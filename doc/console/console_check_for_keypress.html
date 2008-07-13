@@ -1,0 +1,51 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_keyboard.html">&lt; 2.3 Handling keyboard input</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2.3.1 Non-blocking keyboard input<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<p class="code"><pre>
+C++ : static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_PRESSED)
+C   : TCOD_key_t TCOD_console_check_for_keypress(int flags)
+</pre></p>
+<br />
+This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See <a href="key_t.html">TCOD_key_t</a>. If the user didn't press a key, this function returns the key code <a href="keycode_t.html">TCODK_NONE</a>.<br />
+<b>Note that key repeat only results in TCOD_KEY_PRESSED events.</b>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>flags</td><td>A filter for key events :<br />TCOD_KEY_PRESSED : only keypress events are returned<br />TCOD_KEY_RELEASED : only key release events are returnes<br />TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCOD_key_t key = TCODConsole::checkForKeypress();
+      if ( key.vk == TCODK_NONE ) return; // no key pressed
+      if ( key.c == 'i' ) { ... open inventory ... }
+C   : TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+      if ( key.vk == TCODK_NONE ) return; /* no key pressed */
+      if ( key.c == 'i' ) { ... open inventory ... }
+</pre></p>
+<br />
+You can also get the status of any special key at any time with :<br />
+<p class="code"><pre>
+C++ : static bool TCODConsole::isKeyPressed(TCOD_keycode_t key)
+C   : bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>key</td><td>Any key code defined in <a href="keycode_t.html">keycode_t</a> except TCODK_CHAR and TCODK_NONE.</td></tr>
+</table>
+
+

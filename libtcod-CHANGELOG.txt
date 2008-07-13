@@ -1,0 +1,141 @@
++ new features
+- removed features, fixed bugs
+% modified features
+
+
+1.3.2 :
++ added documentation for the generic container module TCODList
+- fixed not being able to open and close the root console more than once
+- fixed parser not being able to attach a sub-structure to more than one structure
+- fixed TCOD_image_from_console not working with root console on C version
+- fixed TCODParser::newStruct, addFlag, addProperty handling only static names
+- fixed web color parser (#rrggbb) in the parser module
+- fixed TCODImage constructor / TCOD_image_new crashing if root console not initialized
+- fixed mouse status not updated if the keyboard events are not read with checkForKeypress/waitForKeypress
+- fixed fbm, turbulence functions returning NaN for high octaves values
+
+1.3.1 :
++ now TCODConsole::putChar/setChar can use ascii code > 255 (ok, it's no more an ascii code, then)
+  this allows you to use fonts with more than 255 characters.
++ added default parser listener for basic config files.
++ added fields in TCOD_mouse_t to easily detect button press events :
+  lbutton_pressed : left button pressed event  
+  rbutton_pressed : right button pressed event  
+  mbutton_pressed : middle button pressed event
+  and to get the mouse movement in cell coordinates (instead of pixels)
++ added functions to retrieve data from TCODMap
+- fixed const correctness in TCODConsole::print*Rect functions
+- fixed a bug in fov toolkit if TCODMap width < height
+- fixed TCOD_struct_get_type returning TCOD_TYPE_NONE instead of TCOD_TYPE_BOOL for flags.
+
+1.3 :
++ added mouse support
++ added the file parser module
++ added TCODColor::setHSV(float h, float s, float v) and TCODColor::getHSV(float *h, float *s, float *v)
++ added TCODColor addition and scalar multiplication. All r,g,b values are clamped to [0-255] :
+  C++ : color1 = color2 * 3.5f;
+        color1 = color1 + color2;
+  C   : color1 = TCOD_color_multiply_scalar ( color2, 3.5f );
+        color1 = TCOD_color_add( color1, color2 );
++ added TCODConsole::setKeyboardRepeat(int initialDelay, int interval) and TCODConsole::disableKeyboardRepeat()
++ added TCODSystem::getCurrentResolution(int *w, int *h)
+% now TCODFov::computeFov takes a maxRadius parameter. Use 0 for unlimited range (default)
+% C++ : colors must be initialized by constructor :
+  1.2.2 : TCODColor mycol={r,g,b};
+  1.3   : TCODColor mycol(r,g,b);
+% TCOD_console_check_for_keypress now has a parameter that indicates which events are tracked
+  1.2.2 : key = TCOD_console_check_for_keypress();
+  1.3   : key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+% the mouse cursor is now automatically hidden when using fullscreen
+- fixed closing the window resulting in a fake 'Q' keyboard event
+- fixed TCODConsole::print* and TCODConsole::rect functions crashing when printing out of the console
+- fixed f parameter modified when calling fbm and turbulence noise functions. Now f is no more modified.
+- fixed wrong ascii code in TCOD_key_t.c when pressing Control and a letter key.
+
+1.2.2 :
++ added helpers for real time games
+  void TCODSystem::setFps(int val) to limit the number of frames per second. Use 0 for unlimited fps (default)
+  int TCODSystem::getFps() to return the number of frames rendered during the last second
+  float TCODSystem::getLastFrameLength() to return the length of the last frame in seconds
++ added TCODImage::clear to fill an image with a color
+% TCODConsole::hline and vline now have a TCOD_bkgnd_flag_t parameter
+% now the TCODConsole::print*Rect functions return the height (number of console lines) of the printed string
+- fixed TCODConsole::print*Rect functions not truncating the string if it reaches the bottom of the rectangle
+  using a rectangle height of 0 means unlimited height
+- fixed a color bug when drawing text using the black color (0,0,0)
+- fixed TCODConsole::waitForKeypress(true) resulting in Alt/Ctrl/Shift key state not cleared
+
+1.2.1 :
++ added TCODImage::blitRect to easily map an image on a specific part of a console
++ added possibility to generate an image from an offscreen console
++ added TCODImage::save
++ image toolkit now support reading 8bpp bitmap files.
+% Random number generators now support inverted ranges instead of crashing : 
+  TCODRandom::getInstance()->getInt(10,2)
+  => return a value between 2 and 10.
+- fixed image toolkit replacing the green component by the red one when loading a bitmap from a file
+- fixed console print*Rect functions unnecessarily splitting the string in some cases
+- on Linux, you don't need to link with SDL anymore when using libtcod/libtcod++
+- fixed linker issues with Visual Studio
+
+1.2 :
++ new 'image' toolkit replacing some of the features previously in the 'system' toolkit.
++ now windowed mode works even on 16bits desktops
++ improved custom font support. 
+  You can now use fonts with characters ordered in rows or columns and with a custom transparent color.
+  This allows you to use most existing character sets with the doryen library.
+  Font characters with grayscale are still not supported.
++ new time functions :
+  uint32 TCODSystem::getElapsedMilli()
+  float TCODSystem::getElapsedSeconds()
++ new background blending modes (see the line sample for a demo) :
+  TCOD_BKGND_LIGHTEN : newbk = MAX(oldbk,curbk)
+  TCOD_BKGND_DARKEN  : newbk = MIN(oldbk,curbk)
+  TCOD_BKGND_SCREEN  : newbk = white - (white - oldbk) * (white - curbk) // inverse of multiply : (1-newbk) = (1-oldbk)*(1-curbk)
+  TCOD_BKGND_COLOR_DODGE : newbk = curbk / (white - oldbk)
+  TCOD_BKGND_COLOR_BURN : newbk = white - (white - oldbk) / curbk
+  TCOD_BKGND_ADD : newbk = oldbk + curbk
+  TCOD_BKGND_ADDALPHA(alpha) : newbk = oldbk + alpha * curbk, 0.0<=alpha<=1.0
+  TCOD_BKGND_BURN : newbk = oldbk + curbk - white
+  TCOD_BKGND_OVERLAY : newbk = curbk <= 0.5 ? 2*curbk*oldbk : white - 2*(white-curbk)*(white-oldbk)
+  TCOD_BKGND_ALPHA(alpha) : newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk), 0.0<=alpha<=1.0
++ The samples can now use custom bitmap fonts / screen resolution. Use following syntax :
+  sample_c[pp] [options]
+  options :
+  -fullscreen : start directly in fullscreen mode
+  -font <font_filename> (default "terminal.bmp")
+  -font-char-size <char_width> <char_height> (default 8 8)
+  -font-layout <nb_char_horiz> <nb_char_vertic> (default 16 16)
+  -font-in-row : characters in the bitmap are ordered in rows (default : columns)
+  -font-key-color <r> <g> <b> : transparent color, r,g,b between 0 and 255. (default 0 0 0)
+  -fullscreen-resolution <width> <height> (default 640 400)
+% headers renamed from tcodlib.h* to libtcod.h*
+% on Linux, the library is splitted into libtcod.so and libtcod++.so
+  allowing C developpers to use it without installing g++
+% the font name is no more a parameter of TCODConsole::initRoot.
+% TCODConsole::setBitmapFontSize renamed to TCODConsole::setCustomFont
+% TCODConsole::printFrame is now a variadic function, like the other text output functions
+% some background blending flags have been renamed :
+  TCOD_BKGND_NOBK replaced by TCOD_BKGND_NONE
+  TCOD_BKGND_BK replaced by TCOD_BKGND_SET
+% the fov toolkit now uses two properties per cell : transparent/walkable. 
+  This is necessary to fix a fov issue with window cells (transparent, but not walkable).
+  void TCODFov::setTransparent(int x,int y, bool isTransparent) has been replaced by :
+  void TCODFov::setProperties(int x,int y, bool isTransparent, bool isWalkable)
+% improved const correctness, added some default parameter values in the C++ API.
+- fixed the window size when using a custom font size
+- fixed TCODK_PRINTSCREEN key event not detected
+- fixed crash in printing functions if the string length was > 255. Now they can handle strings of any size.
+
+1.1 :
++ added the noise toolkit
++ added the field of view toolkit
++ added customizable bitmap font size
+
+1.0.1 : 
++ added C/C++ samples
+% TCODConsole::waitForKeyPress now has a bool parameter indicating if we flush the keyboard buffer before waiting.
+- fixed a color bug when drawing text using the grey color (196,196,196)
+- fixed wrong key codes returned by wait/checkForKeyPress on some keyboard layouts
+
+1.0 : Initial release

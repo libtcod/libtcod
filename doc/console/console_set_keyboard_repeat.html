@@ -1,0 +1,35 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_keyboard.html">&lt; 2.3 Handling keyboard input</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2.3.3 Changing keyboard repeat delay<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<p class="code"><pre>
+C++ : static void TCODConsole::setKeyboardRepeat(int initialDelay,int interval)
+C   : void TCOD_console_set_keyboard_repeat(int initial_delay, int interval)
+</pre></p>
+<br />
+This function changes the keyboard repeat times.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>initialDelay</td><td>Delay in millisecond between the time when a key is pressed, and keyboard repeat begins. If 0, keyboard repeat is disabled.</td></tr>
+<tr><td>interval</td><td>Interval in millisecond between keyboard repeat events.</td></tr>
+</table>
+<br />
+You can also disable the keyboard repeat feature with this function (it's equivalent to setKeyboardRepeat(0,0) ).<br />
+<p class="code"><pre>
+C++ : static void TCODConsole::disableKeyboardRepeat()
+C   : void TCOD_console_disable_keyboard_repeat()
+</pre></p>

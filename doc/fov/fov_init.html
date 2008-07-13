@@ -1,0 +1,60 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 7. Field of view toolkit</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+7.1 Building the map<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="fov_compute.html">&gt; 7.2 Computing the field of view</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+First, you have to allocate a map of the same size as your dungeon.<br />
+<p class="code"><pre>
+C++ : TCODMap::TCODMap(int width, int height)
+C   : TCOD_map_t TCOD_map_new(int widht, int height)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>width,height</td><td>The size of the map (in map cells).</td></tr>
+</table>
+<br />
+Then, build your dungeon by defining which cells let the light pass (by default, all cells block the light) and which cells are walkable (by default, all cells are not-walkable).<br />
+<p class="code"><pre>
+C++ : void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable)
+C   : void TCOD_map_set_properties(TCOD_map_t map, int x, int y, bool is_transparent, bool is_walkable)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
+<tr><td>x,y</td><td>Coordinate of the cell that we want to update.</td></tr>
+<tr><td>isTransparent</td><td>If true, this cell will let the light pass else it will block the light.</td></tr>
+<tr><td>isWalkable</td><td>If true, creatures can walk true this cell (it is not a wall).</td></tr>
+</table>
+<br />
+You can clear an existing map (setting all cells as 'blocking') with :<br />
+<p class="code"><pre>
+C++ : void TCODMap::clear()
+C   : void TCOD_map_clear(TCOD_map_t map)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODMap *map = new TCODMap(50,50); // allocate the map
+      map->setProperties(10,10,true,true); // set a cell as 'empty'
+	  map->clear(); // reset the map (all blocking cells)
+C   : TCOD_map_t map = TCOD_map_new(50,50);
+      TCOD_map_set_properties(map,10,10,true,true);
+	  TCOD_map_clear(map); 
+</pre></p>

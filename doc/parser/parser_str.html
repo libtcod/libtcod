@@ -1,0 +1,211 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 10. File parser</a><br />
+<a href="parser_format.html">&lt; 10.1 The libtcod config file format</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+ 10.2 Declaring the 'structures'<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="parser_run.html">&gt; 10.3 Running the parser</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<a href="#10.2.1">10.2.1 Creating a parser<br /></a>
+<a href="#10.2.2">10.2.2 Registering a new structure type<br /></a>
+<a href="#10.2.3">10.2.3 Adding a new flag<br /></a>
+<a href="#10.2.4">10.2.4 Adding a new property<br /></a>
+<a href="#10.2.5">10.2.5 Adding a new value list property<br /></a>
+<a href="#10.2.6">10.2.6 Adding a sub-structure<br /></a>
+<a href="#10.2.7">10.2.7 Getting a structure type's name<br /></a>
+<a href="#10.2.8">10.2.8 Checking if a property is mandatory<br /></a>
+<a href="#10.2.9">10.2.9 Retrieving the type of a property<br /></a>
+<br />
+<hr />
+<a name="10.2.1"></a>
+<h3>Creating a parser</h3>
+Use this function to create a generic parser. Then you'll specialize this parser by defining the structures it can read.<br />
+<p class="code"><pre>
+C++ : TCODParser::TCODParser()
+C   : TCOD_parser_t TCOD_parser_new()
+</pre></p>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODParser myParser();
+C   : TCOD_parser_t my_parser = TCOD_parser_new();
+</pre></p>
+<br />
+<hr />
+<a name="10.2.2"></a>
+<h3>Registering a new structure type</h3>
+Use this function to register a new structure type.<br />
+<p class="code"><pre>
+C++ : TCODParserStruct *TCODParser::newStructure(const char *name)
+C   : TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C version, the parser handler, returned by <a href="#10.2.1">TCOD_parser_new</a>.</td></tr>
+<tr><td>name</td><td>The name of the structure type (in the <a href="parser_format.html#10.1.2">example</a>, this would be "item_type").</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODParser parser();
+      TCODParserStruct *itemTypeStruct = parser.newStructrue("item_type");
+C   : TCOD_parser_t parser = TCOD_parser_new();
+      TCOD_parser_struct_t item_type_struct = TCOD_parser_new_struct(parser, "item_type");
+</pre></p>
+<hr />
+<a name="10.2.3"></a>
+<h3>Adding a new flag</h3>
+Use this function to add a flag property to a structure type. A flag is a simplified boolean property. It cannot be mandatory : either it's present and it's true, or it's absent and it's false.<br />
+<p class="code"><pre>
+C++ : void TCODParserStruct::addFlag(const char *name)
+C   : void TCOD_struct_add_flag(TCOD_parser_struct_t str,char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>name</td><td>The name of the flag (in the <a href="parser_format.html#10.1.2">example</a>, this would be "abstract").</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : itemTypeStruct->addFlag("abstract");
+C   : TCOD_struct_add_flag(item_type_struct, "abstract");
+</pre></p>
+<hr />
+<a name="10.2.4"></a>
+<h3>Adding a new property</h3>
+Use this function to add a standard property to a structure type. Check standard property types <a href="parser_types.html">here</a>.<br />
+<p class="code"><pre>
+C++ : void TCODParserStruct::addProperty(const char *name, TCOD_value_type_t type, bool mandatory)
+C   : void TCOD_struct_add_property(TCOD_parser_struct_t def, char *name, TCOD_value_type_t type, bool mandatory)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>name</td><td>The name of the property (in the <a href="parser_format.html#10.1.2">example</a>, this would be "cost" or "damages" or ...).</td></tr>
+<tr><td>type</td><td>The type of the property. It can be a standard type (see <a href="parser_types.html">this</a>) or a custom type (see <a href="parser_custom.html">this</a>).</td></tr>
+<tr><td>mandatory</td><td>Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : itemTypeStruct->addProperty("cost",TCOD_TYPE_INT,true);
+      itemTypeStruct->addProperty("weight",TCOD_TYPE_FLOAT,true);
+      itemTypeStruct->addProperty("deal_damage",TCOD_TYPE_BOOL,true);
+C   : TCOD_struct_add_property(item_type_struct, "cost", TCOD_TYPE_INT, true);
+      TCOD_struct_add_property(item_type_struct, "damages", TCOD_TYPE_DICE, true);
+      TCOD_struct_add_property(item_type_struct, "color", TCOD_TYPE_COLOR, true);
+      TCOD_struct_add_property(item_type_struct, "damaged_color", TCOD_TYPE_COLOR, true);
+</pre></p>
+<hr />
+<a name="10.2.5"></a>
+<h3>Adding a new value-list property</h3>
+A value-list property is a string property for which we define the list of allowed values. The parser will raise an error if the file contains an unauthorized value for this property.<br />
+The first value-list property that you add to a structure type will have the TCOD_TYPE_VALUELIST00 type. The next TCOD_TYPE_VALUELIST01. You can define up to 16 value list property for each structure type. The last one has the type TCOD_TYPE_VALUELIST15.<br />
+You must provide a value list as a NULL terminated array of strings.
+<p class="code"><pre>
+C++ : void TCODParserStruct::addValueList(const char *name, const char **value_list, bool mandatory)
+C   : void TCOD_struct_add_value_list(TCOD_parser_struct_t def, char *name, char **value_list, bool mandatory)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>name</td><td>The name of the property (in the <a href="parser_format.html#10.1.2">example</a>, this would be "damage_type").</td></tr>
+<tr><td>value_list</td><td>The list of allowed strings.</td></tr>
+<tr><td>mandatory</td><td>Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : static const char *damageTypes[] = { "slash", "pierce", "bludgeon", NULL }; // note the ending NULL
+      itemTypeStruct->addValueList("damage_type", damageTypes, true);
+C   : static const char *damage_types[] = { "slash", "pierce", "bludgeon", NULL };
+      TCOD_struct_add_value_list(item_type_struct, "damage_type", damage_types, true);
+</pre></p>
+<hr />
+<a name="10.2.6"></a>
+<h3>Adding a sub-structure</h3>
+A structure can contains others structures. You can tell the parser which structures are allowed inside one structure type with this function.<br />
+<p class="code"><pre>
+C++ : void TCODParserStruct::addStructure(TCODParserStruct *sub_structure)
+C   : void TCOD_struct_add_structure(TCOD_parser_struct_t str, TCOD_parser_struct_t sub_structure)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>sub_structure</td><td>The structure type that can be embedded.</td></tr>
+</table>
+<br />
+Example :<br />
+The item_type structure can contain itself :<br />
+<p class="code"><pre>
+C++ : itemTypeStruct->addStructure(itemTypeStruct);
+C   : TCOD_struct_add_value_list(item_type_struct, item_type_struct);
+</pre></p>
+<hr />
+<a name="10.2.7"></a>
+<h3>Getting a structure type's name</h3>
+You can retrieve the name of the structure type with these functions. Warning ! Do not confuse the structure type's name with the structure's name :<br />
+<p class="code"><pre>
+item_type "sword" { ... }
+</pre></p>
+Here, the structure type's name is "item_type", the structure name is "sword". Obviously, the structure name cannot be retrieved from the TCODParserStruct object because it's only known at "runtime" (while parsing the file).
+<p class="code"><pre>
+C++ : const char *TCODParserStruct::getName() const
+C   : const char *TCOD_struct_get_name(TCOD_parser_struct_t str)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : const char *structName = itemTypeStruct->getName(); // returns "item_type"
+C   : const char *struct_name = TCOD_struct_get_name(item_type_struct);
+</pre></p>
+<hr />
+<a name="10.2.8"></a>
+<h3>Checking if a property is mandatory</h3>
+You can know if a property is mandatory :<br />
+<p class="code"><pre>
+C++ : bool TCODParserStruct::isPropertyMandatory(const char *name) const
+C   : bool TCOD_struct_is_mandatory(TCOD_parser_struct_t str,const char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>name</td><td>The name of the property, as defined when you called <a href="#10.2.4">addProperty</a> or <a href="#10.2.5">addValueList</a>.</td></tr></table>
+<br />Example :<br />
+<p class="code"><pre>
+C++ : bool costMandatory = itemTypeStruct->isPropertyMandatory("cost"); 
+C   : bool cost_mandatory = TCOD_struct_is_mandatory(item_type_struct, "cost");
+</pre></p>
+<hr />
+<a name="10.2.9"></a>
+<h3>Retrieving the type of a property</h3>
+You get the type of a property :<br />
+<p class="code"><pre>
+C++ : TCOD_value_type_t TCODParserStruct::getPropertyType(const char *name) const
+C   : TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t str, const char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>str</td><td>In the C version, the structure handler, returned by <a href="#10.2.2">TCOD_parser_new_struct</a>.</td></tr>
+<tr><td>name</td><td>The name of the property, as defined when you called <a href="#10.2.4">addProperty</a> or <a href="#10.2.5">addValueList</a>.</td></tr></table>
+<br />Example :<br />
+<p class="code"><pre>
+C++ : TCOD_value_type_t costType = itemTypeStruct->getPropertyType("cost"); // returns TCOD_TYPE_INT
+C   : TCOD_value_type_t cost_type = TCOD_struct_get_type(item_type_struct, "cost");
+</pre></p>

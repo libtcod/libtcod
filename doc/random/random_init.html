@@ -1,0 +1,54 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 3. Pseudorandom number generator</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+3.1 Creating a generator<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="random_use.html">&gt; 3.2 Using a generator</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+The simplest way to get random number is to use the default generator. The first time you get this generator, it is initialized by calling TCOD_random_new. Then, on successive calls, this function returns the same generator (singleton pattern).<br />
+<p class="code"><pre>
+C++ : static TCODRandom *TCODRandom::getInstance()
+C   : TCOD_random_t TCOD_random_get_instance()
+</pre></p>
+<br />
+You can also create as many generators as you want with a random seed (the number of seconds since Jan 1 1970 at the time the constructor is called). Warning ! If you call this function several times in the same second, it will return the same generator.<br />
+<p class="code"><pre>
+C++ : TCODRandom::TCODRandom();
+C   : TCOD_random_t TCOD_random_new();
+</pre></p>
+<br />
+Finally, you can create generators with a specific seed. Those allow you to get a reproducible set of random numbers. You can for example save a dungeon in a file by saving only the seed used for its generation (provided you have a determinist generation algorithm)<br />
+<p class="code"><pre>
+C++ : TCODRandom::TCODRandom(uint32 seed);
+C   : TCOD_random_t TCOD_random_new_from_seed(uint32 seed);
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>seed</td><td>The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.<br /></td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : // default generator
+      TCODRandom * default = TCODRandom::getInstance();
+      // another random generator
+      TCODRandom *myRandom = new TCODRandom();
+      // a random generator with a specific seed
+      TCODRandom *myDeterministRandom = new TCODRandom(0xdeadbeef);
+C   : /* default generator */
+      TCOD_random_t default = TCOD_random_get_instance();
+      /* another random generator */
+      TCOD_random_t my_random = TCOD_random_new();
+      /* a random generator with a specific seed */
+      TCOD_random_t my_determinist_random = TCOD_random_new_from_seed(0xdeadbeef);
+</pre></p>

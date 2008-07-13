@@ -1,0 +1,86 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 11. All purposes container</a><br />
+<a href="list_list.html">&lt; 11.3 Basic list operations</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+11.4 Basic stack operations<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="list_iterator.html">&gt; 11.5 Iterators</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+You can push an element on the stack (append it to the end of the list) :<br />
+<p class="code"><pre>
+C++ : template &lt;class T&gt; void TCODList::push(const T elt) 
+C   : void TCOD_list_push(TCOD_list_t l, const void * elt)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>elt</td><td>Element to append to the list.</td></tr>
+<tr><td>l</td><td>In the C version, the list handler, returned by <a href="list_init.html">a constructor</a>.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODList&lt;int&gt; intList; // the list is empty (contains 0 elements)
+      intList.push(5); // the list contains 1 element at position 0, value = 5
+      intList.push(2); // the list contains 2 elements : 5,2
+C   : TCOD_list_t intList = TCOD_list_new();
+      TCOD_list_push(intList,(const void *)5);
+      TCOD_list_push(intList,(const void *)2);
+</pre></p><br /><hr />
+You can pop an element from the stack (remove the last element of the list).<br />
+<p class="code"><pre>
+C++ : template &lt;class T&gt; T TCODList::pop()
+C   : void * TCOD_list_pop(TCOD_list_t l)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>l</td><td>In the C version, the list handler, returned by <a href="list_init.html">a constructor</a>.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODList&lt;int&gt; intList; // the list is empty (contains 0 elements)
+      intList.push(5); // the list contains 1 element at position 0, value = 5
+      intList.push(2); // the list contains 2 elements : 5,2
+      int val = intList.pop(); // val == 2, the list contains 1 element : 5
+      val = intList.pop(); // val == 5, the list is empty
+C   : TCOD_list_t intList = TCOD_list_new();
+      TCOD_list_push(intList,(const void *)5);
+      TCOD_list_push(intList,(const void *)2);
+      int val = (int)TCOD_list_pop(intList);
+      val = (int)TCOD_list_pop(intList);
+</pre></p><br /><hr />
+You can read the last element of the stack without removing it :<br />
+<p class="code"><pre>
+C++ : template &lt;class T&gt; T TCODList::peek() const
+C   : void * TCOD_list_peek(TCOD_list_t l)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>l</td><td>In the C version, the list handler, returned by <a href="list_init.html">a constructor</a>.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODList&lt;int&gt; intList;
+      intList.push(3); // intList contains 1 elements : 3
+      int val = intList.peek(); // val == 3, inList contains 1 elements : 3
+      intList.push(2); // intList contains 2 elements : 3, 2
+      val = intList.peek(); // val == 2, inList contains 2 elements : 3, 2
+C   : TCOD_list_t intList = TCOD_list_new();
+      TCOD_list_push(intList,(const void *)3);
+      int val = (int)TCOD_list_peek(intList);
+      TCOD_list_push(intList,(const void *)2);
+      val = (int)TCOD_list_peek(intList);
+</pre></p>
+

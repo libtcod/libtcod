@@ -1,0 +1,56 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../random/index.html">&lt; 3. Pseudorandom number generator</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+4. Line drawing toolkit<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="../system/index.html">&gt; 5. System layer</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+This toolkit is a very simple and lightweight implementation of the bresenham line drawing algorithm.<br/>
+It allows you to follow straight paths on your map very easily.<br />
+<br />
+First, you have to initialize the toolkit with your starting and ending coordinates :<br />
+<p class="code"><pre>
+C++ : static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
+C   : void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>xFrom,yFrom</td><td>Coordinates of the line's starting point.</td></tr>
+<tr><td>xTo, yTo</td><td>Coordinates of the line's ending point.</td></tr>
+</table>
+<br />
+You can then step through each cell with this function. On the first call, xCur and yCur must be initialized with the line starting point's coordinates (xFrom,yFrom). It returns true when you reach the line's ending point.<br />
+<p class="code"><pre>
+C++ : static bool TCODLine::step(int *xCur, int *yCur)
+C   : bool TCOD_line_step(int *xCur, int *yCur)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>xCur,yCur</td><td>Coordinates of the next cell on the line.</td></tr>
+</table>
+<br />
+Example :<br />
+Going from point 5,8 to point 13,4 :<br />
+<p class="code"><pre>
+C++ : int x=5,y=8;
+      TCODLine::init(x,y,13,4);
+      do {
+	     .. update cell x,y
+      } while (! TCODLine::step(&x,&y) );
+C   : int x=5,y=8;
+      TCOD_line_init(x,y,13,4);
+      do {
+	     .. update cell x,y
+      } while (! TCOD_line_step(&x,&y) );
+</pre></p>

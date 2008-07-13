@@ -1,0 +1,25 @@
+SRCDIR=.
+INCDIR=include
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
+CC=mingw32-gcc
+CPP=mingw32-g++
+.SUFFIXES: .dll .a .o .h .c .hpp .cpp
+
+$(TEMP)/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $< 
+
+C_OBJS=$(TEMP)/samples_c.o
+CPP_OBJS=$(TEMP)/samples_cpp.o
+
+all : samples_c.exe samples_cpp.exe
+
+samples_c.exe : $(C_OBJS) libtcod-mingw.dll
+	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -Llib -ltcod-mingw
+
+samples_cpp.exe : $(CPP_OBJS) libtcod-mingw.dll
+	$(CPP) $(CPP_OBJS) -o $@ -Llib -ltcod-mingw
+
+clean :
+	\rm -f $(C_OBJS) $(CPP_OBJS) samples_c.exe samples_cpp.exe

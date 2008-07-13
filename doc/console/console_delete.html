@@ -1,0 +1,36 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_offscreen.html">&lt; 2.4 Using off-screen consoles</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2.4.3 Destroying an offscreen console<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<p class="code"><pre>
+C++ : TCODConsole::~TCODConsole()
+C   : void TCOD_console_delete(TCOD_console_t console)
+</pre></p>
+Use this function to destroy an offscreen console and release any resources allocated. Don't use it on the root console.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>con</td><td>In the C version, the offscreen console handler.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODConsole *off1 = new TCODConsole(80,50);
+      ... use off1
+      delete off1; // destroy the offscreen console
+C   : TCOD_console_t off1 = TCOD_console_new(80,50);
+      ... use off1
+      TCOD_console_delete(off1); /* destroy the offscreen console */
+</pre></p>

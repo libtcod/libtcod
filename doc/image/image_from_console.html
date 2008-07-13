@@ -1,0 +1,33 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 8. Image toolkit</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+8.3 Creating an image from a console<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+You can create an image from any console (either the root console or an offscreen console).<br/>
+The image size will depend on the console size and the font characters size.<br/>
+You can then save the image to a file with the <a href="image_save.html">save</a> function.<br/>
+<p class="code"><pre>
+C++ : TCODImage::TCODImage(const TCODConsole *console)
+C   : TCOD_image_t TCOD_image_from_console(TCOD_console_t console)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>console</td><td>The console to convert. In the C version, use NULL for the root console.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = new TCODImage(TCODConsole::root);
+C   : TCOD_image_t pix = TCOD_image_from_console(NULL);
+</pre></p>

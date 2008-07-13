@@ -1,0 +1,44 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_drawing.html">&lt; 2.2 Drawing on the root console</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+Changing the colors associated with a color control code<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<p class="code"><pre>
+C++ : static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
+C   : void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
+</pre></p>
+This function associates a background and a foreground color with a color control code.<br />
+There are 5 color control codes you can use. The color control code may be :<br />
+<p class="code"><pre>
+	TCOD_COLCTRL_1
+	TCOD_COLCTRL_2 
+	TCOD_COLCTRL_3 
+	TCOD_COLCTRL_4 
+	TCOD_COLCTRL_5
+</pre></p>	
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>con</td><td>The color control code.</td></tr>
+<tr><td>fore</td><td>The foreground color associated with this color control code. You can use <a href="../color/index.html">color constants</a>.</td></tr>
+<tr><td>back</td><td>The background color associated with this color control code. You can use <a href="../color/index.html">color constants</a>.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
+      TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+C   : TCODConsole_set_color_control(TCOD_COLCTRL_1,red,black);
+      TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+</pre></p>

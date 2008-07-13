@@ -1,0 +1,77 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../image/index.html">&lt; 8. Image toolkit</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+9. Mouse support<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="../parser/index.html">&gt; 10. File parser</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+By default, the mouse cursor in visible in windowed mode, hidden in fullscreen mode. You can change it with :<br/>
+<p class="code"><pre>
+C++ : static void TCODMouse::showCursor(bool visible)
+C   : void TCOD_mouse_show_cursor(bool visible)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>visible</td><td>If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.</td></tr>
+</table>
+<br />
+You can get the current cursor status (hidden or visible) with :<br/>
+<p class="code"><pre>
+C++ : static bool TCODMouse::isCursorVisible()
+C   : bool TCOD_mouse_is_cursor_visible()
+</pre></p>
+<br />
+You can set the cursor position (in pixel coordinates, 0x0 = the window top left corner) with :<br/>
+<p class="code"><pre>
+C++ : static void TCODMouse::move(int x, int y)
+C   : void TCOD_mouse_move(int x, int y)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>x,y</td><td>New coordinates of the mouse cursor in pixels.</td></tr>
+</table>
+<br />
+You can read the current mouse status with :<br />
+<p class="code"><pre>
+typedef struct {
+  int x,y;
+  int dx,dy;
+  int cx,cy;
+  int dcx,dcy;
+  unsigned lbutton : 1; 
+  unsigned rbutton : 1;
+  unsigned mbutton : 1;
+  unsigned lbutton_pressed : 1;
+  unsigned rbutton_pressed : 1;
+  unsigned mbutton_pressed : 1;
+} TCOD_mouse_t;
+
+C++ : static TCOD_mouse_t TCODMouse::getStatus()
+C   : TCOD_mouse_t TCOD_mouse_get_status()
+</pre></p>
+<table class="param">
+<tr><th>Field name</th><th>Description</th></tr>
+<tr><td>x,y</td><td>Absolute position of the mouse cursor in pixels relative to the window top-left corner.</td></tr>
+<tr><td>dx,dy</td><td>Movement of the mouse cursor since the last call in pixels.</td></tr>
+<tr><td>cx,cy</td><td>Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).</td></tr>
+<tr><td>dcx,dcy</td><td>Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).</td></tr>
+<tr><td>lbutton</td><td>true if the left button is pressed.</td></tr>
+<tr><td>rbutton</td><td>true if the right button is pressed.</td></tr>
+<tr><td>mbutton</td><td>true if the middle button (or the wheel) is pressed.</td></tr>
+<tr><td>lbutton_pressed</td><td>true if the left button was pressed and released.</td></tr>
+<tr><td>rbutton_pressed</td><td>true if the right button was pressed and released.</td></tr>
+<tr><td>mbutton_pressed</td><td>true if the middle button was pressed and released.</td></tr>
+</table>
+
+<br />

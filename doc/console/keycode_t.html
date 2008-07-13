@@ -1,0 +1,98 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_keyboard.html">&lt; 2.3 Handling keyboard input</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2.3.5 Key codes<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+TCOD_keycode_t is a libtcod specific code representing a key on the keyboard. Possible values are :<br />
+When no key was pressed (see <a href="console_check_for_keypress.html">checkForKeypress</a>) :<br />
+<p class="code"><pre>
+TCODK_NONE
+</pre></p>
+Special keys :<br />
+<p class="code"><pre>
+TCODK_ESCAPE
+TCODK_BACKSPACE
+TCODK_TAB
+TCODK_ENTER
+TCODK_SHIFT
+TCODK_CONTROL
+TCODK_ALT
+TCODK_PAUSE
+TCODK_CAPSLOCK
+TCODK_PAGEUP
+TCODK_PAGEDOWN
+TCODK_END
+TCODK_HOME
+TCODK_UP
+TCODK_LEFT
+TCODK_RIGHT
+TCODK_DOWN
+TCODK_PRINTSCREEN
+TCODK_INSERT
+TCODK_DELETE
+TCODK_LWIN
+TCODK_RWIN
+TCODK_APPS
+TCODK_KPADD
+TCODK_KPSUB
+TCODK_KPDIV
+TCODK_KPMUL
+TCODK_KPDEC
+TCODK_KPENTER
+TCODK_F1
+TCODK_F2
+TCODK_F3
+TCODK_F4
+TCODK_F5
+TCODK_F6
+TCODK_F7
+TCODK_F8
+TCODK_F9
+TCODK_F10
+TCODK_F11
+TCODK_F12
+TCODK_NUMLOCK
+TCODK_SCROLLLOCK
+TCODK_SPACE
+</pre></p>
+numeric keys :<br />
+<p class="code"><pre>
+TCODK_0
+TCODK_1
+TCODK_2
+TCODK_3
+TCODK_4
+TCODK_5
+TCODK_6
+TCODK_7
+TCODK_8
+TCODK_9
+TCODK_KP0
+TCODK_KP1
+TCODK_KP2
+TCODK_KP3
+TCODK_KP4
+TCODK_KP5
+TCODK_KP6
+TCODK_KP7
+TCODK_KP8
+TCODK_KP9
+</pre></p>
+Any other (printable) key :<br />
+<p class="code"><pre>
+TCODK_CHAR
+</pre></p>
+Codes starting with TCODK_KP represents keys on the numeric keypad (if available).<br />

@@ -1,0 +1,49 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 6. Noise generator</a><br />
+<a href="noise_init.html">&lt; 6.1 Creating a noise generator</a><br /><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+6.2 Getting basic Perlin noise<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="noise_fbm.html">&gt; 6.3 Getting fractional brownian motion</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+This function returns the perlin function value between -1.0 and 1.0 at given coordinates.<br />
+<p class="code"><pre>
+C++ : float TCODNoise::getNoise(float *f) const
+C   : float TCOD_noise_get(TCOD_noise_t noise, float *f)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>noise</td><td>In the C version, the generator handler, returned by the <a href="noise_init.html">initialization</a> function.</td></tr>
+<tr><td>f</td><td>An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : // 1d noise
+      TCODNoise * noise1d = new TCODNoise(1);
+      float p=0.5f;
+      float value = noise1d->getNoise(&p);
+      // 2d noise
+      TCODNoise * noise2d = new TCODNoise(2);
+      float p[2]={0.5f,0.7f};
+      float value = noise2d->getNoise(p);
+C   : /* 1d noise */
+      TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+      float p=0.5f;
+      float value = TCOD_noise_get(noise1d,&p);
+      /* 2d noise */
+      TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+      float p[2]={0.5f,0.7f};
+      float value = TCOD_noise_get(noise2d,p);
+</pre></p>

@@ -1,0 +1,66 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 8. Image toolkit</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+8.8 Blitting an image on a console<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+You can draw an image on a console (by changing the cells background color) :<br/>
+The first function allows you to specify the floating point coordinates of the center<br />
+of the image, and its scale and rotation angle.<br />
+The image will be rendered with sub-cell accuracy. For example, if you increase x by 0.01 per frame,<br/>
+you will achieve a smooth scrolling effect.<br />
+<p class="code"><pre>
+C++ : void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
+C   : void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>image</td><td>In the C version, the image handler, obtained with the <a href="image_load.html">load</a> function.</td></tr>
+<tr><td>console</td><td>The console on which the image will be drawn. In the C version, use NULL for the root console.</td></tr>
+<tr><td>x,y</td><td>Coordinates in the console of the center of the image.</td></tr>
+<tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="../console/bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
+<tr><td>scale</td><td>Scale coefficient. Must be &gt; 0.0.</td></tr>
+<tr><td>angle</td><td>Rotation angle in radians.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = TCODImage("mypix.bmp");
+      pix->blit(TCODConsole::root,40.0f,25.0f);
+C   : TCOD_image_t pix = TCOD_image_new(80,50);
+      TCOD_image_blit(pix,NULL,40,25,TCOD_BKGND_SET,1.0f,1.0f,0.0f);
+</pre></p>
+<br />
+The second function allows you to easily map an image to a specific part of a console, by<br />
+specifying a rectangular part of the console (upper-left corner and size).
+<p class="code"><pre>
+C++ : void blitRect(TCODConsole *console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const
+C   : void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>image</td><td>In the C version, the image handler, obtained with the <a href="image_load.html">load</a> function.</td></tr>
+<tr><td>console</td><td>The console on which the image will be drawn. In the C version, use NULL for the root console.</td></tr>
+<tr><td>x,y</td><td>Coordinates in the console of the upper-left corner of the image.</td></tr>
+<tr><td>w,h</td><td>Dimension of the image on the console. Use -1,-1 to use the image size.</td></tr>
+<tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="../console/bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = TCODImage("mypix.bmp");
+      // blitting the image without scaling it
+      pix->blitRect(TCODConsole::root,40,25);
+C   : TCOD_image_t pix = TCOD_image_new(10,10);
+      /* down-scaling a 10x10 image to a 5x5 zone */
+      TCOD_image_blit_rect(pix,NULL,40,25,5,5,TCOD_BKGND_SET);
+</pre></p>

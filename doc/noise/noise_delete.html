@@ -1,0 +1,43 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 6. Noise generator</a><br />
+<a href="noise_turbulence.html">&lt; 6.4 Getting 'turbulence'</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+6.5 Destroying a generator<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+To release ressources used by a generator, use those functions :<br />
+<p class="code"><pre>
+C++ : TCODNoise::~TCODNoise()
+C   : void TCOD_noise_delete(TCOD_noise_t noise)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>noise</td><td>In the C version, the generator handler, returned by the <a href="noise_init.html">initialization function</a>.<br /></td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : // create a generator
+      TCODNoise *noise = new TCODNoise(2);
+      // use it 
+      ...
+      // destroy it
+      delete noise;
+C   : /* create a generator */
+      TCOD_noise_t noise = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAUT_LACUNARITY, NULL);
+      /* use it */ 
+      ...
+      /* destroy it */
+      TCOD_noise_delete(noise);
+</pre></p>

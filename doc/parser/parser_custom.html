@@ -1,0 +1,81 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 10. File parser</a><br />
+<a href="parser_types.html">&lt; 10.4 Standard data types</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+10.5 Using custom data types <br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="parser_default.html">&gt; 10.6 Using the default parser listener</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Warning ! This uses some undocumented features of libtcod. Use it only if you know what you're doing...<br />
+The libtcod parser allows you to add your own data types. You can provide up to 16 custom datatype parsers that will read data from the text file and convert it into a TCOD_value_t union (using either an existing field or the generic custom field).
+<p class="code"><pre>
+typedef TCOD_value_t (*TCOD_parser_custom_t)(TCOD_lex_t *lex, TCOD_parser_listener_t *listener, TCOD_parser_struct_t str, char *name);
+
+C++ : TCOD_value_type_t TCODParser::newCustomType(TCOD_parser_custom_t custom_type_parser)
+C   : TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser,TCOD_parser_custom_t custom_type_parser)
+</pre></p>
+This function associate a datatype parser with a new TCOD type. It returns the corresponding TCOD type between TCOD_TYPE_CUSTOM00 and TCOD_TYPE_CUSTOM15 or TCOD_TYPE_NONE if there are no more custom types available.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C version, the parser handler, returned by <a href="parser_run.html#10.2.1">TCOD_parser_new</a>.</td></tr>
+<tr><td>custom_type_parser</td><td>A function pointer to the new datatype parser.</td></tr>
+</table>
+<br />
+The custom datatype parser has following parameters :<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>lex</td><td>The libtcod generic lexical parser. This part is not yet documented.</td></tr>
+<tr><td>listener</td><td>The parser listener, mainly to call the error callback.</td></tr>
+<tr><td>str</td><td>The structure type currently being parsed.</td></tr>
+<tr><td>name</td><td>The name of the property to parse.</td></tr>
+</table>
+<br />
+The data must be fetched from the file using the lex object. The best way to understand how it work is to read the TCOD_parse_xxx_value functions in the parser_c.c source file. If you don't want to mess with the TCODLex class, you'd better put your custom value in a double-quote limited string so that you only have to manually parse it inside lex-&gt;tok (see TCOD_parse_color_value or TCOD_parse_dice_value for examples).
+Your custom parser can still use existing datatype parsers :
+<p class="code"><pre>
+TCOD_value_t TCOD_parse_bool_value();
+TCOD_value_t TCOD_parse_char_value();
+TCOD_value_t TCOD_parse_integer_value();
+TCOD_value_t TCOD_parse_float_value();
+TCOD_value_t TCOD_parse_string_value();
+TCOD_value_t TCOD_parse_color_value();
+TCOD_value_t TCOD_parse_dice_value();
+</pre></p>
+Example of a (very simple) custom parser :<br />
+In TCOD, certain objects must have a special color that represent the sun color. Obviously, it depends on the time of the day, so I can't put r,g,b values in the config file. So I override the color parser to add a special "sun" value :
+<p class="code"><pre>
+// custom color parser. handle "sun" value
+// World::sunColor is a special color that is replaced at runtime by the actual sun color
+TCOD_value_t customColorParser(TCOD_lex_t *lex, TCOD_parser_listener_t *listener, TCOD_parser_struct_t def, char *propname) {
+	if ( strcmp(lex->tok,"sun") == 0 ) {
+		TCOD_value_t ret;
+		ret.col.r = World::sunColor.r;
+		ret.col.g = World::sunColor.g;
+		ret.col.b = World::sunColor.b;
+		return ret;
+	}
+	return TCOD_parse_color_value();
+}
+</pre></p>
+<br />
+This custom parser is registered before running the parser :<br />
+<p class="code"><pre>
+TCOD_value_type_t customColor = parser.newCustomType(customColorParser);
+</pre></p>
+<br />
+I can now define properties using this custom type :<br />
+<p class="code"><pre>
+TCODParserStruct *feat = parser.newStructure("feature");
+feat->addProperty("color",customColor,false);
+</pre></p>

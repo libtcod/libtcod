@@ -1,0 +1,49 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 3. Pseudorandom number generator</a><br />
+<a href="random_use.html">&lt; 3.2 Using a generator</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+3.3 Getting a random int from a byte array<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="random_delete.html">&gt; 3.4 Destroying a generator</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+This is a very specific feature that may be useful in certain situations. Imagine you want the player to type a world name at the start of the game so that :<br />
+- typing the same name twice results in the same world<br />
+- typing different names results in different worlds<br/>
+Obviously, you need to get a random seed from the name of the world in a determinist way. This is what this function does for you.<br />
+Note that this function is not a pseudorandom number generator, but a seed generator. You still have to create a generator from that seed.<br />
+<p class="code"><pre>
+C++ : static int TCODRandom::getIntFromByteArray(int min, int max, const char *data,int len)
+C   : int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>min, max</td><td>When you call this function, you get a number between (including) min and max<br /></td></tr>
+<tr><td>data, len</td><td>The byte array. len is the number of significant bytes in the array. data may not be finished by a 0 character.<br /></td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : // get a random int from a name
+      char *name = ... get a name
+      int aRandomIntBetween0And1000 = TCODRandom::getIntFromByteArray(0,1000,name,(int)strlen(name));
+      // get a random int from another int
+      int myInt = ...
+      int aRandomInt = TCODRandom::getIntFromByteArray(0,1000,&myInt,sizeof(int));
+C   : /* get a random int from a name */
+      char *name = ... get a name
+      int a_random_int_between_0_and_1000 = TCOD_random_get_int_from_byte_array(0,1000,name,(int)strlen(name));
+      /* get a random int from another int */
+      int my_int = ...
+      int a_random_int = TCOD_random_get_int_from_byte_array(0,1000,&my_int,sizeof(int));
+</pre></p>

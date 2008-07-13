@@ -1,0 +1,37 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../system/index.html">&lt; 5. System layer</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+6. Noise generator<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="../fov/index.html">&gt; 7. Field of view toolkit</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+This toolkit provides several functions to generate <a href="http://en.wikipedia.org/wiki/Perlin_noise">Perlin noise</a> and other derived noises.<br/>
+It can handle noise functions from 1 to 4 dimensions.<br />
+Usage example :<br />
+1D noise : the variation of a torch intensity<br />
+2D fbm : for heightfield generation or clouds<br />
+<br />
+<a href="noise_init.html">6.1 Creating a noise generator</a><br />
+<a href="noise_get.html">6.2 Getting basic Perlin noise</a><br />
+<a href="noise_fbm.html">6.3 Getting fractional brownian motion</a><br />
+<a href="noise_turbulence.html">6.4 Getting 'turbulence'</a><br />
+<a href="noise_delete.html">6.5 Destroying a generator</a><br />
+<br />
+If you don't know what is Perlin noise and derived functions, or what is the influence of the different fractal parameters, check the perlin noise sample included with the library.<br />
+<p align="center">
+<table width="800px"><tr>
+	<td align="center"><img src="noise.png"><br />Perlin noise</td>
+	<td align="center"><img src="fbm.png"><br />Fractional brownian motion (fbm)</td>
+	<td align="center"><img src="turbulence.png"><br />Turbulence</td></tr></table>
+</p>

@@ -1,0 +1,61 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_drawing.html">&lt; 2.2 Drawing on the root console</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+Changing the colors while printing a string<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+If you want to draw a string using different colors for each word, the basic solution is to call a string printing function several times, changing the default colors between each call.<br />
+The TCOD library offers a simpler way to do this, allowing you to draw a string using different colors in a single call. For this, you have to insert <b>color control codes</b> in your string.<br />
+A color control code is associated with a color set (a foreground color and a background color). If you insert this code in your string, the next characters will use the colors associated with the color control code.<br />
+There are 5 predefined color control codes :<br />
+<p class="code"><pre>
+	TCOD_COLCTRL_1
+	TCOD_COLCTRL_2 
+	TCOD_COLCTRL_3 
+	TCOD_COLCTRL_4 
+	TCOD_COLCTRL_5
+</pre></p>
+To associate a color with a code, use <a href="console_set_color_control.html">setColorControl</a>.<br />
+To go back to the console's default colors, insert in your string the <b>color stop control code</b> :<br /> 
+<p class="code"><pre>
+	TCOD_COLCTRL_STOP
+</pre></p>
+Example :<br />
+A string with a red over black word, using predefined color control codes :<br />
+<p class="code"><pre>
+C++ : TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
+      TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+C   : TCODConsole_set_color_control(TCOD_COLCTRL_1,red,black);
+      TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+</pre></p>
+You can also use any color without assigning it to a control code, using the generic control codes :<br />
+<p class="code"><pre>
+	TCOD_COLCTRL_FORE_RGB
+	TCOD_COLCTRL_BACK_RGB
+</pre></p> 
+Those controls respectively change the foreground and background color used to print the string characters. In the string, you must insert the r,g,b components of the color (between 1 and 255. The value 0 is forbidden because it represents the end of the string in C/C++) immediately after this code.<br />
+Example :<br />
+A string with a red word (over default background color), using generic color control codes :<br />
+<p class="code"><pre>
+C++ : TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+C   : TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+</pre></p>
+A string with a red over black word, using generic color control codes :<br />
+<p class="code"><pre>
+C++ : TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word.",
+            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+C   : TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word.",
+            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+</pre></p>

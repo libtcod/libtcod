@@ -1,0 +1,50 @@
+<p align="center">
+=====================================<br />
+The Doryen library v1.3.2<br />
+=====================================<br />
+
+Library content :<br />
+<a href="compil/index.html">0. Compiling with libtcod</a><br />
+<a href="color/index.html">1. Colors</a><br />
+<a href="console/index.html">2. Console emulator</a><br />
+<a href="random/index.html">3. Pseudorandom number generator</a><br />
+<a href="line/index.html">4. Line drawing toolkit</a><br />
+<a href="system/index.html">5. System layer</a><br />
+<a href="noise/index.html">6. Noise generator</a><br />
+<a href="fov/index.html">7. Field of view toolkit</a><br />
+<a href="image/index.html">8. Image toolkit</a><br />
+<a href="mouse/index.html">9. Mouse support</a><br />
+<a href="parser/index.html">10. File parser</a><br />
+<a href="list/index.html">11. All purposes container</a><br />
+</p>
+<br />
+<p align="center">
+<table><tr><td>
+<b>Compiling</b><br />
+To use the library, just include the right file :<br />
+<p class="code"><pre>
+C++ : #include "libtcod.hpp"
+C   : #include "libtcod.h"
+</pre></p>
+Of course, you have to put the libtcod include directory in your compiler include path.<br />
+<br />
+<b>Linking</b><br />
+With Visual Studio, add the libtcod-VS.lib in your linker inputs.<br />
+With Mingw32, add -L./lib -ltcod-mingw to your linking command to link with lib/libtcod-mingw.a.<br />
+With gcc on Linux, add -ltcod to your linking command to link with libtcod.so.<br />
+With g++ on Linux, add -ltcod -ltcod++ to your linking command to link with libtcod++.so.<br />
+<p class="code"><pre>
+gcc -O3 sample.c -o samples_c -L. -ltcod -I include
+g++ -O3 sample.cpp -o samples_cpp -L. -ltcod -ltcod++ -I include
+</pre></p>
+<br />
+<b>Running</b><br />
+On windows, libtcod-VS.dll must be in the same directory as your game exe.<br />
+On Linux, libtcod.so (and libtcod++.so if you're using C++) must be in your LD_LIBRARY_PATH :<br />
+<p class="code"><pre>
+export LD_LIBRARY_PATH=.
+./samples_c
+</pre></p>
+</div>
+</td></tr></table>
+</p>

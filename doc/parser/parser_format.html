@@ -1,0 +1,75 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 10. File parser</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+10.1 The libtcod config file format<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="parser_str.html">&gt; 10.2 Declaring the 'structures'</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<a href="#10.1.1">10.1.1 Comments<br /></a>
+<a href="#10.1.2">10.1.2 Structures<br /></a>
+<br />
+<hr />
+<a name="10.1.1"></a>
+<h3>Comments</h3>
+Your file can contain single line or multi-line comments :<br />
+<p class="code"><pre>
+// This is a single line comment
+/*
+   This is a
+   multi-line comment
+*/
+</pre></p>
+Multi-line comments can be nested :<br />
+<p class="code"><pre>
+/*
+   This is a
+   multi-line comment containing another
+   /*
+       multi-line
+       comment
+   */
+*/
+</pre></p>
+The parser is not sensible to space characters, tabulations or carriage return except inside strings.
+<br />
+<hr />
+<a name="10.1.2"></a>
+<h3>Structures</h3>
+The libtcod config file format is basically a list of structures. A structure has a type, an optional name and contains properties. The type of the structure defines which properties are allowed / mandatory.<br />
+<p class="code"><pre>
+item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'
+	cost=300                   // an integer property
+	weight=3.5                 // a float property
+	deal_damage=true           // a boolean property
+	damages="3d6+2"            // a dice property
+	color="#FF0000"            // a color property, using #RRGGBB syntax
+	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax
+	damage_type="slash"        // a string property
+	abstract                   // a flag (simplified boolean property)
+}
+</pre></p>
+A structure can also contain other structures either of the same type, or structures of another type : <br />
+<p class="code"><pre>
+item_type "blade" {
+	item_type "one-handed blades" {
+		// the item_type "blade" contains another item_type named "one-handed blades"
+	}
+	item_type "two-handed blades" {
+		// the item_type "blade" contains another item_type named "two-handed blades"
+	}
+	feature "damage" {
+		// the item_type "blade" contains another structure, type "feature", name "damage"
+	}
+}
+</pre></p>

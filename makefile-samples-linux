@@ -1,0 +1,26 @@
+SRCDIR=.
+INCDIR=include
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
+CC=gcc
+CPP=g++
+TEMP=/tmp
+.SUFFIXES: .o .h .c .hpp .cpp
+
+$(TEMP)/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $< 
+
+C_OBJS=$(TEMP)/samples_c.o
+CPP_OBJS=$(TEMP)/samples_cpp.o
+
+all : samples_c samples_cpp
+
+samples_c : $(C_OBJS) libtcod.so
+	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L. -ltcod
+
+samples_cpp : $(CPP_OBJS) libtcod++.so
+	$(CPP) $(CPP_OBJS) -o $@ -L. -ltcod -ltcod++
+
+clean :
+	\rm -f $(C_OBJS) $(CPP_OBJS) samples_c samples_cpp

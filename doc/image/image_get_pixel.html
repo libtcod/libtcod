@@ -1,0 +1,34 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 8. Image toolkit</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+8.5 Getting the color of a pixel<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+You can read the colors from an image with :<br />
+<p class="code"><pre>
+C++ : TCODColor TCODImage::getPixel(int x, int y) const
+C   : TCOD_color_t TCOD_image_get_pixel(TCOD_image_t image,int x, int y)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>image</td><td>In the C version, the image handler, obtained with the <a href="image_load.html">load</a> function.</td></tr>
+<tr><td>x,y</td><td>The pixel coordinates inside the image.<br />0 &lt;= x &lt; width<br />0 &lt;= y &lt; height<br /></td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = new TCODImage(80,50);
+      TCODColor col=pix->getPixel(40,25);
+C   : TCOD_image_t pix = TCOD_image_new(80,50);
+      TCOD_color_t col=TCOD_image_get_pixel(pix,40,25);
+</pre></p>

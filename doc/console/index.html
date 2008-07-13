@@ -1,0 +1,46 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../color/index.html">&lt; 1. Colors</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2. Console emulator<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="../random/index.html">&gt; 3. Pseudorandom number generator</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+</style>
+The console emulator handles the rendering of the game screen and the keyboard input.<br/>
+<a href="console_init.html">2.1 Initializing the console</a><br />
+<a href="console_drawing.html">2.2 Drawing on the root console</a><br />
+<a href="console_keyboard.html">2.3 Handling keyboard input</a><br />
+<a href="console_offscreen.html">2.4 Using off-screen consoles</a><br />
+<br />
+Classic real time game loop :<br />
+<p class="code"><pre>
+  TCODConsole::initRoot(80,50,"my game",false);
+  TCODSystem::setFps(25); // limit framerate to 25 frames per second
+  while ( ! endGame && ! TCODConsole::isWindowClosed() ) {
+    ... draw on TCODConsole::root
+    TCODConsole::flush();
+    TCOD_key_t key=TCODConsole::checkForKeypress();
+    updateWorld( key, TCODSystem::getLastFrameLength() );
+    // updateWorld(TCOD_key_t key, float elapsed) (using key if key.vk != TCODK_NONE)
+    // use elapsed to scale any update that is time dependant.
+  }
+</pre></p>
+<br />
+Classic turn by turn game loop :<br />
+<p class="code"><pre>
+  TCODConsole::initMain(80,50,"my game",false);
+  while ( ! endGame && ! TCODConsole::isWindowClosed() ) {
+    ... draw on TCODConsole::root
+    TCODConsole::flush();
+    TCOD_key_t key=TCODConsole::waitForKeypress(true);
+    ... update world, using key
+  }
+</pre></p>
+<br />

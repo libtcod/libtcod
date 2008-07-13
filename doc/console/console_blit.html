@@ -1,0 +1,66 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 2. Console emulator</a><br />
+<a href="console_offscreen.html">&lt; 2.4 Using off-screen consoles</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+2.4.2 Blitting a console on another one<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<p class="code"><pre>
+C++ : static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, int fade=255)
+C   : void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, int fade)
+</pre></p>
+This function allows you to blit a rectangular area of the source console at a specific position on a destination console. It can also simulate alpha transparency with the fade parameter.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>src</td><td>The source console that must be blitted on another one.</td></tr>
+<tr><td>xSrc, ySrc, wSrc, hSrc</td><td>The rectangular area of the source console that will be blitted.</td></tr>
+<tr><td>dst</td><td>The destination console.</td></tr>
+<tr><td>xDst, yDst</td><td>Where to blit the upper-left corner of the source area in the destination console.</td></tr>
+<tr><td>fade</td><td>Alpha transparency of the blitted console.<br />0 =&gt; The source console is completely transparent. This function does nothing.<br />255 =&gt; The source console is opaque. Its cells replace the destination cells.<br /> 0 &lt; fade &lt; 255 =&gt; The source console is partially blitted, simulating real transparency.</td></tr>
+</table>
+Example :<br />
+Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.<br />
+<p class="code"><pre>
+C++ : TCODConsole *off1 = new TCODConsole(80,50);
+      TCODConsole *off2 = new TCODConsole(80,50);
+      ... print screen1 on off1
+      ... print screen2 of off2
+      // render screen1 in the game window
+      TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0,255);
+      TCODConsole::flush();
+      // wait or a keypress
+      TCODConsole::waitForKeypress(true);
+      // do a cross-fading from off1 to off2
+      for (int i=1; i <= 255; i++) {
+          TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0,255); // renders the first screen (opaque)
+          TCODConsole::blit(off2,0,0,80,50,TCODConsole::root,0,0,i); // renders the second screen (transparent)
+          TCODConsole::flush();
+	  }
+C   : TCOD_console_t off1 = TCOD_console_new(80,50);
+      TCOD_console_t off2 = TCOD_console_new(80,50);
+      int i;
+      ... print screen1 on off1
+      ... print screen2 of off2
+      /* render screen1 in the game window */
+      TCOD_console_blit(off1,0,0,80,50,NULL,0,0,255);
+      TCOD_console_flush();
+      /* wait or a keypress */
+      TCOD_console_wait_for_keypress(true);
+      /* do a cross-fading from off1 to off2 */
+      for (i=1; i <= 255; i++) {
+          TCOD_console_blit(off1,0,0,80,50,NULL,0,0,255); /* renders the first screen (opaque) */
+          TCOD_console_blit(off2,0,0,80,50,NULL,0,0,i); /* renders the second screen (transparent) */
+          TCOD_console_flush();
+	  }
+</pre></p>

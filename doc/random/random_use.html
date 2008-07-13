@@ -1,0 +1,55 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 3. Pseudorandom number generator</a><br />
+<a href="random_init.html">&lt; 3.1 Creating a generator</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+3.2 Using a generator<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="random_array.html">&gt; 3.3 Getting a random int from a byte array</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once you obtained a generator (using one of <a href="random_init.html">those methods</a>), you can get random numbers using following functions :<br />
+To get a random integer :<br />
+<p class="code"><pre>
+C++ : int TCODRandom::getInt(int min, int max)
+C   : int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions. If NULL, the default generator is used.</a>.<br /></td></tr>
+<tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max<br /></td></tr>
+</table>
+<br />
+To get a random floating point number :<br />
+<p class="code"><pre>
+C++ : float TCODRandom::getFloat(float min, float max)
+C   : float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions</a>. If NULL, the default generator is used.<br /></td></tr>
+<tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max<br /></td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : // default generator
+      TCODRandom * default = TCODRandom::getInstance();
+      int aRandomIntBetween0And1000 = default->getInt(0,1000);
+      // another random generator
+      TCODRandom *myRandom = new TCODRandom();
+      float aRandomFloatBetween0And1000 = myRandom->getFloat(0.0f,1000.0f);
+C   : /* default generator */
+      int a_random_int_between_0_and_1000 = TCOD_random_get_float(NULL,0,1000);
+      /* another random generator */
+      TCOD_random_t my_random = TCOD_random_new();
+      float a_random_float_between_0_and_1000 = TCOD_random_get_float(my_random,0.0f,1000.0f);
+</pre></p>

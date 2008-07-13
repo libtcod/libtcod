@@ -1,0 +1,266 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 10. File parser</a><br />
+<a href="parser_str.html">&lt;  10.2 Declaring the 'structures'</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+10.3 Running the parser <br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="parser_types.html">&gt; 10.4 Standard data types</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<a href="#10.3.1">10.3.1 Creating a listener<br /></a>
+<a href="#10.3.2">10.3.2 Handling 'newStruct' events<br /></a>
+<a href="#10.3.3">10.3.3 Handling 'newFlag' events<br /></a>
+<a href="#10.3.4">10.3.4 Handling 'newProperty' events<br /></a>
+<a href="#10.3.5">10.3.5 Handling 'endStruct' events<br /></a>
+<a href="#10.3.6">10.3.6 Handling errors<br /></a>
+<a href="#10.3.7">10.3.7 Running the parser<br /></a>
+<a href="#10.3.8">10.3.8 Destroying the parser<br /></a>
+<br />
+<hr />
+<a name="10.3.1"></a>
+<h3>Creating a listener</h3>
+NB : for basic config files, you don't have to write a listener. Instead, use the <a href="parser_default.html">default listener</a>.
+The parser uses a <a href="http://en.wikipedia.org/wiki/SAX">SAX-like</a> approach during the parsing of the file. This means that the whole file is not stored in memory in a tree structure. Instead, it works like a stream parser and raises events. Each event has an associated callback that is provided by a listener :<br />
+<p class="code"><pre>
+C++ : 
+	class ITCODParserListener {
+	public :
+		virtual bool parserNewStruct(TCODParser *parser,const TCODParserStruct *str,const char *name)=0;
+		virtual bool parserFlag(TCODParser *parser,const char *name)=0;
+		virtual bool parserProperty(TCODParser *parser,const char *name, TCOD_value_type_t type, TCOD_value_t value)=0;
+		virtual bool parserEndStruct(TCODParser *parser,const TCODParserStruct *str, const char *name)=0;
+		virtual void error(const char *msg) = 0;
+	};
+C   : 
+	typedef struct {
+		bool (*new_struct)(TCOD_parser_struct_t str,const char *name);
+		bool (*new_flag)(const char *name);
+		bool (*new_property)(const char *name, TCOD_value_type_t type, TCOD_value_t value);
+		bool (*end_struct)(TCOD_parser_struct_t str, const char *name);
+		void (*error)(const char *msg);
+	} TCOD_parser_listener_t;
+</pre></p>
+Before running the parser, you have to build a listener :<br />
+<p class="code"><pre>
+C++ :
+	class MyListener : public ITCODParserListener {
+		bool parserNewStruct(TCODParser *parser,const TCODParserStruct *str,const char *name) {
+			printf ("new structure type '%s' with name '%s'\n",str->getname(),name ? name : "NULL");
+			return true;
+		}
+		bool parserFlag(TCODParser *parser,const char *name) {
+			printf ("found new flag '%s'\n",name);
+			return true;
+		}
+		bool parserProperty(TCODParser *parser,const char *name, TCOD_value_type_t type, TCOD_value_t value) {
+			printf ("found new property '%s'\n",name);
+			return true;
+		}
+		bool parserEndStruct(TCODParser *parser,const TCODParserStruct *str,const char *name) {
+			printf ("end of structure type '%s'\n",name);
+			return true;
+		}
+		void error(char *msg) {
+			fprintf(stderr,msg);
+			exit(1);
+		}
+	};
+C   :
+	bool my_parser_new_struct(TCOD_parser_struct_t str, const char *name) {
+		printf ("new structure type '%s' with name '%s'\n",TCOD_struct_get_name(str),name ? name : "NULL");
+		return true;
+	}
+	bool my_parser_flag(const char *name) {
+		printf ("found new flag '%s'\n",name);
+		return true;
+	}
+	bool my_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value) {
+		printf ("found new property '%s'\n",name);
+		return true;
+	}
+	bool my_parser_end_struct(TCOD_parser_struct_t str, const char *name) {
+		printf ("end of structure type '%s'\n",name);
+		return true;
+	}
+	void my_parser_error(const char *msg) {
+		fprintf(stderr,msg);
+		exit(1);
+	}
+	TCOD_parser_listener_t my_listener = {
+		my_parser_new_struct,
+		my_parser_flag,
+		my_parser_property,
+		my_parser_end_struct,
+		my_parser_error
+	}; 
+</pre></p>
+<br />
+<hr />
+<a name="10.3.2"></a>
+<h3>Handling 'newStruct' events</h3>
+This callback is called each time the parser find a new structure declaration in the file. Example :<br />
+<p class="code"><pre>
+item_type "blade" { // &lt;= newStruct event here
+	... 
+}
+</pre></p>
+It must return true if everything is right, false if there is an error and the parser must exit.<br />
+<p class="code"><pre>
+C++ : bool ITCODParserListener::parserNewStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
+C   : bool new_struct(TCOD_parser_struct_t str,const char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C++ version, the parser object, returned by <a href="parser_str.html#10.2.1">TCODParser constructor</a>. It's used for error handling.</td></tr>
+<tr><td>str</td><td>The structure type. Can be used to retrieve the type's name with <a href="parser_str.html#10.2.7">getName</a>. In the example above, this would be "item_type".</td></tr>
+<tr><td>name</td><td>The name of the structure or NULL if no name is present in the file. In the example above, this would be "blade".</td></tr>
+</table>
+<br />
+<hr />
+<a name="10.3.3"></a>
+<h3>Handling 'newFlag' events</h3>
+This callback is called each time the parser find a new flag in the file. Example :<br />
+<p class="code"><pre>
+item_type "blade" { 
+	abstract  // &lt;= newFlag event here
+}
+</pre></p>
+It must return true if everything is right, false if there is an error and the parser must exit.<br />
+<p class="code"><pre>
+C++ : bool ITCODParserListener::parserFlag(TCODParser *parser,const char *name)
+C   : bool new_flag(const char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C++ version, the parser object, returned by <a href="parser_str.html#10.2.1">TCODParser constructor</a>. It's used for error handling.</td></tr>
+<tr><td>name</td><td>The name of the flag. In the example, this would be "abstract".</td></tr>
+</table>
+<br />
+<hr />
+<a name="10.3.4"></a>
+<h3>Handling 'newProperty' events</h3>
+This callback is called each time the parser find a new property in the file. Example :<br />
+<p class="code"><pre>
+item_type "blade" { 
+	abstract
+	cost=300 // &lt;= newProperty event here
+}
+</pre></p>
+It must return true if everything is right, false if there is an error and the parser must exit.<br />
+<p class="code"><pre>
+C++ : bool ITCODParserListener::parserProperty(TCODParser *parser,const char *name, TCOD_value_type_t type, TCOD_value_t value)
+C   : bool new_property(const char *name, TCOD_value_type_t type, TCOD_value_t value)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C++ version, the parser object, returned by <a href="parser_str.html#10.2.1">TCODParser constructor</a>. It's used for error handling.</td></tr>
+<tr><td>name</td><td>The name of the property. In the example, this would be "cost".</td></tr>
+<tr><td>type</td><td>The type of the property as defined when you called <a href="#10.2.4">addProperty</a> or <a href="#10.2.5">addValueList</a>. In the example, this would be TCOD_TYPE_INT.</td></tr>
+<tr><td>value</td><td>The value of the property, stored in a <a href="parser_types.html">generic value structure</a>. In the example, we would have value.i == 300.<br />
+	In the case of a value-list property, the type would reflect the list id (between TCOD_TYPE_VALUELIST00 and TCOD_TYPE_VALUELIST15) and value.s would contain the actual string.</td></tr>
+</table>
+<br />
+<hr />
+<a name="10.3.5"></a>
+<h3>Handling 'endStruct' events</h3>
+This callback is called each time the parser find the end of a structure declaration in the file. Example :<br />
+<p class="code"><pre>
+item_type "blade" { 
+	... 
+} // &lt;= endStruct event here
+</pre></p>
+It must return true if everything is right, false if there is an error and the parser must exit.<br />
+<p class="code"><pre>
+C++ : bool ITCODParserListener::parserEndStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
+C   : bool end_struct(TCOD_parser_struct_t str,const char *name)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C++ version, the parser object, returned by <a href="parser_str.html#10.2.1">TCODParser constructor</a>. It's used for error handling.</td></tr>
+<tr><td>str</td><td>The structure type. Can be used to retrieve the type's name with <a href="parser_str.html#10.2.7">getName</a>. In the example above, this would be "item_type".</td></tr>
+<tr><td>name</td><td>The name of the structure or NULL if no name is present in the file. In the example above, this would be "blade".</td></tr>
+</table>
+<br />
+<hr />
+<a name="10.3.6"></a>
+<h3>Handling errors</h3>
+There are two kind of errors :
+<ul>
+<li>Errors that are detected by the parser itself (malformed file, bad value syntax for a property, missing mandatory property in a structure, ...).</li>
+<li>Errors that you detect in your callbacks.</li>
+</ul>
+When the parser finds an error in the file, it will call the error callback and stop :
+<p class="code"><pre>
+C++ : void ITCODParserListener::error(const char *msg)
+C   : void error(const char *msg)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>msg</td><td>The error message from the parser with the file name and the line number.</td></tr>
+</table>
+<br />
+If you find an error in your callback, you have to call the parser error function. It will add the file name and line number to your error message, and then call your error callback :<br />
+<p class="code"><pre>
+C++ : void TCODParser::error(const char *msg, ...)
+C   : void TCOD_parser_error(const char *msg, ...)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>msg</td><td>printf-like format string for your error message.</td></tr>
+</table>
+Example :
+<br />
+<p class="code"><pre>
+C++ : parser->error("Bad cost value %d. Cost must be between 0 and 1000", value.i);
+C   : TCOD_parser_error("Bad cost value %d. Cost must be between 0 and 1000", value.i);
+</pre></p>
+The previous code will result in your error callback called with the following string :
+<p class="code"><pre>
+"error in &lt;filename&gt; line &lt;line_number&gt; : Bad cost value %d. Cost must be between 0 and 1000"
+</pre></p>
+<br />
+<hr />
+<a name="10.3.7"></a>
+<h3>Running the parser</h3>
+Once you defined all the structure types and created your listener, you can start the actual parsing of the file :<br />
+<p class="code"><pre>
+C++ : void TCODParser::run(const char *filename, ITCODParserListener *listener)
+C   : void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C version, the parser handler, returned by <a href="#10.2.1">TCOD_parser_new</a>.</td></tr>
+<tr><td>filename</td><td>The name of the text file to parse, absolute or relative to current directory.</td></tr>
+<tr><td>listener</td><td>The listener containing the callbacks. Use NULL for the <a href="parser_default.html">default listener</a></td></tr>
+</table>
+<br />
+Example :
+<br />
+<p class="code"><pre>
+C++ : myParser.run("config.txt",new MyListener());
+C   : TCOD_parser_run(my_parser,"config.txt", my_listener);
+</pre></p>
+<br />
+<hr />
+<a name="10.3.8"></a>
+<h3>Destroying the parser</h3>
+Once you've done with the file parsing, you can release the resources used by the parser :<br />
+<p class="code"><pre>
+C++ : TCODParser::~TCODParser()
+C   : void TCOD_parser_delete(TCOD_parser_t parser)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>parser</td><td>In the C version, the parser handler, returned by <a href="#10.2.1">TCOD_parser_new</a>.</td></tr>
+</table>
+<br />

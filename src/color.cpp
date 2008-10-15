@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,8 @@
 TCODColor TCODColor::black(0,0,0);
 TCODColor TCODColor::darkGrey(96,96,96);
 TCODColor TCODColor::grey(196,196,196);
+TCODColor TCODColor::darkGray(96,96,96);
+TCODColor TCODColor::gray(196,196,196);
 TCODColor TCODColor::white(255,255,255);
 TCODColor TCODColor::darkBlue(40,40,128);
 TCODColor TCODColor::lightBlue(120,120,255);
@@ -62,5 +64,15 @@ void TCODColor::getHSV(float *h, float *s, float *v) const {
 // non member operators
 TCODColor operator *(float value, const TCODColor &c) {
 	return c*value;
+}
+void TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex) {
+	for (int segment=0; segment < nbKey-1; segment++) {
+		int idxStart=keyIndex[segment];
+		int idxEnd=keyIndex[segment+1];
+		int idx;
+		for ( idx=idxStart;idx <= idxEnd; idx++) {
+			map[idx]=TCODColor::lerp(keyColor[segment],keyColor[segment+1],(float)(idx-idxStart)/(idxEnd-idxStart));
+		}
+	}
 }
 

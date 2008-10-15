@@ -1,3 +1,30 @@
+/*
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * The name of J.C.Wilk may not be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #ifndef _TCOD_CONSOLE_H
 #define _TCOD_CONSOLE_H
 
@@ -83,42 +110,60 @@ typedef struct {
 } TCOD_key_t;
 
 enum {
+	// single walls
 	TCOD_CHAR_HLINE=196,
 	TCOD_CHAR_VLINE=179,
 	TCOD_CHAR_NE=191, 
 	TCOD_CHAR_NW=218, 
 	TCOD_CHAR_SE=217, 
 	TCOD_CHAR_SW=192,
+	TCOD_CHAR_TEEW=180, 
+	TCOD_CHAR_TEEE=195, 
+	TCOD_CHAR_TEEN=193,
+	TCOD_CHAR_TEES=194,
+	TCOD_CHAR_CROSS=197,
+	// double walls	
 	TCOD_CHAR_DHLINE=205,
 	TCOD_CHAR_DVLINE=186,
 	TCOD_CHAR_DNE=187, 
 	TCOD_CHAR_DNW=201, 
 	TCOD_CHAR_DSE=188, 
 	TCOD_CHAR_DSW=200,
-	TCOD_CHAR_TEEW=180, 
-	TCOD_CHAR_TEEE=195, 
-	TCOD_CHAR_TEEN=193,
-	TCOD_CHAR_TEES=194,
 	TCOD_CHAR_DTEEW=181, 
 	TCOD_CHAR_DTEEE=198, 
 	TCOD_CHAR_DTEEN=208,
 	TCOD_CHAR_DTEES=210,
-	TCOD_CHAR_CHECKER=178, 
-	TCOD_CHAR_BLOCK=219, 
-	TCOD_CHAR_BLOCK1=178, 
+	TCOD_CHAR_DCROSS=213,
+	// blocks	
+	TCOD_CHAR_BLOCK1=176, 
 	TCOD_CHAR_BLOCK2=177, 
-	TCOD_CHAR_BLOCK3=176, 
-	TCOD_CHAR_BLOCK_B=220, 
-	TCOD_CHAR_BLOCK_T=223,
-	TCOD_CHAR_DS_CROSSH=216, 
-	TCOD_CHAR_DS_CROSSV=215,
-	TCOD_CHAR_CROSS=197,	
-	TCOD_CHAR_LIGHT=15, 
-	TCOD_CHAR_TREE=5,
+	TCOD_CHAR_BLOCK3=178,
+	// arrows 
 	TCOD_CHAR_ARROW_N=24, 
 	TCOD_CHAR_ARROW_S=25, 
 	TCOD_CHAR_ARROW_E=26, 
 	TCOD_CHAR_ARROW_W=27,
+	// arrows without tail
+	TCOD_CHAR_ARROW2_N=30, 
+	TCOD_CHAR_ARROW2_S=31, 
+	TCOD_CHAR_ARROW2_E=16, 
+	TCOD_CHAR_ARROW2_W=17,
+	// double arrows
+	TCOD_CHAR_DARROW_H=29,
+	TCOD_CHAR_DARROW_V=18,
+	// GUI stuff
+	TCOD_CHAR_CHECKBOX_UNSET=224,
+	TCOD_CHAR_CHECKBOX_SET=225,
+	TCOD_CHAR_RADIO_UNSET=9,
+	TCOD_CHAR_RADIO_SET=10,
+	// sub-pixel resolution kit
+	TCOD_CHAR_SUBP_NW=226,
+	TCOD_CHAR_SUBP_NE=227,
+	TCOD_CHAR_SUBP_N=228,
+	TCOD_CHAR_SUBP_SE=229,
+	TCOD_CHAR_SUBP_DIAG=230,
+	TCOD_CHAR_SUBP_E=231,
+	TCOD_CHAR_SUBP_SW=232,
 };
 
 typedef enum { 
@@ -157,14 +202,27 @@ enum {
 	TCOD_KEY_RELEASED=2,
 };
 
+// custom font flags
+enum {
+	TCOD_FONT_LAYOUT_ASCII_INCOL=0,
+	TCOD_FONT_LAYOUT_ASCII_INROW=1,
+	TCOD_FONT_TYPE_GREYSCALE=2,
+	TCOD_FONT_TYPE_GRAYSCALE=2,
+	TCOD_FONT_LAYOUT_TCOD=4,
+};
+
 typedef void * TCOD_console_t;
 
 TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen);
-TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int nb_char_horiz, int nb_char_vertic, bool chars_by_row, TCOD_color_t key_color);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
 TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
 TCODLIB_API bool TCOD_console_is_fullscreen();
 TCODLIB_API bool TCOD_console_is_window_closed();
+
+TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int flags);
+TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
+TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
+TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
 
 TCODLIB_API void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t col);
@@ -209,7 +267,11 @@ TCODLIB_API bool TCOD_console_is_key_pressed(TCOD_keycode_t key);
 TCODLIB_API TCOD_console_t TCOD_console_new(int w, int h);
 TCODLIB_API int TCOD_console_get_width(TCOD_console_t con);
 TCODLIB_API int TCOD_console_get_height(TCOD_console_t con);
+TCODLIB_API void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, int fade);
 TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
+
+TCODLIB_API void TCOD_console_credits();
+TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
 
 #endif

@@ -1,0 +1,87 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 14. BSP toolkit</a><br />
+<a href="bsp_resize.html">&lt; 14.3 Resizing a BSP tree</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+14.4 Reading information from the tree<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="bsp_traverse.html">&gt; 14.5 Traversing the tree</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once you have built a BSP tree, you can retrieve information from any node. The node gives you free access to its fields :<br />
+<p class="code"><pre>
+C++ : class TCODBsp {
+public :
+        int x,y,w,h; // 
+        int position; // position of splitting
+        bool horizontal; // horizontal splitting ?
+        uint8 level; // level in the tree 
+        ...
+      }
+C   : typedef struct {
+        int x,y,w,h;
+        int position;
+        bool horizontal;
+        uint8 level;
+        ...
+      } TCOD_bsp_t;
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>x,y,w,h</td><td>Rectangular region covered by this node.</td></tr>
+<tr><td>position</td><td>If this node is not a leaf, splitting position.</td></tr>
+<tr><td>horizontal</td><td>If this node is not a leaf, splitting orientation.</td></tr>
+<tr><td>level</td><td>Level in the BSP tree (0 for the root, 1 for the root's sons, ...).</td></tr>
+</table>
+<br />
+You can navigate from a node to its sons or its parent using one of those functions. Each function returns NULL if the corresponding node does not exists (if the node is not splitted for getLeft and getRight, and if the node is the root node for getFather).<br />
+<p class="code"><pre>
+C++ : TCODBsp *TCODBsp::getLeft() const
+      TCODBsp *TCODBsp::getRight() const
+      TCODBsp *TCODBsp::getFather() const
+C   : TCOD_bsp_t * TCOD_bsp_left(TCOD_bsp_t *node)
+      TCOD_bsp_t * TCOD_bsp_right(TCOD_bsp_t *node)
+      TCOD_bsp_t * TCOD_bsp_father(TCOD_bsp_t *node)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>node</td><td>In the C version, the node reference.</td></tr>
+</table>
+<br />
+You can know if a node is a leaf (not splitted, no sons) with this function :<br />
+<p class="code"><pre>
+C++ : bool TCODBsp::isLeaf() const
+C   : bool TCOD_bsp_is_leaf(TCOD_bsp_t *node)
+</pre></p>
+<br />
+You can check if a map cell is inside a node.<br />
+<p class="code"><pre>
+C++ : bool TCODBsp::contains(int cx, int cy) const
+C   : bool TCOD_bsp_contains(TCOD_bsp_t *node, int cx, int cy)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>node</td><td>In the C version, the node reference.</td></tr>
+<tr><td>cx,cy</td><td>Map cell coordinates.</td></tr>
+</table>
+<br />
+You can search the tree for the smallest node containing  a map cell. If the cell is outside the tree, the function returns NULL :<br />
+<p class="code"><pre>
+C++ : TCODBsp *TCODBsp::findNode(int cx, int cy)
+C   : TCOD_bsp_t * TCOD_bsp_find_node(TCOD_bsp_t *node, int cx, int cy)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>node</td><td>In the C version, the node reference.</td></tr>
+<tr><td>cx,cy</td><td>Map cell coordinates.</td></tr>
+</table>
+

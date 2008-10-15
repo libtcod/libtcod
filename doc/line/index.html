@@ -1,13 +1,13 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="../random/index.html">&lt; 3. Pseudorandom number generator</a>
+<a href="../system/index.html">&lt; 3. System layer</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
 4. Line drawing toolkit<br />
 =====================================<br />
 </p></td><td width="20%">
-<a href="../system/index.html">&gt; 5. System layer</a>
+<a href="../image/index.html">&gt; 5. Image toolkit</a>
 </td></tr></table>
 <style type="text/css">
 .code { color:#444444; background-color:#EEEEEE;}
@@ -30,7 +30,7 @@ C   : void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo)
 <tr><td>xTo, yTo</td><td>Coordinates of the line's ending point.</td></tr>
 </table>
 <br />
-You can then step through each cell with this function. On the first call, xCur and yCur must be initialized with the line starting point's coordinates (xFrom,yFrom). It returns true when you reach the line's ending point.<br />
+You can then step through each cell with this function. It returns true when you reach the line's ending point.<br />
 <p class="code"><pre>
 C++ : static bool TCODLine::step(int *xCur, int *yCur)
 C   : bool TCOD_line_step(int *xCur, int *yCur)

@@ -1,0 +1,65 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 13. Path finding</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+13.1 Creating a path<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="path_compute.html">&gt; 13.2 Computing the path</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+First, you have to allocate a path using a map from the <a href="../fov/index.html">Field of view module</a>.<br />
+<p class="code"><pre>
+C++ : TCODPath::TCODPath(const TCODMap *map, float diagonalCost=1.41f)
+C   : TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>map</td><td>The map. The path finder will use the 'walkable' property of the cells to find a path.</td></tr>
+<tr><td>diagonalCost</td><td>Cost of a diagonal movement compared to an horizontal or vertical movement. On a standard cartesian map, it should be sqrt(2) (1.41f).<br />It you want the same cost for all movements, use 1.0f.<br />If you don't want the path finder to use diagonal movements, use 0.0f.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODMap *myMap = new TCODMap(50,50);
+      TCODPath *path = new TCODPath(myMap); // allocate the path
+C   : TCOD_map_t my_map=TCOD_map_new(50,50,true);
+      TCOD_path_t path = TCOD_path_new_using_map(my_map,1.41f);
+</pre></p><br />
+Since the walkable status of a cell may depend on a lot of parameters (the creature type, the weather, the terrain type...), you can also create a path by providing a function rather than relying on a TCODMap.
+<p class="code"><pre>
+C++ : class ITCODPathCallback {
+          public :
+               virtual float getWalkCost( int xFrom, int yFrom, int xTo, int yTo, void *userData ) const = 0;
+      };
+      TCODPath::TCODPath(int width, int height, const ITCODPathListener *callback, void *userData, float diagonalCost=1.41f)
+
+C   : typedef float (*TCOD_path_func_t)( int xFrom, int yFrom, int xTo, int yTo, void *user_data )
+      TCOD_path_t TCOD_path_new_using_function(int width, int height, TCOD_path_func_t callback, void *user_data, float diagonalCost)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>width,height</td><td>The size of the map (in map cells).</td></tr>
+<tr><td>callback</td><td>A custom function that must return the walk cost from coordinates xFrom,yFrom to coordinates xTo,yTo.<br />The cost must be > 0.0f if the cell xTo,yTo is walkable.<br />It must be equal to 0.0f if it's not.</td></tr>
+<tr><td>userData</td><td>Custom data that will be passed to the function.</td></tr>
+<tr><td>diagonalCost</td><td>Cost of a diagonal movement compared to an horizontal or vertical movement. On a standard cartesian map, it should be sqrt(2) (1.41f).<br />It you want the same cost for all movements, use 1.0f.<br />If you don't want the path finder to use diagonal movements, use 0.0f.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : class MyCallback : public ITCODPathCallback {
+        public :
+        float getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void *userData ) const { ... }
+      };
+      TCODPath *path = new TCODPath(50,50,new MyCallback(),NULL); // allocate the path
+C   : float my_func(int xFrom, int yFrom, int xTo, int yTo, void *user_data) { ... }
+      TCOD_path_t path = TCOD_path_new_using_function(50,50,my_func,NULL,1.41f);
+</pre></p>

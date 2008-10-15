@@ -7,7 +7,7 @@
 2. Console emulator<br />
 =====================================<br />
 </p></td><td width="20%">
-<a href="../random/index.html">&gt; 3. Pseudorandom number generator</a>
+<a href="../system/index.html">&gt; 3. System layer</a>
 </td></tr></table>
 <style type="text/css">
 .code { color:#444444; background-color:#EEEEEE;}
@@ -35,7 +35,7 @@ Classic real time game loop :<br />
 <br />
 Classic turn by turn game loop :<br />
 <p class="code"><pre>
-  TCODConsole::initMain(80,50,"my game",false);
+  TCODConsole::initRoot(80,50,"my game",false);
   while ( ! endGame && ! TCODConsole::isWindowClosed() ) {
     ... draw on TCODConsole::root
     TCODConsole::flush();

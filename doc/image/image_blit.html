@@ -1,10 +1,10 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 8. Image toolkit</a>
+<a href="index.html">&lt; 5. Image toolkit</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-8.8 Blitting an image on a console<br />
+5.8 Blitting an image on a console<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -21,7 +21,7 @@ of the image, and its scale and rotation angle.<br />
 The image will be rendered with sub-cell accuracy. For example, if you increase x by 0.01 per frame,<br/>
 you will achieve a smooth scrolling effect.<br />
 <p class="code"><pre>
-C++ : void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
+C++ : void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
 C   : void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
 </pre></p>
 <table class="param">
@@ -44,7 +44,7 @@ C   : TCOD_image_t pix = TCOD_image_new(80,50);
 The second function allows you to easily map an image to a specific part of a console, by<br />
 specifying a rectangular part of the console (upper-left corner and size).
 <p class="code"><pre>
-C++ : void blitRect(TCODConsole *console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const
+C++ : void TCODImage::blitRect(TCODConsole *console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const
 C   : void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag)
 </pre></p>
 <table class="param">

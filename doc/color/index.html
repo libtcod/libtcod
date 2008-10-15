@@ -22,6 +22,7 @@ table.none td { border : 0 }
 <a href="#1.4">1.4 Colors operators<br /></a>
 <a href="#1.5">1.5 Interpolating colors<br /></a>
 <a href="#1.6">1.6 HSV conversions<br /></a>
+<a href="#1.7">1.7 Color map generation<br /></a>
 <br />
 <hr />
 <a name="1.1"></a>
@@ -145,4 +146,39 @@ C   : void TCOD_color_get_HSV(TCOD_color_t c,float * h, float * s, float * v)
 <tr><td>c</td><td>In the C version, the TCOD_color_t from which to read.</td></tr>
 <tr><td>h,s,v</td><td>Color components in the HSV space<br />0.0 &lt;= h &lt; 360.0<br />0.0 &lt;= s &lt;= 1.0<br />0.0 &lt;= v &lt;= 1.0</td></tr>
 </table>
+<br /><hr />
+<a name="1.7"></a>
+You can define a color map from an array of color keys. Colors will be interpolated between the keys.<br />
+<p class="code"><pre>
+C++ : static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex)
+C   : void TCOD_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>map</td><td>An array of colors to be filled by the function.</td></tr>
+<tr><td>nbKey</td><td>Number of color keys</td></tr>
+<tr><td>keyColor</td><td>Array of nbKey colors containing the color of each key</td></tr>
+<tr><td>keyIndex</td><td>Array of nbKey integers containing the index of each key.<br />If you want to fill the map array, keyIndex[0] must be 0 and keyIndex[nbKey-1] is the number of elements in map minus 1 but you can also use the function to fill only a part of the map array.<br /></td></tr>
+</table>
 <br />
+Example :
+<p class="code"><pre>
+int idx[] = { 0, 4, 8 }; /* indexes of the keys */
+TCOD_color_t col[] = { { 0,0,0 }, {255,0,0}, {255,255,255} }; /* colors : black, red, white */
+TCOD_color_t map[9];
+TCOD_color_gen_map(map,3,col,idx);
+</pre></p>
+Result :<br />
+<table>
+	<tr><td class="code"><pre>map[0]</pre></td><td align="center" style="background-color:rgb(0,0,0);color:#ffffff;width:50px">&nbsp;</td><td>black</td></tr>
+	<tr><td class="code"><pre>map[1]</pre></td><td align="center" style="background-color:rgb(63,0,0);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[2]</pre></td><td align="center" style="background-color:rgb(127,0,0);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[3]</pre></td><td align="center" style="background-color:rgb(191,0,0);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[4]</pre></td><td align="center" style="background-color:rgb(255,0,0);color:#ffffff;width:50px">&nbsp;</td><td>red</td></tr>
+	<tr><td class="code"><pre>map[5]</pre></td><td align="center" style="background-color:rgb(255,63,63);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[6]</pre></td><td align="center" style="background-color:rgb(255,127,127);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[7]</pre></td><td align="center" style="background-color:rgb(255,191,191);color:#ffffff;width:50px">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[8]</pre></td><td align="center" style="background-color:rgb(255,255,255);color:#ffffff;width:50px">&nbsp;</td><td>white</td></tr>
+</table>
+
+

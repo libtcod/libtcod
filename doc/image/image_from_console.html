@@ -1,10 +1,10 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 8. Image toolkit</a>
+<a href="index.html">&lt; 5. Image toolkit</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-8.3 Creating an image from a console<br />
+5.3 Creating an image from a console<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -30,4 +30,23 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODImage *pix = new TCODImage(TCODConsole::root);
 C   : TCOD_image_t pix = TCOD_image_from_console(NULL);
+</pre></p>If you need to refresh the image with the console's new content, you don't have to delete it and create another one. Instead, use this function :<br />
+<p class="code"><pre>
+C++ : void TCODImage::refreshConsole(const TCODConsole *console)
+C   : void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console)
+</pre></p>
+Note that you must use the same console that was used in the TCOD_image_from_console call (or at least a console with the same size).
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>image</td><td>In the C version, the image created with TCOD_image_from_console.</td></tr>
+<tr><td>console</td><td>The console to capture. In the C version, use NULL for the root console.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = new TCODImage(TCODConsole::root); // create an image from the root console
+      // ... modify the console
+      pix->refreshConsole(TCODConsole::root); // update the image with the console's new content
+C   : TCOD_image_t pix = TCOD_image_from_console(NULL);
+      /* ... modify the console .. */
+      TCOD_image_refresh_console(pix,NULL);
 </pre></p>

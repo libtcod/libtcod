@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #include "libtcod.h"
 
 /* mersenne twister toolkit */
@@ -185,3 +186,15 @@ int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int l
 void TCOD_random_delete(TCOD_random_t mersenne) {
 	free(mersenne);
 }
+TCOD_random_t TCOD_random_save(TCOD_random_t mersenne) {
+	mersenne_data_t *ret=(mersenne_data_t *)malloc(sizeof(mersenne_data_t));
+	if (!mersenne) mersenne=TCOD_random_get_instance();
+	memcpy(ret,mersenne,sizeof(mersenne_data_t));
+	return (TCOD_random_t)ret;
+}
+
+void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
+	memcpy(mersenne,backup,sizeof(mersenne_data_t));
+}
+

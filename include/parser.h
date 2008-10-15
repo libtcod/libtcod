@@ -1,3 +1,30 @@
+/*
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * The name of J.C.Wilk may not be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #ifndef _TCOD_PARSER_H
 #define _TCOD_PARSER_H
 
@@ -42,7 +69,8 @@ typedef enum {
 	TCOD_TYPE_CUSTOM12,
 	TCOD_TYPE_CUSTOM13,
 	TCOD_TYPE_CUSTOM14,
-	TCOD_TYPE_CUSTOM15	
+	TCOD_TYPE_CUSTOM15,
+	TCOD_TYPE_LIST=1024
 } TCOD_value_type_t;
 
 /* dice roll */
@@ -62,6 +90,7 @@ typedef union {
 	char *s;
 	TCOD_color_t col;
 	TCOD_dice_t dice;
+	TCOD_list_t list;
 	void *custom;
 } TCOD_value_t;
 
@@ -69,6 +98,7 @@ typedef union {
 typedef void *TCOD_parser_struct_t;
 TCODLIB_API const char *TCOD_struct_get_name(TCOD_parser_struct_t def);
 TCODLIB_API void TCOD_struct_add_property(TCOD_parser_struct_t def, const char *name,TCOD_value_type_t type, bool mandatory);
+TCODLIB_API void TCOD_struct_add_list_property(TCOD_parser_struct_t def, const char *name,TCOD_value_type_t type, bool mandatory);
 TCODLIB_API void TCOD_struct_add_value_list(TCOD_parser_struct_t def,const char *name, const char **value_list, bool mandatory);
 TCODLIB_API void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name, const char **value_list, int size, bool mandatory);
 TCODLIB_API void TCOD_struct_add_flag(TCOD_parser_struct_t def,const char *propname);
@@ -107,6 +137,7 @@ TCODLIB_API const char * TCOD_parser_get_string_property(TCOD_parser_t parser, c
 TCODLIB_API TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name);
+TCODLIB_API TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type);
 
 /* parser internals (may be used by custom type parsers) */
 /* parser structures */
@@ -140,6 +171,6 @@ TCODLIB_API TCOD_value_t TCOD_parse_string_value();
 TCODLIB_API TCOD_value_t TCOD_parse_color_value();
 TCODLIB_API TCOD_value_t TCOD_parse_dice_value();
 TCODLIB_API TCOD_value_t TCOD_parse_value_list_value(TCOD_struct_int_t *def,int listnum);
-TCODLIB_API TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname);
+TCODLIB_API TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname, bool list);
 
 #endif

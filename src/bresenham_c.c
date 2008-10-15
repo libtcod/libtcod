@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -32,12 +32,14 @@ static int stepy;
 static int e;
 static int deltax;
 static int deltay;
+static int origx; 
+static int origy; 
 static int destx; 
 static int desty; 
 
 /* ********** bresenham line drawing ********** */
 void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
-	int x=xFrom,y=yFrom;
+	int x=origx=xFrom,y=origy=yFrom;
 	destx=xTo;
 	desty=yTo;
 	deltax=destx-x;
@@ -65,21 +67,23 @@ void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
 
 bool TCOD_line_step(int *xCur, int *yCur) {
 	if ( stepx*deltax > stepy*deltay ) {
-		if ( (*xCur) == destx ) return true;
-		(*xCur)+=stepx;
+		if ( origx == destx ) return true;
+		origx+=stepx;
 		e -= stepy*deltay;
 		if ( e < 0) {
-			(*yCur)+=stepy;
+			origy+=stepy;
 			e+=stepx*deltax;
 		}
 	} else {
-		if ( (*yCur) == desty ) return true;
-		(*yCur)+=stepy;
+		if ( origy == desty ) return true;
+		origy+=stepy;
 		e -= stepx*deltax;
 		if ( e < 0) {
-			(*xCur)+=stepx;
+			origx+=stepx;
 			e+=stepy*deltay;
 		}
-	}	
+	}
+	*xCur=origx;
+	*yCur=origy;
 	return false;
 }

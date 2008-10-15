@@ -26,7 +26,7 @@ The function returns the height (number of console lines) of the printed string.
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>con</td><td>In the C version, the offscreen console handler or NULL for the root console.</td></tr>
-<tr><td>x,y</td><td>Coordinates of the rectangle upper-left corner in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
+<tr><td>x,y</td><td>Coordinates of the rectangle's top middle position in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
 <tr><td>w,h</td><td>Size of the rectangle in the console.<br />x &lt;= x+w &lt; console width<br />y &lt;= y+h &lt; console height</td></tr>
 <tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
 <tr><td>fmt</td><td>printf-like format string, eventually followed by parameters. You can use <a href="console_color_control.html">control codes</a> to change the colors inside the string.</td></tr>

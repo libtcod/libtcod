@@ -1,0 +1,96 @@
+# libtcod makefile
+# this linux makefile uses libpng/zlib installed on the system
+# instead of libraries from the dependencies directory
+# might be useful if you're using a libc version not compatible
+# to build debug version, run make FLAGS=-g
+# to build release version, run make FLAGS=-O2 -s
+BINDIR=../../bin/linux
+SRCDIR=src
+INCDIR=include
+
+#dependencies
+# SDL
+SDL_DIR=dependencies/SDL-1.2.12
+SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
+SDL_LIBS=-L $(SDL_DIR)/lib/linux -lSDL
+
+# ZLIB
+ZLIB_DIR=dependencies/zlib-1.2.3
+ZLIB_FLAGS=-I $(ZLIB_DIR)/include
+ZLIB_LIBS=/usr/lib/libz.a
+
+# PNG
+PNG_DIR=dependencies/libpng-1.2.31
+PNG_FLAGS=-I $(PNG_DIR)/include
+PNG_LIBS=/usr/lib/libpng.a
+
+
+CFLAGS=$(FLAGS) -I$(INCDIR) -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
+TEMP=/tmp
+CC=gcc
+CPP=g++
+.SUFFIXES: a .o .h .c
+
+$(TEMP)/libtcod/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+$(TEMP)/libtcod/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
+
+LIBOBJS_C= \
+	$(TEMP)/libtcod/bresenham_c.o \
+	$(TEMP)/libtcod/bsp_c.o \
+	$(TEMP)/libtcod/color_c.o \
+	$(TEMP)/libtcod/console_c.o \
+	$(TEMP)/libtcod/fov_c.o \
+	$(TEMP)/libtcod/heightmap_c.o \
+	$(TEMP)/libtcod/image_c.o \
+	$(TEMP)/libtcod/lex_c.o \
+	$(TEMP)/libtcod/list_c.o \
+	$(TEMP)/libtcod/mersenne_c.o \
+	$(TEMP)/libtcod/noise_c.o \
+	$(TEMP)/libtcod/parser_c.o \
+	$(TEMP)/libtcod/path_c.o \
+	$(TEMP)/libtcod/sys_sdl_c.o \
+	$(TEMP)/libtcod/sys_sdl_img_bmp.o \
+	$(TEMP)/libtcod/sys_sdl_img_png.o \
+	$(TEMP)/libtcod/tree_c.o \
+	$(TEMP)/libtcod/zip_c.o
+
+LIBOBJS_CPP= \
+	$(TEMP)/libtcod/bresenham.o \
+	$(TEMP)/libtcod/bsp.o \
+	$(TEMP)/libtcod/color.o \
+	$(TEMP)/libtcod/console.o \
+	$(TEMP)/libtcod/fov.o \
+	$(TEMP)/libtcod/heightmap.o \
+	$(TEMP)/libtcod/image.o \
+	$(TEMP)/libtcod/lex.o \
+	$(TEMP)/libtcod/mersenne.o \
+	$(TEMP)/libtcod/mouse.o \
+	$(TEMP)/libtcod/noise.o \
+	$(TEMP)/libtcod/parser.o \
+	$(TEMP)/libtcod/path.o \
+	$(TEMP)/libtcod/sys.o \
+	$(TEMP)/libtcod/zip.o
+
+
+all : libtcod.so libtcod++.so
+
+$(TEMP)/libtcod :
+	mkdir -p $@
+
+libtcod.a : $(LIBOBJS_C)
+	ar r $@ $(LIBOBJS_C)
+
+libtcod++.a : $(LIBOBJS_CPP)
+	ar r $@ $(LIBOBJS_CPP)
+
+libtcod.so : $(TEMP)/libtcod $(LIBOBJS_C)
+	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(CFLAGS)
+
+libtcod++.so : $(TEMP)/libtcod $(LIBOBJS_CPP)
+	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP) -L. -ltcod $(CFLAGS)
+
+clean : 
+	\rm -f $(LIBOBJS_C) $(LIBOBJS_CPP) libtcod.a libtcod++.a libtcod.so libtcod++.so
+

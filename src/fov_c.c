@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -178,5 +178,14 @@ TCODLIB_API bool TCOD_map_is_in_fov(TCOD_map_t map, int x, int y) {
 TCODLIB_API bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y) {
 	map_t *m = (map_t *)map;
 	return m->cells[x+y*m->width].walkable;
+}
+TCODLIB_API int TCOD_map_get_width(TCOD_map_t map) {
+	map_t *m = (map_t *)map;
+	return m->width;
+}
+
+TCODLIB_API int TCOD_map_get_height(TCOD_map_t map) {
+	map_t *m = (map_t *)map;
+	return m->height;
 }
 

@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <ctype.h>
 #include "libtcod.h"
 #include "libtcod_int.h"
 
@@ -49,7 +48,7 @@ typedef struct {
 static TCOD_lex_t *lex=NULL;
 
 static const char *symbols[] = {
-	"{","}","=","/","+","-",NULL
+	"{","}","=","/","+","-","[","]",",",NULL
 };
 
 static TCOD_parser_listener_t *listener=NULL;
@@ -67,12 +66,6 @@ static TCOD_parser_listener_t default_listener = {
 	default_end_struct,
 	default_error
 };
-
-static int hextoint(char c) {
-	int v=toupper(c);
-	if ( v >= '0' && v <= '9' ) return v-'0';
-	return 10 + (v-'A');
-}
 
 static bool string_copy(char *dest, char *source, int len) {
 	if ( source == NULL ) return false;
@@ -105,6 +98,11 @@ void TCOD_struct_add_property(TCOD_parser_struct_t def,const char *name,TCOD_val
 	prop->value=type;
 	prop->mandat=mandatory;
 	TCOD_list_push(DEF_PROPS(def),(void *)prop);
+}
+
+// add a list property to an entity definition
+void TCOD_struct_add_list_property(TCOD_parser_struct_t def,const char *name,TCOD_value_type_t type, bool mandatory) {
+	TCOD_struct_add_property(def,name,type|TCOD_TYPE_LIST,mandatory);
 }
 
 void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name, const char **value_list, int size, bool mandatory) {
@@ -218,9 +216,9 @@ TCOD_value_t TCOD_parse_color_value() {
 	    int r,g,b;
 		if ( strlen(lex->tok) != 7 ) TCOD_parser_error("parseColorValue : bad color format. '#rrggbb' expected instead of '%s'",lex->tok);
 		// web format : #rrggbb
-		r=(hextoint(lex->tok[1])<<4) + hextoint(lex->tok[2]);
-		g=(hextoint(lex->tok[3])<<4) + hextoint(lex->tok[4]);
-		b=(hextoint(lex->tok[5])<<4) + hextoint(lex->tok[6]);
+		r=(TCOD_lex_hextoint(lex->tok[1])<<4) + TCOD_lex_hextoint(lex->tok[2]);
+		g=(TCOD_lex_hextoint(lex->tok[3])<<4) + TCOD_lex_hextoint(lex->tok[4]);
+		b=(TCOD_lex_hextoint(lex->tok[5])<<4) + TCOD_lex_hextoint(lex->tok[6]);
 		ret.col.r=r;
 		ret.col.g=g;
 		ret.col.b=b;
@@ -305,63 +303,89 @@ TCOD_value_t TCOD_parse_value_list_value(TCOD_struct_int_t *def,int listnum) {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname) {
+
+TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname, bool list) {
 	TCOD_value_type_t type=TCOD_struct_get_type(def,propname);
 	TCOD_value_t ret={0};
-	switch (type) {
-		case TCOD_TYPE_BOOL : return TCOD_parse_bool_value(); break;
-		case TCOD_TYPE_CHAR : return TCOD_parse_char_value(); break;
-		case TCOD_TYPE_INT : return TCOD_parse_integer_value(); break;
-		case TCOD_TYPE_FLOAT : return TCOD_parse_float_value(); break;
-		case TCOD_TYPE_STRING : return TCOD_parse_string_value(); break;
-		case TCOD_TYPE_COLOR : return TCOD_parse_color_value(); break;
-		case TCOD_TYPE_DICE : return TCOD_parse_dice_value(); break;
-		case TCOD_TYPE_VALUELIST00 :
-		case TCOD_TYPE_VALUELIST01 :
-		case TCOD_TYPE_VALUELIST02 :
-		case TCOD_TYPE_VALUELIST03 :
-		case TCOD_TYPE_VALUELIST04 :
-		case TCOD_TYPE_VALUELIST05 :
-		case TCOD_TYPE_VALUELIST06 :
-		case TCOD_TYPE_VALUELIST07 :
-		case TCOD_TYPE_VALUELIST08 :
-		case TCOD_TYPE_VALUELIST09 :
-		case TCOD_TYPE_VALUELIST10 :
-		case TCOD_TYPE_VALUELIST11 :
-		case TCOD_TYPE_VALUELIST12 :
-		case TCOD_TYPE_VALUELIST13 :
-		case TCOD_TYPE_VALUELIST14 :
-		case TCOD_TYPE_VALUELIST15 : {
-			int listnum = type - TCOD_TYPE_VALUELIST00;
-			return TCOD_parse_value_list_value((TCOD_struct_int_t *)def,listnum); break;
+	if (! list ) type &= ~ TCOD_TYPE_LIST;
+	if ( type & TCOD_TYPE_LIST ) {
+		type &= ~ TCOD_TYPE_LIST;
+		if ( strcmp(lex->tok,"[") != 0 ) {
+			TCOD_parser_error("'[' expected for list value instead of '%s'",lex->tok);
 		}
-		case TCOD_TYPE_CUSTOM00 :
-		case TCOD_TYPE_CUSTOM01 :
-		case TCOD_TYPE_CUSTOM02 :
-		case TCOD_TYPE_CUSTOM03 :
-		case TCOD_TYPE_CUSTOM04 :
-		case TCOD_TYPE_CUSTOM05 :
-		case TCOD_TYPE_CUSTOM06 :
-		case TCOD_TYPE_CUSTOM07 :
-		case TCOD_TYPE_CUSTOM08 :
-		case TCOD_TYPE_CUSTOM09 :
-		case TCOD_TYPE_CUSTOM10 :
-		case TCOD_TYPE_CUSTOM11 :
-		case TCOD_TYPE_CUSTOM12 :
-		case TCOD_TYPE_CUSTOM13 :
-		case TCOD_TYPE_CUSTOM14 :
-		case TCOD_TYPE_CUSTOM15 :
-			if ( parser->customs[type - TCOD_TYPE_CUSTOM00] ) {
-				return parser->customs[type-TCOD_TYPE_CUSTOM00](lex,listener,def,propname);
-			} else {
-				TCOD_parser_error("parse_property_value : no custom parser for property type %d for entity %s prop %s",
-					type,DEF_NAME(def),propname);
+		ret.list=TCOD_list_new();
+		do {
+			TCOD_value_t val;
+			int tok=TCOD_lex_parse(lex);
+			if ( tok == TCOD_LEX_EOF || tok == TCOD_LEX_ERROR ) {
+				TCOD_parser_error("Missing ']' in list value");
 			}
-			break;
-		default : TCOD_parser_error("parse_property_value : unknown property type %d for entity %s prop %s",
-			type,DEF_NAME(def),propname); break;
+			val=TCOD_parse_property_value(parser,def,propname,false);
+			if ( type == TCOD_TYPE_STRING || (type >= TCOD_TYPE_VALUELIST00 && type <= TCOD_TYPE_VALUELIST15 ) ) {
+				TCOD_list_push(ret.list,strdup(val.s));
+			} else {
+				TCOD_list_push(ret.list,val.custom);
+			}
+			TCOD_lex_parse(lex);
+			if ( strcmp(lex->tok,",") != 0 && strcmp(lex->tok,"]") != 0 ) {
+				TCOD_parser_error("',' or ']' expected in list value instead of '%s'",lex->tok);
+			}
+		} while ( strcmp(lex->tok,"]") != 0 );
+	} else {
+		switch (type) {
+			case TCOD_TYPE_BOOL : return TCOD_parse_bool_value(); break;
+			case TCOD_TYPE_CHAR : return TCOD_parse_char_value(); break;
+			case TCOD_TYPE_INT : return TCOD_parse_integer_value(); break;
+			case TCOD_TYPE_FLOAT : return TCOD_parse_float_value(); break;
+			case TCOD_TYPE_STRING : return TCOD_parse_string_value(); break;
+			case TCOD_TYPE_COLOR : return TCOD_parse_color_value(); break;
+			case TCOD_TYPE_DICE : return TCOD_parse_dice_value(); break;
+			case TCOD_TYPE_VALUELIST00 :
+			case TCOD_TYPE_VALUELIST01 :
+			case TCOD_TYPE_VALUELIST02 :
+			case TCOD_TYPE_VALUELIST03 :
+			case TCOD_TYPE_VALUELIST04 :
+			case TCOD_TYPE_VALUELIST05 :
+			case TCOD_TYPE_VALUELIST06 :
+			case TCOD_TYPE_VALUELIST07 :
+			case TCOD_TYPE_VALUELIST08 :
+			case TCOD_TYPE_VALUELIST09 :
+			case TCOD_TYPE_VALUELIST10 :
+			case TCOD_TYPE_VALUELIST11 :
+			case TCOD_TYPE_VALUELIST12 :
+			case TCOD_TYPE_VALUELIST13 :
+			case TCOD_TYPE_VALUELIST14 :
+			case TCOD_TYPE_VALUELIST15 : {
+				int listnum = type - TCOD_TYPE_VALUELIST00;
+				return TCOD_parse_value_list_value((TCOD_struct_int_t *)def,listnum); break;
+			}
+			case TCOD_TYPE_CUSTOM00 :
+			case TCOD_TYPE_CUSTOM01 :
+			case TCOD_TYPE_CUSTOM02 :
+			case TCOD_TYPE_CUSTOM03 :
+			case TCOD_TYPE_CUSTOM04 :
+			case TCOD_TYPE_CUSTOM05 :
+			case TCOD_TYPE_CUSTOM06 :
+			case TCOD_TYPE_CUSTOM07 :
+			case TCOD_TYPE_CUSTOM08 :
+			case TCOD_TYPE_CUSTOM09 :
+			case TCOD_TYPE_CUSTOM10 :
+			case TCOD_TYPE_CUSTOM11 :
+			case TCOD_TYPE_CUSTOM12 :
+			case TCOD_TYPE_CUSTOM13 :
+			case TCOD_TYPE_CUSTOM14 :
+			case TCOD_TYPE_CUSTOM15 :
+				if ( parser->customs[type - TCOD_TYPE_CUSTOM00] ) {
+					return parser->customs[type-TCOD_TYPE_CUSTOM00](lex,listener,def,propname);
+				} else {
+					TCOD_parser_error("parse_property_value : no custom parser for property type %d for entity %s prop %s",
+						type,DEF_NAME(def),propname);
+				}
+				break;
+			default : TCOD_parser_error("parse_property_value : unknown property type %d for entity %s prop %s",
+				type,DEF_NAME(def),propname); break;
+		}
 	}
-	// to avoid compiler warning
 	return ret;
 }
 
@@ -407,7 +431,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 					}
 					TCOD_lex_parse(lex);
 					if (!listener->new_property(propname,TCOD_struct_get_type(def,propname),
-						TCOD_parse_property_value(parser, (TCOD_parser_struct_t *)def,propname))) return false;
+						TCOD_parse_property_value(parser, (TCOD_parser_struct_t *)def,propname,true))) return false;
 					if ( lex->token_type == TCOD_LEX_ERROR ) return false;
 					found=true;
 					break;
@@ -742,4 +766,11 @@ void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name) {
 	return value ? value->custom : NULL;
 }
 
+TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type) {
+	static TCOD_list_t empty_list=NULL;
+	const TCOD_value_t *value;
+	if (! empty_list ) empty_list=TCOD_list_new();
+	value=TCOD_get_property(parser,TCOD_TYPE_LIST|type,name);
+	return value ? value->list : empty_list;
+}
 

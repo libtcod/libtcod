@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ TCODRandom *TCODRandom::getInstance() {
 	return instance;
 }
 
-TCODRandom::TCODRandom() {
-	data = TCOD_random_new();
+TCODRandom::TCODRandom(bool allocate) {
+	if ( allocate ) data = TCOD_random_new();
 }
 
 TCODRandom::TCODRandom(uint32 seed) {
@@ -59,3 +59,14 @@ int TCODRandom::getIntFromByteArray(int min, int max, const char *data,int len) 
 TCODRandom::~TCODRandom() {
 	TCOD_random_delete(data);
 }
+
+TCODRandom *TCODRandom::save() const {
+	TCODRandom *ret=new TCODRandom(false);
+	ret->data=TCOD_random_save(data);
+	return ret;
+}
+
+void TCODRandom::restore(const TCODRandom *backup) {
+	TCOD_random_restore(data,backup->data);
+}
+

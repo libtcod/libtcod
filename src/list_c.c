@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ typedef struct {
 	int allocSize;
 } TCOD_list_int_t;
 
-void TCOD_list_allocate(TCOD_list_t l) {
+static void TCOD_list_allocate_int(TCOD_list_t l) {
 	void **newArray;
 	int newSize = LIST(l)->allocSize * 2;
 	if ( newSize == 0 ) newSize = 16;
@@ -49,15 +49,26 @@ void TCOD_list_allocate(TCOD_list_t l) {
 	LIST(l)->allocSize=newSize;
 }
 
+void TCOD_list_set_size(TCOD_list_t l, int size) {
+	LIST(l)->fillSize=MIN(size,LIST(l)->allocSize);
+}
+
 TCOD_list_t TCOD_list_new() {
 	return (TCOD_list_t)calloc(1,sizeof(TCOD_list_int_t));
+}
+
+TCOD_list_t TCOD_list_allocate(int nb_elements) {
+	TCOD_list_t l=TCOD_list_new();
+	LIST(l)->array = (void **)calloc(sizeof(void *),nb_elements);
+	LIST(l)->allocSize = nb_elements;
+	return l;
 }
 
 TCOD_list_t TCOD_list_duplicate(TCOD_list_t l) {
 	int i=0;
 	void **t;
 	TCOD_list_int_t *ret=(TCOD_list_int_t *)TCOD_list_new();
-	while ( ret->allocSize < LIST(l)->allocSize ) TCOD_list_allocate((TCOD_list_t)ret);
+	while ( ret->allocSize < LIST(l)->allocSize ) TCOD_list_allocate_int((TCOD_list_t)ret);
 	ret->fillSize=LIST(l)->fillSize;
 	for (t=TCOD_list_begin(l); t != TCOD_list_end(l); t++) {
 		ret->array[i++]=*t;
@@ -73,7 +84,7 @@ void TCOD_list_delete(TCOD_list_t l) {
 }
 
 void TCOD_list_push(TCOD_list_t l, const void * elt) {
-	if ( LIST(l)->fillSize+1 >= LIST(l)->allocSize ) TCOD_list_allocate(l);
+	if ( LIST(l)->fillSize+1 >= LIST(l)->allocSize ) TCOD_list_allocate_int(l);
 	LIST(l)->array[LIST(l)->fillSize++] = (void *)elt;
 }
 void * TCOD_list_pop(TCOD_list_t l) {
@@ -95,7 +106,7 @@ void * TCOD_list_get(TCOD_list_t l,int idx) {
 }
 void TCOD_list_set(TCOD_list_t l,const void *elt, int idx) {
 	if ( idx < 0 ) return;
-	while ( LIST(l)->allocSize < idx+1 ) TCOD_list_allocate(l);
+	while ( LIST(l)->allocSize < idx+1 ) TCOD_list_allocate_int(l);
 	LIST(l)->array[idx]=(void *)elt;
 	if ( idx+1 > LIST(l)->fillSize ) LIST(l)->fillSize = idx+1;
 }
@@ -147,7 +158,7 @@ int TCOD_list_size(TCOD_list_t l) {
 }
 void TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before) {
 	int idx;
-	if ( LIST(l)->fillSize+1 >= LIST(l)->allocSize ) TCOD_list_allocate(l);
+	if ( LIST(l)->fillSize+1 >= LIST(l)->allocSize ) TCOD_list_allocate_int(l);
 	for (idx=LIST(l)->fillSize; idx > before; idx--) {
 		LIST(l)->array[idx]=LIST(l)->array[idx-1];
 	}

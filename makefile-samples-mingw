@@ -9,11 +9,37 @@ $(TEMP)/%.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 
 $(TEMP)/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/hmtool/gui/%.o : $(SRCDIR)/src/hmtool/gui/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
 
 C_OBJS=$(TEMP)/samples_c.o
 CPP_OBJS=$(TEMP)/samples_cpp.o
 
-all : samples_c.exe samples_cpp.exe
+HMTOOLOBJS=$(TEMP)/hmtool/hmtool.o \
+	$(TEMP)/hmtool/operation.o \
+	$(TEMP)/hmtool/gui/button.o \
+	$(TEMP)/hmtool/gui/container.o \
+	$(TEMP)/hmtool/gui/hbox.o \
+	$(TEMP)/hmtool/gui/image.o \
+	$(TEMP)/hmtool/gui/label.o \
+	$(TEMP)/hmtool/gui/radiobutton.o \
+	$(TEMP)/hmtool/gui/slider.o \
+	$(TEMP)/hmtool/gui/statusbar.o \
+	$(TEMP)/hmtool/gui/textbox.o \
+	$(TEMP)/hmtool/gui/togglebutton.o \
+	$(TEMP)/hmtool/gui/toolbar.o \
+	$(TEMP)/hmtool/gui/vbox.o \
+	$(TEMP)/hmtool/gui/widget.o
+
+all : samples_c.exe samples_cpp.exe $(TEMP)/hmtool $(TEMP)/hmtool/gui hmtool.exe
+
+$(TEMP)/hmtool :
+	\mkdir -p $@
+
+$(TEMP)/hmtool/gui :
+	\mkdir -p $@
 
 samples_c.exe : $(C_OBJS) libtcod-mingw.dll
 	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -Llib -ltcod-mingw
@@ -21,5 +47,8 @@ samples_c.exe : $(C_OBJS) libtcod-mingw.dll
 samples_cpp.exe : $(CPP_OBJS) libtcod-mingw.dll
 	$(CPP) $(CPP_OBJS) -o $@ -Llib -ltcod-mingw
 
+hmtool.exe : $(HMTOOLOBJS)
+	$(CPP) -o $@ $(HMTOOLOBJS) -Llib -ltcod-mingw
+
 clean :
-	\rm -f $(C_OBJS) $(CPP_OBJS) samples_c.exe samples_cpp.exe
+	\rm -f $(C_OBJS) $(CPP_OBJS) $(HMTOOLOBJS) samples_c.exe samples_cpp.exe hmtool.exe

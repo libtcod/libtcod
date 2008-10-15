@@ -1,0 +1,92 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 11. Compression toolkit</a><br />
+<a href="zip_load.html">&lt; 11.4 Loading compressed data from a file</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+11.5 Getting data from the buffer<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="zip_delete.html">&gt; 11.6 Destroying a compression buffer</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once data has been loaded into the buffer, you can get it with one of those functions.<br />
+<p class="code"><pre>
+C++ : char TCODZip::getChar()
+C   : char TCOD_zip_get_char(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : int TCODZip::getInt()
+C   : int TCOD_zip_get_int(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : float TCODZip::getFloat()
+C   : float TCOD_zip_get_float(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : const char *TCODZip::getString()
+C   : const char *TCOD_zip_get_string(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+The address returned is in the buffer. It is valid as long as you don't destroy the buffer.
+<hr />
+<p class="code"><pre>
+C++ : int TCODZip::getData(int nbBytes, void *data)
+C   : int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void *data)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+<tr><td>nbBytes</td><td>Number of bytes to read</td></tr>
+<tr><td>data</td><td>Address of a pre-allocated buffer (at least nbBytes bytes)</td></tr>
+</table>
+Note that the getData length must match the length of the data when the file was created (with putData).<br/>
+The function returns the number of bytes that were stored in the file by the putData call. If more than nbBytes were stored, the function read only nbBytes and skip the rest of them.
+<hr />
+Example : <br />
+<p class="code"><pre>
+C++ : TCODZip zip;
+      zip.loadFromFile("myCompressedFile.gz");
+      char c=zip.getChar();
+      int i=zip.getInt();
+      float f= zip.getFloat();
+      const char *s=zip.getString();
+      zip.getData(nbBytes, dataPtr);
+C   : TCOD_zip_t zip=TCOD_zip_new();
+      TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
+      char c=TCOD_zip_get_char(zip);
+      int i=TCOD_zip_get_int(zip);
+      float f=TCOD_zip_get_float(zip);
+      const char *s=TCOD_zip_get_string(zip);
+      TCOD_zip_get_data(zip,nbBytes, dataPtr);
+</pre></p>

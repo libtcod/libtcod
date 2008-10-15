@@ -1,10 +1,10 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="../system/index.html">&lt; 5. System layer</a>
+<a href="../system/index.html">&lt; 3. System layer</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.2 Easy screenshots<br />
+3.2 Easy screenshots<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -15,17 +15,17 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-This function allows you to save the current game screen in a bmp file.<br/>
+This function allows you to save the current game screen in a png file, or possibly a bmp file if you provide a filename ending with .bmp.<br/>
 <p class="code"><pre>
 C++ : static void TCODSystem::saveScreenshot(const char *filename)
 C   : void TCOD_sys_save_screenshot(const char *filename)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>filename</td><td>Name of the file. If NULL, a filename is automatically generated with the form &quot;./screenshotNNN.bmp&quot;, NNN being the first free number (if a file named screenshot000.bmp already exist, screenshot001.bmp will be used, and so on...).</td></tr>
+<tr><td>filename</td><td>Name of the file. If NULL, a filename is automatically generated with the form &quot;./screenshotNNN.png&quot;, NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).</td></tr>
 </table>
 Example :<br />
 <p class="code"><pre>
 C++ : TCODSystem::saveScreenshot(NULL);
-C   : TCOD_sys_save_screenshot("./screenshots/myscreen.bmp");
+C   : TCOD_sys_save_screenshot("./screenshots/myscreen.png");
 </pre></p>

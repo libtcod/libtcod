@@ -1,0 +1,116 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 13. Path finding</a><br />
+<a href="path_compute.html">&lt; 13.2 Computing the path</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+13.3 Reading path information<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="path_delete.html">&gt; 13.4 Destroying a path</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once the path has been computed, you can get information about it using of one those functions.<br />
+You can read the current origin and destination cells with :<br />
+<p class="code"><pre>
+C++ : void getOrigin(int *x,int *y) const
+      void getDestination(int *x,int *y) const
+C   : void TCOD_path_get_origin(TCOD_path_t path, int *x, int *y)
+      void TCOD_path_get_destination(TCOD_path_t path, int *x, int *y)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>x,y</td><td>The function returns the cell coordinates in these variables</td></tr>
+</table>
+Note that when you walk the path, the origin changes at each step.<br />
+<br />
+<hr />
+You can get the number of steps needed to reach destination :<br />
+<p class="code"><pre>
+C++ : int TCODPath::size() const
+C   : int TCOD_path_size(TCOD_path_t path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+</table>
+<br />
+<hr />
+You can get the coordinates of each point along the path :<br />
+<p class="code"><pre>
+C++ : void TCODPath::get(int index, int *x, int *y) const
+C   : void TCOD_path_get(TCOD_path_t path, int index, int *x, int *y)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>index</td><td>Step number.<br />0 &lt;= index &lt; path size </td></tr>
+<tr><td>x,y</td><td>Address of the variables receiving the coordinates of the point.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : for (int i=0; i &lt; path->size(); i++ ) {
+           int x,y;
+           path->get(i,&x,&y);
+           printf ("coord : %d %d\n", x,y );
+      }
+C   : int i;
+      for (i=0; i &lt; TCOD_path_size(path); i++ ) {
+           int x,y;
+           TCOD_path_get(path,i,&x,&y);
+           printf ("coord : %d %d\n", x,y );
+      }
+</pre></p><br />
+<hr />
+If you want a creature to follow the path, a more convenient way is to walk the path :<br />
+You know when you reached destination when the path is empty :<br/>
+<p class="code"><pre>
+C++ : bool TCODPath::isEmpty() const
+C   : bool TCOD_path_is_empty(TCOD_path_t path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+</table>
+You can walk the path and go to the next step with :<br />
+<p class="code"><pre>
+C++ : bool TCODPath::walk(int *x, int *y, bool recalculateWhenNeeded)
+C   : bool TCOD_path_walk(TCOD_path_t path, int *x, int *y, bool recalculate_when_needed)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>x,y</td><td>Address of the variables receiving the coordinates of the next point.</td></tr>
+<tr><td>recalculateWhenNeeded</td><td>If the next point is no longer walkable (another creature may be in the way), recalculate a new path and walk it.</td></tr>
+</table>
+Note that walking the path consume one step (and decrease the path size by one). The function returns false if recalculateWhenNeeded is false and the next cell on the path is no longer walkable, or if recalculateWhenNeeded is true, the next cell on the path is no longer walkable and no other path has been found.
+Example :<br />
+<p class="code"><pre>
+C++ : while (! path->isEmpty()) {
+           int x,y;
+           if (path->walk(&x,&y,true)) {
+               printf ("coord : %d %d\n", x,y );
+           } else {
+               printf ("I'm stuck !\n" );
+               break;
+           }
+      }
+C   : while (! TCOD_path_isEmpty(path)) {
+           int x,y;
+           if (TCOD_path_walk(path,&x,&y,true)) {
+               printf ("coord : %d %d\n", x,y );
+           } else {
+               printf ("I'm stuck !\n" );
+               break;
+           }
+      }
+</pre></p>

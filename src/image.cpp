@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -88,5 +88,8 @@ void TCODImage::setKeyColor(const TCODColor keyColor) {
 
 bool TCODImage::isPixelTransparent(int x, int y) const {
 	return TCOD_image_is_pixel_transparent(data,x,y);
+}
+void TCODImage::refreshConsole(const TCODConsole *console) {
+	TCOD_image_refresh_console(data,console->data);
 }
 

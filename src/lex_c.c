@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -296,6 +296,72 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 }
 
 
+
+int TCOD_lex_hextoint(char c) {
+	int v=toupper(c);
+	if ( v >= '0' && v <= '9' ) return v-'0';
+	return 10 + (v-'A');
+}
+
+static bool TCOD_lex_get_special_char(TCOD_lex_t *lex, char *c) {
+	*c = *(++(lex->pos) );
+
+	switch ( *c )
+	{
+		case 'n' : *c='\n'; break;
+		case 't' : *c='\t'; break;
+		case 'r' : *c='\r'; break;
+		case '\\' : 
+		case '\"' :
+		case '\'' :
+		break;
+		case 'x' :
+		{
+			// hexadecimal value "\x80"
+			int value=0;
+			bool hasHex=false;
+			*c = *(++(lex->pos) );
+			while (( *c >= '0' && *c <= '9' ) || (*c >= 'a' && *c <= 'f') || (*c >= 'A' && *c <= 'F') ) {
+				hasHex=true;
+				value <<= 4;
+				value += TCOD_lex_hextoint(*c);
+				*c = *(++(lex->pos) );
+			}
+			if (! hasHex ) {
+				TCOD_last_error=(char *)"\\x must be followed by an hexadecimal value";
+				return false;
+			}
+			*c = value;
+			lex->pos--;
+		}
+		break;
+		case '0' :
+		case '1' :
+		case '2' :
+		case '3' :
+		case '4' :
+		case '5' :
+		case '6' :
+		case '7' :
+		{
+			// octal value "\200"
+			int value=0;
+			while ( *c >= '0' && *c <= '7' ) {
+				value <<= 3;
+				value += (*c - '0');
+				*c = *(++(lex->pos) );
+			}
+			*c = value;
+			lex->pos--;
+		}
+		break;
+		default :
+			TCOD_last_error=(char *)"bad escape sequence inside quote";
+			return false;
+	}
+	return true;
+}
+
 int TCOD_lex_get_string(TCOD_lex_t *lex)
 {
     char c;
@@ -313,21 +379,7 @@ int TCOD_lex_get_string(TCOD_lex_t *lex)
 		}
 		if ( c== '\\' )
 		{
-		    c = *(++(lex->pos) );
-
-			switch ( c )
-			{
-				case 'n' : c='\n'; break;
-				case 't' : c='\t'; break;
-				case 'r' : c='\r'; break;
-				case '\\' : c = '\\'; break;
-				case '\"' :
-				case '\'' :
-				break;
-				default :
-					TCOD_last_error=(char *)"bad escape sequence inside quote";
-					return TCOD_LEX_ERROR;
-			}
+		    if ( ! TCOD_lex_get_special_char(lex,&c) ) return TCOD_LEX_ERROR;
 		}
 		else if ( c == lex->lastStringDelim )
 		{
@@ -418,22 +470,8 @@ int TCOD_lex_get_char(TCOD_lex_t *lex)
     }
     if ( c== '\\' )
     {
-		c = *(++(lex->pos) );
-		lex->pos++;
-		switch ( c )
-		{
-			case 'n' : c='\n'; break;
-			case 't' : c='\t'; break;
-			case 'r' : c='\r'; break;
-			case '0' : c='\0'; break;
-			case '\\' : c = '\\'; break;
-			case '\"' :
-			case '\'' :
-				break;
-			default :
-				TCOD_last_error=(char *)"bad escape sequence inside simple quote";
-				return TCOD_LEX_ERROR;
-		}
+	if ( ! TCOD_lex_get_special_char(lex,&c) ) return TCOD_LEX_ERROR;
+	lex->pos++;
     }
     else
 		lex->pos++;

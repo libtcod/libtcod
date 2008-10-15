@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -38,10 +38,20 @@ TCODConsole::TCODConsole(int w, int h) {
 	data = TCOD_console_new(w,h);
 }
 
-void TCODConsole::setCustomFont(const char *fontFile,int charWidth, int charHeight, int nbCharHoriz, int nbCharVertic, bool inRow,TCODColor keyColor) {
-	TCOD_color_t key_color={keyColor.r,keyColor.g,keyColor.b};
-	if ( inRow ) TCOD_console_set_custom_font(fontFile,charWidth,charHeight,nbCharHoriz,nbCharVertic,1,key_color);
-	else TCOD_console_set_custom_font(fontFile,charWidth,charHeight,nbCharHoriz,nbCharVertic,0,key_color);
+void TCODConsole::setCustomFont(const char *fontFile,int charWidth, int charHeight, int flags) {
+	TCOD_console_set_custom_font(fontFile,charWidth,charHeight,flags);
+}
+
+void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY) {
+	TCOD_console_map_ascii_code_to_font(asciiCode,fontCharX,fontCharY);
+}
+
+void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY) {
+	TCOD_console_map_ascii_codes_to_font(firstAsciiCode,nbCodes,fontCharX,fontCharY);
+}
+
+void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY) {
+	TCOD_console_map_string_to_font(s, fontCharX, fontCharY);
 }
 
 TCOD_key_t TCODConsole::checkForKeypress(int flags) {
@@ -246,3 +256,16 @@ void TCODConsole::disableKeyboardRepeat() {
 bool TCODConsole::isKeyPressed(TCOD_keycode_t key) {
 	return TCOD_console_is_key_pressed(key);
 }
+void TCODConsole::setKeyColor(const TCODColor &col) {
+	TCOD_color_t c={col.r,col.g,col.b};
+	TCOD_console_set_key_color(data,c);
+}
+
+void TCODConsole::credits() {
+	TCOD_console_credits();
+}
+
+bool TCODConsole::renderCredits(int x, int y, bool alpha) {
+	return TCOD_console_credits_render(x,y,alpha);
+}
+

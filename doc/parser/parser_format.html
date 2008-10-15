@@ -1,13 +1,13 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 10. File parser</a><br />
+<a href="index.html">&lt; 7. File parser</a><br />
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-10.1 The libtcod config file format<br />
+7.1 The libtcod config file format<br />
 =====================================<br />
 </p></td><td width="20%">
-<a href="parser_str.html">&gt; 10.2 Declaring the 'structures'</a>
+<a href="parser_str.html">&gt; 7.2 Declaring the 'structures'</a>
 </td></tr></table>
 <style type="text/css">
 .code { color:#444444; background-color:#EEEEEE;}
@@ -57,6 +57,9 @@ item_type "blade" {            // structure's type : 'item_type'. structure's na
 	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax
 	damage_type="slash"        // a string property
 	abstract                   // a flag (simplified boolean property)
+        intList= [ 1,2,3 ]         // a list of int values
+        floatList= [ 1.0,2,3.5 ]   // a list of float values
+        stringList= [ "string1","string2","string3" ]         // a list of string values
 }
 </pre></p>
 A structure can also contain other structures either of the same type, or structures of another type : <br />

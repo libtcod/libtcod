@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,8 @@
 TCOD_color_t TCOD_black={0,0,0};
 TCOD_color_t TCOD_dark_grey={96,96,96};
 TCOD_color_t TCOD_grey={196,196,196};
+TCOD_color_t TCOD_dark_gray={96,96,96};
+TCOD_color_t TCOD_gray={196,196,196};
 TCOD_color_t TCOD_white={255,255,255};
 TCOD_color_t TCOD_dark_blue={40,40,128};
 TCOD_color_t TCOD_light_blue={120,120,255};
@@ -187,4 +189,16 @@ void TCOD_color_get_HSV(TCOD_color_t c, float *h, float *s, float *v)
 	*h *= 60;				// degrees
 	if( *h < 0 ) *h += 360;
 }
+void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const  *key_color, int const  *key_index) {
+	int segment=0;
+	for (segment=0; segment < nb_key-1; segment++) {
+		int idx_start=key_index[segment];
+		int idx_end=key_index[segment+1];
+		int idx;
+		for ( idx=idx_start;idx <= idx_end; idx++) {
+			map[idx]=TCOD_color_lerp(key_color[segment],key_color[segment+1],(float)(idx-idx_start)/(idx_end-idx_start));
+		}
+	}
+}
+
 

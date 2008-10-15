@@ -1,11 +1,11 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 10. File parser</a><br />
-<a href="parser_custom.html">&lt; 10.5 Using custom data types</a><br />
+<a href="index.html">&lt; 7. File parser</a><br />
+<a href="parser_custom.html">&lt; 7.5 Using custom data types</a><br />
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-10.6 Using the default parser listener<br />
+7.6 Using the default parser listener<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -32,6 +32,7 @@ C++ : bool TCODParser::getBoolProperty(const char *name) const;
       TCOD_dice_t TCODParser::getDiceProperty(const char *name) const;
       const char * TCODParser::getStringProperty(const char *name) const;
       void * TCODParser::getCustomProperty(const char *name) const;
+      TCOD_list_t TCODParser::getListProperty(const char *name, TCOD_value_type_t type) const;
 C   : bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name);
       int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name);
       float TCOD_parser_get_float_property(TCOD_parser_t parser, const char *name);
@@ -39,30 +40,38 @@ C   : bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name)
       TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char *name);
       TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name);
       void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name);
+      TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type);
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>parser</td><td>In the C version, the parser handler, returned by <a href="#10.2.1">TCOD_parser_new</a>.</td></tr>
-<tr><td>name</td><td>The full name of the property in the form &lt;structure&gt;.&lt;structure&gt;.&lt;propertyName&gt;. </td></tr>
+<tr><td>name</td><td>The full name of the property in the form &lt;structure&gt;.&lt;structure&gt;.&lt;propertyName&gt;. <tr><td>type</td><td>For the list properties, the type of the list's elements</td></tr>
 </table>
-Note that these function are rather slow especially if your configuration file is big, because they do a linear search in the property list, so you'd better not call them inside inner loops. If you try to get a property that was not declared in the parser, the program will exit with a fatal error. If an optional property is not defined in the file, the function will return 0 or equivalent depending on the type of the property (false for bool/flags, NULL for strings, black for color, ...).
+Note that these function are rather slow especially if your configuration file is big, because they do a linear search in the property list, so you'd better not call them inside inner loops. If you try to get a property that was not declared in the parser, the program will exit with a fatal error. If an optional property is not defined in the file, the function will return 0 or equivalent depending on the type of the property (false for bool/flags, NULL for strings, black for color, an empty list for list properties).
 <br />
+Also note that TCODParser::getListProperty returns a C list structure, not a C++ template. Fortunately, TCODList has a constructor taking a TCOD_list_t as a parameter (see example below).<br />
 Example, with this config file :<br />
 <p class="code"><pre>
 video {
-	mode="800x600"
-	fullscreen=false
+	mode = "800x600"
+        availableModes = [ "800x600", "1024x768", "1280x1024" ]
+	fullscreen = false
 }
 input {
 	mouse {
-		sensibility=0.5
+		sensitivity = 0.5
 	}
 }
 </pre></p>
-You could retrieve properties with following names :<br />
+You can read those properties with following code :<br />
 <p class="code"><pre>
-video.mode
-video.fullscreen
-input.mouse.sensibility
+C++ : char *mode=parser.getStringProperty("video.mode");
+      TCODList&lt;char *&gt; availablesModes(parser.getListProperty("video.mode",TCOD_TYPE_STRING));
+      bool fullscreen = parser.getBoolProperty("video.fullscreen");
+      float mouseSensitivity = parser.getFloatProperty("input.mouse.sensitivity");
+C   : char *mode=TCOD_parser_get_string_property(parser,"video.mode");
+      TCOD_list_t availablesModes = TCOD_parser_get_list_property(parser,"video.mode",TCOD_TYPE_STRING));
+      bool fullscreen = TCOD_parser_get_bool_property(parser,"video.fullscreen");
+      float mouseSensitivity = TCOD_parser_get_float_property(parser,"input.mouse.sensitivity");
 </pre></p>
 

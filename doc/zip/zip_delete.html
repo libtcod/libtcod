@@ -1,0 +1,47 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 11. Compression toolkit</a><br />
+<a href="zip_get.html">&lt; 11.5 Getting data from the buffer</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+11.6 Destroying a compression buffer<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once you don't need the buffer anymore, you can release resources. Note that the adresses returned by the <a href="zip_get.html">getString</a> function are no longer valid once the buffer has been destroyed.<br />
+<p class="code"><pre>
+C++ : TCODZip::~TCODZip()
+C   : void TCOD_zip_delete(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+Example : <br />
+<p class="code"><pre>
+C++ : TCODZip *zip = new TCODZip();
+      zip->loadFromFile("myCompressedFile.gz");
+      char c=zip->getChar();
+      int i=zip->getInt();
+      float f= zip->getFloat();
+      const char *s=strdup(zip->getString()); // we duplicate the string to be able to use it after the buffer deletion
+      zip->getData(nbBytes, dataPtr);
+      delete zip;
+C   : TCOD_zip_t zip=TCOD_zip_new();
+      TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
+      char c=TCOD_zip_get_char(zip);
+      int i=TCOD_zip_get_int(zip);
+      float f=TCOD_zip_get_float(zip);
+      const char *s=strdup(TCOD_zip_get_string(zip));
+      TCOD_zip_get_data(zip,nbBytes, dataPtr);
+      TCOD_zip_delete(zip);
+</pre></p>

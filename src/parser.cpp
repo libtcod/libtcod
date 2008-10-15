@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,10 @@ const char *TCODParserStruct::getName() const {
 
 void TCODParserStruct::addProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_add_property(data,propname,type,mandatory);
+}
+
+void TCODParserStruct::addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
+	TCOD_struct_add_list_property(data,propname,type,mandatory);
 }
 
 void TCODParserStruct::addValueList(const char *propname, const char **value_list, bool mandatory) {
@@ -156,4 +160,7 @@ void * TCODParser::getCustomProperty(const char *name) const {
 	return TCOD_parser_get_custom_property(data,name);
 }
 
+TCOD_list_t TCODParser::getListProperty(const char *name, TCOD_value_type_t type) const {
+	return TCOD_parser_get_list_property(data,name,type);
+}
 

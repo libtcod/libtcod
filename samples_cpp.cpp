@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <math.h>
 #include "libtcod.hpp"
 
@@ -78,14 +79,9 @@ void render_colors(bool first, TCOD_key_t*key) {
 	textColor.r=255-textColor.r;
 	textColor.g=255-textColor.g;
 	textColor.b=255-textColor.b;
-	sampleConsole.setForegroundColor(textColor);
-	// the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
-	sampleConsole.setBackgroundColor(TCODColor::grey);
-	sampleConsole.printCenterRect(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,TCOD_BKGND_MULTIPLY,
-		"The Doryen library uses 24 bits colors, for both background and foreground.");
 	/* put random text (for performance tests) */
 	for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++) {
-		for (int y=12; y < SAMPLE_SCREEN_HEIGHT; y++) {
+		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
 			TCODColor col=sampleConsole.getBack(x,y);
 			col=TCODColor::lerp(col,TCODColor::black,0.5f);
 			int c=TCODRandom::getInstance()->getInt('a','z');
@@ -93,6 +89,11 @@ void render_colors(bool first, TCOD_key_t*key) {
 			sampleConsole.putChar(x,y,c,TCOD_BKGND_NONE);
 		}
 	}
+	sampleConsole.setForegroundColor(textColor);
+	// the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
+	sampleConsole.setBackgroundColor(TCODColor::grey);
+	sampleConsole.printCenterRect(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,TCOD_BKGND_MULTIPLY,
+		"The Doryen library uses 24 bits colors, for both background and foreground.");
 }
 
 // ***************************
@@ -226,16 +227,25 @@ void render_lines(bool first, TCOD_key_t*key) {
 }
 
 // ***************************
-// perlin noise sample
+// noise sample
 // ***************************
 void render_noise(bool first, TCOD_key_t*key) {
-	enum { NOISE,FBM,TURBULENCE }; // which function we render
+	enum { PERLIN,SIMPLEX,WAVELET,
+		FBM_PERLIN,TURBULENCE_PERLIN,
+		FBM_SIMPLEX,TURBULENCE_SIMPLEX,
+		FBM_WAVELET,TURBULENCE_WAVELET }; // which function we render
 	static const char *funcName[]={
-		"1 : perlin noise",
-		"2 : fbm         ",
-		"3 : turbulence  "
+		"1 : perlin noise       ",
+		"2 : simplex noise      ",
+		"3 : wavelet noise      ",
+		"4 : perlin fbm         ",
+		"5 : perlin turbulence  ",
+		"6 : simplex fbm        ",
+		"7 : simplex turbulence ",
+		"8 : wavelet fbm        ",
+		"9 : wavelet turbulence ",
 	};
-	static int func=NOISE;
+	static int func=PERLIN;
 	static TCODNoise *noise=NULL;
 	static float dx=0.0f, dy=0.0f;
 	static float octaves=4.0f;
@@ -260,9 +270,15 @@ void render_noise(bool first, TCOD_key_t*key) {
 			f[1] = zoom*y / SAMPLE_SCREEN_HEIGHT + dy;
 			float value = 0.0f;
 			switch (func ) {
-				case NOISE : value = noise->getNoise(f); break;
-				case FBM : value = noise->getFbm(f,octaves); break;
-				case TURBULENCE : value = noise->getTurbulence(f,octaves); break;
+				case PERLIN : value = noise->getPerlin(f); break;
+				case SIMPLEX : value = noise->getSimplex(f); break;
+				case WAVELET : value = noise->getWavelet(f); break;
+				case FBM_PERLIN : value = noise->getFbmPerlin(f,octaves); break;
+				case TURBULENCE_PERLIN : value = noise->getTurbulencePerlin(f,octaves); break;
+				case FBM_SIMPLEX : value = noise->getFbmSimplex(f,octaves); break;
+				case TURBULENCE_SIMPLEX : value = noise->getTurbulenceSimplex(f,octaves); break;
+				case FBM_WAVELET : value = noise->getFbmWavelet(f,octaves); break;
+				case TURBULENCE_WAVELET : value = noise->getTurbulenceWavelet(f,octaves); break;
 			}
 			uint8 c=(uint8)((value+1.0f)/2.0f*255);
 			// use a bluish color
@@ -272,9 +288,9 @@ void render_noise(bool first, TCOD_key_t*key) {
 	}
 	// draw a transparent rectangle
 	sampleConsole.setBackgroundColor(TCODColor::grey);
-	sampleConsole.rect(2,2,(func == NOISE ? 16 : 24),(func == NOISE ? 4 : 7),false,TCOD_BKGND_MULTIPLY);
+	sampleConsole.rect(2,2,(func <= WAVELET ? 16 : 24),(func <= WAVELET ? 4 : 7),false,TCOD_BKGND_MULTIPLY);
 	// draw the text
-	for (int curfunc=NOISE; curfunc <= TURBULENCE; curfunc++) {
+	for (int curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {
 				sampleConsole.setForegroundColor(TCODColor::white);
 				sampleConsole.setBackgroundColor(TCODColor::lightBlue);
@@ -286,15 +302,15 @@ void render_noise(bool first, TCOD_key_t*key) {
 	}
 	// draw parameters
 	sampleConsole.setForegroundColor(TCODColor::white);
-	sampleConsole.printLeft(2,5,TCOD_BKGND_NONE,"Y/H : zoom (%2.1f)",zoom);
-	if ( func != NOISE ) {
-		sampleConsole.printLeft(2,6,TCOD_BKGND_NONE,"E/D : hurst (%2.1f)",hurst);
-		sampleConsole.printLeft(2,7,TCOD_BKGND_NONE,"R/F : lacunarity (%2.1f)",lacunarity);
-		sampleConsole.printLeft(2,8,TCOD_BKGND_NONE,"T/G : octaves (%2.1f)",octaves);
+	sampleConsole.printLeft(2,11,TCOD_BKGND_NONE,"Y/H : zoom (%2.1f)",zoom);
+	if ( func > WAVELET ) {
+		sampleConsole.printLeft(2,12,TCOD_BKGND_NONE,"E/D : hurst (%2.1f)",hurst);
+		sampleConsole.printLeft(2,13,TCOD_BKGND_NONE,"R/F : lacunarity (%2.1f)",lacunarity);
+		sampleConsole.printLeft(2,14,TCOD_BKGND_NONE,"T/G : octaves (%2.1f)",octaves);
 	}
 	// handle keypress
 	if ( key->vk == TCODK_NONE) return;
-	if ( key->c >= '1' && key->c <= '3') {
+	if ( key->c >= '1' && key->c <= '9') {
 		// change the noise function
 		func = key->c - '1';
 	} else if ( key->c == 'E' || key->c == 'e' ) {
@@ -398,7 +414,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
 				if ( smap[y][x] == '=' ) {
-					sampleConsole.putChar(x,y,'=',TCOD_BKGND_NONE);
+					sampleConsole.putChar(x,y,TCOD_CHAR_DHLINE,TCOD_BKGND_NONE);
 				}
 			}
 		}
@@ -415,11 +431,11 @@ void render_fov(bool first, TCOD_key_t*key) {
 		torchx+=0.2f;
 		// randomize the light position between -1.5 and 1.5
 		float tdx=torchx+20.0f;
-		dx = noise->getNoise(&tdx)*1.5f;
+		dx = noise->getSimplex(&tdx)*1.5f;
 		tdx += 30.0f;
-		dy = noise->getNoise(&tdx)*1.5f;
+		dy = noise->getSimplex(&tdx)*1.5f;
 		// randomize the light intensity between -0.2 and 0.2
-		di = 0.2f * noise->getNoise(&torchx);
+		di = 0.2f * noise->getSimplex(&torchx);
 	}
 	// draw the dungeon
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -503,8 +519,8 @@ void render_image(bool first, TCOD_key_t*key) {
 	static TCODColor blue(0,0,255);
 	static TCODColor green(0,255,0);
 	if ( img == NULL ) {
-		img=new TCODImage("skull.bmp");
-		circle=new TCODImage("circle.bmp");
+		img=new TCODImage("skull.png");
+		circle=new TCODImage("circle.png");
 	}
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
@@ -518,7 +534,7 @@ void render_image(bool first, TCOD_key_t*key) {
 	float angle=TCODSystem::getElapsedSeconds();
 	long elapsed=TCODSystem::getElapsedMilli()/2000;
 	if ( elapsed & 1 ) {
-		// split the color channels of circle.bmp
+		// split the color channels of circle.png
 		// the red channel
 		sampleConsole.setBackgroundColor(TCODColor::red);
 		sampleConsole.rect(0,3,15,15,false,TCOD_BKGND_SET);
@@ -532,7 +548,7 @@ void render_image(bool first, TCOD_key_t*key) {
 		sampleConsole.rect(30,3,15,15,false,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,30,3,-1,-1,TCOD_BKGND_MULTIPLY);
 	} else {
-		// render circle.bmp with normal blitting
+		// render circle.png with normal blitting
 		circle->blitRect(&sampleConsole,0,3,-1,-1,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,15,3,-1,-1,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,30,3,-1,-1,TCOD_BKGND_SET);
@@ -549,6 +565,7 @@ void render_mouse(bool first, TCOD_key_t*key) {
   static bool lbut=false,rbut=false,mbut=false;
   
   if ( first ) {
+    TCODSystem::setFps(30); // fps limited to 30
     sampleConsole.setBackgroundColor(TCODColor::grey);
     sampleConsole.setForegroundColor(TCODColor::lightYellow);
     TCODMouse::move(320,200);
@@ -579,14 +596,390 @@ void render_mouse(bool first, TCOD_key_t*key) {
 }
 
 // ***************************
+// path sample
+// ***************************
+void render_path(bool first, TCOD_key_t*key) {
+	static const char *smap[] = {
+		"##############################################",
+		"#######################      #################",
+		"#####################    #     ###############",
+		"######################  ###        ###########",
+		"##################      #####             ####",
+		"################       ########    ###### ####",
+		"###############      #################### ####",
+		"################    ######                  ##",
+		"########   #######  ######   #     #     #  ##",
+		"########   ######      ###                  ##",
+		"########                                    ##",
+		"####       ######      ###   #     #     #  ##",
+		"#### ###   ########## ####                  ##",
+		"#### ###   ##########   ###########=##########",
+		"#### ##################   #####          #####",
+		"#### ###             #### #####          #####",
+		"####           #     ####                #####",
+		"########       #     #### #####          #####",
+		"########       #####      ####################",
+		"##############################################",
+	};
+	#define TORCH_RADIUS 10.0f
+	#define SQUARED_TORCH_RADIUS (TORCH_RADIUS*TORCH_RADIUS)
+	static int px=20,py=10; // player position
+	static int dx=24,dy=1; // destination
+	static TCODMap *map=NULL;
+	static TCODColor darkWall(0,0,100);
+	static TCODColor darkGround(50,50,150);
+	static TCODColor lightGround(200,180,50);
+	static TCODPath *path=NULL;
+	static bool recalculatePath=false;
+	static float busy;
+	static int oldChar=' ';
+	TCOD_mouse_t mouse;
+	int mx,my;
+	if ( ! map) {
+		// initialize the map for the fov toolkit
+		map = new TCODMap(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
+		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+				if ( smap[y][x] == ' ' ) map->setProperties(x,y,true,true);// ground
+				else if ( smap[y][x] == '=' ) map->setProperties(x,y,true,false); // window
+			}
+		}
+		path=new TCODPath(map);
+	}
+	if ( first ) {
+		TCODSystem::setFps(30); // fps limited to 30
+		// we draw the foreground only the first time.
+		// during the player movement, only the @ is redrawn.
+		// the rest impacts only the background color
+		// draw the help text & player @
+		sampleConsole.clear();
+		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
+		sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"IJKL / mouse :\nmove destination");
+		// draw windows
+		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+				if ( smap[y][x] == '=' ) {
+					sampleConsole.putChar(x,y,TCOD_CHAR_DHLINE,TCOD_BKGND_NONE);
+				}
+			}
+		}
+		recalculatePath=true;
+	}
+	if ( recalculatePath ) {
+		path->compute(px,py,dx,dy);
+		recalculatePath=false;
+		busy=1.0f;
+	}
+	// draw the dungeon
+	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+			bool wall=smap[y][x]=='#';
+			sampleConsole.setBack(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
+		}
+	}
+	// draw the path
+	for (int i=0; i< path->size(); i++ ) {
+		int x,y;
+		path->get(i,&x,&y);
+		sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+	}
+	// move the creature
+	busy-=TCODSystem::getLastFrameLength();
+	if (busy <= 0.0f ) {
+		busy += 0.2f;
+		if (!path->isEmpty()) {
+			sampleConsole.putChar(px,py,' ',TCOD_BKGND_NONE);
+			path->walk(&px,&py,true);
+			sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
+		}
+	}
+	if ( (key->c == 'I' || key->c == 'i') && dy > 0 ) {
+		// destination move north
+		sampleConsole.putChar(dx,dy,oldChar,TCOD_BKGND_NONE);
+		dy--;
+		oldChar=sampleConsole.getChar(dx,dy);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		if ( smap[dy][dx] == ' ' ) {
+			recalculatePath=true;
+		}
+	} else if (( key->c == 'K' || key->c == 'k' ) && dy < SAMPLE_SCREEN_HEIGHT-1 ) {
+		// destination move south
+		sampleConsole.putChar(dx,dy,oldChar,TCOD_BKGND_NONE);
+		dy++;
+		oldChar=sampleConsole.getChar(dx,dy);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		if ( smap[dy][dx] == ' ' ) {
+			recalculatePath=true;
+		}
+	} else if (( key->c == 'J' || key->c == 'j' ) && dx > 0 ) {
+		// destination move west
+		sampleConsole.putChar(dx,dy,oldChar,TCOD_BKGND_NONE);
+		dx--;
+		oldChar=sampleConsole.getChar(dx,dy);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		if ( smap[dy][dx] == ' ' ) {
+			recalculatePath=true;
+		}
+	} else if (( key->c == 'L' || key->c == 'l' ) && dx < SAMPLE_SCREEN_WIDTH -1 ) {
+		// destination move east
+		sampleConsole.putChar(dx,dy,oldChar,TCOD_BKGND_NONE);
+		dx++;
+		oldChar=sampleConsole.getChar(dx,dy);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		if ( smap[dy][dx] == ' ' ) {
+			recalculatePath=true;
+		}
+	}
+	mouse=TCODMouse::getStatus();
+	mx = mouse.cx-SAMPLE_SCREEN_X;
+	my = mouse.cy-SAMPLE_SCREEN_Y;
+	if ( mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && ( dx != mx || dy != my ) ) {
+		sampleConsole.putChar(dx,dy,oldChar,TCOD_BKGND_NONE);
+		dx=mx;dy=my;
+		oldChar=sampleConsole.getChar(dx,dy);
+		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
+		if ( smap[dy][dx] == ' ' ) {
+			recalculatePath=true;
+		}
+	}
+}
+
+// ***************************
+// bsp sample
+// ***************************
+
+static int bspDepth=8;
+static int minRoomSize=4;
+static bool randomRoom=false; // a room fills a random part of the node or the maximum available space ?
+static bool roomWalls=true; // if true, there is always a wall on north & west side of a room
+typedef	char map_t[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
+
+// draw a vertical line
+void vline(map_t *map,int x, int y1, int y2) {
+	int y=y1;
+	int dy=(y1>y2?-1:1);
+	(*map)[x][y]=' ';
+	if ( y1 == y2 ) return;
+	do {
+		y+=dy;
+		(*map)[x][y]=' ';
+	} while (y!=y2);
+}
+
+
+// draw a vertical line up until we reach an empty space
+void vline_up(map_t *map,int x, int y) {
+	while (y >= 0 && (*map)[x][y] != ' ') {
+		(*map)[x][y]=' ';
+		y--;	
+	}
+}
+
+// draw a vertical line down until we reach an empty space
+void vline_down(map_t *map,int x, int y) {
+	while (y < SAMPLE_SCREEN_HEIGHT && (*map)[x][y] != ' ') {
+		(*map)[x][y]=' ';
+		y++;	
+	}
+}
+
+// draw a horizontal line
+void hline(map_t *map,int x1, int y, int x2) {
+	int x=x1;
+	int dx=(x1>x2?-1:1);
+	(*map)[x][y]=' ';
+	if ( x1 == x2 ) return;
+	do {
+		x+=dx;
+		(*map)[x][y]=' ';
+	} while (x!=x2);
+}
+
+// draw a horizontal line left until we reach an empty space
+void hline_left(map_t *map,int x, int y) {
+	while (x >= 0 && (*map)[x][y] != ' ') {
+		(*map)[x][y]=' ';
+		x--;	
+	}
+}
+
+// draw a horizontal line right until we reach an empty space
+void hline_right(map_t *map,int x, int y) {
+	while (x < SAMPLE_SCREEN_WIDTH && (*map)[x][y] != ' ') {
+		(*map)[x][y]=' ';
+		x++;	
+	}
+}
+
+// the class building the dungeon from the bsp nodes
+//#include <stdio.h>
+class BspListener : public ITCODBspCallback {
+public :
+	bool visitNode(TCODBsp *node, void *userData) {
+		map_t *map=(map_t *)userData;
+		if ( node->isLeaf() ) {
+			// calculate the room size
+			int minx = node->x+1;
+			int maxx = node->x+node->w-1;
+			int miny = node->y+1;
+			int maxy = node->y+node->h-1;
+			if (! roomWalls ) {
+				if ( minx > 1 ) minx--;
+				if ( miny > 1 ) miny--;
+			} 
+			if (maxx == SAMPLE_SCREEN_WIDTH-1 ) maxx--;
+			if (maxy == SAMPLE_SCREEN_HEIGHT-1 ) maxy--;
+			if ( randomRoom ) {
+				minx = TCODRandom::getInstance()->getInt(minx,maxx-minRoomSize+1);
+				miny = TCODRandom::getInstance()->getInt(miny,maxy-minRoomSize+1);
+				maxx = TCODRandom::getInstance()->getInt(minx+minRoomSize-1,maxx);
+				maxy = TCODRandom::getInstance()->getInt(miny+minRoomSize-1,maxy);
+			}
+			// resize the node to fit the room
+//printf("node %dx%d %dx%d => room %dx%d %dx%d\n",node->x,node->y,node->w,node->h,minx,miny,maxx-minx+1,maxy-miny+1);
+			node->x=minx;
+			node->y=miny;
+			node->w=maxx-minx+1;
+			node->h=maxy-miny+1;
+			// dig the room
+			for (int x=minx; x <= maxx; x++ ) {
+				for (int y=miny; y <= maxy; y++ ) {
+					(*map)[x][y]=' ';
+				}
+			}
+		} else {
+//printf("lvl %d %dx%d %dx%d\n",node->level, node->x,node->y,node->w,node->h);
+			// resize the node to fit its sons
+			TCODBsp *left=node->getLeft();
+			TCODBsp *right=node->getRight();
+			node->x=MIN(left->x,right->x);
+			node->y=MIN(left->y,right->y);
+			node->w=MAX(left->x+left->w,right->x+right->w)-node->x;
+			node->h=MAX(left->y+left->h,right->y+right->h)-node->y;
+			// create a corridor between the two lower nodes
+			if (node->horizontal) {
+				// vertical corridor
+				if ( left->x+left->w -1 < right->x || right->x+right->w-1 < left->x ) {
+					// no overlapping zone. we need a Z shaped corridor
+					int x1=TCODRandom::getInstance()->getInt(left->x,left->x+left->w-1);
+					int x2=TCODRandom::getInstance()->getInt(right->x,right->x+right->w-1);
+					int y=TCODRandom::getInstance()->getInt(left->y+left->h,right->y);
+					vline_up(map,x1,y-1);
+					hline(map,x1,x2,y);
+					vline_down(map,x2,y+1);
+				} else {
+					// straight vertical corridor
+					int minx=MAX(left->x,right->x);
+					int maxx=MIN(left->x+left->w-1,right->x+right->w-1);
+					int x=TCODRandom::getInstance()->getInt(minx,maxx);
+					vline_down(map,x,right->y);
+					vline_up(map,x,right->y-1);
+				}
+			} else {
+				// horizontal corridor
+				if ( left->y+left->h -1 < right->y || right->y+right->h-1 < left->y ) {
+					// no overlapping zone. we need a Z shaped corridor
+					int y1=TCODRandom::getInstance()->getInt(left->y,left->y+left->h-1);
+					int y2=TCODRandom::getInstance()->getInt(right->y,right->y+right->h-1);
+					int x=TCODRandom::getInstance()->getInt(left->x+left->w,right->x);
+					hline_left(map,x-1,y1);
+					vline(map,x,y1,y2);
+					hline_right(map,x+1,y2);
+				} else {
+					// straight horizontal corridor
+					int miny=MAX(left->y,right->y);
+					int maxy=MIN(left->y+left->h-1,right->y+right->h-1);
+					int y=TCODRandom::getInstance()->getInt(miny,maxy);
+					hline_left(map,right->x-1,y);
+					hline_right(map,right->x,y);
+				}
+			}
+		}
+		return true;
+	}
+};
+void render_bsp(bool first, TCOD_key_t*key) {
+	static TCODBsp *bsp=NULL;
+	static bool generate=true;
+	static bool refresh=false;
+	static map_t map;
+	static TCODColor darkWall(0,0,100);
+	static TCODColor darkGround(50,50,150);
+	static BspListener listener;
+	if ( generate || refresh ) {
+		// dungeon generation
+		if (! bsp ) {
+			// create the bsp
+			bsp = new TCODBsp(0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
+		} else {
+			// restore the nodes size
+			bsp->resize(0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
+		}
+		memset(map,'#',sizeof(char)*SAMPLE_SCREEN_WIDTH*SAMPLE_SCREEN_HEIGHT);
+		if ( generate ) {
+			// build a new random bsp tree
+			bsp->removeSons();
+			bsp->splitRecursive(NULL,bspDepth,minRoomSize+(roomWalls?1:0),minRoomSize+(roomWalls?1:0),1.5f,1.5f);
+		}
+		// create the dungeon from the bsp
+		bsp->traverseInvertedLevelOrder(&listener,&map);
+		generate=false;
+		refresh=false;
+	}
+	sampleConsole.clear();
+	sampleConsole.setForegroundColor(TCODColor::white);
+	sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
+		bspDepth,minRoomSize,
+		randomRoom ? "ON" : "OFF");
+	if ( randomRoom )
+	sampleConsole.printLeft(1,6,TCOD_BKGND_NONE,"2 : room walls %s",
+		roomWalls ? "ON" : "OFF"	);
+	// render the level
+	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+			bool wall= ( map[x][y] == '#' );
+			sampleConsole.setBack(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
+		}
+	}
+	if ( key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER ) {
+		generate=true;
+	} else if (key->c==' ') {
+		refresh=true;
+	} else if (key->c=='+') {
+		bspDepth++;
+		generate=true;
+	} else if (key->c=='-' && bspDepth > 1) {
+		bspDepth--;
+		generate=true;
+	} else if (key->c=='*') {
+		minRoomSize++;
+		generate=true;
+	} else if (key->c=='/' && minRoomSize > 2) {
+		minRoomSize--;
+		generate=true;
+	} else if (key->c=='1' || key->vk == TCODK_1 || key->vk == TCODK_KP1) {
+		randomRoom=!randomRoom;
+		if (! randomRoom ) roomWalls=true;
+		refresh=true;
+	} else if (key->c=='2' || key->vk == TCODK_2 || key->vk == TCODK_KP2) {
+		roomWalls=!roomWalls;
+		refresh=true;
+	}
+}
+
+// ***************************
 // the list of samples
 // ***************************
 sample_t samples[] = {
 	{"  True colors        ",render_colors},
 	{"  Offscreen console  ",render_offscreen},
 	{"  Line drawing       ",render_lines},
-	{"  Perlin noise       ",render_noise},
+	{"  Noise              ",render_noise},
 	{"  Field of view      ",render_fov},
+	{"  Path finding       ",render_path},
+	{"  Bsp toolkit        ",render_bsp},
 	{"  Image toolkit      ",render_image},
 	{"  Mouse support      ",render_mouse},
 };
@@ -599,30 +992,27 @@ int main( int argc, char *argv[] ) {
 	int curSample=0; // index of the current sample
 	bool first=true; // first time we render a sample
 	TCOD_key_t key = {TCODK_NONE,0};
-	const char *font="terminal.bmp";
-	int charWidth=8,charHeight=8,nbCharH=16,nbCharV=16;
+	const char *font="fonts/celtic_garamond_10x10_gs_tc.png";
+	int charWidth=10,charHeight=10;
 	int argn;
 	int fullscreenWidth=0;
 	int fullscreenHeight=0;
 	bool fullscreen=false;
-	bool inRow=false;
-	TCODColor keyColor=TCODColor::black;
+	int fontFlags=TCOD_FONT_TYPE_GREYSCALE|TCOD_FONT_LAYOUT_TCOD, fontNewFlags=0;
+	bool creditsEnd=false;
 
 	// initialize the root console (open the game window)
 	for (argn=1; argn < argc; argn++) {
 		if ( strcmp(argv[argn],"-font") == 0 && argn+1 < argc) {
 			argn++;
 			font=argv[argn];
+			fontFlags=0;
 		} else if ( strcmp(argv[argn],"-font-char-size") == 0 && argn+2 < argc ) {
 			argn++;
 			charWidth=atoi(argv[argn]);
 			argn++;
 			charHeight=atoi(argv[argn]);
-		} else if ( strcmp(argv[argn],"-font-layout") == 0 && argn+2 < argc ) {
-			argn++;
-			nbCharH=atoi(argv[argn]);
-			argn++;
-			nbCharV=atoi(argv[argn]);
+			fontFlags=0;
 		} else if ( strcmp(argv[argn],"-fullscreen-resolution") == 0 && argn+2 < argc ) {
 			argn++;
 			fullscreenWidth=atoi(argv[argn]);
@@ -631,24 +1021,42 @@ int main( int argc, char *argv[] ) {
 		} else if ( strcmp(argv[argn],"-fullscreen") == 0 ) {
 			fullscreen=true;
 		} else if ( strcmp(argv[argn],"-font-in-row") == 0 ) {
-			inRow=true;
-		} else if ( strcmp(argv[argn],"-font-key-color") == 0 && argn+3 < argc) {
-			argn++;
-			keyColor.r = (uint8)atol(argv[argn++]);
-			keyColor.g = (uint8)atol(argv[argn++]);
-			keyColor.b = (uint8)atol(argv[argn]);
+			fontNewFlags |= TCOD_FONT_LAYOUT_ASCII_INROW;
+			fontFlags=0;
+		} else if ( strcmp(argv[argn],"-font-greyscale") == 0 ) {
+			fontNewFlags |= TCOD_FONT_TYPE_GREYSCALE;
+			fontFlags=0;
+		} else if ( strcmp(argv[argn],"-font-tcod") == 0 ) {
+			fontNewFlags |= TCOD_FONT_LAYOUT_TCOD;
+			fontFlags=0;
+		} else if ( strcmp(argv[argn],"-help") == 0 ) {
+			printf ("options :\n");
+			printf ("-font <filename> : use a custom font\n");
+			printf ("-font-char-size <char_width> <char_height> : size of the custom font's characters\n");
+			printf ("-font-in-row : the font layout is in row instead of columns\n");
+			printf ("-font-tcod : the font uses TCOD layout instead of ASCII\n");
+			printf ("-font-greyscale : antialiased font using greyscale bitmap\n");
+			printf ("-fullscreen : start in fullscreen\n");
+			printf ("-fullscreen-resolution <screen_width> <screen_height> : force fullscreen resolution\n");
+			exit(0);
 		} else {
 			argn++; // ignore parameter
 		}
 	}
 
-	TCODConsole::setCustomFont(font,charWidth,charHeight,nbCharH,nbCharV,inRow,keyColor);
+	if ( fontFlags == 0 ) fontFlags=fontNewFlags;
+	TCODConsole::setCustomFont(font,charWidth,charHeight,fontFlags);
 	if ( fullscreenWidth > 0 ) {
 		TCODSystem::forceFullscreenResolution(fullscreenWidth,fullscreenHeight);
 	}
 
 	TCODConsole::initRoot(80,50,"libtcod C++ sample",fullscreen);
+
 	do {
+		if (! creditsEnd) {
+			creditsEnd=TCODConsole::renderCredits(60,42,false);
+		}
+
 		// print the list of samples
 		for (int i=0; i < nbSamples; i++ ) {
 			if ( i == curSample ) {
@@ -661,7 +1069,7 @@ int main( int argc, char *argv[] ) {
 				TCODConsole::root->setBackgroundColor(TCODColor::black);
 			}
 			// print the sample name
-			TCODConsole::root->printLeft(2,47-(nbSamples-i)*2,TCOD_BKGND_SET,samples[i].name);
+			TCODConsole::root->printLeft(2,46-(nbSamples-i),TCOD_BKGND_SET,samples[i].name);
 		}
 		// print the help message
 		TCODConsole::root->setForegroundColor(TCODColor::grey);
@@ -697,6 +1105,9 @@ int main( int argc, char *argv[] ) {
 		} else if ( key.vk == TCODK_ENTER && key.lalt ) {
 			// ALT-ENTER : switch fullscreen
 			TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
+		} else if ( key.vk == TCODK_PRINTSCREEN ) {
+			/* save screenshot */
+			TCODSystem::saveScreenshot(NULL);
 		}
 	} while (!TCODConsole::isWindowClosed());
 	return 0;

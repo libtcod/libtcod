@@ -1,0 +1,39 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 15. Heightmap toolkit</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+15.1 Creating a heightmap<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="heightmap_base.html">&gt; 15.2 Basic operations</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+As with other modules, you have to create a heightmap object first :<br />
+<p class="code"><pre>
+C++ : TCODHeightMap::TCODHeightMap(int w, int h)
+C   : typedef struct {
+          int w,h;
+          float *values;
+      } TCOD_heightmap_t;
+      TCOD_heightmap_t *TCOD_heightmap_new(int w,int h)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>w,h</td><td>The width and height of the heightmap.</td></tr>
+</table>
+Note that whereas most other modules use opaque structs, the TCOD_heightmap_t fields can be freely accessed. Thus, the TCOD_heightmap_new function returns a TCOD_heightmap_t pointer, not a TCOD_heightmap_t. The w and h fields should not be modified after the heightmap creation. 
+The newly created heightmap is filled with 0.0 values.<br />
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODHeightMap myMap(50,50);
+C   : TCOD_heightmap_t *my_map=TCOD_heightmap_new(50,50);
+</pre></p>

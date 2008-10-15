@@ -1,9 +1,80 @@
+X API break
 + new features
-- removed features, fixed bugs
 % modified features
-
-
-1.3.2 :
+- removed features, fixed bugs
+=========================================================
+1.4.0 : 2008 Oct 16
+X Noise functions renamed : 
+   TCODNoise::getNoise -> TCODNoise::getPerlin
+   TCODNoise::getFbm -> TCODNoise::getFbmPerlin
+   TCODNoise::getTurbulence -> TCODNoise::getTurbulencePerlin
+X Some special char constants (TCOD_CHAR_xxx) added/removed
+X setCustomFont changed :
+   setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int flags=0)
+   flags :
+	TCOD_FONT_LAYOUT_ASCII_INROW=1
+	TCOD_FONT_TYPE_GREYSCALE=2
+	TCOD_FONT_LAYOUT_TCOD=4
++ added pathfinding module
++ added BSP module
++ added heightmap module + heightmap tool
++ added compression toolkit
++ added possibility to pre-allocate TCODList's memory
++ added support for PNG images + antialiased fonts from PNG with alpha channel or greyscale
++ added ASCII mapping functions to map an ascii code to any character in your font :
+   static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY);
+   static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY);
+   static void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY);
++ parser : now strings can contain octal/hexadecimal ascii values 
+   myStringProperty1 = "embedded hex value : \x80"
+   myStringProperty2 = "embedded octal value : \200"
++ parser : now can handle list properties.
+    myStruct {
+        myProperty = [ 1, 2, 3 ]
+    }
+  to declare : struct.addListProperty("myProperty",TCOD_TYPE_INT,true);
+  to read (default parser) : TCODList<int> prop( parser.getListProperty("myStruct.myProperty",TCOD_TYPE_INT) );
++ added color map generator. Interpolate colors from an array of key colors :
+   TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex)
++ added random generator backup function. You can save the state of a generator with 
+    TCODRandom *TCODRandom::save()
+  and restore it with
+    void TCODRandom::restore(const TCODRandom *backup)
++ added simplex noise, similar to perlin but faster, especially in 4 dimensions and has better contrast : 
+   TCODNoise::getSimplex
+   TCODNoise::getFbmSimplex
+   TCODNoise::getTurbulenceSimplex
+   Simplex should be prefered over Perlin for most usages.
++ added wavelet noise, similar to perlin, much slower but doesn't blur at high scales. Doesn't work in 4D :
+   TCODNoise::getWavelet
+   TCODNoise::getFbmWavelet
+   TCODNoise::getTurbulenceWavelet
+  Noise functions relative times :
+               2D   3D   4D
+     simplex :  1    1    1
+     perlin :   4    5   17
+     wavelet : 32   14    X
++ you can capture a console to an existing image without creating a new image with TCODImage::refreshConsole
++ non rectangular offscreen consoles :
+    you can define a key color on offscreen consoles. Cells for which background color = key color are not blitted
++ added libtcod credits function. You can either call :
+    TCODConsole::credits() to print the credits page at the start of your game (just after initRoot)
+    or
+    bool TCODConsole::renderCredits(int x, int y, bool alpha) to print the credits on top of one of your
+    existing page (your game menu for example). Call it until it returns true.
+% improved TCODConsole::flush performances :
+   frames per second for sample "True colors" (terminal.png font) on my reference computer (windowed mode) :
+   libtcod 1.3.2 :  130
+   libtcod 1.4.0 :  300
+% TCODNoise::getTurbulence is twice faster
+% improved mouse click detection. Even with a low framerate, mouse clicks will allways be detected and 
+   reported in the Xbutton_pressed fields of TCOD_mouse_t.
+% you don't need anymore to provide values in TCODLine::step parameters
+- fixed memory leak in image module
+- fixed DELETE and INSERT keys not detected
+- fixed a rendering bug when using a white background color before any other background color
+=========================================================
+1.3.2 : 2008 Jul 14
 + added documentation for the generic container module TCODList
 - fixed not being able to open and close the root console more than once
 - fixed parser not being able to attach a sub-structure to more than one structure
@@ -13,8 +84,8 @@
 - fixed TCODImage constructor / TCOD_image_new crashing if root console not initialized
 - fixed mouse status not updated if the keyboard events are not read with checkForKeypress/waitForKeypress
 - fixed fbm, turbulence functions returning NaN for high octaves values
-
-1.3.1 :
+=========================================================
+1.3.1 : 2008 Jun 05
 + now TCODConsole::putChar/setChar can use ascii code > 255 (ok, it's no more an ascii code, then)
   this allows you to use fonts with more than 255 characters.
 + added default parser listener for basic config files.
@@ -27,8 +98,14 @@
 - fixed const correctness in TCODConsole::print*Rect functions
 - fixed a bug in fov toolkit if TCODMap width < height
 - fixed TCOD_struct_get_type returning TCOD_TYPE_NONE instead of TCOD_TYPE_BOOL for flags.
-
-1.3 :
+=========================================================
+1.3 : 2008 May 25
+X C++ : colors must be initialized by constructor :
+  1.2.2 : TCODColor mycol={r,g,b};
+  1.3   : TCODColor mycol(r,g,b);
+X TCOD_console_check_for_keypress now has a parameter that indicates which events are tracked
+  1.2.2 : key = TCOD_console_check_for_keypress();
+  1.3   : key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
 + added mouse support
 + added the file parser module
 + added TCODColor::setHSV(float h, float s, float v) and TCODColor::getHSV(float *h, float *s, float *v)
@@ -40,19 +117,13 @@
 + added TCODConsole::setKeyboardRepeat(int initialDelay, int interval) and TCODConsole::disableKeyboardRepeat()
 + added TCODSystem::getCurrentResolution(int *w, int *h)
 % now TCODFov::computeFov takes a maxRadius parameter. Use 0 for unlimited range (default)
-% C++ : colors must be initialized by constructor :
-  1.2.2 : TCODColor mycol={r,g,b};
-  1.3   : TCODColor mycol(r,g,b);
-% TCOD_console_check_for_keypress now has a parameter that indicates which events are tracked
-  1.2.2 : key = TCOD_console_check_for_keypress();
-  1.3   : key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
 % the mouse cursor is now automatically hidden when using fullscreen
 - fixed closing the window resulting in a fake 'Q' keyboard event
 - fixed TCODConsole::print* and TCODConsole::rect functions crashing when printing out of the console
 - fixed f parameter modified when calling fbm and turbulence noise functions. Now f is no more modified.
 - fixed wrong ascii code in TCOD_key_t.c when pressing Control and a letter key.
-
-1.2.2 :
+=========================================================
+1.2.2 : 2008 Mar 18
 + added helpers for real time games
   void TCODSystem::setFps(int val) to limit the number of frames per second. Use 0 for unlimited fps (default)
   int TCODSystem::getFps() to return the number of frames rendered during the last second
@@ -64,8 +135,8 @@
   using a rectangle height of 0 means unlimited height
 - fixed a color bug when drawing text using the black color (0,0,0)
 - fixed TCODConsole::waitForKeypress(true) resulting in Alt/Ctrl/Shift key state not cleared
-
-1.2.1 :
+=========================================================
+1.2.1 : 2008 Mar 09
 + added TCODImage::blitRect to easily map an image on a specific part of a console
 + added possibility to generate an image from an offscreen console
 + added TCODImage::save
@@ -77,8 +148,8 @@
 - fixed console print*Rect functions unnecessarily splitting the string in some cases
 - on Linux, you don't need to link with SDL anymore when using libtcod/libtcod++
 - fixed linker issues with Visual Studio
-
-1.2 :
+=========================================================
+1.2 : 2008 Feb 26
 + new 'image' toolkit replacing some of the features previously in the 'system' toolkit.
 + now windowed mode works even on 16bits desktops
 + improved custom font support. 
@@ -126,16 +197,17 @@
 - fixed the window size when using a custom font size
 - fixed TCODK_PRINTSCREEN key event not detected
 - fixed crash in printing functions if the string length was > 255. Now they can handle strings of any size.
-
-1.1 :
+=========================================================
+1.1 : 2008 Jan 27
 + added the noise toolkit
 + added the field of view toolkit
 + added customizable bitmap font size
-
-1.0.1 : 
+=========================================================
+1.0.1 : 2008 Jan 19
 + added C/C++ samples
 % TCODConsole::waitForKeyPress now has a bool parameter indicating if we flush the keyboard buffer before waiting.
 - fixed a color bug when drawing text using the grey color (196,196,196)
 - fixed wrong key codes returned by wait/checkForKeyPress on some keyboard layouts
-
-1.0 : Initial release
+=========================================================
+1.0 : 2008 Jan 05
+Initial release

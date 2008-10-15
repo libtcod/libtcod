@@ -1,10 +1,10 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
-<a href="../system/index.html">&lt; 5. System layer</a>
+<a href="../system/index.html">&lt; 3. System layer</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.3 Using a custom resolution for the fullscreen mode<br />
+3.3 Using a custom resolution for the fullscreen mode<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -28,9 +28,9 @@ C   : void TCOD_sys_force_fullscreen_resolution(int width, int height)
 Example :<br />
 <p class="code"><pre>
 C++ : TCODSystem::forceFullscreenResolution(800,600); // use 800x600 in fullscreen instead of 640x400
-      TCODConsole::initRoot(80,50,"",true,"terminal.bmp"); // 80x50 console with 8x8 char => 640x400 default resolution
+      TCODConsole::initRoot(80,50,"",true); // 80x50 console with 8x8 char => 640x400 default resolution
 C   : TCOD_sys_force_fullscreen_resolution(800,600); 
-      TCOD_console_init_root(80,50,"",true,"terminal.bmp");
+      TCOD_console_init_root(80,50,"",true);
 </pre></p>
 <br />
 You can get the current screen resolution with getCurrentResolution. You can use it for example to get the desktop resolution before initializing the root console.<br />
@@ -46,7 +46,7 @@ Example :<br />
 <p class="code"><pre>
 C++ : int w,h;
       TCODSystem::getCurrentResolution(&w,&h); // get desktop resolution
-      TCODConsole::initRoot(w/8,h/8,"",true,"terminal.bmp"); // sets the console size so that it fills the desktop with a 8x8 font
+      TCODConsole::initRoot(w/8,h/8,"",true); // sets the console size so that it fills the desktop with a 8x8 font
 C   : TCOD_sys_get_current_resolution(&w,&h); 
-      TCOD_console_init_root(w/8,h/8,"",true,"terminal.bmp");
+      TCOD_console_init_root(w/8,h/8,"",true);
 </pre></p>

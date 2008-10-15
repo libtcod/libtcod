@@ -16,25 +16,51 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-This function allows you to use a bitmap font with custom character size or layout.<br />
+This function allows you to use a bitmap font (png or bmp) with custom character size or layout.<br />
 <b>It should be called before initializing the root console with <a href="console_init_root.html">initRoot</a>.</b><br />
+Once this function is called, you can define your own custom mappings using <a href="console_map.html">mapping functions</a><br />
 <p class="code"><pre>
-C++ : static void TCODConsole::setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int nbCharHoriz=16, int nbCharVertic=16, bool inRow=false,TCODColor keyColor=TCODColor::black);
-C   : void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int nb_char_horiz, int nb_char_vertic, bool chars_by_row, TCOD_color_t key_color);
+C++ : static void TCODConsole::setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int flags=0)
+C   : void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int flags)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>fontFile</td><td>Name of a .bmp file containing the font.</td></tr>
+<tr><td>fontFile</td><td>Name of a .bmp or .png file containing the font.</td></tr>
 <tr><td>charWidth,charHeight</td><td>Size of a character in the bitmap file.</td></tr>
-<tr><td>nbCharHoriz,nbCharWidth</td><td>Size of the characters grid in the bitmap file. The bitmap width must be nbCharHoriz * charWidth. The bitmap height must be nbCharVertic * charHeight.</td></tr>
-<tr><td>inRow</td><td>If true, the first ASCII characters are in the first row in the bitmap file. Else, they are in the first column.</td></tr>
-<tr><td>keyColor</td><td>Color in the bitmap that represent a transparent pixel.</td></tr>
+<tr><td>flags</td><td>Used to define the characters layout in the bitmap and the font type :<br />
+TCOD_FONT_LAYOUT_ASCII_INCOL (==0) : characters in ASCII order, code 0-15 in the first column<br />
+TCOD_FONT_LAYOUT_ASCII_INROW : characters in ASCII order, code 0-15 in the first row<br />
+TCOD_FONT_LAYOUT_TCOD : simplified layout. See examples below.<br />
+TCOD_FONT_TYPE_GREYSCALE : create an anti-aliased font from a greyscale bitmap<br />
+</td></tr>
 </table>
+<h4>Different font layouts</h4>
+<table>
+<tr><td>ASCII_INROW</td><td>ASCII_INCOL</td><td>TCOD</td></tr>
+<tr><td><img src='terminal8x8_gs_as.png' /></td><td><img src='terminal8x8_gs_ro.png' /></td><td><img src='terminal8x8_gs_tc.png' /></td></tr>
+</table>
+<ul>
+<li>ascii, in columns : characters 0 to 15 are in the first column. The space character is at coordinates 2,0.</li>
+<li>ascii, in rows : characters 0 to 15 are in the first row. The space character is at coordinates 0,2.</li>
+<li>tcod : special mapping. Not all ascii values are mapped. The space character is at coordinates 0,0.</li>
+</ul>
+<h4>Different font types</h4>
+<table>
+<tr><td>standard<br />(non antialiased)</td><td>antialiased<br />(32 bits PNG)</td><td>antialiased<br />(greyscale)</td></tr>
+<tr><td><img src='terminal.png' /></td><td><img src='terminal8x8_aa_as.png' /></td><td><img src='terminal8x8_gs_as.png' /></td></tr>
+</table>
+<ul>
+<li>standard : transparency is given by a key color automatically detected by looking at the color of the space character</li>
+<li>32 bits : transparency is given by the png alpha layer. The font color does not matter</li>
+<li>greyscale : transparency is given by the pixel value. You can use white characters on black background or black characters on white background. The background color is automatically detected by looking at the color of the space character</li>
+</ul>
 Example :<br />
-7x7 characters stored in a 112x112 bitmap file (thus containing an array of 16x16 characters)<br />
+Examples of fonts can be found in libtcod's fonts directory. Check the Readme file there.<br />
 <p class="code"><pre>
-C++ : TCODColor keyCol(255,0,255); // key color = pink
-      TCODConsole::setCustomFont("Herrbdog_7x7_tileset.bmp",7,7,16,16,true,keyCol);
-C   : TCOD_color_t key_col={255,0,255};
-      TCOD_console_set_custom_font("Herrbdog_7x7_tileset.bmp",7,7,16,16,true,key_col);
+C++ : TCODConsole::setCustomFont("standard_8x8_ascii_in_col_font.bmp",8,8,0);
+      TCODConsole::setCustomFont("32bits_8x8_ascii_in_row_font.png",8,8,TCOD_FONT_LAYOUT_INROW);
+      TCODConsole::setCustomFont("greyscale_8x8_tcod_font.png",8,8,TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
+C   : TCOD_console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",8,8,0);
+      TCOD_console_set_custom_font("32bits_8x8_ascii_in_row_font.png",8,8,TCOD_FONT_LAYOUT_INROW);
+      TCOD_console_set_custom_font("greyscale_8x8_tcod_font.png",8,8,TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
 </pre></p>

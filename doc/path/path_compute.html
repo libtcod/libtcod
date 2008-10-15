@@ -1,0 +1,41 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 13. Path finding</a><br />
+<a href="path_init.html">&lt; 13.1 Creating a path</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+13.2 Computing the path<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="path_get.html">&gt; 13.3 Reading path information</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Once you created a TCODPath object, you can compute the path between two points :<br />
+<p class="code"><pre>
+C++ : bool TCODPath::compute(int ox, int oy, int dx, int dy)
+C   : bool TCOD_path_compute(TCOD_path_t path, int ox,int oy, int dx, int dy)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>ox,oy</td><td>Coordinates of the origin of the path.</td></tr>
+<tr><td>dx,dy</td><td>Coordinates of the destination of the path.</td></tr>
+</table>
+Both points should be inside the map, and at a walkable position. The function returns false if there is no possible path.<br />
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODMap *myMap = new TCODMap(50,50);
+      TCODPath *path = new TCODPath(myMap); // allocate the path
+      path->compute(5,5,25,25); // calculate path from 5,5 to 25,25
+C   : TCOD_map_t my_map=TCOD_map_new(50,50);
+      TCOD_path_t path = TCOD_path_new_using_map(my_map);
+      TCOD_path_compute(path,5,5,25,25);
+</pre></p>

@@ -1,3 +1,30 @@
+/*
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * The name of J.C.Wilk may not be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
@@ -9,11 +36,15 @@ public :
 	int getWidth() const;
 	int getHeight() const;
 	static void initRoot(int w, int h, const char * title, bool fullscreen = false);
-	static void setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int nbCharHoriz=16, int nbCharVertic=16, bool inRow=false,TCODColor keyColor=TCODColor::black);
 	static void setWindowTitle(const char *title);
 	static void setFullscreen(bool fullscreen);
 	static bool isFullscreen();
 	static bool isWindowClosed();
+
+	static void setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int flags=0);
+	static void mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY);
+	static void mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY);
+	static void mapStringToFont(const char *s, int fontCharX, int fontCharY);
 	
 	void setBackgroundColor(TCODColor back);
 	void setForegroundColor(TCODColor fore);
@@ -57,8 +88,12 @@ public :
 	
 	TCODConsole(int w, int h);
 	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, int fade=255);
+	void setKeyColor(const TCODColor &col);
 	virtual ~TCODConsole();
 	
+	static void credits();
+	static bool renderCredits(int x, int y, bool alpha);
+
 protected :
 	friend class TCODImage;
 	TCODConsole();

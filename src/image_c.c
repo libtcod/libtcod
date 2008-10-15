@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -244,6 +244,10 @@ void TCOD_image_delete(TCOD_image_t image) {
 		}
 		free(img->mipmaps);
 	}
+	if ( img->sys_img ) {
+		TCOD_sys_delete_bitmap(img->sys_img);
+	}
+	free(image);
 }
 
 bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y) {
@@ -262,7 +266,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	image_data_t *img=(image_data_t *)image;
 	if ( scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	TCOD_image_get_size(image,&width,&height);
-	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f ) {
+	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f && x-((int)x) == 0.0f && y-((int)y)==0.0f) {
 		// clip the image
 		int ix = (int)(x - width*0.5f);
 		int iy = (int)(y - height*0.5f);
@@ -354,13 +358,19 @@ void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int
 }
 
 TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
-    image_data_t *ret;
+	image_data_t *ret;
 	void *bitmap=TCOD_sys_create_bitmap_for_console(console);
 	TCOD_sys_console_to_bitmap(bitmap, TCOD_console_get_width(console), TCOD_console_get_height(console), 
-		TCOD_console_get_buf(console));
+		TCOD_console_get_buf(console),NULL);
 	ret=(image_data_t *)calloc(sizeof(image_data_t),1);
 	ret->sys_img=bitmap;
 	return (TCOD_image_t)ret;
+}
+
+void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
+	image_data_t *img=(image_data_t *)image;
+	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console), 
+		TCOD_console_get_buf(console),NULL);
 }
 
 void TCOD_image_save(TCOD_image_t image, const char *filename) {

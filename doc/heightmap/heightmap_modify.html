@@ -1,0 +1,146 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 15. Heightmap toolkit</a><br />
+<a href="heightmap_base.html">&lt; 15.2 Basic operations</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+15.3 Modifying the heightmap<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="heightmap_read.html">&gt; 15.4 Reading data from the heightmap</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<br />
+Those are advanced operations involving several or all map cells.
+<br />
+<a href="#15.3.1">15.3.1 Add hills<br /></a>
+<a href="#15.3.2">15.3.2 Dig hills<br /></a>
+<a href="#15.3.3">15.3.3 Simulate rain erosion<br /></a>
+<a href="#15.3.4">15.3.4 Do a generic transformation<br /></a>
+<a href="#15.3.5">15.3.5 Add a Voronoi diagram<br /></a>
+<a href="#15.3.6">15.3.6 Add a fbm<br /></a>
+<a href="#15.3.7">15.3.7 Scale with a fbm<br /></a>
+<a href="#15.3.8">15.3.8 Dig along a Bezier curve<br /></a>
+<br />
+<a name="15.3.1"></a><h4>15.3.1 Add hills</h4>
+This function adds a hill (a half spheroid) at given position.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::addHill(float x, float y, float radius, float height)
+C   : void TCOD_heightmap_add_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>x,y</td><td>Coordinates of the center of the hill.<br />0 &lt;= x &lt; map width<br />0 &lt;= y &lt; map height</td></tr>
+<tr><td>radius</td><td>The hill radius.</td></tr>
+<tr><td>height</td><td>The hill height. If height == radius or -radius, the hill is a half-sphere.</td></tr>
+</table>
+<hr />
+<a name="15.3.2"></a><h4>15.3.2 Dig hills</h4>
+This function takes the highest value (if height &gt; 0) or the lowest (if height &lt; 0) between the map and the hill.<br />
+It's main goal is to carve things in maps (like rivers) by digging hills along a curve.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::digHill(float hx, float hy, float hradius, float height)
+C   : void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>x,y</td><td>Coordinates of the center of the hill.<br />0 &lt;= x &lt; map width<br />0 &lt;= y &lt; map height</td></tr>
+<tr><td>radius</td><td>The hill radius.</td></tr>
+<tr><td>height</td><td>The hill height. Can be &lt; 0 or &gt; 0</td></tr>
+</table>
+<hr />
+<a name="15.3.3"></a><h4>15.3.3 Simulate rain erosion</h4>
+This function simulates the effect of rain drops on the terrain, resulting in erosion patterns.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::rainErosion(int nbDrops,float erosionCoef,float sedimentationCoef,TCODRandom *rnd)
+C   : void TCOD_heightmap_rain_erosion(TCOD_heightmap_t *hm, int nbDrops,float erosionCoef,float sedimentationCoef,TCOD_random_t rnd)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>nbDrops</td><td>Number of rain drops to simulate. Should be at least width * height.</td></tr>
+<tr><td>erosionCoef</td><td>Amount of ground eroded on the drop's path.</td></tr>
+<tr><td>sedimentationCoef</td><td>Amount of ground deposited when the drops stops to flow</td></tr>
+<tr><td>rnd</td><td>RNG to use, NULL for default generator.</td></tr>
+</table>
+<hr />
+<a name="15.3.4"></a><h4>15.3.4 Do a generic transformation</h4>
+This function allows you to apply a generic transformation on the map, so that each resulting cell value is the weighted sum of several neighbour cells. This can be used to smooth/sharpen the map.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
+C   : void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>kernelSize</td><td>Number of neighbour cells involved.</td></tr>
+<tr><td>dx,dy</td><td>Array of kernelSize cells coordinates. The coordinates are relative to the current cell (0,0) is current cell, (-1,0) is west cell, (0,-1) is north cell, (1,0) is east cell, (0,1) is south cell, ...</td></tr>
+<tr><td>weight</td><td>Array of kernelSize cells weight. The value of each neighbour cell is scaled by its corresponding weight</td></tr>
+<tr><td>minLevel</td><td>The transformation is only applied to cells which value is &gt;= minLevel.</td></tr>
+<tr><td>maxLevel</td><td>The transformation is only applied to cells which value is &lt;= maxLevel.</td></tr>
+</table>
+<hr />
+<a name="15.3.5"></a><h4>15.3.5 Add a Voronoi diagram</h4>
+This function adds values from a <a href="http://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a> to the map.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd)
+C   : void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, float *coef,TCOD_random_t rnd)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>nbPoints</td><td>Number of Voronoi sites.</td></tr>
+<tr><td>nbCoef</td><td>The diagram value is calculated from the nbCoef closest sites.</td></tr>
+<tr><td>coef</td><td>The distance to each site is scaled by the corresponding coef.<br />Closest site : coef[0], second closest site : coef[1], ...</td></tr>
+<tr><td>rnd</td><td>RNG to use, NULL for default generator.</td></tr>
+</table>
+<hr />
+<a name="15.3.6"></a><h4>15.3.6 Add a fbm</h4>
+This function adds values from a <a href="../noise/index.html">simplex fbm function</a> to the map.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+C   : void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>noise</td><td>The 2D noise to use.</td></tr>
+<tr><td>mulx, muly / addx, addy</td><td>The noise coordinate for map cell (x,y) are (x + addx)*mulx / width , (y + addy)*muly / height.<br />Those values allow you to scale and translate the noise function over the heightmap.</td></tr>
+<tr><td>octaves</td><td>Number of octaves in the fbm sum.</td></tr>
+<tr><td>delta / scale</td><td>The value added to the heightmap is delta + noise * scale.<br />noise is between -1.0 and 1.0</td></tr>
+</table>
+<hr />
+<a name="15.3.7"></a><h4>15.3.7 Scale with a fbm</h4>
+This function works exactly as the previous one, but it multiplies the resulting value instead of adding it to the heightmap.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+C   : void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+</pre></p>
+<hr />
+<a name="15.3.8"></a><h4>15.3.8 Dig along a Bezier curve</h4>
+This function carve a path along a cubic <a href="http://en.wikipedia.org/wiki/Bezier_curve">Bezier curve</a> using the <a href="#15.3.2">digHill</a> function.<br />Could be used for roads/rivers/...<br />
+Both radius and depth can vary linearly along the path.<br />
+<p class="code"><pre>
+C++ : void TCODHeightmap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
+C   : void TCOD_heightmap_dig_bezier(TCOD_heightmap_t *hm, int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>hm</td><td>In the C version, the address of the heightmap struct returned by the <a href="heightmap_init.html">creation function</a>.</td></tr>
+<tr><td>px,py</td><td>The coordinates of the 4 Bezier control points.</td></tr>
+<tr><td>startRadius</td><td>The path radius in map cells at point P0. Might be &lt; 1.0</td></tr>
+<tr><td>startDepth</td><td>The path depth at point P0.</td></tr>
+<tr><td>endRadius</td><td>The path radius in map cells at point P3. Might be &lt; 1.0</td></tr>
+<tr><td>endDepth</td><td>The path depth at point P3.</td></tr>
+</table>
+<hr />
+

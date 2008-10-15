@@ -1,6 +1,6 @@
 /*
-* libtcod 1.3.2
-* Copyright (c) 2007,2008 J.C.Wilk
+* libtcod 1.4.0
+* Copyright (c) 2008 J.C.Wilk
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -35,9 +35,9 @@
 
 // what string
 #if defined( VISUAL_STUDIO ) || defined( BORLANDC )
-static const char *version_string ="@(#) libtcod 1.3.2";
+static const char *version_string ="libtcod 1.4.0";
 #else
-static const char *version_string __attribute__((unused)) ="@(#) libtcod 1.3.2";
+static const char *version_string __attribute__((unused)) ="libtcod 1.4.0";
 #endif
 
 static bool windowClosed=false;
@@ -46,7 +46,6 @@ static TCOD_console_t root = NULL;
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER];
 static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER];
 
-static bool fade_changed=true;
 static TCOD_color_t fading_color={0,0,0};
 static uint8 fade=255;
 
@@ -104,7 +103,6 @@ void TCOD_console_set_fullscreen(bool fullscreen) {
 	TCOD_console_data_t *dat=(TCOD_console_data_t *)(root);
 	TCOD_sys_set_fullscreen(fullscreen);
 	dat->fullscreen=fullscreen;
-	fade_changed=true; // to redraw all screen
 }
 
 bool TCOD_console_is_fullscreen() {
@@ -137,74 +135,53 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 	for (cx = xSrc; cx < xSrc+wSrc; cx++) {
 		for (cy = ySrc; cy < ySrc+hSrc; cy++) {
 			char_t srcChar=src->buf[cy * src->w+cx];
-			int dx=cx-xSrc+xDst;
-			int dy=cy-ySrc+yDst;
-			char_t dstChar;
-			if ( fade_val == 255 ) {
-				dstChar=srcChar;
-			} else {
-				float ffade=(float)fade_val/255.0f;
-				dstChar=dst->buf[dy * dst->w + dx];
-
-				dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,ffade);
-				if ( srcChar.c == ' ' ) {
-					dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,ffade);
-				} else if (dstChar.c == ' ') {
-					dstChar.c=srcChar.c;
-					dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,ffade);
-				} else if (dstChar.c == srcChar.c) {
-					dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,ffade);
+			if (! src->haskey || srcChar.back.r != src->key.r
+				|| srcChar.back.g != src->key.g || srcChar.back.b != src->key.b ) {
+				int dx=cx-xSrc+xDst;
+				int dy=cy-ySrc+yDst;
+				char_t dstChar;
+				if ( fade_val == 255 ) {
+					dstChar=srcChar;
 				} else {
-					if ( fade_val < 128 ) {
-						dstChar.fore=TCOD_color_lerp(dstChar.fore,dstChar.back,
-							(float)(fade_val)/127);
-					} else {
+					float ffade=(float)fade_val/255.0f;
+					dstChar=dst->buf[dy * dst->w + dx];
+
+					dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,ffade);
+					if ( srcChar.c == ' ' ) {
+						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,ffade);
+					} else if (dstChar.c == ' ') {
 						dstChar.c=srcChar.c;
-						dstChar.fore=TCOD_color_lerp(dstChar.back,srcChar.fore,
-							(float)(fade_val-128)/127);
+						dstChar.cf=srcChar.cf;
+						dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,ffade);
+					} else if (dstChar.c == srcChar.c) {
+						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,ffade);
+					} else {
+						if ( fade_val < 128 ) {
+							dstChar.fore=TCOD_color_lerp(dstChar.fore,dstChar.back,
+								(float)(fade_val)/127);
+						} else {
+							dstChar.c=srcChar.c;
+							dstChar.cf=srcChar.cf;
+							dstChar.fore=TCOD_color_lerp(dstChar.back,srcChar.fore,
+								(float)(fade_val-128)/127);
+						}
 					}
 				}
+				dst->buf[dy * dst->w + dx] = dstChar;
 			}
-			dst->buf[dy * dst->w + dx] = dstChar;
 		}
 	}
 }
 
 
 void TCOD_console_flush() {
-	int x,y;
-	bool modif = false;
-	bool render;
 	TCOD_console_data_t *dat=(TCOD_console_data_t *)root;
-	if (! fade_changed) {
-		for (x = 0; x < dat->w && ! modif; x++) {
-			for (y = 0; y < dat->h && ! modif; y++) {
-				char_t *nc=&dat->buf[x+dat->w*y];
-				char_t *oc=&dat->oldbuf[x+dat->w*y];
-				if ( oc->c != nc->c
-					|| oc->fore.r != nc->fore.r
-					|| oc->fore.g != nc->fore.g
-					|| oc->fore.b != nc->fore.b
-					|| oc->back.r != nc->back.r
-					|| oc->back.g != nc->back.g
-					|| oc->back.b != nc->back.b
-					) {
-					modif=true;
-				}
-			}
-		}
-	}
-	render = ( fade_changed || modif );
-	if ( render ) {
-		memcpy(dat->oldbuf,dat->buf,sizeof(char_t)*
-			dat->w*dat->h);
-	}
-	TCOD_sys_flush(render);
-	fade_changed=false;
+	TCOD_sys_flush(true);
+	memcpy(dat->oldbuf,dat->buf,sizeof(char_t)*
+		dat->w*dat->h);
 }
 
 void TCOD_console_set_fade(uint8 val, TCOD_color_t fadecol) {
-	fade_changed=true;
 	fade=val;
 	fading_color=fadecol;
 }
@@ -222,7 +199,9 @@ void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_fl
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
+	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	dat->buf[ y * dat->w + x ].c = c;
+	dat->buf[ y * dat->w + x ].cf = ascii_to_tcod[c];
 	dat->buf[ y * dat->w + x ].fore=dat->fore;
 	TCOD_console_set_back(con,x,y,dat->back,(TCOD_bkgnd_flag_t)flag);
 }
@@ -237,6 +216,7 @@ void TCOD_console_clear(TCOD_console_t con) {
 			int off=x+dat->w*y;
 			dat->buf[off].dirt=0;
 			dat->buf[off].c=' ';
+			dat->buf[off].cf=ascii_to_tcod[' '];
 			dat->buf[off].fore=dat->fore;
 			dat->buf[off].back=dat->back;
 		}
@@ -253,6 +233,7 @@ void TCOD_console_set_fore(TCOD_console_t con,int x,int y, TCOD_color_t col) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
+	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	dat->buf[ y * dat->w + x ].fore=col;
 }
 TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y) {
@@ -276,6 +257,7 @@ void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TC
 	int alpha;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
+	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	back=&dat->buf[y*dat->w+x].back;
 	switch ( flag & 0xff ) {
 		case TCOD_BKGND_SET : *back = col; break;
@@ -370,7 +352,9 @@ void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
+	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	dat->buf[ y * dat->w + x ].c=c;
+	dat->buf[ y * dat->w + x ].cf = ascii_to_tcod[c];
 }
 
 static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, int *w, int *h) {
@@ -395,7 +379,10 @@ void TCOD_console_rect(TCOD_console_t con,int x,int y, int rw, int rh, bool clea
 	for (cx=x;cx < x+rw; cx++) {
 		for (cy=y;cy<y+rh;cy++) {
 			TCOD_console_set_back(con,cx,cy,dat->back,flag);
-			if ( clear ) dat->buf[cx + cy*dat->w].c=' ';
+			if ( clear ) {
+				dat->buf[cx + cy*dat->w].c=' ';
+				dat->buf[cx + cy*dat->w].cf=ascii_to_tcod[' '];
+			}
 		}
 	}
 }
@@ -458,10 +445,12 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
 	TCOD_console_put_char(con,x+w-1,y+h-1,TCOD_CHAR_SE,TCOD_BKGND_SET);
 	TCOD_console_hline(con,x+1,y,w-2, TCOD_BKGND_SET);
 	TCOD_console_hline(con,x+1,y+h-1,w-2, TCOD_BKGND_SET);
-	TCOD_console_vline(con,x,y+1,h-2, TCOD_BKGND_SET);
-	TCOD_console_vline(con,x+w-1,y+1,h-2, TCOD_BKGND_SET);
-	if ( empty ) {
-		TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,TCOD_BKGND_SET);
+	if ( h > 2 ) {
+		TCOD_console_vline(con,x,y+1,h-2, TCOD_BKGND_SET);
+		TCOD_console_vline(con,x+w-1,y+1,h-2, TCOD_BKGND_SET);
+		if ( empty ) {
+			TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,TCOD_BKGND_SET);
+		}
 	}
 	if (fmt) {
 		va_list ap;
@@ -580,6 +569,7 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 	do {
 		// get \n delimited sub-message
 		char *end=strchr(c,'\n');
+		char bak=0;
 		int cl;
 		char *split=NULL;
 		TCOD_color_t oldFore=dat->fore;
@@ -604,17 +594,20 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 				}
 			}
 			if ( split ) {
+				char *oldsplit=split;
 				while ( ! isspace(*split) && split > c ) split --;
-				if ( isspace(*split) ) {
-					*split=0;
-					if (end) *end='\n';
-					end=split;
-					cl=TCOD_console_stringLength(c);
-					switch (align) {
-						case LEFT : cx=x; break;
-						case RIGHT : cx=x-cl+1; break;
-						case CENTER : cx= x-cl/2;break;
-					}
+				if (end) *end='\n';
+				if (!isspace(*split) ) {
+					split=oldsplit;
+				}
+				end=split;
+				bak=*split;
+				*split=0;
+				cl=TCOD_console_stringLength(c);
+				switch (align) {
+					case LEFT : cx=x; break;
+					case RIGHT : cx=x-cl+1; break;
+					case CENTER : cx= x-cl/2;break;
 				}
 			}
 			if ( cx < minx ) {
@@ -656,7 +649,12 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 		}
 		if ( end ) {
 			// next line
-			c=end+1;
+			if ( split && ! isspace(bak) ) {
+				*end=bak;
+				c=end;
+			} else {
+				c=end+1;
+			}
 			cy++;
 		} else c=NULL;
 	} while ( c && cy < dat->h && (rh == 0 || cy < y+rh) );
@@ -669,7 +667,6 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen) {
 	con->w=w;
 	con->h=h;
 	root=con;
-	fade_changed=false;
 	for (i=0; i < TCOD_COLCTRL_NUMBER; i++) {
 		color_control_fore[i]=TCOD_white;
 		color_control_back[i]=TCOD_black;
@@ -679,6 +676,7 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen) {
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	TCOD_console_data_t *dat;
+	int i;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
 	dat->fore=TCOD_white;
@@ -687,12 +685,14 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	dat->fullscreen=fullscreen;
 	dat->windowed=(title != NULL);
 	dat->buf = (char_t *)calloc(sizeof(char_t),dat->w*dat->h);
-	memset(dat->buf,0,sizeof(char_t)*dat->w*dat->h);
 	dat->oldbuf = (char_t *)calloc(sizeof(char_t),dat->w*dat->h);
-	memset(dat->oldbuf,0,sizeof(char_t)*dat->w*dat->h);
+	for (i=0; i< dat->w*dat->h; i++) {
+		dat->buf[i].c=' ';
+		dat->buf[i].cf=ascii_to_tcod[' '];
+	}
 	windowClosed = false;
 	if ( title ) {
-		if (! TCOD_sys_init(dat->w,dat->h,dat->buf,fullscreen) ) return false;
+		if (! TCOD_sys_init(dat->w,dat->h,dat->buf,dat->oldbuf,fullscreen) ) return false;
 		TCOD_sys_set_window_title(title);
 	}
 	return true;
@@ -749,8 +749,36 @@ char_t *TCOD_console_get_buf(TCOD_console_t con) {
 	return dat->buf;
 }
 
-void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int nb_char_horiz, int nb_char_vertic, bool chars_by_row, TCOD_color_t key_color) {
-	TCOD_sys_set_custom_font(fontFile, char_width, char_height, nb_char_horiz, nb_char_vertic, chars_by_row, key_color);
+void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int flags) {
+	TCOD_sys_set_custom_font(fontFile, char_width, char_height, flags);
+}
+
+void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
+	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
+}
+
+void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
+	int c;
+	for (c=asciiCode; c < asciiCode+nbCodes; c++ ) {
+		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
+		fontCharX++;
+		if ( fontCharX == fontNbCharHoriz ) {
+			fontCharX=0;
+			fontCharY++;
+		}
+	}
+}
+
+void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
+	while (*s) {
+		TCOD_console_map_ascii_code_to_font(*s, fontCharX, fontCharY);
+		fontCharX++;
+		if ( fontCharX == fontNbCharHoriz ) {
+			fontCharX=0;
+			fontCharY++;
+		}
+		s++;
+	}
 }
 
 void TCOD_console_set_keyboard_repeat(int initial_delay, int interval) {
@@ -764,3 +792,151 @@ void TCOD_console_disable_keyboard_repeat() {
 bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 	return TCOD_sys_is_key_pressed(key);
 }
+void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
+	TCOD_console_data_t *dat;
+	if (! con ) con=root;
+	dat=(TCOD_console_data_t *)con;
+	dat->key = col;
+	dat->haskey=true;
+}
+
+void TCOD_console_credits() {
+	bool end=false;
+	int x=TCOD_console_get_width(NULL)/2-6;
+	int y=TCOD_console_get_height(NULL)/2;
+	int fade=260;
+	TCOD_sys_set_fps(25);
+	while (!end ) {
+		TCOD_key_t k;
+		end=TCOD_console_credits_render(x,y,false);
+		k=TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+		if ( fade == 260 && k.vk != TCODK_NONE ) {
+			fade -= 10;
+		}
+		TCOD_console_flush();
+		if ( fade < 260 ) {
+			fade -= 10;
+			TCOD_console_set_fade(fade,TCOD_black);
+			if ( fade == 0 ) end=true;
+		}
+	}
+	TCOD_console_set_fade(255,TCOD_black);
+	TCOD_sys_set_fps(0);
+}
+
+bool TCOD_console_credits_render(int x, int y, bool alpha) {
+	static char poweredby[128];
+	static float char_heat[128];
+	static int char_x[128];
+	static int char_y[128];
+	static bool init=false;
+	static int len,len1,cw,ch;
+	static float xstr;
+	static TCOD_color_t colmap[64];
+	static TCOD_color_t colmap_light[64];
+	static TCOD_noise_t noise;
+	static TCOD_color_t colkeys[4] = {
+		{255,255,204},
+		{255,204,0},
+		{255,102,0},
+		{102,153,255},
+	};
+	static TCOD_color_t colkeys_light[4] = {
+		{255,255,204},
+		{128,128,77},
+		{51,51,31},
+		{0,0,0},
+	};
+	static int colpos[4]={
+		0,21,42,63
+	};
+	int i,xc,yc;
+	float sparklex,sparkley,sparklerad,sparklerad2,noisex;
+
+	if (!init) {
+		// initialize all static data, colormaps, ...
+		int curx,cury;
+		xstr=-4.0f;
+		TCOD_color_gen_map(colmap,4,colkeys,colpos);
+		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
+		cury=y;
+		cw=TCOD_console_get_width(NULL);
+		ch=TCOD_console_get_height(NULL);
+		sprintf(poweredby,"Powered by\n%s",version_string);
+		len=strlen(poweredby);
+		len1=11; // sizeof "Powered by\n"
+		curx=x;
+		cury=y;
+		for (i=0; i < len ;i++) {
+			char_heat[i]=-1;
+			char_x[i]=curx;
+			char_y[i]=cury;
+			curx++;
+			if ( poweredby[i] == '\n' ) {
+				curx=x;
+				cury++;
+			}
+		}
+		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+		init=true;
+	}
+	// draw the text
+	for (i=0; i < len ;i++) {
+		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
+			int colidx=(int)(64*char_heat[i]);
+			TCOD_color_t col;
+			if ( colidx > 63 ) colidx=63;
+			col=colmap[colidx];
+			if ( xstr >= len  ) {
+				float coef=(xstr-len)/len;
+				if ( alpha ) {
+					TCOD_color_t fore=TCOD_console_get_back(NULL,char_x[i],char_y[i]);
+					int r=(int)(coef*fore.r + (1.0f-coef)*col.r);
+					int g=(int)(coef*fore.g + (1.0f-coef)*col.g);
+					int b=(int)(coef*fore.b + (1.0f-coef)*col.b);
+					col.r = CLAMP(0,255,r);
+					col.g = CLAMP(0,255,g);
+					col.b = CLAMP(0,255,b);
+					TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
+				} else {
+					col=TCOD_color_lerp(col,TCOD_black,coef);
+				}
+			}
+			TCOD_console_set_char(NULL,char_x[i],char_y[i],poweredby[i]);
+			TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
+		}
+	}
+	if ( xstr < (float)len1 ) {
+		sparklex=x+xstr;
+		sparkley=(float)y;
+	} else {
+		sparklex=x-len1+xstr;
+		sparkley=(float)y+1;
+	}
+	noisex=xstr*6;
+	sparklerad=3.0f+2*TCOD_noise_simplex(noise,&noisex);
+	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
+	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
+	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
+	sparklerad2=sparklerad*sparklerad;
+	// draw the light
+	for (xc=MAX(x-4,0); xc < MIN(x+len,cw-1); xc++) {
+		for (yc=MAX(y-4,0); yc < MAX(y+6,ch-1); yc++) {
+			float dist=((xc-sparklex)*(xc-sparklex)+(yc-sparkley)*(yc-sparkley));
+			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
+				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
+				TCOD_console_set_back(NULL,xc,yc,colmap_light[colidx],alpha ? TCOD_BKGND_ADD: TCOD_BKGND_SET);
+			} else {
+				TCOD_console_set_back(NULL,xc,yc,TCOD_black,alpha ? TCOD_BKGND_ADD: TCOD_BKGND_SET);
+			}
+		}
+	}
+	// update letters heat
+	xstr += TCOD_sys_get_last_frame_length() * 4;
+	for (i=0; i < (int)(xstr+0.5f); i++) {
+		char_heat[i]=(xstr-i)/(len/2);
+	}
+	return xstr > 2*len;
+}
+
+

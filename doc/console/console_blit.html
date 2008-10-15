@@ -64,3 +64,15 @@ C   : TCOD_console_t off1 = TCOD_console_new(80,50);
           TCOD_console_flush();
 	  }
 </pre></p>
+<br />
+<hr /><p class="code"><pre>
+C++ : void TCODConsole::setKeyColor(const TCODColor &col)
+C   : void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col)
+</pre></p>
+This function defines a transparent background color for an offscreen console. All cells with this background color are ignored by the blit operation. You can use it to blit only some parts of the console.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>con</td><td>In the C version, the offscreen console handler or NULL for the root console.</td></tr>
+<tr><td>col</td><td>The transparent background color.</td></tr>
+</table>
+

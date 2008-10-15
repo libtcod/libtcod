@@ -199,7 +199,7 @@ void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_fl
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
-	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
+	if ( (unsigned)(x) >= dat->w || (unsigned)(y) >= dat->h ) return;
 	dat->buf[ y * dat->w + x ].c = c;
 	dat->buf[ y * dat->w + x ].cf = ascii_to_tcod[c];
 	dat->buf[ y * dat->w + x ].fore=dat->fore;
@@ -233,7 +233,7 @@ void TCOD_console_set_fore(TCOD_console_t con,int x,int y, TCOD_color_t col) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
-	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
+	if ( (unsigned)(x) >= dat->w || (unsigned)(y) >= dat->h ) return;
 	dat->buf[ y * dat->w + x ].fore=col;
 }
 TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y) {
@@ -257,7 +257,7 @@ void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TC
 	int alpha;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
-	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
+	if ( (unsigned)(x) >= dat->w || (unsigned)(y) >= dat->h ) return;
 	back=&dat->buf[y*dat->w+x].back;
 	switch ( flag & 0xff ) {
 		case TCOD_BKGND_SET : *back = col; break;
@@ -352,7 +352,7 @@ void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
-	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
+	if ( (unsigned)(x) >= dat->w || (unsigned)(y) >= dat->h ) return;
 	dat->buf[ y * dat->w + x ].c=c;
 	dat->buf[ y * dat->w + x ].cf = ascii_to_tcod[c];
 }
@@ -599,7 +599,7 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 				if (end) *end='\n';
 				if (!isspace(*split) ) {
 					split=oldsplit;
-				}
+				} 
 				end=split;
 				bak=*split;
 				*split=0;
@@ -754,13 +754,13 @@ void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_
 }
 
 void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
-	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
+	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY); 
 }
 
 void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
 	int c;
 	for (c=asciiCode; c < asciiCode+nbCodes; c++ ) {
-		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
+		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY); 
 		fontCharX++;
 		if ( fontCharX == fontNbCharHoriz ) {
 			fontCharX=0;

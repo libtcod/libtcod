@@ -3,6 +3,8 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.4.2 : ??
++ added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
 1.4.1 : 2009 Mar 22
 X Default colors have been changed/added. 
 X TCODMap::computeFov changed to support several algorithms :

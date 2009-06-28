@@ -32,12 +32,13 @@ C   : void TCOD_list_set(TCOD_list_t l,const void *elt, int idx)
 Example :<br />
 <p class="code"><pre>
 C++ : TCODList&lt;int&gt; intList; // the array is empty (contains 0 elements)
-      intList.set(0,5); // the array contains 1 element at position 0, value = 5
-      intList.set(2,7); // the array contains 3 elements : 5, 0, 7
+      intList.set(5,0); // the array contains 1 element at position 0, value = 5
+      intList.set(7,2); // the array contains 3 elements : 5, 0, 7
 C   : TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)5);
-      TCOD_list_set(intList,0,(const void *)7);
-</pre></p><br /><hr />
+      TCOD_list_set(intList,(const void *)5,0);
+      TCOD_list_set(intList,(const void *)7,2);
+</pre></p>
+<br /><hr />
 You can retrieve a value with get.<br />
 <p class="code"><pre>
 C++ : template &lt;class T&gt; T TCODList::get(int idx) const
@@ -52,12 +53,13 @@ C   : void * TCOD_list_get(TCOD_list_t l,int idx)
 Example :<br />
 <p class="code"><pre>
 C++ : TCODList&lt;int&gt; intList;
-      intList.set(0,5);
+      intList.set(5,0);
       int val = intList.get(0); // val == 5
 C   : TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)5);
+      TCOD_list_set(intList,(const void *)5,0);
       int val = (int)TCOD_list_get(intList,0); /* val == 5 */
-</pre></p><br /><hr />
+</pre></p>
+<br /><hr />
 You can check if an array is empty with :<br />
 <p class="code"><pre>
 C++ : template &lt;class T&gt; bool TCODList::isEmpty() const
@@ -72,11 +74,11 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODList&lt;int&gt; intList;
       bool empty=intList.isEmpty(); // empty == true
-      intList.set(0,3);
+      intList.set(3,0);
       empty=intList.isEmpty(); // empty == false
 C   : TCOD_list_t intList = TCOD_list_new();
       bool empty=TCOD_list_is_empty(intList); /* empty == true */
-      TCOD_list_set(intList,0,(const void *)5);
+      TCOD_list_set(intList,(const void *)5,0);
       empty=TCOD_list_is_empty(intList); /* empty == false */
 </pre></p>
 <br /><hr />
@@ -94,11 +96,11 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODList&lt;int&gt; intList;
       int size=intList.size(); // size == 0
-      intList.set(0,3);
+      intList.set(3,0);
       size=intList.size(); // size == 1
 C   : TCOD_list_t intList = TCOD_list_new();
       int size=TCOD_list_size(intList); /* size == 0 */
-      TCOD_list_set(intList,0,(const void *)5);
+      TCOD_list_set(intList,(const void *)5,0);
       size=TCOD_list_size(intList); /* size == 1 */
 </pre></p>
 <br /><hr />
@@ -116,11 +118,11 @@ C   : bool TCOD_list_contains(TCOD_list_t l,const void * elt)
 Example :<br />
 <p class="code"><pre>
 C++ : TCODList&lt;int&gt; intList;
-      intList.set(0,3);
+      intList.set(3,0);
       bool has3 = intList.contains(3); // has3 == true
       bool has4 = intList.contains(4); // has4 == false
 C   : TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)3);
+      TCOD_list_set(intList,(const void *)3,0);
       bool has3 = TCOD_list_contains(intList,(const void *)3); /* has3 == true */
       bool has4 = TCOD_list_contains(intList,(const void *)4); /* has4 == false */
 </pre></p>

@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.1
+* libtcod 1.4.2
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
@@ -85,6 +85,7 @@ void TCOD_map_compute_fov(TCOD_map_t map, int player_x, int player_y, int max_ra
     case FOV_PERMISSIVE_8 : 
 	TCOD_map_compute_fov_permissive2(map,player_x,player_y,max_radius,light_walls, algo-FOV_PERMISSIVE_0); 
 	break;
+	case FOV_RESTRICTIVE : TCOD_map_compute_fov_restrictive_shadowcasting(map,player_x,player_y,max_radius,light_walls); break;
     default:break;
   }
 }

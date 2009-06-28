@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.1
+* libtcod 1.4.2
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
@@ -201,9 +201,12 @@ void TCOD_sys_load_font() {
 		if ( fontTcodLayout ) {
 			keyx = fontWidth/2;
 			keyy = fontHeight/2;
-		} else {
-			keyx = ((int)(' ') % fontNbCharHoriz ) * fontWidth + fontWidth/2;
+		} else if (fontInRow) {
+			keyx = ((int)(' ') % fontNbCharVertic ) * fontWidth + fontWidth/2;
 			keyy = ((int)(' ') / fontNbCharVertic ) * fontHeight + fontHeight/2;
+		} else {
+			keyx = ((int)(' ') / fontNbCharVertic ) * fontWidth + fontWidth/2;
+			keyy = ((int)(' ') % fontNbCharVertic ) * fontHeight + fontHeight/2;
 		}
 		pixel=(Uint8 *)(charmap->pixels) + keyy * charmap->pitch + keyx * charmap->format->BytesPerPixel;
 		fontKeyCol.r=*((pixel)+charmap->format->Rshift/8);

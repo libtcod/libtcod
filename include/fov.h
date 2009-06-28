@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.1
+* libtcod 1.4.2
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
@@ -34,6 +34,7 @@ typedef void *TCOD_map_t;
 // FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html
 // FOV_SHADOW : http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
 // FOV_PERMISSIVE : http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
+// FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
 
 typedef enum {
 	FOV_BASIC,
@@ -48,6 +49,7 @@ typedef enum {
 	FOV_PERMISSIVE_6,
 	FOV_PERMISSIVE_7,
 	FOV_PERMISSIVE_8,
+	FOV_RESTRICTIVE,
 	NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
 

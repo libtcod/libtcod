@@ -1,4 +1,4 @@
-This is the Doryen library 1.4.1 source code.
+This is the Doryen library 1.4.2 source code.
 
 libtcod.h and libtcod.hpp are the main headers, included respectively by the C and C++ programs that use libtcod. All what they do is to include the other headers.
 

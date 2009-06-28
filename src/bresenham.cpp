@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.1
+* libtcod 1.4.2
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *

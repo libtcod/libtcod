@@ -1,5 +1,5 @@
 #
-# libtcod 1.4.1 python wrapper
+# libtcod 1.4.2 python wrapper
 # Copyright (c) 2008 Jice
 # All rights reserved.
 #
@@ -34,9 +34,9 @@ if sys.platform.find('linux') != -1:
 else: 
     _lib = ctypes.cdll['./libtcod-mingw.dll']
 
-HEXVERSION = 0x010401
-STRVERSION = "1.4.1"
-TECHVERSION = 0x01040104
+HEXVERSION = 0x010402
+STRVERSION = "1.4.2"
+TECHVERSION = 0x01040200
 
 ############################
 # color module
@@ -1027,7 +1027,8 @@ FOV_PERMISSIVE_5 = 8
 FOV_PERMISSIVE_6 = 9
 FOV_PERMISSIVE_7 = 10
 FOV_PERMISSIVE_8 = 11
-NB_FOV_ALGORITHMS = 12
+FOV_RESTRICTIVE = 12
+NB_FOV_ALGORITHMS = 13
 
 def FOV_PERMISSIVE(p) :
     return FOV_PERMISSIVE_0+p
@@ -1044,7 +1045,7 @@ def map_set_properties(m, x, y, isTrans, isWalk):
 def map_clear(m):
     _lib.TCOD_map_clear(m)
     
-def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_BASIC ):
+def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_RESTRICTIVE ):
     _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_uint(light_walls), c_int(algo))
     
 def map_is_in_fov(m, x, y):

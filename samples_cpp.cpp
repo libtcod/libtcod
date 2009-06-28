@@ -398,7 +398,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 	static int algonum=0;
 	static const char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ",
 		"PERMISSIVE0","PERMISSIVE1","PERMISSIVE2","PERMISSIVE3","PERMISSIVE4",
-		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8"};
+		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8","RESTRICTIVE"};
 	static float torchx=0.0f; // torch light position in the perlin noise
 	if ( ! map) {
 		// initialize the map for the fov toolkit
@@ -465,19 +465,15 @@ void render_fov(bool first, TCOD_key_t*key) {
 				} else {
 					// torch flickering fx
 					TCODColor base=(wall ? darkWall : darkGround);
-					TCODColor light=(wall ? lightWall : lightGround);
+					light=(wall ? lightWall : lightGround);
 					// cell distance to torch (squared)
 					float r=(float)((x-px+dx)*(x-px+dx)+(y-py+dy)*(y-py+dy));
 					if ( r < SQUARED_TORCH_RADIUS ) {
 						// l = 1.0 at player position, 0.0 at a radius of 10 cells
 						float l = (SQUARED_TORCH_RADIUS-r)/SQUARED_TORCH_RADIUS +di;
-						// clamp between 0 and 1
-						if (l  < 0.0f ) l=0.0f;
-						else if ( l> 1.0f ) l =1.0f;
+						l=CLAMP(0.0f,1.0f,l);
 						// interpolate the color
-						base.r = (uint8)(base.r + (light.r-base.r)*l);
-						base.g = (uint8)(base.g + (light.g-base.g)*l);
-						base.b = (uint8)(base.b + (light.b-base.b)*l);
+						base = TCODColor::lerp(base,light,l);
 					}
 					light=base;
 				}

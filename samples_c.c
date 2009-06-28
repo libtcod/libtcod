@@ -408,7 +408,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 	static int algonum=0;
 	static char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ", 
 		"PERMISSIVE0","PERMISSIVE1","PERMISSIVE2","PERMISSIVE3","PERMISSIVE4",
-		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8"};
+		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8", "RESTRICTIVE"};
 	static float torchx=0.0f; /* torch light position in the perlin noise */
 	int x,y;
 	/* torch position & intensity variation */
@@ -477,11 +477,8 @@ void render_fov(bool first, TCOD_key_t*key) {
 					float r=(x-px+dx)*(x-px+dx)+(y-py+dy)*(y-py+dy); /* cell distance to torch (squared) */
 					if ( r < SQUARED_TORCH_RADIUS ) {
 						float l = (SQUARED_TORCH_RADIUS-r)/SQUARED_TORCH_RADIUS+di;
-						if (l  < 0.0f ) l=0.0f;
-						else if ( l> 1.0f ) l =1.0f;
-						base.r = (uint8)(base.r + (light.r-base.r)*l);
-						base.g = (uint8)(base.g + (light.g-base.g)*l);
-						base.b = (uint8)(base.b + (light.b-base.b)*l);
+						l=CLAMP(0.0f,1.0f,l);
+						base=TCOD_color_lerp(base,light,l);
 					}
 					TCOD_console_set_back(sample_console,x,y,base,TCOD_BKGND_SET);
 				}

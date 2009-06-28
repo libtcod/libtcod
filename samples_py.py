@@ -466,7 +466,7 @@ fov_light_walls = True
 fov_algo_num = 0
 fov_algo_names = ['BASIC      ','DIAMOND    ', 'SHADOW     ',
    'PERMISSIVE0','PERMISSIVE1','PERMISSIVE2','PERMISSIVE3','PERMISSIVE4',
-   'PERMISSIVE5','PERMISSIVE6','PERMISSIVE7','PERMISSIVE8']
+   'PERMISSIVE5','PERMISSIVE6','PERMISSIVE7','PERMISSIVE8','RESTRICTIVE']
 def render_fov(first, key):
     global fov_px, fov_py, fov_map, fov_dark_wall, fov_light_wall
     global fov_dark_ground, fov_light_ground

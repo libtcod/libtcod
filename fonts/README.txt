@@ -1,4 +1,4 @@
-This directory contains antialiased fonts for libtcod 1.4.1.
+This directory contains antialiased fonts for libtcod.
 These fonts are in public domain. 
 
 The file names are composed with :

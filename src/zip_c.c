@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.1
+* libtcod 1.4.2
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
@@ -45,7 +45,7 @@ TCOD_zip_t TCOD_zip_new() {
 
 void TCOD_zip_delete(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
-	TCOD_list_delete(zip->buffer);
+	if ( zip->buffer != NULL ) TCOD_list_delete(zip->buffer);
 	free(zip);
 }
 

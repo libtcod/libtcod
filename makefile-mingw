@@ -48,6 +48,7 @@ LIBOBJS= \
 	$(TEMP)/libtcod/fov_digital.o \
 	$(TEMP)/libtcod/fov_recursive_shadowcasting.o \
 	$(TEMP)/libtcod/fov_permissive2.o \
+	$(TEMP)/libtcod/fov_restrictive.o \
 	$(TEMP)/libtcod/heightmap.o \
 	$(TEMP)/libtcod/heightmap_c.o \
 	$(TEMP)/libtcod/image.o \

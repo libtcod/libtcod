@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -131,11 +131,13 @@ TCODLIB_API void TCOD_parser_delete(TCOD_parser_t parser);
 TCODLIB_API void TCOD_parser_error(const char *msg, ...);
 /* default parser listener */
 TCODLIB_API bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name);
+TCODLIB_API int TCOD_parser_get_char_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API float TCOD_parser_get_float_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API const char * TCOD_parser_get_string_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name);
+TCODLIB_API void TCOD_parser_get_dice_property_py(TCOD_parser_t parser, const char *name, TCOD_dice_t *dice);
 TCODLIB_API void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type);
 

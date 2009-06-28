@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -101,12 +101,12 @@ typedef enum {
 typedef struct {
 	TCOD_keycode_t vk; /*  key code */
 	char c; /* character if vk == TCODK_CHAR else 0 */
-	unsigned pressed : 1; /* does this correspond to a key press or key release event ? */
-	unsigned lalt : 1;
-	unsigned lctrl : 1;
-	unsigned ralt : 1;
-	unsigned rctrl : 1;
-	unsigned shift : 1;
+	unsigned pressed :1; /* does this correspond to a key press or key release event ? */
+	unsigned lalt :1;
+	unsigned lctrl :1;
+	unsigned ralt :1;
+	unsigned rctrl :1;
+	unsigned shift :1;
 } TCOD_key_t;
 
 enum {
@@ -129,11 +129,11 @@ enum {
 	TCOD_CHAR_DNW=201, 
 	TCOD_CHAR_DSE=188, 
 	TCOD_CHAR_DSW=200,
-	TCOD_CHAR_DTEEW=181, 
-	TCOD_CHAR_DTEEE=198, 
-	TCOD_CHAR_DTEEN=208,
-	TCOD_CHAR_DTEES=210,
-	TCOD_CHAR_DCROSS=213,
+	TCOD_CHAR_DTEEW=185, 
+	TCOD_CHAR_DTEEE=204, 
+	TCOD_CHAR_DTEEN=202,
+	TCOD_CHAR_DTEES=203,
+	TCOD_CHAR_DCROSS=206,
 	// blocks	
 	TCOD_CHAR_BLOCK1=176, 
 	TCOD_CHAR_BLOCK2=177, 
@@ -204,11 +204,11 @@ enum {
 
 // custom font flags
 enum {
-	TCOD_FONT_LAYOUT_ASCII_INCOL=0,
-	TCOD_FONT_LAYOUT_ASCII_INROW=1,
-	TCOD_FONT_TYPE_GREYSCALE=2,
-	TCOD_FONT_TYPE_GRAYSCALE=2,
-	TCOD_FONT_LAYOUT_TCOD=4,
+	TCOD_FONT_LAYOUT_ASCII_INCOL=1,
+	TCOD_FONT_LAYOUT_ASCII_INROW=2,
+	TCOD_FONT_TYPE_GREYSCALE=4,
+	TCOD_FONT_TYPE_GRAYSCALE=4,
+	TCOD_FONT_LAYOUT_TCOD=8,
 };
 
 typedef void * TCOD_console_t;
@@ -219,7 +219,7 @@ TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
 TCODLIB_API bool TCOD_console_is_fullscreen();
 TCODLIB_API bool TCOD_console_is_window_closed();
 
-TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile,int char_width, int char_height, int flags);
+TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic);
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
@@ -238,6 +238,9 @@ TCODLIB_API void TCOD_console_print_center(TCOD_console_t con,int x, int y, TCOD
 TCODLIB_API int TCOD_console_print_left_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 TCODLIB_API int TCOD_console_print_right_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 TCODLIB_API int TCOD_console_print_center_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+TCODLIB_API int TCOD_console_height_left_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_height_right_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_height_center_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
 
 TCODLIB_API void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);

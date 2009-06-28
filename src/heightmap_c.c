@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -30,8 +30,6 @@
 #include "libtcod.h"
 
 #define GET_VALUE(hm,x,y) (hm)->values[(x)+(y)*(hm)->w]
-static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset);
-static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, int y, int initsz, int sz,float offset);
 
 TCOD_heightmap_t *TCOD_heightmap_new(int w,int h) {
 	TCOD_heightmap_t *hm=(TCOD_heightmap_t *)malloc(sizeof(TCOD_heightmap_t));
@@ -47,6 +45,10 @@ void TCOD_heightmap_delete(TCOD_heightmap_t *hm) {
 
 void TCOD_heightmap_clear(TCOD_heightmap_t *hm) {
 	memset(hm->values,0,hm->w*hm->h*sizeof(float));
+}
+
+float TCOD_heightmap_get_value(const TCOD_heightmap_t *hm, int x, int y) {
+	return GET_VALUE(hm,x,y);
 }
 
 void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *max) {
@@ -218,7 +220,9 @@ void TCOD_heightmap_dig_bezier(TCOD_heightmap_t *hm, int px[4], int py[4], float
 		xTo=(int)(px[0]*it*it*it + 3*px[1]*t*it*it + 3*px[2]*t*t*it + px[3]*t*t*t);
 		yTo=(int)(py[0]*it*it*it + 3*py[1]*t*it*it + 3*py[2]*t*t*it + py[3]*t*t*t);
 		if ( xTo != xFrom || yTo != yFrom ) {
-			float radius=startRadius+(endRadius-startRadius)*t;			float depth=startDepth+(endDepth-startDepth)*t;			TCOD_heightmap_dig_hill(hm,(float)xTo,(float)yTo,radius,depth);
+			float radius=startRadius+(endRadius-startRadius)*t;
+			float depth=startDepth+(endDepth-startDepth)*t;
+			TCOD_heightmap_dig_hill(hm,(float)xTo,(float)yTo,radius,depth);
 			xFrom=xTo;
 			yFrom=yTo;
 		}
@@ -353,17 +357,23 @@ void TCOD_heightmap_rain_erosion(TCOD_heightmap_t *hm, int nbDrops,float erosion
 				}
 			}
 			if ( slope > 0.0f ) {
-				GET_VALUE(hm,curx,cury) *= 1.0f - (erosionCoef * slope);
+//				GET_VALUE(hm,curx,cury) *= 1.0f - (erosionCoef * slope);
+				GET_VALUE(hm,curx,cury) -= erosionCoef * slope;
 				curx=nextx;
 				cury=nexty;
 				sediment+=slope;
 			} else {
-				GET_VALUE(hm,curx,cury) *= 1.0f + (agregationCoef*sediment);
+//				GET_VALUE(hm,curx,cury) *= 1.0f + (agregationCoef*sediment);
+				GET_VALUE(hm,curx,cury) += agregationCoef*sediment;
 			}
 		} while ( slope > 0.0f );
 		nbDrops--;
 	}
 }
+
+#if 0
+static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset);
+static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, int y, int initsz, int sz,float offset);
 
 void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope,float erosionCoef,float agregationCoef,TCOD_random_t rnd) {
 	int x;
@@ -399,6 +409,7 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 		nbPass--;
 	}
 }
+#endif
 
 void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel) {
 	int x,y;
@@ -406,7 +417,7 @@ void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *
 		int offset=x;
 		for (y=0; y < hm->h; y++) {
 			if ( hm->values[offset] >= minLevel && hm->values[offset] <= maxLevel ) {
-				float val=hm->values[offset];
+				float val=0.0f;
 				float totalWeight=0.0f;
 				int i;
 				for (i=0; i < kernelsize; i++ ) {
@@ -464,6 +475,7 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, 
 	free(pt);
 }
 
+#if 0
 void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rnd) {
 	int step = 1;
 	float offset = 1.0f;
@@ -538,5 +550,5 @@ static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, in
 	z /= count;
 	setMPDHeight(hm,rnd,x,y,z,offset);
 }
-
+#endif
 

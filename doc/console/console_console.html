@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : TCODConsole::TCODConsole(int w, int h)
 C   : TCOD_console_t TCOD_console_new(int w, int h)
+Py  : console_new(w,h)
 </pre></p>
 You can create as many off-screen consoles as you want by using this function. You can draw on them as you would do with the root console, but you cannot flush them to the screen. Else, you can blit them on other consoles, including the root console. See <a href="console_blit.html">blit</a>. The C version of this function returns a console handler that you can use in most <a href="console_drawing.html">console drawing functions</a>.<br />
 <table class="param">
@@ -36,4 +37,8 @@ C   : TCOD_console_t offscreen_console = TCOD_console_new(40,20);
       TCOD_console_set_background_color(offscreen_console,TCOD_red);
       TCOD_console_clear(offscreen_console);
       TCOD_console_blit(offscreen_console,0,0,40,20,NULL,5,5,255);
+Py  : offscreen_console = libtcod.console_new(40,20)
+      libtcod.console_set_background_color(offscreen_console,libtcod.red)
+      libtcod.console_clear(offscreen_console)
+      libtcod.console_blit(offscreen_console,0,0,40,20,0,5,5,255)
 </pre></p>

@@ -19,6 +19,7 @@ table.none td { border : 0 }
 Those functions initialize a noise generator from a number of dimensions (from 1 to 4), some fractal parameters and a random number generator.<br />
 <p class="code"><pre>
 C   : TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random)
+Py  : noise_new(dimensions, hurst=NOISE_DEFAULT_HURST, lacunarity=NOISE_DEFAULT_LACUNARITY, random=0)
 </pre></p>
 <br />
 <table class="param">
@@ -53,4 +54,11 @@ C   : /* 1 dimension generator */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,my_random);
       /* a 3D noise generator with a specific fractal parameters */
       TCOD_noise_t noise3d = TCOD_noise_new(3,0.7f, 1.4f,NULL);
+Py  : # 1 dimension generator 
+      noise1d = libtcod.noise_new(1)
+      # 2D noise with a predefined random number generator 
+      my_random = libtcod.random_new();
+      noise2d = libtcod.noise_new(2,libtcod.NOISE_DEFAULT_HURST, libtcod.NOISE_DEFAULT_LACUNARITY,my_random)
+      # a 3D noise generator with a specific fractal parameters 
+      noise3d = libtcod.noise_new(3, 0.7, 1.4)
 </pre></p>

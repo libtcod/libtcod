@@ -1,3 +1,8 @@
+/*
+ * libtcod CPP samples
+ * This code demonstrates various usages of libtcod modules
+ * It's in the public domain.
+ */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -141,9 +146,18 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 // ***************************
 // line drawing sample
 // ***************************
+static int bkFlag=TCOD_BKGND_SET; // current blending mode
+class LineListener : public TCODLineListener {
+	public :
+		bool putPoint(int x, int y) {
+			if ( x>= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
+				sampleConsole.setBack(x,y,TCODColor::lightBlue,(TCOD_bkgnd_flag_t)bkFlag);
+			}
+			return true;
+		}
+};
 void render_lines(bool first, TCOD_key_t*key) {
 	static TCODConsole bk(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT); // colored background
-	static int bkFlag=TCOD_BKGND_SET; // current blending mode
 	static bool init=false;
 	static const char *flagNames[]={
 		"TCOD_BKGND_NONE",
@@ -214,14 +228,8 @@ void render_lines(bool first, TCOD_key_t*key) {
 	int yd = (int)(SAMPLE_SCREEN_HEIGHT/2 - sinAngle * SAMPLE_SCREEN_WIDTH/2);
 
 	// render the line
-	int x=xo,y=yo;
-	TCODLine::init(x,y,xd,yd);
-	do {
-		if ( x>= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-			sampleConsole.setBack(x,y,TCODColor::lightBlue,(TCOD_bkgnd_flag_t)bkFlag);
-		}
-	} while ( ! TCODLine::step(&x,&y));
-
+	LineListener listener;
+	TCODLine::line(xo,yo,xd,yd,&listener);
 	// print the current flag
 	sampleConsole.printLeft(2,2,TCOD_BKGND_NONE,"%s (ENTER to change)",flagNames[bkFlag&0xff]);
 }
@@ -374,6 +382,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 		"########       #####      ####################",
 		"##############################################",
 	};
+
 	#define TORCH_RADIUS 10.0f
 	#define SQUARED_TORCH_RADIUS (TORCH_RADIUS*TORCH_RADIUS)
 	static int px=20,py=10; // player position
@@ -385,6 +394,11 @@ void render_fov(bool first, TCOD_key_t*key) {
 	static TCODColor darkGround(50,50,150);
 	static TCODColor lightGround(200,180,50);
 	static TCODNoise *noise=NULL;
+	static bool light_walls=true;
+	static int algonum=0;
+	static const char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ",
+		"PERMISSIVE0","PERMISSIVE1","PERMISSIVE2","PERMISSIVE3","PERMISSIVE4",
+		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8"};
 	static float torchx=0.0f; // torch light position in the perlin noise
 	if ( ! map) {
 		// initialize the map for the fov toolkit
@@ -406,8 +420,8 @@ void render_fov(bool first, TCOD_key_t*key) {
 		// draw the help text & player @
 		sampleConsole.clear();
 		sampleConsole.setForegroundColor(TCODColor::white);
-		sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s",
-			torch ? "off" : "on ");
+		sampleConsole.printLeft(1,0,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setForegroundColor(TCODColor::black);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
 		// draw windows
@@ -422,7 +436,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 	if ( recomputeFov ) {
 		// calculate the field of view from the player position
 		recomputeFov=false;
-		map->computeFov(px,py,torch ? (int)(TORCH_RADIUS) : 0);
+		map->computeFov(px,py,torch ? (int)(TORCH_RADIUS) : 0,light_walls,(TCOD_fov_algorithm_t)algonum);
 	}
 	// torch position & intensity variation
 	float dx=0.0f,dy=0.0f,di=0.0f;
@@ -445,8 +459,9 @@ void render_fov(bool first, TCOD_key_t*key) {
 			if (! visible ) {
 				sampleConsole.setBack(x,y,wall ? darkWall:darkGround,TCOD_BKGND_SET);
 			} else {
+				TCODColor light;
 				if ( !torch ) {
-					sampleConsole.setBack(x,y,wall ? lightWall : lightGround, TCOD_BKGND_SET );
+					light = wall ? lightWall : lightGround;
 				} else {
 					// torch flickering fx
 					TCODColor base=(wall ? darkWall : darkGround);
@@ -464,8 +479,9 @@ void render_fov(bool first, TCOD_key_t*key) {
 						base.g = (uint8)(base.g + (light.g-base.g)*l);
 						base.b = (uint8)(base.b + (light.b-base.b)*l);
 					}
-					sampleConsole.setBack(x,y,base,TCOD_BKGND_SET);
+					light=base;
 				}
+				sampleConsole.setBack(x,y,light, TCOD_BKGND_SET );
 			}
 		}
 	}
@@ -505,9 +521,24 @@ void render_fov(bool first, TCOD_key_t*key) {
 		// enable/disable the torch fx
 		torch=!torch;
 		sampleConsole.setForegroundColor(TCODColor::white);
-		sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s",
-			torch ? "off" : "on ");
+		sampleConsole.printLeft(1,0,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setForegroundColor(TCODColor::black);
+	} else if ( key->c == 'W' || key->c == 'w' ) {
+		light_walls=!light_walls;
+		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.printLeft(1,0,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+		sampleConsole.setForegroundColor(TCODColor::black);
+		recomputeFov=true;
+	} else if ( key->c == '+' || key->c == '-' ) {
+		algonum+= key->c == '+' ? 1 : -1;
+		algonum=CLAMP(0,NB_FOV_ALGORITHMS,algonum);
+		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.printLeft(1,0,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+		sampleConsole.setForegroundColor(TCODColor::black);
+		recomputeFov=true;
 	}
 }
 
@@ -520,6 +551,7 @@ void render_image(bool first, TCOD_key_t*key) {
 	static TCODColor green(0,255,0);
 	if ( img == NULL ) {
 		img=new TCODImage("skull.png");
+		img->setKeyColor(TCODColor::black);
 		circle=new TCODImage("circle.png");
 	}
 	if ( first ) {
@@ -552,9 +584,9 @@ void render_image(bool first, TCOD_key_t*key) {
 		circle->blitRect(&sampleConsole,0,3,-1,-1,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,15,3,-1,-1,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,30,3,-1,-1,TCOD_BKGND_SET);
-	}	
+	}
 	img->blit(&sampleConsole,x,y,
-		TCOD_BKGND_ADDALPHA(0.6f),scalex,scaley,angle);
+		TCOD_BKGND_SET,scalex,scaley,angle);
 }
 
 // ***************************
@@ -563,7 +595,7 @@ void render_image(bool first, TCOD_key_t*key) {
 void render_mouse(bool first, TCOD_key_t*key) {
   TCOD_mouse_t mouse;
   static bool lbut=false,rbut=false,mbut=false;
-  
+
   if ( first ) {
     TCODSystem::setFps(30); // fps limited to 30
     sampleConsole.setBackgroundColor(TCODColor::grey);
@@ -571,7 +603,7 @@ void render_mouse(bool first, TCOD_key_t*key) {
     TCODMouse::move(320,200);
     TCODMouse::showCursor(true);
   }
-  
+
   sampleConsole.clear();
   mouse=TCODMouse::getStatus();
   if ( mouse.lbutton_pressed ) lbut=!lbut;
@@ -773,7 +805,7 @@ void vline(map_t *map,int x, int y1, int y2) {
 void vline_up(map_t *map,int x, int y) {
 	while (y >= 0 && (*map)[x][y] != ' ') {
 		(*map)[x][y]=' ';
-		y--;	
+		y--;
 	}
 }
 
@@ -781,7 +813,7 @@ void vline_up(map_t *map,int x, int y) {
 void vline_down(map_t *map,int x, int y) {
 	while (y < SAMPLE_SCREEN_HEIGHT && (*map)[x][y] != ' ') {
 		(*map)[x][y]=' ';
-		y++;	
+		y++;
 	}
 }
 
@@ -801,7 +833,7 @@ void hline(map_t *map,int x1, int y, int x2) {
 void hline_left(map_t *map,int x, int y) {
 	while (x >= 0 && (*map)[x][y] != ' ') {
 		(*map)[x][y]=' ';
-		x--;	
+		x--;
 	}
 }
 
@@ -809,7 +841,7 @@ void hline_left(map_t *map,int x, int y) {
 void hline_right(map_t *map,int x, int y) {
 	while (x < SAMPLE_SCREEN_WIDTH && (*map)[x][y] != ' ') {
 		(*map)[x][y]=' ';
-		x++;	
+		x++;
 	}
 }
 
@@ -828,7 +860,7 @@ public :
 			if (! roomWalls ) {
 				if ( minx > 1 ) minx--;
 				if ( miny > 1 ) miny--;
-			} 
+			}
 			if (maxx == SAMPLE_SCREEN_WIDTH-1 ) maxx--;
 			if (maxy == SAMPLE_SCREEN_HEIGHT-1 ) maxy--;
 			if ( randomRoom ) {
@@ -867,7 +899,7 @@ public :
 					int x2=TCODRandom::getInstance()->getInt(right->x,right->x+right->w-1);
 					int y=TCODRandom::getInstance()->getInt(left->y+left->h,right->y);
 					vline_up(map,x1,y-1);
-					hline(map,x1,x2,y);
+					hline(map,x1,y,x2);
 					vline_down(map,x2,y+1);
 				} else {
 					// straight vertical corridor
@@ -993,7 +1025,7 @@ int main( int argc, char *argv[] ) {
 	bool first=true; // first time we render a sample
 	TCOD_key_t key = {TCODK_NONE,0};
 	const char *font="fonts/celtic_garamond_10x10_gs_tc.png";
-	int charWidth=10,charHeight=10;
+	int nbCharHoriz=0,nbCharVertic=0;
 	int argn;
 	int fullscreenWidth=0;
 	int fullscreenHeight=0;
@@ -1007,11 +1039,11 @@ int main( int argc, char *argv[] ) {
 			argn++;
 			font=argv[argn];
 			fontFlags=0;
-		} else if ( strcmp(argv[argn],"-font-char-size") == 0 && argn+2 < argc ) {
+		} else if ( strcmp(argv[argn],"-font-nb-char") == 0 && argn+2 < argc ) {
 			argn++;
-			charWidth=atoi(argv[argn]);
+			nbCharHoriz=atoi(argv[argn]);
 			argn++;
-			charHeight=atoi(argv[argn]);
+			nbCharVertic=atoi(argv[argn]);
 			fontFlags=0;
 		} else if ( strcmp(argv[argn],"-fullscreen-resolution") == 0 && argn+2 < argc ) {
 			argn++;
@@ -1032,7 +1064,7 @@ int main( int argc, char *argv[] ) {
 		} else if ( strcmp(argv[argn],"-help") == 0 ) {
 			printf ("options :\n");
 			printf ("-font <filename> : use a custom font\n");
-			printf ("-font-char-size <char_width> <char_height> : size of the custom font's characters\n");
+			printf ("-font-nb-char <nb_char_horiz> <nb_char_vertic> : number of characters in the font\n");
 			printf ("-font-in-row : the font layout is in row instead of columns\n");
 			printf ("-font-tcod : the font uses TCOD layout instead of ASCII\n");
 			printf ("-font-greyscale : antialiased font using greyscale bitmap\n");
@@ -1045,7 +1077,7 @@ int main( int argc, char *argv[] ) {
 	}
 
 	if ( fontFlags == 0 ) fontFlags=fontNewFlags;
-	TCODConsole::setCustomFont(font,charWidth,charHeight,fontFlags);
+	TCODConsole::setCustomFont(font,fontFlags,nbCharHoriz,nbCharVertic);
 	if ( fullscreenWidth > 0 ) {
 		TCODSystem::forceFullscreenResolution(fullscreenWidth,fullscreenHeight);
 	}

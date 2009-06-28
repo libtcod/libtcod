@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -37,5 +37,27 @@ TCODLIB_API void TCOD_sys_set_fps(int val);
 TCODLIB_API int TCOD_sys_get_fps();
 TCODLIB_API float TCOD_sys_get_last_frame_length();
 TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
-
+TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
+// filesystem stuff
+TCODLIB_API bool TCOD_sys_create_directory(const char *path);
+TCODLIB_API bool TCOD_sys_delete_file(const char *path);
+TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
+// thread stuff
+typedef void *TCOD_thread_t;
+typedef void *TCOD_semaphore_t;
+typedef void *TCOD_mutex_t;
+// threads
+TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data);
+TCODLIB_API void TCOD_thread_delete(TCOD_thread_t th);
+TCODLIB_API int TCOD_sys_get_num_cores();
+// mutex
+TCODLIB_API TCOD_mutex_t TCOD_mutex_new();
+TCODLIB_API void TCOD_mutex_in(TCOD_mutex_t mut);
+TCODLIB_API void TCOD_mutex_out(TCOD_mutex_t mut);
+TCODLIB_API void TCOD_mutex_delete(TCOD_mutex_t mut);
+// semaphore
+TCODLIB_API TCOD_semaphore_t TCOD_semaphore_new(int initVal);
+TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
+TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
+TCODLIB_API void TCOD_semaphore_delete( TCOD_semaphore_t sem);
 #endif

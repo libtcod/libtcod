@@ -29,15 +29,49 @@ const char *Operation::tips[]= {
 };
 
 
-static const char *header1 =
+static const char *header1[] = {
+// C header
+"#include <stdlib.h>\n"
+"#include \"libtcod.h\"\n"
+"// size of the heightmap\n"
+"#define HM_WIDTH 100\n"
+"#define HM_HEIGHT 80\n",
+// CPP header
 "#include \"libtcod.hpp\"\n"
 "// size of the heightmap\n"
 "#define HM_WIDTH 100\n"
-"#define HM_HEIGHT 80\n";
-static const char *header2 =
+"#define HM_HEIGHT 80\n",
+// PY header
+"#!/usr/bin/python\n"
+"import math\n"
+"import libtcodpy as libtcod\n"
+"# size of the heightmap\n"
+"HM_WIDTH=100\n"
+"HM_HEIGHT=80\n",
+};
+static const char *header2[] = {
+// C header 2
 "// function building the heightmap\n"
-"void buildMap(TCODHeightMap *hm) {\n";
-static const char *footer =
+"void buildMap(TCOD_heightmap_t *hm) {\n",
+// CPP header 2
+"// function building the heightmap\n"
+"void buildMap(TCODHeightMap *hm) {\n",
+// PY header 2
+"# function building the heightmap\n"
+"def buildMap(hm) :\n",
+};
+static const char *footer1[] = {
+// C footer
+"}\n"
+"// test code to print the heightmap\n"
+"// to compile this file on Linux :\n"
+"//  gcc hm.c -o hm -I include/ -L . -ltcod\n"
+"// to compile this file on Windows/mingw32 :\n"
+"//  gcc hm.c -o hm.exe -I include/ -L lib -ltcod-mingw\n"
+"int main(int argc, char *argv[]) {\n"
+"\tint x,y;\n"
+"\tTCOD_heightmap_t *hm=TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n",
+// CPP footer
 "}\n"
 "// test code to print the heightmap\n"
 "// to compile this file on Linux :\n"
@@ -59,12 +93,48 @@ static const char *footer =
 "\tTCODConsole::root->flush();\n"
 "\tTCODConsole::waitForKeypress(true);\n"
 "\treturn 0;\n"
-"}\n";
+"}\n",
+// PY footer
+"# test code to print the heightmap\n"
+"hm=libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
+"buildMap(hm)\n"
+"libtcod.console_init_root(HM_WIDTH,HM_HEIGHT,\"height map test\",False)\n"
+"for x in range(HM_WIDTH) :\n"
+"    for y in range(HM_HEIGHT) :\n"
+"        z = libtcod.heightmap_get_value(hm,x,y)\n"
+"        val=int(z*255) & 0xFF\n"
+"        c=libtcod.Color(val,val,val)\n"
+"        libtcod.console_set_back(None,x,y,c,libtcod.BKGND_SET)\n"
+"libtcod.console_flush()\n"
+"libtcod.console_wait_for_keypress(True)\n",
+};
+
+static const char *footer2[] = {
+// C footer
+"\tbuildMap(hm);\n"
+"\tTCOD_console_init_root(HM_WIDTH,HM_HEIGHT,\"height map test\",false);\n"
+"\tfor (x=0; x < HM_WIDTH; x ++ ) {\n"
+"\t\tfor (y=0;y < HM_HEIGHT; y++ ) {\n"
+"\t\t\tfloat z = TCOD_heightmap_get_value(hm,x,y);\n"
+"\t\t\tuint8 val=(uint8)(z*255);\n"
+"\t\t\tTCOD_color_t c={val,val,val};\n"
+"\t\t\tTCOD_console_set_back(NULL,x,y,c,TCOD_BKGND_SET);\n"
+"\t\t}\n"
+"\t}\n"
+"\tTCOD_console_flush();\n"
+"\tTCOD_console_wait_for_keypress(true);\n"
+"\treturn 0;\n"
+"}\n",
+// CPP footer
+"",
+// PY footer
+"",
+};
 
 TCODList <Operation *> Operation::list;
 char *Operation::codebuf=NULL;
 int Operation::bufSize=0,Operation::freeSize=0;
-TCODList<const char *> Operation::initCode;
+TCODList<const char *> Operation::initCode[Operation::NB_CODE];
 bool Operation::needsRandom=false;
 bool Operation::needsNoise=false;
 Operation *Operation::currentOp=NULL;
@@ -96,27 +166,56 @@ const char * Operation::format(const char *fmt, ...) {
 	return tmp;
 }
 
-const char *Operation::buildCode() {
+const char *Operation::buildCode(CodeType type) {
 	if ( codebuf ) {
 		codebuf[0]=0;
 		freeSize=bufSize;
 	}
-	addCode(header1);
+	addCode(header1[type]);
 	if (needsRandom || needsNoise ) {
-		addCode(format("TCODRandom *rnd=new TCODRandom(%uU);\n",seed));
+		switch(type) {
+			case(C) :
+				addCode(format("TCOD_random_t rnd=NULL;\n",seed));
+			break;
+			case(CPP) :
+				addCode(format("TCODRandom *rnd=new TCODRandom(%uU);\n",seed));
+			break;
+			case(PY) :
+				addCode(format("rnd=libtcod.random_new_from_seed(%u)\n",seed));
+			break;
+			default:break;
+		}
 	}
 	if (needsNoise ) {
-		addCode("TCODNoise *noise=new TCODNoise(2,rnd);\n");
+		switch(type) {
+			case(C) :
+				addCode("TCOD_noise_t noise=NULL;\n");
+			break;
+			case(CPP) :
+				addCode("TCODNoise *noise=new TCODNoise(2,rnd);\n");
+			break;
+			case(PY) :
+				addCode("noise=libtcod.noise_new(2,libtcod.NOISE_DEFAULT_HURST,libtcod.NOISE_DEFAULT_LACUNARITY,rnd)\n");
+			break;
+			default:break;
+		}
 	}
-	for (const char **s=initCode.begin(); s!=initCode.end(); s++) {
+	for (const char **s=initCode[type].begin(); s!=initCode[type].end(); s++) {
 		addCode(*s);
 	}
-	addCode(header2);
+	addCode(header2[type]);
 	for (Operation **op=list.begin(); op!=list.end(); op++) {
-		const char *code=(*op)->getCode();
+		const char *code=(*op)->getCode(type);
 		addCode(code);
 	}
-	addCode(footer);
+	addCode(footer1[type]);
+	if ((needsRandom || needsNoise) && type == C ) {
+		addCode(format("\trnd=TCOD_random_new_from_seed(%uU);\n",seed));
+		if (needsNoise) {
+			addCode("\tnoise=TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,rnd);\n");
+		}
+	}
+	addCode(footer2[type]);
 	return codebuf;
 }
 
@@ -172,8 +271,8 @@ void Operation::cancel() {
 	}
 }
 
-void Operation::addInitCode(const char *code) {
-	if (! initCode.contains(code) ) initCode.push(code);
+void Operation::addInitCode(CodeType type,const char *code) {
+	if (! initCode[type].contains(code) ) initCode[type].push(code);
 }
 
 void Operation::reseed() {
@@ -191,8 +290,20 @@ void Operation::reseed() {
 // ********** actual operations below **********
 
 // Normalize
-const char *NormalizeOperation::getCode() {
-	return format("\thm->normalize(%g,%g);\n",min,max);
+const char *NormalizeOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format("\tTCOD_heightmap_normalize(hm,%g,%g);\n",min,max);
+		break;
+		case CPP :
+			return format("\thm->normalize(%g,%g);\n",min,max);
+		break;
+		case PY :
+			return format("    libtcod.heightmap_normalize(hm,%g,%g)\n",min,max);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void NormalizeOperation::runInternal() {
@@ -206,7 +317,7 @@ bool NormalizeOperation::addInternal() {
 }
 
 void normalizeMinValueCbk(Widget *wid, char * val, void * data) {
-#ifdef VISUAL_STUDIO
+#ifdef TCOD_VISUAL_STUDIO
     float f=(float)atof(val);
     {
 #else
@@ -227,7 +338,7 @@ void normalizeMinValueCbk(Widget *wid, char * val, void * data) {
 }
 
 void normalizeMaxValueCbk(Widget *wid, char * val, void *data) {
-#ifdef VISUAL_STUDIO
+#ifdef TCOD_VISUAL_STUDIO
     float f=(float)atof(val);
     {
 #else
@@ -265,10 +376,26 @@ void NormalizeOperation::createParamUi() {
 }
 
 // AddFbm
-const char *AddFbmOperation::getCode() {
-	return format(
-"\thm->addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
-"\taddFbmDelta += HM_WIDTH;\n", zoom,zoom,offsetx,offsety,octaves,offset,scale);
+const char *AddFbmOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format(
+				"\tTCOD_heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		case CPP :
+			return format(
+				"\thm->addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		case PY :
+			return format(
+				"    libtcod.heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void AddFbmOperation::runInternal() {
@@ -386,10 +513,27 @@ void AddFbmOperation::createParamUi() {
 }
 
 // ScaleFbm
-const char *ScaleFbmOperation::getCode() {
-	return format(
-"\thm->scaleFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
-"\tscaleFbmDelta += HM_WIDTH;\n", zoom,zoom,offsetx,offsety,octaves,offset,scale);
+const char *ScaleFbmOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format(
+				"\tTCOD_heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n"
+				"\tscaleFbmDelta += HM_WIDTH;\n", zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		case CPP :
+			return format(
+				"\thm->scaleFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
+				"\tscaleFbmDelta += HM_WIDTH;\n", zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		case PY :
+			return format(
+				"    libtcod.heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n"
+				"    scaleFbmDelta += HM_WIDTH\n", zoom,zoom,offsetx,offsety,octaves,offset,scale);
+		break;
+		default:break;
+	}
+	return NULL;
+
 }
 
 void ScaleFbmOperation::runInternal() {
@@ -403,8 +547,20 @@ bool ScaleFbmOperation::addInternal() {
 }
 
 // AddHill
-const char *AddHillOperation::getCode() {
-	return format("\taddHill(hm,%d,%g,%g,%g);\n",nbHill,  radius, radiusVar, height);
+const char *AddHillOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format("\taddHill(hm,%d,%g,%g,%g);\n",nbHill,  radius, radiusVar, height);
+		break;
+		case CPP :
+			return format("\taddHill(hm,%d,%g,%g,%g);\n",nbHill,  radius, radiusVar, height);
+		break;
+		case PY :
+			return format("    addHill(hm,%d,%g,%g,%g)\n",nbHill,  radius, radiusVar, height);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void AddHillOperation::runInternal() {
@@ -412,7 +568,22 @@ void AddHillOperation::runInternal() {
 }
 
 bool AddHillOperation::addInternal() {
-	addInitCode(
+	addInitCode(C,
+"#include <math.h>\n"
+"void addHill(TCOD_heightmap_t *hm,int nbHill, float baseRadius, float radiusVar, float height)  {\n"
+"\tint i;\n"
+"\tfor (i=0; i<  nbHill; i++ ) {\n"
+"\t\tfloat hillMinRadius=baseRadius*(1.0f-radiusVar);\n"
+"\t\tfloat hillMaxRadius=baseRadius*(1.0f+radiusVar);\n"
+"\t\tfloat radius = TCOD_random_get_float(rnd,hillMinRadius, hillMaxRadius);\n"
+"\t\tfloat theta = TCOD_random_get_float(rnd,0.0f, 6.283185f); // between 0 and 2Pi\n"
+"\t\tfloat dist = TCOD_random_get_float(rnd,0.0f, (float)MIN(HM_WIDTH,HM_HEIGHT)/2 - radius);\n"
+"\t\tint xh = (int) (HM_WIDTH/2 + cos(theta) * dist);\n"
+"\t\tint yh = (int) (HM_HEIGHT/2 + sin(theta) * dist);\n"
+"\t\tTCOD_heightmap_add_hill(hm,(float)xh,(float)yh,radius,height);\n"
+"\t}\n"
+"}\n");
+	addInitCode(CPP,
 "#include <math.h>\n"
 "void addHill(TCODHeightMap *hm,int nbHill, float baseRadius, float radiusVar, float height)  {\n"
 "\tfor (int i=0; i<  nbHill; i++ ) {\n"
@@ -426,6 +597,18 @@ bool AddHillOperation::addInternal() {
 "\t\thm->addHill((float)xh,(float)yh,radius,height);\n"
 "\t}\n"
 "}\n");
+	addInitCode(PY,
+"def addHill(hm,nbHill,baseRadius,radiusVar,height) :\n"
+"    for i in range(nbHill) :\n"
+"        hillMinRadius=baseRadius*(1.0-radiusVar)\n"
+"        hillMaxRadius=baseRadius*(1.0+radiusVar)\n"
+"        radius = libtcod.random_get_float(rnd,hillMinRadius, hillMaxRadius)\n"
+"        theta = libtcod.random_get_float(rnd,0.0, 6.283185) # between 0 and 2Pi\n"
+"        dist = libtcod.random_get_float(rnd,0.0, float(min(HM_WIDTH,HM_HEIGHT))/2 - radius)\n"
+"        xh = int(HM_WIDTH/2 + math.cos(theta) * dist)\n"
+"        yh = int(HM_HEIGHT/2 + math.sin(theta) * dist)\n"
+"        libtcod.heightmap_add_hill(hm,float(xh),float(yh),radius,height)\n"
+);
 	return true;
 }
 
@@ -504,8 +687,20 @@ void AddHillOperation::createParamUi() {
 }
 
 // AddLevel
-const char *AddLevelOperation::getCode() {
-	return format("\thm->add(%g);\n\thm->clamp(0.0f,1.0f);\n",level);
+const char *AddLevelOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format("\tTCOD_heightmap_add(hm,%g);\n\tTCOD_heightmap_clamp(hm,0.0f,1.0f);\n",level);
+		break;
+		case CPP :
+			return format("\thm->add(%g);\n\thm->clamp(0.0f,1.0f);\n",level);
+		break;
+		case PY :
+			return format("    libtcod.heightmap_add(hm,%g)\n    libtcod.heightmap_clamp(hm,0.0,1.0)\n",level);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void AddLevelOperation::runInternal() {
@@ -555,13 +750,38 @@ void AddLevelOperation::createParamUi() {
 }
 
 // Smooth
-const char *SmoothOperation::getCode() {
-	return format(
-"\tsmoothKernelWeight[4] = %g;\n"
-"\tfor (int i=%d; i>= 0; i--) {\n"
-"\t\thm->kernelTransform(smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g);\n"
-"\t}\n",
-		20 - radius*19,count,minLevel,maxLevel);
+const char *SmoothOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format(
+				"\tsmoothKernelWeight[4] = %g;\n"
+				"\t{\n"
+				"\t\tint i;\n"
+				"\t\tfor (i=%d; i>= 0; i--) {\n"
+				"\t\t\tTCOD_heightmap_kernel_transform(hm,smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g);\n"
+				"\t\t}\n"
+				"\t}\n",
+				20 - radius*19,count,minLevel,maxLevel);
+		break;
+		case CPP :
+			return format(
+				"\tsmoothKernelWeight[4] = %g;\n"
+				"\tfor (int i=%d; i>= 0; i--) {\n"
+				"\t\thm->kernelTransform(smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g);\n"
+				"\t}\n",
+				20 - radius*19,count,minLevel,maxLevel);
+		break;
+		case PY :
+			return format(
+				"    smoothKernelWeight[4] = %g\n"
+				"    for i in range(%d,-1,-1) :\n"
+				"        libtcod.heightmap_kernel_transform(hm,smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g)\n",
+				20 - radius*19,count,minLevel,maxLevel);
+		break;
+		default:break;
+	}
+	return NULL;
+
 }
 
 void SmoothOperation::runInternal() {
@@ -572,12 +792,26 @@ void SmoothOperation::runInternal() {
 }
 
 bool SmoothOperation::addInternal() {
-	addInitCode(
-"// 3x3 kernel for smoothing operations\n"
-"int smoothKernelSize=9;\n"
-"int smoothKernelDx[9]={-1,0,1,-1,0,1,-1,0,1};\n"
-"int smoothKernelDy[9]={-1,-1,-1,0,0,0,1,1,1};\n"
-"float smoothKernelWeight[9]={1,2,1,2,20,2,1,2,1};\n"
+	addInitCode(C,
+		"// 3x3 kernel for smoothing operations\n"
+		"int smoothKernelSize=9;\n"
+		"int smoothKernelDx[9]={-1,0,1,-1,0,1,-1,0,1};\n"
+		"int smoothKernelDy[9]={-1,-1,-1,0,0,0,1,1,1};\n"
+		"float smoothKernelWeight[9]={1,2,1,2,20,2,1,2,1};\n"
+	);
+	addInitCode(CPP,
+		"// 3x3 kernel for smoothing operations\n"
+		"int smoothKernelSize=9;\n"
+		"int smoothKernelDx[9]={-1,0,1,-1,0,1,-1,0,1};\n"
+		"int smoothKernelDy[9]={-1,-1,-1,0,0,0,1,1,1};\n"
+		"float smoothKernelWeight[9]={1,2,1,2,20,2,1,2,1};\n"
+	);
+	addInitCode(PY,
+		"# 3x3 kernel for smoothing operations\n"
+		"smoothKernelSize=9\n"
+		"smoothKernelDx=[-1,0,1,-1,0,1,-1,0,1]\n"
+		"smoothKernelDy=[-1,-1,-1,0,0,0,1,1,1]\n"
+		"smoothKernelWeight=[1.0,2.0,1.0,2.0,20.0,2.0,1.0,2.0,1.0]\n"
 	);
 	return true;
 }
@@ -639,14 +873,14 @@ void SmoothOperation::createParamUi() {
 	slider=new Slider(0,0,8,MIN(0.0f,minLevel),MAX(1.0f,maxLevel),"maxLevel","Land level below which the smooth operation is applied");
 	slider->setCallback(smoothMaxValueCbk,this);
 	params->addWidget(slider);
-	slider->setValue(maxLevel);	
+	slider->setValue(maxLevel);
 
 	slider=new Slider(0,0,8,1.0f,20.0f,"amount","Number of times the smoothing operation is applied");
 	slider->setCallback(smoothCountValueCbk,this);
 	slider->setFormat("%.0f");
 	slider->setSensitivity(4.0f);
 	params->addWidget(slider);
-	slider->setValue((float)count);	
+	slider->setValue((float)count);
 
 	slider=new Slider(0,0,8,0.0f,1.0f,"sharpness","Radius of the blurring effect");
 	slider->setCallback(smoothRadiusValueCbk,this);
@@ -655,8 +889,20 @@ void SmoothOperation::createParamUi() {
 }
 
 // Rain
-const char *RainErosionOperation::getCode() {
-	return format("\thm->rainErosion(%d,%g,%g,rnd);\n",nbDrops,erosionCoef,sedimentationCoef);
+const char *RainErosionOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format("\tTCOD_heightmap_rain_erosion(hm,%d,%g,%g,rnd);\n",nbDrops,erosionCoef,sedimentationCoef);
+		break;
+		case CPP :
+			return format("\thm->rainErosion(%d,%g,%g,rnd);\n",nbDrops,erosionCoef,sedimentationCoef);
+		break;
+		case PY :
+			return format("    libtcod.heightmap_rain_erosion(hm,%d,%g,%g,rnd)\n",nbDrops,erosionCoef,sedimentationCoef);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void RainErosionOperation::runInternal() {
@@ -727,15 +973,42 @@ void RainErosionOperation::createParamUi() {
 }
 
 // NoiseLerp
-const char *NoiseLerpOperation::getCode() {
-	return format(
-	"\t{\n"
-	"\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
-	"\t\ttmp.addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
-	"\t\thm->lerp(hm,&tmp,%g);\n"
-	"\t}\n",
-	zoom,zoom,offsetx,offsety,octaves,offset,scale,coef
-	);
+const char *NoiseLerpOperation::getCode(CodeType type) {
+	switch(type) {
+		case C :
+			return format(
+				"\t{\n"
+				"\t\tTCOD_heightmap_t *tmp=TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n"
+				"\t\tTCOD_heightmap_add_fbm(tmp,noise,%g,%g,%g,%g,%g,%g,%g);\n"
+				"\t\tTCOD_heightmap_lerp(hm,tmp,hm,%g);\n"
+				"\t\tTCOD_heightmap_delete(tmp);\n"
+				"\t}\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale,coef
+				);
+		break;
+		case CPP :
+			return format(
+				"\t{\n"
+				"\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
+				"\t\ttmp.addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
+				"\t\thm->lerp(hm,&tmp,%g);\n"
+				"\t}\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale,coef
+				);
+		break;
+		case PY :
+			return format(
+				"    tmp=libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
+				"    libtcod.heightmap_add_fbm(tmp,noise,%g,%g,%g,%g,%g,%g,%g)\n"
+				"    libtcod.heightmap_lerp(hm,tmp,hm,%g)\n"
+				"    libtcod.heightmap_delete(tmp)\n",
+				zoom,zoom,offsetx,offsety,octaves,offset,scale,coef
+				);
+		break;
+		default:break;
+	}
+	return NULL;
+
 }
 
 void NoiseLerpOperation::runInternal() {
@@ -786,23 +1059,53 @@ VoronoiOperation::VoronoiOperation(int nbPoints, int nbCoef, float *coef)
 	}
 }
 
-const char *VoronoiOperation::getCode() {
+const char *VoronoiOperation::getCode(CodeType type) {
 	char coefstr[256]="";
 	for (int i=0; i<  nbCoef; i++ ) {
 		char tmp2[64];
 		sprintf(tmp2,"%g,",coef[i]);
 		strcat(coefstr,tmp2);
 	}
-	return format(
-	"\t{\n"
-	"\t\tfloat coef[]={%s};\n"
-	"\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
-	"\t\ttmp.addVoronoi(%d,%d,coef,rnd);\n"
-	"\t\ttmp.normalize();\n"
-	"\t\thm->add(hm,&tmp);\n"
-	"\t}\n",
-	coefstr,nbPoints,nbCoef
-	);
+	switch(type) {
+		case C :
+			return format(
+				"\t{\n"
+				"\t\tfloat coef[]={%s};\n"
+				"\t\tTCOD_heightmap_t *tmp =TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n"
+				"\t\tTCOD_heightmap_add_voronoi(tmp,%d,%d,coef,rnd);\n"
+				"\t\tTCOD_heightmap_normalize(tmp,0.0f,1.0f);\n"
+				"\t\tTCOD_heightmap_add(hm,tmp,hm);\n"
+				"\t\tTCOD_heightmap_delete(tmp);\n"
+				"\t}\n",
+				coefstr,nbPoints,nbCoef
+				);
+		break;
+		case CPP :
+			return format(
+				"\t{\n"
+				"\t\tfloat coef[]={%s};\n"
+				"\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
+				"\t\ttmp.addVoronoi(%d,%d,coef,rnd);\n"
+				"\t\ttmp.normalize();\n"
+				"\t\thm->add(hm,&tmp);\n"
+				"\t}\n",
+				coefstr,nbPoints,nbCoef
+				);
+		break;
+		case PY :
+			return format(
+				"    coef=[%s]\n"
+				"    tmp =libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
+				"    libtcod.heightmap_add_voronoi(tmp,%d,%d,coef,rnd)\n"
+				"    libtcod.heightmap_normalize(tmp)\n"
+				"    libtcod.heightmap_add(hm,tmp,hm)\n"
+				"    libtcod.heightmap_delete(tmp)\n",
+				coefstr,nbPoints,nbCoef
+				);
+		break;
+		default:break;
+	}
+	return NULL;
 }
 
 void VoronoiOperation::runInternal() {

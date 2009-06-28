@@ -19,12 +19,14 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : void TCODConsole::setForegroundColor(TCODColor back)
 C   : void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t back)
+Py  : console_set_foreground_color(con,back)
 </pre></p>
 This function changes the default foreground color for a console. The default foreground color is used by several drawing functions like <a href="console_clear.html">clear</a>, <a href="console_put_char.html">putChar</a>, ...<br />
 To change the default foreground color of the root console, use 
 <p class="code"><pre>
 C++ : TCODConsole::root->setForegroundColor(myColor)
-C   : TCODConsole_set_foreground_color(NULL, my_color)
+C   : TCOD_console_set_foreground_color(NULL, my_color)
+Py  : libtcod.console_set_foreground_color(0, my_color)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

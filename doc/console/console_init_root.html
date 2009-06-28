@@ -18,6 +18,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false)
 C   : void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen)
+Py  : console_init_root(w,h,title,fullscreen)
 </pre></p>
 This will either create a new window in your desktop or switch to full screen. Once this function has been called, you access the root console in C++ with TCODConsole::root, in C by using a NULL console handler.<br />
 Note that the C header (libtcod.h) defines the bool type for the C language with :<br />
@@ -44,4 +45,5 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false);
 C   : TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
+Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
 </pre></p>

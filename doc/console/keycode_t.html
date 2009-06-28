@@ -16,7 +16,10 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-TCOD_keycode_t is a libtcod specific code representing a key on the keyboard. Possible values are :<br />
+TCOD_keycode_t is a libtcod specific code representing a key on the keyboard.<br />
+For python, replace TCODK by KEY:
+libtcod.KEY_NONE
+Possible values are :<br />
 When no key was pressed (see <a href="console_check_for_keypress.html">checkForKeypress</a>) :<br />
 <p class="code"><pre>
 TCODK_NONE

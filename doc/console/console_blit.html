@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, int fade=255)
 C   : void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, int fade)
+Py  : console_blit(src,xSrc,ySrc,xSrc,hSrc,dst,xDst,yDst,fade)
 </pre></p>
 This function allows you to blit a rectangular area of the source console at a specific position on a destination console. It can also simulate alpha transparency with the fade parameter.<br />
 <table class="param">
@@ -63,11 +64,26 @@ C   : TCOD_console_t off1 = TCOD_console_new(80,50);
           TCOD_console_blit(off2,0,0,80,50,NULL,0,0,i); /* renders the second screen (transparent) */
           TCOD_console_flush();
 	  }
+Py  : off1 = libtcod.console_new(80,50)
+      off2 = libtcod.console_new(80,50)
+      ... print screen1 on off1
+      ... print screen2 of off2
+      # render screen1 in the game window
+      libtcod.console_blit(off1,0,0,80,50,0,0,0,255)
+      libtcod.console_flush()
+      # wait or a keypress
+      libtcod.console_wait_for_keypress(True)
+      # do a cross-fading from off1 to off2
+      for i in range(1,256) :
+          litbcod.console_blit(off1,0,0,80,50,0,0,0,255) # renders the first screen (opaque)
+          litbcod.console_blit(off2,0,0,80,50,0,0,0,i) # renders the second screen (transparent)
+          litbcod.console_flush()
 </pre></p>
 <br />
 <hr /><p class="code"><pre>
 C++ : void TCODConsole::setKeyColor(const TCODColor &col)
 C   : void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col)
+Py  : console_set_key_color(con,col)
 </pre></p>
 This function defines a transparent background color for an offscreen console. All cells with this background color are ignored by the blit operation. You can use it to blit only some parts of the console.<br />
 <table class="param">

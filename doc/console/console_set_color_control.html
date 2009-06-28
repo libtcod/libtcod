@@ -18,7 +18,8 @@ table.none td { border : 0 }
 </style>
 <p class="code"><pre>
 C++ : static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
-C   : void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
+C   : void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back)
+Py  : console_set_color_control(con, fore, back)
 </pre></p>
 This function associates a background and a foreground color with a color control code.<br />
 There are 5 color control codes you can use. The color control code may be :<br />
@@ -29,6 +30,8 @@ There are 5 color control codes you can use. The color control code may be :<br 
 	TCOD_COLCTRL_4 
 	TCOD_COLCTRL_5
 </pre></p>	
+For python, remove TCOD _ :
+libtcod.COLCTRL_1
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>con</td><td>The color control code.</td></tr>
@@ -39,6 +42,8 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
       TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
-C   : TCODConsole_set_color_control(TCOD_COLCTRL_1,red,black);
-      TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+C   : TCOD_console_set_color_control(TCOD_COLCTRL_1,red,black);
+      TCOD_console_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+Py  : libtcod.console_set_color_control(libtcod.COLCTRL_1,libtcod.red,libtcod.black)
+      libtcod.console_print_left(0,1,1,libtcod.BKGND_SET, "String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
 </pre></p>

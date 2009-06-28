@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -32,12 +32,12 @@
 #include "libtcod.hpp"
 #include "libtcod_int.h"
 
-TCODLex::TCODLex( const char **_symbols, const char **_keywords, const char *simpleComment, 
-		const char *commentStart, const char *commentStop, const char *javadocCommentStart, 
+TCODLex::TCODLex( const char **_symbols, const char **_keywords, const char *simpleComment,
+		const char *commentStart, const char *commentStop, const char *javadocCommentStart,
 		const char *_stringDelim, int _flags)
 {
 	data=(void *)TCOD_lex_new(_symbols,_keywords,simpleComment,commentStart,commentStop,javadocCommentStart,_stringDelim,_flags);
-	
+
 }
 
 TCODLex::TCODLex()
@@ -63,7 +63,7 @@ void TCODLex::setDataBuffer(char *dat)
 
 bool TCODLex::setDataFile(const char *_filename)
 {
-	return TCOD_lex_set_data_file((TCOD_lex_t *)data,_filename);
+	return TCOD_lex_set_data_file((TCOD_lex_t *)data,_filename) != 0;
 }
 
 int TCODLex::parse()
@@ -94,11 +94,11 @@ void TCODLex::restore(TCODLex *savepoint)
 
 bool TCODLex::expect(int tokenType)
 {
-	return (bool)(TCOD_lex_expect_token_type((TCOD_lex_t *)data,tokenType));
+	return TCOD_lex_expect_token_type((TCOD_lex_t *)data,tokenType) != 0;
 }
 
 bool TCODLex::expect(int tokenType, const char *tokenValue)
 {
-	return (bool)(TCOD_lex_expect_token_value((TCOD_lex_t *)data,tokenType,tokenValue));
+	return TCOD_lex_expect_token_value((TCOD_lex_t *)data,tokenType,tokenValue) != 0;
 }
 

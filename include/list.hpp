@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -54,15 +54,19 @@ public :
 			push((T)(*it));
 		}
 	}
-	TCODList(const TCODList<T> &l2) {
-		array=NULL;
-		fillSize=allocSize=0;
+	TCODList<T> & operator = (TCODList<T> const & l2) {
 		while ( allocSize < l2.allocSize ) allocate();
 		fillSize=l2.fillSize;
 		int i=0;
 		for (T *t=l2.begin(); t != l2.end(); t++) {
 			array[i++]=*t;
 		}
+		return *this;
+	}  
+	TCODList(const TCODList<T> &l2) {
+		array=NULL;
+		fillSize=allocSize=0;
+		*this = l2;
 	}
 	virtual ~TCODList() {
 		if ( array ) delete [] array;
@@ -110,10 +114,24 @@ public :
 		if ( fillSize == 0 ) return ((T *)NULL)-1;
 		else return elt-1;
 	}
+	T *removeFast(T *elt) {
+		*elt = array[fillSize-1];
+		fillSize--;
+		if ( fillSize == 0 ) return ((T *)NULL)-1;
+		else return elt-1;
+	}
 	void remove(const T elt) {
 		for ( T* curElt = begin(); curElt != end(); curElt ++) {
 			if ( *curElt == elt ) {
 				remove(curElt);
+				return;
+			}
+		}
+	}
+	void removeFast(const T elt) {
+		for ( T* curElt = begin(); curElt != end(); curElt ++) {
+			if ( *curElt == elt ) {
+				removeFast(curElt);
 				return;
 			}
 		}
@@ -136,13 +154,14 @@ public :
 	int size() const {
 		return fillSize;
 	}
-	void insertBefore(const T elt,int before) {
+	T * insertBefore(const T elt,int before) {
 		if ( fillSize+1 >= allocSize ) allocate();
 		for (int idx=fillSize; idx > before; idx--) {
 			array[idx]=array[idx-1];
 		}
 		array[before]=elt;
 		fillSize++;
+		return &array[before];
 	}
 	bool isEmpty() const {
 		return ( fillSize == 0 );

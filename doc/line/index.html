@@ -23,6 +23,7 @@ First, you have to initialize the toolkit with your starting and ending coordina
 <p class="code"><pre>
 C++ : static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
 C   : void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo)
+Py  : line_init(xFrom, yFrom, xTo, yTo)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -34,6 +35,7 @@ You can then step through each cell with this function. It returns true when you
 <p class="code"><pre>
 C++ : static bool TCODLine::step(int *xCur, int *yCur)
 C   : bool TCOD_line_step(int *xCur, int *yCur)
+Py  : line_step() # returns x,y or None,None if finished
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -53,4 +55,48 @@ C   : int x=5,y=8;
       do {
 	     .. update cell x,y
       } while (! TCOD_line_step(&x,&y) );
+Py  : libtcod.line_init(5,8,13,4)
+      .. update cell 5,8
+      x,y=libtcod.line_step()
+      while (not x is None ) :
+	     .. update cell x,y
+         x,y=libtcod.line_step()
+</pre></p><hr />
+You can also use a callback-based atomic function.<br />
+<p class="code"><pre>
+C++ : class TCODLIB_API TCODLineListener {
+          virtual bool putPoint(int x,int y) = 0;
+      };
+      static bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener)
+C   : typedef bool (*TCOD_line_listener_t) (int x, int y);
+      bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener)
+Py  : def line_listener(x,y) : ...
+      line(xFrom, yFrom, xTo, yTo, listener)
 </pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>xFrom,yFrom</td><td>Coordinates of the line's starting point.</td></tr>
+<tr><td>xTo, yTo</td><td>Coordinates of the line's ending point.</td></tr>
+<tr><td>listener</td><td>Callback called for each line's point. The function stops if the callback returns false.</td></tr>
+</table>
+The function returns false if the line has been interrupted by the callback (it returned false before the last point).
+<br />
+Example :<br />
+Going from point 5,8 to point 13,4 :<br />
+<p class="code"><pre>
+C++ : class MyLineListener : public TCODLineListener {
+          public :
+          bool putPoint(int x,int y) { printf ("%d %d\n",x,y); return true; }
+      };
+      MyLineListener myListener;
+      TCODLine::line(5,8,13,4,&myListener);
+C   : bool my_listener(int x,int y) { printf ("%d %d\n",x,y); return true; }
+      TCOD_line_line(5,8,13,4,my_listener);
+Py  : def my_listener(x,y) : 
+          print x,y
+          return True
+      libtcod.line_line(5,8,13,4,my_listener)
+</pre></p>
+
+
+

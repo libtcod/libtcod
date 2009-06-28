@@ -20,6 +20,7 @@ First, you have to allocate a map of the same size as your dungeon.<br />
 <p class="code"><pre>
 C++ : TCODMap::TCODMap(int width, int height)
 C   : TCOD_map_t TCOD_map_new(int widht, int height)
+Py  : map_new(widht, height)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -30,6 +31,7 @@ Then, build your dungeon by defining which cells let the light pass (by default,
 <p class="code"><pre>
 C++ : void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable)
 C   : void TCOD_map_set_properties(TCOD_map_t map, int x, int y, bool is_transparent, bool is_walkable)
+Py  : map_set_properties(map, x, y, is_transparent, is_walkable)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -43,18 +45,37 @@ You can clear an existing map (setting all cells as 'blocking') with :<br />
 <p class="code"><pre>
 C++ : void TCODMap::clear()
 C   : void TCOD_map_clear(TCOD_map_t map)
+Py  : map_clear(map)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
 </table>
 <br />
+You can copy an existing map into another. You have to allocate the destination map first.<br />
+<p class="code"><pre>
+C++ : void TCODMap::copy(const TCODMap * source)
+C   : void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest)
+Py  : map_copy(source, dest)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>source</td><td>The map containing the source data.</td></tr>
+<tr><td>dest</td><td>In C and python version, the map where data is copied.</td></tr>
+</table>
+<br />
 Example :<br />
 <p class="code"><pre>
 C++ : TCODMap *map = new TCODMap(50,50); // allocate the map
       map->setProperties(10,10,true,true); // set a cell as 'empty'
-	  map->clear(); // reset the map (all blocking cells)
+      TCODMap *map2=new TCODMap(10,10); // allocate another map
+      map2->copy(map); // copy map data into map2, reallocating it to 50x50
 C   : TCOD_map_t map = TCOD_map_new(50,50);
+      TCOD_map_t map2 = TCOD_map_new(10,10);
       TCOD_map_set_properties(map,10,10,true,true);
-	  TCOD_map_clear(map); 
+	  TCOD_map_copy(map,map2); 
+Py  : map = libtcod.map_new(50,50)
+      map2 = libtcod.map_new(10,10)
+      libtcod.map_set_properties(map,10,10,True,True)
+	  libtcod.map_copy(map,map2)
 </pre></p>

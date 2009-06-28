@@ -20,6 +20,7 @@ By default, the mouse cursor in visible in windowed mode, hidden in fullscreen m
 <p class="code"><pre>
 C++ : static void TCODMouse::showCursor(bool visible)
 C   : void TCOD_mouse_show_cursor(bool visible)
+Py  : mouse_show_cursor(visible)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -30,12 +31,14 @@ You can get the current cursor status (hidden or visible) with :<br/>
 <p class="code"><pre>
 C++ : static bool TCODMouse::isCursorVisible()
 C   : bool TCOD_mouse_is_cursor_visible()
+Py  : mouse_is_cursor_visible()
 </pre></p>
 <br />
 You can set the cursor position (in pixel coordinates, 0x0 = the window top left corner) with :<br/>
 <p class="code"><pre>
 C++ : static void TCODMouse::move(int x, int y)
 C   : void TCOD_mouse_move(int x, int y)
+Py  : mouse_move(x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -59,6 +62,7 @@ typedef struct {
 
 C++ : static TCOD_mouse_t TCODMouse::getStatus()
 C   : TCOD_mouse_t TCOD_mouse_get_status()
+Py  : mouse_get_status()
 </pre></p>
 <table class="param">
 <tr><th>Field name</th><th>Description</th></tr>

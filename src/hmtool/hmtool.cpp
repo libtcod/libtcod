@@ -267,8 +267,24 @@ void raiseLowerCbk(Widget *w, void *data) {
 
 // In/Out buttons callbacks
 
+void exportCCbk(Widget *w, void *data) {
+	const char *code=Operation::buildCode(Operation::C);
+	FILE *f=fopen("hm.c","wt");
+	fprintf(f,"%s",code);
+	fclose(f);
+	message(3.0f,"The code has been exported to ./hm.c");
+}
+
+void exportPyCbk(Widget *w, void *data) {
+	const char *code=Operation::buildCode(Operation::PY);
+	FILE *f=fopen("hm.py","wt");
+	fprintf(f,"%s",code);
+	fclose(f);
+	message(3.0f,"The code has been exported to ./hm.py");
+}
+
 void exportCppCbk(Widget *w, void *data) {
-	const char *code=Operation::buildCode();
+	const char *code=Operation::buildCode(Operation::CPP);
 	FILE *f=fopen("hm.cpp","wt");
 	fprintf(f,"%s",code);
 	fclose(f);
@@ -336,28 +352,28 @@ void normalCbk(Widget *w, void *data) {
 }
 
 void changeColorMapIdxCbk(Widget *w, float val, void *data) {
-	int i=(int)data;
+	intptr i=(intptr)data;
 	keyIndex[i]=(int)(val);
 	if ( i == 1 ) sandHeight = (float)(i)/255.0f;
 	initColors();
 }
 
 void changeColorMapRedCbk(Widget *w, float val, void *data) {
-	int i=(int)data;
+	intptr i=(intptr)data;
 	keyColor[i].r=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapGreenCbk(Widget *w, float val, void *data) {
-	int i=(int)data;
+	intptr i=(intptr)data;
 	keyColor[i].g=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapBlueCbk(Widget *w, float val, void *data) {
-	int i=(int)data;
+	intptr i=(intptr)data;
 	keyColor[i].b=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
@@ -463,7 +479,9 @@ void buildGui() {
 
 	// in/out
 	tools->addSeparator("In/Out","Import/Export stuff");
-	tools->addWidget(new Button("export cpp","Generate the code for this heightmap in ./hm.cpp",exportCppCbk,NULL));
+	tools->addWidget(new Button("export C","Generate the C code for this heightmap in ./hm.c",exportCCbk,NULL));
+	tools->addWidget(new Button("export CPP","Generate the CPP code for this heightmap in ./hm.cpp",exportCppCbk,NULL));
+	tools->addWidget(new Button("export PY","Generate the python code for this heightmap in ./hm.py",exportPyCbk,NULL));
 	tools->addWidget(new Button("export bmp","Save this heightmap as a bitmap in ./hm.bmp",exportBmpCbk,NULL));
 
 	vbox->addWidget(tools);
@@ -517,8 +535,6 @@ int main(int argc, char *argv[]) {
 		}
 		switch(key.vk) {
 			case TCODK_PRINTSCREEN : TCODSystem::saveScreenshot(NULL); break;
-			case TCODK_F3 : backup(); if ( !isNormalized ) hm->normalize(); hm->islandify(sandHeight,rnd); hm->clamp(0.0f,1.0f); break;
-			case TCODK_F8 : backup();  if ( !isNormalized ) hm->normalize(); hm->heatErosion(1,0.03f,1.0f,1.0f,rnd); break;
 			default:break;
 		}
 	}

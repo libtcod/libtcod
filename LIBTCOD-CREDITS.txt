@@ -1,4 +1,4 @@
-libtcod 1.4.0 uses following products :
+Products :
 
 - upx, The Ultimate Packer for eXecutables, by Markus Oberhumer, Laszlo Molnar & John Reiser
    http://upx.sourceforge.net
@@ -9,7 +9,16 @@ libtcod 1.4.0 uses following products :
 - SDL 1.2.12, by Sam Lantingua
    http://www.libsdl.org
 
-Many thanks to everyone who provided feedback, and especially to Mingos & Donblas for their huge contribution to this version.
+Many thanks to everyone who provided feedback, and especially :
+- owners of projects using libtcod.
+- Chris Hamons for the C# port and valuable bug fixes.
+- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
+- Michael De Rosa for the OSX port.
+- Sandman for various tricky bug fixes.
 
-The celtic_garamond_10x10.png font used by the samples is provided by Mingos.
+Fonts :
+The celtic garamond and dundalk fonts are from 1001freefonts.com.
+The caeldera font is from blambot.com.
+Other fonts are included in windows. 
+The celtic_garamond, arial and courier bitmap fonts were created by Mingos.
 

@@ -37,6 +37,7 @@ You can set a single value :<br />
 <p class="code"><pre>
 C++ : void TCODHeightmap::setValue(int x, int y, float v)
 C   : void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float value)
+Py  : heightmap_set_value(hm, x, y, value)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -49,6 +50,7 @@ C   : void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float va
 <p class="code"><pre>
 C++ : void TCODHeightmap::add(float value)
 C   : void TCOD_heightmap_add(TCOD_heightmap_t *hm, float value)
+Py  : heightmap_add(hm, value)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -60,6 +62,7 @@ C   : void TCOD_heightmap_add(TCOD_heightmap_t *hm, float value)
 <p class="code"><pre>
 C++ : void TCODHeightmap::scale(float value)
 C   : void TCOD_heightmap_scale(TCOD_heightmap_t *hm, float value)
+Py  : heightmap_scale(hm, value)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -71,6 +74,7 @@ C   : void TCOD_heightmap_scale(TCOD_heightmap_t *hm, float value)
 <p class="code"><pre>
 C++ : void TCODHeightmap::clear()
 C   : void TCOD_heightmap_clear(TCOD_heightmap_t *hm)
+Py  : heightmap_clear(hm)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -81,6 +85,7 @@ C   : void TCOD_heightmap_clear(TCOD_heightmap_t *hm)
 <p class="code"><pre>
 C++ : void TCODHeightmap::clamp(float min, float max)
 C   : void TCOD_heightmap_clamp(TCOD_heightmap_t *hm, float min, float max)
+Py  : heightmap_clamp(hm, mi, ma)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -91,6 +96,7 @@ C   : void TCOD_heightmap_clamp(TCOD_heightmap_t *hm, float min, float max)
 <p class="code"><pre>
 C++ : void TCODHeightmap::copy(const TCODHeightMap *source)
 C   : void TCOD_heightmap_copy(const TCOD_heightmap_t *source,TCOD_heightmap_t *dest)
+Py  : heightmap_copy(source,dest)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -102,6 +108,7 @@ C   : void TCOD_heightmap_copy(const TCOD_heightmap_t *source,TCOD_heightmap_t *
 <p class="code"><pre>
 C++ : void TCODHeightmap::normalize(float min=0.0f, float max=1.0f)
 C   : void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max)
+Py  : heightmap_normalize(hm, mi=0.0, ma=1.0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -112,6 +119,7 @@ C   : void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max)
 <p class="code"><pre>
 C++ : void TCODHeightmap::lerp(const TCODHeightMap *a, const TCODHeightMap *b,float coef)
 C   : void TCOD_heightmap_lerp_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res, float coef)
+Py  : heightmap_lerp_hm(a, b, res, coef)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -125,6 +133,7 @@ C   : void TCOD_heightmap_lerp_hm(const TCOD_heightmap_t *a, const TCOD_heightma
 <p class="code"><pre>
 C++ : void TCODHeightmap::add(const TCODHeightMap *a, const TCODHeightMap *b)
 C   : void TCOD_heightmap_add_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res)
+Py  : heightmap_add_hm(a, b, res)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -137,6 +146,7 @@ C   : void TCOD_heightmap_add_hm(const TCOD_heightmap_t *a, const TCOD_heightmap
 <p class="code"><pre>
 C++ : void TCODHeightmap::multiply(const TCODHeightMap *a, const TCODHeightMap *b)
 C   : void TCOD_heightmap_multiply_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res)
+Py  : heightmap_multiply_hm(a, b, res)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

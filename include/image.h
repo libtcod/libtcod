@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -35,9 +35,14 @@ TCODLIB_API TCOD_image_t TCOD_image_from_console(TCOD_console_t console);
 TCODLIB_API void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console);
 TCODLIB_API TCOD_image_t TCOD_image_load(const char *filename);
 TCODLIB_API void TCOD_image_clear(TCOD_image_t image, TCOD_color_t color);
+TCODLIB_API void TCOD_image_invert(TCOD_image_t image);
+TCODLIB_API void TCOD_image_hflip(TCOD_image_t image);
+TCODLIB_API void TCOD_image_vflip(TCOD_image_t image);
+TCODLIB_API void TCOD_image_scale(TCOD_image_t image, int neww, int newh);
 TCODLIB_API void TCOD_image_save(TCOD_image_t image, const char *filename);
 TCODLIB_API void TCOD_image_get_size(TCOD_image_t image, int *w,int *h);
 TCODLIB_API TCOD_color_t TCOD_image_get_pixel(TCOD_image_t image,int x, int y);
+TCODLIB_API int TCOD_image_get_alpha(TCOD_image_t image,int x, int y);
 TCODLIB_API TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_image_t image,float x0,float y0, float x1, float y1);
 TCODLIB_API void TCOD_image_put_pixel(TCOD_image_t image,int x, int y,TCOD_color_t col);
 TCODLIB_API void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float y, 

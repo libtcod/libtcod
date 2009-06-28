@@ -20,6 +20,7 @@ You can print a "Powered by libtcod x.y.z" screen during your game startup simpl
 <p class="code"><pre>
 C++ : static void TCODConsole::credits()
 C   : void TCOD_console_credits()
+Py  : console_credits()
 </pre></p>
 The credits screen can be skipped by pressing any key.<br />
 Example :<br />
@@ -29,6 +30,8 @@ C++ : TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false); // ini
       // your game here...
 C   : TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
       TCOD_console_credits();
+Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
+      libtcod.console_credits()
 </pre></p>
 <br />
 <hr />
@@ -36,6 +39,7 @@ You can also print the credits on one of your game screens (your main menu for e
 <p class="code"><pre>
 C++ : static bool TCODConsole::renderCredits(int x, int y, bool alpha)
 C   : bool TCOD_console_credits_render(int x, int y, bool alpha)
+Py  : console_credits_render(x, y, alpha)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -59,8 +63,15 @@ C   : TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
       while ( ! TCOD_console_is_window_closed() ) {
           // your game rendering here...
           // render transparent credits near the center of the screen
-          if (! end_credits ) endCredits=TCOD_console_credits_render(35,25,true);
+          if (! end_credits ) end_credits=TCOD_console_credits_render(35,25,true);
           TCOD_console_flush();
       }
+Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
+      end_credits=False
+      while not libtcod.console_is_window_closed() :
+          // your game rendering here...
+          // render transparent credits near the center of the screen
+          if (not end_credits )  : end_credits=libtcod.console_credits_render(35,25,True)
+          libtcod.console_flush()
 </pre></p>
 

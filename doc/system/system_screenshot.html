@@ -19,6 +19,7 @@ This function allows you to save the current game screen in a png file, or possi
 <p class="code"><pre>
 C++ : static void TCODSystem::saveScreenshot(const char *filename)
 C   : void TCOD_sys_save_screenshot(const char *filename)
+Py  : sys_save_screenshot(filename)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -28,4 +29,5 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODSystem::saveScreenshot(NULL);
 C   : TCOD_sys_save_screenshot("./screenshots/myscreen.png");
+Py  : libtcod.sys_save_screenshot("./screenshots/myscreen.png")
 </pre></p>

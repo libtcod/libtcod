@@ -1,0 +1,49 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../system/index.html">&lt; 3. System layer</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+3.4 Filesystem utilities<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no python wrapper since python provides its own builtin functions.<br/>
+All those functions return false if an error occured.<br />
+The first one creates a new directory.<br />
+<p class="code"><pre>
+C++ : static bool TCODSystem::createDirectory(const char *path)
+C   : bool TCOD_sys_create_directory(const char *path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>Directory path. The immediate father directory (&lt;path&gt;/..) must exist and be writable.</td></tr>
+</table>
+<br />
+This one destroys a directory.<br />
+<p class="code"><pre>
+C++ : static bool TCODSystem::deleteDirectory(const char *path)
+C   : bool TCOD_sys_delete_directory(const char *path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>Directory path. This directory must exist, be writable and empty.</td></tr>
+</table>
+<br />
+This one destroys a file.<br />
+<p class="code"><pre>
+C++ : static bool TCODSystem::deleteFile(const char *path)
+C   : bool TCOD_sys_delete_file(const char *path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>File path. This file must exist and be writable.</td></tr>
+</table>
+

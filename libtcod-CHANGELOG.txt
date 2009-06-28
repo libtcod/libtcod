@@ -3,6 +3,90 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.4.1 : 2009 Mar 22
+X Default colors have been changed/added. 
+X TCODMap::computeFov changed to support several algorithms :
+   void computeFov(int playerX,int playerY, int maxRadius,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC)
+   available algorithms :
+   FOV_BASIC : classic libtcod fov
+   FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html
+   FOV_SHADOW : http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
+   FOV_PERMISSIVE : http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
+   light_walls : if false, wall cells are not put in the fov
+X setCustomFont changed :
+   defines the font number of characters instead of character size
+   if not specified, it is deduced from the layout flag (16x16 for ascii, 32x8 for tcod)
+   setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0)
+   The flag values have changed too:
+     TCOD_FONT_LAYOUT_ASCII_INCOL=1,
+     TCOD_FONT_LAYOUT_ASCII_INROW=2,
+     TCOD_FONT_TYPE_GREYSCALE=4,
+     TCOD_FONT_TYPE_GRAYSCALE=4,
+     TCOD_FONT_LAYOUT_TCOD=8,
++ added python wrapper
++ added arial, courier fonts courtesy of Mingos
++ added some non portable filesystem utilities in TCODSystem :
+	bool TCODSystem::createDirectory(const char *path);
+	bool TCODSystem::deleteDirectory(const char *path);
+	bool TCODSystem::deleteFile(const char *path);
++ added multithread utilities in TCODSystem :
+	static TCOD_thread_t TCODSystem::newThread(int (*func)(void *), void *data);
+	static void TCODSystem::deleteThread(TCOD_thread_t th);
+	static TCOD_mutex_t TCODSystem::newMutex();
+	static void TCODSystem::mutexIn(TCOD_mutex_t mut);
+	static void TCODSystem::mutexOut(TCOD_mutex_t mut);
+	static void TCODSystem::deleteMutex(TCOD_mutex_t mut);
+	static TCOD_semaphore_t TCODSystem::newSemaphore(int initVal);
+	static void TCODSystem::lockSemaphore(TCOD_semaphore_t sem);
+	static void TCODSystem::unlockSemaphore(TCOD_semaphore_t sem);
+	static void TCODSystem::deleteSemaphore( TCOD_semaphore_t sem);
++ added some image utilities :
+	void TCODImage::clear(const TCODColor col)
+	void TCODImage::invert()
+	void TCODImage::hflip()
+	void TCODImage::vflip()
+	void TCODImage::scale(int neww, int newh)
+	void TCODImage::setKeyColor(const TCODColor keyColor)
+	int TCODImage::getAlpha(int x,int y) const
+	bool TCODImage::isPixelTransparent(int x, int y) const
++ can now dynamically modify the content of the font bitmap :
+	static void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y)
++ added C and python code generation in the heightmap tool
++ added function to calculate the height of a printed string (with autowrapping) 
+  without actually printing it :
+    int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...)
+    int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...)
+    int TCODConsole::getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...)
++ parser : now strings properties can be splitted. The parser concatenates them :
+    myProperty = "string value can use "
+                 "multi line layout"
++ parser : added missing getCharProperty when using default listener
++ heightmap : added missing TCOD_heightmap_get_value function
++ now support fonts with unlimited number of characters (was limited to 1024 in 1.4.0)
++ added callback-based atomic bresenham function
+    static bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener)
++ added TCODMap::copy function
++ added TCODList fast remove functions (don't preserve the list order)
+    template<class T> void TCODList::removeFast(const T elt)
+    template<class T> T * TCODList::removeFast(T *elt)
+% pathfinding : you don't need to provide coordinates in x,y parameters of Path::walk
+% improved double/simple walls special characters in tcod layout fonts
+- fixed SDL dependant features not being available before initRoot is called.
+  If you want to draw on an offscreen console without calling initRoot, you
+  need to call at least setCustomFont to initialize the font. Else characters won't be rendered.
+- fixed standalone credits page erasing previously fps limit
+- fixed special characters TCOD_CHAR_DTEE* and TCOD_CHAR_DCROSS not printing correctly
+- fixed heightmap tool generated code not compiling
+- fixed parser C++ error function not prepending file name & line number to the error message
+- fixed memory leak in pathfinding
+- fixed fov issue with walkable, non transparent cells
+- fixed numerical stability issues with heightmap rain erosion
+- fixed calculation error in heightmap kernel transformation function
+- fixed TCODConsole::renderCredits being able to render the credits only once
+- fixed mouse cx,cy coordinates in "padded" fullscreen modes
+- fixed mouse cursor hidden when switching fullscreen
+- fixed mouse coordinates when going fullscreen->windowed
+=========================================================
 1.4.0 : 2008 Oct 16
 X Noise functions renamed : 
    TCODNoise::getNoise -> TCODNoise::getPerlin

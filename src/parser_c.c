@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -204,8 +204,30 @@ TCOD_value_t TCOD_parse_float_value() {
 
 TCOD_value_t TCOD_parse_string_value() {
 	TCOD_value_t ret;
+	TCOD_list_t l;
+	bool end=false;
+	char **s;
+	int slen=0;
+	l=TCOD_list_new();
 	if ( lex->token_type != TCOD_LEX_STRING ) TCOD_parser_error("parseStringValue : string constant expected instead of '%s'",lex->tok);
-	ret.s=strdup(lex->tok);
+	while ( !end ) {
+		TCOD_lex_t save;
+		TCOD_list_push(l,(void *)strdup(lex->tok));
+		TCOD_lex_savepoint(lex,&save);
+		if (TCOD_lex_parse(lex) != TCOD_LEX_STRING) {
+			end=true;
+			TCOD_lex_restore(lex,&save);
+		}
+	}
+	for (s=(char **)TCOD_list_begin(l); s != (char **)TCOD_list_end(l); s++ ) {
+		slen += strlen(*s);
+	}
+	ret.s=(char *)calloc(sizeof(char),slen+1);
+	for (s=(char **)TCOD_list_begin(l); s != (char **)TCOD_list_end(l); s++ ) {
+		strcat(ret.s,*s);
+		free(*s);
+	}
+	TCOD_list_delete(l);
 	return ret;
 }
 
@@ -740,6 +762,11 @@ int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name) {
 	return value ? value->i : 0;
 }
 
+int TCOD_parser_get_char_property(TCOD_parser_t parser, const char *name) {
+	const TCOD_value_t *value=TCOD_get_property(parser,TCOD_TYPE_CHAR,name);
+	return value ? value->c : 0;
+}
+
 float TCOD_parser_get_float_property(TCOD_parser_t parser, const char *name) {
 	const TCOD_value_t *value=TCOD_get_property(parser,TCOD_TYPE_FLOAT,name);
 	return value ? value->f : 0.0f;
@@ -759,6 +786,10 @@ TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name
 	static TCOD_dice_t default_dice={0,0,0.0f,0.0f};
 	const TCOD_value_t *value=TCOD_get_property(parser,TCOD_TYPE_DICE,name);
 	return value ? value->dice : default_dice;
+}
+
+void TCOD_parser_get_dice_property_py(TCOD_parser_t parser, const char *name, TCOD_dice_t *dice) {
+	*dice=TCOD_parser_get_dice_property(parser,name);
 }
 
 void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name) {

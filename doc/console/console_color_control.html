@@ -20,6 +20,8 @@ If you want to draw a string using different colors for each word, the basic sol
 The TCOD library offers a simpler way to do this, allowing you to draw a string using different colors in a single call. For this, you have to insert <b>color control codes</b> in your string.<br />
 A color control code is associated with a color set (a foreground color and a background color). If you insert this code in your string, the next characters will use the colors associated with the color control code.<br />
 There are 5 predefined color control codes :<br />
+For python, remove TCOD_ :
+libtcod.COLCTRL_1
 <p class="code"><pre>
 	TCOD_COLCTRL_1
 	TCOD_COLCTRL_2 
@@ -37,8 +39,10 @@ A string with a red over black word, using predefined color control codes :<br /
 <p class="code"><pre>
 C++ : TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
       TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
-C   : TCODConsole_set_color_control(TCOD_COLCTRL_1,red,black);
-      TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+C   : TCOD_console_set_color_control(TCOD_COLCTRL_1,red,black);
+      TCOD_console_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+Py  : libtcod.console_set_color_control(libtcod.COLCTRL_1,litbcod.red,litbcod.black)
+      libtcod.console_print_left(0,1,1,libtcod.BKGND_SET, "String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
 </pre></p>
 You can also use any color without assigning it to a control code, using the generic control codes :<br />
 <p class="code"><pre>
@@ -50,12 +54,15 @@ Example :<br />
 A string with a red word (over default background color), using generic color control codes :<br />
 <p class="code"><pre>
 C++ : TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
-C   : TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+C   : TCOD_console_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+Py  : litbcod.console_print_left(0,1,1,libtcod.BKGND_SET, "String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
 </pre></p>
 A string with a red over black word, using generic color control codes :<br />
 <p class="code"><pre>
 C++ : TCODConsole::root->printLeft(1,1,TCOD_BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word.",
             TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
-C   : TCODConsole_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word.",
+C   : TCOD_console_print_left(NULL,1,1,TCOD_BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word.",
             TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+Py  : libtcod.console_print_left(0,1,1,libtcod.BKGND_SET, "String with a %c%c%c%c%c%c%c%cred%c word."%
+            (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
 </pre></p>

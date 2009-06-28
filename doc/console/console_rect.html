@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : void TCODConsole::rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 C   : void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag)
+Py  : console_rect(con,x,  y,  w, h, clear, flag)
 </pre></p>
 Defines a rectangle inside a console. For each cell in the rectangle :<br />
 - set the cell's background color to the console default background color<br />

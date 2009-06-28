@@ -20,6 +20,7 @@ To release the resources used by a path, destroy it with :<br />
 <p class="code"><pre>
 C++ : TCODPath::~TCODPath()
 C   : void TCOD_path_delete(TCOD_path_t path)
+Py  : path_delete(path)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -33,4 +34,7 @@ C++ : TCODPath *path = new TCODPath(myMap); // allocate the path
 C   : TCOD_path_t path = TCOD_path_new_using_map(my_map);
       /* use the path ... */
       TCOD_path_delete(path);
+Py  : path = libtcod.path_new_using_map(my_map)
+      # use the path ... 
+      libtcod.path_delete(path)
 </pre></p>

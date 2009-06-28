@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -38,8 +38,8 @@ TCODConsole::TCODConsole(int w, int h) {
 	data = TCOD_console_new(w,h);
 }
 
-void TCODConsole::setCustomFont(const char *fontFile,int charWidth, int charHeight, int flags) {
-	TCOD_console_set_custom_font(fontFile,charWidth,charHeight,flags);
+void TCODConsole::setCustomFont(const char *fontFile, int flags,int nbCharHoriz, int nbCharVertic) {
+	TCOD_console_set_custom_font(fontFile,flags,nbCharHoriz,nbCharVertic);
 }
 
 void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY) {
@@ -63,7 +63,7 @@ TCOD_key_t TCODConsole::waitForKeypress(bool flush) {
 }
 
 bool TCODConsole::isWindowClosed() {
-	return TCOD_console_is_window_closed();
+	return TCOD_console_is_window_closed() != 0;
 }
 
 int TCODConsole::getWidth() const {
@@ -115,7 +115,7 @@ void TCODConsole::setFullscreen(bool fullscreen) {
 }
 
 bool TCODConsole::isFullscreen() {
-	return TCOD_console_is_fullscreen();
+	return TCOD_console_is_fullscreen() != 0;
 }
 
 TCODConsole::~TCODConsole() {
@@ -203,28 +203,28 @@ void TCODConsole::printFrame(int x,int y,int w,int h, bool empty, const char *fm
 void TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	TCOD_console_print(data,x,y,getWidth()-x,getHeight()-y,flag,LEFT,TCOD_console_vsprint(fmt,ap),false);
+	TCOD_console_print(data,x,y,getWidth()-x,getHeight()-y,flag,LEFT,TCOD_console_vsprint(fmt,ap),false,false);
 	va_end(ap);
 }
 
 void TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	TCOD_console_print(data,x,y,x+1,getHeight()-y,flag,RIGHT,TCOD_console_vsprint(fmt,ap),false);
+	TCOD_console_print(data,x,y,x+1,getHeight()-y,flag,RIGHT,TCOD_console_vsprint(fmt,ap),false,false);
 	va_end(ap);
 }
 
 void TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	TCOD_console_print(data,x,y,getWidth(),getHeight()-y,flag,CENTER,TCOD_console_vsprint(fmt,ap),false);
+	TCOD_console_print(data,x,y,getWidth(),getHeight()-y,flag,CENTER,TCOD_console_vsprint(fmt,ap),false,false);
 	va_end(ap);
 }
 
 int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	int ret = TCOD_console_print(data,x,y,w,h,flag,LEFT,TCOD_console_vsprint(fmt,ap),true);
+	int ret = TCOD_console_print(data,x,y,w,h,flag,LEFT,TCOD_console_vsprint(fmt,ap),true,false);
 	va_end(ap);
 	return ret;
 }
@@ -232,7 +232,7 @@ int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t fla
 int TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	int ret = TCOD_console_print(data,x,y,w,h,flag,RIGHT,TCOD_console_vsprint(fmt,ap),true);
+	int ret = TCOD_console_print(data,x,y,w,h,flag,RIGHT,TCOD_console_vsprint(fmt,ap),true,false);
 	va_end(ap);
 	return ret;
 }
@@ -240,7 +240,31 @@ int TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t fl
 int TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	int ret = TCOD_console_print(data,x,y,w,h,flag,CENTER,TCOD_console_vsprint(fmt,ap),true);
+	int ret = TCOD_console_print(data,x,y,w,h,flag,CENTER,TCOD_console_vsprint(fmt,ap),true,false);
+	va_end(ap);
+	return ret;
+}
+
+int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	int ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,LEFT,TCOD_console_vsprint(fmt,ap),true,true);
+	va_end(ap);
+	return ret;
+}
+
+int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	int ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,RIGHT,TCOD_console_vsprint(fmt,ap),true,true);
+	va_end(ap);
+	return ret;
+}
+
+int TCODConsole::getHeightCenterRect(int x, int y, int w, int h,const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	int ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap),true,true);
 	va_end(ap);
 	return ret;
 }
@@ -254,7 +278,7 @@ void TCODConsole::disableKeyboardRepeat() {
 }
 
 bool TCODConsole::isKeyPressed(TCOD_keycode_t key) {
-	return TCOD_console_is_key_pressed(key);
+	return TCOD_console_is_key_pressed(key) != 0;
 }
 void TCODConsole::setKeyColor(const TCODColor &col) {
 	TCOD_color_t c={col.r,col.g,col.b};
@@ -266,6 +290,6 @@ void TCODConsole::credits() {
 }
 
 bool TCODConsole::renderCredits(int x, int y, bool alpha) {
-	return TCOD_console_credits_render(x,y,alpha);
+	return TCOD_console_credits_render(x,y,alpha) != 0;
 }
 

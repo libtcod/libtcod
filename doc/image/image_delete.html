@@ -4,7 +4,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.10 Deleting an image<br />
+5.12 Deleting an image<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -19,6 +19,7 @@ You can destroy an image and release used resources with :<br/>
 <p class="code"><pre>
 C++ : TCODImage::~TCODImage()
 C   : void TCOD_image_delete(TCOD_image_t image)
+Py  : image_delete(image)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -32,4 +33,7 @@ C++ : TCODImage *pix = new TCODImage(80,50);
 C   : TCOD_image_t pix = TCOD_image_new(80,50);
       /* ... use pix */
       TCOD_image_delete(pix);
+Py  : pix = libtcod.image_new(80,50)
+      # ... use pix
+      libtcod.image_delete(pix)
 </pre></p>

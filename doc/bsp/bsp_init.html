@@ -20,6 +20,7 @@ First, you have to create the root node of the tree. This node encompasses the w
 <p class="code"><pre>
 C++ : TCODBsp::TCODBsp(int x,int y,int w, int h)
 C   : TCOD_bsp_t *TCOD_bsp_new_with_size(int x,int y,int w, int h)
+Py  : bsp_new_with_size(x,y,w, h)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -30,4 +31,5 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODBsp *myBSP = new TCODBsp(0,0,50,50);
 C   : TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+Py  : my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
 </pre></p>

@@ -17,8 +17,9 @@ th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
 <p class="code"><pre>
-C++ : void TCODConsole::hline(int x,int y, int l)
-C   : void TCOD_console_hline(TCOD_console_t con,int x,int y, int l)
+C++ : void TCODConsole::hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
+C   : void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag)
+Py  : console_hline(con,x,y,l,flag)
 </pre></p>
 Draws an horizontal line in the console, using ASCII code <a href="ascii_constants.html">TCOD_CHAR_HLINE</a> (196), and the console's default background/foreground colors.<br />
 <table class="param">
@@ -26,5 +27,6 @@ Draws an horizontal line in the console, using ASCII code <a href="ascii_constan
 <tr><td>con</td><td>In the C version, the offscreen console handler or NULL for the root console.</td></tr>
 <tr><td>x,y</td><td>Coordinates of the line's left end in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
 <tr><td>l</td><td>The length of the line in cells 1 &lt;= l &lt;= console width - x</td></tr>
+<tr><td>flag</td><td>Operation on the background color</td></tr>
 </table>
 

@@ -1,6 +1,6 @@
 <p align="center">
 =====================================<br />
-The Doryen library v1.4.0<br />
+The Doryen library v1.4.1<br />
 =====================================<br />
 
 Library content :<br />
@@ -44,21 +44,23 @@ To use the library, just include the right file :<br />
 <p class="code"><pre>
 C++ : #include "libtcod.hpp"
 C   : #include "libtcod.h"
+Py  : import libtcodpy as libtcod
 </pre></p>
-Of course, you have to put the libtcod include directory in your compiler include path.<br />
+For C/C++, you have to put the libtcod include directory in your compiler include path.<br />
 <br />
 <b>Linking</b><br />
 With Visual Studio, add the libtcod-VS.lib in your linker inputs.<br />
 With Mingw32, add -L./lib -ltcod-mingw to your linking command to link with lib/libtcod-mingw.a.<br />
 With gcc on Linux, add -ltcod to your linking command to link with libtcod.so.<br />
 With g++ on Linux, add -ltcod -ltcod++ to your linking command to link with libtcod++.so.<br />
+With g++ on MacOSX, add -ltcod -ltcod++ to your linking command to link with libtcod++.a<br />
 <p class="code"><pre>
 gcc -O3 sample.c -o samples_c -L. -ltcod -I include
 g++ -O3 sample.cpp -o samples_cpp -L. -ltcod -ltcod++ -I include
 </pre></p>
 <br />
 <b>Running</b><br />
-On windows, libtcod-*.dll must be in the same directory as your game exe.<br />
+On windows, libtcod-*.dll must be in the same directory as your game exe or py.<br />
 On Linux, libtcod.so (and libtcod++.so if you're using C++) must be in your LD_LIBRARY_PATH :<br />
 <p class="code"><pre>
 export LD_LIBRARY_PATH=.

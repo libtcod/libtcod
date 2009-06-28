@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static void TCODConsole::setFullscreen(bool fullscreen)
 C   : void TCOD_console_set_fullscreen(bool fullscreen)
+Py  : console_set_fullscreen(fullscreen)
 </pre></p>
 This function switches the root console to fullscreen or windowed mode.<br />
 <table class="param">
@@ -30,7 +31,8 @@ Example for an Alt-Enter combination :<br />
 <p class="code"><pre>
 C++ : TCOD_key_t key=TCODConsole::checkForKeypress();
       if ( key.vk == TCODK_ENTER && key.lalt ) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-      
 C   : TCOD_key_t key=TCOD_console_check_for_keypress();
       if ( key.vk == TCODK_ENTER && key.lalt ) TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
+Py  : key=libtcod.console_check_for_keypress()
+      if key.vk == libtcod.KEY_ENTER and key.lalt : libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 </pre></p>

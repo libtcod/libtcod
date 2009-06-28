@@ -4,7 +4,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.7 Changing the color of a pixel<br />
+5.8 Changing the color of a pixel<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -19,6 +19,7 @@ You can modify the colors of an image with :<br />
 <p class="code"><pre>
 C++ : TCODColor TCODImage::putPixel(int x, int y, const TCODColor col)
 C   : void TCOD_image_put_pixel(TCOD_image_t image,int x, int y,TCOD_color_t col)
+Py  : image_put_pixel(image,x, y,col)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -32,4 +33,6 @@ C++ : TCODImage *pix = new TCODImage(80,50);
       pix->putPixel(40,25,TCODColor::white);
 C   : TCOD_image_t pix = TCOD_image_new(80,50);
       TCOD_image_put_pixel(pix,40,25,TCOD_white);
+Py  : pix = libtcod.image_new(80,50)
+      libtcod.image_put_pixel(pix,40,25,libtcod.white)
 </pre></p>

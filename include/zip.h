@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -38,6 +38,9 @@ TCODLIB_API void TCOD_zip_put_char(TCOD_zip_t zip, char val);
 TCODLIB_API void TCOD_zip_put_int(TCOD_zip_t zip, int val);
 TCODLIB_API void TCOD_zip_put_float(TCOD_zip_t zip, float val);
 TCODLIB_API void TCOD_zip_put_string(TCOD_zip_t zip, const char *val);
+TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val);
+TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val);
+TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val);
 TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data);
 TCODLIB_API int TCOD_zip_save_to_file(TCOD_zip_t zip, const char *filename);
 
@@ -47,6 +50,9 @@ TCODLIB_API char TCOD_zip_get_char(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_int(TCOD_zip_t zip);
 TCODLIB_API float TCOD_zip_get_float(TCOD_zip_t zip);
 TCODLIB_API const char *TCOD_zip_get_string(TCOD_zip_t zip);
+TCODLIB_API TCOD_color_t TCOD_zip_get_color(TCOD_zip_t zip);
+TCODLIB_API TCOD_image_t TCOD_zip_get_image(TCOD_zip_t zip);
+TCODLIB_API TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void *data);
 
 #endif

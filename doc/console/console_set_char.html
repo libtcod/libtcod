@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : void TCODConsole::setChar(int x, int y, int c)
 C   : void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c)
+Py  : console_set_char(con, x,  y, c)
 </pre></p>
 This function modifies the ASCII code of a cell, leaving other properties (background and foreground colors) unchanged.<br />
 Note that since a clear console has both background and foreground colors set to black for every cell, using setchar will produce black characters on black background. Use putchar instead.<br />

@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : TCODConsole::~TCODConsole()
 C   : void TCOD_console_delete(TCOD_console_t console)
+Py  : console_delete(console)
 </pre></p>
 Use this function to destroy an offscreen console and release any resources allocated. Don't use it on the root console.<br />
 <table class="param">
@@ -33,4 +34,7 @@ C++ : TCODConsole *off1 = new TCODConsole(80,50);
 C   : TCOD_console_t off1 = TCOD_console_new(80,50);
       ... use off1
       TCOD_console_delete(off1); /* destroy the offscreen console */
+Py  : off1 = libtcod.console_new(80,50)
+      ... use off1
+      libtcod.console_delete(off1) # destroy the offscreen console
 </pre></p>

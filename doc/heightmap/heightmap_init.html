@@ -24,6 +24,7 @@ C   : typedef struct {
           float *values;
       } TCOD_heightmap_t;
       TCOD_heightmap_t *TCOD_heightmap_new(int w,int h)
+Py  : heightmap_new(w,h)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -36,4 +37,6 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODHeightMap myMap(50,50);
 C   : TCOD_heightmap_t *my_map=TCOD_heightmap_new(50,50);
+Py  : map=libtcod.heightmap_new(50,50)
+      print map.w, map.h
 </pre></p>

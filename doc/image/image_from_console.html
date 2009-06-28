@@ -21,6 +21,7 @@ You can then save the image to a file with the <a href="image_save.html">save</a
 <p class="code"><pre>
 C++ : TCODImage::TCODImage(const TCODConsole *console)
 C   : TCOD_image_t TCOD_image_from_console(TCOD_console_t console)
+Py  : image_from_console(console)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -30,10 +31,12 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODImage *pix = new TCODImage(TCODConsole::root);
 C   : TCOD_image_t pix = TCOD_image_from_console(NULL);
+Py  : pix = libtcod.image_from_console(0)
 </pre></p>If you need to refresh the image with the console's new content, you don't have to delete it and create another one. Instead, use this function :<br />
 <p class="code"><pre>
 C++ : void TCODImage::refreshConsole(const TCODConsole *console)
 C   : void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console)
+Py  : image_refresh_console(image, console)
 </pre></p>
 Note that you must use the same console that was used in the TCOD_image_from_console call (or at least a console with the same size).
 <table class="param">
@@ -49,4 +52,7 @@ C++ : TCODImage *pix = new TCODImage(TCODConsole::root); // create an image from
 C   : TCOD_image_t pix = TCOD_image_from_console(NULL);
       /* ... modify the console .. */
       TCOD_image_refresh_console(pix,NULL);
+Py  : pix = libtcod.image_from_console(0)
+      # ... modify the console .. 
+      libtcod.image_refresh_console(pix,0)
 </pre></p>

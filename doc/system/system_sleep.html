@@ -23,6 +23,7 @@ You can dynamically change the frame rate. Just call this function once again.<b
 <p class="code"><pre>
 C++ : static void TCODSystem::setFps(int val)
 C   : void TCOD_sys_set_fps(int val)
+Py  : sys_set_fps(val)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -32,6 +33,7 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODSystem::setFps(25);
 C   : TCOD_sys_set_fps(25);
+Py  : libtcod.sys_set_fps(25)
 </pre></p>
 <br />
 The getFps function returns the actual number of frames rendered during the last second.<br/>
@@ -39,11 +41,13 @@ This value is updated every second.<br />
 <p class="code"><pre>
 C++ : static int TCODSystem::getFps()
 C   : int TCOD_sys_get_fps()
+Py  : sys_get_fps()
 </pre></p>
 Example :<br />
 <p class="code"><pre>
 C++ : int fps = TCODSystem::getFps();
 C   : int fps = TCOD_sys_get_fps();
+Py  : fps = libtcod.sys_get_fps()
 </pre></p>
 <br />
 The getLastFrameLength function return the length in seconds of the last rendered frame.<br/>
@@ -51,6 +55,7 @@ You can use this value to update every time dependant object in the world.<br />
 <p class="code"><pre>
 C++ : static float TCODSystem::getLastFrameLength()
 C   : float TCOD_sys_get_last_frame_length()
+Py  : sys_get_last_frame_length()
 </pre></p>
 Example : moving an objet at 5 console cells per second<br />
 <p class="code"><pre>
@@ -60,12 +65,17 @@ C++ : float x=0,y=0; // object coordinates
 C   : float x=0,y=0;
       x += 5 * TCOD_sys_get_last_frame_length();
       TCOD_console_put_char(NULL,(int)(x),(int)(y),'@');
+Py  : x=0.0
+      y=0.0
+      x += 5 * libtcod.sys_get_last_frame_length()
+      libtcod.console_put_char(0,int(x),int(y),'@')
 </pre></p>
 <br />
 The sleepMilli function allows you to stop the program execution for a specified number of milliseconds.<br/>
 <p class="code"><pre>
 C++ : static void TCODSystem::sleepMilli(uint32 val)
 C   : void TCOD_sys_sleep_milli(uint32 val)
+Py  : sys_sleep_milli(val)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -75,26 +85,31 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODSystem::sleepMilli(50);
 C   : TCOD_sys_sleep_milli(50);
+Py  : libtcod.sys_sleep_milli(50)
 </pre></p>
 <br />
 This function returns the number of milliseconds since the program has started.<br/>
 <p class="code"><pre>
 C++ : static uint32 TCODSystem::getElapsedMilli()
 C   : uint32 TCOD_sys_elapsed_milli()
+Py  : sys_elapsed_milli()
 </pre></p>
 Example :<br />
 <p class="code"><pre>
 C++ : uint32 milli=TCODSystem::getElapsedMilli();
 C   : uint32 milli=TCOD_sys_elapsed_milli();
+Py  : milli=libtcod.sys_elapsed_milli()
 </pre></p>
 <br />
 This function returns the number of seconds since the program has started.<br/>
 <p class="code"><pre>
 C++ : static float TCODSystem::getElapsedSeconds()
 C   : float TCOD_sys_elapsed_seconds()
+Py  : sys_elapsed_seconds()
 </pre></p>
 Example :<br />
 <p class="code"><pre>
 C++ : float seconds = TCODSystem::getElapsedSeconds();
 C   : float seconds = TCOD_sys_elapsed_seconds();
+Py  : seconds = libtcod.sys_elapsed_seconds()
 </pre></p>

@@ -4,7 +4,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.4 Getting the size of an image<br />
+5.5 Getting the size of an image<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -19,6 +19,7 @@ You can read the size of an image in pixels with :<br />
 <p class="code"><pre>
 C++ : void TCODImage::getSize(int *w,int *h) const
 C   : void TCOD_image_get_size(TCOD_image_t image, int *w,int *h)
+Py  : image_get_size(image) # returns w,h
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -33,4 +34,7 @@ C++ : TCODImage *pix = new TCODImage(80,50);
 C   : TCOD_image_t pix = TCOD_image_new(80,50);
       int w,h;
       TCOD_image_get_size(pix,&w,&h); /* w = 80, h = 50 */
+Py  : pix = libtcod.image_new(80,50)
+      w,h=libtcod.image_get_size(pix)
+      # w = 80, h = 50 
 </pre></p>

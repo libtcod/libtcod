@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -61,17 +61,17 @@ public :
 	void digHill(float hx, float hy, float hradius, float height);
 	void digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
 	void rainErosion(int nbDrops,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
-	void heatErosion(int nbPass,float minSlope,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
+//	void heatErosion(int nbPass,float minSlope,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
 	void kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel);
 	void addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd);
-	void midPointDeplacement(TCODRandom *rnd);
+//	void midPointDeplacement(TCODRandom *rnd);
 	void addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 	void scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 	void islandify(float seaLevel,TCODRandom *rnd); // lowers the terrain near the heightmap borders
 	// TODO : checks island connectivity with floodfill
 private :
-	void setMPDHeight(TCODRandom *rnd,int x,int y, float z, float offset);
-	void setMDPHeightSquare(TCODRandom *rnd,int x, int y, int initsz, int sz,float offset);
+//	void setMPDHeight(TCODRandom *rnd,int x,int y, float z, float offset);
+//	void setMDPHeightSquare(TCODRandom *rnd,int x, int y, int initsz, int sz,float offset);
 };
 
 #endif

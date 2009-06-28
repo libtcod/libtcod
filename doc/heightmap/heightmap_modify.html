@@ -34,6 +34,7 @@ This function adds a hill (a half spheroid) at given position.<br />
 <p class="code"><pre>
 C++ : void TCODHeightmap::addHill(float x, float y, float radius, float height)
 C   : void TCOD_heightmap_add_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
+Py  : heightmap_add_hill(hm, x, y, radius, height)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -49,6 +50,7 @@ It's main goal is to carve things in maps (like rivers) by digging hills along a
 <p class="code"><pre>
 C++ : void TCODHeightmap::digHill(float hx, float hy, float hradius, float height)
 C   : void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
+Py  : heightmap_dig_hill(hm, x, y, radius, height)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -63,6 +65,7 @@ This function simulates the effect of rain drops on the terrain, resulting in er
 <p class="code"><pre>
 C++ : void TCODHeightmap::rainErosion(int nbDrops,float erosionCoef,float sedimentationCoef,TCODRandom *rnd)
 C   : void TCOD_heightmap_rain_erosion(TCOD_heightmap_t *hm, int nbDrops,float erosionCoef,float sedimentationCoef,TCOD_random_t rnd)
+Py  : heightmap_rain_erosion(hm, nbDrops,erosionCoef,sedimentationCoef,rnd=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -78,6 +81,7 @@ This function allows you to apply a generic transformation on the map, so that e
 <p class="code"><pre>
 C++ : void TCODHeightmap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 C   : void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
+Py  : heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,maxLevel)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -94,6 +98,7 @@ This function adds values from a <a href="http://en.wikipedia.org/wiki/Voronoi_d
 <p class="code"><pre>
 C++ : void TCODHeightmap::addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd)
 C   : void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, float *coef,TCOD_random_t rnd)
+Py  : heightmap_add_voronoi(hm, nbPoints, nbCoef, coef,rnd=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -109,6 +114,7 @@ This function adds values from a <a href="../noise/index.html">simplex fbm funct
 <p class="code"><pre>
 C++ : void TCODHeightmap::addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 C   : void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+Py  : heightmap_add_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -124,6 +130,7 @@ This function works exactly as the previous one, but it multiplies the resulting
 <p class="code"><pre>
 C++ : void TCODHeightmap::scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 C   : void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+Py  : heightmap_scale_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
 </pre></p>
 <hr />
 <a name="15.3.8"></a><h4>15.3.8 Dig along a Bezier curve</h4>
@@ -132,6 +139,7 @@ Both radius and depth can vary linearly along the path.<br />
 <p class="code"><pre>
 C++ : void TCODHeightmap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
 C   : void TCOD_heightmap_dig_bezier(TCOD_heightmap_t *hm, int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
+Py  : heightmap_dig_bezier(hm, px, py,  startRadius,  startDepth, endRadius, endDepth)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

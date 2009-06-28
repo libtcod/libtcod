@@ -1,6 +1,6 @@
 # libtcod makefile
 # to build debug version, run make FLAGS=-g
-# to build release version, run make FLAGS=-O2 -s
+# to build release version, run make FLAGS='-O2 -s'
 BINDIR=../../bin/linux
 SRCDIR=src
 INCDIR=include
@@ -22,7 +22,7 @@ PNG_FLAGS=-I $(PNG_DIR)/include
 PNG_LIBS=$(PNG_DIR)/lib/linux/libpng.a
 
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 TEMP=/tmp
 CC=gcc
 CPP=g++
@@ -32,6 +32,8 @@ $(TEMP)/libtcod/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 $(TEMP)/libtcod/%.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/libtcod/gui/%.o : $(SRCDIR)/gui/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
 
 LIBOBJS_C= \
 	$(TEMP)/libtcod/bresenham_c.o \
@@ -39,6 +41,11 @@ LIBOBJS_C= \
 	$(TEMP)/libtcod/color_c.o \
 	$(TEMP)/libtcod/console_c.o \
 	$(TEMP)/libtcod/fov_c.o \
+	$(TEMP)/libtcod/fov_circular_raycasting.o \
+	$(TEMP)/libtcod/fov_diamond_raycasting.o \
+	$(TEMP)/libtcod/fov_digital.o \
+	$(TEMP)/libtcod/fov_recursive_shadowcasting.o \
+	$(TEMP)/libtcod/fov_permissive2.o \
 	$(TEMP)/libtcod/heightmap_c.o \
 	$(TEMP)/libtcod/image_c.o \
 	$(TEMP)/libtcod/lex_c.o \
@@ -47,10 +54,12 @@ LIBOBJS_C= \
 	$(TEMP)/libtcod/noise_c.o \
 	$(TEMP)/libtcod/parser_c.o \
 	$(TEMP)/libtcod/path_c.o \
+	$(TEMP)/libtcod/sys_c.o \
 	$(TEMP)/libtcod/sys_sdl_c.o \
 	$(TEMP)/libtcod/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/tree_c.o \
+	$(TEMP)/libtcod/wrappers.o \
 	$(TEMP)/libtcod/zip_c.o
 
 LIBOBJS_CPP= \
@@ -70,10 +79,28 @@ LIBOBJS_CPP= \
 	$(TEMP)/libtcod/sys.o \
 	$(TEMP)/libtcod/zip.o
 
+GUIOBJS= \
+	$(TEMP)/libtcod/gui/button.o \
+	$(TEMP)/libtcod/gui/container.o \
+	$(TEMP)/libtcod/gui/flatlist.o \
+	$(TEMP)/libtcod/gui/hbox.o \
+	$(TEMP)/libtcod/gui/image.o \
+	$(TEMP)/libtcod/gui/label.o \
+	$(TEMP)/libtcod/gui/radiobutton.o \
+	$(TEMP)/libtcod/gui/slider.o \
+	$(TEMP)/libtcod/gui/statusbar.o \
+	$(TEMP)/libtcod/gui/textbox.o \
+	$(TEMP)/libtcod/gui/togglebutton.o \
+	$(TEMP)/libtcod/gui/toolbar.o \
+	$(TEMP)/libtcod/gui/vbox.o \
+	$(TEMP)/libtcod/gui/widget.o
 
-all : libtcod.so libtcod++.so
+all : libtcod.so libtcod++.so libtcod-gui.so
 
 $(TEMP)/libtcod :
+	mkdir -p $@
+
+$(TEMP)/libtcod/gui :
 	mkdir -p $@
 
 libtcod.a : $(LIBOBJS_C)
@@ -88,6 +115,9 @@ libtcod.so : $(TEMP)/libtcod $(LIBOBJS_C)
 libtcod++.so : $(TEMP)/libtcod $(LIBOBJS_CPP)
 	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP) -L. -ltcod $(CFLAGS)
 
+libtcod-gui.so : $(TEMP)/libtcod $(TEMP)/libtcod/gui $(GUIOBJS)
+	gcc -shared -Wl,-soname,$@ -o $@ $(GUIOBJS) -L. -ltcod -ltcod++ $(CFLAGS)
+
 clean : 
-	\rm -f $(LIBOBJS_C) $(LIBOBJS_CPP) libtcod.a libtcod++.a libtcod.so libtcod++.so
+	\rm -f $(LIBOBJS_C) $(LIBOBJS_CPP) $(GUIOBJS) libtcod.a libtcod++.a libtcod.so libtcod++.so libtcod-gui.so libtcodpy.pyc
 

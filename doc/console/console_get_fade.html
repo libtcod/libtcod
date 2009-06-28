@@ -19,10 +19,12 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static uint8 TCODConsole::getFade()
 C   : uint8 TCOD_console_get_fade()
+Py  : console_get_fade()
 </pre></p>
 This function returns the current fade amount, previously defined by <a href="console_set_fade.html">setFade</a>.<br />
 Example :<br />
 <p class="code"><pre>
 C++ : uint8 currentFade = TCODConsole::getFade();
 C   : uint8 current_fade = TCOD_console_get_fade();
+Py  : current_fade=libtcod.console_get_fade()
 </pre></p>

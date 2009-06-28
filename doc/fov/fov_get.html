@@ -21,6 +21,7 @@ Once your computed the field of view, you can know if a cell is visible with :<b
 <p class="code"><pre>
 C++ : bool TCODMap::isInFov(int x, int y) const
 C   : bool TCOD_map_is_in_fov(TCOD_map_t map, int x, int y)
+Py  : map_is_in_fov(map, x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -38,12 +39,18 @@ C   : TCOD_map_t map = TCOD_map_new(50,50);
       TCOD_map_set_properties(map,10,10,true,true);
       TCOD_map_compute_fov(map,10,10);
       bool visible = TCOD_map_is_in_fov(map,10,10);
+Py  : map = libtcod.map_new(50,50)
+      libtcod.map_set_properties(map,10,10,True,True)
+      libtcod.map_compute_fov(map,10,10)
+      visible = libtcod.map_is_in_fov(map,10,10)
 </pre></p>You can also retrieve transparent/walkable informations with :<br />
 <p class="code"><pre>
 C++ : bool TCODMap::isTransparent(int x, int y) const
       bool TCODMap::isWalkable(int x, int y) const
 C   : bool TCOD_map_is_transparent(TCOD_map_t map, int x, int y)
       bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y)
+Py  : map_is_transparent(map, x, y)
+      map_is_walkable(map, x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

@@ -36,18 +36,21 @@ C++ : TCODList&lt;int&gt; intList; // the list is empty (contains 0 elements)
       intList.insertBefore(2,0); // the list contains 2 elements : 2,5
 C   : TCOD_list_t intList = TCOD_list_new();
       TCOD_list_set(intList,0,(const void *)5);
-      TCOD_list_insert_before(intList,(const void *)2,(const void *)0);
+      TCOD_list_insert_before(intList,(const void *)2,0);
 </pre></p><br /><hr />
 You can remove an element from the list.<br />
 <p class="code"><pre>
 C++ : template &lt;class T&gt; void TCODList::remove(const T elt)
+      template &lt;class T&gt; void TCODList::removeFast(const T elt)
 C   : void TCOD_list_remove(TCOD_list_t l, const void * elt)
+      void TCOD_list_remove_fast(TCOD_list_t l, const void * elt)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>elt</td><td>The element to remove</td></tr>
 <tr><td>l</td><td>In the C version, the list handler, returned by <a href="list_init.html">a constructor</a>.</td></tr>
 </table>
+The _fast versions replace the element to remove with the last element of the list. They're faster, but do not preserve the list order.
 <br />
 Example :<br />
 <p class="code"><pre>

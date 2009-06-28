@@ -21,6 +21,7 @@ Once you created a TCODPath object, you can compute the path between two points 
 <p class="code"><pre>
 C++ : bool TCODPath::compute(int ox, int oy, int dx, int dy)
 C   : bool TCOD_path_compute(TCOD_path_t path, int ox,int oy, int dx, int dy)
+Py  : path_compute(path, ox, oy, dx, dy)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -38,4 +39,7 @@ C++ : TCODMap *myMap = new TCODMap(50,50);
 C   : TCOD_map_t my_map=TCOD_map_new(50,50);
       TCOD_path_t path = TCOD_path_new_using_map(my_map);
       TCOD_path_compute(path,5,5,25,25);
+Py  : my_map=libtcod.map_new(50,50)
+      path = libtcod.path_new_using_map(my_map)
+      libtcod.path_compute(path,5,5,25,25)
 </pre></p>

@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -91,7 +91,7 @@ void TCODHeightMap::digBezier(int px[4], int py[4], float startRadius, float sta
 
 bool TCODHeightMap::hasLandOnBorder(float seaLevel) const {
 	TCOD_heightmap_t hm={w,h,values};
-	return TCOD_heightmap_has_land_on_border(&hm,seaLevel);
+	return TCOD_heightmap_has_land_on_border(&hm,seaLevel) != 0;
 }
 
 void TCODHeightMap::islandify(float seaLevel,TCODRandom *rnd) {
@@ -150,11 +150,6 @@ void TCODHeightMap::rainErosion(int nbDrops, float erosionCoef,float agregationC
 	TCOD_heightmap_rain_erosion(&hm, nbDrops, erosionCoef, agregationCoef, rnd->data);
 }
 
-void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,float agregationCoef,TCODRandom *rnd) {
-	TCOD_heightmap_t hm={w,h,values};
-	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, agregationCoef, rnd->data);
-}
-
 void TCODHeightMap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel) {
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_kernel_transform(&hm, kernelSize,dx,dy,weight,minLevel, maxLevel);
@@ -165,8 +160,15 @@ void TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom 
 	TCOD_heightmap_add_voronoi(&hm, nbPoints, nbCoef, coef, rnd->data);
 }
 
+#if 0
+void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,float agregationCoef,TCODRandom *rnd) {
+	TCOD_heightmap_t hm={w,h,values};
+	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, agregationCoef, rnd->data);
+}
+
 void TCODHeightMap::midPointDeplacement(TCODRandom *rnd) {
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_mid_point_deplacement(&hm, rnd->data);
 }
+#endif
 

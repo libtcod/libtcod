@@ -51,6 +51,9 @@ C++ : TCODBsp *TCODBsp::getLeft() const
 C   : TCOD_bsp_t * TCOD_bsp_left(TCOD_bsp_t *node)
       TCOD_bsp_t * TCOD_bsp_right(TCOD_bsp_t *node)
       TCOD_bsp_t * TCOD_bsp_father(TCOD_bsp_t *node)
+Py  : bsp_left(node)
+      bsp_right(node)
+      bsp_father(node)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -61,12 +64,14 @@ You can know if a node is a leaf (not splitted, no sons) with this function :<br
 <p class="code"><pre>
 C++ : bool TCODBsp::isLeaf() const
 C   : bool TCOD_bsp_is_leaf(TCOD_bsp_t *node)
+Py  : bsp_is_leaf(node)
 </pre></p>
 <br />
 You can check if a map cell is inside a node.<br />
 <p class="code"><pre>
 C++ : bool TCODBsp::contains(int cx, int cy) const
 C   : bool TCOD_bsp_contains(TCOD_bsp_t *node, int cx, int cy)
+Py  : bsp_contains(node, cx, cy)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -78,6 +83,7 @@ You can search the tree for the smallest node containing  a map cell. If the cel
 <p class="code"><pre>
 C++ : TCODBsp *TCODBsp::findNode(int cx, int cy)
 C   : TCOD_bsp_t * TCOD_bsp_find_node(TCOD_bsp_t *node, int cx, int cy)
+Py  : bsp_find_node(node, cx, cy)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

@@ -37,6 +37,13 @@ C   : typedef bool (*TCOD_bsp_callback_t)(TCOD_bsp_t *node, void *userData)
       bool TCOD_bsp_traverse_post_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
       bool TCOD_bsp_traverse_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
       bool TCOD_bsp_traverse_inverted_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+Py  : def bsp_callback(node, userData) : # ...
+
+      bsp_traverse_pre_order(node, callback, userData=0)
+      bsp_traverse_in_order(node, callback, userData=0)
+      bsp_traverse_post_order(node, callback, userData=0)
+      bsp_traverse_level_order(node, callback, userData=0)
+      bsp_traverse_inverted_level_order(node, callback, userData=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -70,5 +77,9 @@ C   : bool my_callback(TCOD_bsp_t *node, void *userData) {
             return true;
       }
       TCOD_bsp_traverse_post_order(my_bsp,my_callback,NULL);
+Py  : def my_callback(node, userData) :
+            print "node pos %dx%d size %dx%d level %d"%(node.x,node.y,node.w,node.h,node.level))
+            return True
+      libtcod.bsp_traverse_post_order(my_bsp,my_callback)
 </pre></p>
 

@@ -22,6 +22,7 @@ To get a random integer :<br />
 <p class="code"><pre>
 C++ : int TCODRandom::getInt(int min, int max)
 C   : int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max)
+Py  : random_get_int(mersenne, mi, ma)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -33,6 +34,7 @@ To get a random floating point number :<br />
 <p class="code"><pre>
 C++ : float TCODRandom::getFloat(float min, float max)
 C   : float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max)
+Py  : random_get_float(mersenne, mi, ma)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -53,12 +55,18 @@ C   : /* default generator */
       /* another random generator */
       TCOD_random_t my_random = TCOD_random_new();
       float a_random_float_between_0_and_1000 = TCOD_random_get_float(my_random,0.0f,1000.0f);
+Py  : # default generator 
+      a_random_int_between_0_and_1000 = libtcod.random_get_float(0,0,1000)
+      # another random generator 
+      my_random = libtcod.random_new()
+      a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)
 </pre></p>
 <br />
 You can save the state of a generator with :<br />
 <p class="code"><pre>
 C++ : TCODRandom *TCODRandom::save() const
 C   : TCOD_random_t TCOD_random_save(TCOD_random_t mersenne)
+Py  : random_save(mersenne)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -69,6 +77,7 @@ And restore it later. This makes it possible to get the same serie of number sev
 <p class="code"><pre>
 C++ : void TCODRandom::restore(const TCODRandom *backup)
 C   : void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup)
+Py  : random_restore(mersenne, backup)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -96,4 +105,13 @@ C   : /* save default generator state */
       /* get a random number */
       int number2 = TCOD_random_get_float(NULL,0,1000);
       /* number1 == number2 */
+Py  : # save default generator state 
+      backup=libtcod.random_save(0)
+      # get a random number 
+      number1 = libtcod.random_get_float(0,0,1000)
+      # restore the state 
+      libtcod.random_restore(0,backup)
+      # get a random number 
+      number2 = libtcod.random_get_float(0,0,1000)
+      # number1 == number2 
 </pre></p>

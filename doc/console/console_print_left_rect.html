@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 C   : int TCOD_console_print_left_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
+Py  : console_print_left_rect(con,x, y, w, h, flag, fmt)
 </pre></p>
 This function draws a left aligned string in a rectangle inside the console, using default foreground and background colors. If the string reaches the right border of the rectangle, carriage returns are inserted.<br />
 If h > 0 and the bottom of the rectangle is reached, the string is truncated. If h = 0, the string is only truncated if it reaches the bottom of the console.<br/>
@@ -31,4 +32,17 @@ The function returns the height (number of console lines) of the printed string.
 <tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
 <tr><td>fmt</td><td>printf-like format string, eventually followed by parameters. You can use <a href="console_color_control.html">control codes</a> to change the colors inside the string.</td></tr>
 </table>
-
+<br />
+You can also get the expected height without actually printing the string :
+<p class="code"><pre>
+C++ : int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...)
+C   : int TCOD_console_height_left_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
+Py  : console_height_left_rect(con,x, y, w, h, fmt)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>con</td><td>In the C version, the offscreen console handler or NULL for the root console.</td></tr>
+<tr><td>x,y</td><td>Coordinates of the rectangle's upper-left position in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
+<tr><td>w,h</td><td>Size of the rectangle in the console.<br />x &lt;= x+w &lt; console width<br />y &lt;= y+h &lt; console height</td></tr>
+<tr><td>fmt</td><td>printf-like format string, eventually followed by parameters. You can use <a href="console_color_control.html">control codes</a> to change the colors inside the string.</td></tr>
+</table>

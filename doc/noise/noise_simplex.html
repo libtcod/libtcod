@@ -22,6 +22,7 @@ The simplex noise is much faster than Perlin, especially in 4 dimensions. It has
 <p class="code"><pre>
 C++ : float TCODNoise::getSimplex(float *f) const
 C   : float TCOD_noise_simplex(TCOD_noise_t noise, float *f)
+Py  : noise_simplex(noise, f)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -47,11 +48,18 @@ C   : /* 1d noise */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_simplex(noise2d,p);
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_simplex(noise1d,[0.5])
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_simplex(noise2d,[0.5,0.7])
 </pre></p><br />
 This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.<br />
 <p class="code"><pre>
 C++ : float TCODNoise::getFbmSimplex(float *f, float octaves) const
 C   : float TCOD_noise_fbm_simplex(TCOD_noise_t noise, float *f, float octaves)
+Py  : noise_fbm_simplex(noise, f, octaves)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -78,11 +86,18 @@ C   : /* 1d fbm */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_fbm_simplex(noise2d,p,32.0f);
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_fbm_simplex(noise1d,[0.5],32.0)
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_fbm_simplex(noise2d,[0.5,0.7],32.0)
 </pre></p><br />
 This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.<br />
 <p class="code"><pre>
 C++ : float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const
 C   : float TCOD_noise_turbulence_simplex(TCOD_noise_t noise, float *f, float octaves)
+Py  : noise_turbulence_simplex(noise, f, octaves)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -109,4 +124,9 @@ C   : /* 1d fbm */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_turbulence_simplex(noise2d,p,32.0f);
-</pre></p>
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_turbulence_simplex(noise1d,[0.5],32.0)
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_turbulence_simplex(noise2d,[0.5,0.7],32.0)</pre></p>

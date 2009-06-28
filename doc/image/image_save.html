@@ -4,7 +4,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.9 Saving an image to a .bmp or .png file<br />
+5.11 Saving an image to a .bmp or .png file<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -19,6 +19,7 @@ You can save an image to a 24 bits .bmp or .png file.<br/>
 <p class="code"><pre>
 C++ : void TCODImage::save(const char *filename)
 C   : void TCOD_image_save(TCOD_image_t image, const char *filename)
+Py  : image_save(image, filename)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -31,4 +32,6 @@ C++ : TCODImage *pix = new TCODImage(10,10);
       pix->save("mypic.bmp");
 C   : TCOD_image_t pix = TCOD_image_from_console(my_offscreen_console);
       TCOD_image_save(pix,"mypic.bmp");
+Py  : pix = libtcod.image_from_console(my_offscreen_console)
+      libtcod.image_save(pix,"mypic.bmp")
 </pre></p>

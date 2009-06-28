@@ -18,7 +18,8 @@ th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
 Warning ! This uses some undocumented features of libtcod. Use it only if you know what you're doing...<br />
-The libtcod parser allows you to add your own data types. You can provide up to 16 custom datatype parsers that will read data from the text file and convert it into a TCOD_value_t union (using either an existing field or the generic custom field).
+The libtcod parser allows you to add your own data types. You can provide up to 16 custom datatype parsers that will read data from the text file and convert it into a TCOD_value_t union (using either an existing field or the generic custom field).<br />
+Custom data types are not supported with the python version of the library.
 <p class="code"><pre>
 typedef TCOD_value_t (*TCOD_parser_custom_t)(TCOD_lex_t *lex, TCOD_parser_listener_t *listener, TCOD_parser_struct_t str, char *name);
 

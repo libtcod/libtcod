@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : void TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 C   : void TCOD_console_print_right(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
+Py  : console_print_right(con,x, y, flag, fmt)
 </pre></p>
 This function draws a right aligned string on the console, using default foreground and background colors. If the string reaches the left border of the console, it is truncated.<br />
 <table class="param">

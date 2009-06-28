@@ -19,6 +19,7 @@ You can create an image of any size, filled with the root console's background c
 <p class="code"><pre>
 C++ : TCODImage::TCODImage(int width, int height)
 C   : TCOD_image_t TCOD_image_new(int width, int height)
+Py  : image_new( width, height)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -28,4 +29,5 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODImage *pix = new TCODImage(80,50);
 C   : TCOD_image_t pix = TCOD_image_new(80,50);
+Py  : pix = litbcod.image_new(80,50)
 </pre></p>

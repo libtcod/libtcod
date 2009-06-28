@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -27,8 +27,6 @@
 
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
-
-class TCODImage;
 
 class TCODLIB_API TCODConsole {
 public :
@@ -41,7 +39,7 @@ public :
 	static bool isFullscreen();
 	static bool isWindowClosed();
 
-	static void setCustomFont(const char *fontFile,int charWidth=8, int charHeight=8, int flags=0);
+	static void setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0);
 	static void mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY);
 	static void mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY);
 	static void mapStringToFont(const char *s, int fontCharX, int fontCharY);
@@ -60,6 +58,9 @@ public :
 	int printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	int printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+	int getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...); 
+	int getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...); 
+	int getHeightCenterRect(int x, int y, int w, int h,const char *fmt, ...); 
 
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
@@ -87,6 +88,7 @@ public :
 	static bool isKeyPressed(TCOD_keycode_t key);
 	
 	TCODConsole(int w, int h);
+	TCODConsole(TCOD_console_t con) : data(con) {}
 	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, int fade=255);
 	void setKeyColor(const TCODColor &col);
 	virtual ~TCODConsole();
@@ -95,7 +97,8 @@ public :
 	static bool renderCredits(int x, int y, bool alpha);
 
 protected :
-	friend class TCODImage;
+	friend class TCODLIB_API TCODImage;
+	friend class TCODLIB_API TCODZip;
 	TCODConsole();
 	TCOD_console_t data;
 };

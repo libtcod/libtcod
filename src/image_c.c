@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -193,6 +193,13 @@ TCOD_color_t TCOD_image_get_pixel(TCOD_image_t image,int x, int y) {
 	}
 }
 
+int TCOD_image_get_alpha(TCOD_image_t image,int x, int y) {
+	image_data_t *img=(image_data_t *)image;
+	if ( img->sys_img ) {
+		return TCOD_sys_get_image_alpha(img->sys_img,x,y);
+	} else return 255;
+}
+
 TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_image_t image,float x0,float y0, float x1, float y1) {
 	int texel_xsize,texel_ysize, texel_size, texel_x,texel_y;
 	int cur_size=1;
@@ -253,11 +260,12 @@ void TCOD_image_delete(TCOD_image_t image) {
 bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y) {
 	image_data_t *img=(image_data_t *)image;
 	TCOD_color_t col=TCOD_image_get_pixel(image,x,y);
-	if ( !img->has_key_color || img->key_color.r != col.r 
-		|| img->key_color.g != col.g || img->key_color.b != col.b ) {
-		return false;
+	if ( img->has_key_color && img->key_color.r == col.r
+		&& img->key_color.g == col.g && img->key_color.b == col.b ) {
+		return true;
 	}
-	return true;
+	if ( TCOD_image_get_alpha(image,x,y) == 0 ) return true;
+	return false;
 }
 
 void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float y,
@@ -281,7 +289,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 		for (cx=minx; cx < maxx; cx ++) {
 			for (cy=miny; cy < maxy; cy ++) {
 				TCOD_color_t col=TCOD_image_get_pixel(image,cx-minx+offx,cy-miny+offy);
-				if ( !img->has_key_color || img->key_color.r != col.r 
+				if ( !img->has_key_color || img->key_color.r != col.r
 					|| img->key_color.g != col.g || img->key_color.b != col.b ) {
 					TCOD_console_set_back(console,cx,cy,col,bkgnd_flag);
 				}
@@ -332,11 +340,11 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 				ix = (iw+ (cx-x) * newx_x + (cy-y) *(-newy_x))*invscalex;
 				iy = (ih + (cx-x) * (newx_y) - (cy-y)*newy_y)*invscaley;
 				col = TCOD_image_get_pixel(image,(int)(ix),(int)(iy));
-				if ( !img->has_key_color || img->key_color.r != col.r 
-					|| img->key_color.g != col.g || img->key_color.b != col.b ) {				
+				if ( !img->has_key_color || img->key_color.r != col.r
+					|| img->key_color.g != col.g || img->key_color.b != col.b ) {
 					if ( scalex < 1.0f || scaley < 1.0f ) {
 						col = TCOD_image_get_mipmap_pixel(image,ix,iy,ix+1.0f,iy+1.0f);
-					} 
+					}
 					TCOD_console_set_back(console,cx,cy,col,bkgnd_flag);
 				}
 			}
@@ -344,7 +352,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	}
 }
 
-void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, 
+void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y,
 	int w, int h, TCOD_bkgnd_flag_t bkgnd_flag) {
 	int width,height;
 	float scalex,scaley;
@@ -360,7 +368,7 @@ void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int
 TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
 	image_data_t *ret;
 	void *bitmap=TCOD_sys_create_bitmap_for_console(console);
-	TCOD_sys_console_to_bitmap(bitmap, TCOD_console_get_width(console), TCOD_console_get_height(console), 
+	TCOD_sys_console_to_bitmap(bitmap, TCOD_console_get_width(console), TCOD_console_get_height(console),
 		TCOD_console_get_buf(console),NULL);
 	ret=(image_data_t *)calloc(sizeof(image_data_t),1);
 	ret->sys_img=bitmap;
@@ -369,7 +377,7 @@ TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
 
 void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	image_data_t *img=(image_data_t *)image;
-	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console), 
+	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
 		TCOD_console_get_buf(console),NULL);
 }
 
@@ -387,5 +395,181 @@ void TCOD_image_save(TCOD_image_t image, const char *filename) {
 void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t key_color) {
 	image_data_t *img=(image_data_t *)image;
 	img->has_key_color=true;
-	img->key_color=key_color;	
+	img->key_color=key_color;
 }
+void TCOD_image_invert(TCOD_image_t image) {
+	int i,mip;
+	int width,height;
+	image_data_t *img=(image_data_t *)image;
+	if ( !img->mipmaps && !img->sys_img) return; /* no image data */
+	if ( ! img->mipmaps ) {
+		TCOD_image_init_mipmaps(img);
+	}
+	TCOD_image_get_size(image,&width,&height);
+	for (i=0; i< width*height; i++) {
+		TCOD_color_t col=img->mipmaps[0].buf[i];
+		col.r=255-col.r;
+		col.g=255-col.g;
+		col.b=255-col.b;
+		img->mipmaps[0].buf[i] = col;
+	}
+	for (mip=1; mip < img->nb_mipmaps; mip++) {
+		img->mipmaps[mip].dirty=true;
+	}
+}
+
+void TCOD_image_hflip(TCOD_image_t image) {
+	int px,py;
+	int width,height;
+	TCOD_image_get_size(image,&width,&height);
+	for (py = 0; py < height; py++ ) {
+		for (px = 0; px < width/2; px++ ) {
+			TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
+			TCOD_color_t col2=TCOD_image_get_pixel(image,width-1-px,py);
+			TCOD_image_put_pixel(image,px,py,col2);
+			TCOD_image_put_pixel(image,width-1-px,py,col1);
+		}
+	}
+}
+
+void TCOD_image_vflip(TCOD_image_t image) {
+	int px,py;
+	int width,height;
+	TCOD_image_get_size(image,&width,&height);
+	for (px = 0; px < width; px++ ) {
+		for (py = 0; py < height/2; py++ ) {
+			TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
+			TCOD_color_t col2=TCOD_image_get_pixel(image,px,height-1-py);
+			TCOD_image_put_pixel(image,px,py,col2);
+			TCOD_image_put_pixel(image,px,height-1-py,col1);
+		}
+	}
+}
+
+void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
+	image_data_t *img=(image_data_t *)image;
+	int px,py;
+	int width,height;
+	image_data_t *newimg;
+	TCOD_image_get_size(image,&width,&height);
+	if ( neww==width && newh==height ) return;
+	if ( neww == 0 || newh == 0 ) return;
+	newimg=(image_data_t *)TCOD_image_new(neww,newh);
+
+	if ( neww < width && newh < height ) {
+		// scale down image, using supersampling
+		for (py = 0; py < newh; py++ ) {
+			float y0 = (float)(py) * height / newh;
+			float y0floor = (float)floor(y0);
+			float y0weight = 1.0f - (y0 - y0floor);
+			int iy0 = (int)y0floor;
+
+			float y1 = (float)(py+1) * height / newh;
+			float y1floor = (float)floor(y1-0.00001);
+			float y1weight = (y1 - y1floor);
+			int iy1 = (int)y1floor;
+
+			for (px = 0; px < neww; px++ ) {
+			    TCOD_color_t col;
+				float x0 = (float)(px) * width / neww;
+				float x0floor = (float)floor(x0);
+				float x0weight = 1.0f - (x0 - x0floor);
+				int ix0 = (int)x0floor;
+
+				float x1 = (float)(px+1) * width / neww;
+				float x1floor = (float)floor(x1- 0.00001);
+				float x1weight = (x1 - x1floor);
+				int ix1 = (int)x1floor;
+
+				float r=0,g=0,b=0,sumweight=0.0f;
+				int srcx,srcy;
+				// left & right fractional edges
+				for (srcy=(int)(y0+1); srcy < (int)y1; srcy++) {
+					TCOD_color_t col_left=TCOD_image_get_pixel(image,ix0,srcy);
+					TCOD_color_t col_right=TCOD_image_get_pixel(image,ix1,srcy);
+					r += col_left.r * x0weight + col_right.r * x1weight;
+					g += col_left.g * x0weight + col_right.g * x1weight;
+					b += col_left.b * x0weight + col_right.b * x1weight;
+					sumweight += x0weight+x1weight;
+				}
+				// top & bottom fractional edges
+				for (srcx = (int)(x0+1); srcx < (int)x1; srcx++) {
+					TCOD_color_t col_top=TCOD_image_get_pixel(image,srcx,iy0);
+					TCOD_color_t col_bottom=TCOD_image_get_pixel(image,srcx,iy1);
+					r += col_top.r * y0weight + col_bottom.r * y1weight;
+					g += col_top.g * y0weight + col_bottom.g * y1weight;
+					b += col_top.b * y0weight + col_bottom.b * y1weight;
+					sumweight += y0weight+y1weight;
+				}
+				// center
+				for (srcy=(int)(y0+1); srcy < (int)y1; srcy++) {
+					for (srcx = (int)(x0+1); srcx < (int)x1; srcx++) {
+						TCOD_color_t col=TCOD_image_get_pixel(image,srcx,srcy);
+						r += col.r;
+						g += col.g;
+						b += col.b;
+						sumweight += 1.0f;
+					}
+				}
+				// corners
+				col=TCOD_image_get_pixel(image,ix0,iy0);
+				r += col.r * (x0weight * y0weight);
+				g += col.g * (x0weight * y0weight);
+				b += col.b * (x0weight * y0weight);
+				sumweight += x0weight * y0weight;
+				col=TCOD_image_get_pixel(image,ix0,iy1);
+				r += col.r * (x0weight * y1weight);
+				g += col.g * (x0weight * y1weight);
+				b += col.b * (x0weight * y1weight);
+				sumweight += x0weight * y1weight;
+				col=TCOD_image_get_pixel(image,ix1,iy1);
+				r += col.r * (x1weight * y1weight);
+				g += col.g * (x1weight * y1weight);
+				b += col.b * (x1weight * y1weight);
+				sumweight += x1weight * y1weight;
+				col=TCOD_image_get_pixel(image,ix1,iy0);
+				r += col.r * (x1weight * y0weight);
+				g += col.g * (x1weight * y0weight);
+				b += col.b * (x1weight * y0weight);
+				sumweight += x1weight * y0weight;
+				sumweight = 1.0f / sumweight;
+				r = r*sumweight + 0.5f;
+				g = g*sumweight + 0.5f;
+				b = b*sumweight + 0.5f;
+				col.r=(int)r;
+				col.g=(int)g;
+				col.b=(int)b;
+				TCOD_image_put_pixel(newimg,px,py,col);
+			}
+		}
+	} else {
+		// scale up image, using nearest neightbor
+		for (py = 0; py < newh; py++ ) {
+			int srcy = py * height / newh;
+			for (px = 0; px < neww; px++ ) {
+				int srcx = px * width / neww;
+				TCOD_color_t col=TCOD_image_get_pixel(image,srcx,srcy);
+				TCOD_image_put_pixel(newimg,px,py,col);
+			}
+		}
+	}
+
+	// destroy old image
+	if ( img->mipmaps ) {
+		int i;
+		for ( i=0; i < img->nb_mipmaps; i++) {
+			if ( img->mipmaps[i].buf ) free(img->mipmaps[i].buf);
+		}
+		free(img->mipmaps);
+	}
+	if ( img->sys_img ) {
+		TCOD_sys_delete_bitmap(img->sys_img);
+	}
+	// update img with the new image content
+	img->mipmaps = newimg->mipmaps;
+	img->sys_img=NULL;
+	img->nb_mipmaps=newimg->nb_mipmaps;
+	free(newimg);
+}
+
+

@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_PRESSED)
 C   : TCOD_key_t TCOD_console_check_for_keypress(int flags)
+Py  : console_check_for_keypress(flags=KEY_PRESSED)
 </pre></p>
 <br />
 This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See <a href="key_t.html">TCOD_key_t</a>. If the user didn't press a key, this function returns the key code <a href="keycode_t.html">TCODK_NONE</a>.<br />
@@ -36,12 +37,16 @@ C++ : TCOD_key_t key = TCODConsole::checkForKeypress();
 C   : TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
       if ( key.vk == TCODK_NONE ) return; /* no key pressed */
       if ( key.c == 'i' ) { ... open inventory ... }
+Py  : key = libtcod.console_check_for_keypress()
+      if key.vk == libtcod.KEY_NONE return # no key pressed
+      if key.c == ord('i') : # ... open inventory ...
 </pre></p>
 <br />
 You can also get the status of any special key at any time with :<br />
 <p class="code"><pre>
 C++ : static bool TCODConsole::isKeyPressed(TCOD_keycode_t key)
 C   : bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
+Py  : console_is_key_pressed(key)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

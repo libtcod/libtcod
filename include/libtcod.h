@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -28,23 +28,53 @@
 #ifndef _TCODLIB_H
 #define _TCODLIB_H
 
-// os / compiler identification
+// os identification
+// TCOD_WINDOWS : OS is windows
+// TCOD_LINUX : OS is Linux
+// TCOD_MACOSX : OS is Mac OS X
+
+// compiler identification
+// TCOD_VISUAL_STUDIO : compiler is Microsoft Visual Studio
+// TCOD_MINGW32 : compiler is Mingw32
+// TCOD_GCC : compiler is gcc/g++
+
+// word size
+// TCOD_64BITS : 64 bits OS
+// TCOD_WIN64 : 64 bits Windows
+// TCOD_WIN32 : 32 bits Windows
+// TCOD_LINUX64 : 64 bits Linux
+// TCOD_LINUX32 : 32 bits Linux
+
 #if defined( _MSC_VER )
-#define VISUAL_STUDIO
-#ifndef WIN32
-#define WIN32
-#endif
+#  define TCOD_VISUAL_STUDIO
+#  define TCOD_WINDOWS
+#  ifdef _WIN64
+#    define TCOD_WIN64
+#    define TCOD_64BITS
+#  else
+#    define TCOD_WIN32
+#  endif
 #elif defined( __MINGW32__ )
-#ifndef MINGW32
-#define MINGW32
-#endif
-#ifndef WIN32
-#define WIN32
-#endif
-#elif defined( __BORLANDC__ )
-#define BORLANDC
+#  define TCOD_WINDOWS
+#  define TCOD_MINGW32
+#  define TCOD_WIN32
 #elif defined( __linux )
-#define LINUX
+#  define TCOD_LINUX
+#  define TCOD_GCC
+#  if __WORDSIZE == 64
+#    define TCOD_LINUX64
+#    define TCOD_64BITS
+#  else
+#    define TCOD_LINUX32
+#  endif
+#elif defined (__APPLE__) && defined (__MACH__)
+#  define TCOD_MACOSX
+#  define TCOD_GCC
+#endif
+
+// SDL_main support for OSX
+#ifdef TCOD_MACOSX
+#include "SDL/SDL.h"
 #endif
 
 // base types
@@ -54,23 +84,28 @@ typedef unsigned short uint16;
 typedef short int16;
 typedef unsigned int uint32;
 typedef int int32;
+// int with the same size as a pointer (32 or 64 depending on OS)
+typedef long intptr;
+typedef unsigned long uintptr;
+
+#define TCOD_HEXVERSION 0x010401
+#define TCOD_STRVERSION "1.4.1"
+#define TCOD_TECHVERSION 0x01040105
 
 // bool support for C
-#ifndef __cplusplus
-typedef enum { false, true } bool;
+#ifndef __cplusplus 
+#ifndef bool
+typedef uint8 bool;
+#define false ((bool)0) 
+#define true ((bool)1)
 #endif
-
-#ifdef VISUAL_STUDIO
-#define strdup _strdup
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#endif
-#if defined( VISUAL_STUDIO ) || defined( MINGW32 )
-char *strcasestr (const char *haystack, const char *needle);
+#else
+// in C++ all C functions prototype should use uint8 instead of bool
+#define bool uint8
 #endif
 
 // DLL export
-#ifdef WIN32
+#ifdef TCOD_WINDOWS
 #ifdef LIBTCOD_EXPORTS
 #define TCODLIB_API __declspec(dllexport)
 #else
@@ -82,6 +117,15 @@ char *strcasestr (const char *haystack, const char *needle);
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifdef TCOD_VISUAL_STUDIO
+#define strdup _strdup
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#endif
+#if defined(TCOD_WINDOWS)
+char *strcasestr (const char *haystack, const char *needle);
 #endif
 
 /******************************************
@@ -96,6 +140,7 @@ extern "C" {
 #include "list.h"
 #include "color.h"
 #include "console.h"
+#include "image.h"
 #include "sys.h"
 #include "mersenne.h"
 #include "mouse.h"
@@ -103,7 +148,6 @@ extern "C" {
 #include "noise.h"
 #include "fov.h"
 #include "path.h"
-#include "image.h"
 #include "lex.h"
 #include "parser.h"
 #include "tree.h"
@@ -111,6 +155,7 @@ extern "C" {
 #include "heightmap.h"
 #include "zip.h"
 #ifdef __cplusplus
+#undef bool
 }
 #endif
 

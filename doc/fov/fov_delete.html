@@ -20,6 +20,7 @@ To release the resources used by a map, destroy it with :<br />
 <p class="code"><pre>
 C++ : TCODMap::~TCODMap()
 C   : void TCOD_map_delete(TCOD_map_t map)
+Py  : map_delete(map)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -38,4 +39,9 @@ C   : TCOD_map_t map = TCOD_map_new(50,50);
       TCOD_map_compute_fov(map,10,10);
       bool visible = TCOD_map_is_in_fov(map,10,10);
       TCOD_map_delete(map);
+Py  : map = litbcod.map_new(50,50)
+      litbcod.map_set_can_see_through(map,10,10,True)
+      litbcod.map_compute_fov(map,10,10)
+      visible = litbcod.map_is_in_fov(map,10,10)
+      litbcod.map_delete(map)
 </pre></p>

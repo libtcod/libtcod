@@ -21,6 +21,7 @@ NB : do not delete the default random generator !<br />
 <p class="code"><pre>
 C++ : TCODRandom::~TCODRandom()
 C   : void TCOD_random_delete(TCOD_random_t mersenne)
+Py  : random_delete(mersenne)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -41,4 +42,10 @@ C   : /* create a generator */
       ...
       /* destroy it */
       TCOD_random_delete(rnd);
+Py  : # create a generator 
+      rnd = libtcod.random_new()
+      # use it 
+      ...
+      # destroy it 
+      libtcod.random_delete(rnd)
 </pre></p>

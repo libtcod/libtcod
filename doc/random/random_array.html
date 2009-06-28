@@ -25,6 +25,7 @@ Note that this function is not a pseudorandom number generator, but a seed gener
 <p class="code"><pre>
 C++ : static int TCODRandom::getIntFromByteArray(int min, int max, const char *data,int len)
 C   : int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len)
+Py  : random_get_int_from_byte_array(mi, ma, data)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -46,4 +47,10 @@ C   : /* get a random int from a name */
       /* get a random int from another int */
       int my_int = ...
       int a_random_int = TCOD_random_get_int_from_byte_array(0,1000,&my_int,sizeof(int));
+Py  : # get a random int from a name 
+      name = ... get a name
+      a_random_int_between_0_and_1000 = libtcod.random_get_int_from_byte_array(0,1000,name)
+      # get a random int from another int 
+      my_int = ...
+      a_random_int = libtcod.random_get_int_from_byte_array(0,1000,my_int)
 </pre></p>

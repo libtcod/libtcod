@@ -19,10 +19,12 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static TCODColor TCODConsole::getFadingColor()
 C   : TCOD_color_t TCOD_console_get_fading_color()
+Py  : console_get_fading_color()
 </pre></p>
 This function returns the current fading color, previously defined by <a href="console_set_fade.html">setFade</a>.<br />
 Example :<br />
 <p class="code"><pre>
 C++ : TCODColor currentFadingColor = TCODConsole::getFadingColor();
 C   : TCOD_color_t current_fading_color = TCOD_console_get_fading_color();
+Py  : current_fading_color = libtcod.console_get_fading_color()
 </pre></p>

@@ -22,6 +22,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 <p class="code"><pre>
 C++ : void TCODBsp::resize(int x,int y, int w, int h)
 C   : void TCOD_bsp_resize(TCOD_bsp_t *node, int x,int y, int w, int h)
+Py  : bsp_resize(node,  x,y, w, h)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -40,5 +41,9 @@ C   : TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
       TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
       /* ... do something with the tree here */
       TCOD_bsp_resize(my_bsp,0,0,50,50);
+Py  : my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+      libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
+      # ... do something with the tree here 
+      libtcod.bsp_resize(my_bsp,0,0,50,50)
 </pre></p>
 

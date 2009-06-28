@@ -51,13 +51,16 @@ Warning ! You cannot insert elements in the list while iterating through it. Ins
 You can remove an element from the list while iterating. The element at the iterator position will be removed. The function returns the new iterator.<br />
 <p class="code"><pre>
 C++ : template &lt;class T&gt; T *TCODList::remove(T *iterator)
+      template &lt;class T&gt; T *TCODList::removeFast(T *iterator)
 C   : void **TCOD_list_remove_iterator(TCOD_list_t l, void **iterator)
+      void **TCOD_list_remove_iterator_fast(TCOD_list_t l, void **iterator)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>iterator</td><td>The list iterator.</td></tr>
 <tr><td>l</td><td>In the C version, the list handler, returned by <a href="list_init.html">a constructor</a>.</td></tr>
 </table>
+The _fast versions replace the element to remove with the last element of the list. They're faster, but do not preserve the list order.
 <br />
 Example :<br />
 <p class="code"><pre>

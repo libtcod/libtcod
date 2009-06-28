@@ -22,6 +22,7 @@ The wavelet noise is much slower than Perlin, and can only be computed in 1,2 or
 <p class="code"><pre>
 C++ : float TCODNoise::getWavelet(float *f) const
 C   : float TCOD_noise_wavelet(TCOD_noise_t noise, float *f)
+Py  : noise_wavelet(noise, f)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -47,11 +48,18 @@ C   : /* 1d noise */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_wavelet(noise2d,p);
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_wavelet(noise1d,[0.5])
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_wavelet(noise2d,[0.5,0.7])
 </pre></p><br />
 This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.<br />
 <p class="code"><pre>
 C++ : float TCODNoise::getFbmWavelet(float *f, float octaves) const
 C   : float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves)
+Py  : noise_fbm_wavelet(noise, f, octaves)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -78,11 +86,18 @@ C   : /* 1d fbm */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_fbm_wavelet(noise2d,p,32.0f);
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_fbm_wavelet(noise1d,[0.5],32.0)
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_fbm_wavelet(noise2d,[0.5,0.7],32.0)
 </pre></p><br />
 This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.<br />
 <p class="code"><pre>
 C++ : float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const
 C   : float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves)
+Py  : noise_turbulence_wavelet(noise, f, octaves)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -109,4 +124,10 @@ C   : /* 1d fbm */
       TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
       float p[2]={0.5f,0.7f};
       float value = TCOD_noise_turbulence_wavelet(noise2d,p,32.0f);
+Py  : # 1d noise 
+      noise1d = libtcod.noise_new(1)
+      value = libtcod.noise_turbulence_wavelet(noise1d,[0.5],32.0)
+      # 2d noise
+      noise2d = libtcod.noise_new(2)
+      value = libtcod.noise_turbulence_wavelet(noise2d,[0.5,0.7],32.0)
 </pre></p>

@@ -20,12 +20,14 @@ The simplest way to get random number is to use the default generator. The first
 <p class="code"><pre>
 C++ : static TCODRandom *TCODRandom::getInstance()
 C   : TCOD_random_t TCOD_random_get_instance()
+Py  : random_get_instance()
 </pre></p>
 <br />
 You can also create as many generators as you want with a random seed (the number of seconds since Jan 1 1970 at the time the constructor is called). Warning ! If you call this function several times in the same second, it will return the same generator.<br />
 <p class="code"><pre>
-C++ : TCODRandom::TCODRandom();
-C   : TCOD_random_t TCOD_random_new();
+C++ : TCODRandom::TCODRandom()
+C   : TCOD_random_t TCOD_random_new()
+Py  : random_new()
 </pre></p>
 <br />
 Finally, you can create generators with a specific seed. Those allow you to get a reproducible set of random numbers. You can for example save a dungeon in a file by saving only the seed used for its generation (provided you have a determinist generation algorithm)<br />
@@ -51,4 +53,10 @@ C   : /* default generator */
       TCOD_random_t my_random = TCOD_random_new();
       /* a random generator with a specific seed */
       TCOD_random_t my_determinist_random = TCOD_random_new_from_seed(0xdeadbeef);
+Py  : # default generator 
+      default = libtcod.random_get_instance()
+      # another random generator 
+      my_random = libtcod.random_new()
+      # a random generator with a specific seed 
+      my_determinist_random = libtcod.random_new_from_seed(0xdeadbeef)
 </pre></p>

@@ -32,6 +32,7 @@ This function returns the height value of a map cell.<br />
 <p class="code"><pre>
 C++ : float TCODHeightmap::getValue(int x, int y) const
 C   : float TCOD_heightmap_get_value(const TCOD_heightmap_t *hm, int x, int y)
+Py  : heightmap_get_value(hm,  x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -44,6 +45,7 @@ This function returns the interpolated height at non integer coordinates.<br />
 <p class="code"><pre>
 C++ : float TCODHeightmap::getInterpolatedValue(float x, float y) const
 C   : float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t *hm, float x, float y)
+Py  : heightmap_get_interpolated_value(hm, x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -56,6 +58,7 @@ This function returns the slope between 0 and PI/2 at given coordinates.<br />
 <p class="code"><pre>
 C++ : float TCODHeightmap::getSlope(int x, int y) const
 C   : float TCOD_heightmap_get_slope(const TCOD_heightmap_t *hm, int x, int y)
+Py  : heightmap_get_slope(hm, x, y)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -68,6 +71,7 @@ This function returns the map normal at given coordinates.<br />
 <p class="code"><pre>
 C++ : void TCODHeightmap::getNormal(float x, float y,float n[3], float waterLevel=0.0f) const
 C   : void TCOD_heightmap_get_normal(const TCOD_heightmap_t *hm, float x, float y, float n[3], float waterLevel)
+Py  : heightmap_get_normal(hm, x, y, waterLevel) # returns nx,ny,nz
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -82,6 +86,7 @@ This function returns the number of map cells which value is between min and max
 <p class="code"><pre>
 C++ : int TCODHeightmap::countCells(float min,float max) const
 C   : int TCOD_heightmap_count_cells(const TCOD_heightmap_t *hm, float min, float max)
+Py  : heightmap_count_cells(hm, min, max)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -94,6 +99,7 @@ This function checks if the cells on the map border are below a certain height.<
 <p class="code"><pre>
 C++ : bool TCODHeightmap::hasLandOnBorder(float waterLevel) const
 C   : bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t *hm, float waterLevel)
+Py  : heightmap_has_land_on_border(hm, waterLevel)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -106,6 +112,7 @@ This function calculates the min and max of all values inside the map.<br />
 <p class="code"><pre>
 C++ : void TCODHeightmap::getMinMax(float *min, float *max) const
 C   : void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *max)
+Py  : heightmap_get_minmax(hm) # returns min,max
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

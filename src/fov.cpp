@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -24,7 +24,6 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <stdlib.h>
 #include "libtcod.hpp"
 TCODMap::TCODMap(int width,int height) {
 	data = TCOD_map_new(width,height);
@@ -38,20 +37,40 @@ void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable) {
 	TCOD_map_set_properties(data,x,y,isTransparent,isWalkable);
 }
 
-void TCODMap::computeFov(int x, int y, int maxRadius) {
-	TCOD_map_compute_fov(data,x,y,maxRadius);
+void TCODMap::copy(const TCODMap *source) {
+	TCOD_map_copy(source->data,data);
+}
+
+void TCODMap::computeFov(int x, int y, int maxRadius, bool light_walls, TCOD_fov_algorithm_t algo) {
+	TCOD_map_compute_fov(data,x,y,maxRadius,light_walls, algo);
 }
 
 bool TCODMap::isInFov(int x, int y) const {
-	return TCOD_map_is_in_fov(data,x,y);
+	return TCOD_map_is_in_fov(data,x,y) != 0;
+}
+
+void TCODMap::setInFov(int x,int y, bool fov) {
+	TCOD_map_set_in_fov(data, x, y, fov);
 }
 
 bool TCODMap::isTransparent(int x, int y) const {
-	return TCOD_map_is_transparent(data,x,y);
+	return TCOD_map_is_transparent(data,x,y) != 0;
 }
 
 bool TCODMap::isWalkable(int x, int y) const {
-	return TCOD_map_is_walkable(data,x,y);
+	return TCOD_map_is_walkable(data,x,y) != 0;
+}
+
+int TCODMap::getWidth() const {
+	return TCOD_map_get_width(data);
+}
+
+int TCODMap::getHeight() const {
+	return TCOD_map_get_height(data);
+}
+
+int TCODMap::getNbCells() const {
+	return TCOD_map_get_nb_cells(data);
 }
 
 TCODMap::~TCODMap() {

@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -136,6 +136,21 @@ void TCOD_list_remove(TCOD_list_t l, const void * elt) {
 		}
 	}
 }
+void **TCOD_list_remove_iterator_fast(TCOD_list_t l, void **elt) {
+	*elt = LIST(l)->array[LIST(l)->fillSize-1];
+	LIST(l)->fillSize--;
+	if ( LIST(l)->fillSize == 0 ) return ((void **)NULL)-1;
+	else return elt-1;
+}
+void TCOD_list_remove_fast(TCOD_list_t l, const void * elt) {
+	void **curElt;
+	for ( curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); curElt ++) {
+		if ( *curElt == elt ) {
+			TCOD_list_remove_iterator_fast(l,curElt);
+			return;
+		}
+	}
+}
 bool TCOD_list_contains(TCOD_list_t l,const void * elt) {
 	void **curElt;
 	for ( curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); curElt ++) {
@@ -156,7 +171,7 @@ void TCOD_list_clear_and_delete(TCOD_list_t l) {
 int TCOD_list_size(TCOD_list_t l) {
 	return LIST(l)->fillSize;
 }
-void TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before) {
+void **TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before) {
 	int idx;
 	if ( LIST(l)->fillSize+1 >= LIST(l)->allocSize ) TCOD_list_allocate_int(l);
 	for (idx=LIST(l)->fillSize; idx > before; idx--) {
@@ -164,6 +179,7 @@ void TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before) {
 	}
 	LIST(l)->array[before]=(void *)elt;
 	LIST(l)->fillSize++;
+	return &LIST(l)->array[before];
 }
 bool TCOD_list_is_empty(TCOD_list_t l) {
 	return ( LIST(l)->fillSize == 0 );

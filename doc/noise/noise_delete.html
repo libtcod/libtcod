@@ -20,6 +20,7 @@ To release ressources used by a generator, use those functions :<br />
 <p class="code"><pre>
 C++ : TCODNoise::~TCODNoise()
 C   : void TCOD_noise_delete(TCOD_noise_t noise)
+Py  : noise_delete(noise)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -40,4 +41,10 @@ C   : /* create a generator */
       ...
       /* destroy it */
       TCOD_noise_delete(noise);
+Py  : # create a generator
+      noise = libtcod.noise_new(2,litbcod.NOISE_DEFAULT_HURST, litbcod.NOISE_DEFAUT_LACUNARITY, 0)
+      # use it
+      ...
+      # destroy it 
+      litbcod.noise_delete(noise)
 </pre></p>

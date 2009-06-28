@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -55,12 +55,9 @@ public :
 		r = (int)(this->r * value);
 		g = (int)(this->g * value);
 		b = (int)(this->b * value);
-		r=MIN(255,r);
-		g=MIN(255,g);
-		b=MIN(255,b);
-		r=MAX(0,r);
-		g=MAX(0,g);
-		b=MAX(0,b);
+		r = CLAMP(0,255,r);
+		g = CLAMP(0,255,g);
+		b = CLAMP(0,255,b);
 		ret.r=(uint8)r;
 		ret.g=(uint8)g;
 		ret.b=(uint8)b;
@@ -74,9 +71,19 @@ public :
 		r = MIN(255,r);
 		g = MIN(255,g);
 		b = MIN(255,b);
-		r=MAX(0,r);
-		g=MAX(0,g);
-		b=MAX(0,b);
+		ret.r=(uint8)r;
+		ret.g=(uint8)g;
+		ret.b=(uint8)b;
+		return ret;
+	}
+	TCODColor operator - (const TCODColor & a) const {
+		TCODColor ret;
+		int r=(int)(this->r)-a.r;
+		int g=(int)(this->g)-a.g;
+		int b=(int)(this->b)-a.b;
+		r = MAX(0,r);
+		g = MAX(0,g);
+		b = MAX(0,b);
 		ret.r=(uint8)r;
 		ret.g=(uint8)g;
 		ret.b=(uint8)b;
@@ -94,27 +101,90 @@ public :
 	}
 	static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
 
-	static TCODColor black;
-	static TCODColor darkGrey;
-	static TCODColor grey;
-	static TCODColor darkGray;
-	static TCODColor gray;
-	static TCODColor white;
-	static TCODColor darkBlue;
-	static TCODColor lightBlue;
-	static TCODColor darkRed;
-	static TCODColor lightRed;
-	static TCODColor darkBrown;
-	static TCODColor lightYellow;
-	static TCODColor yellow;
-	static TCODColor darkYellow;
-	static TCODColor green;
-	static TCODColor orange;
-	static TCODColor red;
-	static TCODColor silver;
-	static TCODColor gold;
-	static TCODColor purple;
-	static TCODColor darkPurple;
+	// color array
+	static const TCODColor colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
+
+	// grey levels
+	static const TCODColor black;
+	static const TCODColor darkerGrey;
+	static const TCODColor darkGrey;
+	static const TCODColor grey;
+	static const TCODColor lightGrey;
+	static const TCODColor white;
+	
+	// standard colors
+	static const TCODColor red;
+	static const TCODColor orange;
+	static const TCODColor yellow;
+	static const TCODColor chartreuse;
+	static const TCODColor green;
+	static const TCODColor sea;
+	static const TCODColor cyan;
+	static const TCODColor sky;
+	static const TCODColor blue;
+	static const TCODColor violet;
+	static const TCODColor magenta;
+	static const TCODColor pink;
+	
+	// dark colors
+	static const TCODColor darkRed;
+	static const TCODColor darkOrange;
+	static const TCODColor darkYellow;
+	static const TCODColor darkChartreuse;
+	static const TCODColor darkGreen;
+	static const TCODColor darkSea;
+	static const TCODColor darkCyan;
+	static const TCODColor darkSky;
+	static const TCODColor darkBlue;
+	static const TCODColor darkViolet;
+	static const TCODColor darkMagenta;
+	static const TCODColor darkPink;
+	
+	// darker colors
+	static const TCODColor darkerRed;
+	static const TCODColor darkerOrange;
+	static const TCODColor darkerYellow;
+	static const TCODColor darkerChartreuse;
+	static const TCODColor darkerGreen;
+	static const TCODColor darkerSea;
+	static const TCODColor darkerCyan;
+	static const TCODColor darkerSky;
+	static const TCODColor darkerBlue;
+	static const TCODColor darkerViolet;
+	static const TCODColor darkerMagenta;
+	static const TCODColor darkerPink;
+	
+	// light colors
+	static const TCODColor lightRed;
+	static const TCODColor lightOrange;
+	static const TCODColor lightYellow;
+	static const TCODColor lightChartreuse;
+	static const TCODColor lightGreen;
+	static const TCODColor lightSea;
+	static const TCODColor lightCyan;
+	static const TCODColor lightSky;
+	static const TCODColor lightBlue;
+	static const TCODColor lightViolet;
+	static const TCODColor lightMagenta;
+	static const TCODColor lightPink;
+	
+	// desaturated colors
+	static const TCODColor desaturatedRed;
+	static const TCODColor desaturatedOrange;
+	static const TCODColor desaturatedYellow;
+	static const TCODColor desaturatedChartreuse;
+	static const TCODColor desaturatedGreen;
+	static const TCODColor desaturatedSea;
+	static const TCODColor desaturatedCyan;
+	static const TCODColor desaturatedSky;
+	static const TCODColor desaturatedBlue;
+	static const TCODColor desaturatedViolet;
+	static const TCODColor desaturatedMagenta;
+	static const TCODColor desaturatedPink;	
+	
+	// special
+	static const TCODColor silver;
+	static const TCODColor gold;
 };
 
 TCODLIB_API TCODColor operator *(float value, const TCODColor &c);

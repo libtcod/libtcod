@@ -4,7 +4,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-5.6 Getting the average color of a part of the image<br />
+5.7 Getting the average color of a part of the image<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -20,6 +20,7 @@ It can be used to draw a scaled-down version of the image. It's used by libtcod'
 <p class="code"><pre>
 C++ : TCODColor TCODImage::getMipmapPixel(float x0,float y0, float x1, float y1)
 C   : TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_image_t image,float x0,float y0, float x1, float y1)
+Py  : image_get_mipmap_pixel(image,x0,y0, x1, y1)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -34,4 +35,6 @@ C++ : TCODImage *pix = new TCODImage(80,50);
       TCODColor col=pix->getMipMapPixel(37.5f, 22.5f, 42.5f, 28.5f);
 C   : TCOD_image_t pix = TCOD_image_new(80,50);
       TCOD_color_t col=TCOD_image_get_mipmap_pixel(pix,37.5f, 22.5f, 42.5f, 28.5f);
+Py  : pix = libtcod.image_new(80,50)
+      col=libtcod.image_get_mipmap_pixel(pix,37.5, 22.5, 42.5, 28.5)
 </pre></p>

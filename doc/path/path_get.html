@@ -24,6 +24,8 @@ C++ : void getOrigin(int *x,int *y) const
       void getDestination(int *x,int *y) const
 C   : void TCOD_path_get_origin(TCOD_path_t path, int *x, int *y)
       void TCOD_path_get_destination(TCOD_path_t path, int *x, int *y)
+Py  : path_get_origin(path) # returns x,y
+      path_get_destination(path) # returns x,y
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -37,6 +39,7 @@ You can get the number of steps needed to reach destination :<br />
 <p class="code"><pre>
 C++ : int TCODPath::size() const
 C   : int TCOD_path_size(TCOD_path_t path)
+Py  : path_size(path)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -48,6 +51,7 @@ You can get the coordinates of each point along the path :<br />
 <p class="code"><pre>
 C++ : void TCODPath::get(int index, int *x, int *y) const
 C   : void TCOD_path_get(TCOD_path_t path, int index, int *x, int *y)
+Py  : path_get(path, index) # returns x,y
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -69,6 +73,9 @@ C   : int i;
            TCOD_path_get(path,i,&x,&y);
            printf ("coord : %d %d\n", x,y );
       }
+Py  : for i in range (libtcod.path_size(path)) :
+           x,y=libtcod.path_get(path,i)
+           print 'coord : ',x,y
 </pre></p><br />
 <hr />
 If you want a creature to follow the path, a more convenient way is to walk the path :<br />
@@ -76,6 +83,7 @@ You know when you reached destination when the path is empty :<br/>
 <p class="code"><pre>
 C++ : bool TCODPath::isEmpty() const
 C   : bool TCOD_path_is_empty(TCOD_path_t path)
+Py  : path_is_empty(path)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -85,6 +93,7 @@ You can walk the path and go to the next step with :<br />
 <p class="code"><pre>
 C++ : bool TCODPath::walk(int *x, int *y, bool recalculateWhenNeeded)
 C   : bool TCOD_path_walk(TCOD_path_t path, int *x, int *y, bool recalculate_when_needed)
+Py  : path_walk(TCOD_path_t path, recalculate_when_needed) # returns x,y or None,None if no path
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -104,7 +113,7 @@ C++ : while (! path->isEmpty()) {
                break;
            }
       }
-C   : while (! TCOD_path_isEmpty(path)) {
+C   : while (! TCOD_path_is_empty(path)) {
            int x,y;
            if (TCOD_path_walk(path,&x,&y,true)) {
                printf ("coord : %d %d\n", x,y );
@@ -113,4 +122,11 @@ C   : while (! TCOD_path_isEmpty(path)) {
                break;
            }
       }
+Py  : while not libtcod.path_is_empty(path)) :
+           x,y=libtcod.path_walk(path,True)
+           if not x is None :
+               print 'coord : ',x,y
+           else :
+               print "I'm stuck !"
+               break
 </pre></p>

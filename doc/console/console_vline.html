@@ -17,8 +17,9 @@ th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
 <p class="code"><pre>
-C++ : void TCODConsole::vline(int x,int y, int l)
-C   : void TCOD_console_vline(TCOD_console_t con,int x,int y, int l)
+C++ : void TCODConsole::vline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
+C   : void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag)
+Py  : console_vline(con,x,y,l,flag)
 </pre></p>
 Draws an vertical line in the console, using ASCII code <a href="ascii_constants.html">TCOD_CHAR_VLINE</a> (179), and the console's default background/foreground colors.<br />
 <table class="param">

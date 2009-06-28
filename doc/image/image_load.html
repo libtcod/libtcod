@@ -19,6 +19,7 @@ You can read data from a .bmp or .png file (for example to draw an image using t
 <p class="code"><pre>
 C++ : TCODImage::TCODImage(const char *filename)
 C   : TCOD_image_t TCOD_image_load(const char *filename)
+Py  : image_load(filename)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -28,4 +29,5 @@ Example :<br />
 <p class="code"><pre>
 C++ : TCODImage *pix = new TCODImage("mypic.bmp");
 C   : TCOD_image_t pix = TCOD_image_load("mypic.bmp");
+Py  : pix = libtcod.image_load("mypic.bmp")
 </pre></p>

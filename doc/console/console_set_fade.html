@@ -19,6 +19,7 @@ table.none td { border : 0 }
 <p class="code"><pre>
 C++ : static void TCODConsole::setFade(uint8 fade, const TCODColor &fadingColor)
 C   : void TCOD_console_set_fade(uint8 fade, TCOD_color_t fadingColor)
+Py  : console_set_fade(fade, fadingColor)
 </pre></p>
 This function defines the fading parameters, allowing to easily fade the game screen to/from a color. Once they are defined, the fading parameters are valid for ever. You don't have to call setFade for each rendered frame (unless you change the fading parameters).<br />
 <table class="param">
@@ -35,7 +36,10 @@ C++ : for (int fade=255; fade >= 0; fade --) {
       }
 C   : int fade;
       for (fade=255; fade >= 0; fade --) {
-          TCODConsole_setFade(fade,TCOD_black);
-          TCODConsole_flush();
+          TCOD_console_setFade(fade,TCOD_black);
+          TCOD_console_flush();
       }      
+Py  : for fade in range(255,0) :
+          libtcod.console_setFade(fade,libtcod.black)
+          libtcod.console_flush()
 </pre></p>

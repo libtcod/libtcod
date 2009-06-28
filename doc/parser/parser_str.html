@@ -35,12 +35,14 @@ Use this function to create a generic parser. Then you'll specialize this parser
 <p class="code"><pre>
 C++ : TCODParser::TCODParser()
 C   : TCOD_parser_t TCOD_parser_new()
+Py  : parser_new()
 </pre></p>
 <br />
 Example :<br />
 <p class="code"><pre>
 C++ : TCODParser myParser();
 C   : TCOD_parser_t my_parser = TCOD_parser_new();
+Py  : parser=libtcod.parser_new()
 </pre></p>
 <br />
 <hr />
@@ -50,6 +52,7 @@ Use this function to register a new structure type.<br />
 <p class="code"><pre>
 C++ : TCODParserStruct *TCODParser::newStructure(const char *name)
 C   : TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name)
+Py  : parser_new_struct(parser, name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -63,6 +66,8 @@ C++ : TCODParser parser();
       TCODParserStruct *itemTypeStruct = parser.newStructrue("item_type");
 C   : TCOD_parser_t parser = TCOD_parser_new();
       TCOD_parser_struct_t item_type_struct = TCOD_parser_new_struct(parser, "item_type");
+Py  : parser=libtcod.parser_new()
+      item_type_struct = libtcod.parser_new_struct(parser, "item_type")
 </pre></p>
 <hr />
 <a name="10.2.3"></a>
@@ -71,6 +76,7 @@ Use this function to add a flag property to a structure type. A flag is a simpli
 <p class="code"><pre>
 C++ : void TCODParserStruct::addFlag(const char *name)
 C   : void TCOD_struct_add_flag(TCOD_parser_struct_t str,char *name)
+Py  : struct_add_flag(str,name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -82,6 +88,7 @@ Example :<br />
 <p class="code"><pre>
 C++ : itemTypeStruct->addFlag("abstract");
 C   : TCOD_struct_add_flag(item_type_struct, "abstract");
+Py  : libtcod.struct_add_flag(item_type_struct, "abstract")
 </pre></p>
 <hr />
 <a name="10.2.4"></a>
@@ -90,6 +97,7 @@ Use this function to add a standard property to a structure type. Check standard
 <p class="code"><pre>
 C++ : void TCODParserStruct::addProperty(const char *name, TCOD_value_type_t type, bool mandatory)
 C   : void TCOD_struct_add_property(TCOD_parser_struct_t str, char *name, TCOD_value_type_t type, bool mandatory)
+Py  : struct_add_property(str, name, type, mandatory)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -108,6 +116,10 @@ C   : TCOD_struct_add_property(item_type_struct, "cost", TCOD_TYPE_INT, true);
       TCOD_struct_add_property(item_type_struct, "damages", TCOD_TYPE_DICE, true);
       TCOD_struct_add_property(item_type_struct, "color", TCOD_TYPE_COLOR, true);
       TCOD_struct_add_property(item_type_struct, "damaged_color", TCOD_TYPE_COLOR, true);
+Py  : libtcod.struct_add_property(item_type_struct, "cost", libtcod.TYPE_INT, True)
+      libtcod.struct_add_property(item_type_struct, "damages", libtcod.TYPE_DICE, True)
+      libtcod.struct_add_property(item_type_struct, "color", libtcod.TYPE_COLOR, True)
+      libtcod.struct_add_property(item_type_struct, "damaged_color", libtcod.TYPE_COLOR, True)
 </pre></p>
 <hr />
 <a name="10.2.5"></a>
@@ -118,6 +130,7 @@ You must provide a value list as a NULL terminated array of strings.
 <p class="code"><pre>
 C++ : void TCODParserStruct::addValueList(const char *name, const char **value_list, bool mandatory)
 C   : void TCOD_struct_add_value_list(TCOD_parser_struct_t str, char *name, char **value_list, bool mandatory)
+Py  : struct_add_value_list(str, name, value_list, mandatory)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -133,6 +146,8 @@ C++ : static const char *damageTypes[] = { "slash", "pierce", "bludgeon", NULL }
       itemTypeStruct->addValueList("damage_type", damageTypes, true);
 C   : static const char *damage_types[] = { "slash", "pierce", "bludgeon", NULL };
       TCOD_struct_add_value_list(item_type_struct, "damage_type", damage_types, true);
+Py  : damage_types = [ "slash", "pierce", "bludgeon" ]
+      litbcod.struct_add_value_list(item_type_struct, "damage_type", damage_types, True)
 </pre></p>
 <hr />
 <a name="10.2.6"></a>
@@ -141,6 +156,7 @@ Use this function to add a list property to a structure type.<br />
 <p class="code"><pre>
 C++ : void TCODParserStruct::addListProperty(const char *name, TCOD_value_type_t type, bool mandatory)
 C   : void TCOD_struct_add_list_property(TCOD_parser_struct_t str, char *name, TCOD_value_type_t type, bool mandatory)
+Py  : struct_add_list_property(str, name, type, mandatory)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -158,6 +174,9 @@ C++ : itemTypeStruct->addListProperty("intList",TCOD_TYPE_INT,true);
 C   : TCOD_struct_add_list_property(item_type_struct, "intList", TCOD_TYPE_INT, true);
       TCOD_struct_add_list_property(item_type_struct, "floatList", TCOD_TYPE_FLOAT, true);
       TCOD_struct_add_list_property(item_type_struct, "stringList", TCOD_TYPE_STRING, true);
+Py  : libtcod.struct_add_list_property(item_type_struct, "intList", libtcod.TYPE_INT, True)
+      libtcod.struct_add_list_property(item_type_struct, "floatList", libtcod.TYPE_FLOAT, True)
+      libtcod.struct_add_list_property(item_type_struct, "stringList", libtcod.TYPE_STRING, True)
 </pre></p>
 <hr />
 <a name="10.2.7"></a>
@@ -166,6 +185,7 @@ A structure can contains others structures. You can tell the parser which struct
 <p class="code"><pre>
 C++ : void TCODParserStruct::addStructure(TCODParserStruct *sub_structure)
 C   : void TCOD_struct_add_structure(TCOD_parser_struct_t str, TCOD_parser_struct_t sub_structure)
+Py  : struct_add_structure(str, sub_structure)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -178,6 +198,7 @@ The item_type structure can contain itself :<br />
 <p class="code"><pre>
 C++ : itemTypeStruct->addStructure(itemTypeStruct);
 C   : TCOD_struct_add_value_list(item_type_struct, item_type_struct);
+Py  : libtcod.struct_add_value_list(item_type_struct, item_type_struct)
 </pre></p>
 <hr />
 <a name="10.2.8"></a>
@@ -190,6 +211,7 @@ Here, the structure type's name is "item_type", the structure name is "sword". O
 <p class="code"><pre>
 C++ : const char *TCODParserStruct::getName() const
 C   : const char *TCOD_struct_get_name(TCOD_parser_struct_t str)
+Py  : struct_get_name(str)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -200,6 +222,7 @@ Example :<br />
 <p class="code"><pre>
 C++ : const char *structName = itemTypeStruct->getName(); // returns "item_type"
 C   : const char *struct_name = TCOD_struct_get_name(item_type_struct);
+Py  : struct_name = libtcod.struct_get_name(item_type_struct)
 </pre></p>
 <hr />
 <a name="10.2.9"></a>
@@ -208,6 +231,7 @@ You can know if a property is mandatory :<br />
 <p class="code"><pre>
 C++ : bool TCODParserStruct::isPropertyMandatory(const char *name) const
 C   : bool TCOD_struct_is_mandatory(TCOD_parser_struct_t str,const char *name)
+Py  : struct_is_mandatory(str,name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -217,6 +241,7 @@ C   : bool TCOD_struct_is_mandatory(TCOD_parser_struct_t str,const char *name)
 <p class="code"><pre>
 C++ : bool costMandatory = itemTypeStruct->isPropertyMandatory("cost"); 
 C   : bool cost_mandatory = TCOD_struct_is_mandatory(item_type_struct, "cost");
+Py  : cost_mandatory = libtcod.struct_is_mandatory(item_type_struct, "cost")
 </pre></p>
 <hr />
 <a name="10.2.10"></a>
@@ -225,6 +250,7 @@ You get the type of a property :<br />
 <p class="code"><pre>
 C++ : TCOD_value_type_t TCODParserStruct::getPropertyType(const char *name) const
 C   : TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t str, const char *name)
+Py  : struct_get_type(str, name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -237,4 +263,5 @@ For example, for a list of int, it will return TCOD_TYPE_LIST | TCOD_TYPE_INT.
 C++ : TCOD_value_type_t costType = itemTypeStruct->getPropertyType("cost"); // returns TCOD_TYPE_INT
       TCOD_value_type_t intListType = itemTypeStruct->getPropertyType("intList"); // returns TCOD_TYPE_LIST|TCOD_TYPE_INT
 C   : TCOD_value_type_t cost_type = TCOD_struct_get_type(item_type_struct, "cost");
+Py  : cost_type = libtcod.struct_get_type(item_type_struct, "cost")
 </pre></p>

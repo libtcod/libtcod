@@ -20,6 +20,7 @@ The default resolution depends on the root console size and the font character s
 <p class="code"><pre>
 C++ : static void TCODSystem::forceFullscreenResolution(int width, int height)
 C   : void TCOD_sys_force_fullscreen_resolution(int width, int height)
+Py  : sys_force_fullscreen_resolution(width, height)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -31,12 +32,15 @@ C++ : TCODSystem::forceFullscreenResolution(800,600); // use 800x600 in fullscre
       TCODConsole::initRoot(80,50,"",true); // 80x50 console with 8x8 char => 640x400 default resolution
 C   : TCOD_sys_force_fullscreen_resolution(800,600); 
       TCOD_console_init_root(80,50,"",true);
+Py  : libtcod.sys_force_fullscreen_resolution(800,600)
+      libtcod.console_init_root(80,50,"",True)
 </pre></p>
 <br />
 You can get the current screen resolution with getCurrentResolution. You can use it for example to get the desktop resolution before initializing the root console.<br />
 <p class="code"><pre>
 C++ : static void TCODSystem::getCurrentResolution(int *width, int *height)
 C   : void TCOD_sys_get_current_resolution(int *width, int *height)
+Py  : sys_get_current_resolution() # returns w,h
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -49,4 +53,6 @@ C++ : int w,h;
       TCODConsole::initRoot(w/8,h/8,"",true); // sets the console size so that it fills the desktop with a 8x8 font
 C   : TCOD_sys_get_current_resolution(&w,&h); 
       TCOD_console_init_root(w/8,h/8,"",true);
+Py  : w,h=libtcod.sys_get_current_resolution() 
+      libtcod.console_init_root(w/8,h/8,"",True)
 </pre></p>

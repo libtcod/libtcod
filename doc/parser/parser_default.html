@@ -18,29 +18,39 @@ table.none td { border : 0 }
 </style>
 You can run the parser with a default listener, by passing a NULL value in TCODParser::run :<br />
 <p class="code"><pre>
-C++ : myParser.run(filename,NULL);
-C   : TCOD_parser_run(my_parser,filename,NULL);
+C++ : myParser.run(filename,NULL)
+C   : TCOD_parser_run(my_parser,filename,NULL)
+Py  : parser_run(my_parser,filename,0)
 </pre></p>
 <br />
 In that case, a default listener will be used and the properties read from the file will be stored in the parser. The default listener does not support multiple values, each property name must appear only once in the file, else the last property will overwrite the value of the previous, so it is mean to be use with basic config files.<br />
 Using the default listener does not exempt you from declaring the structures in the parser. It still needs them to check the file validity. Once you run the parser, you can retrieve properties with following functions :<br />
 <p class="code"><pre>
-C++ : bool TCODParser::getBoolProperty(const char *name) const;
-      int TCODParser::getIntProperty(const char *name) const;
-      float TCODParser::getFloatProperty(const char *name) const;
-      TCODColor TCODParser::getColorProperty(const char *name) const;
-      TCOD_dice_t TCODParser::getDiceProperty(const char *name) const;
-      const char * TCODParser::getStringProperty(const char *name) const;
-      void * TCODParser::getCustomProperty(const char *name) const;
-      TCOD_list_t TCODParser::getListProperty(const char *name, TCOD_value_type_t type) const;
-C   : bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name);
-      int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name);
-      float TCOD_parser_get_float_property(TCOD_parser_t parser, const char *name);
-      const char * TCOD_parser_get_string_property(TCOD_parser_t parser, const char *name);
-      TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char *name);
-      TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name);
-      void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name);
-      TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type);
+C++ : bool TCODParser::getBoolProperty(const char *name) const
+      int TCODParser::getCharProperty(const char *name) const
+      int TCODParser::getIntProperty(const char *name) const
+      float TCODParser::getFloatProperty(const char *name) const
+      TCODColor TCODParser::getColorProperty(const char *name) const
+      TCOD_dice_t TCODParser::getDiceProperty(const char *name) const
+      const char * TCODParser::getStringProperty(const char *name) const
+      void * TCODParser::getCustomProperty(const char *name) const
+      TCOD_list_t TCODParser::getListProperty(const char *name, TCOD_value_type_t type) const
+C   : bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name)
+      int TCOD_parser_get_char_property(TCOD_parser_t parser, const char *name)
+      int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name)
+      float TCOD_parser_get_float_property(TCOD_parser_t parser, const char *name)
+      const char * TCOD_parser_get_string_property(TCOD_parser_t parser, const char *name)
+      TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char *name)
+      TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char *name)
+      void * TCOD_parser_get_custom_property(TCOD_parser_t parser, const char *name)
+      TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name, TCOD_value_type_t type)
+Py  : parser_get_bool_property(parser, name)
+      parser_get_int_property(parser, name)
+      parser_get_float_property(parser, name)
+      parser_get_string_property(parser, name)
+      parser_get_color_property(parser, name)
+      parser_get_dice_property(parser, name)
+      parser_get_list_property(parser, name, type)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -73,5 +83,9 @@ C   : char *mode=TCOD_parser_get_string_property(parser,"video.mode");
       TCOD_list_t availablesModes = TCOD_parser_get_list_property(parser,"video.mode",TCOD_TYPE_STRING));
       bool fullscreen = TCOD_parser_get_bool_property(parser,"video.fullscreen");
       float mouseSensitivity = TCOD_parser_get_float_property(parser,"input.mouse.sensitivity");
+Py  : mode=litbcod.parser_get_string_property(parser,"video.mode")
+      availablesModes = litbcod.parser_get_list_property(parser,"video.mode",litbcod.TYPE_STRING))
+      fullscreen = litbcod.parser_get_bool_property(parser,"video.fullscreen")
+      mouseSensitivity = litbcod.parser_get_float_property(parser,"input.mouse.sensitivity")
 </pre></p>
 

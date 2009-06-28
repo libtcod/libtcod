@@ -1,6 +1,6 @@
 /*
-* libtcod 1.4.0
-* Copyright (c) 2008 J.C.Wilk
+* libtcod 1.4.1
+* Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of J.C.Wilk may not be used to endorse or promote products
+*     * The name of Jice may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY J.C.WILK ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL J.C.WILK BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -54,6 +54,22 @@ void TCODZip::putData(int nbBytes, const void *pdata) {
 	TCOD_zip_put_data(data,nbBytes,pdata);
 }
 
+void TCODZip::putColor(const TCODColor *val) {
+	TCOD_color_t col;
+	col.r=val->r;
+	col.g=val->g;
+	col.b=val->b;
+	TCOD_zip_put_color(data,col);
+}
+
+void TCODZip::putImage(const TCODImage *val) {
+	TCOD_zip_put_image(data,val->data);
+}
+
+void TCODZip::putConsole(const TCODConsole *val) {
+	TCOD_zip_put_console(data,val->data);
+}
+
 int TCODZip::saveToFile(const char *filename) {
 	return TCOD_zip_save_to_file(data,filename);
 }
@@ -80,6 +96,18 @@ const char *TCODZip::getString() {
 
 int TCODZip::getData(int nbBytes, void *pdata) {
 	return TCOD_zip_get_data(data,nbBytes,pdata);
+}
+
+TCODColor TCODZip::getColor() {
+	return TCODColor(TCOD_zip_get_color(data));
+}
+
+TCODImage *TCODZip::getImage() {
+	return new TCODImage(TCOD_zip_get_image(data));
+}
+
+TCODConsole *TCODZip::getConsole() {
+	return new TCODConsole(TCOD_zip_get_console(data));
 }
 
 

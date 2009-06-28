@@ -5,7 +5,7 @@
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-2.1.3 Using a custom characters mapping<br />
+2.1.3 Using custom characters mappings<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -28,6 +28,7 @@ You can dynamically change the characters mapping at any time, allowing to use s
 <p class="code"><pre>
 C++ : static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY)
 C   : void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY)
+Py  : console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -39,6 +40,7 @@ C   : void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int
 <p class="code"><pre>
 C++ : static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
 C   : void TCOD_console_map_ascii_codes_to_font(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
+Py  : console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX, fontCharY)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -51,6 +53,7 @@ C   : void TCOD_console_map_ascii_codes_to_font(int firstAsciiCode, int nbCodes,
 <p class="code"><pre>
 C++ : static void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY)
 C   : void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY)
+Py  : console_map_string_to_font(s, fontCharX, fontCharY)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

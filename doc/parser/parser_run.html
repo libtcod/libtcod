@@ -49,6 +49,13 @@ C   :
 		bool (*end_struct)(TCOD_parser_struct_t str, const char *name);
 		void (*error)(const char *msg);
 	} TCOD_parser_listener_t;
+Py  :
+	class ParserListener :
+		def new_struct(str,name) : ...
+		def new_flag(name) : ...
+		def new_property(name,type,value) : ...
+		def end_struct(self, struct, name) : ...
+		def error(msg) : ...
 </pre></p>
 Before running the parser, you have to build a listener :<br />
 <p class="code"><pre>
@@ -103,6 +110,36 @@ C   :
 		my_parser_end_struct,
 		my_parser_error
 	}; 
+Py  :
+    class MyListener:
+        def new_struct(self, struct, name):
+            print 'new structure type', libtcod.struct_get_name(struct), \
+                  ' named ', name
+            return True
+        def new_flag(self, name):
+            print 'new flag named ', name
+            return True
+        def new_property(self,name, typ, value):
+            type_names = ['NONE', 'BOOL', 'CHAR', 'INT', 'FLOAT', 'STRING', \
+                          'COLOR', 'DICE']
+            if typ == libtcod.TYPE_COLOR :
+                print 'new property named ', name,' type ',type_names[typ], \
+                      ' value ', value.r, value.g, value.b
+            elif typ == libtcod.TYPE_DICE :
+                print 'new property named ', name,' type ',type_names[typ], \
+                      ' value ', value.nb_dices, value.nb_faces, \
+                      value.multiplier, value.addsub
+            else:
+                print 'new property named ', name,' type ',type_names[typ], \
+                      ' value ', value
+            return True
+        def end_struct(self, struct, name):
+            print 'end structure type', libtcod.struct_get_name(struct), \
+                  ' named ', name
+            return True
+        def error(self,msg):
+            print 'error : ', msg
+            return True
 </pre></p>
 <br />
 <hr />
@@ -118,6 +155,7 @@ It must return true if everything is right, false if there is an error and the p
 <p class="code"><pre>
 C++ : bool ITCODParserListener::parserNewStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
 C   : bool new_struct(TCOD_parser_struct_t str,const char *name)
+Py  : new_struct(str,name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -139,6 +177,7 @@ It must return true if everything is right, false if there is an error and the p
 <p class="code"><pre>
 C++ : bool ITCODParserListener::parserFlag(TCODParser *parser,const char *name)
 C   : bool new_flag(const char *name)
+Py  : new_flag(name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -160,6 +199,7 @@ It must return true if everything is right, false if there is an error and the p
 <p class="code"><pre>
 C++ : bool ITCODParserListener::parserProperty(TCODParser *parser,const char *name, TCOD_value_type_t type, TCOD_value_t value)
 C   : bool new_property(const char *name, TCOD_value_type_t type, TCOD_value_t value)
+Py  : new_property(name,type,value)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -183,6 +223,7 @@ It must return true if everything is right, false if there is an error and the p
 <p class="code"><pre>
 C++ : bool ITCODParserListener::parserEndStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
 C   : bool end_struct(TCOD_parser_struct_t str,const char *name)
+Py  : end_struct(str,name)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -203,6 +244,7 @@ When the parser finds an error in the file, it will call the error callback and 
 <p class="code"><pre>
 C++ : void ITCODParserListener::error(const char *msg)
 C   : void error(const char *msg)
+Py  : error(msg)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -213,6 +255,7 @@ If you find an error in your callback, you have to call the parser error functio
 <p class="code"><pre>
 C++ : void TCODParser::error(const char *msg, ...)
 C   : void TCOD_parser_error(const char *msg, ...)
+Py  : parser_error(msg)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -223,6 +266,7 @@ Example :
 <p class="code"><pre>
 C++ : parser->error("Bad cost value %d. Cost must be between 0 and 1000", value.i);
 C   : TCOD_parser_error("Bad cost value %d. Cost must be between 0 and 1000", value.i);
+Py  : libtcod.parser_error("Bad cost value %d. Cost must be between 0 and 1000"%( value ))
 </pre></p>
 The previous code will result in your error callback called with the following string :
 <p class="code"><pre>
@@ -236,6 +280,7 @@ Once you defined all the structure types and created your listener, you can star
 <p class="code"><pre>
 C++ : void TCODParser::run(const char *filename, ITCODParserListener *listener)
 C   : void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener)
+Py  : parser_run(parser, filename, listener=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -249,6 +294,7 @@ Example :
 <p class="code"><pre>
 C++ : myParser.run("config.txt",new MyListener());
 C   : TCOD_parser_run(my_parser,"config.txt", my_listener);
+Py  : libtcod.parser_run(my_parser,"config.txt", MyListener())
 </pre></p>
 <br />
 <hr />
@@ -258,6 +304,7 @@ Once you've done with the file parsing, you can release the resources used by th
 <p class="code"><pre>
 C++ : TCODParser::~TCODParser()
 C   : void TCOD_parser_delete(TCOD_parser_t parser)
+Py  : parser_delete(parser)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

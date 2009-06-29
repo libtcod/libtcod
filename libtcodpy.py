@@ -58,17 +58,17 @@ class Color(Structure):
     def __mul__(self, c):
 	iret=0
         if isinstance(c,Color):
-            iret=_lib.TCOD_color_multiply_wrapper(self, c)
+            iret=_lib.TCOD_color_multiply_wrapper(col_to_int(self), col_to_int(c))
         else:
-            iret=_lib.TCOD_color_multiply_scalar_wrapper(self, c_float(c))
+            iret=_lib.TCOD_color_multiply_scalar_wrapper(col_to_int(self), c_float(c))
         return int_to_col(iret)
             
     def __add__(self, c):
-        iret=_lib.TCOD_color_add_wrapper(self, c)
+        iret=_lib.TCOD_color_add_wrapper(col_to_int(self), col_to_int(c))
         return int_to_col(iret)
 
     def __sub__(self, c):
-        iret=_lib.TCOD_color_subtract_wrapper(self, c)
+        iret=_lib.TCOD_color_subtract_wrapper(col_to_int(self), col_to_int(c))
         return int_to_col(iret)
 
 def int_to_col(i) :

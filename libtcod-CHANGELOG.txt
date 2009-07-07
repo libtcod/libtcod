@@ -5,6 +5,9 @@ X API break
 =========================================================
 1.4.2 : ??
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
+- fixed color operations in python
+- fixed a crash when saving a TCODImage before initializing the root console
+
 1.4.1 : 2009 Mar 22
 X Default colors have been changed/added. 
 X TCODMap::computeFov changed to support several algorithms :

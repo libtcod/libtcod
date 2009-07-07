@@ -937,6 +937,7 @@ void TCOD_sys_force_fullscreen_resolution(int width, int height) {
 	fullscreen_height=height;
 }
 
+/*
 void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 	int x,y;
 	SDL_Surface *bitmap=SDL_CreateRGBSurface(SDL_SWSURFACE,width,height,charmap->format->BitsPerPixel,
@@ -945,6 +946,40 @@ void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 		for (y=0; y < height; y++) {
 			SDL_Rect rect;
 			Uint32 col=SDL_MapRGB(charmap->format,buf[x+y*width].r,buf[x+y*width].g,buf[x+y*width].b);
+			rect.x=x;
+			rect.y=y;
+			rect.w=1;
+			rect.h=1;
+			SDL_FillRect(bitmap,&rect,col);
+		}
+	}
+	return (void *)bitmap;
+}
+*/
+void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
+	int x,y;
+	SDL_PixelFormat fmt;
+	memset(&fmt,0,sizeof(SDL_PixelFormat));
+	if ( charmap != NULL ) {
+		fmt = *charmap->format;
+	} else {
+		fmt.BitsPerPixel=24;
+		fmt.Amask=0;
+		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
+			fmt.Rmask=0x0000FF;
+			fmt.Gmask=0x00FF00;
+			fmt.Bmask=0xFF0000;
+		} else {
+			fmt.Rmask=0xFF0000;
+			fmt.Gmask=0x00FF00;
+			fmt.Bmask=0x0000FF;
+		}
+	}
+	SDL_Surface *bitmap=SDL_CreateRGBSurface(SDL_SWSURFACE,width,height,fmt.BitsPerPixel,fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask);
+	for (x=0; x < width; x++) {
+		for (y=0; y < height; y++) {
+			SDL_Rect rect;
+			Uint32 col=SDL_MapRGB(&fmt,buf[x+y*width].r,buf[x+y*width].g,buf[x+y*width].b);
 			rect.x=x;
 			rect.y=y;
 			rect.w=1;

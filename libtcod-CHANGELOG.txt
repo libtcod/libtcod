@@ -3,10 +3,13 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.4.2 : ??
+1.4.2 : 2009 ??? ??
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
-- fixed color operations in python
+- fixed R/B inversion in color operations in python
 - fixed a crash when saving a TCODImage before initializing the root console
+- fixed a crash when destroying an empty TCODZip (file not found)
+- fixed torch effect in C++ sample
+- fixed ASCII_IN_ROW flag not working
 
 1.4.1 : 2009 Mar 22
 X Default colors have been changed/added. 

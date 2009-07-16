@@ -528,7 +528,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 		recompute_fov=true;
 	} else if ( key->c == '+' || key->c == '-' ) {
 		algonum+= key->c == '+' ? 1 : -1;
-		algonum = CLAMP(0,NB_FOV_ALGORITHMS,algonum);
+		algonum = CLAMP(0,NB_FOV_ALGORITHMS-1,algonum);
 		TCOD_console_set_foreground_color(sample_console,TCOD_white);
 		TCOD_console_print_left(sample_console,1,0,TCOD_BKGND_NONE,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);

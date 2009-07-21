@@ -123,8 +123,8 @@ TCODConsole::~TCODConsole() {
 }
 
 void TCODConsole::blit(const TCODConsole *srcCon,int xSrc, int ySrc, int wSrc, int hSrc,
-	TCODConsole *dstCon, int xDst, int yDst, int fade) {
-	TCOD_console_blit(srcCon->data,xSrc,ySrc,wSrc,hSrc,dstCon->data,xDst,yDst,fade);
+	TCODConsole *dstCon, int xDst, int yDst, float foreground_alpha, float background_alpha) {
+	TCOD_console_blit(srcCon->data,xSrc,ySrc,wSrc,hSrc,dstCon->data,xDst,yDst,foreground_alpha, background_alpha);
 }
 
 

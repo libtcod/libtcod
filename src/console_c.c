@@ -123,7 +123,7 @@ void TCOD_console_delete(TCOD_console_t con) {
 }
 
 void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int hSrc,
-	TCOD_console_t dstCon, int xDst, int yDst, int fade_val) {
+	TCOD_console_t dstCon, int xDst, int yDst, float foreground_alpha, float background_alpha) {
     TCOD_console_data_t *src;
     TCOD_console_data_t *dst;
 	int cx,cy;
@@ -139,30 +139,29 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 				int dx=cx-xSrc+xDst;
 				int dy=cy-ySrc+yDst;
 				char_t dstChar;
-				if ( fade_val == 255 ) {
+				if ( foreground_alpha == 1.0f && background_alpha == 1.0f ) {
 					dstChar=srcChar;
 				} else {
-					float ffade=(float)fade_val/255.0f;
 					dstChar=dst->buf[dy * dst->w + dx];
 
-					dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,ffade);
+					dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,background_alpha);
 					if ( srcChar.c == ' ' ) {
-						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,ffade);
+						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,background_alpha);
 					} else if (dstChar.c == ' ') {
 						dstChar.c=srcChar.c;
 						dstChar.cf=srcChar.cf;
-						dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,ffade);
+						dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,foreground_alpha);
 					} else if (dstChar.c == srcChar.c) {
-						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,ffade);
+						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,foreground_alpha);
 					} else {
-						if ( fade_val < 128 ) {
+						if ( foreground_alpha < 0.5f ) {
 							dstChar.fore=TCOD_color_lerp(dstChar.fore,dstChar.back,
-								(float)(fade_val)/127);
+								foreground_alpha*2);
 						} else {
 							dstChar.c=srcChar.c;
 							dstChar.cf=srcChar.cf;
 							dstChar.fore=TCOD_color_lerp(dstChar.back,srcChar.fore,
-								(float)(fade_val-128)/127);
+								(foreground_alpha-0.5f)*2);
 						}
 					}
 				}

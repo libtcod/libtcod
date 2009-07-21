@@ -89,7 +89,7 @@ public :
 	
 	TCODConsole(int w, int h);
 	TCODConsole(TCOD_console_t con) : data(con) {}
-	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, int fade=255);
+	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f);
 	void setKeyColor(const TCODColor &col);
 	virtual ~TCODConsole();
 	

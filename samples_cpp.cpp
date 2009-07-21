@@ -107,7 +107,7 @@ void render_colors(bool first, TCOD_key_t*key) {
 void render_offscreen(bool first, TCOD_key_t*key) {
 	static TCODConsole secondary(SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2); // second screen
 	static TCODConsole screenshot(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT); // second screen
-	static uint8 alpha=0; // alpha value for the blit operation
+	static float alpha=0; // alpha value for the blit operation
 	static bool init=false; // draw the secondary screen only the first time
 	static int counter=0;
 	static int x=0,y=0; // secondary screen position
@@ -122,7 +122,7 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		TCODSystem::setFps(30); // fps limited to 30
 		// get a "screenshot" of the current sample screen
 		TCODConsole::blit(&sampleConsole,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
-							&screenshot,0,0,255);
+							&screenshot,0,0);
 	}
 	counter++;
 	if ( counter % 20 == 0 ) {
@@ -133,13 +133,13 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		if ( y == SAMPLE_SCREEN_HEIGHT/2 ) ydir=-1;
 		else if ( y == 0 ) ydir=1;
 	}
-	alpha=(uint8)(255*(1.0f+cosf(TCODSystem::getElapsedSeconds()*2.0f))/2.0f);
+	alpha=(1.0f+cosf(TCODSystem::getElapsedSeconds()*2.0f))*0.5f;
 	// restore the initial screen
 	TCODConsole::blit(&screenshot,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
-					&sampleConsole,0,0,255);
+					&sampleConsole,0,0);
 	// blit the overlapping screen
 	TCODConsole::blit(&secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,
-					&sampleConsole,x,y,alpha);
+					&sampleConsole,x,y,1.0f,alpha);
 
 }
 
@@ -1113,8 +1113,7 @@ int main( int argc, char *argv[] ) {
 
 		// blit the sample console on the root console
 		TCODConsole::blit(&sampleConsole,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT, // the source console & zone to blit
-							TCODConsole::root,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y, // the destination console & position
-							255 // alpha coef
+							TCODConsole::root,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y // the destination console & position
 						 );
 		// update the game screen
 		TCODConsole::flush();

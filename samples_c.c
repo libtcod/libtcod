@@ -111,7 +111,7 @@ void render_colors(bool first, TCOD_key_t*key) {
 void render_offscreen(bool first, TCOD_key_t*key) {
 	static TCOD_console_t secondary; /* second screen */
 	static TCOD_console_t screenshot; /* second screen */
-	static uint8 alpha=0; /* alpha value for the blit operation */
+	static float alpha=0; /* alpha value for the blit operation */
 	static bool init=false; /* draw the secondary screen only the first time */
 	static int counter=0;
 	static int x=0,y=0; /* secondary screen position */
@@ -128,7 +128,7 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
 		/* get a "screenshot" of the current sample screen */
 		TCOD_console_blit(sample_console,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
-							screenshot,0,0,255);
+							screenshot,0,0,1.0f,1.0f);
 	}
 	counter++;
 	if ( counter % 20 == 0 ) {
@@ -139,13 +139,13 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		if ( y == SAMPLE_SCREEN_HEIGHT/2 ) ydir=-1;
 		else if ( y == 0 ) ydir=1;
 	}
-	alpha=(uint8)(255*(1.0f+cosf(TCOD_sys_elapsed_seconds()*2.0f))/2.0f);
+	alpha=(1.0f+cosf(TCOD_sys_elapsed_seconds()*2.0f))*0.5f;
 	/* restore the initial screen */
 	TCOD_console_blit(screenshot,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
-					sample_console,0,0,255);
+					sample_console,0,0,1.0f,1.0f);
 	/* blit the overlapping screen */
 	TCOD_console_blit(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,
-					sample_console,x,y,alpha);
+					sample_console,x,y,1.0f,alpha);
 
 }
 
@@ -215,7 +215,7 @@ void render_lines(bool first, TCOD_key_t*key) {
 		TCOD_console_set_foreground_color(sample_console,TCOD_white);
 	}
 	/* blit the background */
-	TCOD_console_blit(bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,sample_console,0,0,255);
+	TCOD_console_blit(bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,sample_console,0,0,1.0f,1.0f);
 	/* render the gradient */
 	recty=(int)((SAMPLE_SCREEN_HEIGHT-2)*((1.0f+cosf(TCOD_sys_elapsed_seconds()))/2.0f));
 	for (x=0;x < SAMPLE_SCREEN_WIDTH; x++) {
@@ -1115,7 +1115,7 @@ int main( int argc, char *argv[] ) {
 		/* blit the sample console on the root console */
 		TCOD_console_blit(sample_console,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT, /* the source console & zone to blit */
 							NULL,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y, /* the destination console & position */
-							255 /* alpha coef */
+							1.0f,1.0f /* alpha coefs */
 						 );
 		/* update the game screen */
 		TCOD_console_flush();

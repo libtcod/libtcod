@@ -271,7 +271,7 @@ TCODLIB_API TCOD_console_t TCOD_console_new(int w, int h);
 TCODLIB_API int TCOD_console_get_width(TCOD_console_t con);
 TCODLIB_API int TCOD_console_get_height(TCOD_console_t con);
 TCODLIB_API void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col);
-TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, int fade);
+TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, float foreground_alpha, float background_alpha);
 TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 
 TCODLIB_API void TCOD_console_credits();

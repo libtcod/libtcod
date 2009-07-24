@@ -97,6 +97,7 @@ inline void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, i
             obstaclesInLastLine = totalObstacles;
             y += dy;
             if (y < 0 || y >= m->height) done = true;
+			if ( minAngle == 1.0f ) done=true;
         }
     }
     //octant: horizontal edge
@@ -161,6 +162,7 @@ inline void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, i
             obstaclesInLastLine = totalObstacles;
             x += dx;
             if (x < 0 || x >= m->width) done = true;
+			if ( minAngle == 1.0f ) done=true;
         }
     }
 }

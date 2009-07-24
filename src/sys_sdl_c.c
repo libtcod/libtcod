@@ -72,6 +72,7 @@ int fontNbCharHoriz=16;
 int fontNbCharVertic=16;
 // font layout (character 0 to 15 on the first row or the first column)
 bool fontInRow=false, fontIsGreyscale=false, fontTcodLayout=false;
+
 // font transparent color
 static TCOD_color_t fontKeyCol={0,0,0};
 

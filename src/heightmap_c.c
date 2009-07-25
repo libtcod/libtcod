@@ -51,6 +51,10 @@ float TCOD_heightmap_get_value(const TCOD_heightmap_t *hm, int x, int y) {
 	return GET_VALUE(hm,x,y);
 }
 
+void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float value) {
+	GET_VALUE(hm,x,y)=value;
+}
+
 void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *max) {
 	float curmax=hm->values[0];
 	float curmin=hm->values[0];

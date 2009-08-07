@@ -107,7 +107,6 @@ void render_colors(bool first, TCOD_key_t*key) {
 void render_offscreen(bool first, TCOD_key_t*key) {
 	static TCODConsole secondary(SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2); // second screen
 	static TCODConsole screenshot(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT); // second screen
-	static float alpha=0; // alpha value for the blit operation
 	static bool init=false; // draw the secondary screen only the first time
 	static int counter=0;
 	static int x=0,y=0; // secondary screen position
@@ -133,13 +132,12 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		if ( y == SAMPLE_SCREEN_HEIGHT/2 ) ydir=-1;
 		else if ( y == 0 ) ydir=1;
 	}
-	alpha=(1.0f+cosf(TCODSystem::getElapsedSeconds()*2.0f))*0.5f;
 	// restore the initial screen
 	TCODConsole::blit(&screenshot,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
 					&sampleConsole,0,0);
 	// blit the overlapping screen
 	TCODConsole::blit(&secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,
-					&sampleConsole,x,y,1.0f,alpha);
+					&sampleConsole,x,y,1.0f,0.75f);
 
 }
 
@@ -208,7 +206,7 @@ void render_lines(bool first, TCOD_key_t*key) {
 	// blit the background
 	TCODConsole::blit(&bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,&sampleConsole,0,0);
 	// render the gradient
-	int recty=(int)((SAMPLE_SCREEN_HEIGHT-2)*((1.0f+cosf(TCOD_sys_elapsed_seconds()))/2.0f));
+	int recty=(int)((SAMPLE_SCREEN_HEIGHT-2)*((1.0f+cosf(TCODSystem::getElapsedSeconds()))/2.0f));
 	for (int x=0;x < SAMPLE_SCREEN_WIDTH; x++) {
 		TCODColor col;
 		col.r=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
@@ -219,7 +217,7 @@ void render_lines(bool first, TCOD_key_t*key) {
 		sampleConsole.setBack(x,recty+2,col,(TCOD_bkgnd_flag_t)bkFlag);
 	}
 	// calculate the segment ends
-	float angle = TCOD_sys_elapsed_seconds()*2.0f;
+	float angle = TCODSystem::getElapsedSeconds()*2.0f;
 	float cosAngle=cosf(angle);
 	float sinAngle=sinf(angle);
 	int xo = (int)(SAMPLE_SCREEN_WIDTH/2*(1 + cosAngle));
@@ -555,9 +553,9 @@ void render_image(bool first, TCOD_key_t*key) {
 	}
 	sampleConsole.setBackgroundColor(TCODColor::black);
 	sampleConsole.clear();
-	float x=SAMPLE_SCREEN_WIDTH/2+cosf(TCOD_sys_elapsed_seconds())*10.0f;
+	float x=SAMPLE_SCREEN_WIDTH/2+cosf(TCODSystem::getElapsedSeconds())*10.0f;
 	float y=(float)(SAMPLE_SCREEN_HEIGHT/2);
-	float scalex=0.2f+1.8f*(1.0f+cosf(TCOD_sys_elapsed_seconds()/2))/2.0f;
+	float scalex=0.2f+1.8f*(1.0f+cosf(TCODSystem::getElapsedSeconds()/2))/2.0f;
 	float scaley=scalex;
 	float angle=TCODSystem::getElapsedSeconds();
 	long elapsed=TCODSystem::getElapsedMilli()/2000;

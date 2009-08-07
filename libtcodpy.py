@@ -555,8 +555,8 @@ def console_disable_keyboard_repeat():
 def console_new(w, h):
     return _lib.TCOD_console_new(w, h)
     
-def console_blit(src, x, y, w, h, dst, xdst, ydst, fade=255):
-    _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, fade)
+def console_blit(src, x, y, w, h, dst, xdst, ydst, ffade=1.0,bfade=1.0):
+    _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, c_float(ffade), c_float(bfade))
     
 def console_set_key_color(con, col):
     _lib.TCOD_console_set_key_color(con, col)

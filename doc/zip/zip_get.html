@@ -60,6 +60,36 @@ C   : const char *TCOD_zip_get_string(TCOD_zip_t zip)
 The address returned is in the buffer. It is valid as long as you don't destroy the buffer.
 <hr />
 <p class="code"><pre>
+C++ : TCODColor TCODZip::getColor()
+C   : TCOD_color_t TCOD_zip_get_color(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : TCODImage *TCODZip::getImage()
+C   : TCOD_image_t TCOD_zip_get_image(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : TCODConsole *TCODZip::getConsole()
+C   : TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+</table>
+<hr />
+<p class="code"><pre>
 C++ : int TCODZip::getData(int nbBytes, void *data)
 C   : int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void *data)
 </pre></p>

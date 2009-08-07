@@ -63,6 +63,39 @@ C   : void TCOD_zip_put_string(TCOD_zip_t zip, const char *val)
 </table>
 <hr />
 <p class="code"><pre>
+C++ : void TCODZip::putColor(const TCODColor *val)
+C   : void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+<tr><td>val</td><td>A color to store in the buffer</td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : void TCODZip::putImage(const TCODImage *val)
+C   : void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+<tr><td>val</td><td>An image to store in the buffer</td></tr>
+</table>
+<hr />
+<p class="code"><pre>
+C++ : void TCODZip::putConsole(const TCODConsole *val)
+C   : void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val)
+</pre></p>
+<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>zip</td><td>In the C version, the buffer handler, returned by the <a href="zip_init.html">constructor</a>.<br /></td></tr>
+<tr><td>val</td><td>A console to store in the buffer</td></tr>
+</table>
+<hr />
+<p class="code"><pre>
 C++ : void TCODZip::putData(int nbBytes, const void *data)
 C   : void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data)
 </pre></p>

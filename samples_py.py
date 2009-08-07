@@ -176,7 +176,6 @@ def render_colors(first, key):
 #############################################
 oc_secondary = None
 oc_screenshot = None
-oc_alpha = 0
 oc_counter = 0
 oc_x = 0
 oc_y = 0
@@ -185,7 +184,7 @@ oc_xdir = 1
 oc_ydir = 1
 def render_offscreen(first, key):
     global oc_secondary, oc_screenshot
-    global oc_alpha, oc_counter, oc_x, oc_y, oc_init, oc_xdir, oc_ydir
+    global oc_counter, oc_x, oc_y, oc_init, oc_xdir, oc_ydir
 
     if not oc_init:
         oc_init = True
@@ -208,7 +207,7 @@ def render_offscreen(first, key):
         libtcod.sys_set_fps(30)
         # get a "screenshot" of the current sample screen
         libtcod.console_blit(sample_console, 0, 0, SAMPLE_SCREEN_WIDTH, 
-                             SAMPLE_SCREEN_HEIGHT, oc_screenshot, 0, 0, 255)
+                             SAMPLE_SCREEN_HEIGHT, oc_screenshot, 0, 0)
     oc_counter += 1
     if oc_counter % 20 == 0:
         oc_x += oc_xdir
@@ -221,13 +220,11 @@ def render_offscreen(first, key):
             oc_ydir = -1
         elif oc_y == 0:
             oc_ydir = 1
-    oc_alpha=int(255 * (1.0 + math.cos(libtcod.sys_elapsed_seconds() * 2.0)) 
-                 / 2.0)
     libtcod.console_blit(oc_screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, 
-                         SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 255)
+                         SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0)
     libtcod.console_blit(oc_secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2, 
                          SAMPLE_SCREEN_HEIGHT / 2, sample_console, oc_x, oc_y,
-                         oc_alpha)
+                         1.0,0.75)
 
 #############################################
 # line drawing sample
@@ -1169,7 +1166,7 @@ while not libtcod.console_is_window_closed():
     first = False
     libtcod.console_blit(sample_console,
                          0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT,
-                         0, SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y, 255)
+                         0, SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y)
     # render credits
     if not credits_end: 
         credits_end = libtcod.console_credits_render(60, 42, 0)

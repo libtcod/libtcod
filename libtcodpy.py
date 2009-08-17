@@ -1070,11 +1070,15 @@ _lib.TCOD_path_walk.restype = c_uint
 def path_new_using_map(m, dcost=1.41):
     return _lib.TCOD_path_new_using_map(c_void_p(m), c_float(dcost))
     
+PATH_CBK_FUNC = None
+cbk_func = None
 def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
-    PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, c_void_p)
+    global PATH_CBK_FUNC
+    global cbk_func
+    PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
     cbk_func = PATH_CBK_FUNC(func)
     return _lib.TCOD_path_new_using_function(w, h, cbk_func, 
-                                             c_void_p(userdata), c_float(dcost))
+                                             py_object(userdata), c_float(dcost))
                                              
 def path_compute(p, ox, oy, dx, dy):
     return _lib.TCOD_path_compute(p, ox, oy, dx, dy) == 1

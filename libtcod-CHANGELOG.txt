@@ -13,6 +13,7 @@ X TCODConsole::blit now takes 2 float parameters :
 - fixed a crash when destroying an empty TCODZip (file not found)
 - fixed torch effect in C++ sample
 - fixed ASCII_IN_ROW flag not working
+- fixed path_new_using_function not working in python wrapper
 
 1.4.1 : 2009 Mar 22
 X Default colors have been changed/added. 

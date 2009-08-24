@@ -20,5 +20,5 @@ Fonts :
 The celtic garamond and dundalk fonts are from 1001freefonts.com.
 The caeldera font is from blambot.com.
 Other fonts are included in windows. 
-The celtic_garamond, arial and courier bitmap fonts were created by Mingos.
+The celtic_garamond, arial, courier, dejavu, consolas, prestige and lucida 10x10/12x12 bitmap fonts were created by Mingos.
 

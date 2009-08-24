@@ -561,7 +561,7 @@ int TCOD_console_stringLength(const char *s) {
 	int l=0;
 	while (*s) {
 		if ( *s == (int)TCOD_COLCTRL_FORE_RGB || *s == (int)TCOD_COLCTRL_BACK_RGB ) s+=3;
-		else if ( *s > (int)TCOD_COLCTRL_STOP ) l++;
+		else if ( (unsigned)(*s) > (unsigned)TCOD_COLCTRL_STOP ) l++;
 		s++;
 	}
 	return l;

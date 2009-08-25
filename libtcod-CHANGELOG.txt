@@ -8,7 +8,7 @@ X TCODConsole::blit now takes 2 float parameters :
    static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f)
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
 + heightmap : added missing TCOD_heightmap_set_value function
-+ added consolas, dejavu, lucida10x10, lucida12x12 and prestige fonts
++ new consolas, dejavu, lucida and prestige fonts from Mingos
 - fixed R/B inversion in color operations in python
 - fixed a crash when saving a TCODImage before initializing the root console
 - fixed a crash when destroying an empty TCODZip (file not found)

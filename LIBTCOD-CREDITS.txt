@@ -10,11 +10,16 @@ Products :
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback, and especially :
-- owners of projects using libtcod.
-- Chris Hamons for the C# port and valuable bug fixes.
+- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov routines, lots of bitmap fonts and being the #1 libtcod user, supporter and contributor.
+- Joao 'Jotaf' Henriques for his long time support and priceless comments and suggestions.
+- Chris Hamons and John Klimek for the C# port and valuable bug fixes.
 - Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
 - Michael De Rosa for the OSX port.
 - Sandman for various tricky bug fixes.
+- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines
+- Adam 'Blinks' Blinkinsop for the OSX port and the autotools compilation system.
+- Nick Glauber for being the first libtcod Paypal sponsor
+- owners of projects using libtcod.
 
 Fonts :
 The celtic garamond and dundalk fonts are from 1001freefonts.com.

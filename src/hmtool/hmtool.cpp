@@ -252,7 +252,7 @@ void smoothCbk(Widget *w,void *data) {
 }
 
 void voronoiCbk(Widget *w,void *data) {
-	(new VoronoiOperation(100,2,voronoiCoef))->add(); 
+	(new VoronoiOperation(100,2,voronoiCoef))->add();
 }
 
 void noiseLerpCbk(Widget *w,void *data) {
@@ -524,7 +524,7 @@ int main(int argc, char *argv[]) {
 		} else {
 			if ( fade > 80 ) fade -= 20;
 		}
-		TCODConsole::blit(guicon,0,0,HM_WIDTH,HM_HEIGHT,TCODConsole::root,0,0,fade);
+		TCODConsole::blit(guicon,0,0,HM_WIDTH,HM_HEIGHT,TCODConsole::root,0,0,fade/255.0f,fade/255.0f);
 		TCODConsole::flush();
 		TCOD_key_t key=TCODConsole::checkForKeypress();
 		Widget::updateWidgets(key);

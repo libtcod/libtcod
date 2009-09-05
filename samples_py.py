@@ -387,10 +387,9 @@ def render_noise(first, key):
                                      libtcod.BKGND_SET)
     libtcod.console_set_background_color(sample_console, libtcod.grey)
     rectw = 24
-    recth = 7
+    recth = 13
     if noise_func <= WAVELET: 
-        rectw = 16
-        recth = 4
+        recth = 10
     libtcod.console_rect(sample_console, 2, 2, rectw, recth, False, 
                          libtcod.BKGND_MULTIPLY)
     for curfunc in range(TURBULENCE_WAVELET + 1): 

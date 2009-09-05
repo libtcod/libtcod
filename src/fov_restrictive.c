@@ -31,30 +31,43 @@
 * Original implementation: http://umbrarumregnum.110mb.com/downloads/MRPAS.zip
 */
 
+#include <stdlib.h> // for NULL in VS
 #include "libtcod.h"
 #include "libtcod_int.h"
 
-inline void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int player_x, int player_y, int max_radius, bool light_walls, int maxObstacles, int dx, int dy) {
+void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int player_x, int player_y, int max_radius, bool light_walls, int maxObstacles, int dx, int dy) {
+    static double *startAngle=NULL, *endAngle=NULL;
+    static int angleArraySize=0;
+
+    if ( angleArraySize > 0 && angleArraySize < maxObstacles ) {
+        free(startAngle);
+        startAngle=NULL;
+    }
+    if ( startAngle == NULL ) {
+        angleArraySize = maxObstacles;
+        startAngle = (double *)malloc(sizeof(double) * 2 * maxObstacles);
+        endAngle = &startAngle[maxObstacles];
+    }
     //octant: vertical edge
     {
         int iteration = 1; //iteration of the algo for this octant
         bool done = false;
         int totalObstacles = 0;
         int obstaclesInLastLine = 0;
-        double startAngle[maxObstacles], endAngle[maxObstacles];
 		double minAngle = 0.0f;
+		int x,y;
 
         //do while there are unblocked slopes left and the algo is within the map's boundaries
         //scan progressive lines/columns from the PC outwards
-        int x, y = player_y+dy; //the outer slope's coordinates (first processed line)
+        y = player_y+dy; //the outer slope's coordinates (first processed line)
         if (y < 0 || y >= m->height) done = true;
 		while(!done) {
-            done = true;
             //process cells in the line
 			double slopesPerCell = 1.0f/(double)(iteration+1);
 			double halfSlopes = slopesPerCell*0.5f;
-			int processedCell = minAngle / slopesPerCell;
+			int processedCell = (int)(minAngle / slopesPerCell);
             int minx = MAX(0,player_x-iteration), maxx = MIN(m->width-1,player_x+iteration);
+            done = true;
             for (x = player_x + (processedCell * dx); x >= minx && x <= maxx; x+=dx) {
                 int c = x + (y * m->width);
                 //calculate slopes per cell
@@ -106,20 +119,20 @@ inline void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, i
         bool done = false;
         int totalObstacles = 0;
         int obstaclesInLastLine = 0;
-        double startAngle[maxObstacles], endAngle[maxObstacles];
 		double minAngle = 0.0f;
+		int x,y;
 
         //do while there are unblocked slopes left and the algo is within the map's boundaries
         //scan progressive lines/columns from the PC outwards
-        int x = player_x+dx, y; //the outer slope's coordinates (first processed line)
+        x = player_x+dx; //the outer slope's coordinates (first processed line)
         if (x < 0 || x >= m->width) done = true;
 		while(!done) {
-            done = true;
             //process cells in the line
 			double slopesPerCell = 1.0f/(double)(iteration+1);
 			double halfSlopes = slopesPerCell*0.5f;
-			int processedCell = minAngle / slopesPerCell;
+			int processedCell = (int)(minAngle / slopesPerCell);
             int miny = MAX(0,player_y-iteration), maxy = MIN(m->height-1,player_y+iteration);
+            done = true;
             for (y = player_y + (processedCell * dy); y >= miny && y <= maxy; y+=dy) {
                 int c = x + (y * m->width);
                 //calculate slopes per cell
@@ -170,13 +183,14 @@ inline void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, i
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
     map_t *m = (map_t *)map;
     int c;
+    int maxObstacles;
     //first, zero the FOV map
     for(c = m->nbcells - 1; c >= 0; c--) {
         m->cells[c].fov = 0;
     }
 
     //calculate an approximated (excessive, just in case) maximum number of obstacles per octant
-    int maxObstacles = m->nbcells / 7;
+    maxObstacles = m->nbcells / 7;
 
     //set PC's position as visible
     m->cells[player_x+(player_y*m->width)].fov = 1;

@@ -440,7 +440,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							if ( SDL_MUSTLOCK(charmap) ) {
 								SDL_UnlockSurface(charmap);
 							}
-#endif							
+#endif
 						}
 						SDL_BlitSurface(charmap,&srcRect,bitmap,&dstRect);
 					}
@@ -450,7 +450,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	}
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
-#endif	
+#endif
 	oldFade=fade;
 	if ( any_ascii_updated ) {
 		memset(ascii_updated,0,sizeof(bool)*max_font_chars);
@@ -960,6 +960,7 @@ void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 	int x,y;
 	SDL_PixelFormat fmt;
+	SDL_Surface *bitmap;
 	memset(&fmt,0,sizeof(SDL_PixelFormat));
 	if ( charmap != NULL ) {
 		fmt = *charmap->format;
@@ -976,7 +977,7 @@ void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 			fmt.Bmask=0x0000FF;
 		}
 	}
-	SDL_Surface *bitmap=SDL_CreateRGBSurface(SDL_SWSURFACE,width,height,fmt.BitsPerPixel,fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask);
+	bitmap=SDL_CreateRGBSurface(SDL_SWSURFACE,width,height,fmt.BitsPerPixel,fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask);
 	for (x=0; x < width; x++) {
 		for (y=0; y < height; y++) {
 			SDL_Rect rect;

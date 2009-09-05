@@ -305,7 +305,7 @@ void render_noise(bool first, TCOD_key_t*key) {
 	}
 	/* draw a transparent rectangle */
 	TCOD_console_set_background_color(sample_console,TCOD_grey);
-	TCOD_console_rect(sample_console,2,2,(func <= WAVELET ? 16 : 24),(func <= WAVELET ? 4 : 7),false,TCOD_BKGND_MULTIPLY);
+	TCOD_console_rect(sample_console,2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
 	/* draw the text */
 	for (curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {
@@ -483,7 +483,6 @@ void render_fov(bool first, TCOD_key_t*key) {
 			}
 		}
 	}
-TCOD_console_print_left(sample_console,0,10,TCOD_BKGND_NONE,"%d %d",px,py);
 	if ( key->c == 'I' || key->c == 'i' ) {
 		if ( smap[py-1][px] == ' ' ) {
 			TCOD_console_put_char(sample_console,px,py,' ',TCOD_BKGND_NONE);

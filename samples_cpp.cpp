@@ -294,7 +294,7 @@ void render_noise(bool first, TCOD_key_t*key) {
 	}
 	// draw a transparent rectangle
 	sampleConsole.setBackgroundColor(TCODColor::grey);
-	sampleConsole.rect(2,2,(func <= WAVELET ? 16 : 24),(func <= WAVELET ? 4 : 7),false,TCOD_BKGND_MULTIPLY);
+	sampleConsole.rect(2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
 	// draw the text
 	for (int curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {

@@ -203,8 +203,8 @@ void TCOD_sys_load_font() {
 			keyx = fontWidth/2;
 			keyy = fontHeight/2;
 		} else if (fontInRow) {
-			keyx = ((int)(' ') % fontNbCharVertic ) * fontWidth + fontWidth/2;
-			keyy = ((int)(' ') / fontNbCharVertic ) * fontHeight + fontHeight/2;
+			keyx = ((int)(' ') % fontNbCharHoriz ) * fontWidth + fontWidth/2;
+			keyy = ((int)(' ') / fontNbCharHoriz ) * fontHeight + fontHeight/2;
 		} else {
 			keyx = ((int)(' ') / fontNbCharVertic ) * fontWidth + fontWidth/2;
 			keyy = ((int)(' ') % fontNbCharVertic ) * fontHeight + fontHeight/2;

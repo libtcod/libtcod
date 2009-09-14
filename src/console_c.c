@@ -593,14 +593,14 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 		case CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
 	}
 
+	TCOD_color_t oldFore=dat->fore;
+	TCOD_color_t oldBack=dat->back;
 	do {
 		// get \n delimited sub-message
 		char *end=strchr(c,'\n');
 		char bak=0;
 		int cl;
 		char *split=NULL;
-		TCOD_color_t oldFore=dat->fore;
-		TCOD_color_t oldBack=dat->back;
 		if ( end ) *end=0;
 		cl= TCOD_console_stringLength(c);
 		// find starting x

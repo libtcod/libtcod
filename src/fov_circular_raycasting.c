@@ -70,21 +70,21 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 			int x2 = cx+dx;
 			int y2 = cy+dy;
 			unsigned int offset=cx+cy*map->width;
-			if ( offset < (unsigned)map->nbcells && map->cells[offset].fov == 1 && map->cells[offset].walkable
+			if ( offset < (unsigned)map->nbcells && map->cells[offset].fov == 1 
 				&& map->cells[offset].transparent ) {
 				if ( x2 >= x0 && x2 <= x1 ) {
 					unsigned int offset2=x2+cy*map->width;
-					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].walkable )
+					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].transparent )
 						map->cells[offset2].fov=1;
 				}
 				if ( y2 >= y0 && y2 <= y1 ) {
 					unsigned int offset2=cx+y2*map->width;
-					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].walkable )
+					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].transparent )
 						map->cells[offset2].fov=1;
 				}
 				if ( x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1 ) {
 					unsigned int offset2=x2+y2*map->width;
-					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].walkable )
+					if ( offset2 < (unsigned)map->nbcells && ! map->cells[offset2].transparent )
 						map->cells[offset2].fov=1;
 				}
 			}

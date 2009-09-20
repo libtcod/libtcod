@@ -17,6 +17,7 @@ X TCODConsole::blit now takes 2 float parameters :
 - fixed path_new_using_function not working in python wrapper
 - fixed alignment issues in TCOD_console_print_* with strings containing ascii codes > 127
 - fixed color controls not working with autowrap
+- fixed fov post-processing step to handle opaque walkable cells (for example bush)
 
 1.4.1 : 2009 Mar 22
 X Default colors have been changed/added. 

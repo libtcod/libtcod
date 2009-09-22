@@ -1038,8 +1038,8 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 		fclose(f);
 		return false;
 	}
-	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
 	fclose(f);
+	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
 	return true;
 }
 

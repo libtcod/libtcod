@@ -28,6 +28,12 @@
 #ifndef _TCOD_SYS_HPP
 #define _TCOD_SYS_HPP
 
+class TCODLIB_API ITCODSDLRenderer {
+public :
+	virtual ~ITCODSDLRenderer() {}
+	virtual void render(void *sdlSurface) = 0;
+};
+
 class TCODLIB_API TCODSystem {
 public :
 	static uint32 getElapsedMilli();
@@ -58,6 +64,8 @@ public :
 	static void lockSemaphore(TCOD_semaphore_t sem);
 	static void unlockSemaphore(TCOD_semaphore_t sem);
 	static void deleteSemaphore( TCOD_semaphore_t sem);
+	// custom post-renderer
+	static void registerSDLRenderer(ITCODSDLRenderer *renderer);
 };
 
 #endif

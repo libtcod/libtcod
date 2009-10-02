@@ -60,4 +60,7 @@ TCODLIB_API TCOD_semaphore_t TCOD_semaphore_new(int initVal);
 TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_delete( TCOD_semaphore_t sem);
+// SDL renderer callback
+typedef void (*SDL_renderer_t) (void *sdl_surface);
+TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #endif

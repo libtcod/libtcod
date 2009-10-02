@@ -610,6 +610,16 @@ def sys_get_current_resolution():
 def sys_update_char(asciiCode, fontx, fonty, img, x, y) :
     _lib.TCOD_sys_update_char(c_int(asciiCode),c_int(fontx),c_int(fonty),img,c_int(x),c_int(y))
 
+# custom SDL post renderer
+SDL_RENDERER_FUNC = None
+sdl_renderer_func = None
+def sys_register_SDL_renderer(func):
+    global SDL_RENDERER_FUNC
+    global sdl_renderer_func
+    SDL_RENDERER_FUNC = CFUNCTYPE(None, c_void_p)
+    sdl_renderer_func = SDL_RENDERER_FUNC(func)
+    _lib.TCOD_sys_register_SDL_renderer(sdl_renderer_func)
+
 ############################
 # line module
 ############################

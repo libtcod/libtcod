@@ -126,3 +126,12 @@ void TCODSystem::deleteSemaphore( TCOD_semaphore_t sem) {
 	TCOD_semaphore_delete(sem);
 }
 
+// custom post-renderer
+static ITCODSDLRenderer *renderer=NULL;
+extern "C" void TCOD_CRenderer(void *sdl_surface) {
+	if ( renderer ) renderer->render(sdl_surface);
+}
+void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer) {
+	::renderer = renderer;
+	TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
+}

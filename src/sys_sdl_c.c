@@ -43,6 +43,8 @@ bool TCOD_sys_check_png(const char *filename);
 SDL_Surface *TCOD_sys_read_png(const char *filename);
 void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename);
 
+SDL_renderer_t TCOD_sdl_renderer=NULL;
+
 typedef struct {
 	char *extension;
 	bool (*check_type)(const char *filename);
@@ -162,6 +164,10 @@ static void check_ascii_to_tcod() {
 		max_font_chars=fontNbCharHoriz * fontNbCharVertic;
 		alloc_ascii_tables();
 	}
+}
+
+void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
+	TCOD_sdl_renderer=renderer;
 }
 
 void TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY) {
@@ -647,6 +653,9 @@ void TCOD_sys_flush(bool render) {
 	int32 frame_time,time_to_wait;
 	if ( render ) {
 		TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
+		if ( TCOD_sdl_renderer ) {
+			TCOD_sdl_renderer((void *)screen);
+		}
 		SDL_Flip(screen);
 	}
 	old_time=new_time;

@@ -1,0 +1,56 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="../system/index.html">&lt; 3. System layer</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+3.5 Draw custom graphics on top of the root console<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+You can register a callback that will be called after the libtcod rendering phase, but before the screen buffer is swapped. This callback receives the screen SDL_Surface reference.<br />
+This makes it possible to use any SDL drawing functions (including openGL) on top of the libtcod console.<br/>
+To disable the custom renderer, call the same method with a NULL parameter.<br />
+Note that to keep libtcod from requiring the SDL headers, the callback parameter is a void pointer. You have to include SDL headers and cast it to SDL_Surface in your code.<br />
+<p class="code"><pre>
+C++ : class TCODLIB_API ITCODSDLRenderer {
+      public :
+         virtual void render(void *sdlSurface) = 0;
+      };
+      static void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer);
+C   : typedef void (*SDL_renderer_t) (void *sdl_surface);
+      void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer)
+Py  : def renderer ( sdl_surface ) : ...
+      TCOD_sys_register_SDL_renderer( renderer )
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>renderer</td><td>The renderer to call before swapping the screen buffer. If NULL, custom rendering is disabled.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : class MyRenderer : public ITCODSDLRenderer {
+          public :
+              void render(void *sdlSurface) {
+                  SDL_Surface *s = (SDL_Surface *)sdlSurface;
+                  ... draw something on s
+			  }
+      };
+      TCODSystem::registerSDLRenderer(new MyRenderer());
+C   : void my_renderer( void *sdl_surface ) {
+          SDL_Surface *s = (SDL_Surface *)sdl_surface;
+          ... draw something on s
+      }
+      TCOD_sys_register_SDL_renderer(my_renderer);
+Py  : def my_renderer(sdl_surface) :
+           ... draw something on sdl_surface using pygame
+      libtcod.sys_register_SDL_renderer(my_renderer)
+</pre></p>
+<br />

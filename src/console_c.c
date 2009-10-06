@@ -578,12 +578,12 @@ char * TCOD_console_forward(char *s,int l) {
 
 int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
 	alignment_t align, char *msg, bool can_split, bool count_only) {
-	TCOD_console_data_t *dat;
+	TCOD_console_data_t *dat=(TCOD_console_data_t *)(con?con:root);
 	char *c=msg;
 	int cx=0,cy=y;
 	int minx,maxx,miny,maxy;
-	if (! con ) con=root;
-	dat=(TCOD_console_data_t *)(con);
+	TCOD_color_t oldFore=dat->fore;
+	TCOD_color_t oldBack=dat->back;
 	miny=y;
 	maxy=dat->h-1;
 	if (rh > 0) maxy=MIN(maxy,y+rh-1);
@@ -593,8 +593,6 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 		case CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
 	}
 
-	TCOD_color_t oldFore=dat->fore;
-	TCOD_color_t oldBack=dat->back;
 	do {
 		// get \n delimited sub-message
 		char *end=strchr(c,'\n');

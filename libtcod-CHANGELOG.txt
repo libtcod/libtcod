@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.4.2 : 2009 Sep 09
+1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :
    static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f)
 + added possiblity to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   

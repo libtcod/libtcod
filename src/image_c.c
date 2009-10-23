@@ -573,3 +573,175 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 }
 
 
+// distance between two colors
+int rgbdist(const TCOD_color_t *c1,const TCOD_color_t *c2) {
+	int dr=(int)(c1->r)-c2->r;
+	int dg=(int)(c1->g)-c2->g;
+	int db=(int)(c1->b)-c2->b;
+	return dr*dr+dg*dg+db*db;
+}
+
+void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, int *ascii) {
+	// adapted from Jeff Lait's code posted on r.g.r.d
+	int flag=0;
+	/*
+		pixels have following flag values :
+			X 1
+			2 4
+		flag indicates which pixels uses foreground color (palette[1])
+	*/
+	static int flagToAscii[8] = {
+		0,
+		TCOD_CHAR_SUBP_NE,TCOD_CHAR_SUBP_SW,-TCOD_CHAR_SUBP_DIAG,TCOD_CHAR_SUBP_SE,
+		TCOD_CHAR_SUBP_E,-TCOD_CHAR_SUBP_N,-TCOD_CHAR_SUBP_NW
+	};
+	int weight[2] = { 0, 0 };
+	int i;
+
+	// First colour trivial.
+	palette[0] = desired[0];
+
+	// Ignore all duplicates...
+	for (i = 1; i < 4; i++) {
+		if (desired[i].r != palette[0].r || desired[i].g != palette[0].g || desired[i].b != palette[0].b)
+		break;
+	}
+
+	// All the same.
+	if (i == 4) {
+		*nbCols=1;
+		return;
+	}
+	weight[0] = i;
+
+	// Found a second colour...
+	palette[1] = desired[i];
+	weight[1] = 1;
+	flag |= 1<<(i-1);
+	*nbCols = 2;
+	// remaining colours
+	i++; 
+	while (i< 4) {
+		if (desired[i].r == palette[0].r && desired[i].g == palette[0].g && desired[i].b == palette[0].b) {
+			weight[0]++;
+		} else if (desired[i].r == palette[1].r && desired[i].g == palette[1].g && desired[i].b == palette[1].b)  {
+			flag |= 1<<(i-1);
+			weight[1]++;
+		} else {
+			// Bah, too many colours, 
+			// merge the two nearest
+			int dist0i=rgbdist(&desired[i], &palette[0]);
+			int dist1i=rgbdist(&desired[i], &palette[1]);
+			int dist01=rgbdist(&palette[0],&palette[1]);
+			if ( dist0i < dist1i ) {
+				if ( dist0i <= dist01 ) {
+					// merge 0 and i
+					palette[0]=TCOD_color_lerp(desired[i],palette[0],weight[0]/(1.0f+weight[0]));
+					weight[0]++;
+				} else {
+					// merge 0 and 1
+					palette[0]=TCOD_color_lerp(palette[0],palette[1],(float)(weight[1])/(weight[0]+weight[1]));
+					weight[0]++;
+					palette[1]=desired[i];
+					flag=1<<(i-1);
+				}
+			} else {
+				if ( dist1i <= dist01 ) {
+					// merge 1 and i
+					palette[1]=TCOD_color_lerp(desired[i],palette[1],weight[1]/(1.0f+weight[1]));
+					weight[1]++;
+					flag|=1<<(i-1);
+				} else {
+					// merge 0 and 1
+					palette[0]=TCOD_color_lerp(palette[0],palette[1],(float)(weight[1])/(weight[0]+weight[1]));
+					weight[0]++;
+					palette[1]=desired[i];
+					flag=1<<(i-1);
+				}
+			}
+		}
+		i++;
+	}
+	*ascii=flagToAscii[flag];
+}
+
+void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, int sx, int sy, int w, int h, 
+	TCOD_bkgnd_flag_t flag) {
+	TCOD_color_t grid[4];
+	TCOD_color_t cols[2];
+	int nbCols;
+	int width,height,ascii,cx,cy;
+	TCOD_console_data_t *dat;
+	image_data_t *img=(image_data_t *)image;
+	TCOD_IFNOT(image != NULL) return;
+
+	TCOD_image_get_size(image,&width,&height);
+	if ( con == NULL ) dat = TCOD_root;
+	else dat=(TCOD_console_data_t *)(con);
+	if ( w == -1 ) w=width;
+	if ( h == -1 ) h=height;
+
+	// check that the sx,sy/w,h rectangle is inside the image
+	TCOD_ASSERT(sx >= 0 && sy >= 0 && sx+w <= width && sy+h <= height);
+	TCOD_IFNOT(w > 0 && h > 0) return;
+
+	sx=MAX(0,sx);
+	sy=MAX(0,sy);
+	w = MIN(w,width-sx);
+	h = MIN(h,height-sy);
+
+	int maxx=dx+w/2 <= dat->w ? w : (dat->w-dx)*2;
+	int maxy=dy+h/2 <= dat->h ? h : (dat->h-dy)*2;
+	// check that the image is not blitted outside the console
+	TCOD_IFNOT(dx+maxx/2 >= 0 && dy+maxy/2 >= 0 && dx < dat->w && dy < dat->h) return;
+	maxx+=sx;
+	maxy+=sy;
+
+	for (cx=sx; cx < maxx; cx += 2) {
+		for (cy=sy; cy < maxy; cy += 2) {
+			// get the 2x2 super pixel colors from the image
+			int conx=dx+(cx-sx)/2;
+			int cony=dy+(cy-sy)/2;
+			TCOD_color_t consoleBack=TCOD_console_get_back(con,conx,cony);
+			grid[0]=TCOD_image_get_pixel(image,cx,cy);
+			if ( img->has_key_color && grid[0].r == img->key_color.r  && grid[0].g == img->key_color.g && grid[0].b == img->key_color.b) 
+				grid[0]=consoleBack;
+			if ( cx < w-1 ) {
+				grid[1]=TCOD_image_get_pixel(image,cx+1,cy);
+				if ( img->has_key_color && grid[1].r == img->key_color.r  && grid[1].g == img->key_color.g && grid[1].b == img->key_color.b) 
+					grid[1]=consoleBack;
+			} else grid[1]=consoleBack;
+			if ( cy < h-1 ) {
+				grid[2]=TCOD_image_get_pixel(image,cx,cy+1);
+				if ( img->has_key_color && grid[2].r == img->key_color.r  && grid[2].g == img->key_color.g && grid[2].b == img->key_color.b) 
+					grid[2]=consoleBack;
+			} else grid[2]=consoleBack;
+			if ( cx < w-1 && cy < h-1 ) {
+				grid[3]=TCOD_image_get_pixel(image,cx+1,cy+1);
+				if ( img->has_key_color && grid[3].r == img->key_color.r  && grid[3].g == img->key_color.g && grid[3].b == img->key_color.b) 
+					grid[3]=consoleBack;
+			} else grid[3]=consoleBack;
+			// analyse color, posterize, get pattern
+			getPattern(grid,cols,&nbCols,&ascii);
+			if ( nbCols == 1 ) {
+				// single color
+				TCOD_console_set_background_color(con,cols[0]);
+				TCOD_console_put_char(con,conx,cony,' ',flag);
+			} else {
+				if ( ascii >= 0 ) {
+					TCOD_console_set_background_color(con,cols[0]);
+					TCOD_console_set_foreground_color(con,cols[1]);
+					TCOD_console_put_char(con,conx,cony,ascii,flag);
+				} else {
+					// negative ascii code means we need to invert back/fore colors
+					TCOD_console_set_background_color(con,cols[1]);
+					TCOD_console_set_foreground_color(con,cols[0]);
+					TCOD_console_put_char(con,conx,cony,-ascii,flag);
+				}
+			}
+		}
+	}
+}
+
+
+

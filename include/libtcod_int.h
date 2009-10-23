@@ -73,6 +73,17 @@ typedef struct {
 	cell_t *cells;
 } map_t;
 
+#ifdef NDEBUG
+#define TCOD_IF(x) if (x)
+#define TCOD_IFNOT(x) if (!(x))
+#define TCOD_ASSERT(x)
+#else
+#include <assert.h>
+#define TCOD_IF(x) assert(x);
+#define TCOD_IFNOT(x) assert(x); if (0)
+#define TCOD_ASSERT(x) assert(x)
+#endif
+
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_recursive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
@@ -92,12 +103,13 @@ char_t *TCOD_console_get_buf(TCOD_console_t con);
 void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
 
-/* TCODSystem non public methods */
 extern int fontNbCharHoriz;
 extern int fontNbCharVertic;
 extern bool fontTcodLayout;
 extern int *ascii_to_tcod;
+extern TCOD_console_t TCOD_root;
 
+/* TCODSystem non public methods */
 void TCOD_sys_startup();
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);

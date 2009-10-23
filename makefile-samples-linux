@@ -1,3 +1,6 @@
+# libtcod samples linux makefile
+# to build debug version, run "make -f makefile-samples-linux debug"
+# to build release version, run "make -f makefile-samples-linux release"
 SRCDIR=.
 INCDIR=include
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
@@ -6,32 +9,76 @@ CPP=g++
 TEMP=/tmp
 .SUFFIXES: .o .h .c .hpp .cpp
 
-$(TEMP)/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -o $@ -c $< 
-$(TEMP)/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -o $@ -c $< 
-$(TEMP)/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
-	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
 
-C_OBJS=$(TEMP)/samples_c.o
-CPP_OBJS=$(TEMP)/samples_cpp.o
+C_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_c.o
+CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
 
-HMTOOLOBJS=$(TEMP)/hmtool/hmtool.o \
-	$(TEMP)/hmtool/operation.o
+HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/hmtool/hmtool.o \
+	$(TEMP)/libtcod/debug/hmtool/operation.o
 
-all : samples_c samples_cpp $(TEMP)/hmtool hmtool
+DTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/dtool/dtool.o
 
-$(TEMP)/hmtool :
+C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
+CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
+
+HMTOOLOBJS_RELEASE=$(TEMP)/libtcod/release/hmtool/hmtool.o \
+	$(TEMP)/libtcod/release/hmtool/operation.o
+
+all : debug release
+
+debug : samples_c_debug samples_cpp_debug hmtool_debug 
+
+release : samples_c samples_cpp hmtool 
+
+$(TEMP)/libtcod/debug/hmtool :
 	\mkdir -p $@
 
-samples_c : $(C_OBJS) libtcod.so
-	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L. -ltcod $(CFLAGS) -Wl,-rpath,.
+$(TEMP)/libtcod/release/hmtool :
+	\mkdir -p $@
 
-samples_cpp : $(CPP_OBJS) libtcod++.so
-	$(CPP) $(CPP_OBJS) -o $@ -L. -ltcod -ltcod++ $(CFLAGS) -Wl,-rpath,.
+$(TEMP)/libtcod/debug/samples :
+	\mkdir -p $@
 
-hmtool : $(HMTOOLOBJS)
-	$(CPP) -o $@ $(HMTOOLOBJS) -L. -ltcod -ltcod++ -ltcod-gui $(CFLAGS) -Wl,-rpath,.
+$(TEMP)/libtcod/release/samples :
+	\mkdir -p $@
+
+samples_c : $(TEMP)/libtcod/release/samples $(C_OBJS_RELEASE)
+	$(CC) $(C_OBJS_RELEASE) $(CFLAGS) -o $@ -L. -ltcod $(CFLAGS) -Wl,-rpath,.
+	upx ./samples_c
+
+samples_cpp : $(TEMP)/libtcod/release/samples $(CPP_OBJS_RELEASE)
+	$(CPP) $(CPP_OBJS_RELEASE) -o $@ -L. -ltcod -ltcodxx $(CFLAGS) -Wl,-rpath,.
+	upx ./samples_cpp
+
+hmtool : $(TEMP)/libtcod/release/hmtool $(HMTOOLOBJS_RELEASE)
+	$(CPP) -o $@ $(HMTOOLOBJS_RELEASE) -L. -ltcod -ltcodxx -ltcodgui $(CFLAGS) -Wl,-rpath,.
+	upx ./hmtool
+
+samples_c_debug : $(TEMP)/libtcod/debug/samples $(C_OBJS_DEBUG)
+	$(CC) $(C_OBJS_DEBUG) $(CFLAGS) -o $@ -L. -ltcod_debug $(CFLAGS) -Wl,-rpath,.
+
+samples_cpp_debug : $(TEMP)/libtcod/debug/samples $(CPP_OBJS_DEBUG)
+	$(CPP) $(CPP_OBJS_DEBUG) -o $@ -L. -ltcod_debug -ltcodxx_debug $(CFLAGS) -Wl,-rpath,.
+
+hmtool_debug : $(TEMP)/libtcod/debug/hmtool $(HMTOOLOBJS_DEBUG)
+	$(CPP) -o $@ $(HMTOOLOBJS_DEBUG) -L. -ltcod_debug -ltcodxx_debug -ltcodgui_debug $(CFLAGS) -Wl,-rpath,.
 
 clean :
-	\rm -f $(C_OBJS) $(CPP_OBJS) $(HMTOOLOBJS) samples_c samples_cpp hmtool
+	\rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) samples_c samples_cpp hmtool $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) samples_c_debug samples_cpp_debug hmtool_debug
+

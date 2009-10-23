@@ -4,6 +4,12 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.4.3 : ???? ??? ??
+X renamed libraries on Linux :
+   libtcod++.so  => libtcodxx.so
+   libtcod-gui.so => libtcodgui.so
++ added subcell resolution blitting function TCODImage::blit2x   
+% new compilation system with a debug and release version of the library
+
 =========================================================
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :

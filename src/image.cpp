@@ -28,11 +28,11 @@
 #include "libtcod.hpp"
 #include "libtcod.h"
 
-TCODImage::TCODImage(const char *filename) {
+TCODImage::TCODImage(const char *filename) : deleteData(true) {
 	data=(void *)TCOD_image_load(filename);
 }
 
-TCODImage::TCODImage(int width, int height) {
+TCODImage::TCODImage(int width, int height) : deleteData(true) {
 	data=(void *)TCOD_image_new(width,height);
 }
 
@@ -53,7 +53,7 @@ void TCODImage::getSize(int *w,int *h) const {
 }
 
 TCODImage::~TCODImage() {
-	TCOD_image_delete(data);
+	if ( deleteData ) TCOD_image_delete(data);
 }
 
 TCODColor TCODImage::getPixel(int x, int y) const {
@@ -115,3 +115,6 @@ void TCODImage::scale(int neww, int newh) {
 }
 
 
+void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h, TCOD_bkgnd_flag_t flag) const {
+	TCOD_image_blit_2x(data,dest->data,dx,dy,sx,sy,w,h,flag);
+}

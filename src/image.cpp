@@ -115,6 +115,6 @@ void TCODImage::scale(int neww, int newh) {
 }
 
 
-void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h, TCOD_bkgnd_flag_t flag) const {
-	TCOD_image_blit_2x(data,dest->data,dx,dy,sx,sy,w,h,flag);
+void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h) const {
+	TCOD_image_blit_2x(data,dest->data,dx,dy,sx,sy,w,h);
 }

@@ -708,6 +708,9 @@ def image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle):
                          
 def image_blit_rect(image, console, x, y, w, h, bkgnd_flag):
     _lib.TCOD_image_blit_rect(image, console, x, y, w, h, bkgnd_flag)
+
+def image_blit_2x(image, console, dx, dy, sx, sy, w, h):
+    _lib.TCOD_image_blit_2x(image, console, dx,dy,sx,sy,w,h)
     
 def image_save(image, filename):
     _lib.TCOD_image_save(image, filename)

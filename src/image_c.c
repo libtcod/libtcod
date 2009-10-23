@@ -665,8 +665,7 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 	*ascii=flagToAscii[flag];
 }
 
-void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, int sx, int sy, int w, int h, 
-	TCOD_bkgnd_flag_t flag) {
+void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, int sx, int sy, int w, int h) {
 	TCOD_color_t grid[4];
 	TCOD_color_t cols[2];
 	int nbCols;
@@ -726,17 +725,17 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 			if ( nbCols == 1 ) {
 				// single color
 				TCOD_console_set_background_color(con,cols[0]);
-				TCOD_console_put_char(con,conx,cony,' ',flag);
+				TCOD_console_set_char(con,conx,cony,' ');
 			} else {
 				if ( ascii >= 0 ) {
 					TCOD_console_set_background_color(con,cols[0]);
 					TCOD_console_set_foreground_color(con,cols[1]);
-					TCOD_console_put_char(con,conx,cony,ascii,flag);
+					TCOD_console_put_char(con,conx,cony,ascii,TCOD_BKGND_SET);
 				} else {
 					// negative ascii code means we need to invert back/fore colors
 					TCOD_console_set_background_color(con,cols[1]);
 					TCOD_console_set_foreground_color(con,cols[0]);
-					TCOD_console_put_char(con,conx,cony,-ascii,flag);
+					TCOD_console_put_char(con,conx,cony,-ascii,TCOD_BKGND_SET);
 				}
 			}
 		}

@@ -46,8 +46,7 @@ TCODLIB_API void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, flo
 	TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle);
 TCODLIB_API void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h, 
 	TCOD_bkgnd_flag_t bkgnd_flag);
-TCODLIB_API void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h, 
-	TCOD_bkgnd_flag_t bkgnd_flag);
+TCODLIB_API void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
 TCODLIB_API void TCOD_image_delete(TCOD_image_t image);
 TCODLIB_API void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t key_color);
 TCODLIB_API bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y);

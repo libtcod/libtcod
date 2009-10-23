@@ -15,6 +15,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODImage::blit</h3>
 You can draw an image on a console (by changing the cells background color) :<br/>
 The first function allows you to specify the floating point coordinates of the center<br />
 of the image, and its scale and rotation angle.<br />
@@ -44,6 +45,7 @@ Py  : pix = libtcod.image_new(80,50)
       libtcod.image_blit(pix,0,40,25,libtcod.BKGND_SET,1.0,1.0,0.0)
 </pre></p>
 <br />
+<h3>TCODImage::blitRect</h3>
 The second function allows you to easily map an image to a specific part of a console, by<br />
 specifying a rectangular part of the console (upper-left corner and size).
 <p class="code"><pre>
@@ -72,6 +74,7 @@ Py  : pix = libtcod.image_new(10,10)
       libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
 </pre></p>
 <br />
+<h3>TCODImage::setKeyColor</h3>
 When blitting an image, you can define a key color that will be ignored by the blitting function. This makes it possible to blit non rectangular images or images with transparent pixels.<br />
 <p class="code"><pre>
 C++ : void TCODImage::setKeyColor(const TCODColor keyColor)
@@ -97,3 +100,34 @@ Py  : pix = libtcod.image_new(10,10)
       libtcod.image_set_key_color(pix,libtcod.red)
       libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
 </pre></p>
+<h3>TCODImage::blit2x</h3>
+Eventually, you can use some special characters in the libtcod fonts :<br />
+<img src="subcell.png"><br />
+to double the console resolution using this blitting function.<br />
+<p class="code"><pre>
+C++ : void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1 ) const;
+C   : void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
+Py  : image_blit_2x(image, dest, dx, dy, sx, sy, w, h)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>image</td><td>In the C and python version, the image handler, obtained with the <a href="image_load.html">load</a> function.</td></tr>
+<tr><td>dest</td><td>The console of which the image will be blited. Foreground, background and character data will be overwritten.</td></tr>
+<tr><td>dx,dy</td><td>Coordinate of the console cell where the upper left corner of the blitted image will be.</td></tr>
+<tr><td>x,y,w,h</td><td>Part of the image to blit. Use -1 in w and h to blit the whole image.</td></tr>
+</table>
+Example :<br />
+<p class="code"><pre>
+C++ : TCODImage *pix = TCODImage("mypix.bmp");
+      // blitting the image with subcell resolution
+      pix->blit2x(TCODConsole::root,10,5);
+C   : TCOD_image_t pix = TCOD_image_new(10,10);
+      TCOD_image_blit_2x(pix,NULL,10,5,0,0,-1,-1);
+Py  : pix = libtcod.image_new(10,10)
+      libtcod.image_blit_2x(pix,0,10,5,0,0,-1,-1)
+</pre></p>
+<table><tr><td>
+Comparison before/after subcell resolution in TCOD :<br />
+<img src="subcell_comp.png"></td><td>
+Pyromancer ! screenshot, making full usage of subcell resolution :<br />
+<img src="subcell_pyro.png"></td></tr></table>

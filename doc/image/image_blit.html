@@ -44,7 +44,7 @@ C   : TCOD_image_t pix = TCOD_image_new(80,50);
 Py  : pix = libtcod.image_new(80,50)
       libtcod.image_blit(pix,0,40,25,libtcod.BKGND_SET,1.0,1.0,0.0)
 </pre></p>
-<br />
+
 <h3>TCODImage::blitRect</h3>
 The second function allows you to easily map an image to a specific part of a console, by<br />
 specifying a rectangular part of the console (upper-left corner and size).
@@ -73,7 +73,7 @@ Py  : pix = libtcod.image_new(10,10)
       # down-scaling a 10x10 image to a 5x5 zone
       libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
 </pre></p>
-<br />
+
 <h3>TCODImage::setKeyColor</h3>
 When blitting an image, you can define a key color that will be ignored by the blitting function. This makes it possible to blit non rectangular images or images with transparent pixels.<br />
 <p class="code"><pre>
@@ -100,6 +100,7 @@ Py  : pix = libtcod.image_new(10,10)
       libtcod.image_set_key_color(pix,libtcod.red)
       libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
 </pre></p>
+
 <h3>TCODImage::blit2x</h3>
 Eventually, you can use some special characters in the libtcod fonts :<br />
 <img src="subcell.png"><br />
@@ -107,7 +108,7 @@ to double the console resolution using this blitting function.<br />
 <p class="code"><pre>
 C++ : void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1 ) const;
 C   : void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
-Py  : image_blit_2x(image, dest, dx, dy, sx, sy, w, h)
+Py  : image_blit_2x(image, dest, dx, dy, sx=0, sy=0, w=-1, h=-1)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -124,7 +125,7 @@ C++ : TCODImage *pix = TCODImage("mypix.bmp");
 C   : TCOD_image_t pix = TCOD_image_new(10,10);
       TCOD_image_blit_2x(pix,NULL,10,5,0,0,-1,-1);
 Py  : pix = libtcod.image_new(10,10)
-      libtcod.image_blit_2x(pix,0,10,5,0,0,-1,-1)
+      libtcod.image_blit_2x(pix,0,10,5)
 </pre></p>
 <table><tr><td>
 Comparison before/after subcell resolution in TCOD :<br />

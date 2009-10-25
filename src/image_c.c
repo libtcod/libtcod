@@ -724,7 +724,7 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 			getPattern(grid,cols,&nbCols,&ascii);
 			if ( nbCols == 1 ) {
 				// single color
-				TCOD_console_set_background_color(con,cols[0]);
+				TCOD_console_set_back(con,conx,cony,cols[0],TCOD_BKGND_SET);
 				TCOD_console_set_char(con,conx,cony,' ');
 			} else {
 				if ( ascii >= 0 ) {

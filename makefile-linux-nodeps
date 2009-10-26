@@ -4,7 +4,7 @@
 # might be useful if you're using a libc version not compatible
 # to build debug version, run make FLAGS=-g
 # to build release version, run make FLAGS='-O2 -s'
-# on some linux distro, you might need to use make FLAGS='-g -fPIC'
+# on some linux distro (like 64 bits linux), you might need to use make FLAGS='-g -fPIC'
 BINDIR=../../bin/linux
 SRCDIR=src
 INCDIR=include

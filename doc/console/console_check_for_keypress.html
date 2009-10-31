@@ -17,9 +17,9 @@ th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
 <p class="code"><pre>
-C++ : static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_PRESSED)
+C++ : static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_RELEASED)
 C   : TCOD_key_t TCOD_console_check_for_keypress(int flags)
-Py  : console_check_for_keypress(flags=KEY_PRESSED)
+Py  : console_check_for_keypress(flags=KEY_RELEASED)
 </pre></p>
 <br />
 This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See <a href="key_t.html">TCOD_key_t</a>. If the user didn't press a key, this function returns the key code <a href="keycode_t.html">TCODK_NONE</a>.<br />

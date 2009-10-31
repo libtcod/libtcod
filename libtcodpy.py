@@ -539,7 +539,7 @@ def console_get_fading_color():
 def console_wait_for_keypress(flush):
     return _lib.TCOD_console_wait_for_keypress(c_int(flush))
     
-def console_check_for_keypress(flags=KEY_PRESSED):
+def console_check_for_keypress(flags=KEY_RELEASED):
     return _lib.TCOD_console_check_for_keypress(flags)
     
 def console_is_key_pressed(key):

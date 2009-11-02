@@ -15,6 +15,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODSystem::createDirectory</h3>
 Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no python wrapper since python provides its own builtin functions.<br/>
 All those functions return false if an error occured.<br />
 The first one creates a new directory.<br />
@@ -27,6 +28,7 @@ C   : bool TCOD_sys_create_directory(const char *path)
 <tr><td>path</td><td>Directory path. The immediate father directory (&lt;path&gt;/..) must exist and be writable.</td></tr>
 </table>
 <br />
+<h3>TCODSystem::deleteDirectory</h3>
 This one destroys a directory.<br />
 <p class="code"><pre>
 C++ : static bool TCODSystem::deleteDirectory(const char *path)
@@ -37,6 +39,7 @@ C   : bool TCOD_sys_delete_directory(const char *path)
 <tr><td>path</td><td>Directory path. This directory must exist, be writable and empty.</td></tr>
 </table>
 <br />
+<h3>TCODSystem::deleteFile</h3>
 This one destroys a file.<br />
 <p class="code"><pre>
 C++ : static bool TCODSystem::deleteFile(const char *path)
@@ -46,4 +49,25 @@ C   : bool TCOD_sys_delete_file(const char *path)
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>path</td><td>File path. This file must exist and be writable.</td></tr>
 </table>
-
+<h3>TCODSystem::isDirectory</h3>
+To check if a path is a directory.<br />
+<p class="code"><pre>
+C++ : static bool TCODSystem::isDirectory(const char *path)
+C   : bool TCOD_sys_is_directory(const char *path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>A path to check.</td></tr>
+</table>
+<h3>TCODSystem::getDirectoryContent</h3>
+To get the list of entries in a directory (including sub-directories, except . and ..).<br />
+The returned list is allocated by the function and must be deleted by you. All the const char * inside must be also freed with TCODList::clearAndDelete. 
+<p class="code"><pre>
+C++ : static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)
+C   : TCOD_list_t TCOD_sys_get_directory_content(const char *path)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>path</td><td>A directory.</td></tr>
+<tr><td>pattern</td><td>If NULL or empty, returns all directory entries. Else returns only entries matching the pattern. The pattern is NOT a regular expression. It can only handle one '*' wildcard. Examples : *.png, saveGame*, font*.png</td></tr>
+</table>

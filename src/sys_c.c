@@ -26,6 +26,8 @@
 */
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <sys/stat.h>
 #include "libtcod.h"
 #ifdef TCOD_WINDOWS
 #include <windows.h>
@@ -33,6 +35,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <errno.h>
 #include <pthread.h>
 #endif
@@ -82,6 +85,64 @@ bool TCOD_sys_delete_directory(const char *path) {
 #else
 	return rmdir(path) == 0 || errno == ENOENT;
 #endif
+}
+
+bool TCOD_sys_is_directory(const char *path) {
+	struct stat _st;
+    if ( stat( path, &_st ) == -1 ) return false;
+#ifdef TCOD_WINDOWS
+	return ( _st.st_mode &  _S_IFDIR ) != 0 ;
+#else
+	return S_ISDIR(_st.st_mode) != 0;
+#endif
+}
+
+static bool filename_match(const char *name, const char *pattern) {
+	char *ptr;
+	if ( pattern == NULL || pattern[0] == 0 ) return true;
+	ptr=strchr(pattern,'*');
+	if ( ! ptr ) return strcmp(name,pattern) == 0;
+	if ( ptr != name && strncmp(name,pattern, ptr - pattern) != 0 ) return false;
+	return  strcmp( name + strlen(name) - strlen(ptr+1), ptr+1) == 0;
+}
+
+TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern) {
+	TCOD_list_t list=TCOD_list_new();
+#ifdef TCOD_WINDOWS
+    WIN32_FIND_DATA FileData;
+    HANDLE          hList;
+	char dname[ 512 ];
+	sprintf(dname, "%s\\*",path);
+    hList = FindFirstFile(dname, &FileData);
+    if (hList == INVALID_HANDLE_VALUE) 
+    {
+        return list;
+    }
+	do
+	{
+		if ( ! (strcmp(FileData.cFileName,".") == 0 || strcmp(FileData.cFileName,"..") == 0 ) )
+		{
+			if ( filename_match(FileData.cFileName,pattern) )
+				TCOD_list_push(list,strdup(FileData.cFileName));
+		}
+		
+	} while ( FindNextFile(hList, &FileData) );
+    FindClose(hList);
+#else
+    DIR *dir = opendir(path);
+    if ( ! dir ) return;
+    struct dirent *dirent = NULL;
+    while ( dirent = readdir(dir))
+    {
+		if ( ! (strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 ) )
+		{
+			if ( filename_match(FileData.cFileName,pattern) )
+				TCOD_list_push(list,strdup(dirent->d_name));
+		}
+	}
+	closedir(dir);
+#endif
+	return list;
 }
 
 // thread stuff

@@ -42,6 +42,9 @@ TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_
 TCODLIB_API bool TCOD_sys_create_directory(const char *path);
 TCODLIB_API bool TCOD_sys_delete_file(const char *path);
 TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
+TCODLIB_API bool TCOD_sys_is_directory(const char *path);
+TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
+
 // thread stuff
 typedef void *TCOD_thread_t;
 typedef void *TCOD_semaphore_t;

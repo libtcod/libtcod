@@ -936,12 +936,50 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	for (xc=left*2,xi=0; xc < right*2; xc++,xi++) {
 		for (yc=top*2,yi=0; yc < bottom*2; yc++,yi++) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
+			TCOD_color_t pixcol;
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
 				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
-				TCOD_image_put_pixel(img,xi,yi,colmap_light[colidx]);
+				pixcol=colmap_light[colidx];
 			} else {
-				TCOD_image_put_pixel(img,xi,yi,TCOD_black);
+				pixcol=TCOD_black;
 			}
+			if ( alpha ) {
+				/*
+					console cells have following flag values :
+						1 2
+						4 8
+					flag indicates which subcell uses foreground color
+				*/
+				static int asciiToFlag[] = {
+					1, // TCOD_CHAR_SUBP_NW
+					2, // TCOD_CHAR_SUBP_NE
+					3, // TCOD_CHAR_SUBP_N
+					8, // TCOD_CHAR_SUBP_SE
+					9, // TCOD_CHAR_SUBP_DIAG
+					10, // TCOD_CHAR_SUBP_E
+					4, // TCOD_CHAR_SUBP_SW
+				};
+				int conc= TCOD_console_get_char(NULL,xc/2,yc/2);
+				TCOD_color_t bk=TCOD_console_get_back(NULL,xc/2,yc/2);
+				if ( conc >= TCOD_CHAR_SUBP_NW && conc <= TCOD_CHAR_SUBP_SW ) {
+					// merge two subcell chars...
+					// get the flag for the existing cell on root console
+					int bkflag=asciiToFlag[conc - TCOD_CHAR_SUBP_NW ];
+					int xflag = (xc & 1);
+					int yflag = (yc & 1);
+					// get the flag for the current subcell
+					int credflag = (1+3*yflag) * (xflag+1);
+					if ( (credflag & bkflag) != 0 ) {
+						// the color for this subcell on root console 
+						// is foreground, not background
+						bk = TCOD_console_get_fore(NULL,xc/2,yc/2);
+					}
+				}
+				pixcol.r = MIN(255,(int)(bk.r)+pixcol.r);
+				pixcol.g = MIN(255,(int)(bk.g)+pixcol.g);
+				pixcol.b = MIN(255,(int)(bk.b)+pixcol.b);
+			} 
+			TCOD_image_put_pixel(img,xi,yi,pixcol);
 		}
 	}
 	TCOD_image_blit_2x(img,NULL,left,top,0,0,-1,-1);

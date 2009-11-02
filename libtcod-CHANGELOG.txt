@@ -7,8 +7,12 @@ X API break
 X renamed libraries on Linux :
    libtcod++.so  => libtcodxx.so
    libtcod-gui.so => libtcodgui.so
-+ added subcell resolution blitting function TCODImage::blit2x   
++ added subcell resolution blitting function TCODImage::blit2x
++ added more portable filesystem utilities :
+	static bool TCODSystem::isDirectory(const char *path)
+	static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
 % new compilation system with a debug and release version of the library
+% libtcod credits now use subcell resolution
 
 =========================================================
 1.4.2 : 2009 Oct 06

@@ -877,7 +877,8 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	static int colpos[4]={
 		0,21,42,63
 	};
-	int i,xc,yc;
+	static TCOD_image_t img=NULL;
+	int i,xc,yc,xi,yi,left,right,top,bottom;
 	float sparklex,sparkley,sparklerad,sparklerad2,noisex;
 
 	if (!init1) {
@@ -892,7 +893,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	}
 	if (!init2) {
 		// reset the credits vars ...
-		int curx,cury;
+		int curx,cury,width,height;
 		xstr=-4.0f;
 		len=strlen(poweredby);
 		len1=11; // sizeof "Powered by\n"
@@ -908,6 +909,13 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				cury++;
 			}
 		}
+		left=MAX(x-4,0);
+		right=MIN(x+len,cw-1);
+		top=MAX(y-4,0);
+		bottom=MIN(y+6,ch-1);
+		width=right - left + 1;
+		height=bottom - top + 1;
+		img = TCOD_image_new(width*2,height*2);
 		init2=true;
 	}
 	// draw the text
@@ -948,19 +956,20 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
 	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
 	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
-	sparklerad2=sparklerad*sparklerad;
+	sparklerad2=sparklerad*sparklerad*4;
 	// draw the light
-	for (xc=MAX(x-4,0); xc < MIN(x+len,cw-1); xc++) {
-		for (yc=MAX(y-4,0); yc < MAX(y+6,ch-1); yc++) {
-			float dist=((xc-sparklex)*(xc-sparklex)+(yc-sparkley)*(yc-sparkley));
+	for (xc=left*2,xi=0; xc < right*2; xc++,xi++) {
+		for (yc=top*2,yi=0; yc < bottom*2; yc++,yi++) {
+			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
 				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
-				TCOD_console_set_back(NULL,xc,yc,colmap_light[colidx],alpha ? TCOD_BKGND_ADD: TCOD_BKGND_SET);
+				TCOD_image_put_pixel(img,xi,yi,colmap_light[colidx]);
 			} else {
-				TCOD_console_set_back(NULL,xc,yc,TCOD_black,alpha ? TCOD_BKGND_ADD: TCOD_BKGND_SET);
+				TCOD_image_put_pixel(img,xi,yi,TCOD_black);
 			}
 		}
 	}
+	TCOD_image_blit_2x(img,NULL,left,right,0,0,-1,-1);
 	// update letters heat
 	xstr += TCOD_sys_get_last_frame_length() * 4;
 	for (i=0; i < (int)(xstr+0.5f); i++) {

@@ -32,6 +32,7 @@
 #ifdef TCOD_WINDOWS
 #include <windows.h>
 #else
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -107,7 +108,7 @@ static bool filename_match(const char *name, const char *pattern) {
 }
 
 TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern) {
-	TCOD_list_t list=TCOD_list_new();
+    TCOD_list_t list=TCOD_list_new();
 #ifdef TCOD_WINDOWS
     WIN32_FIND_DATA FileData;
     HANDLE          hList;
@@ -130,13 +131,13 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
     FindClose(hList);
 #else
     DIR *dir = opendir(path);
-    if ( ! dir ) return;
+    if ( ! dir ) return list;
     struct dirent *dirent = NULL;
-    while ( dirent = readdir(dir))
+    while ( ( dirent = readdir(dir) ) )
     {
 		if ( ! (strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 ) )
 		{
-			if ( filename_match(FileData.cFileName,pattern) )
+			if ( filename_match(dirent->d_name,pattern) )
 				TCOD_list_push(list,strdup(dirent->d_name));
 		}
 	}

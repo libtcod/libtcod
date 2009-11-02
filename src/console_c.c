@@ -878,7 +878,8 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		0,21,42,63
 	};
 	static TCOD_image_t img=NULL;
-	int i,xc,yc,xi,yi,left,right,top,bottom;
+	int i,xc,yc,xi,yi;
+	static int left,right,top,bottom;
 	float sparklex,sparkley,sparklerad,sparklerad2,noisex;
 
 	if (!init1) {
@@ -918,6 +919,32 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		img = TCOD_image_new(width*2,height*2);
 		init2=true;
 	}
+	if ( xstr < (float)len1 ) {
+		sparklex=x+xstr;
+		sparkley=(float)y;
+	} else {
+		sparklex=x-len1+xstr;
+		sparkley=(float)y+1;
+	}
+	noisex=xstr*6;
+	sparklerad=3.0f+2*TCOD_noise_simplex(noise,&noisex);
+	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
+	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
+	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
+	sparklerad2=sparklerad*sparklerad*4;
+	// draw the light
+	for (xc=left*2,xi=0; xc < right*2; xc++,xi++) {
+		for (yc=top*2,yi=0; yc < bottom*2; yc++,yi++) {
+			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
+			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
+				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
+				TCOD_image_put_pixel(img,xi,yi,colmap_light[colidx]);
+			} else {
+				TCOD_image_put_pixel(img,xi,yi,TCOD_black);
+			}
+		}
+	}
+	TCOD_image_blit_2x(img,NULL,left,top,0,0,-1,-1);
 	// draw the text
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
@@ -944,32 +971,6 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
 		}
 	}
-	if ( xstr < (float)len1 ) {
-		sparklex=x+xstr;
-		sparkley=(float)y;
-	} else {
-		sparklex=x-len1+xstr;
-		sparkley=(float)y+1;
-	}
-	noisex=xstr*6;
-	sparklerad=3.0f+2*TCOD_noise_simplex(noise,&noisex);
-	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
-	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
-	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
-	sparklerad2=sparklerad*sparklerad*4;
-	// draw the light
-	for (xc=left*2,xi=0; xc < right*2; xc++,xi++) {
-		for (yc=top*2,yi=0; yc < bottom*2; yc++,yi++) {
-			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
-			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
-				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
-				TCOD_image_put_pixel(img,xi,yi,colmap_light[colidx]);
-			} else {
-				TCOD_image_put_pixel(img,xi,yi,TCOD_black);
-			}
-		}
-	}
-	TCOD_image_blit_2x(img,NULL,left,right,0,0,-1,-1);
 	// update letters heat
 	xstr += TCOD_sys_get_last_frame_length() * 4;
 	for (i=0; i < (int)(xstr+0.5f); i++) {

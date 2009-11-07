@@ -884,20 +884,31 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 
 	if (!init1) {
 		// initialize all static data, colormaps, ...
+		int width,height;
 		TCOD_color_gen_map(colmap,4,colkeys,colpos);
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
 		cw=TCOD_console_get_width(NULL);
 		ch=TCOD_console_get_height(NULL);
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+		len=strlen(poweredby);
+		len1=11; // sizeof "Powered by\n"
+		left=MAX(x-4,0);
+		right=MIN(x+len,cw-1);
+		top=MAX(y-4,0);
+		bottom=MIN(y+6,ch-1);
+		width=right - left + 1;
+		height=bottom - top + 1;
+		TCOD_color_t col= TCOD_console_get_background_color(NULL);
+		TCOD_console_set_background_color(NULL,TCOD_black);
+		img = TCOD_image_new(width*2,height*2);
+		TCOD_console_set_background_color(NULL,col);
 		init1=true;
 	}
 	if (!init2) {
 		// reset the credits vars ...
-		int curx,cury,width,height;
+		int curx,cury;
 		xstr=-4.0f;
-		len=strlen(poweredby);
-		len1=11; // sizeof "Powered by\n"
 		curx=x;
 		cury=y;
 		for (i=0; i < len ;i++) {
@@ -910,13 +921,6 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				cury++;
 			}
 		}
-		left=MAX(x-4,0);
-		right=MIN(x+len,cw-1);
-		top=MAX(y-4,0);
-		bottom=MIN(y+6,ch-1);
-		width=right - left + 1;
-		height=bottom - top + 1;
-		img = TCOD_image_new(width*2,height*2);
 		init2=true;
 	}
 	if ( xstr < (float)len1 ) {
@@ -933,8 +937,8 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
 	sparklerad2=sparklerad*sparklerad*4;
 	// draw the light
-	for (xc=left*2,xi=0; xc < right*2; xc++,xi++) {
-		for (yc=top*2,yi=0; yc < bottom*2; yc++,yi++) {
+	for (xc=left*2,xi=0; xc < (right+1)*2; xc++,xi++) {
+		for (yc=top*2,yi=0; yc < (bottom+1)*2; yc++,yi++) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
 			TCOD_color_t pixcol;
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {

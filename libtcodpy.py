@@ -501,8 +501,8 @@ def console_hline(con, x, y, l):
 def console_vline(con, x, y, l):
     _lib.TCOD_console_vline( con, x, y, l)
     
-def console_print_frame(con, x, y, w, h, clr, s):
-    _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clr), s)
+def console_print_frame(con, x, y, w, h, clr, bkflg, s):
+    _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clr), bkflg, s)
     
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)

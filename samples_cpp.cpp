@@ -113,7 +113,7 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 	static int xdir=1,ydir=1; // movement direction
 	if (! init ) {
 		init=true;
-		secondary.printFrame(0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,"Offscreen console");
+		secondary.printFrame(0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,TCOD_BKGND_SET,"Offscreen console");
 		secondary.printCenterRect(SAMPLE_SCREEN_WIDTH/4,2,SAMPLE_SCREEN_WIDTH/2-2,SAMPLE_SCREEN_HEIGHT/2,
 			TCOD_BKGND_NONE,"You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
 	}

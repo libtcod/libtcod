@@ -69,7 +69,7 @@ void ToolBar::setName(const char *name) {
 void ToolBar::render() {
 	con->setBackgroundColor(back);
 	con->setForegroundColor(fore);
-	con->printFrame(x,y,w,h,true,name);
+	con->printFrame(x,y,w,h,true,TCOD_BKGND_SET,name);
 	Container::render();
 }
 

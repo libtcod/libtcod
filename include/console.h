@@ -245,7 +245,7 @@ TCODLIB_API int TCOD_console_height_center_rect(TCOD_console_t con,int x, int y,
 TCODLIB_API void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
-TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, const char *fmt, ...);
+TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
 
 TCODLIB_API TCOD_color_t TCOD_console_get_background_color(TCOD_console_t con);
 TCODLIB_API TCOD_color_t TCOD_console_get_foreground_color(TCOD_console_t con);

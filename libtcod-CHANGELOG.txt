@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.4.3 : ???? ??? ??
+X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux :
    libtcod++.so  => libtcodxx.so
    libtcod-gui.so => libtcodgui.so

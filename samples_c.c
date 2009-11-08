@@ -119,7 +119,7 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 		init=true;
 		secondary=TCOD_console_new(SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2);
 		screenshot=TCOD_console_new(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
-		TCOD_console_print_frame(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,"Offscreen console");
+		TCOD_console_print_frame(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,TCOD_BKGND_SET,"Offscreen console");
 		TCOD_console_print_center_rect(secondary,SAMPLE_SCREEN_WIDTH/4,2,SAMPLE_SCREEN_WIDTH/2-2,SAMPLE_SCREEN_HEIGHT/2,
 			TCOD_BKGND_NONE,"You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
 	}

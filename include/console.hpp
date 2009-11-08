@@ -65,7 +65,7 @@ public :
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void vline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
-	void printFrame(int x,int y,int w,int h, bool empty, const char *fmt, ...);
+	void printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
 
 	TCODColor getBackgroundColor() const;
 	TCODColor getForegroundColor() const;

@@ -435,21 +435,21 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 	return ret;
 }
 
-void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, const char *fmt, ...) {
+void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_console_put_char(con,x,y,TCOD_CHAR_NW,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_NE,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_SW,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x+w-1,y+h-1,TCOD_CHAR_SE,TCOD_BKGND_SET);
-	TCOD_console_hline(con,x+1,y,w-2, TCOD_BKGND_SET);
-	TCOD_console_hline(con,x+1,y+h-1,w-2, TCOD_BKGND_SET);
+	TCOD_console_put_char(con,x,y,TCOD_CHAR_NW,flag);
+	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_NE,flag);
+	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_SW,flag);
+	TCOD_console_put_char(con,x+w-1,y+h-1,TCOD_CHAR_SE,flag);
+	TCOD_console_hline(con,x+1,y,w-2,flag);
+	TCOD_console_hline(con,x+1,y+h-1,w-2,flag);
 	if ( h > 2 ) {
-		TCOD_console_vline(con,x,y+1,h-2, TCOD_BKGND_SET);
-		TCOD_console_vline(con,x+w-1,y+1,h-2, TCOD_BKGND_SET);
+		TCOD_console_vline(con,x,y+1,h-2,flag);
+		TCOD_console_vline(con,x+w-1,y+1,h-2,flag);
 		if ( empty ) {
-			TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,TCOD_BKGND_SET);
+			TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,flag);
 		}
 	}
 	if (fmt) {

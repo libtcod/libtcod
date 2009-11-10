@@ -16,6 +16,12 @@ th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
 Use this method if you're using Linux.<br />
+<h3>Pre-requisites</h3>
+You need to install following packages to be able to use libtcod :<br />
+gcc g++ make zlib libpng12 libsdl1.2<br />
+If you want to compile a fresh libtcod that you checked out from the subversion repository, you need following additional packaged :<br />
+libpng12-dev libsdl1.2-dev upx electric-fence<br />
+<h3>Creating the makefile for C language</h3>
 In the following chapters, replace ${LIBTCODDIR} by the Doryen library's root directory, and ${FLAGS} by any additional compilation flags.<br />
 For example, for a debug version, replace ${FLAGS} by -g. For a release version, replace it by -O3.<br /> 
 If your program's source code is in a single file, you can directly compile and link with a single command (you can put it in a .sh file ) :<br />
@@ -41,7 +47,7 @@ C_OBJS=$(TEMP)/samples_c.o
 all : samples_c
 
 samples_c : $(C_OBJS)
-	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L${LIBTCODDIR} -ltcod
+	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L${LIBTCODDIR} -ltcod -Wl,-rpath,.
 
 clean :
 	\rm -f $(C_OBJS) samples_c
@@ -57,6 +63,7 @@ C_OBJS=$(TEMP)/file1.o $(TEMP)/file2.o \
   $(TEMP)/file5.o
 </pre></p>
 Also replace samples_c by your program name.<br />
+<h3>Compiling</h3>
 Now you can build your program by running this command :<br />
 <p class="code"><pre>
 make
@@ -71,6 +78,7 @@ debug : make FLAGS='-g' clean all
 release : make FLAGS='-O3' clean all
 </pre></p>
 <br />
+<h3>Creating the makefile for C++ language</h3>
 If you're using C++, you may have .cpp file or mixed .c and .cpp files. Use this makefile instead :<br />
 <p class="code"><pre>
 SRCDIR=.
@@ -90,17 +98,12 @@ CPP_OBJS=$(TEMP)/samples_cpp.o
 all : samples_cpp
 
 samples_cpp : $(CPP_OBJS)
-	$(CPP) $(CPP_OBJS) -o $@ -L${LIBTCODDIR} -ltcod -ltcod++
+	$(CPP) $(CPP_OBJS) -o $@ -L${LIBTCODDIR} -ltcod -ltcod++ -Wl,-rpath,.
 
 clean :
 	\rm -f $(CPP_OBJS) samples_cpp
 </pre></p>
 <br />
 List all your C and CPP source files in the CPP_OBJS variable, replace samples_cpp by your program name. This makefile won't work if you have a .c and a .cpp file with the same basename (exemple myfile.c and myfile.cpp). You'll have to rename at least one of them.
-<br />
-Lastly, to run your program, libtcod.so, libtcod++.so and libSDL.so must be in your LD_LIBRARY_PATH variable :<br />
-<p class="code"><pre>
-export LD_LIBRARY_PATH=${LIBTCODDIR}:${LD_LIBRARY_PATH}
-./sample_cpp
 </pre></p>
 

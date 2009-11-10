@@ -6,7 +6,7 @@ INCDIR=include
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
 CC=mingw32-gcc
 CPP=mingw32-g++
-UPX=../mak/upx.exe
+UPX=dependencies/upx/win/upx.exe
 .SUFFIXES: .dll .a .o .h .c .hpp .cpp
 
 $(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.cpp

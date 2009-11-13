@@ -620,7 +620,7 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 	flag |= 1<<(i-1);
 	*nbCols = 2;
 	// remaining colours
-	i++; 
+	i++;
 	while (i< 4) {
 		if (desired[i].r == palette[0].r && desired[i].g == palette[0].g && desired[i].b == palette[0].b) {
 			weight[0]++;
@@ -628,7 +628,7 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 			flag |= 1<<(i-1);
 			weight[1]++;
 		} else {
-			// Bah, too many colours, 
+			// Bah, too many colours,
 			// merge the two nearest
 			int dist0i=rgbdist(&desired[i], &palette[0]);
 			int dist1i=rgbdist(&desired[i], &palette[1]);
@@ -672,6 +672,7 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	int width,height,ascii,cx,cy;
 	TCOD_console_data_t *dat;
 	image_data_t *img=(image_data_t *)image;
+	int maxx,maxy;
 	TCOD_IFNOT(image != NULL) return;
 
 	TCOD_image_get_size(image,&width,&height);
@@ -689,8 +690,8 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	w = MIN(w,width-sx);
 	h = MIN(h,height-sy);
 
-	int maxx=dx+w/2 <= dat->w ? w : (dat->w-dx)*2;
-	int maxy=dy+h/2 <= dat->h ? h : (dat->h-dy)*2;
+	maxx=dx+w/2 <= dat->w ? w : (dat->w-dx)*2;
+	maxy=dy+h/2 <= dat->h ? h : (dat->h-dy)*2;
 	// check that the image is not blitted outside the console
 	TCOD_IFNOT(dx+maxx/2 >= 0 && dy+maxy/2 >= 0 && dx < dat->w && dy < dat->h) return;
 	maxx+=sx;
@@ -703,21 +704,21 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 			int cony=dy+(cy-sy)/2;
 			TCOD_color_t consoleBack=TCOD_console_get_back(con,conx,cony);
 			grid[0]=TCOD_image_get_pixel(image,cx,cy);
-			if ( img->has_key_color && grid[0].r == img->key_color.r  && grid[0].g == img->key_color.g && grid[0].b == img->key_color.b) 
+			if ( img->has_key_color && grid[0].r == img->key_color.r  && grid[0].g == img->key_color.g && grid[0].b == img->key_color.b)
 				grid[0]=consoleBack;
 			if ( cx < w-1 ) {
 				grid[1]=TCOD_image_get_pixel(image,cx+1,cy);
-				if ( img->has_key_color && grid[1].r == img->key_color.r  && grid[1].g == img->key_color.g && grid[1].b == img->key_color.b) 
+				if ( img->has_key_color && grid[1].r == img->key_color.r  && grid[1].g == img->key_color.g && grid[1].b == img->key_color.b)
 					grid[1]=consoleBack;
 			} else grid[1]=consoleBack;
 			if ( cy < h-1 ) {
 				grid[2]=TCOD_image_get_pixel(image,cx,cy+1);
-				if ( img->has_key_color && grid[2].r == img->key_color.r  && grid[2].g == img->key_color.g && grid[2].b == img->key_color.b) 
+				if ( img->has_key_color && grid[2].r == img->key_color.r  && grid[2].g == img->key_color.g && grid[2].b == img->key_color.b)
 					grid[2]=consoleBack;
 			} else grid[2]=consoleBack;
 			if ( cx < w-1 && cy < h-1 ) {
 				grid[3]=TCOD_image_get_pixel(image,cx+1,cy+1);
-				if ( img->has_key_color && grid[3].r == img->key_color.r  && grid[3].g == img->key_color.g && grid[3].b == img->key_color.b) 
+				if ( img->has_key_color && grid[3].r == img->key_color.r  && grid[3].g == img->key_color.g && grid[3].b == img->key_color.b)
 					grid[3]=consoleBack;
 			} else grid[3]=consoleBack;
 			// analyse color, posterize, get pattern

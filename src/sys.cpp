@@ -80,7 +80,7 @@ bool TCODSystem::deleteDirectory(const char *path) {
 }
 
 bool TCODSystem::isDirectory(const char *path) {
-	return TCOD_sys_is_directory(path);
+	return TCOD_sys_is_directory(path) != 0;
 }
 
 TCOD_list_t TCODSystem::getDirectoryContent(const char *path, const char *pattern) {

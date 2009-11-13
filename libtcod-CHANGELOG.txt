@@ -14,6 +14,7 @@ X renamed libraries on Linux :
 	static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
 % new compilation system with a debug and release version of the library
 % libtcod credits now use subcell resolution
+- fixed TCODZip module missing from MSVC release
 
 =========================================================
 1.4.2 : 2009 Oct 06

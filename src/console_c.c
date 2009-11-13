@@ -885,6 +885,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	if (!init1) {
 		// initialize all static data, colormaps, ...
 		int width,height;
+		TCOD_color_t col;
 		TCOD_color_gen_map(colmap,4,colkeys,colpos);
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
 		cw=TCOD_console_get_width(NULL);
@@ -899,7 +900,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		bottom=MIN(y+6,ch-1);
 		width=right - left + 1;
 		height=bottom - top + 1;
-		TCOD_color_t col= TCOD_console_get_background_color(NULL);
+		col= TCOD_console_get_background_color(NULL);
 		TCOD_console_set_background_color(NULL,TCOD_black);
 		img = TCOD_image_new(width*2,height*2);
 		TCOD_console_set_background_color(NULL,col);
@@ -974,7 +975,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 					// get the flag for the current subcell
 					int credflag = (1+3*yflag) * (xflag+1);
 					if ( (credflag & bkflag) != 0 ) {
-						// the color for this subcell on root console 
+						// the color for this subcell on root console
 						// is foreground, not background
 						bk = TCOD_console_get_fore(NULL,xc/2,yc/2);
 					}
@@ -982,7 +983,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				pixcol.r = MIN(255,(int)(bk.r)+pixcol.r);
 				pixcol.g = MIN(255,(int)(bk.g)+pixcol.g);
 				pixcol.b = MIN(255,(int)(bk.b)+pixcol.b);
-			} 
+			}
 			TCOD_image_put_pixel(img,xi,yi,pixcol);
 		}
 	}

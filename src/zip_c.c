@@ -226,10 +226,10 @@ char TCOD_zip_get_char(TCOD_zip_t pzip) {
 	}
 #else
 	switch(zip->isize) {
-		case 4: c= zip->ibuffer&0xFF; break;
-		case 3: c= (zip->ibuffer&0xFF00)>>8; break;
-		case 2: c= (zip->ibuffer&0xFF0000)>>16; break;
-		case 1: c= (zip->ibuffer&0xFF000000)>>24; break;
+		case 4: c= (char)(zip->ibuffer&0xFF); break;
+		case 3: c= (char)((zip->ibuffer&0xFF00)>>8); break;
+		case 2: c= (char)((zip->ibuffer&0xFF0000)>>16); break;
+		case 1: c= (char)((zip->ibuffer&0xFF000000)>>24); break;
 	}
 #endif
 	zip->isize--;

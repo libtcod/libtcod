@@ -576,6 +576,14 @@ char * TCOD_console_forward(char *s,int l) {
 	return s;
 }
 
+char *TCOD_console_strchr(char *s, char c) {
+	while ( *s && *s != c ) {
+		if ( *s == (int)TCOD_COLCTRL_FORE_RGB || *s == (int)TCOD_COLCTRL_BACK_RGB ) s+=3;
+		s++;
+	}
+	return (*s ? s : NULL);
+}
+
 int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
 	alignment_t align, char *msg, bool can_split, bool count_only) {
 	TCOD_console_data_t *dat=(TCOD_console_data_t *)(con?con:TCOD_root);
@@ -595,7 +603,7 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 
 	do {
 		// get \n delimited sub-message
-		char *end=strchr(c,'\n');
+		char *end=TCOD_console_strchr(c,'\n');
 		char bak=0;
 		int cl;
 		char *split=NULL;

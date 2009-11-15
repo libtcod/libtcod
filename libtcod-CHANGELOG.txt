@@ -15,6 +15,7 @@ X renamed libraries on Linux :
 % new compilation system with a debug and release version of the library
 % libtcod credits now use subcell resolution
 - fixed TCODZip module missing from MSVC release
+- fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values
 
 =========================================================
 1.4.2 : 2009 Oct 06

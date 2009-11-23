@@ -174,7 +174,7 @@ def color_lerp(c1, c2, a):
     return int_to_col(iret)
     
 def color_set_hsv(c, h, s, v):
-    _lib.TCOD_color_set_HSV(c, h, s, v)
+    _lib.TCOD_color_set_HSV(c, c_float(h), c_float(s), c_float(v))
     
 def color_get_hsv(c):
     h = c_float()

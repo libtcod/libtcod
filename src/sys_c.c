@@ -28,11 +28,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "libtcod.h"
 #ifdef TCOD_WINDOWS
 #include <windows.h>
 #else
-#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -116,7 +116,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 	char dname[ 512 ];
 	sprintf(dname, "%s\\*",path);
     hList = FindFirstFile(dname, &FileData);
-    if (hList == INVALID_HANDLE_VALUE) 
+    if (hList == INVALID_HANDLE_VALUE)
     {
         return list;
     }
@@ -127,7 +127,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 			if ( filename_match(FileData.cFileName,pattern) )
 				TCOD_list_push(list,strdup(FileData.cFileName));
 		}
-		
+
 	} while ( FindNextFile(hList, &FileData) );
     FindClose(hList);
 #else

@@ -193,7 +193,7 @@ def render_offscreen(first, key):
         oc_screenshot = libtcod.console_new(SAMPLE_SCREEN_WIDTH,
                                             SAMPLE_SCREEN_HEIGHT)
         libtcod.console_print_frame(oc_secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2,
-                                    SAMPLE_SCREEN_HEIGHT / 2, False,
+                                    SAMPLE_SCREEN_HEIGHT / 2, False, libtcod.BKGND_NONE,
                                     'Offscreen console')
         libtcod.console_print_center_rect(oc_secondary, SAMPLE_SCREEN_WIDTH / 4,
                                           2, SAMPLE_SCREEN_WIDTH / 2 - 2,

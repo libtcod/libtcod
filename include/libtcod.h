@@ -101,10 +101,10 @@ typedef unsigned long uintptr;
 #define TCOD_TECHVERSION 0x01040300
 
 // bool support for C
-#ifndef __cplusplus 
+#ifndef __cplusplus
 #ifndef bool
 typedef uint8 bool;
-#define false ((bool)0) 
+#define false ((bool)0)
 #define true ((bool)1)
 #endif
 #else
@@ -138,7 +138,7 @@ char *strcasestr (const char *haystack, const char *needle);
 #ifdef TCOD_LINUX
 #define vsnwprintf vswprintf
 #endif
-#ifdef TCOD_MINGW
+#ifdef TCOD_WINDOWS
 #define vsnwprintf _vsnwprintf
 #endif
 

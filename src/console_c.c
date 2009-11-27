@@ -258,8 +258,8 @@ TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return TCOD_black;
 	return dat->buf[ y * dat->w + x ].back;
 }
@@ -269,8 +269,8 @@ void TCOD_console_set_fore(TCOD_console_t con,int x,int y, TCOD_color_t col) {
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
 	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return;
 	dat->buf[ y * dat->w + x ].fore=col;
 }
@@ -279,8 +279,8 @@ TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return TCOD_white;
 	return dat->buf[ y * dat->w + x ].fore;
 }
@@ -289,8 +289,8 @@ int TCOD_console_get_char(TCOD_console_t con,int x, int y) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	return dat->buf[ y * dat->w + x ].c;
 }
@@ -302,8 +302,8 @@ void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TC
 	int alpha;
 	if (! con ) con=TCOD_root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return;
 	back=&dat->buf[y*dat->w+x].back;
 	switch ( flag & 0xff ) {
@@ -644,8 +644,8 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 	int minx,maxx,miny,maxy;
 	TCOD_color_t oldFore;
 	TCOD_color_t oldBack;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
 	oldFore=dat->fore;
@@ -841,8 +841,8 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 	int minx,maxx,miny,maxy;
 	TCOD_color_t oldFore;
 	TCOD_color_t oldBack;
-	TCOD_IFNOT ( dat != NULL 
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h ) 
+	TCOD_IFNOT ( dat != NULL
+		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
 	oldFore=dat->fore;
@@ -917,14 +917,14 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 					dat->back=color_control_back[(int)(*c)-1];
 				} else if ( *c == TCOD_COLCTRL_FORE_RGB ) {
 					c++;
-					dat->fore.r=*c++;
-					dat->fore.g=*c++;
-					dat->fore.b=*c;
+					dat->fore.r=(uint8)(*c++);
+					dat->fore.g=(uint8)(*c++);
+					dat->fore.b=(uint8)(*c);
 				} else if ( *c == TCOD_COLCTRL_BACK_RGB ) {
 					c++;
-					dat->back.r=*c++;
-					dat->back.g=*c++;
-					dat->back.b=*c;
+					dat->back.r=(uint8)(*c++);
+					dat->back.g=(uint8)(*c++);
+					dat->back.b=(uint8)(*c);
 				} else if ( *c == TCOD_COLCTRL_STOP ) {
 					dat->fore=oldFore;
 					dat->back=oldBack;

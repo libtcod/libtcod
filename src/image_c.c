@@ -138,13 +138,12 @@ TCOD_image_t TCOD_image_new(int width, int height) {
 	int i;
 	float fw,fh;
 	image_data_t *ret=(image_data_t *)calloc(sizeof(image_data_t),1);
-	TCOD_color_t col= TCOD_console_get_background_color(NULL);
 	ret->nb_mipmaps=TCOD_image_get_mipmap_levels(width,height);
 	ret->mipmaps = (mipmap_t *)calloc(sizeof(mipmap_t),ret->nb_mipmaps);
 	ret->mipmaps[0].buf = (TCOD_color_t *)calloc(sizeof(TCOD_color_t),width*height);
 
 	for (i=0; i< width*height; i++) {
-		ret->mipmaps[0].buf[i] = col;
+		ret->mipmaps[0].buf[i] = TCOD_black;
 	}
 	fw=(float)width;
 	fh=(float)height;

@@ -28,6 +28,9 @@
 #ifndef _TCODLIB_H
 #define _TCODLIB_H
 
+// uncomment to disable unicode support
+//#define NO_UNICODE
+
 // os identification
 // TCOD_WINDOWS : OS is windows
 // TCOD_LINUX : OS is Linux
@@ -70,6 +73,11 @@
 #elif defined (__APPLE__) && defined (__MACH__)
 #  define TCOD_MACOSX
 #  define TCOD_GCC
+#endif
+
+// unicode rendering functions support
+#ifndef NO_UNICODE
+#include <wchar.h>
 #endif
 
 // SDL_main support for OSX
@@ -126,6 +134,12 @@ extern "C" {
 #endif
 #if defined(TCOD_WINDOWS)
 char *strcasestr (const char *haystack, const char *needle);
+#endif
+#ifdef TCOD_LINUX
+#define vsnwprintf vswprintf
+#endif
+#ifdef TCOD_MINGW
+#define vsnwprintf _vsnwprintf
 #endif
 
 /******************************************

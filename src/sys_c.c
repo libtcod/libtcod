@@ -39,6 +39,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <pthread.h>
+#include <semaphore.h>
 #endif
 #include "libtcod_int.h"
 
@@ -293,6 +294,15 @@ void TCOD_thread_delete(TCOD_thread_t th)
 #endif
 }
 
+void TCOD_thread_wait(TCOD_thread_t th) {
+#ifdef TCOD_WINDOWS
+	WaitForSingleObject((HANDLE)th,INFINITE);
+#else
+	pthread_t id=(pthread_t)th;
+	pthread_join(id,NULL);
+#endif
+}
+
 TCOD_mutex_t TCOD_mutex_new()
 {
 #ifdef TCOD_WINDOWS
@@ -336,26 +346,14 @@ void TCOD_mutex_delete(TCOD_mutex_t mut)
 #endif
 }
 
-#ifndef TCOD_WINDOWS
-// internal semaphore type
-typedef struct {
-	int value;
-	pthread_cond_t cond;
-	pthread_mutex_t mut;
-} sem_t;
-#endif
-
 TCOD_semaphore_t TCOD_semaphore_new(int initVal)
 {
 #ifdef TCOD_WINDOWS
 	HANDLE ret = CreateSemaphore(NULL,initVal,255,NULL);
 	return (TCOD_semaphore_t)ret;
 #else
-	static pthread_mutex_t tmp=PTHREAD_MUTEX_INITIALIZER;
 	sem_t *ret = (sem_t *)calloc(sizeof(sem_t),1);
-	ret->value=initVal;
-	pthread_cond_init(&ret->cond,NULL);
-	ret->mut = tmp;
+	if ( ret ) sem_init(ret,0,initVal);
 	return (TCOD_semaphore_t) ret;
 #endif
 }
@@ -365,16 +363,7 @@ void TCOD_semaphore_lock(TCOD_semaphore_t sem)
 #ifdef TCOD_WINDOWS
 	WaitForSingleObject((HANDLE)sem,INFINITE);
 #else
-	sem_t *s =(sem_t *)sem;
-	TCOD_mutex_in(&s->mut);
-	s->value--;
-	if ( s->value >= 0)
-	{
-		TCOD_mutex_out(&s->mut);
-		return;
-	}
-	pthread_cond_wait(&s->cond, &s->mut);
-	TCOD_mutex_out(&s->mut);
+	if ( sem ) sem_wait((sem_t *)sem);
 #endif
 }
 
@@ -383,18 +372,7 @@ void TCOD_semaphore_unlock(TCOD_semaphore_t sem)
 #ifdef TCOD_WINDOWS
 	ReleaseSemaphore((HANDLE)sem,1,NULL);
 #else
-	sem_t *s=(sem_t *)sem;
-	TCOD_mutex_in(&s->mut);
-	s->value++;
-	if ( s->value > 0)
-	{
-		// no thread waiting on condition
-		TCOD_mutex_out(&s->mut);
-		return;
-	}
-	// awake a thread
-	pthread_cond_signal(&s->cond);
-	TCOD_mutex_out(&s->mut);
+	if ( sem ) sem_post((sem_t *)sem);
 #endif
 }
 
@@ -405,13 +383,127 @@ void TCOD_semaphore_delete( TCOD_semaphore_t sem)
 #else
 	if ( sem )
 	{
-		sem_t *s = (sem_t *)sem;
-		pthread_cond_destroy(&s->cond);
-		pthread_mutex_destroy(&s->mut);
+		sem_destroy((sem_t *)sem);
 		free (sem);
 	}
 #endif
 }
+
+#ifdef TCOD_WINDOWS
+// poor win32 api has no thread conditions
+typedef struct {
+	int nbSignals;
+	int nbWaiting;
+	TCOD_mutex_t mutex;
+	TCOD_semaphore_t waiting;
+	TCOD_semaphore_t waitDone;
+} cond_t;
+#endif
+
+TCOD_cond_t TCOD_condition_new() {
+#ifdef TCOD_WINDOWS
+	cond_t *ret = (cond_t *)calloc(sizeof(cond_t),1);
+	ret->mutex = TCOD_mutex_new();
+	ret->waiting = TCOD_semaphore_new(0);
+	ret->waitDone = TCOD_semaphore_new(0);
+	return (TCOD_cond_t)ret;
+#else
+	pthread_cond_t *ret = (pthread_cond_t *)calloc(sizeof(pthread_cond_t),1);
+	if ( ret ) pthread_cond_init(ret,NULL);
+	return (TCOD_cond_t) ret;
+#endif
+}
+
+void TCOD_condition_signal(TCOD_cond_t pcond) {
+#ifdef TCOD_WINDOWS
+	cond_t *cond=(cond_t *)pcond;
+	if ( cond ) {
+		TCOD_mutex_in(cond->mutex);
+		if ( cond->nbWaiting > cond->nbSignals ) {
+			cond->nbSignals++;
+			TCOD_semaphore_unlock(cond->waiting);
+			TCOD_mutex_out(cond->mutex);
+			TCOD_semaphore_lock(cond->waitDone);
+		} else {
+			TCOD_mutex_out(cond->mutex);
+		}
+	}
+#else
+	if ( pcond ) {
+		pthread_cond_signal((pthread_cond_t *)pcond);
+	}
+#endif
+}
+
+void TCOD_condition_broadcast(TCOD_cond_t pcond) {
+#ifdef TCOD_WINDOWS
+	cond_t *cond=(cond_t *)pcond;
+	if ( cond ) {
+		TCOD_mutex_in(cond->mutex);
+		if ( cond->nbWaiting > cond->nbSignals ) {
+			int nbUnlock=cond->nbWaiting-cond->nbSignals;
+			int i;
+			cond->nbSignals=cond->nbWaiting;
+			for (i=nbUnlock; i > 0; i--) {
+				TCOD_semaphore_unlock(cond->waiting);
+			}
+			TCOD_mutex_out(cond->mutex);
+			for (i=nbUnlock; i > 0; i--) {
+				TCOD_semaphore_lock(cond->waitDone);
+			}
+		} else {
+			TCOD_mutex_out(cond->mutex);
+		}
+	}
+#else
+	if ( pcond ) {
+		pthread_cond_broadcast((pthread_cond_t *)pcond);
+	}
+#endif
+}
+
+void TCOD_condition_wait(TCOD_cond_t pcond, TCOD_mutex_t mut) {
+#ifdef TCOD_WINDOWS
+	cond_t *cond=(cond_t *)pcond;
+	if ( cond ) {
+		TCOD_mutex_in(cond->mutex);
+		cond->nbWaiting++;
+		TCOD_mutex_out(cond->mutex);
+		TCOD_mutex_out(mut);
+		TCOD_semaphore_lock(cond->waiting);
+		TCOD_mutex_in(cond->mutex);
+		if ( cond->nbSignals > 0 ) {
+			TCOD_semaphore_unlock(cond->waitDone);
+			cond->nbSignals--;
+		}
+		cond->nbWaiting--;
+		TCOD_mutex_out(cond->mutex);
+	}
+#else
+	if ( pcond && mut ) {
+		pthread_cond_wait((pthread_cond_t *)pcond, (pthread_mutex_t *)mut);
+	}
+#endif
+}
+
+void TCOD_condition_delete( TCOD_cond_t pcond) {
+#ifdef TCOD_WINDOWS
+	cond_t *cond=(cond_t *)pcond;
+	if ( cond ) {
+		TCOD_mutex_delete(cond->mutex);
+		TCOD_semaphore_delete(cond->waiting);
+		TCOD_semaphore_delete(cond->waitDone);
+		free(cond);
+	}
+#else
+	if ( pcond ) {
+		pthread_cond_destroy((pthread_cond_t *)pcond);
+		free (pcond);
+	}
+#endif
+}
+
+
 // library initialization function
 #ifdef TCOD_WINDOWS
 BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {

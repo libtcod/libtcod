@@ -51,6 +51,7 @@ public :
 	void setFore(int x, int y, const TCODColor &col);
 	void setChar(int x, int y, int c);
 	void putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
+	void putCharEx(int x, int y, int c, const TCODColor &fore, const TCODColor &back);
 
 	void printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	void printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
@@ -66,6 +67,19 @@ public :
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void vline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+
+#ifndef NO_UNICODE
+	static void mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY);
+	void printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	void printRight(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	void printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	int printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	int printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+	int getHeightLeftRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+	int getHeightRightRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+	int getHeightCenterRect(int x, int y, int w, int h,const wchar_t *fmt, ...); 
+#endif
 
 	TCODColor getBackgroundColor() const;
 	TCODColor getForegroundColor() const;

@@ -139,7 +139,7 @@ static int init_ascii_to_tcod[256] = {
 };
 
 int *ascii_to_tcod=NULL;
-static int max_font_chars=0;
+int TCOD_max_font_chars=0;
 
 static bool *ascii_updated=NULL;
 static bool any_ascii_updated=false;
@@ -152,16 +152,16 @@ static void alloc_ascii_tables() {
 		free(first_draw);
 	}
 
-	ascii_to_tcod = (int *)calloc(sizeof(int),max_font_chars);
-	ascii_updated = (bool *)calloc(sizeof(bool),max_font_chars);
-	charcols = (TCOD_color_t *)calloc(sizeof(TCOD_color_t),max_font_chars);
-	first_draw =(bool *)calloc(sizeof(bool),max_font_chars);
+	ascii_to_tcod = (int *)calloc(sizeof(int),TCOD_max_font_chars);
+	ascii_updated = (bool *)calloc(sizeof(bool),TCOD_max_font_chars);
+	charcols = (TCOD_color_t *)calloc(sizeof(TCOD_color_t),TCOD_max_font_chars);
+	first_draw =(bool *)calloc(sizeof(bool),TCOD_max_font_chars);
 	memcpy(ascii_to_tcod,init_ascii_to_tcod,sizeof(int)*256);
 }
 
 static void check_ascii_to_tcod() {
-	if ( fontNbCharHoriz * fontNbCharVertic != max_font_chars ) {
-		max_font_chars=fontNbCharHoriz * fontNbCharVertic;
+	if ( fontNbCharHoriz * fontNbCharVertic != TCOD_max_font_chars ) {
+		TCOD_max_font_chars=fontNbCharHoriz * fontNbCharVertic;
 		alloc_ascii_tables();
 	}
 }
@@ -171,7 +171,7 @@ void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
 }
 
 void TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY) {
-	if ( asciiCode > 0 && asciiCode < max_font_chars )
+	if ( asciiCode > 0 && asciiCode < TCOD_max_font_chars )
 		ascii_to_tcod[asciiCode] = fontCharX + fontCharY * fontNbCharHoriz;
 }
 
@@ -264,7 +264,7 @@ void TCOD_sys_load_font() {
 	check_ascii_to_tcod();
 	if (!fontTcodLayout) {
 		// apply standard ascii mapping
-		for (i=0; i < max_font_chars; i++ ) ascii_to_tcod[i]=i;
+		for (i=0; i < TCOD_max_font_chars; i++ ) ascii_to_tcod[i]=i;
 	}
 }
 
@@ -459,7 +459,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #endif
 	oldFade=fade;
 	if ( any_ascii_updated ) {
-		memset(ascii_updated,0,sizeof(bool)*max_font_chars);
+		memset(ascii_updated,0,sizeof(bool)*TCOD_max_font_chars);
 		any_ascii_updated=false;
 	}
 }
@@ -546,7 +546,7 @@ void TCOD_sys_startup() {
 	if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) < 0 ) TCOD_fatal_nopar("SDL : cannot initialize");
 	atexit(SDL_Quit);
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
-	max_font_chars=256;
+	TCOD_max_font_chars=256;
 	alloc_ascii_tables();
 	has_startup=true;
 }
@@ -576,7 +576,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	prevConsoleBuffer=oldbuf;
 	fullscreen_on=fullscreen;
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
-	memset(ascii_updated,0,sizeof(bool)*max_font_chars);
+	memset(ascii_updated,0,sizeof(bool)*TCOD_max_font_chars);
 	return true;
 }
 

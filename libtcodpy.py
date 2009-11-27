@@ -452,6 +452,12 @@ def console_put_char(con, x, y, c, flag=BKGND_SET):
         _lib.TCOD_console_put_char(con, x, y, ord(c), flag)
     else:
         _lib.TCOD_console_put_char(con, x, y, c, flag)
+
+def console_put_char_ex(con, x, y, c, fore, back):
+    if type(c) == str:
+        _lib.TCOD_console_put_char_ex(con, x, y, ord(c), fore, back)
+    else:
+        _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
         
 def console_set_back(con, x, y, col, flag=BKGND_SET):
     _lib.TCOD_console_set_back(con, x, y, col, flag)

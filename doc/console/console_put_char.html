@@ -16,6 +16,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODConsole::putChar</h3>
 <p class="code"><pre>
 C++ : void TCODConsole::putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 C   : void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_flag_t flag)
@@ -31,5 +32,23 @@ This function modifies every property of a cell :<br />
 <tr><td>x,y</td><td>Coordinates of the cell in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
 <tr><td>c</td><td>The new ASCII code for the cell between 0 and 255. You can use <a href="ascii_constants.html">ASCII constants</a>.</td></tr>
 <tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
+</table>
+
+<h3>TCODConsole::putCharEx</h3>
+<p class="code"><pre>
+C++ : void TCODConsole::putCharEx(int x, int y, int c, const TCODColor & fore, const TCODColor & back)
+C   : void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back)
+Py  : console_put_char_ex( con, x,  y, c, fore, back)
+</pre></p>
+This function modifies every property of a cell :<br />
+- set the cell's background color to back.<br />
+- set the cell's foreground color to fore.<br />
+- set the cell's ASCII code to c.<br />
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>con</td><td>In the C version, the offscreen console handler or NULL for the root console.</td></tr>
+<tr><td>x,y</td><td>Coordinates of the cell in the console.<br />0 &lt;= x &lt; console width<br />0 &lt;= y &lt; console height</td></tr>
+<tr><td>c</td><td>The new ASCII code for the cell between 0 and 255. You can use <a href="ascii_constants.html">ASCII constants</a>.</td></tr>
+<tr><td>fore,back</td><td>New foreground and background color for this cell.</td></tr>
 </table>
 

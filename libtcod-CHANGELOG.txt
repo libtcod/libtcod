@@ -6,18 +6,36 @@ X API break
 1.4.3 : ???? ??? ??
 X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux :
-   libtcod++.so  => libtcodxx.so
-   libtcod-gui.so => libtcodgui.so
+    libtcod++.so  => libtcodxx.so
+    libtcod-gui.so => libtcodgui.so
 + added subcell resolution blitting function TCODImage::blit2x
 + added more portable filesystem utilities :
-	static bool TCODSystem::isDirectory(const char *path)
-	static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
+    static bool TCODSystem::isDirectory(const char *path)
+    static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
++ added TCODConsole::putCharEx(int x, int y, int c, TCODColor &fore, TCODColor &back) (at last!)
++ added waitThread and thread conditions support in (undocumented) threading api
++ added unicode support and 4 unicode fonts courtesy of Mingos. Functions with unicode support are :
+    static void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY);
+    void TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    void TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    void TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    int TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    int TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
+    int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+    int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+    int TCODConsole::getHeightCenterRect(int x, int y, int w, int h,const wchar_t *fmt, ...);
+  C versions of the functions have _utf suffixes. Unicode fonts are :
+    fonts/consolas_unicode_10x10.png
+    fonts/consolas_unicode_12x12.png
+    fonts/consolas_unicode_16x16.png
+    fonts/consolas_unicode_8x8.png
 % new compilation system with a debug and release version of the library
+% makefiles have been moved to a makefiles subdirectory
 % libtcod credits now use subcell resolution
 - fixed TCODZip module missing from MSVC release
 - fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values
 - fixed issue in color_set_hsv python wrapper
-
 =========================================================
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :

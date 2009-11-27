@@ -1,7 +1,6 @@
 # libtcod makefile
 # to build debug version, run "make -f makefile-linux debug"
 # to build release version, run "make -f makefile-linux release"
-BINDIR=../../bin/linux
 SRCDIR=src
 INCDIR=include
 
@@ -17,8 +16,7 @@ ZLIB_LIBS=-lz
 # PNG
 PNG_LIBS=-lpng
 
-
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing -fPIC
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 TEMP=/tmp
 CC=gcc
 CPP=g++

@@ -108,6 +108,7 @@ extern int fontNbCharVertic;
 extern bool fontTcodLayout;
 extern int *ascii_to_tcod;
 extern TCOD_console_t TCOD_root;
+extern int TCOD_max_font_chars;
 
 /* TCODSystem non public methods */
 void TCOD_sys_startup();
@@ -134,6 +135,13 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
 /* close the window */
 void TCOD_sys_term();
+
+/* UTF-8 stuff */
+#ifndef NO_UNICODE
+wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap);
+int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
+	alignment_t align, wchar_t *msg, bool can_split, bool count_only); 
+#endif
 
 /* image manipulation */
 void *TCOD_sys_load_image(const char *filename);

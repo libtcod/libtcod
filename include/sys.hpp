@@ -56,6 +56,7 @@ public :
 	static int getNumCores();
 	static TCOD_thread_t newThread(int (*func)(void *), void *data);
 	static void deleteThread(TCOD_thread_t th);
+	static void waitThread(TCOD_thread_t th);
 	// mutex
 	static TCOD_mutex_t newMutex();
 	static void mutexIn(TCOD_mutex_t mut);
@@ -66,6 +67,12 @@ public :
 	static void lockSemaphore(TCOD_semaphore_t sem);
 	static void unlockSemaphore(TCOD_semaphore_t sem);
 	static void deleteSemaphore( TCOD_semaphore_t sem);
+	// condition
+	static TCOD_cond_t newCondition();
+	static void signalCondition(TCOD_cond_t sem);
+	static void broadcastCondition(TCOD_cond_t sem);
+	static void waitCondition(TCOD_cond_t sem, TCOD_mutex_t mut);
+	static void deleteCondition( TCOD_cond_t sem);
 	// custom post-renderer
 	static void registerSDLRenderer(ITCODSDLRenderer *renderer);
 };

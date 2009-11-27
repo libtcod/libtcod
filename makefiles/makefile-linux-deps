@@ -1,21 +1,25 @@
 # libtcod makefile
 # to build debug version, run "make -f makefile-linux debug"
 # to build release version, run "make -f makefile-linux release"
-BINDIR=../../bin/linux
 SRCDIR=src
 INCDIR=include
 
 #dependencies
 # SDL
-SDL_FLAGS=`sdl-config --cflags`
-SDL_LIBS=`sdl-config --libs`
+SDL_DIR=dependencies/SDL-1.2.12
+SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
+SDL_LIBS=-L $(SDL_DIR)/lib/linux -lSDL
 
 # ZLIB
-ZLIB_FLAGS=
-ZLIB_LIBS=-lz
+ZLIB_DIR=dependencies/zlib-1.2.3
+ZLIB_FLAGS=-I $(ZLIB_DIR)/include
+ZLIB_LIBS=$(ZLIB_DIR)/lib/linux/libz.a
 
 # PNG
-PNG_LIBS=-lpng
+PNG_DIR=dependencies/libpng-1.2.31
+PNG_FLAGS=-I $(PNG_DIR)/include
+PNG_LIBS=$(PNG_DIR)/lib/linux/libpng.a
+
 
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 TEMP=/tmp

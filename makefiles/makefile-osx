@@ -1,26 +1,23 @@
 # libtcod makefile
-# this linux makefile uses libpng/zlib installed on the system
-# instead of libraries from the dependencies directory
-# might be useful if you're using a libc version not compatible
 # to build debug version, run make FLAGS=-g
 # to build release version, run make FLAGS='-O2 -s'
-# on some linux distro (like 64 bits linux), you might need to use make FLAGS='-g -fPIC'
-BINDIR=../../bin/linux
 SRCDIR=src
 INCDIR=include
 
 #dependencies
 # SDL
-SDL_LIBS=-lSDL
+SDL_DIR=dependencies/SDL-1.2.12
+SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
 
 # ZLIB
-ZLIB_LIBS=-lz
+ZLIB_DIR=dependencies/zlib-1.2.3
+ZLIB_FLAGS=-I $(ZLIB_DIR)/include
 
 # PNG
-PNG_LIBS=-lpng
+PNG_DIR=dependencies/libpng-1.2.31
+PNG_FLAGS=-I $(PNG_DIR)/include
 
-
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall -fno-strict-aliasing
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 TEMP=/tmp
 CC=gcc
 CPP=g++
@@ -41,8 +38,8 @@ LIBOBJS_C= \
 	$(TEMP)/libtcod/fov_c.o \
 	$(TEMP)/libtcod/fov_circular_raycasting.o \
 	$(TEMP)/libtcod/fov_diamond_raycasting.o \
-	$(TEMP)/libtcod/fov_recursive_shadowcasting.o \
 	$(TEMP)/libtcod/fov_digital.o \
+	$(TEMP)/libtcod/fov_recursive_shadowcasting.o \
 	$(TEMP)/libtcod/fov_permissive2.o \
 	$(TEMP)/libtcod/fov_restrictive.o \
 	$(TEMP)/libtcod/heightmap_c.o \
@@ -94,7 +91,7 @@ GUIOBJS= \
 	$(TEMP)/libtcod/gui/vbox.o \
 	$(TEMP)/libtcod/gui/widget.o
 
-all : libtcod.so libtcod++.so libtcod-gui.so
+all : libtcod.a libtcod++.a libtcod-gui.a
 
 $(TEMP)/libtcod :
 	mkdir -p $@
@@ -102,21 +99,15 @@ $(TEMP)/libtcod :
 $(TEMP)/libtcod/gui :
 	mkdir -p $@
 
-libtcod.a : $(LIBOBJS_C)
+libtcod.a : $(TEMP)/libtcod $(LIBOBJS_C)
 	ar r $@ $(LIBOBJS_C)
 
-libtcod++.a : $(LIBOBJS_CPP)
+libtcod++.a : $(TEMP)/libtcod $(LIBOBJS_CPP)
 	ar r $@ $(LIBOBJS_CPP)
 
-libtcod.so : $(TEMP)/libtcod $(LIBOBJS_C)
-	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(CFLAGS)
-
-libtcod++.so : $(TEMP)/libtcod $(LIBOBJS_CPP)
-	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP) -L. -ltcod $(CFLAGS)
-
-libtcod-gui.so : $(TEMP)/libtcod $(TEMP)/libtcod/gui $(GUIOBJS)
-	gcc -shared -Wl,-soname,$@ -o $@ $(GUIOBJS) -L. -ltcod -ltcod++ $(CFLAGS)
+libtcod-gui.a : $(TEMP)/libtcod $(TEMP)/libtcod/gui $(GUIOBJS)
+	ar r $@ $(GUIOBJS)
 
 clean : 
-	\rm -f $(LIBOBJS_C) $(LIBOBJS_CPP) $(GUIOBJS) libtcod.a libtcod++.a libtcod.so libtcod++.so libtcod-gui.so libtcodpy.pyc
+	rm -f $(LIBOBJS_C) $(LIBOBJS_CPP) $(GUIOBJS) libtcod.a libtcod++.a libtcod-gui.a libtcodpy.pyc
 

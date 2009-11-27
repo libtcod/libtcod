@@ -100,6 +100,10 @@ void TCODSystem::deleteThread(TCOD_thread_t th) {
 	TCOD_thread_delete(th);
 }
 
+void TCODSystem::waitThread(TCOD_thread_t th) {
+	TCOD_thread_wait(th);
+}
+
 // mutex
 TCOD_mutex_t TCODSystem::newMutex() {
 	return TCOD_mutex_new();
@@ -132,6 +136,27 @@ void TCODSystem::unlockSemaphore(TCOD_semaphore_t sem) {
 
 void TCODSystem::deleteSemaphore( TCOD_semaphore_t sem) {
 	TCOD_semaphore_delete(sem);
+}
+
+// condition
+TCOD_cond_t TCODSystem::newCondition() {
+	return TCOD_condition_new();
+}
+
+void TCODSystem::signalCondition(TCOD_cond_t cond) {
+	TCOD_condition_signal(cond);
+}
+
+void TCODSystem::broadcastCondition(TCOD_cond_t cond) {
+	TCOD_condition_broadcast(cond);
+}
+
+void TCODSystem::waitCondition(TCOD_cond_t cond, TCOD_mutex_t mut) {
+	TCOD_condition_wait(cond, mut);
+}
+
+void TCODSystem::deleteCondition( TCOD_cond_t cond) {
+	TCOD_condition_delete(cond);
 }
 
 // custom post-renderer

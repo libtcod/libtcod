@@ -15,7 +15,8 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-You can read data from a .bmp or .png file (for example to draw an image using the background color of the console cells).<br/>
+You can read data from a .bmp or .png file (for example to draw an image using the background color of the console cells).<br />
+Note that only 24bits and 32bits PNG files are currently supported.<br />
 <p class="code"><pre>
 C++ : TCODImage::TCODImage(const char *filename)
 C   : TCOD_image_t TCOD_image_load(const char *filename)

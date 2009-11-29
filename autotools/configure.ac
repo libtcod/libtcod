@@ -63,8 +63,8 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([strdup _strdup strcasecmp _stricmp strncasecmp _strnicmp strcasestr])
 AC_CHECK_FUNCS([atexit floor memset mkdir rmdir select sqrt strchr strrchr strtol])
 
-AC_CONFIG_FILES([../Makefile
-                 ../src/Makefile
-                 ../src/gui/Makefile])
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 src/gui/Makefile])
 AC_OUTPUT
 

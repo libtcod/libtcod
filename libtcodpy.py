@@ -36,7 +36,7 @@ else:
 
 HEXVERSION = 0x010403
 STRVERSION = "1.4.3"
-TECHVERSION = 0x01040300
+TECHVERSION = 0x01040301
 
 ############################
 # color module

@@ -36,6 +36,7 @@ X renamed libraries on Linux :
 - fixed TCODZip module missing from MSVC release
 - fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values
 - fixed issue in color_set_hsv python wrapper
+- fixed bug in console blitting when destination coordinates are outside the destination console
 =========================================================
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :

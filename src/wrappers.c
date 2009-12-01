@@ -142,6 +142,12 @@ void TCOD_console_set_fore_wrapper(TCOD_console_t con,int x, int y,
   TCOD_console_set_fore (con, x, y, int_to_color(col));
 }
 
+void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, int y,
+                                       int c, colornum_t fore, colornum_t back)
+{
+  TCOD_console_put_char_ex (con, x, y, c, int_to_color(fore),
+                             int_to_color(back));
+}
 
 colornum_t TCOD_console_get_fore_wrapper(TCOD_console_t con,
                                               int x, int y)
@@ -237,20 +243,24 @@ void TCOD_console_double_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd
 }
 
 
-void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, const char *fmt, ...) {
+void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	TCOD_console_data_t *dat;
 	if (! con ) con=root;
 	dat=(TCOD_console_data_t *)con;
-	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_DSW,TCOD_BKGND_SET);
-	TCOD_console_put_char(con,x+w-1,y+h-1,TCOD_CHAR_DSE,TCOD_BKGND_SET);
-	TCOD_console_double_hline(con,x+1,y,w-2, TCOD_BKGND_SET);
-	TCOD_console_double_hline(con,x+1,y+h-1,w-2, TCOD_BKGND_SET);
-	TCOD_console_double_vline(con,x,y+1,h-2, TCOD_BKGND_SET);
-	TCOD_console_double_vline(con,x+w-1,y+1,h-2, TCOD_BKGND_SET);
-	if ( empty ) {
-		TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,TCOD_BKGND_SET);
+	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,flag);
+	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,flag);
+	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_DSW,flag);
+	TCOD_console_put_char(con,x+w-1,y+h-1,TCOD_CHAR_DSE,flag);
+	TCOD_console_double_hline(con,x+1,y,w-2, flag);
+	TCOD_console_double_hline(con,x+1,y+h-1,w-2, flag);
+	TCOD_console_double_vline(con,x,y+1,h-2, flag);
+	TCOD_console_double_vline(con,x+w-1,y+1,h-2, flag);
+	if ( h > 2 ) {
+		TCOD_console_vline(con,x,y+1,h-2,flag);
+		TCOD_console_vline(con,x+w-1,y+1,h-2,flag);
+		if ( empty ) {
+			TCOD_console_rect(con,x+1,y+1,w-2,h-2,true,flag);
+		}
 	}
 	if (fmt) {
 		va_list ap;

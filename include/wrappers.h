@@ -66,6 +66,8 @@ TCODLIB_API colornum_t TCOD_console_get_fore_wrapper (TCOD_console_t con,
                                               int x, int y);
 TCODLIB_API void TCOD_console_set_fore_wrapper(TCOD_console_t con,int x, int y,
                                       colornum_t col);
+TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, 
+	int y, int c, colornum_t fore, colornum_t back);
 TCODLIB_API void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade);
 TCODLIB_API colornum_t TCOD_console_get_fading_color_wrapper();
 TCODLIB_API void TCOD_console_set_color_control_wrapper(TCOD_colctrl_t con,
@@ -82,6 +84,7 @@ TCODLIB_API void TCOD_console_double_vline(TCOD_console_t con,int x,int y,
 					   int l, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,
 						 int w,int h, bool empty,
+						 TCOD_bkgnd_flag_t flag,
 						 const char *fmt, ...);
 
 TCODLIB_API char *TCOD_console_print_return_string(TCOD_console_t con,int x,

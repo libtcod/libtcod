@@ -146,13 +146,12 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 	TCOD_IFNOT(xDst+wSrc >= 0 && yDst+hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
 	for (cx = xSrc; cx < xSrc+wSrc; cx++) {
 		for (cy = ySrc; cy < ySrc+hSrc; cy++) {
-			if (xDst+cx < 0 || xDst+cx >= dst->w || yDst+cy < 0 || yDst+cy >= dst->h) continue;
-			char_t srcChar=src->buf[cy * src->w+cx];
+			// check if we're outside the dest console
 			int dx=cx-xSrc+xDst;
 			int dy=cy-ySrc+yDst;
-			// check if we're outside the dest console
 			if ( (unsigned) dx >= (unsigned) dst->w || (unsigned)dy >= (unsigned) dst->h ) continue;
 			// check if source pixel is transparent
+			char_t srcChar=src->buf[cy * src->w+cx];
 			if ( src->haskey && srcChar.back.r == src->key.r
 				&& srcChar.back.g == src->key.g && srcChar.back.b == src->key.b ) continue;
 			char_t dstChar;

@@ -148,39 +148,41 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 		for (cy = ySrc; cy < ySrc+hSrc; cy++) {
 			if (xDst+cx < 0 || xDst+cx >= dst->w || yDst+cy < 0 || yDst+cy >= dst->h) continue;
 			char_t srcChar=src->buf[cy * src->w+cx];
-			if (! src->haskey || srcChar.back.r != src->key.r
-				|| srcChar.back.g != src->key.g || srcChar.back.b != src->key.b ) {
-				int dx=cx-xSrc+xDst;
-				int dy=cy-ySrc+yDst;
-				char_t dstChar;
-				if ( foreground_alpha == 1.0f && background_alpha == 1.0f ) {
-					dstChar=srcChar;
-				} else {
-					dstChar=dst->buf[dy * dst->w + dx];
+			int dx=cx-xSrc+xDst;
+			int dy=cy-ySrc+yDst;
+			// check if we're outside the dest console
+			if ( (unsigned) dx >= (unsigned) dst->w || (unsigned)dy >= (unsigned) dst->h ) continue;
+			// check if source pixel is transparent
+			if ( src->haskey && srcChar.back.r == src->key.r
+				&& srcChar.back.g == src->key.g && srcChar.back.b == src->key.b ) continue;
+			char_t dstChar;
+			if ( foreground_alpha == 1.0f && background_alpha == 1.0f ) {
+				dstChar=srcChar;
+			} else {
+				dstChar=dst->buf[dy * dst->w + dx];
 
-					dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,background_alpha);
-					if ( srcChar.c == ' ' ) {
-						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,background_alpha);
-					} else if (dstChar.c == ' ') {
+				dstChar.back = TCOD_color_lerp(dstChar.back,srcChar.back,background_alpha);
+				if ( srcChar.c == ' ' ) {
+					dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.back,background_alpha);
+				} else if (dstChar.c == ' ') {
+					dstChar.c=srcChar.c;
+					dstChar.cf=srcChar.cf;
+					dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,foreground_alpha);
+				} else if (dstChar.c == srcChar.c) {
+					dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,foreground_alpha);
+				} else {
+					if ( foreground_alpha < 0.5f ) {
+						dstChar.fore=TCOD_color_lerp(dstChar.fore,dstChar.back,
+							foreground_alpha*2);
+					} else {
 						dstChar.c=srcChar.c;
 						dstChar.cf=srcChar.cf;
-						dstChar.fore = TCOD_color_lerp(dstChar.back,srcChar.fore,foreground_alpha);
-					} else if (dstChar.c == srcChar.c) {
-						dstChar.fore = TCOD_color_lerp(dstChar.fore,srcChar.fore,foreground_alpha);
-					} else {
-						if ( foreground_alpha < 0.5f ) {
-							dstChar.fore=TCOD_color_lerp(dstChar.fore,dstChar.back,
-								foreground_alpha*2);
-						} else {
-							dstChar.c=srcChar.c;
-							dstChar.cf=srcChar.cf;
-							dstChar.fore=TCOD_color_lerp(dstChar.back,srcChar.fore,
-								(foreground_alpha-0.5f)*2);
-						}
+						dstChar.fore=TCOD_color_lerp(dstChar.back,srcChar.fore,
+							(foreground_alpha-0.5f)*2);
 					}
 				}
-				dst->buf[dy * dst->w + dx] = dstChar;
 			}
+			dst->buf[dy * dst->w + dx] = dstChar;
 		}
 	}
 }

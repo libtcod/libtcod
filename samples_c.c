@@ -133,10 +133,10 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 	if ( counter % 20 == 0 ) {
 		/* move the secondary screen every 2 seconds */
 		x+=xdir;y+=ydir;
-		if ( x == SAMPLE_SCREEN_WIDTH/2 ) xdir=-1;
-		else if ( x == 0 ) xdir=1;
-		if ( y == SAMPLE_SCREEN_HEIGHT/2 ) ydir=-1;
-		else if ( y == 0 ) ydir=1;
+		if ( x == SAMPLE_SCREEN_WIDTH/2+5 ) xdir=-1;
+		else if ( x == -5 ) xdir=1;
+		if ( y == SAMPLE_SCREEN_HEIGHT/2+5 ) ydir=-1;
+		else if ( y == -5 ) ydir=1;
 	}
 	/* restore the initial screen */
 	TCOD_console_blit(screenshot,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,

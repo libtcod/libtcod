@@ -212,13 +212,13 @@ def render_offscreen(first, key):
     if oc_counter % 20 == 0:
         oc_x += oc_xdir
         oc_y += oc_ydir
-        if oc_x == SAMPLE_SCREEN_WIDTH / 2:
+        if oc_x == SAMPLE_SCREEN_WIDTH / 2 + 5:
             oc_xdir = -1
-        elif oc_x == 0:
+        elif oc_x == -5:
             oc_xdir = 1
-        if oc_y == SAMPLE_SCREEN_HEIGHT / 2:
+        if oc_y == SAMPLE_SCREEN_HEIGHT / 2 + 5:
             oc_ydir = -1
-        elif oc_y == 0:
+        elif oc_y == -5:
             oc_ydir = 1
     libtcod.console_blit(oc_screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, 
                          SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0)

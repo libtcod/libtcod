@@ -213,12 +213,12 @@ def color_gen_map(colors, indexes):
 class Key(Structure):
     _fields_=[('vk', c_int, 32),
               ('c', c_int, 8),
-              ('pressed', c_uint, 1),
-              ('lalt', c_uint, 1),
-              ('lctrl', c_uint, 1),
-              ('ralt', c_uint, 1),
-              ('rctrl', c_uint, 1),
-              ('shift', c_uint, 1),
+              ('pressed', c_uint, 8),
+              ('lalt', c_uint, 8),
+              ('lctrl', c_uint, 8),
+              ('ralt', c_uint, 8),
+              ('rctrl', c_uint, 8),
+              ('shift', c_uint, 8),
               ]
 
 _lib.TCOD_console_wait_for_keypress.restype = Key
@@ -736,14 +736,14 @@ class Mouse(Structure):
               ('cy', c_int, 32),
               ('dcx', c_int, 32),
               ('dcy', c_int, 32),
-              ('lbutton', c_uint, 1),
-              ('rbutton', c_uint, 1),
-              ('mbutton', c_uint, 1),
-              ('lbutton_pressed', c_uint, 1),
-              ('rbutton_pressed', c_uint, 1),
-              ('mbutton_pressed', c_uint, 1),
-              ('wheel_up', c_uint, 1),
-              ('wheel_down', c_uint, 1),
+              ('lbutton', c_uint, 8),
+              ('rbutton', c_uint, 8),
+              ('mbutton', c_uint, 8),
+              ('lbutton_pressed', c_uint, 8),
+              ('rbutton_pressed', c_uint, 8),
+              ('mbutton_pressed', c_uint, 8),
+              ('wheel_up', c_uint, 8),
+              ('wheel_down', c_uint, 8),
               ]
 
 _lib.TCOD_mouse_is_cursor_visible.restype = c_uint

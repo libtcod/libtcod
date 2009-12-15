@@ -101,12 +101,12 @@ typedef enum {
 typedef struct {
 	TCOD_keycode_t vk; /*  key code */
 	char c; /* character if vk == TCODK_CHAR else 0 */
-	unsigned pressed :1; /* does this correspond to a key press or key release event ? */
-	unsigned lalt :1;
-	unsigned lctrl :1;
-	unsigned ralt :1;
-	unsigned rctrl :1;
-	unsigned shift :1;
+	bool pressed ; /* does this correspond to a key press or key release event ? */
+	bool lalt ;
+	bool lctrl ;
+	bool ralt ;
+	bool rctrl ;
+	bool shift ;
 } TCOD_key_t;
 
 enum {

@@ -1,0 +1,105 @@
+  <style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+  </style>
+
+<table width="100%">
+
+  <tbody>
+    <tr>
+      <td width="20%"><a href="../index.html">&lt; index</a><br>
+      <a href="index.html">&lt; 7. File parser</a><br>
+      <a href="parser_default.html">&lt; 7.6 Using the default parser
+listener</a><br>
+      </td>
+      <td width="60%">
+      <p align="center">=====================================<br>
+7.7 Parser listener - additional information<br>
+=====================================<br>
+      </p>
+      </td>
+      <td width="20%"> <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+In many cases, the parser can be used in its default minimalist form,
+in which it can parse a single struct of any given type in a text file.
+This is useful, for instance, in case of configuration files, where
+there's only one instance of the struct containing the necessary
+variables. However, consider a case when there are many instances of
+the same kind of struct. This is the case I'll be addressing in this
+short tuto.<br>
+
+<br>
+
+First of all, it's important to know what the listener actually does.
+Unlike the default parser, it will not store the parsed variable values
+internally. After parsing a file with several instances of the same
+kind of struct, the extracted data will vanish. However, the listener
+offers the possibility of telling it what to do with te extracted data
+so it does not get lost. In order to be able to store the information
+safely, it's recommended to previously create a data structure that
+will be able to hold all the extracted data. Something like this is a
+fine way of dealing with it:<br>
+
+<pre>C++: class myData {<br>         public:<br>         char name[32];<br>         var 1<br>         var 2<br>         ...<br>         var n<br>         static TCODList &lt;myData *&gt; list;<br>         static myData * get (const char * name);<br>     };<br>C:   struct my_data {<br>         char name[32];<br>         var 1<br>         var 2<br>         ...<br>         var n<br>     }<br>     TCOD_list_t my_data_list = TCOD_list_new();<br>     my_data * my_data_get (const char * name);<br></pre>
+
+The above class/struct contain all the variables that are defined
+inside the configuration file. The extracted values will be copied to
+those fields. Additionally, there's a char array that will contain the
+extracted struct's name and that will be used for identification
+purposes;<br>
+
+<br>
+
+The list that's declared in the above examples will store pointers to
+all the instances of the data structure, each containing data extracted
+from one instance of the struct in the text file. Additionally, there's
+a getter that will do the dirty job for us upon seeking the correct bit
+of data: it will automatically traverse the list and compare the
+provided string with each list element's name. This way, if we have a
+generic data structure, say, "Creature", and a set of names for its
+instances, say, "goblin", "orc" and "kobold", accessing the correct set
+of variables will require calling:<br>
+
+<pre>C++: myData::get("myName");<br>C:   my_data_get("my_name");<br></pre>
+
+I'll leave the actual implementation of the above functions to the
+individual developers, as this is not key to understanding the parser
+listener.<br>
+
+<br>
+
+So, now that we have the data structure sorted out, let's begin our
+work with the actual listener. We will need to tell the listener
+exactly what to do when certain events are encountered. As a general
+rule, this will break down into:<br>
+
+<ul>
+
+  <li>creating an instance of the data structure, assigning it its name
+and pushing it on the list,</li>
+  <li>assigning it correct values based on their names.</li>
+</ul>
+
+So, to make the parser run, create and build it according to what's
+been laid out in chapter <a href="parser_run.html">7.3: Running the
+parser</a>. You have to remember these basic rules:<br>
+<ul>
+  <li>The parser listener has no thoughts of its own and does only what
+it's instructed to. You have tell it how to decide what to do based on
+what's encountered in the configuration file.</li>
+  <li>The variable names are retrieved in the form of strings, so
+you'll need to call strcmp a lot in order to determine what the
+retrieved value is.</li>
+  <li>Each time you add a new field to the config file, make sure you let the listener know about it.<br>
+  </li>
+  <li>The parser won't know what to do when something's wrong. Tell it where to display the errors.<br>
+  </li>
+</ul>
+

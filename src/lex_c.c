@@ -49,6 +49,13 @@ static char *TCOD_last_error=NULL;
 
 const char *TCOD_lex_get_token_name(int token_type) { return TCOD_LEX_names[token_type]; }
 
+static void allocate_tok(TCOD_lex_t *lex, int len) {
+	if ( lex->toklen > len ) return;
+	while ( lex->toklen <= len ) lex->toklen *= 2;
+	lex->tok = (char *)realloc(lex->tok,lex->toklen);
+}
+
+
 char *TCOD_lex_get_last_error() {
 	return TCOD_last_error;
 }
@@ -111,6 +118,8 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 	lex->javadocCmtStart = javadocCommentStart;
 	lex->stringDelim = _stringDelim;
 	lex->lastStringDelim='\0';
+	lex->tok = (char *)calloc(sizeof(char),256);
+	lex->toklen=256;
 	return (TCOD_lex_t *)lex;
 }
 
@@ -126,7 +135,6 @@ char *TCOD_lex_get_last_javadoc(TCOD_lex_t *lex)
 	return NULL;
 }
 
-
 void TCOD_lex_delete(TCOD_lex_t *lex)
 {
 	if ( ! lex->savept )
@@ -138,6 +146,7 @@ void TCOD_lex_delete(TCOD_lex_t *lex)
 	lex->filename=NULL;
 	lex->buf = NULL;
 	lex->allocBuf=false;
+	if ( lex->tok ) free(lex->tok);
 	free(lex);
 }
 
@@ -383,12 +392,14 @@ int TCOD_lex_get_string(TCOD_lex_t *lex)
 		}
 		else if ( c == lex->lastStringDelim )
 		{
+			allocate_tok(lex, len);
 			lex->tok[ len ] = '\0';
 			lex->token_type = TCOD_LEX_STRING;
 			lex->token_idx = -1;
 			lex->pos++;
 			return TCOD_LEX_STRING;
 		}
+		allocate_tok(lex, len);
 		lex->tok[ len++ ] = c;
     } while ( 1 );
 }
@@ -407,6 +418,7 @@ int TCOD_lex_get_number(TCOD_lex_t *lex)
     len = 0;
     if ( *lex->pos == '-' )
     {
+		allocate_tok(lex, len);
 		lex->tok[ len ++ ] = '-';
 		lex->pos++;
     }
@@ -416,12 +428,14 @@ int TCOD_lex_get_number(TCOD_lex_t *lex)
     if ( c == '0' && ( lex->pos[1] == 'x' || lex->pos[1]=='X') )
     {
 		bhex = 1;
+		allocate_tok(lex, len);
 		lex->tok[ len ++ ] = '0';
 		lex->pos++;
 		c = toupper( * (lex->pos));
     }
     do
     {
+		allocate_tok(lex, len);
 		lex->tok[ len++ ] = (char)c;
 		lex->pos++;
 		if ( c == '.' )
@@ -436,6 +450,7 @@ int TCOD_lex_get_number(TCOD_lex_t *lex)
     } while ((c >= '0' && c<= '9')
 	     || ( bhex && c >= 'A' && c <= 'F' )
 	     || c == '.' );
+	allocate_tok(lex, len);
     lex->tok[len] = 0;
 
     if ( !bfloat )
@@ -522,12 +537,14 @@ int TCOD_lex_get_iden(TCOD_lex_t *lex)
 
     do
     {
+		allocate_tok(lex, len);
 		lex->tok[ len++ ] = c;
 		c = *( ++ (lex->pos)  );
     } while ( ( c >= 'a' && c <= 'z' )
 	      || ( c >= 'A' && c <= 'Z' )
 	      || ( c >= '0' && c <= '9' )
 	      || c == '_' );
+	allocate_tok(lex, len);
     lex->tok[len ] = 0;
 
     while ( key < lex->nb_keywords )

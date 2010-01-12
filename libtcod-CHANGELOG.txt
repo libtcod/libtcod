@@ -35,6 +35,7 @@ X renamed libraries on Linux :
 % new compilation system with a debug and release version of the library
 % makefiles have been moved to a makefiles subdirectory
 % libtcod credits now use subcell resolution
+- now the parser can handle strings/identifiers with unlimited size (previously limited to 256 chars)
 - fixed TCODZip module missing from MSVC release
 - fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values
 - fixed issue in color_set_hsv python wrapper

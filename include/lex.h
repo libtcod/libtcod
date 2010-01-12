@@ -54,7 +54,8 @@
 typedef struct {
 	int file_line, token_type, token_int_val, token_idx;
 	float token_float_val;
-	char tok[1024];
+	char *tok;
+    int toklen;
 	char lastStringDelim;
 	char *pos;
 	char *buf;

@@ -10,6 +10,7 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
++ added a new toolkit: name generation
 + added subcell resolution blitting function TCODImage::blit2x
 + added more portable filesystem utilities :
     static bool TCODSystem::isDirectory(const char *path)

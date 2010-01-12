@@ -1,0 +1,6 @@
+//syllables extracted from the names of dwarves making an appearance in J.R.R. Tolkien's works.
+name "Tolkien dwarf" {
+  syllablesStart = "A, Ba, Bi, Bo, Bom, Da, Do, Du, Dwa, Fa, Fi, Fre, Fun, Ga, Gim, Glo, Gro, Ib, Ki, Lo, Na, O, Tel, Tho, Thra"
+  syllablesEnd = "bur, char, fur, ghal, in, li, lin, mil, ni, ri, rin, un, vi"
+  rules = "$s$e"
+}

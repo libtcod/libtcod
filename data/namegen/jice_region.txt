@@ -1,0 +1,7 @@
+//Region names from Jice's "The Cave"
+name "region" {
+  syllablesStart = "Act, Afr, Ag, Agr, Alb, Am, An, Angl, Ant, As, Asys, Asis, At, Atl, Brund, Cath, Cor, Dan, Eb, Eg, Er, Esc, Esp, Est, Eth, Eur, Flor, It, Lyr, Mal, Mir, Myr, Nor, Pel, Rom, Seg, Sib, Sylv, Terr, Tir, Tr, Tyr, Xan"
+  syllablesMiddle = "ad, ag, al, an, and, ant, anth, ar, ard, as, at, atr, eg, en, ent, ern, et, ian, in, itr, on, op, ov, ur, ymn, yr"
+  syllablesEnd = "a, aia, ana, as, ea, ene, eos, esia, ia, iad, ias, is, ium, ius, on, ona, or, ova, um, us, ya"
+  rules = "$s$m$e, $s$e"
+}

@@ -24,27 +24,22 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*
+* Mingos' NameGen
+* This file was written by Dominik "Mingos" Marczuk.
+*/
 
-#ifndef _TCODLIB_HPP
-#define _TCODLIB_HPP
+#ifndef _TCOD_NAMEGEN_HPP
+#define _TCOD_NAMEGEN_HPP
 
-#include "libtcod.h"
-#include "list.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "image.hpp"
-#include "sys.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "bresenham.hpp"
-#include "noise.hpp"
-#include "fov.hpp"
-#include "path.hpp"
-#include "lex.hpp"
-#include "parser.hpp"
-#include "tree.hpp"
-#include "bsp.hpp"
-#include "heightmap.hpp"
-#include "zip.hpp"
-#include "namegen.hpp"
+class TCODLIB_API TCODNamegen {
+	public:
+		TCODNamegen (const char * filename, const char * name, TCODRandom * random);
+		~TCODNamegen (void);
+		char * generate (bool allocate = false);
+		char * generateCustom (char * rule, bool allocate = false);
+	private:
+		TCOD_namegen_t data;
+};
+
 #endif

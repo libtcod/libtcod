@@ -168,6 +168,7 @@ char *strcasestr (const char *haystack, const char *needle);
 #include "bsp.h"
 #include "heightmap.h"
 #include "zip.h"
+#include "namegen.h"
 #ifdef __cplusplus
 #undef bool
 }

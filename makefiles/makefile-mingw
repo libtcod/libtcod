@@ -67,6 +67,7 @@ LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/tree_c.o \
 	$(TEMP)/libtcod/debug/wrappers.o \
 	$(TEMP)/libtcod/debug/zip_c.o \
+	$(TEMP)/libtcod/debug/namegen_c.o \
 	$(TEMP)/libtcod/debug/bresenham.o \
 	$(TEMP)/libtcod/debug/bsp.o \
 	$(TEMP)/libtcod/debug/color.o \
@@ -81,7 +82,8 @@ LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/parser.o \
 	$(TEMP)/libtcod/debug/path.o \
 	$(TEMP)/libtcod/debug/sys.o \
-	$(TEMP)/libtcod/debug/zip.o
+	$(TEMP)/libtcod/debug/zip.o \
+	$(TEMP)/libtcod/debug/namegen.o
 
 GUIOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/gui/button.o \
@@ -126,6 +128,7 @@ LIBOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/tree_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o \
+	$(TEMP)/libtcod/release/namegen_c.o \
 	$(TEMP)/libtcod/release/bresenham.o \
 	$(TEMP)/libtcod/release/bsp.o \
 	$(TEMP)/libtcod/release/color.o \
@@ -140,7 +143,8 @@ LIBOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/parser.o \
 	$(TEMP)/libtcod/release/path.o \
 	$(TEMP)/libtcod/release/sys.o \
-	$(TEMP)/libtcod/release/zip.o
+	$(TEMP)/libtcod/release/zip.o \
+	$(TEMP)/libtcod/release/namegen.o
 
 GUIOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/gui/button.o \

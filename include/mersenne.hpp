@@ -44,6 +44,7 @@ class TCODLIB_API TCODRandom {
 	protected :
 		friend class TCODLIB_API TCODNoise;
 		friend class TCODLIB_API TCODHeightMap;
+		friend class TCODLIB_API TCODNamegen;
 		TCOD_random_t data;
 };
 

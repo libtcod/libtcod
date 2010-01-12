@@ -24,27 +24,24 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*
+* Mingos' NameGen
+* This file was written by Dominik "Mingos" Marczuk.
+*/
 
-#ifndef _TCODLIB_HPP
-#define _TCODLIB_HPP
+#ifndef _TCOD_NAMEGEN_H
+#define _TCOD_NAMEGEN_H
 
-#include "libtcod.h"
-#include "list.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "image.hpp"
-#include "sys.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "bresenham.hpp"
-#include "noise.hpp"
-#include "fov.hpp"
-#include "path.hpp"
-#include "lex.hpp"
-#include "parser.hpp"
-#include "tree.hpp"
-#include "bsp.hpp"
-#include "heightmap.hpp"
-#include "zip.hpp"
-#include "namegen.hpp"
+/* the generator typedef */
+typedef void * TCOD_namegen_t;
+
+/* prepare a new generator */
+TCODLIB_API TCOD_namegen_t TCOD_namegen_new (const char * filename, const char * name, TCOD_random_t random);
+/* generate a name */
+TCODLIB_API char * TCOD_namegen_generate (TCOD_namegen_t generator, bool allocate);
+/* generate a name using a custom generation rule */
+TCODLIB_API char * TCOD_namegen_generate_custom (TCOD_namegen_t generator, char * rule, bool allocate);
+/* delete a generator */
+TCODLIB_API void TCOD_namegen_delete (TCOD_namegen_t generator);
+
 #endif

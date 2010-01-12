@@ -1,0 +1,119 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 16. Name generator</a><br />
+<a href="namegen_delete.html">&lt; 16.3 Destroying a generator</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+16.4 Syllable set configuration<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<h4>16.4.1 Syllable set structure</h4>
+The syllable sets need to be written in one or more text files that will be opened and parsed by the generator.<br />
+<br />
+The data uses a standard TCODParser file and data should be inserted according to the general rules of creating a configuration file. For more information, please refer to <a href="../parser/parser_format.html">7.1 The libtcod config file format</a>.<br />
+<br />
+The structure type that's defined in the generator is "name". This structure type must also be accompanied by a structure name. It will be used for identification purposes in the generator. For instance, if you use a structure name "fantasy female", you will be able to access this syllable set by creating a generator using "fantasy female" syllables. In the initialisation function, this is the "const char * name" argument.<br />
+<br />
+The structure contains different members, all of which must be of TCOD_TYPE_STRING type. The tokens inside the strings, be them phonemes or syllables, form a single string, but are separated with separator characters. <b>Characters used for token separation are all characters that are not Latin upper- or lowercase characters, dashes or apostrophes</b>. A comma, a space or a comma and a space are readable separators. In order to use a character inside a string that would normally be considered a separator, precede it with a slash (eg. "/:", "/.", "/!", etc.). An exception to this rule is the space character, which can be achieved by using an underscore (eg. "the_Great").<br />
+<br />
+The structure members that may thus be defined are:<br />
+<ul>
+<li>phonemesVocals</li>
+<li>phonemesConsonants</li>
+<li>syllablesPre</li>
+<li>syllablesStart</li>
+<li>syllablesMiddle</li>
+<li>syllablesEnd</li>
+<li>syllablesPost</li>
+</ul>
+All of those strings are considered optional. However, if you don't define a string, but reference it in the name generation rules, you will see a warning displayed on stderr about missing data.<br />
+<br />
+Another optional string is<br />
+<ul>
+<li>illegal</li>
+</ul>
+This string contains strings that are considered illegal. Should a generated name contain any of the tokens specified in this string, it will be discarded and replaced by a new one. Illegal strings may be as short as single characters or as long as entire names. However, it is best to create a syllable set that generates very few names that sound bad. Otherwise, the illegal list might be very long.<br />
+<h4>16.4.2 Rules</h4>
+There's one last string that's contained within the structure:<br />
+<ul>
+<li>rules</li>
+</ul>
+It is mandatory, so not defining it will trigger an error. It defines how the generator should join the supplied data in order to generate a name. This string uses a syntax of its own, which is also used when specifying a rule when generating a custom name (see chapter <a href="namegen_generate.html">16.2</a>).<br />
+<br />
+The rules are parsed pretty much the same way as all other strings, so all rules regarding separators and special characters apply as well. However, you can additionally use a set of wildcards and frequency markers. Each wildcard is preceded by the dollar sign ('$'), while frequency markers are preceded by the per cent sign ('%'). Here's the complete wildcard list:<br />
+<br />
+<table class="param">
+<tr><th>Wildcard</th><th>Example</th><th>Description</th></tr>
+<tr><td>$[INT]P</td><td>$P, $25P</td><td>Use a random Pre syllable.<br >The optional integer value denotes the per cent chance of adding the syllable.</td></tr>
+<tr><td>$[INT]s</td><td>$s, $25s</td><td>Use a random Start syllable.</td></tr>
+<tr><td>$[INT]m</td><td>$m, $25m</td><td>Use a random Middle syllable.</td></tr>
+<tr><td>$[INT]e</td><td>$e, $25e</td><td>Use a random End syllable.</td></tr>
+<tr><td>$[INT]p</td><td>$p, $25p</td><td>Use a random Post syllable.</td></tr>
+<tr><td>$[INT]v</td><td>$v, $25v</td><td>Use a random vocal.</td></tr>
+<tr><td>$[INT]c</td><td>$c, $25c</td><td>Use a random consonant.</td></tr>
+<tr><td>$[INT]?</td><td>$?, $25?</td><td>Use a random phoneme (vocal or consonant).</td></tr>
+<tr><td>%INT</td><td>%50, %25</td><td>Frequency marker. Denotes the per cent chance for the rule to be accepted if it's picked.<br />If the rule is not accepted, another roll is made to choose a name generation rule.<br />It's used to reduce the frequency a given rule is chosen with.<br />This marker may only appear at the beginning of a rule.</td></tr>
+</table>
+<h4>16.4.3 Example structure</h4>
+Consider this example structure. It does not contain syllables, but rather full names.<br />
+<p class="code"><pre>
+name "king" {
+  syllablesStart = "Alexander, Augustus, Casimir, Henry, John, Louis, Sigismund,
+    Stanislao, Stephen, Wenceslaus"
+  syllablesMiddle = "I, II, III, IV, V"
+  syllablesEnd = "Bathory, Herman, Jogaila, Lambert, of_Bohemia, of_France,
+    of_Hungary, of_Masovia, of_Poland, of_Valois, of_Varna, Probus,
+    Spindleshanks, Tanglefoot, the_Bearded, the_Black, the_Bold, the_Brave,
+    the_Chaste, the_Curly, the_Elbow-high, the_Exile, the_Great,
+    the_Jagiellonian, the_Just, the_Old, the_Pious, the_Restorer, the_Saxon,
+    the_Strong, the_Wheelwright, the_White, Vasa, Wrymouth"
+  rules = "%50$s, $s_$m, $s_$50m_$e"
+}
+</pre></p>
+The above structure only uses three syllable lists and has three different rules. Let's analyse them one by one.<br />
+<br />
+<b>%50$s</b> - this will simply output a random Start syllable, but this rule is not intended to be picked with the same frequency as the others, so the frequency marker at the beginning ("%50") ensures that 50% of the time this syllable will be rejected and a different one will be picked.<br />
+<br />
+<b>$s_$m</b> - this will output a Start syllable and a Middle syllable, separated with a space.<br />
+<br />
+<b>$s_$50m_$e</b> - This will output a Start syllable, followed by a Middle syllable, followed by an End sylable, all separated with spaces. However, the Middle syllable has only 50% chance of appearing at all, so 50% of the time the rule will actually produce a Start syllable followed directly by an End syllable, separated with a space.<br />
+<br />
+As you may have noticed, the third rule may produce a double space if the Middle syllable is not chosen. You do not have to worry about such cases, as the generator will automatically reduce all double spaces to single spaces, and leading/ending spaces will be removed completely.<br />
+<br />
+Output from this example set would contain kings' names based on the names of real monarchs of Poland. Have a look at the sample:<br />
+<p class="code"><pre>
+Alexander IV
+Alexander
+Sigismund
+Stanislao V
+Stanislao
+Henry I of Poland
+Augustus V
+Stanislao I the Pious
+Sigismund IV the Brave
+John the Great
+Henry the Old
+John the Bold
+Stanislao II the Saxon
+Wenceslaus of France
+John Probus
+Louis V
+Wenceslaus Lambert
+Stanislao Spindleshanks
+Henry Herman
+Alexander the Old
+Louis V the Curly
+Wenceslaus II
+Augustus IV
+Alexander V
+Augustus Probus
+</pre></p>

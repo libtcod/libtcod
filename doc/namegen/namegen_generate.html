@@ -1,0 +1,67 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 16. Name generator</a><br />
+<a href="namegen_init.html">&lt; 16.1 Creating a generator</a>
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+16.2 Generating a name<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="namegen_delete.html">&gt; 16.3 Destroying a generator</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+<h4>16.2.1 Generate a standard name</h4>
+The following will output a random name generated using one of the generation rules specified in the syllable set:<br />
+<p class="code"><pre>
+C++ : char * TCODNamegen::generate(bool allocate = false)
+C   : char * TCOD_namegen_generate(TCOD_namegen_t generator, bool allocate);
+Py  : ---
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>allocate</td><td>Whether memory should be allocated for the output or not.</td></tr>
+<tr><td>generator</td><td>The name generator object returned by TCOD_namegen_new.</td></tr>
+</table>
+<br />
+Should you choose to allocate memory for the output, you need to remember to deallocate it once you don't need the name anymore using the free() function. This applies to C++ as well (delete won't work - you have to use free()).<br />
+<br />
+On the other hand, should you choose not to allocate memory, be aware that subsequent calls will overwrite the previously returned pointer, so make sure to copy the output using strcpy(), strdup() or other means of your choosing.<br />
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODNamegen myGenerator("data/names.txt","fantasy female",TCODRandom::getInstance());
+      char * myName = myGenerator.generate();
+C   : TCOD_namegen_t my_generator = TCOD_namegen_new("data/names.txt","fantasy female",TCOD_random_get_instance());
+      char * my_name = TCOD_namegen_generate(my_generator,false);
+Py  : ---
+</pre></p>
+<hr />
+<a name="15.3.2"></a><h4>16.2.2 Generate a custom name</h4>
+It is also possible to generate a name using custom generation rules. This overrides the random choice of a generation rule from the syllable set. Please refer to chapter <a href="namegen_file.html">16.4</a> to learn about the name generation rules syntax.<br />
+<p class="code"><pre>
+C++ : char * TCODNamegen::generateCustom(char * rule, bool allocate = false)
+C   : char * TCOD_namegen_generate_custom(TCOD_namegen_t generator, char * rule, bool allocate);
+Py  : ---
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>rule</td><td>The name generation rule. See chapter <a href="namegen_file.html">16.4</a> for more details.</td></tr>
+<tr><td>allocate</td><td>Whether memory should be allocated for the output or not.</td></tr>
+<tr><td>generator</td><td>The name generator object returned by TCOD_namegen_new.</td></tr>
+</table>
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODNamegen myGenerator("data/names.txt","fantasy female",TCODRandom::getInstance());
+      char * myName = myGenerator.generateCustom("$s$e");
+C   : TCOD_namegen_t my_generator = TCOD_namegen_new("data/names.txt","fantasy female",TCOD_random_get_instance());
+      char * my_name = TCOD_namegen_generate_custom(my_generator,"$s$e",false);
+Py  : ---
+</pre></p>

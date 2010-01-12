@@ -1,0 +1,39 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 16. Name generator</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+16.1 Creating a generator<br />
+=====================================<br />
+</p></td><td width="20%">
+<a href="namegen_generate.html">&gt; 16.2 Generating a name</a>
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+In order to be able to generate names, the name generator needs to be initialised with the proper data. It will then be ready to generate one specific type of names. The initialisation is done via:<br />
+<p class="code"><pre>
+C++ : TCODNamegen::TCODNamegen(const char * filename, const char * name, TCODRandom * random)
+C   : TCOD_namegen_t * TCOD_namegen_new(const char * filename, const char * name, TCOD_random_t random)
+Py  : ---
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>filename</td><td>The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".</td></tr>
+<tr><td>name</td><td>The name of the syllable set structure to use, for instance "fantasy female"</td></tr>
+<tr><td>random</td><td>A random number generator object.</td></tr>
+</table>
+Note 1: The filename may contain various structures with syllable sets, but the generator will only use one such structure. Each file will be parsed once only, but the file name cannot be skipped even if a given file has been already parsed.<br />
+Note 2: The name refers to what stands between quotation marks after the declaration of a syllable set structure in the specified file. The name passed as parametre needs to exist in the specified file, otherwise an error will be triggered.<br />
+<br />
+Example :<br />
+<p class="code"><pre>
+C++ : TCODNamegen myGenerator("data/names.txt","fantasy female",TCODRandom::getInstance());
+C   : TCOD_namegen_t my_generator = TCOD_namegen_new("data/names.txt","fantasy female",TCOD_random_get_instance());
+Py  : ---
+</pre></p>

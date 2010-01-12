@@ -81,17 +81,7 @@ TCOD_list_t namegen_syllables_list = NULL;
 /* initialise a syllable set */
 namegen_syllables_t * namegen_syllables_new (void)
 {
-    namegen_syllables_t * data = malloc(sizeof(namegen_syllables_t));
-    data->name = NULL;
-    data->vocals = NULL;
-    data->consonants = NULL;
-    data->pre = NULL;
-    data->start = NULL;
-    data->middle = NULL;
-    data->end = NULL;
-    data->post = NULL;
-    data->illegal = NULL;
-    data->rules = NULL;
+    namegen_syllables_t * data = calloc(sizeof(namegen_syllables_t),1);
     return data;
 }
 
@@ -107,20 +97,13 @@ bool namegen_syllables_check (const char * name)
     /* otherwise, scan it for the name */
     else
     {
-        if (TCOD_list_size(namegen_syllables_list) == 0)
+        namegen_syllables_t ** it;
+        for (it = (namegen_syllables_t**)TCOD_list_begin(namegen_syllables_list); it < (namegen_syllables_t**)TCOD_list_end(namegen_syllables_list); it++)
         {
-            return false;
-        }
-        else
-        {
-            namegen_syllables_t ** it;
-            for (it = (namegen_syllables_t**)TCOD_list_begin(namegen_syllables_list); it < (namegen_syllables_t**)TCOD_list_end(namegen_syllables_list); it++)
+            namegen_syllables_t * check = *it;
+            if (strcmp(check->name,name) == 0)
             {
-                namegen_syllables_t * check = *it;
-                if (strcmp(check->name,name) == 0)
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -153,42 +136,15 @@ namegen_syllables_t * namegen_syllables_get (const char * name)
 /* free a syllables set */
 void namegen_syllables_delete (namegen_syllables_t * data)
 {
-    if (data->vocals != NULL)
-    {
-        free(data->vocals);
-    }
-    if (data->consonants != NULL)
-    {
-        free(data->consonants);
-    }
-    if (data->pre != NULL)
-    {
-        free(data->pre);
-    }
-    if (data->start != NULL)
-    {
-        free(data->start);
-    }
-    if (data->middle != NULL)
-    {
-        free(data->middle);
-    }
-    if (data->end != NULL)
-    {
-        free(data->end);
-    }
-    if (data->post != NULL)
-    {
-        free(data->post);
-    }
-    if (data->illegal != NULL)
-    {
-        free(data->illegal);
-    }
-    if (data->rules != NULL)
-    {
-        free(data->rules);
-    }
+    if (data->vocals) free(data->vocals);
+    if (data->consonants) free(data->consonants);
+    if (data->pre) free(data->pre);
+    if (data->start) free(data->start);
+    if (data->middle) free(data->middle);
+    if (data->end) free(data->end);
+    if (data->post) free(data->post);
+    if (data->illegal) free(data->illegal);
+    if (data->rules) free(data->rules);
     free(data);
 }
 
@@ -241,44 +197,33 @@ bool namegen_parser_flag (const char *name)
 
 bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value)
 {
-    if (strcmp(name,"syllablesStart") == 0)
-    {
+    if (strcmp(name,"syllablesStart") == 0) {
         parser_data->start = strdup(value.s);
     }
-    else if (strcmp(name,"syllablesMiddle") == 0)
-    {
+    else if (strcmp(name,"syllablesMiddle") == 0) {
         parser_data->middle = strdup(value.s);
     }
-    else if (strcmp(name,"syllablesEnd") == 0)
-    {
+    else if (strcmp(name,"syllablesEnd") == 0) {
         parser_data->end = strdup(value.s);
     }
-    else if (strcmp(name,"syllablesPre") == 0)
-    {
+    else if (strcmp(name,"syllablesPre") == 0) {
         parser_data->pre = strdup(value.s);
     }
-    else if (strcmp(name,"syllablesPost") == 0)
-    {
+    else if (strcmp(name,"syllablesPost") == 0) {
         parser_data->post = strdup(value.s);
     }
-    else if (strcmp(name,"phonemesVocals") == 0)
-    {
+    else if (strcmp(name,"phonemesVocals") == 0) {
         parser_data->vocals = strdup(value.s);
     }
-    else if (strcmp(name,"phonemesConsonants") == 0)
-    {
+    else if (strcmp(name,"phonemesConsonants") == 0) {
         parser_data->consonants = strdup(value.s);
     }
-    else if (strcmp(name,"illegal") == 0)
-    {
+    else if (strcmp(name,"illegal") == 0) {
         parser_data->illegal = strdup(value.s);
     }
-    else if (strcmp(name,"rules") == 0)
-    {
+    else if (strcmp(name,"rules") == 0) {
         parser_data->rules = strdup(value.s);
-    }
-    else
-    {
+    } else {
         return false;
     }
     return true;
@@ -539,7 +484,11 @@ TCOD_namegen_t TCOD_namegen_new (const char * filename, const char * name, TCOD_
     }
     namegen_t * data = malloc(sizeof(namegen_t));
     data->initialised = true;
-    data->random = random;
+    if ( random == NULL ) {
+    	data->random = TCOD_random_get_instance();
+	} else {
+    	data->random = random;
+    }
     data->vocals = TCOD_list_new();
     data->consonants = TCOD_list_new();
     data->syllables_pre = TCOD_list_new();
@@ -568,11 +517,11 @@ char * TCOD_namegen_generate_custom (TCOD_namegen_t generator, char * rule, bool
         while (it <= rule + rule_len)
         {
             /* make sure the buffer is large enough */
-            if (strlen(buf) > buflen / 4 * 3)
+            if (strlen(buf) >= buflen)
             {
-                buflen *= 2;
+                while (strlen(buf) >= buflen) buflen *= 2;
                 char * tmp = malloc(buflen);
-                tmp = strdup(buf);
+                strcpy(tmp,buf);
                 free(buf);
                 buf = tmp;
             }
@@ -728,7 +677,7 @@ char * TCOD_namegen_generate (TCOD_namegen_t generator, bool allocate)
     while (TCOD_random_get_int(data->random,0,100) > chance);
     /* OK, we've got ourselves a new rule! */
     char * rule_parsed = strdup(rule_rolled+truncation);
-    char * ret = TCOD_namegen_generate_custom(generator,allocate,rule_parsed);
+    char * ret = TCOD_namegen_generate_custom(generator,rule_parsed,allocate);
     free(rule_parsed);
     return ret;
 }

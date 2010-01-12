@@ -26,7 +26,7 @@ Py  : ---
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>filename</td><td>The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".</td></tr>
 <tr><td>name</td><td>The name of the syllable set structure to use, for instance "fantasy female"</td></tr>
-<tr><td>random</td><td>A random number generator object.</td></tr>
+<tr><td>random</td><td>A random number generator object. Use NULL for the default random number generator</td></tr>
 </table>
 Note 1: The filename may contain various structures with syllable sets, but the generator will only use one such structure. Each file will be parsed once only, but the file name cannot be skipped even if a given file has been already parsed.<br />
 Note 2: The name refers to what stands between quotation marks after the declaration of a syllable set structure in the specified file. The name passed as parametre needs to exist in the specified file, otherwise an error will be triggered.<br />

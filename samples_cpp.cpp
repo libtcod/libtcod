@@ -544,9 +544,9 @@ void render_image(bool first, TCOD_key_t*key) {
 	static TCODColor blue(0,0,255);
 	static TCODColor green(0,255,0);
 	if ( img == NULL ) {
-		img=new TCODImage("skull.png");
+		img=new TCODImage("data/img/skull.png");
 		img->setKeyColor(TCODColor::black);
-		circle=new TCODImage("circle.png");
+		circle=new TCODImage("data/img/circle.png");
 	}
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
@@ -1018,7 +1018,7 @@ int main( int argc, char *argv[] ) {
 	int curSample=0; // index of the current sample
 	bool first=true; // first time we render a sample
 	TCOD_key_t key = {TCODK_NONE,0};
-	const char *font="fonts/celtic_garamond_10x10_gs_tc.png";
+	const char *font="data/fonts/celtic_garamond_10x10_gs_tc.png";
 	int nbCharHoriz=0,nbCharVertic=0;
 	int argn;
 	int fullscreenWidth=0;

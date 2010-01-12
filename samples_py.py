@@ -19,7 +19,7 @@ SAMPLE_SCREEN_WIDTH = 46
 SAMPLE_SCREEN_HEIGHT = 20
 SAMPLE_SCREEN_X = 20
 SAMPLE_SCREEN_Y = 10
-font = os.path.join('fonts', 'celtic_garamond_10x10_gs_tc.png')
+font = os.path.join('data', 'fonts', 'celtic_garamond_10x10_gs_tc.png')
 libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 libtcod.console_init_root(80, 50, 'libtcod python sample', False)
 sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
@@ -42,7 +42,7 @@ if True:
                                 True)
     # default listener
     print '***** Default listener *****'
-    libtcod.parser_run(parser, 'sample.cfg')
+    libtcod.parser_run(parser, os.path.join('data','cfg','sample.cfg'))
     print 'bool_field : ', \
           libtcod.parser_get_bool_property(parser, 'struct.bool_field')
     print 'char_field : ', \
@@ -1048,9 +1048,9 @@ img_green = libtcod.Color(0, 255, 0)
 def render_image(first, key):
     global img,img_circle,img_blue,img_green
     if img is None:
-        img = libtcod.image_load('skull.png')
+        img = libtcod.image_load(os.path.join('data','img','skull.png'))
         libtcod.image_set_key_color(img,libtcod.black)
-        img_circle = libtcod.image_load('circle.png')
+        img_circle = libtcod.image_load(os.path.join('data','img','circle.png'))
     if first:
         libtcod.sys_set_fps(30)
     libtcod.console_set_background_color(sample_console, libtcod.black)

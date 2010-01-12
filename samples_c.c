@@ -545,9 +545,9 @@ void render_image(bool first, TCOD_key_t*key) {
 	float x,y,scalex,scaley,angle;
 	long elapsed;
 	if ( img == NULL ) {
-		img=TCOD_image_load("skull.png");
+		img=TCOD_image_load("data/img/skull.png");
 		TCOD_image_set_key_color(img,TCOD_black);
-		circle=TCOD_image_load("circle.png");
+		circle=TCOD_image_load("data/img/circle.png");
 	}
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
@@ -995,6 +995,85 @@ void render_bsp(bool first, TCOD_key_t*key) {
 	}
 }
 
+/* ***************************
+ * name generator sample
+ * ***************************/
+void render_name(bool first, TCOD_key_t*key) {
+	typedef struct {
+		char *filename;
+		char *setname;
+		char *displayname;
+	} ngdata_t;
+	static ngdata_t ngdata[] = {
+		{ "data/namegen/jice_celtic.cfg", "Celtic male", "jice_celtic.cfg / Celtic male" },
+		{ "data/namegen/jice_celtic.cfg", "Celtic female", "jice_celtic.cfg / Celtic female" },
+		{ "data/namegen/jice_fantasy.cfg", "Fantasy male", "jice_fantasy.cfg / Fantasy male" },
+		{ "data/namegen/jice_fantasy.cfg", "Fantasy female", "jice_fantasy.cfg / Fantasy female" },
+		{ "data/namegen/jice_mesopotamian.cfg", "Mesopotamian male", "jice_mesopotamian.cfg / Mesopotamian male" },
+		{ "data/namegen/jice_mesopotamian.cfg", "Mesopotamian female", "jice_mesopotamian.cfg / Mesopotamian female" },
+		{ "data/namegen/jice_norse.cfg", "Norse male", "jice_norse.cfg / Norse male" },
+		{ "data/namegen/jice_norse.cfg", "Norse female", "jice_norse.cfg / Norse female" },
+		{ "data/namegen/jice_region.cfg", "region", "jice_region.cfg" },
+		{ "data/namegen/jice_town.cfg", "town", "jice_town.cfg" },
+		{ "data/namegen/mingos_demon.cfg", "demon male", "mingos_demon.cfg / demon male" },
+		{ "data/namegen/mingos_demon.cfg", "demon female", "mingos_demon.cfg / demon female" },
+		{ "data/namegen/mingos_dwarf.cfg", "Tolkien dwarf", "mingos_dwarf.cfg" },
+		{ "data/namegen/mingos_norse.cfg", "Norse male", "mingos_norse.cfg" },
+		{ "data/namegen/mingos_standard.cfg", "male", "mingos_standard.cfg / male" },
+		{ "data/namegen/mingos_standard.cfg", "female", "mingos_standard.cfg / female" },
+		{ "data/namegen/mingos_town.cfg", "town", "mingos_town.cfg" },
+	};
+	static int nbSets=sizeof(ngdata)/sizeof(ngdata_t);
+	static int curSet=0;
+	static float delay=0.0f;
+	static TCOD_list_t names=NULL;
+	static TCOD_namegen_t ngs[sizeof(ngdata)/sizeof(ngdata_t)];
+	int i;
+	if ( ! names ) {
+		names=TCOD_list_new();
+		// create the generators
+		for (i=0; i< nbSets; i++) {
+			ngs[i] = TCOD_namegen_new(ngdata[i].filename, ngdata[i].setname,NULL);
+		}	
+	}
+	if ( first ) {
+		TCOD_sys_set_fps(30); /* limited to 30 fps */
+	}
+
+	while ( TCOD_list_size(names) >= 15 ) {
+		// remove the first element. 
+		char *nameToRemove= * (TCOD_list_begin(names));
+		TCOD_list_remove_iterator(names, TCOD_list_begin(names));
+		free(nameToRemove);
+	}
+
+	TCOD_console_clear(sample_console);
+	TCOD_console_set_foreground_color(sample_console,TCOD_white);
+	TCOD_console_print_left(sample_console,1,1,TCOD_BKGND_NONE,"%s\n\n+ : next generator\n- : prev generator",
+		ngdata[curSet].displayname);
+	for (i=0; i < TCOD_list_size(names); i++) {
+		char *name=(char *)TCOD_list_get(names,i);
+		if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
+			TCOD_console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-1,2+i,TCOD_BKGND_NONE,name);
+	}
+
+	delay += TCOD_sys_get_last_frame_length();	
+	if ( delay >= 0.5f ) {
+		delay -= 0.5f;
+		// add a new name to the list
+		TCOD_list_push(names, TCOD_namegen_generate(ngs[curSet], true));
+	}
+	if ( key->c == '+' ) {
+		curSet ++;
+		if ( curSet == nbSets ) curSet=0;
+		TCOD_list_push(names, strdup("======"));
+	} else if ( key->c == '-'  ) {
+		curSet --;
+		if ( curSet < 0 ) curSet=nbSets-1;
+		TCOD_list_push(names, strdup("======"));
+	}
+}
+
 
 /* ***************************
  * the list of samples
@@ -1009,6 +1088,7 @@ sample_t samples[] = {
 	{"  Bsp toolkit        ",render_bsp},
 	{"  Image toolkit      ",render_image},
 	{"  Mouse support      ",render_mouse},
+	{"  Name generator     ",render_name},
 };
 int nb_samples = sizeof(samples)/sizeof(sample_t); /* total number of samples */
 
@@ -1020,7 +1100,7 @@ int main( int argc, char *argv[] ) {
 	bool first=true; /* first time we render a sample */
 	int i;
 	TCOD_key_t key = {TCODK_NONE,0};
-	char *font="fonts/celtic_garamond_10x10_gs_tc.png";
+	char *font="data/fonts/celtic_garamond_10x10_gs_tc.png";
 	int nb_char_horiz=0,nb_char_vertic=0;
 	int argn;
 	int fullscreen_width=0;

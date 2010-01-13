@@ -1440,7 +1440,7 @@ def namegen_generate(ng, allocate=0) :
 def namegen_generate_custom(ng, rule, allocate=0) :
 	return _lib.TCOD_namegen_generate(ng, rule, c_int(allocate))
 
-def namgegen_delete(ng) :
+def namegen_delete(ng) :
 	_lib.TCOD_namegen_delete(ng)
 
 

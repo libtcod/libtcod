@@ -32,7 +32,7 @@
 #include "libtcod.hpp"
 
 TCODNamegen::TCODNamegen (const char * filename, const char * name, TCODRandom * random) {
-	data = TCOD_namegen_new (filename, name, random->data);
+	data = TCOD_namegen_new (filename, name, random ? random->data : NULL);
 }
 
 TCODNamegen::~TCODNamegen (void) {

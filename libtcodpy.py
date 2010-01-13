@@ -1427,8 +1427,20 @@ def heightmap_delete(hm):
     _lib.TCOD_heightmap_delete(hm.p)
 
 
+############################
+# name generator module
+############################
 
+def namegen_new(filename,setname,random=0) :
+	return _lib.TCOD_namegen_new(filename,setname,random)
 
+def namegen_generate(ng, allocate=0) :
+	return _lib.TCOD_namegen_generate(ng, c_int(allocate))
 
+def namegen_generate_custom(ng, rule, allocate=0) :
+	return _lib.TCOD_namegen_generate(ng, rule, c_int(allocate))
+
+def namgegen_delete(ng) :
+	_lib.TCOD_namegen_delete(ng)
 
 

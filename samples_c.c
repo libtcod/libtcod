@@ -1054,7 +1054,7 @@ void render_name(bool first, TCOD_key_t*key) {
 	for (i=0; i < TCOD_list_size(names); i++) {
 		char *name=(char *)TCOD_list_get(names,i);
 		if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
-			TCOD_console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-1,2+i,TCOD_BKGND_NONE,name);
+			TCOD_console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,name);
 	}
 
 	delay += TCOD_sys_get_last_frame_length();	
@@ -1100,7 +1100,7 @@ int main( int argc, char *argv[] ) {
 	bool first=true; /* first time we render a sample */
 	int i;
 	TCOD_key_t key = {TCODK_NONE,0};
-	char *font="data/fonts/celtic_garamond_10x10_gs_tc.png";
+	char *font="data/fonts/consolas10x10_gs_tc.png";
 	int nb_char_horiz=0,nb_char_vertic=0;
 	int argn;
 	int fullscreen_width=0;

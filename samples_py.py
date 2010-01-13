@@ -19,7 +19,7 @@ SAMPLE_SCREEN_WIDTH = 46
 SAMPLE_SCREEN_HEIGHT = 20
 SAMPLE_SCREEN_X = 20
 SAMPLE_SCREEN_Y = 10
-font = os.path.join('data', 'fonts', 'celtic_garamond_10x10_gs_tc.png')
+font = os.path.join('data', 'fonts', 'consolas10x10_gs_tc.png')
 libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
 libtcod.console_init_root(80, 50, 'libtcod python sample', False)
 sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
@@ -1139,6 +1139,72 @@ def render_mouse(first, key):
         libtcod.mouse_show_cursor(True)
 
 #############################################
+# name generator sample
+#############################################
+ng_curset = 0
+class NgData:
+    def __init__(self, filename, setname, displayname):
+        self.filename = filename
+        self.setname = setname
+        self.displayname = displayname
+ngdatas = (NgData("data/namegen/jice_celtic.cfg", "Celtic male", "jice_celtic.cfg / Celtic male" ),
+		NgData( "data/namegen/jice_celtic.cfg", "Celtic female", "jice_celtic.cfg / Celtic female" ),
+		NgData( "data/namegen/jice_fantasy.cfg", "Fantasy male", "jice_fantasy.cfg / Fantasy male" ),
+		NgData( "data/namegen/jice_fantasy.cfg", "Fantasy female", "jice_fantasy.cfg / Fantasy female" ),
+		NgData( "data/namegen/jice_mesopotamian.cfg", "Mesopotamian male", "jice_mesopotamian.cfg / Mesopotamian male" ),
+		NgData( "data/namegen/jice_mesopotamian.cfg", "Mesopotamian female", "jice_mesopotamian.cfg / Mesopotamian female" ),
+		NgData( "data/namegen/jice_norse.cfg", "Norse male", "jice_norse.cfg / Norse male" ),
+		NgData( "data/namegen/jice_norse.cfg", "Norse female", "jice_norse.cfg / Norse female" ),
+		NgData( "data/namegen/jice_region.cfg", "region", "jice_region.cfg" ),
+		NgData( "data/namegen/jice_town.cfg", "town", "jice_town.cfg" ),
+		NgData( "data/namegen/mingos_demon.cfg", "demon male", "mingos_demon.cfg / demon male" ),
+		NgData( "data/namegen/mingos_demon.cfg", "demon female", "mingos_demon.cfg / demon female" ),
+		NgData( "data/namegen/mingos_dwarf.cfg", "Tolkien dwarf", "mingos_dwarf.cfg" ),
+		NgData( "data/namegen/mingos_norse.cfg", "Norse male", "mingos_norse.cfg" ),
+		NgData( "data/namegen/mingos_standard.cfg", "male", "mingos_standard.cfg / male" ),
+		NgData( "data/namegen/mingos_standard.cfg", "female", "mingos_standard.cfg / female" ),
+		NgData( "data/namegen/mingos_town.cfg", "town", "mingos_town.cfg" ))
+ng_nbsets=len(ngdatas)
+ng_delay=0.0
+ng_gen=None
+ng_names=[]
+def render_name(first, key):
+	global ng_curset
+	global ngdatas
+	global ng_nbsets
+	global ng_delay
+	global ng_gen
+	global ng_names
+	if ng_gen is None:
+		ng_gen=[]
+		for i in range(ng_nbsets) :
+			ng_gen.append(libtcod.namegen_new(ngdatas[i].filename,ngdatas[i].setname))
+	if first:
+		libtcod.sys_set_fps(30)
+	while len(ng_names)> 15:
+		ng_names.pop(0)
+	libtcod.console_clear(sample_console)
+	libtcod.console_set_foreground_color(sample_console,libtcod.white)
+	libtcod.console_print_left(sample_console,1,1,libtcod.BKGND_NONE,"%s\n\n+ : next generator\n- : prev generator" %
+		(ngdatas[ng_curset].displayname))
+	for i in range(len(ng_names)) :
+		libtcod.console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,libtcod.BKGND_NONE,ng_names[i])
+	ng_delay += libtcod.sys_get_last_frame_length()
+	if ng_delay > 0.5 :
+		ng_delay -= 0.5
+		ng_names.append(libtcod.namegen_generate(ng_gen[ng_curset],True))
+	if key.c == ord('+'):
+		ng_curset += 1
+		if ng_curset == ng_nbsets :
+			ng_curset=0
+		ng_names.append("======")
+	elif key.c == ord('-'):
+		ng_curset -= 1
+		if ng_curset < 0 :
+			ng_curset=ng_nbsets-1
+		ng_names.append("======")
+
+#############################################
 # main loop
 #############################################
 class Sample:
@@ -1154,7 +1220,8 @@ samples = (Sample('  True colors        ', render_colors),
            Sample('  Path finding       ', render_path),
            Sample('  Bsp toolkit        ', render_bsp),
            Sample('  Image toolkit      ', render_image),
-           Sample('  Mouse support      ', render_mouse))
+           Sample('  Mouse support      ', render_mouse),
+           Sample('  Name generator     ', render_name))
 cur_sample = 0
 credits_end = False
 first = True

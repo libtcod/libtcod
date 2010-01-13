@@ -34,12 +34,11 @@
 
 class TCODLIB_API TCODNamegen {
 	public:
-		TCODNamegen (const char * filename, const char * name, TCODRandom * random);
-		~TCODNamegen (void);
-		char * generate (bool allocate = false);
-		char * generateCustom (char * rule, bool allocate = false);
-	private:
-		TCOD_namegen_t data;
+		static void create (const char * filename, TCODRandom * random);
+		static char * generate (char * name, bool allocate = false);
+		static char * generateCustom (char * name, char * rule, bool allocate = false);
+		static TCOD_list_t retrieveSets (void);
+		static void destroy (void);
 };
 
 #endif

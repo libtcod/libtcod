@@ -1,11 +1,11 @@
 <table width="100%"><tr><td width="20%">
 <a href="../index.html">&lt; index</a><br />
 <a href="index.html">&lt; 16. Name generator</a><br />
-<a href="namegen_delete.html">&lt; 16.3 Destroying a generator</a>
+<a href="namegen_retrieve.html">&lt; 16.4 Retrieving available set names</a>
 </td><td width="60%">
 <p align="center">
 =====================================<br />
-16.4 Syllable set configuration<br />
+16.5 Syllable set configuration<br />
 =====================================<br />
 </p></td><td width="20%">
 </td></tr></table>
@@ -16,7 +16,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-<h4>16.4.1 Syllable set structure</h4>
+<h4>16.5.1 Syllable set structure</h4>
 The syllable sets need to be written in one or more text files that will be opened and parsed by the generator.<br />
 <br />
 The data uses a standard TCODParser file and data should be inserted according to the general rules of creating a configuration file. For more information, please refer to <a href="../parser/parser_format.html">7.1 The libtcod config file format</a>.<br />
@@ -42,7 +42,7 @@ Another optional string is<br />
 <li>illegal</li>
 </ul>
 This string contains strings that are considered illegal. Should a generated name contain any of the tokens specified in this string, it will be discarded and replaced by a new one. Illegal strings may be as short as single characters or as long as entire names. However, it is best to create a syllable set that generates very few names that sound bad. Otherwise, the illegal list might be very long.<br />
-<h4>16.4.2 Rules</h4>
+<h4>16.5.2 Rules</h4>
 There's one last string that's contained within the structure:<br />
 <ul>
 <li>rules</li>
@@ -63,7 +63,7 @@ The rules are parsed pretty much the same way as all other strings, so all rules
 <tr><td>$[INT]?</td><td>$?, $25?</td><td>Use a random phoneme (vocal or consonant).</td></tr>
 <tr><td>%INT</td><td>%50, %25</td><td>Frequency marker. Denotes the per cent chance for the rule to be accepted if it's picked.<br />If the rule is not accepted, another roll is made to choose a name generation rule.<br />It's used to reduce the frequency a given rule is chosen with.<br />This marker may only appear at the beginning of a rule.</td></tr>
 </table>
-<h4>16.4.3 Example structure</h4>
+<h4>16.5.3 Example structure</h4>
 Consider this example structure. It does not contain syllables, but rather full names.<br />
 <p class="code"><pre>
 name "king" {

@@ -16,24 +16,23 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-In order to be able to generate names, the name generator needs to be initialised with the proper data. It will then be ready to generate one specific type of names. The initialisation is done via:<br />
+In order to be able to generate names, the name generator needs to be fed proper data. It will then be ready to generate one specific type of names. The initialisation is done via:<br />
 <p class="code"><pre>
-C++ : TCODNamegen::TCODNamegen(const char * filename, const char * name, TCODRandom * random)
-C   : TCOD_namegen_t * TCOD_namegen_new(const char * filename, const char * name, TCOD_random_t random)
+C++ : static void TCODNamegen::create(const char * filename, TCODRandom * random)
+C   : void TCOD_namegen_create(const char * filename, TCOD_random_t random)
 Py  : ---
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>filename</td><td>The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".</td></tr>
-<tr><td>name</td><td>The name of the syllable set structure to use, for instance "fantasy female"</td></tr>
 <tr><td>random</td><td>A random number generator object. Use NULL for the default random number generator</td></tr>
 </table>
 Note 1: The filename may contain various structures with syllable sets, but the generator will only use one such structure. Each file will be parsed once only, but the file name cannot be skipped even if a given file has been already parsed.<br />
-Note 2: The name refers to what stands between quotation marks after the declaration of a syllable set structure in the specified file. The name passed as parametre needs to exist in the specified file, otherwise an error will be triggered.<br />
+Note 2: Generator can be fed data multiple times if you have it in separate files. Just make sure the structure names in them aren't duplicated.<br />
 <br />
 Example :<br />
 <p class="code"><pre>
-C++ : TCODNamegen myGenerator("data/names.txt","fantasy female",TCODRandom::getInstance());
-C   : TCOD_namegen_t my_generator = TCOD_namegen_new("data/names.txt","fantasy female",TCOD_random_get_instance());
+C++ : TCODNamegen::create("data/names.txt",TCODRandom::getInstance());
+C   : TCOD_namegen_new("data/names.txt",TCOD_random_get_instance());
 Py  : ---
 </pre></p>

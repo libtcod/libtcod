@@ -31,18 +31,22 @@
 
 #include "libtcod.hpp"
 
-TCODNamegen::TCODNamegen (const char * filename, const char * name, TCODRandom * random) {
-	data = TCOD_namegen_new (filename, name, random ? random->data : NULL);
+void TCODNamegen::create (const char * filename, TCODRandom * random) {
+	TCOD_namegen_create (filename, random->data);
 }
 
-TCODNamegen::~TCODNamegen (void) {
-	TCOD_namegen_delete (data);
+char * TCODNamegen::generate (char * name, bool allocate) {
+	return TCOD_namegen_generate (name, allocate);
 }
 
-char * TCODNamegen::generate (bool allocate) {
-	return TCOD_namegen_generate (data, allocate);
+char * TCODNamegen::generateCustom (char * name, char * rule, bool allocate) {
+	return TCOD_namegen_generate_custom (name, rule, allocate);
 }
 
-char * TCODNamegen::generateCustom (char * rule, bool allocate) {
-	return TCOD_namegen_generate_custom (data, rule, allocate);
+TCOD_list_t retrieveSets (void) {
+    return TCOD_namegen_retrieve_sets ();
+}
+
+void TCODNamegen::destroy (void) {
+	TCOD_namegen_destroy ();
 }

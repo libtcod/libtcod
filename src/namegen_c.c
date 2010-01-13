@@ -54,8 +54,8 @@ typedef struct {
 
 /* and the generator struct */
 typedef struct {
-    /* for error handling */
-    bool initialised;
+    /* the name that will be called */
+    char * name;
     /* needs to use a random number generator */
     TCOD_random_t random;
     /* the lists with all the data */
@@ -70,53 +70,36 @@ typedef struct {
     TCOD_list_t rules;
 } namegen_t;
 
+/* ------------------- *
+ * variables and stuff *
+ * ------------------- */
+
+/* the list containing the generators */
+TCOD_list_t namegen_generators_list = NULL;
+
+/* the file parser */
+TCOD_parser_t namegen_parser;
+/* parsed files list */
+TCOD_list_t parsed_files = NULL;
+/* the data that will be filled out */
+namegen_syllables_t * parser_data = NULL;
+namegen_t * parser_output = NULL;
+/* this one's needed to correctly update the generators with RNG pointer */
+TCOD_random_t namegen_random;
+
+/* the string that will be pointed to upon generating a name */
+char * namegen_name = NULL;
+/* for keeping track of the size of output names */
+size_t namegen_name_size;
+
 /* ------------------------------------ *
  * stuff to operate on the syllable set *
  * ------------------------------------ */
-
-/* the list containing raw syllables sets */
-TCOD_list_t namegen_syllables_list = NULL;
 
 /* initialise a syllable set */
 namegen_syllables_t * namegen_syllables_new (void) {
     namegen_syllables_t * data = calloc(sizeof(namegen_syllables_t),1);
     return data;
-}
-
-/* check whether a given syllable set already exists */
-bool namegen_syllables_check (const char * name) {
-    /* if the list is not created yet, create it */
-    if (namegen_syllables_list == NULL) {
-        namegen_syllables_list = TCOD_list_new();
-        return false;
-    }
-    /* otherwise, scan it for the name */
-    else {
-        namegen_syllables_t ** it;
-        for (it = (namegen_syllables_t**)TCOD_list_begin(namegen_syllables_list); it < (namegen_syllables_t**)TCOD_list_end(namegen_syllables_list); it++) {
-            namegen_syllables_t * check = *it;
-            if (strcmp(check->name,name) == 0) return true;
-
-        }
-        return false;
-    }
-}
-
-/* get the appropriate syllables set */
-namegen_syllables_t * namegen_syllables_get (const char * name)
-{
-    if (namegen_syllables_check(name) == true) {
-        namegen_syllables_t ** it;
-        for (it = (namegen_syllables_t**)TCOD_list_begin(namegen_syllables_list); it != (namegen_syllables_t**)TCOD_list_end(namegen_syllables_list); it++) {
-            namegen_syllables_t * check = *it;
-            if (strcmp(check->name,name) == 0)
-                return check;
-        }
-    }
-    /* and if there's no such set... */
-    else
-        fprintf(stderr,"Syllable set \"%s\" could not be retrieved.\n",name);
-    return NULL;
 }
 
 /* free a syllables set */
@@ -130,103 +113,81 @@ void namegen_syllables_delete (namegen_syllables_t * data) {
     if (data->post) free(data->post);
     if (data->illegal) free(data->illegal);
     if (data->rules) free(data->rules);
+    free(data->name);
     free(data);
 }
 
-/* -------------------- *
- * parser-related stuff *
- * -------------------- */
+/* ---------------------------------- *
+ * stuff to operate on the generators *
+ * ---------------------------------- */
 
-/* the parser itself */
-TCOD_parser_t namegen_parser;
+/* create a new generator */
+namegen_t * namegen_generator_new (void) {
+    namegen_t * data = malloc(sizeof(namegen_t));
+    data->name = NULL;
+    /* assign the rng */
+	data->random = TCOD_random_get_instance();
+	/* create the lists */
+    data->vocals = TCOD_list_new();
+    data->consonants = TCOD_list_new();
+    data->syllables_pre = TCOD_list_new();
+    data->syllables_start = TCOD_list_new();
+    data->syllables_middle = TCOD_list_new();
+    data->syllables_end = TCOD_list_new();
+    data->syllables_post = TCOD_list_new();
+    data->illegal_strings = TCOD_list_new();
+    data->rules = TCOD_list_new();
+    return (TCOD_namegen_t)data;
+}
 
-/* the data that will be filled out */
-namegen_syllables_t * parser_data = NULL;
-
-/* preparing the parser */
-void namegen_parser_prepare (void) {
-    static bool namegen_parser_ready = false;
-    if (namegen_parser_ready == true) return;
+/* check whether a given generator already exists */
+bool namegen_generator_check (const char * name) {
+    /* if the list is not created yet, create it */
+    if (namegen_generators_list == NULL) {
+        namegen_generators_list = TCOD_list_new();
+        return false;
+    }
+    /* otherwise, scan it for the name */
     else {
-        namegen_parser = TCOD_parser_new();
-        TCOD_parser_struct_t parser_name = TCOD_parser_new_struct(namegen_parser, "name");
-        TCOD_struct_add_property(parser_name, "phonemesVocals", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "phonemesConsonants", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "syllablesPre", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "syllablesStart", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "syllablesMiddle", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "syllablesEnd", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "syllablesPost", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "illegal", TCOD_TYPE_STRING, false);
-        TCOD_struct_add_property(parser_name, "rules", TCOD_TYPE_STRING, true);
-        namegen_parser_ready = true;
+        namegen_t ** it;
+        for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+            namegen_t * check = *it;
+            if (strcmp(check->name,name) == 0) return true;
+        }
+        return false;
     }
 }
 
-/* parser listener */
-bool namegen_parser_new_struct (TCOD_parser_struct_t str, const char *name) {
-    parser_data = namegen_syllables_new();
-    return true;
-}
-
-bool namegen_parser_flag (const char *name) {
-    return true;
-}
-
-bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value) {
-    if (strcmp(name,"syllablesStart") == 0)             parser_data->start = strdup(value.s);
-    else if (strcmp(name,"syllablesMiddle") == 0)       parser_data->middle = strdup(value.s);
-    else if (strcmp(name,"syllablesEnd") == 0)          parser_data->end = strdup(value.s);
-    else if (strcmp(name,"syllablesPre") == 0)          parser_data->pre = strdup(value.s);
-    else if (strcmp(name,"syllablesPost") == 0)         parser_data->post = strdup(value.s);
-    else if (strcmp(name,"phonemesVocals") == 0)        parser_data->vocals = strdup(value.s);
-    else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = strdup(value.s);
-    else if (strcmp(name,"illegal") == 0)               parser_data->illegal = strdup(value.s);
-    else if (strcmp(name,"rules") == 0)                 parser_data->rules = strdup(value.s);
-    else                                                return false;
-    return true;
-}
-
-bool namegen_parser_end_struct(TCOD_parser_struct_t str, const char *name) {
-    /* if there's no syllable set by this name, add it to the list */
-    if (namegen_syllables_check(name) == false) {
-        parser_data->name = strdup(name);
-        TCOD_list_push(namegen_syllables_list, (const void*)parser_data);
+/* get the appropriate syllables set */
+namegen_t * namegen_generator_get (const char * name) {
+    if (namegen_generator_check(name) == true) {
+        namegen_t ** it;
+        for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it != (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+            namegen_t * check = *it;
+            if (strcmp(check->name,name) == 0) return check;
+        }
     }
-    /* otherwise, free the allocated memory to prevent a memory leak */
-    else namegen_syllables_delete(parser_data);
-    return true;
+    /* and if there's no such set... */
+    else
+        fprintf(stderr,"Generator \"%s\" could not be retrieved.\n",name);
+    return NULL;
 }
 
-void namegen_parser_error(const char *msg) {
-    fprintf(stderr,"%s\n",msg);
-    exit(1);
-}
-
-TCOD_parser_listener_t namegen_listener = {
-    namegen_parser_new_struct,
-    namegen_parser_flag,
-    namegen_parser_property,
-    namegen_parser_end_struct,
-    namegen_parser_error
-};
-
-/* run the parser */
-void namegen_parser_run (const char * filename) {
-    /* prepare the parser --- this will be executed only once */
-    namegen_parser_prepare();
-    /* never parse the same file twice */
-    static TCOD_list_t parsed_files = NULL;
-    if (parsed_files == NULL) parsed_files = TCOD_list_new();
-    char * it;
-    if (TCOD_list_size(parsed_files) > 0) {
-        for (it = (char *)TCOD_list_begin(parsed_files); it != (char *)TCOD_list_end(parsed_files); it++)
-            if (strcmp(it,filename) == 0) return;
-    }
-    /* if the file hasn't been parsed yet, add its name to the list so that it's never parsed twice */
-    TCOD_list_push(parsed_files,(const void *)strdup(filename));
-    /* run the parser */
-    TCOD_parser_run(namegen_parser,filename,&namegen_listener);
+/* destroy a generator */
+void namegen_generator_delete (namegen_t * generator) {
+    namegen_t * data = generator;
+    free(data->name);
+    data->random = NULL;
+    TCOD_list_clear_and_delete(data->vocals);
+    TCOD_list_clear_and_delete(data->consonants);
+    TCOD_list_clear_and_delete(data->syllables_pre);
+    TCOD_list_clear_and_delete(data->syllables_start);
+    TCOD_list_clear_and_delete(data->syllables_middle);
+    TCOD_list_clear_and_delete(data->syllables_end);
+    TCOD_list_clear_and_delete(data->syllables_post);
+    TCOD_list_clear_and_delete(data->illegal_strings);
+    TCOD_list_clear_and_delete(data->rules);
+    free(data);
 }
 
 /* ------------------------------ *
@@ -283,6 +244,99 @@ void namegen_populate (namegen_t * dst, namegen_syllables_t * src) {
     if (src->post != NULL)          namegen_populate_list (src->post,dst->syllables_post,false);
     if (src->illegal != NULL)       namegen_populate_list (src->illegal,dst->illegal_strings,false);
     if (src->rules != NULL)         namegen_populate_list (src->rules,dst->rules,true);
+    dst->name = strdup(src->name);
+}
+
+/* -------------------- *
+ * parser-related stuff *
+ * -------------------- */
+
+/* preparing the parser */
+void namegen_parser_prepare (void) {
+    static bool namegen_parser_ready = false;
+    if (namegen_parser_ready == true) return;
+    else {
+        namegen_parser = TCOD_parser_new();
+        TCOD_parser_struct_t parser_name = TCOD_parser_new_struct(namegen_parser, "name");
+        TCOD_struct_add_property(parser_name, "phonemesVocals", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "phonemesConsonants", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "syllablesPre", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "syllablesStart", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "syllablesMiddle", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "syllablesEnd", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "syllablesPost", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "illegal", TCOD_TYPE_STRING, false);
+        TCOD_struct_add_property(parser_name, "rules", TCOD_TYPE_STRING, true);
+        namegen_parser_ready = true;
+    }
+}
+
+/* parser listener */
+bool namegen_parser_new_struct (TCOD_parser_struct_t str, const char *name) {
+    parser_data = namegen_syllables_new();
+    return true;
+}
+
+bool namegen_parser_flag (const char *name) {
+    return true;
+}
+
+bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value) {
+    if (strcmp(name,"syllablesStart") == 0)             parser_data->start = strdup(value.s);
+    else if (strcmp(name,"syllablesMiddle") == 0)       parser_data->middle = strdup(value.s);
+    else if (strcmp(name,"syllablesEnd") == 0)          parser_data->end = strdup(value.s);
+    else if (strcmp(name,"syllablesPre") == 0)          parser_data->pre = strdup(value.s);
+    else if (strcmp(name,"syllablesPost") == 0)         parser_data->post = strdup(value.s);
+    else if (strcmp(name,"phonemesVocals") == 0)        parser_data->vocals = strdup(value.s);
+    else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = strdup(value.s);
+    else if (strcmp(name,"illegal") == 0)               parser_data->illegal = strdup(value.s);
+    else if (strcmp(name,"rules") == 0)                 parser_data->rules = strdup(value.s);
+    else                                                return false;
+    return true;
+}
+
+bool namegen_parser_end_struct(TCOD_parser_struct_t str, const char *name) {
+    /* if there's no syllable set by this name, add it to the list */
+    if (namegen_generator_check(name) == false) {
+        parser_data->name = strdup(name);
+        parser_output = namegen_generator_new();
+        namegen_populate(parser_output,parser_data);
+        parser_output->random = namegen_random;
+        if (namegen_generators_list == NULL) namegen_generators_list = TCOD_list_new();
+        TCOD_list_push(namegen_generators_list, (const void*)parser_output);
+    }
+    /* free the allocated memory to prevent a memory leak */
+    namegen_syllables_delete(parser_data);
+    return true;
+}
+
+void namegen_parser_error(const char *msg) {
+    fprintf(stderr,"%s\n",msg);
+    exit(1);
+}
+
+TCOD_parser_listener_t namegen_listener = {
+    namegen_parser_new_struct,
+    namegen_parser_flag,
+    namegen_parser_property,
+    namegen_parser_end_struct,
+    namegen_parser_error
+};
+
+/* run the parser */
+void namegen_parser_run (const char * filename) {
+    /* prepare the parser --- this will be executed only once */
+    namegen_parser_prepare();
+    if (parsed_files == NULL) parsed_files = TCOD_list_new();
+    char ** it;
+    if (TCOD_list_size(parsed_files) > 0) {
+        for (it = (char **)TCOD_list_begin(parsed_files); it != (char **)TCOD_list_end(parsed_files); it++)
+            if (strcmp(*it,filename) == 0) return;
+    }
+    /* if the file hasn't been parsed yet, add its name to the list so that it's never parsed twice */
+    TCOD_list_push(parsed_files,(const void *)strdup(filename));
+    /* run the parser */
+    TCOD_parser_run(namegen_parser,filename,&namegen_listener);
 }
 
 /* --------------- *
@@ -334,44 +388,32 @@ void namegen_word_prune_spaces (char * str) {
  * publicly available functions *
  * ---------------------------- */
 
-/* OK, this one's not publicly available... It's the string that will be pointed to upon generating a name */
-char * namegen_name = NULL;
-/* and to keep track of its size... */
-size_t namegen_name_size;
-
 /* prepare a new generator - allocates a new data structure and fills it with necessary content */
-TCOD_namegen_t TCOD_namegen_new (const char * filename, const char * name, TCOD_random_t random) {
-    namegen_parser_run(filename);
-    if (namegen_syllables_check(name) == false) {
-        fprintf(stderr,"The structure name \"%s\" could not be found.\n",name);
-        return NULL;
+void TCOD_namegen_create (const char * filename, TCOD_random_t random) {
+    /* check for file existence */
+    FILE * in = fopen(filename,"r");
+    if (in == NULL) {
+        fprintf(stderr,"File \"%s\" not found!\n",filename);
+        return;
     }
-    namegen_t * data = malloc(sizeof(namegen_t));
-    data->initialised = true;
-    /* assign the rng */
-    if ( random == NULL ) data->random = TCOD_random_get_instance();
-	else data->random = random;
-	/* create the lists */
-    data->vocals = TCOD_list_new();
-    data->consonants = TCOD_list_new();
-    data->syllables_pre = TCOD_list_new();
-    data->syllables_start = TCOD_list_new();
-    data->syllables_middle = TCOD_list_new();
-    data->syllables_end = TCOD_list_new();
-    data->syllables_post = TCOD_list_new();
-    data->illegal_strings = TCOD_list_new();
-    data->rules = TCOD_list_new();
-    /* populate them */
-    namegen_populate(data,namegen_syllables_get(name));
-    return (TCOD_namegen_t)data;
+    fclose(in);
+    /* set namegen RNG */
+    namegen_random = random;
+    /* add the file's contents to the data structures */
+    namegen_parser_run(filename);
 }
 
 /* generate a name using a given generation rule */
-char * TCOD_namegen_generate_custom (TCOD_namegen_t generator, char * rule, bool allocate) {
+char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
+    namegen_t * data;
+    if (namegen_generator_check(name)) data = namegen_generator_get(name);
+    else {
+        fprintf(stderr,"The name \"%s\" has not been found.\n",name);
+        return NULL;
+    }
     size_t buflen = 1024;
     char * buf = malloc(buflen);
     size_t rule_len = strlen(rule);
-    namegen_t * data = (namegen_t *)generator;
     /* let the show begin! */
     do {
         char * it = rule;
@@ -456,8 +498,13 @@ char * TCOD_namegen_generate_custom (TCOD_namegen_t generator, char * rule, bool
 }
 
 /* generate a name with one of the rules from the file */
-char * TCOD_namegen_generate (TCOD_namegen_t generator, bool allocate) {
-    namegen_t * data = (namegen_t*)generator;
+char * TCOD_namegen_generate (char * name, bool allocate) {
+    namegen_t * data;
+    if (namegen_generator_check(name)) data = namegen_generator_get(name);
+    else {
+        fprintf(stderr,"The name \"%s\" has not been found.\n",name);
+        return NULL;
+    }
     /* check if the rules list is present */
     if (TCOD_list_size(data->rules) == 0) {
         fprintf(stderr,"The rules list is empty!\n");
@@ -485,23 +532,38 @@ char * TCOD_namegen_generate (TCOD_namegen_t generator, bool allocate) {
     } while (TCOD_random_get_int(data->random,0,100) > chance);
     /* OK, we've got ourselves a new rule! */
     char * rule_parsed = strdup(rule_rolled+truncation);
-    char * ret = TCOD_namegen_generate_custom(generator,rule_parsed,allocate);
+    char * ret = TCOD_namegen_generate_custom(name,rule_parsed,allocate);
     free(rule_parsed);
     return ret;
 }
 
-/* delete the generator */
-void TCOD_namegen_delete (TCOD_namegen_t generator)
-{
-    namegen_t * data = (namegen_t*)generator;
-    TCOD_list_clear_and_delete(data->vocals);
-    TCOD_list_clear_and_delete(data->consonants);
-    TCOD_list_clear_and_delete(data->syllables_pre);
-    TCOD_list_clear_and_delete(data->syllables_start);
-    TCOD_list_clear_and_delete(data->syllables_middle);
-    TCOD_list_clear_and_delete(data->syllables_end);
-    TCOD_list_clear_and_delete(data->syllables_post);
-    TCOD_list_clear_and_delete(data->illegal_strings);
-    TCOD_list_clear_and_delete(data->rules);
-    free(data);
+/* retrieve the list of all available syllable set names */
+TCOD_list_t TCOD_namegen_retrieve_sets (void) {
+    TCOD_list_t l = TCOD_list_new();
+    namegen_t ** it;
+    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
+        TCOD_list_push(l,(const void*)((*it)->name));
+    return l;
+}
+
+/* delete all the generators */
+void TCOD_namegen_destroy (void) {
+    /* delete all generators */
+    namegen_t ** it;
+    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
+        namegen_generator_delete(*it);
+    /* clear the generators list */
+    TCOD_list_clear(namegen_generators_list);
+    /* get rid of the parsed files list */
+    TCOD_list_clear_and_delete(parsed_files);
+}
+
+void namegen_retrieve (void) {
+    namegen_t ** it;
+    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
+        printf("* \"%s\"\n",(*it)->name);
+    char ** p;
+    printf("PARSED FILES:\n");
+    for (p = (char**)TCOD_list_begin(parsed_files); p < (char**)TCOD_list_end(parsed_files); p++)
+        printf("* \"%s\"\n",(*p));
 }

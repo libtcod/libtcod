@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include "libtcod.h"
 
@@ -396,6 +397,38 @@ void namegen_word_prune_spaces (char * str) {
     while (data[strlen(data)-1] == ' ') data[strlen(data)-1] = '\0';
 }
 
+/* prune repeated "syllables", such as Arnarn */
+bool namegen_word_prune_syllables (char *str) {
+    char * data = strdup(str);
+    int len = strlen(data); /* length of the string */
+    char check[8];
+    int i; /* iteration in for loops */
+    /* change to lowercase */
+    for (i = 0; i < len; i++) data[i] = (char)(tolower(data[i]));
+    /* start pruning */
+    /* 2-character direct repetitions */
+    for (i = 0; i < len - 4; i++) {
+        memset(check,'\0',8);
+        strncpy(check,data+i,2);
+        strncat(check,data+i,2);
+        if (strstr(data,check) != NULL) {
+                free(data);
+                return true;
+            }
+    }
+    /* 3-character repetitions (anywhere in the word) - prunes everything, even 10-char repetitions */
+    for (i = 0; i < len - 6; i++) {
+        memset(check,'\0',8);
+        strncpy(check,data+i,3);
+        if (strstr(data+i+3,check) != NULL) {
+            free(data);
+            return true;
+        }
+    }
+    free(data);
+    return false;
+}
+
 /* ---------------------------- *
  * publicly available functions *
  * ---------------------------- */
@@ -488,7 +521,7 @@ char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
             }
             it++;
         }
-    } while (strlen(buf) == 0 || namegen_word_has_triples(buf) || namegen_word_has_illegal(data,buf));
+    } while (strlen(buf) == 0 || namegen_word_has_triples(buf) == true || namegen_word_has_illegal(data,buf) == true || namegen_word_prune_syllables(buf) == true);
     /* prune the spare spaces out */
     namegen_word_prune_spaces(buf);
     /* return the name accordingly */

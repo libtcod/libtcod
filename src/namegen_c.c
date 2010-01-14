@@ -302,9 +302,14 @@ bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_valu
     else if (strcmp(name,"syllablesPost") == 0)         parser_data->post = strdup(value.s);
     else if (strcmp(name,"phonemesVocals") == 0)        parser_data->vocals = strdup(value.s);
     else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = strdup(value.s);
-    else if (strcmp(name,"illegal") == 0)               parser_data->illegal = strdup(value.s);
     else if (strcmp(name,"rules") == 0)                 parser_data->rules = strdup(value.s);
-    else                                                return false;
+    else if (strcmp(name,"illegal") == 0) { /* illegal strings are converted to lowercase */
+        parser_data->illegal = strdup(value.s);
+        char * str = parser_data->illegal;
+        int i;
+        for(i = 0; i < strlen(str); i++) str[i] = (char)(tolower(str[i]));
+    }
+    else return false;
     return true;
 }
 
@@ -356,18 +361,18 @@ void namegen_parser_run (const char * filename) {
  * rubbish pruning *
  * --------------- */
 
-/* search for occurrences of triple characters */
+/* search for occurrences of triple characters (case-insensitive) */
 bool namegen_word_has_triples (char * str) {
     char * it = str;
-    char c = *it;
+    char c = (char)(tolower(*it));
     int cnt = 1;
     bool has_triples = false;
     it++;
     while (*it != '\0') {
-        if (*it == c) cnt++;
+        if ((char)(tolower(*it)) == c) cnt++;
         else {
             cnt = 1;
-            c = *it;
+            c = (char)(tolower(*it));
         }
         if (cnt >= 3) has_triples = true;
         it++;
@@ -376,12 +381,22 @@ bool namegen_word_has_triples (char * str) {
 }
 
 /* search for occurrences of illegal strings */
-bool namegen_word_has_illegal (namegen_t * data, char * haystack) {
+bool namegen_word_has_illegal (namegen_t * data, char * str) {
+    /* convert word to lowercase */
+    char * haystack = strdup(str);
+    int i;
+    for(i = 0; i < strlen(haystack); i++) haystack[i] = (char)(tolower(haystack[i]));
+    /* look for illegal strings */
     if (TCOD_list_size(data->illegal_strings) > 0) {
         char ** it;
-        for (it = (char**)TCOD_list_begin(data->illegal_strings); it != (char**)TCOD_list_end(data->illegal_strings); it++)
-            if (strstr(haystack,*it) != NULL) return true;
+        for (it = (char**)TCOD_list_begin(data->illegal_strings); it != (char**)TCOD_list_end(data->illegal_strings); it++) {
+            if (strstr(haystack,*it) != NULL) {
+                free(haystack);
+                return true;
+            }
+        }
     }
+    free(haystack);
     return false;
 }
 
@@ -427,6 +442,16 @@ bool namegen_word_prune_syllables (char *str) {
     }
     free(data);
     return false;
+}
+
+/* everything stacked together */
+bool namegen_word_is_ok (namegen_t * data, char * str) {
+    namegen_word_prune_spaces(str);
+    return
+        (strlen(str)>0) &
+        (!namegen_word_has_triples(str)) &
+        (!namegen_word_has_illegal(data,str)) &
+        (!namegen_word_prune_syllables(str));
 }
 
 /* ---------------------------- *
@@ -521,7 +546,7 @@ char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
             }
             it++;
         }
-    } while (strlen(buf) == 0 || namegen_word_has_triples(buf) == true || namegen_word_has_illegal(data,buf) == true || namegen_word_prune_syllables(buf) == true);
+    } while (!namegen_word_is_ok(data,buf));
     /* prune the spare spaces out */
     namegen_word_prune_spaces(buf);
     /* return the name accordingly */

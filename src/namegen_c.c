@@ -151,10 +151,20 @@ bool namegen_generator_check (const char * name) {
     else {
         namegen_t ** it;
         for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
-            namegen_t * check = *it;
-            if (strcmp(check->name,name) == 0) return true;
+            //namegen_t * check = *it;
+            if (strcmp((*it)->name,name) == 0) return true;
         }
         return false;
+    }
+}
+
+/* retrieve available generator names */
+void namegen_get_sets_on_error (void) {
+    fprintf (stderr,"Registered syllable sets are:\n");
+    namegen_t ** it;
+    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+        //namegen_t * check = *it;
+        fprintf (stderr," * \"%s\"\n",(*it)->name);
     }
 }
 
@@ -163,8 +173,8 @@ namegen_t * namegen_generator_get (const char * name) {
     if (namegen_generator_check(name) == true) {
         namegen_t ** it;
         for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it != (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
-            namegen_t * check = *it;
-            if (strcmp(check->name,name) == 0) return check;
+            //namegen_t * check = *it;
+            if (strcmp((*it)->name,name) == 0) return (*it);
         }
     }
     /* and if there's no such set... */
@@ -172,6 +182,8 @@ namegen_t * namegen_generator_get (const char * name) {
         fprintf(stderr,"Generator \"%s\" could not be retrieved.\n",name);
     return NULL;
 }
+
+
 
 /* destroy a generator */
 void namegen_generator_delete (namegen_t * generator) {
@@ -409,6 +421,7 @@ char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
     if (namegen_generator_check(name)) data = namegen_generator_get(name);
     else {
         fprintf(stderr,"The name \"%s\" has not been found.\n",name);
+        namegen_get_sets_on_error();
         return NULL;
     }
     size_t buflen = 1024;
@@ -503,6 +516,7 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
     if (namegen_generator_check(name)) data = namegen_generator_get(name);
     else {
         fprintf(stderr,"The name \"%s\" has not been found.\n",name);
+        namegen_get_sets_on_error();
         return NULL;
     }
     /* check if the rules list is present */

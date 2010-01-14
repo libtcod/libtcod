@@ -34,7 +34,7 @@
 
 class TCODLIB_API TCODNamegen {
 	public:
-		static void create (const char * filename, TCODRandom * random);
+		static void create (const char * filename, TCODRandom * random = NULL);
 		static char * generate (char * name, bool allocate = false);
 		static char * generateCustom (char * name, char * rule, bool allocate = false);
 		static TCOD_list_t retrieveSets (void);

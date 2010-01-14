@@ -1431,16 +1431,28 @@ def heightmap_delete(hm):
 # name generator module
 ############################
 
-def namegen_new(filename,setname,random=0) :
-	return _lib.TCOD_namegen_new(filename,setname,random)
+_lib.TCOD_namegen_get_nb_sets_wrapper.restype = c_int
 
-def namegen_generate(ng, allocate=0) :
-	return _lib.TCOD_namegen_generate(ng, c_int(allocate))
+def namegen_create(filename,random=0) :
+	_lib.TCOD_namegen_create(filename,random)
 
-def namegen_generate_custom(ng, rule, allocate=0) :
-	return _lib.TCOD_namegen_generate(ng, rule, c_int(allocate))
+def namegen_generate(name, allocate=0) :
+	return _lib.TCOD_namegen_generate(name, c_int(allocate))
 
-def namegen_delete(ng) :
-	_lib.TCOD_namegen_delete(ng)
+def namegen_generate_custom(name, rule, allocate=0) :
+	return _lib.TCOD_namegen_generate(name, rule, c_int(allocate))
+
+def namegen_retrieve_sets():
+	nb=_lib.TCOD_namegen_get_nb_sets_wrapper()
+	SARRAY = c_char_p * nb;
+	setsa = SARRAY()
+	_lib.TCOD_namegen_retrieve_sets_wrapper(setsa)
+	ret=list()
+	for i in range(nb):
+		ret.append(setsa[i])
+	return ret
+
+def namegen_destroy() :
+	_lib.TCOD_namegen_destroy()
 
 

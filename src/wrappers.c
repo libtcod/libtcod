@@ -294,3 +294,19 @@ colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const ch
 	return color_to_int(TCOD_parser_get_color_property(parser,name));
 }
 
+int TCOD_namegen_get_nb_sets_wrapper() {
+	TCOD_list_t l=TCOD_namegen_retrieve_sets();
+	int nb = TCOD_list_size(l);
+	TCOD_list_delete(l);
+	return nb;
+}
+
+void TCOD_namegen_retrieve_sets_wrapper(char **sets) {
+	TCOD_list_t l=TCOD_namegen_retrieve_sets();
+	char **it;
+	int i=0;
+	for (it=(char**)TCOD_list_begin(l); it != (char **)TCOD_list_end(l); it++) {
+		sets[i++]=*it;
+	}
+}
+

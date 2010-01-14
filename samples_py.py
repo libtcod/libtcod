@@ -89,7 +89,7 @@ if True:
         def error(self,msg):
             print 'error : ', msg
             return True
-    libtcod.parser_run(parser, 'sample.cfg', MyListener())
+    libtcod.parser_run(parser, os.path.join('data','cfg','sample.cfg'), MyListener())
 #############################################
 # end of parser unit test
 #############################################
@@ -1142,43 +1142,24 @@ def render_mouse(first, key):
 # name generator sample
 #############################################
 ng_curset = 0
-class NgData:
-    def __init__(self, filename, setname, displayname):
-        self.filename = filename
-        self.setname = setname
-        self.displayname = displayname
-ngdatas = (NgData("data/namegen/jice_celtic.cfg", "Celtic male", "jice_celtic.cfg / Celtic male" ),
-		NgData( "data/namegen/jice_celtic.cfg", "Celtic female", "jice_celtic.cfg / Celtic female" ),
-		NgData( "data/namegen/jice_fantasy.cfg", "Fantasy male", "jice_fantasy.cfg / Fantasy male" ),
-		NgData( "data/namegen/jice_fantasy.cfg", "Fantasy female", "jice_fantasy.cfg / Fantasy female" ),
-		NgData( "data/namegen/jice_mesopotamian.cfg", "Mesopotamian male", "jice_mesopotamian.cfg / Mesopotamian male" ),
-		NgData( "data/namegen/jice_mesopotamian.cfg", "Mesopotamian female", "jice_mesopotamian.cfg / Mesopotamian female" ),
-		NgData( "data/namegen/jice_norse.cfg", "Norse male", "jice_norse.cfg / Norse male" ),
-		NgData( "data/namegen/jice_norse.cfg", "Norse female", "jice_norse.cfg / Norse female" ),
-		NgData( "data/namegen/jice_region.cfg", "region", "jice_region.cfg" ),
-		NgData( "data/namegen/jice_town.cfg", "town", "jice_town.cfg" ),
-		NgData( "data/namegen/mingos_demon.cfg", "demon male", "mingos_demon.cfg / demon male" ),
-		NgData( "data/namegen/mingos_demon.cfg", "demon female", "mingos_demon.cfg / demon female" ),
-		NgData( "data/namegen/mingos_dwarf.cfg", "Tolkien dwarf", "mingos_dwarf.cfg" ),
-		NgData( "data/namegen/mingos_norse.cfg", "Norse male", "mingos_norse.cfg" ),
-		NgData( "data/namegen/mingos_standard.cfg", "male", "mingos_standard.cfg / male" ),
-		NgData( "data/namegen/mingos_standard.cfg", "female", "mingos_standard.cfg / female" ),
-		NgData( "data/namegen/mingos_town.cfg", "town", "mingos_town.cfg" ))
-ng_nbsets=len(ngdatas)
-ng_delay=0.0
-ng_gen=None
-ng_names=[]
+ng_nbsets = 0
+ng_delay = 0.0
+ng_names = []
+ng_sets = None
 def render_name(first, key):
 	global ng_curset
-	global ngdatas
 	global ng_nbsets
 	global ng_delay
-	global ng_gen
 	global ng_names
-	if ng_gen is None:
-		ng_gen=[]
-		for i in range(ng_nbsets) :
-			ng_gen.append(libtcod.namegen_new(ngdatas[i].filename,ngdatas[i].setname))
+	global ng_sets
+	if ng_nbsets == 0:
+		# parse all *.cfg files in data/namegen
+		for file in os.listdir('data/namegen') :
+			if file.find('.cfg') > 0 :
+				libtcod.namegen_create(os.path.join('data','namegen',file))
+		# get the sets list
+		ng_sets=libtcod.namegen_retrieve_sets()
+		ng_nbsets=len(ng_sets)
 	if first:
 		libtcod.sys_set_fps(30)
 	while len(ng_names)> 15:
@@ -1186,13 +1167,13 @@ def render_name(first, key):
 	libtcod.console_clear(sample_console)
 	libtcod.console_set_foreground_color(sample_console,libtcod.white)
 	libtcod.console_print_left(sample_console,1,1,libtcod.BKGND_NONE,"%s\n\n+ : next generator\n- : prev generator" %
-		(ngdatas[ng_curset].displayname))
+		ng_sets[ng_curset])
 	for i in range(len(ng_names)) :
 		libtcod.console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,libtcod.BKGND_NONE,ng_names[i])
 	ng_delay += libtcod.sys_get_last_frame_length()
 	if ng_delay > 0.5 :
 		ng_delay -= 0.5
-		ng_names.append(libtcod.namegen_generate(ng_gen[ng_curset],True))
+		ng_names.append(libtcod.namegen_generate(ng_sets[ng_curset],True))
 	if key.c == ord('+'):
 		ng_curset += 1
 		if ng_curset == ng_nbsets :

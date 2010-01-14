@@ -1,5 +1,5 @@
 #
-# libtcod 1.4.3 python wrapper
+# libtcod 1.5.0 python wrapper
 # Copyright (c) 2008 Jice
 # All rights reserved.
 #
@@ -34,9 +34,9 @@ if sys.platform.find('linux') != -1:
 else: 
     _lib = ctypes.cdll['./libtcod-mingw.dll']
 
-HEXVERSION = 0x010403
-STRVERSION = "1.4.3"
-TECHVERSION = 0x01040301
+HEXVERSION = 0x010500
+STRVERSION = "1.5.0"
+TECHVERSION = 0x01050001
 
 ############################
 # color module

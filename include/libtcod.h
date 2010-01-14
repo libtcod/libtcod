@@ -1,5 +1,5 @@
 /*
-* libtcod 1.4.3
+* libtcod 1.5.0
 * Copyright (c) 2008,2009 Jice
 * All rights reserved.
 *
@@ -96,9 +96,9 @@ typedef int int32;
 typedef long intptr;
 typedef unsigned long uintptr;
 
-#define TCOD_HEXVERSION 0x010403
-#define TCOD_STRVERSION "1.4.3"
-#define TCOD_TECHVERSION 0x01040301
+#define TCOD_HEXVERSION 0x010500
+#define TCOD_STRVERSION "1.5.0"
+#define TCOD_TECHVERSION 0x01050001
 
 // bool support for C
 #ifndef __cplusplus

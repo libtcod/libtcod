@@ -29,9 +29,9 @@ import sys
 import ctypes
 from ctypes import *
 
-if sys.platform.find('linux') != -1: 
+if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
-else: 
+else:
     _lib = ctypes.cdll['./libtcod-mingw.dll']
 
 HEXVERSION = 0x010500
@@ -46,7 +46,7 @@ class Color(Structure):
                 ('g', c_uint, 8),
                 ('b', c_uint, 8),
                 ]
-                
+
     def __init__(self, r=0,g=0,b=0):
         self.r = r
         self.g = g
@@ -54,7 +54,7 @@ class Color(Structure):
 
     def __eq__(self, c):
         return (self.r == c.r) and (self.g == c.g) and (self.b == c.b)
-        
+
     def __mul__(self, c):
 	iret=0
         if isinstance(c,Color):
@@ -62,7 +62,7 @@ class Color(Structure):
         else:
             iret=_lib.TCOD_color_multiply_scalar_wrapper(col_to_int(self), c_float(c))
         return int_to_col(iret)
-            
+
     def __add__(self, c):
         iret=_lib.TCOD_color_add_wrapper(col_to_int(self), col_to_int(c))
         return int_to_col(iret)
@@ -172,17 +172,17 @@ gold=Color(255,255,102)
 def color_lerp(c1, c2, a):
     iret = _lib.TCOD_color_lerp_wrapper(col_to_int(c1), col_to_int(c2), c_float(a))
     return int_to_col(iret)
-    
+
 def color_set_hsv(c, h, s, v):
     _lib.TCOD_color_set_HSV(c, c_float(h), c_float(s), c_float(v))
-    
+
 def color_get_hsv(c):
     h = c_float()
     s = c_float()
     v = c_float()
     _lib.TCOD_color_get_HSV(c, byref(h), byref(s), byref(v))
     return h.value, s.value, v.value
-    
+
 def color_gen_map(colors, indexes):
     COLOR_ARRAY = c_ubyte * (3 * len(colors))
     IDX_ARRAY = c_int * len(indexes)
@@ -243,10 +243,10 @@ BKGND_ALPH = 12
 
 def BKGND_ALPHA(a):
     return BKGND_ALPH | (int(a * 255) << 8)
-    
+
 def BKGND_ADDALPHA(a):
     return BKGND_ADDA | (int(a * 255) << 8)
-    
+
 # non blocking key events types
 KEY_PRESSED = 1
 KEY_RELEASED = 2
@@ -322,39 +322,39 @@ KEY_CHAR = 65
 CHAR_HLINE = 196
 CHAR_VLINE = 179
 CHAR_NE = 191
-CHAR_NW = 218 
-CHAR_SE = 217 
+CHAR_NW = 218
+CHAR_SE = 217
 CHAR_SW = 192
-CHAR_TEEW = 180 
-CHAR_TEEE = 195 
+CHAR_TEEW = 180
+CHAR_TEEE = 195
 CHAR_TEEN = 193
 CHAR_TEES = 194
 CHAR_CROSS = 197
-# double walls    
+# double walls
 CHAR_DHLINE = 205
 CHAR_DVLINE = 186
-CHAR_DNE = 187 
-CHAR_DNW = 201 
-CHAR_DSE = 188 
+CHAR_DNE = 187
+CHAR_DNW = 201
+CHAR_DSE = 188
 CHAR_DSW = 200
-CHAR_DTEEW = 185 
-CHAR_DTEEE = 204 
+CHAR_DTEEW = 185
+CHAR_DTEEE = 204
 CHAR_DTEEN = 202
 CHAR_DTEES = 203
 CHAR_DCROSS = 206
-# blocks    
-CHAR_BLOCK1 = 176 
-CHAR_BLOCK2 = 177 
+# blocks
+CHAR_BLOCK1 = 176
+CHAR_BLOCK2 = 177
 CHAR_BLOCK3 = 178
-# arrows 
-CHAR_ARROW_N = 24 
-CHAR_ARROW_S = 25 
-CHAR_ARROW_E = 26 
+# arrows
+CHAR_ARROW_N = 24
+CHAR_ARROW_S = 25
+CHAR_ARROW_E = 26
 CHAR_ARROW_W = 27
 # arrows without tail
-CHAR_ARROW2_N = 30 
-CHAR_ARROW2_S = 31 
-CHAR_ARROW2_E = 16 
+CHAR_ARROW2_N = 30
+CHAR_ARROW2_S = 31
+CHAR_ARROW2_E = 16
 CHAR_ARROW2_W = 17
 # double arrows
 CHAR_DARROW_H = 29
@@ -392,19 +392,19 @@ COLCTRL_STOP=8
 # initializing the console
 def console_init_root(w, h, title, fullscreen=False):
     _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen))
-    
+
 def console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL, nb_char_horiz=0, nb_char_vertic=0):
     _lib.TCOD_console_set_custom_font(fontFile, flags, nb_char_horiz, nb_char_vertic)
-    
+
 def console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY):
     if type(asciiCode) == str:
-        _lib.TCOD_console_map_ascii_code_to_font(ord(asciiCode), fontCharX, 
+        _lib.TCOD_console_map_ascii_code_to_font(ord(asciiCode), fontCharX,
                                                  fontCharY)
     else:
-        _lib.TCOD_console_map_ascii_code_to_font(asciiCode, fontCharX, 
+        _lib.TCOD_console_map_ascii_code_to_font(asciiCode, fontCharX,
                                                  fontCharY)
-        
-def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX, 
+
+def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
                                     fontCharY):
     if type(asciiCode) == str:
         _lib.TCOD_console_map_ascii_codes_to_font(ord(firstAsciiCode), nbCodes,
@@ -412,41 +412,41 @@ def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
     else:
         _lib.TCOD_console_map_ascii_codes_to_font(firstAsciiCode, nbCodes,
                                                   fontCharX, fontCharY)
-                                                  
+
 def console_map_string_to_font(s, fontCharX, fontCharY):
     _lib.TCOD_console_map_string_to_font(s, fontCharX, fontCharY)
-    
+
 def console_is_fullscreen():
     return _lib.TCOD_console_is_fullscreen() == 1
-    
+
 def console_set_fullscreen(fullscreen):
     _lib.TCOD_console_set_fullscreen(c_int(fullscreen))
-    
+
 def console_is_window_closed():
     return _lib.TCOD_console_is_window_closed() == 1
-    
+
 def console_set_window_title(title):
     _lib.TCOD_console_set_window_title(title)
-    
+
 def console_credits():
     _lib.TCOD_console_credits()
-    
+
 def console_credits_render(x, y, alpha):
     return _lib.TCOD_console_credits_render(x, y, c_int(alpha)) == 1
-    
+
 def console_flush():
     _lib.TCOD_console_flush()
 
 # drawing on a console
 def console_set_background_color(con, col):
     _lib.TCOD_console_set_background_color(con, col)
-    
+
 def console_set_foreground_color(con, col):
     _lib.TCOD_console_set_foreground_color(con, col)
-    
+
 def console_clear(con):
     return _lib.TCOD_console_clear(con)
-    
+
 def console_put_char(con, x, y, c, flag=BKGND_SET):
     if type(c) == str:
         _lib.TCOD_console_put_char(con, x, y, ord(c), flag)
@@ -458,115 +458,115 @@ def console_put_char_ex(con, x, y, c, fore, back):
         _lib.TCOD_console_put_char_ex(con, x, y, ord(c), fore, back)
     else:
         _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
-        
+
 def console_set_back(con, x, y, col, flag=BKGND_SET):
     _lib.TCOD_console_set_back(con, x, y, col, flag)
-    
+
 def console_set_fore(con, x, y, col):
     _lib.TCOD_console_set_fore(con, x, y, col)
-    
+
 def console_set_char(con, x, y, c):
     if type(c) == str:
         _lib.TCOD_console_set_char(con, x, y, ord(c))
     else:
         _lib.TCOD_console_set_char(con, x, y, c)
-        
+
 def console_print_left(con, x, y, bk, s):
     _lib.TCOD_console_print_left(con, x, y, bk, s)
-    
+
 def console_print_right(con, x, y, bk, s):
     _lib.TCOD_console_print_right(con, x, y, bk, s)
-    
+
 def console_print_center(con, x, y, bk, s):
     _lib.TCOD_console_print_center(con, x, y, bk, s)
-    
+
 def console_print_left_rect(con, x, y, w, h, bk, s):
     return _lib.TCOD_console_print_left_rect(con, x, y, w, h, bk, s)
-    
+
 def console_print_right_rect(con, x, y, w, h, bk, s):
     return _lib.TCOD_console_print_right_rect(con, x, y, w, h, bk, s)
-    
+
 def console_print_center_rect(con, x, y, w, h, bk, s):
     return _lib.TCOD_console_print_center_rect(con, x, y, w, h, bk, s)
 
 def console_height_left_rect(con, x, y, w, h, s):
     return _lib.TCOD_console_height_left_rect(con, x, y, w, h, s)
-    
+
 def console_height_right_rect(con, x, y, w, h, s):
     return _lib.TCOD_console_height_right_rect(con, x, y, w, h, s)
-    
+
 def console_height_center_rect(con, x, y, w, h, s):
     return _lib.TCOD_console_height_center_rect(con, x, y, w, h, s)
-    
+
 def console_rect(con, x, y, w, h, clr, flag=BKGND_SET):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
-    
+
 def console_hline(con, x, y, l):
     _lib.TCOD_console_hline( con, x, y, l)
-    
+
 def console_vline(con, x, y, l):
     _lib.TCOD_console_vline( con, x, y, l)
-    
+
 def console_print_frame(con, x, y, w, h, clr, bkflg, s):
     _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clr), bkflg, s)
-    
+
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
 def console_get_background_color(con):
     iret=_lib.TCOD_console_get_background_color_wrapper(con)
     return int_to_col(iret)
-    
+
 def console_get_foreground_color(con):
     iret=_lib.TCOD_console_get_foreground_color_wrapper(con)
     return int_to_col(iret)
-    
+
 def console_get_back(con, x, y):
     iret=_lib.TCOD_console_get_back_wrapper(con, x, y)
     return int_to_col(iret)
-    
+
 def console_get_fore(con, x, y):
     iret=_lib.TCOD_console_get_fore_wrapper(con, x, y)
     return int_to_col(iret)
-    
+
 def console_get_char(con, x, y):
     return _lib.TCOD_console_get_char(con, x, y)
-    
+
 def console_set_fade(fade, fadingColor):
     _lib.TCOD_console_set_fade_wrapper(fade, col_to_int(fadingColor))
-    
+
 def console_get_fade():
     return _lib.TCOD_console_get_fade().value
-    
+
 def console_get_fading_color():
     return int_to_col(_lib.TCOD_console_get_fading_color_wrapper())
-    
+
 # handling keyboard input
 def console_wait_for_keypress(flush):
     return _lib.TCOD_console_wait_for_keypress(c_int(flush))
-    
+
 def console_check_for_keypress(flags=KEY_RELEASED):
     return _lib.TCOD_console_check_for_keypress(flags)
-    
+
 def console_is_key_pressed(key):
     return _lib.TCOD_console_is_key_pressed(key) == 1
-    
+
 def console_set_keyboard_repeat(initial_delay, interval):
     _lib.TCOD_console_set_keyboard_repeat(initial_delay, interval)
-    
+
 def console_disable_keyboard_repeat():
     _lib.TCOD_console_disable_keyboard_repeat()
-    
+
 # using offscreen consoles
 def console_new(w, h):
     return _lib.TCOD_console_new(w, h)
-    
+
 def console_blit(src, x, y, w, h, dst, xdst, ydst, ffade=1.0,bfade=1.0):
     _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, c_float(ffade), c_float(bfade))
-    
+
 def console_set_key_color(con, col):
     _lib.TCOD_console_set_key_color(con, col)
-    
+
 def console_delete(con):
     _lib.TCOD_console_delete(con)
 
@@ -579,33 +579,33 @@ _lib.TCOD_sys_elapsed_seconds.restype = c_float
 # high precision time functions
 def sys_set_fps(fps):
     _lib.TCOD_sys_set_fps(fps)
-    
+
 def sys_get_fps():
     return _lib.TCOD_sys_get_fps()
-    
+
 def sys_get_last_frame_length():
     return _lib.TCOD_sys_get_last_frame_length()
-    
+
 def sys_sleep_milli(val):
     _lib.TCOD_sys_sleep_milli(c_uint(val))
 
 def sys_update_char(ascii,img,x,y):
     _lib.TCOD_sys_update_char(c_uint(ascii),img,c_int(x),c_int(y))
-    
+
 def sys_elapsed_milli():
     return _lib.TCOD_sys_elapsed_milli()
-    
+
 def sys_elapsed_seconds():
     return _lib.TCOD_sys_elapsed_seconds()
 
 # easy screenshots
 def sys_save_screenshot(name=0):
     _lib.TCOD_sys_save_screenshot(name)
-    
+
 # custom fullscreen resolution
 def sys_force_fullscreen_resolution(width, height):
     _lib.TCOD_sys_force_fullscreen_resolution(width, height)
-    
+
 def sys_get_current_resolution():
     w = c_int()
     h = c_int()
@@ -634,7 +634,7 @@ _lib.TCOD_line.restype=c_uint
 
 def line_init(xo, yo, xd, yd):
     _lib.TCOD_line_init(xo, yo, xd, yd)
-    
+
 def line_step():
     x = c_int()
     y = c_int()
@@ -646,7 +646,7 @@ def line_step():
 def line(xo,yo,xd,yd,py_callback) :
 	LINE_CBK_FUNC=CFUNCTYPE(c_uint,c_int,c_int)
 	def int_callback(x,y) :
-		if py_callback(x,y) : 
+		if py_callback(x,y) :
 			return 1
 		return 0
 	c_callback=LINE_CBK_FUNC(int_callback)
@@ -659,7 +659,7 @@ _lib.TCOD_image_is_pixel_transparent.restype = c_uint
 
 def image_new(width, height):
     return _lib.TCOD_image_new(width, height)
-    
+
 def image_clear(image,col) :
     _lib.TCOD_image_clear(image,col)
 
@@ -686,41 +686,41 @@ def image_is_pixel_transparent(image,x,y) :
 
 def image_load(filename):
     return _lib.TCOD_image_load(filename)
-    
+
 def image_from_console(console):
     return _lib.TCOD_image_from_console(console)
-    
+
 def image_refresh_console(image, console):
     _lib.TCOD_image_refresh_console(image, console)
-    
+
 def image_get_size(image):
     w=c_int()
     h=c_int()
     _lib.TCOD_image_get_size(image, byref(w), byref(h))
     return w.value, h.value
-    
+
 def image_get_pixel(image, x, y):
     return int_to_col(_lib.TCOD_image_get_pixel_wrapper(image, x, y))
-    
+
 def image_get_mipmap_pixel(image, x0, y0, x1, y1):
-    return int_to_col(_lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0), 
+    return int_to_col(_lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0),
                                             c_float(x1), c_float(y1)))
 def image_put_pixel(image, x, y, col):
     _lib.TCOD_image_put_pixel_wrapper(image, x, y, col_to_int(col))
-    
+
 def image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle):
-    _lib.TCOD_image_blit(image, console, c_float(x), c_float(y), bkgnd_flag, 
+    _lib.TCOD_image_blit(image, console, c_float(x), c_float(y), bkgnd_flag,
                          c_float(scalex), c_float(scaley), c_float(angle))
-                         
+
 def image_blit_rect(image, console, x, y, w, h, bkgnd_flag):
     _lib.TCOD_image_blit_rect(image, console, x, y, w, h, bkgnd_flag)
 
 def image_blit_2x(image, console, dx, dy, sx=0, sy=0, w=-1, h=-1):
     _lib.TCOD_image_blit_2x(image, console, dx,dy,sx,sy,w,h)
-    
+
 def image_save(image, filename):
     _lib.TCOD_image_save(image, filename)
-    
+
 def image_delete(image):
     _lib.TCOD_image_delete(image)
 
@@ -750,15 +750,15 @@ _lib.TCOD_mouse_is_cursor_visible.restype = c_uint
 
 def mouse_show_cursor(visible):
     _lib.TCOD_mouse_show_cursor(c_int(visible))
-    
+
 def mouse_is_cursor_visible():
     return _lib.TCOD_mouse_is_cursor_visible() == 1
-    
+
 def mouse_move(x, y):
     _lib.TCOD_mouse_move(x, y)
-    
+
 def mouse_get_status():
-    m = Mouse()    
+    m = Mouse()
     _lib.TCOD_mouse_get_status_wrapper(byref(m))
     return m
 
@@ -829,16 +829,16 @@ TYPE_LIST = 1024
 
 def parser_new():
     return _lib.TCOD_parser_new()
-    
+
 def parser_new_struct(parser, name):
     return _lib.TCOD_parser_new_struct(parser, name)
-    
+
 def struct_add_flag(struct, name):
     _lib.TCOD_struct_add_flag(struct, name)
-    
+
 def struct_add_property(struct, name, typ, mandatory):
     _lib.TCOD_struct_add_property(struct, name, typ, c_int(mandatory))
-    
+
 def struct_add_value_list(struct, name, value_list, mandatory):
     CARRAY = c_char_p * (len(value_list) + 1)
     cvalue_list = CARRAY()
@@ -846,22 +846,22 @@ def struct_add_value_list(struct, name, value_list, mandatory):
         cvalue_list[i] = cast(value_list[i], c_char_p)
     cvalue_list[len(value_list)] = 0
     _lib.TCOD_struct_add_value_list(struct, name, cvalue_list, c_int(mandatory))
-                                    
+
 def struct_add_list_property(struct, name, typ, mandatory):
     _lib.TCOD_struct_add_list_property(struct, name, typ, c_int(mandatory))
-    
+
 def struct_add_structure(struct, sub_struct):
     _lib.TCOD_struct_add_structure(struct, sub_struct)
-    
+
 def struct_get_name(struct):
     return _lib.TCOD_struct_get_name(struct)
-    
-def struct_is_mandatory(struct, name): 
+
+def struct_is_mandatory(struct, name):
     return _lib.TCOD_struct_is_mandatory(struct, name) == 1
-    
+
 def struct_get_type(struct, name):
     return _lib.TCOD_struct_get_type(struct, name)
-    
+
 def parser_run(parser, filename, listener=0):
     if listener != 0:
         clistener=_CParserListener()
@@ -890,34 +890,34 @@ def parser_run(parser, filename, listener=0):
         _lib.TCOD_parser_run(parser, filename, byref(clistener))
     else:
         _lib.TCOD_parser_run(parser, filename, 0)
-        
+
 def parser_delete(parser):
     _lib.TCOD_parser_delete(parser)
-    
+
 def parser_get_bool_property(parser, name):
     return _lib.TCOD_parser_get_bool_property(parser, name) == 1
-    
+
 def parser_get_int_property(parser, name):
     return _lib.TCOD_parser_get_int_property(parser, name)
-    
+
 def parser_get_char_property(parser, name):
     return '%c' % _lib.TCOD_parser_get_char_property(parser, name)
-    
+
 def parser_get_float_property(parser, name):
     return _lib.TCOD_parser_get_float_property(parser, name)
-    
+
 def parser_get_string_property(parser, name):
     return _lib.TCOD_parser_get_string_property(parser, name)
-    
+
 def parser_get_color_property(parser, name):
     iret=_lib.TCOD_parser_get_color_property_wrapper(parser, name)
     return int_to_col(iret)
-    
+
 def parser_get_dice_property(parser, name):
     d = Dice()
     _lib.TCOD_parser_get_dice_property_py(parser, name, byref(d))
     return d
-    
+
 def parser_get_list_property(parser, name):
     clist = _lib.TCOD_parser_get_list_property(parser, name)
     res = list()
@@ -933,25 +933,25 @@ _lib.TCOD_random_get_float.restype = c_float
 
 def random_get_instance():
     return _lib.TCOD_random_get_instance()
-    
+
 def random_new():
     return _lib.TCOD_random_new()
-    
+
 def random_new_from_seed(seed):
     return _lib.TCOD_random_new_from_seed(c_uint(seed))
-    
+
 def random_get_int(rnd, mi, ma):
     return _lib.TCOD_random_get_int(rnd, mi, ma)
-    
+
 def random_get_float(rnd, mi, ma):
     return _lib.TCOD_random_get_float(rnd, c_float(mi), c_float(ma))
-    
+
 def random_save(rnd):
     return _lib.TCOD_random_save(rnd)
-    
+
 def random_restore(rnd, backup):
     _lib.TCOD_random_restore(rnd, backup)
-    
+
 def random_get_int_from_byte_array(mi, ma, data):
     CHAR_ARRAY = c_char * len(data)
     carr = CHAR_ARRAY()
@@ -960,7 +960,7 @@ def random_get_int_from_byte_array(mi, ma, data):
         carr[i] = d
         i += 1
     return _lib.TCOD_random_get_int_from_byte_array(mi, ma, carr, len(data))
-    
+
 def random_delete(rnd):
     _lib.TCOD_random_delete(rnd)
 
@@ -982,52 +982,52 @@ NOISE_DEFAULT_LACUNARITY = 2.0
 
 def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, rnd=0):
     return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), rnd)
-    
+
 def _noise_int(n, f, func):
     ct = c_float * len(f)
     cf = ct()
     i = 0
-    for value in f: 
+    for value in f:
         cf[i] = c_float(value)
         i += 1
     return func(n, cf)
-    
+
 def noise_perlin(n, f):
     return _noise_int(n, f, _lib.TCOD_noise_perlin)
-    
+
 def noise_simplex(n, f):
     return _noise_int(n, f, _lib.TCOD_noise_simplex)
-    
+
 def noise_wavelet(n, f):
     return _noise_int(n, f, _lib.TCOD_noise_wavelet)
-    
+
 def _noise_int2(n, f, oc, func):
     ct = c_float * len(f)
     cf = ct()
     i = 0
-    for value in f: 
+    for value in f:
         cf[i] = c_float(value)
         i += 1
     return func(n, cf, c_float(oc))
-    
+
 def noise_fbm_perlin(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_perlin)
-    
+
 def noise_fbm_simplex(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_simplex)
-    
+
 def noise_fbm_wavelet(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_wavelet)
-    
+
 def noise_turbulence_perlin(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_perlin)
-    
+
 def noise_turbulence_simplex(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_simplex)
-    
+
 def noise_turbulence_wavelet(n, f, oc):
     return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_wavelet)
-    
+
 def noise_delete(n):
     _lib.TCOD_noise_delete(n)
 
@@ -1057,25 +1057,25 @@ def map_new(w, h):
 
 def map_copy(source, dest):
     return _lib.TCOD_map_copy(source, dest)
-    
+
 def map_set_properties(m, x, y, isTrans, isWalk):
     _lib.TCOD_map_set_properties(m, x, y, c_int(isTrans), c_int(isWalk))
-    
+
 def map_clear(m):
     _lib.TCOD_map_clear(m)
-    
+
 def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_RESTRICTIVE ):
     _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_uint(light_walls), c_int(algo))
-    
+
 def map_is_in_fov(m, x, y):
     return _lib.TCOD_map_is_in_fov(m, x, y) == 1
-    
+
 def map_is_transparent(m, x, y):
     return _lib.TCOD_map_is_transparent(m, x, y) == 1
-    
+
 def map_is_walkable(m, x, y):
     return _lib.TCOD_map_is_walkable(m, x, y) == 1
-    
+
 def map_delete(m):
     return _lib.TCOD_map_delete(m)
 
@@ -1088,7 +1088,7 @@ _lib.TCOD_path_walk.restype = c_uint
 
 def path_new_using_map(m, dcost=1.41):
     return _lib.TCOD_path_new_using_map(c_void_p(m), c_float(dcost))
-    
+
 PATH_CBK_FUNC = None
 cbk_func = None
 def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
@@ -1096,43 +1096,43 @@ def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
     global cbk_func
     PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
     cbk_func = PATH_CBK_FUNC(func)
-    return _lib.TCOD_path_new_using_function(w, h, cbk_func, 
+    return _lib.TCOD_path_new_using_function(w, h, cbk_func,
                                              py_object(userdata), c_float(dcost))
-                                             
+
 def path_compute(p, ox, oy, dx, dy):
     return _lib.TCOD_path_compute(p, ox, oy, dx, dy) == 1
-    
+
 def path_get_origin(p):
     x = c_int()
     y = c_int()
     _lib.TCOD_path_get_origin(p, byref(x), byref(y))
     return x.value, y.value
-    
+
 def path_get_destination(p):
     x = c_int()
     y = c_int()
     _lib.TCOD_path_get_destination(p, byref(x), byref(y))
     return x.value, y.value
-    
+
 def path_size(p):
     return _lib.TCOD_path_size(p)
-    
+
 def path_get(p, idx):
     x = c_int()
     y = c_int()
     _lib.TCOD_path_get(p, idx, byref(x), byref(y))
     return x.value, y.value
-    
+
 def path_is_empty(p):
     return _lib.TCOD_path_is_empty(p) == 1
-    
+
 def path_walk(p, recompute):
     x = c_int()
     y = c_int()
     if _lib.TCOD_path_walk(p, byref(x), byref(y), c_int(recompute)):
         return x.value, y.value
     return None,None
-    
+
 def path_delete(p):
     _lib.TCOD_path_delete(p)
 
@@ -1165,43 +1165,43 @@ class Bsp(object):
     def __init__(self, cnode):
         pcbsp = cast(cnode, POINTER(_CBsp))
         self.p = pcbsp
-        
+
     def getx(self):
-        return self.p.contents.x        
+        return self.p.contents.x
     def setx(self, value):
-        self.p.contents.x = value    
+        self.p.contents.x = value
     x = property(getx, setx)
-    
+
     def gety(self):
-        return self.p.contents.y        
+        return self.p.contents.y
     def sety(self, value):
-        self.p.contents.y = value        
+        self.p.contents.y = value
     y = property(gety, sety)
-    
+
     def getw(self):
-        return self.p.contents.w        
+        return self.p.contents.w
     def setw(self, value):
-        self.p.contents.w = value        
+        self.p.contents.w = value
     w = property(getw, setw)
-    
+
     def geth(self):
-        return self.p.contents.h        
-    def seth(self, value): 
-        self.p.contents.h = value        
+        return self.p.contents.h
+    def seth(self, value):
+        self.p.contents.h = value
     h = property(geth, seth)
-    
+
     def getpos(self):
-        return self.p.contents.position        
+        return self.p.contents.position
     def setpos(self, value):
-        self.p.contents.position = value        
+        self.p.contents.position = value
     position = property(getpos, setpos)
-    
+
     def gethor(self):
         return self.p.contents.horizontal == 1
     def sethor(self,value):
         self.p.contents.horizontal = c_int(value)
     horizontal = property(gethor, sethor)
-    
+
     def getlev(self):
         return self.p.contents.level
     def setlev(self,value):
@@ -1211,65 +1211,65 @@ class Bsp(object):
 
 def bsp_new_with_size(x, y, w, h):
     return Bsp(_lib.TCOD_bsp_new_with_size(x, y, w, h))
-    
+
 def bsp_split_once(node, horizontal, position):
     _lib.TCOD_bsp_split_once(node.p, c_int(horizontal), position)
-    
-def bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio, 
+
+def bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio,
                         maxVRatio):
-    _lib.TCOD_bsp_split_recursive(node.p, randomizer, nb, minHSize, minVSize, 
+    _lib.TCOD_bsp_split_recursive(node.p, randomizer, nb, minHSize, minVSize,
                                   c_float(maxHRatio), c_float(maxVRatio))
-                                  
+
 def bsp_resize(node, x, y, w, h):
     _lib.TCOD_bsp_resize(node.p, x, y, w, h)
-    
+
 def bsp_left(node):
     return Bsp(_lib.TCOD_bsp_left(node.p))
-    
+
 def bsp_right(node):
     return Bsp(_lib.TCOD_bsp_right(node.p))
-    
+
 def bsp_father(node):
     return Bsp(_lib.TCOD_bsp_father(node.p))
-    
+
 def bsp_is_leaf(node):
     return _lib.TCOD_bsp_is_leaf(node.p) == 1
-    
+
 def bsp_contains(node, cx, cy):
     return _lib.TCOD_bsp_contains(node.p, cx, cy) == 1
-    
+
 def bsp_find_node(node, cx, cy):
     return Bsp(_lib.TCOD_bsp_find_node(node.p, cx, cy))
-    
+
 def _bsp_traverse(node, callback, userData, func):
     BSP_CBK_FUNC = CFUNCTYPE(c_int, c_void_p, c_void_p)
-    # convert the c node into a python node 
+    # convert the c node into a python node
     #before passing it to the actual callback
     def node_converter(cnode, data):
         node = Bsp(cnode)
         return callback(node, data)
     cbk_func = BSP_CBK_FUNC(node_converter)
     func(node.p, cbk_func, userData)
-    
+
 def bsp_traverse_pre_order(node, callback, userData=0):
     _bsp_traverse(node, callback, userData, _lib.TCOD_bsp_traverse_pre_order)
-    
+
 def bsp_traverse_in_order(node, callback, userData=0):
     _bsp_traverse(node, callback, userData, _lib.TCOD_bsp_traverse_in_order)
-    
+
 def bsp_traverse_post_order(node, callback, userData=0):
     _bsp_traverse(node, callback, userData, _lib.TCOD_bsp_traverse_post_order)
-    
+
 def bsp_traverse_level_order(node, callback, userData=0):
     _bsp_traverse(node, callback, userData, _lib.TCOD_bsp_traverse_level_order)
-    
+
 def bsp_traverse_inverted_level_order(node, callback, userData=0):
     _bsp_traverse(node, callback, userData,
                   _lib.TCOD_bsp_traverse_inverted_level_order)
-                  
+
 def bsp_remove_sons(node):
     _lib.TCOD_bsp_remove_sons(node.p)
-    
+
 def bsp_delete(node):
     _lib.TCOD_bsp_delete(node.p)
 
@@ -1290,13 +1290,13 @@ class HeightMap(object):
     def __init__(self, chm):
         pchm = cast(chm, POINTER(_CHeightMap))
         self.p = pchm
-        
+
     def getw(self):
         return self.p.contents.w
     def setw(self, value):
         self.p.contents.w = value
     w = property(getw, setw)
-    
+
     def geth(self):
         return self.p.contents.h
     def seth(self, value):
@@ -1306,49 +1306,49 @@ class HeightMap(object):
 def heightmap_new(w, h):
     phm = _lib.TCOD_heightmap_new(w, h)
     return HeightMap(phm)
-    
+
 def heightmap_set_value(hm, x, y, value):
     _lib.TCOD_heightmap_set_value(hm.p, x, y, c_float(value))
-    
+
 def heightmap_add(hm, value):
     _lib.TCOD_heightmap_add(hm.p, c_float(value))
-    
+
 def heightmap_scale(hm, value):
     _lib.TCOD_heightmap_scale(hm.p, c_float(value))
-    
+
 def heightmap_clear(hm):
     _lib.TCOD_heightmap_clear(hm.p)
-    
+
 def heightmap_clamp(hm, mi, ma):
     _lib.TCOD_heightmap_clamp(hm.p, c_float(mi),c_float(ma))
-    
+
 def heightmap_copy(hm1, hm2):
     _lib.TCOD_heightmap_copy(hm1.p, hm2.p)
-    
+
 def heightmap_normalize(hm,  mi=0.0, ma=1.0):
     _lib.TCOD_heightmap_normalize(hm.p, c_float(mi), c_float(ma))
-    
+
 def heightmap_lerp_hm(hm1, hm2, hm3, coef):
     _lib.TCOD_heightmap_lerp_hm(hm1.p, hm2.p, hm3.p, c_float(coef))
-    
+
 def heightmap_add_hm(hm1, hm2, hm3):
     _lib.TCOD_heightmap_add_hm(hm1.p, hm2.p, hm3.p)
-    
+
 def heightmap_multiply_hm(hm1, hm2, hm3):
     _lib.TCOD_heightmap_multiply_hm(hm1.p, hm2.p, hm3.p)
-    
+
 def heightmap_add_hill(hm, x, y, radius, height):
-    _lib.TCOD_heightmap_add_hill(hm.p, c_float( x), c_float( y), 
+    _lib.TCOD_heightmap_add_hill(hm.p, c_float( x), c_float( y),
                                  c_float( radius), c_float( height))
-                                 
+
 def heightmap_dig_hill(hm, x, y, radius, height):
-    _lib.TCOD_heightmap_dig_hill(hm.p, c_float( x), c_float( y), 
+    _lib.TCOD_heightmap_dig_hill(hm.p, c_float( x), c_float( y),
                                  c_float( radius), c_float( height))
-                                 
+
 def heightmap_rain_erosion(hm, nbDrops, erosionCoef, sedimentationCoef, rnd=0):
-    _lib.TCOD_heightmap_rain_erosion(hm.p, nbDrops, c_float( erosionCoef), 
+    _lib.TCOD_heightmap_rain_erosion(hm.p, nbDrops, c_float( erosionCoef),
                                      c_float( sedimentationCoef), rnd)
-                                     
+
 def heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,
                                maxLevel):
     FARRAY = c_float * kernelsize
@@ -1360,28 +1360,28 @@ def heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,
         cdx[i] = c_int(dx[i])
         cdy[i] = c_int(dy[i])
         cweight[i] = c_float(weight[i])
-    _lib.TCOD_heightmap_kernel_transform(hm.p, kernelsize, cdx, cdy, cweight, 
+    _lib.TCOD_heightmap_kernel_transform(hm.p, kernelsize, cdx, cdy, cweight,
                                          c_float(minLevel), c_float(maxLevel))
-                                         
+
 def heightmap_add_voronoi(hm, nbPoints, nbCoef, coef, rnd=0):
     FARRAY = c_float * nbCoef
     ccoef = FARRAY()
     for i in range(nbCoef):
         ccoef[i] = c_float(coef[i])
     _lib.TCOD_heightmap_add_voronoi(hm.p, nbPoints, nbCoef, ccoef, rnd)
-    
+
 def heightmap_add_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta, scale):
-    _lib.TCOD_heightmap_add_fbm(hm.p, noise, c_float(mulx), c_float(muly), 
-                                c_float(addx), c_float(addy), 
-                                c_float(octaves), c_float(delta), 
+    _lib.TCOD_heightmap_add_fbm(hm.p, noise, c_float(mulx), c_float(muly),
+                                c_float(addx), c_float(addy),
+                                c_float(octaves), c_float(delta),
                                 c_float(scale))
-def heightmap_scale_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta, 
+def heightmap_scale_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta,
                         scale):
-    _lib.TCOD_heightmap_scale_fbm(hm.p, noise, c_float(mulx), c_float(muly), 
-                                  c_float(addx), c_float(addy), 
-                                  c_float(octaves), c_float(delta), 
+    _lib.TCOD_heightmap_scale_fbm(hm.p, noise, c_float(mulx), c_float(muly),
+                                  c_float(addx), c_float(addy),
+                                  c_float(octaves), c_float(delta),
                                   c_float(scale))
-def heightmap_dig_bezier(hm, px, py, startRadius, startDepth, endRadius, 
+def heightmap_dig_bezier(hm, px, py, startRadius, startDepth, endRadius,
                          endDepth):
     IARRAY = c_int * 4
     cpx = IARRAY()
@@ -1389,40 +1389,40 @@ def heightmap_dig_bezier(hm, px, py, startRadius, startDepth, endRadius,
     for i in range(4):
         cpx[i] = c_int(px[i])
         cpy[i] = c_int(py[i])
-    _lib.TCOD_heightmap_dig_bezier(hm.p, cpx, cpy, c_float(startRadius), 
-                                   c_float(startDepth), c_float(endRadius), 
-                                   c_float(endDepth)) 
-                                   
+    _lib.TCOD_heightmap_dig_bezier(hm.p, cpx, cpy, c_float(startRadius),
+                                   c_float(startDepth), c_float(endRadius),
+                                   c_float(endDepth))
+
 def heightmap_get_value(hm, x, y):
     return _lib.TCOD_heightmap_get_value(hm.p, x, y)
-    
+
 def heightmap_get_interpolated_value(hm, x, y):
-    return _lib.TCOD_heightmap_get_interplated_value(hm.p, c_float(x), 
+    return _lib.TCOD_heightmap_get_interplated_value(hm.p, c_float(x),
                                                      c_float(y))
-                                                     
+
 def heightmap_get_slope(hm, x, y):
     return _lib.TCOD_heightmap_get_slope(hm.p, x, y)
-    
+
 def heightmap_get_normal(hm, x, y, waterLevel):
     FARRAY = c_float * 3
     cn = FARRAY()
     _lib.TCOD_heightmap_get_normal(hm.p, c_float(x), c_float(y), cn,
                                    c_float(waterLevel))
     return cn[0], cn[1], cn[2]
-    
+
 def heightmap_count_cells(hm, mi, ma):
     return _lib.TCOD_heightmap_count_cells(hm.p, c_float(mi), c_float(ma))
-    
+
 def heightmap_has_land_on_border(hm, waterlevel):
-    return _lib.TCOD_heightmap_has_land_on_border(hm.p, 
+    return _lib.TCOD_heightmap_has_land_on_border(hm.p,
                                                   c_float(waterlevel)) == 1
-    
+
 def heightmap_get_minmax(hm):
     mi = c_float()
     ma = c_float()
     _lib.TCOD_heightmap_get_minmax(hm.p, byref(mi), byref(ma))
     return mi.value, ma.value
-    
+
 def heightmap_delete(hm):
     _lib.TCOD_heightmap_delete(hm.p)
 
@@ -1433,8 +1433,8 @@ def heightmap_delete(hm):
 
 _lib.TCOD_namegen_get_nb_sets_wrapper.restype = c_int
 
-def namegen_create(filename,random=0) :
-	_lib.TCOD_namegen_create(filename,random)
+def namegen_parse(filename,random=0) :
+	_lib.TCOD_namegen_parse(filename,random)
 
 def namegen_generate(name, allocate=0) :
 	return _lib.TCOD_namegen_generate(name, c_int(allocate))
@@ -1442,11 +1442,11 @@ def namegen_generate(name, allocate=0) :
 def namegen_generate_custom(name, rule, allocate=0) :
 	return _lib.TCOD_namegen_generate(name, rule, c_int(allocate))
 
-def namegen_retrieve_sets():
+def namegen_get_sets():
 	nb=_lib.TCOD_namegen_get_nb_sets_wrapper()
 	SARRAY = c_char_p * nb;
 	setsa = SARRAY()
-	_lib.TCOD_namegen_retrieve_sets_wrapper(setsa)
+	_lib.TCOD_namegen_get_sets_wrapper(setsa)
 	ret=list()
 	for i in range(nb):
 		ret.append(setsa[i])

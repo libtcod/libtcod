@@ -458,8 +458,8 @@ bool namegen_word_is_ok (namegen_t * data, char * str) {
  * publicly available functions *
  * ---------------------------- */
 
-/* prepare a new generator - allocates a new data structure and fills it with necessary content */
-void TCOD_namegen_create (const char * filename, TCOD_random_t random) {
+/* parse a new syllable sets file - allocates a new data structure and fills it with necessary content */
+void TCOD_namegen_parse (const char * filename, TCOD_random_t random) {
     /* check for file existence */
     FILE * in = fopen(filename,"r");
     if (in == NULL) {
@@ -469,7 +469,7 @@ void TCOD_namegen_create (const char * filename, TCOD_random_t random) {
     fclose(in);
     /* set namegen RNG */
     namegen_random = random;
-    /* add the file's contents to the data structures */
+    /* run the proper parser - add the file's contents to the data structures */
     namegen_parser_run(filename);
 }
 
@@ -610,7 +610,7 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
 }
 
 /* retrieve the list of all available syllable set names */
-TCOD_list_t TCOD_namegen_retrieve_sets (void) {
+TCOD_list_t TCOD_namegen_get_sets (void) {
     TCOD_list_t l = TCOD_list_new();
     namegen_t ** it;
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
@@ -630,12 +630,12 @@ void TCOD_namegen_destroy (void) {
     TCOD_list_clear_and_delete(parsed_files);
 }
 
-void namegen_retrieve (void) {
-    namegen_t ** it;
-    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
-        printf("* \"%s\"\n",(*it)->name);
-    char ** p;
-    printf("PARSED FILES:\n");
-    for (p = (char**)TCOD_list_begin(parsed_files); p < (char**)TCOD_list_end(parsed_files); p++)
-        printf("* \"%s\"\n",(*p));
-}
+//void namegen_retrieve (void) {
+//    namegen_t ** it;
+//    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
+//        printf("* \"%s\"\n",(*it)->name);
+//    char ** p;
+//    printf("PARSED FILES:\n");
+//    for (p = (char**)TCOD_list_begin(parsed_files); p < (char**)TCOD_list_end(parsed_files); p++)
+//        printf("* \"%s\"\n",(*p));
+//}

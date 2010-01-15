@@ -16,10 +16,10 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-In order to be able to generate names, the name generator needs to be fed proper data. It will then be ready to generate one specific type of names. The initialisation is done via:<br />
+In order to be able to generate names, the name generator needs to be fed proper data. It will then be ready to generate one specific type of names. You can achieve that by telling it what files it should parse in search for proper syllable sets:<br />
 <p class="code"><pre>
-C++ : static void TCODNamegen::create(const char * filename, TCODRandom * random)
-C   : void TCOD_namegen_create(const char * filename, TCOD_random_t random)
+C++ : static void TCODNamegen::parse(const char * filename, TCODRandom * random = NULL)
+C   : void TCOD_namegen_parse(const char * filename, TCOD_random_t random)
 Py  : ---
 </pre></p>
 <table class="param">
@@ -27,12 +27,14 @@ Py  : ---
 <tr><td>filename</td><td>The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".</td></tr>
 <tr><td>random</td><td>A random number generator object. Use NULL for the default random number generator</td></tr>
 </table>
-Note 1: The filename may contain various structures with syllable sets, but the generator will only use one such structure. Each file will be parsed once only, but the file name cannot be skipped even if a given file has been already parsed.<br />
-Note 2: Generator can be fed data multiple times if you have it in separate files. Just make sure the structure names in them aren't duplicated.<br />
+Note 1: The filename may contain various structures with syllable sets, but the generator will only use one such structure. Each file will be parsed once only. If, for some reason, you would like to parse the same file twice, you will need to destroy the generator first, which will empty the list of parsed files along with erasing all the data retrieved from those files.<br />
+Note 2: The generator can be fed data multiple times if you have it in separate files. Just make sure the structure names in them aren't duplicated, otherwise they will be silently ignored.<br />
+Note 3: In the C++ version, you are not obliged to specify the random number generator. If you skip it in the function call, the generator will assume you would like to use an instance of the default generator.<br />
 <br />
 Example :<br />
 <p class="code"><pre>
-C++ : TCODNamegen::create("data/names.txt",TCODRandom::getInstance());
-C   : TCOD_namegen_new("data/names.txt",TCOD_random_get_instance());
+C++ : TCODNamegen::parse("data/names.txt",TCODRandom::getInstance());
+      TCODNamegen::parse("data/names2.txt");
+C   : TCOD_namegen_parse("data/names.txt",TCOD_random_get_instance());
 Py  : ---
 </pre></p>

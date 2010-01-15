@@ -404,7 +404,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 	static TCOD_color_t light_ground={200,180,50};
 	static TCOD_noise_t noise;
 	static int algonum=0;
-	static char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ", 
+	static char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ",
 		"PERMISSIVE0","PERMISSIVE1","PERMISSIVE2","PERMISSIVE3","PERMISSIVE4",
 		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8", "RESTRICTIVE"};
 	static float torchx=0.0f; /* torch light position in the perlin noise */
@@ -1014,10 +1014,10 @@ void render_name(bool first, TCOD_key_t*key) {
 		for (it=(char **)TCOD_list_begin(files); it!= (char **)TCOD_list_end(files); it++) {
 			char tmp[236];
 			sprintf(tmp, "data/namegen/%s",*it);
-			TCOD_namegen_create(tmp,NULL);
-		}	
+			TCOD_namegen_parse(tmp,NULL);
+		}
 		// get the sets list
-		sets=TCOD_namegen_retrieve_sets();
+		sets=TCOD_namegen_get_sets();
 		nbSets=TCOD_list_size(sets);
 	}
 	if ( first ) {
@@ -1025,7 +1025,7 @@ void render_name(bool first, TCOD_key_t*key) {
 	}
 
 	while ( TCOD_list_size(names) >= 15 ) {
-		// remove the first element. 
+		// remove the first element.
 		char *nameToRemove= * (TCOD_list_begin(names));
 		TCOD_list_remove_iterator(names, TCOD_list_begin(names));
 		free(nameToRemove);
@@ -1041,7 +1041,7 @@ void render_name(bool first, TCOD_key_t*key) {
 			TCOD_console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,name);
 	}
 
-	delay += TCOD_sys_get_last_frame_length();	
+	delay += TCOD_sys_get_last_frame_length();
 	if ( delay >= 0.5f ) {
 		delay -= 0.5f;
 		// add a new name to the list

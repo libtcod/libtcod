@@ -1011,10 +1011,10 @@ void render_name(bool first, TCOD_key_t*key) {
 		for (char **it=files.begin(); it != files.end(); it++) {
 			char tmp[256];
 			sprintf(tmp, "data/namegen/%s",*it);
-			TCODNamegen::create(tmp);
-		}	
+			TCODNamegen::parse(tmp);
+		}
 		// get the sets list
-		sets = TCODNamegen::retrieveSets();
+		sets = TCODNamegen::getSets();
 		nbSets = sets.size();
 	}
 	if ( first ) {
@@ -1022,7 +1022,7 @@ void render_name(bool first, TCOD_key_t*key) {
 	}
 
 	while ( names.size() >= 15 ) {
-		// remove the first element. 
+		// remove the first element.
 		char *nameToRemove= * (names.begin());
 		names.remove(names.begin());
 		free(nameToRemove);
@@ -1038,7 +1038,7 @@ void render_name(bool first, TCOD_key_t*key) {
 			sampleConsole.printRight(SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,name);
 	}
 
-	delay += TCODSystem::getLastFrameLength();	
+	delay += TCODSystem::getLastFrameLength();
 	if ( delay >= 0.5f ) {
 		delay -= 0.5f;
 		// add a new name to the list

@@ -19,8 +19,8 @@ table.none td { border : 0 }
 </style>
 If you wish to check the sylable set names that are currently available, you may call:<br />
 <p class="code"><pre>
-C++ : static TCODList TCODNamegen::retrieveSets(void)
-C   : TCOD_list_t TCOD_namegen_destroy(void)
+C++ : static TCODList TCODNamegen::getSets(void)
+C   : TCOD_list_t TCOD_namegen_get_sets(void)
 Py  : ---
 </pre></p>
 This will create a list with all the available syllable set names. Remember to delete that list after you don't need it anymore!

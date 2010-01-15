@@ -26,7 +26,7 @@ Py  : ---
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.4</a> and <a href="../parser/parser_format.html">7.1</a>.</td></tr>
+<tr><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.5</a> and <a href="../parser/parser_format.html">7.1</a>.</td></tr>
 <tr><td>allocate</td><td>Whether memory should be allocated for the output or not.</td></tr>
 </table>
 <br />
@@ -34,7 +34,7 @@ Should you choose to allocate memory for the output, you need to remember to dea
 <br />
 On the other hand, should you choose not to allocate memory, be aware that subsequent calls will overwrite the previously returned pointer, so make sure to copy the output using strcpy(), strdup() or other means of your choosing.<br />
 <br />
-The name you specify needs to be in one of the files the generator has previously parsed (see <a href="namegen_init.html">TCODNamegen::create</a>). If such a name doesn't exist, a warning will be displayed and NULL will be returned.<br />
+The name you specify needs to be in one of the files the generator has previously parsed (see <a href="namegen_init.html">TCODNamegen::parse</a>). If such a name doesn't exist, a warning will be displayed and NULL will be returned.<br />
 <br />
 Example :<br />
 <p class="code"><pre>
@@ -46,7 +46,7 @@ Py  : ---
 </pre></p>
 <hr />
 <a name="15.3.2"></a><h4>16.2.2 Generate a custom name</h4>
-It is also possible to generate a name using custom generation rules. This overrides the random choice of a generation rule from the syllable set. Please refer to chapter <a href="namegen_file.html">16.4</a> to learn about the name generation rules syntax.<br />
+It is also possible to generate a name using custom generation rules. This overrides the random choice of a generation rule from the syllable set. Please refer to chapter <a href="namegen_file.html">16.5</a> to learn about the name generation rules syntax.<br />
 <p class="code"><pre>
 C++ : static char * TCODNamegen::generateCustom(char * name, char * rule, bool allocate = false)
 C   : char * TCOD_namegen_generate_custom(char * name, char * rule, bool allocate);
@@ -54,8 +54,8 @@ Py  : ---
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.4</a> and <a href="../parser/parser_format.html">7.1</a>.</td></tr>
-<tr><td>rule</td><td>The name generation rule. See chapter <a href="namegen_file.html">16.4</a> for more details.</td></tr>
+<tr><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.5</a> and <a href="../parser/parser_format.html">7.1</a>.</td></tr>
+<tr><td>rule</td><td>The name generation rule. See chapter <a href="namegen_file.html">16.5</a> for more details.</td></tr>
 <tr><td>allocate</td><td>Whether memory should be allocated for the output or not.</td></tr>
 </table>
 <br />

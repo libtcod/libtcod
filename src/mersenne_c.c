@@ -28,6 +28,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "libtcod.h"
 
 /* mersenne twister toolkit */
@@ -198,3 +199,18 @@ void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup) {
 	memcpy(mersenne,backup,sizeof(mersenne_data_t));
 }
 
+float TCOD_random_get_gauss_float (TCOD_random_t mersenne, float min, float max) {
+    mersenne_data_t *r;
+	float delta,deltamid;
+	if (max==min) return min;
+	else if (max < min) {
+		float tmp=max;
+		max=min;
+		min=tmp;
+	}
+	if (!mersenne) mersenne=TCOD_random_get_instance();
+	r=(mersenne_data_t *)mersenne;
+	deltamid = ((max - min) / 2) * sin(frandom01(r) * 3.14159f);; /* absolute delta from middle value */
+	delta = max - min - (2 * deltamid); /* calculate the actual delta */
+	return (min + deltamid + (frandom01(r) * delta));
+}

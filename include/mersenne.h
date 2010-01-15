@@ -40,4 +40,6 @@ TCODLIB_API float TCOD_random_get_float(TCOD_random_t mersenne, float min, float
 TCODLIB_API int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len);
 TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
+TCODLIB_API float TCOD_random_get_gauss_float (TCOD_random_t mersenne, float min, float max);
+
 #endif

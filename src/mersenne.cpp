@@ -70,3 +70,6 @@ void TCODRandom::restore(const TCODRandom *backup) {
 	TCOD_random_restore(data,backup->data);
 }
 
+float TCODRandom::getGaussian(float min, float max) {
+	return TCOD_random_get_gaussian(data,min,max);
+}

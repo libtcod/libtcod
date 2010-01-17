@@ -37,6 +37,7 @@ class TCODLIB_API TCODRandom {
 		float getFloat(float min, float max);
 		TCODRandom *save() const;
 		void restore(const TCODRandom *backup);
+		float getGaussian(float min, float max);
 
 		static int getIntFromByteArray(int min, int max, const char *data,int len);
 		virtual ~TCODRandom();

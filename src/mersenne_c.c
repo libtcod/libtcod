@@ -210,7 +210,7 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	}
 	if (!mersenne) mersenne=TCOD_random_get_instance();
 	r=(mersenne_data_t *)mersenne;
-	deltamid = ((max - min) / 2) * sin(frandom01(r) * 3.14159f);; /* absolute delta from middle value */
+	deltamid = (float)(((max - min) / 2) * sin(frandom01(r) * 3.14159f)); /* absolute delta from middle value */
 	delta = max - min - (2 * deltamid); /* calculate the actual delta */
 	return (min + deltamid + (frandom01(r) * delta));
 }

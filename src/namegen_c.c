@@ -161,8 +161,8 @@ bool namegen_generator_check (const char * name) {
 
 /* retrieve available generator names */
 void namegen_get_sets_on_error (void) {
-    fprintf (stderr,"Registered syllable sets are:\n");
     namegen_t ** it;
+    fprintf (stderr,"Registered syllable sets are:\n");
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
         //namegen_t * check = *it;
         fprintf (stderr," * \"%s\"\n",(*it)->name);
@@ -269,8 +269,9 @@ void namegen_parser_prepare (void) {
     static bool namegen_parser_ready = false;
     if (namegen_parser_ready == true) return;
     else {
+        TCOD_parser_struct_t parser_name ;
         namegen_parser = TCOD_parser_new();
-        TCOD_parser_struct_t parser_name = TCOD_parser_new_struct(namegen_parser, "name");
+        parser_name = TCOD_parser_new_struct(namegen_parser, "name");
         TCOD_struct_add_property(parser_name, "phonemesVocals", TCOD_TYPE_STRING, false);
         TCOD_struct_add_property(parser_name, "phonemesConsonants", TCOD_TYPE_STRING, false);
         TCOD_struct_add_property(parser_name, "syllablesPre", TCOD_TYPE_STRING, false);
@@ -304,10 +305,11 @@ bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_valu
     else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = strdup(value.s);
     else if (strcmp(name,"rules") == 0)                 parser_data->rules = strdup(value.s);
     else if (strcmp(name,"illegal") == 0) { /* illegal strings are converted to lowercase */
-        parser_data->illegal = strdup(value.s);
-        char * str = parser_data->illegal;
+        char * str ;
         int i;
-        for(i = 0; i < strlen(str); i++) str[i] = (char)(tolower(str[i]));
+        parser_data->illegal = strdup(value.s);
+        str = parser_data->illegal;
+        for(i = 0; i < (int)strlen(str); i++) str[i] = (char)(tolower(str[i]));
     }
     else return false;
     return true;
@@ -343,10 +345,10 @@ TCOD_parser_listener_t namegen_listener = {
 
 /* run the parser */
 void namegen_parser_run (const char * filename) {
+    char ** it;
     /* prepare the parser --- this will be executed only once */
     namegen_parser_prepare();
     if (parsed_files == NULL) parsed_files = TCOD_list_new();
-    char ** it;
     if (TCOD_list_size(parsed_files) > 0) {
         for (it = (char **)TCOD_list_begin(parsed_files); it != (char **)TCOD_list_end(parsed_files); it++)
             if (strcmp(*it,filename) == 0) return;
@@ -385,7 +387,7 @@ bool namegen_word_has_illegal (namegen_t * data, char * str) {
     /* convert word to lowercase */
     char * haystack = strdup(str);
     int i;
-    for(i = 0; i < strlen(haystack); i++) haystack[i] = (char)(tolower(haystack[i]));
+    for(i = 0; i < (int)strlen(haystack); i++) haystack[i] = (char)(tolower(haystack[i]));
     /* look for illegal strings */
     if (TCOD_list_size(data->illegal_strings) > 0) {
         char ** it;
@@ -402,11 +404,11 @@ bool namegen_word_has_illegal (namegen_t * data, char * str) {
 
 /* removes double spaces, as well as leading and ending spaces */
 void namegen_word_prune_spaces (char * str) {
+    char * s;
     char * data = str;
     /* remove leading spaces */
     while (data[0] == ' ') memmove (data, data+1, strlen(data));
     /* reduce double spaces to single spaces */
-    char * s;
     while ((s = strstr(data,"  ")) != NULL) memmove (s, s+1, strlen(s));
     /* remove the final space */
     while (data[strlen(data)-1] == ' ') data[strlen(data)-1] = '\0';
@@ -476,15 +478,17 @@ void TCOD_namegen_parse (const char * filename, TCOD_random_t random) {
 /* generate a name using a given generation rule */
 char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
     namegen_t * data;
+    size_t buflen = 1024;
+    char * buf ;
+    size_t rule_len ;
     if (namegen_generator_check(name)) data = namegen_generator_get(name);
     else {
         fprintf(stderr,"The name \"%s\" has not been found.\n",name);
         namegen_get_sets_on_error();
         return NULL;
     }
-    size_t buflen = 1024;
-    char * buf = malloc(buflen);
-    size_t rule_len = strlen(rule);
+    buf = malloc(buflen);
+    rule_len = strlen(rule);
     /* let the show begin! */
     do {
         char * it = rule;
@@ -492,8 +496,9 @@ char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
         while (it <= rule + rule_len) {
             /* make sure the buffer is large enough */
             if (strlen(buf) >= buflen) {
+                char * tmp ;
                 while (strlen(buf) >= buflen) buflen *= 2;
-                char * tmp = malloc(buflen);
+                tmp = malloc(buflen);
                 strcpy(tmp,buf);
                 free(buf);
                 buf = tmp;
@@ -571,6 +576,12 @@ char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate) {
 /* generate a name with one of the rules from the file */
 char * TCOD_namegen_generate (char * name, bool allocate) {
     namegen_t * data;
+    int rule_number;
+    int chance;
+    char * rule_rolled;
+    int truncation;
+    char * rule_parsed ;
+    char * ret ;
     if (namegen_generator_check(name)) data = namegen_generator_get(name);
     else {
         fprintf(stderr,"The name \"%s\" has not been found.\n",name);
@@ -583,10 +594,6 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
         exit(1);
     }
     /* choose the rule */
-    int rule_number;
-    int chance;
-    char * rule_rolled;
-    int truncation;
     do {
         rule_number = TCOD_random_get_int(data->random,0,TCOD_list_size(data->rules)-1);
         rule_rolled = (char*)TCOD_list_get(data->rules,rule_number);
@@ -603,8 +610,8 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
         }
     } while (TCOD_random_get_int(data->random,0,100) > chance);
     /* OK, we've got ourselves a new rule! */
-    char * rule_parsed = strdup(rule_rolled+truncation);
-    char * ret = TCOD_namegen_generate_custom(name,rule_parsed,allocate);
+    rule_parsed = strdup(rule_rolled+truncation);
+    ret = TCOD_namegen_generate_custom(name,rule_parsed,allocate);
     free(rule_parsed);
     return ret;
 }

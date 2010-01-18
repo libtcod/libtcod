@@ -61,6 +61,7 @@ protected :
 class TCODLIB_API TCODDijkstra {
     public:
         TCODDijkstra (TCODMap *map, float diagonalCost=1.41f);
+        ~TCODDijkstra (void);
         void compute (int rootX, int rootY);
         float getDistance (int x, int y);
         void setPath (int toX, int toY);

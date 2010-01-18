@@ -516,3 +516,14 @@ bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
     }
     return true;
 }
+
+/* delete a Dijkstra object */
+void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra) {
+    dijkstra_t * data = (dijkstra_t*)dijkstra;
+    free(data->distances);
+    free(data->nodes);
+    TCOD_list_clear(data->path);
+    TCOD_list_delete(data->path);
+    free(data);
+}
+

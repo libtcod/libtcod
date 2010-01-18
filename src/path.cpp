@@ -85,6 +85,11 @@ TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
     data = TCOD_dijkstra_new(map->data,diagonalCost);
 }
 
+//dtor
+TCODDijkstra::~TCODDijkstra (void) {
+    TCOD_dijkstra_delete(data);
+}
+
 //compute distances grid
 void TCODDijkstra::compute (int rootX, int rootY) {
     TCOD_dijkstra_compute(data,rootX,rootY);

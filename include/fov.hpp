@@ -46,6 +46,7 @@ class TCODLIB_API TCODMap {
 		int getHeight() const;
 		int getNbCells() const;
 		friend class TCODLIB_API TCODPath;
+		friend class TCODLIB_API TCODDijkstra;
 //	protected :
 		TCOD_map_t data;
 };

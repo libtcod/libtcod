@@ -57,5 +57,17 @@ protected :
 	} cppData;
 };
 
+//Dijkstra kit
+class TCODLIB_API TCODDijkstra {
+    public:
+        TCODDijkstra (TCODMap *map, float diagonalCost=1.41f);
+        void compute (int rootX, int rootY);
+        float getDistance (int x, int y);
+        void tracePath (int toX, int toY);
+        bool walk (int *x, int *y);
+    private:
+        TCOD_dijkstra_t data;
+};
+
 #endif
 

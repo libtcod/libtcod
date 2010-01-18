@@ -75,4 +75,34 @@ void TCODPath::getDestination(int *x,int *y) const {
 	TCOD_path_get_destination(data,x,y);
 }
 
+// ----------------- //
+// Dijkstra          //
+// written by Mingos //
+// ----------------- //
+
+//ctor
+TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
+    data = TCOD_dijkstra_new(map->data,diagonalCost);
+}
+
+//compute distances grid
+void TCODDijkstra::compute (int rootX, int rootY) {
+    TCOD_dijkstra_compute(data,rootX,rootY);
+}
+
+//retrieve distance to a given cell
+float TCODDijkstra::getDistance (int x, int y) {
+    return TCOD_dijkstra_get_distance(data,x,y);
+}
+
+//create a path
+void TCODDijkstra::tracePath (int toX, int toY) {
+    TCOD_dijkstra_path_trace(data,toX,toY);
+}
+
+//walk a path
+bool TCODDijkstra::walk (int *x, int *y) {
+    return TCOD_dijkstra_path_walk(data,x,y);
+}
+
 

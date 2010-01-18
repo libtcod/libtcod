@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.5.0 : ???? ??? ??
+1.5.0 : 2010 Jan 19
 X removed bitfield from TCOD_key_t and TCOD_mouse_t to ease wrappers writing.
   existing working wrappers might be broken, though.
 X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t

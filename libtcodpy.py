@@ -546,7 +546,9 @@ def console_wait_for_keypress(flush):
     return _lib.TCOD_console_wait_for_keypress(c_int(flush))
 
 def console_check_for_keypress(flags=KEY_RELEASED):
-    return _lib.TCOD_console_check_for_keypress(flags)
+	k=Key()
+	_lib.TCOD_console_check_for_keypress_wrapper(byref(k),c_int(flags))
+	return k
 
 def console_is_key_pressed(key):
     return _lib.TCOD_console_is_key_pressed(key) == 1

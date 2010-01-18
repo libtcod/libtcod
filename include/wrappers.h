@@ -114,5 +114,9 @@ TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
 // parser module
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);
 
+// namegen module
+TCODLIB_API int TCOD_namegen_get_nb_sets_wrapper();
+TCODLIB_API void TCOD_namegen_get_sets_wrapper(char **sets);
+
 #endif	/* WRAPPERS_H */
 

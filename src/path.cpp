@@ -96,8 +96,8 @@ float TCODDijkstra::getDistance (int x, int y) {
 }
 
 //create a path
-void TCODDijkstra::tracePath (int toX, int toY) {
-    TCOD_dijkstra_path_trace(data,toX,toY);
+void TCODDijkstra::setPath (int toX, int toY) {
+    TCOD_dijkstra_path_set(data,toX,toY);
 }
 
 //walk a path

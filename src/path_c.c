@@ -470,7 +470,7 @@ unsigned int dijkstra_get_int_distance (dijkstra_t * data, int x, int y) {
 }
 
 /* create a path */
-void TCOD_dijkstra_path_trace (TCOD_dijkstra_t dijkstra, int x, int y) {
+void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
 
     int px = x, py = y;

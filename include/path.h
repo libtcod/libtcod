@@ -50,7 +50,7 @@ typedef void *TCOD_dijkstra_t;
 TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost);
 TCODLIB_API void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y);
 TCODLIB_API float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y);
-TCODLIB_API void TCOD_dijkstra_path_trace (TCOD_dijkstra_t dijkstra, int x, int y);
+TCODLIB_API void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y);
 TCODLIB_API bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y);
 
 #endif

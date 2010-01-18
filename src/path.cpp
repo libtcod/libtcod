@@ -102,7 +102,7 @@ void TCODDijkstra::setPath (int toX, int toY) {
 
 //walk a path
 bool TCODDijkstra::walk (int *x, int *y) {
-    return TCOD_dijkstra_path_walk(data,x,y);
+    return TCOD_dijkstra_path_walk(data,x,y) != 0;
 }
 
 

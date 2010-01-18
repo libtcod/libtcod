@@ -1028,7 +1028,8 @@ void render_name(bool first, TCOD_key_t*key) {
 		// remove the first element.
 		char *nameToRemove= * (TCOD_list_begin(names));
 		TCOD_list_remove_iterator(names, TCOD_list_begin(names));
-		free(nameToRemove);
+		// for some reason, this crashes on MSVC...
+		//free(nameToRemove);
 	}
 
 	TCOD_console_clear(sample_console);

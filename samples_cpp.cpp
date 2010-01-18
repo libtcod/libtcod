@@ -1025,7 +1025,8 @@ void render_name(bool first, TCOD_key_t*key) {
 		// remove the first element.
 		char *nameToRemove= * (names.begin());
 		names.remove(names.begin());
-		free(nameToRemove);
+		// for some reason, this crashes on MSVC...
+		//free(nameToRemove);
 	}
 
 	sampleConsole.clear();

@@ -17,6 +17,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODRandom::getInt</h3>
 Once you obtained a generator (using one of <a href="random_init.html">those methods</a>), you can get random numbers using following functions :<br />
 To get a random integer :<br />
 <p class="code"><pre>
@@ -29,7 +30,7 @@ Py  : random_get_int(mersenne, mi, ma)
 <tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions. If NULL, the default generator is used.</a>.<br /></td></tr>
 <tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max<br /></td></tr>
 </table>
-<br />
+<h3>TCODRandom::getFloat</h3>
 To get a random floating point number :<br />
 <p class="code"><pre>
 C++ : float TCODRandom::getFloat(float min, float max)
@@ -61,7 +62,19 @@ Py  : # default generator
       my_random = libtcod.random_new()
       a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)
 </pre></p>
-<br />
+<h3>TCODRandom::getGaussian</h3>
+To get a random floating point with an approximated gaussian distribution:<br />
+<p class="code"><pre>
+C++ : float TCODRandom::getGaussian(float min, float max)
+C   : float TCOD_random_get_gaussian(TCOD_random_t mersenne, float min, float max)
+Py  : random_get_gaussian(mersenne, mi, ma)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions</a>. If NULL, the default generator is used.<br /></td></tr>
+<tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max. Due to the gaussian distribution, most values are near (min+max)/2<br /></td></tr>
+</table>
+<h3>TCODRandom::save</h3>
 You can save the state of a generator with :<br />
 <p class="code"><pre>
 C++ : TCODRandom *TCODRandom::save() const
@@ -72,7 +85,7 @@ Py  : random_save(mersenne)
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions</a>. If NULL, the default generator is used.<br /></td></tr>
 </table>
-<br />
+<h3>TCODRandom::restore</h3>
 And restore it later. This makes it possible to get the same serie of number several times with a single generator.<br />
 <p class="code"><pre>
 C++ : void TCODRandom::restore(const TCODRandom *backup)

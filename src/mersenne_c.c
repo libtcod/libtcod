@@ -214,3 +214,76 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	delta = max - min - (2 * deltamid); /* calculate the actual delta */
 	return (min + deltamid + (frandom01(r) * delta));
 }
+
+/* ---------------------------------------- *
+ * COMPLIMENTARY MULTIPLY WITH CARRY - CMWC *
+ * ---------------------------------------- */
+
+/* the typedef */
+typedef struct {
+    unsigned long Q[4096], c;
+    int cur;
+} cmwc_t;
+
+static TCOD_cmwc_t cmwc_instance = NULL;
+
+/* new instance, using a given seed */
+TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed) {
+    cmwc_t * data = malloc(sizeof(cmwc_t));
+    data->Q[0] = seed;
+    int i;
+    for (i = 1; i < 4096; i++) data->Q[i] = data->Q[i-1] * 12345;
+    data->c = data->Q[4095] * 67890;
+    data->cur = 0;
+    return (TCOD_cmwc_t)data;
+}
+/* new instance */
+TCOD_cmwc_t TCOD_cmwc_new (void) {
+    return TCOD_cmwc_new_from_seed (time(NULL));
+}
+
+/* get an instance */
+TCOD_cmwc_t TCOD_cmwc_get_instance (void) {
+    if (cmwc_instance == NULL) cmwc_instance = TCOD_cmwc_new();
+    return cmwc_instance;
+}
+
+/* get an integer */
+unsigned long TCOD_cmwc_get (TCOD_cmwc_t cmwc) {
+    cmwc_t * data = (cmwc_t*)cmwc;
+    static unsigned long long t, a=18782LL;
+    static unsigned long x,r=0xfffffffe;
+    data->cur=(data->cur+1)&4095;
+    t=a*data->Q[data->cur]+data->c;
+    data->c=(t>>32);
+    x=t+data->c;
+    if (x < data->c) { x++; data->c++; }
+    if((x+1)==0) { data->c++; x=0; }
+    return (data->Q[data->cur] = r - x);
+}
+
+/* get integer */
+int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
+    unsigned long r = TCOD_cmwc_get(cmwc);
+    int range;
+    if (max < min) {
+        int tmp = max;
+        max = min;
+        min = tmp;
+    }
+    range = max - min;
+    return ((int)((r % range) + min));
+}
+
+/* get float */
+float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max) {
+    float r = (float)(TCOD_cmwc_get(cmwc)) / 0xFFFFFFFF;
+    float range;
+    if (max < min) {
+        float tmp = max;
+        max = min;
+        min = tmp;
+    }
+    range = max - min;
+    return ((r * range) + min);
+}

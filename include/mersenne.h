@@ -42,4 +42,12 @@ TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
 TCODLIB_API float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max);
 
+typedef void * TCOD_cmwc_t;
+
+TCODLIB_API TCOD_cmwc_t TCOD_cmwc_get_instance (void);
+TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new (void);
+TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed);
+TCODLIB_API int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max);
+TCODLIB_API float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max);
+
 #endif

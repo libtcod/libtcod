@@ -73,3 +73,30 @@ void TCODRandom::restore(const TCODRandom *backup) {
 float TCODRandom::getGaussian(float min, float max) {
 	return TCOD_random_get_gaussian(data,min,max);
 }
+
+// ---- //
+// CMWC //
+// ---- //
+
+static TCODCmwc * cmwcInstance = NULL;
+
+TCODCmwc * TCODCmwc::getInstance (void) {
+    if (cmwcInstance == NULL) cmwcInstance = new TCODCmwc();
+    return cmwcInstance;
+}
+
+TCODCmwc::TCODCmwc (void) {
+    data = TCOD_cmwc_new();
+}
+
+TCODCmwc::TCODCmwc (unsigned long seed) {
+    data = TCOD_cmwc_new_from_seed (seed);
+}
+
+int TCODCmwc::getInt (int min, int max) {
+    return TCOD_cmwc_get_int(data,min,max);
+}
+
+float TCODCmwc::getFloat (float min, float max) {
+    return TCOD_cmwc_get_float(data,min,max);
+}

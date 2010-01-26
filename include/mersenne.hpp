@@ -30,12 +30,12 @@
 
 class TCODLIB_API TCODRandom {
 	public :
-		static TCODRandom *getInstance();
-		TCODRandom(bool allocate=true);
-		TCODRandom(uint32 seed);
+		static TCODRandom * getInstance(void);
+		TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, bool allocate = true);
+		TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, uint32 seed = 666);
 		int getInt(int min, int max);
 		float getFloat(float min, float max);
-		TCODRandom *save() const;
+		TCODRandom * save(TCOD_random_algo_t algo = TCOD_RNG_CMWC) const;
 		void restore(const TCODRandom *backup);
 		float getGaussian(float min, float max);
 
@@ -49,15 +49,15 @@ class TCODLIB_API TCODRandom {
 		TCOD_random_t data;
 };
 
-class TCODLIB_API TCODCmwc {
-    public:
-        static TCODCmwc * getInstance();
-        TCODCmwc(void);
-        TCODCmwc(unsigned long seed);
-        int getInt(int min, int max);
-        float getFloat(float min, float max);
-    private:
-        TCOD_cmwc_t data;
-};
+//class TCODLIB_API TCODCmwc {
+//    public:
+//        static TCODCmwc * getInstance();
+//        TCODCmwc(void);
+//        TCODCmwc(unsigned long seed);
+//        int getInt(int min, int max);
+//        float getFloat(float min, float max);
+//    private:
+//        TCOD_cmwc_t data;
+//};
 
 #endif

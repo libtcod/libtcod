@@ -28,13 +28,20 @@
 #ifndef _TCOD_RANDOM_H
 #define _TCOD_RANDOM_H
 
+/* PRNG algorithms */
+typedef enum {
+    TCOD_RNG_MT,
+    TCOD_RNG_CMWC
+} TCOD_random_algo_t;
+
+
 typedef void *TCOD_random_t;
 
-TCODLIB_API TCOD_random_t TCOD_random_get_instance();
-TCODLIB_API TCOD_random_t TCOD_random_new();
+TCODLIB_API TCOD_random_t TCOD_random_get_instance(void);
+TCODLIB_API TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo);
 TCODLIB_API TCOD_random_t TCOD_random_save(TCOD_random_t mersenne);
 TCODLIB_API void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup);
-TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(uint32 seed);
+TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed);
 TCODLIB_API int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max);
 TCODLIB_API float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max);
 TCODLIB_API int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len);
@@ -42,12 +49,12 @@ TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
 TCODLIB_API float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max);
 
-typedef void * TCOD_cmwc_t;
+//typedef void * TCOD_cmwc_t;
 
-TCODLIB_API TCOD_cmwc_t TCOD_cmwc_get_instance (void);
-TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new (void);
-TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed);
-TCODLIB_API int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max);
-TCODLIB_API float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max);
+//TCODLIB_API TCOD_cmwc_t TCOD_cmwc_get_instance (void);
+//TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new (void);
+//TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed);
+//TCODLIB_API int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max);
+//TCODLIB_API float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max);
 
 #endif

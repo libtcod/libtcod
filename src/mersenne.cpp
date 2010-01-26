@@ -29,19 +29,19 @@
 
 static TCODRandom *instance=(TCODRandom *)NULL;
 
-TCODRandom *TCODRandom::getInstance() {
+TCODRandom *TCODRandom::getInstance(void) {
 	if (! instance ) {
-		instance=new TCODRandom();
+		instance=new TCODRandom(TCOD_RNG_CMWC,true);
 	}
 	return instance;
 }
 
-TCODRandom::TCODRandom(bool allocate) {
-	if ( allocate ) data = TCOD_random_new();
+TCODRandom::TCODRandom(TCOD_random_algo_t algo, bool allocate) {
+	if ( allocate ) data = TCOD_random_new(algo);
 }
 
-TCODRandom::TCODRandom(uint32 seed) {
-	data=TCOD_random_new_from_seed(seed);
+TCODRandom::TCODRandom(TCOD_random_algo_t algo, uint32 seed) {
+	data=TCOD_random_new_from_seed(algo, seed);
 }
 
 int TCODRandom::getInt(int min, int max) {
@@ -60,8 +60,8 @@ TCODRandom::~TCODRandom() {
 	TCOD_random_delete(data);
 }
 
-TCODRandom *TCODRandom::save() const {
-	TCODRandom *ret=new TCODRandom(false);
+TCODRandom *TCODRandom::save(TCOD_random_algo_t algo) const {
+	TCODRandom *ret=new TCODRandom(algo,false);
 	ret->data=TCOD_random_save(data);
 	return ret;
 }
@@ -78,25 +78,25 @@ float TCODRandom::getGaussian(float min, float max) {
 // CMWC //
 // ---- //
 
-static TCODCmwc * cmwcInstance = NULL;
-
-TCODCmwc * TCODCmwc::getInstance (void) {
-    if (cmwcInstance == NULL) cmwcInstance = new TCODCmwc();
-    return cmwcInstance;
-}
-
-TCODCmwc::TCODCmwc (void) {
-    data = TCOD_cmwc_new();
-}
-
-TCODCmwc::TCODCmwc (unsigned long seed) {
-    data = TCOD_cmwc_new_from_seed (seed);
-}
-
-int TCODCmwc::getInt (int min, int max) {
-    return TCOD_cmwc_get_int(data,min,max);
-}
-
-float TCODCmwc::getFloat (float min, float max) {
-    return TCOD_cmwc_get_float(data,min,max);
-}
+//static TCODCmwc * cmwcInstance = NULL;
+//
+//TCODCmwc * TCODCmwc::getInstance (void) {
+//    if (cmwcInstance == NULL) cmwcInstance = new TCODCmwc();
+//    return cmwcInstance;
+//}
+//
+//TCODCmwc::TCODCmwc (void) {
+//    data = TCOD_cmwc_new();
+//}
+//
+//TCODCmwc::TCODCmwc (unsigned long seed) {
+//    data = TCOD_cmwc_new_from_seed (seed);
+//}
+//
+//int TCODCmwc::getInt (int min, int max) {
+//    return TCOD_cmwc_get_int(data,min,max);
+//}
+//
+//float TCODCmwc::getFloat (float min, float max) {
+//    return TCOD_cmwc_get_float(data,min,max);
+//}

@@ -31,10 +31,16 @@
 #include <math.h>
 #include "libtcod.h"
 
-/* mersenne twister toolkit */
+/* pseudorandom number generator toolkit */
 typedef struct {
+	/* algorithm identifier */
+	TCOD_random_algo_t algo;
+	/* Mersenne Twister stuff */
 	uint32 mt[624];
 	int cur_mt;
+	/* Complementary-Multiply-With-Carry stuff */
+	unsigned long Q[4096], c;
+    int cur;
 } mersenne_data_t;
 
 static TCOD_random_t instance=NULL;
@@ -110,25 +116,66 @@ static uint32 hash(const char *data,int len) {
 	return (hash & 0x7FFFFFFF);
 }
 
-TCOD_random_t TCOD_random_new() {
+TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
-	r->cur_mt=624;
-	mt_init((uint32)time(NULL),r->mt);
-	return (TCOD_random_t)r;
+	/* Mersenne Twister */
+	if (algo == TCOD_RNG_MT) {
+        r->cur_mt=624;
+        r->algo=TCOD_RNG_MT;
+        mt_init((uint32)time(NULL),r->mt);
+	}
+	/* Complementary-Multiply-With-Carry */
+	else {
+	    int i;
+        /* fill the Q array with pseudorandom seeds */
+        srand(time(NULL));
+        for (i = 0; i < 4096; i++) r->Q[i] = rand();
+        r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
+        r->cur = 0;
+        r->algo = TCOD_RNG_CMWC;
+	}
+    return (TCOD_random_t)r;
 }
 
-TCOD_random_t TCOD_random_get_instance() {
+TCOD_random_t TCOD_random_get_instance(void) {
 	if (! instance ) {
-		instance=TCOD_random_new();
+		instance=TCOD_random_new(TCOD_RNG_CMWC);
 	}
 	return instance;
 }
 
-TCOD_random_t TCOD_random_new_from_seed(uint32 seed) {
+TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
-	r->cur_mt=624;
-	mt_init(seed,r->mt);
+	/* Mersenne Twister */
+	if (algo == TCOD_RNG_MT) {
+        r->algo = TCOD_RNG_MT;
+        r->cur_mt=624;
+        mt_init(seed,r->mt);
+	}
+	/* Complementary-Multiply-With-Carry */
+	else {
+	    int i;
+        /* fill the Q array with pseudorandom seeds */
+        srand(seed);
+        for (i = 0; i < 4096; i++) r->Q[i] = rand();
+        r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
+        r->cur = 0;
+        r->algo = TCOD_RNG_CMWC;
+	}
 	return (TCOD_random_t)r;
+}
+
+/* get a random number from the CMWC */
+#define CMWC_GET_NUMBER(num) { \
+    static unsigned long long t, a=18782LL; \
+    static unsigned long x; \
+    r->cur=(r->cur+1)&4095; \
+    t=a*r->Q[r->cur]+r->c; \
+    r->c=(t>>32); \
+    x=t+r->c; \
+    if (x < r->c) { x++; r->c++; } \
+    if((x+1)==0) { r->c++; x=0; } \
+    num = (r->Q[r->cur] = 0xfffffffe - x); \
 }
 
 int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
@@ -143,7 +190,14 @@ int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	if (!mersenne) mersenne=TCOD_random_get_instance();
 	r=(mersenne_data_t *)mersenne;
 	delta = max - min + 1;
-	return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
+	/* return a number from the Mersenne Twister */
+	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
+	/* or from the CMWC */
+	else {
+	    int number;
+	    CMWC_GET_NUMBER(number)
+	    return number;
+	}
 }
 
 float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
@@ -158,7 +212,14 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	if (!mersenne) mersenne=TCOD_random_get_instance();
 	r=(mersenne_data_t *)mersenne;
 	delta = max - min;
-	f = delta * frandom01(r);
+	/* Mersenne Twister */
+	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
+	/* CMWC */
+	else {
+	    int number;
+	    CMWC_GET_NUMBER(number)
+	    f = (float)number * rand_div * delta;
+	}
 	return min + f;
 }
 
@@ -210,84 +271,99 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	}
 	if (!mersenne) mersenne=TCOD_random_get_instance();
 	r=(mersenne_data_t *)mersenne;
-	deltamid = (float)(((max - min) / 2) * sin(frandom01(r) * 3.14159f)); /* absolute delta from middle value */
-	delta = max - min - (2 * deltamid); /* calculate the actual delta */
-	return (min + deltamid + (frandom01(r) * delta));
+	/* MT */
+	if (r->algo == TCOD_RNG_MT) {
+	    deltamid = (float)(((max - min) / 2) * sin(frandom01(r) * 3.14159f)); /* absolute delta from middle value */
+        delta = max - min - (2 * deltamid); /* calculate the actual delta */
+	    return (min + deltamid + (frandom01(r) * delta));
+	}
+	/* CMWC */
+	else {
+	    int number;
+	    CMWC_GET_NUMBER(number)
+	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
+	    delta = max - min - (2 * deltamid);
+	    CMWC_GET_NUMBER(number)
+	    return (min + deltamid + ((float)(number)*rand_div*delta));
+	}
 }
 
-/* ---------------------------------------- *
- * COMPLIMENTARY MULTIPLY WITH CARRY - CMWC *
- * ---------------------------------------- */
-
-/* the typedef */
-typedef struct {
-    unsigned long Q[4096], c;
-    int cur;
-} cmwc_t;
-
-static TCOD_cmwc_t cmwc_instance = NULL;
-
-/* new instance, using a given seed */
-TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed) {
-    cmwc_t * data = malloc(sizeof(cmwc_t));
-    int i;
-    /* fill the Q array with pseudorandom seeds */
-    srand(seed);
-    for (i = 0; i < 4096; i++) data->Q[i] = rand();
-    data->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
-    data->cur = 0;
-    return (TCOD_cmwc_t)data;
-}
-/* new instance */
-TCOD_cmwc_t TCOD_cmwc_new (void) {
-    return TCOD_cmwc_new_from_seed (time(NULL));
-}
-
-/* get an instance */
-TCOD_cmwc_t TCOD_cmwc_get_instance (void) {
-    if (cmwc_instance == NULL) cmwc_instance = TCOD_cmwc_new();
-    return cmwc_instance;
-}
-
-/* get an integer */
-/* original implementation by George Marsaglia */
-unsigned long TCOD_cmwc_get (TCOD_cmwc_t cmwc) {
-    cmwc_t * data = (cmwc_t*)cmwc;
-    static unsigned long long t, a=18782LL;
-    static unsigned long x,r=0xfffffffe;
-    data->cur=(data->cur+1)&4095;
-    t=a*data->Q[data->cur]+data->c;
-    data->c=(t>>32);
-    x=t+data->c;
-    if (x < data->c) { x++; data->c++; } /* this is merely an overflow check */
-    if((x+1)==0) { data->c++; x=0; } /* dunno what this does... */
-    return (data->Q[data->cur] = r - x);
-}
-
-/* get integer */
-int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
-    unsigned long r = TCOD_cmwc_get(cmwc);
-    int range;
-    if (max <= min) {
-        if (max == min) return min;
-        int tmp = max;
-        max = min;
-        min = tmp;
-    }
-    range = max - min;
-    return ((int)((r % range) + min));
-}
-
-/* get float */
-float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max) {
-    float r = (float)(TCOD_cmwc_get(cmwc)) * rand_div;
-    float range;
-    if (max <= min) {
-        if (max == min) return min;
-        float tmp = max;
-        max = min;
-        min = tmp;
-    }
-    range = max - min;
-    return ((r * range) + min);
-}
+///* ---------------------------------------- *
+// * COMPLIMENTARY MULTIPLY WITH CARRY - CMWC *
+// * ---------------------------------------- */
+//
+///* the typedef */
+//typedef struct {
+//    unsigned long Q[4096], c;
+//    int cur;
+//} cmwc_t;
+//
+//static TCOD_cmwc_t cmwc_instance = NULL;
+//
+///* new instance, using a given seed */
+//TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed) {
+//    cmwc_t * data = malloc(sizeof(cmwc_t));
+//    int i;
+//    /* fill the Q array with pseudorandom seeds */
+//    srand(seed);
+//    for (i = 0; i < 4096; i++) data->Q[i] = rand();
+//    data->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
+//    data->cur = 0;
+//    return (TCOD_cmwc_t)data;
+//}
+///* new instance */
+//TCOD_cmwc_t TCOD_cmwc_new (void) {
+//    return TCOD_cmwc_new_from_seed (time(NULL));
+//}
+//
+///* get an instance */
+//TCOD_cmwc_t TCOD_cmwc_get_instance (void) {
+//    if (cmwc_instance == NULL) cmwc_instance = TCOD_cmwc_new();
+//    return cmwc_instance;
+//}
+//
+///* get an integer */
+///* original implementation by George Marsaglia */
+//unsigned long TCOD_cmwc_get (mersenne_data_t * rng) {
+//    static unsigned long long t, a=18782LL;
+//    static unsigned long x,r=0xfffffffe;
+//    rng->cur=(data->cur+1)&4095;
+//    t=a*data->Q[data->cur]+data->c;
+//    data->c=(t>>32);
+//    x=t+data->c;
+//    if (x < data->c) { x++; data->c++; } /* this is merely an overflow check */
+//    if((x+1)==0) { data->c++; x=0; } /* dunno what this does... */
+//    return (data->Q[data->cur] = r - x);
+//}
+//
+///* get integer */
+//int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
+//    unsigned long r = TCOD_cmwc_get(cmwc);
+//    int range;
+//    if (max <= min) {
+//        if (max == min) return min;
+//        else {
+//            int tmp = max;
+//            max = min;
+//            min = tmp;
+//        }
+//    }
+//    range = max - min;
+//    return ((int)((r % range) + min));
+//}
+//
+///* get float */
+//float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max) {
+//    float r = (float)(TCOD_cmwc_get(cmwc)) * rand_div;
+//    float range;
+//    if (max <= min) {
+//        if (max == min) return min;
+//        else {
+//            float tmp = max;
+//            max = min;
+//            min = tmp;
+//        }
+//    }
+//    range = max - min;
+//    return ((r * range) + min);
+//}

@@ -107,6 +107,20 @@ static uint32 hash(const char *data,int len) {
 }
 */
 
+/* get a random number from the CMWC */
+#define CMWC_GET_NUMBER(num) { \
+    unsigned long long t; \
+    uint32 x; \
+    r->cur=(r->cur+1)&4095; \
+    t=18782LL*r->Q[r->cur]+r->c; \
+    r->c=(t>>32); \
+    x=t+r->c; \
+    if (x < r->c) { x++; r->c++; } \
+    if((x+1)==0) { r->c++; x=0; } \
+    num = (r->Q[r->cur] = 0xfffffffe - x); \
+}
+
+
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
 	/* Mersenne Twister */
@@ -124,6 +138,11 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
+        // for some reason the first 4096 numbers suck on windows 32
+        for (i = 0; i < 4096; i++) {
+        	uint32 tmp;
+        	CMWC_GET_NUMBER(tmp);
+		}
 	}
     return (TCOD_random_t)r;
 }
@@ -152,22 +171,15 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
+        // for some reason the first 4096 numbers suck on windows 32
+        for (i = 0; i < 4096; i++) {
+        	uint32 tmp;
+        	CMWC_GET_NUMBER(tmp);
+		}
 	}
 	return (TCOD_random_t)r;
 }
 
-/* get a random number from the CMWC */
-#define CMWC_GET_NUMBER(num) { \
-    unsigned long long t; \
-    uint32 x; \
-    r->cur=(r->cur+1)&4095; \
-    t=18782LL*r->Q[r->cur]+r->c; \
-    r->c=(t>>32); \
-    x=t+r->c; \
-    if (x < r->c) { x++; r->c++; } \
-    if((x+1)==0) { r->c++; x=0; } \
-    num = (r->Q[r->cur] = 0xfffffffe - x); \
-}
 
 int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	mersenne_data_t *r;

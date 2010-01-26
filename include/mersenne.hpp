@@ -48,15 +48,4 @@ class TCODLIB_API TCODRandom {
 		TCOD_random_t data;
 };
 
-//class TCODLIB_API TCODCmwc {
-//    public:
-//        static TCODCmwc * getInstance();
-//        TCODCmwc(void);
-//        TCODCmwc(unsigned long seed);
-//        int getInt(int min, int max);
-//        float getFloat(float min, float max);
-//    private:
-//        TCOD_cmwc_t data;
-//};
-
 #endif

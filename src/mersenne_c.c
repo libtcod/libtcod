@@ -31,7 +31,7 @@
 #include <math.h>
 #include "libtcod.h"
 #include "libtcod_int.h"
-                       
+
 static TCOD_random_t instance=NULL;
 static float rand_div=1.0f/(float)(0xffffffff);
 
@@ -183,9 +183,9 @@ int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
 	/* or from the CMWC */
 	else {
-	    int number;
+	    unsigned long number;
 	    CMWC_GET_NUMBER(number)
-	    return number;
+	    return number % delta + min;
 	}
 }
 
@@ -205,7 +205,7 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
 	/* CMWC */
 	else {
-	    int number;
+	    unsigned long number;
 	    CMWC_GET_NUMBER(number)
 	    f = (float)number * rand_div * delta;
 	}
@@ -246,7 +246,7 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	}
 	/* CMWC */
 	else {
-	    int number;
+	    unsigned long number;
 	    CMWC_GET_NUMBER(number)
 	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
 	    delta = max - min - (2 * deltamid);
@@ -254,83 +254,3 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	    return (min + deltamid + ((float)(number)*rand_div*delta));
 	}
 }
-
-///* ---------------------------------------- *
-// * COMPLIMENTARY MULTIPLY WITH CARRY - CMWC *
-// * ---------------------------------------- */
-//
-///* the typedef */
-//typedef struct {
-//    unsigned long Q[4096], c;
-//    int cur;
-//} cmwc_t;
-//
-//static TCOD_cmwc_t cmwc_instance = NULL;
-//
-///* new instance, using a given seed */
-//TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed) {
-//    cmwc_t * data = malloc(sizeof(cmwc_t));
-//    int i;
-//    /* fill the Q array with pseudorandom seeds */
-//    srand(seed);
-//    for (i = 0; i < 4096; i++) data->Q[i] = rand();
-//    data->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
-//    data->cur = 0;
-//    return (TCOD_cmwc_t)data;
-//}
-///* new instance */
-//TCOD_cmwc_t TCOD_cmwc_new (void) {
-//    return TCOD_cmwc_new_from_seed (time(NULL));
-//}
-//
-///* get an instance */
-//TCOD_cmwc_t TCOD_cmwc_get_instance (void) {
-//    if (cmwc_instance == NULL) cmwc_instance = TCOD_cmwc_new();
-//    return cmwc_instance;
-//}
-//
-///* get an integer */
-///* original implementation by George Marsaglia */
-//unsigned long TCOD_cmwc_get (mersenne_data_t * rng) {
-//    static unsigned long long t, a=18782LL;
-//    static unsigned long x,r=0xfffffffe;
-//    rng->cur=(data->cur+1)&4095;
-//    t=a*data->Q[data->cur]+data->c;
-//    data->c=(t>>32);
-//    x=t+data->c;
-//    if (x < data->c) { x++; data->c++; } /* this is merely an overflow check */
-//    if((x+1)==0) { data->c++; x=0; } /* dunno what this does... */
-//    return (data->Q[data->cur] = r - x);
-//}
-//
-///* get integer */
-//int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
-//    unsigned long r = TCOD_cmwc_get(cmwc);
-//    int range;
-//    if (max <= min) {
-//        if (max == min) return min;
-//        else {
-//            int tmp = max;
-//            max = min;
-//            min = tmp;
-//        }
-//    }
-//    range = max - min;
-//    return ((int)((r % range) + min));
-//}
-//
-///* get float */
-//float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max) {
-//    float r = (float)(TCOD_cmwc_get(cmwc)) * rand_div;
-//    float range;
-//    if (max <= min) {
-//        if (max == min) return min;
-//        else {
-//            float tmp = max;
-//            max = min;
-//            min = tmp;
-//        }
-//    }
-//    range = max - min;
-//    return ((r * range) + min);
-//}

@@ -91,6 +91,7 @@ static float frandom01(mersenne_data_t *r) {
 }
 
 /* string hashing function */
+/* not used (yet)
 static uint32 hash(const char *data,int len) {
 	uint32 hash = 0;
 	uint32 x;
@@ -104,6 +105,7 @@ static uint32 hash(const char *data,int len) {
 	}
 	return (hash & 0x7FFFFFFF);
 }
+*/
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);

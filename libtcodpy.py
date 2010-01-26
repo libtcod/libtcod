@@ -933,15 +933,17 @@ def parser_get_list_property(parser, name):
 ############################
 _lib.TCOD_random_get_float.restype = c_float
 _lib.TCOD_random_get_gaussian.restype = c_float
+RNG_MT = 0
+RNG_CMWC = 1
 
 def random_get_instance():
     return _lib.TCOD_random_get_instance()
 
 def random_new():
-    return _lib.TCOD_random_new()
+    return _lib.TCOD_random_new(RNG_CMWC)
 
-def random_new_from_seed(seed):
-    return _lib.TCOD_random_new_from_seed(c_uint(seed))
+def random_new_from_seed(seed, algo=RNG_CMWC):
+    return _lib.TCOD_random_new_from_seed(algo,c_uint(seed))
 
 def random_get_int(rnd, mi, ma):
     return _lib.TCOD_random_get_int(rnd, mi, ma)

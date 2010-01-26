@@ -268,7 +268,8 @@ unsigned long TCOD_cmwc_get (TCOD_cmwc_t cmwc) {
 int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
     unsigned long r = TCOD_cmwc_get(cmwc);
     int range;
-    if (max < min) {
+    if (max <= min) {
+        if (max == min) return min;
         int tmp = max;
         max = min;
         min = tmp;
@@ -279,9 +280,10 @@ int TCOD_cmwc_get_int (TCOD_cmwc_t cmwc, int min, int max) {
 
 /* get float */
 float TCOD_cmwc_get_float (TCOD_cmwc_t cmwc, float min, float max) {
-    float r = (float)(TCOD_cmwc_get(cmwc)) / 0xFFFFFFFF;
+    float r = (float)(TCOD_cmwc_get(cmwc)) * rand_div;
     float range;
-    if (max < min) {
+    if (max <= min) {
+        if (max == min) return min;
         float tmp = max;
         max = min;
         min = tmp;

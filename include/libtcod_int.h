@@ -81,7 +81,7 @@ typedef struct {
 	uint32 mt[624];
 	int cur_mt;
 	/* Complementary-Multiply-With-Carry stuff */
-	unsigned long Q[4096], c;
+	uint32 Q[4096], c;
     int cur;
 } mersenne_data_t;
 
@@ -126,7 +126,7 @@ extern int TCOD_max_font_chars;
 void TCOD_sys_startup();
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
-void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY); 
+void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
 void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
@@ -152,7 +152,7 @@ void TCOD_sys_term();
 #ifndef NO_UNICODE
 wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap);
 int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
-	alignment_t align, wchar_t *msg, bool can_split, bool count_only); 
+	alignment_t align, wchar_t *msg, bool can_split, bool count_only);
 #endif
 
 /* image manipulation */

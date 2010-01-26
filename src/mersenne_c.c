@@ -158,10 +158,10 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
 
 /* get a random number from the CMWC */
 #define CMWC_GET_NUMBER(num) { \
-    static unsigned long long t, a=18782LL; \
-    static unsigned long x; \
+    unsigned long long t; \
+    uint32 x; \
     r->cur=(r->cur+1)&4095; \
-    t=a*r->Q[r->cur]+r->c; \
+    t=18782LL*r->Q[r->cur]+r->c; \
     r->c=(t>>32); \
     x=t+r->c; \
     if (x < r->c) { x++; r->c++; } \
@@ -185,7 +185,7 @@ int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
 	/* or from the CMWC */
 	else {
-	    unsigned long number;
+	    uint32 number;
 	    CMWC_GET_NUMBER(number)
 	    return number % delta + min;
 	}
@@ -207,9 +207,9 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
 	/* CMWC */
 	else {
-	    unsigned long number;
+	    uint32 number;
 	    CMWC_GET_NUMBER(number)
-	    f = (float)number * rand_div * delta;
+	    f = (float)(number) * rand_div * delta;
 	}
 	return min + f;
 }
@@ -248,7 +248,7 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	}
 	/* CMWC */
 	else {
-	    unsigned long number;
+	    uint32 number;
 	    CMWC_GET_NUMBER(number)
 	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
 	    delta = max - min - (2 * deltamid);

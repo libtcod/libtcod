@@ -30,19 +30,8 @@
 #include <string.h>
 #include <math.h>
 #include "libtcod.h"
-
-/* pseudorandom number generator toolkit */
-typedef struct {
-	/* algorithm identifier */
-	TCOD_random_algo_t algo;
-	/* Mersenne Twister stuff */
-	uint32 mt[624];
-	int cur_mt;
-	/* Complementary-Multiply-With-Carry stuff */
-	unsigned long Q[4096], c;
-    int cur;
-} mersenne_data_t;
-
+#include "libtcod_int.h"
+                       
 static TCOD_random_t instance=NULL;
 static float rand_div=1.0f/(float)(0xffffffff);
 
@@ -221,28 +210,6 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	    f = (float)number * rand_div * delta;
 	}
 	return min + f;
-}
-
-int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len) {
-	static uint32 mt_seed[624];
-	static int cur_mt_seed;
-	static uint32 mt_seed_hash=0;
-	static uint32 mt_seed_rand=0;
-	uint32 h;
-	if (max==min) return min;
-	else if (max < min) {
-		int tmp=max;
-		max=min;
-		min=tmp;
-	}
-	h=hash(data,len);
-	if ( h != mt_seed_hash ) {
-		mt_seed_hash=h;
-		mt_init(h,mt_seed);
-		cur_mt_seed=624;
-		mt_seed_rand = (mt_rand(mt_seed,&cur_mt_seed) % (max-min+1)) + min;
-	}
-	return mt_seed_rand;
 }
 
 void TCOD_random_delete(TCOD_random_t mersenne) {

@@ -958,15 +958,6 @@ def random_save(rnd):
 def random_restore(rnd, backup):
     _lib.TCOD_random_restore(rnd, backup)
 
-def random_get_int_from_byte_array(mi, ma, data):
-    CHAR_ARRAY = c_char * len(data)
-    carr = CHAR_ARRAY()
-    i = 0
-    for d in data:
-        carr[i] = d
-        i += 1
-    return _lib.TCOD_random_get_int_from_byte_array(mi, ma, carr, len(data))
-
 def random_delete(rnd):
     _lib.TCOD_random_delete(rnd)
 

@@ -44,7 +44,6 @@ TCODLIB_API void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backu
 TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed);
 TCODLIB_API int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max);
 TCODLIB_API float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max);
-TCODLIB_API int TCOD_random_get_int_from_byte_array(int min, int max, const char *data,int len);
 TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
 TCODLIB_API float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max);

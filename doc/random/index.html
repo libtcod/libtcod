@@ -16,7 +16,15 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-This toolkit is an implementation of a fast and very high quality random number generator using the <a href="http://en.wikipedia.org/wiki/Mersenne_Twister">Mersenne twister algorithm</a>.<br/>
+This toolkit is an implementation of two fast and high quality random number generator :
+<ul><li>a <a href="http://en.wikipedia.org/wiki/Mersenne_Twister">Mersenne twister</a> generator</li>
+<li>a <a href="http://en.wikipedia.org/wiki/Multiply-with-carry">Complementary Multiply With Carry</a> generator.</li></ul>
+CMWC is faster and also has a much better period. It's the default algo since libtcod 1.5.0.<br />
+Relative performance :<br />
+MT int : 62<br />
+MT float : 54<br />
+CMWC int : 21<br />
+CMWC float : 32<br />
 For python users :<br />
 Python already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.<br />
 

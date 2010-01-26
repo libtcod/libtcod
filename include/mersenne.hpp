@@ -32,14 +32,13 @@ class TCODLIB_API TCODRandom {
 	public :
 		static TCODRandom * getInstance(void);
 		TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, bool allocate = true);
-		TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, uint32 seed = 666);
+		TCODRandom(uint32 seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
 		int getInt(int min, int max);
 		float getFloat(float min, float max);
-		TCODRandom * save(TCOD_random_algo_t algo = TCOD_RNG_CMWC) const;
+		TCODRandom * save() const;
 		void restore(const TCODRandom *backup);
 		float getGaussian(float min, float max);
 
-		static int getIntFromByteArray(int min, int max, const char *data,int len);
 		virtual ~TCODRandom();
 
 	protected :

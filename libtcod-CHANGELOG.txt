@@ -10,6 +10,19 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
+X TCODRandom::getIntFromByteArray has been deleted    
+X the random number generator module now support two algorithms :
+  Mersenne twister, used in previous versions of libtcod
+  Complementary Multiply With Carry, 2 to 3 times faster and has a much better period. This is the default algo.
+  You can choose the algorithm in the constructor :
+  typedef enum {
+    TCOD_RNG_MT,
+    TCOD_RNG_CMWC
+  } TCOD_random_algo_t;
+  TCODRandom() => CMWC, default seed
+  TCODRandom(uint32 seed) => CMWC, custom seed
+  TCODRandom(TCOD_random_algo_t algo) => default seed, custom algo
+  TCODRandom(uint32 seed, TCOD_random_algo_t aldo) => custom algo and seed
 + added name generation module (written by Mingos)
 + added subcell resolution blitting function TCODImage::blit2x
 + added more portable filesystem utilities :

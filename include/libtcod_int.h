@@ -73,6 +73,18 @@ typedef struct {
 	cell_t *cells;
 } map_t;
 
+/* pseudorandom number generator toolkit */
+typedef struct {
+	/* algorithm identifier */
+	TCOD_random_algo_t algo;
+	/* Mersenne Twister stuff */
+	uint32 mt[624];
+	int cur_mt;
+	/* Complementary-Multiply-With-Carry stuff */
+	unsigned long Q[4096], c;
+    int cur;
+} mersenne_data_t;
+
 #ifdef NDEBUG
 #define TCOD_IF(x) if (x)
 #define TCOD_IFNOT(x) if (!(x))

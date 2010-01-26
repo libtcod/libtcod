@@ -26,6 +26,7 @@
 */
 #include <stdlib.h>
 #include "libtcod.hpp"
+#include "libtcod_int.h"
 
 static TCODRandom *instance=(TCODRandom *)NULL;
 
@@ -40,7 +41,7 @@ TCODRandom::TCODRandom(TCOD_random_algo_t algo, bool allocate) {
 	if ( allocate ) data = TCOD_random_new(algo);
 }
 
-TCODRandom::TCODRandom(TCOD_random_algo_t algo, uint32 seed) {
+TCODRandom::TCODRandom(uint32 seed, TCOD_random_algo_t algo) {
 	data=TCOD_random_new_from_seed(algo, seed);
 }
 
@@ -52,16 +53,12 @@ float TCODRandom::getFloat(float min, float max) {
 	return TCOD_random_get_float(data,min,max);
 }
 
-int TCODRandom::getIntFromByteArray(int min, int max, const char *data,int len) {
-	return TCOD_random_get_int_from_byte_array(min,max,data,len);
-}
-
 TCODRandom::~TCODRandom() {
 	TCOD_random_delete(data);
 }
 
-TCODRandom *TCODRandom::save(TCOD_random_algo_t algo) const {
-	TCODRandom *ret=new TCODRandom(algo,false);
+TCODRandom *TCODRandom::save() const {
+	TCODRandom *ret=new TCODRandom(((mersenne_data_t *)data)->algo,false);
 	ret->data=TCOD_random_save(data);
 	return ret;
 }

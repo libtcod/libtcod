@@ -230,10 +230,11 @@ static TCOD_cmwc_t cmwc_instance = NULL;
 /* new instance, using a given seed */
 TCODLIB_API TCOD_cmwc_t TCOD_cmwc_new_from_seed (unsigned long seed) {
     cmwc_t * data = malloc(sizeof(cmwc_t));
-    data->Q[0] = seed;
     int i;
-    for (i = 1; i < 4096; i++) data->Q[i] = data->Q[i-1] * 12345;
-    data->c = data->Q[4095] * 67890;
+    /* fill the Q array with pseudorandom seeds */
+    srand(seed);
+    for (i = 0; i < 4096; i++) data->Q[i] = rand();
+    data->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
     data->cur = 0;
     return (TCOD_cmwc_t)data;
 }
@@ -249,6 +250,7 @@ TCOD_cmwc_t TCOD_cmwc_get_instance (void) {
 }
 
 /* get an integer */
+/* original implementation by George Marsaglia */
 unsigned long TCOD_cmwc_get (TCOD_cmwc_t cmwc) {
     cmwc_t * data = (cmwc_t*)cmwc;
     static unsigned long long t, a=18782LL;
@@ -257,8 +259,8 @@ unsigned long TCOD_cmwc_get (TCOD_cmwc_t cmwc) {
     t=a*data->Q[data->cur]+data->c;
     data->c=(t>>32);
     x=t+data->c;
-    if (x < data->c) { x++; data->c++; }
-    if((x+1)==0) { data->c++; x=0; }
+    if (x < data->c) { x++; data->c++; } /* this is merely an overflow check */
+    if((x+1)==0) { data->c++; x=0; } /* dunno what this does... */
     return (data->Q[data->cur] = r - x);
 }
 

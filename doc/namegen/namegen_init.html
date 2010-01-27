@@ -16,11 +16,12 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODNamegen::parse</h3>
 In order to be able to generate names, the name generator needs to be fed proper data. It will then be ready to generate one specific type of names. You can achieve that by telling it what files it should parse in search for proper syllable sets:<br />
 <p class="code"><pre>
 C++ : static void TCODNamegen::parse(const char * filename, TCODRandom * random = NULL)
 C   : void TCOD_namegen_parse(const char * filename, TCOD_random_t random)
-Py  : ---
+Py  : namegen_parse(filename,random=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -36,5 +37,5 @@ Example :<br />
 C++ : TCODNamegen::parse("data/names.txt",TCODRandom::getInstance());
       TCODNamegen::parse("data/names2.txt");
 C   : TCOD_namegen_parse("data/names.txt",TCOD_random_get_instance());
-Py  : ---
+Py  : libtcod.namegen_parse('data/names.txt')
 </pre></p>

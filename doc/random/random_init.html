@@ -16,6 +16,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODRandom::getInstance</h3>
 The simplest way to get random number is to use the default generator. The first time you get this generator, it is initialized by calling TCOD_random_new. Then, on successive calls, this function returns the same generator (singleton pattern).<br />
 <p class="code"><pre>
 C++ : static TCODRandom *TCODRandom::getInstance()
@@ -23,11 +24,12 @@ C   : TCOD_random_t TCOD_random_get_instance()
 Py  : random_get_instance()
 </pre></p>
 <br />
+<h3>TCODRandom::TCODRandom</h3>
 You can also create as many generators as you want with a random seed (the number of seconds since Jan 1 1970 at the time the constructor is called). Warning ! If you call this function several times in the same second, it will return the same generator.<br />
 <p class="code"><pre>
 C++ : TCODRandom::TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC)
 C   : TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo)
-Py  : random_new()
+Py  : random_new(algo=RNG_CMWC)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -38,6 +40,7 @@ Finally, you can create generators with a specific seed. Those allow you to get 
 <p class="code"><pre>
 C++ : TCODRandom::TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, uint32 seed);
 C   : TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed);
+Py  : random_new_from_seed(seed, algo=RNG_CMWC)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>

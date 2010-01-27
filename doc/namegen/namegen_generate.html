@@ -17,12 +17,12 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-<h4>16.2.1 Generate a standard name</h4>
+<h3>TCODNamegen::generate</h3>
 The following will output a random name generated using one of the generation rules specified in the syllable set:<br />
 <p class="code"><pre>
 C++ : static char * TCODNamegen::generate(char * name, bool allocate = false)
 C   : char * TCOD_namegen_generate(char * name, bool allocate);
-Py  : ---
+Py  : namegen_generate(name, allocate=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -38,19 +38,20 @@ The name you specify needs to be in one of the files the generator has previousl
 <br />
 Example :<br />
 <p class="code"><pre>
-C++ : TCODNamegen::create("data/names.txt",TCODRandom::getInstance());
+C++ : TCODNamegen::parse("data/names.txt",TCODRandom::getInstance());
       char * myName = TCODNamegen::generate("fantasy female");
-C   : TCOD_namegen_new("data/names.txt",TCOD_random_get_instance());
+C   : TCOD_namegen_parse("data/names.txt",TCOD_random_get_instance());
       char * my_name = TCOD_namegen_generate("Celtic male",false);
-Py  : ---
+Py  : libtcod.namegen_parse('data/names.txt')
+      name = libtcod.namegen_generate('fantasy female')
 </pre></p>
 <hr />
-<a name="15.3.2"></a><h4>16.2.2 Generate a custom name</h4>
+<h3>TCODNamegen::generateCustom</h3>
 It is also possible to generate a name using custom generation rules. This overrides the random choice of a generation rule from the syllable set. Please refer to chapter <a href="namegen_file.html">16.5</a> to learn about the name generation rules syntax.<br />
 <p class="code"><pre>
 C++ : static char * TCODNamegen::generateCustom(char * name, char * rule, bool allocate = false)
 C   : char * TCOD_namegen_generate_custom(char * name, char * rule, bool allocate);
-Py  : ---
+Py  : namegen_generate_custom(name, rule, allocate=0)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
@@ -65,5 +66,6 @@ C++ : TCODNamegen::create("data/names.txt",TCODRandom::getInstance());
       char * myName = TCODNamegen::generateCustom("Nordic male","$s$e");
 C   : TCOD_namegen_new("data/names.txt",TCOD_random_get_instance());
       char * my_name = TCOD_namegen_generate_custom("Mesopotamian female","$s$e",false);
-Py  : ---
+Py  : libtcod.namegen_parse('data/names.txt')
+      name = libtcod.namegen_generate('fantasy female','$s$e')
 </pre></p>

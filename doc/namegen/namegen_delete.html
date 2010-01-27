@@ -17,11 +17,12 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODNamegen::destroy</h3>
 To release the resources used by a name generator, you may call:<br />
 <p class="code"><pre>
 C++ : static void TCODNamegen::destroy(void)
 C   : void TCOD_namegen_destroy(void)
-Py  : ---
+Py  : namegen_destroy()
 </pre></p>
 This will free all memory used by the generator. In order to generate a name again, you have to call <a href="namegen_init.html">TCODNamegen::parse</a> again.
 <br />

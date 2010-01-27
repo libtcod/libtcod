@@ -939,8 +939,8 @@ RNG_CMWC = 1
 def random_get_instance():
     return _lib.TCOD_random_get_instance()
 
-def random_new():
-    return _lib.TCOD_random_new(RNG_CMWC)
+def random_new(algo=RNG_CMWC):
+    return _lib.TCOD_random_new(algo)
 
 def random_new_from_seed(seed, algo=RNG_CMWC):
     return _lib.TCOD_random_new_from_seed(algo,c_uint(seed))

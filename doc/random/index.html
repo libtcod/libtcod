@@ -16,20 +16,17 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
-This toolkit is an implementation of three fast and high quality pseudorandom number generators:
+This toolkit is an implementation of two fast and high quality pseudorandom number generators:
 <ul><li>a <a href="http://en.wikipedia.org/wiki/Mersenne_Twister">Mersenne twister</a> generator</li>
-<li>a <a href="http://en.wikipedia.org/wiki/Multiply-with-carry#Complementary-multiply-with-carry_generators">Complementary-Multiply-With-Carry</a> generator,</li>
-<li>a Generalised Feedback Shift Register.</li></ul>
-<p>CMWC and GFSR are faster than MT (see table below). CMWC has a much better period than MT (10<sup>39460</sup> vs. 10<sup>6001</sup>), while GFSR is somewhat behind the other two (10<sup>2917</sup>). CMWC is the default algo since libtcod 1.5.0.<br />
-Relative performances:</p>
+<li>a <a href="http://en.wikipedia.org/wiki/Multiply-with-carry#Complementary-multiply-with-carry_generators">Complementary-Multiply-With-Carry</a> generator,</li></ul>
+<p>CMWC is faster than MT (see table below) and has a much better period (10<sup>39460</sup> vs. 10<sup>6001</sup>). It is the default algo since libtcod 1.5.0.<br />
+Relative performances in two independent tests:</p>
 <table class="none">
-<tr><th>Algorithm</th><th>Numbers generated</th><th>Perf</th></tr>
-<tr bgcolor="#EEEEEE"><td>MT</td><td>integer</td><td>62</td></tr>
-<tr><td>MT</td><td>float</td><td>54</td></tr>
-<tr bgcolor="#EEEEEE"><td>CMWC</td><td>integer</td><td>21</td></tr>
-<tr><td>CMWC</td><td>float</td><td>32</td></tr>
-<tr bgcolor="#EEEEEE"><td>GFSR</td><td>integer</td><td>26</td></tr>
-<tr><td>GFSR</td><td>float</td><td>24</td></tr>
+<tr><th>Algorithm</th><th>Numbers generated</th><th>Perf (1)</th><th>Perf (2)</th></tr>
+<tr bgcolor="#EEEEEE"><td>MT</td><td>integer</td><td>62</td><td>50</td></tr>
+<tr><td>MT</td><td>float</td><td>54</td><td>45</td></tr>
+<tr bgcolor="#EEEEEE"><td>CMWC</td><td>integer</td><td>21</td><td>34</td></tr>
+<tr><td>CMWC</td><td>float</td><td>32</td><td>27</td></tr>
 </table>
 <p>For python users :<br />
 Python already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.</p>

@@ -120,15 +120,6 @@ static uint32 hash(const char *data,int len) {
     num = (r->Q[r->cur] = 0xfffffffe - x); \
 }
 
-/* get a random number from the GFSR */
-#define GFSR_GET_NUMBER(num) { \
-    r->Q[0] = r->Q[1]; \
-    r->Q[1] = r->Q[2]; \
-    r->Q[2] = r->Q[3]; \
-    r->Q[3] = r->Q[4]; \
-    num = r->Q[4] = r->Q[0] ^ r->Q[1] ^ r->Q[2] ^ r->Q[3]; \
-}
-
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
 	/* Mersenne Twister */
@@ -152,7 +143,6 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         	CMWC_GET_NUMBER(tmp);
 		}
 	}
-	if (algo == TCOD_RNG_GFSR) r->algo = TCOD_RNG_GFSR;
     return (TCOD_random_t)r;
 }
 
@@ -186,7 +176,6 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         	CMWC_GET_NUMBER(tmp);
 		}
 	}
-	if (algo == TCOD_RNG_GFSR) r->algo = TCOD_RNG_GFSR;
 	return (TCOD_random_t)r;
 }
 
@@ -206,15 +195,9 @@ int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	/* return a number from the Mersenne Twister */
 	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
 	/* or from the CMWC */
-	else if (r->algo == TCOD_RNG_CMWC) {
-	    uint32 number;
-	    CMWC_GET_NUMBER(number)
-	    return number % delta + min;
-	}
-	/* or the GFSR */
 	else {
 	    uint32 number;
-	    GFSR_GET_NUMBER(number)
+	    CMWC_GET_NUMBER(number)
 	    return number % delta + min;
 	}
 }
@@ -234,15 +217,9 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	/* Mersenne Twister */
 	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
 	/* CMWC */
-	else if (r->algo == TCOD_RNG_CMWC) {
-	    uint32 number;
-	    CMWC_GET_NUMBER(number)
-	    f = (float)(number) * rand_div * delta;
-	}
-	/* GFSR */
 	else {
 	    uint32 number;
-	    GFSR_GET_NUMBER(number)
+	    CMWC_GET_NUMBER(number)
 	    f = (float)(number) * rand_div * delta;
 	}
 	return min + f;
@@ -281,21 +258,12 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	    return (min + deltamid + (frandom01(r) * delta));
 	}
 	/* CMWC */
-	else if (r->algo == TCOD_RNG_CMWC) {
-	    uint32 number;
-	    CMWC_GET_NUMBER(number)
-	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
-	    delta = max - min - (2 * deltamid);
-	    CMWC_GET_NUMBER(number)
-	    return (min + deltamid + ((float)(number)*rand_div*delta));
-	}
-	/* GFSR */
 	else {
 	    uint32 number;
-	    GFSR_GET_NUMBER(number)
+	    CMWC_GET_NUMBER(number)
 	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
 	    delta = max - min - (2 * deltamid);
-	    GFSR_GET_NUMBER(number)
+	    CMWC_GET_NUMBER(number)
 	    return (min + deltamid + ((float)(number)*rand_div*delta));
 	}
 }

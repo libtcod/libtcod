@@ -137,11 +137,6 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
-        // for some reason the first 4096 numbers suck on windows 32
-        for (i = 0; i < 4096; i++) {
-        	uint32 tmp;
-        	CMWC_GET_NUMBER(tmp);
-		}
 	}
     return (TCOD_random_t)r;
 }
@@ -170,11 +165,6 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
-        // for some reason the first 4096 numbers suck on windows 32
-        for (i = 0; i < 4096; i++) {
-        	uint32 tmp;
-        	CMWC_GET_NUMBER(tmp);
-		}
 	}
 	return (TCOD_random_t)r;
 }

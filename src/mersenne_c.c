@@ -134,7 +134,7 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         /* fill the Q array with pseudorandom seeds */
         uint32 s = time(0);
         for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
-        r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
+        r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
 	}
@@ -162,7 +162,7 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         /* fill the Q array with pseudorandom seeds */
         uint32 s = seed;
         for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
-        r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
+        r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
 	}

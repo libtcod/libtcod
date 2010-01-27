@@ -81,6 +81,7 @@ typedef struct {
 	uint32 mt[624];
 	int cur_mt;
 	/* Complementary-Multiply-With-Carry stuff */
+	/* shared with Generalised Feedback Shift Register */
 	uint32 Q[4096], c;
     int cur;
 } mersenne_data_t;

@@ -31,7 +31,8 @@
 /* PRNG algorithms */
 typedef enum {
     TCOD_RNG_MT,
-    TCOD_RNG_CMWC
+    TCOD_RNG_CMWC,
+    TCOD_RNG_GFSR
 } TCOD_random_algo_t;
 
 

@@ -120,6 +120,14 @@ static uint32 hash(const char *data,int len) {
     num = (r->Q[r->cur] = 0xfffffffe - x); \
 }
 
+/* get a random number from the GFSR */
+#define GFSR_GET_NUMBER(num) { \
+    r->Q[0] = r->Q[1]; \
+    r->Q[1] = r->Q[2]; \
+    r->Q[2] = r->Q[3]; \
+    r->Q[3] = r->Q[4]; \
+    num = r->Q[4] = r->Q[0] ^ r->Q[1] ^ r->Q[2] ^ r->Q[3]; \
+}
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
@@ -129,13 +137,13 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         r->algo=TCOD_RNG_MT;
         mt_init((uint32)time(NULL),r->mt);
 	}
-	/* Complementary-Multiply-With-Carry */
+	/* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
 	else {
 	    int i;
         /* fill the Q array with pseudorandom seeds */
-        srand(time(NULL));
-        for (i = 0; i < 4096; i++) r->Q[i] = rand();
-        r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
+        uint32 s = time(0);
+        for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
+        r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
         // for some reason the first 4096 numbers suck on windows 32
@@ -144,6 +152,7 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
         	CMWC_GET_NUMBER(tmp);
 		}
 	}
+	if (algo == TCOD_RNG_GFSR) r->algo = TCOD_RNG_GFSR;
     return (TCOD_random_t)r;
 }
 
@@ -162,13 +171,13 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         r->cur_mt=624;
         mt_init(seed,r->mt);
 	}
-	/* Complementary-Multiply-With-Carry */
+	/* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
 	else {
 	    int i;
         /* fill the Q array with pseudorandom seeds */
-        srand(seed);
-        for (i = 0; i < 4096; i++) r->Q[i] = rand();
-        r->c = rand()%809430660; /* this max value is recommended by George Marsaglia */
+        uint32 s = seed;
+        for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
+        r->c = (r->Q[4095] = (s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
         r->algo = TCOD_RNG_CMWC;
         // for some reason the first 4096 numbers suck on windows 32
@@ -177,6 +186,7 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
         	CMWC_GET_NUMBER(tmp);
 		}
 	}
+	if (algo == TCOD_RNG_GFSR) r->algo = TCOD_RNG_GFSR;
 	return (TCOD_random_t)r;
 }
 
@@ -196,9 +206,15 @@ int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
 	/* return a number from the Mersenne Twister */
 	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
 	/* or from the CMWC */
-	else {
+	else if (r->algo == TCOD_RNG_CMWC) {
 	    uint32 number;
 	    CMWC_GET_NUMBER(number)
+	    return number % delta + min;
+	}
+	/* or the GFSR */
+	else {
+	    uint32 number;
+	    GFSR_GET_NUMBER(number)
 	    return number % delta + min;
 	}
 }
@@ -218,9 +234,15 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 	/* Mersenne Twister */
 	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
 	/* CMWC */
-	else {
+	else if (r->algo == TCOD_RNG_CMWC) {
 	    uint32 number;
 	    CMWC_GET_NUMBER(number)
+	    f = (float)(number) * rand_div * delta;
+	}
+	/* GFSR */
+	else {
+	    uint32 number;
+	    GFSR_GET_NUMBER(number)
 	    f = (float)(number) * rand_div * delta;
 	}
 	return min + f;
@@ -259,12 +281,21 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	    return (min + deltamid + (frandom01(r) * delta));
 	}
 	/* CMWC */
-	else {
+	else if (r->algo == TCOD_RNG_CMWC) {
 	    uint32 number;
 	    CMWC_GET_NUMBER(number)
 	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
 	    delta = max - min - (2 * deltamid);
 	    CMWC_GET_NUMBER(number)
+	    return (min + deltamid + ((float)(number)*rand_div*delta));
+	}
+	/* GFSR */
+	else {
+	    uint32 number;
+	    GFSR_GET_NUMBER(number)
+	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
+	    delta = max - min - (2 * deltamid);
+	    GFSR_GET_NUMBER(number)
 	    return (min + deltamid + ((float)(number)*rand_div*delta));
 	}
 }

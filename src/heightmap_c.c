@@ -415,7 +415,7 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 }
 #endif
 
-void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel) {
+void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel) {
 	int x,y;
 	for (x=0; x < hm->w; x++) {
 		int offset=x;
@@ -440,7 +440,7 @@ void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *
 
 }
 
-void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, float *coef,TCOD_random_t rnd) {
+void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, const float *coef,TCOD_random_t rnd) {
 	typedef struct {
 		int x,y;
 		float dist;

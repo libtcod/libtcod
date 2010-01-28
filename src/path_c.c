@@ -370,6 +370,8 @@ typedef struct {
     int diagonal_cost;
     int width, height, nodes_max;
     TCOD_map_t map; /* a TCODMap with walkability data */
+	TCOD_path_func_t func;
+	void *user_data;
     unsigned int * distances; /* distances grid */
     unsigned int * nodes; /* the processed nodes */
     TCOD_list_t path;
@@ -379,6 +381,8 @@ typedef struct {
 TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
     dijkstra_t * data = malloc(sizeof(dijkstra_t));
     data->map = map;
+    data->func = NULL;
+    data->user_data=NULL;
     data->distances = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
     data->nodes = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
     data->diagonal_cost = (int)(diagonalCost * 100.0f);
@@ -388,6 +392,22 @@ TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
     data->path = TCOD_list_new();
     return (TCOD_dijkstra_t)data;
 }
+
+TCOD_dijkstra_t TCOD_djikstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
+    dijkstra_t * data = malloc(sizeof(dijkstra_t));
+    data->map = NULL;
+    data->func = func;
+    data->user_data=user_data;
+    data->distances = malloc(map_width*map_height*sizeof(int));
+    data->nodes = malloc(map_width*map_height*sizeof(int));
+    data->diagonal_cost = (int)(diagonalCost * 100.0f);
+    data->width = map_width;
+    data->height = map_height;
+    data->nodes_max = map_width*map_height;
+    data->path = TCOD_list_new();
+    return (TCOD_dijkstra_t)data;
+}
+
 
 /* compute a Dijkstra grid */
 void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
@@ -424,33 +444,43 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
             /* checked node's coordinates */
             unsigned int tx = x + dx[i];
             unsigned int ty = y + dy[i];
-            /* otherwise, calculate distance, ... */
-            unsigned int dt = distances[nodes[index]]+dd[i];
-            /* ..., encode coordinates, ... */
-            unsigned int new_node = (ty * mx) + tx;
-            /* and check if the node's eligible for queuing */
-            if ((unsigned)tx < (unsigned)mx && (unsigned)ty < (unsigned)my && distances[new_node] > dt) {
-                unsigned int j;
-                /* if not walkable, don't process it */
-                if (!TCOD_map_is_walkable(data->map,tx,ty)) continue;
-                distances[new_node] = dt; /* set processed node's distance */
-                /* place the processed node in the queue before the last queued node with greater distance */
-                j = last_index - 1;
-                while (distances[nodes[j]] > distances[new_node]) {
-                    /* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
-                    if (nodes[j] == new_node) {
-                        int k = j + 1;
-                        while ((unsigned)k <= last_index) {
-                            nodes[k] = nodes[k+1];
-                            k++;
-                        }
-                        last_index--;
-                    }
-                    else nodes[j+1] = nodes[j];
-                    j--;
+            if ((unsigned)tx < (unsigned)mx && (unsigned)ty < (unsigned)my  ) {
+                /* otherwise, calculate distance, ... */
+                unsigned int dt = distances[nodes[index]];
+                float userDist = 0.0f;
+                if ( data->map ) dt += dd[i];
+                else {
+                    // distance given by the user callback
+                    userDist=data->func(x,y,tx,ty,data->user_data);
+                    dt += (unsigned int)(userDist*dd[i]);
                 }
-                last_index++; /* increase total indices count */
-                nodes[j+1] = new_node; /* and finally put the node where it belongs in the queue */
+                /* ..., encode coordinates, ... */
+                unsigned int new_node = (ty * mx) + tx;
+                /* and check if the node's eligible for queuing */
+                if (distances[new_node] > dt) {
+                    unsigned int j;
+                    /* if not walkable, don't process it */
+                    if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
+                    else if ( data->func && userDist <= 0.0f ) continue;
+                    distances[new_node] = dt; /* set processed node's distance */
+                    /* place the processed node in the queue before the last queued node with greater distance */
+                    j = last_index - 1;
+                    while (distances[nodes[j]] > distances[new_node]) {
+                        /* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
+                        if (nodes[j] == new_node) {
+                            int k = j + 1;
+                            while ((unsigned)k <= last_index) {
+                                nodes[k] = nodes[k+1];
+                                k++;
+                            }
+                            last_index--;
+                        }
+                        else nodes[j+1] = nodes[j];
+                        j--;
+                    }
+                    last_index++; /* increase total indices count */
+                    nodes[j+1] = new_node; /* and finally put the node where it belongs in the queue */
+                }
             }
         }
     } while (mmax > ++index);

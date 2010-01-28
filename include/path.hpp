@@ -61,6 +61,7 @@ protected :
 class TCODLIB_API TCODDijkstra {
     public:
         TCODDijkstra (TCODMap *map, float diagonalCost=1.41f);
+        TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost=1.41f);
         ~TCODDijkstra (void);
         void compute (int rootX, int rootY);
         float getDistance (int x, int y);
@@ -68,6 +69,10 @@ class TCODLIB_API TCODDijkstra {
         bool walk (int *x, int *y);
     private:
         TCOD_dijkstra_t data;
+        struct WrapperData {
+            void *userData;
+            const ITCODPathCallback *listener;
+        } cppData;
 };
 
 #endif

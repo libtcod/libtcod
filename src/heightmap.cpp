@@ -150,12 +150,12 @@ void TCODHeightMap::rainErosion(int nbDrops, float erosionCoef,float agregationC
 	TCOD_heightmap_rain_erosion(&hm, nbDrops, erosionCoef, agregationCoef, rnd->data);
 }
 
-void TCODHeightMap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel) {
+void TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel) {
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_kernel_transform(&hm, kernelSize,dx,dy,weight,minLevel, maxLevel);
 }
 
-void TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd) {
+void TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd) {
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_add_voronoi(&hm, nbPoints, nbCoef, coef, rnd->data);
 }

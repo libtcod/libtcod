@@ -62,8 +62,8 @@ public :
 	void digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
 	void rainErosion(int nbDrops,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
 //	void heatErosion(int nbPass,float minSlope,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
-	void kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel);
-	void addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd);
+	void kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel);
+	void addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
 //	void midPointDeplacement(TCODRandom *rnd);
 	void addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 	void scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 

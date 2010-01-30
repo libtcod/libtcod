@@ -385,7 +385,7 @@ TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
     data->user_data=NULL;
     data->distances = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
     data->nodes = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
-    data->diagonal_cost = (int)(diagonalCost * 100.0f);
+    data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
     data->width = TCOD_map_get_width(data->map);
     data->height = TCOD_map_get_height(data->map);
     data->nodes_max = TCOD_map_get_nb_cells(data->map);
@@ -393,14 +393,14 @@ TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
     return (TCOD_dijkstra_t)data;
 }
 
-TCOD_dijkstra_t TCOD_djikstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
+TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
     dijkstra_t * data = malloc(sizeof(dijkstra_t));
     data->map = NULL;
     data->func = func;
     data->user_data=user_data;
-    data->distances = malloc(map_width*map_height*sizeof(int));
-    data->nodes = malloc(map_width*map_height*sizeof(int));
-    data->diagonal_cost = (int)(diagonalCost * 100.0f);
+    data->distances = malloc(map_width*map_height*sizeof(int)*4);
+    data->nodes = malloc(map_width*map_height*sizeof(int)*4);
+    data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
     data->width = map_width;
     data->height = map_height;
     data->nodes_max = map_width*map_height;
@@ -438,6 +438,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
         /* coordinates of currently processed node */
         unsigned int x = nodes[index] % mx;
         unsigned int y = nodes[index] / mx;
+
         /* check adjacent nodes */
         int i;
         for(i=0;i<8;i++) {
@@ -457,7 +458,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
                 /* ..., encode coordinates, ... */
                 unsigned int new_node = (ty * mx) + tx;
                 /* and check if the node's eligible for queuing */
-                if (distances[new_node] > dt) {
+                 if (distances[new_node] > dt) {
                     unsigned int j;
                     /* if not walkable, don't process it */
                     if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
@@ -465,10 +466,10 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
                     distances[new_node] = dt; /* set processed node's distance */
                     /* place the processed node in the queue before the last queued node with greater distance */
                     j = last_index - 1;
-                    while (distances[nodes[j]] > distances[new_node]) {
+                    while (distances[nodes[j]] >= distances[new_node]) {
                         /* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
                         if (nodes[j] == new_node) {
-                            int k = j + 1;
+                            int k = j;
                             while ((unsigned)k <= last_index) {
                                 nodes[k] = nodes[k+1];
                                 k++;
@@ -491,7 +492,7 @@ float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
     unsigned int * distances;
     if ((unsigned)x >= (unsigned)data->width || (unsigned)y >= (unsigned)data->height) return (-1.0f);
-    if (!TCOD_map_is_walkable(data->map,x,y)) return (-1.0f);
+    if (data->distances[(y*data->width)+x] == 0xFFFFFFFF) return (-1.0f);
     distances = data->distances;
     return ((float)distances[(y * data->width) + x] * 0.01f);
 }

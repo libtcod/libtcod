@@ -85,12 +85,12 @@ TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
     data = TCOD_dijkstra_new(map->data,diagonalCost);
 }
 
+//another ctor
 TCODDijkstra::TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost) {
 	cppData.listener=listener;
 	cppData.userData=userData;
-	data=(void *)TCOD_djikstra_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
+	data=(void *)TCOD_dijkstra_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
 }
-
 
 //dtor
 TCODDijkstra::~TCODDijkstra (void) {

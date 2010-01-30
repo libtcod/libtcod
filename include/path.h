@@ -48,7 +48,7 @@ TCODLIB_API void TCOD_path_delete(TCOD_path_t path);
 typedef void *TCOD_dijkstra_t;
 
 TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost);
-TCODLIB_API TCOD_dijkstra_t TCOD_djikstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost);
+TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost);
 TCODLIB_API void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y);
 TCODLIB_API float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y);
 TCODLIB_API void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y);

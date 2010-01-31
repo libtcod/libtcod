@@ -173,6 +173,7 @@ static TCOD_path_data_t *TCOD_path_new_intern(int w, int h) {
 }
 
 TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost) {
+	TCOD_IFNOT(map != NULL) return NULL;
 	TCOD_path_data_t *path=TCOD_path_new_intern(TCOD_map_get_width(map),TCOD_map_get_height(map));
 	path->map=map;
 	path->diagonalCost=diagonalCost;
@@ -180,6 +181,7 @@ TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost) {
 }
 
 TCOD_path_t TCOD_path_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
+	TCOD_IFNOT(func != NULL && map_width > 0 && map_height > 0) return NULL;
 	TCOD_path_data_t *path=TCOD_path_new_intern(map_width,map_height);
 	path->func=func;
 	path->user_data=user_data;
@@ -189,6 +191,7 @@ TCOD_path_t TCOD_path_new_using_function(int map_width, int map_height, TCOD_pat
 
 bool TCOD_path_compute(TCOD_path_t p, int ox,int oy, int dx, int dy) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
+	TCOD_IFNOT(p != NULL) return false;
 	path->ox=ox;
 	path->oy=oy;
 	path->dx=dx;
@@ -196,6 +199,9 @@ bool TCOD_path_compute(TCOD_path_t p, int ox,int oy, int dx, int dy) {
 	TCOD_list_clear(path->path);
 	TCOD_list_clear(path->heap);
 	if ( ox == dx && oy == dy ) return true; /* trivial case */
+	/* check that origin and destination are inside the map */
+	TCOD_IFNOT((unsigned)ox < path->w && (unsigned)oy < path->h) return false;
+	TCOD_IFNOT((unsigned)dx < path->w && (unsigned)dy < path->h) return false;
 	/* initialize djikstra grids */
 	memset(path->grid,0,sizeof(float)*path->w*path->h);
 	memset(path->prev,NONE,sizeof(dir_t)*path->w*path->h);
@@ -220,6 +226,7 @@ bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed)
 	float can_walk;
 	int d;
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
+	TCOD_IFNOT(p != NULL) return false;
 	if ( TCOD_path_is_empty(path) ) return false;
 	d=(int)(uintptr)TCOD_list_pop(path->path);
 	newx=path->ox + dirx[d];
@@ -232,8 +239,8 @@ bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed)
 		if (! TCOD_path_compute(path, path->ox,path->oy, path->dx,path->dy) ) return false ; /* cannot find a new path */
 		return TCOD_path_walk(p,x,y,true); /* walk along the new path */
 	}
-	*x=newx;
-	*y=newy;
+	if ( x ) *x=newx;
+	if ( y ) *y=newy;
 	path->ox=newx;
 	path->oy=newy;
 	return true;
@@ -241,35 +248,39 @@ bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed)
 
 bool TCOD_path_is_empty(TCOD_path_t p) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
+	TCOD_IFNOT(p != NULL) return true;
 	return TCOD_list_is_empty(path->path);
 }
 
 int TCOD_path_size(TCOD_path_t p) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
+	TCOD_IFNOT(p != NULL) return 0;
 	return TCOD_list_size(path->path);
 }
 
 void TCOD_path_get(TCOD_path_t p, int index, int *x, int *y) {
 	int pos;
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
-	*x=path->ox;
-	*y=path->oy;
+	TCOD_IFNOT(p != NULL) return;
+	if ( x ) *x=path->ox;
+	if ( y ) *y=path->oy;
 	pos = TCOD_list_size(path->path)-1;
 	do {
 		int step=(int)(uintptr)TCOD_list_get(path->path,pos);
-		*x += dirx[step];
-		*y += diry[step];
+		if ( x ) *x += dirx[step];
+		if ( y ) *y += diry[step];
 		pos--;index--;
 	} while (index >= 0);
 }
 
 void TCOD_path_delete(TCOD_path_t p) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
-	free(path->grid);
-	free(path->heur);
-	free(path->prev);
-	TCOD_list_delete(path->path);
-	TCOD_list_delete(path->heap);
+	TCOD_IFNOT(p != NULL) return;
+	if ( path->grid ) free(path->grid);
+	if ( path->heur ) free(path->heur);
+	if ( path->prev ) free(path->prev);
+	if ( path->path ) TCOD_list_delete(path->path);
+	if ( path->heap ) TCOD_list_delete(path->heap);
 	free(path);
 }
 
@@ -347,14 +358,16 @@ static float TCOD_path_walk_cost(TCOD_path_data_t *path, int xFrom, int yFrom, i
 
 void TCOD_path_get_origin(TCOD_path_t p, int *x, int *y) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
-	*x=path->ox;
-	*y=path->oy;
+	TCOD_IFNOT(p != NULL) return;
+	if ( x ) *x=path->ox;
+	if ( y ) *y=path->oy;
 }
 
 void TCOD_path_get_destination(TCOD_path_t p, int *x, int *y) {
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
-	*x=path->dx;
-	*y=path->dy;
+	TCOD_IFNOT(p != NULL) return;
+	if ( x ) *x=path->dx;
+	if ( y ) *y=path->dy;
 }
 
 /* ------------------------------------------------------- *
@@ -379,6 +392,7 @@ typedef struct {
 
 /* create a Dijkstra object */
 TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
+	TCOD_IFNOT(map != NULL) return NULL;
     dijkstra_t * data = malloc(sizeof(dijkstra_t));
     data->map = map;
     data->func = NULL;
@@ -394,6 +408,7 @@ TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
 }
 
 TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
+	TCOD_IFNOT(func != NULL && map_width > 0 && map_height > 0) return NULL;
     dijkstra_t * data = malloc(sizeof(dijkstra_t));
     data->map = NULL;
     data->func = func;
@@ -429,6 +444,8 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
     int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
     /* aight, now set the distances table and set everything to infinity */
     unsigned int * distances = data->distances;
+	TCOD_IFNOT(data != NULL) return;
+	TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;
     memset(distances,0xFFFFFFFF,mmax*sizeof(int));
     /* data for root node is known... */
     distances[root] = 0;
@@ -491,8 +508,9 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
     unsigned int * distances;
-    if ((unsigned)x >= (unsigned)data->width || (unsigned)y >= (unsigned)data->height) return (-1.0f);
-    if (data->distances[(y*data->width)+x] == 0xFFFFFFFF) return (-1.0f);
+	TCOD_IFNOT(data != NULL) return -1.0f;
+    TCOD_IFNOT ((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return -1.0f;
+    if (data->distances[(y*data->width)+x] == 0xFFFFFFFF) return -1.0f;
     distances = data->distances;
     return ((float)distances[(y * data->width) + x] * 0.01f);
 }
@@ -512,6 +530,8 @@ void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
     unsigned int distances[9];
     int lowest_index = 666;
+	TCOD_IFNOT(data != NULL) return;
+	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return;
 
     TCOD_list_clear(data->path);
 
@@ -538,11 +558,12 @@ void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 /* walk the path */
 bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
+	TCOD_IFNOT(data != NULL) return false;
     if (TCOD_list_is_empty(data->path)) return false;
     else {
         unsigned int node = (unsigned int)TCOD_list_get(data->path,TCOD_list_size(data->path)-1);
-        *x = (int)(node % data->width);
-        *y = (int)(node / data->width);
+        if ( x ) *x = (int)(node % data->width);
+        if ( y ) *y = (int)(node / data->width);
         TCOD_list_pop(data->path);
     }
     return true;
@@ -551,10 +572,29 @@ bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
 /* delete a Dijkstra object */
 void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
-    free(data->distances);
-    free(data->nodes);
-    TCOD_list_clear(data->path);
-    TCOD_list_delete(data->path);
+	TCOD_IFNOT(data != NULL) return;
+    if ( data->distances ) free(data->distances);
+    if ( data->nodes ) free(data->nodes);
+    if ( data->path ) TCOD_list_clear_and_delete(data->path);
     free(data);
 }
 
+bool TCOD_dijkstra_is_empty(TCOD_dijkstra_t p) {
+	dijkstra_t * data = (dijkstra_t*)p;
+	TCOD_IFNOT(data != NULL) return true;
+	return TCOD_list_is_empty(data->path);
+}
+
+int TCOD_dijkstra_size(TCOD_dijkstra_t p) {
+	dijkstra_t * data = (dijkstra_t*)p;
+	TCOD_IFNOT(data != NULL) return 0;
+	return TCOD_list_size(data->path);	
+}
+
+void TCOD_dijkstra_get(TCOD_dijkstra_t p, int index, int *x, int *y) {
+	dijkstra_t * data = (dijkstra_t*)p;
+	TCOD_IFNOT(data != NULL) return;
+    unsigned int node = (unsigned int)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
+    if ( x ) *x = (int)(node % data->width);
+    if ( y ) *y = (int)(node / data->width);
+}

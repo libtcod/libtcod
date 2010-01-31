@@ -117,4 +117,15 @@ bool TCODDijkstra::walk (int *x, int *y) {
     return TCOD_dijkstra_path_walk(data,x,y) != 0;
 }
 
+bool TCODDijkstra::isEmpty() const {
+	return TCOD_dijkstra_is_empty(data) != 0;
+}
+
+int TCODDijkstra::size() const {
+	return TCOD_dijkstra_size(data);
+}
+
+void TCODDijkstra::get(int index, int *x, int *y) const {
+	return TCOD_dijkstra_get(data,index,x,y);
+}
 

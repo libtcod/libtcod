@@ -656,6 +656,9 @@ void render_path(bool first, TCOD_key_t*key) {
 	static TCODColor darkGround(50,50,150);
 	static TCODColor lightGround(200,180,50);
 	static TCODPath *path=NULL;
+	static bool usingAstar=true;
+	static float dijkstraDist=0;
+	static TCODDijkstra *dijkstra = NULL;
 	static bool recalculatePath=false;
 	static float busy;
 	static int oldChar=' ';
@@ -671,6 +674,7 @@ void render_path(bool first, TCOD_key_t*key) {
 			}
 		}
 		path=new TCODPath(map);
+		dijkstra = new TCODDijkstra(map);
 	}
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
@@ -682,7 +686,8 @@ void render_path(bool first, TCOD_key_t*key) {
 		sampleConsole.setForegroundColor(TCODColor::white);
 		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
-		sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"IJKL / mouse :\nmove destination");
+		sampleConsole.printLeft(1,1,TCOD_BKGND_NONE,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
+		sampleConsole.printLeft(1,4,TCOD_BKGND_NONE,"Using : A*");
 		// draw windows
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -694,9 +699,24 @@ void render_path(bool first, TCOD_key_t*key) {
 		recalculatePath=true;
 	}
 	if ( recalculatePath ) {
-		path->compute(px,py,dx,dy);
+		if (usingAstar) {
+			path->compute(px,py,dx,dy);
+		} else {
+			dijkstraDist=0.0f;
+			// compute the distance grid
+			dijkstra->compute(px,py);
+			// get the maximum distance (needed for ground shading only)
+			for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+				for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+					float d= dijkstra->getDistance(x,y);
+					if ( d > dijkstraDist ) dijkstraDist=d;
+				}
+			}
+			// compute the path
+			dijkstra->setPath(dx,dy);
+		}
 		recalculatePath=false;
-		busy=1.0f;
+		busy=0.2f;
 	}
 	// draw the dungeon
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -706,19 +726,47 @@ void render_path(bool first, TCOD_key_t*key) {
 		}
 	}
 	// draw the path
-	for (int i=0; i< path->size(); i++ ) {
-		int x,y;
-		path->get(i,&x,&y);
-		sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+	if ( usingAstar ) {
+		for (int i=0; i< path->size(); i++ ) {
+			int x,y;
+			path->get(i,&x,&y);
+			sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+		}
+	} else {
+		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+				bool wall=smap[y][x]=='#';
+				if (! wall) {
+					float d= dijkstra->getDistance(x,y);
+					sampleConsole.setBack(x,y,TCODColor::lerp(lightGround,darkGround,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
+				}
+			}
+		}
+		for (int i=0; i< dijkstra->size(); i++ ) {
+			int x,y;
+			dijkstra->get(i,&x,&y);
+			sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+		}
 	}
 	// move the creature
 	busy-=TCODSystem::getLastFrameLength();
 	if (busy <= 0.0f ) {
-		busy += 0.2f;
-		if (!path->isEmpty()) {
-			sampleConsole.putChar(px,py,' ',TCOD_BKGND_NONE);
-			path->walk(&px,&py,true);
-			sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
+		busy = 0.2f;
+		if ( usingAstar ) {
+			if (!path->isEmpty()) {
+				sampleConsole.putChar(px,py,' ',TCOD_BKGND_NONE);
+				path->walk(&px,&py,true);
+				sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
+			}
+		} else {
+			if (!dijkstra->isEmpty()) {
+				sampleConsole.putChar(px,py,' ',TCOD_BKGND_NONE);
+				dijkstra->walk(&px,&py);
+				sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
+				if ( smap[dy][dx] == ' ' ) {
+					recalculatePath=true;
+				}
+			}
 		}
 	}
 	if ( (key->c == 'I' || key->c == 'i') && dy > 0 ) {
@@ -757,6 +805,13 @@ void render_path(bool first, TCOD_key_t*key) {
 		if ( smap[dy][dx] == ' ' ) {
 			recalculatePath=true;
 		}
+	} else if ( key->vk == TCODK_TAB ) {
+		usingAstar = ! usingAstar;
+		if ( usingAstar ) 
+			sampleConsole.printLeft(1,4,TCOD_BKGND_NONE,"Using : A*      ");
+		else
+			sampleConsole.printLeft(1,4,TCOD_BKGND_NONE,"Using : Dijkstra");
+		recalculatePath=true;
 	}
 	mouse=TCODMouse::getStatus();
 	mx = mouse.cx-SAMPLE_SCREEN_X;
@@ -1023,10 +1078,14 @@ void render_name(bool first, TCOD_key_t*key) {
 
 	while ( names.size() >= 15 ) {
 		// remove the first element.
+#ifndef TCOD_VISUAL_STUDIO		
 		char *nameToRemove= * (names.begin());
+#endif
 		names.remove(names.begin());
 		// for some reason, this crashes on MSVC...
-		//free(nameToRemove);
+#ifndef TCOD_VISUAL_STUDIO		
+		free(nameToRemove);
+#endif
 	}
 
 	sampleConsole.clear();

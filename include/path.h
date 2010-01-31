@@ -52,6 +52,9 @@ TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int 
 TCODLIB_API void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y);
 TCODLIB_API float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y);
 TCODLIB_API void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y);
+TCODLIB_API bool TCOD_dijkstra_is_empty(TCOD_dijkstra_t path);
+TCODLIB_API int TCOD_dijkstra_size(TCOD_dijkstra_t path);
+TCODLIB_API void TCOD_dijkstra_get(TCOD_dijkstra_t path, int index, int *x, int *y);
 TCODLIB_API bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y);
 TCODLIB_API void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra);
 

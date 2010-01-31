@@ -406,7 +406,7 @@ def console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY):
 
 def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
                                     fontCharY):
-    if type(asciiCode) == str:
+    if type(firstAsciiCode) == str:
         _lib.TCOD_console_map_ascii_codes_to_font(ord(firstAsciiCode), nbCodes,
                                                   fontCharX, fontCharY)
     else:
@@ -669,10 +669,10 @@ def image_invert(image) :
     _lib.TCOD_image_invert(image)
 
 def image_hflip(image) :
-    _lib.TCOD_image_invert(image)
+    _lib.TCOD_image_hflip(image)
 
 def image_vflip(image) :
-    _lib.TCOD_image_invert(image)
+    _lib.TCOD_image_vflip(image)
 
 def image_scale(image, neww, newh) :
     _lib.TCOD_image_scale(image,c_int(neww),c_int(newh))
@@ -1134,6 +1134,56 @@ def path_walk(p, recompute):
 
 def path_delete(p):
     _lib.TCOD_path_delete(p)
+
+_lib.TCOD_dijkstra_path_set.restype = c_uint
+_lib.TCOD_dijkstra_is_empty.restype = c_uint
+_lib.TCOD_dijkstra_size.restype = c_int
+_lib.TCOD_dijkstra_path_walk.restype = c_uint
+_lib.TCOD_dijkstra_get_distance.restype = c_float
+
+def dijkstra_new(m, dcost=1.41):
+    return _lib.TCOD_dijkstra_new(c_void_p(m), c_float(dcost))
+
+PATH_CBK_FUNC = None
+cbk_func = None
+def dijkstra_new_using_function(w, h, func, userdata=0, dcost=1.41):
+    global PATH_CBK_FUNC
+    global cbk_func
+    PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
+    cbk_func = PATH_CBK_FUNC(func)
+    return _lib.TCOD_path_dijkstra_using_function(w, h, cbk_func,
+                                             py_object(userdata), c_float(dcost))
+
+def dijkstra_compute(p, ox, oy):
+    _lib.TCOD_dijkstra_compute(p, c_int(ox), c_int(oy))
+
+def dijkstra_path_set(p, x, y):
+    return _lib.TCOD_dijkstra_path_set(p, c_int(x), c_int(y))
+
+def dijkstra_get_distance(p, x, y):
+    return _lib.TCOD_dijkstra_get_distance(p, c_int(x), c_int(y))
+
+def dijkstra_size(p):
+    return _lib.TCOD_dijkstra_size(p)
+
+def dijkstra_get(p, idx):
+    x = c_int()
+    y = c_int()
+    _lib.TCOD_dijkstra_get(p, c_int(idx), byref(x), byref(y))
+    return x.value, y.value
+
+def dijkstra_is_empty(p):
+    return _lib.TCOD_dijkstra_is_empty(p) == 1
+
+def dijkstra_path_walk(p):
+    x = c_int()
+    y = c_int()
+    if _lib.TCOD_dijkstra_path_walk(p, byref(x), byref(y)):
+        return x.value, y.value
+    return None,None
+
+def dijkstra_delete(p):
+    _lib.TCOD_dijkstra_delete(p)
 
 ############################
 # bsp module

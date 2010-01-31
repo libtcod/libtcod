@@ -660,6 +660,9 @@ path_dx = 24
 path_dy = 1
 path_map = None
 path = None
+path_dijk_dist = 0.0
+path_using_astar = True
+path_dijk = None
 path_recalculate = False
 path_busy = 0.0
 path_oldchar = ' '
@@ -667,6 +670,7 @@ path_init = False
 def render_path(first, key):
     global path_px, path_py, path_dx, path_dy, path_map, path, path_busy
     global path_oldchar, path_init, path_recalculate
+    global path_dijk_dist, path_using_astar, path_dijk
 
     smap = ['##############################################',
             '#######################      #################',
@@ -703,6 +707,7 @@ def render_path(first, key):
                     # window
                     libtcod.map_set_properties(path_map, x, y, True, False)
         path = libtcod.path_new_using_map(path_map)
+        path_dijk = libtcod.dijkstra_new(path_map)
     if first:
         libtcod.sys_set_fps(30)
         # we draw the foreground only the first time.
@@ -716,7 +721,9 @@ def render_path(first, key):
         libtcod.console_put_char(sample_console, path_px, path_py, '@',
                                  libtcod.BKGND_NONE)
         libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
-                                   "IJKL / mouse :\nmove destination")
+                                   "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra")
+        libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+									"Using : A*")
         # draw windows
         for y in range(SAMPLE_SCREEN_HEIGHT):
             for x in range(SAMPLE_SCREEN_WIDTH):
@@ -726,9 +733,22 @@ def render_path(first, key):
                                              libtcod.BKGND_NONE)
         path_recalculate = True
     if path_recalculate:
-        libtcod.path_compute(path, path_px, path_py, path_dx, path_dy)
-        path_recalculate = False
-        path_busy = 1.0
+        if path_using_astar :
+            libtcod.path_compute(path, path_px, path_py, path_dx, path_dy)
+        else:
+            path_dijk_dist = 0.0
+            # compute dijkstra grid (distance from px,py)
+            libtcod.dijkstra_compute(path_dijk,path_px,path_py)
+            # get the maximum distance (needed for rendering)
+            for y in range(SAMPLE_SCREEN_HEIGHT):
+                for x in range(SAMPLE_SCREEN_WIDTH):
+                    d=libtcod.dijkstra_get_distance(path_dijk,x,y)
+                    if d > path_dijk_dist:
+                        path_dijk_dist=d
+            # compute path from px,py to dx,dy
+            libtcod.dijkstra_path_set(path_dijk,path_dx,path_dy)
+	    path_recalculate = False
+        path_busy = 0.2
     # draw the dungeon
     for y in range(SAMPLE_SCREEN_HEIGHT):
         for x in range(SAMPLE_SCREEN_WIDTH):
@@ -739,20 +759,41 @@ def render_path(first, key):
                 libtcod.console_set_back(sample_console, x, y, fov_dark_ground,
                                          libtcod.BKGND_SET)
     # draw the path
-    for i in range(libtcod.path_size(path)):
-        x,y = libtcod.path_get(path, i)
-        libtcod.console_set_back(sample_console, x, y,
+    if path_using_astar :
+	    for i in range(libtcod.path_size(path)):
+	        x,y = libtcod.path_get(path, i)
+	        libtcod.console_set_back(sample_console, x, y,
                                  fov_light_ground, libtcod.BKGND_SET)
+    else:
+        for y in range(SAMPLE_SCREEN_HEIGHT):
+            for x in range(SAMPLE_SCREEN_WIDTH):
+                if smap[y][x] != '#':
+                    libtcod.console_set_back(sample_console, x, y, libtcod.color_lerp(fov_light_ground,fov_dark_ground,
+                        0.9 * libtcod.dijkstra_get_distance(path_dijk,x,y) / path_dijk_dist), libtcod.BKGND_SET)
+        for i in range(libtcod.dijkstra_size(path_dijk)):
+            x,y=libtcod.dijkstra_get(path_dijk,i)
+            libtcod.console_set_back(sample_console,x,y,fov_light_ground, libtcod.BKGND_SET )
+
     # move the creature
     path_busy -= libtcod.sys_get_last_frame_length()
     if path_busy <= 0.0:
-        path_busy += 0.2
-        if not libtcod.path_is_empty(path):
-            libtcod.console_put_char(sample_console, path_px, path_py, ' ',
-                                     libtcod.BKGND_NONE)
-            path_px, path_py = libtcod.path_walk(path, True)
-            libtcod.console_put_char(sample_console, path_px, path_py, '@',
-                                     libtcod.BKGND_NONE)
+        path_busy = 0.2
+        if path_using_astar :
+		    if not libtcod.path_is_empty(path):
+		        libtcod.console_put_char(sample_console, path_px, path_py, ' ',
+		                                 libtcod.BKGND_NONE)
+		        path_px, path_py = libtcod.path_walk(path, True)
+		        libtcod.console_put_char(sample_console, path_px, path_py, '@',
+		                                 libtcod.BKGND_NONE)
+        else:
+		    if not libtcod.dijkstra_is_empty(path_dijk):
+		        libtcod.console_put_char(sample_console, path_px, path_py, ' ',
+		                                 libtcod.BKGND_NONE)
+		        path_px, path_py = libtcod.dijkstra_path_walk(path_dijk)
+		        libtcod.console_put_char(sample_console, path_px, path_py, '@',
+		                                 libtcod.BKGND_NONE)
+		        path_recalculate = True
+
     if key.c in (ord('I'), ord('i')) and path_dy > 0:
         # destination move north
         libtcod.console_put_char(sample_console, path_dx, path_dy, path_oldchar,
@@ -797,6 +838,16 @@ def render_path(first, key):
                                  libtcod.BKGND_NONE)
         if smap[path_dy][path_dx] == ' ':
             path_recalculate = True
+    elif key.vk == libtcod.KEY_TAB:
+        path_using_astar = not path_using_astar
+        if path_using_astar :
+            libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+									"Using : A*      ")
+        else:
+            libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+									"Using : Dijkstra")
+        path_recalculate=True
+		
     mouse = libtcod.mouse_get_status()
     mx = mouse.cx - SAMPLE_SCREEN_X
     my = mouse.cy - SAMPLE_SCREEN_Y
@@ -1238,7 +1289,7 @@ while not libtcod.console_is_window_closed():
                                 (libtcod.sys_elapsed_milli(),
                                  libtcod.sys_elapsed_seconds()))
     # key handler
-    if key.vk in (libtcod.KEY_DOWN, libtcod.KEY_TAB):
+    if key.vk == libtcod.KEY_DOWN:
         cur_sample = (cur_sample+1) % len(samples)
         first = True
     elif key.vk == libtcod.KEY_UP:

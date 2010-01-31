@@ -658,6 +658,9 @@ void render_path(bool first, TCOD_key_t*key) {
 	static TCOD_color_t dark_ground={50,50,150};
 	static TCOD_color_t light_ground={200,180,50};
 	static TCOD_path_t path=NULL;
+	static bool usingAstar=true;
+	static float dijkstraDist=0;
+	static TCOD_dijkstra_t *dijkstra = NULL;
 	static bool recalculatePath=false;
 	static float busy;
 	static int oldChar=' ';
@@ -673,6 +676,7 @@ void render_path(bool first, TCOD_key_t*key) {
 			}
 		}
 		path=TCOD_path_new_using_map(map,1.41f);
+		dijkstra=TCOD_dijkstra_new(map,1.41f);
 	}
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
@@ -684,7 +688,8 @@ void render_path(bool first, TCOD_key_t*key) {
 		TCOD_console_set_foreground_color(sample_console,TCOD_white);
 		TCOD_console_put_char(sample_console,dx,dy,'+',TCOD_BKGND_NONE);
 		TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
-		TCOD_console_print_left(sample_console,1,1,TCOD_BKGND_NONE,"IJKL / mouse :\nmove destination");
+		TCOD_console_print_left(sample_console,1,1,TCOD_BKGND_NONE,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
+		TCOD_console_print_left(sample_console,1,4,TCOD_BKGND_NONE,"Using : A*");
 		/* draw windows */
 		for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -697,9 +702,25 @@ void render_path(bool first, TCOD_key_t*key) {
 		recalculatePath=true;
 	}
 	if ( recalculatePath ) {
-		TCOD_path_compute(path,px,py,dx,dy);
+		if ( usingAstar ) {
+			TCOD_path_compute(path,px,py,dx,dy);
+		} else {
+			int x,y;
+			dijkstraDist=0.0f;
+			/* compute the distance grid */
+			TCOD_dijkstra_compute(dijkstra,px,py);
+			/* get the maximum distance (needed for ground shading only) */
+			for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+				for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+					float d= TCOD_dijkstra_get_distance(dijkstra,x,y);
+					if ( d > dijkstraDist ) dijkstraDist=d;
+				}
+			}
+			// compute the path
+			TCOD_dijkstra_path_set(dijkstra,dx,dy);
+		}
 		recalculatePath=false;
-		busy=1.0f;
+		busy=0.2f;
 	}
 	// draw the dungeon
 	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -709,19 +730,46 @@ void render_path(bool first, TCOD_key_t*key) {
 		}
 	}
 	// draw the path
-	for (i=0; i< TCOD_path_size(path); i++ ) {
-		int x,y;
-		TCOD_path_get(path,i,&x,&y);
-		TCOD_console_set_back(sample_console,x,y,light_ground, TCOD_BKGND_SET );
+	if ( usingAstar ) {
+		for (i=0; i< TCOD_path_size(path); i++ ) {
+			int x,y;
+			TCOD_path_get(path,i,&x,&y);
+			TCOD_console_set_back(sample_console,x,y,light_ground, TCOD_BKGND_SET );
+		}
+	} else {
+		int x,y,i;
+		for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
+			for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+				bool wall=smap[y][x]=='#';
+				if (! wall) {
+					float d= TCOD_dijkstra_get_distance(dijkstra,x,y);
+					TCOD_console_set_back(sample_console,x,y,TCOD_color_lerp(light_ground,dark_ground,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
+				}
+			}
+		}
+		for (i=0; i< TCOD_dijkstra_size(dijkstra); i++ ) {
+			int x,y;
+			TCOD_dijkstra_get(dijkstra,i,&x,&y);
+			TCOD_console_set_back(sample_console,x,y,light_ground, TCOD_BKGND_SET );
+		}
 	}
 	// move the creature
 	busy-=TCOD_sys_get_last_frame_length();
 	if (busy <= 0.0f ) {
-		busy += 0.2f;
-		if (!TCOD_path_is_empty(path)) {
-			TCOD_console_put_char(sample_console,px,py,' ',TCOD_BKGND_NONE);
-			TCOD_path_walk(path,&px,&py,true);
-			TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
+		busy = 0.2f;
+		if ( usingAstar ) {
+			if (!TCOD_path_is_empty(path)) {
+				TCOD_console_put_char(sample_console,px,py,' ',TCOD_BKGND_NONE);
+				TCOD_path_walk(path,&px,&py,true);
+				TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
+			}
+		} else {
+			if (!TCOD_dijkstra_is_empty(dijkstra)) {
+				TCOD_console_put_char(sample_console,px,py,' ',TCOD_BKGND_NONE);
+				TCOD_dijkstra_path_walk(dijkstra,&px,&py);
+				TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
+				recalculatePath=true;
+			}
 		}
 	}
 	if ( (key->c == 'I' || key->c == 'i') && dy > 0 ) {
@@ -760,6 +808,13 @@ void render_path(bool first, TCOD_key_t*key) {
 		if ( smap[dy][dx] == ' ' ) {
 			recalculatePath=true;
 		}
+	} else if ( key->vk == TCODK_TAB ) {
+		usingAstar = ! usingAstar;
+		if ( usingAstar ) 
+			TCOD_console_print_left(sample_console,1,4,TCOD_BKGND_NONE,"Using : A*      ");
+		else
+			TCOD_console_print_left(sample_console,1,4,TCOD_BKGND_NONE,"Using : Dijkstra");
+		recalculatePath=true;
 	}
 	mouse=TCOD_mouse_get_status();
 	mx = mouse.cx-SAMPLE_SCREEN_X;
@@ -1026,10 +1081,14 @@ void render_name(bool first, TCOD_key_t*key) {
 
 	while ( TCOD_list_size(names) >= 15 ) {
 		// remove the first element.
+#ifndef TCOD_VISUAL_STUDIO
 		char *nameToRemove= * (TCOD_list_begin(names));
+#endif
 		TCOD_list_remove_iterator(names, TCOD_list_begin(names));
 		// for some reason, this crashes on MSVC...
-		//free(nameToRemove);
+#ifndef TCOD_VISUAL_STUDIO
+		free(nameToRemove);
+#endif
 	}
 
 	TCOD_console_clear(sample_console);

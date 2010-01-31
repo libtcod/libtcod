@@ -763,9 +763,7 @@ void render_path(bool first, TCOD_key_t*key) {
 				sampleConsole.putChar(px,py,' ',TCOD_BKGND_NONE);
 				dijkstra->walk(&px,&py);
 				sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
-				if ( smap[dy][dx] == ' ' ) {
-					recalculatePath=true;
-				}
+				recalculatePath=true;
 			}
 		}
 	}

@@ -521,7 +521,7 @@ unsigned int dijkstra_get_int_distance (dijkstra_t * data, int x, int y) {
 }
 
 /* create a path */
-void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
+bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     dijkstra_t * data = (dijkstra_t*)dijkstra;
 
     int px = x, py = y;
@@ -530,8 +530,11 @@ void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
     unsigned int distances[9];
     int lowest_index = 666;
-	TCOD_IFNOT(data != NULL) return;
-	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return;
+	TCOD_IFNOT(data != NULL) return false;
+	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return false;
+
+	// check that destination is reachable
+	if ( dijkstra_get_int_distance(data,x,y) == 0xFFFFFFFF ) return false;
 
     TCOD_list_clear(data->path);
 
@@ -553,6 +556,9 @@ void TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
         px += dx[lowest_index];
         py += dy[lowest_index];
     } while (lowest_index != 8);
+	// remove the last step
+	TCOD_list_pop(data->path);
+	return true;
 }
 
 /* walk the path */
@@ -561,10 +567,9 @@ bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
 	TCOD_IFNOT(data != NULL) return false;
     if (TCOD_list_is_empty(data->path)) return false;
     else {
-        unsigned int node = (unsigned int)TCOD_list_get(data->path,TCOD_list_size(data->path)-1);
+        unsigned int node = (unsigned int)TCOD_list_pop(data->path);
         if ( x ) *x = (int)(node % data->width);
         if ( y ) *y = (int)(node / data->width);
-        TCOD_list_pop(data->path);
     }
     return true;
 }

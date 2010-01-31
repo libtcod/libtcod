@@ -65,7 +65,7 @@ class TCODLIB_API TCODDijkstra {
         ~TCODDijkstra (void);
         void compute (int rootX, int rootY);
         float getDistance (int x, int y);
-        void setPath (int toX, int toY);
+        bool setPath (int toX, int toY);
         bool walk (int *x, int *y);
 		bool isEmpty() const;
 		int size() const;

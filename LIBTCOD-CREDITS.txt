@@ -11,7 +11,7 @@ Products :
 
 Many thanks to everyone who provided feedback, and especially :
 - Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov routines, djikstra pathfinding, name generator, lots of bitmap fonts and being the #1 libtcod user, supporter and contributor.
-- Joao 'Jotaf' Henriques for his long time support and priceless comments and suggestions.
+- Joao 'Jotaf' Henriques for his long time support, priceless comments and suggestions and the awesome python tutorial.
 - Chris Hamons and John Klimek for the C# port and valuable bug fixes.
 - Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
 - Michael De Rosa for the OSX port.

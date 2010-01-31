@@ -4,14 +4,8 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.0 : 2010 Jan 19
-X removed bitfield from TCOD_key_t and TCOD_mouse_t to ease wrappers writing.
-  existing working wrappers might be broken, though.
-X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
-X renamed libraries on Linux to improve portability :
-    libtcod++.so  => libtcodxx.so
-    libtcod-gui.so => libtcodgui.so
 X TCODRandom::getIntFromByteArray has been deleted    
-X the random number generator module now support two algorithms :
+X the random number generator module now support two algorithms (Mingos)
   Mersenne twister, used in previous versions of libtcod
   Complementary Multiply With Carry, 2 to 3 times faster and has a much better period. This is the default algo.
   You can choose the algorithm in the constructor :
@@ -23,7 +17,16 @@ X the random number generator module now support two algorithms :
   TCODRandom(uint32 seed) => CMWC, custom seed
   TCODRandom(TCOD_random_algo_t algo) => default seed, custom algo
   TCODRandom(uint32 seed, TCOD_random_algo_t aldo) => custom algo and seed
-+ added name generation module (written by Mingos)
+X removed bitfield from TCOD_key_t and TCOD_mouse_t to ease wrappers writing.
+  existing working wrappers might be broken, though.
+X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
+X renamed libraries on Linux to improve portability :
+    libtcod++.so  => libtcodxx.so
+    libtcod-gui.so => libtcodgui.so
++ added name generation module (Mingos)
++ added Dijkstra pathfinding (Mingos)
++ added approximated gaussian distribution functions in the RNG module
+    float TCODRandom::getGaussian(float min, float max)
 + added subcell resolution blitting function TCODImage::blit2x
 + added more portable filesystem utilities :
     static bool TCODSystem::isDirectory(const char *path)

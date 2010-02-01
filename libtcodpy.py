@@ -431,6 +431,9 @@ def console_set_window_title(title):
 def console_credits():
     _lib.TCOD_console_credits()
 
+def console_credits_reset():
+    _lib.TCOD_console_credits_reset()
+
 def console_credits_render(x, y, alpha):
     return _lib.TCOD_console_credits_render(x, y, c_int(alpha)) == 1
 
@@ -612,6 +615,12 @@ def sys_get_current_resolution():
     w = c_int()
     h = c_int()
     _lib.TCOD_sys_get_current_resolution(byref(w), byref(h))
+    return w.value, h.value
+
+def sys_get_char_size():
+    w = c_int()
+    h = c_int()
+    _lib.TCOD_sys_get_char_size(byref(w), byref(h))
     return w.value, h.value
 
 # update font bitmap

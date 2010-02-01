@@ -13,6 +13,8 @@
 #include <math.h>
 #ifndef NO_SDL_SAMPLE
 // needed for SDL callback sample
+// hack to keep SDL from messing with main()
+#define _SDL_main_h
 #include <SDL/SDL.h>
 #endif
 #include "libtcod.hpp"
@@ -1145,13 +1147,15 @@ public :
 		int samplex = SAMPLE_SCREEN_X * charw;
 		int sampley = SAMPLE_SCREEN_Y * charh;
 		// let's blur that sample console
+		float f[3],n=0.0f;
+		f[2]=TCODSystem::getElapsedSeconds();
 		for (int x=samplex; x < samplex + SAMPLE_SCREEN_WIDTH * charw-1; x ++ ) {
-			float f[3];
 			f[0]=(float)(x)/(SAMPLE_SCREEN_WIDTH * charw);
-			f[2]=TCODSystem::getElapsedSeconds();
 			for (int y=sampley; y < sampley + SAMPLE_SCREEN_HEIGHT * charh-1; y ++ ) {
-				f[1]=(float)(y)/(SAMPLE_SCREEN_HEIGHT * charh);
-				float n=noise->getFbmSimplex(f,3.0f);
+				if ( (y-sampley)%4 == 0 ) {
+					f[1]=(float)(y)/(SAMPLE_SCREEN_HEIGHT * charh);
+					n=noise->getFbmSimplex(f,3.0f);
+				}
 				int dec = (int)(3*(n+1.0f));
 				if ( dec > 0 ) {
 					Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * screen->format->BytesPerPixel;
@@ -1161,15 +1165,15 @@ public :
 					ir += *((p)+screen->format->Rshift/8);
 					ig += *((p)+screen->format->Gshift/8);
 					ib += *((p)+screen->format->Bshift/8);
-					p += dec*screen->format->BytesPerPixel; // get pixel at x+1,y
+					p += dec*screen->format->BytesPerPixel; // get pixel at x+dec,y
 					ir += *((p)+screen->format->Rshift/8);
 					ig += *((p)+screen->format->Gshift/8);
 					ib += *((p)+screen->format->Bshift/8);
-					p += dec*screen->pitch; // get pixel at x+1,y+1
+					p += dec*screen->pitch; // get pixel at x+dec,y+dec
 					ir += *((p)+screen->format->Rshift/8);
 					ig += *((p)+screen->format->Gshift/8);
 					ib += *((p)+screen->format->Bshift/8);
-					p-= dec *screen->format->BytesPerPixel; // get pixel at x,y+1
+					p-= dec *screen->format->BytesPerPixel; // get pixel at x,y+dec
 					ir += *((p)+screen->format->Rshift/8);
 					ig += *((p)+screen->format->Gshift/8);
 					ib += *((p)+screen->format->Bshift/8);

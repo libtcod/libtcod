@@ -109,6 +109,7 @@ public :
 	virtual ~TCODConsole();
 	
 	static void credits();
+	static void resetCredits();
 	static bool renderCredits(int x, int y, bool alpha);
 
 protected :

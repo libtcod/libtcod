@@ -55,7 +55,7 @@ void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY) {
 }
 
 void TCODConsole::setDirty(int x, int y, int w, int h) {
-	TCOD_console_set_dirty(data,x,y,w,h);
+	TCOD_console_set_dirty(x,y,w,h);
 }
 
 TCOD_key_t TCODConsole::checkForKeypress(int flags) {
@@ -297,6 +297,10 @@ void TCODConsole::setKeyColor(const TCODColor &col) {
 
 void TCODConsole::credits() {
 	TCOD_console_credits();
+}
+
+void TCODConsole::resetCredits() {
+	TCOD_console_credits_reset();
 }
 
 bool TCODConsole::renderCredits(int x, int y, bool alpha) {

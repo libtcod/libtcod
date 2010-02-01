@@ -239,11 +239,9 @@ void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color
 	dat->buf[ offset ].back = back;
 }
 
-void TCOD_console_set_dirty(TCOD_console_t con,int dx, int dy, int dw, int dh) {
-	TCOD_console_data_t *dat;
+void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 	int x,y;
-	if (! con ) con=TCOD_root;
-	dat=(TCOD_console_data_t *)con;
+	TCOD_console_data_t *dat=(TCOD_console_data_t *)TCOD_root;
 	TCOD_IFNOT(dat != NULL) return;
 	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx+dw >= 0 && dy+dh >= 0 ) return;
 	TCOD_IFNOT( dx >= 0 ) {
@@ -1240,13 +1238,18 @@ void TCOD_console_credits() {
 	TCOD_sys_restore_fps();
 }
 
+static bool init2=false;
+
+void TCOD_console_credits_reset() {
+	init2=false;
+}
+
 bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	static char poweredby[128];
 	static float char_heat[128];
 	static int char_x[128];
 	static int char_y[128];
 	static bool init1=false;
-	static bool init2=false;
 	static int len,len1,cw,ch;
 	static float xstr;
 	static TCOD_color_t colmap[64];

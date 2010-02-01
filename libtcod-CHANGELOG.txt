@@ -23,6 +23,7 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
++ added TCODConsole::resetCredits() to restart credits animation before it's finished
 + added TCODConsole::setDirty(int x, int y, int w,int h) to force libtcod to redraw a part of the console
     This might by needed when using the SDL renderer
 + added TCODSystem::getCharSize(int *w, int *h) to get the current font's character size

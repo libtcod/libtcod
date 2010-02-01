@@ -3,10 +3,20 @@
  * This code demonstrates various usages of libtcod modules
  * It's in the public domain.
  */
+
+// uncomment this to disable SDL sample (might cause compilation issues on some systems)
+//#define NO_SDL_SAMPLE
+
 #include <stdlib.h> /* for NULL */
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#ifndef NO_SDL_SAMPLE
+// SDL.h needed for SDL callback sample
+// hack to keep SDL from messing with main()
+#define _SDL_main_h
+#include <SDL/SDL.h>
+#endif
 #include "libtcod.h"
 
 /* a sample has a name and a rendering function */
@@ -1118,6 +1128,87 @@ void render_name(bool first, TCOD_key_t*key) {
 	}
 }
 
+/* ***************************
+ * SDL callback sample
+ * ***************************/
+#ifndef NO_SDL_SAMPLE
+TCOD_noise_t noise=NULL;
+void SDL_render(void *sdlSurface) {
+	SDL_Surface *screen = (SDL_Surface *)sdlSurface;
+	// now we have almighty access to the screen's precious pixels !!
+	// get the font character size
+	int charw,charh,x,y;
+	if ( noise == NULL ) noise = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
+	TCOD_sys_get_char_size(&charw,&charh);
+	// compute the sample console position in pixels
+	int samplex = SAMPLE_SCREEN_X * charw;
+	int sampley = SAMPLE_SCREEN_Y * charh;
+	// let's blur that sample console
+	float f[3],n=0.0f;
+	f[2]=TCOD_sys_elapsed_seconds();
+	for (x=samplex; x < samplex + SAMPLE_SCREEN_WIDTH * charw-1; x ++ ) {
+		f[0]=(float)(x)/(SAMPLE_SCREEN_WIDTH * charw);
+		for (y=sampley; y < sampley + SAMPLE_SCREEN_HEIGHT * charh-1; y ++ ) {
+			if ( (y - sampley ) %4 == 0 ) {
+				f[1]=(float)(y)/(SAMPLE_SCREEN_HEIGHT * charh);
+				n=TCOD_noise_fbm_simplex(noise,f,3.0f);
+			}
+			int dec = (int)(3*(n+1.0f));
+			if ( dec > 0 ) {
+				Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * screen->format->BytesPerPixel;
+				uint32 col;
+				int ir=0,ig=0,ib=0;
+				// get pixel at x,y
+				ir += *((p)+screen->format->Rshift/8);
+				ig += *((p)+screen->format->Gshift/8);
+				ib += *((p)+screen->format->Bshift/8);
+				p += dec*screen->format->BytesPerPixel; // get pixel at x+dec,y
+				ir += *((p)+screen->format->Rshift/8);
+				ig += *((p)+screen->format->Gshift/8);
+				ib += *((p)+screen->format->Bshift/8);
+				p += dec*screen->pitch; // get pixel at x+dec,y+dec
+				ir += *((p)+screen->format->Rshift/8);
+				ig += *((p)+screen->format->Gshift/8);
+				ib += *((p)+screen->format->Bshift/8);
+				p-= dec *screen->format->BytesPerPixel; // get pixel at x,y+dec
+				ir += *((p)+screen->format->Rshift/8);
+				ig += *((p)+screen->format->Gshift/8);
+				ib += *((p)+screen->format->Bshift/8);
+				p -= dec * screen->pitch;
+				ir/=4;
+				ig/=4;
+				ib/=4;
+				col = SDL_MapRGB(screen->format,ir,ig,ib);
+				* (uint32 *)p = col;
+			}
+		}
+	}
+}
+
+static bool sdl_callback_enabled=false;
+void render_sdl(bool first, TCOD_key_t*key) {
+	if ( first ) {
+		TCOD_sys_set_fps(30); /* limited to 30 fps */
+		// use noise sample as background. rendering is done in SampleRenderer
+		TCOD_console_set_background_color(sample_console,TCOD_light_blue);
+		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_clear(sample_console);
+		TCOD_console_print_center_rect(sample_console,SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
+			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.");
+	}
+	if ( key->vk == TCODK_TAB ) {
+		sdl_callback_enabled = !sdl_callback_enabled;
+		if (sdl_callback_enabled) {
+			TCOD_sys_register_SDL_renderer(SDL_render);
+		} else {
+			TCOD_sys_register_SDL_renderer(NULL);
+			// we want libtcod to redraw the sample console even if nothing has changed in it
+			TCOD_console_set_dirty(SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
+		}
+	}
+}
+
+#endif
 
 /* ***************************
  * the list of samples
@@ -1133,6 +1224,9 @@ sample_t samples[] = {
 	{"  Image toolkit      ",render_image},
 	{"  Mouse support      ",render_mouse},
 	{"  Name generator     ",render_name},
+#ifndef NO_SDL_SAMPLE
+	{"  SDL callback       ",render_sdl},
+#endif
 };
 int nb_samples = sizeof(samples)/sizeof(sample_t); /* total number of samples */
 
@@ -1239,6 +1333,14 @@ int main( int argc, char *argv[] ) {
 							NULL,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y, /* the destination console & position */
 							1.0f,1.0f /* alpha coefs */
 						 );
+
+#ifndef NO_SDL_SAMPLE
+		if ( sdl_callback_enabled ) {
+			// we want libtcod to redraw the sample console even if nothing has changed in it
+			TCOD_console_set_dirty(SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
+		}
+#endif
+
 		/* update the game screen */
 		TCOD_console_flush();
 

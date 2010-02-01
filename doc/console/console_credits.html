@@ -16,6 +16,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODConsole::credits</h3>
 You can print a "Powered by libtcod x.y.z" screen during your game startup simply by calling this function after initRoot :<br />
 <p class="code"><pre>
 C++ : static void TCODConsole::credits()
@@ -35,6 +36,7 @@ Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
 </pre></p>
 <br />
 <hr />
+<h3>TCODConsole::renderCredits</h3>
 You can also print the credits on one of your game screens (your main menu for example) by calling this function in your main loop :<br />
 <p class="code"><pre>
 C++ : static bool TCODConsole::renderCredits(int x, int y, bool alpha)
@@ -73,5 +75,13 @@ Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
           // render transparent credits near the center of the screen
           if (not end_credits )  : end_credits=libtcod.console_credits_render(35,25,True)
           libtcod.console_flush()
+</pre></p>
+<hr />
+<h3>TCODConsole::resetCredits</h3>
+You can also restart the credits animation from the begining before it's finished by calling this function :<br />
+<p class="code"><pre>
+C++ : static void TCODConsole::resetCredits()
+C   : bool TCOD_console_credits_reset()
+Py  : console_credits_reset()
 </pre></p>
 

@@ -15,6 +15,7 @@ table.param td { border : 1px solid #000000; }
 th { background-color: #44BBFF; color: #FFFFFF }
 table.none td { border : 0 }
 </style>
+<h3>TCODSystem::registerSDLRenderer</h3>
 You can register a callback that will be called after the libtcod rendering phase, but before the screen buffer is swapped. This callback receives the screen SDL_Surface reference.<br />
 This makes it possible to use any SDL drawing functions (including openGL) on top of the libtcod console.<br/>
 To disable the custom renderer, call the same method with a NULL parameter.<br />
@@ -53,4 +54,16 @@ Py  : def my_renderer(sdl_surface) :
            ... draw something on sdl_surface using pygame
       libtcod.sys_register_SDL_renderer(my_renderer)
 </pre></p>
-<br />
+<br /><hr />
+<h3>TCODSystem::registerSDLRenderer</h3>
+libtcod is not aware of the part of the screen your SDL renderer has updated. If no change occured in the console, it won't redraw them except if you tell him to do so with this function :<br />
+<p class="code"><pre>
+C++ : void TCODConsole::setDirty(int x, int y, int w, int h)
+C   : void TCOD_console_set_dirty(int x, int y, int w, int h)
+Py  : TCOD_console_set_dirty(x, y, w, h)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>x,y,w,h</td><td>Part of the root console you want to redraw even if nothing has changed in the console back/fore/char.</td></tr>
+</table>
+

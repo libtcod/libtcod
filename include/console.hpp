@@ -47,6 +47,7 @@ public :
 	void setBackgroundColor(TCODColor back);
 	void setForegroundColor(TCODColor fore);
 	void clear();
+	void setDirty(int x, int y, int w, int h);
 	void setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void setFore(int x, int y, const TCODColor &col);
 	void setChar(int x, int y, int c);

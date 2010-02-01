@@ -54,6 +54,10 @@ void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY) {
 	TCOD_console_map_string_to_font(s, fontCharX, fontCharY);
 }
 
+void TCODConsole::setDirty(int x, int y, int w, int h) {
+	TCOD_console_set_dirty(data,x,y,w,h);
+}
+
 TCOD_key_t TCODConsole::checkForKeypress(int flags) {
 	return TCOD_sys_check_for_keypress(flags);
 }

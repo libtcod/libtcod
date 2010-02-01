@@ -345,13 +345,14 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 			if ( track_changes ) {
 				char_t *oc=&prev_console_buffer[x+y*console_width];
 				changed=false;
-				if ( ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
+				if ( c->dirt || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
 					|| c->back.b != oc->back.b || c->fore.r != oc->fore.r
 					|| c->fore.g != oc->fore.g || c->fore.b != oc->fore.b
 					|| c->c != oc->c || c->cf != oc->cf) {
 					changed=true;
 				}
 			}
+			c->dirt=0;
 			if ( changed ) {
 				TCOD_color_t b=c->back;
 				dstRect.x=x*fontWidth;

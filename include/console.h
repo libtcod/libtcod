@@ -224,6 +224,7 @@ TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontChar
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
 
+TCODLIB_API void TCOD_console_set_dirty(TCOD_console_t con,int x, int y, int w, int h);
 TCODLIB_API void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_clear(TCOD_console_t con);

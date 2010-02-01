@@ -181,7 +181,9 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 					}
 				}
 			}
+			uint8 dirt=dst->buf[dy * dst->w + dx].dirt;
 			dst->buf[dy * dst->w + dx] = dstChar;
+			dst->buf[dy * dst->w + dx].dirt=dirt;
 		}
 	}
 }
@@ -237,6 +239,31 @@ void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color
 	dat->buf[ offset ].back = back;
 }
 
+void TCOD_console_set_dirty(TCOD_console_t con,int dx, int dy, int dw, int dh) {
+	TCOD_console_data_t *dat;
+	int x,y;
+	if (! con ) con=TCOD_root;
+	dat=(TCOD_console_data_t *)con;
+	TCOD_IFNOT(dat != NULL) return;
+	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx+dw >= 0 && dy+dh >= 0 ) return;
+	TCOD_IFNOT( dx >= 0 ) {
+		dw += dx;
+		dx = 0;
+	}
+	TCOD_IFNOT( dy >= 0 ) {
+		dh += dy;
+		dy = 0;
+	}
+	TCOD_IFNOT( dx+dw < dat->w ) dw = dat->w-dx;
+	TCOD_IFNOT( dy+dh < dat->h ) dh = dat->h-dy;
+
+	for (x=dx; x < dx+dw;x++) {
+		for (y=dy; y < dy+dh; y++) {
+			int off=x+dat->w*y;
+			dat->buf[off].dirt=1;
+		}
+	}
+}
 
 void TCOD_console_clear(TCOD_console_t con) {
 	TCOD_console_data_t *dat;

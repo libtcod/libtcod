@@ -46,6 +46,8 @@ public :
 	static float getLastFrameLength();
 	static void getCurrentResolution(int *w, int *h);
 	static void updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
+	static void getCharSize(int *w, int *h);
+
 	// filsystem stuff
 	static bool createDirectory(const char *path);
 	static bool deleteFile(const char *path);

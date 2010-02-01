@@ -66,6 +66,10 @@ void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage 
 	TCOD_sys_update_char(asciiCode,fontx,fonty,img->data,x,y);
 }
 
+void TCODSystem::getCharSize(int *w, int *h) {
+	TCOD_sys_get_char_size(w,h);
+}
+
 // filesystem stuff
 bool TCODSystem::createDirectory(const char *path) {
 	return TCOD_sys_create_directory(path) != 0;

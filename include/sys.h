@@ -38,6 +38,8 @@ TCODLIB_API int TCOD_sys_get_fps();
 TCODLIB_API float TCOD_sys_get_last_frame_length();
 TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
+TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
+
 // filesystem stuff
 TCODLIB_API bool TCOD_sys_create_directory(const char *path);
 TCODLIB_API bool TCOD_sys_delete_file(const char *path);

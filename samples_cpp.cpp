@@ -1128,10 +1128,11 @@ void render_name(bool first, TCOD_key_t*key) {
  * SDL callback sample
  * ***************************/
 #ifndef NO_SDL_SAMPLE
+static bool sdl_callback_enabled=false;
+
 class SampleRenderer : public ITCODSDLRenderer {
 public :
-	TCODNoise *noise;
-	SampleRenderer() {
+	SampleRenderer() : effectNum(0), delay(3.0f) {
 		noise=new TCODNoise(3);
 	}
 	~SampleRenderer() {
@@ -1146,20 +1147,105 @@ public :
 		// compute the sample console position in pixels
 		int samplex = SAMPLE_SCREEN_X * charw;
 		int sampley = SAMPLE_SCREEN_Y * charh;
+		delay -= TCODSystem::getLastFrameLength();
+		if ( delay < 0.0f ) {
+			delay = 3.0f;
+			effectNum = (effectNum + 1) % 3;
+			if ( effectNum == 2 ) sdl_callback_enabled=false; // no forced redraw for burn effect
+			else sdl_callback_enabled=true;
+		}
+		switch(effectNum) {
+			case 0 : blur(screen,samplex,sampley,SAMPLE_SCREEN_WIDTH * charw,SAMPLE_SCREEN_HEIGHT * charh); break;
+			case 1 : explode(screen,samplex,sampley,SAMPLE_SCREEN_WIDTH * charw,SAMPLE_SCREEN_HEIGHT * charh); break;
+			case 2 : burn(screen,samplex,sampley,SAMPLE_SCREEN_WIDTH * charw,SAMPLE_SCREEN_HEIGHT * charh); break;
+		}
+	}
+	
+protected :
+	TCODNoise *noise;
+	int effectNum;
+	float delay;
+
+	void burn(SDL_Surface *screen, int samplex, int sampley, int samplew, int sampleh) {
+		int ridx=screen->format->Rshift/8;
+		int gidx=screen->format->Gshift/8;
+		int bidx=screen->format->Bshift/8;
+		for (int x=samplex; x < samplex + samplew; x ++ ) {
+			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			for (int y=sampley; y < sampley + sampleh; y ++ ) {
+				int ir=0,ig=0,ib=0;
+				Uint8 *p2 = p + screen->format->BytesPerPixel; // get pixel at x+1,y
+				ir += p2[ridx];
+				ig += p2[gidx];
+				ib += p2[bidx];
+				p2 -= 2*screen->format->BytesPerPixel; // get pixel at x-1,y
+				ir += p2[ridx];
+				ig += p2[gidx];
+				ib += p2[bidx];
+				p2 += screen->format->BytesPerPixel+ screen->pitch; // get pixel at x,y+1
+				ir += p2[ridx];
+				ig += p2[gidx];
+				ib += p2[bidx];
+				p2 -= 2*screen->pitch; // get pixel at x,y-1
+				ir += p2[ridx];
+				ig += p2[gidx];
+				ib += p2[bidx];
+				ir/=4;
+				ig/=4;
+				ib/=4;
+				p[ridx]=ir;
+				p[gidx]=ig;
+				p[bidx]=ib;
+				p += screen->pitch;
+			}
+		}
+	}
+	
+	void explode(SDL_Surface *screen, int samplex, int sampley, int samplew, int sampleh) {
+		int ridx=screen->format->Rshift/8;
+		int gidx=screen->format->Gshift/8;
+		int bidx=screen->format->Bshift/8;
+		TCODRandom *rng=TCODRandom::getInstance();
+		int dist=(int)(10*(3.0f - delay));
+		for (int x=samplex; x < samplex + samplew; x ++ ) {
+			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			for (int y=sampley; y < sampley + sampleh; y ++ ) {
+				int ir=0,ig=0,ib=0;
+				for (int i=0; i < 3; i++) {
+					int dx = rng->getInt(-dist,dist); 
+					int dy = rng->getInt(-dist,dist);
+					Uint8 *p2;
+					p2 = p + dx * screen->format->BytesPerPixel;
+					p2 += dy * screen->pitch; 
+					ir += p2[ridx];
+					ig += p2[gidx];
+					ib += p2[bidx];
+				}
+				ir/=3;
+				ig/=3;
+				ib/=3;
+				p[ridx]=ir;
+				p[gidx]=ig;
+				p[bidx]=ib;
+				p += screen->pitch;
+			}
+		}
+	}
+	
+	void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sampleh) {
 		// let's blur that sample console
 		float f[3],n=0.0f;
 		int ridx=screen->format->Rshift/8;
 		int gidx=screen->format->Gshift/8;
 		int bidx=screen->format->Bshift/8;
 		f[2]=TCODSystem::getElapsedSeconds();
-		for (int x=samplex; x < samplex + SAMPLE_SCREEN_WIDTH * charw; x ++ ) {
-			f[0]=(float)(x)/(SAMPLE_SCREEN_WIDTH * charw);
-			for (int y=sampley; y < sampley + SAMPLE_SCREEN_HEIGHT * charh; y ++ ) {
-				Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * screen->format->BytesPerPixel;
-				uint32 col;
+		for (int x=samplex; x < samplex + samplew; x ++ ) {
+			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			f[0]=(float)(x)/samplew;
+			for (int y=sampley; y < sampley + sampleh; y ++ ) {
 				int ir=0,ig=0,ib=0;
-				if ( (y-sampley)%4 == 0 ) {
-					f[1]=(float)(y)/(SAMPLE_SCREEN_HEIGHT * charh);
+				if ( (y-sampley)%8 == 0 ) {
+					f[1]=(float)(y)/sampleh;
 					n=noise->getFbmSimplex(f,3.0f);
 				}
 				int dec = (int)(3*(n+1.0f));
@@ -1244,17 +1330,18 @@ public :
 						ir/=count;
 						ig/=count;
 						ib/=count;
-						col = SDL_MapRGB(screen->format,ir,ig,ib);
-						* (uint32 *)p = col;
+						p[ridx]=ir;
+						p[gidx]=ig;
+						p[bidx]=ib;
 					break;					
 					default:break;
 				}
+				p += screen->pitch;
 			}
 		}
 	}
 };
 
-static bool sdl_callback_enabled=false;
 void render_sdl(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCODSystem::setFps(30); /* limited to 30 fps */

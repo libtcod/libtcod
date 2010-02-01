@@ -1148,41 +1148,106 @@ public :
 		int sampley = SAMPLE_SCREEN_Y * charh;
 		// let's blur that sample console
 		float f[3],n=0.0f;
+		int ridx=screen->format->Rshift/8;
+		int gidx=screen->format->Gshift/8;
+		int bidx=screen->format->Bshift/8;
 		f[2]=TCODSystem::getElapsedSeconds();
-		for (int x=samplex; x < samplex + SAMPLE_SCREEN_WIDTH * charw-1; x ++ ) {
+		for (int x=samplex; x < samplex + SAMPLE_SCREEN_WIDTH * charw; x ++ ) {
 			f[0]=(float)(x)/(SAMPLE_SCREEN_WIDTH * charw);
-			for (int y=sampley; y < sampley + SAMPLE_SCREEN_HEIGHT * charh-1; y ++ ) {
+			for (int y=sampley; y < sampley + SAMPLE_SCREEN_HEIGHT * charh; y ++ ) {
+				Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * screen->format->BytesPerPixel;
+				uint32 col;
+				int ir=0,ig=0,ib=0;
 				if ( (y-sampley)%4 == 0 ) {
 					f[1]=(float)(y)/(SAMPLE_SCREEN_HEIGHT * charh);
 					n=noise->getFbmSimplex(f,3.0f);
 				}
 				int dec = (int)(3*(n+1.0f));
-				if ( dec > 0 ) {
-					Uint8 *p = (Uint8 *)screen->pixels + y * screen->pitch + x * screen->format->BytesPerPixel;
-					uint32 col;
-					int ir=0,ig=0,ib=0;
-					// get pixel at x,y
-					ir += *((p)+screen->format->Rshift/8);
-					ig += *((p)+screen->format->Gshift/8);
-					ib += *((p)+screen->format->Bshift/8);
-					p += dec*screen->format->BytesPerPixel; // get pixel at x+dec,y
-					ir += *((p)+screen->format->Rshift/8);
-					ig += *((p)+screen->format->Gshift/8);
-					ib += *((p)+screen->format->Bshift/8);
-					p += dec*screen->pitch; // get pixel at x+dec,y+dec
-					ir += *((p)+screen->format->Rshift/8);
-					ig += *((p)+screen->format->Gshift/8);
-					ib += *((p)+screen->format->Bshift/8);
-					p-= dec *screen->format->BytesPerPixel; // get pixel at x,y+dec
-					ir += *((p)+screen->format->Rshift/8);
-					ig += *((p)+screen->format->Gshift/8);
-					ib += *((p)+screen->format->Bshift/8);
-					p -= dec * screen->pitch;
-					ir/=4;
-					ig/=4;
-					ib/=4;
-					col = SDL_MapRGB(screen->format,ir,ig,ib);
-					* (uint32 *)p = col;
+				int count=0;
+				switch(dec) {
+					case 4:
+						count += 4;
+						// get pixel at x,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= 2*screen->format->BytesPerPixel; // get pixel at x+2,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= 2*screen->pitch; // get pixel at x+2,y+2
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p+= 2*screen->format->BytesPerPixel; // get pixel at x,y+2
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += 2*screen->pitch;
+					case 3:
+						count += 4;
+						// get pixel at x,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += 2*screen->format->BytesPerPixel; // get pixel at x+2,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += 2*screen->pitch; // get pixel at x+2,y+2
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p-= 2*screen->format->BytesPerPixel; // get pixel at x,y+2
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= 2*screen->pitch;
+					case 2:
+						count += 4;
+						// get pixel at x,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= screen->format->BytesPerPixel; // get pixel at x-1,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= screen->pitch; // get pixel at x-1,y-1
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p+= screen->format->BytesPerPixel; // get pixel at x,y-1
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += screen->pitch;
+					case 1:
+						count += 4;
+						// get pixel at x,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += screen->format->BytesPerPixel; // get pixel at x+1,y
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p += screen->pitch; // get pixel at x+1,y+1
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p-= screen->format->BytesPerPixel; // get pixel at x,y+1
+						ir += p[ridx];
+						ig += p[gidx];
+						ib += p[bidx];
+						p -= screen->pitch;
+						ir/=count;
+						ig/=count;
+						ib/=count;
+						col = SDL_MapRGB(screen->format,ir,ig,ib);
+						* (uint32 *)p = col;
+					break;					
+					default:break;
 				}
 			}
 		}

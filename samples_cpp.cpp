@@ -267,23 +267,25 @@ void render_noise(bool first, TCOD_key_t*key) {
 	static float octaves=4.0f;
 	static float hurst=TCOD_NOISE_DEFAULT_HURST;
 	static float lacunarity=TCOD_NOISE_DEFAULT_LACUNARITY;
+	static TCODImage *img=NULL;
 	static float zoom=3.0f;
 	if ( !noise) {
 		noise = new TCODNoise(2,hurst,lacunarity);
+		img = new TCODImage(SAMPLE_SCREEN_WIDTH*2,SAMPLE_SCREEN_HEIGHT*2);
 	}
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
 	}
-	sampleConsole.clear();
+	
 	// texture animation
 	dx+=0.01f;
 	dy+=0.01f;
 	// render the 2d noise function
-	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
-		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+	for (int y=0; y < 2*SAMPLE_SCREEN_HEIGHT; y++ ) {
+		for (int x=0; x < 2*SAMPLE_SCREEN_WIDTH; x++ ) {
 			float f[2];
-			f[0] = zoom*x / SAMPLE_SCREEN_WIDTH + dx;
-			f[1] = zoom*y / SAMPLE_SCREEN_HEIGHT + dy;
+			f[0] = zoom*x / (2*SAMPLE_SCREEN_WIDTH) + dx;
+			f[1] = zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + dy;
 			float value = 0.0f;
 			switch (func ) {
 				case PERLIN : value = noise->getPerlin(f); break;
@@ -299,12 +301,22 @@ void render_noise(bool first, TCOD_key_t*key) {
 			uint8 c=(uint8)((value+1.0f)/2.0f*255);
 			// use a bluish color
 			TCODColor col((uint8)(c/2),(uint8)(c/2),c);
-			sampleConsole.setBack(x,y,col,TCOD_BKGND_SET);
+			img->putPixel(x,y,col);
 		}
 	}
+	// blit the noise image on the console with subcell resolution
+	img->blit2x(&sampleConsole,0,0);
 	// draw a transparent rectangle
 	sampleConsole.setBackgroundColor(TCODColor::grey);
 	sampleConsole.rect(2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
+	for (int y=2; y < 2+(func <= WAVELET ? 10 : 13); y++ ) {
+		for (int x=2; x < 2+23; x++ ) {
+			TCODColor col=sampleConsole.getFore(x,y);
+			col = col * TCODColor::grey;
+			sampleConsole.setFore(x,y,col);
+		}
+	}
+	
 	// draw the text
 	for (int curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {

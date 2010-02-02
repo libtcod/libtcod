@@ -274,10 +274,12 @@ void render_noise(bool first, TCOD_key_t*key) {
 	static float octaves=4.0f;
 	static float hurst=TCOD_NOISE_DEFAULT_HURST;
 	static float lacunarity=TCOD_NOISE_DEFAULT_LACUNARITY;
+	static TCOD_image_t img=NULL;
 	static float zoom=3.0f;
 	int x,y,curfunc;
 	if ( !noise) {
 		noise = TCOD_noise_new(2,hurst,lacunarity,NULL);
+		img=TCOD_image_new(SAMPLE_SCREEN_WIDTH*2,SAMPLE_SCREEN_HEIGHT*2);
 	}
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
@@ -287,13 +289,13 @@ void render_noise(bool first, TCOD_key_t*key) {
 	dx+=0.01f;
 	dy+=0.01f;
 	/* render the 2d noise function */
-	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
-		for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
+	for (y=0; y < 2*SAMPLE_SCREEN_HEIGHT; y++ ) {
+		for (x=0; x < 2*SAMPLE_SCREEN_WIDTH; x++ ) {
 			float f[2],value;
 			uint8 c;
 			TCOD_color_t col;
-			f[0] = zoom*x / SAMPLE_SCREEN_WIDTH + dx;
-			f[1] = zoom*y / SAMPLE_SCREEN_HEIGHT + dy;
+			f[0] = zoom*x / (2*SAMPLE_SCREEN_WIDTH) + dx;
+			f[1] = zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + dy;
 			value = 0.0f;
 			switch (func ) {
 				case PERLIN : value = TCOD_noise_perlin(noise,f); break;
@@ -310,12 +312,23 @@ void render_noise(bool first, TCOD_key_t*key) {
 			/* use a bluish color */
 			col.r=col.g=c/2;
 			col.b=c;
-			TCOD_console_set_back(sample_console,x,y,col,TCOD_BKGND_SET);
+			TCOD_image_put_pixel(img,x,y,col);
 		}
 	}
+	/* blit the noise image with subcell resolution */
+	TCOD_image_blit_2x(img,sample_console,0,0,0,0,-1,-1);
+	
 	/* draw a transparent rectangle */
 	TCOD_console_set_background_color(sample_console,TCOD_grey);
 	TCOD_console_rect(sample_console,2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
+	for (y=2; y < 2+(func <= WAVELET ? 10 : 13); y++ ) {
+		for (x=2; x < 2+23; x++ ) {
+			TCOD_color_t col=TCOD_console_get_fore(sample_console,x,y);
+			col = TCOD_color_multiply(col, TCOD_grey);
+			TCOD_console_set_fore(sample_console,x,y,col);
+		}
+	}
+		
 	/* draw the text */
 	for (curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {

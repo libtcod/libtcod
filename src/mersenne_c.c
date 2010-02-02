@@ -230,7 +230,7 @@ void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup) {
 	memcpy(mersenne,backup,sizeof(mersenne_data_t));
 }
 
-float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
+float TCOD_random_get_gaussian_float (TCOD_random_t mersenne, float min, float max) {
     mersenne_data_t *r;
 	float delta,deltamid;
 	if (max==min) return min;
@@ -256,4 +256,8 @@ float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max) {
 	    CMWC_GET_NUMBER(number)
 	    return (min + deltamid + ((float)(number)*rand_div*delta));
 	}
+}
+
+int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int min, int max) {
+    return (int)TCOD_random_get_gaussian_float (mersenne, (float)min+0.5f, (float)max+0.5f);
 }

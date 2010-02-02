@@ -34,7 +34,6 @@ typedef enum {
     TCOD_RNG_CMWC
 } TCOD_random_algo_t;
 
-
 typedef void *TCOD_random_t;
 
 TCODLIB_API TCOD_random_t TCOD_random_get_instance(void);
@@ -46,6 +45,7 @@ TCODLIB_API int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max);
 TCODLIB_API float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max);
 TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
-TCODLIB_API float TCOD_random_get_gaussian (TCOD_random_t mersenne, float min, float max);
+TCODLIB_API float TCOD_random_get_gaussian_float (TCOD_random_t mersenne, float min, float max);
+TCODLIB_API int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int min, int max);
 
 #endif

@@ -62,18 +62,22 @@ Py  : # default generator
       my_random = libtcod.random_new()
       a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)
 </pre></p>
-<h3>TCODRandom::getGaussian</h3>
-To get a random floating point with an approximated gaussian distribution:<br />
+<h3>TCODRandom::getGaussian*</h3>
+To get a random number, either integer or floating point, with an approximated Gaussian distribution:<br />
 <p class="code"><pre>
-C++ : float TCODRandom::getGaussian(float min, float max)
-C   : float TCOD_random_get_gaussian(TCOD_random_t mersenne, float min, float max)
-Py  : random_get_gaussian(mersenne, mi, ma)
+C++ : float TCODRandom::getGaussianFloat(float min, float max)
+      int TCODRandom::getGaussianInt(int min, int max)
+C   : float TCOD_random_get_gaussian_float(TCOD_random_t mersenne, float min, float max)
+      int TCOD_random_get_gaussian_int(TCOD_random_t mersenne, int min, int max)
+Py  : random_get_gaussian_float(mersenne, mi, ma)
+      random_get_gaussian_int(mersenne, mi, ma)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>mersenne</td><td>In the C version, the generator handler, returned by the <a href="random_init.html">initialization functions</a>. If NULL, the default generator is used.<br /></td></tr>
-<tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max. Due to the gaussian distribution, most values are near (min+max)/2<br /></td></tr>
+<tr><td>min, max</td><td>Range of values returned. Each time you call this function, you get a number between (including) min and max.<br />Due to the Gaussian distribution, most values are near (min+max)/2<br /></td></tr>
 </table>
+The integer version of the function will work best at larger deltas (max-min).
 <h3>TCODRandom::save</h3>
 You can save the state of a generator with :<br />
 <p class="code"><pre>

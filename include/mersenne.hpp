@@ -37,7 +37,8 @@ class TCODLIB_API TCODRandom {
 		float getFloat(float min, float max);
 		TCODRandom * save() const;
 		void restore(const TCODRandom *backup);
-		float getGaussian(float min, float max);
+		float getGaussianFloat(float min, float max);
+		int getGaussianInt(int min, int max);
 
 		virtual ~TCODRandom();
 

@@ -67,6 +67,10 @@ void TCODRandom::restore(const TCODRandom *backup) {
 	TCOD_random_restore(data,backup->data);
 }
 
-float TCODRandom::getGaussian(float min, float max) {
-	return TCOD_random_get_gaussian(data,min,max);
+float TCODRandom::getGaussianFloat(float min, float max) {
+	return TCOD_random_get_gaussian_float(data,min,max);
+}
+
+int TCODRandom::getGaussianInt(int min, int max) {
+	return TCOD_random_get_gaussian_int(data,min,max);
 }

@@ -941,7 +941,7 @@ def parser_get_list_property(parser, name):
 # random module
 ############################
 _lib.TCOD_random_get_float.restype = c_float
-_lib.TCOD_random_get_gaussian.restype = c_float
+_lib.TCOD_random_get_gaussian_float.restype = c_float
 RNG_MT = 0
 RNG_CMWC = 1
 
@@ -960,8 +960,11 @@ def random_get_int(rnd, mi, ma):
 def random_get_float(rnd, mi, ma):
     return _lib.TCOD_random_get_float(rnd, c_float(mi), c_float(ma))
 
-def random_get_gaussian(rnd, mi, ma):
-    return _lib.TCOD_random_get_gaussian(rnd, c_float(mi), c_float(ma))
+def random_get_gaussian_float(rnd, mi, ma):
+    return _lib.TCOD_random_get_gaussian_float(rnd, c_float(mi), c_float(ma))
+    
+def random_get_gaussian_int(rnd, mi, ma):
+    return _lib.TCOD_random_get_gaussian_int(rnd, mi, ma)
 
 def random_save(rnd):
     return _lib.TCOD_random_save(rnd)

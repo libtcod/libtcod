@@ -322,8 +322,9 @@ noise_zoom = 3.0
 noise_hurst = libtcod.NOISE_DEFAULT_HURST
 noise_lacunarity = libtcod.NOISE_DEFAULT_LACUNARITY
 noise = libtcod.noise_new(2)
+noise_img=libtcod.image_new(SAMPLE_SCREEN_WIDTH*2,SAMPLE_SCREEN_HEIGHT*2)
 def render_noise(first, key):
-    global noise_func
+    global noise_func, noise_img
     global noise_dx, noise_dy
     global noise_octaves, noise_zoom, noise_hurst, noise_lacunarity, noise
 
@@ -352,10 +353,10 @@ def render_noise(first, key):
     libtcod.console_clear(sample_console)
     noise_dx += 0.01
     noise_dy += 0.01
-    for y in range(SAMPLE_SCREEN_HEIGHT):
-        for x in range(SAMPLE_SCREEN_WIDTH):
-            f = [noise_zoom * x / SAMPLE_SCREEN_WIDTH + noise_dx,
-                 noise_zoom * y / SAMPLE_SCREEN_HEIGHT + noise_dy]
+    for y in range(2*SAMPLE_SCREEN_HEIGHT):
+        for x in range(2*SAMPLE_SCREEN_WIDTH):
+            f = [noise_zoom * x / (2*SAMPLE_SCREEN_WIDTH) + noise_dx,
+                 noise_zoom * y / (2*SAMPLE_SCREEN_HEIGHT) + noise_dy]
             value = 0.0
             if noise_func == PERLIN:
                 value = libtcod.noise_perlin(noise, f)
@@ -383,15 +384,21 @@ def render_noise(first, key):
             elif c > 255:
                 c = 255
             col = libtcod.Color(c / 2, c / 2, c)
-            libtcod.console_set_back(sample_console, x, y, col,
-                                     libtcod.BKGND_SET)
+            libtcod.image_put_pixel(noise_img,x,y,col)
     libtcod.console_set_background_color(sample_console, libtcod.grey)
     rectw = 24
     recth = 13
     if noise_func <= WAVELET:
         recth = 10
+    libtcod.image_blit_2x(noise_img,sample_console,0,0)
     libtcod.console_rect(sample_console, 2, 2, rectw, recth, False,
                          libtcod.BKGND_MULTIPLY)
+    for y in range(2,2+recth):
+    	for x in range(2,2+rectw):
+    		col=libtcod.console_get_fore(sample_console,x,y)
+    		col = col * libtcod.grey
+    		libtcod.console_set_fore(sample_console,x,y,col)
+                        
     for curfunc in range(TURBULENCE_WAVELET + 1):
         if curfunc == noise_func:
             libtcod.console_set_foreground_color(sample_console, libtcod.white)

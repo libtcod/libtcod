@@ -20,8 +20,8 @@ table.none td { border : 0 }
 Once the path has been computed, you can get information about it using of one those functions.<br />
 You can read the current origin and destination cells with :<br />
 <p class="code"><pre>
-C++ : void getOrigin(int *x,int *y) const
-      void getDestination(int *x,int *y) const
+C++ : void TCODPath::getOrigin(int *x,int *y) const
+      void TCODPath::getDestination(int *x,int *y) const
 C   : void TCOD_path_get_origin(TCOD_path_t path, int *x, int *y)
       void TCOD_path_get_destination(TCOD_path_t path, int *x, int *y)
 Py  : path_get_origin(path) # returns x,y
@@ -38,24 +38,44 @@ Note that when you walk the path, the origin changes at each step.<br />
 You can get the number of steps needed to reach destination :<br />
 <p class="code"><pre>
 C++ : int TCODPath::size() const
+      int TCODDijkstra::size() const
 C   : int TCOD_path_size(TCOD_path_t path)
+      int TCOD_dijkstra_size(TCOD_dijkstra_t dijkstra)
 Py  : path_size(path)
+      dijkstra_size(dijkstra)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>path, dijkstra</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
 </table>
+<br />
+<hr />
+You can get the distance of any set of coordinates from the root node:<br />
+<p class="code"><pre>
+C++ : float TCODDijkstra::getDistance(int x, int y)
+C   : float TCOD_dijkstra_get_distance(TCOD_dijkstra_t dijkstra, int x, int y)
+Py  : dijkstra_get_distance(dijkstra, x, y)
+</pre></p>
+<table class="param">
+<tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>dijkstra</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>x,y</td><td>The coordinates whose distance from the root node are to be checked</td></tr>
+</table>
+Note that if the coordinates x,y are outside of the map or are a non-walkable position, the function will return -1.0f. This functionality is only available for Dijkstra's algorithm.<br />
 <br />
 <hr />
 You can get the coordinates of each point along the path :<br />
 <p class="code"><pre>
 C++ : void TCODPath::get(int index, int *x, int *y) const
+      void TCODDijkstra::get(int index, int *x, int *y) const
 C   : void TCOD_path_get(TCOD_path_t path, int index, int *x, int *y)
+      void TCOD_dijkstra_get(TCOD_dijkstra_t dijkstra, int index, int *x, int *y)
 Py  : path_get(path, index) # returns x,y
+      dijkstra_get(dijkstra, index) # returns x,y
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>path, dijkstra</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
 <tr><td>index</td><td>Step number.<br />0 &lt;= index &lt; path size </td></tr>
 <tr><td>x,y</td><td>Address of the variables receiving the coordinates of the point.</td></tr>
 </table>
@@ -65,68 +85,113 @@ Example :<br />
 C++ : for (int i=0; i &lt; path->size(); i++ ) {
            int x,y;
            path->get(i,&x,&y);
-           printf ("coord : %d %d\n", x,y );
+           printf ("Astar coord : %d %d\n", x,y );
+      }
+      for (int i=0; i &lt; dijkstra->size(); i++ ) {
+           int x,y;
+           dijkstra->get(i,&x,&y);
+           printf ("Dijkstra coord : %d %d\n", x,y );
       }
 C   : int i;
       for (i=0; i &lt; TCOD_path_size(path); i++ ) {
            int x,y;
            TCOD_path_get(path,i,&x,&y);
-           printf ("coord : %d %d\n", x,y );
+           printf ("Astar coord : %d %d\n", x,y );
+      }
+      for (i=0; i &lt; TCOD_dijkstra_size(dijkstra); i++ ) {
+           int x,y;
+           TCOD_dijkstra_get(dijkstra,i,&x,&y);
+           printf ("Dijsktra coord : %d %d\n", x,y );
       }
 Py  : for i in range (libtcod.path_size(path)) :
            x,y=libtcod.path_get(path,i)
-           print 'coord : ',x,y
-</pre></p><br />
+           print 'Astar coord : ',x,y
+      for i in range (libtcod.dijkstra_size(dijkstra)) :
+           x,y=libtcod.dijkstra_get(dijkstra,i)
+           print 'Dijkstra coord : ',x,y
+</pre></p>
 <hr />
 If you want a creature to follow the path, a more convenient way is to walk the path :<br />
-You know when you reached destination when the path is empty :<br/>
+You know when you reached destination when the path is empty :<br />
 <p class="code"><pre>
 C++ : bool TCODPath::isEmpty() const
+      bool TCODDijkstra::isEmpty() const
 C   : bool TCOD_path_is_empty(TCOD_path_t path)
+      bool TCOD_dijkstra_is_empty(TCOD_dijkstra_t dijkstra)
 Py  : path_is_empty(path)
+      dijkstra_is_empty(dijkstra)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>path, dijkstra</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
 </table>
 You can walk the path and go to the next step with :<br />
 <p class="code"><pre>
 C++ : bool TCODPath::walk(int *x, int *y, bool recalculateWhenNeeded)
+      bool TCODDijkstra::walk(int *x, int *y)
 C   : bool TCOD_path_walk(TCOD_path_t path, int *x, int *y, bool recalculate_when_needed)
+      bool TCOD_dijkstra_walk(TCOD_dijkstra_t dijkstra, int *x, int *y)
 Py  : path_walk(TCOD_path_t path, recalculate_when_needed) # returns x,y or None,None if no path
+      dijkstra_walk(TCOD_dijkstra_t dijkstra)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>path</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
+<tr><td>path, dijkstra</td><td>In the C version, the path handler returned by a <a href="path_init.html">creation function</a>.</td></tr>
 <tr><td>x,y</td><td>Address of the variables receiving the coordinates of the next point.</td></tr>
 <tr><td>recalculateWhenNeeded</td><td>If the next point is no longer walkable (another creature may be in the way), recalculate a new path and walk it.</td></tr>
 </table>
-Note that walking the path consume one step (and decrease the path size by one). The function returns false if recalculateWhenNeeded is false and the next cell on the path is no longer walkable, or if recalculateWhenNeeded is true, the next cell on the path is no longer walkable and no other path has been found.
+Note that walking the path consume one step (and decrease the path size by one). The function returns false if recalculateWhenNeeded is false and the next cell on the path is no longer walkable, or if recalculateWhenNeeded is true, the next cell on the path is no longer walkable and no other path has been found. Also note that recalculateWhenNeeded only applies to A*.<br />
+<br />
 Example :<br />
 <p class="code"><pre>
 C++ : while (! path->isEmpty()) {
            int x,y;
            if (path->walk(&x,&y,true)) {
-               printf ("coord : %d %d\n", x,y );
+               printf ("Astar coord: %d %d\n",x,y );
            } else {
-               printf ("I'm stuck !\n" );
+               printf ("I'm stuck!\n" );
+               break;
+           }
+      }
+      while (! dijkstra->isEmpty()) {
+           int x,y;
+           if (dijkstra->walk(&x,&y)) {
+               printf ("Dijkstra coord: %d %d\n",x,y );
+           } else {
+               printf ("I'm stuck!\n" );
                break;
            }
       }
 C   : while (! TCOD_path_is_empty(path)) {
            int x,y;
            if (TCOD_path_walk(path,&x,&y,true)) {
-               printf ("coord : %d %d\n", x,y );
+               printf ("Astar coord: %d %d\n",x,y );
            } else {
-               printf ("I'm stuck !\n" );
+               printf ("I'm stuck!\n" );
+               break;
+           }
+      }
+      while (! TCOD_dijkstra_is_empty(dijkstra)) {
+           int x,y;
+           if (TCOD_dijkstra_walk(dijkstra,&x,&y)) {
+               printf ("Dijkstra coord: %d %d\n",x,y );
+           } else {
+               printf ("I'm stuck!\n" );
                break;
            }
       }
 Py  : while not libtcod.path_is_empty(path)) :
            x,y=libtcod.path_walk(path,True)
            if not x is None :
-               print 'coord : ',x,y
+               print 'Astar coord: ',x,y
            else :
-               print "I'm stuck !"
+               print "I'm stuck!"
+               break
+      while not libtcod.dijkstra_is_empty(dijkstra)) :
+           x,y=libtcod.dijkstra_walk(dijkstra,True)
+           if not x is None :
+               print 'Dijkstra coord: ',x,y
+           else :
+               print "I'm stuck!"
                break
 </pre></p>

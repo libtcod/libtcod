@@ -19,22 +19,41 @@ table.none td { border : 0 }
 To release the resources used by a path, destroy it with :<br />
 <p class="code"><pre>
 C++ : TCODPath::~TCODPath()
+      TCODDijkstra::~TCODDijkstra()
 C   : void TCOD_path_delete(TCOD_path_t path)
+      void TCOD_dijkstra_delete(TCOD_dijkstra_t dijkstra)
 Py  : path_delete(path)
+      dijkstra_delete(dijkstra)
 </pre></p>
 <table class="param">
 <tr><th>Parameter</th><th>Description</th></tr>
 <tr><td>path</td><td>In the C version, the path handler returned by one of the TCOD_path_new_* function.</td></tr>
+<tr><td>dijkstra</td><td>In the C version, the path handler returned by one of the TCOD_dijkstra_new* function.</td></tr>
 </table>
 <br />
 Example :<br />
 <p class="code"><pre>
 C++ : TCODPath *path = new TCODPath(myMap); // allocate the path
-      // use the path...      delete path; // destroy the path
+      // use the path...
+      delete path; // destroy the path
+      
+      TCODDijkstra *dijkstra = new TCODDijkstra(myMap); // allocate the path
+      // use the path...
+      delete dijkstra; // destroy the path
+      
 C   : TCOD_path_t path = TCOD_path_new_using_map(my_map);
       /* use the path ... */
       TCOD_path_delete(path);
+      
+      TCOD_dijkstra_t dijkstra = TCOD_dijkstra_new(my_map);
+      /* use the path ... */
+      TCOD_dijkstra_delete(dijkstra);
+      
 Py  : path = libtcod.path_new_using_map(my_map)
       # use the path ... 
       libtcod.path_delete(path)
+      
+      dijkstra = libtcod.dijkstra_new(my_map)
+      # use the path ... 
+      libtcod.dijkstra_delete(dijkstra)
 </pre></p>

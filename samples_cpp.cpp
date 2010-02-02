@@ -1454,7 +1454,7 @@ int main( int argc, char *argv[] ) {
 
 	do {
 		if (! creditsEnd) {
-			creditsEnd=TCODConsole::renderCredits(60,42,false);
+			creditsEnd=TCODConsole::renderCredits(60,43,false);
 		}
 
 		// print the list of samples

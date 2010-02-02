@@ -12,9 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 #ifndef NO_SDL_SAMPLE
-// SDL.h needed for SDL callback sample
-// hack to keep SDL from messing with main()
-#define _SDL_main_h
+// needed for SDL callback sample
 #include <SDL/SDL.h>
 #endif
 #include "libtcod.h"

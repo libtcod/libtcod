@@ -19,7 +19,7 @@ table.none td { border : 0 }
 Those functions initialize a noise generator from a number of dimensions (from 1 to 4), some fractal parameters and a random number generator.<br />
 <p class="code"><pre>
 C   : TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random)
-Py  : noise_new(dimensions, hurst=NOISE_DEFAULT_HURST, lacunarity=NOISE_DEFAULT_LACUNARITY, random=0)
+Py  : noise_new(dimensions, hurst=TCOD_NOISE_DEFAULT_HURST, lacunarity=TCOD_NOISE_DEFAULT_LACUNARITY, random=0)
 </pre></p>
 <br />
 <table class="param">

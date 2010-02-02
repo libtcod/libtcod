@@ -1271,9 +1271,16 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		0,21,42,63
 	};
 	static TCOD_image_t img=NULL;
-	int i,xc,yc,xi,yi;
+	int i,xc,yc,xi,yi,j;
 	static int left,right,top,bottom;
 	float sparklex,sparkley,sparklerad,sparklerad2,noisex;
+	// mini particule system
+#define MAX_PARTICULES 50
+	static float pheat[MAX_PARTICULES];
+	static float px[MAX_PARTICULES],py[MAX_PARTICULES], pvx[MAX_PARTICULES],pvy[MAX_PARTICULES];
+	static int nbpart=0, firstpart=0;
+	static float partDelay=0.1f;
+	float elapsed=TCOD_sys_get_last_frame_length();
 
 	if (!init1) {
 		// initialize all static data, colormaps, ...
@@ -1315,6 +1322,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				cury++;
 			}
 		}
+		nbpart=firstpart=0;
 		init2=true;
 	}
 	if ( xstr < (float)len1 ) {
@@ -1330,24 +1338,24 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
 	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
 	sparklerad2=sparklerad*sparklerad*4;
+
 	// draw the light
 	for (xc=left*2,xi=0; xc < (right+1)*2; xc++,xi++) {
 		for (yc=top*2,yi=0; yc < (bottom+1)*2; yc++,yi++) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
 			TCOD_color_t pixcol;
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
-				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2);
+				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2) + TCOD_random_get_int(NULL,-10,10);
+				colidx=CLAMP(0,63,colidx);
 				pixcol=colmap_light[colidx];
 			} else {
 				pixcol=TCOD_black;
 			}
 			if ( alpha ) {
-				/*
-					console cells have following flag values :
-						1 2
-						4 8
-					flag indicates which subcell uses foreground color
-				*/
+				//	console cells have following flag values :
+				//		1 2
+				//		4 8
+				//	flag indicates which subcell uses foreground color
 				static int asciiToFlag[] = {
 					1, // TCOD_CHAR_SUBP_NW
 					2, // TCOD_CHAR_SUBP_NE
@@ -1380,13 +1388,65 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			TCOD_image_put_pixel(img,xi,yi,pixcol);
 		}
 	}
+
+	// draw and update the particules
+	j=nbpart;i=firstpart;
+	while (j > 0) {
+		int colidx=(int)(64*(1.0f-pheat[i]));
+		TCOD_color_t col;
+		colidx=MIN(63,colidx);
+		col=colmap[colidx];
+		if ( (int)py[i]< (bottom-top+1)*2 ) {
+			int ipx = (int)px[i];
+			int ipy = (int)py[i];
+			float fpx = px[i]-ipx;
+			float fpy = py[i]-ipy;
+			TCOD_color_t col2=TCOD_image_get_pixel(img,ipx,ipy);
+			col2=TCOD_color_lerp(col,col2,0.5f*(fpx+fpy));
+			TCOD_image_put_pixel(img,ipx,ipy,col2);
+			col2=TCOD_image_get_pixel(img,ipx+1,ipy);
+			col2=TCOD_color_lerp(col2,col,fpx);
+			TCOD_image_put_pixel(img,ipx+1,ipy,col2);
+			col2=TCOD_image_get_pixel(img,ipx,ipy+1);
+			col2=TCOD_color_lerp(col2,col,fpy);
+			TCOD_image_put_pixel(img,ipx,ipy+1,col2);
+		} else pvy[i]=-pvy[i] * 0.5f;
+		pvx[i] *= (1.0f-elapsed);
+		pvy[i] += (1.0f-pheat[i])*elapsed*300.0f;
+		px[i] += pvx[i]*elapsed;
+		py[i] += pvy[i]*elapsed;
+		pheat[i] -= elapsed*0.3f;
+		if ( pheat[i] < 0.0f ) {
+			firstpart = (firstpart+1)%MAX_PARTICULES;
+			nbpart--;
+		}
+		i = (i+1)%MAX_PARTICULES;
+		j--;
+	}
+	partDelay -= elapsed;
+	if ( partDelay < 0.0f && nbpart < MAX_PARTICULES && sparklerad > 2.0f ) {
+		// fire a new particule
+		int lastpart = firstpart;
+		int nb=nbpart;
+		while (nb > 0 ) {
+			lastpart = ( lastpart + 1 )%MAX_PARTICULES;
+			nb--;
+		}
+		nbpart++;
+		px[lastpart] = 2*(sparklex-left);
+		py[lastpart] = 2*(sparkley-top)+2;
+		pvx[lastpart] = TCOD_random_get_float(NULL,-5.0f,5.0f);
+		pvy[lastpart] = TCOD_random_get_float(NULL,-0.5f, -5.0f);
+		pheat[lastpart] = 1.0f;
+		partDelay += 0.1f;
+	}
 	TCOD_image_blit_2x(img,NULL,left,top,0,0,-1,-1);
 	// draw the text
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
 			int colidx=(int)(64*char_heat[i]);
 			TCOD_color_t col;
-			if ( colidx > 63 ) colidx=63;
+			colidx=MIN(63,colidx);
 			col=colmap[colidx];
 			if ( xstr >= len  ) {
 				float coef=(xstr-len)/len;
@@ -1408,7 +1468,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		}
 	}
 	// update letters heat
-	xstr += TCOD_sys_get_last_frame_length() * 4;
+	xstr += elapsed * 4;
 	for (i=0; i < (int)(xstr+0.5f); i++) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}

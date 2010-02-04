@@ -393,6 +393,12 @@ COLCTRL_STOP=8
 def console_init_root(w, h, title, fullscreen=False):
     _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen))
 
+def console_get_width(con):
+	return _lib.TCOD_console_get_width(con)
+
+def console_get_height(con):
+	return _lib.TCOD_console_get_height(con)
+
 def console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL, nb_char_horiz=0, nb_char_vertic=0):
     _lib.TCOD_console_set_custom_font(fontFile, flags, nb_char_horiz, nb_char_vertic)
 
@@ -574,6 +580,13 @@ def console_set_key_color(con, col):
 
 def console_delete(con):
     _lib.TCOD_console_delete(con)
+
+# fast color filling
+def console_fill_foreground(con,r,g,b) :
+	_lib.TCOD_console_fill_foreground(con,r,g,b)
+
+def console_fill_background(con,r,g,b) :
+	_lib.TCOD_console_fill_background(con,r,g,b)
 
 ############################
 # sys module

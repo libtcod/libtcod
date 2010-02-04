@@ -1436,7 +1436,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		px[lastpart] = 2*(sparklex-left);
 		py[lastpart] = 2*(sparkley-top)+2;
 		pvx[lastpart] = TCOD_random_get_float(NULL,-5.0f,5.0f);
-		pvy[lastpart] = TCOD_random_get_float(NULL,-0.5f, -5.0f);
+		pvy[lastpart] = TCOD_random_get_float(NULL,-0.5f, -15.0f);
 		pheat[lastpart] = 1.0f;
 		partDelay += 0.1f;
 	}

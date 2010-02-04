@@ -147,7 +147,7 @@ void render() {
 	if ( msg[0] != 0 && msgDelay > 0.0f ) {
 		int h=TCODConsole::root->printCenterRect(HM_WIDTH/2,HM_HEIGHT/2+1,HM_WIDTH/2-2,0,TCOD_BKGND_NONE,msg);
 		TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
-		TCODConsole::root->rect(HM_WIDTH/4,HM_HEIGHT/2,HM_WIDTH/2,h+2,false,TCOD_BKGND_SET);
+		if (h > 0 ) TCODConsole::root->rect(HM_WIDTH/4,HM_HEIGHT/2,HM_WIDTH/2,h+2,false,TCOD_BKGND_SET);
 		TCODConsole::root->setBackgroundColor(TCODColor::black);
 	}
 }

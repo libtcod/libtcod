@@ -1274,7 +1274,7 @@ while not libtcod.console_is_window_closed():
                          0, SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y)
     # render credits
     if not credits_end:
-        credits_end = libtcod.console_credits_render(60, 42, 0)
+        credits_end = libtcod.console_credits_render(60, 43, 0)
     # render sample list
     for i in range(len(samples)):
         if i == cur_sample:

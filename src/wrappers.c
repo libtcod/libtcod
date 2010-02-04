@@ -160,6 +160,40 @@ void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade)
   TCOD_console_set_fade (val, int_to_color(fade));
 }
 
+void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
+	TCOD_console_data_t *dat;
+	int i;
+	if (! con ) con=TCOD_root;
+	dat=(TCOD_console_data_t *)con;
+	char_t *curchar=dat->buf;
+	for (i=0; i < dat->w*dat->h; i++) {
+		curchar->back.r=*r;
+		curchar->back.g=*g;
+		curchar->back.b=*b;
+		curchar++;
+		r++;
+		g++;
+		b++;
+	}
+}
+
+void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
+	TCOD_console_data_t *dat;
+	int i;
+	if (! con ) con=TCOD_root;
+	dat=(TCOD_console_data_t *)con;
+	char_t *curchar=dat->buf;
+	for (i=0; i < dat->w*dat->h; i++) {
+		curchar->fore.r=*r;
+		curchar->fore.g=*g;
+		curchar->fore.b=*b;
+		curchar++;
+		r++;
+		g++;
+		b++;
+	}
+}
+
 colornum_t
 TCOD_console_get_fading_color_wrapper ()
 {

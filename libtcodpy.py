@@ -29,6 +29,12 @@ import sys
 import ctypes
 from ctypes import *
 
+try:  #import NumPy if available
+	import numpy
+	numpy_available = True
+except ImportError:
+	numpy_available = False
+
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
 else:
@@ -174,7 +180,7 @@ def color_lerp(c1, c2, a):
     return int_to_col(iret)
 
 def color_set_hsv(c, h, s, v):
-    _lib.TCOD_color_set_HSV(c, c_float(h), c_float(s), c_float(v))
+    _lib.TCOD_color_set_HSV(byref(c), c_float(h), c_float(s), c_float(v))
 
 def color_get_hsv(c):
     h = c_float()
@@ -571,6 +577,12 @@ def console_disable_keyboard_repeat():
 # using offscreen consoles
 def console_new(w, h):
     return _lib.TCOD_console_new(w, h)
+	
+def console_get_width(con):
+	return _lib.TCOD_console_get_width(con)
+	
+def console_get_height(con):
+	return _lib.TCOD_console_get_height(con)
 
 def console_blit(src, x, y, w, h, dst, xdst, ydst, ffade=1.0,bfade=1.0):
     _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, c_float(ffade), c_float(bfade))
@@ -583,10 +595,53 @@ def console_delete(con):
 
 # fast color filling
 def console_fill_foreground(con,r,g,b) :
-	_lib.TCOD_console_fill_foreground(con,r,g,b)
+	if (numpy_available and isinstance(r, numpy.ndarray) and
+		isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
+		#numpy arrays, use numpy's ctypes functions
+		r = numpy.ascontiguousarray(r, dtype=numpy.int_)
+		g = numpy.ascontiguousarray(g, dtype=numpy.int_)
+		b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+		cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		
+	elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
+		#simple python lists, convert using ctypes
+		cr = (c_int * len(r))(*r)
+		cg = (c_int * len(g))(*g)
+		cb = (c_int * len(b))(*b)
+	else:
+		raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
+	
+	if len(r) != len(g) or len(r) != len(b):
+		raise TypeError('R, G and B must all have the same size.')
+	
+	_lib.TCOD_console_fill_foreground(con, cr, cg, cb)
 
 def console_fill_background(con,r,g,b) :
-	_lib.TCOD_console_fill_background(con,r,g,b)
+	if (numpy_available and isinstance(r, numpy.ndarray) and
+		isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
+		#numpy arrays, use numpy's ctypes functions
+		
+		r = numpy.ascontiguousarray(r, dtype=numpy.int_)
+		g = numpy.ascontiguousarray(g, dtype=numpy.int_)
+		b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+		cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		
+	elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
+		#simple python lists, convert using ctypes
+		cr = (c_int * len(r))(*r)
+		cg = (c_int * len(g))(*g)
+		cb = (c_int * len(b))(*b)
+	else:
+		raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
+	
+	if len(r) != len(g) or len(r) != len(b):
+		raise TypeError('R, G and B must all have the same size.')
+	
+	_lib.TCOD_console_fill_background(con, cr, cg, cb)
 
 ############################
 # sys module

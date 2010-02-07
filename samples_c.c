@@ -317,7 +317,7 @@ void render_noise(bool first, TCOD_key_t*key) {
 	}
 	/* blit the noise image with subcell resolution */
 	TCOD_image_blit_2x(img,sample_console,0,0,0,0,-1,-1);
-	
+
 	/* draw a transparent rectangle */
 	TCOD_console_set_background_color(sample_console,TCOD_grey);
 	TCOD_console_rect(sample_console,2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
@@ -328,7 +328,7 @@ void render_noise(bool first, TCOD_key_t*key) {
 			TCOD_console_set_fore(sample_console,x,y,col);
 		}
 	}
-		
+
 	/* draw the text */
 	for (curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {
@@ -833,7 +833,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		}
 	} else if ( key->vk == TCODK_TAB ) {
 		usingAstar = ! usingAstar;
-		if ( usingAstar ) 
+		if ( usingAstar )
 			TCOD_console_print_left(sample_console,1,4,TCOD_BKGND_NONE,"Using : A*      ");
 		else
 			TCOD_console_print_left(sample_console,1,4,TCOD_BKGND_NONE,"Using : Dijkstra");
@@ -1198,11 +1198,11 @@ void explode(SDL_Surface *screen, int samplex, int sampley, int samplew, int sam
 		for (y=sampley; y < sampley + sampleh; y ++ ) {
 			int ir=0,ig=0,ib=0,i;
 			for (i=0; i < 3; i++) {
-				int dx = TCOD_random_get_int(NULL,-dist,dist); 
+				int dx = TCOD_random_get_int(NULL,-dist,dist);
 				int dy = TCOD_random_get_int(NULL,-dist,dist);
 				Uint8 *p2;
 				p2 = p + dx * screen->format->BytesPerPixel;
-				p2 += dy * screen->pitch; 
+				p2 += dy * screen->pitch;
 				ir += p2[ridx];
 				ig += p2[gidx];
 				ib += p2[bidx];
@@ -1231,13 +1231,13 @@ void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sample
 		Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 		f[0]=(float)(x)/samplew;
 		for (y=sampley; y < sampley + sampleh; y ++ ) {
-			int ir=0,ig=0,ib=0;
+			int ir=0,ig=0,ib=0,dec, count;
 			if ( (y-sampley)%8 == 0 ) {
 				f[1]=(float)(y)/sampleh;
 				n=TCOD_noise_fbm_simplex(noise,f,3.0f);
 			}
-			int dec = (int)(3*(n+1.0f));
-			int count=0;
+			dec = (int)(3*(n+1.0f));
+			count=0;
 			switch(dec) {
 				case 4:
 					count += 4;
@@ -1321,7 +1321,7 @@ void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sample
 					p[ridx]=ir;
 					p[gidx]=ig;
 					p[bidx]=ib;
-				break;					
+				break;
 				default:break;
 			}
 			p += screen->pitch;
@@ -1333,11 +1333,11 @@ void SDL_render(void *sdlSurface) {
 	SDL_Surface *screen = (SDL_Surface *)sdlSurface;
 	// now we have almighty access to the screen's precious pixels !!
 	// get the font character size
-	int charw,charh;
+	int charw,charh,samplex,sampley;
 	TCOD_sys_get_char_size(&charw,&charh);
 	// compute the sample console position in pixels
-	int samplex = SAMPLE_SCREEN_X * charw;
-	int sampley = SAMPLE_SCREEN_Y * charh;
+	samplex = SAMPLE_SCREEN_X * charw;
+	sampley = SAMPLE_SCREEN_Y * charh;
 	delay -= TCOD_sys_get_last_frame_length();
 	if ( delay < 0.0f ) {
 		delay = 3.0f;

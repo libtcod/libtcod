@@ -114,10 +114,10 @@ static uint32 hash(const char *data,int len) {
     r->cur=(r->cur+1)&4095; \
     t=18782LL*r->Q[r->cur]+r->c; \
     r->c=(t>>32); \
-    x=t+r->c; \
+    x=(uint32)(t+r->c); \
     if (x < r->c) { x++; r->c++; } \
     if((x+1)==0) { r->c++; x=0; } \
-    num = (r->Q[r->cur] = 0xfffffffe - x); \
+    num = (uint32)(r->Q[r->cur] = 0xfffffffe - x); \
 }
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
@@ -132,7 +132,7 @@ TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
 	else {
 	    int i;
         /* fill the Q array with pseudorandom seeds */
-        uint32 s = time(0);
+        uint32 s = (uint32)time(0);
         for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
         r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;

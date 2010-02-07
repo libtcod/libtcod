@@ -149,6 +149,7 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 			// check if we're outside the dest console
 			int dx=cx-xSrc+xDst;
 			int dy=cy-ySrc+yDst;
+			uint8 dirt;
 			char_t srcChar,dstChar;
 			if ( (unsigned) dx >= (unsigned) dst->w || (unsigned)dy >= (unsigned) dst->h ) continue;
 			// check if source pixel is transparent
@@ -181,7 +182,7 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 					}
 				}
 			}
-			uint8 dirt=dst->buf[dy * dst->w + dx].dirt;
+			dirt=dst->buf[dy * dst->w + dx].dirt;
 			dst->buf[dy * dst->w + dx] = dstChar;
 			dst->buf[dy * dst->w + dx].dirt=dirt;
 		}

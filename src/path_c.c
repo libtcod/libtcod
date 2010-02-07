@@ -545,7 +545,7 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     do {
         unsigned int lowest = 0xFFFFFFFF;
         int i;
-        TCOD_list_push(data->path,(const void*)((py * data->width) + px));
+        TCOD_list_push(data->path,(const void*)(uintptr)((py * data->width) + px));
         for(i=0;i<8;i++) {
             int cx = px + dx[i];
             int cy = py + dy[i];
@@ -571,7 +571,7 @@ bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
 	TCOD_IFNOT(data != NULL) return false;
     if (TCOD_list_is_empty(data->path)) return false;
     else {
-        unsigned int node = (unsigned int)TCOD_list_pop(data->path);
+        unsigned int node = (unsigned int)(uintptr)TCOD_list_pop(data->path);
         if ( x ) *x = (int)(node % data->width);
         if ( y ) *y = (int)(node / data->width);
     }
@@ -604,7 +604,7 @@ void TCOD_dijkstra_get(TCOD_dijkstra_t p, int index, int *x, int *y) {
 	dijkstra_t * data = (dijkstra_t*)p;
 	unsigned int node ;
 	TCOD_IFNOT(data != NULL) return;
-    node = (unsigned int)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
+    node = (unsigned int)(uintptr)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
     if ( x ) *x = (int)(node % data->width);
     if ( y ) *y = (int)(node / data->width);
 }

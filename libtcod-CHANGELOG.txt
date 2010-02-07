@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.5.0 : 2010 Jan 19
+1.5.0 : 2010 Feb 07
 X TCODRandom::getIntFromByteArray has been deleted    
 X the random number generator module now support two algorithms (Mingos)
   Mersenne twister, used in previous versions of libtcod
@@ -23,6 +23,10 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
++ added functions for fast python full console coloring:
+	console_fill_foreground(con,r,g,b)
+	console_fill_background(con,r,g,b)
+	r,g,b are 1D arrays of console_width * console_height     
 + added TCODConsole::resetCredits() to restart credits animation before it's finished
 + added TCODConsole::setDirty(int x, int y, int w,int h) to force libtcod to redraw a part of the console
     This might by needed when using the SDL renderer

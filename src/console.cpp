@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.0
-* Copyright (c) 2008,2009 Jice
+* Copyright (c) 2008,2009,2010 Jice
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -306,7 +306,8 @@ void TCODConsole::resetCredits() {
 bool TCODConsole::renderCredits(int x, int y, bool alpha) {
 	return TCOD_console_credits_render(x,y,alpha) != 0;
 }
-#ifndef NO_UNICODE
+
+#ifndef NO_UNICODE
 void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY) {
 	TCOD_console_map_string_to_font_utf(s, fontCharX, fontCharY);
 }

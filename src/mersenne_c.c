@@ -216,6 +216,8 @@ float TCOD_random_get_float(TCOD_random_t mersenne,float min, float max) {
 }
 
 void TCOD_random_delete(TCOD_random_t mersenne) {
+	TCOD_IFNOT(mersenne != NULL) return;
+	if ( mersenne == instance ) instance = NULL;
 	free(mersenne);
 }
 TCOD_random_t TCOD_random_save(TCOD_random_t mersenne) {

@@ -558,7 +558,9 @@ def console_get_fading_color():
 
 # handling keyboard input
 def console_wait_for_keypress(flush):
-    return _lib.TCOD_console_wait_for_keypress(c_int(flush))
+    k=Key()
+    _lib.TCOD_console_wait_for_keypress_wrapper(byref(k),c_int(flush))
+    return k
 
 def console_check_for_keypress(flags=KEY_RELEASED):
 	k=Key()

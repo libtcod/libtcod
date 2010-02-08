@@ -121,24 +121,7 @@ static uint32 hash(const char *data,int len) {
 }
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
-	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
-	/* Mersenne Twister */
-	if (algo == TCOD_RNG_MT) {
-        r->cur_mt=624;
-        r->algo=TCOD_RNG_MT;
-        mt_init((uint32)time(NULL),r->mt);
-	}
-	/* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
-	else {
-	    int i;
-        /* fill the Q array with pseudorandom seeds */
-        uint32 s = (uint32)time(0);
-        for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
-        r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
-        r->cur = 0;
-        r->algo = TCOD_RNG_CMWC;
-	}
-    return (TCOD_random_t)r;
+    return TCOD_random_new_from_seed(algo,time(0));
 }
 
 TCOD_random_t TCOD_random_get_instance(void) {

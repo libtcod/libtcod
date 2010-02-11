@@ -687,10 +687,6 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		// when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it
 		if ( kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z ) {
 			ret->c = 'a'+(kev->keysym.sym - SDLK_a);
-		} else if ( kev->keysym.sym >= SDLK_0 && kev->keysym.sym <= SDLK_9 ) {
-			ret->c = '0'+(kev->keysym.sym - SDLK_0);
-		} else if ( kev->keysym.sym >= SDLK_KP0 && kev->keysym.sym <= SDLK_KP9 ) {
-			ret->c = '0'+(kev->keysym.sym - SDLK_KP0);
 		}
 	}
 	if ( ev->type == SDL_KEYDOWN ) vk_to_c[kev->keysym.sym] = ret->c;

@@ -62,6 +62,7 @@ X renamed libraries on Linux to improve portability :
 % new compilation system with a debug and release version of the library
 % makefiles have been moved to a makefiles subdirectory
 % libtcod credits now use subcell resolution
+- fixed wrong ascii code returned by check/waitForKeypress with AltGr+0-9 combination
 - fixed RNG going mad if you delete the default RNG
 - fixed wait_for_keypress not working in python
 - now the parser can handle strings/identifiers with unlimited size (previously limited to 256 chars)

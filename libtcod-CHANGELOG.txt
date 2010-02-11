@@ -23,11 +23,12 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
-+ added text input utility (not documented)	
++ added text field toolkit (undocumented)    
 + added functions for fast python full console coloring:
 	console_fill_foreground(con,r,g,b)
 	console_fill_background(con,r,g,b)
 	r,g,b are 1D arrays of console_width * console_height     
++ added fast python rendering sample (Jotaf)	
 + added TCODConsole::resetCredits() to restart credits animation before it's finished
 + added TCODConsole::setDirty(int x, int y, int w,int h) to force libtcod to redraw a part of the console
     This might by needed when using the SDL renderer
@@ -61,6 +62,8 @@ X renamed libraries on Linux to improve portability :
 % new compilation system with a debug and release version of the library
 % makefiles have been moved to a makefiles subdirectory
 % libtcod credits now use subcell resolution
+- fixed RNG going mad if you delete the default RNG
+- fixed wait_for_keypress not working in python
 - now the parser can handle strings/identifiers with unlimited size (previously limited to 256 chars)
 - fixed TCODZip module missing from MSVC release
 - fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values

@@ -5,7 +5,7 @@
 typedef struct {
     int x, y; /* coordinates on parent console */
     int w, h; /* textfield display size */
-    unsigned int max; /* maximum nb of characters */
+    int max; /* maximum nb of characters */
     int interval; /* cursor blinking interval */
     int halfinterval; /* half of the above */
     int ascii_cursor; /* cursor char. 0 if none */
@@ -19,17 +19,19 @@ typedef struct {
     TCOD_color_t back; /* background colour */
     TCOD_color_t fore; /* foreground colour */
     float transparency; /* background transparency */
+	bool multiline; /* multiline support ? */
     char * text; /* the text itself */
 } text_t;
 
 /* ctor */
-TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int cursor_char, int blink_interval, char * prompt, TCOD_color_t fore, TCOD_color_t back, float back_transparency) {
+TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int cursor_char, int blink_interval, char * prompt, TCOD_color_t fore, TCOD_color_t back, float back_transparency, bool multiline) {
     text_t * data = (text_t*)calloc(sizeof(text_t),1);
     data->x = x;
     data->y = y;
     data->w = w;
     data->h = h;
-    data->max = (max_chars > 0 ? max_chars + 1 : 0xFFFFFFFF);
+    data->multiline = multiline;
+    data->max = (max_chars > 0 ? max_chars + 1 : 0x7FFFFFFF);
     data->interval = blink_interval;
     data->halfinterval = (blink_interval>0?blink_interval/2:0);
     data->ascii_cursor = cursor_char;
@@ -44,6 +46,11 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int curso
 			}
 			ptr++;
 		}
+	}
+	if (! multiline ) {
+		data->max = MIN(w - data->textx,data->max);
+	} else {
+		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
 	}
     data->input_continue = true;
     data->len = MIN(64,data->max);
@@ -64,10 +71,10 @@ static void allocate(text_t *data) {
 }
 
 /* insert a character at cursor position. internal function */
-static void insert(text_t *data, char c) {
+static void insertChar(text_t *data, char c) {
 	char *ptr, *end;
 	if (data->curlen + 1 == data->max) {
-		/* max size reached. replace the last char. dunno increase text size */
+		/* max size reached. replace the last char. don't increase text size */
 		*(data->text + data->curlen -1) = c;
 		return;
 	}
@@ -84,7 +91,7 @@ static void insert(text_t *data, char c) {
 }
 
 /* delete character at cursor position */
-static void delete(text_t *data) {
+static void deleteChar(text_t *data) {
 	char *ptr;
 	if ( data->cursor_pos == 0 ) return;
 	ptr=data->text + data->cursor_pos-1;
@@ -104,12 +111,12 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
     /* process keyboard input */
     switch (key.vk) {
         case TCODK_BACKSPACE: /* get rid of the last character */
-			delete(data);
+			deleteChar(data);
             break;
 		case TCODK_DELETE:
 			if ( data->text[data->cursor_pos] ) {
 				data->cursor_pos++;
-				delete(data);
+				deleteChar(data);
 			}
 			break;
 		case TCODK_LEFT:
@@ -130,7 +137,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
             break;
         default: { /* append a new character */
             if (key.c > 31) {
-				insert(data,(char)(key.c));
+				insertChar(data,(char)(key.c));
             }
             break;
         }
@@ -142,24 +149,73 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
     text_t * data = (text_t*)txt;
     uint32 time = TCOD_sys_elapsed_milli();
+	bool cursor_on = time % data->interval > data->halfinterval;
+	char back=0;
+	int curx,cury,cursorx,cursory;
+	char *ptr;
     TCOD_console_set_background_color(data->con, data->back);
     TCOD_console_set_foreground_color(data->con, data->fore);
     TCOD_console_clear(data->con);
-	if (time % data->interval > data->halfinterval) {
-		// cursor visible
-		if ( data->ascii_cursor ) {
-			char back = data->text[data->cursor_pos];
-			data->text[data->cursor_pos] = data->ascii_cursor;
-		    TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s%s",data->prompt,data->text,data->ascii_cursor);
-			data->text[data->cursor_pos] = back;
-		} else {
-	    	TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s%s",data->prompt,data->text);
-			TCOD_console_set_back(data->con,data->textx+data->cursor_pos,data->texty,data->fore,TCOD_BKGND_SET);
-			TCOD_console_set_fore(data->con,data->textx+data->cursor_pos,data->texty,data->back);
+	
+	/* compute cursor position */
+	if (data->multiline) {
+		int curcount=data->cursor_pos;
+		ptr=data->text;
+		cursorx = data->textx;
+		cursory = data->texty;
+		while (curcount > 0 && *ptr) {
+			if ( *ptr == '\n') {
+				cursorx=0;
+				cursory++;
+			} else {
+				cursorx++;
+				if ( cursorx == data->w ) {	
+					cursorx=0;
+					cursory++;
+				}
+			}
+			ptr++;
+			curcount--;
 		}
 	} else {
-		// cursor invisible
-	    TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s%s",data->prompt,data->text);
+		cursorx = data->textx + data->cursor_pos;
+		cursory = data->texty;
+	}
+
+	if ( cursor_on && data->ascii_cursor) {
+		/* save the character under cursor position */
+		back = data->text[data->cursor_pos];
+		data->text[data->cursor_pos] = data->ascii_cursor;
+	}
+	/* render prompt */
+    TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s",data->prompt);
+	/* render text */
+	curx=data->textx;
+	cury=data->texty;
+	ptr=data->text;
+	while (*ptr) {
+		if ( *ptr == '\n') {
+			curx=0;
+			cury++;
+		} else {
+			TCOD_console_set_char(data->con,curx,cury,*ptr);
+			curx++;
+			if ( curx == data->w ) {	
+				curx=0;
+				cury++;
+			}
+		}
+		ptr++;
+	}
+	if ( cursor_on ) {
+		if ( data->ascii_cursor) {
+			/* restore the character under cursor */
+			data->text[data->cursor_pos] = back;
+		} else {
+			/* invert colors at cursor position */
+			TCOD_console_set_back(data->con,cursorx,cursory,data->fore,TCOD_BKGND_SET);
+			TCOD_console_set_fore(data->con,cursorx,cursory,data->back);
+		}
 	}
     TCOD_console_blit(data->con,0,0,data->w,data->h,con,data->x,data->y,1.0f,data->transparency);
 }

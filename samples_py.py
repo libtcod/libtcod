@@ -1330,7 +1330,7 @@ def render_py(first, key):
 	tex_b = tex_b * (1 - alpha) + ambient_b * alpha
 	
 	if int_t >= 1:  #roll texture (ie, advance in tunnel) according to int_t
-		int_t = mod(int_t, RES_V)  #can't roll more than the texture's size (can happen when time_delta is large)
+		int_t = int_t % RES_V  #can't roll more than the texture's size (can happen when time_delta is large)
 		int_abs_t = int(abs_t)  #new pixels are based on absolute elapsed time
 		
 		if use_numpy:
@@ -1386,7 +1386,7 @@ def render_py(first, key):
 				v = min(v, RES_V - 1)
 				
 				#another coordinate, represents rotation around the tunnel
-				u = mod(RES_U * (arctan2(y, x) / (2 * pi) + 0.5), RES_U)
+				u = (RES_U * (arctan2(y, x) / (2 * pi) + 0.5)) % RES_U
 				
 				#retrieve corresponding pixels from texture
 				brightness = texture2[int(u) + int(v)*RES_U] / 4.0 + 0.5

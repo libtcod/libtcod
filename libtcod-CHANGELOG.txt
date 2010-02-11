@@ -23,6 +23,7 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
++ added text input utility (not documented)	
 + added functions for fast python full console coloring:
 	console_fill_foreground(con,r,g,b)
 	console_fill_background(con,r,g,b)

@@ -65,6 +65,7 @@ LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/debug/tree_c.o \
+	$(TEMP)/libtcod/debug/txtfield_c.o \
 	$(TEMP)/libtcod/debug/wrappers.o \
 	$(TEMP)/libtcod/debug/zip_c.o \
 	$(TEMP)/libtcod/debug/namegen_c.o \
@@ -126,6 +127,7 @@ LIBOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/release/tree_c.o \
+	$(TEMP)/libtcod/release/txtfield_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o \
 	$(TEMP)/libtcod/release/namegen_c.o \

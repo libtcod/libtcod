@@ -105,8 +105,43 @@ static void deleteChar(text_t *data) {
 	}
 }
 
+/* convert current cursor_pos into console coordinates. internal function */
+static void get_cursor_coords(text_t *data, int *cx, int *cy) {
+	char *ptr;
+	if (data->multiline) {
+		int curcount=data->cursor_pos;
+		ptr=data->text;
+		*cx = data->textx;
+		*cy = data->texty;
+		while (curcount > 0 && *ptr) {
+			if ( *ptr == '\n') {
+				*cx=0;
+				(*cy)++;
+			} else {
+				(*cx)++;
+				if ( *cx == data->w ) {	
+					*cx=0;
+					(*cy)++;
+				}
+			}
+			ptr++;
+			curcount--;
+		}
+	} else {
+		*cx = data->textx + data->cursor_pos;
+		*cy = data->texty;
+	}
+}
+
+/* set cursor_pos from coordinates. internal function */
+static void set_cursor_pos(text_t *data, int cx, int cy) {
+	int newpos = cx - data->textx + (cy - data->texty)*data->w; 
+	if ( newpos >= 0 && newpos <= data->curlen ) data->cursor_pos = newpos;
+}
+
 /* update returns false if enter has been pressed, true otherwise */
 bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
+	int cx,cy;
     text_t * data = (text_t*)txt;
     /* process keyboard input */
     switch (key.vk) {
@@ -124,6 +159,16 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 			break;
 		case TCODK_RIGHT:
 			if ( data->text[data->cursor_pos] ) data->cursor_pos++;
+			break;
+		case TCODK_UP :
+			get_cursor_coords(data,&cx,&cy);
+			cy--;
+			set_cursor_pos(data,cx,cy);
+			break;
+		case TCODK_DOWN :
+			get_cursor_coords(data,&cx,&cy);
+			cy++;
+			set_cursor_pos(data,cx,cy);
 			break;
 		case TCODK_HOME:
 			data->cursor_pos = 0;
@@ -158,29 +203,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
     TCOD_console_clear(data->con);
 	
 	/* compute cursor position */
-	if (data->multiline) {
-		int curcount=data->cursor_pos;
-		ptr=data->text;
-		cursorx = data->textx;
-		cursory = data->texty;
-		while (curcount > 0 && *ptr) {
-			if ( *ptr == '\n') {
-				cursorx=0;
-				cursory++;
-			} else {
-				cursorx++;
-				if ( cursorx == data->w ) {	
-					cursorx=0;
-					cursory++;
-				}
-			}
-			ptr++;
-			curcount--;
-		}
-	} else {
-		cursorx = data->textx + data->cursor_pos;
-		cursory = data->texty;
-	}
+	get_cursor_coords(data,&cursorx,&cursory);
 
 	if ( cursor_on && data->ascii_cursor) {
 		/* save the character under cursor position */

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_INT 0x7FFFFFFF
+
 typedef struct {
     int x, y; /* coordinates on parent console */
     int w, h; /* textfield display size */
@@ -9,7 +11,7 @@ typedef struct {
     int interval; /* cursor blinking interval */
     int halfinterval; /* half of the above */
     int ascii_cursor; /* cursor char. 0 if none */
-	int cursor_pos;
+	int cursor_pos, sel_start,sel_end; /* cursor position in text, selection range */
     char * prompt; /* prompt to be displayed before the string */
 	int textx,texty; /* coordinate of start of text (after prompt) */
     TCOD_console_t con; /* offscreen console that will contain the textfield */
@@ -24,19 +26,21 @@ typedef struct {
 } text_t;
 
 /* ctor */
-TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int cursor_char, int blink_interval, char * prompt, TCOD_color_t fore, TCOD_color_t back, float back_transparency, bool multiline) {
+TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int cursor_char, int blink_interval, char * prompt, TCOD_color_t fore, TCOD_color_t back, float back_transparency) {
     text_t * data = (text_t*)calloc(sizeof(text_t),1);
     data->x = x;
     data->y = y;
     data->w = w;
     data->h = h;
-    data->multiline = multiline;
-    data->max = (max_chars > 0 ? max_chars + 1 : 0x7FFFFFFF);
+    data->multiline = (h > 1);
+    data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
     data->interval = blink_interval;
     data->halfinterval = (blink_interval>0?blink_interval/2:0);
     data->ascii_cursor = cursor_char;
     data->prompt = prompt ? strdup(prompt) : "";
     data->con = TCOD_console_new(w,h);
+	data->sel_start = MAX_INT;
+	data->sel_end = -1;
 	if ( prompt ) {
 		char *ptr=prompt;
 		while (*ptr) {
@@ -47,7 +51,7 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int curso
 			ptr++;
 		}
 	}
-	if (! multiline ) {
+	if (! data->multiline ) {
 		data->max = MIN(w - data->textx,data->max);
 	} else {
 		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
@@ -134,51 +138,158 @@ static void get_cursor_coords(text_t *data, int *cx, int *cy) {
 }
 
 /* set cursor_pos from coordinates. internal function */
-static void set_cursor_pos(text_t *data, int cx, int cy) {
-	int newpos = cx - data->textx + (cy - data->texty)*data->w; 
-	if ( newpos >= 0 && newpos <= data->curlen ) data->cursor_pos = newpos;
+static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
+	if ( data->multiline ) {
+		int curx=data->textx,cury=data->texty;
+		char *ptr=data->text;
+		int newpos=0;
+		// find the right line
+		while ( *ptr && cury < cy ) {
+			if (*ptr == '\n' ) {
+				curx=0;cury++;
+			} else curx++;
+			ptr++;
+			newpos++;
+		}
+		if ( cury != cy ) return;
+		// check if cx can be reached
+		while ( *ptr && curx < cx && *ptr != '\n') {
+			ptr++;
+			curx++;
+			newpos++;
+		}
+		data->cursor_pos = newpos;
+	} else {
+		int newpos = cx - data->textx + (cy - data->texty)*data->w; 
+		if ( clamp ) newpos = CLAMP(0,data->curlen,newpos);
+		if ( newpos >= 0 && newpos <= data->curlen ) data->cursor_pos = newpos;
+	}
+}
+
+
+/* decreases the selection range start */
+static void selectStart(text_t *data, int oldpos, TCOD_key_t key) {
+	if ( data->multiline && data->cursor_pos != oldpos ) {
+		if ( key.shift ) {
+			if ( data->sel_start > data->cursor_pos ) data->sel_start = data->cursor_pos;
+			else data->sel_end = data->cursor_pos;
+		} else {
+			data->sel_start=MAX_INT;
+			data->sel_end=-1;
+		}
+	}
+}
+
+/* increases the selection range end */
+static void selectEnd(text_t *data, int oldpos, TCOD_key_t key) {
+	if ( data->multiline && data->cursor_pos != oldpos ) {
+		if ( key.shift ) {
+			if ( data->sel_end < data->cursor_pos ) data->sel_end = data->cursor_pos;
+			else data->sel_start = data->cursor_pos;
+		} else {
+			data->sel_start=MAX_INT;
+			data->sel_end=-1;
+		}
+	}
 }
 
 /* update returns false if enter has been pressed, true otherwise */
 bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
-	int cx,cy;
+	int cx,cy,oldpos;
     text_t * data = (text_t*)txt;
+	oldpos = data->cursor_pos;
     /* process keyboard input */
     switch (key.vk) {
         case TCODK_BACKSPACE: /* get rid of the last character */
-			deleteChar(data);
+			if ( data->sel_start != MAX_INT ) {
+				int count = data->sel_end-data->sel_start;
+				data->cursor_pos = data->sel_start+1;
+				while ( count > 0 ) {
+					deleteChar(data); 
+					count--;
+					data->cursor_pos++;
+				}
+				data->cursor_pos--;
+				data->sel_start=MAX_INT;
+				data->sel_end=-1;
+			} else {
+				deleteChar(data);
+			}
             break;
 		case TCODK_DELETE:
-			if ( data->text[data->cursor_pos] ) {
+			if ( data->sel_start != MAX_INT ) {
+				int count = data->sel_end-data->sel_start;
+				data->cursor_pos = data->sel_start+1;
+				while ( count > 0 ) {
+					deleteChar(data); 
+					count--;
+					data->cursor_pos++;
+				}
+				data->cursor_pos--;
+				data->sel_start=MAX_INT;
+				data->sel_end=-1;
+			} else if ( data->text[data->cursor_pos] ) {
 				data->cursor_pos++;
 				deleteChar(data);
 			}
 			break;
 		case TCODK_LEFT:
-			if ( data->cursor_pos > 0 ) data->cursor_pos--;
+			if ( data->multiline && key.shift && data->sel_end == -1) {
+				data->sel_end = data->cursor_pos;
+			}
+			if ( data->cursor_pos > 0 ) {
+				data->cursor_pos--;
+				selectStart(data,oldpos,key);
+			}
 			break;
 		case TCODK_RIGHT:
-			if ( data->text[data->cursor_pos] ) data->cursor_pos++;
+			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+				data->sel_start = data->cursor_pos;
+			}
+			if ( data->text[data->cursor_pos] ) {
+				data->cursor_pos++;
+				selectEnd(data,oldpos,key);
+			}
 			break;
 		case TCODK_UP :
 			get_cursor_coords(data,&cx,&cy);
-			cy--;
-			set_cursor_pos(data,cx,cy);
+			if ( data->multiline && key.shift && data->sel_end == -1) {
+				data->sel_end = data->cursor_pos;
+			}
+			set_cursor_pos(data,cx,cy-1,false);
+			selectStart(data,oldpos,key);
 			break;
 		case TCODK_DOWN :
 			get_cursor_coords(data,&cx,&cy);
-			cy++;
-			set_cursor_pos(data,cx,cy);
+			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+				data->sel_start = data->cursor_pos;
+			}
+			set_cursor_pos(data,cx,cy+1,false);
+			selectEnd(data,oldpos,key);
 			break;
 		case TCODK_HOME:
-			data->cursor_pos = 0;
+			get_cursor_coords(data,&cx,&cy);
+			if ( data->multiline && key.shift && data->sel_end == -1) {
+				data->sel_end = data->cursor_pos;
+			}
+			set_cursor_pos(data,0,cy,true);
+			selectStart(data,oldpos,key);
 			break;
 		case TCODK_END:
-			data->cursor_pos = strlen(data->text);
+			get_cursor_coords(data,&cx,&cy);
+			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+				data->sel_start = data->cursor_pos;
+			}
+			set_cursor_pos(data,data->w-1,cy,true);
+			selectEnd(data,oldpos,key);
 			break;
         case TCODK_ENTER: /* validate input */
         case TCODK_KPENTER:
-            data->input_continue = false;
+			if ( data->multiline ) {
+				insertChar(data,'\n');
+			} else {
+	            data->input_continue = false;
+			}
             break;
         default: { /* append a new character */
             if (key.c > 31) {
@@ -196,7 +307,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
     uint32 time = TCOD_sys_elapsed_milli();
 	bool cursor_on = time % data->interval > data->halfinterval;
 	char back=0;
-	int curx,cury,cursorx,cursory;
+	int curx,cury,cursorx,cursory, curpos;
 	char *ptr;
     TCOD_console_set_background_color(data->con, data->back);
     TCOD_console_set_foreground_color(data->con, data->fore);
@@ -216,11 +327,17 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 	curx=data->textx;
 	cury=data->texty;
 	ptr=data->text;
+	curpos=0;
 	while (*ptr) {
 		if ( *ptr == '\n') {
 			curx=0;
 			cury++;
 		} else {
+			if ( curpos >= data->sel_start && curpos < data->sel_end ) {
+				/* inverted colors for selection */
+				TCOD_console_set_back(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
+				TCOD_console_set_fore(data->con, curx, cury, data->back);
+			}
 			TCOD_console_set_char(data->con,curx,cury,*ptr);
 			curx++;
 			if ( curx == data->w ) {	
@@ -229,6 +346,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 			}
 		}
 		ptr++;
+		curpos++;
 	}
 	if ( cursor_on ) {
 		if ( data->ascii_cursor) {
@@ -239,6 +357,10 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 			TCOD_console_set_back(data->con,cursorx,cursory,data->fore,TCOD_BKGND_SET);
 			TCOD_console_set_fore(data->con,cursorx,cursory,data->back);
 		}
+	} else if (! cursor_on && ! data->ascii_cursor && data->multiline ) {
+		/* normal colors for cursor ( might be inside selection ) */
+		TCOD_console_set_back(data->con,cursorx,cursory,data->back,TCOD_BKGND_SET);
+		TCOD_console_set_fore(data->con,cursorx,cursory,data->fore);
 	}
     TCOD_console_blit(data->con,0,0,data->w,data->h,con,data->x,data->y,1.0f,data->transparency);
 }

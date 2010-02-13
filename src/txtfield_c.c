@@ -193,6 +193,49 @@ static void selectEnd(text_t *data, int oldpos, TCOD_key_t key) {
 	}
 }
 
+enum { TYPE_SYMBOL, TYPE_ALPHANUM, TYPE_SPACE };
+static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
+
+/* go one word left */ 
+static void previous_word(text_t *data) {
+	/* current character type */
+	if ( data->cursor_pos > 0 ) {
+		/* detect current char type (alphanum/space or symbol) */
+		char *ptr=data->text + data->cursor_pos - 1;
+		int type=TYPE_SYMBOL, curtype;
+		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
+		/* go back until char type changes */
+		curtype=type;
+		do {
+			data->cursor_pos--;
+			ptr--;
+			if ( strchr(symbols,*ptr) ) curtype = TYPE_SYMBOL;
+			else if ( isspace(*ptr) ) curtype = TYPE_SPACE;
+			else curtype = TYPE_ALPHANUM;
+		} while ( data->cursor_pos > 0 && curtype == type);
+	}    
+}
+
+/* go one word right */ 
+static void next_word(text_t *data) {
+	/* current character type */
+	if ( data->text[data->cursor_pos] ) {
+		/* detect current char type (alphanum/space or symbol) */
+		char *ptr=data->text + data->cursor_pos;
+		int type=TYPE_SYMBOL, curtype;
+		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
+		/* go back until char type changes */
+		curtype=type;
+		do {
+			data->cursor_pos++;
+			ptr++;
+			if ( strchr(symbols,*ptr) ) curtype = TYPE_SYMBOL;
+			else if ( isspace(*ptr) ) curtype = TYPE_SPACE;
+			else curtype = TYPE_ALPHANUM;
+		} while ( *ptr && curtype == type);
+	}    
+}
+
 /* update returns false if enter has been pressed, true otherwise */
 bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 	int cx,cy,oldpos;
@@ -233,12 +276,16 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				deleteChar(data);
 			}
 			break;
+		/* shift + arrow / home / end = selection */
+		/* ctrl + arrow = word skipping. ctrl + shift + arrow = word selection */
 		case TCODK_LEFT:
 			if ( data->multiline && key.shift && data->sel_end == -1) {
 				data->sel_end = data->cursor_pos;
 			}
 			if ( data->cursor_pos > 0 ) {
-				data->cursor_pos--;
+				if ( key.lctrl || key.rctrl ) {
+					previous_word(data);
+				} else data->cursor_pos--;
 				selectStart(data,oldpos,key);
 			}
 			break;
@@ -247,7 +294,9 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				data->sel_start = data->cursor_pos;
 			}
 			if ( data->text[data->cursor_pos] ) {
-				data->cursor_pos++;
+				if ( key.lctrl || key.rctrl ) {
+					next_word(data);
+				} else data->cursor_pos++;
 				selectEnd(data,oldpos,key);
 			}
 			break;

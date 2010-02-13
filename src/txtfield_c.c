@@ -145,7 +145,7 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 		int newpos=0;
 		// find the right line
 		while ( *ptr && cury < cy ) {
-			if (*ptr == '\n' ) {
+			if (*ptr == '\n' || curx == data->w-1) {
 				curx=0;cury++;
 			} else curx++;
 			ptr++;

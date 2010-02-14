@@ -82,7 +82,7 @@ static void insertChar(text_t *data, char c) {
 		*(data->text + data->curlen -1) = c;
 		return;
 	}
-	if (data->curlen + 1 == data->len ) allocate(data);	
+	if (data->curlen + 1 == data->len ) allocate(data);
 	ptr=data->text + data->cursor_pos;
 	end=data->text + data->curlen;
 	do {
@@ -123,7 +123,7 @@ static void get_cursor_coords(text_t *data, int *cx, int *cy) {
 				(*cy)++;
 			} else {
 				(*cx)++;
-				if ( *cx == data->w ) {	
+				if ( *cx == data->w ) {
 					*cx=0;
 					(*cy)++;
 				}
@@ -160,7 +160,7 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 		}
 		data->cursor_pos = newpos;
 	} else {
-		int newpos = cx - data->textx + (cy - data->texty)*data->w; 
+		int newpos = cx - data->textx + (cy - data->texty)*data->w;
 		if ( clamp ) newpos = CLAMP(0,data->curlen,newpos);
 		if ( newpos >= 0 && newpos <= data->curlen ) data->cursor_pos = newpos;
 	}
@@ -196,60 +196,117 @@ static void selectEnd(text_t *data, int oldpos, TCOD_key_t key) {
 enum { TYPE_SYMBOL, TYPE_ALPHANUM, TYPE_SPACE };
 static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 
-/* go one word left */ 
+/* check whether a character is a space */
+/* this is needed because cctype isspace() returns rubbish for many diacritics */
+bool is_space (int ch) {
+    bool ret;
+    switch (ch) {
+        case ' ': /* single space */
+        case '\n': /* newline */
+        case '\r': /* carriage return */
+        case '\t': /* tab */
+            ret = true;
+            break;
+        default:
+            ret = false;
+    }
+    return ret;
+}
+
+/* go one word left */
+//static void previous_word(text_t *data) {
+//	/* current character type */
+//	if ( data->cursor_pos > 0 ) {
+//		/* detect current char type (alphanum/space or symbol) */
+//		char *ptr=data->text + data->cursor_pos - 1;
+//		int type=TYPE_SYMBOL, curtype;
+//		bool spaces=is_space(*ptr);
+//		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
+//		/* go back until char type changes */
+//		curtype=type;
+//		do {
+//			data->cursor_pos--;
+//			ptr--;
+//			if ( strchr(symbols,*ptr) ) {
+//				curtype = TYPE_SYMBOL;
+//				spaces=false;
+//			}
+//			else if ( is_space(*ptr) ) {
+//				if (!spaces ) curtype = TYPE_SPACE;
+//			} else {
+//				curtype = TYPE_ALPHANUM;
+//				spaces=false;
+//			}
+//		} while ( data->cursor_pos > 0 && curtype == type);
+//	}
+//}
+
+/* go one word right */
+//static void next_word(text_t *data) {
+//	/* current character type */
+//	if ( data->text[data->cursor_pos] ) {
+//		/* detect current char type (alphanum/space or symbol) */
+//		char *ptr=data->text + data->cursor_pos;
+//		int type=TYPE_SYMBOL, curtype;
+//		bool spaces=is_space(*ptr);
+//		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
+//		/* go back until char type changes */
+//		curtype=type;
+//		do {
+//			data->cursor_pos++;
+//			ptr++;
+//			if ( strchr(symbols,*ptr) ) {
+//				curtype = TYPE_SYMBOL;
+//				spaces=false;
+//			}
+//			else if ( is_space(*ptr) ) {
+//				if (!spaces ) curtype = TYPE_SPACE;
+//			} else {
+//				curtype = TYPE_ALPHANUM;
+//				spaces=false;
+//			}
+//		} while ( *ptr && curtype == type);
+//	}
+//}
+
+/* go one word left */
 static void previous_word(text_t *data) {
 	/* current character type */
 	if ( data->cursor_pos > 0 ) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos - 1;
-		int type=TYPE_SYMBOL, curtype;
-		bool spaces=isspace(*ptr);
-		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
-		/* go back until char type changes */
-		curtype=type;
+		int curtype, prevtype;
+		if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
+		else curtype = TYPE_ALPHANUM;
+		/* go back until char type changes from alphanumeric to something else */
 		do {
 			data->cursor_pos--;
 			ptr--;
-			if ( strchr(symbols,*ptr) ) {
-				curtype = TYPE_SYMBOL;
-				spaces=false;
-			}
-			else if ( isspace(*ptr) ) {
-				if (!spaces ) curtype = TYPE_SPACE;
-			} else {
-				curtype = TYPE_ALPHANUM;
-				spaces=false;
-			}
-		} while ( data->cursor_pos > 0 && curtype == type);
-	}    
+			prevtype = curtype;
+			if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
+            else curtype = TYPE_ALPHANUM;
+		} while ( data->cursor_pos > 0 && !(curtype != TYPE_ALPHANUM && prevtype == TYPE_ALPHANUM));
+	}
 }
 
-/* go one word right */ 
+/* go one word right */
 static void next_word(text_t *data) {
-	/* current character type */
+   /* current character type */
 	if ( data->text[data->cursor_pos] ) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos;
-		int type=TYPE_SYMBOL, curtype;
-		bool spaces=isspace(*ptr);
-		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
-		/* go back until char type changes */
-		curtype=type;
+		int curtype, prevtype;
+		if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
+		else curtype = TYPE_ALPHANUM;
+		/* go forth until char type changes from non alphanumeric to alphanumeric */
 		do {
 			data->cursor_pos++;
 			ptr++;
-			if ( strchr(symbols,*ptr) ) {
-				curtype = TYPE_SYMBOL;
-				spaces=false;
-			}
-			else if ( isspace(*ptr) ) {
-				if (!spaces ) curtype = TYPE_SPACE;
-			} else {
-				curtype = TYPE_ALPHANUM;
-				spaces=false;
-			}
-		} while ( *ptr && curtype == type);
-	}    
+			prevtype = curtype;
+			if ( strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
+			else curtype = TYPE_ALPHANUM;
+		} while ( *ptr && !(curtype == TYPE_ALPHANUM  && prevtype != TYPE_ALPHANUM));
+	}
 }
 
 /* update returns false if enter has been pressed, true otherwise */
@@ -264,7 +321,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				int count = data->sel_end-data->sel_start;
 				data->cursor_pos = data->sel_start+1;
 				while ( count > 0 ) {
-					deleteChar(data); 
+					deleteChar(data);
 					count--;
 					data->cursor_pos++;
 				}
@@ -280,7 +337,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				int count = data->sel_end-data->sel_start;
 				data->cursor_pos = data->sel_start+1;
 				while ( count > 0 ) {
-					deleteChar(data); 
+					deleteChar(data);
 					count--;
 					data->cursor_pos++;
 				}
@@ -377,7 +434,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
     TCOD_console_set_background_color(data->con, data->back);
     TCOD_console_set_foreground_color(data->con, data->fore);
     TCOD_console_clear(data->con);
-	
+
 	/* compute cursor position */
 	get_cursor_coords(data,&cursorx,&cursory);
 
@@ -410,7 +467,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 			}
 			TCOD_console_set_char(data->con,curx,cury,*ptr);
 			curx++;
-			if ( curx == data->w ) {	
+			if ( curx == data->w ) {
 				curx=0;
 				cury++;
 			}

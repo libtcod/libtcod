@@ -26,43 +26,65 @@ typedef struct {
 } text_t;
 
 /* ctor */
-TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars, int cursor_char, int blink_interval, char * prompt, TCOD_color_t fore, TCOD_color_t back, float back_transparency) {
+TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
     text_t * data = (text_t*)calloc(sizeof(text_t),1);
     data->x = x;
     data->y = y;
-    data->w = w;
-    data->h = h;
+    data->w = MAX(w,1); /* no zeroes! */
+    data->h = MAX(h,1);
     data->multiline = (h > 1);
     data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
-    data->interval = blink_interval;
-    data->halfinterval = (blink_interval>0?blink_interval/2:0);
-    data->ascii_cursor = cursor_char;
-    data->prompt = prompt ? strdup(prompt) : "";
+    data->interval = 800;
+    data->halfinterval = 400;
+    data->ascii_cursor = 0;
+    data->prompt = NULL;
+    data->textx = data->texty = 0;
     data->con = TCOD_console_new(w,h);
 	data->sel_start = MAX_INT;
 	data->sel_end = -1;
-	if ( prompt ) {
+//	if (! data->multiline ) {
+//		data->max = MIN(w - data->textx,data->max);
+//	} else {
+//		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
+//	}
+    if (max_chars && max_chars > 0) data->max = max_chars;
+    else data->max = data->w * data->h;
+    data->input_continue = true;
+    data->len = MIN(64,data->max);
+    data->text = (char*)calloc(data->len,sizeof(char));
+    data->back.r = data->back.g = data->back.b = 0;
+    data->fore.r = data->fore.g = data->fore.b = 255;
+    data->transparency = 1.0f;
+    return (TCOD_text_t)data;
+}
+
+/* set cursor and prompt */
+void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_interval, char * prompt) {
+    text_t * data = (text_t*)txt;
+    data->interval = blink_interval;
+    data->halfinterval = (blink_interval > 0 ? blink_interval / 2 : 0);
+    data->ascii_cursor = cursor_char;
+    if (data->prompt) free(data->prompt);
+    data->prompt = prompt ? strdup(prompt) : NULL;
+    data->textx = data->texty = 0;
+    if ( prompt ) {
 		char *ptr=prompt;
 		while (*ptr) {
 			data->textx++;
-			if ( *ptr == '\n' || data->textx == w) {
+			if ( *ptr == '\n' || data->textx == data->w) {
 				data->textx=0;data->texty++;
 			}
 			ptr++;
 		}
 	}
-	if (! data->multiline ) {
-		data->max = MIN(w - data->textx,data->max);
-	} else {
-		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
-	}
-    data->input_continue = true;
-    data->len = MIN(64,data->max);
-    data->text = (char*)calloc(data->len,sizeof(char));
+}
+
+/* set colours */
+void TCOD_text_set_colors (TCOD_text_t txt, TCOD_color_t fore, TCOD_color_t back, float back_transparency) {
+    text_t * data = (text_t*)txt;
     data->back = back;
     data->fore = fore;
     data->transparency = back_transparency;
-    return (TCOD_text_t)data;
 }
 
 /* increase the buffer size. internal function */
@@ -440,7 +462,7 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 		data->text[data->cursor_pos] = data->ascii_cursor;
 	}
 	/* render prompt */
-    TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s",data->prompt);
+    if (data->prompt) TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s",data->prompt);
 	/* render text */
 	curx=data->textx;
 	cury=data->texty;

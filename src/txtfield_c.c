@@ -203,15 +203,23 @@ static void previous_word(text_t *data) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos - 1;
 		int type=TYPE_SYMBOL, curtype;
+		bool spaces=isspace(*ptr);
 		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
 		/* go back until char type changes */
 		curtype=type;
 		do {
 			data->cursor_pos--;
 			ptr--;
-			if ( strchr(symbols,*ptr) ) curtype = TYPE_SYMBOL;
-			else if ( isspace(*ptr) ) curtype = TYPE_SPACE;
-			else curtype = TYPE_ALPHANUM;
+			if ( strchr(symbols,*ptr) ) {
+				curtype = TYPE_SYMBOL;
+				spaces=false;
+			}
+			else if ( isspace(*ptr) ) {
+				if (!spaces ) curtype = TYPE_SPACE;
+			} else {
+				curtype = TYPE_ALPHANUM;
+				spaces=false;
+			}
 		} while ( data->cursor_pos > 0 && curtype == type);
 	}    
 }
@@ -223,15 +231,23 @@ static void next_word(text_t *data) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos;
 		int type=TYPE_SYMBOL, curtype;
+		bool spaces=isspace(*ptr);
 		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
 		/* go back until char type changes */
 		curtype=type;
 		do {
 			data->cursor_pos++;
 			ptr++;
-			if ( strchr(symbols,*ptr) ) curtype = TYPE_SYMBOL;
-			else if ( isspace(*ptr) ) curtype = TYPE_SPACE;
-			else curtype = TYPE_ALPHANUM;
+			if ( strchr(symbols,*ptr) ) {
+				curtype = TYPE_SYMBOL;
+				spaces=false;
+			}
+			else if ( isspace(*ptr) ) {
+				if (!spaces ) curtype = TYPE_SPACE;
+			} else {
+				curtype = TYPE_ALPHANUM;
+				spaces=false;
+			}
 		} while ( *ptr && curtype == type);
 	}    
 }

@@ -165,6 +165,10 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 		int curx=data->textx,cury=data->texty;
 		char *ptr=data->text;
 		int newpos=0;
+		if ( clamp ) {
+			cy=MAX(data->texty,cy);
+			if ( cy == data->texty) cx = MAX(data->textx,cx);
+		}
 		// find the right line
 		while ( *ptr && cury < cy ) {
 			if (*ptr == '\n' || curx == data->w-1) {
@@ -173,7 +177,7 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 			ptr++;
 			newpos++;
 		}
-		if ( cury != cy ) return;
+		if ( ! clamp && cury != cy ) return;
 		// check if cx can be reached
 		while ( *ptr && curx < cx && *ptr != '\n') {
 			ptr++;
@@ -228,62 +232,6 @@ bool is_space (int ch) {
     }
     return ret;
 }
-
-/* go one word left */
-//static void previous_word(text_t *data) {
-//	/* current character type */
-//	if ( data->cursor_pos > 0 ) {
-//		/* detect current char type (alphanum/space or symbol) */
-//		char *ptr=data->text + data->cursor_pos - 1;
-//		int type=TYPE_SYMBOL, curtype;
-//		bool spaces=is_space(*ptr);
-//		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
-//		/* go back until char type changes */
-//		curtype=type;
-//		do {
-//			data->cursor_pos--;
-//			ptr--;
-//			if ( strchr(symbols,*ptr) ) {
-//				curtype = TYPE_SYMBOL;
-//				spaces=false;
-//			}
-//			else if ( is_space(*ptr) ) {
-//				if (!spaces ) curtype = TYPE_SPACE;
-//			} else {
-//				curtype = TYPE_ALPHANUM;
-//				spaces=false;
-//			}
-//		} while ( data->cursor_pos > 0 && curtype == type);
-//	}
-//}
-
-/* go one word right */
-//static void next_word(text_t *data) {
-//	/* current character type */
-//	if ( data->text[data->cursor_pos] ) {
-//		/* detect current char type (alphanum/space or symbol) */
-//		char *ptr=data->text + data->cursor_pos;
-//		int type=TYPE_SYMBOL, curtype;
-//		bool spaces=is_space(*ptr);
-//		if ( !strchr(symbols,*ptr) ) type = TYPE_ALPHANUM;
-//		/* go back until char type changes */
-//		curtype=type;
-//		do {
-//			data->cursor_pos++;
-//			ptr++;
-//			if ( strchr(symbols,*ptr) ) {
-//				curtype = TYPE_SYMBOL;
-//				spaces=false;
-//			}
-//			else if ( is_space(*ptr) ) {
-//				if (!spaces ) curtype = TYPE_SPACE;
-//			} else {
-//				curtype = TYPE_ALPHANUM;
-//				spaces=false;
-//			}
-//		} while ( *ptr && curtype == type);
-//	}
-//}
 
 void typecheck (int * type, int ch) {
     if (strchr(symbols,ch)) *type = TYPE_SYMBOL;
@@ -412,7 +360,11 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 			if ( data->multiline && key.shift && data->sel_end == -1) {
 				data->sel_end = data->cursor_pos;
 			}
-			set_cursor_pos(data,0,cy,true);
+			if ( key.lctrl || key.rctrl ) {
+				set_cursor_pos(data,0,0,true);
+			} else {
+				set_cursor_pos(data,0,cy,true);
+			}
 			selectStart(data,oldpos,key);
 			break;
 		case TCODK_END:
@@ -420,7 +372,11 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
 				data->sel_start = data->cursor_pos;
 			}
-			set_cursor_pos(data,data->w-1,cy,true);
+			if ( key.lctrl || key.rctrl ) {
+				set_cursor_pos(data,data->w,data->h,true);
+			} else {
+				set_cursor_pos(data,data->w-1,cy,true);
+			}
 			selectEnd(data,oldpos,key);
 			break;
         case TCODK_ENTER: /* validate input */

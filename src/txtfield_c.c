@@ -395,6 +395,11 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 	curpos=0;
 	while (*ptr) {
 		if ( *ptr == '\n') {
+			if ( (curx == 0 || curpos == 0 ) && curpos >= data->sel_start && curpos < data->sel_end ) {
+				/* inverted colors for selected empty lines */
+				TCOD_console_set_back(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
+				TCOD_console_set_fore(data->con, curx, cury, data->back);
+			}
 			curx=0;
 			cury++;
 		} else {

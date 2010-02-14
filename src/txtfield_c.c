@@ -201,14 +201,8 @@ static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 bool is_space (int ch) {
     bool ret;
     switch (ch) {
-        case ' ': /* single space */
-        case '\n': /* newline */
-        case '\r': /* carriage return */
-        case '\t': /* tab */
-            ret = true;
-            break;
-        default:
-            ret = false;
+        case ' ': case '\n': case '\r': case '\t': ret = true; break;
+        default: ret = false; break;
     }
     return ret;
 }
@@ -269,6 +263,12 @@ bool is_space (int ch) {
 //	}
 //}
 
+void typecheck (int * type, int ch) {
+    if (strchr(symbols,ch)) *type = TYPE_SYMBOL;
+    else if (is_space(ch)) *type = TYPE_SPACE;
+    else *type = TYPE_ALPHANUM;
+}
+
 /* go one word left */
 static void previous_word(text_t *data) {
 	/* current character type */
@@ -276,15 +276,13 @@ static void previous_word(text_t *data) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos - 1;
 		int curtype, prevtype;
-		if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
-		else curtype = TYPE_ALPHANUM;
+		typecheck(&curtype,*ptr);
 		/* go back until char type changes from alphanumeric to something else */
 		do {
 			data->cursor_pos--;
 			ptr--;
 			prevtype = curtype;
-			if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
-            else curtype = TYPE_ALPHANUM;
+			typecheck(&curtype,*ptr);
 		} while ( data->cursor_pos > 0 && !(curtype != TYPE_ALPHANUM && prevtype == TYPE_ALPHANUM));
 	}
 }
@@ -296,15 +294,13 @@ static void next_word(text_t *data) {
 		/* detect current char type (alphanum/space or symbol) */
 		char *ptr=data->text + data->cursor_pos;
 		int curtype, prevtype;
-		if (strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
-		else curtype = TYPE_ALPHANUM;
+		typecheck(&curtype,*ptr);
 		/* go forth until char type changes from non alphanumeric to alphanumeric */
 		do {
 			data->cursor_pos++;
 			ptr++;
 			prevtype = curtype;
-			if ( strchr(symbols,*ptr) || is_space(*ptr)) curtype = TYPE_SYMBOL;
-			else curtype = TYPE_ALPHANUM;
+			typecheck(&curtype,*ptr);
 		} while ( *ptr && !(curtype == TYPE_ALPHANUM  && prevtype != TYPE_ALPHANUM));
 	}
 }

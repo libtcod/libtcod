@@ -17,8 +17,8 @@ typedef struct {
 	int textx,texty; /* coordinate of start of text (after prompt) */
     TCOD_console_t con; /* offscreen console that will contain the textfield */
     bool input_continue; /* controls whether ENTER has been pressed */
-    size_t len; /* allocated size of the text */
-    size_t curlen; /* current length of the text */
+    int len; /* allocated size of the text */
+    int curlen; /* current length of the text */
     TCOD_color_t back; /* background colour */
     TCOD_color_t fore; /* foreground colour */
     float transparency; /* background transparency */
@@ -91,8 +91,9 @@ void TCOD_text_set_colors (TCOD_text_t txt, TCOD_color_t fore, TCOD_color_t back
 
 /* increase the buffer size. internal function */
 static void allocate(text_t *data) {
+    char *tmp;
     data->len *= 2;
-    char * tmp = (char*)calloc(data->len,sizeof(char));
+    tmp = (char*)calloc(data->len,sizeof(char));
     memcpy(tmp,data->text,data->len/2);
     free(data->text);
     data->text = tmp;
@@ -412,7 +413,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
     text_t * data = (text_t*)txt;
     uint32 time = TCOD_sys_elapsed_milli();
-	bool cursor_on = time % data->interval > data->halfinterval;
+	bool cursor_on = (int)( time % data->interval ) > data->halfinterval;
 	char back=0;
 	int curx,cury,cursorx,cursory, curpos;
 	char *ptr;

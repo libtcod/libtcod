@@ -10,15 +10,17 @@ Products :
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback, and especially :
-- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov routines, djikstra pathfinding, name generator, lots of bitmap fonts and being the #1 libtcod user, supporter and contributor.
-- Joao 'Jotaf' Henriques for his long time support, priceless comments and suggestions and the awesome python tutorial.
+- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra pathfinding, name generator, lots of bitmap fonts and being the #1 libtcod user, supporter and contributor.
+- Joao 'Jotaf' Henriques for his long time support, priceless comments and suggestions and the awesome python tutorial and more awesome python stuff to come.
 - Chris Hamons and John Klimek for the C# port and valuable bug fixes.
 - Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
 - Michael De Rosa for the OSX port.
 - Sandman for various tricky bug fixes.
-- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines
+- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still have to backport them from the old 1.5 branch, btw...).
+- Paul Sexton for the common Lisp wrapper.
+- Bernard Helyer for the D wrapper.
 - Adam 'Blinks' Blinkinsop for the OSX port and the autotools compilation system.
-- Nick Glauber for being the first libtcod Paypal sponsor
+- Nick Glauber for being the first libtcod Paypal sponsor.
 - owners of projects using libtcod.
 
 Fonts :

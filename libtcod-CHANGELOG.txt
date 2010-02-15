@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.5.0 : 2010 Feb 07
+1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    
 X the random number generator module now support two algorithms (Mingos)
   Mersenne twister, used in previous versions of libtcod

@@ -12,6 +12,7 @@ typedef struct {
     int halfinterval; /* half of the above */
     int ascii_cursor; /* cursor char. 0 if none */
 	int cursor_pos, sel_start,sel_end; /* cursor position in text, selection range */
+	int tab_size; /* tab size, if 0, no tab */
     char * prompt; /* prompt to be displayed before the string */
 	int textx,texty; /* coordinate of start of text (after prompt) */
     TCOD_console_t con; /* offscreen console that will contain the textfield */
@@ -59,7 +60,7 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
 }
 
 /* set cursor and prompt */
-void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_interval, char * prompt) {
+void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_interval, char * prompt, int tab_size) {
     text_t * data = (text_t*)txt;
     data->interval = blink_interval;
     data->halfinterval = (blink_interval > 0 ? blink_interval / 2 : 0);
@@ -67,6 +68,7 @@ void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_inter
     if (data->prompt) free(data->prompt);
     data->prompt = prompt ? strdup(prompt) : NULL;
     data->textx = data->texty = 0;
+	data->tab_size=tab_size;
     if ( prompt ) {
 		char *ptr=prompt;
 		while (*ptr) {
@@ -387,6 +389,15 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 	            data->input_continue = false;
 			}
             break;
+		case TCODK_TAB :
+			if (data->tab_size ) {
+				int count=data->tab_size;
+				while ( count > 0 ) {
+					insertChar(data,' ');
+					count--;
+				}
+			}
+			break;
         default: { /* append a new character */
             if (key.c > 31) {
 				insertChar(data,(char)(key.c));

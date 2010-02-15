@@ -1364,7 +1364,7 @@ def render_py(first, key):
 		v = v.clip(0, RES_V - 1)
 		
 		#another coordinate, represents rotation around the tunnel
-		u = mod(RES_U * (math.atan2(yc, xc) / (2 * math.pi) + 0.5), RES_U)
+		u = (RES_U * (math.atan2(yc, xc) / (2 * math.pi) + 0.5) % RES_U
 		
 		#retrieve corresponding pixels from texture
 		brightness = texture[u.astype(intp), v.astype(intp)] / 4.0 + 0.5

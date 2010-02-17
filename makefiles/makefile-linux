@@ -16,6 +16,9 @@ ZLIB_LIBS=-lz
 # PNG
 PNG_LIBS=-lpng
 
+#OPENGL
+OPENGL_LIB=-lGL
+
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 TEMP=/tmp
 CC=gcc

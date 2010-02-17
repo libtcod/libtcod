@@ -278,6 +278,62 @@ static void next_word(text_t *data) {
 	}
 }
 
+/* erase the selected text */
+static void deleteSelection(text_t *data) {
+	int count = data->sel_end-data->sel_start;
+	data->cursor_pos = data->sel_start+1;
+	while ( count > 0 ) {
+		deleteChar(data);
+		count--;
+		data->cursor_pos++;
+	}
+	data->cursor_pos--;
+	data->sel_start=MAX_INT;
+	data->sel_end=-1;
+}
+
+/* copy selected text to clipboard */
+static void copy(text_t *data) {
+	if ( data->sel_end - data->sel_start > 0 ) {
+		char *clipbuf = (char*)calloc(data->sel_end - data->sel_start+1,1);
+		char *ptr=clipbuf;
+		int i;
+		for (i=data->sel_start; i != data->sel_end; i++) {
+			*ptr++ = data->text[i];
+		}
+		TCOD_sys_clipboard_set(clipbuf);
+		free(clipbuf);
+	}
+}
+
+/* cut selected text to clipboard */
+static void cut(text_t *data) {
+	if ( data->sel_end - data->sel_start > 0 ) {
+		char *clipbuf = (char*)calloc(data->sel_end - data->sel_start+1,1);
+		char *ptr=clipbuf;
+		int i;
+		for (i=data->sel_start; i != data->sel_end; i++) {
+			*ptr++ = data->text[i];
+		}
+		TCOD_sys_clipboard_set(clipbuf);
+		free(clipbuf);
+		deleteSelection(data);
+	}
+}
+
+/* paste from clipboard */
+static void paste(text_t *data) {
+	char *clipbuf=TCOD_sys_clipboard_get();
+	if ( clipbuf ) {
+		if ( data->sel_start != MAX_INT ) {
+			deleteSelection(data);
+		}
+		while (*clipbuf) {
+			insertChar(data,*clipbuf++);
+		}
+	}
+}
+
 /* update returns false if enter has been pressed, true otherwise */
 bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 	int cx,cy,oldpos;
@@ -287,35 +343,22 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
     switch (key.vk) {
         case TCODK_BACKSPACE: /* get rid of the last character */
 			if ( data->sel_start != MAX_INT ) {
-				int count = data->sel_end-data->sel_start;
-				data->cursor_pos = data->sel_start+1;
-				while ( count > 0 ) {
-					deleteChar(data);
-					count--;
-					data->cursor_pos++;
-				}
-				data->cursor_pos--;
-				data->sel_start=MAX_INT;
-				data->sel_end=-1;
+				deleteSelection(data);
 			} else {
 				deleteChar(data);
 			}
             break;
 		case TCODK_DELETE:
-			if ( data->sel_start != MAX_INT ) {
-				int count = data->sel_end-data->sel_start;
-				data->cursor_pos = data->sel_start+1;
-				while ( count > 0 ) {
-					deleteChar(data);
-					count--;
+			if ( key.shift ) {
+				/* SHIFT-DELETE : cut to clipboard */
+				cut(data);
+			} else {	
+				if ( data->sel_start != MAX_INT ) {
+					deleteSelection(data);
+				} else if ( data->text[data->cursor_pos] ) {
 					data->cursor_pos++;
+					deleteChar(data);
 				}
-				data->cursor_pos--;
-				data->sel_start=MAX_INT;
-				data->sel_end=-1;
-			} else if ( data->text[data->cursor_pos] ) {
-				data->cursor_pos++;
-				deleteChar(data);
 			}
 			break;
 		/* shift + arrow / home / end = selection */
@@ -384,6 +427,9 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 			break;
         case TCODK_ENTER: /* validate input */
         case TCODK_KPENTER:
+			if ( data->sel_start != MAX_INT ) {
+				deleteSelection(data);
+			}
 			if ( data->multiline ) {
 				insertChar(data,'\n');
 			} else {
@@ -393,6 +439,9 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 		case TCODK_TAB :
 			if (data->tab_size ) {
 				int count=data->tab_size;
+				if ( data->sel_start != MAX_INT ) {
+					deleteSelection(data);
+				}
 				while ( count > 0 ) {
 					insertChar(data,' ');
 					count--;
@@ -400,7 +449,21 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 			}
 			break;
         default: { /* append a new character */
-            if (key.c > 31) {
+			if ( (key.c == 'c' || key.c=='C' || key.vk == TCODK_INSERT) && (key.lctrl || key.rctrl) ) {
+				/* CTRL-C or CTRL-INSERT : copy to clipboard */
+				copy(data);
+			} else if ( (key.c == 'x' || key.c=='X') && (key.lctrl || key.rctrl) ) {
+				/* CTRL-X : cut to clipboard */
+				cut(data);
+			} else if ( ((key.c == 'v' || key.c=='V') && (key.lctrl || key.rctrl))
+				|| ( key.vk == TCODK_INSERT && key.shift ) 
+				 ) {
+				/* CTRL-V or SHIFT-INSERT : paste from clipboard */
+				paste(data);
+			} else if (key.c > 31) {
+				if ( data->sel_start != MAX_INT ) {
+					deleteSelection(data);
+				}
 				insertChar(data,(char)(key.c));
             }
             break;

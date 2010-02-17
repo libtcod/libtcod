@@ -40,6 +40,9 @@
 #include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
+// X11 stuff for clipboard support
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #endif
 #include "libtcod_int.h"
 
@@ -532,13 +535,29 @@ char *TCOD_sys_clipboard_get()
 }
 #else
 // TODO Linux clipboard hell starting here...
+//extern Display *SDL_Display;
+static Display *dpy=NULL;
 void TCOD_sys_clipboard_set(const char *value)
 {
+	if ( ! value ) return;
+	if (!dpy ) dpy = XOpenDisplay(NULL);
+	//XSetSelectionOwner(dpy, XA_PRIMARY, None, CurrentTime);
+	XStoreBytes(dpy,value,strlen(value)+1);
+	// doesn't seem to work without this...
+	int len;
+	char *xbuf = XFetchBytes(dpy,&len);
+	XFree(xbuf);
 }
 
 char *TCOD_sys_clipboard_get()
 {
-    return NULL;
+	int len;
+	if (!dpy ) dpy = XOpenDisplay(NULL);
+	char *xbuf = XFetchBytes(dpy,&len);
+	if (! xbuf ) return NULL;
+	char *ret=strdup(xbuf);
+	XFree(xbuf);
+	return ret;
 }
 #endif
 

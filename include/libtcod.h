@@ -1,6 +1,6 @@
 /*
-* libtcod 1.5.0
-* Copyright (c) 2008,2009,2010 Jice
+* libtcod 1.5.1
+* Copyright (c) 2008,2009,2010 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice may not be used to endorse or promote products
+*     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -30,6 +30,9 @@
 
 // uncomment to disable unicode support
 //#define NO_UNICODE
+
+// uncomment to disable opengl support
+#define NO_OPENGL
 
 // os identification
 // TCOD_WINDOWS : OS is windows
@@ -96,9 +99,9 @@ typedef int int32;
 typedef long intptr;
 typedef unsigned long uintptr;
 
-#define TCOD_HEXVERSION 0x010500
-#define TCOD_STRVERSION "1.5.0"
-#define TCOD_TECHVERSION 0x01050003
+#define TCOD_HEXVERSION 0x010501
+#define TCOD_STRVERSION "1.5.1"
+#define TCOD_TECHVERSION 0x01050100
 
 // bool support for C
 #ifndef __cplusplus

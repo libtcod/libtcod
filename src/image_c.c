@@ -1,6 +1,6 @@
 /*
-* libtcod 1.5.0
-* Copyright (c) 2008,2009,2010 Jice
+* libtcod 1.5.1
+* Copyright (c) 2008,2009,2010 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice may not be used to endorse or promote products
+*     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -367,10 +367,9 @@ void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int
 TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
 	image_data_t *ret;
 	void *bitmap=TCOD_sys_create_bitmap_for_console(console);
-	TCOD_sys_console_to_bitmap(bitmap, TCOD_console_get_width(console), TCOD_console_get_height(console),
-		TCOD_console_get_buf(console),NULL);
 	ret=(image_data_t *)calloc(sizeof(image_data_t),1);
 	ret->sys_img=bitmap;
+	TCOD_image_refresh_console((TCOD_image_t)ret,console);
 	return (TCOD_image_t)ret;
 }
 

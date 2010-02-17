@@ -1,6 +1,6 @@
 /*
-* libtcod 1.5.0
-* Copyright (c) 2008,2009,2010 Jice
+* libtcod 1.5.1
+* Copyright (c) 2008,2009,2010 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,13 +10,13 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice may not be used to endorse or promote products
+*     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY Jice ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-* DISCLAIMED. IN NO EVENT SHALL Jice BE LIABLE FOR ANY
+* DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
 * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
 * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
 * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -29,6 +29,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <SDL/SDL.h>
+#ifndef NO_OPENGL
+#include <SDL/SDL_opengl.h>
+#endif
 #include "libtcod.h"
 #include "libtcod_int.h"
 
@@ -199,6 +202,12 @@ void TCOD_sys_load_font() {
 				hasTransparent=true;
 			}
 		}
+	} else if ( charmap->format->BytesPerPixel != 3 ) {
+		// convert to 24 bits
+		SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
+		SDL_BlitSurface(charmap,NULL,temp,NULL);
+		SDL_FreeSurface(charmap);
+		charmap=temp;
 	}
 	if (! hasTransparent ) {
 		// 24 bit font. check if greyscale
@@ -333,6 +342,15 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes=(oldFade == fade && prev_console_buffer);
+   	Uint8 bpp = charmap->format->BytesPerPixel;
+	char_t *c=&console_buffer[0];
+	char_t *oc=&prev_console_buffer[0];
+	int hdelta;
+	if ( bpp == 4 ) {
+		hdelta=(charmap->pitch - fontWidth*bpp)/4;
+	} else {
+		hdelta=(charmap->pitch - fontWidth*bpp);
+	}
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
@@ -340,10 +358,8 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 		for (x=0; x<console_width; x++) {
 			SDL_Rect srcRect,dstRect;
 			bool changed=true;
-			char_t *c=&console_buffer[x+y*console_width];
 			if ( c->cf == -1 ) c->cf = ascii_to_tcod[c->c];
 			if ( track_changes ) {
-				char_t *oc=&prev_console_buffer[x+y*console_width];
 				changed=false;
 				if ( c->dirt || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
 					|| c->back.b != oc->back.b || c->fore.r != oc->fore.r
@@ -360,9 +376,11 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				dstRect.w=fontWidth;
 				dstRect.h=fontHeight;
 				// draw background
-				b.r = ((int)b.r) * fade / 255 + ((int)fading_color.r) * (255-fade)/255;
-				b.g = ((int)b.g) * fade / 255  + ((int)fading_color.g) * (255-fade)/255;
-				b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
+				if ( fade != 255 ) {
+					b.r = ((int)b.r) * fade / 255 + ((int)fading_color.r) * (255-fade)/255;
+					b.g = ((int)b.g) * fade / 255  + ((int)fading_color.g) * (255-fade)/255;
+					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
+				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 				if ( bitmap == screen && fullscreen_on ) {
 					dstRect.x+=fullscreen_offsetx;
@@ -377,12 +395,14 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					bool first = first_draw[ascii];
 					TCOD_color_t f=c->fore;
 
-					f.r = ((int)f.r) * fade / 255 + ((int)fading_color.r) * (255-fade)/255;
-					f.g = ((int)f.g) * fade / 255 + ((int)fading_color.g) * (255-fade)/255;
-					f.b = ((int)f.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
+					if ( fade != 255 ) {
+						f.r = ((int)f.r) * fade / 255 + ((int)fading_color.r) * (255-fade)/255;
+						f.g = ((int)f.g) * fade / 255 + ((int)fading_color.g) * (255-fade)/255;
+						f.b = ((int)f.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
+					}
 					// only draw character if foreground color != background color
 					if ( ascii_updated[c->c] || f.r != b.r || f.g != b.g || f.b != b.b ) {
-						if ( charmap && charmap->format->Amask == 0
+						if ( charmap->format->Amask == 0
 							&& f.r == fontKeyCol.r && f.g == fontKeyCol.g && f.b == fontKeyCol.b ) {
 							// cannot draw with the key color...
 							if ( f.r < 255 ) f.r++; else f.r--;
@@ -399,7 +419,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 
 						if ( charmap && (first || curtext->r != f.r || curtext->g != f.g || curtext->b!=f.b) ) {
 							// change the character color in the font
-					    	Uint8 bpp = charmap->format->BytesPerPixel;
 					    	first_draw[ascii]=false;
 							sdl_fore=SDL_MapRGB(charmap->format,f.r,f.g,f.b) & rgb_mask;
 							*curtext=f;
@@ -411,35 +430,29 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							if ( bpp == 4 ) {
 								// 32 bits font : fill the whole character with color
 								Uint32 *pix = (Uint32 *)(((Uint8 *)charmap->pixels)+srcRect.x*bpp + srcRect.y*charmap->pitch);
-								int hdelta=(charmap->pitch - fontWidth*bpp)/4;
 								int h=fontHeight;
-								while (h> 0) {
+								while ( h-- ) {
 									int w=fontWidth;
-									while ( w > 0 ) {
+									while ( w-- ) {
 										(*pix) &= nrgb_mask;
 										(*pix) |= sdl_fore;
-										w--;
 										pix++;
 									}
-									h--;
 									pix += hdelta;
 								}
 							} else	{
 								// 24 bits font : fill only non key color pixels
 								Uint32 *pix = (Uint32 *)(((Uint8 *)charmap->pixels)+srcRect.x*bpp + srcRect.y*charmap->pitch);
 								int h=fontHeight;
-								int hdelta=(charmap->pitch - fontWidth*bpp);
-								while (h> 0) {
+								while ( h-- ) {
 									int w=fontWidth;
-									while ( w > 0 ) {
+									while ( w-- ) {
 										if (((*pix) & rgb_mask) != sdl_key ) {
 											(*pix) &= nrgb_mask;
 											(*pix) |= sdl_fore;
 										}
-										w--;
 										pix = (Uint32 *) (((Uint8 *)pix)+3);
 									}
-									h--;
 									pix = (Uint32 *) (((Uint8 *)pix)+hdelta);
 								}
 							}
@@ -453,6 +466,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					}
 				}
 			}
+			c++;oc++;
 		}
 	}
 #ifdef USE_SDL_LOCKS
@@ -568,7 +582,15 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		fullscreen_offsety=(actual_fullscreen_height-consoleHeight*fontHeight)/2;
 		SDL_FillRect(screen,0,0);
 	} else {
-		screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,0);
+#ifndef NO_OPENGL	
+		screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,SDL_OPENGL);
+		const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
+		if ( !glexts || !strstr(glexts,"GL_ARB_shader_objects")) {
+#else
+		{		
+#endif		
+			screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,0);
+		}
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
 	}
 	//if ( SDL_MUSTLOCK( charmap ) ) SDL_UnlockSurface( charmap );

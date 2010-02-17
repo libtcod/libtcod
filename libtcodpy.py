@@ -1,6 +1,6 @@
 #
-# libtcod 1.5.0 python wrapper
-# Copyright (c) 2008 Jice
+# libtcod 1.5.1 python wrapper
+# Copyright (c) 2008,2009,2010 Jice 2008,2009,2010 Jice Mingos
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,9 @@ if sys.platform.find('linux') != -1:
 else:
     _lib = ctypes.cdll['./libtcod-mingw.dll']
 
-HEXVERSION = 0x010500
-STRVERSION = "1.5.0"
-TECHVERSION = 0x01050003
+HEXVERSION = 0x010501
+STRVERSION = "1.5.1"
+TECHVERSION = 0x01050100
 
 ############################
 # color module

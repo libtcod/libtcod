@@ -20,6 +20,9 @@ PNG_DIR=dependencies/libpng-1.2.31
 PNG_FLAGS=-I $(PNG_DIR)/include
 PNG_LIBS=$(PNG_DIR)/lib/mingw/libpng.a
 
+# OPENGL
+OPENGL_LIB=-lopengl32
+
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -Wall -fno-strict-aliasing
 CC=mingw32-gcc
 CPP=mingw32-g++

@@ -91,6 +91,16 @@ TCOD_list_t TCODSystem::getDirectoryContent(const char *path, const char *patter
 	return TCOD_sys_get_directory_content(path,pattern);
 }
 
+// clipboard stuff
+void TCODSystem::setClipboard(const char *value) {
+	TCOD_sys_clipboard_set(value);
+}
+
+char *TCODSystem::getClipboard() {
+	return TCOD_sys_clipboard_get();
+}
+
+
 // thread stuff
 int TCODSystem::getNumCores() {
 	return TCOD_sys_get_num_cores();

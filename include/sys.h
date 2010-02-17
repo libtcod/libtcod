@@ -47,6 +47,10 @@ TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
 TCODLIB_API bool TCOD_sys_is_directory(const char *path);
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
 
+// clipboard
+TCODLIB_API void TCOD_sys_clipboard_set(const char *value);
+TCODLIB_API char *TCOD_sys_clipboard_get();
+
 // thread stuff
 typedef void *TCOD_thread_t;
 typedef void *TCOD_semaphore_t;

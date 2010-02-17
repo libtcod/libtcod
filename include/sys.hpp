@@ -54,6 +54,9 @@ public :
 	static bool deleteDirectory(const char *path);
 	static bool isDirectory(const char *path);
 	static TCOD_list_t getDirectoryContent(const char *path, const char *pattern);
+	// clipboard
+	static void setClipboard(const char *value);
+	static char *getClipboard();
 	// thread stuff
 	static int getNumCores();
 	static TCOD_thread_t newThread(int (*func)(void *), void *data);

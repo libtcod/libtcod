@@ -503,6 +503,45 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 #endif
 }
 
+//clipboard stuff
+#ifdef TCOD_WINDOWS
+void TCOD_sys_clipboard_set(const char *value)
+{
+    HGLOBAL clipbuffer;
+    char * buffer;
+	if (!OpenClipboard(0) || ! value) return;
+    EmptyClipboard();
+    clipbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(value)+1);
+    buffer = (char*)GlobalLock(clipbuffer);
+	strcpy(buffer, value);
+    GlobalUnlock(clipbuffer);
+    SetClipboardData(CF_TEXT, clipbuffer);
+    CloseClipboard();
+}
+
+char *TCOD_sys_clipboard_get()
+{
+    char * buffer = NULL;
+    HANDLE hData;
+	if (!OpenClipboard(NULL)) return 0;
+    hData = GetClipboardData( CF_TEXT );
+    buffer = (char*)GlobalLock( hData );
+    GlobalUnlock( hData );
+    CloseClipboard();
+    return buffer;
+}
+#else
+// TODO Linux clipboard hell starting here...
+void TCOD_sys_clipboard_set(const char *value)
+{
+}
+
+char *TCOD_sys_clipboard_get()
+{
+    return NULL;
+}
+#endif
+
 
 // library initialization function
 #ifdef TCOD_WINDOWS

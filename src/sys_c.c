@@ -534,14 +534,11 @@ char *TCOD_sys_clipboard_get()
     return buffer;
 }
 #else
-// TODO Linux clipboard hell starting here...
-//extern Display *SDL_Display;
 static Display *dpy=NULL;
 void TCOD_sys_clipboard_set(const char *value)
 {
 	if ( ! value ) return;
 	if (!dpy ) dpy = XOpenDisplay(NULL);
-	//XSetSelectionOwner(dpy, XA_PRIMARY, None, CurrentTime);
 	XStoreBytes(dpy,value,strlen(value)+1);
 	// doesn't seem to work without this...
 	int len;

@@ -97,6 +97,16 @@ typedef struct {
 #define TCOD_ASSERT(x) assert(x)
 #endif
 
+#ifndef NO_OPENGL
+/* opengl utilities */
+void TCOD_opengl_init_attributes();
+bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
+bool TCOD_opengl_init_shaders();
+void TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
+void TCOD_opengl_swap();
+#endif
+
+/* fov internal stuff */
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_recursive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);

@@ -59,6 +59,7 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/parser_c.o \
 	$(TEMP)/libtcod/debug/path_c.o \
 	$(TEMP)/libtcod/debug/sys_c.o \
+	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
@@ -123,6 +124,7 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/parser_c.o \
 	$(TEMP)/libtcod/release/path_c.o \
 	$(TEMP)/libtcod/release/sys_c.o \
+	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \

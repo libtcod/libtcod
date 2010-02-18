@@ -29,11 +29,12 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <SDL/SDL.h>
-#ifndef NO_OPENGL
-#include <SDL/SDL_opengl.h>
-#endif
 #include "libtcod.h"
 #include "libtcod_int.h"
+
+#ifndef NO_OPENGL
+static bool useOpenGL=false;
+#endif
 
 // to enable bitmap locking. Is there any use ?? makes the OSX port renderer to fail
 //#define USE_SDL_LOCKS
@@ -335,6 +336,27 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
+static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
+#ifndef NO_OPENGL
+	if ( useOpenGL ) {
+		TCOD_opengl_render(oldFade, ascii_updated, console_buffer, prev_console_buffer);
+		TCOD_opengl_swap();
+	} else 
+#endif
+	{
+		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
+		if ( TCOD_sdl_renderer ) {
+			TCOD_sdl_renderer((void *)screen);
+		}
+		SDL_Flip(screen);
+	}
+	oldFade=(int)TCOD_console_get_fade();
+	if ( any_ascii_updated ) {
+		memset(ascii_updated,0,sizeof(bool)*TCOD_max_font_chars);
+		any_ascii_updated=false;
+	}
+}
+
 void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
 	int x,y;
 	SDL_Surface *bitmap=(SDL_Surface *)vbitmap;
@@ -472,11 +494,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
 #endif
-	oldFade=fade;
-	if ( any_ascii_updated ) {
-		memset(ascii_updated,0,sizeof(bool)*TCOD_max_font_chars);
-		any_ascii_updated=false;
-	}
 }
 
 void TCOD_sys_set_keyboard_repeat(int initial_delay, int interval) {
@@ -583,12 +600,13 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		SDL_FillRect(screen,0,0);
 	} else {
 #ifndef NO_OPENGL	
+		TCOD_opengl_init_attributes();
 		screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,SDL_OPENGL);
-		const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
-		if ( !glexts || !strstr(glexts,"GL_ARB_shader_objects")) {
-#else
-		{		
+		if ( screen && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
+			useOpenGL=true;
+		} else
 #endif		
+		{		
 			screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,0);
 		}
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
@@ -675,11 +693,7 @@ void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
-		TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
-		if ( TCOD_sdl_renderer ) {
-			TCOD_sdl_renderer((void *)screen);
-		}
-		SDL_Flip(screen);
+		TCOD_sys_render(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();

@@ -86,6 +86,7 @@ LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/parser.o \
 	$(TEMP)/libtcod/debug/path.o \
 	$(TEMP)/libtcod/debug/sys.o \
+	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/zip.o \
 	$(TEMP)/libtcod/debug/namegen.o
 
@@ -148,6 +149,7 @@ LIBOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/parser.o \
 	$(TEMP)/libtcod/release/path.o \
 	$(TEMP)/libtcod/release/sys.o \
+	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/zip.o \
 	$(TEMP)/libtcod/release/namegen.o
 

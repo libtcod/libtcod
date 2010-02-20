@@ -29,10 +29,7 @@
 #include "libtcod_int.h"
 #ifndef NO_OPENGL
 #include <SDL/SDL.h>
-#define GL_GLEXT_PROTOTYPES
 #include <SDL/SDL_opengl.h>
-
-#ifdef GL_ARB_shader_objects
 
 #define CHECKGL( GLcall )                               		\
     GLcall;                                             		\
@@ -96,7 +93,7 @@ static const char *TCOD_con_pixel_shader =
 
 "   gl_FragColor = texture2D(font, vec2((tchar.x/fontsize.x),(tchar.y/fontsize.y))+pixPos.xy); "   // magic func: finds pixel value in font file
 
-"   gl_FragColor=gl_FragColor.r*tcharfcol+(1.0-gl_FragColor)*tcharbcol; "      // Coloring stage
+"   gl_FragColor=gl_FragColor.a*tcharfcol+(1.0-gl_FragColor.a)*tcharbcol; "      // Coloring stage
 "} "
 ;
 
@@ -133,6 +130,21 @@ static GLuint Tex[ConsoleDataEnumSize];
 static unsigned char *data[ConsoleDataEnumSize];
 static bool dirty[ConsoleDataEnumSize];
 
+// extension function pointers
+static PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB=0;
+static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB=0;
+static PFNGLSHADERSOURCEARBPROC glShaderSourceARB=0;
+static PFNGLCOMPILESHADERARBPROC glCompileShaderARB=0;
+static PFNGLGETINFOLOGARBPROC glGetInfoLogARB=0;
+static PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB=0;
+static PFNGLATTACHOBJECTARBPROC glAttachObjectARB=0;
+static PFNGLLINKPROGRAMARBPROC glLinkProgramARB=0;
+static PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB=0;
+static PFNGLUNIFORM2FARBPROC glUniform2fARB=0;
+static PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB=0;
+static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
+static PFNGLUNIFORM1IARBPROC glUniform1iARB=0;
+                                        
 // call after creating window
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
@@ -140,6 +152,21 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 
 	// check opengl extensions
 	if (!glexts || !strstr(glexts,"GL_ARB_shader_objects")) return false;
+
+	// set extensions functions pointers
+   	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
+	glGetObjectParameterivARB=(PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+	glShaderSourceARB=(PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
+	glCompileShaderARB=(PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
+	glGetInfoLogARB=(PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
+	glCreateProgramObjectARB=(PFNGLCREATEPROGRAMOBJECTARBPROC)wglGetProcAddress("glCreateProgramObjectARB");
+	glAttachObjectARB=(PFNGLATTACHOBJECTARBPROC)wglGetProcAddress("glAttachObjectARB");
+	glLinkProgramARB=(PFNGLLINKPROGRAMARBPROC)wglGetProcAddress("glLinkProgramARB");
+	glUseProgramObjectARB=(PFNGLUSEPROGRAMOBJECTARBPROC)wglGetProcAddress("glUseProgramObjectARB");
+	glUniform2fARB=(PFNGLUNIFORM2FARBPROC)wglGetProcAddress("glUniform2fARB");
+	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)wglGetProcAddress("glGetUniformLocationARB");
+	glActiveTexture=(PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
+	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)wglGetProcAddress("glUniform1iARB");
 
 	// set opengl state
 	glEnable(GL_TEXTURE_2D);
@@ -199,6 +226,9 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 }
 
 static GLuint loadShader(const char *txt, GLuint type) {
+#ifndef GL_ARB_shader_objects
+	return 0;
+#else
 	int success;
 	int infologLength = 0;
 	int charsWritten = 0;
@@ -223,10 +253,14 @@ static GLuint loadShader(const char *txt, GLuint type) {
 	}
 
 	return v;
+#endif
 }
 
 static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 	GLuint *vertShader, GLuint *fragShader, GLuint *prog) {
+#ifndef GL_ARB_shader_objects
+	return false;
+#else
 	// Create and load Program and Shaders
 	int success;
 	*prog = glCreateProgramObjectARB();
@@ -260,30 +294,21 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 		return false;
 	}
 	return true;
+#endif
 }
 
 bool TCOD_opengl_init_shaders() {
+#ifndef GL_ARB_shader_objects
+	return false;
+#else
 	int i;
 	if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
 	// Host side data init
 	for(i = 0; i< ConsoleDataEnumSize; i++)
 	{
-		data[i] = (unsigned char *)malloc(conwidth*conheight*ConsoleDataAlignment[i]);
-		memset(data[i], 0, conwidth*conheight*ConsoleDataAlignment[i]);
+		data[i] = (unsigned char *)calloc(conwidth*conheight,ConsoleDataAlignment[i]);
 		dirty[i]=true;
 	}
-	// Texture data init
-
-	// Character
-
-	// Initialize character array to 0
-	for(i = 0; i< conwidth*conheight; i++)
-	{
-		data[Character][i] = 0;
-	}
-
-	// ForeColor
-
 	// Initialize ForeCol to 255, 255, 255, 255
 	TCOD_color_t *fCol = (TCOD_color_t *)data[ForeCol];
 	for( i = 0; i < conwidth*conheight; i++)
@@ -291,19 +316,6 @@ bool TCOD_opengl_init_shaders() {
 	    fCol[i].r=255;
 	    fCol[i].g=255;
 	    fCol[i].b=255;
-		//fCol[i].a=255;
-	}
-
-	// BackColor
-
-	// Initialize BackCol to 0, 0, 0, 255
-	TCOD_color_t *bCol = (TCOD_color_t *)data[BackCol];
-	for( i = 0; i < conwidth*conheight; i++)
-	{
-	    bCol[i].r=0;
-	    bCol[i].g=0;
-	    bCol[i].b=0;
-		//bCol[i].a=255;
 	}
 
     // Generate Textures
@@ -337,12 +349,13 @@ bool TCOD_opengl_init_shaders() {
 	CHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
 
 	return true;
+#endif
 }
 
 static void updateTex(ConsoleDataEnum dataType) {
 	DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[dataType]));
 
-	GLenum Type;
+	GLenum Type=0;
 	switch(ConsoleDataAlignment[dataType])
 	{
 	case 1:
@@ -384,6 +397,7 @@ void TCOD_opengl_putchar_ex(int x, int y, unsigned char c, TCOD_color_t fore, TC
 }
 
 void TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer) {
+#ifdef GL_ARB_shader_objects
 	int x,y,i;
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes=(oldFade == fade && prev_console_buffer);
@@ -463,15 +477,14 @@ void TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 
     DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
 
-    DBGCHECKGL(glUseProgramObjectARB(0););
-
+    DBGCHECKGL(glUseProgramObjectARB(0));
+#endif
 }
 
 void TCOD_opengl_swap() {
 	SDL_GL_SwapBuffers();
 }
 
-#endif
 
 #endif
 

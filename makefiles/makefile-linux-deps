@@ -133,6 +133,7 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/release/tree_c.o \
+	$(TEMP)/libtcod/release/txtfield_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o
 

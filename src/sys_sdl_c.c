@@ -33,7 +33,7 @@
 #include "libtcod_int.h"
 
 #ifndef NO_OPENGL
-static bool useOpenGL=false;
+bool TCOD_use_open_gl=false;
 #endif
 
 // to enable bitmap locking. Is there any use ?? makes the OSX port renderer to fail
@@ -338,7 +338,7 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
 #ifndef NO_OPENGL
-	if ( useOpenGL ) {
+	if ( TCOD_use_open_gl ) {
 		TCOD_opengl_render(oldFade, ascii_updated, console_buffer, prev_console_buffer);
 		TCOD_opengl_swap();
 	} else 
@@ -603,7 +603,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_opengl_init_attributes();
 		screen=SDL_SetVideoMode(w*fontWidth,h*fontHeight,32,SDL_OPENGL);
 		if ( screen && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
-			useOpenGL=true;
+			TCOD_use_open_gl=true;
 		} else
 #endif		
 		{		

@@ -28,6 +28,7 @@
 #ifndef _TCODLIB_INT_H
 #define _TCODLIB_INT_H
 #include <stdarg.h>
+#include <assert.h>
 /* tcodlib internal stuff */
 #ifdef __cplusplus
 extern "C" {
@@ -102,8 +103,9 @@ typedef struct {
 void TCOD_opengl_init_attributes();
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
 bool TCOD_opengl_init_shaders();
-void TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
+bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
 void TCOD_opengl_swap();
+extern bool TCOD_use_open_gl;
 #endif
 
 /* fov internal stuff */

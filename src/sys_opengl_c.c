@@ -41,9 +41,9 @@
     return false;
 
 #ifdef NDEBUG
-#define DBGCHECKGL CHECKGL
-#else
 #define DBGCHECKGL(GLcall) GLcall
+#else
+#define DBGCHECKGL CHECKGL
 #endif
 
 typedef  enum 
@@ -278,7 +278,7 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 #else
 	// Create and load Program and Shaders
 	int success;
-	*prog = glCreateProgramObjectARB();
+	*prog = DBGCHECKGL(glCreateProgramObjectARB());
 
 	*vertShader = loadShader(vertShaderCode, GL_VERTEX_SHADER);
 	if ( *vertShader == 0 ) return false;
@@ -367,7 +367,7 @@ bool TCOD_opengl_init_shaders() {
 #endif
 }
 
-static void updateTex(ConsoleDataEnum dataType) {
+static bool updateTex(ConsoleDataEnum dataType) {
 	DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[dataType]));
 
 	GLenum Type=0;
@@ -389,7 +389,7 @@ static void updateTex(ConsoleDataEnum dataType) {
 	DBGCHECKGL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, conwidth, conheight, Type, GL_UNSIGNED_BYTE, data[dataType]));
 
 	DBGCHECKGL(glBindTexture(GL_TEXTURE_2D,0));
-
+	return true;
 }
 
 static void updateChar(ConsoleDataEnum dataType, int BufferPos, unsigned char *c, int length, int offset) {
@@ -411,7 +411,7 @@ void TCOD_opengl_putchar_ex(int x, int y, unsigned char c, TCOD_color_t fore, TC
 
 }
 
-void TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer) {
+bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer) {
 #ifdef GL_ARB_shader_objects
 	int x,y,i;
 	int fade = (int)TCOD_console_get_fade();
@@ -494,6 +494,7 @@ void TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 
     DBGCHECKGL(glUseProgramObjectARB(0));
 #endif
+	return true;
 }
 
 void TCOD_opengl_swap() {

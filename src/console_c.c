@@ -194,6 +194,24 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 void TCOD_console_flush() {
 	TCOD_console_data_t *dat=(TCOD_console_data_t *)TCOD_root;
 	TCOD_IFNOT(dat != NULL) return;
+#ifndef NDEBUG
+	{
+		float el = TCOD_sys_elapsed_seconds();
+		TCOD_color_t bk=dat->back;
+		TCOD_color_t fr=dat->fore;
+		dat->back = TCOD_black;
+		dat->fore = TCOD_white;
+		if ( el < 2.0f ) {
+			TCOD_console_print_left(TCOD_root,1,1,TCOD_BKGND_SET," %s ",
+				TCOD_use_open_gl ? "OPENGL" : "SDL" );			
+		} else if ( el < 3.0f ) {
+			TCOD_console_print_left(TCOD_root,1,1,TCOD_BKGND_ADDALPHA(3.0f-el)," %s ",
+				TCOD_use_open_gl ? "OPENGL" : "SDL" );			
+		}
+		dat->back = bk;
+		dat->fore = fr;
+	} 
+#endif 	
 	TCOD_sys_flush(true);
 	memcpy(dat->oldbuf,dat->buf,sizeof(char_t)*
 		dat->w*dat->h);

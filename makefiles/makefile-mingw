@@ -37,11 +37,11 @@ $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 
 LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/bresenham_c.o \

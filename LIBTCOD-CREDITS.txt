@@ -14,6 +14,7 @@ Many thanks to everyone who provided feedback, and especially :
 - Joao 'Jotaf' Henriques for his long time support, priceless comments and suggestions and the awesome python tutorial and more awesome python stuff to come.
 - Chris Hamons and John Klimek for the C# port and valuable bug fixes.
 - Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
+- Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL renderer
 - Michael De Rosa for the OSX port.
 - Sandman for various tricky bug fixes.
 - Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still have to backport them from the old 1.5 branch, btw...).

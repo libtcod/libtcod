@@ -25,6 +25,10 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+ * This renderer is mostly copied and pasted from Antagonist's SkyFire GLSL roguelike engine
+ */ 
+
 #include "libtcod.h"
 #include "libtcod_int.h"
 #ifndef NO_OPENGL

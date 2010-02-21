@@ -178,6 +178,17 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glOrtho(0, conw, 0, conh, -1.0f, 1.0f);
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
+#ifdef TCOD_WINDOWS
+	if ( ! ((TCOD_console_data_t *)TCOD_root)->fullscreen ) {
+		// turn vsync off in windowed mode
+		typedef bool (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
+		PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
+
+		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+		if (wglSwapIntervalEXT) wglSwapIntervalEXT(0);
+	}
+#endif
 
 	// compute pot size
 	conwidth=conw;

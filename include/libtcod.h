@@ -32,7 +32,7 @@
 //#define NO_UNICODE
 
 // uncomment to disable opengl support
-#define NO_OPENGL
+//#define NO_OPENGL
 
 // os identification
 // TCOD_WINDOWS : OS is windows

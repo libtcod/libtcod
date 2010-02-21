@@ -106,6 +106,7 @@ bool TCOD_opengl_init_shaders();
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
 void TCOD_opengl_swap();
 extern bool TCOD_use_open_gl;
+extern bool TCOD_use_glsl;
 #endif
 
 /* fov internal stuff */
@@ -131,9 +132,16 @@ void TCOD_fatal_nopar(const char *msg);
 extern int fontNbCharHoriz;
 extern int fontNbCharVertic;
 extern bool fontTcodLayout;
-extern int *ascii_to_tcod;
+extern int *TCOD_ascii_to_tcod;
+extern bool TCOD_font_is_in_row;
 extern TCOD_console_t TCOD_root;
 extern int TCOD_max_font_chars;
+extern int TCOD_font_width;
+extern int TCOD_font_height;
+extern bool TCOD_fullscreen_on;
+extern int TCOD_fullscreen_offsetx;
+extern int TCOD_fullscreen_offsety;
+
 
 /* TCODSystem non public methods */
 void TCOD_sys_startup();

@@ -55,6 +55,8 @@ typedef  enum
 } ConsoleDataEnum;
 const int ConsoleDataAlignment[3] = {1, 3, 3 };
 
+static bool hasShader=false;
+
 static const char *TCOD_con_vertex_shader =
 "uniform vec2 termsize; "
 
@@ -155,7 +157,8 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	SDL_Surface *font_surf=(SDL_Surface *)font;
 
 	// check opengl extensions
-	if (!glexts || !strstr(glexts,"GL_ARB_shader_objects")) return false;
+	if (!glexts ) return false;
+	hasShader = (strstr(glexts,"GL_ARB_shader_objects") != NULL);
 
 	// set extensions functions pointers
    	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
@@ -171,7 +174,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)wglGetProcAddress("glGetUniformLocationARB");
 	glActiveTexture=(PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
 	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)wglGetProcAddress("glUniform1iARB");
-
+	
 	// set opengl state
 	glEnable(GL_TEXTURE_2D);
 	glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
@@ -179,7 +182,15 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glOrtho(0, conw, 0, conh, -1.0f, 1.0f);
+	if ( hasShader ) {
+		glOrtho(0, conw, 0, conh, -1.0f, 1.0f);
+		TCOD_use_glsl=true;
+	} else {
+		glOrtho(0, conw, conh, 0.0f, -1.0f, 1.0f);
+		glEnable (GL_BLEND); 
+		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 #ifdef TCOD_WINDOWS
@@ -241,9 +252,6 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 }
 
 static GLuint loadShader(const char *txt, GLuint type) {
-#ifndef GL_ARB_shader_objects
-	return 0;
-#else
 	int success;
 	int infologLength = 0;
 	int charsWritten = 0;
@@ -268,14 +276,10 @@ static GLuint loadShader(const char *txt, GLuint type) {
 	}
 
 	return v;
-#endif
 }
 
 static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 	GLuint *vertShader, GLuint *fragShader, GLuint *prog) {
-#ifndef GL_ARB_shader_objects
-	return false;
-#else
 	// Create and load Program and Shaders
 	int success;
 	*prog = DBGCHECKGL(glCreateProgramObjectARB());
@@ -309,15 +313,13 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 		return false;
 	}
 	return true;
-#endif
 }
 
 bool TCOD_opengl_init_shaders() {
-#ifndef GL_ARB_shader_objects
-	return false;
-#else
 	int i;
-	if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
+	if ( hasShader ) {
+		if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
+	}
 	// Host side data init
 	for(i = 0; i< ConsoleDataEnumSize; i++)
 	{
@@ -362,9 +364,8 @@ bool TCOD_opengl_init_shaders() {
 	CHECKGL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, POTconwidth, POTconheight, 0, GL_RGB, GL_UNSIGNED_BYTE, 0));
 
 	CHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
-
+	
 	return true;
-#endif
 }
 
 static bool updateTex(ConsoleDataEnum dataType) {
@@ -405,25 +406,26 @@ static void updateChar(ConsoleDataEnum dataType, int BufferPos, unsigned char *c
 void TCOD_opengl_putchar_ex(int x, int y, unsigned char c, TCOD_color_t fore, TCOD_color_t back) {
 	int loc = x+y*conwidth;
 
-	updateChar(Character, loc, &c, ConsoleDataAlignment[Character], 0);
-	updateChar(ForeCol, loc, &fore.r, ConsoleDataAlignment[ForeCol], 0);
+	if ( hasShader ) {
+		updateChar(Character, loc, &c, ConsoleDataAlignment[Character], 0);
+		updateChar(ForeCol, loc, &fore.r, ConsoleDataAlignment[ForeCol], 0);
+	}
 	updateChar(BackCol, loc, &back.r, ConsoleDataAlignment[BackCol], 0);
 
 }
 
 bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer) {
-#ifdef GL_ARB_shader_objects
 	int x,y,i;
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes=(oldFade == fade && prev_console_buffer);
-	char_t *c=&console_buffer[0];
-	char_t *oc=&prev_console_buffer[0];
+	char_t *c=console_buffer;
+	char_t *oc=prev_console_buffer;
 	// update opengl data
 	// TODO use function pointers so that libtcod's putchar directly updates opengl data
 	for (y=0;y<conheight;y++) {
 		for (x=0; x<conwidth; x++) {
 			bool changed=true;
-			if ( c->cf == -1 ) c->cf = ascii_to_tcod[c->c];
+			if ( c->cf == -1 ) c->cf = TCOD_ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
 				if ( c->dirt || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
@@ -450,50 +452,111 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			dirty[i] = false;
 		}
 	}
-
-	// actual rendering
-    DBGCHECKGL(glUseProgramObjectARB(conProgram));
-
-	// Technically all these glUniform calls can be moved to SFConsole() when the shader is loaded
-	// None of these change
-	// The Textures still need to bind to the same # Activetexture throughout though
-    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
-	DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"POTtermsize"), (float) POTconwidth, (float) POTconheight));
-    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontsize"), fontNbCharHoriz, fontNbCharVertic));
-
-    DBGCHECKGL(glActiveTexture(GL_TEXTURE0));
-    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
-    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"font"),0));
-
-    DBGCHECKGL(glActiveTexture(GL_TEXTURE1));
-    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[Character]));
-    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"term"),1));
-
-    DBGCHECKGL(glActiveTexture(GL_TEXTURE2));
-    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[ForeCol]));
-    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"termfcol"),2));
-
-    DBGCHECKGL(glActiveTexture(GL_TEXTURE3));
-    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
-    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"termbcol"),3));
-
-//    DBGCHECKGL(shader->Validate());
-
-	DBGCHECKGL(glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-1.0f,-1.0f,0.0f);
-        glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(1.0f,-1.0f,0.0f);
-        glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(1.0f,1.0f, 0.0f);
-        glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-1.0f,1.0f,0.0f);
-	glEnd());
-
-    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
-
-    DBGCHECKGL(glUseProgramObjectARB(0));
-#endif
+	if (! hasShader) {
+		// draw the background
+		float texw=(float)conwidth/POTconwidth;
+		float texh=(float)conheight/POTconheight;
+		char_t *c;
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
+		DBGCHECKGL(glBegin(GL_QUADS);
+			glColor3f(1.0,1.0,1.0);
+			glTexCoord2f( 0.0, 0.0 );
+			glVertex2i( 0, 0);
+			glTexCoord2f( 0.0, texh);
+			glVertex2i( 0, conheight );
+			glTexCoord2f( texw, texh );
+			glVertex2i( conwidth, conheight);
+			glTexCoord2f( texw, 0.0 );
+			glVertex2i( conwidth, 0.0 );
+		glEnd());
+		// draw the characters
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
+	    
+	    c=console_buffer;
+		for (y=0;y<conheight;y++) {
+			for (x=0; x<conwidth; x++) {
+				if ( c->c != ' ' ) {
+					TCOD_color_t f=c->fore;
+					TCOD_color_t b=c->back;
+					// only draw character if foreground color != background color
+					if ( f.r != b.r || f.g != b.g || f.b != b.b ) {
+						int srcx,srcy,destx,desty;
+						destx=x;// *TCOD_font_width;
+						desty=y;// *TCOD_font_height;
+						if ( TCOD_fullscreen_on ) {
+							destx+=TCOD_fullscreen_offsetx;
+							desty+=TCOD_fullscreen_offsety;
+						}
+						// draw foreground
+						int ascii=c->cf;
+						if (TCOD_font_is_in_row) {
+							srcx = (ascii%fontNbCharHoriz);
+							srcy = (ascii/fontNbCharHoriz);
+						} else {
+							srcx = (ascii/fontNbCharVertic);
+							srcy = (ascii%fontNbCharVertic);
+						}
+						glBegin( GL_QUADS );
+						glColor3f(f.r/255.0,f.g/255.0,f.b/255.0);
+						glTexCoord2f( (float)(srcx)/fontNbCharHoriz, (float)(srcy)/fontNbCharVertic );
+						glVertex2i( destx, desty);
+						glTexCoord2f( (float)(srcx)/fontNbCharHoriz, (float)(srcy+1)/fontNbCharVertic );
+						glVertex2i( destx, desty+1 );
+						glTexCoord2f( (float)(srcx+1)/fontNbCharHoriz, (float)(srcy+1)/fontNbCharVertic );
+						glVertex2i( destx+1, desty+1 );
+						glTexCoord2f( (float)(srcx+1)/fontNbCharHoriz, (float)(srcy)/fontNbCharVertic );
+						glVertex2i( destx+1, desty );
+						glEnd();
+					}
+				}
+				c++;
+			}
+		}
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
+	} else {
+		// actual rendering
+	    DBGCHECKGL(glUseProgramObjectARB(conProgram));
+	
+		// Technically all these glUniform calls can be moved to SFConsole() when the shader is loaded
+		// None of these change
+		// The Textures still need to bind to the same # Activetexture throughout though
+	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
+		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"POTtermsize"), (float) POTconwidth, (float) POTconheight));
+	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontsize"), fontNbCharHoriz, fontNbCharVertic));
+	
+	    DBGCHECKGL(glActiveTexture(GL_TEXTURE0));
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
+	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"font"),0));
+	
+	    DBGCHECKGL(glActiveTexture(GL_TEXTURE1));
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[Character]));
+	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"term"),1));
+	
+	    DBGCHECKGL(glActiveTexture(GL_TEXTURE2));
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[ForeCol]));
+	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"termfcol"),2));
+	
+	    DBGCHECKGL(glActiveTexture(GL_TEXTURE3));
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
+	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"termbcol"),3));
+	
+	//    DBGCHECKGL(shader->Validate());
+	
+		DBGCHECKGL(glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 1.0f);
+			glVertex3f(-1.0f,-1.0f,0.0f);
+	        glTexCoord2f(1.0f, 1.0f);
+			glVertex3f(1.0f,-1.0f,0.0f);
+	        glTexCoord2f(1.0f, 0.0f);
+			glVertex3f(1.0f,1.0f, 0.0f);
+	        glTexCoord2f(0.0f, 0.0f);
+			glVertex3f(-1.0f,1.0f,0.0f);
+		glEnd());
+	
+	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
+	
+	    DBGCHECKGL(glUseProgramObjectARB(0));
+	}
 	return true;
 }
 

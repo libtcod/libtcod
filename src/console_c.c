@@ -203,10 +203,10 @@ void TCOD_console_flush() {
 		dat->fore = TCOD_white;
 		if ( el < 2.0f ) {
 			TCOD_console_print_left(TCOD_root,1,1,TCOD_BKGND_SET," %s ",
-				TCOD_use_open_gl ? "OPENGL" : "SDL" );			
+				TCOD_use_open_gl ? (TCOD_use_glsl ? "GLSL" : "OPENGL") : "SDL" );			
 		} else if ( el < 3.0f ) {
 			TCOD_console_print_left(TCOD_root,1,1,TCOD_BKGND_ADDALPHA(3.0f-el)," %s ",
-				TCOD_use_open_gl ? "OPENGL" : "SDL" );			
+				TCOD_use_open_gl ? (TCOD_use_glsl ? "GLSL" : "OPENGL") : "SDL" );			
 		}
 		dat->back = bk;
 		dat->fore = fr;
@@ -240,7 +240,7 @@ void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_fl
 	TCOD_IFNOT (c >= 0 && c < TCOD_max_font_chars ) return;
 	offset = y * dat->w + x;
 	dat->buf[ offset ].c = c;
-	dat->buf[ offset ].cf = ascii_to_tcod[c];
+	dat->buf[ offset ].cf = TCOD_ascii_to_tcod[c];
 	dat->buf[ offset ].fore = dat->fore;
 	TCOD_console_set_back(con,x,y,dat->back,(TCOD_bkgnd_flag_t)flag);
 }
@@ -254,7 +254,7 @@ void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color
 	TCOD_IFNOT (c >= 0 && c < TCOD_max_font_chars ) return;
 	offset = y * dat->w + x;
 	dat->buf[ offset ].c = c;
-	dat->buf[ offset ].cf = ascii_to_tcod[c];
+	dat->buf[ offset ].cf = TCOD_ascii_to_tcod[c];
 	dat->buf[ offset ].fore = fore;
 	dat->buf[ offset ].back = back;
 }
@@ -294,7 +294,7 @@ void TCOD_console_clear(TCOD_console_t con) {
 			int off=x+dat->w*y;
 			dat->buf[off].dirt=0;
 			dat->buf[off].c=' ';
-			dat->buf[off].cf=ascii_to_tcod[' '];
+			dat->buf[off].cf=TCOD_ascii_to_tcod[' '];
 			dat->buf[off].fore=dat->fore;
 			dat->buf[off].back=dat->back;
 		}
@@ -448,7 +448,7 @@ void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c) {
 	dat=(TCOD_console_data_t *)con;
 	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	dat->buf[ y * dat->w + x ].c=c;
-	dat->buf[ y * dat->w + x ].cf = ascii_to_tcod[c];
+	dat->buf[ y * dat->w + x ].cf = TCOD_ascii_to_tcod[c];
 }
 
 static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, int *w, int *h) {
@@ -480,7 +480,7 @@ void TCOD_console_rect(TCOD_console_t con,int x,int y, int rw, int rh, bool clea
 			TCOD_console_set_back(con,cx,cy,dat->back,flag);
 			if ( clear ) {
 				dat->buf[cx + cy*dat->w].c=' ';
-				dat->buf[cx + cy*dat->w].cf=ascii_to_tcod[' '];
+				dat->buf[cx + cy*dat->w].cf=TCOD_ascii_to_tcod[' '];
 			}
 		}
 	}

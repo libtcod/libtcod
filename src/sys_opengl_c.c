@@ -122,7 +122,8 @@ void TCOD_opengl_init_attributes() {
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
-	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	// ATI driver bug : enabling this might result in red screen
+	//SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 }
 
 // console size (power of 2 and cells)

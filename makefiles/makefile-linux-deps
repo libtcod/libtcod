@@ -31,11 +31,11 @@ CPP=g++
 .SUFFIXES: a .o .h .c
 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -O2 -s -o $@ -c $<
+	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $<
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
 $(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -g -o $@ -c $<
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
@@ -65,6 +65,7 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/parser_c.o \
 	$(TEMP)/libtcod/debug/path_c.o \
 	$(TEMP)/libtcod/debug/sys_c.o \
+	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
@@ -129,6 +130,7 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/parser_c.o \
 	$(TEMP)/libtcod/release/path_c.o \
 	$(TEMP)/libtcod/release/sys_c.o \
+	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \

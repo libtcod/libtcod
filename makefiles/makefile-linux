@@ -26,11 +26,11 @@ CPP=g++
 .SUFFIXES: a .o .h .c
 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -O2 -s -o $@ -c $<
+	$(CC) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+	$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $< 
 $(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+	$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $< 
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -g -o $@ -c $<
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp

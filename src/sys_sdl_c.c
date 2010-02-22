@@ -605,14 +605,17 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		screen=SDL_SetVideoMode(w*TCOD_font_width,h*TCOD_font_height,32,SDL_OPENGL);
 		if ( screen && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
 			TCOD_use_open_gl=true;
+			TCOD_LOG(("Using %s renderer...\n",TCOD_use_glsl ? "GLSL" : "OPENGL"));
 		} else
 #endif		
 		{		
 			screen=SDL_SetVideoMode(w*TCOD_font_width,h*TCOD_font_height,32,0);
+#ifndef NDEBUG
+			TCOD_LOG(("Fallback to SDL renderer...\n"));
+#endif
 		}
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
 	}
-	//if ( SDL_MUSTLOCK( charmap ) ) SDL_UnlockSurface( charmap );
 	SDL_EnableUNICODE(1);
 	consoleBuffer=buf;
 	prevConsoleBuffer=oldbuf;

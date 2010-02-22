@@ -77,27 +77,27 @@ static const char *TCOD_con_pixel_shader =
 "uniform sampler2D termfcol; "
 "uniform sampler2D termbcol; "
 
-"uniform vec2 fontsize; "
+"uniform int fontw; "
+"uniform vec2 fontcoef; "
 "uniform vec2 termsize; "
-"uniform vec2 POTtermsize; "
+"uniform vec2 termcoef; "
 
 "void main(void) "
 "{ "
-"   vec2 termscale = vec2(termsize.x/POTtermsize.x, termsize.y/POTtermsize.y); "
 "   vec2 rawCoord = gl_TexCoord[0].xy; "                           // varying from [0, termsize) in x and y
 "   vec2 conPos = floor(rawCoord); "                               // console integer position
 "   vec2 pixPos = fract(rawCoord); "                               // pixel offset within console position
-"   pixPos = vec2(pixPos.x/fontsize.x,pixPos.y/fontsize.y); "      // Correct pixel offset for font tex location
+"   pixPos = vec2(pixPos.x*fontcoef.x,pixPos.y*fontcoef.y); "      // Correct pixel offset for font tex location
 
-"   vec2 address = vec2((conPos.x/termsize.x)*termscale.x,(conPos.y/termsize.y)*termscale.y); "
+"   vec2 address = vec2(conPos.x*termcoef.x,conPos.y*termcoef.y); "
 "	address=address+vec2(0.001, 0.001); "
 "   float inchar = texture2D(term, address).r*256.0; "         // character
 "   vec4 tcharfcol = texture2D(termfcol, address); "           // front color
 "   vec4 tcharbcol = texture2D(termbcol, address); "           // back color
 
-"   vec4 tchar = vec4(floor(inchar),floor(inchar/fontsize.x), 0.0, 0.0); "  // 1D index to 2D index map for character
+"   vec4 tchar = vec4(float(int(floor(inchar))%fontw),floor(inchar/fontw), 0.0, 0.0); "  // 1D index to 2D index map for character
 
-"   gl_FragColor = texture2D(font, vec2((tchar.x/fontsize.x),(tchar.y/fontsize.y))+pixPos.xy); "   // magic func: finds pixel value in font file
+"   gl_FragColor = texture2D(font, vec2((tchar.x*fontcoef.x),(tchar.y*fontcoef.y))+pixPos.xy); "   // magic func: finds pixel value in font file
 
 "   gl_FragColor=gl_FragColor.a*tcharfcol+(1.0-gl_FragColor.a)*tcharbcol; "      // Coloring stage
 "} "
@@ -131,6 +131,8 @@ static int POTconwidth, POTconheight, conwidth, conheight;
 static GLuint conProgram, conVertShader, conFragShader;
 // font texture handle
 static GLuint font_tex;
+// font power of 2 size and pixels
+static int POTfontwidth,POTfontheight, fontwidth,fontheight;
 // console data
 static GLuint Tex[ConsoleDataEnumSize];
 static unsigned char *data[ConsoleDataEnumSize];
@@ -148,8 +150,10 @@ static PFNGLLINKPROGRAMARBPROC glLinkProgramARB=0;
 static PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB=0;
 static PFNGLUNIFORM2FARBPROC glUniform2fARB=0;
 static PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB=0;
-static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
 static PFNGLUNIFORM1IARBPROC glUniform1iARB=0;
+#ifdef TCOD_WINDOWS
+static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
+#endif
                                         
 // call after creating window
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
@@ -161,19 +165,21 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	hasShader = (strstr(glexts,"GL_ARB_shader_objects") != NULL);
 
 	// set extensions functions pointers
-   	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
-	glGetObjectParameterivARB=(PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
-	glShaderSourceARB=(PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
-	glCompileShaderARB=(PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
-	glGetInfoLogARB=(PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
-	glCreateProgramObjectARB=(PFNGLCREATEPROGRAMOBJECTARBPROC)wglGetProcAddress("glCreateProgramObjectARB");
-	glAttachObjectARB=(PFNGLATTACHOBJECTARBPROC)wglGetProcAddress("glAttachObjectARB");
-	glLinkProgramARB=(PFNGLLINKPROGRAMARBPROC)wglGetProcAddress("glLinkProgramARB");
-	glUseProgramObjectARB=(PFNGLUSEPROGRAMOBJECTARBPROC)wglGetProcAddress("glUseProgramObjectARB");
-	glUniform2fARB=(PFNGLUNIFORM2FARBPROC)wglGetProcAddress("glUniform2fARB");
-	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)wglGetProcAddress("glGetUniformLocationARB");
-	glActiveTexture=(PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
-	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)wglGetProcAddress("glUniform1iARB");
+   	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)SDL_GL_GetProcAddress("glCreateShaderObjectARB");
+	glGetObjectParameterivARB=(PFNGLGETOBJECTPARAMETERIVARBPROC)SDL_GL_GetProcAddress("glGetObjectParameterivARB");
+	glShaderSourceARB=(PFNGLSHADERSOURCEARBPROC)SDL_GL_GetProcAddress("glShaderSourceARB");
+	glCompileShaderARB=(PFNGLCOMPILESHADERARBPROC)SDL_GL_GetProcAddress("glCompileShaderARB");
+	glGetInfoLogARB=(PFNGLGETINFOLOGARBPROC)SDL_GL_GetProcAddress("glGetInfoLogARB");
+	glCreateProgramObjectARB=(PFNGLCREATEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glCreateProgramObjectARB");
+	glAttachObjectARB=(PFNGLATTACHOBJECTARBPROC)SDL_GL_GetProcAddress("glAttachObjectARB");
+	glLinkProgramARB=(PFNGLLINKPROGRAMARBPROC)SDL_GL_GetProcAddress("glLinkProgramARB");
+	glUseProgramObjectARB=(PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB");
+	glUniform2fARB=(PFNGLUNIFORM2FARBPROC)SDL_GL_GetProcAddress("glUniform2fARB");
+	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)SDL_GL_GetProcAddress("glGetUniformLocationARB");
+	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)SDL_GL_GetProcAddress("glUniform1iARB");
+#ifdef TCOD_WINDOWS	
+	glActiveTexture=(PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
+#endif
 	
 	// set opengl state
 	glEnable(GL_TEXTURE_2D);
@@ -193,17 +199,17 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-#ifdef TCOD_WINDOWS
+//#ifdef TCOD_WINDOWS
 	if ( ! ((TCOD_console_data_t *)TCOD_root)->fullscreen ) {
 		// turn vsync off in windowed mode
 		typedef bool (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
 		PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 
-		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress("wglSwapIntervalEXT");
+		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)SDL_GL_GetProcAddress("wglSwapIntervalEXT");
 
 		if (wglSwapIntervalEXT) wglSwapIntervalEXT(0);
 	}
-#endif
+//#endif
 
 	// compute pot size
 	conwidth=conw;
@@ -229,11 +235,17 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	amask = 0xff000000;
 	#endif
 
+	fontwidth=font_surf->w;
+	fontheight=font_surf->h;
+	POTfontwidth=POTfontheight=1;
+	while ( POTfontwidth < fontwidth ) POTfontwidth *= 2;
+	while ( POTfontheight < fontheight ) POTfontheight *= 2;
+
 	SDL_SetColorKey(font_surf, SDL_SRCCOLORKEY, SDL_MapRGB(font_surf->format, 0, 0, 0));
 	temp_alpha = SDL_DisplayFormatAlpha(font_surf);
 	SDL_SetAlpha(temp_alpha, 0, SDL_ALPHA_TRANSPARENT);
 
-	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, font_surf->w, font_surf->h, 32, bmask, gmask, rmask, amask); //BGRA
+	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, POTfontwidth, POTfontheight, 32, bmask, gmask, rmask, amask); //BGRA
 
 	SDL_BlitSurface(temp_alpha, NULL, temp, NULL);
 	SDL_FreeSurface(temp_alpha);
@@ -453,9 +465,12 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		}
 	}
 	if (! hasShader) {
-		// draw the background
+		// fixed pipeline for video cards without pixel shader support
+		// draw the background as a single quad
 		float texw=(float)conwidth/POTconwidth;
 		float texh=(float)conheight/POTconheight;
+		float fonw=(float)fontwidth/(fontNbCharHoriz*POTfontwidth);
+		float fonh=(float)fontheight/(fontNbCharVertic*POTfontheight);
 		char_t *c;
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
 		DBGCHECKGL(glBegin(GL_QUADS);
@@ -469,7 +484,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			glTexCoord2f( texw, 0.0 );
 			glVertex2i( conwidth, 0.0 );
 		glEnd());
-		// draw the characters
+		// draw the characters (one quad per cell)
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
 	    
 	    c=console_buffer;
@@ -498,13 +513,13 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 						}
 						glBegin( GL_QUADS );
 						glColor3f(f.r/255.0,f.g/255.0,f.b/255.0);
-						glTexCoord2f( (float)(srcx)/fontNbCharHoriz, (float)(srcy)/fontNbCharVertic );
+						glTexCoord2f( srcx*fonw, srcy*fonh );
 						glVertex2i( destx, desty);
-						glTexCoord2f( (float)(srcx)/fontNbCharHoriz, (float)(srcy+1)/fontNbCharVertic );
+						glTexCoord2f( srcx*fonw, (srcy+1)*fonh );
 						glVertex2i( destx, desty+1 );
-						glTexCoord2f( (float)(srcx+1)/fontNbCharHoriz, (float)(srcy+1)/fontNbCharVertic );
+						glTexCoord2f( (srcx+1)*fonw, (srcy+1)*fonh );
 						glVertex2i( destx+1, desty+1 );
-						glTexCoord2f( (float)(srcx+1)/fontNbCharHoriz, (float)(srcy)/fontNbCharVertic );
+						glTexCoord2f( (srcx+1)*fonw, srcy*fonh );
 						glVertex2i( destx+1, desty );
 						glEnd();
 					}
@@ -521,8 +536,10 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		// None of these change
 		// The Textures still need to bind to the same # Activetexture throughout though
 	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
-		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"POTtermsize"), (float) POTconwidth, (float) POTconheight));
-	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontsize"), fontNbCharHoriz, fontNbCharVertic));
+		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termcoef"), 1.0f/POTconwidth, 1.0f/POTconheight));
+	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"fontw"), fontNbCharHoriz));
+	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontcoef"), (float)(fontwidth)/(POTfontwidth*fontNbCharHoriz), (float)(fontheight)/(POTfontheight*fontNbCharVertic)));
+
 	
 	    DBGCHECKGL(glActiveTexture(GL_TEXTURE0));
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));

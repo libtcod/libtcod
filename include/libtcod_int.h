@@ -91,11 +91,12 @@ typedef struct {
 #define TCOD_IF(x) if (x)
 #define TCOD_IFNOT(x) if (!(x))
 #define TCOD_ASSERT(x)
+#define TCOD_LOG(x) 
 #else
-#include <assert.h>
 #define TCOD_IF(x) assert(x);
 #define TCOD_IFNOT(x) assert(x); if (0)
 #define TCOD_ASSERT(x) assert(x)
+#define TCOD_LOG(x) printf x
 #endif
 
 #ifndef NO_OPENGL

@@ -58,6 +58,7 @@ const int ConsoleDataAlignment[3] = {1, 3, 3 };
 static bool hasShader=false;
 
 static const char *TCOD_con_vertex_shader =
+"#version 110\n"
 "uniform vec2 termsize; "
 
 "void main(void) "
@@ -72,12 +73,13 @@ static const char *TCOD_con_vertex_shader =
 ;
 
 static const char *TCOD_con_pixel_shader =
+"#version 110\n"
 "uniform sampler2D font; "
 "uniform sampler2D term; "
 "uniform sampler2D termfcol; "
 "uniform sampler2D termbcol; "
 
-"uniform int fontw; "
+"uniform float fontw; "
 "uniform vec2 fontcoef; "
 "uniform vec2 termsize; "
 "uniform vec2 termcoef; "
@@ -95,7 +97,7 @@ static const char *TCOD_con_pixel_shader =
 "   vec4 tcharfcol = texture2D(termfcol, address); "           // front color
 "   vec4 tcharbcol = texture2D(termbcol, address); "           // back color
 
-"   vec4 tchar = vec4(float(int(floor(inchar))%fontw),floor(inchar/fontw), 0.0, 0.0); "  // 1D index to 2D index map for character
+"   vec4 tchar = vec4(mod(floor(inchar),floor(fontw)),floor(inchar/fontw), 0.0, 0.0); "  // 1D index to 2D index map for character
 
 "   gl_FragColor = texture2D(font, vec2((tchar.x*fontcoef.x),(tchar.y*fontcoef.y))+pixPos.xy); "   // magic func: finds pixel value in font file
 
@@ -151,6 +153,7 @@ static PFNGLLINKPROGRAMARBPROC glLinkProgramARB=0;
 static PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB=0;
 static PFNGLUNIFORM2FARBPROC glUniform2fARB=0;
 static PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB=0;
+static PFNGLUNIFORM1FARBPROC glUniform1fARB=0;
 static PFNGLUNIFORM1IARBPROC glUniform1iARB=0;
 #ifdef TCOD_WINDOWS
 static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
@@ -164,6 +167,9 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	// check opengl extensions
 	if (!glexts ) return false;
 	hasShader = (strstr(glexts,"GL_ARB_shader_objects") != NULL);
+	if (! hasShader ) {
+		TCOD_LOG(("Missing GL_ARB_shader_objects extension. Falling back to fixed pipeline...\n"));
+	}
 
 	// set extensions functions pointers
    	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)SDL_GL_GetProcAddress("glCreateShaderObjectARB");
@@ -177,6 +183,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glUseProgramObjectARB=(PFNGLUSEPROGRAMOBJECTARBPROC)SDL_GL_GetProcAddress("glUseProgramObjectARB");
 	glUniform2fARB=(PFNGLUNIFORM2FARBPROC)SDL_GL_GetProcAddress("glUniform2fARB");
 	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)SDL_GL_GetProcAddress("glGetUniformLocationARB");
+	glUniform1fARB=(PFNGLUNIFORM1FARBPROC)SDL_GL_GetProcAddress("glUniform1fARB");
 	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)SDL_GL_GetProcAddress("glUniform1iARB");
 #ifdef TCOD_WINDOWS	
 	glActiveTexture=(PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
@@ -538,7 +545,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		// The Textures still need to bind to the same # Activetexture throughout though
 	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
 		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termcoef"), 1.0f/POTconwidth, 1.0f/POTconheight));
-	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"fontw"), fontNbCharHoriz));
+	    DBGCHECKGL(glUniform1fARB(glGetUniformLocationARB(conProgram,"fontw"), (float)fontNbCharHoriz));
 	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontcoef"), (float)(fontwidth)/(POTfontwidth*fontNbCharHoriz), (float)(fontheight)/(POTfontheight*fontNbCharVertic)));
 
 	

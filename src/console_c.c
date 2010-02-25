@@ -272,8 +272,8 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 		dh += dy;
 		dy = 0;
 	}
-	TCOD_IFNOT( dx+dw < dat->w ) dw = dat->w-dx;
-	TCOD_IFNOT( dy+dh < dat->h ) dh = dat->h-dy;
+	TCOD_IFNOT( dx+dw <= dat->w ) dw = dat->w-dx;
+	TCOD_IFNOT( dy+dh <= dat->h ) dh = dat->h-dy;
 
 	for (x=dx; x < dx+dw;x++) {
 		for (y=dy; y < dy+dh; y++) {

@@ -30,7 +30,7 @@ char</b></font> <font color="red">*</font>
 title<font color="red">,</font><font color="red">
 <span style="font-weight: bold; color: blue;">bool</span></font>
 fullscreen <span style="color: red;">=</span> <span style="color: blue;">false</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);"><span style="font-weight: bold;">TCOD_renderer_t</span>
-renderer</span> = <span style="color: rgb(68, 68, 68);">TCOD_RENDERER_GLSL</span>)</font></p>
+renderer</span> = <span style="color: rgb(68, 68, 68); font-weight: bold;">TCOD_RENDERER_GLSL</span>)</font></p>
 <p class="c"><font color="blue"><b>void</b></font>
 TCOD_console_init_root <font color="red">(</font><font color="blue"><b>int</b></font> w<font color="red">,</font> <font color="blue"><b>int</b></font>
 h<font color="red">, </font><font color="blue"><b>const
@@ -41,7 +41,7 @@ fullscreen<font color="red">,</font><font color="red"> <span style="color: rgb(6
 renderer</span></font><font color="red">)</font></p>
 <p class="py">console_init_root <font color="red">(</font>w<font color="red">,</font> h<font color="red">,
 </font>title<font color="red">,</font><font color="red"> </font>fullscreen <span style="color: red;">=</span> <span style="color: blue; font-weight: bold;">False</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">renderer</span>
-=&nbsp;<span style="color: rgb(68, 68, 68);">RENDERER_GLSL</span></font><font color="red">)</font></p>
+=&nbsp;<span style="color: rgb(68, 68, 68); font-weight: bold;">RENDERER_GLSL</span></font><font color="red">)</font></p>
 </div>
 <table class="param">
 <tbody>
@@ -53,7 +53,7 @@ renderer</span></font><font color="red">)</font></p>
 <td>w,h</td>
 <td>size of the console(in characters). The default font in
 libtcod (./terminal.png) uses 8x8 pixels characters. <br>
-You can change the font by calling <a name="console_set_bitmap_font_size.html">TCODConsole::setCustomFont</a>
+You can change the font by calling <a href="console_set_bitmap_font_size.html">TCODConsole::setCustomFont</a>
 <span style="font-weight: bold;">before</span>
 calling initRoot.<br>
 </td>
@@ -61,46 +61,44 @@ calling initRoot.<br>
 <tr>
 <td>title</td>
 <td>title of the window. It's not
-visible when you are in fullscreen.</td>
+visible when you are in fullscreen.<br><br>Note 1 : you can dynamically change the window title with <a href="console_set_window_title.html">TCODConsole::setWindowTitle</a></td>
 </tr>
 <tr class="hilite">
 <td>fullscreen</td>
-<td>wether you start in windowed or fullscreen mode.</td>
+<td>wether you start in windowed or fullscreen mode.<br><br>Note 1 : you can dynamically change this mode with <a href="console_set_fullscreen.html">TCODConsole::setFullscreen</a><br><br>Note 2 : you can get current mode with <a href="console_is_fullscreen.html">TCODConsole::isFullscreen</a></td>
 </tr>
 <tr>
 <td>renderer</td>
 <td>which renderer to use. Possible
 values are :<br>
 <ul>
-<li>TCOD_RENDERER_GLSL : works only on video cards with
+<li><span style="font-weight: bold;">TCOD_RENDERER_GLSL</span> : works only on video cards with
 pixel shaders</li>
-<li>TCOD_RENDERER_OPENGL : works on all video cards
+<li><span style="font-weight: bold;">TCOD_RENDERER_OPENGL</span> : works on all video cards
 supporting OpenGL 1.4</li>
-<li>TCOD_RENDERER_SDL : should work everywhere!</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Note 1:&nbsp;If you select a renderer that is not
+<li><span style="font-weight: bold;">TCOD_RENDERER_SDL</span> : should work everywhere!</li>
+</ul><p>Note 1: if you select a renderer that is not
 supported by the player's machine,
 libtcod scan the lower renderers until it finds a working
 one.</p>
-<p>Note 2:&nbsp;On recent video cards, GLSL results in up to
+<p>Note 2: on recent video cards, GLSL results in up to
 900% increase of framerates in the true color sample compared to SDL
 renderer.</p>
-<p>Note 3: Whatever renderer you use, it can always be overriden
+<p>Note 3: whatever renderer you use, it can always be overriden
 by the player through the libtcod.cfg file.</p>
-<p>Note 4 : You can dynamically change the renderer after calling
+<p>Note 4 : you can dynamically change the renderer after calling
 initRoot with TCODSystem::setRenderer.</p>
-<p>Note 5 : You can get current renderer with
+<p>Note 5 : you can get current renderer with
 TCODSystem::getRenderer. It might be different from the one you set
 in initRoot in case it's not supported on the player's computer.</p>
-<h6>Example:</h6>
+</td>
+</tr>
+</tbody>
+</table><br><h6>Example:</h6>
 <div class="code">
 <p class="cpp"><b>TCODConsole::</b>initRoot<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;">,</span> <span style="color: fuchsia;">50</span><span style="color: red;">,</span> <span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;"></span><span style="color: blue;"></span><span style="color: red;">);</span></p>
 <p class="c">TCOD_console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>
-<span style="color: fuchsia;">50</span><span style="color: red;">,</span>&nbsp;<span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">,</span> <span style="color: rgb(68, 68, 68);">TCOD_RENDERER_SDL</span><span style="color: red;">);</span></p>
+<span style="color: fuchsia;">50</span><span style="color: red;">,</span>&nbsp;<span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">,</span> <span style="color: rgb(68, 68, 68); font-weight: bold;">TCOD_RENDERER_SDL</span><span style="color: red;">);</span></p>
 <p class="py">libtcod.console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>&nbsp;<span style="color: fuchsia;">50</span><span style="color: red;">, </span><span style="color: blue;">'The Chronicles Of Doryen v0.1'</span><span style="color: red;"></span><span style="color: blue;"></span><span style="color: red;">)</span></p>
 </div>
 </div>

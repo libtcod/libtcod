@@ -1,10 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | creating a name
-generator</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | console | initializing the console | creating the game window</title>
 
-<link href="../../css/style.css" rel="stylesheet" type="text/css">
-</head>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
 <body>
 <div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
@@ -31,7 +29,7 @@ h<font color="red">, </font><font color="blue"><b>const
 char</b></font> <font color="red">*</font>
 title<font color="red">,</font><font color="red">
 <span style="font-weight: bold; color: blue;">bool</span></font>
-fullscreen <span style="color: red;">=</span> <span style="color: blue;">false</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">TCOD_renderer_t
+fullscreen <span style="color: red;">=</span> <span style="color: blue;">false</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);"><span style="font-weight: bold;">TCOD_renderer_t</span>
 renderer</span> = <span style="color: rgb(68, 68, 68);">TCOD_RENDERER_GLSL</span>)</font></p>
 <p class="c"><font color="blue"><b>void</b></font>
 TCOD_console_init_root <font color="red">(</font><font color="blue"><b>int</b></font> w<font color="red">,</font> <font color="blue"><b>int</b></font>
@@ -39,10 +37,10 @@ h<font color="red">, </font><font color="blue"><b>const
 char</b></font> <font color="red">*</font>
 title<font color="red">,</font><font color="red">
 <span style="font-weight: bold; color: blue;">bool</span></font>
-fullscreen<font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">TCOD_renderer_t
+fullscreen<font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);"><span style="font-weight: bold;">TCOD_renderer_t</span>
 renderer</span></font><font color="red">)</font></p>
 <p class="py">console_init_root <font color="red">(</font>w<font color="red">,</font> h<font color="red">,
-</font>title<font color="red">,</font><font color="red"> </font>fullscreen <span style="color: red;">=</span> <span style="color: blue;">False</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">renderer</span>
+</font>title<font color="red">,</font><font color="red"> </font>fullscreen <span style="color: red;">=</span> <span style="color: blue; font-weight: bold;">False</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">renderer</span>
 =&nbsp;<span style="color: rgb(68, 68, 68);">RENDERER_GLSL</span></font><font color="red">)</font></p>
 </div>
 <table class="param">
@@ -96,14 +94,14 @@ by the player through the libtcod.cfg file.</p>
 <p>Note 4 : You can dynamically change the renderer after calling
 initRoot with TCODSystem::setRenderer.</p>
 <p>Note 5 : You can get current renderer with
-TCODSystem::getRenderer. It might be different of the one you specify
+TCODSystem::getRenderer. It might be different from the one you set
 in initRoot in case it's not supported on the player's computer.</p>
 <h6>Example:</h6>
 <div class="code">
-<p class="cpp"><b>TCODConsole::</b>initRoot<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;">,</span> <span style="color: fuchsia;">50</span><span style="color: red;">,</span> <span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">);</span></p>
+<p class="cpp"><b>TCODConsole::</b>initRoot<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;">,</span> <span style="color: fuchsia;">50</span><span style="color: red;">,</span> <span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;"></span><span style="color: blue;"></span><span style="color: red;">);</span></p>
 <p class="c">TCOD_console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>
-<span style="color: fuchsia;">50</span><span style="color: red;">,</span>&nbsp;<span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">);</span></p>
-<p class="py">libtcod.console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>&nbsp;<span style="color: fuchsia;">50</span><span style="color: red;">, </span><span style="color: blue;">'The Chronicles Of Doryen v0.1'</span><span style="color: red;">,</span> <span style="color: blue;">False</span><span style="color: red;">)</span></p>
+<span style="color: fuchsia;">50</span><span style="color: red;">,</span>&nbsp;<span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">,</span> <span style="color: rgb(68, 68, 68);">TCOD_RENDERER_SDL</span><span style="color: red;">);</span></p>
+<p class="py">libtcod.console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>&nbsp;<span style="color: fuchsia;">50</span><span style="color: red;">, </span><span style="color: blue;">'The Chronicles Of Doryen v0.1'</span><span style="color: red;"></span><span style="color: blue;"></span><span style="color: red;">)</span></p>
 </div>
 </div>
 </div>

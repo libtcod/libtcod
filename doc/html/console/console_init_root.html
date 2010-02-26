@@ -1,49 +1,111 @@
-<table width="100%"><tr><td width="20%">
-<a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 2. Console</a><br />
-<a href="console_init.html">&lt; 2.1 Initializing the console</a>
-</td><td width="60%">
-<p align="center">
-=====================================<br />
-2.1.1 Creating the game window<br />
-=====================================<br />
-</p></td><td width="20%">
-</td></tr></table>
-<style type="text/css">
-.code { color:#444444; background-color:#EEEEEE;}
-table.param td { border : 1px solid #000000; }
-th { background-color: #44BBFF; color: #FFFFFF }
-table.none td { border : 0 }
-</style>
-<p class="code"><pre>
-C++ : static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false)
-C   : void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen)
-Py  : console_init_root(w,h,title,fullscreen)
-</pre></p>
-This will either create a new window in your desktop or switch to full screen. Once this function has been called, you access the root console in C++ with TCODConsole::root, in C by using a NULL console handler.<br />
-Note that the C header (libtcod.h) defines the bool type for the C language with :<br />
-<p class="code"><pre>
-  typedef enum { false, true } bool;
-</pre></p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | creating a name
+generator</title>
 
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">2. Console</a>
+&gt; <a href="console_init.html">2.1 Initializing the
+console</a>
+&gt; <a href="console_init_root.html">2.1.1 Creating
+the game window</a><br>
+<a class="next" href="console_set_bitmap_font_size.html">2.1.2
+Using a custom bitmap font</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>2.1.1 Creating the game window</h1>
+<div class="code">
+<p class="cpp"><font color="blue"><b>static
+void</b></font> <b>TCODConsole</b><font color="#990000">::</font>initRoot <font color="red">(</font><font color="blue"><b>int</b></font> w<font color="red">,</font> <font color="blue"><b>int</b></font>
+h<font color="red">, </font><font color="blue"><b>const
+char</b></font> <font color="red">*</font>
+title<font color="red">,</font><font color="red">
+<span style="font-weight: bold; color: blue;">bool</span></font>
+fullscreen <span style="color: red;">=</span> <span style="color: blue;">false</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">TCOD_renderer_t
+renderer</span> = <span style="color: rgb(68, 68, 68);">TCOD_RENDERER_GLSL</span>)</font></p>
+<p class="c"><font color="blue"><b>void</b></font>
+TCOD_console_init_root <font color="red">(</font><font color="blue"><b>int</b></font> w<font color="red">,</font> <font color="blue"><b>int</b></font>
+h<font color="red">, </font><font color="blue"><b>const
+char</b></font> <font color="red">*</font>
+title<font color="red">,</font><font color="red">
+<span style="font-weight: bold; color: blue;">bool</span></font>
+fullscreen<font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">TCOD_renderer_t
+renderer</span></font><font color="red">)</font></p>
+<p class="py">console_init_root <font color="red">(</font>w<font color="red">,</font> h<font color="red">,
+</font>title<font color="red">,</font><font color="red"> </font>fullscreen <span style="color: red;">=</span> <span style="color: blue;">False</span><font color="red">,</font><font color="red"> <span style="color: rgb(68, 68, 68);">renderer</span>
+=&nbsp;<span style="color: rgb(68, 68, 68);">RENDERER_GLSL</span></font><font color="red">)</font></p>
+</div>
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>w, h</td><td>size of the console(in characters). The default characters size in libtcod is 8x8. Here are the resulting resolutions :<br />
-<table class="none">
-<tr><td>wxh</td><td>console size in pixels</td></tr>
-<tr><td>80x50</td><td>640x400</td></tr>
-<tr><td>80x60</td><td>640x480</td></tr>
-<tr><td>100x75</td><td>800x600</td></tr>
-<tr><td>128x96</td><td>1024x768</td></tr>
-<tr><td>144x108</td><td>1152x864</td></tr>
-<tr><td>160x128</td><td>1280x1024</td></tr>
-</table></td></tr>
-<tr><td>title</td><td>title of the window. It's not visible when you are in fullscreen.</td></tr>
-<tr><td>fullscreen</td><td>wether you start in windowed or fullscreen mode.</td></tr>
+<tbody>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+<tr class="hilite">
+<td>w,h</td>
+<td>size of the console(in characters). The default font in
+libtcod (./terminal.png) uses 8x8 pixels characters. <br>
+You can change the font by calling <a name="console_set_bitmap_font_size.html">TCODConsole::setCustomFont</a>
+<span style="font-weight: bold;">before</span>
+calling initRoot.<br>
+</td>
+</tr>
+<tr>
+<td>title</td>
+<td>title of the window. It's not
+visible when you are in fullscreen.</td>
+</tr>
+<tr class="hilite">
+<td>fullscreen</td>
+<td>wether you start in windowed or fullscreen mode.</td>
+</tr>
+<tr>
+<td>renderer</td>
+<td>which renderer to use. Possible
+values are :<br>
+<ul>
+<li>TCOD_RENDERER_GLSL : works only on video cards with
+pixel shaders</li>
+<li>TCOD_RENDERER_OPENGL : works on all video cards
+supporting OpenGL 1.4</li>
+<li>TCOD_RENDERER_SDL : should work everywhere!</li>
+</ul>
+</td>
+</tr>
+</tbody>
 </table>
-Example :<br />
-<p class="code"><pre>
-C++ : TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false);
-C   : TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
-Py  : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
-</pre></p>
+<p>Note 1:&nbsp;If you select a renderer that is not
+supported by the player's machine,
+libtcod scan the lower renderers until it finds a working
+one.</p>
+<p>Note 2:&nbsp;On recent video cards, GLSL results in up to
+900% increase of framerates in the true color sample compared to SDL
+renderer.</p>
+<p>Note 3: Whatever renderer you use, it can always be overriden
+by the player through the libtcod.cfg file.</p>
+<p>Note 4 : You can dynamically change the renderer after calling
+initRoot with TCODSystem::setRenderer.</p>
+<p>Note 5 : You can get current renderer with
+TCODSystem::getRenderer. It might be different of the one you specify
+in initRoot in case it's not supported on the player's computer.</p>
+<h6>Example:</h6>
+<div class="code">
+<p class="cpp"><b>TCODConsole::</b>initRoot<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;">,</span> <span style="color: fuchsia;">50</span><span style="color: red;">,</span> <span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">);</span></p>
+<p class="c">TCOD_console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>
+<span style="color: fuchsia;">50</span><span style="color: red;">,</span>&nbsp;<span style="color: blue;">"The Chronicles Of Doryen v0.1"</span><span style="color: red;">,</span> <span style="color: blue;">false</span><span style="color: red;">);</span></p>
+<p class="py">libtcod.console_init_root<span style="color: red;">(</span><span style="color: fuchsia;">80</span><span style="color: red;"></span><span style="color: red;">,</span>&nbsp;<span style="color: fuchsia;">50</span><span style="color: red;">, </span><span style="color: blue;">'The Chronicles Of Doryen v0.1'</span><span style="color: red;">,</span> <span style="color: blue;">False</span><span style="color: red;">)</span></p>
+</div>
+</div>
+</div>
+<!-- <p class="code"><pre> C++ : static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false) C : void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen) Py : console_init_root(w,h,title,fullscreen) </pre></p> This will either create a new window in your desktop or switch to full screen. Once this function has been called, you access the root console in C++ with TCODConsole::root, in C by using a NULL console handler.<br /> Note that the C header (libtcod.h) defines the bool type for the C language with :<br /> <p class="code"><pre> typedef enum { false, true } bool; </pre></p> <table class="param"> <tr><th>Parameter</th><th>Description</th></tr> <tr><td>w, h</td><td>size of the console(in characters). The default characters size in libtcod is 8x8. Here are the resulting resolutions :<br /> <table class="none"> <tr><td>wxh</td><td>console size in pixels</td></tr> <tr><td>80x50</td><td>640x400</td></tr> <tr><td>80x60</td><td>640x480</td></tr> <tr><td>100x75</td><td>800x600</td></tr> <tr><td>128x96</td><td>1024x768</td></tr> <tr><td>144x108</td><td>1152x864</td></tr> <tr><td>160x128</td><td>1280x1024</td></tr> </table></td></tr> <tr><td>title</td><td>title of the window. It's not visible when you are in fullscreen.</td></tr> <tr><td>fullscreen</td><td>wether you start in windowed or fullscreen mode.</td></tr> </table> Example :<br /> <p class="code"><pre> C++ : TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false); C : TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false); Py : libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False) </pre></p> -->
+</body></html>

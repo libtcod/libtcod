@@ -161,10 +161,8 @@ void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade)
 }
 
 void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat;
+	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	int i;
-	if (! con ) con=TCOD_root;
-	dat=(TCOD_console_data_t *)con;
 	char_t *curchar=dat->buf;
 	for (i=0; i < dat->w*dat->h; i++) {
 		curchar->back.r=*r;
@@ -178,10 +176,8 @@ void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
 }
 
 void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat;
+	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	int i;
-	if (! con ) con=TCOD_root;
-	dat=(TCOD_console_data_t *)con;
 	char_t *curchar=dat->buf;
 	for (i=0; i < dat->w*dat->h; i++) {
 		curchar->fore.r=*r;
@@ -264,8 +260,6 @@ void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder)
 /* Routines to draw hlines, vlines and frames using the double-lined
  * characters. */
 
-static TCOD_console_t root = NULL;
-
 void TCOD_console_double_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 	int i;
 	for (i=x; i< x+l; i++) TCOD_console_put_char(con,i,y,TCOD_CHAR_DHLINE,flag);
@@ -278,9 +272,7 @@ void TCOD_console_double_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd
 
 
 void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
-	TCOD_console_data_t *dat;
-	if (! con ) con=root;
-	dat=(TCOD_console_data_t *)con;
+	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,flag);
 	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,flag);
 	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_DSW,flag);

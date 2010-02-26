@@ -668,14 +668,12 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	TCOD_color_t cols[2];
 	int nbCols;
 	int width,height,ascii,cx,cy;
-	TCOD_console_data_t *dat;
+	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)(con) : TCOD_ctx.root;
 	image_data_t *img=(image_data_t *)image;
 	int maxx,maxy;
-	TCOD_IFNOT(image != NULL) return;
+	TCOD_IFNOT(image != NULL && dat != NULL) return;
 
 	TCOD_image_get_size(image,&width,&height);
-	if ( con == NULL ) dat = TCOD_root;
-	else dat=(TCOD_console_data_t *)(con);
 	if ( w == -1 ) w=width;
 	if ( h == -1 ) h=height;
 

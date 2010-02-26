@@ -1360,7 +1360,7 @@ void render_sdl(bool first, TCOD_key_t*key) {
 		TCOD_console_set_foreground_color(sample_console,TCOD_white);
 		TCOD_console_clear(sample_console);
 		TCOD_console_print_center_rect(sample_console,SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
-			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.");
+			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works with SDL renderer.");
 	}
 	if ( key->vk == TCODK_TAB ) {
 		sdl_callback_enabled = !sdl_callback_enabled;
@@ -1399,6 +1399,7 @@ int nb_samples = sizeof(samples)/sizeof(sample_t); /* total number of samples */
 /* ***************************
  * the main function
  * ***************************/
+
 int main( int argc, char *argv[] ) {
 	int cur_sample=0; /* index of the current sample */
 	bool first=true; /* first time we render a sample */
@@ -1411,8 +1412,13 @@ int main( int argc, char *argv[] ) {
 	int fullscreen_height=0;
 	int font_flags=TCOD_FONT_TYPE_GREYSCALE|TCOD_FONT_LAYOUT_TCOD;
 	int font_new_flags=0;
+	TCOD_renderer_t renderer=TCOD_RENDERER_GLSL;
 	bool fullscreen=false;
 	bool credits_end=false;
+	int cur_renderer=0;
+	static const char *renderer_name[TCOD_NB_RENDERERS] = {
+		"F1 GLSL   ","F2 OPENGL ","F3 SDL    "
+	};
 
 	/* initialize the root console (open the game window) */
 	for (argn=1; argn < argc; argn++) {
@@ -1431,6 +1437,9 @@ int main( int argc, char *argv[] ) {
 			fullscreen_width=atoi(argv[argn]);
 			argn++;
 			fullscreen_height=atoi(argv[argn]);
+		} else if ( strcmp(argv[argn],"-renderer") == 0 && argn+1 < argc ) {
+			argn++;
+			renderer=(TCOD_renderer_t)atoi(argv[argn]);
 		} else if ( strcmp(argv[argn],"-fullscreen") == 0 ) {
 			fullscreen=true;
 		} else if ( strcmp(argv[argn],"-font-in-row") == 0 ) {
@@ -1442,7 +1451,7 @@ int main( int argc, char *argv[] ) {
 		} else if ( strcmp(argv[argn],"-font-tcod") == 0 ) {
 			font_flags=0;
 			font_new_flags |= TCOD_FONT_LAYOUT_TCOD;
-		} else if ( strcmp(argv[argn],"-help") == 0 ) {
+		} else if ( strcmp(argv[argn],"-help") == 0 || strcmp(argv[argn],"-?") == 0) {
 			printf ("options :\n");
 			printf ("-font <filename> : use a custom font\n");
 			printf ("-font-nb-char <nb_char_horiz> <nb_char_vertic> : number of characters in the font\n");
@@ -1451,6 +1460,7 @@ int main( int argc, char *argv[] ) {
 			printf ("-font-greyscale : antialiased font using greyscale bitmap\n");
 			printf ("-fullscreen : start in fullscreen\n");
 			printf ("-fullscreen-resolution <screen_width> <screen_height> : force fullscreen resolution\n");
+			printf ("-renderer <num> : set renderer. 0 : GLSL 1 : OPENGL 2 : SDL\n");
 			exit(0);
 		} else {
 			argn++; /* ignore parameter */
@@ -1461,7 +1471,7 @@ int main( int argc, char *argv[] ) {
 	if ( fullscreen_width > 0 ) {
 		TCOD_sys_force_fullscreen_resolution(fullscreen_width,fullscreen_height);
 	}
-	TCOD_console_init_root(80,50,"libtcod C sample",fullscreen);
+	TCOD_console_init_root(80,50,"libtcod C sample",fullscreen, renderer);
 
 	/* initialize the offscreen console for the samples */
 	sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
@@ -1499,13 +1509,30 @@ int main( int argc, char *argv[] ) {
 							NULL,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y, /* the destination console & position */
 							1.0f,1.0f /* alpha coefs */
 						 );
-
 #ifndef NO_SDL_SAMPLE
 		if ( sdl_callback_enabled ) {
 			// we want libtcod to redraw the sample console even if nothing has changed in it
 			TCOD_console_set_dirty(SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
 		}
 #endif
+
+		/* display renderer list and current renderer */
+		cur_renderer=TCOD_sys_get_renderer();
+		TCOD_console_set_foreground_color(NULL,TCOD_grey);
+		TCOD_console_set_background_color(NULL,TCOD_black);
+		TCOD_console_print_left(NULL,42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,"Renderer :");
+		for (i=0; i < TCOD_NB_RENDERERS; i++) {
+			if (i==cur_renderer) {
+				/* set colors for current renderer */
+				TCOD_console_set_foreground_color(NULL,TCOD_white);
+				TCOD_console_set_background_color(NULL,TCOD_light_blue);
+			} else {
+				/* set colors for other renderer */
+				TCOD_console_set_foreground_color(NULL,TCOD_grey);
+				TCOD_console_set_background_color(NULL,TCOD_black);
+			}
+			TCOD_console_print_left(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,renderer_name[i]);
+		}
 
 		/* update the game screen */
 		TCOD_console_flush();
@@ -1527,6 +1554,13 @@ int main( int argc, char *argv[] ) {
 		} else if ( key.vk == TCODK_PRINTSCREEN ) {
 			/* save screenshot */
 			TCOD_sys_save_screenshot(NULL);
+		} else if (key.vk==TCODK_F1) {
+			/* switch renderers with F1,F2,F3 */
+			TCOD_sys_set_renderer(TCOD_RENDERER_GLSL);
+		} else if (key.vk==TCODK_F2) {
+			TCOD_sys_set_renderer(TCOD_RENDERER_OPENGL);
+		} else if (key.vk==TCODK_F3) {
+			TCOD_sys_set_renderer(TCOD_RENDERER_SDL);
 		}
 	} while (!TCOD_console_is_window_closed());
 	return 0;

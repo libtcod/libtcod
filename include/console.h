@@ -211,9 +211,16 @@ enum {
 	TCOD_FONT_LAYOUT_TCOD=8,
 };
 
+typedef enum {
+	TCOD_RENDERER_GLSL,
+	TCOD_RENDERER_OPENGL,
+	TCOD_RENDERER_SDL,
+	TCOD_NB_RENDERERS,
+} TCOD_renderer_t;
+
 typedef void * TCOD_console_t;
 
-TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen);
+TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
 TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
 TCODLIB_API bool TCOD_console_is_fullscreen();

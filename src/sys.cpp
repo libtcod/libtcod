@@ -46,6 +46,14 @@ void TCODSystem::forceFullscreenResolution(int width, int height) {
 	TCOD_sys_force_fullscreen_resolution(width,height);
 }
 
+void TCODSystem::setRenderer(TCOD_renderer_t renderer) {
+	TCOD_sys_set_renderer(renderer);
+}
+
+TCOD_renderer_t TCODSystem::getRenderer() {
+	return TCOD_sys_get_renderer();
+}
+
 void TCODSystem::setFps(int val) {
 	TCOD_sys_set_fps(val);
 }

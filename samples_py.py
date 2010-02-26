@@ -1478,6 +1478,8 @@ samples = (Sample('  True colors        ', render_colors),
 cur_sample = 0
 credits_end = False
 first = True
+cur_renderer = 0
+renderer_name=('F1 GLSL   ','F2 OPENGL ','F3 SDL    ')
 while not libtcod.console_is_window_closed():
     key = libtcod.console_check_for_keypress()
     # render the sample
@@ -1509,6 +1511,20 @@ while not libtcod.console_is_window_closed():
                                 'elapsed : %8d ms %4.2fs' %
                                 (libtcod.sys_elapsed_milli(),
                                  libtcod.sys_elapsed_seconds()))
+
+    cur_renderer=libtcod.sys_get_renderer()
+    libtcod.console_set_foreground_color(None,libtcod.grey)
+    libtcod.console_set_background_color(None,libtcod.black)
+    libtcod.console_print_left(None,42,46-(libtcod.NB_RENDERERS+1),libtcod.BKGND_SET,"Renderer :")
+    for i in range(libtcod.NB_RENDERERS) :
+        if i==cur_renderer :
+            libtcod.console_set_foreground_color(None,libtcod.white)
+            libtcod.console_set_background_color(None,libtcod.light_blue)
+        else :
+            libtcod.console_set_foreground_color(None,libtcod.grey)
+            libtcod.console_set_background_color(None,libtcod.black)
+        libtcod.console_print_left(None,42,46-(libtcod.NB_RENDERERS-i),libtcod.BKGND_SET,renderer_name[i])
+
     # key handler
     if key.vk == libtcod.KEY_DOWN:
         cur_sample = (cur_sample+1) % len(samples)
@@ -1522,6 +1538,12 @@ while not libtcod.console_is_window_closed():
         libtcod.sys_save_screenshot()
     elif key.vk == libtcod.KEY_ESCAPE:
         break
+    elif key.vk == libtcod.KEY_F1:
+        libtcod.sys_set_renderer(libtcod.RENDERER_GLSL)
+    elif key.vk == libtcod.KEY_F2:
+        libtcod.sys_set_renderer(libtcod.RENDERER_OPENGL)
+    elif key.vk == libtcod.KEY_F3:
+        libtcod.sys_set_renderer(libtcod.RENDERER_SDL)
     libtcod.console_flush()
 
 

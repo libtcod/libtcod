@@ -394,10 +394,14 @@ COLCTRL_NUMBER=5
 COLCTRL_FORE_RGB=6
 COLCTRL_BACK_RGB=7
 COLCTRL_STOP=8
-
+# renderers
+RENDERER_GLSL=0
+RENDERER_OPENGL=1
+RENDERER_SDL=2
+NB_RENDERERS=3
 # initializing the console
-def console_init_root(w, h, title, fullscreen=False):
-    _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen))
+def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_GLSL):
+    _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen), c_uint(renderer))
 
 def console_get_width(con):
 	return _lib.TCOD_console_get_width(con)
@@ -650,6 +654,7 @@ def console_fill_background(con,r,g,b) :
 ############################
 _lib.TCOD_sys_get_last_frame_length.restype = c_float
 _lib.TCOD_sys_elapsed_seconds.restype = c_float
+_lib.TCOD_sys_get_renderer.restype = c_uint
 
 # high precision time functions
 def sys_set_fps(fps):
@@ -672,6 +677,12 @@ def sys_elapsed_milli():
 
 def sys_elapsed_seconds():
     return _lib.TCOD_sys_elapsed_seconds()
+
+def sys_set_renderer(renderer):
+    _lib.TCOD_sys_set_renderer(c_uint(renderer))
+
+def sys_get_renderer():
+    return _lib.TCOD_sys_get_renderer()
 
 # easy screenshots
 def sys_save_screenshot(name=0):

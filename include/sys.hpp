@@ -41,6 +41,8 @@ public :
 	static void sleepMilli(uint32 val);
 	static void saveScreenshot(const char *filename);
 	static void forceFullscreenResolution(int width, int height);
+	static void setRenderer(TCOD_renderer_t renderer);
+	static TCOD_renderer_t getRenderer();
 	static void setFps(int val);
 	static int getFps();
 	static float getLastFrameLength();

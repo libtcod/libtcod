@@ -55,10 +55,10 @@ typedef  enum
 } ConsoleDataEnum;
 const int ConsoleDataAlignment[3] = {1, 3, 3 };
 
-static bool hasShader=false;
-
 static const char *TCOD_con_vertex_shader =
+#ifndef NDEBUG
 "#version 110\n"
+#endif
 "uniform vec2 termsize; "
 
 "void main(void) "
@@ -73,7 +73,9 @@ static const char *TCOD_con_vertex_shader =
 ;
 
 static const char *TCOD_con_pixel_shader =
+#ifndef NDEBUG
 "#version 110\n"
+#endif
 "uniform sampler2D font; "
 "uniform sampler2D term; "
 "uniform sampler2D termfcol; "
@@ -119,11 +121,15 @@ inline bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
 
 // called before creating window
 void TCOD_opengl_init_attributes() {
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
+	static bool first=false;
+	if ( first ) {
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
+		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
+		first=false;
+	}
 	// ATI driver bug : enabling this might result in red screen
 	//SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 }
@@ -161,14 +167,19 @@ static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
                                         
 // call after creating window
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
-	const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
 	SDL_Surface *font_surf=(SDL_Surface *)font;
 
 	// check opengl extensions
-	if (!glexts ) return false;
-	hasShader = (strstr(glexts,"GL_ARB_shader_objects") != NULL);
-	if (! hasShader ) {
-		TCOD_LOG(("Missing GL_ARB_shader_objects extension. Falling back to fixed pipeline...\n"));
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
+		bool hasShader = false;
+		const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
+		if (glexts ) {
+			hasShader = (strstr(glexts,"GL_ARB_shader_objects") != NULL);
+		}
+		if (! hasShader ) {
+			TCOD_LOG(("Missing GL_ARB_shader_objects extension. Falling back to fixed pipeline...\n"));
+			TCOD_ctx.renderer = TCOD_RENDERER_OPENGL;		
+		}
 	}
 
 	// set extensions functions pointers
@@ -196,9 +207,9 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	if ( hasShader ) {
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		glOrtho(0, conw, 0, conh, -1.0f, 1.0f);
-		TCOD_use_glsl=true;
+		glDisable (GL_BLEND); 
 	} else {
 		glOrtho(0, conw, conh, 0.0f, -1.0f, 1.0f);
 		glEnable (GL_BLEND); 
@@ -208,7 +219,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 //#ifdef TCOD_WINDOWS
-	if ( ! ((TCOD_console_data_t *)TCOD_root)->fullscreen ) {
+	if ( ! TCOD_ctx.fullscreen ) {
 		// turn vsync off in windowed mode
 		typedef bool (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
 		PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
@@ -337,7 +348,7 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 
 bool TCOD_opengl_init_shaders() {
 	int i;
-	if ( hasShader ) {
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
 	}
 	// Host side data init
@@ -426,7 +437,7 @@ static void updateChar(ConsoleDataEnum dataType, int BufferPos, unsigned char *c
 void TCOD_opengl_putchar_ex(int x, int y, unsigned char c, TCOD_color_t fore, TCOD_color_t back) {
 	int loc = x+y*conwidth;
 
-	if ( hasShader ) {
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		updateChar(Character, loc, &c, ConsoleDataAlignment[Character], 0);
 		updateChar(ForeCol, loc, &fore.r, ConsoleDataAlignment[ForeCol], 0);
 	}
@@ -445,7 +456,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	for (y=0;y<conheight;y++) {
 		for (x=0; x<conwidth; x++) {
 			bool changed=true;
-			if ( c->cf == -1 ) c->cf = TCOD_ascii_to_tcod[c->c];
+			if ( c->cf == -1 ) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
 				if ( c->dirt || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
@@ -472,13 +483,13 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			dirty[i] = false;
 		}
 	}
-	if (! hasShader) {
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_OPENGL ) {
 		// fixed pipeline for video cards without pixel shader support
 		// draw the background as a single quad
 		float texw=(float)conwidth/POTconwidth;
 		float texh=(float)conheight/POTconheight;
-		float fonw=(float)fontwidth/(fontNbCharHoriz*POTfontwidth);
-		float fonh=(float)fontheight/(fontNbCharVertic*POTfontheight);
+		float fonw=(float)fontwidth/(TCOD_ctx.fontNbCharHoriz*POTfontwidth);
+		float fonh=(float)fontheight/(TCOD_ctx.fontNbCharVertic*POTfontheight);
 		char_t *c;
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
 		DBGCHECKGL(glBegin(GL_QUADS);
@@ -506,18 +517,18 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 						int srcx,srcy,destx,desty;
 						destx=x;// *TCOD_font_width;
 						desty=y;// *TCOD_font_height;
-						if ( TCOD_fullscreen_on ) {
-							destx+=TCOD_fullscreen_offsetx;
-							desty+=TCOD_fullscreen_offsety;
+						if ( TCOD_ctx.fullscreen ) {
+							destx+=TCOD_ctx.fullscreen_offsetx;
+							desty+=TCOD_ctx.fullscreen_offsety;
 						}
 						// draw foreground
 						int ascii=c->cf;
-						if (TCOD_font_is_in_row) {
-							srcx = (ascii%fontNbCharHoriz);
-							srcy = (ascii/fontNbCharHoriz);
+						if (TCOD_ctx.font_in_row) {
+							srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
+							srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
 						} else {
-							srcx = (ascii/fontNbCharVertic);
-							srcy = (ascii%fontNbCharVertic);
+							srcx = (ascii/TCOD_ctx.fontNbCharVertic);
+							srcy = (ascii%TCOD_ctx.fontNbCharVertic);
 						}
 						glBegin( GL_QUADS );
 						glColor3f(f.r/255.0,f.g/255.0,f.b/255.0);
@@ -545,8 +556,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		// The Textures still need to bind to the same # Activetexture throughout though
 	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
 		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termcoef"), 1.0f/POTconwidth, 1.0f/POTconheight));
-	    DBGCHECKGL(glUniform1fARB(glGetUniformLocationARB(conProgram,"fontw"), (float)fontNbCharHoriz));
-	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontcoef"), (float)(fontwidth)/(POTfontwidth*fontNbCharHoriz), (float)(fontheight)/(POTfontheight*fontNbCharVertic)));
+	    DBGCHECKGL(glUniform1fARB(glGetUniformLocationARB(conProgram,"fontw"), (float)TCOD_ctx.fontNbCharHoriz));
+	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"fontcoef"), (float)(fontwidth)/(POTfontwidth*TCOD_ctx.fontNbCharHoriz), (float)(fontheight)/(POTfontheight*TCOD_ctx.fontNbCharVertic)));
 
 	
 	    DBGCHECKGL(glActiveTexture(GL_TEXTURE0));

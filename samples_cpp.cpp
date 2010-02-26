@@ -1362,7 +1362,7 @@ void render_sdl(bool first, TCOD_key_t*key) {
 		sampleConsole.setForegroundColor(TCODColor::white);
 		sampleConsole.clear();
 		sampleConsole.printCenterRect(SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
-			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.");
+			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works with SDL renderer.");
 	}
 	if ( key->vk == TCODK_TAB ) {
 		sdl_callback_enabled = !sdl_callback_enabled;
@@ -1409,9 +1409,14 @@ int main( int argc, char *argv[] ) {
 	int argn;
 	int fullscreenWidth=0;
 	int fullscreenHeight=0;
+	TCOD_renderer_t renderer=TCOD_RENDERER_GLSL;
 	bool fullscreen=false;
 	int fontFlags=TCOD_FONT_TYPE_GREYSCALE|TCOD_FONT_LAYOUT_TCOD, fontNewFlags=0;
 	bool creditsEnd=false;
+	int cur_renderer=0;
+	static const char *renderer_name[TCOD_NB_RENDERERS] = {
+		"F1 GLSL   ","F2 OPENGL ","F3 SDL    "
+	};
 
 	// initialize the root console (open the game window)
 	for (argn=1; argn < argc; argn++) {
@@ -1430,6 +1435,9 @@ int main( int argc, char *argv[] ) {
 			fullscreenWidth=atoi(argv[argn]);
 			argn++;
 			fullscreenHeight=atoi(argv[argn]);
+		} else if ( strcmp(argv[argn],"-renderer") == 0 && argn+1 < argc ) {
+			argn++;
+			renderer=(TCOD_renderer_t)atoi(argv[argn]);
 		} else if ( strcmp(argv[argn],"-fullscreen") == 0 ) {
 			fullscreen=true;
 		} else if ( strcmp(argv[argn],"-font-in-row") == 0 ) {
@@ -1441,7 +1449,7 @@ int main( int argc, char *argv[] ) {
 		} else if ( strcmp(argv[argn],"-font-tcod") == 0 ) {
 			fontNewFlags |= TCOD_FONT_LAYOUT_TCOD;
 			fontFlags=0;
-		} else if ( strcmp(argv[argn],"-help") == 0 ) {
+		} else if ( strcmp(argv[argn],"-help") == 0 || strcmp(argv[argn],"-?") == 0) {
 			printf ("options :\n");
 			printf ("-font <filename> : use a custom font\n");
 			printf ("-font-nb-char <nb_char_horiz> <nb_char_vertic> : number of characters in the font\n");
@@ -1450,6 +1458,7 @@ int main( int argc, char *argv[] ) {
 			printf ("-font-greyscale : antialiased font using greyscale bitmap\n");
 			printf ("-fullscreen : start in fullscreen\n");
 			printf ("-fullscreen-resolution <screen_width> <screen_height> : force fullscreen resolution\n");
+			printf ("-renderer <num> : set renderer. 0 : GLSL 1 : OPENGL 2 : SDL\n");
 			exit(0);
 		} else {
 			argn++; // ignore parameter
@@ -1462,7 +1471,7 @@ int main( int argc, char *argv[] ) {
 		TCODSystem::forceFullscreenResolution(fullscreenWidth,fullscreenHeight);
 	}
 
-	TCODConsole::initRoot(80,50,"libtcod C++ sample",fullscreen);
+	TCODConsole::initRoot(80,50,"libtcod C++ sample",fullscreen,renderer);
 
 	do {
 		if (! creditsEnd) {
@@ -1485,7 +1494,7 @@ int main( int argc, char *argv[] ) {
 		}
 		// print the help message
 		TCODConsole::root->setForegroundColor(TCODColor::grey);
-		TCODConsole::root->printRight(79,46,TCOD_BKGND_NONE,"last frame : %3d ms (%3d fps)", (int)(TCODSystem::getLastFrameLength()*1000), TCODSystem::getFps());
+		TCODConsole::root->printRight(79,46,TCOD_BKGND_NONE,"last frame : %3d ms (%3d fps)", (int)(TCODSystem::getLastFrameLength()*1000), 			TCODSystem::getFps());
 		TCODConsole::root->printRight(79,47,TCOD_BKGND_NONE,"elapsed : %8dms %4.2fs", TCODSystem::getElapsedMilli(),TCODSystem::getElapsedSeconds());
 		TCODConsole::root->printLeft(2,47,TCOD_BKGND_NONE,"%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
 		TCODConsole::root->printLeft(2,48,TCOD_BKGND_NONE,"ALT-ENTER : switch to %s",
@@ -1499,13 +1508,32 @@ int main( int argc, char *argv[] ) {
 		TCODConsole::blit(&sampleConsole,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT, // the source console & zone to blit
 							TCODConsole::root,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y // the destination console & position
 						 );
-
+		/* erase the renderer in debug mode (needed because the root console is not cleared each frame) */
+		TCOD_console_print_left(NULL,1,1,TCOD_BKGND_NONE,"        ");
 #ifndef NO_SDL_SAMPLE
 		if ( sdl_callback_enabled ) {
 			// we want libtcod to redraw the sample console even if nothing has changed in it
 			TCODConsole::root->setDirty(SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
 		}
 #endif
+		/* display renderer list and current renderer */
+		cur_renderer=TCODSystem::getRenderer();
+		TCODConsole::root->setForegroundColor(TCODColor::grey);
+		TCODConsole::root->setBackgroundColor(TCODColor::black);
+		TCODConsole::root->printLeft(42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,"Renderer :");
+		for (int i=0; i < TCOD_NB_RENDERERS; i++) {
+			if (i==cur_renderer) {
+				/* set colors for current renderer */
+				TCODConsole::root->setForegroundColor(TCODColor::white);
+				TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
+			} else {
+				/* set colors for other renderer */
+				TCODConsole::root->setForegroundColor(TCODColor::grey);
+				TCODConsole::root->setBackgroundColor(TCODColor::black);
+			}
+			TCODConsole::root->printLeft(42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,renderer_name[i]);
+		}
+
 		// update the game screen
 		TCODConsole::flush();
 
@@ -1526,6 +1554,13 @@ int main( int argc, char *argv[] ) {
 		} else if ( key.vk == TCODK_PRINTSCREEN ) {
 			/* save screenshot */
 			TCODSystem::saveScreenshot(NULL);
+		} else if (key.vk==TCODK_F1) {
+			/* switch renderers with F1,F2,F3 */
+			TCODSystem::setRenderer(TCOD_RENDERER_GLSL);
+		} else if (key.vk==TCODK_F2) {
+			TCODSystem::setRenderer(TCOD_RENDERER_OPENGL);
+		} else if (key.vk==TCODK_F3) {
+			TCODSystem::setRenderer(TCOD_RENDERER_SDL);
 		}
 	} while (!TCODConsole::isWindowClosed());
 	return 0;

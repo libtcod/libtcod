@@ -4,8 +4,12 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
-+ added clipboard support in TCODSystem (on Linux, only X clipboard)
-+ added GLSL renderer (FPS increased 880% on true color sample !!!)
+X TCODConsole::initRoot has an additional renderer parameter :
+   static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false, 
+       TCOD_renderer_t renderer=TCOD_RENDERER_GLSL);
+   Possible values : TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
++ added clipboard support in TCODSystem (on Linux, only X clipboard supported)
++ added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
 % hardened fov module
 =========================================================
 1.5.0 : 2010 Feb 15

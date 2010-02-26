@@ -48,8 +48,6 @@ typedef struct {
 	char_t *buf; /* current console */
 	char_t *oldbuf; /* console for last frame */
 	uint8 fade;
-	bool windowed;
-	bool fullscreen;
 	bool haskey; /* a key color has been defined */
 	/* foreground (text), background and key colors */
 	TCOD_color_t fore,back,key;
@@ -87,6 +85,46 @@ typedef struct {
     int cur;
 } mersenne_data_t;
 
+typedef struct {
+	/* number of characters in the bitmap font */
+	int fontNbCharHoriz;
+	int fontNbCharVertic;
+	/* font type and layout */
+	bool font_tcod_layout;
+	bool font_in_row;
+	bool font_greyscale;
+	/* character size in font */
+	int font_width;
+	int font_height;
+	char font_file[512];
+	char window_title[512];
+	/* ascii code to tcod layout converter */
+	int *ascii_to_tcod;
+	/* the root console */
+	TCOD_console_data_t *root;
+	/* nb chars in the font */
+	int max_font_chars;
+	/* fullscreen data */
+	bool fullscreen;
+	int fullscreen_offsetx;
+	int fullscreen_offsety;
+	/* asked by the user */
+	int fullscreen_width;
+	int fullscreen_height;
+	/* actual resolution */
+	int actual_fullscreen_width;
+	int actual_fullscreen_height;
+	/* renderer to use */
+	TCOD_renderer_t renderer;
+	/* user post-processing callback */
+	SDL_renderer_t sdl_cbk;
+	/* fading data */
+	TCOD_color_t fading_color;
+	uint8 fade;
+} TCOD_internal_context_t;
+
+extern TCOD_internal_context_t TCOD_ctx;
+
 #ifdef NDEBUG
 #define TCOD_IF(x) if (x)
 #define TCOD_IFNOT(x) if (!(x))
@@ -106,8 +144,6 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
 bool TCOD_opengl_init_shaders();
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
 void TCOD_opengl_swap();
-extern bool TCOD_use_open_gl;
-extern bool TCOD_use_glsl;
 #endif
 
 /* fov internal stuff */
@@ -129,20 +165,6 @@ char_t *TCOD_console_get_buf(TCOD_console_t con);
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
-
-extern int fontNbCharHoriz;
-extern int fontNbCharVertic;
-extern bool fontTcodLayout;
-extern int *TCOD_ascii_to_tcod;
-extern bool TCOD_font_is_in_row;
-extern TCOD_console_t TCOD_root;
-extern int TCOD_max_font_chars;
-extern int TCOD_font_width;
-extern int TCOD_font_height;
-extern bool TCOD_fullscreen_on;
-extern int TCOD_fullscreen_offsetx;
-extern int TCOD_fullscreen_offsety;
-
 
 /* TCODSystem non public methods */
 void TCOD_sys_startup();

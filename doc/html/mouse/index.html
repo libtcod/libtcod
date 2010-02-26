@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | mouse support</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">6. Mouse support</a><br>
+<a class="prev" href="../image/index.html">5. Image toolkit</a> | <a class="next" href="../parser/index.html">7. File parser</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+
+<p>By default, the mouse cursor in visible in windowed mode, hidden in fullscreen mode. You can change it with:</p>
+
+<div class="code">
+<p class="cpp"><b><font color="blue">static void</font> TCODMouse</b><font color="red">::</font>showCursor <font color="red">(</font><font color="blue"><b>bool</b></font> visible<font color="red">)</font></p>
+<p class="c"><font color="blue"><b>void</b></font> TCOD_mouse_show_cursor <font color="red">(</font><font color="blue"><b>bool</b></font> visible<font color="red">)</font></p>
+<p class="py">mouse_show_cursor <font color="red">(</font>visible<font color="red">)</font></p></div>
+
+<table class="param">
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>visible</td><td>If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.</td></tr>
+</tbody></table>
+
+<p>You can get the current cursor status (hidden or visible) with:</p>
+
+<div class="code">
+<p class="cpp"><b><font color="blue">static bool</font> TCODMouse</b><font color="red">::</font>isCursorVisible <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="c"><font color="blue"><b>bool</b></font> TCOD_mouse_is_cursor_visible <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="py">mouse_is_cursor_visible <font color="red">()</font></p></div>
+
+<p>You can set the cursor position (in pixel coordinates, where [0,0] is the window's top left corner) with:</p>
+
+<div class="code">
+<p class="cpp"><b><font color="blue">static void</font> TCODMouse</b><font color="red">::</font>move <font color="red">(</font><font color="blue"><b>int</b></font> x<font color="red">,</font> <font color="blue"><b>int</b></font> y<font color="red">)</font></p>
+<p class="c"><font color="blue"><b>void</b></font> TCOD_mouse_move <font color="red">(</font><font color="blue"><b>int</b></font> x<font color="red">,</font> <font color="blue"><b>int</b></font> y<font color="red">)</font></p>
+<p class="py">mouse_move <font color="red">(</font>x<font color="red">,</font> y<font color="red">)</font></p></div>
+
+<table class="param">
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>x,y</td><td>New coordinates of the mouse cursor in pixels.</td></tr>
+</tbody></table>
+
+<p>You can read the current mouse status with:</p>
+<div class="code">
+<p><font color="blue"><b>typedef struct</b></font> <font color="red">{</font><br>
+&nbsp; <font color="blue"><b>&nbsp; int</b></font> x<font color="red">,</font> y<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; int</b></font> dx<font color="red">,</font> dy<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; int</b></font> cx<font color="red">,</font> cy<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; int</b></font> dcx<font color="red">,</font> dcy<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> lbutton <font color="red">:</font> 1<font color="red">;</font><br> 
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> rbutton&nbsp;<font color="red">:</font> 1<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> mbutton&nbsp;<font color="red">:</font> 1<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> lbutton_pressed&nbsp;<font color="red">:</font> 1<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> rbutton_pressed&nbsp;<font color="red">:</font> 1<font color="red">;</font><br>
+&nbsp; <font color="blue"><b>&nbsp; unsigned</b></font> mbutton_pressed&nbsp;<font color="red">:</font> 1<font color="red">;</font><br><font color="red">
+}</font> <b>TCOD_mouse_t</b><font color="red">;</font></p>
+<p class="cpp"><b><font color="blue">static</font> TCOD_mouse_t TCODMouse</b><font color="red">::</font>getStatus <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="c"><b>TCOD_mouse_t</b> TCOD_mouse_get_status <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="py">mouse_get_status <font color="red">()</font></p>
+</div>
+
+<table class="param">
+<tbody><tr><th>Field name</th><th>Description</th></tr>
+<tr><td>x, y</td><td>Absolute position of the mouse cursor in pixels relative to the window top-left corner.</td></tr>
+<tr><td>dx, dy</td><td>Movement of the mouse cursor since the last call in pixels.</td></tr>
+<tr><td>cx, cy</td><td>Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).</td></tr>
+<tr><td>dcx, dcy</td><td>Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).</td></tr>
+<tr><td>lbutton</td><td>true if the left button is pressed.</td></tr>
+<tr><td>rbutton</td><td>true if the right button is pressed.</td></tr>
+<tr><td>mbutton</td><td>true if the middle button (or the wheel) is pressed.</td></tr>
+<tr><td>lbutton_pressed</td><td>true if the left button was pressed and released.</td></tr>
+<tr><td>rbutton_pressed</td><td>true if the right button was pressed and released.</td></tr>
+<tr><td>mbutton_pressed</td><td>true if the middle button was pressed and released.</td></tr>
+</tbody></table>
+
+</div></div></body></html>

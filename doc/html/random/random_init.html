@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | pseudorandom number generator | creating a generator</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">9. Pseudorandom number generator</a> &gt; <a href="random_init.html">9.1. Creating a  generator</a><br>
+<a class="next" href="random_use.html">9.2. Using a generator</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+
+<h1>9.1. Creating a generator</h1><h6>Default generator</h6><p>The
+simplest way to get random number is to use the default generator. The
+first time you get this generator, it is initialized by calling
+TCOD_random_new. Then, on successive calls, this function returns the
+same generator (singleton pattern).</p>
+<div class="code">
+<p class="cpp"><font color="blue"><b>static</b></font> <b>TCODRandom</b> <font color="red">*</font> <b>TCODRandom</b><font color="red">::</font>getInstance <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="c"><b>TCOD_random_t</b> TCOD_random_get_instance <font color="red">(</font><font color="blue"><b>void</b></font><font color="red">)</font></p>
+<p class="py">random_get_instance <font color="red">()</font></p>
+</div>
+<table class="param">
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>algo</td><td>The PRNG algorithm the generator should be using. Possible values are:<br> * <b>TCOD_RNG_MT</b> for Mersenne Twister,<br> * <b>TCOD_RNG_CMWC</b> for Complementary Multiply-With-Carry.</td></tr>
+</tbody></table>
+<h6>Generators with random seeds</h6><p>You can also create as many
+generators as you want with a random seed (the number of seconds since
+Jan 1 1970 at the time the constructor is called). Warning ! If you
+call this function several times in the same second, it will return the
+same generator.</p>
+<div class="code">
+<p class="cpp"><b>TCODRandom</b><font color="red">::</font>TCODRandom <font color="red">(</font><b>TCOD_random_algo_t</b> algo <font color="red">=</font> TCOD_RNG_CMWC<font color="red">)</font></p>
+<p class="c"><b>TCOD_random_t</b> TCOD_random_new <font color="red">(</font><b>TCOD_random_algo_t</b> algo<font color="red">)</font></p>
+<p class="py">random_new <font color="red">(</font>algo <font color="red">=</font> RNG_CMWC<font color="red">)</font></p>
+</div>
+<table class="param">
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>algo</td><td>The PRNG algorithm the generator should be using.</td></tr>
+</tbody></table>
+<h6>Generators with user-defined seeds</h6><p>Finally, you can create
+generators with a specific seed. Those allow you to get a reproducible
+set of random numbers. You can for example save a dungeon in a file by
+saving only the seed used for its generation (provided you have a
+determinist generation algorithm)</p>
+<div class="code">
+<p class="cpp"><b>TCODRandom</b><font color="red">::</font>TCODRandom <font color="red">(</font><b>TCOD_random_algo_t</b> algo <font color="red">=</font> TCOD_RNG_CMWC<font color="red">,</font> <font color="blue"><b>uint32</b></font> seed<font color="red">);</font></p>
+<p class="c"><b>TCOD_random_t</b> TCOD_random_new_from_seed <font color="red">(</font><b>TCOD_random_algo_t</b> algo<font color="red">,</font> <font color="blue"><b>uint32</b></font> seed<font color="red">);</font></p>
+<p class="py">random_new_from_seed <font color="red">(</font>seed<font color="red">,</font> algo <font color="red">=</font> RNG_CMWC<font color="red">)</font></p>
+</div>
+<table class="param">
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr><td>seed</td><td>The 32 bits seed used to initialize the generator.
+Two generators created with the same seed will generate the same set of
+pseudorandom numbers.<br></td></tr>
+<tr><td>algo</td><td>The PRNG algorithm the generator should be using.</td></tr>
+</tbody></table>
+<h6>Example:</h6>
+<div class="code">
+<p class="cpp"><font color="#999999">// default generator</font><br><b>TCODRandom</b> <font color="red">*</font> default <font color="red">=</font> <b>TCODRandom</b><font color="red">::</font>getInstance<font color="red">();</font><br><font color="#999999">// another random generator</font><br><b>TCODRandom</b> <font color="red">*</font> myRandom <font color="red">=</font> <font color="blue"><b>new</b></font> TCODRandom<font color="red">();</font><br><font color="#999999">// a random generator with a specific seed</font><br><b>TCODRandom</b> <font color="red">*</font> myDeterministRandom <font color="red">=</font> <font color="blue"><b>new</b></font> TCODRandom<font color="red">(</font><font color="fuchsia">0xdeadbeef</font><font color="red">);</font></p>
+<p class="c"><font color="#999999">/* default generator */</font><br><b>TCOD_random_t</b> default <font color="red">=</font> TCOD_random_get_instance<font color="red">();</font><br><font color="#999999">/* another random generator */</font><br><b>TCOD_random_t</b> my_random <font color="red">=</font> TCOD_random_new<font color="red">(</font>TCOD_RNG_CMWC<font color="red">);</font><br><font color="#999999">/* a random generator with a specific seed */</font><br><b>TCOD_random_t</b> my_determinist_random <font color="red">=</font> TCOD_random_new_from_seed<font color="red">(</font>TCOD_RNG_CMWC<font color="red">,</font><font color="fuchsia">0xdeadbeef</font><font color="red">);</font></p>
+<p class="py"><font color="#999999"># default generator</font><br>default <font color="red">=</font> libtcod<font color="red">.</font>random_get_instance<font color="red">()</font><br><font color="#999999"># another random generator</font><br>my_random <font color="red">=</font> libtcod<font color="red">.</font>random_new<font color="red">()</font><br><font color="#999999"># a random generator with a specific seed</font><br>my_determinist_random <font color="red">=</font> libtcod<font color="red">.</font>random_new_from_seed<font color="red">(</font><font color="fuchsia">0xdeadbeef</font><font color="red">)</font></p>
+</div>
+</div></div></body></html>

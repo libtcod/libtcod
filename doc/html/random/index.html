@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | pseudorandom number generator</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">9. Pseudorandom number generator</a><br>
+<a class="prev" href="../list/index.html">8. All purposes container</a> | <a class="next" href="../noise/index.html">10. Noise generator</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+
+<p>This toolkit is an implementation of two fast and high quality pseudorandom number generators:</p>
+<ul><li>a <a href="http://en.wikipedia.org/wiki/Mersenne_Twister">Mersenne twister</a> generator,</li>
+<li>a <a href="http://en.wikipedia.org/wiki/Multiply-with-carry#Complementary-multiply-with-carry_generators">Complementary-Multiply-With-Carry</a> generator.</li></ul>
+<p>CMWC is faster than MT (see table below) and has a much better period (10<sup>39460</sup> vs. 10<sup>6001</sup>). It is the default algo since libtcod 1.5.0.</p>
+<p>Relative performances in two independent tests:</p>
+<table class="none">
+<tr><th>Algorithm</th><th>Numbers generated</th><th>Perf (1)</th><th>Perf (2)</th></tr>
+<tr class="hilite"><td>MT</td><td>integer</td><td>62</td><td>50</td></tr>
+<tr><td>MT</td><td>float</td><td>54</td><td>45</td></tr>
+<tr class="hilite"><td>CMWC</td><td>integer</td><td>21</td><td>34</td></tr>
+<tr><td>CMWC</td><td>float</td><td>32</td><td>27</td></tr>
+</table>
+<h6>For python users:</h6>
+<p>Python already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.</p>
+<ul>
+<li><a href="random_init.html">9.1. Creating a generator</a></li>
+<li><a href="random_use.html">9.2. Using a generator</a></li>
+<li><a href="random_delete.html">9.3. Destroying a generator</a></li>
+</ul>
+</body>
+</html>

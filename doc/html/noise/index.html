@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | noise generator</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">10. Noise generator</a><br>
+<a class="prev" href="../random/index.html">9. Pseudorandom number generator</a> | <a class="next" href="../zip/index.html">11. Compression toolkit</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<p>This toolkit provides several functions to generate <a href="http://en.wikipedia.org/wiki/Perlin_noise">Perlin noise</a> and other derived noises. It can handle noise functions from 1 to 4 dimensions.</p>
+<p>Usage example:</p>
+<ul><li>1D noise: the variation of a torch intensity</li><li>2D fbm: for heightfield generation or clouds</li></ul>
+<ul>
+<li><a href="noise_init.html">10.1. Creating a noise generator</a></li>
+<li><a href="noise_perlin.html">10.2. Getting Perlin noise</a></li>
+<li><a href="noise_simplex.html">10.3. Getting simplex noise</a></li>
+<li><a href="noise_wavelet.html">10.4. Getting wavelet noise</a></li>
+<li><a href="noise_delete.html">10.5. Destroying a generator</a></li>
+</ul>
+<p>If you don't know what is Perlin noise and derived functions, or what is the influence of the different fractal parameters, check the Perlin noise sample included with the library.</p>
+<table width="800px" class="none">
+	<tr><td align="center">Perlin noise, fbm, turbulence</td>
+	<td align="center"><img border="1" src="perlin.png"></td>
+	<td align="center"><img border="1" src="fbm_perlin.png"></td>
+	<td align="center"><img border="1" src="turbulence_perlin.png"></td></tr>
+	<tr><td align="center">Simplex noise, fbm, turbulence</td>
+	<td align="center"><img border="1" src="simplex.png"></td>
+	<td align="center"><img border="1" src="fbm_simplex.png"></td>
+	<td align="center"><img border="1" src="turbulence_simplex.png"></td></tr>
+	<tr><td align="center">Wavelet noise, fbm, turbulence</td>
+	<td align="center"><img border="1" src="wavelet.png"></td>
+	<td align="center"><img border="1" src="fbm_wavelet.png"></td>
+	<td align="center"><img border="1" src="turbulence_wavelet.png"></td></tr>
+</table>
+<h6>Noise functions relative times</h6>
+<p>For example, in 4D, Perlin noise is 17 times slower than simplex noise.</p>
+<table border="1">
+	<tr><td></td><td>1D</td><td>2D</td><td>3D</td><td>4D</td></tr>
+	<tr><td>simplex</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+	<tr><td>Perlin</td><td>1.3</td><td>4</td><td>5</td><td>17</td></tr>
+	<tr><td>wavelet</td><td>53</td><td>32</td><td>14</td><td>X</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | creating a name
+generator</title>
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">16. Name generator</a>
+&gt; <a href="namegen_init.html">16.1. Creating a
+generator</a><br>
+<a class="next" href="namegen_generate.html">16.2.
+Generating a name</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>16.1. Creating a generator</h1>
+<p>In order to be able to generate names, the name generator
+needs to be fed proper data. It will then be ready to generate random
+names defined in the file(s) it is fed. Syllable set parsing is
+achieved via the following:</p>
+<div class="code">
+<p class="cpp"><font color="blue"><b>static
+void</b></font> <b>TCODNamegen</b><font color="#990000">::</font>parse <font color="red">(</font><font color="blue"><b>const char</b></font>
+<font color="red">*</font> filename<font color="red">,</font> <b>TCODRandom</b> <font color="red">*</font> random <font color="red">=</font>
+NULL<font color="red">)</font></p>
+<p class="c"><font color="blue"><b>void</b></font>
+TCOD_namegen_parse <font color="red">(</font><font color="blue"><b>const char</b></font> <font color="red">*</font>
+filename<font color="red">,</font> <b>TCOD_random_t</b>
+random<font color="red">)</font></p>
+<p class="py">
+namegen_parse <font color="red">(</font>filename<font color="red">,</font> random <font color="red">=</font>
+<font color="fuchsia">0</font><font color="red">)</font></p>
+</div>
+<table class="param">
+<tbody>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>filename</td>
+<td>The file where the desired syllable set is saved, along
+with its relative parh, for instance, "data/names.txt".</td>
+</tr>
+<tr>
+<td>random</td>
+<td>A random number generator object. Use NULL for the
+default random number generator</td>
+</tr>
+</tbody>
+</table>
+<p>Note 1: Each file will be parsed once only. If, for some
+reason, you would like to parse the same file twice, you will need to
+destroy the generator first, which will empty the list of parsed files
+along with erasing all the data retrieved from those files.</p>
+<p>Note 2: The generator can be fed data multiple times if you
+have it in separate files. Just make sure the structure names in them
+aren't duplicated, otherwise they will be silently ignored.</p>
+<p>Note 3: In the C++ version, you are not obliged to specify the
+random number generator. If you skip it in the function call, the
+generator will assume you would like to use an instance of the default
+generator.</p>
+<h6>Example:</h6>
+<div class="code">
+<p class="cpp"><b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font><b>TCODRandom</b><font color="red">::</font>getInstance<font color="red">())</font>;<br>
+<b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names2.txt"</font><font color="red">)</font>;</p>
+<p class="c">TCOD_namegen_parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font>TCOD_random_get_instance<font color="red">())</font>;</p>
+<p class="py">libtcod<font color="red">.</font>namegen_parse<font color="red">(</font><font color="blue">'data/names.txt'</font><font color="red">)</font></p>
+</div>
+</div>
+</div>
+</body></html>

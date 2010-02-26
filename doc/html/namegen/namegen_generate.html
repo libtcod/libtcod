@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | generating a
+name</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">16. Name generator</a>
+&gt; <a href="namegen_generate.html">16.2. Generating
+a name</a><br>
+<a class="prev" href="namegen_init.html">16.1.
+Crating a generator</a>
+| <a class="next" href="namegen_delete.html">16.3.
+Destroying a generator</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>16.2. Generating a name</h1>
+<h3>Generating a default name</h3>
+<p>The following will output a random name generated using one of
+the generation rules specified in the syllable set:</p>
+<div class="code">
+<p class="cpp"><font color="blue"><b>static
+char</b></font> <font color="red">*</font>
+<b>TCODNamegen</b><font color="red">::</font>generate <font color="red">(</font><b><font color="blue">char</font></b>
+<font color="red">*</font>
+name<font color="red">,</font> <b><font color="blue">bool</font></b> allocate <font color="red">=</font> <b><font color="blue">false</font></b><font color="red">)</font></p>
+<p class="c"><font color="blue"><b>char</b></font>
+<font color="red">*</font> TCOD_namegen_generate <font color="red">(</font><b><font color="blue">char</font></b>
+<font color="red">*</font> name<font color="red">,</font>&nbsp;<b><font color="blue">bool</font></b> allocate<font color="red">)</font></p>
+<p class="py">namegen_generate&nbsp;<font color="red">(</font>name<font color="red">,</font>
+allocate&nbsp;<font color="red">=</font> <font color="fuchsia">0</font><font color="red">)</font></p>
+</div>
+<table class="param">
+<tbody>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>name</td>
+<td>The structure name you wish to refer to, for instance,
+"celtic female".<br>
+For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.5</a> and <a href="../parser/parser_format.html">7.1</a>.</td>
+</tr>
+<tr>
+<td>allocate</td>
+<td>Whether memory should be allocated for the output or
+not.</td>
+</tr>
+</tbody>
+</table>
+<p>Should you choose to allocate memory for the output, you need
+to remember to deallocate it once you don't need the name anymore using
+the free() function. This applies to C++ as well (delete won't work -
+you have to use free()).</p>
+<p>On the other hand, should you choose not to allocate memory,
+be aware that subsequent calls will overwrite the previously returned
+pointer, so make sure to copy the output using strcpy(), strdup() or
+other means of your choosing.</p>
+<p>The name you specify needs to be in one of the files the
+generator has previously parsed (see <a href="namegen_init.html">Creating
+a generator</a>). If such a name doesn't exist, a warning will be
+displayed and NULL will be returned.</p>
+<h6>Example:</h6>
+<div class="code">
+<p class="cpp"><b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font><b>TCODRandom</b><font color="red">::</font>getInstance<font color="red">())</font>;<br>
+<b>char</b> <font color="red">*</font>
+myName <font color="red">=</font> <b>TCODNamegen</b><font color="red">::</font>generate<font color="red">(</font><font color="blue">"fantasy female"</font><font color="red">)</font>;</p>
+<p class="c">TCOD_namegen_parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font>TCOD_random_get_instance<font color="red">())</font>;<br>
+<b>char</b> <font color="red">*</font>
+my_name <font color="red">=</font> TCOD_namegen_generate<font color="red">(</font><font color="blue">"Celtic
+male"</font><font color="red">,</font><font color="blue"><b>false</b></font><font color="red">)</font>;</p>
+<p class="py">libtcod<font color="red">.</font>namegen_parse<font color="red">(</font><font color="blue">'data/names.txt'</font><font color="red">)</font><br>
+name <font color="red">=</font> libtcod<font color="red">.</font>namegen_generate<font color="red">(</font><font color="blue">'Nordic
+female'</font><font color="red">)</font></p>
+</div>
+<hr>
+<h3>Generating a custom name</h3>
+<p>It is also possible to generate a name using custom generation
+rules. This overrides the random choice of a generation rule from the
+syllable set. Please refer to chapter <a href="namegen_file.html">16.5</a>
+to learn about the name
+generation rules syntax.</p>
+<div class="code">
+<p class="cpp"><font color="blue"><b>static
+char</b></font> <font color="red">*</font>
+<b>TCODNamegen</b><font color="red">::</font>generateCustom
+<font color="red">(</font><b><font color="blue">char</font></b>
+<font color="red">*</font>
+name<font color="red">,</font> <b><font color="blue">char</font></b>
+<font color="red">*</font>
+rule<font color="red">, </font><b><font color="blue">bool</font></b> allocate <font color="red">=</font> <b><font color="blue">false</font></b><font color="red">)</font></p>
+<p class="c"><font color="blue"><b>char</b></font>
+<font color="red">*</font>
+TCOD_namegen_generate_custom <font color="red">(</font><b><font color="blue">char</font></b>
+<font color="red">*</font> name<font color="red">,</font>&nbsp;<b><font color="blue">char</font></b>
+<font color="red">*</font>
+rule<font color="red">, </font><b><font color="blue">bool</font></b> allocate<font color="red">)</font></p>
+<p class="py">namegen_generate_custom <font color="red">(</font>name<font color="red">,</font>
+rule<font color="red">,</font> allocate&nbsp;<font color="red">=</font> <font color="fuchsia">0</font><font color="red">)</font></p>
+</div>
+<table class="param">
+<tbody>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>name</td>
+<td>The structure name you wish to refer to, for instance,
+"celtic female".<br>
+For more about how structure names work, please refer to chapters <a href="namegen_file.html">16.5</a> and <a href="../parser/parser_format.html">7.1</a>.</td>
+</tr>
+<tr>
+<td>rule</td>
+<td>The name generation rule. See chapter <a href="namegen_file.html">16.5</a> for more details.</td>
+</tr>
+<tr>
+<td>allocate</td>
+<td>Whether memory should be allocated for the output or
+not.</td>
+</tr>
+</tbody>
+</table>
+<h6>Example:</h6>
+<div class="code">
+<p class="cpp"><b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font><b>TCODRandom</b><font color="red">::</font>getInstance<font color="red">())</font>;<br>
+<font color="blue"><b>char</b></font> <font color="red">*</font>
+myName <font color="red">=</font> <b>TCODNamegen</b><font color="red">::</font>generateCustom<font color="red">(</font><font color="blue">"Nordic male"<font color="red">,</font>"$s$e"</font><font color="red">)</font>;</p>
+<p class="c">TCOD_namegen_parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font>TCOD_random_get_instance<font color="red">())</font>;<br>
+<font color="blue"><b>char</b></font> <font color="red">*</font>
+my_name <font color="red">=</font> TCOD_namegen_generate_custom<font color="red">(</font><font color="blue">"Mesopotamian
+female"<font color="red">,</font>"$s$e"</font><font color="red">,</font><font color="blue"><b>false</b></font><font color="red">)</font>;</p>
+<p class="py">libtcod<font color="red">.</font>namegen_parse<font color="red">(</font><font color="blue">'data/names.txt'</font><font color="red">)</font><br>
+name <font color="red">=</font> libtcod<font color="red">.</font>namegen_generate_custom<font color="red">(</font><font color="blue">'Nordic
+female'<font color="red">,</font>'$s$e'</font><font color="red">)</font></p>
+</div>
+</div>
+</div>
+</body></html>

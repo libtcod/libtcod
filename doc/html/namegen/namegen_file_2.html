@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | syllable set
+configuration | illegal strings</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">16. Name generator</a>
+&gt; <a href="namegen_file.html">16.5.
+Syllable set configuration</a>
+&gt; <a href="namegen_file_2.html">16.5.2. Illegal
+strings</a><br>
+<a class="prev" href="namegen_file_1.html">16.5.1.
+Syllable set basic structure</a> | <a class="next" href="namegen_file_3.html">16.5.3. Rules</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>16.5.2. Illegal strings</h1>
+<p>Another optional property is
+</p>
+<div class="code"><p>illegal</p></div>
+<p>This property contains strings that are considered illegal and
+thus not
+desired in your names. Should a generated name contain any of the
+tokens specified in this string, it will be discarded and replaced by a
+new one. Illegal strings may be as short as single characters or as
+long as entire names. However, it is best to create a syllable set that
+generates very few names that sound bad. Otherwise, the illegal list
+might become very long.</p>
+<p>Be aware that the generator will automatically correct or
+reject certain words, so
+you don't need to place every undesired possibility in this string.</p>
+<p>The generator will correct the following:
+</p>
+<ul>
+<li>leading spaces ("<font color="red">_</font>NAME")</li>
+<li>ending spaces ("NAME<font color="red">_</font>")</li>
+<li>double spaces ("NAME1_<font color="red">_</font>NAME2")</li>
+</ul>
+It will generate a new name in the following cases:
+<ul>
+<li>triple characters ("R<font color="red"><b>aaa</b></font>gnar")</li>
+<li>two-character adjacent repetitions ("<font color="red"><b>Bobo</b></font>fur"
+is wrong, but "<b><font color="green">Bo</font></b>m<b><font color="green">bo</font></b>fur" is OK)</li>
+<li>three-character (or more) repetitions, whether adjacent or
+not ("<font color="red"><b>Bombom</b></font>bur",
+"<font color="red"><b>Dag</b></font>bjoer<font color="red"><b>dag</b></font>", "<font color="red"><b>Gwaer</b></font>dy<font color="red"><b>gwaer</b></font>n")</li>
+</ul>
+<p>Remember that all of this is case-insensitive, so you don't
+need to
+care about uppercase/lowercase distinction in your illegal strings.</p>
+</div>
+</div>
+</body></html>

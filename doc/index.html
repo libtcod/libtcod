@@ -1,73 +1,96 @@
-<p align="center">
-=====================================<br />
-The Doryen library v1.5.0<br />
-=====================================<br />
-
-Library content :<br />
-</p>
-<p align="center">
-<table><tr>
-	<td><h3 style="text-align:center">Core</h3></td>
-	<td><h3 style="text-align:center">Base toolkits</h3></td>
-	<td><h3 style="text-align:center">Roguelike toolkits</h3></td>
-</tr><tr><td>
-<p align="center">
-<a href="compil/index.html">0. Compiling with libtcod</a><br />
-<a href="color/index.html">1. Colors</a><br />
-<a href="console/index.html">2. Console</a><br />
-<a href="system/index.html">3. System layer</a><br />
-</p>
-</td><td>
-<p align="center">
-<a href="line/index.html">4. Line drawing toolkit</a><br />
-<a href="image/index.html">5. Image toolkit</a><br />
-<a href="mouse/index.html">6. Mouse support</a><br />
-<a href="parser/index.html">7. File parser</a><br />
-<a href="list/index.html">8. All purposes container</a><br />
-<a href="random/index.html">9. Pseudorandom number generator</a><br />
-<a href="noise/index.html">10. Noise generator</a><br />
-<a href="zip/index.html">11. Compression toolkit</a><br />
-</p>
-</td><td>
-<p align="center">
-<a href="fov/index.html">12. Field of view toolkit</a><br />
-<a href="path/index.html">13. Path finding</a><br />
-<a href="bsp/index.html">14. BSP toolkit</a><br />
-<a href="heightmap/index.html">15. Heightmap toolkit</a><br />
-<a href="namegen/index.html">16. Name generator</a><br />
-</p>
-</td></tr></table></p>
-<br />
-<p align="center">
-<table><tr><td>
-<b>Compiling</b><br />
-To use the library, just include the right file :<br />
-<p class="code"><pre>
-C++ : #include "libtcod.hpp"
-C   : #include "libtcod.h"
-Py  : import libtcodpy as libtcod
-</pre></p>
-For C/C++, you have to put the libtcod include directory in your compiler include path.<br />
-<br />
-<b>Linking</b><br />
-With Visual Studio, add the libtcod-VS.lib in your linker inputs.<br />
-With Mingw32, add -L./lib -ltcod-mingw to your linking command to link with lib/libtcod-mingw.a.<br />
-With gcc on Linux, add -ltcod to your linking command to link with libtcod.so.<br />
-With g++ on Linux, add -ltcod -ltcod++ to your linking command to link with libtcod++.so.<br />
-With g++ on MacOSX, add -ltcod -ltcod++ to your linking command to link with libtcod++.a<br />
-<p class="code"><pre>
-gcc -O3 sample.c -o samples_c -L. -ltcod -I include
-g++ -O3 sample.cpp -o samples_cpp -L. -ltcod -ltcod++ -I include
-</pre></p>
-<br />
-<b>Running</b><br />
-<b>If you don't use a custom font, terminal.png must be in the same directory as your executable.</b><br/>
-On windows, libtcod-*.dll must be in the same directory as your game exe or py.<br />
-On Linux, libtcod.so (and libtcod++.so if you're using C++) must be in your LD_LIBRARY_PATH :<br />
-<p class="code"><pre>
-export LD_LIBRARY_PATH=.
-./samples_c
-</pre></p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | index</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
-</td></tr></table>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="index.html">Index</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>The Doryen Library v1.5.0 - table of contents</h1>
+<div align="center">
+<table>
+<tbody>
+<tr>
+<td>
+<h3 style="text-align: center;">Core</h3>
+</td>
+<td>
+<h3 style="text-align: center;">Base toolkits</h3>
+</td>
+<td>
+<h3 style="text-align: center;">Roguelike toolkits</h3>
+</td>
+</tr>
+<tr>
+<td>
+<p align="center"><a href="html/compil/index.html">0.
+Compiling with libtcod</a><br>
+<a href="html/color/index.html">1. Colors</a><br>
+<a href="html/console/index.html">2. Console</a><br>
+<a href="html/system/index.html">3. System layer</a><br>
 </p>
+</td>
+<td>
+<p align="center"><a href="html/line/index.html">4.
+Line drawing toolkit</a><br>
+<a href="html/image/index.html">5. Image toolkit</a><br>
+<a href="html/mouse/index.html">6. Mouse support</a><br>
+<a href="html/parser/index.html">7. File parser</a><br>
+<a href="html/list/index.html">8. All purposes container</a><br>
+<a href="html/random/index.html">9. Pseudorandom number
+generator</a><br>
+<a href="html/noise/index.html">10. Noise generator</a><br>
+<a href="html/zip/index.html">11. Compression toolkit</a><br>
+</p>
+</td>
+<td>
+<p align="center"><a href="html/fov/index.html">12.
+Field of view toolkit</a><br>
+<a href="html/path/index.html">13. Path finding</a><br>
+<a href="html/bsp/index.html">14. BSP toolkit</a><br>
+<a href="html/heightmap/index.html">15. Heightmap toolkit</a><br>
+<a href="html/namegen/index.html">16. Name generator</a><br>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h5>Compiling</h5>
+<p>To use the library, just include the right file:</p>
+<div class="code">
+<p class="cpp"><font color="#009900">#include
+"libtcod.hpp"</font></p>
+<p class="c"><font color="#009900">#include
+"libtcod.h"</font></p>
+<p class="py"><font color="#009900">import
+libtcodpy as libtcod</font></p>
+</div>
+<p>For C/C++, you have to put the libtcod include directory in your
+compiler include path.</p>
+<h5>Linking</h5>
+<p>With Visual Studio, add the libtcod-VS.lib in your linker inputs.</p>
+<p>With Mingw32, add -L./lib -ltcod-mingw to your linking command to link with lib/libtcod-mingw.a.</p>
+<p>With gcc on Linux, add -ltcod to your linking command to link with libtcod.so.</p>
+<p>With g++ on Linux, add -ltcod -ltcod++ to your linking command to link with libtcod++.so.</p>
+<p>With g++ on MacOSX, add -ltcod -ltcod++ to your linking command to link with libtcod++.a</p>
+<div class="code">
+<p>gcc -O3 sample.c -o samples_c -L. -ltcod -I include<br>
+g++ -O3 sample.cpp -o samples_cpp -L. -ltcod -ltcod++ -I include</p></div>
+<h5>Running</h5>
+<p>If you don't use a custom font, terminal.png must be in the same directory as your executable.</p>
+<p>On windows, libtcod-*.dll must be in the same directory as your game exe or py.</p>
+<p>On Linux, libtcod.so (and libtcod++.so if you're using C++) must be in your LD_LIBRARY_PATH:</p>
+<div class="code"><p>export LD_LIBRARY_PATH=.<br>
+./samples_c</p></div>
+</div>
+</div>
+</body></html>

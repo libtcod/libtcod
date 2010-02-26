@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | syllable set configuration | rules</title>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
+<body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">16. Name generator</a>
+&gt; <a href="namegen_file.html">16.5.
+Syllable set configuration</a>
+&gt; <a href="namegen_file_2.html">16.5.3. Rules</a><br>
+<a class="prev" href="namegen_file_2.html">16.5.2.
+Illegal strings</a> | <a class="next" href="namegen_file_4.html">16.5.4. Example structure</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<h1>16.5.3. Rules</h1>
+<p>There's one last string that's contained within the structure:</p>
+<div class="code"><p>rules</p></div>
+<p>It is mandatory, so not defining it will trigger an error. It
+defines how the generator should join the supplied data in order to
+generate a name. This string uses a syntax of its own, which is also
+used when specifying a rule when generating a custom name (see chapter <a href="namegen_generate.html">16.2</a>).</p>
+<p>The rules are parsed pretty much the same way as all other strings,
+so all rules regarding separators and special characters apply as well.
+However, you can additionally use a set of wildcards and frequency
+markers. Each wildcard is preceded by the dollar sign (<b>'$'</b>), while frequency markers are preceded by the per cent sign (<b>'%'</b>). Here's the complete wildcard list:</p>
+<table class="param">
+<tbody><tr><th>Wildcard</th><th>Example</th><th>Description</th></tr>
+<tr><td>$[INT]P</td><td>$P, $25P</td><td>Use a random Pre syllable.<br>The optional integer value denotes the per cent chance of adding the syllable.</td></tr>
+<tr><td>$[INT]s</td><td>$s, $25s</td><td>Use a random Start syllable.</td></tr>
+<tr><td>$[INT]m</td><td>$m, $25m</td><td>Use a random Middle syllable.</td></tr>
+<tr><td>$[INT]e</td><td>$e, $25e</td><td>Use a random End syllable.</td></tr>
+<tr><td>$[INT]p</td><td>$p, $25p</td><td>Use a random Post syllable.</td></tr>
+<tr><td>$[INT]v</td><td>$v, $25v</td><td>Use a random vocal.</td></tr>
+<tr><td>$[INT]c</td><td>$c, $25c</td><td>Use a random consonant.</td></tr>
+<tr><td>$[INT]?</td><td>$?, $25?</td><td>Use a random phoneme (vocal or consonant).</td></tr>
+<tr><td>%INT</td><td>%50, %25</td><td>Frequency marker. Denotes the per cent chance for the rule to be accepted if it's picked.<br>If the rule is not accepted, another roll is made to choose a name generation rule.<br>It's used to reduce the frequency a given rule is chosen with.<br>This marker may only appear at the beginning of a rule.</td></tr>
+</tbody></table>
+</div>
+</div>
+</body></html>

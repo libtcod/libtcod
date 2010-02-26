@@ -222,3 +222,22 @@ div.code p.py {
   color: #7fcb26;
   border: 1px solid #000000;
 }
+
+/* CODE STYLES */
+
+.code-tcod {
+  font-weight: bold;
+}
+
+.code-keyword {
+  font-weight: bold;
+  color: blue;
+}
+
+.code-value {
+  color: fuchsia;
+}
+
+.code-symbol {
+  color: red;
+}

@@ -102,9 +102,9 @@ static void allocate(text_t *data) {
 /* insert a character at cursor position. internal function */
 static void insertChar(text_t *data, char c) {
 	char *ptr, *end;
-	if (data->curlen + 1 == data->max) {
+	if (data->cursor_pos + 1 == data->max) {
 		/* max size reached. replace the last char. don't increase text size */
-		*(data->text + data->curlen -1) = c;
+		*(data->text + data->cursor_pos -1) = c;
 		return;
 	}
 	if (data->curlen + 1 == data->len ) allocate(data);
@@ -162,6 +162,29 @@ static void get_cursor_coords(text_t *data, int *cx, int *cy) {
 	}
 }
 
+/* check if the text does not overflow the textfield */
+static bool check_last_pos(text_t *data) {
+	int count = strlen(data->text);
+	int cx=data->textx;
+	int cy=data->texty;
+	char *ptr=data->text;
+	while ( count > 0 ) {
+		if ( *ptr == '\n') {
+			cx=0;
+			cy++;
+		} else {
+			cx++;
+			if ( cx == data->w ) {
+				cx=0;
+				cy++;
+			}
+		}
+		ptr++;
+		count--;
+	}
+	return ( cy < data->h );
+}
+
 /* set cursor_pos from coordinates. internal function */
 static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 	if ( data->multiline ) {
@@ -173,19 +196,21 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 			if ( cy == data->texty) cx = MAX(data->textx,cx);
 		}
 		// find the right line
-		while ( *ptr && cury < cy ) {
+		while ( *ptr && cury < cy && cury < data->h ) {
 			if (*ptr == '\n' || curx == data->w-1) {
 				curx=0;cury++;
 			} else curx++;
 			ptr++;
 			newpos++;
 		}
-		if ( ! clamp && cury != cy ) return;
-		// check if cx can be reached
-		while ( *ptr && curx < cx && *ptr != '\n') {
-			ptr++;
-			curx++;
-			newpos++;
+		if ( cury >= data->h ) return;
+		if ( cury == cy ) {
+			// check if cx can be reached
+			while ( *ptr && curx < cx && *ptr != '\n') {
+				ptr++;
+				curx++;
+				newpos++;
+			}
 		}
 		data->cursor_pos = newpos;
 	} else {
@@ -431,7 +456,8 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				deleteSelection(data);
 			}
 			if ( data->multiline ) {
-				insertChar(data,'\n');
+				get_cursor_coords(data,&cx,&cy);
+				if ( cy < data->h-1 ) insertChar(data,'\n');
 			} else {
 	            data->input_continue = false;
 			}

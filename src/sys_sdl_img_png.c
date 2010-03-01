@@ -173,6 +173,7 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 
 	// get row data
 	row_pointers=(png_bytep *)malloc(sizeof(png_bytep)*surf->h);
+
 	for (y=0; y<  surf->h; y++ ) {
 //		TODO : we should be able to use directly the surface data...
 //		row_pointers[y]=(png_bytep)(Uint8 *)(surf->pixels) + y * surf->pitch;
@@ -184,6 +185,7 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 			row_pointers[y][x*3+2]=*((pixel)+surf->format->Bshift/8);
 		}
 	}
+
 	png_set_rows(png_ptr,info_ptr,row_pointers);
 
 	png_write_png(png_ptr,info_ptr,PNG_TRANSFORM_IDENTITY,NULL);

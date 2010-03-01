@@ -144,6 +144,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
 bool TCOD_opengl_init_shaders();
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
 void TCOD_opengl_swap();
+void * TCOD_opengl_get_screen();
 #endif
 
 /* fov internal stuff */

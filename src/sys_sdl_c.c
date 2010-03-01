@@ -720,7 +720,13 @@ void TCOD_sys_save_screenshot(const char *filename) {
 			}
 		} while(!filename);
 	}
-	TCOD_sys_save_bitmap((void *)screen,filename);
+	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
+		TCOD_sys_save_bitmap((void *)screen,filename);
+	} else {
+		SDL_Surface *screenshot=(SDL_Surface *)TCOD_opengl_get_screen();
+		TCOD_sys_save_bitmap((void *)screenshot,filename);
+		SDL_FreeSurface(screenshot);
+	}
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {

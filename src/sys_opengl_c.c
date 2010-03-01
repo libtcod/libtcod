@@ -600,6 +600,44 @@ void TCOD_opengl_swap() {
 	SDL_GL_SwapBuffers();
 }
 
+void * TCOD_opengl_get_screen() {
+	SDL_Surface *surf;
+	int pixw,pixh,offx=0,offy=0,x,y;
+	Uint32 mask,nmask;
+
+	// allocate a pixel buffer
+	pixw=TCOD_ctx.root->w * TCOD_ctx.font_width;
+	pixh=TCOD_ctx.root->h * TCOD_ctx.font_height;
+	surf=TCOD_sys_get_surface(pixw,pixh,false);
+	if ( TCOD_ctx.fullscreen ) {
+		offx=TCOD_ctx.fullscreen_offsetx;
+		offy=TCOD_ctx.fullscreen_offsety;
+	}
+
+	// get pixel data from opengl
+	glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
+	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glReadPixels(offx,offy,pixw,pixh, GL_RGB, GL_UNSIGNED_BYTE, surf->pixels);
+	glPopClientAttrib();
+	
+	// vertical flip (opengl has lower-left origin, SDL upper left)
+	mask=surf->format->Rmask|surf->format->Gmask|surf->format->Bmask;
+	nmask=~mask;
+	for (x=0; x < surf->w; x++) {
+		for (y=0; y < surf->h/2; y++) {
+			int offsrc=x*3+y*surf->pitch;
+			int offdst=x*3+(surf->h-1-y)*surf->pitch;
+			Uint32 *pixsrc = (Uint32 *)(((Uint8 *)surf->pixels)+offsrc);
+			Uint32 *pixdst = (Uint32 *)(((Uint8 *)surf->pixels)+offdst);
+			Uint32 tmp = *pixsrc;
+			*pixsrc = ((*pixsrc) & nmask) | ((*pixdst) & mask);
+			*pixdst = ((*pixdst) & nmask) | (tmp & mask);
+		}
+	}
+
+	return (void *)surf;
+}
 
 #endif
 

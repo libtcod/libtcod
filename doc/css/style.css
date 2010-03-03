@@ -2,16 +2,32 @@
  * main regions *
  ****************/
  
- /* some neat CSS3 fun - not all browsers understand that :) */
+/* some neat CSS3 fun - not all browsers understand that :) */
+/* Droid - standard font */
 @font-face {
-  font-family: Chica;
-  src: url(../font/Chica.ttf);
+  font-family: droid;
+  src: url(../font/Droid.ttf);
+}
+/* Droid Bold - standard bold font */
+@font-face {
+  font-family: droid-bold;
+  src: url(../font/DroidBold.ttf);
+}
+/* Liberation - monospaced font */
+@font-face {
+  font-family: liberation;
+  src: url(../font/Liberation.ttf);
+}
+/* Liberation Bold - monospaced bold font */
+@font-face {
+  font-family: liberation-bold;
+  src: url(../font/LiberationBold.ttf);
 }
 
  /* global style */
 body {
   background-color: white;
-  font-family: Chica, verdana, helvetica, sans-serif;
+  font-family: droid, verdana, sans-serif;
   font-size: 14px;
   color: black;
   margin: 0px;
@@ -53,6 +69,7 @@ div.main {
 
 /* breadcrumb text area */
 .breadcrumbtext {
+  font-family: droid-bold, verdana, sans-serif;
   font-weight: bold;
   margin-left: 25px;
 }
@@ -102,6 +119,7 @@ div.main {
 
 /* breadcrumb text and link styles */
 .breadcrumb p {
+  font-family: droid-bold;
   font-weight: bold;
   color: white;
   padding-top: 7px;
@@ -136,6 +154,7 @@ div.main {
 
 /* main region text */
 .maintext h1, .maintext h2, .maintext h3, .maintext h4, .maintext h5, .maintext h6 {
+  font-family: droid-bold, verdana, sans-serif;
   font-weight: bold;
   text-shadow: 2px 2px 4px #444444;
 }
@@ -150,12 +169,14 @@ div.main {
 .maintext a, .maintext a:active, .maintext a:visited {
   color: #194675;
   text-decoration: none;
+  font-family: droid-bold, verdana, sans-serif;
   font-weight: bold;
 }
 
 .maintext a:hover {
   color: #4e7195;
   text-decoration: underline;
+  font-family: droid-bold, verdana, sans-serif;
   font-weight: bold;
 }
 
@@ -163,7 +184,7 @@ div.main {
 div.code {
   background-color: #b1ce91;
   margin: 10px 25px;
-  font-family: consolas, monospace;
+  font-family: liberation, consolas, monospace;
   color: #444444;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -176,23 +197,23 @@ div.code p {
 
 div.code p.c {
   padding: 15px 5px 5px 50px;
-	background-image:url('../img/c.png');
+	background-image: url('../img/c.png');
 	background-position: 5px 5px;
-	background-repeat:no-repeat;
+	background-repeat: no-repeat;
 }
 
 div.code p.cpp {
   padding: 15px 5px 5px 50px;
-	background-image:url('../img/cpp.png');
+	background-image: url('../img/cpp.png');
 	background-position: 5px 5px;
-	background-repeat:no-repeat;
+	background-repeat: no-repeat;
 }
 
 div.code p.py {
   padding: 15px 5px 10px 50px;
-	background-image:url('../img/py.png');
+	background-image: url('../img/py.png');
 	background-position: 5px 5px;
-	background-repeat:no-repeat;
+	background-repeat: no-repeat;
 }
 
 /* main region tables */
@@ -226,10 +247,12 @@ div.code p.py {
 /* CODE STYLES */
 
 .code-tcod {
+  font-family: liberation-bold, consolas, monospace;
   font-weight: bold;
 }
 
 .code-keyword {
+  font-family: liberation-bold, consolas, monospace;
   font-weight: bold;
   color: blue;
 }

@@ -2,32 +2,34 @@
  * main regions *
  ****************/
  
-/* some neat CSS3 fun - not all browsers understand that :) */
-/* Droid - standard font */
+/* some neat @font-face fun - the browsers will use custom fonts. */
+/* includes a version for Internet Explorer (.eot native format) */
 @font-face {
-  font-family: droid;
-  src: url(../font/Droid.ttf);
+	font-family: 'DroidSansRegular';
+	src: url('../font/DroidSans.eot');
+	src: local('Droid Sans Regular'), local('DroidSans'), url('../font/DroidSans.ttf') format('truetype');
 }
-/* Droid Bold - standard bold font */
+
 @font-face {
-  font-family: droid-bold;
-  src: url(../font/DroidBold.ttf);
+	font-family: 'DroidSansBold';
+	src: url('../font/DroidSans-Bold.eot');
+	src: local('Droid Sans Bold'), local('DroidSans-Bold'), url('../font/DroidSans-Bold.ttf') format('truetype');
 }
-/* Liberation - monospaced font */
 @font-face {
-  font-family: liberation;
-  src: url(../font/Liberation.ttf);
+	font-family: 'BitstreamVeraSansMonoRoman';
+	src: url('../font/VeraMono.eot');
+	src: local('Bitstream Vera Sans Mono Roman'), local('BitstreamVeraSansMono-Roman'), url('../font/VeraMono.ttf') format('truetype');
 }
-/* Liberation Bold - monospaced bold font */
 @font-face {
-  font-family: liberation-bold;
-  src: url(../font/LiberationBold.ttf);
+	font-family: 'BitstreamVeraSansMonoBold';
+	src: url('../font/VeraMono-Bold.eot');
+	src: local('Bitstream Vera Sans Mono Bold'), local('BitstreamVeraSansMono-Bold'), url('../font/VeraMono-Bold.ttf') format('truetype');
 }
 
  /* global style */
 body {
   background-color: white;
-  font-family: droid, verdana, sans-serif;
+  font-family: DroidSansRegular, verdana, sans-serif;
   font-size: 14px;
   color: black;
   margin: 0px;
@@ -69,7 +71,7 @@ div.main {
 
 /* breadcrumb text area */
 .breadcrumbtext {
-  font-family: droid-bold, verdana, sans-serif;
+  font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
   margin-left: 25px;
 }
@@ -119,7 +121,7 @@ div.main {
 
 /* breadcrumb text and link styles */
 .breadcrumb p {
-  font-family: droid-bold, verdana, sans-serif;
+  font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
   color: white;
   padding-top: 7px;
@@ -154,7 +156,7 @@ div.main {
 
 /* main region text */
 .maintext h1, .maintext h2, .maintext h3, .maintext h4, .maintext h5, .maintext h6 {
-  font-family: droid-bold, verdana, sans-serif;
+  font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
   text-shadow: 2px 2px 4px #444444;
 }
@@ -169,14 +171,14 @@ div.main {
 .maintext a, .maintext a:active, .maintext a:visited {
   color: #194675;
   text-decoration: none;
-  font-family: droid-bold, verdana, sans-serif;
+  font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
 }
 
 .maintext a:hover {
   color: #4e7195;
   text-decoration: underline;
-  font-family: droid-bold, verdana, sans-serif;
+  font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
 }
 
@@ -184,7 +186,7 @@ div.main {
 div.code {
   background-color: #b1ce91;
   margin: 10px 25px;
-  font-family: liberation, consolas, monospace;
+  font-family: BitstreamVeraSansMonoRoman, monospace;
   color: #444444;
   border-color: #194675;
   border-width: 1px;
@@ -250,12 +252,12 @@ div.code p.py {
 /* CODE STYLES */
 
 .code-tcod {
-  font-family: liberation-bold, consolas, monospace;
+  font-family: BitstreamVeraSansMonoBold, monospace;
   font-weight: bold;
 }
 
 .code-keyword {
-  font-family: liberation-bold, consolas, monospace;
+  font-family: BitstreamVeraSansMonoBold, monospace;
   font-weight: bold;
   color: blue;
 }

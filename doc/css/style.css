@@ -119,7 +119,7 @@ div.main {
 
 /* breadcrumb text and link styles */
 .breadcrumb p {
-  font-family: droid-bold;
+  font-family: droid-bold, verdana, sans-serif;
   font-weight: bold;
   color: white;
   padding-top: 7px;
@@ -186,33 +186,36 @@ div.code {
   margin: 10px 25px;
   font-family: liberation, consolas, monospace;
   color: #444444;
+  border-color: #194675;
+  border-width: 1px;
+  border-style: solid;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
 }
 
 div.code p {
-  padding: 5px 10px;
+  padding: 5px 20px;
 }
 
 div.code p.c {
-  padding: 15px 5px 5px 50px;
+  padding: 15px 5px 5px 60px;
 	background-image: url('../img/c.png');
-	background-position: 5px 5px;
+	background-position: 15px 5px;
 	background-repeat: no-repeat;
 }
 
 div.code p.cpp {
-  padding: 15px 5px 5px 50px;
+  padding: 15px 5px 5px 60px;
 	background-image: url('../img/cpp.png');
-	background-position: 5px 5px;
+	background-position: 15px 5px;
 	background-repeat: no-repeat;
 }
 
 div.code p.py {
-  padding: 15px 5px 10px 50px;
+  padding: 15px 5px 10px 60px;
 	background-image: url('../img/py.png');
-	background-position: 5px 5px;
+	background-position: 15px 5px;
 	background-repeat: no-repeat;
 }
 
@@ -263,4 +266,8 @@ div.code p.py {
 
 .code-symbol {
   color: red;
+}
+
+.code-string {
+  color: blue;
 }

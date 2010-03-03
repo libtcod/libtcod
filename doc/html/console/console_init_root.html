@@ -86,9 +86,9 @@ one.</p>
 renderer.</p>
 <p>Note 3: whatever renderer you use, it can always be overriden
 by the player through the libtcod.cfg file.</p>
-<p>Note 4 : you can dynamically change the renderer after calling
+<p>Note 4: you can dynamically change the renderer after calling
 initRoot with TCODSystem::setRenderer.</p>
-<p>Note 5 : you can get current renderer with
+<p>Note 5: you can get current renderer with
 TCODSystem::getRenderer. It might be different from the one you set
 in initRoot in case it's not supported on the player's computer.</p>
 </td>
@@ -96,10 +96,10 @@ in initRoot in case it's not supported on the player's computer.</p>
 </tbody>
 </table><br><h6>Example:</h6>
 <div style="color: rgb(68, 68, 68);" class="code">
-<p class="cpp"><span class="code-tcod">TCODConsole</span><span class="code-symbol">::</span>initRoot<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span> <span class="code-value">50</span><span class="code-symbol">,</span> <span class="code-value">"The Chronicles Of Doryen v0.1"</span><span class="code-symbol">);</span></p>
+<p class="cpp"><span class="code-tcod">TCODConsole</span><span class="code-symbol">::</span>initRoot<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span> <span class="code-value">50</span><span class="code-symbol">,</span> <span class="code-string">"The Chronicles Of Doryen v0.1"</span><span class="code-symbol">);</span></p>
 <p class="c">TCOD_console_init_root<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span>
-<span class="code-value">50</span><span class="code-symbol">,</span>&nbsp;<span class="code-value">"The Chronicles Of Doryen v0.1"</span><span class="code-symbol">,</span> <span class="code-keyword">false</span><span class="code-symbol">,</span> <span class="code-tcod">TCOD_RENDERER_SDL</span><span class="code-symbol">);</span></p>
-<p class="py">libtcod<span class="code-symbol">.</span>console_init_root<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span>&nbsp;<span class="code-value">50</span><span class="code-symbol">,</span> <span class="code-value">'The Chronicles Of Doryen v0.1'</span><span class="code-symbol">)</span></p>
+<span class="code-value">50</span><span class="code-symbol">,</span>&nbsp;<span class="code-string">"The Chronicles Of Doryen v0.1"</span><span class="code-symbol">,</span> <span class="code-keyword">false</span><span class="code-symbol">,</span> <span class="code-tcod">TCOD_RENDERER_SDL</span><span class="code-symbol">);</span></p>
+<p class="py">libtcod<span class="code-symbol">.</span>console_init_root<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span>&nbsp;<span class="code-value">50</span><span class="code-symbol">,</span> <span class="code-string">'The Chronicles Of Doryen v0.1'</span><span class="code-symbol">)</span></p>
 </div>
 </div>
 </div>

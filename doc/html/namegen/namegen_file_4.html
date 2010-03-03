@@ -5,7 +5,7 @@
 <body>
 <div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
-</div>>
+</div>&gt;
 <div class="breadcrumb">
 <div class="breadcrumbtext">
 <p>you are here: <a href="../../index.html">Index</a>
@@ -20,7 +20,7 @@ Syllable set configuration</a>
 <div class="maintext">
 <h1>16.5.4. Example structure</h1>
 <p>Consider this example structure. It does not contain syllables, but rather full names.</p>
-<div class="code"><p><font color="blue"><b>name</b> "king"</font> <font color="red">{</font><br>&nbsp; <b>syllablesStart</b> <font color="red">=</font> <font color="blue">"Alexander, Augustus, Casimir, Henry, John, Louis, Sigismund,<br>&nbsp;&nbsp;&nbsp; Stanislao, Stephen, Wenceslaus"</font><br>&nbsp; <b>syllablesMiddle</b> <font color="red">=</font> <font color="blue">"I, II, III, IV, V"</font><br>&nbsp; <b>syllablesEnd</b> <font color="red">=</font> <font color="blue">"Bathory, Herman, Jogaila, Lambert, of_Bohemia, of_France,<br>&nbsp;&nbsp;&nbsp; of_Hungary, of_Masovia, of_Poland, of_Valois, of_Varna, Probus,<br>&nbsp;&nbsp;&nbsp; Spindleshanks, Tanglefoot, the_Bearded, the_Black, the_Bold, the_Brave,<br>&nbsp;&nbsp;&nbsp; the_Chaste, the_Curly, the_Elbow-high, the_Exile, the_Great,<br>&nbsp;&nbsp;&nbsp; the_Jagiellonian, the_Just, the_Old, the_Pious, the_Restorer, the_Saxon,<br>&nbsp;&nbsp;&nbsp; the_Strong, the_Wheelwright, the_White, Vasa, Wrymouth"</font><br>&nbsp; <b>rules</b> <font color="red">=</font> <font color="blue">"%50$s, $s_$m, $s_$50m_$e"</font><br><font color="red">}</font></p></div>
+<div class="code"><p><span class="code-keyword">name</span> <span class="code-string">"king"</span> <span class="code-symbol">{</span><br>&nbsp; <span class="code-tcod">syllablesStart</span> <span class="code-symbol">=</span> <span class="code-string">"Alexander, Augustus, Casimir, Henry, John, Louis, Sigismund,<br>&nbsp;&nbsp;&nbsp; Stanislao, Stephen, Wenceslaus"</span><br>&nbsp; <span class="code-tcod">syllablesMiddle</span> <span class="code-symbol">=</span> <span class="code-string">"I, II, III, IV, V"</span><br>&nbsp; <span class="code-tcod">syllablesEnd</span> <span class="code-symbol">=</span> <span class="code-string">"Bathory, Herman, Jogaila, Lambert, of_Bohemia, of_France,<br>&nbsp;&nbsp;&nbsp; of_Hungary, of_Masovia, of_Poland, of_Valois, of_Varna, Probus,<br>&nbsp;&nbsp;&nbsp; Spindleshanks, Tanglefoot, the_Bearded, the_Black, the_Bold, the_Brave,<br>&nbsp;&nbsp;&nbsp; the_Chaste, the_Curly, the_Elbow-high, the_Exile, the_Great,<br>&nbsp;&nbsp;&nbsp; the_Jagiellonian, the_Just, the_Old, the_Pious, the_Restorer, the_Saxon,<br>&nbsp;&nbsp;&nbsp; the_Strong, the_Wheelwright, the_White, Vasa, Wrymouth"</span><br>&nbsp; <span class="code-tcod">rules</span> <span class="code-symbol">=</span> <span class="code-string">"%50$s, $s_$m, $s_$50m_$e"</span><br><span class="code-symbol">}</span></p></div>
 <p>The above structure only uses three syllable lists and has three different rules. Let's analyse them one by one.</p>
 <p><b>%50$s</b> - this will simply output a random Start syllable, but
 this rule is not intended to be picked with the same frequency as the

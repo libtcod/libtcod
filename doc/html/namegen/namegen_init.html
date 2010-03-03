@@ -1,10 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | creating a name
-generator</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | name generator | creating a name generator</title>
 
-<link href="../../css/style.css" rel="stylesheet" type="text/css">
-</head>
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head>
 <body>
 <div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
@@ -33,7 +31,7 @@ void</span> <span class="code-tcod">TCODNamegen</span><span class="code-symbol">
 NULL<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span>
 TCOD_namegen_parse <span class="code-symbol">(</span><span class="code-keyword">const char</span> <span class="code-symbol">*</span>
-filename<span class="code-symbol">,</span> TCOD_random_t
+filename<span class="code-symbol">,</span> <span class="code-tcod">TCOD_random_t</span>
 random<span class="code-symbol">)</span></p>
 <p class="py">
 namegen_parse <span class="code-symbol">(</span>filename<span class="code-symbol">,</span> random <span class="code-symbol">=</span>
@@ -45,7 +43,7 @@ namegen_parse <span class="code-symbol">(</span>filename<span class="code-symbol
 <th>Parameter</th>
 <th>Description</th>
 </tr>
-<tr>
+<tr class="hilite">
 <td>filename</td>
 <td>The file where the desired syllable set is saved, along
 with its relative parh, for instance, "data/names.txt".</td>
@@ -70,10 +68,10 @@ generator will assume you would like to use an instance of the default
 generator.</p>
 <h6>Example:</h6>
 <div class="code">
-<p class="cpp"><b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font><b>TCODRandom</b><font color="red">::</font>getInstance<font color="red">())</font>;<br>
-<b>TCODNamegen</b><font color="red">::</font>parse<font color="red">(</font><font color="blue">"data/names2.txt"</font><font color="red">)</font>;</p>
-<p class="c">TCOD_namegen_parse<font color="red">(</font><font color="blue">"data/names.txt"</font><font color="red">,</font>TCOD_random_get_instance<font color="red">())</font>;</p>
-<p class="py">libtcod<font color="red">.</font>namegen_parse<font color="red">(</font><font color="blue">'data/names.txt'</font><font color="red">)</font></p>
+<p class="cpp"><span class="code-tcod">TCODNamegen</span><span class="code-symbol">::</span>parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span><span class="code-tcod">TCODRandom</span><span class="code-symbol">::</span>getInstance<span class="code-symbol">());</span><br><span class="code-tcod">
+TCODNamegen</span><span class="code-symbol">::</span>parse<span class="code-symbol">(</span><span class="code-string">"data/names2.txt"</span><span class="code-symbol">);</span></p>
+<p class="c">TCOD_namegen_parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span>TCOD_random_get_instance<span class="code-symbol">());</span></p>
+<p class="py">libtcod<span class="code-symbol">.</span>namegen_parse<span class="code-symbol">(</span><span class="code-string">'data/names.txt'</span><span class="code-symbol">)</span></p>
 </div>
 </div>
 </div>

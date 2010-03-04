@@ -31,8 +31,9 @@
 #include <string.h>
 
 TCOD_map_t TCOD_map_new(int width, int height) {
+	map_t *map=NULL;
 	TCOD_IFNOT(width > 0 && height > 0) return NULL;
-	map_t *map=(map_t *)calloc(sizeof(map_t),1);
+	map=(map_t *)calloc(sizeof(map_t),1);
 	map->width=width;
 	map->height=height;
 	map->nbcells=width*height;
@@ -40,7 +41,7 @@ TCOD_map_t TCOD_map_new(int width, int height) {
 	return map;
 }
 
-TCODLIB_API void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest) {
+void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest) {
 	map_t *source_int = (map_t *)source;
 	map_t *dest_int = (map_t *)dest;
 	TCOD_IFNOT(source != NULL && dest != NULL) return;

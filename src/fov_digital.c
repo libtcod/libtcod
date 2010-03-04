@@ -31,6 +31,12 @@
 #include <math.h>
 #include "libtcod.h"
 #include "libtcod_int.h"
+#ifdef TCOD_WINDOWS
+#include <malloc.h>
+#define alloca _alloca
+#else
+#include <alloca.h>
+#endif
 
 #define CCW(x1,y1,x2,y2,x3,y3) ((x1)*(y2) + (x2)*(y3) + (x3)*(y1) - (x1)*(y3) - (x2)*(y1) - (x3)*(y2))
 
@@ -45,7 +51,13 @@ void draw (map_t *m,int cx, int cy, int dis, int px, int py, bool light_walls) {
 
 
 static void trace(map_t *m,int dir, int n, int h, int px, int py, bool light_walls) {
-	int topx[n+2], topy[n+2], botx[n+2], boty[n+2];	// convex hull of obstructions
+	// convex hull of obstructions
+	int *topx = alloca(n+2);
+	int *topy = alloca(n+2);
+	int *botx = alloca(n+2);
+	int *boty = alloca(n+2);
+	int cx[2];
+	int cy[2];
 	int curt = 0, curb = 0;	// size of top and bottom convex hulls
 	int s[2][2] = {{0, 0}, {0, 0}};	// too lazy to think of real variable names, four critical points on the convex hulls - these four points determine what is visible
 	int ad1,ad2[2]={0,0},eps[2] = {0, n-1},i;
@@ -59,7 +71,10 @@ static void trace(map_t *m,int dir, int n, int h, int px, int py, bool light_wal
 			}
 		}
 		for(i=0; i <2; i++) if (CCW(topx[s[!i][1]], topy[s[!i][1]], botx[s[i][0]], boty[s[i][0]], ad1, ad2[i]+i) <= 0) return;	// the relevant region is no longer visible. If we don't exit the loop now, strange things happen.
-		int cx[2] = {ad1, ad1}, cy[2] = {ad2[0], ad2[1]};
+		cx[0] = ad1;
+		cx[1] = ad1;
+		cy[0] = ad2[0];
+		cy[1] = ad2[1];
 		for(i=0; i <2; i++) {
 			if (dir&1) cx[i] = -cx[i];
 			if (dir&2) cy[i] = -cy[i];

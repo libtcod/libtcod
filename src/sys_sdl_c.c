@@ -722,10 +722,12 @@ void TCOD_sys_save_screenshot(const char *filename) {
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		TCOD_sys_save_bitmap((void *)screen,filename);
+#ifndef NO_OPENGL		
 	} else {
 		SDL_Surface *screenshot=(SDL_Surface *)TCOD_opengl_get_screen();
 		TCOD_sys_save_bitmap((void *)screenshot,filename);
 		SDL_FreeSurface(screenshot);
+#endif		
 	}
 }
 

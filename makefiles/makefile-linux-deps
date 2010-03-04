@@ -51,7 +51,6 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/fov_c.o \
 	$(TEMP)/libtcod/debug/fov_circular_raycasting.o \
 	$(TEMP)/libtcod/debug/fov_diamond_raycasting.o \
-	$(TEMP)/libtcod/debug/fov_digital.o \
 	$(TEMP)/libtcod/debug/fov_recursive_shadowcasting.o \
 	$(TEMP)/libtcod/debug/fov_permissive2.o \
 	$(TEMP)/libtcod/debug/fov_restrictive.o \
@@ -116,7 +115,6 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/fov_c.o \
 	$(TEMP)/libtcod/release/fov_circular_raycasting.o \
 	$(TEMP)/libtcod/release/fov_diamond_raycasting.o \
-	$(TEMP)/libtcod/release/fov_digital.o \
 	$(TEMP)/libtcod/release/fov_recursive_shadowcasting.o \
 	$(TEMP)/libtcod/release/fov_permissive2.o \
 	$(TEMP)/libtcod/release/fov_restrictive.o \

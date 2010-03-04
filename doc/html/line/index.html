@@ -1,102 +1,112 @@
-<table width="100%"><tr><td width="20%">
-<a href="../index.html">&lt; index</a><br />
-<a href="../system/index.html">&lt; 3. System layer</a>
-</td><td width="60%">
-<p align="center">
-=====================================<br />
-4. Line drawing toolkit<br />
-=====================================<br />
-</p></td><td width="20%">
-<a href="../image/index.html">&gt; 5. Image toolkit</a>
-</td></tr></table>
-<style type="text/css">
-.code { color:#444444; background-color:#EEEEEE;}
-pre { color:#444444; background-color:#EEEEEE;}
-table.param td { border : 1px solid #000000; }
-th { background-color: #44BBFF; color: #FFFFFF }
-table.none td { border : 0 }
-</style>
-This toolkit is a very simple and lightweight implementation of the bresenham line drawing algorithm.<br/>
-It allows you to follow straight paths on your map very easily.<br />
-<br />
-First, you have to initialize the toolkit with your starting and ending coordinates :<br />
-<p class="code"><pre>
-C++ : static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
-C   : void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo)
-Py  : line_init(xFrom, yFrom, xTo, yTo)
-</pre></p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | line drawing toolkit</title>
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head><body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">4. Line drawing toolkit</a><br>
+<a class="prev" href="../system/index.html">3. System layer</a> | <a class="next" href="../image/index.html">5. Image toolkit</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<p>This toolkit is a very simple and lightweight implementation of the
+bresenham line drawing algorithm. It allows you to follow straight
+paths on your map very easily.</p>
+<p>First, you have to initialize the toolkit with your starting and ending coordinates:</p>
+
+<div class="code">
+	<p class="cpp"><span class="code-keyword">static void</span>&nbsp;<span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>init&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> xFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> xTo<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yTo<span class="code-symbol">)</span></p>
+	<p class="c"><span class="code-keyword">void</span>&nbsp;TCOD_line_init&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> xFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> xTo<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yTo<span class="code-symbol">)</span></p>
+	<p class="py">line_init&nbsp;<span class="code-symbol">(</span>xFrom<span class="code-symbol">,</span> yFrom<span class="code-symbol">,</span> xTo<span class="code-symbol">,</span> yTo<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>xFrom,yFrom</td><td>Coordinates of the line's starting point.</td></tr>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>xFrom, yFrom</td><td>Coordinates of the line's starting point.</td></tr>
 <tr><td>xTo, yTo</td><td>Coordinates of the line's ending point.</td></tr>
-</table>
-<br />
-You can then step through each cell with this function. It returns true when you reach the line's ending point.<br />
-<p class="code"><pre>
-C++ : static bool TCODLine::step(int *xCur, int *yCur)
-C   : bool TCOD_line_step(int *xCur, int *yCur)
-Py  : line_step() # returns x,y or None,None if finished
-</pre></p>
+</tbody></table>
+
+<p>You can then step through each cell with this function. It returns true when you reach the line's ending point.</p>
+
+<div class="code">	
+<p class="cpp"><span class="code-keyword">static bool</span>&nbsp;<span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>step&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span>&nbsp;<span class="code-symbol">*</span> xCur<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span>&nbsp;<span class="code-symbol">*</span> yCur<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">bool</span>&nbsp;TCOD_line_step&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span>&nbsp;<span class="code-symbol">*</span> xCur<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span>&nbsp;<span class="code-symbol">*</span> yCur<span class="code-symbol">)</span></p>
+<p class="py">line_step&nbsp;<span class="code-symbol">()</span>&nbsp;<span class="code-comment"># returns x,y or None,None if finished</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>xCur,yCur</td><td>Coordinates of the next cell on the line.</td></tr>
-</table>
-<br />
-Example :<br />
-Going from point 5,8 to point 13,4 :<br />
-<p class="code"><pre>
-C++ : int x=5,y=8;
-      TCODLine::init(x,y,13,4);
-      do {
-	     .. update cell x,y
-      } while (! TCODLine::step(&x,&y) );
-C   : int x=5,y=8;
-      TCOD_line_init(x,y,13,4);
-      do {
-	     .. update cell x,y
-      } while (! TCOD_line_step(&x,&y) );
-Py  : libtcod.line_init(5,8,13,4)
-      .. update cell 5,8
-      x,y=libtcod.line_step()
-      while (not x is None ) :
-	     .. update cell x,y
-         x,y=libtcod.line_step()
-</pre></p><hr />
-You can also use a callback-based atomic function.<br />
-<p class="code"><pre>
-C++ : class TCODLIB_API TCODLineListener {
-          virtual bool putPoint(int x,int y) = 0;
-      };
-      static bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener)
-C   : typedef bool (*TCOD_line_listener_t) (int x, int y);
-      bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener)
-Py  : def line_listener(x,y) : ...
-      line(xFrom, yFrom, xTo, yTo, listener)
-</pre></p>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>xCur, yCur</td><td>Coordinates of the next cell on the line.</td></tr>
+</tbody></table>
+
+<h6>Example:</h6>
+<p>Going from point 5,8 to point 13,4:</p>
+
+<div class="code">
+<p class="cpp">
+<span class="code-keyword">int</span>&nbsp;x&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-value">5</span><span class="code-symbol">,</span> y&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-value">8</span><span class="code-symbol">;</span><br>
+<span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>init<span class="code-symbol">(</span>x<span class="code-symbol">,</span>y<span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">);</span><br><span class="code-keyword">do</span>&nbsp;<span class="code-symbol">{</span><br>
+&nbsp; &nbsp;&nbsp;<span class="code-comment">// update cell x,y</span><br><span class="code-symbol">}</span>&nbsp;<span class="code-keyword">while</span>&nbsp;<span class="code-symbol">(!</span><span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>step<span class="code-symbol">(&amp;</span>x<span class="code-symbol">,&amp;</span>y<span class="code-symbol">));</span></p>
+<p class="c">
+<span class="code-keyword">int</span>&nbsp;x&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-value">5</span><span class="code-symbol">,</span> y&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-value">8</span><span class="code-symbol">;</span><br>
+TCOD_line_init<span class="code-symbol">(</span>x<span class="code-symbol">,</span>y<span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">);</span><br>
+<span class="code-keyword">do</span>&nbsp;<span class="code-symbol">{</span><br>
+&nbsp; &nbsp;&nbsp;<span class="code-comment">/* update cell x,y */</span><br><span class="code-symbol">}</span>&nbsp;<span class="code-keyword">while</span>&nbsp;<span class="code-symbol">(!</span>TCOD_line_step<span class="code-symbol">(&amp;</span>x<span class="code-symbol">,&amp;</span>y<span class="code-symbol">));</span></p>
+<p class="py">
+libtcod<span class="code-symbol">.</span>line_init<span class="code-symbol">(</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">8</span><span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">)</span><br><span class="code-comment"># update cell 5,8</span><br>
+x<span class="code-symbol">,</span>y<span class="code-symbol">=</span>libtcod<span class="code-symbol">.</span>line_step<span class="code-symbol">()</span><br>
+<span class="code-keyword">while</span>&nbsp;<span class="code-symbol">(</span><span class="code-keyword">not</span> x&nbsp;<span class="code-keyword">is None</span><span class="code-symbol">) :</span><br>
+&nbsp; &nbsp;&nbsp;<span class="code-comment"># update cell x,y</span><br>
+x<span class="code-symbol">,</span>y<span class="code-symbol">=</span>libtcod<span class="code-symbol">.</span>line_step<span class="code-symbol">()</span></p>
+</div>
+
+<hr>
+
+<p>You can also use a callback-based atomic function.</p>
+
+<div class="code">
+  <p class="cpp"><span class="code-keyword">class</span>&nbsp;<span class="code-tcod">TCODLIB_API</span>&nbsp;<span class="code-tcod">TCODLineListener</span>&nbsp;<span class="code-symbol">{</span><br>
+		&nbsp; &nbsp;&nbsp;<span class="code-keyword">virtual bool</span> putPoint&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> y<span class="code-symbol">) =</span>&nbsp;<span class="code-value">0</span><span class="code-symbol">;</span><br><span class="code-symbol">};</span><br><span class="code-keyword">static bool</span>&nbsp;<span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>line&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> xFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> xTo<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yTo<span class="code-symbol">,</span>&nbsp;<span class="code-tcod">TCODLineListener</span>&nbsp;<span class="code-symbol">*</span> listener<span class="code-symbol">)</span></p>
+	<p class="c"><span class="code-keyword">typedef bool</span>&nbsp;<span class="code-symbol">(*</span><span class="code-tcod">TCOD_line_listener_t</span><span class="code-symbol">)</span>&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> y<span class="code-symbol">);</span><br>
+		<span class="code-keyword">bool</span>&nbsp;TCOD_line<span class="code-symbol">(</span><span class="code-keyword">int</span> xFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yFrom<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> xTo<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> yTo<span class="code-symbol">,</span>&nbsp;<span class="code-tcod">TCOD_line_listener_t</span> listener<span class="code-symbol">)</span></p>
+	<p class="py"><span class="code-keyword">def</span>&nbsp;line_listener<span class="code-symbol">(</span>x<span class="code-symbol">,</span>y<span class="code-symbol">) :</span>&nbsp;<span class="code-comment"># ...</span><br>
+		line<span class="code-symbol">(</span>xFrom<span class="code-symbol">,</span> yFrom<span class="code-symbol">,</span> xTo<span class="code-symbol">,</span> yTo<span class="code-symbol">,</span> listener<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>xFrom,yFrom</td><td>Coordinates of the line's starting point.</td></tr>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>xFrom, yFrom</td><td>Coordinates of the line's starting point.</td></tr>
 <tr><td>xTo, yTo</td><td>Coordinates of the line's ending point.</td></tr>
-<tr><td>listener</td><td>Callback called for each line's point. The function stops if the callback returns false.</td></tr>
-</table>
-The function returns false if the line has been interrupted by the callback (it returned false before the last point).
-<br />
-Example :<br />
-Going from point 5,8 to point 13,4 :<br />
-<p class="code"><pre>
-C++ : class MyLineListener : public TCODLineListener {
-          public :
-          bool putPoint(int x,int y) { printf ("%d %d\n",x,y); return true; }
-      };
-      MyLineListener myListener;
-      TCODLine::line(5,8,13,4,&myListener);
-C   : bool my_listener(int x,int y) { printf ("%d %d\n",x,y); return true; }
-      TCOD_line_line(5,8,13,4,my_listener);
-Py  : def my_listener(x,y) : 
-          print x,y
-          return True
-      libtcod.line_line(5,8,13,4,my_listener)
-</pre></p>
+<tr class="hilite"><td>listener</td><td>Callback called for each line's point. The function stops if the callback returns false.</td></tr>
+</tbody></table>
 
+<p>The function returns false if the line has been interrupted by the callback (it returned false before the last point).</p>
+<h6>Example:</h6>
+<p>Going from point 5,8 to point 13,4:</p>
 
-
+<div class="code">
+<p class="cpp"><span class="code-keyword">class</span>&nbsp;MyLineListener&nbsp;<span class="code-symbol">:</span>&nbsp;<span class="code-keyword">public</span>&nbsp;<span class="code-tcod">TCODLineListener</span>&nbsp;<span class="code-symbol">{</span><br>
+&nbsp; &nbsp;&nbsp;<span class="code-keyword">public</span><span class="code-symbol">:</span><br>
+&nbsp; &nbsp;&nbsp;<span class="code-keyword">bool</span> putPoint<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword">int</span> y<span class="code-symbol">)</span>&nbsp;<span class="code-symbol">{</span><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; printf&nbsp;<span class="code-symbol">(</span><span class="code-string">"%d %d\n"</span><span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">);</span><br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return true</span><span class="code-symbol">;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-symbol">}</span><br><span class="code-symbol">};</span><br>
+MyLineListener myListener<span class="code-symbol">;</span><br>
+<span class="code-tcod">TCODLine</span><span class="code-symbol">::</span>line<span class="code-symbol">(</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">8</span><span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">,&amp;</span>myListener<span class="code-symbol">);</span></p>
+<p class="c"><span class="code-keyword">bool</span>&nbsp;my_listener<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword">int</span> y<span class="code-symbol">)</span>&nbsp;<span class="code-symbol">{</span><br>
+&nbsp;&nbsp;&nbsp; printf&nbsp;<span class="code-symbol">(</span><span class="code-string">"%d %d\n"</span><span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">);</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return true</span><span class="code-symbol">;</span><br>
+<span class="code-symbol">}</span><br>
+TCOD_line_line<span class="code-symbol">(</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">8</span><span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">,</span>my_listener<span class="code-symbol">);</span></p>
+<p class="py"><span class="code-keyword">def</span>&nbsp;my_listener<span class="code-symbol">(</span>x<span class="code-symbol">,</span>y<span class="code-symbol">):</span><br> 
+&nbsp; &nbsp; print x<span class="code-symbol">,</span>y<br>
+&nbsp; &nbsp;&nbsp;<span class="code-keyword">return True</span><br>
+libtcod<span class="code-symbol">.</span>line_line<span class="code-symbol">(</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">8</span><span class="code-symbol">,</span><span class="code-value">13</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">,</span>my_listener<span class="code-symbol">)</span></p></div>
+</div></div></body></html>

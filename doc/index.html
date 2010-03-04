@@ -1,20 +1,313 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | index</title>
-<link href="css/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-<div class="header">
-<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
-</div>
-<div class="breadcrumb">
-<div class="breadcrumbtext">
-<p>you are here: <a href="index.html">Index</a></p>
-</div>
-</div>
-<div class="main">
-<div class="maintext">
-<h1>The Doryen Library v1.5.0 - table of contents</h1>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | index</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css"></head><body>
+  </head>
+  <body>
+    <div class="header">
+      <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+    </div>
+    <div class="breadcrumb">
+      <div class="breadcrumbtext">
+        <p>you are here: <a href="index.html">Index</a></p>
+      </div>
+    </div>
+    <div class="main">
+      <div class="maintext">
+        <h1>The Doryen Library v1.5.0 - table of contents</h1>
+
+        <div id="toc">
+          <ul>
+            <li class="haschildren"><a href="html/compil/index.html">0. Compiling with libtcod</a>
+              <ul>
+                <li><a href="html/compil/msys_mingw.html">0.1. MinGW32 without IDE</a></li>
+                <li><a href="html/compil/msys_cb.html">0.2. MinGW32 with Code::Blocks</a></li>
+                <li><a href="#">0.3. Visual Studio 2005 (TODO)</a></li>
+                <li><a href="#">0.4. Visual Studio 2008 (TODO)</a></li>
+                <li><a href="html/compil/linux.html">0.5. GCC on Linux</a></li>
+                <li><a href="html/compil/macosx.html">0.6. GCC on MacOS X</a></li>
+              </ul>
+            </li>
+            <li class="cat">Core</li>
+            <li><a href="html/color/index.html">1. Colors</a></li>
+            <li class="haschildren"><a href="html/console/index.html">2. Console</a>
+              <ul>
+                <li class="haschildren"><a href="html/console/console_init.html">2.1. Initializing the console</a>
+                  <ul>
+                    <li><a href="html/console/console_init_root.html">2.1.1. Creating the game window</a></li>
+                    <li><a href="html/console/console_set_bitmap_font_size.html">2.1.2. Using a custom bitmap font</a></li>
+                    <li><a href="html/console/console_map.html">2.1.3. Using custom characters mappings</a></li>
+                    <li><a href="html/console/console_is_fullscreen.html">2.1.4. Getting the current mode (windowed/fullscreen)</a></li>
+                    <li><a href="html/console/console_set_fullscreen.html">2.1.5. Switching between windowed and fullscreen modes</a></li>
+                    <li><a href="html/console/console_is_window_closed.html">2.1.6. Handling "close window" events</a></li>
+                    <li><a href="html/console/console_set_window_title.html">2.1.7. Changing the window title</a></li>
+                    <li><a href="html/console/console_credits.html">2.1.8. Showing credits for libtcod</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/console/console_drawing.html">2.2. Drawing on the root console</a>
+                  <ul>
+                    <li><a href="#">2.2.1. Flushing the root console</a></li>
+                    <li class="haschildren"><a href="html/console/console_drawing_basic.html">2.2.2. Basic printing functions</a>
+                      <ul>
+                        <li><a href="html/console/console_set_background_color.html">2.2.2.1. Setting the default background color</a></li>
+                        <li><a href="html/console/console_set_foreground_color.html">2.2.2.2. Setting the default foreground color</a></li>
+                        <li><a href="html/console/console_clear.html">2.2.2.3. Clearing the console</a></li>
+                        <li><a href="html/console/console_put_char.html">2.2.2.4. Modifying every property of a cell</a></li>
+                        <li><a href="html/console/console_set_back.html">2.2.2.5. Modifying the background color of a cell</a></li>
+                        <li><a href="html/console/console_set_fore.html">2.2.2.6. Modifying the foreground color of a cell</a></li>
+                        <li><a href="html/console/console_set_char.html">2.2.2.7. Modifying the ASCII code of a cell</a></li>
+                      </ul>
+                    </li>
+                    <li class="haschildren"><a href="html/console/console_drawing_string.html">2.2.3. String printing functions</a>
+                      <ul>
+                        <li><a href="html/console/console_print_left.html">2.2.3.1. Printing a left aligned string</a></li>
+                        <li><a href="html/console/console_print_right.html">2.2.3.2. Printing a right aligned string</a></li>
+                        <li><a href="html/console/console_print_center.html">2.2.3.3. Printing a centered string</a></li>
+                        <li><a href="html/console/console_print_left_rect.html">2.2.3.4. Printing a left aligned string with autowrap</a></li>
+                        <li><a href="html/console/console_print_right_rect.html">2.2.3.5. Printing a right aligned string with autowrap</a></li>
+                        <li><a href="html/console/console_print_center_rect.html">2.2.3.6. Printing a centered string with autowrap</a></li>
+                        <li><a href="html/console/console_color_control.html">2.2.3.7. Changing the colors while printing a string</a></li>
+                      </ul>
+                    </li>
+                    <li class="haschildren"><a href="html/console/console_drawing_advanced.html">2.2.4. Advanced printing functions</a>
+                      <ul>
+                        <li><a href="html/console/console_rect.html">2.2.4.1. Filling a rectangle with the background color</a></li>
+                        <li><a href="html/console/console_hline.html">2.2.4.2. Drawing an horizontal line</a></li>
+                        <li><a href="html/console/console_vline.html">2.2.4.3. Drawing a vertical line</a></li>
+                        <li><a href="html/console/console_print_frame.html">2.2.4.4. Drawing a window frame</a></li>
+                      </ul>
+                    </li>
+                    <li class="haschildren"><a href="html/console/console_drawing_reading.html">2.2.5. Reading the content of the console</a>
+                      <ul>
+                        <li><a href="html/console/console_get_background_color.html">2.2.5.1. Reading the default background color</a></li>
+                        <li><a href="html/console/console_get_foreground_color.html">2.2.5.2. Reading the default foreground color</a></li>
+                        <li><a href="html/console/console_get_back.html">2.2.5.3. Reading the background color of a cell</a></li>
+                        <li><a href="html/console/console_get_fore.html">2.2.5.4. Reading the foreground color of a cell</a></li>
+                        <li><a href="html/console/console_get_char.html">2.2.5.5. Reading the ASCII code of a cell</a></li>
+                      </ul>
+                    </li>
+                    <li class="haschildren"><a href="html/console/console_drawing_fading.html">2.2.6. Screen fading functions</a>
+                      <ul>
+                        <li><a href="html/console/console_set_fade.html">2.2.6.1. Changing the fading parameters</a></li>
+                        <li><a href="html/console/console_get_fade.html">2.2.6.2. Reading the fade amount</a></li>
+                        <li><a href="html/console/console_get_fading_color.html">2.2.6.3. Reading the fading color</a></li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/console/console_keyboard.html">2.3. Handling keyboard input</a>
+                  <ul>
+                    <li><a href="html/console/console_wait_for_keypress.html">2.3.1. Blocking keyboard input</a></li>
+                    <li><a href="html/console/console_check_for_keypress.html">2.3.2. Non-blocking keyboard input</a></li>
+                    <li><a href="html/console/console_set_keyboard_repeat.html">2.3.3. Changing keyboard repeat delay</a></li>
+                    <li><a href="html/console/key_t.html">2.3.4. Keyboard event structure</a></li>
+                    <li><a href="html/console/keycode_t.html">2.3.5. Key codes</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/console/console_offscreen.html">2.4. Using off-screen consoles</a>
+                  <ul>
+                    <li><a href="html/console/console_console.html">2.4.1. Creating an offscreen console</a></li>
+                    <li><a href="html/console/console_blit.html">2.4.2. Blitting a console on another one</a></li>
+                    <li><a href="html/console/console_delete.html">2.4.3. Destroying an offscreen console</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/system/index.html">3. System layer</a>
+              <ul>
+                <li><a href="html/system/system_sleep.html">3.1. High precision time functions</a></li>
+                <li><a href="html/system/system_screenshot.html">3.2. Easy screenshots</a></li>
+                <li><a href="html/system/system_fullscreen.html">3.3. Using a custom resolution for the fullscreen mode</a></li>
+                <li><a href="html/system/system_fs.html">3.4. Filesystem utilities</a></li>
+                <li><a href="html/system/system_renderer.html">3.5. Draw custom graphics on top of the root console</a></li>
+              </ul>
+            </li>
+            <li class="cat">Base toolkits</li>
+            <li><a href="html/line/index.html">4. Line drawing toolkit</a></li>
+            <li class="haschildren"><a href="html/image/index.html">5. Image toolkit</a>
+              <ul>
+                <li><a href="html/image/image_new.html">5.1. Creating an empty image</a></li>
+                <li><a href="html/image/image_load.html">5.2. Loading a .bmp or .png image</a></li>
+                <li><a href="html/image/image_from_console.html">5.3. Creating an image from a console</a></li>
+                <li><a href="html/image/image_clear.html">5.4. Filling an image with a color</a></li>
+                <li><a href="html/image/image_get_size.html">5.5. Getting the size of an image</a></li>
+                <li><a href="html/image/image_get_pixel.html">5.6. Getting the color or transparency of a pixel</a></li>
+                <li><a href="html/image/image_get_mipmap_pixel.html">5.7. Getting the average color of a part of the image</a></li>
+                <li><a href="html/image/image_put_pixel.html">5.8. Changing the color of a pixel</a></li>
+                <li><a href="html/image/image_scale.html">5.9. Modifying an image</a></li>
+                <li><a href="html/image/image_blit.html">5.10. Blitting an image on a console</a></li>
+                <li><a href="html/image/image_save.html">5.11. Saving an image to a .bmp or .png file</a></li>
+                <li><a href="html/image/image_delete.html">5.12. Deleting an image</a></li>
+              </ul>
+            </li>
+            <li><a href="html/mouse/index.html"">6. Mouse support</a></li>
+            <li class="haschildren"><a href="html/parser/index.html">7. File parser</a>
+              <ul>
+                <li class="haschildren"><a href="html/parser/parser_format.html">7.1. The libtcod config file format</a>
+                  <ul>
+                    <li><a href="html/parser/parser_format.html#10.1.1">7.1.1. Comments</a></li>
+                    <li><a href="html/parser/parser_format.html#10.1.2">7.1.2. Structures</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/parser/parser_str.html">7.2. Declaring the 'structures'</a>
+                  <ul>
+                    <li><a href="html/parser/parser_str.html#10.2.1">7.2.1. Creating a parser</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.2">7.2.2. Registering a new structure type</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.3">7.2.3. Adding a new flag</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.4">7.2.4. Adding a new property</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.5">7.2.5. Adding a new value list property</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.6">7.2.6. Adding a new list property</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.7">7.2.7. Adding a sub-structure</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.8">7.2.8. Getting a structure type's name</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.9">7.2.9. Checking if a property is mandatory</a></li>
+                    <li><a href="html/parser/parser_str.html#10.2.10">7.2.10. Retrieving the type of a property</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/parser/parser_run.html">7.3. Running the parser</a>
+                  <ul>
+                    <li><a href="html/parser/parser_run.html#10.3.1">7.3.1. Creating a listener</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.2">7.3.2. Handling 'newStruct' events</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.3">7.3.3. Handling 'newFlag' events</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.4">7.3.4. Handling 'newProperty' events</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.5">7.3.5. Handling 'endStruct' events</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.6">7.3.6. Handling errors</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.7">7.3.7. Running the parser</a></li>
+                    <li><a href="html/parser/parser_run.html#10.3.8">7.3.8. Destroying the parser</a></li>
+                  </ul>
+                </li>
+                <li><a href="html/parser/parser_types.html">7.4. Standard data types</a></li>
+                <li><a href="html/parser/parser_custom.html">7.5. Using custom data types</a></li>
+                <li><a href="html/parser/parser_default.html">7.6. Using the default parser listener</a></li>
+                <li><a href="html/parser/parser_tuto.html">7.7. Parser listener - additional information</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/list/index.html">8. All purposes container</a>
+              <ul>
+                <li><a href="html/list/list_init.html">8.1. Creating a list</a></li>
+                <li><a href="html/list/list_array.html">8.2. Basic array operations</a></li>
+                <li><a href="html/list/list_list.html">8.3. Basic list operations</a></li>
+                <li><a href="html/list/list_stack.html">8.4. Basic stack operations</a></li>
+                <li><a href="html/list/list_iterator.html">8.5. Iterators</a></li>
+                <li><a href="html/list/list_delete.html">8.6. Deleting a list</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/random/index.html">9. Pseudorandom number generator</a>
+              <ul>
+                <li><a href="html/random/random_init.html">9.1. Creating a generator</a></li>
+                <li><a href="html/random/random_use.html">9.2. Using a generator</a></li>
+                <li><a href="html/random/random_delete.html">9.3. Destroying a generator</a></li>            
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/noise/index.html">10. Noise generator</a>
+            <ul>
+              <li><a href="html/noise/noise_init.html">10.1. Creating a noise generator</a></li>
+              <li><a href="html/noise/noise_perlin.html">10.2. Getting Perlin noise</a></li>
+              <li><a href="html/noise/noise_simplex.html">10.3. Getting simplex noise</a></li>
+              <li><a href="html/noise/noise_wavelet.html">10.4. Getting wavelet noise</a></li>
+              <li><a href="html/noise/noise_delete.html">10.5. Destroying a generator</a></li>
+            </ul>
+            </li>
+            <li class="haschildren"><a href="html/zip/index.html">11. Compression toolkit</a>
+              <ul>
+                <li><a href="html/zip/zip_init.html">11.1. Creating a compression buffer</a></li>
+                <li><a href="html/zip/zip_put.html">11.2. Putting data in the buffer</a></li>
+                <li><a href="html/zip/zip_save.html">11.3. Saving the compressed data to a file</a></li>
+                <li><a href="html/zip/zip_load.html">11.4. Loading compressed data from a file</a></li>
+                <li><a href="html/zip/zip_get.html">11.5. Getting data from the buffer</a></li>
+                <li><a href="html/zip/zip_delete.html">11.6. Destroying a compression buffer</a></li>
+              </ul>
+            </li>
+            <li class="cat">Roguelike toolkits</li>
+            <li class="haschildren"><a href="html/fov/index.html">12. Field of view toolkit</a>
+              <ul>
+                <li><a href="html/fov/fov_init.html">12.1. Building the map</a></li>   
+                <li><a href="html/fov/fov_compute.html">12.2. Computing the field of view</a></li>
+                <li><a href="html/fov/fov_get.html">12.3. Reading fov information</a></li>
+                <li><a href="html/fov/fov_delete.html">12.4. Destroying a map</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/path/index.html">13. Path finding</a>
+              <ul>
+                <li><a href="html/path/path_init.html">13.1. Creating a path</a></li>
+                <li><a href="html/path/path_compute.html">13.2. Computing the path</a></li>
+                <li><a href="html/path/path_get.html">13.3. Reading path information</a></li>
+                <li><a href="html/path/path_delete.html">13.4. Destroying a path</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/bsp/index.html">14. BSP toolkit</a>
+              <ul>
+                <li><a href="html/bsp/bsp_init.html">14.1. Creating a BSP tree</a></li>
+                <li><a href="html/bsp/bsp_split.html">14.2. Splitting a BSP tree</a></li>
+                <li><a href="html/bsp/bsp_resize.html">14.3. Resizing a BSP tree</a></li>
+                <li><a href="html/bsp/bsp_data.html">14.4. Reading information from the tree</a></li>
+                <li><a href="html/bsp/bsp_traverse.html">14.5. Traversing the tree</a></li>
+                <li><a href="html/bsp/bsp_delete.html">14.6. Destroying a tree</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/heightmap/index.html">15. Heightmap toolkit</a>
+              <ul>
+                <li><a href="html/heightmap/heightmap_init.html">15.1. Creating a heightmap</a></li>
+                <li class="haschildren"><a href="html/heightmap/heightmap_base.html">15.2. Basic operations</a>
+                  <ul>  
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.1">15.2.1. Setting a cell value</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.2">15.2.2. Adding a float value to all cells</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.3">15.2.3. Multiplying all values by a float</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.4">15.2.4. Resetting all values to 0.0</a></li>              
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.5">15.2.5. Clamping all values</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.6">15.2.6. Copying values from another heightmap</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.7">15.2.7. Normalizing values</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.8">15.2.8. Doing a lerp operation between two heightmaps</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.9">15.2.9. Adding two heightmaps</a></li>
+                    <li><a href="html/heightmap/heightmap_base.html#15.2.10">15.2.10. Multiplying two heightmaps</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/heightmap/heightmap_modify.html">15.3. Modifying the heightmap</a>
+                  <ul>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.1">15.3.1. Add hills</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.2">15.3.2. Dig hills</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.3">15.3.3. Simulate rain erosion</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.4">15.3.4. Do a generic transformation</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.5">15.3.5. Add a Voronoi diagram</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.6">15.3.6. Add a fbm</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.7">15.3.7. Scale with a fbm</a></li>
+                    <li><a href="html/heightmap/heightmap_modify.html#15.3.8">15.3.8. Dig along a Bezier curve</a></li>
+                  </ul>
+                </li>
+                <li class="haschildren"><a href="html/heightmap/heightmap_read.html">15.4. Reading data from the heightmap</a>
+                  <ul>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.1">15.4.1. Get the value of a cell<br /></a></li>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.2">15.4.2. Interpolate the height<br /></a</li>>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.3">15.4.3. Get the map slope<br /></a></li>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.4">15.4.4. Get the map normal<br /></a></li>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.5">15.4.5. Count the map cells inside a height range<br /></a></li>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.6">15.4.6. Check if the map is an island<br /></a></li>
+                    <li><a href="html/heightmap/heightmap_read.html#15.4.7">15.4.7. Get the map min and max values<br /></a></li>
+                  </ul>
+                </li>
+                <li><a href="html/heightmap/heightmap_delete.html">15.5. Destroying a heightmap</a></li>
+              </ul>
+            </li>
+            <li class="haschildren"><a href="html/namegen/index.html">16. Name generator</a>
+              <ul>
+                <li><a href="html/namegen/namegen_init.html">16.1. Creating a generator</a></li>
+                <li><a href="html/namegen/namegen_generate.html">16.2. Generating a name</a></li>
+                <li><a href="html/namegen/namegen_delete.html">16.3. Destroying a generator</a></li>
+                <li><a href="html/namegen/namegen_retrieve.html">16.4. Retrieving available set names</a></li>
+                <li class="haschildren"><a href="html/namegen/namegen_file.html">16.5. Syllable set configuration</a>
+                  <ul>
+                    <li><a href="html/namegen/namegen_file_1.html">16.5.1. Syllable set basic structure</a></li>
+                    <li><a href="html/namegen/namegen_file_2.html">16.5.2. Illegal strings</a></li>
+                    <li><a href="html/namegen/namegen_file_3.html">16.5.3. Rules</a></li>
+                    <li><a href="html/namegen/namegen_file_4.html">16.5.4. Example structure</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+<!--
 <div align="center">
 <table>
 <tbody>
@@ -67,12 +360,9 @@ Field of view toolkit</a><br>
 <h5>Compiling</h5>
 <p>To use the library, just include the right file:</p>
 <div class="code">
-<p class="cpp"><font color="#009900">#include
-"libtcod.hpp"</font></p>
-<p class="c"><font color="#009900">#include
-"libtcod.h"</font></p>
-<p class="py"><font color="#009900">import
-libtcodpy as libtcod</font></p>
+<p class="cpp"><span class="code-preprocessor">#include "libtcod.hpp"</span></p>
+<p class="c"><span class="code-preprocessor">#include "libtcod.h"</span></p>
+<p class="py"><span class="code-preprocessor">import libtcodpy as libtcod</span></p>
 </div>
 <p>For C/C++, you have to put the libtcod include directory in your
 compiler include path.</p>
@@ -91,6 +381,7 @@ g++ -O3 sample.cpp -o samples_cpp -L. -ltcod -ltcod++ -I include</p></div>
 <p>On Linux, libtcod.so (and libtcod++.so if you're using C++) must be in your LD_LIBRARY_PATH:</p>
 <div class="code"><p>export LD_LIBRARY_PATH=.<br>
 ./samples_c</p></div>
+-->
 </div>
 </div>
 </body></html>

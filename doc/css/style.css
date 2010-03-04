@@ -1,9 +1,8 @@
-/**************** 
- * main regions *
- ****************/
- 
+/******************************************************************/
 /* some neat @font-face fun - the browsers will use custom fonts. */
-/* includes a version for Internet Explorer (.eot native format) */
+/* includes a version for Internet Explorer (.eot native format)  */
+/******************************************************************/
+
 @font-face {
 	font-family: 'DroidSansRegular';
 	src: url('../font/DroidSans.eot');
@@ -15,18 +14,24 @@
 	src: url('../font/DroidSans-Bold.eot');
 	src: local('Droid Sans Bold'), local('DroidSans-Bold'), url('../font/DroidSans-Bold.ttf') format('truetype');
 }
+
 @font-face {
 	font-family: 'BitstreamVeraSansMonoRoman';
 	src: url('../font/VeraMono.eot');
 	src: local('Bitstream Vera Sans Mono Roman'), local('BitstreamVeraSansMono-Roman'), url('../font/VeraMono.ttf') format('truetype');
 }
+
 @font-face {
 	font-family: 'BitstreamVeraSansMonoBold';
 	src: url('../font/VeraMono-Bold.eot');
 	src: local('Bitstream Vera Sans Mono Bold'), local('BitstreamVeraSansMono-Bold'), url('../font/VeraMono-Bold.ttf') format('truetype');
 }
 
- /* global style */
+/**************** 
+ * main regions *
+ ****************/
+
+/* global style */
 body {
   background-color: white;
   font-family: DroidSansRegular, verdana, sans-serif;
@@ -35,14 +40,21 @@ body {
   margin: 0px;
 }
 
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 150%;
+}
+
 /* header region */
 div.header {
-  margin: 25px 25px 0px 25px;
+  margin: 50px 25px 25px 25px;
 }
 
 /* breadcrumb */
 div.breadcrumb {
-  height: 47px;
+  /*height: 47px;*/
+  height: auto;
   background-image: url('../img/breadcrumb.png');
 	background-repeat: repeat-x;
 	background-color: #194675;
@@ -60,14 +72,6 @@ div.main {
 /***************
  * sub regions *
  ***************/
-
-/* logo */
-.logo {
-  background-image: url('../img/logo.png');
-  background-repeat: no-repeat;
-  background-position:left top;
-  height: 75px;
-}
 
 /* breadcrumb text area */
 .breadcrumbtext {
@@ -87,6 +91,13 @@ div.main {
  * text styles *
  ***************/ 
 
+/* logo margin - to get rid of an unwanted space after the header div */
+.header p {
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
 /* logo style (yeah, an outline :D) */
 .title1 {
   color: #7fcb26;
@@ -100,8 +111,6 @@ div.main {
                 2px -2px 1px #194675,
                 2px 2px 1px #194675,
                 5px 5px 5px #000000;
-  padding: 0;
-  margin: 0;
 }
 .title2 {
   color: #194675;
@@ -115,8 +124,6 @@ div.main {
                 2px -2px 1px #7fcb26,
                 2px 2px 1px #7fcb26,
                 5px 5px 5px #000000;
-  padding: 0;
-  margin: 0;
 }
 
 /* breadcrumb text and link styles */
@@ -124,7 +131,8 @@ div.main {
   font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
   color: white;
-  padding-top: 7px;
+  padding: 7px 0;
+  margin-bottom: 0;
 }
 
 .breadcrumb a, .breadcrumb a:active, .breadcrumb a:visited {
@@ -137,6 +145,7 @@ div.main {
   text-decoration: underline;
 }
 
+/* previous and next links */
 .breadcrumb a.prev {
   background-image: url('../img/prev.png');
   background-repeat: no-repeat;
@@ -151,14 +160,13 @@ div.main {
   padding: 0 20px 0 0;
 }
 
-/* previous and next links */
-
-
 /* main region text */
 .maintext h1, .maintext h2, .maintext h3, .maintext h4, .maintext h5, .maintext h6 {
   font-family: DroidSansBold, verdana, sans-serif;
   font-weight: bold;
   text-shadow: 2px 2px 4px #444444;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 .maintext h1 { font-size: 24px; }
@@ -249,7 +257,9 @@ div.code p.py {
   border: 1px solid #000000;
 }
 
-/* CODE STYLES */
+/***************
+ * CODE STYLES *
+ ***************/
 
 .code-tcod {
   font-family: BitstreamVeraSansMonoBold, monospace;
@@ -272,4 +282,108 @@ div.code p.py {
 
 .code-string {
   color: blue;
+}
+
+.code-comment {
+  color: gray;
+}
+
+.code-preprocessor {
+  color: teal;
+}
+
+/************************************ 
+ * TABLE OF CONTENTS UNIQUE STYLING *
+ ************************************/
+ 
+#toc {
+  font-size: 11px;
+}
+
+#toc ul {
+  padding: 0;
+  margin: 0;
+}
+
+#toc li {
+  list-style: none;
+  position: relative;
+  display: block;
+  width: 200px;
+  background-color: #b1ce91;
+  /* radius - not understood by IE8 and Opera 10.10, but still looks decent */
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px; /* correct CSS3 syntax, unsupported by anything atm */
+  border-style: solid;
+  border-color: #194675;
+  border-width: 1px;
+  padding: 3px 5px;
+  margin-top: -1px;
+}
+
+#toc li:hover {
+  background-color: #7fcb26;
+}
+
+#toc li ul {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#toc li:hover > ul {
+  display: block;
+}
+
+#toc li ul li {
+  _display: inline; /* for IE6 */
+}
+
+/* SUBSUB Menu */
+
+#toc li ul li ul {
+  display: none;
+}
+
+#toc li ul li:hover > ul {
+  display: block;
+  left: 100%;
+  top: 0;
+}
+
+/* SUBSUBSUB Menu */
+
+#toc li ul li ul li ul {
+  display: none;
+}
+
+#toc li ul li ul li:hover ul {
+  left: 100%;
+  top: 0;
+}
+
+/* list items with children will be marked as such */
+
+#toc li.haschildren {
+  background-image: url('../img/haschildren.png');
+  background-position: 193px 2px;
+  background-repeat: no-repeat;
+}
+
+#toc li.haschildren a {
+  padding-right: 28px;
+}
+
+/* category names have a different styling */
+
+#toc li.cat, #toc li.cat:hover {
+  background-color: #194675;
+  color: #7fcb26;
+  text-align: center;
+  font-family: DroidSansBold, verdana, sans-serif;
+  font-weight: bold;
 }

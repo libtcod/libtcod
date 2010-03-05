@@ -12,9 +12,6 @@ IF(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
-	# debug builds want to link in the debug C runtime, but out dependencies on SDL/ZLIB want the release. Use the release always
-	SET(CMAKE_SHARED_LIBRARY_LINKER_FLAGS "${CMAKE_SHARED_LIBRARY_LINKER_FLAGS} /NODEFAULTLIB:MSVCRTD.lib ")
-	
 	SET(LIB_DIR msvc)
 	SET(ZLIB_NAME zdll)
 ELSE(MINGW)
@@ -40,12 +37,10 @@ include_directories(dependencies/libpng-1.2.31/include)
 
 LINK_DIRECTORIES(../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
 
-#HACK
-#src/sys_opengl_c.c 
 SET(LIBTCOD_C_SRC src/bresenham_c.c src/bsp_c.c src/color_c.c src/console_c.c src/fov_c.c src/fov_circular_raycasting.c 
 				src/fov_diamond_raycasting.c src/fov_digital.c src/fov_permissive.c src/fov_permissive2.c src/fov_recursive_shadowcasting.c 
 				src/fov_restrictive.c src/heightmap_c.c src/image_c.c src/lex_c.c src/list_c.c src/mersenne_c.c src/namegen_c.c 
-				src/noise_c.c src/parser_c.c src/path_c.c src/sys_c.c src/sys_sdl_c.c src/sys_sdl_img_bmp.c 
+				src/noise_c.c src/parser_c.c src/path_c.c src/sys_c.c src/sys_opengl_c.c src/sys_sdl_c.c src/sys_sdl_img_bmp.c 
 				src/sys_sdl_img_png.c src/tree_c.c src/txtfield_c.c src/wrappers.c src/zip_c.c)
 
 SET(LIBTCOD_CPP_SRC src/bresenham.cpp src/bsp.cpp src/color.cpp src/console.cpp src/fov.cpp src/heightmap.cpp src/image.cpp src/lex.cpp src/mersenne.cpp 
@@ -61,9 +56,12 @@ include_directories(include/gui)
 add_library(libtcod-gui SHARED ${LIBTCOD_GUI_SRC})
 target_link_libraries(libtcod-gui libtcod) 
 
+IF(MSVC)
 # Since we're exporting functions and clases, we use the "standard" macro combinations to do so under msvc.
 # These turn them on for the right builds.
-IF(MSVC)
 set_property(TARGET libtcod PROPERTY COMPILE_DEFINITIONS LIBTCOD_EXPORTS)
 set_property(TARGET libtcod-gui PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
+
+# Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
+set_property(TARGET libtcod PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
 ENDIF()

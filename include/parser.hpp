@@ -80,6 +80,11 @@ public :
 	virtual void error(const char *msg) = 0;
 };
 
+#ifdef TCOD_VISUAL_STUDIO
+    // silly stuff to avoid VS warning
+	template class TCODLIB_API TCODList<TCODParserStruct *>;
+#endif
+
 class TCODLIB_API TCODParser {
 public :
 	TCODParser();
@@ -92,10 +97,6 @@ public :
 	void run(const char *filename, ITCODParserListener *listener);
 	// error during parsing. can be called by the parser listener
 	void error(const char *msg, ...);
-#ifdef TCOD_VISUAL_STUDIO
-    // silly stuff to avoid VS warning
-	template class TCODLIB_API TCODList<TCODParserStruct *>;
-#endif
 	TCODList<TCODParserStruct *>defs;
 	bool getBoolProperty(const char *name) const;
 	int getIntProperty(const char *name) const;

@@ -121,7 +121,7 @@ static uint32 hash(const char *data,int len) {
 }
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
-    return TCOD_random_new_from_seed(algo,time(0));
+    return TCOD_random_new_from_seed(algo,(uint32)time(0));
 }
 
 TCOD_random_t TCOD_random_get_instance(void) {

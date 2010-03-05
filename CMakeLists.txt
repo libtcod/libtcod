@@ -38,7 +38,7 @@ include_directories(dependencies/libpng-1.2.31/include)
 LINK_DIRECTORIES(../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
 
 SET(LIBTCOD_C_SRC src/bresenham_c.c src/bsp_c.c src/color_c.c src/console_c.c src/fov_c.c src/fov_circular_raycasting.c 
-				src/fov_diamond_raycasting.c src/fov_digital.c src/fov_permissive.c src/fov_permissive2.c src/fov_recursive_shadowcasting.c 
+				src/fov_diamond_raycasting.c src/fov_permissive.c src/fov_permissive2.c src/fov_recursive_shadowcasting.c 
 				src/fov_restrictive.c src/heightmap_c.c src/image_c.c src/lex_c.c src/list_c.c src/mersenne_c.c src/namegen_c.c 
 				src/noise_c.c src/parser_c.c src/path_c.c src/sys_c.c src/sys_opengl_c.c src/sys_sdl_c.c src/sys_sdl_img_bmp.c 
 				src/sys_sdl_img_png.c src/tree_c.c src/txtfield_c.c src/wrappers.c src/zip_c.c)

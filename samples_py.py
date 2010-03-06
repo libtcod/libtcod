@@ -1301,6 +1301,7 @@ def render_py(first, key):
 		use_numpy = not use_numpy
 		first = True
 	if first:  #initialize stuff
+		libtcod.sys_set_fps(0)
 		libtcod.console_clear(sample_console)  #render status message
 		if not numpy_available: text = 'NumPy uninstalled, using default renderer'
 		elif use_numpy: text = 'Renderer: NumPy  \nSpacebar to change'

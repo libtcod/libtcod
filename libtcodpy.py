@@ -1010,8 +1010,8 @@ def parser_get_dice_property(parser, name):
     _lib.TCOD_parser_get_dice_property_py(parser, name, byref(d))
     return d
 
-def parser_get_list_property(parser, name):
-    clist = _lib.TCOD_parser_get_list_property(parser, name)
+def parser_get_list_property(parser, name, type):
+    clist = _lib.TCOD_parser_get_list_property(parser, name, c_uint(type))
     res = list()
     for i in range(_lib.TCOD_list_size(clist)):
         elt = _lib.TCOD_list_get(clist, i)

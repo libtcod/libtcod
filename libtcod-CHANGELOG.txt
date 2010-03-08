@@ -10,7 +10,11 @@ X TCODConsole::initRoot has an additional renderer parameter :
    Possible values : TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
 + added clipboard support in TCODSystem (on Linux, only X clipboard supported)
 + added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
++ added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
 % hardened fov module
+- fixed setDirty() not working for the last row or column of the console
+- fixed python samples not compiling if numpy installed
+- fixed python TCOD_parser_get_list_property
 =========================================================
 1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    

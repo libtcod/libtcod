@@ -12,17 +12,32 @@ IF(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
+	SET(LIBTCOD_NAME libtcod)
+	SET(LIBTCOD_GUI_NAME libtcod-gui)
 	SET(LIB_DIR msvc)
+	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
 ELSE(MINGW)
+	#HACK
+	add_definitions(-DNO_OPENGL)
+
+	SET(LIBTCOD_NAME tcod)
+	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR mingw)
-	SET(ZLIB_NAME libz)
+	SET(PNG_NAME png)
+	SET(ZLIB_NAME z)
 ELSE(APPLE)
+	SET(LIBTCOD_NAME tcod)
+	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR osx)
-	SET(ZLIB_NAME libz)
+	SET(PNG_NAME png)
+	SET(ZLIB_NAME z)
 ELSE()
+	SET(LIBTCOD_NAME tcod)
+	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR linux)
-	SET(ZLIB_NAME libz)
+	SET(PNG_NAME png)
+	SET(ZLIB_NAME z)
 ENDIF()
 
 # MSVC uses special SDL headers.
@@ -35,7 +50,7 @@ ENDIF()
 include_directories(dependencies/zlib-1.2.3/include)
 include_directories(dependencies/libpng-1.2.31/include)
 
-LINK_DIRECTORIES(../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
+LINK_DIRECTORIES(../../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
 
 SET(LIBTCOD_C_SRC src/bresenham_c.c src/bsp_c.c src/color_c.c src/console_c.c src/fov_c.c src/fov_circular_raycasting.c 
 				src/fov_diamond_raycasting.c src/fov_permissive.c src/fov_permissive2.c src/fov_recursive_shadowcasting.c 
@@ -49,19 +64,21 @@ SET(LIBTCOD_CPP_SRC src/bresenham.cpp src/bsp.cpp src/color.cpp src/console.cpp 
 SET(LIBTCOD_GUI_SRC src/gui/button.cpp src/gui/container.cpp src/gui/flatlist.cpp src/gui/hbox.cpp src/gui/image.cpp src/gui/label.cpp  src/gui/radiobutton.cpp 
 				src/gui/slider.cpp src/gui/statusbar.cpp src/gui/textbox.cpp src/gui/togglebutton.cpp src/gui/toolbar.cpp src/gui/vbox.cpp src/gui/widget.cpp)
 
-add_library(libtcod SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
-target_link_libraries(libtcod libpng SDL ${ZLIB_NAME}) 
+add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
+target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME}) 
 
 include_directories(include/gui)
-add_library(libtcod-gui SHARED ${LIBTCOD_GUI_SRC})
-target_link_libraries(libtcod-gui libtcod) 
+add_library(${LIBTCOD_GUI_NAME} SHARED ${LIBTCOD_GUI_SRC})
+target_link_libraries(${LIBTCOD_GUI_NAME} ${LIBTCOD_NAME}) 
 
-IF(MSVC)
+IF(MSVC OR MINGW)
 # Since we're exporting functions and clases, we use the "standard" macro combinations to do so under msvc.
 # These turn them on for the right builds.
-set_property(TARGET libtcod PROPERTY COMPILE_DEFINITIONS LIBTCOD_EXPORTS)
-set_property(TARGET libtcod-gui PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
+set_property(TARGET ${LIBTCOD_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_EXPORTS)
+set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
+ENDIF()
 
+IF(MSVC)
 # Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
-set_property(TARGET libtcod PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
+set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
 ENDIF()

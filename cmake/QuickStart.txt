@@ -1,0 +1,25 @@
+This guide is written to get you up and running using cmake to build libtcod as quickly as possible.
+
+Windows - Using Visual Studio
+------------------------------
+1) Either double click generate-vc.bat or run it from a command line.
+2) Open vcproj folder created in cmake/vcproj
+3) Open libtcod.sln with visual studio.
+
+Right click ALL_BUILD and click build.
+Currently, the output of the build can be all found in the Debug or Release folder. That will change in the future.
+
+
+Windows - Using MSys/MinGW
+---------------------------
+1) Open MSys and cd to the cmake directory
+2) Run generate-make.sh
+3) cd to the release or debug directories
+4) "make" or "make clean" are valid commands.
+
+
+
+FAQ
+---
+Q. When do I have to run the generate script?
+A. Whenever you modify CMakeLists.txt or delete the generated build files. 

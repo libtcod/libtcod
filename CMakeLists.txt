@@ -4,10 +4,9 @@ project (libtcod)
 # All projects need "include" directory
 include_directories(include)
 
-IF(MSVC)
-	#HACK
-	add_definitions(-DNO_OPENGL)
+find_package(OpenGL)
 
+IF(MSVC)
 	# msvc wants to "deprecate" standard C. Turn those warnings off.
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
@@ -18,9 +17,6 @@ IF(MSVC)
 	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
 ELSE(MINGW)
-	#HACK
-	add_definitions(-DNO_OPENGL)
-
 	SET(LIBTCOD_NAME tcod)
 	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR mingw)
@@ -69,7 +65,7 @@ SET(LIBTCOD_SAMPLE_CPP_SRC samples_cpp.cpp)
 SET(LIBTCOD_HP_TOOL_SRC src/hmtool/operation.cpp src/hmtool/hmtool.cpp)
 
 add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
-target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME}) 
+target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY}) 
 
 include_directories(include/gui)
 add_library(${LIBTCOD_GUI_NAME} SHARED ${LIBTCOD_GUI_SRC})

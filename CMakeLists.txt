@@ -4,7 +4,7 @@ project (libtcod)
 # All projects need "include" directory
 include_directories(include)
 
-find_package(OpenGL)
+find_package(OpenGL REQUIRED)
 
 IF(MSVC)
 	# msvc wants to "deprecate" standard C. Turn those warnings off.
@@ -36,6 +36,8 @@ ELSE()
 	SET(ZLIB_NAME z)
 ENDIF()
 
+#Linux uses system libraries
+if(MSVC OR MINGW)
 # MSVC uses special SDL headers.
 IF(MSVC)
 	include_directories(dependencies/SDL-1.2.12/include/msvc)
@@ -47,6 +49,12 @@ include_directories(dependencies/zlib-1.2.3/include)
 include_directories(dependencies/libpng-1.2.31/include)
 
 LINK_DIRECTORIES(../../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
+ELSE(LINUX)
+find_package(SDL REQUIRED)
+find_package(PNG REQUIRED)
+find_package(ZLIB REQUIRED)
+ENDIF()
+
 
 SET(LIBTCOD_C_SRC src/bresenham_c.c src/bsp_c.c src/color_c.c src/console_c.c src/fov_c.c src/fov_circular_raycasting.c 
 				src/fov_diamond_raycasting.c src/fov_permissive.c src/fov_permissive2.c src/fov_recursive_shadowcasting.c 

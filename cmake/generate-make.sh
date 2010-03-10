@@ -1,11 +1,16 @@
 #!/bin/sh
 
-if [ "${MSYSTEM}" == "MINGW32" ]; then
+if [ "$1" = "msys" ]; then
 echo "Building MSYS/MinGW makefiles."
 echo "------------------------------"
 BUILD_TYPE="MSYS Makefiles"
+elif [ "$1" = "unix" ]; then
+echo "Building Unix makefiles."
+echo "------------------------------"
+BUILD_TYPE="Unix Makefiles"
 else
-BUILD_TYPE=""
+echo "Not sure which makefiles to make, bailing..."
+exit 1
 fi
 
 mkdir -p release 

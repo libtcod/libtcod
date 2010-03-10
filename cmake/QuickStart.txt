@@ -13,13 +13,24 @@ Currently, the output of the build can be all found in the Debug or Release fold
 Windows - Using MSys/MinGW
 ---------------------------
 1) Open MSys and cd to the cmake directory
-2) Run generate-make.sh
+2) Run generate-make.sh msys
 3) cd to the release or debug directories
 4) "make" or "make clean" are valid commands.
 
+Linux
+---------------------------
+1) Open a prompt and cd to the make direcotry
+2) chmod +x ./generate-make.sh
+2) ./generate-make.sh unix
+3) cd to the release or debug directories
+4) "make" or "make clean" are valid commands.
 
 
 FAQ
 ---
 Q. When do I have to run the generate script?
 A. Whenever you modify CMakeLists.txt or delete the generated build files. 
+
+Q. I get a nasty warning about the CMakeCache directory being different.
+A. You most likely carried a release/debug directory over from one platform to another. 
+   Go deleate cmake/release and cmake/debug and try again.

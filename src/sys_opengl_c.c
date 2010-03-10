@@ -107,7 +107,7 @@ static const char *TCOD_con_pixel_shader =
 "} "
 ;
 
-inline bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
+bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
 {
     GLenum errCode;
     if((errCode = glGetError())!=GL_NO_ERROR)
@@ -168,6 +168,11 @@ static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
 // call after creating window
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	SDL_Surface *font_surf=(SDL_Surface *)font;
+	
+	// convert font for opengl
+	Uint32 rmask, gmask, bmask, amask;
+	SDL_Surface *temp;
+	SDL_Surface *temp_alpha;
 
 	// check opengl extensions
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
@@ -237,10 +242,6 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	while ( POTconwidth < conw ) POTconwidth *= 2;
 	while ( POTconheight < conh ) POTconheight *= 2;
 
-	// convert font for opengl
-	Uint32 rmask, gmask, bmask, amask;
-	SDL_Surface *temp;
-	SDL_Surface *temp_alpha;
 
 	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	rmask = 0xff000000;
@@ -348,6 +349,7 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 
 bool TCOD_opengl_init_shaders() {
 	int i;
+	TCOD_color_t *fCol;
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
 	}
@@ -358,7 +360,7 @@ bool TCOD_opengl_init_shaders() {
 		dirty[i]=true;
 	}
 	// Initialize ForeCol to 255, 255, 255, 255
-	TCOD_color_t *fCol = (TCOD_color_t *)data[ForeCol];
+	fCol = (TCOD_color_t *)data[ForeCol];
 	for( i = 0; i < conwidth*conheight; i++)
 	{
 	    fCol[i].r=255;
@@ -400,9 +402,9 @@ bool TCOD_opengl_init_shaders() {
 }
 
 static bool updateTex(ConsoleDataEnum dataType) {
+	GLenum Type=0;
 	DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[dataType]));
 
-	GLenum Type=0;
 	switch(ConsoleDataAlignment[dataType])
 	{
 	case 1:
@@ -451,6 +453,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	bool track_changes=(oldFade == fade && prev_console_buffer);
 	char_t *c=console_buffer;
 	char_t *oc=prev_console_buffer;
+	int ascii;
 	// update opengl data
 	// TODO use function pointers so that libtcod's putchar directly updates opengl data
 	for (y=0;y<conheight;y++) {
@@ -501,7 +504,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			glTexCoord2f( texw, texh );
 			glVertex2i( conwidth, conheight);
 			glTexCoord2f( texw, 0.0 );
-			glVertex2i( conwidth, 0.0 );
+			glVertex2i( conwidth, 0 );
 		glEnd());
 		// draw the characters (one quad per cell)
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
@@ -522,7 +525,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 							desty+=TCOD_ctx.fullscreen_offsety;
 						}
 						// draw foreground
-						int ascii=c->cf;
+						ascii=c->cf;
 						if (TCOD_ctx.font_in_row) {
 							srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
 							srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
@@ -531,7 +534,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 							srcy = (ascii%TCOD_ctx.fontNbCharVertic);
 						}
 						glBegin( GL_QUADS );
-						glColor3f(f.r/255.0,f.g/255.0,f.b/255.0);
+						glColor3f((GLfloat)(f.r/255.0), (GLfloat)(f.g/255.0), (GLfloat)(f.b/255.0));
 						glTexCoord2f( srcx*fonw, srcy*fonh );
 						glVertex2i( destx, desty);
 						glTexCoord2f( srcx*fonw, (srcy+1)*fonh );

@@ -64,12 +64,25 @@ SET(LIBTCOD_CPP_SRC src/bresenham.cpp src/bsp.cpp src/color.cpp src/console.cpp 
 SET(LIBTCOD_GUI_SRC src/gui/button.cpp src/gui/container.cpp src/gui/flatlist.cpp src/gui/hbox.cpp src/gui/image.cpp src/gui/label.cpp  src/gui/radiobutton.cpp 
 				src/gui/slider.cpp src/gui/statusbar.cpp src/gui/textbox.cpp src/gui/togglebutton.cpp src/gui/toolbar.cpp src/gui/vbox.cpp src/gui/widget.cpp)
 
+SET(LIBTCOD_SAMPLE_C_SRC samples_c.c)
+SET(LIBTCOD_SAMPLE_CPP_SRC samples_cpp.cpp)
+SET(LIBTCOD_HP_TOOL_SRC src/hmtool/operation.cpp src/hmtool/hmtool.cpp)
+
 add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
 target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME}) 
 
 include_directories(include/gui)
 add_library(${LIBTCOD_GUI_NAME} SHARED ${LIBTCOD_GUI_SRC})
 target_link_libraries(${LIBTCOD_GUI_NAME} ${LIBTCOD_NAME}) 
+
+add_executable(sample_c ${LIBTCOD_SAMPLE_C_SRC})
+target_link_libraries(sample_c ${LIBTCOD_NAME}) 
+
+add_executable(sample_cpp ${LIBTCOD_SAMPLE_CPP_SRC})
+target_link_libraries(sample_cpp ${LIBTCOD_NAME}) 
+
+add_executable(hmtool ${LIBTCOD_HP_TOOL_SRC})
+target_link_libraries(hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME}) 
 
 IF(MSVC OR MINGW)
 # Since we're exporting functions and clases, we use the "standard" macro combinations to do so under msvc.

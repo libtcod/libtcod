@@ -1,8 +1,6 @@
-* Seperate C and CPP libraries for linux.
-* Install build stuff to root directory
+* Seperate release and debug named libraries.
 * Documentation!
 * UPX on release
 * Electrice Fence for linux
-* On linux, use system libraries
 * Work on issues provided by and try to convince maintainers of libtcod that cmake is better.
 * Test mac if I can get ahold of one builds.

@@ -16,20 +16,23 @@ IF(MSVC)
 	SET(LIB_DIR msvc)
 	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
-ELSE(MINGW)
+ELSEIF(MINGW)
+
 	SET(LIBTCOD_NAME tcod-mingw)
 	SET(LIBTCOD_GUI_NAME tcod-gui-mingw)
 	SET(LIB_DIR mingw)
 	SET(PNG_NAME png)
 	SET(ZLIB_NAME z)
-ELSE(APPLE)
+ELSEIF(APPLE)
 	SET(LIBTCOD_NAME tcod)
 	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR osx)
 	SET(PNG_NAME png)
 	SET(ZLIB_NAME z)
-ELSE()
+ELSEIF(UNIX)
+
 	SET(LIBTCOD_NAME tcod)
+	SET(LIBTCOD_CPP_NAME tcodxx)
 	SET(LIBTCOD_GUI_NAME tcod-gui)
 	SET(LIB_DIR linux)
 	SET(PNG_NAME png)
@@ -38,21 +41,23 @@ ENDIF()
 
 #Linux uses system libraries
 if(MSVC OR MINGW)
-# MSVC uses special SDL headers.
-IF(MSVC)
-	include_directories(dependencies/SDL-1.2.12/include/msvc)
+	# MSVC uses special SDL headers.
+	IF(MSVC)
+		include_directories(dependencies/SDL-1.2.12/include/msvc)
+	ELSE()
+		include_directories(dependencies/SDL-1.2.12/include)
+	ENDIF()
+
+	include_directories(dependencies/zlib-1.2.3/include)
+	include_directories(dependencies/libpng-1.2.31/include)
+
+	LINK_DIRECTORIES(../../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
 ELSE()
-	include_directories(dependencies/SDL-1.2.12/include)
-ENDIF()
-
-include_directories(dependencies/zlib-1.2.3/include)
-include_directories(dependencies/libpng-1.2.31/include)
-
-LINK_DIRECTORIES(../../dependencies/libpng-1.2.31/lib/${LIB_DIR}/ ../../dependencies/SDL-1.2.12/lib/${LIB_DIR}/ ../../dependencies/zlib-1.2.3/lib/${LIB_DIR}/)
-ELSE(LINUX)
-find_package(SDL REQUIRED)
-find_package(PNG REQUIRED)
-find_package(ZLIB REQUIRED)
+	find_package(SDL REQUIRED)
+	find_package(PNG REQUIRED)
+	find_package(ZLIB REQUIRED)
+	find_package(Threads REQUIRED)
+	find_library(M_LIB m)
 ENDIF()
 
 
@@ -72,35 +77,55 @@ SET(LIBTCOD_SAMPLE_C_SRC samples_c.c)
 SET(LIBTCOD_SAMPLE_CPP_SRC samples_cpp.cpp)
 SET(LIBTCOD_HP_TOOL_SRC src/hmtool/operation.cpp src/hmtool/hmtool.cpp)
 
-add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
-target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY}) 
+# Linux wants seperate C and C++ libraries.
+IF(UNIX)
+	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC})
+	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} )
+
+	add_library(${LIBTCOD_CPP_NAME} SHARED ${LIBTCOD_CPP_SRC})
+	target_link_libraries(${LIBTCOD_CPP_NAME} ${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} )
+ELSE()
+	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
+	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY}) 
+ENDIF()
 
 include_directories(include/gui)
 add_library(${LIBTCOD_GUI_NAME} SHARED ${LIBTCOD_GUI_SRC})
-target_link_libraries(${LIBTCOD_GUI_NAME} ${LIBTCOD_NAME}) 
+target_link_libraries(${LIBTCOD_GUI_NAME} ${LIBTCOD_NAME} ${LIBTCOD_CPP_NAME}) 	#${LIBTCOD_CPP_NAME} is empty on non-linux platforms
 
-add_executable(sample_c ${LIBTCOD_SAMPLE_C_SRC})
-target_link_libraries(sample_c ${LIBTCOD_NAME}) 
+add_executable(samples_c ${LIBTCOD_SAMPLE_C_SRC})
+target_link_libraries(samples_c ${LIBTCOD_NAME}) 
 
-add_executable(sample_cpp ${LIBTCOD_SAMPLE_CPP_SRC})
-target_link_libraries(sample_cpp ${LIBTCOD_NAME}) 
+add_executable(samples_cpp ${LIBTCOD_SAMPLE_CPP_SRC})
+target_link_libraries(samples_cpp ${LIBTCOD_NAME} ${LIBTCOD_CPP_NAME})  #${LIBTCOD_CPP_NAME} is empty on non-linux platforms
 
 add_executable(hmtool ${LIBTCOD_HP_TOOL_SRC})
 target_link_libraries(hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME}) 
 
 IF(MSVC OR MINGW)
-# Since we're exporting functions and clases, we use the "standard" macro combinations to do so under msvc.
-# These turn them on for the right builds.
-set_property(TARGET ${LIBTCOD_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_EXPORTS)
-set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
+	# Since we're exporting functions and clases, we use the "standard" macro combinations to do so under msvc.
+	# These turn them on for the right builds.
+	set_property(TARGET ${LIBTCOD_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_EXPORTS)
+	set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
+ENDIF()
+
+if(UNIX)
+# Turn off rpath's
+SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
+SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
+SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
+
+set (CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
+set (CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_EXE_LINKER_FLAGS}")
 ENDIF()
 
 IF(MSVC)
-# Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
-set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
+	# Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
+	set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
 ENDIF()
 
-INSTALL(TARGETS sample_c sample_cpp hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME}
+#${LIBTCOD_CPP_NAME} is empty on non-linux platforms
+INSTALL(TARGETS samples_c samples_cpp hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME} ${LIBTCOD_CPP_NAME}
   RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
   LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
 )

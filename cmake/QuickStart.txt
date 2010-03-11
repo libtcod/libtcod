@@ -5,10 +5,7 @@ Windows - Using Visual Studio
 1) Either double click generate-vc.bat or run it from a command line.
 2) Open vcproj folder created in cmake/vcproj
 3) Open libtcod.sln with visual studio.
-
-Right click ALL_BUILD and click build.
-Currently, the output of the build can be all found in the Debug or Release folder. That will change in the future.
-
+4) Right click ALL_BUILD and click build.
 
 Windows - Using MSys/MinGW
 ---------------------------
@@ -28,6 +25,10 @@ Linux
 
 FAQ
 ---
+Q. How to I move the build libraries/exe to the root libtod directory?
+A. There is an "install" target built into the makefile/project. Building it via
+   "make install" or building it will do the copy.
+
 Q. When do I have to run the generate script?
 A. Whenever you modify CMakeLists.txt or delete the generated build files. 
 

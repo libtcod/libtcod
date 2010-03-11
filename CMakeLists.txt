@@ -11,14 +11,14 @@ IF(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
-	SET(LIBTCOD_NAME libtcod)
-	SET(LIBTCOD_GUI_NAME libtcod-gui)
+	SET(LIBTCOD_NAME libtcod-VS)
+	SET(LIBTCOD_GUI_NAME libtcod-gui-VS)
 	SET(LIB_DIR msvc)
 	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
 ELSE(MINGW)
-	SET(LIBTCOD_NAME tcod)
-	SET(LIBTCOD_GUI_NAME tcod-gui)
+	SET(LIBTCOD_NAME tcod-mingw)
+	SET(LIBTCOD_GUI_NAME tcod-gui-mingw)
 	SET(LIB_DIR mingw)
 	SET(PNG_NAME png)
 	SET(ZLIB_NAME z)
@@ -99,3 +99,8 @@ IF(MSVC)
 # Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
 set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
 ENDIF()
+
+INSTALL(TARGETS sample_c sample_cpp hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME}
+  RUNTIME DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
+  LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
+)

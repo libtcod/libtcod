@@ -9,7 +9,8 @@ echo "Building Unix makefiles."
 echo "------------------------------"
 BUILD_TYPE="Unix Makefiles"
 else
-echo "Not sure which makefiles to make, bailing..."
+echo "Not sure which makefiles to make."
+echo "Targets include: msys, unix"
 exit 1
 fi
 

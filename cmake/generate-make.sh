@@ -14,11 +14,15 @@ echo "Targets include: msys, unix"
 exit 1
 fi
 
+echo "Building release makefiles."
+echo "------------------------------"
 mkdir -p release 
 cd release
 cmake -DCMAKE_BUILD_TYPE=Release -G "${BUILD_TYPE}" ../../
 cd .. 
-
+echo
+echo "Building debug makefiles."
+echo "------------------------------"
 mkdir -p debug 
 cd debug 
 cmake -DCMAKE_BUILD_TYPE=Debug -G "${BUILD_TYPE}" ../../

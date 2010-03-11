@@ -58,6 +58,9 @@ ELSE()
 	find_package(ZLIB REQUIRED)
 	find_package(Threads REQUIRED)
 	find_library(M_LIB m)
+	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+		find_library(EFENCE_LIBRARY efence PATHS /usr/lib /usr/local/lib)
+	ENDIF()
 ENDIF()
 
 
@@ -80,10 +83,10 @@ SET(LIBTCOD_HP_TOOL_SRC src/hmtool/operation.cpp src/hmtool/hmtool.cpp)
 # Linux wants seperate C and C++ libraries.
 IF(UNIX)
 	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC})
-	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} )
+	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} ${EFENCE_LIBRARY})
 
 	add_library(${LIBTCOD_CPP_NAME} SHARED ${LIBTCOD_CPP_SRC})
-	target_link_libraries(${LIBTCOD_CPP_NAME} ${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} )
+	target_link_libraries(${LIBTCOD_CPP_NAME} ${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} ${EFENCE_LIBRARY})
 ELSE()
 	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
 	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY}) 

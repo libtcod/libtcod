@@ -109,20 +109,36 @@ IF(MSVC OR MINGW)
 	set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
 ENDIF()
 
-if(UNIX)
-# Turn off rpath's
-SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
-SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
-SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
 
-set (CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
-set (CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_EXE_LINKER_FLAGS}")
+
+if(UNIX)
+
+	SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
+
+	SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
+
+	SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
+	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
+
+	SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_EXE_LINKER_FLAGS}")
+
 ENDIF()
 
 IF(MSVC)
 	# Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
 	set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
 ENDIF()
+
+
+set_property(TARGET ${LIBTCOD_NAME} PROPERTY DEBUG_POSTFIX "-debug")
+set_property(TARGET ${LIBTCOD_CPP_NAME} PROPERTY DEBUG_POSTFIX "-debug")
+set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY DEBUG_POSTFIX "-debug")
+
+set_property(TARGET samples_c PROPERTY DEBUG_POSTFIX "_debug")
+set_property(TARGET samples_cpp PROPERTY DEBUG_POSTFIX "_debug")
+set_property(TARGET hmtool PROPERTY DEBUG_POSTFIX "_debug")
+
+
 
 #${LIBTCOD_CPP_NAME} is empty on non-linux platforms
 INSTALL(TARGETS samples_c samples_cpp hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME} ${LIBTCOD_CPP_NAME}

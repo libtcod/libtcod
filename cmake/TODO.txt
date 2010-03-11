@@ -1,4 +1,3 @@
-* Seperate release and debug named libraries.
 * Documentation!
 * UPX on release
 * Electrice Fence for linux

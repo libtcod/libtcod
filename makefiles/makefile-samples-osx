@@ -23,9 +23,9 @@ PNG_LIBS=$(PNG_DIR)/lib/osx/libpng.a
 
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
 
-$(TEMP)/%.o : $(SRCDIR)/%.cpp
+$(TEMP)/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 
-$(TEMP)/%.o : $(SRCDIR)/%.c
+$(TEMP)/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -o $@ -c $< 
 $(TEMP)/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 

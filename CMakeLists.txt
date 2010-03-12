@@ -83,8 +83,8 @@ SET(LIBTCOD_CPP_SRC src/bresenham.cpp src/bsp.cpp src/color.cpp src/console.cpp 
 SET(LIBTCOD_GUI_SRC src/gui/button.cpp src/gui/container.cpp src/gui/flatlist.cpp src/gui/hbox.cpp src/gui/image.cpp src/gui/label.cpp  src/gui/radiobutton.cpp 
 				src/gui/slider.cpp src/gui/statusbar.cpp src/gui/textbox.cpp src/gui/togglebutton.cpp src/gui/toolbar.cpp src/gui/vbox.cpp src/gui/widget.cpp)
 
-SET(LIBTCOD_SAMPLE_C_SRC samples_c.c)
-SET(LIBTCOD_SAMPLE_CPP_SRC samples_cpp.cpp)
+SET(LIBTCOD_SAMPLE_C_SRC samples/samples_c.c)
+SET(LIBTCOD_SAMPLE_CPP_SRC samples/samples_cpp.cpp)
 SET(LIBTCOD_HP_TOOL_SRC src/hmtool/operation.cpp src/hmtool/hmtool.cpp)
 
 # Linux wants seperate C and C++ libraries.

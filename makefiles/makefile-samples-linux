@@ -9,17 +9,17 @@ CPP=g++
 TEMP=/tmp
 .SUFFIXES: .o .h .c .hpp .cpp
 
-$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.cpp
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
-$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.c
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -g -o $@ -c $< 
 $(TEMP)/libtcod/debug/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
 $(TEMP)/libtcod/debug/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
-$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.cpp
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
-$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.c
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -O2 -s -o $@ -c $< 
 $(TEMP)/libtcod/release/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 

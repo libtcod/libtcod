@@ -35,3 +35,6 @@ A. Whenever you modify CMakeLists.txt or delete the generated build files.
 Q. I get a nasty warning about the CMakeCache directory being different.
 A. You most likely carried a release/debug directory over from one platform to another. 
    Go deleate cmake/release and cmake/debug and try again.
+
+Q. Why doesn't msvc use upx to compress the exe's?
+A. See this bug in cmake: http://www.itk.org/Bug/view.php?id=6242

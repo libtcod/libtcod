@@ -11,12 +11,18 @@ IF(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
+	SET(UPX ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/upx/win/upx.exe)
+	SET(PROGRAM_ENDING .exe)
+
 	SET(LIBTCOD_NAME libtcod-VS)
 	SET(LIBTCOD_GUI_NAME libtcod-gui-VS)
 	SET(LIB_DIR msvc)
 	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
 ELSEIF(MINGW)
+	SET(UPX ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/upx/win/upx.exe)
+	SET(PROGRAM_ENDING .exe)
+
 	SET(LIBTCOD_NAME tcod-mingw)
 	SET(LIBTCOD_GUI_NAME tcod-gui-mingw)
 	SET(LIB_DIR mingw)
@@ -29,6 +35,8 @@ ELSEIF(APPLE)
 	SET(PNG_NAME png)
 	SET(ZLIB_NAME z)
 ELSEIF(UNIX)
+	SET(UPX upx)
+	SET(PROGRAM_ENDING )
 
 	SET(LIBTCOD_NAME tcod)
 	SET(LIBTCOD_CPP_NAME tcodxx)
@@ -139,29 +147,27 @@ set_property(TARGET samples_cpp PROPERTY DEBUG_POSTFIX "_debug")
 set_property(TARGET hmtool PROPERTY DEBUG_POSTFIX "_debug")
 
 
-IF(UNIX)
-	IF(CMAKE_BUILD_TYPE MATCHES "Release")
-		ADD_CUSTOM_COMMAND(
-		    TARGET samples_c
-		    POST_BUILD
-		    COMMAND upx samples_c
-		    VERBATIM
-		)
+IF(CMAKE_BUILD_TYPE MATCHES "Release")
+	ADD_CUSTOM_COMMAND(
+	    TARGET samples_c
+	    POST_BUILD
+	    COMMAND ${UPX} samples_c${PROGRAM_ENDING}
+	    VERBATIM
+	)
 
-		ADD_CUSTOM_COMMAND(
-		    samples_cpp
-		    POST_BUILD
-		    COMMAND upx samples_cpp
-		    VERBATIM
-		)
+	ADD_CUSTOM_COMMAND(
+	    TARGET samples_cpp
+	    POST_BUILD
+	    COMMAND ${UPX} samples_cpp${PROGRAM_ENDING}
+	    VERBATIM
+	)
 
-		ADD_CUSTOM_COMMAND(
-   		    TARGET hmtool
-		    POST_BUILD
-		    COMMAND upx hmtool
-		    VERBATIM
-		)
-	ENDIF()
+	ADD_CUSTOM_COMMAND(
+   	    TARGET hmtool
+	    POST_BUILD
+	    COMMAND ${UPX} hmtool${PROGRAM_ENDING}
+	    VERBATIM
+	)
 ENDIF()
 
 #${LIBTCOD_CPP_NAME} is empty on non-linux platforms

@@ -1,5 +1,3 @@
 * Documentation!
-* UPX on release
-* Electrice Fence for linux
 * Work on issues provided by and try to convince maintainers of libtcod that cmake is better.
 * Test mac if I can get ahold of one builds.

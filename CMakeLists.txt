@@ -17,7 +17,6 @@ IF(MSVC)
 	SET(PNG_NAME libpng)
 	SET(ZLIB_NAME zdll)
 ELSEIF(MINGW)
-
 	SET(LIBTCOD_NAME tcod-mingw)
 	SET(LIBTCOD_GUI_NAME tcod-gui-mingw)
 	SET(LIB_DIR mingw)
@@ -114,8 +113,7 @@ ENDIF()
 
 
 
-if(UNIX)
-
+IF(UNIX)
 	SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
 
 	SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
@@ -124,7 +122,6 @@ if(UNIX)
 	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
 
 	SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_EXE_LINKER_FLAGS}")
-
 ENDIF()
 
 IF(MSVC)
@@ -142,6 +139,30 @@ set_property(TARGET samples_cpp PROPERTY DEBUG_POSTFIX "_debug")
 set_property(TARGET hmtool PROPERTY DEBUG_POSTFIX "_debug")
 
 
+IF(UNIX)
+	IF(CMAKE_BUILD_TYPE MATCHES "Release")
+		ADD_CUSTOM_COMMAND(
+		    TARGET samples_c
+		    POST_BUILD
+		    COMMAND upx samples_c
+		    VERBATIM
+		)
+
+		ADD_CUSTOM_COMMAND(
+		    samples_cpp
+		    POST_BUILD
+		    COMMAND upx samples_cpp
+		    VERBATIM
+		)
+
+		ADD_CUSTOM_COMMAND(
+   		    TARGET hmtool
+		    POST_BUILD
+		    COMMAND upx hmtool
+		    VERBATIM
+		)
+	ENDIF()
+ENDIF()
 
 #${LIBTCOD_CPP_NAME} is empty on non-linux platforms
 INSTALL(TARGETS samples_c samples_cpp hmtool ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME} ${LIBTCOD_CPP_NAME}

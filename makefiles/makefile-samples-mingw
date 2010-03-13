@@ -29,8 +29,6 @@ CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
 HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/samples/hmtool.o \
 	$(TEMP)/libtcod/debug/samples/operation.o
 
-DTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/dtool/dtool.o 
-
 C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
 CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
 
@@ -77,7 +75,7 @@ hmtool_debug.exe : $(TEMP)/libtcod/debug/hmtool $(HMTOOLOBJS_DEBUG)
 	$(CPP) -o $@ $(HMTOOLOBJS_DEBUG) -Llib -ltcod-mingw-debug -ltcod-gui-mingw-debug
 
 clean :
-	\rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) $(DTOOLOBJS_RELEASE) \
+	\rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) \
         samples_c.exe samples_cpp.exe hmtool.exe \
-        $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) $(DTOOLOBJS_DEBUG) \
+        $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) \
         samples_c_debug.exe samples_cpp_debug.exe hmtool_debug.exe 

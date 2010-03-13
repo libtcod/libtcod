@@ -28,8 +28,6 @@ CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
 HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/samples/hmtool.o \
 	$(TEMP)/libtcod/debug/samples/operation.o
 
-DTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/dtool/dtool.o
-
 C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
 CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
 

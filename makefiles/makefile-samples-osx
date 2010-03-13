@@ -27,7 +27,7 @@ $(TEMP)/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 
 $(TEMP)/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -o $@ -c $< 
-$(TEMP)/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+$(TEMP)/hmtool/%.o : $(SRCDIR)/samples/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -o $@ -c $< 
 
 $(TEMP)/hmtool :

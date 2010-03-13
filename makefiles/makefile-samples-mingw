@@ -14,32 +14,28 @@ $(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
 $(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -g -o $@ -c $< 
-$(TEMP)/libtcod/debug/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
-	$(CPP) $(CFLAGS) -g -o $@ -c $< 
-$(TEMP)/libtcod/debug/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
 $(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.cpp
 	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
 $(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.c
 	$(CC) $(CFLAGS) -O2 -s -o $@ -c $< 
-$(TEMP)/libtcod/release/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
-	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
-$(TEMP)/libtcod/release/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/hmtool/%.cpp
 	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
 
 C_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_c.o
 CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
 
-HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/hmtool/hmtool.o \
-	$(TEMP)/libtcod/debug/hmtool/operation.o
+HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/samples/hmtool.o \
+	$(TEMP)/libtcod/debug/samples/operation.o
 
 DTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/dtool/dtool.o 
 
 C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
 CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
 
-HMTOOLOBJS_RELEASE=$(TEMP)/libtcod/release/hmtool/hmtool.o \
-	$(TEMP)/libtcod/release/hmtool/operation.o
+HMTOOLOBJS_RELEASE=$(TEMP)/libtcod/release/samples/hmtool.o \
+	$(TEMP)/libtcod/release/samples/operation.o
 
 all : debug release
 

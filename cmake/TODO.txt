@@ -1,3 +1,1 @@
-* Documentation!
-* Work on issues provided by and try to convince maintainers of libtcod that cmake is better.
-* Test mac if I can get ahold of one builds.
+* Test on mac and get working if I can get ahold of one builds.

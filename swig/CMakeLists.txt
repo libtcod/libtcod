@@ -1,0 +1,41 @@
+IF(DEFINED SWIG_PROGRAM_PATH)
+	MESSAGE(STATUS "Enabling Swig Support...")
+	IF(MSVC OR MINGW)
+		SET(CMAKE_PROGRAM_PATH ${SWIG_PROGRAM_PATH})
+	ENDIF()
+
+	FIND_PACKAGE(SWIG REQUIRED)
+	INCLUDE(${SWIG_USE_FILE})
+	SET(CMAKE_SWIG_FLAGS "")
+
+	MESSAGE(STATUS "Swig CSharp Support Enabled...")
+	IF(MSVC)
+		SET(CSHARP_LIB_NAME libtcod-net-unmanaged)
+	ELSEIF(MINGW)
+		SET(CSHARP_LIB_NAME tcod-net-unmanaged)
+	ELSEIF(APPLE)
+	ELSEIF(UNIX)
+		SET(CSHARP_LIB_NAME tcod-net-unmanaged)
+	ENDIF()
+
+	SET_SOURCE_FILES_PROPERTIES(libtcod.i PROPERTIES CPLUSPLUS ON)
+
+	SET(CMAKE_SWIG_FLAGS -namespace libtcod -dllimport libtcod-net-unmanaged.dll -DTCODLIB_API)
+	SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/csharp)
+	SWIG_ADD_MODULE(${CSHARP_LIB_NAME} csharp libtcod.i)
+	SWIG_LINK_LIBRARIES(${CSHARP_LIB_NAME} ${LIBTCOD_NAME}) 
+
+	IF(DEFINED SWIG_PYTHON)	
+		FIND_PACKAGE(PythonLibs REQUIRED)
+		MESSAGE(STATUS "Swig Python Support Enabled(Only Works In Release Builds)...")
+		INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+
+		include_directories(${PYTHON_HEADER_PATH})
+
+		SET(CMAKE_SWIG_FLAGS -DTCODLIB_API)
+		SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/python)
+		SWIG_ADD_MODULE(libtcod-python python libtcod.i)
+		SWIG_LINK_LIBRARIES(libtcod-python ${LIBTCOD_NAME} ${PYTHON_LIBRARIES})
+	ENDIF()
+
+ENDIF()

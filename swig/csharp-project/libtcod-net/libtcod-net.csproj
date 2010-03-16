@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7F5352B7-D781-42FF-B84F-571AF589B7C8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>libtcod_net</RootNamespace>
+    <AssemblyName>libtcod-net</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\generated\csharp\libtcod.cs">
+      <Link>libtcod.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\libtcodPINVOKE.cs">
+      <Link>libtcodPINVOKE.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_a_TCOD_COLOR_LEVELS__TCODColor.cs">
+      <Link>SWIGTYPE_p_a_TCOD_COLOR_LEVELS__TCODColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_float.cs">
+      <Link>SWIGTYPE_p_float.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_int.cs">
+      <Link>SWIGTYPE_p_int.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_TCOD_color_t.cs">
+      <Link>SWIGTYPE_p_TCOD_color_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_TCOD_console_t.cs">
+      <Link>SWIGTYPE_p_TCOD_console_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_uint8.cs">
+      <Link>SWIGTYPE_p_uint8.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\SWIGTYPE_p_wchar_t.cs">
+      <Link>SWIGTYPE_p_wchar_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCODColor.cs">
+      <Link>TCODColor.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCODConsole.cs">
+      <Link>TCODConsole.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCOD_bkgnd_flag_t.cs">
+      <Link>TCOD_bkgnd_flag_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCOD_colctrl_t.cs">
+      <Link>TCOD_colctrl_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCOD_keycode_t.cs">
+      <Link>TCOD_keycode_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCOD_key_t.cs">
+      <Link>TCOD_key_t.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCOD_renderer_t.cs">
+      <Link>TCOD_renderer_t.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

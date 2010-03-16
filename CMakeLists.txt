@@ -6,6 +6,7 @@ include_directories(include)
 
 find_package(OpenGL REQUIRED)
 
+SET(ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 SET(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
 SET(GUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/gui)
@@ -56,3 +57,10 @@ ENDIF()
 
 add_subdirectory(src) #Needs to come first since samples depend on it
 add_subdirectory(samples)
+
+
+#This needs to be set to the path to a swig executable if you want swig support (and uncommented out).
+#SET(SWIG_PROGRAM_PATH "C:\\Users\\donblas\\Programming\\swigwin-1.3.40")
+#Python will need to be installed for SWIGing to it to work
+#SET(SWIG_PYTHON TRUE)
+#add_subdirectory(swig)

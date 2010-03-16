@@ -28,6 +28,8 @@
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
+#include "console_types.h"
+
 class TCODLIB_API TCODConsole {
 public :
 	static TCODConsole *root;

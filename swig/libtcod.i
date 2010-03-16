@@ -6,6 +6,7 @@
 
 #define NO_UNICODE
 typedef unsigned char uint8;
+typedef unsigned int uint32;
 
 %rename(TCODKey) TCOD_key_t;
 %rename(TCODKeyCode) TCOD_keycode_t;
@@ -58,9 +59,14 @@ void TCODColor::getHSV(float *h, float *s, float *v) const;
 %ignore TCODSystem::waitCondition(TCOD_cond_t sem, TCOD_mutex_t mut);
 %ignore TCODSystem::deleteCondition( TCOD_cond_t sem);
 %ignore TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer);
+%ignore TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
 %ignore ITCODSDLRenderer;
+
+%apply int *OUTPUT {int *w, int *h};
+void TCODSystem::getCurrentResolution(int *w, int *h);
+void TCODSystem::getCharSize(int *w, int *h);
 
 %include "color.hpp"
 %include "console_types.h"
 %include "console.hpp"
-//%include "sys.hpp"
+%include "sys.hpp"

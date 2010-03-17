@@ -61,12 +61,51 @@ void TCODColor::getHSV(float *h, float *s, float *v) const;
 %ignore TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer);
 %ignore TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
 %ignore ITCODSDLRenderer;
-
 %apply int *OUTPUT {int *w, int *h};
 void TCODSystem::getCurrentResolution(int *w, int *h);
 void TCODSystem::getCharSize(int *w, int *h);
+
+// bresenham.hpp
+%ignore TCODLineListener;
+%ignore TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
+%apply int *OUTPUT { int *xCur, int *yCur};
+bool TCODLine::step(int *xCur, int *yCur);
+
+// image.hpp
+%ignore TCODImage::TCODImage(TCOD_image_t img);
+
+// mouse_types.h
+%rename(TCODMouseData) TCOD_mouse_t;
+
+// mersenne_types.h
+%rename(TCODRandomType) TCOD_random_algo_t;
+
+// noise.h
+%apply float *OUTPUT { float *f};
+float TCODNoise::getPerlin(float *f) const;
+float TCODNoise::getFbmPerlin(float *f, float octaves) const;
+float TCODNoise::getTurbulencePerlin(float *f, float octaves) const;
+float TCODNoise::getSimplex(float *f) const;
+float TCODNoise::getFbmSimplex(float *f, float octaves) const;
+float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const;
+float TCODNoise::getWavelet(float *f) const;
+float TCODNoise::getFbmWavelet(float *f, float octaves) const;
+float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
+
+// fov_types.h
+%rename(TCODFOVTypes) TCOD_fov_algorithm_t;
+%ignore TCODMap::data;
 
 %include "color.hpp"
 %include "console_types.h"
 %include "console.hpp"
 %include "sys.hpp"
+%include "bresenham.hpp"
+%include "image.hpp"
+%include "mouse_types.h"
+%include "mouse.hpp"
+%include "mersenne.hpp"
+%include "mersenne_types.h"
+%include "noise.hpp"
+%include "fov.hpp"
+%include "fov_types.h"

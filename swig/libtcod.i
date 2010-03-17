@@ -113,3 +113,8 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %include "fov.hpp"
 %include "fov_types.h"
 %include "namegen.hpp"
+
+// File parser, container, compression skipped due to higher level languages having better tools.
+
+// chamons_todo - How do we enable callbacks?
+// %include "bsp.hpp"

@@ -96,6 +96,9 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %rename(TCODFOVTypes) TCOD_fov_algorithm_t;
 %ignore TCODMap::data;
 
+// namegen.hpp
+%ignore TCODNamegen::getSets();
+
 %include "color.hpp"
 %include "console_types.h"
 %include "console.hpp"
@@ -109,3 +112,4 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %include "noise.hpp"
 %include "fov.hpp"
 %include "fov_types.h"
+%include "namegen.hpp"

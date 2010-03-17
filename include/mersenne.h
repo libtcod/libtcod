@@ -28,11 +28,7 @@
 #ifndef _TCOD_RANDOM_H
 #define _TCOD_RANDOM_H
 
-/* PRNG algorithms */
-typedef enum {
-    TCOD_RNG_MT,
-    TCOD_RNG_CMWC
-} TCOD_random_algo_t;
+#include "mersenne_types.h"
 
 typedef void *TCOD_random_t;
 

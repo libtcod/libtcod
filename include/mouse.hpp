@@ -28,6 +28,8 @@
 #ifndef _TCOD_MOUSE_HPP
 #define _TCOD_MOUSE_HPP
 
+#include "mouse_types.h"
+
 class TCODLIB_API TCODMouse {
 public :
   static TCOD_mouse_t getStatus();

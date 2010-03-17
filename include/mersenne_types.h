@@ -25,15 +25,13 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _TCOD_MOUSE_H
-#define _TCOD_MOUSE_H
+#ifndef _TCOD_RANDOM_TYPES_H
+#define _TCOD_RANDOM_TYPES_H
 
-#include "mouse_types.h"
+/* PRNG algorithms */
+typedef enum {
+    TCOD_RNG_MT,
+    TCOD_RNG_CMWC
+} TCOD_random_algo_t;
 
-/* mouse support */
-TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status();
-TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
-TCODLIB_API bool TCOD_mouse_is_cursor_visible();
-TCODLIB_API void TCOD_mouse_move(int x, int y);
-
-#endif
+#endif // _TCOD_RANDOM_TYPES_H

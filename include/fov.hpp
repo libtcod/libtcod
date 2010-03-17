@@ -28,6 +28,8 @@
 #ifndef _TCOD_FOV_HPP
 #define _TCOD_FOV_HPP
 
+#include "fov_types.h"
+
 class TCODPath;
 
 class TCODLIB_API TCODMap {

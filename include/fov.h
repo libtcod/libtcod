@@ -30,28 +30,7 @@
 
 typedef void *TCOD_map_t;
 
-// FOV_BASIC : http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
-// FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html
-// FOV_SHADOW : http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
-// FOV_PERMISSIVE : http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
-// FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
-
-typedef enum {
-	FOV_BASIC,
-	FOV_DIAMOND,
-	FOV_SHADOW,
-	FOV_PERMISSIVE_0,
-	FOV_PERMISSIVE_1,
-	FOV_PERMISSIVE_2,
-	FOV_PERMISSIVE_3,
-	FOV_PERMISSIVE_4,
-	FOV_PERMISSIVE_5,
-	FOV_PERMISSIVE_6,
-	FOV_PERMISSIVE_7,
-	FOV_PERMISSIVE_8,
-	FOV_RESTRICTIVE,
-	NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
-#define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
+#include "fov_types.h"
 
 // allocate a new map
 TCODLIB_API TCOD_map_t TCOD_map_new(int width, int height);

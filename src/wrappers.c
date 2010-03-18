@@ -173,12 +173,6 @@ void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, int y,
                              int_to_color(back));
 }
 
-colornum_t TCOD_console_get_fore_wrapper(TCOD_console_t con,
-                                              int x, int y)
-{
-  return color_to_int(TCOD_console_get_fore (con, x, y));
-}
-
 void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade)
 {
   TCOD_console_set_fade (val, int_to_color(fade));

@@ -32,7 +32,7 @@ Py  : image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle)
 <tr><td>console</td><td>The console on which the image will be drawn. In the C version, use NULL for the root console.</td></tr>
 <tr><td>x,y</td><td>Coordinates in the console of the center of the image.</td></tr>
 <tr><td>flag</td><td>This flag defines how the cell's background color is modified. See <a href="../console/bkgnd_flag.html">TCOD_bkgnd_flag_t</a>.</td></tr>
-<tr><td>scale</td><td>Scale coefficient. Must be &gt; 0.0.</td></tr>
+<tr><td>scalex,scaley</td><td>Scale coefficient. Must be &gt; 0.0.</td></tr>
 <tr><td>angle</td><td>Rotation angle in radians.</td></tr>
 </table>
 Example :<br />
@@ -115,7 +115,7 @@ Py  : image_blit_2x(image, dest, dx, dy, sx=0, sy=0, w=-1, h=-1)
 <tr><td>image</td><td>In the C and python version, the image handler, obtained with the <a href="image_load.html">load</a> function.</td></tr>
 <tr><td>dest</td><td>The console of which the image will be blited. Foreground, background and character data will be overwritten.</td></tr>
 <tr><td>dx,dy</td><td>Coordinate of the console cell where the upper left corner of the blitted image will be.</td></tr>
-<tr><td>x,y,w,h</td><td>Part of the image to blit. Use -1 in w and h to blit the whole image.</td></tr>
+<tr><td>sx,sy,w,h</td><td>Part of the image to blit. Use -1 in w and h to blit the whole image.</td></tr>
 </table>
 Example :<br />
 <p class="code"><pre>

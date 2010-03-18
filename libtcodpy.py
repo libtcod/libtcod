@@ -520,11 +520,11 @@ def console_height_center_rect(con, x, y, w, h, s):
 def console_rect(con, x, y, w, h, clr, flag=BKGND_SET):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
 
-def console_hline(con, x, y, l):
-    _lib.TCOD_console_hline( con, x, y, l)
+def console_hline(con, x, y, l, flag=BKGND_SET):
+    _lib.TCOD_console_hline( con, x, y, l, flag)
 
-def console_vline(con, x, y, l):
-    _lib.TCOD_console_vline( con, x, y, l)
+def console_vline(con, x, y, l, flag=BKGND_SET):
+    _lib.TCOD_console_vline( con, x, y, l, flag)
 
 def console_print_frame(con, x, y, w, h, clr, bkflg, s):
     _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clr), bkflg, s)
@@ -1072,8 +1072,8 @@ _lib.TCOD_noise_turbulence_wavelet.restype = c_float
 NOISE_DEFAULT_HURST = 0.5
 NOISE_DEFAULT_LACUNARITY = 2.0
 
-def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, rnd=0):
-    return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), rnd)
+def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, random=0):
+    return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), random)
 
 def _noise_int(n, f, func):
     ct = c_float * len(f)

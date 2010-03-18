@@ -1233,6 +1233,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	static int nbpart=0, firstpart=0;
 	static float partDelay=0.1f;
 	float elapsed=TCOD_sys_get_last_frame_length();
+	TCOD_color_t fbackup; // backup fg color
 
 	if (!init1) {
 		// initialize all static data, colormaps, ...
@@ -1277,6 +1278,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		nbpart=firstpart=0;
 		init2=true;
 	}
+	fbackup=TCOD_console_get_foreground_color(NULL);
 	if ( xstr < (float)len1 ) {
 		sparklex=x+xstr;
 		sparkley=(float)y;
@@ -1424,6 +1426,8 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	for (i=0; i < (int)(xstr+0.5f); i++) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}
+	// restore fg color
+	TCOD_console_set_foreground_color(NULL,fbackup);
 	if ( xstr <= 2*len ) return false;
 	init2=false;
 	return true;

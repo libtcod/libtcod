@@ -28,14 +28,25 @@ IF(DEFINED SWIG_PROGRAM_PATH)
 	IF(DEFINED SWIG_PYTHON)	
 		FIND_PACKAGE(PythonLibs REQUIRED)
 		MESSAGE(STATUS "Swig Python Support Enabled(Only Works In Release Builds)...")
-		INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
-
-		include_directories(${PYTHON_HEADER_PATH})
+		include_directories(${PYTHON_INCLUDE_PATH})
 
 		SET(CMAKE_SWIG_FLAGS -DTCODLIB_API)
 		SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/python)
 		SWIG_ADD_MODULE(libtcod-python python libtcod.i)
 		SWIG_LINK_LIBRARIES(libtcod-python ${LIBTCOD_NAME} ${PYTHON_LIBRARIES})
+	ENDIF()
+
+	IF(DEFINED SWIG_LUA)
+		FIND_PACKAGE(Lua51 REQUIRED)
+		MESSAGE(STATUS "Swig Lua Support Enabled...")
+		INCLUDE_DIRECTORIES(${LUA_INCLUDE_DIR})
+
+		include_directories(${PYTHON_HEADER_PATH})
+
+		SET(CMAKE_SWIG_FLAGS -DTCODLIB_API)
+		SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/python)
+		SWIG_ADD_MODULE(libtcod-lua lua libtcod.i)
+		SWIG_LINK_LIBRARIES(libtcod-lua ${LIBTCOD_NAME} ${LUA_LIBRARIES})
 	ENDIF()
 
 ENDIF()

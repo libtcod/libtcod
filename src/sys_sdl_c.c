@@ -631,6 +631,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 		TCOD_sys_term();
 	}
 	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,TCOD_ctx.root->buf,TCOD_ctx.root->oldbuf,TCOD_ctx.fullscreen);
+	TCOD_console_set_window_title(TCOD_ctx.window_title);
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
 

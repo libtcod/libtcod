@@ -29,7 +29,15 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <string.h>
+#ifdef TCOD_LINUX
+// X11 stuff for clipboard support
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#elif defined TCOD_MACOSX
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 #include "libtcod.h"
+#include "libtcod_int.h"
 #ifdef TCOD_WINDOWS
 #include <windows.h>
 #else
@@ -40,12 +48,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
-// X11 stuff for clipboard support
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
 #endif
-#include "libtcod_int.h"
-
 
 #if defined(TCOD_WINDOWS)
 char *strcasestr (const char *haystack, const char *needle) {
@@ -532,6 +535,73 @@ char *TCOD_sys_clipboard_get()
     GlobalUnlock( hData );
     CloseClipboard();
     return buffer;
+}
+#elif defined(TCOD_MACOSX)
+void TCOD_sys_clipboard_set(const char *value)
+{
+	PasteboardRef clipboard;
+  if (PasteboardCreate(kPasteboardClipboard, &clipboard) != noErr) return;
+  if (PasteboardClear(clipboard) != noErr) {
+      CFRelease(clipboard);
+      return;
+  }
+	size_t len = strlen(value);
+  CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, 
+																					(const UInt8 *)value, 
+                                          len, kCFAllocatorNull);
+  if (data == NULL) {
+      CFRelease(clipboard);
+      return;
+  }
+  OSStatus err;
+  err = PasteboardPutItemFlavor(clipboard, NULL, kUTTypePlainText, data, 0);
+  CFRelease(clipboard);
+  CFRelease(data);
+}
+
+char clipboardText[256];
+
+char *TCOD_sys_clipboard_get()
+{
+	PasteboardSyncFlags syncFlags;
+	ItemCount itemCount;
+	PasteboardRef clipboard;
+	UInt32 itemIndex;
+	if (PasteboardCreate(kPasteboardClipboard, &clipboard) != noErr) return NULL;
+	syncFlags = PasteboardSynchronize(clipboard);
+	if (PasteboardGetItemCount(clipboard, &itemCount) != noErr) return NULL;
+	if (itemCount == 0) return NULL;
+	for(itemIndex = 1; itemIndex <= itemCount; itemIndex++) {
+		PasteboardItemID itemID;
+		CFArrayRef flavorTypeArray;
+		CFIndex flavorCount;
+		CFIndex flavorIndex;
+		if (PasteboardGetItemIdentifier(clipboard, itemIndex, &itemID ) != noErr) return NULL;
+		if (PasteboardCopyItemFlavors(clipboard, itemID, &flavorTypeArray) != noErr) return NULL;
+		flavorCount = CFArrayGetCount(flavorTypeArray);
+		for(flavorIndex = 0; flavorIndex < flavorCount; flavorIndex++) {
+        CFStringRef flavorType;
+        CFDataRef flavorData;
+        CFIndex flavorDataSize;
+				flavorType = (CFStringRef)CFArrayGetValueAtIndex(flavorTypeArray, flavorIndex);
+				if (UTTypeConformsTo(flavorType, CFSTR("public.plain-text"))) {
+						if (PasteboardCopyItemFlavorData(clipboard, itemID, flavorType, &flavorData) != noErr) {
+							CFRelease(flavorData);
+							return NULL;
+						}
+						flavorDataSize = CFDataGetLength( flavorData );
+						flavorDataSize = (flavorDataSize<254) ? flavorDataSize : 254;
+						short dataIndex;
+	          for(dataIndex = 0; dataIndex <= flavorDataSize; dataIndex++) {
+	             clipboardText[dataIndex] = *(CFDataGetBytePtr(flavorData) + dataIndex);
+	          }
+	          clipboardText[flavorDataSize] = '\0';
+	          clipboardText[flavorDataSize+1] = '\n';
+						CFRelease (flavorData);
+	     }
+		}
+	}
+	return clipboardText;
 }
 #else
 static Display *dpy=NULL;

@@ -141,6 +141,9 @@ char *strcasestr (const char *haystack, const char *needle);
 #ifdef TCOD_LINUX
 #define vsnwprintf vswprintf
 #endif
+#ifdef TCOD_MACOSX
+#define vsnwprintf vswprintf
+#endif
 #ifdef TCOD_WINDOWS
 #define vsnwprintf _vsnwprintf
 #endif

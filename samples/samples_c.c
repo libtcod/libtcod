@@ -14,8 +14,10 @@
 #ifndef NO_SDL_SAMPLE
 // needed for SDL callback sample
 // hack to keep SDL from messing with main()
+#ifndef TCOD_MACOSX
 #define _SDL_main_h
 #include <SDL/SDL.h>
+#endif
 #endif
 #include "libtcod.h"
 

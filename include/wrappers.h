@@ -44,6 +44,9 @@ TCODLIB_API colornum_t TCOD_color_lerp_wrapper(colornum_t c1,
 						 colornum_t c2, float coef);
 TCODLIB_API void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
 					    float * s, float * v);
+TCODLIB_API float TCOD_color_get_hue (colornum_t c);
+TCODLIB_API float TCOD_color_get_saturation (colornum_t c);
+TCODLIB_API float TCOD_color_get_value (colornum_t c);
 
 // console module
 /* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile, 
@@ -112,6 +115,20 @@ TCODLIB_API void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
 
 // mouse module
 TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
+TCODLIB_API int TCOD_mouse_get_x();
+TCODLIB_API int TCOD_mouse_get_y();
+TCODLIB_API int TCOD_mouse_get_cx();
+TCODLIB_API int TCOD_mouse_get_cy();
+TCODLIB_API int TCOD_mouse_get_dx();
+TCODLIB_API int TCOD_mouse_get_dy();
+TCODLIB_API int TCOD_mouse_get_dcx();
+TCODLIB_API int TCOD_mouse_get_dcy();
+TCODLIB_API uint32 TCOD_mouse_get_lbutton();
+TCODLIB_API uint32 TCOD_mouse_get_mbutton();
+TCODLIB_API uint32 TCOD_mouse_get_rbutton();
+TCODLIB_API uint32 TCOD_mouse_get_lbutton_pressed();
+TCODLIB_API uint32 TCOD_mouse_get_mbutton_pressed();
+TCODLIB_API uint32 TCOD_mouse_get_rbutton_pressed();
 
 // parser module
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);
@@ -119,6 +136,10 @@ TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t pars
 // namegen module
 TCODLIB_API int TCOD_namegen_get_nb_sets_wrapper();
 TCODLIB_API void TCOD_namegen_get_sets_wrapper(char **sets);
+
+// sys module
+TCODLIB_API int TCOD_sys_get_current_resolution_x();
+TCODLIB_API int TCOD_sys_get_current_resolution_y();
 
 #endif	/* WRAPPERS_H */
 

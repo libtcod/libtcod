@@ -82,6 +82,24 @@ void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
   TCOD_color_get_HSV (int_to_color(c), h, s, v);
 }
 
+float TCOD_color_get_hue (colornum_t c) {
+  float hue, sat, val;
+  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
+  return hue;
+}
+
+float TCOD_color_get_saturation (colornum_t c) {
+  float hue, sat, val;
+  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
+  return sat;
+}
+ 
+float TCOD_color_get_value (colornum_t c) {
+  float hue, sat, val;
+  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
+  return val;
+}
+
 /* void TCOD_console_set_custom_font_wrapper(const char *fontFile, */
 /* 					  int char_width, int char_height, */
 /* 					  int flags) */
@@ -120,6 +138,12 @@ void TCOD_console_set_foreground_color_wrapper(TCOD_console_t con,
 {
   TCOD_console_set_foreground_color (con,
 				     int_to_color(col));
+}
+
+colornum_t TCOD_console_get_fore_wrapper(TCOD_console_t con,
+                                              int x, int y)
+{
+  return color_to_int(TCOD_console_get_fore (con, x, y));
 }
 
 colornum_t TCOD_console_get_back_wrapper(TCOD_console_t con,
@@ -257,6 +281,89 @@ void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder)
   *holder = TCOD_mouse_get_status();
 }
 
+int TCOD_mouse_get_x()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.x;
+}
+ 
+int TCOD_mouse_get_y()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.y;
+}
+ 
+int TCOD_mouse_get_cx()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.cx;
+}
+ 
+int TCOD_mouse_get_cy()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.cy;
+}
+ 
+int TCOD_mouse_get_dx()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.dx;
+}
+ 
+int TCOD_mouse_get_dy()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.dy;
+}
+ 
+int TCOD_mouse_get_dcx()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.dcx;
+}
+ 
+int TCOD_mouse_get_dcy()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.dcy;
+}
+ 
+uint32 TCOD_mouse_get_lbutton()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.lbutton;
+}
+ 
+uint32 TCOD_mouse_get_mbutton()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.mbutton;
+}
+ 
+uint32 TCOD_mouse_get_rbutton()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.rbutton;
+}
+ 
+uint32 TCOD_mouse_get_lbutton_pressed()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.lbutton_pressed;
+}
+ 
+uint32 TCOD_mouse_get_mbutton_pressed()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.mbutton_pressed;
+}
+ 
+uint32 TCOD_mouse_get_rbutton_pressed()
+{
+  TCOD_mouse_t mouse = TCOD_mouse_get_status();
+  return mouse.rbutton_pressed;
+}
 /* Routines to draw hlines, vlines and frames using the double-lined
  * characters. */
 
@@ -336,3 +443,16 @@ void TCOD_namegen_get_sets_wrapper(char **sets) {
 	}
 }
 
+int TCOD_sys_get_current_resolution_x()
+{
+  int x, y;
+  TCOD_sys_get_current_resolution(&x, &y);
+  return x;
+}
+ 
+int TCOD_sys_get_current_resolution_y()
+{
+  int x, y;
+  TCOD_sys_get_current_resolution(&x, &y);
+  return y;
+}

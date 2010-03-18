@@ -29,11 +29,11 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifdef TCOD_LINUX
+#ifdef __linux 
 // X11 stuff for clipboard support
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
-#elif defined TCOD_MACOSX
+#elif defined (__APPLE__) && defined (__MACH__)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 #include "libtcod.h"

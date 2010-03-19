@@ -1,81 +1,94 @@
-<table width="100%"><tr><td width="20%">
-<a href="../index.html">&lt; index</a><br />
-<a href="index.html">&lt; 12. Field of view toolkit</a>
-</td><td width="60%">
-<p align="center">
-=====================================<br />
-12.1 Building the map<br />
-=====================================<br />
-</p></td><td width="20%">
-<a href="fov_compute.html">&gt; 12.2 Computing the field of view</a>
-</td></tr></table>
-<style type="text/css">
-.code { color:#444444; background-color:#EEEEEE;}
-pre { color:#444444; background-color:#EEEEEE;}
-table.param td { border : 1px solid #000000; }
-th { background-color: #44BBFF; color: #FFFFFF }
-table.none td { border : 0 }
-</style>
-First, you have to allocate a map of the same size as your dungeon.<br />
-<p class="code"><pre>
-C++ : TCODMap::TCODMap(int width, int height)
-C   : TCOD_map_t TCOD_map_new(int widht, int height)
-Py  : map_new(widht, height)
-</pre></p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>libtcod documentation | field of view toolkit | building the map</title>
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css"></head><body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">12. Field of view toolkit</a>
+&gt; <a href="fov_init.html">12.1. Building the map</a><br>
+<a class="next" href="fov_compute.html">12.2.
+Computing the field of view</a></p>
+</div>
+</div>
+<div class="main">
+<div class="maintext">
+<p>First, you have to allocate a map of the same size as your dungeon.</p>
+
+<div class="code">
+<p class="cpp"><span class="code-tcod">TCODMap</span><span class="code-symbol">::</span>TCODMap&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> width<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> height<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_map_t</span>&nbsp;TCOD_map_new&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> width<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> height<span class="code-symbol">)</span></p>
+<p class="py">map_new&nbsp;<span class="code-symbol">(</span>widht<span class="code-symbol">,</span> height<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>width,height</td><td>The size of the map (in map cells).</td></tr>
-</table>
-<br />
-Then, build your dungeon by defining which cells let the light pass (by default, all cells block the light) and which cells are walkable (by default, all cells are not-walkable).<br />
-<p class="code"><pre>
-C++ : void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable)
-C   : void TCOD_map_set_properties(TCOD_map_t map, int x, int y, bool is_transparent, bool is_walkable)
-Py  : map_set_properties(map, x, y, is_transparent, is_walkable)
-</pre></p>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>width, height</td><td>The size of the map (in map cells).</td></tr>
+</tbody></table>
+
+<p>Then, build your dungeon by defining which cells let the light pass
+(by default, all cells block the light) and which cells are walkable
+(by default, all cells are not-walkable).</p>
+
+<div class="code">
+<p class="cpp"><span class="code-keyword">void</span>&nbsp;<span class="code-tcod">TCODMap</span><span class="code-symbol">::</span>setProperties&nbsp;<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> y<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> isTransparent<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> isWalkable<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span>&nbsp;TCOD_map_set_properties&nbsp;<span class="code-symbol">(</span><span class="code-tcod">TCOD_map_t</span> map<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> x<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">int</span> y<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> is_transparent<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> is_walkable<span class="code-symbol">)</span></p>
+<p class="py">map_set_properties&nbsp;<span class="code-symbol">(</span>map<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> is_transparent<span class="code-symbol">,</span> is_walkable<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
-<tr><td>x,y</td><td>Coordinate of the cell that we want to update.</td></tr>
-<tr><td>isTransparent</td><td>If true, this cell will let the light pass else it will block the light.</td></tr>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
+<tr><td>x, y</td><td>Coordinate of the cell that we want to update.</td></tr>
+<tr class="hilite"><td>isTransparent</td><td>If true, this cell will let the light pass else it will block the light.</td></tr>
 <tr><td>isWalkable</td><td>If true, creatures can walk true this cell (it is not a wall).</td></tr>
-</table>
-<br />
-You can clear an existing map (setting all cells as 'blocking') with :<br />
-<p class="code"><pre>
-C++ : void TCODMap::clear()
-C   : void TCOD_map_clear(TCOD_map_t map)
-Py  : map_clear(map)
-</pre></p>
+</tbody></table>
+
+<p>You can clear an existing map (setting all cells to the chosen walkable/transparent values) with:</p>
+
+<div class="code">
+<p class="cpp"><span class="code-keyword">void</span>&nbsp;<span class="code-tcod">TCODMap</span><span class="code-symbol">::</span>clear&nbsp;<span class="code-symbol">(</span><span class="code-keyword">bool</span> transparent&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-keyword">false</span><span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> walkable&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-keyword">false</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span>&nbsp;TCOD_map_clear&nbsp;<span class="code-symbol">(</span><span class="code-tcod">TCOD_map_t</span> map<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> transparent<span class="code-symbol">,</span>&nbsp;<span class="code-keyword">bool</span> walkable<span class="code-symbol">)</span></p>
+<p class="py">map_clear&nbsp;<span class="code-symbol">(</span>map<span class="code-symbol">,</span> transparent<span class="code-symbol">,</span> walkable<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
-</table>
-<br />
-You can copy an existing map into another. You have to allocate the destination map first.<br />
-<p class="code"><pre>
-C++ : void TCODMap::copy(const TCODMap * source)
-C   : void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest)
-Py  : map_copy(source, dest)
-</pre></p>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.</td></tr>
+<tr><td>walkable</td><td>Whether the cells should be walkable.</td></tr>
+<tr class="hilite"><td>transparent</td><td>Whether the cells should be transparent.</td></tr>
+</tbody></table>
+
+<p>You can copy an existing map into another. You have to allocate the destination map first.</p>
+
+<div class="code">
+<p class="cpp"><span class="code-keyword">void</span>&nbsp;<span class="code-tcod">TCODMap</span><span class="code-symbol">::</span>copy&nbsp;<span class="code-symbol">(</span><span class="code-keyword">const</span>&nbsp;<span class="code-tcod">TCODMap</span>&nbsp;<span class="code-symbol">*</span> source<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span>&nbsp;TCOD_map_copy&nbsp;<span class="code-symbol">(</span><span class="code-tcod">TCOD_map_t</span> source<span class="code-symbol">,</span>&nbsp;<span class="code-tcod">TCOD_map_t</span> dest<span class="code-symbol">)</span></p>
+<p class="py">map_copy&nbsp;<span class="code-symbol">(</span>source<span class="code-symbol">,</span> dest<span class="code-symbol">)</span></p>
+</div>
+
 <table class="param">
-<tr><th>Parameter</th><th>Description</th></tr>
-<tr><td>source</td><td>The map containing the source data.</td></tr>
+<tbody><tr><th>Parameter</th><th>Description</th></tr>
+<tr class="hilite"><td>source</td><td>The map containing the source data.</td></tr>
 <tr><td>dest</td><td>In C and python version, the map where data is copied.</td></tr>
-</table>
-<br />
-Example :<br />
-<p class="code"><pre>
-C++ : TCODMap *map = new TCODMap(50,50); // allocate the map
-      map->setProperties(10,10,true,true); // set a cell as 'empty'
-      TCODMap *map2=new TCODMap(10,10); // allocate another map
-      map2->copy(map); // copy map data into map2, reallocating it to 50x50
-C   : TCOD_map_t map = TCOD_map_new(50,50);
-      TCOD_map_t map2 = TCOD_map_new(10,10);
-      TCOD_map_set_properties(map,10,10,true,true);
-	  TCOD_map_copy(map,map2); 
-Py  : map = libtcod.map_new(50,50)
-      map2 = libtcod.map_new(10,10)
-      libtcod.map_set_properties(map,10,10,True,True)
-	  libtcod.map_copy(map,map2)
-</pre></p>
+</tbody></table>
+
+<h6>Example:</h6>
+
+<div class="code">
+<p class="cpp"><span class="code-tcod">TCODMap</span>&nbsp;<span class="code-symbol">*</span> map&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-keyword">new</span> TCODMap<span class="code-symbol">(</span><span class="code-value">50</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">);</span>&nbsp;<span class="code-comment">// allocate the map</span><br>
+	map<span class="code-symbol">-&gt;</span>setProperties<span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-keyword">true</span><span class="code-symbol">,</span><span class="code-keyword">true</span><span class="code-symbol">);</span>&nbsp;<span class="code-comment">// set a cell as 'empty'</span><br><span class="code-tcod">TCODMap</span>&nbsp;<span class="code-symbol">*</span> map2&nbsp;<span class="code-symbol">=</span>&nbsp;<span class="code-keyword">new</span> TCODMap<span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">);</span>&nbsp;<span class="code-comment">// allocate another map</span><br>
+	map2<span class="code-symbol">-&gt;</span>copy<span class="code-symbol">(</span>map<span class="code-symbol">);</span>&nbsp;<span class="code-comment">// copy map data into map2, reallocating it to 50x50</span></p>
+<p class="c"><span class="code-tcod">TCOD_map_t</span>&nbsp;map&nbsp;<span class="code-symbol">=</span> TCOD_map_new<span class="code-symbol">(</span><span class="code-value">50</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">);</span><br><span class="code-tcod">TCOD_map_t</span>&nbsp;map2&nbsp;<span class="code-symbol">=</span> TCOD_map_new<span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">);</span><br>
+	TCOD_map_set_properties<span class="code-symbol">(</span>map<span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-keyword">true</span><span class="code-symbol">,</span><span class="code-keyword">true</span><span class="code-symbol">);</span><br>
+	TCOD_map_copy<span class="code-symbol">(</span>map<span class="code-symbol">,</span>map2<span class="code-symbol">);</span></p> 
+<p class="py">map&nbsp;<span class="code-symbol">=</span> libtcod<span class="code-symbol">.</span>map_new<span class="code-symbol">(</span><span class="code-value">50</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">)</span><br>map2 <span class="code-symbol">=</span> libtcod<span class="code-symbol">.</span>map_new<span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">)</span><br>
+	libtcod<span class="code-symbol">.</span>map_set_properties<span class="code-symbol">(</span>map<span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-keyword">True</span><span class="code-symbol">,</span><span class="code-keyword">True</span><span class="code-symbol">)</span><br>
+	libtcod<span class="code-symbol">.</span>map_copy<span class="code-symbol">(</span>map<span class="code-symbol">,</span>map2<span class="code-symbol">)</span></p>
+</div>
+</div></div></body></html>

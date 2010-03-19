@@ -35,7 +35,7 @@ class TCODPath;
 class TCODLIB_API TCODMap {
 	public :
 		TCODMap(int width, int height);
-		void clear();
+		void clear(bool transparent=false, bool walkable=false);
 		void setProperties(int x,int y, bool isTransparent, bool isWalkable);
 		void copy (const TCODMap *source);
 		virtual ~TCODMap();

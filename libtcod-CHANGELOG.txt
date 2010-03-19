@@ -8,6 +8,10 @@ X TCODConsole::initRoot has an additional renderer parameter :
    static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false, 
        TCOD_renderer_t renderer=TCOD_RENDERER_GLSL);
    Possible values : TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
+X TCODMap::clear now sets walkable and transparent status of all cells:
+    void TCODMap::clear (bool transparent = false, bool walkable = false)
+    void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
+    map_clear (map, transparent, walkable)
 + added clipboard support in TCODSystem (on Linux, only X clipboard supported)
 + added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)

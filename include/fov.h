@@ -35,7 +35,7 @@ typedef void *TCOD_map_t;
 // allocate a new map
 TCODLIB_API TCOD_map_t TCOD_map_new(int width, int height);
 // set all cells as solid rock (cannot see through nor walk)
-TCODLIB_API void TCOD_map_clear(TCOD_map_t map);
+TCODLIB_API void TCOD_map_clear(TCOD_map_t map, bool transparent, bool walkable);
 // copy a map to another, reallocating it when needed
 TCODLIB_API void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest);
 // change a cell properties

@@ -29,8 +29,8 @@ TCODMap::TCODMap(int width,int height) {
 	data = TCOD_map_new(width,height);
 }
 
-void TCODMap::clear() {
-	TCOD_map_clear(data);
+void TCODMap::clear(bool transparent, bool walkable) {
+	TCOD_map_clear(data,transparent,walkable);
 }
 
 void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable) {

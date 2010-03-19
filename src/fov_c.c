@@ -56,14 +56,17 @@ void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest) {
 }
 
 void TCOD_map_clear(TCOD_map_t map, bool transparent, bool walkable) {
-	int i, j;
-  map_t *m = (map_t *)map;
+	int count;
+	map_t *m = (map_t *)map;
+	cell_t *cell;
 	TCOD_IFNOT(map != NULL) return;
-	memset(m->cells,0,sizeof(cell_t)*m->width*m->height);
-	for(i=0;i<m->width;i++) for(j=0;j<m->height;j++) {
-    m->cells[(j*m->width)+i].transparent = transparent;
-    m->cells[(j*m->width)+i].walkable = walkable;
-    m->cells[(j*m->width)+i].fov = 0;
+	cell=m->cells;
+	count=m->width*m->height;
+	while ( count-- >= 0 ) {
+		cell->transparent = transparent;
+		cell->walkable = walkable;
+		cell->fov = 0;
+		cell++;
   }
 }
 

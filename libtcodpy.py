@@ -1153,8 +1153,8 @@ def map_copy(source, dest):
 def map_set_properties(m, x, y, isTrans, isWalk):
     _lib.TCOD_map_set_properties(m, x, y, c_int(isTrans), c_int(isWalk))
 
-def map_clear(m,walkable,transparent):
-    _lib.TCOD_map_clear(m,walkable,transparent)
+def map_clear(m,walkable=False,transparent=False):
+    _lib.TCOD_map_clear(m,c_int(walkable),c_int(transparent))
 
 def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_RESTRICTIVE ):
     _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_uint(light_walls), c_int(algo))

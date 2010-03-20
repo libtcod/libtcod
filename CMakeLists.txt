@@ -59,9 +59,14 @@ add_subdirectory(src) #Needs to come first since samples depend on it
 add_subdirectory(samples)
 
 
-#This needs to be set to the path to a swig executable if you want swig support (and uncommented out).
+# For swig to work you either need to set SWIG_PROGRAM_PATH (Windows) or SWIG_SYSTEM (Everywhere else).
+# You also need to uncomment the add_subdirectory at the end of the file...
+
+# This needs to be set to the path to a swig executable if you want swig support (and uncommented out).
 #SET(SWIG_PROGRAM_PATH "C:\\Users\\donblas\\Programming\\swigwin-1.3.40")
 #SET(SWIG_SYSTEM TRUE)
+
+#SET(SWIG_CSHARP TRUE)
 #SET(SWIG_PYTHON TRUE)
 #SET(SWIG_LUA TRUE)
 #SET(SWIG_RUBY TRUE)

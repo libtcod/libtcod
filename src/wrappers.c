@@ -450,3 +450,40 @@ int TCOD_sys_get_current_resolution_y()
   TCOD_sys_get_current_resolution(&x, &y);
   return y;
 }
+
+/* Encode key struct as a 4-byte integer:
+ *
+ *    flags     VK    <-char code->
+ *  |---4---|---3---|---2---|---1---|
+ *
+ * char gets 2 bytes to allow for unicode.
+ */
+
+uint32 key_struct_to_bitfield(TCOD_key_t key)
+{
+  uint32 bf = key.c | (key.vk << 16);
+  bf |= (key.pressed | (key.lalt << 1) | (key.lctrl << 2)
+         | (key.ralt << 3) | (key.rctrl << 4) | (key.shift << 5)) << 24;
+  return bf;
+}
+
+uint32 TCOD_console_wait_for_keypress_bitfield (bool flush)
+{
+  /* Waits until a key is pressed, then returns it */
+  TCOD_key_t key = TCOD_console_wait_for_keypress(flush);
+  return key_struct_to_bitfield(key);
+}
+
+
+uint32 TCOD_console_check_for_keypress_bitfield (int flags)
+{
+  /* Return the 'next' key pressed.
+     If no key has been pressed, returns a key event where
+     vk = TCODK_NONE
+     Flags is a bitfield which may contain:
+     - TCOD_KEY_PRESSED -- only return 'press' events
+     - TCOD_KEY_RELEASED -- only return 'release' events
+  */
+  TCOD_key_t key = TCOD_console_check_for_keypress(flags);
+  return key_struct_to_bitfield(key);
+}

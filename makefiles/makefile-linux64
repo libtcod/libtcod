@@ -54,18 +54,19 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/lex_c.o \
 	$(TEMP)/libtcod/debug/list_c.o \
 	$(TEMP)/libtcod/debug/mersenne_c.o \
-	$(TEMP)/libtcod/debug/namegen_c.o \
 	$(TEMP)/libtcod/debug/noise_c.o \
 	$(TEMP)/libtcod/debug/parser_c.o \
 	$(TEMP)/libtcod/debug/path_c.o \
 	$(TEMP)/libtcod/debug/sys_c.o \
+	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/debug/tree_c.o \
 	$(TEMP)/libtcod/debug/txtfield_c.o \
 	$(TEMP)/libtcod/debug/wrappers.o \
-	$(TEMP)/libtcod/debug/zip_c.o
+	$(TEMP)/libtcod/debug/zip_c.o \
+	$(TEMP)/libtcod/debug/namegen_c.o
 
 LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/bresenham.o \
@@ -78,12 +79,12 @@ LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/lex.o \
 	$(TEMP)/libtcod/debug/mersenne.o \
 	$(TEMP)/libtcod/debug/mouse.o \
-	$(TEMP)/libtcod/debug/namegen.o \
 	$(TEMP)/libtcod/debug/noise.o \
 	$(TEMP)/libtcod/debug/parser.o \
 	$(TEMP)/libtcod/debug/path.o \
 	$(TEMP)/libtcod/debug/sys.o \
-	$(TEMP)/libtcod/debug/zip.o
+	$(TEMP)/libtcod/debug/zip.o \
+	$(TEMP)/libtcod/debug/namegen.o
 
 GUIOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/gui/button.o \
@@ -117,18 +118,19 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/lex_c.o \
 	$(TEMP)/libtcod/release/list_c.o \
 	$(TEMP)/libtcod/release/mersenne_c.o \
-	$(TEMP)/libtcod/release/namegen_c.o \
 	$(TEMP)/libtcod/release/noise_c.o \
 	$(TEMP)/libtcod/release/parser_c.o \
 	$(TEMP)/libtcod/release/path_c.o \
 	$(TEMP)/libtcod/release/sys_c.o \
+	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \
 	$(TEMP)/libtcod/release/txtfield_c.o \
 	$(TEMP)/libtcod/release/tree_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
-	$(TEMP)/libtcod/release/zip_c.o
+	$(TEMP)/libtcod/release/zip_c.o \
+	$(TEMP)/libtcod/release/namegen_c.o
 
 LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/bresenham.o \
@@ -141,12 +143,12 @@ LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/lex.o \
 	$(TEMP)/libtcod/release/mersenne.o \
 	$(TEMP)/libtcod/release/mouse.o \
-	$(TEMP)/libtcod/release/namegen.o \
 	$(TEMP)/libtcod/release/noise.o \
 	$(TEMP)/libtcod/release/parser.o \
 	$(TEMP)/libtcod/release/path.o \
 	$(TEMP)/libtcod/release/sys.o \
-	$(TEMP)/libtcod/release/zip.o
+	$(TEMP)/libtcod/release/zip.o \
+	$(TEMP)/libtcod/release/namegen.o
 
 GUIOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/gui/button.o \

@@ -270,94 +270,104 @@ void TCOD_console_wait_for_keypress_wrapper (TCOD_key_t *holder, bool flush)
   *holder = TCOD_console_wait_for_keypress(flush);
 }
 
+/* Global variable, mouse_get_status stores each retrieved
+   mouse status in this variable. */
+static TCOD_mouse_t mouse_status;
+
 void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder)
 {
-  *holder = TCOD_mouse_get_status();
+  mouse_status = TCOD_mouse_get_status();
+  if(holder)
+    *holder = mouse_status;
 }
 
+
+/* The following functions all return information about the last
+   mouse status that was retrieved by TCOD_get_mouse_status_wrapper.
+   They do not query the current mouse status. */
 int TCOD_mouse_get_x()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.x;
+  return mouse_status.x;
 }
- 
+
+
 int TCOD_mouse_get_y()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.y;
+  return mouse_status.y;
 }
- 
+
+
 int TCOD_mouse_get_cx()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.cx;
+  return mouse_status.cx;
 }
- 
+
+
 int TCOD_mouse_get_cy()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.cy;
+  return mouse_status.cy;
 }
- 
+
+
 int TCOD_mouse_get_dx()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.dx;
+  return mouse_status.dx;
 }
- 
+
+
 int TCOD_mouse_get_dy()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.dy;
+  return mouse_status.dy;
 }
- 
+
+
 int TCOD_mouse_get_dcx()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.dcx;
+  return mouse_status.dcx;
 }
- 
+
+
 int TCOD_mouse_get_dcy()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.dcy;
+  return mouse_status.dcy;
 }
- 
-uint32 TCOD_mouse_get_lbutton()
+
+
+unsigned int TCOD_mouse_get_lbutton()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.lbutton;
+  return mouse_status.lbutton;
 }
- 
-uint32 TCOD_mouse_get_mbutton()
+
+
+unsigned int TCOD_mouse_get_mbutton()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.mbutton;
+  return mouse_status.mbutton;
 }
- 
-uint32 TCOD_mouse_get_rbutton()
+
+
+unsigned int TCOD_mouse_get_rbutton()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.rbutton;
+  return mouse_status.rbutton;
 }
- 
-uint32 TCOD_mouse_get_lbutton_pressed()
+
+
+unsigned int TCOD_mouse_get_lbutton_pressed()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.lbutton_pressed;
+  return mouse_status.lbutton_pressed;
 }
- 
-uint32 TCOD_mouse_get_mbutton_pressed()
+
+
+unsigned int TCOD_mouse_get_mbutton_pressed()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.mbutton_pressed;
+  return mouse_status.mbutton_pressed;
 }
- 
-uint32 TCOD_mouse_get_rbutton_pressed()
+
+
+unsigned int TCOD_mouse_get_rbutton_pressed()
 {
-  TCOD_mouse_t mouse = TCOD_mouse_get_status();
-  return mouse.rbutton_pressed;
+  return mouse_status.rbutton_pressed;
 }
+
 /* Routines to draw hlines, vlines and frames using the double-lined
  * characters. */
 

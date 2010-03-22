@@ -56,12 +56,19 @@ IF(DEFINED SWIG_PROGRAM_PATH OR DEFINED SWIG_SYSTEM)
 			SET(CMAKE_SWIG_FLAGS -DTCODLIB_API)
 			SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/ruby)
 			SWIG_ADD_MODULE(libtcod-ruby ruby libtcod.i)
-			SWIG_LINK_LIBRARIES(libtcod-ruby ${LIBTCOD_NAME} ${RUBY_LIBRARY})
-		ELSEIF(MSWIN)
-# By hand, call SWIG and then run ruby 
-#		http://www.swig.org/Doc1.3/Ruby.html
+			SWIG_LINK_LIBRARIES(libtcod-ruby ${LIBTCOD_NAME} ${LIBTCOD_CPP_NAME} ${RUBY_LIBRARY})
+		ELSEIF(MINGW)
+			#Doesn't work yet...
+			#MESSAGE(STATUS "Swig Ruby Support Enabled (Manual)...")
+			#include_directories(${SWIG_RUBY_HEADER_PATH})
+			#include_directories(${SWIG_RUBY_HEADER_PATH}/i386-mingw32)
+			#LINK_DIRECTORIES($(SWIG_RUBY_LIB_DIR))
+			#SET(CMAKE_SWIG_FLAGS -DTCODLIB_API)
+			#SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/ruby)
+			#SWIG_ADD_MODULE(libtcod-ruby ruby libtcod.i)
+			#SWIG_LINK_LIBRARIES(libtcod-ruby ${LIBTCOD_NAME} ${SWIG_RUBY_LIB})
+		ELSEIF(MSVC)
+			#MESSAGE(STATUS "Swig Ruby Support doesn't work under MSVC...")
 		ENDIF()
 	ENDIF()
-
-
 ENDIF()

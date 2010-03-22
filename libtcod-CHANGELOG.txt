@@ -15,6 +15,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added clipboard support in TCODSystem (on Linux, only X clipboard supported)
 + added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
++ added more TCOD_CHAR_* constants
 % hardened fov module
 - fixed setDirty() not working for the last row or column of the console
 - fixed python samples not compiling if numpy installed

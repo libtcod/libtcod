@@ -99,6 +99,16 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 // namegen.hpp
 %ignore TCODNamegen::getSets();
 
+// heightmap.hpp
+%ignore TCODHeightMap::values;
+%apply float *OUTPUT { float *min, float *max };
+void TCODHeightMap::getMinMax(float *min, float *max) const;
+
+%ignore TCODHeightMap::getNormal(float x, float y,float n[3], float waterLevel=0.0f) const;
+%ignore TCODHeightMap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
+%ignore TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel);
+%ignore TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
+
 %include "color.hpp"
 %include "console_types.h"
 %include "console.hpp"
@@ -113,6 +123,7 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %include "fov.hpp"
 %include "fov_types.h"
 %include "namegen.hpp"
+%include "heightmap.hpp"
 
 // File parser, container, compression skipped due to higher level languages having better tools.
 

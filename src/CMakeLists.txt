@@ -38,7 +38,8 @@ SET(LIBTCOD_GUI_SRC gui/button.cpp gui/container.cpp gui/flatlist.cpp gui/hbox.c
 				gui/slider.cpp gui/statusbar.cpp gui/textbox.cpp gui/togglebutton.cpp gui/toolbar.cpp gui/vbox.cpp gui/widget.cpp)
 
 # Linux wants seperate C and C++ libraries.
-IF(UNIX)
+if(APPLE) #Apple is apparenly UNIX
+ELSEIF(UNIX)
 	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC})
 	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} SDL ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} ${EFENCE_LIBRARY})
 

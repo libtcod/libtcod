@@ -8,6 +8,11 @@
 typedef unsigned char uint8;
 typedef unsigned int uint32;
 
+#if SWIGCSHARP
+%typemap(cstype) void * "System.Runtime.InteropServices.HandleRef" 
+%typemap(csin) void * "$csinput" 
+#endif // SWIGCSHARP
+
 %rename(TCODKey) TCOD_key_t;
 %rename(TCODKeyCode) TCOD_keycode_t;
 %rename(TCODBackgroundFlag) TCOD_bkgnd_flag_t;
@@ -66,8 +71,6 @@ void TCODSystem::getCurrentResolution(int *w, int *h);
 void TCODSystem::getCharSize(int *w, int *h);
 
 // bresenham.hpp
-%ignore TCODLineListener;
-%ignore TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
 %apply int *OUTPUT { int *xCur, int *yCur};
 bool TCODLine::step(int *xCur, int *yCur);
 
@@ -81,7 +84,9 @@ bool TCODLine::step(int *xCur, int *yCur);
 %rename(TCODRandomType) TCOD_random_algo_t;
 
 // noise.h
-%apply float *OUTPUT { float *f};
+#if SWIGCSHARP
+%include "arrays_csharp.i"
+%apply float INPUT[] { float *f };
 float TCODNoise::getPerlin(float *f) const;
 float TCODNoise::getFbmPerlin(float *f, float octaves) const;
 float TCODNoise::getTurbulencePerlin(float *f, float octaves) const;
@@ -91,6 +96,11 @@ float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const;
 float TCODNoise::getWavelet(float *f) const;
 float TCODNoise::getFbmWavelet(float *f, float octaves) const;
 float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
+#endif // SWIGCSHARP
+
+// path.hpp
+%ignore TCOD_path_func(int xFrom, int yFrom, int xTo, int yTo, void *data);
+%apply int *OUTPUT { int *x, int *y };
 
 // fov_types.h
 %rename(TCODFOVTypes) TCOD_fov_algorithm_t;
@@ -99,33 +109,36 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 // namegen.hpp
 %ignore TCODNamegen::getSets();
 
-// heightmap.hpp
-%ignore TCODHeightMap::values;
-%apply float *OUTPUT { float *min, float *max };
-void TCODHeightMap::getMinMax(float *min, float *max) const;
+// bsp.hpp
+%module(directors="1") directors
+%{
+#include "bsp.hpp"
+#include "path.hpp"
+#include "bresenham.hpp"
+%}
 
-%ignore TCODHeightMap::getNormal(float x, float y,float n[3], float waterLevel=0.0f) const;
-%ignore TCODHeightMap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
-%ignore TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel);
-%ignore TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
+%feature("director") ITCODBspCallback;
+%feature("director") ITCODPathCallback;
+%feature("director") TCODLineListener;
 
-%include "color.hpp"
-%include "console_types.h"
-%include "console.hpp"
-%include "sys.hpp"
 %include "bresenham.hpp"
-%include "image.hpp"
-%include "mouse_types.h"
-%include "mouse.hpp"
-%include "mersenne.hpp"
-%include "mersenne_types.h"
-%include "noise.hpp"
+%include "bsp.hpp"
+%include "color.hpp"
+%include "console.hpp"
+%include "console_types.h"
 %include "fov.hpp"
 %include "fov_types.h"
+%include "image.hpp"
+%include "mersenne.hpp"
+%include "mersenne_types.h"
+%include "mouse.hpp"
+%include "mouse_types.h"
 %include "namegen.hpp"
-%include "heightmap.hpp"
+%include "noise.hpp"
+%include "path.hpp"
+%include "sys.hpp"
 
 // File parser, container, compression skipped due to higher level languages having better tools.
 
 // chamons_todo - How do we enable callbacks?
-// %include "bsp.hpp"
+%include "bsp.hpp"

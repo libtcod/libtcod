@@ -69,5 +69,15 @@ add_subdirectory(samples)
 #SET(SWIG_CSHARP TRUE)
 #SET(SWIG_PYTHON TRUE)
 #SET(SWIG_LUA TRUE)
+
+# BROKEN - These generators will need work to get working...
+#SET(SWIG_JAVA TRUE)
+#SET(SWIG_PHP TRUE)
 #SET(SWIG_RUBY TRUE)
+# Under Windows, the ruby find_package doesn't seem to work...
+#SET(SWIG_RUBY_HEADER_PATH "C:\\Ruby19\\include\\ruby-1.9.1")
+#SET(SWIG_RUBY_LIB_DIR "C:\\Ruby19\\lib\\")
+#SET(SWIG_RUBY_LIB "libmsvcrt-ruby191-static.a")
+# ENDBROKEN 
+
 #add_subdirectory(swig)

@@ -109,6 +109,21 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 // namegen.hpp
 %ignore TCODNamegen::getSets();
 
+// heightmap.hpp
+%ignore TCODHeightMap::values;
+%apply float *OUTPUT { float *min, float *max };
+void TCODHeightMap::getMinMax(float *min, float *max) const;
+
+#if SWIGCSHARP
+%include "arrays_csharp.i"
+%apply float INPUT[] { float n[3], const float *weight, const float *coef };
+%apply int INPUT[] { int px[4], int py[4], const int *dx, const int *dy };
+TCODHeightMap::getNormal(float x, float y,float n[3], float waterLevel=0.0f) const;
+TCODHeightMap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
+TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel);
+TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
+#endif // SWIGCSHARP
+
 // bsp.hpp
 %module(directors="1") directors
 %{
@@ -128,6 +143,7 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %include "console_types.h"
 %include "fov.hpp"
 %include "fov_types.h"
+%include "heightmap.hpp"
 %include "image.hpp"
 %include "mersenne.hpp"
 %include "mersenne_types.h"
@@ -139,6 +155,3 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %include "sys.hpp"
 
 // File parser, container, compression skipped due to higher level languages having better tools.
-
-// chamons_todo - How do we enable callbacks?
-%include "bsp.hpp"

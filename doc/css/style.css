@@ -269,7 +269,7 @@ div.code p.py {
 .code-keyword {
   font-family: BitstreamVeraSansMonoBold, monospace;
   font-weight: bold;
-  color: blue;
+  color: #0000a0;
 }
 
 .code-value {
@@ -282,6 +282,10 @@ div.code p.py {
 
 .code-string {
   color: blue;
+}
+
+.code-character {
+  color: #e0a020;
 }
 
 .code-comment {

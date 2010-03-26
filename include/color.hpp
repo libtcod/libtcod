@@ -106,85 +106,217 @@ public :
 
 	// grey levels
 	static const TCODColor black;
+	static const TCODColor darkestGrey;
 	static const TCODColor darkerGrey;
 	static const TCODColor darkGrey;
 	static const TCODColor grey;
 	static const TCODColor lightGrey;
+	static const TCODColor lighterGrey;
+	static const TCODColor lightestGrey;
 	static const TCODColor white;
+	
+	//sepia
+	static const TCODColor darkestSepia;
+	static const TCODColor darkerSepia;
+	static const TCODColor darkSepia;
+	static const TCODColor sepia;
+	static const TCODColor lightSepia;
+	static const TCODColor lighterSepia;
+	static const TCODColor lightestSepia;
 	
 	// standard colors
 	static const TCODColor red;
-	static const TCODColor orange;
-	static const TCODColor yellow;
-	static const TCODColor chartreuse;
-	static const TCODColor green;
-	static const TCODColor sea;
-	static const TCODColor cyan;
-	static const TCODColor sky;
-	static const TCODColor blue;
-	static const TCODColor violet;
-	static const TCODColor magenta;
-	static const TCODColor pink;
+  static const TCODColor flame;
+  static const TCODColor orange;
+  static const TCODColor amber;
+  static const TCODColor yellow;
+  static const TCODColor lime;
+  static const TCODColor chartreuse;
+  static const TCODColor green;
+  static const TCODColor sea;
+  static const TCODColor turquoise;
+  static const TCODColor cyan;
+  static const TCODColor sky;
+  static const TCODColor azure;
+  static const TCODColor blue;
+  static const TCODColor han;
+  static const TCODColor violet;
+  static const TCODColor purple;
+  static const TCODColor fuchsia;
+  static const TCODColor magenta;
+  static const TCODColor pink;
+  static const TCODColor crimson;
 	
 	// dark colors
 	static const TCODColor darkRed;
-	static const TCODColor darkOrange;
-	static const TCODColor darkYellow;
-	static const TCODColor darkChartreuse;
-	static const TCODColor darkGreen;
-	static const TCODColor darkSea;
-	static const TCODColor darkCyan;
-	static const TCODColor darkSky;
-	static const TCODColor darkBlue;
-	static const TCODColor darkViolet;
-	static const TCODColor darkMagenta;
-	static const TCODColor darkPink;
+  static const TCODColor darkFlame;
+  static const TCODColor darkOrange;
+  static const TCODColor darkAmber;
+  static const TCODColor darkYellow;
+  static const TCODColor darkLime;
+  static const TCODColor darkChartreuse;
+  static const TCODColor darkGreen;
+  static const TCODColor darkSea;
+  static const TCODColor darkTurquoise;
+  static const TCODColor darkCyan;
+  static const TCODColor darkSky;
+  static const TCODColor darkAzure;
+  static const TCODColor darkBlue;
+  static const TCODColor darkHan;
+  static const TCODColor darkViolet;
+  static const TCODColor darkPurple;
+  static const TCODColor darkFuchsia;
+  static const TCODColor darkMagenta;
+  static const TCODColor darkPink;
+  static const TCODColor darkCrimson;
 	
 	// darker colors
 	static const TCODColor darkerRed;
-	static const TCODColor darkerOrange;
-	static const TCODColor darkerYellow;
-	static const TCODColor darkerChartreuse;
-	static const TCODColor darkerGreen;
-	static const TCODColor darkerSea;
-	static const TCODColor darkerCyan;
-	static const TCODColor darkerSky;
-	static const TCODColor darkerBlue;
-	static const TCODColor darkerViolet;
-	static const TCODColor darkerMagenta;
-	static const TCODColor darkerPink;
+  static const TCODColor darkerFlame;
+  static const TCODColor darkerOrange;
+  static const TCODColor darkerAmber;
+  static const TCODColor darkerYellow;
+  static const TCODColor darkerLime;
+  static const TCODColor darkerChartreuse;
+  static const TCODColor darkerGreen;
+  static const TCODColor darkerSea;
+  static const TCODColor darkerTurquoise;
+  static const TCODColor darkerCyan;
+  static const TCODColor darkerSky;
+  static const TCODColor darkerAzure;
+  static const TCODColor darkerBlue;
+  static const TCODColor darkerHan;
+  static const TCODColor darkerViolet;
+  static const TCODColor darkerPurple;
+  static const TCODColor darkerFuchsia;
+  static const TCODColor darkerMagenta;
+  static const TCODColor darkerPink;
+  static const TCODColor darkerCrimson;
+  
+  // darkest colors
+  static const TCODColor darkestRed;
+  static const TCODColor darkestFlame;
+  static const TCODColor darkestOrange;
+  static const TCODColor darkestAmber;
+  static const TCODColor darkestYellow;
+  static const TCODColor darkestLime;
+  static const TCODColor darkestChartreuse;
+  static const TCODColor darkestGreen;
+  static const TCODColor darkestSea;
+  static const TCODColor darkestTurquoise;
+  static const TCODColor darkestCyan;
+  static const TCODColor darkestSky;
+  static const TCODColor darkestAzure;
+  static const TCODColor darkestBlue;
+  static const TCODColor darkestHan;
+  static const TCODColor darkestViolet;
+  static const TCODColor darkestPurple;
+  static const TCODColor darkestFuchsia;
+  static const TCODColor darkestMagenta;
+  static const TCODColor darkestPink;
+  static const TCODColor darkestCrimson;
 	
 	// light colors
 	static const TCODColor lightRed;
-	static const TCODColor lightOrange;
-	static const TCODColor lightYellow;
-	static const TCODColor lightChartreuse;
-	static const TCODColor lightGreen;
-	static const TCODColor lightSea;
-	static const TCODColor lightCyan;
-	static const TCODColor lightSky;
-	static const TCODColor lightBlue;
-	static const TCODColor lightViolet;
-	static const TCODColor lightMagenta;
-	static const TCODColor lightPink;
+  static const TCODColor lightFlame;
+  static const TCODColor lightOrange;
+  static const TCODColor lightAmber;
+  static const TCODColor lightYellow;
+  static const TCODColor lightLime;
+  static const TCODColor lightChartreuse;
+  static const TCODColor lightGreen;
+  static const TCODColor lightSea;
+  static const TCODColor lightTurquoise;
+  static const TCODColor lightCyan;
+  static const TCODColor lightSky;
+  static const TCODColor lightAzure;
+  static const TCODColor lightBlue;
+  static const TCODColor lightHan;
+  static const TCODColor lightViolet;
+  static const TCODColor lightPurple;
+  static const TCODColor lightFuchsia;
+  static const TCODColor lightMagenta;
+  static const TCODColor lightPink;
+  static const TCODColor lightCrimson;
+
+  //lighter colors
+  static const TCODColor lighterRed;
+  static const TCODColor lighterFlame;
+  static const TCODColor lighterOrange;
+  static const TCODColor lighterAmber;
+  static const TCODColor lighterYellow;
+  static const TCODColor lighterLime;
+  static const TCODColor lighterChartreuse;
+  static const TCODColor lighterGreen;
+  static const TCODColor lighterSea;
+  static const TCODColor lighterTurquoise;
+  static const TCODColor lighterCyan;
+  static const TCODColor lighterSky;
+  static const TCODColor lighterAzure;
+  static const TCODColor lighterBlue;
+  static const TCODColor lighterHan;
+  static const TCODColor lighterViolet;
+  static const TCODColor lighterPurple;
+  static const TCODColor lighterFuchsia;
+  static const TCODColor lighterMagenta;
+  static const TCODColor lighterPink;
+  static const TCODColor lighterCrimson;
+
+  // lightest colors
+  static const TCODColor lightestRed;
+  static const TCODColor lightestFlame;
+  static const TCODColor lightestOrange;
+  static const TCODColor lightestAmber;
+  static const TCODColor lightestYellow;
+  static const TCODColor lightestLime;
+  static const TCODColor lightestChartreuse;
+  static const TCODColor lightestGreen;
+  static const TCODColor lightestSea;
+  static const TCODColor lightestTurquoise;
+  static const TCODColor lightestCyan;
+  static const TCODColor lightestSky;
+  static const TCODColor lightestAzure;
+  static const TCODColor lightestBlue;
+  static const TCODColor lightestHan;
+  static const TCODColor lightestViolet;
+  static const TCODColor lightestPurple;
+  static const TCODColor lightestFuchsia;
+  static const TCODColor lightestMagenta;
+  static const TCODColor lightestPink;
+  static const TCODColor lightestCrimson;
 	
 	// desaturated colors
-	static const TCODColor desaturatedRed;
-	static const TCODColor desaturatedOrange;
-	static const TCODColor desaturatedYellow;
-	static const TCODColor desaturatedChartreuse;
-	static const TCODColor desaturatedGreen;
-	static const TCODColor desaturatedSea;
-	static const TCODColor desaturatedCyan;
-	static const TCODColor desaturatedSky;
-	static const TCODColor desaturatedBlue;
-	static const TCODColor desaturatedViolet;
-	static const TCODColor desaturatedMagenta;
-	static const TCODColor desaturatedPink;	
+  static const TCODColor desaturatedRed;
+  static const TCODColor desaturatedFlame;
+  static const TCODColor desaturatedOrange;
+  static const TCODColor desaturatedAmber;
+  static const TCODColor desaturatedYellow;
+  static const TCODColor desaturatedLime;
+  static const TCODColor desaturatedChartreuse;
+  static const TCODColor desaturatedGreen;
+  static const TCODColor desaturatedSea;
+  static const TCODColor desaturatedTurquoise;
+  static const TCODColor desaturatedCyan;
+  static const TCODColor desaturatedSky;
+  static const TCODColor desaturatedAzure;
+  static const TCODColor desaturatedBlue;
+  static const TCODColor desaturatedHan;
+  static const TCODColor desaturatedViolet;
+  static const TCODColor desaturatedPurple;
+  static const TCODColor desaturatedFuchsia;
+  static const TCODColor desaturatedMagenta;
+  static const TCODColor desaturatedPink;
+  static const TCODColor desaturatedCrimson;	
 	
-	// special
-	static const TCODColor silver;
+	// metallic
+	static const TCODColor brass;
+	static const TCODColor copper;
 	static const TCODColor gold;
+	static const TCODColor silver;
+	
+	// miscellaneous
+	static const TCODColor celadon;
+	static const TCODColor peach;
 };
 
 TCODLIB_API TCODColor operator *(float value, const TCODColor &c);

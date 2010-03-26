@@ -1,114 +1,168 @@
-<table width="100%"><tr><td width="20%">
-<a href="../index.html">&lt; index</a><br />
-<a href="../compil/index.html">&lt; 0. Compiling with libtcod</a>
-</td><td width="60%">
-<p align="center">
-=====================================<br />
-1. Colors<br />
-=====================================<br />
-</p></td><td width="20%">
-<a href="../console/index.html">&gt; 2. Console emulator</a>
-</td></tr></table>
-<style type="text/css">
-.code { color:#444444; background-color:#EEEEEE;}
-pre { color:#444444; background-color:#EEEEEE;}
-table.param td { border : 1px solid #000000; }
-th { background-color: #44BBFF; color: #FFFFFF }
-table.none td { border : 0 }
-table.color td { width:60px; text-align: center;}
-</style>
-<a href="#1.1">1.1 Predefined colors<br /></a>
-<a href="#1.2">1.2 User defined colors<br /></a>
-<a href="#1.3">1.3 Comparing colors<br /></a>
-<a href="#1.4">1.4 Colors operators<br /></a>
-<a href="#1.5">1.5 Interpolating colors<br /></a>
-<a href="#1.6">1.6 HSV conversions<br /></a>
-<a href="#1.7">1.7 Color map generation<br /></a>
-<br />
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+  
+  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <title>libtcod documentation | colors</title>  
+  <link href="../../css/style.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    table.none td { border : 0 }
+    table.color td { width:100px; text-align: center;}
+  </style>
+
+</head><body>
+<div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+
+<div class="breadcrumb">
+<div class="breadcrumbtext">
+<p>you are here: <a href="../../index.html">Index</a>
+&gt; <a href="index.html">1. Colors</a></p>
+</div>
+</div>
+
+<div class="main">
+<div class="maintext">
+
+<div id="toc">
+  <ul>
+    <li><a href="#1.1">1.1. Predefined colors</a></li>
+    <li><a href="#1.2">1.2. User defined colors</a></li>
+    <li><a href="#1.3">1.3. Comparing colors</a></li>
+    <li><a href="#1.4">1.4. Colors operators</a></li>
+    <li><a href="#1.5">1.5. Interpolating colors</a></li>
+    <li><a href="#1.6">1.6. HSV conversions</a></li>
+    <li><a href="#1.7">1.7. Color map generation</a></li>
+  </ul>
+</div>
 <hr />
 <a name="1.1"></a>
-Note that the Doryen library uses 32bits colors. Thus, your OS desktop must use 32bits colors.<br />
-A color is defined by its red, green and blue component between 0 and 255.<br />You can use predefined colors :<br />
-<table class='color'>
-<tr><td style="text-align:right">color</td><td>red</td><td>orange</td><td>yellow</td><td>chartreuse</td><td>green</td><td>sea</td><td>cyan</td><td>sky</td><td>blue</td><td>violet</td><td>magenta</td><td>pink</td></tr>
-<tr><td style="text-aligne:left">level</td><td colspan="12"></td></tr>
-<tr><td>desaturated</td><td style="background-color:rgb(127,63,63)"></td><td style="background-color:rgb(127,95,63)"></td><td style="background-color:rgb(127,127,63)"></td><td style="background-color:rgb(95,127,63)"></td><td style="background-color:rgb(63,127,63)"></td><td style="background-color:rgb(63,127,95)"></td><td style="background-color:rgb(63,127,127)"></td><td style="background-color:rgb(63,95,127)"></td><td style="background-color:rgb(63,63,127)"></td><td style="background-color:rgb(95,63,127)"></td><td style="background-color:rgb(127,63,127)"></td><td style="background-color:rgb(127,63,95)"></td></tr>
-<tr><td>light</td><td style="background-color:rgb(255,127,127)"></td><td style="background-color:rgb(255,191,127)"></td><td style="background-color:rgb(255,255,127)"></td><td style="background-color:rgb(191,255,127)"></td><td style="background-color:rgb(127,255,127)"></td><td style="background-color:rgb(127,255,191)"></td><td style="background-color:rgb(127,255,255)"></td><td style="background-color:rgb(127,191,255)"></td><td style="background-color:rgb(127,127,255)"></td><td style="background-color:rgb(191,127,255)"></td><td style="background-color:rgb(255,127,255)"></td><td style="background-color:rgb(255,127,191)"></td></tr>
-<tr><td>normal</td><td style="background-color:rgb(255,0,0)"></td><td style="background-color:rgb(255,127,0)"></td><td style="background-color:rgb(255,255,0)"></td><td style="background-color:rgb(127,255,0)"></td><td style="background-color:rgb(0,255,0)"></td><td style="background-color:rgb(0,255,127)"></td><td style="background-color:rgb(0,255,255)"></td><td style="background-color:rgb(0,127,255)"></td><td style="background-color:rgb(0,0,255)"></td><td style="background-color:rgb(127,0,255)"></td><td style="background-color:rgb(255,0,255)"></td><td style="background-color:rgb(255,0,127)"></td></tr>
-<tr><td>dark</td><td style="background-color:rgb(127,0,0)"></td><td style="background-color:rgb(127,63,0)"></td><td style="background-color:rgb(127,127,0)"></td><td style="background-color:rgb(63,127,0)"></td><td style="background-color:rgb(0,127,0)"></td><td style="background-color:rgb(0,127,63)"></td><td style="background-color:rgb(0,127,127)"></td><td style="background-color:rgb(0,63,127)"></td><td style="background-color:rgb(0,0,127)"></td><td style="background-color:rgb(63,0,127)"></td><td style="background-color:rgb(127,0,127)"></td><td style="background-color:rgb(127,0,63)"></td></tr>
-<tr><td>darker</td><td style="background-color:rgb(63,0,0)"></td><td style="background-color:rgb(63,31,0)"></td><td style="background-color:rgb(63,63,0)"></td><td style="background-color:rgb(31,63,0)"></td><td style="background-color:rgb(0,63,0)"></td><td style="background-color:rgb(0,63,31)"></td><td style="background-color:rgb(0,63,63)"></td><td style="background-color:rgb(0,31,63)"></td><td style="background-color:rgb(0,0,63)"></td><td style="background-color:rgb(31,0,63)"></td><td style="background-color:rgb(63,0,63)"></td><td style="background-color:rgb(63,0,31)"></td></tr>
-</table>
-Or grey levels :
-<table class='color'>
-<tr><td></td><td>black</td><td>darker grey</td><td>dark grey</td><td>grey</td><td>light grey</td><td>white</td></tr>
-<tr><td>&nbsp;</td><td style="background-color:rgb(0,0,0)"></td><td style="background-color:rgb(31,31,31)"></td><td style="background-color:rgb(63,63,63)"></td><td style="background-color:rgb(128,128,128)"></td><td style="background-color:rgb(191,191,191)"></td><td style="background-color:rgb(255,255,255)"></td></tr>
-</table>
-<p class="code"><pre>
-C++ : TCODColor::desaturatedRed
-      TCODColor::lightRed
-      TCODColor::red
-      TCODColor::darkRed
-      TCODColor::darkerRed
-C   : TCOD_desaturated_red
-      TCOD_light_red
-      TCOD_red
-      TCOD_dark_red
-      TCOD_darker_red
-Py  : libtcod.desaturated_red
-      libtcod.light_red
-      libtcod.red
-      libtcod.dark_red
-      libtcod.darker_red
-</pre></p>
+<p>Note that the Doryen library uses 32bits colors. Thus, your OS desktop must use 32bits colors.</p>
+<p>A color is defined by its red, green and blue component between 0 and 255.</p>
+<p>You can use the following predefined colors (hover over a color to see its full name and R,G,B values):</p>
 
+<table class="color">
+    <tr><td></td><th colspan="8">STANDARD COLORS</th></tr>
+    <tr><td></td><td>desaturated</td><td>lightest</td><td>lighter</td><td>light</td><td>normal</td><td>dark</td><td>darker</td><td>darkest</td></tr>
+		<tr><td>red</td><td title="desaturatedRed: 127,63,63" style="background-color: rgb(127,63,63)"></td><td title="lightestRed: 255,191,191" style="background-color: rgb(255,191,191)"></td><td title="lighterRed: 255,165,165" style="background-color: rgb(255,165,165)"></td><td title="lightRed: 255,114,114" style="background-color: rgb(255,114,114)"></td><td title="red: 255,0,0" style="background-color: rgb(255,0,0)"></td><td title="darkRed: 191,0,0" style="background-color: rgb(191,0,0)"></td><td title="darkerRed: 127,0,0" style="background-color: rgb(127,0,0)"></td><td title="darkestRed: 63,0,0" style="background-color: rgb(63,0,0)"></td></tr>
+		<tr><td>flame</td><td title="desaturatedFlame: 127,79,63" style="background-color: rgb(127,79,63)"></td><td title="lightestFlame: 255,207,191" style="background-color: rgb(255,207,191)"></td><td title="lighterFlame: 255,188,165" style="background-color: rgb(255,188,165)"></td><td title="lightFlame: 255,149,114" style="background-color: rgb(255,149,114)"></td><td title="flame: 255,63,0" style="background-color: rgb(255,63,0)"></td><td title="darkFlame: 191,47,0" style="background-color: rgb(191,47,0)"></td><td title="darkerFlame: 127,31,0" style="background-color: rgb(127,31,0)"></td><td title="darkestFlame: 63,15,0" style="background-color: rgb(63,15,0)"></td></tr>
+		<tr><td>orange</td><td title="desaturatedOrange: 127,95,63" style="background-color: rgb(127,95,63)"></td><td title="lightestOrange: 255,223,191" style="background-color: rgb(255,223,191)"></td><td title="lighterOrange: 255,210,165" style="background-color: rgb(255,210,165)"></td><td title="lightOrange: 255,184,114" style="background-color: rgb(255,184,114)"></td><td title="orange: 255,127,0" style="background-color: rgb(255,127,0)"></td><td title="darkOrange: 191,95,0" style="background-color: rgb(191,95,0)"></td><td title="darkerOrange: 127,63,0" style="background-color: rgb(127,63,0)"></td><td title="darkestOrange: 63,31,0" style="background-color: rgb(63,31,0)"></td></tr>
+		<tr><td>amber</td><td title="desaturatedAmber: 127,111,63" style="background-color: rgb(127,111,63)"></td><td title="lightestAmber: 255,239,191" style="background-color: rgb(255,239,191)"></td><td title="lighterAmber: 255,232,165" style="background-color: rgb(255,232,165)"></td><td title="lightAmber: 255,219,114" style="background-color: rgb(255,219,114)"></td><td title="amber: 255,191,0" style="background-color: rgb(255,191,0)"></td><td title="darkAmber: 191,143,0" style="background-color: rgb(191,143,0)"></td><td title="darkerAmber: 127,95,0" style="background-color: rgb(127,95,0)"></td><td title="darkestAmber: 63,47,0" style="background-color: rgb(63,47,0)"></td></tr>
+		<tr><td>yellow</td><td title="desaturatedYellow: 127,127,63" style="background-color: rgb(127,127,63)"></td><td title="lightestYellow: 255,255,191" style="background-color: rgb(255,255,191)"></td><td title="lighterYellow: 255,255,165" style="background-color: rgb(255,255,165)"></td><td title="lightYellow: 255,255,114" style="background-color: rgb(255,255,114)"></td><td title="yellow: 255,255,0" style="background-color: rgb(255,255,0)"></td><td title="darkYellow: 191,191,0" style="background-color: rgb(191,191,0)"></td><td title="darkerYellow: 127,127,0" style="background-color: rgb(127,127,0)"></td><td title="darkestYellow: 63,63,0" style="background-color: rgb(63,63,0)"></td></tr>
+		<tr><td>lime</td><td title="desaturatedLime: 111,127,63" style="background-color: rgb(111,127,63)"></td><td title="lightestLime: 239,255,191" style="background-color: rgb(239,255,191)"></td><td title="lighterLime: 232,255,165" style="background-color: rgb(232,255,165)"></td><td title="lightLime: 219,255,114" style="background-color: rgb(219,255,114)"></td><td title="lime: 191,255,0" style="background-color: rgb(191,255,0)"></td><td title="darkLime: 143,191,0" style="background-color: rgb(143,191,0)"></td><td title="darkerLime: 95,127,0" style="background-color: rgb(95,127,0)"></td><td title="darkestLime: 47,63,0" style="background-color: rgb(47,63,0)"></td></tr>
+		<tr><td>chartreuse</td><td title="desaturatedChartreuse: 95,127,63" style="background-color: rgb(95,127,63)"></td><td title="lightestChartreuse: 223,255,191" style="background-color: rgb(223,255,191)"></td><td title="lighterChartreuse: 210,255,165" style="background-color: rgb(210,255,165)"></td><td title="lightChartreuse: 184,255,114" style="background-color: rgb(184,255,114)"></td><td title="chartreuse: 127,255,0" style="background-color: rgb(127,255,0)"></td><td title="darkChartreuse: 95,191,0" style="background-color: rgb(95,191,0)"></td><td title="darkerChartreuse: 63,127,0" style="background-color: rgb(63,127,0)"></td><td title="darkestChartreuse: 31,63,0" style="background-color: rgb(31,63,0)"></td></tr>
+		<tr><td>green</td><td title="desaturatedGreen: 63,127,63" style="background-color: rgb(63,127,63)"></td><td title="lightestGreen: 191,255,191" style="background-color: rgb(191,255,191)"></td><td title="lighterGreen: 165,255,165" style="background-color: rgb(165,255,165)"></td><td title="lightGreen: 114,255,114" style="background-color: rgb(114,255,114)"></td><td title="green: 0,255,0" style="background-color: rgb(0,255,0)"></td><td title="darkGreen: 0,191,0" style="background-color: rgb(0,191,0)"></td><td title="darkerGreen: 0,127,0" style="background-color: rgb(0,127,0)"></td><td title="darkestGreen: 0,63,0" style="background-color: rgb(0,63,0)"></td></tr>
+		<tr><td>sea</td><td title="desaturatedSea: 63,127,95" style="background-color: rgb(63,127,95)"></td><td title="lightestSea: 191,255,223" style="background-color: rgb(191,255,223)"></td><td title="lighterSea: 165,255,210" style="background-color: rgb(165,255,210)"></td><td title="lightSea: 114,255,184" style="background-color: rgb(114,255,184)"></td><td title="sea: 0,255,127" style="background-color: rgb(0,255,127)"></td><td title="darkSea: 0,191,95" style="background-color: rgb(0,191,95)"></td><td title="darkerSea: 0,127,63" style="background-color: rgb(0,127,63)"></td><td title="darkestSea: 0,63,31" style="background-color: rgb(0,63,31)"></td></tr>
+		<tr><td>turquoise</td><td title="desaturatedTurquoise: 63,127,111" style="background-color: rgb(63,127,111)"></td><td title="lightestTurquoise: 191,255,239" style="background-color: rgb(191,255,239)"></td><td title="lighterTurquoise: 165,255,232" style="background-color: rgb(165,255,232)"></td><td title="lightTurquoise: 114,255,219" style="background-color: rgb(114,255,219)"></td><td title="turquoise: 0,255,191" style="background-color: rgb(0,255,191)"></td><td title="darkTurquoise: 0,191,143" style="background-color: rgb(0,191,143)"></td><td title="darkerTurquoise: 0,127,95" style="background-color: rgb(0,127,95)"></td><td title="darkestTurquoise: 0,63,47" style="background-color: rgb(0,63,47)"></td></tr>
+		<tr><td>cyan</td><td title="desaturatedCyan: 63,127,127" style="background-color: rgb(63,127,127)"></td><td title="lightestCyan: 191,255,255" style="background-color: rgb(191,255,255)"></td><td title="lighterCyan: 165,255,255" style="background-color: rgb(165,255,255)"></td><td title="lightCyan: 114,255,255" style="background-color: rgb(114,255,255)"></td><td title="cyan: 0,255,255" style="background-color: rgb(0,255,255)"></td><td title="darkCyan: 0,191,191" style="background-color: rgb(0,191,191)"></td><td title="darkerCyan: 0,127,127" style="background-color: rgb(0,127,127)"></td><td title="darkestCyan: 0,63,63" style="background-color: rgb(0,63,63)"></td></tr>
+		<tr><td>sky</td><td title="desaturatedSky: 63,111,127" style="background-color: rgb(63,111,127)"></td><td title="lightestSky: 191,239,255" style="background-color: rgb(191,239,255)"></td><td title="lighterSky: 165,232,255" style="background-color: rgb(165,232,255)"></td><td title="lightSky: 114,219,255" style="background-color: rgb(114,219,255)"></td><td title="sky: 0,191,255" style="background-color: rgb(0,191,255)"></td><td title="darkSky: 0,143,191" style="background-color: rgb(0,143,191)"></td><td title="darkerSky: 0,95,127" style="background-color: rgb(0,95,127)"></td><td title="darkestSky: 0,47,63" style="background-color: rgb(0,47,63)"></td></tr>
+		<tr><td>azure</td><td title="desaturatedAzure: 63,95,127" style="background-color: rgb(63,95,127)"></td><td title="lightestAzure: 191,223,255" style="background-color: rgb(191,223,255)"></td><td title="lighterAzure: 165,210,255" style="background-color: rgb(165,210,255)"></td><td title="lightAzure: 114,184,255" style="background-color: rgb(114,184,255)"></td><td title="azure: 0,127,255" style="background-color: rgb(0,127,255)"></td><td title="darkAzure: 0,95,191" style="background-color: rgb(0,95,191)"></td><td title="darkerAzure: 0,63,127" style="background-color: rgb(0,63,127)"></td><td title="darkestAzure: 0,31,63" style="background-color: rgb(0,31,63)"></td></tr>
+		<tr><td>blue</td><td title="desaturatedBlue: 63,63,127" style="background-color: rgb(63,63,127)"></td><td title="lightestBlue: 191,191,255" style="background-color: rgb(191,191,255)"></td><td title="lighterBlue: 165,165,255" style="background-color: rgb(165,165,255)"></td><td title="lightBlue: 114,114,255" style="background-color: rgb(114,114,255)"></td><td title="blue: 0,0,255" style="background-color: rgb(0,0,255)"></td><td title="darkBlue: 0,0,191" style="background-color: rgb(0,0,191)"></td><td title="darkerBlue: 0,0,127" style="background-color: rgb(0,0,127)"></td><td title="darkestBlue: 0,0,63" style="background-color: rgb(0,0,63)"></td></tr>
+		<tr><td>han</td><td title="desaturatedHan: 79,63,127" style="background-color: rgb(79,63,127)"></td><td title="lightestHan: 207,191,255" style="background-color: rgb(207,191,255)"></td><td title="lighterHan: 188,165,255" style="background-color: rgb(188,165,255)"></td><td title="lightHan: 149,114,255" style="background-color: rgb(149,114,255)"></td><td title="han: 63,0,255" style="background-color: rgb(63,0,255)"></td><td title="darkHan: 47,0,191" style="background-color: rgb(47,0,191)"></td><td title="darkerHan: 31,0,127" style="background-color: rgb(31,0,127)"></td><td title="darkestHan: 15,0,63" style="background-color: rgb(15,0,63)"></td></tr>
+		<tr><td>violet</td><td title="desaturatedViolet: 95,63,127" style="background-color: rgb(95,63,127)"></td><td title="lightestViolet: 223,191,255" style="background-color: rgb(223,191,255)"></td><td title="lighterViolet: 210,165,255" style="background-color: rgb(210,165,255)"></td><td title="lightViolet: 184,114,255" style="background-color: rgb(184,114,255)"></td><td title="violet: 127,0,255" style="background-color: rgb(127,0,255)"></td><td title="darkViolet: 95,0,191" style="background-color: rgb(95,0,191)"></td><td title="darkerViolet: 63,0,127" style="background-color: rgb(63,0,127)"></td><td title="darkestViolet: 31,0,63" style="background-color: rgb(31,0,63)"></td></tr>
+		<tr><td>purple</td><td title="desaturatedPurple: 111,63,127" style="background-color: rgb(111,63,127)"></td><td title="lightestPurple: 239,191,255" style="background-color: rgb(239,191,255)"></td><td title="lighterPurple: 232,165,255" style="background-color: rgb(232,165,255)"></td><td title="lightPurple: 219,114,255" style="background-color: rgb(219,114,255)"></td><td title="purple: 191,0,255" style="background-color: rgb(191,0,255)"></td><td title="darkPurple: 143,0,191" style="background-color: rgb(143,0,191)"></td><td title="darkerPurple: 95,0,127" style="background-color: rgb(95,0,127)"></td><td title="darkestPurple: 47,0,63" style="background-color: rgb(47,0,63)"></td></tr>
+		<tr><td>fuchsia</td><td title="desaturatedFuchsia: 127,63,127" style="background-color: rgb(127,63,127)"></td><td title="lightestFuchsia: 255,191,255" style="background-color: rgb(255,191,255)"></td><td title="lighterFuchsia: 255,165,255" style="background-color: rgb(255,165,255)"></td><td title="lightFuchsia: 255,114,255" style="background-color: rgb(255,114,255)"></td><td title="fuchsia: 255,0,255" style="background-color: rgb(255,0,255)"></td><td title="darkFuchsia: 191,0,191" style="background-color: rgb(191,0,191)"></td><td title="darkerFuchsia: 127,0,127" style="background-color: rgb(127,0,127)"></td><td title="darkestFuchsia: 63,0,63" style="background-color: rgb(63,0,63)"></td></tr>
+		<tr><td>magenta</td><td title="desaturatedMagenta: 127,63,111" style="background-color: rgb(127,63,111)"></td><td title="lightestMagenta: 255,191,239" style="background-color: rgb(255,191,239)"></td><td title="lighterMagenta: 255,165,232" style="background-color: rgb(255,165,232)"></td><td title="lightMagenta: 255,114,219" style="background-color: rgb(255,114,219)"></td><td title="magenta: 255,0,191" style="background-color: rgb(255,0,191)"></td><td title="darkMagenta: 191,0,143" style="background-color: rgb(191,0,143)"></td><td title="darkerMagenta: 127,0,95" style="background-color: rgb(127,0,95)"></td><td title="darkestMagenta: 63,0,47" style="background-color: rgb(63,0,47)"></td></tr>
+		<tr><td>pink</td><td title="desaturatedPink: 127,63,95" style="background-color: rgb(127,63,95)"></td><td title="lightestPink: 255,191,223" style="background-color: rgb(255,191,223)"></td><td title="lighterPink: 255,165,210" style="background-color: rgb(255,165,210)"></td><td title="lightPink: 255,114,184" style="background-color: rgb(255,114,184)"></td><td title="pink: 255,0,127" style="background-color: rgb(255,0,127)"></td><td title="darkPink: 191,0,95" style="background-color: rgb(191,0,95)"></td><td title="darkerPink: 127,0,63" style="background-color: rgb(127,0,63)"></td><td title="darkestPink: 63,0,31" style="background-color: rgb(63,0,31)"></td></tr>
+		<tr><td>crimson</td><td title="desaturatedCrimson: 127,63,79" style="background-color: rgb(127,63,79)"></td><td title="lightestCrimson: 255,191,207" style="background-color: rgb(255,191,207)"></td><td title="lighterCrimson: 255,165,188" style="background-color: rgb(255,165,188)"></td><td title="lightCrimson: 255,114,149" style="background-color: rgb(255,114,149)"></td><td title="crimson: 255,0,63" style="background-color: rgb(255,0,63)"></td><td title="darkCrimson: 191,0,47" style="background-color: rgb(191,0,47)"></td><td title="darkerCrimson: 127,0,31" style="background-color: rgb(127,0,31)"></td><td title="darkestCrimson: 63,0,15" style="background-color: rgb(63,0,15)"></td></tr>
+    <tr><td colspan="9">&nbsp;</td></tr>
+
+    <tr><td></td><th colspan="8">METALLIC COLORS:</th></tr>
+    <tr><td>&nbsp;</td><td>brass</td><td>copper</td><td>gold</td><td>silver</td><td colspan="4"></td></tr>
+    <tr><td>&nbsp;</td><td title="brass: 191,151,96" style="background-color:rgb(191,151,96)"></td><td title="copper: 197,136,124" style="background-color:rgb(197,136,124)"></td><td title="gold: 229,191,0" style="background-color:rgb(229,191,0)"></td><td title="silver: 203,203,203" style="background-color:rgb(203,203,203)"></td><td colspan="4"></td></tr>
+    <tr><td colspan="9">&nbsp;</td></tr>
+
+    <tr><td></td><th colspan="8">MISCELLANEOUS COLORS:</th></tr>
+    <tr><td>&nbsp;</td><td>celadon</td><td>peach</td><td colspan="6"></td></tr>
+    <tr><td>&nbsp;</td><td title="celadon: 172,255,175" style="background-color:rgb(172,255,175)"></td><td title="peach: 255,159,127" style="background-color:rgb(255,159,127)"></td><td colspan="6"></td></tr>
+    <tr><td colspan="9">&nbsp;</td></tr>
+    
+    <tr><td></td><th colspan="8">GREYSCALE & SEPIA:</th></tr>
+    <tr><td colspan="2">&nbsp;</td><td>lightest</td><td>lighter</td><td>light</td><td>normal</td><td>dark</td><td>darker</td><td>darkest</td></tr>
+    <tr><td>grey</td><td>&nbsp;</td><td title="lightestGrey: 223,223,223" style="background-color:rgb(223,223,223)"></td><td title="lighterGrey: 191,191,191" style="background-color:rgb(191,191,191)"></td><td title="lightGrey: 159,159,159" style="background-color:rgb(159,159,159)"></td><td title="grey: 127,127,127" style="background-color:rgb(127,127,127)"></td><td title="darkGrey: 95,95,95" style="background-color:rgb(95,95,95)"></td><td title="darkerGrey: 63,63,63" style="background-color:rgb(63,63,63)"></td><td title="darkestGrey: 31,31,31" style="background-color:rgb(31,31,31)"></td></tr>
+    <tr><td>sepia</td><td>&nbsp;</td><td title="lightestSepia: 222,211,195" style="background-color:rgb(222,211,195)"></td><td title="lighterSepia: 191,171,143" style="background-color:rgb(191,171,143)"></td><td title="lightSepia: 158,134,100" style="background-color:rgb(158,134,100)"></td><td title="sepia: 127,101,63" style="background-color:rgb(127,101,63)"></td><td title="darkSepia: 94,75,47" style="background-color:rgb(94,75,47)"></td><td title="darkerSepia: 63,50,31" style="background-color:rgb(63,50,31)"></td><td title="darkestSepia: 31,24,15" style="background-color:rgb(31,24,15)"></td></tr>
+    <tr><td colspan="9">&nbsp;</td></tr>
+
+    <tr><td></td><th colspan="8">BLACK AND WHITE:</th></tr>
+    <tr><td>&nbsp;</td><td>black</td><td>white</td><td colspan="6"></td></tr>
+    <tr><td>&nbsp;</td><td title="black: 0,0,0" style="background-color:rgb(0,0,0)"></td><td title="white: 255,255,255" style="background-color:rgb(255,255,255)"></td><td colspan="6"></td></tr>
+</table>
+
+<div class="code">
+<p class="cpp">TCODColor::desaturatedRed<br>
+	TCODColor::lightestRed<br>
+	TCODColor::lighterRed<br>
+	TCODColor::lightRed<br>
+	TCODColor::red<br>
+	TCODColor::darkRed<br>
+	TCODColor::darkerRed<br>
+	TCODColor::darkestRed</p>
+<p class="c">TCOD_desaturated_red<br>
+	TCOD_lightest_red<br>
+	TCOD_lighter_red<br>
+  TCOD_light_red<br>
+	TCOD_red<br>
+	TCOD_dark_red<br>
+	TCOD_darker_red<br>
+	TCOD_darkest_red</p>
+<p class="py">libtcod.desaturated_red<br>
+	libtcod.lightest_red<br>
+	libtcod.lighter_red<br>
+  libtcod.light_red<br>
+	libtcod.red<br>
+	libtcod.dark_red<br>
+	libtcod.darker_red<br>
+	libtcod.darkest_red</p>
+</div>
+<hr />
 <a name="1.2"></a>
-or define your own :<br />
-<p class="code"><pre>
-C++ : TCODColor myColor(24,64,255);
-C   : TCOD_color_t my_color={24,64,255};
-Py  : my_color=libtcod.Color(24,64,255)
-</pre></p>
+<p>You can also define your own colors:</p>
+<div class="code">
+<p class="cpp">TCODColor myColor(24,64,255);</p>
+<p class="c">TCOD_color_t my_color={24,64,255};</p>
+<p class="py">my_color=libtcod.Color(24,64,255)</p>
+</div>
 <hr />
 <a name="1.3"></a>
-You can compare two colors :<br />
-<p class="code"><pre>
-C++ :
-  if (myColor == TCODColor::yellow ) { ... }<br />
-  if (myColor != TCODColor::white ) { ... }
-C :
-  if ( TCOD_color_equals(my_color, TCOD_yellow ) ) { ... }<br />
-  if ( ! TCOD_color_equals(my_color, TCOD_white ) ) { ... }
-Py :
-  if my_color ==  libtcod.yellow : ... <br />
-  if my_color != litbcod.white : ... 
-</pre></p>
-<br />
+<p>You can compare two colors:</p>
+<div class="code">
+  <p class="cpp">if (myColor == TCODColor::yellow) { ... }<br />
+  	if (myColor != TCODColor::white) { ... }</p>
+  <p class="c">if (TCOD_color_equals(my_color,TCOD_yellow)) { ... }<br />
+  	if (!TCOD_color_equals(my_color,TCOD_white)) { ... }</p>
+  <p class="py">if my_color ==  libtcod.yellow : ... <br />
+  	if my_color != litbcod.white : ...</p> 
+</div>
 <hr />
 <a name="1.4"></a>
-You can multiply two colors :<br />
-<table>
-	<tr><td class="code"><pre>C++ : TCODColor myDarkRed = </pre></td><td class="code"><pre>TCODColor::darkGrey *</pre></td><td class="code"><pre>TCODColor::lightRed;</pre></td></tr>
-	<tr><td class="code"><pre>C   : TCOD_color_t my_dark_red = TCOD_color_multiply(</pre></td><td class="code"><pre>TCOD_dark_grey,</pre></td><td class="code"><pre>TCOD_light_red);</pre></td></tr>
-	<tr><td class="code"><pre>Py  : my_dark_red =</pre></td><td class="code"><pre>libtcod.dark_grey *</pre></td><td class="code"><pre>libtcod.light_red</pre></td></tr>
+<p>You can multiply two colors:</p>
+<div class="code">
+<table width="100%">
+	<tr><td><p class="cpp">TCODColor myDarkRed =</p></td><td><p>TCODColor::darkGrey *</p></td><td><p>TCODColor::lightRed;</p></td></tr>
+	<tr><td><p class="c">TCOD_color_t my_dark_red = TCOD_color_multiply(</p></td><td><p>TCOD_dark_grey,</p></td><td><p>TCOD_light_red);</p></td></tr>
+	<tr><td><p class="py">my_dark_red =</p></td><td><p>libtcod.dark_grey *</p></td><td><p>libtcod.light_red</p></td></tr>
 	<tr><td style="background-color:rgb(96,0,0);width:60px;height:30px"></td><td style="background-color:rgb(96,96,96);width:60px"></td><td style="background-color:rgb(255,0,0);width:60px"></td></tr>
 </table>
-<p class="code"><pre>
-  c1 = c2 * c3 => c1.r = c2.r * c3.r /255<br />
-                  c1.g = c2.g * c3.g /255<br />
-                  c1.b = c2.b * c3.b /255
-</pre></p>                  
-or multiply a color by a float :<br />
-<table>
-	<tr><td class="code"><pre>C++ : TCODColor myDarkRed = </pre></td><td class="code"><pre>TCODColor::lightRed *</pre></td><td class="code"><pre>0.5f;</pre></td></tr>
-	<tr><td class="code"><pre>C   : TCOD_color_t my_dark_red = TCOD_color_multiply_scalar(</pre></td><td class="code"><pre>TCOD_light_red,</pre></td><td class="code"><pre>0.5f);</pre></td></tr>
-	<tr><td class="code"><pre>Py  : myDarkRed = </pre></td><td class="code"><pre>litbcod.light_red *</pre></td><td class="code"><pre>0.5</pre></td></tr>
+  <p>c1 = c2 * c3 => <br />
+    &nbsp; &nbsp; c1.r = c2.r * c3.r / 255<br />
+    &nbsp; &nbsp; c1.g = c2.g * c3.g / 255<br />
+    &nbsp; &nbsp; c1.b = c2.b * c3.b / 255</p>
+</div>                  
+<p>Or you can multiply a color by a float:</p>
+<div class="code">
+<table width="100%">
+	<tr><td><p class="cpp">TCODColor myDarkRed =</p></td><td><p>TCODColor::lightRed *</p></td><td><p>0.5f;</p></td></tr>
+	<tr><td><p class="c">TCOD_color_t my_dark_red = TCOD_color_multiply_scalar(</p></td><td><p>TCOD_light_red,</p></td><td><p>0.5f);</p></td></tr>
+	<tr><td><p class="py">myDarkRed =</p></td><td><p>litbcod.light_red *</p></td><td><p>0.5</p></td></tr>
 	<tr><td style="background-color:rgb(128,0,0);width:60px;height:30px"></td><td style="background-color:rgb(255,0,0);width:60px"></td><td style="width:60px"></td></tr>
 </table>
-<p class="code"><pre>
-  c1 = c2 * v => c1.r = CLAMP(0, 255, c2.r * v)<br />
-                  c1.g = CLAMP(0, 255, c2.g * v)<br />
-                  c1.b = CLAMP(0, 255, c2.b * v)
-</pre></p>                  
+<p>
+  c1 = c2 * v =><br />
+    &nbsp; &nbsp; c1.r = CLAMP(0, 255, c2.r * v)<br />
+    &nbsp; &nbsp; c1.g = CLAMP(0, 255, c2.g * v)<br />
+    &nbsp; &nbsp; c1.b = CLAMP(0, 255, c2.b * v)
+</p>
+</div>                  
 or add two colors :<br />
 <table>
 	<tr><td class="code"><pre>C++ : TCODColor myRed = </pre></td><td class="code"><pre>TCODColor::lightRed +</pre></td><td class="code"><pre>TCODColor::darkGrey</pre></td></tr>

@@ -109,7 +109,7 @@ typedef struct {
 	bool shift ;
 } TCOD_key_t;
 
-enum {
+typedef enum {
 	// single walls
 	TCOD_CHAR_HLINE=196,
 	TCOD_CHAR_VLINE=179,
@@ -200,7 +200,7 @@ enum {
 	TCOD_CHAR_POW2 = 253,
 	TCOD_CHAR_BULLET_SQUARE = 254,
 	// diacritics
-};
+} TCOD_chars_t;
 
 typedef enum {
 	TCOD_COLCTRL_1 = 1,
@@ -230,19 +230,19 @@ typedef enum {
 	TCOD_BKGND_ALPH
 } TCOD_bkgnd_flag_t;
 
-enum {
+typedef enum {
 	TCOD_KEY_PRESSED=1,
 	TCOD_KEY_RELEASED=2,
-};
+} TCOD_key_status_t;
 
 // custom font flags
-enum {
+typedef enum {
 	TCOD_FONT_LAYOUT_ASCII_INCOL=1,
 	TCOD_FONT_LAYOUT_ASCII_INROW=2,
 	TCOD_FONT_TYPE_GREYSCALE=4,
 	TCOD_FONT_TYPE_GRAYSCALE=4,
 	TCOD_FONT_LAYOUT_TCOD=8,
-};
+} TCOD_font_flags_t;
 
 typedef enum {
 	TCOD_RENDERER_GLSL,

@@ -37,6 +37,12 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\generated\csharp\ITCODBspCallback.cs">
+      <Link>ITCODBspCallback.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\ITCODPathCallback.cs">
+      <Link>ITCODPathCallback.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\libtcod.cs">
       <Link>libtcod.cs</Link>
     </Compile>
@@ -46,14 +52,23 @@
     <Compile Include="..\..\generated\csharp\TCODBackgroundFlag.cs">
       <Link>TCODBackgroundFlag.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\TCODBsp.cs">
+      <Link>TCODBsp.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODColor.cs">
       <Link>TCODColor.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODConsole.cs">
       <Link>TCODConsole.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\TCODDijkstra.cs">
+      <Link>TCODDijkstra.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODFOVTypes.cs">
       <Link>TCODFOVTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCODHeightMap.cs">
+      <Link>TCODHeightMap.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODImage.cs">
       <Link>TCODImage.cs</Link>
@@ -66,6 +81,9 @@
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODLine.cs">
       <Link>TCODLine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCODLineListener.cs">
+      <Link>TCODLineListener.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODMap.cs">
       <Link>TCODMap.cs</Link>
@@ -81,6 +99,9 @@
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODNoise.cs">
       <Link>TCODNoise.cs</Link>
+    </Compile>
+    <Compile Include="..\..\generated\csharp\TCODPath.cs">
+      <Link>TCODPath.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODRandom.cs">
       <Link>TCODRandom.cs</Link>

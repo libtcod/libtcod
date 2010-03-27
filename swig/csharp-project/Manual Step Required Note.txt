@@ -1,0 +1,7 @@
+So apparently there is a bug in SWIG's director where it doesn't respect some typemap nonsense. The fix is to go into every file that wants a "SWIGTYPE_p_void" and NOT add SWIGTYPE_p_void. You need to change the callbacks from:
+
+         (userData == IntPtr.Zero) ? null : new SWIGTYPE_p_void(userData, false));
+ to:
+         new HandleRef(new object(), userData));
+
+If a non-callback wants a SWIGTYPE_p_void then there is a problem with a wrapper.

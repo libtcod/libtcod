@@ -422,6 +422,14 @@ void TCOD_color_get_HSV(TCOD_color_t c, float *h, float *s, float *v)
 	if( *h < 0 ) *h += 360;
 }
 
+void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef) {
+  float h, s, v;
+  TCOD_color_get_HSV(*c,&h,&s,&v);
+  s = CLAMP(0.0f,1.0f,s*scoef);
+  v = CLAMP(0.0f,1.0f,v*vcoef);
+  TCOD_color_set_HSV(c,h,s,v);
+}
+
 void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const  *key_color, int const  *key_index) {
 	int segment=0;
 	for (segment=0; segment < nb_key-1; segment++) {

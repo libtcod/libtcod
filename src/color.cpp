@@ -279,6 +279,12 @@ void TCODColor::getHSV(float *h, float *s, float *v) const {
   TCOD_color_get_HSV(c,h,s,v);
 }
 
+void TCODColor::scaleHSV (float sscale, float vscale) {
+  TCOD_color_t c = {r,g,b};
+  TCOD_color_scale_HSV(&c,sscale,vscale);
+  r = c.r; g = c.g; b = c.b;
+}
+
 // non member operators
 TCODColor operator *(float value, const TCODColor &c) {
 	return c*value;

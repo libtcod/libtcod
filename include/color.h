@@ -41,6 +41,7 @@ TCODLIB_API TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float
 TCODLIB_API void TCOD_color_set_HSV(TCOD_color_t *c,float h, float s, float v);
 TCODLIB_API void TCOD_color_get_HSV(TCOD_color_t c,float * h, float * s, float * v);
 TCODLIB_API void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index);
+TCODLIB_API void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef);
 
 // color names
 enum {

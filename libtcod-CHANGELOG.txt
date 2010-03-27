@@ -16,7 +16,9 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
 + added more TCOD_CHAR_* constants
++ added TCODColor::scaleHSV (saturation and value scaling)
 % hardened fov module
+% extended list of colour constants (the old names can produce slightly different colours)
 - fixed setDirty() not working for the last row or column of the console
 - fixed python samples not compiling if numpy installed
 - fixed python TCOD_parser_get_list_property

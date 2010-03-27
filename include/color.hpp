@@ -91,6 +91,7 @@ public :
 	}
 	void setHSV(float h, float s, float v);
 	void getHSV(float *h, float *s, float *v) const;
+	void scaleHSV (float sscale, float vscale);
 	
 	static TCODColor lerp(const TCODColor &a, const TCODColor &b, float coef) {
 		TCODColor ret;

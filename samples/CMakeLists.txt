@@ -1,4 +1,10 @@
 IF(MSVC)
+	# msvc wants to "deprecate" standard C. Turn those warnings off.
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+ENDIF()
+
+IF(MSVC)
 	SET(UPX ${DEPENDENCY_DIR}/upx/win/upx.exe)
 	SET(PROGRAM_ENDING .exe)
 ELSEIF(MINGW)

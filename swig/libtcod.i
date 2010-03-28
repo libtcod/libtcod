@@ -18,6 +18,29 @@ typedef unsigned int uint32;
 %rename(TCODBackgroundFlag) TCOD_bkgnd_flag_t;
 %rename(TCODRendererType) TCOD_renderer_t;
 
+%rename(TCODSpecialCharacter) TCOD_chars_t;
+%rename(TCODFontFlags) TCOD_font_flags_t;
+%rename(TCODKeyStatus) TCOD_key_status_t;
+
+%rename(MersenneTwister) TCOD_RNG_MT;
+%rename(ComplementaryMultiplyWithCarry) TCOD_RNG_CMWC;
+
+%rename(BasicFov) FOV_BASIC;
+%rename(DiamondFov) FOV_DIAMOND;
+%rename(ShadowFov) FOV_SHADOW;
+%rename(Permissive0Fov) FOV_PERMISSIVE_0;
+%rename(Permissive1Fov) FOV_PERMISSIVE_1;
+%rename(Permissive2Fov) FOV_PERMISSIVE_2;
+%rename(Permissive3Fov) FOV_PERMISSIVE_3;
+%rename(Permissive4Fov) FOV_PERMISSIVE_4;
+%rename(Permissive5Fov) FOV_PERMISSIVE_5;
+%rename(Permissive6Fov) FOV_PERMISSIVE_6;
+%rename(Permissive7Fov) FOV_PERMISSIVE_7;
+%rename(Permissive8Fov) FOV_PERMISSIVE_8;
+%rename(RestrictiveFov) FOV_RESTRICTIVE;
+
+%ignore NB_FOV_ALGORITHMS;
+
 %include typemaps.i
 %rename(Equal) operator ==;
 %rename(NotEqual) operator !=;
@@ -34,6 +57,7 @@ typedef unsigned int uint32;
 %ignore TCODColor::TCODColor(const TCOD_color_t & c);
 %ignore TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
 %ignore TCODColor::colors;
+%ignore operator *(float value, const TCODColor &c);
 
 %apply float *OUTPUT { float *h, float *s, float *v};
 void TCODColor::getHSV(float *h, float *s, float *v) const;
@@ -148,14 +172,33 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "mersenne.hpp"
 %include "mersenne_types.h"
 %include "mouse.hpp"
-%include "mouse_types.h"
 %include "namegen.hpp"
 %include "noise.hpp"
 %include "path.hpp"
 %include "sys.hpp"
 
-// Since selective rename/ignore on "namespaced" structs appears to be broken
-// do global renames, but only after everything else. This should be the last stuff in file.
+// Since selective rename/ignore on "namespaced" structs appears to be broken for C style typedef structs
+// To work around this global renames, but only after everything else. This should be the last stuff in file.
+%rename(LeftButton) lbutton;
+%rename(MiddleButton) mbutton;
+%rename(RightButton) rbutton;
+%rename(LeftButtonPressed) lbutton_pressed;
+%rename(MiddleButtonPressed) mbutton_pressed;
+%rename(RightButtonPressed) rbutton_pressed;
+%rename(WheelUp) wheel_up;
+%rename(WheelDown) wheel_down;
+
+%rename(XPosition) x;
+%rename(YPosition) y;
+%rename(XPositionDelta) dx;
+%rename(YPositionDelta) dy;
+%rename(XCellPosition) cx;
+%rename(YCellPosition) cy;
+%rename(XCellPositionDelta) dcx;
+%rename(YCellPositionDelta) dcy;
+
+%include "mouse_types.h"
+
 %rename(KeyCode) vk;
 %rename(Character) c;
 %rename(Pressed) pressed;
@@ -256,5 +299,92 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %rename(FontGreyscale) TCOD_FONT_TYPE_GREYSCALE;
 %rename(FontGrayscale) TCOD_FONT_TYPE_GRAYSCALE;
 %rename(FontLayoutTCOD) TCOD_FONT_LAYOUT_TCOD;
+
+%rename(KeyPressed) TCOD_KEY_PRESSED;
+%rename(KeyReleased) TCOD_KEY_RELEASED;
+
+
+%rename(HorzLine) TCOD_CHAR_HLINE;
+%rename(VertLine) TCOD_CHAR_VLINE;
+%rename(NE) TCOD_CHAR_NE;
+%rename(NW) TCOD_CHAR_NW;
+%rename(SE) TCOD_CHAR_SE;
+%rename(SW) TCOD_CHAR_SW;
+%rename(TeeWest) TCOD_CHAR_TEEW;
+%rename(TeeEast) TCOD_CHAR_TEEE;
+%rename(TeeNorth) TCOD_CHAR_TEEN;
+%rename(TeeSouth) TCOD_CHAR_TEES;
+%rename(Cross) TCOD_CHAR_CROSS;
+%rename(DoubleHorzLine) TCOD_CHAR_DHLINE;
+%rename(DoubleVertLine) TCOD_CHAR_DVLINE;
+%rename(DoubleNE) TCOD_CHAR_DNE;
+%rename(DoubleNW) TCOD_CHAR_DNW;
+%rename(DoubleSE) TCOD_CHAR_DSE;
+%rename(DoubleSW) TCOD_CHAR_DSW;
+%rename(DoubleTeeWest) TCOD_CHAR_DTEEW;
+%rename(DoubleTeeEast) TCOD_CHAR_DTEEE;
+%rename(DoubleTeeNorth) TCOD_CHAR_DTEEN;
+%rename(DoubleTeeSouth) TCOD_CHAR_DTEES;
+%rename(DoubleCross) TCOD_CHAR_DCROSS;
+%rename(Block1) TCOD_CHAR_BLOCK1;
+%rename(Block2) TCOD_CHAR_BLOCK2;
+%rename(Block3) TCOD_CHAR_BLOCK3;
+%rename(ArrowNorth) TCOD_CHAR_ARROW_N;
+%rename(ArrowSouth) TCOD_CHAR_ARROW_S;
+%rename(ArrowEast) TCOD_CHAR_ARROW_E;
+%rename(ArrowWest) TCOD_CHAR_ARROW_W;
+%rename(ArrowNorthNoTail) TCOD_CHAR_ARROW2_N;
+%rename(ArrowSouthNoTail) TCOD_CHAR_ARROW2_S;
+%rename(ArrowEastNoTail) TCOD_CHAR_ARROW2_E;
+%rename(ArrowWestNoTail) TCOD_CHAR_ARROW2_W;
+%rename(DoubleArrowHorz) TCOD_CHAR_DARROW_H;
+%rename(DoubleArrowVert) TCOD_CHAR_DARROW_V;
+%rename(SubpixelNorthWest) TCOD_CHAR_SUBP_NW;
+%rename(SubpixelNorthEast) TCOD_CHAR_SUBP_NE;
+%rename(SubpixelNorth) TCOD_CHAR_SUBP_N;
+%rename(SubpixelSoutheast) TCOD_CHAR_SUBP_SE;
+%rename(SubpixelDiagonal) TCOD_CHAR_SUBP_DIAG;
+%rename(SubpixelEast) TCOD_CHAR_SUBP_E;
+%rename(SubpixelSouthwest) TCOD_CHAR_SUBP_SW;
+
+%rename(Smilie) TCOD_CHAR_SMILIE;
+%rename(SmilieInv) TCOD_CHAR_SMILIE_INV;
+%rename(Heart) TCOD_CHAR_HEART;
+%rename(Diamond) TCOD_CHAR_DIAMOND;
+%rename(Club) TCOD_CHAR_CLUB;
+%rename(Spade) TCOD_CHAR_SPADE;
+%rename(Bullet) TCOD_CHAR_BULLET;
+%rename(BulletInv) TCOD_CHAR_BULLET_INV;
+%rename(Male) TCOD_CHAR_MALE;
+%rename(Female) TCOD_CHAR_FEMALE;
+%rename(Note) TCOD_CHAR_NOTE;
+%rename(NoteDouble) TCOD_CHAR_NOTE_DOUBLE;
+%rename(Light) TCOD_CHAR_LIGHT;
+%rename(ExclamationDouble) TCOD_CHAR_EXCLAM_DOUBLE;
+%rename(Pilcrow) TCOD_CHAR_PILCROW;
+%rename(Section) TCOD_CHAR_SECTION;
+%rename(Pound) TCOD_CHAR_POUND;
+%rename(Multiplication) TCOD_CHAR_MULTIPLICATION;
+%rename(Function) TCOD_CHAR_FUNCTION;
+%rename(Reserved) TCOD_CHAR_RESERVED;
+%rename(Half) TCOD_CHAR_HALF;
+%rename(OneQuarter) TCOD_CHAR_ONE_QUARTER;
+%rename(Copyright) TCOD_CHAR_COPYRIGHT;
+%rename(Cent) TCOD_CHAR_CENT;
+%rename(Yen) TCOD_CHAR_YEN;
+%rename(Currency) TCOD_CHAR_CURRENCY;
+%rename(ThreeQuarters) TCOD_CHAR_THREE_QUARTERS;
+%rename(Division) TCOD_CHAR_DIVISION;
+%rename(Grade) TCOD_CHAR_GRADE;
+%rename(Umlaut) TCOD_CHAR_UMLAUT;
+%rename(Pow1) TCOD_CHAR_POW1;
+%rename(Pow3) TCOD_CHAR_POW3;
+%rename(Pow2) TCOD_CHAR_POW2;
+%rename(BulletSquare) TCOD_CHAR_BULLET_SQUARE;
+
+%ignore TCOD_CHAR_CHECKBOX_UNSET;
+%ignore TCOD_CHAR_CHECKBOX_SET;
+%ignore TCOD_CHAR_RADIO_UNSET;
+%ignore TCOD_CHAR_RADIO_SET;
 
 %include "console_types.h"

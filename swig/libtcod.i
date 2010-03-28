@@ -2,6 +2,7 @@
 #pragma SWIG nowarn=503
 %{
 #include "libtcod.hpp"
+#include "../swig/ColorHelperFunctions.hpp"
 %}
 
 #define NO_UNICODE
@@ -95,7 +96,7 @@ void TCODSystem::getCurrentResolution(int *w, int *h);
 void TCODSystem::getCharSize(int *w, int *h);
 
 // bresenham.hpp
-%apply int *OUTPUT { int *xCur, int *yCur};
+%apply int *INOUT { int *xCur, int *yCur};
 bool TCODLine::step(int *xCur, int *yCur);
 
 // image.hpp
@@ -163,7 +164,6 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 // File parser, container, compression skipped due to higher level languages having better tools.
 %include "bresenham.hpp"
 %include "bsp.hpp"
-%include "color.hpp"
 %include "console.hpp"
 %include "fov.hpp"
 %include "fov_types.h"
@@ -176,6 +176,7 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "noise.hpp"
 %include "path.hpp"
 %include "sys.hpp"
+%include "ColorHelperFunctions.hpp"
 
 // Since selective rename/ignore on "namespaced" structs appears to be broken for C style typedef structs
 // To work around this global renames, but only after everything else. This should be the last stuff in file.
@@ -388,3 +389,17 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %ignore TCOD_CHAR_RADIO_SET;
 
 %include "console_types.h"
+
+%rename (Red) r;
+%rename (Green) g;
+%rename (Blue) b;
+%rename (Interpolate) lerp;
+
+%include "color.hpp"
+
+%rename (NoiseMaxOctaves) TCOD_NOISE_MAX_OCTAVES;
+%rename (NoiseMaxDimensions) TCOD_NOISE_MAX_DIMENSIONS;
+%rename (NoiseDefaultHurst) TCOD_NOISE_DEFAULT_HURST;
+%rename (NoiseDefaultLacunarity) TCOD_NOISE_DEFAULT_LACUNARITY;
+
+%include "noise_defaults.h"

@@ -30,10 +30,7 @@
 
 typedef void *TCOD_noise_t;
 
-#define TCOD_NOISE_MAX_OCTAVES			128	
-#define TCOD_NOISE_MAX_DIMENSIONS		4
-#define TCOD_NOISE_DEFAULT_HURST        0.5f
-#define TCOD_NOISE_DEFAULT_LACUNARITY   2.0f
+#include "noise_defaults.h"
 
 TCODLIB_API TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random);
 // basic perlin noise

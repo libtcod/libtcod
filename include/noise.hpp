@@ -28,6 +28,8 @@
 #ifndef _TCOD_PERLIN_HPP
 #define _TCOD_PERLIN_HPP
 
+#include "noise_defaults.h"
+
 class TCODLIB_API TCODNoise {
 	public :
 		TCODNoise(int dimensions);

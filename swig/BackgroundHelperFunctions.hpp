@@ -3,7 +3,7 @@
 
 #include "console_types.h"
 
-class TCODColorHelpers
+class TCODCBackgroundHelpers
 {
 	public:
 		static TCOD_bkgnd_flag_t CreateAddAlphaBackground(float alpha)

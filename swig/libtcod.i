@@ -2,7 +2,7 @@
 #pragma SWIG nowarn=503
 %{
 #include "libtcod.hpp"
-#include "../swig/ColorHelperFunctions.hpp"
+#include "../swig/BackgroundHelperFunctions.hpp"
 %}
 
 #define NO_UNICODE
@@ -22,6 +22,7 @@ typedef unsigned int uint32;
 %rename(TCODSpecialCharacter) TCOD_chars_t;
 %rename(TCODFontFlags) TCOD_font_flags_t;
 %rename(TCODKeyStatus) TCOD_key_status_t;
+%rename(TCODNameGenerator) TCODNamegen;
 
 %rename(MersenneTwister) TCOD_RNG_MT;
 %rename(ComplementaryMultiplyWithCarry) TCOD_RNG_CMWC;
@@ -176,7 +177,7 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "noise.hpp"
 %include "path.hpp"
 %include "sys.hpp"
-%include "ColorHelperFunctions.hpp"
+%include "BackgroundHelperFunctions.hpp"
 
 // Since selective rename/ignore on "namespaced" structs appears to be broken for C style typedef structs
 // To work around this global renames, but only after everything else. This should be the last stuff in file.
@@ -189,14 +190,14 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %rename(WheelUp) wheel_up;
 %rename(WheelDown) wheel_down;
 
-%rename(XPosition) x;
-%rename(YPosition) y;
-%rename(XPositionDelta) dx;
-%rename(YPositionDelta) dy;
-%rename(XCellPosition) cx;
-%rename(YCellPosition) cy;
-%rename(XCellPositionDelta) dcx;
-%rename(YCellPositionDelta) dcy;
+%rename(PixelX) x;
+%rename(PixelY) y;
+%rename(PixelVelocityX) dx;
+%rename(PixelVelocityY) dy;
+%rename(CellX) cx;
+%rename(CellY) cy;
+%rename(CellVelocityX) dcx;
+%rename(CellVelocityY) dcy;
 
 %include "mouse_types.h"
 
@@ -295,15 +296,14 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %rename(Space) TCODK_SPACE;
 %rename(Char) TCODK_CHAR;
 
-%rename(FontLayoutAsciiInColumn) TCOD_FONT_LAYOUT_ASCII_INCOL;
-%rename(FontLayoutAsciiInRow) TCOD_FONT_LAYOUT_ASCII_INROW;
-%rename(FontGreyscale) TCOD_FONT_TYPE_GREYSCALE;
-%rename(FontGrayscale) TCOD_FONT_TYPE_GRAYSCALE;
-%rename(FontLayoutTCOD) TCOD_FONT_LAYOUT_TCOD;
+%rename(LayoutAsciiInColumn) TCOD_FONT_LAYOUT_ASCII_INCOL;
+%rename(LayoutAsciiInRow) TCOD_FONT_LAYOUT_ASCII_INROW;
+%rename(Greyscale) TCOD_FONT_TYPE_GREYSCALE;
+%rename(Grayscale) TCOD_FONT_TYPE_GRAYSCALE;
+%rename(LayoutTCOD) TCOD_FONT_LAYOUT_TCOD;
 
 %rename(KeyPressed) TCOD_KEY_PRESSED;
 %rename(KeyReleased) TCOD_KEY_RELEASED;
-
 
 %rename(HorzLine) TCOD_CHAR_HLINE;
 %rename(VertLine) TCOD_CHAR_VLINE;

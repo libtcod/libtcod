@@ -55,11 +55,11 @@
     <Compile Include="..\..\generated\csharp\TCODBsp.cs">
       <Link>TCODBsp.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\TCODCBackgroundHelpers.cs">
+      <Link>TCODCBackgroundHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODColor.cs">
       <Link>TCODColor.cs</Link>
-    </Compile>
-    <Compile Include="..\..\generated\csharp\TCODColorHelpers.cs">
-      <Link>TCODColorHelpers.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\TCODConsole.cs">
       <Link>TCODConsole.cs</Link>
@@ -103,9 +103,6 @@
     <Compile Include="..\..\generated\csharp\TCODMouseData.cs">
       <Link>TCODMouseData.cs</Link>
     </Compile>
-    <Compile Include="..\..\generated\csharp\TCODNamegen.cs">
-      <Link>TCODNamegen.cs</Link>
-    </Compile>
     <Compile Include="..\..\generated\csharp\TCODNoise.cs">
       <Link>TCODNoise.cs</Link>
     </Compile>
@@ -127,6 +124,7 @@
     <Compile Include="..\..\generated\csharp\TCODSystem.cs">
       <Link>TCODSystem.cs</Link>
     </Compile>
+    <Compile Include="TCODNameGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

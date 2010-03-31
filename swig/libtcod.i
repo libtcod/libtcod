@@ -3,7 +3,57 @@
 %{
 #include "libtcod.hpp"
 #include "../swig/BackgroundHelperFunctions.hpp"
+
+#include <vector>
+class TCODNameGenerator
+{
+	public:
+		static void parse (const char * filename, TCODRandom * random = NULL)
+		{
+			TCOD_namegen_parse (filename, random ? random->data : NULL);
+		}
+
+		static char * generate (char * name, bool allocate = false)
+		{
+			return TCOD_namegen_generate (name, allocate);
+		}
+
+		static char * generateCustom (char * name, char * rule, bool allocate = false)
+		{
+			return TCOD_namegen_generate_custom (name, rule, allocate);
+		}
+
+		static std::vector<char*> getSets(void)
+		{
+			std::vector<char*> returnList;
+			TCOD_list_t setList = TCOD_namegen_get_sets();
+			for(int i = 0 ; i < TCOD_list_size(setList) ; ++i)
+			{
+			 	returnList.push_back((char*)TCOD_list_get(setList, i));
+			}
+			return returnList;
+		}
+		
+		static void destroy (void)
+		{
+			TCOD_namegen_destroy ();
+		}
+};
 %}
+
+class TCODLIB_API TCODNameGenerator {
+	public:
+		static void parse (const char * filename, TCODRandom * random = NULL);
+		static char * generate (char * name, bool allocate = false);
+		static char * generateCustom (char * name, char * rule, bool allocate = false);
+		static std::vector<char*> getSets (void);
+		static void destroy (void);
+};
+
+%include std_vector.i
+namespace std {
+%template(StringVector) vector<char*>;
+};
 
 #define NO_UNICODE
 typedef unsigned char uint8;
@@ -22,7 +72,6 @@ typedef unsigned int uint32;
 %rename(TCODSpecialCharacter) TCOD_chars_t;
 %rename(TCODFontFlags) TCOD_font_flags_t;
 %rename(TCODKeyStatus) TCOD_key_status_t;
-%rename(TCODNameGenerator) TCODNamegen;
 
 %rename(MersenneTwister) TCOD_RNG_MT;
 %rename(ComplementaryMultiplyWithCarry) TCOD_RNG_CMWC;
@@ -132,9 +181,6 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %rename(TCODFOVTypes) TCOD_fov_algorithm_t;
 %ignore TCODMap::data;
 
-// namegen.hpp
-%ignore TCODNamegen::getSets();
-
 // heightmap.hpp
 %ignore TCODHeightMap::values;
 %apply float *OUTPUT { float *min, float *max };
@@ -173,7 +219,6 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "mersenne.hpp"
 %include "mersenne_types.h"
 %include "mouse.hpp"
-%include "namegen.hpp"
 %include "noise.hpp"
 %include "path.hpp"
 %include "sys.hpp"

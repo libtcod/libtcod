@@ -103,6 +103,9 @@
     <Compile Include="..\..\generated\csharp\TCODMouseData.cs">
       <Link>TCODMouseData.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\TCODNameGenerator.cs">
+      <Link>TCODNameGenerator.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODNoise.cs">
       <Link>TCODNoise.cs</Link>
     </Compile>
@@ -124,7 +127,7 @@
     <Compile Include="..\..\generated\csharp\TCODSystem.cs">
       <Link>TCODSystem.cs</Link>
     </Compile>
-    <Compile Include="TCODNameGenerator.cs" />
+    <Compile Include="..\..\generated\csharp\StringVector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

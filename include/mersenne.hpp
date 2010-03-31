@@ -48,6 +48,7 @@ class TCODLIB_API TCODRandom {
 		friend class TCODLIB_API TCODNoise;
 		friend class TCODLIB_API TCODHeightMap;
 		friend class TCODLIB_API TCODNamegen;
+		friend class TCODNameGenerator;	// Used for SWIG interface, does NOT need TCODLIB_API
 		TCOD_random_t data;
 };
 

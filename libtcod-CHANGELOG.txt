@@ -22,6 +22,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed setDirty() not working for the last row or column of the console
 - fixed python samples not compiling if numpy installed
 - fixed python TCOD_parser_get_list_property
+- fixed TCODDijkstra destructor crash bug
 =========================================================
 1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    

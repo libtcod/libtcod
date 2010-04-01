@@ -174,8 +174,48 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 #endif // SWIGCSHARP
 
 // path.hpp
-%ignore TCOD_path_func(int xFrom, int yFrom, int xTo, int yTo, void *data);
-%apply int *OUTPUT { int *x, int *y };
+// Swig is too stupid to handle an INOUT and OUTPUT %apply with the same name. So reproduce the entire class...sigh
+class TCODLIB_API ITCODPathCallback {
+public :
+	virtual ~ITCODPathCallback() {}
+	virtual float getWalkCost( int xFrom, int yFrom, int xTo, int yTo, void *userData ) const = 0;
+};
+
+class TCODLIB_API TCODPath {
+public :
+	TCODPath(const TCODMap *map, float diagonalCost=1.41f);
+	TCODPath(int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost=1.41f);
+	virtual ~TCODPath();
+
+	bool compute(int ox, int oy, int dx, int dy);
+	%apply int *INOUT { int *x, int *y };
+	bool walk(int *x, int *y, bool recalculateWhenNeeded);
+	bool isEmpty() const;
+	int size() const;
+	%apply int *OUTPUT { int *x, int *y };
+	void get(int index, int *x, int *y) const;
+	%apply int *OUTPUT { int *x, int *y };
+	void getOrigin(int *x,int *y) const;
+	%apply int *OUTPUT { int *x, int *y };
+	void getDestination(int *x,int *y) const;
+};
+
+//Dijkstra kit
+class TCODLIB_API TCODDijkstra {
+    public:
+        TCODDijkstra (TCODMap *map, float diagonalCost=1.41f);
+        TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost=1.41f);
+        ~TCODDijkstra (void);
+        void compute (int rootX, int rootY);
+        float getDistance (int x, int y);
+        bool setPath (int toX, int toY);
+		%apply int *INOUT { int *x, int *y };
+        bool walk (int *x, int *y);
+		bool isEmpty() const;
+		int size() const;
+		%apply int *OUTPUT { int *x, int *y };
+		void get(int index, int *x, int *y) const;
+};
 
 // fov_types.h
 %rename(TCODFOVTypes) TCOD_fov_algorithm_t;
@@ -220,7 +260,6 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "mersenne_types.h"
 %include "mouse.hpp"
 %include "noise.hpp"
-%include "path.hpp"
 %include "sys.hpp"
 %include "BackgroundHelperFunctions.hpp"
 

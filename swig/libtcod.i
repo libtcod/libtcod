@@ -236,7 +236,14 @@ TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, con
 TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
 #endif // SWIGCSHARP
 
+
 // bsp.hpp
+class ITCODBspCallback {
+public :
+	virtual ~ITCODBspCallback() {}
+	virtual bool visitNode(TCODBsp *node, void *userData) = 0;
+};
+
 %module(directors="1") directors
 %{
 #include "bsp.hpp"

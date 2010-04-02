@@ -217,6 +217,13 @@ class TCODLIB_API TCODDijkstra {
 		void get(int index, int *x, int *y) const;
 };
 
+// bsp.hpp
+class ITCODBspCallback {
+public :
+	virtual ~ITCODBspCallback() {}
+	virtual bool visitNode(TCODBsp *node, void *userData) = 0;
+};
+
 // fov_types.h
 %rename(TCODFOVTypes) TCOD_fov_algorithm_t;
 %ignore TCODMap::data;
@@ -236,14 +243,7 @@ TCODHeightMap::kernelTransform(int kernelSize, const int *dx, const int *dy, con
 TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom *rnd);
 #endif // SWIGCSHARP
 
-
 // bsp.hpp
-class ITCODBspCallback {
-public :
-	virtual ~ITCODBspCallback() {}
-	virtual bool visitNode(TCODBsp *node, void *userData) = 0;
-};
-
 %module(directors="1") directors
 %{
 #include "bsp.hpp"

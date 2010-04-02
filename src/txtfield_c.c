@@ -399,136 +399,139 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
     text_t * data = (text_t*)txt;
     TCOD_IFNOT(data && data->con ) return false;
 	oldpos = data->cursor_pos;
-    /* process keyboard input */
-    switch (key.vk) {
-        case TCODK_BACKSPACE: /* get rid of the last character */
-			if ( data->sel_start != MAX_INT ) {
-				deleteSelection(data);
-			} else {
-				deleteChar(data);
-			}
-            break;
-		case TCODK_DELETE:
-			if ( key.shift ) {
-				/* SHIFT-DELETE : cut to clipboard */
-				cut(data);
-			} else {	
+	/* for real-time keyboard : only on key release */
+    if ( key.pressed ) {
+	    /* process keyboard input */
+	    switch (key.vk) {
+	        case TCODK_BACKSPACE: /* get rid of the last character */
 				if ( data->sel_start != MAX_INT ) {
 					deleteSelection(data);
-				} else if ( data->text[data->cursor_pos] ) {
-					data->cursor_pos++;
+				} else {
 					deleteChar(data);
 				}
-			}
-			break;
-		/* shift + arrow / home / end = selection */
-		/* ctrl + arrow = word skipping. ctrl + shift + arrow = word selection */
-		case TCODK_LEFT:
-			if ( data->multiline && key.shift && data->sel_end == -1) {
-				data->sel_end = data->cursor_pos;
-			}
-			if ( data->cursor_pos > 0 ) {
-				if ( key.lctrl || key.rctrl ) {
-					previous_word(data);
-				} else data->cursor_pos--;
-				selectStart(data,oldpos,key);
-			}
-			break;
-		case TCODK_RIGHT:
-			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
-				data->sel_start = data->cursor_pos;
-			}
-			if ( data->text[data->cursor_pos] ) {
-				if ( key.lctrl || key.rctrl ) {
-					next_word(data);
-				} else data->cursor_pos++;
-				selectEnd(data,oldpos,key);
-			}
-			break;
-		case TCODK_UP :
-			get_cursor_coords(data,&cx,&cy);
-			if ( data->multiline && key.shift && data->sel_end == -1) {
-				data->sel_end = data->cursor_pos;
-			}
-			set_cursor_pos(data,cx,cy-1,false);
-			selectStart(data,oldpos,key);
-			break;
-		case TCODK_DOWN :
-			get_cursor_coords(data,&cx,&cy);
-			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
-				data->sel_start = data->cursor_pos;
-			}
-			set_cursor_pos(data,cx,cy+1,false);
-			selectEnd(data,oldpos,key);
-			break;
-		case TCODK_HOME:
-			get_cursor_coords(data,&cx,&cy);
-			if ( data->multiline && key.shift && data->sel_end == -1) {
-				data->sel_end = data->cursor_pos;
-			}
-			if ( key.lctrl || key.rctrl ) {
-				set_cursor_pos(data,0,0,true);
-			} else {
-				set_cursor_pos(data,0,cy,true);
-			}
-			selectStart(data,oldpos,key);
-			break;
-		case TCODK_END:
-			get_cursor_coords(data,&cx,&cy);
-			if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
-				data->sel_start = data->cursor_pos;
-			}
-			if ( key.lctrl || key.rctrl ) {
-				set_cursor_pos(data,data->w,data->h,true);
-			} else {
-				set_cursor_pos(data,data->w-1,cy,true);
-			}
-			selectEnd(data,oldpos,key);
-			break;
-        case TCODK_ENTER: /* validate input */
-        case TCODK_KPENTER:
-			if ( data->sel_start != MAX_INT ) {
-				deleteSelection(data);
-			}
-			if ( data->multiline ) {
+	            break;
+			case TCODK_DELETE:
+				if ( key.shift ) {
+					/* SHIFT-DELETE : cut to clipboard */
+					cut(data);
+				} else {	
+					if ( data->sel_start != MAX_INT ) {
+						deleteSelection(data);
+					} else if ( data->text[data->cursor_pos] ) {
+						data->cursor_pos++;
+						deleteChar(data);
+					}
+				}
+				break;
+			/* shift + arrow / home / end = selection */
+			/* ctrl + arrow = word skipping. ctrl + shift + arrow = word selection */
+			case TCODK_LEFT:
+				if ( data->multiline && key.shift && data->sel_end == -1) {
+					data->sel_end = data->cursor_pos;
+				}
+				if ( data->cursor_pos > 0 ) {
+					if ( key.lctrl || key.rctrl ) {
+						previous_word(data);
+					} else data->cursor_pos--;
+					selectStart(data,oldpos,key);
+				}
+				break;
+			case TCODK_RIGHT:
+				if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+					data->sel_start = data->cursor_pos;
+				}
+				if ( data->text[data->cursor_pos] ) {
+					if ( key.lctrl || key.rctrl ) {
+						next_word(data);
+					} else data->cursor_pos++;
+					selectEnd(data,oldpos,key);
+				}
+				break;
+			case TCODK_UP :
 				get_cursor_coords(data,&cx,&cy);
-				if ( cy < data->h-1 ) insertChar(data,'\n');
-			} else {
-	            data->input_continue = false;
-			}
-            break;
-		case TCODK_TAB :
-			if (data->tab_size ) {
-				int count=data->tab_size;
+				if ( data->multiline && key.shift && data->sel_end == -1) {
+					data->sel_end = data->cursor_pos;
+				}
+				set_cursor_pos(data,cx,cy-1,false);
+				selectStart(data,oldpos,key);
+				break;
+			case TCODK_DOWN :
+				get_cursor_coords(data,&cx,&cy);
+				if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+					data->sel_start = data->cursor_pos;
+				}
+				set_cursor_pos(data,cx,cy+1,false);
+				selectEnd(data,oldpos,key);
+				break;
+			case TCODK_HOME:
+				get_cursor_coords(data,&cx,&cy);
+				if ( data->multiline && key.shift && data->sel_end == -1) {
+					data->sel_end = data->cursor_pos;
+				}
+				if ( key.lctrl || key.rctrl ) {
+					set_cursor_pos(data,0,0,true);
+				} else {
+					set_cursor_pos(data,0,cy,true);
+				}
+				selectStart(data,oldpos,key);
+				break;
+			case TCODK_END:
+				get_cursor_coords(data,&cx,&cy);
+				if ( data->multiline && key.shift && data->sel_start == MAX_INT ) {
+					data->sel_start = data->cursor_pos;
+				}
+				if ( key.lctrl || key.rctrl ) {
+					set_cursor_pos(data,data->w,data->h,true);
+				} else {
+					set_cursor_pos(data,data->w-1,cy,true);
+				}
+				selectEnd(data,oldpos,key);
+				break;
+	        case TCODK_ENTER: /* validate input */
+	        case TCODK_KPENTER:
 				if ( data->sel_start != MAX_INT ) {
 					deleteSelection(data);
 				}
-				while ( count > 0 ) {
-					insertChar(data,' ');
-					count--;
+				if ( data->multiline ) {
+					get_cursor_coords(data,&cx,&cy);
+					if ( cy < data->h-1 ) insertChar(data,'\n');
+				} else {
+		            data->input_continue = false;
 				}
-			}
-			break;
-        default: { /* append a new character */
-			if ( (key.c == 'c' || key.c=='C' || key.vk == TCODK_INSERT) && (key.lctrl || key.rctrl) ) {
-				/* CTRL-C or CTRL-INSERT : copy to clipboard */
-				copy(data);
-			} else if ( (key.c == 'x' || key.c=='X') && (key.lctrl || key.rctrl) ) {
-				/* CTRL-X : cut to clipboard */
-				cut(data);
-			} else if ( ((key.c == 'v' || key.c=='V') && (key.lctrl || key.rctrl))
-				|| ( key.vk == TCODK_INSERT && key.shift ) 
-				 ) {
-				/* CTRL-V or SHIFT-INSERT : paste from clipboard */
-				paste(data);
-			} else if (key.c > 31) {
-				if ( data->sel_start != MAX_INT ) {
-					deleteSelection(data);
+	            break;
+			case TCODK_TAB :
+				if (data->tab_size ) {
+					int count=data->tab_size;
+					if ( data->sel_start != MAX_INT ) {
+						deleteSelection(data);
+					}
+					while ( count > 0 ) {
+						insertChar(data,' ');
+						count--;
+					}
 				}
-				insertChar(data,(char)(key.c));
-            }
-            break;
-        }
+				break;
+	        default: { /* append a new character */
+				if ( (key.c == 'c' || key.c=='C' || key.vk == TCODK_INSERT) && (key.lctrl || key.rctrl) ) {
+					/* CTRL-C or CTRL-INSERT : copy to clipboard */
+					copy(data);
+				} else if ( (key.c == 'x' || key.c=='X') && (key.lctrl || key.rctrl) ) {
+					/* CTRL-X : cut to clipboard */
+					cut(data);
+				} else if ( ((key.c == 'v' || key.c=='V') && (key.lctrl || key.rctrl))
+					|| ( key.vk == TCODK_INSERT && key.shift ) 
+					 ) {
+					/* CTRL-V or SHIFT-INSERT : paste from clipboard */
+					paste(data);
+				} else if (key.c > 31) {
+					if ( data->sel_start != MAX_INT ) {
+						deleteSelection(data);
+					}
+					insertChar(data,(char)(key.c));
+	            }
+	            break;
+	        }
+	    }
     }
     return data->input_continue;
 }

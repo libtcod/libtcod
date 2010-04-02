@@ -89,6 +89,7 @@ LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/parser.o \
 	$(TEMP)/libtcod/debug/path.o \
 	$(TEMP)/libtcod/debug/sys.o \
+	$(TEMP)/libtcod/debug/txtfield.o \
 	$(TEMP)/libtcod/debug/zip.o
 
 GUIOBJS_DEBUG= \
@@ -153,6 +154,7 @@ LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/parser.o \
 	$(TEMP)/libtcod/release/path.o \
 	$(TEMP)/libtcod/release/sys.o \
+	$(TEMP)/libtcod/release/txtfield.o \
 	$(TEMP)/libtcod/release/zip.o
 
 GUIOBJS_RELEASE= \

@@ -117,6 +117,7 @@ public :
 protected :
 	friend class TCODLIB_API TCODImage;
 	friend class TCODLIB_API TCODZip;
+	friend class TCODLIB_API TCODText;
 	TCODConsole();
 	TCOD_console_t data;
 };

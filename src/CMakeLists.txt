@@ -32,7 +32,7 @@ SET(LIBTCOD_C_SRC bresenham_c.c bsp_c.c color_c.c console_c.c fov_c.c fov_circul
 				sys_sdl_img_png.c tree_c.c txtfield_c.c wrappers.c zip_c.c)
 
 SET(LIBTCOD_CPP_SRC bresenham.cpp bsp.cpp color.cpp console.cpp fov.cpp heightmap.cpp image.cpp lex.cpp mersenne.cpp 
-				mouse.cpp namegen.cpp noise.cpp parser.cpp path.cpp sys.cpp zip.cpp)
+				mouse.cpp namegen.cpp noise.cpp parser.cpp path.cpp sys.cpp txtfield.cpp zip.cpp)
 
 SET(LIBTCOD_GUI_SRC gui/button.cpp gui/container.cpp gui/flatlist.cpp gui/hbox.cpp gui/image.cpp gui/label.cpp  gui/radiobutton.cpp 
 				gui/slider.cpp gui/statusbar.cpp gui/textbox.cpp gui/togglebutton.cpp gui/toolbar.cpp gui/vbox.cpp gui/widget.cpp)

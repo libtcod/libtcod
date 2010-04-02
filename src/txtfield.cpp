@@ -40,15 +40,15 @@ void TCODText::setProperties(int cursor_char, int blink_interval, const char * p
 }
 
 void TCODText::setColors(TCOD_color_t fore, TCOD_color_t back, float back_transparency){
-	TCOD_text_set_colors(data,fore,back,transparency);
+	TCOD_text_set_colors(data,fore,back,back_transparency);
 }
 
 bool TCODText::update(TCOD_key_t key){
 	return TCOD_text_update(data,key);
 }
 
-void TCODText::render(TCOD_console_t con){
-	TCOD_text_render(con,data)
+void TCODText::render(TCODConsole * con){
+	TCOD_text_render(data,con->data);
 }
 
 const char *TCODText::getText(){        

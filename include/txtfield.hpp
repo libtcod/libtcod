@@ -35,7 +35,7 @@ public :
 	void setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size);
 	void setColors(TCOD_color_t fore, TCOD_color_t back, float back_transparency);
 	bool update(TCOD_key_t key);
-	void render(TCOD_console_t con);
+	void render(TCODConsole * con);
 	const char *getText();
 	void reset();
 protected :

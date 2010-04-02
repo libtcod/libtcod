@@ -39,8 +39,10 @@ void TCODText::setProperties(int cursor_char, int blink_interval, const char * p
 	TCOD_text_set_properties(data,cursor_char,blink_interval,prompt,tab_size);	                            
 }
 
-void TCODText::setColors(TCOD_color_t fore, TCOD_color_t back, float back_transparency){
-	TCOD_text_set_colors(data,fore,back,back_transparency);
+void TCODText::setColors(TCODColor fore, TCODColor back, float back_transparency){
+	TCOD_color_t foreground = {fore.r,fore.g,fore.b};
+	TCOD_color_t background = {back.r,back.g,back.b};
+	TCOD_text_set_colors(data,foreground,background,back_transparency);
 }
 
 bool TCODText::update(TCOD_key_t key){

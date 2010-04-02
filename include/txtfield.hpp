@@ -28,12 +28,14 @@
 #ifndef _TCOD_TEXT_HPP_
 #define _TCOD_TEXT_HPP_
 
+#include "color.hpp"
+
 class TCODLIB_API TCODText {
 public :
 	TCODText(int x, int y, int w, int h, int max_chars);
 	~TCODText();
 	void setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size);
-	void setColors(TCOD_color_t fore, TCOD_color_t back, float back_transparency);
+	void setColors(TCODColor fore, TCODColor back, float back_transparency);
 	bool update(TCOD_key_t key);
 	void render(TCODConsole * con);
 	const char *getText();

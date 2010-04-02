@@ -1,4 +1,4 @@
 @mkdir vcproj
 @cd vcproj
-@cmake ..\..\
+@cmake -G "Visual Studio 9 2008" ..\..\ 
 @cd .. 

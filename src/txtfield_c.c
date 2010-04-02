@@ -1,6 +1,34 @@
-#include "txtfield.h"
+/*
+* libtcod 1.5.1
+* Copyright (c) 2008,2009,2010 Jice & Mingos
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * The name of Jice or Mingos may not be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include <stdlib.h>
 #include <string.h>
+#include "libtcod.h"
+#include "libtcod_int.h"
 
 #define MAX_INT 0x7FFFFFFF
 
@@ -29,10 +57,11 @@ typedef struct {
 /* ctor */
 TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
     text_t * data = (text_t*)calloc(sizeof(text_t),1);
+	TCOD_IFNOT(w> 0 && h > 0) return data;
     data->x = x;
     data->y = y;
-    data->w = MAX(w,1); /* no zeroes! */
-    data->h = MAX(h,1);
+    data->w = w;
+    data->h = h;
     data->multiline = (h > 1);
     data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
     data->interval = 800;
@@ -60,8 +89,9 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
 }
 
 /* set cursor and prompt */
-void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_interval, char * prompt, int tab_size) {
+void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_interval, const char * prompt, int tab_size) {
     text_t * data = (text_t*)txt;
+    TCOD_IFNOT(data && data->con ) return;
     data->interval = blink_interval;
     data->halfinterval = (blink_interval > 0 ? blink_interval / 2 : 0);
     data->ascii_cursor = cursor_char;
@@ -70,7 +100,7 @@ void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_inter
     data->textx = data->texty = 0;
 	data->tab_size=tab_size;
     if ( prompt ) {
-		char *ptr=prompt;
+		const char *ptr=prompt;
 		while (*ptr) {
 			data->textx++;
 			if ( *ptr == '\n' || data->textx == data->w) {
@@ -84,6 +114,7 @@ void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_inter
 /* set colours */
 void TCOD_text_set_colors (TCOD_text_t txt, TCOD_color_t fore, TCOD_color_t back, float back_transparency) {
     text_t * data = (text_t*)txt;
+    TCOD_IFNOT(data && data->con ) return;
     data->back = back;
     data->fore = fore;
     data->transparency = back_transparency;
@@ -163,6 +194,8 @@ static void get_cursor_coords(text_t *data, int *cx, int *cy) {
 }
 
 /* check if the text does not overflow the textfield */
+/*
+not working...
 static bool check_last_pos(text_t *data) {
 	int count = strlen(data->text);
 	int cx=data->textx;
@@ -184,6 +217,7 @@ static bool check_last_pos(text_t *data) {
 	}
 	return ( cy < data->h );
 }
+*/
 
 /* set cursor_pos from coordinates. internal function */
 static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
@@ -252,7 +286,7 @@ static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 
 /* check whether a character is a space */
 /* this is needed because cctype isspace() returns rubbish for many diacritics */
-bool is_space (int ch) {
+static bool is_space (int ch) {
     bool ret;
     switch (ch) {
         case ' ': case '\n': case '\r': case '\t': ret = true; break;
@@ -261,7 +295,7 @@ bool is_space (int ch) {
     return ret;
 }
 
-void typecheck (int * type, int ch) {
+static void typecheck (int * type, int ch) {
     if (strchr(symbols,ch)) *type = TYPE_SYMBOL;
     else if (is_space(ch)) *type = TYPE_SPACE;
     else *type = TYPE_ALPHANUM;
@@ -363,6 +397,7 @@ static void paste(text_t *data) {
 bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 	int cx,cy,oldpos;
     text_t * data = (text_t*)txt;
+    TCOD_IFNOT(data && data->con ) return false;
 	oldpos = data->cursor_pos;
     /* process keyboard input */
     switch (key.vk) {
@@ -499,13 +534,16 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 }
 
 /* renders the textfield */
-void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
+void TCOD_text_render (TCOD_text_t txt, TCOD_console_t con) {
     text_t * data = (text_t*)txt;
-    uint32 time = TCOD_sys_elapsed_milli();
-	bool cursor_on = (int)( time % data->interval ) > data->halfinterval;
+    uint32 time;
+	bool cursor_on;
 	char back=0;
 	int curx,cury,cursorx,cursory, curpos;
 	char *ptr;
+    TCOD_IFNOT(data && data->con ) return;
+    time = TCOD_sys_elapsed_milli();
+	cursor_on = (int)( time % data->interval ) > data->halfinterval;
     TCOD_console_set_background_color(data->con, data->back);
     TCOD_console_set_foreground_color(data->con, data->fore);
     TCOD_console_clear(data->con);
@@ -568,13 +606,16 @@ void TCOD_text_render (TCOD_console_t con, TCOD_text_t txt) {
 }
 
 /* returns the text currently stored in the textfield object */
-char * TCOD_text_get (TCOD_text_t txt) {
-    return ((text_t*)txt)->text;
+const char * TCOD_text_get (TCOD_text_t txt) {
+    text_t * data = (text_t*)txt;
+    TCOD_IFNOT(data && data->con ) return "";
+    return data->text;
 }
 
 /* resets the text initial state */
 void TCOD_text_reset (TCOD_text_t txt) {
     text_t * data = (text_t*)txt;
+    TCOD_IFNOT(data && data->con ) return;
     memset(data->text,'\0',data->len);
     data->curlen = 0;
     data->input_continue = true;
@@ -583,8 +624,9 @@ void TCOD_text_reset (TCOD_text_t txt) {
 /* destructor */
 void TCOD_text_delete (TCOD_text_t txt) {
     text_t * data = (text_t*)txt;
-    free(data->text);
-    free(data->prompt);
+    TCOD_IFNOT(data && data->con ) return;
+    if ( data->text ) free(data->text);
+    if ( data->prompt ) free(data->prompt);
     TCOD_console_delete(data->con);
     free(data);
 }

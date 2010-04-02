@@ -59,14 +59,14 @@ void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *ma
 	float curmax=hm->values[0];
 	float curmin=hm->values[0];
 	int x,y;
+	float *value = hm->values;
 	// get max and min height
-	for (x=0; x < hm->w; x++) {
-		int offset=x;
-		for (y=0; y < hm->h; y++) {
-			float val=hm->values[offset];
+	for (y=0; y < hm->h; y++) {
+		for (x=0; x < hm->w; x++) {
+			float val=*value;
 			if ( val > curmax ) curmax = val;
 			else if ( val < curmin ) curmin = val;
-			offset+=hm->w;
+			value++;
 		}
 	}
 	*min=curmin;
@@ -77,15 +77,15 @@ void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max) {
 	float curmin,curmax;
 	int x,y;
 	float invmax;
+	float *value = hm->values;
 	TCOD_heightmap_get_minmax(hm,&curmin,&curmax);
 	if (curmax - curmin == 0.0f) invmax=0.0f;
 	else invmax = (max-min) / (curmax-curmin);
 	// normalize
-	for (x=0; x < hm->w; x++) {
-		int offset=x;
-		for (y=0; y < hm->h; y++) {
-			hm->values[offset] = min + (hm->values[offset] - curmin) * invmax ;
-			offset+=hm->w;
+	for (y=0; y < hm->h; y++) {
+		for (x=0; x < hm->w; x++) {
+			*value = min + (*value - curmin) * invmax ;
+			value++;			
 		}
 	}
 }

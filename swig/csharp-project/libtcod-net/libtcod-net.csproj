@@ -128,6 +128,9 @@
       <Link>TCODSystem.cs</Link>
     </Compile>
     <Compile Include="..\..\generated\csharp\StringVector.cs" />
+    <Compile Include="..\..\generated\csharp\TCODText.cs">
+      <Link>TCODText.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

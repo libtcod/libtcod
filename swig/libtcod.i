@@ -261,6 +261,7 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "mouse.hpp"
 %include "noise.hpp"
 %include "sys.hpp"
+%include "txtfield.hpp"
 %include "BackgroundHelperFunctions.hpp"
 
 // Since selective rename/ignore on "namespaced" structs appears to be broken for C style typedef structs

@@ -175,11 +175,6 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 
 // path.hpp
 // Swig is too stupid to handle an INOUT and OUTPUT %apply with the same name. So reproduce the entire class...sigh
-class TCODLIB_API ITCODPathCallback {
-public :
-	virtual ~ITCODPathCallback() {}
-	virtual float getWalkCost( int xFrom, int yFrom, int xTo, int yTo, void *userData ) const = 0;
-};
 
 class TCODLIB_API TCODPath {
 public :
@@ -215,13 +210,6 @@ class TCODLIB_API TCODDijkstra {
 		int size() const;
 		%apply int *OUTPUT { int *x, int *y };
 		void get(int index, int *x, int *y) const;
-};
-
-// bsp.hpp
-class ITCODBspCallback {
-public :
-	virtual ~ITCODBspCallback() {}
-	virtual bool visitNode(TCODBsp *node, void *userData) = 0;
 };
 
 // fov_types.h
@@ -267,6 +255,7 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "mersenne_types.h"
 %include "mouse.hpp"
 %include "noise.hpp"
+%include "path.hpp"
 %include "sys.hpp"
 %include "txtfield.hpp"
 %include "BackgroundHelperFunctions.hpp"

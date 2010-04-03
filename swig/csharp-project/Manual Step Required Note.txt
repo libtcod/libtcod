@@ -5,3 +5,5 @@ So apparently there is a bug in SWIG's director where it doesn't respect some ty
          new HandleRef(new object(), userData));
 
 If a non-callback wants a SWIGTYPE_p_void then there is a problem with a wrapper.
+
+Also, change all the functions that take HandleRefs to not.

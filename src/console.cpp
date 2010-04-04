@@ -323,25 +323,11 @@ int TCODConsole::getHeightCenterRect(int x, int y, int w, int h, const char *fmt
 	return ret;
 }
 
-int TCODConsole::getHeightRect(int x, int y, int w, int h, TCOD_print_location_t location, const char *fmt, ...) {
+int TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
-	int ret = 0;
-	switch(location)
-	{
-		case TCOD_PRINT_LEFT:
-			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,LEFT,TCOD_console_vsprint(fmt,ap),true,true);
-			break;
-		case TCOD_PRINT_RIGHT:
-			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,RIGHT,TCOD_console_vsprint(fmt,ap),true,true);
-			break;
-		case TCOD_PRINT_CENTER:
-			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap),true,true);
-			break;
-		default:
-			TCOD_ASSERT(0);
-			break;
-	}	
+	// Apparently, this will return the same value for LEFT/RIGHT/CENTER, so no need for enum/swtich statement.
+	int ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap),true,true);
 	va_end(ap);
 	return ret;
 }

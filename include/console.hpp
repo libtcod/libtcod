@@ -71,7 +71,7 @@ public :
 	int getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...); 
 	int getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...); 
 	int getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...); 
-	int getHeightRect(int x, int y, int w, int h, TCOD_print_location_t location, const char *fmt, ...); 
+	int getHeightRect(int x, int y, int w, int h, const char *fmt, ...); 
 
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);

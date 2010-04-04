@@ -42,6 +42,7 @@ public :
 	void putColor(const TCODColor *val);
 	void putImage(const TCODImage *val);
 	void putConsole(const TCODConsole *val);
+	uint32 getCurrentBytes();
 	int saveToFile(const char *filename);
 
 	// input interface
@@ -54,6 +55,8 @@ public :
 	TCODImage *getImage();
 	TCODConsole *getConsole();
 	int getData(int nbBytes, void *data);
+	uint32 getRemainingBytes();
+	void skipBytes(uint32 nbBytes);
 protected :
 	TCOD_zip_t data;
 };

@@ -110,4 +110,14 @@ TCODConsole *TCODZip::getConsole() {
 	return new TCODConsole(TCOD_zip_get_console(data));
 }
 
+uint32 TCODZip::getCurrentBytes() {
+	return TCOD_zip_get_current_bytes(data);
+}
 
+uint32 TCODZip::getRemainingBytes() {
+	return TCOD_zip_get_remaining_bytes(data);
+}
+
+void TCODZip::skipBytes(uint32 nbBytes) {
+	TCOD_zip_skip_bytes(data,nbBytes);
+}

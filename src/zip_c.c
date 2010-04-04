@@ -344,3 +344,24 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 	return ret;
 }
 
+uint32 TCOD_zip_get_current_bytes(TCOD_zip_t pzip) {
+	zip_data_t *zip=(zip_data_t *)pzip;
+	return TCOD_list_size(zip->buffer)*sizeof(uintptr)+zip->isize;
+}
+
+uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
+	zip_data_t *zip=(zip_data_t *)pzip;
+	return (TCOD_list_size(zip->buffer) - zip->offset) * sizeof(uintptr); 
+}
+
+void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32 nbBytes) {
+	zip_data_t *zip=(zip_data_t *)pzip;
+	TCOD_IFNOT((TCOD_list_size(zip->buffer) - zip->offset)*sizeof(uintptr) >= nbBytes ) return;
+	uint32 boffset=zip->offset*sizeof(uintptr)-zip->isize+ nbBytes; // new offset
+	zip->offset = (boffset+sizeof(uintptr)-1)/sizeof(uintptr);
+	zip->isize = boffset%sizeof(uintptr);
+	if ( zip->isize != 0 ) {
+		zip->isize=sizeof(uintptr)-zip->isize;
+		zip->ibuffer=(uintptr)TCOD_list_get(zip->buffer,zip->offset-1);
+	}
+}

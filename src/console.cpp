@@ -231,6 +231,27 @@ void TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *
 	va_end(ap);
 }
 
+void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	switch(location)
+	{
+		case TCOD_PRINT_LEFT:
+			TCOD_console_print(data,x,y,getWidth()-x,getHeight()-y,flag,LEFT,TCOD_console_vsprint(fmt,ap),false,false);
+			break;
+		case TCOD_PRINT_RIGHT:
+			TCOD_console_print(data,x,y,x+1,getHeight()-y,flag,RIGHT,TCOD_console_vsprint(fmt,ap),false,false);
+			break;
+		case TCOD_PRINT_CENTER:
+			TCOD_console_print(data,x,y,getWidth(),getHeight()-y,flag,CENTER,TCOD_console_vsprint(fmt,ap),false,false);
+			break;
+		default:
+			TCOD_ASSERT(0);
+			break;
+	}
+	va_end(ap);
+}
+	
 int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
@@ -255,6 +276,29 @@ int TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t f
 	return ret;
 }
 
+int TCODConsole::printRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	int ret = 0;
+	switch(location)
+	{
+		case TCOD_PRINT_LEFT:
+			ret = TCOD_console_print(data,x,y,w,h,flag,LEFT,TCOD_console_vsprint(fmt,ap),true,false);
+			break;
+		case TCOD_PRINT_RIGHT:
+			ret = TCOD_console_print(data,x,y,w,h,flag,RIGHT,TCOD_console_vsprint(fmt,ap),true,false);
+			break;
+		case TCOD_PRINT_CENTER:
+			ret = TCOD_console_print(data,x,y,w,h,flag,CENTER,TCOD_console_vsprint(fmt,ap),true,false);
+			break;
+		default:
+			TCOD_ASSERT(0);
+			break;
+	}
+	va_end(ap);
+	return ret;
+}
+
 int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
@@ -271,10 +315,33 @@ int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt,
 	return ret;
 }
 
-int TCODConsole::getHeightCenterRect(int x, int y, int w, int h,const char *fmt, ...) {
+int TCODConsole::getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
 	int ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap),true,true);
+	va_end(ap);
+	return ret;
+}
+
+int TCODConsole::getHeightRect(int x, int y, int w, int h, TCOD_print_location_t location, const char *fmt, ...) {
+	va_list ap;
+	va_start(ap,fmt);
+	int ret = 0;
+	switch(location)
+	{
+		case TCOD_PRINT_LEFT:
+			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,LEFT,TCOD_console_vsprint(fmt,ap),true,true);
+			break;
+		case TCOD_PRINT_RIGHT:
+			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,RIGHT,TCOD_console_vsprint(fmt,ap),true,true);
+			break;
+		case TCOD_PRINT_CENTER:
+			ret = TCOD_console_print(data,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap),true,true);
+			break;
+		default:
+			TCOD_ASSERT(0);
+			break;
+	}	
 	va_end(ap);
 	return ret;
 }

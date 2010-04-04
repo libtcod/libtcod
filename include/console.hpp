@@ -30,6 +30,8 @@
 
 #include "console_types.h"
 
+enum TCOD_print_location_t {TCOD_PRINT_LEFT, TCOD_PRINT_RIGHT, TCOD_PRINT_CENTER };
+
 class TCODLIB_API TCODConsole {
 public :
 	static TCODConsole *root;
@@ -59,12 +61,17 @@ public :
 	void printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	void printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	void printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+	void printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...); 
+
 	int printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 	int printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+	int printRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...); 
+
 	int getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...); 
 	int getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...); 
-	int getHeightCenterRect(int x, int y, int w, int h,const char *fmt, ...); 
+	int getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...); 
+	int getHeightRect(int x, int y, int w, int h, TCOD_print_location_t location, const char *fmt, ...); 
 
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);

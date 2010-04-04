@@ -49,6 +49,9 @@
     <Compile Include="..\..\generated\csharp\libtcodPINVOKE.cs">
       <Link>libtcodPINVOKE.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\StringVector.cs">
+      <Link>StringVector.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODBackgroundFlag.cs">
       <Link>TCODBackgroundFlag.cs</Link>
     </Compile>
@@ -112,6 +115,9 @@
     <Compile Include="..\..\generated\csharp\TCODPath.cs">
       <Link>TCODPath.cs</Link>
     </Compile>
+    <Compile Include="..\..\generated\csharp\TCODPrintLocation.cs">
+      <Link>TCODPrintLocation.cs</Link>
+    </Compile>
     <Compile Include="..\..\generated\csharp\TCODRandom.cs">
       <Link>TCODRandom.cs</Link>
     </Compile>
@@ -127,7 +133,6 @@
     <Compile Include="..\..\generated\csharp\TCODSystem.cs">
       <Link>TCODSystem.cs</Link>
     </Compile>
-    <Compile Include="..\..\generated\csharp\StringVector.cs" />
     <Compile Include="..\..\generated\csharp\TCODText.cs">
       <Link>TCODText.cs</Link>
     </Compile>

@@ -39,6 +39,11 @@ class TCODNameGenerator
 			TCOD_namegen_destroy ();
 		}
 };
+
+TCOD_bkgnd_flag_t TCODBackgroundAlphaMask(TCOD_bkgnd_flag_t background)
+{
+	return (TCOD_bkgnd_flag_t)(background & 0xff);
+}
 %}
 
 class TCODLIB_API TCODNameGenerator {
@@ -90,6 +95,11 @@ typedef unsigned int uint32;
 %rename(Permissive8Fov) FOV_PERMISSIVE_8;
 %rename(RestrictiveFov) FOV_RESTRICTIVE;
 
+%rename(TCODPrintLocation) TCOD_print_location_t;
+%rename(PrintLeft) TCOD_PRINT_LEFT;
+%rename(PrintRight) TCOD_PRINT_RIGHT;
+%rename(PrintCenter) TCOD_PRINT_CENTER;
+
 %ignore NB_FOV_ALGORITHMS;
 
 %include typemaps.i
@@ -103,6 +113,18 @@ typedef unsigned int uint32;
 %ignore TCOD_colctrl_t;
 %ignore TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back);
 %ignore TCODConsole::TCODConsole(TCOD_console_t n);
+%rename (setCharBackground) setBack;
+%rename (setCharForeground) setFore;
+%ignore TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+%ignore TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+%ignore TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+%ignore TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+%ignore TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
+%ignore TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+%ignore TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...); 
+%ignore TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...); 
+%ignore TCODConsole::getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...); 
+TCOD_bkgnd_flag_t TCODBackgroundAlphaMask(TCOD_bkgnd_flag_t background);
 
 // color.hpp
 %ignore TCODColor::TCODColor(const TCOD_color_t & c);
@@ -171,11 +193,20 @@ float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const;
 float TCODNoise::getWavelet(float *f) const;
 float TCODNoise::getFbmWavelet(float *f, float octaves) const;
 float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
+
+%rename(getPerlinNoise) getPerlin;
+%rename(getPerlinBrownianMotion) getFbmPerlin;
+%rename(getPerlinTurbulence) getTurbulencePerlin;
+%rename(getSimplexNoise) getSimplex;
+%rename(getSimplexBrownianMotion) getFbmSimplex;
+%rename(getSimplexTurbulence) getTurbulenceSimplex;
+%rename(getWaveletNoise) getWavelet;
+%rename(getWaveletBrownianMotion) getFbmWavelet;
+%rename(getWaveletTurbulence) getTurbulenceWavelet;
 #endif // SWIGCSHARP
 
 // path.hpp
 // Swig is too stupid to handle an INOUT and OUTPUT %apply with the same name. So reproduce the entire class...sigh
-
 class TCODLIB_API TCODPath {
 public :
 	TCODPath(const TCODMap *map, float diagonalCost=1.41f);
@@ -220,6 +251,9 @@ class TCODLIB_API TCODDijkstra {
 %ignore TCODHeightMap::values;
 %apply float *OUTPUT { float *min, float *max };
 void TCODHeightMap::getMinMax(float *min, float *max) const;
+
+// mouse.hpp
+%rename(moveMouse) move;
 
 #if SWIGCSHARP
 %include "arrays_csharp.i"

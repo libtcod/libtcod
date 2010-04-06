@@ -30,7 +30,6 @@
 
 #include "console_types.h"
 
-enum TCOD_print_location_t {TCOD_PRINT_LEFT, TCOD_PRINT_RIGHT, TCOD_PRINT_CENTER };
 
 class TCODLIB_API TCODConsole {
 public :
@@ -58,19 +57,16 @@ public :
 	void putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	void putCharEx(int x, int y, int c, const TCODColor &fore, const TCODColor &back);
 
-	void printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	void printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	void printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	void printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...); 
+	void setBackgroundFlag(TCOD_bkgnd_flag_t flag);
+	TCOD_bkgnd_flag_t getBackgroundFlag() const;
+	void setAlignment(TCOD_alignment_t alignment);
+	TCOD_alignment_t getAlignment() const;	         
 
-	int printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	int printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
-	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
-	int printRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...); 
+	void print(int x, int y, const char *fmt, ...); 
+	void printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
+   	int printRect(int x, int y, int w, int h, const char *fmt, ...); 
+	int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
 
-	int getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...); 
-	int getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...); 
-	int getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...); 
 	int getHeightRect(int x, int y, int w, int h, const char *fmt, ...); 
 
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
@@ -80,15 +76,12 @@ public :
 
 #ifndef NO_UNICODE
 	static void mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY);
-	void printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	void printRight(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	void printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	int printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	int printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	int printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-	int getHeightLeftRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
-	int getHeightRightRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
-	int getHeightCenterRect(int x, int y, int w, int h,const wchar_t *fmt, ...); 
+	void print(int x, int y, const wchar_t *fmt, ...); 
+	void printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...); 
+   	int printRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+	int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...); 
+
+	int getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
 #endif
 
 	TCODColor getBackgroundColor() const;

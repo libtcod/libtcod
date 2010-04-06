@@ -7,9 +7,9 @@ void ToggleButton::render() {
 	con->setForegroundColor(mouseIn ? foreFocus : fore);
 	con->rect(x,y,w,h,true,TCOD_BKGND_SET);
 	if ( label ) {
-		con->printLeft(x,y,TCOD_BKGND_NONE,"%c %s",pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET, label);
+		con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%c %s",pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET, label);
 	} else {
-		con->printLeft(x,y,TCOD_BKGND_NONE,"%c",pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET);
+		con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%c",pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET);
 	}
 }
 

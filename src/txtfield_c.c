@@ -560,7 +560,7 @@ void TCOD_text_render (TCOD_text_t txt, TCOD_console_t con) {
 		data->text[data->cursor_pos] = data->ascii_cursor;
 	}
 	/* render prompt */
-    if (data->prompt) TCOD_console_print_left_rect(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,"%s",data->prompt);
+    if (data->prompt) TCOD_console_print_rect_ex(data->con,0,0,data->w,data->h,TCOD_BKGND_SET,TCOD_LEFT,"%s",data->prompt);
 	/* render text */
 	curx=data->textx;
 	cury=data->texty;

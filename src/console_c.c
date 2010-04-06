@@ -128,6 +128,31 @@ bool TCOD_console_is_fullscreen() {
 	return TCOD_ctx.fullscreen;
 }
 
+void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag) {
+	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
+	dat->bkgnd_flag=flag;
+}
+
+TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
+	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return TCOD_BKGND_NONE;
+	return dat->bkgnd_flag;
+}
+
+void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment) {
+	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
+	dat->alignment=alignment;
+}
+
+TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
+	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return TCOD_LEFT;
+	return dat->alignment;
+}
+
+
 void TCOD_console_delete(TCOD_console_t con) {
     TCOD_console_data_t *dat=(TCOD_console_data_t *)(con);
 	if (! dat ) {
@@ -527,87 +552,61 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
 		tmp=dat->back; // swap colors
 		dat->back=dat->fore;
 		dat->fore=tmp;
-		TCOD_console_print_left(con,xs,y,TCOD_BKGND_SET," %s ",title);
+		TCOD_console_print_ex(con,xs,y,TCOD_BKGND_SET,TCOD_LEFT," %s ",title);
 		tmp=dat->back; // swap colors
 		dat->back=dat->fore;
 		dat->fore=tmp;
 	}
 }
 
-void TCOD_console_print_left(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
-	TCOD_console_print(con,x,y,dat->w-x,dat->h-y,flag,LEFT,TCOD_console_vsprint(fmt,ap), false, false);
+	TCOD_console_print_internal(con,x,y,0,0,dat->bkgnd_flag,
+		dat->alignment,TCOD_console_vsprint(fmt,ap), false, false);
 	va_end(ap);
 }
 
-void TCOD_console_print_right(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+void TCOD_console_print_ex(TCOD_console_t con,int x, int y, 
+	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
-	TCOD_console_print(con,x,y,x+1,dat->h-y,flag,RIGHT,TCOD_console_vsprint(fmt,ap), false, false);
+	TCOD_console_print_internal(con,x,y,0,0,flag,alignment,
+		TCOD_console_vsprint(fmt,ap), false, false);
 	va_end(ap);
 }
 
-void TCOD_console_print_center(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
+	int ret;
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
-	TCOD_console_print(con,x,y,dat->w,dat->h-y,flag,CENTER,TCOD_console_vsprint(fmt,ap), false, false);
-	va_end(ap);
-}
-
-int TCOD_console_print_left_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret = TCOD_console_print(con,x,y,w,h,flag,LEFT,TCOD_console_vsprint(fmt,ap), true, false);
+	ret = TCOD_console_print_internal(con,x,y,w,h,dat->bkgnd_flag,dat->alignment,
+		TCOD_console_vsprint(fmt,ap), true, false);
 	va_end(ap);
 	return ret;
 }
 
-int TCOD_console_print_right_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, 
+	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...) {
 	int ret;
 	va_list ap;
 	va_start(ap,fmt);
-	ret=TCOD_console_print(con,x,y,w,h,flag,RIGHT,TCOD_console_vsprint(fmt,ap), true, false);
+	ret = TCOD_console_print_internal(con,x,y,w,h,flag,alignment,TCOD_console_vsprint(fmt,ap), true, false);
 	va_end(ap);
 	return ret;
 }
 
-int TCOD_console_print_center_rect(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
 	int ret;
 	va_list ap;
 	va_start(ap,fmt);
-	ret=TCOD_console_print(con,x,y,w,h,flag,CENTER,TCOD_console_vsprint(fmt,ap), true, false);
-	va_end(ap);
-	return ret;
-}
-
-int TCOD_console_height_left_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret = TCOD_console_print(con,x,y,w,h,TCOD_BKGND_NONE,LEFT,TCOD_console_vsprint(fmt,ap), true, true);
-	va_end(ap);
-	return ret;
-}
-
-int TCOD_console_height_right_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret=TCOD_console_print(con,x,y,w,h,TCOD_BKGND_NONE,RIGHT,TCOD_console_vsprint(fmt,ap), true, true);
-	va_end(ap);
-	return ret;
-}
-
-int TCOD_console_height_center_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret=TCOD_console_print(con,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint(fmt,ap), true, true);
+	ret = TCOD_console_print_internal(con,x,y,w,h,TCOD_BKGND_NONE,TCOD_LEFT,TCOD_console_vsprint(fmt,ap), true, true);
 	va_end(ap);
 	return ret;
 }
@@ -640,8 +639,8 @@ char *TCOD_console_strchr(char *s, char c) {
 	return (*s ? s : NULL);
 }
 
-int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
-	alignment_t align, char *msg, bool can_split, bool count_only) {
+int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
+	TCOD_alignment_t align, char *msg, bool can_split, bool count_only) {
 	char *c=msg;
 	int cx=0,cy=y;
 	int minx,maxx,miny,maxy;
@@ -652,15 +651,21 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
+	if ( rh == 0 ) rh = dat->h-y; 
+	if ( rw == 0 ) switch(align) {
+		case TCOD_LEFT : rw = dat->w-x; break;
+		case TCOD_RIGHT : rw=x+1; break;
+		case TCOD_CENTER : default : rw=dat->w; break;
+	} 
 	oldFore=dat->fore;
 	oldBack=dat->back;
 	miny=y;
 	maxy=dat->h-1;
 	if (rh > 0) maxy=MIN(maxy,y+rh-1);
 	switch (align) {
-		case LEFT : minx=MAX(0,x); maxx=MIN(dat->w-1,x+rw-1); break;
-		case RIGHT : minx=MAX(0,x-rw+1); maxx=MIN(dat->w-1,x); break;
-		case CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
+		case TCOD_LEFT : minx=MAX(0,x); maxx=MIN(dat->w-1,x+rw-1); break;
+		case TCOD_RIGHT : minx=MAX(0,x-rw+1); maxx=MIN(dat->w-1,x); break;
+		case TCOD_CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
 	}
 
 	do {
@@ -673,16 +678,16 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 		cl= TCOD_console_stringLength(c);
 		// find starting x
 		switch (align) {
-			case LEFT : cx=x; break;
-			case RIGHT : cx=x-cl+1; break;
-			case CENTER : cx= x-cl/2;break;
+			case TCOD_LEFT : cx=x; break;
+			case TCOD_RIGHT : cx=x-cl+1; break;
+			case TCOD_CENTER : cx= x-cl/2;break;
 		}
 		// check if the string is completely out of the minx,miny,maxx,maxy frame
 		if ( cy >= miny && cy <= maxy && cx <= maxx && cx+cl -1 >= minx ) {
 			if ( can_split && cy < maxy ) {
 				// if partially out of screen, try to split the sub-message
-				if ( cx < minx ) split = TCOD_console_forward(c, align == CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
-				else if ( align==CENTER ) {
+				if ( cx < minx ) split = TCOD_console_forward(c, align == TCOD_CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
+				else if ( align == TCOD_CENTER ) {
 					if ( cx + cl/2 > maxx+1 ) split = TCOD_console_forward(c, maxx+1 - cx);
 				} else {
 					if ( cx + cl > maxx+1 ) split = TCOD_console_forward(c, maxx+1 - cx);
@@ -700,9 +705,9 @@ int TCOD_console_print(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgn
 				*split=0;
 				cl=TCOD_console_stringLength(c);
 				switch (align) {
-					case LEFT : cx=x; break;
-					case RIGHT : cx=x-cl+1; break;
-					case CENTER : cx= x-cl/2;break;
+					case TCOD_LEFT : cx=x; break;
+					case TCOD_RIGHT : cx=x-cl+1; break;
+					case TCOD_CENTER : cx= x-cl/2;break;
 				}
 			}
 			if ( cx < minx ) {
@@ -837,8 +842,8 @@ wchar_t * TCOD_console_forward_utf(wchar_t *s,int l) {
 	return s;
 }
 
-int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
-	alignment_t align, wchar_t *msg, bool can_split, bool count_only) {
+int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
+	TCOD_alignment_t align, wchar_t *msg, bool can_split, bool count_only) {
 	wchar_t *c=msg;
 	int cx=0,cy=y;
 	int minx,maxx,miny,maxy;
@@ -849,15 +854,21 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
+	if ( rh == 0 ) rh = dat->h-y; 
+	if ( rw == 0 ) switch(align) {
+		case TCOD_LEFT : rw = dat->w-x; break;
+		case TCOD_RIGHT : rw=x+1; break;
+		case TCOD_CENTER : default : rw=dat->w; break;
+	} 
 	oldFore=dat->fore;
 	oldBack=dat->back;
 	miny=y;
 	maxy=dat->h-1;
 	if (rh > 0) maxy=MIN(maxy,y+rh-1);
 	switch (align) {
-		case LEFT : minx=MAX(0,x); maxx=MIN(dat->w-1,x+rw-1); break;
-		case RIGHT : minx=MAX(0,x-rw+1); maxx=MIN(dat->w-1,x); break;
-		case CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
+		case TCOD_LEFT : minx=MAX(0,x); maxx=MIN(dat->w-1,x+rw-1); break;
+		case TCOD_RIGHT : minx=MAX(0,x-rw+1); maxx=MIN(dat->w-1,x); break;
+		case TCOD_CENTER : default : minx=MAX(0,x-rw/2); maxx=MIN(dat->w-1,x+rw/2); break;
 	}
 
 	do {
@@ -870,16 +881,16 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 		cl= TCOD_console_stringLength_utf(c);
 		// find starting x
 		switch (align) {
-			case LEFT : cx=x; break;
-			case RIGHT : cx=x-cl+1; break;
-			case CENTER : cx= x-cl/2;break;
+			case TCOD_LEFT : cx=x; break;
+			case TCOD_RIGHT : cx=x-cl+1; break;
+			case TCOD_CENTER : cx= x-cl/2;break;
 		}
 		// check if the string is completely out of the minx,miny,maxx,maxy frame
 		if ( cy >= miny && cy <= maxy && cx <= maxx && cx+cl -1 >= minx ) {
 			if ( can_split && cy < maxy ) {
 				// if partially out of screen, try to split the sub-message
-				if ( cx < minx ) split = TCOD_console_forward_utf(c, align == CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
-				else if ( align==CENTER ) {
+				if ( cx < minx ) split = TCOD_console_forward_utf(c, align == TCOD_CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
+				else if ( align==TCOD_CENTER ) {
 					if ( cx + cl/2 > maxx+1 ) split = TCOD_console_forward_utf(c, maxx+1 - cx);
 				} else {
 					if ( cx + cl > maxx+1 ) split = TCOD_console_forward_utf(c, maxx+1 - cx);
@@ -897,9 +908,9 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 				*split=0;
 				cl=TCOD_console_stringLength_utf(c);
 				switch (align) {
-					case LEFT : cx=x; break;
-					case RIGHT : cx=x-cl+1; break;
-					case CENTER : cx= x-cl/2;break;
+					case TCOD_LEFT : cx=x; break;
+					case TCOD_RIGHT : cx=x-cl+1; break;
+					case TCOD_CENTER : cx= x-cl/2;break;
 				}
 			}
 			if ( cx < minx ) {
@@ -953,84 +964,57 @@ int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_
 	return cy-y+1;
 }
 
-void TCOD_console_print_left_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
+void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
-	TCOD_console_print_utf(con,x,y,dat->w-x,dat->h-y,flag,LEFT,TCOD_console_vsprint_utf(fmt,ap), false, false);
+	TCOD_console_print_internal_utf(con,x,y,0,0,dat->bkgnd_flag,dat->alignment,
+		TCOD_console_vsprint_utf(fmt,ap), false, false);
 	va_end(ap);
 }
 
-void TCOD_console_print_right_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
+void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, 
+	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
-	TCOD_console_print_utf(con,x,y,x+1,dat->h-y,flag,RIGHT,TCOD_console_vsprint_utf(fmt,ap), false, false);
+	TCOD_console_print_internal_utf(con,x,y,0,0,flag,alignment,TCOD_console_vsprint_utf(fmt,ap), false, false);
 	va_end(ap);
 }
 
-void TCOD_console_print_center_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
+int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,	
+	const wchar_t *fmt, ...) {
+	int ret;
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
-	TCOD_console_print_utf(con,x,y,dat->w,dat->h-y,flag,CENTER,TCOD_console_vsprint_utf(fmt,ap), false, false);
-	va_end(ap);
-}
-
-int TCOD_console_print_left_rect_utf(TCOD_console_t con,int x, int y, int w, int h,TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret = TCOD_console_print_utf(con,x,y,w,h,flag,LEFT,TCOD_console_vsprint_utf(fmt,ap), true, false);
+	ret = TCOD_console_print_internal_utf(con,x,y,w,h,dat->bkgnd_flag,dat->alignment,
+		TCOD_console_vsprint_utf(fmt,ap), true, false);
 	va_end(ap);
 	return ret;
 }
 
-int TCOD_console_print_right_rect_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
+int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, 
+	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	int ret;
 	va_list ap;
 	va_start(ap,fmt);
-	ret=TCOD_console_print_utf(con,x,y,w,h,flag,RIGHT,TCOD_console_vsprint_utf(fmt,ap), true, false);
+	ret=TCOD_console_print_internal_utf(con,x,y,w,h,flag,alignment,TCOD_console_vsprint_utf(fmt,ap), true, false);
 	va_end(ap);
 	return ret;
 }
 
-int TCOD_console_print_center_rect_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...) {
+int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
 	int ret;
 	va_list ap;
 	va_start(ap,fmt);
-	ret=TCOD_console_print_utf(con,x,y,w,h,flag,CENTER,TCOD_console_vsprint_utf(fmt,ap), true, false);
+	ret = TCOD_console_print_internal_utf(con,x,y,w,h,TCOD_BKGND_NONE,TCOD_LEFT,TCOD_console_vsprint_utf(fmt,ap), true, true);
 	va_end(ap);
 	return ret;
 }
-
-int TCOD_console_height_left_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret = TCOD_console_print_utf(con,x,y,w,h,TCOD_BKGND_NONE,LEFT,TCOD_console_vsprint_utf(fmt,ap), true, true);
-	va_end(ap);
-	return ret;
-}
-
-int TCOD_console_height_right_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret=TCOD_console_print_utf(con,x,y,w,h,TCOD_BKGND_NONE,RIGHT,TCOD_console_vsprint_utf(fmt,ap), true, true);
-	va_end(ap);
-	return ret;
-}
-
-int TCOD_console_height_center_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
-	int ret;
-	va_list ap;
-	va_start(ap,fmt);
-	ret=TCOD_console_print_utf(con,x,y,w,h,TCOD_BKGND_NONE,CENTER,TCOD_console_vsprint_utf(fmt,ap), true, true);
-	va_end(ap);
-	return ret;
-}
-
 
 #endif
 
@@ -1059,6 +1043,8 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	dat->fade=255;
 	dat->buf = (char_t *)calloc(sizeof(char_t),dat->w*dat->h);
 	dat->oldbuf = (char_t *)calloc(sizeof(char_t),dat->w*dat->h);
+	dat->bkgnd_flag=TCOD_BKGND_NONE;
+	dat->alignment=TCOD_LEFT;
 	windowClosed = false;
 	for (i=0; i< dat->w*dat->h; i++) {
 		dat->buf[i].c=' ';

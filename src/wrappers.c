@@ -412,7 +412,7 @@ void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h,
 		tmp=dat->back; // swap colors
 		dat->back=dat->fore;
 		dat->fore=tmp;
-		TCOD_console_print_left(con,xs,y,TCOD_BKGND_SET," %s ",title);
+		TCOD_console_print_ex(con,xs,y,TCOD_BKGND_SET,TCOD_LEFT," %s ",title);
 		tmp=dat->back; // swap colors
 		dat->back=dat->fore;
 		dat->fore=tmp;
@@ -422,8 +422,8 @@ void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h,
 
 char *TCOD_console_print_return_string(TCOD_console_t con,int x,int y, int rw,
 				     int rh, TCOD_bkgnd_flag_t flag,
-	alignment_t align, char *msg, bool can_split, bool count_only) {
-  TCOD_console_print(con,x,y,rw,rh,flag,align,msg,can_split,count_only);
+	TCOD_alignment_t align, char *msg, bool can_split, bool count_only) {
+  TCOD_console_print_internal(con,x,y,rw,rh,flag,align,msg,can_split,count_only);
   return msg;
 }
 

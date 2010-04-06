@@ -29,7 +29,7 @@ public :
 		con->setChar(x+w,y,TCOD_CHAR_TEEW);
 		con->setBackgroundColor(fore);
 		con->setForegroundColor(back);
-		con->printCenter(x+w/2,y,TCOD_BKGND_SET," %s ",txt);
+		con->printEx(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
 	}
 	char *txt;
 };

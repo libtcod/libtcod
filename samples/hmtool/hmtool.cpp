@@ -141,11 +141,11 @@ void render() {
 	sprintf(seedTxt,"seed     : %X",seed);
 	float landProportion=100.0f - 100.0f*backup.countCells(0.0f,sandHeight) / (hm->w*hm->h);
 	sprintf(landMassTxt,"landMass : %d %%%%",(int)landProportion);
-	if ( ! isNormalized ) TCODConsole::root->printCenter(HM_WIDTH/2,HM_HEIGHT-1,TCOD_BKGND_NONE,"the map is not normalized !");
+	if ( ! isNormalized ) TCODConsole::root->printEx(HM_WIDTH/2,HM_HEIGHT-1,TCOD_BKGND_NONE,TCOD_CENTER,"the map is not normalized !");
 	// message
 	msgDelay-=TCODSystem::getLastFrameLength();
 	if ( msg[0] != 0 && msgDelay > 0.0f ) {
-		int h=TCODConsole::root->printCenterRect(HM_WIDTH/2,HM_HEIGHT/2+1,HM_WIDTH/2-2,0,TCOD_BKGND_NONE,msg);
+		int h=TCODConsole::root->printRectEx(HM_WIDTH/2,HM_HEIGHT/2+1,HM_WIDTH/2-2,0,TCOD_BKGND_NONE,TCOD_CENTER,msg);
 		TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
 		if (h > 0 ) TCODConsole::root->rect(HM_WIDTH/4,HM_HEIGHT/2,HM_WIDTH/2,h+2,false,TCOD_BKGND_SET);
 		TCODConsole::root->setBackgroundColor(TCODColor::black);

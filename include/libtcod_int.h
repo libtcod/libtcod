@@ -47,17 +47,17 @@ typedef struct {
 typedef struct {
 	char_t *buf; /* current console */
 	char_t *oldbuf; /* console for last frame */
-	uint8 fade;
-	bool haskey; /* a key color has been defined */
-	/* foreground (text), background and key colors */
-	TCOD_color_t fore,back,key;
 	/* console width and height (in characters,not pixels) */
 	int w,h;
+	/* default background operator for print & print_rect functions */
+	TCOD_bkgnd_flag_t bkgnd_flag;
+	/* default alignment for print & print_rect functions */
+	TCOD_alignment_t alignment;
+	/* foreground (text), background and key colors */
+	TCOD_color_t fore,back,key;
+	uint8 fade;
+	bool haskey; /* a key color has been defined */
 } TCOD_console_data_t;
-
-typedef enum {
-	LEFT,CENTER,RIGHT
-} alignment_t;
 
 /* fov internal stuff */
 typedef struct {
@@ -157,7 +157,7 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 
 /* TCODConsole non public methods*/
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen);
-int TCOD_console_print(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, alignment_t align, char *msg, bool can_split, bool count_only);
+int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char *msg, bool can_split, bool count_only);
 int TCOD_console_stringLength(const char *s);
 char * TCOD_console_forward(char *s,int l);
 void TCOD_console_set_window_closed();
@@ -195,8 +195,8 @@ void TCOD_sys_term();
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
 wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap);
-int TCOD_console_print_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
-	alignment_t align, wchar_t *msg, bool can_split, bool count_only);
+int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
+	TCOD_alignment_t align, wchar_t *msg, bool can_split, bool count_only);
 #endif
 
 /* image manipulation */

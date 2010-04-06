@@ -4,6 +4,14 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X TCODConsole::printLeft/Right/Center replaced by
+	TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t)
+	TCODConsole::setAlignment(TCOD_alignment_t)
+	TCODConsole::print(int x, int y, const char *fmt, ...)
+	TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t bkgnd, TCOD_alignment_t alignment, const char *fmt, ...)
+X TCODConsole::getHeightLeft/Right/CenterRect replaced by
+	TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
+	(the 3 functions were useless, the height does not depend on the alignement... X( )
 X TCODConsole::initRoot has an additional renderer parameter :
    static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false, 
        TCOD_renderer_t renderer=TCOD_RENDERER_GLSL);

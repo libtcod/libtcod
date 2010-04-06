@@ -9,7 +9,7 @@ Label::Label(int x, int y, const char *label, const char *tip) : Widget(x,y,0,1)
 void Label::render() {
 	con->setBackgroundColor(back);
 	con->setForegroundColor(fore);
-	con->printLeft(x,y,TCOD_BKGND_NONE,label);
+	con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,label);
 }
 
 void Label::computeSize() {

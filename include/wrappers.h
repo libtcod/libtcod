@@ -97,7 +97,7 @@ TCODLIB_API void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,
 TCODLIB_API char *TCOD_console_print_return_string(TCOD_console_t con,int x,
 						   int y, int rw, int rh,
 						   TCOD_bkgnd_flag_t flag,
-						   alignment_t align, char *msg,
+						   TCOD_alignment_t align, char *msg,
 						   bool can_split,
 						   bool count_only);
 

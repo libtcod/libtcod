@@ -163,10 +163,10 @@ def render_colors(first, key):
             libtcod.console_put_char(sample_console, x, y, c,
                                      libtcod.BKGND_NONE)
     libtcod.console_set_background_color(sample_console, libtcod.grey)
-    libtcod.console_print_center_rect(sample_console, SAMPLE_SCREEN_WIDTH / 2,
+    libtcod.console_print_rect_ex(sample_console, SAMPLE_SCREEN_WIDTH / 2,
                                       5, SAMPLE_SCREEN_WIDTH - 2,
                                       SAMPLE_SCREEN_HEIGHT - 1,
-                                      libtcod.BKGND_MULTIPLY,
+                                      libtcod.BKGND_MULTIPLY, libtcod.CENTER,
                                       "The Doryen library uses 24 bits "
                                       "colors, for both background and "
                                       "foreground.")
@@ -195,10 +195,10 @@ def render_offscreen(first, key):
         libtcod.console_print_frame(oc_secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2,
                                     SAMPLE_SCREEN_HEIGHT / 2, False, libtcod.BKGND_NONE,
                                     'Offscreen console')
-        libtcod.console_print_center_rect(oc_secondary, SAMPLE_SCREEN_WIDTH / 4,
+        libtcod.console_print_rect_ex(oc_secondary, SAMPLE_SCREEN_WIDTH / 4,
                                           2, SAMPLE_SCREEN_WIDTH / 2 - 2,
                                           SAMPLE_SCREEN_HEIGHT / 2,
-                                          libtcod.BKGND_NONE,
+                                          libtcod.BKGND_NONE, libtcod.CENTER,
                                           "You can render to an offscreen "
                                           "console and blit in on another "
                                           "one, simulating alpha "
@@ -307,7 +307,7 @@ def render_lines(first, key):
     yd = int(SAMPLE_SCREEN_HEIGHT / 2 - sin_angle * SAMPLE_SCREEN_WIDTH / 2)
     # draw the line
     libtcod.line(xo, yo, xd, yd, draw_point)
-    libtcod.console_print_left(sample_console, 2, 2, libtcod.BKGND_NONE,
+    libtcod.console_print(sample_console, 2, 2, 
                                '%s (ENTER to change)' %
                                flag_names[line_bk_flag & 0xff])
 
@@ -404,22 +404,22 @@ def render_noise(first, key):
             libtcod.console_set_foreground_color(sample_console, libtcod.white)
             libtcod.console_set_background_color(sample_console,
                                                  libtcod.light_blue)
-            libtcod.console_print_left(sample_console, 2, 2 + curfunc,
-                                       libtcod.BKGND_SET, funcName[curfunc])
+            libtcod.console_print_ex(sample_console, 2, 2 + curfunc,
+                                       libtcod.BKGND_SET, libtcod.LEFT, funcName[curfunc])
         else:
             libtcod.console_set_foreground_color(sample_console, libtcod.grey)
-            libtcod.console_print_left(sample_console, 2, 2 + curfunc,
-                                       libtcod.BKGND_NONE, funcName[curfunc])
+            libtcod.console_print(sample_console, 2, 2 + curfunc,
+                                       funcName[curfunc])
     libtcod.console_set_foreground_color(sample_console, libtcod.white)
-    libtcod.console_print_left(sample_console, 2, 11, libtcod.BKGND_NONE,
+    libtcod.console_print(sample_console, 2, 11, 
                                'Y/H : zoom (%2.1f)' % noise_zoom)
     if noise_func > WAVELET:
-        libtcod.console_print_left(sample_console, 2, 12, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 2, 12, 
                                    'E/D : hurst (%2.1f)' % noise_hurst)
-        libtcod.console_print_left(sample_console, 2, 13, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 2, 13, 
                                    'R/F : lacunarity (%2.1f)' %
                                    noise_lacunarity)
-        libtcod.console_print_left(sample_console, 2, 14, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 2, 14, 
                                    'T/G : octaves (%2.1f)' % noise_octaves)
     if key.vk == libtcod.KEY_NONE:
         return
@@ -529,7 +529,7 @@ def render_fov(first, key):
         # draw the help text & player @
         libtcod.console_clear(sample_console)
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 1, 
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -634,14 +634,14 @@ def render_fov(first, key):
     elif key.c in (ord('T'), ord('t')):
         fov_torch = not fov_torch
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 1, 
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
     elif key.c in (ord('W'), ord('w')):
         fov_light_walls = not fov_light_walls
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 1, 
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -652,7 +652,7 @@ def render_fov(first, key):
         elif fov_algo_num > 0 :
             fov_algo_num = fov_algo_num - 1
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 1, 
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -727,9 +727,9 @@ def render_path(first, key):
                                  libtcod.BKGND_NONE)
         libtcod.console_put_char(sample_console, path_px, path_py, '@',
                                  libtcod.BKGND_NONE)
-        libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 1, 
                                    "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra")
-        libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 4, 
 									"Using : A*")
         # draw windows
         for y in range(SAMPLE_SCREEN_HEIGHT):
@@ -848,10 +848,10 @@ def render_path(first, key):
     elif key.vk == libtcod.KEY_TAB:
         path_using_astar = not path_using_astar
         if path_using_astar :
-            libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+            libtcod.console_print(sample_console, 1, 4, 
 									"Using : A*      ")
         else:
-            libtcod.console_print_left(sample_console, 1, 4, libtcod.BKGND_NONE,
+            libtcod.console_print(sample_console, 1, 4, 
 									"Using : Dijkstra")
         path_recalculate=True
 		
@@ -1049,7 +1049,7 @@ def render_bsp(first, key):
     rooms = 'OFF'
     if bsp_random_room:
         rooms = 'ON'
-    libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+    libtcod.console_print(sample_console, 1, 1, 
                                "ENTER : rebuild bsp\n"
                                "SPACE : rebuild dungeon\n"
                                "+-: bsp depth %d\n"
@@ -1060,7 +1060,7 @@ def render_bsp(first, key):
         walls = 'OFF'
         if bsp_room_walls:
             walls ='ON'
-        libtcod.console_print_left(sample_console, 1, 6, libtcod.BKGND_NONE,
+        libtcod.console_print(sample_console, 1, 6, 
                                    '2 : room walls %s' % walls)
     # render the level
     for y in range(SAMPLE_SCREEN_HEIGHT):
@@ -1176,7 +1176,7 @@ def render_mouse(first, key):
         mouse_rbut = 1 - mouse_rbut
     if mouse.mbutton_pressed:
         mouse_mbut = 1 - mouse_mbut
-    libtcod.console_print_left(sample_console, 1, 1, libtcod.BKGND_NONE,
+    libtcod.console_print(sample_console, 1, 1, 
                                "Mouse position : %4dx%4d\n"
                         	   "Mouse cell     : %4dx%4d\n"
                         	   "Mouse movement : %4dx%4d\n"
@@ -1189,7 +1189,7 @@ def render_mouse(first, key):
                                butstatus[mouse.lbutton], butstatus[mouse_lbut],
                                butstatus[mouse.rbutton], butstatus[mouse_rbut],
                                butstatus[mouse.mbutton], butstatus[mouse_mbut]))
-    libtcod.console_print_left(sample_console, 1, 10, libtcod.BKGND_NONE,
+    libtcod.console_print(sample_console, 1, 10, 
                                "1 : Hide cursor\n2 : Show cursor")
     if key.c == ord('1'):
         libtcod.mouse_show_cursor(False)
@@ -1224,10 +1224,11 @@ def render_name(first, key):
         ng_names.pop(0)
     libtcod.console_clear(sample_console)
     libtcod.console_set_foreground_color(sample_console,libtcod.white)
-    libtcod.console_print_left(sample_console,1,1,libtcod.BKGND_NONE,"%s\n\n+ : next generator\n- : prev generator" %
+    libtcod.console_print(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator" %
         ng_sets[ng_curset])
     for i in range(len(ng_names)) :
-        libtcod.console_print_right(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,libtcod.BKGND_NONE,ng_names[i])
+        libtcod.console_print_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
+		libtcod.BKGND_NONE,libtcod.RIGHT,ng_names[i])
     ng_delay += libtcod.sys_get_last_frame_length()
     if ng_delay > 0.5 :
         ng_delay -= 0.5
@@ -1307,7 +1308,7 @@ def render_py(first, key):
         elif use_numpy: text = 'Renderer: NumPy  \nSpacebar to change'
         else: text = 'Renderer: default\nSpacebar to change'
         libtcod.console_set_foreground_color(sample_console,libtcod.white)
-        libtcod.console_print_left(sample_console, 1, SCREEN_H - 3, libtcod.BKGND_NONE, text)
+        libtcod.console_print(sample_console, 1, SCREEN_H - 3, text)
         
         frac_t = RES_V - 1  #time is represented in number of pixels of the texture, start later in time to initialize texture
         abs_t = RES_V - 1
@@ -1500,15 +1501,15 @@ while not libtcod.console_is_window_closed():
         else:
             libtcod.console_set_foreground_color(None, libtcod.grey)
             libtcod.console_set_background_color(None, libtcod.black)
-        libtcod.console_print_left(None, 2, 46 - (len(samples) - i),
-                                   libtcod.BKGND_SET, samples[i].name)
+        libtcod.console_print_ex(None, 2, 46 - (len(samples) - i),
+                                   libtcod.BKGND_SET, libtcod.LEFT, samples[i].name)
     # render stats
     libtcod.console_set_foreground_color(None, libtcod.grey)
-    libtcod.console_print_right(None, 79, 46, libtcod.BKGND_NONE,
+    libtcod.console_print_ex(None, 79, 46, libtcod.BKGND_NONE, libtcod.RIGHT,
                                 'last frame : %3d ms (%3d fps)' %
                                 (int(libtcod.sys_get_last_frame_length() *
                                      1000.0), libtcod.sys_get_fps()))
-    libtcod.console_print_right(None, 79, 47, libtcod.BKGND_NONE,
+    libtcod.console_print_ex(None, 79, 47, libtcod.BKGND_NONE, libtcod.RIGHT,
                                 'elapsed : %8d ms %4.2fs' %
                                 (libtcod.sys_elapsed_milli(),
                                  libtcod.sys_elapsed_seconds()))
@@ -1516,7 +1517,7 @@ while not libtcod.console_is_window_closed():
     cur_renderer=libtcod.sys_get_renderer()
     libtcod.console_set_foreground_color(None,libtcod.grey)
     libtcod.console_set_background_color(None,libtcod.black)
-    libtcod.console_print_left(None,42,46-(libtcod.NB_RENDERERS+1),libtcod.BKGND_SET,"Renderer :")
+    libtcod.console_print_ex(None,42,46-(libtcod.NB_RENDERERS+1),libtcod.BKGND_SET, libtcod.LEFT, "Renderer :")
     for i in range(libtcod.NB_RENDERERS) :
         if i==cur_renderer :
             libtcod.console_set_foreground_color(None,libtcod.white)
@@ -1524,7 +1525,7 @@ while not libtcod.console_is_window_closed():
         else :
             libtcod.console_set_foreground_color(None,libtcod.grey)
             libtcod.console_set_background_color(None,libtcod.black)
-        libtcod.console_print_left(None,42,46-(libtcod.NB_RENDERERS-i),libtcod.BKGND_SET,renderer_name[i])
+        libtcod.console_print_ex(None,42,46-(libtcod.NB_RENDERERS-i),libtcod.BKGND_SET,libtcod.LEFT,renderer_name[i])
 
     # key handler
     if key.vk == libtcod.KEY_DOWN:

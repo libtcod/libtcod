@@ -346,11 +346,13 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 
 uint32 TCOD_zip_get_current_bytes(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
+	if (!zip->buffer) zip->buffer=TCOD_list_new();
 	return TCOD_list_size(zip->buffer)*sizeof(uintptr)+zip->isize;
 }
 
 uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
+	if (!zip->buffer) zip->buffer=TCOD_list_new();
 	return (TCOD_list_size(zip->buffer) - zip->offset) * sizeof(uintptr) + zip->isize; 
 }
 

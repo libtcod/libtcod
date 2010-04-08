@@ -205,7 +205,7 @@ void render_lines(bool first, TCOD_key_t*key) {
 				col.r = (uint8)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
 				col.g = (uint8)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
 				col.b = (uint8)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
-				bk.setBack(x,y,col);
+				bk.setBack(x,y,col, TCOD_BKGND_SET);
 			}
 		}
 		init=true;

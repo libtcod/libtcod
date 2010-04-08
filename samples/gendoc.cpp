@@ -34,22 +34,23 @@
 #include "libtcod.hpp"
 
 // a function parameter
-struct Param {
+struct ParamData {
 	char *name;
 	char *desc;	
 }; 
 
 // data about a libtcod function
 struct FuncData {
+	char *title;// function name
 	char *desc; // general description
 	char *cpp;  // C++ function
 	char *c;    // C function
 	char *py;   // python function
-	TCODList<Param *> params; // parameters table
+	TCODList<ParamData *> params; // parameters table
 	char *cppEx; // C++ example
 	char *cEx;   // C example	
 	char *pyEx;  // python example
-	FuncData() : desc(NULL),cpp(NULL),c(NULL),py(NULL),
+	FuncData() : title(NULL),desc(NULL),cpp(NULL),c(NULL),py(NULL),
 		cppEx(NULL),cEx(NULL),pyEx(NULL) {}	
 };
 
@@ -65,7 +66,7 @@ struct PageData {
 	PageData() : name(NULL),title(NULL),desc(NULL), fatherName(NULL),
 		filename(NULL),father(NULL),next(NULL),prev(NULL),
 		fileOrder(0),order(0),numKids(0),pageNum(NULL),
-		url(NULL), breadCrumb(NULL), prevLink(""),nextLink("") {}
+		url(NULL), breadCrumb(NULL), prevLink((char *)""),nextLink((char*)"") {}
 	// computed data
 	PageData *father;
 	PageData *next;
@@ -82,13 +83,14 @@ struct PageData {
 
 TCODList<PageData *> pages;
 // page currently parsed
-PageData *curPage;
+PageData *curPage=NULL;
 // function currently parsed
-FuncData *curFunc;
+FuncData *curFunc=NULL;
 
 // get an identifier at txt pos and put a strdup copy in result
 // returns the position after the identifier
 char *getIdentifier(char *txt, char **result) {
+	while (isspace(*txt)) txt++;
 	char *end=txt;
 	while (!isspace(*end)) end++;
 	*end=0;
@@ -99,6 +101,7 @@ char *getIdentifier(char *txt, char **result) {
 // get the end of line from txt and put a strdup copy in result
 // returns the position after the current line
 char *getLineEnd(char *txt, char **result) {
+	while (isspace(*txt)) txt++;
 	char *end=txt;
 	while (*end && *end != '\n') end++;
 	bool fileEnd = (*end == 0);
@@ -107,13 +110,38 @@ char *getLineEnd(char *txt, char **result) {
 	return fileEnd ? end : end+1;	
 }
 
+// get the data from txt up to the next @ directive and put a strdup copy in result
+// returns the position at the next @ (or end of file)
+char *getParagraph(char *txt, char **result) {
+	while (isspace(*txt)) txt++;
+	char *end=txt;
+	while (*end && *end != '@') end++;
+	bool fileEnd = (*end == 0);
+	*end=0;
+	*result=strdup(txt);
+	if ( ! fileEnd ) *end='@';
+	return end;	
+}
+
 // check if the string starts with keyword
-bool startsWith(char *txt, char *keyword) {
+bool startsWith(const char *txt, const char *keyword) {
 	return strncmp(txt,keyword,strlen(keyword)) == 0;
 }
 
+// print in the file, replace \n by <br>
+void printHtml(FILE *f, const char *txt) {
+	while (*txt) {
+		if ( *txt == '\n' ) fprintf(f,"<br />");
+		else if ( *txt == '\r' ) {} // ignore
+		else {
+			fputc(*txt,f);
+		}
+		txt++;
+	}
+}
+
 // get a page by its name or NULL if it doesn't exist
-PageData *getPage(char *name) {
+PageData *getPage(const char *name) {
 	for (PageData **it=pages.begin();it!=pages.end();it++) {
 		if (strcmp((*it)->name,name)==0) return *it;
 	}
@@ -157,6 +185,18 @@ void parseFile(char *filename) {
 		ptr += strlen(ptr);
 	}
     fclose(f);
+	// remove \r
+	ptr = buf;
+	while (*ptr) {
+		if ( *ptr == '\r') {
+			char *ptr2=ptr;
+			while ( *ptr2 ) {
+				*ptr2 = *(ptr2+1);
+				ptr2++;
+			}
+		}
+		ptr++;
+	}
     
     // now scan javadocs
     int fileOrder=1;
@@ -172,6 +212,7 @@ void parseFile(char *filename) {
 	    			char *pageName=NULL;
 	    			directive = getIdentifier(directive+sizeof("@PageName"),&pageName);
 	    			curPage=getPage(pageName);
+					curFunc=NULL;
 	    			if(!curPage) {
 						// non existing page. create a new one
 						curPage=new PageData();
@@ -179,13 +220,58 @@ void parseFile(char *filename) {
 						curPage->filename = strdup(filename);
 						curPage->fileOrder=fileOrder++;
 						curPage->name=pageName;
+						curFunc=NULL;
 					}
 	    		} else if ( startsWith(directive,"@PageTitle") ) {
 	    			directive = getLineEnd(directive+sizeof("@PageTitle"),&curPage->title);
 	    		} else if ( startsWith(directive,"@PageDesc") ) {
-	    			directive = getIdentifier(directive+sizeof("@PageDesc"),&curPage->desc);
+	    			directive = getParagraph(directive+sizeof("@PageDesc"),&curPage->desc);
 	    		} else if ( startsWith(directive,"@PageFather") ) {
 	    			directive = getIdentifier(directive+sizeof("@PageFather"),&curPage->fatherName);
+	    		} else if ( startsWith(directive,"@FuncTitle") ) {
+					curFunc=new FuncData();
+					curPage->funcs.push(curFunc);
+	    			directive = getLineEnd(directive+sizeof("@FuncTitle"),&curFunc->title);
+	    		} else if ( startsWith(directive,"@FuncDesc") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@FuncDesc"),&curFunc->desc);
+	    		} else if ( startsWith(directive,"@CppEx") ) {
+	    			directive = getParagraph(directive+sizeof("@CppEx"),&curFunc->cppEx);
+	    		} else if ( startsWith(directive,"@CEx") ) {
+	    			directive = getParagraph(directive+sizeof("@CEx"),&curFunc->cEx);
+	    		} else if ( startsWith(directive,"@PyEx") ) {
+	    			directive = getParagraph(directive+sizeof("@PyEx"),&curFunc->pyEx);
+	    		} else if ( startsWith(directive,"@Cpp") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@Cpp"),&curFunc->cpp);
+	    		} else if ( startsWith(directive,"@C") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@C"),&curFunc->c);
+	    		} else if ( startsWith(directive,"@Py") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@Py"),&curFunc->py);
+	    		} else if ( startsWith(directive,"@Param") ) {
+					ParamData *param=new ParamData();
+					curFunc->params.push(param);
+	    			directive = getIdentifier(directive+sizeof("@Param"),&param->name);
+	    			directive = getParagraph(directive,&param->desc);
+				} else {
+					char *tmp;
+					directive = getIdentifier(directive,&tmp);
+					printf ("WARN unknown directive  '%s'\n",tmp);
+					free(tmp);
 				}
 				directive = strchr(directive,'@');
 			}
@@ -229,10 +315,10 @@ void buildTree() {
 			char tmp[1024];
 			sprintf(tmp,"%d",(*it)->order);
 			(*it)->pageNum=strdup(tmp);
-			sprintf(tmp,"doc/html2/%s.html",(*it)->pageNum);
+			sprintf(tmp,"doc/html2/%s.html",(*it)->name);
 			(*it)->url=strdup(tmp);
 			sprintf(tmp,"<a href=\"../index.html\">Index</a> &gt; <a href=\"%s.html\">%s. %s</a>",
-				(*it)->pageNum,(*it)->pageNum,(*it)->title);
+				(*it)->name,(*it)->pageNum,(*it)->title);
 			(*it)->breadCrumb=strdup(tmp);						
 		}
 	}
@@ -250,31 +336,52 @@ void buildTree() {
 					char tmp[256];
 					sprintf(tmp,"%s.%d", page->father->pageNum,page->order);
 					page->pageNum = strdup(tmp);
-					sprintf(tmp,"doc/html2/%s.html",page->pageNum);
+					sprintf(tmp,"doc/html2/%s.html",page->name);
 					page->url=strdup(tmp);
 				}
 			}
 		}
 	}
-	// now compute prev/next links
+	// now compute prev/next links and breadcrumbs for sub pages
 	for (PageData **it=pages.begin();it!=pages.end();it++) {
 		PageData *page=*it;
 		page->prev=getPrev(page);
+		// prev link
 		if ( page->prev ) {
 			char tmp[1024];
 			sprintf (tmp,
 				"<a class=\"prev\" href=\"%s.html\">%s. %s</a>",
-				page->prev->pageNum,page->prev->pageNum,page->prev->title);
+				page->prev->name,page->prev->pageNum,page->prev->title);
 			page->prevLink=strdup(tmp);
 		}
+		// next link
 		page->next=getNext(page);
 		if ( page->next ) {
 			char tmp[1024];
 			sprintf (tmp,
 				"%s<a class=\"next\" href=\"%s.html\">%s. %s</a>",
 				page->prev ? "| " : "",
-				page->next->pageNum,page->next->pageNum,page->next->title);
+				page->next->name,page->next->pageNum,page->next->title);
 			page->nextLink=strdup(tmp);
+		}
+		// breadCrumb
+		if (! page->breadCrumb ) {
+			char tmp[1024];
+			TCODList<PageData *> hierarchy;
+			PageData *curPage=page;
+			while ( curPage ) {
+				hierarchy.push(curPage);
+				curPage=curPage->father;
+			}
+			char *ptr=tmp;
+			strcpy(ptr,"<a href=\"../index.html\">Index</a>");
+			ptr += strlen(ptr);
+			while ( ! hierarchy.isEmpty() ) {
+				curPage=hierarchy.pop();
+				sprintf(ptr, " &gt; <a href=\"%s.html\">%s. %s</a>", curPage->name,curPage->pageNum,curPage->title);
+				ptr += strlen(ptr);
+			}
+			page->breadCrumb =strdup(tmp);
 		}
 	}
 }
@@ -293,12 +400,143 @@ void genPageDoc(PageData *page) {
 "<div class=\"breadcrumb\"><div class=\"breadcrumbtext\"><p>\n"
 "you are here: %s<br>\n"
 "%s %s\n"
-"</p></div></div><div class=\"main\">";
+"</p></div></div><div class=\"main\"><div class=\"maintext\">\n"
+"<h1>%s. %s</h1>\n";
 	static const char *footer="</div></div></body></html>";
+	// page header with breadcrumb
 	fprintf(f,header, page->title, page->breadCrumb,
-		page->prevLink, page->nextLink
+		page->prevLink, page->nextLink, page->pageNum, page->title
 		);
-	// TODO content !
+	// page description
+	if ( page->desc ) {
+		fprintf(f,"<p>");
+		printHtml(f,page->desc);
+		fprintf(f,"</p>\n");
+	}
+	// sub pages toc
+	if ( page->numKids > 0 ) {
+		fprintf(f,"<div id=\"toc\"><ul>");
+		int kidId=1;
+		// level 1
+		while (kidId <= page->numKids ) {
+			// find the kid # kidId
+			PageData *kid = NULL;
+			for (PageData **it=pages.begin(); it != pages.end(); it++) {
+				if ( (*it)->father == page && (*it)->order == kidId ) {
+					kid=*it;
+					break;
+				}
+			}
+			if ( kid ) {
+				if ( kid->numKids > 0 ) {
+					// level 2
+					fprintf (f,"<li class=\"haschildren\"><a href=\"%s.html\">%s. %s</a><ul>\n",
+						kid->name,kid->pageNum,kid->title);
+					int kidKidId=1;
+					while (kidKidId <= kid->numKids ) {
+						PageData *kidKid=NULL;
+						// find the kid # kidKidId of kidId
+						for (PageData **it=pages.begin(); it != pages.end(); it++) {
+							if ( (*it)->father == kid && (*it)->order == kidKidId ) {
+								kidKid=*it;
+								break;
+							}
+						}
+						if ( kidKid ) {
+							fprintf(f,"<li><a href=\"%s.html\">%s. %s</a></li>\n",
+								kidKid->name,kidKid->pageNum,kidKid->title);
+
+						}
+						kidKidId++;
+					}
+					fprintf(f,"</ul></li>\n");
+				} else {
+					fprintf(f,"<li><a href=\"%s.html\">%s. %s</a></li>\n",
+						kid->name,kid->pageNum,kid->title);
+				}
+			}
+			kidId++;
+		}
+	}
+	// functions toc
+	if ( page->funcs.size() > 1 ) {
+		fprintf(f,"<div id=\"toc\"><ul>\n");
+		int i=0;
+		for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
+			FuncData *funcData=*fit;
+			if ( funcData->title ) {
+				fprintf(f, "<li><a href=\"#%d\">%s</a></li>",
+					i,funcData->title);
+			}
+		}		
+		fprintf(f,"</ul></div>\n");
+	}
+	// functions
+	int i=0;
+	for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
+		FuncData *funcData=*fit;
+		// title and description
+		fprintf(f,"<a name=\"%d\"></a>",i);
+		if (funcData->title) fprintf(f,"<h3>%s</h3>\n",funcData->title);
+		if (funcData->desc) {
+			fprintf(f,"<p>");
+			printHtml(f,funcData->desc);
+			fprintf(f,"</p>\n");
+		}
+		// functions for each language
+		fprintf(f,"<div class=\"code\">");
+		// TODO syntax coloring
+		if (funcData->cpp) {
+			fprintf(f,"<p class=\"cpp\">");
+			printHtml(f,funcData->cpp);
+			fprintf(f,"</p>\n");
+		}
+		if (funcData->c) {
+			fprintf(f,"<p class=\"c\">");
+			printHtml(f,funcData->c);
+			fprintf(f,"</p>\n");
+		}
+		if (funcData->py) {
+			fprintf(f,"<p class=\"py\">");
+			printHtml(f,funcData->py);
+			fprintf(f,"</p>\n");
+		}
+		fprintf(f,"</div>\n");
+		// parameters table
+		if ( !funcData->params.isEmpty()) {
+			fprintf(f,"<table class=\"param\"><tbody><tr><th>Parameter</th><th>Description</th></tr>");
+			bool hilite=true;
+			for ( ParamData **pit = funcData->params.begin(); pit != funcData->params.end(); pit++) {
+				if ( hilite ) fprintf(f,"<tr class=\"hilite\">");
+				else fprintf(f,"<tr>");
+				fprintf(f,"<td>%s</td><td>",(*pit)->name);
+				printHtml(f,(*pit)->desc);
+				fprintf(f,"</td></tr>\n");
+				hilite=!hilite;
+			}
+			fprintf(f,"</tbody></table>");
+		}
+		// examples
+		if ( funcData->cppEx || funcData->cEx || funcData->pyEx ) {
+			fprintf(f,"<h6>Example:</h6><div class=\"code\">\n");
+			if (funcData->cppEx) {
+				fprintf(f,"<p class=\"cpp\">");
+				printHtml(f,funcData->cppEx);
+				fprintf(f,"</p>\n");
+			}
+			if (funcData->cEx) {
+				fprintf(f,"<p class=\"c\">");
+				printHtml(f,funcData->cEx);
+				fprintf(f,"</p>\n");
+			}
+			if (funcData->pyEx) {
+				fprintf(f,"<p class=\"py\">");
+				printHtml(f,funcData->pyEx);
+				fprintf(f,"</p>\n");
+			}
+			fprintf(f,"</div><hr>\n");
+		}
+	}
 	fprintf(f,footer);
 	fclose(f);	
 }

@@ -347,6 +347,7 @@ void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TC
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return;
 	back=&dat->buf[y*dat->w+x].back;
+	if ( flag == TCOD_BKGND_DEFAULT ) flag = dat->bkgnd_flag;
 	switch ( flag & 0xff ) {
 		case TCOD_BKGND_SET : *back = col; break;
 		case TCOD_BKGND_MULTIPLY  : *back= TCOD_color_multiply(*back, col); break;

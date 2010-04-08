@@ -381,6 +381,7 @@ BKGND_ADDA = 9
 BKGND_BURN = 10
 BKGND_OVERLAY = 11
 BKGND_ALPH = 12
+BKGND_DEFAULT=13
 
 def BKGND_ALPHA(a):
     return BKGND_ALPH | (int(a * 255) << 8)
@@ -605,7 +606,7 @@ def console_set_foreground_color(con, col):
 def console_clear(con):
     return _lib.TCOD_console_clear(con)
 
-def console_put_char(con, x, y, c, flag=BKGND_SET):
+def console_put_char(con, x, y, c, flag=BKGND_DEFAULT):
     if type(c) == str:
         _lib.TCOD_console_put_char(con, x, y, ord(c), flag)
     else:
@@ -617,7 +618,7 @@ def console_put_char_ex(con, x, y, c, fore, back):
     else:
         _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
 
-def console_set_back(con, x, y, col, flag=BKGND_SET):
+def console_set_back(con, x, y, col, flag=BKGND_DEFAULT):
     _lib.TCOD_console_set_back(con, x, y, col, flag)
 
 def console_set_fore(con, x, y, col):
@@ -641,28 +642,28 @@ def console_set_alignment(con, alignment):
 def console_get_alignment(con):
     return _lib.TCOD_console_get_alignment(con)
 
-def console_print(con, x, y, s):
-    _lib.TCOD_console_print(con, x, y, s)
+def console_print(con, x, y, fmt):
+    _lib.TCOD_console_print(con, x, y, fmt)
 
-def console_print_ex(con, x, y, bk, alignment, s):
-    _lib.TCOD_console_print_ex(con, x, y, bk, alignment, s)
+def console_print_ex(con, x, y, flag, alignment, fmt):
+    _lib.TCOD_console_print_ex(con, x, y, flag, alignment, fmt)
 
-def console_print_rect(con, x, y, w, h, s):
-    return _lib.TCOD_console_print_rect(con, x, y, w, h, s)
+def console_print_rect(con, x, y, w, h, fmt):
+    return _lib.TCOD_console_print_rect(con, x, y, w, h, fmt)
 
-def console_print_rect_ex(con, x, y, w, h, bk, alignment, s):
-    return _lib.TCOD_console_print_rect_ex(con, x, y, w, h, bk, alignment, s)
+def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
+    return _lib.TCOD_console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt)
 
-def console_get_height_rect(con, x, y, w, h, s):
-    return _lib.TCOD_console_get_height_rect(con, x, y, w, h, s)
+def console_get_height_rect(con, x, y, w, h, fmt):
+    return _lib.TCOD_console_get_height_rect(con, x, y, w, h, fmt)
 
-def console_rect(con, x, y, w, h, clr, flag=BKGND_SET):
+def console_rect(con, x, y, w, h, clr, flag=BKGND_DEFAULT):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
 
-def console_hline(con, x, y, l, flag=BKGND_SET):
+def console_hline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_hline( con, x, y, l, flag)
 
-def console_vline(con, x, y, l, flag=BKGND_SET):
+def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
 def console_print_frame(con, x, y, w, h, clr, bkflg, s):
@@ -808,8 +809,8 @@ def sys_get_last_frame_length():
 def sys_sleep_milli(val):
     _lib.TCOD_sys_sleep_milli(c_uint(val))
 
-def sys_update_char(ascii,img,x,y):
-    _lib.TCOD_sys_update_char(c_uint(ascii),img,c_int(x),c_int(y))
+def sys_update_char(asciiCode,fontx,fonty,img,x,y):
+    _lib.TCOD_sys_update_char(c_uint(asciiCode),c_int(fontx),c_int(fonty),img,c_int(x),c_int(y))
 
 def sys_elapsed_milli():
     return _lib.TCOD_sys_elapsed_milli()
@@ -850,11 +851,11 @@ def sys_update_char(asciiCode, fontx, fonty, img, x, y) :
 # custom SDL post renderer
 SDL_RENDERER_FUNC = None
 sdl_renderer_func = None
-def sys_register_SDL_renderer(func):
+def sys_register_SDL_renderer(callback):
     global SDL_RENDERER_FUNC
     global sdl_renderer_func
     SDL_RENDERER_FUNC = CFUNCTYPE(None, c_void_p)
-    sdl_renderer_func = SDL_RENDERER_FUNC(func)
+    sdl_renderer_func = SDL_RENDERER_FUNC(callback)
     _lib.TCOD_sys_register_SDL_renderer(sdl_renderer_func)
 
 ############################

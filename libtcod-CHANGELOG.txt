@@ -9,6 +9,7 @@ X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::setAlignment(TCOD_alignment_t)
 	TCODConsole::print(int x, int y, const char *fmt, ...)
 	TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t bkgnd, TCOD_alignment_t alignment, const char *fmt, ...)
+	added TCOD_BKGND_DEFAULT as default value in rect / putChar / hline / vline / setBack
 X TCODConsole::getHeightLeft/Right/CenterRect replaced by
 	TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
 	(the 3 functions were useless, the height does not depend on the alignement... X( )

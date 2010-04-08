@@ -28,6 +28,11 @@
 #ifndef _TCOD_SYS_HPP
 #define _TCOD_SYS_HPP
 
+/**
+ @PageName system
+ @PageTitle System layer
+ */	
+ 
 class TCODLIB_API ITCODSDLRenderer {
 public :
 	virtual ~ITCODSDLRenderer() {}

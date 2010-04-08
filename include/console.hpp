@@ -30,12 +30,21 @@
 
 #include "console_types.h"
 
+/**
+ @PageName console
+ @PageTitle Console
+ */	
 
 class TCODLIB_API TCODConsole {
 public :
 	static TCODConsole *root;
 	int getWidth() const;
 	int getHeight() const;
+	/**
+	 @PageName console_init
+	 @PageTitle Initializing the console
+	 @PageFather console
+	 */	
 	static void initRoot(int w, int h, const char * title, bool fullscreen = false, TCOD_renderer_t renderer=TCOD_RENDERER_GLSL);
 	static void setWindowTitle(const char *title);
 	static void setFullscreen(bool fullscreen);

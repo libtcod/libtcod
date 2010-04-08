@@ -28,6 +28,11 @@
 #ifndef _TCOD_COLOR_HPP
 #define _TCOD_COLOR_HPP
 
+/**
+ @PageName color
+ @PageTitle Colors
+ */	
+
 class TCODLIB_API TCODColor {
 public :
 	uint8 r,g,b;

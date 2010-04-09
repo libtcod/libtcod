@@ -222,6 +222,13 @@ div.code p.cpp {
 	background-repeat: no-repeat;
 }
 
+div.code p.cs {
+  padding: 15px 5px 5px 60px;
+	background-image: url('../img/cs.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
 div.code p.py {
   padding: 15px 5px 10px 60px;
 	background-image: url('../img/py.png');
@@ -318,7 +325,7 @@ div.code p.py {
   /* radius - not understood by IE8 and Opera 10.10, but still looks decent */
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
-  border-radius: 10px; /* correct CSS3 syntax, unsupported by anything atm */
+  border-radius: 10px; /* correct CSS3 syntax, supported only by Opera 10.50+ and IE9 */
   border-style: solid;
   border-color: #194675;
   border-width: 1px;
@@ -344,7 +351,7 @@ div.code p.py {
 }
 
 #toc li ul li {
-  _display: inline; /* for IE6 */
+  _display: inline; /* hack for IE6 */
 }
 
 /* SUBSUB Menu */

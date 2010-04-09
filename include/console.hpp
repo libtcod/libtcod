@@ -54,21 +54,21 @@ public :
 	@C void TCOD_console_init_root (int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer)
 	@Py console_init_root (w, h, title, fullscreen = False, renderer = RENDERER_GLSL)
 	@Param w,h size of the console(in characters). The default font in libtcod (./terminal.png) uses 8x8 pixels characters.
-You can change the font by calling TCODConsole::setCustomFont before calling initRoot.
+		You can change the font by calling TCODConsole::setCustomFont before calling initRoot.
 	@Param title title of the window. It's not visible when you are in fullscreen.
-Note 1 : you can dynamically change the window title with TCODConsole::setWindowTitle
+		Note 1 : you can dynamically change the window title with TCODConsole::setWindowTitle
 	@Param fullscreen wether you start in windowed or fullscreen mode.
-Note 1 : you can dynamically change this mode with TCODConsole::setFullscreen
-Note 2 : you can get current mode with TCODConsole::isFullscreen
+		Note 1 : you can dynamically change this mode with TCODConsole::setFullscreen
+		Note 2 : you can get current mode with TCODConsole::isFullscreen
 	@Param renderer which renderer to use. Possible values are :
     * TCOD_RENDERER_GLSL : works only on video cards with pixel shaders
     * TCOD_RENDERER_OPENGL : works on all video cards supporting OpenGL 1.4
     * TCOD_RENDERER_SDL : should work everywhere!
-Note 1: if you select a renderer that is not supported by the player's machine, libtcod scan the lower renderers until it finds a working one.
-Note 2: on recent video cards, GLSL results in up to 900% increase of framerates in the true color sample compared to SDL renderer.
-Note 3: whatever renderer you use, it can always be overriden by the player through the libtcod.cfg file.
-Note 4: you can dynamically change the renderer after calling initRoot with TCODSystem::setRenderer.
-Note 5: you can get current renderer with TCODSystem::getRenderer. It might be different from the one you set in initRoot in case it's not supported on the player's computer.
+		Note 1: if you select a renderer that is not supported by the player's machine, libtcod scan the lower renderers until it finds a working one.
+		Note 2: on recent video cards, GLSL results in up to 900% increase of framerates in the true color sample compared to SDL renderer.
+		Note 3: whatever renderer you use, it can always be overriden by the player through the libtcod.cfg file.
+		Note 4: you can dynamically change the renderer after calling initRoot with TCODSystem::setRenderer.
+		Note 5: you can get current renderer with TCODSystem::getRenderer. It might be different from the one you set in initRoot in case it's not supported on the player's computer.
 	@CppEx TCODConsole::initRoot(80, 50, "The Chronicles Of Doryen v0.1");
 	@CEx TCOD_console_init_root(80, 50, "The Chronicles Of Doryen v0.1", false, TCOD_RENDERER_SDL);
 	@PyEx libtcod.console_init_root(80, 50, 'The Chronicles Of Doryen v0.1')
@@ -81,46 +81,46 @@ Note 5: you can get current renderer with TCODSystem::getRenderer. It might be d
 	@PageFather console_init
 	@FuncTitle setCustomFont
 	@FuncDesc This function allows you to use a bitmap font (png or bmp) with custom character size or layout.
-It should be called before initializing the root console with initRoot.
-Once this function is called, you can define your own custom mappings using mapping functions
-<h5>Different font layouts</h5>
-<table>
-<tr><td>ASCII_INROW</td><td>ASCII_INCOL</td><td>TCOD</td></tr>
-
-<tr><td><img src='terminal8x8_gs_ro.png' /></td><td><img src='terminal8x8_gs_as.png' /></td><td><img src='terminal8x8_gs_tc.png' /></td></tr>
-</table>
-<ul>
-<li>ascii, in columns : characters 0 to 15 are in the first column. The space character is at coordinates 2,0.</li>
-<li>ascii, in rows : characters 0 to 15 are in the first row. The space character is at coordinates 0,2.</li>
-<li>tcod : special mapping. Not all ascii values are mapped. The space character is at coordinates 0,0.</li>
-</ul>
-<h5>Different font types</h5>
-<table>
-<tr><td>standard<br />(non antialiased)</td><td>antialiased<br />(32 bits PNG)</td><td>antialiased<br />(greyscale)</td></tr>
-
-<tr><td><img src='terminal.png' /></td><td><img src='terminal8x8_aa_as.png' /></td><td><img src='terminal8x8_gs_as.png' /></td></tr>
-</table>
-<ul>
-<li>standard : transparency is given by a key color automatically detected by looking at the color of the space character</li>
-<li>32 bits : transparency is given by the png alpha layer. The font color does not matter</li>
-<li>greyscale : transparency is given by the pixel value. You can use white characters on black background or black characters on white background. The background color is automatically detected by looking at the color of the space character</li>
-</ul>
-Examples of fonts can be found in libtcod's fonts directory. Check the Readme file there.
+		It should be called before initializing the root console with initRoot.
+		Once this function is called, you can define your own custom mappings using mapping functions
+		<h5>Different font layouts</h5>
+		<table>
+		<tr><td>ASCII_INROW</td><td>ASCII_INCOL</td><td>TCOD</td></tr>
+		
+		<tr><td><img src='terminal8x8_gs_ro.png' /></td><td><img src='terminal8x8_gs_as.png' /></td><td><img src='terminal8x8_gs_tc.png' /></td></tr>
+		</table>
+		<ul>
+		<li>ascii, in columns : characters 0 to 15 are in the first column. The space character is at coordinates 2,0.</li>
+		<li>ascii, in rows : characters 0 to 15 are in the first row. The space character is at coordinates 0,2.</li>
+		<li>tcod : special mapping. Not all ascii values are mapped. The space character is at coordinates 0,0.</li>
+		</ul>
+		<h5>Different font types</h5>
+		<table>
+		<tr><td>standard<br />(non antialiased)</td><td>antialiased<br />(32 bits PNG)</td><td>antialiased<br />(greyscale)</td></tr>
+		
+		<tr><td><img src='terminal.png' /></td><td><img src='terminal8x8_aa_as.png' /></td><td><img src='terminal8x8_gs_as.png' /></td></tr>
+		</table>
+		<ul>
+		<li>standard : transparency is given by a key color automatically detected by looking at the color of the space character</li>
+		<li>32 bits : transparency is given by the png alpha layer. The font color does not matter</li>
+		<li>greyscale : transparency is given by the pixel value. You can use white characters on black background or black characters on white background. The background color is automatically detected by looking at the color of the space character</li>
+		</ul>
+		Examples of fonts can be found in libtcod's fonts directory. Check the Readme file there.
 	@Cpp static void TCODConsole::setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0)
 	@C void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic)
 	@Py console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL,nb_char_horiz=0, nb_char_vertic=0)
 	@Param fontFile Name of a .bmp or .png file containing the font.
 	@Param flags Used to define the characters layout in the bitmap and the font type :
-TCOD_FONT_LAYOUT_ASCII_INCOL : characters in ASCII order, code 0-15 in the first column
-TCOD_FONT_LAYOUT_ASCII_INROW : characters in ASCII order, code 0-15 in the first row
-TCOD_FONT_LAYOUT_TCOD : simplified layout. See examples below.
-TCOD_FONT_TYPE_GREYSCALE : create an anti-aliased font from a greyscale bitmap
-For python, remove TCOD _ :
-libtcod.FONT_LAYOUT_ASCII_INCOL 
+		TCOD_FONT_LAYOUT_ASCII_INCOL : characters in ASCII order, code 0-15 in the first column
+		TCOD_FONT_LAYOUT_ASCII_INROW : characters in ASCII order, code 0-15 in the first row
+		TCOD_FONT_LAYOUT_TCOD : simplified layout. See examples below.
+		TCOD_FONT_TYPE_GREYSCALE : create an anti-aliased font from a greyscale bitmap
+		For python, remove TCOD _ :
+		libtcod.FONT_LAYOUT_ASCII_INCOL 
 	@Param nbCharHoriz,nbCharVertic Number of characters in the font.
-Should be 16x16 for ASCII layouts, 32x8 for TCOD layout.
-But you can use any other layout.
-If set to 0, there are deduced from the font layout flag.
+		Should be 16x16 for ASCII layouts, 32x8 for TCOD layout.
+		But you can use any other layout.
+		If set to 0, there are deduced from the font layout flag.
 	@CppEx TCODConsole::setCustomFont("standard_8x8_ascii_in_col_font.bmp",TCOD_FONT_LAYOUT_ASCII_INCOL);
       TCODConsole::setCustomFont("32bits_8x8_ascii_in_row_font.png",TCOD_FONT_LAYOUT_ASCII_INROW);
       TCODConsole::setCustomFont("greyscale_8x8_tcod_font.png",TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
@@ -139,8 +139,8 @@ If set to 0, there are deduced from the font layout flag.
 	@PageFather console_init
 	@FuncTitle Mapping a single ASCII code to a character
 	@PageDesc These functions allow you to map characters in the bitmap font to ASCII codes.
-They should be called after initializing the root console with initRoot.
-You can dynamically change the characters mapping at any time, allowing to use several fonts in the same screen.
+		They should be called after initializing the root console with initRoot.
+		You can dynamically change the characters mapping at any time, allowing to use several fonts in the same screen.
 	@Cpp static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY)
 	@C void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY)
 	@Py console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY)
@@ -187,12 +187,12 @@ You can dynamically change the characters mapping at any time, allowing to use s
 	@PageName console_fullscreen
 	@FuncTitle Switching between windowed and fullscreen modes
 	@FuncDesc This function switches the root console to fullscreen or windowed mode.
-Note that there is no predefined key combination to switch to/from fullscreen. You have to do this in your own code.
+		Note that there is no predefined key combination to switch to/from fullscreen. You have to do this in your own code.
 	@Cpp static void TCODConsole::setFullscreen(bool fullscreen)
 	@C void TCOD_console_set_fullscreen(bool fullscreen)
 	@Py console_set_fullscreen(fullscreen)
 	@Param fullscreen true to switch to fullscreen mode.
-false to switch to windowed mode.
+		false to switch to windowed mode.
 	@CppEx TCOD_key_t key=TCODConsole::checkForKeypress();
       if ( key.vk == TCODK_ENTER && key.lalt ) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
 	@CEx TCOD_key_t key=TCOD_console_check_for_keypress();
@@ -208,7 +208,7 @@ false to switch to windowed mode.
 	@PageTitle Communicate with the window manager
 	@FuncTitle Changing the window title
 	@FuncDesc This function dynamically changes the title of the game window.
-Note that the window title is not visible while in fullscreen.
+		Note that the window title is not visible while in fullscreen.
 	@Cpp static void TCODConsole::setWindowTitle(const char *title)
  	@C void TCOD_console_set_window_title(const char *title)
 	@Py console_set_window_title(title)
@@ -233,7 +233,7 @@ Note that the window title is not visible while in fullscreen.
 	@PageDesc Use these functions to display credits, as seen in the samples.
 	@FuncTitle Using a separate credit page
 	@FuncDesc You can print a "Powered by libtcod x.y.z" screen during your game startup simply by calling this function after initRoot.
-The credits screen can be skipped by pressing any key.
+		The credits screen can be skipped by pressing any key.
 	@Cpp static void TCODConsole::credits()
 	@C void TCOD_console_credits()
 	@Py console_credits()
@@ -244,13 +244,13 @@ The credits screen can be skipped by pressing any key.
 	@PageName console_credits
 	@FuncTitle Embedding credits in an existing page
 	@FuncDesc You can also print the credits on one of your game screens (your main menu for example) by calling this function in your main loop.
-This function returns true when the credits screen is finished, indicating that you no longer need to call it. 
+		This function returns true when the credits screen is finished, indicating that you no longer need to call it. 
 	@Cpp static bool TCODConsole::renderCredits(int x, int y, bool alpha)
 	@C bool TCOD_console_credits_render(int x, int y, bool alpha)
 	@Py bool TCOD_console_credits_render(int x, int y, bool alpha)
 	@Param x,y Position of the credits text in your root console
 	@Param alpha If true, credits are transparently added on top of the existing screen.
-For this to work, this function must be placed between your screen rendering code and the console flush.
+		For this to work, this function must be placed between your screen rendering code and the console flush.
 	@CppEx TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false); // initialize the root console
       bool endCredits=false;
       while ( ! TCODConsole::isWindowClosed() ) { // your game loop
@@ -329,9 +329,9 @@ For this to work, this function must be placed between your screen rendering cod
 	@PageName console_draw_basic
 	@FuncTitle Clearing a console
 	@FuncDesc This function modifies all cells of a console :
-* set the cell's background color to the console default background color
-* set the cell's foreground color to the console default foreground color
-* set the cell's ASCII code to 32 (space)
+		* set the cell's background color to the console default background color
+		* set the cell's foreground color to the console default foreground color
+		* set the cell's ASCII code to 32 (space)
 	@Cpp void TCODConsole::clear()
 	@C void TCOD_console_clear(TCOD_console_t con)
 	@Py console_clear(con)
@@ -348,8 +348,8 @@ For this to work, this function must be placed between your screen rendering cod
 	@Py console_set_back(con, x,  y, col, flag=BKGND_DEFAULT)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param col the background color to use. You can use color constants
 	@Param flag this flag defines how the cell's background color is modified. See <a href="console_bkgnd_flag_t.html">TCOD_bkgnd_flag_t</a>
 	*/
@@ -363,8 +363,8 @@ For this to work, this function must be placed between your screen rendering cod
 	@Py console_set_fore(con, x, y, col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param col the foreground color to use. You can use color constants
 	*/
 	void setFore(int x, int y, const TCODColor &col);
@@ -373,14 +373,14 @@ For this to work, this function must be placed between your screen rendering cod
 	@PageName console_draw_basic
 	@FuncTitle Setting the ASCII code of a cell
 	@FuncDesc This function modifies the ASCII code of a cell, leaving other properties (background and foreground colors) unchanged.
-Note that since a clear console has both background and foreground colors set to black for every cell, using setchar will produce black characters on black background. Use putchar instead.
+		Note that since a clear console has both background and foreground colors set to black for every cell, using setchar will produce black characters on black background. Use putchar instead.
 	@Cpp void TCODConsole::setChar(int x, int y, int c)
 	@C void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c)
 	@Py console_set_char(con, x,  y, c)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	*/
 	void setChar(int x, int y, int c);
@@ -389,16 +389,16 @@ Note that since a clear console has both background and foreground colors set to
 	@PageName console_draw_basic
 	@FuncTitle Setting every property of a cell using default colors
 	@FuncDesc This function modifies every property of a cell :
-* update the cell's background color according to the console default background color (see TCOD_bkgnd_flag_t).
-* set the cell's foreground color to the console default foreground color
-* set the cell's ASCII code to c
+		* update the cell's background color according to the console default background color (see TCOD_bkgnd_flag_t).
+		* set the cell's foreground color to the console default foreground color
+		* set the cell's ASCII code to c
 	@Cpp void TCODConsole::putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_flag_t flag)
 	@Py console_put_char( con, x,  y, c, flag=BKGND_DEFAULT)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
@@ -408,16 +408,16 @@ Note that since a clear console has both background and foreground colors set to
 	@PageName console_draw_basic
 	@FuncTitle Setting every property of a cell using specific colors
 	@FuncDesc This function modifies every property of a cell :
-* set the cell's background color to back.
-* set the cell's foreground color to fore.
-* set the cell's ASCII code to c.
+		* set the cell's background color to back.
+		* set the cell's foreground color to fore.
+		* set the cell's ASCII code to c.
 	@Cpp void TCODConsole::putCharEx(int x, int y, int c, const TCODColor & fore, const TCODColor & back)
 	@C void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_put_char_ex( con, x,  y, c, fore, back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	@Param fore,back new foreground and background colors for this cell
 	*/
@@ -428,22 +428,22 @@ Note that since a clear console has both background and foreground colors set to
 	@PageTitle Background effect flags
 	@PageFather console_draw
 	@PageDesc This flag is used by most functions that modify a cell background color. It defines how the console's current background color is used to modify the cell's existing background color :
-TCOD_BKGND_NONE : the cell's background color is not modified.
-TCOD_BKGND_SET : the cell's background color is replaced by the console's default background color : newbk = curbk.
-TCOD_BKGND_MULTIPLY : the cell's background color is multiplied by the console's default background color : newbk = oldbk * curbk
-TCOD_BKGND_LIGHTEN : newbk = MAX(oldbk,curbk)
-TCOD_BKGND_DARKEN : newbk = MIN(oldbk,curbk)
-TCOD_BKGND_SCREEN : newbk = white - (white - oldbk) * (white - curbk) // inverse of multiply : (1-newbk) = (1-oldbk)*(1-curbk)
-TCOD_BKGND_COLOR_DODGE : newbk = curbk / (white - oldbk)
-TCOD_BKGND_COLOR_BURN : newbk = white - (white - oldbk) / curbk
-TCOD_BKGND_ADD : newbk = oldbk + curbk
-TCOD_BKGND_ADDALPHA(alpha) : newbk = oldbk + alpha*curbk
-TCOD_BKGND_BURN : newbk = oldbk + curbk - white
-TCOD_BKGND_OVERLAY : newbk = curbk.x <= 0.5 ? 2*curbk*oldbk : white - 2*(white-curbk)*(white-oldbk)
-TCOD_BKGND_ALPHA(alpha) : newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
-TCOD_BKGND_DEFAULT : use the console's default background flag
-Note that TCOD_BKGND_ALPHA and TCOD_BKGND_ADDALPHA are MACROS that needs a float parameter between (0.0 and 1.0). TCOD_BKGND_ALPH and TCOD_BKGND_ADDA should not be used directly (else they will have the same effect as TCOD_BKGND_NONE).
-For python, remove TCOD_ : libtcod.BKGND_NONE 
+		TCOD_BKGND_NONE : the cell's background color is not modified.
+		TCOD_BKGND_SET : the cell's background color is replaced by the console's default background color : newbk = curbk.
+		TCOD_BKGND_MULTIPLY : the cell's background color is multiplied by the console's default background color : newbk = oldbk * curbk
+		TCOD_BKGND_LIGHTEN : newbk = MAX(oldbk,curbk)
+		TCOD_BKGND_DARKEN : newbk = MIN(oldbk,curbk)
+		TCOD_BKGND_SCREEN : newbk = white - (white - oldbk) * (white - curbk) // inverse of multiply : (1-newbk) = (1-oldbk)*(1-curbk)
+		TCOD_BKGND_COLOR_DODGE : newbk = curbk / (white - oldbk)
+		TCOD_BKGND_COLOR_BURN : newbk = white - (white - oldbk) / curbk
+		TCOD_BKGND_ADD : newbk = oldbk + curbk
+		TCOD_BKGND_ADDALPHA(alpha) : newbk = oldbk + alpha*curbk
+		TCOD_BKGND_BURN : newbk = oldbk + curbk - white
+		TCOD_BKGND_OVERLAY : newbk = curbk.x <= 0.5 ? 2*curbk*oldbk : white - 2*(white-curbk)*(white-oldbk)
+		TCOD_BKGND_ALPHA(alpha) : newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
+		TCOD_BKGND_DEFAULT : use the console's default background flag
+		Note that TCOD_BKGND_ALPHA and TCOD_BKGND_ADDALPHA are MACROS that needs a float parameter between (0.0 and 1.0). TCOD_BKGND_ALPH and TCOD_BKGND_ADDA should not be used directly (else they will have the same effect as TCOD_BKGND_NONE).
+		For python, remove TCOD_ : libtcod.BKGND_NONE 
 	*/
 
 	/**
@@ -452,7 +452,7 @@ For python, remove TCOD_ : libtcod.BKGND_NONE
 	@PageFather console_draw
 	@FuncTitle Setting the default background flag
 	@FuncDesc This function defines the background mode (see TCOD_bkgnd_flag_t) for the console.
-This default mode is used by several functions (print, printRect, ...)
+		This default mode is used by several functions (print, printRect, ...)
 	@Cpp void TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t flag)
 	@C void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag)
 	@Py console_set_background_flag(con, flag)
@@ -465,7 +465,7 @@ This default mode is used by several functions (print, printRect, ...)
 	@PageName console_print
 	@FuncTitle Getting the default background flag
 	@FuncDesc This function returns the background mode (see TCOD_bkgnd_flag_t) for the console.
-This default mode is used by several functions (print, printRect, ...)
+		This default mode is used by several functions (print, printRect, ...)
 	@Cpp TCOD_bkgnd_flag_t TCODConsole::getBackgroundFlag() const
 	@C TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con)
 	@Py console_get_background_flag(con)
@@ -477,8 +477,8 @@ This default mode is used by several functions (print, printRect, ...)
 	@PageName console_print
 	@FuncTitle Setting the default alignment
 	@FuncDesc This function defines the default alignment (see TCOD_alignment_t) for the console.
-This default alignment is used by several functions (print, printRect, ...).
-Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
+		This default alignment is used by several functions (print, printRect, ...).
+		Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
 	@Cpp void TCODConsole::setAlignment(TCOD_alignment_t alignment)
 	@C void TCOD_console_set_alignment(TCOD_console_t con,TCOD_bkgnd_flag_t alignment)
 	@Py console_set_alignment(con, alignment)
@@ -491,8 +491,8 @@ Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCO
 	@PageName console_print
 	@FuncTitle Getting the default alignment
 	@FuncDesc This function returns the default alignment (see TCOD_alignment_t) for the console.
-This default mode is used by several functions (print, printRect, ...).
-Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
+		This default mode is used by several functions (print, printRect, ...).
+		Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
 	@Cpp TCOD_alignment_t TCODConsole::getAlignment() const
 	@C TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
 	@Py console_get_alignment(con)
@@ -509,9 +509,9 @@ Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCO
 	@Py console_print(con, x, y, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the character in the console, depending on the alignment :
-* TCOD_LEFT : leftmost character of the string
-* TCOD_CENTER : center character of the string
-* TCOD_RIGHT : rightmost character of the string
+		* TCOD_LEFT : leftmost character of the string
+		* TCOD_CENTER : center character of the string
+		* TCOD_RIGHT : rightmost character of the string
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
 	*/
 	void print(int x, int y, const char *fmt, ...); 
@@ -525,9 +525,9 @@ Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCO
 	@Py console_print_ex(con, x, y, flag, alignment, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the character in the console, depending on the alignment :
-* TCOD_LEFT : leftmost character of the string
-* TCOD_CENTER : center character of the string
-* TCOD_RIGHT : rightmost character of the string
+		* TCOD_LEFT : leftmost character of the string
+		* TCOD_CENTER : center character of the string
+		* TCOD_RIGHT : rightmost character of the string
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	@Param alignment defines how the strings are printed on screen.	
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
@@ -538,17 +538,17 @@ Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCO
 	@PageName console_print
 	@FuncTitle Printing a string with default parameters and autowrap
 	@FuncDesc This function draws a string in a rectangle inside the console, using default colors, alignment and background mode. 
-If the string reaches the borders of the rectangle, carriage returns are inserted.
-If h > 0 and the bottom of the rectangle is reached, the string is truncated. If h = 0, the string is only truncated if it reaches the bottom of the console.
-The function returns the height (number of console lines) of the printed string.
+		If the string reaches the borders of the rectangle, carriage returns are inserted.
+		If h > 0 and the bottom of the rectangle is reached, the string is truncated. If h = 0, the string is only truncated if it reaches the bottom of the console.
+		The function returns the height (number of console lines) of the printed string.
 	@Cpp int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...)
 	@C int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
 	@Py console_print_rect(con, x, y, w, h, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
-x <= x+w < console width
-y <= y+h < console height
+		x <= x+w < console width
+		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
 	*/
    	int printRect(int x, int y, int w, int h, const char *fmt, ...); 
@@ -557,17 +557,17 @@ y <= y+h < console height
 	@PageName console_print
 	@FuncTitle Printing a string with specific alignment and background mode and autowrap
 	@FuncDesc This function draws a string in a rectangle inside the console, using default colors, but specific alignment and background mode. 
-If the string reaches the borders of the rectangle, carriage returns are inserted.
-If h > 0 and the bottom of the rectangle is reached, the string is truncated. If h = 0, the string is only truncated if it reaches the bottom of the console.
-The function returns the height (number of console lines) of the printed string.
+		If the string reaches the borders of the rectangle, carriage returns are inserted.
+		If h > 0 and the bottom of the rectangle is reached, the string is truncated. If h = 0, the string is only truncated if it reaches the bottom of the console.
+		The function returns the height (number of console lines) of the printed string.
 	@Cpp int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@C int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@Py console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
-x <= x+w < console width
-y <= y+h < console height
+		x <= x+w < console width
+		y <= y+h < console height
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	@Param alignment defines how the strings are printed on screen.	
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
@@ -584,8 +584,8 @@ y <= y+h < console height
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
-x <= x+w < console width
-y <= y+h < console height
+		x <= x+w < console width
+		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
 	*/
 	int getHeightRect(int x, int y, int w, int h, const char *fmt, ...); 
@@ -594,25 +594,24 @@ y <= y+h < console height
 	@PageName console_print
 	@FuncTitle Changing the colors while printing a string
 	@FuncDesc If you want to draw a string using different colors for each word, the basic solution is to call a string printing function several times, changing the default colors between each call.
-The TCOD library offers a simpler way to do this, allowing you to draw a string using different colors in a single call. For this, you have to insert color control codes in your string.
-A color control code is associated with a color set (a foreground color and a background color). If you insert this code in your string, the next characters will use the colors associated with the color control code.
-There are 5 predefined color control codes :
-For python, remove TCOD_ : libtcod.COLCTRL_1 
-	TCOD_COLCTRL_1
-	TCOD_COLCTRL_2 
-	TCOD_COLCTRL_3 
-	TCOD_COLCTRL_4 
-	TCOD_COLCTRL_5
-To associate a color with a code, use setColorControl.
-To go back to the console's default colors, insert in your string the color stop control code :
-	TCOD_COLCTRL_STOP
-
-You can also use any color without assigning it to a control code, using the generic control codes :
-	TCOD_COLCTRL_FORE_RGB
-	TCOD_COLCTRL_BACK_RGB
-
-Those controls respectively change the foreground and background color used to print the string characters. In the string, you must insert the r,g,b components of the color (between 1 and 255. The value 0 is forbidden because it represents the end of the string in C/C++) immediately after this code.
-
+		The TCOD library offers a simpler way to do this, allowing you to draw a string using different colors in a single call. For this, you have to insert color control codes in your string.
+		A color control code is associated with a color set (a foreground color and a background color). If you insert this code in your string, the next characters will use the colors associated with the color control code.
+		There are 5 predefined color control codes :
+		For python, remove TCOD_ : libtcod.COLCTRL_1 
+			TCOD_COLCTRL_1
+			TCOD_COLCTRL_2 
+			TCOD_COLCTRL_3 
+			TCOD_COLCTRL_4 
+			TCOD_COLCTRL_5
+		To associate a color with a code, use setColorControl.
+		To go back to the console's default colors, insert in your string the color stop control code :
+			TCOD_COLCTRL_STOP
+		
+		You can also use any color without assigning it to a control code, using the generic control codes :
+			TCOD_COLCTRL_FORE_RGB
+			TCOD_COLCTRL_BACK_RGB
+		
+		Those controls respectively change the foreground and background color used to print the string characters. In the string, you must insert the r,g,b components of the color (between 1 and 255. The value 0 is forbidden because it represents the end of the string in C/C++) immediately after this code.
 	@Cpp static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
 	@C void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_set_color_control(con,fore,back)
@@ -620,38 +619,39 @@ Those controls respectively change the foreground and background color used to p
 	@Param fore foreground color when this control is activated
 	@Param back background color when this control is activated
 	@CppEx // A string with a red over black word, using predefined color control codes
-TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
-TCODConsole::root->print(1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
-	// A string with a red over black word, using generic color control codes
-TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
-            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
-// A string with a red over black word, using generic color control codes
-TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
-            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+		TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
+		TCODConsole::root->print(1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+		// A string with a red over black word, using generic color control codes
+		TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
+	            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+		// A string with a red over black word, using generic color control codes
+		TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
+	            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
 	@CEx // A string with a red over black word, using predefined color control codes
-TCOD_console_set_color_control(TCOD_COLCTRL_1,red,black);
-      TCOD_console_print(NULL,1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
-// A string with a red word (over default background color), using generic color control codes
-TCOD_console_print(NULL,1,1,"String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
-// A string with a red over black word, using generic color control codes
-TCOD_console_print(NULL,1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
+		TCOD_console_set_color_control(TCOD_COLCTRL_1,red,black);
+		TCOD_console_print(NULL,1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
+		// A string with a red word (over default background color), using generic color control codes
+		TCOD_console_print(NULL,1,1,"String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+		// A string with a red over black word, using generic color control codes
+		TCOD_console_print(NULL,1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
             TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
 	@PyEx # A string with a red over black word, using predefined color control codes
-libtcod.console_set_color_control(libtcod.COLCTRL_1,litbcod.red,litbcod.black)
-      libtcod.console_print(0,1,1,"String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
-# A string with a red word (over default background color), using generic color control codes
-litbcod.console_print(0,1,1,"String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
-# A string with a red over black word, using generic color control codes
-libtcod.console_print(0,1,1,"String with a %c%c%c%c%c%c%c%cred%c word."%
+		libtcod.console_set_color_control(libtcod.COLCTRL_1,litbcod.red,litbcod.black)
+		libtcod.console_print(0,1,1,"String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
+		# A string with a red word (over default background color), using generic color control codes
+		litbcod.console_print(0,1,1,"String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
+		# A string with a red over black word, using generic color control codes
+		libtcod.console_print(0,1,1,"String with a %c%c%c%c%c%c%c%cred%c word."%
             (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
 	*/
 	static void setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back);
 
-#ifndef NO_UNICODE	/**
+#ifndef NO_UNICODE
+	/**
 	@PageName console_print
 	@FuncTitle Unicode functions
 	@FuncDesc those functions are similar to their ASCII equivalent, but work with unicode strings (wchar_t in C/C++). 
-Note that unicode is not supported in the python wrapper.
+		Note that unicode is not supported in the python wrapper.
 	@Cpp static void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY)
 	@C void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY)
 	*/
@@ -696,20 +696,20 @@ Note that unicode is not supported in the python wrapper.
 	@PageTitle Advanced printing functions
 	@FuncTitle Filling a rectangle with the background color
 	@FuncDesc Fill a rectangle inside a console. For each cell in the rectangle :
-* set the cell's background color to the console default background color
-* if clear is true, set the cell's ASCII code to 32 (space)
+		* set the cell's background color to the console default background color
+		* if clear is true, set the cell's ASCII code to 32 (space)
 	@Cpp void TCODConsole::rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag)
 	@Py console_rect(con,x,  y,  w, h, clear, flag=BKGND_DEFAULT)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of rectangle upper-left corner in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param w,h size of the rectangle in the console.
-x <= x+w < console width
-y <= y+h < console height
+		x <= x+w < console width
+		y <= y+h < console height
 	@Param clear if true, all characters inside the rectangle are set to ASCII code 32 (space).
-If false, only the background color is modified
+		If false, only the background color is modified
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
@@ -723,8 +723,8 @@ If false, only the background color is modified
 	@Py console_hline(con,x,y,l,flag=BKGND_DEFAULT)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's left end in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param l The length of the line in cells 1 <= l <= console width - x
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	*/
@@ -739,8 +739,8 @@ If false, only the background color is modified
 	@Py console_vline(con,x,y,l,flag=BKGND_DEFAULT)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's upper end in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param l The length of the line in cells 1 <= l <= console height - y
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	*/
@@ -755,16 +755,16 @@ If false, only the background color is modified
 	@Py console_print_frame(con,x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the rectangle's upper-left corner in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	@Param w,h size of the rectangle in the console.
-x <= x+w < console width
-y <= y+h < console height
+		x <= x+w < console width
+		y <= y+h < console height
 	@Param clear if true, all characters inside the rectangle are set to ASCII code 32 (space).
-If false, only the background color is modified
+		If false, only the background color is modified
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	@Param fmt if NULL, the funtion only draws a rectangle.
-Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
+		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
 
@@ -823,8 +823,8 @@ Else, printf-like format string, eventually followed by parameters. You can use 
 	@Py console_get_back(con,x,y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	*/
 	TCODColor getBack(int x, int y) const;
 
@@ -837,8 +837,8 @@ Else, printf-like format string, eventually followed by parameters. You can use 
 	@Py console_get_fore(con,x,y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	*/
 	TCODColor getFore(int x, int y) const;
 
@@ -851,8 +851,8 @@ Else, printf-like format string, eventually followed by parameters. You can use 
 	@Py console_get_char(con,x,y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
-0 <= x < console width
-0 <= y < console height
+		0 <= x < console width
+		0 <= y < console height
 	*/
 	int getChar(int x, int y) const;
 
@@ -908,7 +908,7 @@ Else, printf-like format string, eventually followed by parameters. You can use 
 	@PageFather console
 	@PageTitle Flushing the root console
 	@FuncDesc Once the root console is initialized, you can use one of the printing functions to change the background colors, the foreground colors or the ASCII characters on the console.
-Once you've finished rendering the root console, you have to actually apply the updates to the screen with this function.
+		Once you've finished rendering the root console, you have to actually apply the updates to the screen with this function.
 	@Cpp static void TCODConsole::flush()
 	@C void TCOD_console_flush()
 	@Py console_flush()
@@ -920,108 +920,108 @@ Once you've finished rendering the root console, you have to actually apply the 
 	@PageTitle ASCII constants
 	@PageFather console_draw
 	@FuncDesc Some useful graphic characters in the terminal.bmp font. For the python version, remove TCOD_ from the constants:
-Single line walls:
-TCOD_CHAR_HLINE=196
-TCOD_CHAR_VLINE=179
-TCOD_CHAR_NE=191
-TCOD_CHAR_NW=218
-TCOD_CHAR_SE=217
-TCOD_CHAR_SW=192
-
-Double lines walls:
-TCOD_CHAR_DHLINE=205
-TCOD_CHAR_DVLINE=186
-TCOD_CHAR_DNE=187
-TCOD_CHAR_DNW=201
-TCOD_CHAR_DSE=188
-TCOD_CHAR_DSW=200
-
-Single line vertical/horizontal junctions (T junctions):
-TCOD_CHAR_TEEW=180
-TCOD_CHAR_TEEE=195
-TCOD_CHAR_TEEN=193
-TCOD_CHAR_TEES=194
-
-Double line vertical/horizontal junctions (T junctions):
-TCOD_CHAR_DTEEW=185
-TCOD_CHAR_DTEEE=204
-TCOD_CHAR_DTEEN=202
-TCOD_CHAR_DTEES=203
-
-Block characters:
-TCOD_CHAR_BLOCK1=176
-TCOD_CHAR_BLOCK2=177
-TCOD_CHAR_BLOCK3=178
-
-Cross-junction between two single line walls:
-TCOD_CHAR_CROSS=197
-
-Arrows:
-TCOD_CHAR_ARROW_N=24
-TCOD_CHAR_ARROW_S=25
-TCOD_CHAR_ARROW_E=26
-TCOD_CHAR_ARROW_W=27
-
-Arrows without tail:
-TCOD_CHAR_ARROW2_N=30
-TCOD_CHAR_ARROW2_S=31
-TCOD_CHAR_ARROW2_E=16
-TCOD_CHAR_ARROW2_W=17
-
-Double arrows:
-TCOD_CHAR_DARROW_H=29
-TCOD_CHAR_ARROW_V=18
-
-GUI stuff:
-TCOD_CHAR_CHECKBOX_UNSET=224
-TCOD_CHAR_CHECKBOX_SET=225
-TCOD_CHAR_RADIO_UNSET=9
-TCOD_CHAR_RADIO_SET=10
-
-Sub-pixel resolution kit:
-TCOD_CHAR_SUBP_NW=226
-TCOD_CHAR_SUBP_NE=227
-TCOD_CHAR_SUBP_N=228
-TCOD_CHAR_SUBP_SE=229
-TCOD_CHAR_SUBP_DIAG=230
-TCOD_CHAR_SUBP_E=231
-TCOD_CHAR_SUBP_SW=232
-
-Miscellaneous characters:
-TCOD_CHAR_SMILY = 1
-TCOD_CHAR_SMILY_INV = 2
-TCOD_CHAR_HEART = 3
-TCOD_CHAR_DIAMOND = 4
-TCOD_CHAR_CLUB = 5
-TCOD_CHAR_SPADE = 6
-TCOD_CHAR_BULLET = 7
-TCOD_CHAR_BULLET_INV = 8
-TCOD_CHAR_MALE = 11
-TCOD_CHAR_FEMALE = 12
-TCOD_CHAR_NOTE = 13
-TCOD_CHAR_NOTE_DOUBLE = 14
-TCOD_CHAR_LIGHT = 15
-TCOD_CHAR_EXCLAM_DOUBLE = 19
-TCOD_CHAR_PILCROW = 20
-TCOD_CHAR_SECTION = 21
-TCOD_CHAR_POUND = 156
-TCOD_CHAR_MULTIPLICATION = 158
-TCOD_CHAR_FUNCTION = 159
-TCOD_CHAR_RESERVED = 169
-TCOD_CHAR_HALF = 171
-TCOD_CHAR_ONE_QUARTER = 172
-TCOD_CHAR_COPYRIGHT = 184
-TCOD_CHAR_CENT = 189
-TCOD_CHAR_YEN = 190
-TCOD_CHAR_CURRENCY = 207
-TCOD_CHAR_THREE_QUARTERS = 243
-TCOD_CHAR_DIVISION = 246
-TCOD_CHAR_GRADE = 248
-TCOD_CHAR_UMLAUT = 249
-TCOD_CHAR_POW1 = 251
-TCOD_CHAR_POW3 = 252
-TCOD_CHAR_POW2 = 253
-TCOD_CHAR_BULLET_SQUARE = 254
+		Single line walls:
+		TCOD_CHAR_HLINE=196
+		TCOD_CHAR_VLINE=179
+		TCOD_CHAR_NE=191
+		TCOD_CHAR_NW=218
+		TCOD_CHAR_SE=217
+		TCOD_CHAR_SW=192
+		
+		Double lines walls:
+		TCOD_CHAR_DHLINE=205
+		TCOD_CHAR_DVLINE=186
+		TCOD_CHAR_DNE=187
+		TCOD_CHAR_DNW=201
+		TCOD_CHAR_DSE=188
+		TCOD_CHAR_DSW=200
+		
+		Single line vertical/horizontal junctions (T junctions):
+		TCOD_CHAR_TEEW=180
+		TCOD_CHAR_TEEE=195
+		TCOD_CHAR_TEEN=193
+		TCOD_CHAR_TEES=194
+		
+		Double line vertical/horizontal junctions (T junctions):
+		TCOD_CHAR_DTEEW=185
+		TCOD_CHAR_DTEEE=204
+		TCOD_CHAR_DTEEN=202
+		TCOD_CHAR_DTEES=203
+		
+		Block characters:
+		TCOD_CHAR_BLOCK1=176
+		TCOD_CHAR_BLOCK2=177
+		TCOD_CHAR_BLOCK3=178
+		
+		Cross-junction between two single line walls:
+		TCOD_CHAR_CROSS=197
+		
+		Arrows:
+		TCOD_CHAR_ARROW_N=24
+		TCOD_CHAR_ARROW_S=25
+		TCOD_CHAR_ARROW_E=26
+		TCOD_CHAR_ARROW_W=27
+		
+		Arrows without tail:
+		TCOD_CHAR_ARROW2_N=30
+		TCOD_CHAR_ARROW2_S=31
+		TCOD_CHAR_ARROW2_E=16
+		TCOD_CHAR_ARROW2_W=17
+		
+		Double arrows:
+		TCOD_CHAR_DARROW_H=29
+		TCOD_CHAR_ARROW_V=18
+		
+		GUI stuff:
+		TCOD_CHAR_CHECKBOX_UNSET=224
+		TCOD_CHAR_CHECKBOX_SET=225
+		TCOD_CHAR_RADIO_UNSET=9
+		TCOD_CHAR_RADIO_SET=10
+		
+		Sub-pixel resolution kit:
+		TCOD_CHAR_SUBP_NW=226
+		TCOD_CHAR_SUBP_NE=227
+		TCOD_CHAR_SUBP_N=228
+		TCOD_CHAR_SUBP_SE=229
+		TCOD_CHAR_SUBP_DIAG=230
+		TCOD_CHAR_SUBP_E=231
+		TCOD_CHAR_SUBP_SW=232
+		
+		Miscellaneous characters:
+		TCOD_CHAR_SMILY = 1
+		TCOD_CHAR_SMILY_INV = 2
+		TCOD_CHAR_HEART = 3
+		TCOD_CHAR_DIAMOND = 4
+		TCOD_CHAR_CLUB = 5
+		TCOD_CHAR_SPADE = 6
+		TCOD_CHAR_BULLET = 7
+		TCOD_CHAR_BULLET_INV = 8
+		TCOD_CHAR_MALE = 11
+		TCOD_CHAR_FEMALE = 12
+		TCOD_CHAR_NOTE = 13
+		TCOD_CHAR_NOTE_DOUBLE = 14
+		TCOD_CHAR_LIGHT = 15
+		TCOD_CHAR_EXCLAM_DOUBLE = 19
+		TCOD_CHAR_PILCROW = 20
+		TCOD_CHAR_SECTION = 21
+		TCOD_CHAR_POUND = 156
+		TCOD_CHAR_MULTIPLICATION = 158
+		TCOD_CHAR_FUNCTION = 159
+		TCOD_CHAR_RESERVED = 169
+		TCOD_CHAR_HALF = 171
+		TCOD_CHAR_ONE_QUARTER = 172
+		TCOD_CHAR_COPYRIGHT = 184
+		TCOD_CHAR_CENT = 189
+		TCOD_CHAR_YEN = 190
+		TCOD_CHAR_CURRENCY = 207
+		TCOD_CHAR_THREE_QUARTERS = 243
+		TCOD_CHAR_DIVISION = 246
+		TCOD_CHAR_GRADE = 248
+		TCOD_CHAR_UMLAUT = 249
+		TCOD_CHAR_POW1 = 251
+		TCOD_CHAR_POW3 = 252
+		TCOD_CHAR_POW2 = 253
+		TCOD_CHAR_BULLET_SQUARE = 254
 	*/
 
 	/**
@@ -1036,8 +1036,8 @@ TCOD_CHAR_BULLET_SQUARE = 254
 	@PageTitle Blocking keyboard input
 	@PageFather console_input
 	@FuncDesc This function waits for the user to press a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t.
-If the flush parameter is true, every pending keypress event is discarded, then the function wait for a new keypress.
-If flush is false, the function waits only if there are no pending keypress events, else it returns the first event in the keyboard buffer.
+		If the flush parameter is true, every pending keypress event is discarded, then the function wait for a new keypress.
+		If flush is false, the function waits only if there are no pending keypress events, else it returns the first event in the keyboard buffer.
 	@Cpp static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
 	@C TCOD_key_t TCOD_console_wait_for_keypress(bool flush)
 	@Py console_wait_for_keypress(flush)
@@ -1055,14 +1055,14 @@ If flush is false, the function waits only if there are no pending keypress even
 	@PageTitle Non blocking keyboard input
 	@PageFather console_input
 	@FuncDesc This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t. If the user didn't press a key, this function returns the key code TCODK_NONE.
-<b>Note that key repeat only results in TCOD_KEY_PRESSED events.</b>
+		<b>Note that key repeat only results in TCOD_KEY_PRESSED events.</b>
 	@Cpp static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_RELEASED)
 	@C TCOD_key_t TCOD_console_check_for_keypress(int flags)
 	@Py console_check_for_keypress(flags=KEY_RELEASED)
 	@Param flags A filter for key events :
-TCOD_KEY_PRESSED : only keypress events are returned
-TCOD_KEY_RELEASED : only key release events are returnes
-TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
+		TCOD_KEY_PRESSED : only keypress events are returned
+		TCOD_KEY_RELEASED : only key release events are returnes
+		TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
 	@CppEx TCOD_key_t key = TCODConsole::checkForKeypress();
       if ( key.vk == TCODK_NONE ) return; // no key pressed
       if ( key.c == 'i' ) { ... open inventory ... }
@@ -1110,15 +1110,15 @@ TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
 	@PageFather console_input
 	@PageDesc This structure contains information about a key pressed/released by the user.
 	@C typedef struct {
-	TCOD_keycode_t vk; 
-	char c;
-	bool pressed;
-	bool lalt;
-	bool lctrl;
-	bool ralt;
-	bool rctrl;
-	bool shift;
-} TCOD_key_t;
+		TCOD_keycode_t vk; 
+		char c;
+		bool pressed;
+		bool lalt;
+		bool lctrl;
+		bool ralt;
+		bool rctrl;
+		bool shift;
+	} TCOD_key_t;
 	@Param vk An arbitrary value representing the physical key on the keyboard. Possible values are stored in the TCOD_keycode_t enum. If no key was pressed, the value is TCODK_NONE
 	@Param c If the key correspond to a printable character, the character is stored in this field. Else, this field contains 0.
 	@Param pressed true if the event is a key pressed, or false for a key released.
@@ -1134,82 +1134,82 @@ TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
 	@PageTitle 	Key codes
 	@PageFather console_input
 	@PageDesc TCOD_keycode_t is a libtcod specific code representing a key on the keyboard.
-For python, replace TCODK by KEY: libtcod.KEY_NONE Possible values are :
-When no key was pressed (see checkForKeypress) : TCOD_NONE
-Special keys :
-TCODK_ESCAPE
-TCODK_BACKSPACE
-TCODK_TAB
-TCODK_ENTER
-TCODK_SHIFT
-TCODK_CONTROL
-TCODK_ALT
-TCODK_PAUSE
-TCODK_CAPSLOCK
-TCODK_PAGEUP
-TCODK_PAGEDOWN
-TCODK_END
-TCODK_HOME
-TCODK_UP
-TCODK_LEFT
-TCODK_RIGHT
-TCODK_DOWN
-TCODK_PRINTSCREEN
-TCODK_INSERT
-TCODK_DELETE
-TCODK_LWIN
-TCODK_RWIN
-TCODK_APPS
-TCODK_KPADD
-TCODK_KPSUB
-TCODK_KPDIV
-TCODK_KPMUL
-TCODK_KPDEC
-TCODK_KPENTER
-TCODK_F1
-TCODK_F2
-TCODK_F3
-TCODK_F4
-TCODK_F5
-TCODK_F6
-TCODK_F7
-TCODK_F8
-TCODK_F9
-TCODK_F10
-TCODK_F11
-TCODK_F12
-TCODK_NUMLOCK
-TCODK_SCROLLLOCK
-TCODK_SPACE
-
-numeric keys :
-
-TCODK_0
-TCODK_1
-TCODK_2
-TCODK_3
-TCODK_4
-TCODK_5
-TCODK_6
-TCODK_7
-TCODK_8
-TCODK_9
-TCODK_KP0
-TCODK_KP1
-TCODK_KP2
-TCODK_KP3
-TCODK_KP4
-TCODK_KP5
-TCODK_KP6
-TCODK_KP7
-TCODK_KP8
-TCODK_KP9
-
-Any other (printable) key :
-
-TCODK_CHAR
-
-Codes starting with TCODK_KP represents keys on the numeric keypad (if available).
+		For python, replace TCODK by KEY: libtcod.KEY_NONE Possible values are :
+		When no key was pressed (see checkForKeypress) : TCOD_NONE
+		Special keys :
+		TCODK_ESCAPE
+		TCODK_BACKSPACE
+		TCODK_TAB
+		TCODK_ENTER
+		TCODK_SHIFT
+		TCODK_CONTROL
+		TCODK_ALT
+		TCODK_PAUSE
+		TCODK_CAPSLOCK
+		TCODK_PAGEUP
+		TCODK_PAGEDOWN
+		TCODK_END
+		TCODK_HOME
+		TCODK_UP
+		TCODK_LEFT
+		TCODK_RIGHT
+		TCODK_DOWN
+		TCODK_PRINTSCREEN
+		TCODK_INSERT
+		TCODK_DELETE
+		TCODK_LWIN
+		TCODK_RWIN
+		TCODK_APPS
+		TCODK_KPADD
+		TCODK_KPSUB
+		TCODK_KPDIV
+		TCODK_KPMUL
+		TCODK_KPDEC
+		TCODK_KPENTER
+		TCODK_F1
+		TCODK_F2
+		TCODK_F3
+		TCODK_F4
+		TCODK_F5
+		TCODK_F6
+		TCODK_F7
+		TCODK_F8
+		TCODK_F9
+		TCODK_F10
+		TCODK_F11
+		TCODK_F12
+		TCODK_NUMLOCK
+		TCODK_SCROLLLOCK
+		TCODK_SPACE
+		
+		numeric keys :
+		
+		TCODK_0
+		TCODK_1
+		TCODK_2
+		TCODK_3
+		TCODK_4
+		TCODK_5
+		TCODK_6
+		TCODK_7
+		TCODK_8
+		TCODK_9
+		TCODK_KP0
+		TCODK_KP1
+		TCODK_KP2
+		TCODK_KP3
+		TCODK_KP4
+		TCODK_KP5
+		TCODK_KP6
+		TCODK_KP7
+		TCODK_KP8
+		TCODK_KP9
+		
+		Any other (printable) key :
+		
+		TCODK_CHAR
+		
+		Codes starting with TCODK_KP represents keys on the numeric keypad (if available).
 	*/
 
 	/**
@@ -1223,8 +1223,8 @@ Codes starting with TCODK_KP represents keys on the numeric keypad (if available
 	@C TCOD_console_t TCOD_console_new(int w, int h)
 	@Py console_new(w,h)
 	@Param w,h the console size.
-0 < w
-0 < h
+		0 < w
+		0 < h
 	@CppEx // Creating a 40x20 offscreen console, filling it with red and blitting it on the root console at position 5,5
       TCODConsole *offscreenConsole = new TCODConsole(40,20);
       offscreenConsole->setBackgroundColor(TCODColor::red);
@@ -1253,25 +1253,25 @@ Codes starting with TCODK_KP represents keys on the numeric keypad (if available
 	@Param dst The destination console.
 	@Param xDst,yDst Where to blit the upper-left corner of the source area in the destination console.
 	@Param foregroundAlpha,backgroundAlpha Alpha transparency of the blitted console.
-0.0 => The source console is completely transparent. This function does nothing.
-1.0 => The source console is opaque. Its cells replace the destination cells.
-0 < fade < 1.0 => The source console is partially blitted, simulating real transparency.
+		0.0 => The source console is completely transparent. This function does nothing.
+		1.0 => The source console is opaque. Its cells replace the destination cells.
+		0 < fade < 1.0 => The source console is partially blitted, simulating real transparency.
 	@CppEx // Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.
-TCODConsole *off1 = new TCODConsole(80,50);
-      TCODConsole *off2 = new TCODConsole(80,50);
-      ... print screen1 on off1
-      ... print screen2 of off2
-      // render screen1 in the game window
-      TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0);
-      TCODConsole::flush();
-      // wait or a keypress
-      TCODConsole::waitForKeypress(true);
-      // do a cross-fading from off1 to off2
-      for (int i=1; i <= 255; i++) {
-          TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0); // renders the first screen (opaque)
-          TCODConsole::blit(off2,0,0,80,50,TCODConsole::root,0,0,i/255.0,i/255.0); // renders the second screen (transparent)
-          TCODConsole::flush();
-	  }
+		TCODConsole *off1 = new TCODConsole(80,50);
+		TCODConsole *off2 = new TCODConsole(80,50);
+		... print screen1 on off1
+		... print screen2 of off2
+		// render screen1 in the game window
+		TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0);
+		TCODConsole::flush();
+		// wait or a keypress
+		TCODConsole::waitForKeypress(true);
+		// do a cross-fading from off1 to off2
+		for (int i=1; i <= 255; i++) {
+			TCODConsole::blit(off1,0,0,80,50,TCODConsole::root,0,0); // renders the first screen (opaque)
+			TCODConsole::blit(off2,0,0,80,50,TCODConsole::root,0,0,i/255.0,i/255.0); // renders the second screen (transparent)
+			TCODConsole::flush();
+		}
 	@CEx TCOD_console_t off1 = TCOD_console_new(80,50);
       TCOD_console_t off2 = TCOD_console_new(80,50);
       int i;

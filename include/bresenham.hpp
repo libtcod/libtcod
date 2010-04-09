@@ -37,6 +37,7 @@ class TCODLIB_API TCODLine {
 public :
 	/**
 	@PageName line
+	@PageCategory Base toolkits
 	@PageTitle Line drawing toolkit
 	@PageDesc This toolkit is a very simple and lightweight implementation of the bresenham line drawing algorithm. It allows you to follow straight paths on your map very easily.
 	@FuncTitle Initializing the line

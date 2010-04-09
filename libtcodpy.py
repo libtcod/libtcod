@@ -324,6 +324,9 @@ def color_get_hsv(c):
     _lib.TCOD_color_get_HSV(c, byref(h), byref(s), byref(v))
     return h.value, s.value, v.value
 
+def color_scale_HSV(c, scoef, vcoef) :
+    _lib.TCOD_color_scale_HSV(byref(c),c_float(scoef),c_float(vcoef))
+
 def color_gen_map(colors, indexes):
     COLOR_ARRAY = c_ubyte * (3 * len(colors))
     IDX_ARRAY = c_int * len(indexes)
@@ -666,8 +669,8 @@ def console_hline(con, x, y, l, flag=BKGND_DEFAULT):
 def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
-def console_print_frame(con, x, y, w, h, clr, bkflg, s):
-    _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clr), bkflg, s)
+def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
+    _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clear), flag, fmt)
 
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)

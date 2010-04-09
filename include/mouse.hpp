@@ -32,10 +32,72 @@
 
 class TCODLIB_API TCODMouse {
 public :
-  static TCOD_mouse_t getStatus();
-  static void showCursor(bool visible);
-  static bool isCursorVisible();
-  static void move(int x, int y);
+	/**
+	@PageName mouse
+	@PageTitle Mouse support
+	@PageCategory Base toolkits
+	@FuncTitle Display and hide the mouse cursor
+	@FuncDesc By default, the mouse cursor in visible in windowed mode, hidden in fullscreen mode. You can change it with:
+	@Cpp static void TCODMouse::showCursor (bool visible)
+	@C void TCOD_mouse_show_cursor (bool visible)
+	@Py mouse_show_cursor (visible)
+	@Param visible	If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.
+	*/
+	static void showCursor(bool visible);
+
+	/**
+	@PageName mouse
+	@FuncTitle Getting the cursor status
+	@FuncDesc You can get the current cursor status (hidden or visible) with:
+	@Cpp static bool TCODMouse::isCursorVisible (void)
+	@C bool TCOD_mouse_is_cursor_visible (void)
+	@Py mouse_is_cursor_visible ()
+	*/
+	static bool isCursorVisible();
+
+	/**
+	@PageName mouse
+	@FuncTitle Setting the mouse cursor's position
+	@FuncDesc You can set the cursor position (in pixel coordinates, where [0,0] is the window's top left corner) with:
+	@Cpp static void TCODMouse::move (int x, int y)
+	@C void TCOD_mouse_move (int x, int y)
+	@Py mouse_move (x, y)
+	@Param x,y	New coordinates of the mouse cursor in pixels.
+	*/
+	static void move(int x, int y);
+
+	/**
+	@PageName mouse
+	@FuncTitle Getting the mouse status
+	@FuncDesc You can read the current mouse status with:
+<div class="code" style="padding-left:10px">typedef struct {
+    int x, y;
+    int dx, dy;
+    int cx, cy;
+    int dcx, dcy;
+    unsigned lbutton : 1;
+    unsigned rbutton : 1;
+    unsigned mbutton : 1;
+    unsigned lbutton_pressed : 1;
+    unsigned rbutton_pressed : 1;
+    unsigned mbutton_pressed : 1;
+} TCOD_mouse_t;
+</div>
+	@Cpp static TCOD_mouse_t TCODMouse::getStatus (void)
+	@C TCOD_mouse_t TCOD_mouse_get_status (void)
+	@Py mouse_get_status ()
+	@Param x, y	Absolute position of the mouse cursor in pixels relative to the window top-left corner.
+	@Param dx, dy	Movement of the mouse cursor since the last call in pixels.
+	@Param cx, cy	Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).
+	@Param dcx, dcy	Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).
+	@Param lbutton	true if the left button is pressed.
+	@Param rbutton	true if the right button is pressed.
+	@Param mbutton	true if the middle button (or the wheel) is pressed.
+	@Param lbutton_pressed	true if the left button was pressed and released.
+	@Param rbutton_pressed	true if the right button was pressed and released.
+	@Param mbutton_pressed	true if the middle button was pressed and released.
+	*/
+	static TCOD_mouse_t getStatus();
 };
 
 #endif

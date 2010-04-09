@@ -31,8 +31,9 @@
 #include "console_types.h"
 
 /**
- @PageName console
- @PageTitle Console
+	@PageName console
+	@PageCategory Core
+	@PageTitle Console
  */	
 
 class TCODLIB_API TCODConsole {
@@ -749,9 +750,9 @@ If false, only the background color is modified
 	@PageName console_advanced
 	@FuncTitle Drawing a window frame
 	@FuncDesc This function calls the rect function using the supplied background mode flag, then draws a rectangle with the console's default foreground color. If fmt is not NULL, it is printed on the top of the rectangle, using inverted colors.
-	@Cpp void TCODConsole::printFrame(int x,int y,int w,int h, bool clear, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
+	@Cpp void TCODConsole::printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 	@C void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool clear, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
-	@Py console_print_frame(con,x, y, w, h, clear, fmt)
+	@Py console_print_frame(con,x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the rectangle's upper-left corner in the console.
 0 <= x < console width
@@ -765,7 +766,7 @@ If false, only the background color is modified
 	@Param fmt if NULL, the funtion only draws a rectangle.
 Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
-	void printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
 
 	/**
 	@PageName console_read

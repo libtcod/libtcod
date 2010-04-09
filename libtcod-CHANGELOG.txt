@@ -10,6 +10,9 @@ X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::print(int x, int y, const char *fmt, ...)
 	TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t bkgnd, TCOD_alignment_t alignment, const char *fmt, ...)
 	added TCOD_BKGND_DEFAULT as default value in rect / putChar / hline / vline / setBack
+	the default background flag for a console is BKGND_NONE
+	Warning ! That mean the rect/putChar/... functions now default to BKGND_NONE 
+	instead of BKGND_SET, except if you call setBackgroundFlag before using them.
 X TCODConsole::getHeightLeft/Right/CenterRect replaced by
 	TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
 	(the 3 functions were useless, the height does not depend on the alignement... X( )
@@ -26,6 +29,8 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
 + added more TCOD_CHAR_* constants
 + added TCODColor::scaleHSV (saturation and value scaling)
+% More default values for printFrame :
+	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module
 % extended list of colour constants (the old names can produce slightly different colours)
 - fixed setDirty() not working for the last row or column of the console

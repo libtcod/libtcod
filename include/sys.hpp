@@ -30,6 +30,7 @@
 
 /**
 	@PageName system
+	@PageCategory Core
 	@PageTitle System layer
 	@PageDesc This toolkit contains some system specific miscellaneous utilities. Use them is you want your code to be easily portable.
  */	
@@ -81,14 +82,14 @@ You can use this value to update every time dependent object in the world.
 	@CppEx // moving an objet at 5 console cells per second
 float x=0,y=0; // object coordinates
       x += 5 * TCODSystem::getLastFrameLength();
-      TCODConsole::root->putChar((int)(x),(int)(y),'@');
+      TCODConsole::root->putChar((int)(x),(int)(y),'X');
 	@CEx float x=0,y=0;
       x += 5 * TCOD_sys_get_last_frame_length();
-      TCOD_console_put_char(NULL,(int)(x),(int)(y),'@');
+      TCOD_console_put_char(NULL,(int)(x),(int)(y),'X');
 	@PyEx x=0.0
       y=0.0
       x += 5 * libtcod.sys_get_last_frame_length()
-      libtcod.console_put_char(0,int(x),int(y),'@')
+      libtcod.console_put_char(0,int(x),int(y),'X')
 	*/
 	static float getLastFrameLength();
 

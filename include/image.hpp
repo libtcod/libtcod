@@ -30,6 +30,7 @@ public :
 	/**
 	@PageName image
 	@PageTitle Image toolkit
+	@PageCategory Base toolkits
 	@PageDesc This toolkit contains some image manipulation utilities.	
 	*/	
 	
@@ -152,7 +153,7 @@ You can then save the image to a file with the save function.
 	@C int TCOD_image_get_alpha(TCOD_image_t image,int x, int y)
 	@Py image_get_alpha(image, x, y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
-	@param x,y The pixel coordinates inside the image.
+	@Param x,y The pixel coordinates inside the image.
 0 <= x < width
 0 <= y < height
 	*/

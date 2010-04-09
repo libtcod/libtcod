@@ -30,9 +30,8 @@
 
 #include "mouse_types.h"
 
-/* mouse support */
-TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status();
 TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
+TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status();
 TCODLIB_API bool TCOD_mouse_is_cursor_visible();
 TCODLIB_API void TCOD_mouse_move(int x, int y);
 

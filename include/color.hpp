@@ -29,8 +29,37 @@
 #define _TCOD_COLOR_HPP
 
 /**
- @PageName color
- @PageTitle Colors
+	@PageName color
+	@PageCategory Core
+	@PageTitle Colors
+	@PageDesc The Doryen library uses 32bits colors. Thus, your OS desktop must use 32bits colors.
+A color is defined by its red, green and blue component between 0 and 255.
+You can use the following predefined colors (hover over a color to see its full name and R,G,B values):
+TODO
+	@CppEx TCODColor::desaturatedRed
+TCODColor::lightestRed
+TCODColor::lighterRed
+TCODColor::lightRed
+TCODColor::red
+TCODColor::darkRed
+TCODColor::darkerRed
+TCODColor::darkestRed
+	@CEx TCOD_desaturated_red
+TCOD_lightest_red
+TCOD_lighter_red
+TCOD_light_red
+TCOD_red
+TCOD_dark_red
+TCOD_darker_red
+TCOD_darkest_red
+	@PyEx libtcod.desaturated_red
+libtcod.lightest_red
+libtcod.lighter_red
+libtcod.light_red
+libtcod.red
+libtcod.dark_red
+libtcod.darker_red
+libtcod.darkest_red
  */	
 
 class TCODLIB_API TCODColor {
@@ -38,15 +67,47 @@ public :
 	uint8 r,g,b;
 
 	TCODColor() : r(0),g(0),b(0) {}
+	/**
+	@PageName color
+	@FuncTitle Create your own colors
+	@CppEx TCODColor myColor(24,64,255);
+	@CEx TCOD_color_t my_color={24,64,255};
+	@PyEx my_color=libtcod.Color(24,64,255)
+	*/
 	TCODColor(uint8 r, uint8 g, uint8 b) :r(r),g(g),b(b) {}
 	TCODColor(int r, int g, int b) :r(r),g(g),b(b) {}
 	TCODColor(const TCOD_color_t &col) :r(col.r),g(col.g),b(col.b) {}
+
+	/**
+	@PageName color
+	@FuncTitle Compare two colors
+	@CppEx if (myColor == TCODColor::yellow) { ... }
+if (myColor != TCODColor::white) { ... }
+	@CEx if (TCOD_color_equals(my_color,TCOD_yellow)) { ... }
+if (!TCOD_color_equals(my_color,TCOD_white)) { ... }
+	@PyEx if my_color == libtcod.yellow : ...
+if my_color != litbcod.white : ...
+	*/
 	bool operator == (const TCODColor & c) const {
 		return (c.r == r && c.g == g && c.b == b);
 	}
 	bool operator != (const TCODColor & c) const {
 		return (c.r != r || c.g != g || c.b != b);
 	}
+
+	/**
+	@PageName color
+	@FuncTitle Multiply two colors
+	@FuncDesc c1 = c2 * c3 =>
+    c1.r = c2.r * c3.r / 255
+    c1.g = c2.g * c3.g / 255
+    c1.b = c2.b * c3.b / 255
+	darkishRed = darkGrey * red
+<table><tr><td style="background-color: rgb(96, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr></table>
+	@CppEx TCODColor myDarkishRed = TCODColor::darkGrey * TCODColor::lightRed;
+	@CEx TCOD_color_t my_darkish_red = TCOD_color_multiply(TCOD_dark_grey, TCOD_light_red);
+	@PyEx my_darkish_red = libtcod.dark_grey * libtcod.light_red
+	*/
 	TCODColor operator * (const TCODColor & a) const {
 		TCODColor ret;
 		ret.r=(uint8)(((int)r)*a.r/255);
@@ -54,6 +115,21 @@ public :
 		ret.b=(uint8)(((int)b)*a.b/255);
 		return ret;
 	}
+
+	/**
+	@PageName color
+	@FuncTitle Multiply a color by a float
+	@FuncDesc c1 = c2 * v =>
+    c1.r = CLAMP(0, 255, c2.r * v)
+    c1.g = CLAMP(0, 255, c2.g * v)
+    c1.b = CLAMP(0, 255, c2.b * v) 
+	darkishRed = red * 0.5
+<table><tr><td style="background-color: rgb(128, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="width: 60px;"></td></tr></table>
+</tbody>
+	@CppEx TCODColor myDarkishRed = TCODColor::lightRed * 0.5f;
+	@CEx TCOD_color_t my_darkish_red = TCOD_color_multiply_scalar(TCOD_light_red, 0.5f);
+	@PyEx myDarkishRed = litbcod.light_red * 0.5
+	*/
 	TCODColor operator *(float value) const {
 		TCOD_color_t ret;
 		int r,g,b;
@@ -68,6 +144,19 @@ public :
 		ret.b=(uint8)b;
 		return ret;
 	}
+
+	/**
+	@PageName color
+	@FuncTitle Adding two colors
+	@FuncDesc c1 = c1 + c2 => c1.r = MIN(255, c1.r + c2.r)
+                  c1.g = MIN(255, c1.g + c2.g)
+                  c1.b = MIN(255, c1.b + c2.b)
+	lightishRed = red + darkGrey
+<table><tr><td style="background-color: rgb(255, 128, 128); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="background-color: rgb(128, 128, 128); width: 60px;"></td></tr></table>
+	@CppEx TCODColor myLightishRed = TCODColor::red + TCODColor::darkGrey
+	@CEx TCOD_color_t my_lightish_red = TCOD_color_add(TCOD_red, TCOD_dark_grey);
+	@PyEx myLightishRed = libtcod.red + libtcod.dark_grey
+	*/
 	TCODColor operator + (const TCODColor & a) const {
 		TCODColor ret;
 		int r=(int)(this->r)+a.r;
@@ -81,6 +170,19 @@ public :
 		ret.b=(uint8)b;
 		return ret;
 	}
+
+	/**
+	@PageName color
+	@FuncTitle Subtract two colors
+	@FuncDesc  c1 = c1 - c2 => c1.r = MAX(0, c1.r - c2.r)
+                  c1.g = MAX(0, c1.g - c2.g)
+                  c1.b = MAX(0, c1.b - c2.b)
+	redish = red - darkGrey
+<table><tr><td style="background-color: rgb(127, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="background-color: rgb(128, 128, 128); width: 60px;"></td></tr></table>
+	@CppEx TCODColor myRedish = TCODColor::red -TCODColor::darkGrey
+	@CEx TCOD_color_t my_redish = TCOD_color_subtract(TCOD_red, TCOD_dark_grey);
+	@PyEx myRedish = libtcod.red - libtcod.dark_grey
+	*/
 	TCODColor operator - (const TCODColor & a) const {
 		TCODColor ret;
 		int r=(int)(this->r)-a.r;
@@ -94,10 +196,24 @@ public :
 		ret.b=(uint8)b;
 		return ret;
 	}
-	void setHSV(float h, float s, float v);
-	void getHSV(float *h, float *s, float *v) const;
-	void scaleHSV (float sscale, float vscale);
-	
+
+	/**
+	@PageName color
+	@FuncTitle Interpolate between two colors
+	@FuncDesc   c1 = lerp (c2, c3, coef) => c1.r = c2.r  + (c3.r - c2.r ) * coef
+                              c1.g = c2.g  + (c3.g - c2.g ) * coef
+                              c1.b = c2.b  + (c3.b - c2.b ) * coef
+coef should be between 0.0 and 1.0 but you can as well use other values
+<table><tr><td style="background-color: rgb(96, 96, 96); color: rgb(255, 255, 255);" align="center">coef == 0.0f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr>
+	<tr><td style="background-color: rgb(135, 72, 72); color: rgb(255, 255, 255);" align="center">coef == 0.25f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr>
+	<tr><td style="background-color: rgb(175, 48, 48); color: rgb(255, 255, 255);" align="center">coef == 0.5f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr>
+
+	<tr><td style="background-color: rgb(215, 24, 24); color: rgb(255, 255, 255);" align="center">coef == 0.75f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr>
+	<tr><td style="background-color: rgb(255, 0, 0); color: rgb(255, 255, 255);" align="center">coef == 1.0f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr></table>
+	@CppEx TCODColor myColor = TCODColor::lerp ( TCODColor::darkGrey, TCODColor::lightRed,coef );
+	@CEx TCOD_color_t my_color = TCOD_color_lerp ( TCOD_dark_grey, TCOD_light_red,coef);
+	@PyEx my_color = libtcod.color_lerp ( libtcod.dark_grey, litbcod.light_red,coef)
+	*/
 	static TCODColor lerp(const TCODColor &a, const TCODColor &b, float coef) {
 		TCODColor ret;
 		ret.r=(uint8)(a.r+(b.r-a.r)*coef);
@@ -105,6 +221,86 @@ public :
 		ret.b=(uint8)(a.b+(b.b-a.b)*coef);
 		return ret;
 	}
+
+	/**
+	@PageName color
+	@FuncTitle Define a color by its hue, saturation and value
+	@FuncDesc After this function is called, the r,g,b fields of the color contains the red, green, blue values corresponding to the h,s,v parameters.
+	@Cpp void TCODColor::setHSV(float h, float s, float v)
+	@C void TCOD_color_set_HSV(TCOD_color_t *c,float h, float s, float v)
+	@Py color_set_HSV(c,h,s,v)
+	@Param c In the C and python versions, the color to modify
+	@Param h,s,v Color components in the HSV space
+0.0 <= h < 360.0
+0.0 <= s <= 1.0
+0.0 <= v <= 1.0
+	*/
+	void setHSV(float h, float s, float v);
+
+	/**
+	@PageName color
+	@FuncTitle Get a color hue, saturation and value components
+	@Cpp void TCODColor::getHSV(float *h, float *s, float *v) const
+	@C void TCOD_color_get_HSV(TCOD_color_t c,float * h, float * s, float * v)
+	@Py color_get_HSV(c) # returns [h,s,v]
+	@Param c	In the C and python versions, the TCOD_color_t from which to read.
+	@Param  h,s,v	Color components in the HSV space
+0.0 <= h < 360.0
+0.0 <= s <= 1.0
+0.0 <= v <= 1.0
+	*/
+	void getHSV(float *h, float *s, float *v) const;
+
+	/**
+	@PageName color
+	@FuncTitle Scale a color saturation and value
+	@Cpp void TCODColor::scaleHSV (float sscale, float vscale)
+	@C void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef)
+	@Py color_scale_HSV(c, scoef, vcoef)
+	*/
+	void scaleHSV (float sscale, float vscale);
+
+	/**
+	@PageName color
+	@FuncTitle Generate a smooth color map
+	@FuncDesc You can define a color map from an array of color keys. Colors will be interpolated between the keys.
+0 -> black
+4 -> red
+8 -> white
+Result :
+<table>
+	<tbody><tr><td class="code"><pre>map[0]</pre></td><td style="background-color: rgb(0, 0, 0); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td><td>black</td></tr>
+
+	<tr><td class="code"><pre>map[1]</pre></td><td style="background-color: rgb(63, 0, 0); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[2]</pre></td><td style="background-color: rgb(127, 0, 0); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[3]</pre></td><td style="background-color: rgb(191, 0, 0); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[4]</pre></td><td style="background-color: rgb(255, 0, 0); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td><td>red</td></tr>
+	<tr><td class="code"><pre>map[5]</pre></td><td style="background-color: rgb(255, 63, 63); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[6]</pre></td><td style="background-color: rgb(255, 127, 127); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+
+	<tr><td class="code"><pre>map[7]</pre></td><td style="background-color: rgb(255, 191, 191); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td></tr>
+	<tr><td class="code"><pre>map[8]</pre></td><td style="background-color: rgb(255, 255, 255); color: rgb(255, 255, 255); width: 50px;" align="center">&nbsp;</td><td>white</td></tr>
+</tbody></table>
+	@Cpp static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex)
+	@C void TCOD_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index)
+	@Py color_gen_map(keyColor,keyIndex) # returns an array of colors
+	@Param map	An array of colors to be filled by the function.
+	@Param nbKey	Number of color keys
+	@Param keyColor	Array of nbKey colors containing the color of each key
+	@Param keyIndex	Array of nbKey integers containing the index of each key.
+If you want to fill the map array, keyIndex[0] must be 0 and keyIndex[nbKey-1] is the number of elements in map minus 1 but you can also use the function to fill only a part of the map array.
+	@CppEx int idx[] = { 0, 4, 8 }; // indexes of the keys
+TCODColor col[] = { TCODColor( 0,0,0 ), TCODColor(255,0,0), TCODColor(255,255,255) }; // colors : black, red, white
+TCODColor map[9];
+TCODColor::genMap(map,3,col,idx);
+	@CEx int idx[] = { 0, 4, 8 }; // indexes of the keys
+TCOD_color_t col[] = { { 0,0,0 }, {255,0,0}, {255,255,255} }; // colors : black, red, white
+TCOD_color_t map[9];
+TCOD_color_gen_map(map,3,col,idx);
+	@PyEx idx = [ 0, 4, 8 ] # indexes of the keys 
+col = [ libtcod.Color( 0,0,0 ), libtcod.Color( 255,0,0 ), libtcod.Color(255,255,255) ] # colors : black, red, white 
+map=libtcod.color_gen_map(col,idx)
+	*/	
 	static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
 
 	// color array

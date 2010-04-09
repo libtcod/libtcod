@@ -33,6 +33,9 @@
 #include <sys/stat.h>
 #include "libtcod.hpp"
 
+// index.html categories
+static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", NULL };
+
 // a function parameter
 struct ParamData {
 	char *name;
@@ -45,13 +48,15 @@ struct FuncData {
 	char *desc; // general description
 	char *cpp;  // C++ function
 	char *c;    // C function
+	char *cs;    // C# function
 	char *py;   // python function
 	TCODList<ParamData *> params; // parameters table
 	char *cppEx; // C++ example
 	char *cEx;   // C example	
+	char *csEx;    // C# example
 	char *pyEx;  // python example
-	FuncData() : title(NULL),desc(NULL),cpp(NULL),c(NULL),py(NULL),
-		cppEx(NULL),cEx(NULL),pyEx(NULL) {}	
+	FuncData() : title(NULL),desc(NULL),cpp(NULL),c(NULL),cs(NULL),py(NULL),
+		cppEx(NULL),cEx(NULL),csEx(NULL),pyEx(NULL) {}	
 };
 
 // data about a documentation page
@@ -62,9 +67,10 @@ struct PageData {
 	char *desc; // description on top of page
 	char *fatherName; // symbolic name of father page if any
 	char *filename; // .hpp file from which it comes
+	char *categoryName; // category for level 0 pages
 	TCODList<FuncData *>funcs; // functions in this page
 	PageData() : name(NULL),title(NULL),desc(NULL), fatherName(NULL),
-		filename(NULL),father(NULL),next(NULL),prev(NULL),
+		filename(NULL),categoryName((char *)""),father(NULL),next(NULL),prev(NULL),
 		fileOrder(0),order(0),numKids(0),pageNum(NULL),
 		url(NULL), breadCrumb(NULL), prevLink((char *)""),nextLink((char*)"") {}
 	// computed data
@@ -82,6 +88,8 @@ struct PageData {
 };
 
 TCODList<PageData *> pages;
+// root page corresponding to index.html
+PageData *root=NULL;
 // page currently parsed
 PageData *curPage=NULL;
 // function currently parsed
@@ -140,6 +148,125 @@ void printHtml(FILE *f, const char *txt) {
 	}
 }
 
+// print in the file, coloring syntax using the provided lexer
+void printSyntaxColored(FILE *f, TCODLex *lex) {
+	char *pos=lex->getPos();
+	int tok=lex->parse();
+	while (tok != TCOD_LEX_ERROR && tok != TCOD_LEX_EOF ) {
+		const char *spanClass=NULL;
+		switch (tok) {
+			case TCOD_LEX_SYMBOL : spanClass = "code-symbol"; break;
+			case TCOD_LEX_KEYWORD : spanClass = "code-keyword"; break;
+			case TCOD_LEX_STRING : spanClass = "code-string"; break;
+			case TCOD_LEX_INTEGER : 
+			case TCOD_LEX_FLOAT : 
+			case TCOD_LEX_CHAR : 
+				spanClass = "code-value"; 
+			break;
+			case TCOD_LEX_IDEN : 
+				if ( strncasecmp(lex->getToken(),"tcod",4) == 0 ) {
+					spanClass = "code-tcod"; 
+				}
+			break;
+			default : break;
+		}
+		if ( spanClass ) {
+			fprintf(f, "<span class=\"%s\">",spanClass);
+		} 
+		while ( pos != lex->getPos() ) {
+			if ( *pos == '\r' ) {}
+			else if (*pos == '\n' ) fprintf(f,"<br />");
+			else fputc(*pos,f);
+			pos++;
+		}
+		if ( spanClass ) {
+			fprintf(f, "</span>");
+		} 
+		tok=lex->parse();
+	}
+	if ( tok == TCOD_LEX_ERROR ) {
+		printf ("ERROR while coloring syntax : %s\n",TCOD_lex_get_last_error());
+	}
+}
+
+// print in the file, coloring syntax using C++ rules
+void printCppCode(FILE *f, const char *txt) {
+	static const char *symbols[] = {
+	"::","->","++","--","->*",".*","<<",">>","<=",">=","==","!=","&&","||","+=","-=","*=","/=","%=","&=","^=","|=","<<=",">>=","...",
+	"(",")","[","]",".","+","-","!","~","*","&","|","%","/","<",">","=","^","?",":",";","{","}",",",
+	NULL		
+	};
+	static const char *keywords[] = {
+	"and","and_eq","asm","auto","bitand","bitor","bool","break","case","catch","char","class","compl","const","const_cast","continue",
+	"default","delete","do","double","dynamic_cast","else","enum","explicit","export","extern","false","float","for","friend","goto",
+	"if","inline","int","long","mutable","namespace","new","not","not_eq","operator","or","or_eq","private","protected","public",
+	"register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this",
+	"throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while",
+	"xor","xor_eq",
+	NULL
+	};
+	TCODLex lex(symbols,keywords);
+	lex.setDataBuffer((char *)txt);
+	printSyntaxColored(f,&lex);	
+}
+
+// print in the file, coloring syntax using C rules
+void printCCode(FILE *f, const char *txt) {
+	static const char *symbols[] = {
+		"->","++","--","<<",">>","<=",">=","==","!=","&&","||","*=","/=","+=","-=","%=","<<=",">>=","&=","^=","|=","...",
+		"{","}","(",")","[","]",".","&","*","+","-","~","!","/","%","<",">","^","|","?",":","=",",",";",
+	};
+	static const char *keywords[] = {
+	"auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int",
+	"long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile",
+	"while", 
+	NULL
+	};
+	TCODLex lex(symbols,keywords);
+	lex.setDataBuffer((char *)txt);
+	printSyntaxColored(f,&lex);	
+}
+
+// print in the file, coloring syntax using python rules
+void printPyCode(FILE *f, const char *txt) {
+	static const char *symbols[] = {
+		"**","&&","||","!=","<>","==","<=",">=","+=","-=","**=","*=","//=","/=","%=","|=","^=","<<=",">>=",
+		"+","-","^","*","/","%","&","|","^","<",">","(",")","[","]","{","}",",",":",".","`","=",";","@",
+		NULL
+	};
+	static const char *keywords[] = {
+	"and","as","assert","break","class","continue","def","del","elif","else","except","exec","finally","for",
+	"from","global","if","import","in","is","lambda","not","or","pass","print","raise","return","try","while",
+	"with","yield",
+	NULL
+	};
+	TCODLex lex(symbols,keywords,"#","\"\"\"","\"\"\"",NULL,"\"\'");
+	lex.setDataBuffer((char *)txt);
+	printSyntaxColored(f,&lex);	
+}
+
+// print in the file, coloring syntax using C# rules
+void printCSCode(FILE *f, const char *txt) {
+	static const char *symbols[] = {
+		"++","--","->","<<",">>","<=",">=","==","!=","&&","||","+=","-=","*=","/=","%=","&=","|=","^=","<<=",">>=","??",
+		".","(",")","[","]","{","}","+","-","!","~","&","*","/","%","<",">","^","|","?",":",
+		NULL
+	};
+	static const char *keywords[] = {
+	"abstract","as","base","bool","break","byte","case","catch","char","checked","class","const","continue","decimal","default",
+	"delegate","do","double","else","enum","event","explicit","extern","false","finally","fixed","float","for","foreach","goto",
+	"implicit","in","int","interface","internal","is","lock","long","namespace","new","null","object","operator","out","override",
+	"params","private","protected","public","readonly","ref","return","sbyte","sealed","short","sizeof","stackalloc","static",
+	"string","struct","switch","this","throw","true","try","typeof","uint","ulong","unchecked","unsafe","ushort","using","virtual",
+	"volatile","void","while",
+	"get","partial","set","value","where","yield",
+	NULL
+	};
+	TCODLex lex(symbols,keywords);
+	lex.setDataBuffer((char *)txt);
+	printSyntaxColored(f,&lex);	
+}
+
 // get a page by its name or NULL if it doesn't exist
 PageData *getPage(const char *name) {
 	for (PageData **it=pages.begin();it!=pages.end();it++) {
@@ -168,6 +295,7 @@ PageData *getNext(PageData *page) {
 void parseFile(char *filename) {
 	// load the file into memory (should probably use mmap instead that crap...)
 	struct stat _st;
+	printf ("INFO : parsing file %s\n",filename);
     FILE *f = fopen( filename, "r" );
     if ( f == NULL ) {
 		printf("WARN : cannot open '%s'\n", filename);
@@ -228,6 +356,8 @@ void parseFile(char *filename) {
 	    			directive = getParagraph(directive+sizeof("@PageDesc"),&curPage->desc);
 	    		} else if ( startsWith(directive,"@PageFather") ) {
 	    			directive = getIdentifier(directive+sizeof("@PageFather"),&curPage->fatherName);
+	    		} else if ( startsWith(directive,"@PageCategory") ) {
+	    			directive = getLineEnd(directive+sizeof("@PageCategory"),&curPage->categoryName);
 	    		} else if ( startsWith(directive,"@FuncTitle") ) {
 					curFunc=new FuncData();
 					curPage->funcs.push(curFunc);
@@ -239,10 +369,28 @@ void parseFile(char *filename) {
 					}
 	    			directive = getParagraph(directive+sizeof("@FuncDesc"),&curFunc->desc);
 	    		} else if ( startsWith(directive,"@CppEx") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
 	    			directive = getParagraph(directive+sizeof("@CppEx"),&curFunc->cppEx);
+	    		} else if ( startsWith(directive,"@C#Ex") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@C#Ex"),&curFunc->csEx);
 	    		} else if ( startsWith(directive,"@CEx") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
 	    			directive = getParagraph(directive+sizeof("@CEx"),&curFunc->cEx);
 	    		} else if ( startsWith(directive,"@PyEx") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
 	    			directive = getParagraph(directive+sizeof("@PyEx"),&curFunc->pyEx);
 	    		} else if ( startsWith(directive,"@Cpp") ) {
 					if (! curFunc ) {
@@ -250,6 +398,12 @@ void parseFile(char *filename) {
 						curPage->funcs.push(curFunc);
 					}
 	    			directive = getParagraph(directive+sizeof("@Cpp"),&curFunc->cpp);
+	    		} else if ( startsWith(directive,"@C#") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getParagraph(directive+sizeof("@C#"),&curFunc->cs);
 	    		} else if ( startsWith(directive,"@C") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
@@ -282,22 +436,53 @@ void parseFile(char *filename) {
 
 // computes the page tree and auto-numbers pages
 void buildTree() {
-	// check data, build the pages tree
-	int rootOrder=1; // number of root pages
+	// get the list of root (level 0) pages
+	TCODList<PageData *>rootPages;
 	for (PageData **it=pages.begin();it!=pages.end();it++) {
 		// page requires at least a @PageName and @PageTitle
 		if (! (*it)->name ) {
-			printf ("ERROR : page #%d in %s has no @PageName\n",
-				(*it)->fileOrder,(*it)->filename);
+			printf ("ERROR : page #%d (%s) in %s has no @PageName\n",
+				(*it)->fileOrder,(*it)->name ? (*it)->name : "null", (*it)->filename);
 			it=pages.remove(it);
 			continue;
 		}
 		if (! (*it)->title ) {
-			printf ("ERROR : page #%d in %s has no @PageTitle\n",
-				(*it)->fileOrder,(*it)->filename);
+			printf ("ERROR : page #%d (%s) in %s has no @PageTitle\n",
+				(*it)->fileOrder,(*it)->name ? (*it)->name : "null",(*it)->filename);
 			it=pages.remove(it);
 			continue;
 		}
+		if ( (*it)->fatherName == NULL ) rootPages.push(*it);
+	}
+	// first, order the level 0 pages according to their category
+	int categId=0;
+	while ( categs[categId] ) {	
+		for (PageData **it=pages.begin();it!=pages.end();it++) {
+			if ( (*it)->fatherName == NULL && strcmp((*it)->categoryName,categs[categId]) == 0 ) {
+				// new root page
+				root->numKids++;
+				(*it)->father=root;
+				(*it)->order=root->numKids;
+				char tmp[1024];
+				sprintf(tmp,"%d",(*it)->order);
+				(*it)->pageNum=strdup(tmp);
+				sprintf(tmp,"doc/html2/%s.html",(*it)->name);
+				(*it)->url=strdup(tmp);
+				sprintf(tmp,"<a href=\"../index2.html\">Index</a> &gt; <a href=\"%s.html\">%s. %s</a>",
+					(*it)->name,(*it)->pageNum,(*it)->title);
+				(*it)->breadCrumb=strdup(tmp);						
+				rootPages.remove(*it);
+			}
+		}
+		categId++;
+	}
+	// pages with unknown categories
+	for ( PageData **it=rootPages.begin(); it != rootPages.end(); it++) {
+		printf ("ERROR : unknown category '%s' in page '%s'\n",(*it)->categoryName,(*it)->name);
+		pages.remove(*it);
+	}
+	// build the subpages tree
+	for (PageData **it=pages.begin();it!=pages.end();it++) {
 		if ( (*it)->fatherName != NULL ) {
 			// sub-page. find its daddy and order
 			(*it)->father=getPage((*it)->fatherName);
@@ -309,17 +494,6 @@ void buildTree() {
 			}
 			(*it)->father->numKids++;
 			(*it)->order=(*it)->father->numKids;
-		} else {
-			// new root page
-			(*it)->order=rootOrder++;
-			char tmp[1024];
-			sprintf(tmp,"%d",(*it)->order);
-			(*it)->pageNum=strdup(tmp);
-			sprintf(tmp,"doc/html2/%s.html",(*it)->name);
-			(*it)->url=strdup(tmp);
-			sprintf(tmp,"<a href=\"../index.html\">Index</a> &gt; <a href=\"%s.html\">%s. %s</a>",
-				(*it)->name,(*it)->pageNum,(*it)->title);
-			(*it)->breadCrumb=strdup(tmp);						
 		}
 	}
 	// now compute sub-page numbers 
@@ -374,16 +548,107 @@ void buildTree() {
 				curPage=curPage->father;
 			}
 			char *ptr=tmp;
-			strcpy(ptr,"<a href=\"../index.html\">Index</a>");
-			ptr += strlen(ptr);
+			ptr[0]=0;
 			while ( ! hierarchy.isEmpty() ) {
 				curPage=hierarchy.pop();
-				sprintf(ptr, " &gt; <a href=\"%s.html\">%s. %s</a>", curPage->name,curPage->pageNum,curPage->title);
+				if ( curPage == root ) {
+					sprintf(ptr, "<a href=\"../%s.html\">%s</a>", 
+						curPage->name,curPage->title);
+				} else {
+					sprintf(ptr, " &gt; <a href=\"%s.html\">%s. %s</a>", 
+						curPage->name,curPage->pageNum,curPage->title);
+				}
 				ptr += strlen(ptr);
 			}
 			page->breadCrumb =strdup(tmp);
 		}
 	}
+}
+
+// return the subpage # kidNum
+PageData *getKidByNum(PageData *father, int kidNum) {
+	for (PageData **it=pages.begin(); it != pages.end(); it++) {
+		if ( (*it)->father == father && (*it)->order == kidNum ) {
+			return *it;
+		}
+	}
+	return NULL;
+}
+
+// print subpage TOC for a standard (not index.htlm) page
+void printStandardPageToc(FILE *f,PageData *page) {
+	if ( page->numKids > 0 ) {
+		fprintf(f,"<div id=\"toc\"><ul>");
+		for (int kidId=1;kidId <= page->numKids; kidId++) {
+			// find the kid # kidId
+			PageData *kid = getKidByNum(page,kidId);
+			if ( kid ) {
+				if ( kid->numKids > 0 ) {
+					// level 2
+					fprintf (f,"<li class=\"haschildren\"><a href=\"%s%s.html\">%s. %s</a><ul>\n",
+						page==root ? "html2/":"",
+						kid->name,kid->pageNum,kid->title);
+					int kidKidId=1;
+					while (kidKidId <= kid->numKids ) {
+						PageData *kidKid=NULL;
+						// find the kid # kidKidId of kidId
+						kidKid=getKidByNum(kid,kidKidId);
+						if ( kidKid ) {
+							fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+							page==root ? "html2/":"",
+								kidKid->name,kidKid->pageNum,kidKid->title);
+
+						}
+						kidKidId++;
+					}
+					fprintf(f,"</ul></li>\n");
+				} else {
+					fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+						page==root ? "html2/":"",
+						kid->name,kid->pageNum,kid->title);
+				}
+			}
+		}
+		fprintf(f,"</ul></div>\n");
+	}
+}
+
+// print index.html TOC
+void printRootPageToc(FILE *f,PageData *page) {
+	int categId=0;
+	fprintf(f,"<div id=\"toc\"><ul>");
+	while ( categs[categId] ) {	
+		if ( categId > 0 ) fprintf(f, "<li class=\"cat\">%s</li>\n",categs[categId]);
+		for ( int kidId=1;kidId <= page->numKids; kidId++ ) {
+			PageData *kid = getKidByNum(page,kidId);
+			if ( kid && strcmp(kid->categoryName,categs[categId]) ==0 ) {
+				if ( kid->numKids > 0 ) {
+					// level 2
+					fprintf (f,"<li class=\"haschildren\"><a href=\"%s%s.html\">%s. %s</a><ul>\n",
+						page==root ? "html2/":"",
+						kid->name,kid->pageNum,kid->title);
+					int kidKidId=1;
+					while (kidKidId <= kid->numKids ) {
+						PageData *kidKid=getKidByNum(kid,kidKidId);
+						if ( kidKid ) {
+							fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+							page==root ? "html2/":"",
+								kidKid->name,kidKid->pageNum,kidKid->title);
+
+						}
+						kidKidId++;
+					}
+					fprintf(f,"</ul></li>\n");
+				} else {
+					fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+						page==root ? "html2/":"",
+						kid->name,kid->pageNum,kid->title);
+				}
+			}
+		}
+		categId++;
+	}
+	fprintf(f,"</ul></div>\n");
 }
 
 // generate html file for one page
@@ -393,71 +658,32 @@ void genPageDoc(PageData *page) {
 "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
 "<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n"
 "<title>libtcod documentation | %s</title>\n"
-"<link href=\"../css/style.css\" rel=\"stylesheet\" type=\"text/css\"></head>\n"
+"<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\"></head>\n"
 "<body><div class=\"header\">\n"
 "<p><span class=\"title1\">libtcod</span>&nbsp;<span class=\"title2\">documentation</span></p>\n"
 "</div>\n"
 "<div class=\"breadcrumb\"><div class=\"breadcrumbtext\"><p>\n"
 "you are here: %s<br>\n"
 "%s %s\n"
-"</p></div></div><div class=\"main\"><div class=\"maintext\">\n"
-"<h1>%s. %s</h1>\n";
+"</p></div></div><div class=\"main\"><div class=\"maintext\">\n";
+
 	static const char *footer="</div></div></body></html>";
 	// page header with breadcrumb
-	fprintf(f,header, page->title, page->breadCrumb,
-		page->prevLink, page->nextLink, page->pageNum, page->title
+	fprintf(f,header, page->title, page == root ? "css/style.css" : "../css/style.css", page->breadCrumb,
+		page->prevLink, page->nextLink
 		);
+	// page title
+	if ( page == root ) fprintf(f,"<h1>%s</h1>\n",page->desc);
+	else fprintf(f,"<h1>%s. %s</h1>\n",page->pageNum, page->title);
 	// page description
-	if ( page->desc ) {
+	if ( page != root && page->desc ) {
 		fprintf(f,"<p>");
 		printHtml(f,page->desc);
 		fprintf(f,"</p>\n");
 	}
 	// sub pages toc
-	if ( page->numKids > 0 ) {
-		fprintf(f,"<div id=\"toc\"><ul>");
-		int kidId=1;
-		// level 1
-		while (kidId <= page->numKids ) {
-			// find the kid # kidId
-			PageData *kid = NULL;
-			for (PageData **it=pages.begin(); it != pages.end(); it++) {
-				if ( (*it)->father == page && (*it)->order == kidId ) {
-					kid=*it;
-					break;
-				}
-			}
-			if ( kid ) {
-				if ( kid->numKids > 0 ) {
-					// level 2
-					fprintf (f,"<li class=\"haschildren\"><a href=\"%s.html\">%s. %s</a><ul>\n",
-						kid->name,kid->pageNum,kid->title);
-					int kidKidId=1;
-					while (kidKidId <= kid->numKids ) {
-						PageData *kidKid=NULL;
-						// find the kid # kidKidId of kidId
-						for (PageData **it=pages.begin(); it != pages.end(); it++) {
-							if ( (*it)->father == kid && (*it)->order == kidKidId ) {
-								kidKid=*it;
-								break;
-							}
-						}
-						if ( kidKid ) {
-							fprintf(f,"<li><a href=\"%s.html\">%s. %s</a></li>\n",
-								kidKid->name,kidKid->pageNum,kidKid->title);
-
-						}
-						kidKidId++;
-					}
-					fprintf(f,"</ul></li>\n");
-				} else {
-					fprintf(f,"<li><a href=\"%s.html\">%s. %s</a></li>\n",
-						kid->name,kid->pageNum,kid->title);
-				}
-			}
-			kidId++;
-		}
-	}
+	if ( page == root ) printRootPageToc(f,page);
+	else printStandardPageToc(f,page);
 	// functions toc
 	if ( page->funcs.size() > 1 ) {
 		fprintf(f,"<div id=\"toc\"><ul>\n");
@@ -485,20 +711,24 @@ void genPageDoc(PageData *page) {
 		}
 		// functions for each language
 		fprintf(f,"<div class=\"code\">");
-		// TODO syntax coloring
 		if (funcData->cpp) {
 			fprintf(f,"<p class=\"cpp\">");
-			printHtml(f,funcData->cpp);
+			printCppCode(f,funcData->cpp);
 			fprintf(f,"</p>\n");
 		}
 		if (funcData->c) {
 			fprintf(f,"<p class=\"c\">");
-			printHtml(f,funcData->c);
+			printCCode(f,funcData->c);
+			fprintf(f,"</p>\n");
+		}
+		if (funcData->cs) {
+			fprintf(f,"<p class=\"cs\">");
+			printCSCode(f,funcData->cs);
 			fprintf(f,"</p>\n");
 		}
 		if (funcData->py) {
 			fprintf(f,"<p class=\"py\">");
-			printHtml(f,funcData->py);
+			printPyCode(f,funcData->py);
 			fprintf(f,"</p>\n");
 		}
 		fprintf(f,"</div>\n");
@@ -521,17 +751,22 @@ void genPageDoc(PageData *page) {
 			fprintf(f,"<h6>Example:</h6><div class=\"code\">\n");
 			if (funcData->cppEx) {
 				fprintf(f,"<p class=\"cpp\">");
-				printHtml(f,funcData->cppEx);
+				printCppCode(f,funcData->cppEx);
 				fprintf(f,"</p>\n");
 			}
 			if (funcData->cEx) {
 				fprintf(f,"<p class=\"c\">");
-				printHtml(f,funcData->cEx);
+				printCCode(f,funcData->cEx);
+				fprintf(f,"</p>\n");
+			}
+			if (funcData->csEx) {
+				fprintf(f,"<p class=\"cs\">");
+				printCSCode(f,funcData->csEx);
 				fprintf(f,"</p>\n");
 			}
 			if (funcData->pyEx) {
 				fprintf(f,"<p class=\"py\">");
-				printHtml(f,funcData->pyEx);
+				printPyCode(f,funcData->pyEx);
 				fprintf(f,"</p>\n");
 			}
 			fprintf(f,"</div><hr>\n");
@@ -548,11 +783,21 @@ void genDoc() {
 		printf ("Generating %s - %s...\n",(*it)->pageNum,(*it)->title);
 		genPageDoc(*it);
 	}
+	genPageDoc(root);
 }
 
 // main func
 int main(int argc, char *argv[]) {
 	TCODList<char *> files=TCODSystem::getDirectoryContent("include", "*.hpp");
+	char tmp[128];
+	root = new PageData();
+	root->name=(char *)"index2";
+	root->title=(char *)"Index";
+	root->pageNum=(char *)"";
+	root->breadCrumb=(char *)"<a href=\"index2.html\">Index</a>";
+	root->url=(char *)"doc/index2.html";
+	sprintf(tmp,"The Doryen Library v%s - table of contents",TCOD_STRVERSION);
+	root->desc=strdup(tmp);
 	// parse the *.hpp files
 	for ( char **it=files.begin(); it != files.end(); it++) {
 		char tmp[128];

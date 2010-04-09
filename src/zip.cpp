@@ -110,11 +110,11 @@ TCODConsole *TCODZip::getConsole() {
 	return new TCODConsole(TCOD_zip_get_console(data));
 }
 
-uint32 TCODZip::getCurrentBytes() {
+uint32 TCODZip::getCurrentBytes() const {
 	return TCOD_zip_get_current_bytes(data);
 }
 
-uint32 TCODZip::getRemainingBytes() {
+uint32 TCODZip::getRemainingBytes() const {
 	return TCOD_zip_get_remaining_bytes(data);
 }
 

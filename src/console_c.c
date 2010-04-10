@@ -94,6 +94,10 @@ TCOD_console_t TCOD_console_new(int w, int h)  {
 		con->w=w;
 		con->h=h;
 		TCOD_console_init(con,NULL,false);
+		if(TCOD_ctx.root) {
+			con->alignment=TCOD_ctx.root->alignment;
+			con->bkgnd_flag=TCOD_ctx.root->bkgnd_flag;
+		}
 		return (TCOD_console_t)con;
 	}
 }

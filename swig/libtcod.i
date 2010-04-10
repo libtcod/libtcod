@@ -110,6 +110,7 @@ typedef unsigned int uint32;
 %rename(Minus) operator -;
 
 // console.hpp
+%varargs (1, char * = NULL) TCODConsole::printFrame;
 %ignore TCOD_colctrl_t;
 %ignore TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back);
 %ignore TCODConsole::TCODConsole(TCOD_console_t n);

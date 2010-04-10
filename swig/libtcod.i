@@ -95,10 +95,10 @@ typedef unsigned int uint32;
 %rename(Permissive8Fov) FOV_PERMISSIVE_8;
 %rename(RestrictiveFov) FOV_RESTRICTIVE;
 
-%rename(TCODPrintLocation) TCOD_print_location_t;
-%rename(PrintLeft) TCOD_PRINT_LEFT;
-%rename(PrintRight) TCOD_PRINT_RIGHT;
-%rename(PrintCenter) TCOD_PRINT_CENTER;
+%rename(TCODAlignment) TCOD_alignment_t;
+%rename(LeftAlignment) TCOD_LEFT;
+%rename(RightAlignment) TCOD_RIGHT;
+%rename(CenterAlignment) TCOD_CENTER;
 
 %ignore NB_FOV_ALGORITHMS;
 
@@ -115,6 +115,8 @@ typedef unsigned int uint32;
 %ignore TCODConsole::TCODConsole(TCOD_console_t n);
 %rename (setCharBackground) setBack;
 %rename (setCharForeground) setFore;
+%rename (getCharBackground) getBack;
+%rename (getCharForeground) getFore;
 %ignore TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 %ignore TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 
 %ignore TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const char *fmt, ...); 

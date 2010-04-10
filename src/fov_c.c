@@ -56,18 +56,17 @@ void TCOD_map_copy(TCOD_map_t source, TCOD_map_t dest) {
 }
 
 void TCOD_map_clear(TCOD_map_t map, bool transparent, bool walkable) {
-	int count;
+	int i;
 	map_t *m = (map_t *)map;
 	cell_t *cell;
 	TCOD_IFNOT(map != NULL) return;
 	cell=m->cells;
-	count=m->width*m->height;
-	while ( count-- >= 0 ) {
+	for (i = 0; i < m->nbcells; i++) {
 		cell->transparent = transparent;
 		cell->walkable = walkable;
 		cell->fov = 0;
 		cell++;
-  }
+	}
 }
 
 void TCOD_map_set_properties(TCOD_map_t map, int x, int y, bool is_transparent, bool is_walkable) {
@@ -91,16 +90,16 @@ void TCOD_map_compute_fov(TCOD_map_t map, int player_x, int player_y, int max_ra
 		case FOV_BASIC : TCOD_map_compute_fov_circular_raycasting(map,player_x,player_y,max_radius,light_walls); break;
 		case FOV_DIAMOND : TCOD_map_compute_fov_diamond_raycasting(map,player_x,player_y,max_radius,light_walls); break;
 		case FOV_SHADOW : TCOD_map_compute_fov_recursive_shadowcasting(map,player_x,player_y,max_radius,light_walls); break;
-		case FOV_PERMISSIVE_0 : 
-		case FOV_PERMISSIVE_1 : 
-		case FOV_PERMISSIVE_2 : 
-		case FOV_PERMISSIVE_3 : 
-		case FOV_PERMISSIVE_4 : 
-		case FOV_PERMISSIVE_5 : 
-		case FOV_PERMISSIVE_6 : 
-		case FOV_PERMISSIVE_7 : 
-		case FOV_PERMISSIVE_8 : 
-			TCOD_map_compute_fov_permissive2(map,player_x,player_y,max_radius,light_walls, algo-FOV_PERMISSIVE_0); 
+		case FOV_PERMISSIVE_0 :
+		case FOV_PERMISSIVE_1 :
+		case FOV_PERMISSIVE_2 :
+		case FOV_PERMISSIVE_3 :
+		case FOV_PERMISSIVE_4 :
+		case FOV_PERMISSIVE_5 :
+		case FOV_PERMISSIVE_6 :
+		case FOV_PERMISSIVE_7 :
+		case FOV_PERMISSIVE_8 :
+			TCOD_map_compute_fov_permissive2(map,player_x,player_y,max_radius,light_walls, algo-FOV_PERMISSIVE_0);
 		break;
 		case FOV_RESTRICTIVE : TCOD_map_compute_fov_restrictive_shadowcasting(map,player_x,player_y,max_radius,light_walls); break;
 		default:break;

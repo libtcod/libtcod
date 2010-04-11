@@ -1314,6 +1314,12 @@ def map_is_walkable(m, x, y):
 def map_delete(m):
     return _lib.TCOD_map_delete(m)
 
+def map_get_width(map):
+    return _lib.TCOD_map_get_width(map)
+
+def map_get_height(map):
+    return _lib.TCOD_map_get_height(map)
+
 ############################
 # pathfinding module
 ############################

@@ -44,16 +44,16 @@
 @FuncTitle Comments
 @FuncDesc Your file can contain single line or multi-line comments :
 <div class="code"><p>// This is a single line comment
-/*
+/<span>*</span>
    This is a
    multi-line comment
 *<span>/</span>
 </p></div>
 Multi-line comments can be nested :
-<div class="code"><p>/*
+<div class="code"><p>/<span>*</span>
    This is a
    multi-line comment containing another
-   /*
+   /<span>*</span>
 &nbsp;&nbsp;&nbsp;&nbsp;multi-line
 &nbsp;&nbsp;&nbsp;&nbsp;comment
    *<span>/</span>

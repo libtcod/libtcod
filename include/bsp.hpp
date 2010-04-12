@@ -135,7 +135,7 @@ public :
 	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
       myBSP->splitOnce(true,20); // horizontal split into two nodes : (0,0,50,20) and (0,20,50,30)
 	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-      TCOD_bsp_split_once(my_bsp,false,20); /* vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
+      TCOD_bsp_split_once(my_bsp,false,20); // vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
 	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
       libtcod.bsp_split_once(my_bsp,False,20) # vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
 	*/

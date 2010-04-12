@@ -185,7 +185,7 @@ void printSyntaxColored(FILE *f, TCODLex *lex) {
 		tok=lex->parse();
 	}
 	if ( tok == TCOD_LEX_ERROR ) {
-		printf ("ERROR while coloring syntax : %s\n",TCOD_lex_get_last_error());
+		printf ("ERROR while coloring syntax : %s in '%s'\n",TCOD_lex_get_last_error(),lex->getToken());
 	}
 }
 

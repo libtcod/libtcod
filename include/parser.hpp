@@ -43,32 +43,29 @@
 @PageTitle The libtcod config file format
 @FuncTitle Comments
 @FuncDesc Your file can contain single line or multi-line comments :
-<div class="code">
-// This is a single line comment
-/ *
+<div class="code"><p>// This is a single line comment
+/*
    This is a
    multi-line comment
-* /
-</div>
+*<span>/</span>
+</p></div>
 Multi-line comments can be nested :
-<div class="code">
-/ *
+<div class="code"><p>/*
    This is a
    multi-line comment containing another
-   / *
+   /*
 &nbsp;&nbsp;&nbsp;&nbsp;multi-line
-&nbsp;&nbsp;&nbsp;&nbsp;comment (don't put space between / and *)
-   * /
-* /
-</div>
+&nbsp;&nbsp;&nbsp;&nbsp;comment
+   *<span>/</span>
+*<span>/</span>
+</p></div>
 The parser is not sensible to space characters, tabulations or carriage return except inside strings.
 */
 /**
 @PageName parser_format
 @FuncTitle Structures
 @FuncDesc The libtcod config file format is basically a list of structures. A structure has a type, an optional name and contains properties. The type of the structure defines which properties are allowed / mandatory.
-<div class="code">
-item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'
+<div class="code"><pre>item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'
 	cost=300                   // an integer property
 	weight=3.5                 // a float property
 	deal_damage=true           // a boolean property
@@ -83,10 +80,9 @@ item_type "blade" {            // structure's type : 'item_type'. structure's na
         floatList= [ 1.0,2,3.5 ]   // a list of float values
         stringList= [ "string1","string2","string3" ]         // a list of string values
 }
-</div>
+</pre></div>
 A structure can also contain other structures either of the same type, or structures of another type :
-<div class="code">
-item_type "blade" {
+<div class="code"><pre>item_type "blade" {
 	item_type "one-handed blades" {
 		// the item_type "blade" contains another item_type named "one-handed blades"
 	}
@@ -97,7 +93,7 @@ item_type "blade" {
 		// the item_type "blade" contains another structure, type "feature", name "damage"
 	}
 }
-</div>
+</pre></div>
 */
 
 class TCODLIB_API TCODParser;
@@ -296,9 +292,7 @@ You must provide a value list as a NULL terminated array of strings.
 	@PageName parser_str
 	@FuncTitle Getting a structure type's name
 	@FuncDesc You can retrieve the name of the structure type with these functions. Warning ! Do not confuse the structure type's name with the structure's name :
-<div class="code">
-item_type "sword" { ... }
-</div>
+<div class="code"><p>item_type "sword" { ... }</p></div>
 Here, the structure type's name is "item_type", the structure name is "sword". Obviously, the structure name cannot be retrieved from the TCODParserStruct object because it's only known at "runtime" (while parsing the file).
 	@Cpp const char *TCODParserStruct::getName() const
 	@C const char *TCOD_struct_get_name(TCOD_parser_struct_t str)
@@ -350,8 +344,7 @@ In the case of a list property, the value returned is a bitwise or of TCOD_TYPE_
  @PageName parser_run
  @FuncTitle Creating a listener
  @FuncDesc For basic config files, you don't have to write a listener. Instead, use the default listener. The parser uses a SAX-like approach during the parsing of the file. This means that the whole file is not stored in memory in a tree structure. Instead, it works like a stream parser and raises events. Each event has an associated callback that is provided by a listener :
-<div class="code">
-C++ : 
+<div class="code"><p>C++ : 
 	class ITCODParserListener {
 	public :
 		virtual bool parserNewStruct(TCODParser *parser,const TCODParserStruct *str,const char *name)=0;
@@ -375,10 +368,9 @@ Py  :
 		def new_property(name,type,value) : ...
 		def end_struct(self, struct, name) : ...
 		def error(msg) : ...
-</div>
+</p></div>
 Before running the parser, you have to build a listener :
-<div class="code">
-C++ :
+<div class="code"><p>C++ :
 	class MyListener : public ITCODParserListener {
 		bool parserNewStruct(TCODParser *parser,const TCODParserStruct *str,const char *name) {
 			printf ("new structure type '%s' with name '%s'\n",str->getname(),name ? name : "NULL");
@@ -459,7 +451,7 @@ Py  :
         def error(self,msg):
             print 'error : ', msg
             return True
-</div>
+</p></div>
  */
 
 // sax event listener
@@ -470,11 +462,10 @@ public :
 	@PageName parser_run
 	@FuncTitle Handling 'newStruct' events
 	@FuncDesc This callback is called each time the parser find a new structure declaration in the file. Example :
-<div class="code"> 
-item_type "blade" { // <= newStruct event here
+<div class="code"><p>item_type "blade" { // <= newStruct event here
 	... 
 }
-</div>
+</p></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
 	@Cpp bool ITCODParserListener::parserNewStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
 	@C bool new_struct(TCOD_parser_struct_t str,const char *name)
@@ -489,11 +480,10 @@ It must return true if everything is right, false if there is an error and the p
 	@PageName parser_run
 	@FuncTitle Handling 'newFlag' events
 	@FuncDesc This callback is called each time the parser find a new flag in the file. Example :
-<div class="code">
-item_type "blade" { 
+<div class="code"><p>item_type "blade" { 
 	abstract  // <= newFlag event here
 }
-</div>
+</p></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
 	@Cpp bool ITCODParserListener::parserFlag(TCODParser *parser,const char *name)
 	@C bool new_flag(const char *name)
@@ -507,12 +497,11 @@ It must return true if everything is right, false if there is an error and the p
 	@PageName parser_run
 	@FuncTitle Handling 'newProperty' events
 	@FuncDesc This callback is called each time the parser find a new property in the file. Example :
-<div class="code">
-item_type "blade" { 
+<div class="code"><p>item_type "blade" { 
 	abstract
 	cost=300 // <= newProperty event here
 }
-</div>
+</p></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
 	@Cpp bool ITCODParserListener::parserProperty(TCODParser *parser,const char *name, TCOD_value_type_t type, TCOD_value_t value)
 	@C bool new_property(const char *name, TCOD_value_type_t type, TCOD_value_t value)
@@ -529,11 +518,10 @@ In the case of a value-list property, the type would reflect the list id (betwee
 	@PageName parser_run
 	@FuncTitle Handling 'endStruct' events
 	@FuncDesc This callback is called each time the parser find the end of a structure declaration in the file. Example :
-<div class="code">
-item_type "blade" { 
+<div class="code"><p>item_type "blade" { 
 	... 
 } // <= endStruct event here
-</div>
+</p></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
 	@Cpp bool ITCODParserListener::parserEndStruct(TCODParser *parser,TCODParserStruct *str,const char *name)
 	@C bool end_struct(TCOD_parser_struct_t str,const char *name)
@@ -578,8 +566,7 @@ The code in the example below will result in your error callback called with the
  @PageFather parser
  @PageTitle Standard types
  @PageDesc The parser can parse natively several data types. It stores them in a generic union :
-<div class="code">
-typedef struct {
+<div class="code"><p>typedef struct {
 	int nb_dices;
 	int nb_faces;
 	float multiplier;
@@ -597,7 +584,7 @@ typedef union {
 	TCOD_list_t list;
 	void *custom;
 } TCOD_value_t;
-</div>
+</p></div>
 Possible types are defined by the TCOD_value_type_t enumeration :
 For python, remove TCOD_ : libtcod.TYPE_BOOL
 <table class="param">

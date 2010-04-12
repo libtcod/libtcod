@@ -114,14 +114,14 @@ class TCODLIB_API TCODMap {
 		@PageTitle Computing the field of view
 		@PageFather fov
 		@FuncDesc Once your map is allocated and empty cells have been defined, you can calculate the field of view with :
-			<div class="code">typedef enum { FOV_BASIC, 
+			<div class="code"><p>typedef enum { FOV_BASIC, 
                FOV_DIAMOND, 
                FOV_SHADOW, 
                FOV_PERMISSIVE_0,FOV_PERMISSIVE_1,FOV_PERMISSIVE_2,FOV_PERMISSIVE_3,
                FOV_PERMISSIVE_4,FOV_PERMISSIVE_5,FOV_PERMISSIVE_6,FOV_PERMISSIVE_7,FOV_PERMISSIVE_8, 
                FOV_RESTRICTIVE,
                NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
-            </div>
+            </p></div>
 			* FOV_BASIC : classic libtcod fov algorithm (ray casted from the player to all the cells on the submap perimeter)
 			* FOV_DIAMOND : based on <a href="http://www.geocities.com/temerra/los_rays.html">this</a> algorithm
 			* FOV_SHADOW : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting">this</a> algorithm

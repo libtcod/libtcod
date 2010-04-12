@@ -70,7 +70,7 @@ public :
 	@PageName mouse
 	@FuncTitle Getting the mouse status
 	@FuncDesc You can read the current mouse status with:
-<div class="code" style="padding-left:10px">typedef struct {
+<div class="code"><p>typedef struct {
     int x, y;
     int dx, dy;
     int cx, cy;
@@ -82,7 +82,7 @@ public :
     unsigned rbutton_pressed : 1;
     unsigned mbutton_pressed : 1;
 } TCOD_mouse_t;
-</div>
+</p></div>
 	@Cpp static TCOD_mouse_t TCODMouse::getStatus (void)
 	@C TCOD_mouse_t TCOD_mouse_get_status (void)
 	@Py mouse_get_status ()

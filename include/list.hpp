@@ -54,10 +54,12 @@ public :
 	@FuncDesc You can create an empty list with the default constructor. The C version returns a handler on the list.
 	@Cpp template <class T> TCODList::TCODList()
 	@C TCOD_list_t TCOD_list_new()
-	@CppEx TCODList<int> intList;
-      TCODList<float> *floatList = new TCODList<float>();
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_t floatList = TCOD_list_new();
+	@CppEx 
+		TCODList<int> intList;
+		TCODList<float> *floatList = new TCODList<float>();
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_t floatList = TCOD_list_new();
 	*/
 	TCODList() {
 		array=NULL;
@@ -71,14 +73,16 @@ public :
 	@Cpp template <class T> TCODList::TCODList(const TCODList &l)
 	@C TCOD_list_t TCOD_list_duplicate(TCOD_list_t l)
 	@Param l	Existing list to duplicate.
-	@CppEx TCODList<int> intList;
-      intList.push(3);
-      intList.push(5);
-      TCODList<int> intList2(intList); // intList2 contains two elements : 3 and 5
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)3);
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_t intList2 = TCOD_list_duplicate(intList); // intList2 contains two elements : 3 and 5
+	@CppEx 
+		TCODList<int> intList;
+		intList.push(3);
+		intList.push(5);
+		TCODList<int> intList2(intList); // intList2 contains two elements : 3 and 5
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)3);
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_t intList2 = TCOD_list_duplicate(intList); // intList2 contains two elements : 3 and 5
 	*/
 	TCODList(const TCOD_list_t l) {
 		array=NULL;
@@ -116,12 +120,14 @@ public :
 	@Cpp virtual template <class T> TCODList::~TCODList()
 	@C void TCOD_list_delete(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> *intList = new TCODList<int>(); // allocate a new empty list
-      intList->push(5); // the list contains 1 element at position 0, value = 5
-      delete intList; // destroy the list
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_delete(intList);
+	@CppEx 
+		TCODList<int> *intList = new TCODList<int>(); // allocate a new empty list
+		intList->push(5); // the list contains 1 element at position 0, value = 5
+		delete intList; // destroy the list
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_delete(intList);
 	*/
 	virtual ~TCODList() {
 		if ( array ) delete [] array;
@@ -137,14 +143,16 @@ public :
 	@C void TCOD_list_set(TCOD_list_t l,const void *elt, int idx)
 	@Param elt	Element to put in the array.
 	@Param idx	Index of the element.
-0 <= idx
+		0 <= idx
 	@Param l	In the C version, the handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the array is empty (contains 0 elements)
-      intList.set(5,0); // the array contains 1 element at position 0, value = 5
-      intList.set(7,2); // the array contains 3 elements : 5, 0, 7
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,(const void *)5,0);
-      TCOD_list_set(intList,(const void *)7,2);
+	@CppEx 
+		TCODList<int> intList; // the array is empty (contains 0 elements)
+		intList.set(5,0); // the array contains 1 element at position 0, value = 5
+		intList.set(7,2); // the array contains 3 elements : 5, 0, 7
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,(const void *)5,0);
+		TCOD_list_set(intList,(const void *)7,2);
 	*/
 	void set(const T elt, int idx) {
 		if ( idx < 0 ) return;
@@ -162,12 +170,14 @@ public :
 	@Param idx	Index of the element.
 		0 <= idx < size of the array
 	@Param l	In the C version, the handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      intList.set(5,0);
-      int val = intList.get(0); // val == 5
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,(const void *)5,0);
-      int val = (int)TCOD_list_get(intList,0); // val == 5
+	@CppEx 
+		TCODList<int> intList;
+		intList.set(5,0);
+		int val = intList.get(0); // val == 5
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,(const void *)5,0);
+		int val = (int)TCOD_list_get(intList,0); // val == 5
 	*/
 	T get(int idx) const {
 		return array[idx];
@@ -179,14 +189,16 @@ public :
 	@Cpp template <class T> bool TCODList::isEmpty() const
 	@C bool TCOD_list_is_empty(TCOD_list_t l)
 	@Param l	In the C version, the handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      bool empty=intList.isEmpty(); // empty == true
-      intList.set(3,0);
-      empty=intList.isEmpty(); // empty == false
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      bool empty=TCOD_list_is_empty(intList); // empty == true 
-      TCOD_list_set(intList,(const void *)5,0);
-      empty=TCOD_list_is_empty(intList); // empty == false 
+	@CppEx 
+		TCODList<int> intList;
+		bool empty=intList.isEmpty(); // empty == true
+		intList.set(3,0);
+		empty=intList.isEmpty(); // empty == false
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		bool empty=TCOD_list_is_empty(intList); // empty == true 
+		TCOD_list_set(intList,(const void *)5,0);
+		empty=TCOD_list_is_empty(intList); // empty == false 
 	*/
 	bool isEmpty() const {
 		return ( fillSize == 0 );
@@ -198,14 +210,16 @@ public :
 	@Cpp template <class T> int TCODList::size() const
 	@C int TCOD_list_size(TCOD_list_t l)
 	@Param l	In the C version, the handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      int size=intList.size(); // size == 0
-      intList.set(3,0);
-      size=intList.size(); // size == 1
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      int size=TCOD_list_size(intList); // size == 0 
-      TCOD_list_set(intList,(const void *)5,0);
-      size=TCOD_list_size(intList); // size == 1 
+	@CppEx 
+		TCODList<int> intList;
+		int size=intList.size(); // size == 0
+		intList.set(3,0);
+		size=intList.size(); // size == 1
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		int size=TCOD_list_size(intList); // size == 0 
+		TCOD_list_set(intList,(const void *)5,0);
+		size=TCOD_list_size(intList); // size == 1 
 	*/
 	int size() const {
 		return fillSize;
@@ -218,14 +232,16 @@ public :
 	@C bool TCOD_list_contains(TCOD_list_t l,const void * elt)
 	@Param elt	The element.
 	@Param l	In the C version, the handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      intList.set(3,0);
-      bool has3 = intList.contains(3); // has3 == true
-      bool has4 = intList.contains(4); // has4 == false
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,(const void *)3,0);
-      bool has3 = TCOD_list_contains(intList,(const void *)3); // has3 == true 
-      bool has4 = TCOD_list_contains(intList,(const void *)4); // has4 == false 
+	@CppEx 
+		TCODList<int> intList;
+		intList.set(3,0);
+		bool has3 = intList.contains(3); // has3 == true
+		bool has4 = intList.contains(4); // has4 == false
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,(const void *)3,0);
+		bool has3 = TCOD_list_contains(intList,(const void *)3); // has3 == true 
+		bool has4 = TCOD_list_contains(intList,(const void *)4); // has4 == false 
 	*/
 	bool contains(const T elt) const {
 		for ( T* curElt = begin(); curElt != end(); curElt ++) {
@@ -245,12 +261,14 @@ public :
 	@Param idx	Index of the element after the insertion.
 		0 <= idx < list size
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.set(0,5); // the list contains 1 element at position 0, value = 5
-      intList.insertBefore(2,0); // the list contains 2 elements : 2,5
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)5);
-      TCOD_list_insert_before(intList,(const void *)2,0);
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.set(0,5); // the list contains 1 element at position 0, value = 5
+		intList.insertBefore(2,0); // the list contains 2 elements : 2,5
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,0,(const void *)5);
+		TCOD_list_insert_before(intList,(const void *)2,0);
 	*/
 	T * insertBefore(const T elt,int before) {
 		if ( fillSize+1 >= allocSize ) allocate();
@@ -266,18 +284,22 @@ public :
 	@PageName list_list
 	@FuncTitle Removing an element from the list
 	@FuncDesc The _fast versions replace the element to remove with the last element of the list. They're faster, but do not preserve the list order.
-	@Cpp template <class T> void TCODList::remove(const T elt)
-      template <class T> void TCODList::removeFast(const T elt)
-	@C void TCOD_list_remove(TCOD_list_t l, const void * elt)
-      void TCOD_list_remove_fast(TCOD_list_t l, const void * elt)
+	@Cpp 
+		template <class T> void TCODList::remove(const T elt)
+		template <class T> void TCODList::removeFast(const T elt)
+	@C 
+		void TCOD_list_remove(TCOD_list_t l, const void * elt)
+		void TCOD_list_remove_fast(TCOD_list_t l, const void * elt)
 	@Param elt	The element to remove
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.set(0,5); // the list contains 1 element at position 0, value = 5
-      intList.remove(5); // the list is empty
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)5);
-      TCOD_list_remove(intList,(const void *)5);
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.set(0,5); // the list contains 1 element at position 0, value = 5
+		intList.remove(5); // the list is empty
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,0,(const void *)5);
+		TCOD_list_remove(intList,(const void *)5);
 	*/
 	void remove(const T elt) {
 		for ( T* curElt = begin(); curElt != end(); curElt ++) {
@@ -304,16 +326,18 @@ public :
 	@C void TCOD_list_add_all(TCOD_list_t l, TCOD_list_t l2)
 	@Param l	The list inside which elements will be added.
 	@Param l2	the list handler containing elements to insert.
-	@CppEx TCODList<int> intList;
-      intList.set(1,3); // intList contains 2 elements : 0, 3
-      TCODList<int> intList2; // intList2 is empty
-      intList2.set(0,1); // intList2 contains 1 element : 1
-      intList2.addAll(intList); // intList2 contains 3 elements : 1, 0, 3
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,1,(const void *)3);
-      TCOD_list_t intList2 = TCOD_list_new();
-      TCOD_list_set(intList2,0,(const void *)1);
-      TCOD_list_add_all(intList2,intList);
+	@CppEx 
+		TCODList<int> intList;
+		intList.set(1,3); // intList contains 2 elements : 0, 3
+		TCODList<int> intList2; // intList2 is empty
+		intList2.set(0,1); // intList2 contains 1 element : 1
+		intList2.addAll(intList); // intList2 contains 3 elements : 1, 0, 3
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,1,(const void *)3);
+		TCOD_list_t intList2 = TCOD_list_new();
+		TCOD_list_set(intList2,0,(const void *)1);
+		TCOD_list_add_all(intList2,intList);
 	*/
 	void addAll(const TCODList<T> &l2) {
 		for (T *t=l2.begin(); t!= l2.end(); t++) {
@@ -327,12 +351,14 @@ public :
 	@Cpp template <class T> void TCODList::clear()
 	@C void TCOD_list_clear(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      intList.set(0,3); // intList contains 1 element
-      intList.clear(); // intList is empty
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_set(intList,0,(const void *)5);
-      TCOD_list_clear(intList);
+	@CppEx 
+		TCODList<int> intList;
+		intList.set(0,3); // intList contains 1 element
+		intList.clear(); // intList is empty
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_set(intList,0,(const void *)5);
+		TCOD_list_clear(intList);
 	*/
 	void clear() {
 		fillSize=0;
@@ -344,18 +370,20 @@ public :
 	@Cpp template <class T> void TCODList::clearAndDelete()
 	@C void TCOD_list_clear_and_delete(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<MyClass *> intList;
-      MyClass * cl=new MyClass(); // new instance of MyClass allocated here
-      intList.set(0,cl); 
-      intList.clear(); // the list is empty. cl is always valid
-      intList.set(0,cl); 
-      intList.clearAndDelete(); // the list is empty. delete cl has been called. The address cl is no longer valid.
-	@C TCOD_list_t intList = TCOD_list_new();
-      void *data=calloc(10,1); // some memory allocation here 
-      TCOD_list_set(intList,0,(const void *)data);
-      TCOD_list_clear(intList); // the list is empty, but data is always valid 
-      TCOD_list_set(intList,0,(const void *)data);
-      TCOD_list_clear_and_delete(intList); // the list is empty, free(data) has been called. The address data is no longer valid 
+	@CppEx 
+		TCODList<MyClass *> intList;
+		MyClass * cl=new MyClass(); // new instance of MyClass allocated here
+		intList.set(0,cl); 
+		intList.clear(); // the list is empty. cl is always valid
+		intList.set(0,cl); 
+		intList.clearAndDelete(); // the list is empty. delete cl has been called. The address cl is no longer valid.
+	@C 
+		TCOD_list_t intList = TCOD_list_new();
+		void *data=calloc(10,1); // some memory allocation here 
+		TCOD_list_set(intList,0,(const void *)data);
+		TCOD_list_clear(intList); // the list is empty, but data is always valid 
+		TCOD_list_set(intList,0,(const void *)data);
+		TCOD_list_clear_and_delete(intList); // the list is empty, free(data) has been called. The address data is no longer valid 
 	*/
 	void clearAndDelete() {
 		for ( T* curElt = begin(); curElt != end(); curElt ++ ) {
@@ -374,12 +402,14 @@ public :
 	@C void TCOD_list_push(TCOD_list_t l, const void * elt)
 	@Param elt	Element to append to the list.
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.push(5); // the list contains 1 element at position 0, value = 5
-      intList.push(2); // the list contains 2 elements : 5,2
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_push(intList,(const void *)2);
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.push(5); // the list contains 1 element at position 0, value = 5
+		intList.push(2); // the list contains 2 elements : 5,2
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_push(intList,(const void *)2);
 	*/
 	void push(const T elt) {
 		if ( fillSize+1 >= allocSize ) allocate();
@@ -393,16 +423,18 @@ public :
 	@Cpp template <class T> T TCODList::pop()
 	@C void * TCOD_list_pop(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.push(5); // the list contains 1 element at position 0, value = 5
-      intList.push(2); // the list contains 2 elements : 5,2
-      int val = intList.pop(); // val == 2, the list contains 1 element : 5
-      val = intList.pop(); // val == 5, the list is empty
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_push(intList,(const void *)2);
-      int val = (int)TCOD_list_pop(intList);
-      val = (int)TCOD_list_pop(intList);
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.push(5); // the list contains 1 element at position 0, value = 5
+		intList.push(2); // the list contains 2 elements : 5,2
+		int val = intList.pop(); // val == 2, the list contains 1 element : 5
+		val = intList.pop(); // val == 5, the list is empty
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_push(intList,(const void *)2);
+		int val = (int)TCOD_list_pop(intList);
+		val = (int)TCOD_list_pop(intList);
 	*/
 	T pop() {
 		if ( fillSize == 0 ) return (T)0;
@@ -416,16 +448,18 @@ public :
 	@Cpp template <class T> T TCODList::peek() const
 	@C void * TCOD_list_peek(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList;
-      intList.push(3); // intList contains 1 elements : 3
-      int val = intList.peek(); // val == 3, inList contains 1 elements : 3
-      intList.push(2); // intList contains 2 elements : 3, 2
-      val = intList.peek(); // val == 2, inList contains 2 elements : 3, 2
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)3);
-      int val = (int)TCOD_list_peek(intList);
-      TCOD_list_push(intList,(const void *)2);
-      val = (int)TCOD_list_peek(intList);
+	@CppEx 
+		TCODList<int> intList;
+		intList.push(3); // intList contains 1 elements : 3
+		int val = intList.peek(); // val == 3, inList contains 1 elements : 3
+		intList.push(2); // intList contains 2 elements : 3, 2
+		val = intList.peek(); // val == 2, inList contains 2 elements : 3, 2
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)3);
+		int val = (int)TCOD_list_peek(intList);
+		TCOD_list_push(intList,(const void *)2);
+		val = (int)TCOD_list_peek(intList);
 	*/
 	T peek() const {
 		if ( fillSize == 0 ) return (T)0;
@@ -437,25 +471,29 @@ public :
 	@PageFather list
 	@PageTitle Iterators
 	@FuncDesc You can iterate through the elements of the list using an iterator. begin() returns the address of the first element of the list. You go to the next element using the increment operator ++. When the iterator's value is equal to end(), you've gone through all the elements. <b>Warning ! You cannot insert elements in the list while iterating through it. Inserting elements can result in reallocation of the list and your iterator will not longer be valid.</b>
-	@Cpp template <class T> T * TCODList::begin() const
-      template <class T> T * TCODList::end() const
-	@C void ** TCOD_list_begin(TCOD_list_t l)
-      void ** TCOD_list_end(TCOD_list_t l)
+	@Cpp 
+		template <class T> T * TCODList::begin() const
+		template <class T> T * TCODList::end() const
+	@C 
+		void ** TCOD_list_begin(TCOD_list_t l)
+		void ** TCOD_list_end(TCOD_list_t l)
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.push(5); // the list contains 1 element at position 0, value = 5
-      intList.push(2); // the list contains 2 elements : 5,2
-      for ( int * iterator = intList.begin(); iterator != intList.end(); iterator ++ ) {
-           int currentValue=*iterator;
-           printf("value : %d\n", currentValue );
-      }
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_push(intList,(const void *)2);
-      for ( int * iterator = (int *)TCOD_list_begin(intList); iterator != (int *)TCOD_list_end(intList); iterator ++ ) {
-           int currentValue=*iterator;
-           printf("value : %d\n", currentValue );
-      }
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.push(5); // the list contains 1 element at position 0, value = 5
+		intList.push(2); // the list contains 2 elements : 5,2
+		for ( int * iterator = intList.begin(); iterator != intList.end(); iterator ++ ) {
+			int currentValue=*iterator;
+			printf("value : %d\n", currentValue );
+		}
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_push(intList,(const void *)2);
+		for ( int * iterator = (int *)TCOD_list_begin(intList); iterator != (int *)TCOD_list_end(intList); iterator ++ ) {
+			int currentValue=*iterator;
+			printf("value : %d\n", currentValue );
+		}
 	*/
 	T * begin() const {
 		if ( fillSize == 0 ) return (T *)NULL;
@@ -469,36 +507,40 @@ public :
 	/**
 	@PageName list_iterator
 	@FuncDesc You can remove an element from the list while iterating. The element at the iterator position will be removed. The function returns the new iterator. The _fast versions replace the element to remove with the last element of the list. They're faster, but do not preserve the list order.
-	@Cpp template <class T> T *TCODList::remove(T *iterator)
-      template <class T> T *TCODList::removeFast(T *iterator)
-	@C void **TCOD_list_remove_iterator(TCOD_list_t l, void **iterator)
-      void **TCOD_list_remove_iterator_fast(TCOD_list_t l, void **iterator)
+	@Cpp 
+		template <class T> T *TCODList::remove(T *iterator)
+		template <class T> T *TCODList::removeFast(T *iterator)
+	@C 
+		void **TCOD_list_remove_iterator(TCOD_list_t l, void **iterator)
+		void **TCOD_list_remove_iterator_fast(TCOD_list_t l, void **iterator)
 	@Param iterator	The list iterator.
 	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx TCODList<int> intList; // the list is empty (contains 0 elements)
-      intList.push(5); // the list contains 1 element at position 0, value = 5
-      intList.push(2); // the list contains 2 elements : 5,2
-      intList.push(3); // the list contains 3 elements : 5,2,3
-      for ( int * iterator = intList.begin(); iterator != intList.end(); iterator ++ ) {
-           int currentValue=*iterator;
-           if ( currentValue == 2 ) {
-               // remove this value from the list and keep iterating on next element (value == 3)
-               iterator = intList.remove(iterator);
-           }
-           printf("value : %d\n", currentValue ); // all 3 values will be printed : 5,2,3
-      }
-      // now the list contains only two elements : 5,3
-	@CEx TCOD_list_t intList = TCOD_list_new();
-      TCOD_list_push(intList,(const void *)5);
-      TCOD_list_push(intList,(const void *)2);
-      TCOD_list_push(intList,(const void *)3);
-      for ( int * iterator = (int *)TCOD_list_begin(intList); iterator != (int *)TCOD_list_end(intList); iterator ++ ) {
-           int currentValue=*iterator;
-           if ( currentValue == 2 ) {
-               iterator = (int *)TCOD_list_remove_iterator(intList,(void **)iterator);
-           }
-           printf("value : %d\n", currentValue );
-      }
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.push(5); // the list contains 1 element at position 0, value = 5
+		intList.push(2); // the list contains 2 elements : 5,2
+		intList.push(3); // the list contains 3 elements : 5,2,3
+		for ( int * iterator = intList.begin(); iterator != intList.end(); iterator ++ ) {
+			int currentValue=*iterator;
+			if ( currentValue == 2 ) {
+				// remove this value from the list and keep iterating on next element (value == 3)
+				iterator = intList.remove(iterator);
+			}
+			printf("value : %d\n", currentValue ); // all 3 values will be printed : 5,2,3
+		}
+		// now the list contains only two elements : 5,3
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_push(intList,(const void *)2);
+		TCOD_list_push(intList,(const void *)3);
+		for ( int * iterator = (int *)TCOD_list_begin(intList); iterator != (int *)TCOD_list_end(intList); iterator ++ ) {
+			int currentValue=*iterator;
+			if ( currentValue == 2 ) {
+				iterator = (int *)TCOD_list_remove_iterator(intList,(void **)iterator);
+			}
+			printf("value : %d\n", currentValue );
+		}
 	*/
 	T *remove(T *elt) {
 		for ( T* curElt = elt; curElt < end()-1; curElt ++) {

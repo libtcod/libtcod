@@ -114,19 +114,22 @@ class TCODLIB_API TCODRandom {
 		@Py random_new_from_seed(seed, algo=RNG_CMWC)
 		@Param seed	The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.
 		@Param algo	The PRNG algorithm the generator should be using.
-		@CppEx // default generator
+		@CppEx 
+			// default generator
 			TCODRandom * default = TCODRandom::getInstance();
 			// another random generator
 			TCODRandom * myRandom = new TCODRandom();
 			// a random generator with a specific seed
 			TCODRandom * myDeterministRandom = new TCODRandom(0xdeadbeef);
-        @CEx // default generator 
+        @CEx 
+			// default generator 
 			TCOD_random_t default = TCOD_random_get_instance();
 			// another random generator 
 			TCOD_random_t my_random = TCOD_random_new(TCOD_RNG_CMWC);
 			// a random generator with a specific seed
 			TCOD_random_t my_determinist_random = TCOD_random_new_from_seed(TCOD_RNG_CMWC,0xdeadbeef);
-		@PyEx # default generator
+		@PyEx 
+			# default generator
 			default = libtcod.random_get_instance()
 			# another random generator
 			my_random = libtcod.random_new()
@@ -144,24 +147,27 @@ class TCODLIB_API TCODRandom {
 		@C void TCOD_random_delete(TCOD_random_t mersenne)
 		@Py random_delete(mersenne)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions.
-		@CppEx // create a generator
-	      TCODRandom *rnd = new TCODRandom();
-	      // use it 
-	      ...
-	      // destroy it
-	      delete rnd;
-		@CEx // create a generator 
-	      TCOD_random_t rnd = TCOD_random_new();
-	      // use it  
-	      ...
-	      // destroy it 
-	      TCOD_random_delete(rnd);
-		@PyEx # create a generator 
-	      rnd = libtcod.random_new()
-	      # use it 
-	      ...
-	      # destroy it 
-	      libtcod.random_delete(rnd)		
+		@CppEx 
+			// create a generator
+			TCODRandom *rnd = new TCODRandom();
+			// use it 
+			...
+			// destroy it
+			delete rnd;
+		@CEx 
+			// create a generator 
+			TCOD_random_t rnd = TCOD_random_new();
+			// use it  
+			...
+			// destroy it 
+			TCOD_random_delete(rnd);
+		@PyEx 
+			# create a generator 
+			rnd = libtcod.random_new()
+			# use it 
+			...
+			# destroy it 
+			libtcod.random_delete(rnd)		
 		*/				
 		virtual ~TCODRandom();
 		
@@ -188,22 +194,25 @@ class TCODLIB_API TCODRandom {
 		@Py random_get_float(mersenne, mi, ma)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max
-		@CppEx // default generator
-	      TCODRandom * default = TCODRandom::getInstance();
-	      int aRandomIntBetween0And1000 = default->getInt(0,1000);
-	      // another random generator
-	      TCODRandom *myRandom = new TCODRandom();
-	      float aRandomFloatBetween0And1000 = myRandom->getFloat(0.0f,1000.0f);
-		@CEx // default generator
-	      int a_random_int_between_0_and_1000 = TCOD_random_get_float(NULL,0,1000);
-	      // another random generator
-	      TCOD_random_t my_random = TCOD_random_new();
-	      float a_random_float_between_0_and_1000 = TCOD_random_get_float(my_random,0.0f,1000.0f);
-		@PyEx # default generator 
-	      a_random_int_between_0_and_1000 = libtcod.random_get_float(0,0,1000)
-	      # another random generator 
-	      my_random = libtcod.random_new()
-	      a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)		
+		@CppEx 
+			// default generator
+			TCODRandom * default = TCODRandom::getInstance();
+			int aRandomIntBetween0And1000 = default->getInt(0,1000);
+			// another random generator
+			TCODRandom *myRandom = new TCODRandom();
+			float aRandomFloatBetween0And1000 = myRandom->getFloat(0.0f,1000.0f);
+		@CEx 
+			// default generator
+			int a_random_int_between_0_and_1000 = TCOD_random_get_float(NULL,0,1000);
+			// another random generator
+			TCOD_random_t my_random = TCOD_random_new();
+			float a_random_float_between_0_and_1000 = TCOD_random_get_float(my_random,0.0f,1000.0f);
+		@PyEx 
+			# default generator 
+			a_random_int_between_0_and_1000 = libtcod.random_get_float(0,0,1000)
+			# another random generator 
+			my_random = libtcod.random_new()
+			a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)		
 		*/		
 		float getFloat(float min, float max);
 
@@ -213,12 +222,15 @@ class TCODLIB_API TCODRandom {
 		@FuncDesc To get a random number, either integer or floating point, with an approximated Gaussian distribution:
 			Due to the Gaussian distribution, most values are near (min+max)/2
 			The integer version of the function will work best at larger deltas (max-min).		
-		@Cpp float TCODRandom::getGaussianFloat(float min, float max)
-	      int TCODRandom::getGaussianInt(int min, int max)
-		@C float TCOD_random_get_gaussian_float(TCOD_random_t mersenne, float min, float max)
-	      int TCOD_random_get_gaussian_int(TCOD_random_t mersenne, int min, int max)
-		@Py random_get_gaussian_float(mersenne, mi, ma)
-	      random_get_gaussian_int(mersenne, mi, ma)
+		@Cpp 
+			float TCODRandom::getGaussianFloat(float min, float max)
+			int TCODRandom::getGaussianInt(int min, int max)
+		@C 
+			float TCOD_random_get_gaussian_float(TCOD_random_t mersenne, float min, float max)
+			int TCOD_random_get_gaussian_int(TCOD_random_t mersenne, int min, int max)
+		@Py 
+			random_get_gaussian_float(mersenne, mi, ma)
+			random_get_gaussian_int(mersenne, mi, ma)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max.
 		*/		
@@ -244,35 +256,38 @@ class TCODLIB_API TCODRandom {
 		@C void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup)
 		@Py random_restore(mersenne, backup)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
-		@CppEx // default generator
-	      TCODRandom * default = TCODRandom::getInstance();
-	      // save the state
-	      TCODRandom *backup=default->save();
-	      // get a random number (or several)
-	      int number1 = default->getInt(0,1000);
-	      // restore the state
-	      default->restore(backup);
-	      // get a random number
-	      int number2 = default->getInt(0,1000);
-	      // => number1 == number2
-		@CEx // save default generator state 
-	      TCOD_random_t backup=TCOD_random_save(NULL);
-	      // get a random number 
-	      int number1 = TCOD_random_get_float(NULL,0,1000);
-	      // restore the state 
-	      TCOD_random_restore(NULL,backup);
-	      // get a random number 
-	      int number2 = TCOD_random_get_float(NULL,0,1000);
-	      // number1 == number2 
-		@PyEx # save default generator state 
-	      backup=libtcod.random_save(0)
-	      # get a random number 
-	      number1 = libtcod.random_get_float(0,0,1000)
-	      # restore the state 
-	      libtcod.random_restore(0,backup)
-	      # get a random number 
-	      number2 = libtcod.random_get_float(0,0,1000)
-	      # number1 == number2 		 		
+		@CppEx 
+			// default generator
+			TCODRandom * default = TCODRandom::getInstance();
+			// save the state
+			TCODRandom *backup=default->save();
+			// get a random number (or several)
+			int number1 = default->getInt(0,1000);
+			// restore the state
+			default->restore(backup);
+			// get a random number
+			int number2 = default->getInt(0,1000);
+			// => number1 == number2
+		@CEx 
+			// save default generator state 
+			TCOD_random_t backup=TCOD_random_save(NULL);
+			// get a random number 
+			int number1 = TCOD_random_get_float(NULL,0,1000);
+			// restore the state 
+			TCOD_random_restore(NULL,backup);
+			// get a random number 
+			int number2 = TCOD_random_get_float(NULL,0,1000);
+			// number1 == number2 
+		@PyEx 
+			# save default generator state 
+			backup=libtcod.random_save(0)
+			# get a random number 
+			number1 = libtcod.random_get_float(0,0,1000)
+			# restore the state 
+			libtcod.random_restore(0,backup)
+			# get a random number 
+			number2 = libtcod.random_get_float(0,0,1000)
+			# number1 == number2 		 		
 		*/		
 		void restore(const TCODRandom *backup);
 

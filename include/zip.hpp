@@ -58,29 +58,31 @@ public :
 	@Cpp TCODZip::~TCODZip()
 	@C void TCOD_zip_delete(TCOD_zip_t zip)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
-	@CppEx TCODZip *zip = new TCODZip();
-      zip->loadFromFile("myCompressedFile.gz");
-      char c=zip->getChar();
-      int i=zip->getInt();
-      float f= zip->getFloat();
-      const char *s=strdup(zip->getString()); // we duplicate the string to be able to use it after the buffer deletion
-      zip->getData(nbBytes, dataPtr);
-      delete zip;
-	@CEx TCOD_zip_t zip=TCOD_zip_new();
-      TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
-      char c=TCOD_zip_get_char(zip);
-      int i=TCOD_zip_get_int(zip);
-      float f=TCOD_zip_get_float(zip);
-      const char *s=strdup(TCOD_zip_get_string(zip));
-      TCOD_zip_get_data(zip,nbBytes, dataPtr);
-      TCOD_zip_delete(zip);	
+	@CppEx 
+		TCODZip *zip = new TCODZip();
+		zip->loadFromFile("myCompressedFile.gz");
+		char c=zip->getChar();
+		int i=zip->getInt();
+		float f= zip->getFloat();
+		const char *s=strdup(zip->getString()); // we duplicate the string to be able to use it after the buffer deletion
+		zip->getData(nbBytes, dataPtr);
+		delete zip;
+	@CEx 
+		TCOD_zip_t zip=TCOD_zip_new();
+		TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
+		char c=TCOD_zip_get_char(zip);
+		int i=TCOD_zip_get_int(zip);
+		float f=TCOD_zip_get_float(zip);
+		const char *s=strdup(TCOD_zip_get_string(zip));
+		TCOD_zip_get_data(zip,nbBytes, dataPtr);
+		TCOD_zip_delete(zip);	
 	*/	
 	~TCODZip();
 
 	/**
 	@PageName zip_put
 	@PageFather zip
-	@PageTitle Using the buffer for compressing
+	@PageTitle Using the buffer in output mode
 	@FuncTitle Putting a char in the buffer
 	@Cpp void TCODZip::putChar(char val)
 	@C void TCOD_zip_put_char(TCOD_zip_t zip, char val)
@@ -178,26 +180,28 @@ public :
 	@C int TCOD_zip_save_to_file(TCOD_zip_t zip, const char *filename)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	@Param filename	Name of the file
-	@CppEx TCODZip zip;
-      zip.putChar('A');
-      zip.putInt(1764);
-      zip.putFloat(3.14f);
-      zip.putString("A string");
-      zip.putData(nbBytes, dataPtr);
-      zip.saveToFile("myCompressedFile.gz");
-	@CEx TCOD_zip_t zip=TCOD_zip_new();
-      TCOD_zip_put_char(zip,'A');
-      TCOD_zip_put_int(zip,1764);
-      TCOD_zip_put_float(zip,3.14f);
-      TCOD_zip_put_string(zip,"A string");
-      TCOD_zip_put_data(zip,nbBytes, dataPtr);
-      TCOD_zip_save_to_file(zip,"myCompressedFile.gz");
+	@CppEx 
+		TCODZip zip;
+		zip.putChar('A');
+		zip.putInt(1764);
+		zip.putFloat(3.14f);
+		zip.putString("A string");
+		zip.putData(nbBytes, dataPtr);
+		zip.saveToFile("myCompressedFile.gz");
+	@CEx 
+		TCOD_zip_t zip=TCOD_zip_new();
+		TCOD_zip_put_char(zip,'A');
+		TCOD_zip_put_int(zip,1764);
+		TCOD_zip_put_float(zip,3.14f);
+		TCOD_zip_put_string(zip,"A string");
+		TCOD_zip_put_data(zip,nbBytes, dataPtr);
+		TCOD_zip_save_to_file(zip,"myCompressedFile.gz");
 	*/	
 	int saveToFile(const char *filename);
 
 	/**
 	@PageName zip_load
-	@PageTitle Using the buffer for decompressing
+	@PageTitle Using the buffer in input mode
 	@PageFather zip
 	@FuncTitle Reading from a compressed file
 	@FuncDesc You can read data from a file (compressed or not) into the buffer.
@@ -283,20 +287,22 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	@Param nbBytes	Number of bytes to read
 	@Param data	Address of a pre-allocated buffer (at least nbBytes bytes)
-	@CppEx TCODZip zip;
-      zip.loadFromFile("myCompressedFile.gz");
-      char c=zip.getChar();
-      int i=zip.getInt();
-      float f= zip.getFloat();
-      const char *s=zip.getString();
-      zip.getData(nbBytes, dataPtr);
-	@CEx TCOD_zip_t zip=TCOD_zip_new();
-      TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
-      char c=TCOD_zip_get_char(zip);
-      int i=TCOD_zip_get_int(zip);
-      float f=TCOD_zip_get_float(zip);
-      const char *s=TCOD_zip_get_string(zip);
-      TCOD_zip_get_data(zip,nbBytes, dataPtr);
+	@CppEx 
+		TCODZip zip;
+		zip.loadFromFile("myCompressedFile.gz");
+		char c=zip.getChar();
+		int i=zip.getInt();
+		float f= zip.getFloat();
+		const char *s=zip.getString();
+		zip.getData(nbBytes, dataPtr);
+	@CEx 
+		TCOD_zip_t zip=TCOD_zip_new();
+		TCOD_zip_load_from_file(zip,"myCompressedFile.gz");
+		char c=TCOD_zip_get_char(zip);
+		int i=TCOD_zip_get_int(zip);
+		float f=TCOD_zip_get_float(zip);
+		const char *s=TCOD_zip_get_string(zip);
+		TCOD_zip_get_data(zip,nbBytes, dataPtr);
 	*/	
 	int getData(int nbBytes, void *data);
 	

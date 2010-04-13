@@ -58,23 +58,26 @@ public :
 	@C bool TCOD_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
 	@Param xCur,yCur the coordinates of the next cell on the line are stored here when the function returns
-	@CppEx // Going from point 5,8 to point 13,4
-int x = 5, y = 8;
-TCODLine::init(x,y,13,4);
-do {
-    // update cell x,y
-} while (!TCODLine::step(&x,&y));
-	@Cex int x = 5, y = 8;
-TCOD_line_init(x,y,13,4);
-do {
-    // update cell x,y 
-} while (!TCOD_line_step(&x,&y));
-	@PyEx libtcod.line_init(5,8,13,4)
-# update cell 5,8
-x,y=libtcod.line_step()
-while (not x is None) :
-    # update cell x,y
-x,y=libtcod.line_step()
+	@CppEx 
+		// Going from point 5,8 to point 13,4
+		int x = 5, y = 8;
+		TCODLine::init(x,y,13,4);
+		do {
+		    // update cell x,y
+		} while (!TCODLine::step(&x,&y));
+	@CEx 
+		int x = 5, y = 8;
+		TCOD_line_init(x,y,13,4);
+		do {
+		    // update cell x,y 
+		} while (!TCOD_line_step(&x,&y));
+	@PyEx 
+		libtcod.line_init(5,8,13,4)
+		# update cell 5,8
+		x,y=libtcod.line_step()
+		while (not x is None) :
+		    # update cell x,y
+		x,y=libtcod.line_step()
 	*/	
 	static bool step(int *xCur, int *yCur);
 
@@ -82,14 +85,17 @@ x,y=libtcod.line_step()
 	@PageName line
 	@FuncTitle Callback-based function
 	@FuncDesc The function returns false if the line has been interrupted by the callback (it returned false before the last point).
-	@Cpp class TCODLIB_API TCODLineListener {
-    virtual bool putPoint (int x, int y) = 0;
-};
-static bool TCODLine::line (int xFrom, int yFrom, int xTo, int yTo, TCODLineListener * listener)
-	@C typedef bool (*TCOD_line_listener_t) (int x, int y);
-bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener)
-	@Py def line_listener(x,y) : # ...
-line(xFrom, yFrom, xTo, yTo, listener)
+	@Cpp
+		class TCODLIB_API TCODLineListener {
+			virtual bool putPoint (int x, int y) = 0;
+		};
+		static bool TCODLine::line (int xFrom, int yFrom, int xTo, int yTo, TCODLineListener * listener)
+	@C
+		typedef bool (*TCOD_line_listener_t) (int x, int y);
+		bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener)
+	@Py
+		def line_listener(x,y) : # ...
+		line(xFrom, yFrom, xTo, yTo, listener)
 	@Param xFrom,yFrom	Coordinates of the line's starting point.
 	@Param xTo,yTo	Coordinates of the line's ending point.
 	@Param listener	Callback called for each line's point. The function stops if the callback returns false.

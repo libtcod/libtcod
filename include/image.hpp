@@ -54,7 +54,7 @@ public :
 	@PageName image_create
 	@FuncTitle Loading a .bmp or .png image
 	@FuncDesc You can read data from a .bmp or .png file (for example to draw an image using the background color of the console cells).
-Note that only 24bits and 32bits PNG files are currently supported.
+		Note that only 24bits and 32bits PNG files are currently supported.
 	@Cpp TCODImage::TCODImage(const char *filename)
 	@C TCOD_image_t TCOD_image_load(const char *filename)
 	@Py image_load(filename)
@@ -69,8 +69,8 @@ Note that only 24bits and 32bits PNG files are currently supported.
 	@PageName image_create
 	@FuncTitle Creating an image from a console
 	@FuncDesc You can create an image from any console (either the root console or an offscreen console).
-The image size will depend on the console size and the font characters size.
-You can then save the image to a file with the save function.
+		The image size will depend on the console size and the font characters size.
+		You can then save the image to a file with the save function.
 	@Cpp TCODImage::TCODImage(const TCODConsole *console)
 	@C TCOD_image_t TCOD_image_from_console(TCOD_console_t console)
 	@Py image_from_console(console)
@@ -90,15 +90,18 @@ You can then save the image to a file with the save function.
 	@Py image_refresh_console(image, console)
 	@Param image In the C version, the image created with TCOD_image_from_console.
 	@Param console The console to capture. In the C version, use NULL for the root console.
-	@CppEx TCODImage *pix = new TCODImage(TCODConsole::root); // create an image from the root console
-      // ... modify the console
-      pix->refreshConsole(TCODConsole::root); // update the image with the console's new content
-	@CEx TCOD_image_t pix = TCOD_image_from_console(NULL);
-      // ... modify the console .. 
-      TCOD_image_refresh_console(pix,NULL);
-	@PyEx pix = libtcod.image_from_console(0)
-      # ... modify the console .. 
-      libtcod.image_refresh_console(pix,0)
+	@CppEx 
+		TCODImage *pix = new TCODImage(TCODConsole::root); // create an image from the root console
+		// ... modify the console
+		pix->refreshConsole(TCODConsole::root); // update the image with the console's new content
+	@CEx 
+		TCOD_image_t pix = TCOD_image_from_console(NULL);
+		// ... modify the console .. 
+		TCOD_image_refresh_console(pix,NULL);
+	@PyEx 
+		pix = libtcod.image_from_console(0)
+		# ... modify the console .. 
+		libtcod.image_refresh_console(pix,0)
 	*/
 	void refreshConsole(const TCODConsole *console);
 
@@ -113,15 +116,18 @@ You can then save the image to a file with the save function.
 	@Py image_get_size(image) # returns w,h
 	@Param image In the C version, the image handler, obtained with the load function.
 	@Param w,h When the function returns, those variables contain the size of the image.
-	@CppEx TCODImage *pix = new TCODImage(80,50);
-      int w,h;
-      pix->getSize(&w,&h); // w = 80, h = 50
-	@CEx TCOD_image_t pix = TCOD_image_new(80,50);
-      int w,h;
-      TCOD_image_get_size(pix,&w,&h); // w = 80, h = 50
-	@PyEx pix = libtcod.image_new(80,50)
-      w,h=libtcod.image_get_size(pix)
-      # w = 80, h = 50 
+	@CppEx 
+		TCODImage *pix = new TCODImage(80,50);
+		int w,h;
+		pix->getSize(&w,&h); // w = 80, h = 50
+	@CEx 
+		TCOD_image_t pix = TCOD_image_new(80,50);
+		int w,h;
+		TCOD_image_get_size(pix,&w,&h); // w = 80, h = 50
+	@PyEx 
+		pix = libtcod.image_new(80,50)
+		w,h=libtcod.image_get_size(pix)
+		# w = 80, h = 50 
 	*/		
 	void getSize(int *w,int *h) const;
 
@@ -134,14 +140,17 @@ You can then save the image to a file with the save function.
 	@Py image_get_pixel(image, x, y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
-0 <= x < width
-0 <= y < height
-	@CppEx TCODImage *pix = new TCODImage(80,50);
-      TCODColor col=pix->getPixel(40,25);
-	@CEx TCOD_image_t pix = TCOD_image_new(80,50);
-      TCOD_color_t col=TCOD_image_get_pixel(pix,40,25);
-	@PyEx pix = litbcod.image_new(80,50)
-      col=litbcod.image_get_pixel(pix,40,25)
+		0 <= x < width
+		0 <= y < height
+	@CppEx 
+		TCODImage *pix = new TCODImage(80,50);
+		TCODColor col=pix->getPixel(40,25);
+	@CEx 
+		TCOD_image_t pix = TCOD_image_new(80,50);
+		TCOD_color_t col=TCOD_image_get_pixel(pix,40,25);
+	@PyEx 
+		pix = litbcod.image_new(80,50)
+		col=litbcod.image_get_pixel(pix,40,25)
 	*/
 	TCODColor getPixel(int x, int y) const;
 
@@ -154,8 +163,8 @@ You can then save the image to a file with the save function.
 	@Py image_get_alpha(image, x, y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
-0 <= x < width
-0 <= y < height
+		0 <= x < width
+		0 <= y < height
 	*/
 	int getAlpha(int x,int y) const;
 
@@ -168,8 +177,8 @@ You can then save the image to a file with the save function.
 	@Py image_is_pixel_transparent(image, x, y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
-0 <= x < width
-0 <= y < height
+		0 <= x < width
+		0 <= y < height
 	*/
    	bool isPixelTransparent(int x, int y) const;
 
@@ -177,24 +186,27 @@ You can then save the image to a file with the save function.
 	@PageName image_read
 	@FuncTitle Getting the average color of a part of the image
 	@FuncDesc This method uses mipmaps to get the average color of an arbitrary rectangular region of the image.
-It can be used to draw a scaled-down version of the image. It's used by libtcod's blitting functions.
+		It can be used to draw a scaled-down version of the image. It's used by libtcod's blitting functions.
 	@Cpp TCODColor TCODImage::getMipmapPixel(float x0,float y0, float x1, float y1)
 	@C TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_image_t image,float x0,float y0, float x1, float y1)
 	@Py image_get_mipmap_pixel(image,x0,y0, x1, y1)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param x0,y0	Coordinates in pixels of the upper-left corner of the region.
-0.0 <= x0 < x1
-0.0 <= y0 < y1
+		0.0 <= x0 < x1
+		0.0 <= y0 < y1
 	@Param x1,y1	Coordinates in pixels of the lower-right corner of the region.
-x0 < x1 < width
-y0 < y1 < height
-	@CppEx // Get the average color of a 5x5 "superpixel" in the center of the image.
-	TCODImage *pix = new TCODImage(80,50);
-      TCODColor col=pix->getMipMapPixel(37.5f, 22.5f, 42.5f, 28.5f);
-	@CEx TCOD_image_t pix = TCOD_image_new(80,50);
-      TCOD_color_t col=TCOD_image_get_mipmap_pixel(pix,37.5f, 22.5f, 42.5f, 28.5f);
-	@PyExpix = libtcod.image_new(80,50)
-      col=libtcod.image_get_mipmap_pixel(pix,37.5, 22.5, 42.5, 28.5)
+		x0 < x1 < width
+		y0 < y1 < height
+	@CppEx 
+		// Get the average color of a 5x5 "superpixel" in the center of the image.
+		TCODImage *pix = new TCODImage(80,50);
+		TCODColor col=pix->getMipMapPixel(37.5f, 22.5f, 42.5f, 28.5f);
+	@CEx 
+		TCOD_image_t pix = TCOD_image_new(80,50);
+		TCOD_color_t col=TCOD_image_get_mipmap_pixel(pix,37.5f, 22.5f, 42.5f, 28.5f);
+	@PyEx
+		pix = libtcod.image_new(80,50)
+		col=libtcod.image_get_mipmap_pixel(pix,37.5, 22.5, 42.5, 28.5)
 	*/
    	TCODColor getMipmapPixel(float x0,float y0, float x1, float y1);
 
@@ -220,8 +232,8 @@ y0 < y1 < height
 	@Py image_put_pixel(image,x, y,col)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param x,y	The pixel coordinates inside the image.
-0 <= x < width
-0 <= y < height
+		0 <= x < width
+		0 <= y < height
 	@Param col	The new color of the pixel.
 	*/
 	void putPixel(int x, int y, const TCODColor col);
@@ -278,12 +290,15 @@ y0 < y1 < height
 	@Py image_save(image, filename)
 	@Param image	In the C version, the image handler, obtained with any image creation function.
 	@Param filename	Name of the .bmp or .png file.
-	@CppEx TCODImage *pix = new TCODImage(10,10);
-      pix->save("mypic.bmp");
-	@CEx TCOD_image_t pix = TCOD_image_from_console(my_offscreen_console);
-      TCOD_image_save(pix,"mypic.bmp");
-	@PyEx pix = libtcod.image_from_console(my_offscreen_console)
-      libtcod.image_save(pix,"mypic.bmp")
+	@CppEx 
+		TCODImage *pix = new TCODImage(10,10);
+		pix->save("mypic.bmp");
+	@CEx 
+		TCOD_image_t pix = TCOD_image_from_console(my_offscreen_console);
+		TCOD_image_save(pix,"mypic.bmp");
+	@PyEx 
+		pix = libtcod.image_from_console(my_offscreen_console)
+		libtcod.image_save(pix,"mypic.bmp")
 	  */	
 	void save(const char *filename) const;
 
@@ -308,7 +323,7 @@ y0 < y1 < height
 	@PageName image_blit
 	@FuncTitle Blitting with scaling and/or rotation
 	@FuncDesc This function allows you to specify the floating point coordinates of the center
-of the image, its scale and its rotation angle.
+		of the image, its scale and its rotation angle.
 	@Cpp void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
 	@C void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
 	@Py image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle)
@@ -329,16 +344,19 @@ of the image, its scale and its rotation angle.
 	@Py image_set_key_color(image, keyColor)
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	@Param color	Pixels with this color will be skipped by blitting functions.
-	@CppEx TCODImage *pix = TCODImage("mypix.bmp");
-      pix->setKeyColor(TCODColor::red);
-      // blitting the image, omitting red pixels
-      pix->blitRect(TCODConsole::root,40,25);
-	@CEx TCOD_image_t pix = TCOD_image_new(10,10);
-      TCOD_image_set_key_color(pix,TCOD_red);
-      TCOD_image_blit_rect(pix,NULL,40,25,5,5,TCOD_BKGND_SET);
-	@PyEx pix = libtcod.image_new(10,10)
-      libtcod.image_set_key_color(pix,libtcod.red)
-      libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
+	@CppEx 
+		TCODImage *pix = TCODImage("mypix.bmp");
+		pix->setKeyColor(TCODColor::red);
+		// blitting the image, omitting red pixels
+		pix->blitRect(TCODConsole::root,40,25);
+	@CEx 
+		TCOD_image_t pix = TCOD_image_new(10,10);
+		TCOD_image_set_key_color(pix,TCOD_red);
+		TCOD_image_blit_rect(pix,NULL,40,25,5,5,TCOD_BKGND_SET);
+	@PyEx 
+		pix = libtcod.image_new(10,10)
+		libtcod.image_set_key_color(pix,libtcod.red)
+		libtcod.image_blit_rect(pix,0,40,25,5,5,libtcod.BKGND_SET)
 	*/	
 	void setKeyColor(const TCODColor keyColor);
 	
@@ -346,13 +364,13 @@ of the image, its scale and its rotation angle.
 	@PageName image_blit
 	@FuncTitle Blitting with subcell resolution
 	@FuncDesc Eventually, you can use some special characters in the libtcod fonts :
-<img src="subcell.png">
-to double the console resolution using this blitting function.
-<table><tr><td> 
-Comparison before/after subcell resolution in TCOD :<br /> 
-<img src="subcell_comp.png"></td><td> 
-Pyromancer ! screenshot, making full usage of subcell resolution :<br /> 
-<img src="subcell_pyro.png"></td></tr></table>
+		<img src="subcell.png">
+		to double the console resolution using this blitting function.
+		<table><tr><td> 
+		Comparison before/after subcell resolution in TCOD :<br /> 
+		<img src="subcell_comp.png"></td><td> 
+		Pyromancer ! screenshot, making full usage of subcell resolution :<br /> 
+		<img src="subcell_pyro.png"></td></tr></table>
 	@Cpp void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1 ) const;
 	@C void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
 	@Py image_blit_2x(image, dest, dx, dy, sx=0, sy=0, w=-1, h=-1)

@@ -121,15 +121,18 @@ public :
 		Should be 16x16 for ASCII layouts, 32x8 for TCOD layout.
 		But you can use any other layout.
 		If set to 0, there are deduced from the font layout flag.
-	@CppEx TCODConsole::setCustomFont("standard_8x8_ascii_in_col_font.bmp",TCOD_FONT_LAYOUT_ASCII_INCOL);
-      TCODConsole::setCustomFont("32bits_8x8_ascii_in_row_font.png",TCOD_FONT_LAYOUT_ASCII_INROW);
-      TCODConsole::setCustomFont("greyscale_8x8_tcod_font.png",TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
-	@CEx TCOD_console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",TCOD_FONT_LAYOUT_ASCII_INCOL,16,16);
-      TCOD_console_set_custom_font("32bits_8x8_ascii_in_row_font.png",TCOD_FONT_LAYOUT_ASCII_INROW,32,8);
-      TCOD_console_set_custom_font("greyscale_8x8_tcod_font.png",TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE,32,8);
-	@PyEx libtcod.console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",libtcod.FONT_LAYOUT_ASCII_INCOL)
-      libtcod.console_set_custom_font("32bits_8x8_ascii_in_row_font.png",libtcod.FONT_LAYOUT_ASCII_INROW)
-      libtcod.console_set_custom_font("greyscale_8x8_tcod_font.png",libtcod.FONT_LAYOUT_TCOD | libtcod.FONT_TYPE_GREYSCALE)
+	@CppEx 
+		TCODConsole::setCustomFont("standard_8x8_ascii_in_col_font.bmp",TCOD_FONT_LAYOUT_ASCII_INCOL);
+		TCODConsole::setCustomFont("32bits_8x8_ascii_in_row_font.png",TCOD_FONT_LAYOUT_ASCII_INROW);
+		TCODConsole::setCustomFont("greyscale_8x8_tcod_font.png",TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
+	@CEx 
+		TCOD_console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",TCOD_FONT_LAYOUT_ASCII_INCOL,16,16);
+		TCOD_console_set_custom_font("32bits_8x8_ascii_in_row_font.png",TCOD_FONT_LAYOUT_ASCII_INROW,32,8);
+		TCOD_console_set_custom_font("greyscale_8x8_tcod_font.png",TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE,32,8);
+	@PyEx 
+		libtcod.console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",libtcod.FONT_LAYOUT_ASCII_INCOL)
+		libtcod.console_set_custom_font("32bits_8x8_ascii_in_row_font.png",libtcod.FONT_LAYOUT_ASCII_INROW)
+		libtcod.console_set_custom_font("greyscale_8x8_tcod_font.png",libtcod.FONT_LAYOUT_TCOD | libtcod.FONT_TYPE_GREYSCALE)
 	*/
 	static void setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0);
 
@@ -193,12 +196,18 @@ public :
 	@Py console_set_fullscreen(fullscreen)
 	@Param fullscreen true to switch to fullscreen mode.
 		false to switch to windowed mode.
-	@CppEx TCOD_key_t key=TCODConsole::checkForKeypress();
-      if ( key.vk == TCODK_ENTER && key.lalt ) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-	@CEx TCOD_key_t key=TCOD_console_check_for_keypress();
-      if ( key.vk == TCODK_ENTER && key.lalt ) TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
-	@PyEx key=libtcod.console_check_for_keypress()
-      if key.vk == libtcod.KEY_ENTER and key.lalt : libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
+	@CppEx 
+		TCOD_key_t key=TCODConsole::checkForKeypress();
+		if ( key.vk == TCODK_ENTER && key.lalt ) 
+			TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
+	@CEx 
+		TCOD_key_t key=TCOD_console_check_for_keypress();
+		if ( key.vk == TCODK_ENTER && key.lalt ) 
+			TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
+	@PyEx 
+		key=libtcod.console_check_for_keypress()
+		if key.vk == libtcod.KEY_ENTER and key.lalt : 
+			libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 	*/
 	static void setFullscreen(bool fullscreen);
 
@@ -251,7 +260,8 @@ public :
 	@Param x,y Position of the credits text in your root console
 	@Param alpha If true, credits are transparently added on top of the existing screen.
 		For this to work, this function must be placed between your screen rendering code and the console flush.
-	@CppEx TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false); // initialize the root console
+	@CppEx
+      TCODConsole::initRoot(80,50,"The Chronicles Of Doryen v0.1",false); // initialize the root console
       bool endCredits=false;
       while ( ! TCODConsole::isWindowClosed() ) { // your game loop
           // your game rendering here...
@@ -259,7 +269,8 @@ public :
           if (! endCredits ) endCredits=TCODConsole::renderCredits(35,25,true);
           TCODConsole::flush();
       }
-	@CEx TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
+	@CEx 
+      TCOD_console_init_root(80,50,"The Chronicles Of Doryen v0.1",false);
       bool end_credits=false;
       while ( ! TCOD_console_is_window_closed() ) {
           // your game rendering here...
@@ -267,7 +278,8 @@ public :
           if (! end_credits ) end_credits=TCOD_console_credits_render(35,25,true);
           TCOD_console_flush();
       }
-	@PyEx libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
+	@PyEx
+      libtcod.console_init_root(80,50,"The Chronicles Of Doryen v0.1",False)
       end_credits=False
       while not libtcod.console_is_window_closed() :
           // your game rendering here...
@@ -618,31 +630,35 @@ public :
 	@Param con the color control TCOD_COLCTRL_x, 1<=x<=5
 	@Param fore foreground color when this control is activated
 	@Param back background color when this control is activated
-	@CppEx // A string with a red over black word, using predefined color control codes
+	@CppEx 
+		// A string with a red over black word, using predefined color control codes
 		TCODConsole::setColorControl(TCOD_COLCTRL_1,TCODColor::red,TCODColor::black);
 		TCODConsole::root->print(1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
 		// A string with a red over black word, using generic color control codes
 		TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
-	            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+	          TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
 		// A string with a red over black word, using generic color control codes
 		TCODConsole::root->print(1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
-	            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
-	@CEx // A string with a red over black word, using predefined color control codes
+	          TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+	@CEx 
+		// A string with a red over black word, using predefined color control codes
 		TCOD_console_set_color_control(TCOD_COLCTRL_1,red,black);
 		TCOD_console_print(NULL,1,1,"String with a %cred%c word.",TCOD_COLCTRL_1,TCOD_COLCTRL_STOP);
 		// A string with a red word (over default background color), using generic color control codes
-		TCOD_console_print(NULL,1,1,"String with a %c%c%c%cred%c word.",TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
+		TCOD_console_print(NULL,1,1,"String with a %c%c%c%cred%c word.",
+			TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_STOP);
 		// A string with a red over black word, using generic color control codes
 		TCOD_console_print(NULL,1,1,"String with a %c%c%c%c%c%c%c%cred%c word.",
-            TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
-	@PyEx # A string with a red over black word, using predefined color control codes
+			TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
+	@PyEx 
+		# A string with a red over black word, using predefined color control codes
 		libtcod.console_set_color_control(libtcod.COLCTRL_1,litbcod.red,litbcod.black)
 		libtcod.console_print(0,1,1,"String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
 		# A string with a red word (over default background color), using generic color control codes
 		litbcod.console_print(0,1,1,"String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
 		# A string with a red over black word, using generic color control codes
 		libtcod.console_print(0,1,1,"String with a %c%c%c%c%c%c%c%cred%c word."%
-            (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
+		        (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
 	*/
 	static void setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back);
 
@@ -868,18 +884,21 @@ public :
 	@Py console_set_fade(fade, fadingColor)
 	@Param fade the fading amount. 0 => the screen is filled with the fading color. 255 => no fading effect
 	@Param fadingColor the color to use during the console flushing operation
-	@CppEx for (int fade=255; fade >= 0; fade --) {
-          TCODConsole::setFade(fade,TCODColor::black);
-          TCODConsole::flush();
-      }
-	@CEx int fade;
-      for (fade=255; fade >= 0; fade --) {
-          TCOD_console_setFade(fade,TCOD_black);
-          TCOD_console_flush();
-      }      
-	@PyEx for fade in range(255,0) :
-          libtcod.console_setFade(fade,libtcod.black)
-          libtcod.console_flush()
+	@CppEx 
+		for (int fade=255; fade >= 0; fade --) {
+			TCODConsole::setFade(fade,TCODColor::black);
+			TCODConsole::flush();
+		}
+	@CEx 
+		int fade;
+		for (fade=255; fade >= 0; fade --) {
+			TCOD_console_setFade(fade,TCOD_black);
+			TCOD_console_flush();
+		}      
+	@PyEx 
+		for fade in range(255,0) :
+			libtcod.console_setFade(fade,libtcod.black)
+			libtcod.console_flush()
 	*/
 	static void setFade(uint8 fade, const TCODColor &fadingColor);
 
@@ -1042,12 +1061,15 @@ public :
 	@C TCOD_key_t TCOD_console_wait_for_keypress(bool flush)
 	@Py console_wait_for_keypress(flush)
 	@Param flush if true, all pending keypress events are flushed from the keyboard buffer. Else, return the first available event
-	@CppEx TCOD_key_t key = TCODConsole::waitForKeypress(true);
-      if ( key.c == 'i' ) { ... open inventory ... }
-	@CEx TCOD_key_t key = TCOD_console_wait_for_keypress(true);
-      if ( key.c == 'i' ) { ... open inventory ... }
-	@PyEx key = libtcod.console_wait_for_keypress(True)
-      if key.c == ord('i') : # ... open inventory ...
+	@CppEx 
+		TCOD_key_t key = TCODConsole::waitForKeypress(true);
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@CEx 
+		TCOD_key_t key = TCOD_console_wait_for_keypress(true);
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@PyEx 
+		key = libtcod.console_wait_for_keypress(True)
+		if key.c == ord('i') : # ... open inventory ...
 	*/
 	static TCOD_key_t waitForKeypress(bool flush);
 	/**
@@ -1063,15 +1085,18 @@ public :
 		TCOD_KEY_PRESSED : only keypress events are returned
 		TCOD_KEY_RELEASED : only key release events are returnes
 		TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
-	@CppEx TCOD_key_t key = TCODConsole::checkForKeypress();
-      if ( key.vk == TCODK_NONE ) return; // no key pressed
-      if ( key.c == 'i' ) { ... open inventory ... }
-	@C TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
-      if ( key.vk == TCODK_NONE ) return; // no key pressed
-      if ( key.c == 'i' ) { ... open inventory ... }
-	@Py key = libtcod.console_check_for_keypress()
-      if key.vk == libtcod.KEY_NONE return # no key pressed
-      if key.c == ord('i') : # ... open inventory ...
+	@CppEx 
+		TCOD_key_t key = TCODConsole::checkForKeypress();
+		if ( key.vk == TCODK_NONE ) return; // no key pressed
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@C 
+		TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+		if ( key.vk == TCODK_NONE ) return; // no key pressed
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@Py 
+		key = libtcod.console_check_for_keypress()
+		if key.vk == libtcod.KEY_NONE return # no key pressed
+		if key.c == ord('i') : # ... open inventory ...
 	*/
 	static TCOD_key_t checkForKeypress(int flags=TCOD_KEY_RELEASED);
 	/**
@@ -1109,16 +1134,17 @@ public :
 	@PageTitle 	Keyboard event structure
 	@PageFather console_input
 	@PageDesc This structure contains information about a key pressed/released by the user.
-	@C typedef struct {
-		TCOD_keycode_t vk; 
-		char c;
-		bool pressed;
-		bool lalt;
-		bool lctrl;
-		bool ralt;
-		bool rctrl;
-		bool shift;
-	} TCOD_key_t;
+	@C
+		typedef struct {
+			TCOD_keycode_t vk; 
+			char c;
+			bool pressed;
+			bool lalt;
+			bool lctrl;
+			bool ralt;
+			bool rctrl;
+			bool shift;
+		} TCOD_key_t;
 	@Param vk An arbitrary value representing the physical key on the keyboard. Possible values are stored in the TCOD_keycode_t enum. If no key was pressed, the value is TCODK_NONE
 	@Param c If the key correspond to a printable character, the character is stored in this field. Else, this field contains 0.
 	@Param pressed true if the event is a key pressed, or false for a key released.
@@ -1225,19 +1251,22 @@ public :
 	@Param w,h the console size.
 		0 < w
 		0 < h
-	@CppEx // Creating a 40x20 offscreen console, filling it with red and blitting it on the root console at position 5,5
-      TCODConsole *offscreenConsole = new TCODConsole(40,20);
-      offscreenConsole->setBackgroundColor(TCODColor::red);
-      offscreenConsole->clear();
-      TCODConsole::blit(offscreenConsole,0,0,40,20,TCODConsole::root,5,5,255);
-	@CEx TCOD_console_t offscreen_console = TCOD_console_new(40,20);
-      TCOD_console_set_background_color(offscreen_console,TCOD_red);
-      TCOD_console_clear(offscreen_console);
-      TCOD_console_blit(offscreen_console,0,0,40,20,NULL,5,5,255);
-	@PyEx offscreen_console = libtcod.console_new(40,20)
-      libtcod.console_set_background_color(offscreen_console,libtcod.red)
-      libtcod.console_clear(offscreen_console)
-      libtcod.console_blit(offscreen_console,0,0,40,20,0,5,5,255)
+	@CppEx 
+		// Creating a 40x20 offscreen console, filling it with red and blitting it on the root console at position 5,5
+		TCODConsole *offscreenConsole = new TCODConsole(40,20);
+		offscreenConsole->setBackgroundColor(TCODColor::red);
+		offscreenConsole->clear();
+		TCODConsole::blit(offscreenConsole,0,0,40,20,TCODConsole::root,5,5,255);
+	@CEx 
+		TCOD_console_t offscreen_console = TCOD_console_new(40,20);
+		TCOD_console_set_background_color(offscreen_console,TCOD_red);
+		TCOD_console_clear(offscreen_console);
+		TCOD_console_blit(offscreen_console,0,0,40,20,NULL,5,5,255);
+	@PyEx 
+		offscreen_console = libtcod.console_new(40,20)
+		libtcod.console_set_background_color(offscreen_console,libtcod.red)
+		libtcod.console_clear(offscreen_console)
+		libtcod.console_blit(offscreen_console,0,0,40,20,0,5,5,255)
 	*/
 	TCODConsole(int w, int h);
 
@@ -1256,7 +1285,8 @@ public :
 		0.0 => The source console is completely transparent. This function does nothing.
 		1.0 => The source console is opaque. Its cells replace the destination cells.
 		0 < fade < 1.0 => The source console is partially blitted, simulating real transparency.
-	@CppEx // Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.
+	@CppEx 
+		// Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.
 		TCODConsole *off1 = new TCODConsole(80,50);
 		TCODConsole *off2 = new TCODConsole(80,50);
 		... print screen1 on off1
@@ -1272,36 +1302,38 @@ public :
 			TCODConsole::blit(off2,0,0,80,50,TCODConsole::root,0,0,i/255.0,i/255.0); // renders the second screen (transparent)
 			TCODConsole::flush();
 		}
-	@CEx TCOD_console_t off1 = TCOD_console_new(80,50);
-      TCOD_console_t off2 = TCOD_console_new(80,50);
-      int i;
-      ... print screen1 on off1
-      ... print screen2 of off2
-      // render screen1 in the game window 
-      TCOD_console_blit(off1,0,0,80,50,NULL,0,0,1.0,1.0);
-      TCOD_console_flush();
-      // wait or a keypress 
-      TCOD_console_wait_for_keypress(true);
-      // do a cross-fading from off1 to off2 
-      for (i=1; i <= 255; i++) {
-          TCOD_console_blit(off1,0,0,80,50,NULL,0,0,1.0,1.0); // renders the first screen (opaque) 
-          TCOD_console_blit(off2,0,0,80,50,NULL,0,0,i/255.0,i/255.0); // renders the second screen (transparent) 
-          TCOD_console_flush();
-	  }
-	@PyEx off1 = libtcod.console_new(80,50)
-      off2 = libtcod.console_new(80,50)
-      ... print screen1 on off1
-      ... print screen2 of off2
-      # render screen1 in the game window
-      libtcod.console_blit(off1,0,0,80,50,0,0,0)
-      libtcod.console_flush()
-      # wait or a keypress
-      libtcod.console_wait_for_keypress(True)
-      # do a cross-fading from off1 to off2
-      for i in range(1,256) :
-          litbcod.console_blit(off1,0,0,80,50,0,0,0) # renders the first screen (opaque)
-          litbcod.console_blit(off2,0,0,80,50,0,0,0,i/255.0,i/255.0) # renders the second screen (transparent)
-          litbcod.console_flush()
+	@CEx 
+		TCOD_console_t off1 = TCOD_console_new(80,50);
+		TCOD_console_t off2 = TCOD_console_new(80,50);
+		int i;
+		... print screen1 on off1
+		... print screen2 of off2
+		// render screen1 in the game window 
+		TCOD_console_blit(off1,0,0,80,50,NULL,0,0,1.0,1.0);
+		TCOD_console_flush();
+		// wait or a keypress 
+		TCOD_console_wait_for_keypress(true);
+		// do a cross-fading from off1 to off2 
+		for (i=1; i <= 255; i++) {
+			TCOD_console_blit(off1,0,0,80,50,NULL,0,0,1.0,1.0); // renders the first screen (opaque) 
+			TCOD_console_blit(off2,0,0,80,50,NULL,0,0,i/255.0,i/255.0); // renders the second screen (transparent) 
+			TCOD_console_flush();
+		}
+	@PyEx 
+		off1 = libtcod.console_new(80,50)
+		off2 = libtcod.console_new(80,50)
+		... print screen1 on off1
+		... print screen2 of off2
+		# render screen1 in the game window
+		libtcod.console_blit(off1,0,0,80,50,0,0,0)
+		libtcod.console_flush()
+		# wait or a keypress
+		libtcod.console_wait_for_keypress(True)
+		# do a cross-fading from off1 to off2
+		for i in range(1,256) :
+			litbcod.console_blit(off1,0,0,80,50,0,0,0) # renders the first screen (opaque)
+			litbcod.console_blit(off2,0,0,80,50,0,0,0,i/255.0,i/255.0) # renders the second screen (transparent)
+			litbcod.console_flush()
 	*/
 	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f);
 	/**
@@ -1323,15 +1355,18 @@ public :
 	@C void TCOD_console_delete(TCOD_console_t con)
 	@Py console_delete(con)
 	@Param con in the C and Python versions, the offscreen console handler
-	@CppEx TCODConsole *off1 = new TCODConsole(80,50);
-      ... use off1
-      delete off1; // destroy the offscreen console
-	@CEx TCOD_console_t off1 = TCOD_console_new(80,50);
-      ... use off1
-      TCOD_console_delete(off1); // destroy the offscreen console 
-	@PyEx off1 = libtcod.console_new(80,50)
-      ... use off1
-      libtcod.console_delete(off1) # destroy the offscreen console
+	@CppEx 
+		TCODConsole *off1 = new TCODConsole(80,50);
+		... use off1
+		delete off1; // destroy the offscreen console
+	@CEx 
+		TCOD_console_t off1 = TCOD_console_new(80,50);
+		... use off1
+		TCOD_console_delete(off1); // destroy the offscreen console 
+	@PyEx 
+		off1 = libtcod.console_new(80,50)
+		... use off1
+		libtcod.console_delete(off1) # destroy the offscreen console
 	*/
 	virtual ~TCODConsole();
 

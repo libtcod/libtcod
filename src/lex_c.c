@@ -235,6 +235,7 @@ void TCOD_lex_get_new_line(TCOD_lex_t *lex)
 int TCOD_lex_get_space(TCOD_lex_t *lex)
 {
 	char c;
+	char *startPos=NULL;
 	while ( 1 )
 	{
 		while ( (c = *lex->pos) <= ' ')
@@ -247,6 +248,7 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 		}
 		if ( lex->simpleCmt && strncmp(lex->pos, lex->simpleCmt, strlen(lex->simpleCmt)) == 0 )
 		{
+			if ( ! startPos ) startPos = lex->pos;
 			while ( *lex->pos != '\0' && *lex->pos != '\n' )
 			lex->pos++;
 			TCOD_lex_get_new_line(lex);
@@ -257,6 +259,7 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 			int isJavadoc=( lex->javadocCmtStart && strncmp(lex->pos, lex->javadocCmtStart, strlen(lex->javadocCmtStart)) == 0 );
 			int cmtLevel=1;
 			char *javadocStart = NULL;
+			if ( ! startPos ) startPos = lex->pos;
 			if ( isJavadoc )
 			{
 				javadocStart=lex->pos+strlen(lex->javadocCmtStart);
@@ -300,6 +303,15 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 			continue;
 		}
 		break;
+	}
+	if ( (lex->flags & TCOD_LEX_FLAG_TOKENIZE_COMMENTS) && startPos && lex->pos > startPos ) {
+		int len = lex->pos - startPos;
+		allocate_tok(lex, len+1);
+		strncpy(lex->tok,startPos,len);
+		lex->tok[len]=0;
+		lex->token_type = TCOD_LEX_COMMENT;
+		lex->token_idx = -1;
+		return TCOD_LEX_COMMENT;
 	}
 	return TCOD_LEX_UNKNOWN;
 }

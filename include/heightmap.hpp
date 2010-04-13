@@ -46,19 +46,21 @@ public :
 	@PageTitle Creating a heightmap
 	@FuncTitle Creating an empty map
 	@FuncDesc As with other modules, you have to create a heightmap object first :
-Note that whereas most other modules use opaque structs, the TCOD_heightmap_t fields can be freely accessed. Thus, the TCOD_heightmap_new function returns a TCOD_heightmap_t pointer, not a TCOD_heightmap_t. The w and h fields should not be modified after the heightmap creation. The newly created heightmap is filled with 0.0 values.
+		Note that whereas most other modules use opaque structs, the TCOD_heightmap_t fields can be freely accessed. Thus, the TCOD_heightmap_new function returns a TCOD_heightmap_t pointer, not a TCOD_heightmap_t. The w and h fields should not be modified after the heightmap creation. The newly created heightmap is filled with 0.0 values.
 	@Cpp TCODHeightMap::TCODHeightMap(int w, int h)
-	@C typedef struct {
-          int w,h;
-          float *values;
-      } TCOD_heightmap_t;
-      TCOD_heightmap_t *TCOD_heightmap_new(int w,int h)
+	@C 
+		typedef struct {
+			int w,h;
+			float *values;
+		} TCOD_heightmap_t;
+		TCOD_heightmap_t *TCOD_heightmap_new(int w,int h)
 	@Py heightmap_new(w,h)
 	@Param w,h	The width and height of the heightmap.
 	@CppEx TCODHeightMap myMap(50,50);
 	@CEx TCOD_heightmap_t *my_map=TCOD_heightmap_new(50,50);
-	@PyEx map=libtcod.heightmap_new(50,50)
-      print map.w, map.h
+	@PyEx 
+		map=libtcod.heightmap_new(50,50)
+		print map.w, map.h
 	*/
 	TCODHeightMap(int w, int h);
 
@@ -80,7 +82,7 @@ Note that whereas most other modules use opaque structs, the TCOD_heightmap_t fi
 	@PageDesc Those are simple operations applied either on a single map cell or on every map cell. 
 	@FuncTitle Setting a cell value
 	@FuncDesc Once the heightmap has been created, you can do some basic operations on the values inside it.
-You can set a single value :
+		You can set a single value :
 	@Cpp void TCODHeightmap::setValue(int x, int y, float v)
 	@C void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float value)
 	@Py heightmap_set_value(hm, x, y, value)
@@ -223,7 +225,7 @@ You can set a single value :
 	@PageName heightmap_modify
 	@FuncTitle Dig hills
 	@FuncDesc This function takes the highest value (if height > 0) or the lowest (if height < 0) between the map and the hill.
-It's main goal is to carve things in maps (like rivers) by digging hills along a curve.
+		It's main goal is to carve things in maps (like rivers) by digging hills along a curve.
 	@Cpp void TCODHeightmap::digHill(float hx, float hy, float hradius, float height)
 	@C void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
 	@Py heightmap_dig_hill(hm, x, y, radius, height)
@@ -259,7 +261,7 @@ It's main goal is to carve things in maps (like rivers) by digging hills along a
 	@C void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 	@Py heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,maxLevel)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
-kernelSize	Number of neighbour cells involved.
+		kernelSize	Number of neighbour cells involved.
 	@Param dx,dy	Array of kernelSize cells coordinates. The coordinates are relative to the current cell (0,0) is current cell, (-1,0) is west cell, (0,-1) is north cell, (1,0) is east cell, (0,1) is south cell, ...
 	@Param weight	Array of kernelSize cells weight. The value of each neighbour cell is scaled by its corresponding weight
 	@Param minLevel	The transformation is only applied to cells which value is >= minLevel.

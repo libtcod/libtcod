@@ -27,6 +27,10 @@
 	src: local('Bitstream Vera Sans Mono Bold'), local('BitstreamVeraSansMono-Bold'), url('../font/VeraMono-Bold.ttf') format('truetype');
 }
 
+/* color table specific stuff */
+table.none td { border : 0 }
+table.color td { width:100px; text-align: center;}
+
 /**************** 
  * main regions *
  ****************/
@@ -225,13 +229,6 @@ div.code p.cpp {
 div.code p.cs {
   padding: 15px 5px 5px 60px;
 	background-image: url('../img/cs.png');
-	background-position: 15px 5px;
-	background-repeat: no-repeat;
-}
-
-div.code p.lua {
-  padding: 15px 5px 5px 60px;
-	background-image: url('../img/lua.png');
 	background-position: 15px 5px;
 	background-repeat: no-repeat;
 }

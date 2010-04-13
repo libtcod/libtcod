@@ -28,6 +28,46 @@
 #ifndef _TCOD_COLOR_HPP
 #define _TCOD_COLOR_HPP
 
+// color constants uses to generate @ColorTable
+/**
+	@ColorCategory STANDARD COLORS
+	@Color red 255,0,0
+	@Color flame 255,63,0
+	@Color orange 255,127,0
+	@Color amber 255,191,0
+	@Color yellow 255,255,0,
+	@Color lime 191,255,0
+	@Color chartreuse 127,255,0
+	@Color green 0,255,0
+	@Color sea 0,255,127
+	@Color turquoise 0,255,191
+	@Color cyan 0,255,255
+	@Color sky 0,191,255
+	@Color azure 0,127,255
+	@Color blue 0,0,255
+	@Color han 63,0,255
+	@Color violet 127,0,255
+	@Color purple 191,0,255
+	@Color fuchsia 255,0,255
+	@Color magenta 255,0,191
+	@Color pink 255,0,127
+	@Color crimson 255,0,63
+	@ColorCategory METALLIC COLORS
+	@Color brass 191,151,96
+	@Color copper 196,136,124
+	@Color gold 229,191,0
+	@Color silver 203,203,203
+	@ColorCategory MISCELLANEOUS COLORS
+	@Color celadon 172,255,175
+	@Color peach 255,159,127
+	@ColorCategory GREYSCALE & SEPIA
+	@Color grey 127,127,127
+	@Color sepia 127,101,63
+	@ColorCategory BLACK AND WHITE
+	@Color black 0,0,0
+	@Color white 255,255,255
+*/
+
 /**
 	@PageName color
 	@PageCategory Core
@@ -35,7 +75,7 @@
 	@PageDesc The Doryen library uses 32bits colors. Thus, your OS desktop must use 32bits colors.
 A color is defined by its red, green and blue component between 0 and 255.
 You can use the following predefined colors (hover over a color to see its full name and R,G,B values):
-TODO
+	@ColorTable
 	@CppEx TCODColor::desaturatedRed
 TCODColor::lightestRed
 TCODColor::lighterRed

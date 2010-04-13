@@ -94,15 +94,18 @@ class TCODLIB_API TCODMap {
 		@Py map_copy (source, dest)
 		@Param source	The map containing the source data.
 		@Param dest	In C and python version, the map where data is copied.
-		@CppEx TCODMap * map = new TCODMap(50,50); // allocate the map
+		@CppEx 
+			TCODMap * map = new TCODMap(50,50); // allocate the map
 			map->setProperties(10,10,true,true); // set a cell as 'empty'
 			TCODMap * map2 = new TCODMap(10,10); // allocate another map
 			map2->copy(map); // copy map data into map2, reallocating it to 50x50
-		@CEx TCOD_map_t map = TCOD_map_new(50,50);
+		@CEx 
+			TCOD_map_t map = TCOD_map_new(50,50);
 			TCOD_map_t map2 = TCOD_map_new(10,10);
 			TCOD_map_set_properties(map,10,10,true,true);
 			TCOD_map_copy(map,map2);
-		@PyEx map = libtcod.map_new(50,50)
+		@PyEx 
+			map = libtcod.map_new(50,50)
 			map2 = libtcod.map_new(10,10)
 			libtcod.map_set_properties(map,10,10,True,True)
 			libtcod.map_copy(map,map2)
@@ -114,14 +117,14 @@ class TCODLIB_API TCODMap {
 		@PageTitle Computing the field of view
 		@PageFather fov
 		@FuncDesc Once your map is allocated and empty cells have been defined, you can calculate the field of view with :
-			<div class="code"><p>typedef enum { FOV_BASIC, 
+			<div class="code"><pre>typedef enum { FOV_BASIC, 
                FOV_DIAMOND, 
                FOV_SHADOW, 
                FOV_PERMISSIVE_0,FOV_PERMISSIVE_1,FOV_PERMISSIVE_2,FOV_PERMISSIVE_3,
                FOV_PERMISSIVE_4,FOV_PERMISSIVE_5,FOV_PERMISSIVE_6,FOV_PERMISSIVE_7,FOV_PERMISSIVE_8, 
                FOV_RESTRICTIVE,
                NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
-            </p></div>
+            </pre></div>
 			* FOV_BASIC : classic libtcod fov algorithm (ray casted from the player to all the cells on the submap perimeter)
 			* FOV_DIAMOND : based on <a href="http://www.geocities.com/temerra/los_rays.html">this</a> algorithm
 			* FOV_SHADOW : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting">this</a> algorithm
@@ -139,15 +142,18 @@ class TCODLIB_API TCODMap {
 		@Param maxRadius	If > 0, the fov is only computed up to maxRadius cells away from the player. Else, the range is unlimited.
 		@Param light_walls	Wether the wall cells near ground cells in fov must be in fov too.
 		@Param algo	FOV algorithm to use.
-		@CppEx TCODMap *map = new TCODMap(50,50); // allocate the map
-		      map->setProperties(10,10,true,true); // set a cell as 'empty'
-		      map->computeFov(10,10); // calculate fov from the cell 10x10 (basic raycasting, unlimited range, walls lighting on)
-		@CEx TCOD_map_t map = TCOD_map_new(50,50);
-		      TCOD_map_set_properties(map,10,10,true,true);
-		      TCOD_map_compute_fov(map,10,10,0,true,FOV_SHADOW); // using shadow casting
-		@PyEx map = libtcod.map_new(50,50)
-		      libtcod.map_set_properties(map,10,10,True,True)
-		      libtcod.map_compute_fov(map,10,10,0,True,libtcod.FOV_PERMISSIVE(2)) 
+		@CppEx 
+			TCODMap *map = new TCODMap(50,50); // allocate the map
+			map->setProperties(10,10,true,true); // set a cell as 'empty'
+			map->computeFov(10,10); // calculate fov from the cell 10x10 (basic raycasting, unlimited range, walls lighting on)
+		@CEx 
+			TCOD_map_t map = TCOD_map_new(50,50);
+			TCOD_map_set_properties(map,10,10,true,true);
+			TCOD_map_compute_fov(map,10,10,0,true,FOV_SHADOW); // using shadow casting
+		@PyEx 
+			map = libtcod.map_new(50,50)
+			libtcod.map_set_properties(map,10,10,True,True)
+			libtcod.map_compute_fov(map,10,10,0,True,libtcod.FOV_PERMISSIVE(2)) 
 		*/
 		void computeFov(int playerX,int playerY, int maxRadius = 0,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC);
 
@@ -164,30 +170,36 @@ class TCODLIB_API TCODMap {
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
 			0 <= y < map height.
-		@CppEx TCODMap *map = new TCODMap(50,50); // allocate the map
-	      map->setProperties(10,10,true,true); // set a cell as 'empty'
-	      map->computeFov(10,10); // calculate fov from the cell 10x10
-		  bool visible=map->isInFov(10,10); // is the cell 10x10 visible ?      
-		@CEx TCOD_map_t map = TCOD_map_new(50,50);
-	      TCOD_map_set_properties(map,10,10,true,true);
-	      TCOD_map_compute_fov(map,10,10);
-	      bool visible = TCOD_map_is_in_fov(map,10,10);
-		@PyEx map = libtcod.map_new(50,50)
-	      libtcod.map_set_properties(map,10,10,True,True)
-	      libtcod.map_compute_fov(map,10,10)
-	      visible = libtcod.map_is_in_fov(map,10,10)
+		@CppEx 
+			TCODMap *map = new TCODMap(50,50); // allocate the map
+			map->setProperties(10,10,true,true); // set a cell as 'empty'
+			map->computeFov(10,10); // calculate fov from the cell 10x10
+			bool visible=map->isInFov(10,10); // is the cell 10x10 visible ?      
+		@CEx 
+			TCOD_map_t map = TCOD_map_new(50,50);
+			TCOD_map_set_properties(map,10,10,true,true);
+			TCOD_map_compute_fov(map,10,10);
+			bool visible = TCOD_map_is_in_fov(map,10,10);
+		@PyEx 
+			map = libtcod.map_new(50,50)
+			libtcod.map_set_properties(map,10,10,True,True)
+			libtcod.map_compute_fov(map,10,10)
+			visible = libtcod.map_is_in_fov(map,10,10)
 		*/		
    		bool isInFov(int x,int y) const;
    		/**
    		@PageName fov_get
    		@FuncTitle Checking a cell transparency/walkability
    		@FuncDesc You can also retrieve transparent/walkable informations with :
-		@Cpp bool TCODMap::isTransparent(int x, int y) const
-	      bool TCODMap::isWalkable(int x, int y) const
-		@C bool TCOD_map_is_transparent(TCOD_map_t map, int x, int y)
-	      bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y)
-		@Py map_is_transparent(map, x, y)
-	      map_is_walkable(map, x, y)
+		@Cpp 
+			bool TCODMap::isTransparent(int x, int y) const
+			bool TCODMap::isWalkable(int x, int y) const
+		@C 
+			bool TCOD_map_is_transparent(TCOD_map_t map, int x, int y)
+			bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y)
+		@Py 
+			map_is_transparent(map, x, y)
+			map_is_walkable(map, x, y)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
@@ -200,11 +212,14 @@ class TCODLIB_API TCODMap {
    		@PageName fov_get
    		@FuncTitle Getting the map size
    		@FuncDesc You can retrieve the map size with :
-		@Cpp int TCODMap::getWidth() const
+		@Cpp 
+			int TCODMap::getWidth() const
 			int TCODMap::getHeight() const
-		@C int TCOD_map_get_width(TCOD_map_t map)
+		@C 
+			int TCOD_map_get_width(TCOD_map_t map)
 			int TCOD_map_get_height(TCOD_map_t map)
-		@Py map_get_width(map)
+		@Py 
+			map_get_width(map)
 			map_get_height(map)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		*/   		

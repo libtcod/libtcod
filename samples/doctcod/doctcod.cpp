@@ -50,13 +50,15 @@ struct FuncData {
 	char *c;    // C function
 	char *cs;    // C# function
 	char *py;   // python function
+	char *lua;  // lua function
 	TCODList<ParamData *> params; // parameters table
 	char *cppEx; // C++ example
 	char *cEx;   // C example	
 	char *csEx;    // C# example
 	char *pyEx;  // python example
-	FuncData() : title(NULL),desc(NULL),cpp(NULL),c(NULL),cs(NULL),py(NULL),
-		cppEx(NULL),cEx(NULL),csEx(NULL),pyEx(NULL) {}	
+	char *luaEx; // lua example
+	FuncData() : title(NULL),desc(NULL),cpp(NULL),c(NULL),cs(NULL),py(NULL),lua(NULL),
+		cppEx(NULL),cEx(NULL),csEx(NULL),pyEx(NULL),luaEx(NULL) {}	
 };
 
 // data about a documentation page
@@ -72,7 +74,7 @@ struct PageData {
 	PageData() : name(NULL),title(NULL),desc(NULL), fatherName(NULL),
 		filename(NULL),categoryName((char *)""),father(NULL),next(NULL),prev(NULL),
 		fileOrder(0),order(0),numKids(0),pageNum(NULL),
-		url(NULL), breadCrumb(NULL), prevLink((char *)""),nextLink((char*)"") {}
+		url(NULL), breadCrumb(NULL), prevLink((char *)""),nextLink((char*)""),colorTable(false) {}
 	// computed data
 	PageData *father;
 	PageData *next;
@@ -85,6 +87,7 @@ struct PageData {
 	char *breadCrumb;
 	char *prevLink; // link to prev page in breadcrumb
 	char *nextLink; // link to next page in breadcrumb
+	bool colorTable;
 };
 
 TCODList<PageData *> pages;
@@ -131,6 +134,21 @@ char *getParagraph(char *txt, char **result) {
 	return end;	
 }
 
+// get the data from txt up to the next @ directive and put a strdup copy in result
+// returns the position at the next @ (or end of file)
+char *getCodeParagraph(char *txt, char **result) {
+	// for code, skip only up to the first \n to allow indentation detection
+	while (isspace(*txt) && *txt != '\n') txt++;
+	if ( *txt == '\n') txt++;
+	char *end=txt;
+	while (*end && *end != '@') end++;
+	bool fileEnd = (*end == 0);
+	*end=0;
+	*result=strdup(txt);
+	if ( ! fileEnd ) *end='@';
+	return end;	
+}
+
 // check if the string starts with keyword
 bool startsWith(const char *txt, const char *keyword) {
 	return strncmp(txt,keyword,strlen(keyword)) == 0;
@@ -138,8 +156,14 @@ bool startsWith(const char *txt, const char *keyword) {
 
 // print in the file, replace \n by <br>
 void printHtml(FILE *f, const char *txt) {
+	bool intable=false;
 	while (*txt) {
-		if ( *txt == '\n' ) fprintf(f,"<br />");
+		if ( strncmp(txt,"<table",6) == 0 ) {
+			intable=true;
+		} else if ( intable && strncmp(txt,"</table>",8) == 0 ) {
+			intable=false;
+		}
+		if ( !intable && *txt == '\n' ) fprintf(f,"<br />");
 		else if ( *txt == '\r' ) {} // ignore
 		else {
 			fputc(*txt,f);
@@ -148,10 +172,95 @@ void printHtml(FILE *f, const char *txt) {
 	}
 }
 
+struct ColorModifier {
+	const char *name;
+	float satCoef;
+	float valCoef;
+};
+
+#define NB_COLOR_MOD 8
+ColorModifier colorModifiers[NB_COLOR_MOD] = {
+	{"desaturated", 0.5f,0.5f},
+	{"lightest",0.25f,1.0f},
+	{"lighter",0.35f,1.0f},
+	{"light",0.55f,1.0f},
+	{"",1.0f,1.0f},
+	{"dark",1.0f,0.75f},
+	{"darker",1.0f,0.5f},
+	{"darkest",1.0f,0.25f},
+};
+
+struct Color {
+	char *name;
+	TCODColor col;
+	bool category;
+	Color() : category(false) {}
+};
+
+TCODList<Color> colors;
+
+int greyLevels[] = {223,191,159,127,95,63,31};
+
+// generate the color table from parsed colors
+void printColorTable(FILE *f) {
+	fprintf(f,"<table class=\"color\">\n");
+	bool needHeader=true;
+	int categ=0;
+	for ( Color *col=colors.begin(); col!=colors.end(); col++) {
+		if ( col->category ) {
+			// a color category
+			fprintf(f,"<tr><td></td><th colspan=\"8\">%s</th></tr>\n",col->name);
+			needHeader=true;
+			categ++;
+		} else if ( categ == 1 ){
+			// computed colors
+			if ( needHeader ) fprintf(f,"<tr><td></td><td>desaturated</td><td>lightest</td><td>lighter</td><td>light</td><td>normal</td><td>dark</td><td>darker</td><td>darkest</td></tr>\n");
+			needHeader=false;
+			fprintf(f,"<tr><td>%s</td>",col->name);
+			for (int cm =0; cm < NB_COLOR_MOD; cm++ ) {
+				if ( colorModifiers[cm].name[0] != 0 ) col->name[0]=toupper(col->name[0]);
+				float h,s,v;
+				col->col.getHSV(&h,&s,&v);
+				s *= colorModifiers[cm].satCoef;
+				v *= colorModifiers[cm].valCoef;
+				TCODColor modcol;
+				modcol.setHSV(h,s,v);
+				fprintf(f,"<td title=\"%s%s: %d,%d,%d\" style=\"background-color: rgb(%d,%d,%d)\"></td>",
+					colorModifiers[cm].name,col->name,modcol.r,modcol.g,modcol.b,
+					modcol.r,modcol.g,modcol.b);
+				col->name[0]=tolower(col->name[0]);	
+			}
+			fprintf(f,"</tr>\n");
+		} else if (strcmp(col->name,"grey")==0 ) {
+			// grey colors
+			fprintf(f,"<tr><td colspan=\"2\">&nbsp;</td><td>lightest</td><td>lighter</td><td>light</td><td>normal</td><td>dark</td><td>darker</td><td>darkest</td></tr>\n");
+			fprintf(f,"<tr><td>grey</td><td>&nbsp;</td><td title=\"lightestGrey: 223,223,223\" style=\"background-color: rgb(223, 223, 223);\"></td><td title=\"lighterGrey: 191,191,191\" style=\"background-color: rgb(191, 191, 191);\"></td><td title=\"lightGrey: 159,159,159\" style=\"background-color: rgb(159, 159, 159);\"></td><td title=\"grey: 127,127,127\" style=\"background-color: rgb(127, 127, 127);\"></td><td title=\"darkGrey: 95,95,95\" style=\"background-color: rgb(95, 95, 95);\"></td><td title=\"darkerGrey: 63,63,63\" style=\"background-color: rgb(63, 63, 63);\"></td><td title=\"darkestGrey: 31,31,31\" style=\"background-color: rgb(31, 31, 31);\"></td></tr>\n");
+		} else if ( strcmp(col->name,"sepia") == 0 ) {
+			// sepia colors
+			fprintf(f,"<tr><td>sepia</td><td>&nbsp;</td><td title=\"lightestSepia: 222,211,195\" style=\"background-color: rgb(222, 211, 195);\"></td><td title=\"lighterSepia: 191,171,143\" style=\"background-color: rgb(191, 171, 143);\"></td><td title=\"lightSepia: 158,134,100\" style=\"background-color: rgb(158, 134, 100);\"></td><td title=\"sepia: 127,101,63\" style=\"background-color: rgb(127, 101, 63);\"></td><td title=\"darkSepia: 94,75,47\" style=\"background-color: rgb(94, 75, 47);\"></td><td title=\"darkerSepia: 63,50,31\" style=\"background-color: rgb(63, 50, 31);\"></td><td title=\"darkestSepia: 31,24,15\" style=\"background-color: rgb(31, 24, 15);\"></td></tr>");
+		} else {
+			// miscellaneous colors
+			fprintf(f,"<tr><td>%s</td><td title=\"%s: %d,%d,%d\" style=\"background-color: rgb(%d,%d,%d)\"></td></tr>\n",
+				col->name,
+				col->name,col->col.r,col->col.g,col->col.b,
+				col->col.r,col->col.g,col->col.b);
+		}
+	}
+	fprintf(f,"</table>");
+}
+
 // print in the file, coloring syntax using the provided lexer
 void printSyntaxColored(FILE *f, TCODLex *lex) {
 	char *pos=lex->getPos();
+	int indent=0;
+	// detect first line indentation
+	while ( isspace(*pos) ) {
+		indent++;
+		pos++;
+	}
 	int tok=lex->parse();
+	// fix indentation until real code begins
+	bool lineBegin=true;
 	while (tok != TCOD_LEX_ERROR && tok != TCOD_LEX_EOF ) {
 		const char *spanClass=NULL;
 		switch (tok) {
@@ -162,6 +271,9 @@ void printSyntaxColored(FILE *f, TCODLex *lex) {
 			case TCOD_LEX_FLOAT : 
 			case TCOD_LEX_CHAR : 
 				spanClass = "code-value"; 
+			break;
+			case TCOD_LEX_COMMENT :
+				spanClass = "code-comment";
 			break;
 			case TCOD_LEX_IDEN : 
 				if ( strncasecmp(lex->getToken(),"tcod",4) == 0 ) {
@@ -175,8 +287,18 @@ void printSyntaxColored(FILE *f, TCODLex *lex) {
 		} 
 		while ( pos != lex->getPos() ) {
 			if ( *pos == '\r' ) {}
-			else if (*pos == '\n' ) fprintf(f,"<br />");
-			else fputc(*pos,f);
+			else if (*pos == '\n' ) {
+				fprintf(f,"<br />");
+				pos += indent;
+				lineBegin=true;
+			} else if ( lineBegin && *pos == '\t' ) {
+				fprintf(f,"&nbsp;&nbsp;&nbsp;&nbsp;");
+			} else if ( lineBegin && *pos == ' ' ) {
+				fprintf(f,"&nbsp;");
+			} else {
+				fputc(*pos,f);
+				if ( ! isspace(*pos) ) lineBegin=false;
+			}
 			pos++;
 		}
 		if ( spanClass ) {
@@ -205,7 +327,7 @@ void printCppCode(FILE *f, const char *txt) {
 	"xor","xor_eq",
 	NULL
 	};
-	TCODLex lex(symbols,keywords);
+	TCODLex lex(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
 	lex.setDataBuffer((char *)txt);
 	printSyntaxColored(f,&lex);	
 }
@@ -222,7 +344,7 @@ void printCCode(FILE *f, const char *txt) {
 	"while", 
 	NULL
 	};
-	TCODLex lex(symbols,keywords);
+	TCODLex lex(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
 	lex.setDataBuffer((char *)txt);
 	printSyntaxColored(f,&lex);	
 }
@@ -240,7 +362,7 @@ void printPyCode(FILE *f, const char *txt) {
 	"with","yield",
 	NULL
 	};
-	TCODLex lex(symbols,keywords,"#","\"\"\"","\"\"\"",NULL,"\"\'");
+	TCODLex lex(symbols,keywords,"#","\"\"\"","\"\"\"",NULL,"\"\'",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
 	lex.setDataBuffer((char *)txt);
 	printSyntaxColored(f,&lex);	
 }
@@ -262,7 +384,24 @@ void printCSCode(FILE *f, const char *txt) {
 	"get","partial","set","value","where","yield",
 	NULL
 	};
-	TCODLex lex(symbols,keywords);
+	TCODLex lex(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
+	lex.setDataBuffer((char *)txt);
+	printSyntaxColored(f,&lex);	
+}
+
+// print in the file, coloring syntax using Lua rules
+void printLuaCode(FILE *f, const char *txt) {
+	static const char *symbols[] = {
+		"==","~=","<=",">=","...","..",
+		"+","-","/","*","%","^","<",">",",","(",")","#","{","}","[","]","=",";",":",".",
+		NULL
+	};
+	static const char *keywords[] = {
+	"and","break","do","else","elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or",
+	"repeat", "return", "then", "true", "until", "while",
+	NULL
+	};
+	TCODLex lex(symbols,keywords,"--","--[[","]]",NULL,"\"\'",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
 	lex.setDataBuffer((char *)txt);
 	printSyntaxColored(f,&lex);	
 }
@@ -291,20 +430,19 @@ PageData *getNext(PageData *page) {
 	return NULL;	
 }
 
-// parse a .hpp file and generate corresponding PageData
-void parseFile(char *filename) {
+// load a text file into memory. get rid of \r
+char *loadTextFile(const char *filename) {
 	// load the file into memory (should probably use mmap instead that crap...)
 	struct stat _st;
-	printf ("INFO : parsing file %s\n",filename);
     FILE *f = fopen( filename, "r" );
     if ( f == NULL ) {
 		printf("WARN : cannot open '%s'\n", filename);
-		return ;
+		return NULL;
     }
     if ( stat( filename, &_st ) == -1 ) {
 		fclose(f);
 		printf("WARN : cannot stat '%s'\n", filename );
-		return ;
+		return NULL;
     }
     char *buf = (char*)calloc(sizeof(char),(_st.st_size + 1));
 	char *ptr=buf;
@@ -325,10 +463,18 @@ void parseFile(char *filename) {
 		}
 		ptr++;
 	}
-    
+	return buf;
+}
+
+// parse a .hpp file and generate corresponding PageData
+void parseFile(char *filename) {
+	printf ("INFO : parsing file %s\n",filename);
+	char *buf=loadTextFile(filename);
+    if ( ! buf ) return;
+
     // now scan javadocs
     int fileOrder=1;
-    ptr = strstr(buf,"/**");
+    char *ptr = strstr(buf,"/**");
     while (ptr) {
     	char *end = strstr(ptr,"*/");
     	if ( end ) {
@@ -362,6 +508,20 @@ void parseFile(char *filename) {
 					curFunc=new FuncData();
 					curPage->funcs.push(curFunc);
 	    			directive = getLineEnd(directive+sizeof("@FuncTitle"),&curFunc->title);
+	    		} else if ( startsWith(directive,"@ColorTable") ) {
+					directive += sizeof("@ColorTable");
+					curPage->colorTable=true;
+	    		} else if ( startsWith(directive,"@ColorCategory") ) {
+					Color col;
+					directive=getLineEnd(directive+sizeof("@ColorCategory"),&col.name);
+					col.category=true;
+					colors.push(col);
+	    		} else if ( startsWith(directive,"@Color") ) {
+					Color col;
+					directive=getIdentifier(directive+sizeof("@Color"),&col.name);
+					sscanf(directive,"%d,%d,%d",&col.col.r,&col.col.g,&col.col.b);
+					colors.push(col);
+					while (! isspace(*directive)) directive++;
 	    		} else if ( startsWith(directive,"@FuncDesc") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
@@ -373,49 +533,61 @@ void parseFile(char *filename) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@CppEx"),&curFunc->cppEx);
+	    			directive = getCodeParagraph(directive+sizeof("@CppEx")-1,&curFunc->cppEx);
 	    		} else if ( startsWith(directive,"@C#Ex") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@C#Ex"),&curFunc->csEx);
+	    			directive = getCodeParagraph(directive+sizeof("@C#Ex")-1,&curFunc->csEx);
 	    		} else if ( startsWith(directive,"@CEx") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@CEx"),&curFunc->cEx);
+	    			directive = getCodeParagraph(directive+sizeof("@CEx")-1,&curFunc->cEx);
 	    		} else if ( startsWith(directive,"@PyEx") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@PyEx"),&curFunc->pyEx);
+	    			directive = getCodeParagraph(directive+sizeof("@PyEx")-1,&curFunc->pyEx);
+	    		} else if ( startsWith(directive,"@LuaEx") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getCodeParagraph(directive+sizeof("@LuaEx")-1,&curFunc->luaEx);
 	    		} else if ( startsWith(directive,"@Cpp") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@Cpp"),&curFunc->cpp);
+	    			directive = getCodeParagraph(directive+sizeof("@Cpp")-1,&curFunc->cpp);
 	    		} else if ( startsWith(directive,"@C#") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@C#"),&curFunc->cs);
+	    			directive = getCodeParagraph(directive+sizeof("@C#")-1,&curFunc->cs);
 	    		} else if ( startsWith(directive,"@C") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@C"),&curFunc->c);
+	    			directive = getCodeParagraph(directive+sizeof("@C")-1,&curFunc->c);
 	    		} else if ( startsWith(directive,"@Py") ) {
 					if (! curFunc ) {
 						curFunc=new FuncData();
 						curPage->funcs.push(curFunc);
 					}
-	    			directive = getParagraph(directive+sizeof("@Py"),&curFunc->py);
+	    			directive = getCodeParagraph(directive+sizeof("@Py")-1,&curFunc->py);
+	    		} else if ( startsWith(directive,"@Lua") ) {
+					if (! curFunc ) {
+						curFunc=new FuncData();
+						curPage->funcs.push(curFunc);
+					}
+	    			directive = getCodeParagraph(directive+sizeof("@Lua")-1,&curFunc->lua);
 	    		} else if ( startsWith(directive,"@Param") ) {
 					ParamData *param=new ParamData();
 					curFunc->params.push(param);
@@ -651,128 +823,152 @@ void printRootPageToc(FILE *f,PageData *page) {
 	fprintf(f,"</ul></div>\n");
 }
 
-// generate html file for one page
-void genPageDoc(PageData *page) {
+// generate a .html file for one page
+void genPageDocFromTemplate(PageData *page) {
+	char *pageTpl=loadTextFile("samples/doctcod/page.tpl");
+	if (! pageTpl) return;
 	FILE *f = fopen(page->url,"wt");
-	static const char *header=
-"<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n"
-"<html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n"
-"<title>libtcod documentation | %s</title>\n"
-"<link href=\"%s\" rel=\"stylesheet\" type=\"text/css\"></head>\n"
-"<body><div class=\"header\">\n"
-"<p><span class=\"title1\">libtcod</span>&nbsp;<span class=\"title2\">documentation</span></p>\n"
-"</div>\n"
-"<div class=\"breadcrumb\"><div class=\"breadcrumbtext\"><p>\n"
-"you are here: %s<br>\n"
-"%s %s\n"
-"</p></div></div><div class=\"main\"><div class=\"maintext\">\n";
-
-	static const char *footer="</div></div></body></html>";
-	// page header with breadcrumb
-	fprintf(f,header, page->title, page == root ? "css/style.css" : "../css/style.css", page->breadCrumb,
-		page->prevLink, page->nextLink
-		);
-	// page title
-	if ( page == root ) fprintf(f,"<h1>%s</h1>\n",page->desc);
-	else fprintf(f,"<h1>%s. %s</h1>\n",page->pageNum, page->title);
-	// page description
-	if ( page != root && page->desc ) {
-		fprintf(f,"<p>");
-		printHtml(f,page->desc);
-		fprintf(f,"</p>\n");
+	while (*pageTpl) {
+		if ( strncmp(pageTpl,"${TITLE}",8) == 0 ) {
+			// navigator window's title
+			fprintf(f,page->title);
+			pageTpl+=8;
+		} else if ( strncmp(pageTpl,"${STYLESHEET}",13) == 0 ) {
+			// css file (not the same for index.html and other pages)
+			if (page == root) fprintf(f,"css/style.css"); else fprintf(f,"../css/style.css");
+			pageTpl+=13;
+		} else if ( strncmp(pageTpl,"${LOCATION}",11) == 0 ) {
+			// breadcrumb
+			fprintf(f,page->breadCrumb);
+			pageTpl+=11;
+		} else if ( strncmp(pageTpl,"${PREV_LINK}",12) == 0 ) {
+			// prev page link
+			fprintf(f,page->prevLink);
+			pageTpl+=12;
+		} else if ( strncmp(pageTpl,"${NEXT_LINK}",12) == 0 ) {
+			// next page link
+			fprintf(f,page->nextLink);
+			pageTpl+=12;
+		} else if ( strncmp(pageTpl,"${PAGE_TITLE}",13) == 0 ) {
+			// page title
+			if ( page == root ) fprintf(f,page->desc);
+			else fprintf(f,"%s. %s",page->pageNum, page->title);
+			pageTpl+=13;
+		} else if ( strncmp(pageTpl,"${PAGE_CONTENT}",15) == 0 ) {
+			pageTpl+=15;
+			// sub pages toc
+			if ( page == root ) printRootPageToc(f,page);
+			else printStandardPageToc(f,page);
+			// functions toc
+			if ( page->funcs.size() > 1 ) {
+				fprintf(f,"<div id=\"toc\"><ul>\n");
+				int i=0;
+				for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
+					FuncData *funcData=*fit;
+					if ( funcData->title ) {
+						fprintf(f, "<li><a href=\"#%d\">%s</a></li>",
+							i,funcData->title);
+					}
+				}		
+				fprintf(f,"</ul></div>\n");
+			}
+			// page description
+			if ( page != root && page->desc ) {
+				fprintf(f,"<p>");
+				printHtml(f,page->desc);
+				fprintf(f,"</p>\n");
+				if ( page->colorTable ) printColorTable(f);
+			}
+			// functions
+			int i=0;
+			for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
+				FuncData *funcData=*fit;
+				// title and description
+				fprintf(f,"<a name=\"%d\"></a>",i);
+				if (funcData->title) fprintf(f,"<h3>%s</h3>\n",funcData->title);
+				if (funcData->desc) {
+					fprintf(f,"<p>");
+					printHtml(f,funcData->desc);
+					fprintf(f,"</p>\n");
+				}
+				// functions for each language
+				fprintf(f,"<div class=\"code\">");
+				if (funcData->cpp) {
+					fprintf(f,"<p class=\"cpp\">");
+					printCppCode(f,funcData->cpp);
+					fprintf(f,"</p>\n");
+				}
+				if (funcData->c) {
+					fprintf(f,"<p class=\"c\">");
+					printCCode(f,funcData->c);
+					fprintf(f,"</p>\n");
+				}
+				if (funcData->py) {
+					fprintf(f,"<p class=\"py\">");
+					printPyCode(f,funcData->py);
+					fprintf(f,"</p>\n");
+				}
+				if (funcData->cs) {
+					fprintf(f,"<p class=\"cs\">");
+					printCSCode(f,funcData->cs);
+					fprintf(f,"</p>\n");
+				}
+				if (funcData->lua) {
+					fprintf(f,"<p class=\"lua\">");
+					printLuaCode(f,funcData->lua);
+					fprintf(f,"</p>\n");
+				}
+				fprintf(f,"</div>\n");
+				// parameters table
+				if ( !funcData->params.isEmpty()) {
+					fprintf(f,"<table class=\"param\"><tbody><tr><th>Parameter</th><th>Description</th></tr>");
+					bool hilite=true;
+					for ( ParamData **pit = funcData->params.begin(); pit != funcData->params.end(); pit++) {
+						if ( hilite ) fprintf(f,"<tr class=\"hilite\">");
+						else fprintf(f,"<tr>");
+						fprintf(f,"<td>%s</td><td>",(*pit)->name);
+						printHtml(f,(*pit)->desc);
+						fprintf(f,"</td></tr>\n");
+						hilite=!hilite;
+					}
+					fprintf(f,"</tbody></table>");
+				}
+				// examples
+				if ( funcData->cppEx || funcData->cEx || funcData->pyEx ) {
+					fprintf(f,"<h6>Example:</h6><div class=\"code\">\n");
+					if (funcData->cppEx) {
+						fprintf(f,"<p class=\"cpp\">");
+						printCppCode(f,funcData->cppEx);
+						fprintf(f,"</p>\n");
+					}
+					if (funcData->cEx) {
+						fprintf(f,"<p class=\"c\">");
+						printCCode(f,funcData->cEx);
+						fprintf(f,"</p>\n");
+					}
+					if (funcData->pyEx) {
+						fprintf(f,"<p class=\"py\">");
+						printPyCode(f,funcData->pyEx);
+						fprintf(f,"</p>\n");
+					}
+					if (funcData->csEx) {
+						fprintf(f,"<p class=\"cs\">");
+						printCSCode(f,funcData->csEx);
+						fprintf(f,"</p>\n");
+					}
+					if (funcData->luaEx) {
+						fprintf(f,"<p class=\"lua\">");
+						printLuaCode(f,funcData->luaEx);
+						fprintf(f,"</p>\n");
+					}
+					fprintf(f,"</div><hr>\n");
+				}
+			}
+		} else {
+			fputc(*pageTpl,f);
+			pageTpl++;
+		}
 	}
-	// sub pages toc
-	if ( page == root ) printRootPageToc(f,page);
-	else printStandardPageToc(f,page);
-	// functions toc
-	if ( page->funcs.size() > 1 ) {
-		fprintf(f,"<div id=\"toc\"><ul>\n");
-		int i=0;
-		for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
-			FuncData *funcData=*fit;
-			if ( funcData->title ) {
-				fprintf(f, "<li><a href=\"#%d\">%s</a></li>",
-					i,funcData->title);
-			}
-		}		
-		fprintf(f,"</ul></div>\n");
-	}
-	// functions
-	int i=0;
-	for ( FuncData **fit=page->funcs.begin(); fit != page->funcs.end(); fit++,i++) {
-		FuncData *funcData=*fit;
-		// title and description
-		fprintf(f,"<a name=\"%d\"></a>",i);
-		if (funcData->title) fprintf(f,"<h3>%s</h3>\n",funcData->title);
-		if (funcData->desc) {
-			fprintf(f,"<p>");
-			printHtml(f,funcData->desc);
-			fprintf(f,"</p>\n");
-		}
-		// functions for each language
-		fprintf(f,"<div class=\"code\">");
-		if (funcData->cpp) {
-			fprintf(f,"<p class=\"cpp\">");
-			printCppCode(f,funcData->cpp);
-			fprintf(f,"</p>\n");
-		}
-		if (funcData->c) {
-			fprintf(f,"<p class=\"c\">");
-			printCCode(f,funcData->c);
-			fprintf(f,"</p>\n");
-		}
-		if (funcData->cs) {
-			fprintf(f,"<p class=\"cs\">");
-			printCSCode(f,funcData->cs);
-			fprintf(f,"</p>\n");
-		}
-		if (funcData->py) {
-			fprintf(f,"<p class=\"py\">");
-			printPyCode(f,funcData->py);
-			fprintf(f,"</p>\n");
-		}
-		fprintf(f,"</div>\n");
-		// parameters table
-		if ( !funcData->params.isEmpty()) {
-			fprintf(f,"<table class=\"param\"><tbody><tr><th>Parameter</th><th>Description</th></tr>");
-			bool hilite=true;
-			for ( ParamData **pit = funcData->params.begin(); pit != funcData->params.end(); pit++) {
-				if ( hilite ) fprintf(f,"<tr class=\"hilite\">");
-				else fprintf(f,"<tr>");
-				fprintf(f,"<td>%s</td><td>",(*pit)->name);
-				printHtml(f,(*pit)->desc);
-				fprintf(f,"</td></tr>\n");
-				hilite=!hilite;
-			}
-			fprintf(f,"</tbody></table>");
-		}
-		// examples
-		if ( funcData->cppEx || funcData->cEx || funcData->pyEx ) {
-			fprintf(f,"<h6>Example:</h6><div class=\"code\">\n");
-			if (funcData->cppEx) {
-				fprintf(f,"<p class=\"cpp\">");
-				printCppCode(f,funcData->cppEx);
-				fprintf(f,"</p>\n");
-			}
-			if (funcData->cEx) {
-				fprintf(f,"<p class=\"c\">");
-				printCCode(f,funcData->cEx);
-				fprintf(f,"</p>\n");
-			}
-			if (funcData->csEx) {
-				fprintf(f,"<p class=\"cs\">");
-				printCSCode(f,funcData->csEx);
-				fprintf(f,"</p>\n");
-			}
-			if (funcData->pyEx) {
-				fprintf(f,"<p class=\"py\">");
-				printPyCode(f,funcData->pyEx);
-				fprintf(f,"</p>\n");
-			}
-			fprintf(f,"</div><hr>\n");
-		}
-	}
-	fprintf(f,footer);
 	fclose(f);	
 }
 
@@ -781,14 +977,15 @@ void genDoc() {
 	// generates the doc for each page
 	for (PageData **it=pages.begin();it!=pages.end();it++) {
 		printf ("Generating %s - %s...\n",(*it)->pageNum,(*it)->title);
-		genPageDoc(*it);
+		genPageDocFromTemplate(*it);
 	}
-	genPageDoc(root);
+	genPageDocFromTemplate(root);
 }
 
 // main func
 int main(int argc, char *argv[]) {
 	TCODList<char *> files=TCODSystem::getDirectoryContent("include", "*.hpp");
+	// hardcoded index page
 	char tmp[128];
 	root = new PageData();
 	root->name=(char *)"index2";

@@ -75,21 +75,24 @@ public :
 	@C void TCOD_bsp_remove_sons(TCOD_bsp_t *node)
 	@Py bsp_remove_sons(node)
 	@Param node	In the C version, the node reference.
-	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
-      // create a tree
-      myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
-      // clear it (keep only the root)
-      myBSP->removeSons();
-      // and rebuild another random tree
-      myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-      TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
-      TCOD_bsp_remove_sons(my_bsp);
-      TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-      libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
-      libtcod.bsp_remove_sons(my_bsp)
-      libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
+	@CppEx 
+		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
+		// create a tree
+		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
+		// clear it (keep only the root)
+		myBSP->removeSons();
+		// and rebuild another random tree
+		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
+	@CEx 
+		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
+		TCOD_bsp_remove_sons(my_bsp);
+		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
+	@PyEx 
+		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
+		libtcod.bsp_remove_sons(my_bsp)
+		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
 	*/
 	void removeSons();
 
@@ -101,20 +104,23 @@ public :
 	@C void TCOD_bsp_delete(TCOD_bsp_t *node)
 	@Py bsp_delete(node)
 	@Param node	In the C version, the node reference.
-	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
-      // create a tree
-      myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
-      // use the tree ...
-      // delete the tree
-      delete myBSP; 
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-      TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
-      // use the tree ... 
-      TCOD_bsp_delete(my_bsp);
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-      libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
-      # use the tree ...
-      libtcod.bsp_delete(my_bsp)
+	@CppEx 
+		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
+		// create a tree
+		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
+		// use the tree ...
+		// delete the tree
+		delete myBSP; 
+	@CEx 
+		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
+		// use the tree ... 
+		TCOD_bsp_delete(my_bsp);
+	@PyEx 
+		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
+		# use the tree ...
+		libtcod.bsp_delete(my_bsp)
 	*/
 	virtual ~TCODBsp();
 
@@ -132,12 +138,15 @@ public :
 	@Param position	Coordinate of the splitting position.
 		If horizontal is true, x <= position < x+w
 		Else, y <= position < y+h
-	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
-      myBSP->splitOnce(true,20); // horizontal split into two nodes : (0,0,50,20) and (0,20,50,30)
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-      TCOD_bsp_split_once(my_bsp,false,20); // vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-      libtcod.bsp_split_once(my_bsp,False,20) # vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
+	@CppEx 
+		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
+		myBSP->splitOnce(true,20); // horizontal split into two nodes : (0,0,50,20) and (0,20,50,30)
+	@CEx 
+		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+		TCOD_bsp_split_once(my_bsp,false,20); // vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
+	@PyEx 
+		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+		libtcod.bsp_split_once(my_bsp,False,20) # vertical split into two nodes : (0,0,20,50) and (20,0,30,50)
 	*/
 	void splitOnce(bool horizontal, int position);
 
@@ -153,13 +162,16 @@ public :
 	@Param nb	Number of recursion levels.
 	@Param minHSize, minVSize	minimum values of w and h for a node. A node is splitted only if the resulting sub-nodes are bigger than minHSize x minVSize
 	@Param maxHRatio, maxVRation	maximum values of w/h and h/w for a node. If a node does not conform, the splitting orientation is forced to reduce either the w/h or the h/w ratio. Use values near 1.0 to promote square nodes.
-	@CppEx // Do a 4 levels BSP tree (the region is splitted into a maximum of 2*2*2*2 sub-regions).
+	@CppEx 
+		// Do a 4 levels BSP tree (the region is splitted into a maximum of 2*2*2*2 sub-regions).
 		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
 		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-      TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-      libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
+	@CEx 
+		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
+	@PyEx 
+		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
 	*/
 	void splitRecursive(TCODRandom *randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 
@@ -174,16 +186,19 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Py bsp_resize(node,  x,y, w, h)
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
 	@Param x,y,w,h	New position and size of the node. The original rectangular area covered by the node should be included in the new one to ensure that every splitting edge stay inside its node.
-	@CppEx // We create a BSP, do some processing that will modify the x,y,w,h fields of the tree nodes, then reset all the nodes to their original size.
+	@CppEx 
+		// We create a BSP, do some processing that will modify the x,y,w,h fields of the tree nodes, then reset all the nodes to their original size.
 		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
 		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
 		// ... do something with the tree here
 		myBSP->resize(0,0,50,50);
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+	@CEx 
+		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
 		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
 		// ... do something with the tree here 
 		TCOD_bsp_resize(my_bsp,0,0,50,50);
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+	@PyEx 
+		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
 		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
 		# ... do something with the tree here 
 		libtcod.bsp_resize(my_bsp,0,0,50,50)
@@ -195,21 +210,23 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@PageFather bsp
 	@PageTitle Reading information from the tree
 	@FuncDesc Once you have built a BSP tree, you can retrieve information from any node. The node gives you free access to its fields :
-	@Cpp class TCODBsp {
-public :
-        int x,y,w,h; // 
-        int position; // position of splitting
-        bool horizontal; // horizontal splitting ?
-        uint8 level; // level in the tree 
-        ...
-      }
-	@C typedef struct {
-        int x,y,w,h;
-        int position;
-        bool horizontal;
-        uint8 level;
-        ...
-      } TCOD_bsp_t;
+	@Cpp 
+		class TCODBsp {
+		public :
+			int x,y,w,h; // 
+			int position; // position of splitting
+			bool horizontal; // horizontal splitting ?
+			uint8 level; // level in the tree 
+			...
+		}
+	@C 
+		typedef struct {
+			int x,y,w,h;
+			int position;
+			bool horizontal;
+			uint8 level;
+			...
+		} TCOD_bsp_t;
 	@Param x,y,w,h	Rectangular region covered by this node.
 	@Param position	If this node is not a leaf, splitting position.
 	@Param horizontal	If this node is not a leaf, splitting orientation.
@@ -220,15 +237,18 @@ public :
 	@PageName bsp_read
 	@FuncTitle Navigate in the tree
 	@FuncDesc You can navigate from a node to its sons or its parent using one of those functions. Each function returns NULL if the corresponding node does not exists (if the node is not splitted for getLeft and getRight, and if the node is the root node for getFather).
-	@Cpp TCODBsp *TCODBsp::getLeft() const
-      TCODBsp *TCODBsp::getRight() const
-      TCODBsp *TCODBsp::getFather() const
-	@C TCOD_bsp_t * TCOD_bsp_left(TCOD_bsp_t *node)
-      TCOD_bsp_t * TCOD_bsp_right(TCOD_bsp_t *node)
-      TCOD_bsp_t * TCOD_bsp_father(TCOD_bsp_t *node)
-	@Py bsp_left(node)
-      bsp_right(node)
-      bsp_father(node)
+	@Cpp 
+		TCODBsp *TCODBsp::getLeft() const
+		TCODBsp *TCODBsp::getRight() const
+		TCODBsp *TCODBsp::getFather() const
+	@C 
+		TCOD_bsp_t * TCOD_bsp_left(TCOD_bsp_t *node)
+		TCOD_bsp_t * TCOD_bsp_right(TCOD_bsp_t *node)
+		TCOD_bsp_t * TCOD_bsp_father(TCOD_bsp_t *node)
+	@Py 
+		bsp_left(node)
+		bsp_right(node)
+		bsp_father(node)
 	@Param node	In the C version, the node reference.
 	*/
 	TCODBsp *getLeft() const {
@@ -290,52 +310,58 @@ public :
 		<tbody><tr><th>Pre order</th><th>In order</th><th>Post order</th><th>Level order</th><th>Inverted level<br>order</th></tr>
 		<tr><td><img src="bsp_preorder.png"></td><td><img src="bsp_inorder.png"></td><td><img src="bsp_postorder.png"></td><td><img src="bsp_levelorder.png"></td><td><img src="bsp_invlevelorder.png"></td></tr>
 		</tbody></table>
-	@Cpp class ITCODBspCallback {
-      public :
-          virtual bool visitNode(TCODBsp *node, void *userData) = 0;
-      };
-
-      bool TCODBsp::traversePreOrder(ITCODBspCallback *callback, void *userData)
-      bool TCODBsp::traverseInOrder(ITCODBspCallback *callback, void *userData)
-      bool TCODBsp::traversePostOrder(ITCODBspCallback *callback, void *userData)
-      bool TCODBsp::traverseLevelOrder(ITCODBspCallback *callback, void *userData)
-      bool TCODBsp::traverseInvertedLevelOrder(ITCODBspCallback *callback, void *userData)
-	@C typedef bool (*TCOD_bsp_callback_t)(TCOD_bsp_t *node, void *userData)
-
-      bool TCOD_bsp_traverse_pre_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
-      bool TCOD_bsp_traverse_in_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
-      bool TCOD_bsp_traverse_post_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
-      bool TCOD_bsp_traverse_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
-      bool TCOD_bsp_traverse_inverted_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
-	@Py def bsp_callback(node, userData) : # ...
-
-      bsp_traverse_pre_order(node, callback, userData=0)
-      bsp_traverse_in_order(node, callback, userData=0)
-      bsp_traverse_post_order(node, callback, userData=0)
-      bsp_traverse_level_order(node, callback, userData=0)
-      bsp_traverse_inverted_level_order(node, callback, userData=0)
+	@Cpp 
+		class ITCODBspCallback {
+		public :
+			virtual bool visitNode(TCODBsp *node, void *userData) = 0;
+		};
+		
+		bool TCODBsp::traversePreOrder(ITCODBspCallback *callback, void *userData)
+		bool TCODBsp::traverseInOrder(ITCODBspCallback *callback, void *userData)
+		bool TCODBsp::traversePostOrder(ITCODBspCallback *callback, void *userData)
+		bool TCODBsp::traverseLevelOrder(ITCODBspCallback *callback, void *userData)
+		bool TCODBsp::traverseInvertedLevelOrder(ITCODBspCallback *callback, void *userData)
+	@C 
+		typedef bool (*TCOD_bsp_callback_t)(TCOD_bsp_t *node, void *userData)
+		
+		bool TCOD_bsp_traverse_pre_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+		bool TCOD_bsp_traverse_in_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+		bool TCOD_bsp_traverse_post_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+		bool TCOD_bsp_traverse_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+		bool TCOD_bsp_traverse_inverted_level_order(TCOD_bsp_t *node, TCOD_bsp_callback_t callback, void *userData)
+	@Py 
+		def bsp_callback(node, userData) : # ...
+		
+		bsp_traverse_pre_order(node, callback, userData=0)
+		bsp_traverse_in_order(node, callback, userData=0)
+		bsp_traverse_post_order(node, callback, userData=0)
+		bsp_traverse_level_order(node, callback, userData=0)
+		bsp_traverse_inverted_level_order(node, callback, userData=0)
 	@Param node	In the C version, the node reference (generally, the root node).
 	@Param callback	The function to call for each node.
 		It receives the current node and the custom data as parameters
 		If it returns false, the traversal is interrupted.
 	@Param userData	Custom data to pass to the callback.
-	@CppEx class MyCallback : public ITCODBspCallback {
-        public :
-          bool visitNode(TCODBsp *node, void *userData) {
-            printf("node pos %dx%d size %dx%d level %d\n",node->x,node->y,node->w,node->h,node->level);
-            return true;
-          }
-      };
-      myBSP->traversePostOrder(new MyListener(),NULL);
-	@CEx bool my_callback(TCOD_bsp_t *node, void *userData) {
-            printf("node pos %dx%d size %dx%d level %d\n",node->x,node->y,node->w,node->h,node->level);
-            return true;
-      }
-      TCOD_bsp_traverse_post_order(my_bsp,my_callback,NULL);
-	@PyEx def my_callback(node, userData) :
-            print "node pos %dx%d size %dx%d level %d"%(node.x,node.y,node.w,node.h,node.level))
-            return True
-      libtcod.bsp_traverse_post_order(my_bsp,my_callback)
+	@CppEx 
+		class MyCallback : public ITCODBspCallback {
+		public :
+			bool visitNode(TCODBsp *node, void *userData) {
+				printf("node pos %dx%d size %dx%d level %d\n",node->x,node->y,node->w,node->h,node->level);
+				return true;
+			}
+		};
+		myBSP->traversePostOrder(new MyListener(),NULL);
+	@CEx 
+		bool my_callback(TCOD_bsp_t *node, void *userData) {
+			printf("node pos %dx%d size %dx%d level %d\n",node->x,node->y,node->w,node->h,node->level);
+			return true;
+		}
+		TCOD_bsp_traverse_post_order(my_bsp,my_callback,NULL);
+	@PyEx 
+		def my_callback(node, userData) :
+			print "node pos %dx%d size %dx%d level %d"%(node.x,node.y,node.w,node.h,node.level))
+			return True
+		libtcod.bsp_traverse_post_order(my_bsp,my_callback)
 	*/
 	bool traversePreOrder(ITCODBspCallback *listener, void *userData);
 	bool traverseInOrder(ITCODBspCallback *listener, void *userData);

@@ -50,10 +50,10 @@ public :
 	@PageDesc These are functions specifically aimed at real time game development.
 	@FuncTitle Limit the frames per second
 	@FuncDesc The setFps function allows you to limit the number of frames per second.
-If a frame is rendered faster than expected, the TCOD_console_flush function will wait so that the frame rate never exceed this value.
-You can call this function during your game initialization.
-You can dynamically change the frame rate. Just call this function once again.
-<b>You should always limit the frame rate, except during benchmarks, else your game will use 100% of the CPU power</b>
+		If a frame is rendered faster than expected, the TCOD_console_flush function will wait so that the frame rate never exceed this value.
+		You can call this function during your game initialization.
+		You can dynamically change the frame rate. Just call this function once again.
+		<b>You should always limit the frame rate, except during benchmarks, else your game will use 100% of the CPU power</b>
 	@Cpp static void TCODSystem::setFps(int val)
 	@C void TCOD_sys_set_fps(int val)
 	@Py sys_set_fps(val)
@@ -75,21 +75,24 @@ You can dynamically change the frame rate. Just call this function once again.
 	@PageName system_time
 	@FuncTitle Get the duration of the last frame
 	@FuncDesc This function returns the length in seconds of the last rendered frame.
-You can use this value to update every time dependent object in the world.
+		You can use this value to update every time dependent object in the world.
 	@Cpp static float TCODSystem::getLastFrameLength()
 	@C float TCOD_sys_get_last_frame_length()
 	@Py sys_get_last_frame_length()
-	@CppEx // moving an objet at 5 console cells per second
-float x=0,y=0; // object coordinates
-      x += 5 * TCODSystem::getLastFrameLength();
-      TCODConsole::root->putChar((int)(x),(int)(y),'X');
-	@CEx float x=0,y=0;
-      x += 5 * TCOD_sys_get_last_frame_length();
-      TCOD_console_put_char(NULL,(int)(x),(int)(y),'X');
-	@PyEx x=0.0
-      y=0.0
-      x += 5 * libtcod.sys_get_last_frame_length()
-      libtcod.console_put_char(0,int(x),int(y),'X')
+	@CppEx 
+		// moving an objet at 5 console cells per second
+		float x=0,y=0; // object coordinates
+		x += 5 * TCODSystem::getLastFrameLength();
+		TCODConsole::root->putChar((int)(x),(int)(y),'X');
+	@CEx 
+		float x=0,y=0;
+		x += 5 * TCOD_sys_get_last_frame_length();
+		TCOD_console_put_char(NULL,(int)(x),(int)(y),'X');
+	@PyEx 
+		x=0.0
+		y=0.0
+		x += 5 * libtcod.sys_get_last_frame_length()
+		libtcod.console_put_char(0,int(x),int(y),'X')
 	*/
 	static float getLastFrameLength();
 
@@ -179,7 +182,7 @@ float x=0,y=0; // object coordinates
 	@PageName system_filesystem
 	@FuncTitle List files in a directory
 	@FuncDesc To get the list of entries in a directory (including sub-directories, except . and ..).
-The returned list is allocated by the function and must be deleted by you. All the const char * inside must be also freed with TCODList::clearAndDelete.
+		The returned list is allocated by the function and must be deleted by you. All the const char * inside must be also freed with TCODList::clearAndDelete.
 	@Cpp static TCODList TCODSystem::getDirectoryContent(const char *path, const char *pattern)
 	@C TCOD_list_t TCOD_sys_get_directory_content(const char *path)
 	@Param path a directory
@@ -192,36 +195,42 @@ The returned list is allocated by the function and must be deleted by you. All t
 	@PageFather system
 	@PageTitle Draw custom graphics on top of the root console
 	@PageDesc You can register a callback that will be called after the libtcod rendering phase, but before the screen buffer is swapped. This callback receives the screen SDL_Surface reference.
-This makes it possible to use any SDL drawing functions (including openGL) on top of the libtcod console.
+		This makes it possible to use any SDL drawing functions (including openGL) on top of the libtcod console.
 	@FuncTitle Render custom graphics
 	@FuncDesc To disable the custom renderer, call the same method with a NULL parameter.
-Note that to keep libtcod from requiring the SDL headers, the callback parameter is a void pointer. You have to include SDL headers and cast it to SDL_Surface in your code.
-	@Cpp class TCODLIB_API ITCODSDLRenderer {
-      public :
-         virtual void render(void *sdlSurface) = 0;
-      };
-      static void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *callback);
-	@C typedef void (*SDL_renderer_t) (void *sdl_surface);
-      void TCOD_sys_register_SDL_renderer(SDL_renderer_t callback)
-	@Py def renderer ( sdl_surface ) : ...
-      TCOD_sys_register_SDL_renderer( callback )
+		Note that to keep libtcod from requiring the SDL headers, the callback parameter is a void pointer. You have to include SDL headers and cast it to SDL_Surface in your code.
+	@Cpp 
+		class TCODLIB_API ITCODSDLRenderer {
+		public :
+			virtual void render(void *sdlSurface) = 0;
+		};
+		static void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *callback);
+	@C 
+		typedef void (*SDL_renderer_t) (void *sdl_surface);
+		void TCOD_sys_register_SDL_renderer(SDL_renderer_t callback)
+	@Py 
+		def renderer ( sdl_surface ) : ...
+		TCOD_sys_register_SDL_renderer( callback )
 	@Param callback The renderer to call before swapping the screen buffer. If NULL, custom rendering is disabled
-	@CppEx class MyRenderer : public ITCODSDLRenderer {
-          public :
-              void render(void *sdlSurface) {
-                  SDL_Surface *s = (SDL_Surface *)sdlSurface;
-                  ... draw something on s
-			  }
-      };
-      TCODSystem::registerSDLRenderer(new MyRenderer());
-	@CEx void my_renderer( void *sdl_surface ) {
-          SDL_Surface *s = (SDL_Surface *)sdl_surface;
-          ... draw something on s
-      }
-      TCOD_sys_register_SDL_renderer(my_renderer);
-	@Py def my_renderer(sdl_surface) :
-           ... draw something on sdl_surface using pygame
-      libtcod.sys_register_SDL_renderer(my_renderer)
+	@CppEx 
+		class MyRenderer : public ITCODSDLRenderer {
+		public :
+			void render(void *sdlSurface) {
+				SDL_Surface *s = (SDL_Surface *)sdlSurface;
+				... draw something on s
+			}
+		};
+		TCODSystem::registerSDLRenderer(new MyRenderer());
+	@CEx 
+		void my_renderer( void *sdl_surface ) {
+			SDL_Surface *s = (SDL_Surface *)sdl_surface;
+			... draw something on s
+		}
+		TCOD_sys_register_SDL_renderer(my_renderer);
+	@Py 
+		def my_renderer(sdl_surface) :
+			... draw something on sdl_surface using pygame
+		libtcod.sys_register_SDL_renderer(my_renderer)
 	*/
 	static void registerSDLRenderer(ITCODSDLRenderer *renderer);
 
@@ -241,20 +250,23 @@ Note that to keep libtcod from requiring the SDL headers, the callback parameter
 	@PageTitle Miscellaneous utilities
 	@FuncTitle Using a custom resolution for the fullscreen mode
 	@FuncDesc This function allows you to force the use of a specific resolution in fullscreen mode.
-The default resolution depends on the root console size and the font character size.
+		The default resolution depends on the root console size and the font character size.
 	@Cpp static void TCODSystem::forceFullscreenResolution(int width, int height)
 	@C void TCOD_sys_force_fullscreen_resolution(int width, int height)
 	@Py sys_force_fullscreen_resolution(width, height)
 	@Param width,height Resolution to use when switching to fullscreen.
-Will use the smallest available resolution so that :
-resolution width >= width and resolution width >= root console width * font char width
-resolution width >= height and resolution height >= root console height * font char height
-	@CppEx TCODSystem::forceFullscreenResolution(800,600); // use 800x600 in fullscreen instead of 640x400
-      TCODConsole::initRoot(80,50,"",true); // 80x50 console with 8x8 char => 640x400 default resolution
-	@CEx TCOD_sys_force_fullscreen_resolution(800,600); 
-      TCOD_console_init_root(80,50,"",true);
-	@PyEx libtcod.sys_force_fullscreen_resolution(800,600)
-      libtcod.console_init_root(80,50,"",True)
+		Will use the smallest available resolution so that :
+		resolution width >= width and resolution width >= root console width * font char width
+		resolution width >= height and resolution height >= root console height * font char height
+	@CppEx 
+		TCODSystem::forceFullscreenResolution(800,600); // use 800x600 in fullscreen instead of 640x400
+		TCODConsole::initRoot(80,50,"",true); // 80x50 console with 8x8 char => 640x400 default resolution
+	@CEx 
+		TCOD_sys_force_fullscreen_resolution(800,600); 
+		TCOD_console_init_root(80,50,"",true);
+	@PyEx 
+		libtcod.sys_force_fullscreen_resolution(800,600)
+		libtcod.console_init_root(80,50,"",True)
 	*/
 	static void forceFullscreenResolution(int width, int height);
 
@@ -297,10 +309,10 @@ resolution width >= height and resolution height >= root console height * font c
 	@PageName system_misc
 	@FuncTitle Dynamically change libtcod's internal renderer
 	@FuncDesc As of 1.5.1, libtcod contains 3 different renderers :
-* SDL : historic libtcod renderer. Should work and be pretty fast everywhere
-* OpenGL : requires OpenGL compatible video card. Might be much faster or much slower than SDL, depending on the drivers
-* GLSDL : requires OpenGL 1.4 compatible video card with GL_ARB_shader_objects extension. Blazing fast if you have the proper hardware and drivers.
-This function switches the current renderer dynamically.
+		* SDL : historic libtcod renderer. Should work and be pretty fast everywhere
+		* OpenGL : requires OpenGL compatible video card. Might be much faster or much slower than SDL, depending on the drivers
+		* GLSDL : requires OpenGL 1.4 compatible video card with GL_ARB_shader_objects extension. Blazing fast if you have the proper hardware and drivers.
+		This function switches the current renderer dynamically.
 	@Cpp static void TCODSystem::setRenderer(TCOD_renderer_t renderer)
 	@C void TCOD_sys_set_renderer(TCOD_renderer_t renderer)
 	@Py sys_set_renderer(renderer)

@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Clipboard integration</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a href="../index2.html">Index</a> &gt; <a href="system.html">3. System layer</a> &gt; <a href="system_clipboard.html">3.6. Clipboard integration</a><br>
+<a class="prev" href="system_misc.html">3.5. Miscellaneous utilities</a> 
+</p></div></div><div class="main"><div class="maintext">
+<h1>3.6. Clipboard integration</h1>
+<div id="toc"><ul>
+<li><a href="#0">Copy data to the clipboard</a></li><li><a href="#1">Paste data from the clipboard</a></li></ul></div>
+<p>With these functions, you can copy data in your OS' clipboard from the game or retrieve data from the clipboard.<br />	</p>
+<a name="0"></a><h3>Copy data to the clipboard</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>setClipboard<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>value<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span><span class="code-tcod"> TCOD_sys_clipboard_set</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>value<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>value</td><td>Text to copy in the clipboard<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Paste data from the clipboard</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span><span class="code-tcod">TCODSystem</span><span class="code-symbol">::</span>getClipboard<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">char</span><span class="code-symbol"> *</span><span class="code-tcod">TCOD_sys_clipboard_get</span><span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+
+</div></div></body></html>

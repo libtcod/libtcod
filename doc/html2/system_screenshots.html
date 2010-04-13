@@ -1,0 +1,20 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Easy screenshots</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a href="../index2.html">Index</a> &gt; <a href="system.html">3. System layer</a> &gt; <a href="system_screenshots.html">3.2. Easy screenshots</a><br>
+<a class="prev" href="system_time.html">3.1. High precision time functions</a> | <a class="next" href="system_filesystem.html">3.3. Filesystem utilities</a>
+</p></div></div><div class="main"><div class="maintext">
+<h1>3.2. Easy screenshots</h1>
+<a name="0"></a><p>This function allows you to save the current game screen in a png file, or possibly a bmp file if you provide a filename ending with .bmp.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>saveScreenshot<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span><span class="code-tcod"> TCOD_sys_save_screenshot</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<p class="py">sys_save_screenshot<span class="code-symbol">(</span>filename<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>filename</td><td>Name of the file. If NULL, a filename is automatically generated with the form "./screenshotNNN.png", NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).<br />	</td></tr>
+</tbody></table>
+</div></div></body></html>

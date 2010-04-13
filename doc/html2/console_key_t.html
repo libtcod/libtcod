@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Keyboard event structure</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. Console</a> &gt; <a href="console_input.html">2.4. Handling keyboard input</a> &gt; <a href="console_key_t.html">2.4.4. Keyboard event structure</a><br>
+<a class="prev" href="console_keyboard_repeat.html">2.4.3. Changing keyboard repeat delay</a> | <a class="next" href="console_keycode_t.html">2.4.5. Key codes</a>
+</p></div></div><div class="main"><div class="maintext">
+<h1>2.4.4. Keyboard event structure</h1>
+<p>This structure contains information about a key pressed/released by the user.<br />	</p>
+<a name="0"></a><div class="code"><p class="c"><span class="code-keyword">typedef</span><span class="code-keyword"> struct</span><span class="code-symbol"> {</span><span class="code-tcod"><br />&nbsp;&nbsp;&nbsp;&nbsp;TCOD_keycode_t</span> vk<span class="code-symbol">;</span><span class="code-keyword"> <br />&nbsp;&nbsp;&nbsp;&nbsp;char</span> c<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool pressed<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool lalt<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool lctrl<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool ralt<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool rctrl<span class="code-symbol">;</span><br />&nbsp;&nbsp;&nbsp;&nbsp;bool shift<span class="code-symbol">;</span><span class="code-symbol"><br />}</span><span class="code-tcod"> TCOD_key_t</span><span class="code-symbol">;</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>vk</td><td>An arbitrary value representing the physical key on the keyboard. Possible values are stored in the TCOD_keycode_t enum. If no key was pressed, the value is TCODK_NONE<br />	</td></tr>
+<tr><td>c</td><td>If the key correspond to a printable character, the character is stored in this field. Else, this field contains 0.<br />	</td></tr>
+<tr class="hilite"><td>pressed</td><td>true if the event is a key pressed, or false for a key released.<br />	</td></tr>
+<tr><td>lalt</td><td>This field represents the status of the left Alt key : true => pressed, false => released.<br />	</td></tr>
+<tr class="hilite"><td>lctrl</td><td>This field represents the status of the left Control key : true => pressed, false => released.<br />	</td></tr>
+<tr><td>ralt</td><td>This field represents the status of the right Alt key : true => pressed, false => released.<br />	</td></tr>
+<tr class="hilite"><td>rctrl</td><td>This field represents the status of the right Control key : true => pressed, false => released.<br />	</td></tr>
+<tr><td>shift</td><td>This field represents the status of the shift key : true => pressed, false => released.<br />	</td></tr>
+</tbody></table>
+</div></div></body></html>

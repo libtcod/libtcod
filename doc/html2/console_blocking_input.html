@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Blocking keyboard input</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. Console</a> &gt; <a href="console_input.html">2.4. Handling keyboard input</a> &gt; <a href="console_blocking_input.html">2.4.1. Blocking keyboard input</a><br>
+ <a class="next" href="console_non_blocking_input.html">2.4.2. Non blocking keyboard input</a>
+</p></div></div><div class="main"><div class="maintext">
+<h1>2.4.1. Blocking keyboard input</h1>
+<a name="0"></a><p>This function waits for the user to press a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t.<br />		If the flush parameter is true, every pending keypress event is discarded, then the function wait for a new keypress.<br />		If flush is false, the function waits only if there are no pending keypress events, else it returns the first event in the keyboard buffer.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-tcod"> TCOD_key_t</span><span class="code-tcod"> TCODConsole</span><span class="code-symbol">::</span>waitForKeypress<span class="code-symbol">(</span><span class="code-keyword">bool</span> flush<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_key_t</span><span class="code-tcod"> TCOD_console_wait_for_keypress</span><span class="code-symbol">(</span>bool flush<span class="code-symbol">)</span></p>
+<p class="py">console_wait_for_keypress<span class="code-symbol">(</span>flush<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>flush</td><td>if true, all pending keypress events are flushed from the keyboard buffer. Else, return the first available event<br />	</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp"><span class="code-tcod">TCOD_key_t</span> key<span class="code-symbol"> =</span><span class="code-tcod"> TCODConsole</span><span class="code-symbol">::</span>waitForKeypress<span class="code-symbol">(</span><span class="code-keyword">true</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />if</span><span class="code-symbol"> (</span> key<span class="code-symbol">.</span>c<span class="code-symbol"> ==</span><span class="code-value"> 'i'</span><span class="code-symbol"> )</span><span class="code-symbol"> {</span><span class="code-symbol"> ...</span> open inventory<span class="code-symbol"> ...</span><span class="code-symbol"> }</span></p>
+<p class="c"><span class="code-tcod">TCOD_key_t</span> key<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_console_wait_for_keypress</span><span class="code-symbol">(</span>true<span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />if</span><span class="code-symbol"> (</span> key<span class="code-symbol">.</span>c<span class="code-symbol"> ==</span><span class="code-value"> 'i'</span><span class="code-symbol"> )</span><span class="code-symbol"> {</span><span class="code-symbol"> ...</span> open inventory<span class="code-symbol"> ...</span><span class="code-symbol"> }</span></p>
+<p class="py">key<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>console_wait_for_keypress<span class="code-symbol">(</span>True<span class="code-symbol">)</span><span class="code-keyword"><br />if</span> key<span class="code-symbol">.</span>c<span class="code-symbol"> ==</span> ord<span class="code-symbol">(</span><span class="code-string">'i'</span><span class="code-symbol">)</span><span class="code-symbol"> :</span></p>
+</div><hr>
+
+</div></div></body></html>

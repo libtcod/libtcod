@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | The libtcod config file format</title>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a href="../index2.html">Index</a> &gt; <a href="parser.html">10. File parser</a> &gt; <a href="parser_format.html">10.1. The libtcod config file format</a><br>
+ <a class="next" href="parser_str.html">10.2. Defining the file syntax</a>
+</p></div></div><div class="main"><div class="maintext">
+<h1>10.1. The libtcod config file format</h1>
+<div id="toc"><ul>
+<li><a href="#0">Comments</a></li><li><a href="#1">Structures</a></li></ul></div>
+<a name="0"></a><h3>Comments</h3>
+<p>Your file can contain single line or multi-line comments :<br /><div class="code"><pre>// This is a single line comment<br />/<span>*</span><br />   This is a<br />   multi-line comment<br />*<span>/</span><br /></pre></div><br />Multi-line comments can be nested :<br /><div class="code"><pre>/<span>*</span><br />   This is a<br />   multi-line comment containing another<br />   /<span>*</span><br />&nbsp;&nbsp;&nbsp;&nbsp;multi-line<br />&nbsp;&nbsp;&nbsp;&nbsp;comment<br />   *<span>/</span><br />*<span>/</span><br /></pre></div><br />The parser is not sensible to space characters, tabulations or carriage return except inside strings.<br /></p>
+<div class="code"></div>
+<a name="1"></a><h3>Structures</h3>
+<p>The libtcod config file format is basically a list of structures. A structure has a type, an optional name and contains properties. The type of the structure defines which properties are allowed / mandatory.<br /><div class="code"><pre>item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'<br />	cost=300                   // an integer property<br />	weight=3.5                 // a float property<br />	deal_damage=true           // a boolean property<br />	damages="3d6+2"            // a dice property<br />	color="#FF0000"            // a color property, using #RRGGBB syntax<br />	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax<br />	damage_type="slash"        // a string property<br />	description="This is a long"<br />	            "description." // a multi-line string property<br />	abstract                   // a flag (simplified boolean property)<br />        intList= [ 1,2,3 ]         // a list of int values<br />        floatList= [ 1.0,2,3.5 ]   // a list of float values<br />        stringList= [ "string1","string2","string3" ]         // a list of string values<br />}<br /></pre></div><br />A structure can also contain other structures either of the same type, or structures of another type :<br /><div class="code"><pre>item_type "blade" {<br />	item_type "one-handed blades" {<br />		// the item_type "blade" contains another item_type named "one-handed blades"<br />	}<br />	item_type "two-handed blades" {<br />		// the item_type "blade" contains another item_type named "two-handed blades"<br />	}<br />	feature "damage" {<br />		// the item_type "blade" contains another structure, type "feature", name "damage"<br />	}<br />}<br /></pre></div><br /></p>
+<div class="code"></div>
+
+</div></div></body></html>

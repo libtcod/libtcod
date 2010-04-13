@@ -229,6 +229,13 @@ div.code p.cs {
 	background-repeat: no-repeat;
 }
 
+div.code p.lua {
+  padding: 15px 5px 5px 60px;
+	background-image: url('../img/lua.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
 div.code p.py {
   padding: 15px 5px 10px 60px;
 	background-image: url('../img/py.png');

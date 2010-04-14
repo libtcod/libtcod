@@ -356,7 +356,7 @@ void printCCode(FILE *f, const char *txt) {
 	"auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int",
 	"long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile",
 	"while",
-	"int8","int8_t","int16","int16_t","int32","int32_t","int64","int64_t",
+	"int8","int8_t","int16","int16_t","int32","int32_t","int64","int64_t","bool",
 	"uint8","uint8_t","uint16","uint16_t","uint32","uint32_t","uint64","uint64_t", 
 	NULL
 	};
@@ -376,6 +376,7 @@ void printPyCode(FILE *f, const char *txt) {
 	"and","as","assert","break","class","continue","def","del","elif","else","except","exec","finally","for",
 	"from","global","if","import","in","is","lambda","not","or","pass","print","raise","return","try","while",
 	"with","yield",
+	"True","False",
 	NULL
 	};
 	TCODLex lex(symbols,keywords,"#","\"\"\"","\"\"\"",NULL,"\"\'",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);

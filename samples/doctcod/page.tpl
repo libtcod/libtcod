@@ -3,7 +3,7 @@
 <title>libtcod documentation | ${TITLE}</title>
 <link href="${STYLESHEET}" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
-<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
 you are here: ${LOCATION}<br>

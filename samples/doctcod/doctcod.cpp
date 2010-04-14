@@ -267,9 +267,9 @@ void printSyntaxColored(FILE *f, TCODLex *lex) {
 			case TCOD_LEX_SYMBOL : spanClass = "code-symbol"; break;
 			case TCOD_LEX_KEYWORD : spanClass = "code-keyword"; break;
 			case TCOD_LEX_STRING : spanClass = "code-string"; break;
+			case TCOD_LEX_CHAR : spanClass = "code-character"; break;
 			case TCOD_LEX_INTEGER : 
-			case TCOD_LEX_FLOAT : 
-			case TCOD_LEX_CHAR : 
+			case TCOD_LEX_FLOAT :  
 				spanClass = "code-value"; 
 			break;
 			case TCOD_LEX_COMMENT :
@@ -325,6 +325,8 @@ void printCppCode(FILE *f, const char *txt) {
 	"register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this",
 	"throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while",
 	"xor","xor_eq",
+	"int8","int8_t","int16","int16_t","int32","int32_t","int64","int64_t",
+	"uint8","uint8_t","uint16","uint16_t","uint32","uint32_t","uint64","uint64_t",
 	NULL
 	};
 	TCODLex lex(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);
@@ -339,9 +341,14 @@ void printCCode(FILE *f, const char *txt) {
 		"{","}","(",")","[","]",".","&","*","+","-","~","!","/","%","<",">","^","|","?",":","=",",",";",
 	};
 	static const char *keywords[] = {
-	"auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int",
-	"long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile",
-	"while", 
+	"and","and_eq","asm","auto","bitand","bitor","bool","break","case","catch","char","class","compl","const","const_cast","continue",
+	"default","delete","do","double","dynamic_cast","else","enum","explicit","export","extern","false","float","for","friend","goto",
+	"if","inline","int","long","mutable","namespace","new","not","not_eq","operator","or","or_eq","private","protected","public",
+	"register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this",
+	"throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while",
+	"xor","xor_eq",
+	"int8","int8_t","int16","int16_t","int32","int32_t","int64","int64_t",
+	"uint8","uint8_t","uint16","uint16_t","uint32","uint32_t","uint64","uint64_t", 
 	NULL
 	};
 	TCODLex lex(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT|TCOD_LEX_FLAG_TOKENIZE_COMMENTS);

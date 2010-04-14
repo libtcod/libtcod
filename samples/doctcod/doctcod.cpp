@@ -154,6 +154,11 @@ bool startsWith(const char *txt, const char *keyword) {
 	return strncmp(txt,keyword,strlen(keyword)) == 0;
 }
 
+// check if the string ends with keyword
+bool endsWith(const char *txt, const char *keyword) {
+	return strncmp(txt+strlen(txt)-strlen(keyword),keyword,strlen(keyword)) == 0;
+}
+
 // print in the file, replace \n by <br>
 void printHtml(FILE *f, const char *txt) {
 	bool intable=false;
@@ -276,8 +281,15 @@ void printSyntaxColored(FILE *f, TCODLex *lex) {
 				spanClass = "code-comment";
 			break;
 			case TCOD_LEX_IDEN : 
-				if ( strncasecmp(lex->getToken(),"tcod",4) == 0 ) {
-					spanClass = "code-tcod"; 
+				if ( startsWith(lex->getToken(),"TCOD_") && endsWith(lex->getToken(),"_t") ) spanClass = "code-tcod"; // tcod type
+				else {
+					char *ptr=(char *)lex->getToken();
+					bool isDefine=true;
+					while (isDefine && *ptr) {
+						if ( *ptr >= 'a' && *ptr <= 'z' ) isDefine=false;
+						ptr++;
+					}
+					if ( isDefine ) spanClass="code-tcod"; // tcod constant
 				}
 			break;
 			default : break;
@@ -341,12 +353,9 @@ void printCCode(FILE *f, const char *txt) {
 		"{","}","(",")","[","]",".","&","*","+","-","~","!","/","%","<",">","^","|","?",":","=",",",";",
 	};
 	static const char *keywords[] = {
-	"and","and_eq","asm","auto","bitand","bitor","bool","break","case","catch","char","class","compl","const","const_cast","continue",
-	"default","delete","do","double","dynamic_cast","else","enum","explicit","export","extern","false","float","for","friend","goto",
-	"if","inline","int","long","mutable","namespace","new","not","not_eq","operator","or","or_eq","private","protected","public",
-	"register","reinterpret_cast","return","short","signed","sizeof","static","static_cast","struct","switch","template","this",
-	"throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while",
-	"xor","xor_eq",
+	"auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int",
+	"long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile",
+	"while",
 	"int8","int8_t","int16","int16_t","int32","int32_t","int64","int64_t",
 	"uint8","uint8_t","uint16","uint16_t","uint32","uint32_t","uint64","uint64_t", 
 	NULL

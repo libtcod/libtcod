@@ -34,7 +34,32 @@
 	@PageName console
 	@PageCategory Core
 	@PageTitle Console
- */	
+	@PageDesc The console emulator handles the rendering of the game screen and the keyboard input. 
+Classic real time game loop:
+	@Cpp
+		TCODConsole::initRoot(80,50,"my game",false);
+		TCODSystem::setFps(25); // limit framerate to 25 frames per second
+		while (!endGame && !TCODConsole::isWindowClosed()) {
+			// ... draw on TCODConsole::root
+			TCODConsole::flush();
+			TCOD_key_t key = TCODConsole::checkForKeypress();
+			updateWorld (key, TCODSystem::getLastFrameLength());
+			// updateWorld(TCOD_key_t key, float elapsed) (using key if key.vk != TCODK_NONE)
+			// use elapsed to scale any update that is time dependant.
+		}
+*/
+/**
+	@PageName console
+	@FuncDesc Classic turn by turn game loop:
+	@Cpp 
+		TCODConsole::initRoot(80,50,"my game",false);
+		while (!endGame && !TCODConsole::isWindowClosed()) {
+			// ... draw on TCODConsole::root
+			TCODConsole::flush();
+			TCOD_key_t key = TCODConsole::waitForKeypress(true);
+			//... update world, using key
+		}
+*/	
 
 class TCODLIB_API TCODConsole {
 public :
@@ -1047,6 +1072,7 @@ public :
 	@PageName console_input
 	@PageTitle Handling keyboard input
 	@PageDesc The keyboard handling functions allow you to get keyboard input from the user, either for turn by turn games (the function wait until the user press a key), or real time games (non blocking function).
+	<b>WARNING : for proper redraw event handling, the keyboard functions should always be called just after TCODConsole::flush !</b>
 	@PageFather console
 	*/
 

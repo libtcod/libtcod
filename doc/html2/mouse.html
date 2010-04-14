@@ -3,7 +3,7 @@
 <title>libtcod documentation | Mouse support</title>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
-<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
 you are here: <a href="../index2.html">Index</a> &gt; <a href="mouse.html">8. Mouse support</a><br>
@@ -14,28 +14,28 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="mouse.html">8. Mo
 <li><a href="#0">Display and hide the mouse cursor</a></li><li><a href="#1">Getting the cursor status</a></li><li><a href="#2">Setting the mouse cursor's position</a></li><li><a href="#3">Getting the mouse status</a></li></ul></div>
 <a name="0"></a><h3>Display and hide the mouse cursor</h3>
 <p>By default, the mouse cursor in visible in windowed mode, hidden in fullscreen mode. You can change it with:<br />	</p>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span><span class="code-tcod"> TCODMouse</span><span class="code-symbol">::</span>showCursor<span class="code-symbol"> (</span><span class="code-keyword">bool</span> visible<span class="code-symbol">)</span></p>
-<p class="c"><span class="code-keyword">void</span><span class="code-tcod"> TCOD_mouse_show_cursor</span><span class="code-symbol"> (</span>bool visible<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODMouse<span class="code-symbol">::</span>showCursor<span class="code-symbol"> (</span><span class="code-keyword">bool</span> visible<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_mouse_show_cursor<span class="code-symbol"> (</span>bool visible<span class="code-symbol">)</span></p>
 <p class="py">mouse_show_cursor<span class="code-symbol"> (</span>visible<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>visible</td><td>If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.<br />	</td></tr>
 </tbody></table><a name="1"></a><h3>Getting the cursor status</h3>
 <p>You can get the current cursor status (hidden or visible) with:<br />	</p>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span><span class="code-tcod"> TCODMouse</span><span class="code-symbol">::</span>isCursorVisible<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
-<p class="c">bool<span class="code-tcod"> TCOD_mouse_is_cursor_visible</span><span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODMouse<span class="code-symbol">::</span>isCursorVisible<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="c">bool TCOD_mouse_is_cursor_visible<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
 <p class="py">mouse_is_cursor_visible<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
 </div>
 <a name="2"></a><h3>Setting the mouse cursor's position</h3>
 <p>You can set the cursor position (in pixel coordinates, where [0,0] is the window's top left corner) with:<br />	</p>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span><span class="code-tcod"> TCODMouse</span><span class="code-symbol">::</span>move<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
-<p class="c"><span class="code-keyword">void</span><span class="code-tcod"> TCOD_mouse_move</span><span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODMouse<span class="code-symbol">::</span>move<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_mouse_move<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="py">mouse_move<span class="code-symbol"> (</span>x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>x,y</td><td>New coordinates of the mouse cursor in pixels.<br />	</td></tr>
 </tbody></table><a name="3"></a><h3>Getting the mouse status</h3>
 <p>You can read the current mouse status with:<br /><div class="code"><pre>typedef struct {<br />    int x, y;<br />    int dx, dy;<br />    int cx, cy;<br />    int dcx, dcy;<br />    unsigned lbutton : 1;<br />    unsigned rbutton : 1;<br />    unsigned mbutton : 1;<br />    unsigned lbutton_pressed : 1;<br />    unsigned rbutton_pressed : 1;<br />    unsigned mbutton_pressed : 1;<br />} TCOD_mouse_t;<br /></pre></div><br />	</p>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-tcod"> TCOD_mouse_t</span><span class="code-tcod"> TCODMouse</span><span class="code-symbol">::</span>getStatus<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
-<p class="c"><span class="code-tcod">TCOD_mouse_t</span><span class="code-tcod"> TCOD_mouse_get_status</span><span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-tcod"> TCOD_mouse_t</span> TCODMouse<span class="code-symbol">::</span>getStatus<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_mouse_t</span> TCOD_mouse_get_status<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
 <p class="py">mouse_get_status<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>x,</td><td>y	Absolute position of the mouse cursor in pixels relative to the window top-left corner.<br />	</td></tr>

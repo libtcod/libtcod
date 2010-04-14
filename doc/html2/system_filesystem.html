@@ -3,7 +3,7 @@
 <title>libtcod documentation | Filesystem utilities</title>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
-<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
 you are here: <a href="../index2.html">Index</a> &gt; <a href="system.html">3. System layer</a> &gt; <a href="system_filesystem.html">3.3. Filesystem utilities</a><br>
@@ -14,29 +14,29 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="system.html">3. S
 <li><a href="#0">Create a directory</a></li><li><a href="#1">Delete an empty directory</a></li><li><a href="#2">Delete a file</a></li><li><a href="#3">Check if a path is a directory</a></li><li><a href="#4">List files in a directory</a></li></ul></div>
 <p>Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no python wrapper since python provides its own builtin functions. All those functions return false if an error occured.<br />	</p>
 <a name="0"></a><h3>Create a directory</h3>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>createDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
-<p class="c">bool<span class="code-tcod"> TCOD_sys_create_directory</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODSystem<span class="code-symbol">::</span>createDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<p class="c">bool TCOD_sys_create_directory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>path</td><td>Directory path. The immediate father directory (<path>/..) must exist and be writable.<br />	</td></tr>
 </tbody></table><a name="1"></a><h3>Delete an empty directory</h3>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>deleteDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
-<p class="c">bool<span class="code-tcod"> TCOD_sys_delete_directory</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODSystem<span class="code-symbol">::</span>deleteDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<p class="c">bool TCOD_sys_delete_directory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>path</td><td>directory path. This directory must exist, be writable and empty<br />	</td></tr>
 </tbody></table><a name="2"></a><h3>Delete a file</h3>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>deleteFile<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
-<p class="c">bool<span class="code-tcod"> TCOD_sys_delete_file</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODSystem<span class="code-symbol">::</span>deleteFile<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<p class="c">bool TCOD_sys_delete_file<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>path</td><td>File path. This file must exist and be writable.<br />	</td></tr>
 </tbody></table><a name="3"></a><h3>Check if a path is a directory</h3>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>isDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
-<p class="c">bool<span class="code-tcod"> TCOD_sys_is_directory</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODSystem<span class="code-symbol">::</span>isDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<p class="c">bool TCOD_sys_is_directory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>path</td><td>a path to check<br />	</td></tr>
 </tbody></table><a name="4"></a><h3>List files in a directory</h3>
 <p>To get the list of entries in a directory (including sub-directories, except . and ..).<br />		The returned list is allocated by the function and must be deleted by you. All the const char * inside must be also freed with TCODList::clearAndDelete.<br />	</p>
-<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-tcod"> TCODList</span><span class="code-tcod"> TCODSystem</span><span class="code-symbol">::</span>getDirectoryContent<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>pattern<span class="code-symbol">)</span></p>
-<p class="c"><span class="code-tcod">TCOD_list_t</span><span class="code-tcod"> TCOD_sys_get_directory_content</span><span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span> TCODList TCODSystem<span class="code-symbol">::</span>getDirectoryContent<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>pattern<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_list_t</span> TCOD_sys_get_directory_content<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>path</td><td>a directory<br />	</td></tr>
 <tr><td>pattern</td><td>If NULL or empty, returns all directory entries. Else returns only entries matching the pattern. The pattern is NOT a regular expression. It can only handle one '*' wildcard. Examples : *.png, saveGame*, font*.png<br />	</td></tr>

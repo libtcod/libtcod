@@ -3,7 +3,7 @@
 <title>libtcod documentation | Saving an image to a bmp or png file.</title>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
-<p><span class="title1">libtcod</span>&nbsp;<span class="title2">documentation</span></p>
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
 you are here: <a href="../index2.html">Index</a> &gt; <a href="image.html">5. Image toolkit</a> &gt; <a href="image_save.html">5.4. Saving an image to a bmp or png file.</a><br>
@@ -11,15 +11,15 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="image.html">5. Im
 </p></div></div><div class="main"><div class="maintext">
 <h1>5.4. Saving an image to a bmp or png file.</h1>
 <p>You can save an image to a 24 bits .bmp or .png file.<br />	</p>
-<a name="0"></a><div class="code"><p class="cpp"><span class="code-keyword">void</span><span class="code-tcod"> TCODImage</span><span class="code-symbol">::</span>save<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
-<p class="c"><span class="code-keyword">void</span><span class="code-tcod"> TCOD_image_save</span><span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<a name="0"></a><div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>save<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_save<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
 <p class="py">image_save<span class="code-symbol">(</span>image<span class="code-symbol">,</span> filename<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C version, the image handler, obtained with any image creation function.<br />	</td></tr>
 <tr><td>filename</td><td>Name of the .bmp or .png file.<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
-<p class="cpp"><span class="code-tcod">TCODImage</span><span class="code-symbol"> *</span>pix<span class="code-symbol"> =</span><span class="code-keyword"> new</span><span class="code-tcod"> TCODImage</span><span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />pix<span class="code-symbol">-></span>save<span class="code-symbol">(</span><span class="code-string">"mypic.bmp"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
-<p class="c"><span class="code-tcod">TCOD_image_t</span> pix<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_image_from_console</span><span class="code-symbol">(</span>my_offscreen_console<span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-tcod"><br />TCOD_image_save</span><span class="code-symbol">(</span>pix<span class="code-symbol">,</span><span class="code-string">"mypic.bmp"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="cpp">TCODImage<span class="code-symbol"> *</span>pix<span class="code-symbol"> =</span><span class="code-keyword"> new</span> TCODImage<span class="code-symbol">(</span><span class="code-value">10</span><span class="code-symbol">,</span><span class="code-value">10</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />pix<span class="code-symbol">-></span>save<span class="code-symbol">(</span><span class="code-string">"mypic.bmp"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-tcod">TCOD_image_t</span> pix<span class="code-symbol"> =</span> TCOD_image_from_console<span class="code-symbol">(</span>my_offscreen_console<span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_image_save<span class="code-symbol">(</span>pix<span class="code-symbol">,</span><span class="code-string">"mypic.bmp"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
 <p class="py">pix<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>image_from_console<span class="code-symbol">(</span>my_offscreen_console<span class="code-symbol">)</span><br />libtcod<span class="code-symbol">.</span>image_save<span class="code-symbol">(</span>pix<span class="code-symbol">,</span><span class="code-string">"mypic.bmp"</span><span class="code-symbol">)</span></p>
 </div><hr>
 

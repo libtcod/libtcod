@@ -51,6 +51,7 @@ class TCODLIB_API TCODMap {
 		@Cpp TCODMap::TCODMap (int width, int height)
 		@C TCOD_map_t TCOD_map_new (int width, int height)
 		@Py map_new (width, height)
+		@C# TCODMap::TCODMap(int width, int height)
 		@Param width, height	The size of the map (in map cells).
 		*/		
 		TCODMap(int width, int height);
@@ -63,6 +64,7 @@ class TCODLIB_API TCODMap {
 		@Cpp void TCODMap::setProperties (int x, int y, bool isTransparent, bool isWalkable)
 		@C void TCOD_map_set_properties (TCOD_map_t map, int x, int y, bool is_transparent, bool is_walkable)
 		@Py map_set_properties (map, x, y, is_transparent, is_walkable)
+		@C# void TCODMap::setProperties (int x, int y, bool isTransparent, bool isWalkable)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param x, y	Coordinate of the cell that we want to update.
 		@Param isTransparent	If true, this cell will let the light pass else it will block the light.
@@ -78,6 +80,10 @@ class TCODLIB_API TCODMap {
 		@Cpp void TCODMap::clear (bool transparent = false, bool walkable = false)
 		@C void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
 		@Py map_clear (map, transparent = False, walkable = False)
+		@C#
+			void TCODMap::clear()
+			void TCODMap::clear(bool transparent)
+			void TCODMap::clear(bool transparent, bool walkable)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param walkable	Whether the cells should be walkable.
 		@Param transparent	Whether the cells should be transparent.
@@ -92,6 +98,7 @@ class TCODLIB_API TCODMap {
 		@Cpp void TCODMap::copy (const TCODMap * source)
 		@C void TCOD_map_copy (TCOD_map_t source, TCOD_map_t dest)
 		@Py map_copy (source, dest)
+		@C# void TCODMap::copy (TCODMap source)
 		@Param source	The map containing the source data.
 		@Param dest	In C and python version, the map where data is copied.
 		@CppEx 
@@ -135,6 +142,11 @@ class TCODLIB_API TCODMap {
 		@Cpp void TCODMap::computeFov(int playerX,int playerY, int maxRadius=0,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC)
 		@C void TCOD_map_compute_fov(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo)
 		@Py map_compute_fov(map, player_x, player_y, max_radius=0, light_walls=True, algo=FOV_BASIC )
+		@C# 
+			void TCODMap::computeFov(int playerX, int playerY)
+			void TCODMap::computeFov(int playerX, int playerY, int maxRadius)
+			void TCODMap::computeFov(int playerX, int playerY, int maxRadius,bool light_walls)
+			void TCODMap::computeFov(int playerX, int playerY, int maxRadius,bool light_walls, TCODFOVTypes algo)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param player_x,player_y	Position of the player in the map.
 			0 <= player_x < map width.
@@ -166,6 +178,7 @@ class TCODLIB_API TCODMap {
 		@Cpp bool TCODMap::isInFov(int x, int y) const
 		@C bool TCOD_map_is_in_fov(TCOD_map_t map, int x, int y)
 		@Py map_is_in_fov(map, x, y)
+		@C# bool TCODMap::isInFov(int x, int y)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
@@ -200,6 +213,9 @@ class TCODLIB_API TCODMap {
 		@Py 
 			map_is_transparent(map, x, y)
 			map_is_walkable(map, x, y)
+		@C# 
+			bool TCODMap::isTransparent(int x, int y)
+			bool TCODMap::isWalkable(int x, int y)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
@@ -221,6 +237,9 @@ class TCODLIB_API TCODMap {
 		@Py 
 			map_get_width(map)
 			map_get_height(map)
+		@C#
+			int TCODMap::getWidth()
+			int TCODMap::getHeight()
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		*/   		
    		int getWidth() const;

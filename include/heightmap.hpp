@@ -55,6 +55,7 @@ public :
 		} TCOD_heightmap_t;
 		TCOD_heightmap_t *TCOD_heightmap_new(int w,int h)
 	@Py heightmap_new(w,h)
+	@C# TCODHeightMap::TCODHeightMap(int w, int h)
 	@Param w,h	The width and height of the heightmap.
 	@CppEx TCODHeightMap myMap(50,50);
 	@CEx TCOD_heightmap_t *my_map=TCOD_heightmap_new(50,50);
@@ -71,6 +72,7 @@ public :
 	@Cpp TCODHeightMap::~TCODHeightMap()
 	@C void TCOD_heightmap_delete(TCOD_heightmap_t *hm)
 	@Py heightmap_delete(hm)
+	@C# void TCODHeightMap::Dispose()
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	*/
 	virtual ~TCODHeightMap();
@@ -86,6 +88,7 @@ public :
 	@Cpp void TCODHeightmap::setValue(int x, int y, float v)
 	@C void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float value)
 	@Py heightmap_set_value(hm, x, y, value)
+	@C# void TCODHeightmap::setValue(int x, int y, float v)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the cells to modify inside the map.
 		0 <= x < map width
@@ -102,6 +105,7 @@ public :
 	@Cpp void TCODHeightmap::add(float value)
 	@C void TCOD_heightmap_add(TCOD_heightmap_t *hm, float value)
 	@Py heightmap_add(hm, value)
+	@C# void TCODHeightmap::add(float value)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param value	Value to add to every cell.
 	*/
@@ -113,6 +117,7 @@ public :
 	@Cpp void TCODHeightmap::scale(float value)
 	@C void TCOD_heightmap_scale(TCOD_heightmap_t *hm, float value)
 	@Py heightmap_scale(hm, value)
+	@C# void TCODHeightmap::scale(float value)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param value	Every cell's value is multiplied by this value.
 	*/
@@ -124,6 +129,7 @@ public :
 	@Cpp void TCODHeightmap::clear()
 	@C void TCOD_heightmap_clear(TCOD_heightmap_t *hm)
 	@Py heightmap_clear(hm)
+	@C# void TCODHeightmap::clear()
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	*/
 	void clear(); // resets all values to 0.0
@@ -134,6 +140,7 @@ public :
 	@Cpp void TCODHeightmap::clamp(float min, float max)
 	@C void TCOD_heightmap_clamp(TCOD_heightmap_t *hm, float min, float max)
 	@Py heightmap_clamp(hm, mi, ma)
+	@C# void TCODHeightmap::clamp(float min, float max)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param min,max	Every cell value is clamped between min and max.
 		min < max
@@ -146,6 +153,7 @@ public :
 	@Cpp void TCODHeightmap::copy(const TCODHeightMap *source)
 	@C void TCOD_heightmap_copy(const TCOD_heightmap_t *source,TCOD_heightmap_t *dest)
 	@Py heightmap_copy(source,dest)
+	@C# void TCODHeightmap::copy(TCODHeightMap source)
 	@Param source	Each cell value from the source heightmap is copied in the destination (this for C++) heightmap.
 		The source and destination heightmap must have the same width and height.
 	@Param dest	In the C and python versions, the address of the destination heightmap.
@@ -158,6 +166,10 @@ public :
 	@Cpp void TCODHeightmap::normalize(float min=0.0f, float max=1.0f)
 	@C void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max)
 	@Py heightmap_normalize(hm, mi=0.0, ma=1.0)
+	@C#
+		void TCODHeightmap::normalize()
+		void TCODHeightmap::normalize(float min)
+		void TCODHeightmap::normalize(float min, float max)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param min,max	The whole heightmap is translated and scaled so that the lowest cell value becomes min and the highest cell value becomes max
 		min < max
@@ -170,6 +182,7 @@ public :
 	@Cpp void TCODHeightmap::lerp(const TCODHeightMap *a, const TCODHeightMap *b,float coef)
 	@C void TCOD_heightmap_lerp_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res, float coef)
 	@Py heightmap_lerp_hm(a, b, res, coef)
+	@C# void TCODHeightmap::lerp(TCODHeightMap a, TCODHeightMap b, float coef)
 	@Param a	First heightmap in the lerp operation.
 	@Param b	Second heightmap in the lerp operation.
 	@Param coef	lerp coefficient.
@@ -184,6 +197,7 @@ public :
 	@Cpp void TCODHeightmap::add(const TCODHeightMap *a, const TCODHeightMap *b)
 	@C void TCOD_heightmap_add_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res)
 	@Py heightmap_add_hm(a, b, res)
+	@C# void TCODHeightmap::add(TCODHeightMap a, TCODHeightMap b)
 	@Param a	First heightmap.
 	@Param b	Second heightmap. For each cell in the destination map (this for C++), value = a.value + b.value
 	@Param res	In the C and python versions, the address of the destination heightmap.
@@ -196,6 +210,7 @@ public :
 	@Cpp void TCODHeightmap::multiply(const TCODHeightMap *a, const TCODHeightMap *b)
 	@C void TCOD_heightmap_multiply_hm(const TCOD_heightmap_t *a, const TCOD_heightmap_t *b, TCOD_heightmap_t *res)
 	@Py heightmap_multiply_hm(a, b, res)
+	@C# void TCODHeightmap::multiply(TCODHeightMap a, TCODHeightMap b)
 	@Param a	First heightmap.
 	@Param b	Second heightmap. For each cell in the destination map (this for C++), value = a.value * b.value
 	@Param res	In the C and python versions, the address of the destination heightmap.
@@ -212,6 +227,7 @@ public :
 	@Cpp void TCODHeightmap::addHill(float x, float y, float radius, float height)
 	@C void TCOD_heightmap_add_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
 	@Py heightmap_add_hill(hm, x, y, radius, height)
+	@C# void TCODHeightmap::addHill(float x, float y, float radius, float height)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the center of the hill.
 		0 <= x < map width
@@ -229,6 +245,7 @@ public :
 	@Cpp void TCODHeightmap::digHill(float hx, float hy, float hradius, float height)
 	@C void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
 	@Py heightmap_dig_hill(hm, x, y, radius, height)
+	@C# void TCODHeightmap::digHill(float hx, float hy, float hradius, float height)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the center of the hill.
 		0 <= x < map width
@@ -245,6 +262,7 @@ public :
 	@Cpp void TCODHeightmap::rainErosion(int nbDrops,float erosionCoef,float sedimentationCoef,TCODRandom *rnd)
 	@C void TCOD_heightmap_rain_erosion(TCOD_heightmap_t *hm, int nbDrops,float erosionCoef,float sedimentationCoef,TCOD_random_t rnd)
 	@Py heightmap_rain_erosion(hm, nbDrops,erosionCoef,sedimentationCoef,rnd=0)
+	@C# void TCODHeightmap::rainErosion(int nbDrops, float erosionCoef, float sedimentationCoef, TCODRandom rnd)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param nbDrops	Number of rain drops to simulate. Should be at least width * height.
 	@Param erosionCoef	Amount of ground eroded on the drop's path.
@@ -260,6 +278,7 @@ public :
 	@Cpp void TCODHeightmap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 	@C void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 	@Py heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,maxLevel)
+	@C# void TCODHeightmap::kernelTransform(int kernelSize, int[] dx, int[] dy, float[] weight, float minLevel, float maxLevel)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 		kernelSize	Number of neighbour cells involved.
 	@Param dx,dy	Array of kernelSize cells coordinates. The coordinates are relative to the current cell (0,0) is current cell, (-1,0) is west cell, (0,-1) is north cell, (1,0) is east cell, (0,1) is south cell, ...
@@ -276,6 +295,7 @@ public :
 	@Cpp void TCODHeightmap::addVoronoi(int nbPoints, int nbCoef, float *coef,TCODRandom *rnd)
 	@C void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, float *coef,TCOD_random_t rnd)
 	@Py heightmap_add_voronoi(hm, nbPoints, nbCoef, coef,rnd=0)
+	@C# void TCODHeightmap::addVoronoi(int nbPoints, int nbCoef, float[] coef, TCODRandom rnd)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param nbPoints	Number of Voronoi sites.
 	@Param nbCoef	The diagram value is calculated from the nbCoef closest sites.
@@ -292,6 +312,7 @@ public :
 	@Cpp void TCODHeightmap::addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	@C void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	@Py heightmap_add_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
+	@C# void TCODHeightmap::addFbm(TCODNoise noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param noise	The 2D noise to use.
 	@Param mulx, muly / addx, addy	The noise coordinate for map cell (x,y) are (x + addx)*mulx / width , (y + addy)*muly / height.
@@ -309,6 +330,7 @@ public :
 	@Cpp void TCODHeightmap::scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	@C void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	@Py heightmap_scale_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
+	@C# void TCODHeightmap::scaleFbm(TCODNoise noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
 	*/
 	void scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 
@@ -321,6 +343,7 @@ public :
 	@Cpp void TCODHeightmap::digBezier(int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
 	@C void TCOD_heightmap_dig_bezier(TCOD_heightmap_t *hm, int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth)
 	@Py heightmap_dig_bezier(hm, px, py,  startRadius,  startDepth, endRadius, endDepth)
+	@C# void TCODHeightmap::digBezier(int[] px, int[] py, float startRadius, float startDepth, float endRadius, float endDepth)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param px,py	The coordinates of the 4 Bezier control points.
 	@Param startRadius	The path radius in map cells at point P0. Might be < 1.0
@@ -340,6 +363,7 @@ public :
 	@Cpp float TCODHeightmap::getValue(int x, int y) const
 	@C float TCOD_heightmap_get_value(const TCOD_heightmap_t *hm, int x, int y)
 	@Py heightmap_get_value(hm,  x, y)
+	@C# float TCODHeightmap::getValue(int x, int y)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the map cell.
 		0 <= x < map width
@@ -356,6 +380,7 @@ public :
 	@Cpp float TCODHeightmap::getInterpolatedValue(float x, float y) const
 	@C float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t *hm, float x, float y)
 	@Py heightmap_get_interpolated_value(hm, x, y)
+	@C# float TCODHeightmap::getInterpolatedValue(float x, float y)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the map cell.
 		0 <= x < map width
@@ -370,6 +395,7 @@ public :
 	@Cpp float TCODHeightmap::getSlope(int x, int y) const
 	@C float TCOD_heightmap_get_slope(const TCOD_heightmap_t *hm, int x, int y)
 	@Py heightmap_get_slope(hm, x, y)
+	@C# float TCODHeightmap::getSlope(int x, int y)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the map cell.
 		0 <= x < map width
@@ -384,6 +410,7 @@ public :
 	@Cpp void TCODHeightmap::getNormal(float x, float y,float n[3], float waterLevel=0.0f) const
 	@C void TCOD_heightmap_get_normal(const TCOD_heightmap_t *hm, float x, float y, float n[3], float waterLevel)
 	@Py heightmap_get_normal(hm, x, y, waterLevel) # returns nx,ny,nz
+	@C# void TCODHeightmap::getNormal(float x, float y, float[] n, float waterLevel)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the map cell.
 		0 <= x < map width
@@ -400,6 +427,7 @@ public :
 	@Cpp int TCODHeightmap::countCells(float min,float max) const
 	@C int TCOD_heightmap_count_cells(const TCOD_heightmap_t *hm, float min, float max)
 	@Py heightmap_count_cells(hm, min, max)
+	@C# int TCODHeightmap::countCells(float min, float max)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param min,max	Only cells which value is >=min and <= max are counted.
 	*/
@@ -412,6 +440,7 @@ public :
 	@Cpp bool TCODHeightmap::hasLandOnBorder(float waterLevel) const
 	@C bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t *hm, float waterLevel)
 	@Py heightmap_has_land_on_border(hm, waterLevel)
+	@C# bool TCODHeightmap::hasLandOnBorder(float waterLevel)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param waterLevel	Return true only if no border cell is > waterLevel.
 	*/
@@ -424,6 +453,7 @@ public :
 	@Cpp void TCODHeightmap::getMinMax(float *min, float *max) const
 	@C void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *max)
 	@Py heightmap_get_minmax(hm) # returns min,max
+	@C# void TCODHeightmap::getMinMax(out float min, out float max)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param min, max	The min and max values are returned in these variables.
 	*/

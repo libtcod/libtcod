@@ -80,6 +80,11 @@ class TCODLIB_API TCODNoise {
 			TCODNoise::TCODNoise(int dimensions, float hurst, float lacunarity, TCODRandom *random)		
 		@C TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random)
 		@Py noise_new(dimensions, hurst=TCOD_NOISE_DEFAULT_HURST, lacunarity=TCOD_NOISE_DEFAULT_LACUNARITY, random=0)
+		@C# 
+			TCODNoise::TCODNoise(int dimensions)
+			TCODNoise::TCODNoise(int dimensions, TCODRandom random)
+			TCODNoise::TCODNoise(int dimensions, float hurst, float lacunarity)
+			TCODNoise::TCODNoise(int dimensions, float hurst, float lacunarity, TCODRandom random)
 		@Param dimensions	From 1 to 4.
 		@Param hurst	For fractional brownian motion and turbulence, the fractal Hurst exponent. You can use the default value TCOD_NOISE_DEFAULT_HURST = 0.5f.
 		@Param lacunarity	For fractional brownian motion and turbulence, the fractal lacunarity. You can use the default value TCOD_NOISE_DEFAULT_LACUNARITY = 2.0f.
@@ -120,6 +125,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp TCODNoise::~TCODNoise()
 		@C void TCOD_noise_delete(TCOD_noise_t noise)
 		@Py noise_delete(noise)
+		@C# void TCODNoise::Dispose()
 		@Param noise	In the C and python versions, the generator handler, returned by the initialization function.
 		@CppEx 
 			// create a generator
@@ -155,6 +161,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getSimplex(float *f) const
 		@C float TCOD_noise_simplex(TCOD_noise_t noise, float *f)
 		@Py noise_simplex(noise, f)
+		@C# float TCODNoise::getSimplexNoise(float[] f)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@CppEx 
@@ -192,6 +199,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getFbmSimplex(float *f, float octaves) const
 		@C float TCOD_noise_fbm_simplex(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_fbm_simplex(noise, f, octaves)
+		@C# float TCODNoise::getSimplexBrownianMotion(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
@@ -230,6 +238,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const
 		@C float TCOD_noise_turbulence_simplex(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_turbulence_simplex(noise, f, octaves)
+		@C# float TCODNoise::getSimplexTurbulence(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
@@ -270,6 +279,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getPerlin(float *f) const
 		@C float TCOD_noise_perlin(TCOD_noise_t noise, float *f)
 		@Py noise_perlin(noise, f)
+		@C# float TCODNoise::getPerlinNoise(float[] f)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@CppEx 
@@ -307,6 +317,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getFbmPerlin(float *f, float octaves) const
 		@C float TCOD_noise_fbm_perlin(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_fbm_perlin(noise, f, octaves)
+		@C# float TCODNoise::getPerlinBrownianMotion(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
@@ -345,6 +356,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getTurbulencePerlin(float *f, float octaves) const
 		@C float TCOD_noise_turbulence_perlin(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_turbulence_perlin(noise, f, octaves)
+		@C# float TCODNoise::getPerlinTurbulence(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
@@ -386,6 +398,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getWavelet(float *f) const
 		@C float TCOD_noise_wavelet(TCOD_noise_t noise, float *f)
 		@Py noise_wavelet(noise, f)
+		@C# float TCODNoise::getWaveletNoise(float[] f)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@CppEx 
@@ -423,6 +436,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getFbmWavelet(float *f, float octaves) const
 		@C float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_fbm_wavelet(noise, f, octaves)
+		@C# float TCODNoise::getWaveletBrownianMotion(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
@@ -461,6 +475,7 @@ class TCODLIB_API TCODNoise {
 		@Cpp float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const
 		@C float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves)
 		@Py noise_turbulence_wavelet(noise, f, octaves)
+		@C# float TCODNoise::getWaveletTurbulence(float[] f, float octaves)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128

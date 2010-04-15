@@ -54,6 +54,9 @@ class TCODLIB_API TCODNamegen {
 		@Cpp static void TCODNamegen::parse (const char * filename, TCODRandom * random = NULL)
 		@C void TCOD_namegen_parse (const char * filename, TCOD_random_t random)
 		@Py namegen_parse (filename, random = 0)
+		@C#
+			static void TCODNameGenerator::parse(string filename)
+			static void TCODNameGenerator::parse(string filename, TCODRandom random)
 		@Param filename 	The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".
 		@Param random 	A random number generator object. Use NULL for the default random number generator
 		@CppEx 
@@ -72,6 +75,7 @@ class TCODLIB_API TCODNamegen {
 		@Cpp static void TCODNamegen::destroy (void)
 		@C void TCOD_namegen_destroy (void)
 		@Py namegen_destroy ()
+		@C# static void TCODNameGenerator::destroy()
 		*/
 		static void destroy (void);
 
@@ -89,6 +93,7 @@ class TCODLIB_API TCODNamegen {
 		@Cpp static char * TCODNamegen::generate (char * name, bool allocate = false)
 		@C char * TCOD_namegen_generate (char * name, bool allocate)
 		@Py namegen_generate (name, allocate = 0)
+		@C# string TCODNameGenerator::generate (string name)
 		@Param name 	The structure name you wish to refer to, for instance, "celtic female".
 			For more about how structure names work, please refer to <a href="namegen_file.html">those</a> <a href="parser_format.html">chapters</a>.
 		@Param allocate 	Whether memory should be allocated for the output or not.
@@ -111,6 +116,7 @@ class TCODLIB_API TCODNamegen {
 		@Cpp static char * TCODNamegen::generateCustom (char * name, char * rule, bool allocate = false)
 		@C char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate)
 		@Py namegen_generate_custom (name, rule, allocate = 0)
+		@C# string TCODNameGenerator::generateCustom (string name, string rule)
 		@Param name 	The structure name you wish to refer to, for instance, "celtic female".
 			For more about how structure names work, please refer to <a href="namegen_file.html">those</a> <a href="parser_format.html">chapters</a>.
 		@Param rule 	The name generation rule. See <a href="namegen_file.html">this chapter</a> for more details.
@@ -135,6 +141,7 @@ class TCODLIB_API TCODNamegen {
 		@Cpp static TCODList TCODNamegen::getSets ()
 		@C TCOD_list_t TCOD_namegen_get_sets ()
 		@Py namegen_get_sets ()
+		@C# static IEnumerable<string> TCODNameGenerator::getSets()
 		*/
 		static TCOD_list_t getSets (void);
 

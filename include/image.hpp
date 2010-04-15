@@ -43,6 +43,7 @@ public :
 	@Cpp TCODImage::TCODImage(int width, int height)
 	@C TCOD_image_t TCOD_image_new(int width, int height)
 	@Py image_new( width, height)
+	@C# TCODImage::TCODImage(int width, int height)
 	@Param width,height	Size of the image in pixels.
 	@CppEx TCODImage *pix = new TCODImage(80,50);
 	@CEx TCOD_image_t pix = TCOD_image_new(80,50);
@@ -58,6 +59,7 @@ public :
 	@Cpp TCODImage::TCODImage(const char *filename)
 	@C TCOD_image_t TCOD_image_load(const char *filename)
 	@Py image_load(filename)
+	@C# TCODImage::TCODImage(string filename)
 	@Param filename Name of the .bmp or .png file to load.
 	@CppEx TCODImage *pix = new TCODImage("mypic.bmp");
 	@CEx TCOD_image_t pix = TCOD_image_load("mypic.bmp");
@@ -74,6 +76,7 @@ public :
 	@Cpp TCODImage::TCODImage(const TCODConsole *console)
 	@C TCOD_image_t TCOD_image_from_console(TCOD_console_t console)
 	@Py image_from_console(console)
+	@C# TCODImage::TCODImage(TCODConsole console)
 	@Param console The console to convert. In the C version, use NULL for the root console.
 	@CppEx TCODImage *pix = new TCODImage(TCODConsole::root);
 	@CEx TCOD_image_t pix = TCOD_image_from_console(NULL);
@@ -88,6 +91,7 @@ public :
 	@Cpp void TCODImage::refreshConsole(const TCODConsole *console)
 	@C void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console)
 	@Py image_refresh_console(image, console)
+	@C# void TCODImage::refreshConsole(TCODConsole console)
 	@Param image In the C version, the image created with TCOD_image_from_console.
 	@Param console The console to capture. In the C version, use NULL for the root console.
 	@CppEx 
@@ -114,6 +118,7 @@ public :
 	@Cpp void TCODImage::getSize(int *w,int *h) const
 	@C void TCOD_image_get_size(TCOD_image_t image, int *w,int *h)
 	@Py image_get_size(image) # returns w,h
+	@C# void TCODImage::getSize(out int w, out int h)
 	@Param image In the C version, the image handler, obtained with the load function.
 	@Param w,h When the function returns, those variables contain the size of the image.
 	@CppEx 
@@ -138,6 +143,7 @@ public :
 	@Cpp TCODColor TCODImage::getPixel(int x, int y) const
 	@C TCOD_color_t TCOD_image_get_pixel(TCOD_image_t image,int x, int y)
 	@Py image_get_pixel(image, x, y)
+	@C# TCODColor TCODImage::getPixel(int x, int y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
@@ -158,9 +164,10 @@ public :
 	@PageName image_read
 	@FuncTitle Getting the alpha value of a pixel
 	@FuncDesc If you have set a key color for this image with setKeyColor, or if this image was created from a 32 bits PNG file (with alpha layer), you can get the pixel transparency with this function. This function returns a value between 0 (transparent pixel) and 255 (opaque pixel).
-	@Cpp int TCODImage::getAlpha(int x,int y) const
-	@C int TCOD_image_get_alpha(TCOD_image_t image,int x, int y)
+	@Cpp int TCODImage::getAlpha(int x, int y) const
+	@C int TCOD_image_get_alpha(TCOD_image_t image, int x, int y)
 	@Py image_get_alpha(image, x, y)
+	@C# int TCODImage::getAlpha(int x, int y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
@@ -175,6 +182,7 @@ public :
 	@Cpp bool TCODImage::isPixelTransparent(int x,int y) const
 	@C bool TCOD_image_is_pixel_transparent(TCOD_image_t image,int x, int y)
 	@Py image_is_pixel_transparent(image, x, y)
+	@C# bool TCODImage::isPixelTransparent(int x,int y)
 	@Param image In the C and python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
@@ -190,6 +198,7 @@ public :
 	@Cpp TCODColor TCODImage::getMipmapPixel(float x0,float y0, float x1, float y1)
 	@C TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_image_t image,float x0,float y0, float x1, float y1)
 	@Py image_get_mipmap_pixel(image,x0,y0, x1, y1)
+	@C# TCODColor TCODImage::getMipmapPixel(float x0,float y0, float x1, float y1)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param x0,y0	Coordinates in pixels of the upper-left corner of the region.
 		0.0 <= x0 < x1
@@ -219,6 +228,7 @@ public :
 	@Cpp void TCODImage::clear(const TCODColor color)
 	@C void TCOD_image_clear(TCOD_image_t image, TCOD_color_t color)
 	@Py image_clear(image,color)
+	@C# void TCODImage::clear(TCODColor color)
 	@Param image	In the C and python version, the image to fill.
 	@Param color	The color to use.
 	*/
@@ -230,6 +240,7 @@ public :
 	@Cpp TCODColor TCODImage::putPixel(int x, int y, const TCODColor col)
 	@C void TCOD_image_put_pixel(TCOD_image_t image,int x, int y,TCOD_color_t col)
 	@Py image_put_pixel(image,x, y,col)
+	@C# TCODColor TCODImage::putPixel(int x, int y, TCODColor col)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param x,y	The pixel coordinates inside the image.
 		0 <= x < width
@@ -245,6 +256,7 @@ public :
 	@Cpp void TCODImage::scale(int neww, int newh)
 	@C void TCOD_image_scale(TCOD_image_t image,int neww, int newh)
 	@Py image_scale(image, neww,newh)
+	@C# void TCODImage::scale(int neww, int newh)
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	@Param neww,newh	The new size of the image.
 	*/
@@ -256,6 +268,7 @@ public :
 	@Cpp void TCODImage::hflip()
 	@C void TCOD_image_hflip(TCOD_image_t image)
 	@Py image_hflip(image)
+	@C# void TCODImage::hflip()
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	*/
 	void hflip();
@@ -266,6 +279,7 @@ public :
 	@Cpp void TCODImage::vflip()
 	@C void TCOD_image_vflip(TCOD_image_t image)
 	@Py image_vflip(image)
+	@C# void TCODImage::vflip()
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	*/
 	void vflip();
@@ -276,6 +290,7 @@ public :
 	@Cpp void TCODImage::invert()
 	@C void TCOD_image_invert(TCOD_image_t image)
 	@Py image_invert(image)
+	@C# void TCODImage::invert()
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	*/
 	void invert();
@@ -288,6 +303,7 @@ public :
 	@Cpp void TCODImage::save(const char *filename)
 	@C void TCOD_image_save(TCOD_image_t image, const char *filename)
 	@Py image_save(image, filename)
+	@C# void TCODImage::save(string filename)
 	@Param image	In the C version, the image handler, obtained with any image creation function.
 	@Param filename	Name of the .bmp or .png file.
 	@CppEx 
@@ -311,6 +327,11 @@ public :
 	@Cpp void TCODImage::blitRect(TCODConsole *console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const
 	@C void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag)
 	@Py image_blit_rect(image, console, x, y, w, h, bkgnd_flag)
+	@C# 
+		void TCODImage::blitRect(TCODConsole console, int x, int y) 
+		void TCODImage::blitRect(TCODConsole console, int x, int y, int w)
+		void TCODImage::blitRect(TCODConsole console, int x, int y, int w, int h)
+		void TCODImage::blitRect(TCODConsole console, int x, int y, int w, int h, TCODBackgroundFlag bkgnd_flag)	
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param console	The console on which the image will be drawn. In the C version, use NULL for the root console.
 	@Param x,y	Coordinates in the console of the upper-left corner of the image.
@@ -327,6 +348,12 @@ public :
 	@Cpp void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
 	@C void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
 	@Py image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle)
+	@C#
+		void TCODImage::blit(TCODConsole console, float x, float y)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex, float scaley)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex, float scaley, float angle)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param console	The console on which the image will be drawn. In the C version, use NULL for the root console.
 	@Param x,y	Coordinates in the console of the center of the image.
@@ -342,6 +369,7 @@ public :
 	@Cpp void TCODImage::setKeyColor(const TCODColor keyColor)
 	@C void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t keyColor)
 	@Py image_set_key_color(image, keyColor)
+	@C# void TCODImage::setKeyColor(TCODColor keyColor)
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	@Param color	Pixels with this color will be skipped by blitting functions.
 	@CppEx 
@@ -374,6 +402,12 @@ public :
 	@Cpp void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1 ) const;
 	@C void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
 	@Py image_blit_2x(image, dest, dx, dy, sx=0, sy=0, w=-1, h=-1)
+	@C#
+		void TCODImage::blit2x(TCODConsole dest, int dx, int dy);
+		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx);
+		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy);
+		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w);
+		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w, int h);
 	@Param image	In the C and python version, the image handler, obtained with the load function.
 	@Param dest	The console of which the image will be blited. Foreground, background and character data will be overwritten.
 	@Param dx,dy	Coordinate of the console cell where the upper left corner of the blitted image will be.

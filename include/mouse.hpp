@@ -41,6 +41,7 @@ public :
 	@Cpp static void TCODMouse::showCursor (bool visible)
 	@C void TCOD_mouse_show_cursor (bool visible)
 	@Py mouse_show_cursor (visible)
+	@C# void TCODMouse::showCursor(bool visible)
 	@Param visible	If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.
 	*/
 	static void showCursor(bool visible);
@@ -52,6 +53,7 @@ public :
 	@Cpp static bool TCODMouse::isCursorVisible (void)
 	@C bool TCOD_mouse_is_cursor_visible (void)
 	@Py mouse_is_cursor_visible ()
+	@C# bool TCODMouse::isCursorVisible()
 	*/
 	static bool isCursorVisible();
 
@@ -62,6 +64,7 @@ public :
 	@Cpp static void TCODMouse::move (int x, int y)
 	@C void TCOD_mouse_move (int x, int y)
 	@Py mouse_move (x, y)
+	@C# void TCODMouse::moveMouse(int x, int y)
 	@Param x,y	New coordinates of the mouse cursor in pixels.
 	*/
 	static void move(int x, int y);
@@ -86,6 +89,7 @@ public :
 	@Cpp static TCOD_mouse_t TCODMouse::getStatus (void)
 	@C TCOD_mouse_t TCOD_mouse_get_status (void)
 	@Py mouse_get_status ()
+	@C# TCODMouseData TCODMouse::getStatus()
 	@Param x, y	Absolute position of the mouse cursor in pixels relative to the window top-left corner.
 	@Param dx, dy	Movement of the mouse cursor since the last call in pixels.
 	@Param cx, cy	Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).

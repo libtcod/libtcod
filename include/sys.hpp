@@ -57,6 +57,7 @@ public :
 	@Cpp static void TCODSystem::setFps(int val)
 	@C void TCOD_sys_set_fps(int val)
 	@Py sys_set_fps(val)
+	@C# static void TCODSystem::setFps(int val)
 	@Param val Maximum number of frames per second. 0 means unlimited frame rate.
 	*/
 	static void setFps(int val);
@@ -68,6 +69,7 @@ public :
 	@Cpp static int TCODSystem::getFps()
 	@C int TCOD_sys_get_fps()
 	@Py sys_get_fps()
+	@C# static int TCODSystem::getFps()
 	*/
 	static int getFps();
 
@@ -79,6 +81,7 @@ public :
 	@Cpp static float TCODSystem::getLastFrameLength()
 	@C float TCOD_sys_get_last_frame_length()
 	@Py sys_get_last_frame_length()
+	@C# static float TCODSystem::getLastFrameLength()
 	@CppEx 
 		// moving an objet at 5 console cells per second
 		float x=0,y=0; // object coordinates
@@ -103,6 +106,7 @@ public :
 	@Cpp static void TCODSystem::sleepMilli(uint32 val)
 	@C void TCOD_sys_sleep_milli(uint32 val)
 	@Py sys_sleep_milli(val)
+	@C# static void TCODSystem::sleepMilli(uint val)
 	@Param val number of milliseconds before the function returns
 	*/
 	static void sleepMilli(uint32 val);
@@ -114,6 +118,7 @@ public :
 	@Cpp static uint32 TCODSystem::getElapsedMilli()
 	@C uint32 TCOD_sys_elapsed_milli()
 	@Py sys_elapsed_milli()
+	@C# static uint TCODSystem::getElapsedMilli()
 	*/
 	static uint32 getElapsedMilli();
 
@@ -124,6 +129,7 @@ public :
 	@Cpp static float TCODSystem::getElapsedSeconds()
 	@C float TCOD_sys_elapsed_seconds()
 	@Py sys_elapsed_seconds()
+	@C# static float TCODSystem::getElapsedSeconds()
 	*/
 	static float getElapsedSeconds();
 
@@ -135,6 +141,7 @@ public :
 	@Cpp static void TCODSystem::saveScreenshot(const char *filename)
 	@C void TCOD_sys_save_screenshot(const char *filename)
 	@Py sys_save_screenshot(filename)
+	@C# static void TCODSystem::saveScreenshot(string filename);
 	@Param filename Name of the file. If NULL, a filename is automatically generated with the form "./screenshotNNN.png", NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).
 	*/
 	static void saveScreenshot(const char *filename);
@@ -254,6 +261,7 @@ public :
 	@Cpp static void TCODSystem::forceFullscreenResolution(int width, int height)
 	@C void TCOD_sys_force_fullscreen_resolution(int width, int height)
 	@Py sys_force_fullscreen_resolution(width, height)
+	@C# static void TCODSystem::forceFullscreenResolution(int width, int height);
 	@Param width,height Resolution to use when switching to fullscreen.
 		Will use the smallest available resolution so that :
 		resolution width >= width and resolution width >= root console width * font char width
@@ -277,6 +285,7 @@ public :
 	@Cpp static void TCODSystem::getCurrentResolution(int *width, int *height)
 	@C void TCOD_sys_get_current_resolution(int *width, int *height)
 	@Py sys_get_current_resolution() # returns w,h
+	@C# static void TCODSystem::getCurrentResolution(out int w, out int h);
 	@Param width,height contains current resolution when the function returns
 	*/
 	static void getCurrentResolution(int *w, int *h);
@@ -287,6 +296,7 @@ public :
 	@Cpp static void TCODSystem::getCharSize(int *width, int *height)
 	@C void TCOD_sys_get_char_size(int *width, int *height)
 	@Py sys_get_char_size() # returns w,h
+	@C# static void TCODSystem::getCharSize(out int w, out int h);
 	@Param width,height contains a character size when the function returns
 	*/
 	static void getCharSize(int *w, int *h);
@@ -316,6 +326,7 @@ public :
 	@Cpp static void TCODSystem::setRenderer(TCOD_renderer_t renderer)
 	@C void TCOD_sys_set_renderer(TCOD_renderer_t renderer)
 	@Py sys_set_renderer(renderer)
+	@C# static void TCODSystem::setRenderer(TCODRendererType renderer);
 	@Param renderer Either TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
 	*/
 	static void setRenderer(TCOD_renderer_t renderer);
@@ -326,6 +337,7 @@ public :
 	@Cpp static TCOD_renderer_t TCODSystem::getRenderer()
 	@C TCOD_renderer_t TCOD_sys_get_renderer()
 	@Py sys_get_renderer()
+	@C# static TCODRendererType TCODSystem::getRenderer();
 	*/
 	static TCOD_renderer_t getRenderer();
 

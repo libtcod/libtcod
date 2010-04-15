@@ -67,6 +67,11 @@ public :
 	@Py 
 		path_new_using_map(map, diagonalCost=1.41)
 		dijkstra_new(map, diagonalCost=1.41)
+	@C#
+		TCODPath(TCODMap map, float diagonalCost)
+		TCODPath(TCODMap map)
+		TCODDijkstra(TCODMap map, float diagonalCost)
+		TCODDijkstra(TCODMap map)
 	@Param map	The map. The path finder will use the 'walkable' property of the cells to find a path.
 	@Param diagonalCost	Cost of a diagonal movement compared to an horizontal or vertical movement. On a standard cartesian map, it should be sqrt(2) (1.41f).
 		It you want the same cost for all movements, use 1.0f.
@@ -115,6 +120,11 @@ public :
 		def path_func(xFrom,yFrom,xTo,yTo,userData) : ...
 		path_new_using_function(width, height, path_func, user_data=0, diagonalCost=1.41)
 		dijkstra_new_using_function(width, height, path_func, user_data=0, diagonalCost=1.41)
+	@C#
+		TCODPath(int width, int height, ITCODPathCallback listener, float diagonalCost)
+		TCODPath(int width, int height, ITCODPathCallback listener)
+		TCODDijkstra(int width, int height, ITCODPathCallback listener, float diagonalCost)
+		TCODDijkstra(int width, int height, ITCODPathCallback listener)
 	@Param width,height	The size of the map (in map cells).
 	@Param callback	A custom function that must return the walk cost from coordinates xFrom,yFrom to coordinates xTo,yTo.
 		The cost must be > 0.0f if the cell xTo,yTo is walkable.
@@ -157,6 +167,9 @@ public :
 	@Py 
 		path_delete(path)
 		dijkstra_delete(dijkstra)
+	@C#
+		void TCODPath::Dispose()
+		void TCODDijkstra::Dispose()
 	@Param path	In the C version, the path handler returned by one of the TCOD_path_new_* function.
 	@Param dijkstra	In the C version, the path handler returned by one of the TCOD_dijkstra_new* function.
 	@CppEx 
@@ -195,6 +208,7 @@ public :
 	@Cpp bool TCODPath::compute(int ox, int oy, int dx, int dy)     
 	@C bool TCOD_path_compute(TCOD_path_t path, int ox,int oy, int dx, int dy)
 	@Py path_compute(path, ox, oy, dx, dy)
+	@C#	void TCODPath::compute(int ox, int oy, int dx, int dy)
 	@Param path	In the C version, the path handler returned by a creation function.
 	@Param ox,oy	Coordinates of the origin of the path.
 	@Param dx,dy	Coordinates of the destination of the path.
@@ -232,6 +246,9 @@ public :
 	@Py 
 		path_get_origin(path) # returns x,y
 		path_get_destination(path) # returns x,y
+	@C#
+		void TCODPath::getOrigin(out int x, out int y)
+		void TCODPath::getDestination(out int x, out int y)
 	@Param path	In the C version, the path handler returned by a creation function.
 	@Param x,y	The function returns the cell coordinates in these variables
 	*/	
@@ -251,6 +268,9 @@ public :
 	@Py 
 		path_size(path)
 		dijkstra_size(dijkstra)
+	@C#
+		int TCODPath::size()
+		int TCODDijkstra::size()
 	@Param path, dijkstra	In the C version, the path handler returned by a creation function.
 	*/		
 	int size() const;
@@ -268,6 +288,9 @@ public :
 	@Py 
 		path_get(path, index) # returns x,y
 		dijkstra_get(dijkstra, index) # returns x,y
+	@C#
+		int TCODPath::size()
+		int TCODDijkstra::size()
 	@Param path, dijkstra	In the C version, the path handler returned by a creation function.
 	@Param index	Step number.
 		0 <= index < path size
@@ -319,6 +342,9 @@ public :
 	@Py 
 		path_is_empty(path)
 		dijkstra_is_empty(dijkstra)
+	@C#
+		bool TCODPath::isEmpty()
+		bool TCODDijkstra::isEmpty()
 	@Param path, dijkstra	In the C version, the path handler returned by a creation function.	
 	*/
 	bool isEmpty() const;
@@ -337,6 +363,9 @@ public :
 	@Py 
 		path_walk(TCOD_path_t path, recalculate_when_needed) # returns x,y or None,None if no path
 		dijkstra_walk(TCOD_dijkstra_t dijkstra)
+	@C#
+		bool TCODPath::walk(ref int x, ref int y, bool recalculateWhenNeeded)
+		bool TCODDijkstra::walk(ref int x, ref int y)
 	@Param path, dijkstra	In the C version, the path handler returned by a creation function.
 	@Param x,y	Address of the variables receiving the coordinates of the next point.
 	@Param recalculateWhenNeeded	If the next point is no longer walkable (another creature may be in the way), recalculate a new path and walk it.
@@ -418,6 +447,7 @@ class TCODLIB_API TCODDijkstra {
 		@Cpp void TCODDijkstra::compute(int rootX, int rootY)     
 		@C void TCOD_dijkstra_compute(TCOD_dijkstra_t dijkstra, int root_x, int root_y)
 		@Py dijkstra_compute(dijkstra, root_x, root_y)
+		@C# void TCODDijkstra::compute(int rootX, int rootY)
 		@Param dijkstra	In the C version, the path handler returned by a creation function.
 		@Param root_x,root_y	Coordinates of the root node (origin) of the path.
 			The coordinates should be inside the map, at a walkable position. Otherwise, the function's behaviour will be undefined.        
@@ -432,6 +462,7 @@ class TCODLIB_API TCODDijkstra {
 		@Cpp bool TCODDijkstra::setPath(int toX, int toY)     
 		@C bool TCOD_dijkstra_path_set(TCOD_dijkstra_t dijkstra, int to_x, int to_y)
 		@Py dijkstra_path_set(dijkstra, to_x, to_y)
+		@C# bool TCODDijkstra::setPath(int toX, int toY)
 		@Param dijkstra	In the C version, the path handler returned by a creation function.
 		@Param to_x,to_y	Coordinates of the destination node of the path.
 		@CppEx 
@@ -463,6 +494,7 @@ class TCODLIB_API TCODDijkstra {
 		@Cpp float TCODDijkstra::getDistance(int x, int y)
 		@C float TCOD_dijkstra_get_distance(TCOD_dijkstra_t dijkstra, int x, int y)
 		@Py dijkstra_get_distance(dijkstra, x, y)
+		@C# float TCODDijkstra::getDistance(int x, int y)
 		@Param dijkstra	In the C version, the path handler returned by a creation function.
 		@Param x,y	The coordinates whose distance from the root node are to be checked
         */        

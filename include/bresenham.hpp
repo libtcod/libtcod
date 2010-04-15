@@ -45,6 +45,7 @@ public :
 	@Cpp static void TCODLine::init (int xFrom, int yFrom, int xTo, int yTo)
 	@C void TCOD_line_init (int xFrom, int yFrom, int xTo, int yTo)
 	@Py line_init (xFrom, yFrom, xTo, yTo)
+	@C# static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
 	@Param xFrom,yFrom Coordinates of the line's starting point.
 	@Param xTo,yTo Coordinates of the line's ending point.
 	*/
@@ -57,6 +58,7 @@ public :
 	@Cpp static bool TCODLine::step (int * xCur, int * yCur)
 	@C bool TCOD_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
+	@C# static bool TCODLine::step(ref int xCur, ref int yCur)
 	@Param xCur,yCur the coordinates of the next cell on the line are stored here when the function returns
 	@CppEx 
 		// Going from point 5,8 to point 13,4
@@ -96,6 +98,7 @@ public :
 	@Py
 		def line_listener(x,y) : # ...
 		line(xFrom, yFrom, xTo, yTo, listener)
+	@C# static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener listener)
 	@Param xFrom,yFrom	Coordinates of the line's starting point.
 	@Param xTo,yTo	Coordinates of the line's ending point.
 	@Param listener	Callback called for each line's point. The function stops if the callback returns false.

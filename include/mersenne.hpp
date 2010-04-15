@@ -75,6 +75,9 @@ Relative performances in two independent tests (lower is better) :
 
 <h6>For python users:</h6>
 Python already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.
+
+<h6>For C# users:</h6>
+.NET already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.
  */
 
 class TCODLIB_API TCODRandom {
@@ -88,6 +91,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp static TCODRandom * TCODRandom::getInstance (void)
 		@C TCOD_random_t TCOD_random_get_instance (void)
 		@Py random_get_instance ()
+		@C# static TCODRandom TCODRandom::getInstance()
 		@Param algo	The PRNG algorithm the generator should be using. Possible values are:
 			* TCOD_RNG_MT for Mersenne Twister,
 			* TCOD_RNG_CMWC for Complementary Multiply-With-Carry.		
@@ -101,6 +105,9 @@ class TCODLIB_API TCODRandom {
 		@Cpp TCODRandom::TCODRandom (TCOD_random_algo_t algo = TCOD_RNG_CMWC)
 		@C TCOD_random_t TCOD_random_new (TCOD_random_algo_t algo)
 		@Py random_new (algo = RNG_CMWC)
+		@C# 
+			TCODRandom::TCODRandom() // Defaults to ComplementaryMultiplyWithCarry
+			TCODRandom::TCODRandom(TCODRandomType algo)
 		@Param algo	The PRNG algorithm the generator should be using.		
 		*/		
 		TCODRandom(TCOD_random_algo_t algo = TCOD_RNG_CMWC, bool allocate = true);
@@ -112,6 +119,9 @@ class TCODLIB_API TCODRandom {
 		@Cpp TCODRandom::TCODRandom (uint32 seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
 		@C TCOD_random_t TCOD_random_new_from_seed (TCOD_random_algo_t algo, uint32 seed);
 		@Py random_new_from_seed(seed, algo=RNG_CMWC)
+		@C# 
+			TCODRandom::TCODRandom(uint32 seed) // Defaults to ComplementaryMultiplyWithCarry
+			TCODRandom::TCODRandom(uint32 seed, TCODRandomType algo)
 		@Param seed	The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.
 		@Param algo	The PRNG algorithm the generator should be using.
 		@CppEx 
@@ -146,6 +156,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp TCODRandom::~TCODRandom()
 		@C void TCOD_random_delete(TCOD_random_t mersenne)
 		@Py random_delete(mersenne)
+		@C# void TCODRandom::Dispose()
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions.
 		@CppEx 
 			// create a generator
@@ -180,6 +191,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp int TCODRandom::getInt(int min, int max)
 		@C int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max)
 		@Py random_get_int(mersenne, mi, ma)
+		@C# int TCODRandom::getInt(int min, int max)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used..
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max		
 		*/		
@@ -192,6 +204,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp float TCODRandom::getFloat(float min, float max)
 		@C float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max)
 		@Py random_get_float(mersenne, mi, ma)
+		@C# float TCODRandom::getFloat(float min, float max)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max
 		@CppEx 
@@ -231,6 +244,9 @@ class TCODLIB_API TCODRandom {
 		@Py 
 			random_get_gaussian_float(mersenne, mi, ma)
 			random_get_gaussian_int(mersenne, mi, ma)
+		@C#
+			float TCODRandom::getGaussianFloat(float min, float max)
+			int TCODRandom::getGaussianInt(int min, int max)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max.
 		*/		
@@ -244,6 +260,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp TCODRandom *TCODRandom::save() const
 		@C TCOD_random_t TCOD_random_save(TCOD_random_t mersenne)
 		@Py random_save(mersenne)
+		@C# TCODRandom TCODRandom::save()
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		*/		
 		TCODRandom * save() const;
@@ -255,6 +272,7 @@ class TCODLIB_API TCODRandom {
 		@Cpp void TCODRandom::restore(const TCODRandom *backup)
 		@C void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup)
 		@Py random_restore(mersenne, backup)
+		@C# void TCODRandom::restore(TCODRandom backup)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@CppEx 
 			// default generator

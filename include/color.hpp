@@ -100,6 +100,14 @@ libtcod.red
 libtcod.dark_red
 libtcod.darker_red
 libtcod.darkest_red
+	@C# TCODColor::desaturatedRed
+TCODColor::lightestRed
+TCODColor::lighterRed
+TCODColor::lightRed
+TCODColor::red
+TCODColor::darkRed
+TCODColor::darkerRed
+TCODColor::darkestRed
  */	
 
 class TCODLIB_API TCODColor {
@@ -113,6 +121,7 @@ public :
 	@CppEx TCODColor myColor(24,64,255);
 	@CEx TCOD_color_t my_color={24,64,255};
 	@PyEx my_color=libtcod.Color(24,64,255)
+	@C#Ex TCODColor myColor = new TCODColor(24,64,255);
 	*/
 	TCODColor(uint8 r, uint8 g, uint8 b) :r(r),g(g),b(b) {}
 	TCODColor(int r, int g, int b) :r(r),g(g),b(b) {}
@@ -127,6 +136,8 @@ if (myColor != TCODColor::white) { ... }
 if (!TCOD_color_equals(my_color,TCOD_white)) { ... }
 	@PyEx if my_color == libtcod.yellow : ...
 if my_color != litbcod.white : ...
+	@C#Ex if (myColor.Equal(TCODColor.yellow)) { ... }
+if (myColor.NotEqual(TCODColor.white)) { ... }
 	*/
 	bool operator == (const TCODColor & c) const {
 		return (c.r == r && c.g == g && c.b == b);
@@ -147,6 +158,7 @@ if my_color != litbcod.white : ...
 	@CppEx TCODColor myDarkishRed = TCODColor::darkGrey * TCODColor::lightRed;
 	@CEx TCOD_color_t my_darkish_red = TCOD_color_multiply(TCOD_dark_grey, TCOD_light_red);
 	@PyEx my_darkish_red = libtcod.dark_grey * libtcod.light_red
+	@C#Ex TCODColor myDarkishRed = TCODColor.darkGrey.Multiply(TCODColor.lightRed);
 	*/
 	TCODColor operator * (const TCODColor & a) const {
 		TCODColor ret;
@@ -169,6 +181,7 @@ if my_color != litbcod.white : ...
 	@CppEx TCODColor myDarkishRed = TCODColor::lightRed * 0.5f;
 	@CEx TCOD_color_t my_darkish_red = TCOD_color_multiply_scalar(TCOD_light_red, 0.5f);
 	@PyEx myDarkishRed = litbcod.light_red * 0.5
+	@C#Ex TCODColor myDarkishRed = TCODColor.lightRed.Multiply(0.5f);
 	*/
 	TCODColor operator *(float value) const {
 		TCOD_color_t ret;
@@ -196,6 +209,7 @@ if my_color != litbcod.white : ...
 	@CppEx TCODColor myLightishRed = TCODColor::red + TCODColor::darkGrey
 	@CEx TCOD_color_t my_lightish_red = TCOD_color_add(TCOD_red, TCOD_dark_grey);
 	@PyEx myLightishRed = libtcod.red + libtcod.dark_grey
+	@C#Ex TCODColor myLightishRed = TCODColor.red.Plus(TCODColor.darkGrey)
 	*/
 	TCODColor operator + (const TCODColor & a) const {
 		TCODColor ret;
@@ -219,9 +233,10 @@ if my_color != litbcod.white : ...
                   c1.b = MAX(0, c1.b - c2.b)
 	redish = red - darkGrey
 <table><tr><td style="background-color: rgb(127, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="background-color: rgb(128, 128, 128); width: 60px;"></td></tr></table>
-	@CppEx TCODColor myRedish = TCODColor::red -TCODColor::darkGrey
+	@CppEx TCODColor myRedish = TCODColor::red - TCODColor::darkGrey
 	@CEx TCOD_color_t my_redish = TCOD_color_subtract(TCOD_red, TCOD_dark_grey);
 	@PyEx myRedish = libtcod.red - libtcod.dark_grey
+	@C#Ex TCODColor myRedish = TCODColor.red.Minus(TCODColor.darkGrey)
 	*/
 	TCODColor operator - (const TCODColor & a) const {
 		TCODColor ret;
@@ -253,6 +268,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@CppEx TCODColor myColor = TCODColor::lerp ( TCODColor::darkGrey, TCODColor::lightRed,coef );
 	@CEx TCOD_color_t my_color = TCOD_color_lerp ( TCOD_dark_grey, TCOD_light_red,coef);
 	@PyEx my_color = libtcod.color_lerp ( libtcod.dark_grey, litbcod.light_red,coef)
+	@C#Ex TCODColor myColor = TCODColor.Interpolate( TCODColor.darkGrey, TCODColor.lightRed, coef );
 	*/
 	static TCODColor lerp(const TCODColor &a, const TCODColor &b, float coef) {
 		TCODColor ret;
@@ -269,6 +285,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Cpp void TCODColor::setHSV(float h, float s, float v)
 	@C void TCOD_color_set_HSV(TCOD_color_t *c,float h, float s, float v)
 	@Py color_set_HSV(c,h,s,v)
+	@C# void TCODColor::setHSV(float h, float s, float v)
 	@Param c In the C and python versions, the color to modify
 	@Param h,s,v Color components in the HSV space
 0.0 <= h < 360.0
@@ -283,6 +300,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Cpp void TCODColor::getHSV(float *h, float *s, float *v) const
 	@C void TCOD_color_get_HSV(TCOD_color_t c,float * h, float * s, float * v)
 	@Py color_get_HSV(c) # returns [h,s,v]
+	@C# void TCODColor::getHSV(out float h, out float s, out float v)
 	@Param c	In the C and python versions, the TCOD_color_t from which to read.
 	@Param  h,s,v	Color components in the HSV space
 0.0 <= h < 360.0
@@ -297,6 +315,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Cpp void TCODColor::scaleHSV (float sscale, float vscale)
 	@C void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef)
 	@Py color_scale_HSV(c, scoef, vcoef)
+	@C# void TCODColor::scaleHSV (float sscale, float vscale)
 	*/
 	void scaleHSV (float sscale, float vscale);
 

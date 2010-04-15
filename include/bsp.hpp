@@ -59,6 +59,7 @@ public :
 	@Cpp TCODBsp::TCODBsp(int x,int y,int w, int h)
 	@C TCOD_bsp_t *TCOD_bsp_new_with_size(int x,int y,int w, int h)
 	@Py bsp_new_with_size(x,y,w, h)
+	@C# TCODBsp::TCODBsp(int x, int y, int w, int h)
 	@Param x,y,w,h	Top left corner position and size of the rectangular region covered by the BSP tree.
 	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
 	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
@@ -74,6 +75,7 @@ public :
 	@Cpp void TCODBsp::removeSons()
 	@C void TCOD_bsp_remove_sons(TCOD_bsp_t *node)
 	@Py bsp_remove_sons(node)
+	@C# TCODBsp::removeSons()
 	@Param node	In the C version, the node reference.
 	@CppEx 
 		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
@@ -103,6 +105,7 @@ public :
 	@Cpp void TCODBsp::~TCODBsp()
 	@C void TCOD_bsp_delete(TCOD_bsp_t *node)
 	@Py bsp_delete(node)
+	@C# void TCODBsp::Dispose()
 	@Param node	In the C version, the node reference.
 	@CppEx 
 		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
@@ -133,6 +136,7 @@ public :
 	@Cpp void TCODBsp::splitOnce(bool horizontal, int position)
 	@C void TCOD_bsp_split_once(TCOD_bsp_t *node, bool horizontal, int position)
 	@Py bsp_split_once(node, horizontal, position)
+	@C# void TCODBsp::splitOnce(bool horizontal, int position)
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
 	@Param horizontal	If true, the node will be splitted horizontally, else, vertically.
 	@Param position	Coordinate of the splitting position.
@@ -154,9 +158,10 @@ public :
 	@PageName bsp_split
 	@FuncTitle Recursively splitting a node
 	@FuncDesc You can also recursively split the bsp. At each step, a random orientation (horizontal/vertical) and position are choosen :
-	@Cpp void TCODBsp::splitRecursive(TCODRandom *randomizer, int nb, int minHSize, int maxHRatio, int minVSize, int maxVRatio)
+	@Cpp void TCODBsp::splitRecursive(TCODRandom *randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 	@C void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio)
 	@Py bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio, maxVRatio)
+	@C# void TCODBsp::splitRecursive(TCODRandom randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio)
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
 	@Param randomizer	The random number generator to use. Use NULL for the default one.
 	@Param nb	Number of recursion levels.
@@ -184,6 +189,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Cpp void TCODBsp::resize(int x,int y, int w, int h)
 	@C void TCOD_bsp_resize(TCOD_bsp_t *node, int x,int y, int w, int h)
 	@Py bsp_resize(node,  x,y, w, h)
+	@C# void TCODBsp::resize(int x, int y, int w, int h)
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
 	@Param x,y,w,h	New position and size of the node. The original rectangular area covered by the node should be included in the new one to ensure that every splitting edge stay inside its node.
 	@CppEx 
@@ -227,6 +233,17 @@ You can use it if you changed the nodes size and position while using the BSP tr
 			uint8 level;
 			...
 		} TCOD_bsp_t;
+	@C# 
+		class TCDOBsp
+		{
+		  public int x { get; set; }
+		  public int y { get; set; }
+		  public int h { get; set; }
+		  public int w { get; set; }
+		  public int position { get; set; }
+		  public bool horizontal { get; set; }
+		  public byte level { get; set; }
+		}
 	@Param x,y,w,h	Rectangular region covered by this node.
 	@Param position	If this node is not a leaf, splitting position.
 	@Param horizontal	If this node is not a leaf, splitting orientation.
@@ -249,6 +266,10 @@ You can use it if you changed the nodes size and position while using the BSP tr
 		bsp_left(node)
 		bsp_right(node)
 		bsp_father(node)
+	@C# 
+		TCODBsp TCODBsp::getLeft()
+		TCODBsp TCODBsp::getRight()
+		TCODBsp TCODBsp::getFather()
 	@Param node	In the C version, the node reference.
 	*/
 	TCODBsp *getLeft() const {
@@ -268,6 +289,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Cpp bool TCODBsp::isLeaf() const
 	@C bool TCOD_bsp_is_leaf(TCOD_bsp_t *node)
 	@Py bsp_is_leaf(node)
+	@C# bool TCODBsp::isLeaf()
 	*/
 	bool isLeaf() const { return sons == NULL ; }
 
@@ -278,6 +300,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Cpp bool TCODBsp::contains(int cx, int cy) const
 	@C bool TCOD_bsp_contains(TCOD_bsp_t *node, int cx, int cy)
 	@Py bsp_contains(node, cx, cy)
+	@C# bool TCODBsp::contains(int x, int y)
 	@Param node	In the C version, the node reference.
 	@Param cx,cy	Map cell coordinates.
 	*/
@@ -290,6 +313,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Cpp TCODBsp *TCODBsp::findNode(int cx, int cy)
 	@C TCOD_bsp_t * TCOD_bsp_find_node(TCOD_bsp_t *node, int cx, int cy)
 	@Py bsp_find_node(node, cx, cy)
+	@C# TCODBsp TCODBsp::findNode(int x, int y)
 	@Param node	In the C version, the node reference.
 	@Param cx,cy	Map cell coordinates.
 	*/
@@ -337,6 +361,12 @@ You can use it if you changed the nodes size and position while using the BSP tr
 		bsp_traverse_post_order(node, callback, userData=0)
 		bsp_traverse_level_order(node, callback, userData=0)
 		bsp_traverse_inverted_level_order(node, callback, userData=0)
+	@C#
+		bool TCODBsp::traversePreOrder(ITCODBspCallback callback)
+		bool TCODBsp::traverseInOrder(ITCODBspCallback callback)
+		bool TCODBsp::traversePostOrder(ITCODBspCallback callback)
+		bool TCODBsp::traverseLevelOrder(ITCODBspCallback callback)
+		bool TCODBsp::traverseInvertedLevelOrder(ITCODBspCallback callback)
 	@Param node	In the C version, the node reference (generally, the root node).
 	@Param callback	The function to call for each node.
 		It receives the current node and the custom data as parameters

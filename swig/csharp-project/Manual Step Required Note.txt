@@ -39,4 +39,7 @@ Also, remove these (stupid variable arguments...):
   }
 
 4)  
-Also, Remove the HndleRefs() from TCODPath
+Also, Remove the HandleRefs() from TCODPath
+
+5)
+Also remove HandleRefs() from TCODBsp

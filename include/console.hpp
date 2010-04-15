@@ -78,6 +78,10 @@ public :
 	@Cpp static void TCODConsole::initRoot (int w, int h, const char * title, bool fullscreen = false, TCOD_renderer_t renderer = TCOD_RENDERER_GLSL)
 	@C void TCOD_console_init_root (int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer)
 	@Py console_init_root (w, h, title, fullscreen = False, renderer = RENDERER_GLSL)
+	@C# 
+		static void TCODConsole::initRoot(int w, int h, string title)
+		static void TCODConsole::initRoot(int w, int h, string title, bool fullscreen)
+		static void TCODConsole::initRoot(int w, int h, string title, bool fullscreen, TCODRendererType renderer)
 	@Param w,h size of the console(in characters). The default font in libtcod (./terminal.png) uses 8x8 pixels characters.
 		You can change the font by calling TCODConsole::setCustomFont before calling initRoot.
 	@Param title title of the window. It's not visible when you are in fullscreen.
@@ -134,6 +138,11 @@ public :
 	@Cpp static void TCODConsole::setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0)
 	@C void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic)
 	@Py console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL,nb_char_horiz=0, nb_char_vertic=0)
+	@C# 
+		static void TCODConsole::setCustomFont(string fontFile)
+		static void TCODConsole::setCustomFont(string fontFile, int flags)
+		static void TCODConsole::setCustomFont(string fontFile, int flags, int nbCharHoriz)
+		static void TCODConsole::setCustomFont(string fontFile, int flags, int nbCharHoriz, int nbCharVertic)
 	@Param fontFile Name of a .bmp or .png file containing the font.
 	@Param flags Used to define the characters layout in the bitmap and the font type :
 		TCOD_FONT_LAYOUT_ASCII_INCOL : characters in ASCII order, code 0-15 in the first column
@@ -172,6 +181,7 @@ public :
 	@Cpp static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY)
 	@C void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY)
 	@Py console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY)
+	@C# static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY)
 	@Param asciiCode ASCII code to map.
 	@Param fontCharX,fontCharY Coordinate of the character in the bitmap font (in characters, not pixels).
 	*/
@@ -183,6 +193,7 @@ public :
 	@Cpp static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
 	@C void TCOD_console_map_ascii_codes_to_font(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
 	@Py console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX, fontCharY)
+	@C# static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
 	@Param firstAsciiCode first ASCII code to map
 	@Param nbCodes number of consecutive ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code
@@ -195,6 +206,7 @@ public :
 	@Cpp static void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY)
 	@C void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY)
 	@Py console_map_string_to_font(s, fontCharX, fontCharY)
+	@C# static void TCODConsole::mapStringToFont(string s, int fontCharX, int fontCharY)
 	@Param s string containing the ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code in the string
 	*/
@@ -209,6 +221,7 @@ public :
 	@Cpp static bool TCODConsole::isFullscreen()
 	@C bool TCOD_console_is_fullscreen()
 	@Py console_is_fullscreen()
+	@C# static bool TCODConsole::isFullscreen()
 	*/
 	static bool isFullscreen();
 	/**
@@ -219,6 +232,7 @@ public :
 	@Cpp static void TCODConsole::setFullscreen(bool fullscreen)
 	@C void TCOD_console_set_fullscreen(bool fullscreen)
 	@Py console_set_fullscreen(fullscreen)
+	@C# static void TCODConsole::setFullscreen(bool fullscreen)
 	@Param fullscreen true to switch to fullscreen mode.
 		false to switch to windowed mode.
 	@CppEx 
@@ -246,6 +260,7 @@ public :
 	@Cpp static void TCODConsole::setWindowTitle(const char *title)
  	@C void TCOD_console_set_window_title(const char *title)
 	@Py console_set_window_title(title)
+	@C# static void TCODConsole::setWindowTitle(string title)
 	@Param title New title of the game window
 	*/
 	static void setWindowTitle(const char *title);
@@ -257,6 +272,7 @@ public :
 	@Cpp static bool TCODConsole::isWindowClosed()
 	@C bool TCOD_console_is_window_closed()
 	@Py console_is_window_closed()
+	@C# static bool TCODConsole::isWindowClosed()
 	*/
 	static bool isWindowClosed();
 
@@ -271,6 +287,7 @@ public :
 	@Cpp static void TCODConsole::credits()
 	@C void TCOD_console_credits()
 	@Py console_credits()
+	@C# static void TCODConsole::credits()
 	*/
 	static void credits();
 
@@ -282,6 +299,7 @@ public :
 	@Cpp static bool TCODConsole::renderCredits(int x, int y, bool alpha)
 	@C bool TCOD_console_credits_render(int x, int y, bool alpha)
 	@Py bool TCOD_console_credits_render(int x, int y, bool alpha)
+	@C# static bool TCODConsole::renderCredits(int x, int y, bool alpha)
 	@Param x,y Position of the credits text in your root console
 	@Param alpha If true, credits are transparently added on top of the existing screen.
 		For this to work, this function must be placed between your screen rendering code and the console flush.
@@ -321,6 +339,7 @@ public :
 	@Cpp static void TCODConsole::resetCredits()
 	@C void TCOD_console_credits_reset()
 	@Py console_credits_reset()
+	@C# static void TCODConsole::resetCredits()
 	*/
 	static void resetCredits();
 
@@ -339,6 +358,7 @@ public :
 	@Cpp void TCODConsole::setBackgroundColor(TCODColor back)
 	@C void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t back)
 	@Py console_set_background_color(con,back)
+	@C# void TCODConsole::setBackgroundColor(TCODColor back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param back the new default background color for this console
 	@CppEx TCODConsole::root->setBackgroundColor(myColor)
@@ -354,6 +374,7 @@ public :
 	@Cpp void TCODConsole::setForegroundColor(TCODColor back)
 	@C void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t back)
 	@Py console_set_foreground_color(con,back)
+	@C# void TCODConsole::setForegroundColor(TCODColor back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param back the new default foreground color for this console
 	@CppEx TCODConsole::root->setForegroundColor(myColor)
@@ -372,6 +393,7 @@ public :
 	@Cpp void TCODConsole::clear()
 	@C void TCOD_console_clear(TCOD_console_t con)
 	@Py console_clear(con)
+	@C# void TCODConsole::clear()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	void clear();
@@ -383,6 +405,9 @@ public :
 	@Cpp void TCODConsole::setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag)
 	@Py console_set_back(con, x,  y, col, flag=BKGND_DEFAULT)
+	@C#
+		void TCODConsole::setCharBackground(int x, int y, TCODColor col)
+		void TCODConsole::setCharBackground(int x, int y, TCODColor col, TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -398,6 +423,7 @@ public :
 	@Cpp void TCODConsole::setFore(int x, int y, const TCODColor &col)
 	@C void TCOD_console_set_fore(TCOD_console_t con,int x, int y, TCOD_color_t col)
 	@Py console_set_fore(con, x, y, col)
+	@C# void TCODConsole::setCharForeground(int x, int y, TCODColor col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -414,6 +440,7 @@ public :
 	@Cpp void TCODConsole::setChar(int x, int y, int c)
 	@C void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c)
 	@Py console_set_char(con, x,  y, c)
+	@C# void TCODConsole::setChar(int x, int y, int c)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -432,6 +459,9 @@ public :
 	@Cpp void TCODConsole::putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_flag_t flag)
 	@Py console_put_char( con, x,  y, c, flag=BKGND_DEFAULT)
+	@C#
+		void TCODConsole::putChar(int x, int y, int c)
+		void TCODConsole::putChar(int x, int y, int c, TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -451,6 +481,7 @@ public :
 	@Cpp void TCODConsole::putCharEx(int x, int y, int c, const TCODColor & fore, const TCODColor & back)
 	@C void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_put_char_ex( con, x,  y, c, fore, back)
+	@C# void TCODConsole::putCharEx(int x, int y, int c, TCODColor fore, TCODColor back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -493,6 +524,7 @@ public :
 	@Cpp void TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t flag)
 	@C void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag)
 	@Py console_set_background_flag(con, flag)
+	@C# void TCODConsole::setBackgroundFlag(TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	*/
@@ -506,6 +538,7 @@ public :
 	@Cpp TCOD_bkgnd_flag_t TCODConsole::getBackgroundFlag() const
 	@C TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con)
 	@Py console_get_background_flag(con)
+	@C# TCODBackgroundFlag TCODConsole::getBackgroundFlag()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCOD_bkgnd_flag_t getBackgroundFlag() const;
@@ -519,6 +552,7 @@ public :
 	@Cpp void TCODConsole::setAlignment(TCOD_alignment_t alignment)
 	@C void TCOD_console_set_alignment(TCOD_console_t con,TCOD_bkgnd_flag_t alignment)
 	@Py console_set_alignment(con, alignment)
+	@C# void TCODConsole::setAlignment(TCODAlignment alignment)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param alignment defines how the strings are printed on screen.	
 	*/
@@ -533,6 +567,7 @@ public :
 	@Cpp TCOD_alignment_t TCODConsole::getAlignment() const
 	@C TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
 	@Py console_get_alignment(con)
+	@C# TCODAlignment TCODConsole::getAlignment()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCOD_alignment_t getAlignment() const;	         
@@ -544,12 +579,13 @@ public :
 	@Cpp void TCODConsole::print(int x, int y, const char *fmt, ...)
 	@C void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...)
 	@Py console_print(con, x, y, fmt)
+	@C# void TCODConsole::print(int x, int y, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the character in the console, depending on the alignment :
 		* TCOD_LEFT : leftmost character of the string
 		* TCOD_CENTER : center character of the string
 		* TCOD_RIGHT : rightmost character of the string
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
+	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
 	void print(int x, int y, const char *fmt, ...); 
 
@@ -560,6 +596,7 @@ public :
 	@Cpp void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@C void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@Py console_print_ex(con, x, y, flag, alignment, fmt)
+	@C# void TCODConsole::printEx(int x, int y, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the character in the console, depending on the alignment :
 		* TCOD_LEFT : leftmost character of the string
@@ -567,7 +604,7 @@ public :
 		* TCOD_RIGHT : rightmost character of the string
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	@Param alignment defines how the strings are printed on screen.	
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
+	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
 	void printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
 
@@ -581,12 +618,13 @@ public :
 	@Cpp int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...)
 	@C int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
 	@Py console_print_rect(con, x, y, w, h, fmt)
+	@C# int TCODConsole::printRect(int x, int y, int w, int h, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
 		x <= x+w < console width
 		y <= y+h < console height
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
+	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
    	int printRect(int x, int y, int w, int h, const char *fmt, ...); 
 
@@ -600,6 +638,7 @@ public :
 	@Cpp int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@C int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@Py console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt)
+	@C# int TCODConsole::printRectEx(int x, int y, int w, int h, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
@@ -607,7 +646,7 @@ public :
 		y <= y+h < console height
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	@Param alignment defines how the strings are printed on screen.	
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
+	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
 	int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
 
@@ -618,12 +657,13 @@ public :
 	@Cpp int TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...)
 	@C int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
 	@Py console_get_height_rect(con, x, y, w, h, fmt)
+	@C# int TCODConsole::getHeightRect(int x, int y, int w, int h, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
 		x <= x+w < console width
 		y <= y+h < console height
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string
+	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
 	int getHeightRect(int x, int y, int w, int h, const char *fmt, ...); 
 
@@ -652,6 +692,7 @@ public :
 	@Cpp static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
 	@C void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_set_color_control(con,fore,back)
+	@C# Not Supported.
 	@Param con the color control TCOD_COLCTRL_x, 1<=x<=5
 	@Param fore foreground color when this control is activated
 	@Param back background color when this control is activated
@@ -742,6 +783,9 @@ public :
 	@Cpp void TCODConsole::rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag)
 	@Py console_rect(con,x,  y,  w, h, clear, flag=BKGND_DEFAULT)
+	@C# 
+		void TCODConsole::rect(int x, int y, int w, int h, bool clear)
+		void TCODConsole::rect(int x, int y, int w, int h, bool clear, TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of rectangle upper-left corner in the console.
 		0 <= x < console width
@@ -762,6 +806,9 @@ public :
 	@Cpp void TCODConsole::hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag)
 	@Py console_hline(con,x,y,l,flag=BKGND_DEFAULT)
+	@C#
+		void TCODConsole::hline(int x,int y, int l)
+		void TCODConsole::hline(int x,int y, int l, TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's left end in the console.
 		0 <= x < console width
@@ -778,6 +825,9 @@ public :
 	@Cpp void TCODConsole::vline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
 	@C void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag)
 	@Py console_vline(con,x,y,l,flag=BKGND_DEFAULT)
+	@C# 
+		void TCODConsole::vline(int x,int y, int l)
+		void TCODConsole::vline(int x,int y, int l, TCODBackgroundFlag flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's upper end in the console.
 		0 <= x < console width
@@ -794,6 +844,11 @@ public :
 	@Cpp void TCODConsole::printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 	@C void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool clear, TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 	@Py console_print_frame(con,x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0)
+	@C#
+		void TCODConsole::printFrame(int x,int y, int w,int h)
+		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear)
+		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear, TCODBackgroundFlag flag)
+		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear, TCODBackgroundFlag flag, string fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the rectangle's upper-left corner in the console.
 		0 <= x < console width
@@ -818,6 +873,7 @@ public :
 	@Cpp int TCODConsole::getWidth() const
 	@C int TCOD_console_get_width(TCOD_console_t con)
 	@Py console_get_width(con)
+	@C# int TCODConsole::getWidth()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	int getWidth() const;
@@ -829,6 +885,7 @@ public :
 	@Cpp int TCODConsole::getHeight() const
 	@C int TCOD_console_get_height(TCOD_console_t con)
 	@Py console_get_height(con)
+	@C# int TCODConsole::getHeight()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	int getHeight() const;
@@ -840,6 +897,7 @@ public :
 	@Cpp TCODColor TCODConsole::getBackgroundColor() const
 	@C TCOD_color_t TCOD_console_get_background_color(TCOD_console_t con)
 	@Py console_get_background_color(con)
+	@C# TCODColor TCODConsole::getBackgroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCODColor getBackgroundColor() const;
@@ -851,6 +909,7 @@ public :
 	@Cpp TCODColor TCODConsole::getForegroundColor() const
 	@C TCOD_color_t TCOD_console_get_foreground_color(TCOD_console_t con)
 	@Py console_get_foreground_color(con)
+	@C# TCODColor TCODConsole::getForegroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCODColor getForegroundColor() const;
@@ -862,6 +921,7 @@ public :
 	@Cpp TCODColor TCODConsole::getBack(int x, int y) const
 	@C TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y)
 	@Py console_get_back(con,x,y)
+	@C# TCODColor TCODConsole::getCharBackground(int x, int y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -876,6 +936,7 @@ public :
 	@Cpp TCODColor TCODConsole::getFore(int x, int y) const
 	@C TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y)
 	@Py console_get_fore(con,x,y)
+	@C# TCODColor TCODConsole::getCharForeground(int x, int y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -890,6 +951,7 @@ public :
 	@Cpp TCODColor TCODConsole::getChar(int x, int y) const
 	@C TCOD_color_t TCOD_console_get_char(TCOD_console_t con,int x, int y)
 	@Py console_get_char(con,x,y)
+	@C# TCODColor TCODConsole::getChar(int x, int y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -907,6 +969,7 @@ public :
 	@Cpp static void TCODConsole::setFade(uint8 fade, const TCODColor &fadingColor)
 	@C void TCOD_console_set_fade(uint8 fade, TCOD_color_t fadingColor)
 	@Py console_set_fade(fade, fadingColor)
+	@C# static void TCODConsole::setFade(byte fade, TCODColor fadingColor)
 	@Param fade the fading amount. 0 => the screen is filled with the fading color. 255 => no fading effect
 	@Param fadingColor the color to use during the console flushing operation
 	@CppEx 
@@ -934,6 +997,7 @@ public :
 	@Cpp static uint8 TCODConsole::getFade()
 	@C uint8 TCOD_console_get_fade()
 	@Py console_get_fade()
+	@C# static byte TCODConsole::getFade()
 	*/
 	static uint8 getFade();
 
@@ -944,6 +1008,7 @@ public :
 	@Cpp static TCODColor TCODConsole::getFadingColor()
 	@C TCODColor TCOD_console_get_fadingColor()
 	@Py console_get_fading_color()
+	@C# static TCODColor TCODConsole::getFadingColor()
 	*/
 	static TCODColor getFadingColor();
 
@@ -956,6 +1021,7 @@ public :
 	@Cpp static void TCODConsole::flush()
 	@C void TCOD_console_flush()
 	@Py console_flush()
+	@C# static void TCODConsole::flush()
 	*/
 	static void flush();
 
@@ -1086,6 +1152,7 @@ public :
 	@Cpp static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
 	@C TCOD_key_t TCOD_console_wait_for_keypress(bool flush)
 	@Py console_wait_for_keypress(flush)
+	@C# static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
 	@Param flush if true, all pending keypress events are flushed from the keyboard buffer. Else, return the first available event
 	@CppEx 
 		TCOD_key_t key = TCODConsole::waitForKeypress(true);
@@ -1107,6 +1174,7 @@ public :
 	@Cpp static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_RELEASED)
 	@C TCOD_key_t TCOD_console_check_for_keypress(int flags)
 	@Py console_check_for_keypress(flags=KEY_RELEASED)
+	@C# static TCODKey TCODConsole::checkForKeypress(int flags) // Use TCODKeyStatus
 	@Param flags A filter for key events :
 		TCOD_KEY_PRESSED : only keypress events are returned
 		TCOD_KEY_RELEASED : only key release events are returnes
@@ -1131,6 +1199,7 @@ public :
 	@Cpp static bool TCODConsole::isKeyPressed(TCOD_keycode_t key)
 	@C bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
 	@Py console_is_key_pressed(key)
+	@C# static bool TCODConsole::isKeyPressed(TCODKeyCode key)
 	@Param key Any key code defined in keycode_t except TCODK_CHAR and TCODK_NONE
 	*/
 	static bool isKeyPressed(TCOD_keycode_t key);
@@ -1139,9 +1208,10 @@ public :
 	@PageTitle Changing keyboard repeat delay
 	@PageFather console_input
 	@FuncDesc This function changes the keyboard repeat times.
-	@Cpp static void TCODConsole::setKeyboardRepeat(int initialDelay,int interval)
+	@Cpp static void TCODConsole::setKeyboardRepeat(int initialDelay, int interval)
 	@C void TCOD_console_set_keyboard_repeat(int initial_delay, int interval)
 	@Py console_set_keyboard_repeat(initial_delay, interval)
+	@C# static void TCODConsole::setKeyboardRepeat(int initialDelay, int interval)
 	@Param initialDelay delay in millisecond between the time when a key is pressed, and keyboard repeat begins. If 0, keyboard repeat is disabled
 	@Param interval interval in millisecond between keyboard repeat events
 	*/
@@ -1152,6 +1222,7 @@ public :
 	@Cpp static void TCODConsole::disableKeyboardRepeat()
 	@C void TCOD_console_disable_keyboard_repeat()
 	@Py console_disable_keyboard_repeat()
+	@C# static void TCODConsole::disableKeyboardRepeat()
 	*/
 	static void disableKeyboardRepeat();
 
@@ -1274,6 +1345,7 @@ public :
 	@Cpp TCODConsole::TCODConsole(int w, int h)
 	@C TCOD_console_t TCOD_console_new(int w, int h)
 	@Py console_new(w,h)
+	@C# TCODConsole::TCODConsole(int w, int h)
 	@Param w,h the console size.
 		0 < w
 		0 < h
@@ -1303,6 +1375,10 @@ public :
 	@Cpp static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foregroundAlpha=1.0f, float backgroundAlpha=1.0f)
 	@C void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, float foreground_alpha, float background_alpha)
 	@Py console_blit(src,xSrc,ySrc,xSrc,hSrc,dst,xDst,yDst,foregroundAlpha=1.0,backgroundAlpha=1.0)
+	@C#
+		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst)
+		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst, float foreground_alpha)
+		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst, float foreground_alpha, float background_alpha)
 	@Param src The source console that must be blitted on another one.
 	@Param xSrc,ySrc,wSrc,hSrc The rectangular area of the source console that will be blitted.
 	@Param dst The destination console.
@@ -1369,6 +1445,7 @@ public :
 	@Cpp void TCODConsole::setKeyColor(const TCODColor &col)
 	@C void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col)
 	@Py console_set_key_color(con,col)
+	@C# void TCODConsole::setKeyColor(TCODColor col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param col the transparent background color
 	*/
@@ -1380,6 +1457,7 @@ public :
 	@Cpp TCODConsole::~TCODConsole()
 	@C void TCOD_console_delete(TCOD_console_t con)
 	@Py console_delete(con)
+	@C# void TCODConsole::Dispose()
 	@Param con in the C and Python versions, the offscreen console handler
 	@CppEx 
 		TCODConsole *off1 = new TCODConsole(80,50);

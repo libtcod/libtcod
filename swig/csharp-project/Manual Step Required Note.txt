@@ -43,3 +43,6 @@ Also, Remove the HandleRefs() from TCODPath
 
 5)
 Also remove HandleRefs() from TCODBsp
+
+6)
+Also remove TCODNameGenerator overloads that expose allocate

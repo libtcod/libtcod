@@ -234,7 +234,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 			...
 		} TCOD_bsp_t;
 	@C# 
-		class TCDOBsp
+		class TCODBsp
 		{
 		  public int x { get; set; }
 		  public int y { get; set; }

@@ -100,7 +100,7 @@ libtcod.red
 libtcod.dark_red
 libtcod.darker_red
 libtcod.darkest_red
-	@C# TCODColor::desaturatedRed
+	@C#Ex TCODColor::desaturatedRed
 TCODColor::lightestRed
 TCODColor::lighterRed
 TCODColor::lightRed

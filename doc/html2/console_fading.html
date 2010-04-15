@@ -18,6 +18,7 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. 
 <div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">::</span>setFade<span class="code-symbol">(</span><span class="code-keyword">uint8</span> fade<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor<span class="code-symbol"> &</span>fadingColor<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_console_set_fade<span class="code-symbol">(</span><span class="code-keyword">uint8</span> fade<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> fadingColor<span class="code-symbol">)</span></p>
 <p class="py">console_set_fade<span class="code-symbol">(</span>fade<span class="code-symbol">,</span> fadingColor<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setFade<span class="code-symbol">(</span><span class="code-keyword">byte</span> fade<span class="code-symbol">,</span> TCODColor fadingColor<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>fade</td><td>the fading amount. 0 => the screen is filled with the fading color. 255 => no fading effect<br />	</td></tr>
 <tr><td>fadingColor</td><td>the color to use during the console flushing operation<br />	</td></tr>
@@ -31,12 +32,14 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. 
 <div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> uint8</span> TCODConsole<span class="code-symbol">::</span>getFade<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">uint8</span> TCOD_console_get_fade<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="py">console_get_fade<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> byte</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getFade<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <a name="2"></a><h3>Reading the fading color</h3>
 <p>This function returns the current fading color, previously defined by setFade.<br />	</p>
 <div class="code"><p class="cpp"><span class="code-keyword">static</span> TCODColor TCODConsole<span class="code-symbol">::</span>getFadingColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c">TCODColor TCOD_console_get_fadingColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="py">console_get_fading_color<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span> TCODColor TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getFadingColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 
 </div></div></body></html>

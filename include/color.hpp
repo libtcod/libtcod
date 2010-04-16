@@ -108,7 +108,7 @@ TCODColor::red
 TCODColor::darkRed
 TCODColor::darkerRed
 TCODColor::darkestRed
- */	
+ */
 
 class TCODLIB_API TCODColor {
 public :
@@ -126,6 +126,7 @@ public :
 	TCODColor(uint8 r, uint8 g, uint8 b) :r(r),g(g),b(b) {}
 	TCODColor(int r, int g, int b) :r(r),g(g),b(b) {}
 	TCODColor(const TCOD_color_t &col) :r(col.r),g(col.g),b(col.b) {}
+	TCODColor(float h, float s, float v);
 
 	/**
 	@PageName color
@@ -174,7 +175,7 @@ if (myColor.NotEqual(TCODColor.white)) { ... }
 	@FuncDesc c1 = c2 * v =>
     c1.r = CLAMP(0, 255, c2.r * v)
     c1.g = CLAMP(0, 255, c2.g * v)
-    c1.b = CLAMP(0, 255, c2.b * v) 
+    c1.b = CLAMP(0, 255, c2.b * v)
 	darkishRed = red * 0.5
 <table><tr><td style="background-color: rgb(128, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="width: 60px;"></td></tr></table>
 </tbody>
@@ -356,10 +357,10 @@ TCODColor::genMap(map,3,col,idx);
 TCOD_color_t col[] = { { 0,0,0 }, {255,0,0}, {255,255,255} }; // colors : black, red, white
 TCOD_color_t map[9];
 TCOD_color_gen_map(map,3,col,idx);
-	@PyEx idx = [ 0, 4, 8 ] # indexes of the keys 
-col = [ libtcod.Color( 0,0,0 ), libtcod.Color( 255,0,0 ), libtcod.Color(255,255,255) ] # colors : black, red, white 
+	@PyEx idx = [ 0, 4, 8 ] # indexes of the keys
+col = [ libtcod.Color( 0,0,0 ), libtcod.Color( 255,0,0 ), libtcod.Color(255,255,255) ] # colors : black, red, white
 map=libtcod.color_gen_map(col,idx)
-	*/	
+	*/
 	static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
 
 	// color array
@@ -375,7 +376,7 @@ map=libtcod.color_gen_map(col,idx)
 	static const TCODColor lighterGrey;
 	static const TCODColor lightestGrey;
 	static const TCODColor white;
-	
+
 	//sepia
 	static const TCODColor darkestSepia;
 	static const TCODColor darkerSepia;
@@ -384,7 +385,7 @@ map=libtcod.color_gen_map(col,idx)
 	static const TCODColor lightSepia;
 	static const TCODColor lighterSepia;
 	static const TCODColor lightestSepia;
-	
+
 	// standard colors
 	static const TCODColor red;
   static const TCODColor flame;
@@ -407,7 +408,7 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor magenta;
   static const TCODColor pink;
   static const TCODColor crimson;
-	
+
 	// dark colors
 	static const TCODColor darkRed;
   static const TCODColor darkFlame;
@@ -430,7 +431,7 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor darkMagenta;
   static const TCODColor darkPink;
   static const TCODColor darkCrimson;
-	
+
 	// darker colors
 	static const TCODColor darkerRed;
   static const TCODColor darkerFlame;
@@ -453,7 +454,7 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor darkerMagenta;
   static const TCODColor darkerPink;
   static const TCODColor darkerCrimson;
-  
+
   // darkest colors
   static const TCODColor darkestRed;
   static const TCODColor darkestFlame;
@@ -476,7 +477,7 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor darkestMagenta;
   static const TCODColor darkestPink;
   static const TCODColor darkestCrimson;
-	
+
 	// light colors
 	static const TCODColor lightRed;
   static const TCODColor lightFlame;
@@ -545,7 +546,7 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor lightestMagenta;
   static const TCODColor lightestPink;
   static const TCODColor lightestCrimson;
-	
+
 	// desaturated colors
   static const TCODColor desaturatedRed;
   static const TCODColor desaturatedFlame;
@@ -567,14 +568,14 @@ map=libtcod.color_gen_map(col,idx)
   static const TCODColor desaturatedFuchsia;
   static const TCODColor desaturatedMagenta;
   static const TCODColor desaturatedPink;
-  static const TCODColor desaturatedCrimson;	
-	
+  static const TCODColor desaturatedCrimson;
+
 	// metallic
 	static const TCODColor brass;
 	static const TCODColor copper;
 	static const TCODColor gold;
 	static const TCODColor silver;
-	
+
 	// miscellaneous
 	static const TCODColor celadon;
 	static const TCODColor peach;

@@ -266,6 +266,10 @@ const TCODColor TCODColor::colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
  {TCODColor(TCOD_DESATURATED_CRIMSON),TCODColor(TCOD_LIGHTEST_CRIMSON),TCODColor(TCOD_LIGHTER_CRIMSON),TCODColor(TCOD_LIGHT_CRIMSON),TCODColor(TCOD_CRIMSON),TCODColor(TCOD_DARK_CRIMSON),TCODColor(TCOD_DARKER_CRIMSON),TCODColor(TCOD_DARKEST_CRIMSON)}
 };
 
+TCODColor::TCODColor(float h, float s, float v) {
+	setHSV(h,s,v);
+}
+
 void TCODColor::setHSV(float h, float s, float v) {
   TCOD_color_t c;
   TCOD_color_set_HSV(&c,h,s,v);

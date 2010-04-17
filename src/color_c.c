@@ -274,6 +274,65 @@ const TCOD_color_t TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
  {{TCOD_DESATURATED_CRIMSON},{TCOD_LIGHTEST_CRIMSON},{TCOD_LIGHTER_CRIMSON},{TCOD_LIGHT_CRIMSON},{TCOD_CRIMSON},{TCOD_DARK_CRIMSON},{TCOD_DARKER_CRIMSON},{TCOD_DARKEST_CRIMSON}}
 };
 
+TCOD_color_t TCOD_color_RGB(uint8 r, uint8 g, uint8 b) {
+	TCOD_color_t ret = { r, g, b };
+	return ret;
+}
+
+TCOD_color_t TCOD_color_HSV(float h, float s, float v) {
+	TCOD_color_t ret;
+	int i;
+	float f, p, q, t;
+
+	if( s == 0 ) {
+		// achromatic (grey)
+		ret.r = ret.g = ret.b = (uint8)(v*255);
+	}
+	else {
+		while (h < 0.0f) h += 360.0f; //for H < 0
+		while (h >= 360.0f) h -= 360.0f; //for H >= 360
+		h /= 60;
+		i = (int)(h); //hue sector 0-5
+		f = h - i;			// factorial part of h
+		p = v * ( 1 - s );
+		q = v * ( 1 - s * f );
+		t = v * ( 1 - s * ( 1 - f ) );
+
+		switch (i) {
+			case 0:
+				ret.r = (uint8)(v*255);
+				ret.g = (uint8)(t*255);
+				ret.b = (uint8)(p*255);
+				break;
+			case 1:
+				ret.r = (uint8)(q*255);
+				ret.g = (uint8)(v*255);
+				ret.b = (uint8)(p*255);
+				break;
+			case 2:
+				ret.r = (uint8)(p*255);
+				ret.g = (uint8)(v*255);
+				ret.b = (uint8)(t*255);
+				break;
+			case 3:
+				ret.r = (uint8)(p*255);
+				ret.g = (uint8)(q*255);
+				ret.b = (uint8)(v*255);
+				break;
+			case 4:
+				ret.r = (uint8)(t*255);
+				ret.g = (uint8)(p*255);
+				ret.b = (uint8)(v*255);
+				break;
+			default:
+				ret.r = (uint8)(v*255);
+				ret.g = (uint8)(p*255);
+				ret.b = (uint8)(q*255);
+				break;
+		}
+	}
+	return ret;
+}
 
 bool TCOD_color_equals (TCOD_color_t c1, TCOD_color_t  c2) {
 	return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b);
@@ -337,19 +396,21 @@ TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
 	return ret;
 }
 
-// 0<= h < 360, 0 <= s <= 1, 0 <= v <= 1 
+// 0<= h < 360, 0 <= s <= 1, 0 <= v <= 1
 void TCOD_color_set_HSV(TCOD_color_t *c, float h, float s, float v)
 {
 	int i;
 	float f, p, q, t;
 
-	if( s == 0 ) {
+	if( s == 0.0f ) {
 		// achromatic (grey)
-		c->r = c->g = c->b = (uint8)(v*255);
+		c->r = c->g = c->b = (uint8)(v*255.0f);
 		return;
 	}
 
-	h /= 60;			// sector 0 to 5
+	while (h < 0.0f) h += 360.0f; //for H < 0
+	while (h >= 360.0f) h -= 360.0f; //for H >= 360
+	h /= 60.0f;			// sector 0 to 5
 	i = (int)floor( h );
 	f = h - i;			// factorial part of h
 	p = v * ( 1 - s );
@@ -358,34 +419,34 @@ void TCOD_color_set_HSV(TCOD_color_t *c, float h, float s, float v)
 
 	switch( i ) {
 		case 0:
-			c->r = (uint8)(v*255);
-			c->g = (uint8)(t*255);
-			c->b = (uint8)(p*255);
+			c->r = (uint8)(v*255.0f);
+			c->g = (uint8)(t*255.0f);
+			c->b = (uint8)(p*255.0f);
 			break;
 		case 1:
-			c->r = (uint8)(q*255);
-			c->g = (uint8)(v*255);
-			c->b = (uint8)(p*255);
+			c->r = (uint8)(q*255.0f);
+			c->g = (uint8)(v*255.0f);
+			c->b = (uint8)(p*255.0f);
 			break;
 		case 2:
-			c->r = (uint8)(p*255);
-			c->g = (uint8)(v*255);
-			c->b = (uint8)(t*255);
+			c->r = (uint8)(p*255.0f);
+			c->g = (uint8)(v*255.0f);
+			c->b = (uint8)(t*255.0f);
 			break;
 		case 3:
-			c->r = (uint8)(p*255);
-			c->g = (uint8)(q*255);
-			c->b = (uint8)(v*255);
+			c->r = (uint8)(p*255.0f);
+			c->g = (uint8)(q*255.0f);
+			c->b = (uint8)(v*255.0f);
 			break;
 		case 4:
-			c->r = (uint8)(t*255);
-			c->g = (uint8)(p*255);
-			c->b = (uint8)(v*255);
+			c->r = (uint8)(t*255.0f);
+			c->g = (uint8)(p*255.0f);
+			c->b = (uint8)(v*255.0f);
 			break;
 		default:
-			c->r = (uint8)(v*255);
-			c->g = (uint8)(p*255);
-			c->b = (uint8)(q*255);
+			c->r = (uint8)(v*255.0f);
+			c->g = (uint8)(p*255.0f);
+			c->b = (uint8)(q*255.0f);
 			break;
 	}
 }
@@ -395,39 +456,93 @@ void TCOD_color_get_HSV(TCOD_color_t c, float *h, float *s, float *v)
   uint8 imax,imin;
 	float min, max, delta;
 
-	imax = ( c.r > c.g ? 
+	imax = ( c.r > c.g ?
 			( c.r > c.b ? c.r : c.b )
 			: ( c.g > c.b ? c.g : c.b) );
-	imin = ( c.r < c.g ? 
+	imin = ( c.r < c.g ?
 			( c.r < c.b ? c.r : c.b )
 			: ( c.g < c.b ? c.g : c.b) );
 	max = imax/255.0f;
 	min = imin/255.0f;
 	*v = max; // v
-	
+
 	delta = max - min;
-	if( max != 0 ) *s = delta / max; // s
-	else 
+	if( max != 0.0f ) *s = delta / max; // s
+	else
 	{
-		*s = 0; // s
-		*h= -1; // h
+		*s = 0.0f; // s
+		*h = 0.0f; // h
 		return;
 	}
-	
-	if( c.r == imax ) *h = ( c.g - c.b ) / (255 * delta);		// between yellow & magenta
-	else if( c.g == imax )	*h = 2 + ( c.b - c.r ) / (255 * delta);	// between cyan & yellow
-	else *h = 4 + ( c.r - c.g ) / (255 * delta);	// between magenta & cyan
-	
-	*h *= 60;				// degrees
-	if( *h < 0 ) *h += 360;
+
+	if( c.r == imax ) *h = ( c.g - c.b ) / (255.0f * delta);		// between yellow & magenta
+	else if( c.g == imax )	*h = 2.0f + ( c.b - c.r ) / (255.0f * delta);	// between cyan & yellow
+	else *h = 4.0f + ( c.r - c.g ) / (255.0f * delta);	// between magenta & cyan
+
+	*h *= 60.0f; // degrees
+	if( *h < 0 ) *h += 360.0f;
+}
+
+float TCOD_color_get_hue (TCOD_color_t c) {
+	uint8 max = MAX(c.r,MAX(c.g,c.b));
+	uint8 min = MIN(c.r,MIN(c.g,c.b));
+	float delta = (float)max - (float)min;
+	float ret;
+	if (delta == 0.0f) ret = 0.0f; //achromatic, including black
+	else {
+		if (c.r == max) ret = (float)(c.g - c.b) / delta;
+		else if (c.g == max) ret = 2.0f + (float)(c.b - c.r) / delta;
+		else ret = 4.0f + (float)(c.r - c.g) / delta;
+		ret *= 60.0f;
+		if (ret < 0.0f) ret += 360.0f;
+		if (ret >= 360.0f) ret -= 360.0f;
+	}
+	return ret;
+}
+
+void TCOD_color_set_hue (TCOD_color_t *c, float h) {
+	float obsolete, s, v;
+	TCOD_color_get_HSV(*c,&obsolete,&s,&v);
+	*c = TCOD_color_HSV(h,s,v);
+}
+
+float TCOD_color_get_saturation (TCOD_color_t c) {
+	float max = (float)(MAX(c.r,MAX(c.g,c.b)))/255.0f;
+	float min = (float)(MIN(c.r,MIN(c.g,c.b)))/255.0f;
+	float delta = max - min;
+	if (max == 0.0f) return 0.0f;
+	else return delta/max;
+}
+
+void TCOD_color_set_saturation (TCOD_color_t *c, float s) {
+	float h, obsolete, v;
+	TCOD_color_get_HSV(*c,&h,&obsolete,&v);
+	*c = TCOD_color_HSV(h,s,v);
+}
+
+float TCOD_color_get_value (TCOD_color_t c) {
+	return (float)(MAX(c.r,MAX(c.g,c.b)))/255.0f;
+}
+
+void TCOD_color_set_value (TCOD_color_t *c, float v) {
+	float h, s, obsolete;
+	TCOD_color_get_HSV(*c,&h,&s,&obsolete);
+	*c = TCOD_color_HSV(h,s,v);
+}
+
+void TCOD_color_shift_hue (TCOD_color_t *c, float hshift) {
+	float h, s, v;
+	if (hshift == 0.0f) return;
+	TCOD_color_get_HSV(*c,&h,&s,&v);
+	*c = TCOD_color_HSV(h+hshift,s,v);
 }
 
 void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef) {
-  float h, s, v;
-  TCOD_color_get_HSV(*c,&h,&s,&v);
-  s = CLAMP(0.0f,1.0f,s*scoef);
-  v = CLAMP(0.0f,1.0f,v*vcoef);
-  TCOD_color_set_HSV(c,h,s,v);
+	float h, s, v;
+	TCOD_color_get_HSV(*c,&h,&s,&v);
+	s = CLAMP(0.0f,1.0f,s*scoef);
+	v = CLAMP(0.0f,1.0f,v*vcoef);
+	*c = TCOD_color_HSV(h,s,v);
 }
 
 void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const  *key_color, int const  *key_index) {

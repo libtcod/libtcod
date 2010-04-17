@@ -31,17 +31,30 @@
 typedef struct {
 	uint8 r,g,b;
 } TCOD_color_t;
-	
+
+/* constructors */
+TCODLIB_API TCOD_color_t TCOD_color_RGB(uint8 r, uint8 g, uint8 b);
+TCODLIB_API TCOD_color_t TCOD_color_HSV(float h, float s, float v);
+/* basic operations */
 TCODLIB_API bool TCOD_color_equals (TCOD_color_t c1, TCOD_color_t c2);
 TCODLIB_API TCOD_color_t TCOD_color_add (TCOD_color_t c1, TCOD_color_t c2);
 TCODLIB_API TCOD_color_t TCOD_color_subtract (TCOD_color_t c1, TCOD_color_t c2);
 TCODLIB_API TCOD_color_t TCOD_color_multiply (TCOD_color_t c1, TCOD_color_t c2);
 TCODLIB_API TCOD_color_t TCOD_color_multiply_scalar (TCOD_color_t c1, float value);
-TCODLIB_API TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef);
-TCODLIB_API void TCOD_color_set_HSV(TCOD_color_t *c,float h, float s, float v);
-TCODLIB_API void TCOD_color_get_HSV(TCOD_color_t c,float * h, float * s, float * v);
-TCODLIB_API void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index);
+TCODLIB_API TCOD_color_t TCOD_color_lerp (TCOD_color_t c1, TCOD_color_t c2, float coef);
+/* HSV transformations */
+TCODLIB_API void TCOD_color_set_HSV (TCOD_color_t *c,float h, float s, float v);
+TCODLIB_API void TCOD_color_get_HSV (TCOD_color_t c,float * h, float * s, float * v);
+TCODLIB_API float TCOD_color_get_hue (TCOD_color_t c);
+TCODLIB_API void TCOD_color_set_hue (TCOD_color_t *c, float h);
+TCODLIB_API float TCOD_color_get_saturation (TCOD_color_t c);
+TCODLIB_API void TCOD_color_set_saturation (TCOD_color_t *c, float s);
+TCODLIB_API float TCOD_color_get_value (TCOD_color_t c);
+TCODLIB_API void TCOD_color_set_value (TCOD_color_t *c, float v);
+TCODLIB_API void TCOD_color_shift_hue (TCOD_color_t *c, float hshift);
 TCODLIB_API void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef);
+/* colour map */
+TCODLIB_API void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index);
 
 // color names
 enum {

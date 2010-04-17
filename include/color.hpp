@@ -118,14 +118,18 @@ public :
 	/**
 	@PageName color
 	@FuncTitle Create your own colors
-	@CppEx TCODColor myColor(24,64,255);
-	@CEx TCOD_color_t my_color={24,64,255};
+	@FuncDesc You can create your own colours using a set of constructors, both for RGB and HSV values.
+	@CppEx TCODColor myColor(24,64,255); //RGB
+TCODColor myOtherColor(321.0f,0.7f,1.0f); //HSV
+	@CEx TCOD_color_t my_color={24,64,255}; <span>/</span>* RGB *<span>/</span>
+TCOD_color_t my_other_color = TCOD_color_RGB(24,64,255); <span>/</span>* RGB too *<span>/</span>
+TCOD_color_t my_yet_another_color = TCOD_color_HSV(321.0f,0.7f,1.0f); <span>/</span>* HSV *<span>/</span>
 	@PyEx my_color=libtcod.Color(24,64,255)
 	@C#Ex TCODColor myColor = new TCODColor(24,64,255);
 	*/
-	TCODColor(uint8 r, uint8 g, uint8 b) :r(r),g(g),b(b) {}
-	TCODColor(int r, int g, int b) :r(r),g(g),b(b) {}
-	TCODColor(const TCOD_color_t &col) :r(col.r),g(col.g),b(col.b) {}
+	TCODColor(uint8 r, uint8 g, uint8 b): r(r), g(g), b(b) {}
+	TCODColor(int r, int g, int b): r(r), g(g), b(b) {}
+	TCODColor(const TCOD_color_t &col): r(col.r), g(col.g), b(col.b) {}
 	TCODColor(float h, float s, float v);
 
 	/**
@@ -282,7 +286,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	/**
 	@PageName color
 	@FuncTitle Define a color by its hue, saturation and value
-	@FuncDesc After this function is called, the r,g,b fields of the color contains the red, green, blue values corresponding to the h,s,v parameters.
+	@FuncDesc After this function is called, the r,g,b fields of the color are calculated according to the h,s,v parameters.
 	@Cpp void TCODColor::setHSV(float h, float s, float v)
 	@C void TCOD_color_set_HSV(TCOD_color_t *c,float h, float s, float v)
 	@Py color_set_HSV(c,h,s,v)
@@ -294,6 +298,23 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 0.0 <= v <= 1.0
 	*/
 	void setHSV(float h, float s, float v);
+
+	/**
+	@PageName color
+	@FuncTitle Define a color's hue, saturation or lightness
+	@FuncDesc These functions set only a single component in the HSV color space.
+	@Cpp void TCODColor::setHue (float h)
+void TCODColor::setSaturation (float s)
+void TCODColor::setValue (float v)
+	@C void TCOD_color_set_hue (TCOD_color_t *c, float h)
+void TCOD_color_set_saturation (TCOD_color_t *c, float s)
+void TCOD_color_set_value (TCOD_color_t *c, float v)
+	@Param h,s,v	Color components in the HSV space
+	@Param c	In the C and python versions, the color to modify
+	*/
+	void setHue (float h);
+	void setSaturation (float s);
+	void setValue (float v);
 
 	/**
 	@PageName color
@@ -312,11 +333,42 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 
 	/**
 	@PageName color
-	@FuncTitle Scale a color saturation and value
+	@FuncTitle Get a color's hue, saturation or value
+	@FuncDesc Should you need to extract only one of the HSV components, these functions are what you should call. Note that if you need all three values, it's way less burdensome for the CPU to call TCODColor::getHSV().
+	@Cpp float TCODColor::getHue ()
+float TCODColor::getSaturation ()
+float TCODColor::getValue ()
+	@C float TCOD_color_get_hue (TCOD_color_t c)
+float TCOD_color_get_saturation (TCOD_color_t c)
+float TCOD_color_get_value (TCOD_color_t c)
+	@Param c	the TCOD_color_t from which to read
+	*/
+	float getHue ();
+	float getSaturation ();
+	float getValue ();
+
+	/**
+	@PageName color
+	@FuncTitle Shift a color's hue up or down
+	@FuncDesc The hue shift value is the number of grades the color's hue will be shifted. The value can be negative for shift left, or positive for shift right.
+Resulting values H < 0 and H >= 360 are handled automatically.
+	@Cpp void TCODColor::shiftHue (float hshift)
+	@C void TCOD_color_shift_hue (TCOD_color_t *c, float hshift)
+	@Param c	The color to modify
+	@Param hshift	The hue shift value
+	*/
+	void shiftHue (float hshift);
+
+	/**
+	@PageName color
+	@FuncTitle Scale a color's saturation and value
 	@Cpp void TCODColor::scaleHSV (float sscale, float vscale)
 	@C void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef)
 	@Py color_scale_HSV(c, scoef, vcoef)
 	@C# void TCODColor::scaleHSV (float sscale, float vscale)
+	@Param c	The color to modify
+	@Param sscale	saturation multiplier (1.0f for no change)
+	@Param vscale	value multiplier (1.0f for no change)
 	*/
 	void scaleHSV (float sscale, float vscale);
 

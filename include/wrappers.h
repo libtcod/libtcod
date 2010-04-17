@@ -44,14 +44,14 @@ TCODLIB_API colornum_t TCOD_color_lerp_wrapper(colornum_t c1,
 						 colornum_t c2, float coef);
 TCODLIB_API void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
 					    float * s, float * v);
-TCODLIB_API float TCOD_color_get_hue (colornum_t c);
-TCODLIB_API float TCOD_color_get_saturation (colornum_t c);
-TCODLIB_API float TCOD_color_get_value (colornum_t c);
+TCODLIB_API float TCOD_color_get_hue_ (colornum_t c);
+TCODLIB_API float TCOD_color_get_saturation_ (colornum_t c);
+TCODLIB_API float TCOD_color_get_value_ (colornum_t c);
 
 // console module
-/* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile, 
-                        int char_width, int char_height, int nb_char_horiz, 
-                        int nb_char_vertic, bool chars_by_row, 
+/* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile,
+                        int char_width, int char_height, int nb_char_horiz,
+                        int nb_char_vertic, bool chars_by_row,
                         colornum_t key_color); */
 
 TCODLIB_API void TCOD_console_set_background_color_wrapper(TCOD_console_t con,
@@ -69,7 +69,7 @@ TCODLIB_API colornum_t TCOD_console_get_fore_wrapper (TCOD_console_t con,
                                               int x, int y);
 TCODLIB_API void TCOD_console_set_fore_wrapper(TCOD_console_t con,int x, int y,
                                       colornum_t col);
-TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, 
+TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x,
 	int y, int c, colornum_t fore, colornum_t back);
 TCODLIB_API void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade);
 TCODLIB_API colornum_t TCOD_console_get_fading_color_wrapper();
@@ -81,7 +81,7 @@ TCODLIB_API bool TCOD_console_check_for_keypress_wrapper(TCOD_key_t *holder,
 TCODLIB_API void TCOD_console_wait_for_keypress_wrapper(TCOD_key_t *holder,
 							bool flush);
 TCODLIB_API uint32 TCOD_console_check_for_keypress_bitfield (int flags);
-TCODLIB_API uint32 TCOD_console_wait_for_keypress_bitfield (bool flush);							
+TCODLIB_API uint32 TCOD_console_wait_for_keypress_bitfield (bool flush);
 TCODLIB_API void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b);
 TCODLIB_API void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b);
 

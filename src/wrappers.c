@@ -82,22 +82,16 @@ void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
   TCOD_color_get_HSV (int_to_color(c), h, s, v);
 }
 
-float TCOD_color_get_hue (colornum_t c) {
-  float hue, sat, val;
-  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
-  return hue;
+float TCOD_color_get_hue_ (colornum_t c) {
+  return TCOD_color_get_hue(int_to_color(c));
 }
 
-float TCOD_color_get_saturation (colornum_t c) {
-  float hue, sat, val;
-  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
-  return sat;
+float TCOD_color_get_saturation_ (colornum_t c) {
+  return TCOD_color_get_saturation(int_to_color(c));
 }
- 
-float TCOD_color_get_value (colornum_t c) {
-  float hue, sat, val;
-  TCOD_color_get_HSV(int_to_color(c), &hue, &sat, &val);
-  return val;
+
+float TCOD_color_get_value_ (colornum_t c) {
+  return TCOD_color_get_value(int_to_color(c));
 }
 
 /* void TCOD_console_set_custom_font_wrapper(const char *fontFile, */
@@ -453,7 +447,7 @@ int TCOD_sys_get_current_resolution_x()
   TCOD_sys_get_current_resolution(&x, &y);
   return x;
 }
- 
+
 int TCOD_sys_get_current_resolution_y()
 {
   int x, y;

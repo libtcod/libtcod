@@ -521,8 +521,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 						destx=x;// *TCOD_font_width;
 						desty=y;// *TCOD_font_height;
 						if ( TCOD_ctx.fullscreen ) {
-							destx+=TCOD_ctx.fullscreen_offsetx;
-							desty+=TCOD_ctx.fullscreen_offsety;
+							destx+=TCOD_ctx.fullscreen_offsetx/TCOD_ctx.font_width;
+							desty+=TCOD_ctx.fullscreen_offsety/TCOD_ctx.font_height;
 						}
 						// draw foreground
 						ascii=c->cf;
@@ -595,6 +595,21 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
 	
 	    DBGCHECKGL(glUseProgramObjectARB(0));
+	}
+	// fading overlay
+	if ( fade != 255 ) {
+		int x=0,y=0;
+		if ( TCOD_ctx.fullscreen ) {
+			x=TCOD_ctx.fullscreen_offsetx/TCOD_ctx.font_width;
+			y=TCOD_ctx.fullscreen_offsety/TCOD_ctx.font_height;
+		}
+		glBegin( GL_QUADS );
+		glColor4f(TCOD_ctx.fading_color.r/255.0,TCOD_ctx.fading_color.g/255.0,TCOD_ctx.fading_color.b/255.0,1.0-fade/255.0);
+		glVertex2i( x, y);
+		glVertex2i( x, y+conheight );
+		glVertex2i( x+conwidth, y+conheight );
+		glVertex2i( x+conwidth, y);
+		glEnd();
 	}
 	return true;
 }

@@ -25,6 +25,11 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+ * Warning ! This is not part of libtcod. It's an outdated SFML renderer attempt. To be upgraded... one day... maybe...
+ */
+
+
 #include <SFML/Graphics.h>
 #include <stdio.h>
 #include <string.h>

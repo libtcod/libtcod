@@ -359,7 +359,7 @@ uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
 void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32 nbBytes) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	uint32 boffset=zip->offset*sizeof(uintptr)-zip->isize+ nbBytes; // new offset
-	TCOD_IFNOT(boffset < TCOD_list_size(zip->buffer)*sizeof(uintptr)) return;
+	TCOD_IFNOT(boffset <= TCOD_list_size(zip->buffer)*sizeof(uintptr)) return;
 	zip->offset = (boffset+sizeof(uintptr)-1)/sizeof(uintptr);
 	zip->isize = boffset%sizeof(uintptr);
 	if ( zip->isize != 0 ) {

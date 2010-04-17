@@ -402,9 +402,9 @@ public :
 	@PageName console_draw_basic
 	@FuncTitle Setting the background color of a cell
 	@FuncDesc This function modifies the background color of a cell, leaving other properties (foreground color and ASCII code) unchanged.
-	@Cpp void TCODConsole::setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT)
+	@Cpp void TCODConsole::setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 	@C void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag)
-	@Py console_set_back(con, x,  y, col, flag=BKGND_DEFAULT)
+	@Py console_set_back(con, x,  y, col, flag=BKGND_SET)
 	@C#
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col)
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col, TCODBackgroundFlag flag)
@@ -415,7 +415,7 @@ public :
 	@Param col the background color to use. You can use color constants
 	@Param flag this flag defines how the cell's background color is modified. See <a href="console_bkgnd_flag_t.html">TCOD_bkgnd_flag_t</a>
 	*/
-	void setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
+	void setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	/**
 	@PageName console_draw_basic
 	@FuncTitle Setting the foreground color of a cell

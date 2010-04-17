@@ -29,6 +29,9 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
 + added more TCOD_CHAR_* constants
 + added TCODColor::scaleHSV (saturation and value scaling)
++ added TCODColor::shiftHue (hue shifting up and down)
++ added a TCODColor constructor for HSV values
++ added TCODColor H, S and V separate getters and setters
 % More default values for printFrame :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module
@@ -37,6 +40,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed python samples not compiling if numpy installed
 - fixed python TCOD_parser_get_list_property
 - fixed TCODDijkstra destructor crash bug
+- fixed TCODColor::setHSV bug when using hues below 0 or above 359 grades
 =========================================================
 1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    

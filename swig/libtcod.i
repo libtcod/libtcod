@@ -328,6 +328,7 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %rename(RightControl) rctrl;
 %rename(Shift) shift;
 
+%rename(Default) TCOD_BKGND_DEFAULT;
 %rename(None) TCOD_BKGND_NONE;
 %rename(Set) TCOD_BKGND_SET;
 %rename(Multiply) TCOD_BKGND_MULTIPLY;

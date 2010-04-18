@@ -1233,7 +1233,7 @@ namespace TCODDemo
                     bsp.splitRecursive(null, bspDepth, minRoomSize + (roomWalls ? 1 : 0), minRoomSize + (roomWalls ? 1 : 0), 1.5f, 1.5f);
                 }
                 // create the dungeon from the bsp
-                bsp.traverseInvertedLevelOrder(new TraverseNode(), new System.Runtime.InteropServices.HandleRef());
+                bsp.traverseInvertedLevelOrder(new TraverseNode());
                 generate = false;
                 refresh = false;
             }

@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Using off-screen consoles</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. Console</a> &gt; <a href="console_offscreen.html">2.5. Using off-screen consoles</a><br>
-<a class="prev" href="console_input.html">2.4. Handling keyboard input</a> 
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_offscreen.html')">2.5. Using off-screen consoles</a><br>
+<a class="prev" onclick="link('console_input.html')">2.4. Handling keyboard input</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>2.5. Using off-screen consoles</h1>
 <div id="toc"><ul>
 <li><a href="#0">Creating an offscreen console</a></li><li><a href="#1">Blitting a console on another one</a></li><li><a href="#2">Define a blit-transparent color</a></li><li><a href="#3">Destroying an offscreen console</a></li></ul></div>
@@ -66,4 +69,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. 
 <p class="py">off1<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>console_new<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">)</span><span class="code-symbol"><br />.</span><span class="code-symbol">.</span><span class="code-symbol">.</span> use off1<br />libtcod<span class="code-symbol">.</span>console_delete<span class="code-symbol">(</span>off1<span class="code-symbol">)</span></p>
 </div><hr>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

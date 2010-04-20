@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Reading path information</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="path.html">16. Path finding</a> &gt; <a href="path_read.html">16.3. Reading path information</a><br>
-<a class="prev" href="path_compute.html">16.2. Computing the path</a> 
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('path.html')">16. Path finding</a> &gt; <a onclick="link('path_read.html')">16.3. Reading path information</a><br>
+<a class="prev" onclick="link('path_compute.html')">16.2. Computing the path</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>16.3. Reading path information</h1>
 <div id="toc"><ul>
 <li><a href="#0">Getting the path origin and destination</a></li><li><a href="#1">Getting the path length</a></li><li><a href="#2">Read the path cells' coordinates	</a></li><li><a href="#3">Checking if the path is empty</a></li><li><a href="#4">Walking the path</a></li><li><a href="#5">Getting the distance from a cell to the root node</a></li></ul></div>
@@ -78,4 +81,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="path.html">16. Pa
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>dijkstra</td><td>In the C version, the path handler returned by a creation function.<br />		</td></tr>
 <tr><td>x,y</td><td>The coordinates whose distance from the root node are to be checked<br />        </td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

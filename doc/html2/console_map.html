@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Using custom characters mapping</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. Console</a> &gt; <a href="console_init.html">2.1. Initializing the console</a> &gt; <a href="console_map.html">2.1.3. Using custom characters mapping</a><br>
-<a class="prev" href="console_set_custom_font.html">2.1.2. Using a custom bitmap font</a> | <a class="next" href="console_fullscreen.html">2.1.4. Fullscreen mode</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_init.html')">2.1. Initializing the console</a> &gt; <a onclick="link('console_map.html')">2.1.3. Using custom characters mapping</a><br>
+<a class="prev" onclick="link('console_set_custom_font.html')">2.1.2. Using a custom bitmap font</a> | <a class="next" onclick="link('console_fullscreen.html')">2.1.4. Fullscreen mode</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>2.1.3. Using custom characters mapping</h1>
 <div id="toc"><ul>
 <li><a href="#0">Mapping a single ASCII code to a character</a></li><li><a href="#1">Mapping consecutive ASCII codes to consecutive characters</a></li><li><a href="#2">Mapping ASCII code from a string to consecutive characters</a></li></ul></div>
@@ -39,4 +42,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. 
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>s</td><td>string containing the ASCII codes to map<br />	</td></tr>
 <tr><td>fontCharX,fontCharY</td><td>coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code in the string<br />	</td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Using the buffer in input mode</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="zip.html">11. Compression toolkit</a> &gt; <a href="zip_load.html">11.3. Using the buffer in input mode</a><br>
-<a class="prev" href="zip_put.html">11.2. Using the buffer in output mode</a> 
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('zip.html')">11. Compression toolkit</a> &gt; <a onclick="link('zip_load.html')">11.3. Using the buffer in input mode</a><br>
+<a class="prev" onclick="link('zip_put.html')">11.2. Using the buffer in output mode</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>11.3. Using the buffer in input mode</h1>
 <div id="toc"><ul>
 <li><a href="#0">Reading from a compressed file</a></li><li><a href="#1">Reading a char from the buffer</a></li><li><a href="#2">Reading an integer from the buffer</a></li><li><a href="#3">Reading a floating point value from the buffer</a></li><li><a href="#4">Reading a string from the buffer</a></li><li><a href="#5">Reading a color from the buffer</a></li><li><a href="#6">Reading a color from the buffer</a></li><li><a href="#7">Reading a console from the buffer</a></li><li><a href="#8">Reading some custom data from the buffer</a></li><li><a href="#9">Getting the number of remaining bytes in the buffer</a></li><li><a href="#10">Skiping some bytes in the buffer</a></li></ul></div>
@@ -79,4 +82,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="zip.html">11. Com
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
 <tr><td>nbBytes</td><td>number of uncompressed bytes to skip<br />	</td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

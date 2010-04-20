@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Advanced printing functions</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. Console</a> &gt; <a href="console_draw.html">2.2. Drawing on the root console</a> &gt; <a href="console_advanced.html">2.2.4. Advanced printing functions</a><br>
-<a class="prev" href="console_print.html">2.2.3. String drawing functions</a> | <a class="next" href="console_read.html">2.2.5. Reading the content of the console</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_draw.html')">2.2. Drawing on the root console</a> &gt; <a onclick="link('console_advanced.html')">2.2.4. Advanced printing functions</a><br>
+<a class="prev" onclick="link('console_print.html')">2.2.3. String drawing functions</a> | <a class="next" onclick="link('console_read.html')">2.2.5. Reading the content of the console</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>2.2.4. Advanced printing functions</h1>
 <div id="toc"><ul>
 <li><a href="#0">Filling a rectangle with the background color</a></li><li><a href="#1">Drawing an horizontal line</a></li><li><a href="#2">Drawing an vertical line</a></li><li><a href="#3">Drawing a window frame</a></li></ul></div>
@@ -60,4 +63,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="console.html">2. 
 <tr class="hilite"><td>flag</td><td>this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	<br />	</td></tr>
 <tr><td>fmt</td><td>if NULL, the funtion only draws a rectangle.<br />		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.<br />	</td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

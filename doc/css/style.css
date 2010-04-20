@@ -73,6 +73,13 @@ div.main {
 	height: 250px;
 }
 
+a {
+	cursor:pointer;
+}
+label.disabled {
+	color:#AAAAAA;
+}
+
 /***************
  * sub regions *
  ***************/

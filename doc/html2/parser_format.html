@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | The libtcod config file format</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="parser.html">10. File parser</a> &gt; <a href="parser_format.html">10.1. The libtcod config file format</a><br>
- <a class="next" href="parser_str.html">10.2. Defining the file syntax</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('parser.html')">10. File parser</a> &gt; <a onclick="link('parser_format.html')">10.1. The libtcod config file format</a><br>
+ <a class="next" onclick="link('parser_str.html')">10.2. Defining the file syntax</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>10.1. The libtcod config file format</h1>
 <div id="toc"><ul>
 <li><a href="#0">Comments</a></li><li><a href="#1">Structures</a></li></ul></div>
@@ -19,4 +22,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="parser.html">10. 
 <p>The libtcod config file format is basically a list of structures. A structure has a type, an optional name and contains properties. The type of the structure defines which properties are allowed / mandatory.<br /><div class="code"><pre>item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'<br />	cost=300                   // an integer property<br />	weight=3.5                 // a float property<br />	deal_damage=true           // a boolean property<br />	damages="3d6+2"            // a dice property<br />	color="#FF0000"            // a color property, using #RRGGBB syntax<br />	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax<br />	damage_type="slash"        // a string property<br />	description="This is a long"<br />	            "description." // a multi-line string property<br />	abstract                   // a flag (simplified boolean property)<br />        intList= [ 1,2,3 ]         // a list of int values<br />        floatList= [ 1.0,2,3.5 ]   // a list of float values<br />        stringList= [ "string1","string2","string3" ]         // a list of string values<br />}<br /></pre></div><br />A structure can also contain other structures either of the same type, or structures of another type :<br /><div class="code"><pre>item_type "blade" {<br />	item_type "one-handed blades" {<br />		// the item_type "blade" contains another item_type named "one-handed blades"<br />	}<br />	item_type "two-handed blades" {<br />		// the item_type "blade" contains another item_type named "two-handed blades"<br />	}<br />	feature "damage" {<br />		// the item_type "blade" contains another structure, type "feature", name "damage"<br />	}<br />}<br /></pre></div><br /></p>
 <div class="code"></div>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

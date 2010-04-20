@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Creating a path</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="path.html">16. Path finding</a> &gt; <a href="path_init.html">16.1. Creating a path</a><br>
- <a class="next" href="path_compute.html">16.2. Computing the path</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('path.html')">16. Path finding</a> &gt; <a onclick="link('path_init.html')">16.1. Creating a path</a><br>
+ <a class="next" onclick="link('path_compute.html')">16.2. Computing the path</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>16.1. Creating a path</h1>
 <div id="toc"><ul>
 <li><a href="#0">Allocating a pathfinder from a map</a></li><li><a href="#1">Allocating a pathfinder using a callback</a></li><li><a href="#2">Destroying a path</a></li></ul></div>
@@ -57,4 +60,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="path.html">16. Pa
 <p class="py">path<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>path_new_using_map<span class="code-symbol">(</span>my_map<span class="code-symbol">)</span><span class="code-comment"><br /># use the path ... <br /></span>libtcod<span class="code-symbol">.</span>path_delete<span class="code-symbol">(</span>path<span class="code-symbol">)</span><br /><br />dijkstra<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>dijkstra_new<span class="code-symbol">(</span>my_map<span class="code-symbol">)</span><span class="code-comment"><br /># use the path ... <br /></span>libtcod<span class="code-symbol">.</span>dijkstra_delete<span class="code-symbol">(</span>dijkstra<span class="code-symbol">)</span></p>
 </div><hr>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

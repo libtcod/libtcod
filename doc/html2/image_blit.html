@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Blitting an image on a console</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="image.html">5. Image toolkit</a> &gt; <a href="image_blit.html">5.5. Blitting an image on a console</a><br>
-<a class="prev" href="image_save.html">5.4. Saving an image to a bmp or png file.</a> 
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('image.html')">5. Image toolkit</a> &gt; <a onclick="link('image_blit.html')">5.5. Blitting an image on a console</a><br>
+<a class="prev" onclick="link('image_save.html')">5.4. Saving an image to a bmp or png file.</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>5.5. Blitting an image on a console</h1>
 <div id="toc"><ul>
 <li><a href="#0">Standard blitting</a></li><li><a href="#1">Blitting with scaling and/or rotation</a></li><li><a href="#2">Blitting with a mask</a></li><li><a href="#3">Blitting with subcell resolution</a></li></ul></div>
@@ -67,4 +70,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="image.html">5. Im
 <tr class="hilite"><td>dx,dy</td><td>Coordinate of the console cell where the upper left corner of the blitted image will be.<br />	</td></tr>
 <tr><td>sx,sy,w,h</td><td>Part of the image to blit. Use -1 in w and h to blit the whole image.<br />	</td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

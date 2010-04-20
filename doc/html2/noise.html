@@ -1,19 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Noise generator</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="noise.html">9. Noise generator</a><br>
-<a class="prev" href="mouse.html">8. Mouse support</a> | <a class="next" href="parser.html">10. File parser</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('noise.html')">9. Noise generator</a><br>
+<a class="prev" onclick="link('mouse.html')">8. Mouse support</a> | <a class="next" onclick="link('parser.html')">10. File parser</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>9. Noise generator</h1>
-<div id="toc"><ul><li><a href="noise_init.html">9.1. Creating a noise generator</a></li>
-<li><a href="noise_simplex.html">9.2. Getting simplex noise</a></li>
-<li><a href="noise_perlin.html">9.3. Getting Perlin noise</a></li>
-<li><a href="noise_wavelet.html">9.4. Getting wavelet noise</a></li>
+<div id="toc"><ul><li><a onclick="link('noise_init.html')">9.1. Creating a noise generator</a></li>
+<li><a onclick="link('noise_simplex.html')">9.2. Getting simplex noise</a></li>
+<li><a onclick="link('noise_perlin.html')">9.3. Getting Perlin noise</a></li>
+<li><a onclick="link('noise_wavelet.html')">9.4. Getting wavelet noise</a></li>
 </ul></div>
 <p>This toolkit provides several functions to generate Perlin noise and other derived noises. It can handle noise functions from 1 to 4 dimensions.<br /> </p>
 <a name="0"></a><p>Usage example:<br />	1D noise : the variation of a torch intensity<br />	2D fbm : heightfield generation or clouds<br />	3D fbm : animated smoke<br />	If you don't know what is Perlin noise and derived functions, or what is the influence of the different fractal parameters, check the Perlin noise sample included with the library.<br />	<table width="800px" class="none"> 
@@ -37,4 +40,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="noise.html">9. No
 	</table> 	 	<br /> </p>
 <div class="code"></div>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

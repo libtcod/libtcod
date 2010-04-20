@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Creating a BSP tree</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="bsp.html">12. BSP toolkit</a> &gt; <a href="bsp_init.html">12.1. Creating a BSP tree</a><br>
- <a class="next" href="bsp_split.html">12.2. Splitting the tree</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('bsp.html')">12. BSP toolkit</a> &gt; <a onclick="link('bsp_init.html')">12.1. Creating a BSP tree</a><br>
+ <a class="next" onclick="link('bsp_split.html')">12.2. Splitting the tree</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>12.1. Creating a BSP tree</h1>
 <div id="toc"><ul>
 <li><a href="#0">Creating the root node</a></li><li><a href="#1">Deleting a part of the tree</a></li><li><a href="#2">deleting the tree</a></li></ul></div>
@@ -52,4 +55,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="bsp.html">12. BSP
 <p class="py">my_bsp<span class="code-symbol">=</span>libtcod<span class="code-symbol">.</span>bsp_new_with_size<span class="code-symbol">(</span><span class="code-value">0</span><span class="code-symbol">,</span><span class="code-value">0</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">)</span><br />libtcod<span class="code-symbol">.</span>bsp_split_recursive<span class="code-symbol">(</span>my_bsp<span class="code-symbol">,</span><span class="code-value">0</span><span class="code-symbol">,</span><span class="code-value">4</span><span class="code-symbol">,</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">5</span><span class="code-symbol">,</span><span class="code-value">1.5</span><span class="code-symbol">,</span><span class="code-value">1.5</span><span class="code-symbol">)</span><span class="code-comment"><br /># use the tree ...<br /></span>libtcod<span class="code-symbol">.</span>bsp_delete<span class="code-symbol">(</span>my_bsp<span class="code-symbol">)</span></p>
 </div><hr>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

@@ -90,6 +90,15 @@ struct PageData {
 	bool colorTable;
 };
 
+struct Config {
+	bool generateCpp;
+	bool generateC;
+	bool generatePy;
+	bool generateCs;
+	bool generateLua;
+};
+
+Config config = {true,true,true,true,true};
 TCODList<PageData *> pages;
 // root page corresponding to index.html
 PageData *root=NULL;
@@ -657,7 +666,7 @@ void buildTree() {
 				(*it)->pageNum=strdup(tmp);
 				sprintf(tmp,"doc/html2/%s.html",(*it)->name);
 				(*it)->url=strdup(tmp);
-				sprintf(tmp,"<a href=\"../index2.html\">Index</a> &gt; <a href=\"%s.html\">%s. %s</a>",
+				sprintf(tmp,"<a onclick=\"link('../index2.html')\">Index</a> &gt; <a onclick=\"link('%s.html')\">%s. %s</a>",
 					(*it)->name,(*it)->pageNum,(*it)->title);
 				(*it)->breadCrumb=strdup(tmp);						
 				rootPages.remove(*it);
@@ -713,7 +722,7 @@ void buildTree() {
 		if ( page->prev ) {
 			char tmp[1024];
 			sprintf (tmp,
-				"<a class=\"prev\" href=\"%s.html\">%s. %s</a>",
+				"<a class=\"prev\" onclick=\"link('%s.html')\">%s. %s</a>",
 				page->prev->name,page->prev->pageNum,page->prev->title);
 			page->prevLink=strdup(tmp);
 		}
@@ -722,7 +731,7 @@ void buildTree() {
 		if ( page->next ) {
 			char tmp[1024];
 			sprintf (tmp,
-				"%s<a class=\"next\" href=\"%s.html\">%s. %s</a>",
+				"%s<a class=\"next\" onclick=\"link('%s.html')\">%s. %s</a>",
 				page->prev ? "| " : "",
 				page->next->name,page->next->pageNum,page->next->title);
 			page->nextLink=strdup(tmp);
@@ -741,10 +750,10 @@ void buildTree() {
 			while ( ! hierarchy.isEmpty() ) {
 				curPage=hierarchy.pop();
 				if ( curPage == root ) {
-					sprintf(ptr, "<a href=\"../%s.html\">%s</a>", 
+					sprintf(ptr, "<a onclick=\"link('../%s.html')\">%s</a>", 
 						curPage->name,curPage->title);
 				} else {
-					sprintf(ptr, " &gt; <a href=\"%s.html\">%s. %s</a>", 
+					sprintf(ptr, " &gt; <a onclick=\"link('%s.html')\">%s. %s</a>", 
 						curPage->name,curPage->pageNum,curPage->title);
 				}
 				ptr += strlen(ptr);
@@ -774,7 +783,7 @@ void printStandardPageToc(FILE *f,PageData *page) {
 			if ( kid ) {
 				if ( kid->numKids > 0 ) {
 					// level 2
-					fprintf (f,"<li class=\"haschildren\"><a href=\"%s%s.html\">%s. %s</a><ul>\n",
+					fprintf (f,"<li class=\"haschildren\"><a onclick=\"link('%s%s.html')\">%s. %s</a><ul>\n",
 						page==root ? "html2/":"",
 						kid->name,kid->pageNum,kid->title);
 					int kidKidId=1;
@@ -783,7 +792,7 @@ void printStandardPageToc(FILE *f,PageData *page) {
 						// find the kid # kidKidId of kidId
 						kidKid=getKidByNum(kid,kidKidId);
 						if ( kidKid ) {
-							fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+							fprintf(f,"<li><a onclick=\"link('%s%s.html')\">%s. %s</a></li>\n",
 							page==root ? "html2/":"",
 								kidKid->name,kidKid->pageNum,kidKid->title);
 
@@ -792,7 +801,7 @@ void printStandardPageToc(FILE *f,PageData *page) {
 					}
 					fprintf(f,"</ul></li>\n");
 				} else {
-					fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+					fprintf(f,"<li><a onclick=\"link('%s%s.html')\">%s. %s</a></li>\n",
 						page==root ? "html2/":"",
 						kid->name,kid->pageNum,kid->title);
 				}
@@ -813,14 +822,14 @@ void printRootPageToc(FILE *f,PageData *page) {
 			if ( kid && strcmp(kid->categoryName,categs[categId]) ==0 ) {
 				if ( kid->numKids > 0 ) {
 					// level 2
-					fprintf (f,"<li class=\"haschildren\"><a href=\"%s%s.html\">%s. %s</a><ul>\n",
+					fprintf (f,"<li class=\"haschildren\"><a onclick=\"link('%s%s.html')\">%s. %s</a><ul>\n",
 						page==root ? "html2/":"",
 						kid->name,kid->pageNum,kid->title);
 					int kidKidId=1;
 					while (kidKidId <= kid->numKids ) {
 						PageData *kidKid=getKidByNum(kid,kidKidId);
 						if ( kidKid ) {
-							fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+							fprintf(f,"<li><a onclick=\"link('%s%s.html')\">%s. %s</a></li>\n",
 							page==root ? "html2/":"",
 								kidKid->name,kidKid->pageNum,kidKid->title);
 
@@ -829,7 +838,7 @@ void printRootPageToc(FILE *f,PageData *page) {
 					}
 					fprintf(f,"</ul></li>\n");
 				} else {
-					fprintf(f,"<li><a href=\"%s%s.html\">%s. %s</a></li>\n",
+					fprintf(f,"<li><a onclick=\"link('%s%s.html')\">%s. %s</a></li>\n",
 						page==root ? "html2/":"",
 						kid->name,kid->pageNum,kid->title);
 				}
@@ -838,6 +847,14 @@ void printRootPageToc(FILE *f,PageData *page) {
 		categId++;
 	}
 	fprintf(f,"</ul></div>\n");
+}
+
+void printLanguageFilterForm(FILE *f, const char *langCode, const char *langName, bool onoff) {
+	fprintf(f,"<input type=\"checkbox\" id=\"chk_%s\" name=\"chk_%s\" onchange=\"enable('%s',this.checked)\" %s %s><label %s for='chk_%s'> %s   </label>", 
+		langCode,langCode,langCode,
+		onoff ? "checked='checked'" : "", onoff ? "":"disabled='disabled'",
+		onoff ? "" : "class='disabled'", langCode,langName);
+	
 }
 
 // generate a .html file for one page
@@ -850,6 +867,10 @@ void genPageDocFromTemplate(PageData *page) {
 			// navigator window's title
 			fprintf(f,page->title);
 			pageTpl+=8;
+		} else if ( strncmp(pageTpl,"${SCRIPT}",9) == 0 ) {
+			// javascript file (not the same for index.html and other pages)
+			if (page == root) fprintf(f,"js/doctcod.js"); else fprintf(f,"../js/doctcod.js");
+			pageTpl+=9;
 		} else if ( strncmp(pageTpl,"${STYLESHEET}",13) == 0 ) {
 			// css file (not the same for index.html and other pages)
 			if (page == root) fprintf(f,"css/style.css"); else fprintf(f,"../css/style.css");
@@ -858,6 +879,13 @@ void genPageDocFromTemplate(PageData *page) {
 			// breadcrumb
 			fprintf(f,page->breadCrumb);
 			pageTpl+=11;
+	 	} else if ( strncmp(pageTpl,"${FILTER_FORM}",14) == 0 ) {
+			printLanguageFilterForm(f,"c","C",config.generateC);
+			printLanguageFilterForm(f,"cpp","C++",config.generateCpp);
+			printLanguageFilterForm(f,"cs","C#",config.generateCs);
+			printLanguageFilterForm(f,"py","Py",config.generatePy);
+			printLanguageFilterForm(f,"lua","Lua",config.generateLua);
+			pageTpl+=14;
 		} else if ( strncmp(pageTpl,"${PREV_LINK}",12) == 0 ) {
 			// prev page link
 			fprintf(f,page->prevLink);
@@ -910,27 +938,27 @@ void genPageDocFromTemplate(PageData *page) {
 				}
 				// functions for each language
 				fprintf(f,"<div class=\"code\">");
-				if (funcData->cpp) {
+				if (config.generateCpp && funcData->cpp) {
 					fprintf(f,"<p class=\"cpp\">");
 					printCppCode(f,funcData->cpp);
 					fprintf(f,"</p>\n");
 				}
-				if (funcData->c) {
+				if (config.generateC && funcData->c) {
 					fprintf(f,"<p class=\"c\">");
 					printCCode(f,funcData->c);
 					fprintf(f,"</p>\n");
 				}
-				if (funcData->py) {
+				if (config.generatePy && funcData->py) {
 					fprintf(f,"<p class=\"py\">");
 					printPyCode(f,funcData->py);
 					fprintf(f,"</p>\n");
 				}
-				if (funcData->cs) {
+				if (config.generateCs && funcData->cs) {
 					fprintf(f,"<p class=\"cs\">");
 					printCSCode(f,funcData->cs);
 					fprintf(f,"</p>\n");
 				}
-				if (funcData->lua) {
+				if (config.generateLua && funcData->lua) {
 					fprintf(f,"<p class=\"lua\">");
 					printLuaCode(f,funcData->lua);
 					fprintf(f,"</p>\n");
@@ -953,27 +981,27 @@ void genPageDocFromTemplate(PageData *page) {
 				// examples
 				if ( funcData->cppEx || funcData->cEx || funcData->pyEx ) {
 					fprintf(f,"<h6>Example:</h6><div class=\"code\">\n");
-					if (funcData->cppEx) {
+					if (config.generateCpp && funcData->cppEx) {
 						fprintf(f,"<p class=\"cpp\">");
 						printCppCode(f,funcData->cppEx);
 						fprintf(f,"</p>\n");
 					}
-					if (funcData->cEx) {
+					if (config.generateC && funcData->cEx) {
 						fprintf(f,"<p class=\"c\">");
 						printCCode(f,funcData->cEx);
 						fprintf(f,"</p>\n");
 					}
-					if (funcData->pyEx) {
+					if (config.generatePy && funcData->pyEx) {
 						fprintf(f,"<p class=\"py\">");
 						printPyCode(f,funcData->pyEx);
 						fprintf(f,"</p>\n");
 					}
-					if (funcData->csEx) {
+					if (config.generateCs && funcData->csEx) {
 						fprintf(f,"<p class=\"cs\">");
 						printCSCode(f,funcData->csEx);
 						fprintf(f,"</p>\n");
 					}
-					if (funcData->luaEx) {
+					if (config.generateLua && funcData->luaEx) {
 						fprintf(f,"<p class=\"lua\">");
 						printLuaCode(f,funcData->luaEx);
 						fprintf(f,"</p>\n");
@@ -1001,6 +1029,22 @@ void genDoc() {
 
 // main func
 int main(int argc, char *argv[]) {
+	// parse command line arguments
+	// -c -cpp -py -cs -lua : enable only the languages
+	if ( argc > 1 ) {
+		config.generateCpp=false;
+		config.generateC=false;
+		config.generatePy=false;
+		config.generateCs=false;
+		config.generateLua=false;
+	}
+	for (int pnum=1; pnum < argc; pnum++) {
+		if ( strcmp(argv[pnum],"-c") == 0 ) config.generateC=true;
+		else if ( strcmp(argv[pnum],"-cpp") == 0 ) config.generateCpp=true;
+		else if ( strcmp(argv[pnum],"-cs") == 0 ) config.generateCs=true;
+		else if ( strcmp(argv[pnum],"-py") == 0 ) config.generatePy=true;
+		else if ( strcmp(argv[pnum],"-lua") == 0 ) config.generateLua=true;
+	}
 	TCODList<char *> files=TCODSystem::getDirectoryContent("include", "*.hpp");
 	// hardcoded index page
 	char tmp[128];
@@ -1008,7 +1052,7 @@ int main(int argc, char *argv[]) {
 	root->name=(char *)"index2";
 	root->title=(char *)"Index";
 	root->pageNum=(char *)"";
-	root->breadCrumb=(char *)"<a href=\"index2.html\">Index</a>";
+	root->breadCrumb=(char *)"<a onclick=\"link('index2.html')\">Index</a>";
 	root->url=(char *)"doc/index2.html";
 	sprintf(tmp,"The Doryen Library v%s - table of contents",TCOD_STRVERSION);
 	root->desc=strdup(tmp);

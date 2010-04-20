@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Rules</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="namegen.html">15. Name generator</a> &gt; <a href="namegen_file.html">15.3. Syllable set configuration</a> &gt; <a href="namegen_file_3.html">15.3.3. Rules</a><br>
-<a class="prev" href="namegen_file_2.html">15.3.2. Illegal strings</a> | <a class="next" href="namegen_file_4.html">15.3.4. Example structure</a>
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('namegen.html')">15. Name generator</a> &gt; <a onclick="link('namegen_file.html')">15.3. Syllable set configuration</a> &gt; <a onclick="link('namegen_file_3.html')">15.3.3. Rules</a><br>
+<a class="prev" onclick="link('namegen_file_2.html')">15.3.2. Illegal strings</a> | <a class="next" onclick="link('namegen_file_4.html')">15.3.4. Example structure</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>15.3.3. Rules</h1>
 <p>There's one last string that's contained within the structure:<br /><div class="code"><p>rules</p></div><br /><br />It is mandatory, so not defining it will trigger an error. It defines how the generator should join the supplied data in order to generate a name. This string uses a syntax of its own, which is also used when specifying a rule when generating a custom name (see chapter 16.2).<br /><br />The rules are parsed pretty much the same way as all other strings, so all rules regarding separators and special characters apply as well. However, you can additionally use a set of wildcards and frequency markers. Each wildcard is preceded by the dollar sign ('$'), while frequency markers are preceded by the per cent sign ('%'). Here's the complete wildcard list:<br /><table class="param">
 <tbody><tr><th>Wildcard</th><th>Example</th><th>Description</th></tr>
@@ -25,4 +28,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="namegen.html">15.
 <tr class="hilite"><td>%INT</td><td>%50, %25</td><td>Frequency marker. Denotes the per cent chance for the rule to be accepted if it's picked.<br>If the rule is not accepted, another roll is made to choose a name generation rule.<br>It's used to reduce the frequency a given rule is chosen with.<br>This marker may only appear at the beginning of a rule.</td></tr>
 </tbody></table><br />		</p>
 
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

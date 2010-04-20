@@ -1,14 +1,17 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <title>libtcod documentation | Reading fov information</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a href="../index2.html">Index</a> &gt; <a href="fov.html">13. Field of view</a> &gt; <a href="fov_get.html">13.3. Reading fov information</a><br>
-<a class="prev" href="fov_compute.html">13.2. Computing the field of view</a> 
-</p></div></div><div class="main"><div class="maintext">
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('fov.html')">13. Field of view</a> &gt; <a onclick="link('fov_get.html')">13.3. Reading fov information</a><br>
+<a class="prev" onclick="link('fov_compute.html')">13.2. Computing the field of view</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
 <h1>13.3. Reading fov information</h1>
 <div id="toc"><ul>
 <li><a href="#0">Checking if a cell is in fov</a></li><li><a href="#1">Checking a cell transparency/walkability</a></li><li><a href="#2">Getting the map size</a></li></ul></div>
@@ -44,4 +47,8 @@ you are here: <a href="../index2.html">Index</a> &gt; <a href="fov.html">13. Fie
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>map</td><td>In the C version, the map handler returned by the TCOD_map_new function.<br />		</td></tr>
 </tbody></table>
-</div></div></body></html>
+</div></div></body>
+<script>
+initFilter();
+</script>
+</html>

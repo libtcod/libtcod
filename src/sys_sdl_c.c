@@ -541,8 +541,15 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 	any_ascii_updated=true;
 }
 
+#ifdef TCOD_MACOSX
+void CustomSDLMain();
+#endif
+
 void TCOD_sys_startup() {
 	if (has_startup) return;
+#ifdef TCOD_MACOSX
+	CustomSDLMain();
+#endif
 	if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) < 0 ) TCOD_fatal_nopar("SDL : cannot initialize");
 	atexit(SDL_Quit);
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);

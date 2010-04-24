@@ -83,10 +83,11 @@
 #include <wchar.h>
 #endif
 
-// SDL_main support for OSX
-#ifdef TCOD_MACOSX
+// This is a hack. SDL by default want you to rename your main statement, and insert it's own first
+// It does that to handle some init code. However, libtcod handles that for you. If we did this
+// wrappers like libtcod-net would be hosed, since there is no main statement there. 
+#define _SDL_main_h
 #include "SDL/SDL.h"
-#endif
 
 // base types
 typedef unsigned char uint8;

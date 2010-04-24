@@ -11,12 +11,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#ifndef NO_SDL_SAMPLE
-// needed for SDL callback sample
-// hack to keep SDL from messing with main()
-#define _SDL_main_h
-#include <SDL/SDL.h>
-#endif
 #include "libtcod.hpp"
 
 // a sample has a name and a rendering function

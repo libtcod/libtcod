@@ -30,6 +30,11 @@
 #include "libtcod.h"
 #include "libtcod_int.h"
 
+#ifdef TCOD_MACOSX
+#define png_infopp_NULL (png_infop)NULL
+#define int_p_NULL (int*)NULL
+#endif
+
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8 magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);

@@ -11,6 +11,7 @@ ELSEIF(MINGW)
 	SET(UPX ${DEPENDENCY_DIR}/upx/win/upx.exe)
 	SET(PROGRAM_ENDING .exe)
 ELSEIF(APPLE)
+	SET(PROGRAM_ENDING )
 ELSEIF(UNIX)
 	SET(UPX upx)
 	SET(PROGRAM_ENDING )
@@ -38,26 +39,28 @@ set_property(TARGET samples_cpp PROPERTY DEBUG_POSTFIX "_debug")
 set_property(TARGET hmtool PROPERTY DEBUG_POSTFIX "_debug")
 
 IF(CMAKE_BUILD_TYPE MATCHES "Release")
-	ADD_CUSTOM_COMMAND(
-	    TARGET samples_c
-	    POST_BUILD
-	    COMMAND ${UPX} samples_c${PROGRAM_ENDING}
-	    VERBATIM
-	)
+	IF(NOT APPLE)
+		ADD_CUSTOM_COMMAND(
+	  	 TARGET samples_c
+	  	 POST_BUILD
+	   	 COMMAND ${UPX} samples_c${PROGRAM_ENDING}
+		    VERBATIM
+		)
 
-	ADD_CUSTOM_COMMAND(
-	    TARGET samples_cpp
-	    POST_BUILD
-	    COMMAND ${UPX} samples_cpp${PROGRAM_ENDING}
-	    VERBATIM
-	)
-
-	ADD_CUSTOM_COMMAND(
-   	    TARGET hmtool
-	    POST_BUILD
-	    COMMAND ${UPX} hmtool${PROGRAM_ENDING}
-	    VERBATIM
-	)
+		ADD_CUSTOM_COMMAND(
+		    TARGET samples_cpp
+		    POST_BUILD
+		    COMMAND ${UPX} samples_cpp${PROGRAM_ENDING}
+		    VERBATIM
+		)
+	
+		ADD_CUSTOM_COMMAND(
+   		    TARGET hmtool
+		    POST_BUILD
+		    COMMAND ${UPX} hmtool${PROGRAM_ENDING}
+		    VERBATIM
+		)
+	ENDIF()
 ENDIF()
 
 INSTALL(TARGETS samples_c samples_cpp hmtool

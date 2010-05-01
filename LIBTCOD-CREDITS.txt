@@ -6,7 +6,7 @@ Products :
    http://www.zlib.org
 - libpng 1.2.31, by Glenn Randers-Pehrson
    http://www.libpng.org
-- SDL 1.2.12, by Sam Lantingua
+- SDL 1.2.12, by Sam Lantinga
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback, and especially :

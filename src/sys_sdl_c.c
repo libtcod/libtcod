@@ -242,7 +242,17 @@ void TCOD_sys_load_font() {
 	check_ascii_to_tcod();
 	if (!TCOD_ctx.font_tcod_layout) {
 		// apply standard ascii mapping
-		for (i=0; i < TCOD_ctx.max_font_chars; i++ ) TCOD_ctx.ascii_to_tcod[i]=i;
+		if ( TCOD_ctx.font_in_row ) {
+			// for font in row
+			for (i=0; i < TCOD_ctx.max_font_chars; i++ ) TCOD_ctx.ascii_to_tcod[i]=i;
+		} else {
+			// for font in column
+			for (i=0; i < TCOD_ctx.max_font_chars; i++ ) {
+				int fy = i % TCOD_ctx.fontNbCharVertic;
+				int fx = i / TCOD_ctx.fontNbCharVertic;
+				TCOD_ctx.ascii_to_tcod[i]=fx + fy * TCOD_ctx.fontNbCharHoriz;
+			}
+		}
 	}
 }
 
@@ -397,13 +407,8 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							// cannot draw with the key color...
 							if ( f.r < 255 ) f.r++; else f.r--;
 						}
-						if (TCOD_ctx.font_in_row) {
-							srcRect.x = (ascii%TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_width;
-							srcRect.y = (ascii/TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_height;
-						} else {
-							srcRect.x = (ascii/TCOD_ctx.fontNbCharVertic)*TCOD_ctx.font_width;
-							srcRect.y = (ascii%TCOD_ctx.fontNbCharVertic)*TCOD_ctx.font_height;
-						}
+						srcRect.x = (ascii%TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_width;
+						srcRect.y = (ascii/TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_height;
 						srcRect.w=TCOD_ctx.font_width;
 						srcRect.h=TCOD_ctx.font_height;
 

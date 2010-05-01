@@ -526,13 +526,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 						}
 						// draw foreground
 						ascii=c->cf;
-						if (TCOD_ctx.font_in_row) {
-							srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
-							srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
-						} else {
-							srcx = (ascii/TCOD_ctx.fontNbCharVertic);
-							srcy = (ascii%TCOD_ctx.fontNbCharVertic);
-						}
+						srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
+						srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
 						glBegin( GL_QUADS );
 						glColor3f((GLfloat)(f.r/255.0), (GLfloat)(f.g/255.0), (GLfloat)(f.b/255.0));
 						glTexCoord2f( srcx*fonw, srcy*fonh );

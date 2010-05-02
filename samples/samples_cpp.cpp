@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "libtcod.hpp"
+#include "SDL/SDL.h"
 
 // a sample has a name and a rendering function
 typedef struct {

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "libtcod.hpp"
+#define _SDL_main_h
 #include "SDL/SDL.h"
 
 // a sample has a name and a rendering function

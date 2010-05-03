@@ -75,7 +75,7 @@ function render_colors()
 	for x=0,SAMPLE_SCREEN_WIDTH-1,1 do
 		for y=0,SAMPLE_SCREEN_HEIGHT-1,1 do
 			col=sampleConsole:getCharBackground(x,y)
-			col=tcod.color.Interpolate(col,libtcod.TCODColor_black,0.5)
+			col=tcod.color.Interpolate(col,tcod.color.black,0.5)
 			c=rng:getInt(97,97+25) -- 97 == 'a'
 			sampleConsole:setForegroundColor(col)
 			sampleConsole:putChar(x,y,c,tcod.None)
@@ -83,7 +83,7 @@ function render_colors()
 	end
 	sampleConsole:setForegroundColor(textColor)
 	-- the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
-	sampleConsole:setBackgroundColor(libtcod.TCODColor_grey)
+	sampleConsole:setBackgroundColor(tcod.color.grey)
 	sampleConsole:printRectEx(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,
 		tcod.Multiply,tcod.CenterAlignment,
 		"The Doryen library uses 24 bits colors, for both background and foreground.")
@@ -103,7 +103,7 @@ while not tcod.console.isWindowClosed() do
 		creditsEnd = tcod.console.renderCredits(60, 43, false)
 	end
 	-- render stats
-	root:setForegroundColor(libtcod.TCODColor_grey)
+	root:setForegroundColor(tcod.color.grey)
 	root:printEx(79, 46, tcod.None, tcod.RightAlignment,
 		string.format("last frame : %3d ms (%3d fps)" ,	
 		math.floor(tcod.system.getLastFrameLength() * 1000.0), 

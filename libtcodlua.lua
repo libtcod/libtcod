@@ -33,3 +33,15 @@ for key, value in pairs(libtcod) do
 		tcod[key] = value
 	end
 end
+-- now rename userdata imported from C++
+for key,value in pairs(getmetatable(libtcod)[".get"]) do
+	if type(key) == "string" then                     
+		local library, name = key:match("^TCOD([^_]*)_(.*)")
+		if library ~= nil then
+			-- replace libtcod.TCODColor_grey with tcod.color.grey			
+			library = library:lower( )
+			tcod[library] = tcod[library] or { }
+			tcod[library][name] = value()
+		end
+	end
+end

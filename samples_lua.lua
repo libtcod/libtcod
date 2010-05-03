@@ -1,32 +1,5 @@
 #!/usr/bin/lua
--- load libtcod wrapper
-if type(loadlib) == "function" then
-	init=loadlib
-else
-	init=package.loadlib
-end
-a,b,c=init("./liblibtcod-lua.so","luaopen_libtcod")
-if a == nil then
-	a,b,c=init("./liblibtcod-lua.dll","luaopen_libtcod")
-end
-a()
-
--- improve the wrapper
-local tcod = { }
-for key, value in pairs(libtcod) do
-	if type(key) == "string" then                     
-		local library, name = key:match("^TCOD([^_]*)_(.*)")
-		if library ~= nil then
-			library = library:lower( )
-			tcod[library] = tcod[library] or { }
-			tcod[library][name] = value
-		else
-			tcod[key] = value
-		end
-	else
-		tcod[key] = value
-	end
-end
+dofile "libtcodlua.lua"
 
 SAMPLE_SCREEN_WIDTH = 46
 SAMPLE_SCREEN_HEIGHT = 20
@@ -35,7 +8,7 @@ SAMPLE_SCREEN_Y = 10
 tcod.console.setCustomFont("data/fonts/consolas10x10_gs_tc.png", tcod.Greyscale + tcod.LayoutTCOD)
 tcod.console.initRoot(80,50,"libtcod lua sample", false, tcod.SDL)
 root=libtcod.TCODConsole_root
-sampleConsole = tcod.TCODConsole(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
+sampleConsole = tcod.Console(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 first=true
 rng=tcod.random.getInstance()
 
@@ -45,10 +18,10 @@ TOPRIGHT = 2
 BOTTOMLEFT = 3
 BOTTOMRIGHT = 4
 -- random starting colors for corners
-cols={  tcod.TCODColor(50,40,150), 
-	tcod.TCODColor(240,85,5), 
-	tcod.TCODColor(50,35,240), 
-	tcod.TCODColor(10,200,130) }
+cols={  tcod.Color(50,40,150), 
+	tcod.Color(240,85,5), 
+	tcod.Color(50,35,240), 
+	tcod.Color(10,200,130) }
 dirr={1,-1,1,1}
 dirg={1,-1,-1,1}
 dirb={1,1,1,-1}

@@ -299,6 +299,13 @@ div.code p.py {
 	background-repeat: no-repeat;
 }
 
+div.code p.lua {
+  padding: 15px 5px 10px 60px;
+	background-image: url('../img/lua.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
 /* main region tables */
 table {
   border-collapse: collapse;

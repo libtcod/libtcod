@@ -121,12 +121,11 @@ function render_lines(key)
 	if bkFlag % 256 == tcod.Alpha then
 		-- for the alpha mode, update alpha every frame
 		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
-		-- hack to get the equivalent to C TCOD_BKGND_ALPHA(alpha)
-		bkFlag=tcod.Alpha + math.floor(alpha*255)*(2^8)
+		bkFlag=tcod.console.Alpha(alpha)
 	elseif bkFlag % 256 == tcod.AddAlpha then
 		-- for the add alpha mode, update alpha every frame
 		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
-		bkFlag=tcod.AddAlpha + math.floor(alpha*255)*(2^8)
+		bkFlag=tcod.console.AddAlpha(alpha)
 	end
 	if not init then
 		-- initialize the colored background

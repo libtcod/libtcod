@@ -45,3 +45,11 @@ for key,value in pairs(getmetatable(libtcod)[".get"]) do
 		end
 	end
 end
+function _alpha(alpha)
+	return tcod.Alpha + math.floor(alpha*255)*(2^8)
+end
+function _addAlpha(alpha)
+	return tcod.AddAlpha + math.floor(alpha*255)*(2^8)
+end
+tcod.console.Alpha=_alpha
+tcod.console.AddAlpha=_addAlpha

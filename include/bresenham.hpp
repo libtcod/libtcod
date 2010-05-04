@@ -46,6 +46,7 @@ public :
 	@C void TCOD_line_init (int xFrom, int yFrom, int xTo, int yTo)
 	@Py line_init (xFrom, yFrom, xTo, yTo)
 	@C# static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
+	@Lua tcod.line.init(xFrom,yFrom, xTo,yTo)
 	@Param xFrom,yFrom Coordinates of the line's starting point.
 	@Param xTo,yTo Coordinates of the line's ending point.
 	*/
@@ -59,6 +60,7 @@ public :
 	@C bool TCOD_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
 	@C# static bool TCODLine::step(ref int xCur, ref int yCur)
+	@Lua tcod.line.step(x,y) -- returns lineEnd,x,y
 	@Param xCur,yCur the coordinates of the next cell on the line are stored here when the function returns
 	@CppEx 
 		// Going from point 5,8 to point 13,4
@@ -80,6 +82,14 @@ public :
 		while (not x is None) :
 		    # update cell x,y
 		x,y=libtcod.line_step()
+	@LuaEx
+		x=5
+		y=8
+		tcod.line.init(x,y,13,4)
+		repeat
+			-- update cell x,y
+			lineEnd,x,y = tcod.line.step(x,y)
+		until lineEnd		
 	*/	
 	static bool step(int *xCur, int *yCur);
 

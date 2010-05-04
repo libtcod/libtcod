@@ -12,7 +12,9 @@ sampleConsole = tcod.Console(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 first=true
 rng=tcod.random.getInstance()
 
+-- ******************************
 -- True colors sample (benchmark)
+-- ******************************
 TOPLEFT = 1
 TOPRIGHT = 2
 BOTTOMLEFT = 3
@@ -25,7 +27,7 @@ cols={  tcod.Color(50,40,150),
 dirr={1,-1,1,1}
 dirg={1,-1,-1,1}
 dirb={1,1,1,-1}
-function render_colors()
+function render_colors(key)
 	if first then
 		tcod.system.setFps(0) -- unlimited fps
 		sampleConsole:clear()
@@ -89,19 +91,135 @@ function render_colors()
 		"The Doryen library uses 24 bits colors, for both background and foreground.")
 end
 
+-- *******************
+-- Line drawing sample
+-- ******************* 
+bk = tcod.Console(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT) -- colored background
+bkFlag=tcod.Set
+init=false
+flagNames={
+		"None",
+		"Set",
+		"Multiply",
+		"Lighten",
+		"Darken",
+		"Screen",
+		"Dodge",
+		"Burn",
+		"Add",
+		"AddAlpha",
+		"Burn",
+		"Overlay",
+		"Alpha"
+}
+function render_lines(key) 
+	if key.KeyCode == tcod.Enter or key.KeyCode == tcod.KeypadEnter then
+		-- switch to the next blending mode
+		bkFlag = bkFlag+1
+		if bkFlag > tcod.Alpha then bkFlag=tcod.None end
+	end
+	if bkFlag % 255 == tcod.Alpha then
+		-- for the alpha mode, update alpha every frame
+		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
+		-- hack to get the equivalent to C TCOD_BKGND_ALPHA(alpha)
+		bkFlag=tcod.Alpha + math.floor(alpha) * 255 * (2 ^ 8)
+	elseif bkFlag % 255 == tcod.AddAlpha then
+		-- for the add alpha mode, update alpha every frame
+		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
+		bkFlag=tcod.AddAlpha + math.floor(alpha)*255*(2^8)
+	end
+	if not init then
+		-- initialize the colored background
+		for x=0,SAMPLE_SCREEN_WIDTH,1 do
+			for y=0,SAMPLE_SCREEN_HEIGHT,1 do
+				col = tcod.Color(0,0,0)
+				col.Red = x* 255 / (SAMPLE_SCREEN_WIDTH-1)
+				col.Green = (x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1)
+				col.Blue = y* 255 / (SAMPLE_SCREEN_HEIGHT-1)
+				bk:setCharBackground(x,y,col)
+			end
+		end
+		init=true
+	end
+	if first then
+		tcod.system.setFps(30) -- fps limited to 30
+		sampleConsole:setForegroundColor(tcod.color.white)
+	end
+	-- blit the background
+	tcod.console.blit(bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,sampleConsole,0,0)
+	-- render the gradient
+	recty=(SAMPLE_SCREEN_HEIGHT-2)*((1.0+math.cos(tcod.system.getElapsedSeconds()))/2.0)
+	for x=0,SAMPLE_SCREEN_WIDTH,1 do
+		col = tcod.Color(0,0,0)
+		col.Red=x*255/SAMPLE_SCREEN_WIDTH
+		col.Green=x*255/SAMPLE_SCREEN_WIDTH
+		col.Blue=x*255/SAMPLE_SCREEN_WIDTH
+		sampleConsole:setCharBackground(x,recty,col,bkFlag)
+		sampleConsole:setCharBackground(x,recty+1,col,bkFlag)
+		sampleConsole:setCharBackground(x,recty+2,col,bkFlag)
+	end
+	-- calculate the segment ends
+	angle = tcod.system.getElapsedSeconds()*2.0
+	cosAngle=math.cos(angle)
+	sinAngle=math.sin(angle)
+	xo = SAMPLE_SCREEN_WIDTH/2*(1 + cosAngle)
+	yo = SAMPLE_SCREEN_HEIGHT/2 + sinAngle * SAMPLE_SCREEN_WIDTH/2
+	xd = SAMPLE_SCREEN_WIDTH/2*(1 - cosAngle)
+	yd = SAMPLE_SCREEN_HEIGHT/2 - sinAngle * SAMPLE_SCREEN_WIDTH/2
+
+	-- render the line
+	tcod.line.init(xo,yo,xd,yd)
+	x=xo
+	y=yo
+	repeat
+		if x >= 0 and y >= 0 and x < SAMPLE_SCREEN_WIDTH and y < SAMPLE_SCREEN_HEIGHT then
+			sampleConsole:setCharBackground(x,y,tcod.color.lightBlue,bkFlag)
+		end
+		lineEnd,x,y=tcod.line.step(x,y)
+	until lineEnd
+	-- print the current flag
+	sampleConsole:print(2,2,string.format("%s (ENTER to change)",flagNames[(bkFlag+1)%255]))
+end
+
+
 creditsEnd=false
+
+-- list of samples
+samples = {
+	{ name = "  True colors        ", render = render_colors },
+	{ name = "  Line drawing       ", render = render_lines }
+}
+nbSamples = table.getn(samples)
+curSample = 1
 
 while not tcod.console.isWindowClosed() do
 	key=tcod.console.checkForKeypress()
-	render_colors()
+
+	-- render current sample
+	samples[curSample].render(key)
 	first=false
 
+	-- and blit it on the root console
 	tcod.console.blit(sampleConsole,
 		0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT,
 		root, SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y)
 	if not creditsEnd then
 		creditsEnd = tcod.console.renderCredits(60, 43, false)
 	end
+	-- print the list of samples
+	for i=1,nbSamples,1 do
+		if i == curSample then
+			-- set colors for currently selected sample
+			root:setForegroundColor(tcod.color.white)
+			root:setBackgroundColor(tcod.color.lightBlue)
+		else
+			-- set colors for other samples
+			root:setForegroundColor(tcod.color.grey)
+			root:setBackgroundColor(tcod.color.black)
+		end
+		-- print the sample name
+		root:printEx(2,46-(nbSamples-i),tcod.Set,tcod.LeftAlignment,samples[i].name)
+	end	
 	-- render stats
 	root:setForegroundColor(tcod.color.grey)
 	root:printEx(79, 46, tcod.None, tcod.RightAlignment,
@@ -114,6 +232,16 @@ while not tcod.console.isWindowClosed() do
 		tcod.system.getElapsedSeconds()))
 	tcod.console.flush()
 	if key.KeyCode == tcod.Down then
+			-- down arrow : next sample
+			curSample = (curSample+1) 
+			if curSample == nbSamples+1 then curSample = 1 end
+			first=true
+	elseif key.KeyCode == tcod.Up then
+			-- up arrow : previous sample
+			curSample = curSample - 1
+			if curSample == 0 then curSample = nbSamples end
+			first=true
+	elseif key.KeyCode == tcod.PrintScreen then
 			-- save screenshot
 			tcod.system.saveScreenshot("screenshot0.png")
 	end

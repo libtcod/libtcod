@@ -47,6 +47,17 @@ Classic real time game loop:
 			// updateWorld(TCOD_key_t key, float elapsed) (using key if key.vk != TCODK_NONE)
 			// use elapsed to scale any update that is time dependant.
 		}
+	@Lua
+		tcod.console.initRoot(80,50,"my game", false)
+		root=libtcod.TCODConsole_root
+		tcod.system.setFps(25)
+		while not tcod.console.isWindowClosed() do
+			-- ... draw on root
+			tcod.console.flush()
+			key=tcod.console.checkForKeypress()
+			-- ... update world, using key and tcod.system.getLastFrameLength
+		end
+
 */
 /**
 	@PageName console
@@ -82,6 +93,11 @@ public :
 		static void TCODConsole::initRoot(int w, int h, string title)
 		static void TCODConsole::initRoot(int w, int h, string title, bool fullscreen)
 		static void TCODConsole::initRoot(int w, int h, string title, bool fullscreen, TCODRendererType renderer)
+	@Lua 
+		tcod.console.initRoot(w,h,title) -- fullscreen = false, renderer = GLSL
+		tcod.console.initRoot(w,h,title,fullscreen) -- renderer = GLSL
+		tcod.console.initRoot(w,h,title,fullscreen,renderer)
+		-- renderers : tcod.GLSL, tcod.OpenGL, tcod.SDL
 	@Param w,h size of the console(in characters). The default font in libtcod (./terminal.png) uses 8x8 pixels characters.
 		You can change the font by calling TCODConsole::setCustomFont before calling initRoot.
 	@Param title title of the window. It's not visible when you are in fullscreen.
@@ -101,6 +117,7 @@ public :
 	@CppEx TCODConsole::initRoot(80, 50, "The Chronicles Of Doryen v0.1");
 	@CEx TCOD_console_init_root(80, 50, "The Chronicles Of Doryen v0.1", false, TCOD_RENDERER_SDL);
 	@PyEx libtcod.console_init_root(80, 50, 'The Chronicles Of Doryen v0.1')
+	@LuaEx tcod.console.initRoot(80,50,"The Chronicles Of Doryen v0.1")
 	*/	
 	static void initRoot(int w, int h, const char * title, bool fullscreen = false, TCOD_renderer_t renderer=TCOD_RENDERER_GLSL);
 
@@ -143,6 +160,12 @@ public :
 		static void TCODConsole::setCustomFont(string fontFile, int flags)
 		static void TCODConsole::setCustomFont(string fontFile, int flags, int nbCharHoriz)
 		static void TCODConsole::setCustomFont(string fontFile, int flags, int nbCharHoriz, int nbCharVertic)
+	@Lua
+		tcod.console.setCustomFont(fontFile)
+		tcod.console.setCustomFont(fontFile, flags)
+		tcod.console.setCustomFont(fontFile, nbCharHoriz)
+		tcod.console.setCustomFont(fontFile, flags, nbCharHoriz, nbCharVertic)
+		-- flags : tcod.LayoutAsciiInColumn, tcod.LayoutAsciiInRow, tcod.LayoutTCOD, tcod.Greyscale
 	@Param fontFile Name of a .bmp or .png file containing the font.
 	@Param flags Used to define the characters layout in the bitmap and the font type :
 		TCOD_FONT_LAYOUT_ASCII_INCOL : characters in ASCII order, code 0-15 in the first column
@@ -167,6 +190,10 @@ public :
 		libtcod.console_set_custom_font("standard_8x8_ascii_in_col_font.bmp",libtcod.FONT_LAYOUT_ASCII_INCOL)
 		libtcod.console_set_custom_font("32bits_8x8_ascii_in_row_font.png",libtcod.FONT_LAYOUT_ASCII_INROW)
 		libtcod.console_set_custom_font("greyscale_8x8_tcod_font.png",libtcod.FONT_LAYOUT_TCOD | libtcod.FONT_TYPE_GREYSCALE)
+	@LuaEx 
+		tcod.console.setCustomFont("standard_8x8_ascii_in_col_font.bmp",tcod.LayoutAsciiInColumn);
+		tcod.console.setCustomFont("32bits_8x8_ascii_in_row_font.png",tcod.LayoutAsciiInRow);
+		tcod.console.setCustomFont("greyscale_8x8_tcod_font.png",tcod.LayoutTCOD + tcod.Greyscale);
 	*/
 	static void setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0);
 
@@ -182,6 +209,7 @@ public :
 	@C void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY)
 	@Py console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY)
 	@C# static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY)
+	@Lua tcod.console.mapAsciiCodeToFont(asciiCode, fontCharX, fontCharY)
 	@Param asciiCode ASCII code to map.
 	@Param fontCharX,fontCharY Coordinate of the character in the bitmap font (in characters, not pixels).
 	*/
@@ -194,6 +222,7 @@ public :
 	@C void TCOD_console_map_ascii_codes_to_font(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
 	@Py console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX, fontCharY)
 	@C# static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY)
+	@Lua tcod.console.mapAsciiCodesToFont(firstAsciiCode, nbCodes, fontCharX, fontCharY)
 	@Param firstAsciiCode first ASCII code to map
 	@Param nbCodes number of consecutive ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code
@@ -207,6 +236,7 @@ public :
 	@C void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY)
 	@Py console_map_string_to_font(s, fontCharX, fontCharY)
 	@C# static void TCODConsole::mapStringToFont(string s, int fontCharX, int fontCharY)
+	@Lua tcod.console.mapStringToFont(s, fontCharX, fontCharY)
 	@Param s string containing the ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code in the string
 	*/
@@ -222,6 +252,7 @@ public :
 	@C bool TCOD_console_is_fullscreen()
 	@Py console_is_fullscreen()
 	@C# static bool TCODConsole::isFullscreen()
+	@Lua tcod.console.isFullscreen()
 	*/
 	static bool isFullscreen();
 	/**
@@ -233,6 +264,7 @@ public :
 	@C void TCOD_console_set_fullscreen(bool fullscreen)
 	@Py console_set_fullscreen(fullscreen)
 	@C# static void TCODConsole::setFullscreen(bool fullscreen)
+	@Lua tcod.console.setFullscreen(fullscreen)
 	@Param fullscreen true to switch to fullscreen mode.
 		false to switch to windowed mode.
 	@CppEx 
@@ -247,6 +279,11 @@ public :
 		key=libtcod.console_check_for_keypress()
 		if key.vk == libtcod.KEY_ENTER and key.lalt : 
 			libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
+	@LuaEx 
+		key=tcod.console.checkForKeypress()
+		if key.KeyCode == tcod.Enter and key.LeftAlt then
+			tcod.console.setFullscreen(not tcod.console.isFullscreen())
+		end
 	*/
 	static void setFullscreen(bool fullscreen);
 
@@ -261,6 +298,7 @@ public :
  	@C void TCOD_console_set_window_title(const char *title)
 	@Py console_set_window_title(title)
 	@C# static void TCODConsole::setWindowTitle(string title)
+	@Lua tcod.console.setWindowTitle(title)
 	@Param title New title of the game window
 	*/
 	static void setWindowTitle(const char *title);
@@ -273,6 +311,7 @@ public :
 	@C bool TCOD_console_is_window_closed()
 	@Py console_is_window_closed()
 	@C# static bool TCODConsole::isWindowClosed()
+	@Lua tcod.console.isWindowClosed()
 	*/
 	static bool isWindowClosed();
 
@@ -288,6 +327,7 @@ public :
 	@C void TCOD_console_credits()
 	@Py console_credits()
 	@C# static void TCODConsole::credits()
+	@Lua tcod.console.credits()
 	*/
 	static void credits();
 
@@ -300,6 +340,7 @@ public :
 	@C bool TCOD_console_credits_render(int x, int y, bool alpha)
 	@Py bool TCOD_console_credits_render(int x, int y, bool alpha)
 	@C# static bool TCODConsole::renderCredits(int x, int y, bool alpha)
+	@Lua tcod.console.renderCredits(x, y, alpha)
 	@Param x,y Position of the credits text in your root console
 	@Param alpha If true, credits are transparently added on top of the existing screen.
 		For this to work, this function must be placed between your screen rendering code and the console flush.
@@ -329,6 +370,15 @@ public :
           // render transparent credits near the center of the screen
           if (not end_credits )  : end_credits=libtcod.console_credits_render(35,25,True)
           libtcod.console_flush()
+	@LuaEx
+		tcod.console.initRoot(80,50,"The Chronicles Of Doryen v0.1") -- initialize the root console
+		endCredits=false
+		while not tcod.console.isWindowClosed() do -- your game loop
+			-- your game rendering here...
+			-- render transparent credits near the center of the screen
+			if not endCredits then endCredits=tcod.console.renderCredits(35,25,true) end
+			tcod.console.flush()
+		end
 	*/
 	static bool renderCredits(int x, int y, bool alpha);
 	
@@ -340,6 +390,7 @@ public :
 	@C void TCOD_console_credits_reset()
 	@Py console_credits_reset()
 	@C# static void TCODConsole::resetCredits()
+	@Lua tcod.console.resetCredits()
 	*/
 	static void resetCredits();
 
@@ -359,11 +410,13 @@ public :
 	@C void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t back)
 	@Py console_set_background_color(con,back)
 	@C# void TCODConsole::setBackgroundColor(TCODColor back)
+	@Lua Console:setBackgroundColor(back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param back the new default background color for this console
 	@CppEx TCODConsole::root->setBackgroundColor(myColor)
 	@CEx TCOD_console_set_background_color(NULL, my_color)
 	@PyEx litbcod.console_set_background_color(0, my_color)
+	@Lua libtcod.TCODConsole_root:setBackgroundColor( myColor )
 	*/
 	void setBackgroundColor(TCODColor back);
 
@@ -371,15 +424,17 @@ public :
 	@PageName console_draw_basic
 	@FuncTitle Setting the default foreground color
 	@FuncDesc This function changes the default foreground color for a console. The default foreground color is used by several drawing functions like clear, putChar, ...
-	@Cpp void TCODConsole::setForegroundColor(TCODColor back)
-	@C void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t back)
-	@Py console_set_foreground_color(con,back)
-	@C# void TCODConsole::setForegroundColor(TCODColor back)
+	@Cpp void TCODConsole::setForegroundColor(TCODColor fore)
+	@C void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t fore)
+	@Py console_set_foreground_color(con, fore)
+	@C# void TCODConsole::setForegroundColor(TCODColor fore)
+	@Lua Console:setForegroundColor(fore)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param back the new default foreground color for this console
+	@Param fore the new default foreground color for this console
 	@CppEx TCODConsole::root->setForegroundColor(myColor)
 	@CEx TCOD_console_set_foreground_color(NULL, my_color)
 	@PyEx litbcod.console_set_foreground_color(0, my_color)
+	@LuaEx libtcod.TCODConsole_root:setForegroundColor( myColor )
 	*/
 	void setForegroundColor(TCODColor fore);
 
@@ -394,6 +449,7 @@ public :
 	@C void TCOD_console_clear(TCOD_console_t con)
 	@Py console_clear(con)
 	@C# void TCODConsole::clear()
+	@Lua Console:clear()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	void clear();
@@ -408,6 +464,9 @@ public :
 	@C#
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col)
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col, TCODBackgroundFlag flag)
+	@Lua
+		Console:setCharBackground(x, y, col)
+		Console:setCharBackground(x, y, col, flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -424,6 +483,7 @@ public :
 	@C void TCOD_console_set_fore(TCOD_console_t con,int x, int y, TCOD_color_t col)
 	@Py console_set_fore(con, x, y, col)
 	@C# void TCODConsole::setCharForeground(int x, int y, TCODColor col)
+	@Lua Console:setCharForeground(x, y, col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -441,6 +501,7 @@ public :
 	@C void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c)
 	@Py console_set_char(con, x,  y, c)
 	@C# void TCODConsole::setChar(int x, int y, int c)
+	@Lua Console:setChar(x, y, c)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -462,6 +523,9 @@ public :
 	@C#
 		void TCODConsole::putChar(int x, int y, int c)
 		void TCODConsole::putChar(int x, int y, int c, TCODBackgroundFlag flag)
+	@Lua
+		Console:putChar(x, y, c)
+		Console:putChar(x, y, c, flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -482,6 +546,7 @@ public :
 	@C void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_put_char_ex( con, x,  y, c, fore, back)
 	@C# void TCODConsole::putCharEx(int x, int y, int c, TCODColor fore, TCODColor back)
+	@Lua Console:putCharEx(x, y, c, fore, back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -512,6 +577,7 @@ public :
 		TCOD_BKGND_DEFAULT : use the console's default background flag
 		Note that TCOD_BKGND_ALPHA and TCOD_BKGND_ADDALPHA are MACROS that needs a float parameter between (0.0 and 1.0). TCOD_BKGND_ALPH and TCOD_BKGND_ADDA should not be used directly (else they will have the same effect as TCOD_BKGND_NONE).
 		For python, remove TCOD_ : libtcod.BKGND_NONE 
+		For C# and Lua : None, Set, Multiply, Lighten, Darken, Screen, ColodDodge, ColorBurn, Add, AddAlpha, Burn Overlay, Alpha, Default
 	*/
 
 	/**
@@ -525,6 +591,7 @@ public :
 	@C void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag)
 	@Py console_set_background_flag(con, flag)
 	@C# void TCODConsole::setBackgroundFlag(TCODBackgroundFlag flag)
+	@Lua Console:setBackgroundFlag(flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t	
 	*/
@@ -539,6 +606,7 @@ public :
 	@C TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con)
 	@Py console_get_background_flag(con)
 	@C# TCODBackgroundFlag TCODConsole::getBackgroundFlag()
+	@Lua Console:getBackgroundFlag()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCOD_bkgnd_flag_t getBackgroundFlag() const;
@@ -549,10 +617,12 @@ public :
 	@FuncDesc This function defines the default alignment (see TCOD_alignment_t) for the console.
 		This default alignment is used by several functions (print, printRect, ...).
 		Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
+		For C# and Lua : LeftAlignment, RightAlignment, CenterAlignment
 	@Cpp void TCODConsole::setAlignment(TCOD_alignment_t alignment)
 	@C void TCOD_console_set_alignment(TCOD_console_t con,TCOD_bkgnd_flag_t alignment)
 	@Py console_set_alignment(con, alignment)
 	@C# void TCODConsole::setAlignment(TCODAlignment alignment)
+	@Lua Console:setAlignment(alignment)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param alignment defines how the strings are printed on screen.	
 	*/
@@ -564,10 +634,12 @@ public :
 	@FuncDesc This function returns the default alignment (see TCOD_alignment_t) for the console.
 		This default mode is used by several functions (print, printRect, ...).
 		Values for alignment : TCOD_LEFT, TCOD_CENTER, TCOD_RIGHT (in python, remove TCOD_ : libtcod.LEFT).
+		For C# and Lua : LeftAlignment, RightAlignment, CenterAlignment
 	@Cpp TCOD_alignment_t TCODConsole::getAlignment() const
 	@C TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
 	@Py console_get_alignment(con)
 	@C# TCODAlignment TCODConsole::getAlignment()
+	@Lua Console:getAlignment()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCOD_alignment_t getAlignment() const;	         
@@ -580,8 +652,9 @@ public :
 	@C void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...)
 	@Py console_print(con, x, y, fmt)
 	@C# void TCODConsole::print(int x, int y, string fmt)
+	@Lua Console:print(x, y, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param x,y coordinate of the character in the console, depending on the alignment :
+	@Param x,y coordinate of the character in the console, depending on the default alignment for this console :
 		* TCOD_LEFT : leftmost character of the string
 		* TCOD_CENTER : center character of the string
 		* TCOD_RIGHT : rightmost character of the string
@@ -597,6 +670,7 @@ public :
 	@C void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@Py console_print_ex(con, x, y, flag, alignment, fmt)
 	@C# void TCODConsole::printEx(int x, int y, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
+	@Lua Console::printEx(x, y, flag, alignment, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the character in the console, depending on the alignment :
 		* TCOD_LEFT : leftmost character of the string
@@ -619,6 +693,7 @@ public :
 	@C int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
 	@Py console_print_rect(con, x, y, w, h, fmt)
 	@C# int TCODConsole::printRect(int x, int y, int w, int h, string fmt)
+	@Lua Console:printRect(x, y, w, h, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
@@ -639,6 +714,7 @@ public :
 	@C int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 	@Py console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt)
 	@C# int TCODConsole::printRectEx(int x, int y, int w, int h, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
+	@Lua Console:printRectEx(x, y, w, h, flag, alignment, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
@@ -658,6 +734,7 @@ public :
 	@C int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)
 	@Py console_get_height_rect(con, x, y, w, h, fmt)
 	@C# int TCODConsole::getHeightRect(int x, int y, int w, int h, string fmt)
+	@Lua Console:getHeightRect(x, y, w, h, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinate of the rectangle upper-left corner in the console
 	@Param w,h size of the rectangle
@@ -692,7 +769,8 @@ public :
 	@Cpp static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
 	@C void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_set_color_control(con,fore,back)
-	@C# Not Supported.
+	@C# Not supported.
+	@Lua Not supported
 	@Param con the color control TCOD_COLCTRL_x, 1<=x<=5
 	@Param fore foreground color when this control is activated
 	@Param back background color when this control is activated
@@ -786,6 +864,9 @@ public :
 	@C# 
 		void TCODConsole::rect(int x, int y, int w, int h, bool clear)
 		void TCODConsole::rect(int x, int y, int w, int h, bool clear, TCODBackgroundFlag flag)
+	@Lua 
+		Console:rect(x, y, w, h, clear)
+		Console:rect(x, y, w, h, clear, flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of rectangle upper-left corner in the console.
 		0 <= x < console width
@@ -809,6 +890,9 @@ public :
 	@C#
 		void TCODConsole::hline(int x,int y, int l)
 		void TCODConsole::hline(int x,int y, int l, TCODBackgroundFlag flag)
+	@Lua 
+		Console:hline(x,y, l)
+		Console:hline(x,y, l, flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's left end in the console.
 		0 <= x < console width
@@ -828,6 +912,9 @@ public :
 	@C# 
 		void TCODConsole::vline(int x,int y, int l)
 		void TCODConsole::vline(int x,int y, int l, TCODBackgroundFlag flag)
+	@Lua
+		Console:vline(x,y, l)
+		Console:vline(x,y, l, flag)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the line's upper end in the console.
 		0 <= x < console width
@@ -849,6 +936,11 @@ public :
 		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear)
 		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear, TCODBackgroundFlag flag)
 		void TCODConsole::printFrame(int x,int y, int w,int h, bool clear, TCODBackgroundFlag flag, string fmt)
+	@Lua
+		Console:printFrame(x,y, w,h)
+		Console:printFrame(x,y, w,h, clear)
+		Console:printFrame(x,y, w,h, clear, flag)
+		Console:printFrame(x,y, w,h, clear, flag, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y Coordinates of the rectangle's upper-left corner in the console.
 		0 <= x < console width
@@ -874,6 +966,7 @@ public :
 	@C int TCOD_console_get_width(TCOD_console_t con)
 	@Py console_get_width(con)
 	@C# int TCODConsole::getWidth()
+	@Lua Console:getWidth()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	int getWidth() const;
@@ -886,6 +979,7 @@ public :
 	@C int TCOD_console_get_height(TCOD_console_t con)
 	@Py console_get_height(con)
 	@C# int TCODConsole::getHeight()
+	@Lua Console:getHeight()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	int getHeight() const;
@@ -898,6 +992,7 @@ public :
 	@C TCOD_color_t TCOD_console_get_background_color(TCOD_console_t con)
 	@Py console_get_background_color(con)
 	@C# TCODColor TCODConsole::getBackgroundColor()
+	@Lua Console:getBackgroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCODColor getBackgroundColor() const;
@@ -910,6 +1005,7 @@ public :
 	@C TCOD_color_t TCOD_console_get_foreground_color(TCOD_console_t con)
 	@Py console_get_foreground_color(con)
 	@C# TCODColor TCODConsole::getForegroundColor()
+	@Lua Console:getForegroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCODColor getForegroundColor() const;
@@ -922,6 +1018,7 @@ public :
 	@C TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y)
 	@Py console_get_back(con,x,y)
 	@C# TCODColor TCODConsole::getCharBackground(int x, int y)
+	@Lua Console::getCharBackground(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -937,6 +1034,7 @@ public :
 	@C TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y)
 	@Py console_get_fore(con,x,y)
 	@C# TCODColor TCODConsole::getCharForeground(int x, int y)
+	@Lua Console::getCharForeground(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -952,6 +1050,7 @@ public :
 	@C TCOD_color_t TCOD_console_get_char(TCOD_console_t con,int x, int y)
 	@Py console_get_char(con,x,y)
 	@C# TCODColor TCODConsole::getChar(int x, int y)
+	@Lua Console::getChar(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
 		0 <= x < console width
@@ -970,6 +1069,7 @@ public :
 	@C void TCOD_console_set_fade(uint8 fade, TCOD_color_t fadingColor)
 	@Py console_set_fade(fade, fadingColor)
 	@C# static void TCODConsole::setFade(byte fade, TCODColor fadingColor)
+	@Lua tcod.console.setFade(fade, fadingColor)
 	@Param fade the fading amount. 0 => the screen is filled with the fading color. 255 => no fading effect
 	@Param fadingColor the color to use during the console flushing operation
 	@CppEx 
@@ -987,6 +1087,11 @@ public :
 		for fade in range(255,0) :
 			libtcod.console_setFade(fade,libtcod.black)
 			libtcod.console_flush()
+	@LuaEx 
+		for fade=255,0,-1 do
+			tcod.console.setFade(fade,tcod.color.black)
+			tcod.console.flush()
+		end
 	*/
 	static void setFade(uint8 fade, const TCODColor &fadingColor);
 
@@ -998,6 +1103,7 @@ public :
 	@C uint8 TCOD_console_get_fade()
 	@Py console_get_fade()
 	@C# static byte TCODConsole::getFade()
+	@Lua tcod.console.getFade()
 	*/
 	static uint8 getFade();
 
@@ -1009,6 +1115,7 @@ public :
 	@C TCODColor TCOD_console_get_fadingColor()
 	@Py console_get_fading_color()
 	@C# static TCODColor TCODConsole::getFadingColor()
+	@Lua tcod.console.getFadingColor()
 	*/
 	static TCODColor getFadingColor();
 
@@ -1022,6 +1129,7 @@ public :
 	@C void TCOD_console_flush()
 	@Py console_flush()
 	@C# static void TCODConsole::flush()
+	@Lua tcod.console.flush()
 	*/
 	static void flush();
 
@@ -1029,58 +1137,58 @@ public :
 	@PageName console_ascii
 	@PageTitle ASCII constants
 	@PageFather console_draw
-	@FuncDesc Some useful graphic characters in the terminal.bmp font. For the python version, remove TCOD_ from the constants:
+	@FuncDesc Some useful graphic characters in the terminal.bmp font. For the python version, remove TCOD_ from the constants. C# and Lua is in parenthesis :
 		Single line walls:
-		TCOD_CHAR_HLINE=196
-		TCOD_CHAR_VLINE=179
-		TCOD_CHAR_NE=191
-		TCOD_CHAR_NW=218
-		TCOD_CHAR_SE=217
-		TCOD_CHAR_SW=192
+		TCOD_CHAR_HLINE=196 (HorzLine)
+		TCOD_CHAR_VLINE=179 (VertLine)
+		TCOD_CHAR_NE=191 (NE)
+		TCOD_CHAR_NW=218 (NW)
+		TCOD_CHAR_SE=217 (SE)
+		TCOD_CHAR_SW=192 (SW)
 		
 		Double lines walls:
-		TCOD_CHAR_DHLINE=205
-		TCOD_CHAR_DVLINE=186
-		TCOD_CHAR_DNE=187
-		TCOD_CHAR_DNW=201
-		TCOD_CHAR_DSE=188
-		TCOD_CHAR_DSW=200
+		TCOD_CHAR_DHLINE=205 (DoubleHorzLine)
+		TCOD_CHAR_DVLINE=186 (DoubleVertLine)
+		TCOD_CHAR_DNE=187 (DoubleNE)
+		TCOD_CHAR_DNW=201 (DoubleNW)
+		TCOD_CHAR_DSE=188 (DoubleSE)
+		TCOD_CHAR_DSW=200 (DoubleSW)
 		
 		Single line vertical/horizontal junctions (T junctions):
-		TCOD_CHAR_TEEW=180
-		TCOD_CHAR_TEEE=195
-		TCOD_CHAR_TEEN=193
-		TCOD_CHAR_TEES=194
+		TCOD_CHAR_TEEW=180 (TeeWest)
+		TCOD_CHAR_TEEE=195 (TeeEast)
+		TCOD_CHAR_TEEN=193 (TeeNorth)
+		TCOD_CHAR_TEES=194 (TeeSouth)
 		
 		Double line vertical/horizontal junctions (T junctions):
-		TCOD_CHAR_DTEEW=185
-		TCOD_CHAR_DTEEE=204
-		TCOD_CHAR_DTEEN=202
-		TCOD_CHAR_DTEES=203
+		TCOD_CHAR_DTEEW=185 (DoubleTeeWest)
+		TCOD_CHAR_DTEEE=204 (DoubleTeeEast)
+		TCOD_CHAR_DTEEN=202 (DoubleTeeNorth)
+		TCOD_CHAR_DTEES=203 (DoubleTeeSouth)
 		
 		Block characters:
-		TCOD_CHAR_BLOCK1=176
-		TCOD_CHAR_BLOCK2=177
-		TCOD_CHAR_BLOCK3=178
+		TCOD_CHAR_BLOCK1=176 (Block1)
+		TCOD_CHAR_BLOCK2=177 (Block2)
+		TCOD_CHAR_BLOCK3=178 (Block3)
 		
 		Cross-junction between two single line walls:
-		TCOD_CHAR_CROSS=197
+		TCOD_CHAR_CROSS=197 (Cross)
 		
 		Arrows:
-		TCOD_CHAR_ARROW_N=24
-		TCOD_CHAR_ARROW_S=25
-		TCOD_CHAR_ARROW_E=26
-		TCOD_CHAR_ARROW_W=27
+		TCOD_CHAR_ARROW_N=24 (ArrowNorth)
+		TCOD_CHAR_ARROW_S=25 (ArrowSouth)
+		TCOD_CHAR_ARROW_E=26 (ArrowEast)
+		TCOD_CHAR_ARROW_W=27 (ArrowWest)
 		
 		Arrows without tail:
-		TCOD_CHAR_ARROW2_N=30
-		TCOD_CHAR_ARROW2_S=31
-		TCOD_CHAR_ARROW2_E=16
-		TCOD_CHAR_ARROW2_W=17
+		TCOD_CHAR_ARROW2_N=30 (ArrowNorthNoTail)
+		TCOD_CHAR_ARROW2_S=31 (ArrowSouthNoTail)
+		TCOD_CHAR_ARROW2_E=16 (ArrowEastNoTail)
+		TCOD_CHAR_ARROW2_W=17 (ArrowWestNoTail)
 		
 		Double arrows:
-		TCOD_CHAR_DARROW_H=29
-		TCOD_CHAR_ARROW_V=18
+		TCOD_CHAR_DARROW_H=29 (DoubleArrowHorz)
+		TCOD_CHAR_ARROW_V=18 (DoubleArrowVert)
 		
 		GUI stuff:
 		TCOD_CHAR_CHECKBOX_UNSET=224
@@ -1089,49 +1197,49 @@ public :
 		TCOD_CHAR_RADIO_SET=10
 		
 		Sub-pixel resolution kit:
-		TCOD_CHAR_SUBP_NW=226
-		TCOD_CHAR_SUBP_NE=227
-		TCOD_CHAR_SUBP_N=228
-		TCOD_CHAR_SUBP_SE=229
-		TCOD_CHAR_SUBP_DIAG=230
-		TCOD_CHAR_SUBP_E=231
-		TCOD_CHAR_SUBP_SW=232
+		TCOD_CHAR_SUBP_NW=226 (SubpixelNorthWest)
+		TCOD_CHAR_SUBP_NE=227 (SubpixelNorthEast)
+		TCOD_CHAR_SUBP_N=228 (SubpixelNorth)
+		TCOD_CHAR_SUBP_SE=229 (SubpixelSouthEast)
+		TCOD_CHAR_SUBP_DIAG=230 (SubpixelDiagonal)
+		TCOD_CHAR_SUBP_E=231 (SubpixelEast)
+		TCOD_CHAR_SUBP_SW=232 (SubpixelSouthWest)
 		
 		Miscellaneous characters:
-		TCOD_CHAR_SMILY = 1
-		TCOD_CHAR_SMILY_INV = 2
-		TCOD_CHAR_HEART = 3
-		TCOD_CHAR_DIAMOND = 4
-		TCOD_CHAR_CLUB = 5
-		TCOD_CHAR_SPADE = 6
-		TCOD_CHAR_BULLET = 7
-		TCOD_CHAR_BULLET_INV = 8
-		TCOD_CHAR_MALE = 11
-		TCOD_CHAR_FEMALE = 12
-		TCOD_CHAR_NOTE = 13
-		TCOD_CHAR_NOTE_DOUBLE = 14
-		TCOD_CHAR_LIGHT = 15
-		TCOD_CHAR_EXCLAM_DOUBLE = 19
-		TCOD_CHAR_PILCROW = 20
-		TCOD_CHAR_SECTION = 21
-		TCOD_CHAR_POUND = 156
-		TCOD_CHAR_MULTIPLICATION = 158
-		TCOD_CHAR_FUNCTION = 159
-		TCOD_CHAR_RESERVED = 169
-		TCOD_CHAR_HALF = 171
-		TCOD_CHAR_ONE_QUARTER = 172
-		TCOD_CHAR_COPYRIGHT = 184
-		TCOD_CHAR_CENT = 189
-		TCOD_CHAR_YEN = 190
-		TCOD_CHAR_CURRENCY = 207
-		TCOD_CHAR_THREE_QUARTERS = 243
-		TCOD_CHAR_DIVISION = 246
-		TCOD_CHAR_GRADE = 248
-		TCOD_CHAR_UMLAUT = 249
-		TCOD_CHAR_POW1 = 251
-		TCOD_CHAR_POW3 = 252
-		TCOD_CHAR_POW2 = 253
-		TCOD_CHAR_BULLET_SQUARE = 254
+		TCOD_CHAR_SMILY = 1 (Smilie)
+		TCOD_CHAR_SMILY_INV = 2 (SmilieInv)
+		TCOD_CHAR_HEART = 3 (Heart)
+		TCOD_CHAR_DIAMOND = 4 (Diamond)
+		TCOD_CHAR_CLUB = 5 (Club)
+		TCOD_CHAR_SPADE = 6 (Spade)
+		TCOD_CHAR_BULLET = 7 (Bullet)
+		TCOD_CHAR_BULLET_INV = 8 (BulletInv)
+		TCOD_CHAR_MALE = 11 (Male)
+		TCOD_CHAR_FEMALE = 12 (Female)
+		TCOD_CHAR_NOTE = 13 (Note)
+		TCOD_CHAR_NOTE_DOUBLE = 14 (NoteDouble)
+		TCOD_CHAR_LIGHT = 15 (Light)
+		TCOD_CHAR_EXCLAM_DOUBLE = 19 (ExclamationDouble)
+		TCOD_CHAR_PILCROW = 20 (Pilcrow)
+		TCOD_CHAR_SECTION = 21 (Section)
+		TCOD_CHAR_POUND = 156 (Pound)
+		TCOD_CHAR_MULTIPLICATION = 158 (Multiplication)
+		TCOD_CHAR_FUNCTION = 159 (Function)
+		TCOD_CHAR_RESERVED = 169 (Reserved)
+		TCOD_CHAR_HALF = 171 (Half)
+		TCOD_CHAR_ONE_QUARTER = 172 (OneQuarter)
+		TCOD_CHAR_COPYRIGHT = 184 (Copyright)
+		TCOD_CHAR_CENT = 189 (Cent)
+		TCOD_CHAR_YEN = 190 (Yen)
+		TCOD_CHAR_CURRENCY = 207 (Currency)
+		TCOD_CHAR_THREE_QUARTERS = 243 (ThreeQuarters)
+		TCOD_CHAR_DIVISION = 246 (Division)
+		TCOD_CHAR_GRADE = 248 (Grade)
+		TCOD_CHAR_UMLAUT = 249 (Umlaut)
+		TCOD_CHAR_POW1 = 251 (Pow1)
+		TCOD_CHAR_POW3 = 252 (Pow2)
+		TCOD_CHAR_POW2 = 253 (Pow3)
+		TCOD_CHAR_BULLET_SQUARE = 254 (BulletSquare)
 	*/
 
 	/**
@@ -1153,6 +1261,7 @@ public :
 	@C TCOD_key_t TCOD_console_wait_for_keypress(bool flush)
 	@Py console_wait_for_keypress(flush)
 	@C# static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
+	@Lua tcod.console.waitForKeypress(flush)
 	@Param flush if true, all pending keypress events are flushed from the keyboard buffer. Else, return the first available event
 	@CppEx 
 		TCOD_key_t key = TCODConsole::waitForKeypress(true);
@@ -1163,22 +1272,26 @@ public :
 	@PyEx 
 		key = libtcod.console_wait_for_keypress(True)
 		if key.c == ord('i') : # ... open inventory ...
+	@LuaEx 
+		key = tcod.console.waitForKeypress(true)
+		if key.Character == 'i' then ... open inventory ... end
 	*/
 	static TCOD_key_t waitForKeypress(bool flush);
 	/**
 	@PageName console_non_blocking_input
 	@PageTitle Non blocking keyboard input
 	@PageFather console_input
-	@FuncDesc This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t. If the user didn't press a key, this function returns the key code TCODK_NONE.
+	@FuncDesc This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t. If the user didn't press a key, this function returns the key code TCODK_NONE (NoKey for C# and Lua).
 		<b>Note that key repeat only results in TCOD_KEY_PRESSED events.</b>
 	@Cpp static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_RELEASED)
 	@C TCOD_key_t TCOD_console_check_for_keypress(int flags)
 	@Py console_check_for_keypress(flags=KEY_RELEASED)
 	@C# static TCODKey TCODConsole::checkForKeypress(int flags) // Use TCODKeyStatus
-	@Param flags A filter for key events :
-		TCOD_KEY_PRESSED : only keypress events are returned
-		TCOD_KEY_RELEASED : only key release events are returnes
-		TCOD_KEY_PRESSED|TCOD_KEY_RELEASED : events of both types are returned.
+	@Lua tcod.console.checkForKeypress(flags)
+	@Param flags A filter for key events (C# and Lua in parenthesis):
+		TCOD_KEY_PRESSED (KeyPressed) : only keypress events are returned
+		TCOD_KEY_RELEASED (KeyReleased): only key release events are returnes
+		TCOD_KEY_PRESSED|TCOD_KEY_RELEASED (KeyPressed+KeyReleased): events of both types are returned.
 	@CppEx 
 		TCOD_key_t key = TCODConsole::checkForKeypress();
 		if ( key.vk == TCODK_NONE ) return; // no key pressed
@@ -1191,6 +1304,10 @@ public :
 		key = libtcod.console_check_for_keypress()
 		if key.vk == libtcod.KEY_NONE return # no key pressed
 		if key.c == ord('i') : # ... open inventory ...
+	@LuaEx 
+		key = tcod.console.checkForKeypress()
+		if key.KeyCode == tcod.NoKey then return end -- no key pressed
+		if key.Character == 'i' then ... open inventory ... end
 	*/
 	static TCOD_key_t checkForKeypress(int flags=TCOD_KEY_RELEASED);
 	/**
@@ -1200,7 +1317,8 @@ public :
 	@C bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
 	@Py console_is_key_pressed(key)
 	@C# static bool TCODConsole::isKeyPressed(TCODKeyCode key)
-	@Param key Any key code defined in keycode_t except TCODK_CHAR and TCODK_NONE
+	@Lua tcod.console.isKeyPressed(key)
+	@Param key Any key code defined in keycode_t except TCODK_CHAR (Char) and TCODK_NONE (NoKey)
 	*/
 	static bool isKeyPressed(TCOD_keycode_t key);
 	/**
@@ -1212,6 +1330,7 @@ public :
 	@C void TCOD_console_set_keyboard_repeat(int initial_delay, int interval)
 	@Py console_set_keyboard_repeat(initial_delay, interval)
 	@C# static void TCODConsole::setKeyboardRepeat(int initialDelay, int interval)
+	@Lua tcod.console.setKeyboardRepeat(initialDelay, interval)
 	@Param initialDelay delay in millisecond between the time when a key is pressed, and keyboard repeat begins. If 0, keyboard repeat is disabled
 	@Param interval interval in millisecond between keyboard repeat events
 	*/
@@ -1223,6 +1342,7 @@ public :
 	@C void TCOD_console_disable_keyboard_repeat()
 	@Py console_disable_keyboard_repeat()
 	@C# static void TCODConsole::disableKeyboardRepeat()
+	@Lua tcod.console.disableKeyboardRepeat()
 	*/
 	static void disableKeyboardRepeat();
 
@@ -1242,6 +1362,15 @@ public :
 			bool rctrl;
 			bool shift;
 		} TCOD_key_t;
+	@Lua
+		key.KeyCode
+		key.Character
+		key.Pressed
+		key.LeftAlt
+		key.LeftControl
+		key.RightAlt
+		key.RightControl
+		key.Shift
 	@Param vk An arbitrary value representing the physical key on the keyboard. Possible values are stored in the TCOD_keycode_t enum. If no key was pressed, the value is TCODK_NONE
 	@Param c If the key correspond to a printable character, the character is stored in this field. Else, this field contains 0.
 	@Param pressed true if the event is a key pressed, or false for a key released.
@@ -1257,80 +1386,80 @@ public :
 	@PageTitle 	Key codes
 	@PageFather console_input
 	@PageDesc TCOD_keycode_t is a libtcod specific code representing a key on the keyboard.
-		For python, replace TCODK by KEY: libtcod.KEY_NONE Possible values are :
-		When no key was pressed (see checkForKeypress) : TCOD_NONE
+		For python, replace TCODK by KEY: libtcod.KEY_NONE. C# and Lua, the value is in parenthesis. Possible values are :
+		When no key was pressed (see checkForKeypress) : TCOD_NONE (NoKey)
 		Special keys :
-		TCODK_ESCAPE
-		TCODK_BACKSPACE
-		TCODK_TAB
-		TCODK_ENTER
-		TCODK_SHIFT
-		TCODK_CONTROL
-		TCODK_ALT
-		TCODK_PAUSE
-		TCODK_CAPSLOCK
-		TCODK_PAGEUP
-		TCODK_PAGEDOWN
-		TCODK_END
-		TCODK_HOME
-		TCODK_UP
-		TCODK_LEFT
-		TCODK_RIGHT
-		TCODK_DOWN
-		TCODK_PRINTSCREEN
-		TCODK_INSERT
-		TCODK_DELETE
-		TCODK_LWIN
-		TCODK_RWIN
-		TCODK_APPS
-		TCODK_KPADD
-		TCODK_KPSUB
-		TCODK_KPDIV
-		TCODK_KPMUL
-		TCODK_KPDEC
-		TCODK_KPENTER
-		TCODK_F1
-		TCODK_F2
-		TCODK_F3
-		TCODK_F4
-		TCODK_F5
-		TCODK_F6
-		TCODK_F7
-		TCODK_F8
-		TCODK_F9
-		TCODK_F10
-		TCODK_F11
-		TCODK_F12
-		TCODK_NUMLOCK
-		TCODK_SCROLLLOCK
-		TCODK_SPACE
+		TCODK_ESCAPE (Escape)
+		TCODK_BACKSPACE (Backspace)
+		TCODK_TAB (Tab)
+		TCODK_ENTER (Enter)
+		TCODK_SHIFT (Shift)
+		TCODK_CONTROL (Control)
+		TCODK_ALT (Alt)
+		TCODK_PAUSE (Pause)
+		TCODK_CAPSLOCK (CapsLock)
+		TCODK_PAGEUP (PageUp)
+		TCODK_PAGEDOWN (PageDown)
+		TCODK_END (End)
+		TCODK_HOME (Home)
+		TCODK_UP (Up)
+		TCODK_LEFT (Left)
+		TCODK_RIGHT (Right)
+		TCODK_DOWN (Down)
+		TCODK_PRINTSCREEN (Printscreen)
+		TCODK_INSERT (Insert)
+		TCODK_DELETE (Delete)
+		TCODK_LWIN (Lwin)
+		TCODK_RWIN (Rwin)
+		TCODK_APPS (Apps)
+		TCODK_KPADD (KeypadAdd)
+		TCODK_KPSUB (KeypadSubtract)
+		TCODK_KPDIV (KeypadDivide)
+		TCODK_KPMUL (KeypadMultiply)
+		TCODK_KPDEC (KeypadDecimal)
+		TCODK_KPENTER (KeypadEnter)
+		TCODK_F1 (F1)
+		TCODK_F2 (F2)
+		TCODK_F3 (F3)
+		TCODK_F4 (F4)
+		TCODK_F5 (F5)
+		TCODK_F6 (F6)
+		TCODK_F7 (F7)
+		TCODK_F8 (F8)
+		TCODK_F9 (F9)
+		TCODK_F10 (F10)
+		TCODK_F11 (F11)
+		TCODK_F12 (F12)
+		TCODK_NUMLOCK (Numlock)
+		TCODK_SCROLLLOCK (Scrolllock)
+		TCODK_SPACE (Space)
 		
 		numeric keys :
 		
-		TCODK_0
-		TCODK_1
-		TCODK_2
-		TCODK_3
-		TCODK_4
-		TCODK_5
-		TCODK_6
-		TCODK_7
-		TCODK_8
-		TCODK_9
-		TCODK_KP0
-		TCODK_KP1
-		TCODK_KP2
-		TCODK_KP3
-		TCODK_KP4
-		TCODK_KP5
-		TCODK_KP6
-		TCODK_KP7
-		TCODK_KP8
-		TCODK_KP9
+		TCODK_0 (Zero)
+		TCODK_1 (One)
+		TCODK_2 (Two)
+		TCODK_3 (Three)
+		TCODK_4 (Four)
+		TCODK_5 (Five)
+		TCODK_6 (Six)
+		TCODK_7 (Seven)
+		TCODK_8 (Eight)
+		TCODK_9 (Nine)
+		TCODK_KP0 (KeypadZero)
+		TCODK_KP1 (KeypadOne)
+		TCODK_KP2 (KeypadTwo)
+		TCODK_KP3 (KeypadThree)
+		TCODK_KP4 (KeypadFour)
+		TCODK_KP5 (KeypadFive)
+		TCODK_KP6 (KeypadSix)
+		TCODK_KP7 (KeypadSeven)
+		TCODK_KP8 (KeypadEight)
+		TCODK_KP9 (KeypadNine)
 		
 		Any other (printable) key :
 		
-		TCODK_CHAR
+		TCODK_CHAR (Char)
 		
 		Codes starting with TCODK_KP represents keys on the numeric keypad (if available).
 	*/
@@ -1346,6 +1475,7 @@ public :
 	@C TCOD_console_t TCOD_console_new(int w, int h)
 	@Py console_new(w,h)
 	@C# TCODConsole::TCODConsole(int w, int h)
+	@Lua tcod.Console(w,h)
 	@Param w,h the console size.
 		0 < w
 		0 < h
@@ -1365,6 +1495,12 @@ public :
 		libtcod.console_set_background_color(offscreen_console,libtcod.red)
 		libtcod.console_clear(offscreen_console)
 		libtcod.console_blit(offscreen_console,0,0,40,20,0,5,5,255)
+	@LuaEx 
+		-- Creating a 40x20 offscreen console, filling it with red and blitting it on the root console at position 5,5
+		offscreenConsole = tcod.Console(40,20)
+		offscreenConsole:setBackgroundColor(tcod.color.red)
+		offscreenConsole:clear()
+		tcod.console.blit(offscreenConsole,0,0,40,20,libtcod.TCODConsole_root,5,5,255)
 	*/
 	TCODConsole(int w, int h);
 
@@ -1379,6 +1515,10 @@ public :
 		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst)
 		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst, float foreground_alpha)
 		static void TCODConsole::blit(TCODConsole src, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole dst, int xDst, int yDst, float foreground_alpha, float background_alpha)
+	@Lua
+		tcod.console.blit(src, xSrc, ySrc, wSrc, hSrc, dst, xDst, yDst)
+		tcod.console.blit(src, xSrc, ySrc, wSrc, hSrc, dst, xDst, yDst, foreground_alpha)
+		tcod.console.blit(src, xSrc, ySrc, wSrc, hSrc, dst, xDst, yDst, foreground_alpha, background_alpha)
 	@Param src The source console that must be blitted on another one.
 	@Param xSrc,ySrc,wSrc,hSrc The rectangular area of the source console that will be blitted.
 	@Param dst The destination console.
@@ -1436,6 +1576,24 @@ public :
 			litbcod.console_blit(off1,0,0,80,50,0,0,0) # renders the first screen (opaque)
 			litbcod.console_blit(off2,0,0,80,50,0,0,0,i/255.0,i/255.0) # renders the second screen (transparent)
 			litbcod.console_flush()
+	@LuaEx 
+		-- Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.
+		off1 = tcod.Console(80,50)
+		off2 = tcod.Console(80,50)
+		... print screen1 on off1
+		... print screen2 of off2
+		-- render screen1 in the game window
+		root=libtcod.TCODConsole_root
+		tcod.console.blit(off1,0,0,80,50,root,0,0)
+		tcod.console.flush()
+		-- wait or a keypress
+		tcod.console.waitForKeypress(true)
+		-- do a cross-fading from off1 to off2
+		for i=1,255,1 do
+			tcod.console.blit(off1,0,0,80,50,root,0,0) -- renders the first screen (opaque)
+			tcod.console.blit(off2,0,0,80,50,root,0,0,i/255,i/255) -- renders the second screen (transparent)
+			tcod.console.flush()
+		end
 	*/
 	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f);
 	/**
@@ -1446,6 +1604,7 @@ public :
 	@C void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col)
 	@Py console_set_key_color(con,col)
 	@C# void TCODConsole::setKeyColor(TCODColor col)
+	@Lua Console:setKeyColor(col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param col the transparent background color
 	*/
@@ -1458,6 +1617,7 @@ public :
 	@C void TCOD_console_delete(TCOD_console_t con)
 	@Py console_delete(con)
 	@C# void TCODConsole::Dispose()
+	@Lua through garbage collector
 	@Param con in the C and Python versions, the offscreen console handler
 	@CppEx 
 		TCODConsole *off1 = new TCODConsole(80,50);
@@ -1471,6 +1631,10 @@ public :
 		off1 = libtcod.console_new(80,50)
 		... use off1
 		libtcod.console_delete(off1) # destroy the offscreen console
+	@LuaEx 
+		off1 = tcod.Console(80,50)
+		... use off1
+		off1=nil -- release the reference
 	*/
 	virtual ~TCODConsole();
 

@@ -84,7 +84,7 @@ function render_colors(key)
 		end
 	end
 	sampleConsole:setForegroundColor(textColor)
-	-- the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
+	-- the background behind the text is slightly darkened using the Multiply flag
 	sampleConsole:setBackgroundColor(tcod.color.grey)
 	sampleConsole:printRectEx(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,
 		tcod.Multiply,tcod.CenterAlignment,
@@ -116,17 +116,17 @@ function render_lines(key)
 	if key.KeyCode == tcod.Enter or key.KeyCode == tcod.KeypadEnter then
 		-- switch to the next blending mode
 		bkFlag = bkFlag+1
-		if bkFlag > tcod.Alpha then bkFlag=tcod.None end
+		if bkFlag % 256 > tcod.Alpha then bkFlag=tcod.None end
 	end
-	if bkFlag % 255 == tcod.Alpha then
+	if bkFlag % 256 == tcod.Alpha then
 		-- for the alpha mode, update alpha every frame
 		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
 		-- hack to get the equivalent to C TCOD_BKGND_ALPHA(alpha)
-		bkFlag=tcod.Alpha + math.floor(alpha) * 255 * (2 ^ 8)
-	elseif bkFlag % 255 == tcod.AddAlpha then
+		bkFlag=tcod.Alpha + math.floor(alpha*255)*(2^8)
+	elseif bkFlag % 256 == tcod.AddAlpha then
 		-- for the add alpha mode, update alpha every frame
 		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
-		bkFlag=tcod.AddAlpha + math.floor(alpha)*255*(2^8)
+		bkFlag=tcod.AddAlpha + math.floor(alpha*255)*(2^8)
 	end
 	if not init then
 		-- initialize the colored background
@@ -178,7 +178,7 @@ function render_lines(key)
 		lineEnd,x,y=tcod.line.step(x,y)
 	until lineEnd
 	-- print the current flag
-	sampleConsole:print(2,2,string.format("%s (ENTER to change)",flagNames[(bkFlag+1)%255]))
+	sampleConsole:print(2,2,string.format("%s (ENTER to change)",flagNames[(bkFlag%256)+1]))
 end
 
 

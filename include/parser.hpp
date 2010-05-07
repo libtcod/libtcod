@@ -214,7 +214,7 @@ public :
 	@Py struct_add_property(str, name, type, mandatory)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param name	The name of the property (in the example, this would be "cost" or "damages" or ...).
-	@Param type	The type of the property. It can be a standard type (see this) or a custom type (see this).
+	@Param type	The type of the property. It can be a standard type (see <a href="parser_types.html">this</a>).
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
 	@CppEx 
 		itemTypeStruct->addProperty("cost",TCOD_TYPE_INT,true);
@@ -268,7 +268,7 @@ public :
 	@Py struct_add_list_property(str, name, type, mandatory)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param name	The name of the property (in the example, this would be "cost" or "damages" or ...).
-	@Param type	The type of the list elements. It must be a standard type (see this) or a custom type (see this). It cannot be TCOD_TYPE_LIST.
+	@Param type	The type of the list elements. It must be a standard type (see <a href="parser_types.html">this</a>). It cannot be TCOD_TYPE_LIST.
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
 	@CppEx 
 		itemTypeStruct->addListProperty("intList",TCOD_TYPE_INT,true);

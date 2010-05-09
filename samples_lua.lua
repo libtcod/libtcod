@@ -91,12 +91,57 @@ function render_colors(key)
 		"The Doryen library uses 24 bits colors, for both background and foreground.")
 end
 
+-- ***************************
+-- offscreen console sample
+-- ***************************
+-- a console to store the background screen
+screenshot = tcod.Console(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT)
+-- the offscreen console to blit on top of the background
+secondary = tcod.Console(SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2)
+off_init=false
+off_counter=0
+off_x=0
+off_y=0
+off_xdir=1
+off_ydir=1
+function render_offscreen(key) 
+	if not off_init then
+		-- draw the offscreen console only on first frame
+		off_init=true
+		secondary:printFrame(0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,tcod.Set,"Offscreen console")
+		secondary:printRectEx(SAMPLE_SCREEN_WIDTH/4,2,SAMPLE_SCREEN_WIDTH/2-2,SAMPLE_SCREEN_HEIGHT/2,
+			tcod.None,tcod.CenterAlignment,"You can render to an offscreen console and blit in on another one, simulating alpha transparency.")
+	end
+	if first then
+		tcod.system.setFps(30) -- fps limited to 30
+		-- get a "screenshot" of the current sample screen
+		tcod.console.blit(sampleConsole,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
+							screenshot,0,0);
+	end
+	off_counter = off_counter + 1
+	if off_counter % 20 == 0 then
+		-- move the secondary screen every 2 seconds
+		off_x = off_x + off_xdir
+		off_y = off_y + off_ydir
+		if off_x >= SAMPLE_SCREEN_WIDTH/2+5 then off_xdir = -1 
+		elseif off_x <= -5 then off_xdir = 1 end
+		if off_y >= SAMPLE_SCREEN_HEIGHT/2+5 then off_ydir = -1
+		elseif off_y <= -5 then off_ydir = 1 end
+	end
+	-- restore the initial screen
+	tcod.console.blit(screenshot,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,
+					sampleConsole,0,0)
+	-- blit the overlapping screen
+	tcod.console.blit(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,
+					sampleConsole,off_x,off_y,1.0,0.75)
+end
+
 -- *******************
 -- Line drawing sample
 -- ******************* 
 bk = tcod.Console(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT) -- colored background
 bkFlag=tcod.Set
-init=false
+line_init=false
 flagNames={
 		"None",
 		"Set",
@@ -127,7 +172,7 @@ function render_lines(key)
 		alpha = (1.0+math.cos(tcod.system.getElapsedSeconds()*2))/2.0
 		bkFlag=tcod.console.AddAlpha(alpha)
 	end
-	if not init then
+	if not line_init then
 		-- initialize the colored background
 		for x=0,SAMPLE_SCREEN_WIDTH,1 do
 			for y=0,SAMPLE_SCREEN_HEIGHT,1 do
@@ -138,7 +183,7 @@ function render_lines(key)
 				bk:setCharBackground(x,y,col)
 			end
 		end
-		init=true
+		line_init=true
 	end
 	if first then
 		tcod.system.setFps(30) -- fps limited to 30
@@ -186,6 +231,7 @@ creditsEnd=false
 -- list of samples
 samples = {
 	{ name = "  True colors        ", render = render_colors },
+	{ name = "  Offscreen console  ", render = render_offscreen },
 	{ name = "  Line drawing       ", render = render_lines }
 }
 nbSamples = table.getn(samples)

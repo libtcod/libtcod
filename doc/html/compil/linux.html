@@ -26,8 +26,8 @@ In the following chapters, replace ${LIBTCODDIR} by the Doryen library's root di
 For example, for a debug version, replace ${FLAGS} by -g. For a release version, replace it by -O3.<br /> 
 If your program's source code is in a single file, you can directly compile and link with a single command (you can put it in a .sh file ) :<br />
 <p class="code"><pre>
-C++ : g++ samples_cpp.cpp ${FLAGS} -Wall -o samples_cpp -L${LIBTCODDIR} -ltcod -ltcod++ -I${LIBTCODDIR}/include
-C   : gcc samples_c.c ${FLAGS} -Wall -o samples_c -L${LIBTCODDIR} -ltcod -ltcod++ -I${LIBTCODDIR}/include
+C++ : g++ samples_cpp.cpp ${FLAGS} -Wall -o samples_cpp -L${LIBTCODDIR} -ltcod -ltcodxx -I${LIBTCODDIR}/include
+C   : gcc samples_c.c ${FLAGS} -Wall -o samples_c -L${LIBTCODDIR} -ltcod -ltcodxx -I${LIBTCODDIR}/include
 </pre></p>
 <br />
 If you have several source files and you don't want to recompile everything everytime, you'd better use a makefile :<br />
@@ -98,7 +98,7 @@ CPP_OBJS=$(TEMP)/samples_cpp.o
 all : samples_cpp
 
 samples_cpp : $(CPP_OBJS)
-	$(CPP) $(CPP_OBJS) -o $@ -L${LIBTCODDIR} -ltcod -ltcod++ -Wl,-rpath,.
+	$(CPP) $(CPP_OBJS) -o $@ -L${LIBTCODDIR} -ltcod -ltcodxx -Wl,-rpath,.
 
 clean :
 	\rm -f $(CPP_OBJS) samples_cpp

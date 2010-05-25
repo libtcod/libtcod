@@ -25,6 +25,12 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+	WARNING ! This file is not part of libtcod anymore.
+	This algorithm has been removed because it competes poorly against the others.
+	This code does not compile with MS Visual Studio.
+*/
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

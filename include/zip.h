@@ -33,7 +33,7 @@ typedef void *TCOD_zip_t;
 TCODLIB_API TCOD_zip_t TCOD_zip_new();
 TCODLIB_API void TCOD_zip_delete(TCOD_zip_t zip);
 
-// output interface
+/* output interface */
 TCODLIB_API void TCOD_zip_put_char(TCOD_zip_t zip, char val);
 TCODLIB_API void TCOD_zip_put_int(TCOD_zip_t zip, int val);
 TCODLIB_API void TCOD_zip_put_float(TCOD_zip_t zip, float val);
@@ -45,7 +45,7 @@ TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data
 TCODLIB_API uint32 TCOD_zip_get_current_bytes(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_save_to_file(TCOD_zip_t zip, const char *filename);
 
-// input interface
+/* input interface */
 TCODLIB_API int TCOD_zip_load_from_file(TCOD_zip_t zip, const char *filename);
 TCODLIB_API char TCOD_zip_get_char(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_int(TCOD_zip_t zip);

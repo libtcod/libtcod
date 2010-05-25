@@ -38,9 +38,9 @@
 
 typedef struct {
 	int ndim;
-	unsigned char map[256]; // Randomized map of indexes into buffer
-	float buffer[256][TCOD_NOISE_MAX_DIMENSIONS]; 	// Random 256 x ndim buffer
-	// fractal stuff
+	unsigned char map[256]; /* Randomized map of indexes into buffer */
+	float buffer[256][TCOD_NOISE_MAX_DIMENSIONS]; 	/* Random 256 x ndim buffer */
+	/* fractal stuff */
 	float H;
 	float lacunarity;
 	float exponent[TCOD_NOISE_MAX_OCTAVES];
@@ -75,7 +75,7 @@ static void normalize(perlin_data_t *data, float *f)
 	int i;
 	for(i=0; i<data->ndim; i++)
 		magnitude += f[i]*f[i];
-	magnitude = 1 / sqrtf(magnitude);
+	magnitude = 1.0f / (float)sqrt(magnitude);
 	for(i=0; i<data->ndim; i++)
 		f[i] *= magnitude;
 }
@@ -107,7 +107,7 @@ TCOD_noise_t TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_random
 	data->lacunarity = lacunarity;
 	for(i=0; i<TCOD_NOISE_MAX_OCTAVES; i++)
 	{
-		//exponent[i] = powf(f, -H);
+		/*exponent[i] = powf(f, -H); */
 		data->exponent[i] = 1.0f / f;
 		f *= lacunarity;
 	}
@@ -117,10 +117,10 @@ TCOD_noise_t TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_random
 float TCOD_noise_perlin( TCOD_noise_t noise, float *f )
 {
 	perlin_data_t *data=(perlin_data_t *)noise;
-	int n[TCOD_NOISE_MAX_DIMENSIONS];			// Indexes to pass to lattice function
+	int n[TCOD_NOISE_MAX_DIMENSIONS];			/* Indexes to pass to lattice function */
 	int i;
-	float r[TCOD_NOISE_MAX_DIMENSIONS];		// Remainders to pass to lattice function
-	float w[TCOD_NOISE_MAX_DIMENSIONS];		// Cubic values to pass to interpolation function
+	float r[TCOD_NOISE_MAX_DIMENSIONS];		/* Remainders to pass to lattice function */
+	float w[TCOD_NOISE_MAX_DIMENSIONS];		/* Cubic values to pass to interpolation function */
 	float value;
 
 	for(i=0; i<data->ndim; i++)
@@ -206,19 +206,19 @@ typedef float (*TCOD_noise_func_t)( TCOD_noise_t noise, float *f );
 static float TCOD_noise_fbm_int(TCOD_noise_t noise,  float *f, float octaves, TCOD_noise_func_t func ) {
 	float tf[TCOD_NOISE_MAX_DIMENSIONS];
 	perlin_data_t *data=(perlin_data_t *)noise;
-	// Initialize locals
+	/* Initialize locals */
 	double value = 0;
 	int i,j;
 	memcpy(tf,f,sizeof(float)*data->ndim);
 
-	// Inner loop of spectral construction, where the fractal is built
+	/* Inner loop of spectral construction, where the fractal is built */
 	for(i=0; i<(int)octaves; i++)
 	{
 		value += (double)(func(noise,tf)) * data->exponent[i];
 		for (j=0; j < data->ndim; j++) tf[j] *= data->lacunarity;
 	}
 
-	// Take care of remainder in octaves
+	/* Take care of remainder in octaves */
 	octaves -= (int)octaves;
 	if(octaves > DELTA)
 		value += (double)(octaves * func(noise,tf)) * data->exponent[i];
@@ -228,27 +228,6 @@ static float TCOD_noise_fbm_int(TCOD_noise_t noise,  float *f, float octaves, TC
 float TCOD_noise_fbm_perlin( TCOD_noise_t noise,  float *f, float octaves )
 {
 	return TCOD_noise_fbm_int(noise,f,octaves,TCOD_noise_perlin);
-/*
-	float tf[TCOD_NOISE_MAX_DIMENSIONS];
-	perlin_data_t *data=(perlin_data_t *)noise;
-	// Initialize locals
-	double value = 0;
-	int i,j;
-	memcpy(tf,f,sizeof(float)*data->ndim);
-
-	// Inner loop of spectral construction, where the fractal is built
-	for(i=0; i<(int)octaves; i++)
-	{
-		value += (double)(TCOD_noise_simplex(noise,tf)) * data->exponent[i];
-		for (j=0; j < data->ndim; j++) tf[j] *= data->lacunarity;
-	}
-
-	// Take care of remainder in octaves
-	octaves -= (int)octaves;
-	if(octaves > DELTA)
-		value += (double)(octaves * TCOD_noise_simplex(noise,tf)) * data->exponent[i];
-	return CLAMP(-0.99999f, 0.99999f, (float)value);
-*/
 }
 
 float TCOD_noise_fbm_simplex( TCOD_noise_t noise,  float *f, float octaves )
@@ -260,12 +239,12 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 {
 	float tf[TCOD_NOISE_MAX_DIMENSIONS];
 	perlin_data_t *data=(perlin_data_t *)noise;
-	// Initialize locals
+	/* Initialize locals */
 	double value = 0;
 	int i,j;
 	memcpy(tf,f,sizeof(float)*data->ndim);
 
-	// Inner loop of spectral construction, where the fractal is built
+	/* Inner loop of spectral construction, where the fractal is built */
 	for(i=0; i<(int)octaves; i++)
 	{
 		float nval=func(noise,tf);
@@ -273,7 +252,7 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 		for (j=0; j < data->ndim; j++) tf[j] *= data->lacunarity;
 	}
 
-	// Take care of remainder in octaves
+	/* Take care of remainder in octaves */
 	octaves -= (int)octaves;
 	if(octaves > DELTA) {
 		float nval=func(noise,tf);
@@ -290,8 +269,8 @@ float TCOD_noise_turbulence_simplex( TCOD_noise_t noise, float *f, float octaves
 	return TCOD_noise_turbulence_int(noise,f,octaves,TCOD_noise_simplex);
 }
 
-// simplex noise, adapted from Ken Perlin's presentation at Siggraph 2001
-// and Stefan Gustavson implementation
+/* simplex noise, adapted from Ken Perlin's presentation at Siggraph 2001 */
+/* and Stefan Gustavson implementation */
 
 #define TCOD_NOISE_SIMPLEX_GRADIENT_1D(n,h,x) { \
 	float grad; \
@@ -368,8 +347,8 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 		break;
 		case 2 :
 		{
-			#define F2 0.366025403f  // 0.5f * (sqrtf(3.0f)-1.0f);
-			#define G2 0.211324865f  // (3.0f - sqrtf(3.0f))/6.0f;
+			#define F2 0.366025403f  /* 0.5f * (sqrtf(3.0f)-1.0f); */
+			#define G2 0.211324865f  /* (3.0f - sqrtf(3.0f))/6.0f; */
 
 			float s = (f[0]+f[1])*F2*SIMPLEX_SCALE;
 			float xs = f[0]*SIMPLEX_SCALE+s;
@@ -513,8 +492,8 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 		break;
 		case 4 :
 		{
-			#define F4 0.309016994f // (sqrtf(5.0f)-1.0f)/4.0f
-			#define G4 0.138196601f // (5.0f - sqrtf(5.0f))/20.0f
+			#define F4 0.309016994f /* (sqrtf(5.0f)-1.0f)/4.0f */
+			#define G4 0.138196601f /* (5.0f - sqrtf(5.0f))/20.0f */
 			float n0,n1,n2,n3,n4;
 			float s = (f[0]+f[1]+f[2]+f[3])*F4 * SIMPLEX_SCALE;
 			float xs=f[0]*SIMPLEX_SCALE+s;
@@ -630,7 +609,7 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 	return 0.0f;
 }
 
-// wavelet noise, adapted from Robert L. Cook and Tony Derose 'Wavelet noise' paper
+/* wavelet noise, adapted from Robert L. Cook and Tony Derose 'Wavelet noise' paper */
 
 static int absmod(int x, int n) {
 	int m=x%n;
@@ -728,12 +707,12 @@ float TCOD_noise_wavelet (TCOD_noise_t noise, float *f) {
 	int i;
 	int p[3],c[3],mid[3],n=WAVELET_TILE_SIZE;
 	float w[3][3],t,result=0.0f;
-	if ( data->ndim > 3 ) return 0.0f; // not supported
+	if ( data->ndim > 3 ) return 0.0f; /* not supported */
 	if (! data->waveletTileData ) TCOD_noise_wavelet_init(noise);
 	for (i=0; i < data->ndim; i++ ) pf[i]=f[i]*WAVELET_SCALE;
 	for (i=data->ndim; i < 3; i++ ) pf[i]=0.0f;
 	for (i=0; i < 3; i++ ) {
-		mid[i]=(int)ceilf(pf[i]-0.5f);
+		mid[i]=(int)ceil(pf[i]-0.5f);
 		t=mid[i] - (pf[i]-0.5f);
 		w[i][0]=t*t*0.5f;
 		w[i][2]=(1.0f-t)*(1.0f-t)*0.5f;

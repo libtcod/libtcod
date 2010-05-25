@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #ifdef __linux 
-// X11 stuff for clipboard support
+/* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #elif defined (__APPLE__) && defined (__MACH__)
@@ -95,15 +95,22 @@ bool TCOD_sys_delete_directory(const char *path) {
 #endif
 }
 
+
 bool TCOD_sys_is_directory(const char *path) {
-	struct stat _st;
-    if ( stat( path, &_st ) == -1 ) return false;
 #ifdef TCOD_WINDOWS
-	return ( _st.st_mode &  _S_IFDIR ) != 0 ;
+	HANDLE hList=FindFirstFile(path,NULL);
+	if ( hList != INVALID_HANDLE_VALUE ) {
+		FindClose(hList);
+		return true;
+	}
+	return false;
 #else
-	return S_ISDIR(_st.st_mode) != 0;
+	DIR *d=opendir(path);
+	if ( d ) { closedir(d); return true; }
+	return false;
 #endif
 }
+
 
 static bool filename_match(const char *name, const char *pattern) {
 	char *ptr;
@@ -153,9 +160,9 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 	return list;
 }
 
-// thread stuff
+/* thread stuff */
 #ifdef TCOD_WINDOWS
-// Helper function to count set bits in the processor mask.
+/* Helper function to count set bits in the processor mask. */
 static DWORD CountSetBits(ULONG_PTR bitMask)
 {
     DWORD LSHIFT = sizeof(ULONG_PTR)*8 - 1;
@@ -175,7 +182,7 @@ static DWORD CountSetBits(ULONG_PTR bitMask)
 
 int TCOD_sys_get_num_cores() {
 #ifdef TCOD_WINDOWS
-	// what a crap !!! works only on xp sp3 & vista
+	/* what a crap !!! works only on xp sp3 & vista */
 	typedef enum _PROCESSOR_CACHE_TYPE {
 	  CacheUnified,
 	  CacheInstruction,
@@ -260,7 +267,7 @@ int TCOD_sys_get_num_cores() {
     while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) {
         switch (ptr->Relationship) {
         case RelationProcessorCore:
-            // A hyperthreaded core supplies more than one logical processor.
+            /* A hyperthreaded core supplies more than one logical processor. */
             logicalProcessorCount += CountSetBits(ptr->ProcessorMask);
             break;
         default: break;
@@ -396,7 +403,7 @@ void TCOD_semaphore_delete( TCOD_semaphore_t sem)
 }
 
 #ifdef TCOD_WINDOWS
-// poor win32 api has no thread conditions
+/* poor win32 api has no thread conditions */
 typedef struct {
 	int nbSignals;
 	int nbWaiting;
@@ -509,7 +516,7 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 #endif
 }
 
-//clipboard stuff
+/*clipboard stuff */
 #ifdef TCOD_WINDOWS
 void TCOD_sys_clipboard_set(const char *value)
 {
@@ -610,7 +617,7 @@ void TCOD_sys_clipboard_set(const char *value)
 	if ( ! value ) return;
 	if (!dpy ) dpy = XOpenDisplay(NULL);
 	XStoreBytes(dpy,value,strlen(value)+1);
-	// doesn't seem to work without this...
+	/* doesn't seem to work without this... */
 	int len;
 	char *xbuf = XFetchBytes(dpy,&len);
 	XFree(xbuf);
@@ -629,7 +636,7 @@ char *TCOD_sys_clipboard_get()
 #endif
 
 
-// library initialization function
+/* library initialization function */
 #ifdef TCOD_WINDOWS
 BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {

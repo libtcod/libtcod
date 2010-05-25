@@ -19,7 +19,7 @@ PNG_LIBS=-lpng
 #OPENGL
 OPENGL_LIB=-lGL
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing -ansi
 TEMP=/tmp
 CC=gcc
 CPP=g++

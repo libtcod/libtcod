@@ -152,7 +152,6 @@ bool namegen_generator_check (const char * name) {
     else {
         namegen_t ** it;
         for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
-            //namegen_t * check = *it;
             if (strcmp((*it)->name,name) == 0) return true;
         }
         return false;
@@ -164,7 +163,6 @@ void namegen_get_sets_on_error (void) {
     namegen_t ** it;
     fprintf (stderr,"Registered syllable sets are:\n");
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
-        //namegen_t * check = *it;
         fprintf (stderr," * \"%s\"\n",(*it)->name);
     }
 }
@@ -174,7 +172,6 @@ namegen_t * namegen_generator_get (const char * name) {
     if (namegen_generator_check(name) == true) {
         namegen_t ** it;
         for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it != (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
-            //namegen_t * check = *it;
             if (strcmp((*it)->name,name) == 0) return (*it);
         }
     }
@@ -637,12 +634,3 @@ void TCOD_namegen_destroy (void) {
     TCOD_list_clear_and_delete(parsed_files);
 }
 
-//void namegen_retrieve (void) {
-//    namegen_t ** it;
-//    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
-//        printf("* \"%s\"\n",(*it)->name);
-//    char ** p;
-//    printf("PARSED FILES:\n");
-//    for (p = (char**)TCOD_list_begin(parsed_files); p < (char**)TCOD_list_end(parsed_files); p++)
-//        printf("* \"%s\"\n",(*p));
-//}

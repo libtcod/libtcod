@@ -25,6 +25,12 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+	WARNING ! This code is not part of libtcod anymore.
+	It's the first version of Jonathon Duerig's permissive FOV.
+	It has been replaced by Jonathon Duerig enhanced permissive FOV in fov_permissive2.c
+*/
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

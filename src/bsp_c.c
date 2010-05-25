@@ -164,7 +164,7 @@ void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb
 	int position;
 	if ( nb == 0 || (node->w < 2*minHSize && node->h < 2*minVSize ) ) return;
 	if (! randomizer ) randomizer=TCOD_random_get_instance();
-	// promote square rooms
+	/* promote square rooms */
 	if ( node->h < 2*minVSize || node->w > node->h * maxHRatio ) horiz = false;
 	else if ( node->w < 2*minHSize || node->h > node->w * maxVRatio) horiz = true;
 	else horiz = (TCOD_random_get_int(randomizer,0,1) == 0);

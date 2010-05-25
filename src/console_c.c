@@ -178,14 +178,14 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 	TCOD_IFNOT(xDst+wSrc >= 0 && yDst+hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
 	for (cx = xSrc; cx < xSrc+wSrc; cx++) {
 		for (cy = ySrc; cy < ySrc+hSrc; cy++) {
-			// check if we're outside the dest console
+			/* check if we're outside the dest console */
 			int dx=cx-xSrc+xDst;
 			int dy=cy-ySrc+yDst;
 			uint8 dirt;
 			char_t srcChar,dstChar;
 			if ( (unsigned) cx >= (unsigned) src->w || (unsigned)cy >= (unsigned) src->h ) continue;
 			if ( (unsigned) dx >= (unsigned) dst->w || (unsigned)dy >= (unsigned) dst->h ) continue;
-			// check if source pixel is transparent
+			/* check if source pixel is transparent */
 			srcChar=src->buf[cy * src->w+cx];
 			if ( src->haskey && srcChar.back.r == src->key.r
 				&& srcChar.back.g == src->key.g && srcChar.back.b == src->key.b ) continue;
@@ -494,7 +494,7 @@ void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t
 char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 	#define NB_BUFFERS 10
 	#define INITIAL_SIZE 512
-	// several static buffers in case the function is used more than once in a single function call
+	/* several static buffers in case the function is used more than once in a single function call */
 	static char *msg[NB_BUFFERS]={NULL};
 	static int buflen[NB_BUFFERS]={0};
 	static int curbuf=0;
@@ -513,7 +513,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 		int len = vsnprintf(msg[curbuf],buflen[curbuf],fmt,ap);
 		ok=true;
 		if (len < 0 || len >= buflen[curbuf]) {
-			// buffer too small.
+			/* buffer too small. */
 			if ( len > 0 ) {
 				while ( buflen[curbuf] < len+1 ) buflen[curbuf]*=2;
 			} else {
@@ -552,13 +552,13 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
 		va_start(ap,fmt);
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
-		title[w-3]=0; // truncate if needed
+		title[w-3]=0; /* truncate if needed */
 		xs = x + (w-strlen(title)-2)/2;
-		tmp=dat->back; // swap colors
+		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
 		TCOD_console_print_ex(con,xs,y,TCOD_BKGND_SET,TCOD_LEFT," %s ",title);
-		tmp=dat->back; // swap colors
+		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
 	}
@@ -616,7 +616,7 @@ int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, 
 	return ret;
 }
 
-// non public methods
+/* non public methods */
 int TCOD_console_stringLength(const char *s) {
 	int l=0;
 	while (*s) {
@@ -674,23 +674,23 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 	}
 
 	do {
-		// get \n delimited sub-message
+		/* get \n delimited sub-message */
 		char *end=TCOD_console_strchr(c,'\n');
 		char bak=0;
 		int cl;
 		char *split=NULL;
 		if ( end ) *end=0;
 		cl= TCOD_console_stringLength(c);
-		// find starting x
+		/* find starting x */
 		switch (align) {
 			case TCOD_LEFT : cx=x; break;
 			case TCOD_RIGHT : cx=x-cl+1; break;
 			case TCOD_CENTER : cx= x-cl/2;break;
 		}
-		// check if the string is completely out of the minx,miny,maxx,maxy frame
+		/* check if the string is completely out of the minx,miny,maxx,maxy frame */
 		if ( cy >= miny && cy <= maxy && cx <= maxx && cx+cl -1 >= minx ) {
 			if ( can_split && cy < maxy ) {
-				// if partially out of screen, try to split the sub-message
+				/* if partially out of screen, try to split the sub-message */
 				if ( cx < minx ) split = TCOD_console_forward(c, align == TCOD_CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
 				else if ( align == TCOD_CENTER ) {
 					if ( cx + cl/2 > maxx+1 ) split = TCOD_console_forward(c, maxx+1 - cx);
@@ -716,17 +716,17 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 				}
 			}
 			if ( cx < minx ) {
-				// truncate left part
+				/* truncate left part */
 				c += minx-cx;
 				cl -= minx-cx;
 				cx=minx;
 			}
 			if ( cx + cl > maxx+1 ) {
-				// truncate right part
+				/* truncate right part */
 				split = TCOD_console_forward(c, maxx+1 - cx);
 				*split=0;
 			}
-			// render the sub-message
+			/* render the sub-message */
 			if ( cy >= 0 && cy < dat->h )
 			while (*c) {
 				if ( *c >= TCOD_COLCTRL_1 && *c <= TCOD_COLCTRL_NUMBER ) {
@@ -753,7 +753,7 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 			}
 		}
 		if ( end ) {
-			// next line
+			/* next line */
 			if ( split && ! isspace(bak) ) {
 				*end=bak;
 				c=end;
@@ -792,7 +792,7 @@ void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fo
 wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap) {
 	#define NB_BUFFERS 10
 	#define INITIAL_SIZE 512
-	// several static buffers in case the function is used more than once in a single function call
+	/* several static buffers in case the function is used more than once in a single function call */
 	static wchar_t *msg[NB_BUFFERS]={NULL};
 	static int buflen[NB_BUFFERS]={0};
 	static int curbuf=0;
@@ -811,7 +811,7 @@ wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap) {
 		int len = vsnwprintf(msg[curbuf],buflen[curbuf],fmt,ap);
 		ok=true;
 		if (len < 0 || len >= buflen[curbuf]) {
-			// buffer too small.
+			/* buffer too small. */
 			if ( len > 0 ) {
 				while ( buflen[curbuf] < len+1 ) buflen[curbuf]*=2;
 			} else {
@@ -877,23 +877,23 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 	}
 
 	do {
-		// get \n delimited sub-message
+		/* get \n delimited sub-message */
 		wchar_t *end=TCOD_console_strchr_utf(c,'\n');
 		wchar_t bak=0;
 		int cl;
 		wchar_t *split=NULL;
 		if ( end ) *end=0;
 		cl= TCOD_console_stringLength_utf(c);
-		// find starting x
+		/* find starting x */
 		switch (align) {
 			case TCOD_LEFT : cx=x; break;
 			case TCOD_RIGHT : cx=x-cl+1; break;
 			case TCOD_CENTER : cx= x-cl/2;break;
 		}
-		// check if the string is completely out of the minx,miny,maxx,maxy frame
+		/* check if the string is completely out of the minx,miny,maxx,maxy frame */
 		if ( cy >= miny && cy <= maxy && cx <= maxx && cx+cl -1 >= minx ) {
 			if ( can_split && cy < maxy ) {
-				// if partially out of screen, try to split the sub-message
+				/* if partially out of screen, try to split the sub-message */
 				if ( cx < minx ) split = TCOD_console_forward_utf(c, align == TCOD_CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
 				else if ( align==TCOD_CENTER ) {
 					if ( cx + cl/2 > maxx+1 ) split = TCOD_console_forward_utf(c, maxx+1 - cx);
@@ -919,17 +919,17 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 				}
 			}
 			if ( cx < minx ) {
-				// truncate left part
+				/* truncate left part */
 				c += minx-cx;
 				cl -= minx-cx;
 				cx=minx;
 			}
 			if ( cx + cl > maxx+1 ) {
-				// truncate right part
+				/* truncate right part */
 				split = TCOD_console_forward_utf(c, maxx+1 - cx);
 				*split=0;
 			}
-			// render the sub-message
+			/* render the sub-message */
 			if ( cy >= 0 && cy < dat->h )
 			while (*c) {
 				if ( *c >= TCOD_COLCTRL_1 && *c <= TCOD_COLCTRL_NUMBER ) {
@@ -956,7 +956,7 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 			}
 		}
 		if ( end ) {
-			// next line
+			/* next line */
 			if ( split && ! iswspace(bak) ) {
 				*end=bak;
 				c=end;
@@ -1217,17 +1217,17 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	int i,xc,yc,xi,yi,j;
 	static int left,right,top,bottom;
 	float sparklex,sparkley,sparklerad,sparklerad2,noisex;
-	// mini particule system
+	/* mini particule system */
 #define MAX_PARTICULES 50
 	static float pheat[MAX_PARTICULES];
 	static float px[MAX_PARTICULES],py[MAX_PARTICULES], pvx[MAX_PARTICULES],pvy[MAX_PARTICULES];
 	static int nbpart=0, firstpart=0;
 	static float partDelay=0.1f;
 	float elapsed=TCOD_sys_get_last_frame_length();
-	TCOD_color_t fbackup; // backup fg color
+	TCOD_color_t fbackup; /* backup fg color */
 
 	if (!init1) {
-		// initialize all static data, colormaps, ...
+		/* initialize all static data, colormaps, ... */
 		int width,height;
 		TCOD_color_t col;
 		TCOD_color_gen_map(colmap,4,colkeys,colpos);
@@ -1237,7 +1237,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
 		len=strlen(poweredby);
-		len1=11; // sizeof "Powered by\n"
+		len1=11; /* sizeof "Powered by\n" */
 		left=MAX(x-4,0);
 		right=MIN(x+len,cw-1);
 		top=MAX(y-4,0);
@@ -1251,7 +1251,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		init1=true;
 	}
 	if (!init2) {
-		// reset the credits vars ...
+		/* reset the credits vars ... */
 		int curx,cury;
 		xstr=-4.0f;
 		curx=x;
@@ -1284,7 +1284,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
 	sparklerad2=sparklerad*sparklerad*4;
 
-	// draw the light
+	/* draw the light */
 	for (xc=left*2,xi=0; xc < (right+1)*2; xc++,xi++) {
 		for (yc=top*2,yi=0; yc < (bottom+1)*2; yc++,yi++) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
@@ -1297,32 +1297,32 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				pixcol=TCOD_black;
 			}
 			if ( alpha ) {
-				//	console cells have following flag values :
-				//		1 2
-				//		4 8
-				//	flag indicates which subcell uses foreground color
+				/*	console cells have following flag values :
+				  		1 2
+				  		4 8
+				  	flag indicates which subcell uses foreground color */
 				static int asciiToFlag[] = {
-					1, // TCOD_CHAR_SUBP_NW
-					2, // TCOD_CHAR_SUBP_NE
-					3, // TCOD_CHAR_SUBP_N
-					8, // TCOD_CHAR_SUBP_SE
-					9, // TCOD_CHAR_SUBP_DIAG
-					10, // TCOD_CHAR_SUBP_E
-					4, // TCOD_CHAR_SUBP_SW
+					1, /* TCOD_CHAR_SUBP_NW */
+					2, /* TCOD_CHAR_SUBP_NE */
+					3, /* TCOD_CHAR_SUBP_N */
+					8, /* TCOD_CHAR_SUBP_SE */
+					9, /* TCOD_CHAR_SUBP_DIAG */
+					10, /* TCOD_CHAR_SUBP_E */
+					4, /* TCOD_CHAR_SUBP_SW */
 				};
 				int conc= TCOD_console_get_char(NULL,xc/2,yc/2);
 				TCOD_color_t bk=TCOD_console_get_back(NULL,xc/2,yc/2);
 				if ( conc >= TCOD_CHAR_SUBP_NW && conc <= TCOD_CHAR_SUBP_SW ) {
-					// merge two subcell chars...
-					// get the flag for the existing cell on root console
+					/* merge two subcell chars... 
+					   get the flag for the existing cell on root console */
 					int bkflag=asciiToFlag[conc - TCOD_CHAR_SUBP_NW ];
 					int xflag = (xc & 1);
 					int yflag = (yc & 1);
-					// get the flag for the current subcell
+					/* get the flag for the current subcell */
 					int credflag = (1+3*yflag) * (xflag+1);
 					if ( (credflag & bkflag) != 0 ) {
-						// the color for this subcell on root console
-						// is foreground, not background
+						/* the color for this subcell on root console
+						   is foreground, not background */
 						bk = TCOD_console_get_fore(NULL,xc/2,yc/2);
 					}
 				}
@@ -1334,7 +1334,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		}
 	}
 
-	// draw and update the particules
+	/* draw and update the particules */
 	j=nbpart;i=firstpart;
 	while (j > 0) {
 		int colidx=(int)(64*(1.0f-pheat[i]));
@@ -1370,7 +1370,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	}
 	partDelay -= elapsed;
 	if ( partDelay < 0.0f && nbpart < MAX_PARTICULES && sparklerad > 2.0f ) {
-		// fire a new particule
+		/* fire a new particule */
 		int lastpart = firstpart;
 		int nb=nbpart;
 		while (nb > 0 ) {
@@ -1386,7 +1386,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		partDelay += 0.1f;
 	}
 	TCOD_image_blit_2x(img,NULL,left,top,0,0,-1,-1);
-	// draw the text
+	/* draw the text */
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
 			int colidx=(int)(64*char_heat[i]);
@@ -1412,12 +1412,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
 		}
 	}
-	// update letters heat
+	/* update letters heat */
 	xstr += elapsed * 4;
 	for (i=0; i < (int)(xstr+0.5f); i++) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}
-	// restore fg color
+	/* restore fg color */
 	TCOD_console_set_foreground_color(NULL,fbackup);
 	if ( xstr <= 2*len ) return false;
 	init2=false;

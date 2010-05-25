@@ -44,4 +44,4 @@ typedef struct {
   bool wheel_down ; /* wheel down event */
 } TCOD_mouse_t;
 
-#endif // _TCOD_MOUSE_TYPES_H
+#endif /* _TCOD_MOUSE_TYPES_H */

@@ -44,10 +44,10 @@ static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool lig
 		map->cells[offset].fov=1;
 	}
 	while (!end) {
-		end = TCOD_line_step(&curx,&cury);	// reached xd,yd
+		end = TCOD_line_step(&curx,&cury);	/* reached xd,yd */
 		offset=curx+cury*map->width;
 		if ( r2 > 0 ) {
-			// check radius
+			/* check radius */
 			int cur_radius=(curx-xo)*(curx-xo)+(cury-yo)*(cury-yo);
 			if ( cur_radius > r2 ) return;
 		}
@@ -56,10 +56,10 @@ static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool lig
 			if ( !blocked && ! map->cells[offset].transparent ) {
 				blocked=true;
 			} else if ( blocked ) {
-					return; // wall
+					return; /* wall */
 			}
 			if ( light_walls || ! blocked ) map->cells[offset].fov=1;
-		} else if (in) return; // ray out of map
+		} else if (in) return; /* ray out of map */
 	}
 }
 
@@ -96,7 +96,7 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	int xo,yo;
 	map_t *m = (map_t *)map;
-	// circular ray casting
+	/* circular ray casting */
 	int xmin=0, ymin=0, xmax=m->width, ymax=m->height;
 	int c;
 	int r2=max_radius*max_radius;
@@ -126,7 +126,7 @@ void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int
 		cast_ray(m,player_x,player_y,xo,yo--,r2,light_walls);
 	}
 	if ( light_walls ) {
-		// post-processing artefact fix
+		/* post-processing artefact fix */
 		TCOD_map_postproc(m,xmin,ymin,player_x,player_y,-1,-1);
 		TCOD_map_postproc(m,player_x,ymin,xmax-1,player_y,1,-1);
 		TCOD_map_postproc(m,xmin,player_y,player_x,ymax-1,-1,1);
@@ -139,8 +139,8 @@ void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int
 static bool ray_blocked(map_t *map,float x, float y, int cx, int cy) {
 	int offset=cx+cy*map->width;
 	float d;
-	if ( (unsigned)offset >= (unsigned)map->nbcells ) return false; // out of the map
-	if ( map->cells[offset].transparent ) return false; // empty cell
+	if ( (unsigned)offset >= (unsigned)map->nbcells ) return false; /* out of the map */
+	if ( map->cells[offset].transparent ) return false; /* empty cell */
 	d=(cx-x+0.5f)*(cx-x+0.5f)+(cy-y+0.5f)*(cy-y+0.5f);
 	return d < (CELL_RADIUS+RAY_RADIUS)*(CELL_RADIUS+RAY_RADIUS);
 }
@@ -172,7 +172,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 		end = (cx==xd && cy==yd);
 		offset=cx+cy*map->width;
 		if ( r2 > 0 ) {
-			// check radius
+			/* check radius */
 			int cur_radius=(int)((curx-xo)*(curx-xo)+(cury-yo)*(cury-yo));
 			if ( cur_radius > r2 ) return;
 		}
@@ -184,7 +184,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 			if ( cury+RAY_RADIUS > cy+0.5f-CELL_RADIUS && ray_blocked(map,curx,cury,cx,cy+1) ) return;
 			if ( cury-RAY_RADIUS < cy-0.5f+CELL_RADIUS && ray_blocked(map,curx,cury,cx,cy-1) ) return;
 			map->cells[offset].fov=1;
-		} else if (in) return; // ray out of map
+		} else if (in) return; /* ray out of map */
 	}
 }
 
@@ -192,7 +192,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	int xo,yo;
 	map_t *m = (map_t *)map;
-	// circular ray casting
+	/* circular ray casting */
 	int xmin=0, ymin=0, xmax=m->width, ymax=m->height;
 	int c;
 	int r2=max_radius*max_radius;
@@ -222,7 +222,7 @@ void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int 
 		cast_rayf(m,player_x,player_y,xo,yo--,r2,light_walls);
 	}
 	if ( light_walls ) {
-		// post-processing artefact fix
+		/* post-processing artefact fix */
 		TCOD_map_postproc(m,xmin,ymin,player_x,player_y,-1,-1);
 		TCOD_map_postproc(m,player_x,ymin,xmax-1,player_y,1,-1);
 		TCOD_map_postproc(m,xmin,player_y,player_x,ymax-1,-1,1);

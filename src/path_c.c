@@ -300,7 +300,6 @@ static void TCOD_path_get_cell(TCOD_path_data_t *path, int *x, int *y, float *di
 	*x=(offset % path->w);
 	*y=(offset / path->w);
 	*distance=path->grid[offset];
-//printf ("get cell : %d %d %g\n",*x,*y,*distance);
 }
 /* fill the grid, starting from the origin until we reach the destination */
 static void TCOD_path_set_cells(TCOD_path_data_t *path) {
@@ -331,11 +330,10 @@ static void TCOD_path_set_cells(TCOD_path_data_t *path) {
 						/* put a new cell in the heap */
 						int offset=cx + cy * path->w;
 						/* A* heuristic : remaining distance */
-						float remaining=sqrtf((cx-path->dx)*(cx-path->dx)+(cy-path->dy)*(cy-path->dy));
+						float remaining=(float)sqrt((cx-path->dx)*(cx-path->dx)+(cy-path->dy)*(cy-path->dy));
 						path->grid[ offset ] = covered;
 						path->heur[ offset ] = covered + remaining;
 						path->prev[ offset ] =  prevdirs[i];
-	//printf ("new cell: %d %d %g (prev %g / rem %g)\n",cx,cy,path->heur[ offset ],distance + dist[i],remaining);
 						TCOD_path_push_cell(path,cx,cy);
 					} else if ( previousCovered > covered ) {
 						/* we found a better path to a cell already in the heap */
@@ -453,7 +451,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
     memset(distances,0xFFFFFFFF,mmax*sizeof(int));
     /* data for root node is known... */
     distances[root] = 0;
-    nodes[index] = root; //set starting note to root
+    nodes[index] = root; /*set starting note to root */
     /* and the loop */
     do {
         /* coordinates of currently processed node */
@@ -472,7 +470,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
                 float userDist = 0.0f;
                 if ( data->map ) dt += dd[i];
                 else {
-                    // distance given by the user callback
+                    /* distance given by the user callback */
                     userDist=data->func(x,y,tx,ty,data->user_data);
                     dt += (unsigned int)(userDist*dd[i]);
                 }
@@ -537,7 +535,7 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 	TCOD_IFNOT(data != NULL) return false;
 	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return false;
 
-	// check that destination is reachable
+	/* check that destination is reachable */
 	if ( dijkstra_get_int_distance(data,x,y) == 0xFFFFFFFF ) return false;
 
     TCOD_list_clear(data->path);
@@ -560,7 +558,7 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
         px += dx[lowest_index];
         py += dy[lowest_index];
     } while (lowest_index != 8);
-	// remove the last step
+	/* remove the last step */
 	TCOD_list_pop(data->path);
 	return true;
 }

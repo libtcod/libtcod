@@ -98,34 +98,34 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	* adjustment), then you can read the entire image (including
 	* pixels) into the info structure with this call:
 	*/
-	//png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, png_voidp_NULL);
+	/*png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, png_voidp_NULL); */
 
-	// get info about the image
+	/* get info about the image */
 	png_read_info(png_ptr,info_ptr);
 	png_get_IHDR(png_ptr,info_ptr,&png_width,&png_height,&png_bit_depth,&png_color_type,
 		&png_interlace_type,NULL,NULL);
 
-	// convert the image to a format suitable with libtcod
-	png_set_strip_16(png_ptr); // 16 bits channels => 8 bits channels
-	png_set_packing(png_ptr); // 1,2,4 bits depth => 24/32 bits depth
-	if ( png_color_type == PNG_COLOR_TYPE_GRAY ) png_set_expand(png_ptr); // grayscale => color
+	/* convert the image to a format suitable with libtcod */
+	png_set_strip_16(png_ptr); /* 16 bits channels => 8 bits channels */
+	png_set_packing(png_ptr); /* 1,2,4 bits depth => 24/32 bits depth */
+	if ( png_color_type == PNG_COLOR_TYPE_GRAY ) png_set_expand(png_ptr); /* grayscale => color */
 	if ( png_color_type == PNG_COLOR_TYPE_GRAY_ALPHA ) png_set_gray_to_rgb(png_ptr);
 
-	// update the image information
+	/* update the image information */
 	png_read_update_info(png_ptr,info_ptr);
 	png_get_IHDR(png_ptr,info_ptr,&png_width,&png_height,&png_bit_depth,&png_color_type,
 		&png_interlace_type,NULL,NULL);
 
-	// create the SDL surface
+	/* create the SDL surface */
 	bitmap=TCOD_sys_get_surface(png_width,png_height,info_ptr->channels == 4);
 
-	// get row data
+	/* get row data */
 	row_pointers=(png_bytep *)malloc(sizeof(png_bytep)*png_height);
 	for (y=0; y<  png_height; y++ ) {
 		row_pointers[y]=(png_bytep)(Uint8 *)(bitmap->pixels) + y * bitmap->pitch;
 	}
 
-	// read png data directly into the SDL surface
+	/* read png data directly into the SDL surface */
 	png_read_image(png_ptr,row_pointers);
 
 	/* clean up after the read, and free any memory allocated - REQUIRED */
@@ -176,12 +176,12 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	png_set_IHDR(png_ptr,info_ptr,surf->w, surf->h,
 		8,PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-	// get row data
+	/* get row data */
 	row_pointers=(png_bytep *)malloc(sizeof(png_bytep)*surf->h);
 
 	for (y=0; y<  surf->h; y++ ) {
-//		TODO : we should be able to use directly the surface data...
-//		row_pointers[y]=(png_bytep)(Uint8 *)(surf->pixels) + y * surf->pitch;
+/*		TODO : we should be able to use directly the surface data... */
+/*		row_pointers[y]=(png_bytep)(Uint8 *)(surf->pixels) + y * surf->pitch; */
 		row_pointers[y]=(png_bytep)malloc(sizeof(png_byte)*surf->w*3);
 		for (x=0; x < surf->w; x++ ) {
 			Uint8 *pixel=(Uint8 *)(surf->pixels) + y * surf->pitch + x * surf->format->BytesPerPixel;

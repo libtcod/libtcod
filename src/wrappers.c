@@ -94,20 +94,6 @@ float TCOD_color_get_value_ (colornum_t c) {
   return TCOD_color_get_value(int_to_color(c));
 }
 
-/* void TCOD_console_set_custom_font_wrapper(const char *fontFile, */
-/* 					  int char_width, int char_height, */
-/* 					  int flags) */
-/* /\* int nb_char_horiz, */
-/*                        int nb_char_vertic, bool chars_by_row, */
-/*                        colornum_t key_color) *\/ */
-/* { */
-/*   TCOD_console_set_custom_font (fontFile, */
-/* 				char_width, char_height, nb_char_horiz, */
-/* 				nb_char_vertic, chars_by_row, */
-/* 				int_to_color(key_color)); */
-/* } */
-
-
 colornum_t TCOD_console_get_background_color_wrapper(TCOD_console_t con)
 {
   return color_to_int(TCOD_console_get_background_color (con));
@@ -401,13 +387,13 @@ void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h,
 		va_start(ap,fmt);
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
-		title[w-3]=0; // truncate if needed
+		title[w-3]=0; /* truncate if needed */
 		xs = x + (w-strlen(title)-2)/2;
-		tmp=dat->back; // swap colors
+		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
 		TCOD_console_print_ex(con,xs,y,TCOD_BKGND_SET,TCOD_LEFT," %s ",title);
-		tmp=dat->back; // swap colors
+		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
 	}

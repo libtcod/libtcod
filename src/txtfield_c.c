@@ -72,11 +72,13 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
     data->con = TCOD_console_new(w,h);
 	data->sel_start = MAX_INT;
 	data->sel_end = -1;
-//	if (! data->multiline ) {
-//		data->max = MIN(w - data->textx,data->max);
-//	} else {
-//		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
-//	}
+	/*
+	if (! data->multiline ) {
+		data->max = MIN(w - data->textx,data->max);
+	} else {
+		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
+	}
+	*/
     if (max_chars && max_chars > 0) data->max = max_chars;
     else data->max = data->w * data->h;
     data->input_continue = true;
@@ -229,7 +231,7 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 			cy=MAX(data->texty,cy);
 			if ( cy == data->texty) cx = MAX(data->textx,cx);
 		}
-		// find the right line
+		/* find the right line */
 		while ( *ptr && cury < cy && cury < data->h ) {
 			if (*ptr == '\n' || curx == data->w-1) {
 				curx=0;cury++;
@@ -239,7 +241,7 @@ static void set_cursor_pos(text_t *data, int cx, int cy, bool clamp) {
 		}
 		if ( cury >= data->h ) return;
 		if ( cury == cy ) {
-			// check if cx can be reached
+			/* check if cx can be reached */
 			while ( *ptr && curx < cx && *ptr != '\n') {
 				ptr++;
 				curx++;

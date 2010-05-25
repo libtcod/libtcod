@@ -63,7 +63,7 @@ typedef struct {
 	char *buf;
 	char *filename;
 	char *last_javadoc_comment;
-	// private stuff
+	/* private stuff */
 	int nb_symbols, nb_keywords, flags;
 	char symbols[ TCOD_LEX_MAX_SYMBOLS][ TCOD_LEX_SYMBOL_SIZE ], 
 	keywords[ TCOD_LEX_MAX_KEYWORDS ][ TCOD_LEX_KEYWORD_SIZE ];
@@ -72,7 +72,7 @@ typedef struct {
 	const char *stringDelim;
 	bool javadoc_read;
 	bool allocBuf;
-	bool savept; // is this object a savepoint (no free in destructor)	
+	bool savept; /* is this object a savepoint (no free in destructor) */	
 } TCOD_lex_t;
 
 TCODLIB_API TCOD_lex_t *TCOD_lex_new_intern();

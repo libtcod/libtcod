@@ -28,28 +28,28 @@
 #ifndef _TCODLIB_H
 #define _TCODLIB_H
 
-// uncomment to disable unicode support
-//#define NO_UNICODE
+/* uncomment to disable unicode support */
+/*#define NO_UNICODE */
 
-// uncomment to disable opengl support
-//#define NO_OPENGL
+/* uncomment to disable opengl support */
+/*#define NO_OPENGL */
 
-// os identification
-// TCOD_WINDOWS : OS is windows
-// TCOD_LINUX : OS is Linux
-// TCOD_MACOSX : OS is Mac OS X
+/* os identification
+   TCOD_WINDOWS : OS is windows
+   TCOD_LINUX : OS is Linux
+   TCOD_MACOSX : OS is Mac OS X */
 
-// compiler identification
-// TCOD_VISUAL_STUDIO : compiler is Microsoft Visual Studio
-// TCOD_MINGW32 : compiler is Mingw32
-// TCOD_GCC : compiler is gcc/g++
+/* compiler identification
+   TCOD_VISUAL_STUDIO : compiler is Microsoft Visual Studio
+   TCOD_MINGW32 : compiler is Mingw32
+   TCOD_GCC : compiler is gcc/g++ */
 
-// word size
-// TCOD_64BITS : 64 bits OS
-// TCOD_WIN64 : 64 bits Windows
-// TCOD_WIN32 : 32 bits Windows
-// TCOD_LINUX64 : 64 bits Linux
-// TCOD_LINUX32 : 32 bits Linux
+/* word size
+   TCOD_64BITS : 64 bits OS
+   TCOD_WIN64 : 64 bits Windows
+   TCOD_WIN32 : 32 bits Windows
+   TCOD_LINUX64 : 64 bits Linux
+   TCOD_LINUX32 : 32 bits Linux */
 
 #if defined( _MSC_VER )
 #  define TCOD_VISUAL_STUDIO
@@ -78,27 +78,27 @@
 #  define TCOD_GCC
 #endif
 
-// unicode rendering functions support
+/* unicode rendering functions support */
 #ifndef NO_UNICODE
 #include <wchar.h>
 #endif
 
-// This is a hack. SDL by default want you to rename your main statement, and insert it's own first
-// It does that to handle some init code. However, libtcod handles that for you. If we did this
-// wrappers like libtcod-net would be hosed, since there is no main statement there.
+/* This is a hack. SDL by default want you to rename your main statement, and insert it's own first
+   It does that to handle some init code. However, libtcod handles that for you. If we did this
+   wrappers like libtcod-net would be hosed, since there is no main statement there. */
 #ifdef TCOD_MACOSX 
 #define _SDL_main_h
 #include "SDL/SDL.h"
 #endif
 
-// base types
+/* base types */
 typedef unsigned char uint8;
 typedef char int8;
 typedef unsigned short uint16;
 typedef short int16;
 typedef unsigned int uint32;
 typedef int int32;
-// int with the same size as a pointer (32 or 64 depending on OS)
+/* int with the same size as a pointer (32 or 64 depending on OS) */
 typedef long intptr;
 typedef unsigned long uintptr;
 
@@ -106,7 +106,7 @@ typedef unsigned long uintptr;
 #define TCOD_STRVERSION "1.5.1"
 #define TCOD_TECHVERSION 0x01050100
 
-// bool support for C
+/* bool support for C */
 #ifndef __cplusplus
 #ifndef bool
 typedef uint8 bool;
@@ -114,11 +114,11 @@ typedef uint8 bool;
 #define true ((bool)1)
 #endif
 #else
-// in C++ all C functions prototype should use uint8 instead of bool
+/* in C++ all C functions prototypes should use uint8 instead of bool */
 #define bool uint8
 #endif
 
-// DLL export
+/* DLL export */
 #ifdef TCOD_WINDOWS
 #ifdef LIBTCOD_EXPORTS
 #define TCODLIB_API __declspec(dllexport)
@@ -133,11 +133,14 @@ typedef uint8 bool;
 extern "C" {
 #endif
 
-#ifdef TCOD_VISUAL_STUDIO
-#define strdup _strdup
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#endif
+/* ansi C lacks support for those functions */
+#define strdup(x) TCOD_strdup(x)
+#define strcasecmp(x,y) TCOD_strcasecmp(x,y)
+#define strncasecmp(x,y,n) TCOD_strncasecmp(x,y,n)
+TCODLIB_API char *TCOD_strdup(const char *s);
+TCODLIB_API int TCOD_strcasecmp(const char *s1, const char *s2);
+TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
+
 #if defined(TCOD_WINDOWS)
 char *strcasestr (const char *haystack, const char *needle);
 #endif

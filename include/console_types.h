@@ -110,7 +110,7 @@ typedef struct {
 } TCOD_key_t;
 
 typedef enum {
-	// single walls
+	/* single walls */
 	TCOD_CHAR_HLINE=196,
 	TCOD_CHAR_VLINE=179,
 	TCOD_CHAR_NE=191,
@@ -122,7 +122,7 @@ typedef enum {
 	TCOD_CHAR_TEEN=193,
 	TCOD_CHAR_TEES=194,
 	TCOD_CHAR_CROSS=197,
-	// double walls
+	/* double walls */
 	TCOD_CHAR_DHLINE=205,
 	TCOD_CHAR_DVLINE=186,
 	TCOD_CHAR_DNE=187,
@@ -134,29 +134,29 @@ typedef enum {
 	TCOD_CHAR_DTEEN=202,
 	TCOD_CHAR_DTEES=203,
 	TCOD_CHAR_DCROSS=206,
-	// blocks
+	/* blocks */
 	TCOD_CHAR_BLOCK1=176,
 	TCOD_CHAR_BLOCK2=177,
 	TCOD_CHAR_BLOCK3=178,
-	// arrows
+	/* arrows */
 	TCOD_CHAR_ARROW_N=24,
 	TCOD_CHAR_ARROW_S=25,
 	TCOD_CHAR_ARROW_E=26,
 	TCOD_CHAR_ARROW_W=27,
-	// arrows without tail
+	/* arrows without tail */
 	TCOD_CHAR_ARROW2_N=30,
 	TCOD_CHAR_ARROW2_S=31,
 	TCOD_CHAR_ARROW2_E=16,
 	TCOD_CHAR_ARROW2_W=17,
-	// double arrows
+	/* double arrows */
 	TCOD_CHAR_DARROW_H=29,
 	TCOD_CHAR_DARROW_V=18,
-	// GUI stuff
+	/* GUI stuff */
 	TCOD_CHAR_CHECKBOX_UNSET=224,
 	TCOD_CHAR_CHECKBOX_SET=225,
 	TCOD_CHAR_RADIO_UNSET=9,
 	TCOD_CHAR_RADIO_SET=10,
-	// sub-pixel resolution kit
+	/* sub-pixel resolution kit */
 	TCOD_CHAR_SUBP_NW=226,
 	TCOD_CHAR_SUBP_NE=227,
 	TCOD_CHAR_SUBP_N=228,
@@ -164,7 +164,7 @@ typedef enum {
 	TCOD_CHAR_SUBP_DIAG=230,
 	TCOD_CHAR_SUBP_E=231,
 	TCOD_CHAR_SUBP_SW=232,
-	// miscellaneous
+	/* miscellaneous */
 	TCOD_CHAR_SMILIE = 1,
 	TCOD_CHAR_SMILIE_INV = 2,
 	TCOD_CHAR_HEART = 3,
@@ -199,7 +199,7 @@ typedef enum {
 	TCOD_CHAR_POW3 = 252,
 	TCOD_CHAR_POW2 = 253,
 	TCOD_CHAR_BULLET_SQUARE = 254,
-	// diacritics
+	/* diacritics */
 } TCOD_chars_t;
 
 typedef enum {
@@ -236,7 +236,7 @@ typedef enum {
 	TCOD_KEY_RELEASED=2,
 } TCOD_key_status_t;
 
-// custom font flags
+/* custom font flags */
 typedef enum {
 	TCOD_FONT_LAYOUT_ASCII_INCOL=1,
 	TCOD_FONT_LAYOUT_ASCII_INROW=2,
@@ -258,4 +258,4 @@ typedef enum {
 	TCOD_CENTER 
 } TCOD_alignment_t;
 
-#endif // _TCOD_CONSOLE_TYPES_H
+#endif /* _TCOD_CONSOLE_TYPES_H */

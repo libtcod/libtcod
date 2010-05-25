@@ -31,17 +31,17 @@
 #include <string.h>
 
 typedef struct _ray_data_t {
-	int xloc,yloc; // position
-	int xob,yob; // obscurity vector
-	int xerr,yerr; // bresenham error
-	struct _ray_data_t * xinput, * yinput; // offset of input rays
-	bool added; // already in the fov
-	bool ignore; // non visible. don't bother processing it
+	int xloc,yloc; /* position */
+	int xob,yob; /* obscurity vector */
+	int xerr,yerr; /* bresenham error */
+	struct _ray_data_t * xinput, * yinput; /* offset of input rays */
+	bool added; /* already in the fov */
+	bool ignore; /* non visible. don't bother processing it */
 } ray_data_t;
 
-static int origx,origy; // fov origin
-static ray_data_t **raymap; // result rays
-static ray_data_t *raymap2; // temporary rays
+static int origx,origy; /* fov origin */
+static ray_data_t **raymap; /* result rays */
+static ray_data_t *raymap2; /* temporary rays */
 static int perimidx;
 
 static ray_data_t *new_ray(map_t *m,int x, int y) {
@@ -164,7 +164,7 @@ void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int p
 		} else ray->ignore=true;
 	}
 
-	// set fov data
+	/* set fov data */
 	c=m->cells;
 	r=raymap;
 	nbcells=m->nbcells;
@@ -183,7 +183,7 @@ void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int p
 	}
 	m->cells[origx+origy*m->width].fov=1;
 
-	// light walls
+	/* light walls */
 	if ( light_walls ) {
 		int xmin=0, ymin=0, xmax=m->width, ymax=m->height;
 		if ( max_radius > 0 ) {

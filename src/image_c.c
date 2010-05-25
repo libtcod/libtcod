@@ -274,7 +274,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	if ( scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	TCOD_image_get_size(image,&width,&height);
 	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f && x-((int)x) == 0.0f && y-((int)y)==0.0f) {
-		// clip the image
+		/* clip the image */
 		int ix = (int)(x - width*0.5f);
 		int iy = (int)(y - height*0.5f);
 		int minx=MAX(ix,0);
@@ -297,34 +297,34 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	} else {
 		float iw=width/2*scalex;
 		float ih=height/2*scaley;
-		// get the coordinates of the image corners in the console
-		float newx_x = cosf(angle);
-		float newx_y = -sinf(angle);
+		/* get the coordinates of the image corners in the console */
+		float newx_x = (float)cos(angle);
+		float newx_y = -(float)sin(angle);
 		float newy_x = newx_y;
 		float newy_y = -newx_x;
-		float x0,y0,x1,y1,x2,y2,x3,y3; // image corners coordinates
-		int rx,ry,rw,rh; // rectangular area in the console
+		float x0,y0,x1,y1,x2,y2,x3,y3; /* image corners coordinates */
+		int rx,ry,rw,rh; /* rectangular area in the console */
 		int cx,cy;
 		int minx,miny,maxx,maxy;
 		float invscalex,invscaley;
-		// 0 = P - w/2 x' +h/2 y'
+		/* 0 = P - w/2 x' +h/2 y' */
 		x0 = x-iw*newx_x+ih*newy_x;
 		y0 = y-iw*newx_y+ih*newy_y;
-		// 1 = P + w/2 x' + h/2 y'
+		/* 1 = P + w/2 x' + h/2 y' */
 		x1 = x+iw*newx_x+ih*newy_x;
 		y1 = y+iw*newx_y+ih*newy_y;
-		// 2 = P + w/2 x' - h/2 y'
+		/* 2 = P + w/2 x' - h/2 y' */
 		x2 = x+iw*newx_x-ih*newy_x;
 		y2 = y+iw*newx_y-ih*newy_y;
-		// 3 = P - w/2 x' - h/2 y'
+		/* 3 = P - w/2 x' - h/2 y' */
 		x3 = x-iw*newx_x-ih*newy_x;
 		y3 = y-iw*newx_y-ih*newy_y;
-		// get the affected rectangular area in the console
+		/* get the affected rectangular area in the console */
 		rx=(int)(MIN(MIN(x0,x1),MIN(x2,x3)));
 		ry=(int)(MIN(MIN(y0,y1),MIN(y2,y3)));
 		rw=(int)(MAX(MAX(x0,x1),MAX(x2,x3))) - rx;
 		rh=(int)(MAX(MAX(y0,y1),MAX(y2,y3))) - ry;
-		// clip it
+		/* clip it */
 		minx=MAX(rx,0);
 		miny=MAX(ry,0);
 		maxx=MIN(rx+rw,TCOD_console_get_width(console));
@@ -335,7 +335,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 			for (cy=miny; cy < maxy; cy ++) {
 				float ix,iy;
 				TCOD_color_t col;
-				// map the console pixel to the image world
+				/* map the console pixel to the image world */
 				ix = (iw+ (cx-x) * newx_x + (cy-y) *(-newy_x))*invscalex;
 				iy = (ih + (cx-x) * (newx_y) - (cy-y)*newy_y)*invscaley;
 				col = TCOD_image_get_pixel(image,(int)(ix),(int)(iy));
@@ -455,7 +455,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 	newimg=(image_data_t *)TCOD_image_new(neww,newh);
 
 	if ( neww < width && newh < height ) {
-		// scale down image, using supersampling
+		/* scale down image, using supersampling */
 		for (py = 0; py < newh; py++ ) {
 			float y0 = (float)(py) * height / newh;
 			float y0floor = (float)floor(y0);
@@ -481,7 +481,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 
 				float r=0,g=0,b=0,sumweight=0.0f;
 				int srcx,srcy;
-				// left & right fractional edges
+				/* left & right fractional edges */
 				for (srcy=(int)(y0+1); srcy < (int)y1; srcy++) {
 					TCOD_color_t col_left=TCOD_image_get_pixel(image,ix0,srcy);
 					TCOD_color_t col_right=TCOD_image_get_pixel(image,ix1,srcy);
@@ -490,7 +490,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 					b += col_left.b * x0weight + col_right.b * x1weight;
 					sumweight += x0weight+x1weight;
 				}
-				// top & bottom fractional edges
+				/* top & bottom fractional edges */
 				for (srcx = (int)(x0+1); srcx < (int)x1; srcx++) {
 					TCOD_color_t col_top=TCOD_image_get_pixel(image,srcx,iy0);
 					TCOD_color_t col_bottom=TCOD_image_get_pixel(image,srcx,iy1);
@@ -499,7 +499,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 					b += col_top.b * y0weight + col_bottom.b * y1weight;
 					sumweight += y0weight+y1weight;
 				}
-				// center
+				/* center */
 				for (srcy=(int)(y0+1); srcy < (int)y1; srcy++) {
 					for (srcx = (int)(x0+1); srcx < (int)x1; srcx++) {
 						TCOD_color_t col=TCOD_image_get_pixel(image,srcx,srcy);
@@ -509,7 +509,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 						sumweight += 1.0f;
 					}
 				}
-				// corners
+				/* corners */
 				col=TCOD_image_get_pixel(image,ix0,iy0);
 				r += col.r * (x0weight * y0weight);
 				g += col.g * (x0weight * y0weight);
@@ -541,7 +541,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 			}
 		}
 	} else {
-		// scale up image, using nearest neightbor
+		/* scale up image, using nearest neightbor */
 		for (py = 0; py < newh; py++ ) {
 			int srcy = py * height / newh;
 			for (px = 0; px < neww; px++ ) {
@@ -552,7 +552,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 		}
 	}
 
-	// destroy old image
+	/* destroy old image */
 	if ( img->mipmaps ) {
 		int i;
 		for ( i=0; i < img->nb_mipmaps; i++) {
@@ -563,7 +563,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 	if ( img->sys_img ) {
 		TCOD_sys_delete_bitmap(img->sys_img);
 	}
-	// update img with the new image content
+	/* update img with the new image content */
 	img->mipmaps = newimg->mipmaps;
 	img->sys_img=NULL;
 	img->nb_mipmaps=newimg->nb_mipmaps;
@@ -571,7 +571,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 }
 
 
-// distance between two colors
+/* distance between two colors */
 int rgbdist(const TCOD_color_t *c1,const TCOD_color_t *c2) {
 	int dr=(int)(c1->r)-c2->r;
 	int dg=(int)(c1->g)-c2->g;
@@ -580,7 +580,7 @@ int rgbdist(const TCOD_color_t *c1,const TCOD_color_t *c2) {
 }
 
 void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, int *ascii) {
-	// adapted from Jeff Lait's code posted on r.g.r.d
+	/* adapted from Jeff Lait's code posted on r.g.r.d */
 	int flag=0;
 	/*
 		pixels have following flag values :
@@ -596,28 +596,28 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 	int weight[2] = { 0, 0 };
 	int i;
 
-	// First colour trivial.
+	/* First colour trivial. */
 	palette[0] = desired[0];
 
-	// Ignore all duplicates...
+	/* Ignore all duplicates... */
 	for (i = 1; i < 4; i++) {
 		if (desired[i].r != palette[0].r || desired[i].g != palette[0].g || desired[i].b != palette[0].b)
 		break;
 	}
 
-	// All the same.
+	/* All the same. */
 	if (i == 4) {
 		*nbCols=1;
 		return;
 	}
 	weight[0] = i;
 
-	// Found a second colour...
+	/* Found a second colour... */
 	palette[1] = desired[i];
 	weight[1] = 1;
 	flag |= 1<<(i-1);
 	*nbCols = 2;
-	// remaining colours
+	/* remaining colours */
 	i++;
 	while (i< 4) {
 		if (desired[i].r == palette[0].r && desired[i].g == palette[0].g && desired[i].b == palette[0].b) {
@@ -626,18 +626,18 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 			flag |= 1<<(i-1);
 			weight[1]++;
 		} else {
-			// Bah, too many colours,
-			// merge the two nearest
+			/* Bah, too many colours, */
+			/* merge the two nearest */
 			int dist0i=rgbdist(&desired[i], &palette[0]);
 			int dist1i=rgbdist(&desired[i], &palette[1]);
 			int dist01=rgbdist(&palette[0],&palette[1]);
 			if ( dist0i < dist1i ) {
 				if ( dist0i <= dist01 ) {
-					// merge 0 and i
+					/* merge 0 and i */
 					palette[0]=TCOD_color_lerp(desired[i],palette[0],weight[0]/(1.0f+weight[0]));
 					weight[0]++;
 				} else {
-					// merge 0 and 1
+					/* merge 0 and 1 */
 					palette[0]=TCOD_color_lerp(palette[0],palette[1],(float)(weight[1])/(weight[0]+weight[1]));
 					weight[0]++;
 					palette[1]=desired[i];
@@ -645,12 +645,12 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 				}
 			} else {
 				if ( dist1i <= dist01 ) {
-					// merge 1 and i
+					/* merge 1 and i */
 					palette[1]=TCOD_color_lerp(desired[i],palette[1],weight[1]/(1.0f+weight[1]));
 					weight[1]++;
 					flag|=1<<(i-1);
 				} else {
-					// merge 0 and 1
+					/* merge 0 and 1 */
 					palette[0]=TCOD_color_lerp(palette[0],palette[1],(float)(weight[1])/(weight[0]+weight[1]));
 					weight[0]++;
 					palette[1]=desired[i];
@@ -677,7 +677,7 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	if ( w == -1 ) w=width;
 	if ( h == -1 ) h=height;
 
-	// check that the sx,sy/w,h rectangle is inside the image
+	/* check that the sx,sy/w,h rectangle is inside the image */
 	TCOD_ASSERT(sx >= 0 && sy >= 0 && sx+w <= width && sy+h <= height);
 	TCOD_IFNOT(w > 0 && h > 0) return;
 
@@ -688,14 +688,14 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 
 	maxx=dx+w/2 <= dat->w ? w : (dat->w-dx)*2;
 	maxy=dy+h/2 <= dat->h ? h : (dat->h-dy)*2;
-	// check that the image is not blitted outside the console
+	/* check that the image is not blitted outside the console */
 	TCOD_IFNOT(dx+maxx/2 >= 0 && dy+maxy/2 >= 0 && dx < dat->w && dy < dat->h) return;
 	maxx+=sx;
 	maxy+=sy;
 
 	for (cx=sx; cx < maxx; cx += 2) {
 		for (cy=sy; cy < maxy; cy += 2) {
-			// get the 2x2 super pixel colors from the image
+			/* get the 2x2 super pixel colors from the image */
 			int conx=dx+(cx-sx)/2;
 			int cony=dy+(cy-sy)/2;
 			TCOD_color_t consoleBack=TCOD_console_get_back(con,conx,cony);
@@ -717,10 +717,10 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 				if ( img->has_key_color && grid[3].r == img->key_color.r  && grid[3].g == img->key_color.g && grid[3].b == img->key_color.b)
 					grid[3]=consoleBack;
 			} else grid[3]=consoleBack;
-			// analyse color, posterize, get pattern
+			/* analyse color, posterize, get pattern */
 			getPattern(grid,cols,&nbCols,&ascii);
 			if ( nbCols == 1 ) {
-				// single color
+				/* single color */
 				TCOD_console_set_back(con,conx,cony,cols[0],TCOD_BKGND_SET);
 				TCOD_console_set_char(con,conx,cony,' ');
 			} else {
@@ -729,7 +729,7 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 					TCOD_console_set_foreground_color(con,cols[1]);
 					TCOD_console_put_char(con,conx,cony,ascii,TCOD_BKGND_SET);
 				} else {
-					// negative ascii code means we need to invert back/fore colors
+					/* negative ascii code means we need to invert back/fore colors */
 					TCOD_console_set_background_color(con,cols[1]);
 					TCOD_console_set_foreground_color(con,cols[0]);
 					TCOD_console_put_char(con,conx,cony,-ascii,TCOD_BKGND_SET);

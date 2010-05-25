@@ -42,44 +42,44 @@ TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 
-// filesystem stuff
+/* filesystem stuff */
 TCODLIB_API bool TCOD_sys_create_directory(const char *path);
 TCODLIB_API bool TCOD_sys_delete_file(const char *path);
 TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
 TCODLIB_API bool TCOD_sys_is_directory(const char *path);
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
 
-// clipboard
+/* clipboard */
 TCODLIB_API void TCOD_sys_clipboard_set(const char *value);
 TCODLIB_API char *TCOD_sys_clipboard_get();
 
-// thread stuff
+/* thread stuff */
 typedef void *TCOD_thread_t;
 typedef void *TCOD_semaphore_t;
 typedef void *TCOD_mutex_t;
 typedef void *TCOD_cond_t;
-// threads
+/* threads */
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data);
 TCODLIB_API void TCOD_thread_delete(TCOD_thread_t th);
 TCODLIB_API int TCOD_sys_get_num_cores();
 TCODLIB_API void TCOD_thread_wait(TCOD_thread_t th);
-// mutex
+/* mutex */
 TCODLIB_API TCOD_mutex_t TCOD_mutex_new();
 TCODLIB_API void TCOD_mutex_in(TCOD_mutex_t mut);
 TCODLIB_API void TCOD_mutex_out(TCOD_mutex_t mut);
 TCODLIB_API void TCOD_mutex_delete(TCOD_mutex_t mut);
-// semaphore
+/* semaphore */
 TCODLIB_API TCOD_semaphore_t TCOD_semaphore_new(int initVal);
 TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_delete( TCOD_semaphore_t sem);
-// condition
+/* condition */
 TCODLIB_API TCOD_cond_t TCOD_condition_new();
 TCODLIB_API void TCOD_condition_signal(TCOD_cond_t sem);
 TCODLIB_API void TCOD_condition_broadcast(TCOD_cond_t sem);
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);
 TCODLIB_API void TCOD_condition_delete( TCOD_cond_t sem);
-// SDL renderer callback
+/* SDL renderer callback */
 typedef void (*SDL_renderer_t) (void *sdl_surface);
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #endif

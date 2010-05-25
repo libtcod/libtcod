@@ -31,11 +31,11 @@
 typedef bool (*TCOD_line_listener_t) (int x, int y);
 
 TCODLIB_API void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo);
-TCODLIB_API bool TCOD_line_step(int *xCur, int *yCur); // advance one step. returns true if we reach destination
-// atomic callback function. Stops when the callback returns false
+TCODLIB_API bool TCOD_line_step(int *xCur, int *yCur); /* advance one step. returns true if we reach destination */
+/* atomic callback function. Stops when the callback returns false */
 TCODLIB_API bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener);
 
-// thread-safe versions
+/* thread-safe versions */
 typedef struct {
 	int stepx;
 	int stepy;

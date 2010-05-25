@@ -28,10 +28,40 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include "libtcod.h"
 
 #define MAX_JAVADOC_COMMENT_SIZE 16384
+
+/* damn ANSI C does not know strdup, strcasecmp, strncasecmp */
+char *TCOD_strdup(const char *s) {
+	uint32 l=strlen(s)+1;
+	char *ret=malloc(sizeof(char)*l);
+	memcpy(ret,s,sizeof(char)*l);
+	return ret;
+}
+
+int TCOD_strcasecmp(const char *s1, const char *s2) {
+	unsigned char c1,c2;
+	do {
+		c1 = *s1++;
+		c2 = *s2++;
+		c1 = (unsigned char) tolower( (unsigned char) c1);
+		c2 = (unsigned char) tolower( (unsigned char) c2);
+	} while((c1 == c2) && (c1 != '\0'));
+	return (int) c1-c2;
+} 
+
+int TCOD_strncasecmp(const char *s1, const char *s2, size_t n) {
+	unsigned char c1,c2;
+	do {
+		c1 = *s1++;
+		c2 = *s2++;
+		c1 = (unsigned char) tolower( (unsigned char) c1);
+		c2 = (unsigned char) tolower( (unsigned char) c2);
+		n--;
+	} while((c1 == c2) && (c1 != '\0') && n > 0);
+	return (int) c1-c2;
+} 
 
 static const char * TCOD_LEX_names[] = {
   "unknown token",
@@ -171,14 +201,13 @@ void TCOD_lex_set_data_buffer(TCOD_lex_t *lex,char *dat)
 
 bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
 {
-	struct stat _st;
     FILE *f;
     char *ptr;
     if ( ! _filename ) {
     	TCOD_last_error = (char *)"Lex.setDatafile(NULL) called";
     	return false;
     }
-    f = fopen( _filename, "r" );
+    f = fopen( _filename, "rb" );
     if ( f == NULL )
     {
 		static char msg[255];
@@ -186,16 +215,12 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
 		TCOD_last_error=strdup(msg);
 		return false;
     }
-    if ( stat( _filename, &_st ) == -1 )
-    {
-		static char msg[255];
-		fclose(f);
-		sprintf(msg,"Cannot stat '%s'", _filename );
-		TCOD_last_error=strdup(msg);
-		return false;
-    }
-
-    lex->buf = (char*)calloc(sizeof(char),(_st.st_size + 1));
+	fseek(f, 0, SEEK_END);
+   	long size = ftell(f);
+   	fclose(f);
+    f = fopen( _filename, "r" );
+    
+    lex->buf = (char*)calloc(sizeof(char),(size + 1));
     lex->filename = strdup( _filename );
     if ( lex->buf == NULL || lex->filename == NULL )
     {
@@ -208,8 +233,8 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
 		return false;
     }
 	ptr=lex->buf;
-	// can't rely on size to read because of MS/DOS dumb CR/LF handling
-	while ( fgets(ptr, _st.st_size,f ) )
+	/* can't rely on size to read because of MS/DOS dumb CR/LF handling */
+	while ( fgets(ptr, size,f ) )
 	{
 		ptr += strlen(ptr);
 	}
@@ -229,7 +254,7 @@ void TCOD_lex_get_new_line(TCOD_lex_t *lex)
 }
 
 #ifdef TCOD_VISUAL_STUDIO
-#pragma warning(disable:4127) // conditional expression is constant
+#pragma warning(disable:4127) /* conditional expression is constant */
 #endif
 
 int TCOD_lex_get_space(TCOD_lex_t *lex)
@@ -243,7 +268,7 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 			if (c=='\n')
 				TCOD_lex_get_new_line(lex);
 			else if (c == 0)
-				return TCOD_LEX_EOF;		// end of file
+				return TCOD_LEX_EOF;		/* end of file */
 			else lex->pos++;
 		}
 		if ( lex->simpleCmt && strncmp(lex->pos, lex->simpleCmt, strlen(lex->simpleCmt)) == 0 )
@@ -289,13 +314,13 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 				dst = lex->last_javadoc_comment;
 				while ( src < end )
 				{
-					// skip heading spaces
+					/* skip heading spaces */
 					while ( src < end && isspace(*src) && *src != '\n') src ++;
-					// copy comment line
+					/* copy comment line */
 					while ( src < end && *src != '\n' ) *dst++ = *src++;
 					if ( *src == '\n' ) *dst++ = *src++;
 				}
-				// remove trailing spaces
+				/* remove trailing spaces */
 				while ( dst > lex->last_javadoc_comment && isspace (*(dst-1)) ) dst --;
 				*dst = '\0';
 				lex->javadoc_read=false;
@@ -338,7 +363,7 @@ static bool TCOD_lex_get_special_char(TCOD_lex_t *lex, char *c) {
 		break;
 		case 'x' :
 		{
-			// hexadecimal value "\x80"
+			/* hexadecimal value "\x80" */
 			int value=0;
 			bool hasHex=false;
 			*c = *(++(lex->pos) );
@@ -365,7 +390,7 @@ static bool TCOD_lex_get_special_char(TCOD_lex_t *lex, char *c) {
 		case '6' :
 		case '7' :
 		{
-			// octal value "\200"
+			/* octal value "\200" */
 			int value=0;
 			while ( *c >= '0' && *c <= '7' ) {
 				value <<= 3;
@@ -417,7 +442,7 @@ int TCOD_lex_get_string(TCOD_lex_t *lex)
 }
 
 #ifdef TCOD_VISUAL_STUDIO
-#pragma warning(default:4127) // conditional expression is constant
+#pragma warning(default:4127) /* conditional expression is constant */
 #endif
 
 int TCOD_lex_get_number(TCOD_lex_t *lex)

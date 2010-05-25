@@ -27,10 +27,10 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
-// wrappers to ease other languages integration
+/* wrappers to ease other languages integration */
 typedef unsigned int colornum_t;
 
-// color module
+/* color module */
 TCODLIB_API bool TCOD_color_equals_wrapper (colornum_t c1, colornum_t c2);
 TCODLIB_API colornum_t TCOD_color_add_wrapper (colornum_t c1,
 						 colornum_t c2);
@@ -48,7 +48,7 @@ TCODLIB_API float TCOD_color_get_hue_ (colornum_t c);
 TCODLIB_API float TCOD_color_get_saturation_ (colornum_t c);
 TCODLIB_API float TCOD_color_get_value_ (colornum_t c);
 
-// console module
+/* console module */
 /* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile,
                         int char_width, int char_height, int nb_char_horiz,
                         int nb_char_vertic, bool chars_by_row,
@@ -102,7 +102,7 @@ TCODLIB_API char *TCOD_console_print_return_string(TCOD_console_t con,int x,
 						   bool count_only);
 
 
-// image module
+/* image module */
 
 TCODLIB_API void TCOD_image_clear_wrapper(TCOD_image_t image,
 					  colornum_t color);
@@ -115,7 +115,7 @@ TCODLIB_API void TCOD_image_put_pixel_wrapper(TCOD_image_t image,int x, int y,
 TCODLIB_API void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
 					  colornum_t key_color);
 
-// mouse module
+/* mouse module */
 TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
 TCODLIB_API int TCOD_mouse_get_x();
 TCODLIB_API int TCOD_mouse_get_y();
@@ -132,14 +132,14 @@ TCODLIB_API uint32 TCOD_mouse_get_lbutton_pressed();
 TCODLIB_API uint32 TCOD_mouse_get_mbutton_pressed();
 TCODLIB_API uint32 TCOD_mouse_get_rbutton_pressed();
 
-// parser module
+/* parser module */
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);
 
-// namegen module
+/* namegen module */
 TCODLIB_API int TCOD_namegen_get_nb_sets_wrapper();
 TCODLIB_API void TCOD_namegen_get_sets_wrapper(char **sets);
 
-// sys module
+/* sys module */
 TCODLIB_API int TCOD_sys_get_current_resolution_x();
 TCODLIB_API int TCOD_sys_get_current_resolution_y();
 

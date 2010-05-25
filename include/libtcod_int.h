@@ -228,7 +228,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_LIGHTER_SEPIA 191,171,143
 #define TCOD_LIGHTEST_SEPIA 222,211,195
 
-//desaturated
+/* desaturated */
 #define TCOD_DESATURATED_RED 127,63,63
 #define TCOD_DESATURATED_FLAME 127,79,63
 #define TCOD_DESATURATED_ORANGE 127,95,63
@@ -251,7 +251,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_DESATURATED_PINK 127,63,95
 #define TCOD_DESATURATED_CRIMSON 127,63,79
 
-//lightest
+/* lightest */
 #define TCOD_LIGHTEST_RED 255,191,191
 #define TCOD_LIGHTEST_FLAME 255,207,191
 #define TCOD_LIGHTEST_ORANGE 255,223,191
@@ -274,7 +274,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_LIGHTEST_PINK 255,191,223
 #define TCOD_LIGHTEST_CRIMSON 255,191,207
 
-//lighter
+/* lighter */
 #define TCOD_LIGHTER_RED 255,127,127
 #define TCOD_LIGHTER_FLAME 255,159,127
 #define TCOD_LIGHTER_ORANGE 255,191,127
@@ -297,7 +297,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_LIGHTER_PINK 255,127,191
 #define TCOD_LIGHTER_CRIMSON 255,127,159
 
-//light
+/* light */
 #define TCOD_LIGHT_RED 255,63,63
 #define TCOD_LIGHT_FLAME 255,111,63
 #define TCOD_LIGHT_ORANGE 255,159,63
@@ -320,7 +320,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_LIGHT_PINK 255,63,159
 #define TCOD_LIGHT_CRIMSON 255,63,111
 
-//normal
+/* normal */
 #define TCOD_RED 255,0,0
 #define TCOD_FLAME 255,63,0
 #define TCOD_ORANGE 255,127,0
@@ -343,7 +343,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_PINK 255,0,127
 #define TCOD_CRIMSON 255,0,63
 
-//dark
+/* dark */
 #define TCOD_DARK_RED 191,0,0
 #define TCOD_DARK_FLAME 191,47,0
 #define TCOD_DARK_ORANGE 191,95,0
@@ -366,7 +366,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_DARK_PINK 191,0,95
 #define TCOD_DARK_CRIMSON 191,0,47
 
-//darker
+/* darker */
 #define TCOD_DARKER_RED 127,0,0
 #define TCOD_DARKER_FLAME 127,31,0
 #define TCOD_DARKER_ORANGE 127,63,0
@@ -389,7 +389,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_DARKER_PINK 127,0,63
 #define TCOD_DARKER_CRIMSON 127,0,31
 
-//darkest
+/* darkest */
 #define TCOD_DARKEST_RED 63,0,0
 #define TCOD_DARKEST_FLAME 63,15,0
 #define TCOD_DARKEST_ORANGE 63,31,0
@@ -412,13 +412,13 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 #define TCOD_DARKEST_PINK 63,0,31
 #define TCOD_DARKEST_CRIMSON 63,0,15
 
-// metallic
+/* metallic */
 #define TCOD_BRASS 191,151,96
 #define TCOD_COPPER 197,136,124
 #define TCOD_GOLD 229,191,0
 #define TCOD_SILVER 203,203,203
 
-// miscellaneous
+/* miscellaneous */
 #define TCOD_CELADON 172,255,175
 #define TCOD_PEACH 255,159,127
 

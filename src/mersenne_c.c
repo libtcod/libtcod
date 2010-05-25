@@ -59,16 +59,16 @@ static uint32 mt_rand(uint32 mt[624], int *cur_mt)
         for (i=0;i<623;i++) {
             y = ( mt[i] & MT_HIGH_BIT ) | ( mt[i+1] & MT_LOW_BITS );
             if ( y & 1 ) {
-            	// odd y
+            	/* odd y */
 	            mt[i] = mt[ (i + 397) % 624 ] ^ (y >> 1) ^ 2567483615UL;
 			} else {
-				// even y
+				/* even y */
 	            mt[i] = mt[ (i + 397) % 624 ] ^ (y >> 1);
 			}
         }
         y = ( mt[623] & MT_HIGH_BIT ) | ( mt[0] & MT_LOW_BITS );
         if ( y & 1 ) {
-        	// odd y
+        	/* odd y */
 	        mt[623] = mt[396] ^ (y >> 1) ^ 2567483615UL;
 		} else {
 	        mt[623] = mt[396] ^ (y >> 1);
@@ -91,7 +91,7 @@ static float frandom01(mersenne_data_t *r) {
 }
 
 /* string hashing function */
-/* not used (yet)
+/* not used (yet) 
 static uint32 hash(const char *data,int len) {
 	uint32 hash = 0;
 	uint32 x;

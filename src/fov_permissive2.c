@@ -34,7 +34,7 @@
 /* The size of each square in units */
 #define STEP_SIZE 16
 
-// Jonathon Duerig enhanced permissive FOV
+/* Jonathon Duerig enhanced permissive FOV */
 typedef struct {
 	int xi,yi,xf,yf;
 } line_t;
@@ -92,7 +92,7 @@ static bool is_blocked(map_t *map, view_t *view, int startX, int startY, int x, 
 			ABOVE(&view->steep_line,brx,bry) 
 			&& BELOW(&view->shallow_line,tlx,tly)
 		) 
-//		! blocked
+/*		! blocked */
 	) {
 		map->cells[offset].fov=1;
 	}
@@ -144,8 +144,8 @@ static bool check_view(TCOD_list_t active_views, view_t **it) {
 	if (LINE_COLINEAR(shallow_line,steep_line)
 		&& (COLINEAR(shallow_line,offset,limit) 
 		|| COLINEAR(shallow_line,limit,offset)) ){
-//printf ("deleting view %x\n",it);
-		// slow !
+/*printf ("deleting view %x\n",it); */
+		/* slow ! */
 		TCOD_list_remove_iterator(active_views,(void **)it);
 		return false;
 	}
@@ -154,9 +154,9 @@ static bool check_view(TCOD_list_t active_views, view_t **it) {
 
 static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, int dy, 
 	TCOD_list_t active_views, bool light_walls) {
-	// top left
+	/* top left */
 	int tlx=x, tly=y+STEP_SIZE;
-	// bottom right
+	/* bottom right */
 	int brx=x+STEP_SIZE, bry=y;
 	view_t *view=NULL;
 	while (current_view != (view_t **)TCOD_list_end(active_views)) {
@@ -167,32 +167,32 @@ static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, 
 		current_view++;
 	}
 	if ( current_view == (view_t **)TCOD_list_end(active_views) || ABOVE_OR_COLINEAR(&view->shallow_line,tlx,tly)) {
-		// no more active view
+		/* no more active view */
 		return;
 	}
 	if ( !is_blocked(m,view,startX,startY,x,y,dx,dy,light_walls) ) return;
 	if (  ABOVE(&view->shallow_line,brx,bry) 
 		&& BELOW(&view->steep_line,tlx,tly)) {
-		// view blocked
-		// slow !
+		/* view blocked */
+		/* slow ! */
 		TCOD_list_remove_iterator(active_views,(void **)current_view);
 	} else if ( ABOVE(&view->shallow_line,brx,bry)) {
-		// shallow bump
+		/* shallow bump */                
 		add_shallow_bump(tlx,tly,view);
 		check_view(active_views,current_view);
 	} else if (BELOW(&view->steep_line,tlx,tly)) {
-		// steep bump
+		/* steep bump */
 		add_steep_bump(brx,bry,view);
 		check_view(active_views,current_view);
 	} else {
-		// view splitted
+		/* view splitted */
 		int offset=startX+x*dx/STEP_SIZE + (startY+y*dy/STEP_SIZE)*m->width;
 		view_t *shallower_view= & views[offset];
 		int view_index=current_view - (view_t **)TCOD_list_begin(active_views);
 		view_t **shallower_view_it;
 		view_t **steeper_view_it;
 		*shallower_view=**current_view;
-		// slow !
+		/* slow ! */
 		shallower_view_it = (view_t **)TCOD_list_insert_before(active_views,shallower_view,view_index);
 		steeper_view_it=shallower_view_it+1;
 		current_view=shallower_view_it;
@@ -239,15 +239,15 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 	if ( (unsigned)fovType>8 ) TCOD_fatal("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].\n",fovType);
 	offset=8-fovType;
 	limit=8+fovType;
-	// clean the map
+	/* clean the map */
 	for (c=m->nbcells-1; c >= 0; c--) {
 		m->cells[c].fov=0;
 	}
 	m->cells[player_x+player_y*m->width].fov=1;
-	// preallocate views and bumps
+	/* preallocate views and bumps */
 	views=(view_t *)calloc(sizeof(view_t),m->width*m->height);
 	bumps=(viewbump_t *)calloc(sizeof(viewbump_t),m->width*m->height);
-	// set the fov range
+	/* set the fov range */
 	if ( max_radius > 0 ) {
 		minx=MIN(player_x,max_radius);
 		maxx=MIN(m->width-player_x-1,max_radius);
@@ -259,7 +259,7 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 		miny=player_y;
 		maxy=m->height-player_y-1;
 	}
-	// calculate fov. precise permissive field of view
+	/* calculate fov. precise permissive field of view */
 	bumpidx=0;
 	check_quadrant(m,player_x,player_y,1,1,maxx,maxy, light_walls);
 	bumpidx=0;

@@ -88,22 +88,22 @@ static const char *TCOD_con_pixel_shader =
 
 "void main(void) "
 "{ "
-"   vec2 rawCoord = gl_TexCoord[0].xy; "                           // varying from [0, termsize) in x and y
-"   vec2 conPos = floor(rawCoord); "                               // console integer position
-"   vec2 pixPos = fract(rawCoord); "                               // pixel offset within console position
-"   pixPos = vec2(pixPos.x*fontcoef.x,pixPos.y*fontcoef.y); "      // Correct pixel offset for font tex location
+"   vec2 rawCoord = gl_TexCoord[0].xy; "                           /* varying from [0, termsize) in x and y */
+"   vec2 conPos = floor(rawCoord); "                               /* console integer position */
+"   vec2 pixPos = fract(rawCoord); "                               /* pixel offset within console position */
+"   pixPos = vec2(pixPos.x*fontcoef.x,pixPos.y*fontcoef.y); "      /* Correct pixel offset for font tex location */
 
 "   vec2 address = vec2(conPos.x*termcoef.x,conPos.y*termcoef.y); "
 "	address=address+vec2(0.001, 0.001); "
-"   float inchar = texture2D(term, address).r*256.0; "         // character
-"   vec4 tcharfcol = texture2D(termfcol, address); "           // front color
-"   vec4 tcharbcol = texture2D(termbcol, address); "           // back color
+"   float inchar = texture2D(term, address).r*256.0; "         /* character */
+"   vec4 tcharfcol = texture2D(termfcol, address); "           /* front color */
+"   vec4 tcharbcol = texture2D(termbcol, address); "           /* back color */
 
-"   vec4 tchar = vec4(mod(floor(inchar),floor(fontw)),floor(inchar/fontw), 0.0, 0.0); "  // 1D index to 2D index map for character
+"   vec4 tchar = vec4(mod(floor(inchar),floor(fontw)),floor(inchar/fontw), 0.0, 0.0); "  /* 1D index to 2D index map for character */
 
-"   gl_FragColor = texture2D(font, vec2((tchar.x*fontcoef.x),(tchar.y*fontcoef.y))+pixPos.xy); "   // magic func: finds pixel value in font file
+"   gl_FragColor = texture2D(font, vec2((tchar.x*fontcoef.x),(tchar.y*fontcoef.y))+pixPos.xy); "   /* magic func: finds pixel value in font file */
 
-"   gl_FragColor=gl_FragColor.a*tcharfcol+(1.0-gl_FragColor.a)*tcharbcol; "      // Coloring stage
+"   gl_FragColor=gl_FragColor.a*tcharfcol+(1.0-gl_FragColor.a)*tcharbcol; "      /* Coloring stage */
 "} "
 ;
 
@@ -119,7 +119,7 @@ bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
     return true;
 }
 
-// called before creating window
+/* called before creating window */
 void TCOD_opengl_init_attributes() {
 	static bool first=false;
 	if ( first ) {
@@ -130,24 +130,24 @@ void TCOD_opengl_init_attributes() {
 		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
 		first=false;
 	}
-	// ATI driver bug : enabling this might result in red screen
-	//SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	/* ATI driver bug : enabling this might result in red screen */
+	/*SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); */
 }
 
-// console size (power of 2 and cells)
+/* console size (power of 2 and cells) */
 static int POTconwidth, POTconheight, conwidth, conheight;
-// programs and shaders handles
+/* programs and shaders handles */
 static GLuint conProgram, conVertShader, conFragShader;
-// font texture handle
+/* font texture handle */
 static GLuint font_tex;
-// font power of 2 size and pixels
+/* font power of 2 size and pixels */
 static int POTfontwidth,POTfontheight, fontwidth,fontheight;
-// console data
+/* console data */
 static GLuint Tex[ConsoleDataEnumSize];
 static unsigned char *data[ConsoleDataEnumSize];
 static bool dirty[ConsoleDataEnumSize];
 
-// extension function pointers
+/* extension function pointers */
 static PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB=0;
 static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB=0;
 static PFNGLSHADERSOURCEARBPROC glShaderSourceARB=0;
@@ -165,16 +165,16 @@ static PFNGLUNIFORM1IARBPROC glUniform1iARB=0;
 static PFNGLACTIVETEXTUREPROC glActiveTexture=0;
 #endif
                                         
-// call after creating window
+/* call after creating window */
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	SDL_Surface *font_surf=(SDL_Surface *)font;
 	
-	// convert font for opengl
+	/* convert font for opengl */
 	Uint32 rmask, gmask, bmask, amask;
 	SDL_Surface *temp;
 	SDL_Surface *temp_alpha;
 
-	// check opengl extensions
+	/* check opengl extensions */
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		bool hasShader = false;
 		const char *glexts=(const char *)glGetString(GL_EXTENSIONS);
@@ -187,7 +187,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 		}
 	}
 
-	// set extensions functions pointers
+	/* set extensions functions pointers */
    	glCreateShaderObjectARB=(PFNGLCREATESHADEROBJECTARBPROC)SDL_GL_GetProcAddress("glCreateShaderObjectARB");
 	glGetObjectParameterivARB=(PFNGLGETOBJECTPARAMETERIVARBPROC)SDL_GL_GetProcAddress("glGetObjectParameterivARB");
 	glShaderSourceARB=(PFNGLSHADERSOURCEARBPROC)SDL_GL_GetProcAddress("glShaderSourceARB");
@@ -205,7 +205,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glActiveTexture=(PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
 #endif
 	
-	// set opengl state
+	/* set opengl state */
 	glEnable(GL_TEXTURE_2D);
 	glClearColor(1.0f, 1.0f, 0.0f, 0.0f);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -223,9 +223,9 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-//#ifdef TCOD_WINDOWS
+/*#ifdef TCOD_WINDOWS  */
 	if ( ! TCOD_ctx.fullscreen ) {
-		// turn vsync off in windowed mode
+		/* turn vsync off in windowed mode */
 		typedef bool (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
 		PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT = 0;
 
@@ -233,9 +233,9 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 
 		if (wglSwapIntervalEXT) wglSwapIntervalEXT(0);
 	}
-//#endif
+/*#endif */
 
-	// compute pot size
+	/* compute pot size */
 	conwidth=conw;
 	conheight=conh;
 	POTconwidth=POTconheight=1;
@@ -265,7 +265,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	temp_alpha = SDL_DisplayFormatAlpha(font_surf);
 	SDL_SetAlpha(temp_alpha, 0, SDL_ALPHA_TRANSPARENT);
 
-	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, POTfontwidth, POTfontheight, 32, bmask, gmask, rmask, amask); //BGRA
+	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, POTfontwidth, POTfontheight, 32, bmask, gmask, rmask, amask); /*BGRA */
 
 	SDL_BlitSurface(temp_alpha, NULL, temp, NULL);
 	SDL_FreeSurface(temp_alpha);
@@ -295,7 +295,7 @@ static GLuint loadShader(const char *txt, GLuint type) {
 	glGetObjectParameterivARB(v, GL_COMPILE_STATUS, &success);
 	if(success!=GL_TRUE)
 	{
-	    // something went wrong
+	    /* something went wrong */
 		glGetObjectParameterivARB(v, GL_INFO_LOG_LENGTH,&infologLength);
 		if(infologLength>0)
 		{
@@ -312,7 +312,7 @@ static GLuint loadShader(const char *txt, GLuint type) {
 
 static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 	GLuint *vertShader, GLuint *fragShader, GLuint *prog) {
-	// Create and load Program and Shaders
+	/* Create and load Program and Shaders */
 	int success;
 	*prog = DBGCHECKGL(glCreateProgramObjectARB());
 
@@ -329,7 +329,7 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 	glGetObjectParameterivARB(*prog, GL_LINK_STATUS, &success);
 	if(success!=GL_TRUE)
 	{
-		// something went wrong
+		/* something went wrong */
 		int infologLength = 0;
 		int charsWritten = 0;
 		char *infoLog;
@@ -353,13 +353,13 @@ bool TCOD_opengl_init_shaders() {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
 		if (! loadProgram(TCOD_con_vertex_shader, TCOD_con_pixel_shader, &conVertShader, &conFragShader, &conProgram ) ) return false;
 	}
-	// Host side data init
+	/* Host side data init */
 	for(i = 0; i< ConsoleDataEnumSize; i++)
 	{
 		data[i] = (unsigned char *)calloc(conwidth*conheight,ConsoleDataAlignment[i]);
 		dirty[i]=true;
 	}
-	// Initialize ForeCol to 255, 255, 255, 255
+	/* Initialize ForeCol to 255, 255, 255, 255 */
 	fCol = (TCOD_color_t *)data[ForeCol];
 	for( i = 0; i < conwidth*conheight; i++)
 	{
@@ -368,10 +368,10 @@ bool TCOD_opengl_init_shaders() {
 	    fCol[i].b=255;
 	}
 
-    // Generate Textures
+    /* Generate Textures */
 	glGenTextures(3, Tex);
 
-	// Character Texture
+	/* Character Texture */
 	CHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[Character]));
 
     CHECKGL(glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ));
@@ -380,7 +380,7 @@ bool TCOD_opengl_init_shaders() {
     CHECKGL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, POTconwidth, POTconheight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0));
 
 
-    // ForeCol Texture
+    /* ForeCol Texture */
 	CHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[ForeCol]));
 
     CHECKGL(glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ));
@@ -388,7 +388,7 @@ bool TCOD_opengl_init_shaders() {
 
 	CHECKGL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, POTconwidth, POTconheight, 0, GL_RGB, GL_UNSIGNED_BYTE, 0));
 
-    // BackCol Texture
+    /* BackCol Texture */
 	CHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
 
     CHECKGL(glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ));
@@ -410,16 +410,16 @@ static bool updateTex(ConsoleDataEnum dataType) {
 	case 1:
 		Type = GL_RED;
 		break;
-	//case 2:
-	//	Type = GL_RG;
-	//	break;
+	/*case 2:
+		Type = GL_RG;
+		break; */
 	case 3:
 		Type = GL_RGB;
 		break;
 	case 4:
 		Type = GL_RGBA;
 	}
-    //glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    /*glPixelStorei(GL_UNPACK_ALIGNMENT, 1); */
 	DBGCHECKGL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, conwidth, conheight, Type, GL_UNSIGNED_BYTE, data[dataType]));
 
 	DBGCHECKGL(glBindTexture(GL_TEXTURE_2D,0));
@@ -428,7 +428,7 @@ static bool updateTex(ConsoleDataEnum dataType) {
 
 static void updateChar(ConsoleDataEnum dataType, int BufferPos, unsigned char *c, int length, int offset) {
 	int i;
-	dirty[dataType] = true;		// Set dirty so Texture gets updated next frame
+	dirty[dataType] = true;		/* Set dirty so Texture gets updated next frame */
 
 	for(i = 0; i<length; i++) {
 		data[dataType][BufferPos*ConsoleDataAlignment[dataType] + i + offset] = c[i];
@@ -454,8 +454,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	char_t *c=console_buffer;
 	char_t *oc=prev_console_buffer;
 	int ascii;
-	// update opengl data
-	// TODO use function pointers so that libtcod's putchar directly updates opengl data
+	/* update opengl data */
+	/* TODO use function pointers so that libtcod's putchar directly updates opengl data */
 	for (y=0;y<conheight;y++) {
 		for (x=0; x<conwidth; x++) {
 			bool changed=true;
@@ -477,7 +477,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		}
 	}
 
-	// check if any of the textures have changed since they were last uploaded
+	/* check if any of the textures have changed since they were last uploaded */
 	for( i = 0; i< ConsoleDataEnumSize; i++)
 	{
 		if(dirty[i])
@@ -487,8 +487,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		}
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_OPENGL ) {
-		// fixed pipeline for video cards without pixel shader support
-		// draw the background as a single quad
+		/* fixed pipeline for video cards without pixel shader support */
+		/* draw the background as a single quad */
 		float texw=(float)conwidth/POTconwidth;
 		float texh=(float)conheight/POTconheight;
 		float fonw=(float)fontwidth/(TCOD_ctx.fontNbCharHoriz*POTfontwidth);
@@ -506,7 +506,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			glTexCoord2f( texw, 0.0 );
 			glVertex2i( conwidth, 0 );
 		glEnd());
-		// draw the characters (one quad per cell)
+		/* draw the characters (one quad per cell) */
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
 	    
 	    c=console_buffer;
@@ -515,16 +515,16 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 				if ( c->c != ' ' ) {
 					TCOD_color_t f=c->fore;
 					TCOD_color_t b=c->back;
-					// only draw character if foreground color != background color
+					/* only draw character if foreground color != background color */
 					if ( f.r != b.r || f.g != b.g || f.b != b.b ) {
 						int srcx,srcy,destx,desty;
-						destx=x;// *TCOD_font_width;
-						desty=y;// *TCOD_font_height;
+						destx=x;/* *TCOD_font_width; */
+						desty=y;/* *TCOD_font_height; */
 						if ( TCOD_ctx.fullscreen ) {
 							destx+=TCOD_ctx.fullscreen_offsetx/TCOD_ctx.font_width;
 							desty+=TCOD_ctx.fullscreen_offsety/TCOD_ctx.font_height;
 						}
-						// draw foreground
+						/* draw foreground */
 						ascii=c->cf;
 						srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
 						srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
@@ -546,12 +546,12 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 		}
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));
 	} else {
-		// actual rendering
+		/* actual rendering */
 	    DBGCHECKGL(glUseProgramObjectARB(conProgram));
 	
-		// Technically all these glUniform calls can be moved to SFConsole() when the shader is loaded
-		// None of these change
-		// The Textures still need to bind to the same # Activetexture throughout though
+		/* Technically all these glUniform calls can be moved to SFConsole() when the shader is loaded */
+		/* None of these change */
+		/* The Textures still need to bind to the same # Activetexture throughout though */
 	    DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termsize"), (float) conwidth, (float) conheight));
 		DBGCHECKGL(glUniform2fARB(glGetUniformLocationARB(conProgram,"termcoef"), 1.0f/POTconwidth, 1.0f/POTconheight));
 	    DBGCHECKGL(glUniform1fARB(glGetUniformLocationARB(conProgram,"fontw"), (float)TCOD_ctx.fontNbCharHoriz));
@@ -574,7 +574,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, Tex[BackCol]));
 	    DBGCHECKGL(glUniform1iARB(glGetUniformLocationARB(conProgram,"termbcol"),3));
 	
-	//    DBGCHECKGL(shader->Validate());
+	/*    DBGCHECKGL(shader->Validate()); */
 	
 		DBGCHECKGL(glBegin(GL_QUADS);
 	        glTexCoord2f(0.0f, 1.0f);
@@ -591,7 +591,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	
 	    DBGCHECKGL(glUseProgramObjectARB(0));
 	}
-	// fading overlay
+	/* fading overlay */
 	if ( fade != 255 ) {
 		int x=0,y=0;
 		if ( TCOD_ctx.fullscreen ) {
@@ -618,7 +618,7 @@ void * TCOD_opengl_get_screen() {
 	int pixw,pixh,offx=0,offy=0,x,y;
 	Uint32 mask,nmask;
 
-	// allocate a pixel buffer
+	/* allocate a pixel buffer */
 	pixw=TCOD_ctx.root->w * TCOD_ctx.font_width;
 	pixh=TCOD_ctx.root->h * TCOD_ctx.font_height;
 	surf=TCOD_sys_get_surface(pixw,pixh,false);
@@ -627,14 +627,14 @@ void * TCOD_opengl_get_screen() {
 		offy=TCOD_ctx.fullscreen_offsety;
 	}
 
-	// get pixel data from opengl
+	/* get pixel data from opengl */
 	glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 	glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadPixels(offx,offy,pixw,pixh, GL_RGB, GL_UNSIGNED_BYTE, surf->pixels);
 	glPopClientAttrib();
 	
-	// vertical flip (opengl has lower-left origin, SDL upper left)
+	/* vertical flip (opengl has lower-left origin, SDL upper left) */
 	mask=surf->format->Rmask|surf->format->Gmask|surf->format->Bmask;
 	nmask=~mask;
 	for (x=0; x < surf->w; x++) {

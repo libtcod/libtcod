@@ -23,7 +23,7 @@ PNG_LIBS=$(PNG_DIR)/lib/mingw/libpng.a
 # OPENGL
 OPENGL_LIB=-lopengl32
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -Wall -fno-strict-aliasing
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -Wall -fno-strict-aliasing -ansi
 CC=mingw32-gcc
 CPP=mingw32-g++
 UPX=dependencies/upx/win/upx.exe

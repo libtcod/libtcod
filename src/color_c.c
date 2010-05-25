@@ -28,7 +28,7 @@
 #include "libtcod.h"
 #include "libtcod_int.h"
 
-// grey levels
+/* grey levels */
 const TCOD_color_t TCOD_black={TCOD_BLACK};
 const TCOD_color_t TCOD_darkest_grey={TCOD_DARKEST_GREY};
 const TCOD_color_t TCOD_darker_grey={TCOD_DARKER_GREY};
@@ -46,7 +46,7 @@ const TCOD_color_t TCOD_lighter_gray={TCOD_LIGHTER_GREY};
 const TCOD_color_t TCOD_lightest_gray={TCOD_LIGHTEST_GREY};
 const TCOD_color_t TCOD_white={TCOD_WHITE};
 
-//sepia
+/* sepia */
 const TCOD_color_t TCOD_darkest_sepia={TCOD_DARKEST_SEPIA};
 const TCOD_color_t TCOD_darker_sepia={TCOD_DARKER_SEPIA};
 const TCOD_color_t TCOD_dark_sepia={TCOD_DARK_SEPIA};
@@ -55,7 +55,7 @@ const TCOD_color_t TCOD_light_sepia={TCOD_LIGHT_SEPIA};
 const TCOD_color_t TCOD_lighter_sepia={TCOD_LIGHTER_SEPIA};
 const TCOD_color_t TCOD_lightest_sepia={TCOD_LIGHTEST_SEPIA};
 
-//standard colors
+/* standard colors */
 const TCOD_color_t TCOD_red = {TCOD_RED};
 const TCOD_color_t TCOD_flame = {TCOD_FLAME};
 const TCOD_color_t TCOD_orange = {TCOD_ORANGE};
@@ -78,7 +78,7 @@ const TCOD_color_t TCOD_magenta = {TCOD_MAGENTA};
 const TCOD_color_t TCOD_pink = {TCOD_PINK};
 const TCOD_color_t TCOD_crimson = {TCOD_CRIMSON};
 
-// dark colors
+/* dark colors */
 const TCOD_color_t TCOD_dark_red = {TCOD_DARK_RED};
 const TCOD_color_t TCOD_dark_flame = {TCOD_DARK_FLAME};
 const TCOD_color_t TCOD_dark_orange = {TCOD_DARK_ORANGE};
@@ -101,7 +101,7 @@ const TCOD_color_t TCOD_dark_magenta = {TCOD_DARK_MAGENTA};
 const TCOD_color_t TCOD_dark_pink = {TCOD_DARK_PINK};
 const TCOD_color_t TCOD_dark_crimson = {TCOD_DARK_CRIMSON};
 
-// darker colors
+/* darker colors */
 const TCOD_color_t TCOD_darker_red = {TCOD_DARKER_RED};
 const TCOD_color_t TCOD_darker_flame = {TCOD_DARKER_FLAME};
 const TCOD_color_t TCOD_darker_orange = {TCOD_DARKER_ORANGE};
@@ -124,7 +124,7 @@ const TCOD_color_t TCOD_darker_magenta = {TCOD_DARKER_MAGENTA};
 const TCOD_color_t TCOD_darker_pink = {TCOD_DARKER_PINK};
 const TCOD_color_t TCOD_darker_crimson = {TCOD_DARKER_CRIMSON};
 
-// darkest colors
+/* darkest colors */
 const TCOD_color_t TCOD_darkest_red = {TCOD_DARKEST_RED};
 const TCOD_color_t TCOD_darkest_flame = {TCOD_DARKEST_FLAME};
 const TCOD_color_t TCOD_darkest_orange = {TCOD_DARKEST_ORANGE};
@@ -147,7 +147,7 @@ const TCOD_color_t TCOD_darkest_magenta = {TCOD_DARKEST_MAGENTA};
 const TCOD_color_t TCOD_darkest_pink = {TCOD_DARKEST_PINK};
 const TCOD_color_t TCOD_darkest_crimson = {TCOD_DARKEST_CRIMSON};
 
-// light colors
+/* light colors */
 const TCOD_color_t TCOD_light_red = {TCOD_LIGHT_RED};
 const TCOD_color_t TCOD_light_flame = {TCOD_LIGHT_FLAME};
 const TCOD_color_t TCOD_light_orange = {TCOD_LIGHT_ORANGE};
@@ -170,7 +170,7 @@ const TCOD_color_t TCOD_light_magenta = {TCOD_LIGHT_MAGENTA};
 const TCOD_color_t TCOD_light_pink = {TCOD_LIGHT_PINK};
 const TCOD_color_t TCOD_light_crimson = {TCOD_LIGHT_CRIMSON};
 
-//lighter colors
+/*lighter colors */
 const TCOD_color_t TCOD_lighter_red = {TCOD_LIGHTER_RED};
 const TCOD_color_t TCOD_lighter_flame = {TCOD_LIGHTER_FLAME};
 const TCOD_color_t TCOD_lighter_orange = {TCOD_LIGHTER_ORANGE};
@@ -193,7 +193,7 @@ const TCOD_color_t TCOD_lighter_magenta = {TCOD_LIGHTER_MAGENTA};
 const TCOD_color_t TCOD_lighter_pink = {TCOD_LIGHTER_PINK};
 const TCOD_color_t TCOD_lighter_crimson = {TCOD_LIGHTER_CRIMSON};
 
-// lightest colors
+/* lightest colors */
 const TCOD_color_t TCOD_lightest_red = {TCOD_LIGHTEST_RED};
 const TCOD_color_t TCOD_lightest_flame = {TCOD_LIGHTEST_FLAME};
 const TCOD_color_t TCOD_lightest_orange = {TCOD_LIGHTEST_ORANGE};
@@ -216,7 +216,7 @@ const TCOD_color_t TCOD_lightest_magenta = {TCOD_LIGHTEST_MAGENTA};
 const TCOD_color_t TCOD_lightest_pink = {TCOD_LIGHTEST_PINK};
 const TCOD_color_t TCOD_lightest_crimson = {TCOD_LIGHTEST_CRIMSON};
 
-// desaturated colors
+/* desaturated colors */
 const TCOD_color_t TCOD_desaturated_red = {TCOD_DESATURATED_RED};
 const TCOD_color_t TCOD_desaturated_flame = {TCOD_DESATURATED_FLAME};
 const TCOD_color_t TCOD_desaturated_orange = {TCOD_DESATURATED_ORANGE};
@@ -239,17 +239,17 @@ const TCOD_color_t TCOD_desaturated_magenta = {TCOD_DESATURATED_MAGENTA};
 const TCOD_color_t TCOD_desaturated_pink = {TCOD_DESATURATED_PINK};
 const TCOD_color_t TCOD_desaturated_crimson = {TCOD_DESATURATED_CRIMSON};
 
-// metallic
+/* metallic */
 const TCOD_color_t TCOD_brass = {TCOD_BRASS};
 const TCOD_color_t TCOD_copper = {TCOD_COPPER};
 const TCOD_color_t TCOD_gold = {TCOD_GOLD};
 const TCOD_color_t TCOD_silver = {TCOD_SILVER};
 
-// miscellaneous
+/* miscellaneous */
 const TCOD_color_t TCOD_celadon = {TCOD_CELADON};
 const TCOD_color_t TCOD_peach = {TCOD_PEACH};
 
-// color array
+/* color array */
 const TCOD_color_t TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
  {{TCOD_DESATURATED_RED},{TCOD_LIGHTEST_RED},{TCOD_LIGHTER_RED},{TCOD_LIGHT_RED},{TCOD_RED},{TCOD_DARK_RED},{TCOD_DARKER_RED},{TCOD_DARKEST_RED}},
  {{TCOD_DESATURATED_FLAME},{TCOD_LIGHTEST_FLAME},{TCOD_LIGHTER_FLAME},{TCOD_LIGHT_FLAME},{TCOD_FLAME},{TCOD_DARK_FLAME},{TCOD_DARKER_FLAME},{TCOD_DARKEST_FLAME}},
@@ -285,15 +285,15 @@ TCOD_color_t TCOD_color_HSV(float h, float s, float v) {
 	float f, p, q, t;
 
 	if( s == 0 ) {
-		// achromatic (grey)
+		/* achromatic (grey) */
 		ret.r = ret.g = ret.b = (uint8)(v*255);
 	}
 	else {
-		while (h < 0.0f) h += 360.0f; //for H < 0
-		while (h >= 360.0f) h -= 360.0f; //for H >= 360
+		while (h < 0.0f) h += 360.0f; /*for H < 0 */
+		while (h >= 360.0f) h -= 360.0f; /*for H >= 360 */
 		h /= 60;
-		i = (int)(h); //hue sector 0-5
-		f = h - i;			// factorial part of h
+		i = (int)(h); /*hue sector 0-5 */
+		f = h - i;			/* factorial part of h */
 		p = v * ( 1 - s );
 		q = v * ( 1 - s * f );
 		t = v * ( 1 - s * ( 1 - f ) );
@@ -396,23 +396,23 @@ TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
 	return ret;
 }
 
-// 0<= h < 360, 0 <= s <= 1, 0 <= v <= 1
+/* 0<= h < 360, 0 <= s <= 1, 0 <= v <= 1 */
 void TCOD_color_set_HSV(TCOD_color_t *c, float h, float s, float v)
 {
 	int i;
 	float f, p, q, t;
 
 	if( s == 0.0f ) {
-		// achromatic (grey)
+		/* achromatic (grey) */
 		c->r = c->g = c->b = (uint8)(v*255.0f);
 		return;
 	}
 
-	while (h < 0.0f) h += 360.0f; //for H < 0
-	while (h >= 360.0f) h -= 360.0f; //for H >= 360
-	h /= 60.0f;			// sector 0 to 5
+	while (h < 0.0f) h += 360.0f; /*for H < 0 */
+	while (h >= 360.0f) h -= 360.0f; /*for H >= 360 */
+	h /= 60.0f;			/* sector 0 to 5 */
 	i = (int)floor( h );
-	f = h - i;			// factorial part of h
+	f = h - i;			/* factorial part of h */
 	p = v * ( 1 - s );
 	q = v * ( 1 - s * f );
 	t = v * ( 1 - s * ( 1 - f ) );
@@ -464,22 +464,22 @@ void TCOD_color_get_HSV(TCOD_color_t c, float *h, float *s, float *v)
 			: ( c.g < c.b ? c.g : c.b) );
 	max = imax/255.0f;
 	min = imin/255.0f;
-	*v = max; // v
+	*v = max; /* v */
 
 	delta = max - min;
-	if( max != 0.0f ) *s = delta / max; // s
+	if( max != 0.0f ) *s = delta / max; /* s */
 	else
 	{
-		*s = 0.0f; // s
-		*h = 0.0f; // h
+		*s = 0.0f; /* s */
+		*h = 0.0f; /* h */
 		return;
 	}
 
-	if( c.r == imax ) *h = ( c.g - c.b ) / (255.0f * delta);		// between yellow & magenta
-	else if( c.g == imax )	*h = 2.0f + ( c.b - c.r ) / (255.0f * delta);	// between cyan & yellow
-	else *h = 4.0f + ( c.r - c.g ) / (255.0f * delta);	// between magenta & cyan
+	if( c.r == imax ) *h = ( c.g - c.b ) / (255.0f * delta);		/* between yellow & magenta */
+	else if( c.g == imax )	*h = 2.0f + ( c.b - c.r ) / (255.0f * delta);	/* between cyan & yellow */
+	else *h = 4.0f + ( c.r - c.g ) / (255.0f * delta);	/* between magenta & cyan */
 
-	*h *= 60.0f; // degrees
+	*h *= 60.0f; /* degrees */
 	if( *h < 0 ) *h += 360.0f;
 }
 
@@ -488,7 +488,7 @@ float TCOD_color_get_hue (TCOD_color_t c) {
 	uint8 min = MIN(c.r,MIN(c.g,c.b));
 	float delta = (float)max - (float)min;
 	float ret;
-	if (delta == 0.0f) ret = 0.0f; //achromatic, including black
+	if (delta == 0.0f) ret = 0.0f; /*achromatic, including black */
 	else {
 		if (c.r == max) ret = (float)(c.g - c.b) / delta;
 		else if (c.g == max) ret = 2.0f + (float)(c.b - c.r) / delta;

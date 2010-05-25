@@ -34,4 +34,4 @@ typedef enum {
     TCOD_RNG_CMWC
 } TCOD_random_algo_t;
 
-#endif // _TCOD_RANDOM_TYPES_H
+#endif /* _TCOD_RANDOM_TYPES_H */

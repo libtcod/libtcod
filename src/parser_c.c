@@ -91,7 +91,7 @@ const char *TCOD_struct_get_name(TCOD_parser_struct_t def) {
 	return ((TCOD_struct_int_t *)def)->name;
 }
 
-// add a property to an entity definition
+/* add a property to an entity definition */
 void TCOD_struct_add_property(TCOD_parser_struct_t def,const char *name,TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_prop_t *prop=(TCOD_struct_prop_t *)calloc(1,sizeof(TCOD_struct_prop_t));
 	prop->name=strdup(name);
@@ -100,14 +100,14 @@ void TCOD_struct_add_property(TCOD_parser_struct_t def,const char *name,TCOD_val
 	TCOD_list_push(DEF_PROPS(def),(void *)prop);
 }
 
-// add a list property to an entity definition
+/* add a list property to an entity definition */
 void TCOD_struct_add_list_property(TCOD_parser_struct_t def,const char *name,TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_add_property(def,name,type|TCOD_TYPE_LIST,mandatory);
 }
 
 void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name, const char **value_list, int size, bool mandatory) {
 	char ** newArray = NULL;
-	// duplicate value list to avoid issues with C# garbage collector
+	/* duplicate value list to avoid issues with C# garbage collector */
  	TCOD_value_type_t type = (TCOD_value_type_t)((int)TCOD_TYPE_VALUELIST00 + TCOD_list_size(DEF_LISTS(def)));
 	int i = 0;
 
@@ -121,7 +121,7 @@ void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name,
 	TCOD_list_push(DEF_LISTS(def),(void *)newArray);
 }
 
-// add a value-list property to an entity definition
+/* add a value-list property to an entity definition */
 void TCOD_struct_add_value_list(TCOD_parser_struct_t def,const char *name, const char **value_list, bool mandatory) {
 	int size = 0;
 	if(value_list)
@@ -135,18 +135,18 @@ void TCOD_struct_add_value_list(TCOD_parser_struct_t def,const char *name, const
 }
 
 
-// add a flag (simplified bool value) to an entity definition
-// a flag cannot be mandatory. if present => true, if omitted => false
+/* add a flag (simplified bool value) to an entity definition */
+/* a flag cannot be mandatory. if present => true, if omitted => false */
 void TCOD_struct_add_flag(TCOD_parser_struct_t def,const char *propname) {
 	TCOD_list_push(DEF_FLAGS(def),(void *)strdup(propname));
 }
 
-// add a sub-entity to an entity definition
+/* add a sub-entity to an entity definition */
 void TCOD_struct_add_structure(TCOD_parser_struct_t def, TCOD_parser_struct_t sub_definition) {
 	TCOD_list_push(((TCOD_struct_int_t *)def)->structs,(const void *)sub_definition);
 }
 
-// check if given property is mandatory for this entity definition
+/* check if given property is mandatory for this entity definition */
 bool TCOD_struct_is_mandatory(TCOD_parser_struct_t def, const char *propname) {
 	TCOD_struct_prop_t **iprop;
 	for (iprop=(TCOD_struct_prop_t **)TCOD_list_begin(DEF_PROPS(def)); iprop!=(TCOD_struct_prop_t **)TCOD_list_end(DEF_PROPS(def));iprop++) {
@@ -155,8 +155,8 @@ bool TCOD_struct_is_mandatory(TCOD_parser_struct_t def, const char *propname) {
 	return false;
 }
 
-// returns the type of given property
-// NONE if the property does not exist
+/* returns the type of given property */
+/* NONE if the property does not exist */
 TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t def, const char *propname) {
 	TCOD_struct_prop_t **iprop;
 	char **iflag;
@@ -237,7 +237,7 @@ TCOD_value_t TCOD_parse_color_value() {
 	if (lex->tok[0] == '#') {
 	    int r,g,b;
 		if ( strlen(lex->tok) != 7 ) TCOD_parser_error("parseColorValue : bad color format. '#rrggbb' expected instead of '%s'",lex->tok);
-		// web format : #rrggbb
+		/* web format : #rrggbb */
 		r=(TCOD_lex_hextoint(lex->tok[1])<<4) + TCOD_lex_hextoint(lex->tok[2]);
 		g=(TCOD_lex_hextoint(lex->tok[3])<<4) + TCOD_lex_hextoint(lex->tok[4]);
 		b=(TCOD_lex_hextoint(lex->tok[5])<<4) + TCOD_lex_hextoint(lex->tok[6]);
@@ -245,7 +245,7 @@ TCOD_value_t TCOD_parse_color_value() {
 		ret.col.g=g;
 		ret.col.b=b;
 	} else {
-		// standard format : rrr,ggg,bbb
+		/* standard format : rrr,ggg,bbb */
 		char *begin=lex->tok;
 		char *end=strchr(begin,',');
 		bool ok=true;
@@ -269,7 +269,7 @@ TCOD_value_t TCOD_parse_color_value() {
 }
 
 TCOD_value_t TCOD_parse_dice_value() {
-	// dice format : [<m>x]<n>[Dd]<f>[(+|-)<a>]
+	/* dice format : [<m>x]<n>[Dd]<f>[(+|-)<a>] */
 	TCOD_value_t ret;
 	bool minus=false;
 	char *begin;
@@ -279,7 +279,7 @@ TCOD_value_t TCOD_parse_dice_value() {
 	begin=lex->tok;
 	ptr=strchr(begin,'x');
 	if ( ptr ) {
-		// parse multiplier
+		/* parse multiplier */
 		*ptr=0;
 		ret.dice.multiplier=(float)atof(lex->tok);
 		begin=ptr+1;
@@ -288,7 +288,7 @@ TCOD_value_t TCOD_parse_dice_value() {
 	if (!ptr ) ptr=strchr(begin,'d');
 	if (! ptr )	TCOD_parser_error("parseDiceValue : bad dice format. [<m>x]<n>D<f>[(+|-)<a>] expected instead of '%s'",lex->tok);
 	*ptr=0;
-	// parse nb_dices
+	/* parse nb_dices */
 	ret.dice.nb_dices=atoi(begin);
 	begin=ptr+1;
 	ptr=strchr(begin,'+');
@@ -297,10 +297,10 @@ TCOD_value_t TCOD_parse_dice_value() {
 		if ( ptr ) minus=true;
 	}
 	if (ptr) *ptr=0;
-	// parse nb_faces
+	/* parse nb_faces */
 	ret.dice.nb_faces=atoi(begin);
 	if ( ptr ) {
-		// parse addsub
+		/* parse addsub */
 		begin=ptr+1;
 		ret.dice.addsub=(float)atof(begin);
 		if ( minus ) ret.dice.addsub=-ret.dice.addsub;
@@ -414,7 +414,7 @@ TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_st
 static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_t *def) {
 	char *name=NULL;
 	if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
-		// entity type name
+		/* entity type name */
 		name=strdup(lex->tok);
 		TCOD_lex_parse(lex);
 	}
@@ -426,12 +426,12 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 	while ( strcmp(lex->tok,"}") != 0 ) {
 		bool found=false;
 		char **iflag;
-		// parse entity type content
+		/* parse entity type content */
 		if ( lex->token_type != TCOD_LEX_IDEN ) {
 			TCOD_parser_error("Parser::parseEntity : identifier expected");
 			return false;
 		}
-		// is it a flag ?
+		/* is it a flag ? */
 		for (iflag=(char **)TCOD_list_begin(def->flags);iflag!=(char **)TCOD_list_end(def->flags); iflag++) {
 			if ( strcmp(*iflag,lex->tok) == 0 ) {
 				found=true;
@@ -440,7 +440,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			}
 		}
 		if (!found ) {
-			// is it a property ?
+			/* is it a property ? */
 			TCOD_struct_prop_t **iprop;
 			for (iprop=(TCOD_struct_prop_t **)TCOD_list_begin(def->props); iprop!=(TCOD_struct_prop_t **)TCOD_list_end(def->props);iprop++) {
 				if ( strcmp((*iprop)->name,lex->tok) == 0 ) {
@@ -461,7 +461,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			}
 		}
 		if (! found ) {
-			// is it a sub-entity type
+			/* is it a sub-entity type */
 			TCOD_lex_t save;
 			char type[BIG_NAME_LEN];
 			char id[BIG_NAME_LEN*2 + 2];
@@ -471,7 +471,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			string_copy(type,lex->tok,BIG_NAME_LEN);
 			strcpy(id,type);
 			if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
-				// <type>#<name>
+				/* <type>#<name> */
 				TCOD_struct_int_t **sub;
 				strcat(id,"#");
 				strcat(id,lex->tok);
@@ -491,7 +491,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 				TCOD_lex_restore(lex,&save);
 			}
 			if (! blockFound ) {
-				// <type> alone
+				/* <type> alone */
 				TCOD_struct_int_t **sub;
 				for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
 					sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
@@ -516,9 +516,9 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 	return true;
 }
 
-//**************************************
-// generic parser
-//**************************************
+/****************************************/
+/* generic parser */
+/****************************************/
 
 TCOD_parser_t TCOD_parser_new() {
 	TCOD_parser_int_t *ent = (TCOD_parser_int_t*)calloc(1,sizeof(TCOD_parser_int_t));
@@ -577,9 +577,9 @@ void TCOD_parser_delete(TCOD_parser_t parser) {
 	TCOD_list_clear_and_delete(p->structs);
 }
 
-// parse a file
+/* parse a file */
 static TCOD_list_t *default_props;
-// triggers callbacks in the listener for each event during parsing
+/* triggers callbacks in the listener for each event during parsing */
 void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_listener_t *_listener) {
 	TCOD_parser_int_t *p=(TCOD_parser_int_t *)parser;
 	if (! _listener && ! p->props ) p->props=TCOD_list_new();
@@ -601,7 +601,7 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 		TCOD_struct_int_t **idef;
 		TCOD_lex_parse(lex);
 		if ( lex->token_type == TCOD_LEX_EOF || lex->token_type == TCOD_LEX_ERROR ) break;
-		// get entity type
+		/* get entity type */
 		if ( lex->token_type != TCOD_LEX_IDEN ) {
 			TCOD_parser_error("Parser::parse : identifier token expected");
 			return;
@@ -610,7 +610,7 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 		strcpy(id,type);
 		TCOD_lex_savepoint(lex,&save);
 		if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
-			// named entity. id = <type>#<name>
+			/* named entity. id = <type>#<name> */
 			strcat(id,"#");
 			if ( strlen(lex->tok) >= BIG_NAME_LEN ) {
 				TCOD_parser_error("Parser::parse : name %s too long. Max %d characters",
@@ -621,7 +621,7 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 			named=true;
 		}
 		TCOD_lex_restore(lex,&save);
-		// look for a definition for id
+		/* look for a definition for id */
 		for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(p->structs); idef ++) {
 			if ( strcmp((*idef)->name,id) == 0 ) {
 				def=*idef;
@@ -629,7 +629,7 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 			}
 		}
 		if ( def == NULL && named ) {
-			// look for general definition <type> for entity <type>#<name>
+			/* look for general definition <type> for entity <type>#<name> */
 			for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(p->structs); idef ++) {
 				if ( strcmp((*idef)->name,type) == 0 ) {
 					def=(*idef);
@@ -708,7 +708,7 @@ static const TCOD_value_t * TCOD_get_property(TCOD_parser_t parser, TCOD_value_t
 	for (it=TCOD_list_begin(p->props);it!=TCOD_list_end(p->props);it++) {
 		prop_t *prop=*((prop_t **)it);
 		if (strcmp(prop->name,name) == 0 ) {
-			// property found. check type
+			/* property found. check type */
 			if ( expectedType == TCOD_TYPE_STRING && prop->type >= TCOD_TYPE_VALUELIST00 
 					&& prop->type <= TCOD_TYPE_VALUELIST15 ) return &prop->value;
 			if ( expectedType == TCOD_TYPE_CUSTOM00 && prop->type >= TCOD_TYPE_CUSTOM00 
@@ -733,22 +733,22 @@ static const TCOD_value_t * TCOD_get_property(TCOD_parser_t parser, TCOD_value_t
 			if ( strcmp(str->name,curname) == 0 ) found=true;
 		}
 		if ( ! found ) {
-			// one of the structures is unknown
+			/* one of the structures is unknown */
 			default_error(err);
 		}
 		curname=ptr+1;
 		ptr=strchr(curname,'.');
 	}
 	if ( ! str ) {
-		// no structure in name
+		/* no structure in name */
 		default_error(err);
 	}
 	type = TCOD_struct_get_type((TCOD_parser_struct_t) str, curname);
 	if ( type == TCOD_TYPE_NONE ) {
-		// property does not exist in structure
+		/* property does not exist in structure */
 		default_error(err);
 	}
-	// optional property not defined in the file => ok
+	/* optional property not defined in the file => ok */
 	return NULL;
 }
 

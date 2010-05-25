@@ -31,11 +31,11 @@
 #include "libtcod_int.h"
 
 typedef struct {
-	TCOD_list_t buffer; // list<int>
-	uintptr ibuffer; // byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS)
-	int isize; // number of bytes in ibuffer
-	int bsize; // number of bytes in buffer
-	int offset; // current reading position
+	TCOD_list_t buffer; /* list<int> */
+	uintptr ibuffer; /* byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS) */
+	int isize; /* number of bytes in ibuffer */
+	int bsize; /* number of bytes in buffer */
+	int offset; /* current reading position */
 } zip_data_t;
 
 TCOD_zip_t TCOD_zip_new() {
@@ -50,18 +50,18 @@ void TCOD_zip_delete(TCOD_zip_t pzip) {
 }
 
 
-// output interface
+/* output interface */
 void TCOD_zip_put_char(TCOD_zip_t pzip, char val) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	uintptr iv=(uintptr)(uint8)val;
-	// store one byte in ibuffer
+	/* store one byte in ibuffer */
 	switch (zip->isize) {
 		case 0 : zip->ibuffer|=iv; break;
 		case 1 : zip->ibuffer|=(iv<<8); break;
 		case 2 : zip->ibuffer|=(iv<<16); break;
 		case 3 : zip->ibuffer|=(iv<<24); break;
 #ifdef TCOD_64BITS
-		// for 64 bits OS
+		/* for 64 bits OS */
 		case 4 : zip->ibuffer|=(iv<<32); break;
 		case 5 : zip->ibuffer|=(iv<<40); break;
 		case 6 : zip->ibuffer|=(iv<<48); break;
@@ -71,7 +71,7 @@ void TCOD_zip_put_char(TCOD_zip_t pzip, char val) {
 	zip->isize++;
 	zip->bsize++;
 	if (zip->isize == sizeof(uintptr) ) {
-		// ibuffer full. send it to buffer
+		/* ibuffer full. send it to buffer */
 		if (!zip->buffer) zip->buffer=TCOD_list_new();
 		TCOD_list_push(zip->buffer,(void *)zip->ibuffer);
 		zip->isize=zip->ibuffer=0;
@@ -82,13 +82,13 @@ void TCOD_zip_put_int(TCOD_zip_t pzip, int val) {
 #ifndef TCOD_64BITS
 	zip_data_t *zip=(zip_data_t *)pzip;
 	if ( zip->isize == 0 ) {
-		// the buffer is padded. read 4 bytes
+		/* the buffer is padded. read 4 bytes */
 		if (!zip->buffer) zip->buffer=TCOD_list_new();
 		TCOD_list_push(zip->buffer,(void *)val);
 		zip->bsize += sizeof(uintptr);
 	} else {
 #endif
-		// the buffer is not padded. read 4x1 byte
+		/* the buffer is not padded. read 4x1 byte */
 		TCOD_zip_put_char(pzip,(char)(val&0xFF));
 		TCOD_zip_put_char(pzip,(char)((val&0xFF00)>>8));
 		TCOD_zip_put_char(pzip,(char)((val&0xFF0000)>>16));
@@ -166,7 +166,7 @@ int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char *filename) {
 		return 0;
 	}
 	if ( zip->isize > 0 ) {
-		// send remaining bytes from ibuffer to buffer
+		/* send remaining bytes from ibuffer to buffer */
 		if (!zip->buffer) zip->buffer=TCOD_list_new();
 		TCOD_list_push(zip->buffer,(void *)zip->ibuffer);
 		zip->isize=zip->ibuffer=0;
@@ -178,7 +178,7 @@ int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char *filename) {
 }
 
 
-// input interface
+/* input interface */
 int TCOD_zip_load_from_file(TCOD_zip_t pzip, const char *filename) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	gzFile f=gzopen(filename,"rb");
@@ -207,12 +207,12 @@ char TCOD_zip_get_char(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	char c=0;
 	if ( zip->isize == 0 ) {
-		// ibuffer is empty. get 4 or 8 new bytes from buffer
+		/* ibuffer is empty. get 4 or 8 new bytes from buffer */
 		zip->ibuffer=(uintptr)TCOD_list_get(zip->buffer,zip->offset);
 		zip->offset++;
 		zip->isize=sizeof(uintptr);
 	}
-	// read one byte from ibuffer
+	/* read one byte from ibuffer */
 #ifdef TCOD_64BITS
 	switch(zip->isize) {
 		case 8: c= zip->ibuffer&0xFFL; break;
@@ -240,13 +240,13 @@ int TCOD_zip_get_int(TCOD_zip_t pzip) {
 #ifndef TCOD_64BITS
 	zip_data_t *zip=(zip_data_t *)pzip;
 	if ( zip->isize == 0 ) {
-		// buffer is padded. read 4 bytes
+		/* buffer is padded. read 4 bytes */
 		int i=(int)TCOD_list_get(zip->buffer,zip->offset);
 		zip->offset++;
 		return i;
 	} else {
 #endif
-		// buffer is not padded. read 4x 1 byte
+		/* buffer is not padded. read 4x 1 byte */
 		uint32 i1=(uint32)(uint8)TCOD_zip_get_char(pzip);
 		uint32 i2=(uint32)(uint8)TCOD_zip_get_char(pzip);
 		uint32 i3=(uint32)(uint8)TCOD_zip_get_char(pzip);
@@ -275,12 +275,12 @@ const char *TCOD_zip_get_string(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	int l=TCOD_zip_get_int(pzip);
 	const char *ret=(const char *)TCOD_list_begin(zip->buffer);
-	int boffset; // offset in bytes
+	int boffset; /* offset in bytes */
 	if ( l == -1 ) return NULL;
-	boffset=zip->offset*sizeof(uintptr)-zip->isize; // current offset
-	ret += boffset; // the string address in buffer
-	boffset += l+1; // new offset
-	// update ibuffer
+	boffset=zip->offset*sizeof(uintptr)-zip->isize; /* current offset */
+	ret += boffset; /* the string address in buffer */
+	boffset += l+1; /* new offset */
+	/* update ibuffer */
 	zip->offset = (boffset+sizeof(uintptr)-1)/sizeof(uintptr);
 	zip->isize = boffset%sizeof(uintptr);
 	if ( zip->isize != 0 ) {
@@ -295,16 +295,16 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void *data) {
 	int l=TCOD_zip_get_int(pzip),i;
 	const char *in=(const char *)TCOD_list_begin(zip->buffer);
 	char *out=(char *)data;
-	int boffset; // offset in bytes
+	int boffset; /* offset in bytes */
 	if ( l == -1 ) return 0;
-	boffset=zip->offset*sizeof(uintptr)-zip->isize; // current offset
-	in += boffset; // the data address in buffer
-	// copy it to data
+	boffset=zip->offset*sizeof(uintptr)-zip->isize; /* current offset */
+	in += boffset; /* the data address in buffer */
+	/* copy it to data */
 	for (i=0; i < MIN(l,nbBytes); i++ ) {
 		*(out++)=*(in++);
 		boffset++;
 	}
-	// update ibuffer
+	/* update ibuffer */
 	zip->offset = (boffset+sizeof(uintptr)-1)/sizeof(uintptr);
 	zip->isize = boffset%sizeof(uintptr);
 	if ( zip->isize != 0 ) {
@@ -358,7 +358,7 @@ uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
 
 void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32 nbBytes) {
 	zip_data_t *zip=(zip_data_t *)pzip;
-	uint32 boffset=zip->offset*sizeof(uintptr)-zip->isize+ nbBytes; // new offset
+	uint32 boffset=zip->offset*sizeof(uintptr)-zip->isize+ nbBytes; /* new offset */
 	TCOD_IFNOT(boffset <= TCOD_list_size(zip->buffer)*sizeof(uintptr)) return;
 	zip->offset = (boffset+sizeof(uintptr)-1)/sizeof(uintptr);
 	zip->isize = boffset%sizeof(uintptr);

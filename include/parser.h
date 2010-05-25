@@ -162,7 +162,7 @@ typedef struct {
 	TCOD_parser_custom_t customs[16];
 	/* fatal error occured */
 	bool fatal;
-	// list of properties if default listener is used
+	/* list of properties if default listener is used */
 	TCOD_list_t props;
 } TCOD_parser_int_t;
 TCODLIB_API TCOD_value_t TCOD_parse_bool_value();

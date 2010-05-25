@@ -37,7 +37,7 @@ bool TCOD_sys_check_bmp(const char *filename) {
 SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
 	SDL_Surface *ret=SDL_LoadBMP(filename);
 	if( !ret ) TCOD_fatal("SDL : %s",SDL_GetError());
-	// convert low color images to 24 bits
+	/* convert low color images to 24 bits */
 	if ( ret->format->BytesPerPixel != 3 ) {
 		Uint32 rmask,gmask,bmask;
         SDL_Surface * tmp;

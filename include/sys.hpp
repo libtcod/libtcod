@@ -58,6 +58,7 @@ public :
 	@C void TCOD_sys_set_fps(int val)
 	@Py sys_set_fps(val)
 	@C# static void TCODSystem::setFps(int val)
+	@Lua tcod.system.setFps(val)
 	@Param val Maximum number of frames per second. 0 means unlimited frame rate.
 	*/
 	static void setFps(int val);
@@ -70,6 +71,7 @@ public :
 	@C int TCOD_sys_get_fps()
 	@Py sys_get_fps()
 	@C# static int TCODSystem::getFps()
+	@Lua tcod.system.getFps()
 	*/
 	static int getFps();
 
@@ -82,6 +84,7 @@ public :
 	@C float TCOD_sys_get_last_frame_length()
 	@Py sys_get_last_frame_length()
 	@C# static float TCODSystem::getLastFrameLength()
+	@Lua tcod.system.getLastFrameLength()
 	@CppEx 
 		// moving an objet at 5 console cells per second
 		float x=0,y=0; // object coordinates
@@ -96,6 +99,12 @@ public :
 		y=0.0
 		x += 5 * libtcod.sys_get_last_frame_length()
 		libtcod.console_put_char(0,int(x),int(y),'X')
+	@LuaEx 
+		-- moving an objet at 5 console cells per second
+		x=0
+		y=0 -- object coordinates
+		x = x + 5 * tcod.system.getLastFrameLength()
+		libtcod.TCODConsole_root:putChar(x,y,'X')
 	*/
 	static float getLastFrameLength();
 
@@ -107,6 +116,7 @@ public :
 	@C void TCOD_sys_sleep_milli(uint32 val)
 	@Py sys_sleep_milli(val)
 	@C# static void TCODSystem::sleepMilli(uint val)
+	@Lua tcod.system.sleepMilli(val)
 	@Param val number of milliseconds before the function returns
 	*/
 	static void sleepMilli(uint32 val);
@@ -119,6 +129,7 @@ public :
 	@C uint32 TCOD_sys_elapsed_milli()
 	@Py sys_elapsed_milli()
 	@C# static uint TCODSystem::getElapsedMilli()
+	@Lua tcod.system.getElapsedMilli()
 	*/
 	static uint32 getElapsedMilli();
 
@@ -130,6 +141,7 @@ public :
 	@C float TCOD_sys_elapsed_seconds()
 	@Py sys_elapsed_seconds()
 	@C# static float TCODSystem::getElapsedSeconds()
+	@Lua tcod.system.getElapsedSeconds()
 	*/
 	static float getElapsedSeconds();
 
@@ -142,6 +154,7 @@ public :
 	@C void TCOD_sys_save_screenshot(const char *filename)
 	@Py sys_save_screenshot(filename)
 	@C# static void TCODSystem::saveScreenshot(string filename);
+	@Lua tcod.system.saveScreenshot(filename)
 	@Param filename Name of the file. If NULL, a filename is automatically generated with the form "./screenshotNNN.png", NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).
 	*/
 	static void saveScreenshot(const char *filename);
@@ -262,6 +275,7 @@ public :
 	@C void TCOD_sys_force_fullscreen_resolution(int width, int height)
 	@Py sys_force_fullscreen_resolution(width, height)
 	@C# static void TCODSystem::forceFullscreenResolution(int width, int height);
+	@Lua tcod.system.forceFullscreenResolution(width,height)
 	@Param width,height Resolution to use when switching to fullscreen.
 		Will use the smallest available resolution so that :
 		resolution width >= width and resolution width >= root console width * font char width
@@ -275,6 +289,9 @@ public :
 	@PyEx 
 		libtcod.sys_force_fullscreen_resolution(800,600)
 		libtcod.console_init_root(80,50,"",True)
+	@LuaEx 
+		tcod.system.forceFullscreenResolution(800,600) -- use 800x600 in fullscreen instead of 640x400
+		tcod.console.initRoot(80,50,"",true) -- 80x50 console with 8x8 char => 640x400 default resolution
 	*/
 	static void forceFullscreenResolution(int width, int height);
 

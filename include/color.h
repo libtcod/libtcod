@@ -53,10 +53,10 @@ TCODLIB_API float TCOD_color_get_value (TCOD_color_t c);
 TCODLIB_API void TCOD_color_set_value (TCOD_color_t *c, float v);
 TCODLIB_API void TCOD_color_shift_hue (TCOD_color_t *c, float hshift);
 TCODLIB_API void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef);
-/* colour map */
+/* color map */
 TCODLIB_API void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const *key_color, int const *key_index);
 
-// color names
+/* color names */
 enum {
 	TCOD_COLOR_RED,
 	TCOD_COLOR_FLAME,
@@ -82,7 +82,7 @@ enum {
 	TCOD_COLOR_NB
 };
 
-// color levels
+/* color levels */
 enum {
 	TCOD_COLOR_DESATURATED,
 	TCOD_COLOR_LIGHTEST,
@@ -95,10 +95,10 @@ enum {
 	TCOD_COLOR_LEVELS
 };
 
-// color array
+/* color array */
 extern TCODLIB_API const TCOD_color_t  TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
 
-// grey levels
+/* grey levels */
 extern TCODLIB_API const TCOD_color_t TCOD_black;
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_grey;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_grey;
@@ -116,7 +116,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_lighter_gray;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_gray;
 extern TCODLIB_API const TCOD_color_t TCOD_white;
 
-//sepia
+/* sepia */
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_sepia;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_sepia;
 extern TCODLIB_API const TCOD_color_t TCOD_dark_sepia;
@@ -125,7 +125,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_light_sepia;
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_sepia;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_sepia;
 
-// standard colors
+/* standard colors */
 extern TCODLIB_API const TCOD_color_t TCOD_red;
 extern TCODLIB_API const TCOD_color_t TCOD_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_orange;
@@ -148,7 +148,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_crimson;
 
-// dark colors
+/* dark colors */
 extern TCODLIB_API const TCOD_color_t TCOD_dark_red;
 extern TCODLIB_API const TCOD_color_t TCOD_dark_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_dark_orange;
@@ -171,7 +171,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_dark_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_dark_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_dark_crimson;
 
-// darker colors
+/* darker colors */
 extern TCODLIB_API const TCOD_color_t TCOD_darker_red;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_orange;
@@ -194,7 +194,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_darker_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_darker_crimson;
 
-//darkest colors
+/* darkest colors */
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_red;
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_orange;
@@ -217,7 +217,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_darkest_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_darkest_crimson;
 
-// light colors
+/* light colors */
 extern TCODLIB_API const TCOD_color_t TCOD_light_red;
 extern TCODLIB_API const TCOD_color_t TCOD_light_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_light_orange;
@@ -240,7 +240,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_light_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_light_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_light_crimson;
 
-//lighter colors
+/* lighter colors */
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_red;
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_orange;
@@ -263,7 +263,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_lighter_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_lighter_crimson;
 
-//lightest colors
+/* lightest colors */
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_red;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_orange;
@@ -286,7 +286,7 @@ extern TCODLIB_API const TCOD_color_t TCOD_lightest_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_lightest_crimson;
 
-// desaturated
+/* desaturated */
 extern TCODLIB_API const TCOD_color_t TCOD_desaturated_red;
 extern TCODLIB_API const TCOD_color_t TCOD_desaturated_flame;
 extern TCODLIB_API const TCOD_color_t TCOD_desaturated_orange;
@@ -309,13 +309,13 @@ extern TCODLIB_API const TCOD_color_t TCOD_desaturated_magenta;
 extern TCODLIB_API const TCOD_color_t TCOD_desaturated_pink;
 extern TCODLIB_API const TCOD_color_t TCOD_desaturated_crimson;
 
-// metallic
+/* metallic */
 extern TCODLIB_API const TCOD_color_t TCOD_brass;
 extern TCODLIB_API const TCOD_color_t TCOD_copper;
 extern TCODLIB_API const TCOD_color_t TCOD_gold;
 extern TCODLIB_API const TCOD_color_t TCOD_silver;
 
-// miscellaneous
+/* miscellaneous */
 extern TCODLIB_API const TCOD_color_t TCOD_celadon;
 extern TCODLIB_API const TCOD_color_t TCOD_peach;
 

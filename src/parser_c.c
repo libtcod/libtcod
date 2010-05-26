@@ -94,7 +94,7 @@ const char *TCOD_struct_get_name(TCOD_parser_struct_t def) {
 /* add a property to an entity definition */
 void TCOD_struct_add_property(TCOD_parser_struct_t def,const char *name,TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_prop_t *prop=(TCOD_struct_prop_t *)calloc(1,sizeof(TCOD_struct_prop_t));
-	prop->name=strdup(name);
+	prop->name=TCOD_strdup(name);
 	prop->value=type;
 	prop->mandat=mandatory;
 	TCOD_list_push(DEF_PROPS(def),(void *)prop);
@@ -114,7 +114,7 @@ void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name,
 	if(size) newArray = calloc(size+1, sizeof(char*));
 
 	for(i = 0 ; i < size ; i++)
-		newArray[i] = strdup(value_list[i]);
+		newArray[i] = TCOD_strdup(value_list[i]);
 	newArray[size] = NULL;
 	
 	TCOD_struct_add_property(def,name,type,mandatory);
@@ -138,7 +138,7 @@ void TCOD_struct_add_value_list(TCOD_parser_struct_t def,const char *name, const
 /* add a flag (simplified bool value) to an entity definition */
 /* a flag cannot be mandatory. if present => true, if omitted => false */
 void TCOD_struct_add_flag(TCOD_parser_struct_t def,const char *propname) {
-	TCOD_list_push(DEF_FLAGS(def),(void *)strdup(propname));
+	TCOD_list_push(DEF_FLAGS(def),(void *)TCOD_strdup(propname));
 }
 
 /* add a sub-entity to an entity definition */
@@ -212,7 +212,7 @@ TCOD_value_t TCOD_parse_string_value() {
 	if ( lex->token_type != TCOD_LEX_STRING ) TCOD_parser_error("parseStringValue : string constant expected instead of '%s'",lex->tok);
 	while ( !end ) {
 		TCOD_lex_t save;
-		TCOD_list_push(l,(void *)strdup(lex->tok));
+		TCOD_list_push(l,(void *)TCOD_strdup(lex->tok));
 		TCOD_lex_savepoint(lex,&save);
 		if (TCOD_lex_parse(lex) != TCOD_LEX_STRING) {
 			end=true;
@@ -344,7 +344,7 @@ TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_st
 			}
 			val=TCOD_parse_property_value(parser,def,propname,false);
 			if ( type == TCOD_TYPE_STRING || (type >= TCOD_TYPE_VALUELIST00 && type <= TCOD_TYPE_VALUELIST15 ) ) {
-				TCOD_list_push(ret.list,strdup(val.s));
+				TCOD_list_push(ret.list,TCOD_strdup(val.s));
 			} else {
 				TCOD_list_push(ret.list,val.custom);
 			}
@@ -415,7 +415,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 	char *name=NULL;
 	if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
 		/* entity type name */
-		name=strdup(lex->tok);
+		name=TCOD_strdup(lex->tok);
 		TCOD_lex_parse(lex);
 	}
 	if ( strcmp(lex->tok,"{") != 0 ) {
@@ -475,7 +475,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 				TCOD_struct_int_t **sub;
 				strcat(id,"#");
 				strcat(id,lex->tok);
-				subname=strdup(lex->tok);
+				subname=TCOD_strdup(lex->tok);
 				TCOD_lex_restore(lex,&save);
 				for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
 					sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
@@ -540,7 +540,7 @@ TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser, TCOD_parser_
 
 TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name) {
 	TCOD_struct_int_t *ent = (TCOD_struct_int_t*)calloc(1,sizeof(TCOD_struct_int_t));
-	ent->name=strdup(name);
+	ent->name=TCOD_strdup(name);
 	ent->flags=TCOD_list_new();
 	ent->props=TCOD_list_new();
 	ent->lists=TCOD_list_new();
@@ -668,7 +668,7 @@ static bool default_new_flag(const char *name) {
 	char tmp[512];
 	prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
 	sprintf(tmp,"%s.%s",cur_prop_name,name);
-	prop->name=strdup(tmp);
+	prop->name=TCOD_strdup(tmp);
 	prop->type=TCOD_TYPE_BOOL;
 	prop->value.b=true;
 	TCOD_list_push(default_props,prop);
@@ -679,7 +679,7 @@ static bool default_new_property(const char *propname, TCOD_value_type_t type, T
 	char tmp[512];
 	prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
 	sprintf(tmp,"%s.%s",cur_prop_name,propname);
-	prop->name=strdup(tmp);
+	prop->name=TCOD_strdup(tmp);
 	prop->type=type;
 	prop->value=value;
 	TCOD_list_push(default_props,prop);

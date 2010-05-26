@@ -110,7 +110,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				static char msg[255];
 				sprintf (msg, "symbol '%s' too long (max size %d)",
 				       _symbols[ lex->nb_symbols ], TCOD_LEX_SYMBOL_SIZE );
-				TCOD_last_error=strdup(msg);
+				TCOD_last_error=TCOD_strdup(msg);
 				return NULL;
 			}
 			strcpy(lex->symbols[ lex->nb_symbols ], _symbols[ lex->nb_symbols ] );
@@ -126,7 +126,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				static char msg[255];
 				sprintf(msg,"keyword '%s' too long (max size %d)",
 						   _keywords[ lex->nb_keywords ], TCOD_LEX_KEYWORD_SIZE);
-				TCOD_last_error=strdup(msg);
+				TCOD_last_error=TCOD_strdup(msg);
 				return NULL;
 			}
 			if ( lex->flags & TCOD_LEX_FLAG_NOCASE )
@@ -212,7 +212,7 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
     {
 		static char msg[255];
 		sprintf(msg, "Cannot open '%s'", _filename);
-		TCOD_last_error=strdup(msg);
+		TCOD_last_error=TCOD_strdup(msg);
 		return false;
     }
 	fseek(f, 0, SEEK_END);
@@ -221,7 +221,7 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
     f = fopen( _filename, "r" );
     
     lex->buf = (char*)calloc(sizeof(char),(size + 1));
-    lex->filename = strdup( _filename );
+    lex->filename = TCOD_strdup( _filename );
     if ( lex->buf == NULL || lex->filename == NULL )
     {
 		fclose(f);
@@ -549,7 +549,7 @@ int TCOD_lex_get_symbol(TCOD_lex_t *lex)
     while ( symb < lex->nb_symbols )
     {
 		if ( ( ( lex->flags & TCOD_LEX_FLAG_NOCASE )
-			&& strncasecmp( lex->symbols[ symb ], lex->pos, strlen( lex->symbols[ symb ] ) ) == 0 )
+			&& TCOD_strncasecmp( lex->symbols[ symb ], lex->pos, strlen( lex->symbols[ symb ] ) ) == 0 )
 			|| ( strncmp( lex->symbols[ symb ], lex->pos, strlen( lex->symbols[ symb ] ) ) == 0 ) )
 		{
 			strcpy( lex->tok, lex->symbols[ symb ] );
@@ -563,7 +563,7 @@ int TCOD_lex_get_symbol(TCOD_lex_t *lex)
 
     lex->pos++;
 	sprintf(msg, "unknown symbol %.10s", lex->pos-1 );
-	TCOD_last_error=strdup(msg);
+	TCOD_last_error=TCOD_strdup(msg);
     return TCOD_LEX_ERROR;
 }
 
@@ -587,7 +587,7 @@ int TCOD_lex_get_iden(TCOD_lex_t *lex)
     while ( key < lex->nb_keywords )
     {
 		if ( strcmp( lex->tok, lex->keywords[ key ] ) == 0
-		|| ( lex->flags & TCOD_LEX_FLAG_NOCASE && strcasecmp( lex->tok, lex->keywords[ key ] ) == 0 ))
+		|| ( lex->flags & TCOD_LEX_FLAG_NOCASE && TCOD_strcasecmp( lex->tok, lex->keywords[ key ] ) == 0 ))
 		{
 			lex->token_type = TCOD_LEX_KEYWORD;
 			lex->token_idx = key;
@@ -661,7 +661,7 @@ int TCOD_lex_parse_until_token_value(TCOD_lex_t *lex, const char *tokenValue)
     while ( token != TCOD_LEX_EOF )
     {
         if ( strcmp( lex->tok, tokenValue ) == 0
-			|| ( ( lex->flags & TCOD_LEX_FLAG_NOCASE ) && strcasecmp(lex->tok, tokenValue ) == 0 ) )
+			|| ( ( lex->flags & TCOD_LEX_FLAG_NOCASE ) && TCOD_strcasecmp(lex->tok, tokenValue ) == 0 ) )
             return token;
 	    token = TCOD_lex_parse(lex);
 	    if ( token == TCOD_LEX_ERROR ) return token;

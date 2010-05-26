@@ -134,9 +134,6 @@ extern "C" {
 #endif
 
 /* ansi C lacks support for those functions */
-#define strdup(x) TCOD_strdup(x)
-#define strcasecmp(x,y) TCOD_strcasecmp(x,y)
-#define strncasecmp(x,y,n) TCOD_strncasecmp(x,y,n)
 TCODLIB_API char *TCOD_strdup(const char *s);
 TCODLIB_API int TCOD_strcasecmp(const char *s1, const char *s2);
 TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);

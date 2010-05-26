@@ -232,7 +232,7 @@ void namegen_populate_list (char * source, TCOD_list_t list, bool wildcards) {
             strncat(token,it,1);
         /* all other characters are treated as separators and cause adding the current token to the list */
         else if (strlen(token) > 0) {
-            TCOD_list_push(list,strdup(token));
+            TCOD_list_push(list,TCOD_strdup(token));
             memset(token,'\0',strlen(source)+1);
         }
     } while (++i <= len);
@@ -254,7 +254,7 @@ void namegen_populate (namegen_t * dst, namegen_syllables_t * src) {
     if (src->post != NULL)          namegen_populate_list (src->post,dst->syllables_post,false);
     if (src->illegal != NULL)       namegen_populate_list (src->illegal,dst->illegal_strings,false);
     if (src->rules != NULL)         namegen_populate_list (src->rules,dst->rules,true);
-    dst->name = strdup(src->name);
+    dst->name = TCOD_strdup(src->name);
 }
 
 /* -------------------- *
@@ -293,18 +293,18 @@ bool namegen_parser_flag (const char *name) {
 }
 
 bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value) {
-    if (strcmp(name,"syllablesStart") == 0)             parser_data->start = strdup(value.s);
-    else if (strcmp(name,"syllablesMiddle") == 0)       parser_data->middle = strdup(value.s);
-    else if (strcmp(name,"syllablesEnd") == 0)          parser_data->end = strdup(value.s);
-    else if (strcmp(name,"syllablesPre") == 0)          parser_data->pre = strdup(value.s);
-    else if (strcmp(name,"syllablesPost") == 0)         parser_data->post = strdup(value.s);
-    else if (strcmp(name,"phonemesVocals") == 0)        parser_data->vocals = strdup(value.s);
-    else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = strdup(value.s);
-    else if (strcmp(name,"rules") == 0)                 parser_data->rules = strdup(value.s);
+    if (strcmp(name,"syllablesStart") == 0)             parser_data->start = TCOD_strdup(value.s);
+    else if (strcmp(name,"syllablesMiddle") == 0)       parser_data->middle = TCOD_strdup(value.s);
+    else if (strcmp(name,"syllablesEnd") == 0)          parser_data->end = TCOD_strdup(value.s);
+    else if (strcmp(name,"syllablesPre") == 0)          parser_data->pre = TCOD_strdup(value.s);
+    else if (strcmp(name,"syllablesPost") == 0)         parser_data->post = TCOD_strdup(value.s);
+    else if (strcmp(name,"phonemesVocals") == 0)        parser_data->vocals = TCOD_strdup(value.s);
+    else if (strcmp(name,"phonemesConsonants") == 0)    parser_data->consonants = TCOD_strdup(value.s);
+    else if (strcmp(name,"rules") == 0)                 parser_data->rules = TCOD_strdup(value.s);
     else if (strcmp(name,"illegal") == 0) { /* illegal strings are converted to lowercase */
         char * str ;
         int i;
-        parser_data->illegal = strdup(value.s);
+        parser_data->illegal = TCOD_strdup(value.s);
         str = parser_data->illegal;
         for(i = 0; i < (int)strlen(str); i++) str[i] = (char)(tolower(str[i]));
     }
@@ -315,7 +315,7 @@ bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_valu
 bool namegen_parser_end_struct(TCOD_parser_struct_t str, const char *name) {
     /* if there's no syllable set by this name, add it to the list */
     if (namegen_generator_check(name) == false) {
-        parser_data->name = strdup(name);
+        parser_data->name = TCOD_strdup(name);
         parser_output = namegen_generator_new();
         namegen_populate(parser_output,parser_data);
         parser_output->random = namegen_random;
@@ -351,7 +351,7 @@ void namegen_parser_run (const char * filename) {
             if (strcmp(*it,filename) == 0) return;
     }
     /* if the file hasn't been parsed yet, add its name to the list so that it's never parsed twice */
-    TCOD_list_push(parsed_files,(const void *)strdup(filename));
+    TCOD_list_push(parsed_files,(const void *)TCOD_strdup(filename));
     /* run the parser */
     TCOD_parser_run(namegen_parser,filename,&namegen_listener);
 }
@@ -382,7 +382,7 @@ bool namegen_word_has_triples (char * str) {
 /* search for occurrences of illegal strings */
 bool namegen_word_has_illegal (namegen_t * data, char * str) {
     /* convert word to lowercase */
-    char * haystack = strdup(str);
+    char * haystack = TCOD_strdup(str);
     int i;
     for(i = 0; i < (int)strlen(haystack); i++) haystack[i] = (char)(tolower(haystack[i]));
     /* look for illegal strings */
@@ -413,7 +413,7 @@ void namegen_word_prune_spaces (char * str) {
 
 /* prune repeated "syllables", such as Arnarn */
 bool namegen_word_prune_syllables (char *str) {
-    char * data = strdup(str);
+    char * data = TCOD_strdup(str);
     int len = strlen(data); /* length of the string */
     char check[8];
     int i; /* iteration in for loops */
@@ -607,7 +607,7 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
         }
     } while (TCOD_random_get_int(data->random,0,100) > chance);
     /* OK, we've got ourselves a new rule! */
-    rule_parsed = strdup(rule_rolled+truncation);
+    rule_parsed = TCOD_strdup(rule_rolled+truncation);
     ret = TCOD_namegen_generate_custom(name,rule_parsed,allocate);
     free(rule_parsed);
     return ret;

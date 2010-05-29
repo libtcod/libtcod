@@ -98,7 +98,7 @@ void TCOD_text_set_properties (TCOD_text_t txt, int cursor_char, int blink_inter
     data->halfinterval = (blink_interval > 0 ? blink_interval / 2 : 0);
     data->ascii_cursor = cursor_char;
     if (data->prompt) free(data->prompt);
-    data->prompt = prompt ? strdup(prompt) : NULL;
+    data->prompt = prompt ? TCOD_strdup(prompt) : NULL;
     data->textx = data->texty = 0;
 	data->tab_size=tab_size;
     if ( prompt ) {

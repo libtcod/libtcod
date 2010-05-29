@@ -15,7 +15,7 @@ TextBox::TextBox(int x,int y,int w, int maxw, const char *label, const char *val
 		}
 	}
 	if ( tip ) setTip(tip);
-	if ( label ) this->label=strdup(label);
+	if ( label ) this->label=TCOD_strdup(label);
 	boxw=w;
 	if (label ) {
 		boxx=strlen(label)+1;

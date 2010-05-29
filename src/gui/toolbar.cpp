@@ -6,7 +6,7 @@ class Separator : public Widget {
 public :
 	Separator(const char *txt, const char *tip=NULL) : Widget(0,0,0,1),txt(NULL) {
 		if ( txt ) {
-			this->txt=strdup(txt);
+			this->txt=TCOD_strdup(txt);
 		}
 		if ( tip ) setTip(tip);
 	}
@@ -37,7 +37,7 @@ public :
 ToolBar::ToolBar(int x, int y, const char *name, const char *tip) 
 	: Container(x,y,0,2),name(NULL),fixedWidth(0) {
 	if ( name ) {
-		this->name = strdup(name);
+		this->name = TCOD_strdup(name);
 		w = strlen(name)+4;
 	}
 	if ( tip ) setTip(tip);
@@ -46,7 +46,7 @@ ToolBar::ToolBar(int x, int y, const char *name, const char *tip)
 ToolBar::ToolBar(int x, int y, int w, const char *name, const char *tip) 
 	: Container(x,y,w,2),name(NULL),fixedWidth(w) {
 	if ( name ) {
-		this->name = strdup(name);
+		this->name = TCOD_strdup(name);
 		fixedWidth = w = MAX((int)strlen(name)+4,w);
 	}
 	if ( tip ) setTip(tip);
@@ -59,7 +59,7 @@ ToolBar::~ToolBar() {
 void ToolBar::setName(const char *name) {
 	if ( this->name ) free(this->name);
 	if ( name ) {
-		this->name = strdup(name);
+		this->name = TCOD_strdup(name);
 		fixedWidth = MAX((int)strlen(name)+4,fixedWidth);
 	} else {
 		name=NULL;

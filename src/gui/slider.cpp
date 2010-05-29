@@ -17,7 +17,7 @@ Slider::~Slider() {
 
 void Slider::setFormat(const char *fmt) {
 	if ( this->fmt ) free(this->fmt);
-	if ( fmt ) this->fmt = strdup(fmt);
+	if ( fmt ) this->fmt = TCOD_strdup(fmt);
 	else fmt=NULL;
 	valueToText();
 }

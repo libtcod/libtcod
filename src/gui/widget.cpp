@@ -117,6 +117,6 @@ void Widget::move(int x,int y) {
 
 void Widget::setTip(const char *tip) {
 	if ( this->tip ) free(this->tip);
-	this->tip = strdup(tip);
+	this->tip = TCOD_strdup(tip);
 }
 

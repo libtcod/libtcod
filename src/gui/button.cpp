@@ -32,7 +32,7 @@ Button::~Button() {
 
 void Button::setLabel(const char *newLabel) {
 	if ( label ) free(label);
-	label=strdup(newLabel);
+	label=TCOD_strdup(newLabel);
 }
 
 void Button::render() {

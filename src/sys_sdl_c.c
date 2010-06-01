@@ -593,9 +593,9 @@ static void TCOD_sys_load_player_config() {
 	renderer=TCOD_parser_get_string_property(parser, "libtcod.renderer");
 	if ( renderer != NULL ) {
 		/* custom renderer */
-		if ( strcasecmp(renderer,"GLSL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_GLSL;
-		else if ( strcasecmp(renderer,"OPENGL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_OPENGL;
-		else if ( strcasecmp(renderer,"SDL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_SDL;
+		if ( TCOD_strcasecmp(renderer,"GLSL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_GLSL;
+		else if ( TCOD_strcasecmp(renderer,"OPENGL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_OPENGL;
+		else if ( TCOD_strcasecmp(renderer,"SDL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_SDL;
 		else printf ("Warning : unknown renderer '%s' in libtcod.cfg\n", renderer);
 	}
 	font=TCOD_parser_get_string_property(parser, "libtcod.font");

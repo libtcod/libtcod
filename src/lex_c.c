@@ -203,6 +203,7 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
 {
     FILE *f;
     char *ptr;
+    long size;
     if ( ! _filename ) {
     	TCOD_last_error = (char *)"Lex.setDatafile(NULL) called";
     	return false;
@@ -216,7 +217,7 @@ bool TCOD_lex_set_data_file(TCOD_lex_t *lex, const char *_filename)
 		return false;
     }
 	fseek(f, 0, SEEK_END);
-   	long size = ftell(f);
+   	size = ftell(f);
    	fclose(f);
     f = fopen( _filename, "r" );
     

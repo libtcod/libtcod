@@ -188,6 +188,18 @@ void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
 	}
 }
 
+void TCOD_console_fill_char(TCOD_console_t con, char *arr) {
+	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	int i;
+	char_t *curchar=dat->buf;
+	for (i=0; i < dat->w*dat->h; i++) {
+		curchar->c=*arr;
+		curchar->cf=TCOD_ctx.ascii_to_tcod[(int)(*arr)];
+		curchar++;
+		arr++;
+	}
+}
+
 colornum_t
 TCOD_console_get_fading_color_wrapper ()
 {

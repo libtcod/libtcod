@@ -792,6 +792,21 @@ def console_fill_background(con,r,g,b) :
 	
 	_lib.TCOD_console_fill_background(con, cr, cg, cb)
 
+def console_fill_char(con,arr) :
+	if (numpy_available and isinstance(r, numpy.ndarray) ):
+		#numpy arrays, use numpy's ctypes functions
+		
+		arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
+		carr = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+		
+	elif (isinstance(arr, list) ):
+		#simple python lists, convert using ctypes
+		carr = (c_int * len(arr))(*arr)
+	else:
+		raise TypeError('arr must be a list or a NumPy array')
+	
+	_lib.TCOD_console_fill_char(con, carr)
+
 ############################
 # sys module
 ############################

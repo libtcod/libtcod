@@ -71,14 +71,6 @@ IF(MSVC OR MINGW)
 	set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY COMPILE_DEFINITIONS LIBTCOD_GUI_EXPORTS)
 ENDIF()
 
-IF(UNIX)
-	SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
-	SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
-
-	SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
-	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
-ENDIF()
-
 IF(MSVC)
 	# Since libtcod pulls in DLLs that use the release CRT, force the linker to never try to cross match CRTs
 	set_property(TARGET ${LIBTCOD_NAME} PROPERTY LINK_FLAGS "/NODEFAULTLIB:MSVCRTD.lib ")
@@ -87,6 +79,14 @@ ENDIF()
 set_property(TARGET ${LIBTCOD_NAME} PROPERTY DEBUG_POSTFIX "-debug")
 set_property(TARGET ${LIBTCOD_CPP_NAME} PROPERTY DEBUG_POSTFIX "-debug")
 set_property(TARGET ${LIBTCOD_GUI_NAME} PROPERTY DEBUG_POSTFIX "-debug")
+
+IF(UNIX)
+	SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "") #Workaround for -rdynamic
+	SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "") #same
+
+	SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
+	SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-rpath,. ${CMAKE_SHARED_LINKER_FLAGS}")
+ENDIF()
 
 #${LIBTCOD_CPP_NAME} is empty on non-linux platforms
 INSTALL(TARGETS ${LIBTCOD_NAME} ${LIBTCOD_GUI_NAME} ${LIBTCOD_CPP_NAME}

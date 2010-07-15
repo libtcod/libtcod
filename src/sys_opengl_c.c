@@ -121,7 +121,7 @@ bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
 
 /* called before creating window */
 void TCOD_opengl_init_attributes() {
-	static bool first=false;
+	static bool first=true;
 	if ( first ) {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);

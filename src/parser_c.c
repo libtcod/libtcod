@@ -48,7 +48,7 @@ typedef struct {
 static TCOD_lex_t *lex=NULL;
 
 static const char *symbols[] = {
-	"{","}","=","/","+","-","[","]",",",NULL
+	"{","}","=","/","+","-","[","]",",","#",NULL
 };
 
 static TCOD_parser_listener_t *listener=NULL;
@@ -233,6 +233,26 @@ TCOD_value_t TCOD_parse_string_value() {
 
 TCOD_value_t TCOD_parse_color_value() {
 	TCOD_value_t ret;
+	if ( lex->token_type == TCOD_LEX_SYMBOL && lex->tok[0]=='#') {
+		char tmp[128]="";
+		/* format : col = #FFFFFF */
+		strcat(tmp,"#");
+		int tok=TCOD_lex_parse(lex);
+		if ( tok == TCOD_LEX_IDEN || tok == TCOD_LEX_INTEGER ) {
+			strcat(tmp,lex->tok);
+			strcpy(lex->tok,tmp);
+			if ( strlen(lex->tok) < 7 && tok == TCOD_LEX_INTEGER ) {
+				/* special case of #12AABB => symbol # + 
+					integer 12 + iden AABB */
+				tok=TCOD_lex_parse(lex);
+				if ( tok == TCOD_LEX_IDEN ) {
+					strcat(tmp,lex->tok);
+					strcpy(lex->tok,tmp);
+				}
+			}
+			lex->token_type = TCOD_LEX_STRING;
+		}
+	}
 	if ( lex->token_type != TCOD_LEX_STRING ) TCOD_parser_error("parseColorValue : string constant expected instead of '%s'",lex->tok);
 	if (lex->tok[0] == '#') {
 	    int r,g,b;

@@ -33,6 +33,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added a TCODColor constructor for HSV values
 + added TCODColor H, S and V separate getters and setters
 + added native Mac OSX support
++ added support for quote-less HTML color values in the parser (col=#FFFFFF instead of col="#FFFFFF")
 % More default values for printFrame :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module

@@ -48,9 +48,9 @@ TECHVERSION = 0x01050100
 # color module
 ############################
 class Color(Structure):
-    _fields_ = [('r', c_uint, 8),
-                ('g', c_uint, 8),
-                ('b', c_uint, 8),
+    _fields_ = [('r', c_uint8),
+                ('g', c_uint8),
+                ('b', c_uint8),
                 ]
 
     def __init__(self, r=0,g=0,b=0):
@@ -59,24 +59,25 @@ class Color(Structure):
         self.b = b
 
     def __eq__(self, c):
-        return (self.r == c.r) and (self.g == c.g) and (self.b == c.b)
+        return _lib.TCOD_color_equals(self, c)
 
     def __mul__(self, c):
 	iret=0
         if isinstance(c,Color):
-            iret=_lib.TCOD_color_multiply_wrapper(col_to_int(self), col_to_int(c))
+            return _lib.TCOD_color_multiply_wrapper(self, c)
         else:
-            iret=_lib.TCOD_color_multiply_scalar_wrapper(col_to_int(self), c_float(c))
-        return int_to_col(iret)
+            return _lib.TCOD_color_multiply_scalar_wrapper(self, c_float(c))
 
     def __add__(self, c):
-        iret=_lib.TCOD_color_add_wrapper(col_to_int(self), col_to_int(c))
-        return int_to_col(iret)
+        return _lib.TCOD_color_add_wrapper(self, c)
 
     def __sub__(self, c):
-        iret=_lib.TCOD_color_subtract_wrapper(col_to_int(self), col_to_int(c))
-        return int_to_col(iret)
-
+        return _lib.TCOD_color_subtract_wrapper(self, c)
+_lib.TCOD_color_equals.restype = bool
+_lib.TCOD_color_multiply_wrapper.restype = Color
+_lib.TCOD_color_multiply_scalar_wrapper.restype = Color
+_lib.TCOD_color_add_wrapper.restype = Color
+_lib.TCOD_color_subtract_wrapper.restype = Color
 def int_to_col(i) :
     c=Color()
     c.r=(i&0xFF0000)>>16
@@ -86,7 +87,7 @@ def int_to_col(i) :
 
 def col_to_int(c) :
     return (int(c.r) <<16) | (c.g<<8) | c.b;
-
+    
 # default colors
 # grey levels
 black=Color(0,0,0)

@@ -62,25 +62,31 @@ static void heap_sift_down(TCOD_path_data_t *path, TCOD_list_t heap) {
 	int child=1;
 	uintptr *array=(uintptr *)TCOD_list_begin(heap);
 	while ( child <= end ) {
+		int toSwap=cur;
 		uint32 off_cur=array[cur];
 		float cur_dist=path->heur[off_cur];
+		float swapValue=cur_dist;
 		uint32 off_child=array[child];
 		float child_dist=path->heur[off_child];
+		if ( child_dist < cur_dist ) {
+			toSwap=child;
+			swapValue=child_dist;
+		}
 		if ( child < end ) {
 			/* get the min between child and child+1 */
 			uintptr off_child2=array[child+1];
 			float child2_dist=path->heur[off_child2];
-			if ( child_dist > child2_dist ) {
-				child++;
-				child_dist=child2_dist;
+			if ( swapValue > child2_dist ) {
+				toSwap=child+1;
+				swapValue=child2_dist;
 			}
 		}
-		if ( child_dist < cur_dist ) {
+		if ( toSwap != cur ) {
 			/* get down one level */
-			uintptr tmp = array[child];
-			array[child]=array[cur];
+			uintptr tmp = array[toSwap];
+			array[toSwap]=array[cur];
 			array[cur]=tmp;
-			cur=child;
+			cur=toSwap;
 		} else return;
 		child=cur*2+1;
 	}
@@ -135,18 +141,73 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 	uintptr *array=(uintptr *)TCOD_list_begin(path->heap);
 	uintptr *end=(uintptr *)TCOD_list_end(path->heap);
 	uintptr *cur=array;
+	uintptr off_idx=0;
+	float value;
+	int idx=0;
+	int heap_size=TCOD_list_size(path->heap);
 	/* find the node corresponding to offset ... SLOW !! */
 	while (cur != end) {
 		if (*cur == offset ) break;
-		cur++;
+		cur++;idx++;
 	}
 	if ( cur == end ) return;
+	off_idx=array[idx];
+	value=path->heur[off_idx];
+	if ( idx > 0 ) {
+		int parent=(idx-1)/2;
+		/* compare to its parent */
+		uintptr off_parent=array[parent];
+		float parent_value=path->heur[off_parent];
+		if (value < parent_value) {
+			/* smaller. bubble it up */
+			while ( idx > 0 && value < parent_value ) {
+				/* swap with parent */
+				array[parent]=off_idx;
+				array[idx] = off_parent;
+				idx=parent;
+				if ( idx > 0 ) {
+					parent=(idx-1)/2;
+					off_parent=array[parent];
+					parent_value=path->heur[off_parent];
+				}
+			}
+			return;
+		} 
+	}
+	/* compare to its sons */
+	while ( idx*2+1 < heap_size ) {
+		int child=idx*2+1;	
+		uintptr off_child=array[child];
+		int toSwap=idx;
+		int child2;
+		float swapValue=value;
+		if ( path->heur[off_child] < value ) {
+			/* swap with son1 ? */
+			toSwap=child;
+			swapValue=path->heur[off_child];
+		}
+		child2 = child+1;
+		if ( child2 < heap_size ) {
+			uintptr off_child2=array[child2];
+			if ( path->heur[off_child2] < swapValue) {
+				/* swap with son2 */
+				toSwap=child2;
+			}
+		}
+		if ( toSwap != idx ) {
+			/* bigger. bubble it down */
+			uintptr tmp = array[toSwap];
+			array[toSwap]=array[idx];
+			array[idx] = tmp;
+			idx=toSwap;			
+		} else return;
+	}		
 	/* remove it... SLOW !! */
-	TCOD_list_remove_iterator(path->heap,(void **)cur);
+/*	TCOD_list_remove_iterator(path->heap,(void **)cur);*/
 	/* put it back on the heap */
-	TCOD_list_push(path->heap,(void *)(uintptr)offset);
+/*	TCOD_list_push(path->heap,(void *)(uintptr)offset);*/
 	/* bubble the value up to its real position */
-	heap_sift_up(path,path->heap);
+/*	heap_sift_up(path,path->heap);*/
 }
 
 

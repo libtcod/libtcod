@@ -235,9 +235,9 @@ TCOD_value_t TCOD_parse_color_value() {
 	TCOD_value_t ret;
 	if ( lex->token_type == TCOD_LEX_SYMBOL && lex->tok[0]=='#') {
 		char tmp[128]="";
+		int tok=TCOD_lex_parse(lex);
 		/* format : col = #FFFFFF */
 		strcat(tmp,"#");
-		int tok=TCOD_lex_parse(lex);
 		if ( tok == TCOD_LEX_IDEN || tok == TCOD_LEX_INTEGER ) {
 			strcat(tmp,lex->tok);
 			strcpy(lex->tok,tmp);

@@ -31,19 +31,19 @@
 
 #include "wrappers.h"
 
-#define RED_MASK   0xFF0000
+#define RED_MASK   0x0000FF
 #define GREEN_MASK 0x00FF00
-#define BLUE_MASK  0x0000FF
+#define BLUE_MASK  0xFF0000
 
 TCOD_color_t int_to_color (colornum_t col) {
   TCOD_color_t ret;
-  ret.r = (col & RED_MASK) >> 16;
+  ret.r = col & RED_MASK;
   ret.g = (col & GREEN_MASK) >> 8;
-  ret.b = col & BLUE_MASK;
+  ret.b = (col & BLUE_MASK) >> 16;
   return ret;
 }
 
-#define color_to_int(col) (int)(((int)((col).r) << 16) | ((col).g << 8) | (col).b)
+#define color_to_int(col) (int)(((int)((col).b) << 16) | ((col).g << 8) | (col).r)
 
 bool TCOD_color_equals_wrapper (colornum_t c1, colornum_t c2) {
   return TCOD_color_equals (int_to_color(c1), int_to_color(c2));

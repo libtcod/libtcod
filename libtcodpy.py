@@ -30,15 +30,18 @@ import ctypes
 from ctypes import *
 
 try:  #import NumPy if available
-	import numpy
-	numpy_available = True
+    import numpy
+    numpy_available = True
 except ImportError:
-	numpy_available = False
+    numpy_available = False
 
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
 else:
-    _lib = ctypes.cdll['./libtcod-mingw.dll']
+    try:
+        _lib = ctypes.cdll['./libtcod-mingw.dll']
+    except WindowsError:
+        _lib = ctypes.cdll['./libtcod-VS.dll']
 
 HEXVERSION = 0x010501
 STRVERSION = "1.5.1"
@@ -53,16 +56,10 @@ class Color(Structure):
                 ('b', c_uint8),
                 ]
 
-    def __init__(self, r=0,g=0,b=0):
-        self.r = r
-        self.g = g
-        self.b = b
-
     def __eq__(self, c):
         return _lib.TCOD_color_equals(self, c)
 
     def __mul__(self, c):
-	iret=0
         if isinstance(c,Color):
             return _lib.TCOD_color_multiply_wrapper(self, c)
         else:
@@ -73,21 +70,33 @@ class Color(Structure):
 
     def __sub__(self, c):
         return _lib.TCOD_color_subtract_wrapper(self, c)
+
+    def __repr__(self):
+        return "Color(%d,%d,%d)" % (self.r, self.g, self.b)
+
+    def __getitem__(self, i):
+        if type(i) == str:
+            return getattr(self, i)
+        else:
+            return getattr(self, "rgb"[i])
+
+    def __setitem__(self, i, c):
+        if type(i) == str:
+            setattr(self, i, c)
+        else:
+            setattr(self, "rgb"[i], c)
+
+    def __iter__(self):
+        yield self.r
+        yield self.g
+        yield self.b
+
 _lib.TCOD_color_equals.restype = bool
 _lib.TCOD_color_multiply_wrapper.restype = Color
 _lib.TCOD_color_multiply_scalar_wrapper.restype = Color
 _lib.TCOD_color_add_wrapper.restype = Color
 _lib.TCOD_color_subtract_wrapper.restype = Color
-def int_to_col(i) :
-    c=Color()
-    c.r=(i&0xFF0000)>>16
-    c.g=(i&0xFF00)>>8
-    c.b=(i&0xFF)
-    return c
 
-def col_to_int(c) :
-    return (int(c.r) <<16) | (c.g<<8) | c.b;
-    
 # default colors
 # grey levels
 black=Color(0,0,0)
@@ -311,9 +320,9 @@ celadon=Color(172,255,175)
 peach=Color(255,159,127)
 
 # color functions
+_lib.TCOD_color_lerp_wrapper.restype = Color
 def color_lerp(c1, c2, a):
-    iret = _lib.TCOD_color_lerp_wrapper(col_to_int(c1), col_to_int(c2), c_float(a))
-    return int_to_col(iret)
+    return _lib.TCOD_color_lerp_wrapper(c1, c2, c_float(a))
 
 def color_set_hsv(c, h, s, v):
     _lib.TCOD_color_set_HSV(byref(c), c_float(h), c_float(s), c_float(v))
@@ -329,28 +338,11 @@ def color_scale_HSV(c, scoef, vcoef) :
     _lib.TCOD_color_scale_HSV(byref(c),c_float(scoef),c_float(vcoef))
 
 def color_gen_map(colors, indexes):
-    COLOR_ARRAY = c_ubyte * (3 * len(colors))
-    IDX_ARRAY = c_int * len(indexes)
-    ccolors = COLOR_ARRAY()
-    cindexes = IDX_ARRAY()
-    maxidx = 0
-    for i in range(len(colors)):
-        ccolors[3 * i] = colors[i].r
-        ccolors[3 * i + 1] = colors[i].g
-        ccolors[3 * i + 2] = colors[i].b
-        cindexes[i] = c_int(indexes[i])
-        if indexes[i] > maxidx:
-            maxidx = indexes[i]
-    RES_ARRAY = c_ubyte * (3 * (maxidx + 1))
-    cres = RES_ARRAY()
+    ccolors = (Color * len(colors))(*colors)
+    cindexes = (c_int * len(indexes))(*indexes)
+    cres = (Color * (max(indexes) + 1))()
     _lib.TCOD_color_gen_map(cres, len(colors), ccolors, cindexes)
-    res = list()
-    i = 0
-    while i < 3 * (maxidx + 1):
-        col = Color(cres[i], cres[i + 1], cres[i + 2])
-        res.append(col)
-        i += 3
-    return res
+    return cres
 
 ############################
 # console module
@@ -548,10 +540,10 @@ def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_GLSL):
     _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen), c_uint(renderer))
 
 def console_get_width(con):
-	return _lib.TCOD_console_get_width(con)
+    return _lib.TCOD_console_get_width(con)
 
 def console_get_height(con):
-	return _lib.TCOD_console_get_height(con)
+    return _lib.TCOD_console_get_height(con)
 
 def console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL, nb_char_horiz=0, nb_char_vertic=0):
     _lib.TCOD_console_set_custom_font(fontFile, flags, nb_char_horiz, nb_char_vertic)
@@ -676,33 +668,34 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
+_lib.TCOD_console_get_background_color_wrapper.restype = Color
 def console_get_background_color(con):
-    iret=_lib.TCOD_console_get_background_color_wrapper(con)
-    return int_to_col(iret)
+    return _lib.TCOD_console_get_background_color_wrapper(con)
 
+_lib.TCOD_console_get_foreground_color_wrapper.restype = Color
 def console_get_foreground_color(con):
-    iret=_lib.TCOD_console_get_foreground_color_wrapper(con)
-    return int_to_col(iret)
+    return _lib.TCOD_console_get_foreground_color_wrapper(con)
 
+_lib.TCOD_console_get_back_wrapper.restype = Color
 def console_get_back(con, x, y):
-    iret=_lib.TCOD_console_get_back_wrapper(con, x, y)
-    return int_to_col(iret)
+    return _lib.TCOD_console_get_back_wrapper(con, x, y)
 
+_lib.TCOD_console_get_fore_wrapper.restype = Color
 def console_get_fore(con, x, y):
-    iret=_lib.TCOD_console_get_fore_wrapper(con, x, y)
-    return int_to_col(iret)
+    return _lib.TCOD_console_get_fore_wrapper(con, x, y)
 
 def console_get_char(con, x, y):
     return _lib.TCOD_console_get_char(con, x, y)
 
 def console_set_fade(fade, fadingColor):
-    _lib.TCOD_console_set_fade_wrapper(fade, col_to_int(fadingColor))
+    _lib.TCOD_console_set_fade_wrapper(fade, fadingColor)
 
 def console_get_fade():
     return _lib.TCOD_console_get_fade().value
 
+_lib.TCOD_console_get_fading_color_wrapper.restype = Color
 def console_get_fading_color():
-    return int_to_col(_lib.TCOD_console_get_fading_color_wrapper())
+    return _lib.TCOD_console_get_fading_color_wrapper()
 
 # handling keyboard input
 def console_wait_for_keypress(flush):
@@ -711,9 +704,9 @@ def console_wait_for_keypress(flush):
     return k
 
 def console_check_for_keypress(flags=KEY_RELEASED):
-	k=Key()
-	_lib.TCOD_console_check_for_keypress_wrapper(byref(k),c_int(flags))
-	return k
+    k=Key()
+    _lib.TCOD_console_check_for_keypress_wrapper(byref(k),c_int(flags))
+    return k
 
 def console_is_key_pressed(key):
     return _lib.TCOD_console_is_key_pressed(key) == 1
@@ -727,12 +720,12 @@ def console_disable_keyboard_repeat():
 # using offscreen consoles
 def console_new(w, h):
     return _lib.TCOD_console_new(w, h)
-	
+
 def console_get_width(con):
-	return _lib.TCOD_console_get_width(con)
-	
+    return _lib.TCOD_console_get_width(con)
+
 def console_get_height(con):
-	return _lib.TCOD_console_get_height(con)
+    return _lib.TCOD_console_get_height(con)
 
 def console_blit(src, x, y, w, h, dst, xdst, ydst, ffade=1.0,bfade=1.0):
     _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, c_float(ffade), c_float(bfade))
@@ -745,68 +738,68 @@ def console_delete(con):
 
 # fast color filling
 def console_fill_foreground(con,r,g,b) :
-	if (numpy_available and isinstance(r, numpy.ndarray) and
-		isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
-		#numpy arrays, use numpy's ctypes functions
-		r = numpy.ascontiguousarray(r, dtype=numpy.int_)
-		g = numpy.ascontiguousarray(g, dtype=numpy.int_)
-		b = numpy.ascontiguousarray(b, dtype=numpy.int_)
-		cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		
-	elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
-		#simple python lists, convert using ctypes
-		cr = (c_int * len(r))(*r)
-		cg = (c_int * len(g))(*g)
-		cb = (c_int * len(b))(*b)
-	else:
-		raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
-	
-	if len(r) != len(g) or len(r) != len(b):
-		raise TypeError('R, G and B must all have the same size.')
-	
-	_lib.TCOD_console_fill_foreground(con, cr, cg, cb)
+    if (numpy_available and isinstance(r, numpy.ndarray) and
+        isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
+        #numpy arrays, use numpy's ctypes functions
+        r = numpy.ascontiguousarray(r, dtype=numpy.int_)
+        g = numpy.ascontiguousarray(g, dtype=numpy.int_)
+        b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+        cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+
+    elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
+        #simple python lists, convert using ctypes
+        cr = (c_int * len(r))(*r)
+        cg = (c_int * len(g))(*g)
+        cb = (c_int * len(b))(*b)
+    else:
+        raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
+
+    if len(r) != len(g) or len(r) != len(b):
+        raise TypeError('R, G and B must all have the same size.')
+
+    _lib.TCOD_console_fill_foreground(con, cr, cg, cb)
 
 def console_fill_background(con,r,g,b) :
-	if (numpy_available and isinstance(r, numpy.ndarray) and
-		isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
-		#numpy arrays, use numpy's ctypes functions
-		
-		r = numpy.ascontiguousarray(r, dtype=numpy.int_)
-		g = numpy.ascontiguousarray(g, dtype=numpy.int_)
-		b = numpy.ascontiguousarray(b, dtype=numpy.int_)
-		cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		
-	elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
-		#simple python lists, convert using ctypes
-		cr = (c_int * len(r))(*r)
-		cg = (c_int * len(g))(*g)
-		cb = (c_int * len(b))(*b)
-	else:
-		raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
-	
-	if len(r) != len(g) or len(r) != len(b):
-		raise TypeError('R, G and B must all have the same size.')
-	
-	_lib.TCOD_console_fill_background(con, cr, cg, cb)
+    if (numpy_available and isinstance(r, numpy.ndarray) and
+        isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
+        #numpy arrays, use numpy's ctypes functions
+
+        r = numpy.ascontiguousarray(r, dtype=numpy.int_)
+        g = numpy.ascontiguousarray(g, dtype=numpy.int_)
+        b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+        cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+
+    elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
+        #simple python lists, convert using ctypes
+        cr = (c_int * len(r))(*r)
+        cg = (c_int * len(g))(*g)
+        cb = (c_int * len(b))(*b)
+    else:
+        raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
+
+    if len(r) != len(g) or len(r) != len(b):
+        raise TypeError('R, G and B must all have the same size.')
+
+    _lib.TCOD_console_fill_background(con, cr, cg, cb)
 
 def console_fill_char(con,arr) :
-	if (numpy_available and isinstance(r, numpy.ndarray) ):
-		#numpy arrays, use numpy's ctypes functions
-		
-		arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
-		carr = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-		
-	elif (isinstance(arr, list) ):
-		#simple python lists, convert using ctypes
-		carr = (c_int * len(arr))(*arr)
-	else:
-		raise TypeError('arr must be a list or a NumPy array')
-	
-	_lib.TCOD_console_fill_char(con, carr)
+    if (numpy_available and isinstance(r, numpy.ndarray) ):
+        #numpy arrays, use numpy's ctypes functions
+
+        arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
+        carr = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+
+    elif (isinstance(arr, list) ):
+        #simple python lists, convert using ctypes
+        carr = (c_int * len(arr))(*arr)
+    else:
+        raise TypeError('arr must be a list or a NumPy array')
+
+    _lib.TCOD_console_fill_char(con, carr)
 
 ############################
 # sys module
@@ -827,9 +820,6 @@ def sys_get_last_frame_length():
 
 def sys_sleep_milli(val):
     _lib.TCOD_sys_sleep_milli(c_uint(val))
-
-def sys_update_char(asciiCode,fontx,fonty,img,x,y):
-    _lib.TCOD_sys_update_char(c_uint(asciiCode),c_int(fontx),c_int(fonty),img,c_int(x),c_int(y))
 
 def sys_elapsed_milli():
     return _lib.TCOD_sys_elapsed_milli()
@@ -895,13 +885,13 @@ def line_step():
     return None,None
 
 def line(xo,yo,xd,yd,py_callback) :
-	LINE_CBK_FUNC=CFUNCTYPE(c_uint,c_int,c_int)
-	def int_callback(x,y) :
-		if py_callback(x,y) :
-			return 1
-		return 0
-	c_callback=LINE_CBK_FUNC(int_callback)
-	return _lib.TCOD_line(xo,yo,xd,yd,c_callback) == 1
+    LINE_CBK_FUNC=CFUNCTYPE(c_uint,c_int,c_int)
+    def int_callback(x,y) :
+        if py_callback(x,y) :
+            return 1
+        return 0
+    c_callback=LINE_CBK_FUNC(int_callback)
+    return _lib.TCOD_line(xo,yo,xd,yd,c_callback) == 1
 
 ############################
 # image module
@@ -950,14 +940,16 @@ def image_get_size(image):
     _lib.TCOD_image_get_size(image, byref(w), byref(h))
     return w.value, h.value
 
+_lib.TCOD_image_get_pixel_wrapper.restype = Color
 def image_get_pixel(image, x, y):
-    return int_to_col(_lib.TCOD_image_get_pixel_wrapper(image, x, y))
+    return _lib.TCOD_image_get_pixel_wrapper(image, x, y)
 
+_lib.TCOD_image_get_mipmap_pixel_wrapper = Color
 def image_get_mipmap_pixel(image, x0, y0, x1, y1):
-    return int_to_col(_lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0),
-                                            c_float(x1), c_float(y1)))
+    return _lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0),
+                                            c_float(x1), c_float(y1))
 def image_put_pixel(image, x, y, col):
-    _lib.TCOD_image_put_pixel_wrapper(image, x, y, col_to_int(col))
+    _lib.TCOD_image_put_pixel_wrapper(image, x, y, col)
 
 def image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle):
     _lib.TCOD_image_blit(image, console, c_float(x), c_float(y), bkgnd_flag,
@@ -1160,9 +1152,10 @@ def parser_get_float_property(parser, name):
 def parser_get_string_property(parser, name):
     return _lib.TCOD_parser_get_string_property(parser, name)
 
+_lib.TCOD_parser_get_color_property_wrapper.restype = Color
 def parser_get_color_property(parser, name):
-    iret=_lib.TCOD_parser_get_color_property_wrapper(parser, name)
-    return int_to_col(iret)
+    return _lib.TCOD_parser_get_color_property_wrapper(parser, name)
+
 
 def parser_get_dice_property(parser, name):
     d = Dice()
@@ -1202,7 +1195,7 @@ def random_get_float(rnd, mi, ma):
 
 def random_get_gaussian_float(rnd, mi, ma):
     return _lib.TCOD_random_get_gaussian_float(rnd, c_float(mi), c_float(ma))
-    
+
 def random_get_gaussian_int(rnd, mi, ma):
     return _lib.TCOD_random_get_gaussian_int(rnd, mi, ma)
 
@@ -1741,25 +1734,25 @@ def heightmap_delete(hm):
 _lib.TCOD_namegen_get_nb_sets_wrapper.restype = c_int
 
 def namegen_parse(filename,random=0) :
-	_lib.TCOD_namegen_parse(filename,random)
+    _lib.TCOD_namegen_parse(filename,random)
 
 def namegen_generate(name, allocate=0) :
-	return _lib.TCOD_namegen_generate(name, c_int(allocate))
+    return _lib.TCOD_namegen_generate(name, c_int(allocate))
 
 def namegen_generate_custom(name, rule, allocate=0) :
-	return _lib.TCOD_namegen_generate(name, rule, c_int(allocate))
+    return _lib.TCOD_namegen_generate(name, rule, c_int(allocate))
 
 def namegen_get_sets():
-	nb=_lib.TCOD_namegen_get_nb_sets_wrapper()
-	SARRAY = c_char_p * nb;
-	setsa = SARRAY()
-	_lib.TCOD_namegen_get_sets_wrapper(setsa)
-	ret=list()
-	for i in range(nb):
-		ret.append(setsa[i])
-	return ret
+    nb=_lib.TCOD_namegen_get_nb_sets_wrapper()
+    SARRAY = c_char_p * nb;
+    setsa = SARRAY()
+    _lib.TCOD_namegen_get_sets_wrapper(setsa)
+    ret=list()
+    for i in range(nb):
+        ret.append(setsa[i])
+    return ret
 
 def namegen_destroy() :
-	_lib.TCOD_namegen_destroy()
+    _lib.TCOD_namegen_destroy()
 
 

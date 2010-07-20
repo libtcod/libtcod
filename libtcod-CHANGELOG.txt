@@ -34,6 +34,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added TCODColor H, S and V separate getters and setters
 + added native Mac OSX support
 + added support for quote-less HTML color values in the parser (col=#FFFFFF instead of col="#FFFFFF")
++ added color control helpers for C# (TCODConsole.getColorControlString/getRGBColorControlString)
 % More default values for printFrame :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module
@@ -43,6 +44,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed python TCOD_parser_get_list_property
 - fixed TCODDijkstra destructor crash bug
 - fixed TCODColor::setHSV bug when using hues below 0 or above 359 grades
+- fixed some rare issues in A* pathfinding 
 =========================================================
 1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    

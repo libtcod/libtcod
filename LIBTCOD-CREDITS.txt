@@ -10,16 +10,23 @@ Products :
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback, and especially :
-- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra pathfinding, name generator, lots of bitmap fonts and being the #1 libtcod user, supporter and contributor.
-- Joao 'Jotaf' Henriques for his long time support, priceless comments and suggestions and the awesome python tutorial and more awesome python stuff to come.
-- Chris Hamons for libtcod-net, the cmake system, the swig wrappers... 
+- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra 
+  pathfinding, name generator, documentation skin, lots of bitmap fonts and 
+  being the #1 libtcod user, supporter and contributor.
+- Joao 'Jotaf' Henriques for his long time support, priceless comments and 
+  suggestions and the awesome python tutorial.
+- Chris 'donblas' Hamons for libtcod-net, the cmake system, the swig wrappers...
+- dividee for polishing and optimizing the python wrapper. 
 - John Klimek for the early C# port and valuable bug fixes.
-- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution to the python port.
-- Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL renderer
+- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution 
+  to the python port.
+- Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL 
+  renderer
 - Michael De Rosa for the OSX ports.
 - Killer_X for the OSX/XCode port.
 - Sandman for various tricky bug fixes.
-- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still have to backport them from the old 1.5 branch, btw...).
+- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still 
+  have to backport them from the old 1.5 branch, btw...).
 - Paul Sexton for the common Lisp wrapper.
 - Bernard Helyer for the D wrapper.
 - Adam 'Blinks' Blinkinsop for the OSX port and the autotools compilation system.

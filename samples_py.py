@@ -307,7 +307,7 @@ def render_lines(first, key):
     yd = int(SAMPLE_SCREEN_HEIGHT / 2 - sin_angle * SAMPLE_SCREEN_WIDTH / 2)
     # draw the line
     libtcod.line(xo, yo, xd, yd, draw_point)
-    libtcod.console_print(sample_console, 2, 2, 
+    libtcod.console_print(sample_console, 2, 2,
                                '%s (ENTER to change)' %
                                flag_names[line_bk_flag & 0xff])
 
@@ -394,11 +394,11 @@ def render_noise(first, key):
     libtcod.console_rect(sample_console, 2, 2, rectw, recth, False,
                          libtcod.BKGND_MULTIPLY)
     for y in range(2,2+recth):
-    	for x in range(2,2+rectw):
-    		col=libtcod.console_get_fore(sample_console,x,y)
-    		col = col * libtcod.grey
-    		libtcod.console_set_fore(sample_console,x,y,col)
-                        
+        for x in range(2,2+rectw):
+            col=libtcod.console_get_fore(sample_console,x,y)
+            col = col * libtcod.grey
+            libtcod.console_set_fore(sample_console,x,y,col)
+
     for curfunc in range(TURBULENCE_WAVELET + 1):
         if curfunc == noise_func:
             libtcod.console_set_foreground_color(sample_console, libtcod.white)
@@ -411,15 +411,15 @@ def render_noise(first, key):
             libtcod.console_print(sample_console, 2, 2 + curfunc,
                                        funcName[curfunc])
     libtcod.console_set_foreground_color(sample_console, libtcod.white)
-    libtcod.console_print(sample_console, 2, 11, 
+    libtcod.console_print(sample_console, 2, 11,
                                'Y/H : zoom (%2.1f)' % noise_zoom)
     if noise_func > WAVELET:
-        libtcod.console_print(sample_console, 2, 12, 
+        libtcod.console_print(sample_console, 2, 12,
                                    'E/D : hurst (%2.1f)' % noise_hurst)
-        libtcod.console_print(sample_console, 2, 13, 
+        libtcod.console_print(sample_console, 2, 13,
                                    'R/F : lacunarity (%2.1f)' %
                                    noise_lacunarity)
-        libtcod.console_print(sample_console, 2, 14, 
+        libtcod.console_print(sample_console, 2, 14,
                                    'T/G : octaves (%2.1f)' % noise_octaves)
     if key.vk == libtcod.KEY_NONE:
         return
@@ -520,7 +520,7 @@ def render_fov(first, key):
     if fov_torch:
         torchs = 'on '
     if fov_light_walls :
-    	lights='on '
+        lights='on '
     if first:
         libtcod.sys_set_fps(30)
         # we draw the foreground only the first time.
@@ -529,7 +529,7 @@ def render_fov(first, key):
         # draw the help text & player @
         libtcod.console_clear(sample_console)
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print(sample_console, 1, 1, 
+        libtcod.console_print(sample_console, 1, 1,
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -634,14 +634,14 @@ def render_fov(first, key):
     elif key.c in (ord('T'), ord('t')):
         fov_torch = not fov_torch
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print(sample_console, 1, 1, 
+        libtcod.console_print(sample_console, 1, 1,
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
     elif key.c in (ord('W'), ord('w')):
         fov_light_walls = not fov_light_walls
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print(sample_console, 1, 1, 
+        libtcod.console_print(sample_console, 1, 1,
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -652,7 +652,7 @@ def render_fov(first, key):
         elif fov_algo_num > 0 :
             fov_algo_num = fov_algo_num - 1
         libtcod.console_set_foreground_color(sample_console, libtcod.white)
-        libtcod.console_print(sample_console, 1, 1, 
+        libtcod.console_print(sample_console, 1, 1,
                                "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_foreground_color(sample_console, libtcod.black)
@@ -727,10 +727,10 @@ def render_path(first, key):
                                  libtcod.BKGND_NONE)
         libtcod.console_put_char(sample_console, path_px, path_py, '@',
                                  libtcod.BKGND_NONE)
-        libtcod.console_print(sample_console, 1, 1, 
+        libtcod.console_print(sample_console, 1, 1,
                                    "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra")
-        libtcod.console_print(sample_console, 1, 4, 
-									"Using : A*")
+        libtcod.console_print(sample_console, 1, 4,
+                                    "Using : A*")
         # draw windows
         for y in range(SAMPLE_SCREEN_HEIGHT):
             for x in range(SAMPLE_SCREEN_WIDTH):
@@ -754,7 +754,7 @@ def render_path(first, key):
                         path_dijk_dist=d
             # compute path from px,py to dx,dy
             libtcod.dijkstra_path_set(path_dijk,path_dx,path_dy)
-	    path_recalculate = False
+        path_recalculate = False
         path_busy = 0.2
     # draw the dungeon
     for y in range(SAMPLE_SCREEN_HEIGHT):
@@ -767,9 +767,9 @@ def render_path(first, key):
                                          libtcod.BKGND_SET)
     # draw the path
     if path_using_astar :
-	    for i in range(libtcod.path_size(path)):
-	        x,y = libtcod.path_get(path, i)
-	        libtcod.console_set_back(sample_console, x, y,
+        for i in range(libtcod.path_size(path)):
+            x,y = libtcod.path_get(path, i)
+            libtcod.console_set_back(sample_console, x, y,
                                  fov_light_ground, libtcod.BKGND_SET)
     else:
         for y in range(SAMPLE_SCREEN_HEIGHT):
@@ -786,20 +786,20 @@ def render_path(first, key):
     if path_busy <= 0.0:
         path_busy = 0.2
         if path_using_astar :
-		    if not libtcod.path_is_empty(path):
-		        libtcod.console_put_char(sample_console, path_px, path_py, ' ',
-		                                 libtcod.BKGND_NONE)
-		        path_px, path_py = libtcod.path_walk(path, True)
-		        libtcod.console_put_char(sample_console, path_px, path_py, '@',
-		                                 libtcod.BKGND_NONE)
+            if not libtcod.path_is_empty(path):
+                libtcod.console_put_char(sample_console, path_px, path_py, ' ',
+                                         libtcod.BKGND_NONE)
+                path_px, path_py = libtcod.path_walk(path, True)
+                libtcod.console_put_char(sample_console, path_px, path_py, '@',
+                                         libtcod.BKGND_NONE)
         else:
-		    if not libtcod.dijkstra_is_empty(path_dijk):
-		        libtcod.console_put_char(sample_console, path_px, path_py, ' ',
-		                                 libtcod.BKGND_NONE)
-		        path_px, path_py = libtcod.dijkstra_path_walk(path_dijk)
-		        libtcod.console_put_char(sample_console, path_px, path_py, '@',
-		                                 libtcod.BKGND_NONE)
-		        path_recalculate = True
+            if not libtcod.dijkstra_is_empty(path_dijk):
+                libtcod.console_put_char(sample_console, path_px, path_py, ' ',
+                                         libtcod.BKGND_NONE)
+                path_px, path_py = libtcod.dijkstra_path_walk(path_dijk)
+                libtcod.console_put_char(sample_console, path_px, path_py, '@',
+                                         libtcod.BKGND_NONE)
+                path_recalculate = True
 
     if key.c in (ord('I'), ord('i')) and path_dy > 0:
         # destination move north
@@ -848,13 +848,13 @@ def render_path(first, key):
     elif key.vk == libtcod.KEY_TAB:
         path_using_astar = not path_using_astar
         if path_using_astar :
-            libtcod.console_print(sample_console, 1, 4, 
-									"Using : A*      ")
+            libtcod.console_print(sample_console, 1, 4,
+                                    "Using : A*      ")
         else:
-            libtcod.console_print(sample_console, 1, 4, 
-									"Using : Dijkstra")
+            libtcod.console_print(sample_console, 1, 4,
+                                    "Using : Dijkstra")
         path_recalculate=True
-		
+
     mouse = libtcod.mouse_get_status()
     mx = mouse.cx - SAMPLE_SCREEN_X
     my = mouse.cy - SAMPLE_SCREEN_Y
@@ -1049,7 +1049,7 @@ def render_bsp(first, key):
     rooms = 'OFF'
     if bsp_random_room:
         rooms = 'ON'
-    libtcod.console_print(sample_console, 1, 1, 
+    libtcod.console_print(sample_console, 1, 1,
                                "ENTER : rebuild bsp\n"
                                "SPACE : rebuild dungeon\n"
                                "+-: bsp depth %d\n"
@@ -1060,7 +1060,7 @@ def render_bsp(first, key):
         walls = 'OFF'
         if bsp_room_walls:
             walls ='ON'
-        libtcod.console_print(sample_console, 1, 6, 
+        libtcod.console_print(sample_console, 1, 6,
                                    '2 : room walls %s' % walls)
     # render the level
     for y in range(SAMPLE_SCREEN_HEIGHT):
@@ -1176,12 +1176,12 @@ def render_mouse(first, key):
         mouse_rbut = 1 - mouse_rbut
     if mouse.mbutton_pressed:
         mouse_mbut = 1 - mouse_mbut
-    libtcod.console_print(sample_console, 1, 1, 
+    libtcod.console_print(sample_console, 1, 1,
                                "Mouse position : %4dx%4d\n"
-                        	   "Mouse cell     : %4dx%4d\n"
-                        	   "Mouse movement : %4dx%4d\n"
-                        	   "Left button    : %s (toggle %s)\n"
-                        	   "Right button   : %s (toggle %s)\n"
+                               "Mouse cell     : %4dx%4d\n"
+                               "Mouse movement : %4dx%4d\n"
+                               "Left button    : %s (toggle %s)\n"
+                               "Right button   : %s (toggle %s)\n"
                                "Middle button  : %s (toggle %s)\n" %
                                (mouse.x, mouse.y,
                                mouse.cx, mouse.cy,
@@ -1189,7 +1189,7 @@ def render_mouse(first, key):
                                butstatus[mouse.lbutton], butstatus[mouse_lbut],
                                butstatus[mouse.rbutton], butstatus[mouse_rbut],
                                butstatus[mouse.mbutton], butstatus[mouse_mbut]))
-    libtcod.console_print(sample_console, 1, 10, 
+    libtcod.console_print(sample_console, 1, 10,
                                "1 : Hide cursor\n2 : Show cursor")
     if key.c == ord('1'):
         libtcod.mouse_show_cursor(False)
@@ -1228,7 +1228,7 @@ def render_name(first, key):
         ng_sets[ng_curset])
     for i in range(len(ng_names)) :
         libtcod.console_print_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
-		libtcod.BKGND_NONE,libtcod.RIGHT,ng_names[i])
+        libtcod.BKGND_NONE,libtcod.RIGHT,ng_names[i])
     ng_delay += libtcod.sys_get_last_frame_length()
     if ng_delay > 0.5 :
         ng_delay -= 0.5
@@ -1297,7 +1297,7 @@ class Light:
 
 def render_py(first, key):
     global use_numpy, frac_t, abs_t, lights, tex_r, tex_g, tex_b, xc, yc, texture, texture2, brightness2, R2, G2, B2
-    
+
     if key.c == ord(' ') and numpy_available:  #toggle renderer
         use_numpy = not use_numpy
         first = True
@@ -1309,18 +1309,18 @@ def render_py(first, key):
         else: text = 'Renderer: default\nSpacebar to change'
         libtcod.console_set_foreground_color(sample_console,libtcod.white)
         libtcod.console_print(sample_console, 1, SCREEN_H - 3, text)
-        
+
         frac_t = RES_V - 1  #time is represented in number of pixels of the texture, start later in time to initialize texture
         abs_t = RES_V - 1
         lights = []  #lights list, and current color of the tunnel texture
         tex_r, tex_g, tex_b = 0, 0, 0
-    
+
     time_delta = libtcod.sys_get_last_frame_length() * SPEED  #advance time
     frac_t += time_delta  #increase fractional (always < 1.0) time
     abs_t += time_delta  #increase absolute elapsed time
     int_t = int(frac_t)  #integer time units that passed this frame (number of texture pixels to advance)
     frac_t -= int_t  #keep this < 1.0
-    
+
     #change texture color according to presence of lights (basically, sum them
     #to get ambient light and smoothly change the current color into that)
     ambient_r = AMBIENT_LIGHT * sum([light.r * light.strength for light in lights])
@@ -1330,11 +1330,11 @@ def render_py(first, key):
     tex_r = tex_r * (1 - alpha) + ambient_r * alpha
     tex_g = tex_g * (1 - alpha) + ambient_g * alpha
     tex_b = tex_b * (1 - alpha) + ambient_b * alpha
-    
+
     if int_t >= 1:  #roll texture (ie, advance in tunnel) according to int_t
         int_t = int_t % RES_V  #can't roll more than the texture's size (can happen when time_delta is large)
         int_abs_t = int(abs_t)  #new pixels are based on absolute elapsed time
-        
+
         if use_numpy:
             texture = roll(texture, -int_t, 1)
             #replace new stretch of texture with new values
@@ -1343,12 +1343,12 @@ def render_py(first, key):
                     tex_v = (v + int_abs_t) / float(RES_V)
                     texture[u,v] = (libtcod.noise_fbm_simplex(noise2d, [u/float(RES_U), tex_v], 32.0) +
                                     libtcod.noise_fbm_simplex(noise2d, [1 - u/float(RES_U), tex_v], 32.0))
-            
+
         else:  #"roll" texture, without numpy
             temp = texture2[0 : RES_U*int_t]
             texture2 = texture2[RES_U*int_t : ]
             texture2.extend(temp)
-            
+
             #replace new stretch of texture with new values
             for v in range(RES_V - int_t, RES_V):
                 for u in range(0, RES_U):
@@ -1360,17 +1360,17 @@ def render_py(first, key):
         #squared distance from center, clipped to sensible minimum and maximum values
         sqr_dist = xc**2 + yc**2
         sqr_dist = sqr_dist.clip(1.0 / RES_V, RES_V**2)
-        
+
         #one coordinate into the texture, represents depth in the tunnel
         v = TEX_STRETCH * float(RES_V) / sqr_dist + frac_t
         v = v.clip(0, RES_V - 1)
-        
+
         #another coordinate, represents rotation around the tunnel
         u = mod(RES_U * (arctan2(yc, xc) / (2 * pi) + 0.5), RES_U)
-        
+
         #retrieve corresponding pixels from texture
         brightness = texture[u.astype(intp), v.astype(intp)] / 4.0 + 0.5
-        
+
         #use the brightness map to compose the final color of the tunnel
         R = brightness * tex_r
         G = brightness * tex_g
@@ -1382,49 +1382,49 @@ def render_py(first, key):
                 #squared distance from center, clipped to sensible minimum and maximum values
                 sqr_dist = x**2 + y**2
                 sqr_dist = min(max(sqr_dist, 1.0 / RES_V), RES_V**2)
-                
+
                 #one coordinate into the texture, represents depth in the tunnel
                 v = TEX_STRETCH * float(RES_V) / sqr_dist + frac_t
                 v = min(v, RES_V - 1)
-                
+
                 #another coordinate, represents rotation around the tunnel
                 u = (RES_U * (math.atan2(y, x) / (2 * math.pi) + 0.5)) % RES_U
-                
+
                 #retrieve corresponding pixels from texture
                 brightness = texture2[int(u) + int(v)*RES_U] / 4.0 + 0.5
-                
+
                 #use the brightness map to compose the final color of the tunnel
                 R2[i] = brightness * tex_r
                 G2[i] = brightness * tex_g
                 B2[i] = brightness * tex_b
                 i += 1
-    
+
     #create new light source
     if libtcod.random_get_float(0, 0, 1) <= time_delta * LIGHTS_CHANCE and len(lights) < MAX_LIGHTS:
         x = libtcod.random_get_float(0, -0.5, 0.5)
         y = libtcod.random_get_float(0, -0.5, 0.5)
         strength = libtcod.random_get_float(0, MIN_LIGHT_STRENGTH, 1.0)
-        
+
         color = libtcod.Color(0, 0, 0)  #create bright colors with random hue
         hue = libtcod.random_get_float(0, 0, 360)
         libtcod.color_set_hsv(color, hue, 0.5, strength)
         lights.append(Light(x, y, TEX_STRETCH, color.r, color.g, color.b, strength))
-    
+
     #eliminate lights that are going to be out of view
     lights = [light for light in lights if light.z - time_delta > 1.0 / RES_V]
-    
+
     for light in lights:  #render lights
         #move light's Z coordinate with time, then project its XYZ coordinates to screen-space
         light.z -= float(time_delta) / TEX_STRETCH
         xl = light.x / light.z * SCREEN_H
         yl = light.y / light.z * SCREEN_H
-        
+
         if use_numpy:
             #calculate brightness of light according to distance from viewer and strength,
             #then calculate brightness of each pixel with inverse square distance law
             light_brightness = LIGHT_BRIGHTNESS * light.strength * (1.0 - light.z / TEX_STRETCH)
             brightness = light_brightness / ((xc - xl)**2 + (yc - yl)**2)
-            
+
             #make all pixels shine around this light
             R += brightness * light.r
             G += brightness * light.g
@@ -1435,18 +1435,18 @@ def render_py(first, key):
                 for x in range(-HALF_W, HALF_W):
                     light_brightness = LIGHT_BRIGHTNESS * light.strength * (1.0 - light.z / TEX_STRETCH)
                     brightness = light_brightness / ((x - xl)**2 + (y - yl)**2)
-                    
+
                     R2[i] += brightness * light.r
                     G2[i] += brightness * light.g
                     B2[i] += brightness * light.b
                     i += 1
-    
+
     if use_numpy:
         #truncate values
         R = R.clip(0, 255)
         G = G.clip(0, 255)
         B = B.clip(0, 255)
-    
+
         #fill the screen with these background colors
         libtcod.console_fill_background(sample_console, R, G, B)
     else:
@@ -1454,7 +1454,7 @@ def render_py(first, key):
         R2 = [int(min(r, 255)) for r in R2]
         G2 = [int(min(g, 255)) for g in G2]
         B2 = [int(min(b, 255)) for b in B2]
-        
+
         #fill the screen with these background colors
         libtcod.console_fill_background(sample_console, R2, G2, B2)
 

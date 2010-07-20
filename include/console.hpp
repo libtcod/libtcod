@@ -804,6 +804,11 @@ public :
 		# A string with a red over black word, using generic color control codes
 		libtcod.console_print(0,1,1,"String with a %c%c%c%c%c%c%c%cred%c word."%
 		        (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
+		        
+	@C#Ex
+		TCODConsole.root.print(1,1,String.Format("String with a {0}red{1} word.",
+			TCODConsole.getRGBColorControlString(ColorControlForeground,TCODColor.red),
+			TCODConsole.getColorControlString(ColorControlStop));
 	*/
 	static void setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back);
 

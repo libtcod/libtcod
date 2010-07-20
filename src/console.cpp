@@ -372,6 +372,36 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, .
 	return ret;
 }
 
+// color control string formating utilities for swigged language  
+
+// ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
+#define NB_BUFFERS 10
+const char *TCODConsole::getColorControlString( TCOD_colctrl_t ctrl ) {
+	static char buf[NB_BUFFERS][2];
+	static int buf_nb=0;
+	const char *ret;
+	buf[buf_nb][0]=ctrl;
+	buf[buf_nb][1]=0;
+	ret = (const char *)(&buf[buf_nb][0]);
+	buf_nb = (buf_nb+1) % NB_BUFFERS;
+	return ret;
+}
+
+// ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB  
+const char *TCODConsole::getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col ) {
+	static char buf[NB_BUFFERS][5];
+	static int buf_nb=0;
+	const char *ret;
+	buf[buf_nb][0]=ctrl;
+	buf[buf_nb][1]=col.r;
+	buf[buf_nb][2]=col.g;
+	buf[buf_nb][3]=col.b;
+	buf[buf_nb][4]=0;
+	ret = (const char *)(&buf[buf_nb][0]);
+	buf_nb = (buf_nb+1) % NB_BUFFERS;
+	return ret;
+}
+
 #endif
 
 

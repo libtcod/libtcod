@@ -48,7 +48,7 @@ STRVERSION = "1.5.1"
 TECHVERSION = 0x01050100
 
 ############################
-# color module
+# color module 
 ############################
 class Color(Structure):
     _fields_ = [('r', c_uint8),

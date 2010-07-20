@@ -286,7 +286,7 @@ TCOD_color_t TCOD_color_HSV(float h, float s, float v) {
 
 	if( s == 0 ) {
 		/* achromatic (grey) */
-		ret.r = ret.g = ret.b = (uint8)(v*255);
+		ret.r = ret.g = ret.b = (uint8)(v*255.0f+0.5f);
 	}
 	else {
 		while (h < 0.0f) h += 360.0f; /*for H < 0 */
@@ -300,34 +300,34 @@ TCOD_color_t TCOD_color_HSV(float h, float s, float v) {
 
 		switch (i) {
 			case 0:
-				ret.r = (uint8)(v*255);
-				ret.g = (uint8)(t*255);
-				ret.b = (uint8)(p*255);
+				ret.r = (uint8)(v*255.0f+0.5f);
+				ret.g = (uint8)(t*255.0f+0.5f);
+				ret.b = (uint8)(p*255.0f+0.5f);
 				break;
 			case 1:
-				ret.r = (uint8)(q*255);
-				ret.g = (uint8)(v*255);
-				ret.b = (uint8)(p*255);
+				ret.r = (uint8)(q*255.0f+0.5f);
+				ret.g = (uint8)(v*255.0f+0.5f);
+				ret.b = (uint8)(p*255.0f+0.5f);
 				break;
 			case 2:
-				ret.r = (uint8)(p*255);
-				ret.g = (uint8)(v*255);
-				ret.b = (uint8)(t*255);
+				ret.r = (uint8)(p*255.0f+0.5f);
+				ret.g = (uint8)(v*255.0f+0.5f);
+				ret.b = (uint8)(t*255.0f+0.5f);
 				break;
 			case 3:
-				ret.r = (uint8)(p*255);
-				ret.g = (uint8)(q*255);
-				ret.b = (uint8)(v*255);
+				ret.r = (uint8)(p*255.0f+0.5f);
+				ret.g = (uint8)(q*255.0f+0.5f);
+				ret.b = (uint8)(v*255.0f+0.5f);
 				break;
 			case 4:
-				ret.r = (uint8)(t*255);
-				ret.g = (uint8)(p*255);
-				ret.b = (uint8)(v*255);
+				ret.r = (uint8)(t*255.0f+0.5f);
+				ret.g = (uint8)(p*255.0f+0.5f);
+				ret.b = (uint8)(v*255.0f+0.5f);
 				break;
 			default:
-				ret.r = (uint8)(v*255);
-				ret.g = (uint8)(p*255);
-				ret.b = (uint8)(q*255);
+				ret.r = (uint8)(v*255.0f+0.5f);
+				ret.g = (uint8)(p*255.0f+0.5f);
+				ret.b = (uint8)(q*255.0f+0.5f);
 				break;
 		}
 	}
@@ -404,7 +404,7 @@ void TCOD_color_set_HSV(TCOD_color_t *c, float h, float s, float v)
 
 	if( s == 0.0f ) {
 		/* achromatic (grey) */
-		c->r = c->g = c->b = (uint8)(v*255.0f);
+		c->r = c->g = c->b = (uint8)(v*255.0f+0.5f);
 		return;
 	}
 
@@ -419,34 +419,34 @@ void TCOD_color_set_HSV(TCOD_color_t *c, float h, float s, float v)
 
 	switch( i ) {
 		case 0:
-			c->r = (uint8)(v*255.0f);
-			c->g = (uint8)(t*255.0f);
-			c->b = (uint8)(p*255.0f);
+			c->r = (uint8)(v*255.0f+0.5f);
+			c->g = (uint8)(t*255.0f+0.5f);
+			c->b = (uint8)(p*255.0f+0.5f);
 			break;
 		case 1:
-			c->r = (uint8)(q*255.0f);
-			c->g = (uint8)(v*255.0f);
-			c->b = (uint8)(p*255.0f);
+			c->r = (uint8)(q*255.0f+0.5f);
+			c->g = (uint8)(v*255.0f+0.5f);
+			c->b = (uint8)(p*255.0f+0.5f);
 			break;
 		case 2:
-			c->r = (uint8)(p*255.0f);
-			c->g = (uint8)(v*255.0f);
-			c->b = (uint8)(t*255.0f);
+			c->r = (uint8)(p*255.0f+0.5f);
+			c->g = (uint8)(v*255.0f+0.5f);
+			c->b = (uint8)(t*255.0f+0.5f);
 			break;
 		case 3:
-			c->r = (uint8)(p*255.0f);
-			c->g = (uint8)(q*255.0f);
-			c->b = (uint8)(v*255.0f);
+			c->r = (uint8)(p*255.0f+0.5f);
+			c->g = (uint8)(q*255.0f+0.5f);
+			c->b = (uint8)(v*255.0f+0.5f);
 			break;
 		case 4:
-			c->r = (uint8)(t*255.0f);
-			c->g = (uint8)(p*255.0f);
-			c->b = (uint8)(v*255.0f);
+			c->r = (uint8)(t*255.0f+0.5f);
+			c->g = (uint8)(p*255.0f+0.5f);
+			c->b = (uint8)(v*255.0f+0.5f);
 			break;
 		default:
-			c->r = (uint8)(v*255.0f);
-			c->g = (uint8)(p*255.0f);
-			c->b = (uint8)(q*255.0f);
+			c->r = (uint8)(v*255.0f+0.5f);
+			c->g = (uint8)(p*255.0f+0.5f);
+			c->b = (uint8)(q*255.0f+0.5f);
 			break;
 	}
 }

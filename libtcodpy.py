@@ -48,7 +48,7 @@ STRVERSION = "1.5.1"
 TECHVERSION = 0x01050100
 
 ############################
-# color module 
+# color module
 ############################
 class Color(Structure):
     _fields_ = [('r', c_uint8),
@@ -870,8 +870,9 @@ def sys_register_SDL_renderer(callback):
 ############################
 # line module
 ############################
-_lib.TCOD_line_step.restype = c_uint
-_lib.TCOD_line.restype=c_uint
+_lib.TCOD_line_step.restype = c_bool
+_lib.TCOD_line.restype=c_bool
+_lib.TCOD_line_step_mt.restype = c_bool
 
 def line_init(xo, yo, xd, yd):
     _lib.TCOD_line_init(xo, yo, xd, yd)
@@ -885,13 +886,19 @@ def line_step():
     return None,None
 
 def line(xo,yo,xd,yd,py_callback) :
-    LINE_CBK_FUNC=CFUNCTYPE(c_uint,c_int,c_int)
-    def int_callback(x,y) :
-        if py_callback(x,y) :
-            return 1
-        return 0
-    c_callback=LINE_CBK_FUNC(int_callback)
-    return _lib.TCOD_line(xo,yo,xd,yd,c_callback) == 1
+    LINE_CBK_FUNC=CFUNCTYPE(c_bool,c_int,c_int)
+    c_callback=LINE_CBK_FUNC(py_callback)
+    return _lib.TCOD_line(xo,yo,xd,yd,c_callback)
+
+def line_iter(xo, yo, xd, yd):
+    data = (c_int * 9)()        # struct TCOD_bresenham_data_t
+    _lib.TCOD_line_init_mt(xo, yo, xd, yd, data)
+    x = c_int(xo)
+    y = c_int(yo)
+    done = False
+    while not done:
+        yield x.value, y.value
+        done = _lib.TCOD_line_step_mt(byref(x), byref(y), data)
 
 ############################
 # image module

@@ -138,7 +138,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 		if ( ! (strcmp(FileData.cFileName,".") == 0 || strcmp(FileData.cFileName,"..") == 0 ) )
 		{
 			if ( filename_match(FileData.cFileName,pattern) )
-				TCOD_list_push(list,strdup(FileData.cFileName));
+				TCOD_list_push(list,TCOD_strdup(FileData.cFileName));
 		}
 
 	} while ( FindNextFile(hList, &FileData) );

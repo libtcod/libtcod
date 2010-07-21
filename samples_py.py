@@ -233,14 +233,6 @@ line_bk = libtcod.Color()
 line_init = False
 line_bk_flag = libtcod.BKGND_SET
 
-def draw_point(x,y) :
-    global line_bk_flag
-    if SAMPLE_SCREEN_WIDTH > x>= 0 and \
-        0 <= y < SAMPLE_SCREEN_HEIGHT:
-        libtcod.console_set_back(sample_console, x, y,
-                                 libtcod.light_blue, line_bk_flag)
-    return True
-
 def render_lines(first, key):
     global line_bk, line_init, line_bk_flag
 
@@ -306,7 +298,12 @@ def render_lines(first, key):
     xd = int(SAMPLE_SCREEN_WIDTH / 2 * (1 - cos_angle))
     yd = int(SAMPLE_SCREEN_HEIGHT / 2 - sin_angle * SAMPLE_SCREEN_WIDTH / 2)
     # draw the line
-    libtcod.line(xo, yo, xd, yd, draw_point)
+    # in python the easiest way is to use the line iterator
+    for x,y in libtcod.line_iter(xo, yo, xd, yd):
+        if 0 <= x < SAMPLE_SCREEN_WIDTH and \
+           0 <= y < SAMPLE_SCREEN_HEIGHT:
+            libtcod.console_set_back(sample_console, x, y,
+                                     libtcod.light_blue, line_bk_flag)
     libtcod.console_print(sample_console, 2, 2,
                                '%s (ENTER to change)' %
                                flag_names[line_bk_flag & 0xff])

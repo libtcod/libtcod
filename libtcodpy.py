@@ -91,7 +91,7 @@ class Color(Structure):
         yield self.g
         yield self.b
 
-_lib.TCOD_color_equals.restype = bool
+_lib.TCOD_color_equals.restype = c_bool
 _lib.TCOD_color_multiply_wrapper.restype = Color
 _lib.TCOD_color_multiply_scalar_wrapper.restype = Color
 _lib.TCOD_color_add_wrapper.restype = Color
@@ -348,20 +348,28 @@ def color_gen_map(colors, indexes):
 # console module
 ############################
 class Key(Structure):
-    _fields_=[('vk', c_int, 32),
-              ('c', c_int, 8),
-              ('pressed', c_uint, 8),
-              ('lalt', c_uint, 8),
-              ('lctrl', c_uint, 8),
-              ('ralt', c_uint, 8),
-              ('rctrl', c_uint, 8),
-              ('shift', c_uint, 8),
+    _fields_=[('vk', c_int),
+              ('c', c_int8),
+              ('pressed', c_bool),
+              ('lalt', c_bool),
+              ('lctrl', c_bool),
+              ('ralt', c_bool),
+              ('rctrl', c_bool),
+              ('shift', c_bool),
               ]
 
 _lib.TCOD_console_wait_for_keypress.restype = Key
 _lib.TCOD_console_check_for_keypress.restype = Key
-_lib.TCOD_console_credits_render.restype = c_uint
+_lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
+_lib.TCOD_console_is_fullscreen.restype = c_bool
+_lib.TCOD_console_is_window_closed.restype = c_bool
+_lib.TCOD_console_get_background_color_wrapper.restype = Color
+_lib.TCOD_console_get_foreground_color_wrapper.restype = Color
+_lib.TCOD_console_get_back_wrapper.restype = Color
+_lib.TCOD_console_get_fore_wrapper.restype = Color
+_lib.TCOD_console_get_fading_color_wrapper.restype = Color
+_lib.TCOD_console_is_key_pressed.restype = c_bool
 
 # background rendering modes
 BKGND_NONE = 0
@@ -569,13 +577,13 @@ def console_map_string_to_font(s, fontCharX, fontCharY):
     _lib.TCOD_console_map_string_to_font(s, fontCharX, fontCharY)
 
 def console_is_fullscreen():
-    return _lib.TCOD_console_is_fullscreen() == 1
+    return _lib.TCOD_console_is_fullscreen()
 
 def console_set_fullscreen(fullscreen):
     _lib.TCOD_console_set_fullscreen(c_int(fullscreen))
 
 def console_is_window_closed():
-    return _lib.TCOD_console_is_window_closed() == 1
+    return _lib.TCOD_console_is_window_closed()
 
 def console_set_window_title(title):
     _lib.TCOD_console_set_window_title(title)
@@ -587,7 +595,7 @@ def console_credits_reset():
     _lib.TCOD_console_credits_reset()
 
 def console_credits_render(x, y, alpha):
-    return _lib.TCOD_console_credits_render(x, y, c_int(alpha)) == 1
+    return _lib.TCOD_console_credits_render(x, y, c_int(alpha))
 
 def console_flush():
     _lib.TCOD_console_flush()
@@ -668,19 +676,15 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
-_lib.TCOD_console_get_background_color_wrapper.restype = Color
 def console_get_background_color(con):
     return _lib.TCOD_console_get_background_color_wrapper(con)
 
-_lib.TCOD_console_get_foreground_color_wrapper.restype = Color
 def console_get_foreground_color(con):
     return _lib.TCOD_console_get_foreground_color_wrapper(con)
 
-_lib.TCOD_console_get_back_wrapper.restype = Color
 def console_get_back(con, x, y):
     return _lib.TCOD_console_get_back_wrapper(con, x, y)
 
-_lib.TCOD_console_get_fore_wrapper.restype = Color
 def console_get_fore(con, x, y):
     return _lib.TCOD_console_get_fore_wrapper(con, x, y)
 
@@ -693,7 +697,6 @@ def console_set_fade(fade, fadingColor):
 def console_get_fade():
     return _lib.TCOD_console_get_fade().value
 
-_lib.TCOD_console_get_fading_color_wrapper.restype = Color
 def console_get_fading_color():
     return _lib.TCOD_console_get_fading_color_wrapper()
 
@@ -709,7 +712,7 @@ def console_check_for_keypress(flags=KEY_RELEASED):
     return k
 
 def console_is_key_pressed(key):
-    return _lib.TCOD_console_is_key_pressed(key) == 1
+    return _lib.TCOD_console_is_key_pressed(key)
 
 def console_set_keyboard_repeat(initial_delay, interval):
     _lib.TCOD_console_set_keyboard_repeat(initial_delay, interval)
@@ -744,9 +747,9 @@ def console_fill_foreground(con,r,g,b) :
         r = numpy.ascontiguousarray(r, dtype=numpy.int_)
         g = numpy.ascontiguousarray(g, dtype=numpy.int_)
         b = numpy.ascontiguousarray(b, dtype=numpy.int_)
-        cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-        cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-        cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cr = r.ctypes.data_as(POINTER(c_int))
+        cg = g.ctypes.data_as(POINTER(c_int))
+        cb = b.ctypes.data_as(POINTER(c_int))
 
     elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
         #simple python lists, convert using ctypes
@@ -769,9 +772,9 @@ def console_fill_background(con,r,g,b) :
         r = numpy.ascontiguousarray(r, dtype=numpy.int_)
         g = numpy.ascontiguousarray(g, dtype=numpy.int_)
         b = numpy.ascontiguousarray(b, dtype=numpy.int_)
-        cr = r.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-        cg = g.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
-        cb = b.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        cr = r.ctypes.data_as(POINTER(c_int))
+        cg = g.ctypes.data_as(POINTER(c_int))
+        cb = b.ctypes.data_as(POINTER(c_int))
 
     elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
         #simple python lists, convert using ctypes
@@ -791,7 +794,7 @@ def console_fill_char(con,arr) :
         #numpy arrays, use numpy's ctypes functions
 
         arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
-        carr = arr.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
+        carr = arr.ctypes.data_as(POINTER(c_int))
 
     elif (isinstance(arr, list) ):
         #simple python lists, convert using ctypes
@@ -806,7 +809,6 @@ def console_fill_char(con,arr) :
 ############################
 _lib.TCOD_sys_get_last_frame_length.restype = c_float
 _lib.TCOD_sys_elapsed_seconds.restype = c_float
-_lib.TCOD_sys_get_renderer.restype = c_uint
 
 # high precision time functions
 def sys_set_fps(fps):
@@ -828,7 +830,7 @@ def sys_elapsed_seconds():
     return _lib.TCOD_sys_elapsed_seconds()
 
 def sys_set_renderer(renderer):
-    _lib.TCOD_sys_set_renderer(c_uint(renderer))
+    _lib.TCOD_sys_set_renderer(renderer)
 
 def sys_get_renderer():
     return _lib.TCOD_sys_get_renderer()
@@ -903,7 +905,9 @@ def line_iter(xo, yo, xd, yd):
 ############################
 # image module
 ############################
-_lib.TCOD_image_is_pixel_transparent.restype = c_uint
+_lib.TCOD_image_is_pixel_transparent.restype = c_bool
+_lib.TCOD_image_get_pixel_wrapper.restype = Color
+_lib.TCOD_image_get_mipmap_pixel_wrapper = Color
 
 def image_new(width, height):
     return _lib.TCOD_image_new(width, height)
@@ -930,7 +934,7 @@ def image_get_alpha(image,x,y) :
     return _lib.TCOD_image_get_alpha(image,c_int(x),c_int(y))
 
 def image_is_pixel_transparent(image,x,y) :
-    return _lib.TCOD_image_is_pixel_transparent(image,c_int(x),c_int(y)) == 1
+    return _lib.TCOD_image_is_pixel_transparent(image,c_int(x),c_int(y))
 
 def image_load(filename):
     return _lib.TCOD_image_load(filename)
@@ -947,11 +951,9 @@ def image_get_size(image):
     _lib.TCOD_image_get_size(image, byref(w), byref(h))
     return w.value, h.value
 
-_lib.TCOD_image_get_pixel_wrapper.restype = Color
 def image_get_pixel(image, x, y):
     return _lib.TCOD_image_get_pixel_wrapper(image, x, y)
 
-_lib.TCOD_image_get_mipmap_pixel_wrapper = Color
 def image_get_mipmap_pixel(image, x0, y0, x1, y1):
     return _lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0),
                                             c_float(x1), c_float(y1))
@@ -978,31 +980,31 @@ def image_delete(image):
 # mouse module
 ############################
 class Mouse(Structure):
-    _fields_=[('x', c_int, 32),
-              ('y', c_int, 32),
-              ('dx', c_int, 32),
-              ('dy', c_int, 32),
-              ('cx', c_int, 32),
-              ('cy', c_int, 32),
-              ('dcx', c_int, 32),
-              ('dcy', c_int, 32),
-              ('lbutton', c_uint, 8),
-              ('rbutton', c_uint, 8),
-              ('mbutton', c_uint, 8),
-              ('lbutton_pressed', c_uint, 8),
-              ('rbutton_pressed', c_uint, 8),
-              ('mbutton_pressed', c_uint, 8),
-              ('wheel_up', c_uint, 8),
-              ('wheel_down', c_uint, 8),
+    _fields_=[('x', c_int),
+              ('y', c_int),
+              ('dx', c_int),
+              ('dy', c_int),
+              ('cx', c_int),
+              ('cy', c_int),
+              ('dcx', c_int),
+              ('dcy', c_int),
+              ('lbutton', c_bool),
+              ('rbutton', c_bool),
+              ('mbutton', c_bool),
+              ('lbutton_pressed', c_bool),
+              ('rbutton_pressed', c_bool),
+              ('mbutton_pressed', c_bool),
+              ('wheel_up', c_bool),
+              ('wheel_down', c_bool),
               ]
 
-_lib.TCOD_mouse_is_cursor_visible.restype = c_uint
+_lib.TCOD_mouse_is_cursor_visible.restype = c_bool
 
 def mouse_show_cursor(visible):
     _lib.TCOD_mouse_show_cursor(c_int(visible))
 
 def mouse_is_cursor_visible():
-    return _lib.TCOD_mouse_is_cursor_visible() == 1
+    return _lib.TCOD_mouse_is_cursor_visible()
 
 def mouse_move(x, y):
     _lib.TCOD_mouse_move(x, y)
@@ -1016,10 +1018,11 @@ def mouse_get_status():
 # parser module
 ############################
 _lib.TCOD_struct_get_name.restype = c_char_p
-_lib.TCOD_struct_is_mandatory.restype = c_uint
-_lib.TCOD_parser_get_bool_property.restype = c_uint
+_lib.TCOD_struct_is_mandatory.restype = c_bool
+_lib.TCOD_parser_get_bool_property.restype = c_bool
 _lib.TCOD_parser_get_float_property.restype = c_float
 _lib.TCOD_parser_get_string_property.restype = c_char_p
+_lib.TCOD_parser_get_color_property_wrapper.restype = Color
 
 class Dice(Structure):
     _fields_=[('nb_dices', c_int),
@@ -1107,7 +1110,7 @@ def struct_get_name(struct):
     return _lib.TCOD_struct_get_name(struct)
 
 def struct_is_mandatory(struct, name):
-    return _lib.TCOD_struct_is_mandatory(struct, name) == 1
+    return _lib.TCOD_struct_is_mandatory(struct, name)
 
 def struct_get_type(struct, name):
     return _lib.TCOD_struct_get_type(struct, name)
@@ -1145,7 +1148,7 @@ def parser_delete(parser):
     _lib.TCOD_parser_delete(parser)
 
 def parser_get_bool_property(parser, name):
-    return _lib.TCOD_parser_get_bool_property(parser, name) == 1
+    return _lib.TCOD_parser_get_bool_property(parser, name)
 
 def parser_get_int_property(parser, name):
     return _lib.TCOD_parser_get_int_property(parser, name)
@@ -1159,7 +1162,6 @@ def parser_get_float_property(parser, name):
 def parser_get_string_property(parser, name):
     return _lib.TCOD_parser_get_string_property(parser, name)
 
-_lib.TCOD_parser_get_color_property_wrapper.restype = Color
 def parser_get_color_property(parser, name):
     return _lib.TCOD_parser_get_color_property_wrapper(parser, name)
 
@@ -1285,6 +1287,10 @@ def noise_delete(n):
 ############################
 # fov module
 ############################
+_lib.TCOD_map_is_in_fov.restype = c_bool
+_lib.TCOD_map_is_transparent = c_bool
+_lib.TCOD_map_is_walkable = c_bool
+
 FOV_BASIC = 0
 FOV_DIAMOND = 1
 FOV_SHADOW = 2
@@ -1319,13 +1325,13 @@ def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_RESTRICTIVE ):
     _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_uint(light_walls), c_int(algo))
 
 def map_is_in_fov(m, x, y):
-    return _lib.TCOD_map_is_in_fov(m, x, y) == 1
+    return _lib.TCOD_map_is_in_fov(m, x, y)
 
 def map_is_transparent(m, x, y):
-    return _lib.TCOD_map_is_transparent(m, x, y) == 1
+    return _lib.TCOD_map_is_transparent(m, x, y)
 
 def map_is_walkable(m, x, y):
-    return _lib.TCOD_map_is_walkable(m, x, y) == 1
+    return _lib.TCOD_map_is_walkable(m, x, y)
 
 def map_delete(m):
     return _lib.TCOD_map_delete(m)
@@ -1339,8 +1345,8 @@ def map_get_height(map):
 ############################
 # pathfinding module
 ############################
-_lib.TCOD_path_compute.restype = c_uint
-_lib.TCOD_path_is_empty.restype = c_uint
+_lib.TCOD_path_compute.restype = c_bool
+_lib.TCOD_path_is_empty.restype = c_bool
 _lib.TCOD_path_walk.restype = c_uint
 
 def path_new_using_map(m, dcost=1.41):
@@ -1357,7 +1363,7 @@ def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
                                              py_object(userdata), c_float(dcost))
 
 def path_compute(p, ox, oy, dx, dy):
-    return _lib.TCOD_path_compute(p, ox, oy, dx, dy) == 1
+    return _lib.TCOD_path_compute(p, ox, oy, dx, dy)
 
 def path_get_origin(p):
     x = c_int()
@@ -1381,7 +1387,7 @@ def path_get(p, idx):
     return x.value, y.value
 
 def path_is_empty(p):
-    return _lib.TCOD_path_is_empty(p) == 1
+    return _lib.TCOD_path_is_empty(p)
 
 def path_walk(p, recompute):
     x = c_int()
@@ -1394,7 +1400,7 @@ def path_delete(p):
     _lib.TCOD_path_delete(p)
 
 _lib.TCOD_dijkstra_path_set.restype = c_uint
-_lib.TCOD_dijkstra_is_empty.restype = c_uint
+_lib.TCOD_dijkstra_is_empty.restype = c_bool
 _lib.TCOD_dijkstra_size.restype = c_int
 _lib.TCOD_dijkstra_path_walk.restype = c_uint
 _lib.TCOD_dijkstra_get_distance.restype = c_float
@@ -1431,7 +1437,7 @@ def dijkstra_get(p, idx):
     return x.value, y.value
 
 def dijkstra_is_empty(p):
-    return _lib.TCOD_dijkstra_is_empty(p) == 1
+    return _lib.TCOD_dijkstra_is_empty(p)
 
 def dijkstra_path_walk(p):
     x = c_int()
@@ -1463,8 +1469,8 @@ _lib.TCOD_bsp_new_with_size.restype = POINTER(_CBsp)
 _lib.TCOD_bsp_left.restype = POINTER(_CBsp)
 _lib.TCOD_bsp_right.restype = POINTER(_CBsp)
 _lib.TCOD_bsp_father.restype = POINTER(_CBsp)
-_lib.TCOD_bsp_is_leaf.restype = c_uint
-_lib.TCOD_bsp_contains.restype = c_uint
+_lib.TCOD_bsp_is_leaf.restype = c_bool
+_lib.TCOD_bsp_contains.restype = c_bool
 _lib.TCOD_bsp_find_node.restype = POINTER(_CBsp)
 
 # python class encapsulating the _CBsp pointer
@@ -1540,10 +1546,10 @@ def bsp_father(node):
     return Bsp(_lib.TCOD_bsp_father(node.p))
 
 def bsp_is_leaf(node):
-    return _lib.TCOD_bsp_is_leaf(node.p) == 1
+    return _lib.TCOD_bsp_is_leaf(node.p)
 
 def bsp_contains(node, cx, cy):
-    return _lib.TCOD_bsp_contains(node.p, cx, cy) == 1
+    return _lib.TCOD_bsp_contains(node.p, cx, cy)
 
 def bsp_find_node(node, cx, cy):
     return Bsp(_lib.TCOD_bsp_find_node(node.p, cx, cy))
@@ -1591,7 +1597,7 @@ class _CHeightMap(Structure):
 
 _lib.TCOD_heightmap_new.restype = POINTER(_CHeightMap)
 _lib.TCOD_heightmap_get_value.restype = c_float
-_lib.TCOD_heightmap_has_land_on_border.restype = c_uint
+_lib.TCOD_heightmap_has_land_on_border.restype = c_bool
 
 class HeightMap(object):
     def __init__(self, chm):
@@ -1721,8 +1727,7 @@ def heightmap_count_cells(hm, mi, ma):
     return _lib.TCOD_heightmap_count_cells(hm.p, c_float(mi), c_float(ma))
 
 def heightmap_has_land_on_border(hm, waterlevel):
-    return _lib.TCOD_heightmap_has_land_on_border(hm.p,
-                                                  c_float(waterlevel)) == 1
+    return _lib.TCOD_heightmap_has_land_on_border(hm.p, c_float(waterlevel))
 
 def heightmap_get_minmax(hm):
     mi = c_float()

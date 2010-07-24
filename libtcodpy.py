@@ -29,6 +29,9 @@ import sys
 import ctypes
 from ctypes import *
 
+if not hasattr(ctypes, "c_bool"):   # for Python < 2.6
+    c_bool = c_uint8
+
 try:  #import NumPy if available
     import numpy
     numpy_available = True
@@ -1453,16 +1456,16 @@ def dijkstra_delete(p):
 # bsp module
 ############################
 class _CBsp(Structure):
-    _fields_ = [('next', c_int, 32),
-                ('father', c_int, 32),
-                ('son', c_int, 32),
-                ('x', c_int, 32),
-                ('y', c_int, 32),
-                ('w', c_int, 32),
-                ('h', c_int, 32),
-                ('position', c_int, 32),
-                ('level', c_uint, 32),
-                ('horizontal', c_uint, 32),
+    _fields_ = [('next', c_void_p),
+                ('father', c_void_p),
+                ('son', c_void_p),
+                ('x', c_int),
+                ('y', c_int),
+                ('w', c_int),
+                ('h', c_int),
+                ('position', c_int),
+                ('level', c_uint8),
+                ('horizontal', c_bool),
                 ]
 
 _lib.TCOD_bsp_new_with_size.restype = POINTER(_CBsp)

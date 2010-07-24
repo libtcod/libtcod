@@ -555,7 +555,7 @@ void TCOD_sys_startup() {
 #endif
 	if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) < 0 ) TCOD_fatal_nopar("SDL : cannot initialize");
 #ifndef	TCOD_WINDOWS
-	// not needed and might crash on windows
+	/* not needed and might crash on windows */
 	atexit(SDL_Quit);
 #endif
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);

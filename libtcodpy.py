@@ -27,6 +27,7 @@
 
 import sys
 import ctypes
+import array
 from ctypes import *
 
 if not hasattr(ctypes, "c_bool"):   # for Python < 2.6
@@ -352,7 +353,7 @@ def color_gen_map(colors, indexes):
 ############################
 class Key(Structure):
     _fields_=[('vk', c_int),
-              ('c', c_int8),
+              ('c', c_uint8),
               ('pressed', c_bool),
               ('lalt', c_bool),
               ('lctrl', c_bool),
@@ -744,6 +745,9 @@ def console_delete(con):
 
 # fast color filling
 def console_fill_foreground(con,r,g,b) :
+    if len(r) != len(g) or len(r) != len(b):
+        raise TypeError('R, G and B must all have the same size.')
+
     if (numpy_available and isinstance(r, numpy.ndarray) and
         isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
         #numpy arrays, use numpy's ctypes functions
@@ -753,21 +757,34 @@ def console_fill_foreground(con,r,g,b) :
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
-
-    elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
-        #simple python lists, convert using ctypes
-        cr = (c_int * len(r))(*r)
-        cg = (c_int * len(g))(*g)
-        cb = (c_int * len(b))(*b)
+    elif (isinstance(r, Array) and sizeof(r._type_) == sizeof(c_int) and
+          isinstance(g, Array) and sizeof(g._type_) == sizeof(c_int) and
+          isinstance(b, Array) and sizeof(b._type_) == sizeof(c_int)):
+        # ctypes arrays: nothing to do
+        cr, cg, cb = r, g, b
+    elif (isinstance(r, array.array) and r.itemsize == sizeof(c_int) and
+          isinstance(g, array.array) and g.itemsize == sizeof(c_int) and
+          isinstance(b, array.array) and r.itemsize == sizeof(c_int)):
+        # arrays from the array module
+        cr = r.buffer_info()[0]
+        cg = g.buffer_info()[0]
+        cb = b.buffer_info()[0]
     else:
-        raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
-
-    if len(r) != len(g) or len(r) != len(b):
-        raise TypeError('R, G and B must all have the same size.')
+        # otherwise convert using the array module
+        # it's faster than using ctypes
+        r = array.array('i',r)
+        g = array.array('i',g)
+        b = array.array('i',b)
+        cr = r.buffer_info()[0]
+        cg = g.buffer_info()[0]
+        cb = b.buffer_info()[0]
 
     _lib.TCOD_console_fill_foreground(con, cr, cg, cb)
 
 def console_fill_background(con,r,g,b) :
+    if len(r) != len(g) or len(r) != len(b):
+        raise TypeError('R, G and B must all have the same size.')
+
     if (numpy_available and isinstance(r, numpy.ndarray) and
         isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
         #numpy arrays, use numpy's ctypes functions
@@ -778,17 +795,27 @@ def console_fill_background(con,r,g,b) :
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
-
-    elif (isinstance(r, list) and isinstance(g, list) and isinstance(b, list)):
-        #simple python lists, convert using ctypes
-        cr = (c_int * len(r))(*r)
-        cg = (c_int * len(g))(*g)
-        cb = (c_int * len(b))(*b)
+    elif (isinstance(r, Array) and sizeof(r._type_) == sizeof(c_int) and
+          isinstance(g, Array) and sizeof(g._type_) == sizeof(c_int) and
+          isinstance(b, Array) and sizeof(b._type_) == sizeof(c_int)):
+        # ctypes arrays: nothing to do
+        cr, cg, cb = r, g, b
+    elif (isinstance(r, array.array) and r.itemsize == sizeof(c_int) and
+          isinstance(g, array.array) and g.itemsize == sizeof(c_int) and
+          isinstance(b, array.array) and r.itemsize == sizeof(c_int)):
+        # arrays from the array module
+        cr = r.buffer_info()[0]
+        cg = g.buffer_info()[0]
+        cb = b.buffer_info()[0]
     else:
-        raise TypeError('R, G and B must all be of the same type (list or NumPy array)')
-
-    if len(r) != len(g) or len(r) != len(b):
-        raise TypeError('R, G and B must all have the same size.')
+        # otherwise convert using the array module
+        # it's faster than using ctypes
+        r = array.array('i',r)
+        g = array.array('i',g)
+        b = array.array('i',b)
+        cr = r.buffer_info()[0]
+        cg = g.buffer_info()[0]
+        cb = b.buffer_info()[0]
 
     _lib.TCOD_console_fill_background(con, cr, cg, cb)
 

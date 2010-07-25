@@ -1061,8 +1061,12 @@ class Dice(Structure):
               ('addsub', c_float),
               ]
 
+    def __repr__(self):
+        return "Dice(%d, %d, %s, %s)" % (self.nb_dices, self.nb_faces,
+                                      self.multiplier, self.addsub)
+
 class _CValue(Union):
-    _fields_=[('c',c_uint),
+    _fields_=[('c',c_uint8),
               ('i',c_int),
               ('f',c_float),
               ('s',c_char_p),
@@ -1110,6 +1114,29 @@ TYPE_VALUELIST14 = 22
 TYPE_VALUELIST15 = 23
 TYPE_LIST = 1024
 
+def _convert_TCODList(clist, typ):
+    res = list()
+    for i in range(_lib.TCOD_list_size(clist)):
+        elt = _lib.TCOD_list_get(clist, i)
+        elt = cast(elt, c_void_p)
+        if typ == TYPE_BOOL:
+            elt = c_bool.from_buffer(elt).value
+        elif typ == TYPE_CHAR:
+            elt = c_char.from_buffer(elt).value
+        elif typ == TYPE_INT:
+            elt = c_int.from_buffer(elt).value
+        elif typ == TYPE_FLOAT:
+            elt = c_float.from_buffer(elt).value
+        elif typ == TYPE_STRING or TYPE_VALUELIST15 >= typ >= TYPE_VALUELIST00:
+            elt = cast(elt, c_char_p).value
+        elif typ == TYPE_COLOR:
+            elt = Color.from_buffer_copy(elt)
+        elif typ == TYPE_DICE:
+            # doesn't work
+            elt = Dice.from_buffer_copy(elt)
+        res.append(elt)
+    return res
+
 def parser_new():
     return _lib.TCOD_parser_new()
 
@@ -1120,7 +1147,7 @@ def struct_add_flag(struct, name):
     _lib.TCOD_struct_add_flag(struct, name)
 
 def struct_add_property(struct, name, typ, mandatory):
-    _lib.TCOD_struct_add_property(struct, name, typ, c_int(mandatory))
+    _lib.TCOD_struct_add_property(struct, name, typ, c_bool(mandatory))
 
 def struct_add_value_list(struct, name, value_list, mandatory):
     CARRAY = c_char_p * (len(value_list) + 1)
@@ -1128,10 +1155,10 @@ def struct_add_value_list(struct, name, value_list, mandatory):
     for i in range(len(value_list)):
         cvalue_list[i] = cast(value_list[i], c_char_p)
     cvalue_list[len(value_list)] = 0
-    _lib.TCOD_struct_add_value_list(struct, name, cvalue_list, c_int(mandatory))
+    _lib.TCOD_struct_add_value_list(struct, name, cvalue_list, c_bool(mandatory))
 
 def struct_add_list_property(struct, name, typ, mandatory):
-    _lib.TCOD_struct_add_list_property(struct, name, typ, c_int(mandatory))
+    _lib.TCOD_struct_add_list_property(struct, name, typ, c_bool(mandatory))
 
 def struct_add_structure(struct, sub_struct):
     _lib.TCOD_struct_add_structure(struct, sub_struct)
@@ -1164,6 +1191,9 @@ def parser_run(parser, filename, listener=0):
                 return listener.new_property(name, typ, value.col)
             elif typ == TYPE_DICE:
                 return listener.new_property(name, typ, value.dice)
+            elif typ & TYPE_LIST:
+                return listener.new_property(name, typ,
+                                        _convert_TCODList(value.custom, typ & 0xFF))
             return True
         clistener.new_struct = _CFUNC_NEW_STRUCT(listener.new_struct)
         clistener.new_flag = _CFUNC_NEW_FLAG(listener.new_flag)
@@ -1195,19 +1225,14 @@ def parser_get_string_property(parser, name):
 def parser_get_color_property(parser, name):
     return _lib.TCOD_parser_get_color_property_wrapper(parser, name)
 
-
 def parser_get_dice_property(parser, name):
     d = Dice()
     _lib.TCOD_parser_get_dice_property_py(parser, name, byref(d))
     return d
 
-def parser_get_list_property(parser, name, type):
-    clist = _lib.TCOD_parser_get_list_property(parser, name, c_uint(type))
-    res = list()
-    for i in range(_lib.TCOD_list_size(clist)):
-        elt = _lib.TCOD_list_get(clist, i)
-        res.append(elt)
-    return res
+def parser_get_list_property(parser, name, typ):
+    clist = _lib.TCOD_parser_get_list_property(parser, name, c_int(typ))
+    return _convert_TCODList(clist, typ)
 
 ############################
 # random module

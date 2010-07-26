@@ -505,6 +505,8 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
     static int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
     /* and distances for each index */
     int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
+	/* if diagonal_cost is 0, disallow diagonal moves */
+	int imax = (data->diagonal_cost == 0 ? 4 : 8);
     /* aight, now set the distances table and set everything to infinity */
     unsigned int * distances = data->distances;
 	TCOD_IFNOT(data != NULL) return;
@@ -521,7 +523,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 
         /* check adjacent nodes */
         int i;
-        for(i=0;i<8;i++) {
+        for(i=0;i<imax;i++) {
             /* checked node's coordinates */
             unsigned int tx = x + dx[i];
             unsigned int ty = y + dy[i];
@@ -591,8 +593,9 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 
     static int dx[9] = { -1, 0, 1, 0, -1, 1, 1, -1, 0 };
     static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
-    unsigned int distances[9];
-    int lowest_index = 666;
+    unsigned int distances[8];
+    int lowest_index;
+	int imax = (data->diagonal_cost == 0 ? 4 : 8);
 	TCOD_IFNOT(data != NULL) return false;
 	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return false;
 
@@ -602,17 +605,18 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
     TCOD_list_clear(data->path);
 
     do {
-        unsigned int lowest = 0xFFFFFFFF;
+        unsigned int lowest;
         int i;
         TCOD_list_push(data->path,(const void*)(uintptr)((py * data->width) + px));
-        for(i=0;i<8;i++) {
+        for(i=0;i<imax;i++) {
             int cx = px + dx[i];
             int cy = py + dy[i];
             if ((unsigned)cx < (unsigned)data->width && (unsigned)cy < (unsigned)data->height) distances[i] = dijkstra_get_int_distance(data,cx,cy);
             else distances[i] = 0xFFFFFFFF;
         }
-        distances[8] = dijkstra_get_int_distance(data,px,py);
-        for(i=0;i<9;i++) if (distances[i] < lowest) {
+        lowest = dijkstra_get_int_distance(data,px,py);
+		lowest_index = 8;
+        for(i=0;i<imax;i++) if (distances[i] < lowest) {
             lowest = distances[i];
             lowest_index = i;
         }

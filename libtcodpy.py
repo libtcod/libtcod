@@ -27,7 +27,7 @@
 
 import sys
 import ctypes
-import array
+import struct
 from ctypes import *
 
 if not hasattr(ctypes, "c_bool"):   # for Python < 2.6
@@ -757,27 +757,12 @@ def console_fill_foreground(con,r,g,b) :
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
-    elif (isinstance(r, Array) and sizeof(r._type_) == sizeof(c_int) and
-          isinstance(g, Array) and sizeof(g._type_) == sizeof(c_int) and
-          isinstance(b, Array) and sizeof(b._type_) == sizeof(c_int)):
-        # ctypes arrays: nothing to do
-        cr, cg, cb = r, g, b
-    elif (isinstance(r, array.array) and r.itemsize == sizeof(c_int) and
-          isinstance(g, array.array) and g.itemsize == sizeof(c_int) and
-          isinstance(b, array.array) and r.itemsize == sizeof(c_int)):
-        # arrays from the array module
-        cr = r.buffer_info()[0]
-        cg = g.buffer_info()[0]
-        cb = b.buffer_info()[0]
     else:
-        # otherwise convert using the array module
-        # it's faster than using ctypes
-        r = array.array('i',r)
-        g = array.array('i',g)
-        b = array.array('i',b)
-        cr = r.buffer_info()[0]
-        cg = g.buffer_info()[0]
-        cb = b.buffer_info()[0]
+        # otherwise convert using the struct module
+        s = struct.Struct('%di' % len(r))
+        cr = s.pack(*r)
+        cg = s.pack(*g)
+        cb = s.pack(*b)
 
     _lib.TCOD_console_fill_foreground(con, cr, cg, cb)
 
@@ -788,49 +773,29 @@ def console_fill_background(con,r,g,b) :
     if (numpy_available and isinstance(r, numpy.ndarray) and
         isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
         #numpy arrays, use numpy's ctypes functions
-
         r = numpy.ascontiguousarray(r, dtype=numpy.int_)
         g = numpy.ascontiguousarray(g, dtype=numpy.int_)
         b = numpy.ascontiguousarray(b, dtype=numpy.int_)
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
-    elif (isinstance(r, Array) and sizeof(r._type_) == sizeof(c_int) and
-          isinstance(g, Array) and sizeof(g._type_) == sizeof(c_int) and
-          isinstance(b, Array) and sizeof(b._type_) == sizeof(c_int)):
-        # ctypes arrays: nothing to do
-        cr, cg, cb = r, g, b
-    elif (isinstance(r, array.array) and r.itemsize == sizeof(c_int) and
-          isinstance(g, array.array) and g.itemsize == sizeof(c_int) and
-          isinstance(b, array.array) and r.itemsize == sizeof(c_int)):
-        # arrays from the array module
-        cr = r.buffer_info()[0]
-        cg = g.buffer_info()[0]
-        cb = b.buffer_info()[0]
     else:
-        # otherwise convert using the array module
-        # it's faster than using ctypes
-        r = array.array('i',r)
-        g = array.array('i',g)
-        b = array.array('i',b)
-        cr = r.buffer_info()[0]
-        cg = g.buffer_info()[0]
-        cb = b.buffer_info()[0]
+        # otherwise convert using the struct module
+        s = struct.Struct('%di' % len(r))
+        cr = s.pack(*r)
+        cg = s.pack(*g)
+        cb = s.pack(*b)
 
     _lib.TCOD_console_fill_background(con, cr, cg, cb)
 
 def console_fill_char(con,arr) :
     if (numpy_available and isinstance(r, numpy.ndarray) ):
         #numpy arrays, use numpy's ctypes functions
-
         arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
         carr = arr.ctypes.data_as(POINTER(c_int))
-
-    elif (isinstance(arr, list) ):
-        #simple python lists, convert using ctypes
-        carr = (c_int * len(arr))(*arr)
     else:
-        raise TypeError('arr must be a list or a NumPy array')
+        #otherwise convert using the struct module
+        carr = struct.pack('%di' % len(arr), *arr)
 
     _lib.TCOD_console_fill_char(con, carr)
 

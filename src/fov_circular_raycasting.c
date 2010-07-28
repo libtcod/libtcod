@@ -145,11 +145,14 @@ static bool ray_blocked(map_t *map,float x, float y, int cx, int cy) {
 	return d < (CELL_RADIUS+RAY_RADIUS)*(CELL_RADIUS+RAY_RADIUS);
 }
 static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
-	float curx=xo+0.5f, cury=yo+0.5f;
+	float fxo=xo+0.5f, fyo=yo+0.5f;
+	float curx=fxo, cury=fyo;
+	float fxd=xd+0.5f;
+	float fyd=yd+0.5f;
 	bool in=false;
 	bool end=false;
 	int offset;
-	float dx=(float)(xd-xo), dy=(float)(yd-yo),idx,idy;
+	float dx=(float)(fxd-curx), dy=(float)(fyd-cury),idx,idy;
 	if ( dx == 0 && dy == 0 ) return;
 	if ( fabs(dx) > fabs(dy) ) {
 		idy = (float)(dy/fabs(dx));
@@ -173,7 +176,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 		offset=cx+cy*map->width;
 		if ( r2 > 0 ) {
 			/* check radius */
-			int cur_radius=(int)((curx-xo)*(curx-xo)+(cury-yo)*(cury-yo));
+			int cur_radius=(int)((curx-fxo)*(curx-fxo)+(cury-fyo)*(cury-fyo));
 			if ( cur_radius > r2 ) return;
 		}
 		if ( (unsigned)offset < (unsigned)map->nbcells ) {
@@ -207,19 +210,19 @@ void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int 
 	}
 	xo=xmin; yo=ymin;
 	while ( xo < xmax ) {
-		cast_rayf(m,player_x,player_y,xo++,yo,r2,light_walls);
+		cast_ray(m,player_x,player_y,xo++,yo,r2,light_walls);
 	}
 	xo=xmax-1;yo=ymin+1;
 	while ( yo < ymax ) {
-		cast_rayf(m,player_x,player_y,xo,yo++,r2,light_walls);
+		cast_ray(m,player_x,player_y,xo,yo++,r2,light_walls);
 	}
 	xo=xmax-2;yo=ymax-1;
 	while ( xo >= 0 ) {
-		cast_rayf(m,player_x,player_y,xo--,yo,r2,light_walls);
+		cast_ray(m,player_x,player_y,xo--,yo,r2,light_walls);
 	}
 	xo=xmin;yo=ymax-2;
 	while ( yo > 0 ) {
-		cast_rayf(m,player_x,player_y,xo,yo--,r2,light_walls);
+		cast_ray(m,player_x,player_y,xo,yo--,r2,light_walls);
 	}
 	if ( light_walls ) {
 		/* post-processing artefact fix */

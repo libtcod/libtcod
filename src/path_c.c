@@ -30,9 +30,7 @@
 #include <math.h>
 #include "libtcod.h"
 #include "libtcod_int.h"
-enum { NORTH_WEST,NORTH, NORTH_EAST,
-               WEST,NONE,EAST,
-               SOUTH_WEST,SOUTH,SOUTH_EAST };
+enum { NORTH_WEST,NORTH, NORTH_EAST, WEST,NONE,EAST, SOUTH_WEST,SOUTH,SOUTH_EAST };
 typedef unsigned char dir_t;
 
 /* convert dir_t to dx,dy */
@@ -172,11 +170,11 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 				}
 			}
 			return;
-		} 
+		}
 	}
 	/* compare to its sons */
 	while ( idx*2+1 < heap_size ) {
-		int child=idx*2+1;	
+		int child=idx*2+1;
 		uintptr off_child=array[child];
 		int toSwap=idx;
 		int child2;
@@ -199,15 +197,9 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 			uintptr tmp = array[toSwap];
 			array[toSwap]=array[idx];
 			array[idx] = tmp;
-			idx=toSwap;			
+			idx=toSwap;
 		} else return;
-	}		
-	/* remove it... SLOW !! */
-/*	TCOD_list_remove_iterator(path->heap,(void **)cur);*/
-	/* put it back on the heap */
-/*	TCOD_list_push(path->heap,(void *)(uintptr)offset);*/
-	/* bubble the value up to its real position */
-/*	heap_sift_up(path,path->heap);*/
+	}
 }
 
 
@@ -234,7 +226,7 @@ static TCOD_path_data_t *TCOD_path_new_intern(int w, int h) {
 }
 
 TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost) {
-    TCOD_path_data_t *path;
+	TCOD_path_data_t *path;
 	TCOD_IFNOT(map != NULL) return NULL;
 	path=TCOD_path_new_intern(TCOD_map_get_width(map),TCOD_map_get_height(map));
 	path->map=map;
@@ -243,7 +235,7 @@ TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost) {
 }
 
 TCOD_path_t TCOD_path_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
-    TCOD_path_data_t *path;
+	TCOD_path_data_t *path;
 	TCOD_IFNOT(func != NULL && map_width > 0 && map_height > 0) return NULL;
 	path=TCOD_path_new_intern(map_width,map_height);
 	path->func=func;
@@ -441,188 +433,183 @@ void TCOD_path_get_destination(TCOD_path_t p, int *x, int *y) {
 
 /* Dijkstra data structure */
 typedef struct {
-    int diagonal_cost;
-    int width, height, nodes_max;
-    TCOD_map_t map; /* a TCODMap with walkability data */
+	int diagonal_cost;
+	int width, height, nodes_max;
+	TCOD_map_t map; /* a TCODMap with walkability data */
 	TCOD_path_func_t func;
 	void *user_data;
-    unsigned int * distances; /* distances grid */
-    unsigned int * nodes; /* the processed nodes */
-    TCOD_list_t path;
+	unsigned int * distances; /* distances grid */
+	unsigned int * nodes; /* the processed nodes */
+	TCOD_list_t path;
 } dijkstra_t;
 
 /* create a Dijkstra object */
 TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost) {
-    dijkstra_t * data ;
+	dijkstra_t * data ;
 	TCOD_IFNOT(map != NULL) return NULL;
-    data = malloc(sizeof(dijkstra_t));
-    data->map = map;
-    data->func = NULL;
-    data->user_data=NULL;
-    data->distances = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
-    data->nodes = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
-    data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
-    data->width = TCOD_map_get_width(data->map);
-    data->height = TCOD_map_get_height(data->map);
-    data->nodes_max = TCOD_map_get_nb_cells(data->map);
-    data->path = TCOD_list_new();
-    return (TCOD_dijkstra_t)data;
+	data = malloc(sizeof(dijkstra_t));
+	data->map = map;
+	data->func = NULL;
+	data->user_data=NULL;
+	data->distances = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
+	data->nodes = malloc(TCOD_map_get_nb_cells(data->map)*sizeof(int));
+	data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
+	data->width = TCOD_map_get_width(data->map);
+	data->height = TCOD_map_get_height(data->map);
+	data->nodes_max = TCOD_map_get_nb_cells(data->map);
+	data->path = TCOD_list_new();
+	return (TCOD_dijkstra_t)data;
 }
 
 TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost) {
-    dijkstra_t * data;
+	dijkstra_t * data;
 	TCOD_IFNOT(func != NULL && map_width > 0 && map_height > 0) return NULL;
-    data = malloc(sizeof(dijkstra_t));
-    data->map = NULL;
-    data->func = func;
-    data->user_data=user_data;
-    data->distances = malloc(map_width*map_height*sizeof(int)*4);
-    data->nodes = malloc(map_width*map_height*sizeof(int)*4);
-    data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
-    data->width = map_width;
-    data->height = map_height;
-    data->nodes_max = map_width*map_height;
-    data->path = TCOD_list_new();
-    return (TCOD_dijkstra_t)data;
+	data = malloc(sizeof(dijkstra_t));
+	data->map = NULL;
+	data->func = func;
+	data->user_data=user_data;
+	data->distances = malloc(map_width*map_height*sizeof(int)*4);
+	data->nodes = malloc(map_width*map_height*sizeof(int)*4);
+	data->diagonal_cost = (int)((diagonalCost * 100.0f)+0.1f); /* because (int)(1.41f*100.0f) == 140!!! */
+	data->width = map_width;
+	data->height = map_height;
+	data->nodes_max = map_width*map_height;
+	data->path = TCOD_list_new();
+	return (TCOD_dijkstra_t)data;
 }
 
 
 /* compute a Dijkstra grid */
 void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
-    dijkstra_t * data = (dijkstra_t*)dijkstra;
-    /* map size data */
-    unsigned int mx = data->width;
-    unsigned int my = data->height;
-    unsigned int mmax = data->nodes_max;
-    /* encode the root coords in one integer */
-    unsigned int root = (root_y * mx) + root_x;
-    /* some stuff to walk through the nodes table */
-    unsigned int index = 0; /* the index of the first node in queue */
-    unsigned int last_index = 1; /* total nb of registered queue indices */
-    unsigned int * nodes = data->nodes; /* table of nodes to which the indices above apply */
-    /* ok, here's the order of node processing: W, S, E, N, NW, NE, SE, SW */
-    static int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
-    static int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
-    /* and distances for each index */
-    int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
+	/* map size data */
+	unsigned int mx = data->width;
+	unsigned int my = data->height;
+	unsigned int mmax = data->nodes_max;
+	/* encode the root coords in one integer */
+	unsigned int root = (root_y * mx) + root_x;
+	/* some stuff to walk through the nodes table */
+	unsigned int index = 0; /* the index of the first node in queue */
+	unsigned int last_index = 1; /* total nb of registered queue indices */
+	unsigned int * nodes = data->nodes; /* table of nodes to which the indices above apply */
+	/* ok, here's the order of node processing: W, S, E, N, NW, NE, SE, SW */
+	static int dx[8] = { -1, 0, 1, 0, -1, 1, 1, -1 };
+	static int dy[8] = { 0, -1, 0, 1, -1, -1, 1, 1 };
+	/* and distances for each index */
+	int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
 	/* if diagonal_cost is 0, disallow diagonal moves */
 	int imax = (data->diagonal_cost == 0 ? 4 : 8);
-    /* aight, now set the distances table and set everything to infinity */
-    unsigned int * distances = data->distances;
+	/* aight, now set the distances table and set everything to infinity */
+	unsigned int * distances = data->distances;
 	TCOD_IFNOT(data != NULL) return;
 	TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;
-    memset(distances,0xFFFFFFFF,mmax*sizeof(int));
-    /* data for root node is known... */
-    distances[root] = 0;
-    nodes[index] = root; /*set starting note to root */
-    /* and the loop */
-    do {
-        /* coordinates of currently processed node */
-        unsigned int x = nodes[index] % mx;
-        unsigned int y = nodes[index] / mx;
+	memset(distances,0xFFFFFFFF,mmax*sizeof(int));
+	/* data for root node is known... */
+	distances[root] = 0;
+	nodes[index] = root; /*set starting note to root */
+	/* and the loop */
+	do {
+		/* coordinates of currently processed node */
+		unsigned int x = nodes[index] % mx;
+		unsigned int y = nodes[index] / mx;
 
-        /* check adjacent nodes */
-        int i;
-        for(i=0;i<imax;i++) {
-            /* checked node's coordinates */
-            unsigned int tx = x + dx[i];
-            unsigned int ty = y + dy[i];
-            if ((unsigned)tx < (unsigned)mx && (unsigned)ty < (unsigned)my  ) {
-                /* otherwise, calculate distance, ... */
-                unsigned int dt = distances[nodes[index]], new_node;
-                float userDist = 0.0f;
-                if ( data->map ) dt += dd[i];
-                else {
-                    /* distance given by the user callback */
-                    userDist=data->func(x,y,tx,ty,data->user_data);
-                    dt += (unsigned int)(userDist*dd[i]);
-                }
-                /* ..., encode coordinates, ... */
-                new_node = (ty * mx) + tx;
-                /* and check if the node's eligible for queuing */
-                 if (distances[new_node] > dt) {
-                    unsigned int j;
-                    /* if not walkable, don't process it */
-                    if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
-                    else if ( data->func && userDist <= 0.0f ) continue;
-                    distances[new_node] = dt; /* set processed node's distance */
-                    /* place the processed node in the queue before the last queued node with greater distance */
-                    j = last_index - 1;
-                    while (distances[nodes[j]] >= distances[new_node]) {
-                        /* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
-                        if (nodes[j] == new_node) {
-                            int k = j;
-                            while ((unsigned)k <= last_index) {
-                                nodes[k] = nodes[k+1];
-                                k++;
-                            }
-                            last_index--;
-                        }
-                        else nodes[j+1] = nodes[j];
-                        j--;
-                    }
-                    last_index++; /* increase total indices count */
-                    nodes[j+1] = new_node; /* and finally put the node where it belongs in the queue */
-                }
-            }
-        }
-    } while (mmax > ++index);
+		/* check adjacent nodes */
+		int i;
+		for(i=0;i<imax;i++) {
+			/* checked node's coordinates */
+			unsigned int tx = x + dx[i];
+			unsigned int ty = y + dy[i];
+			if ((unsigned)tx < (unsigned)mx && (unsigned)ty < (unsigned)my  ) {
+				/* otherwise, calculate distance, ... */
+				unsigned int dt = distances[nodes[index]], new_node;
+				float userDist = 0.0f;
+				if ( data->map ) dt += dd[i];
+				else {
+					/* distance given by the user callback */
+					userDist=data->func(x,y,tx,ty,data->user_data);
+					dt += (unsigned int)(userDist*dd[i]);
+				}
+				/* ..., encode coordinates, ... */
+				new_node = (ty * mx) + tx;
+				/* and check if the node's eligible for queuing */
+				 if (distances[new_node] > dt) {
+					unsigned int j;
+					/* if not walkable, don't process it */
+					if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
+					else if ( data->func && userDist <= 0.0f ) continue;
+					distances[new_node] = dt; /* set processed node's distance */
+					/* place the processed node in the queue before the last queued node with greater distance */
+					j = last_index - 1;
+					while (distances[nodes[j]] >= distances[new_node]) {
+						/* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
+						if (nodes[j] == new_node) {
+							int k = j;
+							while ((unsigned)k <= last_index) {
+								nodes[k] = nodes[k+1];
+								k++;
+							}
+							last_index--;
+						}
+						else nodes[j+1] = nodes[j];
+						j--;
+					}
+					last_index++; /* increase total indices count */
+					nodes[j+1] = new_node; /* and finally put the node where it belongs in the queue */
+				}
+			}
+		}
+	} while (mmax > ++index);
 }
 
 /* get distance from source */
 float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, int y) {
-    dijkstra_t * data = (dijkstra_t*)dijkstra;
-    unsigned int * distances;
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
+	unsigned int * distances;
 	TCOD_IFNOT(data != NULL) return -1.0f;
-    TCOD_IFNOT ((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return -1.0f;
-    if (data->distances[(y*data->width)+x] == 0xFFFFFFFF) return -1.0f;
-    distances = data->distances;
-    return ((float)distances[(y * data->width) + x] * 0.01f);
+	TCOD_IFNOT ((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return -1.0f;
+	if (data->distances[(y*data->width)+x] == 0xFFFFFFFF) return -1.0f;
+	distances = data->distances;
+	return ((float)distances[(y * data->width) + x] * 0.01f);
 }
 
 unsigned int dijkstra_get_int_distance (dijkstra_t * data, int x, int y) {
-    unsigned int * distances = data->distances;
-    return distances[(y * data->width) + x];
+	unsigned int * distances = data->distances;
+	return distances[(y * data->width) + x];
 }
 
 /* create a path */
 bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
-    dijkstra_t * data = (dijkstra_t*)dijkstra;
-
-    int px = x, py = y;
-
-    static int dx[9] = { -1, 0, 1, 0, -1, 1, 1, -1, 0 };
-    static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
-    unsigned int distances[8];
-    int lowest_index;
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
+	int px = x, py = y;
+	static int dx[9] = { -1, 0, 1, 0, -1, 1, 1, -1, 0 };
+	static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
+	unsigned int distances[8];
+	int lowest_index;
 	int imax = (data->diagonal_cost == 0 ? 4 : 8);
 	TCOD_IFNOT(data != NULL) return false;
 	TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return false;
-
 	/* check that destination is reachable */
 	if ( dijkstra_get_int_distance(data,x,y) == 0xFFFFFFFF ) return false;
-
-    TCOD_list_clear(data->path);
-
-    do {
-        unsigned int lowest;
-        int i;
-        TCOD_list_push(data->path,(const void*)(uintptr)((py * data->width) + px));
-        for(i=0;i<imax;i++) {
-            int cx = px + dx[i];
-            int cy = py + dy[i];
-            if ((unsigned)cx < (unsigned)data->width && (unsigned)cy < (unsigned)data->height) distances[i] = dijkstra_get_int_distance(data,cx,cy);
-            else distances[i] = 0xFFFFFFFF;
-        }
-        lowest = dijkstra_get_int_distance(data,px,py);
+	TCOD_list_clear(data->path);
+	do {
+		unsigned int lowest;
+		int i;
+		TCOD_list_push(data->path,(const void*)(uintptr)((py * data->width) + px));
+		for(i=0;i<imax;i++) {
+			int cx = px + dx[i];
+			int cy = py + dy[i];
+			if ((unsigned)cx < (unsigned)data->width && (unsigned)cy < (unsigned)data->height) distances[i] = dijkstra_get_int_distance(data,cx,cy);
+			else distances[i] = 0xFFFFFFFF;
+		}
+		lowest = dijkstra_get_int_distance(data,px,py);
 		lowest_index = 8;
-        for(i=0;i<imax;i++) if (distances[i] < lowest) {
-            lowest = distances[i];
-            lowest_index = i;
-        }
-        px += dx[lowest_index];
-        py += dy[lowest_index];
-    } while (lowest_index != 8);
+		for(i=0;i<imax;i++) if (distances[i] < lowest) {
+			lowest = distances[i];
+			lowest_index = i;
+		}
+		px += dx[lowest_index];
+		py += dy[lowest_index];
+	} while (lowest_index != 8);
 	/* remove the last step */
 	TCOD_list_pop(data->path);
 	return true;
@@ -630,25 +617,25 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 
 /* walk the path */
 bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
-    dijkstra_t * data = (dijkstra_t*)dijkstra;
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
 	TCOD_IFNOT(data != NULL) return false;
-    if (TCOD_list_is_empty(data->path)) return false;
-    else {
-        unsigned int node = (unsigned int)(uintptr)TCOD_list_pop(data->path);
-        if ( x ) *x = (int)(node % data->width);
-        if ( y ) *y = (int)(node / data->width);
-    }
-    return true;
+	if (TCOD_list_is_empty(data->path)) return false;
+	else {
+		unsigned int node = (unsigned int)(uintptr)TCOD_list_pop(data->path);
+		if ( x ) *x = (int)(node % data->width);
+		if ( y ) *y = (int)(node / data->width);
+	}
+	return true;
 }
 
 /* delete a Dijkstra object */
 void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra) {
-    dijkstra_t * data = (dijkstra_t*)dijkstra;
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
 	TCOD_IFNOT(data != NULL) return;
-    if ( data->distances ) free(data->distances);
-    if ( data->nodes ) free(data->nodes);
-    if ( data->path ) TCOD_list_clear(data->path);
-    free(data);
+	if ( data->distances ) free(data->distances);
+	if ( data->nodes ) free(data->nodes);
+	if ( data->path ) TCOD_list_clear(data->path);
+	free(data);
 }
 
 bool TCOD_dijkstra_is_empty(TCOD_dijkstra_t p) {
@@ -667,7 +654,7 @@ void TCOD_dijkstra_get(TCOD_dijkstra_t p, int index, int *x, int *y) {
 	dijkstra_t * data = (dijkstra_t*)p;
 	unsigned int node ;
 	TCOD_IFNOT(data != NULL) return;
-    node = (unsigned int)(uintptr)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
-    if ( x ) *x = (int)(node % data->width);
-    if ( y ) *y = (int)(node / data->width);
+	node = (unsigned int)(uintptr)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
+	if ( x ) *x = (int)(node % data->width);
+	if ( y ) *y = (int)(node / data->width);
 }

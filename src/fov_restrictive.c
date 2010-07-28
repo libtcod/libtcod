@@ -36,18 +36,18 @@
 #include "libtcod_int.h"
 
 void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int player_x, int player_y, int max_radius, bool light_walls, int maxObstacles, int dx, int dy) {
-	static double *startAngle=NULL, *endAngle=NULL;
-	static int angleArraySize=0;
+	static double * startAngle = NULL;
+  static double * endAngle = NULL;
+  static int _maxObstacles = 0;
 
-	if ( angleArraySize > 0 && angleArraySize < maxObstacles ) {
-		free(startAngle);
-		startAngle=NULL;
-	}
-	if ( startAngle == NULL ) {
-		angleArraySize = maxObstacles;
-		startAngle = (double *)malloc(sizeof(double) * 2 * maxObstacles);
-		endAngle = &startAngle[maxObstacles];
-	}
+  if (maxObstacles != _maxObstacles) {
+    if (startAngle != NULL) free(startAngle);
+    if (endAngle != NULL) free(endAngle);
+    startAngle = calloc(maxObstacles, sizeof(double));
+    endAngle = calloc(maxObstacles, sizeof(double));
+    _maxObstacles = maxObstacles;
+  }
+
 	/*octant: vertical edge */
 	{
 		int iteration = 1; /*iteration of the algo for this octant */
@@ -78,7 +78,7 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 				if (obstaclesInLastLine > 0 && m->cells[c].fov == 0) {
 					int idx = 0;
 					while(visible && idx < obstaclesInLastLine) {
-						if (m->cells[c].transparent == true) {
+						if (m->cells[c].transparent) {
 							if (centreSlope > startAngle[idx] && centreSlope < endAngle[idx])
 								visible = false;
 						}
@@ -95,7 +95,12 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 					done = false;
 					/*if the cell is opaque, block the adjacent slopes */
 					if (!m->cells[c].transparent) {
-						if (minAngle >= startSlope) minAngle = endSlope;
+						if (minAngle >= startSlope) {
+							minAngle = endSlope;
+							/* if minAngle is applied to the last cell in line, nothing more
+							   needs to be checked. */
+							if (processedCell == iteration) done = true;
+						}
 						else {
 							startAngle[totalObstacles] = startSlope;
 							endAngle[totalObstacles++] = endSlope;
@@ -110,7 +115,6 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 			obstaclesInLastLine = totalObstacles;
 			y += dy;
 			if (y < 0 || y >= m->height) done = true;
-			if ( minAngle == 1.0 ) done=true;
 		}
 	}
 	/*octant: horizontal edge */
@@ -143,7 +147,7 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 				if (obstaclesInLastLine > 0 && m->cells[c].fov == 0) {
 					int idx = 0;
 					while(visible && idx < obstaclesInLastLine) {
-						if (m->cells[c].transparent == true) {
+						if (m->cells[c].transparent) {
 							if (centreSlope > startAngle[idx] && centreSlope < endAngle[idx])
 								visible = false;
 						}
@@ -160,7 +164,12 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 					done = false;
 					/*if the cell is opaque, block the adjacent slopes */
 					if (!m->cells[c].transparent) {
-						if (minAngle >= startSlope) minAngle = endSlope;
+						if (minAngle >= startSlope) {
+						  minAngle = endSlope;
+						  /* if minAngle is applied to the last cell in line, nothing more
+							   needs to be checked. */
+							if (processedCell == iteration) done = true;
+						}
 						else {
 							startAngle[totalObstacles] = startSlope;
 							endAngle[totalObstacles++] = endSlope;
@@ -175,7 +184,6 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 			obstaclesInLastLine = totalObstacles;
 			x += dx;
 			if (x < 0 || x >= m->width) done = true;
-			if ( minAngle == 1.0 ) done=true;
 		}
 	}
 }
@@ -187,6 +195,7 @@ void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x
 	/*first, zero the FOV map */
 	for(c = m->nbcells - 1; c >= 0; c--) {
 		m->cells[c].fov = 0;
+
 	}
 
 	/*calculate an approximated (excessive, just in case) maximum number of obstacles per octant */

@@ -51,11 +51,10 @@ if True:
           libtcod.parser_get_int_property(parser, 'struct.int_field')
     print 'float_field : ', \
           libtcod.parser_get_float_property(parser, 'struct.float_field')
-    col = libtcod.parser_get_color_property(parser, 'struct.color_field')
-    print 'color_field : ', col.r, col.g, col.b
-    dice = libtcod.parser_get_dice_property(parser, 'struct.dice_field')
-    print 'dice_field : ', dice.nb_dices, dice.nb_faces, dice.multiplier, \
-          dice.addsub
+    print 'color_field : ', \
+          libtcod.parser_get_color_property(parser, 'struct.color_field')
+    print 'dice_field : ', \
+          libtcod.parser_get_dice_property(parser, 'struct.dice_field')
     print 'string_field : ', \
           libtcod.parser_get_string_property(parser, 'struct.string_field')
     # custom listener
@@ -71,16 +70,8 @@ if True:
         def new_property(self,name, typ, value):
             type_names = ['NONE', 'BOOL', 'CHAR', 'INT', 'FLOAT', 'STRING', \
                           'COLOR', 'DICE']
-            if name == 'color_field':
-                print 'new property named ', name,' type ',type_names[typ], \
-                      ' value ', value.r, value.g, value.b
-            elif name == 'dice_field':
-                print 'new property named ', name,' type ',type_names[typ], \
-                      ' value ', value.nb_dices, value.nb_faces, \
-                      value.multiplier, value.addsub
-            else:
-                print 'new property named ', name,' type ',type_names[typ], \
-                      ' value ', value
+            print 'new property named ', name,' type ',type_names[typ], \
+                  ' value ', value
             return True
         def end_struct(self, struct, name):
             print 'end structure type', libtcod.struct_get_name(struct), \
@@ -1245,7 +1236,7 @@ def render_name(first, key):
 # python fast render sample
 #############################################
 try:  #import NumPy
-    from numpy import *
+    import numpy as np
     numpy_available = True
 except ImportError:
     numpy_available = False
@@ -1270,14 +1261,14 @@ AMBIENT_LIGHT = 0.8  #brightness of tunnel texture
 #xc = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
 #yc = [[1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]]
 if numpy_available:
-    (xc, yc) = meshgrid(range(SCREEN_W), range(SCREEN_H))
+    (xc, yc) = np.meshgrid(range(SCREEN_W), range(SCREEN_H))
     #translate coordinates of all pixels to center
     xc = xc - HALF_W
     yc = yc - HALF_H
 
 noise2d = libtcod.noise_new(2, 0.5, 2.0)
 if numpy_available:  #the texture starts empty
-    texture = zeros((RES_U, RES_V))
+    texture = np.zeros((RES_U, RES_V))
 
 #create lists to work without numpy
 texture2 = [0 for i in range(RES_U * RES_V)]
@@ -1333,7 +1324,7 @@ def render_py(first, key):
         int_abs_t = int(abs_t)  #new pixels are based on absolute elapsed time
 
         if use_numpy:
-            texture = roll(texture, -int_t, 1)
+            texture = np.roll(texture, -int_t, 1)
             #replace new stretch of texture with new values
             for v in range(RES_V - int_t, RES_V):
                 for u in range(0, RES_U):
@@ -1363,10 +1354,10 @@ def render_py(first, key):
         v = v.clip(0, RES_V - 1)
 
         #another coordinate, represents rotation around the tunnel
-        u = mod(RES_U * (arctan2(yc, xc) / (2 * pi) + 0.5), RES_U)
+        u = np.mod(RES_U * (np.arctan2(yc, xc) / (2 * np.pi) + 0.5), RES_U)
 
         #retrieve corresponding pixels from texture
-        brightness = texture[u.astype(intp), v.astype(intp)] / 4.0 + 0.5
+        brightness = texture[u.astype(int), v.astype(int)] / 4.0 + 0.5
 
         #use the brightness map to compose the final color of the tunnel
         R = brightness * tex_r

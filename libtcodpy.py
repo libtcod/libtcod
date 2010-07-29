@@ -46,6 +46,21 @@ else:
         _lib = ctypes.cdll['./libtcod-mingw.dll']
     except WindowsError:
         _lib = ctypes.cdll['./libtcod-VS.dll']
+    # On Windows, ctypes doesn't work well with function returning structs,
+    # so we have to user the _wrapper functions instead
+    _lib.TCOD_color_multiply = _lib.TCOD_color_multiply_wrapper
+    _lib.TCOD_color_add = _lib.TCOD_color_add_wrapper
+    _lib.TCOD_color_multiply_scalar = _lib.TCOD_color_multiply_scalar_wrapper
+    _lib.TCOD_color_subtract = _lib.TCOD_color_subtract_wrapper
+    _lib.TCOD_color_lerp = _lib.TCOD_color_lerp_wrapper
+    _lib.TCOD_console_get_background_color = _lib.TCOD_console_get_background_color_wrapper
+    _lib.TCOD_console_get_foreground_color = _lib.TCOD_console_get_foreground_color_wrapper
+    _lib.TCOD_console_get_back = _lib.TCOD_console_get_back_wrapper
+    _lib.TCOD_console_get_fore = _lib.TCOD_console_get_fore_wrapper
+    _lib.TCOD_console_get_fading_color = _lib.TCOD_console_get_fading_color_wrapper
+    _lib.TCOD_image_get_pixel = _lib.TCOD_image_get_pixel_wrapper
+    _lib.TCOD_image_get_mipmap_pixel = _lib.TCOD_image_get_mipmap_pixel_wrapper
+    _lib.TCOD_parser_get_color_property = _lib.TCOD_parser_get_color_property_wrapper
 
 HEXVERSION = 0x010501
 STRVERSION = "1.5.1"
@@ -65,15 +80,15 @@ class Color(Structure):
 
     def __mul__(self, c):
         if isinstance(c,Color):
-            return _lib.TCOD_color_multiply_wrapper(self, c)
+            return _lib.TCOD_color_multiply(self, c)
         else:
-            return _lib.TCOD_color_multiply_scalar_wrapper(self, c_float(c))
+            return _lib.TCOD_color_multiply_scalar(self, c_float(c))
 
     def __add__(self, c):
-        return _lib.TCOD_color_add_wrapper(self, c)
+        return _lib.TCOD_color_add(self, c)
 
     def __sub__(self, c):
-        return _lib.TCOD_color_subtract_wrapper(self, c)
+        return _lib.TCOD_color_subtract(self, c)
 
     def __repr__(self):
         return "Color(%d,%d,%d)" % (self.r, self.g, self.b)
@@ -96,10 +111,10 @@ class Color(Structure):
         yield self.b
 
 _lib.TCOD_color_equals.restype = c_bool
-_lib.TCOD_color_multiply_wrapper.restype = Color
-_lib.TCOD_color_multiply_scalar_wrapper.restype = Color
-_lib.TCOD_color_add_wrapper.restype = Color
-_lib.TCOD_color_subtract_wrapper.restype = Color
+_lib.TCOD_color_multiply.restype = Color
+_lib.TCOD_color_multiply_scalar.restype = Color
+_lib.TCOD_color_add.restype = Color
+_lib.TCOD_color_subtract.restype = Color
 
 # default colors
 # grey levels
@@ -324,9 +339,9 @@ celadon=Color(172,255,175)
 peach=Color(255,159,127)
 
 # color functions
-_lib.TCOD_color_lerp_wrapper.restype = Color
+_lib.TCOD_color_lerp.restype = Color
 def color_lerp(c1, c2, a):
-    return _lib.TCOD_color_lerp_wrapper(c1, c2, c_float(a))
+    return _lib.TCOD_color_lerp(c1, c2, c_float(a))
 
 def color_set_hsv(c, h, s, v):
     _lib.TCOD_color_set_HSV(byref(c), c_float(h), c_float(s), c_float(v))
@@ -368,11 +383,11 @@ _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
 _lib.TCOD_console_is_fullscreen.restype = c_bool
 _lib.TCOD_console_is_window_closed.restype = c_bool
-_lib.TCOD_console_get_background_color_wrapper.restype = Color
-_lib.TCOD_console_get_foreground_color_wrapper.restype = Color
-_lib.TCOD_console_get_back_wrapper.restype = Color
-_lib.TCOD_console_get_fore_wrapper.restype = Color
-_lib.TCOD_console_get_fading_color_wrapper.restype = Color
+_lib.TCOD_console_get_background_color.restype = Color
+_lib.TCOD_console_get_foreground_color.restype = Color
+_lib.TCOD_console_get_back.restype = Color
+_lib.TCOD_console_get_fore.restype = Color
+_lib.TCOD_console_get_fading_color.restype = Color
 _lib.TCOD_console_is_key_pressed.restype = c_bool
 
 # background rendering modes
@@ -681,28 +696,29 @@ def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
 def console_get_background_color(con):
-    return _lib.TCOD_console_get_background_color_wrapper(con)
+    return _lib.TCOD_console_get_background_color(con)
 
 def console_get_foreground_color(con):
-    return _lib.TCOD_console_get_foreground_color_wrapper(con)
+    return _lib.TCOD_console_get_foreground_color(con)
 
 def console_get_back(con, x, y):
-    return _lib.TCOD_console_get_back_wrapper(con, x, y)
+    return _lib.TCOD_console_get_back(con, x, y)
 
 def console_get_fore(con, x, y):
-    return _lib.TCOD_console_get_fore_wrapper(con, x, y)
+    return _lib.TCOD_console_get_fore(con, x, y)
 
 def console_get_char(con, x, y):
     return _lib.TCOD_console_get_char(con, x, y)
 
 def console_set_fade(fade, fadingColor):
-    _lib.TCOD_console_set_fade_wrapper(fade, fadingColor)
+    _lib.TCOD_console_set_fade(fade, fadingColor)
+    ##_lib.TCOD_console_set_fade_wrapper(fade, fadingColor)
 
 def console_get_fade():
     return _lib.TCOD_console_get_fade().value
 
 def console_get_fading_color():
-    return _lib.TCOD_console_get_fading_color_wrapper()
+    return _lib.TCOD_console_get_fading_color()
 
 # handling keyboard input
 def console_wait_for_keypress(flush):
@@ -901,8 +917,8 @@ def line_iter(xo, yo, xd, yd):
 # image module
 ############################
 _lib.TCOD_image_is_pixel_transparent.restype = c_bool
-_lib.TCOD_image_get_pixel_wrapper.restype = Color
-_lib.TCOD_image_get_mipmap_pixel_wrapper = Color
+_lib.TCOD_image_get_pixel.restype = Color
+_lib.TCOD_image_get_mipmap_pixel.restype = Color
 
 def image_new(width, height):
     return _lib.TCOD_image_new(width, height)
@@ -947,13 +963,14 @@ def image_get_size(image):
     return w.value, h.value
 
 def image_get_pixel(image, x, y):
-    return _lib.TCOD_image_get_pixel_wrapper(image, x, y)
+    return _lib.TCOD_image_get_pixel(image, x, y)
 
 def image_get_mipmap_pixel(image, x0, y0, x1, y1):
-    return _lib.TCOD_image_get_mipmap_pixel_wrapper(image, c_float(x0), c_float(y0),
+    return _lib.TCOD_image_get_mipmap_pixel(image, c_float(x0), c_float(y0),
                                             c_float(x1), c_float(y1))
 def image_put_pixel(image, x, y, col):
-    _lib.TCOD_image_put_pixel_wrapper(image, x, y, col)
+    _lib.TCOD_image_put_pixel(image, x, y, col)
+    ##_lib.TCOD_image_put_pixel_wrapper(image, x, y, col)
 
 def image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle):
     _lib.TCOD_image_blit(image, console, c_float(x), c_float(y), bkgnd_flag,
@@ -1017,7 +1034,7 @@ _lib.TCOD_struct_is_mandatory.restype = c_bool
 _lib.TCOD_parser_get_bool_property.restype = c_bool
 _lib.TCOD_parser_get_float_property.restype = c_float
 _lib.TCOD_parser_get_string_property.restype = c_char_p
-_lib.TCOD_parser_get_color_property_wrapper.restype = Color
+_lib.TCOD_parser_get_color_property.restype = Color
 
 class Dice(Structure):
     _fields_=[('nb_dices', c_int),
@@ -1188,7 +1205,7 @@ def parser_get_string_property(parser, name):
     return _lib.TCOD_parser_get_string_property(parser, name)
 
 def parser_get_color_property(parser, name):
-    return _lib.TCOD_parser_get_color_property_wrapper(parser, name)
+    return _lib.TCOD_parser_get_color_property(parser, name)
 
 def parser_get_dice_property(parser, name):
     d = Dice()
@@ -1762,8 +1779,6 @@ def heightmap_delete(hm):
 ############################
 # name generator module
 ############################
-
-_lib.TCOD_namegen_get_nb_sets_wrapper.restype = c_int
 
 def namegen_parse(filename,random=0) :
     _lib.TCOD_namegen_parse(filename,random)

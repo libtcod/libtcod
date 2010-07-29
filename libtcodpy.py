@@ -1794,10 +1794,7 @@ def namegen_get_sets():
     SARRAY = c_char_p * nb;
     setsa = SARRAY()
     _lib.TCOD_namegen_get_sets_wrapper(setsa)
-    ret=list()
-    for i in range(nb):
-        ret.append(setsa[i])
-    return ret
+    return list(setsa)
 
 def namegen_destroy() :
     _lib.TCOD_namegen_destroy()

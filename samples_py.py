@@ -40,6 +40,22 @@ if True:
     libtcod.struct_add_property(struct, 'dice_field', libtcod.TYPE_DICE, True)
     libtcod.struct_add_property(struct, 'string_field', libtcod.TYPE_STRING,
                                 True)
+    libtcod.struct_add_list_property(struct, 'bool_list', libtcod.TYPE_BOOL,
+                                True)
+    libtcod.struct_add_list_property(struct, 'char_list', libtcod.TYPE_CHAR,
+                                True)
+    libtcod.struct_add_list_property(struct, 'integer_list', libtcod.TYPE_INT,
+                                True)
+    libtcod.struct_add_list_property(struct, 'float_list', libtcod.TYPE_FLOAT,
+                                True)
+    libtcod.struct_add_list_property(struct, 'string_list', libtcod.TYPE_STRING,
+                                True)
+    libtcod.struct_add_list_property(struct, 'color_list', libtcod.TYPE_COLOR,
+                                True)
+##    # dice lists doesn't work yet
+##    libtcod.struct_add_list_property(struct, 'dice_list', libtcod.TYPE_DICE,
+##                                True)
+
     # default listener
     print '***** Default listener *****'
     libtcod.parser_run(parser, os.path.join('data','cfg','sample.cfg'))
@@ -57,7 +73,28 @@ if True:
           libtcod.parser_get_dice_property(parser, 'struct.dice_field')
     print 'string_field : ', \
           libtcod.parser_get_string_property(parser, 'struct.string_field')
-    # custom listener
+    print 'bool_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.bool_list',
+                                                           libtcod.TYPE_BOOL)
+    print 'char_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.char_list',
+                                                           libtcod.TYPE_CHAR)
+    print 'integer_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.integer_list',
+                                                           libtcod.TYPE_INT)
+    print 'float_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.float_list',
+                                                           libtcod.TYPE_FLOAT)
+    print 'string_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.string_list',
+                                                           libtcod.TYPE_STRING)
+    print 'color_list : ', \
+          libtcod.parser_get_list_property(parser, 'struct.color_list',
+                                                           libtcod.TYPE_COLOR)
+##    print 'dice_list : ', \
+##          libtcod.parser_get_list_property(parser, 'struct.dice_list',
+##                                                           libtcod.TYPE_DICE)    # custom listener
+
     print '***** Custom listener *****'
     class MyListener:
         def new_struct(self, struct, name):
@@ -70,8 +107,11 @@ if True:
         def new_property(self,name, typ, value):
             type_names = ['NONE', 'BOOL', 'CHAR', 'INT', 'FLOAT', 'STRING', \
                           'COLOR', 'DICE']
-            print 'new property named ', name,' type ',type_names[typ], \
-                  ' value ', value
+            type_name = type_names[typ & 0xff]
+            if typ & libtcod.TYPE_LIST:
+                type_name = 'LIST<%s>' % type_name
+            print 'new property named ', name,' type ',type_name, \
+                      ' value ', value
             return True
         def end_struct(self, struct, name):
             print 'end structure type', libtcod.struct_get_name(struct), \
@@ -1205,6 +1245,7 @@ def render_name(first, key):
                 libtcod.namegen_parse(os.path.join('data','namegen',file))
         # get the sets list
         ng_sets=libtcod.namegen_get_sets()
+        print ng_sets
         ng_nbsets=len(ng_sets)
     if first:
         libtcod.sys_set_fps(30)

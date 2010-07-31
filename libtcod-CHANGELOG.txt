@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X TCODRandom::getGaussianFloat and TCODRandom::getGaussianInt have been replaced by TCODRandom::getGaussianRange
 X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t)
 	TCODConsole::setAlignment(TCOD_alignment_t)
@@ -24,6 +25,8 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
     void TCODMap::clear (bool transparent = false, bool walkable = false)
     void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
     map_clear (map, transparent, walkable)
++ added weighted Gaussian distribution RNG
++ added Gaussian distribution RNG with no minimum/maximum bounds (using only mean and standard deviance)
 + added clipboard support in TCODSystem (on Linux, only X clipboard supported)
 + added GLSL and OpenGL(fixed pipeline) renderer (FPS increased 880% on true color sample !!!)
 + added libtcod.cfg (allows the player to tweaks libtcod overriding the game presets)
@@ -35,10 +38,12 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added native Mac OSX support
 + added support for quote-less HTML color values in the parser (col=#FFFFFF instead of col="#FFFFFF")
 + added color control helpers for C# (TCODConsole.getColorControlString/getRGBColorControlString)
+% Gaussian distribution in TCODRandom now uses a more precise Box-Muller transform algorithm
 % More default values for printFrame :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module
 % extended list of colour constants (the old names can produce slightly different colours)
+- fixed TCODDijkstra segfault when diagonal movement cost was zero
 - fixed setDirty() not working for the last row or column of the console
 - fixed python samples not compiling if numpy installed
 - fixed python TCOD_parser_get_list_property

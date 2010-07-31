@@ -67,10 +67,40 @@ void TCODRandom::restore(const TCODRandom *backup) {
 	TCOD_random_restore(data,backup->data);
 }
 
-float TCODRandom::getGaussianFloat(float min, float max) {
-	return TCOD_random_get_gaussian_float(data,min,max);
+double TCODRandom::getGaussian (double mean, double stdDeviation) {
+	return TCOD_random_get_gaussian_double(data, mean, stdDeviation);
 }
 
-int TCODRandom::getGaussianInt(int min, int max) {
-	return TCOD_random_get_gaussian_int(data,min,max);
+float TCODRandom::getGaussian (float mean, float stdDeviation) {
+	return (float)TCOD_random_get_gaussian_double(data, (double)mean, (double)stdDeviation);
 }
+
+int TCODRandom::getGaussian (int mean, int stdDeviation) {
+	double num = TCOD_random_get_gaussian_double(data,(double)mean,(double)stdDeviation);
+	return (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+}
+
+double TCODRandom::getGaussianRange (double min, double max) {
+	return TCOD_random_get_gaussian_double_range(data,min,max);
+}
+
+float TCODRandom::getGaussianRange (float min, float max) {
+	return (float)TCOD_random_get_gaussian_double_range(data,(double)min,(double)max);
+}
+
+int TCODRandom::getGaussianRange (int min, int max) {
+	return TCOD_random_get_gaussian_int_range(data,min,max);
+}
+
+double TCODRandom::getGaussianRange (double min, double max, double mean) {
+	return TCOD_random_get_gaussian_double_range_custom(data,min,max,mean);
+}
+
+float TCODRandom::getGaussianRange (float min, float max, float mean) {
+	return (float)TCOD_random_get_gaussian_double_range_custom(data,(double)min,(double)max,(double)mean);
+}
+
+int TCODRandom::getGaussianRange (int min, int max, int mean) {
+	return TCOD_random_get_gaussian_int_range_custom(data,min,max,mean);
+}
+

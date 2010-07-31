@@ -34,6 +34,7 @@
 
 static TCOD_random_t instance=NULL;
 static float rand_div=1.0f/(float)(0xffffffff);
+static double rand_div_double = 1.0 / (double)(0xffffffff);
 
 /* initialize the mersenne twister array */
 static void mt_init(uint32 seed, uint32 mt[624] )
@@ -91,7 +92,7 @@ static float frandom01(mersenne_data_t *r) {
 }
 
 /* string hashing function */
-/* not used (yet) 
+/* not used (yet)
 static uint32 hash(const char *data,int len) {
 	uint32 hash = 0;
 	uint32 x;
@@ -215,34 +216,119 @@ void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup) {
 	memcpy(mersenne,backup,sizeof(mersenne_data_t));
 }
 
-float TCOD_random_get_gaussian_float (TCOD_random_t mersenne, float min, float max) {
-    mersenne_data_t *r;
-	float delta,deltamid;
-	if (max==min) return min;
-	else if (max < min) {
-		float tmp=max;
-		max=min;
-		min=tmp;
-	}
-	if (!mersenne) mersenne=TCOD_random_get_instance();
-	r=(mersenne_data_t *)mersenne;
-	/* MT */
-	if (r->algo == TCOD_RNG_MT) {
-	    deltamid = (float)(((max - min) / 2) * sin(frandom01(r) * 3.14159f)); /* absolute delta from middle value */
-        delta = max - min - (2 * deltamid); /* calculate the actual delta */
-	    return (min + deltamid + (frandom01(r) * delta));
-	}
-	/* CMWC */
+/* Box-Muller transform (Gaussian distribution) */
+
+double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, double std_deviation) {
+	double x1, x2, w, y1;
+	static double y2;
+	static bool again = false;
+	double ret;
+	if (again)
+		ret = mean + y2 * std_deviation;
 	else {
-	    uint32 number;
-	    CMWC_GET_NUMBER(number)
-	    deltamid = (float)(((max - min) / 2) * sin(number * rand_div * 3.14159f));
-	    delta = max - min - (2 * deltamid);
-	    CMWC_GET_NUMBER(number)
-	    return (min + deltamid + ((float)(number)*rand_div*delta));
+		mersenne_data_t *r = (mersenne_data_t *)mersenne;
+		/* MT */
+		if (r->algo == TCOD_RNG_MT) {
+			do {
+				x1 = frandom01(r) * 2.0 - 1.0;
+				x2 = frandom01(r) * 2.0 - 1.0;
+				w = x1 * x1 + x2 * x2;
+			} while (w >= 1.0);
+		}
+		/* CMWC */
+		else {
+			uint32 number;
+			do {
+				CMWC_GET_NUMBER(number)
+				x1 = number * rand_div_double * 2.0 - 1.0;
+				CMWC_GET_NUMBER(number)
+				x2 = number * rand_div_double * 2.0 - 1.0;
+				w = x1 * x1 + x2 * x2;
+			} while (w >= 1.0);
+		}
+		w = sqrt((-2.0 * log(w)) / w);
+		y1 = x1 * w;
+		y2 = x2 * w;
+		ret = mean + y1 * std_deviation;
 	}
+	again = !again;
+	return ret;
 }
 
-int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int min, int max) {
-    return (int)TCOD_random_get_gaussian_float (mersenne, (float)min+0.5f, (float)max+0.5f);
+float TCOD_random_get_gaussian_float (TCOD_random_t mersenne, float mean, float std_deviation) {
+	return (float)TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
+}
+
+int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int mean, int std_deviation) {
+	double num = TCOD_random_get_gaussian_double(mersenne,(double)mean,(double)std_deviation);
+	return (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+}
+
+/* Box-Muller, ranges */
+
+double TCOD_random_get_gaussian_double_range (TCOD_random_t mersenne, double min, double max) {
+	if (min > max) {
+		double tmp = max;
+		max = min;
+		min = tmp;
+	}
+	double mean = (min + max) / 2;
+	double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
+	double ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+	return CLAMP(min,max,ret);
+}
+
+float TCOD_random_get_gaussian_float_range (TCOD_random_t mersenne, float min, float max) {
+	if (min > max) {
+		float tmp = max;
+		max = min;
+		min = tmp;
+	}
+	return (float)TCOD_random_get_gaussian_double_range (mersenne, (double)min, (double)max);
+}
+
+int TCOD_random_get_gaussian_int_range (TCOD_random_t mersenne, int min, int max) {
+	if (min > max) {
+		int tmp = max;
+		max = min;
+		min = tmp;
+	}
+	double num = TCOD_random_get_gaussian_double_range (mersenne, (double)min, (double)max);
+	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	return CLAMP(min,max,ret);
+}
+
+/* Box-Muller, ranges with a custom mean */
+
+double TCOD_random_get_gaussian_double_range_custom (TCOD_random_t mersenne, double min, double max, double mean) {
+	if (min > max) {
+		double tmp = max;
+		max = min;
+		min = tmp;
+	}
+	double d1 = max - mean;
+	double d2 = mean - min;
+	double std_deviation = MAX(d1,d2) / 3.0;
+	double ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+	return CLAMP(min,max,ret);
+}
+
+float TCOD_random_get_gaussian_float_range_custom (TCOD_random_t mersenne, float min, float max, float mean) {
+	if (min > max) {
+		float tmp = max;
+		max = min;
+		min = tmp;
+	}
+	return (float)TCOD_random_get_gaussian_double_range_custom (mersenne, (double)min, (double)max, (double)mean);
+}
+
+int TCOD_random_get_gaussian_int_range_custom (TCOD_random_t mersenne, int min, int max, int mean) {
+	if (min > max) {
+		int tmp = max;
+		max = min;
+		min = tmp;
+	}
+	double num = TCOD_random_get_gaussian_double_range_custom (mersenne, (double)min, (double)max, (double)mean);
+	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	return CLAMP(min,max,ret);
 }

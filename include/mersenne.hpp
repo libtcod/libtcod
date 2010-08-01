@@ -187,8 +187,15 @@ class TCODLIB_API TCODRandom {
 		@PageFather random
 		@PageTitle Using a generator
 		@FuncTitle Getting an integer
-		@FuncDesc Once you obtained a generator (using one of those methods), you can get random numbers using following functions.
-		@Cpp int TCODRandom::getInt(int min, int max)
+		@FuncDesc Once you obtained a generator (using one of those methods), you can get random numbers using following functions, using either the explicit or simplified API where applicable:
+		@Cpp
+			//explicit API:
+
+			int TCODRandom::getInt(int min, int max)
+
+			//simplified API:
+
+			int TCODRandom::get(int min, int max)
 		@C int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max)
 		@Py random_get_int(mersenne, mi, ma)
 		@C# int TCODRandom::getInt(int min, int max)
@@ -196,12 +203,20 @@ class TCODLIB_API TCODRandom {
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max
 		*/
 		int getInt(int min, int max);
+		inline int get(int min, int max) { return getInt(min,max); }
 
 		/**
 		@PageName random_use
 		@FuncTitle Getting a float
-		@FuncDesc To get a random floating point number :
-		@Cpp float TCODRandom::getFloat(float min, float max)
+		@FuncDesc To get a random floating point number, using either the explicit or simplified API where applicable
+		@Cpp
+			//explicit API:
+
+			float TCODRandom::getFloat(float min, float max)
+
+			//simplified API:
+
+			float TCODRandom::get(float min, float max)
 		@C float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max)
 		@Py random_get_float(mersenne, mi, ma)
 		@C# float TCODRandom::getFloat(float min, float max)
@@ -211,9 +226,11 @@ class TCODLIB_API TCODRandom {
 			// default generator
 			TCODRandom * default = TCODRandom::getInstance();
 			int aRandomIntBetween0And1000 = default->getInt(0,1000);
+			int anotherRandomInt = default->get(0,1000);
 			// another random generator
 			TCODRandom *myRandom = new TCODRandom();
 			float aRandomFloatBetween0And1000 = myRandom->getFloat(0.0f,1000.0f);
+			float anotherRandomFloat = myRandom->get(0.0f,1000.0f);
 		@CEx
 			// default generator
 			int a_random_int_between_0_and_1000 = TCOD_random_get_float(NULL,0,1000);
@@ -228,6 +245,7 @@ class TCODLIB_API TCODRandom {
 			a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)
 		*/
 		float getFloat(float min, float max);
+		inline float get(float min, float max) { return getFloat(min,max); }
 
    		/**
 		@PageName random_use
@@ -238,7 +256,24 @@ class TCODLIB_API TCODRandom {
 			1. Specify the mean and standard deviation. The mean will be the central (most probable) value. 99.7% of all the obtained values will be within a 3 standard deviations radius from the mean. In other words, for instance, if the mean is 15 and standard deviance is 5, the effective range of the obtained numbers will be 0-30, with 0.3% of the results beyond this scope.
 			2. Specify minimum and maximum values. The mean will be right in the middle between minimum and maximum values. Standard deviance will be calculated automatically to fir the specified range of numbers.
 			3. Specify minimum and maximum values, as well as the mean, which may be any number, even outside the minimum-maximum range. Standard deviance will be calculated to fit the specified range of numbers.
+			You can use either the explicit or the simplified API where applicable
 		@Cpp
+			//explicit API:
+
+			double getGaussianDouble (double mean, double stdDeviation)
+			float getGaussianFloat (float mean, float stdDeviation)
+			int getGaussianInt (int mean, int stdDeviation)
+
+			double getGaussianRangeDouble (double min, double max)
+			float getGaussianRangeFloat (float min, float max)
+			int getGaussianRangeInt (int min, int max)
+
+			double getGaussianRangeDouble (double min, double max, double mean)
+			float getGaussianRangeFloat (float min, float max, float mean)
+			int getGaussianRangeInt (int min, int max, int mean)
+
+			//simplified API:
+
 			double getGaussian (double mean, double stdDeviation)
 			float getGaussian (float mean, float stdDeviation)
 			int getGaussian (int mean, int stdDeviation)
@@ -271,17 +306,31 @@ class TCODLIB_API TCODRandom {
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max.
 		*/
-		double getGaussian (double mean, double stdDeviation);
-		float getGaussian (float mean, float stdDeviation);
-		int getGaussian (int mean, int stdDeviation);
+		double getGaussianDouble (double mean, double stdDeviation);
+		float getGaussianFloat (float mean, float stdDeviation);
+		int getGaussianInt (int mean, int stdDeviation);
 
-		double getGaussianRange (double min, double max);
-		float getGaussianRange (float min, float max);
-		int getGaussianRange (int min, int max);
+		double getGaussianRangeDouble (double min, double max);
+		float getGaussianRangeFloat (float min, float max);
+		int getGaussianRangeInt (int min, int max);
 
-		double getGaussianRange (double min, double max, double mean);
-		float getGaussianRange (float min, float max, float mean);
-		int getGaussianRange (int min, int max, int mean);
+		double getGaussianRangeDoubleCustom (double min, double max, double mean);
+		float getGaussianRangeFloatCustom (float min, float max, float mean);
+		int getGaussianRangeIntCustom (int min, int max, int mean);
+
+		// simplified API:
+
+		inline double getGaussian (double mean, double stdDeviation) { return getGaussianDouble(mean,stdDeviation); }
+		inline float getGaussian (float mean, float stdDeviation) { return getGaussianFloat(mean,stdDeviation); }
+		inline int getGaussian (int mean, int stdDeviation) { return getGaussianInt(mean,stdDeviation); }
+
+		inline double getGaussianRange (double min, double max) { return getGaussianRangeDouble (min, max); }
+		inline float getGaussianRange (float min, float max) { return getGaussianRangeFloat (min, max); }
+		inline int getGaussianRange (int min, int max) { return getGaussianRangeInt (min, max); }
+
+		inline double getGaussianRange (double min, double max, double mean) { return getGaussianRangeDoubleCustom (min, max, mean); }
+		inline float getGaussianRange (float min, float max, float mean) { return getGaussianRangeFloatCustom (min, max, mean); }
+		inline int getGaussianRange (int min, int max, int mean) { return getGaussianRangeIntCustom (min, max, mean); }
 
 		/**
 		@PageName random_use

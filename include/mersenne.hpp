@@ -157,7 +157,7 @@ class TCODLIB_API TCODRandom {
 		@C void TCOD_random_delete(TCOD_random_t mersenne)
 		@Py random_delete(mersenne)
 		@C# void TCODRandom::Dispose()
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions.
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions.
 		@CppEx
 			// create a generator
 			TCODRandom *rnd = new TCODRandom();
@@ -199,8 +199,8 @@ class TCODLIB_API TCODRandom {
 		@C int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max)
 		@Py random_get_int(mersenne, mi, ma)
 		@C# int TCODRandom::getInt(int min, int max)
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used..
-		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used..
+		@Param min,max	Range of values returned. Each time you call this function, you get a number between (including) min and max
 		*/
 		int getInt(int min, int max);
 		inline int get(int min, int max) { return getInt(min,max); }
@@ -220,8 +220,8 @@ class TCODLIB_API TCODRandom {
 		@C float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max)
 		@Py random_get_float(mersenne, mi, ma)
 		@C# float TCODRandom::getFloat(float min, float max)
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
-		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
+		@Param min,max	Range of values returned. Each time you call this function, you get a number between (including) min and max
 		@CppEx
 			// default generator
 			TCODRandom * default = TCODRandom::getInstance();
@@ -254,7 +254,7 @@ class TCODLIB_API TCODRandom {
 			Due to the Gaussian distribution, most values are near (min+max)/2
 			The algorithm used is Box-Muller transform, Marsaglia polar method. You can use the algorithm in three ways:
 			1. Specify the mean and standard deviation. The mean will be the central (most probable) value. 99.7% of all the obtained values will be within a 3 standard deviations radius from the mean. In other words, for instance, if the mean is 15 and standard deviance is 5, the effective range of the obtained numbers will be 0-30, with 0.3% of the results beyond this scope.
-			2. Specify minimum and maximum values. The mean will be right in the middle between minimum and maximum values. Standard deviance will be calculated automatically to fir the specified range of numbers.
+			2. Specify minimum and maximum values. The mean will be right in the middle between minimum and maximum values. Standard deviance will be calculated automatically to fit the specified range of numbers.
 			3. Specify minimum and maximum values, as well as the mean, which may be any number, even outside the minimum-maximum range. Standard deviance will be calculated to fit the specified range of numbers.
 			You can use either the explicit or the simplified API where applicable
 		@Cpp
@@ -298,13 +298,19 @@ class TCODLIB_API TCODRandom {
 			float TCOD_random_get_gaussian_float_range_custom (TCOD_random_t mersenne, float min, float max, float mean)
 			int TCOD_random_get_gaussian_int_range_custom (TCOD_random_t mersenne, int min, int max, int mean)
 		@Py
-			random_get_gaussian_float(mersenne, mi, ma)
-			random_get_gaussian_int(mersenne, mi, ma)
+			random_get_gaussian_double(mersenne, mean, std_deviation)
+			random_get_gaussian_float(mersenne, mean, std_deviation)
+			random_get_gaussian_int(mersenne, mean, std_deviation)
+
+			random_get_gaussian_double_range(mersenne, mi, ma, mean=None)
+			random_get_gaussian_float_range(mersenne, mi, ma, mean=None)
+			random_get_gaussian_int_range(mersenne, mi, ma, mean=None)
 		@C#
 			float TCODRandom::getGaussianFloat(float min, float max)
 			int TCODRandom::getGaussianInt(int min, int max)
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
-		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max.
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
+		@Param mean,std_deviation Mean and standard deviation. 68.27% of returned values will be within one standard deviation of the mean, 95.45% within two, and 99.73% within three.
+		@Param min,max	Range of values returned. Each time you call one of these functions, you get a number between (including) min and max.
 		*/
 		double getGaussianDouble (double mean, double stdDeviation);
 		float getGaussianFloat (float mean, float stdDeviation);
@@ -340,7 +346,7 @@ class TCODLIB_API TCODRandom {
 		@C TCOD_random_t TCOD_random_save(TCOD_random_t mersenne)
 		@Py random_save(mersenne)
 		@C# TCODRandom TCODRandom::save()
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		*/
 		TCODRandom * save() const;
 
@@ -352,7 +358,7 @@ class TCODLIB_API TCODRandom {
 		@C void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup)
 		@Py random_restore(mersenne, backup)
 		@C# void TCODRandom::restore(TCODRandom backup)
-		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
+		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@CppEx
 			// default generator
 			TCODRandom * default = TCODRandom::getInstance();

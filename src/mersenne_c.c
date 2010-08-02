@@ -267,14 +267,15 @@ int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int mean, int std_devi
 /* Box-Muller, ranges */
 
 double TCOD_random_get_gaussian_double_range (TCOD_random_t mersenne, double min, double max) {
+	double mean, std_deviation, ret;
 	if (min > max) {
 		double tmp = max;
 		max = min;
 		min = tmp;
 	}
-	double mean = (min + max) / 2;
-	double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
-	double ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+	mean = (min + max) / 2;
+	std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
+	ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
 	return CLAMP(min,max,ret);
 }
 
@@ -288,28 +289,31 @@ float TCOD_random_get_gaussian_float_range (TCOD_random_t mersenne, float min, f
 }
 
 int TCOD_random_get_gaussian_int_range (TCOD_random_t mersenne, int min, int max) {
+	double num;
+	int ret;
 	if (min > max) {
 		int tmp = max;
 		max = min;
 		min = tmp;
 	}
-	double num = TCOD_random_get_gaussian_double_range (mersenne, (double)min, (double)max);
-	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	num = TCOD_random_get_gaussian_double_range (mersenne, (double)min, (double)max);
+	ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
 	return CLAMP(min,max,ret);
 }
 
 /* Box-Muller, ranges with a custom mean */
 
 double TCOD_random_get_gaussian_double_range_custom (TCOD_random_t mersenne, double min, double max, double mean) {
+	double d1, d2, std_deviation, ret;
 	if (min > max) {
 		double tmp = max;
 		max = min;
 		min = tmp;
 	}
-	double d1 = max - mean;
-	double d2 = mean - min;
-	double std_deviation = MAX(d1,d2) / 3.0;
-	double ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+	d1 = max - mean;
+	d2 = mean - min;
+	std_deviation = MAX(d1,d2) / 3.0;
+	ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
 	return CLAMP(min,max,ret);
 }
 
@@ -323,12 +327,14 @@ float TCOD_random_get_gaussian_float_range_custom (TCOD_random_t mersenne, float
 }
 
 int TCOD_random_get_gaussian_int_range_custom (TCOD_random_t mersenne, int min, int max, int mean) {
+	double num;
+	int ret;
 	if (min > max) {
 		int tmp = max;
 		max = min;
 		min = tmp;
 	}
-	double num = TCOD_random_get_gaussian_double_range_custom (mersenne, (double)min, (double)max, (double)mean);
-	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	num = TCOD_random_get_gaussian_double_range_custom (mersenne, (double)min, (double)max, (double)mean);
+	ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
 	return CLAMP(min,max,ret);
 }

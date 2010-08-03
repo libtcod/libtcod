@@ -202,8 +202,8 @@ class TCODLIB_API TCODRandom {
 		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used..
 		@Param min,max	Range of values returned. Each time you call this function, you get a number between (including) min and max
 		*/
-		int getInt(int min, int max);
-		inline int get(int min, int max) { return getInt(min,max); }
+		inline int getInt(int min, int max) { return TCOD_random_get_int(data,min,max); }
+		inline int get(int min, int max) { return TCOD_random_get_int(data,min,max); }
 
 		/**
 		@PageName random_use
@@ -244,8 +244,8 @@ class TCODLIB_API TCODRandom {
 			my_random = libtcod.random_new()
 			a_random_float_between_0_and_1000 = libtcod.random_get_float(my_random,0.0,1000.0)
 		*/
-		float getFloat(float min, float max);
-		inline float get(float min, float max) { return getFloat(min,max); }
+		inline float getFloat(float min, float max) { return TCOD_random_get_float(data,min,max); }
+		inline float get(float min, float max) { return TCOD_random_get_float(data,min,max); }
 
    		/**
 		@PageName random_use
@@ -256,7 +256,7 @@ class TCODLIB_API TCODRandom {
 			1. Specify the mean and standard deviation. The mean will be the central (most probable) value. 99.7% of all the obtained values will be within a 3 standard deviations radius from the mean. In other words, for instance, if the mean is 15 and standard deviance is 5, the effective range of the obtained numbers will be 0-30, with 0.3% of the results beyond this scope.
 			2. Specify minimum and maximum values. The mean will be right in the middle between minimum and maximum values. Standard deviance will be calculated automatically to fit the specified range of numbers.
 			3. Specify minimum and maximum values, as well as the mean, which may be any number, even outside the minimum-maximum range. Standard deviance will be calculated to fit the specified range of numbers.
-			You can use either the explicit or the simplified API where applicable
+			You can use either the explicit or the simplified API where applicable.
 		@Cpp
 			//explicit API:
 
@@ -311,32 +311,116 @@ class TCODLIB_API TCODRandom {
 		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param mean,std_deviation Mean and standard deviation. 68.27% of returned values will be within one standard deviation of the mean, 95.45% within two, and 99.73% within three.
 		@Param min,max	Range of values returned. Each time you call one of these functions, you get a number between (including) min and max.
+		@Param mean The mean, or the value that should be randomly selected with the highest frequency (the peak of the bell curve).
+		@Param stdDeviation The standard deviation from the mean. The random values will fall within 1 standard deviation from the mean 68% of times, within 2 standard deviations from the mean, 95% of times, within 3 standard deviation from the mean, 99.7% of times (according to the three-sigma rule).
 		*/
-		double getGaussianDouble (double mean, double stdDeviation);
-		float getGaussianFloat (float mean, float stdDeviation);
-		int getGaussianInt (int mean, int stdDeviation);
+		inline double getGaussianDouble (double mean, double stdDeviation) { return TCOD_random_get_gaussian_double(data,mean,stdDeviation); }
+		inline float getGaussianFloat (float mean, float stdDeviation) { return TCOD_random_get_gaussian_float(data,mean,stdDeviation); }
+		inline int getGaussianInt (int mean, int stdDeviation) { return TCOD_random_get_gaussian_int(data,mean,stdDeviation); }
 
-		double getGaussianRangeDouble (double min, double max);
-		float getGaussianRangeFloat (float min, float max);
-		int getGaussianRangeInt (int min, int max);
+		inline double getGaussianRangeDouble (double min, double max) { return TCOD_random_get_gaussian_double_range(data,min,max); }
+		inline float getGaussianRangeFloat (float min, float max) { return TCOD_random_get_gaussian_float_range(data,min,max); }
+		inline int getGaussianRangeInt (int min, int max) { return TCOD_random_get_gaussian_int_range(data,min,max); }
 
-		double getGaussianRangeDoubleCustom (double min, double max, double mean);
-		float getGaussianRangeFloatCustom (float min, float max, float mean);
-		int getGaussianRangeIntCustom (int min, int max, int mean);
+		inline double getGaussianRangeDoubleCustom (double min, double max, double mean) { return TCOD_random_get_gaussian_double_range_custom(data,min,max,mean); }
+		inline float getGaussianRangeFloatCustom (float min, float max, float mean) { return TCOD_random_get_gaussian_float_range_custom(data,min,max,mean); }
+		inline int getGaussianRangeIntCustom (int min, int max, int mean) { return TCOD_random_get_gaussian_int_range_custom(data,min,max,mean); }
 
 		// simplified API:
 
-		inline double getGaussian (double mean, double stdDeviation) { return getGaussianDouble(mean,stdDeviation); }
-		inline float getGaussian (float mean, float stdDeviation) { return getGaussianFloat(mean,stdDeviation); }
-		inline int getGaussian (int mean, int stdDeviation) { return getGaussianInt(mean,stdDeviation); }
+		inline double getGaussian (double mean, double stdDeviation) { return TCOD_random_get_gaussian_double(data,mean,stdDeviation); }
+		inline float getGaussian (float mean, float stdDeviation) { return TCOD_random_get_gaussian_float(data,mean,stdDeviation); }
+		inline int getGaussian (int mean, int stdDeviation) { return TCOD_random_get_gaussian_int(data,mean,stdDeviation); }
 
-		inline double getGaussianRange (double min, double max) { return getGaussianRangeDouble (min, max); }
-		inline float getGaussianRange (float min, float max) { return getGaussianRangeFloat (min, max); }
-		inline int getGaussianRange (int min, int max) { return getGaussianRangeInt (min, max); }
+		inline double getGaussianRange (double min, double max) { return TCOD_random_get_gaussian_double_range(data,min,max); }
+		inline float getGaussianRange (float min, float max) { return TCOD_random_get_gaussian_float_range(data,min,max); }
+		inline int getGaussianRange (int min, int max) { return TCOD_random_get_gaussian_int_range(data,min,max); }
 
-		inline double getGaussianRange (double min, double max, double mean) { return getGaussianRangeDoubleCustom (min, max, mean); }
-		inline float getGaussianRange (float min, float max, float mean) { return getGaussianRangeFloatCustom (min, max, mean); }
-		inline int getGaussianRange (int min, int max, int mean) { return getGaussianRangeIntCustom (min, max, mean); }
+		inline double getGaussianRange (double min, double max, double mean) { return TCOD_random_get_gaussian_double_range_custom(data,min,max,mean); }
+		inline float getGaussianRange (float min, float max, float mean) { return TCOD_random_get_gaussian_float_range_custom(data,min,max,mean); }
+		inline int getGaussianRange (int min, int max, int mean) { return TCOD_random_get_gaussian_int_range_custom(data,min,max,mean); }
+
+		/**
+		@PageName random_use
+		@FuncTitle Getting numbers with an inverse Gaussian distribution
+		@FuncDesc The inverse Gaussian distribution works prettu much the same way Gaussian distribution does, only that values near the chosen mean have the least chance of being selected, while the extreme values are the most probable.
+			This is an approximation, since it uses +/- 3 standard deviations from the mean as the extreme values, which means that the algorithm will be slightly inaccurate 0.3% of times.
+			You can use either the explicit or the simplified API where applicable.
+		@Cpp
+			//Explicit API:
+
+			double getGaussianDoubleInv (double mean, double stdDeviation)
+			float getGaussianFloatInv (float mean, float stdDeviation)
+			int getGaussianIntInv (int mean, int stdDeviation)
+
+			double getGaussianRangeDoubleInv (double min, double max)
+			float getGaussianRangeFloatInv (float min, float max)
+			int getGaussianRangeIntInv (int min, int max)
+
+			double getGaussianRangeDoubleCustomInv (double min, double max, double mean)
+			float getGaussianRangeFloatCustomInv (float min, float max, float mean)
+			int getGaussianRangeIntCustomInv (int min, int max, int mean)
+
+			//simplified API:
+
+			double getGaussianInv (double mean, double stdDeviation)
+			float getGaussianInv (float mean, float stdDeviation)
+			int getGaussianInv (int mean, int stdDeviation)
+
+			double getGaussianRangeInv (double min, double max)
+			float getGaussianRangeInv (float min, float max)
+			int getGaussianRangeInv (int min, int max)
+
+			double getGaussianRangeInv (double min, double max, double mean)
+			float getGaussianRangeInv (float min, float max, float mean)
+			int getGaussianRangeInv (int min, int max, int mean)
+		@C
+			double TCOD_random_get_gaussian_double_inv (TCOD_random_t mersenne, double mean, double std_deviation);
+			float TCOD_random_get_gaussian_float_inv (TCOD_random_t mersenne, float mean, float std_deviation);
+			int TCOD_random_get_gaussian_int_inv (TCOD_random_t mersenne, int mean, int std_deviation);
+
+			double TCOD_random_get_gaussian_double_range_inv (TCOD_random_t mersenne, double min, double max);
+			float TCOD_random_get_gaussian_float_range_inv (TCOD_random_t mersenne, float min, float max);
+			int TCOD_random_get_gaussian_int_range_inv (TCOD_random_t mersenne, int min, int max);
+
+			double TCOD_random_get_gaussian_double_range_custom_inv (TCOD_random_t mersenne, double min, double max, double mean);
+			float TCOD_random_get_gaussian_float_range_custom_inv (TCOD_random_t mersenne, float min, float max, float mean);
+			int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int min, int max, int mean);
+		@Py
+
+		@C#
+
+		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
+		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max. In the inverted version of the Gaussian distribution toolkit, these are the extreme values, with the most probability of appearing.
+		@Param mean The mean, or the value that should be randomly selected with the highest frequency (the peak of the bell curve). In the inverted version of the Gaussian distribution toolkit, this is the value that has the LEAST probability of being selected (again, this is slightly inaccurate in 0.3% of cases).
+		@Param stdDeviation The standard deviation from the mean. In the inverted version of the Gaussian distribution toolkit, this is actually the standard deviation from the extreme values, not from the mean.
+		*/
+
+		inline double getGaussianDoubleInv (double mean, double stdDeviation) { return TCOD_random_get_gaussian_double_inv(data,mean,stdDeviation); }
+		inline float getGaussianFloatInv (float mean, float stdDeviation) { return TCOD_random_get_gaussian_float_inv(data,mean,stdDeviation); }
+		inline int getGaussianIntInv (int mean, int stdDeviation) { return TCOD_random_get_gaussian_int_inv(data,mean,stdDeviation); }
+
+		inline double getGaussianRangeDoubleInv (double min, double max) { return TCOD_random_get_gaussian_double_range_inv(data,min,max); }
+		inline float getGaussianRangeFloatInv (float min, float max) { return TCOD_random_get_gaussian_float_range_inv(data,min,max); }
+		inline int getGaussianRangeIntInv (int min, int max) { return TCOD_random_get_gaussian_int_range_inv(data,min,max); }
+
+		inline double getGaussianRangeDoubleCustomInv (double min, double max, double mean) { return TCOD_random_get_gaussian_double_range_custom_inv(data,min,max,mean); }
+		inline float getGaussianRangeFloatCustomInv (float min, float max, float mean) { return TCOD_random_get_gaussian_float_range_custom_inv(data,min,max,mean); }
+		inline int getGaussianRangeIntCustomInv (int min, int max, int mean) { return TCOD_random_get_gaussian_int_range_custom_inv(data,min,max,mean); }
+
+		//simplified API:
+
+		inline double getGaussianInv (double mean, double stdDeviation) { return TCOD_random_get_gaussian_double_inv(data,mean,stdDeviation); }
+		inline float getGaussianInv (float mean, float stdDeviation) { return TCOD_random_get_gaussian_float_inv(data,mean,stdDeviation); }
+		inline int getGaussianInv (int mean, int stdDeviation) { return TCOD_random_get_gaussian_int_inv(data,mean,stdDeviation); }
+
+		inline double getGaussianRangeInv (double min, double max) { return TCOD_random_get_gaussian_double_range_inv(data,min,max); }
+		inline float getGaussianRangeInv (float min, float max) { return TCOD_random_get_gaussian_float_range_inv(data,min,max); }
+		inline int getGaussianRangeInv (int min, int max) { return TCOD_random_get_gaussian_int_range_inv(data,min,max); }
+
+		inline double getGaussianRangeInv (double min, double max, double mean) { return TCOD_random_get_gaussian_double_range_custom_inv(data,min,max,mean); }
+		inline float getGaussianRangeInv (float min, float max, float mean) { return TCOD_random_get_gaussian_float_range_custom_inv(data,min,max,mean); }
+		inline int getGaussianRangeInv (int min, int max, int mean) { return TCOD_random_get_gaussian_int_range_custom_inv(data,min,max,mean); }
 
 		/**
 		@PageName random_use

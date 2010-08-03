@@ -338,3 +338,74 @@ int TCOD_random_get_gaussian_int_range_custom (TCOD_random_t mersenne, int min, 
 	ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
 	return CLAMP(min,max,ret);
 }
+
+/* Box-Muller, inverted distribution */
+
+double TCOD_random_get_gaussian_double_inv (TCOD_random_t mersenne, double mean, double std_deviation) {
+	double num = TCOD_random_get_gaussian_double(mersenne,mean,std_deviation);
+	return (num >= mean ? num - (3 * std_deviation) : num + (3 * std_deviation));
+}
+
+float TCOD_random_get_gaussian_float_inv (TCOD_random_t mersenne, float mean, float std_deviation) {
+	double num = TCOD_random_get_gaussian_double(mersenne,(double)mean,(double)std_deviation);
+	return (num >= mean ? (float)(num - (3 * std_deviation)) : (float)(num + (3 * std_deviation)));
+}
+
+int TCOD_random_get_gaussian_int_inv (TCOD_random_t mersenne, int mean, int std_deviation) {
+	double num = TCOD_random_get_gaussian_double(mersenne,(double)mean,(double)std_deviation);
+	int inum = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	return (num >= mean ? inum - (3 * std_deviation) : inum + (3 * std_deviation));
+}
+
+/* Box-Muller, ranges, inverted distribution */
+
+double TCOD_random_get_gaussian_double_range_inv (TCOD_random_t mersenne, double min, double max) {
+	double mean, std_deviation, ret;
+	if (min > max) {
+		double tmp = max;
+		max = min;
+		min = tmp;
+	}
+	mean = (min + max) / 2.0;
+	std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
+	ret = TCOD_random_get_gaussian_double_inv(mersenne, mean, std_deviation);
+	return CLAMP(min,max,ret);
+}
+
+float TCOD_random_get_gaussian_float_range_inv (TCOD_random_t mersenne, float min, float max) {
+	float ret = (float)TCOD_random_get_gaussian_double_range_inv(mersenne, (double)min, (double)max);
+	return CLAMP(min,max,ret);
+}
+
+int TCOD_random_get_gaussian_int_range_inv (TCOD_random_t mersenne, int min, int max) {
+	double num = TCOD_random_get_gaussian_double_range_inv(mersenne, (double)min, (double)max);
+	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	return CLAMP(min,max,ret);
+}
+
+/* Box-Muller, ranges with a custom mean, inverted distribution */
+
+double TCOD_random_get_gaussian_double_range_custom_inv (TCOD_random_t mersenne, double min, double max, double mean) {
+	double d1, d2, std_deviation, ret;
+	if (min > max) {
+		double tmp = max;
+		max = min;
+		min = tmp;
+	}
+	d1 = max - mean;
+	d2 = mean - min;
+	std_deviation = MAX(d1,d2) / 3.0;
+	ret = TCOD_random_get_gaussian_double_inv(mersenne, mean, std_deviation);
+	return CLAMP(min,max,ret);
+}
+
+float TCOD_random_get_gaussian_float_range_custom_inv (TCOD_random_t mersenne, float min, float max, float mean) {
+	float ret = (float)TCOD_random_get_gaussian_double_range_custom_inv(mersenne, (double)min, (double)max, (double)mean);
+	return CLAMP(min,max,ret);
+}
+
+int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int min, int max, int mean) {
+	double num = TCOD_random_get_gaussian_double_range_custom_inv(mersenne, (double)min, (double)max, (double)mean);
+	int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+	return CLAMP(min,max,ret);
+}

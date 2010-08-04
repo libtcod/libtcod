@@ -309,7 +309,6 @@ class TCODLIB_API TCODRandom {
 			float TCODRandom::getGaussianFloat(float min, float max)
 			int TCODRandom::getGaussianInt(int min, int max)
 		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
-		@Param mean,std_deviation Mean and standard deviation. 68.27% of returned values will be within one standard deviation of the mean, 95.45% within two, and 99.73% within three.
 		@Param min,max	Range of values returned. Each time you call one of these functions, you get a number between (including) min and max.
 		@Param mean The mean, or the value that should be randomly selected with the highest frequency (the peak of the bell curve).
 		@Param stdDeviation The standard deviation from the mean. The random values will fall within 1 standard deviation from the mean 68% of times, within 2 standard deviations from the mean, 95% of times, within 3 standard deviation from the mean, 99.7% of times (according to the three-sigma rule).
@@ -387,7 +386,13 @@ class TCODLIB_API TCODRandom {
 			float TCOD_random_get_gaussian_float_range_custom_inv (TCOD_random_t mersenne, float min, float max, float mean);
 			int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int min, int max, int mean);
 		@Py
+			random_get_gaussian_double_inv(mersenne, mean, std_deviation)
+			random_get_gaussian_float_inv(mersenne, mean, std_deviation)
+			random_get_gaussian_int_inv(mersenne, mean, std_deviation)
 
+			random_get_gaussian_double_range_inv(mersenne, mi, ma, mean=None)
+			random_get_gaussian_float_range_inv(mersenne, mi, ma, mean=None)
+			random_get_gaussian_int_range_inv(mersenne, mi, ma, mean=None)
 		@C#
 
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.

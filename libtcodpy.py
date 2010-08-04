@@ -1226,6 +1226,12 @@ _lib.TCOD_random_get_gaussian_double_range_custom.restype = c_double
 _lib.TCOD_random_get_gaussian_float.restype = c_float
 _lib.TCOD_random_get_gaussian_float_range.restype = c_float
 _lib.TCOD_random_get_gaussian_float_range_custom.restype = c_float
+_lib.TCOD_random_get_gaussian_double_inv.restype = c_double
+_lib.TCOD_random_get_gaussian_double_range_inv.restype = c_double
+_lib.TCOD_random_get_gaussian_double_range_custom_inv.restype = c_double
+_lib.TCOD_random_get_gaussian_float_inv.restype = c_float
+_lib.TCOD_random_get_gaussian_float_range_inv.restype = c_float
+_lib.TCOD_random_get_gaussian_float_range_custom_inv.restype = c_float
 
 RNG_MT = 0
 RNG_CMWC = 1
@@ -1277,6 +1283,39 @@ def random_get_gaussian_int_range(rnd, mi, ma, mean=None):
         return _lib.TCOD_random_get_gaussian_int_range(rnd, mi, ma)
     else:
         return _lib.TCOD_random_get_gaussian_int_range_custom(rnd, mi, ma, mean)
+
+def random_get_gaussian_double_inv(rnd, mean, std_dev):
+    return _lib.TCOD_random_get_gaussian_double_inv(
+                            rnd, c_double(mean), c_double(std_dev))
+
+def random_get_gaussian_float_inv(rnd, mean, std_dev):
+    return _lib.TCOD_random_get_gaussian_float_inv(
+                            rnd, c_float(mean), c_float(std_dev))
+
+def random_get_gaussian_int_inv(rnd, mean, std_dev):
+    return _lib.TCOD_random_get_gaussian_int(rnd, mean, std_dev)
+
+def random_get_gaussian_double_range_inv(rnd, mi, ma, mean=None):
+    if mean is None:
+        return _lib.TCOD_random_get_gaussian_double_range_inv(
+                           rnd, c_double(mi), c_double(ma))
+    else:
+        return _lib.TCOD_random_get_gaussian_double_range_custom_inv(
+                           rnd, c_double(mi), c_double(ma), c_double(mean))
+
+def random_get_gaussian_float_range_inv(rnd, mi, ma, mean=None):
+    if mean is None:
+        return _lib.TCOD_random_get_gaussian_float_range_inv(
+                            rnd, c_float(mi), c_float(ma))
+    else:
+        return _lib.TCOD_random_get_gaussian_float_range_custom_inv(
+                            rnd, c_float(mi), c_float(ma), c_float(mean))
+
+def random_get_gaussian_int_range_inv(rnd, mi, ma, mean=None):
+    if mean is None:
+        return _lib.TCOD_random_get_gaussian_int_range_inv(rnd, mi, ma)
+    else:
+        return _lib.TCOD_random_get_gaussian_int_range_custom_inv(rnd, mi, ma, mean)
 
 def random_save(rnd):
     return _lib.TCOD_random_save(rnd)

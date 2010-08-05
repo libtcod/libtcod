@@ -871,12 +871,9 @@ def sys_update_char(asciiCode, fontx, fonty, img, x, y) :
     _lib.TCOD_sys_update_char(c_int(asciiCode),c_int(fontx),c_int(fonty),img,c_int(x),c_int(y))
 
 # custom SDL post renderer
-SDL_RENDERER_FUNC = None
-sdl_renderer_func = None
+SDL_RENDERER_FUNC = CFUNCTYPE(None, c_void_p)
 def sys_register_SDL_renderer(callback):
-    global SDL_RENDERER_FUNC
     global sdl_renderer_func
-    SDL_RENDERER_FUNC = CFUNCTYPE(None, c_void_p)
     sdl_renderer_func = SDL_RENDERER_FUNC(callback)
     _lib.TCOD_sys_register_SDL_renderer(sdl_renderer_func)
 
@@ -1293,7 +1290,7 @@ def random_get_gaussian_float_inv(rnd, mean, std_dev):
                             rnd, c_float(mean), c_float(std_dev))
 
 def random_get_gaussian_int_inv(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_int(rnd, mean, std_dev)
+    return _lib.TCOD_random_get_gaussian_int_inv(rnd, mean, std_dev)
 
 def random_get_gaussian_double_range_inv(rnd, mi, ma, mean=None):
     if mean is None:
@@ -1342,53 +1339,42 @@ _lib.TCOD_noise_turbulence_wavelet.restype = c_float
 NOISE_DEFAULT_HURST = 0.5
 NOISE_DEFAULT_LACUNARITY = 2.0
 
+_NOISE_PACKER_FUNC = (None,
+                      struct.Struct("1f").pack,
+                      struct.Struct("2f").pack,
+                      struct.Struct("3f").pack,
+                      struct.Struct("4f").pack,
+                      )
+
 def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, random=0):
     return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), random)
 
-def _noise_int(n, f, func):
-    ct = c_float * len(f)
-    cf = ct()
-    i = 0
-    for value in f:
-        cf[i] = c_float(value)
-        i += 1
-    return func(n, cf)
-
 def noise_perlin(n, f):
-    return _noise_int(n, f, _lib.TCOD_noise_perlin)
+    return _lib.TCOD_noise_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f))
 
 def noise_simplex(n, f):
-    return _noise_int(n, f, _lib.TCOD_noise_simplex)
+    return _lib.TCOD_noise_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f))
 
 def noise_wavelet(n, f):
-    return _noise_int(n, f, _lib.TCOD_noise_wavelet)
-
-def _noise_int2(n, f, oc, func):
-    ct = c_float * len(f)
-    cf = ct()
-    i = 0
-    for value in f:
-        cf[i] = c_float(value)
-        i += 1
-    return func(n, cf, c_float(oc))
+    return _lib.TCOD_noise_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f))
 
 def noise_fbm_perlin(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_perlin)
+    return _lib.TCOD_noise_fbm_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_fbm_simplex(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_simplex)
+    return _lib.TCOD_noise_fbm_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_fbm_wavelet(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_fbm_wavelet)
+    return _lib.TCOD_noise_fbm_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_turbulence_perlin(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_perlin)
+    return _lib.TCOD_noise_turbulence_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_turbulence_simplex(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_simplex)
+    return _lib.TCOD_noise_turbulence_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_turbulence_wavelet(n, f, oc):
-    return _noise_int2(n, f, oc, _lib.TCOD_noise_turbulence_wavelet)
+    return _lib.TCOD_noise_turbulence_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
 
 def noise_delete(n):
     _lib.TCOD_noise_delete(n)
@@ -1431,7 +1417,7 @@ def map_clear(m,walkable=False,transparent=False):
     _lib.TCOD_map_clear(m,c_int(walkable),c_int(transparent))
 
 def map_compute_fov(m, x, y, radius=0, light_walls=True, algo=FOV_RESTRICTIVE ):
-    _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_uint(light_walls), c_int(algo))
+    _lib.TCOD_map_compute_fov(m, x, y, c_int(radius), c_bool(light_walls), c_int(algo))
 
 def map_is_in_fov(m, x, y):
     return _lib.TCOD_map_is_in_fov(m, x, y)
@@ -1456,17 +1442,15 @@ def map_get_height(map):
 ############################
 _lib.TCOD_path_compute.restype = c_bool
 _lib.TCOD_path_is_empty.restype = c_bool
-_lib.TCOD_path_walk.restype = c_uint
+_lib.TCOD_path_walk.restype = c_bool
+
+PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
 
 def path_new_using_map(m, dcost=1.41):
     return _lib.TCOD_path_new_using_map(c_void_p(m), c_float(dcost))
 
-PATH_CBK_FUNC = None
-cbk_func = None
 def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
-    global PATH_CBK_FUNC
     global cbk_func
-    PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
     cbk_func = PATH_CBK_FUNC(func)
     return _lib.TCOD_path_new_using_function(w, h, cbk_func,
                                              py_object(userdata), c_float(dcost))
@@ -1508,21 +1492,16 @@ def path_walk(p, recompute):
 def path_delete(p):
     _lib.TCOD_path_delete(p)
 
-_lib.TCOD_dijkstra_path_set.restype = c_uint
+_lib.TCOD_dijkstra_path_set.restype = c_bool
 _lib.TCOD_dijkstra_is_empty.restype = c_bool
-_lib.TCOD_dijkstra_size.restype = c_int
-_lib.TCOD_dijkstra_path_walk.restype = c_uint
+_lib.TCOD_dijkstra_path_walk.restype = c_bool
 _lib.TCOD_dijkstra_get_distance.restype = c_float
 
 def dijkstra_new(m, dcost=1.41):
     return _lib.TCOD_dijkstra_new(c_void_p(m), c_float(dcost))
 
-PATH_CBK_FUNC = None
-cbk_func = None
 def dijkstra_new_using_function(w, h, func, userdata=0, dcost=1.41):
-    global PATH_CBK_FUNC
     global cbk_func
-    PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
     cbk_func = PATH_CBK_FUNC(func)
     return _lib.TCOD_path_dijkstra_using_function(w, h, cbk_func,
                                              py_object(userdata), c_float(dcost))
@@ -1582,6 +1561,8 @@ _lib.TCOD_bsp_is_leaf.restype = c_bool
 _lib.TCOD_bsp_contains.restype = c_bool
 _lib.TCOD_bsp_find_node.restype = POINTER(_CBsp)
 
+BSP_CBK_FUNC = CFUNCTYPE(c_int, c_void_p, c_void_p)
+
 # python class encapsulating the _CBsp pointer
 class Bsp(object):
     def __init__(self, cnode):
@@ -1619,9 +1600,9 @@ class Bsp(object):
     position = property(getpos, setpos)
 
     def gethor(self):
-        return self.p.contents.horizontal == 1
+        return self.p.contents.horizontal
     def sethor(self,value):
-        self.p.contents.horizontal = c_int(value)
+        self.p.contents.horizontal = value
     horizontal = property(gethor, sethor)
 
     def getlev(self):
@@ -1664,7 +1645,6 @@ def bsp_find_node(node, cx, cy):
     return Bsp(_lib.TCOD_bsp_find_node(node.p, cx, cy))
 
 def _bsp_traverse(node, callback, userData, func):
-    BSP_CBK_FUNC = CFUNCTYPE(c_int, c_void_p, c_void_p)
     # convert the c node into a python node
     #before passing it to the actual callback
     def node_converter(cnode, data):
@@ -1775,21 +1755,15 @@ def heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,
                                maxLevel):
     FARRAY = c_float * kernelsize
     IARRAY = c_int * kernelsize
-    cdx = IARRAY()
-    cdy = IARRAY()
-    cweight = FARRAY()
-    for i in range(kernelsize):
-        cdx[i] = c_int(dx[i])
-        cdy[i] = c_int(dy[i])
-        cweight[i] = c_float(weight[i])
+    cdx = IARRAY(*dx)
+    cdy = IARRAY(*dy)
+    cweight = FARRAY(*weight)
     _lib.TCOD_heightmap_kernel_transform(hm.p, kernelsize, cdx, cdy, cweight,
                                          c_float(minLevel), c_float(maxLevel))
 
 def heightmap_add_voronoi(hm, nbPoints, nbCoef, coef, rnd=0):
     FARRAY = c_float * nbCoef
-    ccoef = FARRAY()
-    for i in range(nbCoef):
-        ccoef[i] = c_float(coef[i])
+    ccoef = FARRAY(*coef)
     _lib.TCOD_heightmap_add_voronoi(hm.p, nbPoints, nbCoef, ccoef, rnd)
 
 def heightmap_add_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta, scale):
@@ -1806,11 +1780,8 @@ def heightmap_scale_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta,
 def heightmap_dig_bezier(hm, px, py, startRadius, startDepth, endRadius,
                          endDepth):
     IARRAY = c_int * 4
-    cpx = IARRAY()
-    cpy = IARRAY()
-    for i in range(4):
-        cpx[i] = c_int(px[i])
-        cpy[i] = c_int(py[i])
+    cpx = IARRAY(*px)
+    cpy = IARRAY(*py)
     _lib.TCOD_heightmap_dig_bezier(hm.p, cpx, cpy, c_float(startRadius),
                                    c_float(startDepth), c_float(endRadius),
                                    c_float(endDepth))
@@ -1819,7 +1790,7 @@ def heightmap_get_value(hm, x, y):
     return _lib.TCOD_heightmap_get_value(hm.p, x, y)
 
 def heightmap_get_interpolated_value(hm, x, y):
-    return _lib.TCOD_heightmap_get_interplated_value(hm.p, c_float(x),
+    return _lib.TCOD_heightmap_get_interpolated_value(hm.p, c_float(x),
                                                      c_float(y))
 
 def heightmap_get_slope(hm, x, y):

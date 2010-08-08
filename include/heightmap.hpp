@@ -274,7 +274,11 @@ public :
 	/**
 	@PageName heightmap_modify
 	@FuncTitle Do a generic transformation
-	@FuncDesc This function allows you to apply a generic transformation on the map, so that each resulting cell value is the weighted sum of several neighbour cells. This can be used to smooth/sharpen the map.
+	@FuncDesc This function allows you to apply a generic transformation on the map, so that each resulting cell value is the weighted sum of several neighbour cells. This can be used to smooth/sharpen the map. See examples below for a simple horizontal smoothing kernel : replace value(x,y) with 0.33*value(x-1,y) + 0.33*value(x,y) + 0.33*value(x+1,y).To do this, you need a kernel of size 3 (the sum involves 3 surrounding cells). The dx,dy array will contain :
+	dx=-1,dy = 0 for cell x-1,y
+	dx=1,dy=0 for cell x+1,y
+	dx=0,dy=0 for current cell (x,y)
+	The weight array will contain 0.33 for each cell. 
 	@Cpp void TCODHeightmap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 	@C void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
 	@Py heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,maxLevel)
@@ -285,6 +289,16 @@ public :
 	@Param weight	Array of kernelSize cells weight. The value of each neighbour cell is scaled by its corresponding weight
 	@Param minLevel	The transformation is only applied to cells which value is >= minLevel.
 	@Param maxLevel	The transformation is only applied to cells which value is <= maxLevel.
+	@CEx 
+		int dx [] = {-1,1,0};
+		int dy[] = {0,0,0};
+		float weight[] = {0.33f,0.33f,0.33f};
+		TCOD_heightMap_kernel_transform(heightmap,3,dx,dy,weight,0.0f,1.0f);
+	@CppEx 
+		int dx [] = {-1,1,0};
+		int dy[] = {0,0,0};
+		float weight[] = {0.33f,0.33f,0.33f};
+		heightmap->kernelTransform(heightmap,3,dx,dy,weight,0.0f,1.0f);
 	*/
 	void kernelTransform(int kernelSize, const int *dx, const int *dy, const float *weight, float minLevel,float maxLevel);
 

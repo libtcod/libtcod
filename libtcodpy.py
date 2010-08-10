@@ -1822,6 +1822,8 @@ def heightmap_delete(hm):
 ############################
 # name generator module
 ############################
+_lib.TCOD_namegen_generate.restype = c_char_p
+_lib.TCOD_namegen_generate_custom.restype = c_char_p
 
 def namegen_parse(filename,random=0) :
     _lib.TCOD_namegen_parse(filename,random)

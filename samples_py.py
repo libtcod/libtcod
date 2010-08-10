@@ -1247,7 +1247,7 @@ def render_name(first, key):
     ng_delay += libtcod.sys_get_last_frame_length()
     if ng_delay > 0.5 :
         ng_delay -= 0.5
-        ng_names.append(libtcod.namegen_generate(ng_sets[ng_curset],True))
+        ng_names.append(libtcod.namegen_generate(ng_sets[ng_curset]))
     if key.c == ord('+'):
         ng_curset += 1
         if ng_curset == ng_nbsets :

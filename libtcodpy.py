@@ -1828,11 +1828,11 @@ _lib.TCOD_namegen_generate_custom.restype = c_char_p
 def namegen_parse(filename,random=0) :
     _lib.TCOD_namegen_parse(filename,random)
 
-def namegen_generate(name, allocate=0) :
-    return _lib.TCOD_namegen_generate(name, c_int(allocate))
+def namegen_generate(name) :
+    return _lib.TCOD_namegen_generate(name, 0)
 
-def namegen_generate_custom(name, rule, allocate=0) :
-    return _lib.TCOD_namegen_generate(name, rule, c_int(allocate))
+def namegen_generate_custom(name, rule) :
+    return _lib.TCOD_namegen_generate(name, rule, 0)
 
 def namegen_get_sets():
     nb=_lib.TCOD_namegen_get_nb_sets_wrapper()

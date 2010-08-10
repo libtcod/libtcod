@@ -911,55 +911,41 @@ bsp_room_walls = True
 bsp_map = None
 # draw a vertical line
 def vline(m, x, y1, y2):
-    y = y1
     if y1 > y2:
-        dy = -1
-    else:
-        dy = 1
-    m[x][y] = True
-    while y < y2:
-        y += dy
+        y1,y2 = y2,y1
+    for y in range(y1,y2+1):
         m[x][y] = True
 
 # draw a vertical line up until we reach an empty space
 def vline_up(m, x, y):
-    yt=y
-    while yt >= 0 and not m[x][yt]:
-        m[x][yt] = True
-        yt -= 1
+    while y >= 0 and not m[x][y]:
+        m[x][y] = True
+        y -= 1
 
 # draw a vertical line down until we reach an empty space
 def vline_down(m, x, y):
-    yt=y
-    while yt < SAMPLE_SCREEN_HEIGHT and not m[x][yt]:
-        m[x][yt] = True
-        yt += 1
+    while y < SAMPLE_SCREEN_HEIGHT and not m[x][y]:
+        m[x][y] = True
+        y += 1
 
 # draw a horizontal line
 def hline(m, x1, y, x2):
-    x = x1
     if x1 > x2:
-        dx = -1
-    else:
-        dx = 1
-    m[x][y] = True
-    while x < x2:
-        x += dx
+        x1,x2 = x2,x1
+    for x in range(x1,x2+1):
         m[x][y] = True
 
 # draw a horizontal line left until we reach an empty space
 def hline_left(m, x, y):
-    xt=x
-    while xt >= 0 and not m[xt][y]:
-        m[xt][y] = True
-        xt -= 1
+    while x >= 0 and not m[x][y]:
+        m[x][y] = True
+        x -= 1
 
 # draw a horizontal line right until we reach an empty space
 def hline_right(m, x, y):
-    xt=x
-    while xt < SAMPLE_SCREEN_WIDTH and not m[xt][y]:
-        m[xt][y]=True
-        xt += 1
+    while x < SAMPLE_SCREEN_WIDTH and not m[x][y]:
+        m[x][y]=True
+        x += 1
 
 # the class building the dungeon from the bsp nodes
 def traverse_node(node, dat):

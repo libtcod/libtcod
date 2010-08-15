@@ -187,6 +187,11 @@ bool TCODLine::step(int *xCur, int *yCur);
 #if SWIGCSHARP
 %include "arrays_csharp.i"
 %apply float INPUT[] { float *f };
+#else
+%include <typemaps.i>
+%apply (float *INOUT) {(double* f)};
+%apply (float *INOUT, float IN) {(double* f, float octaves)};
+#endif
 float TCODNoise::getPerlin(float *f) const;
 float TCODNoise::getFbmPerlin(float *f, float octaves) const;
 float TCODNoise::getTurbulencePerlin(float *f, float octaves) const;
@@ -206,7 +211,6 @@ float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
 %rename(getWaveletNoise) getWavelet;
 %rename(getWaveletBrownianMotion) getFbmWavelet;
 %rename(getWaveletTurbulence) getTurbulenceWavelet;
-#endif // SWIGCSHARP
 
 // path.hpp
 // Swig is too stupid to handle an INOUT and OUTPUT %apply with the same name. So reproduce the entire class...sigh

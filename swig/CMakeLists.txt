@@ -24,7 +24,7 @@ IF(DEFINED SWIG_PROGRAM_PATH OR DEFINED SWIG_SYSTEM)
 			SET(CMAKE_SKIP_RPATH ON) #Don't place hard coded rpaths'
 		ENDIF()
 
-		SET(CMAKE_SWIG_FLAGS -namespace libtcod -dllimport libtcod-net-unmanaged.dll -DTCODLIB_API)
+		SET(CMAKE_SWIG_FLAGS -namespace libtcod -dllimport libtcod-net-unmanaged -DTCODLIB_API)
 		SET(CMAKE_SWIG_OUTDIR ${ROOT_DIR}/swig/generated/csharp)
 		SWIG_ADD_MODULE(${CSHARP_LIB_NAME} csharp libtcod.i)
 		SWIG_LINK_LIBRARIES(${CSHARP_LIB_NAME} ${LIBTCOD_NAME} ${LIBTCOD_CPP_NAME} ) 

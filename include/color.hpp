@@ -140,7 +140,8 @@ public :
 		TCOD_color_t my_other_color = TCOD_color_RGB(24,64,255); <span>/</span>* RGB too *<span>/</span>
 		TCOD_color_t my_yet_another_color = TCOD_color_HSV(321.0f,0.7f,1.0f); <span>/</span>* HSV *<span>/</span>
 	@PyEx my_color=libtcod.Color(24,64,255)
-	@C#Ex TCODColor myColor = new TCODColor(24,64,255);
+	@C#Ex TCODColor myColor = new TCODColor(24,64,255); //RGB
+	     TCODColor myColor = new TCODColor(321.0f,0.7f,1.0f); //HSV
 	@LuaEx myColor = tcod.Color(24,24,255)
 	*/
 	TCODColor(uint8 r, uint8 g, uint8 b): r(r), g(g), b(b) {}
@@ -382,6 +383,10 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		Color:getHue()
 		Color:getSaturation()
 		Color:getValue()
+	@C#
+		float TCODColor::getHue()
+		float TCODColor::getSaturation()
+		float TCODColor::getValue()
 	@Param c	the TCOD_color_t from which to read
 	*/
 	float getHue ();
@@ -395,6 +400,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		Resulting values H < 0 and H >= 360 are handled automatically.
 	@Cpp void TCODColor::shiftHue (float hshift)
 	@C void TCOD_color_shift_hue (TCOD_color_t *c, float hshift)
+	@C# TCODColor::shiftHue(float hshift)
 	@Lua Color:shiftHue(hshift)
 	@Param c	The color to modify
 	@Param hshift	The hue shift value
@@ -407,7 +413,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Cpp void TCODColor::scaleHSV (float sscale, float vscale)
 	@C void TCOD_color_scale_HSV (TCOD_color_t *c, float scoef, float vcoef)
 	@Py color_scale_HSV(c, scoef, vcoef)
-	@C# void TCODColor::scaleHSV (float sscale, float vscale)
+	@C# TCODColor::scaleHSV (float sscale, float vscale)
 	@Lua Color:scaleHSV(sscale,vscale)
 	@Param c	The color to modify
 	@Param sscale	saturation multiplier (1.0f for no change)

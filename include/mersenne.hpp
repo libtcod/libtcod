@@ -306,8 +306,18 @@ class TCODLIB_API TCODRandom {
 			random_get_gaussian_float_range(mersenne, mi, ma, mean=None)
 			random_get_gaussian_int_range(mersenne, mi, ma, mean=None)
 		@C#
-			float TCODRandom::getGaussianFloat(float min, float max)
-			int TCODRandom::getGaussianInt(int min, int max)
+			double TCODRandom::getGaussianDouble(double mean, double stdDeviation)
+			float TCODRandom::getGaussianFloat(float mean, float stdDeviation)
+			int TCODRandom::getGaussianInt(int mean, int stdDeviation)
+
+			double TCODRandom::getGaussianRangeDouble(double min, double max)
+			float TCODRandom::getGaussianRangeFloat(float min, float max)
+			int TCODRandom::getGaussianRangeInt int min, int max)
+
+			double TCODRandom::getGaussianRangeDouble(double min, double max, double mean)
+			float TCODRandom::getGaussianRangeFloat(float min, float max, float mean)
+			int TCODRandom::getGaussianRangeInt(int min, int max, int mean)
+
 		@Param mersenne	In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min,max	Range of values returned. Each time you call one of these functions, you get a number between (including) min and max.
 		@Param mean The mean, or the value that should be randomly selected with the highest frequency (the peak of the bell curve).
@@ -394,7 +404,17 @@ class TCODLIB_API TCODRandom {
 			random_get_gaussian_float_range_inv(mersenne, mi, ma, mean=None)
 			random_get_gaussian_int_range_inv(mersenne, mi, ma, mean=None)
 		@C#
+			double TCODRandom::getGaussianDoubleInv(double mean, double stdDeviation)
+			float TCODRandom::getGaussianFloatInv(float mean, float stdDeviation)
+			int TCODRandom::getGaussianIntInv(int mean, int stdDeviation)
 
+			double TCODRandom::getGaussianRangeDoubleInv(double min, double max)
+			float TCODRandom::getGaussianRangeFloatInv(float min, float max)
+			int TCODRandom::getGaussianRangeIntInv(int min, int max)
+
+			double TCODRandom::getGaussianRangeDoubleCustomInv(double min, double max, double mean)
+			float TCODRandom::getGaussianRangeFloatCustomInv(float min, float max, float mean)
+			int TCODRandom::getGaussianRangeIntCustomInv(int min, int max, int mean)
 		@Param mersenne	In the C version, the generator handler, returned by the initialization functions. If NULL, the default generator is used.
 		@Param min, max	Range of values returned. Each time you call this function, you get a number between (including) min and max. In the inverted version of the Gaussian distribution toolkit, these are the extreme values, with the most probability of appearing.
 		@Param mean The mean, or the value that should be randomly selected with the highest frequency (the peak of the bell curve). In the inverted version of the Gaussian distribution toolkit, this is the value that has the LEAST probability of being selected (again, this is slightly inaccurate in 0.3% of cases).

@@ -770,7 +770,7 @@ public :
 	@Cpp static void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, const TCODColor &back)
 	@C void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back)
 	@Py console_set_color_control(con,fore,back)
-	@C# Not supported.
+	@C# Not supported directly, use getRGBColorControlString and getColorControlString.
 	@Lua Not supported
 	@Param con the color control TCOD_COLCTRL_x, 1<=x<=5
 	@Param fore foreground color when this control is activated

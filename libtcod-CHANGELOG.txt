@@ -43,6 +43,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)
 % hardened fov module
 % extended list of colour constants (the old names can produce slightly different colours)
+% TCODMap memory consumption divided by 4
 - fixed TCODNamegen returning integers in the python version
 - fixed TCODDijkstra segfault when diagonal movement cost was zero
 - fixed setDirty() not working for the last row or column of the console

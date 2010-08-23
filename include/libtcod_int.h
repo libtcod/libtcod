@@ -61,9 +61,9 @@ typedef struct {
 
 /* fov internal stuff */
 typedef struct {
-	unsigned int transparent:1;
-	unsigned int walkable:1;
-	unsigned int fov:1;
+	bool transparent:1;
+	bool walkable:1;
+	bool fov:1;
 } cell_t;
 typedef struct {
 	int width;

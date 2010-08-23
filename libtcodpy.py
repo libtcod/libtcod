@@ -620,11 +620,11 @@ def console_flush():
     _lib.TCOD_console_flush()
 
 # drawing on a console
-def console_set_background_color(con, col):
-    _lib.TCOD_console_set_background_color(con, col)
+def console_set_default_background(con, col):
+    _lib.TCOD_console_set_default_background(con, col)
 
-def console_set_foreground_color(con, col):
-    _lib.TCOD_console_set_foreground_color(con, col)
+def console_set_default_foreground(con, col):
+    _lib.TCOD_console_set_default_foreground(con, col)
 
 def console_clear(con):
     return _lib.TCOD_console_clear(con)
@@ -641,11 +641,11 @@ def console_put_char_ex(con, x, y, c, fore, back):
     else:
         _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
 
-def console_set_back(con, x, y, col, flag=BKGND_DEFAULT):
-    _lib.TCOD_console_set_back(con, x, y, col, flag)
+def console_set_char_background(con, x, y, col, flag=BKGND_DEFAULT):
+    _lib.TCOD_console_set_char_background(con, x, y, col, flag)
 
-def console_set_fore(con, x, y, col):
-    _lib.TCOD_console_set_fore(con, x, y, col)
+def console_set_char_foreground(con, x, y, col):
+    _lib.TCOD_console_set_char_foreground(con, x, y, col)
 
 def console_set_char(con, x, y, c):
     if type(c) == str:
@@ -695,17 +695,17 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
-def console_get_background_color(con):
-    return _lib.TCOD_console_get_background_color(con)
+def console_get_default_background(con):
+    return _lib.TCOD_console_get_default_background(con)
 
-def console_get_foreground_color(con):
-    return _lib.TCOD_console_get_foreground_color(con)
+def console_get_default_foreground(con):
+    return _lib.TCOD_console_get_default_foreground(con)
 
-def console_get_back(con, x, y):
-    return _lib.TCOD_console_get_back(con, x, y)
+def console_get_char_background(con, x, y):
+    return _lib.TCOD_console_get_char_background(con, x, y)
 
-def console_get_fore(con, x, y):
-    return _lib.TCOD_console_get_fore(con, x, y)
+def console_get_char_foreground(con, x, y):
+    return _lib.TCOD_console_get_char_foreground(con, x, y)
 
 def console_get_char(con, x, y):
     return _lib.TCOD_console_get_char(con, x, y)

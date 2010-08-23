@@ -4,6 +4,23 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X Console default and cell foreground and background colour getters and setters renamed to more intuitive names:
+  * TCOD_console_set_background_color => TCOD_console_set_default_background
+  * TCOD_console_set_foreground_color => TCOD_console_set_default_foreground
+  * TCOD_console_get_background_color => TCOD_console_get_default_background
+  * TCOD_console_get_foreground_color => TCOD_console_get_default_foreground
+  * TCOD_console_set_back => TCOD_console_set_char_background
+  * TCOD_console_set_fore => TCOD_console_set_char_foreground
+  * TCOD_console_get_back => TCOD_console_get_char_background
+  * TCOD_console_get_fore => TCOD_console_get_char_foreground
+  * setBackgroundColor => setDefaultBackground
+  * setForegroundColor => setDefaultForeground
+  * getBackgroundColor => getDefaultBackground
+  * getForegroundColor => getDefaultForeground
+  * setBack => setCharBackground
+  * setFore => setCharForeground
+  * getBack => getCharBackground
+  * getFore => getCharForeground
 X TCODRandom::getGaussianFloat and TCODRandom::getGaussianInt have been replaced by TCODRandom::getGaussianRange
 X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t)
@@ -38,6 +55,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added native Mac OSX support
 + added support for quote-less HTML color values in the parser (col=#FFFFFF instead of col="#FFFFFF")
 + added color control helpers for C# (TCODConsole.getColorControlString/getRGBColorControlString)
+% Restrictive FOV algo updated to MRPAS v1.1 (faster, better-looking, improved symmetry)
 % Gaussian distribution in TCODRandom now uses a more precise Box-Muller transform algorithm
 % More default values for printFrame :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)

@@ -416,7 +416,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 				if ( key.shift ) {
 					/* SHIFT-DELETE : cut to clipboard */
 					cut(data);
-				} else {	
+				} else {
 					if ( data->sel_start != MAX_INT ) {
 						deleteSelection(data);
 					} else if ( data->text[data->cursor_pos] ) {
@@ -521,7 +521,7 @@ bool TCOD_text_update (TCOD_text_t txt, TCOD_key_t key) {
 					/* CTRL-X : cut to clipboard */
 					cut(data);
 				} else if ( ((key.c == 'v' || key.c=='V') && (key.lctrl || key.rctrl))
-					|| ( key.vk == TCODK_INSERT && key.shift ) 
+					|| ( key.vk == TCODK_INSERT && key.shift )
 					 ) {
 					/* CTRL-V or SHIFT-INSERT : paste from clipboard */
 					paste(data);
@@ -549,8 +549,8 @@ void TCOD_text_render (TCOD_text_t txt, TCOD_console_t con) {
     TCOD_IFNOT(data && data->con ) return;
     time = TCOD_sys_elapsed_milli();
 	cursor_on = (int)( time % data->interval ) > data->halfinterval;
-    TCOD_console_set_background_color(data->con, data->back);
-    TCOD_console_set_foreground_color(data->con, data->fore);
+    TCOD_console_set_default_background(data->con, data->back);
+    TCOD_console_set_default_foreground(data->con, data->fore);
     TCOD_console_clear(data->con);
 
 	/* compute cursor position */
@@ -572,16 +572,16 @@ void TCOD_text_render (TCOD_text_t txt, TCOD_console_t con) {
 		if ( *ptr == '\n') {
 			if ( (curx == 0 || curpos == 0 ) && curpos >= data->sel_start && curpos < data->sel_end ) {
 				/* inverted colors for selected empty lines */
-				TCOD_console_set_back(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
-				TCOD_console_set_fore(data->con, curx, cury, data->back);
+				TCOD_console_set_char_background(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
+				TCOD_console_set_char_foreground(data->con, curx, cury, data->back);
 			}
 			curx=0;
 			cury++;
 		} else {
 			if ( curpos >= data->sel_start && curpos < data->sel_end ) {
 				/* inverted colors for selection */
-				TCOD_console_set_back(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
-				TCOD_console_set_fore(data->con, curx, cury, data->back);
+				TCOD_console_set_char_background(data->con, curx, cury, data->fore, TCOD_BKGND_SET);
+				TCOD_console_set_char_foreground(data->con, curx, cury, data->back);
 			}
 			TCOD_console_set_char(data->con,curx,cury,*ptr);
 			curx++;
@@ -599,13 +599,13 @@ void TCOD_text_render (TCOD_text_t txt, TCOD_console_t con) {
 			data->text[data->cursor_pos] = back;
 		} else {
 			/* invert colors at cursor position */
-			TCOD_console_set_back(data->con,cursorx,cursory,data->fore,TCOD_BKGND_SET);
-			TCOD_console_set_fore(data->con,cursorx,cursory,data->back);
+			TCOD_console_set_char_background(data->con,cursorx,cursory,data->fore,TCOD_BKGND_SET);
+			TCOD_console_set_char_foreground(data->con,cursorx,cursory,data->back);
 		}
 	} else if (! cursor_on && ! data->ascii_cursor && data->multiline ) {
 		/* normal colors for cursor ( might be inside selection ) */
-		TCOD_console_set_back(data->con,cursorx,cursory,data->back,TCOD_BKGND_SET);
-		TCOD_console_set_fore(data->con,cursorx,cursory,data->fore);
+		TCOD_console_set_char_background(data->con,cursorx,cursory,data->back,TCOD_BKGND_SET);
+		TCOD_console_set_char_foreground(data->con,cursorx,cursory,data->fore);
 	}
     TCOD_console_blit(data->con,0,0,data->w,data->h,con,data->x,data->y,1.0f,data->transparency);
 }

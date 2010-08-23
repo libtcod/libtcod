@@ -79,13 +79,13 @@ void render_colors(bool first, TCOD_key_t*key) {
 			float ycoef = (float)(y)/(SAMPLE_SCREEN_HEIGHT-1);
 			// get the current cell color
 			TCODColor curColor = TCODColor::lerp(top,bottom,ycoef);
-			sampleConsole.setBack(x,y,curColor,TCOD_BKGND_SET);
+			sampleConsole.setCharBackground(x,y,curColor,TCOD_BKGND_SET);
 		}
 	}
 
 	// ==== print the text with a random color ====
 	// get the background color at the text position
-	TCODColor textColor=sampleConsole.getBack(SAMPLE_SCREEN_WIDTH/2,5);
+	TCODColor textColor=sampleConsole.getCharBackground(SAMPLE_SCREEN_WIDTH/2,5);
 	// and invert it
 	textColor.r=255-textColor.r;
 	textColor.g=255-textColor.g;
@@ -93,16 +93,16 @@ void render_colors(bool first, TCOD_key_t*key) {
 	/* put random text (for performance tests) */
 	for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++) {
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-			TCODColor col=sampleConsole.getBack(x,y);
+			TCODColor col=sampleConsole.getCharBackground(x,y);
 			col=TCODColor::lerp(col,TCODColor::black,0.5f);
 			int c=TCODRandom::getInstance()->getInt('a','z');
-			sampleConsole.setForegroundColor(col);
+			sampleConsole.setDefaultForeground(col);
 			sampleConsole.putChar(x,y,c,TCOD_BKGND_NONE);
 		}
 	}
-	sampleConsole.setForegroundColor(textColor);
+	sampleConsole.setDefaultForeground(textColor);
 	// the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
-	sampleConsole.setBackgroundColor(TCODColor::grey);
+	sampleConsole.setDefaultBackground(TCODColor::grey);
 	sampleConsole.printRectEx(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,
 		TCOD_BKGND_MULTIPLY,TCOD_CENTER,
 		"The Doryen library uses 24 bits colors, for both background and foreground.");
@@ -156,7 +156,7 @@ class LineListener : public TCODLineListener {
 	public :
 		bool putPoint(int x, int y) {
 			if ( x>= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-				sampleConsole.setBack(x,y,TCODColor::lightBlue,(TCOD_bkgnd_flag_t)bkFlag);
+				sampleConsole.setCharBackground(x,y,TCODColor::lightBlue,(TCOD_bkgnd_flag_t)bkFlag);
 			}
 			return true;
 		}
@@ -201,14 +201,14 @@ void render_lines(bool first, TCOD_key_t*key) {
 				col.r = (uint8)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
 				col.g = (uint8)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
 				col.b = (uint8)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
-				bk.setBack(x,y,col, TCOD_BKGND_SET);
+				bk.setCharBackground(x,y,col, TCOD_BKGND_SET);
 			}
 		}
 		init=true;
 	}
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 	}
 	// blit the background
 	TCODConsole::blit(&bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,&sampleConsole,0,0);
@@ -219,9 +219,9 @@ void render_lines(bool first, TCOD_key_t*key) {
 		col.r=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
 		col.g=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
 		col.b=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		sampleConsole.setBack(x,recty,col,(TCOD_bkgnd_flag_t)bkFlag);
-		sampleConsole.setBack(x,recty+1,col,(TCOD_bkgnd_flag_t)bkFlag);
-		sampleConsole.setBack(x,recty+2,col,(TCOD_bkgnd_flag_t)bkFlag);
+		sampleConsole.setCharBackground(x,recty,col,(TCOD_bkgnd_flag_t)bkFlag);
+		sampleConsole.setCharBackground(x,recty+1,col,(TCOD_bkgnd_flag_t)bkFlag);
+		sampleConsole.setCharBackground(x,recty+2,col,(TCOD_bkgnd_flag_t)bkFlag);
 	}
 	// calculate the segment ends
 	float angle = TCODSystem::getElapsedSeconds()*2.0f;
@@ -273,7 +273,7 @@ void render_noise(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
 	}
-	
+
 	// texture animation
 	dx+=0.01f;
 	dy+=0.01f;
@@ -304,29 +304,29 @@ void render_noise(bool first, TCOD_key_t*key) {
 	// blit the noise image on the console with subcell resolution
 	img->blit2x(&sampleConsole,0,0);
 	// draw a transparent rectangle
-	sampleConsole.setBackgroundColor(TCODColor::grey);
+	sampleConsole.setDefaultBackground(TCODColor::grey);
 	sampleConsole.rect(2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
 	for (int y=2; y < 2+(func <= WAVELET ? 10 : 13); y++ ) {
 		for (int x=2; x < 2+23; x++ ) {
-			TCODColor col=sampleConsole.getFore(x,y);
+			TCODColor col=sampleConsole.getCharForeground(x,y);
 			col = col * TCODColor::grey;
-			sampleConsole.setFore(x,y,col);
+			sampleConsole.setCharForeground(x,y,col);
 		}
 	}
-	
+
 	// draw the text
 	for (int curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {
-				sampleConsole.setForegroundColor(TCODColor::white);
-				sampleConsole.setBackgroundColor(TCODColor::lightBlue);
+				sampleConsole.setDefaultForeground(TCODColor::white);
+				sampleConsole.setDefaultBackground(TCODColor::lightBlue);
 				sampleConsole.printEx(2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
 		} else {
-				sampleConsole.setForegroundColor(TCODColor::grey);
+				sampleConsole.setDefaultForeground(TCODColor::grey);
 				sampleConsole.print(2,2+curfunc,funcName[curfunc]);
 		}
 	}
 	// draw parameters
-	sampleConsole.setForegroundColor(TCODColor::white);
+	sampleConsole.setDefaultForeground(TCODColor::white);
 	sampleConsole.print(2,11,"Y/H : zoom (%2.1f)",zoom);
 	if ( func > WAVELET ) {
 		sampleConsole.print(2,12,"E/D : hurst (%2.1f)",hurst);
@@ -436,10 +436,10 @@ void render_fov(bool first, TCOD_key_t*key) {
 		// the rest impacts only the background color
 		// draw the help text & player @
 		sampleConsole.clear();
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		sampleConsole.setForegroundColor(TCODColor::black);
+		sampleConsole.setDefaultForeground(TCODColor::black);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
 		// draw windows
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -474,7 +474,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 			bool visible = map->isInFov(x,y);
 			bool wall=smap[y][x]=='#';
 			if (! visible ) {
-				sampleConsole.setBack(x,y,wall ? darkWall:darkGround,TCOD_BKGND_SET);
+				sampleConsole.setCharBackground(x,y,wall ? darkWall:darkGround,TCOD_BKGND_SET);
 			} else {
 				TCODColor light;
 				if ( !torch ) {
@@ -494,7 +494,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 					}
 					light=base;
 				}
-				sampleConsole.setBack(x,y,light, TCOD_BKGND_SET );
+				sampleConsole.setCharBackground(x,y,light, TCOD_BKGND_SET );
 			}
 		}
 	}
@@ -533,24 +533,24 @@ void render_fov(bool first, TCOD_key_t*key) {
 	} else if ( key->c == 'T' || key->c == 't' ) {
 		// enable/disable the torch fx
 		torch=!torch;
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		sampleConsole.setForegroundColor(TCODColor::black);
+		sampleConsole.setDefaultForeground(TCODColor::black);
 	} else if ( key->c == 'W' || key->c == 'w' ) {
 		light_walls=!light_walls;
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		sampleConsole.setForegroundColor(TCODColor::black);
+		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
 	} else if ( key->c == '+' || key->c == '-' ) {
 		algonum+= key->c == '+' ? 1 : -1;
 		algonum=CLAMP(0,NB_FOV_ALGORITHMS-1,algonum);
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		sampleConsole.setForegroundColor(TCODColor::black);
+		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
 	}
 }
@@ -570,7 +570,7 @@ void render_image(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCODSystem::setFps(30); // fps limited to 30
 	}
-	sampleConsole.setBackgroundColor(TCODColor::black);
+	sampleConsole.setDefaultBackground(TCODColor::black);
 	sampleConsole.clear();
 	float x=SAMPLE_SCREEN_WIDTH/2+cosf(TCODSystem::getElapsedSeconds())*10.0f;
 	float y=(float)(SAMPLE_SCREEN_HEIGHT/2);
@@ -581,15 +581,15 @@ void render_image(bool first, TCOD_key_t*key) {
 	if ( elapsed & 1 ) {
 		// split the color channels of circle.png
 		// the red channel
-		sampleConsole.setBackgroundColor(TCODColor::red);
+		sampleConsole.setDefaultBackground(TCODColor::red);
 		sampleConsole.rect(0,3,15,15,false,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,0,3,-1,-1,TCOD_BKGND_MULTIPLY);
 		// the green channel
-		sampleConsole.setBackgroundColor(green);
+		sampleConsole.setDefaultBackground(green);
 		sampleConsole.rect(15,3,15,15,false,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,15,3,-1,-1,TCOD_BKGND_MULTIPLY);
 		// the blue channel
-		sampleConsole.setBackgroundColor(blue);
+		sampleConsole.setDefaultBackground(blue);
 		sampleConsole.rect(30,3,15,15,false,TCOD_BKGND_SET);
 		circle->blitRect(&sampleConsole,30,3,-1,-1,TCOD_BKGND_MULTIPLY);
 	} else {
@@ -611,8 +611,8 @@ void render_mouse(bool first, TCOD_key_t*key) {
 
   if ( first ) {
     TCODSystem::setFps(30); // fps limited to 30
-    sampleConsole.setBackgroundColor(TCODColor::grey);
-    sampleConsole.setForegroundColor(TCODColor::lightYellow);
+    sampleConsole.setDefaultBackground(TCODColor::grey);
+    sampleConsole.setDefaultForeground(TCODColor::lightYellow);
     TCODMouse::move(320,200);
     TCODMouse::showCursor(true);
   }
@@ -702,7 +702,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		// the rest impacts only the background color
 		// draw the help text & player @
 		sampleConsole.clear();
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
 		sampleConsole.print(1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
@@ -741,7 +741,7 @@ void render_path(bool first, TCOD_key_t*key) {
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
 			bool wall=smap[y][x]=='#';
-			sampleConsole.setBack(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
+			sampleConsole.setCharBackground(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
 		}
 	}
 	// draw the path
@@ -749,7 +749,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		for (int i=0; i< path->size(); i++ ) {
 			int x,y;
 			path->get(i,&x,&y);
-			sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+			sampleConsole.setCharBackground(x,y,lightGround, TCOD_BKGND_SET );
 		}
 	} else {
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -757,14 +757,14 @@ void render_path(bool first, TCOD_key_t*key) {
 				bool wall=smap[y][x]=='#';
 				if (! wall) {
 					float d= dijkstra->getDistance(x,y);
-					sampleConsole.setBack(x,y,TCODColor::lerp(lightGround,darkGround,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
+					sampleConsole.setCharBackground(x,y,TCODColor::lerp(lightGround,darkGround,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
 				}
 			}
 		}
 		for (int i=0; i< dijkstra->size(); i++ ) {
 			int x,y;
 			dijkstra->get(i,&x,&y);
-			sampleConsole.setBack(x,y,lightGround, TCOD_BKGND_SET );
+			sampleConsole.setCharBackground(x,y,lightGround, TCOD_BKGND_SET );
 		}
 	}
 	// move the creature
@@ -824,7 +824,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		}
 	} else if ( key->vk == TCODK_TAB ) {
 		usingAstar = ! usingAstar;
-		if ( usingAstar ) 
+		if ( usingAstar )
 			sampleConsole.print(1,4,"Using : A*      ");
 		else
 			sampleConsole.print(1,4,"Using : Dijkstra");
@@ -1027,7 +1027,7 @@ void render_bsp(bool first, TCOD_key_t*key) {
 		refresh=false;
 	}
 	sampleConsole.clear();
-	sampleConsole.setForegroundColor(TCODColor::white);
+	sampleConsole.setDefaultForeground(TCODColor::white);
 	sampleConsole.print(1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
 		bspDepth,minRoomSize,
 		randomRoom ? "ON" : "OFF");
@@ -1038,7 +1038,7 @@ void render_bsp(bool first, TCOD_key_t*key) {
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
 			bool wall= ( map[x][y] == '#' );
-			sampleConsole.setBack(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
+			sampleConsole.setCharBackground(x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
 		}
 	}
 	if ( key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER ) {
@@ -1095,19 +1095,19 @@ void render_name(bool first, TCOD_key_t*key) {
 
 	while ( names.size() >= 15 ) {
 		// remove the first element.
-#ifndef TCOD_VISUAL_STUDIO		
+#ifndef TCOD_VISUAL_STUDIO
 		char *nameToRemove= * (names.begin());
 #endif
 		names.remove(names.begin());
 		// for some reason, this crashes on MSVC...
-#ifndef TCOD_VISUAL_STUDIO		
+#ifndef TCOD_VISUAL_STUDIO
 		free(nameToRemove);
 #endif
 	}
 
-	sampleConsole.setBackgroundColor(TCODColor::lightBlue);
+	sampleConsole.setDefaultBackground(TCODColor::lightBlue);
 	sampleConsole.clear();
-	sampleConsole.setForegroundColor(TCODColor::white);
+	sampleConsole.setDefaultForeground(TCODColor::white);
 	sampleConsole.print(1,1,"%s\n\n+ : next generator\n- : prev generator",
 		sets.get(curSet));
 	for (i=0; i < names.size(); i++) {
@@ -1169,7 +1169,7 @@ public :
 			case 2 : burn(screen,samplex,sampley,SAMPLE_SCREEN_WIDTH * charw,SAMPLE_SCREEN_HEIGHT * charh); break;
 		}
 	}
-	
+
 protected :
 	TCODNoise *noise;
 	int effectNum;
@@ -1209,7 +1209,7 @@ protected :
 			}
 		}
 	}
-	
+
 	void explode(SDL_Surface *screen, int samplex, int sampley, int samplew, int sampleh) {
 		int ridx=screen->format->Rshift/8;
 		int gidx=screen->format->Gshift/8;
@@ -1221,11 +1221,11 @@ protected :
 			for (int y=sampley; y < sampley + sampleh; y ++ ) {
 				int ir=0,ig=0,ib=0;
 				for (int i=0; i < 3; i++) {
-					int dx = rng->getInt(-dist,dist); 
+					int dx = rng->getInt(-dist,dist);
 					int dy = rng->getInt(-dist,dist);
 					Uint8 *p2;
 					p2 = p + dx * screen->format->BytesPerPixel;
-					p2 += dy * screen->pitch; 
+					p2 += dy * screen->pitch;
 					ir += p2[ridx];
 					ig += p2[gidx];
 					ib += p2[bidx];
@@ -1240,7 +1240,7 @@ protected :
 			}
 		}
 	}
-	
+
 	void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sampleh) {
 		// let's blur that sample console
 		float f[3],n=0.0f;
@@ -1342,7 +1342,7 @@ protected :
 						p[ridx]=ir;
 						p[gidx]=ig;
 						p[bidx]=ib;
-					break;					
+					break;
 					default:break;
 				}
 				p += screen->pitch;
@@ -1355,8 +1355,8 @@ void render_sdl(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCODSystem::setFps(30); /* limited to 30 fps */
 		// use noise sample as background. rendering is done in SampleRenderer
-		sampleConsole.setBackgroundColor(TCODColor::lightBlue);
-		sampleConsole.setForegroundColor(TCODColor::white);
+		sampleConsole.setDefaultBackground(TCODColor::lightBlue);
+		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.clear();
 		sampleConsole.printRectEx(SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,TCOD_CENTER,
 			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works with SDL renderer.");
@@ -1478,18 +1478,18 @@ int main( int argc, char *argv[] ) {
 		for (int i=0; i < nbSamples; i++ ) {
 			if ( i == curSample ) {
 				// set colors for currently selected sample
-				TCODConsole::root->setForegroundColor(TCODColor::white);
-				TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
+				TCODConsole::root->setDefaultForeground(TCODColor::white);
+				TCODConsole::root->setDefaultBackground(TCODColor::lightBlue);
 			} else {
 				// set colors for other samples
-				TCODConsole::root->setForegroundColor(TCODColor::grey);
-				TCODConsole::root->setBackgroundColor(TCODColor::black);
+				TCODConsole::root->setDefaultForeground(TCODColor::grey);
+				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
 			// print the sample name
 			TCODConsole::root->printEx(2,46-(nbSamples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
 		}
 		// print the help message
-		TCODConsole::root->setForegroundColor(TCODColor::grey);
+		TCODConsole::root->setDefaultForeground(TCODColor::grey);
 		TCODConsole::root->printEx(79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCODSystem::getLastFrameLength()*1000), 			TCODSystem::getFps());
 		TCODConsole::root->printEx(79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCODSystem::getElapsedMilli(),TCODSystem::getElapsedSeconds());
 		TCODConsole::root->print(2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
@@ -1504,7 +1504,7 @@ int main( int argc, char *argv[] ) {
 		TCODConsole::blit(&sampleConsole,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT, // the source console & zone to blit
 							TCODConsole::root,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y // the destination console & position
 						 );
-		// erase the renderer in debug mode (needed because the root console is not cleared each frame) 
+		// erase the renderer in debug mode (needed because the root console is not cleared each frame)
 		TCODConsole::root->print(1,1,"        ");
 #ifndef NO_SDL_SAMPLE
 		if ( sdl_callback_enabled ) {
@@ -1514,18 +1514,18 @@ int main( int argc, char *argv[] ) {
 #endif
 		/* display renderer list and current renderer */
 		cur_renderer=TCODSystem::getRenderer();
-		TCODConsole::root->setForegroundColor(TCODColor::grey);
-		TCODConsole::root->setBackgroundColor(TCODColor::black);
+		TCODConsole::root->setDefaultForeground(TCODColor::grey);
+		TCODConsole::root->setDefaultBackground(TCODColor::black);
 		TCODConsole::root->printEx(42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
 		for (int i=0; i < TCOD_NB_RENDERERS; i++) {
 			if (i==cur_renderer) {
 				/* set colors for current renderer */
-				TCODConsole::root->setForegroundColor(TCODColor::white);
-				TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
+				TCODConsole::root->setDefaultForeground(TCODColor::white);
+				TCODConsole::root->setDefaultBackground(TCODColor::lightBlue);
 			} else {
 				/* set colors for other renderer */
-				TCODConsole::root->setForegroundColor(TCODColor::grey);
-				TCODConsole::root->setBackgroundColor(TCODColor::black);
+				TCODConsole::root->setDefaultForeground(TCODColor::grey);
+				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
 			TCODConsole::root->printEx(42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
 		}

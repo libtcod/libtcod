@@ -47,11 +47,11 @@ TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes
 TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
 
 TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
-TCODLIB_API void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t col);
-TCODLIB_API void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t col);
+TCODLIB_API void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t col);
+TCODLIB_API void TCOD_console_set_default_foreground(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_clear(TCOD_console_t con);
-TCODLIB_API void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag);
-TCODLIB_API void TCOD_console_set_fore(TCOD_console_t con,int x, int y, TCOD_color_t col);
+TCODLIB_API void TCOD_console_set_char_background(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag);
+TCODLIB_API void TCOD_console_set_char_foreground(TCOD_console_t con,int x, int y, TCOD_color_t col);
 TCODLIB_API void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c);
 TCODLIB_API void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back);
@@ -60,10 +60,10 @@ TCODLIB_API void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_
 TCODLIB_API TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con);
 TCODLIB_API void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment);
 TCODLIB_API TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con);
-TCODLIB_API void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...); 
-TCODLIB_API void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
-TCODLIB_API int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...); 
-TCODLIB_API int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...); 
+TCODLIB_API void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...);
+TCODLIB_API void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
 
 TCODLIB_API void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag);
@@ -74,18 +74,18 @@ TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,i
 #ifndef NO_UNICODE
 /* unicode support */
 TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
-TCODLIB_API void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...); 
-TCODLIB_API void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...); 
-TCODLIB_API int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...); 
-TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...); 
+TCODLIB_API void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...);
+TCODLIB_API void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
 TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
 #endif
 
 
-TCODLIB_API TCOD_color_t TCOD_console_get_background_color(TCOD_console_t con);
-TCODLIB_API TCOD_color_t TCOD_console_get_foreground_color(TCOD_console_t con);
-TCODLIB_API TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y);
-TCODLIB_API TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y);
+TCODLIB_API TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con);
+TCODLIB_API TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con);
+TCODLIB_API TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int x, int y);
+TCODLIB_API TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y);
 TCODLIB_API int TCOD_console_get_char(TCOD_console_t con,int x, int y);
 
 TCODLIB_API void TCOD_console_set_fade(uint8 val, TCOD_color_t fade);

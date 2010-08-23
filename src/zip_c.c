@@ -148,8 +148,8 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val) {
 	for (y=0; y < h; y++) {
 		for (x=0; x < w; x++ ) {
 			TCOD_zip_put_char(zip,TCOD_console_get_char(val,x,y));
-			TCOD_zip_put_color(zip,TCOD_console_get_fore(val,x,y));
-			TCOD_zip_put_color(zip,TCOD_console_get_back(val,x,y));
+			TCOD_zip_put_color(zip,TCOD_console_get_char_foreground(val,x,y));
+			TCOD_zip_put_color(zip,TCOD_console_get_char_background(val,x,y));
 		}
 	}
 }
@@ -337,8 +337,8 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 	for (y=0; y < h; y++) {
 		for (x=0; x < w; x++ ) {
 			TCOD_console_set_char(ret, x,y,TCOD_zip_get_char(pzip));
-			TCOD_console_set_fore(ret, x,y,TCOD_zip_get_color(pzip));
-			TCOD_console_set_back(ret, x,y,TCOD_zip_get_color(pzip), TCOD_BKGND_SET);
+			TCOD_console_set_char_foreground(ret, x,y,TCOD_zip_get_color(pzip));
+			TCOD_console_set_char_background(ret, x,y,TCOD_zip_get_color(pzip), TCOD_BKGND_SET);
 		}
 	}
 	return ret;
@@ -353,7 +353,7 @@ uint32 TCOD_zip_get_current_bytes(TCOD_zip_t pzip) {
 uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	if (!zip->buffer) zip->buffer=TCOD_list_new();
-	return (TCOD_list_size(zip->buffer) - zip->offset) * sizeof(uintptr) + zip->isize; 
+	return (TCOD_list_size(zip->buffer) - zip->offset) * sizeof(uintptr) + zip->isize;
 }
 
 void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32 nbBytes) {

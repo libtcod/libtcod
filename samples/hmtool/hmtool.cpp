@@ -92,8 +92,8 @@ void initColors() {
 void render() {
 	static TCODHeightMap backup(HM_WIDTH,HM_HEIGHT);
 	isNormalized=true;
-	TCODConsole::root->setBackgroundColor(TCODColor::black);
-	TCODConsole::root->setForegroundColor(TCODColor::white);
+	TCODConsole::root->setDefaultBackground(TCODColor::black);
+	TCODConsole::root->setDefaultForeground(TCODColor::white);
 	TCODConsole::root->clear();
 	backup.copy(hm);
 	mapmin=1E8f;
@@ -116,11 +116,11 @@ void render() {
 				z = CLAMP(0.0f,1.0f,hm->getSlope(x,y)*10.0f);
 				val = (uint8)(z*255);
 				TCODColor c(val,val,val);
-				TCODConsole::root->setBack(x,y,c);
+				TCODConsole::root->setCharBackground(x,y,c);
 			} else if ( greyscale ) {
 				// render the greyscale heightmap
 				TCODColor c(val,val,val);
-				TCODConsole::root->setBack(x,y,c);
+				TCODConsole::root->setCharBackground(x,y,c);
 			} else if ( normal) {
 				// render the normal map
 				float n[3];
@@ -129,10 +129,10 @@ void render() {
 				uint8 g = (uint8)((n[1]*0.5f+0.5f)*255);
 				uint8 b = (uint8)((n[2]*0.5f+0.5f)*255);
 				TCODColor c(r,g,b);
-				TCODConsole::root->setBack(x,y,c);
+				TCODConsole::root->setCharBackground(x,y,c);
 			} else {
 				// render the colored heightmap
-				TCODConsole::root->setBack(x,y,mapGradient[val]);
+				TCODConsole::root->setCharBackground(x,y,mapGradient[val]);
 			}
 		}
 	}
@@ -146,9 +146,9 @@ void render() {
 	msgDelay-=TCODSystem::getLastFrameLength();
 	if ( msg[0] != 0 && msgDelay > 0.0f ) {
 		int h=TCODConsole::root->printRectEx(HM_WIDTH/2,HM_HEIGHT/2+1,HM_WIDTH/2-2,0,TCOD_BKGND_NONE,TCOD_CENTER,msg);
-		TCODConsole::root->setBackgroundColor(TCODColor::lightBlue);
+		TCODConsole::root->setDefaultBackground(TCODColor::lightBlue);
 		if (h > 0 ) TCODConsole::root->rect(HM_WIDTH/4,HM_HEIGHT/2,HM_WIDTH/2,h+2,false,TCOD_BKGND_SET);
-		TCODConsole::root->setBackgroundColor(TCODColor::black);
+		TCODConsole::root->setDefaultBackground(TCODColor::black);
 	}
 }
 
@@ -361,21 +361,21 @@ void changeColorMapIdxCbk(Widget *w, float val, void *data) {
 void changeColorMapRedCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].r=(int)(val);
-	keyImages[i]->setBackgroundColor(keyColor[i]);
+	keyImages[i]->setDefaultBackground(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapGreenCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].g=(int)(val);
-	keyImages[i]->setBackgroundColor(keyColor[i]);
+	keyImages[i]->setDefaultBackground(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapBlueCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].b=(int)(val);
-	keyImages[i]->setBackgroundColor(keyColor[i]);
+	keyImages[i]->setDefaultBackground(keyColor[i]);
 	initColors();
 }
 
@@ -399,7 +399,7 @@ void changeColorMapCbk(Widget *w, void *data) {
 		idxSlider->setCallback(changeColorMapIdxCbk,(void *)i);
 		vbox->addWidget(idxSlider);
 		keyImages[i]=new Image(0,0,0,2);
-		keyImages[i]->setBackgroundColor(keyColor[i]);
+		keyImages[i]->setDefaultBackground(keyColor[i]);
 		vbox->addWidget(keyImages[i]);
 		hbox->addWidget(vbox);
 
@@ -513,7 +513,7 @@ int main(int argc, char *argv[]) {
 
 	while ( ! TCODConsole::isWindowClosed() ) {
 		render();
-		guicon->setBackgroundColor(TCODColor(255,0,255));
+		guicon->setDefaultBackground(TCODColor(255,0,255));
 		guicon->clear();
 		Widget::renderWidgets();
 		if (! creditsEnd ) {

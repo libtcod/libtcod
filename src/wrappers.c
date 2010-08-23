@@ -94,56 +94,56 @@ float TCOD_color_get_value_ (colornum_t c) {
   return TCOD_color_get_value(int_to_color(c));
 }
 
-colornum_t TCOD_console_get_background_color_wrapper(TCOD_console_t con)
+colornum_t TCOD_console_get_default_background_wrapper(TCOD_console_t con)
 {
-  return color_to_int(TCOD_console_get_background_color (con));
+  return color_to_int(TCOD_console_get_default_background (con));
 }
 
 
-colornum_t TCOD_console_get_foreground_color_wrapper(TCOD_console_t con)
+colornum_t TCOD_console_get_default_foreground_wrapper(TCOD_console_t con)
 {
-  return color_to_int(TCOD_console_get_foreground_color (con));
+  return color_to_int(TCOD_console_get_default_foreground (con));
 }
 
 
-void TCOD_console_set_background_color_wrapper(TCOD_console_t con,
+void TCOD_console_set_default_background_wrapper(TCOD_console_t con,
 						   colornum_t col)
 {
-   TCOD_console_set_background_color (con,
+   TCOD_console_set_default_background (con,
 				      int_to_color(col));
 }
 
-void TCOD_console_set_foreground_color_wrapper(TCOD_console_t con,
+void TCOD_console_set_default_foreground_wrapper(TCOD_console_t con,
 						   colornum_t col)
 {
-  TCOD_console_set_foreground_color (con,
+  TCOD_console_set_default_foreground (con,
 				     int_to_color(col));
 }
 
-colornum_t TCOD_console_get_fore_wrapper(TCOD_console_t con,
+colornum_t TCOD_console_get_char_foreground_wrapper(TCOD_console_t con,
                                               int x, int y)
 {
-  return color_to_int(TCOD_console_get_fore (con, x, y));
+  return color_to_int(TCOD_console_get_char_foreground (con, x, y));
 }
 
-colornum_t TCOD_console_get_back_wrapper(TCOD_console_t con,
+colornum_t TCOD_console_get_char_background_wrapper(TCOD_console_t con,
 						       int x, int y)
 {
-  return color_to_int(TCOD_console_get_back (con, x, y));
+  return color_to_int(TCOD_console_get_char_background (con, x, y));
 }
 
-void TCOD_console_set_back_wrapper(TCOD_console_t con,int x, int y,
+void TCOD_console_set_char_background_wrapper(TCOD_console_t con,int x, int y,
                                       colornum_t col,
                                       TCOD_bkgnd_flag_t flag)
 {
-  TCOD_console_set_back (con, x, y, int_to_color(col), flag);
+  TCOD_console_set_char_background (con, x, y, int_to_color(col), flag);
 }
 
 
-void TCOD_console_set_fore_wrapper(TCOD_console_t con,int x, int y,
+void TCOD_console_set_char_foreground_wrapper(TCOD_console_t con,int x, int y,
 				   colornum_t col)
 {
-  TCOD_console_set_fore (con, x, y, int_to_color(col));
+  TCOD_console_set_char_foreground (con, x, y, int_to_color(col));
 }
 
 void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, int y,

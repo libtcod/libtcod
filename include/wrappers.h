@@ -54,20 +54,20 @@ TCODLIB_API float TCOD_color_get_value_ (colornum_t c);
                         int nb_char_vertic, bool chars_by_row,
                         colornum_t key_color); */
 
-TCODLIB_API void TCOD_console_set_background_color_wrapper(TCOD_console_t con,
+TCODLIB_API void TCOD_console_set_default_background_wrapper(TCOD_console_t con,
 						   colornum_t col);
-TCODLIB_API void TCOD_console_set_foreground_color_wrapper(TCOD_console_t con,
+TCODLIB_API void TCOD_console_set_default_foreground_wrapper(TCOD_console_t con,
 						   colornum_t col);
-TCODLIB_API colornum_t TCOD_console_get_background_color_wrapper(TCOD_console_t con);
-TCODLIB_API colornum_t TCOD_console_get_foreground_color_wrapper(TCOD_console_t con);
-TCODLIB_API colornum_t TCOD_console_get_back_wrapper(TCOD_console_t con,
+TCODLIB_API colornum_t TCOD_console_get_default_background_wrapper(TCOD_console_t con);
+TCODLIB_API colornum_t TCOD_console_get_default_foreground_wrapper(TCOD_console_t con);
+TCODLIB_API colornum_t TCOD_console_get_char_background_wrapper(TCOD_console_t con,
 						       int x, int y);
-TCODLIB_API void TCOD_console_set_back_wrapper(TCOD_console_t con,int x, int y,
+TCODLIB_API void TCOD_console_set_char_background_wrapper(TCOD_console_t con,int x, int y,
                                       colornum_t col,
                                       TCOD_bkgnd_flag_t flag);
-TCODLIB_API colornum_t TCOD_console_get_fore_wrapper (TCOD_console_t con,
+TCODLIB_API colornum_t TCOD_console_get_char_foreground_wrapper (TCOD_console_t con,
                                               int x, int y);
-TCODLIB_API void TCOD_console_set_fore_wrapper(TCOD_console_t con,int x, int y,
+TCODLIB_API void TCOD_console_set_char_foreground_wrapper(TCOD_console_t con,int x, int y,
                                       colornum_t col);
 TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x,
 	int y, int c, colornum_t fore, colornum_t back);

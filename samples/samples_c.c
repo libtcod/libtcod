@@ -82,31 +82,31 @@ void render_colors(bool first, TCOD_key_t*key) {
 			float ycoef = (float)(y)/(SAMPLE_SCREEN_HEIGHT-1);
 			/* get the current cell color */
 			TCOD_color_t curColor = TCOD_color_lerp(top,bottom,ycoef);
-			TCOD_console_set_back(sample_console,x,y,curColor,TCOD_BKGND_SET);
+			TCOD_console_set_char_background(sample_console,x,y,curColor,TCOD_BKGND_SET);
 		}
 	}
 
 	/* ==== print the text ==== */
 	/* get the background color at the text position */
-	textColor=TCOD_console_get_back(sample_console,SAMPLE_SCREEN_WIDTH/2,5);
+	textColor=TCOD_console_get_char_background(sample_console,SAMPLE_SCREEN_WIDTH/2,5);
 	/* and invert it */
 	textColor.r=255-textColor.r;
 	textColor.g=255-textColor.g;
 	textColor.b=255-textColor.b;
-	TCOD_console_set_foreground_color(sample_console,textColor);
+	TCOD_console_set_default_foreground(sample_console,textColor);
 	/* put random text (for performance tests) */
 	for (x=0; x < SAMPLE_SCREEN_WIDTH; x++) {
 		for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
 		    int c;
-			TCOD_color_t col=TCOD_console_get_back(sample_console,x,y);
+			TCOD_color_t col=TCOD_console_get_char_background(sample_console,x,y);
 			col=TCOD_color_lerp(col,TCOD_black,0.5f);
 			c=TCOD_random_get_int(NULL,'a','z');
-			TCOD_console_set_foreground_color(sample_console,col);
+			TCOD_console_set_default_foreground(sample_console,col);
 			TCOD_console_put_char(sample_console,x,y,c,TCOD_BKGND_NONE);
 		}
 	}
 	/* the background behind the text is slightly darkened using the BKGND_MULTIPLY flag */
-	TCOD_console_set_background_color(sample_console,TCOD_grey);
+	TCOD_console_set_default_background(sample_console,TCOD_grey);
 	TCOD_console_print_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,5,
 		SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,TCOD_BKGND_MULTIPLY,TCOD_CENTER,
 		"The Doryen library uses 24 bits colors, for both background and foreground.");
@@ -160,7 +160,7 @@ void render_offscreen(bool first, TCOD_key_t*key) {
 static int bk_flag=TCOD_BKGND_SET; /* current blending mode */
 bool line_listener(int x, int y) {
 	if ( x>= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-		TCOD_console_set_back(sample_console,x,y,TCOD_light_blue, (TCOD_bkgnd_flag_t)bk_flag);
+		TCOD_console_set_char_background(sample_console,x,y,TCOD_light_blue, (TCOD_bkgnd_flag_t)bk_flag);
 	}
 	return true;
 }
@@ -210,14 +210,14 @@ void render_lines(bool first, TCOD_key_t*key) {
 				col.r = (uint8)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
 				col.g = (uint8)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
 				col.b = (uint8)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
-				TCOD_console_set_back(bk,x,y,col,TCOD_BKGND_SET);
+				TCOD_console_set_char_background(bk,x,y,col,TCOD_BKGND_SET);
 			}
 		}
 		init=true;
 	}
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 	}
 	/* blit the background */
 	TCOD_console_blit(bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,sample_console,0,0,1.0f,1.0f);
@@ -228,9 +228,9 @@ void render_lines(bool first, TCOD_key_t*key) {
 		col.r=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
 		col.g=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
 		col.b=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		TCOD_console_set_back(sample_console,x,recty,col,(TCOD_bkgnd_flag_t)bk_flag);
-		TCOD_console_set_back(sample_console,x,recty+1,col,(TCOD_bkgnd_flag_t)bk_flag);
-		TCOD_console_set_back(sample_console,x,recty+2,col,(TCOD_bkgnd_flag_t)bk_flag);
+		TCOD_console_set_char_background(sample_console,x,recty,col,(TCOD_bkgnd_flag_t)bk_flag);
+		TCOD_console_set_char_background(sample_console,x,recty+1,col,(TCOD_bkgnd_flag_t)bk_flag);
+		TCOD_console_set_char_background(sample_console,x,recty+2,col,(TCOD_bkgnd_flag_t)bk_flag);
 	}
 	/* calculate the segment ends */
 	angle = TCOD_sys_elapsed_seconds()*2.0f;
@@ -316,29 +316,29 @@ void render_noise(bool first, TCOD_key_t*key) {
 	TCOD_image_blit_2x(img,sample_console,0,0,0,0,-1,-1);
 
 	/* draw a transparent rectangle */
-	TCOD_console_set_background_color(sample_console,TCOD_grey);
+	TCOD_console_set_default_background(sample_console,TCOD_grey);
 	TCOD_console_rect(sample_console,2,2,23,(func <= WAVELET ? 10 : 13),false,TCOD_BKGND_MULTIPLY);
 	for (y=2; y < 2+(func <= WAVELET ? 10 : 13); y++ ) {
 		for (x=2; x < 2+23; x++ ) {
-			TCOD_color_t col=TCOD_console_get_fore(sample_console,x,y);
+			TCOD_color_t col=TCOD_console_get_char_foreground(sample_console,x,y);
 			col = TCOD_color_multiply(col, TCOD_grey);
-			TCOD_console_set_fore(sample_console,x,y,col);
+			TCOD_console_set_char_foreground(sample_console,x,y,col);
 		}
 	}
 
 	/* draw the text */
 	for (curfunc=PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
 		if ( curfunc == func ) {
-				TCOD_console_set_foreground_color(sample_console,TCOD_white);
-				TCOD_console_set_background_color(sample_console,TCOD_light_blue);
+				TCOD_console_set_default_foreground(sample_console,TCOD_white);
+				TCOD_console_set_default_background(sample_console,TCOD_light_blue);
 				TCOD_console_print_ex(sample_console,2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
 		} else {
-				TCOD_console_set_foreground_color(sample_console,TCOD_grey);
+				TCOD_console_set_default_foreground(sample_console,TCOD_grey);
 				TCOD_console_print(sample_console,2,2+curfunc,funcName[curfunc]);
 		}
 	}
 	/* draw parameters */
-	TCOD_console_set_foreground_color(sample_console,TCOD_white);
+	TCOD_console_set_default_foreground(sample_console,TCOD_white);
 	TCOD_console_print(sample_console,2,11,"Y/H : zoom (%2.1f)",zoom);
 	if ( func > WAVELET ) {
 		TCOD_console_print(sample_console,2,12,"E/D : hurst (%2.1f)",hurst);
@@ -448,10 +448,10 @@ void render_fov(bool first, TCOD_key_t*key) {
 		   the rest impacts only the background color */
 		/* draw the help text & player @ */
 		TCOD_console_clear(sample_console);
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_print(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		TCOD_console_set_foreground_color(sample_console,TCOD_black);
+		TCOD_console_set_default_foreground(sample_console,TCOD_black);
 		TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
 		/* draw windows */
 		for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -482,12 +482,12 @@ void render_fov(bool first, TCOD_key_t*key) {
 			bool visible = TCOD_map_is_in_fov(map,x,y);
 			bool wall=smap[y][x]=='#';
 			if (! visible ) {
-				TCOD_console_set_back(sample_console,x,y,
+				TCOD_console_set_char_background(sample_console,x,y,
 					wall ? dark_wall:dark_ground,TCOD_BKGND_SET);
 
 			} else {
 				if ( !torch ) {
-					TCOD_console_set_back(sample_console,x,y,
+					TCOD_console_set_char_background(sample_console,x,y,
 					 wall ? light_wall : light_ground, TCOD_BKGND_SET );
 				} else {
 					TCOD_color_t base=(wall ? dark_wall : dark_ground);
@@ -498,7 +498,7 @@ void render_fov(bool first, TCOD_key_t*key) {
 						l=CLAMP(0.0f,1.0f,l);
 						base=TCOD_color_lerp(base,light,l);
 					}
-					TCOD_console_set_back(sample_console,x,y,base,TCOD_BKGND_SET);
+					TCOD_console_set_char_background(sample_console,x,y,base,TCOD_BKGND_SET);
 				}
 			}
 		}
@@ -533,24 +533,24 @@ void render_fov(bool first, TCOD_key_t*key) {
 		}
 	} else if ( key->c == 'T' || key->c == 't' ) {
 		torch=!torch;
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_print(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		TCOD_console_set_foreground_color(sample_console,TCOD_black);
+		TCOD_console_set_default_foreground(sample_console,TCOD_black);
 	} else if ( key->c == 'W' || key->c == 'w' ) {
 		light_walls=!light_walls;
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_print(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		TCOD_console_set_foreground_color(sample_console,TCOD_black);
+		TCOD_console_set_default_foreground(sample_console,TCOD_black);
 		recompute_fov=true;
 	} else if ( key->c == '+' || key->c == '-' ) {
 		algonum+= key->c == '+' ? 1 : -1;
 		algonum = CLAMP(0,NB_FOV_ALGORITHMS-1,algonum);
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_print(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
-		TCOD_console_set_foreground_color(sample_console,TCOD_black);
+		TCOD_console_set_default_foreground(sample_console,TCOD_black);
 		recompute_fov=true;
 	}
 }
@@ -572,7 +572,7 @@ void render_image(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
 	}
-	TCOD_console_set_background_color(sample_console,TCOD_black);
+	TCOD_console_set_default_background(sample_console,TCOD_black);
 	TCOD_console_clear(sample_console);
 	x=SAMPLE_SCREEN_WIDTH/2+cosf(TCOD_sys_elapsed_seconds())*10.0f;
 	y=(float)(SAMPLE_SCREEN_HEIGHT/2);
@@ -583,15 +583,15 @@ void render_image(bool first, TCOD_key_t*key) {
 	if ( elapsed & 1 ) {
 		/* split the color channels of circle.png */
 		/* the red channel */
-		TCOD_console_set_background_color(sample_console,TCOD_red);
+		TCOD_console_set_default_background(sample_console,TCOD_red);
 		TCOD_console_rect(sample_console,0,3,15,15,false,TCOD_BKGND_SET);
 		TCOD_image_blit_rect(circle,sample_console,0,3,-1,-1,TCOD_BKGND_MULTIPLY);
 		/* the green channel */
-		TCOD_console_set_background_color(sample_console,green);
+		TCOD_console_set_default_background(sample_console,green);
 		TCOD_console_rect(sample_console,15,3,15,15,false,TCOD_BKGND_SET);
 		TCOD_image_blit_rect(circle,sample_console,15,3,-1,-1,TCOD_BKGND_MULTIPLY);
 		/* the blue channel */
-		TCOD_console_set_background_color(sample_console,blue);
+		TCOD_console_set_default_background(sample_console,blue);
 		TCOD_console_rect(sample_console,30,3,15,15,false,TCOD_BKGND_SET);
 		TCOD_image_blit_rect(circle,sample_console,30,3,-1,-1,TCOD_BKGND_MULTIPLY);
 	} else {
@@ -612,8 +612,8 @@ void render_mouse(bool first, TCOD_key_t*key) {
   static bool lbut=false,rbut=false,mbut=false;
 
   if ( first ) {
-    TCOD_console_set_background_color(sample_console,TCOD_grey);
-    TCOD_console_set_foreground_color(sample_console,TCOD_light_yellow);
+    TCOD_console_set_default_background(sample_console,TCOD_grey);
+    TCOD_console_set_default_foreground(sample_console,TCOD_light_yellow);
     TCOD_mouse_move(320,200);
     TCOD_mouse_show_cursor(true);
     TCOD_sys_set_fps(30); /* limited to 30 fps */
@@ -705,7 +705,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		   the rest impacts only the background color */
 		/* draw the help text & player @ */
 		TCOD_console_clear(sample_console);
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_put_char(sample_console,dx,dy,'+',TCOD_BKGND_NONE);
 		TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
 		TCOD_console_print(sample_console,1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
@@ -746,7 +746,7 @@ void render_path(bool first, TCOD_key_t*key) {
 	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
 			bool wall=smap[y][x]=='#';
-			TCOD_console_set_back(sample_console,x,y,wall ? dark_wall : dark_ground, TCOD_BKGND_SET );
+			TCOD_console_set_char_background(sample_console,x,y,wall ? dark_wall : dark_ground, TCOD_BKGND_SET );
 		}
 	}
 	// draw the path
@@ -754,7 +754,7 @@ void render_path(bool first, TCOD_key_t*key) {
 		for (i=0; i< TCOD_path_size(path); i++ ) {
 			int x,y;
 			TCOD_path_get(path,i,&x,&y);
-			TCOD_console_set_back(sample_console,x,y,light_ground, TCOD_BKGND_SET );
+			TCOD_console_set_char_background(sample_console,x,y,light_ground, TCOD_BKGND_SET );
 		}
 	} else {
 		int x,y,i;
@@ -763,14 +763,14 @@ void render_path(bool first, TCOD_key_t*key) {
 				bool wall=smap[y][x]=='#';
 				if (! wall) {
 					float d= TCOD_dijkstra_get_distance(dijkstra,x,y);
-					TCOD_console_set_back(sample_console,x,y,TCOD_color_lerp(light_ground,dark_ground,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
+					TCOD_console_set_char_background(sample_console,x,y,TCOD_color_lerp(light_ground,dark_ground,0.9f * d / dijkstraDist), TCOD_BKGND_SET );
 				}
 			}
 		}
 		for (i=0; i< TCOD_dijkstra_size(dijkstra); i++ ) {
 			int x,y;
 			TCOD_dijkstra_get(dijkstra,i,&x,&y);
-			TCOD_console_set_back(sample_console,x,y,light_ground, TCOD_BKGND_SET );
+			TCOD_console_set_char_background(sample_console,x,y,light_ground, TCOD_BKGND_SET );
 		}
 	}
 	// move the creature
@@ -1030,7 +1030,7 @@ void render_bsp(bool first, TCOD_key_t*key) {
 		refresh=false;
 	}
 	TCOD_console_clear(sample_console);
-	TCOD_console_set_foreground_color(sample_console,TCOD_white);
+	TCOD_console_set_default_foreground(sample_console,TCOD_white);
 	TCOD_console_print(sample_console,1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
 		bspDepth,minRoomSize,
 		randomRoom ? "ON" : "OFF");
@@ -1041,7 +1041,7 @@ void render_bsp(bool first, TCOD_key_t*key) {
 	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
 			bool wall= ( map[x][y] == '#' );
-			TCOD_console_set_back(sample_console,x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
+			TCOD_console_set_char_background(sample_console,x,y,wall ? darkWall : darkGround, TCOD_BKGND_SET );
 		}
 	}
 	if ( key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER ) {
@@ -1112,7 +1112,7 @@ void render_name(bool first, TCOD_key_t*key) {
 	}
 
 	TCOD_console_clear(sample_console);
-	TCOD_console_set_foreground_color(sample_console,TCOD_white);
+	TCOD_console_set_default_foreground(sample_console,TCOD_white);
 	TCOD_console_print(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator",
 		(char *)TCOD_list_get(sets,curSet));
 	for (i=0; i < TCOD_list_size(names); i++) {
@@ -1354,8 +1354,8 @@ void render_sdl(bool first, TCOD_key_t*key) {
 	if ( first ) {
 		TCOD_sys_set_fps(30); /* limited to 30 fps */
 		// use noise sample as background. rendering is done in SampleRenderer
-		TCOD_console_set_background_color(sample_console,TCOD_light_blue);
-		TCOD_console_set_foreground_color(sample_console,TCOD_white);
+		TCOD_console_set_default_background(sample_console,TCOD_light_blue);
+		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_clear(sample_console);
 		TCOD_console_print_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
 			TCOD_CENTER,
@@ -1481,18 +1481,18 @@ int main( int argc, char *argv[] ) {
 		for (i=0; i < nb_samples; i++ ) {
 			if ( i == cur_sample ) {
 				/* set colors for currently selected sample */
-				TCOD_console_set_foreground_color(NULL,TCOD_white);
-				TCOD_console_set_background_color(NULL,TCOD_light_blue);
+				TCOD_console_set_default_foreground(NULL,TCOD_white);
+				TCOD_console_set_default_background(NULL,TCOD_light_blue);
 			} else {
 				/* set colors for other samples */
-				TCOD_console_set_foreground_color(NULL,TCOD_grey);
-				TCOD_console_set_background_color(NULL,TCOD_black);
+				TCOD_console_set_default_foreground(NULL,TCOD_grey);
+				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
 			/* print the sample name */
 			TCOD_console_print_ex(NULL,2,46-(nb_samples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
 		}
 		/* print the help message */
-		TCOD_console_set_foreground_color(NULL,TCOD_grey);
+		TCOD_console_set_default_foreground(NULL,TCOD_grey);
 		TCOD_console_print_ex(NULL,79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCOD_sys_get_last_frame_length()*1000), TCOD_sys_get_fps());
 		TCOD_console_print_ex(NULL,79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCOD_sys_elapsed_milli(),TCOD_sys_elapsed_seconds());
 		TCOD_console_print(NULL,2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N,TCOD_CHAR_ARROW_S);
@@ -1516,18 +1516,18 @@ int main( int argc, char *argv[] ) {
 
 		/* display renderer list and current renderer */
 		cur_renderer=TCOD_sys_get_renderer();
-		TCOD_console_set_foreground_color(NULL,TCOD_grey);
-		TCOD_console_set_background_color(NULL,TCOD_black);
+		TCOD_console_set_default_foreground(NULL,TCOD_grey);
+		TCOD_console_set_default_background(NULL,TCOD_black);
 		TCOD_console_print_ex(NULL,42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
 		for (i=0; i < TCOD_NB_RENDERERS; i++) {
 			if (i==cur_renderer) {
 				/* set colors for current renderer */
-				TCOD_console_set_foreground_color(NULL,TCOD_white);
-				TCOD_console_set_background_color(NULL,TCOD_light_blue);
+				TCOD_console_set_default_foreground(NULL,TCOD_white);
+				TCOD_console_set_default_background(NULL,TCOD_light_blue);
 			} else {
 				/* set colors for other renderer */
-				TCOD_console_set_foreground_color(NULL,TCOD_grey);
-				TCOD_console_set_background_color(NULL,TCOD_black);
+				TCOD_console_set_default_foreground(NULL,TCOD_grey);
+				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
 			TCOD_console_print_ex(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
 		}

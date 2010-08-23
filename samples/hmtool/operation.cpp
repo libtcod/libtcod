@@ -87,7 +87,7 @@ static const char *footer1[] = {
 "\t\t\tfloat z = hm.getValue(x,y);\n"
 "\t\t\tuint8 val=(uint8)(z*255);\n"
 "\t\t\tTCODColor c(val,val,val);\n"
-"\t\t\tTCODConsole::root->setBack(x,y,c);\n"
+"\t\t\tTCODConsole::root->setCharBackground(x,y,c);\n"
 "\t\t}\n"
 "\t}\n"
 "\tTCODConsole::root->flush();\n"

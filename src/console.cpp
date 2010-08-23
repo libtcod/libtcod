@@ -83,24 +83,24 @@ void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor &fore, con
 	TCOD_console_set_color_control(con,f,b);
 }
 
-TCODColor TCODConsole::getBackgroundColor() const {
-	TCOD_color_t c= TCOD_console_get_background_color(data);
+TCODColor TCODConsole::getDefaultBackground() const {
+	TCOD_color_t c= TCOD_console_get_default_background(data);
 	TCODColor ret;
 	ret.r=c.r;
 	ret.g=c.g;
 	ret.b=c.b;
 	return ret;
 }
-TCODColor TCODConsole::getForegroundColor() const {
-	return TCOD_console_get_foreground_color(data);
+TCODColor TCODConsole::getDefaultForeground() const {
+	return TCOD_console_get_default_foreground(data);
 }
-void TCODConsole::setBackgroundColor(TCODColor back) {
+void TCODConsole::setDefaultBackground(TCODColor back) {
 	TCOD_color_t b={back.r,back.g,back.b};
-	TCOD_console_set_background_color(data,b);
+	TCOD_console_set_default_background(data,b);
 }
-void TCODConsole::setForegroundColor(TCODColor fore) {
+void TCODConsole::setDefaultForeground(TCODColor fore) {
 	TCOD_color_t b={fore.r,fore.g,fore.b};
-	TCOD_console_set_foreground_color(data,b);
+	TCOD_console_set_default_foreground(data,b);
 }
 
 void TCODConsole::setWindowTitle(const char *title) {
@@ -179,24 +179,24 @@ void TCODConsole::clear() {
 	TCOD_console_clear(data);
 }
 
-TCODColor TCODConsole::getBack(int x, int y) const {
-	return TCOD_console_get_back(data,x,y);
+TCODColor TCODConsole::getCharBackground(int x, int y) const {
+	return TCOD_console_get_char_background(data,x,y);
 }
-void TCODConsole::setFore(int x,int y, const TCODColor &col) {
+void TCODConsole::setCharForeground(int x,int y, const TCODColor &col) {
 	TCOD_color_t c={col.r,col.g,col.b};
-	TCOD_console_set_fore(data,x,y,c);
+	TCOD_console_set_char_foreground(data,x,y,c);
 }
-TCODColor TCODConsole::getFore(int x, int y) const {
-	return TCOD_console_get_fore(data,x,y);
+TCODColor TCODConsole::getCharForeground(int x, int y) const {
+	return TCOD_console_get_char_foreground(data,x,y);
 }
 
 int TCODConsole::getChar(int x, int y) const {
 	return TCOD_console_get_char(data,x,y);
 }
 
-void TCODConsole::setBack(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag) {
+void TCODConsole::setCharBackground(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag) {
 	TCOD_color_t c={col.r,col.g,col.b};
-	TCOD_console_set_back(data,x,y,c,flag);
+	TCOD_console_set_char_background(data,x,y,c,flag);
 }
 
 void TCODConsole::setChar(int x, int y, int c) {
@@ -266,7 +266,7 @@ void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_loc
 	va_end(ap);
 }
 */
-	
+
 int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=(TCOD_console_data_t *)data;
@@ -277,7 +277,7 @@ int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...) {
 	return ret;
 }
 
-int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, 
+int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
 	TCOD_alignment_t alignment, const char *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
@@ -340,7 +340,7 @@ void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t
 	va_list ap;
 	va_start(ap,fmt);
 	TCOD_console_print_internal_utf(data,x,y,0,0,flag,alignment,TCOD_console_vsprint_utf(fmt,ap),false,false);
-	va_end(ap);       
+	va_end(ap);
 }
 
 int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...) {
@@ -354,7 +354,7 @@ int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...) 
 	return ret;
 }
 
-int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, 
+int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
 	TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	va_list ap;
 	va_start(ap,fmt);
@@ -372,7 +372,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, .
 	return ret;
 }
 
-// color control string formating utilities for swigged language  
+// color control string formating utilities for swigged language
 
 // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
 #define NB_BUFFERS 10
@@ -387,7 +387,7 @@ const char *TCODConsole::getColorControlString( TCOD_colctrl_t ctrl ) {
 	return ret;
 }
 
-// ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB  
+// ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
 const char *TCODConsole::getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col ) {
 	static char buf[NB_BUFFERS][5];
 	static int buf_nb=0;

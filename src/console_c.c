@@ -254,7 +254,7 @@ void TCOD_console_put_char(TCOD_console_t con,int x, int y, int c, TCOD_bkgnd_fl
 	dat->buf[ offset ].c = c;
 	dat->buf[ offset ].cf = TCOD_ctx.ascii_to_tcod[c];
 	dat->buf[ offset ].fore = dat->fore;
-	TCOD_console_set_back(con,x,y,dat->back,(TCOD_bkgnd_flag_t)flag);
+	TCOD_console_set_char_background(con,x,y,dat->back,(TCOD_bkgnd_flag_t)flag);
 }
 
 void TCOD_console_put_char_ex(TCOD_console_t con,int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
@@ -309,7 +309,7 @@ void TCOD_console_clear(TCOD_console_t con) {
 	}
 }
 
-TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y) {
+TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int x, int y) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
@@ -317,7 +317,7 @@ TCOD_color_t TCOD_console_get_back(TCOD_console_t con,int x, int y) {
 	return dat->buf[ y * dat->w + x ].back;
 }
 
-void TCOD_console_set_fore(TCOD_console_t con,int x,int y, TCOD_color_t col) {
+void TCOD_console_set_char_foreground(TCOD_console_t con,int x,int y, TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	if ( (unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h ) return;
 	TCOD_IFNOT ( dat != NULL
@@ -326,7 +326,7 @@ void TCOD_console_set_fore(TCOD_console_t con,int x,int y, TCOD_color_t col) {
 	dat->buf[ y * dat->w + x ].fore=col;
 }
 
-TCOD_color_t TCOD_console_get_fore(TCOD_console_t con,int x, int y) {
+TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
@@ -342,7 +342,7 @@ int TCOD_console_get_char(TCOD_console_t con,int x, int y) {
 	return dat->buf[ y * dat->w + x ].c;
 }
 
-void TCOD_console_set_back(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag) {
+void TCOD_console_set_char_background(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag) {
 	TCOD_color_t *back;
 	int newr,newg,newb;
 	int alpha;
@@ -472,7 +472,7 @@ void TCOD_console_rect(TCOD_console_t con,int x,int y, int rw, int rh, bool clea
 	TCOD_IFNOT(rw > 0 && rh > 0) return;
 	for (cx=x;cx < x+rw; cx++) {
 		for (cy=y;cy<y+rh;cy++) {
-			TCOD_console_set_back(con,cx,cy,dat->back,flag);
+			TCOD_console_set_char_background(con,cx,cy,dat->back,flag);
 			if ( clear ) {
 				dat->buf[cx + cy*dat->w].c=' ';
 				dat->buf[cx + cy*dat->w].cf=TCOD_ctx.ascii_to_tcod[' '];
@@ -574,7 +574,7 @@ void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 	va_end(ap);
 }
 
-void TCOD_console_print_ex(TCOD_console_t con,int x, int y, 
+void TCOD_console_print_ex(TCOD_console_t con,int x, int y,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
@@ -597,7 +597,7 @@ int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const
 	return ret;
 }
 
-int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, 
+int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...) {
 	int ret;
 	va_list ap;
@@ -656,12 +656,12 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
-	if ( rh == 0 ) rh = dat->h-y; 
+	if ( rh == 0 ) rh = dat->h-y;
 	if ( rw == 0 ) switch(align) {
 		case TCOD_LEFT : rw = dat->w-x; break;
 		case TCOD_RIGHT : rw=x+1; break;
 		case TCOD_CENTER : default : rw=dat->w; break;
-	} 
+	}
 	oldFore=dat->fore;
 	oldBack=dat->back;
 	miny=y;
@@ -859,12 +859,12 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
 	TCOD_IFNOT(msg != NULL) return 0;
-	if ( rh == 0 ) rh = dat->h-y; 
+	if ( rh == 0 ) rh = dat->h-y;
 	if ( rw == 0 ) switch(align) {
 		case TCOD_LEFT : rw = dat->w-x; break;
 		case TCOD_RIGHT : rw=x+1; break;
 		case TCOD_CENTER : default : rw=dat->w; break;
-	} 
+	}
 	oldFore=dat->fore;
 	oldBack=dat->back;
 	miny=y;
@@ -979,7 +979,7 @@ void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt,
 	va_end(ap);
 }
 
-void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, 
+void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
@@ -989,7 +989,7 @@ void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y,
 	va_end(ap);
 }
 
-int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,	
+int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,
 	const wchar_t *fmt, ...) {
 	int ret;
 	va_list ap;
@@ -1002,7 +1002,7 @@ int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,
 	return ret;
 }
 
-int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, 
+int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	int ret;
 	va_list ap;
@@ -1062,25 +1062,25 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	return true;
 }
 
-void TCOD_console_set_foreground_color(TCOD_console_t con,TCOD_color_t col) {
+void TCOD_console_set_default_foreground(TCOD_console_t con,TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	dat->fore=col;
 }
 
-void TCOD_console_set_background_color(TCOD_console_t con,TCOD_color_t col) {
+void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	dat->back=col;
 }
 
-TCOD_color_t TCOD_console_get_foreground_color(TCOD_console_t con) {
+TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return TCOD_white;
 	return dat->fore;
 }
 
-TCOD_color_t TCOD_console_get_background_color(TCOD_console_t con) {
+TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return TCOD_black;
 	return dat->back;
@@ -1244,10 +1244,10 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		bottom=MIN(y+6,ch-1);
 		width=right - left + 1;
 		height=bottom - top + 1;
-		col= TCOD_console_get_background_color(NULL);
-		TCOD_console_set_background_color(NULL,TCOD_black);
+		col= TCOD_console_get_default_background(NULL);
+		TCOD_console_set_default_background(NULL,TCOD_black);
 		img = TCOD_image_new(width*2,height*2);
-		TCOD_console_set_background_color(NULL,col);
+		TCOD_console_set_default_background(NULL,col);
 		init1=true;
 	}
 	if (!init2) {
@@ -1269,7 +1269,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		nbpart=firstpart=0;
 		init2=true;
 	}
-	fbackup=TCOD_console_get_foreground_color(NULL);
+	fbackup=TCOD_console_get_default_foreground(NULL);
 	if ( xstr < (float)len1 ) {
 		sparklex=x+xstr;
 		sparkley=(float)y;
@@ -1311,9 +1311,9 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 					4, /* TCOD_CHAR_SUBP_SW */
 				};
 				int conc= TCOD_console_get_char(NULL,xc/2,yc/2);
-				TCOD_color_t bk=TCOD_console_get_back(NULL,xc/2,yc/2);
+				TCOD_color_t bk=TCOD_console_get_char_background(NULL,xc/2,yc/2);
 				if ( conc >= TCOD_CHAR_SUBP_NW && conc <= TCOD_CHAR_SUBP_SW ) {
-					/* merge two subcell chars... 
+					/* merge two subcell chars...
 					   get the flag for the existing cell on root console */
 					int bkflag=asciiToFlag[conc - TCOD_CHAR_SUBP_NW ];
 					int xflag = (xc & 1);
@@ -1323,7 +1323,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 					if ( (credflag & bkflag) != 0 ) {
 						/* the color for this subcell on root console
 						   is foreground, not background */
-						bk = TCOD_console_get_fore(NULL,xc/2,yc/2);
+						bk = TCOD_console_get_char_foreground(NULL,xc/2,yc/2);
 					}
 				}
 				pixcol.r = MIN(255,(int)(bk.r)+pixcol.r);
@@ -1396,20 +1396,20 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			if ( xstr >= len  ) {
 				float coef=(xstr-len)/len;
 				if ( alpha ) {
-					TCOD_color_t fore=TCOD_console_get_back(NULL,char_x[i],char_y[i]);
+					TCOD_color_t fore=TCOD_console_get_char_background(NULL,char_x[i],char_y[i]);
 					int r=(int)(coef*fore.r + (1.0f-coef)*col.r);
 					int g=(int)(coef*fore.g + (1.0f-coef)*col.g);
 					int b=(int)(coef*fore.b + (1.0f-coef)*col.b);
 					col.r = CLAMP(0,255,r);
 					col.g = CLAMP(0,255,g);
 					col.b = CLAMP(0,255,b);
-					TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
+					TCOD_console_set_char_foreground(NULL,char_x[i],char_y[i],col);
 				} else {
 					col=TCOD_color_lerp(col,TCOD_black,coef);
 				}
 			}
 			TCOD_console_set_char(NULL,char_x[i],char_y[i],poweredby[i]);
-			TCOD_console_set_fore(NULL,char_x[i],char_y[i],col);
+			TCOD_console_set_char_foreground(NULL,char_x[i],char_y[i],col);
 		}
 	}
 	/* update letters heat */
@@ -1418,7 +1418,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}
 	/* restore fg color */
-	TCOD_console_set_foreground_color(NULL,fbackup);
+	TCOD_console_set_default_foreground(NULL,fbackup);
 	if ( xstr <= 2*len ) return false;
 	init2=false;
 	return true;

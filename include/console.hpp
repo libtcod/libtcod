@@ -408,14 +408,14 @@ public :
 	@FuncDesc This function changes the default background color for a console. The default background color is used by several drawing functions like clear, putChar, ...
 	@Cpp void TCODConsole::setDefaultBackground(TCODColor back)
 	@C void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t back)
-	@Py console_set_background_color(con,back)
+	@Py console_set_default_background(con,back)
 	@C# void TCODConsole::setBackgroundColor(TCODColor back)
 	@Lua Console:setBackgroundColor(back)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param back the new default background color for this console
 	@CppEx TCODConsole::root->setDefaultBackground(myColor)
 	@CEx TCOD_console_set_default_background(NULL, my_color)
-	@PyEx litbcod.console_set_background_color(0, my_color)
+	@PyEx litbcod.console_set_default_background(0, my_color)
 	@Lua libtcod.TCODConsole_root:setBackgroundColor( myColor )
 	*/
 	void setDefaultBackground(TCODColor back);
@@ -426,14 +426,14 @@ public :
 	@FuncDesc This function changes the default foreground color for a console. The default foreground color is used by several drawing functions like clear, putChar, ...
 	@Cpp void TCODConsole::setDefaultForeground(TCODColor fore)
 	@C void TCOD_console_set_default_foreground(TCOD_console_t con,TCOD_color_t fore)
-	@Py console_set_foreground_color(con, fore)
+	@Py console_set_default_foreground(con, fore)
 	@C# void TCODConsole::setForegroundColor(TCODColor fore)
 	@Lua Console:setForegroundColor(fore)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param fore the new default foreground color for this console
 	@CppEx TCODConsole::root->setDefaultForeground(myColor)
 	@CEx TCOD_console_set_default_foreground(NULL, my_color)
-	@PyEx litbcod.console_set_foreground_color(0, my_color)
+	@PyEx litbcod.console_set_default_foreground(0, my_color)
 	@LuaEx libtcod.TCODConsole_root:setForegroundColor( myColor )
 	*/
 	void setDefaultForeground(TCODColor fore);
@@ -460,7 +460,7 @@ public :
 	@FuncDesc This function modifies the background color of a cell, leaving other properties (foreground color and ASCII code) unchanged.
 	@Cpp void TCODConsole::setCharBackground(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 	@C void TCOD_console_set_char_background(TCOD_console_t con,int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag)
-	@Py console_set_back(con, x,  y, col, flag=BKGND_SET)
+	@Py console_set_char_background(con, x,  y, col, flag=BKGND_SET)
 	@C#
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col)
 		void TCODConsole::setCharBackground(int x, int y, TCODColor col, TCODBackgroundFlag flag)
@@ -481,7 +481,7 @@ public :
 	@FuncDesc This function modifies the foreground color of a cell, leaving other properties (background color and ASCII code) unchanged.
 	@Cpp void TCODConsole::setCharForeground(int x, int y, const TCODColor &col)
 	@C void TCOD_console_set_char_foreground(TCOD_console_t con,int x, int y, TCOD_color_t col)
-	@Py console_set_fore(con, x, y, col)
+	@Py console_set_char_foreground(con, x, y, col)
 	@C# void TCODConsole::setCharForeground(int x, int y, TCODColor col)
 	@Lua Console:setCharForeground(x, y, col)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
@@ -996,7 +996,7 @@ public :
 	@FuncDesc This function returns the default background color of a console.
 	@Cpp TCODColor TCODConsole::getDefaultBackground() const
 	@C TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con)
-	@Py console_get_background_color(con)
+	@Py console_get_default_background(con)
 	@C# TCODColor TCODConsole::getBackgroundColor()
 	@Lua Console:getBackgroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
@@ -1009,7 +1009,7 @@ public :
 	@FuncDesc This function returns the default foreground color of a console.
 	@Cpp TCODColor TCODConsole::getDefaultForeground() const
 	@C TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con)
-	@Py console_get_foreground_color(con)
+	@Py console_get_default_foreground(con)
 	@C# TCODColor TCODConsole::getForegroundColor()
 	@Lua Console:getForegroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
@@ -1022,7 +1022,7 @@ public :
 	@FuncDesc This function returns the background color of a cell.
 	@Cpp TCODColor TCODConsole::getCharBackground(int x, int y) const
 	@C TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int x, int y)
-	@Py console_get_back(con,x,y)
+	@Py console_get_char_background(con,x,y)
 	@C# TCODColor TCODConsole::getCharBackground(int x, int y)
 	@Lua Console::getCharBackground(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
@@ -1038,7 +1038,7 @@ public :
 	@FuncDesc This function returns the foreground color of a cell.
 	@Cpp TCODColor TCODConsole::getCharForeground(int x, int y) const
 	@C TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y)
-	@Py console_get_fore(con,x,y)
+	@Py console_get_char_foreground(con,x,y)
 	@C# TCODColor TCODConsole::getCharForeground(int x, int y)
 	@Lua Console::getCharForeground(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console

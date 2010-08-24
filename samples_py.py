@@ -93,8 +93,9 @@ if True:
                                                            libtcod.TYPE_COLOR)
 ##    print 'dice_list : ', \
 ##          libtcod.parser_get_list_property(parser, 'struct.dice_list',
-##                                                           libtcod.TYPE_DICE)    # custom listener
+##                                                           libtcod.TYPE_DICE)
 
+    # custom listener
     print '***** Custom listener *****'
     class MyListener:
         def new_struct(self, struct, name):
@@ -179,7 +180,7 @@ def render_colors(first, key):
             curColor = libtcod.color_lerp(top, bottom, ycoef)
             libtcod.console_set_char_background(sample_console, x, y, curColor,
                                      libtcod.BKGND_SET)
-    textColor = libtcod.console_get_back(sample_console,
+    textColor = libtcod.console_get_char_background(sample_console,
                                          SAMPLE_SCREEN_WIDTH / 2, 5)
     textColor.r = 255 - textColor.r
     textColor.g = 255 - textColor.g
@@ -187,7 +188,7 @@ def render_colors(first, key):
     libtcod.console_set_default_foreground(sample_console, textColor)
     for x in range(SAMPLE_SCREEN_WIDTH):
         for y in range(SAMPLE_SCREEN_HEIGHT):
-            col = libtcod.console_get_back(sample_console, x, y)
+            col = libtcod.console_get_char_background(sample_console, x, y)
             col = libtcod.color_lerp(col, libtcod.black, 0.5)
             c = libtcod.random_get_int(None, ord('a'), ord('z'))
             libtcod.console_set_default_foreground(sample_console, col)

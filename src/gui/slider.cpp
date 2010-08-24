@@ -26,8 +26,8 @@ void Slider::render() {
 	w-=2;
 	TextBox::render();
 	w+=2;
-	con->setBackgroundColor((onArrows || drag) ? backFocus : back);
-	con->setForegroundColor((onArrows || drag) ? foreFocus : fore);
+	con->setDefaultBackground((onArrows || drag) ? backFocus : back);
+	con->setDefaultForeground((onArrows || drag) ? foreFocus : fore);
 	con->rect(x+w-2,y,2,1,TCOD_BKGND_SET);
 	con->setChar(x+w-2,y,TCOD_CHAR_ARROW_W);
 	con->setChar(x+w-1,y,TCOD_CHAR_ARROW_E);

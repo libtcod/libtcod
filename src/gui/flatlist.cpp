@@ -19,11 +19,11 @@ void FlatList::render() {
 	TextBox::render();
 	boxx--;
 	w++;
-	con->setBackgroundColor((onLeftArrow) ? backFocus : back);
-	con->setForegroundColor((onLeftArrow) ? foreFocus : fore);
+	con->setDefaultBackground((onLeftArrow) ? backFocus : back);
+	con->setDefaultForeground((onLeftArrow) ? foreFocus : fore);
 	con->putChar(x+boxx,y,TCOD_CHAR_ARROW_W);
-	con->setBackgroundColor((onRightArrow) ? backFocus : back);
-	con->setForegroundColor((onRightArrow) ? foreFocus : fore);
+	con->setDefaultBackground((onRightArrow) ? backFocus : back);
+	con->setDefaultForeground((onRightArrow) ? foreFocus : fore);
 	con->putChar(x+w-1,y,TCOD_CHAR_ARROW_E);
 }
 

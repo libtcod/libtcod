@@ -178,7 +178,7 @@ void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(void *bitmap);
 void TCOD_sys_console_to_bitmap(void *bitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer);
 void TCOD_sys_set_keyboard_repeat(int initial_delay, int interval);
-void *TCOD_sys_get_surface(int width, int height, bool alpha);
+TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
 void TCOD_sys_save_fps();
 void TCOD_sys_restore_fps();
 
@@ -200,7 +200,7 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 #endif
 
 /* image manipulation */
-void *TCOD_sys_load_image(const char *filename);
+TCODLIB_API void *TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const void *image, int *w,int *h);
 TCOD_color_t TCOD_sys_get_image_pixel(const void *image,int x, int y);
 int TCOD_sys_get_image_alpha(const void *image,int x, int y);

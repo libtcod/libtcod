@@ -36,8 +36,8 @@ void Button::setLabel(const char *newLabel) {
 }
 
 void Button::render() {
-	con->setBackgroundColor(mouseIn ? backFocus : back);
-	con->setForegroundColor(mouseIn ? foreFocus : fore);
+	con->setDefaultBackground(mouseIn ? backFocus : back);
+	con->setDefaultForeground(mouseIn ? foreFocus : fore);
 	if ( w > 0 && h > 0 ) con->rect(x,y,w,h,true,TCOD_BKGND_SET);
 	if ( label ) {
 		if ( pressed && mouseIn ) {

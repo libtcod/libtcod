@@ -22,13 +22,13 @@ public :
 		if ( w < width ) w=width;
 	}
 	void render() {
-		con->setBackgroundColor(back);
-		con->setForegroundColor(fore);
+		con->setDefaultBackground(back);
+		con->setDefaultForeground(fore);
 		con->hline(x,y,w, TCOD_BKGND_SET);
 		con->setChar(x-1,y,TCOD_CHAR_TEEE);
 		con->setChar(x+w,y,TCOD_CHAR_TEEW);
-		con->setBackgroundColor(fore);
-		con->setForegroundColor(back);
+		con->setDefaultBackground(fore);
+		con->setDefaultForeground(back);
 		con->printEx(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
 	}
 	char *txt;
@@ -67,8 +67,8 @@ void ToolBar::setName(const char *name) {
 }
 
 void ToolBar::render() {
-	con->setBackgroundColor(back);
-	con->setForegroundColor(fore);
+	con->setDefaultBackground(back);
+	con->setDefaultForeground(fore);
 	con->printFrame(x,y,w,h,true,TCOD_BKGND_SET,name);
 	Container::render();
 }

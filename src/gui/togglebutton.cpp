@@ -3,8 +3,8 @@
 #include "gui.hpp"
 
 void ToggleButton::render() {
-	con->setBackgroundColor(mouseIn ? backFocus : back);
-	con->setForegroundColor(mouseIn ? foreFocus : fore);
+	con->setDefaultBackground(mouseIn ? backFocus : back);
+	con->setDefaultForeground(mouseIn ? foreFocus : fore);
 	con->rect(x,y,w,h,true,TCOD_BKGND_SET);
 	if ( label ) {
 		con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%c %s",pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET, label);

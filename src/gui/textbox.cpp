@@ -33,24 +33,24 @@ void TextBox::setText(const char *txt) {
 }
 
 void TextBox::render() {
-	con->setBackgroundColor(back);
-	con->setForegroundColor(fore);
+	con->setDefaultBackground(back);
+	con->setDefaultForeground(fore);
 	con->rect(x,y,w,h,true,TCOD_BKGND_SET);
 	if ( label ) con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,label);
 
-	con->setBackgroundColor(keyboardFocus == this ? foreFocus : fore);
-	con->setForegroundColor(keyboardFocus == this ? backFocus : back);
+	con->setDefaultBackground(keyboardFocus == this ? foreFocus : fore);
+	con->setDefaultForeground(keyboardFocus == this ? backFocus : back);
 	con->rect(x+boxx,y,boxw,h,false,TCOD_BKGND_SET);
 	int len=strlen(txt)-offset;
 	if (len > boxw) len = boxw;
 	if ( txt ) con->printEx(x+boxx,y,TCOD_BKGND_NONE,TCOD_LEFT,"%.*s",len,&txt[offset]);
 	if (keyboardFocus == this && blink > 0.0f) {
 		if (insert) {
-			con->setBack(x+boxx+pos-offset,y,fore);
-			con->setFore(x+boxx+pos-offset,y,back);
+			con->setCharBackground(x+boxx+pos-offset,y,fore);
+			con->setCharForeground(x+boxx+pos-offset,y,back);
 		} else {
-			con->setBack(x+boxx+pos-offset,y,back);
-			con->setFore(x+boxx+pos-offset,y,fore);
+			con->setCharBackground(x+boxx+pos-offset,y,back);
+			con->setCharForeground(x+boxx+pos-offset,y,fore);
 		}
 	}
 }

@@ -9,7 +9,7 @@ Image::~Image() {
 }
 
 void Image::render() {
-	con->setBackgroundColor(back);
+	con->setDefaultBackground(back);
 	con->rect(x,y,w,h,TCOD_BKGND_SET);
 }
 

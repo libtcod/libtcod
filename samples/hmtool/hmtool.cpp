@@ -361,21 +361,21 @@ void changeColorMapIdxCbk(Widget *w, float val, void *data) {
 void changeColorMapRedCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].r=(int)(val);
-	keyImages[i]->setDefaultBackground(keyColor[i]);
+	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapGreenCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].g=(int)(val);
-	keyImages[i]->setDefaultBackground(keyColor[i]);
+	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapBlueCbk(Widget *w, float val, void *data) {
 	intptr i=(intptr)data;
 	keyColor[i].b=(int)(val);
-	keyImages[i]->setDefaultBackground(keyColor[i]);
+	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
@@ -399,7 +399,7 @@ void changeColorMapCbk(Widget *w, void *data) {
 		idxSlider->setCallback(changeColorMapIdxCbk,(void *)i);
 		vbox->addWidget(idxSlider);
 		keyImages[i]=new Image(0,0,0,2);
-		keyImages[i]->setDefaultBackground(keyColor[i]);
+		keyImages[i]->setBackgroundColor(keyColor[i]);
 		vbox->addWidget(keyImages[i]);
 		hbox->addWidget(vbox);
 

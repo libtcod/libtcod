@@ -268,9 +268,9 @@ class TCODLIB_API TCODRandom {
 			float getGaussianRangeFloat (float min, float max)
 			int getGaussianRangeInt (int min, int max)
 
-			double getGaussianRangeDouble (double min, double max, double mean)
-			float getGaussianRangeFloat (float min, float max, float mean)
-			int getGaussianRangeInt (int min, int max, int mean)
+			double getGaussianRangeDoubleCustom (double min, double max, double mean)
+			float getGaussianRangeFloatCustom (float min, float max, float mean)
+			int getGaussianRangeIntCustom (int min, int max, int mean)
 
 			//simplified API:
 

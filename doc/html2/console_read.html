@@ -34,45 +34,45 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
 </tbody></table><a name="2"></a><h3>Reading the default background color</h3>
-<p>This function returns the default background color of a console. <br />	</p>
-<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getBackgroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
-<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_background_color<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
-<p class="py">console_get_background_color<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
+<p>This function returns the default background color of a console.<br />	</p>
+<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getDefaultBackground<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_default_background<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
+<p class="py">console_get_default_background<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
 <p class="cs">TCODColor TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getBackgroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="lua">Console<span class="code-symbol">:</span>getBackgroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
 </tbody></table><a name="3"></a><h3>Reading the default foreground color</h3>
-<p>This function returns the default foreground color of a console. <br />	</p>
-<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getForegroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
-<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_foreground_color<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
-<p class="py">console_get_foreground_color<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
+<p>This function returns the default foreground color of a console.<br />	</p>
+<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getDefaultForeground<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_default_foreground<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
+<p class="py">console_get_default_foreground<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
 <p class="cs">TCODColor TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getForegroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="lua">Console<span class="code-symbol">:</span>getForegroundColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
 </tbody></table><a name="4"></a><h3>Reading the background color of a cell</h3>
-<p>This function returns the background color of a cell. <br />	</p>
-<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getBack<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
-<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_back<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
-<p class="py">console_get_back<span class="code-symbol">(</span>con<span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">)</span></p>
+<p>This function returns the background color of a cell.<br />	</p>
+<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getCharBackground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_char_background<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="py">console_get_char_background<span class="code-symbol">(</span>con<span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">)</span></p>
 <p class="cs">TCODColor TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getCharBackground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="lua">Console<span class="code-symbol">:</span><span class="code-symbol">:</span>getCharBackground<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
 <tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
 </tbody></table><a name="5"></a><h3>Reading the foreground color of a cell</h3>
-<p>This function returns the foreground color of a cell. <br />	</p>
-<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getFore<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
-<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_fore<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
-<p class="py">console_get_fore<span class="code-symbol">(</span>con<span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">)</span></p>
+<p>This function returns the foreground color of a cell.<br />	</p>
+<div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getCharForeground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_char_foreground<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="py">console_get_char_foreground<span class="code-symbol">(</span>con<span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">)</span></p>
 <p class="cs">TCODColor TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>getCharForeground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="lua">Console<span class="code-symbol">:</span><span class="code-symbol">:</span>getCharForeground<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
 <tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
 </tbody></table><a name="6"></a><h3>Reading the ASCII code of a cell</h3>
-<p>This function returns the ASCII code of a cell. <br />	</p>
+<p>This function returns the ASCII code of a cell.<br />	</p>
 <div class="code"><p class="cpp">TCODColor TCODConsole<span class="code-symbol">::</span>getChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
 <p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_console_get_char<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="py">console_get_char<span class="code-symbol">(</span>con<span class="code-symbol">,</span>x<span class="code-symbol">,</span>y<span class="code-symbol">)</span></p>

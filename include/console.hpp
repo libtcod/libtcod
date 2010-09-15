@@ -696,7 +696,10 @@ public :
 	@C# int TCODConsole::printRect(int x, int y, int w, int h, string fmt)
 	@Lua Console:printRect(x, y, w, h, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param x,y coordinate of the rectangle upper-left corner in the console
+	@Param x,y coordinate of the character in the console, depending on the alignment :
+		* TCOD_LEFT : leftmost character of the string
+		* TCOD_CENTER : center character of the string
+		* TCOD_RIGHT : rightmost character of the string
 	@Param w,h size of the rectangle
 		x <= x+w < console width
 		y <= y+h < console height
@@ -717,7 +720,10 @@ public :
 	@C# int TCODConsole::printRectEx(int x, int y, int w, int h, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
 	@Lua Console:printRectEx(x, y, w, h, flag, alignment, fmt)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param x,y coordinate of the rectangle upper-left corner in the console
+	@Param x,y coordinate of the character in the console, depending on the alignment :
+		* TCOD_LEFT : leftmost character of the string
+		* TCOD_CENTER : center character of the string
+		* TCOD_RIGHT : rightmost character of the string
 	@Param w,h size of the rectangle
 		x <= x+w < console width
 		y <= y+h < console height

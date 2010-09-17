@@ -71,6 +71,11 @@ char *strcasestr (const char *haystack, const char *needle) {
 }
 #endif
 
+void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy) {
+	if ( offx ) *offx = TCOD_ctx.fullscreen_offsetx;
+	if ( offy ) *offy = TCOD_ctx.fullscreen_offsety;
+}
+
 bool TCOD_sys_create_directory(const char *path) {
 #ifdef TCOD_WINDOWS
 	return (CreateDirectory(path,NULL) != 0 || GetLastError() == ERROR_ALREADY_EXISTS);

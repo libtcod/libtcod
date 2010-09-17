@@ -308,6 +308,16 @@ public :
 	static void getCurrentResolution(int *w, int *h);
 	/**
 	@PageName system_misc
+	@FuncTitle Get fullscreen offset
+	@FuncDesc If the fullscreen resolution does not matches the console size in pixels, black borders are added. This function returns the position in pixels of the console top left corner in the screen. 
+	@Cpp static void TCODSystem::getFullscreenOffsets(int *offx, int *offy)
+	@C void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy)
+	@C# static void TCODSystem::getFullscreenOffsets(out int offx, out int offy);
+	@Param offx,offy contains the position of the console on the screen when using fullscreen mode.
+	*/
+	static void getFullscreenOffsets(int *offx, int *offy);
+	/**
+	@PageName system_misc
 	@FuncTitle Get the font size
 	@FuncDesc You can get the size of the characters in the font
 	@Cpp static void TCODSystem::getCharSize(int *width, int *height)

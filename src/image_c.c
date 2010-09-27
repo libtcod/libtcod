@@ -702,17 +702,17 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 			grid[0]=TCOD_image_get_pixel(image,cx,cy);
 			if ( img->has_key_color && grid[0].r == img->key_color.r  && grid[0].g == img->key_color.g && grid[0].b == img->key_color.b)
 				grid[0]=consoleBack;
-			if ( cx < w-1 ) {
+			if ( cx < maxx-1 ) {
 				grid[1]=TCOD_image_get_pixel(image,cx+1,cy);
 				if ( img->has_key_color && grid[1].r == img->key_color.r  && grid[1].g == img->key_color.g && grid[1].b == img->key_color.b)
 					grid[1]=consoleBack;
 			} else grid[1]=consoleBack;
-			if ( cy < h-1 ) {
+			if ( cy < maxy-1 ) {
 				grid[2]=TCOD_image_get_pixel(image,cx,cy+1);
 				if ( img->has_key_color && grid[2].r == img->key_color.r  && grid[2].g == img->key_color.g && grid[2].b == img->key_color.b)
 					grid[2]=consoleBack;
 			} else grid[2]=consoleBack;
-			if ( cx < w-1 && cy < h-1 ) {
+			if ( cx < maxx-1 && cy < maxy-1 ) {
 				grid[3]=TCOD_image_get_pixel(image,cx+1,cy+1);
 				if ( img->has_key_color && grid[3].r == img->key_color.r  && grid[3].g == img->key_color.g && grid[3].b == img->key_color.b)
 					grid[3]=consoleBack;

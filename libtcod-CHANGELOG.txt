@@ -70,6 +70,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed TCODDijkstra destructor crash bug
 - fixed TCODColor::setHSV bug when using hues below 0 or above 359 grades
 - fixed some rare issues in A* pathfinding 
+- fixed issue in TCODImage::blit2x when blitting only a subregion of the image
 =========================================================
 1.5.0 : 2010 Feb 15
 X TCODRandom::getIntFromByteArray has been deleted    

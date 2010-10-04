@@ -1473,6 +1473,9 @@ def path_get_destination(p):
 def path_size(p):
     return _lib.TCOD_path_size(p)
 
+def path_reverse(p):
+    _lib.TCOD_path_reverse(p)	
+	
 def path_get(p, idx):
     x = c_int()
     y = c_int()
@@ -1517,6 +1520,9 @@ def dijkstra_get_distance(p, x, y):
 
 def dijkstra_size(p):
     return _lib.TCOD_dijkstra_size(p)
+
+def dijkstra_reverse(p):
+    _lib.TCOD_dijkstra_reverse(p)
 
 def dijkstra_get(p, idx):
     x = c_int()

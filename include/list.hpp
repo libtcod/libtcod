@@ -393,6 +393,38 @@ public :
 	}
 
 	/**
+	@PageName list_list
+	@FuncTitle Reversing a list
+	@FuncDesc This function reverses the order of the elements in the list.</b>
+	@Cpp 
+		void TCODList::reverse()
+	@C 
+		void TCOD_list_reverse(TCOD_list_t l)
+	@Param l	In the C version, the list handler, returned by a constructor.
+	@CppEx 
+		TCODList<int> intList; // the list is empty (contains 0 elements)
+		intList.push(5); // the list contains 1 element at position 0, value = 5
+		intList.push(2); // the list contains 2 elements : 5,2
+		intList.reverse(); // now order is 2,5
+	@CEx 
+		TCOD_list_t intList = TCOD_list_new();
+		TCOD_list_push(intList,(const void *)5);
+		TCOD_list_push(intList,(const void *)2);
+		TCOD_list_reverse();
+	*/
+	void reverse() {
+		T* head = begin();
+		T* tail = end();
+		while ( head < tail ) {
+			T tmp = *head;
+			*head=*tail;
+			*tail=tmp;
+			head++;
+			tail--;
+		}
+	}
+
+	/**
 	@PageName list_stack
 	@PageTitle Basic stack operations
 	@PageFather list

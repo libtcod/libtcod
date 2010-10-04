@@ -59,6 +59,10 @@ bool TCODPath::isEmpty() const {
 	return TCOD_path_is_empty(data) != 0;
 }
 
+void TCODPath::reverse() {
+	TCOD_path_reverse(data);
+}
+
 int TCODPath::size() const {
 	return TCOD_path_size(data);
 }
@@ -110,6 +114,10 @@ float TCODDijkstra::getDistance (int x, int y) {
 //create a path
 bool TCODDijkstra::setPath (int toX, int toY) {
     return (TCOD_dijkstra_path_set(data,toX,toY) != 0);
+}
+
+void TCODDijkstra::reverse() {
+	TCOD_dijkstra_reverse(data);
 }
 
 //walk a path

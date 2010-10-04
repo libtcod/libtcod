@@ -36,6 +36,7 @@ typedef unsigned char dir_t;
 /* convert dir_t to dx,dy */
 static int dirx[]={-1,0,1,-1,0,1,-1,0,1};
 static int diry[]={-1,-1,-1,0,0,0,1,1,1};
+static int invdir[] = {SOUTH_EAST,SOUTH,SOUTH_WEST,EAST,NONE,WEST,NORTH_EAST,NORTH,NORTH_WEST};
 
 typedef struct {
 	int ox,oy; /* coordinates of the creature position */
@@ -274,6 +275,23 @@ bool TCOD_path_compute(TCOD_path_t p, int ox,int oy, int dx, int dy) {
 		dy -= diry[step];
 	} while ( dx != ox || dy != oy );
 	return true;
+}
+
+void TCOD_path_reverse(TCOD_path_t p) {
+	int tmp,i;
+	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
+	TCOD_IFNOT(p != NULL) return ;
+	tmp=path->ox;
+	path->ox=path->dx;
+	path->dx=tmp;
+	tmp=path->oy;
+	path->oy=path->dy;
+	path->dy=tmp;
+	for (i=0; i < TCOD_list_size(path->path); i++) {
+		int d=(int)(uintptr)TCOD_list_get(path->path,i);
+		d = invdir[d];
+		TCOD_list_set(path->path,(void *)(uintptr)d,i);
+	}
 }
 
 bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed) {
@@ -613,6 +631,12 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 	/* remove the last step */
 	TCOD_list_pop(data->path);
 	return true;
+}
+
+void TCOD_dijkstra_reverse(TCOD_dijkstra_t dijkstra) {
+	dijkstra_t * data = (dijkstra_t*)dijkstra;
+	TCOD_IFNOT(data != NULL) return;
+	TCOD_list_reverse(data->path);
 }
 
 /* walk the path */

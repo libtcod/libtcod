@@ -38,6 +38,7 @@ TCODLIB_API bool TCOD_path_compute(TCOD_path_t path, int ox,int oy, int dx, int 
 TCODLIB_API bool TCOD_path_walk(TCOD_path_t path, int *x, int *y, bool recalculate_when_needed);
 TCODLIB_API bool TCOD_path_is_empty(TCOD_path_t path);
 TCODLIB_API int TCOD_path_size(TCOD_path_t path);
+TCODLIB_API void TCOD_path_reverse(TCOD_path_t path);
 TCODLIB_API void TCOD_path_get(TCOD_path_t path, int index, int *x, int *y);
 TCODLIB_API void TCOD_path_get_origin(TCOD_path_t path, int *x, int *y);
 TCODLIB_API void TCOD_path_get_destination(TCOD_path_t path, int *x, int *y);
@@ -54,6 +55,7 @@ TCODLIB_API float TCOD_dijkstra_get_distance (TCOD_dijkstra_t dijkstra, int x, i
 TCODLIB_API bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y);
 TCODLIB_API bool TCOD_dijkstra_is_empty(TCOD_dijkstra_t path);
 TCODLIB_API int TCOD_dijkstra_size(TCOD_dijkstra_t path);
+TCODLIB_API void TCOD_dijkstra_reverse(TCOD_dijkstra_t path);
 TCODLIB_API void TCOD_dijkstra_get(TCOD_dijkstra_t path, int index, int *x, int *y);
 TCODLIB_API bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y);
 TCODLIB_API void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra);

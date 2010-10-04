@@ -229,6 +229,42 @@ public :
 	bool compute(int ox, int oy, int dx, int dy);
 
 	/**
+	@PageName path_compute
+	@FuncTitle Reversing a path
+	@FuncDesc Once you computed a path, you can exchange origin and destination :
+	@Cpp 
+		void TCODPath::reverse()     
+		void TCODDijkstra::reverse()
+	@C 
+		void TCOD_path_reverse(TCOD_path_t path)
+		void TCOD_dijkstra_reverse(TCOD_dijkstra_t dijkstra)
+	@Py 
+		path_reverse(path)
+		dijkstra_reverse(dijkstra)
+	@C#	
+		void TCODPath::reverse()
+		void TCODDijkstra::reverse()
+	@Param path	In the C version, the path handler returned by a creation function.
+	@CppEx 
+		TCODMap *myMap = new TCODMap(50,50);
+		TCODPath *path = new TCODPath(myMap); // allocate the path
+		path->compute(5,5,25,25); // calculate path from 5,5 to 25,25
+		path->reverse(); // now the path goes from 25,25 to 5,5
+	@CEx 
+		TCOD_map_t my_map=TCOD_map_new(50,50);
+		TCOD_path_t path = TCOD_path_new_using_map(my_map);
+		TCOD_path_compute(path,5,5,25,25); // calculate path from 5,5 to 25,25
+		TCOD_path_reverse(path); // now the path goes from 25,25 to 5,5
+	@PyEx 
+		my_map=libtcod.map_new(50,50)
+		path = libtcod.path_new_using_map(my_map)
+		libtcod.path_compute(path,5,5,25,25) # calculate path from 5,5 to 25,25
+		libtcod.path_reverse(path) # now the path goes from 25,25 to 5,5
+	*/
+	void reverse();
+	
+
+	/**
 	@PageName path_read
 	@PageTitle Reading path information
 	@PageFather path
@@ -501,6 +537,7 @@ class TCODLIB_API TCODDijkstra {
         float getDistance (int x, int y);
         bool walk (int *x, int *y);
 		bool isEmpty() const;
+		void reverse();
 		int size() const;
 		void get(int index, int *x, int *y) const;
     private:

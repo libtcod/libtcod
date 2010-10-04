@@ -118,6 +118,17 @@ void ** TCOD_list_end(TCOD_list_t l) {
 	if ( LIST(l)->fillSize == 0 ) return (void **)NULL;
 	return &LIST(l)->array[LIST(l)->fillSize];
 }
+void TCOD_list_reverse(TCOD_list_t l) {
+	void **head=TCOD_list_begin(l);
+	void **tail=TCOD_list_end(l);
+	while ( head < tail ) {
+		void *tmp=*head;
+		*head=*tail;
+		*tail=tmp;
+		head++;
+		tail--;
+	}
+}
 void **TCOD_list_remove_iterator(TCOD_list_t l, void **elt) {
 	void **curElt;
 	for ( curElt = elt; curElt < TCOD_list_end(l)-1; curElt ++) {

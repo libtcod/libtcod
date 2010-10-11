@@ -150,8 +150,8 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
     FindClose(hList);
 #else
     DIR *dir = opendir(path);
-    if ( ! dir ) return list;
     struct dirent *dirent = NULL;
+    if ( ! dir ) return list;
     while ( ( dirent = readdir(dir) ) )
     {
 		if ( ! (strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 ) )
@@ -296,10 +296,11 @@ TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data)
 	return (TCOD_thread_t)ret;
 #else
 	pthread_t id;
+	int iret;
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
-	int iret =pthread_create(&id,&attr,(void *(*)(void *))func,data);
+	iret =pthread_create(&id,&attr,(void *(*)(void *))func,data);
 	if ( iret != 0 ) id=0;
 	return (TCOD_thread_t)id;
 #endif
@@ -614,6 +615,15 @@ char *TCOD_sys_clipboard_get()
 		}
 	}
 	return clipboardText;
+}
+#elif defined(TCOD_HAIKU)
+/* TODO */
+void TCOD_sys_clipboard_set(const char *value)
+{
+}
+char *TCOD_sys_clipboard_get()
+{
+	return "";
 }
 #else
 static Display *dpy=NULL;

@@ -272,43 +272,13 @@ float TCOD_noise_turbulence_simplex( TCOD_noise_t noise, float *f, float octaves
 /* simplex noise, adapted from Ken Perlin's presentation at Siggraph 2001 */
 /* and Stefan Gustavson implementation */
 
-#define TCOD_NOISE_SIMPLEX_GRADIENT_1D(n,h,x) { \
-	float grad; \
-	h &= 0xF; \
-	grad=1.0f+(h & 7); \
-	if ( h & 8 ) grad = -grad; \
-	n = grad * x; \
-}
+#define TCOD_NOISE_SIMPLEX_GRADIENT_1D(n,h,x) { float grad; h &= 0xF; grad=1.0f+(h & 7); if ( h & 8 ) grad = -grad; n = grad * x; }
 
-#define TCOD_NOISE_SIMPLEX_GRADIENT_2D(n,h,x,y) { \
-	float u,v; \
-	h &= 0x7; \
-	if ( h < 4 ) { \
-		u=x; \
-		v=2.0f*y; \
-	} else { \
-		u=y; \
-		v=2.0f*x; \
-	} \
-	n = ((h & 1) ? -u : u) + ((h & 2) ? -v :v ); \
-}
+#define TCOD_NOISE_SIMPLEX_GRADIENT_2D(n,h,x,y) { float u,v; h &= 0x7; if ( h < 4 ) { u=x; v=2.0f*y; } else { u=y; v=2.0f*x; } n = ((h & 1) ? -u : u) + ((h & 2) ? -v :v ); }
 
-#define TCOD_NOISE_SIMPLEX_GRADIENT_3D(n,h,x,y,z) { \
-	float u,v; \
-	h &= 0xF; \
-	u = (h < 8 ? x : y); \
-	v = (h < 4 ? y : ( h == 12 || h == 14 ? x : z ) ); \
-	n= ((h & 1) ? -u : u ) + ((h & 2) ? -v : v); \
-}
+#define TCOD_NOISE_SIMPLEX_GRADIENT_3D(n,h,x,y,z) { float u,v; h &= 0xF; u = (h < 8 ? x : y); v = (h < 4 ? y : ( h == 12 || h == 14 ? x : z ) ); n= ((h & 1) ? -u : u ) + ((h & 2) ? -v : v); }
 
-#define TCOD_NOISE_SIMPLEX_GRADIENT_4D(n,h,x,y,z,t) { \
-	float u,v,w; \
-	h &= 0x1F; \
-	u = (h < 24 ? x:y); \
-	v = (h < 16 ? y:z); \
-	w = (h < 8 ? z:t); \
-	n= ((h & 1) ? -u : u ) + ((h & 2) ? -v : v) + ((h & 4) ? -w : w);\
-}
+#define TCOD_NOISE_SIMPLEX_GRADIENT_4D(n,h,x,y,z,t) { float u,v,w; h &= 0x1F; u = (h < 24 ? x:y); v = (h < 16 ? y:z); w = (h < 8 ? z:t); n= ((h & 1) ? -u : u ) + ((h & 2) ? -v : v) + ((h & 4) ? -w : w);}
 
 static float simplex[64][4] = {
 	{0,1,2,3},{0,1,3,2},{0,0,0,0},{0,2,3,1},{0,0,0,0},{0,0,0,0},{0,0,0,0},{1,2,3,0},

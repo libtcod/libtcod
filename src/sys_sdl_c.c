@@ -28,7 +28,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#ifdef __HAIKU__
+#include <SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
 #include "libtcod.h"
 #include "libtcod_int.h"
 

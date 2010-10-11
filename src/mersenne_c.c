@@ -109,17 +109,7 @@ static uint32 hash(const char *data,int len) {
 */
 
 /* get a random number from the CMWC */
-#define CMWC_GET_NUMBER(num) { \
-    unsigned long long t; \
-    uint32 x; \
-    r->cur=(r->cur+1)&4095; \
-    t=18782LL*r->Q[r->cur]+r->c; \
-    r->c=(t>>32); \
-    x=(uint32)(t+r->c); \
-    if (x < r->c) { x++; r->c++; } \
-    if((x+1)==0) { r->c++; x=0; } \
-    num = (uint32)(r->Q[r->cur] = 0xfffffffe - x); \
-}
+#define CMWC_GET_NUMBER(num) { unsigned long long t; uint32 x; r->cur=(r->cur+1)&4095; t=18782LL*r->Q[r->cur]+r->c; r->c=(t>>32); x=(uint32)(t+r->c); if (x < r->c) { x++; r->c++; } if((x+1)==0) { r->c++; x=0; } num = (uint32)(r->Q[r->cur] = 0xfffffffe - x); }
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
     return TCOD_random_new_from_seed(algo,(uint32)time(0));

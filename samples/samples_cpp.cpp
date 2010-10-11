@@ -13,7 +13,12 @@
 #include <math.h>
 #include "libtcod.hpp"
 #define _SDL_main_h
-#include "SDL/SDL.h"
+#ifdef __HAIKU__
+#include <SDL.h>
+#else
+#include <SDL/SDL.h>
+#endif
+
 
 // a sample has a name and a rendering function
 typedef struct {

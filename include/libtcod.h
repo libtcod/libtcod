@@ -37,7 +37,8 @@
 /* os identification
    TCOD_WINDOWS : OS is windows
    TCOD_LINUX : OS is Linux
-   TCOD_MACOSX : OS is Mac OS X */
+   TCOD_MACOSX : OS is Mac OS X 
+   TCOD_HAIKU : OS is Haiku */
 
 /* compiler identification
    TCOD_VISUAL_STUDIO : compiler is Microsoft Visual Studio
@@ -64,6 +65,12 @@
 #  define TCOD_WINDOWS
 #  define TCOD_MINGW32
 #  define TCOD_WIN32
+#elif defined( __HAIKU__ )
+#  define TCOD_HAIKU
+#  define TCOD_GCC
+#  if __WORDSIZE == 64
+#    define TCOD_64BITS
+#  endif
 #elif defined( __linux )
 #  define TCOD_LINUX
 #  define TCOD_GCC
@@ -141,7 +148,7 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #if defined(TCOD_WINDOWS)
 char *strcasestr (const char *haystack, const char *needle);
 #endif
-#ifdef TCOD_LINUX
+#if defined(TCOD_LINUX) || defined(TCOD_HAIKU)
 #define vsnwprintf vswprintf
 #endif
 #ifdef TCOD_MACOSX

@@ -25,12 +25,16 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef __HAIKU__
+#include <SDL.h>
+#else
 #include <SDL/SDL.h>
+#endif
 #include <png.h>
 #include "libtcod.h"
 #include "libtcod_int.h"
 
-#ifdef TCOD_MACOSX
+#if defined( TCOD_MACOSX ) || defined( TCOD_HAIKU ) 
 #define png_infopp_NULL (png_infop)NULL
 #define int_p_NULL (int*)NULL
 #endif

@@ -86,7 +86,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="lua">Console<span class="code-symbol">:</span>printRect<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> w<span class="code-symbol">,</span> h<span class="code-symbol">,</span> fmt<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
-<tr><td>x,y</td><td>coordinate of the rectangle upper-left corner in the console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinate of the character in the console, depending on the alignment :<br />		* TCOD_LEFT : leftmost character of the string<br />		* TCOD_CENTER : center character of the string<br />		* TCOD_RIGHT : rightmost character of the string<br />	</td></tr>
 <tr class="hilite"><td>w,h</td><td>size of the rectangle<br />		x <= x+w < console width<br />		y <= y+h < console height<br />	</td></tr>
 <tr><td>fmt</td><td>printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.<br />	</td></tr>
 </tbody></table><a name="7"></a><h3>Printing a string with specific alignment and background mode and autowrap</h3>
@@ -98,7 +98,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="lua">Console<span class="code-symbol">:</span>printRectEx<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> w<span class="code-symbol">,</span> h<span class="code-symbol">,</span> flag<span class="code-symbol">,</span> alignment<span class="code-symbol">,</span> fmt<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
-<tr><td>x,y</td><td>coordinate of the rectangle upper-left corner in the console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinate of the character in the console, depending on the alignment :<br />		* TCOD_LEFT : leftmost character of the string<br />		* TCOD_CENTER : center character of the string<br />		* TCOD_RIGHT : rightmost character of the string<br />	</td></tr>
 <tr class="hilite"><td>w,h</td><td>size of the rectangle<br />		x <= x+w < console width<br />		y <= y+h < console height<br />	</td></tr>
 <tr><td>flag</td><td>this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t<br />	</td></tr>
 <tr class="hilite"><td>alignment</td><td>defines how the strings are printed on screen.<br />	</td></tr>

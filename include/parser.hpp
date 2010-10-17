@@ -70,7 +70,7 @@ The parser is not sensible to space characters, tabulations or carriage return e
 	weight=3.5                 // a float property
 	deal_damage=true           // a boolean property
 	damages="3d6+2"            // a dice property
-	color="#FF0000"            // a color property, using #RRGGBB syntax
+	col="#FF0000"              // a color property, using #RRGGBB syntax
 	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax
 	damage_type="slash"        // a string property
 	description="This is a long"
@@ -94,6 +94,21 @@ A structure can also contain other structures either of the same type, or struct
 	}
 }
 </pre></div>
+Sometimes, you don't know the list of properties at compile-time. Fortunately, since libtcod 1.5.1, you can add auto-declaring properties in the file, using one of the type keywords :
+<div class="code"><pre>item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'
+	bool deal_damage=true
+	char character='@'
+	int cost=300
+	float weight=3.5
+	string damage_type="slash"
+	color col="#FF0000"
+	dice damages="3d6+2"
+    int[] intList= [ 1,2,3 ]
+    float[] floatList= [ 1.0,2,3.5 ]
+    string[] stringList= [ "string1","string2","string3" ]
+}
+</pre></div>
+The properties declared with this syntax are not prealably declared for the structure item_type. But since the type is specified, the parser won't reject them. Instead, it will add the property declaration to the structure dynamically (when it parses the file).  
 */
 
 class TCODLIB_API TCODParser;

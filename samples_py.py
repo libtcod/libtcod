@@ -31,7 +31,7 @@ sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 if True:
     print '***** File Parser test *****'
     parser=libtcod.parser_new()
-    struct=libtcod.parser_new_struct(parser, 'struct')
+    struct=libtcod.parser_new_struct(parser, 'myStruct')
     libtcod.struct_add_property(struct, 'bool_field', libtcod.TYPE_BOOL, True)
     libtcod.struct_add_property(struct, 'char_field', libtcod.TYPE_CHAR, True)
     libtcod.struct_add_property(struct, 'int_field', libtcod.TYPE_INT, True)
@@ -60,39 +60,39 @@ if True:
     print '***** Default listener *****'
     libtcod.parser_run(parser, os.path.join('data','cfg','sample.cfg'))
     print 'bool_field : ', \
-          libtcod.parser_get_bool_property(parser, 'struct.bool_field')
+          libtcod.parser_get_bool_property(parser, 'myStruct.bool_field')
     print 'char_field : ', \
-          libtcod.parser_get_char_property(parser, 'struct.char_field')
+          libtcod.parser_get_char_property(parser, 'myStruct.char_field')
     print 'int_field : ', \
-          libtcod.parser_get_int_property(parser, 'struct.int_field')
+          libtcod.parser_get_int_property(parser, 'myStruct.int_field')
     print 'float_field : ', \
-          libtcod.parser_get_float_property(parser, 'struct.float_field')
+          libtcod.parser_get_float_property(parser, 'myStruct.float_field')
     print 'color_field : ', \
-          libtcod.parser_get_color_property(parser, 'struct.color_field')
+          libtcod.parser_get_color_property(parser, 'myStruct.color_field')
     print 'dice_field : ', \
-          libtcod.parser_get_dice_property(parser, 'struct.dice_field')
+          libtcod.parser_get_dice_property(parser, 'myStruct.dice_field')
     print 'string_field : ', \
-          libtcod.parser_get_string_property(parser, 'struct.string_field')
+          libtcod.parser_get_string_property(parser, 'myStruct.string_field')
     print 'bool_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.bool_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.bool_list',
                                                            libtcod.TYPE_BOOL)
     print 'char_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.char_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.char_list',
                                                            libtcod.TYPE_CHAR)
     print 'integer_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.integer_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.integer_list',
                                                            libtcod.TYPE_INT)
     print 'float_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.float_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.float_list',
                                                            libtcod.TYPE_FLOAT)
     print 'string_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.string_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.string_list',
                                                            libtcod.TYPE_STRING)
     print 'color_list : ', \
-          libtcod.parser_get_list_property(parser, 'struct.color_list',
+          libtcod.parser_get_list_property(parser, 'myStruct.color_list',
                                                            libtcod.TYPE_COLOR)
 ##    print 'dice_list : ', \
-##          libtcod.parser_get_list_property(parser, 'struct.dice_list',
+##          libtcod.parser_get_list_property(parser, 'myStruct.dice_list',
 ##                                                           libtcod.TYPE_DICE)
 
     # custom listener

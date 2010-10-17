@@ -51,6 +51,10 @@ static const char *symbols[] = {
 	"{","}","=","/","+","-","[","]",",","#",NULL
 };
 
+static const char *keywords[] = {
+	"struct","bool","char","int","float","string","color","dice",NULL
+};
+
 static TCOD_parser_listener_t *listener=NULL;
 
 static bool default_new_struct(TCOD_parser_struct_t str,const char *name);
@@ -446,6 +450,32 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 	while ( strcmp(lex->tok,"}") != 0 ) {
 		bool found=false;
 		char **iflag;
+		TCOD_value_type_t dynType = TCOD_TYPE_NONE;
+		if ( lex->token_type == TCOD_LEX_KEYWORD ) {
+			/* dynamic property declaration */
+			if ( strcmp(lex->tok,"bool") == 0 ) dynType=TCOD_TYPE_BOOL;
+			else if ( strcmp(lex->tok,"char") == 0 ) dynType=TCOD_TYPE_CHAR;
+			else if ( strcmp(lex->tok,"int") == 0 ) dynType=TCOD_TYPE_INT;
+			else if ( strcmp(lex->tok,"float") == 0 ) dynType=TCOD_TYPE_FLOAT;
+			else if ( strcmp(lex->tok,"string") == 0 ) dynType=TCOD_TYPE_STRING;
+			else if ( strcmp(lex->tok,"color") == 0 ) dynType=TCOD_TYPE_COLOR;
+			else if ( strcmp(lex->tok,"dice") == 0 ) dynType=TCOD_TYPE_DICE;
+			else {
+				TCOD_parser_error("Parser::parseEntity : dynamic declaration of '%s' not supported",lex->tok);
+				return false;
+			}
+			/* TODO : dynamically declared sub-structures */
+			TCOD_lex_parse(lex);
+			if ( strcmp(lex->tok,"[") == 0 ) {
+				TCOD_lex_parse(lex);
+				if ( strcmp(lex->tok,"]") != 0 ) {
+					TCOD_parser_error("Parser::parseEntity : syntax error. ']' expected instead of '%s'",lex->tok);
+					return false;
+				}
+				dynType |= TCOD_TYPE_LIST;
+				TCOD_lex_parse(lex);
+			}
+		}
 		/* parse entity type content */
 		if ( lex->token_type != TCOD_LEX_IDEN ) {
 			TCOD_parser_error("Parser::parseEntity : identifier expected");
@@ -459,26 +489,32 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 				break;
 			}
 		}
-		if (!found ) {
-			/* is it a property ? */
-			TCOD_struct_prop_t **iprop;
-			for (iprop=(TCOD_struct_prop_t **)TCOD_list_begin(def->props); iprop!=(TCOD_struct_prop_t **)TCOD_list_end(def->props);iprop++) {
-				if ( strcmp((*iprop)->name,lex->tok) == 0 ) {
-					char propname[BIG_NAME_LEN];
-					string_copy(propname,lex->tok,BIG_NAME_LEN);
-					TCOD_lex_parse(lex);
-					if ( strcmp(lex->tok,"=") != 0 ) {
-						TCOD_parser_error("Parser::parseEntity : '=' expected");
-						return false;
+		if (!found) {
+			do {
+				/* is it a property ? */
+				TCOD_struct_prop_t **iprop;
+				for (iprop=(TCOD_struct_prop_t **)TCOD_list_begin(def->props); iprop!=(TCOD_struct_prop_t **)TCOD_list_end(def->props);iprop++) {
+					if ( strcmp((*iprop)->name,lex->tok) == 0 ) {
+						char propname[BIG_NAME_LEN];
+						string_copy(propname,lex->tok,BIG_NAME_LEN);
+						TCOD_lex_parse(lex);
+						if ( strcmp(lex->tok,"=") != 0 ) {
+							TCOD_parser_error("Parser::parseEntity : '=' expected");
+							return false;
+						}
+						TCOD_lex_parse(lex);
+						if (!listener->new_property(propname,TCOD_struct_get_type(def,propname),
+							TCOD_parse_property_value(parser, (TCOD_parser_struct_t *)def,propname,true))) return false;
+						if ( lex->token_type == TCOD_LEX_ERROR ) return false;
+						found=true;
+						break;
 					}
-					TCOD_lex_parse(lex);
-					if (!listener->new_property(propname,TCOD_struct_get_type(def,propname),
-						TCOD_parse_property_value(parser, (TCOD_parser_struct_t *)def,propname,true))) return false;
-					if ( lex->token_type == TCOD_LEX_ERROR ) return false;
-					found=true;
-					break;
 				}
-			}
+				if ( dynType != TCOD_TYPE_NONE ) {
+					/* dynamically add a property to the current structure */
+					TCOD_struct_add_property(def,lex->tok,dynType,false);
+				}
+			} while ( ! found && dynType != TCOD_TYPE_NONE);
 		}
 		if (! found ) {
 			/* is it a sub-entity type */
@@ -605,7 +641,7 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 	if (! _listener && ! p->props ) p->props=TCOD_list_new();
 	listener=_listener ? _listener : &default_listener;
 	default_props = p->props;
-	lex=TCOD_lex_new(symbols,NULL,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT);
+	lex=TCOD_lex_new(symbols,keywords,"//","/*","*/",NULL,"\"",TCOD_LEX_FLAG_NESTING_COMMENT);
 	if (!TCOD_lex_set_data_file(lex,(char *)filename)) {
 		char buf[1024];
 		sprintf(buf,"Fatal error : %s\n",TCOD_lex_get_last_error());

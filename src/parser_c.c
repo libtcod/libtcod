@@ -450,6 +450,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 	while ( strcmp(lex->tok,"}") != 0 ) {
 		bool found=false;
 		char **iflag;
+		bool dynStruct=false;
 		TCOD_value_type_t dynType = TCOD_TYPE_NONE;
 		if ( lex->token_type == TCOD_LEX_KEYWORD ) {
 			/* dynamic property declaration */
@@ -460,6 +461,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			else if ( strcmp(lex->tok,"string") == 0 ) dynType=TCOD_TYPE_STRING;
 			else if ( strcmp(lex->tok,"color") == 0 ) dynType=TCOD_TYPE_COLOR;
 			else if ( strcmp(lex->tok,"dice") == 0 ) dynType=TCOD_TYPE_DICE;
+			else if ( strcmp(lex->tok,"struct") == 0 ) dynStruct=true;
 			else {
 				TCOD_parser_error("Parser::parseEntity : dynamic declaration of '%s' not supported",lex->tok);
 				return false;
@@ -467,6 +469,10 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			/* TODO : dynamically declared sub-structures */
 			TCOD_lex_parse(lex);
 			if ( strcmp(lex->tok,"[") == 0 ) {
+				if ( dynType == TCOD_TYPE_NONE ) {
+					TCOD_parser_error("Parser::parseEntity : unexpected symbol '['");
+					return false;
+				}
 				TCOD_lex_parse(lex);
 				if ( strcmp(lex->tok,"]") != 0 ) {
 					TCOD_parser_error("Parser::parseEntity : syntax error. ']' expected instead of '%s'",lex->tok);
@@ -482,14 +488,16 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 			return false;
 		}
 		/* is it a flag ? */
-		for (iflag=(char **)TCOD_list_begin(def->flags);iflag!=(char **)TCOD_list_end(def->flags); iflag++) {
-			if ( strcmp(*iflag,lex->tok) == 0 ) {
-				found=true;
-				if (!listener->new_flag(lex->tok)) return false;
-				break;
+		if (! dynStruct && dynType == TCOD_TYPE_NONE) {
+			for (iflag=(char **)TCOD_list_begin(def->flags);iflag!=(char **)TCOD_list_end(def->flags); iflag++) {
+				if ( strcmp(*iflag,lex->tok) == 0 ) {
+					found=true;
+					if (!listener->new_flag(lex->tok)) return false;
+					break;
+				}
 			}
 		}
-		if (!found) {
+		if (!found && ! dynStruct) {
 			do {
 				/* is it a property ? */
 				TCOD_struct_prop_t **iprop;
@@ -518,48 +526,77 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 		}
 		if (! found ) {
 			/* is it a sub-entity type */
-			TCOD_lex_t save;
-			char type[BIG_NAME_LEN];
 			char id[BIG_NAME_LEN*2 + 2];
-			char *subname=NULL;
 			bool blockFound=false;
-			TCOD_lex_savepoint(lex,&save);
-			string_copy(type,lex->tok,BIG_NAME_LEN);
-			strcpy(id,type);
-			if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
-				/* <type>#<name> */
-				TCOD_struct_int_t **sub;
-				strcat(id,"#");
-				strcat(id,lex->tok);
-				subname=TCOD_strdup(lex->tok);
-				TCOD_lex_restore(lex,&save);
-				for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
-					sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
-					if ( strcmp((*sub)->name,id) == 0 ) {
-						if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),lex->tok)) return false;
-						if (!TCOD_parser_parse_entity(parser,*sub)) return false;
-						blockFound=true;
-						found=true;
-						break;
+			do {
+				TCOD_lex_t save;
+				char type[BIG_NAME_LEN];
+				char *subname=NULL;
+				bool named=false;
+				TCOD_lex_savepoint(lex,&save);
+				string_copy(type,lex->tok,BIG_NAME_LEN);
+				strcpy(id,type);
+				if ( TCOD_lex_parse(lex) == TCOD_LEX_STRING ) {
+					/* <type>#<name> */
+					TCOD_struct_int_t **sub;
+					strcat(id,"#");
+					strcat(id,lex->tok);
+					named=true;
+					subname=TCOD_strdup(lex->tok);
+					TCOD_lex_restore(lex,&save);
+					for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
+						sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
+						if ( strcmp((*sub)->name,id) == 0 ) {
+							if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),lex->tok)) return false;
+							if (!TCOD_parser_parse_entity(parser,*sub)) return false;
+							blockFound=true;
+							found=true;
+							break;
+						}
+					}
+				} else {
+					TCOD_lex_restore(lex,&save);
+				}
+				if (! blockFound ) {
+					/* <type> alone */
+					TCOD_struct_int_t **sub;
+					for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
+						sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
+						if ( strcmp((*sub)->name,type) == 0 ) {
+							if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),subname)) return false;
+							if (!TCOD_parser_parse_entity(parser,*sub)) return false;
+							blockFound=true;
+							found=true;
+							break;
+						}
 					}
 				}
-			} else {
-				TCOD_lex_restore(lex,&save);
-			}
-			if (! blockFound ) {
-				/* <type> alone */
-				TCOD_struct_int_t **sub;
-				for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
-					sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
-					if ( strcmp((*sub)->name,type) == 0 ) {
-						if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),subname)) return false;
-						if (!TCOD_parser_parse_entity(parser,*sub)) return false;
-						blockFound=true;
-						found=true;
-						break;
+				if (! blockFound && dynStruct ) {
+					/* unknown structure. auto-declaration */
+					TCOD_struct_int_t **idef;
+					TCOD_struct_int_t *s=NULL;
+					for (idef=(TCOD_struct_int_t **)TCOD_list_begin(parser->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(parser->structs); idef ++) {
+						if ( strcmp((*idef)->name,id) == 0 ) {
+							s=*idef;
+							break;
+						}
 					}
+					if ( s == NULL && named ) {
+						/* look for general definition <type> for entity <type>#<name> */
+						for (idef=(TCOD_struct_int_t **)TCOD_list_begin(parser->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(parser->structs); idef ++) {
+							if ( strcmp((*idef)->name,type) == 0 ) {
+								s=*idef;
+								break;
+							}
+						}
+					}
+					if ( s == NULL ) {
+						/* dyn struct not found. create it */
+						s = TCOD_parser_new_struct(parser,type);
+					}
+					TCOD_struct_add_structure(def,s);
 				}
-			}
+			} while (!blockFound && dynStruct );
 			if (! blockFound ) {
 				TCOD_parser_error("Parser::parseEntity : entity type %s does not contain %s",
 					def->name,id);
@@ -655,8 +692,19 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 		TCOD_lex_t save;
 		TCOD_struct_int_t *def=NULL;
 		TCOD_struct_int_t **idef;
+		bool dynStruct=false;
 		TCOD_lex_parse(lex);
 		if ( lex->token_type == TCOD_LEX_EOF || lex->token_type == TCOD_LEX_ERROR ) break;
+		if ( lex->token_type == TCOD_LEX_KEYWORD ) {
+			if ( strcmp(lex->tok,"struct") == 0) {
+				/* level 0 dynamic structure declaration */
+				dynStruct=true;
+				TCOD_lex_parse(lex);
+			} else {
+				TCOD_parser_error("Parser::parse : unexpected keyword '%s'",lex->tok);
+				return;
+			}
+		}
 		/* get entity type */
 		if ( lex->token_type != TCOD_LEX_IDEN ) {
 			TCOD_parser_error("Parser::parse : identifier token expected");
@@ -677,22 +725,28 @@ void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_li
 			named=true;
 		}
 		TCOD_lex_restore(lex,&save);
-		/* look for a definition for id */
-		for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(p->structs); idef ++) {
-			if ( strcmp((*idef)->name,id) == 0 ) {
-				def=*idef;
-				break;
-			}
-		}
-		if ( def == NULL && named ) {
-			/* look for general definition <type> for entity <type>#<name> */
+		do {
+			/* look for a definition for id */
 			for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(p->structs); idef ++) {
-				if ( strcmp((*idef)->name,type) == 0 ) {
-					def=(*idef);
+				if ( strcmp((*idef)->name,id) == 0 ) {
+					def=*idef;
 					break;
 				}
 			}
-		}
+			if ( def == NULL && named ) {
+				/* look for general definition <type> for entity <type>#<name> */
+				for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!=(TCOD_struct_int_t **)TCOD_list_end(p->structs); idef ++) {
+					if ( strcmp((*idef)->name,type) == 0 ) {
+						def=(*idef);
+						break;
+					}
+				}
+			}
+			if ( def == NULL && dynStruct ) {
+				/* dyn struct not found. create it */
+				TCOD_parser_new_struct(parser,type);
+			}
+		} while ( def == NULL && dynStruct );
 		if (def == NULL ) {
 			TCOD_parser_error("Parser::parse : unknown entity type %s",type);
 			return;

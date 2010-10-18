@@ -659,8 +659,8 @@ int TCOD_lex_parse_until_token_value(TCOD_lex_t *lex, const char *tokenValue)
 	int token;
     token = TCOD_lex_parse(lex);
     if ( token == TCOD_LEX_ERROR ) return token;
-    while ( token != TCOD_LEX_EOF )
     {
+    while ( token != TCOD_LEX_EOF )
         if ( strcmp( lex->tok, tokenValue ) == 0
 			|| ( ( lex->flags & TCOD_LEX_FLAG_NOCASE ) && TCOD_strcasecmp(lex->tok, tokenValue ) == 0 ) )
             return token;
@@ -674,6 +674,8 @@ void TCOD_lex_savepoint(TCOD_lex_t *lex,TCOD_lex_t *_savept)
 {
 	TCOD_lex_t *savept=(TCOD_lex_t *)_savept;
 	*savept = *lex;
+	savept->tok = (char *)calloc(sizeof(char),lex->toklen);
+	strcpy(savept->tok,lex->tok);
 	savept->savept=true;
 }
 

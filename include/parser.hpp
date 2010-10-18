@@ -108,7 +108,16 @@ Sometimes, you don't know the list of properties at compile-time. Fortunately, s
 	string[] stringList= [ "string1","string2","string3" ]
 }
 </pre></div>
-The properties declared with this syntax were not previously declared for the structure item_type. But since the type is specified, the parser won't reject them. Instead, it will add the property declaration to the structure dynamically (when it parses the file).  
+The properties declared with this syntax were not previously declared for the structure item_type. But since the type is specified, the parser won't reject them. Instead, it will add the property declaration to the structure dynamically (when it parses the file).
+You can also dynamically create new structures and sub-structures with the struct keyword :
+<div class="code"><pre>item_type "blade" {
+    struct component {
+	    string name="blade"
+		float weight=1.0
+	}
+}
+</div>
+With this syntax, you don't need to declare the "component" structure at all in the parser. It will be dynamically registered as the file is parsed.
 */
 
 class TCODLIB_API TCODParser;

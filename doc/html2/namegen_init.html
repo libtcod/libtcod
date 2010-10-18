@@ -7,12 +7,12 @@
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('namegen.html')">15. Name generator</a> &gt; <a onclick="link('namegen_init.html')">15.1. Creating a generator</a><br>
- <a class="next" onclick="link('namegen_generate.html')">15.2. Generating a name</a>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('namegen.html')">14. Name generator</a> &gt; <a onclick="link('namegen_init.html')">14.1. Creating a generator</a><br>
+ <a class="next" onclick="link('namegen_generate.html')">14.2. Generating a name</a>
 </p></div></div>
 <div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
 <div class="main"><div class="maintext">
-<h1>15.1. Creating a generator</h1>
+<h1>14.1. Creating a generator</h1>
 <div id="toc"><ul>
 <li><a href="#1">Destroying a generator</a></li></ul></div>
 <a name="0"></a><p>In order to be able to generate names, the name generator needs to be fed proper data. It will then be ready to generate random names defined in the file(s) it is fed. Syllable set parsing is achieved via the following.<br />			Note 1: Each file will be parsed once only. If, for some reason, you would like to parse the same file twice, you will need to destroy the generator first, which will empty the list of parsed files along with erasing all the data retrieved from those files.<br />			<br />			Note 2: The generator can be fed data multiple times if you have it in separate files. Just make sure the structure names in them aren't duplicated, otherwise they will be silently ignored.<br />			<br />			Note 3: In the C++ version, you are not obliged to specify the random number generator. If you skip it in the function call, the generator will assume you would like to use an instance of the default generator.<br /><br />		</p>

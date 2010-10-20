@@ -293,7 +293,7 @@ TCOD_value_t TCOD_parse_color_value() {
 }
 
 TCOD_value_t TCOD_parse_dice_value() {
-	/* dice format : [<m>x]<n>[Dd]<f>[(+|-)<a>] */
+	/* dice format : [<m>(x|*)]<n>(D|d)<f>[(+|-)<a>] */
 	TCOD_value_t ret;
 	bool minus=false;
 	char *begin;
@@ -302,6 +302,7 @@ TCOD_value_t TCOD_parse_dice_value() {
 	ret.dice.addsub=0.0f;
 	begin=lex->tok;
 	ptr=strchr(begin,'x');
+	if (! ptr ) ptr=strchr(begin,'*');
 	if ( ptr ) {
 		/* parse multiplier */
 		*ptr=0;
@@ -310,7 +311,7 @@ TCOD_value_t TCOD_parse_dice_value() {
 	}
 	ptr=strchr(begin,'D');
 	if (!ptr ) ptr=strchr(begin,'d');
-	if (! ptr )	TCOD_parser_error("parseDiceValue : bad dice format. [<m>x]<n>D<f>[(+|-)<a>] expected instead of '%s'",lex->tok);
+	if (! ptr )	TCOD_parser_error("parseDiceValue : bad dice format. [<m>(x|*)]<n>(D|d)<f>[(+|-)<a>] expected instead of '%s'",lex->tok);
 	*ptr=0;
 	/* parse nb_dices */
 	ret.dice.nb_dices=atoi(begin);

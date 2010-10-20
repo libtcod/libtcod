@@ -654,7 +654,7 @@ Special characters :<br>
 <tr><td>TCOD_TYPE_STRING</td><td>A double-quote delimited string :<br>"This is a string"<br>Support the same special characters as TCOD_TYPE_CHAR.</td><td>value.s == the corresponding string.<br>Warning ! If you want to store this string, you have to duplicate it (with strdup) as it will be overwritten by the parser</td></tr>
 <tr><td>TCOD_TYPE_COLOR</td><td>decimal notation : "16,32,64"<br>hexadecimal notation : "#102040"</td><td>value.col == the color.</td></tr>
 
-<tr><td>TCOD_TYPE_DICE</td><td>[multiplier x] nb_dices d nb_faces [(+|-) addsub] :<br>"3d6"<br>"3d6+2"<br>"0.5x3d6-2"</td><td>value.dice == the dice components</td></tr>
+<tr><td>TCOD_TYPE_DICE</td><td>[multiplier (x|*)] nb_dices (d|D) nb_faces [(+|-) addsub] :<br>"3d6"<br>"3D6+2"<br>"0.5x3d6-2"<br>"2*3d8"</td><td>value.dice == the dice components</td></tr>
 <tr><td>TCOD_TYPE_VALUELISTxx</td><td>Same as TCOD_TYPE_STRING</td><td>value.s == the string value from the value list</td></tr>
 <tr><td>TCOD_TYPE_LIST</td><td>[ &lt;value1&gt;,&lt;value2&gt;,... ]</td><td>value.list == the TCOD_list_t containing the elements</td></tr>
 

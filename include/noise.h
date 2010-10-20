@@ -30,8 +30,16 @@
 
 typedef void *TCOD_noise_t;
 
+typedef enum {
+	TCOD_NOISE_PERLIN = 1,
+	TCOD_NOISE_SIMPLEX = 2,
+	TCOD_NOISE_WAVELET = 4,
+	TCOD_NOISE_DEFAULT = 0
+} TCOD_noise_type_t;
+
 #include "noise_defaults.h"
 
+/* create a new noise object */
 TCODLIB_API TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random);
 /* basic perlin noise */
 TCODLIB_API float TCOD_noise_perlin( TCOD_noise_t noise, float *f );
@@ -51,7 +59,12 @@ TCODLIB_API float TCOD_noise_wavelet (TCOD_noise_t noise, float *f);
 TCODLIB_API float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves);
 /* turbulence (fractal sum of abs(simplex noise) ) */
 TCODLIB_API float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves);
-
+/* simplified API */
+TCODLIB_API void TCOD_noise_set_type (TCOD_noise_t noise, TCOD_noise_type_t type);
+TCODLIB_API float TCOD_noise_get (TCOD_noise_t noise, float *f);
+TCODLIB_API float TCOD_noise_get_fbm (TCOD_noise_t noise, float *f, float octaves);
+TCODLIB_API float TCOD_noise_get_turbulence (TCOD_noise_t noise, float *f, float octaves);
+/* delete the noise object */
 TCODLIB_API void TCOD_noise_delete(TCOD_noise_t noise);
 
 #endif

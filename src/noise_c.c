@@ -46,6 +46,8 @@ typedef struct {
 	float exponent[TCOD_NOISE_MAX_OCTAVES];
 	float *waveletTileData;
 	TCOD_random_t rand;
+	/* noise type */
+	TCOD_noise_type_t noise_type;
 } perlin_data_t;
 
 static float lattice( perlin_data_t *data, int ix, float fx, int iy, float fy, int iz, float fz, int iw, float fw)
@@ -111,6 +113,7 @@ TCOD_noise_t TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_random
 		data->exponent[i] = 1.0f / f;
 		f *= lacunarity;
 	}
+	data->noise_type = TCOD_NOISE_DEFAULT;
 	return (TCOD_noise_t)data;
 }
 
@@ -711,8 +714,49 @@ float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves)
 	return TCOD_noise_turbulence_int(noise,f,octaves,TCOD_noise_wavelet);
 }
 
+void TCOD_noise_set_type (TCOD_noise_t noise, TCOD_noise_type_t type) {
+	((perlin_data_t *)noise)->noise_type = type;
+}
+
+float TCOD_noise_get (TCOD_noise_t noise, float *f) {
+	switch (((perlin_data_t *)noise)->noise_type) {
+		case (TCOD_NOISE_PERLIN):
+			return TCOD_noise_perlin(noise,f); break;
+		case (TCOD_NOISE_SIMPLEX):
+			return TCOD_noise_simplex(noise,f); break;
+		case (TCOD_NOISE_WAVELET):
+			return TCOD_noise_wavelet(noise,f); break;
+		default:
+			return TCOD_noise_simplex(noise,f); break;
+	}
+}
+
+float TCOD_noise_get_fbm (TCOD_noise_t noise, float *f, float octaves) {
+	switch (((perlin_data_t *)noise)->noise_type) {
+		case (TCOD_NOISE_PERLIN):
+			return TCOD_noise_fbm_perlin(noise,f,octaves); break;
+		case (TCOD_NOISE_SIMPLEX):
+			return TCOD_noise_fbm_simplex(noise,f,octaves); break;
+		case (TCOD_NOISE_WAVELET):
+			return TCOD_noise_fbm_wavelet(noise,f,octaves); break;
+		default:
+			return TCOD_noise_fbm_simplex(noise,f,octaves); break;
+	}
+}
+
+float TCOD_noise_get_turbulence (TCOD_noise_t noise, float *f, float octaves) {
+	switch (((perlin_data_t *)noise)->noise_type) {
+		case (TCOD_NOISE_PERLIN):
+			return TCOD_noise_turbulence_perlin(noise,f,octaves); break;
+		case (TCOD_NOISE_SIMPLEX):
+			return TCOD_noise_turbulence_simplex(noise,f,octaves); break;
+		case (TCOD_NOISE_WAVELET):
+			return TCOD_noise_turbulence_wavelet(noise,f,octaves); break;
+		default:
+			return TCOD_noise_turbulence_simplex(noise,f,octaves); break;
+	}
+}
 
 void TCOD_noise_delete(TCOD_noise_t noise) {
 	free((perlin_data_t *)noise);
 }
-

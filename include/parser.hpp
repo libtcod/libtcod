@@ -172,7 +172,7 @@ public :
 	@PageTitle Running the parser 
 	@FuncTitle Running the parser
 	@FuncDesc Once you defined all the structure types and created your listener, you can start the actual parsing of the file :
-	@Cpp void TCODParser::run(const char *filename, ITCODParserListener *listener)
+	@Cpp void TCODParser::run(const char *filename, ITCODParserListener *listener = NULL)
 	@C void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener)
 	@Py parser_run(parser, filename, listener=0)
 	@Param parser	In the C version, the parser handler, returned by TCOD_parser_new.
@@ -182,7 +182,7 @@ public :
 	@C TCOD_parser_run(my_parser,"config.txt", my_listener);
 	@Py libtcod.parser_run(my_parser,"config.txt", MyListener())
 	*/
-	void run(const char *filename, ITCODParserListener *listener);
+	void run(const char *filename, ITCODParserListener *listener = NULL);
 
 	/**
 	@PageName parser_run

@@ -507,7 +507,7 @@ class TCODLIB_API TCODNoise {
 		*/
 		float getTurbulenceWavelet(float *f, float octaves) const;
 
-		inline void setType (TCOD_noise_type_t type);
+		void setType (TCOD_noise_type_t type);
 		float get(float *f);
 		float getFbm(float *f, float octaves);
 		float getTurbulence(float *f, float octaves);

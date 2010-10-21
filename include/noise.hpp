@@ -508,9 +508,9 @@ class TCODLIB_API TCODNoise {
 		float getTurbulenceWavelet(float *f, float octaves) const;
 
 		void setType (TCOD_noise_type_t type);
-		float get(float *f);
-		float getFbm(float *f, float octaves);
-		float getTurbulence(float *f, float octaves);
+		float get(float *f, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		float getFbm(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		float getTurbulence(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 
 	protected :
 		friend class TCODLIB_API TCODHeightMap;

@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X The noise API now has less functions that choose the noise type based on the set flags.
 X Console default and cell foreground and background colour getters and setters renamed to more intuitive names:
   * TCOD_console_set_background_color => TCOD_console_set_default_background
   * TCOD_console_set_foreground_color => TCOD_console_set_default_foreground

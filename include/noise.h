@@ -41,26 +41,12 @@ typedef enum {
 
 /* create a new noise object */
 TCODLIB_API TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random);
-/* basic perlin noise */
-TCODLIB_API float TCOD_noise_perlin( TCOD_noise_t noise, float *f );
-/* fractional brownian motion (fractal sum of perlin noises) */
-TCODLIB_API float TCOD_noise_fbm_perlin( TCOD_noise_t noise, float *f, float octaves );
-/* turbulence (fractal sum of abs(perlin noise) ) */
-TCODLIB_API float TCOD_noise_turbulence_perlin( TCOD_noise_t noise, float *f, float octaves );
-/* simplex noise */
-TCODLIB_API float TCOD_noise_simplex( TCOD_noise_t noise, float *f );
-/* fractional brownian motion (fractal sum of simplex noises) */
-TCODLIB_API float TCOD_noise_fbm_simplex( TCOD_noise_t noise, float *f, float octaves );
-/* turbulence (fractal sum of abs(simplex noise) ) */
-TCODLIB_API float TCOD_noise_turbulence_simplex( TCOD_noise_t noise, float *f, float octaves );
-/* wavelet noise */
-TCODLIB_API float TCOD_noise_wavelet (TCOD_noise_t noise, float *f);
-/* fractional brownian motion (fractal sum of wavelet noises) */
-TCODLIB_API float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves);
-/* turbulence (fractal sum of abs(simplex noise) ) */
-TCODLIB_API float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves);
+
 /* simplified API */
 TCODLIB_API void TCOD_noise_set_type (TCOD_noise_t noise, TCOD_noise_type_t type);
+TCODLIB_API float TCOD_noise_get_ex (TCOD_noise_t noise, float *f, TCOD_noise_type_t type);
+TCODLIB_API float TCOD_noise_get_fbm_ex (TCOD_noise_t noise, float *f, float octaves, TCOD_noise_type_t type);
+TCODLIB_API float TCOD_noise_get_turbulence_ex (TCOD_noise_t noise, float *f, float octaves, TCOD_noise_type_t type);
 TCODLIB_API float TCOD_noise_get (TCOD_noise_t noise, float *f);
 TCODLIB_API float TCOD_noise_get_fbm (TCOD_noise_t noise, float *f, float octaves);
 TCODLIB_API float TCOD_noise_get_turbulence (TCOD_noise_t noise, float *f, float octaves);

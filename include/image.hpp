@@ -287,7 +287,7 @@ public :
     /**
 	@PageName image_update
 	@FuncTitle Rotating the image clockwise
-	@FundDesc Rotate the image clockwise by increment of 90 degrees. 
+	@FuncDesc Rotate the image clockwise by increment of 90 degrees. 
 	@Cpp void TCODImage::rotate90(int numRotations=1)
 	@C void TCOD_image_rotate90(TCOD_image_t image, int numRotations)
 	@Py image_rotate90(image, num=1)

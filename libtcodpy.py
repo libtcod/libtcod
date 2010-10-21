@@ -929,6 +929,9 @@ def image_invert(image) :
 def image_hflip(image) :
     _lib.TCOD_image_hflip(image)
 
+def image_rotate90(image, num=1) :
+    _lib.TCOD_image_rotate90(image,num)
+
 def image_vflip(image) :
     _lib.TCOD_image_vflip(image)
 

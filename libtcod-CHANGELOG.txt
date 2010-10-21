@@ -54,6 +54,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 + added TCODColor::shiftHue (hue shifting up and down)
 + added a TCODColor constructor for HSV values
 + added TCODColor H, S and V separate getters and setters
++ added TCODColor::rotate90
 + added native Mac OSX support
 + added support for quote-less HTML color values in the parser (col=#FFFFFF instead of col="#FFFFFF")
 + added color control helpers for C# (TCODConsole.getColorControlString/getRGBColorControlString)

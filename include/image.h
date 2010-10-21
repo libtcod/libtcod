@@ -34,6 +34,7 @@ TCODLIB_API TCOD_image_t TCOD_image_load(const char *filename);
 TCODLIB_API void TCOD_image_clear(TCOD_image_t image, TCOD_color_t color);
 TCODLIB_API void TCOD_image_invert(TCOD_image_t image);
 TCODLIB_API void TCOD_image_hflip(TCOD_image_t image);
+TCODLIB_API void TCOD_image_rotate90(TCOD_image_t image, int numRotations);
 TCODLIB_API void TCOD_image_vflip(TCOD_image_t image);
 TCODLIB_API void TCOD_image_scale(TCOD_image_t image, int neww, int newh);
 TCODLIB_API void TCOD_image_save(TCOD_image_t image, const char *filename);

@@ -241,7 +241,7 @@ void TCOD_image_put_pixel(TCOD_image_t image,int x, int y,TCOD_color_t col) {
 	}
 }
 
-void TCOD_image_delete(TCOD_image_t image) {
+void TCOD_image_delete_internal(TCOD_image_t image) {
 	image_data_t *img=(image_data_t *)image;
 	if ( img->mipmaps ) {
 		int i;
@@ -253,6 +253,10 @@ void TCOD_image_delete(TCOD_image_t image) {
 	if ( img->sys_img ) {
 		TCOD_sys_delete_bitmap(img->sys_img);
 	}
+}
+
+void TCOD_image_delete(TCOD_image_t image) {
+	TCOD_image_delete_internal(image);
 	free(image);
 }
 
@@ -444,6 +448,63 @@ void TCOD_image_vflip(TCOD_image_t image) {
 	}
 }
 
+void TCOD_image_rotate90(TCOD_image_t image, int numRotations) {
+	int px,py;
+	int width,height;
+	numRotations = numRotations % 4;
+	if (numRotations == 0 ) return;
+	if ( numRotations < 0 ) numRotations += 4;
+	TCOD_image_get_size(image,&width,&height);
+	if (numRotations == 1) {
+		/* rotate 90 degrees */
+		TCOD_image_t newImg=TCOD_image_new(height,width);
+		for (px = 0; px < width; px++ ) {
+			for (py = 0; py < height; py++ ) {
+				TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
+				TCOD_image_put_pixel(newImg,height-1-py,px,col1);
+			}
+		}
+		TCOD_image_delete_internal(image);
+		image_data_t *img=(image_data_t *)image;
+		image_data_t *img2=(image_data_t *)newImg;
+		/* update img with the new image content */
+		img->mipmaps = img2->mipmaps;
+		img->sys_img=NULL;
+		img->nb_mipmaps=img2->nb_mipmaps;
+		free(img2);
+	} else if ( numRotations == 2 ) {
+		/* rotate 180 degrees */
+		int maxy=height/2 + ((height & 1) == 1? 1 : 0 );
+		for (px = 0; px < width; px++ ) {
+			for (py = 0; py < maxy; py++ ) {
+				if ( py != height-1-py || px < width/2 ) {
+					TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
+					TCOD_color_t col2=TCOD_image_get_pixel(image,width-1-px,height-1-py);
+					TCOD_image_put_pixel(image,px,py,col2);
+					TCOD_image_put_pixel(image,width-1-px,height-1-py,col1);
+				}
+			}
+		}
+	} else if (numRotations == 3) {
+		/* rotate 270 degrees */
+		TCOD_image_t newImg=TCOD_image_new(height,width);
+		for (px = 0; px < width; px++ ) {
+			for (py = 0; py < height; py++ ) {
+				TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
+				TCOD_image_put_pixel(newImg,py,width-1-px,col1);
+			}
+		}
+		TCOD_image_delete_internal(image);
+		image_data_t *img=(image_data_t *)image;
+		image_data_t *img2=(image_data_t *)newImg;
+		/* update img with the new image content */
+		img->mipmaps = img2->mipmaps;
+		img->sys_img=NULL;
+		img->nb_mipmaps=img2->nb_mipmaps;
+		free(img2);
+	}
+}
+
 void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 	image_data_t *img=(image_data_t *)image;
 	int px,py;
@@ -553,16 +614,7 @@ void TCOD_image_scale(TCOD_image_t image, int neww, int newh) {
 	}
 
 	/* destroy old image */
-	if ( img->mipmaps ) {
-		int i;
-		for ( i=0; i < img->nb_mipmaps; i++) {
-			if ( img->mipmaps[i].buf ) free(img->mipmaps[i].buf);
-		}
-		free(img->mipmaps);
-	}
-	if ( img->sys_img ) {
-		TCOD_sys_delete_bitmap(img->sys_img);
-	}
+	TCOD_image_delete_internal(image);
 	/* update img with the new image content */
 	img->mipmaps = newimg->mipmaps;
 	img->sys_img=NULL;

@@ -106,6 +106,10 @@ void TCODImage::hflip() {
 	TCOD_image_hflip(data);
 }
 
+void TCODImage::rotate90(int numRotations) {
+	TCOD_image_rotate90(data,numRotations);
+}
+
 void TCODImage::vflip() {
 	TCOD_image_vflip(data);
 }

@@ -286,6 +286,19 @@ public :
 
     /**
 	@PageName image_update
+	@FuncTitle Rotating the image clockwise
+	@FundDesc Rotate the image clockwise by increment of 90 degrees. 
+	@Cpp void TCODImage::rotate90(int numRotations=1)
+	@C void TCOD_image_rotate90(TCOD_image_t image, int numRotations)
+	@Py image_rotate90(image, num=1)
+	@C# void TCODImage::rotate90(int numRotations)
+	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param numRotations	Number of 90 degrees rotations. Should be between 1 and 3.
+	*/
+	void rotate90(int numRotations=1);
+
+    /**
+	@PageName image_update
 	@FuncTitle Inverting the colors of the image
 	@Cpp void TCODImage::invert()
 	@C void TCOD_image_invert(TCOD_image_t image)

@@ -1278,7 +1278,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		sparkley=(float)y+1;
 	}
 	noisex=xstr*6;
-	sparklerad=3.0f+2*TCOD_noise_simplex(noise,&noisex);
+	sparklerad=3.0f+2*TCOD_noise_get(noise,&noisex);
 	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
 	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
 	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;

@@ -458,6 +458,8 @@ void TCOD_image_rotate90(TCOD_image_t image, int numRotations) {
 	if (numRotations == 1) {
 		/* rotate 90 degrees */
 		TCOD_image_t newImg=TCOD_image_new(height,width);
+		image_data_t *img=(image_data_t *)image;
+		image_data_t *img2=(image_data_t *)newImg;
 		for (px = 0; px < width; px++ ) {
 			for (py = 0; py < height; py++ ) {
 				TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
@@ -465,8 +467,6 @@ void TCOD_image_rotate90(TCOD_image_t image, int numRotations) {
 			}
 		}
 		TCOD_image_delete_internal(image);
-		image_data_t *img=(image_data_t *)image;
-		image_data_t *img2=(image_data_t *)newImg;
 		/* update img with the new image content */
 		img->mipmaps = img2->mipmaps;
 		img->sys_img=NULL;
@@ -488,6 +488,8 @@ void TCOD_image_rotate90(TCOD_image_t image, int numRotations) {
 	} else if (numRotations == 3) {
 		/* rotate 270 degrees */
 		TCOD_image_t newImg=TCOD_image_new(height,width);
+		image_data_t *img=(image_data_t *)image;
+		image_data_t *img2=(image_data_t *)newImg;
 		for (px = 0; px < width; px++ ) {
 			for (py = 0; py < height; py++ ) {
 				TCOD_color_t col1=TCOD_image_get_pixel(image,px,py);
@@ -495,8 +497,6 @@ void TCOD_image_rotate90(TCOD_image_t image, int numRotations) {
 			}
 		}
 		TCOD_image_delete_internal(image);
-		image_data_t *img=(image_data_t *)image;
-		image_data_t *img2=(image_data_t *)newImg;
 		/* update img with the new image content */
 		img->mipmaps = img2->mipmaps;
 		img->sys_img=NULL;

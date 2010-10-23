@@ -148,7 +148,7 @@ void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx,
 		for (y=0; y < hm->h; y++) {
             float value;
 			f[1] = (y + addy)*ycoef;
-			value=delta+TCOD_noise_fbm_simplex(noise,f,octaves)*scale;
+			value=delta+TCOD_noise_get_fbm(noise,f,octaves)*scale;
 			hm->values[offset] += value;
 			if ( value < min ) min = value;
 			if ( value > max ) max=value;
@@ -166,7 +166,7 @@ void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mul
 		f[0] = (x + addx) * xcoef;
 		for (y=0; y < hm->h; y++) {
 			f[1] = (y + addy)*ycoef;
-			hm->values[offset] *= (delta+TCOD_noise_fbm_simplex(noise,f,octaves)*scale);
+			hm->values[offset] *= (delta+TCOD_noise_get_fbm(noise,f,octaves)*scale);
 			offset+=hm->w;
 		}
 	}

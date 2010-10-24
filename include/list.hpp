@@ -88,7 +88,7 @@ public :
 		array=NULL;
 		fillSize=allocSize=0;
 		for ( void **it=TCOD_list_begin(l); it != TCOD_list_end(l); it++ ) {
-			push((T)(uintptr)(*it));
+			push(*((T *)(it)));
 		}
 	}
 	TCODList(const TCODList<T> &l2) {

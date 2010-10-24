@@ -37,28 +37,16 @@ TCODLIB_API TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo);
 TCODLIB_API TCOD_random_t TCOD_random_save(TCOD_random_t mersenne);
 TCODLIB_API void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup);
 TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed);
-TCODLIB_API int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max);
-TCODLIB_API float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max);
 TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
-TCODLIB_API double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, double std_deviation);
-TCODLIB_API float TCOD_random_get_gaussian_float (TCOD_random_t mersenne, float mean, float std_deviation);
-TCODLIB_API int TCOD_random_get_gaussian_int (TCOD_random_t mersenne, int mean, int std_deviation);
-TCODLIB_API double TCOD_random_get_gaussian_double_range (TCOD_random_t mersenne, double min, double max);
-TCODLIB_API float TCOD_random_get_gaussian_float_range (TCOD_random_t mersenne, float min, float max);
-TCODLIB_API int TCOD_random_get_gaussian_int_range (TCOD_random_t mersenne, int min, int max);
-TCODLIB_API double TCOD_random_get_gaussian_double_range_custom (TCOD_random_t mersenne, double min, double max, double mean);
-TCODLIB_API float TCOD_random_get_gaussian_float_range_custom (TCOD_random_t mersenne, float min, float max, float mean);
-TCODLIB_API int TCOD_random_get_gaussian_int_range_custom (TCOD_random_t mersenne, int min, int max, int mean);
+TCODLIB_API void TCOD_random_set_distribution (TCOD_random_t mersenne, TCOD_distribution_t distribution);
 
-TCODLIB_API double TCOD_random_get_gaussian_double_inv (TCOD_random_t mersenne, double mean, double std_deviation);
-TCODLIB_API float TCOD_random_get_gaussian_float_inv (TCOD_random_t mersenne, float mean, float std_deviation);
-TCODLIB_API int TCOD_random_get_gaussian_int_inv (TCOD_random_t mersenne, int mean, int std_deviation);
-TCODLIB_API double TCOD_random_get_gaussian_double_range_inv (TCOD_random_t mersenne, double min, double max);
-TCODLIB_API float TCOD_random_get_gaussian_float_range_inv (TCOD_random_t mersenne, float min, float max);
-TCODLIB_API int TCOD_random_get_gaussian_int_range_inv (TCOD_random_t mersenne, int min, int max);
-TCODLIB_API double TCOD_random_get_gaussian_double_range_custom_inv (TCOD_random_t mersenne, double min, double max, double mean);
-TCODLIB_API float TCOD_random_get_gaussian_float_range_custom_inv (TCOD_random_t mersenne, float min, float max, float mean);
-TCODLIB_API int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int min, int max, int mean);
+TCODLIB_API int TCOD_random_get_int (TCOD_random_t mersenne, int min, int max);
+TCODLIB_API float TCOD_random_get_float (TCOD_random_t mersenne, float min, float max);
+TCODLIB_API double TCOD_random_get_double (TCOD_random_t mersenne, double min, double max);
+
+TCODLIB_API int TCOD_random_get_int_mean (TCOD_random_t mersenne, int min, int max, int mean);
+TCODLIB_API float TCOD_random_get_float_mean (TCOD_random_t mersenne, float min, float max, float mean);
+TCODLIB_API double TCOD_random_get_double_mean (TCOD_random_t mersenne, double min, double max, double mean);
 
 #endif

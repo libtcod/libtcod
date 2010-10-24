@@ -190,7 +190,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_simplex(noise2d,[0.5,0.7])
    		*/
-		float getSimplex(float *f) const;
+		//float getSimplex(float *f) const;
 
 		/**
 		@PageName noise_simplex
@@ -229,7 +229,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_fbm_simplex(noise2d,[0.5,0.7],32.0)
 		*/
-		float getFbmSimplex(float *f, float octaves) const;
+		//float getFbmSimplex(float *f, float octaves) const;
 
 		/**
 		@PageName noise_simplex
@@ -268,7 +268,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_turbulence_simplex(noise2d,[0.5,0.7],32.0)
 		*/
-		float getTurbulenceSimplex(float *f, float octaves) const;
+		//float getTurbulenceSimplex(float *f, float octaves) const;
 
 		/**
 		@PageName noise_perlin
@@ -308,7 +308,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_perlin(noise2d,[0.5,0.7])
 		*/
-		float getPerlin(float *f) const;
+		//float getPerlin(float *f) const;
 
 		/**
 		@PageName noise_perlin
@@ -347,7 +347,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_fbm_perlin(noise2d,[0.5,0.7],32.0)
 		*/
-		float getFbmPerlin(float *f, float octaves) const;
+		//float getFbmPerlin(float *f, float octaves) const;
 
 		/**
 		@PageName noise_perlin
@@ -386,7 +386,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_turbulence_perlin(noise2d,[0.5,0.7],32.0)
 		*/
-		float getTurbulencePerlin(float *f, float octaves) const;
+		//float getTurbulencePerlin(float *f, float octaves) const;
 
 		/**
 		@PageName noise_wavelet
@@ -427,7 +427,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_wavelet(noise2d,[0.5,0.7])
 		*/
-		float getWavelet(float *f) const;
+		//float getWavelet(float *f) const;
 
 		/**
 		@PageName noise_wavelet
@@ -466,7 +466,7 @@ class TCODLIB_API TCODNoise {
 			noise2d = libtcod.noise_new(2)
 			value = libtcod.noise_fbm_wavelet(noise2d,[0.5,0.7],32.0)
 		*/
-		float getFbmWavelet(float *f, float octaves) const;
+		//float getFbmWavelet(float *f, float octaves) const;
 
 		/**
 		@PageName noise_wavelet

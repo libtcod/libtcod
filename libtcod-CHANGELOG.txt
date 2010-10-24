@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X The RNG API now has less functions that choose the distribution based on the set flags.
 X The noise API now has less functions that choose the noise type based on the set flags.
 X Console default and cell foreground and background colour getters and setters renamed to more intuitive names:
   * TCOD_console_set_background_color => TCOD_console_set_default_background
@@ -22,7 +23,6 @@ X Console default and cell foreground and background colour getters and setters 
   * setFore => setCharForeground
   * getBack => getCharBackground
   * getFore => getCharForeground
-X TCODRandom::getGaussianFloat and TCODRandom::getGaussianInt have been replaced by TCODRandom::getGaussianRange
 X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t)
 	TCODConsole::setAlignment(TCOD_alignment_t)

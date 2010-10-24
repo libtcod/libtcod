@@ -76,6 +76,8 @@ typedef struct {
 typedef struct {
 	/* algorithm identifier */
 	TCOD_random_algo_t algo;
+	/* distribution */
+	TCOD_distribution_t distribution;
 	/* Mersenne Twister stuff */
 	uint32 mt[624];
 	int cur_mt;
@@ -129,7 +131,7 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_IF(x) if (x)
 #define TCOD_IFNOT(x) if (!(x))
 #define TCOD_ASSERT(x)
-#define TCOD_LOG(x) 
+#define TCOD_LOG(x)
 #else
 #define TCOD_IF(x) assert(x);
 #define TCOD_IFNOT(x) assert(x); if (0)

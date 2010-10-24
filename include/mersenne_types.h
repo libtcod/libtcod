@@ -28,6 +28,14 @@
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
 
+/* dice roll */
+typedef struct {
+	int nb_rolls;
+	int nb_faces;
+	float multiplier;
+	float addsub;
+} TCOD_dice_t;
+
 /* PRNG algorithms */
 typedef enum {
     TCOD_RNG_MT,

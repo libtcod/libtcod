@@ -120,7 +120,7 @@ void TCOD_struct_add_value_list_sized(TCOD_parser_struct_t def,const char *name,
 	for(i = 0 ; i < size ; i++)
 		newArray[i] = TCOD_strdup(value_list[i]);
 	newArray[size] = NULL;
-	
+
 	TCOD_struct_add_property(def,name,type,mandatory);
 	TCOD_list_push(DEF_LISTS(def),(void *)newArray);
 }
@@ -246,7 +246,7 @@ TCOD_value_t TCOD_parse_color_value() {
 			strcat(tmp,lex->tok);
 			strcpy(lex->tok,tmp);
 			if ( strlen(lex->tok) < 7 && tok == TCOD_LEX_INTEGER ) {
-				/* special case of #12AABB => symbol # + 
+				/* special case of #12AABB => symbol # +
 					integer 12 + iden AABB */
 				tok=TCOD_lex_parse(lex);
 				if ( tok == TCOD_LEX_IDEN ) {
@@ -313,8 +313,8 @@ TCOD_value_t TCOD_parse_dice_value() {
 	if (!ptr ) ptr=strchr(begin,'d');
 	if (! ptr )	TCOD_parser_error("parseDiceValue : bad dice format. [<m>(x|*)]<n>(D|d)<f>[(+|-)<a>] expected instead of '%s'",lex->tok);
 	*ptr=0;
-	/* parse nb_dices */
-	ret.dice.nb_dices=atoi(begin);
+	/* parse nb_rolls */
+	ret.dice.nb_rolls=atoi(begin);
 	begin=ptr+1;
 	ptr=strchr(begin,'+');
 	if (! ptr) {
@@ -653,7 +653,7 @@ void TCOD_parser_delete(TCOD_parser_t parser) {
 
  	for (idef=(TCOD_struct_int_t **)TCOD_list_begin(p->structs); idef!= (TCOD_struct_int_t **)TCOD_list_end(p->structs); idef++) {
 		free((*idef)->name);
-	
+
 		for ( propCleanup = (TCOD_struct_prop_t**) TCOD_list_begin((*idef)->props); propCleanup != (TCOD_struct_prop_t**)TCOD_list_end((*idef)->props); propCleanup++ ) {
 			free((*propCleanup)->name);
 		}
@@ -664,7 +664,7 @@ void TCOD_parser_delete(TCOD_parser_t parser) {
 			while((*listCleanup)[listSize] != NULL) {
 				free((*listCleanup)[listSize]);
 				listSize++;
-			}		
+			}
 		}
 		TCOD_list_clear_and_delete((*idef)->lists);
 	}
@@ -820,9 +820,9 @@ static const TCOD_value_t * TCOD_get_property(TCOD_parser_t parser, TCOD_value_t
 		prop_t *prop=*((prop_t **)it);
 		if (strcmp(prop->name,name) == 0 ) {
 			/* property found. check type */
-			if ( expectedType == TCOD_TYPE_STRING && prop->type >= TCOD_TYPE_VALUELIST00 
+			if ( expectedType == TCOD_TYPE_STRING && prop->type >= TCOD_TYPE_VALUELIST00
 					&& prop->type <= TCOD_TYPE_VALUELIST15 ) return &prop->value;
-			if ( expectedType == TCOD_TYPE_CUSTOM00 && prop->type >= TCOD_TYPE_CUSTOM00 
+			if ( expectedType == TCOD_TYPE_CUSTOM00 && prop->type >= TCOD_TYPE_CUSTOM00
 					&& prop->type <= TCOD_TYPE_CUSTOM15 ) return &prop->value;
 			if (prop->type != expectedType ) {
 				sprintf(err,"Fatal error ! Try to read property '%s' width bad type\n",name);

@@ -29,7 +29,7 @@
 #define _TCOD_PARSER_H
 
 /* generic type */
-typedef enum { 
+typedef enum {
 	TCOD_TYPE_NONE,
 	TCOD_TYPE_BOOL,
 	TCOD_TYPE_CHAR,
@@ -72,14 +72,6 @@ typedef enum {
 	TCOD_TYPE_CUSTOM15,
 	TCOD_TYPE_LIST=1024
 } TCOD_value_type_t;
-
-/* dice roll */
-typedef struct {
-	int nb_dices;
-	int nb_faces;
-	float multiplier;
-	float addsub;
-} TCOD_dice_t;
 
 /* generic value */
 typedef union {

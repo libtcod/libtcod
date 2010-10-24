@@ -151,13 +151,13 @@ public :
 	@Py parser_new_struct(parser, name)
 	@Param parser	In the C version, the parser handler, returned by TCOD_parser_new.
 	@Param name	The name of the structure type (in the example, this would be "item_type").
-	@CppEx 
+	@CppEx
 		TCODParser parser();
 		TCODParserStruct *itemTypeStruct = parser.newStructrue("item_type");
-	@CEx 
+	@CEx
 		TCOD_parser_t parser = TCOD_parser_new();
 		TCOD_parser_struct_t item_type_struct = TCOD_parser_new_struct(parser, "item_type");
-	@PyEx 
+	@PyEx
 		parser=libtcod.parser_new()
 		item_type_struct = libtcod.parser_new_struct(parser, "item_type")
 	*/
@@ -169,7 +169,7 @@ public :
 	/**
 	@PageName parser_run
 	@PageFather parser
-	@PageTitle Running the parser 
+	@PageTitle Running the parser
 	@FuncTitle Running the parser
 	@FuncDesc Once you defined all the structure types and created your listener, you can start the actual parsing of the file :
 	@Cpp void TCODParser::run(const char *filename, ITCODParserListener *listener = NULL)
@@ -240,17 +240,17 @@ public :
 	@Param name	The name of the property (in the example, this would be "cost" or "damages" or ...).
 	@Param type	The type of the property. It can be a standard type (see <a href="parser_types.html">this</a>).
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
-	@CppEx 
+	@CppEx
 		itemTypeStruct->addProperty("cost",TCOD_TYPE_INT,true);
 		itemTypeStruct->addProperty("weight",TCOD_TYPE_FLOAT,true);
 		itemTypeStruct->addProperty("deal_damage",TCOD_TYPE_BOOL,true);
 		itemTypeStruct->addProperty("damaged_color",TCOD_TYPE_COLOR,true);
-	@CEx 
+	@CEx
 		TCOD_struct_add_property(item_type_struct, "cost", TCOD_TYPE_INT, true);
 		TCOD_struct_add_property(item_type_struct, "damages", TCOD_TYPE_DICE, true);
 		TCOD_struct_add_property(item_type_struct, "color", TCOD_TYPE_COLOR, true);
 		TCOD_struct_add_property(item_type_struct, "damaged_color", TCOD_TYPE_COLOR, true);
-	@PyEx 
+	@PyEx
 		libtcod.struct_add_property(item_type_struct, "cost", libtcod.TYPE_INT, True)
 		libtcod.struct_add_property(item_type_struct, "damages", libtcod.TYPE_DICE, True)
 		libtcod.struct_add_property(item_type_struct, "color", libtcod.TYPE_COLOR, True)
@@ -271,13 +271,13 @@ public :
 	@Param name	The name of the property (in the example, this would be "damage_type").
 	@Param value_list	The list of allowed strings.
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
-	@CppEx 
+	@CppEx
 		static const char *damageTypes[] = { "slash", "pierce", "bludgeon", NULL }; // note the ending NULL
 		itemTypeStruct->addValueList("damage_type", damageTypes, true);
-	@CEx 
+	@CEx
 		static const char *damage_types[] = { "slash", "pierce", "bludgeon", NULL };
 		TCOD_struct_add_value_list(item_type_struct, "damage_type", damage_types, true);
-	@PyEx 
+	@PyEx
 		damage_types = [ "slash", "pierce", "bludgeon" ]
 		litbcod.struct_add_value_list(item_type_struct, "damage_type", damage_types, True)
 	*/
@@ -294,22 +294,22 @@ public :
 	@Param name	The name of the property (in the example, this would be "cost" or "damages" or ...).
 	@Param type	The type of the list elements. It must be a standard type (see <a href="parser_types.html">this</a>). It cannot be TCOD_TYPE_LIST.
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
-	@CppEx 
+	@CppEx
 		itemTypeStruct->addListProperty("intList",TCOD_TYPE_INT,true);
 		itemTypeStruct->addListProperty("floatList",TCOD_TYPE_FLOAT,true);
 		itemTypeStruct->addListProperty("stringList",TCOD_TYPE_STRING,true);
-	@CEx 
+	@CEx
 		TCOD_struct_add_list_property(item_type_struct, "intList", TCOD_TYPE_INT, true);
 		TCOD_struct_add_list_property(item_type_struct, "floatList", TCOD_TYPE_FLOAT, true);
 		TCOD_struct_add_list_property(item_type_struct, "stringList", TCOD_TYPE_STRING, true);
-	@PyEx 
+	@PyEx
 		libtcod.struct_add_list_property(item_type_struct, "intList", libtcod.TYPE_INT, True)
 		libtcod.struct_add_list_property(item_type_struct, "floatList", libtcod.TYPE_FLOAT, True)
 		libtcod.struct_add_list_property(item_type_struct, "stringList", libtcod.TYPE_STRING, True)
 	*/
 	void addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory);
 
-	/**	
+	/**
 	@PageName parser_str
 	@FuncTitle Adding a sub-structure
 	@FuncDesc A structure can contain others structures. You can tell the parser which structures are allowed inside one structure type with this function.
@@ -318,7 +318,7 @@ public :
 	@Py struct_add_structure(str, sub_structure)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param sub_structure	The structure type that can be embedded.
-	@CppEx 
+	@CppEx
 		// The item_type structure can contain itself
 		itemTypeStruct->addStructure(itemTypeStruct);
 	@CEx TCOD_struct_add_value_list(item_type_struct, item_type_struct);
@@ -351,7 +351,7 @@ public :
 	@Py struct_is_mandatory(str,name)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param name	The name of the property, as defined when you called addProperty or addValueList or addListProperty.
-	@CppEx bool costMandatory = itemTypeStruct->isPropertyMandatory("cost"); 
+	@CppEx bool costMandatory = itemTypeStruct->isPropertyMandatory("cost");
 	@CEx bool cost_mandatory = TCOD_struct_is_mandatory(item_type_struct, "cost");
 	@PyEx cost_mandatory = libtcod.struct_is_mandatory(item_type_struct, "cost")
 	*/
@@ -367,7 +367,7 @@ public :
 	@Py struct_get_type(str, name)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param name	The name of the property, as defined when you called addProperty or addValueList or addListProperty.
-	@CppEx 
+	@CppEx
 		TCOD_value_type_t costType = itemTypeStruct->getPropertyType("cost"); // returns TCOD_TYPE_INT
 		TCOD_value_type_t intListType = itemTypeStruct->getPropertyType("intList"); // returns TCOD_TYPE_LIST|TCOD_TYPE_INT
 	@CEx TCOD_value_type_t cost_type = TCOD_struct_get_type(item_type_struct, "cost");
@@ -383,7 +383,7 @@ public :
  @PageName parser_run
  @FuncTitle Creating a listener
  @FuncDesc For basic config files, you don't have to write a listener. Instead, use the default listener. The parser uses a SAX-like approach during the parsing of the file. This means that the whole file is not stored in memory in a tree structure. Instead, it works like a stream parser and raises events. Each event has an associated callback that is provided by a listener :
- @Cpp 
+ @Cpp
 	class ITCODParserListener {
 	public :
 		virtual bool parserNewStruct(TCODParser *parser,const TCODParserStruct *str,const char *name)=0;
@@ -392,7 +392,7 @@ public :
 		virtual bool parserEndStruct(TCODParser *parser,const TCODParserStruct *str, const char *name)=0;
 		virtual void error(const char *msg) = 0;
 	};
- @C 
+ @C
 	typedef struct {
 		bool (*new_struct)(TCOD_parser_struct_t str,const char *name);
 		bool (*new_flag)(const char *name);
@@ -461,32 +461,32 @@ public :
 		my_parser_property,
 		my_parser_end_struct,
 		my_parser_error
-	}; 
+	};
  @Py
     class MyListener:
         def new_struct(self, struct, name):
-            print 'new structure type', libtcod.struct_get_name(struct), 
+            print 'new structure type', libtcod.struct_get_name(struct),
                   ' named ', name
             return True
         def new_flag(self, name):
             print 'new flag named ', name
             return True
         def new_property(self,name, typ, value):
-            type_names = ['NONE', 'BOOL', 'CHAR', 'INT', 'FLOAT', 'STRING', 
+            type_names = ['NONE', 'BOOL', 'CHAR', 'INT', 'FLOAT', 'STRING',
                           'COLOR', 'DICE']
             if typ == libtcod.TYPE_COLOR :
-                print 'new property named ', name,' type ',type_names[typ], 
+                print 'new property named ', name,' type ',type_names[typ],
                       ' value ', value.r, value.g, value.b
             elif typ == libtcod.TYPE_DICE :
-                print 'new property named ', name,' type ',type_names[typ], 
-                      ' value ', value.nb_dices, value.nb_faces, 
+                print 'new property named ', name,' type ',type_names[typ],
+                      ' value ', value.nb_rolls, value.nb_faces,
                       value.multiplier, value.addsub
             else:
-                print 'new property named ', name,' type ',type_names[typ], 
+                print 'new property named ', name,' type ',type_names[typ],
                       ' value ', value
             return True
         def end_struct(self, struct, name):
-            print 'end structure type', libtcod.struct_get_name(struct), 
+            print 'end structure type', libtcod.struct_get_name(struct),
                   ' named ', name
             return True
         def error(self,msg):
@@ -503,7 +503,7 @@ public :
 	@FuncTitle Handling 'newStruct' events
 	@FuncDesc This callback is called each time the parser find a new structure declaration in the file. Example :
 <div class="code"><pre>item_type "blade" { // <= newStruct event here
-	... 
+	...
 }
 </pre></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
@@ -520,7 +520,7 @@ It must return true if everything is right, false if there is an error and the p
 	@PageName parser_run
 	@FuncTitle Handling 'newFlag' events
 	@FuncDesc This callback is called each time the parser find a new flag in the file. Example :
-<div class="code"><pre>item_type "blade" { 
+<div class="code"><pre>item_type "blade" {
 	abstract  // <= newFlag event here
 }
 </pre></div>
@@ -533,11 +533,11 @@ It must return true if everything is right, false if there is an error and the p
 	*/
 	virtual bool parserFlag(TCODParser *parser,const char *name)=0;
 
-	/**	
+	/**
 	@PageName parser_run
 	@FuncTitle Handling 'newProperty' events
 	@FuncDesc This callback is called each time the parser find a new property in the file. Example :
-<div class="code"><pre>item_type "blade" { 
+<div class="code"><pre>item_type "blade" {
 	abstract
 	cost=300 // <= newProperty event here
 }
@@ -558,8 +558,8 @@ In the case of a value-list property, the type would reflect the list id (betwee
 	@PageName parser_run
 	@FuncTitle Handling 'endStruct' events
 	@FuncDesc This callback is called each time the parser find the end of a structure declaration in the file. Example :
-<div class="code"><pre>item_type "blade" { 
-	... 
+<div class="code"><pre>item_type "blade" {
+	...
 } // <= endStruct event here
 </pre></div>
 It must return true if everything is right, false if there is an error and the parser must exit.
@@ -608,12 +608,12 @@ The code in the example below will result in your error callback called with the
  @FuncDesc The parser can parse natively several data types. It stores them in a generic union :
  @C
 	typedef struct {
-		int nb_dices;
+		int nb_rolls;
 		int nb_faces;
 		float multiplier;
 		float addsub;
 	} TCOD_dice_t;
-	
+
 	typedef union {
 		bool b;
 		char c;
@@ -654,13 +654,13 @@ Special characters :<br>
 <tr><td>TCOD_TYPE_STRING</td><td>A double-quote delimited string :<br>"This is a string"<br>Support the same special characters as TCOD_TYPE_CHAR.</td><td>value.s == the corresponding string.<br>Warning ! If you want to store this string, you have to duplicate it (with strdup) as it will be overwritten by the parser</td></tr>
 <tr><td>TCOD_TYPE_COLOR</td><td>decimal notation : "16,32,64"<br>hexadecimal notation : "#102040"</td><td>value.col == the color.</td></tr>
 
-<tr><td>TCOD_TYPE_DICE</td><td>[multiplier (x|*)] nb_dices (d|D) nb_faces [(+|-) addsub] :<br>"3d6"<br>"3D6+2"<br>"0.5x3d6-2"<br>"2*3d8"</td><td>value.dice == the dice components</td></tr>
+<tr><td>TCOD_TYPE_DICE</td><td>[multiplier (x|*)] nb_rolls (d|D) nb_faces [(+|-) addsub] :<br>"3d6"<br>"3D6+2"<br>"0.5x3d6-2"<br>"2*3d8"</td><td>value.dice == the dice components</td></tr>
 <tr><td>TCOD_TYPE_VALUELISTxx</td><td>Same as TCOD_TYPE_STRING</td><td>value.s == the string value from the value list</td></tr>
 <tr><td>TCOD_TYPE_LIST</td><td>[ &lt;value1&gt;,&lt;value2&gt;,... ]</td><td>value.list == the TCOD_list_t containing the elements</td></tr>
 
 </tbody></table>
 
-To define a list type, use the appropriate function (TCODParserStruct::addListProperty / TCOD_parser_add_list_property) and specify the type of the elements in the list. Lists of list are not supported. 
+To define a list type, use the appropriate function (TCODParserStruct::addListProperty / TCOD_parser_add_list_property) and specify the type of the elements in the list. Lists of list are not supported.
  */
 
 

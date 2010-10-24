@@ -485,3 +485,48 @@ double TCOD_random_get_double_mean (TCOD_random_t mersenne, double min, double m
 		default: return TCOD_random_get_gaussian_double_range_custom(mersenne, min, max, mean); break;
 	}
 }
+
+TCOD_dice_t TCOD_random_dice_new (const char * s) {
+	TCOD_dice_t d = { 1, 1, 1.0f, 0.0f };
+	char * ptr = (char *)s;
+	char * tmp = (char *)malloc(strlen(s) + 1);
+	size_t l;
+	/* get multiplier */
+	if ((l = strcspn(ptr,"*x")) < strlen(ptr)) {
+		strcpy(tmp,ptr);
+		tmp[l] = '\0';
+		d.multiplier = atof(tmp);
+		ptr += l + 1;
+	}
+	/* get rolls */
+	l = strcspn(ptr,"dD");
+	strcpy(tmp,ptr);
+	tmp[l] = '\0';
+	d.nb_rolls = atoi(tmp);
+	ptr += l + 1;
+	/* get faces */
+	l = strcspn(ptr,"-+");
+	strcpy(tmp,ptr);
+	tmp[l] = '\0';
+	d.nb_faces = atoi(tmp);
+	ptr += l;
+	/* get addsub */
+	if (strlen(ptr) > 0) {
+		int mul = (*ptr == '+') ? 1 : (-1);
+		ptr++;
+		d.addsub = atof(ptr) * mul;
+	}
+	/* finish */
+	free(tmp);
+	return d;
+}
+
+int TCOD_random_dice_roll (TCOD_random_t mersenne, TCOD_dice_t dice) {
+	int min = (int)(dice.multiplier * dice.nb_rolls + dice.addsub);
+	int max = (int)(dice.multiplier * dice.nb_rolls * dice.nb_faces + dice.addsub);
+	return TCOD_random_get_i(mersenne,min,max);
+}
+
+int TCOD_random_dice_roll_s (TCOD_random_t mersenne, const char * s) {
+	return TCOD_random_dice_roll(mersenne,TCOD_random_dice_new(s));
+}

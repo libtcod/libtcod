@@ -43,6 +43,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
     void TCODMap::clear (bool transparent = false, bool walkable = false)
     void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
     map_clear (map, transparent, walkable)
++ added dice to the TCODRandom toolkit
 + added support for dynamic property declaration in the parser
 + added TCODList::reverse(), TCODPath::reverse(), TCODDijkstra::reverse()
 + added weighted Gaussian distribution RNG

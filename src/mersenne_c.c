@@ -512,9 +512,9 @@ TCOD_dice_t TCOD_random_dice_new (const char * s) {
 	ptr += l;
 	/* get addsub */
 	if (strlen(ptr) > 0) {
-		int mul = (*ptr == '+') ? 1 : (-1);
+		int sign = (*ptr == '+') ? 1 : (-1);
 		ptr++;
-		d.addsub = atof(ptr) * mul;
+		d.addsub = atof(ptr) * sign;
 	}
 	/* finish */
 	free(tmp);
@@ -522,9 +522,11 @@ TCOD_dice_t TCOD_random_dice_new (const char * s) {
 }
 
 int TCOD_random_dice_roll (TCOD_random_t mersenne, TCOD_dice_t dice) {
-	int min = (int)(dice.multiplier * dice.nb_rolls + dice.addsub);
-	int max = (int)(dice.multiplier * dice.nb_rolls * dice.nb_faces + dice.addsub);
-	return TCOD_random_get_i(mersenne,min,max);
+	int rolls;
+	int result = 0;
+	for (rolls = 0; rolls < dice.nb_rolls; rolls++)
+		result += TCOD_random_get_i(mersenne,1,dice.nb_faces);
+	return (result + dice.addsub) * dice.multiplier;
 }
 
 int TCOD_random_dice_roll_s (TCOD_random_t mersenne, const char * s) {

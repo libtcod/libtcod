@@ -388,25 +388,25 @@ def render_noise(first, key):
                  noise_zoom * y / (2*SAMPLE_SCREEN_HEIGHT) + noise_dy]
             value = 0.0
             if noise_func == PERLIN:
-                value = libtcod.noise_perlin(noise, f)
+                value = libtcod.noise_get(noise, f, libtcod.NOISE_PERLIN)
             elif noise_func == SIMPLEX:
-                value = libtcod.noise_simplex(noise, f)
+                value = libtcod.noise_get(noise, f, libtcod.NOISE_SIMPLEX)
             elif noise_func == WAVELET:
-                value = libtcod.noise_wavelet(noise, f)
+                value = libtcod.noise_get(noise, f, libtcod.NOISE_WAVELET)
             elif noise_func == FBM_PERLIN:
-                value = libtcod.noise_fbm_perlin(noise, f, noise_octaves)
+                value = libtcod.noise_get_fbm(noise, f, noise_octaves, libtcod.NOISE_PERLIN)
             elif noise_func == TURBULENCE_PERLIN:
-                value = libtcod.noise_turbulence_perlin(noise, f, noise_octaves)
+                value = libtcod.noise_get_turbulence(noise, f, noise_octaves, libtcod.NOISE_PERLIN)
             elif noise_func == FBM_SIMPLEX:
-                value = libtcod.noise_fbm_simplex(noise, f, noise_octaves)
+                value = libtcod.noise_get_fbm(noise, f, noise_octaves, libtcod.NOISE_SIMPLEX)
             elif noise_func == TURBULENCE_SIMPLEX:
-                value = libtcod.noise_turbulence_simplex(noise, f,
-                                                         noise_octaves)
+                value = libtcod.noise_get_turbulence(noise, f,
+                                                         noise_octaves, libtcod.NOISE_SIMPLEX)
             elif noise_func == FBM_WAVELET:
-                value = libtcod.noise_fbm_wavelet(noise, f, noise_octaves)
+                value = libtcod.noise_get_fbm(noise, f, noise_octaves, libtcod.NOISE_WAVELET)
             elif noise_func == TURBULENCE_WAVELET:
-                value = libtcod.noise_turbulence_wavelet(noise, f,
-                                                         noise_octaves)
+                value = libtcod.noise_get_turbulence(noise, f,
+                                                         noise_octaves, libtcod.NOISE_WAVELET)
             c = int((value + 1.0) / 2.0 * 255)
             if c < 0:
                 c = 0
@@ -1357,8 +1357,8 @@ def render_py(first, key):
             for v in range(RES_V - int_t, RES_V):
                 for u in range(0, RES_U):
                     tex_v = (v + int_abs_t) / float(RES_V)
-                    texture[u,v] = (libtcod.noise_fbm_simplex(noise2d, [u/float(RES_U), tex_v], 32.0) +
-                                    libtcod.noise_fbm_simplex(noise2d, [1 - u/float(RES_U), tex_v], 32.0))
+                    texture[u,v] = (libtcod.noise_get_fbm(noise2d, [u/float(RES_U), tex_v], 32.0) +
+                                    libtcod.noise_get_fbm(noise2d, [1 - u/float(RES_U), tex_v], 32.0))
 
         else:  #"roll" texture, without numpy
             temp = texture2[0 : RES_U*int_t]
@@ -1370,8 +1370,8 @@ def render_py(first, key):
                 for u in range(0, RES_U):
                     tex_v = (v + int_abs_t) / float(RES_V)
                     texture2[u + v*RES_U] = (
-                        libtcod.noise_fbm_simplex(noise2d, [u/float(RES_U), tex_v], 32.0) +
-                        libtcod.noise_fbm_simplex(noise2d, [1 - u/float(RES_U), tex_v], 32.0))
+                        libtcod.noise_get_fbm(noise2d, [u/float(RES_U), tex_v], 32.0) +
+                        libtcod.noise_get_fbm(noise2d, [1 - u/float(RES_U), tex_v], 32.0))
     if use_numpy:
         #squared distance from center, clipped to sensible minimum and maximum values
         sqr_dist = xc**2 + yc**2

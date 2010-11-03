@@ -290,15 +290,15 @@ void render_noise(bool first, TCOD_key_t*key) {
 			f[1] = zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + dy;
 			float value = 0.0f;
 			switch (func ) {
-				case PERLIN : value = noise->getPerlin(f); break;
-				case SIMPLEX : value = noise->getSimplex(f); break;
-				case WAVELET : value = noise->getWavelet(f); break;
-				case FBM_PERLIN : value = noise->getFbmPerlin(f,octaves); break;
-				case TURBULENCE_PERLIN : value = noise->getTurbulencePerlin(f,octaves); break;
-				case FBM_SIMPLEX : value = noise->getFbmSimplex(f,octaves); break;
-				case TURBULENCE_SIMPLEX : value = noise->getTurbulenceSimplex(f,octaves); break;
-				case FBM_WAVELET : value = noise->getFbmWavelet(f,octaves); break;
-				case TURBULENCE_WAVELET : value = noise->getTurbulenceWavelet(f,octaves); break;
+				case PERLIN : value = noise->get(f,TCOD_NOISE_PERLIN); break;
+				case SIMPLEX : value = noise->get(f,TCOD_NOISE_SIMPLEX); break;
+				case WAVELET : value = noise->get(f,TCOD_NOISE_WAVELET); break;
+				case FBM_PERLIN : value = noise->getFbm(f,octaves,TCOD_NOISE_PERLIN); break;
+				case TURBULENCE_PERLIN : value = noise->getTurbulence(f,octaves,TCOD_NOISE_PERLIN); break;
+				case FBM_SIMPLEX : value = noise->getFbm(f,octaves,TCOD_NOISE_SIMPLEX); break;
+				case TURBULENCE_SIMPLEX : value = noise->getTurbulence(f,octaves,TCOD_NOISE_SIMPLEX); break;
+				case FBM_WAVELET : value = noise->getFbm(f,octaves,TCOD_NOISE_WAVELET); break;
+				case TURBULENCE_WAVELET : value = noise->getTurbulence(f,octaves,TCOD_NOISE_WAVELET); break;
 			}
 			uint8 c=(uint8)((value+1.0f)/2.0f*255);
 			// use a bluish color
@@ -467,11 +467,11 @@ void render_fov(bool first, TCOD_key_t*key) {
 		torchx+=0.2f;
 		// randomize the light position between -1.5 and 1.5
 		float tdx=torchx+20.0f;
-		dx = noise->getSimplex(&tdx)*1.5f;
+		dx = noise->get(&tdx)*1.5f;
 		tdx += 30.0f;
-		dy = noise->getSimplex(&tdx)*1.5f;
+		dy = noise->get(&tdx)*1.5f;
 		// randomize the light intensity between -0.2 and 0.2
-		di = 0.2f * noise->getSimplex(&torchx);
+		di = 0.2f * noise->get(&torchx);
 	}
 	// draw the dungeon
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -1260,7 +1260,7 @@ protected :
 				int ir=0,ig=0,ib=0;
 				if ( (y-sampley)%8 == 0 ) {
 					f[1]=(float)(y)/sampleh;
-					n=noise->getFbmSimplex(f,3.0f);
+					n=noise->getFbm(f,3.0f);
 				}
 				int dec = (int)(3*(n+1.0f));
 				int count=0;

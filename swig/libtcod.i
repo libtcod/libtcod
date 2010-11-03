@@ -192,25 +192,14 @@ bool TCODLine::step(int *xCur, int *yCur);
 %apply (float *INOUT) {(double* f)};
 %apply (float *INOUT, float IN) {(double* f, float octaves)};
 #endif
-float TCODNoise::getPerlin(float *f) const;
-float TCODNoise::getFbmPerlin(float *f, float octaves) const;
-float TCODNoise::getTurbulencePerlin(float *f, float octaves) const;
-float TCODNoise::getSimplex(float *f) const;
-float TCODNoise::getFbmSimplex(float *f, float octaves) const;
-float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const;
-float TCODNoise::getWavelet(float *f) const;
-float TCODNoise::getFbmWavelet(float *f, float octaves) const;
-float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const;
-
-%rename(getPerlinNoise) getPerlin;
-%rename(getPerlinBrownianMotion) getFbmPerlin;
-%rename(getPerlinTurbulence) getTurbulencePerlin;
-%rename(getSimplexNoise) getSimplex;
-%rename(getSimplexBrownianMotion) getFbmSimplex;
-%rename(getSimplexTurbulence) getTurbulenceSimplex;
-%rename(getWaveletNoise) getWavelet;
-%rename(getWaveletBrownianMotion) getFbmWavelet;
-%rename(getWaveletTurbulence) getTurbulenceWavelet;
+%rename(TCODNoiseType) TCOD_noise_type_t;
+%rename(NoiseDefault) TCOD_NOISE_DEFAULT;
+%rename(NoiseSimplex) TCOD_NOISE_SIMPLEX;
+%rename(NoisePerlin) TCOD_NOISE_PERLIN;
+%rename(NoiseWavelet) TCOD_NOISE_WAVEVLET;
+float TCODNoise::get(float *f, TCOD_noise_type_t typ=TCOD_NOISE_DEFAULT);
+float TCODNoise::getFbm(float *f, float octaves, TCOD_noise_type_t typ=TCOD_NOISE_DEFAULT);
+float TCODNoise::getTurbulence(float *f, float octaves, TCOD_noise_type_t typ=TCOD_NOISE_DEFAULT);
 
 // path.hpp
 // Swig is too stupid to handle an INOUT and OUTPUT %apply with the same name. So reproduce the entire class...sigh

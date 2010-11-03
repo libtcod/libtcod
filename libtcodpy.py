@@ -1220,21 +1220,16 @@ def parser_get_list_property(parser, name, typ):
 # random module
 ############################
 _lib.TCOD_random_get_float.restype = c_float
-_lib.TCOD_random_get_gaussian_double.restype = c_double
-_lib.TCOD_random_get_gaussian_double_range.restype = c_double
-_lib.TCOD_random_get_gaussian_double_range_custom.restype = c_double
-_lib.TCOD_random_get_gaussian_float.restype = c_float
-_lib.TCOD_random_get_gaussian_float_range.restype = c_float
-_lib.TCOD_random_get_gaussian_float_range_custom.restype = c_float
-_lib.TCOD_random_get_gaussian_double_inv.restype = c_double
-_lib.TCOD_random_get_gaussian_double_range_inv.restype = c_double
-_lib.TCOD_random_get_gaussian_double_range_custom_inv.restype = c_double
-_lib.TCOD_random_get_gaussian_float_inv.restype = c_float
-_lib.TCOD_random_get_gaussian_float_range_inv.restype = c_float
-_lib.TCOD_random_get_gaussian_float_range_custom_inv.restype = c_float
+_lib.TCOD_random_get_double.restype = c_double
 
 RNG_MT = 0
 RNG_CMWC = 1
+
+DISTRIBUTION_LINEAR = 0
+DISTRIBUTION_GAUSSIAN = 1
+DISTRIBUTION_GAUSSIAN_RANGE = 2
+DISTRIBUTION_GAUSSIAN_INVERSE = 3
+DISTRIBUTION_GAUSSIAN_RANGE_INVERSE = 4
 
 def random_get_instance():
     return _lib.TCOD_random_get_instance()
@@ -1245,77 +1240,26 @@ def random_new(algo=RNG_CMWC):
 def random_new_from_seed(seed, algo=RNG_CMWC):
     return _lib.TCOD_random_new_from_seed(algo,c_uint(seed))
 
+def random_set_distribution(rnd, dist) :
+	_lib.TCOD_random_set_distribution(rnd, dist)
+
 def random_get_int(rnd, mi, ma):
     return _lib.TCOD_random_get_int(rnd, mi, ma)
 
 def random_get_float(rnd, mi, ma):
     return _lib.TCOD_random_get_float(rnd, c_float(mi), c_float(ma))
 
-def random_get_gaussian_double(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_double(
-                            rnd, c_double(mean), c_double(std_dev))
+def random_get_double(rnd, mi, ma):
+    return _lib.TCOD_random_get_double(rnd, c_double(mi), c_double(ma))
 
-def random_get_gaussian_float(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_float(
-                            rnd, c_float(mean), c_float(std_dev))
+def random_get_int_mean(rnd, mi, ma, mean):
+    return _lib.TCOD_random_get_int_mean(rnd, mi, ma, mean)
 
-def random_get_gaussian_int(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_int(rnd, mean, std_dev)
+def random_get_float_mean(rnd, mi, ma, mean):
+    return _lib.TCOD_random_get_float_mean(rnd, c_float(mi), c_float(ma), c_float(mean))
 
-def random_get_gaussian_double_range(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_double_range(
-                           rnd, c_double(mi), c_double(ma))
-    else:
-        return _lib.TCOD_random_get_gaussian_double_range_custom(
-                           rnd, c_double(mi), c_double(ma), c_double(mean))
-
-def random_get_gaussian_float_range(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_float_range(
-                            rnd, c_float(mi), c_float(ma))
-    else:
-        return _lib.TCOD_random_get_gaussian_float_range_custom(
-                            rnd, c_float(mi), c_float(ma), c_float(mean))
-
-def random_get_gaussian_int_range(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_int_range(rnd, mi, ma)
-    else:
-        return _lib.TCOD_random_get_gaussian_int_range_custom(rnd, mi, ma, mean)
-
-def random_get_gaussian_double_inv(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_double_inv(
-                            rnd, c_double(mean), c_double(std_dev))
-
-def random_get_gaussian_float_inv(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_float_inv(
-                            rnd, c_float(mean), c_float(std_dev))
-
-def random_get_gaussian_int_inv(rnd, mean, std_dev):
-    return _lib.TCOD_random_get_gaussian_int_inv(rnd, mean, std_dev)
-
-def random_get_gaussian_double_range_inv(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_double_range_inv(
-                           rnd, c_double(mi), c_double(ma))
-    else:
-        return _lib.TCOD_random_get_gaussian_double_range_custom_inv(
-                           rnd, c_double(mi), c_double(ma), c_double(mean))
-
-def random_get_gaussian_float_range_inv(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_float_range_inv(
-                            rnd, c_float(mi), c_float(ma))
-    else:
-        return _lib.TCOD_random_get_gaussian_float_range_custom_inv(
-                            rnd, c_float(mi), c_float(ma), c_float(mean))
-
-def random_get_gaussian_int_range_inv(rnd, mi, ma, mean=None):
-    if mean is None:
-        return _lib.TCOD_random_get_gaussian_int_range_inv(rnd, mi, ma)
-    else:
-        return _lib.TCOD_random_get_gaussian_int_range_custom_inv(rnd, mi, ma, mean)
+def random_get_double_mean(rnd, mi, ma, mean):
+    return _lib.TCOD_random_get_double_mean(rnd, c_double(mi), c_double(ma), c_double(mean))
 
 def random_save(rnd):
     return _lib.TCOD_random_save(rnd)
@@ -1329,18 +1273,20 @@ def random_delete(rnd):
 ############################
 # noise module
 ############################
-_lib.TCOD_noise_perlin.restype = c_float
-_lib.TCOD_noise_simplex.restype = c_float
-_lib.TCOD_noise_wavelet.restype = c_float
-_lib.TCOD_noise_fbm_perlin.restype = c_float
-_lib.TCOD_noise_fbm_simplex.restype = c_float
-_lib.TCOD_noise_fbm_wavelet.restype = c_float
-_lib.TCOD_noise_turbulence_perlin.restype = c_float
-_lib.TCOD_noise_turbulence_simplex.restype = c_float
-_lib.TCOD_noise_turbulence_wavelet.restype = c_float
+_lib.TCOD_noise_get.restype = c_float
+_lib.TCOD_noise_get_ex.restype = c_float
+_lib.TCOD_noise_get_fbm.restype = c_float
+_lib.TCOD_noise_get_fbm_ex.restype = c_float
+_lib.TCOD_noise_get_turbulence.restype = c_float
+_lib.TCOD_noise_get_turbulence_ex.restype = c_float
 
 NOISE_DEFAULT_HURST = 0.5
 NOISE_DEFAULT_LACUNARITY = 2.0
+
+NOISE_DEFAULT = 0
+NOISE_PERLIN = 1
+NOISE_SIMPLEX = 2
+NOISE_WAVELET = 4
 
 _NOISE_PACKER_FUNC = (None,
                       struct.Struct("1f").pack,
@@ -1352,32 +1298,17 @@ _NOISE_PACKER_FUNC = (None,
 def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, random=0):
     return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), random)
 
-def noise_perlin(n, f):
-    return _lib.TCOD_noise_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f))
+def noise_set_type(n, typ) :
+    _lib.TCOD_noise_set_type(n,typ)
 
-def noise_simplex(n, f):
-    return _lib.TCOD_noise_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f))
+def noise_get(n, f, typ=NOISE_DEFAULT):
+    return _lib.TCOD_noise_get_ex(n, _NOISE_PACKER_FUNC[len(f)](*f), typ)
 
-def noise_wavelet(n, f):
-    return _lib.TCOD_noise_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f))
+def noise_get_fbm(n, f, oc, typ=NOISE_DEFAULT):
+    return _lib.TCOD_noise_get_fbm_ex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc), typ)
 
-def noise_fbm_perlin(n, f, oc):
-    return _lib.TCOD_noise_fbm_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
-
-def noise_fbm_simplex(n, f, oc):
-    return _lib.TCOD_noise_fbm_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
-
-def noise_fbm_wavelet(n, f, oc):
-    return _lib.TCOD_noise_fbm_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
-
-def noise_turbulence_perlin(n, f, oc):
-    return _lib.TCOD_noise_turbulence_perlin(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
-
-def noise_turbulence_simplex(n, f, oc):
-    return _lib.TCOD_noise_turbulence_simplex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
-
-def noise_turbulence_wavelet(n, f, oc):
-    return _lib.TCOD_noise_turbulence_wavelet(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc))
+def noise_get_turbulence(n, f, oc, typ=NOISE_DEFAULT):
+    return _lib.TCOD_noise_get_turbulence_ex(n, _NOISE_PACKER_FUNC[len(f)](*f), c_float(oc), typ)
 
 def noise_delete(n):
     _lib.TCOD_noise_delete(n)

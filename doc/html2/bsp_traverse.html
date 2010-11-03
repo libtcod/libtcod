@@ -7,12 +7,12 @@
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('bsp.html')">15. BSP toolkit</a> &gt; <a onclick="link('bsp_traverse.html')">15.5. Traversing the tree</a><br>
-<a class="prev" onclick="link('bsp_read.html')">15.4. Reading information from the tree</a> 
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('bsp.html')">12. BSP toolkit</a> &gt; <a onclick="link('bsp_traverse.html')">12.5. Traversing the tree</a><br>
+<a class="prev" onclick="link('bsp_read.html')">12.4. Reading information from the tree</a> 
 </p></div></div>
 <div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
 <div class="main"><div class="maintext">
-<h1>15.5. Traversing the tree</h1>
+<h1>12.5. Traversing the tree</h1>
 <a name="0"></a><p>You can scan all the nodes of the tree and have a custom function called back for each node.<br />		Each traversal function returns false if the traversal has been interrupted (a callback returned false).<br />		* Pre-order : the callback is called for the current node, then for the left son, then for the right son.<br />		* In-order : the callback is called for the left son, then for current node, then for the right son.<br />		* Post-order : the callback is called for the left son, then for the right son, then for the current node.<br />		* Level-order : the callback is called for the nodes level by level, from left to right.<br />		* Inverted level-order : the callback is called in the exact inverse order as Level-order.<br />		<table class="param">
 		<tbody><tr><th>Pre order</th><th>In order</th><th>Post order</th><th>Level order</th><th>Inverted level<br>order</th></tr>
 		<tr><td><img src="bsp_preorder.png"></td><td><img src="bsp_inorder.png"></td><td><img src="bsp_postorder.png"></td><td><img src="bsp_levelorder.png"></td><td><img src="bsp_invlevelorder.png"></td></tr>

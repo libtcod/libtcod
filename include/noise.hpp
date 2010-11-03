@@ -152,364 +152,167 @@ class TCODLIB_API TCODNoise {
 		virtual ~TCODNoise();
 
    		/**
-   		@PageName noise_simplex
+   		@PageName noise_setType
 		@PageFather noise
-		@PageTitle Getting simplex noise
-		@FuncTitle Getting flat simplex noise
-		@FuncDesc This function returns the simplex noise function value between -1.0 and 1.0 at given coordinates.
-			The simplex noise is much faster than Perlin, especially in 4 dimensions. It has a better contrast too.
-		@Cpp float TCODNoise::getSimplex(float *f) const
-		@C float TCOD_noise_simplex(TCOD_noise_t noise, float *f)
-		@Py noise_simplex(noise, f)
-		@C# float TCODNoise::getSimplexNoise(float[] f)
+		@PageTitle Choosing a noise type
+		@FuncTitle Choosing a noise type
+		@FuncDesc Use this function to define the default algorithm used by the noise functions. 
+			The default algorithm is simplex. It's much faster than Perlin, especially in 4 dimensions. It has a better contrast too.
+		@Cpp void TCODNoise::setType(TCOD_noise_type_t type)
+		@C void TCOD_noise_set_type(TCOD_noise_t noise, TCOD_noise_type_t type)
+		@Py noise_set_type(noise, type)
+		@C# void TCODNoise::setType(type)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
+		@Param type		The algorithm to use, either TCOD_NOISE_SIMPLEX, TCOD_NOISE_PERLIN or TCOD_NOISE_WAVELET.
 		@CppEx
-			// 1d noise
 			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getSimplex(&p);
-			// 2d noise
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getSimplex(p);
+			noise1d->setType(TCOD_NOISE_PERLIN);
 		@CEx
-			// 1d noise
 			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_simplex(noise1d,&p);
-			// 2d noise
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_simplex(noise2d,p);
+			TCOD_noise_set_type(noise1d,TCOD_NOISE_PERLIN);
 		@PyEx
-			# 1d noise
 			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_simplex(noise1d,[0.5])
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_simplex(noise2d,[0.5,0.7])
+			libtcod.noise_set_type(noise1d,libtcod.NOISE_PERLIN)
    		*/
-		//float getSimplex(float *f) const;
-
-		/**
-		@PageName noise_simplex
-		@FuncTitle Getting simplex fbm noise
-		@FuncDesc This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getFbmSimplex(float *f, float octaves) const
-		@C float TCOD_noise_fbm_simplex(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_fbm_simplex(noise, f, octaves)
-		@C# float TCODNoise::getSimplexBrownianMotion(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getFbmSimplex(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getFbmSimplex(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_fbm_simplex(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_fbm_simplex(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_fbm_simplex(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_fbm_simplex(noise2d,[0.5,0.7],32.0)
-		*/
-		//float getFbmSimplex(float *f, float octaves) const;
-
-		/**
-		@PageName noise_simplex
-		@FuncTitle Getting simplex turbulence
-		@FuncDesc This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getTurbulenceSimplex(float *f, float octaves) const
-		@C float TCOD_noise_turbulence_simplex(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_turbulence_simplex(noise, f, octaves)
-		@C# float TCODNoise::getSimplexTurbulence(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getTurbulenceSimplex(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getTurbulenceSimplex(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_turbulence_simplex(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_turbulence_simplex(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_turbulence_simplex(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_turbulence_simplex(noise2d,[0.5,0.7],32.0)
-		*/
-		//float getTurbulenceSimplex(float *f, float octaves) const;
-
-		/**
-		@PageName noise_perlin
-		@PageFather noise
-		@PageTitle Getting Perlin noise
-		@FuncTitle Getting flat Perlin noise
-		@FuncDesc This function returns the perlin noise function value between -1.0 and 1.0 at given coordinates.
-		@Cpp float TCODNoise::getPerlin(float *f) const
-		@C float TCOD_noise_perlin(TCOD_noise_t noise, float *f)
-		@Py noise_perlin(noise, f)
-		@C# float TCODNoise::getPerlinNoise(float[] f)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@CppEx
-			// 1d noise
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getPerlin(&p);
-			// 2d noise
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getPerlin(p);
-		@CEx
-			// 1d noise
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_perlin(noise1d,&p);
-			// 2d noise
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_perlin(noise2d,p);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_perlin(noise1d,[0.5])
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_perlin(noise2d,[0.5,0.7])
-		*/
-		//float getPerlin(float *f) const;
-
-		/**
-		@PageName noise_perlin
-		@FuncTitle Getting Perlin fbm
-		@FuncDesc This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getFbmPerlin(float *f, float octaves) const
-		@C float TCOD_noise_fbm_perlin(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_fbm_perlin(noise, f, octaves)
-		@C# float TCODNoise::getPerlinBrownianMotion(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getFbmPerlin(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getFbmPerlin(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_fbm_perlin(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_fbm_perlin(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_fbm_perlin(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_fbm_perlin(noise2d,[0.5,0.7],32.0)
-		*/
-		//float getFbmPerlin(float *f, float octaves) const;
-
-		/**
-		@PageName noise_perlin
-		@FuncTitle Getting Perlin turbulence
-		@FuncDesc This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getTurbulencePerlin(float *f, float octaves) const
-		@C float TCOD_noise_turbulence_perlin(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_turbulence_perlin(noise, f, octaves)
-		@C# float TCODNoise::getPerlinTurbulence(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getTurbulencePerlin(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getTurbulencePerlin(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_turbulence_perlin(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_turbulence_perlin(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_turbulence_perlin(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_turbulence_perlin(noise2d,[0.5,0.7],32.0)
-		*/
-		//float getTurbulencePerlin(float *f, float octaves) const;
-
-		/**
-		@PageName noise_wavelet
-		@PageFather noise
-		@PageTitle Getting wavelet noise
-		@FuncTitle Getting flat wavelet noise
-		@FuncDesc This function returns the wavelet noise function value between -1.0 and 1.0 at given coordinates.
-			The wavelet noise is much slower than Perlin, and can only be computed in 1,2 or 3 dimensions. But it doesn't blur at high scales.
-		@Cpp float TCODNoise::getWavelet(float *f) const
-		@C float TCOD_noise_wavelet(TCOD_noise_t noise, float *f)
-		@Py noise_wavelet(noise, f)
-		@C# float TCODNoise::getWaveletNoise(float[] f)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@CppEx
-			// 1d noise
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getWavelet(&p);
-			// 2d noise
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getWavelet(p);
-		@CEx
-			// 1d noise
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_wavelet(noise1d,&p);
-			// 2d noise
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_wavelet(noise2d,p);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_wavelet(noise1d,[0.5])
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_wavelet(noise2d,[0.5,0.7])
-		*/
-		//float getWavelet(float *f) const;
-
-		/**
-		@PageName noise_wavelet
-		@FuncTitle Getting wavelet fbm
-		@FuncDesc This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getFbmWavelet(float *f, float octaves) const
-		@C float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_fbm_wavelet(noise, f, octaves)
-		@C# float TCODNoise::getWaveletBrownianMotion(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getFbmWavelet(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getFbmWavelet(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_fbm_wavelet(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_fbm_wavelet(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_fbm_wavelet(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_fbm_wavelet(noise2d,[0.5,0.7],32.0)
-		*/
-		//float getFbmWavelet(float *f, float octaves) const;
-
-		/**
-		@PageName noise_wavelet
-		@FuncTitle Getting wavelet turbulence
-		@FuncDesc This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
-		@Cpp float TCODNoise::getTurbulenceWavelet(float *f, float octaves) const
-		@C float TCOD_noise_turbulence_wavelet(TCOD_noise_t noise, float *f, float octaves)
-		@Py noise_turbulence_wavelet(noise, f, octaves)
-		@C# float TCODNoise::getWaveletTurbulence(float[] f, float octaves)
-		@Param noise	In the C version, the generator handler, returned by the initialization function.
-		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@CppEx
-			// 1d fbm
-			TCODNoise * noise1d = new TCODNoise(1);
-			float p=0.5f;
-			float value = noise1d->getTurbulenceWavelet(&p,32.0f);
-			// 2d fbm
-			TCODNoise * noise2d = new TCODNoise(2);
-			float p[2]={0.5f,0.7f};
-			float value = noise2d->getTurbulenceWavelet(p,32.0f);
-		@CEx
-			// 1d fbm
-			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p=0.5f;
-			float value = TCOD_noise_turbulence_wavelet(noise1d,&p,32.0f);
-			// 2d fbm
-			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-			float p[2]={0.5f,0.7f};
-			float value = TCOD_noise_turbulence_wavelet(noise2d,p,32.0f);
-		@PyEx
-			# 1d noise
-			noise1d = libtcod.noise_new(1)
-			value = libtcod.noise_turbulence_wavelet(noise1d,[0.5],32.0)
-			# 2d noise
-			noise2d = libtcod.noise_new(2)
-			value = libtcod.noise_turbulence_wavelet(noise2d,[0.5,0.7],32.0)
-		*/
-		float getTurbulenceWavelet(float *f, float octaves) const;
-
 		void setType (TCOD_noise_type_t type);
+   		/**
+   		@PageName noise_get
+		@PageFather noise
+		@PageTitle Getting flat noise
+		@FuncDesc This function returns the noise function value between -1.0 and 1.0 at given coordinates.
+		@Cpp float TCODNoise::get(float *f, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT)
+		@C	float TCOD_noise_get(TCOD_noise_t noise, float *f)
+float TCOD_noise_get_ex(TCOD_noise_t noise, float *f, TCOD_noise_type_t type)
+		@Py noise_get(noise, f, type=NOISE_DEFAULT)
+		@C# float TCODNoise::get(float[] f, type=NoiseDefault)
+		@Param noise	In the C version, the generator handler, returned by the initialization function.
+		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
+		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set) 
+		@CppEx
+			// 1d noise
+			TCODNoise * noise1d = new TCODNoise(1);
+			float p=0.5f;
+			// get a 1d simplex value
+			float value = noise1d->get(&p);
+			// 2d noise
+			TCODNoise * noise2d = new TCODNoise(2);
+			float p[2]={0.5f,0.7f};
+			// get a 2D Perlin value
+			float value = noise2d->get(p, TCOD_NOISE_PERLIN);
+		@CEx
+			// 1d noise
+			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p=0.5f;
+			// get a 1d simplex value
+			float value = TCOD_noise_get(noise1d,&p);
+			// 2d noise
+			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p[2]={0.5f,0.7f};
+			// get a 2d perlin value
+			float value = TCOD_noise_get_ex(noise2d,p,TCOD_NOISE_PERLIN);
+		@PyEx
+			# 1d noise
+			noise1d = libtcod.noise_new(1)
+			# get a 1d simplex value
+			value = libtcod.noise_get(noise1d,[0.5])
+			# 2d noise
+			noise2d = libtcod.noise_new(2)
+			# get a 2d perlin value
+			value = libtcod.noise_get(noise2d,[0.5,0.7], libtcod.NOISE_PERLIN)
+   		*/
 		float get(float *f, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		/**
+		@PageName noise_get_fbm
+		@PageFather noise
+		@PageTitle Getting fbm noise
+		@FuncDesc This function returns the fbm function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
+		@Cpp float TCODNoise::getFbm(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT)
+		@C	float TCOD_noise_get_fbm(TCOD_noise_t noise, float *f, float octaves)
+float TCOD_noise_get_fbm(TCOD_noise_t noise, float *f, float octaves, TCOD_noise_type_t type)
+		@Py noise_get_fbm(noise, f, octaves, type=NOISE_DEFAULT)
+		@C# float TCODNoise::getBrownianMotion(float[] f, float octaves, type=NoiseDefault)
+		@Param noise	In the C version, the generator handler, returned by the initialization function.
+		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
+		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
+		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set) 
+		@CppEx
+			// 1d fbm
+			TCODNoise * noise1d = new TCODNoise(1);
+			float p=0.5f;
+			// get a 1d simplex fbm
+			float value = noise1d->getFbm(&p,32.0f);
+			// 2d fbm
+			TCODNoise * noise2d = new TCODNoise(2);
+			float p[2]={0.5f,0.7f};
+			// get a 2d perlin fbm
+			float value = noise2d->getFbm(p,32.0f, TCOD_NOISE_PERLIN);
+		@CEx
+			// 1d fbm
+			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p=0.5f;
+			// get a 1d simplex fbm
+			float value = TCOD_noise_get_fbm(noise1d,&p,32.0f);
+			// 2d fbm
+			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p[2]={0.5f,0.7f};
+			// get a 2d perlin fbm
+			float value = TCOD_noise_get_fbm_ex(noise2d,p,32.0f,TCOD_NOISE_PERLIN);
+		@PyEx
+			# 1d noise
+			noise1d = libtcod.noise_new(1)
+			# 1d simplex fbm
+			value = libtcod.noise_get_fbm(noise1d,[0.5],32.0)
+			# 2d noise
+			noise2d = libtcod.noise_new(2)
+			# 2d perlin fbm
+			value = libtcod.noise_get_fbm(noise2d,[0.5,0.7],32.0, libtcod.NOISE_PERLIN)
+		*/
 		float getFbm(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		/**
+		@PageName noise_get_turbulence
+		@PageFather noise
+		@PageTitle Getting turbulence
+		@FuncDesc This function returns the turbulence function value between -1.0 and 1.0 at given coordinates, using fractal hurst and lacunarity defined when the generator has been created.
+		@Cpp float TCODNoise::getTurbulence(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT)
+		@C	float TCOD_noise_get_turbulence(TCOD_noise_t noise, float *f, float octaves)
+float TCOD_noise_get_turbulence_ex(TCOD_noise_t noise, float *f, float octaves, TCOD_noise_type_t)
+		@Py noise_get_turbulence(noise, f, octaves, type=NOISE_DEFAULT)
+		@C# float TCODNoise::getTurbulence(float[] f, float octaves, type=NoiseDefault)
+		@Param noise	In the C version, the generator handler, returned by the initialization function.
+		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
+		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
+		@CppEx
+			// 1d fbm
+			TCODNoise * noise1d = new TCODNoise(1);
+			float p=0.5f;
+			// a 1d simplex turbulence
+			float value = noise1d->getTurbulence(&p,32.0f);
+			// 2d fbm
+			TCODNoise * noise2d = new TCODNoise(2);
+			float p[2]={0.5f,0.7f};
+			// a 2d perlin turbulence
+			float value = noise2d->getTurbulence(p,32.0f, TCOD_NOISE_PERLIN);
+		@CEx
+			// 1d fbm
+			TCOD_noise_t noise1d = TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p=0.5f;
+			// a 1d simplex turbulence
+			float value = TCOD_noise_get_turbulence(noise1d,&p,32.0f);
+			// 2d fbm
+			TCOD_noise_t noise2d = TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
+			float p[2]={0.5f,0.7f};
+			// a 2d perlin turbulence
+			float value = TCOD_noise_get_turbulence_ex(noise2d,p,32.0f, TCOD_NOISE_PERLIN);
+		@PyEx
+			# 1d noise
+			noise1d = libtcod.noise_new(1)
+			# 1d simplex turbulence
+			value = libtcod.noise_get_turbulence(noise1d,[0.5],32.0)
+			# 2d noise
+			noise2d = libtcod.noise_new(2)
+			# 2d perlin turbulence
+			value = libtcod.noise_get_turbulence(noise2d,[0.5,0.7],32.0,libtcod.NOISE_PERLIN)
+		*/
 		float getTurbulence(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 
 	protected :

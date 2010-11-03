@@ -7,37 +7,38 @@
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('noise.html')">7. Noise generator</a><br>
-<a class="prev" onclick="link('random.html')">6. Pseudorandom number generator</a> | <a class="next" onclick="link('zip.html')">8. Compression toolkit</a>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('noise.html')">9. Noise generator</a><br>
+<a class="prev" onclick="link('mouse.html')">8. Mouse support</a> | <a class="next" onclick="link('parser.html')">10. File parser</a>
 </p></div></div>
 <div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
 <div class="main"><div class="maintext">
-<h1>7. Noise generator</h1>
-<div id="toc"><ul><li><a onclick="link('noise_init.html')">7.1. Creating a noise generator</a></li>
-<li><a onclick="link('noise_simplex.html')">7.2. Getting simplex noise</a></li>
-<li><a onclick="link('noise_perlin.html')">7.3. Getting Perlin noise</a></li>
-<li><a onclick="link('noise_wavelet.html')">7.4. Getting wavelet noise</a></li>
+<h1>9. Noise generator</h1>
+<div id="toc"><ul><li><a onclick="link('noise_init.html')">9.1. Creating a noise generator</a></li>
+<li><a onclick="link('noise_setType.html')">9.2. Choosing a noise type</a></li>
+<li><a onclick="link('noise_get.html')">9.3. Getting flat noise</a></li>
+<li><a onclick="link('noise_get_fbm.html')">9.4. Getting fbm noise</a></li>
+<li><a onclick="link('noise_get_turbulence.html')">9.5. Getting turbulence</a></li>
 </ul></div>
 <p>This toolkit provides several functions to generate Perlin noise and other derived noises. It can handle noise functions from 1 to 4 dimensions.<br /> </p>
-<a name="0"></a><p>Usage example:<br />	1D noise : the variation of a torch intensity<br />	2D fbm : heightfield generation or clouds<br />	3D fbm : animated smoke<br />	If you don't know what is Perlin noise and derived functions, or what is the influence of the different fractal parameters, check the Perlin noise sample included with the library.<br />	<table width="800px" class="none"> 
-		<tr><td align="center">Simplex noise, fbm, turbulence</td> 
-		<td align="center"><img border="1" src="simplex.png"></td> 
-		<td align="center"><img border="1" src="fbm_simplex.png"></td> 
-		<td align="center"><img border="1" src="turbulence_simplex.png"></td></tr> 
-		<tr><td align="center">Perlin noise, fbm, turbulence</td> 
-		<td align="center"><img border="1" src="perlin.png"></td> 
-		<td align="center"><img border="1" src="fbm_perlin.png"></td> 
-		<td align="center"><img border="1" src="turbulence_perlin.png"></td></tr> 
-		<tr><td align="center">Wavelet noise, fbm, turbulence</td> 
-		<td align="center"><img border="1" src="wavelet.png"></td> 
-		<td align="center"><img border="1" src="fbm_wavelet.png"></td> 
-		<td align="center"><img border="1" src="turbulence_wavelet.png"></td></tr> 
-	</table><br />	<h6>Noise functions relative times</h6><br />	<br />	For example, in 4D, Perlin noise is 17 times slower than simplex noise.<br />	<table border="1"> 
-		<tr><td></td><td>1D</td><td>2D</td><td>3D</td><td>4D</td></tr> 
-		<tr><td>simplex</td><td>1</td><td>1</td><td>1</td><td>1</td></tr> 
-		<tr><td>Perlin</td><td>1.3</td><td>4</td><td>5</td><td>17</td></tr> 
-		<tr><td>wavelet</td><td>53</td><td>32</td><td>14</td><td>X</td></tr> 
-	</table> 	 	<br /> </p>
+<a name="0"></a><p>Usage example:<br />	1D noise : the variation of a torch intensity<br />	2D fbm : heightfield generation or clouds<br />	3D fbm : animated smoke<br />	If you don't know what is Perlin noise and derived functions, or what is the influence of the different fractal parameters, check the Perlin noise sample included with the library.<br />	<table width="800px" class="none">
+		<tr><td align="center">Simplex noise, fbm, turbulence</td>
+		<td align="center"><img border="1" src="simplex.png"></td>
+		<td align="center"><img border="1" src="fbm_simplex.png"></td>
+		<td align="center"><img border="1" src="turbulence_simplex.png"></td></tr>
+		<tr><td align="center">Perlin noise, fbm, turbulence</td>
+		<td align="center"><img border="1" src="perlin.png"></td>
+		<td align="center"><img border="1" src="fbm_perlin.png"></td>
+		<td align="center"><img border="1" src="turbulence_perlin.png"></td></tr>
+		<tr><td align="center">Wavelet noise, fbm, turbulence</td>
+		<td align="center"><img border="1" src="wavelet.png"></td>
+		<td align="center"><img border="1" src="fbm_wavelet.png"></td>
+		<td align="center"><img border="1" src="turbulence_wavelet.png"></td></tr>
+	</table><br />	<h6>Noise functions relative times</h6><br /><br />	For example, in 4D, Perlin noise is 17 times slower than simplex noise.<br />	<table border="1">
+		<tr><td></td><td>1D</td><td>2D</td><td>3D</td><td>4D</td></tr>
+		<tr><td>simplex</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>
+		<tr><td>Perlin</td><td>1.3</td><td>4</td><td>5</td><td>17</td></tr>
+		<tr><td>wavelet</td><td>53</td><td>32</td><td>14</td><td>X</td></tr>
+	</table><br /> </p>
 <div class="code"></div>
 
 </div></div>

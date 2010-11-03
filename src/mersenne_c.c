@@ -240,6 +240,7 @@ double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, dou
 	if (again)
 		ret = mean + y2 * std_deviation;
 	else {
+		if (!mersenne) mersenne=TCOD_random_get_instance();
 		mersenne_data_t *r = (mersenne_data_t *)mersenne;
 		/* MT */
 		if (r->algo == TCOD_RNG_MT) {
@@ -425,11 +426,13 @@ int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int m
 }
 
 void TCOD_random_set_distribution (TCOD_random_t mersenne, TCOD_distribution_t distribution) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	mersenne_data_t *r = (mersenne_data_t *)mersenne;
 	r->distribution = distribution;
 }
 
 int TCOD_random_get_int (TCOD_random_t mersenne, int min, int max) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_LINEAR: return TCOD_random_get_i(mersenne, min, max); break;
 		case TCOD_DISTRIBUTION_GAUSSIAN: return TCOD_random_get_gaussian_int(mersenne, min, max); break;
@@ -441,6 +444,7 @@ int TCOD_random_get_int (TCOD_random_t mersenne, int min, int max) {
 }
 
 float TCOD_random_get_float (TCOD_random_t mersenne, float min, float max) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_LINEAR: return TCOD_random_get_f(mersenne, min, max); break;
 		case TCOD_DISTRIBUTION_GAUSSIAN: return TCOD_random_get_gaussian_float(mersenne, min, max); break;
@@ -452,6 +456,7 @@ float TCOD_random_get_float (TCOD_random_t mersenne, float min, float max) {
 }
 
 double TCOD_random_get_double (TCOD_random_t mersenne, double min, double max) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_LINEAR: return TCOD_random_get_d(mersenne, min, max); break;
 		case TCOD_DISTRIBUTION_GAUSSIAN: return TCOD_random_get_gaussian_double(mersenne, min, max); break;
@@ -463,6 +468,7 @@ double TCOD_random_get_double (TCOD_random_t mersenne, double min, double max) {
 }
 
 int TCOD_random_get_int_mean (TCOD_random_t mersenne, int min, int max, int mean) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
 		case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE: return TCOD_random_get_gaussian_int_range_custom_inv(mersenne, min, max, mean); break;
@@ -471,6 +477,7 @@ int TCOD_random_get_int_mean (TCOD_random_t mersenne, int min, int max, int mean
 }
 
 float TCOD_random_get_float_mean (TCOD_random_t mersenne, float min, float max, float mean) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
 		case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE: return TCOD_random_get_gaussian_float_range_custom_inv(mersenne, min, max, mean); break;
@@ -479,6 +486,7 @@ float TCOD_random_get_float_mean (TCOD_random_t mersenne, float min, float max, 
 }
 
 double TCOD_random_get_double_mean (TCOD_random_t mersenne, double min, double max, double mean) {
+	if (!mersenne) mersenne=TCOD_random_get_instance();
 	switch (((mersenne_data_t *)mersenne)->distribution) {
 		case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
 		case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE: return TCOD_random_get_gaussian_double_range_custom_inv(mersenne, min, max, mean); break;
@@ -489,7 +497,7 @@ double TCOD_random_get_double_mean (TCOD_random_t mersenne, double min, double m
 TCOD_dice_t TCOD_random_dice_new (const char * s) {
 	TCOD_dice_t d = { 1, 1, 1.0f, 0.0f };
 	char * ptr = (char *)s;
-	char * tmp = (char *)malloc(strlen(s) + 1);
+	char tmp[128];
 	size_t l;
 	/* get multiplier */
 	if ((l = strcspn(ptr,"*x")) < strlen(ptr)) {
@@ -516,8 +524,6 @@ TCOD_dice_t TCOD_random_dice_new (const char * s) {
 		ptr++;
 		d.addsub = atof(ptr) * sign;
 	}
-	/* finish */
-	free(tmp);
 	return d;
 }
 

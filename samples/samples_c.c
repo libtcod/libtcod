@@ -300,15 +300,15 @@ void render_noise(bool first, TCOD_key_t*key) {
 			f[1] = zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + dy;
 			value = 0.0f;
 			switch (func ) {
-				case PERLIN : value = TCOD_noise_perlin(noise,f); break;
-				case SIMPLEX : value = TCOD_noise_simplex(noise,f); break;
-				case WAVELET : value = TCOD_noise_wavelet(noise,f); break;
-				case FBM_PERLIN : value = TCOD_noise_fbm_perlin(noise,f,octaves); break;
-				case TURBULENCE_PERLIN : value = TCOD_noise_turbulence_perlin(noise,f,octaves); break;
-				case FBM_SIMPLEX : value = TCOD_noise_fbm_simplex(noise,f,octaves); break;
-				case TURBULENCE_SIMPLEX : value = TCOD_noise_turbulence_simplex(noise,f,octaves); break;
-				case FBM_WAVELET : value = TCOD_noise_fbm_wavelet(noise,f,octaves); break;
-				case TURBULENCE_WAVELET : value = TCOD_noise_turbulence_wavelet(noise,f,octaves); break;
+				case PERLIN : value = TCOD_noise_get_ex(noise,f,TCOD_NOISE_PERLIN); break;
+				case SIMPLEX : value = TCOD_noise_get_ex(noise,f,TCOD_NOISE_SIMPLEX); break;
+				case WAVELET : value = TCOD_noise_get_ex(noise,f,TCOD_NOISE_WAVELET); break;
+				case FBM_PERLIN : value = TCOD_noise_get_fbm_ex(noise,f,octaves,TCOD_NOISE_PERLIN); break;
+				case TURBULENCE_PERLIN : value = TCOD_noise_get_turbulence_ex(noise,f,octaves,TCOD_NOISE_PERLIN); break;
+				case FBM_SIMPLEX : value = TCOD_noise_get_fbm_ex(noise,f,octaves,TCOD_NOISE_SIMPLEX); break;
+				case TURBULENCE_SIMPLEX : value = TCOD_noise_get_turbulence_ex(noise,f,octaves,TCOD_NOISE_SIMPLEX); break;
+				case FBM_WAVELET : value = TCOD_noise_get_fbm_ex(noise,f,octaves,TCOD_NOISE_WAVELET); break;
+				case TURBULENCE_WAVELET : value = TCOD_noise_get_turbulence_ex(noise,f,octaves,TCOD_NOISE_WAVELET); break;
 			}
 			c=(uint8)((value+1.0f)/2.0f*255);
 			/* use a bluish color */
@@ -477,10 +477,10 @@ void render_fov(bool first, TCOD_key_t*key) {
 		torchx+=0.2f;
 		/* randomize the light position between -1.5 and 1.5 */
 		tdx=torchx+20.0f;
-		dx = TCOD_noise_simplex(noise,&tdx)*1.5f;
+		dx = TCOD_noise_get(noise,&tdx)*1.5f;
 		tdx += 30.0f;
-		dy = TCOD_noise_simplex(noise,&tdx)*1.5f;
-		di = 0.2f * TCOD_noise_simplex(noise,&torchx);
+		dy = TCOD_noise_get(noise,&tdx)*1.5f;
+		di = 0.2f * TCOD_noise_get(noise,&torchx);
 	}
 	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -1237,7 +1237,7 @@ void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sample
 			int ir=0,ig=0,ib=0,dec, count;
 			if ( (y-sampley)%8 == 0 ) {
 				f[1]=(float)(y)/sampleh;
-				n=TCOD_noise_fbm_simplex(noise,f,3.0f);
+				n=TCOD_noise_get_fbm(noise,f,3.0f);
 			}
 			dec = (int)(3*(n+1.0f));
 			count=0;

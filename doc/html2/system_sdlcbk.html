@@ -7,12 +7,12 @@
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('system.html')">2. System layer</a> &gt; <a onclick="link('system_sdlcbk.html')">2.4. Draw custom graphics on top of the root console</a><br>
-<a class="prev" onclick="link('system_filesystem.html')">2.3. Filesystem utilities</a> | <a class="next" onclick="link('system_misc.html')">2.5. Miscellaneous utilities</a>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('system.html')">3. System layer</a> &gt; <a onclick="link('system_sdlcbk.html')">3.4. Draw custom graphics on top of the root console</a><br>
+<a class="prev" onclick="link('system_filesystem.html')">3.3. Filesystem utilities</a> | <a class="next" onclick="link('system_misc.html')">3.5. Miscellaneous utilities</a>
 </p></div></div>
 <div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
 <div class="main"><div class="maintext">
-<h1>2.4. Draw custom graphics on top of the root console</h1>
+<h1>3.4. Draw custom graphics on top of the root console</h1>
 <div id="toc"><ul>
 <li><a href="#0">Render custom graphics</a></li><li><a href="#1">Managing screen redraw</a></li></ul></div>
 <p>You can register a callback that will be called after the libtcod rendering phase, but before the screen buffer is swapped. This callback receives the screen SDL_Surface reference.<br />		This makes it possible to use any SDL drawing functions (including openGL) on top of the libtcod console.<br />	</p>

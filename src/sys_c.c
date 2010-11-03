@@ -27,9 +27,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifdef __linux 
+#ifdef __linux
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -163,6 +164,22 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 	closedir(dir);
 #endif
 	return list;
+}
+
+bool TCOD_sys_file_exists(const char * filename, ...) {
+	FILE * in;
+	bool ret = false;
+	char f[1024];
+	va_list ap;
+	va_start(ap,filename);
+	vsprintf(f,filename,ap);
+	va_end(ap);
+	in = fopen(f,"rb");
+	if (in != NULL) {
+		ret = true;
+		fclose(in);
+	}
+	return ret;
 }
 
 /* thread stuff */
@@ -559,8 +576,8 @@ void TCOD_sys_clipboard_set(const char *value)
       return;
   }
 	size_t len = strlen(value);
-  CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, 
-																					(const UInt8 *)value, 
+  CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
+																					(const UInt8 *)value,
                                           len, kCFAllocatorNull);
   if (data == NULL) {
       CFRelease(clipboard);

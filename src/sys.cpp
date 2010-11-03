@@ -25,6 +25,8 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include "libtcod.hpp"
+#include <stdio.h>
+#include <stdarg.h>
 
 void TCODSystem::saveScreenshot(const char *filename) {
 	TCOD_sys_save_screenshot(filename);
@@ -101,6 +103,22 @@ bool TCODSystem::isDirectory(const char *path) {
 
 TCOD_list_t TCODSystem::getDirectoryContent(const char *path, const char *pattern) {
 	return TCOD_sys_get_directory_content(path,pattern);
+}
+
+bool TCODSystem::fileExists(const char * filename, ...) {
+	FILE * in;
+	bool ret = false;
+	char f[1024];
+	va_list ap;
+	va_start(ap,filename);
+	vsprintf(f,filename,ap);
+	va_end(ap);
+	in = fopen(f,"rb");
+	if (in != NULL) {
+		ret = true;
+		fclose(in);
+	}
+	return ret;
 }
 
 // clipboard stuff

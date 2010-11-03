@@ -33,8 +33,8 @@
 	@PageCategory Core
 	@PageTitle System layer
 	@PageDesc This toolkit contains some system specific miscellaneous utilities. Use them is you want your code to be easily portable.
- */	
- 
+ */
+
 class TCODLIB_API ITCODSDLRenderer {
 public :
 	virtual ~ITCODSDLRenderer() {}
@@ -85,21 +85,21 @@ public :
 	@Py sys_get_last_frame_length()
 	@C# static float TCODSystem::getLastFrameLength()
 	@Lua tcod.system.getLastFrameLength()
-	@CppEx 
+	@CppEx
 		// moving an objet at 5 console cells per second
 		float x=0,y=0; // object coordinates
 		x += 5 * TCODSystem::getLastFrameLength();
 		TCODConsole::root->putChar((int)(x),(int)(y),'X');
-	@CEx 
+	@CEx
 		float x=0,y=0;
 		x += 5 * TCOD_sys_get_last_frame_length();
 		TCOD_console_put_char(NULL,(int)(x),(int)(y),'X');
-	@PyEx 
+	@PyEx
 		x=0.0
 		y=0.0
 		x += 5 * libtcod.sys_get_last_frame_length()
 		libtcod.console_put_char(0,int(x),int(y),'X')
-	@LuaEx 
+	@LuaEx
 		-- moving an objet at 5 console cells per second
 		x=0
 		y=0 -- object coordinates
@@ -197,7 +197,7 @@ public :
 	@Param path a path to check
 	*/
 	static bool isDirectory(const char *path);
-	
+
 	/**
 	@PageName system_filesystem
 	@FuncTitle List files in a directory
@@ -211,6 +211,25 @@ public :
 	static TCOD_list_t getDirectoryContent(const char *path, const char *pattern);
 
 	/**
+	@PageName system_filesystem
+	@FuncTitle Check if a given file exists
+	@FuncDesc In order to check whether a given file exists in the filesystem. Useful for detecting errors caused by missing files.
+	@Cpp static bool TCODSystem::fileExists(const char *filename, ...)
+	@C bool TCOD_sys_file_exists(const char * filename, ...)
+	@Param filename the file name, using printf-like formatting
+	@Param ... optional arguments for filename formatting
+	@CppEx
+		if (!TCODSystem::fileExists("myfile.%s","txt")) {
+		    fprintf(stderr,"no such file!");
+		}
+	@CEx
+		if (!TCOD_sys_file_exists("myfile.%s","txt")) {
+		    fprintf(stderr,"no such file!");
+		}
+	*/
+	static bool fileExists(const char * filename, ...);
+
+	/**
 	@PageName system_sdlcbk
 	@PageFather system
 	@PageTitle Draw custom graphics on top of the root console
@@ -219,20 +238,20 @@ public :
 	@FuncTitle Render custom graphics
 	@FuncDesc To disable the custom renderer, call the same method with a NULL parameter.
 		Note that to keep libtcod from requiring the SDL headers, the callback parameter is a void pointer. You have to include SDL headers and cast it to SDL_Surface in your code.
-	@Cpp 
+	@Cpp
 		class TCODLIB_API ITCODSDLRenderer {
 		public :
 			virtual void render(void *sdlSurface) = 0;
 		};
 		static void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *callback);
-	@C 
+	@C
 		typedef void (*SDL_renderer_t) (void *sdl_surface);
 		void TCOD_sys_register_SDL_renderer(SDL_renderer_t callback)
-	@Py 
+	@Py
 		def renderer ( sdl_surface ) : ...
 		TCOD_sys_register_SDL_renderer( callback )
 	@Param callback The renderer to call before swapping the screen buffer. If NULL, custom rendering is disabled
-	@CppEx 
+	@CppEx
 		class MyRenderer : public ITCODSDLRenderer {
 		public :
 			void render(void *sdlSurface) {
@@ -241,13 +260,13 @@ public :
 			}
 		};
 		TCODSystem::registerSDLRenderer(new MyRenderer());
-	@CEx 
+	@CEx
 		void my_renderer( void *sdl_surface ) {
 			SDL_Surface *s = (SDL_Surface *)sdl_surface;
 			... draw something on s
 		}
 		TCOD_sys_register_SDL_renderer(my_renderer);
-	@Py 
+	@Py
 		def my_renderer(sdl_surface) :
 			... draw something on sdl_surface using pygame
 		libtcod.sys_register_SDL_renderer(my_renderer)
@@ -280,16 +299,16 @@ public :
 		Will use the smallest available resolution so that :
 		resolution width >= width and resolution width >= root console width * font char width
 		resolution width >= height and resolution height >= root console height * font char height
-	@CppEx 
+	@CppEx
 		TCODSystem::forceFullscreenResolution(800,600); // use 800x600 in fullscreen instead of 640x400
 		TCODConsole::initRoot(80,50,"",true); // 80x50 console with 8x8 char => 640x400 default resolution
-	@CEx 
-		TCOD_sys_force_fullscreen_resolution(800,600); 
+	@CEx
+		TCOD_sys_force_fullscreen_resolution(800,600);
 		TCOD_console_init_root(80,50,"",true);
-	@PyEx 
+	@PyEx
 		libtcod.sys_force_fullscreen_resolution(800,600)
 		libtcod.console_init_root(80,50,"",True)
-	@LuaEx 
+	@LuaEx
 		tcod.system.forceFullscreenResolution(800,600) -- use 800x600 in fullscreen instead of 640x400
 		tcod.console.initRoot(80,50,"",true) -- 80x50 console with 8x8 char => 640x400 default resolution
 	*/
@@ -309,7 +328,7 @@ public :
 	/**
 	@PageName system_misc
 	@FuncTitle Get fullscreen offset
-	@FuncDesc If the fullscreen resolution does not matches the console size in pixels, black borders are added. This function returns the position in pixels of the console top left corner in the screen. 
+	@FuncDesc If the fullscreen resolution does not matches the console size in pixels, black borders are added. This function returns the position in pixels of the console top left corner in the screen.
 	@Cpp static void TCODSystem::getFullscreenOffsets(int *offx, int *offy)
 	@C void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy)
 	@C# static void TCODSystem::getFullscreenOffsets(out int offx, out int offy);

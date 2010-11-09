@@ -46,7 +46,7 @@ void TCODText::setColors(TCODColor fore, TCODColor back, float back_transparency
 }
 
 bool TCODText::update(TCOD_key_t key){
-	return TCOD_text_update(data,key);
+	return TCOD_text_update(data,key) != 0;
 }
 
 void TCODText::render(TCODConsole * con){

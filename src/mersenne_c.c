@@ -240,8 +240,9 @@ double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, dou
 	if (again)
 		ret = mean + y2 * std_deviation;
 	else {
+        mersenne_data_t *r = NULL;
 		if (!mersenne) mersenne=TCOD_random_get_instance();
-		mersenne_data_t *r = (mersenne_data_t *)mersenne;
+		r = (mersenne_data_t *)mersenne;
 		/* MT */
 		if (r->algo == TCOD_RNG_MT) {
 			do {
@@ -426,8 +427,9 @@ int TCOD_random_get_gaussian_int_range_custom_inv (TCOD_random_t mersenne, int m
 }
 
 void TCOD_random_set_distribution (TCOD_random_t mersenne, TCOD_distribution_t distribution) {
+    mersenne_data_t *r = NULL;
 	if (!mersenne) mersenne=TCOD_random_get_instance();
-	mersenne_data_t *r = (mersenne_data_t *)mersenne;
+	r = (mersenne_data_t *)mersenne;
 	r->distribution = distribution;
 }
 
@@ -503,7 +505,7 @@ TCOD_dice_t TCOD_random_dice_new (const char * s) {
 	if ((l = strcspn(ptr,"*x")) < strlen(ptr)) {
 		strcpy(tmp,ptr);
 		tmp[l] = '\0';
-		d.multiplier = atof(tmp);
+		d.multiplier = (float)atof(tmp);
 		ptr += l + 1;
 	}
 	/* get rolls */
@@ -522,7 +524,7 @@ TCOD_dice_t TCOD_random_dice_new (const char * s) {
 	if (strlen(ptr) > 0) {
 		int sign = (*ptr == '+') ? 1 : (-1);
 		ptr++;
-		d.addsub = atof(ptr) * sign;
+		d.addsub = (float)(atof(ptr) * sign);
 	}
 	return d;
 }
@@ -532,7 +534,7 @@ int TCOD_random_dice_roll (TCOD_random_t mersenne, TCOD_dice_t dice) {
 	int result = 0;
 	for (rolls = 0; rolls < dice.nb_rolls; rolls++)
 		result += TCOD_random_get_i(mersenne,1,dice.nb_faces);
-	return (result + dice.addsub) * dice.multiplier;
+	return (int)((result + dice.addsub) * dice.multiplier);
 }
 
 int TCOD_random_dice_roll_s (TCOD_random_t mersenne, const char * s) {

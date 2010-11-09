@@ -79,13 +79,13 @@ function render_colors(key)
 			local col=sampleConsole:getCharBackground(x,y)
 			col=tcod.color.Interpolate(col,tcod.color.black,0.5)
 			local c=rng:getInt(97,97+25) -- 97 == 'a'
-			sampleConsole:setForegroundColor(col)
+			sampleConsole:setDefaultForeground(col)
 			sampleConsole:putChar(x,y,c,tcod.None)
 		end
 	end
-	sampleConsole:setForegroundColor(textColor)
+	sampleConsole:setDefaultForeground(textColor)
 	-- the background behind the text is slightly darkened using the Multiply flag
-	sampleConsole:setBackgroundColor(tcod.color.grey)
+	sampleConsole:setDefaultBackground(tcod.color.grey)
 	sampleConsole:printRectEx(SAMPLE_SCREEN_WIDTH/2,5,SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,
 		tcod.Multiply,tcod.CenterAlignment,
 		"The Doryen library uses 24 bits colors, for both background and foreground.")
@@ -187,7 +187,7 @@ function render_lines(key)
 	end
 	if first then
 		tcod.system.setFps(30) -- fps limited to 30
-		sampleConsole:setForegroundColor(tcod.color.white)
+		sampleConsole:setDefaultForeground(tcod.color.white)
 	end
 	-- blit the background
 	tcod.console.blit(bk,0,0,SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT,sampleConsole,0,0)
@@ -275,15 +275,15 @@ function render_noise(key)
 		for x=0,2*SAMPLE_SCREEN_WIDTH-1,1 do
 			local f = { zoom*x / (2*SAMPLE_SCREEN_WIDTH) + noise_dx, zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + noise_dy } 
 			local value = 0
-			if func == PERLIN then value = noise:getPerlin(f) 
-			elseif func == SIMPLEX then value = noise:getPerlin(f)  
-			elseif func == WAVELET then value = noise:getWavelet(f)
-			elseif func ==  FBM_PERLIN then value = noise:getFbmPerlin(f,octaves)
-			elseif func ==  TURBULENCE_PERLIN then value = noise:getTurbulencePerlin(f,octaves)
-			elseif func ==  FBM_SIMPLEX then value = noise:getFbmSimplex(f,octaves)
-			elseif func ==  TURBULENCE_SIMPLEX then value = noise:getTurbulenceSimplex(f,octaves)
-			elseif func ==  FBM_WAVELET then value = noise:getFbmWavelet(f,octaves)
-			elseif func ==  TURBULENCE_WAVELET then value = noise:getTurbulenceWavelet(f,octaves)
+			if func == PERLIN then value = noise:get(f,NoisePerlin) 
+			elseif func == SIMPLEX then value = noise:get(f,NoiseSimplex)  
+			elseif func == WAVELET then value = noise:get(f,NoiseWavelet)
+			elseif func ==  FBM_PERLIN then value = noise:getFbm(f,octaves,NOISE_PERLIN)
+			elseif func ==  TURBULENCE_PERLIN then value = noise:getTurbulence(f,octaves,TCOD_NOISE_PERLIN)
+			elseif func ==  FBM_SIMPLEX then value = noise:getFbm(f,octaves,NoiseSimplex)
+			elseif func ==  TURBULENCE_SIMPLEX then value = noise:getTurbulence(f,octaves,NoiseSimplex)
+			elseif func ==  FBM_WAVELET then value = noise:getFbm(f,octaves,NoiseWavelet)
+			elseif func ==  TURBULENCE_WAVELET then value = noise:getTurbulence(f,octaves,NoiseWavelet)
 			end
 			local c=math.floor((value+1.0)/2.0*255)
 			-- use a bluish color
@@ -392,18 +392,18 @@ while not tcod.console.isWindowClosed() do
 	for i=1,nbSamples,1 do
 		if i == curSample then
 			-- set colors for currently selected sample
-			root:setForegroundColor(tcod.color.white)
-			root:setBackgroundColor(tcod.color.lightBlue)
+			root:setDefaultForeground(tcod.color.white)
+			root:setDefaultBackground(tcod.color.lightBlue)
 		else
 			-- set colors for other samples
-			root:setForegroundColor(tcod.color.grey)
-			root:setBackgroundColor(tcod.color.black)
+			root:setDefaultForeground(tcod.color.grey)
+			root:setDefaultBackground(tcod.color.black)
 		end
 		-- print the sample name
 		root:printEx(2,46-(nbSamples-i),tcod.Set,tcod.LeftAlignment,samples[i].name)
 	end	
 	-- render stats
-	root:setForegroundColor(tcod.color.grey)
+	root:setDefaultForeground(tcod.color.grey)
 	root:printEx(79, 46, tcod.None, tcod.RightAlignment,
 		string.format("last frame : %3d ms (%3d fps)" ,	
 		math.floor(tcod.system.getLastFrameLength() * 1000.0), 

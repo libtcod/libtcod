@@ -217,34 +217,34 @@ public :
 	/**
 	@PageName parser_str
 	@FuncTitle Adding a new flag
-	@FuncDesc Use this function to add a flag property to a structure type. A flag is a simplified boolean property. It cannot be mandatory : either it's present and it's true, or it's absent and it's false.
-	@Cpp void TCODParserStruct::addFlag(const char *name)
+	@FuncDesc Use this function to add a flag property to a structure type. A flag is a simplified boolean property. It cannot be mandatory: either it's present and it's true, or it's absent and it's false.<br />Note that in the C++ version, the function returns its parent object, allowing for chaining.
+	@Cpp TCODParserStruct* TCODParserStruct::addFlag(const char *name)
 	@C void TCOD_struct_add_flag(TCOD_parser_struct_t str,char *name)
 	@Py struct_add_flag(str,name)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
 	@Param name	The name of the flag (in the example, this would be "abstract").
-	@CppEx itemTypeStruct->addFlag("abstract");
+	@CppEx itemTypeStruct->addFlag("abstract")->addFlag("static");
 	@CEx TCOD_struct_add_flag(item_type_struct, "abstract");
 	@PyEx libtcod.struct_add_flag(item_type_struct, "abstract")
 	*/
-	void addFlag(const char *propname);
+	TCODParserStruct* addFlag(const char *propname);
 
 	/**
 	@PageName parser_str
 	@FuncTitle Adding a new property
-	@FuncDesc Use this function to add a standard property to a structure type. Check standard property types here.
-	@Cpp void TCODParserStruct::addProperty(const char *name, TCOD_value_type_t type, bool mandatory)
+	@FuncDesc Use this function to add a standard property to a structure type. Check standard property types here.<br />Note that in the C++ version, the function returns its parent object, allowing for chaining.
+	@Cpp TCODParserStruct* TCODParserStruct::addProperty(const char *name, TCOD_value_type_t type, bool mandatory)
 	@C void TCOD_struct_add_property(TCOD_parser_struct_t str, char *name, TCOD_value_type_t type, bool mandatory)
 	@Py struct_add_property(str, name, type, mandatory)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
-	@Param name	The name of the property (in the example, this would be "cost" or "damages" or ...).
+	@Param name	The name of the property (in the example, this would be "cost" or "damage" or ...).
 	@Param type	The type of the property. It can be a standard type (see <a href="parser_types.html">this</a>).
-	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
+	@Param mandatory	Is this property mandatory? If true and the property is not defined in the file, the parser will raise an error.
 	@CppEx
-		itemTypeStruct->addProperty("cost",TCOD_TYPE_INT,true);
-		itemTypeStruct->addProperty("weight",TCOD_TYPE_FLOAT,true);
-		itemTypeStruct->addProperty("deal_damage",TCOD_TYPE_BOOL,true);
-		itemTypeStruct->addProperty("damaged_color",TCOD_TYPE_COLOR,true);
+		itemTypeStruct->addProperty("cost",TCOD_TYPE_INT,true)
+		    ->addProperty("weight",TCOD_TYPE_FLOAT,true)
+		    ->addProperty("deal_damage",TCOD_TYPE_BOOL,true)
+		    ->addProperty("damaged_color",TCOD_TYPE_COLOR,true);
 	@CEx
 		TCOD_struct_add_property(item_type_struct, "cost", TCOD_TYPE_INT, true);
 		TCOD_struct_add_property(item_type_struct, "damages", TCOD_TYPE_DICE, true);
@@ -256,15 +256,15 @@ public :
 		libtcod.struct_add_property(item_type_struct, "color", libtcod.TYPE_COLOR, True)
 		libtcod.struct_add_property(item_type_struct, "damaged_color", libtcod.TYPE_COLOR, True)
 	*/
-	void addProperty(const char *propname, TCOD_value_type_t type, bool mandatory);
+	TCODParserStruct* addProperty(const char *propname, TCOD_value_type_t type, bool mandatory);
 
 	/**
 	@PageName parser_str
 	@FuncTitle Adding a new value-list property
 	@FuncDesc A value-list property is a string property for which we define the list of allowed values. The parser will raise an error if the file contains an unauthorized value for this property.
 		The first value-list property that you add to a structure type will have the TCOD_TYPE_VALUELIST00 type. The next TCOD_TYPE_VALUELIST01. You can define up to 16 value list property for each structure type. The last one has the type TCOD_TYPE_VALUELIST15.
-		You must provide a value list as a NULL terminated array of strings.
-	@Cpp void TCODParserStruct::addValueList(const char *name, const char **value_list, bool mandatory)
+		You must provide a value list as a NULL terminated array of strings.<br />Note that in the C++ version, the function returns its parent object, allowing for chaining.
+	@Cpp TCODParserStruct* TCODParserStruct::addValueList(const char *name, const char **value_list, bool mandatory)
 	@C void TCOD_struct_add_value_list(TCOD_parser_struct_t str, char *name, char **value_list, bool mandatory)
 	@Py struct_add_value_list(str, name, value_list, mandatory)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
@@ -281,13 +281,13 @@ public :
 		damage_types = [ "slash", "pierce", "bludgeon" ]
 		litbcod.struct_add_value_list(item_type_struct, "damage_type", damage_types, True)
 	*/
-	void addValueList(const char *propname, const char **value_list, bool mandatory);
+	TCODParserStruct* addValueList(const char *propname, const char **value_list, bool mandatory);
 
 	/**
 	@PageName parser_str
 	@FuncTitle Adding a new list property
-	@FuncDesc Use this function to add a list property to a structure type.
-	@Cpp void TCODParserStruct::addListProperty(const char *name, TCOD_value_type_t type, bool mandatory)
+	@FuncDesc Use this function to add a list property to a structure type.<br />Note that in the C++ version, the function returns its parent object, allowing for chaining.
+	@Cpp TCODParserStruct* TCODParserStruct::addListProperty(const char *name, TCOD_value_type_t type, bool mandatory)
 	@C void TCOD_struct_add_list_property(TCOD_parser_struct_t str, char *name, TCOD_value_type_t type, bool mandatory)
 	@Py struct_add_list_property(str, name, type, mandatory)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
@@ -295,9 +295,9 @@ public :
 	@Param type	The type of the list elements. It must be a standard type (see <a href="parser_types.html">this</a>). It cannot be TCOD_TYPE_LIST.
 	@Param mandatory	Is this property mandatory ? If true and the property is not defined in the file, the parser will raise an error.
 	@CppEx
-		itemTypeStruct->addListProperty("intList",TCOD_TYPE_INT,true);
-		itemTypeStruct->addListProperty("floatList",TCOD_TYPE_FLOAT,true);
-		itemTypeStruct->addListProperty("stringList",TCOD_TYPE_STRING,true);
+		itemTypeStruct->addListProperty("intList",TCOD_TYPE_INT,true)
+		    ->addListProperty("floatList",TCOD_TYPE_FLOAT,true)
+		    ->addListProperty("stringList",TCOD_TYPE_STRING,true);
 	@CEx
 		TCOD_struct_add_list_property(item_type_struct, "intList", TCOD_TYPE_INT, true);
 		TCOD_struct_add_list_property(item_type_struct, "floatList", TCOD_TYPE_FLOAT, true);
@@ -307,13 +307,13 @@ public :
 		libtcod.struct_add_list_property(item_type_struct, "floatList", libtcod.TYPE_FLOAT, True)
 		libtcod.struct_add_list_property(item_type_struct, "stringList", libtcod.TYPE_STRING, True)
 	*/
-	void addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory);
+	TCODParserStruct* addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory);
 
 	/**
 	@PageName parser_str
 	@FuncTitle Adding a sub-structure
-	@FuncDesc A structure can contain others structures. You can tell the parser which structures are allowed inside one structure type with this function.
-	@Cpp void TCODParserStruct::addStructure(TCODParserStruct *sub_structure)
+	@FuncDesc A structure can contain others structures. You can tell the parser which structures are allowed inside one structure type with this function.<br />Note that in the C++ version, the function returns its parent object, allowing for chaining.
+	@Cpp TCODParserStruct* TCODParserStruct::addStructure(TCODParserStruct *sub_structure)
 	@C void TCOD_struct_add_structure(TCOD_parser_struct_t str, TCOD_parser_struct_t sub_structure)
 	@Py struct_add_structure(str, sub_structure)
 	@Param str	In the C version, the structure handler, returned by TCOD_parser_new_struct.
@@ -324,7 +324,7 @@ public :
 	@CEx TCOD_struct_add_value_list(item_type_struct, item_type_struct);
 	@PyEx libtcod.struct_add_value_list(item_type_struct, item_type_struct)
 	*/
-	void addStructure(TCODParserStruct *sub_entity);
+	TCODParserStruct* addStructure(TCODParserStruct *sub_entity);
 
 	/**
 	@PageName parser_str

@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.1 : ???? ??? ??
+X Some of the parser-related functions now can be chained.
 X The RNG API now has less functions that choose the distribution based on the set flags.
 X The noise API now has less functions that choose the noise type based on the set flags.
 X Console default and cell foreground and background colour getters and setters renamed to more intuitive names:

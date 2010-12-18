@@ -35,24 +35,29 @@ const char *TCODParserStruct::getName() const {
 	return TCOD_struct_get_name(data);
 }
 
-void TCODParserStruct::addProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
+TCODParserStruct* TCODParserStruct::addProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_add_property(data,propname,type,mandatory);
+	return this;
 }
 
-void TCODParserStruct::addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
+TCODParserStruct* TCODParserStruct::addListProperty(const char *propname, TCOD_value_type_t type, bool mandatory) {
 	TCOD_struct_add_list_property(data,propname,type,mandatory);
+	return this;
 }
 
-void TCODParserStruct::addValueList(const char *propname, const char **value_list, bool mandatory) {
+TCODParserStruct* TCODParserStruct::addValueList(const char *propname, const char **value_list, bool mandatory) {
 	TCOD_struct_add_value_list(data,propname,value_list,mandatory);
+	return this;
 }
 
-void TCODParserStruct::addFlag(const char *propname) {
+TCODParserStruct* TCODParserStruct::addFlag(const char *propname) {
 	TCOD_struct_add_flag(data,propname);
+	return this;
 }
 
-void TCODParserStruct::addStructure(TCODParserStruct *sub_entity) {
+TCODParserStruct* TCODParserStruct::addStructure(TCODParserStruct *sub_entity) {
 	TCOD_struct_add_structure(data,sub_entity->data);
+	return this;
 }
 
 bool TCODParserStruct::isPropertyMandatory(const char *propname) const {

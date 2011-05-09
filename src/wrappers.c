@@ -489,3 +489,8 @@ uint32 TCOD_console_check_for_keypress_bitfield (int flags)
   TCOD_key_t key = TCOD_console_check_for_keypress(flags);
   return key_struct_to_bitfield(key);
 }
+
+void TCOD_console_set_key_color_wrapper (TCOD_console_t con, colornum_t c)
+{
+  TCOD_console_set_key_color(con, int_to_color(c));
+}

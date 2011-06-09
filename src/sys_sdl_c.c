@@ -974,7 +974,8 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
 }
 
 TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
-	static TCOD_key_t noret={TCODK_NONE,0};
+	TCOD_key_t noret={TCODK_NONE,0};
+	/*
 	SDL_Event ev;
 
 	SDL_PumpEvents();
@@ -984,12 +985,18 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
 			return tmpretkey;
 		}
 	}
+	*/
+	TCOD_event_t mask = 0;
+	if ( (flags & TCOD_KEY_PRESSED) != 0 ) mask |= TCOD_EVENT_KEY_PRESS;
+	if ( (flags & TCOD_KEY_RELEASED) != 0 ) mask |= TCOD_EVENT_KEY_RELEASE;
+	TCOD_sys_check_for_event(mask,&noret,NULL);
 	return noret;
 }
 
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
-	SDL_Event ev;
 	TCOD_key_t ret={TCODK_NONE,0};
+	/*
+	SDL_Event ev;
 	SDL_PumpEvents();
 	if ( flush ) {
 		while ( SDL_PollEvent(&ev) ) {
@@ -1000,6 +1007,8 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 		SDL_WaitEvent(&ev);
 		ret = TCOD_sys_SDLtoTCOD(&ev,TCOD_KEY_PRESSED);
 	} while ( ret.vk == TCODK_NONE && ev.type != SDL_QUIT );
+	*/
+	TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS,&ret,NULL,flush);
 	return ret;
 }
 
@@ -1101,10 +1110,11 @@ TCOD_event_t TCOD_sys_check_for_event(TCOD_event_t eventMask, TCOD_key_t *key, T
 	TCOD_event_t retMask=0;
 	if ( eventMask == 0 ) return 0;
 	SDL_PumpEvents();
-	SDL_WaitEvent(&ev);
-	mouse->lbutton_pressed =false;
-	mouse->rbutton_pressed =false;
-	mouse->mbutton_pressed =false;
+	if ( mouse ) {
+		mouse->lbutton_pressed =false;
+		mouse->rbutton_pressed =false;
+		mouse->mbutton_pressed =false;
+	}
 	while ( SDL_PollEvent(&ev) ) {
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,mouse);
 		if ( retMask != 0 ) return retMask;

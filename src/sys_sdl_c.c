@@ -1003,6 +1003,114 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 	return ret;
 }
 
+static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
+	TCOD_event_t retMask=0;
+	switch(ev->type) {
+		case SDL_KEYDOWN : 
+			if ( (TCOD_EVENT_KEY_PRESS & eventMask) != 0) {
+				retMask|=TCOD_EVENT_KEY_PRESS; 
+				*key = TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
+				return retMask;					
+			}
+		break;
+		case SDL_KEYUP : 
+			if ( (TCOD_EVENT_KEY_RELEASE & eventMask) != 0) {
+				retMask|=TCOD_EVENT_KEY_RELEASE; 
+				*key = TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_RELEASED);
+				return retMask;					
+			}
+		break;
+		case SDL_MOUSEMOTION : 
+			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
+				SDL_MouseMotionEvent *mme=&ev->motion;
+				int charWidth, charHeight;
+				/*SDL_GetMouseState(&mouse->x,&mouse->y);*/
+				/*SDL_GetRelativeMouseState(&mouse->dx,&mouse->dy);*/
+				retMask|=TCOD_EVENT_MOUSE_MOVE;
+				mouse->dx = mme->xrel;
+				mouse->dy = mme->yrel;
+				mouse->x=mme->x;
+				mouse->y=mme->y;				
+				TCOD_sys_get_char_size(&charWidth,&charHeight);
+				mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+				mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				mouse->dcx = mouse->dx / charWidth;
+				mouse->dcy = mouse->dy / charHeight;
+				return retMask;
+			}
+		break; 
+		case SDL_MOUSEBUTTONDOWN : 
+			if ( (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
+				SDL_MouseButtonEvent *mev=&ev->button;
+				retMask|=TCOD_EVENT_MOUSE_PRESS;
+				switch (mev->button) {
+					case 1 : mouse->lbutton = mousebl=true; break;
+					case 2 : mouse->mbutton = mousebm=true; break;
+					case 3 : mouse->rbutton = mousebr=true; break;
+				}
+				return retMask;
+			}
+		break; 
+		case SDL_MOUSEBUTTONUP : 
+			if ( (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
+				SDL_MouseButtonEvent *mev=&ev->button;
+				retMask|=TCOD_EVENT_MOUSE_RELEASE;
+				switch (mev->button) {
+					case 1 : if (mousebl) mouse->lbutton_pressed = mouse_force_bl=true; mouse->lbutton = mousebl=false; break;
+					case 2 : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
+					case 3 : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
+				}
+				return retMask;
+			}
+		break;
+		case SDL_QUIT :
+			TCOD_console_set_window_closed();
+		break;
+		case SDL_VIDEOEXPOSE :
+			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
+		break;			
+		default : break; 
+	}
+	return retMask;
+}
+
+TCOD_event_t TCOD_sys_wait_for_event(TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
+	SDL_Event ev;
+	TCOD_event_t retMask=0;
+	if ( eventMask == 0 ) return 0;
+	SDL_PumpEvents();
+	if ( flush ) {
+		while ( SDL_PollEvent(&ev) ) {
+			TCOD_sys_SDLtoTCOD(&ev,0);
+		}
+	}
+	SDL_WaitEvent(&ev);
+	mouse->lbutton_pressed =false;
+	mouse->rbutton_pressed =false;
+	mouse->mbutton_pressed =false;
+	do {
+		SDL_WaitEvent(&ev);
+		retMask=TCOD_sys_handle_event(&ev,eventMask,key,mouse);
+		if ( retMask != 0 ) return retMask;
+	} while ( ev.type != SDL_QUIT );
+	return retMask;
+}
+
+TCOD_event_t TCOD_sys_check_for_event(TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
+	SDL_Event ev;
+	TCOD_event_t retMask=0;
+	if ( eventMask == 0 ) return 0;
+	SDL_PumpEvents();
+	SDL_WaitEvent(&ev);
+	mouse->lbutton_pressed =false;
+	mouse->rbutton_pressed =false;
+	mouse->mbutton_pressed =false;
+	while ( SDL_PollEvent(&ev) ) {
+		retMask=TCOD_sys_handle_event(&ev,eventMask,key,mouse);
+		if ( retMask != 0 ) return retMask;
+	}
+	return retMask;
+}
 
 void TCOD_sys_sleep_milli(uint32 milliseconds) {
 	SDL_Delay(milliseconds);

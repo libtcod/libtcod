@@ -43,6 +43,19 @@ TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 
+typedef enum {
+  TCOD_EVENT_KEY_PRESS=1,
+  TCOD_EVENT_KEY_RELEASE=2,
+  TCOD_EVENT_KEY=TCOD_EVENT_KEY_PRESS|TCOD_EVENT_KEY_RELEASE,
+  TCOD_EVENT_MOUSE_MOVE=4,
+  TCOD_EVENT_MOUSE_PRESS=8,
+  TCOD_EVENT_MOUSE_RELEASE=16,
+  TCOD_EVENT_MOUSE=TCOD_EVENT_MOUSE_MOVE|TCOD_EVENT_MOUSE_PRESS|TCOD_EVENT_MOUSE_RELEASE,
+  TCOD_EVENT_ANY=TCOD_EVENT_KEY|TCOD_EVENT_MOUSE,
+} TCOD_event_t;
+TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush);
+TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
+
 /* filesystem stuff */
 TCODLIB_API bool TCOD_sys_create_directory(const char *path);
 TCODLIB_API bool TCOD_sys_delete_file(const char *path);

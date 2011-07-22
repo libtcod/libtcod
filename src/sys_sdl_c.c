@@ -1015,19 +1015,23 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
 	switch(ev->type) {
-		case SDL_KEYDOWN : 
+		case SDL_KEYDOWN : {		 
+			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
 			if ( (TCOD_EVENT_KEY_PRESS & eventMask) != 0) {
 				retMask|=TCOD_EVENT_KEY_PRESS; 
-				*key = TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
+				*key = tmpKey; 
 				return retMask;					
 			}
+		}
 		break;
-		case SDL_KEYUP : 
+		case SDL_KEYUP : { 
+			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_RELEASED);
 			if ( (TCOD_EVENT_KEY_RELEASE & eventMask) != 0) {
 				retMask|=TCOD_EVENT_KEY_RELEASE; 
-				*key = TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_RELEASED);
+				*key = tmpKey;
 				return retMask;					
 			}
+		}
 		break;
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {

@@ -1539,7 +1539,7 @@ int main( int argc, char *argv[] ) {
 		TCODConsole::flush();
 
 		// did the user hit a key ?
-		key = TCODConsole::checkForKeypress();
+		key = TCODConsole::checkForKeypress(TCOD_KEY_PRESSED);
 		if ( key.vk == TCODK_DOWN ) {
 			// down arrow : next sample
 			curSample = (curSample+1) % nbSamples;

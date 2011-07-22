@@ -1193,7 +1193,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	static int char_x[128];
 	static int char_y[128];
 	static bool init1=false;
-	static int len,len1,cw,ch;
+	static int len,len1,cw=-1,ch=-1;
 	static float xstr;
 	static TCOD_color_t colmap[64];
 	static TCOD_color_t colmap_light[64];
@@ -1228,25 +1228,17 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 
 	if (!init1) {
 		/* initialize all static data, colormaps, ... */
-		int width,height;
 		TCOD_color_t col;
 		TCOD_color_gen_map(colmap,4,colkeys,colpos);
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
-		cw=TCOD_console_get_width(NULL);
-		ch=TCOD_console_get_height(NULL);
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
 		len=strlen(poweredby);
 		len1=11; /* sizeof "Powered by\n" */
 		left=MAX(x-4,0);
-		right=MIN(x+len,cw-1);
 		top=MAX(y-4,0);
-		bottom=MIN(y+6,ch-1);
-		width=right - left + 1;
-		height=bottom - top + 1;
 		col= TCOD_console_get_default_background(NULL);
 		TCOD_console_set_default_background(NULL,TCOD_black);
-		img = TCOD_image_new(width*2,height*2);
 		TCOD_console_set_default_background(NULL,col);
 		init1=true;
 	}
@@ -1268,6 +1260,18 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		}
 		nbpart=firstpart=0;
 		init2=true;
+	}
+	if (TCOD_console_get_width(NULL) != cw || TCOD_console_get_height(NULL)!=ch) {
+		/* console size has changed */
+		int width,height;
+		cw=TCOD_console_get_width(NULL);
+		ch=TCOD_console_get_height(NULL);
+		right=MIN(x+len,cw-1);
+		bottom=MIN(y+6,ch-1);
+		width=right - left + 1;
+		height=bottom - top + 1;
+		if ( img ) TCOD_image_delete(img);
+		img = TCOD_image_new(width*2,height*2);
 	}
 	fbackup=TCOD_console_get_default_foreground(NULL);
 	if ( xstr < (float)len1 ) {

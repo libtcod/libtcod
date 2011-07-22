@@ -126,7 +126,12 @@ class TCODLIB_API ITCODParserListener;
 
 #ifdef TCOD_VISUAL_STUDIO
     // silly stuff to avoid VS warning
-	template class TCODLIB_API TCODList<TCODParserStruct *>;
+	#pragma warning(disable: 4251)
+#endif
+	TCODList<TCODParserStruct *> defs;
+#ifdef TCOD_VISUAL_STUDIO
+	// restore warning again
+	#pragma warning(default: 4251)
 #endif
 
 class TCODLIB_API TCODParser {

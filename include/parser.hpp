@@ -195,7 +195,7 @@ public :
     // silly stuff to avoid VS warning
 	#pragma warning(disable: 4251)
 #endif
-	extern TCODList<TCODParserStruct *> defs;
+	TCODList<TCODParserStruct *> defs;
 #ifdef TCOD_VISUAL_STUDIO
 	// restore warning again
 	#pragma warning(default: 4251)

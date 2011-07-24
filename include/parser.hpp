@@ -124,16 +124,6 @@ class TCODLIB_API TCODParser;
 class TCODLIB_API TCODParserStruct;
 class TCODLIB_API ITCODParserListener;
 
-#ifdef TCOD_VISUAL_STUDIO
-    // silly stuff to avoid VS warning
-	#pragma warning(disable: 4251)
-#endif
-	TCODList<TCODParserStruct *> defs;
-#ifdef TCOD_VISUAL_STUDIO
-	// restore warning again
-	#pragma warning(default: 4251)
-#endif
-
 class TCODLIB_API TCODParser {
 public :
 	/**
@@ -201,7 +191,16 @@ public :
 
 	// error during parsing. can be called by the parser listener
 	void error(const char *msg, ...);
-	TCODList<TCODParserStruct *>defs;
+#ifdef TCOD_VISUAL_STUDIO
+    // silly stuff to avoid VS warning
+	#pragma warning(disable: 4251)
+#endif
+	extern TCODList<TCODParserStruct *> defs;
+#ifdef TCOD_VISUAL_STUDIO
+	// restore warning again
+	#pragma warning(default: 4251)
+#endif
+
 	bool getBoolProperty(const char *name) const;
 	int getIntProperty(const char *name) const;
 	int getCharProperty(const char *name) const;

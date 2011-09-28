@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Creating a generator</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('random.html')">7. Pseudorandom number generator</a> &gt; <a onclick="link('random_init.html')">7.1. Creating a generator</a><br>
+ <a class="next" onclick="link('random_distro.html')">7.2. Using a generator</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>7.1. Creating a generator</h1>
+<div id="toc"><ul>
+<li><a href="#0">Default generator</a></li><li><a href="#1">Generators with random seeds</a></li><li><a href="#2">Generators with user defined seeds</a></li><li><a href="#3">Destroying a RNG</a></li></ul></div>
+<a name="0"></a><h3>Default generator</h3>
+<p>The simplest way to get random number is to use the default generator. The first time you get this generator, it is initialized by calling TCOD_random_new. Then, on successive calls, this function returns the same generator (singleton pattern).<br />		</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span> TCODRandom<span class="code-symbol"> *</span> TCODRandom<span class="code-symbol">::</span>getInstance<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_get_instance<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="py">random_get_instance<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span> TCODRandom TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>getInstance<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>algo</td><td>The PRNG algorithm the generator should be using. Possible values are:<br />			* TCOD_RNG_MT for Mersenne Twister,<br />			* TCOD_RNG_CMWC for Complementary Multiply-With-Carry.<br />		</td></tr>
+</tbody></table><a name="1"></a><h3>Generators with random seeds</h3>
+<p>You can also create as many generators as you want with a random seed (the number of seconds since Jan 1 1970 at the time the constructor is called). Warning ! If you call this function several times in the same second, it will return the same generator.<br />		</p>
+<div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span>TCODRandom<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_RNG_CMWC</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_new<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol">)</span></p>
+<p class="py">random_new<span class="code-symbol"> (</span>algo<span class="code-symbol"> =</span><span class="code-tcod"> RNG_CMWC</span><span class="code-symbol">)</span></p>
+<p class="cs">TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-comment"> // Defaults to ComplementaryMultiplyWithCarry<br /></span>TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>TCODRandomType algo<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>algo</td><td>The PRNG algorithm the generator should be using.<br />		</td></tr>
+</tbody></table><a name="2"></a><h3>Generators with user defined seeds</h3>
+<p>Finally, you can create generators with a specific seed. Those allow you to get a reproducible set of random numbers. You can for example save a dungeon in a file by saving only the seed used for its generation (provided you have a determinist generation algorithm)<br />		</p>
+<div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span>TCODRandom<span class="code-symbol"> (</span><span class="code-keyword">uint32</span> seed<span class="code-symbol">,</span><span class="code-tcod"> TCOD_random_algo_t</span> algo<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_RNG_CMWC</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_new_from_seed<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol">,</span><span class="code-keyword"> uint32</span> seed<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py">random_new_from_seed<span class="code-symbol">(</span>seed<span class="code-symbol">,</span> algo<span class="code-symbol">=</span><span class="code-tcod">RNG_CMWC</span><span class="code-symbol">)</span></p>
+<p class="cs">TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>uint32 seed<span class="code-symbol">)</span><span class="code-comment"> // Defaults to ComplementaryMultiplyWithCarry<br /></span>TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>uint32 seed<span class="code-symbol">,</span> TCODRandomType algo<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>seed</td><td>The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.<br />		</td></tr>
+<tr><td>algo</td><td>The PRNG algorithm the generator should be using.<br />		</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp"><span class="code-comment">// default generator<br /></span>TCODRandom<span class="code-symbol"> *</span><span class="code-keyword"> default</span><span class="code-symbol"> =</span> TCODRandom<span class="code-symbol">::</span>getInstance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// another random generator<br /></span>TCODRandom<span class="code-symbol"> *</span> myRandom<span class="code-symbol"> =</span><span class="code-keyword"> new</span> TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// a random generator with a specific seed<br /></span>TCODRandom<span class="code-symbol"> *</span> myDeterministRandom<span class="code-symbol"> =</span><span class="code-keyword"> new</span> TCODRandom<span class="code-symbol">(</span><span class="code-value">0xdeadbeef</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-comment">// default generator<br /></span><span class="code-tcod">TCOD_random_t</span><span class="code-keyword"> default</span><span class="code-symbol"> =</span> TCOD_random_get_instance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// another random generator<br /></span><span class="code-tcod">TCOD_random_t</span> my_random<span class="code-symbol"> =</span> TCOD_random_new<span class="code-symbol">(</span><span class="code-tcod">TCOD_RNG_CMWC</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// a random generator with a specific seed<br /></span><span class="code-tcod">TCOD_random_t</span> my_determinist_random<span class="code-symbol"> =</span> TCOD_random_new_from_seed<span class="code-symbol">(</span><span class="code-tcod">TCOD_RNG_CMWC</span><span class="code-symbol">,</span><span class="code-value">0xdeadbeef</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py"><span class="code-comment"># default generator<br /></span>default<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>random_get_instance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-comment"><br /># another random generator<br /></span>my_random<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>random_new<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-comment"><br /># a random generator with a specific seed<br /></span>my_determinist_random<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>random_new_from_seed<span class="code-symbol">(</span><span class="code-value">0xdeadbeef</span><span class="code-symbol">)</span></p>
+</div><hr>
+<a name="3"></a><h3>Destroying a RNG</h3>
+<p>To release ressources used by a generator, use those functions :<br />			NB : do not delete the default random generator !<br />		</p>
+<div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span><span class="code-symbol">~</span>TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_random_delete<span class="code-symbol">(</span><span class="code-tcod">TCOD_random_t</span> mersenne<span class="code-symbol">)</span></p>
+<p class="py">random_delete<span class="code-symbol">(</span>mersenne<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>Dispose<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>mersenne</td><td>In the C and Python versions, the generator handler, returned by the initialization functions.<br />		</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp"><span class="code-comment">// create a generator<br /></span>TCODRandom<span class="code-symbol"> *</span>rnd<span class="code-symbol"> =</span><span class="code-keyword"> new</span> TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// use it<br /></span><span class="code-symbol">...</span><span class="code-comment"><br />// destroy it<br /></span><span class="code-keyword">delete</span> rnd<span class="code-symbol">;</span></p>
+<p class="c"><span class="code-comment">// create a generator<br /></span><span class="code-tcod">TCOD_random_t</span> rnd<span class="code-symbol"> =</span> TCOD_random_new<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-comment"><br />// use it<br /></span><span class="code-symbol">...</span><span class="code-comment"><br />// destroy it<br /></span>TCOD_random_delete<span class="code-symbol">(</span>rnd<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py"><span class="code-comment"># create a generator<br /></span>rnd<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>random_new<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-comment"><br /># use it<br /></span><span class="code-symbol">.</span><span class="code-symbol">.</span><span class="code-symbol">.</span><span class="code-comment"><br /># destroy it<br /></span>libtcod<span class="code-symbol">.</span>random_delete<span class="code-symbol">(</span>rnd<span class="code-symbol">)</span></p>
+</div><hr>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Using a generator</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('random.html')">7. Pseudorandom number generator</a> &gt; <a onclick="link('random_distro.html')">7.2. Using a generator</a><br>
+<a class="prev" onclick="link('random_init.html')">7.1. Creating a generator</a> | <a class="next" onclick="link('random_use.html')">7.3. Using a generator</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>7.2. Using a generator</h1>
+<a name="0"></a><h3>Setting the default RNG distribution</h3>
+<p>Random numbers can be obtained using several different distributions. Linear is default, but if you wish to use one of the available Gaussian distributions, you can use this function to tell libtcod which is your preferred distribution. All random number getters will then use that distribution automatically to fetch your random numbers.<br />The distributions available are as follows:<br />1. TCOD_DISTRIBUTION_LINEAR<br />This is the default distribution. It will return a number from a range min-max. The numbers will be evenly distributed, ie, each number from the range has the exact same chance of being selected.<br />2. TCOD_DISTRIBUTION_GAUSSIAN<br />This distribution does not have minimum and maximum values. Instead, a mean and a standard deviation are used. The mean is the central value. It will appear with the greatest frequency. The farther away from the mean, the less the probability of appearing the possible results have. Although extreme values are possible, 99.7% of the results will be within the radius of 3 standard deviations from the mean. So, if the mean is 0 and the standard deviation is 5, the numbers will mostly fall in the (-15,15) range.<br />3. TCOD_DISTRIBUTION_GAUSSIAN_RANGE<br />This one takes minimum and maximum values. Under the hood, it computes the mean (which falls right between the minimum and maximum) and the standard deviation and applies a standard Gaussian distribution to the values. The difference is that the result is always guaranteed to be in the min-max range.<br />4. TCOD_DISTRIBUTION_GAUSSIAN_INVERSE<br />Essentially, this is the same as TCOD_DISTRIBUTION_GAUSSIAN. The difference is that the values near +3 and -3 standard deviations from the mean have the highest possibility of appearing, while the mean has the lowest.<br />5. TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE<br />Essentially, this is the same as TCOD_DISTRIBUTION_GAUSSIAN_RANGE, but the min and max values have the greatest probability of appearing, while the values between them, the lowest.<br /><br />There exist functions to also specify both a min-max range AND a custom mean, which can be any value (possibly either min or max, but it can even be outside that range). In case such a function is used, the distributions will trigger a slihtly different behaviour:<br />* TCOD_DISTRIBUTION_LINEAR<br />* TCOD_DISTRIBUTION_GAUSSIAN<br />* TCOD_DISTRIBUTION_GAUSSIAN_RANGE<br />In these cases, the selected mean will have the highest probability of appearing.<br /><br />* TCOD_DISTRIBUTION_GAUSSIAN_INVERSE<br />* TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE<br />In these cases, the selected mean will appear with the lowest frequency.<br />		</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODRandom<span class="code-symbol">::</span>setDistribution<span class="code-symbol">(</span><span class="code-tcod">TCOD_distribution_t</span> distribution<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_random_set_distribution<span class="code-symbol">(</span><span class="code-tcod">TCOD_random_t</span> mersenne<span class="code-symbol">,</span><span class="code-tcod"> TCOD_distribution_t</span> distribution<span class="code-symbol">)</span></p>
+<p class="py"></p>
+<p class="cs"></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>mersenne</td><td>In the C and Python versions, the generator handler, returned by the initialization functions. If NULL, the default generator is used..<br />		</td></tr>
+<tr><td>distribution</td><td>The distribution constant from the available set:<ul><li>TCOD_DISTRIBUTION_LINEAR</li><li>TCOD_DISTRIBUTION_GAUSSIAN</li><li>TCOD_DISTRIBUTION_GAUSSIAN_RANGE</li><li>TCOD_DISTRIBUTION_GAUSSIAN_INVERSE</li><li>TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE</li></ul><br />		</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

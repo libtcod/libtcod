@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Generating a name</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('namegen.html')">15. Name generator</a> &gt; <a onclick="link('namegen_generate.html')">15.2. Generating a name</a><br>
+<a class="prev" onclick="link('namegen_init.html')">15.1. Creating a generator</a> | <a class="next" onclick="link('namegen_file.html')">15.3. Syllable set configuration</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>15.2. Generating a name</h1>
+<div id="toc"><ul>
+<li><a href="#0">Generating a default name</a></li><li><a href="#1">Generating a custom name</a></li><li><a href="#2">Retrieving available set names</a></li></ul></div>
+<a name="0"></a><h3>Generating a default name</h3>
+<p>The following will output a random name generated using one of the generation rules specified in the syllable set:<br />			Should you choose to allocate memory for the output, you need to remember to deallocate it once you don't need the name anymore using the free() function. This applies to C++ as well (delete won't work - you have to use free()).<br />			<br />			On the other hand, should you choose not to allocate memory, be aware that subsequent calls will overwrite the previously returned pointer, so make sure to copy the output using strcpy(), strdup() or other means of your choosing.<br />			<br />			The name you specify needs to be in one of the files the generator has previously parsed (see Creating a generator). If such a name doesn't exist, a warning will be displayed and NULL will be returned.<br />		</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span> TCODNamegen<span class="code-symbol">::</span>generate<span class="code-symbol"> (</span><span class="code-keyword">char</span><span class="code-symbol"> *</span> name<span class="code-symbol">,</span><span class="code-keyword"> bool</span> allocate<span class="code-symbol"> =</span><span class="code-keyword"> false</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">char</span><span class="code-symbol"> *</span> TCOD_namegen_generate<span class="code-symbol"> (</span><span class="code-keyword">char</span><span class="code-symbol"> *</span> name<span class="code-symbol">,</span><span class="code-keyword"> bool</span> allocate<span class="code-symbol">)</span></p>
+<p class="py">namegen_generate<span class="code-symbol"> (</span>name<span class="code-symbol">,</span> allocate<span class="code-symbol"> =</span><span class="code-value"> 0</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">string</span> TCODNameGenerator<span class="code-symbol">:</span><span class="code-symbol">:</span>generate<span class="code-symbol"> (</span><span class="code-keyword">string</span> name<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />			For more about how structure names work, please refer to <a href="namegen_file.html">those</a> <a href="parser_format.html">chapters</a>.<br />		</td></tr>
+<tr><td>allocate</td><td>Whether memory should be allocated for the output or not.<br />		</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODNamegen<span class="code-symbol">::</span>parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span>TCODRandom<span class="code-symbol">::</span>getInstance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span><span class="code-symbol"> *</span> myName<span class="code-symbol"> =</span> TCODNamegen<span class="code-symbol">::</span>generate<span class="code-symbol">(</span><span class="code-string">"fantasy female"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c">TCOD_namegen_parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span>TCOD_random_get_instance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span><span class="code-symbol"> *</span> my_name<span class="code-symbol"> =</span> TCOD_namegen_generate<span class="code-symbol">(</span><span class="code-string">"Celtic male"</span><span class="code-symbol">,</span>false<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py">libtcod<span class="code-symbol">.</span>namegen_parse<span class="code-symbol">(</span><span class="code-string">'data/names.txt'</span><span class="code-symbol">)</span><br />name<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>namegen_generate<span class="code-symbol">(</span><span class="code-string">'Nordic female'</span><span class="code-symbol">)</span></p>
+</div><hr>
+<a name="1"></a><h3>Generating a custom name</h3>
+<p>It is also possible to generate a name using custom generation rules. This overrides the random choice of a generation rule from the syllable set. Please refer to chapter 16.5 to learn about the name generation rules syntax.<br />		</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span> TCODNamegen<span class="code-symbol">::</span>generateCustom<span class="code-symbol"> (</span><span class="code-keyword">char</span><span class="code-symbol"> *</span> name<span class="code-symbol">,</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span> rule<span class="code-symbol">,</span><span class="code-keyword"> bool</span> allocate<span class="code-symbol"> =</span><span class="code-keyword"> false</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">char</span><span class="code-symbol"> *</span> TCOD_namegen_generate_custom<span class="code-symbol"> (</span><span class="code-keyword">char</span><span class="code-symbol"> *</span> name<span class="code-symbol">,</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span> rule<span class="code-symbol">,</span><span class="code-keyword"> bool</span> allocate<span class="code-symbol">)</span></p>
+<p class="py">namegen_generate_custom<span class="code-symbol"> (</span>name<span class="code-symbol">,</span> rule<span class="code-symbol">,</span> allocate<span class="code-symbol"> =</span><span class="code-value"> 0</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">string</span> TCODNameGenerator<span class="code-symbol">:</span><span class="code-symbol">:</span>generateCustom<span class="code-symbol"> (</span><span class="code-keyword">string</span> name<span class="code-symbol">,</span><span class="code-keyword"> string</span> rule<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>name</td><td>The structure name you wish to refer to, for instance, "celtic female".<br />			For more about how structure names work, please refer to <a href="namegen_file.html">those</a> <a href="parser_format.html">chapters</a>.<br />		</td></tr>
+<tr><td>rule</td><td>The name generation rule. See <a href="namegen_file.html">this chapter</a> for more details.<br />		</td></tr>
+<tr class="hilite"><td>allocate</td><td>Whether memory should be allocated for the output or not.<br />		</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODNamegen<span class="code-symbol">::</span>parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span>TCODRandom<span class="code-symbol">::</span>getInstance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span><span class="code-symbol"> *</span> myName<span class="code-symbol"> =</span> TCODNamegen<span class="code-symbol">::</span>generateCustom<span class="code-symbol">(</span><span class="code-string">"Nordic male"</span><span class="code-symbol">,</span><span class="code-string">"$s$e"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c">TCOD_namegen_parse<span class="code-symbol">(</span><span class="code-string">"data/names.txt"</span><span class="code-symbol">,</span>TCOD_random_get_instance<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span><span class="code-symbol"> *</span> my_name<span class="code-symbol"> =</span> TCOD_namegen_generate_custom<span class="code-symbol">(</span><span class="code-string">"Mesopotamian female"</span><span class="code-symbol">,</span><span class="code-string">"$s$e"</span><span class="code-symbol">,</span>false<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py">libtcod<span class="code-symbol">.</span>namegen_parse<span class="code-symbol">(</span><span class="code-string">'data/names.txt'</span><span class="code-symbol">)</span><br />name<span class="code-symbol"> =</span> libtcod<span class="code-symbol">.</span>namegen_generate_custom<span class="code-symbol">(</span><span class="code-string">'Nordic female'</span><span class="code-symbol">,</span><span class="code-string">'$s$e'</span><span class="code-symbol">)</span></p>
+</div><hr>
+<a name="2"></a><h3>Retrieving available set names</h3>
+<p>If you wish to check the sylable set names that are currently available, you may call:<br />		This will create a list with all the available syllable set names. Remember to delete that list after you don't need it anymore!<br />		</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span> TCODList TCODNamegen<span class="code-symbol">::</span>getSets<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_list_t</span> TCOD_namegen_get_sets<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="py">namegen_get_sets<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span> IEnumerable<span class="code-symbol"><</span><span class="code-keyword">string</span><span class="code-symbol">></span> TCODNameGenerator<span class="code-symbol">:</span><span class="code-symbol">:</span>getSets<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

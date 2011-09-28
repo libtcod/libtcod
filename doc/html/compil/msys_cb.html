@@ -1,0 +1,56 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 0. Compiling with libtcod</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+0.2 MINGW32 with Code::Blocks<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Use this method if you're using the <a href="http://www.codeblocks.org/">Code::Blocks</a> IDE on windows.<br />
+Obviously, you first have to download and install Code::Blocks. Then start it and click "Create a new project"<br />
+<h4>Create a new project</h4>
+Choose the "Console application" template, then click Go.<br />
+Select your project name and directory and click next.<br />
+Select GNU GCC compiler (it's the default) and click next.<br />
+Select your language (C or C++) and click Finish.<br />
+Your project is created and you can import your sources in &lt;project_name&gt;/Sources.<br />
+For this tutorial, we'll use a basic hello world C++ program. You can copy and paste it to replace the main.cpp content created by Code::Blocks :<br />
+<p class="code"><pre>
+#include "libtcod.hpp"
+
+int main() {
+    TCODConsole::initRoot(80,50,"test",false);
+    while (! TCODConsole::isWindowClosed()) {
+        TCODConsole::root->clear();
+        TCODConsole::root->printCenter(40,25,TCOD_BKGND_NONE,"Hello world!");
+        TCODConsole::flush();
+        TCODConsole::checkForKeypress();
+    }
+}
+</pre></p>
+<h4>Compilation setup</h4>
+Now right click on the project name in the manager and select "Build options..."<br />
+In the "linker settings" tab, add libtcod-mingw.a<br />
+In the "search directories" tab, "Compiler" subtab, add the libtcod include directory. <br />
+Then click OK.<br />
+That's it ! Press CTRL-F9 and your program should compile.<br />
+<h4>Run/Debug configuration</h4>
+Now if you try to run it (CTRL-F10), it will complain because it doesn't find libtcod-mingw.dll.<br />
+To fix this, right click on the project name in the manager and select "Properties..."<br />
+In the "Build target" tab, set the Execution working dir to be libtcod directory.<br />
+Now CTRL-F10 works and you should see a nice black window with "Hello world!"<br />
+<h4>Remove output window</h4>
+The MS_DOS window that opens allows you to see the standard output of the program.<br />
+For a release version, you probably want to get rid of it.<br />
+So once again, right click on the project name, select "Properties...".<br />
+In the "Build target" tab, make sure the release target is selected so that you keep the MS-DOS window when you're using the debug version.<br />
+In "Type", select "GUI application" instead of "console application".<br />

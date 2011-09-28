@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | High precision time functions</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('system.html')">3. System layer</a> &gt; <a onclick="link('system_time.html')">3.1. High precision time functions</a><br>
+ <a class="next" onclick="link('system_screenshots.html')">3.2. Easy screenshots</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>3.1. High precision time functions</h1>
+<div id="toc"><ul>
+<li><a href="#0">Limit the frames per second</a></li><li><a href="#1">Get the number of frames rendered during the last second</a></li><li><a href="#2">Get the duration of the last frame</a></li><li><a href="#3">Pause the program</a></li><li><a href="#4">Get global timer in milliseconds</a></li><li><a href="#5">Get global timer in seconds</a></li></ul></div>
+<p>These are functions specifically aimed at real time game development.<br />	</p>
+<a name="0"></a><h3>Limit the frames per second</h3>
+<p>The setFps function allows you to limit the number of frames per second.<br />		If a frame is rendered faster than expected, the TCOD_console_flush function will wait so that the frame rate never exceed this value.<br />		You can call this function during your game initialization.<br />		You can dynamically change the frame rate. Just call this function once again.<br />		<b>You should always limit the frame rate, except during benchmarks, else your game will use 100% of the CPU power</b><br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODSystem<span class="code-symbol">::</span>setFps<span class="code-symbol">(</span><span class="code-keyword">int</span> val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_sys_set_fps<span class="code-symbol">(</span><span class="code-keyword">int</span> val<span class="code-symbol">)</span></p>
+<p class="py">sys_set_fps<span class="code-symbol">(</span>val<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>setFps<span class="code-symbol">(</span><span class="code-keyword">int</span> val<span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>setFps<span class="code-symbol">(</span>val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>val</td><td>Maximum number of frames per second. 0 means unlimited frame rate.<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Get the number of frames rendered during the last second</h3>
+<p>The value returned by this function is updated every second.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> int</span> TCODSystem<span class="code-symbol">::</span>getFps<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_sys_get_fps<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="py">sys_get_fps<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> int</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>getFps<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>getFps<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<a name="2"></a><h3>Get the duration of the last frame</h3>
+<p>This function returns the length in seconds of the last rendered frame.<br />		You can use this value to update every time dependent object in the world.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> float</span> TCODSystem<span class="code-symbol">::</span>getLastFrameLength<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_sys_get_last_frame_length<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="py">sys_get_last_frame_length<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> float</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>getLastFrameLength<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>getLastFrameLength<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<h6>Example:</h6><div class="code">
+<p class="cpp"><span class="code-comment">// moving an objet at 5 console cells per second<br /></span><span class="code-keyword">float</span> x<span class="code-symbol">=</span><span class="code-value">0</span><span class="code-symbol">,</span>y<span class="code-symbol">=</span><span class="code-value">0</span><span class="code-symbol">;</span><span class="code-comment"> // object coordinates<br /></span>x<span class="code-symbol"> +=</span><span class="code-value"> 5</span><span class="code-symbol"> *</span> TCODSystem<span class="code-symbol">::</span>getLastFrameLength<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCODConsole<span class="code-symbol">::</span>root<span class="code-symbol">-></span>putChar<span class="code-symbol">(</span><span class="code-symbol">(</span><span class="code-keyword">int</span><span class="code-symbol">)</span><span class="code-symbol">(</span>x<span class="code-symbol">)</span><span class="code-symbol">,</span><span class="code-symbol">(</span><span class="code-keyword">int</span><span class="code-symbol">)</span><span class="code-symbol">(</span>y<span class="code-symbol">)</span><span class="code-symbol">,</span><span class="code-character">'X'</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-keyword">float</span> x<span class="code-symbol">=</span><span class="code-value">0</span><span class="code-symbol">,</span>y<span class="code-symbol">=</span><span class="code-value">0</span><span class="code-symbol">;</span><br />x<span class="code-symbol"> +=</span><span class="code-value"> 5</span><span class="code-symbol"> *</span> TCOD_sys_get_last_frame_length<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_console_put_char<span class="code-symbol">(</span><span class="code-tcod">NULL</span><span class="code-symbol">,</span><span class="code-symbol">(</span><span class="code-keyword">int</span><span class="code-symbol">)</span><span class="code-symbol">(</span>x<span class="code-symbol">)</span><span class="code-symbol">,</span><span class="code-symbol">(</span><span class="code-keyword">int</span><span class="code-symbol">)</span><span class="code-symbol">(</span>y<span class="code-symbol">)</span><span class="code-symbol">,</span><span class="code-character">'X'</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="py">x<span class="code-symbol">=</span><span class="code-value">0.0</span><br />y<span class="code-symbol">=</span><span class="code-value">0.0</span><br />x<span class="code-symbol"> +=</span><span class="code-value"> 5</span><span class="code-symbol"> *</span> libtcod<span class="code-symbol">.</span>sys_get_last_frame_length<span class="code-symbol">(</span><span class="code-symbol">)</span><br />libtcod<span class="code-symbol">.</span>console_put_char<span class="code-symbol">(</span><span class="code-value">0</span><span class="code-symbol">,</span>int<span class="code-symbol">(</span>x<span class="code-symbol">)</span><span class="code-symbol">,</span>int<span class="code-symbol">(</span>y<span class="code-symbol">)</span><span class="code-symbol">,</span><span class="code-string">'X'</span><span class="code-symbol">)</span></p>
+<p class="lua"><span class="code-comment">-- moving an objet at 5 console cells per second<br /></span>x<span class="code-symbol">=</span><span class="code-value">0</span><br />y<span class="code-symbol">=</span><span class="code-value">0</span><span class="code-comment"> -- object coordinates<br /></span>x<span class="code-symbol"> =</span> x<span class="code-symbol"> +</span><span class="code-value"> 5</span><span class="code-symbol"> *</span> tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>getLastFrameLength<span class="code-symbol">(</span><span class="code-symbol">)</span><br />libtcod<span class="code-symbol">.</span>TCODConsole_root<span class="code-symbol">:</span>putChar<span class="code-symbol">(</span>x<span class="code-symbol">,</span>y<span class="code-symbol">,</span><span class="code-string">'X'</span><span class="code-symbol">)</span></p>
+</div><hr>
+<a name="3"></a><h3>Pause the program</h3>
+<p>Use this function to stop the program execution for a specified number of milliseconds.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODSystem<span class="code-symbol">::</span>sleepMilli<span class="code-symbol">(</span><span class="code-keyword">uint32</span> val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_sys_sleep_milli<span class="code-symbol">(</span><span class="code-keyword">uint32</span> val<span class="code-symbol">)</span></p>
+<p class="py">sys_sleep_milli<span class="code-symbol">(</span>val<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>sleepMilli<span class="code-symbol">(</span><span class="code-keyword">uint</span> val<span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>sleepMilli<span class="code-symbol">(</span>val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>val</td><td>number of milliseconds before the function returns<br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Get global timer in milliseconds</h3>
+<p>This function returns the number of milliseconds since the program has started.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> uint32</span> TCODSystem<span class="code-symbol">::</span>getElapsedMilli<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">uint32</span> TCOD_sys_elapsed_milli<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="py">sys_elapsed_milli<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> uint</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>getElapsedMilli<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>getElapsedMilli<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<a name="5"></a><h3>Get global timer in seconds</h3>
+<p>This function returns the number of seconds since the program has started.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> float</span> TCODSystem<span class="code-symbol">::</span>getElapsedSeconds<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_sys_elapsed_seconds<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="py">sys_elapsed_seconds<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> float</span> TCODSystem<span class="code-symbol">:</span><span class="code-symbol">:</span>getElapsedSeconds<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>system<span class="code-symbol">.</span>getElapsedSeconds<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

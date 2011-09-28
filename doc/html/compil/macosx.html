@@ -1,0 +1,48 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 0. Compiling with libtcod</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+0.6 GCC on MacOSX<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+To compile the samples under OSX, use 'make -f makefile-samples-osx all'. For your own application, modify the makefile to include your c/cpp source files, and create a new executable target. For example, if your application is called 'MyRoguelike', and uses source files src1.c, src2.c and src3.c, you would add the following lines to the end of makefile-samples-osx.
+
+<p class="code"><pre>
+MY_OBJS=$(TEMP)/src1.o $(TEMP)/src2.o $(TEMP)/src3.o
+myroguelike : $(MY_OBJS) libtcod.a
+	$(CC) $(MY_OBJS) $(CFLAGS) -o $@ -L. -ltcod $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+</pre></p>
+
+Build using 'make -f makefile-samples-osx myroguelike' to get a command-line build of your application. To create a double-clickable application, create a new Info.plist file for your binary (see the osx directory for examples), and add the following to the makefile:
+
+<p class="code"><pre>
+myroguelike.app : myroguelike
+	mkdir -p myroguelike.app/Contents/MacOS
+	cp osx/myroguelike_Info.plist myroguelike.app/Contents/Info.plist
+	cp myroguelike myroguelike.app/Contents/MacOS/
+</pre></p>
+
+Build using 'make -f makefile-samples-osx myroguelike.app', and you should have a self-contained application bundle that will work on any OSX system.
+<br/>
+<br/>
+<b>Important Note:</b> If you need to access system information (resolution etc) via SDL before you call TCOD_sys_init(), you must explicitly call TCOD_sys_startup(), using code similar to the following:
+
+<p class="code"><pre>
+#ifdef __APPLE__
+TCOD_sys_startup();
+#endif
+//access system info....
+bool success = TCOD_sys_init(....
+</pre></p>
+
+<br />

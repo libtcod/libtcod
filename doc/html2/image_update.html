@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Updating an image</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('image.html')">5. Image toolkit</a> &gt; <a onclick="link('image_update.html')">5.3. Updating an image</a><br>
+<a class="prev" onclick="link('image_read.html')">5.2. Reading data from a TCODImage</a> | <a class="next" onclick="link('image_save.html')">5.4. Saving an image to a bmp or png file.</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>5.3. Updating an image</h1>
+<div id="toc"><ul>
+<li><a href="#0">Filling an image with a color</a></li><li><a href="#1">Changing the color of a pixel</a></li><li><a href="#2">Scaling an image</a></li><li><a href="#3">Flipping the image horizontally</a></li><li><a href="#4">Flipping the image vertically</a></li><li><a href="#5">Rotating the image clockwise</a></li><li><a href="#6">Inverting the colors of the image</a></li></ul></div>
+<a name="0"></a><h3>Filling an image with a color</h3>
+<p>You can fill the whole image with a color with :<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>clear<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODColor color<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_clear<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> color<span class="code-symbol">)</span></p>
+<p class="py">image_clear<span class="code-symbol">(</span>image<span class="code-symbol">,</span>color<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>clear<span class="code-symbol">(</span>TCODColor color<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image to fill.<br />	</td></tr>
+<tr><td>color</td><td>The color to use.<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Changing the color of a pixel</h3>
+<div class="code"><p class="cpp">TCODColor TCODImage<span class="code-symbol">::</span>putPixel<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor col<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_put_pixel<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-tcod">TCOD_color_t</span> col<span class="code-symbol">)</span></p>
+<p class="py">image_put_pixel<span class="code-symbol">(</span>image<span class="code-symbol">,</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span>col<span class="code-symbol">)</span></p>
+<p class="cs">TCODColor TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>putPixel<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span> TCODColor col<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C version, the image handler, obtained with the load function.<br />	</td></tr>
+<tr><td>x,y</td><td>The pixel coordinates inside the image.<br />		0 <= x < width<br />		0 <= y < height<br />	</td></tr>
+<tr class="hilite"><td>col</td><td>The new color of the pixel.<br />	</td></tr>
+</tbody></table><a name="2"></a><h3>Scaling an image</h3>
+<p>You can resize an image and scale its content. If neww < oldw or newh < oldh, supersampling is used to scale down the image. Else the image is scaled up using nearest neightbor.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>scale<span class="code-symbol">(</span><span class="code-keyword">int</span> neww<span class="code-symbol">,</span><span class="code-keyword"> int</span> newh<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_scale<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword">int</span> neww<span class="code-symbol">,</span><span class="code-keyword"> int</span> newh<span class="code-symbol">)</span></p>
+<p class="py">image_scale<span class="code-symbol">(</span>image<span class="code-symbol">,</span> neww<span class="code-symbol">,</span>newh<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>scale<span class="code-symbol">(</span><span class="code-keyword">int</span> neww<span class="code-symbol">,</span><span class="code-keyword"> int</span> newh<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<tr><td>neww,newh</td><td>The new size of the image.<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Flipping the image horizontally</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>hflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_hflip<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
+<p class="py">image_hflip<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>hflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Flipping the image vertically</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>vflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_vflip<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
+<p class="py">image_vflip<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>vflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+</tbody></table><a name="5"></a><h3>Rotating the image clockwise</h3>
+<p>Rotate the image clockwise by increment of 90 degrees. <br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>rotate90<span class="code-symbol">(</span><span class="code-keyword">int</span> numRotations<span class="code-symbol">=</span><span class="code-value">1</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_rotate90<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword"> int</span> numRotations<span class="code-symbol">)</span></p>
+<p class="py">image_rotate90<span class="code-symbol">(</span>image<span class="code-symbol">,</span> num<span class="code-symbol">=</span><span class="code-value">1</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>rotate90<span class="code-symbol">(</span><span class="code-keyword">int</span> numRotations<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<tr><td>numRotations</td><td>Number of 90 degrees rotations. Should be between 1 and 3.<br />	</td></tr>
+</tbody></table><a name="6"></a><h3>Inverting the colors of the image</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>invert<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_image_invert<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
+<p class="py">image_invert<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>invert<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

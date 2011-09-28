@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Mouse support</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('mouse.html')">8. Mouse support</a><br>
+<a class="prev" onclick="link('random.html')">7. Pseudorandom number generator</a> | <a class="next" onclick="link('noise.html')">9. Noise generator</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>8. Mouse support</h1>
+<div id="toc"><ul>
+<li><a href="#0">Display and hide the mouse cursor</a></li><li><a href="#1">Getting the cursor status</a></li><li><a href="#2">Setting the mouse cursor's position</a></li><li><a href="#3">Getting the mouse status</a></li></ul></div>
+<a name="0"></a><h3>Display and hide the mouse cursor</h3>
+<p>By default, the mouse cursor in visible in windowed mode, hidden in fullscreen mode. You can change it with:<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODMouse<span class="code-symbol">::</span>showCursor<span class="code-symbol"> (</span><span class="code-keyword">bool</span> visible<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_mouse_show_cursor<span class="code-symbol"> (</span><span class="code-keyword">bool</span> visible<span class="code-symbol">)</span></p>
+<p class="py">mouse_show_cursor<span class="code-symbol"> (</span>visible<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODMouse<span class="code-symbol">:</span><span class="code-symbol">:</span>showCursor<span class="code-symbol">(</span><span class="code-keyword">bool</span> visible<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>visible</td><td>If true, this function turns the mouse cursor on. Else it turns the mouse cursor off.<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Getting the cursor status</h3>
+<p>You can get the current cursor status (hidden or visible) with:<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODMouse<span class="code-symbol">::</span>isCursorVisible<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">bool</span> TCOD_mouse_is_cursor_visible<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="py">mouse_is_cursor_visible<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">bool</span> TCODMouse<span class="code-symbol">:</span><span class="code-symbol">:</span>isCursorVisible<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<a name="2"></a><h3>Setting the mouse cursor's position</h3>
+<p>You can set the cursor position (in pixel coordinates, where [0,0] is the window's top left corner) with:<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODMouse<span class="code-symbol">::</span>move<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_mouse_move<span class="code-symbol"> (</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="py">mouse_move<span class="code-symbol"> (</span>x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODMouse<span class="code-symbol">:</span><span class="code-symbol">:</span>moveMouse<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>x,y</td><td>New coordinates of the mouse cursor in pixels.<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Getting the mouse status</h3>
+<p>You can read the current mouse status with this function. Note that this function does not update the mouse status. You have to call either TCODSystem::checkForEvent or TCODSystem::waitForEvent for the mouse status to be updated.<br /><div class="code"><pre>typedef struct {<br />  int x,y;<br />  int dx,dy;<br />  int cx,cy;<br />  int dcx,dcy;<br />  bool lbutton; <br />  bool rbutton;<br />  bool mbutton;<br />  bool lbutton_pressed; <br />  bool rbutton_pressed; <br />  bool mbutton_pressed; <br />  bool wheel_up;<br />  bool wheel_down;<br />} TCOD_mouse_t;<br /></pre></div><br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-tcod"> TCOD_mouse_t</span> TCODMouse<span class="code-symbol">::</span>getStatus<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_mouse_t</span> TCOD_mouse_get_status<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
+<p class="py">mouse_get_status<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
+<p class="cs">TCODMouseData TCODMouse<span class="code-symbol">:</span><span class="code-symbol">:</span>getStatus<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>x,</td><td>y	Absolute position of the mouse cursor in pixels relative to the window top-left corner.<br />	</td></tr>
+<tr><td>dx,</td><td>dy	Movement of the mouse cursor since the last call in pixels.<br />	</td></tr>
+<tr class="hilite"><td>cx,</td><td>cy	Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).<br />	</td></tr>
+<tr><td>dcx,</td><td>dcy	Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).<br />	</td></tr>
+<tr class="hilite"><td>lbutton</td><td>true if the left button is pressed.<br />	</td></tr>
+<tr><td>rbutton</td><td>true if the right button is pressed.<br />	</td></tr>
+<tr class="hilite"><td>mbutton</td><td>true if the middle button (or the wheel) is pressed.<br />	</td></tr>
+<tr><td>lbutton_pressed</td><td>true if the left button was pressed and released.<br />	</td></tr>
+<tr class="hilite"><td>rbutton_pressed</td><td>true if the right button was pressed and released.<br />	</td></tr>
+<tr><td>mbutton_pressed</td><td>true if the middle button was pressed and released.<br />	</td></tr>
+<tr class="hilite"><td>wheel_up</td><td>true if the wheel was rolled up.<br />	</td></tr>
+<tr><td>wheel_down</td><td>true if the wheel was rolled down.<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

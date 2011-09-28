@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | The libtcod config file format</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('parser.html')">10. File parser</a> &gt; <a onclick="link('parser_format.html')">10.1. The libtcod config file format</a><br>
+ <a class="next" onclick="link('parser_str.html')">10.2. Defining the file syntax</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>10.1. The libtcod config file format</h1>
+<div id="toc"><ul>
+<li><a href="#0">Comments</a></li><li><a href="#1">Structures</a></li></ul></div>
+<a name="0"></a><h3>Comments</h3>
+<p>Your file can contain single line or multi-line comments :<br /><div class="code"><pre>// This is a single line comment<br />/<span>*</span><br />   This is a<br />   multi-line comment<br />*<span>/</span><br /></pre></div><br />Multi-line comments can be nested :<br /><div class="code"><pre>/<span>*</span><br />   This is a<br />   multi-line comment containing another<br />   /<span>*</span><br />&nbsp;&nbsp;&nbsp;&nbsp;multi-line<br />&nbsp;&nbsp;&nbsp;&nbsp;comment<br />   *<span>/</span><br />*<span>/</span><br /></pre></div><br />The parser is not sensible to space characters, tabulations or carriage return except inside strings.<br /></p>
+<div class="code"></div>
+<a name="1"></a><h3>Structures</h3>
+<p>The libtcod config file format is basically a list of structures. A structure has a type, an optional name and contains properties. The type of the structure defines which properties are allowed / mandatory.<br /><div class="code"><pre>item_type "blade" {            // structure's type : 'item_type'. structure's name : 'blade'<br />	cost=300                   // an integer property<br />	weight=3.5                 // a float property<br />	deal_damage=true           // a boolean property<br />	damages="3d6+2"            // a dice property<br />	col="#FF0000"              // a color property, using #RRGGBB syntax<br />	damaged_color="128,96,96"  // another color property, using rrr,ggg,bbb syntax<br />	damage_type="slash"        // a string property<br />	description="This is a long"<br />	            "description." // a multi-line string property<br />	abstract                   // a flag (simplified boolean property)<br />        intList= [ 1,2,3 ]         // a list of int values<br />        floatList= [ 1.0,2,3.5 ]   // a list of float values<br />        stringList= [ "string1","string2","string3" ]         // a list of string values<br />}<br /></pre></div><br />A structure can also contain other structures either of the same type, or structures of another type :<br /><div class="code"><pre>item_type "blade" {<br />	item_type "one-handed blades" {<br />		// the item_type "blade" contains another item_type named "one-handed blades"<br />	}<br />	item_type "two-handed blades" {<br />		// the item_type "blade" contains another item_type named "two-handed blades"<br />	}<br />	feature "damage" {<br />		// the item_type "blade" contains another structure, type "feature", name "damage"<br />	}<br />}<br /></pre></div><br />Sometimes, you don't know the list of properties at compile-time. Fortunately, since libtcod 1.5.1, you can add auto-declaring properties in the file, using one of the type keywords :<br /><div class="code"><pre>item_type "blade" {<br />	bool deal_damage=true<br />	char character='D'<br />	int cost=300<br />	float weight=3.5<br />	string damage_type="slash"<br />	color col="#FF0000"<br />	dice damages="3d6+2"<br />	int[] intList= [ 1,2,3 ]<br />	float[] floatList= [ 1.0,2,3.5 ]<br />	string[] stringList= [ "string1","string2","string3" ]<br />}<br /></pre></div><br />The properties declared with this syntax were not previously declared for the structure item_type. But since the type is specified, the parser won't reject them. Instead, it will add the property declaration to the structure dynamically (when it parses the file).<br />You can also dynamically create new structures and sub-structures with the struct keyword :<br /><div class="code"><pre>item_type "blade" {<br />    struct component {<br />	    string name="blade"<br />		float weight=1.0<br />	}<br />}<br /></div><br />With this syntax, you don't need to declare the "component" structure at all in the parser. It will be dynamically registered as the file is parsed.<br /></p>
+<div class="code"></div>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

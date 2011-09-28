@@ -1,0 +1,101 @@
+<table width="100%"><tr><td width="20%">
+<a href="../index.html">&lt; index</a><br />
+<a href="index.html">&lt; 0. Compiling with libtcod</a><br />
+</td><td width="60%">
+<p align="center">
+=====================================<br />
+0.1 MINGW32 without IDE<br />
+=====================================<br />
+</p></td><td width="20%">
+</td></tr></table>
+<style type="text/css">
+.code { color:#444444; background-color:#EEEEEE;}
+pre { color:#444444; background-color:#EEEEEE;}
+table.param td { border : 1px solid #000000; }
+th { background-color: #44BBFF; color: #FFFFFF }
+table.none td { border : 0 }
+</style>
+Use this method if you're using MINGW32 in command line with <a href="http://www.mingw.org/msys.shtml">MSYS</a> or in a MS-DOS console.<br />
+In the following chapters, replace ${LIBTCODDIR} by the Doryen library's root directory, and ${FLAGS} by any additional compilation flags.<br />
+For example, for a debug version, replace ${FLAGS} by -g. For a release version, replace it by -O3.<br /> 
+If your program's source code is in a single file, you can directly compile and link with a single command (you can put it in a .bat file for MS-DOS or a .sh file for MSYS ) :<br />
+<p class="code"><pre>
+C++ : g++ samples_cpp.cpp ${FLAGS} -Wall -o samples_cpp.exe -L${LIBTCODDIR}/lib -ltcod-mingw -I${LIBTCODDIR}/include
+C   : gcc samples_c.c ${FLAGS} -Wall -o samples_c.exe -L${LIBTCODDIR}/lib -ltcod-mingw -I${LIBTCODDIR}/include
+</pre></p>
+<br />
+If you have several source files and you don't want to recompile everything everytime, you'd better use a makefile :<br />
+If you're using the C language copy and paste this into a 'makefile' file in your source directory (replace ${LIBTCODDIR} by its real value):<br />
+<p class="code"><pre>
+SRCDIR=.
+INCDIR=${LIBTCODDIR}/include
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
+CC=mingw32-gcc
+.SUFFIXES: .o .h .c
+
+$(TEMP)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $< 
+
+C_OBJS=$(TEMP)/samples_c.o
+
+all : samples_c.exe
+
+samples_c.exe : $(C_OBJS)
+	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L${LIBTCODDIR}/lib -ltcod-mingw
+
+clean :
+	\rm -f $(C_OBJS) samples_c.exe
+</pre></p>
+<br />
+<b>Important!</b> Every indented line in the makefile must begin with a tabulation, not spaces.<br />
+I won't explain the whole makefile syntax here, but basically :<br />
+List all your sources files in the C_OBJS variable with a space between each name. You can use a multiline provided you put a backslash at the end of the line and a tabulation as the first character of the new line. Exemple :<br />
+If your have 5 source files : file1.c, file2.c, file3.c, file4.c and file5.c :<br />
+<p class="code"><pre>
+C_OBJS=$(TEMP)/file1.o $(TEMP)/file2.o \
+  $(TEMP)/file3.o $(TEMP)/file4.o \
+  $(TEMP)/file5.o
+</pre></p>
+Also replace samples_c.exe by your program name.<br />
+Now you can build your exe by running this command :<br />
+<p class="code"><pre>
+make
+</pre></p>
+You can rebuild the whole program with :<br />
+<p class="code"><pre>
+make clean all
+</pre></p>
+You can choose to build either the debug or the release configuration :<br />
+<p class="code"><pre>
+debug : make FLAGS='-g' clean all
+release : make FLAGS='-O3' clean all
+</pre></p>
+<br />
+If you're using C++, you may have .cpp file or mixed .c and .cpp files. Use this makefile instead :<br />
+<p class="code"><pre>
+SRCDIR=.
+INCDIR=${LIBTCODDIR}/include
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
+CC=mingw32-gcc
+CPP=mingw32-g++
+.SUFFIXES: .o .h .c .hpp .cpp
+
+$(TEMP)/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -o $@ -c $< 
+$(TEMP)/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $< 
+
+CPP_OBJS=$(TEMP)/samples_cpp.o
+
+all : samples_cpp.exe
+
+samples_cpp.exe : $(CPP_OBJS)
+	$(CPP) $(CPP_OBJS) -o $@ -L${LIBTCODDIR}/lib -ltcod-mingw
+
+clean :
+	\rm -f $(CPP_OBJS) samples_cpp.exe
+</pre></p>
+<br />
+List all your C and CPP source files in the CPP_OBJS variable, replace samples_cpp.exe by your program name. This makefile won't work if you have a .c and a .cpp file with the same basename (exemple myfile.c and myfile.cpp). You'll have to rename at least one of them.
+<br />
+Lastly, to run your program, libtcod-mingw.dll and SDL.dll must be in the same directory.<br />

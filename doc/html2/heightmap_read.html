@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Reading data from the heightmap</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('heightmap.html')">14. Heightmap toolkit</a> &gt; <a onclick="link('heightmap_read.html')">14.4. Reading data from the heightmap</a><br>
+<a class="prev" onclick="link('heightmap_modify.html')">14.3. Modifying the heightmap</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>14.4. Reading data from the heightmap</h1>
+<div id="toc"><ul>
+<li><a href="#0">Get the value of a cell</a></li><li><a href="#1">Interpolate the height</a></li><li><a href="#2">Get the map slope</a></li><li><a href="#3">Get the map normal</a></li><li><a href="#4">Count the map cells inside a height range</a></li><li><a href="#5">Check if the map is an island</a></li><li><a href="#6">Get the map min and max values</a></li></ul></div>
+<p>Those functions return raw or computed information about the heightmap.<br />	</p>
+<a name="0"></a><h3>Get the value of a cell</h3>
+<p>This function returns the height value of a map cell.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">::</span>getValue<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_heightmap_get_value<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="py">heightmap_get_value<span class="code-symbol">(</span>hm<span class="code-symbol">,</span>  x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>getValue<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>x,y</td><td>Coordinates of the map cell.<br />		0 <= x < map width<br />		0 <= y < map height<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Interpolate the height</h3>
+<p>This function returns the interpolated height at non integer coordinates.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">::</span>getInterpolatedValue<span class="code-symbol">(</span><span class="code-keyword">float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_heightmap_get_interpolated_value<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">)</span></p>
+<p class="py">heightmap_get_interpolated_value<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>getInterpolatedValue<span class="code-symbol">(</span><span class="code-keyword">float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>x,y</td><td>Coordinates of the map cell.<br />		0 <= x < map width<br />		0 <= y < map height<br />	</td></tr>
+</tbody></table><a name="2"></a><h3>Get the map slope</h3>
+<p>This function returns the slope between 0 and PI/2 at given coordinates.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">::</span>getSlope<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_heightmap_get_slope<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+<p class="py">heightmap_get_slope<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">float</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>getSlope<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>x,y</td><td>Coordinates of the map cell.<br />		0 <= x < map width<br />		0 <= y < map height<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Get the map normal</h3>
+<p>This function returns the map normal at given coordinates.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>getNormal<span class="code-symbol">(</span><span class="code-keyword">float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">,</span><span class="code-keyword">float</span> n<span class="code-symbol">[</span><span class="code-value">3</span><span class="code-symbol">]</span><span class="code-symbol">,</span><span class="code-keyword"> float</span> waterLevel<span class="code-symbol">=</span><span class="code-value">0.0</span>f<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_heightmap_get_normal<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">,</span><span class="code-keyword"> float</span> n<span class="code-symbol">[</span><span class="code-value">3</span><span class="code-symbol">]</span><span class="code-symbol">,</span><span class="code-keyword"> float</span> waterLevel<span class="code-symbol">)</span></p>
+<p class="py">heightmap_get_normal<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> waterLevel<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>getNormal<span class="code-symbol">(</span><span class="code-keyword">float</span> x<span class="code-symbol">,</span><span class="code-keyword"> float</span> y<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol">[</span><span class="code-symbol">]</span> n<span class="code-symbol">,</span><span class="code-keyword"> float</span> waterLevel<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>x,y</td><td>Coordinates of the map cell.<br />		0 <= x < map width<br />		0 <= y < map height<br />	</td></tr>
+<tr class="hilite"><td>n</td><td>The function stores the normalized normal vector in this array.<br />	</td></tr>
+<tr><td>waterLevel</td><td>The map height is clamped at waterLevel so that the sea is flat.<br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Count the map cells inside a height range</h3>
+<p>This function returns the number of map cells which value is between min and max.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">int</span> TCODHeightMap<span class="code-symbol">::</span>countCells<span class="code-symbol">(</span><span class="code-keyword">float</span> min<span class="code-symbol">,</span><span class="code-keyword">float</span> max<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_heightmap_count_cells<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span> min<span class="code-symbol">,</span><span class="code-keyword"> float</span> max<span class="code-symbol">)</span></p>
+<p class="py">heightmap_count_cells<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> min<span class="code-symbol">,</span> max<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">int</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>countCells<span class="code-symbol">(</span><span class="code-keyword">float</span> min<span class="code-symbol">,</span><span class="code-keyword"> float</span> max<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>min,max</td><td>Only cells which value is >=min and <= max are counted.<br />	</td></tr>
+</tbody></table><a name="5"></a><h3>Check if the map is an island</h3>
+<p>This function checks if the cells on the map border are below a certain height.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">bool</span> TCODHeightMap<span class="code-symbol">::</span>hasLandOnBorder<span class="code-symbol">(</span><span class="code-keyword">float</span> waterLevel<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">bool</span> TCOD_heightmap_has_land_on_border<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span> waterLevel<span class="code-symbol">)</span></p>
+<p class="py">heightmap_has_land_on_border<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> waterLevel<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">bool</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>hasLandOnBorder<span class="code-symbol">(</span><span class="code-keyword">float</span> waterLevel<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>waterLevel</td><td>Return true only if no border cell is > waterLevel.<br />	</td></tr>
+</tbody></table><a name="6"></a><h3>Get the map min and max values</h3>
+<p>This function calculates the min and max of all values inside the map.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>getMinMax<span class="code-symbol">(</span><span class="code-keyword">float</span><span class="code-symbol"> *</span>min<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol"> *</span>max<span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_heightmap_get_minmax<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol"> *</span>min<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol"> *</span>max<span class="code-symbol">)</span></p>
+<p class="py">heightmap_get_minmax<span class="code-symbol">(</span>hm<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>getMinMax<span class="code-symbol">(</span><span class="code-keyword">out</span><span class="code-keyword"> float</span> min<span class="code-symbol">,</span><span class="code-keyword"> out</span><span class="code-keyword"> float</span> max<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>min,</td><td>max	The min and max values are returned in these variables.<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

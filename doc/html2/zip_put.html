@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Using the buffer in output mode</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('zip.html')">11. Compression toolkit</a> &gt; <a onclick="link('zip_put.html')">11.2. Using the buffer in output mode</a><br>
+<a class="prev" onclick="link('zip_init.html')">11.1. Creating a compression buffer</a> | <a class="next" onclick="link('zip_load.html')">11.3. Using the buffer in input mode</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>11.2. Using the buffer in output mode</h1>
+<div id="toc"><ul>
+<li><a href="#0">Putting a char in the buffer</a></li><li><a href="#1">Putting an integer in the buffer</a></li><li><a href="#2">Putting a floating point value in the buffer</a></li><li><a href="#3">Putting a string in the buffer</a></li><li><a href="#4">Putting a color in the buffer</a></li><li><a href="#5">Putting an image in the buffer</a></li><li><a href="#6">Putting a console in the buffer</a></li><li><a href="#7">Putting some custom data in the buffer</a></li><li><a href="#8">Reading the number of (uncompressed) bytes in the buffer</a></li><li><a href="#9">Saving the buffer on disk</a></li></ul></div>
+<a name="0"></a><h3>Putting a char in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putChar<span class="code-symbol">(</span><span class="code-keyword">char</span> val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_char<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> char</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>A 8 bits value to store in the buffer<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Putting an integer in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putInt<span class="code-symbol">(</span><span class="code-keyword">int</span> val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_int<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> int</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>An integer value to store in the buffer<br />	</td></tr>
+</tbody></table><a name="2"></a><h3>Putting a floating point value in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putFloat<span class="code-symbol">(</span><span class="code-keyword">float</span> val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_float<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> float</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>A float value to store in the buffer<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Putting a string in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putString<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_string<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>A string to store in the buffer<br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Putting a color in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putColor<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODColor<span class="code-symbol"> *</span>val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_color<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-tcod"> TCOD_color_t</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>A color to store in the buffer<br />	</td></tr>
+</tbody></table><a name="5"></a><h3>Putting an image in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putImage<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODImage<span class="code-symbol"> *</span>val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_image<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-tcod"> TCOD_image_t</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>An image to store in the buffer<br />	</td></tr>
+</tbody></table><a name="6"></a><h3>Putting a console in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putConsole<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODConsole<span class="code-symbol"> *</span>val<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_console<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-tcod"> TCOD_console_t</span> val<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>val</td><td>A console to store in the buffer<br />	</td></tr>
+</tbody></table><a name="7"></a><h3>Putting some custom data in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>putData<span class="code-symbol">(</span><span class="code-keyword">int</span> nbBytes<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> void</span><span class="code-symbol"> *</span>data<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_put_data<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> int</span> nbBytes<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> void</span><span class="code-symbol"> *</span>data<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>nbBytes</td><td>Number of bytes to store in the buffer<br />	</td></tr>
+<tr class="hilite"><td>val</td><td>Address of the data to store in the buffer<br />	</td></tr>
+</tbody></table><a name="8"></a><h3>Reading the number of (uncompressed) bytes in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">uint32</span> TCODZip<span class="code-symbol">::</span>getCurrentBytes<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">uint32</span> TCOD_zip_get_current_bytes<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="9"></a><h3>Saving the buffer on disk</h3>
+<p>Once you have finished adding data in the buffer, you can compress it and save it in a file.<br />		The function returns the number of (uncompressed) bytes saved.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">int</span> TCODZip<span class="code-symbol">::</span>saveToFile<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_zip_save_to_file<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>filename</td><td>Name of the file<br />	</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODZip zip<span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>putChar<span class="code-symbol">(</span><span class="code-character">'A'</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>putInt<span class="code-symbol">(</span><span class="code-value">1764</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>putFloat<span class="code-symbol">(</span><span class="code-value">3.14</span>f<span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>putString<span class="code-symbol">(</span><span class="code-string">"A string"</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>putData<span class="code-symbol">(</span>nbBytes<span class="code-symbol">,</span> dataPtr<span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>saveToFile<span class="code-symbol">(</span><span class="code-string">"myCompressedFile.gz"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">=</span>TCOD_zip_new<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_put_char<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-character">'A'</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_put_int<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-value">1764</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_put_float<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-value">3.14</span>f<span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_put_string<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-string">"A string"</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_put_data<span class="code-symbol">(</span>zip<span class="code-symbol">,</span>nbBytes<span class="code-symbol">,</span> dataPtr<span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_save_to_file<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-string">"myCompressedFile.gz"</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+</div><hr>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Standard types</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('parser.html')">10. File parser</a> &gt; <a onclick="link('parser_types.html')">10.4. Standard types</a><br>
+<a class="prev" onclick="link('parser_run.html')">10.3. Running the parser</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>10.4. Standard types</h1>
+<div id="toc"><ul>
+</ul></div>
+<a name="0"></a><p>The parser can parse natively several data types. It stores them in a generic union :<br /> </p>
+<div class="code"><p class="c"><span class="code-keyword">typedef</span><span class="code-keyword"> struct</span><span class="code-symbol"> {</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;int</span> nb_rolls<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;int</span> nb_faces<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;float</span> multiplier<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;float</span> addsub<span class="code-symbol">;</span><span class="code-symbol"><br />}</span><span class="code-tcod"> TCOD_dice_t</span><span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;typedef</span><span class="code-keyword"> union</span><span class="code-symbol"> {</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;bool</span> b<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;char</span> c<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;int32</span> i<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;float</span> f<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;char</span><span class="code-symbol"> *</span>s<span class="code-symbol">;</span><span class="code-tcod"><br />&nbsp;&nbsp;&nbsp;&nbsp;TCOD_color_t</span> col<span class="code-symbol">;</span><span class="code-tcod"><br />&nbsp;&nbsp;&nbsp;&nbsp;TCOD_dice_t</span> dice<span class="code-symbol">;</span><span class="code-tcod"><br />&nbsp;&nbsp;&nbsp;&nbsp;TCOD_list_t</span> list<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;void</span><span class="code-symbol"> *</span>custom<span class="code-symbol">;</span><span class="code-symbol"><br />}</span><span class="code-tcod"> TCOD_value_t</span><span class="code-symbol">;</span></p>
+</div>
+<a name="1"></a><p>Possible types are defined by the TCOD_value_type_t enumeration :<br />For python, remove TCOD_ : libtcod.TYPE_BOOL<br /><table class="param">
+<tbody><tr><th>TCOD_value_type_t</th><th>Value in file</th><th>TCOD_value_t</th></tr>
+
+<tr><td>TCOD_TYPE_BOOL</td><td>true<br>false</td><td>value.b == true/false</td></tr>
+<tr><td>TCOD_TYPE_CHAR</td><td>decimal notation : 0 .. 255<br>
+hexadecimal notation : 0x00 .. 0xff <br>
+char notation : 'a' ';' ...<br>
+Special characters :<br>
+'\n' : carriage return (ascii 13)<br>
+'\t' : tabulation (ascii 9)<br>
+
+'\r' : line feed (ascii 10)<br>
+'\\' : antislash (ascii 92)<br>
+'\"' : double-quote (ascii 34)<br>
+'\'' : simple quote (ascii 39)<br>
+'\xHH' : hexadecimal value, same as 0xHH, HH between 0 and FF<br>
+'\NNN' : octal value, NNN between 0 and 377<br>
+</td><td>value.c == The corresponding ascii code</td></tr>
+<tr><td>TCOD_TYPE_INT</td><td>decimal notation : -2147483648 .. 2147483647<br>hexadecimal notation : 0x0 .. 0xFFFFFFFF</td><td>value.i == the integer value</td></tr>
+
+<tr><td>TCOD_TYPE_FLOAT</td><td>Any format parsable by atof. Examples:<br>3.14159<br>1.25E-3</td><td>value.f == the float value</td></tr>
+<tr><td>TCOD_TYPE_STRING</td><td>A double-quote delimited string :<br>"This is a string"<br>Support the same special characters as TCOD_TYPE_CHAR.</td><td>value.s == the corresponding string.<br>Warning ! If you want to store this string, you have to duplicate it (with strdup) as it will be overwritten by the parser</td></tr>
+<tr><td>TCOD_TYPE_COLOR</td><td>decimal notation : "16,32,64"<br>hexadecimal notation : "#102040"</td><td>value.col == the color.</td></tr>
+
+<tr><td>TCOD_TYPE_DICE</td><td>[multiplier (x|*)] nb_rolls (d|D) nb_faces [(+|-) addsub] :<br>"3d6"<br>"3D6+2"<br>"0.5x3d6-2"<br>"2*3d8"</td><td>value.dice == the dice components</td></tr>
+<tr><td>TCOD_TYPE_VALUELISTxx</td><td>Same as TCOD_TYPE_STRING</td><td>value.s == the string value from the value list</td></tr>
+<tr><td>TCOD_TYPE_LIST</td><td>[ &lt;value1&gt;,&lt;value2&gt;,... ]</td><td>value.list == the TCOD_list_t containing the elements</td></tr>
+
+</tbody></table><br /><br />To define a list type, use the appropriate function (TCODParserStruct::addListProperty / TCOD_parser_add_list_property) and specify the type of the elements in the list. Lists of list are not supported.<br /> </p>
+<div class="code"></div>
+
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

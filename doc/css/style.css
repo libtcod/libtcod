@@ -1,0 +1,519 @@
+/******************************************************************/
+/* some neat @font-face fun - the browsers will use custom fonts. */
+/* includes a version for Internet Explorer (.eot native format)  */
+/******************************************************************/
+
+@font-face {
+	font-family: 'DroidSans';
+	font-weight: normal;
+	src: url('../font/DroidSans.eot');
+	src: local('Droid Sans Regular'), local('DroidSans'), url('../font/DroidSans.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'DroidSans';
+	font-weight: bold;
+	src: url('../font/DroidSans-Bold.eot');
+	src: local('Droid Sans Bold'), local('DroidSans-Bold'), url('../font/DroidSans-Bold.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	font-weight: normal;
+	src: url('../font/VeraMono.eot');
+	src: local('Bitstream Vera Sans Mono Roman'), local('BitstreamVeraSansMono-Roman'), url('../font/VeraMono.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'BitstreamVeraSansMono';
+	font-weight: bold;
+	src: url('../font/VeraMono-Bold.eot');
+	src: local('Bitstream Vera Sans Mono Bold'), local('BitstreamVeraSansMono-Bold'), url('../font/VeraMono-Bold.ttf') format('truetype');
+}
+
+/**************** 
+ * main regions *
+ ****************/
+
+/* global style */
+body {
+  background-color: white;
+  font-family: DroidSans, verdana, sans-serif;
+  font-size: 14px;
+  color: black;
+  margin: 0px;
+  height: 100%;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 150%;
+}
+
+/* header region */
+div.header {
+  margin: 50px 25px 25px 35px;
+}
+
+/* breadcrumb */
+div.breadcrumb {
+  height: auto;
+  background-image: url('../img/breadcrumb.png');
+	background-repeat: repeat-x;
+	background-color: #194675;
+}
+
+/* main contents - with a gradient */
+div.main {
+  position: relative;
+  background-image: url('../img/gradient.png');
+	background-repeat: repeat-x;
+	width:100%;
+
+}
+
+/* footer */
+div.footer {
+  background-image: url('../img/breadcrumb.png');
+	background-repeat: repeat-x;
+	background-color: #194675;
+}
+
+label.disabled {
+	color:#AAAAAA;
+}
+
+/***************
+ * sub regions *
+ ***************/
+
+/* breadcrumb text area */
+.breadcrumbtext {
+  font-weight: bold;
+  margin-left: 35px;
+}
+
+/* main contents text area */
+.maintext {
+  position: reative;
+  z-index: 0;
+  margin: 0px 25px 25px 35px;
+  padding-top: 25px;
+}
+
+div.footer .footertext {
+  padding: 10px 25px 10px 35px;
+  color: #b1ce91;
+  font-size: 12px;
+  text-align: center;
+}
+
+/***********
+ * sidebar *
+ ***********/
+
+#sidebar {
+  background: url('../img/sidebar.png') top left repeat-y transparent;
+  width: 300px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  margin: 0;
+  margin-left: -275px;
+  z-index: 10;
+  height: 100%;
+  -webkit-transition: margin 1s ease;
+}
+#sidebar:hover {
+  margin-left: 0;
+  -webkit-transition: margin .1s linear;
+}
+#sidebar-container {
+  background: url('../img/sidebar_arrow.png') center right no-repeat transparent;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+#sidebar-subcontainer {
+  width: 250px;
+  margin: 1em 35px 1em 15px;
+} 
+
+/***************
+ * text styles *
+ ***************/ 
+
+/* logo margin - to get rid of an unwanted space after the header div */
+.header p {
+  line-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* logo style (yeah, an outline :D) */
+.title1 {
+  color: #7fcb26;
+  font-size: 64px;
+  text-shadow: -2px 0px 1px #194675,
+                2px 0px 1px #194675,
+                0px -2px 1px #194675,
+                0px 2px 1px #194675,
+                -2px -2px 1px #194675,
+                -2px 2px 1px #194675,
+                2px -2px 1px #194675,
+                2px 2px 1px #194675,
+                5px 5px 5px #000000;
+}
+.title2 {
+  color: #194675;
+  font-size: 64px;
+  text-shadow: -2px 0px 1px #7fcb26,
+                2px 0px 1px #7fcb26,
+                0px -2px 1px #7fcb26,
+                0px 2px 1px #7fcb26,
+                -2px -2px 1px #7fcb26,
+                -2px 2px 1px #7fcb26,
+                2px -2px 1px #7fcb26,
+                2px 2px 1px #7fcb26,
+                5px 5px 5px #000000;
+}
+
+/* breadcrumb text and link styles */
+.breadcrumb p {
+  font-weight: bold;
+  color: white;
+  padding: 7px 0;
+  margin-bottom: 0;
+}
+
+.breadcrumb a, .breadcrumb a:active, .breadcrumb a:visited {
+  color: #b1ce91;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: #7fcb26;
+  text-decoration: underline;
+}
+
+/* previous and next links */
+.breadcrumb a.prev {
+  background-image: url('../img/prev.png');
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  padding: 0 0 0 20px;
+}
+
+.breadcrumb a.next {
+  background-image: url('../img/next.png');
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  padding: 0 20px 0 0;
+}
+
+/* main region text */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  text-shadow: 2px 2px 4px #444444;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+h1 { font-size: 24px; }
+h2 { font-size: 22px; }
+h3 { font-size: 20px; }
+h4 { font-size: 18px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+
+a, a:active, a:visited, a:link {
+  color: #194675;
+  text-decoration: none;
+  font-weight: bold;
+  cursor:pointer;
+}
+
+a:hover {
+  color: #4e7195;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.footertext a,
+.footertext a:active,
+.footertext a:visited,
+.footertext a:link {
+  color: #b1ce91;
+}
+
+.footertext a:hover {
+  color: #7fcb26;
+}
+
+/* code */
+div.code {
+  background-color: #b1ce91;
+  margin: 10px 25px;
+  font-family: BitstreamVeraSansMono, monospace;
+  color: #444444;
+  border-color: #194675;
+  border-width: 1px;
+  border-style: solid;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+div.code p {
+  padding: 5px 20px;
+}
+
+div.code p.c {
+  padding: 15px 5px 5px 60px;
+	background-image: url('../img/c.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
+div.code p.cpp {
+  padding: 15px 5px 5px 60px;
+	background-image: url('../img/cpp.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
+div.code p.cs {
+  padding: 15px 5px 5px 60px;
+	background-image: url('../img/cs.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
+div.code p.py {
+  padding: 15px 5px 10px 60px;
+	background-image: url('../img/py.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
+div.code p.lua {
+  padding: 15px 5px 10px 60px;
+	background-image: url('../img/lua.png');
+	background-position: 15px 5px;
+	background-repeat: no-repeat;
+}
+
+/* main region tables */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table td, table th {
+  padding: 5px;
+}
+
+table tr.hilite {
+  background-color: #b1ce91;
+}
+
+table.none {
+  border: 0;
+}
+
+table.param td {
+  border: 1px solid #000000;
+}
+
+table th {
+  background-color: #194675;
+  color: #7fcb26;
+  border: 1px solid #000000;
+}
+
+/* color table specific stuff */
+
+table.color td {
+  width:100px;
+  text-align: center;
+}
+
+/* horizontal rule */
+
+hr {
+  background-color: #7fcb26; /* non IE */
+  color: #7fcb26; /* IE */
+  height: 6px;
+  width: 90%;
+  border: 2px solid #194675;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+#sidebar hr {
+  background-color: #194675; /* non IE */
+  color: #194675; /* IE */
+  border: 2px solid  #7fcb26;
+}
+
+/***************
+ * CODE STYLES *
+ ***************/
+
+.code-tcod {
+  font-weight: bold;
+}
+
+.code-keyword {
+  font-weight: bold;
+  color: #0000a0;
+}
+
+.code-value {
+  color: fuchsia;
+}
+
+.code-symbol {
+  color: red;
+}
+
+.code-string {
+  color: blue;
+}
+
+.code-character {
+  color: #e0a020;
+}
+
+.code-comment {
+  color: gray;
+}
+
+.code-preprocessor {
+  color: teal;
+}
+
+/************************************ 
+ * TABLE OF CONTENTS UNIQUE STYLING *
+ ************************************/
+ 
+div.toc,
+#toc {
+  font-size: 11px;
+}
+
+div.toc ul,
+#toc ul {
+  padding: 0;
+  margin: 0;
+}
+
+div.toc li,
+#toc li {
+  list-style: none;
+  position: relative;
+  display: block;
+  width: 248px;
+  background-color: #b1ce91;
+  /* radius - not understood by IE8 and Opera 10.10, but still looks decent */
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px; /* correct CSS3 syntax, supported only by Opera 10.50+ and IE9 */
+  border: 1px solid #194675;
+  padding: 3px 5px;
+  margin-top: -1px;
+}
+
+#toc li { width: 200px; } /* redefinition - should take precedence */
+
+/* in the sidebar, the elements will have a shadow */
+#sidebar div.toc li {
+  -moz-box-shadow: 3px 1px 4px rgba(0,0,0,.25);
+  -webkit-box-shadow: 3px 1px 4px rgba(0,0,0,.25);
+  box-shadow: 3px 1px 4px rgba(0,0,0,.25);
+}
+
+div.toc li:hover,
+#toc li:hover {
+  background-color: #7fcb26;
+}
+
+div.toc li ul,
+#toc li ul {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  padding: 0;
+  margin: 0;
+}
+
+div.toc li:hover > ul,
+#toc li:hover > ul {
+  display: block;
+}
+
+div.toc li ul li,
+#toc li ul li {
+  _display: inline; /* hack for IE6 */
+}
+
+/* SUBSUB Menu */
+
+div.toc li ul li ul,
+#toc li ul li ul {
+  display: none;
+}
+
+div.toc li ul li:hover > ul,
+#toc li ul li:hover > ul {
+  display: block;
+  left: 100%;
+  top: 0;
+}
+
+/* SUBSUBSUB Menu */
+
+div.toc li ul li ul li ul,
+#toc li ul li ul li ul {
+  display: none;
+}
+
+div.toc li ul li ul li:hover ul,
+#toc li ul li ul li:hover ul {
+  left: 100%;
+  top: 0;
+}
+
+/* list items with children will be marked as such */
+
+div.toc li.haschildren {
+  background-image: url('../img/haschildren.png');
+  background-position: 241px 2px;
+  background-repeat: no-repeat;
+}
+
+#toc li.haschildren {
+  background-image: url('../img/haschildren.png');
+  background-position: 193px 2px;
+  background-repeat: no-repeat;
+}
+
+div.toc li.haschildren a,
+#toc li.haschildren a {
+  padding-right: 28px;
+}
+
+/* category names have a different styling */
+
+div.toc li.cat, div.toc li.cat:hover,
+#toc li.cat, #toc li.cat:hover {
+  background-color: #194675;
+  color: #7fcb26;
+  text-align: center;
+  font-weight: bold;
+}

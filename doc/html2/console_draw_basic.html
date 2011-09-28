@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Basic printing functions</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_draw.html')">2.2. Drawing on the root console</a> &gt; <a onclick="link('console_draw_basic.html')">2.2.1. Basic printing functions</a><br>
+ <a class="next" onclick="link('console_bkgnd_flag_t.html')">2.2.2. Background effect flags</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>2.2.1. Basic printing functions</h1>
+<div id="toc"><ul>
+<li><a href="#0">Setting the default background color</a></li><li><a href="#1">Setting the default foreground color</a></li><li><a href="#2">Clearing a console</a></li><li><a href="#3">Setting the background color of a cell</a></li><li><a href="#4">Setting the foreground color of a cell</a></li><li><a href="#5">Setting the ASCII code of a cell</a></li><li><a href="#6">Setting every property of a cell using default colors</a></li><li><a href="#7">Setting every property of a cell using specific colors</a></li></ul></div>
+<a name="0"></a><h3>Setting the default background color</h3>
+<p>This function changes the default background color for a console. The default background color is used by several drawing functions like clear, putChar, ...<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>setDefaultBackground<span class="code-symbol">(</span>TCODColor back<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_set_default_background<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-tcod">TCOD_color_t</span> back<span class="code-symbol">)</span></p>
+<p class="py">console_set_default_background<span class="code-symbol">(</span>con<span class="code-symbol">,</span>back<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setBackgroundColor<span class="code-symbol">(</span>TCODColor back<span class="code-symbol">)</span></p>
+<p class="lua">libtcod<span class="code-symbol">.</span>TCODConsole_root<span class="code-symbol">:</span>setBackgroundColor<span class="code-symbol">(</span> myColor<span class="code-symbol"> )</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>back</td><td>the new default background color for this console<br />	</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODConsole<span class="code-symbol">::</span>root<span class="code-symbol">-></span>setDefaultBackground<span class="code-symbol">(</span>myColor<span class="code-symbol">)</span></p>
+<p class="c">TCOD_console_set_default_background<span class="code-symbol">(</span><span class="code-tcod">NULL</span><span class="code-symbol">,</span> my_color<span class="code-symbol">)</span></p>
+<p class="py">litbcod<span class="code-symbol">.</span>console_set_default_background<span class="code-symbol">(</span><span class="code-value">0</span><span class="code-symbol">,</span> my_color<span class="code-symbol">)</span></p>
+</div><hr>
+<a name="1"></a><h3>Setting the default foreground color</h3>
+<p>This function changes the default foreground color for a console. The default foreground color is used by several drawing functions like clear, putChar, ...<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>setDefaultForeground<span class="code-symbol">(</span>TCODColor fore<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_set_default_foreground<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-tcod">TCOD_color_t</span> fore<span class="code-symbol">)</span></p>
+<p class="py">console_set_default_foreground<span class="code-symbol">(</span>con<span class="code-symbol">,</span> fore<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setForegroundColor<span class="code-symbol">(</span>TCODColor fore<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>setForegroundColor<span class="code-symbol">(</span>fore<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>fore</td><td>the new default foreground color for this console<br />	</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODConsole<span class="code-symbol">::</span>root<span class="code-symbol">-></span>setDefaultForeground<span class="code-symbol">(</span>myColor<span class="code-symbol">)</span></p>
+<p class="c">TCOD_console_set_default_foreground<span class="code-symbol">(</span><span class="code-tcod">NULL</span><span class="code-symbol">,</span> my_color<span class="code-symbol">)</span></p>
+<p class="py">litbcod<span class="code-symbol">.</span>console_set_default_foreground<span class="code-symbol">(</span><span class="code-value">0</span><span class="code-symbol">,</span> my_color<span class="code-symbol">)</span></p>
+<p class="lua">libtcod<span class="code-symbol">.</span>TCODConsole_root<span class="code-symbol">:</span>setForegroundColor<span class="code-symbol">(</span> myColor<span class="code-symbol"> )</span></p>
+</div><hr>
+<a name="2"></a><h3>Clearing a console</h3>
+<p>This function modifies all cells of a console :<br />		* set the cell's background color to the console default background color<br />		* set the cell's foreground color to the console default foreground color<br />		* set the cell's ASCII code to 32 (space)<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>clear<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_clear<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
+<p class="py">console_clear<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>clear<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>clear<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Setting the background color of a cell</h3>
+<p>This function modifies the background color of a cell, leaving other properties (foreground color and ASCII code) unchanged.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>setCharBackground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor<span class="code-symbol"> &</span>col<span class="code-symbol">,</span><span class="code-tcod"> TCOD_bkgnd_flag_t</span> flag<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_BKGND_SET</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_set_char_background<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> col<span class="code-symbol">,</span><span class="code-tcod"> TCOD_bkgnd_flag_t</span> flag<span class="code-symbol">)</span></p>
+<p class="py">console_set_char_background<span class="code-symbol">(</span>con<span class="code-symbol">,</span> x<span class="code-symbol">,</span>  y<span class="code-symbol">,</span> col<span class="code-symbol">,</span> flag<span class="code-symbol">=</span><span class="code-tcod">BKGND_SET</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setCharBackground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span> TCODColor col<span class="code-symbol">)</span><span class="code-keyword"><br />void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setCharBackground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span> TCODColor col<span class="code-symbol">,</span> TCODBackgroundFlag flag<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>setCharBackground<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> col<span class="code-symbol">)</span><br />Console<span class="code-symbol">:</span>setCharBackground<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> col<span class="code-symbol">,</span> flag<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
+<tr class="hilite"><td>col</td><td>the background color to use. You can use color constants<br />	</td></tr>
+<tr><td>flag</td><td>this flag defines how the cell's background color is modified. See <a href="console_bkgnd_flag_t.html">TCOD_bkgnd_flag_t</a><br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Setting the foreground color of a cell</h3>
+<p>This function modifies the foreground color of a cell, leaving other properties (background color and ASCII code) unchanged.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>setCharForeground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor<span class="code-symbol"> &</span>col<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_set_char_foreground<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> col<span class="code-symbol">)</span></p>
+<p class="py">console_set_char_foreground<span class="code-symbol">(</span>con<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> col<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setCharForeground<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span> TCODColor col<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>setCharForeground<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> col<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
+<tr class="hilite"><td>col</td><td>the foreground color to use. You can use color constants<br />	</td></tr>
+</tbody></table><a name="5"></a><h3>Setting the ASCII code of a cell</h3>
+<p>This function modifies the ASCII code of a cell, leaving other properties (background and foreground colors) unchanged.<br />		Note that since a clear console has both background and foreground colors set to black for every cell, using setchar will produce black characters on black background. Use putchar instead.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>setChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_set_char<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">)</span></p>
+<p class="py">console_set_char<span class="code-symbol">(</span>con<span class="code-symbol">,</span> x<span class="code-symbol">,</span>  y<span class="code-symbol">,</span> c<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>setChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>setChar<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> c<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
+<tr class="hilite"><td>c</td><td>the new ASCII code for the cell. You can use ASCII constants<br />	</td></tr>
+</tbody></table><a name="6"></a><h3>Setting every property of a cell using default colors</h3>
+<p>This function modifies every property of a cell :<br />		* update the cell's background color according to the console default background color (see TCOD_bkgnd_flag_t).<br />		* set the cell's foreground color to the console default foreground color<br />		* set the cell's ASCII code to c<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>putChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span><span class="code-tcod"> TCOD_bkgnd_flag_t</span> flag<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_BKGND_DEFAULT</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_put_char<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span><span class="code-tcod"> TCOD_bkgnd_flag_t</span> flag<span class="code-symbol">)</span></p>
+<p class="py">console_put_char<span class="code-symbol">(</span> con<span class="code-symbol">,</span> x<span class="code-symbol">,</span>  y<span class="code-symbol">,</span> c<span class="code-symbol">,</span> flag<span class="code-symbol">=</span><span class="code-tcod">BKGND_DEFAULT</span><span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>putChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">)</span><span class="code-keyword"><br />void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>putChar<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span> TCODBackgroundFlag flag<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>putChar<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> c<span class="code-symbol">)</span><br />Console<span class="code-symbol">:</span>putChar<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> c<span class="code-symbol">,</span> flag<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
+<tr class="hilite"><td>c</td><td>the new ASCII code for the cell. You can use ASCII constants<br />	</td></tr>
+<tr><td>flag</td><td>this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t<br />	</td></tr>
+</tbody></table><a name="7"></a><h3>Setting every property of a cell using specific colors</h3>
+<p>This function modifies every property of a cell :<br />		* set the cell's background color to back.<br />		* set the cell's foreground color to fore.<br />		* set the cell's ASCII code to c.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>putCharEx<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor<span class="code-symbol"> &</span> fore<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor<span class="code-symbol"> &</span> back<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_put_char_ex<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> fore<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> back<span class="code-symbol">)</span></p>
+<p class="py">console_put_char_ex<span class="code-symbol">(</span> con<span class="code-symbol">,</span> x<span class="code-symbol">,</span>  y<span class="code-symbol">,</span> c<span class="code-symbol">,</span> fore<span class="code-symbol">,</span> back<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>putCharEx<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> c<span class="code-symbol">,</span> TCODColor fore<span class="code-symbol">,</span> TCODColor back<span class="code-symbol">)</span></p>
+<p class="lua">Console<span class="code-symbol">:</span>putCharEx<span class="code-symbol">(</span>x<span class="code-symbol">,</span> y<span class="code-symbol">,</span> c<span class="code-symbol">,</span> fore<span class="code-symbol">,</span> back<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>con</td><td>in the C and Python versions, the offscreen console handler or NULL for the root console<br />	</td></tr>
+<tr><td>x,y</td><td>coordinates of the cell in the console.<br />		0 <= x < console width<br />		0 <= y < console height<br />	</td></tr>
+<tr class="hilite"><td>c</td><td>the new ASCII code for the cell. You can use ASCII constants<br />	</td></tr>
+<tr><td>fore,back</td><td>new foreground and background colors for this cell<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

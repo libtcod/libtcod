@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Using the buffer in input mode</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('zip.html')">11. Compression toolkit</a> &gt; <a onclick="link('zip_load.html')">11.3. Using the buffer in input mode</a><br>
+<a class="prev" onclick="link('zip_put.html')">11.2. Using the buffer in output mode</a> 
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>11.3. Using the buffer in input mode</h1>
+<div id="toc"><ul>
+<li><a href="#0">Reading from a compressed file</a></li><li><a href="#1">Reading a char from the buffer</a></li><li><a href="#2">Reading an integer from the buffer</a></li><li><a href="#3">Reading a floating point value from the buffer</a></li><li><a href="#4">Reading a string from the buffer</a></li><li><a href="#5">Reading a color from the buffer</a></li><li><a href="#6">Reading a color from the buffer</a></li><li><a href="#7">Reading a console from the buffer</a></li><li><a href="#8">Reading some custom data from the buffer</a></li><li><a href="#9">Getting the number of remaining bytes in the buffer</a></li><li><a href="#10">Skiping some bytes in the buffer</a></li></ul></div>
+<a name="0"></a><h3>Reading from a compressed file</h3>
+<p>You can read data from a file (compressed or not) into the buffer.<br />		The function returns the number of (uncompressed) bytes read or 0 if an error occured. <br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">int</span> TCODZip<span class="code-symbol">::</span>loadFromFile<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_zip_load_from_file<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>filename</td><td>Name of the file<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Reading a char from the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">char</span> TCODZip<span class="code-symbol">::</span>getChar<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">char</span> TCOD_zip_get_char<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor<br />	</td></tr>
+</tbody></table><a name="2"></a><h3>Reading an integer from the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">int</span> TCODZip<span class="code-symbol">::</span>getInt<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_zip_get_int<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="3"></a><h3>Reading a floating point value from the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">float</span> TCODZip<span class="code-symbol">::</span>getFloat<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">float</span> TCOD_zip_get_float<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="4"></a><h3>Reading a string from the buffer</h3>
+<p>The address returned is in the buffer. It is valid as long as you don't destroy the buffer.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>TCODZip<span class="code-symbol">::</span>getString<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>TCOD_zip_get_string<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="5"></a><h3>Reading a color from the buffer</h3>
+<div class="code"><p class="cpp">TCODColor TCODZip<span class="code-symbol">::</span>getColor<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_zip_get_color<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="6"></a><h3>Reading a color from the buffer</h3>
+<div class="code"><p class="cpp">TCODImage<span class="code-symbol"> *</span>TCODZip<span class="code-symbol">::</span>getImage<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_zip_get_image<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="7"></a><h3>Reading a console from the buffer</h3>
+<div class="code"><p class="cpp">TCODConsole<span class="code-symbol"> *</span>TCODZip<span class="code-symbol">::</span>getConsole<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_console_t</span> TCOD_zip_get_console<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="8"></a><h3>Reading some custom data from the buffer</h3>
+<p>Note that the getData length must match the length of the data when the file was created (with putData).<br />		The function returns the number of bytes that were stored in the file by the putData call. If more than nbBytes were stored, the function read only nbBytes and skip the rest of them.<br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">int</span> TCODZip<span class="code-symbol">::</span>getData<span class="code-symbol">(</span><span class="code-keyword">int</span> nbBytes<span class="code-symbol">,</span><span class="code-keyword"> void</span><span class="code-symbol"> *</span>data<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">int</span> TCOD_zip_get_data<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> int</span> nbBytes<span class="code-symbol">,</span><span class="code-keyword"> void</span><span class="code-symbol"> *</span>data<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>nbBytes</td><td>Number of bytes to read<br />	</td></tr>
+<tr class="hilite"><td>data</td><td>Address of a pre-allocated buffer (at least nbBytes bytes)<br />	</td></tr>
+</tbody></table><h6>Example:</h6><div class="code">
+<p class="cpp">TCODZip zip<span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>loadFromFile<span class="code-symbol">(</span><span class="code-string">"myCompressedFile.gz"</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span> c<span class="code-symbol">=</span>zip<span class="code-symbol">.</span>getChar<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />int</span> i<span class="code-symbol">=</span>zip<span class="code-symbol">.</span>getInt<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />float</span> f<span class="code-symbol">=</span> zip<span class="code-symbol">.</span>getFloat<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>s<span class="code-symbol">=</span>zip<span class="code-symbol">.</span>getString<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />zip<span class="code-symbol">.</span>getData<span class="code-symbol">(</span>nbBytes<span class="code-symbol">,</span> dataPtr<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+<p class="c"><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">=</span>TCOD_zip_new<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_load_from_file<span class="code-symbol">(</span>zip<span class="code-symbol">,</span><span class="code-string">"myCompressedFile.gz"</span><span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />char</span> c<span class="code-symbol">=</span>TCOD_zip_get_char<span class="code-symbol">(</span>zip<span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />int</span> i<span class="code-symbol">=</span>TCOD_zip_get_int<span class="code-symbol">(</span>zip<span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />float</span> f<span class="code-symbol">=</span>TCOD_zip_get_float<span class="code-symbol">(</span>zip<span class="code-symbol">)</span><span class="code-symbol">;</span><span class="code-keyword"><br />const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>s<span class="code-symbol">=</span>TCOD_zip_get_string<span class="code-symbol">(</span>zip<span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCOD_zip_get_data<span class="code-symbol">(</span>zip<span class="code-symbol">,</span>nbBytes<span class="code-symbol">,</span> dataPtr<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
+</div><hr>
+<a name="9"></a><h3>Getting the number of remaining bytes in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">uint32</span> TCODZip<span class="code-symbol">::</span>getRemainingBytes<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-keyword"> const</span></p>
+<p class="c"><span class="code-keyword">uint32</span> TCOD_zip_get_remaining_bytes<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+</tbody></table><a name="10"></a><h3>Skiping some bytes in the buffer</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODZip<span class="code-symbol">::</span>skipBytes<span class="code-symbol">(</span><span class="code-keyword">uint32</span> nbBytes<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_zip_skip_bytes<span class="code-symbol">(</span><span class="code-tcod">TCOD_zip_t</span> zip<span class="code-symbol">,</span><span class="code-keyword"> uint32</span> nbBytes<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>zip</td><td>In the C version, the buffer handler, returned by the constructor.<br />	</td></tr>
+<tr><td>nbBytes</td><td>number of uncompressed bytes to skip<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

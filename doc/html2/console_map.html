@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Using custom characters mapping</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_init.html')">2.1. Initializing the console</a> &gt; <a onclick="link('console_map.html')">2.1.3. Using custom characters mapping</a><br>
+<a class="prev" onclick="link('console_set_custom_font.html')">2.1.2. Using a custom bitmap font</a> | <a class="next" onclick="link('console_fullscreen.html')">2.1.4. Fullscreen mode</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="main"><div class="maintext">
+<h1>2.1.3. Using custom characters mapping</h1>
+<div id="toc"><ul>
+<li><a href="#0">Mapping a single ASCII code to a character</a></li><li><a href="#1">Mapping consecutive ASCII codes to consecutive characters</a></li><li><a href="#2">Mapping ASCII code from a string to consecutive characters</a></li></ul></div>
+<p>These functions allow you to map characters in the bitmap font to ASCII codes.<br />		They should be called after initializing the root console with initRoot.<br />		You can dynamically change the characters mapping at any time, allowing to use several fonts in the same screen.<br />	</p>
+<a name="0"></a><h3>Mapping a single ASCII code to a character</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">::</span>mapAsciiCodeToFont<span class="code-symbol">(</span><span class="code-keyword">int</span> asciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_map_ascii_code_to_font<span class="code-symbol">(</span><span class="code-keyword">int</span> asciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="py">console_map_ascii_code_to_font<span class="code-symbol">(</span>asciiCode<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>mapAsciiCodeToFont<span class="code-symbol">(</span><span class="code-keyword">int</span> asciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>console<span class="code-symbol">.</span>mapAsciiCodeToFont<span class="code-symbol">(</span>asciiCode<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>asciiCode</td><td>ASCII code to map.<br />	</td></tr>
+<tr><td>fontCharX,fontCharY</td><td>Coordinate of the character in the bitmap font (in characters, not pixels).<br />	</td></tr>
+</tbody></table><a name="1"></a><h3>Mapping consecutive ASCII codes to consecutive characters</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">::</span>mapAsciiCodesToFont<span class="code-symbol">(</span><span class="code-keyword">int</span> firstAsciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> nbCodes<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_map_ascii_codes_to_font<span class="code-symbol">(</span><span class="code-keyword">int</span> firstAsciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> nbCodes<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="py">console_map_ascii_codes_to_font<span class="code-symbol">(</span>firstAsciiCode<span class="code-symbol">,</span> nbCodes<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>mapAsciiCodesToFont<span class="code-symbol">(</span><span class="code-keyword">int</span> firstAsciiCode<span class="code-symbol">,</span><span class="code-keyword"> int</span> nbCodes<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>console<span class="code-symbol">.</span>mapAsciiCodesToFont<span class="code-symbol">(</span>firstAsciiCode<span class="code-symbol">,</span> nbCodes<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>firstAsciiCode</td><td>first ASCII code to map<br />	</td></tr>
+<tr><td>nbCodes</td><td>number of consecutive ASCII codes to map<br />	</td></tr>
+<tr class="hilite"><td>fontCharX,fontCharY</td><td>coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code<br />	</td></tr>
+</tbody></table><a name="2"></a><h3>Mapping ASCII code from a string to consecutive characters</h3>
+<div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">::</span>mapStringToFont<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>s<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_console_map_string_to_font<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>s<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="py">console_map_string_to_font<span class="code-symbol">(</span>s<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="cs"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODConsole<span class="code-symbol">:</span><span class="code-symbol">:</span>mapStringToFont<span class="code-symbol">(</span><span class="code-keyword">string</span> s<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharX<span class="code-symbol">,</span><span class="code-keyword"> int</span> fontCharY<span class="code-symbol">)</span></p>
+<p class="lua">tcod<span class="code-symbol">.</span>console<span class="code-symbol">.</span>mapStringToFont<span class="code-symbol">(</span>s<span class="code-symbol">,</span> fontCharX<span class="code-symbol">,</span> fontCharY<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>s</td><td>string containing the ASCII codes to map<br />	</td></tr>
+<tr><td>fontCharX,fontCharY</td><td>coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code in the string<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+</script>
+</html>

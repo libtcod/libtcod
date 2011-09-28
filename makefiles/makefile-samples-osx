@@ -1,0 +1,200 @@
+# libtcod samples osx makefile
+# to build debug version, run "make -f makefile-samples-osx debug"
+# to build release version, run "make -f makefile-samples-osx release"
+SRCDIR=.
+INCDIR=include
+# CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SRCDIR) -Wall
+CC=gcc
+CPP=g++
+TEMP=/tmp
+.SUFFIXES: .o .h .c .hpp .cpp
+	
+#dependencies
+# SDL
+SDL_DIR=dependencies/SDL-1.2.14
+SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
+SDL_LIBS=$(SDL_DIR)/lib/osx/libSDL.a $(SDL_DIR)/lib/osx/libSDLmain.a -framework Carbon -framework Quartz -framework OpenGL -framework AppKit -framework IOKit -framework AudioUnit -framework Quicktime -framework Cocoa
+
+# ZLIB
+ZLIB_DIR=dependencies/zlib-1.2.3
+ZLIB_FLAGS=-I $(ZLIB_DIR)/include
+ZLIB_LIBS=$(ZLIB_DIR)/lib/osx/libz.a
+
+# PNG
+PNG_DIR=dependencies/libpng-1.2.31
+PNG_FLAGS=-I $(PNG_DIR)/include
+PNG_LIBS=$(PNG_DIR)/lib/osx/libpng.a
+
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
+
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/dtool/%.o : $(SRCDIR)/src/dtool/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+
+C_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_c.o
+CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
+
+HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/hmtool/hmtool.o \
+	$(TEMP)/libtcod/debug/hmtool/operation.o
+
+DTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/dtool/dtool.o
+
+C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
+CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
+
+HMTOOLOBJS_RELEASE=$(TEMP)/libtcod/release/hmtool/hmtool.o \
+	$(TEMP)/libtcod/release/hmtool/operation.o
+
+all : debug release apps
+
+debug : samples_c_debug samples_cpp_debug hmtool_debug 
+
+release : samples_c samples_cpp hmtool 
+
+apps: samples_c.app samples_cpp.app hmtool.app
+
+$(TEMP)/libtcod/debug/hmtool :
+	\mkdir -p $@
+
+$(TEMP)/libtcod/release/hmtool :
+	\mkdir -p $@
+
+$(TEMP)/libtcod/debug/samples :
+	\mkdir -p $@
+
+$(TEMP)/libtcod/release/samples :
+	\mkdir -p $@
+
+samples_c : $(TEMP)/libtcod/release/samples $(C_OBJS_RELEASE)
+	$(CC) $(C_OBJS_RELEASE) $(CFLAGS) -o $@ -L. -ltcod_debug $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+samples_cpp : $(TEMP)/libtcod/release/samples $(CPP_OBJS_RELEASE)
+	$(CPP) $(CPP_OBJS_RELEASE) $(CFLAGS) -o $@ -L. -ltcod -ltcodxx $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+hmtool : $(TEMP)/libtcod/release/hmtool $(HMTOOLOBJS_RELEASE)
+	$(CPP) $(HMTOOLOBJS_RELEASE) $(CFLAGS) -o $@ -L. -ltcod -ltcodxx -ltcodgui $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+samples_c_debug : $(TEMP)/libtcod/debug/samples $(C_OBJS_DEBUG)
+	$(CC) $(C_OBJS_DEBUG) $(CFLAGS) -o $@ -L. -ltcod_debug $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+samples_cpp_debug : $(TEMP)/libtcod/debug/samples $(CPP_OBJS_DEBUG)
+	$(CPP) $(CPP_OBJS_DEBUG) $(CFLAGS) -o $@ -L. -ltcod_debug -ltcodxx_debug $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+hmtool_debug : $(TEMP)/libtcod/debug/hmtool $(HMTOOLOBJS_DEBUG)
+	$(CPP) $(HMTOOLOBJS_DEBUG) $(CFLAGS) -o $@ -L. -ltcod_debug -ltcodxx_debug -ltcodgui_debug $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+
+samples_c.app : samples_c
+	mkdir -p samples_c.app/Contents/MacOS
+	cp osx/samples_c_Info.plist samples_c.app/Contents/Info.plist
+	cp libtcod.cfg samples_c.app/Contents/MacOS/
+	cp samples_c samples_c.app/Contents/MacOS/
+	cp -rf data/ samples_c.app/Contents/MacOS/
+
+samples_cpp.app : samples_cpp
+	mkdir -p samples_cpp.app/Contents/MacOS
+	cp osx/samples_cpp_Info.plist samples_cpp.app/Contents/Info.plist
+	cp libtcod.cfg samples_cpp.app/Contents/MacOS/
+	cp samples_cpp samples_cpp.app/Contents/MacOS/
+	cp -rf data/ samples_cpp.app/Contents/MacOS/
+
+hmtool.app : hmtool
+	mkdir -p hmtool.app/Contents/MacOS
+	cp osx/hmtool_Info.plist hmtool.app/Contents/Info.plist
+	cp libtcod.cfg hmtool.app/Contents/MacOS/
+	cp hmtool hmtool.app/Contents/MacOS/
+	cp -rf data/ hmtool.app/Contents/MacOS/
+
+clean :
+	\rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) samples_c samples_cpp hmtool $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) samples_c_debug samples_cpp_debug hmtool_debug
+	\rm -rf samples_c.app samples_cpp.app hmtool.app
+
+
+#OLD OSX FOLLOWS============================
+# SRCDIR=.
+# INCDIR=include
+# CC=gcc
+# CPP=g++
+# TEMP=/tmp
+# .SUFFIXES: .o .h .c .hpp .cpp
+# 
+# #dependencies
+# # SDL
+# SDL_DIR=dependencies/SDL-1.2.14
+# SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
+# SDL_LIBS=$(SDL_DIR)/lib/osx/libSDL.a $(SDL_DIR)/lib/osx/libSDLmain.a -framework Carbon -framework Quartz -framework OpenGL -framework AppKit -framework IOKit -framework AudioUnit -framework Quicktime -framework Cocoa
+# 
+# # ZLIB
+# ZLIB_DIR=dependencies/zlib-1.2.3
+# ZLIB_FLAGS=-I $(ZLIB_DIR)/include
+# ZLIB_LIBS=$(ZLIB_DIR)/lib/osx/libz.a
+# 
+# # PNG
+# PNG_DIR=dependencies/libpng-1.2.31
+# PNG_FLAGS=-I $(PNG_DIR)/include
+# PNG_LIBS=$(PNG_DIR)/lib/osx/libpng.a
+# 
+# CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) -fno-strict-aliasing
+# 
+# $(TEMP)/%.o : $(SRCDIR)/%.cpp
+# 	$(CPP) $(CFLAGS) -o $@ -c $< 
+# $(TEMP)/%.o : $(SRCDIR)/%.c
+# 	$(CC) $(CFLAGS) -o $@ -c $< 
+# $(TEMP)/hmtool/%.o : $(SRCDIR)/src/hmtool/%.cpp
+# 	$(CPP) $(CFLAGS) -o $@ -c $< 
+# 
+# $(TEMP)/hmtool :
+# 	mkdir -p $@
+# 
+# C_OBJS=$(TEMP)/samples_c.o
+# CPP_OBJS=$(TEMP)/samples_cpp.o
+# 	
+# HMTOOLOBJS=$(TEMP)/hmtool/hmtool.o \
+# 	$(TEMP)/hmtool/operation.o
+# 
+# all : samples_c.app samples_cpp.app $(TEMP)/hmtool hmtool.app
+# 
+# $(TEMP)/hmtool :
+# 	mkdir -p $@
+# 
+# samples_c : $(C_OBJS) libtcod.a
+# 	$(CC) $(C_OBJS) $(CFLAGS) -o $@ -L. -ltcod $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+# 
+# samples_cpp : $(CPP_OBJS) libtcod++.a
+# 	$(CPP) $(CPP_OBJS) -o $@ -L. -ltcod -ltcod++ $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+# 
+# hmtool : $(TEMP)/hmtool $(HMTOOLOBJS)
+# 	$(CPP) -o $@ $(HMTOOLOBJS) -L. -ltcod -ltcod++ -ltcod-gui $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS)
+# 
+# samples_c.app : samples_c
+# 	mkdir -p samples_c.app/Contents/MacOS
+# 	cp osx/samples_c_Info.plist samples_c.app/Contents/Info.plist
+# 	cp samples_c samples_c.app/Contents/MacOS/
+# 	cp -r data/ samples_c.app/Contents/MacOS/
+# 
+# samples_cpp.app : samples_cpp
+# 	mkdir -p samples_cpp.app/Contents/MacOS
+# 	cp osx/samples_cpp_Info.plist samples_cpp.app/Contents/Info.plist
+# 	cp samples_cpp samples_cpp.app/Contents/MacOS/
+# 	cp -r data/ samples_cpp.app/Contents/MacOS/
+# 
+# hmtool.app : hmtool
+# 	mkdir -p hmtool.app/Contents/MacOS
+# 	cp osx/hmtool_Info.plist hmtool.app/Contents/Info.plist
+# 	cp hmtool hmtool.app/Contents/MacOS/
+# 
+# clean :
+# 	\rm -f $(C_OBJS) $(CPP_OBJS) $(HMTOOLOBJS) samples_c samples_cpp hmtool
+# 	\rm -rf hmtool.app samples_cpp.app samples_c.app

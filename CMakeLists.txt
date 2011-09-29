@@ -63,12 +63,16 @@ add_subdirectory(samples)
 # You also need to uncomment the add_subdirectory at the end of the file...
 
 # This needs to be set to the path to a swig executable if you want swig support (and uncommented out).
-#SET(SWIG_PROGRAM_PATH "C:\\Users\\donblas\\Programming\\swigwin-1.3.40")
-#SET(SWIG_SYSTEM TRUE)
+OPTION(SWIG_ON "Run SWIG" OFF)
+SET(SWIG_PROGRAM_PATH "C:\\Users\\donblas\\Programming\\swigwin-1.3.40" CACHE FILEPATH  "Path to SWIG")
+IF(SWIG_ON)
+	SET(SWIG_SYSTEM TRUE)
+	add_subdirectory(swig)
+ENDIF()
+OPTION(SWIG_CSHARP "Generate CSharp" OFF)
+OPTION(SWIG_PYTHON "Generate Python" OFF)
+OPTION(SWIG_LUA "Generate Lua" OFF)
 
-#SET(SWIG_CSHARP TRUE)
-#SET(SWIG_PYTHON TRUE)
-#SET(SWIG_LUA TRUE)
 
 # BROKEN - These generators will need work to get working...
 #SET(SWIG_JAVA TRUE)
@@ -79,5 +83,3 @@ add_subdirectory(samples)
 #SET(SWIG_RUBY_LIB_DIR "C:\\Ruby19\\lib\\")
 #SET(SWIG_RUBY_LIB "libmsvcrt-ruby191-static.a")
 # ENDBROKEN 
-
-#add_subdirectory(swig)

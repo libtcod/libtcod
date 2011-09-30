@@ -49,7 +49,7 @@
 #include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <dlfnc.h>
+#include <dlfcn.h>
 #endif
 
 #if defined(TCOD_WINDOWS)

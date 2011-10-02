@@ -42,16 +42,16 @@ debug : samples_c_debug.exe samples_cpp_debug.exe hmtool_debug.exe
 release : samples_c.exe samples_cpp.exe hmtool.exe 
 
 $(TEMP)/libtcod/debug/hmtool :
-	\mkdir -p $@
+	mkdir -p $@
 	
 $(TEMP)/libtcod/release/hmtool :
-	\mkdir -p $@
+	mkdir -p $@
 
 $(TEMP)/libtcod/debug/samples :
-	\mkdir -p $@
+	mkdir -p $@
 	
 $(TEMP)/libtcod/release/samples :
-	\mkdir -p $@
+	mkdir -p $@
 
 samples_c.exe : $(TEMP)/libtcod/release/samples $(C_OBJS_RELEASE)
 	$(CC) $(C_OBJS_RELEASE) $(CFLAGS) -o $@ -Llib -ltcod-mingw  -L$(SDLDIR)/lib/mingw -lSDL -mwindows

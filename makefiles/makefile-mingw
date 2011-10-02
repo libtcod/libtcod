@@ -187,16 +187,19 @@ $(TEMP)/libtcod/release :
 $(TEMP)/libtcod/release/gui :
 	mkdir -p $@
 
+lib/ :
+	mkdir -p $@
+
 libtcod-mingw.a : $(LIBOBJS_DEBUG)
 	ar r $@ $(LIBOBJS_DEBUG)
 	
-libtcod-mingw.dll : $(TEMP)/libtcod/release $(LIBOBJS_RELEASE)
+libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release $(LIBOBJS_RELEASE)
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB)
 
 libtcod-gui-mingw.dll : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw
 
-libtcod-mingw-debug.dll : $(TEMP)/libtcod/debug $(LIBOBJS_DEBUG)
+libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug $(LIBOBJS_DEBUG)
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB)
 
 libtcod-gui-mingw-debug.dll : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)

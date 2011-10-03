@@ -290,6 +290,16 @@ TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float *coef,TCODRandom
 %include "txtfield.hpp"
 %include "BackgroundHelperFunctions.hpp"
 
+%rename(EventKeyPress) TCOD_EVENT_KEY_PRESS;
+%rename(EventKeyRelease) TCOD_EVENT_KEY_RELEASE;
+%rename(EventKey) TCOD_EVENT_KEY;
+%rename(EventMouseMove) TCOD_EVENT_MOUSE_MOVE;
+%rename(EventMousePress) TCOD_EVENT_MOUSE_PRESS;
+%rename(EventMouseRelease) TCOD_EVENT_MOUSE_RELEASE;
+%rename(EventMouse) TCOD_EVENT_MOUSE;
+%rename(EventAny) TCOD_EVENT_ANY;
+%rename(TCODEvent) TCOD_event_t;
+
 // Since selective rename/ignore on "namespaced" structs appears to be broken for C style typedef structs
 // To work around this global renames, but only after everything else. This should be the last stuff in file.
 %rename(LeftButton) lbutton;

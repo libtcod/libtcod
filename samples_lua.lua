@@ -375,7 +375,8 @@ nbSamples = table.getn(samples)
 curSample = 1
 
 while not tcod.console.isWindowClosed() do
-	key=tcod.console.checkForKeypress()
+	key=tcod.Key()
+	tcod.system.checkForEvent(29,key,nil)
 
 	-- render current sample
 	samples[curSample].render(key)

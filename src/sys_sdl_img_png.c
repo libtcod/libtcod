@@ -34,7 +34,7 @@
 #include "libtcod.h"
 #include "libtcod_int.h"
 
-#define png_infopp_NULL (png_infop)NULL
+#define png_infopp_NULL (png_infopp)NULL
 #if defined( TCOD_MACOSX ) || defined( TCOD_HAIKU ) 
 #define int_p_NULL (int*)NULL
 #endif

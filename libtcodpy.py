@@ -642,7 +642,7 @@ def console_put_char_ex(con, x, y, c, fore, back):
     else:
         _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
 
-def console_set_char_background(con, x, y, col, flag=BKGND_DEFAULT):
+def console_set_char_background(con, x, y, col, flag=BKGND_SET):
     _lib.TCOD_console_set_char_background(con, x, y, col, flag)
 
 def console_set_char_foreground(con, x, y, col):

@@ -1330,8 +1330,8 @@ def noise_delete(n):
 # fov module
 ############################
 _lib.TCOD_map_is_in_fov.restype = c_bool
-_lib.TCOD_map_is_transparent = c_bool
-_lib.TCOD_map_is_walkable = c_bool
+_lib.TCOD_map_is_transparent.restype = c_bool
+_lib.TCOD_map_is_walkable.restype = c_bool
 
 FOV_BASIC = 0
 FOV_DIAMOND = 1

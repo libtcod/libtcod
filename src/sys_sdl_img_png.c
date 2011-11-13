@@ -121,7 +121,7 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 		&png_interlace_type,NULL,NULL);
 
 	/* create the SDL surface */
-	bitmap=TCOD_sys_get_surface(png_width,png_height,info_ptr->channels == 4);
+	bitmap=TCOD_sys_get_surface(png_width,png_height,(int)png_get_channels(png_ptr, info_ptr)== 4);
 
 	/* get row data */
 	row_pointers=(png_bytep *)malloc(sizeof(png_bytep)*png_height);

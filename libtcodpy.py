@@ -380,6 +380,82 @@ class Key(Structure):
               ('shift', c_bool),
               ]
 
+class ConsoleBuffer:
+    # simple console that allows direct (fast) access to cells. simplifies
+    # use of the "fill" functions.
+    def __init__(self, width, height, back_r=0, back_g=0, back_b=0, fore_r=0, fore_g=0, fore_b=0, char=' '):
+        # initialize with given width and height. values to fill the buffer
+        # are optional, defaults to black with no characters.
+        n = width * height
+        self.width = width
+        self.height = height
+        self.clear(back_r, back_g, back_b, fore_r, fore_g, fore_b, char)
+
+    def clear(self, back_r=0, back_g=0, back_b=0, fore_r=0, fore_g=0, fore_b=0, char=' '):
+        # clears the console. values to fill it with are optional, defaults
+        # to black with no characters.
+        n = self.width * self.height
+        self.back_r = [back_r] * n
+        self.back_g = [back_g] * n
+        self.back_b = [back_b] * n
+        self.fore_r = [fore_r] * n
+        self.fore_g = [fore_g] * n
+        self.fore_b = [fore_b] * n
+        self.char = [char] * n
+    
+    def copy(self):
+        # returns a copy of this ConsoleBuffer.
+        other = ConsoleBuffer(0, 0)
+        other.width = self.width
+        other.height = self.height
+        other.back_r = list(self.back_r)  # make explicit copies of all lists
+        other.back_g = list(self.back_g)
+        other.back_b = list(self.back_b)
+        other.fore_r = list(self.fore_r)
+        other.fore_g = list(self.fore_g)
+        other.fore_b = list(self.fore_b)
+        other.char = list(self.char)
+        return other
+    
+    def set_fore(self, x, y, r, g, b, char):
+        # set the character and foreground color of one cell.
+        i = self.width * y + x
+        self.fore_r[i] = r
+        self.fore_g[i] = g
+        self.fore_b[i] = b
+        self.char[i] = char
+    
+    def set_back(self, x, y, r, g, b):
+        # set the background color of one cell.
+        i = self.width * y + x
+        self.back_r[i] = r
+        self.back_g[i] = g
+        self.back_b[i] = b
+    
+    def set(self, x, y, back_r, back_g, back_b, fore_r, fore_g, fore_b, char):
+        # set the background color, foreground color and character of one cell.
+        i = self.width * y + x
+        self.back_r[i] = back_r
+        self.back_g[i] = back_g
+        self.back_b[i] = back_b
+        self.fore_r[i] = fore_r
+        self.fore_g[i] = fore_g
+        self.fore_b[i] = fore_b
+        self.char[i] = char
+    
+    def blit(self, dest, fill_fore=True, fill_back=True):
+        # use libtcod's "fill" functions to write the buffer to a console.
+        if (console_get_width(dest) != self.width or
+            console_get_height(dest) != self.height):
+            raise ValueError('ConsoleBuffer.blit: Destination console has an incorrect size.')
+        
+        if fill_back:
+            console_fill_background(dest, self.back_r, self.back_g, self.back_b)
+
+        if fill_fore:
+            console_fill_foreground(dest, self.fore_r, self.fore_g, self.fore_b)
+            console_fill_char(dest, self.char)
+
 _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
 _lib.TCOD_console_is_fullscreen.restype = c_bool

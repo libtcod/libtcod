@@ -138,7 +138,7 @@ tc_dirr = [1, -1, 1, 1]
 tc_dirg = [1, -1, -1, 1]
 tc_dirb = [1, 1, 1, -1]
 def render_colors(first, key, mouse):
-    global tc_cols, tc_dirr, tc_dirg, tc_dirb
+    global tc_cols, tc_dirr, tc_dirg, tc_dirb, tc_fast
 
     TOPLEFT = 0
     TOPRIGHT = 1
@@ -147,6 +147,7 @@ def render_colors(first, key, mouse):
     if first:
         libtcod.sys_set_fps(0)
         libtcod.console_clear(sample_console)
+        tc_fast = False
     for c in range(4):
         # move each corner color
         component=libtcod.random_get_int(None, 0, 2)
@@ -169,31 +170,54 @@ def render_colors(first, key, mouse):
             elif tc_cols[c].b == 0:
                 tc_dirb[c] = 1
 
-    # interpolate corner colors
-    for x in range(SAMPLE_SCREEN_WIDTH):
-        xcoef = float(x) / (SAMPLE_SCREEN_WIDTH - 1)
-        top = libtcod.color_lerp(tc_cols[TOPLEFT], tc_cols[TOPRIGHT], xcoef)
-        bottom = libtcod.color_lerp(tc_cols[BOTTOMLEFT], tc_cols[BOTTOMRIGHT],
-                                    xcoef)
-        for y in range(SAMPLE_SCREEN_HEIGHT):
-            ycoef = float(y) / (SAMPLE_SCREEN_HEIGHT - 1)
-            curColor = libtcod.color_lerp(top, bottom, ycoef)
-            libtcod.console_set_char_background(sample_console, x, y, curColor,
-                                     libtcod.BKGND_SET)
-    textColor = libtcod.console_get_char_background(sample_console,
-                                         SAMPLE_SCREEN_WIDTH / 2, 5)
-    textColor.r = 255 - textColor.r
-    textColor.g = 255 - textColor.g
-    textColor.b = 255 - textColor.b
-    libtcod.console_set_default_foreground(sample_console, textColor)
-    for x in range(SAMPLE_SCREEN_WIDTH):
-        for y in range(SAMPLE_SCREEN_HEIGHT):
-            col = libtcod.console_get_char_background(sample_console, x, y)
-            col = libtcod.color_lerp(col, libtcod.black, 0.5)
-            c = libtcod.random_get_int(None, ord('a'), ord('z'))
-            libtcod.console_set_default_foreground(sample_console, col)
-            libtcod.console_put_char(sample_console, x, y, c,
-                                     libtcod.BKGND_NONE)
+    if not tc_fast:
+        # interpolate corner colors
+        for x in range(SAMPLE_SCREEN_WIDTH):
+            xcoef = float(x) / (SAMPLE_SCREEN_WIDTH - 1)
+            top = libtcod.color_lerp(tc_cols[TOPLEFT], tc_cols[TOPRIGHT], xcoef)
+            bottom = libtcod.color_lerp(tc_cols[BOTTOMLEFT], tc_cols[BOTTOMRIGHT],
+                                        xcoef)
+            for y in range(SAMPLE_SCREEN_HEIGHT):
+                ycoef = float(y) / (SAMPLE_SCREEN_HEIGHT - 1)
+                curColor = libtcod.color_lerp(top, bottom, ycoef)
+                libtcod.console_set_char_background(sample_console, x, y, curColor,
+                                         libtcod.BKGND_SET)
+        textColor = libtcod.console_get_char_background(sample_console,
+                                             SAMPLE_SCREEN_WIDTH / 2, 5)
+        textColor.r = 255 - textColor.r
+        textColor.g = 255 - textColor.g
+        textColor.b = 255 - textColor.b
+        libtcod.console_set_default_foreground(sample_console, textColor)
+        for x in range(SAMPLE_SCREEN_WIDTH):
+            for y in range(SAMPLE_SCREEN_HEIGHT):
+                col = libtcod.console_get_char_background(sample_console, x, y)
+                col = libtcod.color_lerp(col, libtcod.black, 0.5)
+                c = libtcod.random_get_int(None, ord('a'), ord('z'))
+                libtcod.console_set_default_foreground(sample_console, col)
+                libtcod.console_put_char(sample_console, x, y, c,
+                                         libtcod.BKGND_NONE)
+    else:
+        # same, but using the ConsoleBuffer class to speed up rendering
+        buffer = libtcod.ConsoleBuffer(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)  # initialize buffer
+        c = libtcod.random_get_int(None, ord('a'), ord('z'))
+        for x in xrange(SAMPLE_SCREEN_WIDTH):
+            xcoef = float(x) / (SAMPLE_SCREEN_WIDTH - 1)
+            top = libtcod.color_lerp(tc_cols[TOPLEFT], tc_cols[TOPRIGHT], xcoef)
+            bottom = libtcod.color_lerp(tc_cols[BOTTOMLEFT], tc_cols[BOTTOMRIGHT], xcoef)
+            for y in xrange(SAMPLE_SCREEN_HEIGHT):
+                # for maximum speed, we avoid using any libtcod function in
+                # this inner loop, except for the ConsoleBuffer's functions.
+                ycoef = float(y) / (SAMPLE_SCREEN_HEIGHT - 1)
+                r = top.r * ycoef + bottom.r * (1 - ycoef)
+                g = top.g * ycoef + bottom.g * (1 - ycoef)
+                b = top.b * ycoef + bottom.b * (1 - ycoef)
+                c += 1
+                if c > ord('z'): c = ord('a')
+                # set background, foreground and char with a single function
+                buffer.set(x, y, r, g, b, r / 2, g / 2, b / 2, chr(c))
+        buffer.blit(sample_console)  # update console with the buffer's contents
+        libtcod.console_set_default_foreground(sample_console, libtcod.Color(int(r), int(g), int(b)))
+
     libtcod.console_set_default_background(sample_console, libtcod.grey)
     libtcod.console_print_rect_ex(sample_console, SAMPLE_SCREEN_WIDTH / 2,
                                       5, SAMPLE_SCREEN_WIDTH - 2,
@@ -202,6 +226,11 @@ def render_colors(first, key, mouse):
                                       "The Doryen library uses 24 bits "
                                       "colors, for both background and "
                                       "foreground.")
+
+    if key.c == ord('f'): tc_fast = not tc_fast
+    libtcod.console_set_default_foreground(sample_console, libtcod.white)
+    libtcod.console_print(sample_console, 1, SAMPLE_SCREEN_HEIGHT - 2,
+                           "F : turn fast rendering %s" % ("off" if tc_fast else "on"))
 
 #############################################
 # offscreen console sample

@@ -448,13 +448,15 @@ class ConsoleBuffer:
         if (console_get_width(dest) != self.width or
             console_get_height(dest) != self.height):
             raise ValueError('ConsoleBuffer.blit: Destination console has an incorrect size.')
-        
+
+        s = struct.Struct('%di' % len(self.back_r))
+
         if fill_back:
-            console_fill_background(dest, self.back_r, self.back_g, self.back_b)
+            _lib.TCOD_console_fill_background(dest, s.pack(*self.back_r), s.pack(*self.back_g), s.pack(*self.back_b))
 
         if fill_fore:
-            console_fill_foreground(dest, self.fore_r, self.fore_g, self.fore_b)
-            console_fill_char(dest, self.char)
+            _lib.TCOD_console_fill_foreground(dest, s.pack(*self.fore_r), s.pack(*self.fore_g), s.pack(*self.fore_b))
+            _lib.TCOD_console_fill_char(dest, struct.pack('%dc' % len(self.back_r), *self.char))
 
 _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]

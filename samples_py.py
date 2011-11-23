@@ -208,9 +208,9 @@ def render_colors(first, key, mouse):
                 # for maximum speed, we avoid using any libtcod function in
                 # this inner loop, except for the ConsoleBuffer's functions.
                 ycoef = float(y) / (SAMPLE_SCREEN_HEIGHT - 1)
-                r = top.r * ycoef + bottom.r * (1 - ycoef)
-                g = top.g * ycoef + bottom.g * (1 - ycoef)
-                b = top.b * ycoef + bottom.b * (1 - ycoef)
+                r = int(top.r * ycoef + bottom.r * (1 - ycoef))
+                g = int(top.g * ycoef + bottom.g * (1 - ycoef))
+                b = int(top.b * ycoef + bottom.b * (1 - ycoef))
                 c += 1
                 if c > ord('z'): c = ord('a')
                 # set background, foreground and char with a single function

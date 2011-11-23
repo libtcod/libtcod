@@ -873,16 +873,16 @@ def console_fill_background(con,r,g,b) :
     _lib.TCOD_console_fill_background(con, cr, cg, cb)
 
 def console_fill_char(con,arr) :
-    if (numpy_available and isinstance(r, numpy.ndarray) ):
+    if (numpy_available and isinstance(arr, numpy.ndarray) ):
         #numpy arrays, use numpy's ctypes functions
         arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
         carr = arr.ctypes.data_as(POINTER(c_int))
     else:
         #otherwise convert using the struct module
-        carr = struct.pack('%di' % len(arr), *arr)
+        carr = struct.pack('%dc' % len(arr), *arr)
 
     _lib.TCOD_console_fill_char(con, carr)
-
+        
 def console_load_asc(con, filename) :
     _lib.TCOD_console_load_asc(con,filename)
 def console_save_asc(con, filename) :

@@ -230,7 +230,7 @@ def render_colors(first, key, mouse):
     if key.c == ord('f'): tc_fast = not tc_fast
     libtcod.console_set_default_foreground(sample_console, libtcod.white)
     libtcod.console_print(sample_console, 1, SAMPLE_SCREEN_HEIGHT - 2,
-                           "F : turn fast rendering %s" % ("off" if tc_fast else "on"))
+                           "F : turn fast rendering (python 2.6 only) %s" % ("off" if tc_fast else "on"))
 
 #############################################
 # offscreen console sample

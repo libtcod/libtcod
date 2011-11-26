@@ -1472,53 +1472,52 @@ _lib.TCOD_path_walk.restype = c_bool
 PATH_CBK_FUNC = CFUNCTYPE(c_float, c_int, c_int, c_int, c_int, py_object)
 
 def path_new_using_map(m, dcost=1.41):
-    return _lib.TCOD_path_new_using_map(c_void_p(m), c_float(dcost))
+    return (_lib.TCOD_path_new_using_map(c_void_p(m), c_float(dcost)), None)
 
 def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
-    global cbk_func
     cbk_func = PATH_CBK_FUNC(func)
-    return _lib.TCOD_path_new_using_function(w, h, cbk_func,
-                                             py_object(userdata), c_float(dcost))
+    return (_lib.TCOD_path_new_using_function(w, h, cbk_func,
+            py_object(userdata), c_float(dcost)), cbk_func)
 
 def path_compute(p, ox, oy, dx, dy):
-    return _lib.TCOD_path_compute(p, ox, oy, dx, dy)
+    return _lib.TCOD_path_compute(p[0], ox, oy, dx, dy)
 
 def path_get_origin(p):
     x = c_int()
     y = c_int()
-    _lib.TCOD_path_get_origin(p, byref(x), byref(y))
+    _lib.TCOD_path_get_origin(p[0], byref(x), byref(y))
     return x.value, y.value
 
 def path_get_destination(p):
     x = c_int()
     y = c_int()
-    _lib.TCOD_path_get_destination(p, byref(x), byref(y))
+    _lib.TCOD_path_get_destination(p[0], byref(x), byref(y))
     return x.value, y.value
 
 def path_size(p):
-    return _lib.TCOD_path_size(p)
+    return _lib.TCOD_path_size(p[0])
 
 def path_reverse(p):
-    _lib.TCOD_path_reverse(p)	
-	
+    _lib.TCOD_path_reverse(p[0])  
+
 def path_get(p, idx):
     x = c_int()
     y = c_int()
-    _lib.TCOD_path_get(p, idx, byref(x), byref(y))
+    _lib.TCOD_path_get(p[0], idx, byref(x), byref(y))
     return x.value, y.value
 
 def path_is_empty(p):
-    return _lib.TCOD_path_is_empty(p)
+    return _lib.TCOD_path_is_empty(p[0])
 
 def path_walk(p, recompute):
     x = c_int()
     y = c_int()
-    if _lib.TCOD_path_walk(p, byref(x), byref(y), c_int(recompute)):
+    if _lib.TCOD_path_walk(p[0], byref(x), byref(y), c_int(recompute)):
         return x.value, y.value
     return None,None
 
 def path_delete(p):
-    _lib.TCOD_path_delete(p)
+    _lib.TCOD_path_delete(p[0])
 
 _lib.TCOD_dijkstra_path_set.restype = c_bool
 _lib.TCOD_dijkstra_is_empty.restype = c_bool
@@ -1526,47 +1525,46 @@ _lib.TCOD_dijkstra_path_walk.restype = c_bool
 _lib.TCOD_dijkstra_get_distance.restype = c_float
 
 def dijkstra_new(m, dcost=1.41):
-    return _lib.TCOD_dijkstra_new(c_void_p(m), c_float(dcost))
+    return (_lib.TCOD_dijkstra_new(c_void_p(m), c_float(dcost)), None)
 
 def dijkstra_new_using_function(w, h, func, userdata=0, dcost=1.41):
-    global cbk_func
     cbk_func = PATH_CBK_FUNC(func)
-    return _lib.TCOD_path_dijkstra_using_function(w, h, cbk_func,
-                                             py_object(userdata), c_float(dcost))
+    return (_lib.TCOD_path_dijkstra_using_function(w, h, cbk_func,
+            py_object(userdata), c_float(dcost)), cbk_func)
 
 def dijkstra_compute(p, ox, oy):
-    _lib.TCOD_dijkstra_compute(p, c_int(ox), c_int(oy))
+    _lib.TCOD_dijkstra_compute(p[0], c_int(ox), c_int(oy))
 
 def dijkstra_path_set(p, x, y):
-    return _lib.TCOD_dijkstra_path_set(p, c_int(x), c_int(y))
+    return _lib.TCOD_dijkstra_path_set(p[0], c_int(x), c_int(y))
 
 def dijkstra_get_distance(p, x, y):
-    return _lib.TCOD_dijkstra_get_distance(p, c_int(x), c_int(y))
+    return _lib.TCOD_dijkstra_get_distance(p[0], c_int(x), c_int(y))
 
 def dijkstra_size(p):
-    return _lib.TCOD_dijkstra_size(p)
+    return _lib.TCOD_dijkstra_size(p[0])
 
 def dijkstra_reverse(p):
-    _lib.TCOD_dijkstra_reverse(p)
+    _lib.TCOD_dijkstra_reverse(p[0])
 
 def dijkstra_get(p, idx):
     x = c_int()
     y = c_int()
-    _lib.TCOD_dijkstra_get(p, c_int(idx), byref(x), byref(y))
+    _lib.TCOD_dijkstra_get(p[0], c_int(idx), byref(x), byref(y))
     return x.value, y.value
 
 def dijkstra_is_empty(p):
-    return _lib.TCOD_dijkstra_is_empty(p)
+    return _lib.TCOD_dijkstra_is_empty(p[0])
 
 def dijkstra_path_walk(p):
     x = c_int()
     y = c_int()
-    if _lib.TCOD_dijkstra_path_walk(p, byref(x), byref(y)):
+    if _lib.TCOD_dijkstra_path_walk(p[0], byref(x), byref(y)):
         return x.value, y.value
     return None,None
 
 def dijkstra_delete(p):
-    _lib.TCOD_dijkstra_delete(p)
+    _lib.TCOD_dijkstra_delete(p[0])
 
 ############################
 # bsp module

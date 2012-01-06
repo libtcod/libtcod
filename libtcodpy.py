@@ -401,7 +401,7 @@ class ConsoleBuffer:
         self.fore_r = [fore_r] * n
         self.fore_g = [fore_g] * n
         self.fore_b = [fore_b] * n
-        self.char = [char] * n
+        self.char = [ord(char)] * n
     
     def copy(self):
         # returns a copy of this ConsoleBuffer.
@@ -423,7 +423,7 @@ class ConsoleBuffer:
         self.fore_r[i] = r
         self.fore_g[i] = g
         self.fore_b[i] = b
-        self.char[i] = char
+        self.char[i] = ord(char)
     
     def set_back(self, x, y, r, g, b):
         # set the background color of one cell.
@@ -441,7 +441,7 @@ class ConsoleBuffer:
         self.fore_r[i] = fore_r
         self.fore_g[i] = fore_g
         self.fore_b[i] = fore_b
-        self.char[i] = char
+        self.char[i] = ord(char)
     
     def blit(self, dest, fill_fore=True, fill_back=True):
         # use libtcod's "fill" functions to write the buffer to a console.
@@ -456,7 +456,7 @@ class ConsoleBuffer:
 
         if fill_fore:
             _lib.TCOD_console_fill_foreground(dest, s.pack(*self.fore_r), s.pack(*self.fore_g), s.pack(*self.fore_b))
-            _lib.TCOD_console_fill_char(dest, struct.pack('%dc' % len(self.back_r), *self.char))
+            _lib.TCOD_console_fill_char(dest, s.pack(*self.char))
 
 _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
@@ -881,7 +881,7 @@ def console_fill_char(con,arr) :
         carr = arr.ctypes.data_as(POINTER(c_int))
     else:
         #otherwise convert using the struct module
-        carr = struct.pack('%dc' % len(arr), *arr)
+        carr = struct.pack('%di' % len(arr), *arr)
 
     _lib.TCOD_console_fill_char(con, carr)
         
@@ -967,6 +967,9 @@ EVENT_MOUSE=EVENT_MOUSE_MOVE|EVENT_MOUSE_PRESS|EVENT_MOUSE_RELEASE
 EVENT_ANY=EVENT_KEY|EVENT_MOUSE
 def sys_check_for_event(mask,k,m) :
     return _lib.TCOD_sys_check_for_event(c_int(mask),byref(k),byref(m))
+
+def sys_wait_for_event(mask,k,m,flush) :
+    return _lib.TCOD_sys_check_for_event(c_int(mask),byref(k),byref(m),c_bool(flush))
 
 ############################
 # line module

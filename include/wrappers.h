@@ -84,7 +84,7 @@ TCODLIB_API uint32 TCOD_console_check_for_keypress_bitfield (int flags);
 TCODLIB_API uint32 TCOD_console_wait_for_keypress_bitfield (bool flush);
 TCODLIB_API void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b);
 TCODLIB_API void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b);
-TCODLIB_API void TCOD_console_fill_char(TCOD_console_t con, char *arr);
+TCODLIB_API void TCOD_console_fill_char(TCOD_console_t con, int *arr);
 
 TCODLIB_API void TCOD_console_double_hline(TCOD_console_t con,int x,int y, int l,
 					   TCOD_bkgnd_flag_t flag);

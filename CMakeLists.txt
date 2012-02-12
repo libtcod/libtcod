@@ -57,7 +57,7 @@ ENDIF()
 
 add_subdirectory(src) #Needs to come first since samples depend on it
 add_subdirectory(samples)
-
+add_subdirectory(samples/worldgen) # WorldGen demo
 
 # For swig to work you either need to set SWIG_PROGRAM_PATH (Windows) or SWIG_SYSTEM (Everywhere else).
 # You also need to uncomment the add_subdirectory at the end of the file...

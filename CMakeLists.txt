@@ -11,6 +11,11 @@ SET(INSTALL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 SET(DEPENDENCY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies)
 SET(GUI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include/gui)
 
+OPTION(LIBTCOD_SAMPLES "Generate libtcod samples" ON)
+OPTION(SWIG_CSHARP "Generate CSharp" OFF)
+OPTION(SWIG_PYTHON "Generate Python" OFF)
+OPTION(SWIG_LUA "Generate Lua" OFF)
+
 IF(MSVC)
 	SET(LIBTCOD_NAME libtcod-VS)
 	SET(LIBTCOD_GUI_NAME libtcod-gui-VS)
@@ -56,8 +61,13 @@ ELSE()
 ENDIF()
 
 add_subdirectory(src) #Needs to come first since samples depend on it
+
+# Use -DLIBTCOD_SAMPLES=OFF if you want do disable the building of the samples (eg. library API changes).
+IF(LIBTCOD_SAMPLES)
 add_subdirectory(samples)
 add_subdirectory(samples/worldgen) # WorldGen demo
+add_subdirectory(samples/rad) # Radiosity demo
+ENDIF()
 
 # For swig to work you either need to set SWIG_PROGRAM_PATH (Windows) or SWIG_SYSTEM (Everywhere else).
 # You also need to uncomment the add_subdirectory at the end of the file...
@@ -69,9 +79,6 @@ IF(SWIG_ON)
 	SET(SWIG_SYSTEM TRUE)
 	add_subdirectory(swig)
 ENDIF()
-OPTION(SWIG_CSHARP "Generate CSharp" OFF)
-OPTION(SWIG_PYTHON "Generate Python" OFF)
-OPTION(SWIG_LUA "Generate Lua" OFF)
 
 
 # BROKEN - These generators will need work to get working...

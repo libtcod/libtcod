@@ -1065,7 +1065,6 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 			TCOD_sys_SDLtoTCOD(&ev,0);
 		}
 	}
-	SDL_WaitEvent(&ev);
 	tcod_mouse.lbutton_pressed =false;
 	tcod_mouse.rbutton_pressed =false;
 	tcod_mouse.mbutton_pressed =false;
@@ -1110,6 +1109,32 @@ TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse
 TCOD_mouse_t TCOD_mouse_get_status() {
 	return tcod_mouse;
 }
+
+
+/* classic keyboard functions (based on generic events) */
+
+TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
+	static TCOD_key_t noret={TCODK_NONE,0};
+
+	TCOD_key_t key;
+	TCOD_event_t ev = TCOD_sys_check_for_event(flags & TCOD_EVENT_KEY, &key, NULL);
+
+	if ((ev & TCOD_EVENT_KEY) == 0) return noret;
+
+	return key;
+}
+
+TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
+	static TCOD_key_t noret={TCODK_NONE,0};
+
+	TCOD_key_t key;
+	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY, &key, NULL, flush);
+
+	if ((ev & TCOD_EVENT_KEY) == 0) return noret;
+
+	return key;
+}
+
 
 void TCOD_sys_sleep_milli(uint32 milliseconds) {
 	SDL_Delay(milliseconds);

@@ -75,6 +75,14 @@ void TCODConsole::setDirty(int x, int y, int w, int h) {
 	TCOD_console_set_dirty(x,y,w,h);
 }
 
+TCOD_key_t TCODConsole::checkForKeypress(int flags) {
+	return TCOD_sys_check_for_keypress(flags);
+}
+
+TCOD_key_t TCODConsole::waitForKeypress(bool flush) {
+	return TCOD_sys_wait_for_keypress(flush);
+}
+
 bool TCODConsole::isWindowClosed() {
 	return TCOD_console_is_window_closed() != 0;
 }

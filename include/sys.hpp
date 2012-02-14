@@ -176,7 +176,7 @@ public :
 	@CEx
 		TCOD_key_t key;
 		TCOD_mouse_t mouse;
-		TCOD_key_t key = TCOD_sys_wait_for_event(TCOD_EVENT_ANY,&key,&mouse,true);
+		TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_ANY,&key,&mouse,true);
 		if ( ev == TCOD_EVENT_KEY_PRESS && key.c == 'i' ) { ... open inventory ... }	
 	*/
 	static TCOD_event_t waitForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush);
@@ -210,7 +210,7 @@ public :
 	@CEx
 		TCOD_key_t key;
 		TCOD_mouse_t mouse;
-		TCOD_key_t key = TCOD_sys_check_for_event(TCOD_EVENT_ANY,&key,&mouse);
+		TCOD_event_t ev = TCOD_sys_check_for_event(TCOD_EVENT_ANY,&key,&mouse);
 		if ( ev == TCOD_EVENT_KEY_PRESS && key.c == 'i' ) { ... open inventory ... }	
 	*/
 	static TCOD_event_t checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);

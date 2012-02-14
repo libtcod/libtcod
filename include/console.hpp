@@ -1263,11 +1263,66 @@ public :
 	@PageFather console
 	*/
 
-	/**
+/**
 	@PageName console_blocking_input
 	@PageTitle Blocking keyboard input
 	@PageFather console_input
+	@FuncDesc This function waits for the user to press a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t.
+		If the flush parameter is true, every pending keypress event is discarded, then the function wait for a new keypress.
+		If flush is false, the function waits only if there are no pending keypress events, else it returns the first event in the keyboard buffer.
+	@Cpp static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
+	@C TCOD_key_t TCOD_console_wait_for_keypress(bool flush)
+	@Py console_wait_for_keypress(flush)
+	@C# static TCOD_key_t TCODConsole::waitForKeypress(bool flush)
+	@Lua tcod.console.waitForKeypress(flush)
+	@Param flush if true, all pending keypress events are flushed from the keyboard buffer. Else, return the first available event
+	@CppEx
+		TCOD_key_t key = TCODConsole::waitForKeypress(true);
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@CEx
+		TCOD_key_t key = TCOD_console_wait_for_keypress(true);
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@PyEx
+		key = libtcod.console_wait_for_keypress(True)
+		if key.c == ord('i') : # ... open inventory ...
+	@LuaEx
+		key = tcod.console.waitForKeypress(true)
+		if key.Character == 'i' then ... open inventory ... end
 	*/
+	static TCOD_key_t waitForKeypress(bool flush);
+	/**
+	@PageName console_non_blocking_input
+	@PageTitle Non blocking keyboard input
+	@PageFather console_input
+	@FuncDesc This function checks if the user has pressed a key. It returns the code of the key pressed as well as the corresponding character. See TCOD_key_t. If the user didn't press a key, this function returns the key code TCODK_NONE (NoKey for C# and Lua).
+		<b>Note that key repeat only results in TCOD_KEY_PRESSED events.</b>
+	@Cpp static TCOD_key_t TCODConsole::checkForKeypress(int flags=TCOD_KEY_RELEASED)
+	@C TCOD_key_t TCOD_console_check_for_keypress(int flags)
+	@Py console_check_for_keypress(flags=KEY_RELEASED)
+	@C# static TCODKey TCODConsole::checkForKeypress(int flags) // Use TCODKeyStatus
+	@Lua tcod.console.checkForKeypress(flags)
+	@Param flags A filter for key events (C# and Lua in parenthesis):
+		TCOD_KEY_PRESSED (KeyPressed) : only keypress events are returned
+		TCOD_KEY_RELEASED (KeyReleased): only key release events are returnes
+		TCOD_KEY_PRESSED|TCOD_KEY_RELEASED (KeyPressed+KeyReleased): events of both types are returned.
+	@CppEx
+		TCOD_key_t key = TCODConsole::checkForKeypress();
+		if ( key.vk == TCODK_NONE ) return; // no key pressed
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@C
+		TCOD_key_t key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+		if ( key.vk == TCODK_NONE ) return; // no key pressed
+		if ( key.c == 'i' ) { ... open inventory ... }
+	@Py
+		key = libtcod.console_check_for_keypress()
+		if key.vk == libtcod.KEY_NONE return # no key pressed
+		if key.c == ord('i') : # ... open inventory ...
+	@LuaEx
+		key = tcod.console.checkForKeypress()
+		if key.KeyCode == tcod.NoKey then return end -- no key pressed
+		if key.Character == 'i' then ... open inventory ... end
+	*/
+	static TCOD_key_t checkForKeypress(int flags=TCOD_KEY_RELEASED);
 	
 	/**
 	@PageName console_non_blocking_input

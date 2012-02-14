@@ -249,6 +249,18 @@ void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
 			    int_to_color(key_color));
 }
 
+bool TCOD_console_check_for_keypress_wrapper (TCOD_key_t *holder, int flags)
+{
+  *holder = TCOD_console_check_for_keypress(flags);
+  return (holder->vk != TCODK_NONE);
+}
+
+
+void TCOD_console_wait_for_keypress_wrapper (TCOD_key_t *holder, bool flush)
+{
+  *holder = TCOD_console_wait_for_keypress(flush);
+}
+
 void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *mouse) {
 	*mouse=TCOD_mouse_get_status();
 }

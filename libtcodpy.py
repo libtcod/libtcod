@@ -800,6 +800,16 @@ def console_get_fading_color():
     return _lib.TCOD_console_get_fading_color()
 
 # handling keyboard input
+def console_wait_for_keypress(flush):
+    k=Key()
+    _lib.TCOD_console_wait_for_keypress_wrapper(byref(k),c_bool(flush))
+    return k
+
+def console_check_for_keypress(flags=KEY_RELEASED):
+    k=Key()
+    _lib.TCOD_console_check_for_keypress_wrapper(byref(k),c_int(flags))
+    return k
+
 def console_is_key_pressed(key):
     return _lib.TCOD_console_is_key_pressed(key)
 
@@ -969,7 +979,7 @@ def sys_check_for_event(mask,k,m) :
     return _lib.TCOD_sys_check_for_event(c_int(mask),byref(k),byref(m))
 
 def sys_wait_for_event(mask,k,m,flush) :
-    return _lib.TCOD_sys_check_for_event(c_int(mask),byref(k),byref(m),c_bool(flush))
+    return _lib.TCOD_sys_wait_for_event(c_int(mask),byref(k),byref(m),c_bool(flush))
 
 ############################
 # line module

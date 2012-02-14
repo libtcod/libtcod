@@ -102,6 +102,14 @@ TCOD_console_t TCOD_console_new(int w, int h)  {
 	}
 }
 
+TCOD_key_t TCOD_console_check_for_keypress(int flags) {
+	return TCOD_sys_check_for_keypress(flags);
+}
+
+TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
+	return TCOD_sys_wait_for_keypress(flush);
+}
+
 bool TCOD_console_is_window_closed() {
 	return windowClosed;
 }

@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.5.1 : ???? ??? ??
+1.5.1 : 2012 Feb 16
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
   replaced with TCOD_sys_check_for_event and TCOD_sys_wait_for_event
 X source width and height can be 0 in TCODConsole::blit to blit the whole console 

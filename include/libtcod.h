@@ -111,7 +111,7 @@ typedef unsigned long uintptr;
 
 #define TCOD_HEXVERSION 0x010501
 #define TCOD_STRVERSION "1.5.1"
-#define TCOD_TECHVERSION 0x01050101
+#define TCOD_TECHVERSION 0x01050103
 
 /* bool support for C */
 #ifndef __cplusplus

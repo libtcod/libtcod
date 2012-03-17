@@ -42,6 +42,9 @@ except ImportError:
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
     LINUX=True
+elif sys.platform.find('darwin') != -1:
+    _lib = ctypes.cdll['./libtcod.dylib']
+    MAC = True
 else:
     try:
         _lib = ctypes.cdll['./libtcod-mingw.dll']
@@ -112,6 +115,11 @@ class Color(Structure):
         yield self.r
         yield self.g
         yield self.b
+
+# Should be valid on any platform, check it!  Has to be done after Color is defined.
+if MAC:
+    from cprotos import setup_protos
+    setup_protos(_lib)
 
 _lib.TCOD_color_equals.restype = c_bool
 _lib.TCOD_color_multiply.restype = Color
@@ -452,11 +460,11 @@ class ConsoleBuffer:
         s = struct.Struct('%di' % len(self.back_r))
 
         if fill_back:
-            _lib.TCOD_console_fill_background(dest, s.pack(*self.back_r), s.pack(*self.back_g), s.pack(*self.back_b))
+            _lib.TCOD_console_fill_background(dest, (c_int * len(self.back_r))(*self.back_r), (c_int * len(self.back_g))(*self.back_g), (c_int * len(self.back_b))(*self.back_b))
 
         if fill_fore:
-            _lib.TCOD_console_fill_foreground(dest, s.pack(*self.fore_r), s.pack(*self.fore_g), s.pack(*self.fore_b))
-            _lib.TCOD_console_fill_char(dest, s.pack(*self.char))
+            _lib.TCOD_console_fill_foreground(dest, (c_int * len(self.fore_r))(*self.fore_r), (c_int * len(self.fore_g))(*self.fore_g), (c_int * len(self.fore_b))(*self.fore_b))
+            _lib.TCOD_console_fill_char(dest, (c_int * len(self.char))(*self.char))
 
 _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
@@ -745,16 +753,16 @@ def console_get_alignment(con):
     return _lib.TCOD_console_get_alignment(con)
 
 def console_print(con, x, y, fmt):
-    _lib.TCOD_console_print(con, x, y, fmt)
+    _lib.TCOD_console_print(c_void_p(con), x, y, fmt)
 
 def console_print_ex(con, x, y, flag, alignment, fmt):
-    _lib.TCOD_console_print_ex(con, x, y, flag, alignment, fmt)
+    _lib.TCOD_console_print_ex(c_void_p(con), x, y, flag, alignment, fmt)
 
 def console_print_rect(con, x, y, w, h, fmt):
-    return _lib.TCOD_console_print_rect(con, x, y, w, h, fmt)
+    return _lib.TCOD_console_print_rect(c_void_p(con), x, y, w, h, fmt)
 
 def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
-    return _lib.TCOD_console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt)
+    return _lib.TCOD_console_print_rect_ex(c_void_p(con), x, y, w, h, flag, alignment, fmt)
 
 def console_get_height_rect(con, x, y, w, h, fmt):
     return _lib.TCOD_console_get_height_rect(con, x, y, w, h, fmt)
@@ -769,7 +777,7 @@ def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
 def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
-    _lib.TCOD_console_print_frame(con, x, y, w, h, c_int(clear), flag, fmt)
+    _lib.TCOD_console_print_frame(c_void_p(con), x, y, w, h, c_int(clear), flag, fmt)
 
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
@@ -854,11 +862,10 @@ def console_fill_foreground(con,r,g,b) :
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
     else:
-        # otherwise convert using the struct module
-        s = struct.Struct('%di' % len(r))
-        cr = s.pack(*r)
-        cg = s.pack(*g)
-        cb = s.pack(*b)
+        # otherwise convert using ctypes arrays
+        cr = (c_int * len(r))(*r)
+        cg = (c_int * len(g))(*g)
+        cb = (c_int * len(b))(*b)
 
     _lib.TCOD_console_fill_foreground(con, cr, cg, cb)
 
@@ -876,11 +883,10 @@ def console_fill_background(con,r,g,b) :
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
     else:
-        # otherwise convert using the struct module
-        s = struct.Struct('%di' % len(r))
-        cr = s.pack(*r)
-        cg = s.pack(*g)
-        cb = s.pack(*b)
+        # otherwise convert using ctypes arrays
+        cr = (c_int * len(r))(*r)
+        cg = (c_int * len(g))(*g)
+        cb = (c_int * len(b))(*b)
 
     _lib.TCOD_console_fill_background(con, cr, cg, cb)
 
@@ -1163,7 +1169,8 @@ class _CValue(Union):
 
 _CFUNC_NEW_STRUCT = CFUNCTYPE(c_uint, c_void_p, c_char_p)
 _CFUNC_NEW_FLAG = CFUNCTYPE(c_uint, c_char_p)
-_CFUNC_NEW_PROPERTY = CFUNCTYPE(c_uint, c_char_p, c_int, _CValue)
+# JBRFIXME - POINTER(_CValue) is a guess, was _CValue, which crashes python in ctypes
+_CFUNC_NEW_PROPERTY = CFUNCTYPE(c_uint, c_char_p, c_int, POINTER(_CValue))
 
 class _CParserListener(Structure):
     _fields_=[('new_struct', _CFUNC_NEW_STRUCT),
@@ -1313,7 +1320,7 @@ def parser_get_color_property(parser, name):
 
 def parser_get_dice_property(parser, name):
     d = Dice()
-    _lib.TCOD_parser_get_dice_property_py(parser, name, byref(d))
+    _lib.TCOD_parser_get_dice_property_py(c_void_p(parser), name, byref(d))
     return d
 
 def parser_get_list_property(parser, name, typ):
@@ -1393,10 +1400,10 @@ NOISE_SIMPLEX = 2
 NOISE_WAVELET = 4
 
 _NOISE_PACKER_FUNC = (None,
-                      struct.Struct("1f").pack,
-                      struct.Struct("2f").pack,
-                      struct.Struct("3f").pack,
-                      struct.Struct("4f").pack,
+                      (c_float * 1),
+                      (c_float * 2),
+                      (c_float * 3),
+                      (c_float * 4),
                       )
 
 def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, random=0):

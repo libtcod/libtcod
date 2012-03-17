@@ -1163,14 +1163,14 @@ class _CValue(Union):
               ('f',c_float),
               ('s',c_char_p),
               ('col',Color),
-              ('dice',Dice),
+              # JBR crashes in ctypes if this is present
+              #('dice',Dice),
               ('custom',c_void_p),
               ]
 
 _CFUNC_NEW_STRUCT = CFUNCTYPE(c_uint, c_void_p, c_char_p)
 _CFUNC_NEW_FLAG = CFUNCTYPE(c_uint, c_char_p)
-# JBRFIXME - POINTER(_CValue) is a guess, was _CValue, which crashes python in ctypes
-_CFUNC_NEW_PROPERTY = CFUNCTYPE(c_uint, c_char_p, c_int, POINTER(_CValue))
+_CFUNC_NEW_PROPERTY = CFUNCTYPE(c_uint, c_char_p, c_int, _CValue)
 
 class _CParserListener(Structure):
     _fields_=[('new_struct', _CFUNC_NEW_STRUCT),

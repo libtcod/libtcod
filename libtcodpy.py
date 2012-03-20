@@ -1162,9 +1162,9 @@ class _CValue(Union):
               ('i',c_int),
               ('f',c_float),
               ('s',c_char_p),
-              ('col',Color),
-              # JBR crashes in ctypes if this is present
-              #('dice',Dice),
+              # JBR03192012 See http://bugs.python.org/issue14354 for why these are not defined as their actual types
+              ('col',c_uint8 * 3),
+              ('dice',c_int * 4),
               ('custom',c_void_p),
               ]
 
@@ -1281,9 +1281,11 @@ def parser_run(parser, filename, listener=0):
                  TYPE_VALUELIST15 >= typ >= TYPE_VALUELIST00:
                  return listener.new_property(name, typ, value.s)
             elif typ == TYPE_COLOR:
-                return listener.new_property(name, typ, value.col)
+                col = cast(value.col, POINTER(Color)).contents
+                return listener.new_property(name, typ, col)
             elif typ == TYPE_DICE:
-                return listener.new_property(name, typ, value.dice)
+                dice = cast(value.dice, POINTER(Dice)).contents
+                return listener.new_property(name, typ, dice)
             elif typ & TYPE_LIST:
                 return listener.new_property(name, typ,
                                         _convert_TCODList(value.custom, typ & 0xFF))

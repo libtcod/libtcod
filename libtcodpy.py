@@ -753,19 +753,19 @@ def console_get_alignment(con):
     return _lib.TCOD_console_get_alignment(con)
 
 def console_print(con, x, y, fmt):
-    _lib.TCOD_console_print(c_void_p(con), x, y, fmt)
+    _lib.TCOD_console_print(c_void_p(con), x, y, c_char_p(fmt))
 
 def console_print_ex(con, x, y, flag, alignment, fmt):
-    _lib.TCOD_console_print_ex(c_void_p(con), x, y, flag, alignment, fmt)
+    _lib.TCOD_console_print_ex(c_void_p(con), x, y, flag, alignment, c_char_p(fmt))
 
 def console_print_rect(con, x, y, w, h, fmt):
-    return _lib.TCOD_console_print_rect(c_void_p(con), x, y, w, h, fmt)
+    return _lib.TCOD_console_print_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
 
 def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
-    return _lib.TCOD_console_print_rect_ex(c_void_p(con), x, y, w, h, flag, alignment, fmt)
+    return _lib.TCOD_console_print_rect_ex(c_void_p(con), x, y, w, h, flag, alignment, c_char_p(fmt))
 
 def console_get_height_rect(con, x, y, w, h, fmt):
-    return _lib.TCOD_console_get_height_rect(con, x, y, w, h, fmt)
+    return _lib.TCOD_console_get_height_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
 
 def console_rect(con, x, y, w, h, clr, flag=BKGND_DEFAULT):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
@@ -777,7 +777,7 @@ def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
 def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
-    _lib.TCOD_console_print_frame(c_void_p(con), x, y, w, h, c_int(clear), flag, fmt)
+    _lib.TCOD_console_print_frame(c_void_p(con), x, y, w, h, c_int(clear), flag, c_char_p(fmt))
 
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)

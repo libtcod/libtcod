@@ -130,7 +130,7 @@ def setup_protos(lib):
     lib.TCOD_color_scale_HSV .argtypes=[POINTER(Color), c_float , c_float ]
 
     lib.TCOD_color_gen_map.restype=c_void
-    lib.TCOD_color_gen_map.argtypes=[POINTER(Color), c_int, POINTER(c_int), POINTER(c_int)]
+    lib.TCOD_color_gen_map.argtypes=[POINTER(Color), c_int, POINTER(Color), POINTER(c_int)]
 
     lib.TCOD_console_init_root.restype=c_void
     lib.TCOD_console_init_root.argtypes=[c_int, c_int, c_char_p , c_bool , c_uint ]

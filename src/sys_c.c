@@ -679,11 +679,12 @@ BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
 	return TRUE;
 }
 #else
-	#ifndef TCOD_MACOSX
+// JBR03202012 Presumably there was a reason for this being if !MACOSOX, but it works fine for me
+//	#ifndef TCOD_MACOSX
 	void __attribute__ ((constructor)) DllMain() {
 		TCOD_sys_startup();
 	}
-	#endif
+//	#endif
 #endif
 
 /* dynamic library support */

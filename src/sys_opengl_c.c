@@ -53,7 +53,7 @@ typedef  enum
 	BackCol,
 	ConsoleDataEnumSize
 } ConsoleDataEnum;
-const int ConsoleDataAlignment[3] = {1, 3, 3 };
+const int ConsoleDataAlignment[3] = {4, 3, 3 };
 
 static const char *TCOD_con_vertex_shader =
 #ifndef NDEBUG
@@ -95,7 +95,7 @@ static const char *TCOD_con_pixel_shader =
 
 "   vec2 address = vec2(conPos.x*termcoef.x,conPos.y*termcoef.y); "
 "	address=address+vec2(0.001, 0.001); "
-"   float inchar = texture2D(term, address).r*256.0; "         /* character */
+"   float inchar = texture2D(term, address).r*256.0 + texture2D(term,address.g) * 256.0 * 256.0; "         /* character */
 "   vec4 tcharfcol = texture2D(termfcol, address); "           /* front color */
 "   vec4 tcharbcol = texture2D(termbcol, address); "           /* back color */
 

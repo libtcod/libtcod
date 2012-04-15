@@ -53,6 +53,10 @@ typedef  enum
 	BackCol,
 	ConsoleDataEnumSize
 } ConsoleDataEnum;
+/* JBR04152012 - Made Character a 4 byte value here to support extended characters like other renderers.
+   Seems like it should be possible to make it a two byte value using GL_UNSIGNED_SHORT_5_6_5_REV in updateTex, 
+   but I can't seem to get the math right in the shader code, it always loses precision somewhere,
+   resulting in incorrect characters. */
 const int ConsoleDataAlignment[3] = {4, 3, 3 };
 
 static const char *TCOD_con_vertex_shader =
@@ -95,7 +99,8 @@ static const char *TCOD_con_pixel_shader =
 
 "   vec2 address = vec2(conPos.x*termcoef.x,conPos.y*termcoef.y); "
 "	address=address+vec2(0.001, 0.001); "
-"   float inchar = texture2D(term, address).r*256.0 + texture2D(term,address.g) * 256.0 * 256.0; "         /* character */
+"   vec4 charvec = texture2D(term,address);"
+"   float inchar = (charvec.r * 255.0) + (charvec.g * 255.0 * 256.0);"                         /* character */
 "   vec4 tcharfcol = texture2D(termfcol, address); "           /* front color */
 "   vec4 tcharbcol = texture2D(termbcol, address); "           /* back color */
 
@@ -418,6 +423,7 @@ static bool updateTex(ConsoleDataEnum dataType) {
 		break;
 	case 4:
 		Type = GL_RGBA;
+		break;
 	}
     /*glPixelStorei(GL_UNPACK_ALIGNMENT, 1); */
 	DBGCHECKGL(glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, conwidth, conheight, Type, GL_UNSIGNED_BYTE, data[dataType]));
@@ -436,11 +442,11 @@ static void updateChar(ConsoleDataEnum dataType, int BufferPos, unsigned char *c
 
 }
 
-void TCOD_opengl_putchar_ex(int x, int y, unsigned char c, TCOD_color_t fore, TCOD_color_t back) {
+void TCOD_opengl_putchar_ex(int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
 	int loc = x+y*conwidth;
 
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
-		updateChar(Character, loc, &c, ConsoleDataAlignment[Character], 0);
+		updateChar(Character, loc, (char *)&c, ConsoleDataAlignment[Character], 0);
 		updateChar(ForeCol, loc, &fore.r, ConsoleDataAlignment[ForeCol], 0);
 	}
 	updateChar(BackCol, loc, &back.r, ConsoleDataAlignment[BackCol], 0);

@@ -557,7 +557,7 @@ void TCOD_sys_startup() {
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
-	if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) < 0 ) TCOD_fatal_nopar("SDL : cannot initialize");
+	TCOD_IFNOT(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) >= 0 ) return;
 #ifndef	TCOD_WINDOWS
 	/* not needed and might crash on windows */
 	atexit(SDL_Quit);
@@ -752,7 +752,6 @@ void TCOD_sys_save_screenshot(const char *filename) {
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
 	bool mouseOn=SDL_ShowCursor(-1);
-	TCOD_ctx.fullscreen=fullscreen;
 	/*
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	SDL_InitSubSystem(SDL_INIT_VIDEO);
@@ -762,8 +761,9 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	*/
 	if ( fullscreen ) {
 		find_resolution();
-		screen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
-		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot set fullscreen video mode");
+		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
+		TCOD_IFNOT ( newscreen != NULL ) return;
+		screen=newscreen;
 		SDL_ShowCursor(mouseOn ? 1:0);
 		TCOD_ctx.actual_fullscreen_width=screen->w;
 		TCOD_ctx.actual_fullscreen_height=screen->h;
@@ -775,12 +775,14 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 		printf ("flags : %x bpp : %d bitspp : %d\n",screen->flags, screen->format->BytesPerPixel, screen->format->BitsPerPixel);
 		*/
 	} else {
-		screen=SDL_SetVideoMode(TCOD_ctx.root->w*TCOD_ctx.font_width,TCOD_ctx.root->h*TCOD_ctx.font_height,32,0);
-		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
+		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.root->w*TCOD_ctx.font_width,TCOD_ctx.root->h*TCOD_ctx.font_height,32,0);
+		TCOD_IFNOT( newscreen != NULL ) return;
+		screen=newscreen;
 		SDL_ShowCursor(mouseOn ? 1:0);
 		TCOD_ctx.fullscreen_offsetx=0;
 		TCOD_ctx.fullscreen_offsety=0;
 	}
+	TCOD_ctx.fullscreen=fullscreen;
 	/* SDL_WM_SetCaption(TCOD_ctx.window_title,NULL); */
 	oldFade=-1; /* to redraw the whole screen */
 	SDL_UpdateRect(screen, 0, 0, 0, 0);

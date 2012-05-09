@@ -280,7 +280,10 @@ void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int fla
 	}
 	if ( TCOD_ctx.font_tcod_layout ) TCOD_ctx.font_in_row=true;
 	check_ascii_to_tcod();
+	/*
+	screw up things on linux64. apparently, useless
 	TCOD_sys_load_font();
+	*/
 }
 
 static void find_resolution() {

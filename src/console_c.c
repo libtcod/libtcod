@@ -748,7 +748,7 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 					dat->fore=oldFore;
 					dat->back=oldBack;
 				} else {
-					if (! count_only) TCOD_console_put_char(con,cx,cy,(unsigned char)(*c),flag);
+					if (! count_only) TCOD_console_put_char(con,cx,cy,(int)(*c),flag);
 					cx++;
 				}
 				c++;
@@ -951,7 +951,7 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 					dat->fore=oldFore;
 					dat->back=oldBack;
 				} else {
-					if (! count_only) TCOD_console_put_char(con,cx,cy,(unsigned char)(*c),flag);
+					if (! count_only) TCOD_console_put_char(con,cx,cy,(int)(*c),flag);
 					cx++;
 				}
 				c++;

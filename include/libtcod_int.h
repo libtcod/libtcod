@@ -102,6 +102,8 @@ typedef struct {
 	char window_title[512];
 	/* ascii code to tcod layout converter */
 	int *ascii_to_tcod;
+	/* whether each character in the font is a colored tile */
+	bool *colored;
 	/* the root console */
 	TCOD_console_data_t *root;
 	/* nb chars in the font */

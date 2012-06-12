@@ -98,9 +98,16 @@ void render_colors(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	// put random text (for performance tests) 
 	for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++) {
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+			int c;
 			TCODColor col=sampleConsole.getCharBackground(x,y);
 			col=TCODColor::lerp(col,TCODColor::black,0.5f);
-			int c=TCODRandom::getInstance()->getInt('a','z');
+			// use colored character 255 on first and last lines
+			if ( y == 0 || y == SAMPLE_SCREEN_HEIGHT-1) {
+				c=255;
+			} else {
+				c=TCODRandom::getInstance()->getInt('a','z');
+			}
+			
 			sampleConsole.setDefaultForeground(col);
 			sampleConsole.putChar(x,y,c,TCOD_BKGND_NONE);
 		}

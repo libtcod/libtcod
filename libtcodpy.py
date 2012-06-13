@@ -39,6 +39,10 @@ try:  #import NumPy if available
 except ImportError:
     numpy_available = False
 
+LINUX=False
+MAC=False
+MINGW=False
+MSVC=False
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
     LINUX=True

@@ -65,11 +65,12 @@ add_subdirectory(src) #Needs to come first since samples depend on it
 # Use -DLIBTCOD_SAMPLES=OFF if you want do disable the building of the samples (eg. library API changes).
 IF(LIBTCOD_SAMPLES)
 add_subdirectory(samples)
-add_subdirectory(samples/worldgen) # WorldGen demo
-add_subdirectory(samples/rad) # Radiosity demo
 add_subdirectory(samples/frost) # Frost effect demo
-add_subdirectory(samples/weather) # Weather + Day/Night demo
+add_subdirectory(samples/navier) # Navier demo
+add_subdirectory(samples/rad) # Radiosity demo
 add_subdirectory(samples/ripples) # Water ripples demo
+add_subdirectory(samples/weather) # Weather + Day/Night demo
+add_subdirectory(samples/worldgen) # WorldGen demo
 ENDIF()
 
 # For swig to work you either need to set SWIG_PROGRAM_PATH (Windows) or SWIG_SYSTEM (Everywhere else).

@@ -104,7 +104,7 @@ static const char *footer1[] = {
 "        z = libtcod.heightmap_get_value(hm,x,y)\n"
 "        val=int(z*255) & 0xFF\n"
 "        c=libtcod.Color(val,val,val)\n"
-"        libtcod.console_set_back(None,x,y,c,libtcod.BKGND_SET)\n"
+"        libtcod.console_set_char_background(None,x,y,c,libtcod.BKGND_SET)\n"
 "libtcod.console_flush()\n"
 "libtcod.console_wait_for_keypress(True)\n",
 };
@@ -118,7 +118,7 @@ static const char *footer2[] = {
 "\t\t\tfloat z = TCOD_heightmap_get_value(hm,x,y);\n"
 "\t\t\tuint8 val=(uint8)(z*255);\n"
 "\t\t\tTCOD_color_t c={val,val,val};\n"
-"\t\t\tTCOD_console_set_back(NULL,x,y,c,TCOD_BKGND_SET);\n"
+"\t\t\tTCOD_console_set_char_background(NULL,x,y,c,TCOD_BKGND_SET);\n"
 "\t\t}\n"
 "\t}\n"
 "\tTCOD_console_flush();\n"
@@ -1074,7 +1074,7 @@ const char *VoronoiOperation::getCode(CodeType type) {
 				"\t\tTCOD_heightmap_t *tmp =TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n"
 				"\t\tTCOD_heightmap_add_voronoi(tmp,%d,%d,coef,rnd);\n"
 				"\t\tTCOD_heightmap_normalize(tmp,0.0f,1.0f);\n"
-				"\t\tTCOD_heightmap_add(hm,tmp,hm);\n"
+				"\t\tTCOD_heightmap_add_hm(hm,tmp,hm);\n"
 				"\t\tTCOD_heightmap_delete(tmp);\n"
 				"\t}\n",
 				coefstr,nbPoints,nbCoef
@@ -1098,7 +1098,7 @@ const char *VoronoiOperation::getCode(CodeType type) {
 				"    tmp =libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
 				"    libtcod.heightmap_add_voronoi(tmp,%d,%d,coef,rnd)\n"
 				"    libtcod.heightmap_normalize(tmp)\n"
-				"    libtcod.heightmap_add(hm,tmp,hm)\n"
+				"    libtcod.heightmap_add_hm(hm,tmp,hm)\n"
 				"    libtcod.heightmap_delete(tmp)\n",
 				coefstr,nbPoints,nbCoef
 				);

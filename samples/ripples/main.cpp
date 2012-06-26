@@ -109,9 +109,11 @@ int main (int argc, char *argv[]) {
 	rippleManager = new RippleManager(&waterMap);
 	
 	while (! TCODConsole::isWindowClosed()) {
-		//	read keyboard
-		TCOD_key_t k=TCODConsole::checkForKeypress(TCOD_KEY_PRESSED|TCOD_KEY_RELEASED);
-		TCOD_mouse_t mouse=TCODMouse::getStatus();
+		TCOD_key_t k;
+		TCOD_mouse_t mouse;
+
+		TCODSystem::checkForEvent(TCOD_EVENT_KEY|TCOD_EVENT_MOUSE, &k, &mouse);
+
 		if ( k.vk == TCODK_PRINTSCREEN ) {
 			// screenshot
 			if (! k.pressed ) TCODSystem::saveScreenshot(NULL);

@@ -229,7 +229,7 @@ void get_from_UI ( float * d, float * u, float * v, float elapsed, TCOD_key_t k,
 		u[i] = v[i] = d[i] = 0.0f;
 	}
 
-	if ( !mouse.lbutton && ! mouse.rbutton ) return;
+	if ( !mouse.lbutton && !mouse.rbutton ) return;
 
 	i = mouse.cx*2;
 	j = mouse.cy*2;
@@ -284,9 +284,10 @@ int main (int argc, char *argv[]) {
 	init();
 	
 	while (! TCODConsole::isWindowClosed()) {
-		//	read keyboard
-		TCOD_key_t k=TCODConsole::checkForKeypress(TCOD_KEY_PRESSED|TCOD_KEY_RELEASED);
-		TCOD_mouse_t mouse=TCODMouse::getStatus();
+		TCOD_key_t k;
+		TCOD_mouse_t mouse;
+
+		TCODSystem::checkForEvent(TCOD_EVENT_KEY|TCOD_EVENT_MOUSE, &k, &mouse);
 /*
 		v_prev[IX(N/2,0)] = 1.0f;
 		u_prev[IX(N/3,N/3)]=1.0f;

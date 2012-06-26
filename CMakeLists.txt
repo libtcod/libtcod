@@ -67,6 +67,7 @@ IF(LIBTCOD_SAMPLES)
 add_subdirectory(samples)
 add_subdirectory(samples/worldgen) # WorldGen demo
 add_subdirectory(samples/rad) # Radiosity demo
+add_subdirectory(samples/frost) # Frost effect demo
 ENDIF()
 
 # For swig to work you either need to set SWIG_PROGRAM_PATH (Windows) or SWIG_SYSTEM (Everywhere else).

@@ -21,6 +21,8 @@ SET(LIBTCOD_SAMPLE_C_SRC samples_c.c)
 SET(LIBTCOD_SAMPLE_CPP_SRC samples_cpp.cpp)
 SET(LIBTCOD_HP_TOOL_SRC hmtool/operation.cpp hmtool/hmtool.cpp)
 
+# samples_c.c needs SDL/SDL.h, so we need the include dir
+include_directories(${SDL_INCLUDE_DIR})
 add_executable(samples_c ${LIBTCOD_SAMPLE_C_SRC})
 target_link_libraries(samples_c ${LIBTCOD_NAME}) 
 

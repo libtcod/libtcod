@@ -30,7 +30,7 @@
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifdef __linux
+#if defined ( __linux ) || defined ( __FreeBSD__ )
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>

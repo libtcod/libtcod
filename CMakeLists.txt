@@ -50,11 +50,26 @@ if(MSVC OR MINGW)
 	LINK_DIRECTORIES(${DEPENDENCY_DIR}/libpng-1.2.31/lib/${LIB_DIR}/ ${DEPENDENCY_DIR}/SDL-1.2.12/lib/${LIB_DIR}/ 
 					${DEPENDENCY_DIR}/zlib-1.2.3/lib/${LIB_DIR}/)
 ELSE()
+	find_package(X11 REQUIRED)
 	find_package(SDL REQUIRED)
 	find_package(PNG REQUIRED)
 	find_package(ZLIB REQUIRED)
 	find_package(Threads REQUIRED)
 	find_library(M_LIB m)
+	set(EXTERNAL_LIBS ${X11_LIBRARIES}
+			  ${SDL_LIBRARY} # this sucks, it's LIBRARY not LIBRARIES
+			  ${PNG_LIBRARIES}
+			  ${ZLIB_LIBRARIES}
+			  ${CMAKE_THREAD_LIBS_INIT} # this comes from find_package(Threads ..)
+			  ${M_LIB_LIBRARIES}
+			  ${OPENGL_LIBRARIES})
+	set(EXTERNAL_INCLUDES ${X11_INCLUDE_DIRS}
+			      ${SDL_INCLUDE_DIR} # again, singular...
+			      ${PNG_INCLUDE_DIRS}
+			      ${ZLIB_INCLUDE_DIRS}
+			      ${M_LIB_INCLUDE_DIRS}
+			      ${X11_INCLUDE_DIRS}
+			      ${OPENGL_INCLUDE_DIRS})
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 		find_library(EFENCE_LIBRARY efence PATHS /usr/lib /usr/local/lib)
 	ENDIF()

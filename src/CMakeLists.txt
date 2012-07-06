@@ -50,11 +50,12 @@ SET(LIBTCOD_GUI_SRC gui/button.cpp gui/container.cpp gui/flatlist.cpp gui/hbox.c
 
 # Linux wants seperate C and C++ libraries.
 IF(UNIX AND NOT APPLE)
+	include_directories( ${EXTERNAL_INCLUDES} )
 	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC})
-	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} ${SDL_NAME} ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} ${EFENCE_LIBRARY})
+	target_link_libraries(${LIBTCOD_NAME} ${EXTERNAL_LIBS} ${EFENCE_LIBRARY})
 
 	add_library(${LIBTCOD_CPP_NAME} SHARED ${LIBTCOD_CPP_SRC})
-	target_link_libraries(${LIBTCOD_CPP_NAME} ${LIBTCOD_NAME} ${PNG_NAME} ${SDL_NAME} ${ZLIB_NAME} ${OPENGL_LIBRARY} ${M_LIB} ${EFENCE_LIBRARY})
+	target_link_libraries(${LIBTCOD_CPP_NAME} ${LIBTCOD_NAME} ${EXTERNAL_LIBS} ${EFENCE_LIBRARY})
 ELSE()
 	add_library(${LIBTCOD_NAME} SHARED ${LIBTCOD_C_SRC} ${LIBTCOD_CPP_SRC})
 	target_link_libraries(${LIBTCOD_NAME} ${PNG_NAME} ${SDL_NAME} ${ZLIB_NAME} ${OPENGL_LIBRARY}) 

@@ -205,43 +205,13 @@ void TCOD_sys_load_font() {
 		fontKeyCol.r=*((pixel)+charmap->format->Rshift/8);
 		fontKeyCol.g=*((pixel)+charmap->format->Gshift/8);
 		fontKeyCol.b=*((pixel)+charmap->format->Bshift/8);
-		/* convert greyscale to font with alpha layer */
-		if ( TCOD_ctx.font_greyscale ) {
-			bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
-			/* convert the surface to 32 bits if needed */
-			if ( charmap->format->BytesPerPixel != 4 ) {
-				SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
-				SDL_BlitSurface(charmap,NULL,temp,NULL);
-				SDL_FreeSurface(charmap);
-				charmap=temp;
-			}
-			/* fill the surface with white, use alpha layer for characters */
-			for (x=0; x < charmap->w; x ++ ) {
-				for (y=0;y < charmap->h; y++ ) {
-					Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
-					Uint8 r=*((pixel)+charmap->format->Rshift/8);
-					*((pixel)+charmap->format->Ashift/8) = (invert ? 255-r : r);
-					*((pixel)+charmap->format->Rshift/8)=255;
-					*((pixel)+charmap->format->Gshift/8)=255;
-					*((pixel)+charmap->format->Bshift/8)=255;
-				}
-			}
-		} else if ( charmap->format->BytesPerPixel == 4 ) {
+		if ( ! TCOD_ctx.font_greyscale && charmap->format->BytesPerPixel == 4 ) {
 			/* 32 bits font but alpha layer not used. convert to 24 bits (faster) */
 			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
 			charmap=temp;
 		}
-	}
-	sdl_key=SDL_MapRGB(charmap->format,fontKeyCol.r,fontKeyCol.g,fontKeyCol.b);
-	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
-	nrgb_mask = ~ rgb_mask;
-	sdl_key &= rgb_mask; /* remove the alpha part */
-	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
-	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
-		charcols[i]=fontKeyCol;
-		first_draw[i]=true;
 	}
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
@@ -269,6 +239,55 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
+
+	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
+	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
+		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
+		/* convert the surface to 32 bits if needed */
+		if ( charmap->format->BytesPerPixel != 4 ) {
+			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
+			SDL_BlitSurface(charmap,NULL,temp,NULL);
+			SDL_FreeSurface(charmap);
+			charmap=temp;
+		}
+		for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
+			int cx,cy;
+			cx=(i%TCOD_ctx.fontNbCharHoriz);
+			cy=(i/TCOD_ctx.fontNbCharHoriz);			
+			/* fill the surface with white, use alpha layer for characters */
+			for (x=cx*TCOD_ctx.font_width; x < (cx+1)*TCOD_ctx.font_width; x ++ ) {
+				for (y=cy*TCOD_ctx.font_height;y < (cy+1)*TCOD_ctx.font_height; y++ ) {
+					if ( ! TCOD_ctx.colored[i]) {
+						Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
+						Uint8 r=*((pixel)+charmap->format->Rshift/8);
+						*((pixel)+charmap->format->Ashift/8) = (invert ? 255-r : r);
+						*((pixel)+charmap->format->Rshift/8)=255;
+						*((pixel)+charmap->format->Gshift/8)=255;
+						*((pixel)+charmap->format->Bshift/8)=255;
+					} else {
+						Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
+						Uint8 r=*((pixel)+charmap->format->Rshift/8);
+						Uint8 g=*((pixel)+charmap->format->Gshift/8);
+						Uint8 b=*((pixel)+charmap->format->Bshift/8);
+						if ( r == fontKeyCol.r && g == fontKeyCol.g && b == fontKeyCol.b ) {
+							*((pixel)+charmap->format->Ashift/8) = 0;
+						} else {
+							*((pixel)+charmap->format->Ashift/8) = 255;							
+						}
+					}
+				}
+			}
+		}
+	}
+	sdl_key=SDL_MapRGB(charmap->format,fontKeyCol.r,fontKeyCol.g,fontKeyCol.b);
+	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
+	nrgb_mask = ~ rgb_mask;
+	sdl_key &= rgb_mask; /* remove the alpha part */
+	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
+	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
+		charcols[i]=fontKeyCol;
+		first_draw[i]=true;
+	}
 	check_ascii_to_tcod();
 	if (!TCOD_ctx.font_tcod_layout) {
 		/* apply standard ascii mapping */

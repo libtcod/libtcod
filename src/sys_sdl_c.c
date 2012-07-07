@@ -169,13 +169,14 @@ void TCOD_sys_load_font() {
 	check_ascii_to_tcod();
 	/* figure out what kind of font we have */
 	/* check if the alpha layer is actually used */
-	if ( charmap->format->BytesPerPixel == 4 )
-	for (x=0; !hasTransparent && x < charmap->w; x ++ ) {
-		for (y=0;!hasTransparent && y < charmap->h; y++ ) {
-			Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
-			Uint8 alpha=*((pixel)+charmap->format->Ashift/8);
-			if ( alpha < 255 ) {
-				hasTransparent=true;
+	if ( charmap->format->BytesPerPixel == 4 ) {
+		for (x=0; !hasTransparent && x < charmap->w; x ++ ) {
+			for (y=0;!hasTransparent && y < charmap->h; y++ ) {
+				Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
+				Uint8 alpha=*((pixel)+charmap->format->Ashift/8);
+				if ( alpha < 255 ) {
+					hasTransparent=true;
+				}
 			}
 		}
 	} else if ( charmap->format->BytesPerPixel != 3 ) {
@@ -186,7 +187,7 @@ void TCOD_sys_load_font() {
 		charmap=temp;
 	}
 	if (! hasTransparent ) {
-		/* 24 bit font. check if greyscale */
+		/* alpha layer not used */
 		int x,y,keyx,keyy;
         Uint8 *pixel;
 		/* the key color is found on the character corresponding to space ' ' */
@@ -207,13 +208,14 @@ void TCOD_sys_load_font() {
 		/* convert greyscale to font with alpha layer */
 		if ( TCOD_ctx.font_greyscale ) {
 			bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
-			/* convert it to 32 bits if needed */
+			/* convert the surface to 32 bits if needed */
 			if ( charmap->format->BytesPerPixel != 4 ) {
 				SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
 				SDL_BlitSurface(charmap,NULL,temp,NULL);
 				SDL_FreeSurface(charmap);
 				charmap=temp;
 			}
+			/* fill the surface with white, use alpha layer for characters */
 			for (x=0; x < charmap->w; x ++ ) {
 				for (y=0;y < charmap->h; y++ ) {
 					Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
@@ -224,8 +226,8 @@ void TCOD_sys_load_font() {
 					*((pixel)+charmap->format->Bshift/8)=255;
 				}
 			}
-		} else {
-			/* alpha layer not used. convert to 24 bits (faster) */
+		} else if ( charmap->format->BytesPerPixel == 4 ) {
+			/* 32 bits font but alpha layer not used. convert to 24 bits (faster) */
 			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
@@ -286,7 +288,8 @@ void TCOD_sys_load_font() {
 
 void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int flags) {
 	strcpy(TCOD_ctx.font_file,fontFile);
-	if (flags==0) flags=TCOD_FONT_LAYOUT_ASCII_INCOL;
+	/* if layout not defined, assume ASCII_INCOL */
+	if (flags == 0 || flags == TCOD_FONT_TYPE_GREYSCALE) flags |= TCOD_FONT_LAYOUT_ASCII_INCOL;
 	TCOD_ctx.font_in_row=((flags & TCOD_FONT_LAYOUT_ASCII_INROW) != 0);
 	TCOD_ctx.font_greyscale = ((flags & TCOD_FONT_TYPE_GREYSCALE) != 0 );
 	TCOD_ctx.font_tcod_layout = ((flags & TCOD_FONT_LAYOUT_TCOD) != 0 );

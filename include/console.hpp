@@ -144,11 +144,11 @@ public :
 		<table>
 		<tr><td>standard<br />(non antialiased)</td><td>antialiased<br />(32 bits PNG)</td><td>antialiased<br />(greyscale)</td></tr>
 
-		<tr><td><img src='terminal.png' /></td><td><img src='terminal8x8_aa_as.png' /></td><td><img src='terminal8x8_gs_as.png' /></td></tr>
+		<tr><td><img src='terminal.png' /></td><td><img src='terminal8x8_aa_as.png' /></td><td><img src='terminal8x8_gs_as2.png' /></td></tr>
 		</table>
 		<ul>
 		<li>standard : transparency is given by a key color automatically detected by looking at the color of the space character</li>
-		<li>32 bits : transparency is given by the png alpha layer. The font color does not matter</li>
+		<li>32 bits : transparency is given by the png alpha layer. The font color does not matter but it must be desaturated</li>
 		<li>greyscale : transparency is given by the pixel value. You can use white characters on black background or black characters on white background. The background color is automatically detected by looking at the color of the space character</li>
 		</ul>
 		Examples of fonts can be found in libtcod's fonts directory. Check the Readme file there.

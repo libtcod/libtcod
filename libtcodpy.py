@@ -654,7 +654,7 @@ LEFT=0
 RIGHT=1
 CENTER=2
 # initializing the console
-def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_GLSL):
+def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_SDL):
     _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen), c_uint(renderer))
 
 def console_get_width(con):

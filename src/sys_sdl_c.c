@@ -170,6 +170,7 @@ void TCOD_sys_load_font() {
 	/* figure out what kind of font we have */
 	/* check if the alpha layer is actually used */
 	if ( charmap->format->BytesPerPixel == 4 ) {
+		printf ("32bits font... checking for alpha layer... ");
 		for (x=0; !hasTransparent && x < charmap->w; x ++ ) {
 			for (y=0;!hasTransparent && y < charmap->h; y++ ) {
 				Uint8 *pixel=(Uint8 *)(charmap->pixels) + y * charmap->pitch + x * charmap->format->BytesPerPixel;
@@ -179,8 +180,10 @@ void TCOD_sys_load_font() {
 				}
 			}
 		}
+		printf (hasTransparent ? "present\n" : "not present\n");
 	} else if ( charmap->format->BytesPerPixel != 3 ) {
 		/* convert to 24 bits */
+		printf ("font bpp < 24. converting to 24bits\n");
 		SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 		SDL_BlitSurface(charmap,NULL,temp,NULL);
 		SDL_FreeSurface(charmap);
@@ -205,8 +208,10 @@ void TCOD_sys_load_font() {
 		fontKeyCol.r=*((pixel)+charmap->format->Rshift/8);
 		fontKeyCol.g=*((pixel)+charmap->format->Gshift/8);
 		fontKeyCol.b=*((pixel)+charmap->format->Bshift/8);
+		printf ("key color : %d %d %d\n",fontKeyCol.r,fontKeyCol.g,fontKeyCol.b);
 		if ( ! TCOD_ctx.font_greyscale && charmap->format->BytesPerPixel == 4 ) {
 			/* 32 bits font but alpha layer not used. convert to 24 bits (faster) */
+			printf ("32bits font with no alpha => converting to faster 24 bits\n");
 			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
@@ -245,6 +250,7 @@ void TCOD_sys_load_font() {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
 		/* convert the surface to 32 bits if needed */
 		if ( charmap->format->BytesPerPixel != 4 ) {
+			printf("24bits greyscale font. converting to 32bits\n");
 			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);

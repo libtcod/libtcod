@@ -1,2 +1,2 @@
-#define SDL_REVISION "hg-46:dacdda275cfd"
-#define SDL_REVISION_NUMBER 46
+#define SDL_REVISION "hg-48:c159e98fe513"
+#define SDL_REVISION_NUMBER 48

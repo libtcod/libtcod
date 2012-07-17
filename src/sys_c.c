@@ -30,7 +30,8 @@
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <string.h>
-#if defined ( __linux ) || defined ( __FreeBSD__ )
+
+#if defined (__linux) && ! defined (__ANDROID__)
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -634,7 +635,7 @@ char *TCOD_sys_clipboard_get()
 	}
 	return clipboardText;
 }
-#elif defined(TCOD_HAIKU)
+#elif defined(TCOD_HAIKU) || defined(TCOD_ANDROID)
 /* TODO */
 void TCOD_sys_clipboard_set(const char *value)
 {

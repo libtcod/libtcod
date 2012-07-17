@@ -446,8 +446,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	int x,y;
 #if SDL_VERSION_ATLEAST(2,0,0)
 	SDL_Surface *bitmap=(SDL_Surface *)vbitmap;
+	SDL_PixelFormat *sdl_window_pixelformat = SDL_AllocFormat(SDL_GetWindowPixelFormat(window));
 #else
 	SDL_Surface *bitmap=(SDL_Surface *)vbitmap;
+	SDL_PixelFormat *sdl_window_pixelformat = bitmap->format;
 #endif
 	Uint32 sdl_back=0,sdl_fore=0;
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
@@ -467,7 +469,12 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 		SDL_BlitSurface(charmap,NULL,charmap_backup,NULL);
 	}	
 #ifdef USE_SDL_LOCKS
-	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
+	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+		SDL_FreeFormat(sdl_window_pixelformat);
+#endif
+		return;
+	}
 #endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {
@@ -496,10 +503,11 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					b.g = ((int)b.g) * fade / 255  + ((int)fading_color.g) * (255-fade)/255;
 					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 				}
-				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 #if SDL_VERSION_ATLEAST(2,0,0)	
+				sdl_back=SDL_MapRGB(sdl_window_pixelformat,b.r,b.g,b.b);
 				if ( vbitmap == NULL && TCOD_ctx.fullscreen ) {
 #else
+				sdl_back=SDL_MapRGB(sdl_window_pixelformat,b.r,b.g,b.b);
 				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
 #endif
 					dstRect.x+=TCOD_ctx.fullscreen_offsetx;
@@ -546,7 +554,12 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							*curtext=f;
 #ifdef USE_SDL_LOCKS
 							if ( SDL_MUSTLOCK(charmap) ) {
-								if ( SDL_LockSurface(charmap) < 0 ) return;
+								if ( SDL_LockSurface(charmap) < 0 ) {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+									SDL_FreeFormat(sdl_window_pixelformat);
+#endif
+									return;
+								}
 							}
 #endif
 							if ( bpp == 4 ) {
@@ -658,6 +671,9 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	}
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
+#endif
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	SDL_FreeFormat(sdl_window_pixelformat);
 #endif
 }
 

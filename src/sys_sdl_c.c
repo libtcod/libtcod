@@ -411,13 +411,11 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-#if SDL_VERSION_ATLEAST(2,0,0)	
-		SDL_RenderClear(renderer); /* Necessary? */
-#endif
 		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
 		if ( TCOD_ctx.sdl_cbk ) {
 #if SDL_VERSION_ATLEAST(2,0,0)	
-			TCOD_ctx.sdl_cbk((void *)renderer);
+			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
+			/* TCOD_ctx.sdl_cbk((void *)renderer); */
 #else
 			TCOD_ctx.sdl_cbk((void *)screen);
 #endif
@@ -655,7 +653,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #if SDL_VERSION_ATLEAST(2,0,0)	
 						if (vbitmap == NULL) {
 							SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, charmap);
-							SDL_RenderCopy(renderer,NULL,&srcRect,&dstRect);
+							SDL_RenderCopy(renderer,tex,&srcRect,&dstRect);
 							SDL_DestroyTexture(tex);
 						} else {
 							SDL_BlitSurface(charmap,&srcRect,bitmap,&dstRect);

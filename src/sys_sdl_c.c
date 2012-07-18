@@ -65,7 +65,9 @@ static image_support_t image_type[] = {
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 static SDL_Window* window=NULL;
+#   ifdef USE_SDL2_RENDERER
 static SDL_Renderer* renderer=NULL;
+#   endif
 #else
 static SDL_Surface* screen=NULL;
 #endif
@@ -421,7 +423,11 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 #endif
 		}
 #if SDL_VERSION_ATLEAST(2,0,0)	
+#   ifdef USE_SDL2_RENDERER
 		SDL_RenderPresent(renderer);
+#   else
+		SDL_UpdateWindowSurface(window);
+#   endif
 #else
 		SDL_Flip(screen);
 #endif
@@ -442,13 +448,7 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
 	static SDL_Surface *charmap_backup=NULL;
 	int x,y;
-#if SDL_VERSION_ATLEAST(2,0,0)
 	SDL_Surface *bitmap=(SDL_Surface *)vbitmap;
-	SDL_PixelFormat *sdl_window_pixelformat = SDL_AllocFormat(SDL_GetWindowPixelFormat(window));
-#else
-	SDL_Surface *bitmap=(SDL_Surface *)vbitmap;
-	SDL_PixelFormat *sdl_window_pixelformat = bitmap->format;
-#endif
 	Uint32 sdl_back=0,sdl_fore=0;
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
@@ -467,12 +467,11 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 		SDL_BlitSurface(charmap,NULL,charmap_backup,NULL);
 	}	
 #ifdef USE_SDL_LOCKS
-	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) {
-#if SDL_VERSION_ATLEAST(2,0,0)	
-		SDL_FreeFormat(sdl_window_pixelformat);
+	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
-		return;
-	}
+#if SDL_VERSION_ATLEAST(2,0,0)
+	if (bitmap == NULL)
+		bitmap = SDL_GetWindowSurface(window);
 #endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {
@@ -501,26 +500,16 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					b.g = ((int)b.g) * fade / 255  + ((int)fading_color.g) * (255-fade)/255;
 					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 				}
-#if SDL_VERSION_ATLEAST(2,0,0)	
-				sdl_back=SDL_MapRGB(sdl_window_pixelformat,b.r,b.g,b.b);
+				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
+#if SDL_VERSION_ATLEAST(2,0,0)
 				if ( vbitmap == NULL && TCOD_ctx.fullscreen ) {
 #else
-				sdl_back=SDL_MapRGB(sdl_window_pixelformat,b.r,b.g,b.b);
 				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
 #endif
 					dstRect.x+=TCOD_ctx.fullscreen_offsetx;
 					dstRect.y+=TCOD_ctx.fullscreen_offsety;
 				}
-#if SDL_VERSION_ATLEAST(2,0,0)	
-				if (vbitmap == NULL) {
-					SDL_SetRenderDrawColor(renderer,b.r,b.g,b.b,255);
-					SDL_RenderFillRect(renderer,&dstRect);
-				} else {
-					SDL_FillRect(bitmap,&dstRect,sdl_back);
-				}
-#else
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
-#endif
 				if ( c->c != ' ' ) {
 					/* draw foreground */
 					int ascii=c->cf;
@@ -552,12 +541,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							*curtext=f;
 #ifdef USE_SDL_LOCKS
 							if ( SDL_MUSTLOCK(charmap) ) {
-								if ( SDL_LockSurface(charmap) < 0 ) {
-#if SDL_VERSION_ATLEAST(2,0,0)	
-									SDL_FreeFormat(sdl_window_pixelformat);
-#endif
-									return;
-								}
+								if ( SDL_LockSurface(charmap) < 0 ) return;
 							}
 #endif
 							if ( bpp == 4 ) {
@@ -650,17 +634,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 							}
 #endif
 						}
-#if SDL_VERSION_ATLEAST(2,0,0)	
-						if (vbitmap == NULL) {
-							SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, charmap);
-							SDL_RenderCopy(renderer,tex,&srcRect,&dstRect);
-							SDL_DestroyTexture(tex);
-						} else {
-							SDL_BlitSurface(charmap,&srcRect,bitmap,&dstRect);
-						}
-#else
 						SDL_BlitSurface(charmap,&srcRect,bitmap,&dstRect);
-#endif
 					}
 				}
 			}
@@ -669,9 +643,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	}
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
-#endif
-#if SDL_VERSION_ATLEAST(2,0,0)	
-	SDL_FreeFormat(sdl_window_pixelformat);
 #endif
 }
 
@@ -925,8 +896,12 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
 		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
+#   else
+		SDL_FillRect(SDL_GetWindowSurface(window),0,0);
+#   endif
 #else
 		SDL_FillRect(screen,0,0);
 #endif
@@ -964,8 +939,10 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 #endif
 	}
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
 	renderer = SDL_CreateRenderer(window, -1, 0);
 	if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
+#   endif
 #else
 	SDL_EnableUNICODE(1);
 #endif
@@ -1072,7 +1049,11 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	/* SDL_WM_SetCaption(TCOD_ctx.window_title,NULL); */
 	oldFade=-1; /* to redraw the whole screen */
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
 	SDL_RenderPresent(renderer);
+#   else
+	SDL_FillRect(SDL_GetWindowSurface(window),0,0);
+#   endif
 #else
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
 #endif
@@ -1503,7 +1484,9 @@ void TCOD_sys_sleep_milli(uint32 milliseconds) {
 void TCOD_sys_term() {
 	SDL_Quit();
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
 	renderer=NULL;
+#   endif
 	window=NULL;
 #else
 	screen=NULL;

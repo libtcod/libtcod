@@ -419,9 +419,12 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
 		if ( TCOD_ctx.sdl_cbk ) {
-#if SDL_VERSION_ATLEAST(2,0,0) && !defined (USE_SDL2_RENDERER)
+#if SDL_VERSION_ATLEAST(2,0,0)
+#	ifdef defined (USE_SDL2_RENDERER)
 			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
-			/* TCOD_ctx.sdl_cbk((void *)renderer); */
+#	else
+			TCOD_ctx.sdl_cbk((void *)SDL_GetWindowSurface(window));
+#	endif
 #else
 			TCOD_ctx.sdl_cbk((void *)screen);
 #endif
@@ -1020,10 +1023,11 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	if ( fullscreen ) {
 		find_resolution();
 #if SDL_VERSION_ATLEAST(2,0,0)
-		winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
-		SDL_Window *newwindow = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
-		TCOD_IFNOT ( newwindow != NULL ) return;
-		window=newwindow;
+		SDL_SetWindowFullscreen(window, fullscreen);
+#	ifdef USE_SDL2_RENDERER
+		/* screen = SDL_CreateWindowFramebuffer(window); */
+#   else
+#	endif
 #else
 		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 		TCOD_IFNOT ( newscreen != NULL ) return;
@@ -1045,9 +1049,7 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 		*/
 	} else {
 #if SDL_VERSION_ATLEAST(2,0,0)
-		SDL_Window *newwindow = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.root->w*TCOD_ctx.font_width,TCOD_ctx.root->h*TCOD_ctx.font_height,winflags);
-		TCOD_IFNOT ( newwindow != NULL ) return;
-		window=newwindow;
+		SDL_SetWindowFullscreen(window, fullscreen);
 #else
 		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.root->w*TCOD_ctx.font_width,TCOD_ctx.root->h*TCOD_ctx.font_height,32,0);
 		TCOD_IFNOT( newscreen != NULL ) return;

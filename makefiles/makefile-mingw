@@ -195,20 +195,16 @@ libtcod-mingw.a : $(LIBOBJS_DEBUG)
 	ar r $@ $(LIBOBJS_DEBUG)
 	
 libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release $(LIBOBJS_RELEASE)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB)
-#-static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
 
 libtcod-gui-mingw.dll : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw
-#-static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw -static-libgcc -static-libstdc++
 
 libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug $(LIBOBJS_DEBUG)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB)
-#-static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
 
 libtcod-gui-mingw-debug.dll : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug
-#-static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug -static-libgcc -static-libstdc++
 
 upx :
 	$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll

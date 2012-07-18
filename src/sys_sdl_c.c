@@ -67,6 +67,7 @@ static image_support_t image_type[] = {
 static SDL_Window* window=NULL;
 #   ifdef USE_SDL2_RENDERER
 static SDL_Renderer* renderer=NULL;
+static SDL_Surface* screen=NULL;
 #   endif
 #else
 static SDL_Surface* screen=NULL;
@@ -412,10 +413,13 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(USE_SDL2_RENDERER)
+	SDL_Texture *screentexture;
+#endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
 		if ( TCOD_ctx.sdl_cbk ) {
-#if SDL_VERSION_ATLEAST(2,0,0)	
+#if SDL_VERSION_ATLEAST(2,0,0) && !defined (USE_SDL2_RENDERER)
 			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
 			/* TCOD_ctx.sdl_cbk((void *)renderer); */
 #else
@@ -424,7 +428,10 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 		}
 #if SDL_VERSION_ATLEAST(2,0,0)	
 #   ifdef USE_SDL2_RENDERER
+		screentexture = SDL_CreateTextureFromSurface(renderer, screen);
+		SDL_RenderCopy(renderer, screentexture, NULL, NULL);
 		SDL_RenderPresent(renderer);
+		SDL_DestroyTexture(screentexture);
 #   else
 		SDL_UpdateWindowSurface(window);
 #   endif
@@ -470,8 +477,13 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+	if (bitmap == NULL)
+		bitmap = screen;
+#   else
 	if (bitmap == NULL)
 		bitmap = SDL_GetWindowSurface(window);
+#   endif
 #endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {

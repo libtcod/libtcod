@@ -1123,7 +1123,11 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 
 static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	SDL_KeyboardEvent *kev=&ev->key;
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	ret->c = kev->keysym.sym & 0xFF;
+#else
 	ret->c=(char)kev->keysym.unicode;
+#endif
 	if ( ( kev->keysym.mod & (KMOD_LCTRL|KMOD_RCTRL) ) != 0 ) {
 		/* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
 		if ( kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z ) {

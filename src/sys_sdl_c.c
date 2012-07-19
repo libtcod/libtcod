@@ -994,7 +994,11 @@ void TCOD_sys_save_screenshot(const char *filename) {
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
 		/* somethign with SDL_SetRenderTarget? */
+#	else
+		TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename);
+#	endif
 #else
 		TCOD_sys_save_bitmap((void *)screen,filename);
 #endif
@@ -1662,11 +1666,17 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 void TCOD_sys_get_current_resolution(int *w, int *h) {
 #if SDL_VERSION_ATLEAST(2,0,0)
 	int displayidx;
-	TCOD_IFNOT(window) return;
-	displayidx = SDL_GetWindowDisplay(window);
-	TCOD_IFNOT(displayidx >= 0) return;
 	SDL_Rect rect = { 0, 0, 0, 0 };
-	TCOD_IFNOT(SDL_GetDisplayBounds(displayidx, &rect)) return;
+	if (window) {
+		TCOD_IFNOT(window) return;
+		displayidx = SDL_GetWindowDisplay(window);
+		TCOD_IFNOT(displayidx >= 0) return;
+	} else {
+		/* No window if no console, but user can want to know res before opening one. */
+		TCOD_IFNOT(SDL_GetNumVideoDisplays() > 0) return;
+		displayidx = 0;
+	}
+	TCOD_IFNOT(SDL_GetDisplayBounds(displayidx, &rect) == 0) return;
 	*w=rect.w;
 	*h=rect.h;
 #else

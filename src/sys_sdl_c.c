@@ -238,6 +238,7 @@ void TCOD_sys_load_font() {
 			charmap=temp;
 		}
 	}
+#ifdef ENABLE_FLAWED_CODE
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		int px,py,cx,cy;
@@ -264,7 +265,7 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
-
+#endif
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */

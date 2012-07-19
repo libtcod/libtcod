@@ -172,7 +172,7 @@ void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
-void TCOD_sys_startup();
+TCODLIB_API void TCOD_sys_startup();
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);

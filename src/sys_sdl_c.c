@@ -370,7 +370,7 @@ static void find_resolution() {
 	TCOD_ctx.actual_fullscreen_width=wantedw;
 	TCOD_ctx.actual_fullscreen_height=wantedh;
 
-#if SDL_VERSION_ATLEAST(2,0,0)	
+#if SDL_VERSION_ATLEAST(2,0,0)
 	wantedmode.w = wantedw;
 	wantedmode.h = wantedh;
 	wantedmode.format = 0;  /* don't care for rest. */
@@ -420,7 +420,7 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
 		if ( TCOD_ctx.sdl_cbk ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-#	ifdef defined (USE_SDL2_RENDERER)
+#	if defined (USE_SDL2_RENDERER)
 			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
 #	else
 			TCOD_ctx.sdl_cbk((void *)SDL_GetWindowSurface(window));
@@ -1008,9 +1008,6 @@ void TCOD_sys_save_screenshot(const char *filename) {
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
-#if SDL_VERSION_ATLEAST(2,0,0)	
-	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-#endif
 	bool mouseOn=SDL_ShowCursor(-1);
 	TCOD_ctx.fullscreen=fullscreen;
 	/*
@@ -1664,7 +1661,14 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 
 void TCOD_sys_get_current_resolution(int *w, int *h) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-	SDL_GetWindowSize(window,w,h);
+	int displayidx;
+	TCOD_IFNOT(window) return;
+	displayidx = SDL_GetWindowDisplay(window);
+	TCOD_IFNOT(displayidx >= 0) return;
+	SDL_Rect rect = { 0, 0, 0, 0 };
+	TCOD_IFNOT(SDL_GetDisplayBounds(displayidx, &rect)) return;
+	*w=rect.w;
+	*h=rect.h;
 #else
 	const SDL_VideoInfo *info=SDL_GetVideoInfo();
 	*w=info->current_w;

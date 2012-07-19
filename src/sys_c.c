@@ -674,7 +674,7 @@ char *TCOD_sys_clipboard_get()
 #ifdef TCOD_WINDOWS
 BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {
-		/* case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break; */
+		/* case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;  -- not safe, locks up in SDL2/RegisterClass call */
 		default : break;
 	}
 	return TRUE;

@@ -25,7 +25,7 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined (__HAIKU__)
+#if defined (__HAIKU__) || defined (__ANDROID__)
 #include <SDL.h>
 #elif defined(TCOD_SDL2)
 #include <SDL2/SDL.h>
@@ -41,6 +41,18 @@
 #define int_p_NULL (int*)NULL
 #endif
 
+/* Redirected png IO through SDL's rwops mechanism. */
+static void png_read_data(png_structp png_ptr, png_bytep data, png_size_t length) {
+	SDL_RWops *rwops = png_get_io_ptr(png_ptr);
+	rwops->read(rwops,data,length,1);
+}
+static void png_write_data(png_structp png_ptr, png_bytep data, png_size_t length) {
+	SDL_RWops *rwops = png_get_io_ptr(png_ptr);
+	rwops->write(rwops,data,length,1);
+}
+static void png_flush_data(png_structp png_ptr) {}
+
+
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8 magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
@@ -51,11 +63,19 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	int png_bit_depth,png_color_type,png_interlace_type;
 	png_structp png_ptr;
 	png_infop info_ptr;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops;
+#else
 	FILE *fp;
+#endif
 	SDL_Surface *bitmap;
 	png_bytep *row_pointers;
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+	if ((rwops = SDL_RWFromFile(filename, "rb")) == NULL)
+#else
 	if ((fp = fopen(filename, "rb")) == NULL)
+#endif
 		return NULL;
 	/* Create and initialize the png_struct with the desired error handler
 	* functions.  If you want to use the default stderr and longjump method,
@@ -67,7 +87,11 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 
 	if (png_ptr == NULL)
 	{
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		return NULL;
 	}
 
@@ -75,7 +99,11 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL)
 	{
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		png_destroy_read_struct(&png_ptr, png_infopp_NULL, png_infopp_NULL);
 		return NULL;
 	}
@@ -89,12 +117,20 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		/* If we get here, we had a problem reading the file */
 		return NULL;
 	}
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+	png_set_read_fn(png_ptr, (voidp)rwops, (png_rw_ptr)png_read_data);
+#else
 	png_init_io(png_ptr, fp);
+#endif
 
 	/*
 	* If you have enough memory to read in the entire image at once,
@@ -139,7 +175,11 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	free(row_pointers);
 
 	/* close the file */
+#if SDL_VERSION_ATLEAST(2,0,0)
+	rwops->close(rwops);
+#else
 	fclose(fp);
+#endif
 	return bitmap;
 }
 
@@ -148,14 +188,23 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	png_infop info_ptr;
 	png_bytep *row_pointers;
 	int y,x;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops = SDL_RWFromFile(filename, "wb");
+	if (!rwops) return;
+#else
 	FILE *fp=fopen(filename,"wb");
 	if (!fp) return;
+#endif
 
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,NULL, NULL, NULL);
 
 	if (png_ptr == NULL)
 	{
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		return;
 	}
 
@@ -163,7 +212,11 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL)
 	{
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		png_destroy_write_struct(&png_ptr, png_infopp_NULL);
 		return;
 	}
@@ -172,12 +225,20 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	{
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		png_destroy_read_struct(&png_ptr, &info_ptr, png_infopp_NULL);
+#if SDL_VERSION_ATLEAST(2,0,0)
+		rwops->close(rwops);
+#else
 		fclose(fp);
+#endif
 		/* If we get here, we had a problem reading the file */
 		return;
 	}
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+	png_set_write_fn(png_ptr, (png_rw_ptr)rwops, (png_rw_ptr)png_write_data, (png_flush_ptr)png_flush_data);
+#else
 	png_init_io(png_ptr, fp);
+#endif
 
 	png_set_IHDR(png_ptr,info_ptr,surf->w, surf->h,
 		8,PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
@@ -201,7 +262,11 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 
 	png_write_png(png_ptr,info_ptr,PNG_TRANSFORM_IDENTITY,NULL);
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+	rwops->close(rwops);
+#else
 	fclose(fp);
+#endif
 	/* clean up, and free any memory allocated - REQUIRED */
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 

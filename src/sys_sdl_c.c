@@ -28,10 +28,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#if defined (__HAIKU__)
+#if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
-#elif defined(TCOD_SDL2)
-#include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
@@ -40,6 +38,7 @@
 
 /* to enable bitmap locking. Is there any use ?? makes the OSX port renderer to fail */
 /*#define USE_SDL_LOCKS */
+
 
 /* image support stuff */
 bool TCOD_sys_check_bmp(const char *filename);
@@ -89,6 +88,7 @@ static bool mousebr=false;
 static bool mouse_force_bl=false;
 static bool mouse_force_bm=false;
 static bool mouse_force_br=false;
+static bool mouse_touch=true;
 
 /* minimum length for a frame (when fps are limited) */
 static int min_frame_length=0;
@@ -760,6 +760,9 @@ void TCOD_sys_startup() {
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
+#ifndef NDEBUG
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+#endif
 	TCOD_IFNOT(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) >= 0 ) return;
 #ifndef	TCOD_WINDOWS
 	/* not needed and might crash on windows */
@@ -813,10 +816,19 @@ static void TCOD_sys_load_player_config() {
 	font=TCOD_parser_get_string_property(parser, "libtcod.font");
 	if ( font != NULL ) {
 		/* custom font */
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_RWops *rwops = SDL_RWFromFile(font,"rb");
+		if (rwops) {
+#else
 		FILE *f=fopen(font,"rb");
 		if (f) {
+#endif
 			int fontNbCharHoriz,fontNbCharVertic;
+#if SDL_VERSION_ATLEAST(2,0,0)
+			rwops->close(rwops);
+#else
 			fclose(f);
+#endif
 			strcpy(TCOD_ctx.font_file,font);
 			TCOD_ctx.font_in_row=TCOD_parser_get_bool_property(parser,"libtcod.fontInRow");
 			TCOD_ctx.font_greyscale=TCOD_parser_get_bool_property(parser,"libtcod.fontGreyscale");
@@ -860,13 +872,21 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-#endif
+	SDL_RWops *rwops;
+#else
 	FILE *f;
+#endif
 	if ( ! has_startup ) TCOD_sys_startup();
 	/* check if there is a user (player) config file */
+#if SDL_VERSION_ATLEAST(2,0,0)
+	rwops =  SDL_RWFromFile("./libtcod.cfg", "r");
+	if (rwops) {
+		rwops->close(rwops);
+#else
 	f = fopen("./libtcod.cfg","r");
 	if ( f ) {
 		fclose(f);
+#endif
 		/* yes, read it */
 		TCOD_sys_load_player_config();
 		if (TCOD_ctx.fullscreen) fullscreen=true;
@@ -1325,6 +1345,25 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
 	return key_status[key];
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+static void TCOD_sys_mouse_touch_conversion(SDL_Event *ev, TCOD_mouse_t *mouse) {
+	SDL_TouchFingerEvent *tfe=&ev->tfinger;
+	SDL_Touch *touch=SDL_GetTouch(tfe->touchId);
+	int charWidth, charHeight;
+	int windowWidth, windowHeight;
+	TCOD_sys_get_current_resolution(&windowWidth, &windowHeight);
+	mouse->dx += (tfe->dx * windowWidth)/touch->xres;
+	mouse->dy += (tfe->dy * windowHeight)/touch->yres;
+	mouse->x = (tfe->x * windowWidth)/touch->xres;
+	mouse->y = (tfe->y * windowHeight)/touch->yres;
+	TCOD_sys_get_char_size(&charWidth,&charHeight);
+	mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+	mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+	mouse->dcx = mouse->dx / charWidth;
+	mouse->dcy = mouse->dy / charHeight;
+}
+#endif
+
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
@@ -1347,6 +1386,33 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
+#if SDL_VERSION_ATLEAST(2,0,0)
+		case SDL_FINGERMOTION :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				printf("TCOD finger motion event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_MOVE;
+			}
+		break;
+		case SDL_FINGERDOWN :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				mouse->lbutton=mousebl=true;
+				printf("TCOD finger down event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_PRESS;
+			}
+		break;
+		case SDL_FINGERUP :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				if (mousebl)
+					mouse->lbutton_pressed = mouse_force_bl=true;
+				mouse->lbutton = mousebl=false;
+				printf("TCOD finger up event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_RELEASE;
+			}
+		break;
+#endif
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
 				SDL_MouseMotionEvent *mme=&ev->motion;
@@ -1691,6 +1757,15 @@ void TCOD_sys_get_current_resolution(int *w, int *h) {
 bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 	uint8 tmp[128];
 	int i;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops =  SDL_RWFromFile(filename, "rb");
+	if (! rwops) return false;
+	if ( (i = rwops->read(rwops,tmp,size,1)) != 1 ) {
+		rwops->close(rwops);
+		return false;
+	}
+	rwops->close(rwops);
+#else
 	FILE *f=fopen(filename,"rb");
 	if (! f) return false;
 	if ( fread(tmp,1,128,f) < (unsigned)size ) {
@@ -1698,7 +1773,9 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 		return false;
 	}
 	fclose(f);
+#endif
 	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
+	printf("TCOD_sys_check_magic_number: 4");
 	return true;
 }
 
@@ -1725,3 +1802,8 @@ void TCOD_mouse_move(int x, int y) {
 #endif
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+void TCOD_mouse_includes_touch(bool enable) {
+	mouse_touch = enable;
+}
+#endif

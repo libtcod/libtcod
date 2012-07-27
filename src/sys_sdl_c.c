@@ -377,7 +377,7 @@ static void find_resolution() {
 	wantedmode.format = 0;  /* don't care for rest. */
 	wantedmode.refresh_rate = 0;
 	wantedmode.driverdata = 0;
-	if (SDL_GetClosestDisplayMode(SDL_GetWindowDisplay(window), &wantedmode, &closestmode) == &closestmode) {
+	if (SDL_GetClosestDisplayMode(window?SDL_GetWindowDisplay(window):0, &wantedmode, &closestmode) == &closestmode) {
 		bestw=closestmode.w;
 		besth=closestmode.h;
 	} else {
@@ -891,6 +891,10 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_sys_load_player_config();
 		if (TCOD_ctx.fullscreen) fullscreen=true;
 	}
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
+	/* Android should always be fullscreen. */
+	TCOD_ctx.fullscreen = fullscreen = true;
+#endif
 	if (! charmap) TCOD_sys_load_font();
 	if ( fullscreen  ) {
 		find_resolution();
@@ -899,6 +903,9 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 			TCOD_opengl_init_attributes();
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
+#	if defined(__ANDROID__) && defined(XXXX_TBD)
+			winflags |= SDL_WINDOW_RESIZABLE;
+#	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
 			if ( window && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
 #else
@@ -915,6 +922,9 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
+#	if defined(__ANDROID__) && defined(FUTURE_SUPPORT)
+			winflags |= SDL_WINDOW_RESIZABLE;
+#	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
 			if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot set fullscreen video mode");
 #else

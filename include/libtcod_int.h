@@ -129,7 +129,7 @@ typedef struct {
 
 extern TCOD_internal_context_t TCOD_ctx;
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) && !defined(NDEBUG)
 #include <android/log.h>
 #ifdef printf
 #undef printf

@@ -471,7 +471,6 @@ class ConsoleBuffer:
             _lib.TCOD_console_fill_char(dest, (c_int * len(self.char))(*self.char))
 
 _lib.TCOD_console_credits_render.restype = c_bool
-_lib.TCOD_console_set_custom_font.argtypes=[c_char_p,c_int]
 _lib.TCOD_console_is_fullscreen.restype = c_bool
 _lib.TCOD_console_is_window_closed.restype = c_bool
 _lib.TCOD_console_get_default_background.restype = Color
@@ -690,7 +689,7 @@ RIGHT=1
 CENTER=2
 # initializing the console
 def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_SDL):
-    _lib.TCOD_console_init_root(w, h, title, c_uint(fullscreen), c_uint(renderer))
+    _lib.TCOD_console_init_root(w, h, c_char_p(title), fullscreen, renderer)
 
 def console_get_width(con):
     return _lib.TCOD_console_get_width(con)
@@ -699,10 +698,10 @@ def console_get_height(con):
     return _lib.TCOD_console_get_height(con)
 
 def console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL, nb_char_horiz=0, nb_char_vertic=0):
-    _lib.TCOD_console_set_custom_font(fontFile, flags, nb_char_horiz, nb_char_vertic)
+    _lib.TCOD_console_set_custom_font(c_char_p(fontFile), flags, nb_char_horiz, nb_char_vertic)
 
 def console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY):
-    if type(asciiCode) == str:
+    if type(asciiCode) == str or type(asciiCode) == bytes:
         _lib.TCOD_console_map_ascii_code_to_font(ord(asciiCode), fontCharX,
                                                  fontCharY)
     else:
@@ -711,7 +710,7 @@ def console_map_ascii_code_to_font(asciiCode, fontCharX, fontCharY):
 
 def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
                                     fontCharY):
-    if type(firstAsciiCode) == str:
+    if type(firstAsciiCode) == str or type(asciiCode) == bytes:
         _lib.TCOD_console_map_ascii_codes_to_font(ord(firstAsciiCode), nbCodes,
                                                   fontCharX, fontCharY)
     else:
@@ -719,7 +718,10 @@ def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
                                                   fontCharX, fontCharY)
 
 def console_map_string_to_font(s, fontCharX, fontCharY):
-    _lib.TCOD_console_map_string_to_font(s, fontCharX, fontCharY)
+    if type(s) == bytes:
+        _lib.TCOD_console_map_string_to_font(s, fontCharX, fontCharY)
+    else:
+        _lib.TCOD_console_map_string_to_font_utf(s, fontCharX, fontCharY)
 
 def console_is_fullscreen():
     return _lib.TCOD_console_is_fullscreen()
@@ -731,7 +733,7 @@ def console_is_window_closed():
     return _lib.TCOD_console_is_window_closed()
 
 def console_set_window_title(title):
-    _lib.TCOD_console_set_window_title(title)
+    _lib.TCOD_console_set_window_title(c_char_p(title))
 
 def console_credits():
     _lib.TCOD_console_credits()
@@ -756,13 +758,13 @@ def console_clear(con):
     return _lib.TCOD_console_clear(con)
 
 def console_put_char(con, x, y, c, flag=BKGND_DEFAULT):
-    if type(c) == str:
+    if type(c) == str or type(c) == bytes:
         _lib.TCOD_console_put_char(con, x, y, ord(c), flag)
     else:
         _lib.TCOD_console_put_char(con, x, y, c, flag)
 
 def console_put_char_ex(con, x, y, c, fore, back):
-    if type(c) == str:
+    if type(c) == str or type(c) == bytes:
         _lib.TCOD_console_put_char_ex(con, x, y, ord(c), fore, back)
     else:
         _lib.TCOD_console_put_char_ex(con, x, y, c, fore, back)
@@ -774,7 +776,7 @@ def console_set_char_foreground(con, x, y, col):
     _lib.TCOD_console_set_char_foreground(con, x, y, col)
 
 def console_set_char(con, x, y, c):
-    if type(c) == str:
+    if type(c) == str or type(c) == bytes:
         _lib.TCOD_console_set_char(con, x, y, ord(c))
     else:
         _lib.TCOD_console_set_char(con, x, y, c)
@@ -792,19 +794,34 @@ def console_get_alignment(con):
     return _lib.TCOD_console_get_alignment(con)
 
 def console_print(con, x, y, fmt):
-    _lib.TCOD_console_print(c_void_p(con), x, y, c_char_p(fmt))
+    if type(fmt) == bytes:
+        _lib.TCOD_console_print(c_void_p(con), x, y, c_char_p(fmt))
+    else:
+        _lib.TCOD_console_print_utf(c_void_p(con), x, y, fmt)
 
 def console_print_ex(con, x, y, flag, alignment, fmt):
-    _lib.TCOD_console_print_ex(c_void_p(con), x, y, flag, alignment, c_char_p(fmt))
+    if type(fmt) == bytes:
+        _lib.TCOD_console_print_ex(c_void_p(con), x, y, flag, alignment, c_char_p(fmt))
+    else:
+        _lib.TCOD_console_print_ex_utf(c_void_p(con), x, y, flag, alignment, fmt)
 
 def console_print_rect(con, x, y, w, h, fmt):
-    return _lib.TCOD_console_print_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
+    if type(fmt) == bytes:
+        return _lib.TCOD_console_print_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
+    else:
+        return _lib.TCOD_console_print_rect_utf(c_void_p(con), x, y, w, h, fmt)
 
 def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
-    return _lib.TCOD_console_print_rect_ex(c_void_p(con), x, y, w, h, flag, alignment, c_char_p(fmt))
+    if type(fmt) == bytes:
+        return _lib.TCOD_console_print_rect_ex(c_void_p(con), x, y, w, h, flag, alignment, c_char_p(fmt))
+    else:
+        return _lib.TCOD_console_print_rect_ex_utf(c_void_p(con), x, y, w, h, flag, alignment, fmt)
 
 def console_get_height_rect(con, x, y, w, h, fmt):
-    return _lib.TCOD_console_get_height_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
+    if type(fmt) == bytes:
+        return _lib.TCOD_console_get_height_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
+    else:
+        return _lib.TCOD_console_get_height_rect_utf(c_void_p(con), x, y, w, h, fmt)
 
 def console_rect(con, x, y, w, h, clr, flag=BKGND_DEFAULT):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
@@ -982,7 +999,7 @@ def sys_get_renderer():
 
 # easy screenshots
 def sys_save_screenshot(name=0):
-    _lib.TCOD_sys_save_screenshot(name)
+    _lib.TCOD_sys_save_screenshot(c_char_p(name))
 
 # custom fullscreen resolution
 def sys_force_fullscreen_resolution(width, height):
@@ -1097,7 +1114,7 @@ def image_is_pixel_transparent(image,x,y) :
     return _lib.TCOD_image_is_pixel_transparent(image,c_int(x),c_int(y))
 
 def image_load(filename):
-    return _lib.TCOD_image_load(filename)
+    return _lib.TCOD_image_load(c_char_p(filename))
 
 def image_from_console(console):
     return _lib.TCOD_image_from_console(console)
@@ -1132,7 +1149,7 @@ def image_blit_2x(image, console, dx, dy, sx=0, sy=0, w=-1, h=-1):
     _lib.TCOD_image_blit_2x(image, console, dx,dy,sx,sy,w,h)
 
 def image_save(image, filename):
-    _lib.TCOD_image_save(image, filename)
+    _lib.TCOD_image_save(image, c_char_p(filename))
 
 def image_delete(image):
     _lib.TCOD_image_delete(image)
@@ -1334,38 +1351,38 @@ def parser_run(parser, filename, listener=0):
         clistener.new_property = _CFUNC_NEW_PROPERTY(value_converter)
         clistener.end_struct = _CFUNC_NEW_STRUCT(listener.end_struct)
         clistener.error = _CFUNC_NEW_FLAG(listener.error)
-        _lib.TCOD_parser_run(parser, filename, byref(clistener))
+        _lib.TCOD_parser_run(parser, c_char_p(filename), byref(clistener))
     else:
-        _lib.TCOD_parser_run(parser, filename, 0)
+        _lib.TCOD_parser_run(parser, c_char_p(filename), 0)
 
 def parser_delete(parser):
     _lib.TCOD_parser_delete(parser)
 
 def parser_get_bool_property(parser, name):
-    return _lib.TCOD_parser_get_bool_property(parser, name)
+    return _lib.TCOD_parser_get_bool_property(parser, c_char_p(name))
 
 def parser_get_int_property(parser, name):
-    return _lib.TCOD_parser_get_int_property(parser, name)
+    return _lib.TCOD_parser_get_int_property(parser, c_char_p(name))
 
 def parser_get_char_property(parser, name):
-    return '%c' % _lib.TCOD_parser_get_char_property(parser, name)
+    return '%c' % _lib.TCOD_parser_get_char_property(parser, c_char_p(name))
 
 def parser_get_float_property(parser, name):
-    return _lib.TCOD_parser_get_float_property(parser, name)
+    return _lib.TCOD_parser_get_float_property(parser, c_char_p(name))
 
 def parser_get_string_property(parser, name):
-    return _lib.TCOD_parser_get_string_property(parser, name)
+    return _lib.TCOD_parser_get_string_property(parser, c_char_p(name))
 
 def parser_get_color_property(parser, name):
-    return _lib.TCOD_parser_get_color_property(parser, name)
+    return _lib.TCOD_parser_get_color_property(parser, c_char_p(name))
 
 def parser_get_dice_property(parser, name):
     d = Dice()
-    _lib.TCOD_parser_get_dice_property_py(c_void_p(parser), name, byref(d))
+    _lib.TCOD_parser_get_dice_property_py(c_void_p(parser), c_char_p(name), byref(d))
     return d
 
 def parser_get_list_property(parser, name, typ):
-    clist = _lib.TCOD_parser_get_list_property(parser, name, c_int(typ))
+    clist = _lib.TCOD_parser_get_list_property(parser, c_char_p(name), c_int(typ))
     return _convert_TCODList(clist, typ)
 
 ############################

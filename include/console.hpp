@@ -1059,10 +1059,10 @@ public :
 	@PageName console_read
 	@FuncTitle Reading the ASCII code of a cell
 	@FuncDesc This function returns the ASCII code of a cell.
-	@Cpp TCODColor TCODConsole::getChar(int x, int y) const
-	@C TCOD_color_t TCOD_console_get_char(TCOD_console_t con,int x, int y)
+	@Cpp int TCODConsole::getChar(int x, int y) const
+	@C int TCOD_console_get_char(TCOD_console_t con,int x, int y)
 	@Py console_get_char(con,x,y)
-	@C# TCODColor TCODConsole::getChar(int x, int y)
+	@C# int TCODConsole::getChar(int x, int y)
 	@Lua Console::getChar(x, y)
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param x,y coordinates of the cell in the console.
@@ -1125,7 +1125,7 @@ public :
 	@FuncTitle Reading the fading color
 	@FuncDesc This function returns the current fading color, previously defined by setFade.
 	@Cpp static TCODColor TCODConsole::getFadingColor()
-	@C TCODColor TCOD_console_get_fadingColor()
+	@C TCOD_color_t TCOD_console_get_fading_color()
 	@Py console_get_fading_color()
 	@C# static TCODColor TCODConsole::getFadingColor()
 	@Lua tcod.console.getFadingColor()

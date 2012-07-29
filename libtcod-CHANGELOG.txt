@@ -47,7 +47,10 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
     void TCODMap::clear (bool transparent = false, bool walkable = false)
     void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
     map_clear (map, transparent, walkable)
-+ Added native support for .ASC and .APF file (Ascii Paint format)
++ cmake compilation works on FreeBSD thanks to namor_     
++ added support for python3k. The samples run with python 3.2.3    
++ added support for colored tiles. Standard font characters MUST only use greyscale colors.    
++ added native support for .ASC and .APF file (Ascii Paint format)
   * TCODConsole::TCODConsole(const char *filename)
   * bool TCODConsole::loadAsc(const char *filename)
   * bool TCODConsole::saveAsc(const char *filename) const    

@@ -9,7 +9,7 @@ Products :
 - SDL 1.2.12, by Sam Lantinga
    http://www.libsdl.org
 
-Many thanks to everyone who provided feedback, and especially :
+Many thanks to everyone who provided feedback and patches, and especially :
 - Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra 
   pathfinding, name generator, documentation skin, lots of bitmap fonts and 
   being the #1 libtcod user, supporter and contributor.
@@ -22,15 +22,17 @@ Many thanks to everyone who provided feedback, and especially :
   to the python port.
 - Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL 
   renderer
-- Michael De Rosa for the OSX ports.
-- Killer_X for the OSX/XCode port.
 - Sandman for various tricky bug fixes.
 - Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still 
-  have to backport them from the old 1.5 branch, btw...).
+  to be backported from the old 1.5 branch...).
 - Paul Sexton for the common Lisp wrapper.
 - Bernard Helyer for the D wrapper.
 - Adam 'Blinks' Blinkinsop for the OSX port and the autotools compilation system.
 - Nick Glauber for being the first libtcod Paypal sponsor.
+- Matt Sullivan for the py3k support
+- namor for the FreeBSD cmake support
+- Anylo for putting some of the demos in the cmake compilation
+- Michael De Rosa, Killer_X and Joe Rumsey for their work on OSX port 
 - owners of projects using libtcod.
 
 Fonts :

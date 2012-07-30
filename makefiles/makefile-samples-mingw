@@ -3,8 +3,8 @@
 # to build release version, run "make -f makefile-samples-mingw release"
 SRCDIR=.
 INCDIR=include
-SDLDIR=dependencies/SDL-1.2.12
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SDLDIR)/include -I$(SRCDIR) -Wall
+SDLDIR=dependencies/SDL2-hg
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SDLDIR)/include -I$(SRCDIR) -Wall -DTCOD_SDL2
 CC=mingw32-gcc
 CPP=mingw32-g++
 UPX=dependencies/upx/win/upx.exe
@@ -54,11 +54,11 @@ $(TEMP)/libtcod/release/samples :
 	mkdir -p $@
 
 samples_c.exe : $(TEMP)/libtcod/release/samples $(C_OBJS_RELEASE)
-	$(CC) $(C_OBJS_RELEASE) $(CFLAGS) -o $@ -Llib -ltcod-mingw  -L$(SDLDIR)/lib/mingw -lSDL -mwindows
+	$(CC) $(C_OBJS_RELEASE) $(CFLAGS) -o $@ -Llib -ltcod-mingw  -L$(SDLDIR)/lib/mingw -lSDL2
 	$(UPX) samples_c.exe 
 
 samples_cpp.exe : $(TEMP)/libtcod/release/samples $(CPP_OBJS_RELEASE)
-	$(CPP) $(CPP_OBJS_RELEASE) -o $@ -Llib -ltcod-mingw -L$(SDLDIR)/lib/mingw -lSDL -mwindows
+	$(CPP) $(CPP_OBJS_RELEASE) -o $@ -Llib -ltcod-mingw -L$(SDLDIR)/lib/mingw -lSDL2
 	$(UPX) samples_cpp.exe 
 
 hmtool.exe : $(TEMP)/libtcod/release/hmtool $(HMTOOLOBJS_RELEASE)
@@ -66,16 +66,16 @@ hmtool.exe : $(TEMP)/libtcod/release/hmtool $(HMTOOLOBJS_RELEASE)
 	$(UPX) hmtool.exe 
 
 samples_c_debug.exe : $(TEMP)/libtcod/debug/samples $(C_OBJS_DEBUG)
-	$(CC) $(C_OBJS_DEBUG) $(CFLAGS) -o $@ -Llib -ltcod-mingw-debug -L$(SDLDIR)/lib/mingw -lSDL 
+	$(CC) $(C_OBJS_DEBUG) $(CFLAGS) -o $@ -Llib -ltcod-mingw-debug -L$(SDLDIR)/lib/mingw -lSDL2
 
 samples_cpp_debug.exe : $(TEMP)/libtcod/debug/samples $(CPP_OBJS_DEBUG)
-	$(CPP) $(CPP_OBJS_DEBUG) -o $@ -Llib -ltcod-mingw-debug  -L$(SDLDIR)/lib/mingw -lSDL 
+	$(CPP) $(CPP_OBJS_DEBUG) -o $@ -Llib -ltcod-mingw-debug  -L$(SDLDIR)/lib/mingw -lSDL2
 
 hmtool_debug.exe : $(TEMP)/libtcod/debug/hmtool $(HMTOOLOBJS_DEBUG)
 	$(CPP) -o $@ $(HMTOOLOBJS_DEBUG) -Llib -ltcod-mingw-debug -ltcod-gui-mingw-debug
 
 clean :
-	\rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) \
+	rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) \
         samples_c.exe samples_cpp.exe hmtool.exe \
         $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) \
         samples_c_debug.exe samples_cpp_debug.exe hmtool_debug.exe 

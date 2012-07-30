@@ -129,6 +129,23 @@ typedef struct {
 
 extern TCOD_internal_context_t TCOD_ctx;
 
+#if defined(__ANDROID__) && !defined(NDEBUG)
+#include <android/log.h>
+#ifdef printf
+#undef printf
+#endif
+#ifdef vprintf
+#undef vprintf
+#endif
+#define printf(args...) __android_log_print(ANDROID_LOG_INFO, "libtcod", ## args)
+#define vprintf(args...) __android_log_vprint(ANDROID_LOG_INFO, "libtcod", ## args)
+
+#ifdef assert
+#undef assert
+#endif
+#define assert(cond) if(!(cond)) __android_log_assert(#cond, "libtcod", "assertion failed: %s", #cond)
+#endif
+
 #ifdef NDEBUG
 #define TCOD_IF(x) if (x)
 #define TCOD_IFNOT(x) if (!(x))
@@ -172,7 +189,7 @@ void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
-void TCOD_sys_startup();
+TCODLIB_API void TCOD_sys_startup();
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);

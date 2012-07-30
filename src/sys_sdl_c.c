@@ -28,7 +28,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#ifdef __HAIKU__
+#if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
 #else
 #include <SDL/SDL.h>
@@ -38,6 +38,7 @@
 
 /* to enable bitmap locking. Is there any use ?? makes the OSX port renderer to fail */
 /*#define USE_SDL_LOCKS */
+
 
 /* image support stuff */
 bool TCOD_sys_check_bmp(const char *filename);
@@ -60,7 +61,16 @@ static image_support_t image_type[] = {
 	{ NULL, NULL, NULL, NULL },
 };
 
+
+#if SDL_VERSION_ATLEAST(2,0,0)
+static SDL_Window* window=NULL;
+#   ifdef USE_SDL2_RENDERER
+static SDL_Renderer* renderer=NULL;
 static SDL_Surface* screen=NULL;
+#   endif
+#else
+static SDL_Surface* screen=NULL;
+#endif
 static SDL_Surface* charmap=NULL;
 static char_t *consoleBuffer=NULL;
 static char_t *prevConsoleBuffer=NULL;
@@ -78,6 +88,7 @@ static bool mousebr=false;
 static bool mouse_force_bl=false;
 static bool mouse_force_bm=false;
 static bool mouse_force_br=false;
+static bool mouse_touch=true;
 
 /* minimum length for a frame (when fps are limited) */
 static int min_frame_length=0;
@@ -95,7 +106,16 @@ static bool key_status[TCODK_CHAR+1];
 static int oldFade=-1;
 
 /* convert SDL vk to a char (depends on the keyboard layout) */
+#if SDL_VERSION_ATLEAST(2,0,0)
+typedef struct {
+	SDL_Keycode	sdl_key;
+	int tcod_key;
+} vk_to_c_entry;
+#define NUM_VK_TO_C_ENTRIES 10
+static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
+#else
 static char vk_to_c[SDLK_LAST];
+#endif
 
 /* convert ASCII code to TCOD layout position */
 static int init_ascii_to_tcod[256] = {
@@ -218,6 +238,7 @@ void TCOD_sys_load_font() {
 			charmap=temp;
 		}
 	}
+#ifdef ENABLE_FLAWED_CODE
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		int px,py,cx,cy;
@@ -244,7 +265,7 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
-
+#endif
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
@@ -289,7 +310,7 @@ void TCOD_sys_load_font() {
 	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
 	nrgb_mask = ~ rgb_mask;
 	sdl_key &= rgb_mask; /* remove the alpha part */
-	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
+	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_TRUE|SDL_RLEACCEL,sdl_key);
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		charcols[i]=fontKeyCol;
 		first_draw[i]=true;
@@ -339,12 +360,31 @@ void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int fla
 }
 
 static void find_resolution() {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	SDL_DisplayMode wantedmode, closestmode;
+#else
 	SDL_Rect **modes;
+#endif
 	int i,bestw,besth,wantedw,wantedh;
 	wantedw=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	wantedh=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
 	TCOD_ctx.actual_fullscreen_width=wantedw;
 	TCOD_ctx.actual_fullscreen_height=wantedh;
+
+#if SDL_VERSION_ATLEAST(2,0,0)
+	wantedmode.w = wantedw;
+	wantedmode.h = wantedh;
+	wantedmode.format = 0;  /* don't care for rest. */
+	wantedmode.refresh_rate = 0;
+	wantedmode.driverdata = 0;
+	if (SDL_GetClosestDisplayMode(window?SDL_GetWindowDisplay(window):0, &wantedmode, &closestmode) == &closestmode) {
+		bestw=closestmode.w;
+		besth=closestmode.h;
+	} else {
+		bestw=99999;
+		besth=99999;
+	}
+#else
 	modes=SDL_ListModes(NULL, SDL_FULLSCREEN);
 
 	bestw=99999;
@@ -359,6 +399,7 @@ static void find_resolution() {
 			}
 		}
 	}
+#endif
 	if ( bestw != 99999) {
 		TCOD_ctx.actual_fullscreen_width=bestw;
 		TCOD_ctx.actual_fullscreen_height=besth;
@@ -373,12 +414,34 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(USE_SDL2_RENDERER)
+	SDL_Texture *screentexture;
+#endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
 		if ( TCOD_ctx.sdl_cbk ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+#	if defined (USE_SDL2_RENDERER)
+			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
+#	else
+			TCOD_ctx.sdl_cbk((void *)SDL_GetWindowSurface(window));
+#	endif
+#else
 			TCOD_ctx.sdl_cbk((void *)screen);
+#endif
 		}
+#if SDL_VERSION_ATLEAST(2,0,0)	
+#   ifdef USE_SDL2_RENDERER
+		screentexture = SDL_CreateTextureFromSurface(renderer, screen);
+		SDL_RenderCopy(renderer, screentexture, NULL, NULL);
+		SDL_RenderPresent(renderer);
+		SDL_DestroyTexture(screentexture);
+#   else
+		SDL_UpdateWindowSurface(window);
+#   endif
+#else
 		SDL_Flip(screen);
+#endif
 	}
 #ifndef NO_OPENGL
 	else {
@@ -417,6 +480,15 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+	if (bitmap == NULL)
+		bitmap = screen;
+#   else
+	if (bitmap == NULL)
+		bitmap = SDL_GetWindowSurface(window);
+#   endif
+#endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {
 			SDL_Rect srcRect,dstRect;
@@ -445,7 +517,11 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
+#if SDL_VERSION_ATLEAST(2,0,0)
+				if ( vbitmap == NULL && TCOD_ctx.fullscreen ) {
+#else
 				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
+#endif
 					dstRect.x+=TCOD_ctx.fullscreen_offsetx;
 					dstRect.y+=TCOD_ctx.fullscreen_offsety;
 				}
@@ -587,7 +663,9 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 }
 
 void TCOD_sys_set_keyboard_repeat(int initial_delay, int interval) {
+#if !SDL_VERSION_ATLEAST(2,0,0)
 	SDL_EnableKeyRepeat(initial_delay,interval);
+#endif
 }
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
@@ -607,7 +685,9 @@ void *TCOD_sys_get_surface(int width, int height, bool alpha) {
 			bmask=0x0000FF00;
 			amask=0x000000FF;
 		}
+#if !SDL_VERSION_ATLEAST(2,0,0)
 		flags|=SDL_SRCALPHA;
+#endif
 	} else {
 		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
 			rmask=0x0000FF;
@@ -620,11 +700,19 @@ void *TCOD_sys_get_surface(int width, int height, bool alpha) {
 		}
 		amask=0;
 	}
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	bitmap=SDL_CreateRGBSurface(flags,width,height,
+#else
 	bitmap=SDL_AllocSurface(flags,width,height,
+#endif
 		alpha ? 32:24,
 		rmask,gmask,bmask,amask);
 	if ( alpha ) {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+		SDL_SetSurfaceAlphaMod(bitmap, 255);
+#else
 		SDL_SetAlpha(bitmap, SDL_SRCALPHA, 255);
+#endif
 	}
 	return (void *)bitmap;
 }
@@ -672,12 +760,19 @@ void TCOD_sys_startup() {
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
+#if SDL_VERSION_ATLEAST(2,0,0)
+#ifndef NDEBUG
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+#endif
+#endif
 	TCOD_IFNOT(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) >= 0 ) return;
 #ifndef	TCOD_WINDOWS
 	/* not needed and might crash on windows */
 	atexit(SDL_Quit);
 #endif
+#if !SDL_VERSION_ATLEAST(2,0,0)
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
+#endif
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -723,10 +818,19 @@ static void TCOD_sys_load_player_config() {
 	font=TCOD_parser_get_string_property(parser, "libtcod.font");
 	if ( font != NULL ) {
 		/* custom font */
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_RWops *rwops = SDL_RWFromFile(font,"rb");
+		if (rwops) {
+#else
 		FILE *f=fopen(font,"rb");
 		if (f) {
+#endif
 			int fontNbCharHoriz,fontNbCharVertic;
+#if SDL_VERSION_ATLEAST(2,0,0)
+			rwops->close(rwops);
+#else
 			fclose(f);
+#endif
 			strcpy(TCOD_ctx.font_file,font);
 			TCOD_ctx.font_in_row=TCOD_parser_get_bool_property(parser,"libtcod.fontInRow");
 			TCOD_ctx.font_greyscale=TCOD_parser_get_bool_property(parser,"libtcod.fontGreyscale");
@@ -759,7 +863,11 @@ TCOD_renderer_t TCOD_sys_get_renderer() {
 void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( renderer == TCOD_ctx.renderer ) return;
 	TCOD_ctx.renderer=renderer;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	if ( window ) {
+#else
 	if ( screen ) {
+#endif
 		TCOD_sys_term();
 	}
 	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,TCOD_ctx.root->buf,TCOD_ctx.root->oldbuf,TCOD_ctx.fullscreen);
@@ -768,24 +876,48 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 }
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+	SDL_RWops *rwops;
+#else
 	FILE *f;
+#endif
 	if ( ! has_startup ) TCOD_sys_startup();
 	/* check if there is a user (player) config file */
+#if SDL_VERSION_ATLEAST(2,0,0)
+	rwops =  SDL_RWFromFile("./libtcod.cfg", "r");
+	if (rwops) {
+		rwops->close(rwops);
+#else
 	f = fopen("./libtcod.cfg","r");
 	if ( f ) {
 		fclose(f);
+#endif
 		/* yes, read it */
 		TCOD_sys_load_player_config();
 		if (TCOD_ctx.fullscreen) fullscreen=true;
 	}
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
+	/* Android should always be fullscreen. */
+	TCOD_ctx.fullscreen = fullscreen = true;
+#endif
 	if (! charmap) TCOD_sys_load_font();
 	if ( fullscreen  ) {
 		find_resolution();
 #ifndef NO_OPENGL	
 		if (TCOD_ctx.renderer != TCOD_RENDERER_SDL ) {
 			TCOD_opengl_init_attributes();
+#if SDL_VERSION_ATLEAST(2,0,0)
+			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
+#	if defined(__ANDROID__) && defined(XXXX_TBD)
+			winflags |= SDL_WINDOW_RESIZABLE;
+#	endif
+			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
+			if ( window && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
+#else
 			screen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN|SDL_OPENGL);
 			if ( screen && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
+#endif
 				TCOD_LOG(("Using %s renderer...\n",TCOD_ctx.renderer == TCOD_RENDERER_GLSL ? "GLSL" : "OPENGL"));
 			} else {
 				TCOD_LOG(("Fallback to SDL renderer...\n"));
@@ -794,21 +926,49 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		} 
 #endif		
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
+#	if defined(__ANDROID__) && defined(FUTURE_SUPPORT)
+			winflags |= SDL_WINDOW_RESIZABLE;
+#	endif
+			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
+			if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot set fullscreen video mode");
+#else
 			screen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 			if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot set fullscreen video mode");
+#endif
 		}
 		SDL_ShowCursor(0);
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_GetWindowSize(window,&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
+#else
 		TCOD_ctx.actual_fullscreen_width=screen->w;
 		TCOD_ctx.actual_fullscreen_height=screen->h;
+#endif
 		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
 		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		SDL_RenderClear(renderer);
+#   else
+		SDL_FillRect(SDL_GetWindowSurface(window),0,0);
+#   endif
+#else
 		SDL_FillRect(screen,0,0);
+#endif
 	} else {
 #ifndef NO_OPENGL	
 		if (TCOD_ctx.renderer != TCOD_RENDERER_SDL ) {
 			TCOD_opengl_init_attributes();
+#if SDL_VERSION_ATLEAST(2,0,0)
+			winflags |= SDL_WINDOW_OPENGL;
+			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,winflags);
+			if ( window && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
+#else
 			screen=SDL_SetVideoMode(w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,32,SDL_OPENGL);
 			if ( screen && TCOD_opengl_init_state(w, h, charmap) && TCOD_opengl_init_shaders() ) {
+#endif
 				TCOD_LOG(("Using %s renderer...\n",TCOD_ctx.renderer == TCOD_RENDERER_GLSL ? "GLSL" : "OPENGL"));
 			} else {
 				TCOD_LOG(("Fallback to SDL renderer...\n"));
@@ -817,12 +977,27 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		} 
 #endif		
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,winflags);
+#else
 			screen=SDL_SetVideoMode(w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,32,0);
+#endif
 			TCOD_LOG(("Using SDL renderer...\n"));
 		}
+#if SDL_VERSION_ATLEAST(2,0,0)
+		if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
+#else
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
+#endif
 	}
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+	renderer = SDL_CreateRenderer(window, -1, 0);
+	if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
+#   endif
+#else
 	SDL_EnableUNICODE(1);
+#endif
 	consoleBuffer=buf;
 	prevConsoleBuffer=oldbuf;
 	TCOD_ctx.fullscreen=fullscreen;
@@ -855,7 +1030,15 @@ void TCOD_sys_save_screenshot(const char *filename) {
 		} while(!filename);
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+		/* somethign with SDL_SetRenderTarget? */
+#	else
+		TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename);
+#	endif
+#else
 		TCOD_sys_save_bitmap((void *)screen,filename);
+#endif
 #ifndef NO_OPENGL		
 	} else {
 		SDL_Surface *screenshot=(SDL_Surface *)TCOD_opengl_get_screen();
@@ -867,6 +1050,7 @@ void TCOD_sys_save_screenshot(const char *filename) {
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
 	bool mouseOn=SDL_ShowCursor(-1);
+	TCOD_ctx.fullscreen=fullscreen;
 	/*
 	SDL_QuitSubSystem(SDL_INIT_VIDEO);
 	SDL_InitSubSystem(SDL_INIT_VIDEO);
@@ -876,12 +1060,24 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	*/
 	if ( fullscreen ) {
 		find_resolution();
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_SetWindowFullscreen(window, fullscreen);
+#	ifdef USE_SDL2_RENDERER
+		/* screen = SDL_CreateWindowFramebuffer(window); */
+#   else
+#	endif
+#else
 		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 		TCOD_IFNOT ( newscreen != NULL ) return;
 		screen=newscreen;
+#endif
 		SDL_ShowCursor(mouseOn ? 1:0);
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_GetWindowSize(window,&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
+#else
 		TCOD_ctx.actual_fullscreen_width=screen->w;
 		TCOD_ctx.actual_fullscreen_height=screen->h;
+#endif
 		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
 		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 		/*
@@ -890,9 +1086,13 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 		printf ("flags : %x bpp : %d bitspp : %d\n",screen->flags, screen->format->BytesPerPixel, screen->format->BitsPerPixel);
 		*/
 	} else {
+#if SDL_VERSION_ATLEAST(2,0,0)
+		SDL_SetWindowFullscreen(window, fullscreen);
+#else
 		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.root->w*TCOD_ctx.font_width,TCOD_ctx.root->h*TCOD_ctx.font_height,32,0);
 		TCOD_IFNOT( newscreen != NULL ) return;
 		screen=newscreen;
+#endif
 		SDL_ShowCursor(mouseOn ? 1:0);
 		TCOD_ctx.fullscreen_offsetx=0;
 		TCOD_ctx.fullscreen_offsety=0;
@@ -900,20 +1100,36 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	TCOD_ctx.fullscreen=fullscreen;
 	/* SDL_WM_SetCaption(TCOD_ctx.window_title,NULL); */
 	oldFade=-1; /* to redraw the whole screen */
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+	SDL_RenderPresent(renderer);
+#   else
+	SDL_FillRect(SDL_GetWindowSurface(window),0,0);
+#   endif
+#else
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
+#endif
 }
 
 
 void TCOD_sys_set_window_title(const char *title) {
 	strcpy(TCOD_ctx.window_title,title);
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_SetWindowTitle(window, title);
+#else
 	SDL_WM_SetCaption(title,NULL);
+#endif
 }
 
 void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
+#if SDL_VERSION_ATLEAST(2,0,0)	
+		TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
+#else
 		TCOD_sys_render(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
+#endif
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
@@ -936,17 +1152,47 @@ void TCOD_sys_flush(bool render) {
 	last_frame_length = frame_time * 0.001f;
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)	
+static char TCOD_sys_get_vk(SDL_Keycode sdl_key) {
+	int i;
+	for (i = 0; i < NUM_VK_TO_C_ENTRIES; i++) {
+		if (vk_to_c[i].sdl_key == sdl_key)
+			return vk_to_c[i].tcod_key;
+	}
+	return 0;
+}
+
+static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
+	int i;
+	for (i = 0; i < NUM_VK_TO_C_ENTRIES; i++) {
+		if (vk_to_c[i].sdl_key == 0) {
+			vk_to_c[i].tcod_key = tcod_key;
+			break;
+		}
+	}
+}
+#endif
+
 static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	SDL_KeyboardEvent *kev=&ev->key;
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	ret->c = kev->keysym.sym & 0xFF;
+#else
 	ret->c=(char)kev->keysym.unicode;
+#endif
 	if ( ( kev->keysym.mod & (KMOD_LCTRL|KMOD_RCTRL) ) != 0 ) {
 		/* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
 		if ( kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z ) {
 			ret->c = 'a'+(kev->keysym.sym - SDLK_a);
 		}
 	}
+#if SDL_VERSION_ATLEAST(2,0,0)	
+	if ( ev->type == SDL_KEYDOWN ) TCOD_sys_set_vk(kev->keysym.sym, ret->c);
+	else if (ev->type == SDL_KEYUP ) ret->c = TCOD_sys_get_vk(kev->keysym.sym);
+#else
 	if ( ev->type == SDL_KEYDOWN ) vk_to_c[kev->keysym.sym] = ret->c;
 	else if (ev->type == SDL_KEYUP ) ret->c = vk_to_c[kev->keysym.sym];
+#endif
 	switch(kev->keysym.sym) {
 		case SDLK_ESCAPE : ret->vk=TCODK_ESCAPE;break;
 		case SDLK_SPACE : ret->vk=TCODK_SPACE; break;
@@ -963,7 +1209,11 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_LALT : case SDLK_RALT : ret->vk=TCODK_ALT;break;
 		case SDLK_LCTRL : case SDLK_RCTRL : ret->vk=TCODK_CONTROL;break;
 		case SDLK_LSHIFT : case SDLK_RSHIFT : ret->vk=TCODK_SHIFT;break;
+#if SDL_VERSION_ATLEAST(2,0,0)	
+		case SDLK_PRINTSCREEN : ret->vk=TCODK_PRINTSCREEN;break;
+#else
 		case SDLK_PRINT : ret->vk=TCODK_PRINTSCREEN;break;
+#endif
 		case SDLK_LEFT : ret->vk=TCODK_LEFT;break;
 		case SDLK_UP : ret->vk=TCODK_UP;break;
 		case SDLK_RIGHT : ret->vk=TCODK_RIGHT;break;
@@ -990,6 +1240,18 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_7 : ret->vk=TCODK_7;break;
 		case SDLK_8 : ret->vk=TCODK_8;break;
 		case SDLK_9 : ret->vk=TCODK_9;break;
+#if SDL_VERSION_ATLEAST(2,0,0)	
+		case SDLK_KP_0 : ret->vk=TCODK_KP0;break;
+		case SDLK_KP_1 : ret->vk=TCODK_KP1;break;
+		case SDLK_KP_2 : ret->vk=TCODK_KP2;break;
+		case SDLK_KP_3 : ret->vk=TCODK_KP3;break;
+		case SDLK_KP_4 : ret->vk=TCODK_KP4;break;
+		case SDLK_KP_5 : ret->vk=TCODK_KP5;break;
+		case SDLK_KP_6 : ret->vk=TCODK_KP6;break;
+		case SDLK_KP_7 : ret->vk=TCODK_KP7;break;
+		case SDLK_KP_8 : ret->vk=TCODK_KP8;break;
+		case SDLK_KP_9 : ret->vk=TCODK_KP9;break;
+#else
 		case SDLK_KP0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP2 : ret->vk=TCODK_KP2;break;
@@ -1000,6 +1262,7 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_KP7 : ret->vk=TCODK_KP7;break;
 		case SDLK_KP8 : ret->vk=TCODK_KP8;break;
 		case SDLK_KP9 : ret->vk=TCODK_KP9;break;
+#endif
 		case SDLK_KP_DIVIDE : ret->vk=TCODK_KPDIV;break;
 		case SDLK_KP_MULTIPLY : ret->vk=TCODK_KPMUL;break;
 		case SDLK_KP_PLUS : ret->vk=TCODK_KPADD;break;
@@ -1023,7 +1286,11 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 			TCOD_console_set_window_closed();
 		break;
 		case SDL_VIDEOEXPOSE :
+#if SDL_VERSION_ATLEAST(2,0,0)
+			TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
+#else
 			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
+#endif
 		break;
 		case SDL_MOUSEBUTTONDOWN : {
 			SDL_MouseButtonEvent *mev=&ev->button;
@@ -1094,6 +1361,25 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
 	return key_status[key];
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+static void TCOD_sys_mouse_touch_conversion(SDL_Event *ev, TCOD_mouse_t *mouse) {
+	SDL_TouchFingerEvent *tfe=&ev->tfinger;
+	SDL_Touch *touch=SDL_GetTouch(tfe->touchId);
+	int charWidth, charHeight;
+	int windowWidth, windowHeight;
+	TCOD_sys_get_current_resolution(&windowWidth, &windowHeight);
+	mouse->dx += (tfe->dx * windowWidth)/touch->xres;
+	mouse->dy += (tfe->dy * windowHeight)/touch->yres;
+	mouse->x = (tfe->x * windowWidth)/touch->xres;
+	mouse->y = (tfe->y * windowHeight)/touch->yres;
+	TCOD_sys_get_char_size(&charWidth,&charHeight);
+	mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+	mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+	mouse->dcx = mouse->dx / charWidth;
+	mouse->dcy = mouse->dy / charHeight;
+}
+#endif
+
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
@@ -1116,6 +1402,33 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
+#if SDL_VERSION_ATLEAST(2,0,0)
+		case SDL_FINGERMOTION :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				printf("TCOD finger motion event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_MOVE;
+			}
+		break;
+		case SDL_FINGERDOWN :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				mouse->lbutton=mousebl=true;
+				printf("TCOD finger down event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_PRESS;
+			}
+		break;
+		case SDL_FINGERUP :
+			if (mouse_touch && (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
+				TCOD_sys_mouse_touch_conversion(ev, mouse);
+				if (mousebl)
+					mouse->lbutton_pressed = mouse_force_bl=true;
+				mouse->lbutton = mousebl=false;
+				printf("TCOD finger up event: %d %d\n", mouse->x, mouse->y);
+				return retMask | TCOD_EVENT_MOUSE_RELEASE;
+			}
+		break;
+#endif
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
 				SDL_MouseMotionEvent *mme=&ev->motion;
@@ -1143,8 +1456,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_LEFT : mouse->lbutton=mousebl=true; break;
 					case SDL_BUTTON_MIDDLE : mouse->mbutton=mousebm=true; break;
 					case SDL_BUTTON_RIGHT : mouse->rbutton=mousebr=true; break;
+#if !SDL_VERSION_ATLEAST(2,0,0)	
 					case SDL_BUTTON_WHEELUP : mouse->wheel_up=true; break;
 					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
+#endif
 				}
 				return retMask;
 			}
@@ -1164,9 +1479,20 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_QUIT :
 			TCOD_console_set_window_closed();
 		break;
+#if SDL_VERSION_ATLEAST(2,0,0)
+		case SDL_WINDOWEVENT :
+			switch (ev->window.event) {
+			case SDL_WINDOWEVENT_EXPOSED:
+				TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
+			break;
+			default : break; 
+			}
+		break;
+#else
 		case SDL_VIDEOEXPOSE :
 			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
 		break;			
+#endif
 		default : break; 
 	}
 	return retMask;
@@ -1259,7 +1585,14 @@ void TCOD_sys_sleep_milli(uint32 milliseconds) {
 
 void TCOD_sys_term() {
 	SDL_Quit();
+#if SDL_VERSION_ATLEAST(2,0,0)
+#   ifdef USE_SDL2_RENDERER
+	renderer=NULL;
+#   endif
+	window=NULL;
+#else
 	screen=NULL;
+#endif
 }
 
 void *TCOD_sys_load_image(const char *filename) {
@@ -1414,15 +1747,41 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 }
 
 void TCOD_sys_get_current_resolution(int *w, int *h) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+	int displayidx;
+	SDL_Rect rect = { 0, 0, 0, 0 };
+	if (window) {
+		TCOD_IFNOT(window) return;
+		displayidx = SDL_GetWindowDisplay(window);
+		TCOD_IFNOT(displayidx >= 0) return;
+	} else {
+		/* No window if no console, but user can want to know res before opening one. */
+		TCOD_IFNOT(SDL_GetNumVideoDisplays() > 0) return;
+		displayidx = 0;
+	}
+	TCOD_IFNOT(SDL_GetDisplayBounds(displayidx, &rect) == 0) return;
+	*w=rect.w;
+	*h=rect.h;
+#else
 	const SDL_VideoInfo *info=SDL_GetVideoInfo();
 	*w=info->current_w;
 	*h=info->current_h;
+#endif
 }
 
 /* image stuff */
 bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 	uint8 tmp[128];
 	int i;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops =  SDL_RWFromFile(filename, "rb");
+	if (! rwops) return false;
+	if ( (i = rwops->read(rwops,tmp,size,1)) != 1 ) {
+		rwops->close(rwops);
+		return false;
+	}
+	rwops->close(rwops);
+#else
 	FILE *f=fopen(filename,"rb");
 	if (! f) return false;
 	if ( fread(tmp,1,128,f) < (unsigned)size ) {
@@ -1430,9 +1789,17 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 		return false;
 	}
 	fclose(f);
+#endif
 	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
+	printf("TCOD_sys_check_magic_number: 4");
 	return true;
 }
+
+#if SDL_VERSION_ATLEAST(2,0,0)
+void *TCOD_sys_get_sdl_window() {
+	return (void *)window;
+}
+#endif
 
 /* mouse stuff */
 void TCOD_mouse_show_cursor(bool visible) {
@@ -1444,6 +1811,15 @@ bool TCOD_mouse_is_cursor_visible() {
 }
 
 void TCOD_mouse_move(int x, int y) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+  SDL_WarpMouseInWindow(window, (Uint16)x,(Uint16)y);
+#else
   SDL_WarpMouse((Uint16)x,(Uint16)y);
+#endif
 }
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+void TCOD_mouse_includes_touch(bool enable) {
+	mouse_touch = enable;
+}
+#endif

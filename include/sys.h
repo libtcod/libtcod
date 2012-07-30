@@ -42,6 +42,7 @@ TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
+TCODLIB_API void *TCOD_sys_get_sdl_window();
 
 typedef enum {
   TCOD_EVENT_KEY_PRESS=1,

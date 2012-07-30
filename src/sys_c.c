@@ -30,7 +30,8 @@
 #include <stdarg.h>
 #include <sys/stat.h>
 #include <string.h>
-#if defined ( __linux ) || defined ( __FreeBSD__ )
+
+#if defined (__linux) && ! defined (__ANDROID__)
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -634,7 +635,7 @@ char *TCOD_sys_clipboard_get()
 	}
 	return clipboardText;
 }
-#elif defined(TCOD_HAIKU)
+#elif defined(TCOD_HAIKU) || defined(__ANDROID__)
 /* TODO */
 void TCOD_sys_clipboard_set(const char *value)
 {
@@ -673,7 +674,7 @@ char *TCOD_sys_clipboard_get()
 #ifdef TCOD_WINDOWS
 BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {
-		case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;
+		/* case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;  -- not safe, locks up in SDL2/RegisterClass call */
 		default : break;
 	}
 	return TRUE;
@@ -682,7 +683,7 @@ BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
 /* JBR03202012 Presumably there was a reason for this being if !MACOSOX, but it works fine for me
 	#ifndef TCOD_MACOSX */
 	void __attribute__ ((constructor)) DllMain() {
-		TCOD_sys_startup();
+		/* TCOD_sys_startup(); */
 	}
 /*	#endif */
 #endif

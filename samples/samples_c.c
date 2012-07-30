@@ -13,7 +13,7 @@
 #include <math.h>
 #include "libtcod.h"
 #define _SDL_main_h
-#ifdef __HAIKU__
+#if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
 #else
 #include <SDL/SDL.h>

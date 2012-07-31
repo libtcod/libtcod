@@ -1,4 +1,4 @@
-package org.disinterest.broguex;
+package org.libsdl.app;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -50,6 +50,7 @@ public class SDLActivity extends Activity {
     // Load the .so
     static {
         System.loadLibrary("SDL2");
+        System.loadLibrary("tcod");
         //System.loadLibrary("SDL2_image");
         //System.loadLibrary("SDL2_mixer");
         //System.loadLibrary("SDL2_ttf");

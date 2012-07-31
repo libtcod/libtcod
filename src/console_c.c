@@ -304,7 +304,7 @@ void TCOD_console_clear(TCOD_console_t con) {
 			int off=x+dat->w*y;
 			dat->buf[off].dirt=0;
 			dat->buf[off].c=' ';
-			dat->buf[off].cf=TCOD_ctx.ascii_to_tcod[' '];
+			dat->buf[off].cf=TCOD_ctx.ascii_to_tcod?TCOD_ctx.ascii_to_tcod[' ']:0;
 			dat->buf[off].fore=dat->fore;
 			dat->buf[off].back=dat->back;
 		}

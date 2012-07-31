@@ -4,8 +4,8 @@ Products :
    http://upx.sourceforge.net
 - zlib 1.2.3, by Jean-loup Gailly and Mark Adler
    http://www.zlib.org
-- libpng 1.2.31, by Glenn Randers-Pehrson
-   http://www.libpng.org
+- lodepng 20120729, by Lode Vandevenne
+   http://lodev.org/lodepng
 - SDL 1.2.12, by Sam Lantinga
    http://www.libsdl.org
 

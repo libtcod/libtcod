@@ -13,17 +13,13 @@ SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
 ZLIB_DIR=dependencies/zlib-1.2.3
 ZLIB_FLAGS=-I $(ZLIB_DIR)/include
 
-# PNG
-PNG_DIR=dependencies/libpng-1.2.31
-PNG_FLAGS=-I $(PNG_DIR)/include
- 
 # OSX Core libraries
 OSX_FLAGS=-I /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks
 
 #OPENGL
 OPENGL_LIB=-lGL
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(PNG_FLAGS) $(OSX_FLAGS) -fno-strict-aliasing
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(OSX_FLAGS) -fno-strict-aliasing
 TEMP=/tmp
 CC=gcc
 CPP=g++
@@ -70,7 +66,8 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/txtfield_c.o \
 	$(TEMP)/libtcod/debug/wrappers.o \
 	$(TEMP)/libtcod/debug/zip_c.o \
-	$(TEMP)/libtcod/debug/namegen_c.o
+	$(TEMP)/libtcod/debug/namegen_c.o \
+	$(TEMP)/libtcod/debug/png/lodepng.o
 
 LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/bresenham.o \
@@ -135,7 +132,8 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/tree_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o \
-	$(TEMP)/libtcod/release/namegen_c.o
+	$(TEMP)/libtcod/release/namegen_c.o \
+	$(TEMP)/libtcod/release/png/lodepng.o
 
 LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/bresenham.o \
@@ -178,31 +176,31 @@ debug : libtcod_debug.a libtcodxx_debug.a libtcodgui_debug.a
 
 release : libtcod.a libtcodxx.a libtcodgui.a
 
-$(TEMP)/libtcod/debug :
+$(TEMP)/libtcod/debug/png :
 	mkdir -p $@
 
 $(TEMP)/libtcod/debug/gui :
 	mkdir -p $@
 
-$(TEMP)/libtcod/release :
+$(TEMP)/libtcod/release/png :
 	mkdir -p $@
 
 $(TEMP)/libtcod/release/gui :
 	mkdir -p $@
 
-libtcod_debug.a : $(TEMP)/libtcod/debug $(LIBOBJS_C_DEBUG)
+libtcod_debug.a : $(TEMP)/libtcod/debug/png $(LIBOBJS_C_DEBUG)
 	ar r $@ $(LIBOBJS_C_DEBUG)
 
-libtcodxx_debug.a : $(TEMP)/libtcod/debug $(LIBOBJS_CPP_DEBUG)
+libtcodxx_debug.a : $(TEMP)/libtcod/debug/png $(LIBOBJS_CPP_DEBUG)
 	ar r $@ $(LIBOBJS_CPP_DEBUG)
 	
 libtcodgui_debug.a : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
 	ar r $@ $(GUIOBJS_DEBUG)
 	
-libtcod.a : $(TEMP)/libtcod/release $(LIBOBJS_C_RELEASE)
+libtcod.a : $(TEMP)/libtcod/release/png $(LIBOBJS_C_RELEASE)
 	ar r $@ $(LIBOBJS_C_RELEASE)
 
-libtcodxx.a : $(TEMP)/libtcod/release $(LIBOBJS_CPP_RELEASE)
+libtcodxx.a : $(TEMP)/libtcod/release/png $(LIBOBJS_CPP_RELEASE)
 	ar r $@ $(LIBOBJS_CPP_RELEASE)
 
 libtcodgui.a : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)

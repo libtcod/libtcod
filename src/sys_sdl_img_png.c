@@ -52,8 +52,8 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 
 	lodepng_state_init(&state);
 	/*optionally customize the state*/
+	if (!TCOD_sys_load_file(filename,&png,&pngsize)) return NULL;
 
-	lodepng_load_file(&png, &pngsize, filename);
 	lodepng_inspect(&width,&height,&state, png, pngsize);
 	bpp=lodepng_get_bpp(&state.info_png.color);
 
@@ -92,6 +92,9 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	unsigned char *image, *dest=(unsigned char *)malloc(surf->h*surf->w*3*sizeof(char));
 	unsigned x,y;
+	unsigned char *buf;
+	size_t size;
+	int error;
 	/* SDL uses 32bits format without alpha layer for screen. convert it to 24 bits */
 	image=dest;
 	for (y=0; y<  surf->h; y++ ) {
@@ -102,7 +105,13 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 			*dest++=*((pixel)+surf->format->Bshift/8);
 		}
 	}
-	lodepng_encode24_file(filename,image,surf->w,surf->h);
+	error=lodepng_encode_memory(&buf,&size,image,surf->w,surf->h,LCT_RGB,8);
 	free(image);
+	if ( ! error ) {
+		TCOD_sys_write_file(filename,buf,size);
+		free(buf);
+	} else {
+		printf("error %u: %s\n", error, lodepng_error_text(error));
+	}
 }
 

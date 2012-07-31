@@ -168,22 +168,6 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 	return list;
 }
 
-bool TCOD_sys_file_exists(const char * filename, ...) {
-	FILE * in;
-	bool ret = false;
-	char f[1024];
-	va_list ap;
-	va_start(ap,filename);
-	vsprintf(f,filename,ap);
-	va_end(ap);
-	in = fopen(f,"rb");
-	if (in != NULL) {
-		ret = true;
-		fclose(in);
-	}
-	return ret;
-}
-
 /* thread stuff */
 #ifdef TCOD_WINDOWS
 /* Helper function to count set bits in the processor mask. */

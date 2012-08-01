@@ -1480,9 +1480,16 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
 			switch (ev->window.event) {
+#ifdef __ANDROID__
+			case SDL_WINDOWEVENT_RESTORED:
+				/* User returned to home screen, then reopened app.  Need complete redraw, not partial. */
+				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
+			break;
+#else
 			case SDL_WINDOWEVENT_EXPOSED:
 				TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
 			break;
+#endif
 			default : break; 
 			}
 		break;

@@ -619,7 +619,7 @@ int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, 
 }
 
 /* non public methods */
-int TCOD_console_stringLength(const char *s) {
+int TCOD_console_stringLength(const unsigned char *s) {
 	int l=0;
 	while (*s) {
 		if ( *s == (int)TCOD_COLCTRL_FORE_RGB || *s == (int)TCOD_COLCTRL_BACK_RGB ) s+=3;
@@ -629,7 +629,7 @@ int TCOD_console_stringLength(const char *s) {
 	return l;
 }
 
-char * TCOD_console_forward(char *s,int l) {
+unsigned char * TCOD_console_forward(unsigned char *s,int l) {
 	while ( *s && l > 0 ) {
 		if ( *s == (int)TCOD_COLCTRL_FORE_RGB || *s == (int)TCOD_COLCTRL_BACK_RGB ) s+=3;
 		else if ( *s > (int)TCOD_COLCTRL_STOP ) l--;
@@ -638,7 +638,7 @@ char * TCOD_console_forward(char *s,int l) {
 	return s;
 }
 
-char *TCOD_console_strchr(char *s, char c) {
+unsigned char *TCOD_console_strchr(unsigned char *s, unsigned char c) {
 	while ( *s && *s != c ) {
 		if ( *s == (int)TCOD_COLCTRL_FORE_RGB || *s == (int)TCOD_COLCTRL_BACK_RGB ) s+=3;
 		s++;
@@ -648,7 +648,7 @@ char *TCOD_console_strchr(char *s, char c) {
 
 int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
 	TCOD_alignment_t align, char *msg, bool can_split, bool count_only) {
-	char *c=msg;
+	unsigned char *c=(unsigned char *)msg;
 	int cx=0,cy=y;
 	int minx,maxx,miny,maxy;
 	TCOD_color_t oldFore;
@@ -677,10 +677,10 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 
 	do {
 		/* get \n delimited sub-message */
-		char *end=TCOD_console_strchr(c,'\n');
+		unsigned char *end=TCOD_console_strchr(c,'\n');
 		char bak=0;
 		int cl;
-		char *split=NULL;
+		unsigned char *split=NULL;
 		if ( end ) *end=0;
 		cl= TCOD_console_stringLength(c);
 		/* find starting x */
@@ -701,7 +701,7 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 				}
 			}
 			if ( split ) {
-				char *oldsplit=split;
+				unsigned char *oldsplit=split;
 				while ( ! isspace(*split) && split > c ) split --;
 				if (end) *end='\n';
 				if (!isspace(*split) ) {
@@ -1471,8 +1471,14 @@ TCOD_console_t TCOD_console_from_file(const char *filename) {
 	TCOD_IFNOT( f!=NULL ) {
 		return NULL;
 	}
-	fscanf(f, "ASCII-Paint v%g", &version);
-	fscanf(f, "%i %i", &width, &height);
+	if (fscanf(f, "ASCII-Paint v%g", &version) != 1 ) {
+		fclose(f);
+		return NULL;
+	}
+	if (fscanf(f, "%i %i", &width, &height) != 2 ) {
+		fclose(f);
+		return NULL;
+	}
 	TCOD_IFNOT ( width > 0 && height > 0) {
 		fclose(f);
 		return NULL;
@@ -1497,8 +1503,14 @@ bool TCOD_console_load_asc(TCOD_console_t pcon, const char *filename) {
 	TCOD_IFNOT( f!=NULL ) {
 		return false;
 	}
-	fscanf(f, "ASCII-Paint v%g", &version);
-	fscanf(f, "%i %i", &width, &height);
+	if (fscanf(f, "ASCII-Paint v%g", &version) != 1 ) {
+		fclose(f);
+		return false;
+	}
+	if (fscanf(f, "%i %i", &width, &height) != 2 ) {
+		fclose(f);
+		return false;
+	}
 	TCOD_IFNOT ( width > 0 && height > 0) {
 		fclose(f);
 		return false;

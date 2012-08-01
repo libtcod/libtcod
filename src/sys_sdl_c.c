@@ -213,7 +213,7 @@ void TCOD_sys_load_font() {
 	}
 	if (! hasTransparent ) {
 		/* alpha layer not used */
-		int x,y,keyx,keyy;
+		int keyx,keyy;
         Uint8 *pixel;
 		/* the key color is found on the character corresponding to space ' ' */
 		if ( TCOD_ctx.font_tcod_layout ) {

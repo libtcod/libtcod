@@ -875,7 +875,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_sys_load_player_config();
 		if (TCOD_ctx.fullscreen) fullscreen=true;
 	}
-#if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(TCOD_ANDROID)
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
@@ -887,7 +887,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 			TCOD_opengl_init_attributes();
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
-#	if defined(__ANDROID__) && defined(XXXX_TBD)
+#	if defined(TCOD_ANDROID) && defined(XXXX_TBD)
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
@@ -906,7 +906,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
-#	if defined(__ANDROID__) && defined(FUTURE_SUPPORT)
+#	if defined(TCOD_ANDROID) && defined(FUTURE_SUPPORT)
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
@@ -1437,9 +1437,16 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
 			switch (ev->window.event) {
+#ifdef TCOD_ANDROID
+			case SDL_WINDOWEVENT_RESTORED:
+				/* User returned to home screen, then reopened app.  Need complete redraw, not partial. */
+				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
+			break;
+#else
 			case SDL_WINDOWEVENT_EXPOSED:
 				TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
 			break;
+#endif
 			default : break; 
 			}
 		break;

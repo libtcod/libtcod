@@ -1154,8 +1154,10 @@ void TCOD_sys_flush(bool render) {
 static char TCOD_sys_get_vk(SDL_Keycode sdl_key) {
 	int i;
 	for (i = 0; i < NUM_VK_TO_C_ENTRIES; i++) {
-		if (vk_to_c[i].sdl_key == sdl_key)
+		if (vk_to_c[i].sdl_key == sdl_key) {
+			vk_to_c[i].sdl_key = 0;
 			return vk_to_c[i].tcod_key;
+		}
 	}
 	return 0;
 }
@@ -1164,6 +1166,7 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 	int i;
 	for (i = 0; i < NUM_VK_TO_C_ENTRIES; i++) {
 		if (vk_to_c[i].sdl_key == 0) {
+			vk_to_c[i].sdl_key = sdl_key;
 			vk_to_c[i].tcod_key = tcod_key;
 			break;
 		}
@@ -1173,7 +1176,7 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 
 static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	SDL_KeyboardEvent *kev=&ev->key;
-#if SDL_VERSION_ATLEAST(2,0,0)	
+#if SDL_VERSION_ATLEAST(2,0,0)
 	ret->c = kev->keysym.sym & 0xFF;
 #else
 	ret->c=(char)kev->keysym.unicode;

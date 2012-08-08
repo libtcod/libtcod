@@ -30,6 +30,8 @@
 #include <ctype.h>
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
+#elif defined (TCOD_SDL2)
+#include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
@@ -364,8 +366,9 @@ static void find_resolution() {
 	SDL_DisplayMode wantedmode, closestmode;
 #else
 	SDL_Rect **modes;
+	int i;
 #endif
-	int i,bestw,besth,wantedw,wantedh;
+	int bestw,besth,wantedw,wantedh;
 	wantedw=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	wantedh=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
 	TCOD_ctx.actual_fullscreen_width=wantedw;
@@ -1785,7 +1788,7 @@ void TCOD_mouse_includes_touch(bool enable) {
 }
 #endif
 
-bool TCOD_sys_load_file(const char *filename, unsigned char **buf, uint32 *size) {
+bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size) {
 	uint32 filesize;
 	/* get file size */
 #if SDL_VERSION_ATLEAST(2,0,0)

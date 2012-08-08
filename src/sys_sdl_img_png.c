@@ -52,7 +52,7 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 
 	lodepng_state_init(&state);
 	/*optionally customize the state*/
-	if (!TCOD_sys_load_file(filename,&png,&pngsize)) return NULL;
+	if (!TCOD_sys_read_file(filename,&png,&pngsize)) return NULL;
 
 	lodepng_inspect(&width,&height,&state, png, pngsize);
 	bpp=lodepng_get_bpp(&state.info_png.color);

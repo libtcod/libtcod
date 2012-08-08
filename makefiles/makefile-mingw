@@ -6,9 +6,9 @@ INCDIR=include
 
 #dependencies
 # SDL
-SDL_DIR=dependencies/SDL2-hg
+SDL_DIR=dependencies/SDL-1.2.12
 SDL_FLAGS=-I $(SDL_DIR)/include
-SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL2
+SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL
 
 # ZLIB
 ZLIB_DIR=dependencies/zlib-1.2.3
@@ -18,7 +18,14 @@ ZLIB_LIBS=$(ZLIB_DIR)/lib/mingw/libz.a
 # OPENGL
 OPENGL_LIB=-lopengl32
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -Wall -fno-strict-aliasing -DTCOD_SDL2 -DNO_OPENGL
+# MINGW version
+MINGW_VERSION=$(word 3,$(shell sh -c "grep __MINGW32_MAJOR_VERSION /mingw/include/_mingw.h | grep define "))
+ifeq ($(MINGW_VERSION),4)
+MINGW_FLAGS=-static-libgcc -static-libstdc++
+endif
+
+
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -Wall -fno-strict-aliasing
 # -ansi
 CC=mingw32-gcc
 CPP=mingw32-g++
@@ -192,16 +199,16 @@ libtcod-mingw.a : $(LIBOBJS_DEBUG)
 	ar r $@ $(LIBOBJS_DEBUG)
 	
 libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
 libtcod-gui-mingw.dll : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw -static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
 
 libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
 libtcod-gui-mingw-debug.dll : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug -static-libgcc -static-libstdc++
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
 
 upx :
 	$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll

@@ -414,7 +414,7 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 	void *screen = SDL_GetWindowSurface(window);
 #endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-		if (TCOD_ctx.fullscreen_scale && vbitmap == NULL) {
+		if (TCOD_ctx.fullscreen_scale > 0.05f && vbitmap == NULL) {
 			int w = console_width*TCOD_ctx.font_width, h = console_height*TCOD_ctx.font_height;
 			float scaleFactor;
 			SDL_Rect srcRect, dstRect;
@@ -429,7 +429,7 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 			srcRect.x=srcRect.y=0; srcRect.w=w; srcRect.h=h;
 			dstRect.x=TCOD_ctx.fullscreen_offsetx; dstRect.y=TCOD_ctx.fullscreen_offsety;
 			dstRect.w=TCOD_ctx.scale_fullscreen_width; dstRect.h=TCOD_ctx.scale_fullscreen_height;
-			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect); /* Need to hook in dstRect, with best fit scaled result. */
+			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
 			/* Check result! */
 		} else {
 			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
@@ -872,22 +872,28 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 }
 
 static void TCOD_sys_init_screen_offset() {
-	if (TCOD_ctx.fullscreen_scale) {
+#ifdef __ANDROID__
+	int console_width = TCOD_ctx.root->w*TCOD_ctx.font_width;
+	int console_height = TCOD_ctx.root->h*TCOD_ctx.font_height;
+	TCOD_ctx.fullscreen_scale = MIN((float)TCOD_ctx.actual_fullscreen_width/console_width, (float)TCOD_ctx.actual_fullscreen_height/console_height);
+#endif
+	if (TCOD_ctx.fullscreen_scale > 0.05f || ABS(1.0f - TCOD_ctx.fullscreen_scale) > 0.05f) {
+#ifndef __ANDROID__
 		int console_width = TCOD_ctx.root->w*TCOD_ctx.font_width;
 		int console_height = TCOD_ctx.root->h*TCOD_ctx.font_height;
-		float scaleFactor = MIN((float)TCOD_ctx.actual_fullscreen_width/console_width, (float)TCOD_ctx.actual_fullscreen_height/console_height);
-		TCOD_ctx.scale_fullscreen_width=(int)(console_width*scaleFactor);
-		TCOD_ctx.scale_fullscreen_height=(int)(console_height*scaleFactor);
+#endif
+		TCOD_ctx.scale_fullscreen_width=(int)(console_width*TCOD_ctx.fullscreen_scale);
+		TCOD_ctx.scale_fullscreen_height=(int)(console_height*TCOD_ctx.fullscreen_scale);
 		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.scale_fullscreen_width)/2;
 		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.scale_fullscreen_height)/2;
 	} else {
+		TCOD_ctx.fullscreen_scale = 0.0f;
 		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
 		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 	}
 }
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
-	bool fullscreen_scale = false;
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	SDL_RWops *rwops;
@@ -912,8 +918,6 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 #if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
-	/* Android should also scale, rather than center. */
-	TCOD_ctx.fullscreen_scale = fullscreen_scale = true;
 #endif
 	if (! charmap) TCOD_sys_load_font();
 	if ( fullscreen  ) {
@@ -1358,18 +1362,22 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
 static void TCOD_sys_mouse_touch_conversion(SDL_Event *ev, TCOD_mouse_t *mouse) {
 	SDL_TouchFingerEvent *tfe=&ev->tfinger;
 	SDL_Touch *touch=SDL_GetTouch(tfe->touchId);
-	int charWidth, charHeight;
-	int windowWidth, windowHeight;
-	TCOD_sys_get_current_resolution(&windowWidth, &windowHeight);
-	mouse->dx += (tfe->dx * windowWidth)/touch->xres;
-	mouse->dy += (tfe->dy * windowHeight)/touch->yres;
-	mouse->x = (tfe->x * windowWidth)/touch->xres;
-	mouse->y = (tfe->y * windowHeight)/touch->yres;
-	TCOD_sys_get_char_size(&charWidth,&charHeight);
-	mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
-	mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
-	mouse->dcx = mouse->dx / charWidth;
-	mouse->dcy = mouse->dy / charHeight;
+	mouse->dx += (tfe->dx * TCOD_ctx.actual_fullscreen_width)/touch->xres;
+	mouse->dy += (tfe->dy * TCOD_ctx.actual_fullscreen_height)/touch->yres;
+	mouse->x = (tfe->x * TCOD_ctx.actual_fullscreen_width)/touch->xres;
+	mouse->y = (tfe->y * TCOD_ctx.actual_fullscreen_height)/touch->yres;
+	if (TCOD_ctx.fullscreen_scale > 0.05f) {
+		/* Which character = fractional position on scaled screen * axis length as number of console characters. */
+		mouse->cx = ((mouse->x - TCOD_ctx.fullscreen_offsetx) * TCOD_ctx.root->w)/TCOD_ctx.scale_fullscreen_width;
+		mouse->cy = ((mouse->y - TCOD_ctx.fullscreen_offsety) * TCOD_ctx.root->h)/TCOD_ctx.scale_fullscreen_height;
+		mouse->dcx = (int)(mouse->dx / (TCOD_ctx.font_width * TCOD_ctx.fullscreen_scale));
+		mouse->dcy = (int)(mouse->dy / (TCOD_ctx.font_height * TCOD_ctx.fullscreen_scale));
+	} else {
+		mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
+		mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
+		mouse->dcx = mouse->dx / TCOD_ctx.font_width;
+		mouse->dcy = mouse->dy / TCOD_ctx.font_height;
+	}
 }
 #endif
 
@@ -1434,10 +1442,18 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				mouse->x=mme->x;
 				mouse->y=mme->y;				
 				TCOD_sys_get_char_size(&charWidth,&charHeight);
-				mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
-				mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
-				mouse->dcx = mouse->dx / charWidth;
-				mouse->dcy = mouse->dy / charHeight;
+				if (TCOD_ctx.fullscreen_scale > 0.05f) {
+					/* Which character = fractional position on scaled screen * axis length as number of console characters. */
+					mouse->cx = ((mouse->x - TCOD_ctx.fullscreen_offsetx) * TCOD_ctx.root->w)/TCOD_ctx.scale_fullscreen_width;
+					mouse->cy = ((mouse->y - TCOD_ctx.fullscreen_offsety) * TCOD_ctx.root->h)/TCOD_ctx.scale_fullscreen_height;
+					mouse->dcx = (int)(mouse->dx / (charWidth * TCOD_ctx.fullscreen_scale));
+					mouse->dcy = (int)(mouse->dy / (charHeight * TCOD_ctx.fullscreen_scale));
+				} else {
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+					mouse->dcx = mouse->dx / charWidth;
+					mouse->dcy = mouse->dy / charHeight;
+				}
 				return retMask;
 			}
 		break; 

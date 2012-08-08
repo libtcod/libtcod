@@ -64,13 +64,10 @@ static image_support_t image_type[] = {
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 static SDL_Window* window=NULL;
-#   ifdef USE_SDL2_RENDERER
-static SDL_Renderer* renderer=NULL;
-static SDL_Surface* screen=NULL;
-#   endif
 #else
 static SDL_Surface* screen=NULL;
 #endif
+static SDL_Surface* scale_screen=NULL;
 static SDL_Surface* charmap=NULL;
 static char_t *consoleBuffer=NULL;
 static char_t *prevConsoleBuffer=NULL;
@@ -412,31 +409,36 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
-#if SDL_VERSION_ATLEAST(2,0,0) && defined(USE_SDL2_RENDERER)
-	SDL_Texture *screentexture;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	/* We get this everytime in case the old one is stale. */
+	void *screen = SDL_GetWindowSurface(window);
 #endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-		TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
+		if (TCOD_ctx.fullscreen_scale && vbitmap == NULL) {
+			int w = console_width*TCOD_ctx.font_width, h = console_height*TCOD_ctx.font_height;
+			float scaleFactor;
+			SDL_Rect srcRect, dstRect;
+			/* Make a bitmap of exact rendering size and correct format. */
+			if (scale_screen == NULL) {
+				SDL_PixelFormat *fmt = charmap->format;
+				scale_screen=SDL_CreateRGBSurface(SDL_SWSURFACE,w,h,fmt->BitsPerPixel,fmt->Rmask,fmt->Gmask,fmt->Bmask,fmt->Amask);
+			}
+			/* Render the console to the bitmap. */
+			TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, console_buffer, prev_console_buffer);
+			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it. */
+			srcRect.x=srcRect.y=0; srcRect.w=w; srcRect.h=h;
+			dstRect.x=TCOD_ctx.fullscreen_offsetx; dstRect.y=TCOD_ctx.fullscreen_offsety;
+			dstRect.w=TCOD_ctx.scale_fullscreen_width; dstRect.h=TCOD_ctx.scale_fullscreen_height;
+			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect); /* Need to hook in dstRect, with best fit scaled result. */
+			/* Check result! */
+		} else {
+			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
+		}
 		if ( TCOD_ctx.sdl_cbk ) {
-#if SDL_VERSION_ATLEAST(2,0,0)
-#	if defined (USE_SDL2_RENDERER)
-			printf("TCOD_sys_render call to renderer unsupported yet, in SDL2\n");
-#	else
-			TCOD_ctx.sdl_cbk((void *)SDL_GetWindowSurface(window));
-#	endif
-#else
 			TCOD_ctx.sdl_cbk((void *)screen);
-#endif
 		}
 #if SDL_VERSION_ATLEAST(2,0,0)	
-#   ifdef USE_SDL2_RENDERER
-		screentexture = SDL_CreateTextureFromSurface(renderer, screen);
-		SDL_RenderCopy(renderer, screentexture, NULL, NULL);
-		SDL_RenderPresent(renderer);
-		SDL_DestroyTexture(screentexture);
-#   else
 		SDL_UpdateWindowSurface(window);
-#   endif
 #else
 		SDL_Flip(screen);
 #endif
@@ -479,13 +481,8 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
 #if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-	if (bitmap == NULL)
-		bitmap = screen;
-#   else
 	if (bitmap == NULL)
 		bitmap = SDL_GetWindowSurface(window);
-#   endif
 #endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {
@@ -516,6 +513,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 #if SDL_VERSION_ATLEAST(2,0,0)
+				/* fullscreen_scale should be initially done off-window, and not here. */
 				if ( vbitmap == NULL && TCOD_ctx.fullscreen ) {
 #else
 				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
@@ -873,7 +871,23 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
 
+static void TCOD_sys_init_screen_offset() {
+	if (TCOD_ctx.fullscreen_scale) {
+		int console_width = TCOD_ctx.root->w*TCOD_ctx.font_width;
+		int console_height = TCOD_ctx.root->h*TCOD_ctx.font_height;
+		float scaleFactor = MIN((float)TCOD_ctx.actual_fullscreen_width/console_width, (float)TCOD_ctx.actual_fullscreen_height/console_height);
+		TCOD_ctx.scale_fullscreen_width=(int)(console_width*scaleFactor);
+		TCOD_ctx.scale_fullscreen_height=(int)(console_height*scaleFactor);
+		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.scale_fullscreen_width)/2;
+		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.scale_fullscreen_height)/2;
+	} else {
+		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
+		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
+	}
+}
+
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
+	bool fullscreen_scale = false;
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 	SDL_RWops *rwops;
@@ -898,6 +912,8 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 #if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
+	/* Android should also scale, rather than center. */
+	TCOD_ctx.fullscreen_scale = fullscreen_scale = true;
 #endif
 	if (! charmap) TCOD_sys_load_font();
 	if ( fullscreen  ) {
@@ -943,15 +959,9 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_ctx.actual_fullscreen_width=screen->w;
 		TCOD_ctx.actual_fullscreen_height=screen->h;
 #endif
-		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
-		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
+		TCOD_sys_init_screen_offset();
 #if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
-#   else
 		SDL_FillRect(SDL_GetWindowSurface(window),0,0);
-#   endif
 #else
 		SDL_FillRect(screen,0,0);
 #endif
@@ -988,12 +998,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
 #endif
 	}
-#if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
-#   endif
-#else
+#if !SDL_VERSION_ATLEAST(2,0,0)
 	SDL_EnableUNICODE(1);
 #endif
 	consoleBuffer=buf;
@@ -1029,11 +1034,7 @@ void TCOD_sys_save_screenshot(const char *filename) {
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-		/* somethign with SDL_SetRenderTarget? */
-#	else
 		TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename);
-#	endif
 #else
 		TCOD_sys_save_bitmap((void *)screen,filename);
 #endif
@@ -1060,10 +1061,6 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 		find_resolution();
 #if SDL_VERSION_ATLEAST(2,0,0)
 		SDL_SetWindowFullscreen(window, fullscreen);
-#	ifdef USE_SDL2_RENDERER
-		/* screen = SDL_CreateWindowFramebuffer(window); */
-#   else
-#	endif
 #else
 		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 		TCOD_IFNOT ( newscreen != NULL ) return;
@@ -1076,8 +1073,7 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 		TCOD_ctx.actual_fullscreen_width=screen->w;
 		TCOD_ctx.actual_fullscreen_height=screen->h;
 #endif
-		TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
-		TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
+		TCOD_sys_init_screen_offset();
 		/*
 		printf ("actual resolution : %dx%d\n",TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height);
 		printf ("offset : %dx%d\n",TCOD_ctx.fullscreen_offsetx,TCOD_ctx.fullscreen_offsety);
@@ -1099,11 +1095,7 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	/* SDL_WM_SetCaption(TCOD_ctx.window_title,NULL); */
 	oldFade=-1; /* to redraw the whole screen */
 #if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-	SDL_RenderPresent(renderer);
-#   else
 	SDL_FillRect(SDL_GetWindowSurface(window),0,0);
-#   endif
 #else
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
 #endif
@@ -1594,10 +1586,8 @@ void TCOD_sys_sleep_milli(uint32 milliseconds) {
 void TCOD_sys_term() {
 	SDL_Quit();
 #if SDL_VERSION_ATLEAST(2,0,0)
-#   ifdef USE_SDL2_RENDERER
-	renderer=NULL;
-#   endif
 	window=NULL;
+	scale_screen=NULL;
 #else
 	screen=NULL;
 #endif

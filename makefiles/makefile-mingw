@@ -29,9 +29,9 @@ GCC_VERSION=$(word 3,$(shell sh -c "gcc --version | grep gcc.exe "))
 # 3.20 / 4.6.2
 ifeq ($(MINGW_VERSION),3.18)
 MINGW_FLAGS=-static-libgcc -static-libstdc++
-else ifeq($(MINGW_VERSION),3.19)
+elif ($(MINGW_VERSION),3.19)
 MINGW_FLAGS=-static-libgcc -static-libstdc++
-else ifeq($(MINGW_VERSION),3.20)
+elif ($(MINGW_VERSION),3.20)
 MINGW_FLAGS=-static-libgcc -static-libstdc++
 endif
 

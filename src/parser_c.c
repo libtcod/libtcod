@@ -519,7 +519,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 						break;
 					}
 				}
-				if ( dynType != TCOD_TYPE_NONE ) {
+				if ( !found && dynType != TCOD_TYPE_NONE ) {
 					/* dynamically add a property to the current structure */
 					TCOD_struct_add_property(def,lex->tok,dynType,false);
 				}

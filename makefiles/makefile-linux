@@ -35,137 +35,79 @@ $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
 $(TEMP)/libtcod/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
 	$(CPP) $(CFLAGS) -g -o $@ -c $< 
 
-LIBOBJS_C_DEBUG= \
-	$(TEMP)/libtcod/debug/bresenham_c.o \
-	$(TEMP)/libtcod/debug/bsp_c.o \
-	$(TEMP)/libtcod/debug/color_c.o \
-	$(TEMP)/libtcod/debug/console_c.o \
-	$(TEMP)/libtcod/debug/fov_c.o \
-	$(TEMP)/libtcod/debug/fov_circular_raycasting.o \
-	$(TEMP)/libtcod/debug/fov_diamond_raycasting.o \
-	$(TEMP)/libtcod/debug/fov_recursive_shadowcasting.o \
-	$(TEMP)/libtcod/debug/fov_permissive2.o \
-	$(TEMP)/libtcod/debug/fov_restrictive.o \
-	$(TEMP)/libtcod/debug/heightmap_c.o \
-	$(TEMP)/libtcod/debug/image_c.o \
-	$(TEMP)/libtcod/debug/lex_c.o \
-	$(TEMP)/libtcod/debug/list_c.o \
-	$(TEMP)/libtcod/debug/mersenne_c.o \
-	$(TEMP)/libtcod/debug/noise_c.o \
-	$(TEMP)/libtcod/debug/parser_c.o \
-	$(TEMP)/libtcod/debug/path_c.o \
-	$(TEMP)/libtcod/debug/sys_c.o \
-	$(TEMP)/libtcod/debug/sys_opengl_c.o \
-	$(TEMP)/libtcod/debug/sys_sdl_c.o \
-	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
-	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
-	$(TEMP)/libtcod/debug/tree_c.o \
-	$(TEMP)/libtcod/debug/txtfield_c.o \
-	$(TEMP)/libtcod/debug/wrappers.o \
-	$(TEMP)/libtcod/debug/zip_c.o \
-	$(TEMP)/libtcod/debug/namegen_c.o \
-	$(TEMP)/libtcod/debug/png/lodepng.o
+LIBOBJS_C= \
+	bresenham_c.o \
+	bsp_c.o \
+	color_c.o \
+	console_c.o \
+	fov_c.o \
+	fov_circular_raycasting.o \
+	fov_diamond_raycasting.o \
+	fov_recursive_shadowcasting.o \
+	fov_permissive2.o \
+	fov_restrictive.o \
+	heightmap_c.o \
+	image_c.o \
+	lex_c.o \
+	list_c.o \
+	mersenne_c.o \
+	noise_c.o \
+	parser_c.o \
+	path_c.o \
+	sys_c.o \
+	sys_opengl_c.o \
+	sys_sdl_c.o \
+	sys_sdl_img_bmp.o \
+	sys_sdl_img_png.o \
+	tree_c.o \
+	txtfield_c.o \
+	wrappers.o \
+	zip_c.o \
+	namegen_c.o \
+	png/lodepng.o
 
-LIBOBJS_CPP_DEBUG= \
-	$(TEMP)/libtcod/debug/bresenham.o \
-	$(TEMP)/libtcod/debug/bsp.o \
-	$(TEMP)/libtcod/debug/color.o \
-	$(TEMP)/libtcod/debug/console.o \
-	$(TEMP)/libtcod/debug/fov.o \
-	$(TEMP)/libtcod/debug/heightmap.o \
-	$(TEMP)/libtcod/debug/image.o \
-	$(TEMP)/libtcod/debug/lex.o \
-	$(TEMP)/libtcod/debug/mersenne.o \
-	$(TEMP)/libtcod/debug/mouse.o \
-	$(TEMP)/libtcod/debug/noise.o \
-	$(TEMP)/libtcod/debug/parser.o \
-	$(TEMP)/libtcod/debug/path.o \
-	$(TEMP)/libtcod/debug/sys.o \
-	$(TEMP)/libtcod/debug/txtfield.o \
-	$(TEMP)/libtcod/debug/zip.o \
-	$(TEMP)/libtcod/debug/namegen.o
+LIBOBJS_CPP= \
+	bresenham.o \
+	bsp.o \
+	color.o \
+	console.o \
+	fov.o \
+	heightmap.o \
+	image.o \
+	lex.o \
+	mersenne.o \
+	mouse.o \
+	noise.o \
+	parser.o \
+	path.o \
+	sys.o \
+	txtfield.o \
+	zip.o \
+	namegen.o
 
-GUIOBJS_DEBUG= \
-	$(TEMP)/libtcod/debug/gui/button.o \
-	$(TEMP)/libtcod/debug/gui/container.o \
-	$(TEMP)/libtcod/debug/gui/flatlist.o \
-	$(TEMP)/libtcod/debug/gui/hbox.o \
-	$(TEMP)/libtcod/debug/gui/image.o \
-	$(TEMP)/libtcod/debug/gui/label.o \
-	$(TEMP)/libtcod/debug/gui/radiobutton.o \
-	$(TEMP)/libtcod/debug/gui/slider.o \
-	$(TEMP)/libtcod/debug/gui/statusbar.o \
-	$(TEMP)/libtcod/debug/gui/textbox.o \
-	$(TEMP)/libtcod/debug/gui/togglebutton.o \
-	$(TEMP)/libtcod/debug/gui/toolbar.o \
-	$(TEMP)/libtcod/debug/gui/vbox.o \
-	$(TEMP)/libtcod/debug/gui/widget.o
+GUIOBJS= \
+	gui/button.o \
+	gui/container.o \
+	gui/flatlist.o \
+	gui/hbox.o \
+	gui/image.o \
+	gui/label.o \
+	gui/radiobutton.o \
+	gui/slider.o \
+	gui/statusbar.o \
+	gui/textbox.o \
+	gui/togglebutton.o \
+	gui/toolbar.o \
+	gui/vbox.o \
+	gui/widget.o
 
-LIBOBJS_C_RELEASE= \
-	$(TEMP)/libtcod/release/bresenham_c.o \
-	$(TEMP)/libtcod/release/bsp_c.o \
-	$(TEMP)/libtcod/release/color_c.o \
-	$(TEMP)/libtcod/release/console_c.o \
-	$(TEMP)/libtcod/release/fov_c.o \
-	$(TEMP)/libtcod/release/fov_circular_raycasting.o \
-	$(TEMP)/libtcod/release/fov_diamond_raycasting.o \
-	$(TEMP)/libtcod/release/fov_recursive_shadowcasting.o \
-	$(TEMP)/libtcod/release/fov_permissive2.o \
-	$(TEMP)/libtcod/release/fov_restrictive.o \
-	$(TEMP)/libtcod/release/heightmap_c.o \
-	$(TEMP)/libtcod/release/image_c.o \
-	$(TEMP)/libtcod/release/lex_c.o \
-	$(TEMP)/libtcod/release/list_c.o \
-	$(TEMP)/libtcod/release/mersenne_c.o \
-	$(TEMP)/libtcod/release/noise_c.o \
-	$(TEMP)/libtcod/release/parser_c.o \
-	$(TEMP)/libtcod/release/path_c.o \
-	$(TEMP)/libtcod/release/sys_c.o \
-	$(TEMP)/libtcod/release/sys_opengl_c.o \
-	$(TEMP)/libtcod/release/sys_sdl_c.o \
-	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
-	$(TEMP)/libtcod/release/sys_sdl_img_png.o \
-	$(TEMP)/libtcod/release/txtfield_c.o \
-	$(TEMP)/libtcod/release/tree_c.o \
-	$(TEMP)/libtcod/release/wrappers.o \
-	$(TEMP)/libtcod/release/zip_c.o \
-	$(TEMP)/libtcod/release/namegen_c.o \
-	$(TEMP)/libtcod/release/png/lodepng.o
 
-LIBOBJS_CPP_RELEASE= \
-	$(TEMP)/libtcod/release/bresenham.o \
-	$(TEMP)/libtcod/release/bsp.o \
-	$(TEMP)/libtcod/release/color.o \
-	$(TEMP)/libtcod/release/console.o \
-	$(TEMP)/libtcod/release/fov.o \
-	$(TEMP)/libtcod/release/heightmap.o \
-	$(TEMP)/libtcod/release/image.o \
-	$(TEMP)/libtcod/release/lex.o \
-	$(TEMP)/libtcod/release/mersenne.o \
-	$(TEMP)/libtcod/release/mouse.o \
-	$(TEMP)/libtcod/release/noise.o \
-	$(TEMP)/libtcod/release/parser.o \
-	$(TEMP)/libtcod/release/path.o \
-	$(TEMP)/libtcod/release/sys.o \
-	$(TEMP)/libtcod/release/txtfield.o \
-	$(TEMP)/libtcod/release/zip.o \
-	$(TEMP)/libtcod/release/namegen.o
-
-GUIOBJS_RELEASE= \
-	$(TEMP)/libtcod/release/gui/button.o \
-	$(TEMP)/libtcod/release/gui/container.o \
-	$(TEMP)/libtcod/release/gui/flatlist.o \
-	$(TEMP)/libtcod/release/gui/hbox.o \
-	$(TEMP)/libtcod/release/gui/image.o \
-	$(TEMP)/libtcod/release/gui/label.o \
-	$(TEMP)/libtcod/release/gui/radiobutton.o \
-	$(TEMP)/libtcod/release/gui/slider.o \
-	$(TEMP)/libtcod/release/gui/statusbar.o \
-	$(TEMP)/libtcod/release/gui/textbox.o \
-	$(TEMP)/libtcod/release/gui/togglebutton.o \
-	$(TEMP)/libtcod/release/gui/toolbar.o \
-	$(TEMP)/libtcod/release/gui/vbox.o \
-	$(TEMP)/libtcod/release/gui/widget.o
+LIBOBJS_C_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(LIBOBJS_C))
+LIBOBJS_CPP_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(LIBOBJS_CPP))
+GUIOBJS_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(GUIOBJS))
+LIBOBJS_C_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(LIBOBJS_C))
+LIBOBJS_CPP_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(LIBOBJS_CPP))
+GUIOBJS_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(GUIOBJS))
 
 all : debug release
 

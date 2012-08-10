@@ -128,6 +128,14 @@ bool TCODSystem::fileExists(const char * filename, ...) {
 	return ret;
 }
 
+bool TCODSystem::readFile(const char *filename, unsigned char **buf, uint32 *size) {
+	return TCOD_sys_read_file(filename,buf,size);
+}
+
+bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32 size) {
+	return TCOD_sys_write_file(filename,buf,size);
+}
+
 // clipboard stuff
 void TCODSystem::setClipboard(const char *value) {
 	TCOD_sys_clipboard_set(value);

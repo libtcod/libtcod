@@ -446,7 +446,7 @@ void TCOD_opengl_putchar_ex(int x, int y, int c, TCOD_color_t fore, TCOD_color_t
 	int loc = x+y*conwidth;
 
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
-		updateChar(Character, loc, (char *)&c, ConsoleDataAlignment[Character], 0);
+		updateChar(Character, loc, (unsigned char *)&c, ConsoleDataAlignment[Character], 0);
 		updateChar(ForeCol, loc, &fore.r, ConsoleDataAlignment[ForeCol], 0);
 	}
 	updateChar(BackCol, loc, &back.r, ConsoleDataAlignment[BackCol], 0);

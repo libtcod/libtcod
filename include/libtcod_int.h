@@ -179,8 +179,8 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 /* TCODConsole non public methods*/
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen);
 int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char *msg, bool can_split, bool count_only);
-int TCOD_console_stringLength(const char *s);
-char * TCOD_console_forward(char *s,int l);
+int TCOD_console_stringLength(const unsigned char *s);
+unsigned char * TCOD_console_forward(unsigned char *s,int l);
 void TCOD_console_set_window_closed();
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
 char_t *TCOD_console_get_buf(TCOD_console_t con);

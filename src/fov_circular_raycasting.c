@@ -134,6 +134,7 @@ void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int
 	}
 }
 
+#if 0
 #define CELL_RADIUS 0.4f
 #define RAY_RADIUS 0.2f
 static bool ray_blocked(map_t *map,float x, float y, int cx, int cy) {
@@ -190,7 +191,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 		} else if (in) return; /* ray out of map */
 	}
 }
-
+#endif
 
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	int xo,yo;

@@ -1,44 +1,45 @@
-# libtcod makefile
-# to build debug version, run "make -f makefile-osx debug"
-# to build release version, run "make -f makefile-osx release"
+# libtcod mingw32 makefile
+# to build debug version, run "make -f makefile-mingw debug"
+# to build release version, run "make -f makefile-mingw release"
 SRCDIR=src
 INCDIR=include
 
 #dependencies
 # SDL
-SDL_DIR=dependencies/SDL-1.2.14
-SDL_FLAGS=-D_GNU_SOURCE=1 -D_REENTRANT -I $(SDL_DIR)/include
+SDL_DIR=dependencies/SDL2-hg
+SDL_FLAGS=-I $(SDL_DIR)/include
+SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL2
 
 # ZLIB
 ZLIB_DIR=dependencies/zlib-1.2.3
 ZLIB_FLAGS=-I $(ZLIB_DIR)/include
+ZLIB_LIBS=$(ZLIB_DIR)/lib/mingw/libz.a
 
-# OSX Core libraries
-OSX_FLAGS=-I /Developer/SDKs/MacOSX10.6.sdk/System/Library/Frameworks
+# OPENGL
+OPENGL_LIB=-lopengl32
 
-#OPENGL
-OPENGL_LIB=-lGL
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -Wall -fno-strict-aliasing -DTCOD_SDL2 -DNO_OPENGL
+# -ansi
+CC=mingw32-gcc
+CPP=mingw32-g++
+UPX=dependencies/upx/win/upx.exe
+.SUFFIXES: .dll .a .o .h .c .hpp .cpp
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) $(OSX_FLAGS) -fno-strict-aliasing
-TEMP=/tmp
-CC=gcc
-CPP=g++
-.SUFFIXES: a .o .h .c
 
-$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
-$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $< 
-$(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $< 
-$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -g -o $@ -c $<
-$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -g -o $@ -c $< 
 $(TEMP)/libtcod/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+	$(CPP) $(CFLAGS) -g -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
+	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 
-LIBOBJS_C_DEBUG= \
+LIBOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/bresenham_c.o \
 	$(TEMP)/libtcod/debug/bsp_c.o \
 	$(TEMP)/libtcod/debug/color_c.o \
@@ -58,7 +59,6 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/parser_c.o \
 	$(TEMP)/libtcod/debug/path_c.o \
 	$(TEMP)/libtcod/debug/sys_c.o \
-	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_c.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/debug/sys_sdl_img_png.o \
@@ -67,9 +67,6 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/wrappers.o \
 	$(TEMP)/libtcod/debug/zip_c.o \
 	$(TEMP)/libtcod/debug/namegen_c.o \
-	$(TEMP)/libtcod/debug/png/lodepng.o
-
-LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/bresenham.o \
 	$(TEMP)/libtcod/debug/bsp.o \
 	$(TEMP)/libtcod/debug/color.o \
@@ -84,9 +81,11 @@ LIBOBJS_CPP_DEBUG= \
 	$(TEMP)/libtcod/debug/parser.o \
 	$(TEMP)/libtcod/debug/path.o \
 	$(TEMP)/libtcod/debug/sys.o \
+	$(TEMP)/libtcod/debug/sys_opengl_c.o \
 	$(TEMP)/libtcod/debug/txtfield.o \
 	$(TEMP)/libtcod/debug/zip.o \
-	$(TEMP)/libtcod/debug/namegen.o
+	$(TEMP)/libtcod/debug/namegen.o \
+	$(TEMP)/libtcod/debug/png/lodepng.o
 
 GUIOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/gui/button.o \
@@ -104,7 +103,7 @@ GUIOBJS_DEBUG= \
 	$(TEMP)/libtcod/debug/gui/vbox.o \
 	$(TEMP)/libtcod/debug/gui/widget.o
 
-LIBOBJS_C_RELEASE= \
+LIBOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/bresenham_c.o \
 	$(TEMP)/libtcod/release/bsp_c.o \
 	$(TEMP)/libtcod/release/color_c.o \
@@ -124,18 +123,14 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/parser_c.o \
 	$(TEMP)/libtcod/release/path_c.o \
 	$(TEMP)/libtcod/release/sys_c.o \
-	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_c.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_bmp.o \
 	$(TEMP)/libtcod/release/sys_sdl_img_png.o \
-	$(TEMP)/libtcod/release/txtfield_c.o \
 	$(TEMP)/libtcod/release/tree_c.o \
+	$(TEMP)/libtcod/release/txtfield_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o \
 	$(TEMP)/libtcod/release/namegen_c.o \
-	$(TEMP)/libtcod/release/png/lodepng.o
-
-LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/bresenham.o \
 	$(TEMP)/libtcod/release/bsp.o \
 	$(TEMP)/libtcod/release/color.o \
@@ -150,9 +145,11 @@ LIBOBJS_CPP_RELEASE= \
 	$(TEMP)/libtcod/release/parser.o \
 	$(TEMP)/libtcod/release/path.o \
 	$(TEMP)/libtcod/release/sys.o \
+	$(TEMP)/libtcod/release/sys_opengl_c.o \
 	$(TEMP)/libtcod/release/txtfield.o \
 	$(TEMP)/libtcod/release/zip.o \
-	$(TEMP)/libtcod/release/namegen.o
+	$(TEMP)/libtcod/release/namegen.o \
+	$(TEMP)/libtcod/release/png/lodepng.o
 
 GUIOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/gui/button.o \
@@ -169,12 +166,12 @@ GUIOBJS_RELEASE= \
 	$(TEMP)/libtcod/release/gui/toolbar.o \
 	$(TEMP)/libtcod/release/gui/vbox.o \
 	$(TEMP)/libtcod/release/gui/widget.o
-
+	
 all : debug release
 
-debug : libtcod_debug.a libtcodxx_debug.a libtcodgui_debug.a
+release : libtcod-mingw.dll libtcod-gui-mingw.dll upx
 
-release : libtcod.a libtcodxx.a libtcodgui.a
+debug : libtcod-mingw-debug.dll libtcod-gui-mingw-debug.dll
 
 $(TEMP)/libtcod/debug/png :
 	mkdir -p $@
@@ -188,23 +185,27 @@ $(TEMP)/libtcod/release/png :
 $(TEMP)/libtcod/release/gui :
 	mkdir -p $@
 
-libtcod_debug.a : $(TEMP)/libtcod/debug/png $(LIBOBJS_C_DEBUG)
-	ar r $@ $(LIBOBJS_C_DEBUG)
+lib/ :
+	mkdir -p $@
 
-libtcodxx_debug.a : $(TEMP)/libtcod/debug/png $(LIBOBJS_CPP_DEBUG)
-	ar r $@ $(LIBOBJS_CPP_DEBUG)
+libtcod-mingw.a : $(LIBOBJS_DEBUG)
+	ar r $@ $(LIBOBJS_DEBUG)
 	
-libtcodgui_debug.a : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
-	ar r $@ $(GUIOBJS_DEBUG)
-	
-libtcod.a : $(TEMP)/libtcod/release/png $(LIBOBJS_C_RELEASE)
-	ar r $@ $(LIBOBJS_C_RELEASE)
+libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE)
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
 
-libtcodxx.a : $(TEMP)/libtcod/release/png $(LIBOBJS_CPP_RELEASE)
-	ar r $@ $(LIBOBJS_CPP_RELEASE)
+libtcod-gui-mingw.dll : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw -static-libgcc -static-libstdc++
 
-libtcodgui.a : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
-	ar r $@ $(GUIOBJS_RELEASE)
+libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG)
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -static-libgcc -static-libstdc++
 
-clean : 
-	\rm -f $(LIBOBJS_C_RELEASE) $(LIBOBJS_CPP_RELEASE) $(GUIOBJS_RELEASE) $(LIBOBJS_C_DEBUG) $(LIBOBJS_CPP_DEBUG) $(GUIOBJS_DEBUG) libtcod.a libtcodxx.a  libtcodgui.a libtcod_debug.a libtcodxx_debug.a libtcodgui_debug.a libtcodpy.pyc
+libtcod-gui-mingw-debug.dll : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
+	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug -static-libgcc -static-libstdc++
+
+upx :
+	$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll
+
+clean :
+	rm -f $(LIBOBJS_RELEASE) $(GUIOBJS_RELEASE) libtcod-mingw.dll lib/libtcod-mingw.a libtcod-gui-mingw.dll lib/libtcod-gui-mingw.a libtcodpy.pyc $(LIBOBJS_DEBUG) $(GUIOBJS_DEBUG) libtcod-mingw-debug.dll lib/libtcod-mingw-debug.a libtcod-gui-mingw-debug.dll lib/libtcod-gui-mingw-debug.a 
+

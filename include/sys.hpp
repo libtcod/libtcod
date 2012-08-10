@@ -297,7 +297,45 @@ public :
 		}
 	*/
 	static bool fileExists(const char * filename, ...);
-
+	/**
+	@PageName system_filesystem
+	@FuncTitle Read the content of a file into memory
+	@FuncDesc This is a portable function to read the content of a file from disk or from the application apk (android).
+		buf must be freed with free(buf).
+	@Cpp static bool TCODSystem::readFile(const char *filename, unsigned char **buf, uint32 *size)
+	@C bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size)
+	@Param filename the file name
+	@Param buf a buffer to be allocated and filled with the file content
+	@Param size the size of the allocated buffer.
+	@CppEx
+		unsigned char *buf;
+		uint32 size;
+		if (TCODSystem::readFile("myfile.dat",&buf,&size)) {
+		    // do something with buf
+		    free(buf);
+		}
+	@CEx
+		if (TCOD_sys_read_file("myfile.dat",&buf,&size)) {
+		    // do something with buf
+		    free(buf);
+		}
+	*/	
+	static bool readFile(const char *filename, unsigned char **buf, uint32 *size);
+	/**
+	@PageName system_filesystem
+	@FuncTitle Write the content of a memory buffer to a file
+	@FuncDesc This is a portable function to write some data to a file.
+	@Cpp static bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32 size)
+	@C bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size)
+	@Param filename the file name
+	@Param buf a buffer containing the data to write
+	@Param size the number of bytes to write.
+	@CppEx
+		TCODSystem::writeFile("myfile.dat",buf,size));
+	@CEx
+		TCOD_sys_write_file("myfile.dat",buf,size));
+	*/		
+	static bool writeFile(const char *filename, unsigned char *buf, uint32 size);
 	/**
 	@PageName system_sdlcbk
 	@PageFather system

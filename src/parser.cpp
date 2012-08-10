@@ -83,7 +83,11 @@ extern "C" uint8 new_struct(TCOD_parser_struct_t def,const char *name) {
 			return listener->parserNewStruct(parser,*idef,name) ? 1 : 0;
 		}
 	}
-	return 0;
+	// not found. autodeclaring struct
+	TCODParserStruct *idef = new TCODParserStruct();
+	idef->data = def;
+	parser->defs.push(idef);
+	return listener->parserNewStruct(parser,idef,name) ? 1 : 0;
 }
 extern "C" uint8 new_flag(const char *name) {
 	return listener->parserFlag(parser,name) ? 1 : 0;

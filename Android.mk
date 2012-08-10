@@ -4,11 +4,10 @@ include $(CLEAR_VARS)
 
 LOCAL_MODULE := tcod
 
-SDL_PATH := ../sdl2
-PNG_PATH := ../png
+SDL_PATH := ../SDL2
 
 LOCAL_CFLAGS := -DNO_OPENGL
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(PNG_PATH)/include $(LOCAL_PATH)/include 
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/include 
 
 # Add your application source files here...
 LOCAL_SRC_FILES := \
@@ -40,10 +39,10 @@ LOCAL_SRC_FILES := \
 	src/tree_c.c \
 	src/txtfield_c.c \
 	src/wrappers.c \
-	src/zip_c.c
+	src/zip_c.c \
+	src/png/lodepng.c
 
 LOCAL_SHARED_LIBRARIES := SDL2
-LOCAL_STATIC_LIBRARIES := png
 
 LOCAL_LDLIBS := -lz -llog
 

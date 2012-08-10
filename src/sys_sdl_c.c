@@ -30,6 +30,8 @@
 #include <ctype.h>
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
+#elif defined (TCOD_SDL2)
+#include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
@@ -85,7 +87,9 @@ static bool mousebr=false;
 static bool mouse_force_bl=false;
 static bool mouse_force_bm=false;
 static bool mouse_force_br=false;
+#if SDL_VERSION_ATLEAST(2,0,0)
 static bool mouse_touch=true;
+#endif
 
 /* minimum length for a frame (when fps are limited) */
 static int min_frame_length=0;
@@ -208,7 +212,7 @@ void TCOD_sys_load_font() {
 	}
 	if (! hasTransparent ) {
 		/* alpha layer not used */
-		int x,y,keyx,keyy;
+		int keyx,keyy;
         Uint8 *pixel;
 		/* the key color is found on the character corresponding to space ' ' */
 		if ( TCOD_ctx.font_tcod_layout ) {
@@ -361,8 +365,9 @@ static void find_resolution() {
 	SDL_DisplayMode wantedmode, closestmode;
 #else
 	SDL_Rect **modes;
+	int i;
 #endif
-	int i,bestw,besth,wantedw,wantedh;
+	int bestw,besth,wantedw,wantedh;
 	wantedw=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	wantedh=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
 	TCOD_ctx.actual_fullscreen_width=wantedw;
@@ -816,19 +821,8 @@ static void TCOD_sys_load_player_config() {
 	font=TCOD_parser_get_string_property(parser, "libtcod.font");
 	if ( font != NULL ) {
 		/* custom font */
-#if SDL_VERSION_ATLEAST(2,0,0)
-		SDL_RWops *rwops = SDL_RWFromFile(font,"rb");
-		if (rwops) {
-#else
-		FILE *f=fopen(font,"rb");
-		if (f) {
-#endif
+		if ( TCOD_sys_file_exists(font)) {
 			int fontNbCharHoriz,fontNbCharVertic;
-#if SDL_VERSION_ATLEAST(2,0,0)
-			rwops->close(rwops);
-#else
-			fclose(f);
-#endif
 			strcpy(TCOD_ctx.font_file,font);
 			TCOD_ctx.font_in_row=TCOD_parser_get_bool_property(parser,"libtcod.fontInRow");
 			TCOD_ctx.font_greyscale=TCOD_parser_get_bool_property(parser,"libtcod.fontGreyscale");
@@ -886,26 +880,15 @@ static void TCOD_sys_init_screen_offset() {
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
-	SDL_RWops *rwops;
-#else
-	FILE *f;
 #endif
 	if ( ! has_startup ) TCOD_sys_startup();
 	/* check if there is a user (player) config file */
-#if SDL_VERSION_ATLEAST(2,0,0)
-	rwops =  SDL_RWFromFile("./libtcod.cfg", "r");
-	if (rwops) {
-		rwops->close(rwops);
-#else
-	f = fopen("./libtcod.cfg","r");
-	if ( f ) {
-		fclose(f);
-#endif
+	if ( TCOD_sys_file_exists("./libtcod.cfg")) {
 		/* yes, read it */
 		TCOD_sys_load_player_config();
 		if (TCOD_ctx.fullscreen) fullscreen=true;
 	}
-#if SDL_VERSION_ATLEAST(2,0,0) && defined(__ANDROID__)
+#if SDL_VERSION_ATLEAST(2,0,0) && defined(TCOD_ANDROID)
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
@@ -917,7 +900,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 			TCOD_opengl_init_attributes();
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
-#	if defined(__ANDROID__) && defined(XXXX_TBD)
+#	if defined(TCOD_ANDROID) && defined(XXXX_TBD)
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
@@ -936,7 +919,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
-#	if defined(__ANDROID__) && defined(FUTURE_SUPPORT)
+#	if defined(TCOD_ANDROID) && defined(FUTURE_SUPPORT)
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
@@ -1302,32 +1285,9 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 		/* handled in TCOD_sys_handle_event */
 		/*
 		case SDL_QUIT :
-			TCOD_console_set_window_closed();
-		break;
 		case SDL_VIDEOEXPOSE :
-#if SDL_VERSION_ATLEAST(2,0,0)
-			TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
-#else
-			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
-#endif
-		break;
 		case SDL_MOUSEBUTTONDOWN : {
-			SDL_MouseButtonEvent *mev=&ev->button;
-			switch (mev->button) {
-				case SDL_BUTTON_LEFT : mousebl=true; break;
-				case SDL_BUTTON_MIDDLE : mousebm=true; break;
-				case SDL_BUTTON_RIGHT : mousebr=true; break;
-			}
-		}
-		break;
 		case SDL_MOUSEBUTTONUP : {
-			SDL_MouseButtonEvent *mev=&ev->button;
-			switch (mev->button) {
-				case SDL_BUTTON_LEFT : if (mousebl) mouse_force_bl=true; mousebl=false; break;
-				case SDL_BUTTON_MIDDLE : if (mousebm) mouse_force_bm=true; mousebm=false; break;
-				case SDL_BUTTON_RIGHT : if (mousebr) mouse_force_br=true; mousebr=false; break;
-			}
-		}
 		break;
 		*/
 		case SDL_KEYUP : {
@@ -1511,7 +1471,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
 			switch (ev->window.event) {
-#ifdef __ANDROID__
+#ifdef TCOD_ANDROID
 			case SDL_WINDOWEVENT_RESTORED:
 				/* User returned to home screen, then reopened app.  Need complete redraw, not partial. */
 				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
@@ -1825,7 +1785,6 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 	fclose(f);
 #endif
 	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
-	printf("TCOD_sys_check_magic_number: 4");
 	return true;
 }
 
@@ -1857,3 +1816,81 @@ void TCOD_mouse_includes_touch(bool enable) {
 	mouse_touch = enable;
 }
 #endif
+
+bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size) {
+	uint32 filesize;
+	/* get file size */
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops= SDL_RWFromFile(filename,"rb");
+	if (!rwops) return false;
+	SDL_RWseek(rwops,0,RW_SEEK_END);
+	filesize=SDL_RWtell(rwops);
+	SDL_RWseek(rwops,0,RW_SEEK_SET);	
+#else
+	FILE * fops=fopen(filename,"rb");
+	if (!fops) return false;
+	fseek(fops,0,SEEK_END);
+	filesize=ftell(fops);
+	fseek(fops,0,SEEK_SET);
+#endif
+	/* allocate buffer */
+	*buf = (unsigned char *)malloc(sizeof(unsigned char)*filesize);
+	/* read from file */
+#if SDL_VERSION_ATLEAST(2,0,0)
+	if (SDL_RWread(rwops,*buf,sizeof(unsigned char),filesize) != filesize) {
+		SDL_RWclose(rwops);
+		free(*buf);
+		return false;
+	}
+	SDL_RWclose(rwops);
+#else
+	if (fread(*buf,sizeof(unsigned char),filesize,fops) != filesize ) {
+		fclose(fops);
+		free(*buf);
+		return false;
+	}
+	*size=filesize;
+	fclose(fops);
+#endif
+	return true;
+}
+
+bool TCOD_sys_file_exists(const char * filename, ...) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops;
+#else
+	FILE * fops;
+#endif
+	char f[1024];
+	va_list ap;
+	va_start(ap,filename);
+	vsprintf(f,filename,ap);
+	va_end(ap);
+#if SDL_VERSION_ATLEAST(2,0,0)
+	rwops = SDL_RWFromFile(f,"rb");
+	if (rwops) {
+		SDL_RWclose(rwops);
+#else
+	fops=fopen(f,"rb");
+	if (fops) {
+		fclose(fops);
+#endif
+		return true;
+	}
+	return false;
+}
+
+bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_RWops *rwops= SDL_RWFromFile(filename,"wb");
+	if (!rwops) return false;
+	SDL_RWwrite(rwops,buf,sizeof(unsigned char),size);
+	SDL_RWclose(rwops);
+#else
+	FILE * fops=fopen(filename,"wb");
+	if (!fops) return false;
+	fwrite(buf,sizeof(unsigned char),size,fops);
+	fclose(fops);
+#endif
+	return true;
+}

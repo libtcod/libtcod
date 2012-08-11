@@ -1849,9 +1849,9 @@ bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size)
 		free(*buf);
 		return false;
 	}
-	*size=filesize;
 	fclose(fops);
 #endif
+	*size=filesize;
 	return true;
 }
 

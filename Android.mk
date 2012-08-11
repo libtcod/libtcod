@@ -6,7 +6,7 @@ LOCAL_MODULE := tcod
 
 SDL_PATH := ../SDL2
 
-LOCAL_CFLAGS := -DNO_OPENGL -DTCOD_SDL2
+LOCAL_CFLAGS := -DNO_OPENGL -DTCOD_SDL2 -DTCOD_ANDROID
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/include 
 
 # Add your application source files here...

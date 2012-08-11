@@ -110,6 +110,7 @@ typedef struct {
 	int max_font_chars;
 	/* fullscreen data */
 	bool fullscreen;
+	bool fullscreen_scaling;
 	float fullscreen_scale;
 	int fullscreen_offsetx;
 	int fullscreen_offsety;

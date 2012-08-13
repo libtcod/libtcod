@@ -74,9 +74,7 @@ static SDL_Surface* charmap=NULL;
 static char_t *consoleBuffer=NULL;
 static char_t *prevConsoleBuffer=NULL;
 static bool has_startup=false;
-#ifdef TCOD_ANDROID
 static bool clear_screen=false;
-#endif
 
 /* font transparent color */
 static TCOD_color_t fontKeyCol={0,0,0};
@@ -1425,10 +1423,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_DOLLARRECORD :
-			printf("SDL_DOLLARRECORD: touchId=%ld gestureId=%ld", ev->dgesture.touchId, ev->dgesture.gestureId);
+			printf("SDL_DOLLARRECORD: touchId=%d gestureId=%d", (int)ev->dgesture.touchId, (int)ev->dgesture.gestureId);
 		break;
 		case SDL_DOLLARGESTURE :
-			printf("SDL_DOLLARGESTURE: touchId=%ld gestureId=%ld error=%f fingers=%ld", ev->dgesture.touchId, ev->dgesture.gestureId, ev->dgesture.error, ev->dgesture.numFingers);
+			printf("SDL_DOLLARGESTURE: touchId=%d gestureId=%d error=%f fingers=%d", (int)ev->dgesture.touchId, (int)ev->dgesture.gestureId, ev->dgesture.error, (int)ev->dgesture.numFingers);
 		break;
 		case SDL_FINGERMOTION :
 			if (mouse_touch && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {

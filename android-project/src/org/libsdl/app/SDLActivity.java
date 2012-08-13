@@ -9,6 +9,7 @@ import javax.microedition.khronos.egl.*;
 import android.app.*;
 import android.content.*;
 import android.view.*;
+import android.view.inputmethod.InputMethodManager;
 import android.os.*;
 import android.util.Log;
 import android.graphics.*;
@@ -107,13 +108,33 @@ public class SDLActivity extends Activity {
     }
 
     // Messages from the SDLMain thread
-    static int COMMAND_CHANGE_TITLE = 1;
+    static final int COMMAND_CHANGE_TITLE = 1;
+    static final int COMMAND_KEYBOARD_SHOW = 2;
 
     // Handler for the messages
     Handler commandHandler = new Handler() {
+        @Override
         public void handleMessage(Message msg) {
-            if (msg.arg1 == COMMAND_CHANGE_TITLE) {
+            switch (msg.arg1) {
+            case COMMAND_CHANGE_TITLE:
                 setTitle((String)msg.obj);
+                break;
+            case COMMAND_KEYBOARD_SHOW:
+                InputMethodManager manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                if (manager != null) {
+                    switch (((Integer)msg.obj).intValue()) {
+                    case 0:
+                        manager.hideSoftInputFromWindow(mSurface.getWindowToken(), 0);
+                        break;
+                    case 1:
+                        manager.showSoftInput(mSurface, 0);
+                        break;
+                    case 2:
+                        manager.toggleSoftInputFromWindow(mSurface.getWindowToken(), 0, 0);
+                        break;
+                    }
+                }
+               break;
             }
         }
     };
@@ -154,6 +175,10 @@ public class SDLActivity extends Activity {
     public static void setActivityTitle(String title) {
         // Called from SDLMain() thread and can't directly affect the view
         mSingleton.sendCommand(COMMAND_CHANGE_TITLE, title);
+    }
+
+    public static void sendMessage(int command, int param) {
+        mSingleton.sendCommand(command, Integer.valueOf(param));
     }
 
     public static Context getContext() {
@@ -540,9 +565,9 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
              final int touchDevId = event.getDeviceId();
              final int pointerCount = event.getPointerCount();
              // touchId, pointerId, action, x, y, pressure
-             int actionPointerIndex = event.getActionIndex();
+             int actionPointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent. ACTION_POINTER_ID_SHIFT; /* API 8: event.getActionIndex(); */
              int pointerFingerId = event.getPointerId(actionPointerIndex);
-             int action = event.getActionMasked();
+             int action = (event.getAction() & MotionEvent.ACTION_MASK); /* API 8: event.getActionMasked(); */
 
              float x = event.getX(actionPointerIndex);
              float y = event.getY(actionPointerIndex);
@@ -591,4 +616,3 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     }
 
 }
-

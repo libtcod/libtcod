@@ -1820,7 +1820,7 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 }
 
 #if SDL_VERSION_ATLEAST(2,0,0)
-void *TCOD_sys_get_sdl_window() {
+void *TCOD_sys_get_SDL_window() {
 	return (void *)window;
 }
 #endif

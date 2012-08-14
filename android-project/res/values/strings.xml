@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SDL App</string>
+    <string name="app_name">SDL app</string>
+    <string name="do_not_display_again">Do not display again</string>
+    <string name="settings_name">Settings</string>
+    <string name="scaling_menu_item_name">Scaling</string>
+    <string name="dev_name">Dev</string>
+    <string name="development_name">Development</string>
+    <string name="record_gesture_menu_item_name">Record gesture</string>
+    <string name="save_gestures_menu_item_name">Save gestures</string>
+    <string name="load_gestures_menu_item_name">Load gestures</string>
+    <string name="fps_30_menu_item_name">30 fps</string>
+    <string name="fps_60_menu_item_name">60 fps</string>
+    <string name="fps_90_menu_item_name">90 fps</string>
+    <string name="fps_unlimited_menu_item_name">unlimited fps</string>
 </resources>

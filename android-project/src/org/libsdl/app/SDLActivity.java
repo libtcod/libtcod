@@ -6,10 +6,17 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.egl.*;
 
+import org.libsdl.app.R;
+import org.libsdl.app.SDLActivity;
+
 import android.app.*;
 import android.content.*;
 import android.view.*;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.os.*;
 import android.util.Log;
 import android.graphics.*;
@@ -18,7 +25,13 @@ import android.text.*;
 import android.media.*;
 import android.hardware.*;
 import android.content.*;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.*;
 
 
@@ -57,6 +70,18 @@ public class SDLActivity extends Activity {
         //System.loadLibrary("SDL2_ttf");
         System.loadLibrary("main");
     }
+    
+    /* CUSTOM ADDITIONS START */
+    public static String PREFS_TCOD_SCALING = "use-tcod-scaling";
+    public static String PREFS_TCOD_FPS_LIMIT = "use-tcod-fps-limit";
+    public static String PREFS_RELEASE_NOTES_SEEN = "release-note-version";
+
+    private static boolean mShowReleaseNotes;
+    private static boolean mTCODScaling;
+    private static int mTCODFPS;
+    private static String mVersionName;
+    private static boolean mDebuggable;
+    /* CUSTOM ADDITIONS END */
 
     // Setup
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +98,28 @@ public class SDLActivity extends Activity {
         mSurface = new SDLSurface(getApplication());
         setContentView(mSurface);
         SurfaceHolder holder = mSurface.getHolder();
+
+        /* CUSTOM ADDITIONS START */
+        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+    	mTCODScaling = prefs.getBoolean(PREFS_TCOD_SCALING, false);
+    	SDLActivity.nativeTCODScaling(mTCODScaling ? 1 : 0);
+    	mTCODFPS = prefs.getInt(PREFS_TCOD_FPS_LIMIT, 30);
+    	SDLActivity.nativeTCODSetFPS(mTCODFPS);
+
+    	/* Initialise the release notes related malarkey. */
+    	String rnVersionName = prefs.getString(PREFS_RELEASE_NOTES_SEEN, "");
+    	try {
+    		PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_META_DATA);
+    		/* Grab and check version name. */
+    		mVersionName = pInfo.versionName;
+            mShowReleaseNotes = !rnVersionName.equals(mVersionName);
+            /* Generic useful configuration information. */
+        	mDebuggable = (pInfo.applicationInfo.flags & ApplicationInfo.FLAG_DEBUGGABLE) == ApplicationInfo.FLAG_DEBUGGABLE;
+    	} catch (NameNotFoundException e) {
+    		Log.e("SDL", "Failed to fetch package info..");
+    	}
+    	Log.d("SDL", String.format("Show release notes: %b", mShowReleaseNotes));
+        /* CUSTOM ADDITIONS END */
     }
 
     // Events
@@ -106,6 +153,101 @@ public class SDLActivity extends Activity {
             //Log.v("SDL", "Finished waiting for SDL thread");
         }
     }
+    
+    /* CUSTOM ADDITIONS START */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean flag = super.onCreateOptionsMenu(menu);
+		if (flag) {
+	    	MenuInflater inflater = getMenuInflater();
+	    	inflater.inflate(R.menu.main, menu);
+		}
+		return flag;
+	}
+	
+    @Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		MenuItem item;
+		item = menu.findItem(R.id.scaling_menu_item);
+		item.setChecked(mTCODScaling);
+
+		Log.v("SDL", String.format("mTCODFPS %d", mTCODFPS));
+		item = menu.findItem(R.id.fps_30_menu_item);
+		item.setChecked(mTCODFPS == 30);
+		item = menu.findItem(R.id.fps_60_menu_item);
+		item.setChecked(mTCODFPS == 60);
+		item = menu.findItem(R.id.fps_90_menu_item);
+		item.setChecked(mTCODFPS == 90);
+		item = menu.findItem(R.id.fps_unlimited_menu_item);
+		item.setChecked(mTCODFPS == 0);
+		
+		item = menu.findItem(R.id.dev_menu_item);
+		item.setVisible(mDebuggable);
+		item.setEnabled(mDebuggable);
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {		
+		if (super.onOptionsItemSelected(item))
+			return true;
+
+		int fps_value = 0;
+		SharedPreferences prefs;
+		SharedPreferences.Editor prefsEd;
+
+		switch (item.getItemId()) {
+		case R.id.scaling_menu_item:
+			mTCODScaling = !mTCODScaling;
+			item.setChecked(mTCODScaling);
+			
+			/* Persist new setting. */
+	    	prefs = getPreferences(MODE_PRIVATE);
+	    	prefsEd = prefs.edit();
+	    	prefsEd.putBoolean(PREFS_TCOD_SCALING, mTCODScaling);
+	    	prefsEd.commit();
+
+	    	/* Apply new setting. */
+	    	SDLActivity.nativeTCODScaling(mTCODScaling ? 1 : 0);
+	    	
+			break;
+		case R.id.fps_90_menu_item:
+			fps_value += 30;
+		case R.id.fps_60_menu_item:
+			fps_value += 30;
+		case R.id.fps_30_menu_item:
+			fps_value += 30;
+		case R.id.fps_unlimited_menu_item:
+			mTCODFPS = fps_value;
+			item.setChecked(true);
+			
+			/* Persist new setting. */
+	    	prefs = getPreferences(MODE_PRIVATE);
+	    	prefsEd = prefs.edit();
+	    	prefsEd.putInt(PREFS_TCOD_FPS_LIMIT, mTCODFPS);
+	    	prefsEd.commit();
+	    	
+	    	SDLActivity.nativeTCODSetFPS(mTCODFPS);
+	    	
+			break;
+		case R.id.record_gesture_menu_item:
+			SDLActivity.nativeSDLRecordGesture();
+			break;
+		case R.id.save_gestures_menu_item:
+			SDLActivity.nativeSDLSaveGestures();
+			break;
+		case R.id.load_gestures_menu_item:
+			SDLActivity.nativeSDLLoadGestures();
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
+    /* CUSTOM ADDITIONS END */
 
     // Messages from the SDLMain thread
     static final int COMMAND_CHANGE_TITLE = 1;
@@ -161,6 +303,13 @@ public class SDLActivity extends Activity {
     public static native void onNativeAccel(float x, float y, float z);
     public static native void nativeRunAudioThread();
 
+    /* CUSTOM ADDITIONS START */
+    public static native void nativeTCODScaling(int scaling);
+    public static native void nativeTCODSetFPS(int value);
+    public static native void nativeSDLRecordGesture();
+    public static native void nativeSDLSaveGestures();
+    public static native void nativeSDLLoadGestures();
+    /* CUSTOM ADDITIONS END */
 
     // Java functions called from C
 
@@ -181,6 +330,65 @@ public class SDLActivity extends Activity {
         mSingleton.sendCommand(command, Integer.valueOf(param));
     }
 
+    /* CUSTOM ADDITIONS START */
+    private void showReleaseNotes() {
+    	if (!mShowReleaseNotes) {
+    		return;
+    	}
+    	
+    	AlertDialog.Builder alert = new AlertDialog.Builder(this);
+    	alert.setIcon(R.drawable.icon);
+    	alert.setTitle("SDLApp Release Notes");
+    	alert.setNeutralButton("OK", new DialogInterface.OnClickListener() {			
+			public void onClick(DialogInterface dialog, int which) {
+				if (!mShowReleaseNotes) {
+			    	SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+			    	SharedPreferences.Editor prefsEd = prefs.edit();
+			    	prefsEd.putString(PREFS_RELEASE_NOTES_SEEN, mVersionName);
+			    	boolean savedSuccessfully = prefsEd.commit();
+			    	Log.d("SDL", String.format("Saved release-note-version='%s' => %b", mVersionName, savedSuccessfully));
+				}
+			}
+		});
+
+    	LayoutInflater factory = LayoutInflater.from(this);
+        final View alertView = factory.inflate(R.layout.releasenotes, null);
+        CheckBox cb = (CheckBox) alertView.findViewById(R.id.releasenotes_checkbox);
+        cb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				mShowReleaseNotes = !isChecked;
+			}        	
+        });
+        
+        /* Populate the text view with the release notes. */
+        TextView tv = (TextView) alertView.findViewById(R.id.releasenotes_text);    	
+    	InputStream is = null;
+    	try {
+    		is = getResources().openRawResource(R.raw.releasenotes);
+    		byte[] reader = new byte[is.available()];
+    		while (is.read(reader) != -1) {}
+    		tv.setText(new String(reader));
+    	} catch (IOException e) {    	
+    		Log.e("ReadRawResourceFile", e.getMessage(), e);
+    	} finally {
+	    	if (is != null) {
+		    	try {
+			    	is.close();
+		    	} catch (IOException e) {}
+	    	}
+    	}
+    	
+    	alert.setView(alertView);
+    	/* Non-blocking, execution proceeds. */
+    	alert.show();
+    }
+
+    public static void openMenu() {
+    	mSingleton.openOptionsMenu();
+    }
+    /* CUSTOM ADDITIONS END */
+
     public static Context getContext() {
         return mSingleton;
     }
@@ -188,6 +396,10 @@ public class SDLActivity extends Activity {
     public static void startApp() {
         // Start up the C app thread
         if (mSDLThread == null) {
+            /* CUSTOM ADDITIONS START */
+        	mSingleton.showReleaseNotes();
+            /* CUSTOM ADDITIONS END */
+
             mSDLThread = new Thread(new SDLMain(), "SDLThread");
             mSDLThread.start();
         }
@@ -547,6 +759,12 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             //Log.v("SDL", "key down: " + keyCode);
+            /* CUSTOM ADDITIONS START */
+        	if (keyCode == KeyEvent.KEYCODE_MENU) {
+        		SDLActivity.openMenu();
+        		return true;
+        	}
+            /* CUSTOM ADDITIONS END */
             SDLActivity.onNativeKeyDown(keyCode);
             return true;
         }

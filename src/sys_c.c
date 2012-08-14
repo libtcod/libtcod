@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#if defined (__linux) && ! defined (__ANDROID__)
+#if defined (__linux) && ! defined (__ANDROID__) || defined (__FreeBSD__)
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>

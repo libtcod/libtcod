@@ -129,11 +129,11 @@ bool TCODSystem::fileExists(const char * filename, ...) {
 }
 
 bool TCODSystem::readFile(const char *filename, unsigned char **buf, uint32 *size) {
-	return TCOD_sys_read_file(filename,buf,size);
+	return TCOD_sys_read_file(filename,buf,size) != 0;
 }
 
 bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32 size) {
-	return TCOD_sys_write_file(filename,buf,size);
+	return TCOD_sys_write_file(filename,buf,size) != 0;
 }
 
 // clipboard stuff

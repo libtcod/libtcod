@@ -207,8 +207,9 @@ void TCOD_sys_load_font() {
 		printf (hasTransparent ? "present\n" : "not present\n");
 	} else if ( charmap->format->BytesPerPixel != 3 ) {
 		/* convert to 24 bits */
+		SDL_Surface *temp;
 		printf ("font bpp < 24. converting to 24bits\n");
-		SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
+		temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 		SDL_BlitSurface(charmap,NULL,temp,NULL);
 		SDL_FreeSurface(charmap);
 		charmap=temp;
@@ -235,8 +236,9 @@ void TCOD_sys_load_font() {
 		printf ("key color : %d %d %d\n",fontKeyCol.r,fontKeyCol.g,fontKeyCol.b);
 		if ( ! TCOD_ctx.font_greyscale && charmap->format->BytesPerPixel == 4 ) {
 			/* 32 bits font but alpha layer not used. convert to 24 bits (faster) */
+			SDL_Surface *temp;
 			printf ("32bits font with no alpha => converting to faster 24 bits\n");
-			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
+			temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
 			charmap=temp;
@@ -273,8 +275,9 @@ void TCOD_sys_load_font() {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
 		/* convert the surface to 32 bits if needed */
 		if ( charmap->format->BytesPerPixel != 4 ) {
+			SDL_Surface *temp;
 			printf("24bits greyscale font. converting to 32bits\n");
-			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
+			temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
 			charmap=temp;
@@ -584,10 +587,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 									while (h> 0) {
 										int w=TCOD_ctx.font_width;
 										while ( w > 0 ) {
-											(*pix) &= nrgb_mask; /* erase the color */
 											int r=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift/8));
 											int g=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift/8));
 											int b=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift/8));
+											(*pix) &= nrgb_mask; /* erase the color */
 											r = r * f.r / 255;
 											g = g * f.g / 255;
 											b = b * f.b / 255;
@@ -627,10 +630,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 										int w=TCOD_ctx.font_width;
 										while ( w > 0 ) {
 											if (((*pixorig) & rgb_mask) != sdl_key ) {
-												(*pix) &= nrgb_mask; /* erase the color */
 												int r=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift/8));
 												int g=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift/8));
 												int b=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift/8));
+												(*pix) &= nrgb_mask; /* erase the color */
 												r = r * f.r / 255;
 												g = g * f.g / 255;
 												b = b * f.b / 255;
@@ -1040,15 +1043,17 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	memset(charcols,128,256*sizeof(TCOD_color_t));
 	*/
 	if ( fullscreen ) {
-		find_resolution();
 #if SDL_VERSION_ATLEAST(2,0,0)
+		find_resolution();
 		SDL_SetWindowFullscreen(window, fullscreen);
 #	ifdef USE_SDL2_RENDERER
 		/* screen = SDL_CreateWindowFramebuffer(window); */
 #   else
 #	endif
 #else
-		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
+		SDL_Surface *newscreen;
+		find_resolution();
+		newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 		TCOD_IFNOT ( newscreen != NULL ) return;
 		screen=newscreen;
 #endif

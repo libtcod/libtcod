@@ -49,6 +49,8 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	size_t pngsize;
 	LodePNGState state;
 	SDL_Surface *bitmap;
+	unsigned char *source;
+	unsigned int rowsize;
 
 	lodepng_state_init(&state);
 	/*optionally customize the state*/
@@ -76,8 +78,8 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 		
 	/* create the SDL surface */
 	bitmap=TCOD_sys_get_surface(width,height,bpp==32);
-	unsigned char *source=image;
-	unsigned int rowsize=width*bpp/8;
+	source=image;
+	rowsize=width*bpp/8;
 	for (y=0; y<  height; y++ ) {
 		Uint8 *row_pointer=(Uint8 *)(bitmap->pixels) + y * bitmap->pitch;
 		memcpy(row_pointer,source,rowsize);

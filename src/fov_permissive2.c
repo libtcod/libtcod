@@ -75,27 +75,7 @@ static bool is_blocked(map_t *map, view_t *view, int startX, int startY, int x, 
 	int posy=y*dy/STEP_SIZE+startY;
 	int offset=posx + (posy)*map->width;
 	bool blocked=!map->cells[offset].transparent;
-	int tlx,tly,brx,bry;
-	if ( blocked ) {
-		tlx=x;
-		tly=y+STEP_SIZE;
-		brx=x+STEP_SIZE;
-		bry=y;
-	} else {
-		tlx=x+offset;
-		tly=y+limit;
-		brx=x+limit;
-		bry=y+offset;
-	}
-	if ( light_walls || 
-		(
-			ABOVE(&view->steep_line,brx,bry) 
-			&& BELOW(&view->shallow_line,tlx,tly)
-		) 
-/*		! blocked */
-	) {
-		map->cells[offset].fov=1;
-	}
+	if (! blocked || light_walls) map->cells[offset].fov=1; 
 	return blocked;
 }
 

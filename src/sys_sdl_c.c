@@ -213,6 +213,8 @@ void TCOD_sys_load_font() {
 		SDL_BlitSurface(charmap,NULL,temp,NULL);
 		SDL_FreeSurface(charmap);
 		charmap=temp;
+	} else {
+		printf ("24 bits font.\n");
 	}
 	if (! hasTransparent ) {
 		/* alpha layer not used */
@@ -315,7 +317,7 @@ void TCOD_sys_load_font() {
 	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
 	nrgb_mask = ~ rgb_mask;
 	sdl_key &= rgb_mask; /* remove the alpha part */
-	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_TRUE|SDL_RLEACCEL,sdl_key);
+	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		charcols[i]=fontKeyCol;
 		first_draw[i]=true;

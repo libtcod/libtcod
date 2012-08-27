@@ -317,7 +317,11 @@ void TCOD_sys_load_font() {
 	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
 	nrgb_mask = ~ rgb_mask;
 	sdl_key &= rgb_mask; /* remove the alpha part */
+#if SDL_VERSION_ATLEAST(2,0,0)		
+	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_TRUE|SDL_RLEACCEL,sdl_key);
+#else
 	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
+#endif
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		charcols[i]=fontKeyCol;
 		first_draw[i]=true;

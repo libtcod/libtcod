@@ -788,7 +788,9 @@ void TCOD_sys_startup() {
 #endif
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
+#ifndef NO_OPENGL
 	TCOD_opengl_init_attributes();
+#endif
 
 	has_startup=true;
 }

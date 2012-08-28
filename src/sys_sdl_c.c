@@ -180,6 +180,7 @@ void TCOD_sys_load_font() {
 	bool hasTransparent=false;
 	int x,y;
 
+	if ( charmap ) SDL_FreeSurface(charmap);
 	charmap=TCOD_sys_load_image(TCOD_ctx.font_file);
 	if (charmap == NULL ) TCOD_fatal("SDL : cannot load %s",TCOD_ctx.font_file);
 	if ( (float)(charmap->w / TCOD_ctx.fontNbCharHoriz) != charmap->w / TCOD_ctx.fontNbCharHoriz
@@ -288,7 +289,7 @@ void TCOD_sys_load_font() {
 			int cx,cy;
 			cx=(i%TCOD_ctx.fontNbCharHoriz);
 			cy=(i/TCOD_ctx.fontNbCharHoriz);			
-			/* fill the surface with white, use alpha layer for characters */
+			/* fill the surface with white (except colored tiles), use alpha layer for characters */
 			for (x=cx*TCOD_ctx.font_width; x < (cx+1)*TCOD_ctx.font_width; x ++ ) {
 				for (y=cy*TCOD_ctx.font_height;y < (cy+1)*TCOD_ctx.font_height; y++ ) {
 					if ( ! TCOD_ctx.colored[i]) {
@@ -787,11 +788,7 @@ void TCOD_sys_startup() {
 #endif
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
-		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
+	TCOD_opengl_init_attributes();
 
 	has_startup=true;
 }
@@ -877,6 +874,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 }
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
+	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 #endif
@@ -891,7 +889,10 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
-	if (! charmap) TCOD_sys_load_font();
+	if (last_renderer != TCOD_ctx.renderer || ! charmap) {
+		/* reload the font when switching renderer to restore original character colors */
+		TCOD_sys_load_font();
+	}
 	if ( fullscreen  ) {
 		find_resolution();
 #ifndef NO_OPENGL	

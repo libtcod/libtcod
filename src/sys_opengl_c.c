@@ -100,14 +100,13 @@ static const char *TCOD_con_pixel_shader =
 "   vec2 address = vec2(conPos.x*termcoef.x,conPos.y*termcoef.y); "
 "	address=address+vec2(0.001, 0.001); "
 "   vec4 charvec = texture2D(term,address);"
-"   float inchar = (charvec.r * 255.0) + (charvec.g * 255.0 * 256.0);"                         /* character */
+"   float inchar = (charvec.r * 256.0) + (charvec.g * 256.0 * 256.0);"          /* character */
 "   vec4 tcharfcol = texture2D(termfcol, address); "           /* front color */
 "   vec4 tcharbcol = texture2D(termbcol, address); "           /* back color */
 
 "   vec4 tchar = vec4(mod(floor(inchar),floor(fontw)),floor(inchar/fontw), 0.0, 0.0); "  /* 1D index to 2D index map for character */
 
 "   gl_FragColor = texture2D(font, vec2((tchar.x*fontcoef.x),(tchar.y*fontcoef.y))+pixPos.xy); "   /* magic func: finds pixel value in font file */
-
 "   gl_FragColor=gl_FragColor.a*tcharfcol+(1.0-gl_FragColor.a)*tcharbcol; "      /* Coloring stage */
 "} "
 ;
@@ -133,10 +132,10 @@ void TCOD_opengl_init_attributes() {
 		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
 		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
+		/* ATI driver bug : enabling this might result in red screen */
+		/* SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); */
 		first=false;
 	}
-	/* ATI driver bug : enabling this might result in red screen */
-	/*SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); */
 }
 
 /* console size (power of 2 and cells) */

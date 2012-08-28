@@ -93,7 +93,7 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 
 void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	unsigned char *image, *dest=(unsigned char *)malloc(surf->h*surf->w*3*sizeof(char));
-	unsigned x,y;
+	int x,y;
 	unsigned char *buf;
 	size_t size;
 	int error;

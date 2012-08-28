@@ -43,16 +43,16 @@ TCODConsole::TCODConsole(const char *filename) {
 }
 
 bool TCODConsole::loadAsc(const char *filename) {
-	return TCOD_console_load_asc(data,filename);
+	return TCOD_console_load_asc(data,filename) != 0;
 }
 bool TCODConsole::saveAsc(const char *filename) const {
-	return TCOD_console_save_asc(data,filename);
+	return TCOD_console_save_asc(data,filename) != 0;
 }
 bool TCODConsole::saveApf(const char *filename) const {
-	return TCOD_console_save_apf(data,filename);
+	return TCOD_console_save_apf(data,filename) != 0;
 }
 bool TCODConsole::loadApf(const char *filename) {
-	return TCOD_console_load_apf(data,filename);
+	return TCOD_console_load_apf(data,filename) != 0;
 }
 
 void TCODConsole::setCustomFont(const char *fontFile, int flags,int nbCharHoriz, int nbCharVertic) {

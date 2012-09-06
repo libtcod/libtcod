@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.1
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#if defined (__linux) && ! defined (__ANDROID__)
+#if defined (__linux) && ! defined (__ANDROID__) || defined (__FreeBSD__)
 /* X11 stuff for clipboard support */
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>

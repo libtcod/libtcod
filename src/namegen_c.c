@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.1
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -616,9 +616,12 @@ char * TCOD_namegen_generate (char * name, bool allocate) {
 /* retrieve the list of all available syllable set names */
 TCOD_list_t TCOD_namegen_get_sets (void) {
     TCOD_list_t l = TCOD_list_new();
-    namegen_t ** it;
-    for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
-        TCOD_list_push(l,(const void*)((*it)->name));
+    if (namegen_generators_list != NULL) {
+        namegen_t ** it;
+        for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list); it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+            TCOD_list_push(l,(const void*)((*it)->name));
+        }
+    }
     return l;
 }
 

@@ -6,9 +6,9 @@ INCDIR=include
 
 #dependencies
 # SDL
-SDL_DIR=dependencies/SDL-1.2.12
+SDL_DIR=dependencies/SDL-1.2.15
 SDL_FLAGS=-I $(SDL_DIR)/include
-SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL
+SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL.dll
 
 # ZLIB
 ZLIB_DIR=dependencies/zlib-1.2.3
@@ -18,25 +18,8 @@ ZLIB_LIBS=$(ZLIB_DIR)/lib/mingw/libz.a
 # OPENGL
 OPENGL_LIB=-lopengl32
 
-# MINGW version
-MINGW_VERSION=$(word 3,$(shell sh -c "grep __MINGW32_VERSION /mingw/include/_mingw.h | grep define "))
-ifndef ($(MINGW_VERSION))
-MINGW_VERSION=$(word 3,$(shell sh -c "grep __MINGW32_VERSION /include/_mingw.h | grep define "))
-endif
-GCC_VERSION=$(word 3,$(shell sh -c "gcc --version | grep gcc.exe "))
-# 3.17 / 3.4.5
-# 3.18 / 4.5.2
-# 3.20 / 4.6.2
-ifeq ($(MINGW_VERSION),3.18)
-MINGW_FLAGS=-static-libgcc -static-libstdc++
-elif ($(MINGW_VERSION),3.19)
-MINGW_FLAGS=-static-libgcc -static-libstdc++
-elif ($(MINGW_VERSION),3.20)
-MINGW_FLAGS=-static-libgcc -static-libstdc++
-endif
-
-
 CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -Wall -fno-strict-aliasing -ansi
+MINGW_FLAGS=-static-libgcc -static-libstdc++
 CC=mingw32-gcc
 CPP=mingw32-g++
 UPX=dependencies/upx/win/upx.exe

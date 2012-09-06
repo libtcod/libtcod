@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.1
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,9 @@
 #include "libtcod_int.h"
 #ifdef TCOD_WINDOWS
 #include <malloc.h>
+#ifndef alloca
 #define alloca _alloca
+#endif
 #else
 #include <alloca.h>
 #endif
@@ -86,7 +88,7 @@ static void trace(map_t *m,int dir, int n, int h, int px, int py, bool light_wal
 			if (dir&2) cy[i] = -cy[i];
 			if (dir&4) cx[i] ^= cy[i], cy[i] ^= cx[i], cx[i] ^= cy[i];
 			cx[i] += px, cy[i] += py;
-			
+
 			if (CCW(topx[s[i][1]], topy[s[i][1]], botx[s[!i][0]], boty[s[!i][0]], ad1, ad2[i]+1-i) > 0) {
 				draw(m,cx[i], cy[i], n,px,py,light_walls);
 			}
@@ -106,7 +108,7 @@ static void trace(map_t *m,int dir, int n, int h, int px, int py, bool light_wal
 				botx[curb] = botx[curb+1], boty[curb] = boty[curb+1];
 			}
 		}
-		
+
 		if ( (unsigned)cx[1] < (unsigned)m->width && (unsigned)cy[1] < (unsigned)m->height)
 		if (!m->cells[m->width*cy[1]+cx[1]].transparent) {	// same as above
 			++curt;

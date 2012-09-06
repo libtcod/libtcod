@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.1
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -157,10 +157,7 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #if defined(TCOD_WINDOWS)
 char *strcasestr (const char *haystack, const char *needle);
 #endif
-#if defined(TCOD_LINUX) || defined(TCOD_HAIKU) || defined(TCOD_FREEBSD)
-#define vsnwprintf vswprintf
-#endif
-#ifdef TCOD_MACOSX
+#if defined(TCOD_LINUX) || defined(TCOD_HAIKU) || defined(TCOD_FREEBSD) || defined(TCOD_MACOSX)
 #define vsnwprintf vswprintf
 #endif
 #ifdef TCOD_WINDOWS

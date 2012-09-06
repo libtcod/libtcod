@@ -66,6 +66,7 @@ LIBOBJS_C_DEBUG= \
 	$(TEMP)/libtcod/debug/txtfield_c.o \
 	$(TEMP)/libtcod/debug/wrappers.o \
 	$(TEMP)/libtcod/debug/zip_c.o \
+	$(TEMP)/libtcod/debug/png/lodepng.o \
 	$(TEMP)/libtcod/debug/namegen_c.o
 
 LIBOBJS_CPP_DEBUG= \
@@ -131,6 +132,7 @@ LIBOBJS_C_RELEASE= \
 	$(TEMP)/libtcod/release/tree_c.o \
 	$(TEMP)/libtcod/release/wrappers.o \
 	$(TEMP)/libtcod/release/zip_c.o \
+	$(TEMP)/libtcod/release/png/lodepng.o \
 	$(TEMP)/libtcod/release/namegen_c.o
 
 LIBOBJS_CPP_RELEASE= \
@@ -174,13 +176,13 @@ debug : libtcod_debug.so libtcodxx_debug.so libtcodgui_debug.so
 
 release : libtcod.so libtcodxx.so libtcodgui.so
 
-$(TEMP)/libtcod/debug :
+$(TEMP)/libtcod/debug/png :
 	mkdir -p $@
 
 $(TEMP)/libtcod/debug/gui :
 	mkdir -p $@
 
-$(TEMP)/libtcod/release :
+$(TEMP)/libtcod/release/png :
 	mkdir -p $@
 
 $(TEMP)/libtcod/release/gui :
@@ -192,19 +194,19 @@ libtcod.a : $(LIBOBJS_C_DEBUG)
 libtcodxx.a : $(LIBOBJS_CPP_DEBUG)
 	ar r $@ $(LIBOBJS_CPP_DEBUG)
 
-libtcod.so : $(TEMP)/libtcod/release $(LIBOBJS_C_RELEASE)
+libtcod.so : $(TEMP)/libtcod/release/png $(LIBOBJS_C_RELEASE)
 	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C_RELEASE) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(CFLAGS) $(OPENGL_LIB)
 
-libtcodxx.so : $(TEMP)/libtcod/release $(LIBOBJS_CPP_RELEASE)
+libtcodxx.so : $(TEMP)/libtcod/release/png $(LIBOBJS_CPP_RELEASE)
 	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP_RELEASE) -L. -ltcod $(CFLAGS)
 
 libtcodgui.so : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
 	gcc -shared -Wl,-soname,$@ -o $@ $(GUIOBJS_RELEASE) -L. -ltcod -ltcodxx $(CFLAGS)
 
-libtcod_debug.so : $(TEMP)/libtcod/debug $(LIBOBJS_C_DEBUG)
+libtcod_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_C_DEBUG)
 	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C_DEBUG) $(ZLIB_LIBS) $(PNG_LIBS) $(SDL_LIBS) $(CFLAGS) $(OPENGL_LIB)
 
-libtcodxx_debug.so : $(TEMP)/libtcod/debug $(LIBOBJS_CPP_DEBUG)
+libtcodxx_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_CPP_DEBUG)
 	gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP_DEBUG) -L. -ltcod_debug $(CFLAGS)
 
 libtcodgui_debug.so : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)

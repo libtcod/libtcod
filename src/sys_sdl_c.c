@@ -1,6 +1,6 @@
 /*
 * libtcod 1.5.1
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -178,6 +178,7 @@ void TCOD_sys_load_font() {
 	bool hasTransparent=false;
 	int x,y;
 
+	if ( charmap ) SDL_FreeSurface(charmap);
 	charmap=TCOD_sys_load_image(TCOD_ctx.font_file);
 	if (charmap == NULL ) TCOD_fatal("SDL : cannot load %s",TCOD_ctx.font_file);
 	if ( (float)(charmap->w / TCOD_ctx.fontNbCharHoriz) != charmap->w / TCOD_ctx.fontNbCharHoriz
@@ -205,11 +206,14 @@ void TCOD_sys_load_font() {
 		printf (hasTransparent ? "present\n" : "not present\n");
 	} else if ( charmap->format->BytesPerPixel != 3 ) {
 		/* convert to 24 bits */
+		SDL_Surface *temp;
 		printf ("font bpp < 24. converting to 24bits\n");
-		SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
+		temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 		SDL_BlitSurface(charmap,NULL,temp,NULL);
 		SDL_FreeSurface(charmap);
 		charmap=temp;
+	} else {
+		printf ("24 bits font.\n");
 	}
 	if (! hasTransparent ) {
 		/* alpha layer not used */
@@ -233,8 +237,9 @@ void TCOD_sys_load_font() {
 		printf ("key color : %d %d %d\n",fontKeyCol.r,fontKeyCol.g,fontKeyCol.b);
 		if ( ! TCOD_ctx.font_greyscale && charmap->format->BytesPerPixel == 4 ) {
 			/* 32 bits font but alpha layer not used. convert to 24 bits (faster) */
+			SDL_Surface *temp;
 			printf ("32bits font with no alpha => converting to faster 24 bits\n");
-			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
+			temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,false);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
 			charmap=temp;
@@ -271,8 +276,9 @@ void TCOD_sys_load_font() {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
 		/* convert the surface to 32 bits if needed */
 		if ( charmap->format->BytesPerPixel != 4 ) {
+			SDL_Surface *temp;
 			printf("24bits greyscale font. converting to 32bits\n");
-			SDL_Surface *temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
+			temp=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
 			SDL_BlitSurface(charmap,NULL,temp,NULL);
 			SDL_FreeSurface(charmap);
 			charmap=temp;
@@ -281,7 +287,7 @@ void TCOD_sys_load_font() {
 			int cx,cy;
 			cx=(i%TCOD_ctx.fontNbCharHoriz);
 			cy=(i/TCOD_ctx.fontNbCharHoriz);			
-			/* fill the surface with white, use alpha layer for characters */
+			/* fill the surface with white (except colored tiles), use alpha layer for characters */
 			for (x=cx*TCOD_ctx.font_width; x < (cx+1)*TCOD_ctx.font_width; x ++ ) {
 				for (y=cy*TCOD_ctx.font_height;y < (cy+1)*TCOD_ctx.font_height; y++ ) {
 					if ( ! TCOD_ctx.colored[i]) {
@@ -310,7 +316,11 @@ void TCOD_sys_load_font() {
 	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
 	nrgb_mask = ~ rgb_mask;
 	sdl_key &= rgb_mask; /* remove the alpha part */
+#if SDL_VERSION_ATLEAST(2,0,0)		
 	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_TRUE|SDL_RLEACCEL,sdl_key);
+#else
+	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
+#endif
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		charcols[i]=fontKeyCol;
 		first_draw[i]=true;
@@ -605,10 +615,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 									while (h> 0) {
 										int w=TCOD_ctx.font_width;
 										while ( w > 0 ) {
-											(*pix) &= nrgb_mask; /* erase the color */
 											int r=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift/8));
 											int g=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift/8));
 											int b=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift/8));
+											(*pix) &= nrgb_mask; /* erase the color */
 											r = r * f.r / 255;
 											g = g * f.g / 255;
 											b = b * f.b / 255;
@@ -648,10 +658,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 										int w=TCOD_ctx.font_width;
 										while ( w > 0 ) {
 											if (((*pixorig) & rgb_mask) != sdl_key ) {
-												(*pix) &= nrgb_mask; /* erase the color */
 												int r=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift/8));
 												int g=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift/8));
 												int b=(int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift/8));
+												(*pix) &= nrgb_mask; /* erase the color */
 												r = r * f.r / 255;
 												g = g * f.g / 255;
 												b = b * f.b / 255;
@@ -799,11 +809,9 @@ void TCOD_sys_startup() {
 #endif
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
-		SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32 );
+#ifndef NO_OPENGL
+	TCOD_opengl_init_attributes();
+#endif
 
 	has_startup=true;
 }
@@ -926,6 +934,7 @@ static void TCOD_sys_init_scaling(bool scaling) {
 }
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
+	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 #endif
@@ -940,7 +949,10 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
-	if (! charmap) TCOD_sys_load_font();
+	if (last_renderer != TCOD_ctx.renderer || ! charmap) {
+		/* reload the font when switching renderer to restore original character colors */
+		TCOD_sys_load_font();
+	}
 	if ( fullscreen  ) {
 		find_resolution();
 #ifndef NO_OPENGL	
@@ -1086,11 +1098,13 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	memset(charcols,128,256*sizeof(TCOD_color_t));
 	*/
 	if ( fullscreen ) {
-		find_resolution();
 #if SDL_VERSION_ATLEAST(2,0,0)
+		find_resolution();
 		SDL_SetWindowFullscreen(window, fullscreen);
 #else
-		SDL_Surface *newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
+		SDL_Surface *newscreen;
+		find_resolution();
+		newscreen=SDL_SetVideoMode(TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,32,SDL_FULLSCREEN);
 		TCOD_IFNOT ( newscreen != NULL ) return;
 		screen=newscreen;
 #endif

@@ -1470,7 +1470,7 @@ int main( int argc, char *argv[] ) {
 			printf ("-renderer <num> : set renderer. 0 : GLSL 1 : OPENGL 2 : SDL\n");
 			exit(0);
 		} else {
-			argn++; /* ignore parameter */
+			/* ignore parameter */
 		}
 	}
 	if ( font_flags == 0 ) font_flags=font_new_flags;

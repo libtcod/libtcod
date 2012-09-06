@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.5.1 : 2012 Feb 16
+1.5.1 : 2012 Aug 29
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
   replaced with TCOD_sys_check_for_event and TCOD_sys_wait_for_event
 X source width and height can be 0 in TCODConsole::blit to blit the whole console 
@@ -56,7 +56,6 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
   * bool TCODConsole::saveAsc(const char *filename) const    
   * bool TCODConsole::loadApf(const char *filename)
   * bool TCODConsole::saveApf(const char *filename) const    
-+ added Ascii animator .ASC and .APF file export/import support  
 + added mouse wheel support in TCOD_mouse_t.wheel_up/wheel_down  
 + added TCODSystem::fileExists function for checking whether a given file exists
 + added dice to the TCODRandom toolkit
@@ -84,6 +83,10 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 % extended list of colour constants (the old names can produce slightly different colours)
 % TCODMap memory consumption divided by 4
 % now mouse wheel events are properly detected
+- fixed namegen crash if generator list is empty
+- fixed permissive fov when light_walls is false
+- fixed possible crash when clearing an offscreen console before calling initRoot
+- fix possible crash when printing a string containing ascii codes > 127
 - fixed TCODNamegen returning integers in the python version
 - fixed TCODDijkstra segfault when diagonal movement cost was zero
 - fixed setDirty() not working for the last row or column of the console

@@ -1116,29 +1116,33 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 
 	TCOD_console_clear(sample_console);
 	TCOD_console_set_default_foreground(sample_console,TCOD_white);
-	TCOD_console_print(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator",
-		(char *)TCOD_list_get(sets,curSet));
-	for (i=0; i < TCOD_list_size(names); i++) {
-		char *name=(char *)TCOD_list_get(names,i);
-		if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
-			TCOD_console_print_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
-				TCOD_BKGND_NONE,TCOD_RIGHT,name);
-	}
+	if (TCOD_list_size(sets) > 0) {
+		TCOD_console_print(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator",
+			(char *)TCOD_list_get(sets,curSet));
+		for (i=0; i < TCOD_list_size(names); i++) {
+			char *name=(char *)TCOD_list_get(names,i);
+			if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
+				TCOD_console_print_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
+					TCOD_BKGND_NONE,TCOD_RIGHT,name);
+		}
 
-	delay += TCOD_sys_get_last_frame_length();
-	if ( delay >= 0.5f ) {
-		delay -= 0.5f;
-		// add a new name to the list
-		TCOD_list_push(names, TCOD_namegen_generate((char *)TCOD_list_get(sets,curSet), true));
-	}
-	if ( key->c == '+' ) {
-		curSet ++;
-		if ( curSet == nbSets ) curSet=0;
-		TCOD_list_push(names, strdup("======"));
-	} else if ( key->c == '-'  ) {
-		curSet --;
-		if ( curSet < 0 ) curSet=nbSets-1;
-		TCOD_list_push(names, strdup("======"));
+		delay += TCOD_sys_get_last_frame_length();
+		if ( delay >= 0.5f ) {
+			delay -= 0.5f;
+			// add a new name to the list
+			TCOD_list_push(names, TCOD_namegen_generate((char *)TCOD_list_get(sets,curSet), true));
+		}
+		if ( key->c == '+' ) {
+			curSet ++;
+			if ( curSet == nbSets ) curSet=0;
+			TCOD_list_push(names, strdup("======"));
+		} else if ( key->c == '-'  ) {
+			curSet --;
+			if ( curSet < 0 ) curSet=nbSets-1;
+			TCOD_list_push(names, strdup("======"));
+		}
+	} else {
+		TCOD_console_print(sample_console,1,1,"Unable to find name config data files.");
 	}
 }
 

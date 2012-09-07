@@ -3,6 +3,10 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.5.2 : ?
+- fixed TCOD_sys_wait_event not returning on mouse events
+- fixed crash in python console_map_ascii_codes_to_font
+=========================================================
 1.5.1 : 2012 Aug 29
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
   replaced with TCOD_sys_check_for_event and TCOD_sys_wait_for_event

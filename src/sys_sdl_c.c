@@ -1497,7 +1497,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	do {
 		SDL_WaitEvent(&ev);
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
-	} while ( ev.type != SDL_QUIT && (retMask & TCOD_EVENT_KEY) == 0 );
+	} while ( ev.type != SDL_QUIT && (retMask & eventMask) == 0 );
 	if (mouse) { *mouse=tcod_mouse; }
 	return retMask;
 }

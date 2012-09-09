@@ -128,7 +128,7 @@ bool TCODSystem::fileExists(const char * filename, ...) {
 	return ret;
 }
 
-bool TCODSystem::readFile(const char *filename, unsigned char **buf, uint32 *size) {
+bool TCODSystem::readFile(const char *filename, unsigned char **buf, size_t *size) {
 	return TCOD_sys_read_file(filename,buf,size) != 0;
 }
 

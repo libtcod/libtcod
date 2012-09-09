@@ -64,7 +64,7 @@ TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
 TCODLIB_API bool TCOD_sys_is_directory(const char *path);
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
 TCODLIB_API bool TCOD_sys_file_exists(const char * filename, ...);
-TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size);
+TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size);
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size);
 
 /* clipboard */

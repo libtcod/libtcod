@@ -320,7 +320,7 @@ public :
 		    free(buf);
 		}
 	*/	
-	static bool readFile(const char *filename, unsigned char **buf, uint32 *size);
+	static bool readFile(const char *filename, unsigned char **buf, size_t *size);
 	/**
 	@PageName system_filesystem
 	@FuncTitle Write the content of a memory buffer to a file

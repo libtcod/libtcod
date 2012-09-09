@@ -26,4 +26,6 @@ void CustomSDLMain()
 				if (!CPSSetFrontProcess(&PSN))
 					[NSApplication sharedApplication];
 	}
+
+    [pool release];
 }

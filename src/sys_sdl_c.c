@@ -1802,7 +1802,7 @@ void TCOD_mouse_includes_touch(bool enable) {
 }
 #endif
 
-bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size) {
+bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
 	uint32 filesize;
 	/* get file size */
 #if SDL_VERSION_ATLEAST(2,0,0)

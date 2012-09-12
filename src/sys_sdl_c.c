@@ -1156,6 +1156,10 @@ void TCOD_sys_set_scaling(bool scaling) {
 	clear_screen=true;
 }
 
+void TCOD_sys_set_clear_screen() {
+	clear_screen=true;
+}
+
 void TCOD_sys_set_window_title(const char *title) {
 	strcpy(TCOD_ctx.window_title,title);
 #if SDL_VERSION_ATLEAST(2,0,0)

@@ -1249,8 +1249,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_KP_8 : ret->vk=TCODK_KP8;break;
 		case SDLK_KP_9 : ret->vk=TCODK_KP9;break;
 #else
-		case SDLK_RMETA : ret->vk=TCODK_RWIN;break;
-		case SDLK_LMETA : ret->vk=TCODK_LWIN;break;
+		case SDLK_RSUPER : ret->vk=TCODK_RWIN;break;
+		case SDLK_LSUPER : ret->vk=TCODK_LWIN;break;
 		case SDLK_KP0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP2 : ret->vk=TCODK_KP2;break;

@@ -1500,6 +1500,10 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	tcod_mouse.wheel_down=false;
 	tcod_mouse.dx=0;
 	tcod_mouse.dy=0;
+	if ( key ) {
+		key->vk=TCODK_NONE;
+		key->c=0;
+	}	
 	do {
 		SDL_WaitEvent(&ev);
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);

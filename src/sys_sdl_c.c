@@ -1439,6 +1439,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
 #endif
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}
 				return retMask;
 			}
 		break; 
@@ -1451,6 +1460,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_MIDDLE : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
 					case SDL_BUTTON_RIGHT : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}				
 				return retMask;
 			}
 		break;

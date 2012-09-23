@@ -8,6 +8,7 @@ SDL_PATH := ../SDL2
 TCOD_PATH := ../libtcod
 TCOD_SAMPLE_PATH = $(TCOD_PATH)/samples/
 
+LOCAL_CFLAGS := -DTCOD_SDL2 -DTCOD_ANDROID
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(TCOD_PATH)/include
 
 # Add your application source files here...

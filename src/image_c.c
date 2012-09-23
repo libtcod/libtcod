@@ -277,7 +277,9 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	image_data_t *img=(image_data_t *)image;
 	if ( scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	TCOD_image_get_size(image,&width,&height);
-	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f && x-((int)x) == 0.0f && y-((int)y)==0.0f) {
+	float rx = x - width * 0.5f;
+	float ry = y - height * 0.5f; 
+	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f && rx == ((int)rx) && ry == ((int)ry)) {
 		/* clip the image */
 		int ix = (int)(x - width*0.5f);
 		int iy = (int)(y - height*0.5f);
@@ -365,7 +367,7 @@ void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int
 	if ( w <= 0 || h <= 0 || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	scalex = (float)(w)/width;
 	scaley = (float)(h)/height;
-	TCOD_image_blit(image,console,(int)(x+w*0.5f),(int)(y+h*0.5f),bkgnd_flag,scalex,scaley,0.0f);
+	TCOD_image_blit(image,console,x+w*0.5f,y+h*0.5f,bkgnd_flag,scalex,scaley,0.0f);
 }
 
 TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {

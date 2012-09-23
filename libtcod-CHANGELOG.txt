@@ -4,6 +4,8 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.2 : ?
+- fixed TCOD_image_blit_rect not working with odd width/height
+- fixed TCODK_RWIN/TCODK_LWIN not detected
 - fixed TCOD_sys_wait_event not returning on mouse events
 - fixed mouse dcx/dcy fields always 0 when the cursor moves slowly
 - fixed crash in python console_map_ascii_codes_to_font

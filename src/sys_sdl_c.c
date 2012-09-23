@@ -1236,6 +1236,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_8 : ret->vk=TCODK_8;break;
 		case SDLK_9 : ret->vk=TCODK_9;break;
 #if SDL_VERSION_ATLEAST(2,0,0)	
+		case SDLK_RGUI : ret->vk=TCODK_RGUI;break;
+		case SDLK_LGUI : ret->vk=TCODK_LGUI;break;
 		case SDLK_KP_0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP_1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP_2 : ret->vk=TCODK_KP2;break;
@@ -1247,6 +1249,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_KP_8 : ret->vk=TCODK_KP8;break;
 		case SDLK_KP_9 : ret->vk=TCODK_KP9;break;
 #else
+		case SDLK_RSUPER : ret->vk=TCODK_RWIN;break;
+		case SDLK_LSUPER : ret->vk=TCODK_LWIN;break;
 		case SDLK_KP0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP2 : ret->vk=TCODK_KP2;break;
@@ -1404,7 +1408,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
 				SDL_MouseMotionEvent *mme=&ev->motion;
-				int charWidth, charHeight;
+				int charWidth, charHeight, oldcx,oldcy;
 				/*SDL_GetMouseState(&mouse->x,&mouse->y);*/
 				/*SDL_GetRelativeMouseState(&mouse->dx,&mouse->dy);*/
 				retMask|=TCOD_EVENT_MOUSE_MOVE;
@@ -1413,10 +1417,12 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				mouse->x=mme->x;
 				mouse->y=mme->y;				
 				TCOD_sys_get_char_size(&charWidth,&charHeight);
+				oldcx=mouse->cx;
+				oldcy=mouse->cy;
 				mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
 				mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
-				mouse->dcx = mouse->dx / charWidth;
-				mouse->dcy = mouse->dy / charHeight;
+				mouse->dcx = mouse->cx - oldcx;
+				mouse->dcy = mouse->cy - oldcy;
 				return retMask;
 			}
 		break; 
@@ -1433,6 +1439,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
 #endif
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}
 				return retMask;
 			}
 		break; 
@@ -1445,6 +1460,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_MIDDLE : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
 					case SDL_BUTTON_RIGHT : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}				
 				return retMask;
 			}
 		break;
@@ -1494,6 +1518,10 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	tcod_mouse.wheel_down=false;
 	tcod_mouse.dx=0;
 	tcod_mouse.dy=0;
+	if ( key ) {
+		key->vk=TCODK_NONE;
+		key->c=0;
+	}	
 	do {
 		SDL_WaitEvent(&ev);
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);

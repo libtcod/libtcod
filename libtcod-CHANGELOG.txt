@@ -5,6 +5,7 @@ X API break
 =========================================================
 1.5.2 : ?
 - fixed TCOD_sys_wait_event not returning on mouse events
+- fixed mouse dcx/dcy fields always 0 when the cursor moves slowly
 - fixed crash in python console_map_ascii_codes_to_font
 =========================================================
 1.5.1 : 2012 Aug 29

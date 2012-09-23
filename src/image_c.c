@@ -365,7 +365,7 @@ void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int
 	if ( w <= 0 || h <= 0 || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	scalex = (float)(w)/width;
 	scaley = (float)(h)/height;
-	TCOD_image_blit(image,console,x+w*0.5f,y+h*0.5f,bkgnd_flag,scalex,scaley,0.0f);
+	TCOD_image_blit(image,console,(int)(x+w*0.5f),(int)(y+h*0.5f),bkgnd_flag,scalex,scaley,0.0f);
 }
 
 TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {

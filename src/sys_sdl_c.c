@@ -63,6 +63,18 @@ static image_support_t image_type[] = {
 	{ NULL, NULL, NULL, NULL },
 };
 
+typedef struct {
+	float last_scale_xc, last_scale_yc;
+	float last_scale_factor;
+
+	float src_height_width_ratio;
+	float dst_height_width_ratio;
+	int src_x0, src_y0;
+	int src_copy_width, src_copy_height;
+	int src_proportionate_width, src_proportionate_height;
+	int dst_display_width, dst_display_height;
+	int dst_offset_x, dst_offset_y;
+} scale_data_t;
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 static SDL_Window* window=NULL;
@@ -75,6 +87,11 @@ static char_t *consoleBuffer=NULL;
 static char_t *prevConsoleBuffer=NULL;
 static bool has_startup=false;
 static bool clear_screen=false;
+static float scale_factor=0.5f;
+static float scale_xc=0.5f;
+static float scale_yc=0.5f;
+static scale_data_t scale_data={0};
+#define MIN_SCALE_FACTOR 0.3f
 
 /* font transparent color */
 static TCOD_color_t fontKeyCol={0,0,0};
@@ -88,7 +105,7 @@ static bool mousebr=false;
 static bool mouse_force_bl=false;
 static bool mouse_force_bm=false;
 static bool mouse_force_br=false;
-#if SDL_VERSION_ATLEAST(2,0,0)
+#ifdef TCOD_TOUCH_INPUT
 static bool mouse_touch=true;
 #endif
 
@@ -445,7 +462,69 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 			/* Implicitly do complete console redraw, not just tracked changes. */
 			prev_console_buffer_ptr = NULL;
 		}
-		if (TCOD_ctx.fullscreen_scaling && vbitmap == NULL) {
+		if (scale_factor + 1e-3f >= MIN_SCALE_FACTOR && vbitmap == NULL) {
+			int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;
+			int console_height_p = TCOD_ctx.root->h*TCOD_ctx.font_height;
+			SDL_Rect srcRect, dstRect;
+			/* Make a bitmap of exact rendering size and correct format. */
+			if (scale_screen == NULL) {
+				SDL_PixelFormat *fmt = charmap->format;
+				scale_screen=SDL_CreateRGBSurface(SDL_SWSURFACE,console_width_p,console_height_p,fmt->BitsPerPixel,fmt->Rmask,fmt->Gmask,fmt->Bmask,fmt->Amask);
+				if (scale_screen == NULL) {
+					TCOD_fatal("SDL : failed to create scaling surface");
+					return;
+				}
+			}
+			/* Render the console to the bitmap. */
+			TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, console_buffer, prev_console_buffer_ptr);
+			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it. */
+			if (TCOD_ctx.fullscreen_scale > 0 && scale_factor > TCOD_ctx.fullscreen_scale) {
+				scale_factor = TCOD_ctx.fullscreen_scale;
+			}
+			/* This should only be recalculated if the input variables change. */
+			if (scale_data.last_scale_factor != scale_factor ||
+					scale_data.last_scale_xc != scale_xc ||
+					scale_data.last_scale_yc != scale_yc) {
+				int scale_x0, scale_y0;
+				/* Preserve old value of input variables, to enable recalculation if they change. */
+				scale_data.last_scale_factor = scale_factor;
+				scale_data.last_scale_xc = scale_xc;
+				scale_data.last_scale_yc = scale_yc;
+
+				scale_data.dst_height_width_ratio = (float)TCOD_ctx.actual_fullscreen_height/TCOD_ctx.actual_fullscreen_width;
+				scale_data.src_proportionate_width = (int)(console_width_p * scale_factor);
+				scale_data.src_proportionate_height = (int)(console_width_p * scale_factor * scale_data.dst_height_width_ratio);
+
+				/* Work out how much of the console to copy. */
+				scale_data.src_x0 = (scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width);
+				if (scale_data.src_x0 + scale_data.src_proportionate_width > console_width_p)
+					scale_data.src_x0 = console_width_p - scale_data.src_proportionate_width;
+				if (scale_data.src_x0 < 0)
+					scale_data.src_x0 = 0;
+				scale_data.src_copy_width = scale_data.src_proportionate_width;
+				if (scale_data.src_x0 + scale_data.src_copy_width > console_width_p)
+					scale_data.src_copy_width = console_width_p - scale_data.src_x0;
+
+				scale_data.src_y0 = (scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height);
+				if (scale_data.src_y0 + scale_data.src_proportionate_height > console_height_p)
+					scale_data.src_y0 = console_height_p - scale_data.src_proportionate_height;
+				if (scale_data.src_y0 < 0)
+					scale_data.src_y0 = 0;
+				scale_data.src_copy_height = scale_data.src_proportionate_height;
+				if (scale_data.src_y0 + scale_data.src_copy_height > console_height_p)
+					scale_data.src_copy_height = console_height_p - scale_data.src_y0;
+
+				scale_data.dst_display_width = (scale_data.src_copy_width * TCOD_ctx.actual_fullscreen_width) / scale_data.src_proportionate_width;
+				scale_data.dst_display_height = (scale_data.src_copy_height * TCOD_ctx.actual_fullscreen_height) / scale_data.src_proportionate_height;
+				scale_data.dst_offset_x = (TCOD_ctx.actual_fullscreen_width - scale_data.dst_display_width)/2;
+				scale_data.dst_offset_y = (TCOD_ctx.actual_fullscreen_height - scale_data.dst_display_height)/2;
+			}
+
+			srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
+			dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
+			dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
+			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
+		} else if (TCOD_ctx.fullscreen_scaling && vbitmap == NULL) {
 			int w = console_width*TCOD_ctx.font_width, h = console_height*TCOD_ctx.font_height;
 			SDL_Rect srcRect, dstRect;
 			/* Make a bitmap of exact rendering size and correct format. */
@@ -1392,10 +1471,7 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
 static void TCOD_update_mouse_coords(TCOD_mouse_t *mouse) {
 	if (TCOD_ctx.fullscreen_scaling) {
 		/* Which character = fractional position on scaled screen * axis length as number of console characters. */
-		mouse->cx = ((mouse->x - TCOD_ctx.fullscreen_offsetx) * TCOD_ctx.root->w)/TCOD_ctx.scale_fullscreen_width;
-		mouse->cy = ((mouse->y - TCOD_ctx.fullscreen_offsety) * TCOD_ctx.root->h)/TCOD_ctx.scale_fullscreen_height;
-		mouse->dcx = (int)(mouse->dx / (TCOD_ctx.font_width * TCOD_ctx.fullscreen_scale));
-		mouse->dcy = (int)(mouse->dy / (TCOD_ctx.font_height * TCOD_ctx.fullscreen_scale));
+		/* TODO: Support translating mouse clicks. */
 	} else {
 		mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
 		mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
@@ -1404,21 +1480,24 @@ static void TCOD_update_mouse_coords(TCOD_mouse_t *mouse) {
 	}
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
-static void TCOD_sys_mouse_touch_conversion(SDL_Event *ev, TCOD_mouse_t *mouse) {
-	SDL_TouchFingerEvent *tfe=&ev->tfinger;
-	SDL_Touch *touch=SDL_GetTouch(tfe->touchId);
-	mouse->dx += (tfe->dx * TCOD_ctx.actual_fullscreen_width)/touch->xres;
-	mouse->dy += (tfe->dy * TCOD_ctx.actual_fullscreen_height)/touch->yres;
-	mouse->x = (tfe->x * TCOD_ctx.actual_fullscreen_width)/touch->xres;
-	mouse->y = (tfe->y * TCOD_ctx.actual_fullscreen_height)/touch->yres;
+#ifdef TCOD_TOUCH_INPUT
+static TCOD_touch_t tcod_touch={0};
 
-	TCOD_update_mouse_coords(mouse);
+static int TCOD_sys_get_touch_finger_index(SDL_FingerID fingerId) {
+	int i;
+	for (i = 0; i < tcod_touch.nfingers; i++)
+		if (tcod_touch.finger_ids[i] == fingerId)
+			return i;
+	if (i == tcod_touch.nfingers && i+1 <= MAX_TOUCH_FINGERS) {
+		tcod_touch.nfingers += 1;
+		tcod_touch.finger_ids[i] = fingerId;
+		return i;
+	}
+	return -1;
 }
 #endif
-
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
-static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
+static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key) {
 	TCOD_event_t retMask=0;
 	switch(ev->type) {
 		case SDL_KEYDOWN : {		 
@@ -1439,38 +1518,169 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
-#if SDL_VERSION_ATLEAST(2,0,0)
-		case SDL_DOLLARRECORD :
-			printf("SDL_DOLLARRECORD: touchId=%d gestureId=%d", (int)ev->dgesture.touchId, (int)ev->dgesture.gestureId);
-		break;
-		case SDL_DOLLARGESTURE :
-			printf("SDL_DOLLARGESTURE: touchId=%d gestureId=%d error=%f fingers=%d", (int)ev->dgesture.touchId, (int)ev->dgesture.gestureId, ev->dgesture.error, (int)ev->dgesture.numFingers);
-		break;
-		case SDL_FINGERMOTION :
-			if (mouse_touch && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
-				TCOD_sys_mouse_touch_conversion(ev, mouse);
-				printf("TCOD finger motion event: %d %d\n", mouse->x, mouse->y);
-				return retMask | TCOD_EVENT_MOUSE_MOVE;
-			}
-		break;
+#ifdef TCOD_TOUCH_INPUT
+		/*
+		 * Need to distinguish between:
+		 * - Tap: Can be optionally delegated to a mouse press.
+		 * - Touch and drag: Should affect scaling screen position.
+		 */
 		case SDL_FINGERDOWN :
-			if (mouse_touch && (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
-				TCOD_sys_mouse_touch_conversion(ev, mouse);
-				mouse->lbutton=mousebl=true;
-				printf("TCOD finger down event: %d %d\n", mouse->x, mouse->y);
-				return retMask | TCOD_EVENT_MOUSE_PRESS;
-			}
-		break;
 		case SDL_FINGERUP :
-			if (mouse_touch && (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
-				TCOD_sys_mouse_touch_conversion(ev, mouse);
-				if (mousebl)
-					mouse->lbutton_pressed = mouse_force_bl=true;
-				mouse->lbutton = mousebl=false;
-				printf("TCOD finger up event: %d %d\n", mouse->x, mouse->y);
-				return retMask | TCOD_EVENT_MOUSE_RELEASE;
+		case SDL_FINGERMOTION :
+		{
+			SDL_Touch *touch=SDL_GetTouch(ev->tfinger.touchId);
+			int idx, mouse_touch_valid;
+			int last_x, last_y, last_cx, last_cy;
+			float xf, yf, screen_x, screen_y;
+
+			/* Reset the global variable. */
+			if (tcod_touch.nfingerspressed == 0) {
+				tcod_touch.nupdates = 0;
+				tcod_touch.nfingers = 0;
 			}
-		break;
+
+			idx = TCOD_sys_get_touch_finger_index(ev->tfinger.fingerId);
+			if (idx == -1) {
+				printf("ERROR: failed to allocate extra finger");
+				break;
+			}
+
+			/* Count the number of events contributing to an ongoing tracked touch (zeroed above in finger press). */
+			tcod_touch.finger_id = ev->tfinger.fingerId;
+			tcod_touch.nupdates += 1;
+
+			/* We only emulate mouse events when the first finger is the only one pressed. */
+			if (SDL_FINGERDOWN == ev->type) {
+				tcod_touch.nfingerspressed += 1;
+				tcod_touch.fingerspressed[idx] = 1;
+				mouse_touch_valid = mouse_touch && tcod_touch.nfingerspressed == 1 && tcod_touch.fingerspressed[0];
+			} else if (SDL_FINGERUP == ev->type) {
+				mouse_touch_valid = mouse_touch && tcod_touch.nfingerspressed == 1 && tcod_touch.fingerspressed[0];
+				tcod_touch.nfingerspressed -= 1;
+				tcod_touch.fingerspressed[idx] = 0;
+			} else
+				mouse_touch_valid = mouse_touch && tcod_touch.nfingerspressed == 1 && tcod_touch.fingerspressed[0];
+
+			/* Keep the coordinates & deltas for the current finger up to date. */
+			if (tcod_touch.nupdates > 1) {
+				last_x = tcod_touch.coords[idx][0];
+				last_y = tcod_touch.coords[idx][1];
+				last_cx = tcod_touch.consolecoords[idx][0];
+				last_cy = tcod_touch.consolecoords[idx][1];
+				/* Subsequent events record the previous coord values. */
+				tcod_touch.coords_prev[idx][0] = last_x;
+				tcod_touch.coords_prev[idx][1] = last_y;
+			}
+
+			/* Coordinates are raw full screen positions. */
+			screen_x = (ev->tfinger.x * TCOD_ctx.actual_fullscreen_width) / touch->xres; // 1
+			screen_y = (ev->tfinger.y * TCOD_ctx.actual_fullscreen_height) / touch->yres; // 1
+			xf = (float)(screen_x - scale_data.dst_offset_x) / scale_data.dst_display_width; // 1 + 2
+			yf = (float)(screen_y - scale_data.dst_offset_y) / scale_data.dst_display_height; // 1 + 2
+			tcod_touch.coords[idx][0] = scale_data.src_x0 + scale_data.src_copy_width * xf;
+			tcod_touch.coords[idx][1] = scale_data.src_y0 + scale_data.src_copy_height * yf;
+			if (tcod_touch.nupdates > 1) {
+				tcod_touch.coords_delta[idx][0] = tcod_touch.coords[idx][0] - last_x;
+				tcod_touch.coords_delta[idx][1] = tcod_touch.coords[idx][1] - last_y;
+			} else {
+				tcod_touch.coords_delta[idx][0] = tcod_touch.coords_delta[idx][1] = 0;
+				/* The first event takes the previous coord values as the first coord values. */
+				tcod_touch.coords_prev[idx][0] = tcod_touch.coords[idx][0];
+				tcod_touch.coords_prev[idx][1] = tcod_touch.coords[idx][1];
+			}
+
+			/* Console coordinates need to be mapped back from screen coordinates through scaling. */
+			if (xf + 1e-3f >= 0.0f && xf - 1e-3f < 1.0f)
+				tcod_touch.consolecoords[idx][0] = (float)tcod_touch.coords[idx][0] / TCOD_ctx.font_width;
+			else
+				tcod_touch.consolecoords[idx][0] = -1;
+
+			if (yf + 1e-3f > 0.0f && yf - 1e-3f < 1.0f)
+				tcod_touch.consolecoords[idx][1] = (float)tcod_touch.coords[idx][1] / TCOD_ctx.font_height;
+			else
+				tcod_touch.consolecoords[idx][1] = -1;
+			if (tcod_touch.nupdates > 1) {
+				tcod_touch.consolecoords_delta[idx][0] = tcod_touch.consolecoords[idx][0] - last_cx;
+				tcod_touch.consolecoords_delta[idx][1] = tcod_touch.consolecoords[idx][1] - last_cy;
+			} else
+				tcod_touch.consolecoords_delta[idx][0] = tcod_touch.consolecoords_delta[idx][1] = 0;
+
+			if (SDL_FINGERDOWN == ev->type) {
+				if ((TCOD_EVENT_FINGER_PRESS & eventMask) != 0)
+					retMask |= TCOD_EVENT_FINGER_PRESS;
+
+				if (mouse_touch_valid && (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
+					tcod_mouse.lbutton=mousebl=true;
+					retMask |= TCOD_EVENT_MOUSE_PRESS;
+				}
+			} else if (SDL_FINGERUP == ev->type) {
+				if ((TCOD_EVENT_FINGER_RELEASE & eventMask) != 0)
+					retMask |= TCOD_EVENT_FINGER_RELEASE;
+
+				if (mouse_touch_valid && (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
+					if (mousebl)
+						tcod_mouse.lbutton_pressed = mouse_force_bl=true;
+					tcod_mouse.lbutton = mousebl=false;
+					retMask |= TCOD_EVENT_MOUSE_RELEASE;
+				}
+			} else if (SDL_FINGERMOTION == ev->type) {
+				if ((TCOD_EVENT_FINGER_MOVE & eventMask) != 0)
+					retMask |= TCOD_EVENT_FINGER_MOVE;
+
+				if (mouse_touch_valid && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0)
+					retMask |= TCOD_EVENT_MOUSE_MOVE;
+
+				/* TODO: Flag avoid mouse up as mouse touch event if have dragged? */
+				if (tcod_touch.nfingerspressed == 1) {
+					/* One finger drag AKA drag to move. */
+					if (tcod_touch.fingerspressed[0]) {
+						/* Actual display offset is the inverted finger movement. */
+						scale_xc -= (float)tcod_touch.coords_delta[idx][0] / TCOD_ctx.actual_fullscreen_width;
+						/* Bound the translation within the console area. */
+						if (scale_xc + 1e-3f < 0.0f)
+							scale_xc = 0.0f;
+						if (scale_xc - 1e-3f > 1.0f)
+							scale_xc = 1.0f;
+						scale_yc -= (float)tcod_touch.coords_delta[idx][1] / TCOD_ctx.actual_fullscreen_height;
+						if (scale_yc + 1e-3f < 0.0f)
+							scale_yc = 0.0f;
+						if (scale_yc - 1e-3f > 1.0f)
+							scale_yc = 1.0f;
+						TCOD_sys_set_clear_screen();
+					}
+				} else if (tcod_touch.nfingerspressed == 2) {
+					/* Two finger pinch AKA pinch to zoom */
+					if (tcod_touch.fingerspressed[0] && tcod_touch.fingerspressed[1]) {
+						float len_previous = sqrtf((float)(pow(tcod_touch.coords_prev[0][0]-tcod_touch.coords_prev[1][0], 2)+pow(tcod_touch.coords_prev[0][1]-tcod_touch.coords_prev[1][1], 2)));
+						float len_current = sqrt((float)(pow(tcod_touch.coords[0][0]-tcod_touch.coords[1][0], 2) + pow(tcod_touch.coords[0][1]-tcod_touch.coords[1][1], 2)));
+						float scale_adjust = len_previous/len_current;
+						int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;
+						int console_height_p = TCOD_ctx.root->h*TCOD_ctx.font_height;
+						float aspect_ratio;
+						scale_factor *= scale_adjust;
+						if (scale_factor < MIN_SCALE_FACTOR)
+							scale_factor = MIN_SCALE_FACTOR;
+						else if (scale_factor > 1.0f)
+							scale_factor = 1.0f;
+						TCOD_sys_set_clear_screen();
+					}
+				}
+			}
+
+			if (mouse_touch_valid && (retMask & (TCOD_EVENT_MOUSE_PRESS|TCOD_EVENT_MOUSE_RELEASE|TCOD_EVENT_MOUSE_MOVE)) != 0) {
+				tcod_mouse.x = tcod_touch.coords[idx][0];
+				tcod_mouse.y = tcod_touch.coords[idx][1];
+				tcod_mouse.dx += tcod_touch.coords_delta[idx][0];
+				tcod_mouse.dy += tcod_touch.coords_delta[idx][1];
+				tcod_mouse.cx = tcod_touch.consolecoords[idx][0];
+				tcod_mouse.cy = tcod_touch.consolecoords[idx][1];
+				tcod_mouse.dcx = tcod_touch.consolecoords_delta[idx][0];
+				tcod_mouse.dcy = tcod_touch.consolecoords_delta[idx][1];
+				/* printf("CX,CY: %d,%d", tcod_mouse.cx,tcod_mouse.cy); */
+			}
+
+			break;
+		}
 #endif
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
@@ -1478,11 +1688,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				/*SDL_GetMouseState(&mouse->x,&mouse->y);*/
 				/*SDL_GetRelativeMouseState(&mouse->dx,&mouse->dy);*/
 				retMask|=TCOD_EVENT_MOUSE_MOVE;
-				mouse->dx += mme->xrel;
-				mouse->dy += mme->yrel;
-				mouse->x=mme->x;
-				mouse->y=mme->y;				
-				TCOD_update_mouse_coords(mouse);
+				tcod_mouse.dx += mme->xrel;
+				tcod_mouse.dy += mme->yrel;
+				tcod_mouse.x=mme->x;
+				tcod_mouse.y=mme->y;
+				TCOD_update_mouse_coords(&tcod_mouse);
 				return retMask;
 			}
 		break; 
@@ -1491,12 +1701,12 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				SDL_MouseButtonEvent *mev=&ev->button;
 				retMask|=TCOD_EVENT_MOUSE_PRESS;
 				switch (mev->button) {
-					case SDL_BUTTON_LEFT : mouse->lbutton=mousebl=true; break;
-					case SDL_BUTTON_MIDDLE : mouse->mbutton=mousebm=true; break;
-					case SDL_BUTTON_RIGHT : mouse->rbutton=mousebr=true; break;
+					case SDL_BUTTON_LEFT : tcod_mouse.lbutton=mousebl=true; break;
+					case SDL_BUTTON_MIDDLE : tcod_mouse.mbutton=mousebm=true; break;
+					case SDL_BUTTON_RIGHT : tcod_mouse.rbutton=mousebr=true; break;
 #if !SDL_VERSION_ATLEAST(2,0,0)	
-					case SDL_BUTTON_WHEELUP : mouse->wheel_up=true; break;
-					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
+					case SDL_BUTTON_WHEELUP : tcod_mouse.wheel_up=true; break;
+					case SDL_BUTTON_WHEELDOWN : tcod_mouse.wheel_down=true;break;
 #endif
 				}
 				return retMask;
@@ -1507,9 +1717,9 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				SDL_MouseButtonEvent *mev=&ev->button;
 				retMask|=TCOD_EVENT_MOUSE_RELEASE;
 				switch (mev->button) {
-					case SDL_BUTTON_LEFT : if (mousebl) mouse->lbutton_pressed = mouse_force_bl=true; mouse->lbutton = mousebl=false; break;
-					case SDL_BUTTON_MIDDLE : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
-					case SDL_BUTTON_RIGHT : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
+					case SDL_BUTTON_LEFT : if (mousebl) tcod_mouse.lbutton_pressed = mouse_force_bl=true; tcod_mouse.lbutton = mousebl=false; break;
+					case SDL_BUTTON_MIDDLE : if (mousebm) tcod_mouse.mbutton_pressed = mouse_force_bm=true; tcod_mouse.mbutton = mousebm=false; break;
+					case SDL_BUTTON_RIGHT : if (mousebr) tcod_mouse.rbutton_pressed = mouse_force_br=true; tcod_mouse.rbutton = mousebr=false; break;
 				}
 				return retMask;
 			}
@@ -1562,7 +1772,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	tcod_mouse.dy=0;
 	do {
 		SDL_WaitEvent(&ev);
-		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
+		retMask=TCOD_sys_handle_event(&ev,eventMask,key);
 	} while ( ev.type != SDL_QUIT && (retMask & TCOD_EVENT_KEY) == 0 );
 	if (mouse) { *mouse=tcod_mouse; }
 	return retMask;
@@ -1585,7 +1795,7 @@ TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse
 		key->c=0;
 	}
 	while ( SDL_PollEvent(&ev) ) {
-		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
+		retMask=TCOD_sys_handle_event(&ev,eventMask,key);
 		if ((retMask & TCOD_EVENT_KEY) != 0)
 			/* only one key event per frame */ 
 			break; 
@@ -1860,11 +2070,11 @@ void TCOD_mouse_move(int x, int y) {
 #endif
 }
 
-#if SDL_VERSION_ATLEAST(2,0,0)
 void TCOD_mouse_includes_touch(bool enable) {
+#ifdef TCOD_TOUCH_INPUT
 	mouse_touch = enable;
-}
 #endif
+}
 
 bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size) {
 	uint32 filesize;

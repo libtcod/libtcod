@@ -9,7 +9,6 @@
 typedef struct {
   int nupdates; /* how many updates have happened since the first finger was pressed. */
   SDL_FingerID finger_id; /* the last finger which was pressed. */
-  int coords_prev[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
   int coords[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
   int coords_delta[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
   int consolecoords[MAX_TOUCH_FINGERS][2]; /* cell coordinates in the root console for each finger. */

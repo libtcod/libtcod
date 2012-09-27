@@ -1523,14 +1523,21 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		 * Need to distinguish between:
 		 * - Tap: Can be optionally delegated to a mouse press.
 		 * - Touch and drag: Should affect scaling screen position.
-		 */
+		 *
+		TODO: Panning now 'judders' unless it is done in the northwest direction.
+		TODO: Zooming should perhaps recenter on the center of the current 'pinch'.
+		TODO: Mouse events need to take into account scaling support for coordinate
+		      resolution.
+		TODO: Remove old scaling support, and incorporate the calculated scaling level
+		      as the maximum scaling factor.
+		TODO: Panning acceleration.
+  		 */
 		case SDL_FINGERDOWN :
 		case SDL_FINGERUP :
 		case SDL_FINGERMOTION :
 		{
 			SDL_Touch *touch=SDL_GetTouch(ev->tfinger.touchId);
 			int idx, mouse_touch_valid;
-			int last_x, last_y, last_cx, last_cy;
 			float xf, yf, screen_x, screen_y;
 
 			/* Reset the global variable. */
@@ -1561,49 +1568,21 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			} else
 				mouse_touch_valid = mouse_touch && tcod_touch.nfingerspressed == 1 && tcod_touch.fingerspressed[0];
 
-			/* Keep the coordinates & deltas for the current finger up to date. */
-			if (tcod_touch.nupdates > 1) {
-				last_x = tcod_touch.coords[idx][0];
-				last_y = tcod_touch.coords[idx][1];
-				last_cx = tcod_touch.consolecoords[idx][0];
-				last_cy = tcod_touch.consolecoords[idx][1];
-				/* Subsequent events record the previous coord values. */
-				tcod_touch.coords_prev[idx][0] = last_x;
-				tcod_touch.coords_prev[idx][1] = last_y;
-			}
-
 			/* Coordinates are raw full screen positions. */
 			screen_x = (ev->tfinger.x * TCOD_ctx.actual_fullscreen_width) / touch->xres; // 1
 			screen_y = (ev->tfinger.y * TCOD_ctx.actual_fullscreen_height) / touch->yres; // 1
-			xf = (float)(screen_x - scale_data.dst_offset_x) / scale_data.dst_display_width; // 1 + 2
-			yf = (float)(screen_y - scale_data.dst_offset_y) / scale_data.dst_display_height; // 1 + 2
+			xf = (float)(screen_x - scale_data.dst_offset_x) / scale_data.dst_display_width; // 1
+			yf = (float)(screen_y - scale_data.dst_offset_y) / scale_data.dst_display_height; // 1
 			tcod_touch.coords[idx][0] = scale_data.src_x0 + scale_data.src_copy_width * xf;
 			tcod_touch.coords[idx][1] = scale_data.src_y0 + scale_data.src_copy_height * yf;
-			if (tcod_touch.nupdates > 1) {
-				tcod_touch.coords_delta[idx][0] = tcod_touch.coords[idx][0] - last_x;
-				tcod_touch.coords_delta[idx][1] = tcod_touch.coords[idx][1] - last_y;
-			} else {
-				tcod_touch.coords_delta[idx][0] = tcod_touch.coords_delta[idx][1] = 0;
-				/* The first event takes the previous coord values as the first coord values. */
-				tcod_touch.coords_prev[idx][0] = tcod_touch.coords[idx][0];
-				tcod_touch.coords_prev[idx][1] = tcod_touch.coords[idx][1];
-			}
+			tcod_touch.coords_delta[idx][0] = (ev->tfinger.dx * scale_data.src_proportionate_width) / touch->xres;
+			tcod_touch.coords_delta[idx][1] = (ev->tfinger.dy * scale_data.src_proportionate_height) / touch->yres;
 
 			/* Console coordinates need to be mapped back from screen coordinates through scaling. */
-			if (xf + 1e-3f >= 0.0f && xf - 1e-3f < 1.0f)
-				tcod_touch.consolecoords[idx][0] = (float)tcod_touch.coords[idx][0] / TCOD_ctx.font_width;
-			else
-				tcod_touch.consolecoords[idx][0] = -1;
-
-			if (yf + 1e-3f > 0.0f && yf - 1e-3f < 1.0f)
-				tcod_touch.consolecoords[idx][1] = (float)tcod_touch.coords[idx][1] / TCOD_ctx.font_height;
-			else
-				tcod_touch.consolecoords[idx][1] = -1;
-			if (tcod_touch.nupdates > 1) {
-				tcod_touch.consolecoords_delta[idx][0] = tcod_touch.consolecoords[idx][0] - last_cx;
-				tcod_touch.consolecoords_delta[idx][1] = tcod_touch.consolecoords[idx][1] - last_cy;
-			} else
-				tcod_touch.consolecoords_delta[idx][0] = tcod_touch.consolecoords_delta[idx][1] = 0;
+			tcod_touch.consolecoords[idx][0] = tcod_touch.coords[idx][0] / TCOD_ctx.font_width;
+			tcod_touch.consolecoords[idx][1] = tcod_touch.coords[idx][1] / TCOD_ctx.font_height;
+			tcod_touch.consolecoords_delta[idx][0] = tcod_touch.coords_delta[idx][0] / TCOD_ctx.font_width;
+			tcod_touch.consolecoords_delta[idx][1] = tcod_touch.coords_delta[idx][1] / TCOD_ctx.font_height;
 
 			if (SDL_FINGERDOWN == ev->type) {
 				if ((TCOD_EVENT_FINGER_PRESS & eventMask) != 0)
@@ -1651,7 +1630,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				} else if (tcod_touch.nfingerspressed == 2) {
 					/* Two finger pinch AKA pinch to zoom */
 					if (tcod_touch.fingerspressed[0] && tcod_touch.fingerspressed[1]) {
-						float len_previous = sqrtf((float)(pow(tcod_touch.coords_prev[0][0]-tcod_touch.coords_prev[1][0], 2)+pow(tcod_touch.coords_prev[0][1]-tcod_touch.coords_prev[1][1], 2)));
+						int f0x0 = tcod_touch.coords[0][0] - tcod_touch.coords_delta[0][0];
+						int f0y0 = tcod_touch.coords[0][1] - tcod_touch.coords_delta[0][1];
+						int f1x0 = tcod_touch.coords[1][0] - tcod_touch.coords_delta[1][0];
+						int f1y0 = tcod_touch.coords[1][1] - tcod_touch.coords_delta[1][1];
+						float len_previous = sqrtf((float)(pow(f0x0-f1x0, 2)+pow(f0y0-f1y0, 2)));
 						float len_current = sqrt((float)(pow(tcod_touch.coords[0][0]-tcod_touch.coords[1][0], 2) + pow(tcod_touch.coords[0][1]-tcod_touch.coords[1][1], 2)));
 						float scale_adjust = len_previous/len_current;
 						int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;

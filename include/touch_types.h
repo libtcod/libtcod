@@ -4,7 +4,7 @@
 
 #ifdef TCOD_TOUCH_INPUT
 
-#include <SDL_touch.h>
+#include <SDL2/SDL_touch.h>
 
 typedef struct {
   int nupdates; /* how many updates have happened since the first finger was pressed. */

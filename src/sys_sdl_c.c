@@ -24,6 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+//#define TCOD_SDL2 // TEMPORARY REMOVE PLEASE
 
 #include <string.h>
 #include <stdio.h>
@@ -38,12 +39,13 @@
 #include "libtcod.h"
 #include "libtcod_int.h"
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__)
 #define TCOD_TOUCH_INPUT
 #define MAX_TOUCH_FINGERS 5
 
 typedef struct {
   int nupdates; /* how many updates have happened since the first finger was pressed. */
+  Uint32 ticks0; /* current number of ticks at start of touch event sequence. */
   SDL_FingerID finger_id; /* the last finger which was pressed. */
   int coords[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
   int coords_delta[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
@@ -111,7 +113,7 @@ static float scale_factor=1.0f;
 static float scale_xc=0.5f;
 static float scale_yc=0.5f;
 static scale_data_t scale_data={0};
-#define MIN_SCALE_FACTOR 0.3f
+#define MIN_SCALE_FACTOR 0.25f
 
 /* font transparent color */
 static TCOD_color_t fontKeyCol={0,0,0};
@@ -282,6 +284,7 @@ void TCOD_sys_load_font() {
 			charmap=temp;
 		}
 	}
+#ifdef ZZZZZ
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		int px,py,cx,cy;
@@ -308,6 +311,7 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
+#endif
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
@@ -469,32 +473,29 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 	char_t *prev_console_buffer_ptr = prev_console_buffer;
 #if SDL_VERSION_ATLEAST(2,0,0)
 	/* We get this everytime in case the old one is stale. */
-	void *screen = SDL_GetWindowSurface(window);
+	SDL_Surface *screen = SDL_GetWindowSurface(window);
 #endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-		if (clear_screen) {
-			clear_screen=false;
-#if SDL_VERSION_ATLEAST(2,0,0)
-			SDL_FillRect(SDL_GetWindowSurface(window),0,0);
-#else
-			SDL_UpdateRect(screen, 0, 0, 0, 0);
-#endif
-			/* Implicitly do complete console redraw, not just tracked changes. */
-			prev_console_buffer_ptr = NULL;
-		}
 		if (vbitmap == NULL) {
 			int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;
 			int console_height_p = TCOD_ctx.root->h*TCOD_ctx.font_height;
 			SDL_Rect srcRect, dstRect;
+
 			/* Make a bitmap of exact rendering size and correct format. */
 			if (scale_screen == NULL) {
-				SDL_PixelFormat *fmt = charmap->format;
+				SDL_PixelFormat *fmt = screen->format;
 				scale_screen=SDL_CreateRGBSurface(SDL_SWSURFACE,console_width_p,console_height_p,fmt->BitsPerPixel,fmt->Rmask,fmt->Gmask,fmt->Bmask,fmt->Amask);
 				if (scale_screen == NULL) {
 					TCOD_fatal("SDL : failed to create scaling surface");
 					return;
 				}
+			} else if (clear_screen) {
+				clear_screen=false;
+				SDL_FillRect(scale_screen,0,0);
+				/* Implicitly do complete console redraw, not just tracked changes. */
+				prev_console_buffer_ptr = NULL;
 			}
+
 			/* Render the console to the bitmap. */
 			TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, console_buffer, prev_console_buffer_ptr);
 			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it. */
@@ -539,18 +540,18 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				scale_data.dst_display_height = (scale_data.src_copy_height * scale_data.surface_height) / scale_data.src_proportionate_height;
 				scale_data.dst_offset_x = (scale_data.surface_width - scale_data.dst_display_width)/2;
 				scale_data.dst_offset_y = (scale_data.surface_height - scale_data.dst_display_height)/2;
+				//printf("FPS: %d\n", TCOD_sys_get_fps());
+				printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh? %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height, screen->w, screen->h);
 			}
 
+			/* Prepare for the scaled copy of the displayed console area. */
 			srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
 			dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
 			dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
 			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
+		    /* TODO: This makes the update faster, why? */
+		    SDL_SetClipRect(screen, NULL);
 		} else {
-			/* Reduce memory usage, important on Android. */
-			if (scale_screen) {
-				SDL_FreeSurface(scale_screen);
-				scale_screen = NULL;
-			}
 			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer_ptr);
 		}
 		if ( TCOD_ctx.sdl_cbk ) {
@@ -599,10 +600,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
-#if SDL_VERSION_ATLEAST(2,0,0)
-	if (bitmap == NULL)
-		bitmap = SDL_GetWindowSurface(window);
-#endif
 	for (y=0;y<console_height;y++) {
 		for (x=0; x<console_width; x++) {
 			SDL_Rect srcRect,dstRect;
@@ -632,13 +629,12 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 #if SDL_VERSION_ATLEAST(2,0,0)
-				if ( vbitmap == NULL && TCOD_ctx.fullscreen ) {
 #else
 				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
-#endif
 					dstRect.x+=TCOD_ctx.fullscreen_offsetx;
 					dstRect.y+=TCOD_ctx.fullscreen_offsety;
 				}
+#endif
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
 				if ( c->c != ' ' ) {
 					/* draw foreground */
@@ -1467,7 +1463,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		 * - Touch and drag: Should affect scaling screen position.
 		 *
 		TODO: Panning acceleration.
-		TODO: Panning finger up triggers mouse up events (e.g. move to given console position).
+		TODO: Panning finger up triggers mouse up events (e.g. move to given console position).  Fixable?
   		 */
 		case SDL_FINGERDOWN :
 		case SDL_FINGERUP :
@@ -1476,12 +1472,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			SDL_Touch *touch=SDL_GetTouch(ev->tfinger.touchId);
 			int idx, mouse_touch_valid;
 			float xf, yf, screen_x, screen_y;
+			Uint32 ticks_taken = 0;
 
 			/* Reset the global variable. */
 			if (tcod_touch.nfingerspressed == 0) {
 				tcod_touch.nupdates = 0;
 				tcod_touch.nfingers = 0;
-			}
+				tcod_touch.ticks0 = SDL_GetTicks();
+			} else
+				ticks_taken = SDL_GetTicks() - tcod_touch.ticks0;
 
 			idx = TCOD_sys_get_touch_finger_index(ev->tfinger.fingerId);
 			if (idx == -1) {
@@ -1522,6 +1521,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			tcod_touch.consolecoords_delta[idx][1] = tcod_touch.coords_delta[idx][1] / TCOD_ctx.font_height;
 
 			if (SDL_FINGERDOWN == ev->type) {
+				// printf("SDL_FINGERDOWN [%d] ticks=%d", tcod_touch.nupdates, ticks_taken);
 				if ((TCOD_EVENT_FINGER_PRESS & eventMask) != 0)
 					retMask |= TCOD_EVENT_FINGER_PRESS;
 
@@ -1530,6 +1530,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					retMask |= TCOD_EVENT_MOUSE_PRESS;
 				}
 			} else if (SDL_FINGERUP == ev->type) {
+				// printf("SDL_FINGERUP [%d] ticks=%d", tcod_touch.nupdates, ticks_taken);
 				if ((TCOD_EVENT_FINGER_RELEASE & eventMask) != 0)
 					retMask |= TCOD_EVENT_FINGER_RELEASE;
 
@@ -1540,16 +1541,17 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					retMask |= TCOD_EVENT_MOUSE_RELEASE;
 				}
 			} else if (SDL_FINGERMOTION == ev->type) {
+				// printf("SDL_FINGERMOTION [%d] ticks=%d", tcod_touch.nupdates, ticks_taken);
 				if ((TCOD_EVENT_FINGER_MOVE & eventMask) != 0)
 					retMask |= TCOD_EVENT_FINGER_MOVE;
 
 				if (mouse_touch_valid && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0)
 					retMask |= TCOD_EVENT_MOUSE_MOVE;
 
-				/* TODO: Flag avoid mouse up as mouse touch event if have dragged? */
 				if (tcod_touch.nfingerspressed == 1) {
-					/* One finger drag AKA drag to move. */
-					if (tcod_touch.fingerspressed[0]) {
+					/* One finger drag AKA drag to move.
+					 * Ignore the first few move events that happen unhelpfully immediately after finger down. */
+					if (tcod_touch.fingerspressed[0] && (tcod_touch.coords_delta[0][0] || tcod_touch.coords_delta[0][1]) && ticks_taken > 10) {
 						/* Actual display offset is the inverted finger movement. */
 						scale_xc -= (float)tcod_touch.coords_delta[idx][0] / scale_data.surface_width;
 						/* Bound the translation within the console area. */
@@ -1586,7 +1588,14 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				}
 			}
 
-			if (mouse_touch_valid && (retMask & (TCOD_EVENT_MOUSE_PRESS|TCOD_EVENT_MOUSE_RELEASE|TCOD_EVENT_MOUSE_MOVE)) != 0) {
+			/* We need to distinguish between handleable touch events, and short distinct mouse events. */
+			if (ticks_taken > 400 || tcod_touch.nfingers > 1) {
+				// printf("DEF NOT MOUSE CODE[%d]", tcod_touch.nupdates);
+				mouse->cx = 0;
+				mouse->cy = 0;
+				mouse->dcx = 0;
+				mouse->dcy = 0;
+			} else if (mouse_touch_valid && (retMask & (TCOD_EVENT_MOUSE_PRESS|TCOD_EVENT_MOUSE_RELEASE|TCOD_EVENT_MOUSE_MOVE)) != 0) {
 				mouse->x = tcod_touch.coords[idx][0];
 				mouse->y = tcod_touch.coords[idx][1];
 				mouse->dx += tcod_touch.coords_delta[idx][0];
@@ -1653,7 +1662,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
-			/* printf("SDL2 WINDOW EVENT: %x\n", ev->window.event); */
+#ifdef TCOD_ANDROID
+			/* At this point, there are some corner cases that need dealing with.  So log this. */
+			printf("SDL2 WINDOWEVENT: %x\n", ev->window.event);
+#endif
 			switch (ev->window.event) {
 #ifdef TCOD_ANDROID
 			case SDL_WINDOWEVENT_RESTORED:
@@ -1662,7 +1674,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			break;
 #else
 			case SDL_WINDOWEVENT_EXPOSED:
-				TCOD_sys_console_to_bitmap(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
+				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
 			break;
 #endif
 			default : break; 

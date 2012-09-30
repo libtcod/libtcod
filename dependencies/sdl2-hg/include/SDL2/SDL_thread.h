@@ -86,9 +86,7 @@ typedef int (SDLCALL * SDL_ThreadFunction) (void *data);
  *  library!
  */
 #define SDL_PASSED_BEGINTHREAD_ENDTHREAD
-#ifndef _WIN32_WCE
 #include <process.h>            /* This has _beginthread() and _endthread() defined! */
-#endif
 
 typedef uintptr_t(__cdecl * pfnSDL_CurrentBeginThread) (void *, unsigned,
                                                         unsigned (__stdcall *
@@ -106,21 +104,11 @@ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data,
                  pfnSDL_CurrentBeginThread pfnBeginThread,
                  pfnSDL_CurrentEndThread pfnEndThread);
 
-#if defined(_WIN32_WCE)
-
-/**
- *  Create a thread.
- */
-#define SDL_CreateThread(fn, name, data) SDL_CreateThread(fn, name, data, NULL, NULL)
-
-#else
-
 /**
  *  Create a thread.
  */
 #define SDL_CreateThread(fn, name, data) SDL_CreateThread(fn, name, data, _beginthreadex, _endthreadex)
 
-#endif
 #else
 
 /**

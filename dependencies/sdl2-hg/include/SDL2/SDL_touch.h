@@ -71,7 +71,8 @@ struct SDL_Touch {
   float y_max,y_min;
   Uint16 xres,yres,pressureres;
   float native_xres,native_yres,native_pressureres;
-  float tilt;                   /* for future use */
+  float tilt_x;                 /* for future use */
+  float tilt_y;                 /* for future use */
   float rotation;               /* for future use */
   
   /* Data common to all touch */

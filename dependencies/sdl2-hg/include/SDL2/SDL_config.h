@@ -125,7 +125,7 @@
 #define HAVE_SSCANF 1
 #define HAVE_SNPRINTF 1
 #define HAVE_VSNPRINTF 1
-#define HAVE_M_PI 
+#define HAVE_M_PI /**/
 #define HAVE_ATAN 1
 #define HAVE_ATAN2 1
 #define HAVE_CEIL 1
@@ -243,7 +243,6 @@
 /* #undef SDL_TIMER_NDS */
 /* #undef SDL_TIMER_UNIX */
 #define SDL_TIMER_WINDOWS 1
-/* #undef SDL_TIMER_WINCE */
 
 /* Enable various video drivers */
 /* #undef SDL_VIDEO_DRIVER_BWINDOW */

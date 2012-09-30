@@ -373,7 +373,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture * texture,
                                               const void *pixels, int pitch);
 
 /**
- *  \brief Lock a portion of the texture for pixel access.
+ *  \brief Lock a portion of the texture for write-only pixel access.
  *  
  *  \param texture   The texture to lock for access, which was created with 
  *                   ::SDL_TEXTUREACCESS_STREAMING.
@@ -670,6 +670,28 @@ extern DECLSPEC void SDLCALL SDL_DestroyTexture(SDL_Texture * texture);
  *  \sa SDL_CreateRenderer()
  */
 extern DECLSPEC void SDLCALL SDL_DestroyRenderer(SDL_Renderer * renderer);
+
+
+/**
+ *  \brief Bind the texture to the current OpenGL/ES/ES2 context for use with
+ *         OpenGL instructions.
+ *
+ *  \param texture  The SDL texture to bind
+ *  \param texw     A pointer to a float that will be filled with the texture width
+ *  \param texh     A pointer to a float that will be filled with the texture height
+ *
+ *  \return 0 on success, or -1 if the operation is not supported
+ */
+extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh);
+
+/**
+ *  \brief Unbind a texture from the current OpenGL/ES/ES2 context.
+ *
+ *  \param texture  The SDL texture to unbind
+ *
+ *  \return 0 on success, or -1 if the operation is not supported
+ */
+extern DECLSPEC int SDLCALL SDL_GL_UnbindTexture(SDL_Texture *texture);
 
 
 /* Ends C function definitions when using C++ */

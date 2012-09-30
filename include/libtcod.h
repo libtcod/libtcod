@@ -178,7 +178,6 @@ char *strcasestr (const char *haystack, const char *needle);
 #include "console.h"
 #include "image.h"
 #include "mouse.h"
-#include "touch.h"
 #include "sys.h"
 #include "mersenne.h"
 #include "bresenham.h"

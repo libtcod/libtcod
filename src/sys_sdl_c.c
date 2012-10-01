@@ -24,7 +24,6 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-//#define TCOD_SDL2 // TEMPORARY REMOVE PLEASE
 
 #include <string.h>
 #include <stdio.h>
@@ -88,6 +87,8 @@ typedef struct {
 	float last_scale_factor;
 	float last_fullscreen;
 
+	float max_scale_factor;
+
 	float src_height_width_ratio;
 	float dst_height_width_ratio;
 	int src_x0, src_y0;
@@ -100,6 +101,7 @@ typedef struct {
 
 #if SDL_VERSION_ATLEAST(2,0,0)
 static SDL_Window* window=NULL;
+static SDL_Renderer* renderer=NULL;
 #else
 static SDL_Surface* screen=NULL;
 #endif
@@ -284,7 +286,6 @@ void TCOD_sys_load_font() {
 			charmap=temp;
 		}
 	}
-#ifdef ZZZZZ
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		int px,py,cx,cy;
@@ -311,7 +312,6 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
-#endif
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
@@ -471,20 +471,29 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
  * threading complications it takes care of special cases internally.  */
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
 	char_t *prev_console_buffer_ptr = prev_console_buffer;
-#if SDL_VERSION_ATLEAST(2,0,0)
-	/* We get this everytime in case the old one is stale. */
-	SDL_Surface *screen = SDL_GetWindowSurface(window);
-#endif
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		if (vbitmap == NULL) {
 			int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;
 			int console_height_p = TCOD_ctx.root->h*TCOD_ctx.font_height;
 			SDL_Rect srcRect, dstRect;
+#if SDL_VERSION_ATLEAST(2,0,0)
+			SDL_Texture *texture;
+#endif
 
 			/* Make a bitmap of exact rendering size and correct format. */
 			if (scale_screen == NULL) {
+				int bpp;
+				Uint32 rmask, gmask, bmask, amask;
+#if SDL_VERSION_ATLEAST(2,0,0)
+				if (SDL_PixelFormatEnumToMasks(SDL_GetWindowPixelFormat(window), &bpp, &rmask, &gmask, &bmask, &amask) == SDL_FALSE) {
+					TCOD_fatal("SDL : failed to create scaling surface : indeterminate window pixel format");
+					return;
+				}
+#else
 				SDL_PixelFormat *fmt = screen->format;
-				scale_screen=SDL_CreateRGBSurface(SDL_SWSURFACE,console_width_p,console_height_p,fmt->BitsPerPixel,fmt->Rmask,fmt->Gmask,fmt->Bmask,fmt->Amask);
+				bpp=fmt->BitsPerPixel; rmask=fmt->Rmask; gmask=fmt->Gmask; bmask=fmt->Bmask; amask=fmt->Amask;
+#endif
+				scale_screen=SDL_CreateRGBSurface(SDL_SWSURFACE,console_width_p,console_height_p,bpp,rmask,gmask,bmask,amask);
 				if (scale_screen == NULL) {
 					TCOD_fatal("SDL : failed to create scaling surface");
 					return;
@@ -496,9 +505,10 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				prev_console_buffer_ptr = NULL;
 			}
 
-			/* Render the console to the bitmap. */
 			TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, console_buffer, prev_console_buffer_ptr);
-			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it. */
+
+			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
+			 * This data is also used for console coordinate resolution.. */
 			if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != scale_xc || scale_data.last_scale_yc != scale_yc || scale_data.last_fullscreen != TCOD_ctx.fullscreen) {
 				/* Preserve old value of input variables, to enable recalculation if they change. */
 				scale_data.last_scale_factor = scale_factor;
@@ -513,6 +523,8 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 					scale_data.surface_width = console_width_p;
 					scale_data.surface_height = console_height_p;
 				}
+				scale_data.max_scale_factor = MIN((float)scale_data.surface_width/console_width_p, (float)scale_data.surface_height/console_height_p);
+
 				scale_data.dst_height_width_ratio = (float)scale_data.surface_height/scale_data.surface_width;
 				scale_data.src_proportionate_width = (int)(console_width_p * scale_factor);
 				scale_data.src_proportionate_height = (int)(console_width_p * scale_factor * scale_data.dst_height_width_ratio);
@@ -540,25 +552,46 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				scale_data.dst_display_height = (scale_data.src_copy_height * scale_data.surface_height) / scale_data.src_proportionate_height;
 				scale_data.dst_offset_x = (scale_data.surface_width - scale_data.dst_display_width)/2;
 				scale_data.dst_offset_y = (scale_data.surface_height - scale_data.dst_display_height)/2;
-				//printf("FPS: %d\n", TCOD_sys_get_fps());
-				printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh? %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height, screen->w, screen->h);
+				/*__android_log_print(ANDROID_LOG_INFO, "libtcod", );
+				 * printf("FPS: %d\n", TCOD_sys_get_fps());
+				 * printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height); */
 			}
 
-			/* Prepare for the scaled copy of the displayed console area. */
-			srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
-			dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
-			dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
+			if (scale_data.max_scale_factor - 1e-3f < scale_factor) {
+				/* Prepare for the unscaled and centered copy of the entire console. */
+				srcRect.x=0; srcRect.y=0; srcRect.w=console_width_p; srcRect.h=console_height_p;
+				if (TCOD_ctx.fullscreen) {
+					dstRect.x=TCOD_ctx.fullscreen_offsetx; dstRect.y=TCOD_ctx.fullscreen_offsety;
+				} else {
+					dstRect.x=0; dstRect.y=0;
+				}
+				dstRect.w=console_width_p; dstRect.h=console_height_p;
+			} else {
+				/* Prepare for the scaled copy of the displayed console area. */
+				srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
+				dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
+				dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
+			}
+#if SDL_VERSION_ATLEAST(2,0,0)
+			texture = SDL_CreateTextureFromSurface(renderer, scale_screen);
+			SDL_RenderClear(renderer);
+			SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+			SDL_DestroyTexture(texture);
+#else
 			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
-		    /* TODO: This makes the update faster, why? */
-		    SDL_SetClipRect(screen, NULL);
+#endif
 		} else {
 			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer_ptr);
 		}
 		if ( TCOD_ctx.sdl_cbk ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+			TCOD_ctx.sdl_cbk(NULL);
+#else
 			TCOD_ctx.sdl_cbk((void *)screen);
+#endif
 		}
 #if SDL_VERSION_ATLEAST(2,0,0)	
-		SDL_UpdateWindowSurface(window);
+		SDL_RenderPresent(renderer);
 #else
 		SDL_Flip(screen);
 #endif
@@ -866,7 +899,10 @@ void CustomSDLMain();
 #endif
 
 void TCOD_sys_startup() {
-	if (has_startup) return;
+	if (has_startup) {
+		printf("TCOD_sys_startup - returning, already called\n");
+		return;
+	}
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
@@ -1005,7 +1041,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 			TCOD_opengl_init_attributes();
 #if SDL_VERSION_ATLEAST(2,0,0)
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
-#	if defined(TCOD_ANDROID) && defined(XXXX_TBD)
+#	if defined(TCOD_ANDROID) && defined(FUTURE_SUPPORT)
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
@@ -1042,9 +1078,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		TCOD_ctx.actual_fullscreen_height=screen->h;
 #endif
 		TCOD_sys_init_screen_offset();
-#if SDL_VERSION_ATLEAST(2,0,0)
-		SDL_FillRect(SDL_GetWindowSurface(window),0,0);
-#else
+#if !SDL_VERSION_ATLEAST(2,0,0)
 		SDL_FillRect(screen,0,0);
 #endif
 	} else {
@@ -1080,7 +1114,11 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 		if ( screen == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
 #endif
 	}
-#if !SDL_VERSION_ATLEAST(2,0,0)
+#if SDL_VERSION_ATLEAST(2,0,0)
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+#else
 	SDL_EnableUNICODE(1);
 #endif
 	consoleBuffer=buf;
@@ -1116,7 +1154,7 @@ void TCOD_sys_save_screenshot(const char *filename) {
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-		TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename);
+		/* TODO: TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename); */
 #else
 		TCOD_sys_save_bitmap((void *)screen,filename);
 #endif
@@ -1178,15 +1216,20 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	TCOD_ctx.fullscreen=fullscreen;
 	/* SDL_WM_SetCaption(TCOD_ctx.window_title,NULL); */
 	oldFade=-1; /* to redraw the whole screen */
-#if SDL_VERSION_ATLEAST(2,0,0)
-	SDL_FillRect(SDL_GetWindowSurface(window),0,0);
-#else
+#if !SDL_VERSION_ATLEAST(2,0,0)
 	SDL_UpdateRect(screen, 0, 0, 0, 0);
 #endif
 }
 
+/* This just forces a complete redraw, bypassing the usual rendering of changes. */
 void TCOD_sys_set_clear_screen() {
 	clear_screen=true;
+}
+
+void TCOD_sys_set_no_scaling() {
+	scale_factor = scale_data.max_scale_factor;
+	scale_xc = 0.5f;
+	scale_yc = 0.5f;
 }
 
 void TCOD_sys_set_window_title(const char *title) {
@@ -1564,7 +1607,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 							scale_yc = 0.0f;
 						if (scale_yc - 1e-3f > 1.0f)
 							scale_yc = 1.0f;
-						TCOD_sys_set_clear_screen();
 					}
 				} else if (tcod_touch.nfingerspressed == 2) {
 					/* Two finger pinch AKA pinch to zoom */
@@ -1574,16 +1616,12 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 						float len_previous = sqrtf((float)(pow(f0x0-f1x0,2)+pow(f0y0-f1y0,2)));
 						float len_current = sqrt((float)(pow(tcod_touch.coords[0][0]-tcod_touch.coords[1][0], 2)+pow(tcod_touch.coords[0][1]-tcod_touch.coords[1][1],2)));
 						float scale_adjust = len_previous/len_current;
-						int console_width = TCOD_ctx.root->w*TCOD_ctx.font_width;
-						int console_height = TCOD_ctx.root->h*TCOD_ctx.font_height;
-						float max_scale = MIN((float)scale_data.surface_width/console_width, (float)scale_data.surface_height/console_height);
-						float aspect_ratio;
+
 						scale_factor *= scale_adjust;
 						if (scale_factor - 1e-3f < MIN_SCALE_FACTOR)
 							scale_factor = MIN_SCALE_FACTOR;
-						else if (scale_factor + 1e-3f > max_scale)
-							scale_factor = max_scale;
-						TCOD_sys_set_clear_screen();
+						else if (scale_factor + 1e-3f > scale_data.max_scale_factor)
+							scale_factor = scale_data.max_scale_factor;
 					}
 				}
 			}
@@ -1664,21 +1702,8 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_WINDOWEVENT :
 #ifdef TCOD_ANDROID
 			/* At this point, there are some corner cases that need dealing with.  So log this. */
-			printf("SDL2 WINDOWEVENT: %x\n", ev->window.event);
+			printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event);
 #endif
-			switch (ev->window.event) {
-#ifdef TCOD_ANDROID
-			case SDL_WINDOWEVENT_RESTORED:
-				/* User returned to home screen, then reopened app.  Need complete redraw, not partial. */
-				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
-			break;
-#else
-			case SDL_WINDOWEVENT_EXPOSED:
-				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, NULL);
-			break;
-#endif
-			default : break; 
-			}
 		break;
 #else
 		case SDL_VIDEOEXPOSE :

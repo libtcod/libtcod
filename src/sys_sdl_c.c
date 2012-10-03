@@ -24,12 +24,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+//#define TCOD_SDL2 // TEMPORARY REMOVE PLEASE
 
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
+#include <android/log.h>
 #elif defined (TCOD_SDL2)
 #include <SDL2/SDL.h>
 #else
@@ -83,6 +85,7 @@ static image_support_t image_type[] = {
 };
 
 typedef struct {
+	float force_recalc;
 	float last_scale_xc, last_scale_yc;
 	float last_scale_factor;
 	float last_fullscreen;
@@ -286,6 +289,7 @@ void TCOD_sys_load_font() {
 			charmap=temp;
 		}
 	}
+//#ifdef ZZZZZ
 	/* detect colored tiles */
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		int px,py,cx,cy;
@@ -312,6 +316,7 @@ void TCOD_sys_load_font() {
 			}
 		}
 	}	
+//#endif
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
@@ -465,6 +470,47 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
+/*
+ * Separate out the actual rendering, so that render to texture can be done.
+ */
+static void actual_rendering() {
+	SDL_Rect srcRect, dstRect;
+#if SDL_VERSION_ATLEAST(2,0,0)
+	SDL_Texture *texture;
+#endif
+
+	if (scale_data.max_scale_factor - 1e-3f < scale_factor) {
+		/* Prepare for the unscaled and centered copy of the entire console. */
+		srcRect.x=0; srcRect.y=0; srcRect.w=scale_screen->w; srcRect.h=scale_screen->h;
+		if (TCOD_ctx.fullscreen) {
+			dstRect.x=TCOD_ctx.fullscreen_offsetx; dstRect.y=TCOD_ctx.fullscreen_offsety;
+		} else {
+			dstRect.x=0; dstRect.y=0;
+		}
+		dstRect.w=scale_screen->w; dstRect.h=scale_screen->h;
+	} else {
+		/* Prepare for the scaled copy of the displayed console area. */
+		srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
+		dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
+		dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
+	}
+#if SDL_VERSION_ATLEAST(2,0,0)
+	texture = SDL_CreateTextureFromSurface(renderer, scale_screen);
+	SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
+	SDL_DestroyTexture(texture);
+#else
+	SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
+#endif
+
+	if ( TCOD_ctx.sdl_cbk ) {
+#if SDL_VERSION_ATLEAST(2,0,0)
+		TCOD_ctx.sdl_cbk((void *)renderer);
+#else
+		TCOD_ctx.sdl_cbk((void *)screen);
+#endif
+	}
+}
+
 /* In order to avoid rendering race conditions and the ensuing segmentation
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
@@ -473,12 +519,8 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 	char_t *prev_console_buffer_ptr = prev_console_buffer;
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		if (vbitmap == NULL) {
-			int console_width_p = TCOD_ctx.root->w*TCOD_ctx.font_width;
-			int console_height_p = TCOD_ctx.root->h*TCOD_ctx.font_height;
-			SDL_Rect srcRect, dstRect;
-#if SDL_VERSION_ATLEAST(2,0,0)
-			SDL_Texture *texture;
-#endif
+			int console_width_p = console_width*TCOD_ctx.font_width;
+			int console_height_p = console_height*TCOD_ctx.font_height;
 
 			/* Make a bitmap of exact rendering size and correct format. */
 			if (scale_screen == NULL) {
@@ -509,12 +551,14 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 
 			/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 			 * This data is also used for console coordinate resolution.. */
-			if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != scale_xc || scale_data.last_scale_yc != scale_yc || scale_data.last_fullscreen != TCOD_ctx.fullscreen) {
+			if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != scale_xc || scale_data.last_scale_yc != scale_yc ||
+					scale_data.last_fullscreen != TCOD_ctx.fullscreen || scale_data.force_recalc) {
 				/* Preserve old value of input variables, to enable recalculation if they change. */
 				scale_data.last_scale_factor = scale_factor;
 				scale_data.last_scale_xc = scale_xc;
 				scale_data.last_scale_yc = scale_yc;
 				scale_data.last_fullscreen = TCOD_ctx.fullscreen;
+				scale_data.force_recalc = 0;
 
 				if (scale_data.last_fullscreen) {
 					scale_data.surface_width = TCOD_ctx.actual_fullscreen_width;
@@ -554,41 +598,20 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				scale_data.dst_offset_y = (scale_data.surface_height - scale_data.dst_display_height)/2;
 				/*__android_log_print(ANDROID_LOG_INFO, "libtcod", );
 				 * printf("FPS: %d\n", TCOD_sys_get_fps());
-				 * printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height); */
+				printf("scale_xc %0.3f scale_yc %0.3f scale_factor %0.3f cw %d ch %d\n", scale_xc, scale_yc, scale_factor, console_width_p, console_height_p);
+				printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height);*/
 			}
 
-			if (scale_data.max_scale_factor - 1e-3f < scale_factor) {
-				/* Prepare for the unscaled and centered copy of the entire console. */
-				srcRect.x=0; srcRect.y=0; srcRect.w=console_width_p; srcRect.h=console_height_p;
-				if (TCOD_ctx.fullscreen) {
-					dstRect.x=TCOD_ctx.fullscreen_offsetx; dstRect.y=TCOD_ctx.fullscreen_offsety;
-				} else {
-					dstRect.x=0; dstRect.y=0;
-				}
-				dstRect.w=console_width_p; dstRect.h=console_height_p;
-			} else {
-				/* Prepare for the scaled copy of the displayed console area. */
-				srcRect.x=scale_data.src_x0; srcRect.y=scale_data.src_y0; srcRect.w=scale_data.src_copy_width; srcRect.h=scale_data.src_copy_height;
-				dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
-				dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
-			}
-#if SDL_VERSION_ATLEAST(2,0,0)
-			texture = SDL_CreateTextureFromSurface(renderer, scale_screen);
-			SDL_RenderClear(renderer);
-			SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
-			SDL_DestroyTexture(texture);
-#else
-			SDL_BlitScaled(scale_screen, &srcRect, screen, &dstRect);
-#endif
+			actual_rendering();
 		} else {
 			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer_ptr);
-		}
-		if ( TCOD_ctx.sdl_cbk ) {
+			if ( TCOD_ctx.sdl_cbk ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-			TCOD_ctx.sdl_cbk(NULL);
+				TCOD_ctx.sdl_cbk((void *)renderer);
 #else
-			TCOD_ctx.sdl_cbk((void *)screen);
+				TCOD_ctx.sdl_cbk((void *)screen);
 #endif
+			}
 		}
 #if SDL_VERSION_ATLEAST(2,0,0)	
 		SDL_RenderPresent(renderer);
@@ -1154,7 +1177,39 @@ void TCOD_sys_save_screenshot(const char *filename) {
 	}
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 #if SDL_VERSION_ATLEAST(2,0,0)
-		/* TODO: TCOD_sys_save_bitmap((void *)SDL_GetWindowSurface(window),filename); */
+		/* This would be a lot easier if image saving could do textures. */
+	    SDL_Rect rect;
+		SDL_RenderGetViewport(renderer, &rect);
+		Uint32 format = SDL_GetWindowPixelFormat(window);
+		SDL_Texture *texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
+		if (0 != texture) {
+			if (SDL_SetRenderTarget(renderer, texture)) {
+				void *pixels;
+				int pitch, access;
+
+				actual_rendering();
+				SDL_SetRenderTarget(renderer, NULL);
+
+				rect.x = rect.y = rect.w = rect.h = 0;
+				if (-1 != SDL_QueryTexture(texture, &format, &access, &rect.w, &rect.h) &&
+						-1 != SDL_LockTexture(texture, NULL, &pixels, &pitch)) {
+					int depth;
+					Uint32 rmask, gmask, bmask, amask;
+					if (SDL_TRUE == SDL_PixelFormatEnumToMasks(format, &depth, &rmask, &gmask, &bmask, &amask)) {
+						SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(pixels, rect.w, rect.h, depth, pitch, rmask, gmask, bmask, amask);
+						TCOD_sys_save_bitmap((void *)surface,filename);
+						SDL_FreeSurface(surface);
+					} else
+						TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_PixelFormatEnumToMasks"));
+
+					SDL_UnlockTexture(texture);
+				} else
+					TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_QueryTexture or SDL_LockTexture"));
+			} else
+				TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_SetRenderTarget"));
+			SDL_DestroyTexture(texture);
+		} else
+			TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_CreateTexture"));
 #else
 		TCOD_sys_save_bitmap((void *)screen,filename);
 #endif
@@ -1480,6 +1535,7 @@ static int TCOD_sys_get_touch_finger_index(SDL_FingerID fingerId) {
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
+	printf("TCOD_sys_handle_event type=%04x\n", ev->type);
 	switch(ev->type) {
 		case SDL_KEYDOWN : {		 
 			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
@@ -1505,8 +1561,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		 * - Tap: Can be optionally delegated to a mouse press.
 		 * - Touch and drag: Should affect scaling screen position.
 		 *
-		TODO: Panning acceleration.
-		TODO: Panning finger up triggers mouse up events (e.g. move to given console position).  Fixable?
   		 */
 		case SDL_FINGERDOWN :
 		case SDL_FINGERUP :
@@ -1667,6 +1721,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				return retMask | TCOD_EVENT_MOUSE_MOVE;
 			}
 		break; 
+#if SDL_VERSION_ATLEAST(2,0,0)
+		case SDL_MOUSEWHEEL :
+			printf("MOUSE WHEEL: %d\n", ev->wheel.y);
+		break;
+#endif
 		case SDL_MOUSEBUTTONDOWN : 
 			if ( (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
 				SDL_MouseButtonEvent *mev=&ev->button;
@@ -1703,6 +1762,19 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #ifdef TCOD_ANDROID
 			/* At this point, there are some corner cases that need dealing with.  So log this. */
 			printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event);
+			switch (ev->window.event) {
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+			{
+				printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event, ev->window.data1, ev->window.data2);
+				/* If the app is started while the device is locked, the screen will be in portrait mode.  We need to rescale when it changes. */
+				if (scale_data.surface_width != ev->window.data1 || scale_data.surface_height != ev->window.data1)
+					scale_data.force_recalc = 1;
+				break;
+			}
+			default:
+				printf("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event);
+				break;
+			}
 #endif
 		break;
 #else
@@ -1805,6 +1877,10 @@ void TCOD_sys_term() {
 #if SDL_VERSION_ATLEAST(2,0,0)
 	window=NULL;
 	scale_screen=NULL;
+	if (renderer) {
+		SDL_DestroyRenderer(renderer);
+		renderer = NULL;
+	}
 #else
 	screen=NULL;
 #endif
@@ -2012,6 +2088,10 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 #if SDL_VERSION_ATLEAST(2,0,0)
 void *TCOD_sys_get_SDL_window() {
 	return (void *)window;
+}
+
+void *TCOD_sys_get_SDL_renderer() {
+	return (void *)renderer;
 }
 #endif
 

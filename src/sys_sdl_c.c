@@ -1354,7 +1354,15 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	SDL_KeyboardEvent *kev=&ev->key;
 #if SDL_VERSION_ATLEAST(2,0,0)
-	ret->c = kev->keysym.sym & 0xFF;
+	/* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
+		Presumably in order to avoid problems with different keyboard layouts, they
+		are expected to write their own key mapping editing code for the user.  */
+	ret->c = kev->keysym.sym;
+	switch (kev->keysym.sym) {
+	case SDLK_SLASH : if (kev->keysym.mod & KMOD_SHIFT) ret->c='?'; break;
+	case SDLK_BACKQUOTE : if (kev->keysym.mod & KMOD_SHIFT) ret->c='~'; break;
+	default : if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK)) ret->c = 0; break;
+	}
 #else
 	ret->c=(char)kev->keysym.unicode;
 #endif

@@ -922,10 +922,7 @@ void CustomSDLMain();
 #endif
 
 void TCOD_sys_startup() {
-	if (has_startup) {
-		printf("TCOD_sys_startup - returning, already called\n");
-		return;
-	}
+	if (has_startup) return;
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
@@ -1535,7 +1532,7 @@ static int TCOD_sys_get_touch_finger_index(SDL_FingerID fingerId) {
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
-	printf("TCOD_sys_handle_event type=%04x\n", ev->type);
+	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
 	switch(ev->type) {
 		case SDL_KEYDOWN : {		 
 			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
@@ -1581,7 +1578,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 
 			idx = TCOD_sys_get_touch_finger_index(ev->tfinger.fingerId);
 			if (idx == -1) {
-				printf("ERROR: failed to allocate extra finger");
+				TCOD_LOG(("ERROR: failed to allocate extra finger"));
 				break;
 			}
 
@@ -1723,7 +1720,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		break; 
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_MOUSEWHEEL :
-			printf("MOUSE WHEEL: %d\n", ev->wheel.y);
+			if (ev->wheel.y < 0)
+				mouse->wheel_down=true;
+			else
+				mouse->wheel_up=true;
+			return retMask | TCOD_EVENT_MOUSE_PRESS;
 		break;
 #endif
 		case SDL_MOUSEBUTTONDOWN : 
@@ -1761,18 +1762,18 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_WINDOWEVENT :
 #ifdef TCOD_ANDROID
 			/* At this point, there are some corner cases that need dealing with.  So log this. */
-			printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event);
+			/* printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event); */
 			switch (ev->window.event) {
 			case SDL_WINDOWEVENT_SIZE_CHANGED:
 			{
-				printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event, ev->window.data1, ev->window.data2);
+				/* printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event, ev->window.data1, ev->window.data2); */
 				/* If the app is started while the device is locked, the screen will be in portrait mode.  We need to rescale when it changes. */
 				if (scale_data.surface_width != ev->window.data1 || scale_data.surface_height != ev->window.data1)
 					scale_data.force_recalc = 1;
 				break;
 			}
 			default:
-				printf("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event);
+				TCOD_LOG(("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event));
 				break;
 			}
 #endif

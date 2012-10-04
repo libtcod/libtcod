@@ -602,6 +602,9 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height);*/
 			}
 
+#if SDL_VERSION_ATLEAST(2,0,0)
+			SDL_RenderClear(renderer);
+#endif
 			actual_rendering();
 		} else {
 			TCOD_sys_console_to_bitmap(vbitmap, console_width, console_height, console_buffer, prev_console_buffer_ptr);

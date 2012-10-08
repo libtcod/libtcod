@@ -1357,11 +1357,34 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	/* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
 		Presumably in order to avoid problems with different keyboard layouts, they
 		are expected to write their own key mapping editing code for the user.  */
-	ret->c = kev->keysym.sym;
-	switch (kev->keysym.sym) {
-	case SDLK_SLASH : if (kev->keysym.mod & KMOD_SHIFT) ret->c='?'; break;
-	case SDLK_BACKQUOTE : if (kev->keysym.mod & KMOD_SHIFT) ret->c='~'; break;
-	default : if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK)) ret->c = 0; break;
+	if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK))
+		ret->c = 0;
+	else {
+		ret->c = kev->keysym.sym;
+		if (kev->keysym.mod & KMOD_SHIFT)
+			switch (kev->keysym.sym) {
+			case SDLK_BACKQUOTE : ret->c='~'; break;
+			case SDLK_1 : ret->c='!'; break;
+			case SDLK_2 : ret->c='@'; break;
+			case SDLK_3 : ret->c='#'; break;
+			case SDLK_4 : ret->c='$'; break;
+			case SDLK_5 : ret->c='%'; break;
+			case SDLK_6 : ret->c='^'; break;
+			case SDLK_7 : ret->c='&'; break;
+			case SDLK_8 : ret->c='*'; break;
+			case SDLK_9 : ret->c='('; break;
+			case SDLK_0 : ret->c=')'; break;
+			case SDLK_MINUS : ret->c='_'; break;
+			case SDLK_EQUALS : ret->c='+'; break;
+			case SDLK_LEFTBRACKET : ret->c='{'; break;
+			case SDLK_RIGHTBRACKET : ret->c='}'; break;
+			case SDLK_BACKSLASH : ret->c='|'; break;
+			case SDLK_SEMICOLON : ret->c=':'; break;
+			case SDLK_QUOTE : ret->c='"'; break;
+			case SDLK_COMMA : ret->c='<'; break;
+			case SDLK_PERIOD : ret->c='>'; break;
+			case SDLK_SLASH : ret->c='?'; break;
+			}
 	}
 #else
 	ret->c=(char)kev->keysym.unicode;

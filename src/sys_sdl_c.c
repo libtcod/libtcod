@@ -877,6 +877,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
+	static char last_font[512]="";
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 #endif
@@ -891,7 +892,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
-	if (last_renderer != TCOD_ctx.renderer || ! charmap) {
+	if (last_renderer != TCOD_ctx.renderer || ! charmap || strcmp(last_font,TCOD_ctx.font_file) != 0) {
 		/* reload the font when switching renderer to restore original character colors */
 		TCOD_sys_load_font();
 	}

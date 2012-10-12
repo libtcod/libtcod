@@ -10,14 +10,16 @@
 #include <stdlib.h> /* for NULL */
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
 #include "libtcod.h"
 #define _SDL_main_h
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
+#elif defined(TCOD_SDL2)
+#include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
+#include <math.h>
 
 
 /* a sample has a name and a rendering function */

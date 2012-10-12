@@ -28,6 +28,8 @@
 #if defined (__HAIKU__) || defined (__ANDROID__)
 #include <SDL.h>
 #elif defined(TCOD_SDL2)
+#include <stdlib.h>
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>

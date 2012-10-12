@@ -27,6 +27,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
@@ -1237,8 +1238,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_8 : ret->vk=TCODK_8;break;
 		case SDLK_9 : ret->vk=TCODK_9;break;
 #if SDL_VERSION_ATLEAST(2,0,0)	
-		case SDLK_RGUI : ret->vk=TCODK_RGUI;break;
-		case SDLK_LGUI : ret->vk=TCODK_LGUI;break;
+		case SDLK_RGUI : ret->vk=TCODK_RWIN;break;
+		case SDLK_LGUI : ret->vk=TCODK_LWIN;break;
 		case SDLK_KP_0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP_1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP_2 : ret->vk=TCODK_KP2;break;

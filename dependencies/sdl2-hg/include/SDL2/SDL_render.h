@@ -373,7 +373,7 @@ extern DECLSPEC int SDLCALL SDL_UpdateTexture(SDL_Texture * texture,
                                               const void *pixels, int pitch);
 
 /**
- *  \brief Lock a portion of the texture for pixel access.
+ *  \brief Lock a portion of the texture for write-only pixel access.
  *  
  *  \param texture   The texture to lock for access, which was created with 
  *                   ::SDL_TEXTUREACCESS_STREAMING.
@@ -413,9 +413,54 @@ extern DECLSPEC SDL_bool SDLCALL SDL_RenderTargetSupported(SDL_Renderer *rendere
  * \param texture The targeted texture, which must be created with the SDL_TEXTUREACCESS_TARGET flag, or NULL for the default render target
  *
  * \return 0 on success, or -1 on error
+ *
+ *  \sa SDL_GetRenderTarget()
  */
 extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *renderer,
                                                 SDL_Texture *texture);
+
+/**
+ * \brief Get the current render target or NULL for the default render target.
+ *
+ * \return The current render target
+ *
+ *  \sa SDL_SetRenderTarget()
+ */
+extern DECLSPEC SDL_Texture * SDLCALL SDL_GetRenderTarget(SDL_Renderer *renderer);
+
+/**
+ *  \brief Set device independent resolution for rendering
+ *
+ *  \param w      The width of the logical resolution
+ *  \param h      The height of the logical resolution
+ *
+ *  This function uses the viewport and scaling functionality to allow a fixed logical
+ *  resolution for rendering, regardless of the actual output resolution.  If the actual
+ *  output resolution doesn't have the same aspect ratio the output rendering will be
+ *  centered within the output display.
+ *
+ *  If the output display is a window, mouse events in the window will be filtered
+ *  and scaled so they seem to arrive within the logical resolution.
+ *
+ *  \note If this function results in scaling or subpixel drawing by the 
+ *        rendering backend, it will be handled using the appropriate
+ *        quality hints.
+ *
+ *  \sa SDL_RenderGetLogicalSize()
+ *  \sa SDL_RenderSetScale()
+ *  \sa SDL_RenderSetViewport()
+ */
+extern DECLSPEC int SDLCALL SDL_RenderSetLogicalSize(SDL_Renderer * renderer, int w, int h);
+
+/**
+ *  \brief Get device independent resolution for rendering
+ *
+ *  \param w      A pointer filled with the width of the logical resolution
+ *  \param h      A pointer filled with the height of the logical resolution
+ *
+ *  \sa SDL_RenderSetLogicalSize()
+ */
+extern DECLSPEC void SDLCALL SDL_RenderGetLogicalSize(SDL_Renderer * renderer, int *w, int *y);
 
 /**
  *  \brief Set the drawing area for rendering on the current target.
@@ -426,15 +471,51 @@ extern DECLSPEC int SDLCALL SDL_SetRenderTarget(SDL_Renderer *renderer,
  *
  *  \note When the window is resized, the current viewport is automatically
  *        centered within the new window size.
+ *
+ *  \sa SDL_RenderGetViewport()
+ *  \sa SDL_RenderSetLogicalSize()
  */
 extern DECLSPEC int SDLCALL SDL_RenderSetViewport(SDL_Renderer * renderer,
                                                   const SDL_Rect * rect);
 
 /**
  *  \brief Get the drawing area for the current target.
+ *
+ *  \sa SDL_RenderSetViewport()
  */
 extern DECLSPEC void SDLCALL SDL_RenderGetViewport(SDL_Renderer * renderer,
                                                    SDL_Rect * rect);
+
+/**
+ *  \brief Set the drawing scale for rendering on the current target.
+ *
+ *  \param scaleX The horizontal scaling factor
+ *  \param scaleY The vertical scaling factor
+ *
+ *  The drawing coordinates are scaled by the x/y scaling factors
+ *  before they are used by the renderer.  This allows resolution
+ *  independent drawing with a single coordinate system.
+ *
+ *  \note If this results in scaling or subpixel drawing by the 
+ *        rendering backend, it will be handled using the appropriate
+ *        quality hints.  For best results use integer scaling factors.
+ *
+ *  \sa SDL_RenderGetScale()
+ *  \sa SDL_RenderSetLogicalSize()
+ */
+extern DECLSPEC int SDLCALL SDL_RenderSetScale(SDL_Renderer * renderer,
+                                               float scaleX, float scaleY);
+
+/**
+ *  \brief Get the drawing scale for the current target.
+ *
+ *  \param scaleX A pointer filled in with the horizontal scaling factor
+ *  \param scaleY A pointer filled in with the vertical scaling factor
+ *
+ *  \sa SDL_RenderSetScale()
+ */
+extern DECLSPEC void SDLCALL SDL_RenderGetScale(SDL_Renderer * renderer,
+                                               float *scaleX, float *scaleY);
 
 /**
  *  \brief Set the color used for drawing operations (Rect, Line and Clear).
@@ -670,6 +751,28 @@ extern DECLSPEC void SDLCALL SDL_DestroyTexture(SDL_Texture * texture);
  *  \sa SDL_CreateRenderer()
  */
 extern DECLSPEC void SDLCALL SDL_DestroyRenderer(SDL_Renderer * renderer);
+
+
+/**
+ *  \brief Bind the texture to the current OpenGL/ES/ES2 context for use with
+ *         OpenGL instructions.
+ *
+ *  \param texture  The SDL texture to bind
+ *  \param texw     A pointer to a float that will be filled with the texture width
+ *  \param texh     A pointer to a float that will be filled with the texture height
+ *
+ *  \return 0 on success, or -1 if the operation is not supported
+ */
+extern DECLSPEC int SDLCALL SDL_GL_BindTexture(SDL_Texture *texture, float *texw, float *texh);
+
+/**
+ *  \brief Unbind a texture from the current OpenGL/ES/ES2 context.
+ *
+ *  \param texture  The SDL texture to unbind
+ *
+ *  \return 0 on success, or -1 if the operation is not supported
+ */
+extern DECLSPEC int SDLCALL SDL_GL_UnbindTexture(SDL_Texture *texture);
 
 
 /* Ends C function definitions when using C++ */

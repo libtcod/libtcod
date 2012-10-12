@@ -118,7 +118,40 @@ extern "C" {
  *  By default SDL does not sync screen surface updates with vertical refresh.
  */
 #define SDL_HINT_RENDER_VSYNC               "SDL_RENDER_VSYNC"
-	
+
+/**
+ *  \brief  A variable controlling whether the X11 VidMode extension should be used.
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - Disable XVidMode
+ *    "1"       - Enable XVidMode
+ *
+ *  By default SDL will use XVidMode if it is available.
+ */
+#define SDL_HINT_VIDEO_X11_XVIDMODE         "SDL_VIDEO_X11_XVIDMODE"
+
+/**
+ *  \brief  A variable controlling whether the X11 Xinerama extension should be used.
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - Disable Xinerama
+ *    "1"       - Enable Xinerama
+ *
+ *  By default SDL will use Xinerama if it is available.
+ */
+#define SDL_HINT_VIDEO_X11_XINERAMA         "SDL_VIDEO_X11_XINERAMA"
+
+/**
+ *  \brief  A variable controlling whether the X11 XRandR extension should be used.
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - Disable XRandR
+ *    "1"       - Enable XRandR
+ *
+ *  By default SDL will not use XRandR because of window manager issues.
+ */
+#define SDL_HINT_VIDEO_X11_XRANDR           "SDL_VIDEO_X11_XRANDR"
+
 /**
  *  \brief  A variable controlling whether the idle timer is disabled on iOS.
  *

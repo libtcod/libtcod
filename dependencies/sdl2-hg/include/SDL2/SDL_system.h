@@ -30,6 +30,11 @@
 
 #include "SDL_stdinc.h"
 
+#if __IPHONEOS__
+#include "SDL_video.h"
+#include "SDL_keyboard.h"
+#endif
+
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -40,15 +45,13 @@ extern "C" {
 
 #if __IPHONEOS__
 
-#include "SDL_video.h"
-
 extern DECLSPEC int SDLCALL SDL_iPhoneSetAnimationCallback(SDL_Window * window, int interval, void (*callback)(void*), void *callbackParam);
 extern DECLSPEC void SDLCALL SDL_iPhoneSetEventPump(SDL_bool enabled);
 
-extern DECLSPEC int SDLCALL SDL_iPhoneKeyboardShow(SDL_Window * window);
-extern DECLSPEC int SDLCALL SDL_iPhoneKeyboardHide(SDL_Window * window);
-extern DECLSPEC SDL_bool SDLCALL SDL_iPhoneKeyboardIsShown(SDL_Window * window);
-extern DECLSPEC int SDLCALL SDL_iPhoneKeyboardToggle(SDL_Window * window);
+#define SDL_iPhoneKeyboardShow  SDL_ShowScreenKeyboard
+#define SDL_iPhoneKeyboardHide  SDL_HideScreenKeyboard
+#define SDL_iPhoneKeyboardToggle    SDL_ToggleScreenKeyboard
+#define SDL_iPhoneKeyboardIsShown   SDL_IsScreenKeyboardShown
 
 #endif
 

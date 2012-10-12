@@ -65,7 +65,7 @@
 
 /* Need to do this here because intrin.h has C++ code in it */
 /* Visual Studio 2005 has a bug where intrin.h conflicts with winnt.h */
-#if defined(_MSC_VER) && (_MSC_VER >= 1500) && !defined(_WIN32_WCE)
+#if defined(_MSC_VER) && (_MSC_VER >= 1500)
 #include <intrin.h>
 #define HAVE_MSC_ATOMICS 1
 #endif
@@ -161,10 +161,10 @@ void _ReadWriteBarrier(void);
 #include <libkern/OSAtomic.h>
 
 #define SDL_AtomicCAS(a, oldval, newval) OSAtomicCompareAndSwap32Barrier((oldval), (newval), &(a)->value)
-#if SIZEOF_VOIDP == 4
-#define SDL_AtomicCASPtr(a, oldval, newval) OSAtomicCompareAndSwap32Barrier((int32_t)(oldval), (int32_t)(newval), (int32_t*)(a))
-#elif SIZEOF_VOIDP == 8
+#ifdef __LP64__
 #define SDL_AtomicCASPtr(a, oldval, newval) OSAtomicCompareAndSwap64Barrier((int64_t)(oldval), (int64_t)(newval), (int64_t*)(a))
+#else
+#define SDL_AtomicCASPtr(a, oldval, newval) OSAtomicCompareAndSwap32Barrier((int32_t)(oldval), (int32_t)(newval), (int32_t*)(a))
 #endif
 
 #elif defined(HAVE_GCC_ATOMICS)

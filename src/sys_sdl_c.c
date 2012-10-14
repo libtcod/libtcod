@@ -90,7 +90,7 @@ typedef struct {
 	float last_scale_factor;
 	float last_fullscreen;
 
-	float max_scale_factor;
+	float min_scale_factor;
 
 	float src_height_width_ratio;
 	float dst_height_width_ratio;
@@ -118,7 +118,7 @@ static float scale_factor=1.0f;
 static float scale_xc=0.5f;
 static float scale_yc=0.5f;
 static scale_data_t scale_data={0};
-#define MIN_SCALE_FACTOR 0.25f
+#define MAX_SCALE_FACTOR 5.0f
 
 /* font transparent color */
 static TCOD_color_t fontKeyCol={0,0,0};
@@ -479,7 +479,7 @@ static void actual_rendering() {
 	SDL_Texture *texture;
 #endif
 
-	if (scale_data.max_scale_factor - 1e-3f < scale_factor) {
+	if (scale_data.min_scale_factor + 1e-3f > scale_factor) {
 		/* Prepare for the unscaled and centered copy of the entire console. */
 		srcRect.x=0; srcRect.y=0; srcRect.w=scale_screen->w; srcRect.h=scale_screen->h;
 		if (TCOD_ctx.fullscreen) {
@@ -567,11 +567,11 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 					scale_data.surface_width = console_width_p;
 					scale_data.surface_height = console_height_p;
 				}
-				scale_data.max_scale_factor = MIN((float)scale_data.surface_width/console_width_p, (float)scale_data.surface_height/console_height_p);
+				scale_data.min_scale_factor = MAX((float)console_width_p/scale_data.surface_width, (float)console_height_p/scale_data.surface_height);
 
 				scale_data.dst_height_width_ratio = (float)scale_data.surface_height/scale_data.surface_width;
-				scale_data.src_proportionate_width = (int)(console_width_p * scale_factor);
-				scale_data.src_proportionate_height = (int)(console_width_p * scale_factor * scale_data.dst_height_width_ratio);
+				scale_data.src_proportionate_width = (int)(console_width_p / scale_factor);
+				scale_data.src_proportionate_height = (int)((console_width_p * scale_data.dst_height_width_ratio) / scale_factor);
 
 				/* Work out how much of the console to copy. */
 				scale_data.src_x0 = (scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width);
@@ -1282,7 +1282,7 @@ void TCOD_sys_set_clear_screen() {
 }
 
 void TCOD_sys_set_no_scaling() {
-	scale_factor = scale_data.max_scale_factor;
+	scale_factor = scale_data.min_scale_factor;
 	scale_xc = 0.5f;
 	scale_yc = 0.5f;
 }
@@ -1701,7 +1701,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 						float p1x = (f1x1 + f0x1)/2.0f, p1y = (f1y1 + f0y1)/2.0f;
 						float len_previous = sqrtf((float)(pow(f0x0-f1x0,2) + pow(f0y0-f1y0,2)));
 						float len_current = sqrt((float)(pow(f0x1-f1x1, 2) + pow(f0y1-f1y1,2)));
-						scale_adjust = len_previous/len_current;
+						scale_adjust = len_current/len_previous;
 						xc_shift = ((p1x - p0x) / scale_data.surface_width);
 						yc_shift = ((p1y - p0y) / scale_data.surface_height);
 					}
@@ -1724,10 +1724,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				}
 				if (fabs(scale_adjust - 1.0f) > 1e-3f) {
 					scale_factor *= scale_adjust;
-					if (scale_factor - 1e-3f < MIN_SCALE_FACTOR)
-						scale_factor = MIN_SCALE_FACTOR;
-					else if (scale_factor + 1e-3f > scale_data.max_scale_factor)
-						scale_factor = scale_data.max_scale_factor;
+					if (scale_factor + 1e-3f > MAX_SCALE_FACTOR)
+						scale_factor = MAX_SCALE_FACTOR;
+					else if (scale_factor - 1e-3f < scale_data.min_scale_factor)
+						scale_factor = scale_data.min_scale_factor;
 				}
 			}
 

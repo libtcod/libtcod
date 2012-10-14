@@ -1669,6 +1669,8 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					retMask |= TCOD_EVENT_MOUSE_RELEASE;
 				}
 			} else if (SDL_FINGERMOTION == ev->type) {
+				float scale_adjust = 1.0f, xc_shift = 0.0f, yc_shift = 0.0f;
+
 				// printf("SDL_FINGERMOTION [%d] ticks=%d", tcod_touch.nupdates, ticks_taken);
 				if ((TCOD_EVENT_FINGER_MOVE & eventMask) != 0)
 					retMask |= TCOD_EVENT_FINGER_MOVE;
@@ -1680,34 +1682,52 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					/* One finger drag AKA drag to move.
 					 * Ignore the first few move events that happen unhelpfully immediately after finger down. */
 					if (tcod_touch.fingerspressed[0] && (tcod_touch.coords_delta[0][0] || tcod_touch.coords_delta[0][1]) && ticks_taken > 10) {
-						/* Actual display offset is the inverted finger movement. */
-						scale_xc -= (float)tcod_touch.coords_delta[idx][0] / scale_data.surface_width;
-						/* Bound the translation within the console area. */
-						if (scale_xc + 1e-3f < 0.0f)
-							scale_xc = 0.0f;
-						if (scale_xc - 1e-3f > 1.0f)
-							scale_xc = 1.0f;
-						scale_yc -= (float)tcod_touch.coords_delta[idx][1] / scale_data.surface_height;
-						if (scale_yc + 1e-3f < 0.0f)
-							scale_yc = 0.0f;
-						if (scale_yc - 1e-3f > 1.0f)
-							scale_yc = 1.0f;
+						xc_shift = (float)tcod_touch.coords_delta[idx][0] / scale_data.surface_width;
+						yc_shift = (float)tcod_touch.coords_delta[idx][1] / scale_data.surface_height;
 					}
 				} else if (tcod_touch.nfingerspressed == 2) {
-					/* Two finger pinch AKA pinch to zoom */
+					/* Two finger pinch AKA pinch to zoom
+					 * Both fingers should stay exactly where they are on the full surface
+					 * in order to manipulate the drag and zoom effect.  */
 					if (tcod_touch.fingerspressed[0] && tcod_touch.fingerspressed[1]) {
+						/*
+						 * New algorithm
+						 */
 						int f0x0 = tcod_touch.coords[0][0]-tcod_touch.coords_delta[0][0], f0y0 = tcod_touch.coords[0][1]-tcod_touch.coords_delta[0][1];
 						int f1x0 = tcod_touch.coords[1][0]-tcod_touch.coords_delta[1][0], f1y0 = tcod_touch.coords[1][1]-tcod_touch.coords_delta[1][1];
-						float len_previous = sqrtf((float)(pow(f0x0-f1x0,2)+pow(f0y0-f1y0,2)));
-						float len_current = sqrt((float)(pow(tcod_touch.coords[0][0]-tcod_touch.coords[1][0], 2)+pow(tcod_touch.coords[0][1]-tcod_touch.coords[1][1],2)));
-						float scale_adjust = len_previous/len_current;
-
-						scale_factor *= scale_adjust;
-						if (scale_factor - 1e-3f < MIN_SCALE_FACTOR)
-							scale_factor = MIN_SCALE_FACTOR;
-						else if (scale_factor + 1e-3f > scale_data.max_scale_factor)
-							scale_factor = scale_data.max_scale_factor;
+						int f0x1 = tcod_touch.coords[0][0], f0y1 = tcod_touch.coords[0][1];
+						int f1x1 = tcod_touch.coords[1][0], f1y1 = tcod_touch.coords[1][1];
+						float p0x = (f1x0 + f0x0)/2.0f, p0y = (f1y0 + f0y0)/2.0f;
+						float p1x = (f1x1 + f0x1)/2.0f, p1y = (f1y1 + f0y1)/2.0f;
+						float len_previous = sqrtf((float)(pow(f0x0-f1x0,2) + pow(f0y0-f1y0,2)));
+						float len_current = sqrt((float)(pow(f0x1-f1x1, 2) + pow(f0y1-f1y1,2)));
+						scale_adjust = len_previous/len_current;
+						xc_shift = ((p1x - p0x) / scale_data.surface_width);
+						yc_shift = ((p1y - p0y) / scale_data.surface_height);
 					}
+				}
+
+				/* Bound the translations within the console area. */
+				if (fabs(xc_shift) > 1e-3f) {
+					scale_xc -= xc_shift; /* Actual display shift is the inverted finger movement. */
+					if (scale_xc + 1e-3f < 0.0f)
+						scale_xc = 0.0f;
+					if (scale_xc - 1e-3f > 1.0f)
+						scale_xc = 1.0f;
+				}
+				if (fabs(yc_shift) > 1e-3f) {
+					scale_yc -= yc_shift; /* Actual display shift is the inverted finger movement. */
+					if (scale_yc + 1e-3f < 0.0f)
+						scale_yc = 0.0f;
+					if (scale_yc - 1e-3f > 1.0f)
+						scale_yc = 1.0f;
+				}
+				if (fabs(scale_adjust - 1.0f) > 1e-3f) {
+					scale_factor *= scale_adjust;
+					if (scale_factor - 1e-3f < MIN_SCALE_FACTOR)
+						scale_factor = MIN_SCALE_FACTOR;
+					else if (scale_factor + 1e-3f > scale_data.max_scale_factor)
+						scale_factor = scale_data.max_scale_factor;
 				}
 			}
 

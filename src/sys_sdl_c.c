@@ -1580,9 +1580,9 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 	static TCOD_key_t noret={TCODK_NONE,0};
 
 	TCOD_key_t key;
-	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY, &key, NULL, flush);
+	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS, &key, NULL, flush);
 
-	if ((ev & TCOD_EVENT_KEY) == 0) return noret;
+	if ((ev & TCOD_EVENT_KEY_PRESS) == 0) return noret;
 
 	return key;
 }

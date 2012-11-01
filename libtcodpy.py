@@ -1,5 +1,5 @@
 #
-# libtcod 1.5.1 python wrapper
+# libtcod 1.5.2 python wrapper
 # Copyright (c) 2008,2009,2010 Jice & Mingos
 # All rights reserved.
 #
@@ -75,9 +75,9 @@ else:
     _lib.TCOD_image_get_mipmap_pixel = _lib.TCOD_image_get_mipmap_pixel_wrapper
     _lib.TCOD_parser_get_color_property = _lib.TCOD_parser_get_color_property_wrapper
 
-HEXVERSION = 0x010501
-STRVERSION = "1.5.1"
-TECHVERSION = 0x01050103
+HEXVERSION = 0x010502
+STRVERSION = "1.5.2"
+TECHVERSION = 0x01050200
 
 ############################
 # color module

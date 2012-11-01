@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -1401,6 +1401,7 @@ public :
 	@Param mbutton_pressed true if the middle button was pressed and released.
 	@Param wheel_up true if the wheel was rolled up.
 	@Param wheel_down true if the wheel was rolled down.
+	*/
 
 	/**
 	@PageName console_keycode_t

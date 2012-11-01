@@ -1223,15 +1223,23 @@ def render_mouse(first, key, mouse):
         wheel="UP"
     elif mouse.wheel_down :
         wheel="DOWN"
+    activemsg="APPLICATION INACTIVE"
+    if libtcod.console_is_active() :
+    	activemsg=""
+    focusmsg="OUT OF FOCUS"
+    if libtcod.console_has_mouse_focus() :
+    	focusmsg=""
     libtcod.console_print(sample_console, 1, 1,
-                               "Mouse position : %4dx%4d\n"
+    	                       "%s\n"
+                               "Mouse position : %4dx%4d %s\n"
                                "Mouse cell     : %4dx%4d\n"
                                "Mouse movement : %4dx%4d\n"
                                "Left button    : %s (toggle %s)\n"
                                "Right button   : %s (toggle %s)\n"
                                "Middle button  : %s (toggle %s)\n"
 							   "Wheel          : %s" %
-                               (mouse.x, mouse.y,
+                               (activemsg,
+                               mouse.x, mouse.y, focusmsg,
                                mouse.cx, mouse.cy,
                                mouse.dx, mouse.dy,
                                butstatus[mouse.lbutton], butstatus[mouse_lbut],

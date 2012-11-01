@@ -1380,6 +1380,12 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
+		case SDL_ACTIVEEVENT : 
+			switch(ev->active.state) {
+				case SDL_APPMOUSEFOCUS : TCOD_ctx.app_has_mouse_focus=ev->active.gain; break;
+				default : TCOD_ctx.app_is_active=ev->active.gain; break;
+			}
+		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_FINGERMOTION :
 			if (mouse_touch && (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
@@ -1475,7 +1481,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		break;
 		case SDL_QUIT :
-			TCOD_console_set_window_closed();
+			TCOD_ctx.is_window_closed=true;
 		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :

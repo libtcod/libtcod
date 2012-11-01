@@ -69,42 +69,7 @@ public :
 	*/
 	static void move(int x, int y);
 
-	/**
-	@PageName mouse
-	@FuncTitle Getting the mouse status
-	@FuncDesc You can read the current mouse status with this function. Note that this function does not update the mouse status. You have to call either TCODSystem::checkForEvent or TCODSystem::waitForEvent for the mouse status to be updated.
-<div class="code"><pre>typedef struct {
-  int x,y;
-  int dx,dy;
-  int cx,cy;
-  int dcx,dcy;
-  bool lbutton; 
-  bool rbutton;
-  bool mbutton;
-  bool lbutton_pressed; 
-  bool rbutton_pressed; 
-  bool mbutton_pressed; 
-  bool wheel_up;
-  bool wheel_down;
-} TCOD_mouse_t;
-</pre></div>
-	@Cpp static TCOD_mouse_t TCODMouse::getStatus (void)
-	@C TCOD_mouse_t TCOD_mouse_get_status (void)
-	@Py mouse_get_status ()
-	@C# TCODMouseData TCODMouse::getStatus()
-	@Param x, y	Absolute position of the mouse cursor in pixels relative to the window top-left corner.
-	@Param dx, dy	Movement of the mouse cursor since the last call in pixels.
-	@Param cx, cy	Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).
-	@Param dcx, dcy	Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).
-	@Param lbutton	true if the left button is pressed.
-	@Param rbutton	true if the right button is pressed.
-	@Param mbutton	true if the middle button (or the wheel) is pressed.
-	@Param lbutton_pressed	true if the left button was pressed and released.
-	@Param rbutton_pressed	true if the right button was pressed and released.
-	@Param mbutton_pressed	true if the middle button was pressed and released.
-	@Param wheel_up	true if the wheel was rolled up.
-	@Param wheel_down	true if the wheel was rolled down.
-	*/
+	/* deprecated as of 1.5.1 */	
 	static TCOD_mouse_t getStatus();
 };
 

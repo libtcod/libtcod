@@ -87,6 +87,14 @@ bool TCODConsole::isWindowClosed() {
 	return TCOD_console_is_window_closed() != 0;
 }
 
+bool TCODConsole::hasMouseFocus() {
+	return TCOD_console_has_mouse_focus() != 0;
+}
+
+bool TCODConsole::isActive() {
+	return TCOD_console_is_active() != 0;
+}
+
 int TCODConsole::getWidth() const {
 	return TCOD_console_get_width(data);
 }

@@ -476,6 +476,8 @@ class ConsoleBuffer:
 _lib.TCOD_console_credits_render.restype = c_bool
 _lib.TCOD_console_is_fullscreen.restype = c_bool
 _lib.TCOD_console_is_window_closed.restype = c_bool
+_lib.TCOD_console_has_mouse_focus.restype = c_bool
+_lib.TCOD_console_is_active.restype = c_bool
 _lib.TCOD_console_get_default_background.restype = Color
 _lib.TCOD_console_get_default_foreground.restype = Color
 _lib.TCOD_console_get_char_background.restype = Color
@@ -734,6 +736,12 @@ def console_set_fullscreen(fullscreen):
 
 def console_is_window_closed():
     return _lib.TCOD_console_is_window_closed()
+
+def console_has_mouse_focus():
+    return _lib.TCOD_console_has_mouse_focus()
+
+def console_is_active():
+    return _lib.TCOD_console_is_active()
 
 def console_set_window_title(title):
     _lib.TCOD_console_set_window_title(c_char_p(title))

@@ -4,6 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.2 : ?
++ added TCODConsole::hasMouseFocus() and TCODConsole::isActive()
 - fixed TCODConsole::waitForKeypress returning for both press and release events (returns only on press)
 - fixed dynamic font switching not working
 - fixed TCOD_image_blit_rect not working with odd width/height

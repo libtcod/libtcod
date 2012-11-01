@@ -1,25 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-<title>libtcod documentation | Handling keyboard input</title>
+<title>libtcod documentation | Handling user input</title>
 <script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
 <div class="breadcrumb"><div class="breadcrumbtext"><p>
-you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_input.html')">2.4. Handling keyboard input</a><br>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_input.html')">2.4. Handling user input</a><br>
 <a class="prev" onclick="link('console_flush.html')">2.3. Flushing the root console</a> | <a class="next" onclick="link('console_offscreen.html')">2.5. Using off-screen consoles</a>
 </p></div></div>
 <div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
 <div class="main"><div class="maintext">
-<h1>2.4. Handling keyboard input</h1>
-<div id="toc"><ul><li><a onclick="link('console_blocking_input.html')">2.4.1. Blocking keyboard input</a></li>
-<li><a onclick="link('console_non_blocking_input.html')">2.4.2. Non blocking keyboard input</a></li>
+<h1>2.4. Handling user input</h1>
+<div id="toc"><ul><li><a onclick="link('console_blocking_input.html')">2.4.1. Blocking user input</a></li>
+<li><a onclick="link('console_non_blocking_input.html')">2.4.2. Non blocking user input</a></li>
 <li><a onclick="link('console_keyboard_repeat.html')">2.4.3. Changing keyboard repeat delay</a></li>
 <li><a onclick="link('console_key_t.html')">2.4.4. Keyboard event structure</a></li>
-<li><a onclick="link('console_keycode_t.html')">2.4.5. Key codes</a></li>
+<li><a onclick="link('console_mouse_t.html')">2.4.5. Mouse event structure</a></li>
+<li><a onclick="link('console_keycode_t.html')">2.4.6. Key codes</a></li>
 </ul></div>
-<p>The keyboard handling functions allow you to get keyboard input from the user, either for turn by turn games (the function wait until the user press a key), or real time games (non blocking function).<br />	<b>WARNING : for proper redraw event handling, the keyboard functions should always be called just after TCODConsole::flush !</b><br />	</p>
+<p>The user handling functions allow you to get keyboard and mouse input from the user, either for turn by turn games (the function wait until the user press a key or a mouse button), or real time games (non blocking function).<br />	<b>WARNING : those functions also handle screen redraw event, so TCODConsole::flush function won't redraw screen if no user input function is called !</b><br />	</p>
 
 </div></div>
 <div class="footer"><div class="footertext">

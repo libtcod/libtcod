@@ -384,7 +384,7 @@ static TCOD_key_t TCOD_sys_SFMLtoTCOD(sfEvent *ev, int flags) {
 	ret.pressed=0;
 	switch (ev->Type) {
 		case sfEvtClosed :
-			TCOD_console_set_window_closed();
+			TCOD_ctx.is_window_closed=true;
 		break;
 		case sfEvtKeyReleased : {
 			TCOD_key_t tmpkey;

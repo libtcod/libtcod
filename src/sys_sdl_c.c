@@ -596,10 +596,6 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 				scale_data.dst_display_height = (scale_data.src_copy_height * scale_data.surface_height) / scale_data.src_proportionate_height;
 				scale_data.dst_offset_x = (scale_data.surface_width - scale_data.dst_display_width)/2;
 				scale_data.dst_offset_y = (scale_data.surface_height - scale_data.dst_display_height)/2;
-				/*__android_log_print(ANDROID_LOG_INFO, "libtcod", );
-				 * printf("FPS: %d\n", TCOD_sys_get_fps());
-				printf("scale_xc %0.3f scale_yc %0.3f scale_factor %0.3f cw %d ch %d\n", scale_xc, scale_yc, scale_factor, console_width_p, console_height_p);
-				printf("SRCxy %d %d SRCwh %d %d DSTxy %d %d DSTwh %d %d REALwh %d %d", scale_data.src_x0, scale_data.src_y0, scale_data.src_copy_width, scale_data.src_copy_height, scale_data.dst_offset_x, scale_data.dst_offset_y, scale_data.dst_display_width, scale_data.dst_display_height, scale_data.surface_width, scale_data.surface_height);*/
 			}
 
 #if SDL_VERSION_ATLEAST(2,0,0)
@@ -1281,10 +1277,13 @@ void TCOD_sys_set_clear_screen() {
 	clear_screen=true;
 }
 
-void TCOD_sys_set_no_scaling() {
-	scale_factor = scale_data.min_scale_factor;
-	scale_xc = 0.5f;
-	scale_yc = 0.5f;
+void TCOD_sys_set_scale_factor(float value) {
+	printf("scale_factor: %0.3f -> %0.3f", scale_factor, value);
+	scale_factor = value;
+	if (scale_factor + 1e-3 < scale_data.min_scale_factor)
+		scale_factor = scale_data.min_scale_factor;
+	else if (scale_factor - 1e-3 > MAX_SCALE_FACTOR)
+		scale_factor = MAX_SCALE_FACTOR;
 }
 
 void TCOD_sys_set_window_title(const char *title) {
@@ -1563,6 +1562,24 @@ static int TCOD_sys_get_touch_finger_index(SDL_FingerID fingerId) {
 	return -1;
 }
 #endif
+
+void TCOD_sys_unproject_screen_coords(int sx, int sy, int *ssx, int *ssy) {
+	*ssx = (scale_data.src_x0 + ((sx - scale_data.dst_offset_x) * scale_data.src_copy_width) / scale_data.dst_display_width);
+	*ssy = (scale_data.src_y0 + ((sy - scale_data.dst_offset_y) * scale_data.src_copy_width) / scale_data.dst_display_width);
+}
+
+void TCOD_sys_convert_console_to_screen_coords(int cx, int cy, int *sx, int *sy) {
+	*sx = scale_data.dst_offset_x + ((cx * TCOD_ctx.font_width - scale_data.src_x0) * scale_data.dst_display_width) / scale_data.src_copy_width;
+	*sy = scale_data.dst_offset_y + ((cy * TCOD_ctx.font_height - scale_data.src_y0) * scale_data.dst_display_height) / scale_data.src_copy_height;
+}
+
+void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy) {
+	int ssx, ssy;
+	TCOD_sys_unproject_screen_coords(sx, sy, &ssx, &ssy);
+	*cx = ssx / TCOD_ctx.font_width;
+	*cy = ssy / TCOD_ctx.font_height;
+}
+
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
@@ -1722,13 +1739,8 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					if (scale_yc - 1e-3f > 1.0f)
 						scale_yc = 1.0f;
 				}
-				if (fabs(scale_adjust - 1.0f) > 1e-3f) {
-					scale_factor *= scale_adjust;
-					if (scale_factor + 1e-3f > MAX_SCALE_FACTOR)
-						scale_factor = MAX_SCALE_FACTOR;
-					else if (scale_factor - 1e-3f < scale_data.min_scale_factor)
-						scale_factor = scale_data.min_scale_factor;
-				}
+				if (fabs(scale_adjust - 1.0f) > 1e-3f)
+					TCOD_sys_set_scale_factor(scale_factor * scale_adjust);
 			}
 
 			/* We need to distinguish between handleable touch events, and short distinct mouse events. */
@@ -1755,15 +1767,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #endif
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
-				SDL_MouseMotionEvent *mme=&ev->motion;
-				float xf = (float)(mme->x - scale_data.dst_offset_x) / scale_data.dst_display_width;
-				float yf = (float)(mme->y - scale_data.dst_offset_y) / scale_data.dst_display_height;
-
-				mouse->x = scale_data.src_x0 + scale_data.src_copy_width * xf;
-				mouse->y = scale_data.src_y0 + scale_data.src_copy_height * yf;
-				mouse->dx += (mme->xrel * scale_data.src_proportionate_width) / scale_data.surface_width;
-				mouse->dy += (mme->yrel * scale_data.src_proportionate_height) / scale_data.surface_height;
-
+				SDL_MouseMotionEvent *mev=&ev->motion;
+				int ssx, ssy;
+				TCOD_sys_unproject_screen_coords(mev->x, mev->y, &mouse->x, &mouse->y);
+				mouse->dx += (mev->xrel * scale_data.src_proportionate_width) / scale_data.surface_width;
+				mouse->dy += (mev->yrel * scale_data.src_proportionate_height) / scale_data.surface_height;
 				mouse->cx = mouse->x / TCOD_ctx.font_width;
 				mouse->cy = mouse->y / TCOD_ctx.font_height;
 				mouse->dcx = mouse->dx / TCOD_ctx.font_width;
@@ -1826,9 +1834,11 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					scale_data.force_recalc = 1;
 				break;
 			}
+#ifdef NDEBUG_HMM
 			default:
 				TCOD_LOG(("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event));
 				break;
+#endif
 			}
 #endif
 		break;

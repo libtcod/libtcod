@@ -482,7 +482,7 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, 
 static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset);
 static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, int y, int initsz, int sz,float offset);
 
-void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rnd) {
+void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rnd, float roughness) {
 	int step = 1;
 	float offset = 1.0f;
 	int initsz = MIN(hm->w,hm->h)-1;
@@ -506,7 +506,7 @@ void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rn
 				setMPDHeight(hm,rnd,diamondx,diamondy,z,offset);
 			}
 		}
-		offset*=0.5f;
+		offset*=roughness;
 		/* square step */
 		for (x=0; x < step; x++ ) {
 			for (y=0; y < step; y++ ) {

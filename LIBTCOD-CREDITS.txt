@@ -34,6 +34,7 @@ Many thanks to everyone who provided feedback and patches, and especially :
 - namor for the FreeBSD cmake support
 - Anylo for putting some of the demos in the cmake compilation
 - Michael De Rosa, Killer_X and Joe Rumsey for their work on OSX port 
+- Denis Belov for fixes on the heightmap toolkit
 - owners of projects using libtcod.
 
 Fonts :

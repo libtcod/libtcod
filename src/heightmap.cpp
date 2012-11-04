@@ -165,10 +165,11 @@ void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,floa
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, agregationCoef, rnd->data);
 }
+#endif
 
 void TCODHeightMap::midPointDeplacement(TCODRandom *rnd) {
 	TCOD_heightmap_t hm={w,h,values};
+	if ( ! rnd ) rnd = TCODRandom::getInstance();
 	TCOD_heightmap_mid_point_deplacement(&hm, rnd->data);
 }
-#endif
 

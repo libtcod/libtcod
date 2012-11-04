@@ -479,16 +479,18 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, int nbCoef, 
 	free(pt);
 }
 
-#if 0
+static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset);
+static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, int y, int initsz, int sz,float offset);
+
 void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rnd) {
 	int step = 1;
 	float offset = 1.0f;
-	int initsz = MIN(hm->w,hm->h);
+	int initsz = MIN(hm->w,hm->h)-1;
 	int sz = initsz;
-	hm->values[0] = TCOD_random_get_float(rnd,0.0f,0.0f);
-	hm->values[sz-1] = TCOD_random_get_float(rnd,0.0f,0.0f);
-	hm->values[(sz-1)*sz] = TCOD_random_get_float(rnd,0.0f,0.0f);
-	hm->values[sz*sz-1] = TCOD_random_get_float(rnd,0.0f,0.0f);
+	hm->values[0] = TCOD_random_get_float(rnd,0.0f,1.0f);
+	hm->values[sz-1] = TCOD_random_get_float(rnd,0.0f,1.0f);
+	hm->values[(sz-1)*sz] = TCOD_random_get_float(rnd,0.0f,1.0f);
+	hm->values[sz*sz-1] = TCOD_random_get_float(rnd,0.0f,1.0f);
 	while (sz > 0) {
 		int x,y;
 		/* diamond step */
@@ -499,7 +501,7 @@ void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rn
 				float z= GET_VALUE(hm,x*sz,y*sz);
 				z += GET_VALUE(hm,(x+1)*sz,y*sz);
 				z += GET_VALUE(hm,(x+1)*sz,(y+1)*sz);
-				z += GET_VALUE(hm,x*sz,(y+1)*sz-1);
+				z += GET_VALUE(hm,x*sz,(y+1)*sz);
 				z *= 0.25f;
 				setMPDHeight(hm,rnd,diamondx,diamondy,z,offset);
 			}
@@ -527,8 +529,7 @@ void TCOD_heightmap_mid_point_deplacement(TCOD_heightmap_t *hm, TCOD_random_t rn
 
 /* private stuff */
 static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset) {
-	if ( z > 0.0f ) z = TCOD_random_get_float(rnd,z+offset*0.8f,z+offset);
-	else z = TCOD_random_get_float(rnd,z,z+offset);
+	z += TCOD_random_get_float(rnd,-offset,offset);
 	GET_VALUE(hm,x,y)=z;
 }
 
@@ -554,5 +555,3 @@ static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, in
 	z /= count;
 	setMPDHeight(hm,rnd,x,y,z,offset);
 }
-#endif
-

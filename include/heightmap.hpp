@@ -474,7 +474,7 @@ public :
 	void getMinMax(float *min, float *max) const;
 
 //	void heatErosion(int nbPass,float minSlope,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
-//	void midPointDeplacement(TCODRandom *rnd);
+	void midPointDeplacement(TCODRandom *rnd);
 	void islandify(float seaLevel,TCODRandom *rnd); // lowers the terrain near the heightmap borders
 	// TODO : checks island connectivity with floodfill
 private :

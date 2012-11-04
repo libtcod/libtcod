@@ -167,9 +167,9 @@ void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,floa
 }
 #endif
 
-void TCODHeightMap::midPointDeplacement(TCODRandom *rnd, float roughness) {
+void TCODHeightMap::midPointDisplacement(TCODRandom *rnd, float roughness) {
 	TCOD_heightmap_t hm={w,h,values};
 	if ( ! rnd ) rnd = TCODRandom::getInstance();
-	TCOD_heightmap_mid_point_deplacement(&hm, rnd->data, roughness);
+	TCOD_heightmap_mid_point_displacement(&hm, rnd->data, roughness);
 }
 

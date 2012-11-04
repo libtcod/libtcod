@@ -1865,6 +1865,9 @@ def heightmap_dig_hill(hm, x, y, radius, height):
     _lib.TCOD_heightmap_dig_hill(hm.p, c_float( x), c_float( y),
                                  c_float( radius), c_float( height))
 
+def heightmap_mid_point_displacement(hm, rng, roughness):
+    _lib.TCOD_heightmap_mid_point_displacement(hm.p, rng, c_float(roughness))
+
 def heightmap_rain_erosion(hm, nbDrops, erosionCoef, sedimentationCoef, rnd=0):
     _lib.TCOD_heightmap_rain_erosion(hm.p, nbDrops, c_float( erosionCoef),
                                      c_float( sedimentationCoef), rnd)

@@ -14,7 +14,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="main"><div class="maintext">
 <h1>14.3. Modifying the heightmap</h1>
 <div id="toc"><ul>
-<li><a href="#0">Add hills</a></li><li><a href="#1">Dig hills</a></li><li><a href="#2">Simulate rain erosion</a></li><li><a href="#3">Do a generic transformation</a></li><li><a href="#4">Add a Voronoi diagram</a></li><li><a href="#5">Add a fbm</a></li><li><a href="#6">Scale with a fbm</a></li><li><a href="#7">Dig along a Bezier curve</a></li></ul></div>
+<li><a href="#0">Add hills</a></li><li><a href="#1">Dig hills</a></li><li><a href="#2">Simulate rain erosion</a></li><li><a href="#3">Do a generic transformation</a></li><li><a href="#4">Add a Voronoi diagram</a></li><li><a href="#5">Add a fbm</a></li><li><a href="#6">Scale with a fbm</a></li><li><a href="#7">Dig along a Bezier curve</a></li><li><a href="#8">Generate a map with mid-point displacement</a></li></ul></div>
 <p>Those are advanced operations involving several or all map cells.<br />	</p>
 <a name="0"></a><h3>Add hills</h3>
 <p>This function adds a hill (a half spheroid) at given position.<br />	</p>
@@ -110,6 +110,15 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <tr><td>startDepth</td><td>The path depth at point P0.<br />	</td></tr>
 <tr class="hilite"><td>endRadius</td><td>The path radius in map cells at point P3. Might be < 1.0<br />	</td></tr>
 <tr><td>endDepth</td><td>The path depth at point P3.<br />	</td></tr>
+</tbody></table><a name="8"></a><h3>Generate a map with mid-point displacement</h3>
+<p>This algorithm generates a realistic fractal heightmap using the <a href="http://en.wikipedia.org/wiki/Diamond-square_algorithm">diamond-square</a> (or random midpoint displacement) algorithm.<br />		The roughness range should be comprised between 0.4 and 0.6. The image below show the same map with roughness varying from 0.4 to 0.6.<br />		<img src="midpoint.png" /><br />		It's also a good habit to normalize the map after using this algorithm to avoid unexpected heights.<br /><br />	</p>
+<div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>midPointDisplacement<span class="code-symbol">(</span>TCODRandom<span class="code-symbol"> *</span>rng<span class="code-symbol">=</span><span class="code-tcod">NULL</span><span class="code-symbol">,</span><span class="code-keyword">float</span> roughness<span class="code-symbol">=</span><span class="code-value">0.45</span>f<span class="code-symbol">)</span></p>
+<p class="c"><span class="code-keyword">void</span> TCOD_heightmap_mid_point_displacement<span class="code-symbol">(</span><span class="code-tcod">TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-tcod"> TCOD_random_t</span> rnd<span class="code-symbol">,</span><span class="code-keyword"> float</span> roughness<span class="code-symbol">)</span></p>
+<p class="py">heightmap_mid_point_displacement<span class="code-symbol">(</span>hm<span class="code-symbol">,</span> rng<span class="code-symbol">,</span> roughness<span class="code-symbol">)</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C and python version, the adress of the heightmap struct returned by the creation function.<br />	</td></tr>
+<tr><td>rng</td><td>Random number generation to use, or NULL/0 to use the default one.<br />	</td></tr>
+<tr class="hilite"><td>roughness</td><td>Map roughness.<br />	</td></tr>
 </tbody></table>
 </div></div>
 <div class="footer"><div class="footertext">

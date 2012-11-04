@@ -4,7 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.5.2 : ?
-+ added mid point deplacement algorithm to the heightmap toolkit
++ added mid point displacement algorithm to the heightmap toolkit
 + added TCODConsole::hasMouseFocus() and TCODConsole::isActive()
 - fixed TCODConsole::waitForKeypress returning for both press and release events (returns only on press)
 - fixed dynamic font switching not working

@@ -1762,6 +1762,8 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 }
 
 void TCOD_sys_get_current_resolution(int *w, int *h) {
+	/* be sure that SDL is initialized */
+	TCOD_sys_startup();
 #if SDL_VERSION_ATLEAST(2,0,0)
 	int displayidx;
 	SDL_Rect rect = { 0, 0, 0, 0 };

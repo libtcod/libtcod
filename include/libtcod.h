@@ -25,8 +25,8 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _TCODLIB_H
-#define _TCODLIB_H
+#ifndef _LIBTCOD_H
+#define _LIBTCOD_H
 
 /* uncomment to disable unicode support */
 /*#define NO_UNICODE */
@@ -50,7 +50,9 @@
    TCOD_WIN64 : 64 bits Windows
    TCOD_WIN32 : 32 bits Windows
    TCOD_LINUX64 : 64 bits Linux
-   TCOD_LINUX32 : 32 bits Linux */
+   TCOD_LINUX32 : 32 bits Linux
+   TCOD_FREEBSD64 : 64 bits FreeBSD
+   TCOD_FREEBSD32 : 32 bits FreeBSD */
 
 #if defined( _MSC_VER )
 #  define TCOD_VISUAL_STUDIO
@@ -171,7 +173,7 @@ char *strcasestr (const char *haystack, const char *needle);
 #define MIN(a,b) ((a)>(b)?(b):(a))
 #define ABS(a) ((a)<0?-(a):(a))
 #define CLAMP(a, b, x)		((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
-#define LERP(a, b, x) ( a + x * (b - a) )
+#define LERP(a, b, x) ( (a) + (x) * ((b) - (a)) )
 
 #include "list.h"
 #include "color.h"

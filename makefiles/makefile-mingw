@@ -25,21 +25,28 @@ CPP=mingw32-g++
 UPX=dependencies/upx/win/upx.exe
 .SUFFIXES: .dll .a .o .h .c .hpp .cpp
 
-
+#compilation rules
 $(TEMP)/libtcod/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -g -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+	@echo Compiling debug $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -g -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+	@echo Compiling debug $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+	@ echo Compiling debug $(basename $<).c
+	@$(CC) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+	@ echo Compiling release $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+	@ echo Compiling release $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+	@ echo Compiling release $(basename $<).c
+	@$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/zlib/%.o : $(SRCDIR)/zlib/%.c
-	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
+	@ echo Compiling zlib $(basename $<).c
+	@$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
 
 ZLIBOBJS=$(addprefix $(TEMP)/libtcod/zlib/, \
 	adler32.o \
@@ -135,46 +142,51 @@ release : libtcod-mingw.dll libtcod-gui-mingw.dll upx
 debug : libtcod-mingw-debug.dll libtcod-gui-mingw-debug.dll
 
 $(TEMP)/libtcod/debug/png :
-	mkdir -p $@
+	@mkdir -p $@
 
 $(TEMP)/libtcod/debug/gui :
-	mkdir -p $@
+	@mkdir -p $@
 
 $(TEMP)/libtcod/release/png :
-	mkdir -p $@
+	@mkdir -p $@
 
 $(TEMP)/libtcod/release/gui :
-	mkdir -p $@
+	@mkdir -p $@
 
 $(TEMP)/libtcod/zlib :
-	mkdir -p $@
+	@mkdir -p $@
 
 lib/ :
-	mkdir -p $@
+	@mkdir -p $@
 
 libtcod-mingw.a : $(LIBOBJS_DEBUG)
-	ar r $@ $(LIBOBJS_DEBUG)
+	@ar r $@ $(LIBOBJS_DEBUG)
 
 lib/libz.a : $(TEMP)/libtcod/zlib $(ZLIBOBJS)
-	ar r $@ $(ZLIBOBJS)
+	@ar r $@ $(ZLIBOBJS)
 	
 libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE) lib/libz.a
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
 libtcod-gui-mingw.dll : lib/ $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE) lib/libz.a
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
 
 libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG) lib/libz.a
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
 libtcod-gui-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG) lib/libz.a
-	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
 
 upx :
-	$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll
+	@echo Compressing...
+	@$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll
 
 clean :
-	rm -f $(LIBOBJS_RELEASE) $(GUIOBJS_RELEASE) libtcod-mingw.dll lib/libtcod-mingw.a libtcod-gui-mingw.dll lib/libtcod-gui-mingw.a libtcodpy.pyc $(LIBOBJS_DEBUG) $(GUIOBJS_DEBUG) libtcod-mingw-debug.dll lib/libtcod-mingw-debug.a libtcod-gui-mingw-debug.dll lib/libtcod-gui-mingw-debug.a 
+	@rm -f $(LIBOBJS_RELEASE) $(GUIOBJS_RELEASE) libtcod-mingw.dll lib/libtcod-mingw.a libtcod-gui-mingw.dll lib/libtcod-gui-mingw.a libtcodpy.pyc $(LIBOBJS_DEBUG) $(GUIOBJS_DEBUG) libtcod-mingw-debug.dll lib/libtcod-mingw-debug.a libtcod-gui-mingw-debug.dll lib/libtcod-gui-mingw-debug.a 
 
 cleanall : clean
-	rm -f $(ZLIBOBJS)
+	@rm -f $(ZLIBOBJS)

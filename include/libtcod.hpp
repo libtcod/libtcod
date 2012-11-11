@@ -25,8 +25,8 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _TCODLIB_HPP
-#define _TCODLIB_HPP
+#ifndef _LIBTCOD_HPP
+#define _LIBTCOD_HPP
 
 #include "libtcod.h"
 #include "list.hpp"

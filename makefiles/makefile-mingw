@@ -11,9 +11,9 @@ SDL_FLAGS=-I $(SDL_DIR)/include
 SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL.dll
 
 # ZLIB
-ZLIB_DIR=dependencies/zlib-1.2.3
-ZLIB_FLAGS=-I $(ZLIB_DIR)/include
-ZLIB_LIBS=$(ZLIB_DIR)/lib/mingw/libz.a
+ZLIB_DIR=lib
+ZLIB_FLAGS=-I src/zlib
+ZLIB_LIBS=lib/libz.a
 
 # OPENGL
 OPENGL_LIB=-lopengl32
@@ -38,6 +38,25 @@ $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
 	$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
 $(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/zlib/%.o : $(SRCDIR)/zlib/%.c
+	$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
+
+ZLIBOBJS=$(addprefix $(TEMP)/libtcod/zlib/, \
+	adler32.o \
+	crc32.o \
+	deflate.o \
+	infback.o \
+	inffast.o \
+	inflate.o \
+	inftrees.o \
+	trees.o \
+	zutil.o \
+	compress.o \
+	uncompr.o \
+	gzclose.o \
+	gzlib.o \
+	gzread.o \
+	gzwrite.o )
 
 LIBOBJS= \
 	bresenham_c.o \
@@ -127,22 +146,28 @@ $(TEMP)/libtcod/release/png :
 $(TEMP)/libtcod/release/gui :
 	mkdir -p $@
 
+$(TEMP)/libtcod/zlib :
+	mkdir -p $@
+
 lib/ :
 	mkdir -p $@
 
 libtcod-mingw.a : $(LIBOBJS_DEBUG)
 	ar r $@ $(LIBOBJS_DEBUG)
+
+lib/libz.a : $(TEMP)/libtcod/zlib $(ZLIBOBJS)
+	ar r $@ $(ZLIBOBJS)
 	
-libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE)
+libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE) lib/libz.a
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
-libtcod-gui-mingw.dll : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
+libtcod-gui-mingw.dll : lib/ $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE) lib/libz.a
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
 
-libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG)
+libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG) lib/libz.a
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
-libtcod-gui-mingw-debug.dll : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
+libtcod-gui-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG) lib/libz.a
 	$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
 
 upx :
@@ -151,3 +176,5 @@ upx :
 clean :
 	rm -f $(LIBOBJS_RELEASE) $(GUIOBJS_RELEASE) libtcod-mingw.dll lib/libtcod-mingw.a libtcod-gui-mingw.dll lib/libtcod-gui-mingw.a libtcodpy.pyc $(LIBOBJS_DEBUG) $(GUIOBJS_DEBUG) libtcod-mingw-debug.dll lib/libtcod-mingw-debug.a libtcod-gui-mingw-debug.dll lib/libtcod-gui-mingw-debug.a 
 
+cleanall : clean
+	rm -f $(ZLIBOBJS)

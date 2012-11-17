@@ -10,7 +10,7 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('image.html')">5. Image toolkit</a> &gt; <a onclick="link('image_create.html')">5.1. Creating an image</a><br>
  <a class="next" onclick="link('image_read.html')">5.2. Reading data from a TCODImage</a>
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>5.1. Creating an image</h1>
 <div id="toc"><ul>
@@ -20,7 +20,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODImage<span class="code-symbol">::</span>TCODImage<span class="code-symbol">(</span><span class="code-keyword">int</span> width<span class="code-symbol">,</span><span class="code-keyword"> int</span> height<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_image_new<span class="code-symbol">(</span><span class="code-keyword">int</span> width<span class="code-symbol">,</span><span class="code-keyword"> int</span> height<span class="code-symbol">)</span></p>
 <p class="py">image_new<span class="code-symbol">(</span> width<span class="code-symbol">,</span> height<span class="code-symbol">)</span></p>
-<p class="cs">TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODImage<span class="code-symbol">(</span><span class="code-keyword">int</span> width<span class="code-symbol">,</span><span class="code-keyword"> int</span> height<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>width,height</td><td>Size of the image in pixels.<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
@@ -33,7 +32,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODImage<span class="code-symbol">::</span>TCODImage<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_image_load<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>filename<span class="code-symbol">)</span></p>
 <p class="py">image_load<span class="code-symbol">(</span>filename<span class="code-symbol">)</span></p>
-<p class="cs">TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODImage<span class="code-symbol">(</span><span class="code-keyword">string</span> filename<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>filename</td><td>Name of the .bmp or .png file to load.<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
@@ -46,7 +44,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODImage<span class="code-symbol">::</span>TCODImage<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODConsole<span class="code-symbol"> *</span>console<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_image_from_console<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> console<span class="code-symbol">)</span></p>
 <p class="py">image_from_console<span class="code-symbol">(</span>console<span class="code-symbol">)</span></p>
-<p class="cs">TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODImage<span class="code-symbol">(</span>TCODConsole console<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>console</td><td>The console to convert. In the C version, use NULL for the root console.<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
@@ -59,7 +56,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>refreshConsole<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODConsole<span class="code-symbol"> *</span>console<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_image_refresh_console<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-tcod"> TCOD_console_t</span> console<span class="code-symbol">)</span></p>
 <p class="py">image_refresh_console<span class="code-symbol">(</span>image<span class="code-symbol">,</span> console<span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">:</span><span class="code-symbol">:</span>refreshConsole<span class="code-symbol">(</span>TCODConsole console<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C version, the image created with TCOD_image_from_console.<br />	</td></tr>
 <tr><td>console</td><td>The console to capture. In the C version, use NULL for the root console.<br />	</td></tr>

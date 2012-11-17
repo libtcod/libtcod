@@ -40,12 +40,13 @@ Classic real time game loop:
 		TCODConsole::initRoot(80,50,"my game",false);
 		TCODSystem::setFps(25); // limit framerate to 25 frames per second
 		while (!endGame && !TCODConsole::isWindowClosed()) {
-			// ... draw on TCODConsole::root
-			TCODConsole::flush();
-			TCOD_key_t key = TCODConsole::checkForKeypress();
+			TCOD_key_t key;
+			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
 			updateWorld (key, TCODSystem::getLastFrameLength());
 			// updateWorld(TCOD_key_t key, float elapsed) (using key if key.vk != TCODK_NONE)
 			// use elapsed to scale any update that is time dependant.
+			// ... draw world+GUI on TCODConsole::root
+			TCODConsole::flush();
 		}
 	@Lua
 		tcod.console.initRoot(80,50,"my game", false)
@@ -67,7 +68,8 @@ Classic real time game loop:
 		while (!endGame && !TCODConsole::isWindowClosed()) {
 			// ... draw on TCODConsole::root
 			TCODConsole::flush();
-			TCOD_key_t key = TCODConsole::waitForKeypress(true);
+			TCOD_key_t key;
+			TCODConsole::waitForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL,true);
 			//... update world, using key
 		}
 */
@@ -268,15 +270,18 @@ public :
 	@Param fullscreen true to switch to fullscreen mode.
 		false to switch to windowed mode.
 	@CppEx
-		TCOD_key_t key=TCODConsole::checkForKeypress();
+		TCOD_key_t key;
+		TCODConsole::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
 		if ( key.vk == TCODK_ENTER && key.lalt )
 			TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
 	@CEx
-		TCOD_key_t key=TCOD_console_check_for_keypress();
+		TCOD_key_t key;
+		TCOD_console_check_for_event(TCOD_EVENT_KEY_PRESS,&key,NULL);
 		if ( key.vk == TCODK_ENTER && key.lalt )
 			TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
 	@PyEx
-		key=libtcod.console_check_for_keypress()
+		key=Key()
+		libtcod.console_check_for_event(libtcod.EVENT_KEY_PRESS,key,0)
 		if key.vk == libtcod.KEY_ENTER and key.lalt :
 			libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 	@LuaEx
@@ -1300,7 +1305,7 @@ public :
 	@PageName console_non_blocking_input
 	@PageTitle Non blocking user input
 	@PageFather console_input
-	@FuncDesc You can also get the status of any special key at any time with :
+	@FuncDesc The prefered way to check for user input is to use checkForEvent below, but you can also get the status of any special key at any time with :
 	@Cpp static bool TCODConsole::isKeyPressed(TCOD_keycode_t key)
 	@C bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
 	@Py console_is_key_pressed(key)
@@ -1409,7 +1414,7 @@ public :
 	@PageFather console_input
 	@PageDesc TCOD_keycode_t is a libtcod specific code representing a key on the keyboard.
 		For python, replace TCODK by KEY: libtcod.KEY_NONE. C# and Lua, the value is in parenthesis. Possible values are :
-		When no key was pressed (see checkForKeypress) : TCOD_NONE (NoKey)
+		When no key was pressed (see checkForEvent) : TCOD_NONE (NoKey)
 		Special keys :
 		TCODK_ESCAPE (Escape)
 		TCODK_BACKSPACE (Backspace)

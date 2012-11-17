@@ -98,7 +98,7 @@ struct Config {
 	bool generateLua;
 };
 
-Config config = {true,true,true,true,true};
+Config config = {true,true,true,false,false};
 TCODList<PageData *> pages;
 // root page corresponding to index.html
 PageData *root=NULL;
@@ -882,9 +882,9 @@ void genPageDocFromTemplate(PageData *page) {
 	 	} else if ( strncmp(pageTpl,"${FILTER_FORM}",14) == 0 ) {
 			printLanguageFilterForm(f,"c","C",config.generateC);
 			printLanguageFilterForm(f,"cpp","C++",config.generateCpp);
-			printLanguageFilterForm(f,"cs","C#",config.generateCs);
 			printLanguageFilterForm(f,"py","Py",config.generatePy);
 			printLanguageFilterForm(f,"lua","Lua",config.generateLua);
+			printLanguageFilterForm(f,"cs","C#",config.generateCs);
 			pageTpl+=14;
 		} else if ( strncmp(pageTpl,"${PREV_LINK}",12) == 0 ) {
 			// prev page link

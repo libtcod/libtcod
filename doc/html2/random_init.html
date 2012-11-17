@@ -10,7 +10,7 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('random.html')">7. Pseudorandom number generator</a> &gt; <a onclick="link('random_init.html')">7.1. Creating a generator</a><br>
  <a class="next" onclick="link('random_distro.html')">7.2. Using a generator</a>
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>7.1. Creating a generator</h1>
 <div id="toc"><ul>
@@ -20,7 +20,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp"><span class="code-keyword">static</span> TCODRandom<span class="code-symbol"> *</span> TCODRandom<span class="code-symbol">::</span>getInstance<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_get_instance<span class="code-symbol"> (</span><span class="code-keyword">void</span><span class="code-symbol">)</span></p>
 <p class="py">random_get_instance<span class="code-symbol"> (</span><span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">static</span> TCODRandom TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>getInstance<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>algo</td><td>The PRNG algorithm the generator should be using. Possible values are:<br />			* TCOD_RNG_MT for Mersenne Twister,<br />			* TCOD_RNG_CMWC for Complementary Multiply-With-Carry.<br />		</td></tr>
 </tbody></table><a name="1"></a><h3>Generators with random seeds</h3>
@@ -28,7 +27,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span>TCODRandom<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_RNG_CMWC</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_new<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol">)</span></p>
 <p class="py">random_new<span class="code-symbol"> (</span>algo<span class="code-symbol"> =</span><span class="code-tcod"> RNG_CMWC</span><span class="code-symbol">)</span></p>
-<p class="cs">TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span><span class="code-comment"> // Defaults to ComplementaryMultiplyWithCarry<br /></span>TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>TCODRandomType algo<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>algo</td><td>The PRNG algorithm the generator should be using.<br />		</td></tr>
 </tbody></table><a name="2"></a><h3>Generators with user defined seeds</h3>
@@ -36,7 +34,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span>TCODRandom<span class="code-symbol"> (</span><span class="code-keyword">uint32</span> seed<span class="code-symbol">,</span><span class="code-tcod"> TCOD_random_algo_t</span> algo<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_RNG_CMWC</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
 <p class="c"><span class="code-tcod">TCOD_random_t</span> TCOD_random_new_from_seed<span class="code-symbol"> (</span><span class="code-tcod">TCOD_random_algo_t</span> algo<span class="code-symbol">,</span><span class="code-keyword"> uint32</span> seed<span class="code-symbol">)</span><span class="code-symbol">;</span></p>
 <p class="py">random_new_from_seed<span class="code-symbol">(</span>seed<span class="code-symbol">,</span> algo<span class="code-symbol">=</span><span class="code-tcod">RNG_CMWC</span><span class="code-symbol">)</span></p>
-<p class="cs">TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>uint32 seed<span class="code-symbol">)</span><span class="code-comment"> // Defaults to ComplementaryMultiplyWithCarry<br /></span>TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODRandom<span class="code-symbol">(</span>uint32 seed<span class="code-symbol">,</span> TCODRandomType algo<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>seed</td><td>The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.<br />		</td></tr>
 <tr><td>algo</td><td>The PRNG algorithm the generator should be using.<br />		</td></tr>
@@ -50,7 +47,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODRandom<span class="code-symbol">::</span><span class="code-symbol">~</span>TCODRandom<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_random_delete<span class="code-symbol">(</span><span class="code-tcod">TCOD_random_t</span> mersenne<span class="code-symbol">)</span></p>
 <p class="py">random_delete<span class="code-symbol">(</span>mersenne<span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">void</span> TCODRandom<span class="code-symbol">:</span><span class="code-symbol">:</span>Dispose<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>mersenne</td><td>In the C and Python versions, the generator handler, returned by the initialization functions.<br />		</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">

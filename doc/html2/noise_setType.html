@@ -10,7 +10,7 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('noise.html')">9. Noise generator</a> &gt; <a onclick="link('noise_setType.html')">9.2. Choosing a noise type</a><br>
 <a class="prev" onclick="link('noise_init.html')">9.1. Creating a noise generator</a> | <a class="next" onclick="link('noise_get.html')">9.3. Getting flat noise</a>
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>9.2. Choosing a noise type</h1>
 <a name="0"></a><h3>Choosing a noise type</h3>
@@ -18,7 +18,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODNoise<span class="code-symbol">::</span>setType<span class="code-symbol">(</span><span class="code-tcod">TCOD_noise_type_t</span> type<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_noise_set_type<span class="code-symbol">(</span><span class="code-tcod">TCOD_noise_t</span> noise<span class="code-symbol">,</span><span class="code-tcod"> TCOD_noise_type_t</span> type<span class="code-symbol">)</span></p>
 <p class="py">noise_set_type<span class="code-symbol">(</span>noise<span class="code-symbol">,</span> type<span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">void</span> TCODNoise<span class="code-symbol">:</span><span class="code-symbol">:</span>setType<span class="code-symbol">(</span>type<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>noise</td><td>In the C version, the generator handler, returned by the initialization function.<br />		</td></tr>
 <tr><td>type</td><td>The algorithm to use, either TCOD_NOISE_SIMPLEX, TCOD_NOISE_PERLIN or TCOD_NOISE_WAVELET.<br />		</td></tr>

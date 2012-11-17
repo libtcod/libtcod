@@ -10,7 +10,7 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('heightmap.html')">14. Heightmap toolkit</a> &gt; <a onclick="link('heightmap_init.html')">14.1. Creating a heightmap</a><br>
  <a class="next" onclick="link('heightmap_base.html')">14.2. Basic operations</a>
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>14.1. Creating a heightmap</h1>
 <div id="toc"><ul>
@@ -20,7 +20,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODHeightMap<span class="code-symbol">::</span>TCODHeightMap<span class="code-symbol">(</span><span class="code-keyword">int</span> w<span class="code-symbol">,</span><span class="code-keyword"> int</span> h<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">typedef</span><span class="code-keyword"> struct</span><span class="code-symbol"> {</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;int</span> w<span class="code-symbol">,</span>h<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;&nbsp;&nbsp;float</span><span class="code-symbol"> *</span>values<span class="code-symbol">;</span><span class="code-symbol"><br />}</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol">;</span><span class="code-tcod"><br />TCOD_heightmap_t</span><span class="code-symbol"> *</span>TCOD_heightmap_new<span class="code-symbol">(</span><span class="code-keyword">int</span> w<span class="code-symbol">,</span><span class="code-keyword">int</span> h<span class="code-symbol">)</span></p>
 <p class="py">heightmap_new<span class="code-symbol">(</span>w<span class="code-symbol">,</span>h<span class="code-symbol">)</span></p>
-<p class="cs">TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>TCODHeightMap<span class="code-symbol">(</span><span class="code-keyword">int</span> w<span class="code-symbol">,</span><span class="code-keyword"> int</span> h<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>w,h</td><td>The width and height of the heightmap.<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
@@ -33,7 +32,6 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="code"><p class="cpp">TCODHeightMap<span class="code-symbol">::</span><span class="code-symbol">~</span>TCODHeightMap<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_heightmap_delete<span class="code-symbol">(</span><span class="code-tcod">TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">)</span></p>
 <p class="py">heightmap_delete<span class="code-symbol">(</span>hm<span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">:</span><span class="code-symbol">:</span>Dispose<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>hm</td><td>In the C version, the address of the heightmap struct returned by the creation function.<br />	</td></tr>
 </tbody></table>

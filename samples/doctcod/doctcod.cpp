@@ -34,7 +34,7 @@
 #include "libtcod.hpp"
 
 // index.html categories
-static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", NULL };
+static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", "Howtos", NULL };
 
 // a function parameter
 struct ParamData {
@@ -528,6 +528,11 @@ void parseFile(char *filename) {
 	    			directive = getParagraph(directive+sizeof("@PageDesc"),&curPage->desc);
 	    		} else if ( startsWith(directive,"@PageFather") ) {
 	    			directive = getIdentifier(directive+sizeof("@PageFather"),&curPage->fatherName);
+	    			if ( strcmp(curPage->fatherName,curPage->name) == 0 ) {
+	    				printf ("ERROR : file %s : page %s is its own father\n", filename,
+	    					curPage->name);
+	    				exit(1);
+	    			}
 	    		} else if ( startsWith(directive,"@PageCategory") ) {
 	    			directive = getLineEnd(directive+sizeof("@PageCategory"),&curPage->categoryName);
 	    		} else if ( startsWith(directive,"@FuncTitle") ) {

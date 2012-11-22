@@ -922,9 +922,9 @@ def console_fill_foreground(con,r,g,b) :
     if (numpy_available and isinstance(r, numpy.ndarray) and
         isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
         #numpy arrays, use numpy's ctypes functions
-        r = numpy.ascontiguousarray(r, dtype=numpy.int_)
-        g = numpy.ascontiguousarray(g, dtype=numpy.int_)
-        b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+        r = numpy.ascontiguousarray(r, dtype=numpy.int32)
+        g = numpy.ascontiguousarray(g, dtype=numpy.int32)
+        b = numpy.ascontiguousarray(b, dtype=numpy.int32)
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
@@ -943,9 +943,9 @@ def console_fill_background(con,r,g,b) :
     if (numpy_available and isinstance(r, numpy.ndarray) and
         isinstance(g, numpy.ndarray) and isinstance(b, numpy.ndarray)):
         #numpy arrays, use numpy's ctypes functions
-        r = numpy.ascontiguousarray(r, dtype=numpy.int_)
-        g = numpy.ascontiguousarray(g, dtype=numpy.int_)
-        b = numpy.ascontiguousarray(b, dtype=numpy.int_)
+        r = numpy.ascontiguousarray(r, dtype=numpy.int32)
+        g = numpy.ascontiguousarray(g, dtype=numpy.int32)
+        b = numpy.ascontiguousarray(b, dtype=numpy.int32)
         cr = r.ctypes.data_as(POINTER(c_int))
         cg = g.ctypes.data_as(POINTER(c_int))
         cb = b.ctypes.data_as(POINTER(c_int))
@@ -960,7 +960,7 @@ def console_fill_background(con,r,g,b) :
 def console_fill_char(con,arr) :
     if (numpy_available and isinstance(arr, numpy.ndarray) ):
         #numpy arrays, use numpy's ctypes functions
-        arr = numpy.ascontiguousarray(arr, dtype=numpy.int_)
+        arr = numpy.ascontiguousarray(arr, dtype=numpy.int32)
         carr = arr.ctypes.data_as(POINTER(c_int))
     else:
         #otherwise convert using the struct module

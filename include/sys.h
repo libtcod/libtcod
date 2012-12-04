@@ -45,6 +45,7 @@ TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 TCODLIB_API void *TCOD_sys_get_sdl_window();
 
 typedef enum {
+  TCOD_EVENT_NONE=0,
   TCOD_EVENT_KEY_PRESS=1,
   TCOD_EVENT_KEY_RELEASE=2,
   TCOD_EVENT_KEY=TCOD_EVENT_KEY_PRESS|TCOD_EVENT_KEY_RELEASE,

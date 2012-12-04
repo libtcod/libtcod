@@ -152,6 +152,7 @@ public :
 		The return value indicate what event was actually triggered. Values in key and mouse structures are updated accordingly.
 		If flush is false, the function waits only if there are no pending events, else it returns the first event in the buffer.
 	@Cpp typedef enum {
+		TCOD_EVENT_NONE=0,
 		TCOD_EVENT_KEY_PRESS=1,
 		TCOD_EVENT_KEY_RELEASE=2,
 		TCOD_EVENT_KEY=TCOD_EVENT_KEY_PRESS|TCOD_EVENT_KEY_RELEASE,

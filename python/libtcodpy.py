@@ -1040,6 +1040,7 @@ def sys_register_SDL_renderer(callback):
     _lib.TCOD_sys_register_SDL_renderer(sdl_renderer_func)
 
 # events
+EVENT_NONE=0
 EVENT_KEY_PRESS=1
 EVENT_KEY_RELEASE=2
 EVENT_KEY=EVENT_KEY_PRESS|EVENT_KEY_RELEASE

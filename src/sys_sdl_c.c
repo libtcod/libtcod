@@ -479,7 +479,7 @@ static void actual_rendering() {
 	SDL_Texture *texture;
 #endif
 
-	if (scale_data.min_scale_factor + 1e-3f > scale_factor) {
+	if (scale_data.min_scale_factor - 1e-3f > scale_factor) {
 		/* Prepare for the unscaled and centered copy of the entire console. */
 		srcRect.x=0; srcRect.y=0; srcRect.w=scale_screen->w; srcRect.h=scale_screen->h;
 		if (TCOD_ctx.fullscreen) {
@@ -568,6 +568,9 @@ static void TCOD_sys_render(void *vbitmap, int console_width, int console_height
 					scale_data.surface_height = console_height_p;
 				}
 				scale_data.min_scale_factor = MAX((float)console_width_p/scale_data.surface_width, (float)console_height_p/scale_data.surface_height);
+				if (scale_data.min_scale_factor > 1.0f)
+					scale_data.min_scale_factor = 1.0f;
+				/*printf("min_scale_factor %0.3f = MAX(%d/%d, %d/%d)", scale_data.min_scale_factor, console_width_p, scale_data.surface_width, console_height_p, scale_data.surface_height);*/
 
 				scale_data.dst_height_width_ratio = (float)scale_data.surface_height/scale_data.surface_width;
 				scale_data.src_proportionate_width = (int)(console_width_p / scale_factor);
@@ -1278,12 +1281,13 @@ void TCOD_sys_set_clear_screen() {
 }
 
 void TCOD_sys_set_scale_factor(float value) {
-	printf("scale_factor: %0.3f -> %0.3f", scale_factor, value);
+	float old_scale_factor = scale_factor;
 	scale_factor = value;
 	if (scale_factor + 1e-3 < scale_data.min_scale_factor)
 		scale_factor = scale_data.min_scale_factor;
 	else if (scale_factor - 1e-3 > MAX_SCALE_FACTOR)
 		scale_factor = MAX_SCALE_FACTOR;
+	printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);
 }
 
 void TCOD_sys_set_window_title(const char *title) {

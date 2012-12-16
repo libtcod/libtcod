@@ -106,12 +106,8 @@ bool TCOD_sys_delete_directory(const char *path) {
 
 bool TCOD_sys_is_directory(const char *path) {
 #ifdef TCOD_WINDOWS
-	HANDLE hList=FindFirstFile(path,NULL);
-	if ( hList != INVALID_HANDLE_VALUE ) {
-		FindClose(hList);
-		return true;
-	}
-	return false;
+	DWORD type=GetFileAttributes(path);
+	return ( type & FILE_ATTRIBUTE_DIRECTORY) != 0 ;
 #else
 	DIR *d=opendir(path);
 	if ( d ) { closedir(d); return true; }

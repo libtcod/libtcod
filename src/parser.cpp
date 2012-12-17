@@ -142,6 +142,10 @@ void TCODParser::error(const char *msg, ...) {
 
 // default parser
 
+bool TCODParser::hasProperty(const char *name) const {
+	return TCOD_parser_has_property(data,name) != 0;
+}
+
 bool TCODParser::getBoolProperty(const char *name) const {
 	return TCOD_parser_get_bool_property(data,name) != 0;
 }

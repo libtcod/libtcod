@@ -201,6 +201,7 @@ public :
 	#pragma warning(default: 4251)
 #endif
 
+	bool hasProperty(const char *name) const;
 	bool getBoolProperty(const char *name) const;
 	int getIntProperty(const char *name) const;
 	int getCharProperty(const char *name) const;

@@ -1209,6 +1209,7 @@ def mouse_get_status():
 ############################
 _lib.TCOD_struct_get_name.restype = c_char_p
 _lib.TCOD_struct_is_mandatory.restype = c_bool
+_lib.TCOD_parser_has_property.restype = c_bool
 _lib.TCOD_parser_get_bool_property.restype = c_bool
 _lib.TCOD_parser_get_float_property.restype = c_float
 _lib.TCOD_parser_get_string_property.restype = c_char_p
@@ -1369,6 +1370,9 @@ def parser_run(parser, filename, listener=0):
 
 def parser_delete(parser):
     _lib.TCOD_parser_delete(parser)
+
+def parser_has_property(parser, name):
+    return _lib.TCOD_parser_has_property(parser, c_char_p(name))
 
 def parser_get_bool_property(parser, name):
     return _lib.TCOD_parser_get_bool_property(parser, c_char_p(name))

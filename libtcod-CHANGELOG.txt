@@ -6,6 +6,8 @@ X API break
 1.5.2 : ?
 + added mid point displacement algorithm to the heightmap toolkit
 + added TCODConsole::hasMouseFocus() and TCODConsole::isActive()
++ added TCODParser::hasProperty to check if a property is defined when
+  using the default parser
 - fixed TCODConsole::waitForKeypress returning for both press and release events (returns only on press)
 - fixed dynamic font switching not working
 - fixed TCOD_image_blit_rect not working with odd width/height

@@ -863,6 +863,19 @@ static const TCOD_value_t * TCOD_get_property(TCOD_parser_t parser, TCOD_value_t
 	return NULL;
 }
 
+bool TCOD_parser_has_property(TCOD_parser_t parser, const char *name) {
+	void **it;
+	TCOD_parser_int_t *p=(TCOD_parser_int_t *)parser;
+	if (! p->props ) return false;
+	for (it=TCOD_list_begin(p->props);it!=TCOD_list_end(p->props);it++) {
+		prop_t *prop=*((prop_t **)it);
+		if (strcmp(prop->name,name) == 0 ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name) {
 	const TCOD_value_t *value=TCOD_get_property(parser,TCOD_TYPE_BOOL,name);
 	return value ? value->b : false;

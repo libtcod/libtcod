@@ -33,9 +33,11 @@
 class TCODLIB_API TCODText {
 public :
 	TCODText(int x, int y, int w, int h, int max_chars);
+	TCODText(int w, int h, int max_chars);
 	~TCODText();
 	void setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size);
 	void setColors(TCODColor fore, TCODColor back, float back_transparency);
+	void setPos(int x, int y);
 	bool update(TCOD_key_t key);
 	void render(TCODConsole * con);
 	const char *getText();

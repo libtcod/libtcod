@@ -93,7 +93,24 @@
 	@PageName compile_libtcod_linux
 	@PageFather compile_libtcod
 	@PageTitle On Linux
-	@PageDesc TODO
+	@PageDesc  <h4>Linux compilation</h4>
+	On a freshly installed Ubuntu :
+	Get the tools :
+	<pre name="code" class="brush: bash">sudo apt-get install gcc g++ make upx electric-fence libsdl1.2-dev mercurial</pre>
+
+	Get the latest sources :
+	<pre name="code" class="brush: bash">hg clone https://bitbucket.org/jice/libtcod</pre>
+
+	Compile the library :
+	<pre name="code" class="brush: bash">cd libtcod/</pre>
+	<pre name="code" class="brush: bash">make -f makefiles/makefile-linux clean all</pre>
+	(or makefile-linux64 on 64 bits linux)
+
+	Compile the samples :
+	<pre name="code" class="brush: bash">make -f makefiles/makefile-samples-linux</pre>
+
+	Enjoy :
+	<pre name="code" class="brush: bash">./samples_cpp</pre>
 */
 
 /**
@@ -113,7 +130,7 @@
 /**
 	@PageName start_project
 	@PageCategory Howtos
-	@PageTitle On to start a project
+	@PageTitle How to start a project
 	@PageDesc This page contains howtos about how to create a project from scratch
 */
 

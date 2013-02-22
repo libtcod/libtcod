@@ -1119,11 +1119,15 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_ho
 }
 
 void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
 }
 
 void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
 	int c;
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_IFNOT(asciiCode >= 0 && asciiCode+nbCodes <= TCOD_ctx.max_font_chars) return;
 	for (c=asciiCode; c < asciiCode+nbCodes; c++ ) {
 		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
@@ -1137,6 +1141,8 @@ void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCh
 
 void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
 	TCOD_IFNOT(s != NULL) return;
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	while (*s) {
 		TCOD_console_map_ascii_code_to_font(*s, fontCharX, fontCharY);
 		fontCharX++;

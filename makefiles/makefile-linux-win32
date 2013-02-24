@@ -171,7 +171,7 @@ libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE) lib/libz
 	@echo Linking $@
 	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
-libtcod-gui-mingw.dll : lib/ $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE) lib/libz.a
+libtcod-gui-mingw.dll : lib/ $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
 	@echo Linking $@
 	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
 
@@ -179,7 +179,7 @@ libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG) lib/li
 	@echo Linking $@
 	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
 
-libtcod-gui-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG) lib/libz.a
+libtcod-gui-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
 	@echo Linking $@
 	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
 

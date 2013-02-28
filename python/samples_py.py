@@ -611,10 +611,10 @@ def render_fov(first, key, mouse):
         fov_torchx += 0.2
         # randomize the light position between -1.5 and 1.5
         tdx = [fov_torchx + 20.0]
-        dx = libtcod.noise_simplex(noise,tdx) * 1.5
+        dx = libtcod.noise_get(noise, tdx, libtcod.NOISE_SIMPLEX) * 1.5
         tdx[0] += 30.0
-        dy = libtcod.noise_simplex(noise,tdx) * 1.5
-        di = 0.2 * libtcod.noise_simplex(noise, [fov_torchx])
+        dy = libtcod.noise_get(noise, tdx, libtcod.NOISE_SIMPLEX) * 1.5
+        di = 0.2 * libtcod.noise_get(noise, [fov_torchx], libtcod.NOISE_SIMPLEX)
     for y in range(SAMPLE_SCREEN_HEIGHT):
         for x in range(SAMPLE_SCREEN_WIDTH):
             visible = libtcod.map_is_in_fov(fov_map, x, y)

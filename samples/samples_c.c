@@ -10,14 +10,16 @@
 #include <stdlib.h> /* for NULL */
 #include <string.h>
 #include <stdio.h>
-#include <math.h>
 #include "libtcod.h"
 #define _SDL_main_h
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
+#elif defined(TCOD_SDL2)
+#include <SDL2/SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
+#include <math.h>
 
 
 /* a sample has a name and a rendering function */
@@ -628,14 +630,16 @@ void render_mouse(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
   if ( mouse->rbutton_pressed ) rbut=!rbut;
   if ( mouse->mbutton_pressed ) mbut=!mbut;
   TCOD_console_print(sample_console,1,1,
-    "Mouse position : %4dx%4d\n"
+  	"%s\n"
+    "Mouse position : %4dx%4d %s\n"
     "Mouse cell     : %4dx%4d\n"
     "Mouse movement : %4dx%4d\n"
     "Left button    : %s (toggle %s)\n"
     "Right button   : %s (toggle %s)\n"
     "Middle button  : %s (toggle %s)\n"
 	"Wheel          : %s\n",
-    mouse->x,mouse->y,
+	TCOD_console_is_active() ? "" : "APPLICATION INACTIVE",
+    mouse->x,mouse->y,TCOD_console_has_mouse_focus() ? "" : "OUT OF FOCUS",
     mouse->cx,mouse->cy,
     mouse->dx,mouse->dy,
     mouse->lbutton ? " ON" : "OFF",lbut ? " ON" : "OFF",

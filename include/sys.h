@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -45,6 +45,7 @@ TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 TCODLIB_API void *TCOD_sys_get_SDL_window();
 
 typedef enum {
+  TCOD_EVENT_NONE=0,
   TCOD_EVENT_KEY_PRESS=1,
   TCOD_EVENT_KEY_RELEASE=2,
   TCOD_EVENT_KEY=TCOD_EVENT_KEY_PRESS|TCOD_EVENT_KEY_RELEASE,
@@ -70,7 +71,7 @@ TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
 TCODLIB_API bool TCOD_sys_is_directory(const char *path);
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
 TCODLIB_API bool TCOD_sys_file_exists(const char * filename, ...);
-TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size);
+TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size);
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size);
 
 /* clipboard */

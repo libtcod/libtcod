@@ -3,6 +3,10 @@
 <title>libtcod documentation | ASCII constants</title>
 <script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<link type="text/css" rel="stylesheet" href="../css/shCore.css"></link>
+<link type="text/css" rel="stylesheet" href="../css/shThemeDefault.css"></link>
+<script language="javascript" src="../js/shCore.js"></script>
+<script language="javascript" src="../js/shBrushBash.js"></script>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
@@ -10,7 +14,7 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_draw.html')">2.2. Drawing on the root console</a> &gt; <a onclick="link('console_ascii.html')">2.2.7. ASCII constants</a><br>
 <a class="prev" onclick="link('console_fading.html')">2.2.6. Screen fading functions</a> 
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>2.2.7. ASCII constants</h1>
 <a name="0"></a><p>Some useful graphic characters in the terminal.bmp font. For the python version, remove TCOD_ from the constants. C# and Lua is in parenthesis :<br />		Single line walls:<br />		TCOD_CHAR_HLINE=196 (HorzLine)<br />		TCOD_CHAR_VLINE=179 (VertLine)<br />		TCOD_CHAR_NE=191 (NE)<br />		TCOD_CHAR_NW=218 (NW)<br />		TCOD_CHAR_SE=217 (SE)<br />		TCOD_CHAR_SW=192 (SW)<br /><br />		Double lines walls:<br />		TCOD_CHAR_DHLINE=205 (DoubleHorzLine)<br />		TCOD_CHAR_DVLINE=186 (DoubleVertLine)<br />		TCOD_CHAR_DNE=187 (DoubleNE)<br />		TCOD_CHAR_DNW=201 (DoubleNW)<br />		TCOD_CHAR_DSE=188 (DoubleSE)<br />		TCOD_CHAR_DSW=200 (DoubleSW)<br /><br />		Single line vertical/horizontal junctions (T junctions):<br />		TCOD_CHAR_TEEW=180 (TeeWest)<br />		TCOD_CHAR_TEEE=195 (TeeEast)<br />		TCOD_CHAR_TEEN=193 (TeeNorth)<br />		TCOD_CHAR_TEES=194 (TeeSouth)<br /><br />		Double line vertical/horizontal junctions (T junctions):<br />		TCOD_CHAR_DTEEW=185 (DoubleTeeWest)<br />		TCOD_CHAR_DTEEE=204 (DoubleTeeEast)<br />		TCOD_CHAR_DTEEN=202 (DoubleTeeNorth)<br />		TCOD_CHAR_DTEES=203 (DoubleTeeSouth)<br /><br />		Block characters:<br />		TCOD_CHAR_BLOCK1=176 (Block1)<br />		TCOD_CHAR_BLOCK2=177 (Block2)<br />		TCOD_CHAR_BLOCK3=178 (Block3)<br /><br />		Cross-junction between two single line walls:<br />		TCOD_CHAR_CROSS=197 (Cross)<br /><br />		Arrows:<br />		TCOD_CHAR_ARROW_N=24 (ArrowNorth)<br />		TCOD_CHAR_ARROW_S=25 (ArrowSouth)<br />		TCOD_CHAR_ARROW_E=26 (ArrowEast)<br />		TCOD_CHAR_ARROW_W=27 (ArrowWest)<br /><br />		Arrows without tail:<br />		TCOD_CHAR_ARROW2_N=30 (ArrowNorthNoTail)<br />		TCOD_CHAR_ARROW2_S=31 (ArrowSouthNoTail)<br />		TCOD_CHAR_ARROW2_E=16 (ArrowEastNoTail)<br />		TCOD_CHAR_ARROW2_W=17 (ArrowWestNoTail)<br /><br />		Double arrows:<br />		TCOD_CHAR_DARROW_H=29 (DoubleArrowHorz)<br />		TCOD_CHAR_ARROW_V=18 (DoubleArrowVert)<br /><br />		GUI stuff:<br />		TCOD_CHAR_CHECKBOX_UNSET=224<br />		TCOD_CHAR_CHECKBOX_SET=225<br />		TCOD_CHAR_RADIO_UNSET=9<br />		TCOD_CHAR_RADIO_SET=10<br /><br />		Sub-pixel resolution kit:<br />		TCOD_CHAR_SUBP_NW=226 (SubpixelNorthWest)<br />		TCOD_CHAR_SUBP_NE=227 (SubpixelNorthEast)<br />		TCOD_CHAR_SUBP_N=228 (SubpixelNorth)<br />		TCOD_CHAR_SUBP_SE=229 (SubpixelSouthEast)<br />		TCOD_CHAR_SUBP_DIAG=230 (SubpixelDiagonal)<br />		TCOD_CHAR_SUBP_E=231 (SubpixelEast)<br />		TCOD_CHAR_SUBP_SW=232 (SubpixelSouthWest)<br /><br />		Miscellaneous characters:<br />		TCOD_CHAR_SMILY = 1 (Smilie)<br />		TCOD_CHAR_SMILY_INV = 2 (SmilieInv)<br />		TCOD_CHAR_HEART = 3 (Heart)<br />		TCOD_CHAR_DIAMOND = 4 (Diamond)<br />		TCOD_CHAR_CLUB = 5 (Club)<br />		TCOD_CHAR_SPADE = 6 (Spade)<br />		TCOD_CHAR_BULLET = 7 (Bullet)<br />		TCOD_CHAR_BULLET_INV = 8 (BulletInv)<br />		TCOD_CHAR_MALE = 11 (Male)<br />		TCOD_CHAR_FEMALE = 12 (Female)<br />		TCOD_CHAR_NOTE = 13 (Note)<br />		TCOD_CHAR_NOTE_DOUBLE = 14 (NoteDouble)<br />		TCOD_CHAR_LIGHT = 15 (Light)<br />		TCOD_CHAR_EXCLAM_DOUBLE = 19 (ExclamationDouble)<br />		TCOD_CHAR_PILCROW = 20 (Pilcrow)<br />		TCOD_CHAR_SECTION = 21 (Section)<br />		TCOD_CHAR_POUND = 156 (Pound)<br />		TCOD_CHAR_MULTIPLICATION = 158 (Multiplication)<br />		TCOD_CHAR_FUNCTION = 159 (Function)<br />		TCOD_CHAR_RESERVED = 169 (Reserved)<br />		TCOD_CHAR_HALF = 171 (Half)<br />		TCOD_CHAR_ONE_QUARTER = 172 (OneQuarter)<br />		TCOD_CHAR_COPYRIGHT = 184 (Copyright)<br />		TCOD_CHAR_CENT = 189 (Cent)<br />		TCOD_CHAR_YEN = 190 (Yen)<br />		TCOD_CHAR_CURRENCY = 207 (Currency)<br />		TCOD_CHAR_THREE_QUARTERS = 243 (ThreeQuarters)<br />		TCOD_CHAR_DIVISION = 246 (Division)<br />		TCOD_CHAR_GRADE = 248 (Grade)<br />		TCOD_CHAR_UMLAUT = 249 (Umlaut)<br />		TCOD_CHAR_POW1 = 251 (Pow1)<br />		TCOD_CHAR_POW3 = 252 (Pow2)<br />		TCOD_CHAR_POW2 = 253 (Pow3)<br />		TCOD_CHAR_BULLET_SQUARE = 254 (BulletSquare)<br />	</p>
@@ -18,14 +22,16 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 
 </div></div>
 <div class="footer"><div class="footertext">
-	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>
+	<p>libtcod 1.5.2, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>
 	This file has been generated by doctcod.</p>
 	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
 	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
-  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+	<td><a href="http://doryen.eptalys.net/libtcod/tutorial">libtcod tutorials</a></td>
+  </tr></table></p>
 </div></div>
 </body>
 <script>
 initFilter();
+SyntaxHighlighter.all();
 </script>
 </html>

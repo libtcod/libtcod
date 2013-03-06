@@ -3,6 +3,20 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.5.2 : ?
++ added mid point displacement algorithm to the heightmap toolkit
++ added TCODConsole::hasMouseFocus() and TCODConsole::isActive()
++ added TCODParser::hasProperty to check if a property is defined when
+  using the default parser
++ added TCODText::setPos(int x, int y)
+- fixed TCODConsole::waitForKeypress returning for both press and release events (returns only on press)
+- fixed dynamic font switching not working
+- fixed TCOD_image_blit_rect not working with odd width/height
+- fixed TCODK_RWIN/TCODK_LWIN not detected
+- fixed TCOD_sys_wait_event not returning on mouse events
+- fixed mouse dcx/dcy fields always 0 when the cursor moves slowly
+- fixed crash in python console_map_ascii_codes_to_font
+=========================================================
 1.5.1 : 2012 Aug 29
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
   replaced with TCOD_sys_check_for_event and TCOD_sys_wait_for_event

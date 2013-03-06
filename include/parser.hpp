@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -201,6 +201,7 @@ public :
 	#pragma warning(default: 4251)
 #endif
 
+	bool hasProperty(const char *name) const;
 	bool getBoolProperty(const char *name) const;
 	int getIntProperty(const char *name) const;
 	int getCharProperty(const char *name) const;

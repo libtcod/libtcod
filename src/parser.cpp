@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -141,6 +141,10 @@ void TCODParser::error(const char *msg, ...) {
 }
 
 // default parser
+
+bool TCODParser::hasProperty(const char *name) const {
+	return TCOD_parser_has_property(data,name) != 0;
+}
 
 bool TCODParser::getBoolProperty(const char *name) const {
 	return TCOD_parser_get_bool_property(data,name) != 0;

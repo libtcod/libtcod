@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -40,6 +40,8 @@ TCODLIB_API void TCOD_console_set_window_title(const char *title);
 TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
 TCODLIB_API bool TCOD_console_is_fullscreen();
 TCODLIB_API bool TCOD_console_is_window_closed();
+TCODLIB_API bool TCOD_console_has_mouse_focus();
+TCODLIB_API bool TCOD_console_is_active();
 
 TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic);
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);

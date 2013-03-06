@@ -148,7 +148,7 @@ extern "C" {
  *    "0"       - Disable XRandR
  *    "1"       - Enable XRandR
  *
- *  By default SDL will use XRandR if it is available.
+ *  By default SDL will not use XRandR because of window manager issues.
  */
 #define SDL_HINT_VIDEO_X11_XRANDR           "SDL_VIDEO_X11_XRANDR"
 

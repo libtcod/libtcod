@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -474,7 +474,22 @@ public :
 	void getMinMax(float *min, float *max) const;
 
 //	void heatErosion(int nbPass,float minSlope,float erosionCoef,float sedimentationCoef,TCODRandom *rnd);
-//	void midPointDeplacement(TCODRandom *rnd);
+	/**
+	@PageName heightmap_modify
+	@FuncTitle Generate a map with mid-point displacement
+	@FuncDesc This algorithm generates a realistic fractal heightmap using the <a href="http://en.wikipedia.org/wiki/Diamond-square_algorithm">diamond-square</a> (or random midpoint displacement) algorithm.
+		The roughness range should be comprised between 0.4 and 0.6. The image below show the same map with roughness varying from 0.4 to 0.6.
+		<img src="midpoint.png" />
+		It's also a good habit to normalize the map after using this algorithm to avoid unexpected heights.
+
+	@Cpp void TCODHeightMap::midPointDisplacement(TCODRandom *rng=NULL,float roughness=0.45f)
+	@C void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t *hm, TCOD_random_t rnd, float roughness)
+	@Py heightmap_mid_point_displacement(hm, rng, roughness)
+	@Param hm	In the C and python version, the adress of the heightmap struct returned by the creation function.
+	@Param rng	Random number generation to use, or NULL/0 to use the default one.
+	@Param roughness	Map roughness.
+	*/
+	void midPointDisplacement(TCODRandom *rnd = NULL, float roughness=0.45f);
 	void islandify(float seaLevel,TCODRandom *rnd); // lowers the terrain near the heightmap borders
 	// TODO : checks island connectivity with floodfill
 private :

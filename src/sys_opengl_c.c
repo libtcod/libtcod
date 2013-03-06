@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -141,7 +141,7 @@ void TCOD_opengl_init_attributes() {
 /* console size (power of 2 and cells) */
 static int POTconwidth, POTconheight, conwidth, conheight;
 /* programs and shaders handles */
-static GLuint conProgram, conVertShader, conFragShader;
+static GLhandleARB conProgram, conVertShader, conFragShader;
 /* font texture handle */
 static GLuint font_tex;
 /* font power of 2 size and pixels */
@@ -287,12 +287,12 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	return true;
 }
 
-static GLuint loadShader(const char *txt, GLuint type) {
+static GLhandleARB loadShader(const char *txt, GLuint type) {
 	int success;
 	int infologLength = 0;
 	int charsWritten = 0;
     char *infoLog;
-	GLuint v = glCreateShaderObjectARB(type);
+	GLhandleARB v = glCreateShaderObjectARB(type);
 	glShaderSourceARB(v, 1, &txt, 0);
 	glCompileShaderARB(v);
 
@@ -315,7 +315,7 @@ static GLuint loadShader(const char *txt, GLuint type) {
 }
 
 static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
-	GLuint *vertShader, GLuint *fragShader, GLuint *prog) {
+	GLhandleARB *vertShader, GLhandleARB *fragShader, GLhandleARB *prog) {
 	/* Create and load Program and Shaders */
 	int success;
 	*prog = DBGCHECKGL(glCreateProgramObjectARB());

@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -32,6 +32,8 @@
 typedef void * TCOD_text_t;
 
 TCODLIB_API TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars);
+TCODLIB_API TCOD_text_t TCOD_text_init2(int w, int h, int max_chars);
+TCODLIB_API void TCOD_text_set_pos(TCOD_text_t txt, int x, int y);
 TCODLIB_API void TCOD_text_set_properties(TCOD_text_t txt, int cursor_char, int blink_interval, const char * prompt, int tab_size);
 TCODLIB_API void TCOD_text_set_colors(TCOD_text_t txt, TCOD_color_t fore, TCOD_color_t back, float back_transparency);
 TCODLIB_API bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key);

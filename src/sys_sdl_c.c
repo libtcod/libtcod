@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -28,6 +28,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 #if defined (__HAIKU__) || defined(__ANDROID__)
 #include <SDL.h>
@@ -1038,6 +1039,7 @@ static void TCOD_sys_init_screen_offset() {
 
 bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
+	static char last_font[512]="";
 #if SDL_VERSION_ATLEAST(2,0,0)	
 	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 #endif
@@ -1052,7 +1054,7 @@ bool TCOD_sys_init(int w,int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
 #endif
-	if (last_renderer != TCOD_ctx.renderer || ! charmap) {
+	if (last_renderer != TCOD_ctx.renderer || ! charmap || strcmp(last_font,TCOD_ctx.font_file) != 0) {
 		/* reload the font when switching renderer to restore original character colors */
 		TCOD_sys_load_font();
 	}
@@ -1453,6 +1455,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_8 : ret->vk=TCODK_8;break;
 		case SDLK_9 : ret->vk=TCODK_9;break;
 #if SDL_VERSION_ATLEAST(2,0,0)	
+		case SDLK_RGUI : ret->vk=TCODK_RWIN;break;
+		case SDLK_LGUI : ret->vk=TCODK_LWIN;break;
 		case SDLK_KP_0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP_1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP_2 : ret->vk=TCODK_KP2;break;
@@ -1464,6 +1468,8 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_KP_8 : ret->vk=TCODK_KP8;break;
 		case SDLK_KP_9 : ret->vk=TCODK_KP9;break;
 #else
+		case SDLK_RSUPER : ret->vk=TCODK_RWIN;break;
+		case SDLK_LSUPER : ret->vk=TCODK_LWIN;break;
 		case SDLK_KP0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP2 : ret->vk=TCODK_KP2;break;
@@ -1606,6 +1612,12 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				return retMask;					
 			}
 		}
+		break;
+		case SDL_ACTIVEEVENT : 
+			switch(ev->active.state) {
+				case SDL_APPMOUSEFOCUS : TCOD_ctx.app_has_mouse_focus=ev->active.gain; break;
+				default : TCOD_ctx.app_is_active=ev->active.gain; break;
+			}
 		break;
 #ifdef TCOD_TOUCH_INPUT
 		/*
@@ -1772,7 +1784,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_MOUSEMOTION : 
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
 				SDL_MouseMotionEvent *mev=&ev->motion;
-				int ssx, ssy;
 				TCOD_sys_unproject_screen_coords(mev->x, mev->y, &mouse->x, &mouse->y);
 				mouse->dx += (mev->xrel * scale_data.src_proportionate_width) / scale_data.surface_width;
 				mouse->dy += (mev->yrel * scale_data.src_proportionate_height) / scale_data.surface_height;
@@ -1806,6 +1817,15 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
 #endif
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}
 				return retMask;
 			}
 		break; 
@@ -1818,11 +1838,20 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_MIDDLE : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
 					case SDL_BUTTON_RIGHT : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
 				}
+				/* update mouse position */
+				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
+					int charWidth, charHeight;
+					mouse->x=mev->x;
+					mouse->y=mev->y;
+					TCOD_sys_get_char_size(&charWidth,&charHeight);
+					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / charWidth;
+					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / charHeight;
+				}				
 				return retMask;
 			}
 		break;
 		case SDL_QUIT :
-			TCOD_console_set_window_closed();
+			TCOD_ctx.is_window_closed=true;
 		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
@@ -1873,10 +1902,14 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	tcod_mouse.wheel_down=false;
 	tcod_mouse.dx=0;
 	tcod_mouse.dy=0;
+	if ( key ) {
+		key->vk=TCODK_NONE;
+		key->c=0;
+	}	
 	do {
 		SDL_WaitEvent(&ev);
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
-	} while ( ev.type != SDL_QUIT && (retMask & TCOD_EVENT_KEY) == 0 );
+	} while ( ev.type != SDL_QUIT && (retMask & eventMask) == 0 );
 	if (mouse) { *mouse=tcod_mouse; }
 	return retMask;
 }
@@ -1929,9 +1962,9 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 	static TCOD_key_t noret={TCODK_NONE,0};
 
 	TCOD_key_t key;
-	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY, &key, NULL, flush);
+	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS, &key, NULL, flush);
 
-	if ((ev & TCOD_EVENT_KEY) == 0) return noret;
+	if ((ev & TCOD_EVENT_KEY_PRESS) == 0) return noret;
 
 	return key;
 }
@@ -2107,6 +2140,8 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 }
 
 void TCOD_sys_get_current_resolution(int *w, int *h) {
+	/* be sure that SDL is initialized */
+	TCOD_sys_startup();
 #if SDL_VERSION_ATLEAST(2,0,0)
 	int displayidx;
 	SDL_Rect rect = { 0, 0, 0, 0 };
@@ -2187,7 +2222,7 @@ void TCOD_mouse_includes_touch(bool enable) {
 #endif
 }
 
-bool TCOD_sys_read_file(const char *filename, unsigned char **buf, uint32 *size) {
+bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
 	uint32 filesize;
 	/* get file size */
 #if SDL_VERSION_ATLEAST(2,0,0)

@@ -1,0 +1,195 @@
+# libtcod linux->mingw32 cross compilation makefile
+# to build debug version, run "make -f makefile-mingw debug"
+# to build release version, run "make -f makefile-mingw release"
+SRCDIR=src
+INCDIR=include
+
+#dependencies
+# SDL
+SDL_DIR=dependencies/SDL-1.2.15
+SDL_FLAGS=-I $(SDL_DIR)/include
+SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL.dll
+
+# ZLIB
+ZLIB_DIR=lib
+ZLIB_FLAGS=-I src/zlib
+ZLIB_LIBS=lib/libz.a
+
+# OPENGL
+OPENGL_LIB=-lopengl32
+
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -Wall -fno-strict-aliasing -ansi
+#MINGW_FLAGS=-static-libgcc -static-libstdc++
+CC=i586-mingw32msvc-gcc
+CPP=i586-mingw32msvc-g++
+AR=i586-mingw32msvc-ar
+UPX=dependencies/upx/win/upx.exe
+TEMP=/tmp
+.SUFFIXES: .dll .a .o .h .c .hpp .cpp
+
+#compilation rules
+$(TEMP)/libtcod/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
+	@echo Compiling debug $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -g -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
+	@echo Compiling debug $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
+	@ echo Compiling debug $(basename $<).c
+	@$(CC) $(CFLAGS) -g -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
+	@ echo Compiling release $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_GUI_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
+	@ echo Compiling release $(basename $<).cpp
+	@$(CPP) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
+	@ echo Compiling release $(basename $<).c
+	@$(CC) $(CFLAGS) -DNDEBUG -O2 -s -DLIBTCOD_EXPORTS -o $@ -c $< 
+$(TEMP)/libtcod/zlib/%.o : $(SRCDIR)/zlib/%.c
+	@ echo Compiling zlib $(basename $<).c
+	@$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $< 
+
+ZLIBOBJS=$(addprefix $(TEMP)/libtcod/zlib/, \
+	adler32.o \
+	crc32.o \
+	deflate.o \
+	infback.o \
+	inffast.o \
+	inflate.o \
+	inftrees.o \
+	trees.o \
+	zutil.o \
+	compress.o \
+	uncompr.o \
+	gzclose.o \
+	gzlib.o \
+	gzread.o \
+	gzwrite.o )
+
+LIBOBJS= \
+	bresenham_c.o \
+	bsp_c.o \
+	color_c.o \
+	console_c.o \
+	fov_c.o \
+	fov_circular_raycasting.o \
+	fov_diamond_raycasting.o \
+	fov_recursive_shadowcasting.o \
+	fov_permissive2.o \
+	fov_restrictive.o \
+	heightmap_c.o \
+	image_c.o \
+	lex_c.o \
+	list_c.o \
+	mersenne_c.o \
+	noise_c.o \
+	parser_c.o \
+	path_c.o \
+	sys_c.o \
+	sys_sdl_c.o \
+	sys_sdl_img_bmp.o \
+	sys_sdl_img_png.o \
+	tree_c.o \
+	txtfield_c.o \
+	wrappers.o \
+	zip_c.o \
+	namegen_c.o \
+	bresenham.o \
+	bsp.o \
+	color.o \
+	console.o \
+	fov.o \
+	heightmap.o \
+	image.o \
+	lex.o \
+	mersenne.o \
+	mouse.o \
+	noise.o \
+	parser.o \
+	path.o \
+	sys.o \
+	sys_opengl_c.o \
+	txtfield.o \
+	zip.o \
+	namegen.o \
+	png/lodepng.o
+
+GUIOBJS= \
+	gui/button.o \
+	gui/container.o \
+	gui/flatlist.o \
+	gui/hbox.o \
+	gui/image.o \
+	gui/label.o \
+	gui/radiobutton.o \
+	gui/slider.o \
+	gui/statusbar.o \
+	gui/textbox.o \
+	gui/togglebutton.o \
+	gui/toolbar.o \
+	gui/vbox.o \
+	gui/widget.o
+
+
+LIBOBJS_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(LIBOBJS) )
+GUIOBJS_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(GUIOBJS) )
+LIBOBJS_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(LIBOBJS) )
+GUIOBJS_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(GUIOBJS) )
+	
+all : debug release
+
+release : libtcod-mingw.dll libtcod-gui-mingw.dll 
+
+debug : libtcod-mingw-debug.dll libtcod-gui-mingw-debug.dll
+
+$(TEMP)/libtcod/debug/png :
+	@mkdir -p $@
+
+$(TEMP)/libtcod/debug/gui :
+	@mkdir -p $@
+
+$(TEMP)/libtcod/release/png :
+	@mkdir -p $@
+
+$(TEMP)/libtcod/release/gui :
+	@mkdir -p $@
+
+$(TEMP)/libtcod/zlib :
+	@mkdir -p $@
+
+lib/ :
+	@mkdir -p $@
+
+libtcod-mingw.a : $(LIBOBJS_DEBUG)
+	@$(AR) r $@ $(LIBOBJS_DEBUG)
+
+lib/libz.a : $(TEMP)/libtcod/zlib $(ZLIBOBJS)
+	@$(AR) r $@ $(ZLIBOBJS)
+	
+libtcod-mingw.dll : lib/ $(TEMP)/libtcod/release/png $(LIBOBJS_RELEASE) lib/libz.a
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw.a $(LIBOBJS_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
+
+libtcod-gui-mingw.dll : lib/ $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw.a $(GUIOBJS_RELEASE) -Llib -ltcod-mingw $(MINGW_FLAGS)
+
+libtcod-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/png $(LIBOBJS_DEBUG) lib/libz.a
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-mingw-debug.a $(LIBOBJS_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) $(MINGW_FLAGS)
+
+libtcod-gui-mingw-debug.dll : lib/ $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
+	@echo Linking $@
+	@$(CPP) -mwindows -o $@ -shared -Wl,--out-implib,lib/libtcod-gui-mingw-debug.a $(GUIOBJS_DEBUG) -Llib -ltcod-mingw-debug $(MINGW_FLAGS)
+
+upx :
+	@echo Compressing...
+	@$(UPX) libtcod-mingw.dll libtcod-gui-mingw.dll
+
+clean :
+	@rm -f $(LIBOBJS_RELEASE) $(GUIOBJS_RELEASE) libtcod-mingw.dll lib/libtcod-mingw.a libtcod-gui-mingw.dll lib/libtcod-gui-mingw.a libtcodpy.pyc $(LIBOBJS_DEBUG) $(GUIOBJS_DEBUG) libtcod-mingw-debug.dll lib/libtcod-mingw-debug.a libtcod-gui-mingw-debug.dll lib/libtcod-gui-mingw-debug.a 
+
+cleanall : clean
+	@rm -f $(ZLIBOBJS)
+

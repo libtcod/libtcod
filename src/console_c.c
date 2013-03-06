@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -43,7 +43,6 @@ static const char *version_string ="libtcod "TCOD_STRVERSION;
 static const char *version_string __attribute__((unused)) ="libtcod "TCOD_STRVERSION;
 #endif
 
-static bool windowClosed=false;
 TCOD_internal_context_t TCOD_ctx={
 	/* number of characters in the bitmap font */
 	16,16,
@@ -58,6 +57,12 @@ TCOD_internal_context_t TCOD_ctx={
 	NULL,
 	/* fading data */
 	{0,0,0},255,
+	/* window closed ? */
+	false,
+	/* mouse focus ? */ 
+	false,
+	/* application active ? */
+	true,
 };
 
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER];
@@ -111,11 +116,15 @@ TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
 }
 
 bool TCOD_console_is_window_closed() {
-	return windowClosed;
+	return TCOD_ctx.is_window_closed;
 }
 
-void TCOD_console_set_window_closed() {
-	windowClosed=true;
+bool TCOD_console_has_mouse_focus() {
+	return TCOD_ctx.app_has_mouse_focus;
+}
+
+bool TCOD_console_is_active() {
+	return TCOD_ctx.app_is_active;
 }
 
 void TCOD_console_set_window_title(const char *title) {
@@ -1052,7 +1061,6 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	dat->oldbuf = (char_t *)calloc(sizeof(char_t),dat->w*dat->h);
 	dat->bkgnd_flag=TCOD_BKGND_NONE;
 	dat->alignment=TCOD_LEFT;
-	windowClosed = false;
 	for (i=0; i< dat->w*dat->h; i++) {
 		dat->buf[i].c=' ';
 		dat->buf[i].cf=-1;
@@ -1111,11 +1119,15 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_ho
 }
 
 void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
 }
 
 void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
 	int c;
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_IFNOT(asciiCode >= 0 && asciiCode+nbCodes <= TCOD_ctx.max_font_chars) return;
 	for (c=asciiCode; c < asciiCode+nbCodes; c++ ) {
 		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
@@ -1129,6 +1141,8 @@ void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCh
 
 void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
 	TCOD_IFNOT(s != NULL) return;
+	/* cannot change mapping before initRoot is called */
+	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	while (*s) {
 		TCOD_console_map_ascii_code_to_font(*s, fontCharX, fontCharY);
 		fontCharX++;

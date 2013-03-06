@@ -1,3 +1,14 @@
-syntax: glob
-cmake/cbproj/*
-cmake/vcproj/*
+syntax: regexp
+
+cbproj
+vcproj
+xcodeproj
+libtcod.build
+CMakeFiles
+CMakeScripts
+.*\.cmake$
+Makefile$
+.*\.dylib$
+.*/[Release|Debug]
+CMakeCache.txt
+\.a$

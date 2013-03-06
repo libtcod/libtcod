@@ -3,6 +3,10 @@
 <title>libtcod documentation | Getting flat noise</title>
 <script type="text/javascript" src="../js/doctcod.js"></script>
 <link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<link type="text/css" rel="stylesheet" href="../css/shCore.css"></link>
+<link type="text/css" rel="stylesheet" href="../css/shThemeDefault.css"></link>
+<script language="javascript" src="../js/shCore.js"></script>
+<script language="javascript" src="../js/shBrushBash.js"></script>
 <body><div class="header">
 <p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
 </div>
@@ -10,14 +14,13 @@
 you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('noise.html')">9. Noise generator</a> &gt; <a onclick="link('noise_get.html')">9.3. Getting flat noise</a><br>
 <a class="prev" onclick="link('noise_setType.html')">9.2. Choosing a noise type</a> | <a class="next" onclick="link('noise_get_fbm.html')">9.4. Getting fbm noise</a>
 </p></div></div>
-<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)" checked='checked' ><label  for='chk_cs'> C#   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)" checked='checked' ><label  for='chk_lua'> Lua   </label></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
 <div class="main"><div class="maintext">
 <h1>9.3. Getting flat noise</h1>
 <a name="0"></a><p>This function returns the noise function value between -1.0 and 1.0 at given coordinates.<br />		</p>
 <div class="code"><p class="cpp"><span class="code-keyword">float</span> TCODNoise<span class="code-symbol">::</span>get<span class="code-symbol">(</span><span class="code-keyword">float</span><span class="code-symbol"> *</span>f<span class="code-symbol">,</span><span class="code-tcod"> TCOD_noise_type_t</span> type<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_NOISE_DEFAULT</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">float</span> TCOD_noise_get<span class="code-symbol">(</span><span class="code-tcod">TCOD_noise_t</span> noise<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol"> *</span>f<span class="code-symbol">)</span><span class="code-keyword"><br />float</span> TCOD_noise_get_ex<span class="code-symbol">(</span><span class="code-tcod">TCOD_noise_t</span> noise<span class="code-symbol">,</span><span class="code-keyword"> float</span><span class="code-symbol"> *</span>f<span class="code-symbol">,</span><span class="code-tcod"> TCOD_noise_type_t</span> type<span class="code-symbol">)</span></p>
 <p class="py">noise_get<span class="code-symbol">(</span>noise<span class="code-symbol">,</span> f<span class="code-symbol">,</span> type<span class="code-symbol">=</span><span class="code-tcod">NOISE_DEFAULT</span><span class="code-symbol">)</span></p>
-<p class="cs"><span class="code-keyword">float</span> TCODNoise<span class="code-symbol">:</span><span class="code-symbol">:</span><span class="code-keyword">get</span><span class="code-symbol">(</span><span class="code-keyword">float</span><span class="code-symbol">[</span><span class="code-symbol">]</span> f<span class="code-symbol">,</span> type<span class="code-symbol">=</span>NoiseDefault<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>noise</td><td>In the C version, the generator handler, returned by the initialization function.<br />		</td></tr>
 <tr><td>f</td><td>An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.<br />		</td></tr>
@@ -30,14 +33,16 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 
 </div></div>
 <div class="footer"><div class="footertext">
-	<p>libtcod 1.5.1, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>
+	<p>libtcod 1.5.2, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>
 	This file has been generated by doctcod.</p>
 	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
 	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
-  <td><a href="http://www.youtube.com/watch?v=PY9lJnVQbXs&feature=PlayList&p=553E3D00A1460331&playnext_from=PL&index=0&playnext=1">libtcod HOWTO video tutorials</a></td></tr></table></p>
+	<td><a href="http://doryen.eptalys.net/libtcod/tutorial">libtcod tutorials</a></td>
+  </tr></table></p>
 </div></div>
 </body>
 <script>
 initFilter();
+SyntaxHighlighter.all();
 </script>
 </html>

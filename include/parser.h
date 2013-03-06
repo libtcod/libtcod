@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -122,6 +122,7 @@ TCODLIB_API void TCOD_parser_delete(TCOD_parser_t parser);
 /* error during parsing. can be called by the parser listener */
 TCODLIB_API void TCOD_parser_error(const char *msg, ...);
 /* default parser listener */
+TCODLIB_API bool TCOD_parser_has_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API int TCOD_parser_get_char_property(TCOD_parser_t parser, const char *name);
 TCODLIB_API int TCOD_parser_get_int_property(TCOD_parser_t parser, const char *name);

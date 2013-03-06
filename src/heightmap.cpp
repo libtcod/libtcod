@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -165,10 +165,11 @@ void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,floa
 	TCOD_heightmap_t hm={w,h,values};
 	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, agregationCoef, rnd->data);
 }
-
-void TCODHeightMap::midPointDeplacement(TCODRandom *rnd) {
-	TCOD_heightmap_t hm={w,h,values};
-	TCOD_heightmap_mid_point_deplacement(&hm, rnd->data);
-}
 #endif
+
+void TCODHeightMap::midPointDisplacement(TCODRandom *rnd, float roughness) {
+	TCOD_heightmap_t hm={w,h,values};
+	if ( ! rnd ) rnd = TCODRandom::getInstance();
+	TCOD_heightmap_mid_point_displacement(&hm, rnd->data, roughness);
+}
 

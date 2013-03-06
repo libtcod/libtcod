@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -125,6 +125,12 @@ typedef struct {
 	/* fading data */
 	TCOD_color_t fading_color;
 	uint8 fade;
+	/* application window was closed */
+	bool is_window_closed;
+	/* application has mouse focus */
+	bool app_has_mouse_focus;
+	/* application is active (not iconified) */
+	bool app_is_active;
 } TCOD_internal_context_t;
 
 extern TCOD_internal_context_t TCOD_ctx;
@@ -181,7 +187,6 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen);
 int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char *msg, bool can_split, bool count_only);
 int TCOD_console_stringLength(const unsigned char *s);
 unsigned char * TCOD_console_forward(unsigned char *s,int l);
-void TCOD_console_set_window_closed();
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
 char_t *TCOD_console_get_buf(TCOD_console_t con);
 /* fatal errors */

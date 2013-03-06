@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010 Jice & Mingos
 * All rights reserved.
 *
@@ -34,7 +34,7 @@
 #include "libtcod.hpp"
 
 // index.html categories
-static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", NULL };
+static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", "Howtos", NULL };
 
 // a function parameter
 struct ParamData {
@@ -98,7 +98,7 @@ struct Config {
 	bool generateLua;
 };
 
-Config config = {true,true,true,true,true};
+Config config = {true,true,true,false,false};
 TCODList<PageData *> pages;
 // root page corresponding to index.html
 PageData *root=NULL;
@@ -528,6 +528,11 @@ void parseFile(char *filename) {
 	    			directive = getParagraph(directive+sizeof("@PageDesc"),&curPage->desc);
 	    		} else if ( startsWith(directive,"@PageFather") ) {
 	    			directive = getIdentifier(directive+sizeof("@PageFather"),&curPage->fatherName);
+	    			if ( strcmp(curPage->fatherName,curPage->name) == 0 ) {
+	    				printf ("ERROR : file %s : page %s is its own father\n", filename,
+	    					curPage->name);
+	    				exit(1);
+	    			}
 	    		} else if ( startsWith(directive,"@PageCategory") ) {
 	    			directive = getLineEnd(directive+sizeof("@PageCategory"),&curPage->categoryName);
 	    		} else if ( startsWith(directive,"@FuncTitle") ) {
@@ -882,9 +887,9 @@ void genPageDocFromTemplate(PageData *page) {
 	 	} else if ( strncmp(pageTpl,"${FILTER_FORM}",14) == 0 ) {
 			printLanguageFilterForm(f,"c","C",config.generateC);
 			printLanguageFilterForm(f,"cpp","C++",config.generateCpp);
-			printLanguageFilterForm(f,"cs","C#",config.generateCs);
 			printLanguageFilterForm(f,"py","Py",config.generatePy);
 			printLanguageFilterForm(f,"lua","Lua",config.generateLua);
+			printLanguageFilterForm(f,"cs","C#",config.generateCs);
 			pageTpl+=14;
 		} else if ( strncmp(pageTpl,"${PREV_LINK}",12) == 0 ) {
 			// prev page link

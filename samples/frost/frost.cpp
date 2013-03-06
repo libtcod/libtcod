@@ -15,7 +15,7 @@ TCODColor keyCols[4]={TCODColor::black,TCODColor::darkerBlue,TCODColor::lighterB
 #define PIX_PER_FRAME 6
 #define RANGE 10
 
-class Frost;
+struct Frost;
 
 class FrostManager {
 public :
@@ -34,7 +34,7 @@ public :
 		grid[cx+cy*w]=v;
 	}	
 protected :
-	friend class Frost;
+	friend struct Frost;
 	TCODList<Frost *> list;
 	float *grid;
 	TCODImage *img;

@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -88,6 +88,47 @@ TCOD_text_t TCOD_text_init (int x, int y, int w, int h, int max_chars) {
     data->fore.r = data->fore.g = data->fore.b = 255;
     data->transparency = 1.0f;
     return (TCOD_text_t)data;
+}
+
+TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
+    text_t * data = (text_t*)calloc(sizeof(text_t),1);
+	TCOD_IFNOT(w> 0 && h > 0) return data;
+    data->x = 0;
+    data->y = 0;
+    data->w = w;
+    data->h = h;
+    data->multiline = (h > 1);
+    data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
+    data->interval = 800;
+    data->halfinterval = 400;
+    data->ascii_cursor = 0;
+    data->prompt = NULL;
+    data->textx = data->texty = 0;
+    data->con = TCOD_console_new(w,h);
+	data->sel_start = MAX_INT;
+	data->sel_end = -1;
+	/*
+	if (! data->multiline ) {
+		data->max = MIN(w - data->textx,data->max);
+	} else {
+		data->max = MIN(w*(h-data->texty) - data->textx,data->max);
+	}
+	*/
+    if (max_chars && max_chars > 0) data->max = max_chars;
+    else data->max = data->w * data->h;
+    data->input_continue = true;
+    data->len = MIN(64,data->max);
+    data->text = (char*)calloc(data->len,sizeof(char));
+    data->back.r = data->back.g = data->back.b = 0;
+    data->fore.r = data->fore.g = data->fore.b = 255;
+    data->transparency = 1.0f;
+    return (TCOD_text_t)data;
+}
+
+void TCOD_text_set_pos(TCOD_text_t txt, int x, int y) {
+    text_t * data = (text_t*)txt;
+	data->x=x;
+	data->y=y;	
 }
 
 /* set cursor and prompt */

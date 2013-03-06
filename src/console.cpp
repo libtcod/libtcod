@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -85,6 +85,14 @@ TCOD_key_t TCODConsole::waitForKeypress(bool flush) {
 
 bool TCODConsole::isWindowClosed() {
 	return TCOD_console_is_window_closed() != 0;
+}
+
+bool TCODConsole::hasMouseFocus() {
+	return TCOD_console_has_mouse_focus() != 0;
+}
+
+bool TCODConsole::isActive() {
+	return TCOD_console_is_active() != 0;
 }
 
 int TCODConsole::getWidth() const {

@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -31,8 +31,16 @@ TCODText::TCODText(int x, int y, int w, int h, int max_chars){
 	data=TCOD_text_init(x,y,w,h,max_chars);
 }
 
+TCODText::TCODText(int w, int h, int max_chars){
+	data=TCOD_text_init2(w,h,max_chars);
+}
+
 TCODText::~TCODText(){
 	TCOD_text_delete(data);
+}
+
+void TCODText::setPos(int x, int y) {
+	TCOD_text_set_pos(data,x,y);
 }
 
 void TCODText::setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size){

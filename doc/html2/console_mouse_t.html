@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>libtcod documentation | Mouse event structure</title>
+<script type="text/javascript" src="../js/doctcod.js"></script>
+<link href="../css/style.css" rel="stylesheet" type="text/css"></head>
+<link type="text/css" rel="stylesheet" href="../css/shCore.css"></link>
+<link type="text/css" rel="stylesheet" href="../css/shThemeDefault.css"></link>
+<script language="javascript" src="../js/shCore.js"></script>
+<script language="javascript" src="../js/shBrushBash.js"></script>
+<body><div class="header">
+<p><span class="title1">libtcod</span><span class="title2">documentation</span></p>
+</div>
+<div class="breadcrumb"><div class="breadcrumbtext"><p>
+you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="link('console.html')">2. Console</a> &gt; <a onclick="link('console_input.html')">2.4. Handling user input</a> &gt; <a onclick="link('console_mouse_t.html')">2.4.5. Mouse event structure</a><br>
+<a class="prev" onclick="link('console_key_t.html')">2.4.4. Keyboard event structure</a> | <a class="next" onclick="link('console_keycode_t.html')">2.4.6. Key codes</a>
+</p></div></div>
+<div class="filter"><input type="checkbox" id="chk_c" name="chk_c" onchange="enable('c',this.checked)" checked='checked' ><label  for='chk_c'> C   </label><input type="checkbox" id="chk_cpp" name="chk_cpp" onchange="enable('cpp',this.checked)" checked='checked' ><label  for='chk_cpp'> C++   </label><input type="checkbox" id="chk_py" name="chk_py" onchange="enable('py',this.checked)" checked='checked' ><label  for='chk_py'> Py   </label><input type="checkbox" id="chk_lua" name="chk_lua" onchange="enable('lua',this.checked)"  disabled='disabled'><label class='disabled' for='chk_lua'> Lua   </label><input type="checkbox" id="chk_cs" name="chk_cs" onchange="enable('cs',this.checked)"  disabled='disabled'><label class='disabled' for='chk_cs'> C#   </label></div>
+<div class="main"><div class="maintext">
+<h1>2.4.5. Mouse event structure</h1>
+<p>This tructure contains information about a mouse move/press/release event.<br />	</p>
+<a name="0"></a><div class="code"><p class="c"><span class="code-keyword">typedef</span><span class="code-keyword"> struct</span><span class="code-symbol"> {</span><span class="code-keyword"><br />&nbsp;&nbsp;int</span> x<span class="code-symbol">,</span>y<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;int</span> dx<span class="code-symbol">,</span>dy<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;int</span> cx<span class="code-symbol">,</span>cy<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;int</span> dcx<span class="code-symbol">,</span>dcy<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> lbutton<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> rbutton<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> mbutton<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> lbutton_pressed<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> rbutton_pressed<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> mbutton_pressed<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> wheel_up<span class="code-symbol">;</span><span class="code-keyword"><br />&nbsp;&nbsp;bool</span> wheel_down<span class="code-symbol">;</span><span class="code-symbol"><br />}</span><span class="code-tcod"> TCOD_mouse_t</span><span class="code-symbol">;</span></p>
+</div>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>x,y</td><td>Absolute position of the mouse cursor in pixels relative to the window top-left corner.<br />	</td></tr>
+<tr><td>dx,dy</td><td>Movement of the mouse cursor since the last call in pixels.<br />	</td></tr>
+<tr class="hilite"><td>cx,cy</td><td>Coordinates of the console cell under the mouse cursor (pixel coordinates divided by the font size).<br />	</td></tr>
+<tr><td>dcx,dcy</td><td>Movement of the mouse since the last call in console cells (pixel coordinates divided by the font size).<br />	</td></tr>
+<tr class="hilite"><td>lbutton</td><td>true if the left button is pressed.<br />	</td></tr>
+<tr><td>rbutton</td><td>true if the right button is pressed.<br />	</td></tr>
+<tr class="hilite"><td>mbutton</td><td>true if the middle button (or the wheel) is pressed.<br />	</td></tr>
+<tr><td>lbutton_pressed</td><td>true if the left button was pressed and released.<br />	</td></tr>
+<tr class="hilite"><td>rbutton_pressed</td><td>true if the right button was pressed and released.<br />	</td></tr>
+<tr><td>mbutton_pressed</td><td>true if the middle button was pressed and released.<br />	</td></tr>
+<tr class="hilite"><td>wheel_up</td><td>true if the wheel was rolled up.<br />	</td></tr>
+<tr><td>wheel_down</td><td>true if the wheel was rolled down.<br />	</td></tr>
+</tbody></table>
+</div></div>
+<div class="footer"><div class="footertext">
+	<p>libtcod 1.5.2, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>
+	This file has been generated by doctcod.</p>
+	<p><table width='100%'><tr><td><a href="http://doryen.eptalys.net/libtcod">libtcod website</a></td>
+	<td><a href="http://doryen.eptalys.net/forum/index.php?board=12.0">libtcod on Roguecentral forums</a></td>
+	<td><a href="http://doryen.eptalys.net/libtcod/tutorial">libtcod tutorials</a></td>
+  </tr></table></p>
+</div></div>
+</body>
+<script>
+initFilter();
+SyntaxHighlighter.all();
+</script>
+</html>

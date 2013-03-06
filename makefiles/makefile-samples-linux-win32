@@ -1,0 +1,82 @@
+# libtcod samples linux->mingw32 cross compilation makefile
+# to build debug version, run "make -f makefile-samples-mingw debug"
+# to build release version, run "make -f makefile-samples-mingw release"
+SRCDIR=.
+INCDIR=include
+SDLDIR=dependencies/SDL-1.2.15
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SDLDIR)/include -I$(SRCDIR) -Wall
+CC=i586-mingw32msvc-gcc
+CPP=i586-mingw32msvc-g++
+UPX=dependencies/upx/win/upx.exe
+TEMP=/tmp
+
+#MINGW_FLAGS=-static-libgcc -static-libstdc++
+
+.SUFFIXES: .dll .a .o .h .c .hpp .cpp
+
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/%.c
+	$(CC) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/debug/samples/%.o : $(SRCDIR)/samples/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -g -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/%.c
+	$(CC) $(CFLAGS) -O2 -s -o $@ -c $< 
+$(TEMP)/libtcod/release/samples/%.o : $(SRCDIR)/samples/hmtool/%.cpp
+	$(CPP) $(CFLAGS) -O2 -s -o $@ -c $< 
+
+C_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_c.o
+CPP_OBJS_DEBUG=$(TEMP)/libtcod/debug/samples/samples_cpp.o
+
+HMTOOLOBJS_DEBUG=$(TEMP)/libtcod/debug/samples/hmtool.o \
+	$(TEMP)/libtcod/debug/samples/operation.o
+
+C_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_c.o
+CPP_OBJS_RELEASE=$(TEMP)/libtcod/release/samples/samples_cpp.o
+
+HMTOOLOBJS_RELEASE=$(TEMP)/libtcod/release/samples/hmtool.o \
+	$(TEMP)/libtcod/release/samples/operation.o
+
+all : debug release
+
+debug : samples_c_debug.exe samples_cpp_debug.exe hmtool_debug.exe 
+
+release : samples_c.exe samples_cpp.exe hmtool.exe 
+
+$(TEMP)/libtcod/debug/hmtool :
+	mkdir -p $@
+	
+$(TEMP)/libtcod/release/hmtool :
+	mkdir -p $@
+
+$(TEMP)/libtcod/debug/samples :
+	mkdir -p $@
+	
+$(TEMP)/libtcod/release/samples :
+	mkdir -p $@
+
+samples_c.exe : $(TEMP)/libtcod/release/samples $(C_OBJS_RELEASE)
+	$(CPP) $(C_OBJS_RELEASE) -o $@ -Llib -ltcod-mingw  -L$(SDLDIR)/lib/mingw -lSDL.dll -mwindows $(MINGW_FLAGS)
+
+samples_cpp.exe : $(TEMP)/libtcod/release/samples $(CPP_OBJS_RELEASE)
+	$(CPP) $(CPP_OBJS_RELEASE) -o $@ -Llib -ltcod-mingw -L$(SDLDIR)/lib/mingw -lSDL.dll -mwindows $(MINGW_FLAGS)
+
+hmtool.exe : $(TEMP)/libtcod/release/hmtool $(HMTOOLOBJS_RELEASE)
+	$(CPP) $(HMTOOLOBJS_RELEASE) -o $@ -Llib -ltcod-mingw -ltcod-gui-mingw -mwindows $(MINGW_FLAGS)
+
+samples_c_debug.exe : $(TEMP)/libtcod/debug/samples $(C_OBJS_DEBUG)
+	$(CPP) $(C_OBJS_DEBUG) -o $@ -Llib -ltcod-mingw-debug -L$(SDLDIR)/lib/mingw -lSDL.dll $(MINGW_FLAGS)
+
+samples_cpp_debug.exe : $(TEMP)/libtcod/debug/samples $(CPP_OBJS_DEBUG)
+	$(CPP) $(CPP_OBJS_DEBUG) -o $@ -Llib -ltcod-mingw-debug  -L$(SDLDIR)/lib/mingw -lSDL.dll $(MINGW_FLAGS)
+
+hmtool_debug.exe : $(TEMP)/libtcod/debug/hmtool $(HMTOOLOBJS_DEBUG)
+	$(CPP) $(HMTOOLOBJS_DEBUG) -o $@ -Llib -ltcod-mingw-debug -ltcod-gui-mingw-debug $(MINGW_FLAGS)
+
+clean :
+	rm -f $(C_OBJS_RELEASE) $(CPP_OBJS_RELEASE) $(HMTOOLOBJS_RELEASE) \
+        samples_c.exe samples_cpp.exe hmtool.exe \
+        $(C_OBJS_DEBUG) $(CPP_OBJS_DEBUG) $(HMTOOLOBJS_DEBUG) \
+        samples_c_debug.exe samples_cpp_debug.exe hmtool_debug.exe 

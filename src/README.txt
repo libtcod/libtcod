@@ -33,8 +33,6 @@ They have currently a single working implementation relying on SDL : sys_sdl_c.c
 As it is heavily system dependant, the mouse C implementation is in sys_sdl_c.c.
 As of 1.4, the image load/save functions are isolated in sys_sdl_XXX.c, 
 XXX being the image type (currently bmp and png).
-There is an obsolete SFML implementation, but it's based on 1.3 version 
-and performances are terrible : sys_sfml_c.c
 As of 1.5.1, sys_opengl_c.c contains OpenGL and GLSL renderers. Those two
 renderers are still dependant on SDL.
 

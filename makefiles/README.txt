@@ -5,10 +5,10 @@ List of makefiles :
 makefile-linux           Linux 32 bits
 makefile-linux64         Linux 64 bits 
 makefile-mingw           Windows/Mingw32
-makefile-osx             Mac OS/X
+makefile-mingw-sdl2      Windows/Mingw32 using SDL 2 (experimental)
+makefile-haiku           Haiku
 makefile-samples-linux   Samples compilation on Linux
 makefile-samples-mingw   Samples compilation on Windows/Mingw32
-makefile-samples-osx     Samples compilation on Mac OS/X
 
 *******************
 Linux prerequisites

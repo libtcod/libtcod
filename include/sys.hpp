@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.1
+* libtcod 1.5.2
 * Copyright (c) 2008,2009,2010,2012 Jice & Mingos
 * All rights reserved.
 *
@@ -148,10 +148,11 @@ public :
 	/**
 	@PageName console_blocking_input
 	@FuncTitle Waiting for any event (mouse or keyboard)
-	@FuncDesc There's a more generic function that waits for an event from the user. The eventMask shows what events we're waiting for.
+	@FuncDesc This function waits for an event from the user. The eventMask shows what events we're waiting for.
 		The return value indicate what event was actually triggered. Values in key and mouse structures are updated accordingly.
 		If flush is false, the function waits only if there are no pending events, else it returns the first event in the buffer.
 	@Cpp typedef enum {
+		TCOD_EVENT_NONE=0,
 		TCOD_EVENT_KEY_PRESS=1,
 		TCOD_EVENT_KEY_RELEASE=2,
 		TCOD_EVENT_KEY=TCOD_EVENT_KEY_PRESS|TCOD_EVENT_KEY_RELEASE,
@@ -184,7 +185,7 @@ public :
 	/**
 	@PageName console_non_blocking_input
 	@FuncTitle Checking for any event (mouse or keyboard)
-	@FuncDesc There's a more generic function that checks if an event from the user is in the buffer. The eventMask shows what events we're waiting for.
+	@FuncDesc This function checks if an event from the user is in the buffer. The eventMask shows what events we're waiting for.
 		The return value indicate what event was actually found. Values in key and mouse structures are updated accordingly.
 	@Cpp typedef enum {
 		TCOD_EVENT_KEY_PRESS=1,
@@ -320,7 +321,7 @@ public :
 		    free(buf);
 		}
 	*/	
-	static bool readFile(const char *filename, unsigned char **buf, uint32 *size);
+	static bool readFile(const char *filename, unsigned char **buf, size_t *size);
 	/**
 	@PageName system_filesystem
 	@FuncTitle Write the content of a memory buffer to a file

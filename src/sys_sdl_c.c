@@ -1613,12 +1613,14 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
+#if !SDL_VERSION_ATLEAST(2,0,0)	
 		case SDL_ACTIVEEVENT : 
 			switch(ev->active.state) {
 				case SDL_APPMOUSEFOCUS : TCOD_ctx.app_has_mouse_focus=ev->active.gain; break;
 				default : TCOD_ctx.app_is_active=ev->active.gain; break;
 			}
 		break;
+#endif
 #ifdef TCOD_TOUCH_INPUT
 		/*
 		 * Need to distinguish between:
@@ -1855,10 +1857,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		break;
 #if SDL_VERSION_ATLEAST(2,0,0)
 		case SDL_WINDOWEVENT :
-#ifdef TCOD_ANDROID
 			/* At this point, there are some corner cases that need dealing with.  So log this. */
 			/* printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event); */
 			switch (ev->window.event) {
+#ifdef TCOD_ANDROID
 			case SDL_WINDOWEVENT_SIZE_CHANGED:
 			{
 				/* printf("SDL2 WINDOWEVENT (SDL_WINDOWEVENT_SIZE_CHANGED): 0x%04x w=%d h=%d\n", ev->window.event, ev->window.data1, ev->window.data2); */
@@ -1867,14 +1869,22 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					scale_data.force_recalc = 1;
 				break;
 			}
+#endif
+			case SDL_WINDOWEVENT_ENTER:          /**< Window has gained mouse focus */
+				TCOD_ctx.app_has_mouse_focus=true; break;
+			case SDL_WINDOWEVENT_LEAVE:          /**< Window has lost mouse focus */
+				TCOD_ctx.app_has_mouse_focus=false; break;
+			case SDL_WINDOWEVENT_MAXIMIZED:      /**< Window has been maximized */
+				TCOD_ctx.app_is_active=true; break;
+			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
+				TCOD_ctx.app_is_active=false; break;
 #ifdef NDEBUG_HMM
 			default:
 				TCOD_LOG(("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event));
 				break;
 #endif
 			}
-#endif
-		break;
+ 		break;
 #else
 		case SDL_VIDEOEXPOSE :
 			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);

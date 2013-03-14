@@ -8,7 +8,7 @@ INCDIR=include
 # SDL
 SDL_DIR=dependencies/SDL2-hg
 SDL_FLAGS=-I $(SDL_DIR)/include
-SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL2
+SDL_LIBS=-L $(SDL_DIR)/lib/mingw -lSDL2 -lm -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -luuid
 
 # ZLIB
 ZLIB_FLAGS=-I src/zlib

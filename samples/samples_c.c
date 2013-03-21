@@ -1532,6 +1532,21 @@ int main( int argc, char *argv[] ) {
 
 		/* display renderer list and current renderer */
 		cur_renderer=TCOD_sys_get_renderer();
+		TCOD_console_set_default_foreground(NULL,TCOD_white);
+		for (i=0; i < 80; i++) {
+			if (i % 2)
+				TCOD_console_set_default_background(NULL,TCOD_red);
+			else
+				TCOD_console_set_default_background(NULL,TCOD_white);
+			TCOD_console_print_ex(NULL,i,0,TCOD_BKGND_SET, TCOD_LEFT, "D");
+		}
+		for (i=0; i < 50; i++) {
+			if (i % 2)
+				TCOD_console_set_default_background(NULL,TCOD_red);
+			else
+				TCOD_console_set_default_background(NULL,TCOD_white);
+			TCOD_console_print_ex(NULL,0,i,TCOD_BKGND_SET, TCOD_LEFT, "D");
+		}
 		TCOD_console_set_default_foreground(NULL,TCOD_grey);
 		TCOD_console_set_default_background(NULL,TCOD_black);
 		TCOD_console_print_ex(NULL,42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");

@@ -20,20 +20,15 @@
 */
 
 /**
- *  \file SDL_gesture.h
- *  
- *  Include file for SDL gesture event handling.
+ *  \file SDL_bits.h
+ *
+ *  Functions for fiddling with bits and bitmasks.
  */
 
-#ifndef _SDL_gesture_h
-#define _SDL_gesture_h
+#ifndef _SDL_bits_h
+#define _SDL_bits_h
 
 #include "SDL_stdinc.h"
-#include "SDL_error.h"
-#include "SDL_video.h"
-
-#include "SDL_touch.h"
-
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
@@ -43,40 +38,48 @@ extern "C" {
 /* *INDENT-ON* */
 #endif
 
-typedef Sint64 SDL_GestureID;
-
-/* Function prototypes */
+/**
+ *  \file SDL_bits.h
+ */
 
 /**
- *  \brief Begin Recording a gesture on the specified touch, or all touches (-1)
+ *  Get the index of the most significant bit. Result is undefined when called
+ *  with 0. This operation can also be stated as "count leading zeroes" and
+ *  "log base 2".
  *
- *
+ *  \return Index of the most significant bit.
  */
-extern DECLSPEC int SDLCALL SDL_RecordGesture(SDL_TouchID touchId);
+SDL_FORCE_INLINE Sint8
+SDL_MostSignificantBitIndex32(Uint32 x)
+{
+#if defined(__GNUC__)
+    /* Count Leading Zeroes builtin in GCC.
+     * http://gcc.gnu.org/onlinedocs/gcc-4.3.4/gcc/Other-Builtins.html
+     */
+    return 31 - __builtin_clz(x);
+#else
+    /* Based off of Bit Twiddling Hacks by Sean Eron Anderson
+     * <seander@cs.stanford.edu>, released in the public domain.
+     * http://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+     */
+    const Uint32 b[] = {0x2, 0xC, 0xF0, 0xFF00, 0xFFFF0000};
+    const Uint8  S[] = {1, 2, 4, 8, 16};
 
+    Uint8 msbIndex = 0;
+    int i;
 
-/**
- *  \brief Save all currently loaded Dollar Gesture templates
- *
- *
- */
-extern DECLSPEC int SDLCALL SDL_SaveAllDollarTemplates(SDL_RWops *src);
+    for (i = 4; i >= 0; i--)
+    {
+        if (x & b[i])
+        {
+            x >>= S[i];
+            msbIndex |= S[i];
+        }
+    }
 
-/**
- *  \brief Save a currently loaded Dollar Gesture template
- *
- *
- */
-extern DECLSPEC int SDLCALL SDL_SaveDollarTemplate(SDL_GestureID gestureId,SDL_RWops *src);
-
-
-/**
- *  \brief Load Dollar Gesture templates from a file
- *
- *
- */
-extern DECLSPEC int SDLCALL SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL_RWops *src);
-
+    return msbIndex;
+#endif
+}
 
 /* Ends C function definitions when using C++ */
 #ifdef __cplusplus
@@ -86,6 +89,6 @@ extern DECLSPEC int SDLCALL SDL_LoadDollarTemplates(SDL_TouchID touchId, SDL_RWo
 #endif
 #include "close_code.h"
 
-#endif /* _SDL_gesture_h */
+#endif /* _SDL_bits_h */
 
 /* vi: set ts=4 sw=4 expandtab: */

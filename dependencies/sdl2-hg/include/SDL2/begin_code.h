@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -126,6 +126,14 @@
 */
 #ifndef SDL_INLINE_OKAY
 #define __inline__
+#endif
+
+#if defined(_MSC_VER)
+#define SDL_FORCE_INLINE __forceinline
+#elif defined(__GNUC__) || defined(__clang__)
+#define SDL_FORCE_INLINE __attribute__((always_inline)) static inline
+#else
+#define SDL_FORCE_INLINE static __inline__
 #endif
 
 /* Apparently this is needed by several Windows compilers */

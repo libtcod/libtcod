@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -151,21 +151,34 @@ extern DECLSPEC SDL_Keycode SDLCALL SDL_GetKeyFromName(const char *name);
 
 /**
  *  \brief Start accepting Unicode text input events.
+ *         This function will show the on-screen keyboard if supported.
  *  
  *  \sa SDL_StopTextInput()
  *  \sa SDL_SetTextInputRect()
+ *  \sa SDL_HasScreenKeyboardSupport()
  */
 extern DECLSPEC void SDLCALL SDL_StartTextInput(void);
 
 /**
+ *  \brief Return whether or not Unicode text input events are enabled.
+ *
+ *  \sa SDL_StartTextInput()
+ *  \sa SDL_StopTextInput()
+ */
+extern DECLSPEC SDL_bool SDLCALL SDL_IsTextInputActive(void);
+
+/**
  *  \brief Stop receiving any text input events.
+ *         This function will hide the on-screen keyboard if supported.
  *  
  *  \sa SDL_StartTextInput()
+ *  \sa SDL_HasScreenKeyboardSupport()
  */
 extern DECLSPEC void SDLCALL SDL_StopTextInput(void);
 
 /**
  *  \brief Set the rectangle used to type Unicode text inputs.
+ *         This is used as a hint for IME and on-screen keyboard placement.
  *  
  *  \sa SDL_StartTextInput()
  */
@@ -174,60 +187,13 @@ extern DECLSPEC void SDLCALL SDL_SetTextInputRect(SDL_Rect *rect);
 /**
  *  \brief Returns whether the platform has some screen keyboard support.
  *  
- *  \param window The window for which screen keyboard should be checked.
- *  
  *  \return SDL_TRUE if some keyboard support is available else SDL_FALSE.
  *  
  *  \note Not all screen keyboard functions are supported on all platforms.
  *  
- *  \sa SDL_ShowScreenKeyboard()
- *  \sa SDL_HideScreenKeyboard()
- *  \sa SDL_IsScreenKeyboardShown()
- *  \sa SDL_ToggleScreenKeyboard()
- */
-extern DECLSPEC SDL_bool SDLCALL SDL_HasScreenKeyboardSupport(SDL_Window *window);
-
-/**
- *  \brief Requests to show a screen keyboard for given window.
- *  
- *  \param window The window for which screen keyboard should be shown.
- *  
- *  \return 0 if request will be processed or -1 on error (e.g. no support).
- *  
- *  \note Showing screen keyboards is asynchronous on some platforms.
- *  
- *  \sa SDL_HasScreenKeyboardSupport()
- *  \sa SDL_HideScreenKeyboard()
- */
-extern DECLSPEC int SDLCALL SDL_ShowScreenKeyboard(SDL_Window *window);
-
-/**
- *  \brief Requests to hide a screen keyboard for given window.
- *  
- *  \param window The window for which screen keyboard should be shown.
- *  
- *  \return 0 if request will be processed or -1 on error (e.g. no support).
- *  
- *  \note Hiding screen keyboards is asynchronous on some platforms.
- *  
- *  \sa SDL_HasScreenKeyboardSupport()
- *  \sa SDL_ShowScreenKeyboard()
- */
-extern DECLSPEC int SDLCALL SDL_HideScreenKeyboard(SDL_Window *window);
-
-/**
- *  \brief Requests to toggle a screen keyboard for given window.
- *  
- *  \param window The window for which screen keyboard should be toggled.
- *  
- *  \return 0 if request will be processed or -1 on error (e.g. no support).
- *  
- *  \note Showing and hiding screen keyboards is asynchronous on some platforms.
- *  
- *  \sa SDL_HasScreenKeyboardSupport()
  *  \sa SDL_IsScreenKeyboardShown()
  */
-extern DECLSPEC int SDLCALL SDL_ToggleScreenKeyboard(SDL_Window * window);
+extern DECLSPEC SDL_bool SDLCALL SDL_HasScreenKeyboardSupport(void);
 
 /**
  *  \brief Returns whether the screen keyboard is shown for given window.
@@ -236,11 +202,7 @@ extern DECLSPEC int SDLCALL SDL_ToggleScreenKeyboard(SDL_Window * window);
  *  
  *  \return SDL_TRUE if screen keyboard is shown else SDL_FALSE.
  *  
- *  \note May always return SDL_FALSE on some platforms (not implemented there).
- *  
  *  \sa SDL_HasScreenKeyboardSupport()
- *  \sa SDL_ShowScreenKeyboard()
- *  \sa SDL_HideScreenKeyboard()
  */
 extern DECLSPEC SDL_bool SDLCALL SDL_IsScreenKeyboardShown(SDL_Window *window);
 

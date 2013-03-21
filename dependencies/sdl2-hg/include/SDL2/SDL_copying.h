@@ -18,21 +18,3 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution.
 */
-
-/**
- *  \file SDL_opengles.h
- *  
- *  This is a simple file to encapsulate the OpenGL ES 2.0 API headers.
- */
-
-#ifdef __IPHONEOS__
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-#else
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#endif
-
-#ifndef APIENTRY
-#define APIENTRY
-#endif

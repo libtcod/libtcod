@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -52,6 +52,7 @@ extern DECLSPEC void SDLCALL SDL_ClearError(void);
 /*@{*/
 #define SDL_OutOfMemory()	SDL_Error(SDL_ENOMEM)
 #define SDL_Unsupported()	SDL_Error(SDL_UNSUPPORTED)
+#define SDL_InvalidParamError(param)	SDL_SetError("Parameter '%s' is invalid", (param))
 typedef enum
 {
     SDL_ENOMEM,

@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -23,22 +23,6 @@
  *  \file SDL_mouse.h
  *  
  *  Include file for SDL mouse event handling.
- *
- *  Please note that this ONLY discusses "mice" with the notion of the
- *  desktop GUI. You (usually) have one system cursor, and the OS hides
- *  the hardware details from you. If you plug in 10 mice, all ten move that
- *  one cursor. For many applications and games, this is perfect, and this
- *  API has served hundreds of SDL programs well since its birth.
- *
- *  It's not the whole picture, though. If you want more lowlevel control,
- *  SDL offers a different API, that gives you visibility into each input
- *  device, multi-touch interfaces, etc.
- *
- *  Those two APIs are incompatible, and you usually should not use both
- *  at the same time. But for legacy purposes, this API refers to a "mouse"
- *  when it actually means the system pointer and not a physical mouse.
- *
- *  The other API is in SDL_input.h
  */
 
 #ifndef _SDL_mouse_h
@@ -58,6 +42,25 @@ extern "C" {
 
 typedef struct SDL_Cursor SDL_Cursor;   /* Implementation dependent */
 
+/**
+ * \brief Cursor types for SDL_CreateSystemCursor.
+ */
+typedef enum
+{
+    SDL_SYSTEM_CURSOR_ARROW,     // Arrow
+    SDL_SYSTEM_CURSOR_IBEAM,     // I-beam
+    SDL_SYSTEM_CURSOR_WAIT,      // Wait
+    SDL_SYSTEM_CURSOR_CROSSHAIR, // Crosshair
+    SDL_SYSTEM_CURSOR_WAITARROW, // Small wait cursor (or Wait if not available)
+    SDL_SYSTEM_CURSOR_SIZENWSE,  // Double arrow pointing northwest and southeast
+    SDL_SYSTEM_CURSOR_SIZENESW,  // Double arrow pointing northeast and southwest
+    SDL_SYSTEM_CURSOR_SIZEWE,    // Double arrow pointing west and east
+    SDL_SYSTEM_CURSOR_SIZENS,    // Double arrow pointing north and south
+    SDL_SYSTEM_CURSOR_SIZEALL,   // Four pointed arrow pointing north, south, east, and west
+    SDL_SYSTEM_CURSOR_NO,        // Slashed circle or crossbones
+    SDL_SYSTEM_CURSOR_HAND,      // Hand
+    SDL_NUM_SYSTEM_CURSORS
+} SDL_SystemCursor;
 
 /* Function prototypes */
 
@@ -74,7 +77,7 @@ extern DECLSPEC SDL_Window * SDLCALL SDL_GetMouseFocus(void);
  *  mouse cursor position relative to the focus window for the currently
  *  selected mouse.  You can pass NULL for either x or y.
  */
-extern DECLSPEC Uint8 SDLCALL SDL_GetMouseState(int *x, int *y);
+extern DECLSPEC Uint32 SDLCALL SDL_GetMouseState(int *x, int *y);
 
 /**
  *  \brief Retrieve the relative state of the mouse.
@@ -83,7 +86,7 @@ extern DECLSPEC Uint8 SDLCALL SDL_GetMouseState(int *x, int *y);
  *  be tested using the SDL_BUTTON(X) macros, and x and y are set to the
  *  mouse deltas since the last call to SDL_GetRelativeMouseState().
  */
-extern DECLSPEC Uint8 SDLCALL SDL_GetRelativeMouseState(int *x, int *y);
+extern DECLSPEC Uint32 SDLCALL SDL_GetRelativeMouseState(int *x, int *y);
 
 /**
  *  \brief Moves the mouse to the given position within the window.
@@ -153,6 +156,13 @@ extern DECLSPEC SDL_Cursor *SDLCALL SDL_CreateCursor(const Uint8 * data,
 extern DECLSPEC SDL_Cursor *SDLCALL SDL_CreateColorCursor(SDL_Surface *surface,
                                                           int hot_x,
                                                           int hot_y);
+
+/**
+ *  \brief Create a system cursor.
+ *
+ *  \sa SDL_FreeCursor()
+ */
+extern DECLSPEC SDL_Cursor *SDLCALL SDL_CreateSystemCursor(SDL_SystemCursor id);
 
 /**
  *  \brief Set the active cursor.

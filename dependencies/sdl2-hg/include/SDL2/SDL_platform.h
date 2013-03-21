@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -118,12 +118,10 @@
 #undef __WIN32__
 #define __WIN32__	1
 #endif
-
-#if defined(__NDS__)
-#undef __NINTENDODS__
-#define __NINTENDODS__	1
+#if defined(__PSP__)
+#undef __PSP__
+#define __PSP__	1
 #endif
-
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */

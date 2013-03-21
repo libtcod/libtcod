@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -49,14 +49,8 @@
  *  The best way to learn how to use SDL is to check out the header files in
  *  the "include" subdirectory and the programs in the "test" subdirectory.
  *  The header files and test programs are well commented and always up to date.
- *  More documentation is available in HTML format in "docs/index.html", and
- *  a documentation wiki is available online at:
- *  	http://www.libsdl.org/cgi/docwiki.cgi
- *  
- *  The test programs in the "test" subdirectory are in the public domain.
- *  
- *  Frequently asked questions are answered online:
- *  	http://www.libsdl.org/faq.php
+ *  More documentation and FAQs are available online at:
+ *  	http://wiki.libsdl.org/
  *  
  *  If you need help with the library, or just want to discuss SDL related
  *  issues, you can join the developers mailing list:
@@ -79,9 +73,13 @@
 #include "SDL_endian.h"
 #include "SDL_error.h"
 #include "SDL_events.h"
+#include "SDL_joystick.h"
+#include "SDL_gamecontroller.h"
+#include "SDL_haptic.h"
 #include "SDL_hints.h"
 #include "SDL_loadso.h"
 #include "SDL_log.h"
+#include "SDL_messagebox.h"
 #include "SDL_mutex.h"
 #include "SDL_power.h"
 #include "SDL_render.h"
@@ -114,8 +112,12 @@ extern "C" {
 #define SDL_INIT_VIDEO          0x00000020
 #define SDL_INIT_JOYSTICK       0x00000200
 #define SDL_INIT_HAPTIC         0x00001000
+#define SDL_INIT_GAMECONTROLLER 0x00002000		/**< turn on game controller also implicitly does JOYSTICK */
 #define SDL_INIT_NOPARACHUTE    0x00100000      /**< Don't catch fatal signals */
-#define SDL_INIT_EVERYTHING     0x0000FFFF
+#define SDL_INIT_EVERYTHING ( \
+                SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | \
+                SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER \
+            )
 /*@}*/
 
 /**

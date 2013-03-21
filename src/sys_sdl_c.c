@@ -432,7 +432,7 @@ static void find_resolution() {
 	wantedmode.format = 0;  /* don't care for rest. */
 	wantedmode.refresh_rate = 0;
 	wantedmode.driverdata = 0;
-	if (SDL_GetClosestDisplayMode(window?SDL_GetWindowDisplay(window):0, &wantedmode, &closestmode) == &closestmode) {
+	if (SDL_GetClosestDisplayMode(window?SDL_GetWindowDisplayIndex(window):0, &wantedmode, &closestmode) == &closestmode) {
 		bestw=closestmode.w;
 		besth=closestmode.h;
 	} else {
@@ -2161,7 +2161,7 @@ void TCOD_sys_get_current_resolution(int *w, int *h) {
 	SDL_Rect rect = { 0, 0, 0, 0 };
 	if (window) {
 		TCOD_IFNOT(window) return;
-		displayidx = SDL_GetWindowDisplay(window);
+		displayidx = SDL_GetWindowDisplayIndex(window);
 		TCOD_IFNOT(displayidx >= 0) return;
 	} else {
 		/* No window if no console, but user can want to know res before opening one. */

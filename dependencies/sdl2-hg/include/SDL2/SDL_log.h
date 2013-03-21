@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -59,17 +59,21 @@ extern "C" {
  *  \brief The predefined log categories
  *
  *  By default the application category is enabled at the INFO level,
- *  and all other categories are enabled at the CRITICAL level.
+ *  the assert category is enabled at the WARN level, test is enabled
+ *  at the VERBOSE level and all other categories are enabled at the 
+ *  CRITICAL level.
  */
 enum
 {
     SDL_LOG_CATEGORY_APPLICATION,
     SDL_LOG_CATEGORY_ERROR,
+    SDL_LOG_CATEGORY_ASSERT,
     SDL_LOG_CATEGORY_SYSTEM,
     SDL_LOG_CATEGORY_AUDIO,
     SDL_LOG_CATEGORY_VIDEO,
     SDL_LOG_CATEGORY_RENDER,
     SDL_LOG_CATEGORY_INPUT,
+    SDL_LOG_CATEGORY_TEST,
 
     /* Reserved for future SDL library use */
     SDL_LOG_CATEGORY_RESERVED1,

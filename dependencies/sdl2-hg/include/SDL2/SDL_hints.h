@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -148,10 +148,28 @@ extern "C" {
  *    "0"       - Disable XRandR
  *    "1"       - Enable XRandR
  *
- *  By default SDL will use XRandR if it is available.
+ *  By default SDL will not use XRandR because of window manager issues.
  */
 #define SDL_HINT_VIDEO_X11_XRANDR           "SDL_VIDEO_X11_XRANDR"
 
+/**
+ *  \brief  A variable controlling whether grabbing input grabs the keyboard
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - Grab will affect only the mouse
+ *    "1"       - Grab will affect mouse and keyboard
+ *
+ *  By default SDL will not grab the keyboard so system shortcuts still work.
+ */
+#define SDL_HINT_GRAB_KEYBOARD              "SDL_GRAB_KEYBOARD"
+
+/**
+ *  \brief Minimize your SDL_Window if it loses key focus when in Fullscreen mode. Defaults to true.
+ *
+ */
+#define SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS   "SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS"
+
+	
 /**
  *  \brief  A variable controlling whether the idle timer is disabled on iOS.
  *
@@ -176,6 +194,39 @@ extern "C" {
  *    "LandscapeLeft", "LandscapeRight", "Portrait" "PortraitUpsideDown"
  */
 #define SDL_HINT_ORIENTATIONS "SDL_IOS_ORIENTATIONS"
+
+
+/**
+ *  \brief  A variable that lets you disable the detection and use of Xinput gamepad devices
+ *
+ *  The variable can be set to the following values:
+ *    "0"       - Disable XInput timer (only uses direct input)
+ *    "1"       - Enable XInput timer (the default)
+ */
+#define SDL_HINT_XINPUT_ENABLED "SDL_XINPUT_ENABLED"
+
+
+/**
+ *  \brief  A variable that lets you manually hint extra gamecontroller db entries
+ *  
+ *  The variable should be newline delimited rows of gamecontroller config data, see SDL_gamecontroller.h
+ *
+ *  This hint must be set before calling SDL_Init(SDL_INIT_GAMECONTROLLER)
+ *  You can update mappings after the system is initialized with SDL_GameControllerMappingForGUID() and SDL_GameControllerAddMapping()
+ */
+#define SDL_HINT_GAMECONTROLLERCONFIG "SDL_GAMECONTROLLERCONFIG"
+
+
+/**
+ *  \brief If set to 0 then never set the top most bit on a SDL Window, even if the video mode expects it.
+ *		This is a debugging aid for developers and not expected to be used by end users. The default is "1"
+ *
+ *  This variable can be set to the following values:
+ *    "0"       - don't allow topmost
+ *    "1"       - allow topmost
+ */
+#define SDL_HINT_ALLOW_TOPMOST "SDL_ALLOW_TOPMOST"
+
 
 
 /**

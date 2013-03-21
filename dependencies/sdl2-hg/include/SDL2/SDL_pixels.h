@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -114,9 +114,10 @@ enum
 #define SDL_DEFINE_PIXELFOURCC(A, B, C, D) SDL_FOURCC(A, B, C, D)
 
 #define SDL_DEFINE_PIXELFORMAT(type, order, layout, bits, bytes) \
-    ((1 << 31) | ((type) << 24) | ((order) << 20) | ((layout) << 16) | \
+    ((1 << 28) | ((type) << 24) | ((order) << 20) | ((layout) << 16) | \
      ((bits) << 8) | ((bytes) << 0))
 
+#define SDL_PIXELFLAG(X)	(((X) >> 28) & 0x0F)
 #define SDL_PIXELTYPE(X)	(((X) >> 24) & 0x0F)
 #define SDL_PIXELORDER(X)	(((X) >> 20) & 0x0F)
 #define SDL_PIXELLAYOUT(X)	(((X) >> 16) & 0x0F)
@@ -140,8 +141,9 @@ enum
       (SDL_PIXELORDER(format) == SDL_PACKEDORDER_ABGR) || \
       (SDL_PIXELORDER(format) == SDL_PACKEDORDER_BGRA)))
 
+/* The flag is set to 1 because 0x1? is not in the printable ASCII range */
 #define SDL_ISPIXELFORMAT_FOURCC(format)    \
-    ((format) && !((format) & 0x80000000))
+    ((format) && (SDL_PIXELFLAG(format) != 1))
 
 /* Note: If you modify this list, update SDL_GetPixelFormatName() */
 enum

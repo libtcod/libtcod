@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -91,8 +91,6 @@ disable assertions.
 #define SDL_disabled_assert(condition) \
     do { (void) sizeof ((condition)); } while (0)
 
-#if (SDL_ASSERT_LEVEL > 0)
-
 typedef enum
 {
     SDL_ASSERTION_RETRY,  /**< Retry the assert immediately. */
@@ -112,6 +110,8 @@ typedef struct SDL_assert_data
     const char *function;
     const struct SDL_assert_data *next;
 } SDL_assert_data;
+
+#if (SDL_ASSERT_LEVEL > 0)
 
 /* Never call this directly. Use the SDL_assert* macros. */
 extern DECLSPEC SDL_assert_state SDLCALL SDL_ReportAssertion(SDL_assert_data *,

@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -70,8 +70,15 @@ extern DECLSPEC SDL_mutex *SDLCALL SDL_CreateMutex(void);
  *  
  *  \return 0, or -1 on error.
  */
-#define SDL_LockMutex(m)	SDL_mutexP(m)
-extern DECLSPEC int SDLCALL SDL_mutexP(SDL_mutex * mutex);
+#define SDL_mutexP(m)	SDL_LockMutex(m)
+extern DECLSPEC int SDLCALL SDL_LockMutex(SDL_mutex * mutex);
+
+/**
+ *  Try to lock the mutex
+ *  
+ *  \return 0, SDL_MUTEX_TIMEDOUT, or -1 on error
+ */
+extern DECLSPEC int SDLCALL SDL_TryLockMutex(SDL_mutex * mutex);
 
 /**
  *  Unlock the mutex.
@@ -81,8 +88,8 @@ extern DECLSPEC int SDLCALL SDL_mutexP(SDL_mutex * mutex);
  *  \warning It is an error to unlock a mutex that has not been locked by
  *           the current thread, and doing so results in undefined behavior.
  */
-#define SDL_UnlockMutex(m)	SDL_mutexV(m)
-extern DECLSPEC int SDLCALL SDL_mutexV(SDL_mutex * mutex);
+#define SDL_mutexV(m)	SDL_UnlockMutex(m)
+extern DECLSPEC int SDLCALL SDL_UnlockMutex(SDL_mutex * mutex);
 
 /** 
  *  Destroy a mutex.

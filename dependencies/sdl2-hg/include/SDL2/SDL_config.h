@@ -1,7 +1,7 @@
 /* include/SDL_config.h.  Generated from SDL_config.h.in by configure.  */
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -71,6 +71,8 @@
 #define HAVE_SIGNAL_H 1
 /* #undef HAVE_ALTIVEC_H */
 /* #undef HAVE_PTHREAD_NP_H */
+/* #undef HAVE_LIBUDEV_H */
+/* #undef HAVE_DBUS_DBUS_H */
 
 /* C library functions */
 #define HAVE_MALLOC 1
@@ -140,6 +142,8 @@
 #define HAVE_SIN 1
 #define HAVE_SINF 1
 #define HAVE_SQRT 1
+/* #undef HAVE_FSEEKO */
+#define HAVE_FSEEKO64 1
 /* #undef HAVE_SIGACTION */
 /* #undef HAVE_SA_SIGACTION */
 /* #undef HAVE_SETJMP */
@@ -195,7 +199,6 @@
 /* #undef SDL_AUDIO_DRIVER_ESD_DYNAMIC */
 /* #undef SDL_AUDIO_DRIVER_NAS */
 /* #undef SDL_AUDIO_DRIVER_NAS_DYNAMIC */
-/* #undef SDL_AUDIO_DRIVER_NDS */
 /* #undef SDL_AUDIO_DRIVER_OSS */
 /* #undef SDL_AUDIO_DRIVER_OSS_SOUNDCARD_H */
 /* #undef SDL_AUDIO_DRIVER_PAUDIO */
@@ -213,7 +216,6 @@
 /* #undef SDL_JOYSTICK_DUMMY */
 /* #undef SDL_JOYSTICK_IOKIT */
 /* #undef SDL_JOYSTICK_LINUX */
-/* #undef SDL_JOYSTICK_NDS */
 #define SDL_JOYSTICK_WINMM 1
 /* #undef SDL_JOYSTICK_USBHID */
 /* #undef SDL_JOYSTICK_USBHID_MACHINE_JOYSTICK_H */
@@ -231,7 +233,6 @@
 
 /* Enable various threading systems */
 /* #undef SDL_THREAD_BEOS */
-/* #undef SDL_THREAD_NDS */
 /* #undef SDL_THREAD_PTHREAD */
 /* #undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX */
 /* #undef SDL_THREAD_PTHREAD_RECURSIVE_MUTEX_NP */
@@ -240,7 +241,6 @@
 /* Enable various timer systems */
 /* #undef SDL_TIMER_BEOS */
 /* #undef SDL_TIMER_DUMMY */
-/* #undef SDL_TIMER_NDS */
 /* #undef SDL_TIMER_UNIX */
 #define SDL_TIMER_WINDOWS 1
 
@@ -250,7 +250,6 @@
 /* #undef SDL_VIDEO_DRIVER_DIRECTFB */
 /* #undef SDL_VIDEO_DRIVER_DIRECTFB_DYNAMIC */
 #define SDL_VIDEO_DRIVER_DUMMY 1
-/* #undef SDL_VIDEO_DRIVER_NDS */
 #define SDL_VIDEO_DRIVER_WINDOWS 1
 /* #undef SDL_VIDEO_DRIVER_X11 */
 /* #undef SDL_VIDEO_DRIVER_X11_DYNAMIC */
@@ -294,7 +293,6 @@
 #define SDL_POWER_WINDOWS 1
 /* #undef SDL_POWER_MACOSX */
 /* #undef SDL_POWER_BEOS */
-/* #undef SDL_POWER_NINTENDODS */
 /* #undef SDL_POWER_HARDWIRED */
 
 /* Enable assembly routines */

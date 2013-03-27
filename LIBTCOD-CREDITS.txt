@@ -6,7 +6,7 @@ Products :
    http://www.zlib.org
 - lodepng 20120729, by Lode Vandevenne
    http://lodev.org/lodepng
-- SDL 1.2.12, by Sam Lantinga
+- SDL 1.2.15, by Sam Lantinga
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback and patches, and especially :

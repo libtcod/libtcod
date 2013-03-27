@@ -3,6 +3,8 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.6.0 : ?
+=========================================================
 1.5.2 : ?
 + added mid point displacement algorithm to the heightmap toolkit
 + added TCODConsole::hasMouseFocus() and TCODConsole::isActive()

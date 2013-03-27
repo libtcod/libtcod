@@ -1,5 +1,5 @@
 /*
-* libtcod 1.5.2
+* libtcod 1.6.0
 * Copyright (c) 2008,2009,2010 Jice & Mingos
 * All rights reserved.
 *

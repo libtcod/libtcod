@@ -85,6 +85,7 @@ LIBOBJS= \
 	path_c.o \
 	sys_c.o \
 	sys_sdl_c.o \
+	sys_sdl12_c.o \
 	sys_sdl_img_bmp.o \
 	sys_sdl_img_png.o \
 	tree_c.o \

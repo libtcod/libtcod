@@ -16,7 +16,12 @@ ZLIB_LIBS=lib/libz.a
 #OPENGL
 OPENGL_LIB=-lGL
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) -fno-strict-aliasing -ansi
+# 32/64 bit detection
+ARCH=$(shell getconf LONG_BIT)
+CFLAGS_32=
+CFLAGS_64=-fPIC
+
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) -fno-strict-aliasing -ansi $(CFLAGS_$(ARCH))
 TEMP=/tmp
 CC=gcc
 CPP=g++

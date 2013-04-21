@@ -16,12 +16,9 @@ ZLIB_LIBS=lib/libz.a
 #OPENGL
 OPENGL_LIB=-lGL
 
-# 32/64 bit detection
-ARCH=$(shell getconf LONG_BIT)
-CFLAGS_32=
-CFLAGS_64=-fPIC
+LIBS=$(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -lm -ldl -lX11 -lpthread
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) -fno-strict-aliasing -ansi $(CFLAGS_$(ARCH))
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) -fno-strict-aliasing -ansi -fPIC
 TEMP=/tmp
 CC=gcc
 CPP=g++
@@ -173,27 +170,27 @@ libtcodxx.a : $(LIBOBJS_CPP_DEBUG)
 
 libtcod.so : $(TEMP)/libtcod/release/png $(LIBOBJS_C_RELEASE)  lib/libz.a
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C_RELEASE) $(ZLIB_LIBS) $(SDL_LIBS) $(CFLAGS) $(OPENGL_LIB)
+	@gcc -shared -Wl,-soname,libtcod.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_C_RELEASE) $(LIBS) $(CFLAGS)
 
 libtcodxx.so : $(TEMP)/libtcod/release/png $(LIBOBJS_CPP_RELEASE)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP_RELEASE) -L. -ltcod $(CFLAGS)
+	@g++ -shared -Wl,-soname,libtcodxx.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_CPP_RELEASE) -L. -ltcod $(CFLAGS)
 
 libtcodgui.so : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(GUIOBJS_RELEASE) -L. -ltcod -ltcodxx $(CFLAGS)
+	@g++ -shared -Wl,-soname,libtcodgui.so.1 $(LDFLAGS) -o $@ $(GUIOBJS_RELEASE) -L. -ltcod -ltcodxx $(CFLAGS)
 
 libtcod_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_C_DEBUG) lib/libz.a
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_C_DEBUG) $(ZLIB_LIBS) $(SDL_LIBS) $(CFLAGS) $(OPENGL_LIB)
+	@gcc -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_C_DEBUG) $(LIBS) $(CFLAGS)
 
 libtcodxx_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_CPP_DEBUG)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(LIBOBJS_CPP_DEBUG) -L. -ltcod_debug $(CFLAGS)
+	@g++ -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_CPP_DEBUG) -L. -ltcod_debug $(CFLAGS)
 
 libtcodgui_debug.so : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ -o $@ $(GUIOBJS_DEBUG) -L. -ltcod_debug -ltcodxx_debug $(CFLAGS)
+	@g++ -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(GUIOBJS_DEBUG) -L. -ltcod_debug -ltcodxx_debug $(CFLAGS)
 
 clean : 
 	\rm -f $(LIBOBJS_C_RELEASE) $(LIBOBJS_CPP_RELEASE) $(GUIOBJS_RELEASE) $(LIBOBJS_C_DEBUG) $(LIBOBJS_CPP_DEBUG) $(GUIOBJS_DEBUG) libtcod.a libtcodxx.a libtcod.so libtcodxx.so libtcodgui.so libtcod_debug.so libtcodxx_debug.so libtcodgui_debug.so libtcodpy.pyc

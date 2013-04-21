@@ -104,7 +104,6 @@
 	Compile the library :
 	<pre name="code" class="brush: bash">cd libtcod/</pre>
 	<pre name="code" class="brush: bash">make -f makefiles/makefile-linux clean all</pre>
-	(or makefile-linux64 on 64 bits linux)
 
 	Compile the samples :
 	<pre name="code" class="brush: bash">make -f makefiles/makefile-samples-linux</pre>

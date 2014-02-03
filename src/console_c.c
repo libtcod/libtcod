@@ -700,7 +700,7 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 		}
 		/* check if the string is completely out of the minx,miny,maxx,maxy frame */
 		if ( cy >= miny && cy <= maxy && cx <= maxx && cx+cl -1 >= minx ) {
-			if ( can_split && cy < maxy ) {
+			if ( can_split && cy <= maxy ) {
 				/* if partially out of screen, try to split the sub-message */
 				if ( cx < minx ) split = TCOD_console_forward(c, align == TCOD_CENTER ? cl-2*(minx-cx) : cl-(minx-cx));
 				else if ( align == TCOD_CENTER ) {

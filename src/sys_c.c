@@ -200,8 +200,7 @@ int TCOD_sys_get_num_cores() {
 	  WORD                   LineSize;
 	  DWORD                  Size;
 	  PROCESSOR_CACHE_TYPE   Type;
-	} CACHE_DESCRIPTOR,
-	 *PCACHE_DESCRIPTOR;
+	} CACHE_DESCRIPTOR;
 	typedef enum _LOGICAL_PROCESSOR_RELATIONSHIP {
 	  RelationProcessorCore,
 	  RelationNumaNode,
@@ -652,7 +651,7 @@ char *TCOD_sys_clipboard_get()
 
 /* library initialization function */
 #ifdef TCOD_WINDOWS
-BOOL APIENTRY DllMain( HANDLE hModule, DWORD reason, LPVOID reserved) {
+BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {
 		/* case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;  -- not safe, locks up in SDL2/RegisterClass call */
 		default : break;

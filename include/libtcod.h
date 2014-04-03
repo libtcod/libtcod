@@ -110,12 +110,14 @@
 #endif
 
 /* base types */
+#ifndef TCOD_NOBASETYPES
 typedef unsigned char uint8;
 typedef char int8;
 typedef unsigned short uint16;
 typedef short int16;
 typedef unsigned int uint32;
 typedef int int32;
+#endif
 /* int with the same size as a pointer (32 or 64 depending on OS) */
 typedef long intptr;
 typedef unsigned long uintptr;

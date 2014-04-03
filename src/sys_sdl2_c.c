@@ -316,9 +316,11 @@ static void save_screenshot(const char *filename) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		/* This would be a lot easier if image saving could do textures. */
 	    SDL_Rect rect;
+		Uint32 format;
+		SDL_Texture *texture;
 		SDL_RenderGetViewport(renderer, &rect);
-		Uint32 format = SDL_GetWindowPixelFormat(window);
-		SDL_Texture *texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
+		format = SDL_GetWindowPixelFormat(window);
+		texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
 		if (0 != texture) {
 			if (SDL_SetRenderTarget(renderer, texture)) {
 				void *pixels;

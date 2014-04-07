@@ -4,7 +4,7 @@
 SRCDIR=.
 INCDIR=include
 SDLDIR=dependencies/SDL2-hg
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SDLDIR)/include -I$(SRCDIR) -Wall -DTCOD_SDL2
+CFLAGS=$(FLAGS) -I$(INCDIR) -I$(SDLDIR)/include/SDL2 -I$(SRCDIR) -Wall -DTCOD_SDL2
 CC=mingw32-gcc
 CPP=mingw32-g++
 UPX=dependencies/upx/win/upx.exe

@@ -30,7 +30,7 @@
 #elif defined(TCOD_SDL2)
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif

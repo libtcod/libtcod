@@ -33,7 +33,7 @@
 #include <SDL.h>
 #include <android/log.h>
 #elif defined (TCOD_SDL2)
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif

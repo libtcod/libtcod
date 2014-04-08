@@ -420,8 +420,14 @@ static bool file_write(const char *filename, unsigned char *buf, uint32 size) {
 }
 
 static void term() {
-	window=NULL;
-	scale_screen=NULL;
+	if (window) {
+		SDL_DestroyWindow(window);
+		window=NULL;
+	}
+	if (scale_screen) {
+		SDL_FreeSurface(scale_screen);
+		scale_screen=NULL;
+	}
 	if (renderer) {
 		SDL_DestroyRenderer(renderer);
 		renderer = NULL;

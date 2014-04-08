@@ -841,6 +841,9 @@ void TCOD_sys_flush(bool render) {
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
+	/* If TCOD has been terminated and restarted. */
+	if (old_time > new_time)
+		old_time = elapsed = 0;
 	if ( new_time / 1000 != elapsed ) {
 		/* update fps every second */
 		fps=cur_fps;
@@ -1491,8 +1494,10 @@ void TCOD_sys_sleep_milli(uint32 milliseconds) {
 }
 
 void TCOD_sys_term() {
-	SDL_Quit();
 	sdl->term();
+	SDL_Quit();
+	memset(&scale_data,0,sizeof(scale_data_t));
+	has_startup=false;
 }
 
 void *TCOD_sys_load_image(const char *filename) {

@@ -664,6 +664,7 @@ void TCOD_sys_startup() {
 #ifndef TCOD_SDL2
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
 #endif
+	memset(&TCOD_ctx.key_state,0,sizeof(TCOD_key_t));
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
 #ifndef NO_OPENGL
@@ -999,10 +1000,10 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 }
 
 static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
-	static TCOD_key_t ret;
-	ret.vk=TCODK_NONE;
-	ret.c=0;
-	ret.pressed=0;
+	TCOD_key_t *ret = &TCOD_ctx.key_state;
+	ret->vk=TCODK_NONE;
+	ret->c=0;
+	ret->pressed=0;
 	switch (ev->type) {
 		/* handled in TCOD_sys_handle_event */
 		/*
@@ -1016,20 +1017,20 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 			SDL_KeyboardEvent *kev=&ev->key;
 			TCOD_key_t tmpkey;
 			switch(kev->keysym.sym) {
-				case SDLK_LALT : ret.lalt=0; break;
-				case SDLK_RALT : ret.ralt=0; break;
-				case SDLK_LCTRL : ret.lctrl=0; break;
-				case SDLK_RCTRL : ret.rctrl=0; break;
-				case SDLK_LSHIFT : ret.shift=0; break;
-				case SDLK_RSHIFT : ret.shift=0; break;
+				case SDLK_LALT : ret->lalt=0; break;
+				case SDLK_RALT : ret->ralt=0; break;
+				case SDLK_LCTRL : ret->lctrl=0; break;
+				case SDLK_RCTRL : ret->rctrl=0; break;
+				case SDLK_LSHIFT : ret->shift=0; break;
+				case SDLK_RSHIFT : ret->shift=0; break;
 				default:break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);
 			key_status[tmpkey.vk]=false;
 			if ( flags & TCOD_KEY_RELEASED ) {
-				ret.vk=tmpkey.vk;
-				ret.c=tmpkey.c;
-				ret.pressed=0;
+				ret->vk=tmpkey.vk;
+				ret->c=tmpkey.c;
+				ret->pressed=0;
 			}
 		}
 		break;
@@ -1037,25 +1038,25 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 			SDL_KeyboardEvent *kev=&ev->key;
 			TCOD_key_t tmpkey;
 			switch(kev->keysym.sym) {
-				case SDLK_LALT : ret.lalt=1; break;
-				case SDLK_RALT : ret.ralt=1; break;
-				case SDLK_LCTRL : ret.lctrl=1; break;
-				case SDLK_RCTRL : ret.rctrl=1; break;
-				case SDLK_LSHIFT : ret.shift=1; break;
-				case SDLK_RSHIFT : ret.shift=1; break;
+				case SDLK_LALT : ret->lalt=1; break;
+				case SDLK_RALT : ret->ralt=1; break;
+				case SDLK_LCTRL : ret->lctrl=1; break;
+				case SDLK_RCTRL : ret->rctrl=1; break;
+				case SDLK_LSHIFT : ret->shift=1; break;
+				case SDLK_RSHIFT : ret->shift=1; break;
 				default : break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);
 			key_status[tmpkey.vk]=true;
 			if ( flags & TCOD_KEY_PRESSED ) {
-				ret.vk=tmpkey.vk;
-				ret.c=tmpkey.c;
-				ret.pressed=1;
+				ret->vk=tmpkey.vk;
+				ret->c=tmpkey.c;
+				ret->pressed=1;
 			}
 		}
 		break;
 	}
-	return ret;
+	return *ret;
 }
 
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {

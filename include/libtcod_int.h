@@ -134,6 +134,7 @@ typedef struct {
 	/* fading data */
 	TCOD_color_t fading_color;
 	uint8 fade;
+	TCOD_key_t key_state;
 	/* application window was closed */
 	bool is_window_closed;
 	/* application has mouse focus */

@@ -57,6 +57,8 @@ TCOD_internal_context_t TCOD_ctx={
 	NULL,
 	/* fading data */
 	{0,0,0},255,
+	/*key state*/
+	{0},
 	/* window closed ? */
 	false,
 	/* mouse focus ? */ 

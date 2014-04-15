@@ -1125,7 +1125,18 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
-#ifndef TCOD_SDL2
+#ifdef TCOD_SDL2
+		case SDL_TEXTINPUT: {
+			SDL_TextInputEvent *iev=&ev->text;
+			TCOD_key_t ret;
+			ret.vk = TCODK_TEXT;
+			ret.pressed = 1;
+			strncpy(&ret.text, iev->text, TCOD_KEY_TEXT_SIZE);
+			*key = ret;
+			return retMask | TCOD_EVENT_KEY_PRESS; 
+		}
+		break;
+#else
 		case SDL_ACTIVEEVENT : 
 			switch(ev->active.state) {
 				case SDL_APPMOUSEFOCUS : TCOD_ctx.app_has_mouse_focus=ev->active.gain; break;

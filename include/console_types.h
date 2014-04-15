@@ -94,13 +94,17 @@ typedef enum {
 	TCODK_NUMLOCK,
 	TCODK_SCROLLLOCK,
 	TCODK_SPACE,
-	TCODK_CHAR
+	TCODK_CHAR,
+	TCODK_TEXT
 } TCOD_keycode_t;
 
-/* key data : special code or character */
+#define TCOD_KEY_TEXT_SIZE 32
+
+/* key data : special code or character or text */
 typedef struct {
 	TCOD_keycode_t vk; /*  key code */
 	char c; /* character if vk == TCODK_CHAR else 0 */
+	char text[TCOD_KEY_TEXT_SIZE]; /* text if vk == TCODK_TEXT else text[0] == '\0' */
 	bool pressed ; /* does this correspond to a key press or key release event ? */
 	bool lalt ;
 	bool lctrl ;

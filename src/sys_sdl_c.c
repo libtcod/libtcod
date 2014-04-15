@@ -1388,6 +1388,9 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				TCOD_ctx.app_is_active=true; break;
 			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
 				TCOD_ctx.app_is_active=false; break;
+			case SDL_WINDOWEVENT_EXPOSED:        /**< Window has been returned to and needs a refresh. */
+				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
+				break;
 #ifdef NDEBUG_HMM
 			default:
 				TCOD_LOG(("SDL2 WINDOWEVENT (unknown): 0x%04x\n", ev->window.event));

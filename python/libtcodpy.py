@@ -387,12 +387,13 @@ def color_gen_map(colors, indexes):
 class Key(Structure):
     _fields_=[('vk', c_int),
               ('c', c_uint8),
+              ('text',c_char * 32),
               ('pressed', c_bool),
               ('lalt', c_bool),
               ('lctrl', c_bool),
               ('ralt', c_bool),
               ('rctrl', c_bool),
-              ('shift', c_bool),
+              ('shift', c_bool)
               ]
 
 class ConsoleBuffer:

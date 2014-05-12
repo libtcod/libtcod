@@ -1131,7 +1131,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			TCOD_key_t ret;
 			ret.vk = TCODK_TEXT;
 			ret.pressed = 1;
-			strncpy(&ret.text, iev->text, TCOD_KEY_TEXT_SIZE);
+			strncpy(ret.text, iev->text, TCOD_KEY_TEXT_SIZE);
 			*key = ret;
 			return retMask | TCOD_EVENT_KEY_PRESS; 
 		}

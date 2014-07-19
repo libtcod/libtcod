@@ -119,8 +119,13 @@ typedef unsigned int uint32;
 typedef int int32;
 #endif
 /* int with the same size as a pointer (32 or 64 depending on OS) */
+#ifdef TCOD_WIN64
+typedef long long intptr;
+typedef unsigned long long uintptr;
+#else
 typedef long intptr;
 typedef unsigned long uintptr;
+#endif
 
 #define TCOD_HEXVERSION 0x010600
 #define TCOD_STRVERSION "1.6.0"

@@ -67,6 +67,15 @@
 #  define TCOD_WINDOWS
 #  define TCOD_MINGW32
 #  define TCOD_WIN32
+#elif defined( __MINGW64__ )
+#  define TCOD_WINDOWS
+#  define TCOD_MINGW32
+#  ifdef _WIN64
+#    define TCOD_WIN64
+#    define TCOD_64BITS
+#  else
+#    define TCOD_WIN32
+#  endif   
 #elif defined( __HAIKU__ )
 #  define TCOD_HAIKU
 #  define TCOD_GCC

@@ -664,6 +664,9 @@ void TCOD_text_reset (TCOD_text_t txt) {
     TCOD_IFNOT(data && data->con ) return;
     memset(data->text,'\0',data->len);
     data->curlen = 0;
+    data->cursor_pos = 0;
+	data->sel_start = MAX_INT;
+	data->sel_end = -1;
     data->input_continue = true;
 }
 

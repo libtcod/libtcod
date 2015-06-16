@@ -1424,7 +1424,6 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	SDL_Event ev;
 	TCOD_event_t retMask=0;
 	if ( eventMask == 0 ) return 0;
-	SDL_PumpEvents();
 	if ( flush ) {
 		while ( SDL_PollEvent(&ev) ) {
 			TCOD_sys_SDLtoTCOD(&ev,0);
@@ -1453,7 +1452,6 @@ TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse
 	SDL_Event ev;
 	TCOD_event_t retMask=0;
 	if ( eventMask == 0 ) return 0;
-	SDL_PumpEvents();
 	tcod_mouse.lbutton_pressed =false;
 	tcod_mouse.rbutton_pressed =false;
 	tcod_mouse.mbutton_pressed =false;

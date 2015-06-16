@@ -1348,29 +1348,38 @@ public :
 		typedef struct {
 			TCOD_keycode_t vk;
 			char c;
+			char text[32];
 			bool pressed;
 			bool lalt;
 			bool lctrl;
+			bool lmeta;
 			bool ralt;
 			bool rctrl;
+			bool rmeta;
 			bool shift;
 		} TCOD_key_t;
 	@Lua
 		key.KeyCode
 		key.Character
+		key.Text
 		key.Pressed
 		key.LeftAlt
 		key.LeftControl
+		key.LeftMeta
 		key.RightAlt
 		key.RightControl
+		key.RightMeta
 		key.Shift
 	@Param vk An arbitrary value representing the physical key on the keyboard. Possible values are stored in the TCOD_keycode_t enum. If no key was pressed, the value is TCODK_NONE
 	@Param c If the key correspond to a printable character, the character is stored in this field. Else, this field contains 0.
+	@Param text If vk is TCODK_TEXT, this will contain the text entered by the user.
 	@Param pressed true if the event is a key pressed, or false for a key released.
 	@Param lalt This field represents the status of the left Alt key : true => pressed, false => released.
 	@Param lctrl This field represents the status of the left Control key : true => pressed, false => released.
+	@Param lmeta This field represents the status of the left Meta (Windows/Command/..) key : true => pressed, false => released.
 	@Param ralt This field represents the status of the right Alt key : true => pressed, false => released.
 	@Param rctrl This field represents the status of the right Control key : true => pressed, false => released.
+	@Param rmeta This field represents the status of the right Meta (Windows/Command/..) key : true => pressed, false => released.
 	@Param shift This field represents the status of the shift key : true => pressed, false => released.
 	*/
 
@@ -1378,7 +1387,7 @@ public :
 	@PageName console_mouse_t
 	@PageTitle Mouse event structure
 	@PageFather console_input
-	@PageDesc This tructure contains information about a mouse move/press/release event.
+	@PageDesc This structure contains information about a mouse move/press/release event.
 	@C
 		typedef struct {
 		  int x,y;

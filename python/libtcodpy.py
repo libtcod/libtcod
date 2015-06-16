@@ -391,8 +391,10 @@ class Key(Structure):
               ('pressed', c_bool),
               ('lalt', c_bool),
               ('lctrl', c_bool),
+              ('lmeta', c_bool),
               ('ralt', c_bool),
               ('rctrl', c_bool),
+              ('rmeta', c_bool),
               ('shift', c_bool)
               ]
 

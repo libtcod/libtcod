@@ -108,8 +108,10 @@ typedef struct {
 	bool pressed ; /* does this correspond to a key press or key release event ? */
 	bool lalt ;
 	bool lctrl ;
+	bool lmeta ;
 	bool ralt ;
 	bool rctrl ;
+	bool rmeta ;
 	bool shift ;
 } TCOD_key_t;
 

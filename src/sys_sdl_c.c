@@ -1024,6 +1024,13 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 				case SDLK_RCTRL : ret->rctrl=0; break;
 				case SDLK_LSHIFT : ret->shift=0; break;
 				case SDLK_RSHIFT : ret->shift=0; break;
+#ifdef TCOD_SDL2
+				case SDLK_LGUI : ret->lmeta=0; break;
+				case SDLK_RGUI : ret->rmeta=0; break;
+#else
+				case SDLK_LSUPER : ret->lmeta=0; break;
+				case SDLK_RSUPER : ret->rmeta=0; break;
+#endif
 				default:break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);
@@ -1045,6 +1052,13 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 				case SDLK_RCTRL : ret->rctrl=1; break;
 				case SDLK_LSHIFT : ret->shift=1; break;
 				case SDLK_RSHIFT : ret->shift=1; break;
+#ifdef TCOD_SDL2
+				case SDLK_LGUI : ret->lmeta=1; break;
+				case SDLK_RGUI : ret->rmeta=1; break;
+#else
+				case SDLK_LSUPER : ret->lmeta=1; break;
+				case SDLK_RSUPER : ret->rmeta=1; break;
+#endif
 				default : break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);

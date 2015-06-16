@@ -964,6 +964,7 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 #ifdef TCOD_SDL2	
 		case SDLK_RGUI : ret->vk=TCODK_RWIN;break;
 		case SDLK_LGUI : ret->vk=TCODK_LWIN;break;
+		case SDLK_NUMLOCKCLEAR : ret->vk=TCODK_NUMLOCK;break;
 		case SDLK_KP_0 : ret->vk=TCODK_KP0;break;
 		case SDLK_KP_1 : ret->vk=TCODK_KP1;break;
 		case SDLK_KP_2 : ret->vk=TCODK_KP2;break;

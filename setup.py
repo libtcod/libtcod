@@ -107,7 +107,9 @@ setup(
     cmdclass=cmdclass,
     
     # ensure ctypes is installed
-    install_requires=['ctypes>=1.0.0'],
+    #install_requires=['ctypes>=1.0.0'],
+    # a good idea in theory, but pip tries to install it when it already exists
+    # in most Python versions and crashes the installation.
     
     # tell setuptools that this module is zip unsafe
     # setuptools seems to break on its automatic check for some reason

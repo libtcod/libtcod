@@ -101,7 +101,6 @@ setup(
     
     # package named to be compatible with the tutorial
     packages=['libtcodpy'],
-    package_dir={'libtcodpy': 'python/libtcodpy'},
     
     # use added and modified commands
     cmdclass=cmdclass,
@@ -110,10 +109,6 @@ setup(
     #install_requires=['ctypes>=1.0.0'],
     # a good idea in theory, but pip tries to install it when it already exists
     # in most Python versions and crashes the installation.
-    
-    # tell setuptools that this module is zip unsafe
-    # setuptools seems to break on its automatic check for some reason
-    zip_safe = False,
     
     # optional metadata for pypi
     description = '',

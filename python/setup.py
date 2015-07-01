@@ -5,7 +5,12 @@ import os
 
 from distutils.command.build import build as orig_build
 from distutils.util import get_platform
+from distutils import file_util
 from setuptools import setup, Command
+
+# this flag tells the script if this is a sdist build
+# True if python is a subdirectory, which means we are above it
+IS_PYTHON_SDIST = os.path.exists('python/')
 
 class build_make(Command):
     description = "run the makefile and include the libraries in the build"
@@ -14,23 +19,24 @@ class build_make(Command):
                      "ignore errors from makefile commands"),
                    ]
 
-    boolean_options = ['skip-build']
+    boolean_options = ['ignore-errors']
 
     def initialize_options(self):
         self.build_lib = None
         self.ignore_errors = False
         self.makefile = None
         self.make_data = None # {package: files}
+        place_dll_dir = 'libtcodpy'
         
         if 'linux' in sys.platform:
-            self.makefile = 'makefiles\makefile-linux'
-            self.make_data = {'libtcodpy': ['libtcod.so']}
+            self.makefile = 'makefiles/makefile-linux'
+            self.make_data = {place_dll_dir: ['libtcod.so']}
         elif 'haiku' in sys.platform:
-            self.makefile = 'makefiles\makefile-haiku'
-            self.make_data = {'libtcodpy': ['libtcod.so']}
+            self.makefile = 'makefiles/makefile-haiku'
+            self.make_data = {place_dll_dir: ['libtcod.so']}
         elif 'win' in sys.platform:
-            self.makefile = 'makefiles\makefile-mingw-sdl2'
-            self.make_data = {'libtcodpy': ['libtcod-mingw.dll', 'SDL2.dll']}
+            self.makefile = 'makefiles/makefile-mingw-sdl2'
+            self.make_data = {place_dll_dir: ['libtcod-mingw.dll', 'SDL2.dll']}
         else:
             raise StandardError('No makefile exists for the %s platform' %
                                  sys.platform)
@@ -42,7 +48,7 @@ class build_make(Command):
     def run(self):
         cmd = ['make', '-f', self.makefile,'release']
         if self.ignore_errors:
-            cmd += ['-i']
+            cmd += ['--ignore-errors']
         if self.dry_run:
             cmd += ['--dry-run']
         self.spawn(cmd)
@@ -50,7 +56,7 @@ class build_make(Command):
             for file in files:
                 self.copy_file(os.path.join('.', file),
                                os.path.join(self.build_lib, directory, file))
-
+       
 class build(orig_build):
     
     def initialize_options(self):
@@ -92,7 +98,15 @@ try:
 except ImportError:
     pass
 
-setup(
+try:
+    if not IS_PYTHON_SDIST:
+        # move up and copy important setup files for the duration of the script
+        os.chdir('..')
+        file_util.copy_file('python/setup.cfg', 'setup.cfg', link='hard')
+        file_util.copy_file('python/MANIFEST.in', 'MANIFEST.in', link='hard')
+        file_util.copy_file('python/setup.py', 'setup.py', link='hard')
+
+    setup(
     # public name, e.g. > pip install libtcod
     name='libtcod',
     
@@ -101,12 +115,23 @@ setup(
     
     # package named to be compatible with the tutorial
     packages=['libtcodpy'],
+    package_dir={'libtcodpy':'python/libtcodpy'},
     
     # use added and modified commands
     cmdclass=cmdclass,
     
+    # important metadata
+    url = 'https://bitbucket.org/libtcod/libtcod',
+    maintainer = '',
+    maintainer_email = '',
+    
     # optional metadata for pypi
     description = '',
-    url = 'https://bitbucket.org/libtcod/libtcod',
     license = 'Revised BSD License', # 3-clause BSD license
-)
+    )
+finally:
+    if not IS_PYTHON_SDIST:
+        # remove the redundant setup files
+        os.remove('setup.cfg')
+        os.remove('MANIFEST.in')
+        os.remove('setup.py')

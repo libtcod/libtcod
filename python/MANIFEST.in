@@ -1,9 +1,16 @@
-include data/*
-include dependencies/*
-include makefiles/*
+recursive-include data *
+recursive-include dependencies *
+recursive-include makefiles *
+recursive-include include *
+recursive-include src *
+recursive-include python *.py
 include lib/donotremove
-include *.txt
 include *.py
-include *.png
 include *.cfg
+include *.in
+include *.txt
+include *.png
 include SDL2.dll
+exclude python/setup.py
+exclude python/setup.cfg
+exclude python/MANIFEST.in

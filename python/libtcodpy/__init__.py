@@ -48,8 +48,8 @@ MSVC=False
 # add package directory (where the DLL's are) to environ
 os.environ['PATH'] += ';' + __path__[0]
 
-# develop mode path, DLL's are one level up from the package
-os.environ['PATH'] += ';' + os.path.join(__path__[0], '..')
+# develop mode path, DLL's are some levels up from the package directory
+os.environ['PATH'] += ';' + os.path.join(__path__[0], '../..')
 
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']

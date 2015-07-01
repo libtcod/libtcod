@@ -1,0 +1,9 @@
+include data/*
+include dependencies/*
+include makefiles/*
+include lib/donotremove
+include *.txt
+include *.py
+include *.png
+include *.cfg
+include SDL2.dll

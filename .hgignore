@@ -14,3 +14,4 @@ CMakeCache.txt
 \.a$
 \.egg-info/
 __pycache__
+\.py[co]

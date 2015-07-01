@@ -25,6 +25,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import os
 import sys
 import ctypes
 import struct
@@ -43,6 +44,10 @@ LINUX=False
 MAC=False
 MINGW=False
 MSVC=False
+
+# add package directory (where the DLL's are) to environ
+os.environ['PATH'] += ';' + __path__[0]
+
 if sys.platform.find('linux') != -1:
     _lib = ctypes.cdll['./libtcod.so']
     LINUX=True
@@ -125,7 +130,7 @@ class Color(Structure):
 
 # Should be valid on any platform, check it!  Has to be done after Color is defined.
 if MAC:
-    from cprotos import setup_protos
+    from .cprotos import setup_protos
     setup_protos(_lib)
 
 _lib.TCOD_color_equals.restype = c_bool

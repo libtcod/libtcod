@@ -12,3 +12,4 @@ Makefile$
 .*/[Release|Debug]
 CMakeCache.txt
 \.a$
+\.egg-info/

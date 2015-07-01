@@ -105,11 +105,6 @@ setup(
     # use added and modified commands
     cmdclass=cmdclass,
     
-    # ensure ctypes is installed
-    #install_requires=['ctypes>=1.0.0'],
-    # a good idea in theory, but pip tries to install it when it already exists
-    # in most Python versions and crashes the installation.
-    
     # optional metadata for pypi
     description = '',
     url = 'https://bitbucket.org/libtcod/libtcod',

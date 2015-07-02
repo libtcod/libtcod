@@ -45,27 +45,37 @@ MAC=False
 MINGW=False
 MSVC=False
 
-# add package directory (where the DLL's are) to environ
-os.environ['PATH'] += ';' + __path__[0]
-
-# develop mode path, DLL's are some levels up from the package directory
-os.environ['PATH'] += ';' + os.path.join(__path__[0], '../..')
+def _get_cdll(libname):
+    ''' 
+        get the library libname using a manual search path that will first
+        check the package directory and then the development path
+        
+        returns the ctypes lib object
+    '''
+    try:
+        # get library from the package
+        return ctypes.cdll[os.path.realpath(os.path.join(__path__[0], libname))]
+    except OSError:
+        # or try to get get it from the development path
+        return ctypes.cdll[os.path.realpath(os.path.join(__path__[0],
+                                                         '../..', libname))]
 
 if sys.platform.find('linux') != -1:
-    _lib = ctypes.cdll['./libtcod.so']
+    _lib = _get_cdll('libtcod.so')
     LINUX=True
 elif sys.platform.find('darwin') != -1:
-    _lib = ctypes.cdll['./libtcod.dylib']
+    _lib = _get_cdll('libtcod.dylib')
     MAC = True
 elif sys.platform.find('haiku') != -1:
-    _lib = ctypes.cdll['./libtcod.so']
+    _lib = _get_cdll('libtcod.so')
     HAIKU = True
 else:
+    _get_cdll('SDL.dll')
     try:
-        _lib = ctypes.cdll['./libtcod-mingw.dll']
+        _lib = _get_cdll('libtcod-mingw.dll')
         MINGW=True
     except WindowsError:
-        _lib = ctypes.cdll['./libtcod-VS.dll']
+        _lib = _get_cdll('libtcod-VS.dll')
         MSVC=True
     # On Windows, ctypes doesn't work well with function returning structs,
     # so we have to user the _wrapper functions instead

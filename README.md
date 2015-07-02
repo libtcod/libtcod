@@ -1,6 +1,12 @@
-# README #
-
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing an advanced true color console, input, and lots of other utilities frequently used in roguelikes.
+
+## What can it do? ##
+
+If you want to get a quick overview of the features that libtcod provides, check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features) page.
+
+If you want to get a quick overview of games which have used libtcod, check out the [Projects](http://roguecentral.org/doryen/projects-2/) page.
+
+libtcod is also well known for it's [easy to follow tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod), which many people have used to get started developing a roguelike.  Note that the tutorial uses the last stable version of libtcod, so you can't just grab the latest source code from here and run with it.  Follow the relevant links the tutorial gives, and it will point you to the right locations.
 
 ### How do I get set up? ###
 

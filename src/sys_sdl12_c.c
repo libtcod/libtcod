@@ -24,6 +24,8 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_SDL2
+
 #include "libtcod.h"
 #include "libtcod_int.h"
 
@@ -273,3 +275,4 @@ TCOD_SDL_driver_t *SDL_implementation_factory() {
 	return ret;
 }
 
+#endif

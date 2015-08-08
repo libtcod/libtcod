@@ -26,7 +26,7 @@
 */
 #include <stdlib.h>
 #include <string.h>
-#include <zlib.h>
+#include "zlib/zlib.h"
 #include "libtcod.h"
 #include "libtcod_int.h"
 

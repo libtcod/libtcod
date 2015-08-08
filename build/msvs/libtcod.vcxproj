@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D6197244-2BEB-4AED-988E-CC1F0B647055}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="common.props" />
+    <Import Project="core.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="common.props" />
+    <Import Project="core.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\RMT\VCS\GIT\Games\roguelike - incursion\repo\build\dependencies\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <AdditionalDependencies>SDL2_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\RMT\VCS\GIT\Games\roguelike - incursion\repo\build\dependencies\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>C:\RMT\VCS\GIT\Games\roguelike - incursion\repo\build\dependencies\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
+      <AdditionalDependencies>SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\RMT\VCS\GIT\Games\roguelike - incursion\repo\build\dependencies\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\bresenham.cpp" />
+    <ClCompile Include="..\..\src\bresenham_c.c" />
+    <ClCompile Include="..\..\src\bsp.cpp" />
+    <ClCompile Include="..\..\src\bsp_c.c" />
+    <ClCompile Include="..\..\src\color.cpp" />
+    <ClCompile Include="..\..\src\color_c.c" />
+    <ClCompile Include="..\..\src\console.cpp" />
+    <ClCompile Include="..\..\src\console_c.c" />
+    <ClCompile Include="..\..\src\fov.cpp" />
+    <ClCompile Include="..\..\src\fov_c.c" />
+    <ClCompile Include="..\..\src\fov_circular_raycasting.c" />
+    <ClCompile Include="..\..\src\fov_diamond_raycasting.c" />
+    <ClCompile Include="..\..\src\fov_permissive2.c" />
+    <ClCompile Include="..\..\src\fov_recursive_shadowcasting.c" />
+    <ClCompile Include="..\..\src\fov_restrictive.c" />
+    <ClCompile Include="..\..\src\heightmap.cpp" />
+    <ClCompile Include="..\..\src\heightmap_c.c" />
+    <ClCompile Include="..\..\src\image.cpp" />
+    <ClCompile Include="..\..\src\image_c.c" />
+    <ClCompile Include="..\..\src\lex.cpp" />
+    <ClCompile Include="..\..\src\lex_c.c" />
+    <ClCompile Include="..\..\src\list_c.c" />
+    <ClCompile Include="..\..\src\mersenne.cpp" />
+    <ClCompile Include="..\..\src\mersenne_c.c" />
+    <ClCompile Include="..\..\src\mouse.cpp" />
+    <ClCompile Include="..\..\src\namegen.cpp" />
+    <ClCompile Include="..\..\src\namegen_c.c" />
+    <ClCompile Include="..\..\src\noise.cpp" />
+    <ClCompile Include="..\..\src\noise_c.c" />
+    <ClCompile Include="..\..\src\parser.cpp" />
+    <ClCompile Include="..\..\src\parser_c.c" />
+    <ClCompile Include="..\..\src\path.cpp" />
+    <ClCompile Include="..\..\src\path_c.c" />
+    <ClCompile Include="..\..\src\png\lodepng.c" />
+    <ClCompile Include="..\..\src\sys.cpp" />
+    <ClCompile Include="..\..\src\sys_c.c" />
+    <ClCompile Include="..\..\src\sys_opengl_c.c" />
+    <ClCompile Include="..\..\src\sys_sdl12_c.c" />
+    <ClCompile Include="..\..\src\sys_sdl2_c.c" />
+    <ClCompile Include="..\..\src\sys_sdl_c.c" />
+    <ClCompile Include="..\..\src\sys_sdl_img_bmp.c" />
+    <ClCompile Include="..\..\src\sys_sdl_img_png.c" />
+    <ClCompile Include="..\..\src\tree_c.c" />
+    <ClCompile Include="..\..\src\txtfield.cpp" />
+    <ClCompile Include="..\..\src\txtfield_c.c" />
+    <ClCompile Include="..\..\src\wrappers.c" />
+    <ClCompile Include="..\..\src\zip.cpp" />
+    <ClCompile Include="..\..\src\zip_c.c" />
+    <ClCompile Include="..\..\src\zlib\adler32.c" />
+    <ClCompile Include="..\..\src\zlib\compress.c" />
+    <ClCompile Include="..\..\src\zlib\crc32.c" />
+    <ClCompile Include="..\..\src\zlib\deflate.c" />
+    <ClCompile Include="..\..\src\zlib\gzclose.c" />
+    <ClCompile Include="..\..\src\zlib\gzlib.c" />
+    <ClCompile Include="..\..\src\zlib\gzread.c" />
+    <ClCompile Include="..\..\src\zlib\gzwrite.c" />
+    <ClCompile Include="..\..\src\zlib\infback.c" />
+    <ClCompile Include="..\..\src\zlib\inffast.c" />
+    <ClCompile Include="..\..\src\zlib\inflate.c" />
+    <ClCompile Include="..\..\src\zlib\inftrees.c" />
+    <ClCompile Include="..\..\src\zlib\trees.c" />
+    <ClCompile Include="..\..\src\zlib\uncompr.c" />
+    <ClCompile Include="..\..\src\zlib\zutil.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\include\bresenham.h" />
+    <ClInclude Include="..\..\include\bresenham.hpp" />
+    <ClInclude Include="..\..\include\bsp.h" />
+    <ClInclude Include="..\..\include\bsp.hpp" />
+    <ClInclude Include="..\..\include\color.h" />
+    <ClInclude Include="..\..\include\color.hpp" />
+    <ClInclude Include="..\..\include\console.h" />
+    <ClInclude Include="..\..\include\console.hpp" />
+    <ClInclude Include="..\..\include\console_types.h" />
+    <ClInclude Include="..\..\include\fov.h" />
+    <ClInclude Include="..\..\include\fov.hpp" />
+    <ClInclude Include="..\..\include\fov_types.h" />
+    <ClInclude Include="..\..\include\heightmap.h" />
+    <ClInclude Include="..\..\include\heightmap.hpp" />
+    <ClInclude Include="..\..\include\howto.hpp" />
+    <ClInclude Include="..\..\include\image.h" />
+    <ClInclude Include="..\..\include\image.hpp" />
+    <ClInclude Include="..\..\include\lex.h" />
+    <ClInclude Include="..\..\include\lex.hpp" />
+    <ClInclude Include="..\..\include\libtcod.h" />
+    <ClInclude Include="..\..\include\libtcod.hpp" />
+    <ClInclude Include="..\..\include\libtcod_int.h" />
+    <ClInclude Include="..\..\include\list.h" />
+    <ClInclude Include="..\..\include\list.hpp" />
+    <ClInclude Include="..\..\include\mersenne.h" />
+    <ClInclude Include="..\..\include\mersenne.hpp" />
+    <ClInclude Include="..\..\include\mersenne_types.h" />
+    <ClInclude Include="..\..\include\mouse.h" />
+    <ClInclude Include="..\..\include\mouse.hpp" />
+    <ClInclude Include="..\..\include\mouse_types.h" />
+    <ClInclude Include="..\..\include\namegen.h" />
+    <ClInclude Include="..\..\include\namegen.hpp" />
+    <ClInclude Include="..\..\include\noise.h" />
+    <ClInclude Include="..\..\include\noise.hpp" />
+    <ClInclude Include="..\..\include\noise_defaults.h" />
+    <ClInclude Include="..\..\include\parser.h" />
+    <ClInclude Include="..\..\include\parser.hpp" />
+    <ClInclude Include="..\..\include\path.h" />
+    <ClInclude Include="..\..\include\path.hpp" />
+    <ClInclude Include="..\..\include\sys.h" />
+    <ClInclude Include="..\..\include\sys.hpp" />
+    <ClInclude Include="..\..\include\tree.h" />
+    <ClInclude Include="..\..\include\tree.hpp" />
+    <ClInclude Include="..\..\include\txtfield.h" />
+    <ClInclude Include="..\..\include\txtfield.hpp" />
+    <ClInclude Include="..\..\include\wrappers.h" />
+    <ClInclude Include="..\..\include\zip.h" />
+    <ClInclude Include="..\..\include\zip.hpp" />
+    <ClInclude Include="..\..\src\png\lodepng.h" />
+    <ClInclude Include="..\..\src\zlib\crc32.h" />
+    <ClInclude Include="..\..\src\zlib\deflate.h" />
+    <ClInclude Include="..\..\src\zlib\gzguts.h" />
+    <ClInclude Include="..\..\src\zlib\inffast.h" />
+    <ClInclude Include="..\..\src\zlib\inffixed.h" />
+    <ClInclude Include="..\..\src\zlib\inflate.h" />
+    <ClInclude Include="..\..\src\zlib\inftrees.h" />
+    <ClInclude Include="..\..\src\zlib\trees.h" />
+    <ClInclude Include="..\..\src\zlib\zconf.h" />
+    <ClInclude Include="..\..\src\zlib\zlib.h" />
+    <ClInclude Include="..\..\src\zlib\zutil.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

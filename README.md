@@ -40,8 +40,10 @@ To be able to compile libtcod on Linux, make sure that following packages are in
 
 **If you are using 1.5, or following the tutorial, then SDL should be your choice -- unless the tutorial you are doing refers to SDL2.**
 
-SDL2 is the latest version of SDL.  SDL itself, is no longer actively developed.
+[SDL2](http://hg.libsdl.org/SDL) is the latest version of SDL.  SDL itself, is no longer actively developed.
 
 While libtcod still supports SDL, it is no longer actively developed.  The current development efforts of the SDL project are focused on SDL2.  And similarly, libtcod development will be focused on the SDL2 code path.
 
 For now, SDL should be considered the most stable version to use, and SDL2 experimental.  At this time, SDL2 key handling is flawed and favours tablet and mobile devices with no touch screen or numeric keypad.
+
+The SDL2 revision 704a0bfecf75 is the only one that is supported by this project at this time.  If you are using any other revision, try the supported revision before reporting problems.

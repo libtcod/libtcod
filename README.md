@@ -2,6 +2,8 @@ libtcod is a free, fast, portable and uncomplicated API for roguelike developers
 
 ## What can it do? ##
 
+**Note that 1.6 is bleeding edge and still needs polishing before it can replace 1.5.  It is recommended you use 1.5.**
+
 If you want to get a quick overview of the features that libtcod provides, check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features) page.
 
 If you want to get a quick overview of games which have used libtcod, check out the [Projects](http://roguecentral.org/doryen/projects-2/) page.
@@ -32,6 +34,8 @@ To be able to compile libtcod on Linux, make sure that following packages are in
 * libsdl1.2-dev
 
 ### SDL vs SDL2 ###
+
+**If you are using 1.5, or following the tutorial, then SDL should be your choice -- unless the tutorial you are doing refers to SDL2.**
 
 SDL2 is the latest version of SDL.  SDL itself, is no longer actively developed.
 

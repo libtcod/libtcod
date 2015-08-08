@@ -6,7 +6,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NO_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NO_OPENGL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link />
   </ItemDefinitionGroup>

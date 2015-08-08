@@ -14,9 +14,9 @@ libtcod is also well known for it's [easy to follow tutorial](http://www.rogueba
 
 All makefiles, solutions and projects are found under the `build/` subdirectory.
 
-If you are using Windows, it is recommended you use the Visual Studio solution.
+Currently supported platforms:
 
-* Visual Studio.
+* Visual Studio (Win32).
 * Linux 32 bits.
 * Linux 64 bits.
 * Windows/Mingw32 (SDL).

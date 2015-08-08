@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
+
 #include "libtcod.hpp"
+#define _SDL_main_h
 #include "libtcod_int.h"
 
 
@@ -188,8 +190,8 @@ void Frost::render(TCODImage *img) {
 	}
 }
 
-int main() {
-	TCODConsole::initRoot(80,50,"frost test",false);
+int main(int argc, char** argv) {
+    TCODConsole::initRoot(80, 50, "frost test", false);
 	TCOD_mouse_t mouse;
 	TCOD_key_t key;
 	TCODSystem::setFps(25);

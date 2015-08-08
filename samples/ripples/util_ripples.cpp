@@ -24,7 +24,9 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <malloc.h>
 #include <string.h>
+
 #include "main.hpp"
 
 // dummy height indicating that a cell is not water
@@ -43,9 +45,9 @@ RippleManager::RippleManager(TCODMap *waterMap) {
 }
 
 void RippleManager::init(TCODMap *waterMap) {
-	this->width=waterMap->getWidth();
-	this->height=waterMap->getHeight();
-	bool visited[width][height];
+    this->width = waterMap->getWidth();
+	this->height = waterMap->getHeight();
+    bool *visited = (bool*)alloca(sizeof(bool)*width*height);
 	memset(visited,0,sizeof(bool)*width*height);
 	// first time : compute water zones
 	zone.cumulatedElapsed=0.0f;
@@ -130,7 +132,7 @@ void RippleManager::renderRipples(const TCODImage *ground, TCODImage *groundWith
 			if ( getData(x,y) != NO_WATER ) {
 				float xOffset=(getData(x-1,y)-getData(x+1,y));
 				float yOffset=(getData(x,y-1)-getData(x,y+1));
-				float f[3]={x,y,elCoef};
+				float f[3]={float(x),float(y),elCoef};
 				xOffset+=noise3d.get(f, TCOD_NOISE_SIMPLEX)*0.3f;
 				if ( ABS(xOffset) < 250 && ABS(yOffset) < 250 ) {
 					TCODColor col=ground->getPixel(x+(int)(xOffset),y+(int)(yOffset));

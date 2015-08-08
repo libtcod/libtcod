@@ -82,39 +82,39 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Configuration) ($(Platform))
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration) ($(Platform))\</OutDir>
-    <IntDir>$(ProjectName)\$(Configuration) ($(Platform))\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Configuration) ($(Platform))
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration) ($(Platform))\</OutDir>
-    <IntDir>$(ProjectName)\$(Configuration) ($(Platform))\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Configuration) ($(Platform))
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration) ($(Platform))\</OutDir>
-    <IntDir>$(ProjectName)\$(Configuration) ($(Platform))\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Configuration) ($(Platform))
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Configuration) ($(Platform))\</OutDir>
-    <IntDir>$(ProjectName)\$(Configuration) ($(Platform))\</IntDir>
+    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

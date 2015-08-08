@@ -27,6 +27,9 @@
 #include "libtcod.h"
 #include "libtcod_int.h"
 
+#include <stdio.h>
+#include <string.h>
+
 static SDL_Surface* scale_screen=NULL;
 static float scale_xc=0.5f;
 static float scale_yc=0.5f;

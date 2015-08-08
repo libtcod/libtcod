@@ -8,7 +8,7 @@
 //#define NO_SDL_SAMPLE
 
 #include <stdlib.h>
-#include <string.h>
+#include <string.h>`
 #include <stdio.h>
 #include <math.h>
 #include "libtcod.hpp"

@@ -1,5 +1,7 @@
 syntax: regexp
 
+\.vcproj$
+\.vcxproj.user$
 cbproj
 xcodeproj
 libtcod.build

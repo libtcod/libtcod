@@ -1,8 +1,8 @@
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing an advanced true color console, input, and lots of other utilities frequently used in roguelikes.
 
-## What can it do? ##
-
 **Note that 1.6 is bleeding edge and still needs polishing before it can replace 1.5.  It is recommended you use 1.5.**
+
+## What can it do? ##
 
 If you want to get a quick overview of the features that libtcod provides, check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features) page.
 

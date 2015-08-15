@@ -63,7 +63,7 @@ REM variable: %V_SKIPPED% - 'yes' or 'no', depending on whether the archive was 
 set /A L_SDL2_ATTEMPTS=0
 
 :user_function_prepare_dependency_retry
-cd !DEPENDENCY_PATH!
+cd "!DEPENDENCY_PATH!"
 
 if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 	echo ERROR.. !V_LINK_PARTS[%HTTP_FILENAME%]! not handled by user who wrote the build amendments.
@@ -138,14 +138,14 @@ REM --- FUNCTION: user_function_prepare_dependencies -------------------------
 REM description: This is called as a final step after all dependencies have been prepared.
 REM variable: %DEPENDENCY_PATH% - The absolute path of the dependencies directory.
 
-if exist !UV_INCLUDE_PATH! goto exit_from_user_function_prepare_dependencies
+if exist "!UV_INCLUDE_PATH!" goto exit_from_user_function_prepare_dependencies
 
 set /A L_COUNT=0
 :loop_user_function_prepare_dependencies
 
 if %L_COUNT% LSS %UV_INCLUDE_COMMAND_COUNT% (
     echo Copying includes: !UV_INCLUDE_COMMANDS[%L_COUNT%]!
-    xcopy >nul /Q /Y !DEPENDENCY_PATH!\!UV_INCLUDE_COMMANDS[%L_COUNT%]! %UV_INCLUDE_PATH%\
+    xcopy >nul /Q /Y "!DEPENDENCY_PATH!\!UV_INCLUDE_COMMANDS[%L_COUNT%]!" "%UV_INCLUDE_PATH%\"
 
     set /A L_COUNT=%L_COUNT%+1
     goto loop_user_function_prepare_dependencies
@@ -340,8 +340,8 @@ if not defined 7Z_EXE (
     )
 )
 
-if not exist "%DEPENDENCY_PATH%" mkdir %DEPENDENCY_PATH%
-cd %DEPENDENCY_PATH%
+if not exist "%DEPENDENCY_PATH%" mkdir "%DEPENDENCY_PATH%"
+cd "%DEPENDENCY_PATH%"
 
 REM These variables are used to index the LINKS array entries.
 REM
@@ -465,7 +465,7 @@ goto internal_function_teardown
 REM --- FUNCTION: internal_function_build_project ----------------------------
 :internal_function_build_project
 
-cd !BUILD_PATH!
+cd "!BUILD_PATH!"
 call :user_function_build_project
 
 goto:eof REM return
@@ -473,7 +473,7 @@ goto:eof REM return
 REM --- FUNCTION: internal_function_make_release -----------------------------
 :internal_function_make_release
 
-cd %DEPENDENCY_PATH%
+cd "%DEPENDENCY_PATH%"
 call :user_function_make_release
 
 goto:eof REM return
@@ -557,7 +557,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 
 call :user_function_prepare_dependency
 
-cd %DEPENDENCY_PATH%
+cd "%DEPENDENCY_PATH%"
 
 goto:eof REM return
 
@@ -589,7 +589,7 @@ REM input argument:  V_IDX_FD       - The index into the links array of the curr
 REM output argument: V_LINK_PARTS   - The array of elements that make up the given link text.
 
 :loop_internal_function_fetch_dependency
-cd %DEPENDENCY_PATH%
+cd "%DEPENDENCY_PATH%"
 
 if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
     set L_VCS_DESC=

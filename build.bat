@@ -24,8 +24,10 @@ REM        <revision-id>: This can be a URL, or it can be a filesystem path to a
 REM TODO(rmtew): Comment out local git repositories and replace with remote ones before committing.
 
 set LINKS[0]=vcs hg SDL2 704a0bfecf75 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
-if "!SDL2LINK!" NEQ "" set LINKS[0]=!SDL2LINK!
 REM set LINKS[0]=vcs hg SDL2 704a0bfecf75 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
+set LINKS[1]=
+
+if "!SDL2LINK!" NEQ "" set LINKS[0]=!SDL2LINK!
 
 REM __ MD5CHECKSUMS entries are the MD5 checksum for the download in the matching LINKS position
 REM      To get the checksum for a newly added download to add to an entry here, simply run the script and when

@@ -522,11 +522,16 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 	TCOD_IFNOT(data != NULL) return;
 	TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;
 	memset(distances,0xFFFFFFFF,mmax*sizeof(int));
+	memset(nodes,0xFFFFFFFF,mmax*sizeof(int));
 	/* data for root node is known... */
 	distances[root] = 0;
 	nodes[index] = root; /*set starting note to root */
 	/* and the loop */
 	do {
+		if (nodes[index] == 0xFFFFFFFF) {
+			continue;
+		}
+
 		/* coordinates of currently processed node */
 		unsigned int x = nodes[index] % mx;
 		unsigned int y = nodes[index] / mx;
@@ -550,7 +555,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 				/* ..., encode coordinates, ... */
 				new_node = (ty * mx) + tx;
 				/* and check if the node's eligible for queuing */
-				 if (distances[new_node] > dt) {
+				if (distances[new_node] > dt) {
 					unsigned int j;
 					/* if not walkable, don't process it */
 					if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
@@ -658,7 +663,7 @@ void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra) {
 	TCOD_IFNOT(data != NULL) return;
 	if ( data->distances ) free(data->distances);
 	if ( data->nodes ) free(data->nodes);
-	if ( data->path ) TCOD_list_clear(data->path);
+	if ( data->path ) TCOD_list_delete(data->path);
 	free(data);
 }
 

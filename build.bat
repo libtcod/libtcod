@@ -1,5 +1,5 @@
 <# : 
-@echo off
+@IF "!BUILDVERBOSE!" NEQ "Y" ECHO OFF
 setlocal EnableDelayedExpansion
 
 REM Copyright 2015 Richard Tew
@@ -241,6 +241,10 @@ set L_NAME=libtcod-msvs-!UV_VERSION!
 call :internal_function_get_date
 !7Z_EXE! a -r -t7z -mx9 !L_NAME!-!L_DATE!.7z !L_NAME!\*
 
+if "!APPVEYOR_CMD!" NEQ "" (
+    !APPVEYOR_CMD! PushArtifact !L_NAME!-!L_DATE!.7z
+)
+
 cd "!BUILD_PATH!"
 
 goto:eof REM return
@@ -294,6 +298,11 @@ if not defined 7Z_EXE (
     if "!7Z_EXE!" EQU "" (
         if exist "c:\Program Files\7-Zip\7z.exe" set 7Z_EXE="c:\Program Files\7-Zip\7z.exe"
     )
+)
+
+if not defined APPVEYOR_CMD (
+	REM Allow CI artifact collection on Appveyor.
+    where appveyor >nul 2>&1 && (set APPVEYOR_CMD=appveyor) || (set APPVEYOR_CMD=)
 )
 
 REM Work out the data format.

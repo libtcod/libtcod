@@ -1,6 +1,7 @@
 syntax: regexp
 
 build/dependencies
+build/packages
 \.vcproj$
 \.vcxproj.user$
 cbproj

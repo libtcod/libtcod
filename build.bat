@@ -96,6 +96,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					set L_ERROR_MSG=
 					for /F "usebackq tokens=*" %%i in (`msbuild /nologo VisualC\SDL_VS2013.sln /p:Configuration^=%%C /p:Platform^=%%P /t:SDL2^,SDL2main`) do (
 						set L_LINE=%%i
+						if "!BUILDVERBOSE!" EQU "Y" echo %%i
 						if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i
 					)
 					set /A L_SDL2_ATTEMPTS=!L_SDL2_ATTEMPTS!+1
@@ -174,6 +175,7 @@ for %%P in (Win32 x64) do (
 				set L_ERROR_MSG=
 				for /F "usebackq tokens=*" %%i in (`msbuild /nologo msvs\libtcod.sln /p:Configuration^=%%C /p:Platform^=%%P /t:%%N`) do (
 					set L_LINE=%%i
+					if "!BUILDVERBOSE!" EQU "Y" echo %%i
 					if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i
 				)
 				set /A L_SDL2_ATTEMPTS=!L_SDL2_ATTEMPTS!+1
@@ -200,39 +202,32 @@ cd "!BUILD_PATH!"
 if exist "!UV_PACKAGES_DIRNAME!" rmdir /S /Q "!UV_PACKAGES_DIRNAME!"
 if not exist "!UV_PACKAGES_DIRNAME!" mkdir "!UV_PACKAGES_DIRNAME!"
 
-REM The naming is important and is dynamically used to determine which files to copy.
-for %%A in (release-with-pdbs debug-with-pdbs release) do (
-    set L_ARCHIVENAME=libtcod-!UV_VERSION!
-    set L_NAME=%%A
-    echo Making '%%A' package directory
-    set L_PDBS=!L_NAME:~-4,4!
-    if "!L_NAME:~0,1!" EQU "r" (
-        set L_CONFIG=Release
-        if "!L_PDBS!" EQU "pdbs" set L_ARCHIVENAME=!L_ARCHIVENAME!-release-with-pdbs
-    ) else (
-        set L_CONFIG=Debug
-        if "!L_PDBS!" EQU "pdbs" set L_ARCHIVENAME=!L_ARCHIVENAME!-debug-with-pdbs
-    )
-    set L_NAME=!L_ARCHIVENAME!
+set L_NAME=libtcod-msvs-!UV_VERSION!
+mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!"
 
-    mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!"
-    mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\logs"
-    mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\save"
+for %%P in (Win32 x64) do (
+	mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P"
+	for %%C in (Debug Release) do (
+		mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C"
 
-    copy >nul "!DEPENDENCY_PATH!\SDL2\VisualC\SDL\Win32\!L_CONFIG!\SDL2.dll" "!UV_PACKAGES_DIRNAME!\!L_NAME!\"
-    if "!L_PDBS!" EQU "pdbs" copy >nul "!DEPENDENCY_PATH!\SDL2\VisualC\SDL\Win32\!L_CONFIG!\SDL2.pdb" "!UV_PACKAGES_DIRNAME!\!L_NAME!\"
+		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.dll" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
+		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.lib" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
+		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.pdb" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
+	)
 )
+copy >nul "!BUILD_SCRIPT_PATH!\*.txt" "!UV_PACKAGES_DIRNAME!\!L_NAME!\"
+xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\include" "!UV_PACKAGES_DIRNAME!\!L_NAME!\include\"
+xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\data" "!UV_PACKAGES_DIRNAME!\!L_NAME!\data\"
+xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\src" "!UV_PACKAGES_DIRNAME!\!L_NAME!\src\"
 
 REM Collect the dependencies
-echo Making 'dependencies' package directory
-set "L_DEPENDENCIES_PATH=!UV_PACKAGES_DIRNAME!\dependencies"
+echo Making 'dependencies' package subdirectory
+set "L_DEPENDENCIES_PATH=!UV_PACKAGES_DIRNAME!\!L_NAME!\dependencies"
 mkdir "!L_DEPENDENCIES_PATH!"
 xcopy /I /E  >nul "!DEPENDENCY_PATH!\include" "!L_DEPENDENCIES_PATH!\include\"
-copy >nul "!BUILD_SCRIPT_PATH!\LICENSE" "!L_DEPENDENCIES_PATH!\"
-copy >nul "!DEPENDENCY_PATH!\*.lib" "!L_DEPENDENCIES_PATH!\"
-copy >nul "!DEPENDENCY_PATH!\*.pdb" "!L_DEPENDENCIES_PATH!\"
-copy >nul "!DEPENDENCY_PATH!\*.dll" "!L_DEPENDENCIES_PATH!\"
-copy >nul "!DEPENDENCY_PATH!\*.exe" "!L_DEPENDENCIES_PATH!\"
+xcopy /I /E  >nul "!DEPENDENCY_PATH!\Win32" "!L_DEPENDENCIES_PATH!\Win32\"
+xcopy /I /E  >nul "!DEPENDENCY_PATH!\x64" "!L_DEPENDENCIES_PATH!\x64\"
+copy >nul "!BUILD_SCRIPT_PATH!\README-SDL.txt" "!L_DEPENDENCIES_PATH!\"
 
 :exit_from_user_function_make_release
 goto:eof REM return
@@ -240,52 +235,11 @@ goto:eof REM return
 REM --- FUNCTION: user_function_package_release ------------------------------
 :user_function_package_release
 
-cd "!BUILD_PATH!"
+cd "!UV_PACKAGES_DIRNAME!"
 
-REM Verify that the directories exist.
-set /A L_FLAG=0
-for %%A in (release-with-pdbs debug-with-pdbs release) do (
-    set L_ARCHIVENAME=libtcod-!UV_VERSION!
-    set L_NAME=%%A
-    set L_PDBS=!L_NAME:~-4,4!
-    if "!L_PDBS!" EQU "pdbs" (
-        if "!L_NAME:~0,1!" EQU "r" (
-            set L_ARCHIVENAME=!L_ARCHIVENAME!-release-with-pdbs
-        ) else (
-            set L_ARCHIVENAME=!L_ARCHIVENAME!-debug-with-pdbs
-        )
-    )
-
-    if not exist "!UV_PACKAGES_PATH!\!L_ARCHIVENAME!" (
-        echo ERROR: Release directory '!L_ARCHIVENAME!' does not exist.
-        set /A L_FLAG=1
-    )
-)
-if !L_FLAG! EQU 1 (
-    echo Aborting packaging process.
-    goto internal_function_teardown
-)
-
-REM Archive
-cd "!UV_PACKAGES_PATH!"
-for %%A in (release-with-pdbs debug-with-pdbs release) do (
-    set L_ARCHIVENAME=libtcod-!UV_VERSION!
-    set L_NAME=%%A
-    set L_PDBS=!L_NAME:~-4,4!
-    if "!L_PDBS!" EQU "pdbs" (
-        if "!L_NAME:~0,1!" EQU "r" (
-            set L_ARCHIVENAME=!L_ARCHIVENAME!-release-with-pdbs
-        ) else (
-            set L_ARCHIVENAME=!L_ARCHIVENAME!-debug-with-pdbs
-        )
-    )
-
-    !7Z_EXE! a -r -t7z -mx9 !L_ARCHIVENAME!.7z !L_ARCHIVENAME!
-)
-
-REM Archive the dependencies collection.
-for /f "tokens=2-4 delims=/ " %%a in ('date /t') do (set L_DATE=%%c%%a%%b)
-!7Z_EXE! a -r -t7z -mx9 build_dependencies-!L_DATE!-only-needed-for-development.7z dependencies\*
+set L_NAME=libtcod-msvs-!UV_VERSION!
+call :internal_function_get_date
+!7Z_EXE! a -r -t7z -mx9 !L_NAME!-!L_DATE!.7z !L_NAME!\*
 
 cd "!BUILD_PATH!"
 
@@ -295,19 +249,19 @@ REM --- FUNCTION: user_function_teardown -------------------------------------
 :user_function_teardown
 REM description: This is called just before a non-error exit.
 
-goto internal_function_exit
+goto internal_function_exit_clean
 
 REM --- FUNCTION: internal_function_setup ------------------------------------
 :internal_function_setup
 
 REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
-if not exist "%VS120COMNTOOLS%VsDevCmd.bat" (
-    echo You do not appear to have Visual Studio 2013 installed.
+if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
+    echo You do not appear to have Visual Studio 2015 installed.
     echo The community edition is free, download it and install it.
     pause & exit /b
 )
-if "%VisualStudioVersion%" EQU "" CALL "%VS120COMNTOOLS%VsDevCmd.bat"
-if "%VisualStudioVersion%" NEQ "12.0" (
+if "%VisualStudioVersion%" EQU "" CALL "%VS140COMNTOOLS%VsDevCmd.bat"
+if "%VisualStudioVersion%" NEQ "14.0" (
     echo Your console window has already run the setup for Visual Studio %VisualStudioVersion%.
     echo Open a fresh window and run this script there.  It will run the correct setup.
     pause & exit /b
@@ -340,6 +294,14 @@ if not defined 7Z_EXE (
     if "!7Z_EXE!" EQU "" (
         if exist "c:\Program Files\7-Zip\7z.exe" set 7Z_EXE="c:\Program Files\7-Zip\7z.exe"
     )
+)
+
+REM Work out the data format.
+FOR /F "tokens=3" %%A IN ('REG QUERY "HKCU\Control Panel\International" /v sShortDate 2^>NUL') DO (
+	SET sShortDate=%%A
+)
+if "!sShortDate:~0,1!" EQU "d" (
+	SET DATEFORMAT=international
 )
 
 if not exist "%DEPENDENCY_PATH%" mkdir "%DEPENDENCY_PATH%"
@@ -827,19 +789,35 @@ set V_RESULT=!L_SUBSTRING!
 
 goto:eof REM return
 
+REM --- FUNCTION: internal_function_get_date
+:internal_function_get_date
+
+for /f "tokens=2-4 delims=/ " %%a in ('date /t') do (
+	if "!DATEFORMAT!" EQU "international" (
+		set L_DATE=%%c%%b%%a
+	) else (
+		set L_DATE=%%c%%a%%b
+	)
+)
+
+goto:eof REM return
+
 REM --- Everything is done, exit back to the user ----------------------------
 
 :internal_function_teardown
 REM Now that processing is done, allow the user to do some steps before exiting.
+set EXIT_CODE=0
 goto user_function_teardown
 
 :internal_function_exit
+set EXIT_CODE=1
+:internal_function_exit_clean
 REM Leave the user in the directory they were in to begin with.
 cd %BUILD_SCRIPT_PATH%
 
 REM endlocal: Ensure environment variables are left the same as when the script started.
 REM exit /b:  Exit the script, but do not close any DOS window it was run from within.
-endlocal & exit /b
+endlocal & exit /b !EXIT_CODE!
 #>
 
 function MD5-Checksum([string]$path, [string]$discard) {

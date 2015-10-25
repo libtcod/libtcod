@@ -2,7 +2,7 @@ libtcod is a free, fast, portable and uncomplicated API for roguelike developers
 
 **Note that 1.6 is bleeding edge and still needs polishing before it can replace 1.5.  It is recommended you use 1.5.**
 
-1.6: [![Build status](https://ci.appveyor.com/api/projects/status/6jh07hq205iy0mlh?svg=true)](https://ci.appveyor.com/project/rmtew/libtcod)
+1.6: [![Build status](https://ci.appveyor.com/api/projects/status/6jh07hq205iy0mlh/branch/default?svg=true)](https://ci.appveyor.com/project/rmtew/libtcod/branch/default)
 
 1.5: COMING SOON
 

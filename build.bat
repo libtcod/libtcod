@@ -1,10 +1,9 @@
 <# : 
-@IF "!BUILDVERBOSE!" NEQ "Y" ECHO OFF
+@IF "!CI!" NEQ "True" ECHO OFF
 setlocal EnableDelayedExpansion
 
 REM Copyright 2015 Richard Tew
 REM This script is intended to automate building of libtcod on Windows.
-REM ...
 
 REM Divert to the internal setup code, it will return to the user setup.
 goto internal_function_setup
@@ -43,13 +42,32 @@ set /A UV_INCLUDE_COMMAND_COUNT=0
 set UV_PACKAGES_DIRNAME=packages
 set UV_PACKAGES_PATH=!BUILD_PATH!\packages
 
-REM Set to yes to get the buggy curses executables packaged as well.
-set UV_PACKAGE_CURSES=yes
-
 REM Allow the user to specify the path to their Git 'git' executable.  It may have to be accessed via absolute path.
 if not defined PYTHON_EXE (
     set "PATH=C:\Python27;%PATH%"
     python.exe --help >nul 2>&1 && (set PYTHON_EXE=python.exe) || (set PYTHON_EXE=)
+)
+
+REM Get the date in a form YYYYMMDD
+call :internal_function_get_date
+set UV_DATE=!V_RESULT!
+
+if not defined UV_BUILD_ID (
+	for /F "usebackq tokens=*" %%A in (`hg id`) do (
+		set UV_BUILD_ID=%%A
+	)
+)
+
+if not defined UV_PACKAGE_RELEASE_DIRNAME (
+	if defined APPVEYOR (
+		if defined APPVEYOR_REPO_TAG_NAME (
+			set UV_PACKAGE_RELEASE_DIRNAME=!APPVEYOR_PROJECT_NAME!-msvs-!APPVEYOR_REPO_TAG_NAME!
+		) else (
+			set UV_PACKAGE_RELEASE_DIRNAME=!APPVEYOR_PROJECT_NAME!-msvs-!APPVEYOR_REPO_BRANCH!-!UV_DATE!
+		)
+	) else (
+		set UV_PACKAGE_RELEASE_DIRNAME=libtcod-msvs
+	)
 )
 
 REM Process the user data, calling event functions when applicable.
@@ -96,7 +114,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					set L_ERROR_MSG=
 					for /F "usebackq tokens=*" %%i in (`msbuild /nologo VisualC\SDL_VS2013.sln /p:Configuration^=%%C /p:Platform^=%%P /t:SDL2^,SDL2main`) do (
 						set L_LINE=%%i
-						if "!BUILDVERBOSE!" EQU "Y" echo %%i
+						if "!CI!" EQU "True" echo %%i
 						if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i
 					)
 					set /A L_SDL2_ATTEMPTS=!L_SDL2_ATTEMPTS!+1
@@ -164,70 +182,99 @@ set TCOD_SLN_PATH=!BUILD_PATH!\msvs
 
 for %%P in (Win32 x64) do (
 	for %%C in (Debug Release) do (
-		for %%N in (libtcod libtcod-gui) do (
-			set "TCOD_BUILD_PATH=!TCOD_SLN_PATH!\%%N\%%P\%%C"
-
-			if exist "!TCOD_BUILD_PATH!\%%N.dll" (
-				echo Building: [%%N^|%%C^|%%P] .. skipped
-			) else (
-				echo Building: [%%N^|%%C^|%%P]
-				
-				set L_ERROR_MSG=
-				for /F "usebackq tokens=*" %%i in (`msbuild /nologo msvs\libtcod.sln /p:Configuration^=%%C /p:Platform^=%%P /t:%%N`) do (
-					set L_LINE=%%i
-					if "!BUILDVERBOSE!" EQU "Y" echo %%i
-					if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i
-				)
-				set /A L_SDL2_ATTEMPTS=!L_SDL2_ATTEMPTS!+1
-
-				if not exist "!TCOD_BUILD_PATH!\%%N.dll" (
-					echo ERROR.. %%N.dll did not successfully build for some reason.
-					goto internal_function_exit
-				)
-			)
+		set L_ERROR_MSG=
+		for /F "usebackq tokens=*" %%i in (`msbuild /nologo msvs\libtcod.sln /p:Configuration^=%%C /p:Platform^=%%P`) do (
+			set L_LINE=%%i
+			if "!CI!" EQU "True" echo %%i
+			if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i
+		)
+		if "!L_ERROR_MSG!" NEQ "" (
+			echo ERROR.. libtcod did not successfully build for some reason.
+			goto internal_function_exit
 		)
 	)
 )
-REM xxx
 
 goto:eof REM return
 
 REM --- FUNCTION: user_function_make_release ---------------------------------
 :user_function_make_release
 
-REM todo(rmtew): UV_VERSION everywhere should be fixed.
-
 cd "!BUILD_PATH!"
 
-if exist "!UV_PACKAGES_DIRNAME!" rmdir /S /Q "!UV_PACKAGES_DIRNAME!"
-if not exist "!UV_PACKAGES_DIRNAME!" mkdir "!UV_PACKAGES_DIRNAME!"
-
-set L_NAME=libtcod-msvs-!UV_VERSION!
-mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!"
-
-for %%P in (Win32 x64) do (
-	mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P"
-	for %%C in (Debug Release) do (
-		mkdir "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C"
-
-		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.dll" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
-		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.lib" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
-		copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\%%C\libtcod.pdb" "!UV_PACKAGES_DIRNAME!\!L_NAME!\%%P\%%C\"
+REM Windows defender or something holds onto a file handle.  Retry..
+set /A L_COUNT=0
+for /L %%I in (1,1,5) do (
+	if exist "!UV_PACKAGES_DIRNAME!" (
+		rmdir /S /Q "!UV_PACKAGES_DIRNAME!"
+		set /A L_COUNT=!L_COUNT!+1
 	)
 )
-copy >nul "!BUILD_SCRIPT_PATH!\*.txt" "!UV_PACKAGES_DIRNAME!\!L_NAME!\"
-xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\include" "!UV_PACKAGES_DIRNAME!\!L_NAME!\include\"
-xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\data" "!UV_PACKAGES_DIRNAME!\!L_NAME!\data\"
-xcopy /I /E  >nul "!BUILD_SCRIPT_PATH!\src" "!UV_PACKAGES_DIRNAME!\!L_NAME!\src\"
 
-REM Collect the dependencies
-echo Making 'dependencies' package subdirectory
-set "L_DEPENDENCIES_PATH=!UV_PACKAGES_DIRNAME!\!L_NAME!\dependencies"
-mkdir "!L_DEPENDENCIES_PATH!"
-xcopy /I /E  >nul "!DEPENDENCY_PATH!\include" "!L_DEPENDENCIES_PATH!\include\"
-xcopy /I /E  >nul "!DEPENDENCY_PATH!\Win32" "!L_DEPENDENCIES_PATH!\Win32\"
-xcopy /I /E  >nul "!DEPENDENCY_PATH!\x64" "!L_DEPENDENCIES_PATH!\x64\"
-copy >nul "!BUILD_SCRIPT_PATH!\README-SDL.txt" "!L_DEPENDENCIES_PATH!\"
+if exist "!UV_PACKAGES_DIRNAME!" (
+	echo Failed to purge old release directory: !UV_PACKAGES_DIRNAME!
+	goto internal_function_exit
+)
+
+mkdir "!UV_PACKAGES_DIRNAME!"
+cd "!UV_PACKAGES_DIRNAME!"
+
+REM Do binary releases for all platforms.
+for %%P in (Win32 x64) do (
+	echo Making release: !UV_PACKAGE_RELEASE_DIRNAME!-%%P
+	set "L_RELEASE_PATH=!UV_PACKAGE_RELEASE_DIRNAME!-%%P"
+	
+	REM Start with a verbatim copy of the repository.
+	hg archive -t files !L_RELEASE_PATH!
+	del !L_RELEASE_PATH!\.hg*
+	
+	REM Copy the dependencies into place for compilation.
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependencies\include\"
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
+
+	REM Copy release dlls into the top level directory.
+	copy >nul "!BUILD_PATH!\dependencies\%%P\Release\SDL2.dll" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\Release\libtcod.dll" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\libtcod-gui\%%P\Release\libtcod-gui.dll" "!L_RELEASE_PATH!\"
+
+	REM Copy samples.
+	copy >nul "!BUILD_PATH!\msvs\samples_c\%%P\Release\samples_c.exe" "!L_RELEASE_PATH!\samples.exe"
+	copy >nul "!BUILD_PATH!\msvs\frost\%%P\Release\frost.exe" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\navier\%%P\Release\navier.exe" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\rad\%%P\Release\rad.exe" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\ripples\%%P\Release\ripples.exe" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\weather\%%P\Release\weather.exe" "!L_RELEASE_PATH!\"
+
+	REM Record the release path, so the packaging stage can be rerun.
+	echo !L_RELEASE_PATH!>>index.txt
+)
+
+echo Making dependency snapshot: !UV_PACKAGE_RELEASE_DIRNAME!-dependencies
+set "L_RELEASE_PATH=!UV_PACKAGE_RELEASE_DIRNAME!-dependencies"
+mkdir !L_RELEASE_PATH!
+
+xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependencies\include\"
+for %%P in (Win32 x64) do (
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
+	for %%C in (Release Debug) do (
+		for %%N in (libtcod libtcod-gui samples_c samples_cpp frost navier rad ripples weather) do (
+			set "L_RELPATH=%%N\%%P\%%C"
+			mkdir "!L_RELEASE_PATH!\!L_RELPATH!"
+
+			for %%X in (exe dll) do (
+				if exist "!BUILD_PATH!\msvs\!L_RELPATH!\%%N.%%X" (
+					copy >nul "!BUILD_PATH!\msvs\!L_RELPATH!\%%N.%%X" "!L_RELEASE_PATH!\!L_RELPATH!\"
+					if "%%X" EQU "dll" (
+						copy >nul "!BUILD_PATH!\msvs\!L_RELPATH!\%%N.lib" "!L_RELEASE_PATH!\!L_RELPATH!\"
+					)
+				)
+			)
+			copy >nul "!BUILD_PATH!\msvs\!L_RELPATH!\%%N.pdb" "!L_RELEASE_PATH!\!L_RELPATH!\"
+		)
+	)
+)
+
+cd "!BUILD_PATH!"
 
 :exit_from_user_function_make_release
 goto:eof REM return
@@ -235,14 +282,17 @@ goto:eof REM return
 REM --- FUNCTION: user_function_package_release ------------------------------
 :user_function_package_release
 
-cd "!UV_PACKAGES_DIRNAME!"
+cd "!BUILD_PATH!\!UV_PACKAGES_DIRNAME!"
 
-set L_NAME=libtcod-msvs-!UV_VERSION!
-call :internal_function_get_date
-!7Z_EXE! a -r -t7z -mx9 !L_NAME!-!L_DATE!.7z !L_NAME!\*
+REM The make release stage will have recorded release directories in 'index.txt'.
+for /F "usebackq tokens=*" %%I in (index.txt) do (
+    echo Packaging release: %%I
 
-if "!APPVEYOR_CMD!" NEQ "" (
-    !APPVEYOR_CMD! PushArtifact !L_NAME!-!L_DATE!.7z
+	!7Z_EXE! a -r -t7z -mx9 %%I.7z %%I\*
+
+	if defined APPVEYOR (
+		appveyor PushArtifact %%I.7z
+	)
 )
 
 cd "!BUILD_PATH!"
@@ -264,12 +314,13 @@ if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
     echo The community edition is free, download it and install it.
     pause & exit /b
 )
-if "%VisualStudioVersion%" EQU "" CALL "%VS140COMNTOOLS%VsDevCmd.bat"
-if "%VisualStudioVersion%" NEQ "14.0" (
+
+if "%VisualStudioVersion%" NEQ "" (
     echo Your console window has already run the setup for Visual Studio %VisualStudioVersion%.
     echo Open a fresh window and run this script there.  It will run the correct setup.
     pause & exit /b
 )
+CALL "%VS140COMNTOOLS%VsDevCmd.bat"
 
 REM The top-level directory.
 set BUILD_SCRIPT_PATH=%~dp0
@@ -298,19 +349,6 @@ if not defined 7Z_EXE (
     if "!7Z_EXE!" EQU "" (
         if exist "c:\Program Files\7-Zip\7z.exe" set 7Z_EXE="c:\Program Files\7-Zip\7z.exe"
     )
-)
-
-if not defined APPVEYOR_CMD (
-	REM Allow CI artifact collection on Appveyor.
-    where appveyor >nul 2>&1 && (set APPVEYOR_CMD=appveyor) || (set APPVEYOR_CMD=)
-)
-
-REM Work out the data format.
-FOR /F "tokens=3" %%A IN ('REG QUERY "HKCU\Control Panel\International" /v sShortDate 2^>NUL') DO (
-	SET sShortDate=%%A
-)
-if "!sShortDate:~0,1!" EQU "d" (
-	SET DATEFORMAT=international
 )
 
 if not exist "%DEPENDENCY_PATH%" mkdir "%DEPENDENCY_PATH%"
@@ -798,14 +836,19 @@ set V_RESULT=!L_SUBSTRING!
 
 goto:eof REM return
 
-REM --- FUNCTION: internal_function_get_date
+REM --- FUNCTION: internal_function_get_date ---------------------------------
 :internal_function_get_date
+REM output argument: V_RESULT       - The date in form YYYYMMDD
+
+FOR /F "tokens=3" %%A IN ('REG QUERY "HKCU\Control Panel\International" /v sShortDate 2^>NUL') DO (
+	SET sShortDate=%%A
+)
 
 for /f "tokens=2-4 delims=/ " %%a in ('date /t') do (
-	if "!DATEFORMAT!" EQU "international" (
-		set L_DATE=%%c%%b%%a
+	if "!sShortDate:~0,1!" EQU "d" (
+		set V_RESULT=%%c%%b%%a
 	) else (
-		set L_DATE=%%c%%a%%b
+		set V_RESULT=%%c%%a%%b
 	)
 )
 

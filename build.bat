@@ -5,6 +5,10 @@ setlocal EnableDelayedExpansion
 REM Copyright 2015 Richard Tew
 REM This script is intended to automate building of libtcod on Windows.
 
+REM TODO: appveyor publish build dependencies
+REM TODO: replace branch name with libtcod version in release package file name
+REM TODO: Put commit id in release package file name.
+
 REM Divert to the internal setup code, it will return to the user setup.
 goto internal_function_setup
 
@@ -273,6 +277,8 @@ for %%P in (Win32 x64) do (
 		)
 	)
 )
+REM Record the release path, so the packaging stage can be rerun.
+echo !L_RELEASE_PATH!>>index.txt
 
 cd "!BUILD_PATH!"
 

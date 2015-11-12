@@ -132,6 +132,9 @@ try:
 finally:
     if not IS_PYTHON_SDIST:
         # remove the redundant setup files
-        os.remove('setup.cfg')
-        os.remove('MANIFEST.in')
-        os.remove('setup.py')
+        try:
+            os.remove('setup.cfg')
+            os.remove('MANIFEST.in')
+            os.remove('setup.py')
+        except OSError:
+            pass # ignore missing files

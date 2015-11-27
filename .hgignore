@@ -18,3 +18,7 @@ CMakeCache.txt
 \.egg-info/
 __pycache__
 \.py[co]
+\.deps/
+\.dirstamp
+\.o
+\.lo

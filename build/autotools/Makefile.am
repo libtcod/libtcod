@@ -1,5 +1,5 @@
-AM_CFLAGS = -I$(top_srcdir)/../../include -DTCOD_SDL2 -DNO_OPENGL -DNDEBUG
-AM_CPPFLAGS = -I$(top_srcdir)/../../include -DTCOD_SDL2 -DNO_OPENGL -DNDEBUG
+AM_CFLAGS = -I$(top_srcdir)/../../include -DTCOD_SDL2 -DNO_OPENGL -DNDEBUG -O2
+AM_CPPFLAGS = -I$(top_srcdir)/../../include -DTCOD_SDL2 -DNO_OPENGL -DNDEBUG -O2
 AM_LDFLAGS = -lz
 
 lib_LTLIBRARIES = libtcod.la libtcodxx.la
@@ -35,8 +35,7 @@ libtcod_la_SOURCES = \
 	../../src/zip_c.c \
 	../../src/png/lodepng.c
 
-otherincludedir = $(includedir)/tcod
-otherinclude_HEADERS = \
+pkginclude_HEADERS = \
 	../../include/bresenham.h \
 	../../include/mersenne_types.h \
 	../../include/bsp.h \

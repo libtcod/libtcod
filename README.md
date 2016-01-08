@@ -27,6 +27,8 @@ Currently supported platforms:
 * Windows/Mingw32 (SDL2).
 * Haiku.
 
+The Mingw32 makefiles should be used with a [MSYS terminal](http://mingw.org/wiki/msys).
+
 To be able to compile libtcod on Linux, make sure that following packages are installed (if this list is out of date, please file a bug):
 
 * gcc

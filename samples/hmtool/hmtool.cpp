@@ -352,28 +352,28 @@ void normalCbk(Widget *w, void *data) {
 }
 
 void changeColorMapIdxCbk(Widget *w, float val, void *data) {
-	intptr i=(intptr)data;
+	intptr i=((intptr)data);
 	keyIndex[i]=(int)(val);
 	if ( i == 1 ) sandHeight = (float)(i)/255.0f;
 	initColors();
 }
 
 void changeColorMapRedCbk(Widget *w, float val, void *data) {
-	intptr i=(intptr)data;
+	intptr i=((intptr)data);
 	keyColor[i].r=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapGreenCbk(Widget *w, float val, void *data) {
-	intptr i=(intptr)data;
+	intptr i=((intptr)data);
 	keyColor[i].g=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapBlueCbk(Widget *w, float val, void *data) {
-	intptr i=(intptr)data;
+	intptr i=((intptr)data);
 	keyColor[i].b=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();

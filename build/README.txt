@@ -10,6 +10,8 @@ makefile-haiku           Haiku
 makefile-samples-linux   Samples compilation on Linux
 makefile-samples-mingw   Samples compilation on Windows/Mingw32
 
+The mingw makefiles should be used with a MSYS terminal : http://mingw.org/wiki/msys
+
 *******************
 Linux prerequisites
 *******************

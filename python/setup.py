@@ -102,9 +102,9 @@ try:
     if not IS_PYTHON_SDIST:
         # move up and copy important setup files for the duration of the script
         os.chdir('..')
-        file_util.copy_file('python/setup.cfg', 'setup.cfg', link='hard')
-        file_util.copy_file('python/MANIFEST.in', 'MANIFEST.in', link='hard')
-        file_util.copy_file('python/setup.py', 'setup.py', link='hard')
+        file_util.copy_file('python/setup.cfg', 'setup.cfg')
+        file_util.copy_file('python/MANIFEST.in', 'MANIFEST.in')
+        file_util.copy_file('python/setup.py', 'setup.py')
 
     setup(
     # public name, e.g. > pip install libtcod
@@ -132,6 +132,9 @@ try:
 finally:
     if not IS_PYTHON_SDIST:
         # remove the redundant setup files
-        os.remove('setup.cfg')
-        os.remove('MANIFEST.in')
-        os.remove('setup.py')
+        try:
+            os.remove('setup.cfg')
+            os.remove('MANIFEST.in')
+            os.remove('setup.py')
+        except OSError:
+            pass # ignore missing files

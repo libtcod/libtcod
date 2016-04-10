@@ -25,6 +25,8 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define _GNU_SOURCE 1
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -183,7 +185,7 @@ void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
 	TCOD_ctx.sdl_cbk=renderer;
 }
 
-void TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY) {
+void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
 	if ( asciiCode > 0 && asciiCode < TCOD_ctx.max_font_chars )
 		TCOD_ctx.ascii_to_tcod[asciiCode] = fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
 }

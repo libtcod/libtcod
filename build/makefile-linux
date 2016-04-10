@@ -1,52 +1,65 @@
 # libtcod makefile
 # to build debug version, run "make -f makefile-linux debug"
 # to build release version, run "make -f makefile-linux release"
+
+# Paths
 SRCDIR=src
 INCDIR=include
+TMPDIR=/tmp
+OUTDIR=$(TMPDIR)/libtcod
 
-#dependencies
+# Dependencies
 # SDL
 SDL_FLAGS=`sdl2-config --cflags`
 SDL_LIBS=`sdl2-config --libs`
-
 # ZLIB
 ZLIB_FLAGS=-I src/zlib
-ZLIB_LIBS=lib/libz.a
-
+ZLIB_LIB=$(OUTDIR)/zlib/libz.a
 #OPENGL
 OPENGL_LIB=-lGL
 
-LIBS=$(ZLIB_LIBS) $(SDL_LIBS) $(OPENGL_LIB) -lm -ldl -lX11 -lpthread
+# Libraries
+LIBS=$(ZLIB_LIB) $(SDL_LIBS) $(OPENGL_LIB) -lm -ldl -lX11 -lpthread
 
-CFLAGS=$(FLAGS) -I$(INCDIR) -I$(INCDIR)/gui -Wall $(SDL_FLAGS) $(ZLIB_FLAGS) -fno-strict-aliasing -ansi -fPIC -DTCOD_SDL2 -DNO_OPENGL
-TEMP=/tmp
+# Compiler Flags
+FLAGS_COMMON=-fPIC -fno-strict-aliasing -Wall -Werror
+CFLAGS=$(FLAGS_COMMON) -std=c99
+CXXFLAGS=$(FLAGS_COMMON)
+
+# Preprocessor Flags
+CPPFLAGS=-I$(INCDIR) -I$(INCDIR)/gui $(SDL_FLAGS) $(ZLIB_FLAGS) -DTCOD_SDL2 -DNO_OPENGL
+
+# Compilers
 CC=gcc
-CPP=g++
+CXX=g++
+
+# Automake specifications
 .SUFFIXES: a .o .h .c
 
-$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.c
-	@ echo Compiling release $(basename $<).c
-	@$(CC) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
-$(TEMP)/libtcod/release/%.o : $(SRCDIR)/%.cpp
-	@ echo Compiling release $(basename $<).cpp
-	@$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
-$(TEMP)/libtcod/release/gui/%.o : $(SRCDIR)/gui/%.cpp
-	@ echo Compiling release $(basename $<).cpp
-	@$(CPP) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
-$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.c
-	@echo Compiling debug $(basename $<).c
-	@$(CC) $(CFLAGS) -g -o $@ -c $<
-$(TEMP)/libtcod/debug/%.o : $(SRCDIR)/%.cpp
-	@echo Compiling debug $(basename $<).cpp
-	@$(CPP) $(CFLAGS) -g -o $@ -c $<
-$(TEMP)/libtcod/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
-	@echo Compiling debug $(basename $<).cpp
-	@$(CPP) $(CFLAGS) -g -o $@ -c $<
-$(TEMP)/libtcod/zlib/%.o : $(SRCDIR)/zlib/%.c
-	@ echo Compiling zlib $(basename $<).c
-	@$(CC) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $<
 
-ZLIBOBJS=$(addprefix $(TEMP)/libtcod/zlib/, \
+$(OUTDIR)/release/%.o : $(SRCDIR)/%.c
+	@ echo Compiling release $(basename $<).c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
+$(OUTDIR)/release/%.o : $(SRCDIR)/%.cpp
+	@ echo Compiling release $(basename $<).cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
+$(OUTDIR)/release/gui/%.o : $(SRCDIR)/gui/%.cpp
+	@ echo Compiling release $(basename $<).cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -O2 -DNDEBUG -s -o $@ -c $<
+$(OUTDIR)/debug/%.o : $(SRCDIR)/%.c
+	@echo Compiling debug $(basename $<).c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -g -o $@ -c $<
+$(OUTDIR)/debug/%.o : $(SRCDIR)/%.cpp
+	@echo Compiling debug $(basename $<).cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -o $@ -c $<
+$(OUTDIR)/debug/gui/%.o : $(SRCDIR)/gui/%.cpp
+	@echo Compiling debug $(basename $<).cpp
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -o $@ -c $<
+$(OUTDIR)/zlib/%.o : $(SRCDIR)/zlib/%.c
+	@ echo Compiling zlib $(basename $<).c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -DNDEBUG -O2 -s -o $@ -c $<
+
+ZLIBOBJS=$(addprefix $(OUTDIR)/zlib/, \
 	adler32.o \
 	crc32.o \
 	deflate.o \
@@ -87,6 +100,7 @@ LIBOBJS_C= \
 	sys_sdl2_c.o \
 	sys_sdl_img_bmp.o \
 	sys_sdl_img_png.o \
+	sys_opengl_c.o \
 	tree_c.o \
 	txtfield_c.o \
 	wrappers.o \
@@ -94,7 +108,7 @@ LIBOBJS_C= \
 	namegen_c.o \
 	png/lodepng.o
 
-LIBOBJS_CPP= \
+LIBOBJS_CXX= \
 	bresenham.o \
 	bsp.o \
 	color.o \
@@ -130,12 +144,12 @@ GUIOBJS= \
 	gui/widget.o
 
 
-LIBOBJS_C_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(LIBOBJS_C))
-LIBOBJS_CPP_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(LIBOBJS_CPP))
-GUIOBJS_DEBUG=$(addprefix $(TEMP)/libtcod/debug/, $(GUIOBJS))
-LIBOBJS_C_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(LIBOBJS_C))
-LIBOBJS_CPP_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(LIBOBJS_CPP))
-GUIOBJS_RELEASE=$(addprefix $(TEMP)/libtcod/release/, $(GUIOBJS))
+LIBOBJS_C_DEBUG=$(addprefix $(OUTDIR)/debug/, $(LIBOBJS_C))
+LIBOBJS_CXX_DEBUG=$(addprefix $(OUTDIR)/debug/, $(LIBOBJS_CXX))
+GUIOBJS_DEBUG=$(addprefix $(OUTDIR)/debug/, $(GUIOBJS))
+LIBOBJS_C_RELEASE=$(addprefix $(OUTDIR)/release/, $(LIBOBJS_C))
+LIBOBJS_CXX_RELEASE=$(addprefix $(OUTDIR)/release/, $(LIBOBJS_CXX))
+GUIOBJS_RELEASE=$(addprefix $(OUTDIR)/release/, $(GUIOBJS))
 
 all : debug release
 
@@ -143,57 +157,73 @@ debug : libtcod_debug.so libtcodxx_debug.so libtcodgui_debug.so
 
 release : libtcod.so libtcodxx.so libtcodgui.so
 
-$(TEMP)/libtcod/debug/png :
+$(OUTDIR)/debug/png :
 	mkdir -p $@
 
-$(TEMP)/libtcod/debug/gui :
+$(OUTDIR)/debug/gui :
 	mkdir -p $@
 
-$(TEMP)/libtcod/release/png :
+$(OUTDIR)/release/png :
 	mkdir -p $@
 
-$(TEMP)/libtcod/release/gui :
+$(OUTDIR)/release/gui :
 	mkdir -p $@
 
-$(TEMP)/libtcod/zlib :
+$(OUTDIR)/zlib :
 	@mkdir -p $@
 
 libtcod.a : $(LIBOBJS_C_DEBUG)
 	ar r $@ $(LIBOBJS_C_DEBUG)
 
-lib/libz.a : $(TEMP)/libtcod/zlib $(ZLIBOBJS)
+$(ZLIB_LIB) : $(OUTDIR)/zlib $(ZLIBOBJS)
 	@ar r $@ $(ZLIBOBJS)
 
-libtcodxx.a : $(LIBOBJS_CPP_DEBUG)
-	ar r $@ $(LIBOBJS_CPP_DEBUG)
+libtcodxx.a : $(LIBOBJS_CXX_DEBUG)
+	ar r $@ $(LIBOBJS_CXX_DEBUG)
 
-libtcod.so : $(TEMP)/libtcod/release/png $(LIBOBJS_C_RELEASE)  lib/libz.a
+libtcod.so : $(OUTDIR)/release/png $(LIBOBJS_C_RELEASE) $(ZLIB_LIB)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,libtcod.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_C_RELEASE) $(LIBS) $(CFLAGS)
+	@$(CC) -shared -Wl,-soname,libtcod.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_C_RELEASE) $(LIBS) $(CPPFLAGS) $(CFLAGS)
 
-libtcodxx.so : $(TEMP)/libtcod/release/png $(LIBOBJS_CPP_RELEASE)
+libtcodxx.so : $(OUTDIR)/release/png $(LIBOBJS_CXX_RELEASE)
 	@echo Linking $@
-	@g++ -shared -Wl,-soname,libtcodxx.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_CPP_RELEASE) -L. -ltcod $(CFLAGS)
+	@$(CXX) -shared -Wl,-soname,libtcodxx.so.1 $(LDFLAGS) -o $@ $(LIBOBJS_CXX_RELEASE) -L. -ltcod $(CPPFLAGS) $(CXXFLAGS)
 
-libtcodgui.so : $(TEMP)/libtcod/release/gui $(GUIOBJS_RELEASE)
+libtcodgui.so : $(OUTDIR)/release/gui $(GUIOBJS_RELEASE)
 	@echo Linking $@
-	@g++ -shared -Wl,-soname,libtcodgui.so.1 $(LDFLAGS) -o $@ $(GUIOBJS_RELEASE) -L. -ltcod -ltcodxx $(CFLAGS)
+	@$(CXX) -shared -Wl,-soname,libtcodgui.so.1 $(LDFLAGS) -o $@ $(GUIOBJS_RELEASE) -L. -ltcod -ltcodxx $(CPPFLAGS) $(CXXFLAGS)
 
-libtcod_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_C_DEBUG) lib/libz.a
+libtcod_debug.so : $(OUTDIR)/debug/png $(LIBOBJS_C_DEBUG) $(ZLIB_LIB)
 	@echo Linking $@
-	@gcc -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_C_DEBUG) $(LIBS) $(CFLAGS)
+	@$(CC) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_C_DEBUG) $(LIBS) $(CPPFLAGS) $(CFLAGS)
 
-libtcodxx_debug.so : $(TEMP)/libtcod/debug/png $(LIBOBJS_CPP_DEBUG)
+libtcodxx_debug.so : $(OUTDIR)/debug/png $(LIBOBJS_CXX_DEBUG)
 	@echo Linking $@
-	@g++ -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_CPP_DEBUG) -L. -ltcod_debug $(CFLAGS)
+	@$(CXX) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(LIBOBJS_CXX_DEBUG) -L. -ltcod_debug $(CPPFLAGS) $(CXXFLAGS)
 
-libtcodgui_debug.so : $(TEMP)/libtcod/debug/gui $(GUIOBJS_DEBUG)
+libtcodgui_debug.so : $(OUTDIR)/debug/gui $(GUIOBJS_DEBUG)
 	@echo Linking $@
-	@g++ -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(GUIOBJS_DEBUG) -L. -ltcod_debug -ltcodxx_debug $(CFLAGS)
+	@$(CXX) -shared -Wl,-soname,$@ $(LDFLAGS) -o $@ $(GUIOBJS_DEBUG) -L. -ltcod_debug -ltcodxx_debug $(CPPFLAGS) $(CXXFLAGS)
 
 clean :
-	\rm -f $(LIBOBJS_C_RELEASE) $(LIBOBJS_CPP_RELEASE) $(GUIOBJS_RELEASE) $(LIBOBJS_C_DEBUG) $(LIBOBJS_CPP_DEBUG) $(GUIOBJS_DEBUG) libtcod.a libtcodxx.a libtcod.so libtcodxx.so libtcodgui.so libtcod_debug.so libtcodxx_debug.so libtcodgui_debug.so libtcodpy.pyc
-
+	\rm -f \
+		$(LIBOBJS_C_RELEASE) \
+		$(LIBOBJS_CXX_RELEASE) \
+		$(GUIOBJS_RELEASE) \
+	   	$(LIBOBJS_C_DEBUG) \
+	   	$(LIBOBJS_CXX_DEBUG) \
+	   	$(GUIOBJS_DEBUG) \
+	   	libtcod.a \
+	   	libtcodxx.a \
+	   	libtcod.so \
+	   	libtcodxx.so \
+	   	libtcodgui.so \
+	   	libtcod_debug.so \
+	   	libtcodxx_debug.so \
+	   	libtcodgui_debug.so \
+	   	libtcodpy.pyc
 
 cleanall : clean
-	@rm -f $(ZLIBOBJS)
+	@rm -f \
+		$(ZLIBOBJS) \
+		$(ZLIB_LIB)

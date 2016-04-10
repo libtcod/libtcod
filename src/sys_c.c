@@ -25,8 +25,6 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _POSIX_C_SOURCE 200809L
-
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>

@@ -25,8 +25,6 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#define _GNU_SOURCE 1
-
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

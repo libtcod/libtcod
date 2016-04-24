@@ -36,7 +36,7 @@ class TCODPath;
  @PageName fov
  @PageCategory Roguelike toolkits
  @PageTitle Field of view
- @PageDesc This toolkit allows to easily calculate the potential visible set of map cells from the player position.
+ @PageDesc This toolkit allows one to easily calculate the potential visible set of map cells from the player position.
 A cell is potentially visible if the line of sight from the player to the cell in unobstructed.
  */
 
@@ -100,7 +100,7 @@ class TCODLIB_API TCODMap {
 		@Py map_copy (source, dest)
 		@C# void TCODMap::copy (TCODMap source)
 		@Param source	The map containing the source data.
-		@Param dest	In C and python version, the map where data is copied.
+		@Param dest	In C and Python version, the map where data is copied.
 		@CppEx 
 			TCODMap * map = new TCODMap(50,50); // allocate the map
 			map->setProperties(10,10,true,true); // set a cell as 'empty'
@@ -152,7 +152,7 @@ class TCODLIB_API TCODMap {
 			0 <= player_x < map width.
 			0 <= player_y < map height.
 		@Param maxRadius	If > 0, the fov is only computed up to maxRadius cells away from the player. Else, the range is unlimited.
-		@Param light_walls	Wether the wall cells near ground cells in fov must be in fov too.
+		@Param light_walls	Whether the wall cells near ground cells in fov must be in fov too.
 		@Param algo	FOV algorithm to use.
 		@CppEx 
 			TCODMap *map = new TCODMap(50,50); // allocate the map
@@ -203,7 +203,7 @@ class TCODLIB_API TCODMap {
    		/**
    		@PageName fov_get
    		@FuncTitle Checking a cell transparency/walkability
-   		@FuncDesc You can also retrieve transparent/walkable informations with :
+   		@FuncDesc You can also retrieve transparent/walkable information with :
 		@Cpp 
 			bool TCODMap::isTransparent(int x, int y) const
 			bool TCODMap::isWalkable(int x, int y) const

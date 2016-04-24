@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/Python
 #
-# libtcod python samples
+# libtcod Python samples
 # This code demonstrates various usages of libtcod modules
 # It's in the public domain.
 #
@@ -23,7 +23,7 @@ cwd_path = os.path.dirname(os.path.realpath(__file__))
 data_path = os.path.abspath(os.path.join(cwd_path, b'..', b'data'))
 font = os.path.join(data_path, b'fonts', b'consolas10x10_gs_tc.png')
 libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-libtcod.console_init_root(80, 50, b'libtcod python sample', False)
+libtcod.console_init_root(80, 50, b'libtcod Python sample', False)
 sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 
 #############################################
@@ -232,7 +232,7 @@ def render_colors(first, key, mouse):
     if key.c == ord('f'): tc_fast = not tc_fast
     libtcod.console_set_default_foreground(sample_console, libtcod.white)
     libtcod.console_print(sample_console, 1, SAMPLE_SCREEN_HEIGHT - 2,
-                           "F : turn fast rendering (python 2.6 only) %s" % ("off" if tc_fast else "on"))
+                           "F : turn fast rendering (Python 2.6 only) %s" % ("off" if tc_fast else "on"))
 
 #############################################
 # offscreen console sample
@@ -361,7 +361,7 @@ def render_lines(first, key, mouse):
     xd = int(SAMPLE_SCREEN_WIDTH // 2 * (1 - cos_angle))
     yd = int(SAMPLE_SCREEN_HEIGHT // 2 - sin_angle * SAMPLE_SCREEN_WIDTH // 2)
     # draw the line
-    # in python the easiest way is to use the line iterator
+    # in Python the easiest way is to use the line iterator
     for x,y in libtcod.line_iter(xo, yo, xd, yd):
         if 0 <= x < SAMPLE_SCREEN_WIDTH and \
            0 <= y < SAMPLE_SCREEN_HEIGHT:
@@ -1305,7 +1305,7 @@ def render_name(first, key, mouse):
         ng_names.append("======")
 
 #############################################
-# python fast render sample
+# Python fast render sample
 #############################################
 try:  #import NumPy
     import numpy as np

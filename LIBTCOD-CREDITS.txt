@@ -14,13 +14,13 @@ Many thanks to everyone who provided feedback and patches, and especially :
   pathfinding, name generator, documentation skin, lots of bitmap fonts and 
   being the #1 libtcod user, supporter and contributor.
 - Joao 'Jotaf' Henriques for his long time support, priceless comments and 
-  suggestions and the awesome python tutorial.
+  suggestions and the awesome Python tutorial.
 - Chris 'donblas' Hamons for libtcod-net, the cmake system, the swig wrappers...
 - Jonathon Duerig for the permissive field of view algorithm
-- dividee for polishing and optimizing the python wrapper. 
+- dividee for polishing and optimizing the Python wrapper. 
 - John Klimek for the early C# port and valuable bug fixes.
 - Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution 
-  to the python port.
+  to the Python port.
 - Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL 
   renderer
 - Sandman for various tricky bug fixes.

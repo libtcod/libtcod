@@ -17,7 +17,7 @@ X API break
 - fixed TCODK_RWIN/TCODK_LWIN not detected
 - fixed TCOD_sys_wait_event not returning on mouse events
 - fixed mouse dcx/dcy fields always 0 when the cursor moves slowly
-- fixed crash in python console_map_ascii_codes_to_font
+- fixed crash in Python console_map_ascii_codes_to_font
 =========================================================
 1.5.1 : 2012 Aug 29
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
@@ -64,7 +64,7 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
     void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
     map_clear (map, transparent, walkable)
 + cmake compilation works on FreeBSD thanks to namor_     
-+ added support for python3k. The samples run with python 3.2.3    
++ added support for python3k. The samples run with Python 3.2.3    
 + added support for colored tiles. Standard font characters MUST only use greyscale colors.    
 + added native support for .ASC and .APF file (Ascii Paint format)
   * TCODConsole::TCODConsole(const char *filename)
@@ -103,11 +103,11 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed permissive fov when light_walls is false
 - fixed possible crash when clearing an offscreen console before calling initRoot
 - fix possible crash when printing a string containing ascii codes > 127
-- fixed TCODNamegen returning integers in the python version
+- fixed TCODNamegen returning integers in the Python version
 - fixed TCODDijkstra segfault when diagonal movement cost was zero
 - fixed setDirty() not working for the last row or column of the console
-- fixed python samples not compiling if numpy installed
-- fixed python TCOD_parser_get_list_property
+- fixed Python samples not compiling if numpy installed
+- fixed Python TCOD_parser_get_list_property
 - fixed TCODDijkstra destructor crash bug
 - fixed TCODColor::setHSV bug when using hues below 0 or above 359 grades
 - fixed some rare issues in A* pathfinding 
@@ -135,11 +135,11 @@ X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
 + added text field toolkit (undocumented)    
-+ added functions for fast python full console coloring:
++ added functions for fast Python full console coloring:
 	console_fill_foreground(con,r,g,b)
 	console_fill_background(con,r,g,b)
 	r,g,b are 1D arrays of console_width * console_height     
-+ added fast python rendering sample (Jotaf)	
++ added fast Python rendering sample (Jotaf)	
 + added TCODConsole::resetCredits() to restart credits animation before it's finished
 + added TCODConsole::setDirty(int x, int y, int w,int h) to force libtcod to redraw a part of the console
     This might by needed when using the SDL renderer
@@ -153,7 +153,7 @@ X renamed libraries on Linux to improve portability :
     static bool TCODSystem::isDirectory(const char *path)
     static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
 + added TCODConsole::putCharEx(int x, int y, int c, TCODColor &fore, TCODColor &back) (at last!)
-+ added waitThread and thread conditions support in (undocumented) threading api
++ added waitThread and thread conditions support in (undocumented) threading API
 + added unicode support and 4 unicode fonts courtesy of Mingos. Functions with unicode support are :
     static void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY);
     void TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
@@ -175,26 +175,26 @@ X renamed libraries on Linux to improve portability :
 % libtcod credits now use subcell resolution
 - fixed wrong ascii code returned by check/waitForKeypress with AltGr+0-9 combination
 - fixed RNG going mad if you delete the default RNG
-- fixed wait_for_keypress not working in python
+- fixed wait_for_keypress not working in Python
 - now the parser can handle strings/identifiers with unlimited size (previously limited to 256 chars)
 - fixed TCODZip module missing from MSVC release
 - fixed issue with TCOD_COLCTRL_FORE_RGB and TCOD_COLCTRL_BACK_RGB when using 10 or 37 in rgb values
-- fixed issue in color_set_hsv python wrapper
+- fixed issue in color_set_hsv Python wrapper
 - fixed bug in console blitting when destination coordinates are outside the destination console
 =========================================================
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :
    static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f)
-+ added possiblity to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   
++ added possibility to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
 + heightmap : added missing TCOD_heightmap_set_value function
 + new consolas, dejavu, lucida and prestige fonts from Mingos
-- fixed R/B inversion in color operations in python
+- fixed R/B inversion in color operations in Python
 - fixed a crash when saving a TCODImage before initializing the root console
 - fixed a crash when destroying an empty TCODZip (file not found)
 - fixed torch effect in C++ sample
 - fixed ASCII_IN_ROW flag not working
-- fixed path_new_using_function not working in python wrapper
+- fixed path_new_using_function not working in Python wrapper
 - fixed alignment issues in TCOD_console_print_* with strings containing ascii codes > 127
 - fixed color controls not working with autowrap
 - fixed fov post-processing step to handle opaque walkable cells (for example bush)
@@ -219,7 +219,7 @@ X setCustomFont changed :
      TCOD_FONT_TYPE_GREYSCALE=4,
      TCOD_FONT_TYPE_GRAYSCALE=4,
      TCOD_FONT_LAYOUT_TCOD=8,
-+ added python wrapper
++ added Python wrapper
 + added arial, courier fonts courtesy of Mingos
 + added some non portable filesystem utilities in TCODSystem :
 	bool TCODSystem::createDirectory(const char *path);
@@ -247,13 +247,13 @@ X setCustomFont changed :
 	bool TCODImage::isPixelTransparent(int x, int y) const
 + can now dynamically modify the content of the font bitmap :
 	static void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y)
-+ added C and python code generation in the heightmap tool
++ added C and Python code generation in the heightmap tool
 + added function to calculate the height of a printed string (with autowrapping) 
   without actually printing it :
     int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...)
     int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...)
     int TCODConsole::getHeightCenterRect(int x, int y, int w, int h, const char *fmt, ...)
-+ parser : now strings properties can be splitted. The parser concatenates them :
++ parser : now strings properties can be split. The parser concatenates them :
     myProperty = "string value can use "
                  "multi line layout"
 + parser : added missing getCharProperty when using default listener
@@ -267,7 +267,7 @@ X setCustomFont changed :
     template<class T> T * TCODList::removeFast(T *elt)
 % pathfinding : you don't need to provide coordinates in x,y parameters of Path::walk
 % improved double/simple walls special characters in tcod layout fonts
-- fixed SDL dependant features not being available before initRoot is called.
+- fixed SDL dependent features not being available before initRoot is called.
   If you want to draw on an offscreen console without calling initRoot, you
   need to call at least setCustomFont to initialize the font. Else characters won't be rendered.
 - fixed standalone credits page erasing previously fps limit
@@ -324,7 +324,7 @@ X setCustomFont changed :
    TCODNoise::getSimplex
    TCODNoise::getFbmSimplex
    TCODNoise::getTurbulenceSimplex
-   Simplex should be prefered over Perlin for most usages.
+   Simplex should be preferred over Perlin for most usages.
 + added wavelet noise, similar to perlin, much slower but doesn't blur at high scales. Doesn't work in 4D :
    TCODNoise::getWavelet
    TCODNoise::getFbmWavelet
@@ -347,7 +347,7 @@ X setCustomFont changed :
    libtcod 1.3.2 :  130
    libtcod 1.4.0 :  300
 % TCODNoise::getTurbulence is twice faster
-% improved mouse click detection. Even with a low framerate, mouse clicks will allways be detected and 
+% improved mouse click detection. Even with a low framerate, mouse clicks will always be detected and 
    reported in the Xbutton_pressed fields of TCOD_mouse_t.
 % you don't need anymore to provide values in TCODLine::step parameters
 - fixed memory leak in image module
@@ -461,7 +461,7 @@ X TCOD_console_check_for_keypress now has a parameter that indicates which event
   -font-key-color <r> <g> <b> : transparent color, r,g,b between 0 and 255. (default 0 0 0)
   -fullscreen-resolution <width> <height> (default 640 400)
 % headers renamed from tcodlib.h* to libtcod.h*
-% on Linux, the library is splitted into libtcod.so and libtcod++.so
+% on Linux, the library is split into libtcod.so and libtcod++.so
   allowing C developpers to use it without installing g++
 % the font name is no more a parameter of TCODConsole::initRoot.
 % TCODConsole::setBitmapFontSize renamed to TCODConsole::setCustomFont

@@ -481,7 +481,7 @@ void buildGui() {
 	tools->addSeparator("In/Out","Import/Export stuff");
 	tools->addWidget(new Button("export C","Generate the C code for this heightmap in ./hm.c",exportCCbk,NULL));
 	tools->addWidget(new Button("export CPP","Generate the CPP code for this heightmap in ./hm.cpp",exportCppCbk,NULL));
-	tools->addWidget(new Button("export PY","Generate the python code for this heightmap in ./hm.py",exportPyCbk,NULL));
+	tools->addWidget(new Button("export PY","Generate the Python code for this heightmap in ./hm.py",exportPyCbk,NULL));
 	tools->addWidget(new Button("export bmp","Save this heightmap as a bitmap in ./hm.bmp",exportBmpCbk,NULL));
 
 	vbox->addWidget(tools);

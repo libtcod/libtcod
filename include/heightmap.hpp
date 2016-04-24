@@ -31,7 +31,7 @@
  @PageName heightmap
  @PageCategory Roguelike toolkits
  @PageTitle Heightmap toolkit
- @PageDesc This toolkit allows to create a 2D grid of float values using various algorithms.
+ @PageDesc This toolkit allows one to create a 2D grid of float values using various algorithms.
 
 The code using the heightmap toolkit can be automatically generated with the heightmap tool (hmtool) included in the libtcod package.
  */
@@ -156,7 +156,7 @@ public :
 	@C# void TCODHeightMap::copy(TCODHeightMap source)
 	@Param source	Each cell value from the source heightmap is copied in the destination (this for C++) heightmap.
 		The source and destination heightmap must have the same width and height.
-	@Param dest	In the C and python versions, the address of the destination heightmap.
+	@Param dest	In the C and Python versions, the address of the destination heightmap.
 	*/
 	void copy(const TCODHeightMap *source);
 
@@ -187,7 +187,7 @@ public :
 	@Param b	Second heightmap in the lerp operation.
 	@Param coef	lerp coefficient.
 		For each cell in the destination map (this for C++), value = a.value + (b.value - a.value) * coef
-	@Param res	In the C and python versions, the address of the destination heightmap.
+	@Param res	In the C and Python versions, the address of the destination heightmap.
 	*/
 	void lerp(const TCODHeightMap *a, const TCODHeightMap *b,float coef);
 
@@ -200,7 +200,7 @@ public :
 	@C# void TCODHeightMap::add(TCODHeightMap a, TCODHeightMap b)
 	@Param a	First heightmap.
 	@Param b	Second heightmap. For each cell in the destination map (this for C++), value = a.value + b.value
-	@Param res	In the C and python versions, the address of the destination heightmap.
+	@Param res	In the C and Python versions, the address of the destination heightmap.
 	*/
 	void add(const TCODHeightMap *a, const TCODHeightMap *b);
 
@@ -213,7 +213,7 @@ public :
 	@C# void TCODHeightMap::multiply(TCODHeightMap a, TCODHeightMap b)
 	@Param a	First heightmap.
 	@Param b	Second heightmap. For each cell in the destination map (this for C++), value = a.value * b.value
-	@Param res	In the C and python versions, the address of the destination heightmap.
+	@Param res	In the C and Python versions, the address of the destination heightmap.
 	*/
 	void multiply(const TCODHeightMap *a, const TCODHeightMap *b);
 
@@ -485,7 +485,7 @@ public :
 	@Cpp void TCODHeightMap::midPointDisplacement(TCODRandom *rng=NULL,float roughness=0.45f)
 	@C void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t *hm, TCOD_random_t rnd, float roughness)
 	@Py heightmap_mid_point_displacement(hm, rng, roughness)
-	@Param hm	In the C and python version, the adress of the heightmap struct returned by the creation function.
+	@Param hm	In the C and Python version, the address of the heightmap struct returned by the creation function.
 	@Param rng	Random number generation to use, or NULL/0 to use the default one.
 	@Param roughness	Map roughness.
 	*/

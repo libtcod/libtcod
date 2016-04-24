@@ -38,7 +38,7 @@ public :
  @PageName path
  @PageTitle Path finding
  @PageCategory Roguelike toolkits
- @PageDesc This toolkit allows to easily calculate the optimal path between two points in your dungeon by using either the <a href="http://en.wikipedia.org/wiki/A*">A* algorithm</a> or <a href="http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra's algorithm</a>.
+ @PageDesc This toolkit allows one to easily calculate the optimal path between two points in your dungeon by using either the <a href="http://en.wikipedia.org/wiki/A*">A* algorithm</a> or <a href="http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Dijkstra's algorithm</a>.
 Please note that the paths generated with the two algorithms may differ slightly. Due to how they're implemented, A* will usually prefer diagonal moves over orthogonal, while Dijkstra will have the opposite preference. In other words, paths from point X to point Y will look like this:
 <div class="code"><pre>
 Dijkstra:      A*:

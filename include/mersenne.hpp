@@ -73,7 +73,7 @@ Relative performances in two independent tests (lower is better) :
     </tr>
 </table>
 
-<h6>For python users:</h6>
+<h6>For Python users:</h6>
 Python already has great builtin random generators. But some parts of the Doryen library (noise, heightmap, ...) uses RNG as parameters. If you intend to use those functions, you must provide a RNG created with the library.
 
 <h6>For C# users:</h6>
@@ -151,7 +151,7 @@ class TCODLIB_API TCODRandom {
 		/**
 		@PageName random_init
 		@FuncTitle Destroying a RNG
-		@FuncDesc To release ressources used by a generator, use those functions :
+		@FuncDesc To release resources used by a generator, use those functions :
 			NB : do not delete the default random generator !
 		@Cpp TCODRandom::~TCODRandom()
 		@C void TCOD_random_delete(TCOD_random_t mersenne)
@@ -343,7 +343,7 @@ In these cases, the selected mean will appear with the lowest frequency.
 		/**
 		@PageName random_use
 		@FuncTitle Restoring a saved state
-		@FuncDesc And restore it later. This makes it possible to get the same serie of number several times with a single generator.
+		@FuncDesc And restore it later. This makes it possible to get the same series of number several times with a single generator.
 		@Cpp void TCODRandom::restore(const TCODRandom *backup)
 		@C void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup)
 		@Py random_restore(mersenne, backup)

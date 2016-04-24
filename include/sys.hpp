@@ -233,7 +233,7 @@ public :
 	@PageName system_filesystem
 	@PageFather system
 	@PageTitle Filesystem utilities
-	@PageDesc Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no python wrapper since python provides its own builtin functions. All those functions return false if an error occured.
+	@PageDesc Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no Python wrapper since Python provides its own builtin functions. All those functions return false if an error occurred.
 	@FuncTitle Create a directory
 	@Cpp static bool TCODSystem::createDirectory(const char *path)
 	@C bool TCOD_sys_create_directory(const char *path)
@@ -384,7 +384,7 @@ public :
 	/**
 	@PageName system_sdlcbk
 	@FuncTitle Managing screen redraw
-	@FuncDesc libtcod is not aware of the part of the screen your SDL renderer has updated. If no change occured in the console, it won't redraw them except if you tell him to do so with this function
+	@FuncDesc libtcod is not aware of the part of the screen your SDL renderer has updated. If no change occurred in the console, it won't redraw them except if you tell him to do so with this function
 	@Cpp void TCODConsole::setDirty(int x, int y, int w, int h)
 	@C void TCOD_console_set_dirty(int x, int y, int w, int h)
 	@Py TCOD_console_set_dirty(x, y, w, h)

@@ -320,7 +320,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Py color_set_hsv(c,h,s,v)
 	@C# void TCODColor::setHSV(float h, float s, float v)
 	@Lua Color:setHSV( h, s ,v )
-	@Param c In the C and python versions, the color to modify
+	@Param c In the C and Python versions, the color to modify
 	@Param h,s,v Color components in the HSV space
 		0.0 <= h < 360.0
 		0.0 <= s <= 1.0
@@ -345,7 +345,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		Color:setSaturation(s)
 		Color:setValue(v)
 	@Param h,s,v	Color components in the HSV space
-	@Param c	In the C and python versions, the color to modify
+	@Param c	In the C and Python versions, the color to modify
 	*/
 	void setHue (float h);
 	void setSaturation (float s);
@@ -359,7 +359,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Py color_get_HSV(c) # returns [h,s,v]
 	@C# void TCODColor::getHSV(out float h, out float s, out float v)
 	@Lua Color:getHSV() -- returns h,s,v
-	@Param c	In the C and python versions, the TCOD_color_t from which to read.
+	@Param c	In the C and Python versions, the TCOD_color_t from which to read.
 	@Param  h,s,v	Color components in the HSV space
 		0.0 <= h < 360.0
 		0.0 <= s <= 1.0

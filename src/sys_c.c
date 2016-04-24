@@ -408,7 +408,7 @@ void TCOD_semaphore_delete( TCOD_semaphore_t sem)
 }
 
 #ifdef TCOD_WINDOWS
-/* poor win32 api has no thread conditions */
+/* poor win32 API has no thread conditions */
 typedef struct {
 	int nbSignals;
 	int nbWaiting;

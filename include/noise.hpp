@@ -121,12 +121,12 @@ class TCODLIB_API TCODNoise {
 
 		/**
 		@PageName noise_init
-		@FuncDesc To release ressources used by a generator, use those functions :
+		@FuncDesc To release resources used by a generator, use those functions :
 		@Cpp TCODNoise::~TCODNoise()
 		@C void TCOD_noise_delete(TCOD_noise_t noise)
 		@Py noise_delete(noise)
 		@C# void TCODNoise::Dispose()
-		@Param noise	In the C and python versions, the generator handler, returned by the initialization function.
+		@Param noise	In the C and Python versions, the generator handler, returned by the initialization function.
 		@CppEx
 			// create a generator
 			TCODNoise *noise = new TCODNoise(2);

@@ -39,7 +39,7 @@
 	@PageFather compile_libtcod
 	@PageTitle On Windows with Mingw
 	@PageDesc <h4>Mingw installation</h4>
-	Download the latest version of Mingw from this adress :
+	Download the latest version of Mingw from this address :
 	<a href="http://sourceforge.net/projects/mingw/files/">http://sourceforge.net/projects/mingw/files/</a>
 
 	The latest installer should be at the top of the page with a name starting with mingw-get-inst..

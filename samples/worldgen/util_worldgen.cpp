@@ -234,7 +234,7 @@ void WorldGenerator::setLandMass(float landMass, float waterLevel) {
 	float newWaterLevel=i/255.0f;
 	float landCoef = (1.0f-waterLevel)/(1.0f-newWaterLevel);
 	float waterCoef = waterLevel / newWaterLevel;
-	// water level should be rised/lowered to newWaterLevel
+	// water level should be raised/lowered to newWaterLevel
 	for ( int x=0; x < HM_WIDTH; x++) {
 	    for (int y=0; y < HM_HEIGHT; y++) {
 			float h=hm->getValue(x,y);

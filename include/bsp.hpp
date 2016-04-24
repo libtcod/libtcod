@@ -40,7 +40,7 @@ public :
  @PageName bsp
  @PageCategory Roguelike toolkits
  @PageTitle BSP toolkit
- @PageDesc This toolkit allows to create and manipulate 2D Binary Space Partition trees. They can be used to split a rectangular region into non overlapping sub-regions.
+ @PageDesc This toolkit allows one to create and manipulate 2D Binary Space Partition trees. They can be used to split a rectangular region into non overlapping sub-regions.
  */
 
 class TCODLIB_API TCODBsp : public TCODTree {
@@ -138,7 +138,7 @@ public :
 	@Py bsp_split_once(node, horizontal, position)
 	@C# void TCODBsp::splitOnce(bool horizontal, int position)
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
-	@Param horizontal	If true, the node will be splitted horizontally, else, vertically.
+	@Param horizontal	If true, the node will be split horizontally, else, vertically.
 	@Param position	Coordinate of the splitting position.
 		If horizontal is true, x <= position < x+w
 		Else, y <= position < y+h
@@ -157,7 +157,7 @@ public :
 	/**
 	@PageName bsp_split
 	@FuncTitle Recursively splitting a node
-	@FuncDesc You can also recursively split the bsp. At each step, a random orientation (horizontal/vertical) and position are choosen :
+	@FuncDesc You can also recursively split the bsp. At each step, a random orientation (horizontal/vertical) and position are chosen :
 	@Cpp void TCODBsp::splitRecursive(TCODRandom *randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 	@C void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio)
 	@Py bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio, maxVRatio)
@@ -165,10 +165,10 @@ public :
 	@Param node	In the C version, the root node created with TCOD_bsp_new_with_size, or a node obtained by splitting.
 	@Param randomizer	The random number generator to use. Use NULL for the default one.
 	@Param nb	Number of recursion levels.
-	@Param minHSize, minVSize	minimum values of w and h for a node. A node is splitted only if the resulting sub-nodes are bigger than minHSize x minVSize
+	@Param minHSize, minVSize	minimum values of w and h for a node. A node is split only if the resulting sub-nodes are bigger than minHSize x minVSize
 	@Param maxHRatio, maxVRation	maximum values of w/h and h/w for a node. If a node does not conform, the splitting orientation is forced to reduce either the w/h or the h/w ratio. Use values near 1.0 to promote square nodes.
 	@CppEx 
-		// Do a 4 levels BSP tree (the region is splitted into a maximum of 2*2*2*2 sub-regions).
+		// Do a 4 levels BSP tree (the region is split into a maximum of 2*2*2*2 sub-regions).
 		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
 		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f); 
 	@CEx 
@@ -253,7 +253,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	/**
 	@PageName bsp_read
 	@FuncTitle Navigate in the tree
-	@FuncDesc You can navigate from a node to its sons or its parent using one of those functions. Each function returns NULL if the corresponding node does not exists (if the node is not splitted for getLeft and getRight, and if the node is the root node for getFather).
+	@FuncDesc You can navigate from a node to its sons or its parent using one of those functions. Each function returns NULL if the corresponding node does not exists (if the node is not split for getLeft and getRight, and if the node is the root node for getFather).
 	@Cpp 
 		TCODBsp *TCODBsp::getLeft() const
 		TCODBsp *TCODBsp::getRight() const
@@ -285,7 +285,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	/**
 	@PageName bsp_read
 	@FuncTitle Checking if a node is a leaf
-	@FuncDesc You can know if a node is a leaf (not splitted, no sons) with this function :
+	@FuncDesc You can know if a node is a leaf (not split, no sons) with this function :
 	@Cpp bool TCODBsp::isLeaf() const
 	@C bool TCOD_bsp_is_leaf(TCOD_bsp_t *node)
 	@Py bsp_is_leaf(node)

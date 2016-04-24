@@ -36,7 +36,7 @@
  @PageCategory Base toolkits
  @PageTitle All purposes container
  @PageDesc This is a fast, lightweight and generic container, that provides array, list and stack paradigms.
-Note that this module has no python wrapper. Use python built-in containers instead.
+Note that this module has no Python wrapper. Use Python built-in containers instead.
  */
 
 // fast & lightweight list template

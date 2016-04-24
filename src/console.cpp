@@ -397,7 +397,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, .
 	return ret;
 }
 
-// color control string formating utilities for swigged language
+// color control string formatting utilities for swigged language
 
 // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
 #define NB_BUFFERS 10

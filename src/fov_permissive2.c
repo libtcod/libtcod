@@ -165,7 +165,7 @@ static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, 
 		add_steep_bump(brx,bry,view);
 		check_view(active_views,current_view);
 	} else {
-		/* view splitted */
+		/* view split */
 		int offset=startX+x*dx/STEP_SIZE + (startY+y*dy/STEP_SIZE)*m->width;
 		view_t *shallower_view= & views[offset];
 		int view_index=current_view - (view_t **)TCOD_list_begin(active_views);

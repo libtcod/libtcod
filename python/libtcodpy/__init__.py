@@ -1,5 +1,5 @@
 #
-# libtcod 1.6.0 python wrapper
+# libtcod 1.6.0 Python wrapper
 # Copyright (c) 2008,2009,2010,2012,2013 Jice & Mingos
 # All rights reserved.
 #
@@ -1707,7 +1707,7 @@ _lib.TCOD_bsp_find_node.restype = POINTER(_CBsp)
 
 BSP_CBK_FUNC = CFUNCTYPE(c_int, c_void_p, c_void_p)
 
-# python class encapsulating the _CBsp pointer
+# Python class encapsulating the _CBsp pointer
 class Bsp(object):
     def __init__(self, cnode):
         pcbsp = cast(cnode, POINTER(_CBsp))
@@ -1789,7 +1789,7 @@ def bsp_find_node(node, cx, cy):
     return Bsp(_lib.TCOD_bsp_find_node(node.p, cx, cy))
 
 def _bsp_traverse(node, callback, userData, func):
-    # convert the c node into a python node
+    # convert the c node into a Python node
     #before passing it to the actual callback
     def node_converter(cnode, data):
         node = Bsp(cnode)

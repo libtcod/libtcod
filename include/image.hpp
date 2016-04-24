@@ -144,7 +144,7 @@ public :
 	@C TCOD_color_t TCOD_image_get_pixel(TCOD_image_t image,int x, int y)
 	@Py image_get_pixel(image, x, y)
 	@C# TCODColor TCODImage::getPixel(int x, int y)
-	@Param image In the C and python version, the image handler, obtained with the load function.
+	@Param image In the C and Python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
 		0 <= y < height
@@ -168,7 +168,7 @@ public :
 	@C int TCOD_image_get_alpha(TCOD_image_t image, int x, int y)
 	@Py image_get_alpha(image, x, y)
 	@C# int TCODImage::getAlpha(int x, int y)
-	@Param image In the C and python version, the image handler, obtained with the load function.
+	@Param image In the C and Python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
 		0 <= y < height
@@ -183,7 +183,7 @@ public :
 	@C bool TCOD_image_is_pixel_transparent(TCOD_image_t image,int x, int y)
 	@Py image_is_pixel_transparent(image, x, y)
 	@C# bool TCODImage::isPixelTransparent(int x,int y)
-	@Param image In the C and python version, the image handler, obtained with the load function.
+	@Param image In the C and Python version, the image handler, obtained with the load function.
 	@Param x,y The pixel coordinates inside the image.
 		0 <= x < width
 		0 <= y < height
@@ -229,7 +229,7 @@ public :
 	@C void TCOD_image_clear(TCOD_image_t image, TCOD_color_t color)
 	@Py image_clear(image,color)
 	@C# void TCODImage::clear(TCODColor color)
-	@Param image	In the C and python version, the image to fill.
+	@Param image	In the C and Python version, the image to fill.
 	@Param color	The color to use.
 	*/
 	void clear(const TCODColor col);
@@ -257,7 +257,7 @@ public :
 	@C void TCOD_image_scale(TCOD_image_t image,int neww, int newh)
 	@Py image_scale(image, neww,newh)
 	@C# void TCODImage::scale(int neww, int newh)
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	@Param neww,newh	The new size of the image.
 	*/
 	void scale(int neww, int newh);
@@ -269,7 +269,7 @@ public :
 	@C void TCOD_image_hflip(TCOD_image_t image)
 	@Py image_hflip(image)
 	@C# void TCODImage::hflip()
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	*/
 	void hflip();
 
@@ -280,7 +280,7 @@ public :
 	@C void TCOD_image_vflip(TCOD_image_t image)
 	@Py image_vflip(image)
 	@C# void TCODImage::vflip()
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	*/
 	void vflip();
 
@@ -292,7 +292,7 @@ public :
 	@C void TCOD_image_rotate90(TCOD_image_t image, int numRotations)
 	@Py image_rotate90(image, num=1)
 	@C# void TCODImage::rotate90(int numRotations)
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	@Param numRotations	Number of 90 degrees rotations. Should be between 1 and 3.
 	*/
 	void rotate90(int numRotations=1);
@@ -304,7 +304,7 @@ public :
 	@C void TCOD_image_invert(TCOD_image_t image)
 	@Py image_invert(image)
 	@C# void TCODImage::invert()
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	*/
 	void invert();
 
@@ -383,7 +383,7 @@ public :
 	@C void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t keyColor)
 	@Py image_set_key_color(image, keyColor)
 	@C# void TCODImage::setKeyColor(TCODColor keyColor)
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	@Param color	Pixels with this color will be skipped by blitting functions.
 	@CppEx 
 		TCODImage *pix = TCODImage("mypix.bmp");
@@ -421,7 +421,7 @@ public :
 		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy);
 		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w);
 		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w, int h);
-	@Param image	In the C and python version, the image handler, obtained with the load function.
+	@Param image	In the C and Python version, the image handler, obtained with the load function.
 	@Param dest	The console of which the image will be blited. Foreground, background and character data will be overwritten.
 	@Param dx,dy	Coordinate of the console cell where the upper left corner of the blitted image will be.
 	@Param sx,sy,w,h	Part of the image to blit. Use -1 in w and h to blit the whole image.

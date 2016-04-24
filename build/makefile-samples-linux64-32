@@ -1,4 +1,4 @@
-# libtcod samples linux 64 -> 32 cross compilation makefile
+# libtcod samples Linux 64 -> 32 cross compilation makefile
 # to build debug version, run "make -f makefile-samples-linux64-32 debug"
 # to build release version, run "make -f makefile-samples-linux64-32 release"
 SRCDIR=.

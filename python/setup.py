@@ -9,7 +9,7 @@ from distutils import file_util
 from setuptools import setup, Command
 
 # this flag tells the script if this is a sdist build
-# True if python is a subdirectory, which means we are above it
+# True if Python is a subdirectory, which means we are above it
 IS_PYTHON_SDIST = os.path.exists('python/')
 
 class build_make(Command):
@@ -75,7 +75,7 @@ try:
     from wheel.bdist_wheel import bdist_wheel as orig_bdist_wheel
     
     class bdist_wheel(orig_bdist_wheel):
-        """ctypes libraries are "platform specific" "pure python" modules.
+        """ctypes libraries are "platform specific" "pure Python" modules.
         
         There's no way to tell bdist_wheel this without overwriting its methods
         """

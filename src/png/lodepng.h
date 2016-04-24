@@ -1443,7 +1443,7 @@ for C and C++.
 *) Other Compilers
 
 If you encounter problems on other compilers, feel free to let me know and I may
-try to fix it if the compiler is modern standards complient.
+try to fix it if the compiler is modern standards compliant.
 
 
 10. examples
@@ -1511,7 +1511,7 @@ symbol.
 *) 22 apr 2012 (!): Made interface more consistent, renaming a lot. Removed
     redundant C++ codec classes. Reduced amount of structs. Everything changed,
     but it is cleaner now imho and functionality remains the same. Also fixed
-    several bugs and shrinked the implementation code. Made new samples.
+    several bugs and shrunk the implementation code. Made new samples.
 *) 6 nov 2011 (!): By default, the encoder now automatically chooses the best
     PNG color model and bit depth, based on the amount and type of colors of the
     raw image. For this, autoLeaveOutAlphaChannel replaced by auto_choose_color.
@@ -1536,7 +1536,7 @@ symbol.
 *) 08 aug 2010: only changed some comments and external samples.
 *) 05 jul 2010: fixed bug thanks to warnings in the new gcc version.
 *) 14 mar 2010: fixed bug where too much memory was allocated for char buffers.
-*) 02 sep 2008: fixed bug where it could create empty tree that linux apps could
+*) 02 sep 2008: fixed bug where it could create empty tree that Linux apps could
     read by ignoring the problem but windows apps couldn't.
 *) 06 jun 2008: added more error checks for out of memory cases.
 *) 26 apr 2008: added a few more checks here and there to ensure more safety.

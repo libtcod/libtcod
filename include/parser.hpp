@@ -634,7 +634,7 @@ The code in the example below will result in your error callback called with the
 /**
  @PageName parser_types
  @FuncDesc Possible types are defined by the TCOD_value_type_t enumeration :
-For python, remove TCOD_ : libtcod.TYPE_BOOL
+For Python, remove TCOD_ : libtcod.TYPE_BOOL
 <table class="param">
 <tbody><tr><th>TCOD_value_type_t</th><th>Value in file</th><th>TCOD_value_t</th></tr>
 

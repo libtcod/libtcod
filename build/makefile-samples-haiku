@@ -1,4 +1,4 @@
-# libtcod samples linux makefile
+# libtcod samples Linux makefile
 # to build debug version, run "make -f makefile-samples-linux debug"
 # to build release version, run "make -f makefile-samples-linux release"
 SRCDIR=.

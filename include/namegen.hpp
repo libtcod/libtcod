@@ -36,7 +36,7 @@
  @PageName namegen
  @PageCategory Roguelike toolkits
  @PageTitle Name generator
- @PageDesc This tool allows to generate random names out of custom made syllable sets.
+ @PageDesc This tool allows one to generate random names out of custom made syllable sets.
  */
 class TCODLIB_API TCODNamegen {
 	public:

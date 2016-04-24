@@ -1,4 +1,4 @@
-#!/usr/bin/Python
+#!/usr/bin/python
 #
 # libtcod Python samples
 # This code demonstrates various usages of libtcod modules

@@ -485,7 +485,7 @@ public :
 	@Cpp void TCODHeightMap::midPointDisplacement(TCODRandom *rng=NULL,float roughness=0.45f)
 	@C void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t *hm, TCOD_random_t rnd, float roughness)
 	@Py heightmap_mid_point_displacement(hm, rng, roughness)
-	@Param hm	In the C and python version, the adress of the heightmap struct returned by the creation function.
+	@Param hm	In the C and python version, the address of the heightmap struct returned by the creation function.
 	@Param rng	Random number generation to use, or NULL/0 to use the default one.
 	@Param roughness	Map roughness.
 	*/

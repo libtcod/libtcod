@@ -28,13 +28,13 @@ sys       : system specific functions.
 txtfield  : work-in-progress text input utility 
 zip       : compression module
 
-Note that some of the sys toolkits rely on system dependant functions. 
+Note that some of the sys toolkits rely on system dependent functions. 
 They have currently a single working implementation relying on SDL : sys_sdl_c.c
-As it is heavily system dependant, the mouse C implementation is in sys_sdl_c.c.
+As it is heavily system dependent, the mouse C implementation is in sys_sdl_c.c.
 As of 1.4, the image load/save functions are isolated in sys_sdl_XXX.c, 
 XXX being the image type (currently bmp and png).
 As of 1.5.1, sys_opengl_c.c contains OpenGL and GLSL renderers. Those two
-renderers are still dependant on SDL.
+renderers are still dependent on SDL.
 
 libtcod_int.h contains everything that is exported by the toolkits 
 (implemented in a toolkit and used in another one) but should not be seen 

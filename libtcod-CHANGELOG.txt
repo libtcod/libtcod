@@ -185,7 +185,7 @@ X renamed libraries on Linux to improve portability :
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :
    static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f)
-+ added possiblity to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   
++ added possibility to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
 + heightmap : added missing TCOD_heightmap_set_value function
 + new consolas, dejavu, lucida and prestige fonts from Mingos
@@ -267,7 +267,7 @@ X setCustomFont changed :
     template<class T> T * TCODList::removeFast(T *elt)
 % pathfinding : you don't need to provide coordinates in x,y parameters of Path::walk
 % improved double/simple walls special characters in tcod layout fonts
-- fixed SDL dependant features not being available before initRoot is called.
+- fixed SDL dependent features not being available before initRoot is called.
   If you want to draw on an offscreen console without calling initRoot, you
   need to call at least setCustomFont to initialize the font. Else characters won't be rendered.
 - fixed standalone credits page erasing previously fps limit
@@ -324,7 +324,7 @@ X setCustomFont changed :
    TCODNoise::getSimplex
    TCODNoise::getFbmSimplex
    TCODNoise::getTurbulenceSimplex
-   Simplex should be prefered over Perlin for most usages.
+   Simplex should be preferred over Perlin for most usages.
 + added wavelet noise, similar to perlin, much slower but doesn't blur at high scales. Doesn't work in 4D :
    TCODNoise::getWavelet
    TCODNoise::getFbmWavelet

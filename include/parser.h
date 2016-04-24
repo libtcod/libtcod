@@ -153,7 +153,7 @@ typedef struct {
 	TCOD_list_t structs;
 	/* list of custom type parsers */
 	TCOD_parser_custom_t customs[16];
-	/* fatal error occured */
+	/* fatal error occurred */
 	bool fatal;
 	/* list of properties if default listener is used */
 	TCOD_list_t props;

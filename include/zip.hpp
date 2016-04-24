@@ -205,7 +205,7 @@ public :
 	@PageFather zip
 	@FuncTitle Reading from a compressed file
 	@FuncDesc You can read data from a file (compressed or not) into the buffer.
-		The function returns the number of (uncompressed) bytes read or 0 if an error occured. 
+		The function returns the number of (uncompressed) bytes read or 0 if an error occurred.
 	@Cpp int TCODZip::loadFromFile(const char *filename)
 	@C int TCOD_zip_load_from_file(TCOD_zip_t zip, const char *filename)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.

@@ -1511,7 +1511,7 @@ symbol.
 *) 22 apr 2012 (!): Made interface more consistent, renaming a lot. Removed
     redundant C++ codec classes. Reduced amount of structs. Everything changed,
     but it is cleaner now imho and functionality remains the same. Also fixed
-    several bugs and shrinked the implementation code. Made new samples.
+    several bugs and shrunk the implementation code. Made new samples.
 *) 6 nov 2011 (!): By default, the encoder now automatically chooses the best
     PNG color model and bit depth, based on the amount and type of colors of the
     raw image. For this, autoLeaveOutAlphaChannel replaced by auto_choose_color.

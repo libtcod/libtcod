@@ -44,7 +44,7 @@ Classic real time game loop:
 			TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
 			updateWorld (key, TCODSystem::getLastFrameLength());
 			// updateWorld(TCOD_key_t key, float elapsed) (using key if key.vk != TCODK_NONE)
-			// use elapsed to scale any update that is time dependant.
+			// use elapsed to scale any update that is time dependent.
 			// ... draw world+GUI on TCODConsole::root
 			TCODConsole::flush();
 		}
@@ -410,7 +410,7 @@ public :
 	/**
 	@PageName console_credits
 	@FuncTitle Restart the credits animation
-	@FuncDesc When using rederCredits, you can restart the credits animation from the begining before it's finished by calling this function.
+	@FuncDesc When using rederCredits, you can restart the credits animation from the beginning before it's finished by calling this function.
 	@Cpp static void TCODConsole::resetCredits()
 	@C void TCOD_console_credits_reset()
 	@Py console_credits_reset()
@@ -989,7 +989,7 @@ public :
 	@Param clear if true, all characters inside the rectangle are set to ASCII code 32 (space).
 		If false, only the background color is modified
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
-	@Param fmt if NULL, the funtion only draws a rectangle.
+	@Param fmt if NULL, the function only draws a rectangle.
 		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
@@ -1305,7 +1305,7 @@ public :
 	@PageName console_non_blocking_input
 	@PageTitle Non blocking user input
 	@PageFather console_input
-	@FuncDesc The prefered way to check for user input is to use checkForEvent below, but you can also get the status of any special key at any time with :
+	@FuncDesc The preferred way to check for user input is to use checkForEvent below, but you can also get the status of any special key at any time with :
 	@Cpp static bool TCODConsole::isKeyPressed(TCOD_keycode_t key)
 	@C bool TCOD_console_is_key_pressed(TCOD_keycode_t key)
 	@Py console_is_key_pressed(key)

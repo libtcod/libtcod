@@ -157,7 +157,7 @@ public :
 	/**
 	@PageName bsp_split
 	@FuncTitle Recursively splitting a node
-	@FuncDesc You can also recursively split the bsp. At each step, a random orientation (horizontal/vertical) and position are choosen :
+	@FuncDesc You can also recursively split the bsp. At each step, a random orientation (horizontal/vertical) and position are chosen :
 	@Cpp void TCODBsp::splitRecursive(TCODRandom *randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 	@C void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio)
 	@Py bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio, maxVRatio)

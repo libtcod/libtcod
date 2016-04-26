@@ -113,6 +113,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				sprintf (msg, "symbol '%s' too long (max size %d)",
 				       _symbols[ lex->nb_symbols ], TCOD_LEX_SYMBOL_SIZE );
 				TCOD_last_error=TCOD_strdup(msg);
+				TCOD_lex_delete (lex);
 				return NULL;
 			}
 			strcpy(lex->symbols[ lex->nb_symbols ], _symbols[ lex->nb_symbols ] );
@@ -129,6 +130,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				sprintf(msg,"keyword '%s' too long (max size %d)",
 						   _keywords[ lex->nb_keywords ], TCOD_LEX_KEYWORD_SIZE);
 				TCOD_last_error=TCOD_strdup(msg);
+				TCOD_lex_delete (lex);
 				return NULL;
 			}
 			if ( lex->flags & TCOD_LEX_FLAG_NOCASE )

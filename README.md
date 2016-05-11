@@ -38,7 +38,6 @@ To be able to compile libtcod on Linux, make sure that following packages are in
 * libpng12
 * libsdl1.2
 * upx
-* electric-fence
 * libpng12-dev
 * libsdl1.2-dev
 

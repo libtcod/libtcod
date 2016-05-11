@@ -1,10 +1,10 @@
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing an advanced true color console, input, and lots of other utilities frequently used in roguelikes.
 
-**Note that 1.6 is bleeding edge and still needs polishing before it can replace 1.5.  It is recommended you use 1.5.**
+**Note that the popular tutorial mentioned below still uses 1.5, it will direct you on how to get set up correctly.**
 
 1.6: [![Build status](https://ci.appveyor.com/api/projects/status/6jh07hq205iy0mlh/branch/default?svg=true)](https://ci.appveyor.com/project/rmtew/libtcod/branch/default)
 
-1.5: COMING SOON
+1.5: COMING.
 
 ## What can it do? ##
 
@@ -16,30 +16,11 @@ libtcod is also well known for it's [easy to follow tutorial](http://www.rogueba
 
 ### How do I get set up? ###
 
-All makefiles, solutions and projects are found under the `build/` subdirectory.
+You have two options, both of which are located under the `build/` subdirectory.
 
-Currently supported platforms:
+For Windows users, either running the top-level 'build.bat' script, or opening the solution directly within Visual Studio.
 
-* Visual Studio (Win32).
-* Linux 32 bits.
-* Linux 64 bits.
-* Windows/Mingw32 (SDL).
-* Windows/Mingw32 (SDL2).
-* Haiku.
-
-The Mingw32 makefiles should be used with a [MSYS terminal](http://mingw.org/wiki/msys).
-
-To be able to compile libtcod on Linux, make sure that following packages are installed (if this list is out of date, please file a bug):
-
-* gcc
-* g++
-* make
-* zlib
-* libpng12
-* libsdl1.2
-* upx
-* libpng12-dev
-* libsdl1.2-dev
+For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.
 
 ### SDL vs SDL2 ###
 

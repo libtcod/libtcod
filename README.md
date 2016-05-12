@@ -20,7 +20,11 @@ You have two options, both of which are located under the `build/` subdirectory.
 
 For Windows users, either running the top-level 'build.bat' script, or opening the solution directly within Visual Studio.
 
-For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.
+For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more. For example, to build a production library :
+
+    cd build/autotools
+    ./configure CFLAGS='-O2'
+    make
 
 ### SDL vs SDL2 ###
 

@@ -606,7 +606,7 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 	int px = x, py = y;
 	static int dx[9] = { -1, 0, 1, 0, -1, 1, 1, -1, 0 };
 	static int dy[9] = { 0, -1, 0, 1, -1, -1, 1, 1, 0 };
-	unsigned int distances[8];
+	unsigned int distances[8] = {0};
 	int lowest_index;
 	int imax = (data->diagonal_cost == 0 ? 4 : 8);
 	TCOD_IFNOT(data != NULL) return false;

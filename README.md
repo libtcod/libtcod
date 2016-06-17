@@ -23,6 +23,7 @@ For Windows users, either running the top-level 'build.bat' script, or opening t
 For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more. For example, to build a production library :
 
     cd build/autotools
+    autoreconf -i # if building from hg
     ./configure CFLAGS='-O2'
     make
 

@@ -26,8 +26,8 @@ REM        <revision-id>: This can be a URL, or it can be a filesystem path to a
 
 REM TODO(rmtew): Comment out local git repositories and replace with remote ones before committing.
 
-set LINKS[0]=vcs hg SDL2 704a0bfecf75 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
-REM set LINKS[0]=vcs hg SDL2 704a0bfecf75 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
+set LINKS[0]=vcs hg SDL2 e12c38730512 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
+REM set LINKS[0]=vcs hg SDL2 e12c38730512 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
 set LINKS[1]=
 
 if "!SDL2LINK!" NEQ "" set LINKS[0]=!SDL2LINK!
@@ -314,6 +314,7 @@ goto internal_function_exit_clean
 REM --- FUNCTION: internal_function_setup ------------------------------------
 :internal_function_setup
 
+REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
 if "%BYPASS_VS_CHECK%" NEQ "yes" (
 	REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
 	if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
@@ -328,6 +329,13 @@ if "%BYPASS_VS_CHECK%" NEQ "yes" (
 		pause & exit /b
 	)
 	CALL "%VS140COMNTOOLS%VsDevCmd.bat"
+)
+
+if "%VisualStudioVersion%" NEQ "14.0" (
+	echo Visual Studio incorrect.
+	echo Expected: "14.0"
+	echo Got: "%VisualStudioVersion%"
+	pause & exit /b
 )
 
 REM The top-level directory.

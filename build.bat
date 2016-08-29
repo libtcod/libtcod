@@ -1,4 +1,4 @@
-<# : 
+<# :
 @IF "!CI!" NEQ "True" ECHO OFF
 setlocal EnableDelayedExpansion
 
@@ -111,7 +111,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					echo Building: [SDL2^|%%C^|%%P] .. skipped
 				) else (
 					echo Building: [SDL2^|%%C^|%%P]
-					
+
 					REM SDL2 in theory requires the DirectX SDK to be installed, but in practice it's absence
 					REM can be worked around by putting a dummy include file in place, and then only XAudio2
 					REM support is lost.
@@ -139,8 +139,8 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 									goto user_function_prepare_dependency_retry
 								)
 							)
-						)					
-						
+						)
+
 						echo ERROR.. SDL2.dll did not successfully build for some reason.
 						goto internal_function_exit
 					)
@@ -227,11 +227,11 @@ REM Do binary releases for all platforms.
 for %%P in (Win32 x64) do (
 	echo Making release: !UV_PACKAGE_RELEASE_DIRNAME!-%%P
 	set "L_RELEASE_PATH=!UV_PACKAGE_RELEASE_DIRNAME!-%%P"
-	
+
 	REM Start with a verbatim copy of the repository.
 	hg archive -t files !L_RELEASE_PATH!
 	del !L_RELEASE_PATH!\.hg*
-	
+
 	REM Copy the dependencies into place for compilation.
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependencies\include\"
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
@@ -314,19 +314,21 @@ goto internal_function_exit_clean
 REM --- FUNCTION: internal_function_setup ------------------------------------
 :internal_function_setup
 
-REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
-if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
-    echo You do not appear to have Visual Studio 2015 installed.
-    echo The community edition is free, download it and install it.
-    pause & exit /b
-)
+if "%BYPASS_VS_CHECK%" NEQ "yes" (
+	REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
+	if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
+		echo You do not appear to have Visual Studio 2015 installed.
+		echo The community edition is free, download it and install it.
+		pause & exit /b
+	)
 
-if "%VisualStudioVersion%" NEQ "" (
-    echo Your console window has already run the setup for Visual Studio %VisualStudioVersion%.
-    echo Open a fresh window and run this script there.  It will run the correct setup.
-    pause & exit /b
+	if "%VisualStudioVersion%" NEQ "" (
+		echo Your console window has already run the setup for Visual Studio %VisualStudioVersion%.
+		echo Open a fresh window and run this script there.  It will run the correct setup.
+		pause & exit /b
+	)
+	CALL "%VS140COMNTOOLS%VsDevCmd.bat"
 )
-CALL "%VS140COMNTOOLS%VsDevCmd.bat"
 
 REM The top-level directory.
 set BUILD_SCRIPT_PATH=%~dp0
@@ -378,7 +380,7 @@ set VCS_REVISION=3
 set VCS_CLONEURL=4
 set VCS_ZIPDLURL=5
 
-call :user_function_setup 
+call :user_function_setup
 
 REM --- FUNCTION: internal_function_main -------------------------------------
 REM input argument:  V_LINKS   - The user defined links.
@@ -691,9 +693,9 @@ set /A L_ATTEMPTS=0
 :internal_function_fetch_dependency_retry
 
 if not exist "!V_LINK_PARTS[%HTTP_NAME%]!" (
-    echo Downloading: [!V_LINK_PARTS[%HTTP_NAME%]!] 
+    echo Downloading: [!V_LINK_PARTS[%HTTP_NAME%]!]
     powershell -c "Start-BitsTransfer -source !V_LINK_PARTS[%HTTP_URL%]!"
-    
+
     if not exist !V_LINK_PARTS[%HTTP_FILENAME%]! (
         echo Failed to download !V_LINK_PARTS[%HTTP_FILENAME%]!
         goto internal_function_exit
@@ -718,7 +720,7 @@ if "!V_PASSED!" EQU "yes" (
             goto internal_function_fetch_dependency_retry
         )
     )
-    
+
     echo ERROR: Failed to obtain valid copy of [!V_LINK_PARTS[%HTTP_FILENAME%]!]
     goto internal_function_exit
 ) else (
@@ -920,7 +922,7 @@ function Archive-Extract([string]$zipFilePath, [string]$destinationPath) {
         return 2; # Failure
     }
     Write-Host "MSG: EXTRACTING";
-    
+
     $zipfile.Entries | foreach {
         $extractFilePath = Join-Path -Path $destinationPath -ChildPath $_.FullName;
         $extractFileDirPath = Split-Path -Parent $extractFilePath;

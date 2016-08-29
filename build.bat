@@ -116,7 +116,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					REM can be worked around by putting a dummy include file in place, and then only XAudio2
 					REM support is lost.
 					set L_ERROR_MSG=
-					for /F "usebackq tokens=*" %%i in (`msbuild /nologo VisualC\SDL_VS2013.sln /p:Configuration^=%%C /p:Platform^=%%P /t:SDL2^,SDL2main`) do (
+					for /F "usebackq tokens=*" %%i in (`msbuild /nologo VisualC\SDL.sln /p:Configuration^=%%C /p:Platform^=%%P /t:SDL2^,SDL2main`) do (
 						set L_LINE=%%i
 						if "!CI!" EQU "True" echo %%i
 						if "!L_LINE:fatal error=!" NEQ "!L_LINE!" set L_ERROR_MSG=%%i

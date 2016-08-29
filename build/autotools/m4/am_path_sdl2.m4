@@ -1,24 +1,12 @@
-#!/bin/bash
-
-mkdir -p m4
-
-touch NEWS
-touch README
-touch AUTHORS
-touch ChangeLog
-
-# The following code is from:
-# https://hg.libsdl.org/SDL/raw-file/183936dd34d5/sdl2.m4
-cat <<'EOF' > acinclude.m4
-# Configure paths for SDL
-# Sam Lantinga 9/21/99
-# stolen from Manish Singh
-# stolen back from Frank Belew
-# stolen from Manish Singh
-# Shamelessly stolen from Owen Taylor
-
-# serial 1
-
+dnl Configure paths for SDL
+dnl Sam Lantinga 9/21/99
+dnl stolen from Manish Singh
+dnl stolen back from Frank Belew
+dnl stolen from Manish Singh
+dnl Shamelessly stolen from Owen Taylor
+dnl
+dnl serial 1
+dnl
 dnl AM_PATH_SDL2([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl
@@ -212,7 +200,3 @@ int main(int argc, char *argv[])
   AC_SUBST(SDL_LIBS)
   rm -f conf.sdltest
 ])
-
-EOF
-
-autoreconf -i

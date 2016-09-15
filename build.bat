@@ -116,6 +116,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					REM can be worked around by putting a dummy include file in place, and then only XAudio2
 					REM support is lost.
 					set L_ERROR_MSG=
+					devenv /upgrade VisualC\SDL.sln
 					for /F "usebackq tokens=*" %%i in (`msbuild /nologo VisualC\SDL.sln /p:Configuration^=%%C /p:Platform^=%%P /t:SDL2^,SDL2main`) do (
 						set L_LINE=%%i
 						if "!CI!" EQU "True" echo %%i
@@ -123,11 +124,11 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
 					)
 					set /A L_SDL2_ATTEMPTS=!L_SDL2_ATTEMPTS!+1
 
-					if exist VisualC\SDL\%%P\%%C\SDL2.dll (
+					if exist VisualC\%%P\%%C\SDL2.dll (
 						echo Copying: [SDL2^|%%C^|%%P]
-						copy >nul VisualC\SDL\%%P\%%C\SDL2.dll "!SDL2BUILDPATH!\"
-						copy >nul VisualC\SDL\%%P\%%C\SDL2.lib "!SDL2BUILDPATH!\"
-						copy >nul VisualC\SDL\%%P\%%C\SDL2.pdb "!SDL2BUILDPATH!\"
+						copy >nul VisualC\%%P\%%C\SDL2.dll "!SDL2BUILDPATH!\"
+						copy >nul VisualC\%%P\%%C\SDL2.lib "!SDL2BUILDPATH!\"
+						copy >nul VisualC\%%P\%%C\SDL2.pdb "!SDL2BUILDPATH!\"
 					) else (
 						REM Only try and recover from the DirectX problem, and if that don't work, give up.
 						if "!L_ERROR_MSG!" NEQ "" (

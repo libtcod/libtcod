@@ -1,7 +1,5 @@
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing an advanced true color console, input, and lots of other utilities frequently used in roguelikes.
 
-**Note that the popular tutorial mentioned below still uses 1.5, it will direct you on how to get set up correctly.**
-
 1.6: [![Build status](https://ci.appveyor.com/api/projects/status/6jh07hq205iy0mlh/branch/default?svg=true)](https://ci.appveyor.com/project/rmtew/libtcod/branch/default)
 
 1.5: COMING.
@@ -12,7 +10,7 @@ If you want to get a quick overview of the features that libtcod provides, check
 
 If you want to get a quick overview of games which have used libtcod, check out the [Projects](http://roguecentral.org/doryen/projects-2/) page.
 
-libtcod is also well known for it's [easy to follow tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod), which many people have used to get started developing a roguelike.  Note that the tutorial uses the last stable version of libtcod, so you can't just grab the latest source code from here and run with it.  Follow the relevant links the tutorial gives, and it will point you to the right locations.
+libtcod is also well known for it's [easy to follow tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod), which many people have used to get started developing a roguelike.  Follow the relevant links the tutorial gives, and it will point you to the right locations.
 
 ### How do I get set up? ###
 
@@ -29,7 +27,7 @@ For all other platforms, you need to make use of the `autotools` support.  This 
 
 ### SDL vs SDL2 ###
 
-**If you are using 1.5, or following the tutorial, then SDL should be your choice -- unless the tutorial you are doing refers to SDL2.**
+**If you are using 1.5, then SDL should be your choice -- unless the tutorial you are doing refers to SDL2.**
 
 [SDL2](http://hg.libsdl.org/SDL) is the latest version of SDL.  SDL itself, is no longer actively developed.
 
@@ -37,4 +35,4 @@ While libtcod still supports SDL, it is no longer actively developed.  The curre
 
 For now, SDL should be considered the most stable version to use, and SDL2 experimental.  At this time, SDL2 key handling is flawed and favours tablet and mobile devices with no touch screen or numeric keypad.
 
-The SDL2 revision 704a0bfecf75 is the only one that is supported by this project at this time.  If you are using any other revision, try the supported revision before reporting problems.
+The SDL2 revision e12c38730512 is the only one that is supported by this project at this time.  If you are using any other revision, try the supported revision before reporting problems.  This is to ensure that we are all dealing with the same SDL2 bugs, otherwise your problems may not be reproducible when reported.

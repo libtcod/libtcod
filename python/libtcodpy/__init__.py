@@ -46,19 +46,37 @@ MINGW=False
 MSVC=False
 
 def _get_cdll(libname):
-    ''' 
+    '''
         get the library libname using a manual search path that will first
         check the package directory and then the development path
-        
+
         returns the ctypes lib object
     '''
-    try:
-        # get library from the package
-        return ctypes.cdll[os.path.realpath(os.path.join(__path__[0], libname))]
-    except OSError:
-        # or try to get get it from the development path
-        return ctypes.cdll[os.path.realpath(os.path.join(__path__[0],
-                                                         '../..', libname))]
+    pathsToTry = []
+    # 1. Try the directory this script is located in.
+    pathsToTry.append(os.path.join(__path__[0], libname))
+    # 2. Try the directory of the command-line script.
+    scriptFilePath = sys.argv[0]
+    scriptPath = os.path.dirname(scriptFilePath)
+    if len(scriptPath):
+        pathsToTry.append(os.path.join(scriptPath, libname))
+    else:
+        pathsToTry.append(os.path.join(os.getcwd(), libname))
+    # 3. Try the top-level path in the development tree.
+    potentialTopLevelPath = os.path.realpath(os.path.join(__path__[0], os.pardir, os.pardir))
+    pythonPath = os.path.join(potentialTopLevelPath, "python")
+    if os.path.exists(pythonPath):
+        pathsToTry.append(potentialTopLevelPath)
+
+    for libPath in pathsToTry:
+        print "trying "+ libPath
+        if os.path.exists(libPath):
+            try:
+                # get library from the package
+                return ctypes.cdll[libPath]
+            except:
+                pass
+    raise Exception("unable to locate "+ libname)
 
 if sys.platform.find('linux') != -1:
     _lib = _get_cdll('libtcod.so')
@@ -72,11 +90,11 @@ elif sys.platform.find('haiku') != -1:
 else:
     _get_cdll('SDL2.dll')
     try:
-        _lib = _get_cdll('libtcod-mingw.dll')
-        MINGW=True
-    except WindowsError:
         _lib = _get_cdll('libtcod.dll')
         MSVC=True
+    except WindowsError:
+        _lib = _get_cdll('libtcod-mingw.dll')
+        MINGW=True
     # On Windows, ctypes doesn't work well with function returning structs,
     # so we have to user the _wrapper functions instead
     _lib.TCOD_color_multiply = _lib.TCOD_color_multiply_wrapper
@@ -438,7 +456,7 @@ class ConsoleBuffer:
         self.fore_g = [fore_g] * n
         self.fore_b = [fore_b] * n
         self.char = [ord(char)] * n
-    
+
     def copy(self):
         # returns a copy of this ConsoleBuffer.
         other = ConsoleBuffer(0, 0)
@@ -452,7 +470,7 @@ class ConsoleBuffer:
         other.fore_b = list(self.fore_b)
         other.char = list(self.char)
         return other
-    
+
     def set_fore(self, x, y, r, g, b, char):
         # set the character and foreground color of one cell.
         i = self.width * y + x
@@ -460,14 +478,14 @@ class ConsoleBuffer:
         self.fore_g[i] = g
         self.fore_b[i] = b
         self.char[i] = ord(char)
-    
+
     def set_back(self, x, y, r, g, b):
         # set the background color of one cell.
         i = self.width * y + x
         self.back_r[i] = r
         self.back_g[i] = g
         self.back_b[i] = b
-    
+
     def set(self, x, y, back_r, back_g, back_b, fore_r, fore_g, fore_b, char):
         # set the background color, foreground color and character of one cell.
         i = self.width * y + x
@@ -478,7 +496,7 @@ class ConsoleBuffer:
         self.fore_g[i] = fore_g
         self.fore_b[i] = fore_b
         self.char[i] = ord(char)
-    
+
     def blit(self, dest, fill_fore=True, fill_back=True):
         # use libtcod's "fill" functions to write the buffer to a console.
         if (console_get_width(dest) != self.width or
@@ -988,7 +1006,7 @@ def console_fill_char(con,arr) :
         carr = struct.pack('%di' % len(arr), *arr)
 
     _lib.TCOD_console_fill_char(con, carr)
-        
+
 def console_load_asc(con, filename) :
     _lib.TCOD_console_load_asc(con,filename)
 def console_save_asc(con, filename) :
@@ -1613,7 +1631,7 @@ def path_size(p):
     return _lib.TCOD_path_size(p[0])
 
 def path_reverse(p):
-    _lib.TCOD_path_reverse(p[0])  
+    _lib.TCOD_path_reverse(p[0])
 
 def path_get(p, idx):
     x = c_int()

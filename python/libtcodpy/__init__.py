@@ -69,7 +69,6 @@ def _get_cdll(libname):
         pathsToTry.append(potentialTopLevelPath)
 
     for libPath in pathsToTry:
-        print "trying "+ libPath
         if os.path.exists(libPath):
             try:
                 # get library from the package

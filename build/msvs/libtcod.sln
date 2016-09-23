@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtcod", "libtcod.vcxproj", "{D6197244-2BEB-4AED-988E-CC1F0B647055}"
 EndProject
@@ -44,6 +44,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "weather", "weather.vcxproj"
 	ProjectSection(ProjectDependencies) = postProject
 		{D6197244-2BEB-4AED-988E-CC1F0B647055} = {D6197244-2BEB-4AED-988E-CC1F0B647055}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "doctcod", "doctcod.vcxproj", "{37AB5715-48D7-4BF2-BC39-21A141CCB85C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +127,14 @@ Global
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|Win32.Build.0 = Release|Win32
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|x64.ActiveCfg = Release|x64
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|x64.Build.0 = Release|x64
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Debug|Win32.Build.0 = Debug|Win32
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Debug|x64.ActiveCfg = Debug|x64
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Debug|x64.Build.0 = Debug|x64
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Release|Win32.ActiveCfg = Release|Win32
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Release|Win32.Build.0 = Release|Win32
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Release|x64.ActiveCfg = Release|x64
+		{37AB5715-48D7-4BF2-BC39-21A141CCB85C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

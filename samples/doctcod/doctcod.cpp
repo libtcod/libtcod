@@ -1,6 +1,6 @@
 /*
 * libtcod 1.6.2
-* Copyright (c) 2008,2009,2010 Jice & Mingos
+* Copyright (c) 2008,2009,2010,2016 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,10 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include "libtcod.hpp"
+
+#ifdef TCOD_WINDOWS
+#define strdup _strdup
+#endif
 
 // index.html categories
 static const char *categs[] = {"", "Core","Base toolkits","Roguelike toolkits", "Howtos", NULL };

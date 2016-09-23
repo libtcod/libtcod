@@ -1,12 +1,10 @@
 Products :
 
-- upx, The Ultimate Packer for eXecutables, by Markus Oberhumer, Laszlo Molnar & John Reiser
-   http://upx.sourceforge.net
-- zlib 1.2.3, by Jean-loup Gailly and Mark Adler
+- zlib 1.2.8, by Jean-loup Gailly and Mark Adler
    http://www.zlib.org
-- lodepng 20120729, by Lode Vandevenne
+- lodepng 20160501, by Lode Vandevenne
    http://lodev.org/lodepng
-- SDL 1.2.15, by Sam Lantinga
+- SDL 2, by Sam Lantinga
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback and patches, and especially :

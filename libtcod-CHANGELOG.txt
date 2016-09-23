@@ -3,7 +3,7 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.6.1 : 2016 ? ?
+1.6.1 : 2016 Sep 23
 % Python libtcodpy is now better at finding DLLs on Windows
   https://bitbucket.org/libtcod/libtcod/commits/eda0075
 =========================================================
@@ -54,7 +54,7 @@ X API break
 1.5.1 : 2012 Aug 29
 X TCOD_console_wait_for_keypress, TCOD_console_check_for_keypress, TCOD_mouse_get_status
   replaced with TCOD_sys_check_for_event and TCOD_sys_wait_for_event
-X source width and height can be 0 in TCODConsole::blit to blit the whole console 
+X source width and height can be 0 in TCODConsole::blit to blit the whole console
 X Some of the parser-related functions now can be chained.
 X The RNG API now has less functions that choose the distribution based on the set flags.
 X The noise API now has less functions that choose the noise type based on the set flags.
@@ -82,29 +82,29 @@ X TCODConsole::printLeft/Right/Center replaced by
 	TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t bkgnd, TCOD_alignment_t alignment, const char *fmt, ...)
 	added TCOD_BKGND_DEFAULT as default value in rect / putChar / hline / vline / setBack
 	the default background flag for a console is BKGND_NONE
-	Warning ! That mean the rect/putChar/... functions now default to BKGND_NONE 
+	Warning ! That mean the rect/putChar/... functions now default to BKGND_NONE
 	instead of BKGND_SET, except if you call setBackgroundFlag before using them.
 X TCODConsole::getHeightLeft/Right/CenterRect replaced by
 	TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
 	(the 3 functions were useless, the height does not depend on the alignement... X( )
 X TCODConsole::initRoot has an additional renderer parameter :
-   static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false, 
+   static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false,
        TCOD_renderer_t renderer=TCOD_RENDERER_SDL);
    Possible values : TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
 X TCODMap::clear now sets walkable and transparent status of all cells:
     void TCODMap::clear (bool transparent = false, bool walkable = false)
     void TCOD_map_clear (TCOD_map_t map, bool transparent, bool walkable)
     map_clear (map, transparent, walkable)
-+ cmake compilation works on FreeBSD thanks to namor_     
-+ added support for python3k. The samples run with Python 3.2.3    
-+ added support for colored tiles. Standard font characters MUST only use greyscale colors.    
++ cmake compilation works on FreeBSD thanks to namor_
++ added support for python3k. The samples run with Python 3.2.3
++ added support for colored tiles. Standard font characters MUST only use greyscale colors.
 + added native support for .ASC and .APF file (Ascii Paint format)
   * TCODConsole::TCODConsole(const char *filename)
   * bool TCODConsole::loadAsc(const char *filename)
-  * bool TCODConsole::saveAsc(const char *filename) const    
+  * bool TCODConsole::saveAsc(const char *filename) const
   * bool TCODConsole::loadApf(const char *filename)
-  * bool TCODConsole::saveApf(const char *filename) const    
-+ added mouse wheel support in TCOD_mouse_t.wheel_up/wheel_down  
+  * bool TCODConsole::saveApf(const char *filename) const
++ added mouse wheel support in TCOD_mouse_t.wheel_up/wheel_down
 + added TCODSystem::fileExists function for checking whether a given file exists
 + added dice to the TCODRandom toolkit
 + added support for dynamic property declaration in the parser
@@ -142,12 +142,12 @@ X TCODMap::clear now sets walkable and transparent status of all cells:
 - fixed Python TCOD_parser_get_list_property
 - fixed TCODDijkstra destructor crash bug
 - fixed TCODColor::setHSV bug when using hues below 0 or above 359 grades
-- fixed some rare issues in A* pathfinding 
+- fixed some rare issues in A* pathfinding
 - fixed issue in TCODImage::blit2x when blitting only a subregion of the image
 - fixed memory leak in TCODImage::save
 =========================================================
 1.5.0 : 2010 Feb 15
-X TCODRandom::getIntFromByteArray has been deleted    
+X TCODRandom::getIntFromByteArray has been deleted
 X the random number generator module now support two algorithms (Mingos)
   Mersenne twister, used in previous versions of libtcod
   Complementary Multiply With Carry, 2 to 3 times faster and has a much better period. This is the default algo.
@@ -166,12 +166,12 @@ X TCODConsole::printFrame now takes an extra argument: TCOD_bkgnd_flag_t
 X renamed libraries on Linux to improve portability :
     libtcod++.so  => libtcodxx.so
     libtcod-gui.so => libtcodgui.so
-+ added text field toolkit (undocumented)    
++ added text field toolkit (undocumented)
 + added functions for fast Python full console coloring:
 	console_fill_foreground(con,r,g,b)
 	console_fill_background(con,r,g,b)
-	r,g,b are 1D arrays of console_width * console_height     
-+ added fast Python rendering sample (Jotaf)	
+	r,g,b are 1D arrays of console_width * console_height
++ added fast Python rendering sample (Jotaf)
 + added TCODConsole::resetCredits() to restart credits animation before it's finished
 + added TCODConsole::setDirty(int x, int y, int w,int h) to force libtcod to redraw a part of the console
     This might by needed when using the SDL renderer
@@ -183,19 +183,19 @@ X renamed libraries on Linux to improve portability :
 + added subcell resolution blitting function TCODImage::blit2x
 + added more portable filesystem utilities :
     static bool TCODSystem::isDirectory(const char *path)
-    static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)   
+    static TCODList<const char *> TCODSystem::getDirectoryContent(const char *path, const char *pattern)
 + added TCODConsole::putCharEx(int x, int y, int c, TCODColor &fore, TCODColor &back) (at last!)
 + added waitThread and thread conditions support in (undocumented) threading API
 + added unicode support and 4 unicode fonts courtesy of Mingos. Functions with unicode support are :
     static void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY);
-    void TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    void TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    void TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    int TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    int TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...); 
-    int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
-    int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const wchar_t *fmt, ...); 
+    void TCODConsole::printLeft(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    void TCODConsole::printRight(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    void TCODConsole::printCenter(int x, int y, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    int TCODConsole::printLeftRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    int TCODConsole::printRightRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    int TCODConsole::printCenterRect(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, const wchar_t *fmt, ...);
+    int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const wchar_t *fmt, ...);
+    int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const wchar_t *fmt, ...);
     int TCODConsole::getHeightCenterRect(int x, int y, int w, int h,const wchar_t *fmt, ...);
   C versions of the functions have _utf suffixes. Unicode fonts are :
     fonts/consolas_unicode_10x10.png
@@ -217,7 +217,7 @@ X renamed libraries on Linux to improve portability :
 1.4.2 : 2009 Oct 06
 X TCODConsole::blit now takes 2 float parameters :
    static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f)
-+ added possibility to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer   
++ added possibility to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer
 + added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
 + heightmap : added missing TCOD_heightmap_set_value function
 + new consolas, dejavu, lucida and prestige fonts from Mingos
@@ -232,7 +232,7 @@ X TCODConsole::blit now takes 2 float parameters :
 - fixed fov post-processing step to handle opaque walkable cells (for example bush)
 =========================================================
 1.4.1 : 2009 Mar 22
-X Default colors have been changed/added. 
+X Default colors have been changed/added.
 X TCODMap::computeFov changed to support several algorithms :
    void computeFov(int playerX,int playerY, int maxRadius,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC)
    available algorithms :
@@ -280,7 +280,7 @@ X setCustomFont changed :
 + can now dynamically modify the content of the font bitmap :
 	static void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y)
 + added C and Python code generation in the heightmap tool
-+ added function to calculate the height of a printed string (with autowrapping) 
++ added function to calculate the height of a printed string (with autowrapping)
   without actually printing it :
     int TCODConsole::getHeightLeftRect(int x, int y, int w, int h, const char *fmt, ...)
     int TCODConsole::getHeightRightRect(int x, int y, int w, int h, const char *fmt, ...)
@@ -316,7 +316,7 @@ X setCustomFont changed :
 - fixed mouse coordinates when going fullscreen->windowed
 =========================================================
 1.4.0 : 2008 Oct 16
-X Noise functions renamed : 
+X Noise functions renamed :
    TCODNoise::getNoise -> TCODNoise::getPerlin
    TCODNoise::getFbm -> TCODNoise::getFbmPerlin
    TCODNoise::getTurbulence -> TCODNoise::getTurbulencePerlin
@@ -337,7 +337,7 @@ X setCustomFont changed :
    static void TCODConsole::mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY);
    static void TCODConsole::mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY);
    static void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY);
-+ parser : now strings can contain octal/hexadecimal ascii values 
++ parser : now strings can contain octal/hexadecimal ascii values
    myStringProperty1 = "embedded hex value : \x80"
    myStringProperty2 = "embedded octal value : \200"
 + parser : now can handle list properties.
@@ -348,11 +348,11 @@ X setCustomFont changed :
   to read (default parser) : TCODList<int> prop( parser.getListProperty("myStruct.myProperty",TCOD_TYPE_INT) );
 + added color map generator. Interpolate colors from an array of key colors :
    TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex)
-+ added random generator backup function. You can save the state of a generator with 
++ added random generator backup function. You can save the state of a generator with
     TCODRandom *TCODRandom::save()
   and restore it with
     void TCODRandom::restore(const TCODRandom *backup)
-+ added simplex noise, similar to perlin but faster, especially in 4 dimensions and has better contrast : 
++ added simplex noise, similar to perlin but faster, especially in 4 dimensions and has better contrast :
    TCODNoise::getSimplex
    TCODNoise::getFbmSimplex
    TCODNoise::getTurbulenceSimplex
@@ -379,7 +379,7 @@ X setCustomFont changed :
    libtcod 1.3.2 :  130
    libtcod 1.4.0 :  300
 % TCODNoise::getTurbulence is twice faster
-% improved mouse click detection. Even with a low framerate, mouse clicks will always be detected and 
+% improved mouse click detection. Even with a low framerate, mouse clicks will always be detected and
    reported in the Xbutton_pressed fields of TCOD_mouse_t.
 % you don't need anymore to provide values in TCODLine::step parameters
 - fixed memory leak in image module
@@ -402,8 +402,8 @@ X setCustomFont changed :
   this allows you to use fonts with more than 255 characters.
 + added default parser listener for basic config files.
 + added fields in TCOD_mouse_t to easily detect button press events :
-  lbutton_pressed : left button pressed event  
-  rbutton_pressed : right button pressed event  
+  lbutton_pressed : left button pressed event
+  rbutton_pressed : right button pressed event
   mbutton_pressed : middle button pressed event
   and to get the mouse movement in cell coordinates (instead of pixels)
 + added functions to retrieve data from TCODMap
@@ -453,7 +453,7 @@ X TCOD_console_check_for_keypress now has a parameter that indicates which event
 + added possibility to generate an image from an offscreen console
 + added TCODImage::save
 + image toolkit now support reading 8bpp bitmap files.
-% Random number generators now support inverted ranges instead of crashing : 
+% Random number generators now support inverted ranges instead of crashing :
   TCODRandom::getInstance()->getInt(10,2)
   => return a value between 2 and 10.
 - fixed image toolkit replacing the green component by the red one when loading a bitmap from a file
@@ -464,7 +464,7 @@ X TCOD_console_check_for_keypress now has a parameter that indicates which event
 1.2 : 2008 Feb 26
 + new 'image' toolkit replacing some of the features previously in the 'system' toolkit.
 + now windowed mode works even on 16bits desktops
-+ improved custom font support. 
++ improved custom font support.
   You can now use fonts with characters ordered in rows or columns and with a custom transparent color.
   This allows you to use most existing character sets with the doryen library.
   Font characters with grayscale are still not supported.
@@ -501,7 +501,7 @@ X TCOD_console_check_for_keypress now has a parameter that indicates which event
 % some background blending flags have been renamed :
   TCOD_BKGND_NOBK replaced by TCOD_BKGND_NONE
   TCOD_BKGND_BK replaced by TCOD_BKGND_SET
-% the fov toolkit now uses two properties per cell : transparent/walkable. 
+% the fov toolkit now uses two properties per cell : transparent/walkable.
   This is necessary to fix a fov issue with window cells (transparent, but not walkable).
   void TCODFov::setTransparent(int x,int y, bool isTransparent) has been replaced by :
   void TCODFov::setProperties(int x,int y, bool isTransparent, bool isWalkable)

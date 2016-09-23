@@ -364,6 +364,7 @@ void printCCode(FILE *f, const char *txt) {
 	static const char *symbols[] = {
 		"->","++","--","<<",">>","<=",">=","==","!=","&&","||","*=","/=","+=","-=","%=","<<=",">>=","&=","^=","|=","...",
 		"{","}","(",")","[","]",".","&","*","+","-","~","!","/","%","<",">","^","|","?",":","=",",",";",
+		NULL
 	};
 	static const char *keywords[] = {
 	"auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int",
@@ -547,15 +548,15 @@ void parseFile(char *filename) {
 					directive += sizeof("@ColorTable");
 					curPage->colorTable=true;
 	    		} else if ( startsWith(directive,"@ColorCategory") ) {
-					Color col;
-					directive=getLineEnd(directive+sizeof("@ColorCategory"),&col.name);
-					col.category=true;
-					colors.push(col);
+					Color *catCol = new Color();
+					directive=getLineEnd(directive+sizeof("@ColorCategory"),&catCol->name);
+					catCol->category=true;
+					colors.push(*catCol);
 	    		} else if ( startsWith(directive,"@Color") ) {
-					Color col;
-					directive=getIdentifier(directive+sizeof("@Color"),&col.name);
-					sscanf(directive,"%d,%d,%d",&col.col.r,&col.col.g,&col.col.b);
-					colors.push(col);
+					Color *col = new Color();
+					directive=getIdentifier(directive+sizeof("@Color"),&col->name);
+					sscanf(directive,"%d,%d,%d",&col->col.r,&col->col.g,&col->col.b);
+					colors.push(*col);
 					while (! isspace(*directive)) directive++;
 	    		} else if ( startsWith(directive,"@FuncDesc") ) {
 					if (! curFunc ) {

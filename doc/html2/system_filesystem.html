@@ -19,7 +19,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <h1>3.3. Filesystem utilities</h1>
 <div id="toc"><ul>
 <li><a href="#0">Create a directory</a></li><li><a href="#1">Delete an empty directory</a></li><li><a href="#2">Delete a file</a></li><li><a href="#3">Check if a path is a directory</a></li><li><a href="#4">List files in a directory</a></li><li><a href="#5">Check if a given file exists</a></li><li><a href="#6">Read the content of a file into memory</a></li><li><a href="#7">Write the content of a memory buffer to a file</a></li></ul></div>
-<p>Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no python wrapper since python provides its own builtin functions. All those functions return false if an error occured.<br />	</p>
+<p>Those are a few function that cannot be easily implemented in a portable way in C/C++. They have no Python wrapper since Python provides its own builtin functions. All those functions return false if an error occurred.<br />	</p>
 <a name="0"></a><h3>Create a directory</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> bool</span> TCODSystem<span class="code-symbol">::</span>createDirectory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">bool</span> TCOD_sys_create_directory<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>path<span class="code-symbol">)</span></p>

@@ -25,7 +25,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="c"><span class="code-keyword">void</span> TCOD_image_clear<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-tcod"> TCOD_color_t</span> color<span class="code-symbol">)</span></p>
 <p class="py">image_clear<span class="code-symbol">(</span>image<span class="code-symbol">,</span>color<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image to fill.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image to fill.<br />	</td></tr>
 <tr><td>color</td><td>The color to use.<br />	</td></tr>
 </tbody></table><a name="1"></a><h3>Changing the color of a pixel</h3>
 <div class="code"><p class="cpp">TCODColor TCODImage<span class="code-symbol">::</span>putPixel<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODColor col<span class="code-symbol">)</span></p>
@@ -41,34 +41,34 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="c"><span class="code-keyword">void</span> TCOD_image_scale<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword">int</span> neww<span class="code-symbol">,</span><span class="code-keyword"> int</span> newh<span class="code-symbol">)</span></p>
 <p class="py">image_scale<span class="code-symbol">(</span>image<span class="code-symbol">,</span> neww<span class="code-symbol">,</span>newh<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 <tr><td>neww,newh</td><td>The new size of the image.<br />	</td></tr>
 </tbody></table><a name="3"></a><h3>Flipping the image horizontally</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>hflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_image_hflip<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
 <p class="py">image_hflip<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 </tbody></table><a name="4"></a><h3>Flipping the image vertically</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>vflip<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_image_vflip<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
 <p class="py">image_vflip<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 </tbody></table><a name="5"></a><h3>Rotating the image clockwise</h3>
 <p>Rotate the image clockwise by increment of 90 degrees. <br />	</p>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>rotate90<span class="code-symbol">(</span><span class="code-keyword">int</span> numRotations<span class="code-symbol">=</span><span class="code-value">1</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_image_rotate90<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword"> int</span> numRotations<span class="code-symbol">)</span></p>
 <p class="py">image_rotate90<span class="code-symbol">(</span>image<span class="code-symbol">,</span> num<span class="code-symbol">=</span><span class="code-value">1</span><span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 <tr><td>numRotations</td><td>Number of 90 degrees rotations. Should be between 1 and 3.<br />	</td></tr>
 </tbody></table><a name="6"></a><h3>Inverting the colors of the image</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODImage<span class="code-symbol">::</span>invert<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_image_invert<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">)</span></p>
 <p class="py">image_invert<span class="code-symbol">(</span>image<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 </tbody></table>
 </div></div>
 <div class="footer"><div class="footertext">

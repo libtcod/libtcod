@@ -62,7 +62,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="py">heightmap_copy<span class="code-symbol">(</span>source<span class="code-symbol">,</span>dest<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>source</td><td>Each cell value from the source heightmap is copied in the destination (this for C++) heightmap.<br />		The source and destination heightmap must have the same width and height.<br />	</td></tr>
-<tr><td>dest</td><td>In the C and python versions, the address of the destination heightmap.<br />	</td></tr>
+<tr><td>dest</td><td>In the C and Python versions, the address of the destination heightmap.<br />	</td></tr>
 </tbody></table><a name="6"></a><h3>Normalizing values</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>normalize<span class="code-symbol">(</span><span class="code-keyword">float</span> min<span class="code-symbol">=</span><span class="code-value">0.0</span>f<span class="code-symbol">,</span><span class="code-keyword"> float</span> max<span class="code-symbol">=</span><span class="code-value">1.0</span>f<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_heightmap_normalize<span class="code-symbol">(</span><span class="code-tcod">TCOD_heightmap_t</span><span class="code-symbol"> *</span>hm<span class="code-symbol">,</span><span class="code-keyword"> float</span> min<span class="code-symbol">,</span><span class="code-keyword"> float</span> max<span class="code-symbol">)</span></p>
@@ -78,7 +78,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>a</td><td>First heightmap in the lerp operation.<br />	</td></tr>
 <tr><td>b</td><td>Second heightmap in the lerp operation.<br />	</td></tr>
 <tr class="hilite"><td>coef</td><td>lerp coefficient.<br />		For each cell in the destination map (this for C++), value = a.value + (b.value - a.value) * coef<br />	</td></tr>
-<tr><td>res</td><td>In the C and python versions, the address of the destination heightmap.<br />	</td></tr>
+<tr><td>res</td><td>In the C and Python versions, the address of the destination heightmap.<br />	</td></tr>
 </tbody></table><a name="8"></a><h3>Adding two heightmaps</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>add<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODHeightMap<span class="code-symbol"> *</span>a<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODHeightMap<span class="code-symbol"> *</span>b<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_heightmap_add_hm<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>a<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>b<span class="code-symbol">,</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>res<span class="code-symbol">)</span></p>
@@ -86,7 +86,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>a</td><td>First heightmap.<br />	</td></tr>
 <tr><td>b</td><td>Second heightmap. For each cell in the destination map (this for C++), value = a.value + b.value<br />	</td></tr>
-<tr class="hilite"><td>res</td><td>In the C and python versions, the address of the destination heightmap.<br />	</td></tr>
+<tr class="hilite"><td>res</td><td>In the C and Python versions, the address of the destination heightmap.<br />	</td></tr>
 </tbody></table><a name="9"></a><h3>Multiplying two heightmaps</h3>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODHeightMap<span class="code-symbol">::</span>multiply<span class="code-symbol">(</span><span class="code-keyword">const</span> TCODHeightMap<span class="code-symbol"> *</span>a<span class="code-symbol">,</span><span class="code-keyword"> const</span> TCODHeightMap<span class="code-symbol"> *</span>b<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_heightmap_multiply_hm<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>a<span class="code-symbol">,</span><span class="code-keyword"> const</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>b<span class="code-symbol">,</span><span class="code-tcod"> TCOD_heightmap_t</span><span class="code-symbol"> *</span>res<span class="code-symbol">)</span></p>
@@ -94,7 +94,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>a</td><td>First heightmap.<br />	</td></tr>
 <tr><td>b</td><td>Second heightmap. For each cell in the destination map (this for C++), value = a.value * b.value<br />	</td></tr>
-<tr class="hilite"><td>res</td><td>In the C and python versions, the address of the destination heightmap.<br />	</td></tr>
+<tr class="hilite"><td>res</td><td>In the C and Python versions, the address of the destination heightmap.<br />	</td></tr>
 </tbody></table>
 </div></div>
 <div class="footer"><div class="footertext">

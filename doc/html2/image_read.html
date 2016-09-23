@@ -38,7 +38,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="c"><span class="code-tcod">TCOD_color_t</span> TCOD_image_get_pixel<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="py">image_get_pixel<span class="code-symbol">(</span>image<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 <tr><td>x,y</td><td>The pixel coordinates inside the image.<br />		0 <= x < width<br />		0 <= y < height<br />	</td></tr>
 </tbody></table><h6>Example:</h6><div class="code">
 <p class="cpp">TCODImage<span class="code-symbol"> *</span>pix<span class="code-symbol"> =</span><span class="code-keyword"> new</span> TCODImage<span class="code-symbol">(</span><span class="code-value">80</span><span class="code-symbol">,</span><span class="code-value">50</span><span class="code-symbol">)</span><span class="code-symbol">;</span><br />TCODColor col<span class="code-symbol">=</span>pix<span class="code-symbol">-></span>getPixel<span class="code-symbol">(</span><span class="code-value">40</span><span class="code-symbol">,</span><span class="code-value">25</span><span class="code-symbol">)</span><span class="code-symbol">;</span></p>
@@ -51,7 +51,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="c"><span class="code-keyword">int</span> TCOD_image_get_alpha<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword"> int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="py">image_get_alpha<span class="code-symbol">(</span>image<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 <tr><td>x,y</td><td>The pixel coordinates inside the image.<br />		0 <= x < width<br />		0 <= y < height<br />	</td></tr>
 </tbody></table><a name="3"></a><h3>Checking if a pixel is transparent</h3>
 <p>You can use this simpler version (for images with alpha layer, returns true only if alpha == 0) :<br />	</p>
@@ -59,7 +59,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <p class="c"><span class="code-keyword">bool</span> TCOD_image_is_pixel_transparent<span class="code-symbol">(</span><span class="code-tcod">TCOD_image_t</span> image<span class="code-symbol">,</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">)</span></p>
 <p class="py">image_is_pixel_transparent<span class="code-symbol">(</span>image<span class="code-symbol">,</span> x<span class="code-symbol">,</span> y<span class="code-symbol">)</span></p>
 </div>
-<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and python version, the image handler, obtained with the load function.<br />	</td></tr>
+<table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>image</td><td>In the C and Python version, the image handler, obtained with the load function.<br />	</td></tr>
 <tr><td>x,y</td><td>The pixel coordinates inside the image.<br />		0 <= x < width<br />		0 <= y < height<br />	</td></tr>
 </tbody></table><a name="4"></a><h3>Getting the average color of a part of the image</h3>
 <p>This method uses mipmaps to get the average color of an arbitrary rectangular region of the image.<br />		It can be used to draw a scaled-down version of the image. It's used by libtcod's blitting functions.<br />	</p>

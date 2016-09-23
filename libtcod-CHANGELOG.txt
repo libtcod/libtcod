@@ -3,7 +3,39 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.6.0 : ?
+1.6.1 : 2016 ? ?
+% Python libtcodpy is now better at finding DLLs on Windows
+  https://bitbucket.org/libtcod/libtcod/commits/eda0075
+=========================================================
+1.6.0 : 2016 Sep 16
++ added support for autotools builds
+  https://bitbucket.org/libtcod/libtcod/commits/41e1c24
++ added support for Visual Studio builds
++ added Visual Studio build script that can fetch and build dependencies, the project, and package up the result
++ hooked up Visual Studio build script to continuous integration service to run on each commit
++ libtcod is now reentrant which allows the window to be resized among other things
+  https://bitbucket.org/libtcod/libtcod/commits/14bad22
++ added new TCODK_TEXT event to cover the SDL2 SDL_TEXTINPUT event.
+  https://bitbucket.org/libtcod/libtcod/commits/7a8b072
+% upgraded to SDL2
+% upgraded zlib to version 1.2.8
+% upgraded lodepng to the 20160501 release
+  https://bitbucket.org/libtcod/libtcod/commits/60c127e
+% fixed compilation warnings in pathing code
+  https://bitbucket.org/libtcod/libtcod/commits/4045633
+% fixed memory leaks in pathing (Paral Zsolt)
+  https://bitbucket.org/libtcod/libtcod/commits/4c4af80
+% lmeta and rmeta modifiers have been added to TCOD_key_t
+  https://bitbucket.org/libtcod/libtcod/commits/e386362
+% map numlock key for SDL2
+  https://bitbucket.org/libtcod/libtcod/commits/83d481c
+% reset the cursor in text field when the text field is reset (cottog)
+  https://bitbucket.org/libtcod/libtcod/commits/6673e6c
+% remove superfluous calls to SDL_PumpEvents
+  https://bitbucket.org/libtcod/libtcod/commits/1edf96d
+% alt-tabbing back to the libtcod window would leave the window blank
+  https://bitbucket.org/libtcod/libtcod/commits/73fdf51
+- removed support for mingw builds because no-one could get it to work
 =========================================================
 1.5.2 : ?
 + added mid point displacement algorithm to the heightmap toolkit

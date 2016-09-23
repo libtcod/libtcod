@@ -244,6 +244,7 @@ for %%P in (Win32 x64) do (
 
 	REM Copy samples.
 	copy >nul "!BUILD_PATH!\msvs\samples_c\%%P\Release\samples_c.exe" "!L_RELEASE_PATH!\samples.exe"
+	copy >nul "!BUILD_PATH!\msvs\doctcod\%%P\Release\doctcod.exe" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\frost\%%P\Release\frost.exe" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\navier\%%P\Release\navier.exe" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\rad\%%P\Release\rad.exe" "!L_RELEASE_PATH!\"
@@ -262,7 +263,7 @@ xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependen
 for %%P in (Win32 x64) do (
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
 	for %%C in (Release Debug) do (
-		for %%N in (libtcod libtcod-gui samples_c samples_cpp frost navier rad ripples weather) do (
+		for %%N in (libtcod libtcod-gui samples_c samples_cpp frost navier rad ripples weather doctcod) do (
 			set "L_RELPATH=%%N\%%P\%%C"
 			mkdir "!L_RELEASE_PATH!\!L_RELPATH!"
 

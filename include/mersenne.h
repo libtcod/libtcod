@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.1
-* Copyright (c) 2008,2009,2010,2012,2013 Jice & Mingos & rmtew
+* libtcod 1.6.2
+* Copyright (c) 2008,2009,2010,2012,2013,2016 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without

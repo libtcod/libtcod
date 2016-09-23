@@ -14,6 +14,12 @@ libtcod is also well known for it's [easy to follow tutorial](http://www.rogueba
 
 ### How do I get set up? ###
 
+#### Using the provided binaries ####
+
+Currently, only Windows binaries are available from the Bitbucket [download section](https://bitbucket.org/libtcod/libtcod/downloads) for this project.  If you are programming in C or C++, various sample projects are provided which can be used as examples.  For those who wish to program in Python which is the only scripting language support that has been contributed so far, the basics are described in [part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up) of the tutorial.
+
+#### Compiling from source ####
+
 You have two options, both of which are located under the `build/` subdirectory.
 
 For Windows users, either running the top-level 'build.bat' script, or opening the solution directly within Visual Studio.

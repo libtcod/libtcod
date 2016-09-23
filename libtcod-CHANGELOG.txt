@@ -3,6 +3,8 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
+1.6.2 : ?
+=========================================================
 1.6.1 : 2016 Sep 23
 % Python libtcodpy is now better at finding DLLs on Windows
   https://bitbucket.org/libtcod/libtcod/commits/eda0075

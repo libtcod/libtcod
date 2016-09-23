@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.1
-* Copyright (c) 2008,2009,2010,2012,2013 Jice & Mingos & rmtew
+* libtcod 1.6.2
+* Copyright (c) 2008,2009,2010,2012,2013,2016 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -136,9 +136,9 @@ typedef long intptr;
 typedef unsigned long uintptr;
 #endif
 
-#define TCOD_HEXVERSION 0x010601
-#define TCOD_STRVERSION "1.6.1"
-#define TCOD_TECHVERSION 0x01060100
+#define TCOD_HEXVERSION 0x010602
+#define TCOD_STRVERSION "1.6.2"
+#define TCOD_TECHVERSION 0x01060200
 
 /* bool support for C */
 #ifndef __cplusplus

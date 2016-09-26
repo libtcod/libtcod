@@ -66,16 +66,14 @@ def _get_cdll(libname):
     potentialTopLevelPath = os.path.realpath(os.path.join(__path__[0], os.pardir, os.pardir))
     pythonPath = os.path.join(potentialTopLevelPath, "python")
     if os.path.exists(pythonPath):
-        pathsToTry.append(potentialTopLevelPath)
+        pathsToTry.append(os.path.join(potentialTopLevelPath, libname))
 
     for libPath in pathsToTry:
         if os.path.exists(libPath):
-            try:
-                # get library from the package
-                return ctypes.cdll[libPath]
-            except:
-                pass
-    raise Exception("unable to locate "+ libname)
+            # get library from the package
+            return ctypes.cdll[libPath]
+
+    raise Exception("unable to locate: "+ libname)
 
 if sys.platform.find('linux') != -1:
     _lib = _get_cdll('libtcod.so')

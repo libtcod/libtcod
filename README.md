@@ -1,4 +1,3 @@
-
 [TOC]
 
 ## Introduction ##
@@ -55,6 +54,6 @@ The SDL2 revision e12c38730512 is the only one that is supported by this project
 
 ## Getting Started ##
 
-libtcod comes with a sample application, implementations of which are provided in each of C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)), C++ [samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default) and Python [samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default).  This provides a decent overview of the basic features, in an interactive fashion.  Each should be identical, so if you are using Windows, downloading the precompiled binaries and running the included `samples.exe` which is compiled from the C source code, should be representative of the other versions.
+libtcod comes with a sample application, implementations of which are provided in each of C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)), C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)) and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).  This provides a decent overview of the basic features, in an interactive fashion.  Each should be identical, so if you are using Windows, downloading the precompiled binaries and running the included `samples.exe` which is compiled from the C source code, should be representative of the other versions.
 
 The popular [Python tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod) is a good way to both build up a simple roguelike, and get familiar with the basics of libtcod.

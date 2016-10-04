@@ -14,15 +14,27 @@ libtcod is also well known for it's [easy to follow tutorial](http://www.rogueba
 
 ### How do I get set up? ###
 
-#### Using the provided binaries ####
+#### Using one of our downloads ####
 
-Currently, only Windows binaries are available from the Bitbucket [download section](https://bitbucket.org/libtcod/libtcod/downloads) for this project.  If you are programming in C or C++, various sample projects are provided which can be used as examples.  For those who wish to program in Python which is the only scripting language support that has been contributed so far, the basics are described in [part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up) of the tutorial.
+Currently, only Windows binaries and a source code snapshot are available from the Bitbucket [download section](https://bitbucket.org/libtcod/libtcod/downloads) for this project.  If you are programming in C or C++, various sample projects are included within the source code which can be used as examples of various features.  For those who wish to program in Python which is the only scripting language support that has been contributed so far, the basics are described in [part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up) of the tutorial.
+
+Three files are currently provided for each release:
+
+* 32 bit (Win32) binaries also including source code.
+* 64 bit (x64) binaries also including source code.
+* Just the source code.
 
 #### Compiling from source ####
 
-You have two options, both of which are located under the `build/` subdirectory.
+These are the recommended places to obtain the source code from:
 
-For Windows users, either running the top-level 'build.bat' script, or opening the solution directly within Visual Studio.
+* The latest source code binary on the [downloads page](https://bitbucket.org/libtcod/libtcod/downloads).
+* Clone the repository with Mercurial and checkout the tag for the latest version in the default branch.
+* Clone the repository and checkout the bleeding edge from the tip in the default branch. 
+
+All compilation methods, whether Windows or autotools, are located within the `build/` subdirectory.
+
+Windows users can either runn the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
 
 For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more. For example, to build a production library :
 

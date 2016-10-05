@@ -80,8 +80,6 @@ TCODLIB_API bool TCOD_console_check_for_keypress_wrapper(TCOD_key_t *holder,
 							 int flags);
 TCODLIB_API void TCOD_console_wait_for_keypress_wrapper(TCOD_key_t *holder,
 							bool flush);
-TCODLIB_API uint32 TCOD_console_check_for_keypress_bitfield (int flags);
-TCODLIB_API uint32 TCOD_console_wait_for_keypress_bitfield (bool flush);
 TCODLIB_API void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b);
 TCODLIB_API void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b);
 TCODLIB_API void TCOD_console_fill_char(TCOD_console_t con, int *arr);
@@ -101,7 +99,7 @@ TCODLIB_API char *TCOD_console_print_return_string(TCOD_console_t con,int x,
 						   TCOD_alignment_t align, char *msg,
 						   bool can_split,
 						   bool count_only);
-TCODLIB_API void console_set_key_color_wrapper (TCOD_console_t con, colornum_t c);
+TCODLIB_API void TCOD_console_set_key_color_wrapper (TCOD_console_t con, colornum_t c);
 
 /* image module */
 
@@ -118,20 +116,6 @@ TCODLIB_API void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
 
 /* mouse module */
 TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
-TCODLIB_API int TCOD_mouse_get_x();
-TCODLIB_API int TCOD_mouse_get_y();
-TCODLIB_API int TCOD_mouse_get_cx();
-TCODLIB_API int TCOD_mouse_get_cy();
-TCODLIB_API int TCOD_mouse_get_dx();
-TCODLIB_API int TCOD_mouse_get_dy();
-TCODLIB_API int TCOD_mouse_get_dcx();
-TCODLIB_API int TCOD_mouse_get_dcy();
-TCODLIB_API uint32 TCOD_mouse_get_lbutton();
-TCODLIB_API uint32 TCOD_mouse_get_mbutton();
-TCODLIB_API uint32 TCOD_mouse_get_rbutton();
-TCODLIB_API uint32 TCOD_mouse_get_lbutton_pressed();
-TCODLIB_API uint32 TCOD_mouse_get_mbutton_pressed();
-TCODLIB_API uint32 TCOD_mouse_get_rbutton_pressed();
 
 /* parser module */
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);

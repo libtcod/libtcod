@@ -113,9 +113,11 @@
 /* This is a hack. SDL by default want you to rename your main statement, and insert it's own first
    It does that to handle some init code. However, libtcod handles that for you. If we did this
    wrappers like libtcod-net would be hosed, since there is no main statement there. */
+#ifndef TCOD_NO_MACOSX_SDL_MAIN
 #ifdef TCOD_MACOSX
 #define _SDL_main_h
 #include "SDL/SDL.h"
+#endif
 #endif
 
 /* base types */
@@ -153,6 +155,7 @@ typedef uint8 bool;
 #endif
 
 /* DLL export */
+#ifndef TCODLIB_API
 #ifdef TCOD_WINDOWS
 #ifdef LIBTCOD_EXPORTS
 #define TCODLIB_API __declspec(dllexport)
@@ -161,6 +164,7 @@ typedef uint8 bool;
 #endif
 #else
 #define TCODLIB_API
+#endif
 #endif
 
 #ifdef __cplusplus

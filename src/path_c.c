@@ -516,24 +516,24 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 	/* and distances for each index */
 	int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
 	/* if diagonal_cost is 0, disallow diagonal moves */
-    int i;
+	int i;
 	int imax = (data->diagonal_cost == 0 ? 4 : 8);
 	/* aight, now set the distances table and set everything to infinity */
 	unsigned int * distances = data->distances;
-    /* coordinates of currently processed node */
-    unsigned int x;
-    unsigned int y;
-    /* checked node's coordinates */
-    unsigned int tx;
-    unsigned int ty;
+	/* coordinates of currently processed node */
+	unsigned int x;
+	unsigned int y;
+	/* checked node's coordinates */
+	unsigned int tx;
+	unsigned int ty;
 	/* distance */
-    unsigned int dt;
-    /* distance given by the user callback */
-    float userDist;
-    /* more node coordinates? */
-    unsigned int new_node;
-    unsigned int j;
-    int k; /* why is this not unsigned? */
+	unsigned int dt;
+	/* distance given by the user callback */
+	float userDist;
+	/* more node coordinates? */
+	unsigned int new_node;
+	unsigned int j;
+	int k; /* why is this not unsigned? */
 
 	TCOD_IFNOT(data != NULL) return;
 	TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;

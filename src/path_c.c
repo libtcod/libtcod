@@ -516,9 +516,25 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 	/* and distances for each index */
 	int dd[8] = { 100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost };
 	/* if diagonal_cost is 0, disallow diagonal moves */
+	int i;
 	int imax = (data->diagonal_cost == 0 ? 4 : 8);
 	/* aight, now set the distances table and set everything to infinity */
 	unsigned int * distances = data->distances;
+	/* coordinates of currently processed node */
+	unsigned int x;
+	unsigned int y;
+	/* checked node's coordinates */
+	unsigned int tx;
+	unsigned int ty;
+	/* distance */
+	unsigned int dt;
+	/* distance given by the user callback */
+	float userDist;
+	/* more node coordinates? */
+	unsigned int new_node;
+	unsigned int j;
+	int k; /* why is this not unsigned? */
+
 	TCOD_IFNOT(data != NULL) return;
 	TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;
 	memset(distances,0xFFFFFFFF,mmax*sizeof(int));
@@ -533,19 +549,18 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 		}
 
 		/* coordinates of currently processed node */
-		unsigned int x = nodes[index] % mx;
-		unsigned int y = nodes[index] / mx;
+		x = nodes[index] % mx;
+		y = nodes[index] / mx;
 
 		/* check adjacent nodes */
-		int i;
 		for(i=0;i<imax;i++) {
 			/* checked node's coordinates */
-			unsigned int tx = x + dx[i];
-			unsigned int ty = y + dy[i];
+			tx = x + dx[i];
+			ty = y + dy[i];
 			if ((unsigned)tx < (unsigned)mx && (unsigned)ty < (unsigned)my  ) {
 				/* otherwise, calculate distance, ... */
-				unsigned int dt = distances[nodes[index]], new_node;
-				float userDist = 0.0f;
+				dt = distances[nodes[index]];
+				userDist = 0.0f;
 				if ( data->map ) dt += dd[i];
 				else {
 					/* distance given by the user callback */
@@ -556,7 +571,6 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 				new_node = (ty * mx) + tx;
 				/* and check if the node's eligible for queuing */
 				if (distances[new_node] > dt) {
-					unsigned int j;
 					/* if not walkable, don't process it */
 					if (data->map && !TCOD_map_is_walkable(data->map,tx,ty)) continue;
 					else if ( data->func && userDist <= 0.0f ) continue;
@@ -566,7 +580,7 @@ void TCOD_dijkstra_compute (TCOD_dijkstra_t dijkstra, int root_x, int root_y) {
 					while (distances[nodes[j]] >= distances[new_node]) {
 						/* this ensures that if the node has been queued previously, but with a higher distance, it's removed */
 						if (nodes[j] == new_node) {
-							int k = j;
+							k = j;
 							while ((unsigned)k <= last_index) {
 								nodes[k] = nodes[k+1];
 								k++;

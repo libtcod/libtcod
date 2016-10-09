@@ -6,6 +6,7 @@ X API break
 1.6.2 : ?
 + doctcod command added to VS2015 solution
 % crash bugs fixed in documentation generation
+% libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference.
 =========================================================
 1.6.1 : 2016 Sep 23
 % Python libtcodpy is now better at finding DLLs on Windows

@@ -52,6 +52,32 @@ def _get_cdll(libname):
 
         returns the ctypes lib object
     '''
+    def get_pe_architecture(filePath):
+        # From: https://github.com/tgandor/meats/blob/master/missing/arch_of.py
+        with open(filePath, 'rb') as f:
+            doshdr = f.read(64)
+            magic, padding, offset = struct.unpack('2s58si', doshdr)
+            # print magic, offset
+            if magic != b'MZ':
+                return None
+            f.seek(offset, os.SEEK_SET)
+            pehdr = f.read(6)
+            # careful! H == unsigned short, x64 is negative with signed
+            magic, padding, machine = struct.unpack('2s2sH', pehdr)
+            # print magic, hex(machine)
+            if magic != b'PE':
+                return None
+            if machine == 0x014c:
+                return 'i386'
+            if machine == 0x0200:
+                return 'IA64'
+            if machine == 0x8664:
+                return 'x64'
+            return 'unknown'
+
+    pythonExePath = sys.executable
+    pythonExeArchitecture = get_pe_architecture(pythonExePath)
+
     pathsToTry = []
     # 1. Try the directory this script is located in.
     pathsToTry.append(os.path.join(__path__[0], libname))
@@ -71,6 +97,11 @@ def _get_cdll(libname):
     for libPath in pathsToTry:
         if os.path.exists(libPath):
             # get library from the package
+            libArchitecture = get_pe_architecture(libPath)
+            if libArchitecture != pythonExeArchitecture:
+                libName = os.path.basename(libPath)
+                print "Error: Incompatible architecture, python is %s, %s is %s" % (pythonExeArchitecture, libName, libArchitecture)
+                sys.exit(1)
             return ctypes.cdll[libPath]
 
     raise Exception("unable to locate: "+ libname)

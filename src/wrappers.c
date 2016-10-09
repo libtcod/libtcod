@@ -372,7 +372,7 @@ colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const ch
 	return color_to_int(TCOD_parser_get_color_property(parser,name));
 }
 
-int TCOD_namegen_get_nb_sets_wrapper() {
+int TCOD_namegen_get_nb_sets_wrapper(void) {
 	TCOD_list_t l=TCOD_namegen_get_sets();
 	int nb = TCOD_list_size(l);
 	TCOD_list_delete(l);

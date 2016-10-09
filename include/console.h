@@ -40,10 +40,10 @@ typedef void * TCOD_console_t;
 TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
 TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
-TCODLIB_API bool TCOD_console_is_fullscreen();
-TCODLIB_API bool TCOD_console_is_window_closed();
-TCODLIB_API bool TCOD_console_has_mouse_focus();
-TCODLIB_API bool TCOD_console_is_active();
+TCODLIB_API bool TCOD_console_is_fullscreen(void);
+TCODLIB_API bool TCOD_console_is_window_closed(void);
+TCODLIB_API bool TCOD_console_has_mouse_focus(void);
+TCODLIB_API bool TCOD_console_is_active(void);
 
 TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic);
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
@@ -98,10 +98,10 @@ TCODLIB_API TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t 
 #endif
 
 TCODLIB_API void TCOD_console_set_fade(uint8 val, TCOD_color_t fade);
-TCODLIB_API uint8 TCOD_console_get_fade();
-TCODLIB_API TCOD_color_t TCOD_console_get_fading_color();
+TCODLIB_API uint8 TCOD_console_get_fade(void);
+TCODLIB_API TCOD_color_t TCOD_console_get_fading_color(void);
 
-TCODLIB_API void TCOD_console_flush();
+TCODLIB_API void TCOD_console_flush(void);
 
 TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 
@@ -123,8 +123,8 @@ TCODLIB_API void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col)
 TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, float foreground_alpha, float background_alpha);
 TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 
-TCODLIB_API void TCOD_console_credits();
-TCODLIB_API void TCOD_console_credits_reset();
+TCODLIB_API void TCOD_console_credits(void);
+TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
 
 #endif

@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include "libtcod.h"
 
-TCOD_bsp_t *TCOD_bsp_new() {
+TCOD_bsp_t *TCOD_bsp_new(void) {
 	return (TCOD_bsp_t *)calloc(sizeof(TCOD_bsp_t),1);
 }
 

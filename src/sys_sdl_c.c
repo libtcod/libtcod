@@ -153,7 +153,7 @@ static int init_ascii_to_tcod[256] = {
 bool *ascii_updated=NULL;
 bool any_ascii_updated=false;
 
-static void alloc_ascii_tables() {
+static void alloc_ascii_tables(void) {
 	if ( TCOD_ctx.ascii_to_tcod ) free(TCOD_ctx.ascii_to_tcod);
 	if ( ascii_updated ) free(ascii_updated);
 	if ( charcols ) {
@@ -168,7 +168,7 @@ static void alloc_ascii_tables() {
 	memcpy(TCOD_ctx.ascii_to_tcod,init_ascii_to_tcod,sizeof(int)*256);
 }
 
-static void check_ascii_to_tcod() {
+static void check_ascii_to_tcod(void) {
 	if ( TCOD_ctx.fontNbCharHoriz * TCOD_ctx.fontNbCharVertic != TCOD_ctx.max_font_chars ) {
 		TCOD_ctx.max_font_chars=TCOD_ctx.fontNbCharHoriz * TCOD_ctx.fontNbCharVertic;
 		alloc_ascii_tables();
@@ -184,7 +184,7 @@ void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
 		TCOD_ctx.ascii_to_tcod[asciiCode] = fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
 }
 
-void TCOD_sys_load_font() {
+void TCOD_sys_load_font(void) {
 	int i;
 	bool hasTransparent=false;
 	int x,y;
@@ -376,7 +376,7 @@ void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int fla
 	*/
 }
 
-void find_resolution() {
+void find_resolution(void) {
 	TCOD_ctx.actual_fullscreen_width=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	TCOD_ctx.actual_fullscreen_height=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
 	sdl->get_closest_mode(&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
@@ -838,7 +838,7 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 void CustomSDLMain();
 #endif
 
-void TCOD_sys_startup() {
+void TCOD_sys_startup(void) {
 	if (has_startup) return;
 	sdl = SDL_implementation_factory();
 #ifdef TCOD_MACOSX
@@ -862,7 +862,7 @@ void TCOD_sys_startup() {
 	has_startup=true;
 }
 
-static void TCOD_sys_load_player_config() {
+static void TCOD_sys_load_player_config(void) {
 	const char *renderer;	
 	const char *font;	
 	int fullscreenWidth,fullscreenHeight;
@@ -924,7 +924,7 @@ static void TCOD_sys_load_player_config() {
 }
 
 
-TCOD_renderer_t TCOD_sys_get_renderer() {
+TCOD_renderer_t TCOD_sys_get_renderer(void) {
 	return TCOD_ctx.renderer;
 }
 
@@ -943,7 +943,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
 
-void TCOD_sys_init_screen_offset() {
+void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsetx=(TCOD_ctx.actual_fullscreen_width-TCOD_ctx.root->w*TCOD_ctx.font_width)/2;
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
@@ -1640,7 +1640,7 @@ TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse
 	return retMask;
 }
 
-TCOD_mouse_t TCOD_mouse_get_status() {
+TCOD_mouse_t TCOD_mouse_get_status(void) {
 	return tcod_mouse;
 }
 
@@ -1674,7 +1674,7 @@ void TCOD_sys_sleep_milli(uint32 milliseconds) {
 	SDL_Delay(milliseconds);
 }
 
-void TCOD_sys_term() {
+void TCOD_sys_term(void) {
 	sdl->term();
 	SDL_Quit();
 	memset(&scale_data,0,sizeof(scale_data_t));
@@ -1734,11 +1734,11 @@ int TCOD_sys_get_image_alpha(const void *image,int x, int y) {
 	return *((bits)+surf->format->Ashift/8);
 }
 
-uint32 TCOD_sys_elapsed_milli() {
+uint32 TCOD_sys_elapsed_milli(void) {
 	return (uint32)SDL_GetTicks();
 }
 
-float TCOD_sys_elapsed_seconds() {
+float TCOD_sys_elapsed_seconds(void) {
 	static float div=1.0f/1000.0f;
 	return SDL_GetTicks()*div;
 }
@@ -1792,19 +1792,19 @@ void TCOD_sys_set_fps(int val) {
 	else min_frame_length=1000/val;
 }
 
-void TCOD_sys_save_fps() {
+void TCOD_sys_save_fps(void) {
 	min_frame_length_backup=min_frame_length;
 }
 
-void TCOD_sys_restore_fps() {
+void TCOD_sys_restore_fps(void) {
 	min_frame_length=min_frame_length_backup;
 }
 
-int TCOD_sys_get_fps() {
+int TCOD_sys_get_fps(void) {
 	return fps;
 }
 
-float TCOD_sys_get_last_frame_length() {
+float TCOD_sys_get_last_frame_length(void) {
 	return last_frame_length;
 }
 
@@ -1834,11 +1834,11 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 	return true;
 }
 
-void *TCOD_sys_get_SDL_window() {
+void *TCOD_sys_get_SDL_window(void) {
 	return (void *)window;
 }
 
-void *TCOD_sys_get_SDL_renderer() {
+void *TCOD_sys_get_SDL_renderer(void) {
 	return (void *)renderer;
 }
 
@@ -1847,7 +1847,7 @@ void TCOD_mouse_show_cursor(bool visible) {
   SDL_ShowCursor(visible ? 1 : 0);
 }
 
-bool TCOD_mouse_is_cursor_visible() {
+bool TCOD_mouse_is_cursor_visible(void) {
   return SDL_ShowCursor(-1) ? true : false;
 }
 

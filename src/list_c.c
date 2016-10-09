@@ -53,7 +53,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size) {
 	LIST(l)->fillSize=MIN(size,LIST(l)->allocSize);
 }
 
-TCOD_list_t TCOD_list_new() {
+TCOD_list_t TCOD_list_new(void) {
 	return (TCOD_list_t)calloc(1,sizeof(TCOD_list_int_t));
 }
 

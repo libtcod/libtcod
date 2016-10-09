@@ -30,7 +30,7 @@
 
 typedef void *TCOD_zip_t;
 
-TCODLIB_API TCOD_zip_t TCOD_zip_new();
+TCODLIB_API TCOD_zip_t TCOD_zip_new(void);
 TCODLIB_API void TCOD_zip_delete(TCOD_zip_t zip);
 
 /* output interface */

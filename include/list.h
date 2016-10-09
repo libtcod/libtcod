@@ -30,7 +30,7 @@
 
 typedef void *TCOD_list_t;
 
-TCODLIB_API TCOD_list_t TCOD_list_new();
+TCODLIB_API TCOD_list_t TCOD_list_new(void);
 TCODLIB_API TCOD_list_t TCOD_list_allocate(int nb_elements);
 TCODLIB_API TCOD_list_t TCOD_list_duplicate(TCOD_list_t l);
 TCODLIB_API void TCOD_list_delete(TCOD_list_t l);

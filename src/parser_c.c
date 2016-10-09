@@ -173,7 +173,7 @@ TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t def, const char *pro
 	return TCOD_TYPE_NONE;
 }
 
-TCOD_value_t TCOD_parse_bool_value() {
+TCOD_value_t TCOD_parse_bool_value(void) {
 	TCOD_value_t ret;
 	if ( strcmp(lex->tok,"true") == 0 ) ret.b=true;
 	else if ( strcmp(lex->tok,"false") == 0 ) ret.b=false;
@@ -181,7 +181,7 @@ TCOD_value_t TCOD_parse_bool_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_char_value() {
+TCOD_value_t TCOD_parse_char_value(void) {
 	TCOD_value_t ret;
 	if ( lex->token_type != TCOD_LEX_CHAR && lex->token_type != TCOD_LEX_INTEGER )
 		TCOD_parser_error("parseCharValue : char constant expected instead of '%s'",lex->tok);
@@ -189,7 +189,7 @@ TCOD_value_t TCOD_parse_char_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_integer_value() {
+TCOD_value_t TCOD_parse_integer_value(void) {
 	TCOD_value_t ret;
 	if ( lex->token_type != TCOD_LEX_INTEGER )
 		TCOD_parser_error("parseIntegerValue : integer constant expected instead of '%s'",lex->tok);
@@ -197,7 +197,7 @@ TCOD_value_t TCOD_parse_integer_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_float_value() {
+TCOD_value_t TCOD_parse_float_value(void) {
 	TCOD_value_t ret;
 	if ( lex->token_type != TCOD_LEX_FLOAT && lex->token_type != TCOD_LEX_INTEGER )
 		TCOD_parser_error("parseFloatValue : float constant expected instead of '%s'",lex->tok);
@@ -206,7 +206,7 @@ TCOD_value_t TCOD_parse_float_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_string_value() {
+TCOD_value_t TCOD_parse_string_value(void) {
 	TCOD_value_t ret;
 	TCOD_list_t l;
 	bool end=false;
@@ -235,7 +235,7 @@ TCOD_value_t TCOD_parse_string_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_color_value() {
+TCOD_value_t TCOD_parse_color_value(void) {
 	TCOD_value_t ret;
 	if ( lex->token_type == TCOD_LEX_SYMBOL && lex->tok[0]=='#') {
 		char tmp[128]="";
@@ -292,7 +292,7 @@ TCOD_value_t TCOD_parse_color_value() {
 	return ret;
 }
 
-TCOD_value_t TCOD_parse_dice_value() {
+TCOD_value_t TCOD_parse_dice_value(void) {
 	/* dice format : [<m>(x|*)]<n>(D|d)<f>[(+|-)<a>] */
 	TCOD_value_t ret;
 	bool minus=false;
@@ -614,7 +614,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 /* generic parser */
 /****************************************/
 
-TCOD_parser_t TCOD_parser_new() {
+TCOD_parser_t TCOD_parser_new(void) {
 	TCOD_parser_int_t *ent = (TCOD_parser_int_t*)calloc(1,sizeof(TCOD_parser_int_t));
 	ent->structs=TCOD_list_new();
 	return (TCOD_parser_t) ent;

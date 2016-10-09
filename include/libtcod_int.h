@@ -193,12 +193,12 @@ extern TCOD_internal_context_t TCOD_ctx;
 
 #ifndef NO_OPENGL
 /* opengl utilities */
-void TCOD_opengl_init_attributes();
+void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
-bool TCOD_opengl_init_shaders();
+bool TCOD_opengl_init_shaders(void);
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
-void TCOD_opengl_swap();
-void * TCOD_opengl_get_screen();
+void TCOD_opengl_swap(void);
+void * TCOD_opengl_get_screen(void);
 #endif
 
 /* image internal stuff */
@@ -251,12 +251,12 @@ void TCOD_sys_console_to_bitmap(void *bitmap, int console_width, int console_hei
 void TCOD_sys_console_to_bitmap(void *bitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer);
 #endif
 TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
-void TCOD_sys_save_fps();
-void TCOD_sys_restore_fps();
+void TCOD_sys_save_fps(void);
+void TCOD_sys_restore_fps(void);
 
 /* switch fullscreen mode */
 void TCOD_sys_set_fullscreen(bool fullscreen);
-void TCOD_sys_set_clear_screen();
+void TCOD_sys_set_clear_screen(void);
 void TCOD_sys_set_scale_factor(float value);
 void TCOD_sys_convert_console_to_screen_coords(int cx, int cy, int *sx, int *sy);
 void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy);
@@ -266,7 +266,7 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
 /* close the window */
-void TCOD_sys_term();
+void TCOD_sys_term(void);
 
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
@@ -316,13 +316,13 @@ typedef struct {
 	bool (*file_exists)(const char * filename);
 	bool (*file_write)(const char *filename, unsigned char *buf, uint32 size);
 	/* clean stuff */
-	void (*term)();
+	void (*term)(void);
 } TCOD_SDL_driver_t;
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */
-TCOD_SDL_driver_t *SDL_implementation_factory();
-void find_resolution();
-void TCOD_sys_init_screen_offset();
+TCOD_SDL_driver_t *SDL_implementation_factory(void);
+void find_resolution(void);
+void TCOD_sys_init_screen_offset(void);
 extern SDL_Surface* screen;
 extern int oldFade;
 extern bool *ascii_updated;

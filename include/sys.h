@@ -28,24 +28,24 @@
 #ifndef _TCOD_SYS_H
 #define _TCOD_SYS_H
 
-TCODLIB_API void TCOD_sys_startup();
-TCODLIB_API uint32 TCOD_sys_elapsed_milli();
-TCODLIB_API float TCOD_sys_elapsed_seconds();
+TCODLIB_API void TCOD_sys_startup(void);
+TCODLIB_API uint32 TCOD_sys_elapsed_milli(void);
+TCODLIB_API float TCOD_sys_elapsed_seconds(void);
 TCODLIB_API void TCOD_sys_sleep_milli(uint32 val);
 TCODLIB_API void TCOD_sys_save_screenshot(const char *filename);
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
 TCODLIB_API void TCOD_sys_set_renderer(TCOD_renderer_t renderer);
-TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer();
+TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
 TCODLIB_API void TCOD_sys_set_fps(int val);
-TCODLIB_API int TCOD_sys_get_fps();
-TCODLIB_API float TCOD_sys_get_last_frame_length();
+TCODLIB_API int TCOD_sys_get_fps(void);
+TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 #ifdef TCOD_SDL2
-TCODLIB_API void *TCOD_sys_get_SDL_window();
-TCODLIB_API void *TCOD_sys_get_SDL_renderer();
+TCODLIB_API void *TCOD_sys_get_SDL_window(void);
+TCODLIB_API void *TCOD_sys_get_SDL_renderer(void);
 #endif
 
 typedef enum {
@@ -80,7 +80,7 @@ TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, u
 
 /* clipboard */
 TCODLIB_API void TCOD_sys_clipboard_set(const char *value);
-TCODLIB_API char *TCOD_sys_clipboard_get();
+TCODLIB_API char *TCOD_sys_clipboard_get(void);
 
 /* thread stuff */
 typedef void *TCOD_thread_t;
@@ -90,10 +90,10 @@ typedef void *TCOD_cond_t;
 /* threads */
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data);
 TCODLIB_API void TCOD_thread_delete(TCOD_thread_t th);
-TCODLIB_API int TCOD_sys_get_num_cores();
+TCODLIB_API int TCOD_sys_get_num_cores(void);
 TCODLIB_API void TCOD_thread_wait(TCOD_thread_t th);
 /* mutex */
-TCODLIB_API TCOD_mutex_t TCOD_mutex_new();
+TCODLIB_API TCOD_mutex_t TCOD_mutex_new(void);
 TCODLIB_API void TCOD_mutex_in(TCOD_mutex_t mut);
 TCODLIB_API void TCOD_mutex_out(TCOD_mutex_t mut);
 TCODLIB_API void TCOD_mutex_delete(TCOD_mutex_t mut);
@@ -103,7 +103,7 @@ TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
 TCODLIB_API void TCOD_semaphore_delete( TCOD_semaphore_t sem);
 /* condition */
-TCODLIB_API TCOD_cond_t TCOD_condition_new();
+TCODLIB_API TCOD_cond_t TCOD_condition_new(void);
 TCODLIB_API void TCOD_condition_signal(TCOD_cond_t sem);
 TCODLIB_API void TCOD_condition_broadcast(TCOD_cond_t sem);
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);

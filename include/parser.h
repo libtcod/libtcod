@@ -114,7 +114,7 @@ typedef TCOD_value_t (*TCOD_parser_custom_t)(TCOD_lex_t *lex, TCOD_parser_listen
 /* the parser */
 typedef void *TCOD_parser_t;
 
-TCODLIB_API TCOD_parser_t TCOD_parser_new();
+TCODLIB_API TCOD_parser_t TCOD_parser_new(void);
 TCODLIB_API TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name);
 TCODLIB_API TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser,TCOD_parser_custom_t custom_type_parser);
 TCODLIB_API void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener);
@@ -158,13 +158,13 @@ typedef struct {
 	/* list of properties if default listener is used */
 	TCOD_list_t props;
 } TCOD_parser_int_t;
-TCODLIB_API TCOD_value_t TCOD_parse_bool_value();
-TCODLIB_API TCOD_value_t TCOD_parse_char_value();
-TCODLIB_API TCOD_value_t TCOD_parse_integer_value();
-TCODLIB_API TCOD_value_t TCOD_parse_float_value();
-TCODLIB_API TCOD_value_t TCOD_parse_string_value();
-TCODLIB_API TCOD_value_t TCOD_parse_color_value();
-TCODLIB_API TCOD_value_t TCOD_parse_dice_value();
+TCODLIB_API TCOD_value_t TCOD_parse_bool_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_char_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_integer_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_float_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_string_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_color_value(void);
+TCODLIB_API TCOD_value_t TCOD_parse_dice_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_value_list_value(TCOD_struct_int_t *def,int listnum);
 TCODLIB_API TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname, bool list);
 

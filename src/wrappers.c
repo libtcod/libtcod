@@ -82,15 +82,15 @@ void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
   TCOD_color_get_HSV (int_to_color(c), h, s, v);
 }
 
-float TCOD_color_get_hue_ (colornum_t c) {
+float TCOD_color_get_hue_wrapper (colornum_t c) {
   return TCOD_color_get_hue(int_to_color(c));
 }
 
-float TCOD_color_get_saturation_ (colornum_t c) {
+float TCOD_color_get_saturation_wrapper (colornum_t c) {
   return TCOD_color_get_saturation(int_to_color(c));
 }
 
-float TCOD_color_get_value_ (colornum_t c) {
+float TCOD_color_get_value_wrapper (colornum_t c) {
   return TCOD_color_get_value(int_to_color(c));
 }
 

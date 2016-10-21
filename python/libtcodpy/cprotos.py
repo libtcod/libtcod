@@ -213,20 +213,8 @@ def setup_protos(lib):
 #    lib.TCOD_console_get_height_rect.restype=c_int
 #    lib.TCOD_console_get_height_rect.argtypes=[c_void_p ,c_int, c_int, c_int, c_int, c_char_p, ...]
 
-    lib.TCOD_console_rect.restype=c_void
-    lib.TCOD_console_rect.argtypes=[c_void_p ,c_int, c_int, c_int, c_int, c_bool , c_int ]
-
-    lib.TCOD_console_hline.restype=c_void
-    lib.TCOD_console_hline.argtypes=[c_void_p ,c_int,c_int, c_int, c_int ]
-
-    lib.TCOD_console_vline.restype=c_void
-    lib.TCOD_console_vline.argtypes=[c_void_p ,c_int,c_int, c_int, c_int ]
-
 #    lib.TCOD_console_print_frame.restype=c_void
 #    lib.TCOD_console_print_frame.argtypes=[c_void_p ,c_int,c_int,c_int,c_int, c_bool , c_int , c_char_p, ...]
-
-    lib.TCOD_console_map_string_to_font_utf.restype=c_void
-    lib.TCOD_console_map_string_to_font_utf.argtypes=[c_char_p, c_int, c_int]
 
 #    lib.TCOD_console_print_utf.restype=c_void
 #    lib.TCOD_console_print_utf.argtypes=[c_void_p ,c_int, c_int, wchar_t_p, ...]
@@ -239,24 +227,6 @@ def setup_protos(lib):
 
 #    lib.TCOD_console_print_rect_ex_utf.restype=c_int
 #    lib.TCOD_console_print_rect_ex_utf.argtypes=[c_void_p ,c_int, c_int, c_int, c_int, c_int , c_int , wchar_t_p, ...]
-
-    lib.TCOD_console_get_height_rect_utf.restype=c_int
-#    lib.TCOD_console_get_height_rect_utf.argtypes=[c_void_p ,c_int, c_int, c_int, c_int, wchar_t_p, ...]
-
-    lib.TCOD_console_get_default_background.restype=Color
-    lib.TCOD_console_get_default_background.argtypes=[c_void_p ]
-
-    lib.TCOD_console_get_default_foreground.restype=Color
-    lib.TCOD_console_get_default_foreground.argtypes=[c_void_p ]
-
-    lib.TCOD_console_get_char_background.restype=Color
-    lib.TCOD_console_get_char_background.argtypes=[c_void_p ,c_int, c_int]
-
-    lib.TCOD_console_get_char_foreground.restype=Color
-    lib.TCOD_console_get_char_foreground.argtypes=[c_void_p ,c_int, c_int]
-
-    lib.TCOD_console_get_char.restype=c_int
-    lib.TCOD_console_get_char.argtypes=[c_void_p ,c_int, c_int]
 
     lib.TCOD_console_set_fade.restype=c_void
     lib.TCOD_console_set_fade.argtypes=[c_byte , Color ]
@@ -290,18 +260,6 @@ def setup_protos(lib):
 
     lib.TCOD_console_from_file.restype=c_void_p
     lib.TCOD_console_from_file.argtypes=[c_char_p]
-
-    lib.TCOD_console_load_asc.restype=c_bool
-    lib.TCOD_console_load_asc.argtypes=[c_void_p , c_char_p]
-
-    lib.TCOD_console_load_apf.restype=c_bool
-    lib.TCOD_console_load_apf.argtypes=[c_void_p , c_char_p]
-
-    lib.TCOD_console_save_asc.restype=c_bool
-    lib.TCOD_console_save_asc.argtypes=[c_void_p , c_char_p]
-
-    lib.TCOD_console_save_apf.restype=c_bool
-    lib.TCOD_console_save_apf.argtypes=[c_void_p , c_char_p]
 
     lib.TCOD_console_new.restype=c_void_p
     lib.TCOD_console_new.argtypes=[c_int, c_int]

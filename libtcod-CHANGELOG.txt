@@ -5,8 +5,11 @@ X API break
 =========================================================
 1.6.2 : ?
 + doctcod command added to VS2015 solution
++ Python (PTVS) project for samples_py added to VS2015 solution
 % crash bugs fixed in documentation generation
-% libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference.
+% libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference
+% libtcodpy now uses more wrapper functions on Windows to cover ctypes limitations in passing and returning struct values
+% libtcodpy now inlines more ctypes argtypes and restype definitions in order to work better on x64
 =========================================================
 1.6.1 : 2016 Sep 23
 % Python libtcodpy is now better at finding DLLs on Windows

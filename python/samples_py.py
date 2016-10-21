@@ -706,17 +706,18 @@ def render_fov(first, key, mouse):
                                (torchs,lights,fov_algo_names[fov_algo_num]))
         libtcod.console_set_default_foreground(sample_console, libtcod.black)
         fov_recompute = True
-    elif key.c in (ord('+'), ord('-')):
-        if key.c == ord('+') and fov_algo_num < libtcod.NB_FOV_ALGORITHMS-1:
-            fov_algo_num = fov_algo_num + 1
-        elif fov_algo_num > 0 :
-            fov_algo_num = fov_algo_num - 1
-        libtcod.console_set_default_foreground(sample_console, libtcod.white)
-        libtcod.console_print(sample_console, 1, 1,
-                               "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
-                               (torchs,lights,fov_algo_names[fov_algo_num]))
-        libtcod.console_set_default_foreground(sample_console, libtcod.black)
-        fov_recompute = True
+    elif key.vk == libtcod.KEY_TEXT:
+        if key.text in ("+", "-"):
+            if key.text == "+" and fov_algo_num < libtcod.NB_FOV_ALGORITHMS-1:
+                fov_algo_num = fov_algo_num + 1
+            elif fov_algo_num > 0 :
+                fov_algo_num = fov_algo_num - 1
+            libtcod.console_set_default_foreground(sample_console, libtcod.white)
+            libtcod.console_print(sample_console, 1, 1,
+                                   "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s" %
+                                   (torchs,lights,fov_algo_names[fov_algo_num]))
+            libtcod.console_set_default_foreground(sample_console, libtcod.black)
+            fov_recompute = True
 
 #############################################
 # pathfinding sample
@@ -1120,16 +1121,16 @@ def render_bsp(first, key, mouse):
         bsp_generate = True
     elif key.c==ord(' '):
         bsp_refresh = True
-    elif key.c == ord('+'):
+    elif key.text == "+":
         bsp_depth += 1
         bsp_generate = True
-    elif key.c == ord('-') and bsp_depth > 1:
+    elif key.text == "-" and bsp_depth > 1:
         bsp_depth -= 1
         bsp_generate = True
-    elif key.c==ord('*'):
+    elif key.text == "*":
         bsp_min_room_size += 1
         bsp_generate = True
-    elif key.c == ord('/') and bsp_min_room_size > 2:
+    elif key.text == "/" and bsp_min_room_size > 2:
         bsp_min_room_size -= 1
         bsp_generate = True
     elif key.c == ord('1') or key.vk in (libtcod.KEY_1, libtcod.KEY_KP1):
@@ -1293,12 +1294,12 @@ def render_name(first, key, mouse):
     if ng_delay > 0.5 :
         ng_delay -= 0.5
         ng_names.append(libtcod.namegen_generate(ng_sets[ng_curset]))
-    if key.c == ord('+'):
+    if key.text == "+":
         ng_curset += 1
         if ng_curset == ng_nbsets :
             ng_curset=0
         ng_names.append("======")
-    elif key.c == ord('-'):
+    elif key.text == "-":
         ng_curset -= 1
         if ng_curset < 0 :
             ng_curset=ng_nbsets-1

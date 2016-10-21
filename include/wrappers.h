@@ -44,9 +44,9 @@ TCODLIB_API colornum_t TCOD_color_lerp_wrapper(colornum_t c1,
 						 colornum_t c2, float coef);
 TCODLIB_API void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
 					    float * s, float * v);
-TCODLIB_API float TCOD_color_get_hue_ (colornum_t c);
-TCODLIB_API float TCOD_color_get_saturation_ (colornum_t c);
-TCODLIB_API float TCOD_color_get_value_ (colornum_t c);
+TCODLIB_API float TCOD_color_get_hue_wrapper (colornum_t c);
+TCODLIB_API float TCOD_color_get_saturation_wrapper (colornum_t c);
+TCODLIB_API float TCOD_color_get_value_wrapper(colornum_t c);
 
 /* console module */
 /* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile,

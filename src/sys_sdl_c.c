@@ -1120,6 +1120,7 @@ void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy)
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
+	key->text[0] = '\0';
 	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
 	switch(ev->type) {
 		case SDL_KEYDOWN : {		 

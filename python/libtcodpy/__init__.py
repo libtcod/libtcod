@@ -88,7 +88,13 @@ def _get_cdll(libname):
         pathsToTry.append(os.path.join(scriptPath, libname))
     else:
         pathsToTry.append(os.path.join(os.getcwd(), libname))
-    # 3. Try the top-level path in the development tree.
+    # 3. Try the environment variable LIBTCOD_DLL_PATH.
+    if "LIBTCOD_DLL_PATH" in os.environ:
+        envPaths = os.environ["LIBTCOD_DLL_PATH"].split(";")
+        for envPath in envPaths:
+            if os.path.exists(envPath):
+                pathsToTry.append(os.path.join(envPath, libname))
+    # 4. Try the top-level path in the development tree.
     potentialTopLevelPath = os.path.realpath(os.path.join(__path__[0], os.pardir, os.pardir))
     pythonPath = os.path.join(potentialTopLevelPath, "python")
     if os.path.exists(pythonPath):
@@ -125,23 +131,46 @@ else:
         MINGW=True
     # On Windows, ctypes doesn't work well with function returning structs,
     # so we have to user the _wrapper functions instead
-    _lib.TCOD_color_multiply = _lib.TCOD_color_multiply_wrapper
-    _lib.TCOD_color_add = _lib.TCOD_color_add_wrapper
-    _lib.TCOD_color_multiply_scalar = _lib.TCOD_color_multiply_scalar_wrapper
-    _lib.TCOD_color_subtract = _lib.TCOD_color_subtract_wrapper
-    _lib.TCOD_color_lerp = _lib.TCOD_color_lerp_wrapper
-    _lib.TCOD_console_get_default_background = _lib.TCOD_console_get_default_background_wrapper
-    _lib.TCOD_console_get_default_foreground = _lib.TCOD_console_get_default_foreground_wrapper
-    _lib.TCOD_console_get_char_background = _lib.TCOD_console_get_char_background_wrapper
-    _lib.TCOD_console_get_char_foreground = _lib.TCOD_console_get_char_foreground_wrapper
-    _lib.TCOD_console_get_fading_color = _lib.TCOD_console_get_fading_color_wrapper
-    _lib.TCOD_image_get_pixel = _lib.TCOD_image_get_pixel_wrapper
-    _lib.TCOD_image_get_mipmap_pixel = _lib.TCOD_image_get_mipmap_pixel_wrapper
-    _lib.TCOD_parser_get_color_property = _lib.TCOD_parser_get_color_property_wrapper
+    for function_name in [
+        "TCOD_color_equals",
+        "TCOD_color_add",
+        "TCOD_color_subtract",
+        "TCOD_color_multiply",
+        "TCOD_color_multiply_scalar",
+        "TCOD_color_lerp",
+        "TCOD_color_get_HSV",
+        "TCOD_color_get_hue",
+        "TCOD_color_get_saturation",
+        "TCOD_color_get_value",
+        "TCOD_console_get_default_background",
+        "TCOD_console_get_default_foreground",
+        "TCOD_console_set_default_background",
+        "TCOD_console_set_default_foreground",
+        "TCOD_console_get_char_foreground",
+        "TCOD_console_get_char_background",
+        "TCOD_console_set_char_background",
+        "TCOD_console_set_char_foreground",
+        "TCOD_console_put_char_ex",
+        "TCOD_console_set_fade",
+        "TCOD_console_get_fading_color",
+        "TCOD_console_set_color_control",
+        "TCOD_image_clear",
+        "TCOD_image_get_pixel",
+        "TCOD_image_get_mipmap_pixel",
+        "TCOD_image_put_pixel",
+        "TCOD_image_set_key_color",
+        "TCOD_parser_get_color_property",
+        "TCOD_console_set_key_color",
+    ]:
+        wrapper_func = getattr(_lib, function_name +"_wrapper", None)
+        if wrapper_func is not None:
+            setattr(_lib, function_name, wrapper_func)
+        else:
+            raise Exception("unable to find wrapper", function_name)
 
-HEXVERSION = 0x010600
-STRVERSION = "1.6.0"
-TECHVERSION = 0x01060000
+HEXVERSION = 0x010602
+STRVERSION = "1.6.2"
+TECHVERSION = 0x01060200
 
 ############################
 # color module
@@ -644,6 +673,7 @@ KEY_NUMLOCK = 62
 KEY_SCROLLLOCK = 63
 KEY_SPACE = 64
 KEY_CHAR = 65
+KEY_TEXT = 66
 # special chars
 # single walls
 CHAR_HLINE = 196
@@ -789,6 +819,8 @@ def console_map_ascii_codes_to_font(firstAsciiCode, nbCodes, fontCharX,
         _lib.TCOD_console_map_ascii_codes_to_font(firstAsciiCode, nbCodes,
                                                   fontCharX, fontCharY)
 
+_lib.TCOD_console_map_string_to_font.argtypes=[c_char_p, c_int, c_int]
+_lib.TCOD_console_map_string_to_font_utf.argtypes=[c_wchar_p, c_int, c_int]
 def console_map_string_to_font(s, fontCharX, fontCharY):
     if type(s) == bytes:
         _lib.TCOD_console_map_string_to_font(s, fontCharX, fontCharY)
@@ -895,18 +927,23 @@ def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
     else:
         return _lib.TCOD_console_print_rect_ex_utf(c_void_p(con), x, y, w, h, flag, alignment, fmt)
 
+_lib.TCOD_console_get_height_rect.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_char_p]
+_lib.TCOD_console_get_height_rect_utf.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_wchar_p]
 def console_get_height_rect(con, x, y, w, h, fmt):
     if type(fmt) == bytes:
         return _lib.TCOD_console_get_height_rect(c_void_p(con), x, y, w, h, c_char_p(fmt))
     else:
-        return _lib.TCOD_console_get_height_rect_utf(c_void_p(con), x, y, w, h, fmt)
+        return _lib.TCOD_console_get_height_rect_utf(con, x, y, w, h, fmt)
 
+_lib.TCOD_console_rect.argtypes=[ c_void_p, c_int, c_int, c_int, c_int, c_bool, c_int ]
 def console_rect(con, x, y, w, h, clr, flag=BKGND_DEFAULT):
     _lib.TCOD_console_rect(con, x, y, w, h, c_int(clr), flag)
 
+_lib.TCOD_console_hline.argtypes=[ c_void_p, c_int, c_int, c_int, c_int ]
 def console_hline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_hline( con, x, y, l, flag)
 
+_lib.TCOD_console_vline.argtypes=[ c_void_p, c_int, c_int, c_int, c_int ]
 def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
@@ -916,25 +953,37 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)
 
+_lib.TCOD_console_get_default_background.restype=Color
+_lib.TCOD_console_get_default_background.argtypes=[c_void_p]
 def console_get_default_background(con):
     return _lib.TCOD_console_get_default_background(con)
 
+_lib.TCOD_console_get_default_foreground.restype=Color
+_lib.TCOD_console_get_default_foreground.argtypes=[c_void_p]
 def console_get_default_foreground(con):
     return _lib.TCOD_console_get_default_foreground(con)
 
+_lib.TCOD_console_get_char_background.restype=Color
+_lib.TCOD_console_get_char_background.argtypes=[c_void_p, c_int, c_int]
 def console_get_char_background(con, x, y):
     return _lib.TCOD_console_get_char_background(con, x, y)
 
+_lib.TCOD_console_get_char_foreground.restype=Color
+_lib.TCOD_console_get_char_foreground.argtypes=[c_void_p, c_int, c_int]
 def console_get_char_foreground(con, x, y):
     return _lib.TCOD_console_get_char_foreground(con, x, y)
 
+_lib.TCOD_console_get_char.restype=c_int
+_lib.TCOD_console_get_char.argtypes=[c_void_p, c_int, c_int]
 def console_get_char(con, x, y):
     return _lib.TCOD_console_get_char(con, x, y)
 
+_lib.TCOD_console_set_fade.argtypes=[c_byte, Color]
 def console_set_fade(fade, fadingColor):
     _lib.TCOD_console_set_fade(fade, fadingColor)
-    ##_lib.TCOD_console_set_fade_wrapper(fade, fadingColor)
 
+_lib.TCOD_console_get_fade.restype=c_byte
+_lib.TCOD_console_get_fade.argtypes=[]
 def console_get_fade():
     return _lib.TCOD_console_get_fade().value
 
@@ -964,13 +1013,19 @@ def console_disable_keyboard_repeat():
 # using offscreen consoles
 def console_new(w, h):
     return _lib.TCOD_console_new(w, h)
+
+_lib.TCOD_console_from_file.restype=c_void_p
+_lib.TCOD_console_from_file.argtypes=[c_char_p]
 def console_from_file(filename):
     return _lib.TCOD_console_from_file(filename)
+
 def console_get_width(con):
     return _lib.TCOD_console_get_width(con)
 
 def console_get_height(con):
     return _lib.TCOD_console_get_height(con)
+
+_lib.TCOD_console_blit.argtypes=[c_void_p ,c_int, c_int, c_int, c_int, c_void_p , c_int, c_int, c_float, c_float]
 
 def console_blit(src, x, y, w, h, dst, xdst, ydst, ffade=1.0,bfade=1.0):
     _lib.TCOD_console_blit(src, x, y, w, h, dst, xdst, ydst, c_float(ffade), c_float(bfade))
@@ -1035,12 +1090,23 @@ def console_fill_char(con,arr) :
 
     _lib.TCOD_console_fill_char(con, carr)
 
+_lib.TCOD_console_load_asc.restype=c_bool
+_lib.TCOD_console_load_asc.argtypes=[c_void_p , c_char_p]
 def console_load_asc(con, filename) :
     _lib.TCOD_console_load_asc(con,filename)
+
+_lib.TCOD_console_save_asc.restype=c_bool
+_lib.TCOD_console_save_asc.argtypes=[c_void_p , c_char_p]
 def console_save_asc(con, filename) :
     _lib.TCOD_console_save_asc(con,filename)
+
+_lib.TCOD_console_load_apf.restype=c_bool
+_lib.TCOD_console_load_apf.argtypes=[c_void_p , c_char_p]
 def console_load_apf(con, filename) :
     _lib.TCOD_console_load_apf(con,filename)
+
+_lib.TCOD_console_save_apf.restype=c_bool
+_lib.TCOD_console_save_apf.argtypes=[c_void_p , c_char_p]
 def console_save_apf(con, filename) :
     _lib.TCOD_console_save_apf(con,filename)
 
@@ -1213,23 +1279,28 @@ def image_get_pixel(image, x, y):
 def image_get_mipmap_pixel(image, x0, y0, x1, y1):
     return _lib.TCOD_image_get_mipmap_pixel(image, c_float(x0), c_float(y0),
                                             c_float(x1), c_float(y1))
+
+_lib.TCOD_image_put_pixel.argtypes=[ c_void_p ,c_int, c_int, Color ]
 def image_put_pixel(image, x, y, col):
     _lib.TCOD_image_put_pixel(image, x, y, col)
-    ##_lib.TCOD_image_put_pixel_wrapper(image, x, y, col)
 
+_lib.TCOD_image_blit.argtypes=[c_void_p, c_void_p, c_float, c_float, c_int, c_float, c_float, c_float]
 def image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle):
-    _lib.TCOD_image_blit(image, console, c_float(x), c_float(y), bkgnd_flag,
-                         c_float(scalex), c_float(scaley), c_float(angle))
+    _lib.TCOD_image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle)
 
+_lib.TCOD_image_blit_rect.argtypes=[c_void_p , c_void_p , c_int, c_int, c_int, c_int,]
 def image_blit_rect(image, console, x, y, w, h, bkgnd_flag):
     _lib.TCOD_image_blit_rect(image, console, x, y, w, h, bkgnd_flag)
 
+_lib.TCOD_image_blit_2x.argtypes=[c_void_p , c_void_p , c_int, c_int, c_int, c_int, c_int, c_int]
 def image_blit_2x(image, console, dx, dy, sx=0, sy=0, w=-1, h=-1):
     _lib.TCOD_image_blit_2x(image, console, dx,dy,sx,sy,w,h)
 
+_lib.TCOD_image_save.argtypes=[c_void_p, c_char_p]
 def image_save(image, filename):
     _lib.TCOD_image_save(image, c_char_p(filename))
 
+_lib.TCOD_image_delete.argtypes=[c_void_p]
 def image_delete(image):
     _lib.TCOD_image_delete(image)
 
@@ -1548,7 +1619,7 @@ _NOISE_PACKER_FUNC = (None,
                       )
 
 def noise_new(dim, h=NOISE_DEFAULT_HURST, l=NOISE_DEFAULT_LACUNARITY, random=0):
-    return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), random)
+    return _lib.TCOD_noise_new(dim, c_float(h), c_float(l), c_void_p(random))
 
 def noise_set_type(n, typ) :
     _lib.TCOD_noise_set_type(n,typ)

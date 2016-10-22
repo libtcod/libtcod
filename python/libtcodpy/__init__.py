@@ -123,12 +123,8 @@ elif sys.platform.find('haiku') != -1:
     HAIKU = True
 else:
     _get_cdll('SDL2.dll')
-    try:
-        _lib = _get_cdll('libtcod.dll')
-        MSVC=True
-    except WindowsError:
-        _lib = _get_cdll('libtcod-mingw.dll')
-        MINGW=True
+    _lib = _get_cdll('libtcod.dll')
+    MSVC=True
     # On Windows, ctypes doesn't work well with function returning structs,
     # so we have to user the _wrapper functions instead
     for function_name in [

@@ -116,8 +116,6 @@ TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
 #ifdef TCOD_SDL2
 typedef void (*SDL_renderer_t) (void *sdl_renderer);
-#else
-typedef void (*SDL_renderer_t) (void *sdl_surface);
-#endif
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
+#endif
 #endif

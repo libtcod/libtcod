@@ -78,13 +78,9 @@ static image_support_t image_type[] = {
 };
 
 scale_data_t scale_data={0};
-#ifdef TCOD_SDL2
 SDL_Window* window=NULL;
 SDL_Renderer* renderer=NULL;
 float scale_factor=1.0f;
-#else
-SDL_Surface* screen=NULL;
-#endif
 SDL_Surface* charmap=NULL;
 static char_t *consoleBuffer=NULL;
 static char_t *prevConsoleBuffer=NULL;
@@ -123,16 +119,12 @@ static bool key_status[TCODK_CHAR+1];
 int oldFade=-1;
 
 /* convert SDL vk to a char (depends on the keyboard layout) */
-#ifdef TCOD_SDL2
 typedef struct {
 	SDL_Keycode	sdl_key;
 	int tcod_key;
 } vk_to_c_entry;
 #define NUM_VK_TO_C_ENTRIES 10
 static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
-#else
-static char vk_to_c[SDLK_LAST];
-#endif
 
 /* convert ASCII code to TCOD layout position */
 static int init_ascii_to_tcod[256] = {
@@ -331,11 +323,7 @@ void TCOD_sys_load_font() {
 	rgb_mask=charmap->format->Rmask|charmap->format->Gmask|charmap->format->Bmask;
 	nrgb_mask = ~ rgb_mask;
 	sdl_key &= rgb_mask; /* remove the alpha part */
-#ifdef TCOD_SDL2		
 	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_TRUE|SDL_RLEACCEL,sdl_key);
-#else
-	if ( charmap->format->BytesPerPixel == 3 ) SDL_SetColorKey(charmap,SDL_SRCCOLORKEY|SDL_RLEACCEL,sdl_key);
-#endif
 	for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 		charcols[i]=fontKeyCol;
 		first_draw[i]=true;
@@ -453,13 +441,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
-#ifdef TCOD_SDL2
-#else
-				if ( bitmap == screen && TCOD_ctx.fullscreen ) {
-					dstRect.x+=TCOD_ctx.fullscreen_offsetx;
-					dstRect.y+=TCOD_ctx.fullscreen_offsety;
-				}
-#endif
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
 				if ( c->c != ' ' ) {
 					/* draw foreground */
@@ -597,12 +578,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #endif
 }
 
-void TCOD_sys_set_keyboard_repeat(int initial_delay, int interval) {
-#ifndef TCOD_SDL2
-	SDL_EnableKeyRepeat(initial_delay,interval);
-#endif
-}
-
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
 	return sdl->create_surface(width,height,alpha);
 }
@@ -651,18 +626,13 @@ void TCOD_sys_startup() {
 #ifdef TCOD_MACOSX
 	CustomSDLMain();
 #endif
-#ifdef TCOD_SDL2
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
-#endif
 #endif
 	TCOD_IFNOT(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) >= 0 ) return;
 #ifndef	TCOD_WINDOWS
 	/* not needed and might crash on windows */
 	atexit(SDL_Quit);
-#endif
-#ifndef TCOD_SDL2
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,SDL_DEFAULT_REPEAT_INTERVAL);
 #endif
 	memset(&TCOD_ctx.key_state,0,sizeof(TCOD_key_t));
 	TCOD_ctx.max_font_chars=256;
@@ -743,11 +713,7 @@ TCOD_renderer_t TCOD_sys_get_renderer() {
 void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( renderer == TCOD_ctx.renderer ) return;
 	TCOD_ctx.renderer=renderer;
-#ifdef TCOD_SDL2
 	if ( window ) {
-#else
-	if ( screen ) {
-#endif
 		TCOD_sys_term();
 	}
 	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,TCOD_ctx.root->buf,TCOD_ctx.root->oldbuf,TCOD_ctx.fullscreen);
@@ -813,7 +779,6 @@ void TCOD_sys_set_fullscreen(bool fullscreen) {
 	sdl->set_fullscreen(fullscreen);
 }
 
-#ifdef TCOD_SDL2
 void TCOD_sys_set_scale_factor(float value) {
 	float old_scale_factor = scale_factor;
 	scale_factor = value;
@@ -823,7 +788,6 @@ void TCOD_sys_set_scale_factor(float value) {
 		scale_factor = MAX_SCALE_FACTOR;
 	printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);
 }
-#endif
 
 void TCOD_sys_set_window_title(const char *title) {
 	strcpy(TCOD_ctx.window_title,title);
@@ -834,11 +798,7 @@ void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
-#ifdef TCOD_SDL2	
 		TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
-#else
-		TCOD_sys_render(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer, prevConsoleBuffer);
-#endif
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
@@ -864,7 +824,6 @@ void TCOD_sys_flush(bool render) {
 	last_frame_length = frame_time * 0.001f;
 }
 
-#ifdef TCOD_SDL2	
 static char TCOD_sys_get_vk(SDL_Keycode sdl_key) {
 	int i;
 	for (i = 0; i < NUM_VK_TO_C_ENTRIES; i++) {
@@ -886,11 +845,9 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 		}
 	}
 }
-#endif
 
 static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	SDL_KeyboardEvent *kev=&ev->key;
-#ifdef TCOD_SDL2
 	/* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
 		Presumably in order to avoid problems with different keyboard layouts, they
 		are expected to write their own key mapping editing code for the user.  */
@@ -898,22 +855,14 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		ret->c = 0;
 	else
 		ret->c = kev->keysym.sym;
-#else
-	ret->c=(char)kev->keysym.unicode;
-#endif
 	if ( ( kev->keysym.mod & (KMOD_LCTRL|KMOD_RCTRL) ) != 0 ) {
 		/* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
 		if ( kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z ) {
 			ret->c = 'a'+(kev->keysym.sym - SDLK_a);
 		}
 	}
-#ifdef TCOD_SDL2	
 	if ( ev->type == SDL_KEYDOWN ) TCOD_sys_set_vk(kev->keysym.sym, ret->c);
 	else if (ev->type == SDL_KEYUP ) ret->c = TCOD_sys_get_vk(kev->keysym.sym);
-#else
-	if ( ev->type == SDL_KEYDOWN ) vk_to_c[kev->keysym.sym] = ret->c;
-	else if (ev->type == SDL_KEYUP ) ret->c = vk_to_c[kev->keysym.sym];
-#endif
 	switch(kev->keysym.sym) {
 		case SDLK_ESCAPE : ret->vk=TCODK_ESCAPE;break;
 		case SDLK_SPACE : ret->vk=TCODK_SPACE; break;
@@ -930,11 +879,7 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_LALT : case SDLK_RALT : ret->vk=TCODK_ALT;break;
 		case SDLK_LCTRL : case SDLK_RCTRL : ret->vk=TCODK_CONTROL;break;
 		case SDLK_LSHIFT : case SDLK_RSHIFT : ret->vk=TCODK_SHIFT;break;
-#ifdef TCOD_SDL2	
 		case SDLK_PRINTSCREEN : ret->vk=TCODK_PRINTSCREEN;break;
-#else
-		case SDLK_PRINT : ret->vk=TCODK_PRINTSCREEN;break;
-#endif
 		case SDLK_LEFT : ret->vk=TCODK_LEFT;break;
 		case SDLK_UP : ret->vk=TCODK_UP;break;
 		case SDLK_RIGHT : ret->vk=TCODK_RIGHT;break;
@@ -961,7 +906,6 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_7 : ret->vk=TCODK_7;break;
 		case SDLK_8 : ret->vk=TCODK_8;break;
 		case SDLK_9 : ret->vk=TCODK_9;break;
-#ifdef TCOD_SDL2	
 		case SDLK_RGUI : ret->vk=TCODK_RWIN;break;
 		case SDLK_LGUI : ret->vk=TCODK_LWIN;break;
 		case SDLK_NUMLOCKCLEAR : ret->vk=TCODK_NUMLOCK;break;
@@ -975,20 +919,6 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 		case SDLK_KP_7 : ret->vk=TCODK_KP7;break;
 		case SDLK_KP_8 : ret->vk=TCODK_KP8;break;
 		case SDLK_KP_9 : ret->vk=TCODK_KP9;break;
-#else
-		case SDLK_RSUPER : ret->vk=TCODK_RWIN;break;
-		case SDLK_LSUPER : ret->vk=TCODK_LWIN;break;
-		case SDLK_KP0 : ret->vk=TCODK_KP0;break;
-		case SDLK_KP1 : ret->vk=TCODK_KP1;break;
-		case SDLK_KP2 : ret->vk=TCODK_KP2;break;
-		case SDLK_KP3 : ret->vk=TCODK_KP3;break;
-		case SDLK_KP4 : ret->vk=TCODK_KP4;break;
-		case SDLK_KP5 : ret->vk=TCODK_KP5;break;
-		case SDLK_KP6 : ret->vk=TCODK_KP6;break;
-		case SDLK_KP7 : ret->vk=TCODK_KP7;break;
-		case SDLK_KP8 : ret->vk=TCODK_KP8;break;
-		case SDLK_KP9 : ret->vk=TCODK_KP9;break;
-#endif
 		case SDLK_KP_DIVIDE : ret->vk=TCODK_KPDIV;break;
 		case SDLK_KP_MULTIPLY : ret->vk=TCODK_KPMUL;break;
 		case SDLK_KP_PLUS : ret->vk=TCODK_KPADD;break;
@@ -1024,13 +954,8 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 				case SDLK_RCTRL : ret->rctrl=0; break;
 				case SDLK_LSHIFT : ret->shift=0; break;
 				case SDLK_RSHIFT : ret->shift=0; break;
-#ifdef TCOD_SDL2
 				case SDLK_LGUI : ret->lmeta=0; break;
 				case SDLK_RGUI : ret->rmeta=0; break;
-#else
-				case SDLK_LSUPER : ret->lmeta=0; break;
-				case SDLK_RSUPER : ret->rmeta=0; break;
-#endif
 				default:break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);
@@ -1052,13 +977,8 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
 				case SDLK_RCTRL : ret->rctrl=1; break;
 				case SDLK_LSHIFT : ret->shift=1; break;
 				case SDLK_RSHIFT : ret->shift=1; break;
-#ifdef TCOD_SDL2
 				case SDLK_LGUI : ret->lmeta=1; break;
 				case SDLK_RGUI : ret->rmeta=1; break;
-#else
-				case SDLK_LSUPER : ret->lmeta=1; break;
-				case SDLK_RSUPER : ret->rmeta=1; break;
-#endif
 				default : break;
 			}
 			TCOD_sys_convert_event(ev,&tmpkey);
@@ -1141,7 +1061,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			}
 		}
 		break;
-#ifdef TCOD_SDL2
 		case SDL_TEXTINPUT: {
 			SDL_TextInputEvent *iev=&ev->text;
 			TCOD_key_t ret;
@@ -1152,14 +1071,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			return retMask | TCOD_EVENT_KEY_PRESS; 
 		}
 		break;
-#else
-		case SDL_ACTIVEEVENT : 
-			switch(ev->active.state) {
-				case SDL_APPMOUSEFOCUS : TCOD_ctx.app_has_mouse_focus=ev->active.gain; break;
-				default : TCOD_ctx.app_is_active=ev->active.gain; break;
-			}
-		break;
-#endif
 #ifdef TCOD_TOUCH_INPUT
 		/*
 		 * Need to distinguish between:
@@ -1338,7 +1249,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				return retMask | TCOD_EVENT_MOUSE_MOVE;
 			}
 		break; 
-#ifdef TCOD_SDL2
 		case SDL_MOUSEWHEEL :
 			if (ev->wheel.y < 0)
 				mouse->wheel_down=true;
@@ -1346,7 +1256,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				mouse->wheel_up=true;
 			return retMask | TCOD_EVENT_MOUSE_PRESS;
 		break;
-#endif
 		case SDL_MOUSEBUTTONDOWN : 
 			if ( (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
 				SDL_MouseButtonEvent *mev=&ev->button;
@@ -1355,10 +1264,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					case SDL_BUTTON_LEFT : mouse->lbutton=mousebl=true; break;
 					case SDL_BUTTON_MIDDLE : mouse->mbutton=mousebm=true; break;
 					case SDL_BUTTON_RIGHT : mouse->rbutton=mousebr=true; break;
-#ifndef TCOD_SDL2
-					case SDL_BUTTON_WHEELUP : mouse->wheel_up=true; break;
-					case SDL_BUTTON_WHEELDOWN : mouse->wheel_down=true;break;
-#endif
 				}
 				/* update mouse position */
 				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
@@ -1392,7 +1297,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_QUIT :
 			TCOD_ctx.is_window_closed=true;
 		break;
-#ifdef TCOD_SDL2
 		case SDL_WINDOWEVENT :
 			/* At this point, there are some corner cases that need dealing with.  So log this. */
 			/* printf("SDL2 WINDOWEVENT: 0x%04x\n", ev->window.event); */
@@ -1425,11 +1329,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #endif
 			}
  		break;
-#else
-		case SDL_VIDEOEXPOSE :
-			TCOD_sys_console_to_bitmap(screen,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL),consoleBuffer,prevConsoleBuffer);
-		break;			
-#endif
 		default : break; 
 	}
 	return retMask;
@@ -1690,7 +1589,6 @@ void TCOD_sys_get_current_resolution(int *w, int *h) {
 bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 	uint8 tmp[128];
 	int i;
-#ifdef TCOD_SDL2
 	SDL_RWops *rwops =  SDL_RWFromFile(filename, "rb");
 	if (! rwops) return false;
 	if ( (i = rwops->read(rwops,tmp,size,1)) != 1 ) {
@@ -1698,20 +1596,10 @@ bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data) {
 		return false;
 	}
 	rwops->close(rwops);
-#else
-	FILE *f=fopen(filename,"rb");
-	if (! f) return false;
-	if ( fread(tmp,1,128,f) < (unsigned)size ) {
-		fclose(f);
-		return false;
-	}
-	fclose(f);
-#endif
 	for (i=0; i< size; i++) if (tmp[i]!=data[i]) return false;
 	return true;
 }
 
-#ifdef TCOD_SDL2
 void *TCOD_sys_get_SDL_window() {
 	return (void *)window;
 }
@@ -1719,7 +1607,6 @@ void *TCOD_sys_get_SDL_window() {
 void *TCOD_sys_get_SDL_renderer() {
 	return (void *)renderer;
 }
-#endif
 
 /* mouse stuff */
 void TCOD_mouse_show_cursor(bool visible) {

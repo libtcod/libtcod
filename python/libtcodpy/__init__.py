@@ -1,6 +1,6 @@
 #
-# libtcod 1.6.0 Python wrapper
-# Copyright (c) 2008,2009,2010,2012,2013 Jice & Mingos
+# libtcod 1.6.2 Python wrapper
+# Copyright (c) 2008,2009,2010,2012,2013,2016 Jice & Mingos & rmtew
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -999,12 +999,6 @@ def console_check_for_keypress(flags=KEY_RELEASED):
 
 def console_is_key_pressed(key):
     return _lib.TCOD_console_is_key_pressed(key)
-
-def console_set_keyboard_repeat(initial_delay, interval):
-    _lib.TCOD_console_set_keyboard_repeat(initial_delay, interval)
-
-def console_disable_keyboard_repeat():
-    _lib.TCOD_console_disable_keyboard_repeat()
 
 # using offscreen consoles
 def console_new(w, h):

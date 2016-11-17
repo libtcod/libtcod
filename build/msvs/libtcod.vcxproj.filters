@@ -96,9 +96,6 @@
     <ClCompile Include="..\..\src\sys_opengl_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl12_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\sys_sdl2_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>

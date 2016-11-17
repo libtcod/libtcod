@@ -195,7 +195,6 @@
     <ClCompile Include="..\..\src\sys.cpp" />
     <ClCompile Include="..\..\src\sys_c.c" />
     <ClCompile Include="..\..\src\sys_opengl_c.c" />
-    <ClCompile Include="..\..\src\sys_sdl12_c.c" />
     <ClCompile Include="..\..\src\sys_sdl2_c.c" />
     <ClCompile Include="..\..\src\sys_sdl_c.c" />
     <ClCompile Include="..\..\src\sys_sdl_img_bmp.c" />

@@ -1314,30 +1314,6 @@ public :
 	@Param key Any key code defined in keycode_t except TCODK_CHAR (Char) and TCODK_NONE (NoKey)
 	*/
 	static bool isKeyPressed(TCOD_keycode_t key);
-	/**
-	@PageName console_keyboard_repeat
-	@PageTitle Changing keyboard repeat delay
-	@PageFather console_input
-	@FuncDesc This function changes the keyboard repeat times.
-	@Cpp static void TCODConsole::setKeyboardRepeat(int initialDelay, int interval)
-	@C void TCOD_console_set_keyboard_repeat(int initial_delay, int interval)
-	@Py console_set_keyboard_repeat(initial_delay, interval)
-	@C# static void TCODConsole::setKeyboardRepeat(int initialDelay, int interval)
-	@Lua tcod.console.setKeyboardRepeat(initialDelay, interval)
-	@Param initialDelay delay in millisecond between the time when a key is pressed, and keyboard repeat begins. If 0, keyboard repeat is disabled
-	@Param interval interval in millisecond between keyboard repeat events
-	*/
-	static void setKeyboardRepeat(int initialDelay,int interval);
-	/**
-	@PageName console_keyboard_repeat
-	@FuncDesc You can also disable the keyboard repeat feature with this function (it's equivalent to setKeyboardRepeat(0,0) ).
-	@Cpp static void TCODConsole::disableKeyboardRepeat()
-	@C void TCOD_console_disable_keyboard_repeat()
-	@Py console_disable_keyboard_repeat()
-	@C# static void TCODConsole::disableKeyboardRepeat()
-	@Lua tcod.console.disableKeyboardRepeat()
-	*/
-	static void disableKeyboardRepeat();
 
 	/**
 	@PageName console_key_t

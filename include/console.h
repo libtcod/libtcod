@@ -100,8 +100,6 @@ TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t
 
 TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
-TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay, int interval);
-TCODLIB_API void TCOD_console_disable_keyboard_repeat();
 TCODLIB_API bool TCOD_console_is_key_pressed(TCOD_keycode_t key);
 
 /* ASCII paint file support */

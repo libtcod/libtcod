@@ -319,14 +319,6 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...)
 	return ret;
 }
 
-void TCODConsole::setKeyboardRepeat(int initialDelay,int interval) {
-	TCOD_console_set_keyboard_repeat(initialDelay,interval);
-}
-
-void TCODConsole::disableKeyboardRepeat() {
-	TCOD_console_disable_keyboard_repeat();
-}
-
 bool TCODConsole::isKeyPressed(TCOD_keycode_t key) {
 	return TCOD_console_is_key_pressed(key) != 0;
 }

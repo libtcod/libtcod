@@ -46,6 +46,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "weather", "weather.vcxproj"
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "doctcod", "doctcod.vcxproj", "{37AB5715-48D7-4BF2-BC39-21A141CCB85C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6197244-2BEB-4AED-988E-CC1F0B647055} = {D6197244-2BEB-4AED-988E-CC1F0B647055}
+	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "python", "..\..\python\python.pyproj", "{9F5A5967-268C-4D0D-A182-4112A94ABE4B}"
 EndProject

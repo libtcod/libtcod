@@ -25,15 +25,11 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined (__HAIKU__) || defined (__ANDROID__)
-#include <SDL.h>
-#elif defined(TCOD_SDL2)
+#if !defined (__HAIKU__) && !defined (__ANDROID__)
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL.h>
-#else
-#include <SDL/SDL.h>
 #endif
+#include <SDL.h>
 #include "png/lodepng.h"
 #include "libtcod.h"
 #include "libtcod_int.h"

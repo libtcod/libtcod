@@ -25,11 +25,7 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined (__HAIKU__) || defined (__ANDROID__) || defined(TCOD_SDL2)
 #include <SDL.h>
-#else
-#include <SDL/SDL.h>
-#endif
 #include "libtcod.h"
 #include "libtcod_int.h"
 

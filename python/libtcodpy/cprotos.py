@@ -249,12 +249,6 @@ def setup_protos(lib):
 #    lib.TCOD_console_wait_for_keypress.restype=TCOD_key_t
 #    lib.TCOD_console_wait_for_keypress.argtypes=[c_bool ]
 
-    lib.TCOD_console_set_keyboard_repeat.restype=c_void
-    lib.TCOD_console_set_keyboard_repeat.argtypes=[c_int, c_int]
-
-    lib.TCOD_console_disable_keyboard_repeat.restype=c_void
-    lib.TCOD_console_disable_keyboard_repeat.argtypes=[]
-
     lib.TCOD_console_is_key_pressed.restype=c_bool
     lib.TCOD_console_is_key_pressed.argtypes=[c_int ]
 

@@ -29,14 +29,10 @@
 #define _TCODLIB_INT_H
 #include <stdarg.h>
 #include <assert.h>
-#if defined (__HAIKU__) || defined(__ANDROID__)
-#include <SDL.h>
+#if defined(__ANDROID__)
 #include <android/log.h>
-#elif defined (TCOD_SDL2)
-#include <SDL.h>
-#else
-#include <SDL/SDL.h>
 #endif
+#include <SDL.h>
 
 /* tcodlib internal stuff */
 #ifdef __cplusplus
@@ -212,7 +208,6 @@ void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
 void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(void *bitmap);
 void TCOD_sys_console_to_bitmap(void *bitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer);
-void TCOD_sys_set_keyboard_repeat(int initial_delay, int interval);
 TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
 void TCOD_sys_save_fps();
 void TCOD_sys_restore_fps();

@@ -188,6 +188,7 @@ public :
 	@Py parser_delete(parser)
 	@Param parser	In the C version, the parser handler, returned by TCOD_parser_new.
 	*/
+	~TCODParser();
 
 	// error during parsing. can be called by the parser listener
 	void error(const char *msg, ...);

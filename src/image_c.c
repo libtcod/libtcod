@@ -45,6 +45,24 @@ typedef struct {
 	bool has_key_color;
 } image_data_t;
 
+#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+/*
+Internal libtcod optimisation, direct colour manipulation in the images primary mipmap.
+*/
+TCOD_color_t *TCOD_image_get_colors(TCOD_image_t *image) {
+	image_data_t *img = ((image_data_t *)image);
+	return img->mipmaps[0].buf;
+}
+
+void TCOD_image_invalidate_mipmaps(TCOD_image_t *image) {
+	int i;
+	image_data_t *img = ((image_data_t *)image);
+	for (i = 1; i < img->nb_mipmaps; i++) {
+		img->mipmaps[i].dirty = true;
+	}
+}
+#endif
+
 static int TCOD_image_get_mipmap_levels(int width, int height) {
 	int curw=width;
 	int curh=height;
@@ -89,6 +107,28 @@ static void TCOD_image_generate_mip(image_data_t *img, int mip) {
 		}
 	}
 }
+
+#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+/*
+Internal way of copying rendering fg/bg color frame data.
+*/
+bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImage) {
+	int i;
+	image_data_t *img_src = (image_data_t *)srcImage;
+	image_data_t *img_dst = (image_data_t *)dstImage;
+	if (!img_src->mipmaps || img_src->sys_img || !img_dst->mipmaps || img_dst->sys_img) /* Both internal images. */
+		return false;
+	if (img_src->mipmaps[0].width != img_dst->mipmaps[0].width || img_src->mipmaps[0].height != img_dst->mipmaps[0].height)
+		return false;
+	/* Copy all mipmaps? */
+	for (i = 0; i < img_src->nb_mipmaps; i++) {
+		img_dst->mipmaps[i].dirty = img_src->mipmaps[i].dirty;
+		if (i == 0 || !img_dst->mipmaps[i].dirty)
+			memcpy(img_dst->mipmaps[i].buf, img_src->mipmaps[i].buf, sizeof(TCOD_color_t)*(img_src->mipmaps[i].width)*(img_src->mipmaps[i].height));
+	}
+	return true;
+}
+#endif
 
 static void TCOD_image_init_mipmaps(image_data_t *img) {
 	int w,h,i,x,y;
@@ -382,8 +422,14 @@ TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
 
 void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	image_data_t *img=(image_data_t *)image;
+
+#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
-		TCOD_console_get_buf(console),NULL);
+		TCOD_console_get_render_state(console));
+#else
+	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
+		TCOD_console_get_buf(console), NULL);
+#endif
 }
 
 void TCOD_image_save(TCOD_image_t image, const char *filename) {
@@ -409,6 +455,7 @@ void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t key_color) {
 	img->has_key_color=true;
 	img->key_color=key_color;
 }
+
 void TCOD_image_invert(TCOD_image_t image) {
 	int i,mip;
 	int width,height;

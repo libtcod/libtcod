@@ -467,14 +467,14 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 			if ( c->cf == -1 ) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
-				if ( c->dirt || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
+				if ( c->dirty || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
 					|| c->back.b != oc->back.b || c->fore.r != oc->fore.r
 					|| c->fore.g != oc->fore.g || c->fore.b != oc->fore.b
 					|| c->c != oc->c || c->cf != oc->cf) {
 					changed=true;
 				}
 			}
-			c->dirt=0;
+			c->dirty=0;
 			if ( changed ) {
 				TCOD_opengl_putchar_ex(x,y,c->cf,c->fore,c->back);
 			}

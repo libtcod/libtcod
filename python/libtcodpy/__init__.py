@@ -13,7 +13,7 @@
 #     * The name of Jice or Mingos may not be used to endorse or promote products
 #       derived from this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+# THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 # EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 # DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -945,6 +945,12 @@ def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
 
 def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
     _lib.TCOD_console_print_frame(c_void_p(con), x, y, w, h, c_int(clear), flag, c_char_p(fmt))
+
+def console_get_foreground_image(con):
+    return _lib.TCOD_console_get_foreground_color_image(c_void_p(con))
+
+def console_get_background_image(con):
+    return _lib.TCOD_console_get_background_color_image(c_void_p(con))
 
 def console_set_color_control(con,fore,back) :
     _lib.TCOD_console_set_color_control(con,fore,back)

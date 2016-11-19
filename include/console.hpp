@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -28,6 +28,9 @@
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
+class TCODConsole;
+
+#include "image.hpp"
 #include "console_types.h"
 
 /**
@@ -993,6 +996,26 @@ public :
 		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
+
+	/**
+	@PageName console_advanced
+	@FuncTitle Manipulating foreground colors as an image
+	@FuncDesc This function obtains the image containing the console foreground colors.
+	@Cpp TCODImage *TCODConsole::getForegroundImage()
+	@C TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con)
+	@Py console_get_foreground_image(con)
+	*/
+	TCODImage *getForegroundColorImage();
+
+	/**
+	@PageName console_advanced
+	@FuncTitle Manipulating background colors as an image
+	@FuncDesc This function obtains the image containing the console background colors.
+	@Cpp TCODImage *TCODConsole::getBackgroundImage()
+	@C TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con)
+	@Py console_get_background_image(con)
+	*/
+	TCODImage *getBackgroundColorImage();
 
 	/**
 	@PageName console_read

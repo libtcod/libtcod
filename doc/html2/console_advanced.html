@@ -18,7 +18,7 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <div class="main"><div class="maintext">
 <h1>2.2.4. Advanced printing functions</h1>
 <div id="toc"><ul>
-<li><a href="#0">Filling a rectangle with the background color</a></li><li><a href="#1">Drawing an horizontal line</a></li><li><a href="#2">Drawing an vertical line</a></li><li><a href="#3">Drawing a window frame</a></li></ul></div>
+<li><a href="#0">Filling a rectangle with the background color</a></li><li><a href="#1">Drawing an horizontal line</a></li><li><a href="#2">Drawing an vertical line</a></li><li><a href="#3">Drawing a window frame</a></li><li><a href="#4">Manipulating foreground colors as an image</a></li><li><a href="#5">Manipulating background colors as an image</a></li></ul></div>
 <a name="0"></a><h3>Filling a rectangle with the background color</h3>
 <p>Fill a rectangle inside a console. For each cell in the rectangle :<br />		* set the cell's background color to the console default background color<br />		* if clear is true, set the cell's ASCII code to 32 (space)<br />	</p>
 <div class="code"><p class="cpp"><span class="code-keyword">void</span> TCODConsole<span class="code-symbol">::</span>rect<span class="code-symbol">(</span><span class="code-keyword">int</span> x<span class="code-symbol">,</span><span class="code-keyword"> int</span> y<span class="code-symbol">,</span><span class="code-keyword"> int</span> w<span class="code-symbol">,</span><span class="code-keyword"> int</span> h<span class="code-symbol">,</span><span class="code-keyword"> bool</span> clear<span class="code-symbol">,</span><span class="code-tcod"> TCOD_bkgnd_flag_t</span> flag<span class="code-symbol"> =</span><span class="code-tcod"> TCOD_BKGND_DEFAULT</span><span class="code-symbol">)</span></p>
@@ -62,7 +62,19 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <tr><td>clear</td><td>if true, all characters inside the rectangle are set to ASCII code 32 (space).<br />		If false, only the background color is modified<br />	</td></tr>
 <tr class="hilite"><td>flag</td><td>this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t<br />	</td></tr>
 <tr><td>fmt</td><td>if NULL, the function only draws a rectangle.<br />		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.<br />	</td></tr>
-</tbody></table>
+</tbody></table><a name="4"></a><h3>Manipulating foreground colors as an image</h3>
+<p>This function obtains the image containing the console foreground colors.<br />	</p>
+<div class="code"><p class="cpp">TCODImage<span class="code-symbol"> *</span>TCODConsole<span class="code-symbol">::</span>getForegroundImage<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_console_get_foreground_color_image<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
+<p class="py">console_get_foreground_image<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
+</div>
+<a name="5"></a><h3>Manipulating background colors as an image</h3>
+<p>This function obtains the image containing the console background colors.<br />	</p>
+<div class="code"><p class="cpp">TCODImage<span class="code-symbol"> *</span>TCODConsole<span class="code-symbol">::</span>getBackgroundImage<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
+<p class="c"><span class="code-tcod">TCOD_image_t</span> TCOD_console_get_background_color_image<span class="code-symbol">(</span><span class="code-tcod">TCOD_console_t</span> con<span class="code-symbol">)</span></p>
+<p class="py">console_get_background_image<span class="code-symbol">(</span>con<span class="code-symbol">)</span></p>
+</div>
+
 </div></div>
 <div class="footer"><div class="footertext">
 	<p>libtcod 1.5.2, &copy; 2008, 2009, 2010, 2012 Jice & Mingos<br>

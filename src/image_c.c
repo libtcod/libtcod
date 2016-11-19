@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -424,8 +424,8 @@ void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	image_data_t *img=(image_data_t *)image;
 
 #ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
-	TCOD_render_state_t *full_render_state = TCOD_console_get_render_state(console);
-	TCOD_render_state_t partial_render_state = *full_render_state;
+	/* We're copying the state and clearing part of the copy, no need to delete/free. */
+	TCOD_render_state_t partial_render_state = *TCOD_console_get_render_state(console);
 	partial_render_state.oldbuf = NULL;
 	partial_render_state.bg_colors_prev = NULL;
 	partial_render_state.fg_colors_prev = NULL;

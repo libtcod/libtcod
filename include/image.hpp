@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -24,6 +24,13 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#ifndef _TCOD_IMAGE_HPP
+#define _TCOD_IMAGE_HPP
+
+class TCODImage;
+
+#include "console.hpp"
 
 class TCODLIB_API TCODImage {
 public :
@@ -83,7 +90,7 @@ public :
 	@PyEx pix = libtcod.image_from_console(0)
 	*/	
 	TCODImage(const TCODConsole *console);
-	
+
 	/**
 	@PageName image_create
 	@FuncTitle refreshing an image created from a console
@@ -438,3 +445,4 @@ protected :
 	bool deleteData;
 };
 
+#endif

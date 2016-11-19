@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -239,6 +239,16 @@ void TCODConsole::hline(int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 void TCODConsole::vline(int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 	TCOD_console_vline(data,x,y,l,flag);
 }
+
+/*
+TCODImage *TCODConsole::getForegroundColorImage() {
+	return new TCODImage(TCOD_console_get_foreground_color_image(data));
+}
+
+TCODImage *TCODConsole::getBackgroundColorImage() {
+	return new TCODImage(TCOD_console_get_background_color_image(data));
+}
+*/
 
 void TCODConsole::printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt , ...) {
 	if ( fmt ) {

@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -27,6 +27,10 @@
 
 #ifndef _LIBTCOD_H
 #define _LIBTCOD_H
+
+#ifndef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+#define NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+#endif
 
 /* uncomment to disable unicode support */
 /*#define NO_UNICODE */

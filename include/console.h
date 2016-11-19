@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -34,6 +34,8 @@
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8)(alpha*255))<<8)))
 
 typedef void * TCOD_console_t;
+
+#include "image.h"
 
 TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
@@ -89,6 +91,11 @@ TCODLIB_API TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con)
 TCODLIB_API TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int x, int y);
 TCODLIB_API TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y);
 TCODLIB_API int TCOD_console_get_char(TCOD_console_t con,int x, int y);
+
+#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+TCODLIB_API TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con);
+TCODLIB_API TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con);
+#endif
 
 TCODLIB_API void TCOD_console_set_fade(uint8 val, TCOD_color_t fade);
 TCODLIB_API uint8 TCOD_console_get_fade();

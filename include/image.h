@@ -13,7 +13,7 @@
 *     * The name of Jice or Mingos may not be used to endorse or promote products
 *       derived from this software without specific prior written permission.
 *
-* THIS SOFTWARE IS PROVIDED BY JICE AND MINGOS ``AS IS'' AND ANY
+* THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 * DISCLAIMED. IN NO EVENT SHALL JICE OR MINGOS BE LIABLE FOR ANY
@@ -25,7 +25,12 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef _TCOD_IMAGE_H
+#define _TCOD_IMAGE_H
+
 typedef void *TCOD_image_t;
+
+#include "console.h"
 
 TCODLIB_API TCOD_image_t TCOD_image_new(int width, int height);
 TCODLIB_API TCOD_image_t TCOD_image_from_console(TCOD_console_t console);
@@ -52,3 +57,4 @@ TCODLIB_API void TCOD_image_delete(TCOD_image_t image);
 TCODLIB_API void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t key_color);
 TCODLIB_API bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y);
 
+#endif

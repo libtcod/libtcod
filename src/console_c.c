@@ -280,7 +280,7 @@ void TCOD_console_flush() {
 	TCOD_sys_flush(true);
 	memcpy(dat->state.oldbuf, dat->state.buf, sizeof(char_t)*dat->w*dat->h);
 	TCOD_image_mipmap_copy_internal(dat->state.fg_colors, dat->state.fg_colors_prev);
-	TCOD_image_mipmap_copy_internal(dat->state.fg_colors, dat->state.bg_colors_prev);
+	TCOD_image_mipmap_copy_internal(dat->state.bg_colors, dat->state.bg_colors_prev);
 }
 #else
 void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int hSrc,

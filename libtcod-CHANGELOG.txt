@@ -8,6 +8,7 @@ X API break
 + Python (PTVS) project for samples_py added to VS2015 solution.
 + Console foreground and background colours are images.
   https://bitbucket.org/libtcod/libtcod/issues/51/console-image-unification
++ Added TCOD_console_get_background_color_image and TCOD_console_get_foreground_color_image API for C++/C/Python.
 % crash bugs fixed in documentation generation.
 % libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference.
 % libtcodpy now uses more wrapper functions on Windows to cover ctypes limitations in passing and returning struct values.

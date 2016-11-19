@@ -196,11 +196,14 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
 	TCOD_console_data_t *dst = dstCon ? (TCOD_console_data_t *)dstCon : TCOD_ctx.root;
 	TCOD_color_t *srcFgColors, *srcBgColors, *dstFgColors, *dstBgColors;
+	bool srcHasKeyColor;
+	TCOD_color_t srcKeyColor;
 	int cx, cy;
 	if (wSrc == 0) wSrc = src->w;
 	if (hSrc == 0) hSrc = src->h;
 	TCOD_IFNOT(wSrc > 0 && hSrc > 0) return;
 	TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
+	TCOD_image_get_key_data(src->state.bg_colors, &srcHasKeyColor, &srcKeyColor);
 	srcFgColors = TCOD_image_get_colors(src->state.fg_colors);
 	srcBgColors = TCOD_image_get_colors(src->state.bg_colors);
 	dstFgColors = TCOD_image_get_colors(dst->state.fg_colors);
@@ -222,8 +225,8 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			srcFgColor = srcFgColors[src_idx];
 			srcBgColor = srcBgColors[src_idx];
 			/* check if source pixel is transparent */
-			if (src->haskey &&
-				srcBgColor.r == src->key.r && srcBgColor.g == src->key.g && srcBgColor.b == src->key.b)
+			if (srcHasKeyColor &&
+				srcBgColor.r == srcKeyColor.r && srcBgColor.g == srcKeyColor.g && srcBgColor.b == srcKeyColor.b)
 				continue;
 
 			if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
@@ -1543,8 +1546,12 @@ bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
+#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+	TCOD_image_set_key_color(dat->state.bg_colors, col);
+#else
 	dat->key = col;
 	dat->haskey=true;
+#endif
 }
 
 void TCOD_console_credits() {

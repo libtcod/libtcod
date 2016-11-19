@@ -54,6 +54,12 @@ TCOD_color_t *TCOD_image_get_colors(TCOD_image_t *image) {
 	return img->mipmaps[0].buf;
 }
 
+void TCOD_image_get_key_data(TCOD_image_t image, bool *has_key_color, TCOD_color_t *key_color) {
+	image_data_t *img = ((image_data_t *)image);
+	*has_key_color = img->has_key_color;
+	*key_color = img->key_color;
+}
+
 void TCOD_image_invalidate_mipmaps(TCOD_image_t *image) {
 	int i;
 	image_data_t *img = ((image_data_t *)image);

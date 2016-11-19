@@ -70,6 +70,8 @@ typedef struct {
 #else
 	char_t *buf; /* current console */
 	char_t *oldbuf; /* console for last frame */
+	bool haskey; /* a key color has been defined */
+	TCOD_color_t key;
 #endif
 	/* console width and height (in characters,not pixels) */
 	int w,h;
@@ -77,10 +79,9 @@ typedef struct {
 	TCOD_bkgnd_flag_t bkgnd_flag;
 	/* default alignment for print & print_rect functions */
 	TCOD_alignment_t alignment;
-	/* foreground (text), background and key colors */
-	TCOD_color_t fore,back,key;
+	/* foreground (text), background colors */
+	TCOD_color_t fore, back;
 	uint8 fade;
-	bool haskey; /* a key color has been defined */
 } TCOD_console_data_t;
 
 /* fov internal stuff */
@@ -89,6 +90,7 @@ typedef struct {
 	bool walkable:1;
 	bool fov:1;
 } cell_t;
+
 typedef struct {
 	int width;
 	int height;
@@ -205,6 +207,7 @@ void * TCOD_opengl_get_screen();
 bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImage);
 TCOD_color_t *TCOD_image_get_colors(TCOD_image_t *image);
 void TCOD_image_invalidate_mipmaps(TCOD_image_t *image);
+void TCOD_image_get_key_data(TCOD_image_t image, bool *has_key_color, TCOD_color_t *key_color);
 #endif
 
 /* fov internal stuff */

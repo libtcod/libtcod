@@ -418,10 +418,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 		oc = &render_state->oldbuf[0];
 		ofg = TCOD_image_get_colors(render_state->fg_colors_prev);
 		obg = TCOD_image_get_colors(render_state->bg_colors_prev);
-		/*
-		if (memcmp(ofg, nfg, sizeof(TCOD_color_t)*console_width*console_height) == 0 ||
-			memcmp(obg, nbg, sizeof(TCOD_color_t)*console_width*console_height) == 0)
-			*/
 	}
 	if ( charmap_backup == NULL ) {
 		charmap_backup=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);

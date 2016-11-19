@@ -424,8 +424,13 @@ void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	image_data_t *img=(image_data_t *)image;
 
 #ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
+	TCOD_render_state_t *full_render_state = TCOD_console_get_render_state(console);
+	TCOD_render_state_t partial_render_state = *full_render_state;
+	partial_render_state.oldbuf = NULL;
+	partial_render_state.bg_colors_prev = NULL;
+	partial_render_state.fg_colors_prev = NULL;
 	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
-		TCOD_console_get_render_state(console));
+		&partial_render_state);
 #else
 	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
 		TCOD_console_get_buf(console), NULL);

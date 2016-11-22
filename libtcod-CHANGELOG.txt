@@ -13,6 +13,8 @@ X API break
 % libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference.
 % libtcodpy now uses more wrapper functions on Windows to cover ctypes limitations in passing and returning struct values.
 % libtcodpy now inlines more ctypes argtypes and restype definitions in order to work better on x64.
+% libtcodpy partially rewritten to support Python 3 as best possible.
+% samples_py partially rewritten to run under both Python 3 and Python 2.
 % C++ TCODParser memory leak fixed.
   https://bitbucket.org/libtcod/libtcod/issues/27/tcodparser-memory-leaks
 X Removed SDL1 support.

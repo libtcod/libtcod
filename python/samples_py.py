@@ -4,9 +4,12 @@
 # This code demonstrates various usages of libtcod modules
 # It's in the public domain.
 #
+from __future__ import print_function
 import math
 import os
 import libtcodpy as libtcod
+
+xrange = range
 
 # Import Psyco if available
 try:
@@ -20,10 +23,10 @@ SAMPLE_SCREEN_HEIGHT = 20
 SAMPLE_SCREEN_X = 20
 SAMPLE_SCREEN_Y = 10
 cwd_path = os.path.dirname(os.path.realpath(__file__))
-data_path = os.path.abspath(os.path.join(cwd_path, b'..', b'data'))
-font = os.path.join(data_path, b'fonts', b'consolas10x10_gs_tc.png')
+data_path = os.path.abspath(os.path.join(cwd_path, '..', 'data'))
+font = os.path.join(data_path, 'fonts', 'consolas10x10_gs_tc.png')
 libtcod.console_set_custom_font(font, libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
-libtcod.console_init_root(80, 50, b'libtcod Python sample', False)
+libtcod.console_init_root(80, 50, 'libtcod Python sample', False)
 sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 
 #############################################
@@ -33,68 +36,68 @@ sample_console = libtcod.console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 if True:
     print ('***** File Parser test *****')
     parser=libtcod.parser_new()
-    struct=libtcod.parser_new_struct(parser, b'myStruct')
-    libtcod.struct_add_property(struct, b'bool_field', libtcod.TYPE_BOOL, True)
-    libtcod.struct_add_property(struct, b'char_field', libtcod.TYPE_CHAR, True)
-    libtcod.struct_add_property(struct, b'int_field', libtcod.TYPE_INT, True)
-    libtcod.struct_add_property(struct, b'float_field', libtcod.TYPE_FLOAT, True)
-    libtcod.struct_add_property(struct, b'color_field', libtcod.TYPE_COLOR, True)
-    libtcod.struct_add_property(struct, b'dice_field', libtcod.TYPE_DICE, True)
-    libtcod.struct_add_property(struct, b'string_field', libtcod.TYPE_STRING,
+    struct=libtcod.parser_new_struct(parser,'myStruct')
+    libtcod.struct_add_property(struct,'bool_field', libtcod.TYPE_BOOL, True)
+    libtcod.struct_add_property(struct,'char_field', libtcod.TYPE_CHAR, True)
+    libtcod.struct_add_property(struct,'int_field', libtcod.TYPE_INT, True)
+    libtcod.struct_add_property(struct,'float_field', libtcod.TYPE_FLOAT, True)
+    libtcod.struct_add_property(struct,'color_field', libtcod.TYPE_COLOR, True)
+    libtcod.struct_add_property(struct,'dice_field', libtcod.TYPE_DICE, True)
+    libtcod.struct_add_property(struct,'string_field', libtcod.TYPE_STRING,
                                 True)
-    libtcod.struct_add_list_property(struct, b'bool_list', libtcod.TYPE_BOOL,
+    libtcod.struct_add_list_property(struct,'bool_list', libtcod.TYPE_BOOL,
                                 True)
-    libtcod.struct_add_list_property(struct, b'char_list', libtcod.TYPE_CHAR,
+    libtcod.struct_add_list_property(struct,'char_list', libtcod.TYPE_CHAR,
                                 True)
-    libtcod.struct_add_list_property(struct, b'integer_list', libtcod.TYPE_INT,
+    libtcod.struct_add_list_property(struct,'integer_list', libtcod.TYPE_INT,
                                 True)
-    libtcod.struct_add_list_property(struct, b'float_list', libtcod.TYPE_FLOAT,
+    libtcod.struct_add_list_property(struct,'float_list', libtcod.TYPE_FLOAT,
                                 True)
-    libtcod.struct_add_list_property(struct, b'string_list', libtcod.TYPE_STRING,
+    libtcod.struct_add_list_property(struct,'string_list', libtcod.TYPE_STRING,
                                 True)
-    libtcod.struct_add_list_property(struct, b'color_list', libtcod.TYPE_COLOR,
+    libtcod.struct_add_list_property(struct,'color_list', libtcod.TYPE_COLOR,
                                 True)
 ##    # dice lists doesn't work yet
-##    libtcod.struct_add_list_property(struct, b'dice_list', libtcod.TYPE_DICE,
+##    libtcod.struct_add_list_property(struct,'dice_list', libtcod.TYPE_DICE,
 ##                                True)
 
     # default listener
     print ('***** Default listener *****')
-    libtcod.parser_run(parser, os.path.join(data_path,b'cfg',b'sample.cfg'))
+    libtcod.parser_run(parser, os.path.join(data_path,'cfg','sample.cfg'))
     print ('bool_field : ', \
-          libtcod.parser_get_bool_property(parser, b'myStruct.bool_field'))
+          libtcod.parser_get_bool_property(parser,'myStruct.bool_field'))
     print ('char_field : ', \
-          libtcod.parser_get_char_property(parser, b'myStruct.char_field'))
+          libtcod.parser_get_char_property(parser,'myStruct.char_field'))
     print ('int_field : ', \
-          libtcod.parser_get_int_property(parser, b'myStruct.int_field'))
+          libtcod.parser_get_int_property(parser,'myStruct.int_field'))
     print ('float_field : ', \
-          libtcod.parser_get_float_property(parser, b'myStruct.float_field'))
+          libtcod.parser_get_float_property(parser,'myStruct.float_field'))
     print ('color_field : ', \
-          libtcod.parser_get_color_property(parser, b'myStruct.color_field'))
+          libtcod.parser_get_color_property(parser,'myStruct.color_field'))
     print ('dice_field : ', \
-          libtcod.parser_get_dice_property(parser, b'myStruct.dice_field'))
+          libtcod.parser_get_dice_property(parser,'myStruct.dice_field'))
     print ('string_field : ', \
-          libtcod.parser_get_string_property(parser, b'myStruct.string_field'))
+            libtcod.parser_get_string_property(parser,'myStruct.string_field'))
     print ('bool_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.bool_list',
+          libtcod.parser_get_list_property(parser,'myStruct.bool_list',
                                                            libtcod.TYPE_BOOL))
     print ('char_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.char_list',
+          libtcod.parser_get_list_property(parser,'myStruct.char_list',
                                                            libtcod.TYPE_CHAR))
     print ('integer_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.integer_list',
+          libtcod.parser_get_list_property(parser,'myStruct.integer_list',
                                                            libtcod.TYPE_INT))
     print ('float_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.float_list',
+          libtcod.parser_get_list_property(parser,'myStruct.float_list',
                                                            libtcod.TYPE_FLOAT))
     print ('string_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.string_list',
+          libtcod.parser_get_list_property(parser,'myStruct.string_list',
                                                            libtcod.TYPE_STRING))
     print ('color_list : ', \
-          libtcod.parser_get_list_property(parser, b'myStruct.color_list',
+          libtcod.parser_get_list_property(parser,'myStruct.color_list',
                                                            libtcod.TYPE_COLOR))
 ##    print ('dice_list : ', \
-##          libtcod.parser_get_list_property(parser, b'myStruct.dice_list',
+##          libtcod.parser_get_list_property(parser,'myStruct.dice_list',
 ##                                                           libtcod.TYPE_DICE))
 
     # custom listener
@@ -123,7 +126,7 @@ if True:
         def error(self,msg):
             print ('error : ', msg)
             return True
-    libtcod.parser_run(parser, os.path.join(data_path,b'cfg',b'sample.cfg'), MyListener())
+    libtcod.parser_run(parser, os.path.join(data_path,'cfg','sample.cfg'), MyListener())
 #############################################
 # end of parser unit test
 #############################################
@@ -257,7 +260,7 @@ def render_offscreen(first, key, mouse):
                                             SAMPLE_SCREEN_HEIGHT)
         libtcod.console_print_frame(oc_secondary, 0, 0, SAMPLE_SCREEN_WIDTH // 2,
                                     SAMPLE_SCREEN_HEIGHT // 2, False, libtcod.BKGND_NONE,
-                                    b'Offscreen console')
+                                    'Offscreen console')
         libtcod.console_print_rect_ex(oc_secondary, SAMPLE_SCREEN_WIDTH // 4,
                                           2, SAMPLE_SCREEN_WIDTH // 2 - 2,
                                           SAMPLE_SCREEN_HEIGHT // 2,
@@ -708,7 +711,7 @@ def render_fov(first, key, mouse):
         fov_recompute = True
     elif key.vk == libtcod.KEY_TEXT:
         if key.text in ("+", "-"):
-            if key.text == "+" and fov_algo_num < libtcod.NB_FOV_ALGORITHMS-1:
+            if key.text == b"+" and fov_algo_num < libtcod.NB_FOV_ALGORITHMS-1:
                 fov_algo_num = fov_algo_num + 1
             elif fov_algo_num > 0 :
                 fov_algo_num = fov_algo_num - 1
@@ -1121,16 +1124,16 @@ def render_bsp(first, key, mouse):
         bsp_generate = True
     elif key.c==ord(' '):
         bsp_refresh = True
-    elif key.text == "+":
+    elif key.text == b"+":
         bsp_depth += 1
         bsp_generate = True
-    elif key.text == "-" and bsp_depth > 1:
+    elif key.text == b"-" and bsp_depth > 1:
         bsp_depth -= 1
         bsp_generate = True
-    elif key.text == "*":
+    elif key.text == b"*":
         bsp_min_room_size += 1
         bsp_generate = True
-    elif key.text == "/" and bsp_min_room_size > 2:
+    elif key.text == b"/" and bsp_min_room_size > 2:
         bsp_min_room_size -= 1
         bsp_generate = True
     elif key.c == ord('1') or key.vk in (libtcod.KEY_1, libtcod.KEY_KP1):
@@ -1152,9 +1155,9 @@ img_green = libtcod.Color(0, 255, 0)
 def render_image(first, key, mouse):
     global img,img_circle,img_blue,img_green
     if img is None:
-        img = libtcod.image_load(os.path.join(data_path,b'img',b'skull.png'))
+        img = libtcod.image_load(os.path.join(data_path,'img','skull.png'))
         libtcod.image_set_key_color(img,libtcod.black)
-        img_circle = libtcod.image_load(os.path.join(data_path,b'img',b'circle.png'))
+        img_circle = libtcod.image_load(os.path.join(data_path,'img','circle.png'))
     if first:
         libtcod.sys_set_fps(30)
     libtcod.console_set_default_background(sample_console, libtcod.black)
@@ -1272,9 +1275,9 @@ def render_name(first, key, mouse):
     global ng_sets
     if ng_nbsets == 0:
         # parse all *.cfg files in data/namegen
-        for file in os.listdir(os.path.join(data_path, b'namegen')) :
-            if file.find(b'.cfg') > 0 :
-                libtcod.namegen_parse(os.path.join(data_path,b'namegen',file))
+        for file in os.listdir(os.path.join(data_path,'namegen')) :
+            if file.find('.cfg') > 0 :
+                libtcod.namegen_parse(os.path.join(data_path,'namegen',file))
         # get the sets list
         ng_sets=libtcod.namegen_get_sets()
         print (ng_sets)
@@ -1294,12 +1297,12 @@ def render_name(first, key, mouse):
     if ng_delay > 0.5 :
         ng_delay -= 0.5
         ng_names.append(libtcod.namegen_generate(ng_sets[ng_curset]))
-    if key.text == "+":
+    if key.text == b"+":
         ng_curset += 1
         if ng_curset == ng_nbsets :
             ng_curset=0
         ng_names.append("======")
-    elif key.text == "-":
+    elif key.text == b"-":
         ng_curset -= 1
         if ng_curset < 0 :
             ng_curset=ng_nbsets-1

@@ -113,6 +113,10 @@ setup(
     maintainer = '',
     maintainer_email = '',
 
+    # used for test command
+    tests_require = ['nose2', 'cov-core'],
+    test_suite='nose2.collector.collector',
+
     # optional metadata for pypi
     description = '',
     license = 'Revised BSD License', # 3-clause BSD license

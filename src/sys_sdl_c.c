@@ -82,12 +82,7 @@ SDL_Window* window=NULL;
 SDL_Renderer* renderer=NULL;
 float scale_factor=1.0f;
 SDL_Surface* charmap=NULL;
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 static TCOD_render_state_t *renderState = NULL;
-#else
-static char_t *consoleBuffer=NULL;
-static char_t *prevConsoleBuffer=NULL;
-#endif
 static bool has_startup=false;
 #define MAX_SCALE_FACTOR 5.0f
 
@@ -389,7 +384,6 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
 	sdl->render(vbitmap, console_width, console_height, render_state);
 }
@@ -402,6 +396,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes = (oldFade == fade && render_state->oldbuf);
+	if (render_state->clear_screen) {
+		track_changes = false;
+		render_state->clear_screen = false;
+	}
    	Uint8 bpp = charmap->format->BytesPerPixel;
 	char_t *c=&render_state->buf[0];
 	char_t *oc;
@@ -597,204 +595,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
 #endif
 }
-#else
-static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
-	sdl->render(vbitmap, console_width, console_height, console_buffer, prev_console_buffer);
-}
-
-void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
-	static SDL_Surface *charmap_backup = NULL;
-	int x, y;
-	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
-	Uint32 sdl_back = 0, sdl_fore = 0;
-	TCOD_color_t fading_color = TCOD_console_get_fading_color();
-	int fade = (int)TCOD_console_get_fade();
-	bool track_changes = (oldFade == fade && prev_console_buffer);
-	Uint8 bpp = charmap->format->BytesPerPixel;
-	char_t *c = &console_buffer[0];
-	char_t *oc = &prev_console_buffer[0];
-	int hdelta;
-	if (bpp == 4) {
-		hdelta = (charmap->pitch - TCOD_ctx.font_width*bpp) / 4;
-	}
-	else {
-		hdelta = (charmap->pitch - TCOD_ctx.font_width*bpp);
-	}
-	if (charmap_backup == NULL) {
-		charmap_backup = (SDL_Surface *)TCOD_sys_get_surface(charmap->w, charmap->h, true);
-		SDL_BlitSurface(charmap, NULL, charmap_backup, NULL);
-	}
-#ifdef USE_SDL_LOCKS
-	if (SDL_MUSTLOCK(bitmap) && SDL_LockSurface(bitmap) < 0) return;
-#endif
-	for (y = 0; y<console_height; y++) {
-		for (x = 0; x<console_width; x++) {
-			SDL_Rect srcRect, dstRect;
-			bool changed = true;
-			if (c->cf == -1) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
-			if (track_changes) {
-				changed = false;
-				if (c->dirty || ascii_updated[c->c] || c->back.r != oc->back.r || c->back.g != oc->back.g
-					|| c->back.b != oc->back.b || c->fore.r != oc->fore.r
-					|| c->fore.g != oc->fore.g || c->fore.b != oc->fore.b
-					|| c->c != oc->c || c->cf != oc->cf) {
-					changed = true;
-				}
-			}
-			c->dirty = 0;
-			if (changed) {
-				TCOD_color_t b = c->back;
-				dstRect.x = x*TCOD_ctx.font_width;
-				dstRect.y = y*TCOD_ctx.font_height;
-				dstRect.w = TCOD_ctx.font_width;
-				dstRect.h = TCOD_ctx.font_height;
-				/* draw background */
-				if (fade != 255) {
-					b.r = ((int)b.r) * fade / 255 + ((int)fading_color.r) * (255 - fade) / 255;
-					b.g = ((int)b.g) * fade / 255 + ((int)fading_color.g) * (255 - fade) / 255;
-					b.b = ((int)b.b) * fade / 255 + ((int)fading_color.b) * (255 - fade) / 255;
-				}
-				sdl_back = SDL_MapRGB(bitmap->format, b.r, b.g, b.b);
-				SDL_FillRect(bitmap, &dstRect, sdl_back);
-				if (c->c != ' ') {
-					/* draw foreground */
-					int ascii = c->cf;
-					TCOD_color_t *curtext = &charcols[ascii];
-					bool first = first_draw[ascii];
-					TCOD_color_t f = c->fore;
-
-					if (fade != 255) {
-						f.r = ((int)f.r) * fade / 255 + ((int)fading_color.r) * (255 - fade) / 255;
-						f.g = ((int)f.g) * fade / 255 + ((int)fading_color.g) * (255 - fade) / 255;
-						f.b = ((int)f.b) * fade / 255 + ((int)fading_color.b) * (255 - fade) / 255;
-					}
-					/* only draw character if foreground color != background color */
-					if (ascii_updated[c->c] || f.r != b.r || f.g != b.g || f.b != b.b) {
-						if (charmap->format->Amask == 0
-							&& f.r == fontKeyCol.r && f.g == fontKeyCol.g && f.b == fontKeyCol.b) {
-							/* cannot draw with the key color... */
-							if (f.r < 255) f.r++; else f.r--;
-						}
-						srcRect.x = (ascii%TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_width;
-						srcRect.y = (ascii / TCOD_ctx.fontNbCharHoriz)*TCOD_ctx.font_height;
-						srcRect.w = TCOD_ctx.font_width;
-						srcRect.h = TCOD_ctx.font_height;
-
-						if (charmap && (first || curtext->r != f.r || curtext->g != f.g || curtext->b != f.b)) {
-							/* change the character color in the font */
-							first_draw[ascii] = false;
-							sdl_fore = SDL_MapRGB(charmap->format, f.r, f.g, f.b) & rgb_mask;
-							*curtext = f;
-#ifdef USE_SDL_LOCKS
-							if (SDL_MUSTLOCK(charmap)) {
-								if (SDL_LockSurface(charmap) < 0) return;
-							}
-#endif
-							if (bpp == 4) {
-								/* 32 bits font : fill the whole character with foreground color */
-								Uint32 *pix = (Uint32 *)(((Uint8 *)charmap->pixels) + srcRect.x*bpp + srcRect.y*charmap->pitch);
-								int h = TCOD_ctx.font_height;
-								if (!TCOD_ctx.colored[ascii]) {
-									while (h--) {
-										int w = TCOD_ctx.font_width;
-										while (w--) {
-											(*pix) &= nrgb_mask;
-											(*pix) |= sdl_fore;
-											pix++;
-										}
-										pix += hdelta;
-									}
-								}
-								else {
-									/* colored character : multiply color with foreground color */
-									Uint32 *pixorig = (Uint32 *)(((Uint8 *)charmap_backup->pixels) + srcRect.x*bpp + srcRect.y*charmap_backup->pitch);
-									int hdelta_backup = (charmap_backup->pitch - TCOD_ctx.font_width * 4) / 4;
-									while (h> 0) {
-										int w = TCOD_ctx.font_width;
-										while (w > 0) {
-											int r = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift / 8));
-											int g = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift / 8));
-											int b = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift / 8));
-											(*pix) &= nrgb_mask; /* erase the color */
-											r = r * f.r / 255;
-											g = g * f.g / 255;
-											b = b * f.b / 255;
-											/* set the new color */
-											(*pix) |= (r << charmap->format->Rshift) | (g << charmap->format->Gshift) | (b << charmap->format->Bshift);
-											w--;
-											pix++;
-											pixorig++;
-										}
-										h--;
-										pix += hdelta;
-										pixorig += hdelta_backup;
-									}
-								}
-							}
-							else {
-								/* 24 bits font : fill only non key color pixels */
-								Uint32 *pix = (Uint32 *)(((Uint8 *)charmap->pixels) + srcRect.x*bpp + srcRect.y*charmap->pitch);
-								int h = TCOD_ctx.font_height;
-								if (!TCOD_ctx.colored[ascii]) {
-									while (h--) {
-										int w = TCOD_ctx.font_width;
-										while (w--) {
-											if (((*pix) & rgb_mask) != sdl_key) {
-												(*pix) &= nrgb_mask;
-												(*pix) |= sdl_fore;
-											}
-											pix = (Uint32 *)(((Uint8 *)pix) + 3);
-										}
-										pix = (Uint32 *)(((Uint8 *)pix) + hdelta);
-									}
-								}
-								else {
-									/* colored character : multiply color with foreground color */
-									Uint32 *pixorig = (Uint32 *)(((Uint8 *)charmap_backup->pixels) + srcRect.x * 4 + srcRect.y*charmap_backup->pitch);
-									/* charmap_backup is always 32 bits */
-									int hdelta_backup = (charmap_backup->pitch - TCOD_ctx.font_width * 4) / 4;
-									while (h> 0) {
-										int w = TCOD_ctx.font_width;
-										while (w > 0) {
-											if (((*pixorig) & rgb_mask) != sdl_key) {
-												int r = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Rshift / 8));
-												int g = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Gshift / 8));
-												int b = (int)(*((Uint8 *)(pixorig)+charmap_backup->format->Bshift / 8));
-												(*pix) &= nrgb_mask; /* erase the color */
-												r = r * f.r / 255;
-												g = g * f.g / 255;
-												b = b * f.b / 255;
-												/* set the new color */
-												(*pix) |= (r << charmap->format->Rshift) | (g << charmap->format->Gshift) | (b << charmap->format->Bshift);
-											}
-											w--;
-											pix = (Uint32 *)(((Uint8 *)pix) + 3);
-											pixorig++;
-										}
-										h--;
-										pix = (Uint32 *)(((Uint8 *)pix) + hdelta);
-										pixorig += hdelta_backup;
-									}
-								}
-							}
-#ifdef USE_SDL_LOCKS
-							if (SDL_MUSTLOCK(charmap)) {
-								SDL_UnlockSurface(charmap);
-							}
-#endif
-						}
-						SDL_BlitSurface(charmap, &srcRect, bitmap, &dstRect);
-					}
-				}
-			}
-			c++; oc++;
-		}
-	}
-#ifdef USE_SDL_LOCKS
-	if (SDL_MUSTLOCK(bitmap)) SDL_UnlockSurface(bitmap);
-#endif
-}
-#endif
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
 	return sdl->create_surface(width,height,alpha);
@@ -934,11 +734,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( window ) {
 		TCOD_sys_term();
 	}
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,&TCOD_ctx.root->state,TCOD_ctx.fullscreen);
-#else
-	TCOD_sys_init(TCOD_ctx.root->w, TCOD_ctx.root->h, TCOD_ctx.root->buf, TCOD_ctx.root->oldbuf, TCOD_ctx.fullscreen);
-#endif
 	TCOD_console_set_window_title(TCOD_ctx.window_title);
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
@@ -948,7 +744,6 @@ void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
@@ -969,29 +764,6 @@ bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscre
 	memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
 	return true;
 }
-#else
-bool TCOD_sys_init(int w, int h, char_t *buf, char_t *oldbuf, bool fullscreen) {
-	static TCOD_renderer_t last_renderer = TCOD_RENDERER_SDL;
-	static char last_font[512] = "";
-	if (!has_startup) TCOD_sys_startup();
-	/* check if there is a user (player) config file */
-	if (TCOD_sys_file_exists("./libtcod.cfg")) {
-		/* yes, read it */
-		TCOD_sys_load_player_config();
-		if (TCOD_ctx.fullscreen) fullscreen = true;
-	}
-	if (last_renderer != TCOD_ctx.renderer || !charmap || strcmp(last_font, TCOD_ctx.font_file) != 0) {
-		/* reload the font when switching renderer to restore original character colors */
-		TCOD_sys_load_font();
-	}
-	sdl->create_window(w, h, fullscreen);
-	consoleBuffer = buf;
-	prevConsoleBuffer = oldbuf;
-	memset(key_status, 0, sizeof(bool)*(TCODK_CHAR + 1));
-	memset(ascii_updated, 0, sizeof(bool)*TCOD_ctx.max_font_chars);
-	return true;
-}
-#endif
 
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
 	image_support_t *img=image_type;
@@ -1043,11 +815,7 @@ void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 		TCOD_sys_render(NULL, TCOD_console_get_width(NULL), TCOD_console_get_height(NULL), renderState);
-#else
-		TCOD_sys_render(NULL, TCOD_console_get_width(NULL), TCOD_console_get_height(NULL), consoleBuffer, prevConsoleBuffer);
-#endif
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
@@ -1569,11 +1337,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
 				TCOD_ctx.app_is_active=false; break;
 			case SDL_WINDOWEVENT_EXPOSED:        /**< Window has been returned to and needs a refresh. */
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL), renderState);
-#else
-				TCOD_sys_render(NULL, TCOD_console_get_width(NULL), TCOD_console_get_height(NULL), consoleBuffer, prevConsoleBuffer);
-#endif
 				break;
 #ifdef NDEBUG_HMM
 			default:

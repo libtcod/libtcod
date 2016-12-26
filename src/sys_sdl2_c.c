@@ -98,8 +98,7 @@ static void actual_rendering(void) {
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
-static void render(void *vbitmap, int console_width, int console_height, char_t *console_buffer, char_t *prev_console_buffer) {
-	char_t *prev_console_buffer_ptr = prev_console_buffer;
+static void render(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		int console_width_p = console_width*TCOD_ctx.font_width;
 		int console_height_p = console_height*TCOD_ctx.font_height;
@@ -121,10 +120,10 @@ static void render(void *vbitmap, int console_width, int console_height, char_t 
 			clear_screen=false;
 			SDL_FillRect(scale_screen,0,0);
 			/* Implicitly do complete console redraw, not just tracked changes. */
-			prev_console_buffer_ptr = NULL;
+			render_state->clear_screen = true;
 		}
 
-		TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, console_buffer, prev_console_buffer_ptr);
+		TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, render_state);
 
 		/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 		 * This data is also used for console coordinate resolution.. */

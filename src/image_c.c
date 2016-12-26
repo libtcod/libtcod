@@ -45,7 +45,6 @@ typedef struct {
 	bool has_key_color;
 } image_data_t;
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 /*
 Internal libtcod optimisation, direct colour manipulation in the images primary mipmap.
 */
@@ -67,7 +66,6 @@ void TCOD_image_invalidate_mipmaps(TCOD_image_t *image) {
 		img->mipmaps[i].dirty = true;
 	}
 }
-#endif
 
 static int TCOD_image_get_mipmap_levels(int width, int height) {
 	int curw=width;
@@ -114,7 +112,6 @@ static void TCOD_image_generate_mip(image_data_t *img, int mip) {
 	}
 }
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 /*
 Internal way of copying rendering fg/bg color frame data.
 */
@@ -134,7 +131,6 @@ bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImag
 	}
 	return true;
 }
-#endif
 
 static void TCOD_image_init_mipmaps(image_data_t *img) {
 	int w,h,i,x,y;
@@ -429,7 +425,6 @@ TCOD_image_t TCOD_image_from_console(TCOD_console_t console) {
 void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	image_data_t *img=(image_data_t *)image;
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 	/* We're copying the state and clearing part of the copy, no need to delete/free. */
 	TCOD_render_state_t partial_render_state = *TCOD_console_get_render_state(console);
 	partial_render_state.oldbuf = NULL;
@@ -437,10 +432,6 @@ void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	partial_render_state.fg_colors_prev = NULL;
 	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
 		&partial_render_state);
-#else
-	TCOD_sys_console_to_bitmap(img->sys_img, TCOD_console_get_width(console), TCOD_console_get_height(console),
-		TCOD_console_get_buf(console), NULL);
-#endif
 }
 
 void TCOD_image_save(TCOD_image_t image, const char *filename) {

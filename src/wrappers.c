@@ -158,7 +158,6 @@ void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade)
   TCOD_console_set_fade (val, int_to_color(fade));
 }
 
-#ifdef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
 void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	int i;
@@ -200,49 +199,6 @@ void TCOD_console_fill_char(TCOD_console_t con, int *arr) {
 		arr++;
 	}
 }
-#else
-void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	int i;
-	char_t *curchar=dat->buf;
-	for (i=0; i < dat->w*dat->h; i++) {
-		curchar->back.r=*r;
-		curchar->back.g=*g;
-		curchar->back.b=*b;
-		curchar++;
-		r++;
-		g++;
-		b++;
-	}
-}
-
-void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	int i;
-	char_t *curchar=dat->buf;
-	for (i=0; i < dat->w*dat->h; i++) {
-		curchar->fore.r=*r;
-		curchar->fore.g=*g;
-		curchar->fore.b=*b;
-		curchar++;
-		r++;
-		g++;
-		b++;
-	}
-}
-
-void TCOD_console_fill_char(TCOD_console_t con, int *arr) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	int i;
-	char_t *curchar=dat->buf;
-	for (i=0; i < dat->w*dat->h; i++) {
-		curchar->c=*arr;
-		curchar->cf=TCOD_ctx.ascii_to_tcod[*arr];
-		curchar++;
-		arr++;
-	}
-}
-#endif
 
 colornum_t
 TCOD_console_get_fading_color_wrapper ()

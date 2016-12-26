@@ -28,10 +28,6 @@
 #ifndef _LIBTCOD_H
 #define _LIBTCOD_H
 
-#ifndef NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
-#define NEW_FEATURE_IMAGE_CONSOLE_UNIFICATION
-#endif
-
 /* uncomment to disable unicode support */
 /*#define NO_UNICODE */
 

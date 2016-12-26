@@ -833,17 +833,6 @@ _lib.TCOD_console_init_root.argtypes=[c_int, c_int, c_char_p , c_bool , c_uint ]
 def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_SDL):
     _lib.TCOD_console_init_root(w, h, convert_to_ascii(title), fullscreen, renderer)
 
-
-_lib.TCOD_console_get_width.restype=c_int
-_lib.TCOD_console_get_width.argtypes=[c_void_p ]
-def console_get_width(con):
-    return _lib.TCOD_console_get_width(con)
-
-_lib.TCOD_console_get_height.restype=c_int
-_lib.TCOD_console_get_height.argtypes=[c_void_p ]
-def console_get_height(con):
-    return _lib.TCOD_console_get_height(con)
-
 #_lib.TCOD_console_set_custom_font.restype=c_void
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p, c_int,c_int, c_int]
 def console_set_custom_font(fontFile, flags=FONT_LAYOUT_ASCII_INCOL, nb_char_horiz=0, nb_char_vertic=0):
@@ -1053,7 +1042,7 @@ def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
     _lib.TCOD_console_vline( con, x, y, l, flag)
 
 _lib.TCOD_console_print_frame.argtypes=[c_void_p,c_int,c_int,c_int,c_int,c_int,c_int,c_char_p]
-def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=0):
+def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=''):
     _lib.TCOD_console_print_frame(con, x, y, w, h, clear, flag, convert_to_ascii(fmt))
 
 _lib.TCOD_console_get_foreground_color_image.restype=c_void_p
@@ -1104,7 +1093,7 @@ def console_set_fade(fade, fadingColor):
 _lib.TCOD_console_get_fade.restype=c_byte
 _lib.TCOD_console_get_fade.argtypes=[]
 def console_get_fade():
-    return _lib.TCOD_console_get_fade().value
+    return _lib.TCOD_console_get_fade()
 
 _lib.TCOD_console_get_fading_color.restype=Color
 _lib.TCOD_console_get_fading_color.argtypes=[]
@@ -1222,30 +1211,29 @@ def console_fill_char(con,arr) :
         arr = numpy.ascontiguousarray(arr, dtype=numpy.int32)
         carr = arr.ctypes.data_as(POINTER(c_int))
     else:
-        #otherwise convert using the struct module
-        carr = struct.pack('%di' % len(arr), *arr)
+        carr = (c_int * len(arr))(*arr)
 
     _lib.TCOD_console_fill_char(c_void_p(con), carr)
 
 _lib.TCOD_console_load_asc.restype=c_bool
 _lib.TCOD_console_load_asc.argtypes=[c_void_p , c_char_p]
 def console_load_asc(con, filename) :
-    _lib.TCOD_console_load_asc(con,convert_to_ascii(filename))
+    return _lib.TCOD_console_load_asc(con,convert_to_ascii(filename))
 
 _lib.TCOD_console_save_asc.restype=c_bool
 _lib.TCOD_console_save_asc.argtypes=[c_void_p , c_char_p]
 def console_save_asc(con, filename) :
-    _lib.TCOD_console_save_asc(con,convert_to_ascii(filename))
+    return _lib.TCOD_console_save_asc(con,convert_to_ascii(filename))
 
 _lib.TCOD_console_load_apf.restype=c_bool
 _lib.TCOD_console_load_apf.argtypes=[c_void_p , c_char_p]
 def console_load_apf(con, filename) :
-    _lib.TCOD_console_load_apf(con,convert_to_ascii(filename))
+    return _lib.TCOD_console_load_apf(con,convert_to_ascii(filename))
 
 _lib.TCOD_console_save_apf.restype=c_bool
 _lib.TCOD_console_save_apf.argtypes=[c_void_p , c_char_p]
 def console_save_apf(con, filename) :
-    _lib.TCOD_console_save_apf(con,convert_to_ascii(filename))
+    return _lib.TCOD_console_save_apf(con,convert_to_ascii(filename))
 
 ############################
 # sys module
@@ -1270,9 +1258,9 @@ def sys_get_last_frame_length():
     return _lib.TCOD_sys_get_last_frame_length()
 
 #_lib.TCOD_sys_sleep_milli.restype=c_void
-_lib.TCOD_sys_sleep_milli.argtypes=[c_int ]
+_lib.TCOD_sys_sleep_milli.argtypes=[c_uint ]
 def sys_sleep_milli(val):
-    _lib.TCOD_sys_sleep_milli(c_uint(val))
+    _lib.TCOD_sys_sleep_milli(val)
 
 _lib.TCOD_sys_elapsed_milli.restype=c_int
 _lib.TCOD_sys_elapsed_milli.argtypes=[]
@@ -1384,7 +1372,7 @@ def line(xo,yo,xd,yd,py_callback) :
     c_callback=LINE_CBK_FUNC(py_callback)
     return _lib.TCOD_line(xo,yo,xd,yd,c_callback)
 
-#_lib.TCOD_line_init_mt.restype=c_void 
+#_lib.TCOD_line_init_mt.restype=c_void
 _lib.TCOD_line_init_mt.argtypes=[c_int, c_int, c_int, c_int, c_void_p]
 _lib.TCOD_line_step_mt.restype = c_bool
 _lib.TCOD_line_step_mt.argtypes=[POINTER(c_int), POINTER(c_int), c_void_p]
@@ -1829,9 +1817,9 @@ def random_new(algo=RNG_CMWC):
     return _lib.TCOD_random_new(algo)
 
 _lib.TCOD_random_new_from_seed.restype=c_void_p
-_lib.TCOD_random_new_from_seed.argtypes=[c_int , c_int ]
+_lib.TCOD_random_new_from_seed.argtypes=[c_int, c_uint]
 def random_new_from_seed(seed, algo=RNG_CMWC):
-    return _lib.TCOD_random_new_from_seed(algo,c_uint(seed))
+    return _lib.TCOD_random_new_from_seed(algo, seed)
 
 #_lib.TCOD_random_set_distribution.restype=c_void
 _lib.TCOD_random_set_distribution.argtypes=[c_void_p , c_int ]
@@ -2120,7 +2108,7 @@ def dijkstra_new(m, dcost=1.41):
 
 def dijkstra_new_using_function(w, h, func, userdata=0, dcost=1.41):
     cbk_func = PATH_CBK_FUNC(func)
-    return (_lib.TCOD_path_dijkstra_using_function(w, h, cbk_func,
+    return (_lib.TCOD_dijkstra_new_using_function(w, h, cbk_func,
             py_object(userdata), c_float(dcost)), cbk_func)
 
 #_lib.TCOD_dijkstra_compute.restype=c_void
@@ -2252,19 +2240,19 @@ _lib.TCOD_bsp_new_with_size.argtypes=[c_int,c_int,c_int, c_int]
 def bsp_new_with_size(x, y, w, h):
     return Bsp(_lib.TCOD_bsp_new_with_size(x, y, w, h))
 
-#_lib.TCOD_bsp_split_once.restype=c_void 
+#_lib.TCOD_bsp_split_once.restype=c_void
 _lib.TCOD_bsp_split_once.argtypes=[c_void_p, c_bool , c_int]
 def bsp_split_once(node, horizontal, position):
     _lib.TCOD_bsp_split_once(node.p, c_int(horizontal), position)
 
-#_lib.TCOD_bsp_split_recursive.restype=c_void 
+#_lib.TCOD_bsp_split_recursive.restype=c_void
 _lib.TCOD_bsp_split_recursive.argtypes=[c_void_p, c_void_p , c_int, ]
 def bsp_split_recursive(node, randomizer, nb, minHSize, minVSize, maxHRatio,
                         maxVRatio):
     _lib.TCOD_bsp_split_recursive(node.p, randomizer, nb, minHSize, minVSize,
                                   c_float(maxHRatio), c_float(maxVRatio))
 
-#_lib.TCOD_bsp_resize.restype=c_void 
+#_lib.TCOD_bsp_resize.restype=c_void
 _lib.TCOD_bsp_resize.argtypes=[c_void_p, c_int,c_int, c_int, c_int]
 def bsp_resize(node, x, y, w, h):
     _lib.TCOD_bsp_resize(node.p, x, y, w, h)
@@ -2333,7 +2321,7 @@ _lib.TCOD_bsp_remove_sons.argtypes=[c_void_p]
 def bsp_remove_sons(node):
     _lib.TCOD_bsp_remove_sons(node.p)
 
-#_lib.TCOD_bsp_delete.restype=c_void 
+#_lib.TCOD_bsp_delete.restype=c_void
 _lib.TCOD_bsp_delete.argtypes=[c_void_p]
 def bsp_delete(node):
     _lib.TCOD_bsp_delete(node.p)

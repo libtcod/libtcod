@@ -117,15 +117,15 @@ TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
 	return TCOD_sys_wait_for_keypress(flush);
 }
 
-bool TCOD_console_is_window_closed() {
+bool TCOD_console_is_window_closed(void) {
 	return TCOD_ctx.is_window_closed;
 }
 
-bool TCOD_console_has_mouse_focus() {
+bool TCOD_console_has_mouse_focus(void) {
 	return TCOD_ctx.app_has_mouse_focus;
 }
 
-bool TCOD_console_is_active() {
+bool TCOD_console_is_active(void) {
 	return TCOD_ctx.app_is_active;
 }
 
@@ -139,7 +139,7 @@ void TCOD_console_set_fullscreen(bool fullscreen) {
 	TCOD_ctx.fullscreen=fullscreen;
 }
 
-bool TCOD_console_is_fullscreen() {
+bool TCOD_console_is_fullscreen(void) {
 	return TCOD_ctx.fullscreen;
 }
 
@@ -274,7 +274,7 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 	TCOD_image_invalidate_mipmaps(dst->state.bg_colors);
 }
 
-void TCOD_console_flush() {
+void TCOD_console_flush(void) {
 	TCOD_console_data_t *dat = TCOD_ctx.root;
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_flush(true);
@@ -338,7 +338,7 @@ void TCOD_console_blit(TCOD_console_t srcCon,int xSrc, int ySrc, int wSrc, int h
 	}
 }
 
-void TCOD_console_flush() {
+void TCOD_console_flush(void) {
 	TCOD_console_data_t *dat = TCOD_ctx.root;
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_flush(true);
@@ -351,11 +351,11 @@ void TCOD_console_set_fade(uint8 val, TCOD_color_t fadecol) {
 	TCOD_ctx.fading_color=fadecol;
 }
 
-uint8 TCOD_console_get_fade() {
+uint8 TCOD_console_get_fade(void) {
 	return TCOD_ctx.fade;
 }
 
-TCOD_color_t TCOD_console_get_fading_color() {
+TCOD_color_t TCOD_console_get_fading_color(void) {
 	return TCOD_ctx.fading_color;
 }
 
@@ -1554,7 +1554,7 @@ void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
 #endif
 }
 
-void TCOD_console_credits() {
+void TCOD_console_credits(void) {
 	bool end=false;
 	int x=TCOD_console_get_width(NULL)/2-6;
 	int y=TCOD_console_get_height(NULL)/2;
@@ -1581,7 +1581,7 @@ void TCOD_console_credits() {
 
 static bool init2=false;
 
-void TCOD_console_credits_reset() {
+void TCOD_console_credits_reset(void) {
 	init2=false;
 }
 
@@ -1960,7 +1960,7 @@ bool TCOD_console_save_asc(TCOD_console_t pcon, const char *filename) {
 
 static bool hasDetectedBigEndianness = false;
 static bool isBigEndian;
-void detectBigEndianness(){
+void detectBigEndianness(void) {
 	if (!hasDetectedBigEndianness){
 		uint32 Value32;
 		uint8 *VPtr = (uint8 *)&Value32;

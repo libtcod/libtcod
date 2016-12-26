@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include "libtcod.h"
 
-TCOD_tree_t *TCOD_tree_new() {
+TCOD_tree_t *TCOD_tree_new(void) {
 	return (TCOD_tree_t *)calloc(1,sizeof(TCOD_tree_t));
 }
 

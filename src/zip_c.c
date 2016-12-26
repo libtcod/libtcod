@@ -38,7 +38,7 @@ typedef struct {
 	int offset; /* current reading position */
 } zip_data_t;
 
-TCOD_zip_t TCOD_zip_new() {
+TCOD_zip_t TCOD_zip_new(void) {
 	zip_data_t *ret=(zip_data_t *)calloc(sizeof(zip_data_t),1);
 	return (TCOD_zip_t)ret;
 }

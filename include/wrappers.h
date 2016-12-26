@@ -72,7 +72,7 @@ TCODLIB_API void TCOD_console_set_char_foreground_wrapper(TCOD_console_t con,int
 TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x,
 	int y, int c, colornum_t fore, colornum_t back);
 TCODLIB_API void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade);
-TCODLIB_API colornum_t TCOD_console_get_fading_color_wrapper();
+TCODLIB_API colornum_t TCOD_console_get_fading_color_wrapper(void);
 TCODLIB_API void TCOD_console_set_color_control_wrapper(TCOD_colctrl_t con,
 						colornum_t fore,
 						colornum_t back);
@@ -121,12 +121,12 @@ TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);
 
 /* namegen module */
-TCODLIB_API int TCOD_namegen_get_nb_sets_wrapper();
+TCODLIB_API int TCOD_namegen_get_nb_sets_wrapper(void);
 TCODLIB_API void TCOD_namegen_get_sets_wrapper(char **sets);
 
 /* sys module */
-TCODLIB_API int TCOD_sys_get_current_resolution_x();
-TCODLIB_API int TCOD_sys_get_current_resolution_y();
+TCODLIB_API int TCOD_sys_get_current_resolution_x(void);
+TCODLIB_API int TCOD_sys_get_current_resolution_y(void);
 
 #endif	/* WRAPPERS_H */
 

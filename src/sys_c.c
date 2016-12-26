@@ -185,7 +185,7 @@ static DWORD CountSetBits(ULONG_PTR bitMask)
 }
 #endif
 
-int TCOD_sys_get_num_cores() {
+int TCOD_sys_get_num_cores(void) {
 #ifdef TCOD_WINDOWS
 	/* what a crap !!! works only on xp sp3 & vista */
 	typedef enum _PROCESSOR_CACHE_TYPE {
@@ -418,7 +418,7 @@ typedef struct {
 } cond_t;
 #endif
 
-TCOD_cond_t TCOD_condition_new() {
+TCOD_cond_t TCOD_condition_new(void) {
 #ifdef TCOD_WINDOWS
 	cond_t *ret = (cond_t *)calloc(sizeof(cond_t),1);
 	ret->mutex = TCOD_mutex_new();
@@ -662,7 +662,7 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
 #else
 /* JBR03202012 Presumably there was a reason for this being if !MACOSOX, but it works fine for me
 	#ifndef TCOD_MACOSX */
-	void __attribute__ ((constructor)) DllMain() {
+	void __attribute__ ((constructor)) DllMain(void) {
 		/* TCOD_sys_startup(); */
 	}
 /*	#endif */

@@ -36,7 +36,7 @@ static float scale_yc=0.5f;
 static bool clear_screen=false;
 
 /* This just forces a complete redraw, bypassing the usual rendering of changes. */
-void TCOD_sys_set_clear_screen() {
+void TCOD_sys_set_clear_screen(void) {
 	clear_screen=true;
 }
 
@@ -56,7 +56,7 @@ static void get_closest_mode(int *w, int *h) {
 /*
  * Separate out the actual rendering, so that render to texture can be done.
  */
-static void actual_rendering() {
+static void actual_rendering(void) {
 	SDL_Rect srcRect, dstRect;
 #if SDL_VERSION_ATLEAST(2,0,0)
 	SDL_Texture *texture;
@@ -422,7 +422,7 @@ static bool file_write(const char *filename, unsigned char *buf, uint32 size) {
 	return true;
 }
 
-static void term() {
+static void term(void) {
 	if (window) {
 		SDL_DestroyWindow(window);
 		window=NULL;
@@ -437,7 +437,7 @@ static void term() {
 	}
 }
 
-TCOD_SDL_driver_t *SDL_implementation_factory() {
+TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	TCOD_SDL_driver_t *ret=(TCOD_SDL_driver_t *)calloc(1,sizeof(TCOD_SDL_driver_t));
 	ret->get_closest_mode=get_closest_mode;
 	ret->render=render;

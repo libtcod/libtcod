@@ -86,11 +86,11 @@ static void allocate_tok(TCOD_lex_t *lex, int len) {
 }
 
 
-char *TCOD_lex_get_last_error() {
+char *TCOD_lex_get_last_error(void) {
 	return TCOD_last_error;
 }
 
-TCOD_lex_t *TCOD_lex_new_intern() {
+TCOD_lex_t *TCOD_lex_new_intern(void) {
 	return (TCOD_lex_t *)calloc(1,sizeof(TCOD_lex_t));
 }
 

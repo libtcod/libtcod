@@ -124,7 +124,7 @@ bool _CheckGL_Error(const char* GLcall, const char* file, const int line)
 }
 
 /* called before creating window */
-void TCOD_opengl_init_attributes() {
+void TCOD_opengl_init_attributes(void) {
 	static bool first=true;
 	if ( first ) {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -351,7 +351,7 @@ static bool loadProgram(const char *vertShaderCode, const char *fragShaderCode,
 	return true;
 }
 
-bool TCOD_opengl_init_shaders() {
+bool TCOD_opengl_init_shaders(void) {
 	int i;
 	TCOD_color_t *fCol;
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
@@ -614,11 +614,11 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	return true;
 }
 
-void TCOD_opengl_swap() {
+void TCOD_opengl_swap(void) {
 	SDL_GL_SwapBuffers();
 }
 
-void * TCOD_opengl_get_screen() {
+void * TCOD_opengl_get_screen(void) {
 	SDL_Surface *surf;
 	int pixw,pixh,offx=0,offy=0,x,y;
 	Uint32 mask,nmask;

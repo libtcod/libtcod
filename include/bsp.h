@@ -38,7 +38,7 @@ typedef struct {
 
 typedef bool (*TCOD_bsp_callback_t)(TCOD_bsp_t *node, void *userData);
 
-TCODLIB_API TCOD_bsp_t *TCOD_bsp_new();
+TCODLIB_API TCOD_bsp_t *TCOD_bsp_new(void);
 TCODLIB_API TCOD_bsp_t *TCOD_bsp_new_with_size(int x,int y,int w, int h);
 TCODLIB_API void TCOD_bsp_delete(TCOD_bsp_t *node);
 

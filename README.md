@@ -50,7 +50,7 @@ For all other platforms, you need to make use of the `autotools` support.  This 
 
 [SDL2](http://hg.libsdl.org/SDL) is the latest version of SDL.  While the latest code for libtcod retains the support for SDL, it is not recommended you use it.  The SDL support will eventually be removed, and if you choose to use it, you will be incurring extra work for you further down the road.
 
-The SDL2 revision e12c38730512 is the only one that is supported by this project at this time.  If you are using any other revision, try the supported revision before reporting problems.  This is to ensure that we are all dealing with the same SDL2 bugs, otherwise your problems may not be reproducible when reported.
+The SDL2 revision 007dfe83abf8 is the only one that is supported by this project at this time.  If you are using any other revision, try the supported revision before reporting problems.  This is to ensure that we are all dealing with the same SDL2 bugs, otherwise your problems may not be reproducible when reported.
 
 ## Getting Started ##
 

@@ -1,7 +1,7 @@
 Building Libtcod 1.6 on Linux with SDL2
 =======================================
 
-Due to limited resources, libtcod 1.6 is only going to support SDL2. In addition, the last verified as stable version is the SDL2 commit `704a0bfecf75`. To build libtcod, we recommend you build this version of SDL2.
+Due to limited resources, libtcod 1.6 is only going to support SDL2. In addition, the last verified as stable version is the SDL2 commit `007dfe83abf8`. To build libtcod, we recommend you build this version of SDL2.
 
 The following instructions have been tested on 32 and 64-bit versions of Ubuntu 14.04 and Fedora 22.
 
@@ -22,9 +22,9 @@ Building SDL2
 -------------
 Download the supported SDL2 revision, build and install it:
 
-    $ curl -o sdl.tar.gz http://hg.libsdl.org/SDL/archive/704a0bfecf75.tar.gz
+    $ curl -o sdl.tar.gz http://hg.libsdl.org/SDL/archive/007dfe83abf8.tar.gz
     $ tar -xf sdl.tar.gz
-    $ cd SDL-704a0bfecf75/
+    $ cd SDL-007dfe83abf8/
     $ mkdir -p build
     $ cd build
     $ ../configure

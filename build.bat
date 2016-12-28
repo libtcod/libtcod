@@ -26,8 +26,8 @@ REM        <revision-id>: This can be a URL, or it can be a filesystem path to a
 
 REM TODO(rmtew): Comment out local git repositories and replace with remote ones before committing.
 
-set LINKS[0]=vcs hg SDL2 e12c38730512 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
-REM set LINKS[0]=vcs hg SDL2 e12c38730512 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
+REM set LINKS[0]=vcs hg SDL2 007dfe83abf8 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
+set LINKS[0]=vcs hg SDL2 007dfe83abf8 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
 set LINKS[1]=
 
 if "!SDL2LINK!" NEQ "" set LINKS[0]=!SDL2LINK!

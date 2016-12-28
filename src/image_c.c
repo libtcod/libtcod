@@ -124,11 +124,10 @@ bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImag
 	if (img_src->mipmaps[0].width != img_dst->mipmaps[0].width || img_src->mipmaps[0].height != img_dst->mipmaps[0].height)
 		return false;
 	/* Copy all mipmaps? */
-	for (i = 0; i < img_src->nb_mipmaps; i++) {
-		img_dst->mipmaps[i].dirty = img_src->mipmaps[i].dirty;
-		if (i == 0 || !img_dst->mipmaps[i].dirty)
-			memcpy(img_dst->mipmaps[i].buf, img_src->mipmaps[i].buf, sizeof(TCOD_color_t)*(img_src->mipmaps[i].width)*(img_src->mipmaps[i].height));
-	}
+	img_dst->mipmaps[0].dirty = img_src->mipmaps[0].dirty;
+	memcpy(img_dst->mipmaps[0].buf, img_src->mipmaps[0].buf, sizeof(TCOD_color_t)*(img_src->mipmaps[0].width)*(img_src->mipmaps[0].height));
+	for (i = 1; i < img_src->nb_mipmaps; i++)
+		img_dst->mipmaps[i].dirty = true;
 	return true;
 }
 

@@ -65,6 +65,7 @@ struct Frost {
 FrostManager::FrostManager(int w, int h) : w(w),h(h) {
 	grid = new float[w*h];
 	img=new TCODImage(w,h);
+	clear();
 }
 FrostManager::~FrostManager() {
 	delete [] grid;

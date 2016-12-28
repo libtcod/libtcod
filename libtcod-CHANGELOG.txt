@@ -3,11 +3,13 @@ X API break
 % modified features
 - removed features, fixed bugs
 =========================================================
-1.6.2 : ?
+1.6.2 : 2016-12-28
 + doctcod command added to VS2015 solution.
 + Python (PTVS) project for samples_py added to VS2015 solution.
 + Console foreground and background colours are images.
   https://bitbucket.org/libtcod/libtcod/issues/51/console-image-unification
++ Python unit tests added (Kyle Stewart).
+  https://bitbucket.org/libtcod/libtcod/commits/7a66ad5d66832686c0071e3938b85ebad8e7cebb
 + Added TCOD_console_get_background_color_image and TCOD_console_get_foreground_color_image API for C++/C/Python.
 % crash bugs fixed in documentation generation.
 % libtcodpy when loading a DLL now explicitly compares the architecture of the Python version uses, to the architecture of the DLL and exits outputting any difference.
@@ -17,6 +19,8 @@ X API break
 % samples_py partially rewritten to run under both Python 3 and Python 2.
 % C++ TCODParser memory leak fixed.
   https://bitbucket.org/libtcod/libtcod/issues/27/tcodparser-memory-leaks
+% Adopted strict prototypes / void in C parameterless functions (Kyle Stewart).
+  https://bitbucket.org/libtcod/libtcod/commits/5353098a70254b59b740865a875cccf1d6d84c27
 X Removed SDL1 support.
 X Removed C/C++/Python API functions TCOD_sys_set_keyboard_repeat and TCOD_sys_disable_keyboard_repeat.  This was SDL1 functionality, and not supported in SDL2.
 =========================================================

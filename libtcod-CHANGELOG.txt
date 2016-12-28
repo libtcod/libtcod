@@ -21,6 +21,7 @@ X API break
   https://bitbucket.org/libtcod/libtcod/issues/27/tcodparser-memory-leaks
 % Adopted strict prototypes / void in C parameterless functions (Kyle Stewart).
   https://bitbucket.org/libtcod/libtcod/commits/5353098a70254b59b740865a875cccf1d6d84c27
+% Frost sample fixed for a non-initialised data structure crash.
 X Removed SDL1 support.
 X Removed C/C++/Python API functions TCOD_sys_set_keyboard_repeat and TCOD_sys_disable_keyboard_repeat.  This was SDL1 functionality, and not supported in SDL2.
 =========================================================

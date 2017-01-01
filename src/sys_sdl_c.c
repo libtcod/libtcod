@@ -396,15 +396,15 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes = (oldFade == fade && render_state->oldbuf);
-	if (render_state->clear_screen) {
-		track_changes = false;
-		render_state->clear_screen = false;
-	}
-   	Uint8 bpp = charmap->format->BytesPerPixel;
+	Uint8 bpp = charmap->format->BytesPerPixel;
 	char_t *c=&render_state->buf[0];
 	char_t *oc;
 	TCOD_color_t *ofg, *obg, *nfg, *nbg;
 	int hdelta;
+	if (render_state->clear_screen) {
+		track_changes = false;
+		render_state->clear_screen = false;
+	}
 	if ( bpp == 4 ) {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp)/4;
 	} else {

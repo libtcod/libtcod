@@ -172,6 +172,8 @@ static void TCOD_console_data_free(TCOD_console_data_t *dat) {
 	if (dat->state.fg_colors_prev) TCOD_image_delete(dat->state.fg_colors_prev);
 	if (dat->state.bg_colors) TCOD_image_delete(dat->state.bg_colors);
 	if (dat->state.bg_colors_prev) TCOD_image_delete(dat->state.bg_colors_prev);
+	free(dat->state.buf);
+	free(dat->state.oldbuf);
 }
 
 void TCOD_console_delete(TCOD_console_t con) {

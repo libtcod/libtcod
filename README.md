@@ -29,9 +29,9 @@ Two builds are currently provided for each release:
 
 These are the recommended places to obtain the source code from:
 
-* The latest source code binary on the [downloads page](https://bitbucket.org/libtcod/libtcod/downloads).
-* Clone the repository with Mercurial and checkout the tag for the latest version in the default branch.
-* Clone the repository and checkout the bleeding edge from the tip in the default branch. 
+* The latest source code release snapshot on the [downloads page](https://bitbucket.org/libtcod/libtcod/downloads).
+* Clone the repository with Mercurial and checkout the tag for the latest version in the `default` branch.
+* Clone the repository and checkout the bleeding edge from the tip in the default branch.
 
 All compilation methods, whether Windows or autotools, are located within the `build/` subdirectory.
 

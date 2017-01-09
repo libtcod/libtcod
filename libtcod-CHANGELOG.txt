@@ -4,7 +4,7 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.6.3 : ?
-% who knows.
+% Fix for memory leak introduced with the foreground/background image change (Aaron Wise).
 =========================================================
 1.6.2 : 2016-12-28
 + doctcod command added to VS2015 solution.

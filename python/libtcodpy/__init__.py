@@ -1,6 +1,6 @@
 #
-# libtcod 1.6.2 Python wrapper
-# Copyright (c) 2008,2009,2010,2012,2013,2016 Jice & Mingos & rmtew
+# libtcod 1.6.3 Python wrapper
+# Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -186,7 +186,7 @@ else:
             raise Exception("unable to find wrapper", function_name)
 
 HEXVERSION = 0x010602
-STRVERSION = "1.6.2"
+STRVERSION = "1.6.3"
 TECHVERSION = 0x01060200
 
 ############################

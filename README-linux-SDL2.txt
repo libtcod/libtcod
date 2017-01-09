@@ -1,8 +1,6 @@
 Building Libtcod 1.6 on Linux with SDL2
 =======================================
 
-Due to limited resources, libtcod 1.6 is only going to support SDL2. In addition, the last verified as stable version is the SDL2 commit `007dfe83abf8`. To build libtcod, we recommend you build this version of SDL2.
-
 The following instructions have been tested on 32 and 64-bit versions of Ubuntu 14.04 and Fedora 22.
 
 Dependencies
@@ -20,7 +18,10 @@ For Fedora 22:
 
 Building SDL2
 -------------
-Download the supported SDL2 revision, build and install it:
+
+It is recommended strongly that you install SDL2 using your package manager.  However, if you are unable to work out the package name, then you can take the harder route and build it yourself.
+
+Download the supported SDL2 revision, build and install it if you must:
 
     $ curl -o sdl.tar.gz http://hg.libsdl.org/SDL/archive/007dfe83abf8.tar.gz
     $ tar -xf sdl.tar.gz

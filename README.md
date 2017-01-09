@@ -37,7 +37,7 @@ All compilation methods, whether Windows or autotools, are located within the `b
 
 Windows users can either run the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
 
-For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.txt).
+For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).
 
 #### SDL2 ####
 

@@ -296,7 +296,6 @@ void TCOD_path_reverse(TCOD_path_t p) {
 
 bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed) {
 	int newx,newy;
-	float can_walk;
 	int d;
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
 	TCOD_IFNOT(p != NULL) return false;
@@ -305,8 +304,8 @@ bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed)
 	newx=path->ox + dirx[d];
 	newy=path->oy + diry[d];
 	/* check if the path is still valid */
-	can_walk = TCOD_path_walk_cost(path,path->ox,path->oy,newx,newy);
-	if ( can_walk == 0.0f ) {
+	if ( TCOD_path_walk_cost(path,path->ox,path->oy,newx,newy) <= 0.0f ) {
+		/* path is blocked */
 		if (! recalculate_when_needed ) return false; /* don't walk */
 		/* calculate a new path */
 		if (! TCOD_path_compute(path, path->ox,path->oy, path->dx,path->dy) ) return false ; /* cannot find a new path */

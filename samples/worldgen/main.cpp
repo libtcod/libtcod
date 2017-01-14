@@ -109,7 +109,7 @@ void render() {
 
 int main (int argc, char *argv[]) {
 	// initialize the game window
-	TCODConsole::initRoot(WIDTH,HEIGHT,"World generator v"VERSION, false,TCOD_RENDERER_SDL);
+	TCODConsole::initRoot(WIDTH,HEIGHT,VERSION, false,TCOD_RENDERER_SDL);
 	TCODSystem::setFps(25);
 	TCODMouse::showCursor(true);
 

@@ -26,7 +26,7 @@
 #include "libtcod.hpp"
 #include "util_worldgen.hpp"
 
-#define VERSION "0.1.0"
+#define VERSION "World generator v0.1.0"
 
 // console size
 #define CON_W 80

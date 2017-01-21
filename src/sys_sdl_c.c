@@ -634,16 +634,9 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 	any_ascii_updated=true;
 }
 
-#ifdef TCOD_MACOSX
-void CustomSDLMain();
-#endif
-
 void TCOD_sys_startup(void) {
 	if (has_startup) return;
 	sdl = SDL_implementation_factory();
-#ifdef TCOD_MACOSX
-	CustomSDLMain();
-#endif
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif

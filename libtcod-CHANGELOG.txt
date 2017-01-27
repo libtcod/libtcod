@@ -5,6 +5,8 @@ X API break
 =========================================================
 1.6.3 : ?
 % Fix for memory leak introduced with the foreground/background image change (Aaron Wise).
+% Fix for broken SDL callback (reported by grimstain@bitbucket)
+  https://bitbucket.org/libtcod/libtcod/issues/78/sdl-callback-null-pixels
 =========================================================
 1.6.2 : 2016-12-28
 + doctcod command added to VS2015 solution.

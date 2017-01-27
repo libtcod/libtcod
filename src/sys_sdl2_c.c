@@ -58,9 +58,7 @@ static void get_closest_mode(int *w, int *h) {
  */
 static void actual_rendering(void) {
 	SDL_Rect srcRect, dstRect;
-#if SDL_VERSION_ATLEAST(2,0,0)
 	SDL_Texture *texture;
-#endif
 
 	if (scale_data.min_scale_factor - 1e-3f > scale_factor) {
 		/* Prepare for the unscaled and centered copy of the entire console. */
@@ -77,21 +75,12 @@ static void actual_rendering(void) {
 		dstRect.x=scale_data.dst_offset_x; dstRect.y=scale_data.dst_offset_y;
 		dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
 	}
-#if SDL_VERSION_ATLEAST(2,0,0)
+	if ( TCOD_ctx.sdl_cbk ) {
+		TCOD_ctx.sdl_cbk((void *)scale_screen);
+	}
 	texture = SDL_CreateTextureFromSurface(renderer, scale_screen);
 	SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
 	SDL_DestroyTexture(texture);
-#else
-	SDL_SoftStretch(scale_screen, &srcRect, screen, &dstRect);
-#endif
-
-	if ( TCOD_ctx.sdl_cbk ) {
-#if SDL_VERSION_ATLEAST(2,0,0)
-		TCOD_ctx.sdl_cbk((void *)renderer);
-#else
-		TCOD_ctx.sdl_cbk((void *)screen);
-#endif
-	}
 }
 
 /* In order to avoid rendering race conditions and the ensuing segmentation

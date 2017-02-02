@@ -109,7 +109,8 @@ def get_libtcod_version():
             continue
         with open(os.path.join(LIBTCOD_ROOT_DIR, filename), 'r') as changelog:
             # Grab the first thing we see after a "===" separator.
-            return re.search('.*?=+\n([^ :]+)', changelog.read()).groups()[0]
+            return re.match(r'[^=]+=+(?:\r\n?|\n)([^ :]+)',
+                            changelog.read()).groups()[0]
 
 
 LIBTCOD_ROOT_DIR = '../..'

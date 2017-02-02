@@ -24,10 +24,17 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
+// windows specific inclusion of alloca
+// all other platforms have alloca in stdlib.h
+#ifndef alloca
+#include <malloc.h>
+#endif
+
 #include "main.hpp"
+
 
 // dummy height indicating that a cell is not water
 #define NO_WATER -1000.0f

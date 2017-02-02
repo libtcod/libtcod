@@ -1,0 +1,365 @@
+
+import os
+import sys
+
+import platform
+import re
+import subprocess
+import tarfile
+import time
+import urllib
+import zipfile
+
+
+def ensure_path(path):
+    """Make sure a directory exists for a new file at path."""
+    path = os.path.dirname(path)
+    if not os.path.isdir(path):
+        os.makedirs(path)
+
+
+def download_sdl2_win32(env):
+    """Download the MinGW or VC development distribution from libsdl.org"""
+    if env.File('$SDL2_ZIP_PATH').exists():
+        return
+    print(env.subst('Downloading $SDL2_ZIP_URL'))
+    ensure_path(env.subst('$SDL2_ZIP_PATH'))
+    urllib.urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
+
+
+def unpack_sdl2_win32(env):
+    """Unpack an SDL2 zip/tar file."""
+    if env.Dir('$SDL2_PATH').exists():
+        print(env.subst('SDL2 already exists at $SDL2_PATH'))
+        return
+    download_sdl2_win32(env)
+    print(env.subst('Extracting $SDL2_ZIP_FILE to $DEPENDANCY_DIR'))
+    if(env.subst('$SDL2_ZIP_FILE').endswith('.zip')):
+        zf = zipfile.ZipFile(env.subst('$SDL2_ZIP_PATH'), 'r')
+    else:
+        zf = tarfile.open(env.subst('$SDL2_ZIP_PATH'), 'r|*')
+    zf.extractall(env.subst('$DEPENDANCY_DIR'))
+    zf.close()
+
+
+def download_sdl2_darwin(env):
+    """Download the Mac OS/X distribution from libsdl.org"""
+    if env.File('$SDL2_DMG_PATH').exists():
+        return
+    print(env.subst('Downloading $SDL2_DMG_URL'))
+    ensure_path(env.subst('$SDL2_DMG_PATH'))
+    urllib.urlretrieve(env.subst('$SDL2_DMG_URL'), env.subst('$SDL2_DMG_PATH'))
+
+
+def unpack_sdl2_darwin(env):
+    """Unpack an SDL2 dmg file."""
+    if env.Dir('$SDL2_PATH').exists():
+        print(env.subst('SDL2 already exists at $SDL2_PATH'))
+        return
+    download_sdl2_darwin(env)
+    print(env.subst('Extracting $SDL2_DMG_PATH to $DEPENDANCY_DIR'))
+    subprocess.check_call(['hdiutil', 'mount', env.subst('$SDL2_DMG_PATH')])
+    subprocess.check_call(['cp', '-r', '/Volumes/SDL2/SDL2.framework',
+                                       env.subst('$DEPENDANCY_DIR')])
+    subprocess.check_call(['hdiutil', 'unmount', '/Volumes/SDL2'])
+
+
+def samples_factory():
+    """Return a list of samples builders."""
+    samples = []
+    installers = []
+
+    env_samples = env.Clone()
+    env_samples.Append(CPPDEFINES=['TCOD_SDL2'])
+    if env['TOOLSET'] == 'mingw':
+        # These might need to be statically linked somewhere.
+        env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
+
+    if sys.platform == 'win32':
+        env_samples.Append(LIBS=['libtcod', 'libtcod-gui'])
+    else:
+        env_samples.Append(LIBS=['tcod', 'tcod-gui'])
+
+    for name in os.listdir(env.subst('$LIBTCOD_ROOT_DIR/samples')):
+        path = os.path.join(env.subst('$LIBTCOD_ROOT_DIR/samples'), name)
+        path_variant = os.path.join(env.subst('$VARIANT/samples'), name)
+        if os.path.isdir(path):
+            target = name
+            source=Glob(os.path.join(path_variant, '*.c*'))
+        elif name[-2:] == '.c' or name[-4:] == '.cpp':
+            target=name.rsplit('.')[0]
+            source=path_variant
+        else:
+            continue
+        target = os.path.join('$VARIANT', target)
+        samples.append(
+            env_samples.Program(
+                target=target,
+                source=source,
+                )
+            )
+    env.Depends(samples, [libtcod, libtcod_gui])
+    return samples
+
+
+def get_libtcod_version():
+    """Return the latest version number from the CHANGELOG."""
+    for filename in os.listdir(LIBTCOD_ROOT_DIR):
+        if 'CHANGELOG' not in filename:
+            continue
+        with open(os.path.join(LIBTCOD_ROOT_DIR, filename), 'r') as changelog:
+            # Grab the first thing we see after a "===" separator.
+            return re.search('.*?=+\n([^ :]+)', changelog.read()).groups()[0]
+
+
+LIBTCOD_ROOT_DIR = '../..'
+
+vars = Variables()
+pre_vars = Environment(variables=vars)
+vars.Add(EnumVariable('MODE', 'Set build variant.', 'RELEASE',
+                      allowed_values=('RELEASE', 'DEBUG')))
+
+default_toolset = 'msvc' if sys.platform == 'win32' else 'default'
+vars.Add(EnumVariable('TOOLSET', 'Force using this compiler. (Windows only)',
+                      default_toolset, ('default', 'msvc', 'mingw')))
+
+vars.Add('CCFLAGS', 'Compiler flags', '')
+vars.Add('LINKFLAGS', 'Linker flags', '')
+
+vars.Add(EnumVariable('ARCH', 'Set target architecture. (Windows/Linux only)',
+                      'x86', allowed_values=('x86', 'x86_64')))
+
+# A dummy environment to check the current variables so far.
+env_vars = Environment(variables=vars)
+
+if env_vars['TOOLSET'] == 'default':
+    default_tag = '$VERSION-$ARCH'
+    windows_toolset = 'msvc'
+else:
+    default_tag = '$VERSION-$ARCH-$TOOLSET'
+    windows_toolset = env_vars['TOOLSET']
+
+if env_vars['MODE'] != 'RELEASE':
+    default_tag += '-$MODE'
+
+vars.Add('TAG', 'Variant tag.', default_tag)
+vars.Add('CPPDEFINES', 'Defined preprocessor values.',
+         'NO_OPENGL NDEBUG TCOD_SDL2')
+
+vars.Add('VERSION', 'libtcod version.', get_libtcod_version())
+vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT-$DATETIME')
+
+if sys.platform == 'win32':
+    DEPENDANCY_DIR = './dependencies/$WINDOWS_TOOLSET'
+else:
+    DEPENDANCY_DIR = './dependencies'
+vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
+vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.5')
+
+if windows_toolset == 'msvc':
+    sdl2_zip_file = 'SDL2-devel-$SDL2_VERSION-VC.zip'
+else:
+    sdl2_zip_file = 'SDL2-devel-$SDL2_VERSION-mingw.tar.gz'
+
+if sys.platform == 'win32':
+    sdl2_path = '$DEPENDANCY_DIR/SDL2-$SDL2_VERSION'
+elif sys.platform == 'darwin':
+    sdl2_path = '$DEPENDANCY_DIR/SDL2.framework'
+else:
+    sdl2_path = ''
+
+TOOLSETS = {'default': ['default'],
+            'msvc': ['msvc', 'mslink'],
+            'mingw': ['mingw'],
+            }
+
+env = Environment(
+    tools=TOOLSETS[env_vars['TOOLSET']] + ['tar', 'zip'],
+    WINDOWS_TOOLSET=windows_toolset,
+    variables=vars,
+    ENV=os.environ,
+    LIBTCOD_ROOT_DIR=LIBTCOD_ROOT_DIR,
+    INSTALL_DIR='$LIBTCOD_ROOT_DIR',
+    CPPPATH=['$VARIANT/include',
+             '$VARIANT/include/gui',
+             '$VARIANT/src/png',
+             '$VARIANT/src/zlib',
+             ],
+    LIBPATH=['$VARIANT'],
+    VARIANT='libtcod-$TAG',
+    DATE=time.strftime("%Y-%m-%d"),
+    DATETIME=time.strftime("%Y-%m-%d-%H%M%S"),
+    TARGET_ARCH = env_vars['ARCH'],
+    SDL2_PATH=sdl2_path,
+    SDL2_ZIP_FILE=sdl2_zip_file,
+    SDL2_ZIP_PATH='$DEPENDANCY_DIR/$SDL2_ZIP_FILE',
+    SDL2_ZIP_URL='https://www.libsdl.org/release/$SDL2_ZIP_FILE',
+    SDL2_DMG_FILE='SDL2-${SDL2_VERSION}.dmg',
+    SDL2_DMG_PATH='$DEPENDANCY_DIR/$SDL2_DMG_FILE',
+    SDL2_DMG_URL='https://www.libsdl.org/release/$SDL2_DMG_FILE',
+    )
+
+env['CCFLAGS'] = Split(env['CCFLAGS'])
+env['LINKFLAGS'] = Split(env['LINKFLAGS'])
+env['CPPDEFINES'] = Split(env['CPPDEFINES'])
+
+if sys.platform != 'darwin':
+    # Removing the lib prefix on Mac causes a link failure.
+    env.Replace(LIBPREFIX='', SHLIBPREFIX='')
+
+env['SDL_ARCH'] = 'x86' if env['ARCH'] == 'x86' else 'x64'
+env['SDL_MINGW_ARCH'] = 'i686' if env['SDL_ARCH'] == 'x86' else 'x86_64'
+
+using_msvc = env['CC'] == 'cl'
+
+if env['MODE'] == 'RELEASE':
+    if using_msvc: # use msvc flags
+        env.Prepend(CCFLAGS=['-W3', '-Ox'])
+    else: # use gcc flags
+        env.Prepend(CCFLAGS=['-Wall', '-O3'])
+if env['MODE'] == 'DEBUG':
+    if using_msvc:
+        env.Prepend(CCFLAGS=['-W3', '-DEBUG'])
+    else:
+        env.Prepend(CCFLAGS=['-Wall', '-g'])
+
+sdl_package = []
+sdl_install = []
+
+if sys.platform == 'win32':
+    unpack_sdl2_win32(env)
+    if using_msvc:
+        env.Append(CPPDEFINES=['_CRT_SECURE_NO_WARNINGS'])
+    env.Append(LIBS=['User32'])
+    if env['WINDOWS_TOOLSET'] == 'msvc':
+        env.Append(CPPPATH=['$SDL2_PATH/include'],
+                   LIBPATH=['$SDL2_PATH/lib/$SDL_ARCH'])
+        sdl_install = env.Install('$INSTALL_DIR',
+                                  '$SDL2_PATH/lib/$SDL_ARCH/SDL2.dll')
+        sdl_package = env.Install('$VARIANT',
+                                  '$SDL2_PATH/lib/$SDL_ARCH/SDL2.dll')
+    else:
+        # I couldn't get sdl2-config to run on Windows
+        # `sdl2-config --cflags --libs` is manually unpacked here
+        env.Append(
+            CPPPATH=['$SDL2_PATH/$SDL_MINGW_ARCH-w64-mingw32/include/SDL2'],
+            LIBPATH=['$SDL2_PATH/$SDL_MINGW_ARCH-w64-mingw32/lib'],
+            CCFLAGS=['-mwindows'],
+            LIBS=['mingw32', 'SDL2main', 'SDL2'],
+            #CPPDEFINES=['main=SDL_main'],
+            )
+
+        sdl_install = env.Install(
+            '$INSTALL_DIR',
+            '$SDL2_PATH/$SDL_MINGW_ARCH-w64-mingw32/bin/SDL2.dll'
+            )
+        sdl_package = env.Install(
+            '$VARIANT',
+            '$SDL2_PATH/$SDL_MINGW_ARCH-w64-mingw32/bin/SDL2.dll'
+            )
+elif sys.platform == 'darwin':
+    unpack_sdl2_darwin(env)
+    env['ARCH'] = 'x86.x86_64'
+    env.Append(CPPPATH=['$SDL2_PATH/Headers'])
+    sdl_install = env.Install('$INSTALL_DIR', '$SDL2_PATH')
+    sdl_package = env.Install('$VARIANT', '$SDL2_PATH')
+else:
+    env.ParseConfig("sdl2-config --cflags --libs")
+    env.Append(LIBS=['m'])
+
+if sys.platform == 'darwin':
+    OSX_FLAGS = ['-arch', 'i386', '-arch', 'x86_64']
+    env.Append(CCFLAGS=OSX_FLAGS,
+               LINKFLAGS=OSX_FLAGS)
+    # Added a ton ot rpath's.
+    # Only '@loader_path/' is actually needed.
+    env.Append(LINKFLAGS=['-framework', 'ApplicationServices',
+                          '-framework', 'SDL2',
+                          '-F$SDL2_PATH/..',
+                          '-rpath', '@loader_path/',
+                          '-rpath', '@loader_path/../Frameworks',
+                          '-rpath', '/Library/Frameworks',
+                          '-rpath', '/System/Library/Frameworks',
+                          ]
+               )
+
+if (sys.platform != 'darwin' and sys.platform != 'win32') or env['TOOLSET'] == 'mingw':
+    arch_flags = ['-m32'] if env['ARCH'] == 'x86' else ['-m64']
+    env.Append(CCFLAGS=arch_flags, LINKFLAGS=arch_flags)
+
+env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
+
+env_libtcod = env.Clone()
+env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
+
+if sys.platform != 'darwin':
+    env_libtcod.Append(LIBS=['SDL2'])
+
+libtcod = env_libtcod.SharedLibrary(
+    target='$VARIANT/libtcod',
+    source=(env.Glob('$VARIANT/src/*.c*') + env.Glob('$VARIANT/src/*/*.c')),
+    )
+
+env_libtcod_gui = env.Clone()
+env_libtcod_gui.Append(
+    CPPDEFINES=['LIBTCOD_GUI_EXPORTS'],
+    LIBS=['libtcod' if sys.platform == 'win32' else 'tcod'],
+    )
+
+libtcod_gui = env_libtcod_gui.SharedLibrary(
+    target='$VARIANT/libtcod-gui',
+    source=Glob(env.subst('$VARIANT/src/gui/*.cpp')),
+    )
+
+env.Depends(libtcod_gui, libtcod)
+
+if sys.platform == 'darwin':
+    env_libtcod.Append(LINKFLAGS=['-install_name', '@rpath/libtcod.dylib'])
+    env_libtcod_gui.Append(LINKFLAGS=['-install_name',
+                                      '@rpath/libtcod-gui.dylib'])
+
+lib_build = [libtcod, libtcod_gui]
+lib_install =  env.Install('$INSTALL_DIR', lib_build) + sdl_install
+Alias("build_libtcod", lib_build)
+Alias("develop_libtcod", lib_build + lib_install)
+
+samples_builders = samples_factory()
+samples_installers = env.Install('$INSTALL_DIR', samples_builders)
+Alias("build_samples", samples_builders)
+Alias("develop_samples", samples_builders + samples_installers)
+
+package_files = (
+    lib_build + samples_builders + sdl_package +
+    env.Glob('$VARIANT/*.md') +
+    env.Glob('$VARIANT/*.txt') +
+    env.Glob('$VARIANT/*.png') +
+    env.Glob('$VARIANT/data/**/*.*') +
+    env.Glob('$VARIANT/doc/**/*.*') +
+    env.Glob('$VARIANT/include/*.h*') +
+    env.Glob('$VARIANT/include/**/*.h*') +
+    env.Glob('$VARIANT/lua/*.lua') +
+    env.Glob('$VARIANT/python/*.py') +
+    env.Glob('$VARIANT/python/**/*.py') +
+    env.Glob('$VARIANT/python/**.pyproj') +
+    env.Glob('$VARIANT/python/**.cfg') +
+    env.Glob('$VARIANT/python/**.in') +
+    env.Glob('$VARIANT/samples/*.c*') +
+    env.Glob('$VARIANT/samples/**/*.c*') +
+    env.Glob('$VARIANT/samples/**/*.h*') +
+    env.Glob('$VARIANT/samples/**/*.png') +
+    env.Glob('$VARIANT/samples/**/*.txt')
+    )
+
+if sys.platform == 'win32':
+    zip = env.Zip('${DIST_NAME}.zip', package_files)
+else:
+    env.Append(TARFLAGS = '-c -z')
+    zip = env.Tar('${DIST_NAME}.tar.gz', package_files)
+
+Alias("dist", zip)
+
+Alias("build", ["build_samples", "build_libtcod"])
+Alias("develop", ["develop_samples", "develop_libtcod"])
+
+Default(None)
+Help(vars.GenerateHelpText(env))

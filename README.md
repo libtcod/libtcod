@@ -25,7 +25,7 @@ Two builds are currently provided for each release:
 * 32 bit (Win32, SDL2 only) binaries also including source code.
 * 64 bit (x64, SDL2 only) binaries also including source code.
 
-**Warning:** Run `samples.exe` as your first action, if you download these builds.  If you get an error about `vcruntime140.dll` being missing, you need to install the two [Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587).  Make sure you install the 32-bit runtime.  And make sure you also install the 64-bit runtime.
+**Warning:** If you download these builds, run `samples.exe` as your very first action.  If you are unable to and get an error about `vcruntime140.dll` being missing, you need to install the two [Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587).  Make sure you install the 32-bit runtime.  And make sure you also install the 64-bit runtime.  Then run `samples.exe` again, and it should now work.  Whether you plan to develop in C, C++, Python or some other language, this is required.
 
 ### Compiling from source ###
 

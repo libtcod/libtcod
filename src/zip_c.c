@@ -157,7 +157,7 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val) {
 int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char *filename) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	gzFile f=gzopen(filename,"wb");
-	int l=zip->bsize;
+	int l=zip->bsize, ret;
 	void *buf;
 	if (!f) return 0;
 	gzwrite(f,&l,sizeof(int));
@@ -169,11 +169,18 @@ int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char *filename) {
 		/* send remaining bytes from ibuffer to buffer */
 		if (!zip->buffer) zip->buffer=TCOD_list_new();
 		TCOD_list_push(zip->buffer,(void *)zip->ibuffer);
-		zip->isize=zip->ibuffer=0;
+		zip->isize = 0;
+		zip->ibuffer = 0;
 	}
 	buf=(void *)TCOD_list_begin(zip->buffer);
-	l=gzwrite(f,buf,l);
-	gzclose(f);
+	ret=gzwrite(f,buf,l);
+	if (ret != l) {
+		gzclose(f);
+		return 0;
+	}
+	ret=gzclose(f);
+	if (ret != Z_OK)
+		return 0;
 	return l;
 }
 

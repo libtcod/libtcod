@@ -234,8 +234,19 @@ for %%P in (Win32 x64) do (
 	del !L_RELEASE_PATH!\.hg*
 
 	REM Copy the dependencies into place for compilation.
-	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependencies\include\"
-	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\build-files\include\"
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\build-files\%%P\"
+	for %%R in (Debug Release) do (
+		for %%N in (libtcod libtcod-gui) do (
+			for %%S in (dll pdb lib) do (
+				xcopy /I /E  >nul "!BUILD_PATH!\msvs\%%N\%%P\%%R\%%N.%%S" "!L_RELEASE_PATH!\build-files\%%P\%%R\"
+				REM I have no idea how this garbage gets copied.
+				if exist "!L_RELEASE_PATH!\build-files\%%P\%%R\%%N.tlog" (
+					rmdir /q /s "!L_RELEASE_PATH!\build-files\%%P\%%R\%%N.tlog"
+				)
+			)
+		)
+	)
 
 	REM Copy release dlls into the top level directory.
 	copy >nul "!BUILD_PATH!\dependencies\%%P\Release\SDL2.dll" "!L_RELEASE_PATH!\"

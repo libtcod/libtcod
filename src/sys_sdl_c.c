@@ -83,6 +83,7 @@ SDL_Renderer* renderer=NULL;
 float scale_factor=1.0f;
 SDL_Surface* charmap=NULL;
 static TCOD_render_state_t *renderState = NULL;
+char *last_clipboard_text = NULL;
 static bool has_startup=false;
 #define MAX_SCALE_FACTOR 5.0f
 

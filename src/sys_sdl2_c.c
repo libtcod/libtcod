@@ -371,7 +371,17 @@ static void set_mouse_position(int x, int y) {
 }
 
 static char *get_clipboard_text() {
-	return SDL_GetClipboardText();
+	/*
+	We hold onto the last clipboard text pointer SDL gave us.
+	For C API callers it can be considered a borrowed reference.
+	For Python ctypes API callers, the contents are copied into the Python string that is constructed from it.
+	*/
+	if (last_clipboard_text) {
+		SDL_free(last_clipboard_text);
+		last_clipboard_text = NULL;
+	}
+	last_clipboard_text = SDL_GetClipboardText();
+	return last_clipboard_text;
 }
 
 static bool set_clipboard_text(char *text) {
@@ -419,6 +429,10 @@ static bool file_write(const char *filename, unsigned char *buf, uint32 size) {
 }
 
 static void term(void) {
+	if (last_clipboard_text) {
+		SDL_free(last_clipboard_text);
+		last_clipboard_text = NULL;
+	}
 	if (window) {
 		SDL_DestroyWindow(window);
 		window=NULL;

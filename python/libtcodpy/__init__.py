@@ -1302,7 +1302,7 @@ def sys_save_screenshot(name=0):
 _lib.TCOD_sys_clipboard_set.restype=c_void
 _lib.TCOD_sys_clipboard_set.argtypes=[c_char_p]
 def sys_clipboard_set(text):
-    return _lib.TCOD_sys_clipboard_set(text)
+    _lib.TCOD_sys_clipboard_set(text)
 
 _lib.TCOD_sys_clipboard_get.restype=c_char_p
 _lib.TCOD_sys_clipboard_get.argtypes=[]

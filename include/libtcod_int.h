@@ -319,6 +319,7 @@ extern scale_data_t scale_data;
 extern float scale_factor;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
+extern char *last_clipboard_text;
 #endif
 
 /* color values */

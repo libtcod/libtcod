@@ -38,13 +38,17 @@ Slider::Slider(int x,int y,int w, float min, float max, const char *label, const
 }
 
 Slider::~Slider() {
-	if ( fmt ) free(fmt);
+	if (fmt)
+		free(fmt);
 }
 
 void Slider::setFormat(const char *fmt) {
-	if ( this->fmt ) free(this->fmt);
-	if ( fmt ) this->fmt = TCOD_strdup(fmt);
-	else fmt=NULL;
+	if (this->fmt)
+		free(this->fmt);
+	if (fmt)
+		this->fmt = TCOD_strdup(fmt);
+	else
+		this->fmt = NULL;
 	valueToText();
 }
 

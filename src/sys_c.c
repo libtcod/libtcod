@@ -521,6 +521,10 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 #endif
 }
 
+/* This was needed before SDL2 provided it's own clipboard support.  In theory, it's still needed
+// if someone wants to do a non-SDL2 backend where there is no clipboard support.  Or to bring
+// back the SDL clipboard support. */
+#ifdef OLD_CLIPBOARD_SUPPORT
 /*clipboard stuff */
 #ifdef TCOD_WINDOWS
 void TCOD_sys_clipboard_set(const char *value)
@@ -647,6 +651,7 @@ char *TCOD_sys_clipboard_get()
 	XFree(xbuf);
 	return ret;
 }
+#endif
 #endif
 
 

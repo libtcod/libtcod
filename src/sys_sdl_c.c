@@ -1618,6 +1618,17 @@ void TCOD_mouse_includes_touch(bool enable) {
 #endif
 }
 
+/*clipboard stuff */
+void TCOD_sys_clipboard_set(const char *value)
+{
+	sdl->set_clipboard_text(value);
+}
+
+char *TCOD_sys_clipboard_get()
+{
+	return sdl->get_clipboard_text();
+}
+
 bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
 	return sdl->file_read(filename,buf,size);
 }

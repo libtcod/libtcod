@@ -370,6 +370,14 @@ static void set_mouse_position(int x, int y) {
   SDL_WarpMouseInWindow(window, (Uint16)x,(Uint16)y);
 }
 
+static char *get_clipboard_text() {
+	return SDL_GetClipboardText();
+}
+
+static bool set_clipboard_text(char *text) {
+	return SDL_SetClipboardText(text) == 0;
+}
+
 /* android compatible file access functions */
 static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
 	uint32 filesize;
@@ -436,6 +444,8 @@ TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	ret->save_screenshot=save_screenshot;
 	ret->get_current_resolution=get_current_resolution;
 	ret->set_mouse_position=set_mouse_position;
+	ret->get_clipboard_text = get_clipboard_text;
+	ret->set_clipboard_text = set_clipboard_text;
 	ret->file_read=file_read;
 	ret->file_exists=file_exists;
 	ret->file_write=file_write;

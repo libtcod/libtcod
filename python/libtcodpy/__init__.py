@@ -1291,6 +1291,18 @@ _lib.TCOD_sys_save_screenshot.argtypes=[c_char_p]
 def sys_save_screenshot(name=0):
     _lib.TCOD_sys_save_screenshot(convert_to_ascii(name))
 
+# clipboard support
+
+_lib.TCOD_sys_clipboard_set.restype=c_void
+_lib.TCOD_sys_clipboard_set.argtypes=[c_char_p]
+def sys_clipboard_set(text):
+    return _lib.TCOD_sys_clipboard_set(text)
+
+_lib.TCOD_sys_clipboard_get.restype=c_char_p
+_lib.TCOD_sys_clipboard_get.argtypes=[]
+def sys_clipboard_get():
+    return _lib.TCOD_sys_clipboard_get()
+    
 # custom fullscreen resolution
 
 _lib.TCOD_sys_force_fullscreen_resolution.restype=c_void
@@ -2859,4 +2871,3 @@ _lib.TCOD_zip_get_remaining_bytes.argtypes=[c_void_p ]
 
 _lib.TCOD_zip_skip_bytes.restype=c_void
 _lib.TCOD_zip_skip_bytes.argtypes=[c_void_p ,c_int ]
-

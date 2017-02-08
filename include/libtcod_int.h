@@ -277,6 +277,9 @@ typedef struct {
 	void (*get_current_resolution)(int *w, int *h);
 	/* change the mouse cursor position */
 	void (*set_mouse_position)(int x, int y);
+	/* clipboard */
+	char *(*get_clipboard_text)();
+	bool (*set_clipboard_text)(char *text);
 	/* android compatible file access functions */
 	bool (*file_read)(const char *filename, unsigned char **buf, size_t *size);
 	bool (*file_exists)(const char * filename);

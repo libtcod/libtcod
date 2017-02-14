@@ -500,18 +500,21 @@ public :
 	@PageTitle Clipboard integration
 	@PageDesc With these functions, you can copy data in your OS' clipboard from the game or retrieve data from the clipboard.
 	@PageFather system
-	@FuncTitle Copy data to the clipboard
+	@FuncTitle Set current clipboard contents
 	@Cpp static void TCODSystem::setClipboard(const char *value)
 	@C void TCOD_sys_clipboard_set(const char *value)
-	@Param value Text to copy in the clipboard
+	@Py sys_clipboard_set(value)
+	@Param value UTF-8 text to copy into the clipboard
 	*/
 	static void setClipboard(const char *value);
 
 	/**
 	@PageName system_clipboard
-	@FuncTitle Paste data from the clipboard
+	@FuncTitle Get current clipboard contents
+	@FuncDesc Returns the UTF-8 text currently in the clipboard.
 	@Cpp static char *TCODSystem::getClipboard()
 	@C char *TCOD_sys_clipboard_get()
+	@Py sys_clipboard_get() # Returns UTF-8 string
 	*/
 	static char *getClipboard();
 

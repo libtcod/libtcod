@@ -1303,19 +1303,17 @@ def sys_save_screenshot(name=0):
     _lib.TCOD_sys_save_screenshot(convert_to_ascii(name))
 
 # clipboard support
+# This maps to the SDL2 API, so only uses utf-8 for both Python 2 and 3.
 
 _lib.TCOD_sys_clipboard_set.restype=c_void
 _lib.TCOD_sys_clipboard_set.argtypes=[c_char_p]
 def sys_clipboard_set(text):
-    _lib.TCOD_sys_clipboard_set(convert_to_ascii(text))
+    _lib.TCOD_sys_clipboard_set(text.encode("utf-8"))
 
 _lib.TCOD_sys_clipboard_get.restype=c_char_p
 _lib.TCOD_sys_clipboard_get.argtypes=[]
 def sys_clipboard_get():
-    ret = _lib.TCOD_sys_clipboard_get()
-    if is_python_3:
-        return ret.decode("utf-8")
-    return ret
+    return _lib.TCOD_sys_clipboard_get().decode("utf-8")
     
 # custom fullscreen resolution
 

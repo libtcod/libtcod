@@ -26,9 +26,7 @@
 */
 
 /*
-* Mingos' Restrictive Precise Angle Shadowcasting (MRPAS), v1.1
-* This file was written by Dominik "Mingos" Marczuk.
-* Original implementation: http://umbrarumregnum.110mb.com/downloads/MRPAS.zip
+* Mingos' Restrictive Precise Angle Shadowcasting (MRPAS) v1.2
 */
 
 #include <stdlib.h> /* for NULL in VS */

@@ -4,7 +4,9 @@ X API break
 - removed features, fixed bugs
 =========================================================
 1.6.3 : ?
++ Exposed clipboard API to Python.
 % Fix for memory leak introduced with the foreground/background image change (Aaron Wise).
+% Updated restrictive FOV code to match MRPAS v1.2 (mingos@bitbucket)
 % Fix for broken SDL callback (reported by grimstain@bitbucket)
   https://bitbucket.org/libtcod/libtcod/issues/78/sdl-callback-null-pixels
 % Per-platform clipboard get/set code has been removed, and the SDL2 API is used instead.

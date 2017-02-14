@@ -69,7 +69,14 @@ public :
 	*/
 	static void move(int x, int y);
 
-	/* deprecated as of 1.5.1 */	
+	/**
+	@PageName mouse
+	@FuncTitle Get the last known mouse cursor position
+	@FuncDesc This function is only valid, and only returns updated values, after you have called event-related functions.  Whether to check for events, or wait for events.  It does not provide the actual mouse position at the time the call is made.
+	@Cpp static TCOD_mouse_t TCODMouse::getStatus ()
+	@C void TCOD_mouse_get_status ()
+	@Py mouse_get_status ()
+	*/
 	static TCOD_mouse_t getStatus();
 };
 

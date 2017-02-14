@@ -1246,6 +1246,11 @@ _lib.TCOD_sys_startup.argtypes=[]
 def sys_startup():
     _lib.TCOD_sys_startup()
 
+_lib.TCOD_sys_shutdown.restype=c_void
+_lib.TCOD_sys_shutdown.argtypes=[]
+def sys_shutdown():
+    _lib.TCOD_sys_shutdown()
+
 _lib.TCOD_sys_get_last_frame_length.restype = c_float
 _lib.TCOD_sys_elapsed_seconds.restype = c_float
 

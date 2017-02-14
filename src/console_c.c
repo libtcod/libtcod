@@ -78,7 +78,7 @@ void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_
 
 void TCOD_fatal(const char *fmt, ...) {
 	va_list ap;
-	TCOD_sys_term();
+	TCOD_sys_shutdown();
 	printf("%s\n",version_string);
 	va_start(ap,fmt);
 	vprintf(fmt,ap);
@@ -88,7 +88,7 @@ void TCOD_fatal(const char *fmt, ...) {
 }
 
 void TCOD_fatal_nopar(const char *msg) {
-	TCOD_sys_term();
+	TCOD_sys_shutdown();
 	printf("%s\n%s\n",version_string,msg);
 	exit (1);
 }
@@ -180,7 +180,7 @@ void TCOD_console_delete(TCOD_console_t con) {
     TCOD_console_data_t *dat=(TCOD_console_data_t *)(con);
 	if (! dat ) {
 		dat=TCOD_ctx.root;
-		TCOD_sys_term();
+		TCOD_sys_uninit();
 		TCOD_ctx.root=NULL;
 	}
 	TCOD_console_data_free(dat);
@@ -600,7 +600,7 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
 		title[w-3]=0; /* truncate if needed */
-		xs = x + (w-strlen(title)-2)/2;
+		xs = x + (w-(int)strlen(title)-2)/2;
 		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
@@ -1299,7 +1299,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-		len=strlen(poweredby);
+		len=(int)strlen(poweredby);
 		len1=11; /* sizeof "Powered by\n" */
 		left=MAX(x-4,0);
 		top=MAX(y-4,0);

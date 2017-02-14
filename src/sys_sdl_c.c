@@ -641,11 +641,8 @@ void TCOD_sys_startup(void) {
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
-	TCOD_IFNOT(SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) >= 0 ) return;
-#ifndef	TCOD_WINDOWS
-	/* not needed and might crash on windows */
+	TCOD_IFNOT(SDL_Init(SDL_INIT_VIDEO) >= 0 ) return;
 	atexit(SDL_Quit);
-#endif
 	memset(&TCOD_ctx.key_state,0,sizeof(TCOD_key_t));
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
@@ -654,6 +651,15 @@ void TCOD_sys_startup(void) {
 #endif
 
 	has_startup=true;
+}
+
+void TCOD_sys_shutdown(void) {
+	if (!has_startup) return;
+	TCOD_sys_uninit();
+	sdl->shutdown();
+	SDL_Quit();
+	memset(&scale_data, 0, sizeof(scale_data_t));
+	has_startup = false;
 }
 
 static void TCOD_sys_load_player_config(void) {
@@ -725,9 +731,7 @@ TCOD_renderer_t TCOD_sys_get_renderer(void) {
 void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( renderer == TCOD_ctx.renderer ) return;
 	TCOD_ctx.renderer=renderer;
-	if ( window ) {
-		TCOD_sys_term();
-	}
+	TCOD_sys_uninit();
 	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,&TCOD_ctx.root->state,TCOD_ctx.fullscreen);
 	TCOD_console_set_window_title(TCOD_ctx.window_title);
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
@@ -757,6 +761,12 @@ bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscre
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
 	memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
 	return true;
+}
+
+void TCOD_sys_uninit(void) {
+	if (!has_startup) return;
+	renderState = NULL;
+	sdl->destroy_window();
 }
 
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
@@ -1430,13 +1440,6 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 
 void TCOD_sys_sleep_milli(uint32 milliseconds) {
 	SDL_Delay(milliseconds);
-}
-
-void TCOD_sys_term(void) {
-	sdl->term();
-	SDL_Quit();
-	memset(&scale_data,0,sizeof(scale_data_t));
-	has_startup=false;
 }
 
 void *TCOD_sys_load_image(const char *filename) {

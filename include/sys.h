@@ -29,6 +29,7 @@
 #define _TCOD_SYS_H
 
 TCODLIB_API void TCOD_sys_startup(void);
+TCODLIB_API void TCOD_sys_shutdown(void);
 TCODLIB_API uint32 TCOD_sys_elapsed_milli(void);
 TCODLIB_API float TCOD_sys_elapsed_seconds(void);
 TCODLIB_API void TCOD_sys_sleep_milli(uint32 val);

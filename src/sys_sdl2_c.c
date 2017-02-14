@@ -281,6 +281,21 @@ static void create_window(int w, int h, bool fullscreen) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }
 
+static void destroy_window() {
+	if (scale_screen) {
+		SDL_FreeSurface(scale_screen);
+		scale_screen = NULL;
+	}
+	if (renderer) {
+		SDL_DestroyRenderer(renderer);
+		renderer = NULL;
+	}
+	if (window) {
+		SDL_DestroyWindow(window);
+		window = NULL;
+	}
+}
+
 static void set_fullscreen(bool fullscreen) {
 	bool mouseOn=SDL_ShowCursor(-1);	
 	if ( fullscreen ) {
@@ -428,42 +443,31 @@ static bool file_write(const char *filename, unsigned char *buf, uint32 size) {
 	return true;
 }
 
-static void term(void) {
+static void shutdown(void) {
 	if (last_clipboard_text) {
 		SDL_free(last_clipboard_text);
 		last_clipboard_text = NULL;
-	}
-	if (window) {
-		SDL_DestroyWindow(window);
-		window=NULL;
-	}
-	if (scale_screen) {
-		SDL_FreeSurface(scale_screen);
-		scale_screen=NULL;
-	}
-	if (renderer) {
-		SDL_DestroyRenderer(renderer);
-		renderer = NULL;
 	}
 }
 
 TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	TCOD_SDL_driver_t *ret=(TCOD_SDL_driver_t *)calloc(1,sizeof(TCOD_SDL_driver_t));
-	ret->get_closest_mode=get_closest_mode;
-	ret->render=render;
-	ret->create_surface=create_surface;
-	ret->create_window=create_window;
-	ret->set_fullscreen=set_fullscreen;
-	ret->set_window_title=set_window_title;
-	ret->save_screenshot=save_screenshot;
-	ret->get_current_resolution=get_current_resolution;
-	ret->set_mouse_position=set_mouse_position;
+	ret->get_closest_mode = get_closest_mode;
+	ret->render = render;
+	ret->create_surface = create_surface;
+	ret->create_window = create_window;
+	ret->destroy_window = destroy_window;
+	ret->set_fullscreen = set_fullscreen;
+	ret->set_window_title = set_window_title;
+	ret->save_screenshot = save_screenshot;
+	ret->get_current_resolution = get_current_resolution;
+	ret->set_mouse_position = set_mouse_position;
 	ret->get_clipboard_text = get_clipboard_text;
 	ret->set_clipboard_text = set_clipboard_text;
-	ret->file_read=file_read;
-	ret->file_exists=file_exists;
-	ret->file_write=file_write;
-	ret->term=term;
+	ret->file_read = file_read;
+	ret->file_exists = file_exists;
+	ret->file_write = file_write;
+	ret->shutdown = shutdown;
 	return ret;
 }
 

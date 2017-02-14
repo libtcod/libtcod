@@ -213,6 +213,7 @@ void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
 bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscreen);
+void TCOD_sys_uninit(void);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
@@ -235,8 +236,6 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
-/* close the window */
-void TCOD_sys_term(void);
 
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
@@ -267,6 +266,8 @@ typedef struct {
 	SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
 	/* create the game window */
 	void (*create_window)(int w, int h, bool fullscreen);
+	/* destroy the game window */
+	void (*destroy_window)();
 	/* switch fullscreen on/off */
 	void (*set_fullscreen)(bool fullscreen);
 	/* change the game window title */
@@ -285,7 +286,7 @@ typedef struct {
 	bool (*file_exists)(const char * filename);
 	bool (*file_write)(const char *filename, unsigned char *buf, uint32 size);
 	/* clean stuff */
-	void (*term)(void);
+	void (*shutdown)(void);
 } TCOD_SDL_driver_t;
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */

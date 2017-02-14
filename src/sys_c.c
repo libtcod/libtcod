@@ -659,18 +659,15 @@ char *TCOD_sys_clipboard_get()
 #ifdef TCOD_WINDOWS
 BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {
-		/* case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;  -- not safe, locks up in SDL2/RegisterClass call */
+		case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;
 		default : break;
 	}
 	return TRUE;
 }
 #else
-/* JBR03202012 Presumably there was a reason for this being if !MACOSOX, but it works fine for me
-	#ifndef TCOD_MACOSX */
 	void __attribute__ ((constructor)) DllMain(void) {
-		/* TCOD_sys_startup(); */
+		TCOD_sys_startup();
 	}
-/*	#endif */
 #endif
 
 /* dynamic library support */

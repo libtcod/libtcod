@@ -187,9 +187,9 @@ else:
         else:
             raise Exception("unable to find wrapper", function_name)
 
-HEXVERSION = 0x010602
+HEXVERSION = 0x010603
 STRVERSION = "1.6.3"
-TECHVERSION = 0x01060200
+TECHVERSION = 0x01060300
 
 ############################
 # color module
@@ -1307,12 +1307,15 @@ def sys_save_screenshot(name=0):
 _lib.TCOD_sys_clipboard_set.restype=c_void
 _lib.TCOD_sys_clipboard_set.argtypes=[c_char_p]
 def sys_clipboard_set(text):
-    _lib.TCOD_sys_clipboard_set(text)
+    _lib.TCOD_sys_clipboard_set(convert_to_ascii(text))
 
 _lib.TCOD_sys_clipboard_get.restype=c_char_p
 _lib.TCOD_sys_clipboard_get.argtypes=[]
 def sys_clipboard_get():
-    return _lib.TCOD_sys_clipboard_get()
+    ret = _lib.TCOD_sys_clipboard_get()
+    if is_python_3:
+        return ret.decode("utf-8")
+    return ret
     
 # custom fullscreen resolution
 

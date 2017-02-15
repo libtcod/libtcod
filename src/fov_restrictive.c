@@ -85,7 +85,8 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 					) {
 						visible = false;
 					} else {
-						for (int idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
+						int idx;
+						for (idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
 							if (
 								start_slope <= end_angle[idx] &&
 								end_slope >= start_angle[idx]
@@ -193,7 +194,8 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 					) {
 						visible = false;
 					} else {
-						for (int idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
+						int idx;
+						for (idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
 							if (
 								start_slope <= end_angle[idx] &&
 								end_slope >= start_angle[idx]
@@ -261,9 +263,10 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	map_t *m = (map_t *)map;
 	int max_obstacles;
+	int c;
 
 	/* first, zero the FOV map */
-	for(int c = m->nbcells - 1; c >= 0; c--) {
+	for(c = m->nbcells - 1; c >= 0; c--) {
 		m->cells[c].fov = false;
 	}
 

@@ -502,12 +502,12 @@ public :
 	@PageFather system
 	@FuncTitle Set current clipboard contents
 	@FuncDesc Takes UTF-8 text and copies it into the system clipboard.  On Linux, because an application cannot access the system clipboard unless a window is open, if no window is open the call will do nothing.
-	@Cpp static void TCODSystem::setClipboard(const char *value)
-	@C void TCOD_sys_clipboard_set(const char *value)
+	@Cpp static bool TCODSystem::setClipboard(const char *value)
+	@C bool TCOD_sys_clipboard_set(const char *value)
 	@Py sys_clipboard_set(value)
 	@Param value UTF-8 text to copy into the clipboard
 	*/
-	static void setClipboard(const char *value);
+	static bool setClipboard(const char *value);
 
 	/**
 	@PageName system_clipboard

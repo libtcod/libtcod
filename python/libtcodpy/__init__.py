@@ -253,6 +253,7 @@ _lib.TCOD_color_multiply_scalar.restype=Color
 _lib.TCOD_color_multiply_scalar.argtypes=[Color , c_float ]
 
 # Should be valid on any platform, check it!  Has to be done after Color is defined.
+# NOTE(rmtew): This should ideally be deleted.  Most of it is moved or duplicated here.
 if MAC:
     from .cprotos import setup_protos
     setup_protos(_lib)
@@ -1305,10 +1306,10 @@ def sys_save_screenshot(name=0):
 # clipboard support
 # This maps to the SDL2 API, so only uses utf-8 for both Python 2 and 3.
 
-_lib.TCOD_sys_clipboard_set.restype=c_void
+_lib.TCOD_sys_clipboard_set.restype=c_bool
 _lib.TCOD_sys_clipboard_set.argtypes=[c_char_p]
 def sys_clipboard_set(text):
-    _lib.TCOD_sys_clipboard_set(text.encode("utf-8"))
+    return _lib.TCOD_sys_clipboard_set(text.encode("utf-8"))
 
 _lib.TCOD_sys_clipboard_get.restype=c_char_p
 _lib.TCOD_sys_clipboard_get.argtypes=[]

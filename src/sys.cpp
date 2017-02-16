@@ -137,8 +137,8 @@ bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32 size
 }
 
 // clipboard stuff
-void TCODSystem::setClipboard(const char *value) {
-	TCOD_sys_clipboard_set(value);
+bool TCODSystem::setClipboard(const char *value) {
+	return TCOD_sys_clipboard_set(value);
 }
 
 char *TCODSystem::getClipboard() {

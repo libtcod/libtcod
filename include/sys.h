@@ -80,7 +80,7 @@ TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, s
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size);
 
 /* clipboard */
-TCODLIB_API void TCOD_sys_clipboard_set(const char *value);
+TCODLIB_API bool TCOD_sys_clipboard_set(const char *value);
 TCODLIB_API char *TCOD_sys_clipboard_get(void);
 
 /* thread stuff */

@@ -2476,7 +2476,7 @@ def heightmap_add_voronoi(hm, nbPoints, nbCoef, coef, rnd=0):
     _lib.TCOD_heightmap_add_voronoi(hm.p, nbPoints, nbCoef, ccoef, rnd)
 
 _lib.TCOD_heightmap_add_fbm.restype=c_void
-_lib.TCOD_heightmap_add_fbm.argtypes=[c_void_p, c_int ,c_float , c_float , c_float , c_float , c_float , c_float , c_float ]
+_lib.TCOD_heightmap_add_fbm.argtypes=[c_void_p, c_void_p, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
 def heightmap_add_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta, scale):
     _lib.TCOD_heightmap_add_fbm(hm.p, noise, c_float(mulx), c_float(muly),
                                 c_float(addx), c_float(addy),
@@ -2484,7 +2484,7 @@ def heightmap_add_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta, scale):
                                 c_float(scale))
 
 _lib.TCOD_heightmap_scale_fbm.restype=c_void
-_lib.TCOD_heightmap_scale_fbm.argtypes=[c_void_p, c_int ,c_float , c_float , c_float , c_float , c_float , c_float , c_float ]
+_lib.TCOD_heightmap_scale_fbm.argtypes=[c_void_p, c_void_p, c_float, c_float, c_float, c_float, c_float, c_float, c_float]
 def heightmap_scale_fbm(hm, noise, mulx, muly, addx, addy, octaves, delta,
                         scale):
     _lib.TCOD_heightmap_scale_fbm(hm.p, noise, c_float(mulx), c_float(muly),

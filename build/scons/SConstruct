@@ -215,9 +215,9 @@ using_msvc = env['CC'] == 'cl'
 
 if env['MODE'] == 'RELEASE':
     if using_msvc: # use msvc flags
-        env.Prepend(CCFLAGS=['-W3', '-Ox'])
+        env.Prepend(CCFLAGS=['-W3', '-O2'])
     else: # use gcc flags
-        env.Prepend(CCFLAGS=['-Wall', '-O3'])
+        env.Prepend(CCFLAGS=['-Wall', '-O2'])
 if env['MODE'] == 'DEBUG':
     if using_msvc:
         env.Prepend(CCFLAGS=['-W3', '-DEBUG'])
@@ -292,6 +292,8 @@ env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
 
 env_libtcod = env.Clone()
 env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
+if not using_msvc:
+    env_libtcod.Prepend(CFLAGS=['-ansi'])
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])

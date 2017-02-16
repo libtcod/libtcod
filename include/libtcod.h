@@ -109,7 +109,8 @@
 /* This is a hack. SDL by default want you to rename your main statement, and insert it's own first
    It does that to handle some init code. However, libtcod handles that for you. If we did this
    wrappers like libtcod-net would be hosed, since there is no main statement there. */
-#ifndef TCOD_NO_MACOSX_SDL_MAIN
+/* This hack is no longer needed when using SDL2 */
+#ifndef TCOD_SDL2
 #ifdef TCOD_MACOSX
 #define _SDL_main_h
 #include "SDL/SDL.h"

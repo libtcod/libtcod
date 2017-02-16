@@ -19,15 +19,16 @@ you are here: <a onclick="link('../index2.html')">Index</a> &gt; <a onclick="lin
 <h1>3.6. Clipboard integration</h1>
 <div id="toc"><ul>
 <li><a href="#0">Set current clipboard contents</a></li><li><a href="#1">Get current clipboard contents</a></li></ul></div>
-<p>With these functions, you can copy data in your OS' clipboard from the game or retrieve data from the clipboard.<br />	</p>
+<p>With these functions, you can copy data in your operating system's clipboard from the game or retrieve data from the clipboard.<br />	</p>
 <a name="0"></a><h3>Set current clipboard contents</h3>
+<p>Takes UTF-8 text and copies it into the system clipboard.  On Linux, because an application cannot access the system clipboard unless a window is open, if no window is open the call will do nothing.<br />	</p>
 <div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> void</span> TCODSystem<span class="code-symbol">::</span>setClipboard<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>value<span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">void</span> TCOD_sys_clipboard_set<span class="code-symbol">(</span><span class="code-keyword">const</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>value<span class="code-symbol">)</span></p>
 <p class="py">sys_clipboard_set<span class="code-symbol">(</span>value<span class="code-symbol">)</span></p>
 </div>
 <table class="param"><tbody><tr><th>Parameter</th><th>Description</th></tr><tr class="hilite"><td>value</td><td>UTF-8 text to copy into the clipboard<br />	</td></tr>
 </tbody></table><a name="1"></a><h3>Get current clipboard contents</h3>
-<p>Returns the UTF-8 text currently in the clipboard.<br />	</p>
+<p>Returns the UTF-8 text currently in the system clipboard.  On Linux, because an application cannot access the system clipboard unless a window is open, if no window is open an empty string will be returned.  For C and C++, note that the pointer is borrowed, and libtcod will take care of freeing the memory.<br />	</p>
 <div class="code"><p class="cpp"><span class="code-keyword">static</span><span class="code-keyword"> char</span><span class="code-symbol"> *</span>TCODSystem<span class="code-symbol">::</span>getClipboard<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="c"><span class="code-keyword">char</span><span class="code-symbol"> *</span>TCOD_sys_clipboard_get<span class="code-symbol">(</span><span class="code-symbol">)</span></p>
 <p class="py">sys_clipboard_get<span class="code-symbol">(</span><span class="code-symbol">)</span></p>

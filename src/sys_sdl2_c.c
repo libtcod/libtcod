@@ -386,6 +386,15 @@ static void set_mouse_position(int x, int y) {
 }
 
 static char *get_clipboard_text() {
+#ifdef TCOD_LINUX
+	/*
+		X11 clipboard is inaccessible without an open window.
+		https://bugzilla.libsdl.org/show_bug.cgi?id=3222
+	*/
+	if (!window)
+		return "";
+#endif
+
 	/*
 	We hold onto the last clipboard text pointer SDL gave us.
 	For C API callers it can be considered a borrowed reference.
@@ -400,6 +409,15 @@ static char *get_clipboard_text() {
 }
 
 static bool set_clipboard_text(char *text) {
+#ifdef TCOD_LINUX
+	/*
+	X11 clipboard is inaccessible without an open window.
+	https://bugzilla.libsdl.org/show_bug.cgi?id=3222
+	*/
+	if (!window)
+		return false;
+#endif
+
 	return SDL_SetClipboardText(text) == 0;
 }
 

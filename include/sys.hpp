@@ -498,9 +498,10 @@ public :
 	/**
 	@PageName system_clipboard
 	@PageTitle Clipboard integration
-	@PageDesc With these functions, you can copy data in your OS' clipboard from the game or retrieve data from the clipboard.
+	@PageDesc With these functions, you can copy data in your operating system's clipboard from the game or retrieve data from the clipboard.
 	@PageFather system
 	@FuncTitle Set current clipboard contents
+	@FuncDesc Takes UTF-8 text and copies it into the system clipboard.  On Linux, because an application cannot access the system clipboard unless a window is open, if no window is open the call will do nothing.
 	@Cpp static void TCODSystem::setClipboard(const char *value)
 	@C void TCOD_sys_clipboard_set(const char *value)
 	@Py sys_clipboard_set(value)
@@ -511,7 +512,7 @@ public :
 	/**
 	@PageName system_clipboard
 	@FuncTitle Get current clipboard contents
-	@FuncDesc Returns the UTF-8 text currently in the clipboard.
+	@FuncDesc Returns the UTF-8 text currently in the system clipboard.  On Linux, because an application cannot access the system clipboard unless a window is open, if no window is open an empty string will be returned.  For C and C++, note that the pointer is borrowed, and libtcod will take care of freeing the memory.
 	@Cpp static char *TCODSystem::getClipboard()
 	@C char *TCOD_sys_clipboard_get()
 	@Py sys_clipboard_get() # Returns UTF-8 string

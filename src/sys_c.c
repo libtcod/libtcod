@@ -32,11 +32,8 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#if defined (__linux) && ! defined (__ANDROID__) || defined (__FreeBSD__)
-/* X11 stuff for clipboard support */
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#elif defined (__APPLE__) && defined (__MACH__)
+#if defined (__APPLE__) && defined (__MACH__)
+/* Is this necessary now the custom clipboard stuff is gone? */
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 #include "libtcod.h"
@@ -520,140 +517,6 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 	}
 #endif
 }
-
-/* This was needed before SDL2 provided it's own clipboard support.  In theory, it's still needed
-// if someone wants to do a non-SDL2 backend where there is no clipboard support.  Or to bring
-// back the SDL clipboard support. */
-#ifdef OLD_CLIPBOARD_SUPPORT
-/*clipboard stuff */
-#ifdef TCOD_WINDOWS
-void TCOD_sys_clipboard_set(const char *value)
-{
-    HGLOBAL clipbuffer;
-    char * buffer;
-	if (!OpenClipboard(0) || ! value) return;
-    EmptyClipboard();
-    clipbuffer = GlobalAlloc(GMEM_DDESHARE, strlen(value)+1);
-    buffer = (char*)GlobalLock(clipbuffer);
-	strcpy(buffer, value);
-    GlobalUnlock(clipbuffer);
-    SetClipboardData(CF_TEXT, clipbuffer);
-    CloseClipboard();
-}
-
-char *TCOD_sys_clipboard_get()
-{
-    char * buffer = NULL;
-    HANDLE hData;
-	if (!OpenClipboard(NULL)) return 0;
-    hData = GetClipboardData( CF_TEXT );
-    buffer = (char*)GlobalLock( hData );
-    GlobalUnlock( hData );
-    CloseClipboard();
-    return buffer;
-}
-#elif defined(TCOD_MACOSX)
-void TCOD_sys_clipboard_set(const char *value)
-{
-	PasteboardRef clipboard;
-  if (PasteboardCreate(kPasteboardClipboard, &clipboard) != noErr) return;
-  if (PasteboardClear(clipboard) != noErr) {
-      CFRelease(clipboard);
-      return;
-  }
-	size_t len = strlen(value);
-  CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault,
-																					(const UInt8 *)value,
-                                          len, kCFAllocatorNull);
-  if (data == NULL) {
-      CFRelease(clipboard);
-      return;
-  }
-  OSStatus err;
-  err = PasteboardPutItemFlavor(clipboard, NULL, kUTTypePlainText, data, 0);
-  CFRelease(clipboard);
-  CFRelease(data);
-}
-
-char clipboardText[256];
-
-char *TCOD_sys_clipboard_get()
-{
-	PasteboardSyncFlags syncFlags;
-	ItemCount itemCount;
-	PasteboardRef clipboard;
-	UInt32 itemIndex;
-	if (PasteboardCreate(kPasteboardClipboard, &clipboard) != noErr) return NULL;
-	syncFlags = PasteboardSynchronize(clipboard);
-	if (PasteboardGetItemCount(clipboard, &itemCount) != noErr) return NULL;
-	if (itemCount == 0) return NULL;
-	for(itemIndex = 1; itemIndex <= itemCount; itemIndex++) {
-		PasteboardItemID itemID;
-		CFArrayRef flavorTypeArray;
-		CFIndex flavorCount;
-		CFIndex flavorIndex;
-		if (PasteboardGetItemIdentifier(clipboard, itemIndex, &itemID ) != noErr) return NULL;
-		if (PasteboardCopyItemFlavors(clipboard, itemID, &flavorTypeArray) != noErr) return NULL;
-		flavorCount = CFArrayGetCount(flavorTypeArray);
-		for(flavorIndex = 0; flavorIndex < flavorCount; flavorIndex++) {
-        CFStringRef flavorType;
-        CFDataRef flavorData;
-        CFIndex flavorDataSize;
-				flavorType = (CFStringRef)CFArrayGetValueAtIndex(flavorTypeArray, flavorIndex);
-				if (UTTypeConformsTo(flavorType, CFSTR("public.plain-text"))) {
-						if (PasteboardCopyItemFlavorData(clipboard, itemID, flavorType, &flavorData) != noErr) {
-							CFRelease(flavorData);
-							return NULL;
-						}
-						flavorDataSize = CFDataGetLength( flavorData );
-						flavorDataSize = (flavorDataSize<254) ? flavorDataSize : 254;
-						short dataIndex;
-	          for(dataIndex = 0; dataIndex <= flavorDataSize; dataIndex++) {
-	             clipboardText[dataIndex] = *(CFDataGetBytePtr(flavorData) + dataIndex);
-	          }
-	          clipboardText[flavorDataSize] = '\0';
-	          clipboardText[flavorDataSize+1] = '\n';
-						CFRelease (flavorData);
-	     }
-		}
-	}
-	return clipboardText;
-}
-#elif defined(TCOD_HAIKU) || defined(__ANDROID__)
-/* TODO */
-void TCOD_sys_clipboard_set(const char *value)
-{
-}
-char *TCOD_sys_clipboard_get()
-{
-	return "";
-}
-#else
-static Display *dpy=NULL;
-void TCOD_sys_clipboard_set(const char *value)
-{
-	if ( ! value ) return;
-	if (!dpy ) dpy = XOpenDisplay(NULL);
-	XStoreBytes(dpy,value,strlen(value)+1);
-	/* doesn't seem to work without this... */
-	int len;
-	char *xbuf = XFetchBytes(dpy,&len);
-	XFree(xbuf);
-}
-
-char *TCOD_sys_clipboard_get()
-{
-	int len;
-	if (!dpy ) dpy = XOpenDisplay(NULL);
-	char *xbuf = XFetchBytes(dpy,&len);
-	if (! xbuf ) return NULL;
-	char *ret=strdup(xbuf);
-	XFree(xbuf);
-	return ret;
-}
-#endif
-#endif
-
 
 /* library initialization function */
 #ifdef TCOD_WINDOWS

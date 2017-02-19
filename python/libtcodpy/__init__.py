@@ -939,16 +939,16 @@ _lib.TCOD_console_clear.argtypes=[c_void_p ]
 def console_clear(con):
     return _lib.TCOD_console_clear(con)
 
-#_lib.TCOD_console_put_char.restype=c_void
-#_lib.TCOD_console_put_char.argtypes=[c_void_p ,c_int, c_int, c_int, c_int ]
+_lib.TCOD_console_put_char.restype=c_void
+_lib.TCOD_console_put_char.argtypes=[c_void_p ,c_int, c_int, c_int, c_int]
 def console_put_char(con, x, y, c, flag=BKGND_DEFAULT):
     if type(c) == str or type(c) == bytes:
         _lib.TCOD_console_put_char(c_void_p(con), x, y, ord(c), flag)
     else:
         _lib.TCOD_console_put_char(c_void_p(con), x, y, c, flag)
 
-#_lib.TCOD_console_put_char_ex.restype=c_void
-#_lib.TCOD_console_put_char_ex.argtypes=[c_void_p ,c_int, c_int, c_int, Color, Color ]
+_lib.TCOD_console_put_char_ex.restype=c_void
+_lib.TCOD_console_put_char_ex.argtypes=[c_void_p ,c_int, c_int, c_int, Color, Color]
 def console_put_char_ex(con, x, y, c, fore, back):
     if type(c) == str or type(c) == bytes:
         _lib.TCOD_console_put_char_ex(c_void_p(con), x, y, ord(c), fore, back)
@@ -2285,19 +2285,16 @@ def bsp_resize(node, x, y, w, h):
     _lib.TCOD_bsp_resize(node.p, x, y, w, h)
 
 _lib.TCOD_bsp_left.restype = POINTER(_CBsp)
-#_lib.TCOD_bsp_left.restype=c_void_p
 _lib.TCOD_bsp_left.argtypes=[c_void_p]
 def bsp_left(node):
     return Bsp(_lib.TCOD_bsp_left(node.p))
 
 _lib.TCOD_bsp_right.restype = POINTER(_CBsp)
-#_lib.TCOD_bsp_right.restype=c_void_p
 _lib.TCOD_bsp_right.argtypes=[c_void_p]
 def bsp_right(node):
     return Bsp(_lib.TCOD_bsp_right(node.p))
 
 _lib.TCOD_bsp_father.restype = POINTER(_CBsp)
-#_lib.TCOD_bsp_father.restype=c_void_p
 _lib.TCOD_bsp_father.argtypes=[c_void_p]
 def bsp_father(node):
     return Bsp(_lib.TCOD_bsp_father(node.p))
@@ -2313,7 +2310,6 @@ def bsp_contains(node, cx, cy):
     return _lib.TCOD_bsp_contains(node.p, cx, cy)
 
 _lib.TCOD_bsp_find_node.restype = POINTER(_CBsp)
-#_lib.TCOD_bsp_find_node.restype=c_void_p
 _lib.TCOD_bsp_find_node.argtypes=[c_void_p, c_int, c_int]
 def bsp_find_node(node, cx, cy):
     return Bsp(_lib.TCOD_bsp_find_node(node.p, cx, cy))

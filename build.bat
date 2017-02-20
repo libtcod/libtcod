@@ -67,7 +67,7 @@ if not defined UV_PACKAGE_RELEASE_DIRNAME (
 		if defined APPVEYOR_REPO_TAG_NAME (
 			set UV_PACKAGE_RELEASE_DIRNAME=!APPVEYOR_PROJECT_NAME!-msvs-!APPVEYOR_REPO_TAG_NAME!
 		) else (
-			set UV_PACKAGE_RELEASE_DIRNAME=!APPVEYOR_PROJECT_NAME!-msvs-!APPVEYOR_REPO_BRANCH!-!UV_DATE!
+			set UV_PACKAGE_RELEASE_DIRNAME=!APPVEYOR_PROJECT_NAME!-msvs-latest-unstable-build
 		)
 	) else (
 		set UV_PACKAGE_RELEASE_DIRNAME=libtcod-msvs
@@ -311,6 +311,12 @@ for /F "usebackq tokens=*" %%I in (index.txt) do (
 
 	if defined APPVEYOR (
 		appveyor PushArtifact %%I.7z
+		if defined CURL_EXE (
+			echo Uploading '%%I.7z' to bitbucket downloads page.
+			echo off
+			!CURL_EXE! !CURL_ARGS! -X POST https://api.bitbucket.org/2.0/repositories/libtcod/libtcod/downloads -F files=@"%%I.7z"
+			@IF "!CI!" NEQ "True" echo on
+		)
 	)
 )
 
@@ -370,6 +376,12 @@ REM Allow the user to specify the path to their Git 'git' executable.  It may ha
 if not defined GIT_EXE (
     REM This doesn't work directly, like hg.exe, so need where.
     where git.exe >nul 2>&1 && (set GIT_EXE=git.exe) || (set GIT_EXE=)
+)
+
+REM If curl is present, which it should be on appveyor, then double check so it can be used for artifact uploads.
+if not defined CURL_EXE (
+    REM This doesn't work directly, like hg.exe, so need where.
+    where curl.exe >nul 2>&1 && (set CURL_EXE=curl.exe) || (set CURL_EXE=)
 )
 
 REM Allow the user to specify the path to their 7zip '7z' executable.  It may have to be accessed via absolute path.

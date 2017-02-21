@@ -794,5 +794,8 @@ float TCOD_noise_get_turbulence (TCOD_noise_t noise, float *f, float octaves) {
 }
 
 void TCOD_noise_delete(TCOD_noise_t noise) {
+  if (((perlin_data_t *)noise)->waveletTileData) {
+    free(((perlin_data_t *)noise)->waveletTileData);
+  }
 	free((perlin_data_t *)noise);
 }

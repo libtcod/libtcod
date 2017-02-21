@@ -211,7 +211,7 @@ REM Windows defender or something holds onto a file handle.  Retry..
 set /A L_COUNT=0
 for /L %%I in (1,1,5) do (
 	if exist "!UV_PACKAGES_DIRNAME!" (
-		rmdir /S /Q "!UV_PACKAGES_DIRNAME!"
+		rmdir /S /Q "!UV_PACKAGES_DIRNAME!" 2> nul
 		set /A L_COUNT=!L_COUNT!+1
 	)
 )
@@ -233,48 +233,58 @@ for %%P in (Win32 x64) do (
 	hg archive -t files !L_RELEASE_PATH!
 	del !L_RELEASE_PATH!\.hg*
 
+	set L_FILES_FILENAME=!L_RELEASE_PATH!\WHERE-ARE-THE-PREBUILT-FILES.txt
+	echo. > !L_FILES_FILENAME!
+	echo These files are placed where Visual Studio expects to find them if you compile the solution:> !L_FILES_FILENAME!
+	echo. > !L_FILES_FILENAME!
+	echo SDL2 includes:>> !L_FILES_FILENAME!
+	echo !DEPENDENCY_DIRNAME!\include\>> !L_FILES_FILENAME!
+	echo. >> !L_FILES_FILENAME!
+
 	REM Copy the dependencies into place for compilation.
-	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\build-files\include\"
-	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\build-files\%%P\"
-	for %%R in (Debug Release) do (
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\include\"
+	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\%%P\"
+	for %%C in (Debug Release) do (
 		for %%N in (libtcod libtcod-gui) do (
+			echo %%C %%P %%N:>> !L_FILES_FILENAME!
+			
 			for %%S in (dll pdb lib) do (
-				xcopy /I /E  >nul "!BUILD_PATH!\msvs\%%N\%%P\%%R\%%N.%%S" "!L_RELEASE_PATH!\build-files\%%P\%%R\"
-				REM I have no idea how this garbage gets copied.
-				if exist "!L_RELEASE_PATH!\build-files\%%P\%%R\%%N.tlog" (
-					rmdir /q /s "!L_RELEASE_PATH!\build-files\%%P\%%R\%%N.tlog"
+				xcopy /I /E >nul "!BUILD_PATH!\msvs\%%N\%%P\%%C\%%N.%%S" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\*"
+				echo   !BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.%%S>> !L_FILES_FILENAME!
+				REM Delete useless automatically copied files.
+				if exist "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.tlog" (
+					rmdir /q /s "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.tlog"
 				)
 			)
+			echo. >> !L_FILES_FILENAME!
 		)
 	)
 
-	REM Copy release dlls into the top level directory.
+	REM Copy release dlls into the top level directory so the samples can be run directly.
 	copy >nul "!BUILD_PATH!\dependencies\%%P\Release\SDL2.dll" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\Release\libtcod.dll" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\libtcod-gui\%%P\Release\libtcod-gui.dll" "!L_RELEASE_PATH!\"
 
-	REM Copy samples.
+	REM Copy the featured sample and the documentation generator.
 	copy >nul "!BUILD_PATH!\msvs\samples_c\%%P\Release\samples_c.exe" "!L_RELEASE_PATH!\samples.exe"
 	copy >nul "!BUILD_PATH!\msvs\doctcod\%%P\Release\doctcod.exe" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\frost\%%P\Release\frost.exe" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\navier\%%P\Release\navier.exe" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\rad\%%P\Release\rad.exe" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\ripples\%%P\Release\ripples.exe" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\weather\%%P\Release\weather.exe" "!L_RELEASE_PATH!\"
 
 	REM Record the release path, so the packaging stage can be rerun.
 	echo !L_RELEASE_PATH!>>index.txt
 )
 
-echo Making dependency snapshot: !UV_PACKAGE_RELEASE_DIRNAME!-dependencies
-set "L_RELEASE_PATH=!UV_PACKAGE_RELEASE_DIRNAME!-dependencies"
+echo Making extras snapshot: !UV_PACKAGE_RELEASE_DIRNAME!-extras
+set "L_RELEASE_PATH=!UV_PACKAGE_RELEASE_DIRNAME!-extras"
 mkdir !L_RELEASE_PATH!
 
-xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\dependencies\include\"
+set L_FILES_FILENAME=!L_RELEASE_PATH!\HOW-TO-RUN-THESE-FILES.txt
+echo. > !L_FILES_FILENAME!
+echo Download either of the Win32 or x64 builds, and copy the exe you want to run into it's root directory.>> !L_FILES_FILENAME!
+echo. >> !L_FILES_FILENAME!
+
 for %%P in (Win32 x64) do (
-	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\dependencies\%%P\"
 	for %%C in (Release Debug) do (
-		for %%N in (libtcod libtcod-gui samples_c samples_cpp frost navier rad ripples weather doctcod) do (
+		for %%N in (samples_cpp frost navier rad ripples weather) do (
 			set "L_RELPATH=%%N\%%P\%%C"
 			mkdir "!L_RELEASE_PATH!\!L_RELPATH!"
 
@@ -310,7 +320,8 @@ for /F "usebackq tokens=*" %%I in (index.txt) do (
 	!7Z_EXE! a -r -t7z -mx9 %%I.7z %%I\*
 
 	if defined APPVEYOR (
-		appveyor PushArtifact %%I.7z
+		REM rmtew -- This seems to error with 'appveyor' command not found.  But they are detected automatically by the 
+		REM appveyor PushArtifact %%I.7z
 		if defined CURL_EXE (
 			echo Uploading '%%I.7z' to bitbucket downloads page.
 			echo off

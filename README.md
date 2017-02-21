@@ -35,17 +35,19 @@ These are the recommended places to obtain the source code from:
 * Clone the repository with Mercurial and checkout the tag for the latest version in the `default` branch.
 * Clone the repository and checkout the bleeding edge from the tip in the default branch.
 
-All compilation methods, whether Windows or autotools, are located within the `build/` subdirectory.
+All compilation methods, currently including Visual Studio (Windows), SCons (Windows, Linux, MacOS) and autotools (Linux, MacOS), are located within the `build/` subdirectory.
 
-Windows users can either run the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
+Windows users who prefer to use Visual Studio directly can either run the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
 
-For all other platforms, you need to make use of the `autotools` support.  This is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).
+Autotools is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).  Similarly, SCons is another popular approach, and explicit instructions are [provided here](https://bitbucket.org/libtcod/libtcod/src/tip/build/scons/?at=default) for those who prefer.
 
 #### SDL2 ####
 
 [SDL2](http://hg.libsdl.org/SDL) is the latest version of SDL.  Release 2.0.5 (changeset 007dfe83abf8) of SDL2, is currently used for the official Windows builds.  If you choose to use a different version of SDL2, please be sure to mention it in any issues you create.  And if you are using the bleeding edge (the latest unreleased/untagged changes), please rule out that this is the cause of any problems you encounter, before creating issues.
 
 ## Getting Started ##
+
+The latest documentation is updated with every significant change made to libtcod.  You can find it in [the doc directory](https://bitbucket.org/libtcod/libtcod/src/tip/doc/index2.html?at=default&fileviewer=file-view-default).  Similarly, [the changelog]()https://bitbucket.org/libtcod/libtcod/src/tip/libtcod-CHANGELOG.txt?at=default provides a high level overview of the things you might need to be aware of when later updating libtcod.
 
 libtcod comes with a sample application, implementations of which are provided in each of C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)), C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)) and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).  This provides a decent overview of the basic features, in an interactive fashion.  Each should be identical for the most part, so if you are using Windows, downloading the precompiled binaries and running the included `samples.exe` which is compiled from the C source code, should be representative of the other versions.
 

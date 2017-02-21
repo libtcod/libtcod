@@ -1623,15 +1623,13 @@ void TCOD_mouse_includes_touch(bool enable) {
 }
 
 /*clipboard stuff */
-bool TCOD_sys_clipboard_set(const char *value)
-{
+bool TCOD_sys_clipboard_set(const char *value) {
 	if (!has_startup)
 		return false;
 	return sdl->set_clipboard_text(value);
 }
 
-char *TCOD_sys_clipboard_get()
-{
+char *TCOD_sys_clipboard_get() {
 	if (!has_startup)
 		return "";
 	return sdl->get_clipboard_text();

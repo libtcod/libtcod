@@ -1315,7 +1315,7 @@ _lib.TCOD_sys_clipboard_get.restype=c_char_p
 _lib.TCOD_sys_clipboard_get.argtypes=[]
 def sys_clipboard_get():
     return _lib.TCOD_sys_clipboard_get().decode("utf-8")
-    
+
 # custom fullscreen resolution
 
 _lib.TCOD_sys_force_fullscreen_resolution.restype=c_void
@@ -2063,10 +2063,13 @@ _lib.TCOD_path_new_using_map.argtypes=[c_void_p , c_float ]
 def path_new_using_map(m, dcost=1.41):
     return (_lib.TCOD_path_new_using_map(m, dcost), None)
 
+_lib.TCOD_path_new_using_function.restype=c_void_p
+_lib.TCOD_path_new_using_function.argtypes=[c_int, c_int, PATH_CBK_FUNC,
+                                            py_object, c_float]
 def path_new_using_function(w, h, func, userdata=0, dcost=1.41):
     cbk_func = PATH_CBK_FUNC(func)
     return (_lib.TCOD_path_new_using_function(w, h, cbk_func,
-            py_object(userdata), c_float(dcost)), cbk_func)
+                                              userdata, dcost), cbk_func)
 
 _lib.TCOD_path_compute.restype = c_bool
 _lib.TCOD_path_compute.argtypes=[c_void_p , c_int,c_int, c_int, c_int]
@@ -2133,10 +2136,13 @@ _lib.TCOD_dijkstra_new .argtypes=[c_void_p , c_float ]
 def dijkstra_new(m, dcost=1.41):
     return (_lib.TCOD_dijkstra_new(c_void_p(m), c_float(dcost)), None)
 
+_lib.TCOD_dijkstra_new_using_function.restype=c_void_p
+_lib.TCOD_dijkstra_new_using_function.argtypes=[c_int, c_int, PATH_CBK_FUNC,
+                                                py_object, c_float]
 def dijkstra_new_using_function(w, h, func, userdata=0, dcost=1.41):
     cbk_func = PATH_CBK_FUNC(func)
     return (_lib.TCOD_dijkstra_new_using_function(w, h, cbk_func,
-            py_object(userdata), c_float(dcost)), cbk_func)
+                                                  userdata, dcost), cbk_func)
 
 _lib.TCOD_dijkstra_compute.restype=c_void
 _lib.TCOD_dijkstra_compute.argtypes=[c_void_p , c_int, c_int]
@@ -2444,8 +2450,11 @@ def heightmap_dig_hill(hm, x, y, radius, height):
     _lib.TCOD_heightmap_dig_hill(hm.p, c_float( x), c_float( y),
                                  c_float( radius), c_float( height))
 
+_lib.TCOD_heightmap_mid_point_displacement.restype = c_void
+_lib.TCOD_heightmap_mid_point_displacement.argtypes = [c_void_p, c_void_p,
+                                                       c_float]
 def heightmap_mid_point_displacement(hm, rng, roughness):
-    _lib.TCOD_heightmap_mid_point_displacement(hm.p, rng, c_float(roughness))
+    _lib.TCOD_heightmap_mid_point_displacement(hm.p, rng, roughness)
 
 _lib.TCOD_heightmap_rain_erosion.restype=c_void
 _lib.TCOD_heightmap_rain_erosion.argtypes=[c_void_p, c_int,c_float ,c_float ,c_void_p ]

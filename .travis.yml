@@ -1,0 +1,39 @@
+language: python
+python:
+- "2.7"
+- "3.3"
+os: linux
+
+matrix:
+  include:
+  - os: osx
+    language: generic
+
+sudo: required
+dist: trusty
+
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+      - scons
+
+before_install:
+# Start X11 display on Linux
+- 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi'
+- 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi'
+# Install SCons on MacOS via pip
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install --egg scons; fi
+
+install:
+- cd build/scons
+- scons develop dist -j 2 MODE=DEBUG ARCH=x86_64
+- cd ../..
+
+before_script:
+- pip install pytest pytest-cov
+- cd python
+- python setup.py develop
+
+script:
+- pytest -v

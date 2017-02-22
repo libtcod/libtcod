@@ -39,7 +39,9 @@ All compilation methods, currently including Visual Studio (Windows), SCons (Win
 
 Windows users who prefer to use Visual Studio directly can either run the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
 
-Autotools is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).  Similarly, SCons is another popular approach, and explicit instructions are [provided here](https://bitbucket.org/libtcod/libtcod/src/tip/build/scons/?at=default) for those who prefer.
+Autotools is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).  SCons is another popular approach, and explicit instructions are [provided here](https://bitbucket.org/libtcod/libtcod/src/tip/build/scons/?at=default) for those who prefer.
+
+MacOS users with a working Homebrew installation, can install the necessary dependencies with `brew install autoconf automake libtool pkg-build sdl2`. To build from the current development version of libtcod (rather than downloading a source package), `brew install mercurial`. Then follow [the directions](README-linux-SDL2.md) for building libtcod on Linux (just the final section). Note that the actual libraries will be in libtcod/build/autotools/.lib, with several symlinks.
 
 #### SDL2 ####
 

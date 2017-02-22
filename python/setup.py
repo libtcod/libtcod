@@ -94,6 +94,9 @@ try:
 except ImportError:
     pass
 
+needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
+pytest_runner = ['pytest-runner'] if needs_pytest else []
+
 setup(
     # public name, e.g. > pip install libtcod
     name='libtcod',
@@ -114,8 +117,8 @@ setup(
     maintainer_email = '',
 
     # used for test command
-    tests_require = ['nose2', 'cov-core'],
-    test_suite='nose2.collector.collector',
+    setup_requires = pytest_runner,
+    tests_require = ['pytest', 'pytest-cov'],
 
     # optional metadata for pypi
     description = '',

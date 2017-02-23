@@ -2,11 +2,14 @@ X API break
 + new features
 % modified features
 - removed features, fixed bugs
+This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
 1.6.3 : as yet unreleased
 + Added SCons build support (HexDecimal@bitbucket).
   https://bitbucket.org/libtcod/libtcod/commits/92c5a1b530049f15d1ed36375b12781554272f17
 + Exposed clipboard API to Python (rmtew@bitbucket).
++ Added TravisCI integration tests (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
++ Added .gitattributes and .gitignore files (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
 % Fix for memory leak introduced with the foreground/background image change (Aaron Wise).
   https://bitbucket.org/libtcod/libtcod/commits/275e8bd97000599e9d87bfa138fa72c066b1cae7
 % TCOD_path_walk now considers negative values to be blocking the path (HexDecimal@bitbucket)
@@ -16,6 +19,7 @@ X API break
 % Fix for broken SDL callback (reported by grimstain@bitbucket)
   https://bitbucket.org/libtcod/libtcod/issues/78/sdl-callback-null-pixels
 % Per-platform clipboard get/set code has been removed, and the SDL2 API is used instead (rmtew@bitbucket).
+  The clipboard encoding is now UTF-8 on all platforms.
   https://bitbucket.org/libtcod/libtcod/issues/81/
 % Fix for bug in Slider::setFormat() which left a dangling pointer (reported by Kai Kratz@bitbucket)
   https://bitbucket.org/libtcod/libtcod/commits/07c1214077d121107c5ad8ee38c589ad677f5e76
@@ -28,6 +32,8 @@ X API break
 % Documented and undeprecated TCOD_mouse_get_status() as the state is awkwardly exposed via check/wait event calls anyway (rmtew@bitbucket).
 % Fix key handling in name generator in C sample (reported by Chris Hamons@bitbucket)
   https://bitbucket.org/libtcod/libtcod/issues/83/
+% Switched Python tests to use pytest instead of unittest. (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
+- Fixed creating a libtcodpy pathfinder with a callback would crash on 64-bit Unix systems (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
 =========================================================
 1.6.2 : 2016-12-28
 + doctcod command added to VS2015 solution.

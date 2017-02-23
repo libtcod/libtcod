@@ -36,8 +36,10 @@ build_script:
 
 test_script:
 - cmd: cd python
-- cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% setup.py test
-- cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% setup.py test
+- cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pip install -U pytest pytest-cov
+- cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pytest -v
+- cmd: if defined TEST_PYTHON2 %TEST_PYTHON3% -m pip install -U pytest pytest-cov
+- cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -m pytest -v
 
 artifacts:
 - path: build\scons\libtcod-*.zip

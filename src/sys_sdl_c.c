@@ -146,19 +146,14 @@ static int init_ascii_to_tcod[256] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* ASCII 240 to 255 */
 };
 
-bool *ascii_updated=NULL;
-bool any_ascii_updated=false;
-
 static void alloc_ascii_tables(void) {
 	if ( TCOD_ctx.ascii_to_tcod ) free(TCOD_ctx.ascii_to_tcod);
-	if ( ascii_updated ) free(ascii_updated);
 	if ( charcols ) {
 		free(charcols);
 		free(first_draw);
 	}
 
 	TCOD_ctx.ascii_to_tcod = (int *)calloc(sizeof(int),TCOD_ctx.max_font_chars);
-	ascii_updated = (bool *)calloc(sizeof(bool),TCOD_ctx.max_font_chars);
 	charcols = (TCOD_color_t *)calloc(sizeof(TCOD_color_t),TCOD_ctx.max_font_chars);
 	first_draw =(bool *)calloc(sizeof(bool),TCOD_ctx.max_font_chars);
 	memcpy(TCOD_ctx.ascii_to_tcod,init_ascii_to_tcod,sizeof(int)*256);
@@ -429,17 +424,15 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 		for (x=0; x<console_width; x++) {
 			SDL_Rect srcRect,dstRect;
 			bool changed=true;
-			if ( c->cf == -1 ) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
-				if (c->dirty || ascii_updated[c->c] ||
+				if (
 					nbg->r != obg->r || nbg->g != obg->g || nbg->b != obg->b ||
 					nfg->r != ofg->r || nfg->g != ofg->g || nfg->b != ofg->b ||
-					c->c != oc->c || c->cf != oc->cf) {
+					c->c != oc->c) {
 					changed=true;
 				}
 			}
-			c->dirty=0;
 			if ( changed ) {
 				TCOD_color_t b=*nbg;
 				dstRect.x=x*TCOD_ctx.font_width;
@@ -456,7 +449,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
 				if ( c->c != ' ' ) {
 					/* draw foreground */
-					int ascii=c->cf;
+					int ascii = TCOD_ctx.ascii_to_tcod[c->c];
 					TCOD_color_t *curtext = &charcols[ascii];
 					bool first = first_draw[ascii];
 					TCOD_color_t f=*nfg;
@@ -467,7 +460,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 						f.b = ((int)f.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 					}
 					/* only draw character if foreground color != background color */
-					if ( ascii_updated[c->c] || f.r != b.r || f.g != b.g || f.b != b.b ) {
+					if ( f.r != b.r || f.g != b.g || f.b != b.b ) {
 						if ( charmap->format->Amask == 0
 							&& f.r == fontKeyCol.r && f.g == fontKeyCol.g && f.b == fontKeyCol.b ) {
 							/* cannot draw with the key color... */
@@ -629,10 +622,8 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 			}
 		}
 	}
-	/* TODO : improve this. */
 	charcols[asciiCode]=pink;
-	ascii_updated[asciiCode]=true;
-	any_ascii_updated=true;
+	TCOD_console_set_dirty_character_code(asciiCode);
 }
 
 void TCOD_sys_startup(void) {
@@ -759,7 +750,6 @@ bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscre
 	sdl->create_window(w,h,fullscreen);
 	renderState = render_state;
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
-	memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
 	return true;
 }
 

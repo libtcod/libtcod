@@ -211,12 +211,10 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			int dy = cy - ySrc + yDst;
 			int dst_idx = dy * dst->w + dx;
 			int src_idx = cy * src->w + cx;
-			uint8 dirty;
 			char_t srcChar, dstChar;
 			TCOD_color_t srcFgColor, srcBgColor, dstFgColor, dstBgColor;
 			if ((unsigned)cx >= (unsigned)src->w || (unsigned)cy >= (unsigned)src->h) continue;
 			if ((unsigned)dx >= (unsigned)dst->w || (unsigned)dy >= (unsigned)dst->h) continue;
-			dirty = dst->state.buf[dst_idx].dirty;
 			srcChar = src->state.buf[src_idx];
 			srcFgColor = srcFgColors[src_idx];
 			srcBgColor = srcBgColors[src_idx];
@@ -241,7 +239,6 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 				}
 				else if (dstChar.c == ' ') {
 					dstChar.c = srcChar.c;
-					dstChar.cf = srcChar.cf;
 					dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor, foreground_alpha);
 				}
 				else if (dstChar.c == srcChar.c) {
@@ -254,7 +251,6 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 					}
 					else {
 						dstChar.c = srcChar.c;
-						dstChar.cf = srcChar.cf;
 						dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor,
 							(foreground_alpha - 0.5f) * 2);
 					}
@@ -263,7 +259,6 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			dstFgColors[dst_idx] = dstFgColor;
 			dstBgColors[dst_idx] = dstBgColor;
 			dst->state.buf[dst_idx] = dstChar;
-			dst->state.buf[dst_idx].dirty = dirty;
 		}
 	}
 	TCOD_image_invalidate_mipmaps(dst->state.fg_colors);
@@ -299,7 +294,6 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
 	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->state.buf[offset].c = c;
-	dat->state.buf[offset].cf = TCOD_ctx.ascii_to_tcod[c];
 	TCOD_image_put_pixel(dat->state.fg_colors, x, y, dat->fore);
 	TCOD_console_set_char_background(con, x, y, dat->back, (TCOD_bkgnd_flag_t)flag);
 }
@@ -311,7 +305,6 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
 	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->state.buf[offset].c = c;
-	dat->state.buf[offset].cf = TCOD_ctx.ascii_to_tcod[c];
 	TCOD_image_put_pixel(dat->state.fg_colors, x, y, fore);
 	TCOD_image_put_pixel(dat->state.bg_colors, x, y, back);
 }
@@ -335,7 +328,22 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 	for (x = dx; x < dx + dw; x++) {
 		for (y = dy; y < dy + dh; y++) {
 			int off = x + dat->w*y;
-			dat->state.buf[off].dirty = 1;
+			dat->state.buf[off].c = -1;
+		}
+	}
+}
+
+void TCOD_console_set_dirty_character_code(int ch) {
+	/* Mark a character dirty by invalidating all occurrences of it in the root
+	   `state.oldbuf` character buffer.  Each character tile will be refreshed
+	   when the old buffer is compared to the current buffer next render.
+	   It's recommended that this method stays non-public. */
+	int i;
+	TCOD_console_data_t *dat = TCOD_ctx.root;
+	TCOD_IFNOT(dat != NULL) return;
+	for (i = 0; i < dat->w * dat->h; i++) {
+		if (dat->state.oldbuf[i].c == ch) {
+			dat->state.oldbuf[i].c = -1;
 		}
 	}
 }
@@ -347,9 +355,8 @@ void TCOD_console_clear(TCOD_console_t con) {
 	for (x = 0; x < dat->w; x++) {
 		for (y = 0; y < dat->h; y++) {
 			int off = x + dat->w*y;
-			dat->state.buf[off].dirty = 0;
+			dat->state.oldbuf[off].c = -1; /* forces refresh of the entire console */
 			dat->state.buf[off].c = ' ';
-			dat->state.buf[off].cf = TCOD_ctx.ascii_to_tcod ? TCOD_ctx.ascii_to_tcod[' '] : 0;
 		}
 	}
 	TCOD_image_clear(dat->state.fg_colors, dat->fore);
@@ -492,7 +499,6 @@ void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
 	dat->state.buf[y * dat->w + x].c = c;
-	dat->state.buf[y * dat->w + x].cf = TCOD_ctx.ascii_to_tcod[c];
 }
 
 static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, int *w, int *h) {
@@ -522,7 +528,6 @@ void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool cl
 			TCOD_console_set_char_background(con, cx, cy, dat->back, flag);
 			if (clear) {
 				dat->state.buf[cx + cy*dat->w].c = ' ';
-				dat->state.buf[cx + cy*dat->w].cf = TCOD_ctx.ascii_to_tcod[' '];
 			}
 		}
 	}
@@ -1110,7 +1115,6 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	dat->alignment=TCOD_LEFT;
 	for (i=0; i< dat->w*dat->h; i++) {
 		dat->state.buf[i].c=' ';
-		dat->state.buf[i].cf=-1;
 	}
 	if ( title ) {
 		if (! TCOD_sys_init(dat->w,dat->h,&dat->state,fullscreen) ) return false;

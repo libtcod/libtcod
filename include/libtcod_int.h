@@ -41,9 +41,7 @@ extern "C" {
 
 /* a cell in the console */
 typedef struct {
-	int c;		/* character ascii code */
-	int cf;		/* character number in font */
-	uint8 dirty;	/* cell modified since last flush ? */
+	int c;		/* character code */
 } char_t;
 
 /* TCODConsole non public data */
@@ -207,6 +205,8 @@ int TCOD_console_stringLength(const unsigned char *s);
 unsigned char * TCOD_console_forward(unsigned char *s,int l);
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
 TCOD_render_state_t *TCOD_console_get_render_state(TCOD_console_t con);
+void TCOD_console_set_dirty_character_code(int ch);
+
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
@@ -295,8 +295,6 @@ void find_resolution(void);
 void TCOD_sys_init_screen_offset(void);
 extern SDL_Surface* screen;
 extern int oldFade;
-extern bool *ascii_updated;
-extern bool any_ascii_updated;
 extern SDL_Surface* charmap;
 typedef struct {
 	float force_recalc;

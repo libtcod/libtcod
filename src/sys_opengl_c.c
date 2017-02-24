@@ -464,19 +464,18 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 	for (y=0;y<conheight;y++) {
 		for (x=0; x<conwidth; x++) {
 			bool changed=true;
-			if ( c->cf == -1 ) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
-				if ( c->dirty || ascii_updated[ c->c ] || c->back.r != oc->back.r || c->back.g != oc->back.g
+				if ( c->back.r != oc->back.r || c->back.g != oc->back.g
 					|| c->back.b != oc->back.b || c->fore.r != oc->fore.r
 					|| c->fore.g != oc->fore.g || c->fore.b != oc->fore.b
-					|| c->c != oc->c || c->cf != oc->cf) {
+					|| c->c != oc->c) {
 					changed=true;
 				}
 			}
-			c->dirty=0;
 			if ( changed ) {
-				TCOD_opengl_putchar_ex(x,y,c->cf,c->fore,c->back);
+				TCOD_opengl_putchar_ex(x, y, TCOD_ctx.ascii_to_tcod[c->c],
+				                       c->fore, c->back);
 			}
 			c++;oc++;
 		}
@@ -530,7 +529,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, char_t *console_buffe
 							desty+=TCOD_ctx.fullscreen_offsety/TCOD_ctx.font_height;
 						}
 						/* draw foreground */
-						ascii=c->cf;
+						ascii = TCOD_ctx.ascii_to_tcod[c->c];
 						srcx = (ascii%TCOD_ctx.fontNbCharHoriz);
 						srcy = (ascii/TCOD_ctx.fontNbCharHoriz);
 						glBegin( GL_QUADS );

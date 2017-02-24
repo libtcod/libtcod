@@ -194,7 +194,6 @@ void TCOD_console_fill_char(TCOD_console_t con, int *arr) {
 	char_t *curchar = dat->state.buf;
 	for (i = 0; i < dat->w*dat->h; i++) {
 		curchar->c = *arr;
-		curchar->cf = TCOD_ctx.ascii_to_tcod[*arr];
 		curchar++;
 		arr++;
 	}

@@ -172,15 +172,11 @@ static void render(void *vbitmap, int console_width, int console_height, TCOD_re
 	}
 #ifndef NO_OPENGL
 	else {
-		TCOD_opengl_render(oldFade, ascii_updated, console_buffer, prev_console_buffer);
+		TCOD_opengl_render(oldFade, NULL, console_buffer, prev_console_buffer);
 		TCOD_opengl_swap();
 	}  
 #endif
 	oldFade=(int)TCOD_console_get_fade();
-	if ( any_ascii_updated ) {
-		memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
-		any_ascii_updated=false;
-	}
 }
 
 static SDL_Surface *create_surface(int width, int height, bool with_alpha) {

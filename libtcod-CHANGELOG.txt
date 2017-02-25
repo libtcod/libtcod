@@ -9,6 +9,7 @@ This project does not adhere to Semantic Versioning. http://semver.org/
   https://bitbucket.org/libtcod/libtcod/commits/92c5a1b530049f15d1ed36375b12781554272f17
 + Exposed clipboard API to Python (rmtew@bitbucket).
 + Added TravisCI integration tests (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
++ Added .gitattributes and .gitignore files (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
 % Updated restrictive FOV code to match MRPAS v1.2 (mingos@bitbucket)
   https://bitbucket.org/libtcod/libtcod/commits/28a19912ac7fef6e68164fb8970230517888c9ff
 % Per-platform clipboard get/set code has been removed, and the SDL2 API is used instead (rmtew@bitbucket).

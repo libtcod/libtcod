@@ -82,9 +82,9 @@ SDL_Window* window=NULL;
 SDL_Renderer* renderer=NULL;
 float scale_factor=1.0f;
 SDL_Surface* charmap=NULL;
-static TCOD_render_state_t *renderState = NULL;
 char *last_clipboard_text = NULL;
 static bool has_startup=false;
+TCOD_console_data_t *sdl_renderer_cache = NULL;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* font transparent color */
@@ -380,38 +380,37 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
-static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
-	sdl->render(vbitmap, console_width, console_height, render_state);
+static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
+	sdl->render(vbitmap, console);
 }
 
-void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
+void TCOD_sys_console_to_bitmap(void *vbitmap,
+																TCOD_console_data_t* console) {
 	static SDL_Surface *charmap_backup=NULL;
 	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
 	int x,y;
 	Uint32 sdl_back=0, sdl_fore=0;
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
-	bool track_changes = (oldFade == fade && render_state->oldbuf);
+	/* can only track changes on the root console */
+	bool track_changes = (oldFade == fade && sdl_renderer_cache &&
+	                      console == TCOD_ctx.root);
 	Uint8 bpp = charmap->format->BytesPerPixel;
-	char_t *c=&render_state->buf[0];
-	char_t *oc;
+	int *c = console->ch_array;
+	int *oc;
 	TCOD_color_t *ofg, *obg, *nfg, *nbg;
 	int hdelta;
-	if (render_state->clear_screen) {
-		track_changes = false;
-		render_state->clear_screen = false;
-	}
 	if ( bpp == 4 ) {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp)/4;
 	} else {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp);
 	}
-	nfg = TCOD_image_get_colors(render_state->fg_colors);
-	nbg = TCOD_image_get_colors(render_state->bg_colors);
+	nfg = TCOD_image_get_colors(console->fg_colors);
+	nbg = TCOD_image_get_colors(console->bg_colors);
 	if (track_changes) {
-		oc = &render_state->oldbuf[0];
-		ofg = TCOD_image_get_colors(render_state->fg_colors_prev);
-		obg = TCOD_image_get_colors(render_state->bg_colors_prev);
+		oc = sdl_renderer_cache->ch_array;
+		ofg = TCOD_image_get_colors(sdl_renderer_cache->fg_colors);
+		obg = TCOD_image_get_colors(sdl_renderer_cache->bg_colors);
 	}
 	if ( charmap_backup == NULL ) {
 		charmap_backup=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
@@ -420,8 +419,8 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
-	for (y=0;y<console_height;y++) {
-		for (x=0; x<console_width; x++) {
+	for (y = 0; y < console->h; y++) {
+		for (x = 0; x < console->w; x++) {
 			SDL_Rect srcRect,dstRect;
 			bool changed=true;
 			if ( track_changes ) {
@@ -429,7 +428,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				if (
 					nbg->r != obg->r || nbg->g != obg->g || nbg->b != obg->b ||
 					nfg->r != ofg->r || nfg->g != ofg->g || nfg->b != ofg->b ||
-					c->c != oc->c) {
+					*c != *oc) {
 					changed=true;
 				}
 			}
@@ -447,9 +446,9 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
-				if ( c->c != ' ' ) {
+				if ( *c != ' ' ) {
 					/* draw foreground */
-					int ascii = TCOD_ctx.ascii_to_tcod[c->c];
+					int ascii = TCOD_ctx.ascii_to_tcod[*c];
 					TCOD_color_t *curtext = &charcols[ascii];
 					bool first = first_draw[ascii];
 					TCOD_color_t f=*nfg;
@@ -588,6 +587,14 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
 #endif
+	/* update previous values cache */
+	memcpy(sdl_renderer_cache->ch_array, console->ch_array,
+				 sizeof(console->ch_array[0]) *
+				 sdl_renderer_cache->w * sdl_renderer_cache->h);
+	TCOD_image_mipmap_copy_internal(console->fg_colors,
+	                                sdl_renderer_cache->fg_colors);
+	TCOD_image_mipmap_copy_internal(console->bg_colors,
+	                                sdl_renderer_cache->bg_colors);
 }
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
@@ -723,7 +730,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( renderer == TCOD_ctx.renderer ) return;
 	TCOD_ctx.renderer=renderer;
 	TCOD_sys_uninit();
-	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,&TCOD_ctx.root->state,TCOD_ctx.fullscreen);
+	TCOD_sys_init(TCOD_ctx.root, TCOD_ctx.fullscreen);
 	TCOD_console_set_window_title(TCOD_ctx.window_title);
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
@@ -733,7 +740,7 @@ void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
 
-bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscreen) {
+bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
 	if ( ! has_startup ) TCOD_sys_startup();
@@ -747,15 +754,21 @@ bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscre
 		/* reload the font when switching renderer to restore original character colors */
 		TCOD_sys_load_font();
 	}
-	sdl->create_window(w,h,fullscreen);
-	renderState = render_state;
+	sdl->create_window(console->w, console->h, fullscreen);
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
+
+	if (sdl_renderer_cache) {
+		TCOD_console_delete((TCOD_console_t*)sdl_renderer_cache);
+	}
+	sdl_renderer_cache = (TCOD_console_data_t*)TCOD_console_new(console->w, console->h);
 	return true;
 }
 
 void TCOD_sys_uninit(void) {
 	if (!has_startup) return;
-	renderState = NULL;
+	if (sdl_renderer_cache) {
+		TCOD_console_delete((TCOD_console_t*)sdl_renderer_cache);
+	}
 	sdl->destroy_window();
 }
 
@@ -809,7 +822,7 @@ void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
-		TCOD_sys_render(NULL, TCOD_console_get_width(NULL), TCOD_console_get_height(NULL), renderState);
+		TCOD_sys_render(NULL, TCOD_ctx.root);
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
@@ -1331,7 +1344,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
 				TCOD_ctx.app_is_active=false; break;
 			case SDL_WINDOWEVENT_EXPOSED:        /**< Window has been returned to and needs a refresh. */
-				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL), renderState);
+				TCOD_sys_render(NULL, TCOD_ctx.root);
 				break;
 #ifdef NDEBUG_HMM
 			default:

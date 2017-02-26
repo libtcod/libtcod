@@ -168,12 +168,9 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 }
 
 static void TCOD_console_data_free(TCOD_console_data_t *dat) {
-	if (dat->state.fg_colors) TCOD_image_delete(dat->state.fg_colors);
-	if (dat->state.fg_colors_prev) TCOD_image_delete(dat->state.fg_colors_prev);
-	if (dat->state.bg_colors) TCOD_image_delete(dat->state.bg_colors);
-	if (dat->state.bg_colors_prev) TCOD_image_delete(dat->state.bg_colors_prev);
-	free(dat->state.buf);
-	free(dat->state.oldbuf);
+	if (dat->fg_colors) TCOD_image_delete(dat->fg_colors);
+	if (dat->bg_colors) TCOD_image_delete(dat->bg_colors);
+	free(dat->ch_array);
 }
 
 void TCOD_console_delete(TCOD_console_t con) {
@@ -199,11 +196,11 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 	if (hSrc == 0) hSrc = src->h;
 	TCOD_IFNOT(wSrc > 0 && hSrc > 0) return;
 	TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
-	TCOD_image_get_key_data(src->state.bg_colors, &srcHasKeyColor, &srcKeyColor);
-	srcFgColors = TCOD_image_get_colors(src->state.fg_colors);
-	srcBgColors = TCOD_image_get_colors(src->state.bg_colors);
-	dstFgColors = TCOD_image_get_colors(dst->state.fg_colors);
-	dstBgColors = TCOD_image_get_colors(dst->state.bg_colors);
+	TCOD_image_get_key_data(src->bg_colors, &srcHasKeyColor, &srcKeyColor);
+	srcFgColors = TCOD_image_get_colors(src->fg_colors);
+	srcBgColors = TCOD_image_get_colors(src->bg_colors);
+	dstFgColors = TCOD_image_get_colors(dst->fg_colors);
+	dstBgColors = TCOD_image_get_colors(dst->bg_colors);
 	for (cx = xSrc; cx < xSrc + wSrc; cx++) {
 		for (cy = ySrc; cy < ySrc + hSrc; cy++) {
 			/* check if we're outside the dest console */
@@ -211,11 +208,11 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			int dy = cy - ySrc + yDst;
 			int dst_idx = dy * dst->w + dx;
 			int src_idx = cy * src->w + cx;
-			char_t srcChar, dstChar;
+			int srcChar, dstChar;
 			TCOD_color_t srcFgColor, srcBgColor, dstFgColor, dstBgColor;
 			if ((unsigned)cx >= (unsigned)src->w || (unsigned)cy >= (unsigned)src->h) continue;
 			if ((unsigned)dx >= (unsigned)dst->w || (unsigned)dy >= (unsigned)dst->h) continue;
-			srcChar = src->state.buf[src_idx];
+			srcChar = src->ch_array[src_idx];
 			srcFgColor = srcFgColors[src_idx];
 			srcBgColor = srcBgColors[src_idx];
 			/* check if source pixel is transparent */
@@ -229,19 +226,19 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 				dstBgColor = srcBgColor;
 			}
 			else {
-				dstChar = dst->state.buf[dst_idx];
+				dstChar = dst->ch_array[dst_idx];
 				dstFgColor = dstFgColors[dst_idx];
 				dstBgColor = dstBgColors[dst_idx];
 
 				dstBgColor = TCOD_color_lerp(dstBgColor, srcBgColor, background_alpha);
-				if (srcChar.c == ' ') {
+				if (srcChar == ' ') {
 					dstFgColor = TCOD_color_lerp(dstFgColor, srcBgColor, background_alpha);
 				}
-				else if (dstChar.c == ' ') {
-					dstChar.c = srcChar.c;
+				else if (dstChar == ' ') {
+					dstChar = srcChar;
 					dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor, foreground_alpha);
 				}
-				else if (dstChar.c == srcChar.c) {
+				else if (dstChar == srcChar) {
 					dstFgColor = TCOD_color_lerp(dstFgColor, srcFgColor, foreground_alpha);
 				}
 				else {
@@ -250,7 +247,7 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 							foreground_alpha * 2);
 					}
 					else {
-						dstChar.c = srcChar.c;
+						dstChar = srcChar;
 						dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor,
 							(foreground_alpha - 0.5f) * 2);
 					}
@@ -258,20 +255,17 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			}
 			dstFgColors[dst_idx] = dstFgColor;
 			dstBgColors[dst_idx] = dstBgColor;
-			dst->state.buf[dst_idx] = dstChar;
+			dst->ch_array[dst_idx] = dstChar;
 		}
 	}
-	TCOD_image_invalidate_mipmaps(dst->state.fg_colors);
-	TCOD_image_invalidate_mipmaps(dst->state.bg_colors);
+	TCOD_image_invalidate_mipmaps(dst->fg_colors);
+	TCOD_image_invalidate_mipmaps(dst->bg_colors);
 }
 
 void TCOD_console_flush(void) {
 	TCOD_console_data_t *dat = TCOD_ctx.root;
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_flush(true);
-	memcpy(dat->state.oldbuf, dat->state.buf, sizeof(char_t)*dat->w*dat->h);
-	TCOD_image_mipmap_copy_internal(dat->state.fg_colors, dat->state.fg_colors_prev);
-	TCOD_image_mipmap_copy_internal(dat->state.bg_colors, dat->state.bg_colors_prev);
 }
 
 void TCOD_console_set_fade(uint8 val, TCOD_color_t fadecol) {
@@ -293,8 +287,8 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
-	dat->state.buf[offset].c = c;
-	TCOD_image_put_pixel(dat->state.fg_colors, x, y, dat->fore);
+	dat->ch_array[offset] = c;
+	TCOD_image_put_pixel(dat->fg_colors, x, y, dat->fore);
 	TCOD_console_set_char_background(con, x, y, dat->back, (TCOD_bkgnd_flag_t)flag);
 }
 
@@ -304,14 +298,14 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
-	dat->state.buf[offset].c = c;
-	TCOD_image_put_pixel(dat->state.fg_colors, x, y, fore);
-	TCOD_image_put_pixel(dat->state.bg_colors, x, y, back);
+	dat->ch_array[offset] = c;
+	TCOD_image_put_pixel(dat->fg_colors, x, y, fore);
+	TCOD_image_put_pixel(dat->bg_colors, x, y, back);
 }
 
 void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 	int x, y;
-	TCOD_console_data_t *dat = TCOD_ctx.root;
+	TCOD_console_data_t *dat = sdl_renderer_cache;
 	TCOD_IFNOT(dat != NULL) return;
 	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
 	TCOD_IFNOT(dx >= 0) {
@@ -328,39 +322,40 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 	for (x = dx; x < dx + dw; x++) {
 		for (y = dy; y < dy + dh; y++) {
 			int off = x + dat->w*y;
-			dat->state.buf[off].c = -1;
+			dat->ch_array[off] = -1;
 		}
 	}
 }
 
 void TCOD_console_set_dirty_character_code(int ch) {
-	/* Mark a character dirty by invalidating all occurrences of it in the root
-	   `state.oldbuf` character buffer.  Each character tile will be refreshed
+	/* Mark a character dirty by invalidating all occurrences of it in the
+	   software renderer cache.  Each character tile will be refreshed
 	   when the old buffer is compared to the current buffer next render.
 	   It's recommended that this method stays non-public. */
 	int i;
-	TCOD_console_data_t *dat = TCOD_ctx.root;
+	TCOD_console_data_t *dat = sdl_renderer_cache;
 	TCOD_IFNOT(dat != NULL) return;
 	for (i = 0; i < dat->w * dat->h; i++) {
-		if (dat->state.oldbuf[i].c == ch) {
-			dat->state.oldbuf[i].c = -1;
+		if (dat->ch_array[i] == ch) {
+			dat->ch_array[i] = -1;
 		}
 	}
 }
 
 void TCOD_console_clear(TCOD_console_t con) {
-	int x, y;
+	int i;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
-	for (x = 0; x < dat->w; x++) {
-		for (y = 0; y < dat->h; y++) {
-			int off = x + dat->w*y;
-			dat->state.oldbuf[off].c = -1; /* forces refresh of the entire console */
-			dat->state.buf[off].c = ' ';
+	for (i = 0; i < dat->w * dat->h; i++) {
+		dat->ch_array[i] = ' ';
+	}
+	TCOD_image_clear(dat->fg_colors, dat->fore);
+	TCOD_image_clear(dat->bg_colors, dat->back);
+	if (sdl_renderer_cache) { /* clear the sdl renderer cache */
+		for (i = 0; i < sdl_renderer_cache->w * sdl_renderer_cache->h; i++) {
+			sdl_renderer_cache->ch_array[i] = -1;
 		}
 	}
-	TCOD_image_clear(dat->state.fg_colors, dat->fore);
-	TCOD_image_clear(dat->state.bg_colors, dat->back);
 }
 
 TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) {
@@ -368,7 +363,7 @@ TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) 
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_black;
-	return TCOD_image_get_pixel(dat->state.bg_colors, x, y);
+	return TCOD_image_get_pixel(dat->bg_colors, x, y);
 }
 
 void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_color_t col) {
@@ -377,7 +372,7 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return;
-	TCOD_image_put_pixel(dat->state.fg_colors, x, y, col);
+	TCOD_image_put_pixel(dat->fg_colors, x, y, col);
 }
 
 TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) {
@@ -385,7 +380,7 @@ TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) 
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_white;
-	return TCOD_image_get_pixel(dat->state.fg_colors, x, y);
+	return TCOD_image_get_pixel(dat->fg_colors, x, y);
 }
 
 int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
@@ -393,7 +388,7 @@ int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return 0;
-	return dat->state.buf[y * dat->w + x].c;
+	return dat->ch_array[y * dat->w + x];
 }
 
 void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag) {
@@ -404,7 +399,7 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return;
-	back = &(TCOD_image_get_colors(dat->state.bg_colors)[y*dat->w + x]);
+	back = &(TCOD_image_get_colors(dat->bg_colors)[y*dat->w + x]);
 	if (flag == TCOD_BKGND_DEFAULT) flag = dat->bkgnd_flag;
 	switch (flag & 0xff) {
 	case TCOD_BKGND_SET: *back = col; break;
@@ -498,7 +493,7 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
-	dat->state.buf[y * dat->w + x].c = c;
+	dat->ch_array[y * dat->w + x] = c;
 }
 
 static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, int *w, int *h) {
@@ -527,7 +522,7 @@ void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool cl
 		for (cy = y; cy<y + rh; cy++) {
 			TCOD_console_set_char_background(con, cx, cy, dat->back, flag);
 			if (clear) {
-				dat->state.buf[cx + cy*dat->w].c = ' ';
+				dat->ch_array[cx + cy*dat->w] = ' ';
 			}
 		}
 	}
@@ -1092,13 +1087,9 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 }
 
 static void TCOD_console_data_alloc(TCOD_console_data_t *dat) {
-	dat->state.buf = (char_t *)calloc(sizeof(char_t), dat->w*dat->h);
-	dat->state.oldbuf = (char_t *)calloc(sizeof(char_t), dat->w*dat->h);
-	dat->state.fg_colors = TCOD_image_new(dat->w, dat->h);
-	dat->state.fg_colors_prev = TCOD_image_new(dat->w, dat->h);
-	dat->state.bg_colors = TCOD_image_new(dat->w, dat->h);
-	dat->state.bg_colors_prev = TCOD_image_new(dat->w, dat->h);
-	dat->state.clear_screen = false;
+	dat->ch_array = (int *)calloc(sizeof(int), dat->w*dat->h);
+	dat->fg_colors = TCOD_image_new(dat->w, dat->h);
+	dat->bg_colors = TCOD_image_new(dat->w, dat->h);
 }
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
@@ -1107,17 +1098,16 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	TCOD_IFNOT(dat != NULL) return false;
 	dat->fore=TCOD_white;
 	dat->back=TCOD_black;
-	dat->fade=255;
 
 	TCOD_console_data_alloc(dat);
 
 	dat->bkgnd_flag=TCOD_BKGND_NONE;
 	dat->alignment=TCOD_LEFT;
 	for (i=0; i< dat->w*dat->h; i++) {
-		dat->state.buf[i].c=' ';
+		dat->ch_array[i] = ' ';
 	}
 	if ( title ) {
-		if (! TCOD_sys_init(dat->w,dat->h,&dat->state,fullscreen) ) return false;
+		if (! TCOD_sys_init(dat, fullscreen) ) return false;
 		TCOD_sys_set_window_title(title);
 	}
 	return true;
@@ -1162,19 +1152,13 @@ int TCOD_console_get_height(TCOD_console_t con) {
 TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return NULL;
-	return dat->state.fg_colors;
+	return dat->fg_colors;
 }
 
 TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return NULL;
-	return dat->state.bg_colors;
-}
-
-TCOD_render_state_t *TCOD_console_get_render_state(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return NULL;
-	return &dat->state;
+	return dat->bg_colors;
 }
 
 void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic) {
@@ -1223,7 +1207,7 @@ bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
-	TCOD_image_set_key_color(dat->state.bg_colors, col);
+	TCOD_image_set_key_color(dat->bg_colors, col);
 }
 
 void TCOD_console_credits(void) {

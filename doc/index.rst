@@ -22,3 +22,5 @@
 .. toctree::
    :maxdepth: 1
    :caption: How-tos
+   
+   upgrading

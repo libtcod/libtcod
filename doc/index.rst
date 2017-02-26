@@ -6,21 +6,27 @@
 .. toctree::
    :maxdepth: 1
    :caption: Core
+   :glob:
 
-   colors
-   console
-   system
+   _source/core/*
 
 .. toctree::
    :maxdepth: 1
    :caption: Base toolkits
+   :glob:
+
+   _source/base-toolkits/*
    
 .. toctree::
    :maxdepth: 1
    :caption: Roguelike toolkits
+   :glob:
+   
+   _source/roguelike-toolkits/*
    
 .. toctree::
    :maxdepth: 1
    :caption: How-tos
+   :glob:
    
-   upgrading
+   _source/*

@@ -7,6 +7,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 1.6.4 : Unreleased
 - Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
+- Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)
+  https://bitbucket.org/libtcod/libtcod/issues/88
 
 =========================================================
 1.6.3 : 2017-02-26

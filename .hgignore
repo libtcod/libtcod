@@ -2,6 +2,7 @@ syntax: regexp
 
 build/dependencies
 build/packages
+doc/_build
 \.vcproj$
 \.vcxproj.user$
 cbproj
@@ -22,3 +23,4 @@ __pycache__
 \.dirstamp
 \.o
 \.lo
+\.suo

@@ -5,15 +5,8 @@ X API break
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
 1.6.4 : Unreleased
-+ Added internal function: `TCOD_console_set_dirty_character_code`. (Kyle Stewart)
-% Internal functions `TCOD_sys_init` and `TCOD_sys_console_to_bitmap` now take `TCOD_console_data_t*` instead of a render state. (Kyle Stewart)
-% The new internal variable `sdl_renderer_cache` is now used for console data caching instead of attributes embedded in the root console object. (Kyle Stewart)
-- Console objects are now safer to create and use before libtcod is fully initialized. (Kyle Stewart)
-- `clear_screen` attribute removed from console data. (Kyle Stewart)
-- Removed internal structs: `char_t` and `TCOD_render_state_t`.
-  Their functionality was merged with `TCOD_console_data_t`. (Kyle Stewart)
-- Internal function `TCOD_console_get_render_state` removed. (Kyle Stewart)
-- Removed private variables: `ascii_updated`, `any_ascii_updated`, and `renderState`. (Kyle Stewart)
+- Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
+  https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
 
 =========================================================
 1.6.3 : 2017-02-26

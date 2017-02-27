@@ -82,7 +82,6 @@ SDL_Window* window=NULL;
 SDL_Renderer* renderer=NULL;
 float scale_factor=1.0f;
 SDL_Surface* charmap=NULL;
-static TCOD_render_state_t *renderState = NULL;
 char *last_clipboard_text = NULL;
 static bool has_startup=false;
 #define MAX_SCALE_FACTOR 5.0f
@@ -146,19 +145,14 @@ static int init_ascii_to_tcod[256] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* ASCII 240 to 255 */
 };
 
-bool *ascii_updated=NULL;
-bool any_ascii_updated=false;
-
 static void alloc_ascii_tables(void) {
 	if ( TCOD_ctx.ascii_to_tcod ) free(TCOD_ctx.ascii_to_tcod);
-	if ( ascii_updated ) free(ascii_updated);
 	if ( charcols ) {
 		free(charcols);
 		free(first_draw);
 	}
 
 	TCOD_ctx.ascii_to_tcod = (int *)calloc(sizeof(int),TCOD_ctx.max_font_chars);
-	ascii_updated = (bool *)calloc(sizeof(bool),TCOD_ctx.max_font_chars);
 	charcols = (TCOD_color_t *)calloc(sizeof(TCOD_color_t),TCOD_ctx.max_font_chars);
 	first_draw =(bool *)calloc(sizeof(bool),TCOD_ctx.max_font_chars);
 	memcpy(TCOD_ctx.ascii_to_tcod,init_ascii_to_tcod,sizeof(int)*256);
@@ -385,38 +379,36 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
-static void TCOD_sys_render(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
-	sdl->render(vbitmap, console_width, console_height, render_state);
+static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
+	sdl->render(vbitmap, console);
 }
 
-void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
+void TCOD_sys_console_to_bitmap(void *vbitmap,
+		TCOD_console_data_t* console, TCOD_console_data_t* cache) {
 	static SDL_Surface *charmap_backup=NULL;
 	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
 	int x,y;
 	Uint32 sdl_back=0, sdl_fore=0;
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
-	bool track_changes = (oldFade == fade && render_state->oldbuf);
+	/* can only track changes on the root console */
+	bool track_changes = (cache && oldFade == fade);
 	Uint8 bpp = charmap->format->BytesPerPixel;
-	char_t *c=&render_state->buf[0];
-	char_t *oc;
+	int *c = console->ch_array;
+	int *oc;
 	TCOD_color_t *ofg, *obg, *nfg, *nbg;
 	int hdelta;
-	if (render_state->clear_screen) {
-		track_changes = false;
-		render_state->clear_screen = false;
-	}
 	if ( bpp == 4 ) {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp)/4;
 	} else {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp);
 	}
-	nfg = TCOD_image_get_colors(render_state->fg_colors);
-	nbg = TCOD_image_get_colors(render_state->bg_colors);
+	nfg = TCOD_image_get_colors(console->fg_colors);
+	nbg = TCOD_image_get_colors(console->bg_colors);
 	if (track_changes) {
-		oc = &render_state->oldbuf[0];
-		ofg = TCOD_image_get_colors(render_state->fg_colors_prev);
-		obg = TCOD_image_get_colors(render_state->bg_colors_prev);
+		oc = cache->ch_array;
+		ofg = TCOD_image_get_colors(cache->fg_colors);
+		obg = TCOD_image_get_colors(cache->bg_colors);
 	}
 	if ( charmap_backup == NULL ) {
 		charmap_backup=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
@@ -425,21 +417,19 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) && SDL_LockSurface( bitmap ) < 0 ) return;
 #endif
-	for (y=0;y<console_height;y++) {
-		for (x=0; x<console_width; x++) {
+	for (y = 0; y < console->h; y++) {
+		for (x = 0; x < console->w; x++) {
 			SDL_Rect srcRect,dstRect;
 			bool changed=true;
-			if ( c->cf == -1 ) c->cf = TCOD_ctx.ascii_to_tcod[c->c];
 			if ( track_changes ) {
 				changed=false;
-				if (c->dirty || ascii_updated[c->c] ||
+				if (
 					nbg->r != obg->r || nbg->g != obg->g || nbg->b != obg->b ||
 					nfg->r != ofg->r || nfg->g != ofg->g || nfg->b != ofg->b ||
-					c->c != oc->c || c->cf != oc->cf) {
+					*c != *oc) {
 					changed=true;
 				}
 			}
-			c->dirty=0;
 			if ( changed ) {
 				TCOD_color_t b=*nbg;
 				dstRect.x=x*TCOD_ctx.font_width;
@@ -454,9 +444,9 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 				}
 				sdl_back=SDL_MapRGB(bitmap->format,b.r,b.g,b.b);
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
-				if ( c->c != ' ' ) {
+				if ( *c != ' ' ) {
 					/* draw foreground */
-					int ascii=c->cf;
+					int ascii = TCOD_ctx.ascii_to_tcod[*c];
 					TCOD_color_t *curtext = &charcols[ascii];
 					bool first = first_draw[ascii];
 					TCOD_color_t f=*nfg;
@@ -467,7 +457,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 						f.b = ((int)f.b) * fade / 255 + ((int)fading_color.b) * (255-fade)/255;
 					}
 					/* only draw character if foreground color != background color */
-					if ( ascii_updated[c->c] || f.r != b.r || f.g != b.g || f.b != b.b ) {
+					if ( f.r != b.r || f.g != b.g || f.b != b.b ) {
 						if ( charmap->format->Amask == 0
 							&& f.r == fontKeyCol.r && f.g == fontKeyCol.g && f.b == fontKeyCol.b ) {
 							/* cannot draw with the key color... */
@@ -595,6 +585,13 @@ void TCOD_sys_console_to_bitmap(void *vbitmap, int console_width, int console_he
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
 #endif
+	if (cache) {
+		/* update previous values cache */
+		memcpy(cache->ch_array, console->ch_array,
+		       sizeof(console->ch_array[0]) * console->w * console->h);
+		TCOD_image_mipmap_copy_internal(console->fg_colors, cache->fg_colors);
+		TCOD_image_mipmap_copy_internal(console->bg_colors, cache->bg_colors);
+	}
 }
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
@@ -629,10 +626,8 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 			}
 		}
 	}
-	/* TODO : improve this. */
 	charcols[asciiCode]=pink;
-	ascii_updated[asciiCode]=true;
-	any_ascii_updated=true;
+	TCOD_sys_set_dirty_character_code(asciiCode);
 }
 
 void TCOD_sys_startup(void) {
@@ -732,7 +727,7 @@ void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 	if ( renderer == TCOD_ctx.renderer ) return;
 	TCOD_ctx.renderer=renderer;
 	TCOD_sys_uninit();
-	TCOD_sys_init(TCOD_ctx.root->w,TCOD_ctx.root->h,&TCOD_ctx.root->state,TCOD_ctx.fullscreen);
+	TCOD_sys_init(TCOD_ctx.root, TCOD_ctx.fullscreen);
 	TCOD_console_set_window_title(TCOD_ctx.window_title);
 	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
 }
@@ -742,7 +737,7 @@ void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
 
-bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscreen) {
+bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
 	if ( ! has_startup ) TCOD_sys_startup();
@@ -756,16 +751,14 @@ bool TCOD_sys_init(int w,int h, TCOD_render_state_t *render_state, bool fullscre
 		/* reload the font when switching renderer to restore original character colors */
 		TCOD_sys_load_font();
 	}
-	sdl->create_window(w,h,fullscreen);
-	renderState = render_state;
+	sdl->create_window(console->w, console->h, fullscreen);
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
-	memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
+
 	return true;
 }
 
 void TCOD_sys_uninit(void) {
 	if (!has_startup) return;
-	renderState = NULL;
 	sdl->destroy_window();
 }
 
@@ -819,7 +812,7 @@ void TCOD_sys_flush(bool render) {
 	static uint32 old_time,new_time=0, elapsed=0;
 	int32 frame_time,time_to_wait;
 	if ( render ) {
-		TCOD_sys_render(NULL, TCOD_console_get_width(NULL), TCOD_console_get_height(NULL), renderState);
+		TCOD_sys_render(NULL, TCOD_ctx.root);
 	}
 	old_time=new_time;
 	new_time=TCOD_sys_elapsed_milli();
@@ -1341,7 +1334,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
 				TCOD_ctx.app_is_active=false; break;
 			case SDL_WINDOWEVENT_EXPOSED:        /**< Window has been returned to and needs a refresh. */
-				TCOD_sys_render(NULL,TCOD_console_get_width(NULL),TCOD_console_get_height(NULL), renderState);
+				TCOD_sys_render(NULL, TCOD_ctx.root);
 				break;
 #ifdef NDEBUG_HMM
 			default:
@@ -1650,4 +1643,43 @@ bool TCOD_sys_file_exists(const char * filename, ...) {
 
 bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size) {
 	return sdl->file_write(filename,buf,size);
+}
+
+/* Mark a rectangle of tiles dirty. */
+void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
+	int x, y;
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	if (!dat) return;
+	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
+	TCOD_IFNOT(dx >= 0) {
+		dw += dx;
+		dx = 0;
+	}
+	TCOD_IFNOT(dy >= 0) {
+		dh += dy;
+		dy = 0;
+	}
+	TCOD_IFNOT(dx + dw <= dat->w) dw = dat->w - dx;
+	TCOD_IFNOT(dy + dh <= dat->h) dh = dat->h - dy;
+
+	for (x = dx; x < dx + dw; ++x) {
+		for (y = dy; y < dy + dh; ++y) {
+			dat->ch_array[dat->w * y + x] = -1;
+		}
+	}
+}
+
+/* Mark a character dirty by invalidating all occurrences of it in the software
+   renderer cache.  Each character tile will be refreshed when the old buffer
+   is compared to the current buffer next render.
+   It's recommended that this method stays non-public. */
+void TCOD_sys_set_dirty_character_code(int ch) {
+	int i;
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	if (!dat) return;
+	for (i = 0; i < dat->w * dat->h; ++i) {
+		if (dat->ch_array[i] == ch) {
+			dat->ch_array[i] = -1;
+		}
+	}
 }

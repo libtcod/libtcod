@@ -4,6 +4,11 @@ X API break
 - removed features, fixed bugs
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
+1.6.4 : Unreleased
+- Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
+  https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
+
+=========================================================
 1.6.3 : 2017-02-26
 + Added SCons build support (HexDecimal@bitbucket).
   https://bitbucket.org/libtcod/libtcod/commits/92c5a1b530049f15d1ed36375b12781554272f17

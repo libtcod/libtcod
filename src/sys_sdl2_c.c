@@ -34,6 +34,7 @@ static SDL_Surface* scale_screen=NULL;
 static float scale_xc=0.5f;
 static float scale_yc=0.5f;
 static bool clear_screen=false;
+static TCOD_console_data_t *root_console_cache; /* cache for previous values */
 
 /* This just forces a complete redraw, bypassing the usual rendering of changes. */
 void TCOD_sys_set_clear_screen(void) {
@@ -83,14 +84,26 @@ static void actual_rendering(void) {
 	SDL_DestroyTexture(texture);
 }
 
+/* Return an up-to-date cache for the root console, create or resize the cache
+   if needed */
+static TCOD_console_data_t *ensure_cache(TCOD_console_data_t* root) {
+	if (!root_console_cache ||
+			root_console_cache->w != root->w ||
+			root_console_cache->h != root->h) {
+		if (root_console_cache) { TCOD_console_delete(root_console_cache); }
+		root_console_cache = TCOD_console_new(root->w, root->h);
+	}
+	return root_console_cache;
+}
+
 /* In order to avoid rendering race conditions and the ensuing segmentation
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
-static void render(void *vbitmap, int console_width, int console_height, TCOD_render_state_t *render_state) {
+static void render(void *vbitmap, TCOD_console_data_t *console) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-		int console_width_p = console_width*TCOD_ctx.font_width;
-		int console_height_p = console_height*TCOD_ctx.font_height;
+		int console_width_p = console->w * TCOD_ctx.font_width;
+		int console_height_p = console->h * TCOD_ctx.font_height;
 
 		/* Make a bitmap of exact rendering size and correct format. */
 		if (scale_screen == NULL) {
@@ -109,10 +122,10 @@ static void render(void *vbitmap, int console_width, int console_height, TCOD_re
 			clear_screen=false;
 			SDL_FillRect(scale_screen,0,0);
 			/* Implicitly do complete console redraw, not just tracked changes. */
-			render_state->clear_screen = true;
+			TCOD_console_set_dirty(0, 0, console->w, console->h);
 		}
 
-		TCOD_sys_console_to_bitmap(scale_screen, console_width, console_height, render_state);
+		TCOD_sys_console_to_bitmap(scale_screen, console, ensure_cache(console));
 
 		/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 		 * This data is also used for console coordinate resolution.. */
@@ -172,15 +185,16 @@ static void render(void *vbitmap, int console_width, int console_height, TCOD_re
 	}
 #ifndef NO_OPENGL
 	else {
-		TCOD_opengl_render(oldFade, ascii_updated, console_buffer, prev_console_buffer);
+		TCOD_opengl_render(oldFade, NULL, console_buffer, prev_console_buffer);
 		TCOD_opengl_swap();
 	}  
 #endif
 	oldFade=(int)TCOD_console_get_fade();
-	if ( any_ascii_updated ) {
-		memset(ascii_updated,0,sizeof(bool)*TCOD_ctx.max_font_chars);
-		any_ascii_updated=false;
-	}
+}
+
+/* Return the current root console cache if it exists, or NULL. */
+static TCOD_console_data_t *get_root_console_cache(void){
+	return root_console_cache;
 }
 
 static SDL_Surface *create_surface(int width, int height, bool with_alpha) {
@@ -466,6 +480,10 @@ static void shutdown(void) {
 		SDL_free(last_clipboard_text);
 		last_clipboard_text = NULL;
 	}
+	if (root_console_cache) {
+		TCOD_console_delete(root_console_cache);
+		root_console_cache = NULL;
+		}
 }
 
 TCOD_SDL_driver_t *SDL_implementation_factory(void) {
@@ -486,6 +504,7 @@ TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	ret->file_exists = file_exists;
 	ret->file_write = file_write;
 	ret->shutdown = shutdown;
+	ret->get_root_console_cache = get_root_console_cache;
 	return ret;
 }
 

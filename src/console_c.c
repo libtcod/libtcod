@@ -263,7 +263,6 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 }
 
 void TCOD_console_flush(void) {
-	TCOD_console_data_t *dat = TCOD_ctx.root;
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_flush(true);
 }
@@ -304,42 +303,7 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
 }
 
 void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
-	int x, y;
-	TCOD_console_data_t *dat = sdl_renderer_cache;
-	TCOD_IFNOT(dat != NULL) return;
-	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
-	TCOD_IFNOT(dx >= 0) {
-		dw += dx;
-		dx = 0;
-	}
-	TCOD_IFNOT(dy >= 0) {
-		dh += dy;
-		dy = 0;
-	}
-	TCOD_IFNOT(dx + dw <= dat->w) dw = dat->w - dx;
-	TCOD_IFNOT(dy + dh <= dat->h) dh = dat->h - dy;
-
-	for (x = dx; x < dx + dw; x++) {
-		for (y = dy; y < dy + dh; y++) {
-			int off = x + dat->w*y;
-			dat->ch_array[off] = -1;
-		}
-	}
-}
-
-void TCOD_console_set_dirty_character_code(int ch) {
-	/* Mark a character dirty by invalidating all occurrences of it in the
-	   software renderer cache.  Each character tile will be refreshed
-	   when the old buffer is compared to the current buffer next render.
-	   It's recommended that this method stays non-public. */
-	int i;
-	TCOD_console_data_t *dat = sdl_renderer_cache;
-	TCOD_IFNOT(dat != NULL) return;
-	for (i = 0; i < dat->w * dat->h; i++) {
-		if (dat->ch_array[i] == ch) {
-			dat->ch_array[i] = -1;
-		}
-	}
+	TCOD_sys_set_dirty(dx, dy, dw, dh);
 }
 
 void TCOD_console_clear(TCOD_console_t con) {
@@ -351,11 +315,8 @@ void TCOD_console_clear(TCOD_console_t con) {
 	}
 	TCOD_image_clear(dat->fg_colors, dat->fore);
 	TCOD_image_clear(dat->bg_colors, dat->back);
-	if (sdl_renderer_cache) { /* clear the sdl renderer cache */
-		for (i = 0; i < sdl_renderer_cache->w * sdl_renderer_cache->h; i++) {
-			sdl_renderer_cache->ch_array[i] = -1;
-		}
-	}
+	/* clear the sdl renderer cache */
+	TCOD_sys_set_dirty(0, 0, dat->w, dat->h);
 }
 
 TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) {

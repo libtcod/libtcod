@@ -191,8 +191,6 @@ int TCOD_console_stringLength(const unsigned char *s);
 unsigned char * TCOD_console_forward(unsigned char *s,int l);
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
 void TCOD_console_set_dirty_character_code(int ch);
-/* cache for previous console data */
-extern TCOD_console_data_t *sdl_renderer_cache;
 
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);
@@ -207,10 +205,13 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
 void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(void *bitmap);
-void TCOD_sys_console_to_bitmap(void *bitmap, TCOD_console_data_t *console);
+void TCOD_sys_console_to_bitmap(void *bitmap, TCOD_console_data_t *console,
+                                TCOD_console_data_t *cache);
 TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
+void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
+void TCOD_sys_set_dirty_character_code(int ch);
 
 /* switch fullscreen mode */
 void TCOD_sys_set_fullscreen(bool fullscreen);
@@ -274,6 +275,8 @@ typedef struct {
 	bool (*file_write)(const char *filename, unsigned char *buf, uint32 size);
 	/* clean stuff */
 	void (*shutdown)(void);
+  /* get root cache */
+  TCOD_console_data_t *(*get_root_console_cache)(void);
 } TCOD_SDL_driver_t;
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */

@@ -34,6 +34,7 @@ static SDL_Surface* scale_screen=NULL;
 static float scale_xc=0.5f;
 static float scale_yc=0.5f;
 static bool clear_screen=false;
+static TCOD_console_data_t *root_console_cache; /* cache for previous values */
 
 /* This just forces a complete redraw, bypassing the usual rendering of changes. */
 void TCOD_sys_set_clear_screen(void) {
@@ -83,6 +84,18 @@ static void actual_rendering(void) {
 	SDL_DestroyTexture(texture);
 }
 
+/* Return an up-to-date cache for the root console, create or resize the cache
+   if needed */
+static TCOD_console_data_t *ensure_cache(TCOD_console_data_t* root) {
+	if (!root_console_cache ||
+			root_console_cache->w != root->w ||
+			root_console_cache->h != root->h) {
+		if (root_console_cache) { TCOD_console_delete(root_console_cache); }
+		root_console_cache = TCOD_console_new(root->w, root->h);
+	}
+	return root_console_cache;
+}
+
 /* In order to avoid rendering race conditions and the ensuing segmentation
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
@@ -112,7 +125,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 			TCOD_console_set_dirty(0, 0, console->w, console->h);
 		}
 
-		TCOD_sys_console_to_bitmap(scale_screen, console);
+		TCOD_sys_console_to_bitmap(scale_screen, console, ensure_cache(console));
 
 		/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 		 * This data is also used for console coordinate resolution.. */
@@ -177,6 +190,11 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 	}  
 #endif
 	oldFade=(int)TCOD_console_get_fade();
+}
+
+/* Return the current root console cache if it exists, or NULL. */
+static TCOD_console_data_t *get_root_console_cache(void){
+	return root_console_cache;
 }
 
 static SDL_Surface *create_surface(int width, int height, bool with_alpha) {
@@ -462,6 +480,10 @@ static void shutdown(void) {
 		SDL_free(last_clipboard_text);
 		last_clipboard_text = NULL;
 	}
+	if (root_console_cache) {
+		TCOD_console_delete(root_console_cache);
+		root_console_cache = NULL;
+		}
 }
 
 TCOD_SDL_driver_t *SDL_implementation_factory(void) {
@@ -482,6 +504,7 @@ TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	ret->file_exists = file_exists;
 	ret->file_write = file_write;
 	ret->shutdown = shutdown;
+	ret->get_root_console_cache = get_root_console_cache;
 	return ret;
 }
 

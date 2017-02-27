@@ -84,7 +84,6 @@ float scale_factor=1.0f;
 SDL_Surface* charmap=NULL;
 char *last_clipboard_text = NULL;
 static bool has_startup=false;
-TCOD_console_data_t *sdl_renderer_cache = NULL;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* font transparent color */
@@ -385,7 +384,8 @@ static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
 }
 
 void TCOD_sys_console_to_bitmap(void *vbitmap,
-																TCOD_console_data_t* console) {
+																TCOD_console_data_t* console,
+																TCOD_console_data_t* cache) {
 	static SDL_Surface *charmap_backup=NULL;
 	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
 	int x,y;
@@ -393,8 +393,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 	TCOD_color_t fading_color = TCOD_console_get_fading_color();
 	int fade = (int)TCOD_console_get_fade();
 	/* can only track changes on the root console */
-	bool track_changes = (oldFade == fade && sdl_renderer_cache &&
-	                      console == TCOD_ctx.root);
+	bool track_changes = (cache && oldFade == fade);
 	Uint8 bpp = charmap->format->BytesPerPixel;
 	int *c = console->ch_array;
 	int *oc;
@@ -408,9 +407,9 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 	nfg = TCOD_image_get_colors(console->fg_colors);
 	nbg = TCOD_image_get_colors(console->bg_colors);
 	if (track_changes) {
-		oc = sdl_renderer_cache->ch_array;
-		ofg = TCOD_image_get_colors(sdl_renderer_cache->fg_colors);
-		obg = TCOD_image_get_colors(sdl_renderer_cache->bg_colors);
+		oc = cache->ch_array;
+		ofg = TCOD_image_get_colors(cache->fg_colors);
+		obg = TCOD_image_get_colors(cache->bg_colors);
 	}
 	if ( charmap_backup == NULL ) {
 		charmap_backup=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
@@ -587,14 +586,13 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 #ifdef USE_SDL_LOCKS
 	if ( SDL_MUSTLOCK( bitmap ) ) SDL_UnlockSurface( bitmap );
 #endif
-	/* update previous values cache */
-	memcpy(sdl_renderer_cache->ch_array, console->ch_array,
-				 sizeof(console->ch_array[0]) *
-				 sdl_renderer_cache->w * sdl_renderer_cache->h);
-	TCOD_image_mipmap_copy_internal(console->fg_colors,
-	                                sdl_renderer_cache->fg_colors);
-	TCOD_image_mipmap_copy_internal(console->bg_colors,
-	                                sdl_renderer_cache->bg_colors);
+	if (cache) {
+		/* update previous values cache */
+		memcpy(cache->ch_array, console->ch_array,
+		       sizeof(console->ch_array[0]) * console->w * console->h);
+		TCOD_image_mipmap_copy_internal(console->fg_colors, cache->fg_colors);
+		TCOD_image_mipmap_copy_internal(console->bg_colors, cache->bg_colors);
+	}
 }
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
@@ -630,7 +628,7 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 		}
 	}
 	charcols[asciiCode]=pink;
-	TCOD_console_set_dirty_character_code(asciiCode);
+	TCOD_sys_set_dirty_character_code(asciiCode);
 }
 
 void TCOD_sys_startup(void) {
@@ -757,18 +755,11 @@ bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen) {
 	sdl->create_window(console->w, console->h, fullscreen);
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
 
-	if (sdl_renderer_cache) {
-		TCOD_console_delete((TCOD_console_t*)sdl_renderer_cache);
-	}
-	sdl_renderer_cache = (TCOD_console_data_t*)TCOD_console_new(console->w, console->h);
 	return true;
 }
 
 void TCOD_sys_uninit(void) {
 	if (!has_startup) return;
-	if (sdl_renderer_cache) {
-		TCOD_console_delete((TCOD_console_t*)sdl_renderer_cache);
-	}
 	sdl->destroy_window();
 }
 
@@ -1653,4 +1644,43 @@ bool TCOD_sys_file_exists(const char * filename, ...) {
 
 bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size) {
 	return sdl->file_write(filename,buf,size);
+}
+
+/* Mark a rectangle of tiles dirty. */
+void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
+	int x, y;
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	if (!dat) return;
+	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
+	TCOD_IFNOT(dx >= 0) {
+		dw += dx;
+		dx = 0;
+	}
+	TCOD_IFNOT(dy >= 0) {
+		dh += dy;
+		dy = 0;
+	}
+	TCOD_IFNOT(dx + dw <= dat->w) dw = dat->w - dx;
+	TCOD_IFNOT(dy + dh <= dat->h) dh = dat->h - dy;
+
+	for (x = dx; x < dx + dw; ++x) {
+		for (y = dy; y < dy + dh; ++y) {
+			dat->ch_array[dat->w * y + x] = -1;
+		}
+	}
+}
+
+/* Mark a character dirty by invalidating all occurrences of it in the software
+   renderer cache.  Each character tile will be refreshed when the old buffer
+   is compared to the current buffer next render.
+   It's recommended that this method stays non-public. */
+void TCOD_sys_set_dirty_character_code(int ch) {
+	int i;
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	if (!dat) return;
+	for (i = 0; i < dat->w * dat->h; ++i) {
+		if (dat->ch_array[i] == ch) {
+			dat->ch_array[i] = -1;
+		}
+	}
 }

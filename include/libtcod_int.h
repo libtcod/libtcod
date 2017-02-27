@@ -40,8 +40,8 @@ extern "C" {
 #endif
 
 typedef struct {
-  int *ch_array; /* character code array */
-  TCOD_image_t fg_colors, bg_colors;
+	int *ch_array; /* character code array */
+	TCOD_image_t fg_colors, bg_colors;
 	/* console width and height (in characters,not pixels) */
 	int w,h;
 	/* default background operator for print & print_rect functions */
@@ -275,8 +275,8 @@ typedef struct {
 	bool (*file_write)(const char *filename, unsigned char *buf, uint32 size);
 	/* clean stuff */
 	void (*shutdown)(void);
-  /* get root cache */
-  TCOD_console_data_t *(*get_root_console_cache)(void);
+	/* get root cache */
+	TCOD_console_data_t *(*get_root_console_cache)(void);
 } TCOD_SDL_driver_t;
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */

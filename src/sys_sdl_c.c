@@ -384,8 +384,7 @@ static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
 }
 
 void TCOD_sys_console_to_bitmap(void *vbitmap,
-																TCOD_console_data_t* console,
-																TCOD_console_data_t* cache) {
+		TCOD_console_data_t* console, TCOD_console_data_t* cache) {
 	static SDL_Surface *charmap_backup=NULL;
 	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
 	int x,y;

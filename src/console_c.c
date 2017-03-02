@@ -1472,6 +1472,14 @@ static void TCOD_console_read_asc(TCOD_console_t con,FILE *f,int width, int heig
 static void TCOD_console_read_apf(TCOD_console_t con,FILE *f,int width, int height, float version) {
 }
 
+static int string_ends_with(const char *str, const char *suffix) {
+	int str_len = strlen(str);
+	int suffix_len = strlen(suffix);
+	return
+		(str_len >= suffix_len) &&
+		(0 == strcmp(str + (str_len-suffix_len), suffix));
+}
+
 TCOD_console_t TCOD_console_from_file(const char *filename) {
 	float version;
 	int width,height;
@@ -1479,6 +1487,9 @@ TCOD_console_t TCOD_console_from_file(const char *filename) {
 	FILE *f;
 	TCOD_IFNOT( filename != NULL ) {
 		return NULL;
+	}
+	if (string_ends_with(filename, ".xp")) {
+		return TCOD_console_from_xp(filename);
 	}
 	f=fopen(filename,"rb");
 	TCOD_IFNOT( f!=NULL ) {
@@ -1497,9 +1508,11 @@ TCOD_console_t TCOD_console_from_file(const char *filename) {
 		return NULL;
 	}
 	con=TCOD_console_new(width,height);
-	if ( strstr(filename,".asc") )
+	if (string_ends_with(filename, ".asc")) {
 		TCOD_console_read_asc(con,f,width,height,version);
-	else TCOD_console_read_apf(con,f,width,height,version);
+	} else {
+		TCOD_console_read_apf(con,f,width,height,version);
+	}
 	return con;
 }
 

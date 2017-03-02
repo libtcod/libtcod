@@ -121,7 +121,7 @@ def test_console_asc_read_write(console, offscreen, tmpdir):
     libtcodpy.console_print(console, 0, 0, 'test')
 
     asc_file = tmpdir.join('test.asc').strpath
-    libtcodpy.console_save_asc(console, asc_file)
+    assert libtcodpy.console_save_asc(console, asc_file)
     assert libtcodpy.console_load_asc(offscreen, asc_file)
     assertConsolesEqual(console, offscreen)
 
@@ -129,9 +129,44 @@ def test_console_apf_read_write(console, offscreen, tmpdir):
     libtcodpy.console_print(console, 0, 0, 'test')
 
     apf_file = tmpdir.join('test.apf').strpath
-    libtcodpy.console_save_apf(console, apf_file)
+    assert libtcodpy.console_save_apf(console, apf_file)
     assert libtcodpy.console_load_apf(offscreen, apf_file)
     assertConsolesEqual(console, offscreen)
+
+def test_console_rexpaint_load_test_file(console):
+    xp_console = libtcodpy.console_from_xp('../data/rexpaint/test.xp')
+    assert xp_console
+    assert libtcodpy.console_get_char(xp_console, 0, 0) == ord('T')
+    assert libtcodpy.console_get_char(xp_console, 1, 0) == ord('e')
+    assert (libtcodpy.console_get_char_background(xp_console, 0, 1) ==
+            libtcodpy.Color(255, 0, 0))
+    assert (libtcodpy.console_get_char_background(xp_console, 1, 1) ==
+            libtcodpy.Color(0, 255, 0))
+    assert (libtcodpy.console_get_char_background(xp_console, 2, 1) ==
+            libtcodpy.Color(0, 0, 255))
+
+def test_console_rexpaint_save_load(console, tmpdir, ch, fg, bg):
+    libtcodpy.console_print(console, 0, 0, 'test')
+    libtcodpy.console_put_char_ex(console, 1, 1, ch, fg, bg)
+    xp_file = tmpdir.join('test.xp').strpath
+    assert libtcodpy.console_save_xp(console, xp_file, 1)
+    xp_console = libtcodpy.console_from_xp(xp_file)
+    assert xp_console
+    assertConsolesEqual(console, xp_console)
+    assert libtcodpy.console_load_xp(None, xp_file)
+    assertConsolesEqual(console, xp_console)
+
+def test_console_rexpaint_list_save_load(console, tmpdir):
+    con1 = libtcodpy.console_new(8, 2)
+    con2 = libtcodpy.console_new(8, 2)
+    libtcodpy.console_print(con1, 0, 0, 'hello')
+    libtcodpy.console_print(con2, 0, 0, 'world')
+    xp_file = tmpdir.join('test.xp').strpath
+    assert libtcodpy.console_list_save_xp([con1, con2], xp_file, 1)
+    for a, b in zip([con1, con2], libtcodpy.console_list_load_xp(xp_file)):
+        assertConsolesEqual(a, b)
+        libtcodpy.console_delete(a)
+        libtcodpy.console_delete(b)
 
 def test_console_fullscreen(console):
     libtcodpy.console_set_fullscreen(False)

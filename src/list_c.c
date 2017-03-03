@@ -120,7 +120,7 @@ void ** TCOD_list_end(TCOD_list_t l) {
 }
 void TCOD_list_reverse(TCOD_list_t l) {
 	void **head=TCOD_list_begin(l);
-	void **tail=TCOD_list_end(l);
+	void **tail=TCOD_list_end(l) - 1;
 	while ( head < tail ) {
 		void *tmp=*head;
 		*head=*tail;

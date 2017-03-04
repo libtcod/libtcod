@@ -693,7 +693,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
                 REM Does not exist, fetch it.
                 echo .. !L_VCS_CMD_CLONE!
                 for /F "usebackq tokens=*" %%i in (`!L_VCS_CMD_CLONE!`) do (
-                    echo .. %L_VCS_EXE%: %%i
+                    echo .. !L_VCS_EXE!: %%i
                 )
                 REM The subsequent VCS update needs to be within the repository directory.
                 cd !V_LINK_PARTS[%VCS_NAME%]!
@@ -702,12 +702,12 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
                 echo .. !L_VCS_CMD_PULL!
                 cd !V_LINK_PARTS[%VCS_NAME%]!
                 for /F "usebackq tokens=*" %%i in (`!L_VCS_CMD_PULL!`) do (
-                    echo .. %L_VCS_EXE%: %%i
+                    echo .. !L_VCS_EXE!: %%i
                 )
             )
             echo Updating: [!V_LINK_PARTS[%VCS_NAME%]!] !L_VCS_DESC! repository to revision [!V_LINK_PARTS[%VCS_REVISION%]!].
             for /F "usebackq tokens=*" %%i in (`!L_VCS_CMD_UPDATE!`) do (
-                echo .. %L_VCS_EXE%: %%i
+                echo .. !L_VCS_EXE!: %%i
             )
             goto exit_from_internal_function_fetch_dependency
         ) else (

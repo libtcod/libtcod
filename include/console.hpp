@@ -1622,7 +1622,14 @@ public :
 		TCOD_console_save_apf(console,"myfile.apf");
 	*/
 	bool saveApf(const char *filename) const;
-	
+
+	bool loadXp(const char *filename) {
+		return TCOD_console_load_xp(data, filename);
+	}
+	bool saveXp(const char *filename, int compress_level) {
+		return TCOD_console_save_xp(data, filename, compress_level);
+	}
+
 	/**
 	@PageName console_offscreen
 	@FuncTitle Blitting a console on another one

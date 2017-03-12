@@ -1238,6 +1238,51 @@ _lib.TCOD_console_save_apf.argtypes=[c_void_p , c_char_p]
 def console_save_apf(con, filename) :
     return _lib.TCOD_console_save_apf(con,convert_to_ascii(filename))
 
+_lib.TCOD_console_from_xp.restype = c_void_p
+_lib.TCOD_console_from_xp.argtypes = [c_char_p]
+def console_from_xp(filename):
+    return _lib.TCOD_console_from_xp(filename.encode('utf-8'))
+
+_lib.TCOD_console_load_xp.restype = c_bool
+_lib.TCOD_console_load_xp.argtypes = [c_void_p, c_char_p]
+def console_load_xp(con, filename):
+    return _lib.TCOD_console_load_xp(con, filename.encode('utf-8'))
+
+_lib.TCOD_console_save_xp.restype = c_bool
+_lib.TCOD_console_save_xp.argtypes = [c_void_p, c_char_p, c_int]
+def console_save_xp(con, filename, compress_level=9):
+    return _lib.TCOD_console_save_xp(con, filename.encode('utf-8'),
+                                     compress_level)
+
+_lib.TCOD_console_list_from_xp.restype = c_void_p
+_lib.TCOD_console_list_from_xp.argtypes = [c_char_p]
+def console_list_load_xp(filename):
+    tcod_list = _lib.TCOD_console_list_from_xp(filename.encode('utf-8'))
+    if not tcod_list:
+        return None
+    try:
+        python_list = []
+        _lib.TCOD_list_reverse(tcod_list)
+        while not _lib.TCOD_list_is_empty(tcod_list):
+            python_list.append(_lib.TCOD_list_pop(tcod_list))
+        return python_list
+    finally:
+        _lib.TCOD_list_delete(tcod_list)
+
+_lib.TCOD_console_list_save_xp.restype = c_bool
+_lib.TCOD_console_list_save_xp.argtypes = [c_void_p, c_char_p, c_int]
+def console_list_save_xp(console_list, filename, compress_level=9):
+    tcod_list = _lib.TCOD_list_new()
+    try:
+        for console in console_list:
+            _lib.TCOD_list_push(tcod_list, console)
+        return _lib.TCOD_console_list_save_xp(
+            tcod_list, filename.encode('utf-8'), compress_level
+            )
+    finally:
+        _lib.TCOD_list_delete(tcod_list)
+
+
 ############################
 # sys module
 ############################

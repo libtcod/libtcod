@@ -192,7 +192,6 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TC
 int TCOD_console_stringLength(const unsigned char *s);
 unsigned char * TCOD_console_forward(unsigned char *s,int l);
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
-void TCOD_console_set_dirty_character_code(int ch);
 
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);

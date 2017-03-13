@@ -106,13 +106,13 @@ protected :
 	typedef struct {
 		float slope;
 		// number of cells flowing into this cell
-		uint32 area;
+		uint32_t area;
 		// direction of lowest neighbour
-		uint8 flowDir;
+		uint8_t flowDir;
 		// inverse flow direction
-		uint8 upDir;
-		uint8 inFlags; // incoming flows
-		uint8 riverId;
+		uint8_t upDir;
+		uint8_t inFlags; // incoming flows
+		uint8_t riverId;
 		int riverLength;
 	} map_data_t;
 	map_data_t * mapData;

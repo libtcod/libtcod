@@ -376,7 +376,7 @@ void WorldGenerator::erodeMap() {
                 float sediment=0.0f;
                 bool end=false;
                 int ix=x,iy=y;
-                uint8 oldFlow=md->flowDir;
+                uint8_t oldFlow=md->flowDir;
                 map_data_t *md2=md;
                 while ( !end ) {
                     float h = hm->getValue(ix,iy);

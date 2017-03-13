@@ -20,7 +20,7 @@ float hillRadius=0.1f;
 float hillVariation=0.5f;
 float addFbmDelta=0.0f;
 float scaleFbmDelta=0.0f;
-uint32 seed=0xdeadbeef;
+uint32_t seed=0xdeadbeef;
 
 float sandHeight=0.12f;
 float grassHeight=0.315f;
@@ -110,11 +110,11 @@ void render() {
 	for (int x=0; x < HM_WIDTH; x ++ ) {
 		for (int y=0;y < HM_HEIGHT; y++ ) {
 			float z = backup.getValue(x,y);
-			uint8 val=(uint8)(z*255);
+			uint8_t val=(uint8_t)(z*255);
 			if ( slope ) {
 				// render the slope map
 				z = CLAMP(0.0f,1.0f,hm->getSlope(x,y)*10.0f);
-				val = (uint8)(z*255);
+				val = (uint8_t)(z*255);
 				TCODColor c(val,val,val);
 				TCODConsole::root->setCharBackground(x,y,c);
 			} else if ( greyscale ) {
@@ -125,9 +125,9 @@ void render() {
 				// render the normal map
 				float n[3];
 				hm->getNormal((float)x,(float)y,n,mapmin);
-				uint8 r = (uint8)((n[0]*0.5f+0.5f)*255);
-				uint8 g = (uint8)((n[1]*0.5f+0.5f)*255);
-				uint8 b = (uint8)((n[2]*0.5f+0.5f)*255);
+				uint8_t r = (uint8_t)((n[0]*0.5f+0.5f)*255);
+				uint8_t g = (uint8_t)((n[1]*0.5f+0.5f)*255);
+				uint8_t b = (uint8_t)((n[2]*0.5f+0.5f)*255);
 				TCODColor c(r,g,b);
 				TCODConsole::root->setCharBackground(x,y,c);
 			} else {
@@ -296,11 +296,11 @@ void exportBmpCbk(Widget *w, void *data) {
 	for (int x=0; x < HM_WIDTH; x++ ) {
 		for (int y=0; y < HM_HEIGHT; y++ ) {
 			float z = hm->getValue(x,y);
-			uint8 val=(uint8)(z*255);
+			uint8_t val=(uint8_t)(z*255);
 			if ( slope ) {
 				// render the slope map
 				z = CLAMP(0.0f,1.0f,hm->getSlope(x,y)*10.0f);
-				val = (uint8)(z*255);
+				val = (uint8_t)(z*255);
 				TCODColor c(val,val,val);
 				img.putPixel(x,y,c);
 			} else if ( greyscale ) {
@@ -311,9 +311,9 @@ void exportBmpCbk(Widget *w, void *data) {
 				// render the normal map
 				float n[3];
 				hm->getNormal((float)x,(float)y,n,mapmin);
-				uint8 r = (uint8)((n[0]*0.5f+0.5f)*255);
-				uint8 g = (uint8)((n[1]*0.5f+0.5f)*255);
-				uint8 b = (uint8)((n[2]*0.5f+0.5f)*255);
+				uint8_t r = (uint8_t)((n[0]*0.5f+0.5f)*255);
+				uint8_t g = (uint8_t)((n[1]*0.5f+0.5f)*255);
+				uint8_t b = (uint8_t)((n[2]*0.5f+0.5f)*255);
 				TCODColor c(r,g,b);
 				img.putPixel(x,y,c);
 			} else {
@@ -352,28 +352,28 @@ void normalCbk(Widget *w, void *data) {
 }
 
 void changeColorMapIdxCbk(Widget *w, float val, void *data) {
-	intptr i=((intptr)data);
+	intptr_t i=((intptr_t)data);
 	keyIndex[i]=(int)(val);
 	if ( i == 1 ) sandHeight = (float)(i)/255.0f;
 	initColors();
 }
 
 void changeColorMapRedCbk(Widget *w, float val, void *data) {
-	intptr i=((intptr)data);
+	intptr_t i=((intptr_t)data);
 	keyColor[i].r=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapGreenCbk(Widget *w, float val, void *data) {
-	intptr i=((intptr)data);
+	intptr_t i=((intptr_t)data);
 	keyColor[i].g=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
 }
 
 void changeColorMapBlueCbk(Widget *w, float val, void *data) {
-	intptr i=((intptr)data);
+	intptr_t i=((intptr_t)data);
 	keyColor[i].b=(int)(val);
 	keyImages[i]->setBackgroundColor(keyColor[i]);
 	initColors();
@@ -508,7 +508,7 @@ int main(int argc, char *argv[]) {
 	hmold = new TCODHeightMap(HM_WIDTH,HM_HEIGHT);
 	rnd=new TCODRandom(seed);
 	noise=new TCODNoise(2,rnd);
-	uint8 fade=50;
+	uint8_t fade=50;
 	bool creditsEnd=false;
 
 	while ( ! TCODConsole::isWindowClosed() ) {

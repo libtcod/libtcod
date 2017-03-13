@@ -19,7 +19,7 @@ extern int smoothKernelDx[9];
 extern int smoothKernelDy[9];
 extern float smoothKernelWeight[9];
 extern TCODRandom *rnd;
-extern uint32 seed;
+extern uint32_t seed;
 extern float mapmin,mapmax;
 
 // an abstract elementary operation on the heightmap

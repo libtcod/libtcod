@@ -645,3 +645,6 @@ def test_dijkstra_callback(map_, path_callback):
         )
     libtcodpy.dijkstra_compute(path, *POINT_A)
     libtcodpy.dijkstra_delete(path)
+
+if __name__ == '__main__':
+    pytest.main()

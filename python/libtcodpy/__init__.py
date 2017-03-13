@@ -1642,7 +1642,7 @@ class _CValue(Union):
               ('f',c_float),
               ('s',c_char_p),
               # JBR03192012 See http://bugs.python.org/issue14354 for why these are not defined as their actual types
-              ('col',c_uint8_t* 3),
+              ('col',c_uint8 * 3),
               ('dice',c_int * 4),
               ('custom',c_void_p),
               ]

@@ -204,6 +204,11 @@ float TCOD_noise_perlin( TCOD_noise_t noise, float *f )
 	return CLAMP(-0.99999f, 0.99999f, value);
 }
 
+static int absmod(int x, int n) {
+	int m=x%n;
+	return m < 0 ? m+n : m;
+}
+
 /* simplex noise, adapted from Ken Perlin's presentation at Siggraph 2001 */
 /* and Stefan Gustavson implementation */
 
@@ -265,7 +270,7 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 			float yo = j-t;
 			float x0 = f[0]*SIMPLEX_SCALE-xo;
 			float y0 = f[1]*SIMPLEX_SCALE-yo;
-			int i1,j1,ii = i%256,jj = j%256;
+			int i1,j1,ii = absmod(i ,256),jj = absmod(j, 256);
 			float n0,n1,n2,x1,y1,x2,y2,t0,t1,t2;
 			if ( x0 > y0 ) {
 				i1=1;j1=0;
@@ -356,9 +361,9 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 			x3 = x0 - 1.0f +3.0f * G3;
 			y3 = y0 - 1.0f +3.0f * G3;
 			z3 = z0 - 1.0f +3.0f * G3;
-			ii = i%256;
-			jj = j%256;
-			kk = k%256;
+			ii = absmod(i, 256);
+			jj = absmod(j, 256);
+			kk = absmod(k, 256);
 			t0 = 0.6f - x0*x0 -y0*y0 -z0*z0;
 			if ( t0 < 0.0f ) n0 = 0.0f;
 			else {
@@ -461,10 +466,10 @@ float TCOD_noise_simplex(TCOD_noise_t noise, float *f) {
 			z4 = z0 - 1.0f +4.0f * G4;
 			w4 = w0 - 1.0f +4.0f * G4;
 
-			ii = i%256;
-			jj = j%256;
-			kk = k%256;
-			ll = l%256;
+			ii = absmod(i, 256);
+			jj = absmod(j, 256);
+			kk = absmod(k, 256);
+			ll = absmod(l, 256);
 
 			t0 = 0.6f - x0*x0 -y0*y0 -z0*z0 -w0*w0;
 			if ( t0 < 0.0f ) n0 = 0.0f;
@@ -583,11 +588,6 @@ float TCOD_noise_turbulence_simplex( TCOD_noise_t noise, float *f, float octaves
 }
 
 /* wavelet noise, adapted from Robert L. Cook and Tony Derose 'Wavelet noise' paper */
-
-static int absmod(int x, int n) {
-	int m=x%n;
-	return m < 0 ? m+n : m;
-}
 
 static void TCOD_noise_wavelet_downsample(float *from, float *to, int stride) {
 	static float acoeffs[2*WAVELET_ARAD]= {

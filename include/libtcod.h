@@ -117,7 +117,7 @@
 #endif
 #endif
 
-#include <external/pstdint.h>
+#include "external/pstdint.h"
 
 #define TCOD_HEXVERSION 0x010603
 #define TCOD_STRVERSION "1.6.3"

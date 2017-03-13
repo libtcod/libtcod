@@ -314,7 +314,7 @@ extern SDL_Renderer* renderer;
 extern char *last_clipboard_text;
 #endif
 
-// SDL & OpenGL
+/* SDL & OpenGL */
 extern int oldFade;
 
 /* color values */

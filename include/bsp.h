@@ -32,7 +32,7 @@ typedef struct {
 	TCOD_tree_t tree; /* pseudo oop : bsp inherit tree */
 	int x,y,w,h; /* node position & size */
 	int position; /* position of splitting */
-	uint8 level; /* level in the tree */
+	uint8_t level; /* level in the tree */
 	bool horizontal; /* horizontal splitting ? */
 } TCOD_bsp_t;
 

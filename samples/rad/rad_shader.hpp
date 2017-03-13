@@ -70,8 +70,8 @@ protected :
 	float *ffSum;
 	// convenient way to store the list of cells with non null incoming light
 	struct Coord {
-		uint16 x;
-		uint16 y;
+		uint16_t x;
+		uint16_t y;
 		Coord() {}
 		Coord(int x, int y) : x(x),y(y){}
 	};

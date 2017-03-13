@@ -116,12 +116,12 @@ class TCODLIB_API TCODRandom {
 		@PageName random_init
 		@FuncTitle Generators with user defined seeds
 		@FuncDesc Finally, you can create generators with a specific seed. Those allow you to get a reproducible set of random numbers. You can for example save a dungeon in a file by saving only the seed used for its generation (provided you have a determinist generation algorithm)
-		@Cpp TCODRandom::TCODRandom (uint32 seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
-		@C TCOD_random_t TCOD_random_new_from_seed (TCOD_random_algo_t algo, uint32 seed);
+		@Cpp TCODRandom::TCODRandom (uint32_t seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
+		@C TCOD_random_t TCOD_random_new_from_seed (TCOD_random_algo_t algo, uint32_t seed);
 		@Py random_new_from_seed(seed, algo=RNG_CMWC)
 		@C#
-			TCODRandom::TCODRandom(uint32 seed) // Defaults to ComplementaryMultiplyWithCarry
-			TCODRandom::TCODRandom(uint32 seed, TCODRandomType algo)
+			TCODRandom::TCODRandom(uint32_t seed) // Defaults to ComplementaryMultiplyWithCarry
+			TCODRandom::TCODRandom(uint32_t seed, TCODRandomType algo)
 		@Param seed	The 32 bits seed used to initialize the generator. Two generators created with the same seed will generate the same set of pseudorandom numbers.
 		@Param algo	The PRNG algorithm the generator should be using.
 		@CppEx
@@ -146,7 +146,7 @@ class TCODLIB_API TCODRandom {
 			# a random generator with a specific seed
 			my_determinist_random = libtcod.random_new_from_seed(0xdeadbeef)
 		*/
-		TCODRandom(uint32 seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
+		TCODRandom(uint32_t seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
 
 		/**
 		@PageName random_init

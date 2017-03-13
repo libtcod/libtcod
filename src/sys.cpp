@@ -32,11 +32,11 @@ void TCODSystem::saveScreenshot(const char *filename) {
 	TCOD_sys_save_screenshot(filename);
 }
 
-void TCODSystem::sleepMilli(uint32 milliseconds) {
+void TCODSystem::sleepMilli(uint32_t milliseconds) {
 	TCOD_sys_sleep_milli(milliseconds);
 }
 
-uint32 TCODSystem::getElapsedMilli() {
+uint32_t TCODSystem::getElapsedMilli() {
 	return TCOD_sys_elapsed_milli();
 }
 
@@ -132,13 +132,13 @@ bool TCODSystem::readFile(const char *filename, unsigned char **buf, size_t *siz
 	return TCOD_sys_read_file(filename,buf,size) != 0;
 }
 
-bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32 size) {
+bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32_t size) {
 	return TCOD_sys_write_file(filename,buf,size) != 0;
 }
 
 // clipboard stuff
 bool TCODSystem::setClipboard(const char *value) {
-	return TCOD_sys_clipboard_set(value);
+	return TCOD_sys_clipboard_set(value) != 0;
 }
 
 char *TCODSystem::getClipboard() {

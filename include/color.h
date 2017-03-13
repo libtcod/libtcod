@@ -29,11 +29,11 @@
 #define _TCOD_COLOR_H
 
 typedef struct {
-	uint8 r,g,b;
+	uint8_t r,g,b;
 } TCOD_color_t;
 
 /* constructors */
-TCODLIB_API TCOD_color_t TCOD_color_RGB(uint8 r, uint8 g, uint8 b);
+TCODLIB_API TCOD_color_t TCOD_color_RGB(uint8_t r, uint8_t g, uint8_t b);
 TCODLIB_API TCOD_color_t TCOD_color_HSV(float h, float s, float v);
 /* basic operations */
 TCODLIB_API bool TCOD_color_equals (TCOD_color_t c1, TCOD_color_t c2);

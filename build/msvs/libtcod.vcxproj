@@ -166,6 +166,7 @@
     <ClCompile Include="..\..\src\color_c.c" />
     <ClCompile Include="..\..\src\console.cpp" />
     <ClCompile Include="..\..\src\console_c.c" />
+    <ClCompile Include="..\..\src\console_rexpaint.c" />
     <ClCompile Include="..\..\src\fov.cpp" />
     <ClCompile Include="..\..\src\fov_c.c" />
     <ClCompile Include="..\..\src\fov_circular_raycasting.c" />
@@ -231,6 +232,7 @@
     <ClInclude Include="..\..\include\console.h" />
     <ClInclude Include="..\..\include\console.hpp" />
     <ClInclude Include="..\..\include\console_types.h" />
+    <ClInclude Include="..\..\include\external\pstdint.h" />
     <ClInclude Include="..\..\include\fov.h" />
     <ClInclude Include="..\..\include\fov.hpp" />
     <ClInclude Include="..\..\include\fov_types.h" />

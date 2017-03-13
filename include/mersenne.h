@@ -36,7 +36,7 @@ TCODLIB_API TCOD_random_t TCOD_random_get_instance(void);
 TCODLIB_API TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo);
 TCODLIB_API TCOD_random_t TCOD_random_save(TCOD_random_t mersenne);
 TCODLIB_API void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup);
-TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed);
+TCODLIB_API TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed);
 TCODLIB_API void TCOD_random_delete(TCOD_random_t mersenne);
 
 TCODLIB_API void TCOD_random_set_distribution (TCOD_random_t mersenne, TCOD_distribution_t distribution);

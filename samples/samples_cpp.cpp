@@ -205,9 +205,9 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		for (int x=0; x < SAMPLE_SCREEN_WIDTH; x ++) {
 			for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
 				TCODColor col;
-				col.r = (uint8)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
-				col.g = (uint8)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
-				col.b = (uint8)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
+				col.r = (uint8_t)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
+				col.g = (uint8_t)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
+				col.b = (uint8_t)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
 				bk.setCharBackground(x,y,col, TCOD_BKGND_SET);
 			}
 		}
@@ -223,9 +223,9 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	int recty=(int)((SAMPLE_SCREEN_HEIGHT-2)*((1.0f+cosf(TCODSystem::getElapsedSeconds()))/2.0f));
 	for (int x=0;x < SAMPLE_SCREEN_WIDTH; x++) {
 		TCODColor col;
-		col.r=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		col.g=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		col.b=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.r=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.g=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.b=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
 		sampleConsole.setCharBackground(x,recty,col,(TCOD_bkgnd_flag_t)bkFlag);
 		sampleConsole.setCharBackground(x,recty+1,col,(TCOD_bkgnd_flag_t)bkFlag);
 		sampleConsole.setCharBackground(x,recty+2,col,(TCOD_bkgnd_flag_t)bkFlag);
@@ -302,9 +302,9 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 				case FBM_WAVELET : value = noise->getFbm(f,octaves,TCOD_NOISE_WAVELET); break;
 				case TURBULENCE_WAVELET : value = noise->getTurbulence(f,octaves,TCOD_NOISE_WAVELET); break;
 			}
-			uint8 c=(uint8)((value+1.0f)/2.0f*255);
+			uint8_t c=(uint8_t)((value+1.0f)/2.0f*255);
 			// use a bluish color
-			TCODColor col((uint8)(c/2),(uint8)(c/2),c);
+			TCODColor col((uint8_t)(c/2),(uint8_t)(c/2),c);
 			img->putPixel(x,y,col);
 		}
 	}
@@ -1187,10 +1187,10 @@ protected :
 		int gidx=screen->format->Gshift/8;
 		int bidx=screen->format->Bshift/8;
 		for (int x=samplex; x < samplex + samplew; x ++ ) {
-			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 			for (int y=sampley; y < sampley + sampleh; y ++ ) {
 				int ir=0,ig=0,ib=0;
-				Uint8 *p2 = p + screen->format->BytesPerPixel; // get pixel at x+1,y
+				uint8_t *p2 = p + screen->format->BytesPerPixel; // get pixel at x+1,y
 				ir += p2[ridx];
 				ig += p2[gidx];
 				ib += p2[bidx];
@@ -1224,13 +1224,13 @@ protected :
 		TCODRandom *rng=TCODRandom::getInstance();
 		int dist=(int)(10*(3.0f - delay));
 		for (int x=samplex; x < samplex + samplew; x ++ ) {
-			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 			for (int y=sampley; y < sampley + sampleh; y ++ ) {
 				int ir=0,ig=0,ib=0;
 				for (int i=0; i < 3; i++) {
 					int dx = rng->getInt(-dist,dist);
 					int dy = rng->getInt(-dist,dist);
-					Uint8 *p2;
+					uint8_t *p2;
 					p2 = p + dx * screen->format->BytesPerPixel;
 					p2 += dy * screen->pitch;
 					ir += p2[ridx];
@@ -1256,7 +1256,7 @@ protected :
 		int bidx=screen->format->Bshift/8;
 		f[2]=TCODSystem::getElapsedSeconds();
 		for (int x=samplex; x < samplex + samplew; x ++ ) {
-			Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+			uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 			f[0]=(float)(x)/samplew;
 			for (int y=sampley; y < sampley + sampleh; y ++ ) {
 				int ir=0,ig=0,ib=0;

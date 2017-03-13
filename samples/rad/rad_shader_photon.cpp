@@ -178,8 +178,8 @@ void PhotonShader::compute() {
 	TCODColor *col=lightmap;
 	propagate();  
 	for (int c=0; c < size; c++,cellData++, col++) {
-		col->r = (uint8)MIN(255,cellData->outgoing.r);
-		col->g = (uint8)MIN(255,cellData->outgoing.g);
-		col->b = (uint8)MIN(255,cellData->outgoing.b);
+		col->r = (uint8_t)MIN(255,cellData->outgoing.r);
+		col->g = (uint8_t)MIN(255,cellData->outgoing.g);
+		col->b = (uint8_t)MIN(255,cellData->outgoing.b);
 	}	
 }

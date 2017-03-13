@@ -125,7 +125,7 @@ You can use the following predefined colors (hover over a color to see its full 
 
 class TCODLIB_API TCODColor {
 public :
-	uint8 r,g,b;
+	uint8_t r,g,b;
 
 	TCODColor() : r(0),g(0),b(0) {}
 	/**
@@ -144,7 +144,7 @@ public :
 	     TCODColor myColor = new TCODColor(321.0f,0.7f,1.0f); //HSV
 	@LuaEx myColor = tcod.Color(24,24,255)
 	*/
-	TCODColor(uint8 r, uint8 g, uint8 b): r(r), g(g), b(b) {}
+	TCODColor(uint8_t r, uint8_t g, uint8_t b): r(r), g(g), b(b) {}
 	TCODColor(int r, int g, int b): r(r), g(g), b(b) {}
 	TCODColor(const TCOD_color_t &col): r(col.r), g(col.g), b(col.b) {}
 	TCODColor(float h, float s, float v);
@@ -191,9 +191,9 @@ public :
 	*/
 	TCODColor operator * (const TCODColor & a) const {
 		TCODColor ret;
-		ret.r=(uint8)(((int)r)*a.r/255);
-		ret.g=(uint8)(((int)g)*a.g/255);
-		ret.b=(uint8)(((int)b)*a.b/255);
+		ret.r=(uint8_t)(((int)r)*a.r/255);
+		ret.g=(uint8_t)(((int)g)*a.g/255);
+		ret.b=(uint8_t)(((int)b)*a.b/255);
 		return ret;
 	}
 
@@ -222,9 +222,9 @@ public :
 		r = CLAMP(0,255,r);
 		g = CLAMP(0,255,g);
 		b = CLAMP(0,255,b);
-		ret.r=(uint8)r;
-		ret.g=(uint8)g;
-		ret.b=(uint8)b;
+		ret.r=(uint8_t)r;
+		ret.g=(uint8_t)g;
+		ret.b=(uint8_t)b;
 		return ret;
 	}
 
@@ -250,9 +250,9 @@ public :
 		r = MIN(255,r);
 		g = MIN(255,g);
 		b = MIN(255,b);
-		ret.r=(uint8)r;
-		ret.g=(uint8)g;
-		ret.b=(uint8)b;
+		ret.r=(uint8_t)r;
+		ret.g=(uint8_t)g;
+		ret.b=(uint8_t)b;
 		return ret;
 	}
 
@@ -278,9 +278,9 @@ public :
 		r = MAX(0,r);
 		g = MAX(0,g);
 		b = MAX(0,b);
-		ret.r=(uint8)r;
-		ret.g=(uint8)g;
-		ret.b=(uint8)b;
+		ret.r=(uint8_t)r;
+		ret.g=(uint8_t)g;
+		ret.b=(uint8_t)b;
 		return ret;
 	}
 
@@ -305,9 +305,9 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	*/
 	static TCODColor lerp(const TCODColor &a, const TCODColor &b, float coef) {
 		TCODColor ret;
-		ret.r=(uint8)(a.r+(b.r-a.r)*coef);
-		ret.g=(uint8)(a.g+(b.g-a.g)*coef);
-		ret.b=(uint8)(a.b+(b.b-a.b)*coef);
+		ret.r=(uint8_t)(a.r+(b.r-a.r)*coef);
+		ret.g=(uint8_t)(a.g+(b.g-a.g)*coef);
+		ret.b=(uint8_t)(a.b+(b.b-a.b)*coef);
 		return ret;
 	}
 

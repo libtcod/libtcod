@@ -165,11 +165,11 @@ public :
 	/**
 	@PageName zip_put
 	@FuncTitle Reading the number of (uncompressed) bytes in the buffer
-	@Cpp uint32 TCODZip::getCurrentBytes()
-	@C uint32 TCOD_zip_get_current_bytes(TCOD_zip_t zip)
+	@Cpp uint32_t TCODZip::getCurrentBytes()
+	@C uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t zip)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/	
-	uint32 getCurrentBytes() const;
+	uint32_t getCurrentBytes() const;
 	
 	/**
 	@PageName zip_put
@@ -309,21 +309,21 @@ public :
 	/**
 	@PageName zip_load
 	@FuncTitle Getting the number of remaining bytes in the buffer
-	@Cpp uint32 TCODZip::getRemainingBytes() const
-	@C uint32 TCOD_zip_get_remaining_bytes(TCOD_zip_t zip)
+	@Cpp uint32_t TCODZip::getRemainingBytes() const
+	@C uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t zip)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/	
-	uint32 getRemainingBytes() const;
+	uint32_t getRemainingBytes() const;
 
 	/**
 	@PageName zip_load
 	@FuncTitle Skipping some bytes in the buffer
-	@Cpp void TCODZip::skipBytes(uint32 nbBytes)
-	@C void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32 nbBytes)
+	@Cpp void TCODZip::skipBytes(uint32_t nbBytes)
+	@C void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	@Param nbBytes number of uncompressed bytes to skip
 	*/	
-	void skipBytes(uint32 nbBytes);
+	void skipBytes(uint32_t nbBytes);
 protected :
 	TCOD_zip_t data;
 };

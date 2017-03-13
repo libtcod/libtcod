@@ -174,7 +174,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	SDL_Surface *font_surf=(SDL_Surface *)font;
 	
 	/* convert font for opengl */
-	Uint32 rmask, gmask, bmask, amask;
+	uint32_t rmask, gmask, bmask, amask;
 	SDL_Surface *temp;
 	SDL_Surface *temp_alpha;
 
@@ -620,7 +620,7 @@ void TCOD_opengl_swap(void) {
 void * TCOD_opengl_get_screen(void) {
 	SDL_Surface *surf;
 	int pixw,pixh,offx=0,offy=0,x,y;
-	Uint32 mask,nmask;
+	uint32_t mask,nmask;
 
 	/* allocate a pixel buffer */
 	pixw=TCOD_ctx.root->w * TCOD_ctx.font_width;
@@ -645,9 +645,9 @@ void * TCOD_opengl_get_screen(void) {
 		for (y=0; y < surf->h/2; y++) {
 			int offsrc=x*3+y*surf->pitch;
 			int offdst=x*3+(surf->h-1-y)*surf->pitch;
-			Uint32 *pixsrc = (Uint32 *)(((Uint8 *)surf->pixels)+offsrc);
-			Uint32 *pixdst = (Uint32 *)(((Uint8 *)surf->pixels)+offdst);
-			Uint32 tmp = *pixsrc;
+			uint32_t *pixsrc = (uint32_t *)(((uint8_t*)surf->pixels)+offsrc);
+			uint32_t *pixdst = (uint32_t *)(((uint8_t*)surf->pixels)+offdst);
+			uint32_t tmp = *pixsrc;
 			*pixsrc = ((*pixsrc) & nmask) | ((*pixdst) & mask);
 			*pixdst = ((*pixdst) & nmask) | (tmp & mask);
 		}

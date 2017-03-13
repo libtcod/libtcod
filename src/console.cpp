@@ -177,12 +177,12 @@ void TCODConsole::flush() {
 	TCOD_console_flush();
 }
 
-void TCODConsole::setFade(uint8 val, const TCODColor &fade) {
+void TCODConsole::setFade(uint8_t val, const TCODColor &fade) {
 	TCOD_color_t f= {fade.r,fade.g,fade.b};
 	TCOD_console_set_fade(val,f);
 }
 
-uint8 TCODConsole::getFade() {
+uint8_t TCODConsole::getFade() {
 	return TCOD_console_get_fade();
 }
 

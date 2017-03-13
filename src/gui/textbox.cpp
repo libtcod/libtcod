@@ -119,7 +119,7 @@ void TextBox::update(TCOD_key_t k) {
 			case TCODK_BACKSPACE :
 				if (pos > 0) {
 					pos--;
-					for (uint32 i=pos; i <= strlen(txt); i++ ) {
+					for (uint32_t i=pos; i <= strlen(txt); i++ ) {
 						txt[i]=txt[i+1];
 					}
 					if (txtcbk) txtcbk(this,txt,data);
@@ -129,7 +129,7 @@ void TextBox::update(TCOD_key_t k) {
 			break;
 			case TCODK_DELETE :
 				if (pos < (int)strlen(txt)) {
-					for (uint32 i=pos; i <= strlen(txt); i++ ) {
+					for (uint32_t i=pos; i <= strlen(txt); i++ ) {
 						txt[i]=txt[i+1];
 					}
 					if (txtcbk) txtcbk(this,txt,data);

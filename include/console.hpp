@@ -1126,8 +1126,8 @@ public :
 	@PageDesc Use these functions to easily fade to/from a color
 	@FuncTitle Changing the fading parameters
 	@FuncDesc This function defines the fading parameters, allowing to easily fade the game screen to/from a color. Once they are defined, the fading parameters are valid for ever. You don't have to call setFade for each rendered frame (unless you change the fading parameters).
-	@Cpp static void TCODConsole::setFade(uint8 fade, const TCODColor &fadingColor)
-	@C void TCOD_console_set_fade(uint8 fade, TCOD_color_t fadingColor)
+	@Cpp static void TCODConsole::setFade(uint8_t fade, const TCODColor &fadingColor)
+	@C void TCOD_console_set_fade(uint8_t fade, TCOD_color_t fadingColor)
 	@Py console_set_fade(fade, fadingColor)
 	@C# static void TCODConsole::setFade(byte fade, TCODColor fadingColor)
 	@Lua tcod.console.setFade(fade, fadingColor)
@@ -1154,19 +1154,19 @@ public :
 			tcod.console.flush()
 		end
 	*/
-	static void setFade(uint8 fade, const TCODColor &fadingColor);
+	static void setFade(uint8_t fade, const TCODColor &fadingColor);
 
 	/**
 	@PageName console_fading
 	@FuncTitle Reading the fade amount
 	@FuncDesc This function returns the current fade amount, previously defined by setFade.
-	@Cpp static uint8 TCODConsole::getFade()
-	@C uint8 TCOD_console_get_fade()
+	@Cpp static uint8_t TCODConsole::getFade()
+	@C uint8_t TCOD_console_get_fade()
 	@Py console_get_fade()
 	@C# static byte TCODConsole::getFade()
 	@Lua tcod.console.getFade()
 	*/
-	static uint8 getFade();
+	static uint8_t getFade();
 
 	/**
 	@PageName console_fading
@@ -1624,10 +1624,10 @@ public :
 	bool saveApf(const char *filename) const;
 
 	bool loadXp(const char *filename) {
-		return TCOD_console_load_xp(data, filename);
+		return TCOD_console_load_xp(data, filename) != 0;
 	}
 	bool saveXp(const char *filename, int compress_level) {
-		return TCOD_console_save_xp(data, filename, compress_level);
+		return TCOD_console_save_xp(data, filename, compress_level) != 0;
 	}
 
 	/**

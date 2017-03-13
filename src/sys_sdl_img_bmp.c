@@ -30,7 +30,7 @@
 #include "libtcod_int.h"
 
 bool TCOD_sys_check_bmp(const char *filename) {
-	static uint8 magic_number[]={0x42, 0x4d};
+	static uint8_t magic_number[]={0x42, 0x4d};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
 }
 
@@ -39,7 +39,7 @@ SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
 	if( !ret ) TCOD_fatal("SDL : %s",SDL_GetError());
 	/* convert low color images to 24 bits */
 	if ( ret->format->BytesPerPixel != 3 ) {
-		Uint32 rmask,gmask,bmask;
+		uint32_t rmask,gmask,bmask;
         SDL_Surface * tmp;
 		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
 			rmask=0xFF0000;

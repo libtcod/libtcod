@@ -48,7 +48,7 @@ public :
 	int x,y,w,h; // 
 	int position; // position of splitting
 	bool horizontal; // horizontal splitting ?
-	uint8 level; // level in the tree 
+	uint8_t level; // level in the tree 
 	
 	/**
 	@PageName bsp_init
@@ -222,7 +222,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 			int x,y,w,h; // 
 			int position; // position of splitting
 			bool horizontal; // horizontal splitting ?
-			uint8 level; // level in the tree 
+			uint8_t level; // level in the tree 
 			...
 		}
 	@C 
@@ -230,7 +230,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
 			int x,y,w,h;
 			int position;
 			bool horizontal;
-			uint8 level;
+			uint8_t level;
 			...
 		} TCOD_bsp_t;
 	@C# 

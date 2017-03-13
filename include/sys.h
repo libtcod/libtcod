@@ -30,9 +30,9 @@
 
 TCODLIB_API void TCOD_sys_startup(void);
 TCODLIB_API void TCOD_sys_shutdown(void);
-TCODLIB_API uint32 TCOD_sys_elapsed_milli(void);
+TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
 TCODLIB_API float TCOD_sys_elapsed_seconds(void);
-TCODLIB_API void TCOD_sys_sleep_milli(uint32 val);
+TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
 TCODLIB_API void TCOD_sys_save_screenshot(const char *filename);
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
 TCODLIB_API void TCOD_sys_set_renderer(TCOD_renderer_t renderer);
@@ -77,7 +77,7 @@ TCODLIB_API bool TCOD_sys_is_directory(const char *path);
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
 TCODLIB_API bool TCOD_sys_file_exists(const char * filename, ...);
 TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size);
-TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32 size);
+TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size);
 
 /* clipboard */
 TCODLIB_API bool TCOD_sys_clipboard_set(const char *value);

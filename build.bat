@@ -668,7 +668,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
         set L_VCS_TEST_NAME=.git
         set L_VCS_EXE=!GIT_EXE!
         set L_VCS_CMD_CLONE=!GIT_EXE! clone "!V_LINK_PARTS[%VCS_CLONEURL%]!" !V_LINK_PARTS[%VCS_NAME%]! --no-checkout -b master
-        set L_VCS_CMD_PULL=!GIT_EXE! pull origin master
+        set L_VCS_CMD_PULL=!GIT_EXE! pull "!V_LINK_PARTS[%VCS_CLONEURL%]!"
         set L_VCS_CMD_UPDATE=!GIT_EXE! checkout !V_LINK_PARTS[%VCS_REVISION%]! -q
     )
 

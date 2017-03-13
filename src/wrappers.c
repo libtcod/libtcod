@@ -153,7 +153,7 @@ void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x, int y,
                              int_to_color(back));
 }
 
-void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade)
+void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade)
 {
   TCOD_console_set_fade (val, int_to_color(fade));
 }
@@ -301,7 +301,7 @@ void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h,
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
 		title[w-3]=0; /* truncate if needed */
-		xs = x + (w-strlen(title)-2)/2;
+		xs = x + (w-(int)strlen(title)-2)/2;
 		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;

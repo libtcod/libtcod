@@ -208,9 +208,9 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		for (x=0; x < SAMPLE_SCREEN_WIDTH; x ++) {
 			for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++) {
 				TCOD_color_t col;
-				col.r = (uint8)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
-				col.g = (uint8)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
-				col.b = (uint8)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
+				col.r = (uint8_t)(x* 255 / (SAMPLE_SCREEN_WIDTH-1));
+				col.g = (uint8_t)((x+y)* 255 / (SAMPLE_SCREEN_WIDTH-1+SAMPLE_SCREEN_HEIGHT-1));
+				col.b = (uint8_t)(y* 255 / (SAMPLE_SCREEN_HEIGHT-1));
 				TCOD_console_set_char_background(bk,x,y,col,TCOD_BKGND_SET);
 			}
 		}
@@ -226,9 +226,9 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	recty=(int)((SAMPLE_SCREEN_HEIGHT-2)*((1.0f+cosf(TCOD_sys_elapsed_seconds()))/2.0f));
 	for (x=0;x < SAMPLE_SCREEN_WIDTH; x++) {
 		TCOD_color_t col;
-		col.r=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		col.g=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
-		col.b=(uint8)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.r=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.g=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
+		col.b=(uint8_t)(x*255/SAMPLE_SCREEN_WIDTH);
 		TCOD_console_set_char_background(sample_console,x,recty,col,(TCOD_bkgnd_flag_t)bk_flag);
 		TCOD_console_set_char_background(sample_console,x,recty+1,col,(TCOD_bkgnd_flag_t)bk_flag);
 		TCOD_console_set_char_background(sample_console,x,recty+2,col,(TCOD_bkgnd_flag_t)bk_flag);
@@ -290,7 +290,7 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	for (y=0; y < 2*SAMPLE_SCREEN_HEIGHT; y++ ) {
 		for (x=0; x < 2*SAMPLE_SCREEN_WIDTH; x++ ) {
 			float f[2],value;
-			uint8 c;
+			uint8_t c;
 			TCOD_color_t col;
 			f[0] = zoom*x / (2*SAMPLE_SCREEN_WIDTH) + dx;
 			f[1] = zoom*y / (2*SAMPLE_SCREEN_HEIGHT) + dy;
@@ -306,7 +306,7 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 				case FBM_WAVELET : value = TCOD_noise_get_fbm_ex(noise,f,octaves,TCOD_NOISE_WAVELET); break;
 				case TURBULENCE_WAVELET : value = TCOD_noise_get_turbulence_ex(noise,f,octaves,TCOD_NOISE_WAVELET); break;
 			}
-			c=(uint8)((value+1.0f)/2.0f*255);
+			c=(uint8_t)((value+1.0f)/2.0f*255);
 			/* use a bluish color */
 			col.r=col.g=c/2;
 			col.b=c;
@@ -1197,10 +1197,10 @@ void burn(SDL_Surface *screen, int samplex, int sampley, int samplew, int sample
 	int bidx=screen->format->Bshift/8;
 	int x,y;
 	for (x=samplex; x < samplex + samplew; x ++ ) {
-		Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+		uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 		for (y=sampley; y < sampley + sampleh; y ++ ) {
 			int ir=0,ig=0,ib=0;
-			Uint8 *p2 = p + screen->format->BytesPerPixel; // get pixel at x+1,y
+			uint8_t *p2 = p + screen->format->BytesPerPixel; // get pixel at x+1,y
 			ir += p2[ridx];
 			ig += p2[gidx];
 			ib += p2[bidx];
@@ -1234,13 +1234,13 @@ void explode(SDL_Surface *screen, int samplex, int sampley, int samplew, int sam
 	int dist=(int)(10*(3.0f - delay));
 	int x,y;
 	for (x=samplex; x < samplex + samplew; x ++ ) {
-		Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+		uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 		for (y=sampley; y < sampley + sampleh; y ++ ) {
 			int ir=0,ig=0,ib=0,i;
 			for (i=0; i < 3; i++) {
 				int dx = TCOD_random_get_int(NULL,-dist,dist);
 				int dy = TCOD_random_get_int(NULL,-dist,dist);
-				Uint8 *p2;
+				uint8_t *p2;
 				p2 = p + dx * screen->format->BytesPerPixel;
 				p2 += dy * screen->pitch;
 				ir += p2[ridx];
@@ -1268,7 +1268,7 @@ void blur(SDL_Surface *screen, int samplex, int sampley, int samplew, int sample
 	f[2]=TCOD_sys_elapsed_seconds();
 	if ( noise == NULL ) noise=TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
 	for (x=samplex; x < samplex + samplew; x ++ ) {
-		Uint8 *p = (Uint8 *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
+		uint8_t *p = (uint8_t *)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
 		f[0]=(float)(x)/samplew;
 		for (y=sampley; y < sampley + sampleh; y ++ ) {
 			int ir=0,ig=0,ib=0,dec, count;

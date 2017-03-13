@@ -71,7 +71,7 @@ TCODLIB_API void TCOD_console_set_char_foreground_wrapper(TCOD_console_t con,int
                                       colornum_t col);
 TCODLIB_API void TCOD_console_put_char_ex_wrapper(TCOD_console_t con, int x,
 	int y, int c, colornum_t fore, colornum_t back);
-TCODLIB_API void TCOD_console_set_fade_wrapper(uint8 val, colornum_t fade);
+TCODLIB_API void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade);
 TCODLIB_API colornum_t TCOD_console_get_fading_color_wrapper(void);
 TCODLIB_API void TCOD_console_set_color_control_wrapper(TCOD_colctrl_t con,
 						colornum_t fore,

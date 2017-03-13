@@ -267,12 +267,12 @@ void TCOD_console_flush(void) {
 	TCOD_sys_flush(true);
 }
 
-void TCOD_console_set_fade(uint8 val, TCOD_color_t fadecol) {
+void TCOD_console_set_fade(uint8_t val, TCOD_color_t fadecol) {
 	TCOD_ctx.fade=val;
 	TCOD_ctx.fading_color=fadecol;
 }
 
-uint8 TCOD_console_get_fade(void) {
+uint8_t TCOD_console_get_fade(void) {
 	return TCOD_ctx.fade;
 }
 
@@ -377,9 +377,9 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 		break;
 	case TCOD_BKGND_SCREEN:
 		/* newbk = white - (white - oldbk) * (white - curbk) */
-		back->r = (uint8)(255 - (int)(255 - back->r)*(255 - col.r) / 255);
-		back->g = (uint8)(255 - (int)(255 - back->g)*(255 - col.g) / 255);
-		back->b = (uint8)(255 - (int)(255 - back->b)*(255 - col.b) / 255);
+		back->r = (uint8_t)(255 - (int)(255 - back->r)*(255 - col.r) / 255);
+		back->g = (uint8_t)(255 - (int)(255 - back->g)*(255 - col.g) / 255);
+		back->b = (uint8_t)(255 - (int)(255 - back->b)*(255 - col.b) / 255);
 		break;
 	case TCOD_BKGND_COLOR_DODGE:
 		/* newbk = curbk / (white - oldbk) */
@@ -389,9 +389,9 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 		else newg = 255;
 		if (back->b != 255) newb = (int)(255 * col.b) / (255 - back->b);
 		else newb = 255;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_COLOR_BURN:
 		/* newbk = white - (white - oldbk) / curbk */
@@ -401,18 +401,18 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 		else newg = 0;
 		if (col.b > 0) newb = 255 - (int)(255 * (255 - back->b)) / col.b;
 		else newb = 0;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_ADD:
 		/* newbk = oldbk + curbk */
 		newr = (int)(back->r) + col.r;
 		newg = (int)(back->g) + col.g;
 		newb = (int)(back->b) + col.b;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_ADDA:
 		alpha = (flag >> 8);
@@ -420,27 +420,27 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 		newr = (int)(back->r) + alpha * col.r / 255;
 		newg = (int)(back->g) + alpha * col.g / 255;
 		newb = (int)(back->b) + alpha * col.b / 255;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_BURN:
 		/* newbk = oldbk + curbk - white */
 		newr = (int)(back->r) + col.r - 255;
 		newg = (int)(back->g) + col.g - 255;
 		newb = (int)(back->b) + col.b - 255;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_OVERLAY:
 		/* newbk = curbk.x <= 0.5 ? 2*curbk*oldbk : white - 2*(white-curbk)*(white-oldbk) */
 		newr = col.r <= 128 ? 2 * (int)(col.r) * back->r / 255 : 255 - 2 * (int)(255 - col.r)*(255 - back->r) / 255;
 		newg = col.g <= 128 ? 2 * (int)(col.g) * back->g / 255 : 255 - 2 * (int)(255 - col.g)*(255 - back->g) / 255;
 		newb = col.b <= 128 ? 2 * (int)(col.b) * back->b / 255 : 255 - 2 * (int)(255 - col.b)*(255 - back->b) / 255;
-		back->r = (uint8)CLAMP(0, 255, newr);
-		back->g = (uint8)CLAMP(0, 255, newg);
-		back->b = (uint8)CLAMP(0, 255, newb);
+		back->r = (uint8_t)CLAMP(0, 255, newr);
+		back->g = (uint8_t)CLAMP(0, 255, newg);
+		back->b = (uint8_t)CLAMP(0, 255, newb);
 		break;
 	case TCOD_BKGND_ALPH:
 		/* newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk) */
@@ -945,14 +945,14 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 					dat->back=color_control_back[(int)(*c)-1];
 				} else if ( *c == TCOD_COLCTRL_FORE_RGB ) {
 					c++;
-					dat->fore.r=(uint8)(*c++);
-					dat->fore.g=(uint8)(*c++);
-					dat->fore.b=(uint8)(*c);
+					dat->fore.r=(uint8_t)(*c++);
+					dat->fore.g=(uint8_t)(*c++);
+					dat->fore.b=(uint8_t)(*c);
 				} else if ( *c == TCOD_COLCTRL_BACK_RGB ) {
 					c++;
-					dat->back.r=(uint8)(*c++);
-					dat->back.g=(uint8)(*c++);
-					dat->back.b=(uint8)(*c);
+					dat->back.r=(uint8_t)(*c++);
+					dat->back.g=(uint8_t)(*c++);
+					dat->back.b=(uint8_t)(*c);
 				} else if ( *c == TCOD_COLCTRL_STOP ) {
 					dat->fore=oldFore;
 					dat->back=oldBack;
@@ -1592,8 +1592,8 @@ static bool hasDetectedBigEndianness = false;
 static bool isBigEndian;
 void detectBigEndianness(void) {
 	if (!hasDetectedBigEndianness){
-		uint32 Value32;
-		uint8 *VPtr = (uint8 *)&Value32;
+		uint32_t Value32;
+		uint8_t *VPtr = (uint8_t *)&Value32;
 		VPtr[0] = VPtr[1] = VPtr[2] = 0; VPtr[3] = 1;
 		if(Value32 == 1) isBigEndian = true;
 		else isBigEndian = false;
@@ -1601,19 +1601,19 @@ void detectBigEndianness(void) {
 	}
 }
 
-uint16 bswap16(uint16 s){
-	uint8* ps = (uint8*)&s;
-	uint16 res;
-	uint8* pres = (uint8*)&res;
+uint16_t bswap16(uint16_t s){
+	uint8_t* ps = (uint8_t*)&s;
+	uint16_t res;
+	uint8_t* pres = (uint8_t*)&res;
 	pres[0] = ps[1];
 	pres[1] = ps[0];
 	return res;
 }
 
-uint32 bswap32(uint32 s){
-	uint8 *ps=(uint8 *)(&s);
-	uint32 res;
-	uint8 *pres=(uint8 *)&res;
+uint32_t bswap32(uint32_t s){
+	uint8_t *ps=(uint8_t *)(&s);
+	uint32_t res;
+	uint8_t *pres=(uint8_t *)&res;
 	pres[0]=ps[3];
 	pres[1]=ps[2];
 	pres[2]=ps[1];
@@ -1621,35 +1621,35 @@ uint32 bswap32(uint32 s){
 	return res;
 }
 
-uint16 l16(uint16 s){
+uint16_t l16(uint16_t s){
 	if (isBigEndian) return bswap16(s); else return s;
 }
 
-uint32 l32(uint32 s){
+uint32_t l32(uint32_t s){
 	if (isBigEndian) return bswap32(s); else return s;
 }
 
 /* fix the endianness */
-void fix16(uint16* u){
+void fix16(uint16_t* u){
 	*u = l16(*u);
 }
 
-void fix32(uint32* u){
+void fix32(uint32_t* u){
 	*u = l32(*u);
 }
 
 /************ RIFF helpers  */
 
-uint32 fourCC(const char* c){
-	return (*(uint32*)c);
+uint32_t fourCC(const char* c){
+	return (*(uint32_t*)c);
 }
 
 /* checks if u equals str */
-bool fourCCequals(uint32 u, const char* str){
+bool fourCCequals(uint32_t u, const char* str){
 	return fourCC(str)==u;
 }
 
-void fromFourCC(uint32 u, char*s){
+void fromFourCC(uint32_t u, char*s){
 	const char* c = (const char*)(&u);
 	s[0]=c[0];
 	s[1]=c[1];
@@ -1658,15 +1658,15 @@ void fromFourCC(uint32 u, char*s){
 	s[4]=0;
 }
 
-void put8(uint8 d, FILE* fp){
+void put8(uint8_t d, FILE* fp){
 	fwrite(&d,1,1,fp);
 }
 
-void put16(uint16 d, FILE* fp){
+void put16(uint16_t d, FILE* fp){
 	fwrite(&d,2,1,fp);
 }
 
-void put32(uint32 d, FILE* fp){
+void put32(uint32_t d, FILE* fp){
 	fwrite(&d,4,1,fp);
 }
 
@@ -1678,16 +1678,16 @@ void putData(void* what, int length, FILE* fp){
 	fwrite(what,length,1,fp);
 }
 
-bool get8(uint8* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint8),1,fp);
+bool get8(uint8_t* u, FILE* fp){
+	return 1==fread((void*)u, sizeof(uint8_t),1,fp);
 }
 
-bool get16(uint16* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint16),1,fp);
+bool get16(uint16_t* u, FILE* fp){
+	return 1==fread((void*)u, sizeof(uint16_t),1,fp);
 }
 
-bool get32(uint32* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint32),1,fp);
+bool get32(uint32_t* u, FILE* fp){
+	return 1==fread((void*)u, sizeof(uint32_t),1,fp);
 }
 
 bool getData(void* u, size_t sz, FILE* fp){
@@ -1698,38 +1698,38 @@ bool getData(void* u, size_t sz, FILE* fp){
 /********* APF RIFF structures */
 
 typedef struct {
-	uint32 show_grid;
-	uint32 grid_width;
-	uint32 grid_height;
+	uint32_t show_grid;
+	uint32_t grid_width;
+	uint32_t grid_height;
 } SettingsDataV1;
 
 #define FILTER_TYPE_UNCOMPRESSED 0
 #define FORMAT_TYPE_CRGBRGB 0
 
 typedef struct {
-	uint32 width;
-	uint32 height;
-	uint32 filter;
-	uint32 format;
+	uint32_t width;
+	uint32_t height;
+	uint32_t filter;
+	uint32_t format;
 } ImageDetailsV1;
 
 /* Layers */
 
 typedef struct {
-	uint32 name;
-	uint32 mode;
-	uint32 index;
-	uint32 dataSize;
+	uint32_t name;
+	uint32_t mode;
+	uint32_t index;
+	uint32_t dataSize;
 } LayerV1 ;
 
 typedef struct {
-	uint32 name;
-	uint32 mode;
-	uint32 fgalpha;
-	uint32 bgalpha;
-	uint32 visible;
-	uint32 index;
-	uint32 dataSize;
+	uint32_t name;
+	uint32_t mode;
+	uint32_t fgalpha;
+	uint32_t bgalpha;
+	uint32_t visible;
+	uint32_t index;
+	uint32_t dataSize;
 } LayerV2;
 
 /* fix the endianness */
@@ -1776,14 +1776,14 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 	}
 	else {
 		int x,y;
-		uint32 riffSize = 0;
-		uint32 imgDetailsSize ;
+		uint32_t riffSize = 0;
+		uint32_t imgDetailsSize ;
 		SettingsDataV1 settingsData;
 		ImageDetailsV1 imgData;
 		fpos_t posRiffSize;
-		uint32 settingsSz ;
-		uint32 layerImageSize ;
-		uint32 layerChunkSize ;
+		uint32_t settingsSz ;
+		uint32_t layerImageSize ;
+		uint32_t layerChunkSize ;
 		/*  riff header*/
 		putFourCC("RIFF",fp);
 		fgetpos(fp,&posRiffSize);
@@ -1797,7 +1797,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 				settingsData.show_grid = 0;
 				settingsData.grid_width = 8;
 				settingsData.grid_height = 8;
-				settingsSz = sizeof(uint32) + sizeof settingsData;
+				settingsSz = sizeof(uint32_t) + sizeof settingsData;
 				putFourCC("sett",fp);
 				put32(l32(settingsSz),fp);
 				put32(l32(1),fp);
@@ -1813,7 +1813,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 				imgData.height = con->h;
 				imgData.filter = 0;
 				imgData.format = 0;
-				imgDetailsSize = sizeof(uint32) + sizeof imgData;
+				imgDetailsSize = sizeof(uint32_t) + sizeof imgData;
 				putFourCC("imgd",fp);
 				put32(l32(imgDetailsSize),fp);
 				put32(l32(1),fp); 
@@ -1828,7 +1828,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 				   the first layer is the lowest layer
 				   Assume imgData filter = uncompressed, and imgData format = CRGB */
 				layerImageSize = imgData.width*imgData.height*7;
-				layerChunkSize = sizeof(uint32) /* version */
+				layerChunkSize = sizeof(uint32_t) /* version */
 						+ sizeof(LayerV2) /* header */
 						+ layerImageSize; /* data */
 
@@ -1868,7 +1868,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 						riffSize++;
 					}
 
-				riffSize += 2*sizeof(uint32)+layerChunkSize;
+				riffSize += 2*sizeof(uint32_t)+layerChunkSize;
 
 		fsetpos(fp,&posRiffSize);
 		put32(l32(riffSize),fp);
@@ -1881,7 +1881,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 typedef struct {
 	LayerV1 headerv1;
 	LayerV2 headerv2;
-	uint8* data; /* dynamically allocated */
+	uint8_t* data; /* dynamically allocated */
 }  LayerData;
 
 typedef struct {
@@ -1891,13 +1891,13 @@ typedef struct {
 } Data;
 
 bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
-	uint32 sett = fourCC("sett");
-	uint32 imgd = fourCC("imgd");
+	uint32_t sett = fourCC("sett");
+	uint32_t imgd = fourCC("imgd");
 	/*
-	uint32 LIST = fourCC("LIST");
-	uint32 LAYR = fourCC("LAYR");
+	uint32_t LIST = fourCC("LIST");
+	uint32_t LAYR = fourCC("LAYR");
 	*/
-	uint32 layr = fourCC("layr");
+	uint32_t layr = fourCC("layr");
 	FILE* fp ;
 	Data data; 
 	TCOD_console_data_t *con=pcon ? (TCOD_console_data_t *)pcon : TCOD_ctx.root;
@@ -1923,11 +1923,11 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 	}
 	else {
 		/* read the header */
-		uint32 riff;
-		uint32 riffSize;
+		uint32_t riff;
+		uint32_t riffSize;
 		int index = 0;
 		int x,y;
-		uint8 *imgData;
+		uint8_t *imgData;
 		bool keepGoing = true;
 		if (! get32(&riff,fp) || ! fourCCequals(riff,"RIFF")){
 			ERR("File doesn't have a RIFF header");
@@ -1936,12 +1936,12 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 		fix32(&riffSize);
 
 		while(keepGoing && fp){ /* for each subfield, try to find the APF_ field */
-			uint32 apf;
+			uint32_t apf;
 			if (! get32(&apf,fp)) break;
 			if (fourCCequals(apf,"apf ") || fourCCequals(apf,"APF ")){
 				/* Process APF segment */
 				while(keepGoing && fp){
-					uint32 seg;
+					uint32_t seg;
 					if (! get32(&seg,fp)){
 						keepGoing = false;
 						break;
@@ -1949,8 +1949,8 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 					else {
 						if (seg==sett){
 							/* size */
-							uint32 sz;
-							uint32 ver;
+							uint32_t sz;
+							uint32_t ver;
 							SettingsDataV1 settingsData;
 
 							get32(&sz,fp);
@@ -1967,8 +1967,8 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 						}
 						else if (seg==imgd){
 							/* sz */
-							uint32 sz;
-							uint32 ver;
+							uint32_t sz;
+							uint32_t ver;
 							ImageDetailsV1 dets;
 
 							get32(&sz,fp);
@@ -1997,8 +1997,8 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 
 						}
 						else if (seg==layr){
-							uint32 sz;
-							uint32 ver;
+							uint32_t sz;
+							uint32_t ver;
 
 							get32(&sz,fp);
 							fix32(&sz);
@@ -2012,7 +2012,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 								fixLayerv1(&data.layer.headerv1);
 
 								/* Read in the data chunk*/
-								data.layer.data = (uint8*)malloc(sizeof(uint8)*data.layer.headerv1.dataSize);
+								data.layer.data = (uint8_t*)malloc(sizeof(uint8_t)*data.layer.headerv1.dataSize);
 								getData((void*) data.layer.data, data.layer.headerv1.dataSize, fp);
 							}
 							else if (ver==2){
@@ -2020,14 +2020,14 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 								fixLayerv2(&data.layer.headerv2);
 
 								/* Read in the data chunk */
-								data.layer.data = (uint8*)malloc(sizeof(uint8)*data.layer.headerv2.dataSize);
+								data.layer.data = (uint8_t*)malloc(sizeof(uint8_t)*data.layer.headerv2.dataSize);
 								getData((void*) data.layer.data, data.layer.headerv2.dataSize, fp);
 
 							}
 						}
 						else {
 							/* skip unknown segment */
-							uint32 sz;
+							uint32_t sz;
 							get32(&sz,fp);
 							fix32(&sz);
 							fseek(fp,sz,SEEK_CUR);
@@ -2040,7 +2040,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 			}
 			else {
 				/* skip this segment */
-				uint32 sz;
+				uint32_t sz;
 				get32(&sz,fp);
 				fseek(fp,sz,SEEK_CUR);
 			}
@@ -2051,12 +2051,12 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 			for(y = 0; y < con->h; y++) {
 	    	TCOD_color_t fore,back;
 		    int c = (unsigned char)(imgData[index++]);
-		    fore.r = (uint8)(imgData[index++]);
-		    fore.g = (uint8)(imgData[index++]);
-		    fore.b = (uint8)(imgData[index++]);
-		    back.r = (uint8)(imgData[index++]);
-		    back.g = (uint8)(imgData[index++]);
-		    back.b = (uint8)(imgData[index++]);
+		    fore.r = (uint8_t)(imgData[index++]);
+		    fore.g = (uint8_t)(imgData[index++]);
+		    fore.b = (uint8_t)(imgData[index++]);
+		    back.r = (uint8_t)(imgData[index++]);
+		    back.g = (uint8_t)(imgData[index++]);
+		    back.b = (uint8_t)(imgData[index++]);
 		    TCOD_console_put_char_ex(con,x,y,c,fore,back);
 			}
 		}
@@ -2072,11 +2072,11 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 bool ApfFile::Load(std::string filename){
 	detectBigEndianness();
 
-	uint32 sett = fourCC("sett");
-	uint32 imgd = fourCC("imgd");
-	uint32 LIST = fourCC("LIST");
-	uint32 LAYR = fourCC("LAYR");
-	uint32 layr = fourCC("layr");
+	uint32_t sett = fourCC("sett");
+	uint32_t imgd = fourCC("imgd");
+	uint32_t LIST = fourCC("LIST");
+	uint32_t LAYR = fourCC("LAYR");
+	uint32_t layr = fourCC("layr");
 
 	Data data; // File data
 
@@ -2101,25 +2101,25 @@ bool ApfFile::Load(std::string filename){
 	}
 	else {
 		// read the header
-		uint32 riff;
+		uint32_t riff;
 		if (not get32(&riff,fp)
 			or
 			not fourCCequals(riff,"RIFF")){
 			ERR("File doesn't have a RIFF header");
 		}
 		// else
-		uint32 riffSize;
+		uint32_t riffSize;
 		if (!get32(&riffSize,fp)) ERR("No RIFF size field!");
 		fix(&riffSize);
 
 		bool keepGoing = true;
 		while(keepGoing and fp){ // for each subfield, try to find the APF_ field
-			uint32 apf;
+			uint32_t apf;
 			if (not get32(&apf,fp)) break;
 			if (fourCCequals(apf,"apf ") or fourCCequals(apf,"APF ")){
 				// Process APF segment
 				while(keepGoing and fp){
-					uint32 seg;
+					uint32_t seg;
 					if (not get32(&seg,fp)){
 						keepGoing = false;
 						break;
@@ -2127,11 +2127,11 @@ bool ApfFile::Load(std::string filename){
 					else {
 						if (seg==sett){
 							// size
-							uint32 sz;
+							uint32_t sz;
 							get32(&sz,fp);
 							fix(&sz);
 							// version
-							uint32 ver;
+							uint32_t ver;
 							get32(&ver,fp);
 							fix(&ver);
 							if (ver!=1) ERR_NEWER("settings");
@@ -2147,11 +2147,11 @@ bool ApfFile::Load(std::string filename){
 						}
 						else if (seg==imgd){
 							// sz
-							uint32 sz;
+							uint32_t sz;
 							get32(&sz,fp);
 							fix(&sz);
 							// version
-							uint32 ver;
+							uint32_t ver;
 							get32(&ver,fp);
 							fix(&ver);
 							if (ver!=1) ERR_NEWER("image details");
@@ -2174,11 +2174,11 @@ bool ApfFile::Load(std::string filename){
 							// printf("Found a layer\n");
 
 							// sz
-							uint32 sz;
+							uint32_t sz;
 							get32(&sz,fp);
 							fix(&sz);
 							// version
-							uint32 ver;
+							uint32_t ver;
 							get32(&ver,fp);
 							fix(&ver);
 							if (ver>2) ERR_NEWER("layer spec");
@@ -2220,7 +2220,7 @@ bool ApfFile::Load(std::string filename){
 						}
 						else {
 							// skip unknown segment
-							uint32 sz;
+							uint32_t sz;
 							get32(&sz,fp);
 							fix(&sz);
 							fseek(fp,sz,SEEK_CUR);
@@ -2233,7 +2233,7 @@ bool ApfFile::Load(std::string filename){
 			}
 			else {
 				// skip this segment
-				uint32 sz;
+				uint32_t sz;
 				get32(&sz,fp);
 				fseek(fp,sz,SEEK_CUR);
 			}
@@ -2255,7 +2255,7 @@ bool ApfFile::Load(std::string filename){
 			// l->compositingMode =
 
 			// Copy data into currently selected canvas
-			uint8* imgData = ld->data;
+			uint8_t* imgData = ld->data;
 			CanvasImage *img = new CanvasImage;
 			// Write the brush data for every brush in the image
 			int index = 0;
@@ -2263,12 +2263,12 @@ bool ApfFile::Load(std::string filename){
 				for(int y = 0; y < app->canvasHeight; y++) {
 					Brush b;
 					b.symbol = (unsigned char)(imgData[index++]);
-					b.fore.r = (uint8)(imgData[index++]);
-					b.fore.g = (uint8)(imgData[index++]);
-					b.fore.b = (uint8)(imgData[index++]);
-					b.back.r = (uint8)(imgData[index++]);
-					b.back.g = (uint8)(imgData[index++]);
-					b.back.b = (uint8)(imgData[index++]);
+					b.fore.r = (uint8_t)(imgData[index++]);
+					b.fore.g = (uint8_t)(imgData[index++]);
+					b.fore.b = (uint8_t)(imgData[index++]);
+					b.back.r = (uint8_t)(imgData[index++]);
+					b.back.g = (uint8_t)(imgData[index++]);
+					b.back.b = (uint8_t)(imgData[index++]);
 					b.solid = true; // deprecated
 					b.walkable = true; // deprecated
 					img->push_back(b);

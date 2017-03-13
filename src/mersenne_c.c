@@ -37,7 +37,7 @@ static float rand_div=1.0f/(float)(0xffffffff);
 static double rand_div_double = 1.0 / (double)(0xffffffff);
 
 /* initialize the mersenne twister array */
-static void mt_init(uint32 seed, uint32 mt[624] )
+static void mt_init(uint32_t seed, uint32_t mt[624] )
 {
 	int i;
     mt[0]= seed;
@@ -47,11 +47,11 @@ static void mt_init(uint32 seed, uint32 mt[624] )
 }
 
 /* get the next random value from the mersenne twister array */
-static uint32 mt_rand(uint32 mt[624], int *cur_mt)
+static uint32_t mt_rand(uint32_t mt[624], int *cur_mt)
 {
 #define MT_HIGH_BIT 0x80000000UL
 #define MT_LOW_BITS 0x7fffffffUL
-    uint32 y;
+    uint32_t y;
 
     if (*cur_mt == 624) {
     	/* our 624 sequence is finished. generate a new one */
@@ -93,9 +93,9 @@ static float frandom01(mersenne_data_t *r) {
 
 /* string hashing function */
 /* not used (yet)
-static uint32 hash(const char *data,int len) {
-	uint32 hash = 0;
-	uint32 x;
+static uint32_t hash(const char *data,int len) {
+	uint32_t hash = 0;
+	uint32_t x;
 	int i;
 	for(i = 0; i < len; data++, i++) {
 		hash = (hash << 4) + (*data);
@@ -109,10 +109,10 @@ static uint32 hash(const char *data,int len) {
 */
 
 /* get a random number from the CMWC */
-#define CMWC_GET_NUMBER(num) { unsigned long long t; uint32 x; r->cur=(r->cur+1)&4095; t=18782LL*r->Q[r->cur]+r->c; r->c=(t>>32); x=(uint32)(t+r->c); if (x < r->c) { x++; r->c++; } if((x+1)==0) { r->c++; x=0; } num = (uint32)(r->Q[r->cur] = 0xfffffffe - x); }
+#define CMWC_GET_NUMBER(num) { unsigned long long t; uint32_t x; r->cur=(r->cur+1)&4095; t=18782LL*r->Q[r->cur]+r->c; r->c=(t>>32); x=(uint32_t)(t+r->c); if (x < r->c) { x++; r->c++; } if((x+1)==0) { r->c++; x=0; } num = (uint32_t)(r->Q[r->cur] = 0xfffffffe - x); }
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) {
-    return TCOD_random_new_from_seed(algo,(uint32)time(0));
+    return TCOD_random_new_from_seed(algo,(uint32_t)time(0));
 }
 
 TCOD_random_t TCOD_random_get_instance(void) {
@@ -122,7 +122,7 @@ TCOD_random_t TCOD_random_get_instance(void) {
 	return instance;
 }
 
-TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
+TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
 	mersenne_data_t *r = (mersenne_data_t *)calloc(sizeof(mersenne_data_t),1);
 	/* Mersenne Twister */
 	if (algo == TCOD_RNG_MT) {
@@ -134,7 +134,7 @@ TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32 seed) {
 	else {
 	    int i;
         /* fill the Q array with pseudorandom seeds */
-        uint32 s = seed;
+        uint32_t s = seed;
         for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
         r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
         r->cur = 0;
@@ -161,7 +161,7 @@ int TCOD_random_get_i(TCOD_random_t mersenne, int min, int max) {
 	if (r->algo == TCOD_RNG_MT) return ( mt_rand(r->mt,&r->cur_mt)  % delta ) + min;
 	/* or from the CMWC */
 	else {
-	    uint32 number;
+	    uint32_t number;
 	    CMWC_GET_NUMBER(number)
 	    return number % delta + min;
 	}
@@ -183,7 +183,7 @@ float TCOD_random_get_f(TCOD_random_t mersenne,float min, float max) {
 	if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
 	/* CMWC */
 	else {
-	    uint32 number;
+	    uint32_t number;
 	    CMWC_GET_NUMBER(number)
 	    f = (float)(number) * rand_div * delta;
 	}
@@ -206,7 +206,7 @@ double TCOD_random_get_d(TCOD_random_t mersenne, double min, double max) {
 	if (r->algo == TCOD_RNG_MT) f = delta * (double)frandom01(r);
 	/* CMWC */
 	else {
-	    uint32 number;
+	    uint32_t number;
 	    CMWC_GET_NUMBER(number)
 	    f = (double)(number) * rand_div_double * delta;
 	}
@@ -253,7 +253,7 @@ double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, dou
 		}
 		/* CMWC */
 		else {
-			uint32 number;
+			uint32_t number;
 			do {
 				CMWC_GET_NUMBER(number)
 				x1 = number * rand_div_double * 2.0 - 1.0;

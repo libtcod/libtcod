@@ -31,6 +31,9 @@
     <Filter Include="Source Files\cpp">
       <UniqueIdentifier>{63e6f9f2-e655-4ffa-8b82-c81e649624dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\external">
+      <UniqueIdentifier>{bac2f5e8-48b6-4377-93de-6b317a6bd50d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\bresenham_c.c">
@@ -219,6 +222,9 @@
     <ClCompile Include="..\..\src\txtfield.cpp">
       <Filter>Source Files\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\console_rexpaint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\zlib\zconf.h">
@@ -400,6 +406,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\zip.hpp">
       <Filter>Header Files\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\external\pstdint.h">
+      <Filter>Header Files\external</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

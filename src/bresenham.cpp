@@ -39,7 +39,7 @@ bool TCODLine::step(int *xCur, int *yCur) {
 static TCODLineListener *listener=NULL;
 
 // C to C++ bridge
-extern "C" uint8 internalListener(int x,int y) {
+extern "C" uint8_t internalListener(int x,int y) {
 	return listener->putPoint(x,y) ? 1 : 0;
 }
 

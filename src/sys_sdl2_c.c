@@ -108,7 +108,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 		/* Make a bitmap of exact rendering size and correct format. */
 		if (scale_screen == NULL) {
 			int bpp;
-			Uint32 rmask, gmask, bmask, amask;
+			uint32_t rmask, gmask, bmask, amask;
 			if (SDL_PixelFormatEnumToMasks(SDL_GetWindowPixelFormat(window), &bpp, &rmask, &gmask, &bmask, &amask) == SDL_FALSE) {
 				TCOD_fatal("SDL : failed to create scaling surface : indeterminate window pixel format");
 				return;
@@ -198,7 +198,7 @@ static TCOD_console_data_t *get_root_console_cache(void){
 }
 
 static SDL_Surface *create_surface(int width, int height, bool with_alpha) {
-	Uint32 rmask,gmask,bmask,amask;
+	uint32_t rmask,gmask,bmask,amask;
 	SDL_Surface *bitmap;
 	int flags=SDL_SWSURFACE;
 
@@ -236,7 +236,7 @@ static SDL_Surface *create_surface(int width, int height, bool with_alpha) {
 }
 
 static void create_window(int w, int h, bool fullscreen) {
-	Uint32 winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+	uint32_t winflags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
 #if defined(TCOD_ANDROID)
 	/* Android should always be fullscreen. */
 	TCOD_ctx.fullscreen = fullscreen = true;
@@ -336,7 +336,7 @@ static void save_screenshot(const char *filename) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		/* This would be a lot easier if image saving could do textures. */
 	    SDL_Rect rect;
-		Uint32 format;
+		uint32_t format;
 		SDL_Texture *texture;
 		SDL_RenderGetViewport(renderer, &rect);
 		format = SDL_GetWindowPixelFormat(window);
@@ -353,7 +353,7 @@ static void save_screenshot(const char *filename) {
 				if (-1 != SDL_QueryTexture(texture, &format, &access, &rect.w, &rect.h) &&
 						-1 != SDL_LockTexture(texture, NULL, &pixels, &pitch)) {
 					int depth;
-					Uint32 rmask, gmask, bmask, amask;
+					uint32_t rmask, gmask, bmask, amask;
 					if (SDL_TRUE == SDL_PixelFormatEnumToMasks(format, &depth, &rmask, &gmask, &bmask, &amask)) {
 						SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(pixels, rect.w, rect.h, depth, pitch, rmask, gmask, bmask, amask);
 						TCOD_sys_save_bitmap((void *)surface,filename);
@@ -396,7 +396,7 @@ static void get_current_resolution(int *w, int *h) {
 }
 
 static void set_mouse_position(int x, int y) {
-  SDL_WarpMouseInWindow(window, (Uint16)x,(Uint16)y);
+  SDL_WarpMouseInWindow(window, (uint16_t)x,(uint16_t)y);
 }
 
 static char *get_clipboard_text() {
@@ -437,7 +437,7 @@ static bool set_clipboard_text(char *text) {
 
 /* android compatible file access functions */
 static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
-	uint32 filesize;
+	uint32_t filesize;
 	/* get file size */
 	SDL_RWops *rwops= SDL_RWFromFile(filename,"rb");
 	if (!rwops) return false;
@@ -467,7 +467,7 @@ static bool file_exists(const char * filename) {
 	return false;
 }
 
-static bool file_write(const char *filename, unsigned char *buf, uint32 size) {
+static bool file_write(const char *filename, unsigned char *buf, uint32_t size) {
 	SDL_RWops *rwops= SDL_RWFromFile(filename,"wb");
 	if (!rwops) return false;
 	SDL_RWwrite(rwops,buf,sizeof(unsigned char),size);

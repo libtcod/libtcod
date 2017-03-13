@@ -34,7 +34,7 @@
 
 /* damn ANSI C does not know strdup, strcasecmp, strncasecmp */
 char *TCOD_strdup(const char *s) {
-	uint32 l=strlen(s)+1;
+	uint32_t l=strlen(s)+1;
 	char *ret=malloc(sizeof(char)*l);
 	memcpy(ret,s,sizeof(char)*l);
 	return ret;

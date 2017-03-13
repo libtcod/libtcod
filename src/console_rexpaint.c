@@ -26,22 +26,14 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/* This should not be the first include, but other includes break otherwise. */
-#include <libtcod.h>
-
-#include <console.h>
-
-#include <limits.h>
-#include <stddef.h>
-
 #include <zlib.h>
 
-#include <color.h>
-#include <console_types.h>
-/* Needed only for TCOD_fatal */
-#include <libtcod_int.h>
 /* Needed only for bool types */
-#include <libtcod.h>
+#include "libtcod.h"
+/* Needed only for TCOD_fatal */
+#include "libtcod_int.h"
+
+#include <console_types.h>
 
 /* Confirm that the current types are the same as what this code expects. */
 #if UINT_MAX != 0xffffffff

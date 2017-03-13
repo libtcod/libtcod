@@ -41,7 +41,7 @@ TCODRandom::TCODRandom(TCOD_random_algo_t algo, bool allocate) {
 	if ( allocate ) data = TCOD_random_new(algo);
 }
 
-TCODRandom::TCODRandom(uint32 seed, TCOD_random_algo_t algo) {
+TCODRandom::TCODRandom(uint32_t seed, TCOD_random_algo_t algo) {
 	data=TCOD_random_new_from_seed(algo, seed);
 }
 

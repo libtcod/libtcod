@@ -77,7 +77,7 @@ typedef enum {
 typedef union {
 	bool b;
 	char c;
-	int32 i;
+	int32_t i;
 	float f;
 	char *s;
 	TCOD_color_t col;

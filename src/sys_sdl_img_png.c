@@ -35,7 +35,7 @@
 #include "libtcod_int.h"
 
 bool TCOD_sys_check_png(const char *filename) {
-	static uint8 magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
+	static uint8_t magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
 }
 
@@ -79,7 +79,7 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	source=image;
 	rowsize=width*bpp/8;
 	for (y=0; y<  height; y++ ) {
-		Uint8 *row_pointer=(Uint8 *)(bitmap->pixels) + y * bitmap->pitch;
+		uint8_t*row_pointer=(uint8_t*)(bitmap->pixels) + y * bitmap->pitch;
 		memcpy(row_pointer,source,rowsize);
 		source+=rowsize;
 	}
@@ -99,7 +99,7 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	image=dest;
 	for (y=0; y<  surf->h; y++ ) {
 		for (x=0; x < surf->w; x++ ) {
-			Uint8 *pixel=(Uint8 *)(surf->pixels) + y * surf->pitch + x * surf->format->BytesPerPixel;
+			uint8_t*pixel=(uint8_t*)(surf->pixels) + y * surf->pitch + x * surf->format->BytesPerPixel;
 			*dest++=*((pixel)+surf->format->Rshift/8);
 			*dest++=*((pixel)+surf->format->Gshift/8);
 			*dest++=*((pixel)+surf->format->Bshift/8);

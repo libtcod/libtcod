@@ -32,7 +32,9 @@
 #if defined(__ANDROID__)
 #include <android/log.h>
 #endif
+#ifdef TCOD_SDL2
 #include <SDL.h>
+#endif
 
 /* tcodlib internal stuff */
 #ifdef __cplusplus
@@ -73,11 +75,11 @@ typedef struct {
 	/* distribution */
 	TCOD_distribution_t distribution;
 	/* Mersenne Twister stuff */
-	uint32 mt[624];
+	uint32_t mt[624];
 	int cur_mt;
 	/* Complementary-Multiply-With-Carry stuff */
 	/* shared with Generalised Feedback Shift Register */
-	uint32 Q[4096], c;
+	uint32_t Q[4096], c;
     int cur;
 } mersenne_data_t;
 
@@ -118,7 +120,7 @@ typedef struct {
 	SDL_renderer_t sdl_cbk;
 	/* fading data */
 	TCOD_color_t fading_color;
-	uint8 fade;
+	uint8_t fade;
 	TCOD_key_t key_state;
 	/* application window was closed */
 	bool is_window_closed;
@@ -237,11 +239,12 @@ TCODLIB_API void *TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const void *image, int *w,int *h);
 TCOD_color_t TCOD_sys_get_image_pixel(const void *image,int x, int y);
 int TCOD_sys_get_image_alpha(const void *image,int x, int y);
-bool TCOD_sys_check_magic_number(const char *filename, int size, uint8 *data);
+bool TCOD_sys_check_magic_number(const char *filename, int size, uint8_t *data);
 
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);
 
+#ifdef TCOD_SDL2
 /*
 	SDL12/SDL2 abstraction layer
 */
@@ -272,7 +275,7 @@ typedef struct {
 	/* android compatible file access functions */
 	bool (*file_read)(const char *filename, unsigned char **buf, size_t *size);
 	bool (*file_exists)(const char * filename);
-	bool (*file_write)(const char *filename, unsigned char *buf, uint32 size);
+	bool (*file_write)(const char *filename, unsigned char *buf, uint32_t size);
 	/* clean stuff */
 	void (*shutdown)(void);
 	/* get root cache */
@@ -281,11 +284,9 @@ typedef struct {
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */
 TCOD_SDL_driver_t *SDL_implementation_factory(void);
+
 void find_resolution(void);
 void TCOD_sys_init_screen_offset(void);
-extern SDL_Surface* screen;
-extern int oldFade;
-extern SDL_Surface* charmap;
 typedef struct {
 	float force_recalc;
 	float last_scale_xc, last_scale_yc;
@@ -304,12 +305,17 @@ typedef struct {
 	int surface_width, surface_height;
 } scale_data_t;
 extern scale_data_t scale_data;
-#ifdef TCOD_SDL2
+
 extern float scale_factor;
+extern SDL_Surface* screen;
+extern SDL_Surface* charmap;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;
 extern char *last_clipboard_text;
 #endif
+
+// SDL & OpenGL
+extern int oldFade;
 
 /* color values */
 #define TCOD_BLACK 0,0,0

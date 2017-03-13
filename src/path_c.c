@@ -59,13 +59,13 @@ static void heap_sift_down(TCOD_path_data_t *path, TCOD_list_t heap) {
 	int cur=0;
 	int end = TCOD_list_size(heap)-1;
 	int child=1;
-	uintptr *array=(uintptr *)TCOD_list_begin(heap);
+	uintptr_t *array=(uintptr_t *)TCOD_list_begin(heap);
 	while ( child <= end ) {
 		int toSwap=cur;
-		uint32 off_cur=array[cur];
+		uint32_t off_cur=array[cur];
 		float cur_dist=path->heur[off_cur];
 		float swapValue=cur_dist;
-		uint32 off_child=array[child];
+		uint32_t off_child=array[child];
 		float child_dist=path->heur[off_child];
 		if ( child_dist < cur_dist ) {
 			toSwap=child;
@@ -73,7 +73,7 @@ static void heap_sift_down(TCOD_path_data_t *path, TCOD_list_t heap) {
 		}
 		if ( child < end ) {
 			/* get the min between child and child+1 */
-			uintptr off_child2=array[child+1];
+			uintptr_t off_child2=array[child+1];
 			float child2_dist=path->heur[off_child2];
 			if ( swapValue > child2_dist ) {
 				toSwap=child+1;
@@ -82,7 +82,7 @@ static void heap_sift_down(TCOD_path_data_t *path, TCOD_list_t heap) {
 		}
 		if ( toSwap != cur ) {
 			/* get down one level */
-			uintptr tmp = array[toSwap];
+			uintptr_t tmp = array[toSwap];
 			array[toSwap]=array[cur];
 			array[cur]=tmp;
 			cur=toSwap;
@@ -95,16 +95,16 @@ static void heap_sift_up(TCOD_path_data_t *path, TCOD_list_t heap) {
 	/* sift-up : move the last element of the heap up to its right place */
 	int end = TCOD_list_size(heap)-1;
 	int child=end;
-	uintptr *array=(uintptr *)TCOD_list_begin(heap);
+	uintptr_t *array=(uintptr_t *)TCOD_list_begin(heap);
 	while ( child > 0 ) {
-		uintptr off_child=array[child];
+		uintptr_t off_child=array[child];
 		float child_dist=path->heur[off_child];
 		int parent = (child-1)/2;
-		uintptr off_parent=array[parent];
+		uintptr_t off_parent=array[parent];
 		float parent_dist=path->heur[off_parent];
 		if ( parent_dist > child_dist ) {
 			/* get up one level */
-			uintptr tmp = array[child];
+			uintptr_t tmp = array[child];
 			array[child]=array[parent];
 			array[parent]=tmp;
 			child=parent;
@@ -115,18 +115,18 @@ static void heap_sift_up(TCOD_path_data_t *path, TCOD_list_t heap) {
 /* add a coordinate pair in the heap so that the heap root always contains the minimum A* score */
 static void heap_add(TCOD_path_data_t *path, TCOD_list_t heap, int x, int y) {
 	/* append the new value to the end of the heap */
-	uintptr off=x+y*path->w;
+	uintptr_t off=x+y*path->w;
 	TCOD_list_push(heap,(void *)off);
 	/* bubble the value up to its real position */
 	heap_sift_up(path,heap);
 }
 
 /* get the coordinate pair with the minimum A* score from the heap */
-static uint32 heap_get(TCOD_path_data_t *path,TCOD_list_t heap) {
+static uint32_t heap_get(TCOD_path_data_t *path,TCOD_list_t heap) {
 	/* return the first value of the heap (minimum score) */
-	uintptr *array=(uintptr *)TCOD_list_begin(heap);
+	uintptr_t *array=(uintptr_t *)TCOD_list_begin(heap);
 	int end=TCOD_list_size(heap)-1;
-	uint32 off=(uint32)(array[0]);
+	uint32_t off=(uint32_t)(array[0]);
 	/* take the last element and put it at first position (heap root) */
 	array[0] = array[end];
 	TCOD_list_pop(heap);
@@ -136,11 +136,11 @@ static uint32 heap_get(TCOD_path_data_t *path,TCOD_list_t heap) {
 }
 
 /* this is the slow part, when we change the heuristic of a cell already in the heap */
-static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
-	uintptr *array=(uintptr *)TCOD_list_begin(path->heap);
-	uintptr *end=(uintptr *)TCOD_list_end(path->heap);
-	uintptr *cur=array;
-	uintptr off_idx=0;
+static void heap_reorder(TCOD_path_data_t *path, uint32_t offset) {
+	uintptr_t *array=(uintptr_t *)TCOD_list_begin(path->heap);
+	uintptr_t *end=(uintptr_t *)TCOD_list_end(path->heap);
+	uintptr_t *cur=array;
+	uintptr_t off_idx=0;
 	float value;
 	int idx=0;
 	int heap_size=TCOD_list_size(path->heap);
@@ -155,7 +155,7 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 	if ( idx > 0 ) {
 		int parent=(idx-1)/2;
 		/* compare to its parent */
-		uintptr off_parent=array[parent];
+		uintptr_t off_parent=array[parent];
 		float parent_value=path->heur[off_parent];
 		if (value < parent_value) {
 			/* smaller. bubble it up */
@@ -176,7 +176,7 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 	/* compare to its sons */
 	while ( idx*2+1 < heap_size ) {
 		int child=idx*2+1;
-		uintptr off_child=array[child];
+		uintptr_t off_child=array[child];
 		int toSwap=idx;
 		int child2;
 		float swapValue=value;
@@ -187,7 +187,7 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 		}
 		child2 = child+1;
 		if ( child2 < heap_size ) {
-			uintptr off_child2=array[child2];
+			uintptr_t off_child2=array[child2];
 			if ( path->heur[off_child2] < swapValue) {
 				/* swap with son2 */
 				toSwap=child2;
@@ -195,7 +195,7 @@ static void heap_reorder(TCOD_path_data_t *path, uint32 offset) {
 		}
 		if ( toSwap != idx ) {
 			/* bigger. bubble it down */
-			uintptr tmp = array[toSwap];
+			uintptr_t tmp = array[toSwap];
 			array[toSwap]=array[idx];
 			array[idx] = tmp;
 			idx=toSwap;
@@ -270,7 +270,7 @@ bool TCOD_path_compute(TCOD_path_t p, int ox,int oy, int dx, int dy) {
 	do {
 		/* walk from destination to origin, using the 'prev' array */
 		int step=path->prev[ dx + dy * path->w ];
-		TCOD_list_push(path->path,(void *)(uintptr)step);
+		TCOD_list_push(path->path,(void *)(uintptr_t)step);
 		dx -= dirx[step];
 		dy -= diry[step];
 	} while ( dx != ox || dy != oy );
@@ -288,9 +288,9 @@ void TCOD_path_reverse(TCOD_path_t p) {
 	path->oy=path->dy;
 	path->dy=tmp;
 	for (i=0; i < TCOD_list_size(path->path); i++) {
-		int d=(int)(uintptr)TCOD_list_get(path->path,i);
+		int d=(int)(uintptr_t)TCOD_list_get(path->path,i);
 		d = invdir[d];
-		TCOD_list_set(path->path,(void *)(uintptr)d,i);
+		TCOD_list_set(path->path,(void *)(uintptr_t)d,i);
 	}
 }
 
@@ -300,7 +300,7 @@ bool TCOD_path_walk(TCOD_path_t p, int *x, int *y, bool recalculate_when_needed)
 	TCOD_path_data_t *path=(TCOD_path_data_t *)p;
 	TCOD_IFNOT(p != NULL) return false;
 	if ( TCOD_path_is_empty(path) ) return false;
-	d=(int)(uintptr)TCOD_list_pop(path->path);
+	d=(int)(uintptr_t)TCOD_list_pop(path->path);
 	newx=path->ox + dirx[d];
 	newy=path->oy + diry[d];
 	/* check if the path is still valid */
@@ -338,7 +338,7 @@ void TCOD_path_get(TCOD_path_t p, int index, int *x, int *y) {
 	if ( y ) *y=path->oy;
 	pos = TCOD_list_size(path->path)-1;
 	do {
-		int step=(int)(uintptr)TCOD_list_get(path->path,pos);
+		int step=(int)(uintptr_t)TCOD_list_get(path->path,pos);
 		if ( x ) *x += dirx[step];
 		if ( y ) *y += diry[step];
 		pos--;index--;
@@ -366,7 +366,7 @@ static void TCOD_path_push_cell(TCOD_path_data_t *path, int x, int y) {
 
 /* get the best cell from the heap */
 static void TCOD_path_get_cell(TCOD_path_data_t *path, int *x, int *y, float *distance) {
-	uint32 offset = heap_get(path,path->heap);
+	uint32_t offset = heap_get(path,path->heap);
 	*x=(offset % path->w);
 	*y=(offset / path->w);
 	*distance=path->grid[offset];
@@ -617,7 +617,7 @@ bool TCOD_dijkstra_path_set (TCOD_dijkstra_t dijkstra, int x, int y) {
 	do {
 		unsigned int lowest;
 		int i;
-		TCOD_list_push(data->path,(const void*)(uintptr)((py * data->width) + px));
+		TCOD_list_push(data->path,(const void*)(uintptr_t)((py * data->width) + px));
 		for(i=0;i<imax;i++) {
 			int cx = px + dx[i];
 			int cy = py + dy[i];
@@ -650,7 +650,7 @@ bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y) {
 	TCOD_IFNOT(data != NULL) return false;
 	if (TCOD_list_is_empty(data->path)) return false;
 	else {
-		unsigned int node = (unsigned int)(uintptr)TCOD_list_pop(data->path);
+		unsigned int node = (unsigned int)(uintptr_t)TCOD_list_pop(data->path);
 		if ( x ) *x = (int)(node % data->width);
 		if ( y ) *y = (int)(node / data->width);
 	}
@@ -683,7 +683,7 @@ void TCOD_dijkstra_get(TCOD_dijkstra_t p, int index, int *x, int *y) {
 	dijkstra_t * data = (dijkstra_t*)p;
 	unsigned int node ;
 	TCOD_IFNOT(data != NULL) return;
-	node = (unsigned int)(uintptr)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
+	node = (unsigned int)(uintptr_t)TCOD_list_get(data->path,TCOD_list_size(data->path)-index-1);
 	if ( x ) *x = (int)(node % data->width);
 	if ( y ) *y = (int)(node / data->width);
 }

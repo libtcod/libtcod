@@ -133,11 +133,11 @@ void init() {
 void render() {
 	// compute lights
 	framesCount++;
-	uint32 start=TCODSystem::getElapsedMilli();
+	uint32_t start=TCODSystem::getElapsedMilli();
 	leftShader->compute();
-	uint32 leftEnd=TCODSystem::getElapsedMilli();
+	uint32_t leftEnd=TCODSystem::getElapsedMilli();
 	rightShader->compute();
-	uint32 rightEnd=TCODSystem::getElapsedMilli();
+	uint32_t rightEnd=TCODSystem::getElapsedMilli();
 	stdTime+=(leftEnd-start)*0.001f;
 	radTime+=(rightEnd-leftEnd)*0.001f;
 	if ( (int)(start/1000) != timeSecond ) {

@@ -117,23 +117,7 @@
 #endif
 #endif
 
-/* base types */
-#ifndef TCOD_NOBASETYPES
-typedef unsigned char uint8;
-typedef char int8;
-typedef unsigned short uint16;
-typedef short int16;
-typedef unsigned int uint32;
-typedef int int32;
-#endif
-/* int with the same size as a pointer (32 or 64 depending on OS) */
-#ifdef TCOD_WIN64
-typedef long long intptr;
-typedef unsigned long long uintptr;
-#else
-typedef long intptr;
-typedef unsigned long uintptr;
-#endif
+#include <external/pstdint.h>
 
 #define TCOD_HEXVERSION 0x010603
 #define TCOD_STRVERSION "1.6.3"
@@ -142,13 +126,13 @@ typedef unsigned long uintptr;
 /* bool support for C */
 #ifndef __cplusplus
 #ifndef bool
-typedef uint8 bool;
+typedef uint8_t bool;
 #define false ((bool)0)
 #define true ((bool)1)
 #endif
 #else
-/* in C++ all C functions prototypes should use uint8 instead of bool */
-#define bool uint8
+/* in C++ all C functions prototypes should use uint8_t instead of bool */
+#define bool uint8_t
 #endif
 
 /* DLL export */

@@ -28,6 +28,7 @@
 #ifndef _TCOD_MOUSE_HPP
 #define _TCOD_MOUSE_HPP
 
+#include "mouse.h"
 #include "mouse_types.h"
 
 class TCODLIB_API TCODMouse {

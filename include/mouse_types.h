@@ -28,6 +28,11 @@
 #ifndef _TCOD_MOUSE_TYPES_H
 #define _TCOD_MOUSE_TYPES_H
 
+#include "libtcod_portability.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* mouse data */
 typedef struct {
   int x,y; /* absolute position */
@@ -43,5 +48,7 @@ typedef struct {
   bool wheel_up ; /* wheel up event */
   bool wheel_down ; /* wheel down event */
 } TCOD_mouse_t;
-
+#ifdef __cplusplus
+}
+#endif
 #endif /* _TCOD_MOUSE_TYPES_H */

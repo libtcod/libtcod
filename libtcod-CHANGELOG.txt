@@ -8,6 +8,9 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 + Added support for loading/saving REXPaint files. (Kyle Stewart)
 % Upgraded to `stdint.h` source code typing via `pstdint.h` (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/91
+% All libtcod headers are now self-contained. (Kyle Stewart)
+  https://bitbucket.org/libtcod/libtcod/issues/93/header-organization
+% bool type is now based off of stdbool.h (Kyle Stewart)
 - Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)

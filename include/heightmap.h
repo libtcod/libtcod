@@ -27,6 +27,13 @@
 #ifndef _TCOD_HEIGHTMAP_H
 #define _TCOD_HEIGHTMAP_H
 
+#include "libtcod_portability.h"
+#include "mersenne_types.h"
+#include "noise.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef struct {
 	int w,h;
 	float *values;
@@ -65,6 +72,7 @@ TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t *hm, TCO
 TCODLIB_API void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 TCODLIB_API void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale); 
 TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t *hm, float seaLevel,TCOD_random_t rnd);
-
+#ifdef __cplusplus
+}
 #endif
-
+#endif

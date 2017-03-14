@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_TOOLBAR_HPP
+#define TCOD_GUI_TOOLBAR_HPP
+#include "container.hpp"
 class TCODLIB_GUI_API ToolBar : public Container {
 public :
 	ToolBar(int x, int y, const char *name, const char *tip=NULL);
@@ -37,4 +40,4 @@ protected :
 	char *name;
 	int fixedWidth;
 };
-
+#endif /* TCOD_GUI_TOOLBAR_HPP */

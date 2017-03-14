@@ -25,15 +25,15 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <console.h>
 
 #include <zlib.h>
 
-/* Needed only for bool types */
-#include "libtcod.h"
 /* Needed only for TCOD_fatal */
-#include "libtcod_int.h"
+#include <libtcod_int.h>
 
 #include <console_types.h>
+#include <color.h>
 
 /* Confirm that the current types are the same as what this code expects. */
 #if UINT_MAX != 0xffffffff

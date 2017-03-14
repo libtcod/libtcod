@@ -24,11 +24,13 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <fov.h>
 
 #include <stdlib.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
 #include <string.h>
+
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
 
 typedef struct _ray_data_t {
 	int xloc,yloc; /* position */

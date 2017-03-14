@@ -28,6 +28,8 @@
 #ifndef _TCOD_COLOR_HPP
 #define _TCOD_COLOR_HPP
 
+#include "color.h"
+#include "libtcod_utility.h"
 // color constants uses to generate @ColorTable
 /**
 	@ColorCategory STANDARD COLORS

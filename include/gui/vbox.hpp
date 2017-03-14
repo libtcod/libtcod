@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_VBOX_HPP
+#define TCOD_GUI_VBOX_HPP
+#include "container.hpp"
 class TCODLIB_GUI_API VBox : public Container {
 public :
 	VBox(int x, int y, int padding) : Container(x,y,0,0),padding(padding) {}
@@ -31,4 +34,4 @@ public :
 protected :
 	int padding;
 };
-
+#endif /* TCOD_GUI_VBOX_HPP */

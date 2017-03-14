@@ -28,6 +28,12 @@
 #ifndef _TCOD_PATH_H
 #define _TCOD_PATH_H
 
+#include "libtcod_portability.h"
+#include "fov_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef float (*TCOD_path_func_t)( int xFrom, int yFrom, int xTo, int yTo, void *user_data );
 typedef void *TCOD_path_t;
 
@@ -59,5 +65,7 @@ TCODLIB_API void TCOD_dijkstra_reverse(TCOD_dijkstra_t path);
 TCODLIB_API void TCOD_dijkstra_get(TCOD_dijkstra_t path, int index, int *x, int *y);
 TCODLIB_API bool TCOD_dijkstra_path_walk (TCOD_dijkstra_t dijkstra, int *x, int *y);
 TCODLIB_API void TCOD_dijkstra_delete (TCOD_dijkstra_t dijkstra);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -24,9 +24,12 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <color.h>
+
 #include <math.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
+
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
 
 /* grey levels */
 const TCOD_color_t TCOD_black={TCOD_BLACK};

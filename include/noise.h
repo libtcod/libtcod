@@ -28,6 +28,12 @@
 #ifndef _TCOD_PERLIN_H
 #define _TCOD_PERLIN_H
 
+#include "libtcod_portability.h"
+#include "mersenne_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef void *TCOD_noise_t;
 
 typedef enum {
@@ -52,5 +58,7 @@ TCODLIB_API float TCOD_noise_get_fbm (TCOD_noise_t noise, float *f, float octave
 TCODLIB_API float TCOD_noise_get_turbulence (TCOD_noise_t noise, float *f, float octaves);
 /* delete the noise object */
 TCODLIB_API void TCOD_noise_delete(TCOD_noise_t noise);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

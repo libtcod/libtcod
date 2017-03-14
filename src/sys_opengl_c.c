@@ -28,8 +28,8 @@
 /*
  * This renderer is mostly copied and pasted from Antagonist's SkyFire GLSL roguelike engine
  */ 
+#include <sys.h>
 
-#include "libtcod.h"
 #include "libtcod_int.h"
 #ifndef NO_OPENGL
 #include <SDL/SDL.h>

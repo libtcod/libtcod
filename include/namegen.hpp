@@ -32,6 +32,9 @@
 #ifndef _TCOD_NAMEGEN_HPP
 #define _TCOD_NAMEGEN_HPP
 
+#include "list.hpp"
+#include "mersenne.hpp"
+#include "namegen.h"
 /**
  @PageName namegen
  @PageCategory Roguelike toolkits

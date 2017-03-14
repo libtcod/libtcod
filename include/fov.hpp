@@ -28,10 +28,9 @@
 #ifndef _TCOD_FOV_HPP
 #define _TCOD_FOV_HPP
 
-#include "fov_types.h"
+#include "fov.h"
 
 class TCODPath;
-
 /**
  @PageName fov
  @PageCategory Roguelike toolkits

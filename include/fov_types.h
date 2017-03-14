@@ -28,6 +28,11 @@
 #ifndef _TCOD_FOV_TYPES_H
 #define _TCOD_FOV_TYPES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef void *TCOD_map_t;
+
 /* FOV_BASIC : http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
    FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html
    FOV_SHADOW : http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
@@ -51,4 +56,7 @@ typedef enum {
 	NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* _TCOD_FOV_TYPES_H */

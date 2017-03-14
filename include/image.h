@@ -28,9 +28,13 @@
 #ifndef _TCOD_IMAGE_H
 #define _TCOD_IMAGE_H
 
-typedef void *TCOD_image_t;
+#include "color.h"
+#include "console_types.h"
 
-#include "console.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
+typedef void *TCOD_image_t;
 
 TCODLIB_API TCOD_image_t TCOD_image_new(int width, int height);
 TCODLIB_API TCOD_image_t TCOD_image_from_console(TCOD_console_t console);
@@ -57,4 +61,7 @@ TCODLIB_API void TCOD_image_delete(TCOD_image_t image);
 TCODLIB_API void TCOD_image_set_key_color(TCOD_image_t image, TCOD_color_t key_color);
 TCODLIB_API bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

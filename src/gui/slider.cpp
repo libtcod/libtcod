@@ -24,11 +24,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <slider.hpp>
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
 
 Slider::Slider(int x,int y,int w, float min, float max, const char *label, const char *tip)
 	: TextBox(x,y,w,10,label,NULL,tip),min(min),max(max),value((min+max)*0.5f),sensitivity(1.0f),

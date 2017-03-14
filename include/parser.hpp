@@ -28,6 +28,9 @@
 #ifndef _TCOD_PARSER_HPP
 #define _TCOD_PARSER_HPP
 
+#include "color.hpp"
+#include "list.hpp"
+#include "parser.h"
 /**
 @PageName parser
 @PageTitle File parser

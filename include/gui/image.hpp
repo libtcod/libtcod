@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_IMAGE_HPP
+#define TCOD_GUI_IMAGE_HPP
+#include "widget.hpp"
 class TCODLIB_GUI_API Image : public Widget {
 public : 
 	Image(int x,int y,int w, int h, const char *tip=NULL);
@@ -35,4 +38,4 @@ protected :
 
 	TCODColor back;
 };
-
+#endif /* TCOD_GUI_IMAGE_HPP */

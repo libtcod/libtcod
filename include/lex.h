@@ -25,12 +25,18 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _TCOD_LEX_H
-#define _TCOD_LEX_H
 /*
  * This is a libtcod internal module.
  * Use at your own risks...
  */
+#ifndef _TCOD_LEX_H
+#define _TCOD_LEX_H
+
+#include "libtcod_portability.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define TCOD_LEX_FLAG_NOCASE 1
 #define TCOD_LEX_FLAG_NESTING_COMMENT 2
@@ -65,18 +71,18 @@ typedef struct {
 	char *last_javadoc_comment;
 	/* private stuff */
 	int nb_symbols, nb_keywords, flags;
-	char symbols[ TCOD_LEX_MAX_SYMBOLS][ TCOD_LEX_SYMBOL_SIZE ], 
+	char symbols[ TCOD_LEX_MAX_SYMBOLS][ TCOD_LEX_SYMBOL_SIZE ],
 	keywords[ TCOD_LEX_MAX_KEYWORDS ][ TCOD_LEX_KEYWORD_SIZE ];
 	const char *simpleCmt;
 	const char *cmtStart, *cmtStop, *javadocCmtStart;
 	const char *stringDelim;
 	bool javadoc_read;
 	bool allocBuf;
-	bool savept; /* is this object a savepoint (no free in destructor) */	
+	bool savept; /* is this object a savepoint (no free in destructor) */
 } TCOD_lex_t;
 
 TCODLIB_API TCOD_lex_t *TCOD_lex_new_intern(void);
-TCODLIB_API TCOD_lex_t *TCOD_lex_new(const char **symbols, const char **keywords, const char *simpleComment, 
+TCODLIB_API TCOD_lex_t *TCOD_lex_new(const char **symbols, const char **keywords, const char *simpleComment,
 		const char *commentStart, const char *commentStop, const char *javadocCommentStart, const char *stringDelim, int flags);
 TCODLIB_API void TCOD_lex_delete(TCOD_lex_t *lex);
 
@@ -97,5 +103,7 @@ TCODLIB_API const char *TCOD_lex_get_token_name(int token_type);
 TCODLIB_API char *TCOD_lex_get_last_error(void);
 
 TCODLIB_API int TCOD_lex_hextoint(char c);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -28,16 +28,19 @@
 #ifndef _TCOD_CONSOLE_H
 #define _TCOD_CONSOLE_H
 
-#include "external/pstdint.h"
+#include "libtcod_portability.h"
+
+#include "color.h"
 #include "console_types.h"
+#include "image.h"
 #include "list.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH|(((uint8_t)(alpha*255))<<8)))
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8_t)(alpha*255))<<8)))
-
-typedef void * TCOD_console_t;
-
-#include "image.h"
 
 TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
@@ -133,4 +136,7 @@ TCODLIB_API bool TCOD_console_load_xp(TCOD_console_t con, const char *filename);
 TCODLIB_API bool TCOD_console_save_xp(TCOD_console_t con, const char *filename, int compress_level);
 TCODLIB_API TCOD_list_t TCOD_console_list_from_xp(const char *filename);
 TCODLIB_API bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char *filename, int compress_level);
+#ifdef __cplusplus
+}
+#endif
 #endif

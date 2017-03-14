@@ -10,8 +10,9 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice or Mingos may not be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+*     * The name of Jice or Mingos may not be used to endorse or promote
+*       products derived from this software without specific prior written
+*       permission.
 *
 * THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -24,30 +25,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TCOD_GUI_TEXTBOX_HPP
-#define TCOD_GUI_TEXTBOX_HPP
-#include "widget.hpp"
-class TCODLIB_GUI_API TextBox : public Widget {
-public :
-	TextBox(int x,int y,int w, int maxw, const char *label, const char *value, const char *tip=NULL);
-	virtual ~TextBox();
-	void render();
-	void update(const TCOD_key_t k);
-	void setText(const char *txt);
-	const char *getValue() { return txt; }
-	void setCallback(void (*cbk)(Widget *wid, char * val, void * data), void *data) { txtcbk=cbk; this->data=data; }
-	static void setBlinkingDelay(float delay) { blinkingDelay=delay; }
-protected :
-	static float blinkingDelay;
-	char *label;
-	char *txt;
-	float blink;
-	int pos, offset;
-	int boxx,boxw,maxw;
-	bool insert;
-	void (*txtcbk)(Widget *wid, char * val, void *data);
-	void *data;
+#ifndef LIBTCOD_VERSION_H
+#define LIBTCOD_VERSION_H
 
-	void onButtonClick();
-};
-#endif /* TCOD_GUI_TEXTBOX_HPP */
+#define TCOD_HEXVERSION 0x010603
+#define TCOD_STRVERSION "1.6.3"
+#define TCOD_TECHVERSION 0x01060300
+
+#endif /* LIBTCOD_VERSION_H */

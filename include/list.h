@@ -28,6 +28,12 @@
 #ifndef _TCOD_LIST_H
 #define _TCOD_LIST_H
 
+#include "libtcod_portability.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void *TCOD_list_t;
 
 TCODLIB_API TCOD_list_t TCOD_list_new(void);
@@ -53,5 +59,7 @@ TCODLIB_API void TCOD_list_clear_and_delete(TCOD_list_t l);
 TCODLIB_API int TCOD_list_size(TCOD_list_t l);
 TCODLIB_API void ** TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before);
 TCODLIB_API bool TCOD_list_is_empty(TCOD_list_t l);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

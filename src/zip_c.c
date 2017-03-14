@@ -24,11 +24,15 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <zip.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
+
+#include <console.h>
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
 
 typedef struct {
 	TCOD_list_t buffer; /* list<int> */

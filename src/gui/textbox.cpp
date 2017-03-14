@@ -24,10 +24,10 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <textbox.hpp>
+
 #include <string.h>
 #include <stdio.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
 
 float TextBox::blinkingDelay=0.5f;
 TextBox::TextBox(int x,int y,int w, int maxw, const char *label, const char *value, const char *tip)

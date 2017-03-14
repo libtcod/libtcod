@@ -24,12 +24,13 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <parser.hpp>
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include "libtcod.hpp"
 
 const char *TCODParserStruct::getName() const {
 	return TCOD_struct_get_name(data);
@@ -77,7 +78,7 @@ TCODParserStruct *TCODParser::newStructure(const char *name) {
 
 static ITCODParserListener *listener=NULL;
 static TCODParser *parser=NULL;
-extern "C" uint8_t new_struct(TCOD_parser_struct_t def,const char *name) {
+extern "C" bool new_struct(TCOD_parser_struct_t def,const char *name) {
 	for ( TCODParserStruct **idef=parser->defs.begin(); idef != parser->defs.end(); idef++) {
 		if ( (*idef)->data == def ) {
 			return listener->parserNewStruct(parser,*idef,name) ? 1 : 0;
@@ -89,13 +90,13 @@ extern "C" uint8_t new_struct(TCOD_parser_struct_t def,const char *name) {
 	parser->defs.push(idef);
 	return listener->parserNewStruct(parser,idef,name) ? 1 : 0;
 }
-extern "C" uint8_t new_flag(const char *name) {
+extern "C" bool new_flag(const char *name) {
 	return listener->parserFlag(parser,name) ? 1 : 0;
 }
-extern "C" uint8_t new_property(const char *propname, TCOD_value_type_t type, TCOD_value_t value) {
+extern "C" bool new_property(const char *propname, TCOD_value_type_t type, TCOD_value_t value) {
 	return listener->parserProperty(parser,propname,type, value) ? 1 : 0;
 }
-extern "C" uint8_t end_struct(TCOD_parser_struct_t def, const char *name) {
+extern "C" bool end_struct(TCOD_parser_struct_t def, const char *name) {
 	for ( TCODParserStruct **idef=parser->defs.begin(); idef != parser->defs.end(); idef++) {
 		if ( (*idef)->data == def ) {
 			return listener->parserEndStruct(parser,*idef,name) ? 1 : 0;

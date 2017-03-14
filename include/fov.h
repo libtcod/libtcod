@@ -28,10 +28,12 @@
 #ifndef _TCOD_FOV_H
 #define _TCOD_FOV_H
 
-typedef void *TCOD_map_t;
-
+#include "libtcod_portability.h"
 #include "fov_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* allocate a new map */
 TCODLIB_API TCOD_map_t TCOD_map_new(int width, int height);
 /* set all cells as solid rock (cannot see through nor walk) */
@@ -55,4 +57,7 @@ TCODLIB_API bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y);
 TCODLIB_API int TCOD_map_get_width(TCOD_map_t map);
 TCODLIB_API int TCOD_map_get_height(TCOD_map_t map);
 TCODLIB_API int TCOD_map_get_nb_cells(TCOD_map_t map);
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_BUTTON_HPP
+#define TCOD_GUI_BUTTON_HPP
+#include "widget.hpp"
 class TCODLIB_GUI_API Button : public Widget {
 public :
 	Button(const char *label, const char *tip, widget_callback_t cbk, void *userData=NULL);
@@ -43,4 +46,4 @@ protected :
 	void onButtonClick();
 	void expand(int width, int height);
 };
-
+#endif /* TCOD_GUI_BUTTON_HPP */

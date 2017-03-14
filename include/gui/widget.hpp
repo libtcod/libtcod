@@ -24,6 +24,13 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_WIDGET_HPP
+#define TCOD_GUI_WIDGET_HPP
+#include "gui_portability.hpp"
+#include "../color.hpp"
+#include "../console.hpp"
+#include "../list.hpp"
+#include "../mouse.hpp"
 class TCODLIB_GUI_API Widget {
 public :
 	int x,y,w,h;
@@ -75,6 +82,5 @@ protected :
 	bool mouseL:1;
 	bool visible:1;
 };
-
 typedef void (*widget_callback_t) ( Widget *w, void *userData );
-
+#endif /* TCOD_GUI_WIDGET_HPP */

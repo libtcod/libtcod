@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_CONTAINER_HPP
+#define TCOD_GUI_CONTAINER_HPP
+#include "widget.hpp"
 class TCODLIB_GUI_API Container : public Widget {
 public :
 	Container(int x, int y, int w, int h) : Widget(x,y,w,h) {}
@@ -37,4 +40,4 @@ public :
 protected :
 	TCODList<Widget *> content;
 };
-
+#endif /* TCOD_GUI_CONTAINER_HPP */

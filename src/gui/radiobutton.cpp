@@ -24,8 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "libtcod.hpp"
-#include "gui.hpp"
+#include <radiobutton.hpp>
 
 RadioButton *RadioButton::groupSelect[512];
 int RadioButton::defaultGroup=0;

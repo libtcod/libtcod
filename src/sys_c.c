@@ -24,6 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <sys.h>
 
 #include <ctype.h>
 #include <stdlib.h>
@@ -36,7 +37,6 @@
 /* Is this necessary now the custom clipboard stuff is gone? */
 #include <ApplicationServices/ApplicationServices.h>
 #endif
-#include "libtcod.h"
 #include "libtcod_int.h"
 #ifdef TCOD_WINDOWS
 #include <windows.h>

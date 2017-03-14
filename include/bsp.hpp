@@ -28,6 +28,11 @@
 #ifndef _TCOD_BSP_HPP
 #define _TCOD_BSP_HPP
 
+#include "bsp.h"
+#include "list.hpp"
+#include "mersenne.hpp"
+#include "tree.hpp"
+
 class TCODBsp;
 
 class TCODLIB_API ITCODBspCallback {

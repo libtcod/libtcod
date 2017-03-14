@@ -32,6 +32,13 @@
 #ifndef _TCOD_NAMEGEN_H
 #define _TCOD_NAMEGEN_H
 
+#include "libtcod_portability.h"
+#include "list.h"
+#include "mersenne.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* the generator typedef */
 typedef void * TCOD_namegen_t;
 
@@ -45,5 +52,7 @@ TCODLIB_API char * TCOD_namegen_generate_custom (char * name, char * rule, bool 
 TCODLIB_API TCOD_list_t TCOD_namegen_get_sets (void);
 /* delete a generator */
 TCODLIB_API void TCOD_namegen_destroy (void);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

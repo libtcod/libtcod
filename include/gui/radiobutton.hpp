@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_RADIOBUTTON_HPP
+#define TCOD_GUI_RADIOBUTTON_HPP
+#include "button.hpp"
 class TCODLIB_GUI_API RadioButton : public Button {
 public :
 	RadioButton(const char *label, const char *tip, widget_callback_t cbk, void *userData=NULL)
@@ -44,4 +47,4 @@ protected :
 
 	void onButtonClick();
 };
-
+#endif /* TCOD_GUI_RADIOBUTTON_HPP */

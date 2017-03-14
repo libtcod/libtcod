@@ -28,8 +28,9 @@
 #ifndef _TCOD_PERLIN_HPP
 #define _TCOD_PERLIN_HPP
 
+#include "mersenne.hpp"
+#include "noise.h"
 #include "noise_defaults.h"
-
 /**
  @PageName noise
  @PageCategory Base toolkits

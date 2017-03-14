@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_FLATLIST_HPP
+#define TCOD_GUI_FLATLIST_HPP
+#include "textbox.hpp"
 class TCODLIB_GUI_API FlatList : public TextBox {
 public :
 	FlatList(int x,int y,int w, const char **list, const char *label, const char *tip=NULL);
@@ -45,4 +48,4 @@ protected :
 	void textToValue();
 	void onButtonClick();
 };
-
+#endif /* TCOD_GUI_FLATLIST_HPP */

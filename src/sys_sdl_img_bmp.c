@@ -24,10 +24,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <sys.h>
 
 #include <SDL.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
+
+#include <libtcod_int.h>
 
 bool TCOD_sys_check_bmp(const char *filename) {
 	static uint8_t magic_number[]={0x42, 0x4d};

@@ -29,6 +29,8 @@
 #define _TCOD_TEXT_HPP_
 
 #include "color.hpp"
+#include "console.hpp"
+#include "txtfield.h"
 
 class TCODLIB_API TCODText {
 public :

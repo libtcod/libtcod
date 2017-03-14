@@ -27,6 +27,9 @@
 
 #ifndef _TCOD_BRESENHAM_HPP
 #define _TCOD_BRESENHAM_HPP
+
+#include "bresenham.h"
+
 class TCODLIB_API TCODLineListener {
 public :
 	virtual bool putPoint(int x,int y) = 0;

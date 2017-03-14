@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_LABEL_HPP
+#define TCOD_GUI_LABEL_HPP
+#include "widget.hpp"
 class TCODLIB_GUI_API Label : public Widget {
 public :
 	Label(int x, int y, const char *label, const char *tip=NULL );
@@ -35,4 +38,4 @@ protected :
 
 	void expand(int width, int height);
 };
-
+#endif /* TCOD_GUI_LABEL_HPP */

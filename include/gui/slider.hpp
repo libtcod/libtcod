@@ -24,6 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_SLIDER_HPP
+#define TCOD_GUI_SLIDER_HPP
+#include "textbox.hpp"
 class TCODLIB_GUI_API Slider : public TextBox {
 public :
 	Slider(int x,int y,int w, float min, float max, const char *label, const char *tip=NULL);
@@ -51,4 +54,4 @@ protected :
 	void onButtonPress();
 	void onButtonRelease();
 };
-
+#endif /* TCOD_GUI_SLIDER_HPP */

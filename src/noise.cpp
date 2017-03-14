@@ -24,8 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <noise.hpp>
+
 #include <stdlib.h>
-#include "libtcod.hpp"
 TCODNoise::TCODNoise(int dimensions, TCOD_noise_type_t type) {
 	data = TCOD_noise_new(dimensions, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, TCODRandom::getInstance()->data);
 	TCOD_noise_set_type(data,type);

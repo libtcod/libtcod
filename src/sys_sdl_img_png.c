@@ -24,15 +24,17 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <sys.h>
 
 #if !defined (__HAIKU__) && !defined (__ANDROID__)
 #include <stdlib.h>
 #include <stdio.h>
 #endif
 #include <SDL.h>
+
 #include "png/lodepng.h"
-#include "libtcod.h"
-#include "libtcod_int.h"
+
+#include <libtcod_int.h>
 
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8_t magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};

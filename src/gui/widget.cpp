@@ -24,9 +24,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <widget.hpp>
+
 #include <string.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
+
+#include <sys.hpp>
 
 TCODColor Widget::back=TCODColor(40,40,120);
 TCODColor Widget::fore=TCODColor(220,220,180);

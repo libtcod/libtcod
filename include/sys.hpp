@@ -28,7 +28,11 @@
 #ifndef _TCOD_SYS_HPP
 #define _TCOD_SYS_HPP
 
+#include "image.hpp"
+#include "mouse.hpp"
+#include "sys.h"
 /**
+
 	@PageName system
 	@PageCategory Core
 	@PageTitle System layer

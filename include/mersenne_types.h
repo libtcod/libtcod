@@ -28,6 +28,8 @@
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
 
+typedef void *TCOD_random_t;
+
 /* dice roll */
 typedef struct {
 	int nb_rolls;
@@ -49,5 +51,4 @@ typedef enum {
 	TCOD_DISTRIBUTION_GAUSSIAN_INVERSE,
 	TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE
 } TCOD_distribution_t;
-
 #endif /* _TCOD_RANDOM_TYPES_H */

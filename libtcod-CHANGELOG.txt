@@ -13,6 +13,7 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/88
 - Fixed TCOD_list_reverse. (Kyle Stewart)
+- Fixed simplex noise artifacts when using negative coordinates. (Kyle Stewart)
 
 =========================================================
 1.6.3 : 2017-02-26

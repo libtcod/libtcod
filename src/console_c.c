@@ -24,18 +24,23 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <console.h>
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
 #ifndef NO_UNICODE
 #include <wchar.h>
 #include <wctype.h>
 #endif
+
+#include <noise.h>
+#include <mersenne.h>
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
+#include <libtcod_version.h>
 
 #if defined( TCOD_VISUAL_STUDIO )
 static const char *version_string ="libtcod "TCOD_STRVERSION;

@@ -28,9 +28,11 @@
 #ifndef _TCOD_IMAGE_HPP
 #define _TCOD_IMAGE_HPP
 
-class TCODImage;
-
+#include "color.hpp"
 #include "console.hpp"
+#include "image.h"
+
+class TCODConsole;
 
 class TCODLIB_API TCODImage {
 public :

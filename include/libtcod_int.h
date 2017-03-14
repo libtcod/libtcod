@@ -36,6 +36,14 @@
 #include <SDL.h>
 #endif
 
+#include "libtcod_portability.h"
+#include "color.h"
+#include "console_types.h"
+#include "fov.h"
+#include "fov_types.h"
+#include "mersenne_types.h"
+#include "sys.h"
+
 /* tcodlib internal stuff */
 #ifdef __cplusplus
 extern "C" {

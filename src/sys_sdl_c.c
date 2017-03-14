@@ -24,13 +24,17 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mouse.h>
+#include <sys.h>
 
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
+
+#include <console.h>
+#include <libtcod_int.h>
+#include <parser.h>
 
 static TCOD_SDL_driver_t *sdl=NULL;
 

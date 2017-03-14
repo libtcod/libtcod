@@ -24,9 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
-#include "libtcod.hpp"
-#include "libtcod.h"
+#include <image.hpp>
 
 TCODImage::TCODImage(const char *filename) : deleteData(true) {
 	data=(void *)TCOD_image_load(filename);

@@ -27,6 +27,8 @@
 #ifndef _TCOD_HEIGHTMAP_HPP
 #define _TCOD_HEIGHTMAP_HPP
 
+#include "heightmap.h"
+#include "noise.hpp"
 /**
  @PageName heightmap
  @PageCategory Roguelike toolkits

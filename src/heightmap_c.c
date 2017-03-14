@@ -24,10 +24,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <heightmap.h>
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "libtcod.h"
+
+#include <libtcod_utility.h>
+#include <mersenne.h>
 
 #define GET_VALUE(hm,x,y) (hm)->values[(x)+(y)*(hm)->w]
 

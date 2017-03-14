@@ -24,9 +24,12 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifndef TCOD_GUI_STATUSBAR_HPP
+#define TCOD_GUI_STATUSBAR_HPP
+#include "widget.hpp"
 class TCODLIB_GUI_API StatusBar : public Widget {
 public :
 	StatusBar(int x,int y,int w, int h):Widget(x,y,w,h) {}
 	void render();
 };
-
+#endif /* TCOD_GUI_STATUSBAR_HPP */

@@ -28,6 +28,15 @@
 #ifndef _TCOD_PARSER_H
 #define _TCOD_PARSER_H
 
+#include "libtcod_portability.h"
+#include "color.h"
+#include "list.h"
+#include "lex.h"
+#include "mersenne.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* generic type */
 typedef enum {
 	TCOD_TYPE_NONE,
@@ -167,5 +176,7 @@ TCODLIB_API TCOD_value_t TCOD_parse_color_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_dice_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_value_list_value(TCOD_struct_int_t *def,int listnum);
 TCODLIB_API TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t *parser, TCOD_parser_struct_t def, char *propname, bool list);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

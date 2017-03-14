@@ -28,9 +28,10 @@
 #ifndef _TCOD_LIST_HPP
 #define _TCOD_LIST_HPP
 
+#include "list.h"
+
 #include <string.h> // memcpy
 #include <stdlib.h> // NULL
-
 /**
  @PageName list
  @PageCategory Base toolkits

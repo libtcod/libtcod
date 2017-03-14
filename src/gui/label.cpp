@@ -24,8 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "libtcod.hpp"
-#include "gui.hpp"
+#include <label.hpp>
 
 Label::Label(int x, int y, const char *label, const char *tip) : Widget(x,y,0,1) {
 	this->label=label;

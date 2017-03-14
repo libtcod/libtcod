@@ -25,7 +25,7 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "libtcod.hpp"
+#include <txtfield.hpp>
 
 TCODText::TCODText(int x, int y, int w, int h, int max_chars){
 	data=TCOD_text_init(x,y,w,h,max_chars);

@@ -28,6 +28,10 @@
 #ifndef _TCOD_CONSOLE_TYPES_H
 #define _TCOD_CONSOLE_TYPES_H
 
+#include "libtcod_portability.h"
+
+typedef void * TCOD_console_t;
+
 typedef enum {
 	TCODK_NONE,
 	TCODK_ESCAPE,
@@ -263,5 +267,4 @@ typedef enum {
 	TCOD_RIGHT, 
 	TCOD_CENTER 
 } TCOD_alignment_t;
-
 #endif /* _TCOD_CONSOLE_TYPES_H */

@@ -24,11 +24,12 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <fov.h>
 
 #include <stdlib.h>
-#include "libtcod.h"
-#include "libtcod_int.h"
 #include <string.h>
+
+#include <libtcod_int.h>
 
 TCOD_map_t TCOD_map_new(int width, int height) {
 	map_t *map=NULL;

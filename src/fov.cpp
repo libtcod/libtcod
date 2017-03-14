@@ -24,7 +24,8 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "libtcod.hpp"
+#include <fov.hpp>
+
 TCODMap::TCODMap(int width,int height) {
 	data = TCOD_map_new(width,height);
 }

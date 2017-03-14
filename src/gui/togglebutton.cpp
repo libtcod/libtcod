@@ -24,9 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <togglebutton.hpp>
+
 #include <string.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
 
 void ToggleButton::render() {
 	con->setDefaultBackground(mouseIn ? backFocus : back);

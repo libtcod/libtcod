@@ -24,13 +24,15 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include "lex.hpp"
+
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include "libtcod.hpp"
-#include "libtcod_int.h"
+
+#include <libtcod_int.h>
 
 TCODLex::TCODLex( const char **_symbols, const char **_keywords, const char *simpleComment,
 		const char *commentStart, const char *commentStop, const char *javadocCommentStart,

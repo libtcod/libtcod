@@ -28,6 +28,13 @@
 #ifndef _TCOD_BSP_H
 #define _TCOD_BSP_H
 
+#include "libtcod_portability.h"
+#include "mersenne_types.h"
+#include "tree.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef struct {
 	TCOD_tree_t tree; /* pseudo oop : bsp inherit tree */
 	int x,y,w,h; /* node position & size */
@@ -59,5 +66,7 @@ TCODLIB_API void TCOD_bsp_split_once(TCOD_bsp_t *node, bool horizontal, int posi
 TCODLIB_API void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, 
 		int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 TCODLIB_API void TCOD_bsp_remove_sons(TCOD_bsp_t *node);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -28,12 +28,14 @@
 * Mingos' NameGen
 * This file was written by Dominik "Mingos" Marczuk.
 */
+#include <namegen.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "libtcod.h"
+
+#include <parser.h>
 
 /* ------------ *
  * the typedefs *

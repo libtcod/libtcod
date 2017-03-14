@@ -24,10 +24,10 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <flatlist.hpp>
+
 #include <stdio.h>
 #include <math.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
 
 FlatList::FlatList(int x,int y,int w, const char **list, const char *label, const char *tip)
 	: TextBox(x,y,w,10,label,NULL,tip),value(list),list(list),

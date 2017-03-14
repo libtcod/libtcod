@@ -24,8 +24,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <heightmap.hpp>
+
 #include <math.h>
-#include "libtcod.hpp"
+
+#include <cstring>
 
 TCODHeightMap::TCODHeightMap(int w, int h) : w(w),h(h) {
 	values = new float[w*h];

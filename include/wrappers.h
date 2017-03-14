@@ -27,6 +27,15 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
+#include "libtcod_portability.h"
+#include "console_types.h"
+#include "image.h"
+#include "mouse.h"
+#include "parser.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* wrappers to ease other languages integration */
 typedef unsigned int colornum_t;
 
@@ -127,6 +136,7 @@ TCODLIB_API void TCOD_namegen_get_sets_wrapper(char **sets);
 /* sys module */
 TCODLIB_API int TCOD_sys_get_current_resolution_x(void);
 TCODLIB_API int TCOD_sys_get_current_resolution_y(void);
-
+#ifdef __cplusplus
+}
+#endif
 #endif	/* WRAPPERS_H */
-

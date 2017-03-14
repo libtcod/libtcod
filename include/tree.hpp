@@ -28,6 +28,8 @@
 #ifndef _TCOD_TREE_HPP
 #define _TCOD_TREE_HPP
 
+#include "tree.h"
+
 class TCODLIB_API TCODTree {
 public :
 	TCODTree *next;

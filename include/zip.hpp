@@ -28,6 +28,10 @@
 #ifndef _TCOD_ZIP_HPP
 #define _TCOD_ZIP_HPP
 
+#include "color.hpp"
+#include "console.hpp"
+#include "image.hpp"
+#include "zip.h"
 /**
  @PageName zip
  @PageCategory Base toolkits

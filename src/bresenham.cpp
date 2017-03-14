@@ -24,8 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
-#include "libtcod.hpp"
+#include <bresenham.hpp>
 
 // ********** bresenham line drawing **********
 void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo) {
@@ -39,7 +38,7 @@ bool TCODLine::step(int *xCur, int *yCur) {
 static TCODLineListener *listener=NULL;
 
 // C to C++ bridge
-extern "C" uint8_t internalListener(int x,int y) {
+extern "C" bool internalListener(int x,int y) {
 	return listener->putPoint(x,y) ? 1 : 0;
 }
 

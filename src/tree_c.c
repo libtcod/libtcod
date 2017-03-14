@@ -24,8 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <tree.h>
+
 #include <stdlib.h>
-#include "libtcod.h"
 
 TCOD_tree_t *TCOD_tree_new(void) {
 	return (TCOD_tree_t *)calloc(1,sizeof(TCOD_tree_t));
@@ -41,4 +42,3 @@ void TCOD_tree_add_son(TCOD_tree_t *node, TCOD_tree_t *son) {
 		node->sons=son;
 	}
 }
-

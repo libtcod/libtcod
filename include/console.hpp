@@ -28,11 +28,11 @@
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
-class TCODConsole;
-
+#include "console.h"
 #include "image.hpp"
-#include "console_types.h"
+#include "color.hpp"
 
+class TCODImage;
 /**
 	@PageName console
 	@PageCategory Core
@@ -1775,9 +1775,9 @@ public :
 	static const char *getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col );
 
 protected :
-	friend class TCODLIB_API TCODImage;
-	friend class TCODLIB_API TCODZip;
-	friend class TCODLIB_API TCODText;
+	friend class TCODImage;
+	friend class TCODZip;
+	friend class TCODText;
 	TCODConsole();
 	TCOD_console_t data;
 };

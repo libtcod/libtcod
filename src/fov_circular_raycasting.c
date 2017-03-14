@@ -24,12 +24,15 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <fov.h>
 
-#include "libtcod.h"
-#include "libtcod_int.h"
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
+
+#include <bresenham.h>
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
 
 static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
 	int curx=xo,cury=yo;

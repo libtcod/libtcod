@@ -28,6 +28,14 @@
 #ifndef _TCOD_SYS_H
 #define _TCOD_SYS_H
 
+#include "libtcod_portability.h"
+#include "list.h"
+#include "image.h"
+#include "mouse_types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 TCODLIB_API void TCOD_sys_startup(void);
 TCODLIB_API void TCOD_sys_shutdown(void);
 TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
@@ -118,5 +126,8 @@ TCODLIB_API void TCOD_close_library(TCOD_library_t);
 #ifdef TCOD_SDL2
 typedef void (*SDL_renderer_t) (void *sdl_renderer);
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
+#endif
+#ifdef __cplusplus
+}
 #endif
 #endif

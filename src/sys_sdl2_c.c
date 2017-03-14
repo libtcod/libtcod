@@ -24,11 +24,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "libtcod.h"
-#include "libtcod_int.h"
+#include <sys.h>
 
 #include <stdio.h>
 #include <string.h>
+
+#include <console.h>
+#include <libtcod_int.h>
+#include <libtcod_utility.h>
 
 static SDL_Surface* scale_screen=NULL;
 static float scale_xc=0.5f;

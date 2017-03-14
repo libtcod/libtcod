@@ -24,8 +24,12 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <bsp.h>
+
 #include <stdlib.h>
-#include "libtcod.h"
+
+#include <list.h>
+#include <mersenne.h>
 
 TCOD_bsp_t *TCOD_bsp_new(void) {
 	return (TCOD_bsp_t *)calloc(sizeof(TCOD_bsp_t),1);

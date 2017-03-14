@@ -28,6 +28,14 @@
 #ifndef _TCOD_ZIP_H
 #define _TCOD_ZIP_H
 
+#include "libtcod_portability.h"
+#include "color.h"
+#include "console_types.h"
+#include "image.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef void *TCOD_zip_t;
 
 TCODLIB_API TCOD_zip_t TCOD_zip_new(void);
@@ -57,6 +65,7 @@ TCODLIB_API TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void *data);
 TCODLIB_API uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t zip);
 TCODLIB_API void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes);
-
+#ifdef __cplusplus
+}
 #endif
-
+#endif

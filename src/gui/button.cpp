@@ -24,9 +24,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <button.hpp>
+
 #include <string.h>
-#include "libtcod.hpp"
-#include "gui.hpp"
 
 Button::Button(const char *label,const char *tip,widget_callback_t cbk, void *userData) 
 	: pressed(false),label(NULL) {

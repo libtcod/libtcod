@@ -28,12 +28,18 @@
 #ifndef _TCOD_MOUSE_H
 #define _TCOD_MOUSE_H
 
+#include "libtcod_portability.h"
 #include "mouse_types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
 TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status(void);
 TCODLIB_API bool TCOD_mouse_is_cursor_visible(void);
 TCODLIB_API void TCOD_mouse_move(int x, int y);
 TCODLIB_API void TCOD_mouse_includes_touch(bool enable);
-
+#ifdef __cplusplus
+}
+#endif
 #endif

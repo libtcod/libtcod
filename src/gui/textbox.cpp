@@ -44,7 +44,7 @@ TextBox::TextBox(int x,int y,int w, int maxw, const char *label, const char *val
 	if ( label ) this->label=TCOD_strdup(label);
 	boxw=w;
 	if (label ) {
-		boxx=strlen(label)+1;
+		boxx=(int)strlen(label)+1;
 		this->w+= boxx;
 	}
 }
@@ -67,7 +67,7 @@ void TextBox::render() {
 	con->setDefaultBackground(keyboardFocus == this ? foreFocus : fore);
 	con->setDefaultForeground(keyboardFocus == this ? backFocus : back);
 	con->rect(x+boxx,y,boxw,h,false,TCOD_BKGND_SET);
-	int len=strlen(txt)-offset;
+	int len=(int)strlen(txt)-offset;
 	if (len > boxw) len = boxw;
 	if ( txt ) con->printEx(x+boxx,y,TCOD_BKGND_NONE,TCOD_LEFT,"%.*s",len,&txt[offset]);
 	if (keyboardFocus == this && blink > 0.0f) {
@@ -143,7 +143,7 @@ void TextBox::update(TCOD_key_t k) {
 			break;
 */
 			case TCODK_END :
-				pos = strlen(txt);
+				pos = (int)strlen(txt);
 				if ( pos >= w ) offset = pos-w+1;
 				blink=blinkingDelay;
 			break;

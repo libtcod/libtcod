@@ -32,10 +32,10 @@
 #define MAX_WIND_SPEED 4.0f
 #define LIGHTNING_LEVEL 0.4f
 #define LIGHTNING_RADIUS 500
-#define LIGHTNING_LIFE 2.0
-#define LIGHTNING_INTENSITY_SPEED 20.0
-#define LIGHTNING_MIN_PROB 7.0
-#define LIGHTNING_MAX_PROB 1.0
+#define LIGHTNING_LIFE 2.0f
+#define LIGHTNING_INTENSITY_SPEED 20.0f
+#define LIGHTNING_MIN_PROB 7.0f
+#define LIGHTNING_MAX_PROB 1.0f
 #define RAIN_MIN_PROB 4000
 #define RAIN_MED_PROB 400
 #define RAIN_MAX_PROB 10
@@ -48,7 +48,7 @@ void Weather::init(int width, int height) {
 	dx=dy=noisex=noisey=20000.0f;
 	indicatorDelta=0.0f;
 	changeFactor=1.0f;
-	update(0.1);
+	update(0.1f);
 }
 
 void Weather::move(int dx, int dy) {
@@ -89,7 +89,7 @@ void Weather::update(float elapsed) {
 				lightning_t l;
 				l.posx = TCODRandom::getInstance()->getInt(0,map->w);
 				l.posy = TCODRandom::getInstance()->getInt(0,map->h);
-				l.life = TCODRandom::getInstance()->getFloat(0.1,LIGHTNING_LIFE);
+				l.life = TCODRandom::getInstance()->getFloat(0.1f,LIGHTNING_LIFE);
 				l.radius=TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS,LIGHTNING_RADIUS*2);
 				l.noisex=TCODRandom::getInstance()->getFloat(0.0f,1000.0f);
 				l.intensity=0.0f;
@@ -212,12 +212,12 @@ void Weather::calculateAmbient(float timeInSeconds) {
 		// between 7am and 8am
 		coef = (hour - 7.0f); 
 		ambientColor = TCODColor::lerp(dawn,dawn2,coef);
-		coef = 0.33333 + coef/3.0f;
+		coef = 0.33333f + coef/3.0f;
 	} else if ( hour < 9.0f ) {
 		// between 8am and 9am
 		coef = (hour - 8.0f); 
 		ambientColor = TCODColor::lerp(dawn2,day,coef);
-		coef = 0.66666 + coef/3.0f;
+		coef = 0.66666f + coef/3.0f;
 	} else if ( hour < 18.0f ) {
 		// between 9am and 6pm
 		ambientColor = day;
@@ -226,12 +226,12 @@ void Weather::calculateAmbient(float timeInSeconds) {
 		// between 6pm and 7pm
 		coef = (hour - 18.0f); 
 		ambientColor = TCODColor::lerp(day,dawn2,coef);
-		coef = 0.66666 + (1.0f-coef)/3.0f;
+		coef = 0.66666f + (1.0f-coef)/3.0f;
 	} else if ( hour < 20.0f ) {
 		// between 7pm and 8pm
 		coef = (hour - 19.0f); 
 		ambientColor = TCODColor::lerp(dawn2,dawn,coef);
-		coef = 0.33333 + (1.0f-coef)/3.0f;
+		coef = 0.33333f + (1.0f-coef)/3.0f;
 	} else if ( hour < 21.0f ) {
 		// between 8pm and 9pm
 		coef = (hour - 20.0f); 

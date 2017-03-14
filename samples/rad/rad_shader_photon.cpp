@@ -88,12 +88,12 @@ void PhotonShader::computeFormFactor(int x, int y) {
 		}
 	}
 	// scale so that the sum of all form factors for cell x,y is 1.0
-	ffSum[x+y*map->getWidth()]=curFfSum;
+	ffSum[x+y*map->getWidth()]=(float)curFfSum;
 	if ( curFfSum > 1E-8 ) {
 		curFfSum = 1.0/curFfSum;
 		for (int cx=minx,cdx=minx - ominx; cx<=maxx;cx++,cdx++) {
 			for (int cy=miny,cdy=miny - ominy;cy<=maxy;cy++,cdy++) {
-				cellFormFactor[cdx+cdy*maxDiameter] *= curFfSum;
+				cellFormFactor[cdx+cdy*maxDiameter] *= (float)curFfSum;
 			}
 		}
 	}

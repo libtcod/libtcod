@@ -414,7 +414,7 @@ void namegen_word_prune_spaces (char * str) {
 /* prune repeated "syllables", such as Arnarn */
 bool namegen_word_prune_syllables (char *str) {
     char * data = TCOD_strdup(str);
-    int len = strlen(data); /* length of the string */
+    size_t len = strlen(data); /* length of the string */
     char check[8];
     int i; /* iteration in for loops */
     /* change to lowercase */

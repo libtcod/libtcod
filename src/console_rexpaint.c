@@ -62,7 +62,7 @@ struct RexPaintTile {
 };
 /* Read data from a gz file, returns 0 on success, or -1 on any error. */
 static int load_gz_confirm(gzFile gz_file, void *data, size_t length) {
-	if (gzread(gz_file, data, length) != length) { return -1; }
+	if (gzread(gz_file, data, (int)length) != length) { return -1; }
 	return 0;
 }
 static int load_header(gzFile gz_file, struct RexPaintHeader *xp_header) {

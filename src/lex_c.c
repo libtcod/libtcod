@@ -34,7 +34,7 @@
 
 /* damn ANSI C does not know strdup, strcasecmp, strncasecmp */
 char *TCOD_strdup(const char *s) {
-	uint32_t l=strlen(s)+1;
+	size_t l=strlen(s)+1;
 	char *ret=malloc(sizeof(char)*l);
 	memcpy(ret,s,sizeof(char)*l);
 	return ret;
@@ -331,7 +331,7 @@ int TCOD_lex_get_space(TCOD_lex_t *lex)
 		break;
 	}
 	if ( (lex->flags & TCOD_LEX_FLAG_TOKENIZE_COMMENTS) && startPos && lex->pos > startPos ) {
-		int len = lex->pos - startPos;
+		int len = (int)(lex->pos - startPos);
 		allocate_tok(lex, len+1);
 		strncpy(lex->tok,startPos,len);
 		lex->tok[len]=0;

@@ -64,7 +64,7 @@ ToolBar::ToolBar(int x, int y, const char *name, const char *tip)
 	: Container(x,y,0,2),name(NULL),fixedWidth(0) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		w = strlen(name)+4;
+		w = (int)strlen(name)+4;
 	}
 	if ( tip ) setTip(tip);
 }
@@ -101,7 +101,7 @@ void ToolBar::render() {
 
 void ToolBar::computeSize() {
 	int cury=y+1;
-	w=name ? strlen(name)+4 : 2;
+	w=name ? (int)strlen(name)+4 : 2;
 	for (Widget **wid=content.begin(); wid != content.end(); wid ++ ) {
 		if ( (*wid)->isVisible() ) {
 			(*wid)->x=x+1;

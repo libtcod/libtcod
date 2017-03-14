@@ -168,7 +168,7 @@ static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, 
 		/* view split */
 		int offset=startX+x*dx/STEP_SIZE + (startY+y*dy/STEP_SIZE)*m->width;
 		view_t *shallower_view= & views[offset];
-		int view_index=current_view - (view_t **)TCOD_list_begin(active_views);
+		int view_index=(int)(current_view - (view_t **)TCOD_list_begin(active_views));
 		view_t **shallower_view_it;
 		view_t **steeper_view_it;
 		*shallower_view=**current_view;

@@ -76,7 +76,7 @@ void Button::render() {
 
 void Button::computeSize() {
 	if ( label != NULL ) {
-		w=strlen(label)+2;
+		w=(int)(strlen(label)+2);
 	} else {
 		w=4;
 	}

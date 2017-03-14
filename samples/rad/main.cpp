@@ -37,8 +37,8 @@
 #define MAP_HEIGHT 50 
 
 #define LIGHT_RADIUS 10
-#define CELL_REFLECTIVITY 1.5
-#define CELL_SELF_ILLUMINATION 0.4
+#define CELL_REFLECTIVITY 1.5f
+#define CELL_SELF_ILLUMINATION 0.4f
 
 TCODMap *map;
 BspHelper bsp;
@@ -120,7 +120,7 @@ void init() {
 	if (enableGammaCorrection) {
 		for (int i=0; i< 256; i++) {
 			float v=i/255.0f;
-			float correctedV = pow(v,GAMMA);
+			float correctedV = powf(v,GAMMA);
 			gammaLookup[i] = (int)(correctedV*255);
 		}
 	} else {

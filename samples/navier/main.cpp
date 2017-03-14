@@ -70,10 +70,10 @@ void set_bnd ( int b, float * x ) {
 		x[IX(i,N+1)] = b == 1 ? -x[IX(i,N)] : x[IX(i,N)];
 	} 
 	// boundary conditions at corners
-	x[IX(0  ,0  )] = 0.5*(x[IX(1,0  )]+x[IX(0  ,1)]); 
-	x[IX(0  ,N+1)] = 0.5*(x[IX(1,N+1)]+x[IX(0  ,N )]); 
-	x[IX(N+1,0  )] = 0.5*(x[IX(N,0  )]+x[IX(N+1,1)]); 
-	x[IX(N+1,N+1)] = 0.5*(x[IX(N,N+1)]+x[IX(N+1,N )]); 
+	x[IX(0  ,0  )] = 0.5f*(x[IX(1,0  )]+x[IX(0  ,1)]); 
+	x[IX(0  ,N+1)] = 0.5f*(x[IX(1,N+1)]+x[IX(0  ,N )]); 
+	x[IX(N+1,0  )] = 0.5f*(x[IX(N,0  )]+x[IX(N+1,1)]); 
+	x[IX(N+1,N+1)] = 0.5f*(x[IX(N,N+1)]+x[IX(N+1,N )]); 
 } 
 
 
@@ -141,10 +141,10 @@ void advect ( int b, float * d, float * d0, float * u, float * v, float dt ) {
 } 
 
 void project ( float * u, float * v, float * p, float * div ) { 
-	float h = 1.0/N; 
+	float h = 1.0f/N; 
 	for ( int i=1 ; i<=N ; i++ ) { 
 		for ( int j=1 ; j<=N ; j++ ) { 
-			div[IX(i,j)] = -0.5*h*(u[IX(i+1,j)]-u[IX(i-1,j)]+ 
+			div[IX(i,j)] = -0.5f*h*(u[IX(i+1,j)]-u[IX(i-1,j)]+ 
 							v[IX(i,j+1)]-v[IX(i,j-1)]); 
 			p[IX(i,j)] = 0; 
 		} 
@@ -163,8 +163,8 @@ void project ( float * u, float * v, float * p, float * div ) {
 
 	for ( int i=1 ; i<=N ; i++ ) { 
 		for ( int j=1 ; j<=N ; j++ ) { 
-			u[IX(i,j)] -= 0.5*(p[IX(i+1,j)]-p[IX(i-1,j)])/h; 
-			v[IX(i,j)] -= 0.5*(p[IX(i,j+1)]-p[IX(i,j-1)])/h; 
+			u[IX(i,j)] -= 0.5f*(p[IX(i+1,j)]-p[IX(i-1,j)])/h; 
+			v[IX(i,j)] -= 0.5f*(p[IX(i,j+1)]-p[IX(i,j-1)])/h; 
 		} 
 	} 
 	set_bnd ( 1, u ); set_bnd ( 2, v );  
@@ -237,9 +237,9 @@ void get_from_UI ( float * d, float * u, float * v, float elapsed, TCOD_key_t k,
 
 	if ( mouse.lbutton ) {
 		float dx,dy,l;
-		dx=mouse.cx-playerx;
-		dy=mouse.cy-playery;
-		l=sqrt(dx*dx+dy*dy);
+		dx=(float)(mouse.cx-playerx);
+		dy=(float)(mouse.cy-playery);
+		l=sqrtf(dx*dx+dy*dy);
 		if ( l > 0 ) {
 			l = 1.0f/l;
 			dx*=l;

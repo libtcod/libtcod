@@ -554,8 +554,12 @@ void parseFile(char *filename) {
 					colors.push(*catCol);
 	    		} else if ( startsWith(directive,"@Color") ) {
 					Color *col = new Color();
+					int colr, colg, colb;
 					directive=getIdentifier(directive+sizeof("@Color"),&col->name);
-					sscanf(directive,"%d,%d,%d",&col->col.r,&col->col.g,&col->col.b);
+					sscanf(directive,"%d,%d,%d",&colr, &colg, &colb);
+					col->col.r = (uint8_t)colr;
+					col->col.g = (uint8_t)colg;
+					col->col.b = (uint8_t)colb;
 					colors.push(*col);
 					while (! isspace(*directive)) directive++;
 	    		} else if ( startsWith(directive,"@FuncDesc") ) {

@@ -39,7 +39,7 @@ void Label::render() {
 }
 
 void Label::computeSize() {
-	if ( label ) w=strlen(label);
+	if ( label ) w=(int)strlen(label);
 	else w=0;
 }
 

@@ -1574,9 +1574,9 @@ void TCOD_sys_get_current_resolution(int *w, int *h) {
 }
 
 /* image stuff */
-bool TCOD_sys_check_magic_number(const char *filename, int size, uint8_t*data) {
+bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t*data) {
 	uint8_t tmp[128];
-	int i;
+	size_t i;
 	SDL_RWops *rwops =  SDL_RWFromFile(filename, "rb");
 	if (! rwops) return false;
 	if ( (i = rwops->read(rwops,tmp,size,1)) != 1 ) {

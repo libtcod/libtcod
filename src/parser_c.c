@@ -211,7 +211,7 @@ TCOD_value_t TCOD_parse_string_value(void) {
 	TCOD_list_t l;
 	bool end=false;
 	char **s;
-	int slen=0;
+	size_t slen=0;
 	l=TCOD_list_new();
 	if ( lex->token_type != TCOD_LEX_STRING ) TCOD_parser_error("parseStringValue : string constant expected instead of '%s'",lex->tok);
 	while ( !end ) {

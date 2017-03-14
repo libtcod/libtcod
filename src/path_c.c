@@ -62,10 +62,10 @@ static void heap_sift_down(TCOD_path_data_t *path, TCOD_list_t heap) {
 	uintptr_t *array=(uintptr_t *)TCOD_list_begin(heap);
 	while ( child <= end ) {
 		int toSwap=cur;
-		uint32_t off_cur=array[cur];
+		uintptr_t off_cur=array[cur];
 		float cur_dist=path->heur[off_cur];
 		float swapValue=cur_dist;
-		uint32_t off_child=array[child];
+		uintptr_t off_child=array[child];
 		float child_dist=path->heur[off_child];
 		if ( child_dist < cur_dist ) {
 			toSwap=child;

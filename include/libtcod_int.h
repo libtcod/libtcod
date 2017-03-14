@@ -238,7 +238,7 @@ TCODLIB_API void *TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const void *image, int *w,int *h);
 TCOD_color_t TCOD_sys_get_image_pixel(const void *image,int x, int y);
 int TCOD_sys_get_image_alpha(const void *image,int x, int y);
-bool TCOD_sys_check_magic_number(const char *filename, int size, uint8_t *data);
+bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t *data);
 
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);
@@ -270,7 +270,7 @@ typedef struct {
 	void (*set_mouse_position)(int x, int y);
 	/* clipboard */
 	char *(*get_clipboard_text)();
-	bool (*set_clipboard_text)(char *text);
+	bool (*set_clipboard_text)(const char *text);
 	/* android compatible file access functions */
 	bool (*file_read)(const char *filename, unsigned char **buf, size_t *size);
 	bool (*file_exists)(const char * filename);

@@ -108,7 +108,7 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	error=lodepng_encode_memory(&buf,&size,image,surf->w,surf->h,LCT_RGB,8);
 	free(image);
 	if ( ! error ) {
-		TCOD_sys_write_file(filename,buf,size);
+		TCOD_sys_write_file(filename,buf,(uint32_t)size);
 		free(buf);
 	} else {
 		printf("error %u: %s\n", error, lodepng_error_text(error));

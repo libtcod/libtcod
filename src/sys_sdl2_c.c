@@ -155,7 +155,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 			scale_data.src_proportionate_height = (int)((console_width_p * scale_data.dst_height_width_ratio) / scale_factor);
 
 			/* Work out how much of the console to copy. */
-			scale_data.src_x0 = (scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width);
+			scale_data.src_x0 = (int)((scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width));
 			if (scale_data.src_x0 + scale_data.src_proportionate_width > console_width_p)
 				scale_data.src_x0 = console_width_p - scale_data.src_proportionate_width;
 			if (scale_data.src_x0 < 0)
@@ -164,7 +164,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 			if (scale_data.src_x0 + scale_data.src_copy_width > console_width_p)
 				scale_data.src_copy_width = console_width_p - scale_data.src_x0;
 
-			scale_data.src_y0 = (scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height);
+			scale_data.src_y0 = (int)((scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height));
 			if (scale_data.src_y0 + scale_data.src_proportionate_height > console_height_p)
 				scale_data.src_y0 = console_height_p - scale_data.src_proportionate_height;
 			if (scale_data.src_y0 < 0)
@@ -422,7 +422,7 @@ static char *get_clipboard_text() {
 	return last_clipboard_text;
 }
 
-static bool set_clipboard_text(char *text) {
+static bool set_clipboard_text(const char *text) {
 #ifdef TCOD_LINUX
 	/*
 	X11 clipboard is inaccessible without an open window.
@@ -437,7 +437,7 @@ static bool set_clipboard_text(char *text) {
 
 /* android compatible file access functions */
 static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
-	uint32_t filesize;
+	int64_t filesize;
 	/* get file size */
 	SDL_RWops *rwops= SDL_RWFromFile(filename,"rb");
 	if (!rwops) return false;

@@ -188,7 +188,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 	}
 #ifndef NO_OPENGL
 	else {
-		TCOD_opengl_render(oldFade, NULL, console_buffer, prev_console_buffer);
+		TCOD_opengl_render(oldFade, NULL, console, ensure_cache(console));
 		TCOD_opengl_swap();
 	}  
 #endif
@@ -299,6 +299,9 @@ static void create_window(int w, int h, bool fullscreen) {
 }
 
 static void destroy_window() {
+	if (TCOD_ctx.renderer == TCOD_RENDERER_OPENGL || TCOD_ctx.renderer == TCOD_RENDERER_GLSL) {
+		TCOD_opengl_uninit_state();
+	}
 	if (scale_screen) {
 		SDL_FreeSurface(scale_screen);
 		scale_screen = NULL;

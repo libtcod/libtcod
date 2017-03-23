@@ -173,8 +173,9 @@ extern TCOD_internal_context_t TCOD_ctx;
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
+void TCOD_opengl_uninit_state();
 bool TCOD_opengl_init_shaders(void);
-bool TCOD_opengl_render(int oldFade, bool *ascii_updated, char_t *console_buffer, char_t *prev_console_buffer);
+bool TCOD_opengl_render(int oldFade, bool *ascii_updated, TCOD_console_data_t *console, TCOD_console_data_t *cache);
 void TCOD_opengl_swap(void);
 void * TCOD_opengl_get_screen(void);
 #endif
@@ -314,7 +315,6 @@ typedef struct {
 extern scale_data_t scale_data;
 
 extern float scale_factor;
-extern SDL_Surface* screen;
 extern SDL_Surface* charmap;
 extern SDL_Window* window;
 extern SDL_Renderer* renderer;

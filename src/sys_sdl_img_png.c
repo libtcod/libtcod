@@ -24,6 +24,8 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifdef TCOD_SDL2
+
 #include <sys.h>
 
 #if !defined (__HAIKU__) && !defined (__ANDROID__)
@@ -117,3 +119,4 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	}
 }
 
+#endif /* TCOD_SDL2 */

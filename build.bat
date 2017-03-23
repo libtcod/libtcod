@@ -231,26 +231,33 @@ for %%P in (Win32 x64) do (
 
 	REM Start with a verbatim copy of the repository.
 	hg archive -t files !L_RELEASE_PATH!
-	del !L_RELEASE_PATH!\.hg*
+	del !L_RELEASE_PATH!\.*
+	del !L_RELEASE_PATH!\*.yml
 
 	set L_FILES_FILENAME=!L_RELEASE_PATH!\WHERE-ARE-THE-PREBUILT-FILES.txt
 	echo. > !L_FILES_FILENAME!
 	echo These files are placed where Visual Studio expects to find them if you compile the solution:> !L_FILES_FILENAME!
 	echo. > !L_FILES_FILENAME!
 	echo SDL2 includes:>> !L_FILES_FILENAME!
-	echo !DEPENDENCY_DIRNAME!\include\>> !L_FILES_FILENAME!
+	echo   !DEPENDENCY_DIRNAME!\include\>> !L_FILES_FILENAME!
 	echo. >> !L_FILES_FILENAME!
 
 	REM Copy the dependencies into place for compilation.
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\include\"
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\%%P\"
 	for %%C in (Debug Release) do (
-		for %%N in (libtcod libtcod-gui) do (
+		for %%N in (libtcod_sdl_opengl libtcod_sdl libtcod-gui) do (
 			echo %%C %%P %%N:>> !L_FILES_FILENAME!
+
+			set L_BASENAME=%%N
+			set L_BASENAME=!L_BASENAME:libtcod_=!
+			if not !L_BASENAME! == %%N (
+				set L_BASENAME=libtcod
+			)
 			
 			for %%S in (dll pdb lib) do (
-				xcopy /I /E >nul "!BUILD_PATH!\msvs\%%N\%%P\%%C\%%N.%%S" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\*"
-				echo   !BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.%%S>> !L_FILES_FILENAME!
+				xcopy /I /E >nul "!BUILD_PATH!\msvs\%%N\%%P\%%C\!L_BASENAME!.%%S" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\*"
+                echo   !BUILD_DIRNAME!\msvs\%%N\%%P\%%C\!L_BASENAME!.%%S>> !L_FILES_FILENAME!
 				REM Delete useless automatically copied files.
 				if exist "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.tlog" (
 					rmdir /q /s "!L_RELEASE_PATH!\!BUILD_DIRNAME!\msvs\%%N\%%P\%%C\%%N.tlog"
@@ -262,7 +269,7 @@ for %%P in (Win32 x64) do (
 
 	REM Copy release dlls into the top level directory so the samples can be run directly.
 	copy >nul "!BUILD_PATH!\dependencies\%%P\Release\SDL2.dll" "!L_RELEASE_PATH!\"
-	copy >nul "!BUILD_PATH!\msvs\libtcod\%%P\Release\libtcod.dll" "!L_RELEASE_PATH!\"
+	copy >nul "!BUILD_PATH!\msvs\libtcod_sdl_opengl\%%P\Release\libtcod.dll" "!L_RELEASE_PATH!\"
 	copy >nul "!BUILD_PATH!\msvs\libtcod-gui\%%P\Release\libtcod-gui.dll" "!L_RELEASE_PATH!\"
 
 	REM Copy the featured sample and the documentation generator.

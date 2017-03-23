@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtcod", "libtcod.vcxproj", "{D6197244-2BEB-4AED-988E-CC1F0B647055}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtcod_sdl", "libtcod.vcxproj", "{D6197244-2BEB-4AED-988E-CC1F0B647055}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtcod-gui", "libtcod-gui.vcxproj", "{1A754D9A-D06F-4DE4-BB32-896B93C7C360}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -51,6 +51,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "doctcod", "doctcod.vcxproj"
 	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "python", "..\..\python\python.pyproj", "{9F5A5967-268C-4D0D-A182-4112A94ABE4B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtcod_sdl_opengl", "libtcod_sdl_opengl.vcxproj", "{A56B29B9-036F-401A-B371-7ABB29A91640}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -168,6 +170,16 @@ Global
 		{9F5A5967-268C-4D0D-A182-4112A94ABE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F5A5967-268C-4D0D-A182-4112A94ABE4B}.Release|Win32.ActiveCfg = Release|Any CPU
 		{9F5A5967-268C-4D0D-A182-4112A94ABE4B}.Release|x64.ActiveCfg = Release|Any CPU
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Debug|Win32.Build.0 = Debug|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Debug|x64.ActiveCfg = Debug|x64
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Debug|x64.Build.0 = Debug|x64
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Release|Any CPU.ActiveCfg = Release|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Release|Win32.ActiveCfg = Release|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Release|Win32.Build.0 = Release|Win32
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Release|x64.ActiveCfg = Release|x64
+		{A56B29B9-036F-401A-B371-7ABB29A91640}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

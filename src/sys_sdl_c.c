@@ -24,6 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifdef TCOD_SDL2
 #include <mouse.h>
 #include <sys.h>
 
@@ -1687,3 +1688,4 @@ void TCOD_sys_set_dirty_character_code(int ch) {
 		}
 	}
 }
+#endif /* TCOD_SDL2 */

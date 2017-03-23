@@ -226,5 +226,7 @@ extern "C" void TCOD_CRenderer(void *sdl_surface) {
 }
 void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer) {
 	::renderer = renderer;
+#ifdef TCOD_SDL2
 	TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
+#endif
 }

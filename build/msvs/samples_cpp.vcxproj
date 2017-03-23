@@ -82,7 +82,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod_sdl_opengl\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>true</LinkIncremental>
@@ -91,7 +91,7 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod_sdl_opengl\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>true</LinkIncremental>
@@ -100,7 +100,7 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod_sdl_opengl\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>false</LinkIncremental>
@@ -109,7 +109,7 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerWorkingDirectory>$(SolutionDir)..\..\</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
+    <LocalDebuggerEnvironment>PATH=%PATH%;$(SolutionDir)libtcod_sdl_opengl\$(Platform)\$(Configuration);$(SolutionDir)..\dependencies\$(Platform)\$(Configuration)
 $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LinkIncremental>false</LinkIncremental>

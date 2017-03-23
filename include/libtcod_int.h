@@ -122,10 +122,12 @@ typedef struct {
 	/* actual resolution */
 	int actual_fullscreen_width;
 	int actual_fullscreen_height;
+#ifdef TCOD_SDL2
 	/* renderer to use */
 	TCOD_renderer_t renderer;
 	/* user post-processing callback */
 	SDL_renderer_t sdl_cbk;
+#endif
 	/* fading data */
 	TCOD_color_t fading_color;
 	uint8_t fade;

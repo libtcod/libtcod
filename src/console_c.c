@@ -57,9 +57,11 @@ TCOD_internal_context_t TCOD_ctx={
 	8,8,
 	"terminal.png","",
 	NULL,NULL,NULL,0,false,0,0,0,0,0,0,
+#ifdef TCOD_SDL2
 	/* default renderer to use */
 	TCOD_RENDERER_GLSL,
 	NULL,
+#endif
 	/* fading data */
 	{0,0,0},255,
 	/*key state*/
@@ -1043,7 +1045,9 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 		con->w=w;
 		con->h=h;
 		TCOD_ctx.root=con;
+#ifdef TCOD_SDL2
 		TCOD_ctx.renderer=renderer;
+#endif
 		for (i=0; i < TCOD_COLCTRL_NUMBER; i++) {
 			color_control_fore[i]=TCOD_white;
 			color_control_back[i]=TCOD_black;

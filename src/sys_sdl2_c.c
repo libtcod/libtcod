@@ -299,9 +299,11 @@ static void create_window(int w, int h, bool fullscreen) {
 }
 
 static void destroy_window() {
+#ifndef NO_OPENGL	
 	if (TCOD_ctx.renderer == TCOD_RENDERER_OPENGL || TCOD_ctx.renderer == TCOD_RENDERER_GLSL) {
 		TCOD_opengl_uninit_state();
 	}
+#endif
 	if (scale_screen) {
 		SDL_FreeSurface(scale_screen);
 		scale_screen = NULL;

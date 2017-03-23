@@ -10,6 +10,7 @@ import time
 import urllib
 import zipfile
 
+import config
 
 def ensure_path(path):
     """Make sure a directory exists for a new file at path."""
@@ -117,8 +118,7 @@ LIBTCOD_ROOT_DIR = '../..'
 
 vars = Variables()
 pre_vars = Environment(variables=vars)
-vars.Add(EnumVariable('MODE', 'Set build variant.', 'RELEASE',
-                      allowed_values=('RELEASE', 'DEBUG')))
+vars.Add('MODE', 'Set build variant.', 'DEBUG')
 
 default_toolset = 'msvc' if sys.platform == 'win32' else 'default'
 vars.Add(EnumVariable('TOOLSET', 'Force using this compiler. (Windows only)',
@@ -140,12 +140,12 @@ else:
     default_tag = '$VERSION-$ARCH-$TOOLSET'
     windows_toolset = env_vars['TOOLSET']
 
-if env_vars['MODE'] != 'RELEASE':
+if env_vars['MODE'].upper() != 'RELEASE':
     default_tag += '-$MODE'
 
 vars.Add('TAG', 'Variant tag.', default_tag)
 vars.Add('CPPDEFINES', 'Defined preprocessor values.',
-         'NO_OPENGL NDEBUG TCOD_SDL2')
+         ' '.join(config.DEFINES))
 
 vars.Add('VERSION', 'libtcod version.', get_libtcod_version())
 vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT-$DATETIME')
@@ -175,7 +175,7 @@ TOOLSETS = {'default': ['default'],
             }
 
 env = Environment(
-    tools=TOOLSETS[env_vars['TOOLSET']] + ['tar', 'zip'],
+    tools=TOOLSETS[env_vars['TOOLSET'].lower()] + ['tar', 'zip'],
     WINDOWS_TOOLSET=windows_toolset,
     variables=vars,
     ENV=os.environ,
@@ -213,16 +213,8 @@ env['SDL_MINGW_ARCH'] = 'i686' if env['SDL_ARCH'] == 'x86' else 'x86_64'
 
 using_msvc = env['CC'] == 'cl'
 
-if env['MODE'] == 'RELEASE':
-    if using_msvc: # use msvc flags
-        env.Prepend(CCFLAGS=['-W3', '-O2'])
-    else: # use gcc flags
-        env.Prepend(CCFLAGS=['-Wall', '-O2'])
-if env['MODE'] == 'DEBUG':
-    if using_msvc:
-        env.Prepend(CCFLAGS=['-W3', '-DEBUG'])
-    else:
-        env.Prepend(CCFLAGS=['-Wall', '-g'])
+CONFIG_NAME = '%s_%s' % (env['MODE'].upper(), 'MSVC' if using_msvc else 'GCC')
+env.Prepend(**getattr(config, CONFIG_NAME))
 
 sdl_package = []
 sdl_install = []
@@ -297,6 +289,14 @@ if not using_msvc:
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])
+
+if 'NO_OPENGL' not in env['CPPDEFINES']:
+    if sys.platform == 'win32':
+        env_libtcod.Append(LIBS=['opengl32'])
+    elif sys.platform == 'darwin':
+        env_libtcod.Append(LINKFLAGS=['-framework', 'OpenGL'])
+    else:
+        env_libtcod.Append(LIBS=['GL'])
 
 libtcod = env_libtcod.SharedLibrary(
     target='$VARIANT/libtcod',

@@ -169,9 +169,7 @@ static PFNGLUNIFORM2FARBPROC glUniform2fARB=0;
 static PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB=0;
 static PFNGLUNIFORM1FARBPROC glUniform1fARB=0;
 static PFNGLUNIFORM1IARBPROC glUniform1iARB=0;
-#ifdef TCOD_WINDOWS
 static PFNGLACTIVETEXTUREPROC glActiveTextureF=0;
-#endif
                            
 static SDL_GLContext glcontext;
 
@@ -216,9 +214,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	glGetUniformLocationARB=(PFNGLGETUNIFORMLOCATIONARBPROC)SDL_GL_GetProcAddress("glGetUniformLocationARB");
 	glUniform1fARB=(PFNGLUNIFORM1FARBPROC)SDL_GL_GetProcAddress("glUniform1fARB");
 	glUniform1iARB=(PFNGLUNIFORM1IARBPROC)SDL_GL_GetProcAddress("glUniform1iARB");
-#ifdef TCOD_WINDOWS	
 	glActiveTextureF=(PFNGLACTIVETEXTUREPROC)SDL_GL_GetProcAddress("glActiveTexture");
-#endif
 	
 	/* set opengl state */
 	glEnable(GL_TEXTURE_2D);

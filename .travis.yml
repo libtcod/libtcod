@@ -27,7 +27,7 @@ before_install:
 
 install:
 - cd build/scons
-- scons develop dist -j 2 MODE=DEBUG ARCH=x86_64
+- scons develop dist -j 3 ARCH=x86_64
 - cd ../..
 
 before_script:

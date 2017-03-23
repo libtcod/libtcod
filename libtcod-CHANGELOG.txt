@@ -11,13 +11,16 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 % All libtcod headers are now self-contained. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/93/header-organization
 % bool type is now based off of stdbool.h (Kyle Stewart)
+% SCons builder defaults to debug builds, now builds with OpenGL, and uses link
+  time optimization on release builds. (Kyle Stewart)
+  https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
 - Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/88
 - Fixed TCOD_list_reverse. (Kyle Stewart)
 - Fixed simplex noise artifacts when using negative coordinates. (Kyle Stewart)
-- Fixed the GLSL and OPENGL renderers (rmtew)
+- Fixed the GLSL and OPENGL renderers on all platforms. (rmtew) (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
 
 =========================================================

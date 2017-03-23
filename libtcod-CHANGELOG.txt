@@ -17,6 +17,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
   https://bitbucket.org/libtcod/libtcod/issues/88
 - Fixed TCOD_list_reverse. (Kyle Stewart)
 - Fixed simplex noise artifacts when using negative coordinates. (Kyle Stewart)
+- Fixed the GLSL and OPENGL renderers (rmtew)
+  https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
 
 =========================================================
 1.6.3 : 2017-02-26

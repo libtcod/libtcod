@@ -276,14 +276,10 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	while ( POTfontheight < fontheight ) POTfontheight *= 2;
 
 	SDL_SetColorKey(font_surf, 1, SDL_MapRGB(font_surf->format, 0, 0, 0));
-	uint32_t pixelformat_id = SDL_GetWindowPixelFormat(window);
-	/* From here: */
-	SDL_PixelFormat *my_format = SDL_AllocFormat(pixelformat_id);
+	SDL_PixelFormat *my_format = SDL_AllocFormat(SDL_GetWindowPixelFormat(window));
 	my_format->Amask = amask;
-	temp_alpha = SDL_ConvertSurface(font_surf, my_format, 0); /* NOTE(rmtew): temp_alpha = SDL_DisplayFormatAlpha(font_surf) goes away in SDL2 */
+	temp_alpha = SDL_ConvertSurface(font_surf, my_format, 0);
 	SDL_FreeFormat(my_format);
-	SDL_SetSurfaceAlphaMod(temp_alpha, 255); /* NOTE(rmtew): SDL_SetAlpha(temp_alpha, 0, SDL_ALPHA_TRANSPARENT) goes away in SDL2 */
-	/* To here, is SDL2 conversion of SDL1 code.  Note that SDL_SetSurfaceAlphaMod may not be correct. */
 
 	temp = SDL_CreateRGBSurface(SDL_SWSURFACE, POTfontwidth, POTfontheight, 32, bmask, gmask, rmask, amask); /*BGRA */
 
@@ -577,6 +573,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 					}
 				}
 				c++;
+				nfg++;
+				nbg++;
 			}
 		}
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, 0));

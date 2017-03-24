@@ -300,7 +300,7 @@ static void create_window(int w, int h, bool fullscreen) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 }
 
-static void destroy_window() {
+static void destroy_window(void) {
 #ifndef NO_OPENGL	
 	if (TCOD_ctx.renderer == TCOD_RENDERER_OPENGL || TCOD_ctx.renderer == TCOD_RENDERER_GLSL) {
 		TCOD_opengl_uninit_state();
@@ -409,7 +409,7 @@ static void set_mouse_position(int x, int y) {
   SDL_WarpMouseInWindow(window, (uint16_t)x,(uint16_t)y);
 }
 
-static char *get_clipboard_text() {
+static char *get_clipboard_text(void) {
 #ifdef TCOD_LINUX
 	/*
 		X11 clipboard is inaccessible without an open window.

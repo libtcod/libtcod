@@ -183,7 +183,7 @@ extern TCOD_internal_context_t TCOD_ctx;
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
-void TCOD_opengl_uninit_state();
+void TCOD_opengl_uninit_state(void);
 bool TCOD_opengl_init_shaders(void);
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, TCOD_console_data_t *console, TCOD_console_data_t *cache);
 void TCOD_opengl_swap(void);
@@ -283,7 +283,7 @@ typedef struct {
 	/* create the game window */
 	void (*create_window)(int w, int h, bool fullscreen);
 	/* destroy the game window */
-	void (*destroy_window)();
+	void (*destroy_window)(void);
 	/* switch fullscreen on/off */
 	void (*set_fullscreen)(bool fullscreen);
 	/* change the game window title */
@@ -295,7 +295,7 @@ typedef struct {
 	/* change the mouse cursor position */
 	void (*set_mouse_position)(int x, int y);
 	/* clipboard */
-	char *(*get_clipboard_text)();
+	char *(*get_clipboard_text)(void);
 	bool (*set_clipboard_text)(const char *text);
 	/* android compatible file access functions */
 	bool (*file_read)(const char *filename, unsigned char **buf, size_t *size);

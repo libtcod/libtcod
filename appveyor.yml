@@ -9,11 +9,11 @@ environment:
     - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python33/python.exe"
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=mingw"
+    - SCONSOPTS: "ARCH=x86_64 TOOLSET=mingw -j 3"
       INSTALL_MINGW_64: yes
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python33-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86 TOOLSET=mingw"
+    - SCONSOPTS: "ARCH=x86 TOOLSET=mingw -j 3"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python33/python.exe"
     - DEFAULT_BUILD: yes
@@ -24,7 +24,7 @@ build_script:
 - cmd: if defined INSTALL_MINGW_64 choco install mingw
 - cmd: refreshenv
 # SCons will build in release mode on a tag push.
-- cmd: if defined APPVEYOR_REPO_TAG_NAME set SCONSMODE=MODE=RELEASE VERSION=%APPVEYOR_REPO_TAG_NAME% CCFLAGS="-Os"
+- cmd: if defined APPVEYOR_REPO_TAG_NAME set SCONSMODE=MODE=RELEASE VERSION=%APPVEYOR_REPO_TAG_NAME%
 # Install and run scons when there are any SCONSOPTS.
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip distribute setuptools
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --egg scons

@@ -418,7 +418,7 @@ bool namegen_word_prune_syllables (char *str) {
     char * data = TCOD_strdup(str);
     size_t len = strlen(data); /* length of the string */
     char check[8];
-    int i; /* iteration in for loops */
+    size_t i; /* iteration in for loops */
     /* change to lowercase */
     for (i = 0; i < len; i++) data[i] = (char)(tolower(data[i]));
     /* start pruning */

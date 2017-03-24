@@ -246,7 +246,7 @@ for %%P in (Win32 x64) do (
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\include" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\include\"
 	xcopy /I /E  >nul "!BUILD_PATH!\dependencies\%%P" "!L_RELEASE_PATH!\!BUILD_DIRNAME!\dependencies\%%P\"
 	for %%C in (Debug Release) do (
-		for %%N in (libtcod_sdl_opengl libtcod_sdl libtcod-gui) do (
+		for %%N in (libtcod_bare libtcod_sdl_opengl libtcod_sdl libtcod-gui) do (
 			echo %%C %%P %%N:>> !L_FILES_FILENAME!
 
 			set L_BASENAME=%%N

@@ -118,6 +118,19 @@
 #endif
 #endif
 
+/* For now this encapsulates mouse, keyboard, and consoles themselves. */
+#undef TCOD_CONSOLE_SUPPORT
+#undef TCOD_IMAGE_SUPPORT
+#undef TCOD_OSUTIL_SUPPORT
+
+#ifdef TCOD_SDL2
+#define TCOD_CONSOLE_SUPPORT
+#define TCOD_IMAGE_SUPPORT
+#define TCOD_OSUTIL_SUPPORT
+#else
+#define TCOD_BARE
+#endif
+
 /* int types */
 #include "external/pstdint.h"
 

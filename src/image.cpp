@@ -26,6 +26,8 @@
 */
 #include <image.hpp>
 
+#ifdef TCOD_IMAGE_SUPPORT
+
 TCODImage::TCODImage(const char *filename) : deleteData(true) {
 	data=(void *)TCOD_image_load(filename);
 }
@@ -34,9 +36,11 @@ TCODImage::TCODImage(int width, int height) : deleteData(true) {
 	data=(void *)TCOD_image_new(width,height);
 }
 
+#ifdef TCOD_CONSOLE_SUPPORT
 TCODImage::TCODImage(const TCODConsole *con) {
 	data=(void *)TCOD_image_from_console(con->data);
 }
+#endif
 
 void TCODImage::clear(const TCODColor col) {
 	TCOD_color_t ccol;
@@ -71,6 +75,7 @@ void TCODImage::putPixel(int x, int y, const TCODColor col) {
 	TCOD_image_put_pixel(data,x,y,ccol);
 }
 
+#ifdef TCOD_CONSOLE_SUPPORT
 void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle) const {
 	TCOD_image_blit(data,console->data,x,y,bkgnd_flag,scalex,scaley,angle);
 }
@@ -78,6 +83,7 @@ void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t b
 void TCODImage::blitRect(TCODConsole *console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag) const {
 	TCOD_image_blit_rect(data,console->data,x,y,w,h,bkgnd_flag);
 }
+#endif /* TCOD_CONSOLE_SUPPORT */
 
 void TCODImage::save(const char *filename) const {
 	TCOD_image_save(data,filename);
@@ -92,9 +98,11 @@ bool TCODImage::isPixelTransparent(int x, int y) const {
 	return TCOD_image_is_pixel_transparent(data,x,y) != 0;
 }
 
+#ifdef TCOD_CONSOLE_SUPPORT
 void TCODImage::refreshConsole(const TCODConsole *console) {
 	TCOD_image_refresh_console(data,console->data);
 }
+#endif /* TCOD_CONSOLE_SUPPORT */
 
 void TCODImage::invert() {
 	TCOD_image_invert(data);
@@ -116,7 +124,10 @@ void TCODImage::scale(int neww, int newh) {
 	TCOD_image_scale(data,neww,newh);
 }
 
-
+#ifdef TCOD_CONSOLE_SUPPORT
 void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h) const {
 	TCOD_image_blit_2x(data,dest->data,dx,dy,sx,sy,w,h);
 }
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#endif /* TCOD_IMAGE_SUPPORT */

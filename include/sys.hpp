@@ -112,6 +112,7 @@ public :
 	*/
 	static float getLastFrameLength();
 
+#ifdef TCOD_OSUTIL_SUPPORT
 	/**
 	@PageName system_time
 	@FuncTitle Pause the program
@@ -148,7 +149,9 @@ public :
 	@Lua tcod.system.getElapsedSeconds()
 	*/
 	static float getElapsedSeconds();
+#endif
 
+#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName console_blocking_input
 	@FuncTitle Waiting for any event (mouse or keyboard)
@@ -219,6 +222,9 @@ public :
 		if ( ev == TCOD_EVENT_KEY_PRESS && key.c == 'i' ) { ... open inventory ... }	
 	*/
 	static TCOD_event_t checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
+#endif
+
+#ifdef TCOD_SDL2
 	/**
 	@PageName system_screenshots
 	@PageFather system
@@ -232,6 +238,7 @@ public :
 	@Param filename Name of the file. If NULL, a filename is automatically generated with the form "./screenshotNNN.png", NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).
 	*/
 	static void saveScreenshot(const char *filename);
+#endif
 
 	/**
 	@PageName system_filesystem
@@ -395,6 +402,7 @@ public :
 	@Param x,y,w,h Part of the root console you want to redraw even if nothing has changed in the console back/fore/char.
 	*/
 
+#ifdef TCOD_SDL2
 	/**
 	@PageName system_misc
 	@PageFather system
@@ -447,6 +455,7 @@ public :
 	@Param offx,offy contains the position of the console on the screen when using fullscreen mode.
 	*/
 	static void getFullscreenOffsets(int *offx, int *offy);
+
 	/**
 	@PageName system_misc
 	@FuncTitle Get the font size
@@ -472,7 +481,9 @@ public :
 	@Param x,y position in pixels of the top-left corner of the character in the image
 	*/
 	static void updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
+#endif
 
+#ifdef TCOD_SDL2
 	/**
 	@PageName system_misc
 	@FuncTitle Dynamically change libtcod's internal renderer
@@ -522,6 +533,7 @@ public :
 	@Py sys_clipboard_get() # Returns UTF-8 string
 	*/
 	static char *getClipboard();
+#endif
 
 	// thread stuff
 	static int getNumCores();

@@ -30,6 +30,8 @@
 
 #include "libtcod_portability.h"
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include "color.h"
 #include "console_types.h"
 #include "image.h"
@@ -139,4 +141,7 @@ TCODLIB_API bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char 
 #ifdef __cplusplus
 }
 #endif
-#endif
+
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#endif /* _TCOD_CONSOLE_H */

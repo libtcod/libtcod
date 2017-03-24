@@ -27,6 +27,8 @@
 
 #include <txtfield.hpp>
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 TCODText::TCODText(int x, int y, int w, int h, int max_chars){
 	data=TCOD_text_init(x,y,w,h,max_chars);
 }
@@ -68,3 +70,5 @@ const char *TCODText::getText(){
 void TCODText::reset(){
 	TCOD_text_reset(data);
 }
+
+#endif /* TCOD_CONSOLE_SUPPORT */

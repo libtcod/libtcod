@@ -29,6 +29,9 @@
 #define _TCOD_MOUSE_H
 
 #include "libtcod_portability.h"
+
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include "mouse_types.h"
 
 #ifdef __cplusplus
@@ -42,4 +45,7 @@ TCODLIB_API void TCOD_mouse_includes_touch(bool enable);
 #ifdef __cplusplus
 }
 #endif
-#endif
+
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#endif /* _TCOD_MOUSE_H */

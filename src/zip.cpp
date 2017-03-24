@@ -62,13 +62,17 @@ void TCODZip::putColor(const TCODColor *val) {
 	TCOD_zip_put_color(data,col);
 }
 
+#ifdef TCOD_IMAGE_SUPPORT
 void TCODZip::putImage(const TCODImage *val) {
 	TCOD_zip_put_image(data,val->data);
 }
+#endif
 
+#ifdef TCOD_CONSOLE_SUPPORT
 void TCODZip::putConsole(const TCODConsole *val) {
 	TCOD_zip_put_console(data,val->data);
 }
+#endif
 
 int TCODZip::saveToFile(const char *filename) {
 	return TCOD_zip_save_to_file(data,filename);
@@ -102,13 +106,17 @@ TCODColor TCODZip::getColor() {
 	return TCODColor(TCOD_zip_get_color(data));
 }
 
+#ifdef TCOD_IMAGE_SUPPORT
 TCODImage *TCODZip::getImage() {
 	return new TCODImage(TCOD_zip_get_image(data));
 }
+#endif
 
+#ifdef TCOD_CONSOLE_SUPPORT
 TCODConsole *TCODZip::getConsole() {
 	return new TCODConsole(TCOD_zip_get_console(data));
 }
+#endif
 
 uint32_t TCODZip::getCurrentBytes() const {
 	return TCOD_zip_get_current_bytes(data);

@@ -26,6 +26,8 @@
 */
 #include <mouse.hpp>
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 void TCODMouse::showCursor(bool visible) {
 	TCOD_mouse_show_cursor(visible);
 }
@@ -42,3 +44,4 @@ TCOD_mouse_t TCODMouse::getStatus() {
 	return TCOD_mouse_get_status();
 }
 
+#endif

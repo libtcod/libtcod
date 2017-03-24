@@ -24,6 +24,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #include <console.h>
 
 #include <stdio.h>
@@ -41,6 +42,8 @@
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 #include <libtcod_version.h>
+
+#ifdef TCOD_CONSOLE_SUPPORT
 
 #if defined( TCOD_VISUAL_STUDIO )
 static const char *version_string ="libtcod "TCOD_STRVERSION;
@@ -83,23 +86,6 @@ void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_
 	color_control_back[con-1]=back;
 }
 
-void TCOD_fatal(const char *fmt, ...) {
-	va_list ap;
-	TCOD_sys_shutdown();
-	printf("%s\n",version_string);
-	va_start(ap,fmt);
-	vprintf(fmt,ap);
-	va_end(ap);
-	printf ("\n");
-	exit (1);
-}
-
-void TCOD_fatal_nopar(const char *msg) {
-	TCOD_sys_shutdown();
-	printf("%s\n%s\n",version_string,msg);
-	exit (1);
-}
-
 TCOD_console_t TCOD_console_new(int w, int h)  {
 	TCOD_IFNOT(w > 0 && h > 0 ) {
 		return NULL;
@@ -132,9 +118,11 @@ bool TCOD_console_has_mouse_focus(void) {
 	return TCOD_ctx.app_has_mouse_focus;
 }
 
+#ifdef TCOD_SDL2
 bool TCOD_console_is_active(void) {
 	return TCOD_ctx.app_is_active;
 }
+#endif
 
 void TCOD_console_set_window_title(const char *title) {
 	TCOD_sys_set_window_title(title);
@@ -2302,3 +2290,5 @@ bool ApfFile::Load(std::string filename){
 	return true;
 }
 */
+
+#endif /* TCOD_CONSOLE_SUPPORT */

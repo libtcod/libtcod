@@ -96,6 +96,8 @@ float TCOD_color_get_value_wrapper (colornum_t c) {
   return TCOD_color_get_value(int_to_color(c));
 }
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 colornum_t TCOD_console_get_default_background_wrapper(TCOD_console_t con)
 {
   return color_to_int(TCOD_console_get_default_background (con));
@@ -213,6 +215,9 @@ void TCOD_console_set_color_control_wrapper(TCOD_colctrl_t con,
 				  int_to_color(back));
 }
 
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#ifdef TCOD_IMAGE_SUPPORT
 void TCOD_image_clear_wrapper(TCOD_image_t image,
 					  colornum_t color)
 {
@@ -246,6 +251,9 @@ void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
   TCOD_image_set_key_color (image,
 			    int_to_color(key_color));
 }
+#endif /* TCOD_IMAGE_SUPPORT */
+
+#ifdef TCOD_CONSOLE_SUPPORT
 
 bool TCOD_console_check_for_keypress_wrapper (TCOD_key_t *holder, int flags)
 {
@@ -322,6 +330,8 @@ char *TCOD_console_print_return_string(TCOD_console_t con,int x,int y, int rw,
   return msg;
 }
 
+#endif /* TCOD_CONSOLE_SUPPORT */
+
 colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name) {
 	return color_to_int(TCOD_parser_get_color_property(parser,name));
 }
@@ -342,6 +352,7 @@ void TCOD_namegen_get_sets_wrapper(char **sets) {
 	}
 }
 
+#ifdef TCOD_SDL2
 int TCOD_sys_get_current_resolution_x()
 {
   int x, y;
@@ -355,8 +366,11 @@ int TCOD_sys_get_current_resolution_y()
   TCOD_sys_get_current_resolution(&x, &y);
   return y;
 }
+#endif
 
+#ifdef TCOD_CONSOLE_SUPPORT
 void TCOD_console_set_key_color_wrapper (TCOD_console_t con, colornum_t c)
 {
   TCOD_console_set_key_color(con, int_to_color(c));
 }
+#endif

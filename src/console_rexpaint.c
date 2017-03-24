@@ -27,6 +27,8 @@
 */
 #include <console.h>
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include <zlib.h>
 
 /* Needed only for TCOD_fatal */
@@ -333,3 +335,5 @@ bool TCOD_console_list_save_xp(
 	if (gzclose(gz_file)) { return false; /* error writing to file */ }
 	return true;
 }
+
+#endif /* TCOD_CONSOLE_SUPPORT */

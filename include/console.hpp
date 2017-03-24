@@ -29,6 +29,9 @@
 #define _TCOD_CONSOLE_HPP
 
 #include "console.h"
+
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include "image.hpp"
 #include "color.hpp"
 
@@ -1782,4 +1785,6 @@ protected :
 	TCOD_console_t data;
 };
 
-#endif
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#endif /* _TCOD_CONSOLE_HPP */

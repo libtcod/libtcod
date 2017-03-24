@@ -30,6 +30,9 @@
 #define _TCOD_TEXT_H_
 
 #include "libtcod_portability.h"
+
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include "color.h"
 #include "console_types.h"
 
@@ -51,4 +54,7 @@ TCODLIB_API void TCOD_text_delete(TCOD_text_t txt);
 #ifdef __cplusplus
 }
 #endif
-#endif
+
+#endif /* TCOD_CONSOLE_SUPPORT */
+
+#endif /* _TCOD_TEXT_H_ */

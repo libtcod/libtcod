@@ -49,6 +49,7 @@
 extern "C" {
 #endif
 
+#ifdef TCOD_CONSOLE_SUPPORT
 typedef struct {
 	int *ch_array; /* character code array */
 	TCOD_image_t fg_colors, bg_colors;
@@ -61,6 +62,7 @@ typedef struct {
 	/* foreground (text), background colors */
 	TCOD_color_t fore, back;
 } TCOD_console_data_t;
+#endif
 
 /* fov internal stuff */
 typedef struct {
@@ -108,6 +110,7 @@ typedef struct {
 	int *ascii_to_tcod;
 	/* whether each character in the font is a colored tile */
 	bool *colored;
+#ifdef TCOD_CONSOLE_SUPPORT
 	/* the root console */
 	TCOD_console_data_t *root;
 	/* nb chars in the font */
@@ -122,6 +125,7 @@ typedef struct {
 	/* actual resolution */
 	int actual_fullscreen_width;
 	int actual_fullscreen_height;
+#endif
 #ifdef TCOD_SDL2
 	/* renderer to use */
 	TCOD_renderer_t renderer;
@@ -131,13 +135,17 @@ typedef struct {
 	/* fading data */
 	TCOD_color_t fading_color;
 	uint8_t fade;
+#ifdef TCOD_CONSOLE_SUPPORT
 	TCOD_key_t key_state;
+#endif
+#ifdef TCOD_SDL2
 	/* application window was closed */
 	bool is_window_closed;
 	/* application has mouse focus */
 	bool app_has_mouse_focus;
 	/* application is active (not iconified) */
 	bool app_is_active;
+#endif
 } TCOD_internal_context_t;
 
 extern TCOD_internal_context_t TCOD_ctx;
@@ -171,7 +179,7 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_LOG(x) printf x
 #endif
 
-#ifndef NO_OPENGL
+#if defined(TCOD_SDL2) && !defined(NO_OPENGL)
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
@@ -182,12 +190,13 @@ void TCOD_opengl_swap(void);
 void * TCOD_opengl_get_screen(void);
 #endif
 
+#ifdef TCOD_IMAGE_SUPPORT
 /* image internal stuff */
-
 bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImage);
 TCOD_color_t *TCOD_image_get_colors(TCOD_image_t *image);
 void TCOD_image_invalidate_mipmaps(TCOD_image_t *image);
 void TCOD_image_get_key_data(TCOD_image_t image, bool *has_key_color, TCOD_color_t *key_color);
+#endif
 
 /* fov internal stuff */
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
@@ -197,18 +206,21 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy);
 
+#ifdef TCOD_CONSOLE_SUPPORT
 /* TCODConsole non public methods*/
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen);
 int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char *msg, bool can_split, bool count_only);
 int TCOD_console_stringLength(const unsigned char *s);
 unsigned char * TCOD_console_forward(unsigned char *s,int l);
 char *TCOD_console_vsprint(const char *fmt, va_list ap);
+#endif
 
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
+#ifdef TCOD_CONSOLE_SUPPORT
 bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen);
 void TCOD_sys_uninit(void);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
@@ -236,6 +248,7 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
+#endif
 
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
@@ -244,12 +257,14 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 	TCOD_alignment_t align, wchar_t *msg, bool can_split, bool count_only);
 #endif
 
+#ifdef TCOD_IMAGE_SUPPORT
 /* image manipulation */
 TCODLIB_API void *TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const void *image, int *w,int *h);
 TCOD_color_t TCOD_sys_get_image_pixel(const void *image,int x, int y);
 int TCOD_sys_get_image_alpha(const void *image,int x, int y);
 bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t *data);
+#endif
 
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);

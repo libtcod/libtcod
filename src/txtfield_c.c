@@ -26,6 +26,8 @@
 */
 #include <txtfield.h>
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -682,3 +684,5 @@ void TCOD_text_delete (TCOD_text_t txt) {
     TCOD_console_delete(data->con);
     free(data);
 }
+
+#endif /* TCOD_CONSOLE_SUPPORT */

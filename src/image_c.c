@@ -24,13 +24,18 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <image.h>
+#include <libtcod_portability.h>
+
+#ifdef TCOD_IMAGE_SUPPORT
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
 
+#include <image.h>
+#ifdef TCOD_CONSOLE_SUPPORT
 #include <console.h>
+#endif
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 
@@ -296,7 +301,9 @@ void TCOD_image_delete_internal(TCOD_image_t image) {
 		free(img->mipmaps);
 	}
 	if ( img->sys_img ) {
+#ifdef TCOD_SDL2
 		TCOD_sys_delete_bitmap(img->sys_img);
+#endif
 	}
 }
 
@@ -315,6 +322,8 @@ bool TCOD_image_is_pixel_transparent(TCOD_image_t image, int x, int y) {
 	if ( TCOD_image_get_alpha(image,x,y) == 0 ) return true;
 	return false;
 }
+
+#ifdef TCOD_CONSOLE_SUPPORT
 
 void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float y,
 	TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle) {
@@ -432,6 +441,8 @@ void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	TCOD_sys_console_to_bitmap(
 		img->sys_img, (TCOD_console_data_t*)console, NULL);
 }
+
+#endif /* TCOD_CONSOLE_SUPPORT */
 
 void TCOD_image_save(TCOD_image_t image, const char *filename) {
 	image_data_t *img=(image_data_t *)image;
@@ -773,6 +784,8 @@ void getPattern(TCOD_color_t desired[4], TCOD_color_t palette[2], int *nbCols, i
 	*ascii=flagToAscii[flag];
 }
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, int sx, int sy, int w, int h) {
 	TCOD_color_t grid[4];
 	TCOD_color_t cols[2];
@@ -849,5 +862,6 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	}
 }
 
+#endif /* TCOD_CONSOLE_SUPPORT */
 
-
+#endif /* TCOD_IMAGE_SUPPORT */

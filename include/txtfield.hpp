@@ -32,6 +32,8 @@
 #include "console.hpp"
 #include "txtfield.h"
 
+#ifdef TCOD_CONSOLE_SUPPORT
+
 class TCODLIB_API TCODText {
 public :
 	TCODText(int x, int y, int w, int h, int max_chars);
@@ -48,5 +50,6 @@ protected :
 	TCOD_text_t data;
 };
 
+#endif /* TCOD_CONSOLE_SUPPORT */
 
 #endif

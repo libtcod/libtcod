@@ -58,6 +58,7 @@ libtcod_la_SOURCES = \
 	../../src/bsp_c.c \
 	../../src/color_c.c \
 	../../src/console_c.c \
+	../../src/console_rexpaint.c \
 	../../src/fov_c.c \
 	../../src/fov_circular_raycasting.c \
 	../../src/fov_diamond_raycasting.c \

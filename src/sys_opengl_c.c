@@ -179,13 +179,15 @@ void TCOD_opengl_uninit_state() {
 
 /* call after creating window */
 bool TCOD_opengl_init_state(int conw, int conh, void *font) {
-	glcontext = SDL_GL_CreateContext(window);
 	SDL_Surface *font_surf=(SDL_Surface *)font;
-	
+	SDL_PixelFormat *my_format=SDL_AllocFormat(SDL_GetWindowPixelFormat(window));
+
 	/* convert font for opengl */
 	uint32_t rmask, gmask, bmask, amask;
 	SDL_Surface *temp;
 	SDL_Surface *temp_alpha;
+
+	glcontext = SDL_GL_CreateContext(window);
 
 	/* check opengl extensions */
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_GLSL ) {
@@ -273,7 +275,6 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	while ( POTfontheight < fontheight ) POTfontheight *= 2;
 
 	SDL_SetColorKey(font_surf, 1, SDL_MapRGB(font_surf->format, 0, 0, 0));
-	SDL_PixelFormat *my_format = SDL_AllocFormat(SDL_GetWindowPixelFormat(window));
 	my_format->Amask = amask;
 	temp_alpha = SDL_ConvertSurface(font_surf, my_format, 0);
 	SDL_FreeFormat(my_format);
@@ -475,7 +476,6 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 		ofg = TCOD_image_get_colors(cache->fg_colors);
 		obg = TCOD_image_get_colors(cache->bg_colors);
 	}
-	int ascii;
 	/* update opengl data */
 	/* TODO use function pointers so that libtcod's putchar directly updates opengl data */
 	for (y=0;y<conheight;y++) {
@@ -546,6 +546,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 					/* only draw character if foreground color != background color */
 					if ( f.r != b.r || f.g != b.g || f.b != b.b ) {
 						int srcx,srcy,destx,desty;
+						int ascii;
 						destx=x;/* *TCOD_font_width; */
 						desty=y;/* *TCOD_font_height; */
 						if ( TCOD_ctx.fullscreen ) {

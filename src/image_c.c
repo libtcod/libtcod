@@ -848,14 +848,14 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 				TCOD_console_set_char(con,conx,cony,' ');
 			} else {
 				if ( ascii >= 0 ) {
-					TCOD_console_set_default_background(con,cols[0]);
-					TCOD_console_set_default_foreground(con,cols[1]);
-					TCOD_console_put_char(con,conx,cony,ascii,TCOD_BKGND_SET);
+					TCOD_console_set_char_background(con,conx,cony,cols[0],TCOD_BKGND_SET);
+					TCOD_console_set_char_foreground(con,conx,cony,cols[1]);
+					TCOD_console_set_char(con,conx,cony,ascii);
 				} else {
 					/* negative ascii code means we need to invert back/fore colors */
-					TCOD_console_set_default_background(con,cols[1]);
-					TCOD_console_set_default_foreground(con,cols[0]);
-					TCOD_console_put_char(con,conx,cony,-ascii,TCOD_BKGND_SET);
+					TCOD_console_set_char_background(con,conx,cony,cols[1],TCOD_BKGND_SET);
+					TCOD_console_set_char_foreground(con,conx,cony,cols[0]);
+					TCOD_console_set_char(con,conx,cony,-ascii);
 				}
 			}
 		}

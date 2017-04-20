@@ -22,6 +22,7 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - Fixed simplex noise artifacts when using negative coordinates. (Kyle Stewart)
 - Fixed the GLSL and OPENGL renderers on all platforms. (rmtew) (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
+- TCOD_image_blit_2x no longer alters a consoles default colors. (Kyle Stewart)
 
 =========================================================
 1.6.3 : 2017-02-26

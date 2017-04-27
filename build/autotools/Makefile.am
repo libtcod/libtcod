@@ -114,10 +114,14 @@ pkginclude_HEADERS = \
 	../../include/libtcod.h \
 	../../include/txtfield.h \
 	../../include/libtcod_int.h \
+	../../include/libtcod_portability.h \
+	../../include/libtcod_utility.h \
+	../../include/libtcod_version.h \
 	../../include/wrappers.h \
 	../../include/list.h \
 	../../include/zip.h \
 	../../include/mersenne.h \
+	../../include/external/pstdint.h \
 	../../include/bresenham.hpp \
 	../../include/mersenne.hpp \
 	../../include/bsp.hpp \

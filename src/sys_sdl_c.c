@@ -642,7 +642,6 @@ void TCOD_sys_startup(void) {
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
 	TCOD_IFNOT(SDL_Init(SDL_INIT_VIDEO) >= 0 ) return;
-	atexit(SDL_Quit);
 	memset(&TCOD_ctx.key_state,0,sizeof(TCOD_key_t));
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();

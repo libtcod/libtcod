@@ -469,12 +469,12 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 	TCOD_color_t *ofg, *obg, *nfg, *nbg;
 	int *c = console->ch_array;
 	int *oc;
-	nfg = TCOD_image_get_colors(console->fg_colors);
-	nbg = TCOD_image_get_colors(console->bg_colors);
+	nfg = console->fg_array;
+	nbg = console->bg_array;
 	if (track_changes) {
 		oc = cache->ch_array;
-		ofg = TCOD_image_get_colors(cache->fg_colors);
-		obg = TCOD_image_get_colors(cache->bg_colors);
+		ofg = cache->fg_array;
+		obg = cache->bg_array;
 	}
 	/* update opengl data */
 	/* TODO use function pointers so that libtcod's putchar directly updates opengl data */
@@ -536,8 +536,8 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 	    DBGCHECKGL(glBindTexture(GL_TEXTURE_2D, font_tex));
 
 	    c = console->ch_array;
-		nfg = TCOD_image_get_colors(console->fg_colors);
-		nbg = TCOD_image_get_colors(console->bg_colors);
+		nfg = console->fg_array;
+		nbg = console->bg_array;
 		for (y=0;y<conheight;y++) {
 			for (x=0; x<conwidth; x++) {
 				if ( *c != ' ' ) {

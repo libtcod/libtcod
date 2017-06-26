@@ -228,9 +228,22 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 }
 
 static void TCOD_console_data_free(TCOD_console_data_t *dat) {
-	if (dat->fg_colors) TCOD_image_delete(dat->fg_colors);
-	if (dat->bg_colors) TCOD_image_delete(dat->bg_colors);
+	if (dat->fg_colors) {
+		TCOD_image_delete(dat->fg_colors);
+	} else {
+		free(dat->fg_array);
+	}
+	if (dat->bg_colors) {
+		TCOD_image_delete(dat->bg_colors);
+	} else {
+		free(dat->bg_array);
+	}
 	free(dat->ch_array);
+	dat->fg_colors = NULL;
+	dat->fg_array = NULL;
+	dat->bg_colors = NULL;
+	dat->bg_array = NULL;
+	dat->ch_array = NULL;
 }
 /**
  *  Delete a console.
@@ -250,41 +263,23 @@ void TCOD_console_delete(TCOD_console_t con) {
 	TCOD_console_data_free(dat);
 	free(dat);
 }
-/**
- *  Blit from one console to another.
- *
- *  \param srcCon Pointer to the source console.
- *  \param xSrc The left region of the source console to blit from.
- *  \param ySrc The top region of the source console to blit from.
- *  \param wSrc The width of the region to blit from.
- *              If 0 then it will fill to the maximum width.
- *  \param hSrc The height of the region to blit from.
- *              If 0 then it will fill to the maximum height.
- *  \param dstCon Pointer to the destination console.
- *  \param xDst The left corner to blit onto the destination console.
- *  \param yDst The top corner to blit onto the destination console.
- *  \param foreground_alpha Foreground blending alpha.
- *  \param background_alpha Background blending alpha.
- *
- *  If the source console has a key color, this function will use it.
- */
-void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
-	TCOD_console_t dstCon, int xDst, int yDst, float foreground_alpha, float background_alpha) {
+
+void TCOD_console_blit_key_color(
+		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
+		TCOD_console_t dstCon, int xDst, int yDst,
+		float foreground_alpha, float background_alpha, TCOD_color_t *key_color) {
 	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
 	TCOD_console_data_t *dst = dstCon ? (TCOD_console_data_t *)dstCon : TCOD_ctx.root;
 	TCOD_color_t *srcFgColors, *srcBgColors, *dstFgColors, *dstBgColors;
-	bool srcHasKeyColor;
-	TCOD_color_t srcKeyColor;
 	int cx, cy;
 	if (wSrc == 0) wSrc = src->w;
 	if (hSrc == 0) hSrc = src->h;
 	TCOD_IFNOT(wSrc > 0 && hSrc > 0) return;
 	TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
-	TCOD_image_get_key_data(src->bg_colors, &srcHasKeyColor, &srcKeyColor);
-	srcFgColors = TCOD_image_get_colors(src->fg_colors);
-	srcBgColors = TCOD_image_get_colors(src->bg_colors);
-	dstFgColors = TCOD_image_get_colors(dst->fg_colors);
-	dstBgColors = TCOD_image_get_colors(dst->bg_colors);
+	srcFgColors = src->fg_array;
+	srcBgColors = src->bg_array;
+	dstFgColors = dst->fg_array;
+	dstBgColors = dst->bg_array;
 	for (cx = xSrc; cx < xSrc + wSrc; cx++) {
 		for (cy = ySrc; cy < ySrc + hSrc; cy++) {
 			/* check if we're outside the dest console */
@@ -300,9 +295,10 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			srcFgColor = srcFgColors[src_idx];
 			srcBgColor = srcBgColors[src_idx];
 			/* check if source pixel is transparent */
-			if (srcHasKeyColor &&
-				srcBgColor.r == srcKeyColor.r && srcBgColor.g == srcKeyColor.g && srcBgColor.b == srcKeyColor.b)
-				continue;
+			if (key_color &&
+					srcBgColor.r == key_color->r &&
+					srcBgColor.g == key_color->g &&
+					srcBgColor.b == key_color->b) { continue; }
 
 			if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
 				dstChar = srcChar;
@@ -342,9 +338,42 @@ void TCOD_console_blit(TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int 
 			dst->ch_array[dst_idx] = dstChar;
 		}
 	}
-	TCOD_image_invalidate_mipmaps(dst->fg_colors);
-	TCOD_image_invalidate_mipmaps(dst->bg_colors);
+	if (dst->fg_colors) { TCOD_image_invalidate_mipmaps(dst->fg_colors); }
+	if (dst->bg_colors) { TCOD_image_invalidate_mipmaps(dst->bg_colors); }
 }
+/**
+ *  Blit from one console to another.
+ *
+ *  \param srcCon Pointer to the source console.
+ *  \param xSrc The left region of the source console to blit from.
+ *  \param ySrc The top region of the source console to blit from.
+ *  \param wSrc The width of the region to blit from.
+ *              If 0 then it will fill to the maximum width.
+ *  \param hSrc The height of the region to blit from.
+ *              If 0 then it will fill to the maximum height.
+ *  \param dstCon Pointer to the destination console.
+ *  \param xDst The left corner to blit onto the destination console.
+ *  \param yDst The top corner to blit onto the destination console.
+ *  \param foreground_alpha Foreground blending alpha.
+ *  \param background_alpha Background blending alpha.
+ *
+ *  If the source console has a key color, this function will use it.
+ */
+void TCOD_console_blit(
+		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
+		TCOD_console_t dstCon, int xDst, int yDst,
+		float foreground_alpha, float background_alpha) {
+	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
+	bool srcHasKeyColor = false;
+	TCOD_color_t srcKeyColor;
+	if (src->bg_colors) {
+		TCOD_image_get_key_data(src->bg_colors, &srcHasKeyColor, &srcKeyColor);
+	}
+	TCOD_console_blit_key_color(
+		srcCon, xSrc, ySrc, wSrc, hSrc, dstCon, xDst, yDst,
+		foreground_alpha, background_alpha, (srcHasKeyColor ? &srcKeyColor : NULL)
+		);
+	}
 /**
  *  Render and present the root console to the active display.
  */
@@ -394,7 +423,7 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
-	TCOD_image_put_pixel(dat->fg_colors, x, y, dat->fore);
+	TCOD_console_set_char_foreground(dat, x, y, dat->fore);
 	TCOD_console_set_char_background(con, x, y, dat->back, (TCOD_bkgnd_flag_t)flag);
 }
 /**
@@ -413,8 +442,8 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
-	TCOD_image_put_pixel(dat->fg_colors, x, y, fore);
-	TCOD_image_put_pixel(dat->bg_colors, x, y, back);
+	TCOD_console_set_char_foreground(dat, x, y, fore);
+	TCOD_console_set_char_background(dat, x, y, back, TCOD_BKGND_SET);
 }
 /**
  *  Manually mark a region of a console as dirty.
@@ -431,9 +460,9 @@ void TCOD_console_clear(TCOD_console_t con) {
 	TCOD_IFNOT(dat != NULL) return;
 	for (i = 0; i < dat->w * dat->h; i++) {
 		dat->ch_array[i] = ' ';
+		dat->fg_array[i] = dat->fore;
+		dat->bg_array[i] = dat->back;
 	}
-	TCOD_image_clear(dat->fg_colors, dat->fore);
-	TCOD_image_clear(dat->bg_colors, dat->back);
 	/* clear the sdl renderer cache */
 	TCOD_sys_set_dirty(0, 0, dat->w, dat->h);
 }
@@ -450,7 +479,7 @@ TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) 
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_black;
-	return TCOD_image_get_pixel(dat->bg_colors, x, y);
+	return dat->bg_array[y * dat->w + x];
 }
 /**
  *  Change the foreground color of a console tile.
@@ -466,7 +495,7 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return;
-	TCOD_image_put_pixel(dat->fg_colors, x, y, col);
+	dat->fg_array[y * dat->w + x] = col;
 }
 /**
  *  Return the foreground color of a console at x,y
@@ -481,7 +510,7 @@ TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) 
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_white;
-	return TCOD_image_get_pixel(dat->fg_colors, x, y);
+	return dat->fg_array[y * dat->w + x];
 }
 /**
  *  Return a character code of a console at x,y
@@ -515,7 +544,7 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return;
-	back = &(TCOD_image_get_colors(dat->bg_colors)[y*dat->w + x]);
+	back = &(dat->bg_array[y*dat->w + x]);
 	if (flag == TCOD_BKGND_DEFAULT) flag = dat->bkgnd_flag;
 	switch (flag & 0xff) {
 	case TCOD_BKGND_SET: *back = col; break;
@@ -1335,8 +1364,15 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 
 static void TCOD_console_data_alloc(TCOD_console_data_t *dat) {
 	dat->ch_array = (int *)calloc(sizeof(int), dat->w*dat->h);
+#ifdef TCOD_IMAGE_SUPPORT
 	dat->fg_colors = TCOD_image_new(dat->w, dat->h);
+	dat->fg_array = TCOD_image_get_colors(dat->fg_colors);
 	dat->bg_colors = TCOD_image_new(dat->w, dat->h);
+	dat->bg_array = TCOD_image_get_colors(dat->bg_colors);
+#else
+	dat->fg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w*dat->h);
+	dat->bg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w*dat->h);
+#endif
 }
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
@@ -1490,7 +1526,8 @@ bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 }
 void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
+	TCOD_IF(dat != NULL) return;
+	TCOD_IF(dat->bg_colors != NULL) return;
 	TCOD_image_set_key_color(dat->bg_colors, col);
 }
 

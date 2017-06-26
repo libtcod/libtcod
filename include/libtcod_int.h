@@ -52,6 +52,9 @@ extern "C" {
 #ifdef TCOD_CONSOLE_SUPPORT
 typedef struct {
 	int *ch_array; /* character code array */
+  /* pointers to arrays of colors, with or without images */
+  TCOD_color_t *fg_array, *bg_array;
+  /* (optional) pointers to images */
 	TCOD_image_t fg_colors, bg_colors;
 	/* console width and height (in characters,not pixels) */
 	int w,h;

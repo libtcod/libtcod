@@ -392,16 +392,15 @@ if "%BYPASS_VS_CHECK%" NEQ "yes" (
 		pause & exit /b
 	)
 
-	if not exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
-		echo You do not appear to have wswhere available.  It comes with Visual Studio 2017.
-		echo The community edition is free, download it and install it.
-		pause & exit /b
+	set L_VSPATH=
+	if  exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+		for /F "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -version 15 -property installationPath`) do (
+			set "L_VSPATH=%%i\Common7\Tools\VsDevCmd.bat"
+		)
+	) else (
+		set "L_VSPATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
 	)
 
-	set L_VSPATH=
-	for /F "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -version 15 -property installationPath`) do (
-		set "L_VSPATH=%%i\Common7\Tools\VsDevCmd.bat"
-	)
 
 	CALL "!L_VSPATH!" -no_logo
 )

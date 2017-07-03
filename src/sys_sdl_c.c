@@ -1096,11 +1096,10 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		break;
 		case SDL_TEXTINPUT: {
 			SDL_TextInputEvent *iev=&ev->text;
-			TCOD_key_t ret;
-			ret.vk = TCODK_TEXT;
-			ret.pressed = 1;
-			strncpy(ret.text, iev->text, TCOD_KEY_TEXT_SIZE);
-			*key = ret;
+			*key = TCOD_ctx.key_state;
+			key->vk = TCODK_TEXT;
+			key->pressed = 1;
+			strncpy(key->text, iev->text, TCOD_KEY_TEXT_SIZE);
 			return retMask | TCOD_EVENT_KEY_PRESS; 
 		}
 		break;

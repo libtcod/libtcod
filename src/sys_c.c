@@ -558,6 +558,21 @@ void TCOD_fatal_nopar(const char *msg) {
 	exit(1);
 }
 
+/* library initialization function */
+#ifdef TCOD_WINDOWS
+BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
+	switch (reason ) {
+		case DLL_PROCESS_ATTACH : TCOD_sys_startup(); break;
+		default : break;
+	}
+	return TRUE;
+}
+#else
+	void __attribute__ ((constructor)) DllMain(void) {
+		TCOD_sys_startup();
+	}
+#endif
+
 /* dynamic library support */
 #ifdef TCOD_WINDOWS
 TCOD_library_t TCOD_load_library(const char *path) {

@@ -39,6 +39,22 @@
 
 static TCOD_SDL_driver_t *sdl=NULL;
 
+/* library initialization function */
+#ifdef TCOD_WINDOWS
+#include <windows.h>
+BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
+	switch (reason ) {
+		case DLL_PROCESS_ATTACH : sdl = SDL_implementation_factory(); break;
+		default : break;
+	}
+	return TRUE;
+}
+#else
+	void __attribute__ ((constructor)) DllMain(void) {
+		sdl = SDL_implementation_factory();
+	}
+#endif
+
 #if defined(__ANDROID__)
 #define TCOD_TOUCH_INPUT
 #define MAX_TOUCH_FINGERS 5
@@ -639,7 +655,6 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 
 void TCOD_sys_startup(void) {
 	if (has_startup) return;
-	sdl = SDL_implementation_factory();
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
@@ -746,7 +761,7 @@ void TCOD_sys_init_screen_offset(void) {
 bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
-	if ( ! has_startup ) TCOD_sys_startup();
+	TCOD_sys_startup();
 	/* check if there is a user (player) config file */
 	if ( TCOD_sys_file_exists("./libtcod.cfg")) {
 		/* yes, read it */
@@ -1622,14 +1637,12 @@ void TCOD_mouse_includes_touch(bool enable) {
 
 /*clipboard stuff */
 bool TCOD_sys_clipboard_set(const char *value) {
-	if (!has_startup)
-		return false;
+	if (!has_startup) { return false; }
 	return sdl->set_clipboard_text(value);
 }
 
 char *TCOD_sys_clipboard_get() {
-	if (!has_startup)
-		return "";
+	if (!has_startup) { return ""; }
 	return sdl->get_clipboard_text();
 }
 
@@ -1642,7 +1655,7 @@ bool TCOD_sys_file_exists(const char * filename, ...) {
 	va_list ap;
 	va_start(ap,filename);
 	vsprintf(f,filename,ap);
-	va_end(ap);	
+	va_end(ap);
 	return sdl->file_exists(f);
 }
 

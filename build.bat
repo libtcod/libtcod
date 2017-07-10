@@ -26,9 +26,12 @@ REM        <revision-id>: This can be a URL, or it can be a filesystem path to a
 
 REM TODO(rmtew): Comment out local git repositories and replace with remote ones before committing.
 
-set LINKS[0]=vcs hg SDL2 007dfe83abf8 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
+REM set LINKS[0]=vcs hg SDL2 007dfe83abf8 http://hg.libsdl.org/SDL http://hg.libsdl.org/SDL/archive/REV.zip
 REM set LINKS[0]=vcs hg SDL2 007dfe83abf8 C:\RMT\VCS\HG\libraries\SDL http://hg.libsdl.org/SDL/archive/
-set LINKS[1]=
+set LINKS[0]=https://www.libsdl.org/release/SDL2-devel-2.0.5-VC.zip
+set LINKS[1]=https://www.libsdl.org/release/SDL2-2.0.5-win32-x86.zip
+set LINKS[2]=https://www.libsdl.org/release/SDL2-2.0.5-win32-x64.zip
+set LINKS[3]=
 
 if "!SDL2LINK!" NEQ "" set LINKS[0]=!SDL2LINK!
 
@@ -36,7 +39,9 @@ REM __ MD5CHECKSUMS entries are the MD5 checksum for the download in the matchin
 REM      To get the checksum for a newly added download to add to an entry here, simply run the script and when
 REM      the download is processed, the calculated checksum will be printed and noted as unchecked.
 
-REM e.g. set MD5CHECKSUMS[0]=BB-C5-10-F0-91-34-2F-CF-5B-A7-A2-BC-A3-97-FD-A1
+set MD5CHECKSUMS[0]=B7-71-F3-6B-B6-40-C1-73-E5-3F-A8-25-9C-DD-38-35
+set MD5CHECKSUMS[1]=8B-F6-66-88-2E-6D-4A-4E-89-F9-87-26-E0-22-42-81
+set MD5CHECKSUMS[2]=C4-DC-72-7B-13-D4-09-2E-B7-50-99-70-DA-3D-C4-1E
 
 set UV_INCLUDE_PATH=!DEPENDENCY_PATH!\include
 
@@ -89,9 +94,36 @@ set /A L_SDL2_ATTEMPTS=0
 :user_function_prepare_dependency_retry
 cd "!DEPENDENCY_PATH!"
 
-if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
-	echo ERROR.. !V_LINK_PARTS[%HTTP_FILENAME%]! not handled by user who wrote the build amendments.
-	goto internal_function_exit
+if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "https" (
+	if "!V_LINK_PARTS[%HTTP_FILENAME%]!" EQU "SDL2-devel-2.0.5-VC.zip" (
+		set UV_INCLUDE_COMMANDS[!UV_INCLUDE_COMMAND_COUNT!]=!V_DIRNAME!\SDL2-2.0.5\include\*.h
+		set /A UV_INCLUDE_COMMAND_COUNT=!UV_INCLUDE_COMMAND_COUNT!+1
+
+		for %%P in (Win32 x64) do (
+			SET L_PLATFORM=%%P
+			if "%%P" EQU "Win32" SET L_PLATFORM=x86
+			if not exist "!DEPENDENCY_PATH!\%%P\Debug" mkdir !DEPENDENCY_PATH!\%%P\Debug
+			if not exist "!DEPENDENCY_PATH!\%%P\Release" mkdir !DEPENDENCY_PATH!\%%P\Release
+			copy >nul !V_DIRNAME!\SDL2-2.0.5\lib\!L_PLATFORM!\SDL2.dll "!DEPENDENCY_PATH!\%%P\Debug\"
+			copy >nul !V_DIRNAME!\SDL2-2.0.5\lib\!L_PLATFORM!\SDL2.lib "!DEPENDENCY_PATH!\%%P\Debug\"
+			copy >nul !V_DIRNAME!\SDL2-2.0.5\lib\!L_PLATFORM!\SDL2.lib "!DEPENDENCY_PATH!\%%P\Release\"
+		)
+
+		cd !DEPENDENCY_PATH!
+	) else if "!V_LINK_PARTS[%HTTP_FILENAME%]!" EQU "SDL2-2.0.5-win32-x64.zip" (
+		if not exist "!DEPENDENCY_PATH!\x64\Release" mkdir !DEPENDENCY_PATH!\x64\Release
+		copy >nul !V_DIRNAME!\SDL2.dll "!DEPENDENCY_PATH!\x64\Release\"
+	
+		cd !DEPENDENCY_PATH!
+	) else if "!V_LINK_PARTS[%HTTP_FILENAME%]!" EQU "SDL2-2.0.5-win32-x86.zip" (
+		if not exist "!DEPENDENCY_PATH!\Win32\Release" mkdir !DEPENDENCY_PATH!\Win32\Release
+		copy >nul !V_DIRNAME!\SDL2.dll "!DEPENDENCY_PATH!\Win32\Release\"
+
+		cd !DEPENDENCY_PATH!
+	) else (
+		echo ERROR.. !V_LINK_PARTS[%HTTP_FILENAME%]! not handled by user who wrote the build amendments.
+		goto internal_function_exit
+	)
 ) else if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
     set L_VCS_NAME=!V_LINK_PARTS[%VCS_NAME%]!
     if "!L_VCS_NAME!" EQU "SDL2" (
@@ -354,25 +386,23 @@ REM --- FUNCTION: internal_function_setup ------------------------------------
 REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
 if "%BYPASS_VS_CHECK%" NEQ "yes" (
 	REM Ensure that we have a properly set up developer console with access to things like msbuild and devenv.
-	if not exist "%VS140COMNTOOLS%VsDevCmd.bat" (
-		echo You do not appear to have Visual Studio 2015 installed.
-		echo The community edition is free, download it and install it.
-		pause & exit /b
-	)
-
-	if "%VisualStudioVersion%" NEQ "" (
+	if "%VS150COMNTOOLS%" NEQ "" (
 		echo Your console window has already run the setup for Visual Studio %VisualStudioVersion%.
 		echo Open a fresh window and run this script there.  It will run the correct setup.
 		pause & exit /b
 	)
-	CALL "%VS140COMNTOOLS%VsDevCmd.bat"
-)
 
-if "%VisualStudioVersion%" NEQ "14.0" (
-	echo Visual Studio incorrect.
-	echo Expected: "14.0"
-	echo Got: "%VisualStudioVersion%"
-	pause & exit /b
+	set L_VSPATH=
+	if  exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+		for /F "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -version 15 -property installationPath`) do (
+			set "L_VSPATH=%%i\Common7\Tools\VsDevCmd.bat"
+		)
+	) else (
+		set "L_VSPATH=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\Tools\VsDevCmd.bat"
+	)
+
+
+	CALL "!L_VSPATH!" -no_logo
 )
 
 REM The top-level directory.
@@ -593,33 +623,14 @@ REM VCS link:    VCS  <hg>  <NAME> <REVISION> <CLONEURL> <ZIPDLURL>
 REM ............ Attempt 1: Identify presence of hg.exe or git.exe, and clone or pull <CLONEURL> <REVISION>
 REM ............ Attempt 2: Download <ZIPDLURL><REVISION>.zip as a normal link.
 
-if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "http" (
-    REM Environment variables for powershell script.
-    set fn=Archive-Extract
-    set fnp0=%DEPENDENCY_PATH%\!V_LINK_PARTS[%HTTP_FILENAME%]!
-    set fnp1=%DEPENDENCY_PATH%
+if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "https" (
     REM Environment variables for function 'user_function_prepare_dependency'.
-    set V_DIRNAME=
+    set V_DIRNAME=!V_LINK_PARTS[%HTTP_FILENAME%]:~0,-4!
     set V_SKIPPED=no
-
-    REM Iterate over the lines of output.
-    for /F "usebackq tokens=*" %%i in (`more "%BUILD_SCRIPT_PATH%%BUILD_SCRIPT_FILENAME%" ^| powershell -c -`) do (
-        set L_LINE=%%i
-        if "!L_LINE:~0,12!" EQU "EXTRACTPATH:" (
-            set V_DIRNAME=!L_LINE:~13!
-        ) else if "!L_LINE:~0,4!" EQU "MSG:" (
-            if "!L_LINE:~5!" EQU "EXTRACTED" (
-                echo Decompressing: [!V_LINK_PARTS[%HTTP_FILENAME%]!] .. skipped
-                set V_SKIPPED=yes
-            ) else if "!L_LINE:~5!" EQU "EXTRACTING" (
-                echo Decompressing: [!V_LINK_PARTS[%HTTP_FILENAME%]!]
-            )
-        ) else (
-            echo Unexpected result: !L_LINE!
-        )
-    )
-    REM Do we process the output as it arrives, or at the end?
-    REM echo Decompressed?: [!V_LINK_PARTS[%HTTP_FILENAME%]!]
+	
+	if not exist "%DEPENDENCY_PATH%\!V_DIRNAME!" (
+		!7Z_EXE! x %DEPENDENCY_PATH%\!V_LINK_PARTS[%HTTP_FILENAME%]! -o!V_DIRNAME!
+	)
 ) else if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
     set V_DIRNAME=!V_LINK_PARTS[%VCS_NAME%]!
     REM Stop errors from nothing being here.
@@ -740,7 +751,7 @@ if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" EQU "vcs" (
 )
 
 REM Skip logic to keep script flat, as not possible to have label inside if statement block.
-if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" NEQ "http" goto exit_from_internal_function_fetch_dependency
+if "!V_LINK_PARTS[%LINK_CLASSIFIER%]!" NEQ "https" goto exit_from_internal_function_fetch_dependency
 
 set /A L_ATTEMPTS=0
 :internal_function_fetch_dependency_retry
@@ -850,9 +861,9 @@ REM output argument: V_LINK_PARTS   - The array of elements that make up the giv
 set V_LINK_PARTS[%LINK_CLASSIFIER%]=
 for /F "tokens=1,2,3,4,5,6" %%A in ("!V_LINK!") do (
     set L_FIRST=%%A
-    if /I "!L_FIRST:~0,7!" EQU "http://" (
-        set V_LINK_PARTS[%LINK_CLASSIFIER%]=http
-        set V_LINK_PARTS[%HTTP_URL%]=!V_LINK_PARTS[%%A]!
+    if /I "!L_FIRST:~0,8!" EQU "https://" (
+        set V_LINK_PARTS[%LINK_CLASSIFIER%]=https
+        set V_LINK_PARTS[%HTTP_URL%]=!V_LINK!
 
         REM .. V_LINK_PARTS[%HTTP_NAME%], V_LINK_PARTS[%HTTP_FILENAME%] = get_urlfilename(V_LINK)
         call :internal_function_get_urlfilename

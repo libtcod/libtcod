@@ -23,6 +23,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - Fixed the GLSL and OPENGL renderers on all platforms. (rmtew) (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
 - TCOD_image_blit_2x no longer alters a consoles default colors. (Kyle Stewart)
+- SDL is no longer initialized at module load time. (Kyle Stewart)
+  https://bitbucket.org/libtcod/libtcod/issues/107/sdl_init-on-library-load-libtcod
 
 =========================================================
 1.6.3 : 2017-02-26

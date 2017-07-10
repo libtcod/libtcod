@@ -39,6 +39,22 @@
 
 static TCOD_SDL_driver_t *sdl=NULL;
 
+/* library initialization function */
+#ifdef TCOD_WINDOWS
+#include <windows.h>
+BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
+	switch (reason ) {
+		case DLL_PROCESS_ATTACH : sdl = SDL_implementation_factory(); break;
+		default : break;
+	}
+	return TRUE;
+}
+#else
+	void __attribute__ ((constructor)) DllMain(void) {
+		sdl = SDL_implementation_factory();
+	}
+#endif
+
 #if defined(__ANDROID__)
 #define TCOD_TOUCH_INPUT
 #define MAX_TOUCH_FINGERS 5
@@ -372,7 +388,6 @@ void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int fla
 }
 
 void find_resolution(void) {
-	TCOD_sys_startup();
 	TCOD_ctx.actual_fullscreen_width=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	TCOD_ctx.actual_fullscreen_height=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
 	sdl->get_closest_mode(&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
@@ -386,7 +401,6 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
-	TCOD_sys_startup();
 	sdl->render(vbitmap, console);
 }
 
@@ -602,7 +616,6 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 }
 
 void *TCOD_sys_get_surface(int width, int height, bool alpha) {
-	TCOD_sys_startup();
 	return sdl->create_surface(width,height,alpha);
 }
 
@@ -640,7 +653,6 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 
 void TCOD_sys_startup(void) {
 	if (has_startup) return;
-	sdl = SDL_implementation_factory();
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
@@ -778,7 +790,6 @@ void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
 
 void TCOD_sys_save_screenshot(const char *filename) {
 	char buf[128];
-	TCOD_sys_startup();
 	if ( filename == NULL ) {
 		/* generate filename */
 		int idx=0;
@@ -797,7 +808,6 @@ void TCOD_sys_save_screenshot(const char *filename) {
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
-	TCOD_sys_startup();
 	TCOD_ctx.fullscreen=fullscreen;
 	sdl->set_fullscreen(fullscreen);
 }
@@ -813,7 +823,6 @@ void TCOD_sys_set_scale_factor(float value) {
 }
 
 void TCOD_sys_set_window_title(const char *title) {
-	TCOD_sys_startup();
 	strcpy(TCOD_ctx.window_title,title);
 	sdl->set_window_title(title);
 }
@@ -1616,7 +1625,6 @@ bool TCOD_mouse_is_cursor_visible(void) {
 }
 
 void TCOD_mouse_move(int x, int y) {
-	TCOD_sys_startup();
 	sdl->set_mouse_position(x,y);
 }
 
@@ -1638,14 +1646,12 @@ char *TCOD_sys_clipboard_get() {
 }
 
 bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
-	TCOD_sys_startup();
 	return sdl->file_read(filename,buf,size);
 }
 
 bool TCOD_sys_file_exists(const char * filename, ...) {
 	char f[1024];
 	va_list ap;
-	TCOD_sys_startup();
 	va_start(ap,filename);
 	vsprintf(f,filename,ap);
 	va_end(ap);
@@ -1653,16 +1659,13 @@ bool TCOD_sys_file_exists(const char * filename, ...) {
 }
 
 bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size) {
-	TCOD_sys_startup();
 	return sdl->file_write(filename,buf,size);
 }
 
 /* Mark a rectangle of tiles dirty. */
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
 	int x, y;
-	TCOD_console_data_t *dat;
-	TCOD_sys_startup();
-	dat = sdl->get_root_console_cache();
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
 	if (!dat) return;
 	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
 	TCOD_IFNOT(dx >= 0) {
@@ -1689,9 +1692,7 @@ void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
    It's recommended that this method stays non-public. */
 void TCOD_sys_set_dirty_character_code(int ch) {
 	int i;
-	TCOD_console_data_t *dat;
-	TCOD_sys_startup();
-	dat = sdl->get_root_console_cache();
+	TCOD_console_data_t *dat = sdl->get_root_console_cache();
 	if (!dat) return;
 	for (i = 0; i < dat->w * dat->h; ++i) {
 		if (dat->ch_array[i] == ch) {

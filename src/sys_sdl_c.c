@@ -820,7 +820,7 @@ void TCOD_sys_set_scale_factor(float value) {
 		scale_factor = scale_data.min_scale_factor;
 	else if (scale_factor - 1e-3 > MAX_SCALE_FACTOR)
 		scale_factor = MAX_SCALE_FACTOR;
-	//printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);
+	/*printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);*/
 }
 
 void TCOD_sys_set_window_title(const char *title) {

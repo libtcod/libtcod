@@ -15,6 +15,7 @@ This project does not adhere to Semantic Versioning. http://semver.org/
   time optimization on release builds. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
 % Text input events now include correct modifier key values. (Kyle Stewart)
+% Fixed touch support compilation, although it is still an experimental option that may change (rmtew)
 - Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)

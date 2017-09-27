@@ -273,11 +273,14 @@ void TCOD_list_set_size(TCOD_list_t l, int size);
 /*
 	SDL12/SDL2 abstraction layer
 */
-typedef struct {
+typedef struct TCOD_SDL_driver_t {
+    float scale_xc;
+    float scale_yc;
+
 	/* get a fullscreen mode suitable for the console */
 	void (*get_closest_mode)(int *w, int *h);
 	/* render the console on a surface/texture */
-	void (*render)(void *vbitmap, TCOD_console_data_t *console);
+	void (*render)(struct TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *console);
 	/* create a new surface */
 	SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
 	/* create the game window */

@@ -36,8 +36,6 @@
 #include <libtcod_utility.h>
 
 static SDL_Surface* scale_screen=NULL;
-static float scale_xc=0.5f;
-static float scale_yc=0.5f;
 static bool clear_screen=false;
 static TCOD_console_data_t *root_console_cache; /* cache for previous values */
 
@@ -105,7 +103,7 @@ static TCOD_console_data_t *ensure_cache(TCOD_console_data_t* root) {
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
-static void render(void *vbitmap, TCOD_console_data_t *console) {
+static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *console) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		int console_width_p = console->w * TCOD_ctx.font_width;
 		int console_height_p = console->h * TCOD_ctx.font_height;
@@ -134,12 +132,12 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 
 		/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 		 * This data is also used for console coordinate resolution.. */
-		if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != scale_xc || scale_data.last_scale_yc != scale_yc ||
+		if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != sdl->scale_xc || scale_data.last_scale_yc != sdl->scale_yc ||
 				scale_data.last_fullscreen != TCOD_ctx.fullscreen || scale_data.force_recalc) {
 			/* Preserve old value of input variables, to enable recalculation if they change. */
 			scale_data.last_scale_factor = scale_factor;
-			scale_data.last_scale_xc = scale_xc;
-			scale_data.last_scale_yc = scale_yc;
+			scale_data.last_scale_xc = sdl->scale_xc;
+			scale_data.last_scale_yc = sdl->scale_yc;
 			scale_data.last_fullscreen = TCOD_ctx.fullscreen;
 			scale_data.force_recalc = 0;
 
@@ -160,7 +158,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 			scale_data.src_proportionate_height = (int)((console_width_p * scale_data.dst_height_width_ratio) / scale_factor);
 
 			/* Work out how much of the console to copy. */
-			scale_data.src_x0 = (int)((scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width));
+			scale_data.src_x0 = (int)((sdl->scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width));
 			if (scale_data.src_x0 + scale_data.src_proportionate_width > console_width_p)
 				scale_data.src_x0 = console_width_p - scale_data.src_proportionate_width;
 			if (scale_data.src_x0 < 0)
@@ -169,7 +167,7 @@ static void render(void *vbitmap, TCOD_console_data_t *console) {
 			if (scale_data.src_x0 + scale_data.src_copy_width > console_width_p)
 				scale_data.src_copy_width = console_width_p - scale_data.src_x0;
 
-			scale_data.src_y0 = (int)((scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height));
+			scale_data.src_y0 = (int)((sdl->scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height));
 			if (scale_data.src_y0 + scale_data.src_proportionate_height > console_height_p)
 				scale_data.src_y0 = console_height_p - scale_data.src_proportionate_height;
 			if (scale_data.src_y0 < 0)
@@ -498,7 +496,10 @@ static void shutdown(void) {
 
 TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	TCOD_SDL_driver_t *ret=(TCOD_SDL_driver_t *)calloc(1,sizeof(TCOD_SDL_driver_t));
-	ret->get_closest_mode = get_closest_mode;
+    ret->scale_xc = 0.5f;
+    ret->scale_yc = 0.5f;
+
+    ret->get_closest_mode = get_closest_mode;
 	ret->render = render;
 	ret->create_surface = create_surface;
 	ret->create_window = create_window;

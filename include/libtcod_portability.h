@@ -98,6 +98,9 @@
 #elif defined (__APPLE__) && defined (__MACH__)
 #  define TCOD_MACOSX
 #  define TCOD_GCC
+#  if __WORDSIZE == 64
+#    define TCOD_64BITS
+#  endif
 #endif
 
 /* unicode rendering functions support */

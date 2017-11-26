@@ -293,9 +293,11 @@ static void create_window(int w, int h, bool fullscreen) {
 		}
 		if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
 	}
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-	if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
+		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	}
 }
 
 static void destroy_window(void) {

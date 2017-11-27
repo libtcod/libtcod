@@ -239,6 +239,9 @@
     <ClInclude Include="..\..\include\libtcod.h" />
     <ClInclude Include="..\..\include\libtcod.hpp" />
     <ClInclude Include="..\..\include\libtcod_int.h" />
+    <ClInclude Include="..\..\include\libtcod_portability.h" />
+    <ClInclude Include="..\..\include\libtcod_utility.h" />
+    <ClInclude Include="..\..\include\libtcod_version.h" />
     <ClInclude Include="..\..\include\list.h" />
     <ClInclude Include="..\..\include\list.hpp" />
     <ClInclude Include="..\..\include\mersenne.h" />

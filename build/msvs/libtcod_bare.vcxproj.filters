@@ -410,5 +410,14 @@
     <ClInclude Include="..\..\include\external\pstdint.h">
       <Filter>Header Files\external</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\libtcod_portability.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libtcod_utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libtcod_version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #
-# libtcod 1.6.3 Python wrapper
+# libtcod 1.6.4 Python wrapper
 # Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
 # All rights reserved.
 #
@@ -187,9 +187,9 @@ else:
         else:
             raise Exception("unable to find wrapper", function_name)
 
-HEXVERSION = 0x010603
-STRVERSION = "1.6.3"
-TECHVERSION = 0x01060300
+HEXVERSION = 0x010604
+STRVERSION = "1.6.4"
+TECHVERSION = 0x01060400
 
 ############################
 # color module

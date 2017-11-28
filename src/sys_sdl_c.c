@@ -1,5 +1,5 @@
 /*
-* libtcod 1.6.3
+* libtcod 1.6.4
 * Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
 * All rights reserved.
 *
@@ -38,6 +38,7 @@
 #include <parser.h>
 
 static TCOD_SDL_driver_t *sdl=NULL;
+
 
 /* library initialization function */
 #ifdef TCOD_WINDOWS
@@ -401,7 +402,7 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
-	sdl->render(vbitmap, console);
+	sdl->render(sdl, vbitmap, console);
 }
 
 void TCOD_sys_console_to_bitmap(void *vbitmap,
@@ -821,7 +822,7 @@ void TCOD_sys_set_scale_factor(float value) {
 		scale_factor = scale_data.min_scale_factor;
 	else if (scale_factor - 1e-3 > MAX_SCALE_FACTOR)
 		scale_factor = MAX_SCALE_FACTOR;
-	printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);
+	/*printf("scale_factor: %0.3f -> %0.3f (wanted: %0.3f)", old_scale_factor, scale_factor, value);*/
 }
 
 void TCOD_sys_set_window_title(const char *title) {
@@ -1116,7 +1117,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 		case SDL_FINGERUP :
 		case SDL_FINGERMOTION :
 		{
-			SDL_Touch *touch=SDL_GetTouch(ev->tfinger.touchId);
 			int idx, mouse_touch_valid;
 			float xf, yf, screen_x, screen_y;
 			uint32_t ticks_taken = 0;
@@ -1152,14 +1152,14 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				mouse_touch_valid = mouse_touch && tcod_touch.nfingerspressed == 1 && tcod_touch.fingerspressed[0];
 
 			/* Coordinates are raw full screen positions. */
-			screen_x = (ev->tfinger.x * scale_data.surface_width) / touch->xres;
-			screen_y = (ev->tfinger.y * scale_data.surface_height) / touch->yres;
+			screen_x = ev->tfinger.x * scale_data.surface_width;
+			screen_y = ev->tfinger.y * scale_data.surface_height;
 			xf = (float)(screen_x - scale_data.dst_offset_x) / scale_data.dst_display_width;
 			yf = (float)(screen_y - scale_data.dst_offset_y) / scale_data.dst_display_height;
 			tcod_touch.coords[idx][0] = scale_data.src_x0 + scale_data.src_copy_width * xf;
 			tcod_touch.coords[idx][1] = scale_data.src_y0 + scale_data.src_copy_height * yf;
-			tcod_touch.coords_delta[idx][0] = (ev->tfinger.dx * scale_data.src_proportionate_width) / touch->xres;
-			tcod_touch.coords_delta[idx][1] = (ev->tfinger.dy * scale_data.src_proportionate_height) / touch->yres;
+			tcod_touch.coords_delta[idx][0] = ev->tfinger.dx * scale_data.src_proportionate_width;
+			tcod_touch.coords_delta[idx][1] = ev->tfinger.dy * scale_data.src_proportionate_height;
 
 			/* Console coordinates need to be mapped back from screen coordinates through scaling. */
 			tcod_touch.consolecoords[idx][0] = tcod_touch.coords[idx][0] / TCOD_ctx.font_width;
@@ -1228,18 +1228,18 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 
 				/* Bound the translations within the console area. */
 				if (fabs(xc_shift) > 1e-3f) {
-					scale_xc -= xc_shift; /* Actual display shift is the inverted finger movement. */
-					if (scale_xc + 1e-3f < 0.0f)
-						scale_xc = 0.0f;
-					if (scale_xc - 1e-3f > 1.0f)
-						scale_xc = 1.0f;
+					sdl->scale_xc -= xc_shift; /* Actual display shift is the inverted finger movement. */
+					if (sdl->scale_xc + 1e-3f < 0.0f)
+                        sdl->scale_xc = 0.0f;
+					if (sdl->scale_xc - 1e-3f > 1.0f)
+                        sdl->scale_xc = 1.0f;
 				}
 				if (fabs(yc_shift) > 1e-3f) {
-					scale_yc -= yc_shift; /* Actual display shift is the inverted finger movement. */
-					if (scale_yc + 1e-3f < 0.0f)
-						scale_yc = 0.0f;
-					if (scale_yc - 1e-3f > 1.0f)
-						scale_yc = 1.0f;
+                    sdl->scale_yc -= yc_shift; /* Actual display shift is the inverted finger movement. */
+					if (sdl->scale_yc + 1e-3f < 0.0f)
+                        sdl->scale_yc = 0.0f;
+					if (sdl->scale_yc - 1e-3f > 1.0f)
+                        sdl->scale_yc = 1.0f;
 				}
 				if (fabs(scale_adjust - 1.0f) > 1e-3f)
 					TCOD_sys_set_scale_factor(scale_factor * scale_adjust);

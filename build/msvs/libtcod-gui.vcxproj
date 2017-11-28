@@ -157,6 +157,7 @@
     <ClInclude Include="..\..\include\gui\container.hpp" />
     <ClInclude Include="..\..\include\gui\flatlist.hpp" />
     <ClInclude Include="..\..\include\gui\gui.hpp" />
+    <ClInclude Include="..\..\include\gui\gui_portability.hpp" />
     <ClInclude Include="..\..\include\gui\hbox.hpp" />
     <ClInclude Include="..\..\include\gui\image.hpp" />
     <ClInclude Include="..\..\include\gui\label.hpp" />

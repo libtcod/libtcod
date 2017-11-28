@@ -4,7 +4,10 @@ X API break
 - removed features, fixed bugs
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
-1.6.4 : Unreleased
+1.6.5 : Unreleased
+
+=========================================================
+1.6.4 : 2017-11-27
 + Added support for loading/saving REXPaint files. (Kyle Stewart)
 % Upgraded to `stdint.h` source code typing via `pstdint.h` (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/91
@@ -14,6 +17,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 % SCons builder defaults to debug builds, now builds with OpenGL, and uses link
   time optimization on release builds. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
+% Text input events now include correct modifier key values. (Kyle Stewart)
+% Fixed touch support compilation, although it is still an experimental option that may change (rmtew)
 - Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)
@@ -25,6 +30,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - TCOD_image_blit_2x no longer alters a consoles default colors. (Kyle Stewart)
 - SDL is no longer initialized at module load time. (Kyle Stewart)
   https://bitbucket.org/libtcod/libtcod/issues/107/sdl_init-on-library-load-libtcod
+- SDL renderer is only created when using SDL rendering (wump@bitbucket)
+  https://bitbucket.org/libtcod/libtcod/pull-requests/74/dont-create-sdl-renderer-when-using-opengl
 
 =========================================================
 1.6.3 : 2017-02-26

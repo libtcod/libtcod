@@ -168,6 +168,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\samples\doctcod\doctcod.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\doc\conf.py" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

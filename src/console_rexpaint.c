@@ -31,34 +31,21 @@
 
 #include <zlib.h>
 
-/* Needed only for TCOD_fatal */
-#include <libtcod_int.h>
-
+#include <libtcod_portability.h>
+#include <libtcod_int.h> /* Needed only for TCOD_fatal */
 #include <console_types.h>
 #include <color.h>
 
-/* Confirm that the current types are the same as what this code expects. */
-#if UINT_MAX != 0xffffffff
-#error int type must be 32-bit!
-#endif
-
-#ifdef TCOD_SDL2
-#include <SDL_endian.h>
-#if SDL_BYTEORDER != SDL_LIL_ENDIAN
-#error byte-order must be little endian!
-#endif
-#endif
-
 struct RexPaintHeader {
-	int version;
-	int layer_count;
+	int32_t version;
+	int32_t layer_count;
 };
 struct RexPaintLayerChunk {
-	int width;
-	int height;
+	int32_t width;
+	int32_t height;
 };
 struct RexPaintTile {
-	int ch;
+	int32_t ch;
 	TCOD_color_t fg;
 	TCOD_color_t bg;
 };

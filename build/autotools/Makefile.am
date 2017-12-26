@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/../../include \
-	-DTCOD_SDL2 -DNO_OPENGL \
+	-DNO_OPENGL \
 	-DNDEBUG -O2 \
 	$(SDL_CFLAGS) $(X11_CFLAGS) $(ZLIB_CFLAGS)
 

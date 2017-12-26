@@ -60,7 +60,7 @@ TCOD_internal_context_t TCOD_ctx={
 	8,8,
 	"terminal.png","",
 	NULL,NULL,NULL,0,false,0,0,0,0,0,0,
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/* default renderer to use */
 	TCOD_RENDERER_GLSL,
 	NULL,
@@ -118,7 +118,7 @@ bool TCOD_console_has_mouse_focus(void) {
 	return TCOD_ctx.app_has_mouse_focus;
 }
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 bool TCOD_console_is_active(void) {
 	return TCOD_ctx.app_is_active;
 }
@@ -1033,7 +1033,7 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 		con->w=w;
 		con->h=h;
 		TCOD_ctx.root=con;
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 		TCOD_ctx.renderer=renderer;
 #endif
 		for (i=0; i < TCOD_COLCTRL_NUMBER; i++) {

@@ -32,11 +32,6 @@
 #if defined(__ANDROID__)
 #include <android/log.h>
 #endif
-#ifdef TCOD_SDL2
-struct SDL_Surface;
-struct SDL_Window;
-struct SDL_Renderer;
-#endif
 
 #include "libtcod_portability.h"
 #include "color.h"
@@ -50,6 +45,11 @@ struct SDL_Renderer;
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* SDL2 forward declarations */
+struct SDL_Surface;
+struct SDL_Window;
+struct SDL_Renderer;
 
 #ifdef TCOD_CONSOLE_SUPPORT
 typedef struct {
@@ -128,7 +128,7 @@ typedef struct {
 	int actual_fullscreen_width;
 	int actual_fullscreen_height;
 #endif
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/* renderer to use */
 	TCOD_renderer_t renderer;
 	/* user post-processing callback */
@@ -140,7 +140,7 @@ typedef struct {
 #ifdef TCOD_CONSOLE_SUPPORT
 	TCOD_key_t key_state;
 #endif
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/* application window was closed */
 	bool is_window_closed;
 	/* application has mouse focus */
@@ -181,7 +181,7 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_LOG(x) printf x
 #endif
 
-#if defined(TCOD_SDL2) && !defined(NO_OPENGL)
+#if !defined(TCOD_BARE) && !defined(NO_OPENGL)
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
@@ -271,7 +271,7 @@ bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t *dat
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 /*
 	SDL12/SDL2 abstraction layer
 */

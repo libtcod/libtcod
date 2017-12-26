@@ -5,6 +5,7 @@ X API break
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
 1.6.5 : Unreleased
+- Resolved header issues that were leaving some types and functions undefined. (Kyle Stewart)
 
 =========================================================
 1.6.4 : 2017-11-27

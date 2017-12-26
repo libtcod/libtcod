@@ -33,7 +33,9 @@
 #include <android/log.h>
 #endif
 #ifdef TCOD_SDL2
-#include <SDL.h>
+struct SDL_Surface;
+struct SDL_Window;
+struct SDL_Renderer;
 #endif
 
 #include "libtcod_portability.h"
@@ -282,7 +284,7 @@ typedef struct TCOD_SDL_driver_t {
 	/* render the console on a surface/texture */
 	void (*render)(struct TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *console);
 	/* create a new surface */
-	SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
+	struct SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
 	/* create the game window */
 	void (*create_window)(int w, int h, bool fullscreen);
 	/* destroy the game window */
@@ -335,9 +337,9 @@ typedef struct {
 extern scale_data_t scale_data;
 
 extern float scale_factor;
-extern SDL_Surface* charmap;
-extern SDL_Window* window;
-extern SDL_Renderer* renderer;
+extern struct SDL_Surface* charmap;
+extern struct SDL_Window* window;
+extern struct SDL_Renderer* renderer;
 extern char *last_clipboard_text;
 #endif
 

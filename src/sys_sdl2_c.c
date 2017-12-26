@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <SDL.h>
+
 #include <console.h>
 #include <libtcod_int.h>
 #include <libtcod_utility.h>

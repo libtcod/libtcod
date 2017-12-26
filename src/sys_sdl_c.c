@@ -33,6 +33,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <SDL.h>
+
 #include <console.h>
 #include <libtcod_int.h>
 #include <parser.h>

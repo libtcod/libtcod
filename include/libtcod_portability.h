@@ -126,12 +126,10 @@
 #undef TCOD_IMAGE_SUPPORT
 #undef TCOD_OSUTIL_SUPPORT
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 #define TCOD_CONSOLE_SUPPORT
 #define TCOD_IMAGE_SUPPORT
 #define TCOD_OSUTIL_SUPPORT
-#else
-#define TCOD_BARE
 #endif
 
 /* int types */

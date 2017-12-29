@@ -301,7 +301,7 @@ void TCOD_image_delete_internal(TCOD_image_t image) {
 		free(img->mipmaps);
 	}
 	if ( img->sys_img ) {
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 		TCOD_sys_delete_bitmap(img->sys_img);
 #endif
 	}

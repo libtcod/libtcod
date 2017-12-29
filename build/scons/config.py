@@ -1,5 +1,5 @@
 
-DEFINES = ['NDEBUG', 'TCOD_SDL2']
+DEFINES = ['NDEBUG']
 
 # MODE options are DEBUG, SIZE, PERFORMANCE, and RELEASE.
 

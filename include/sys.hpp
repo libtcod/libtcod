@@ -224,7 +224,7 @@ public :
 	static TCOD_event_t checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
 #endif
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/**
 	@PageName system_screenshots
 	@PageFather system
@@ -402,7 +402,7 @@ public :
 	@Param x,y,w,h Part of the root console you want to redraw even if nothing has changed in the console back/fore/char.
 	*/
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/**
 	@PageName system_misc
 	@PageFather system
@@ -483,7 +483,7 @@ public :
 	static void updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
 #endif
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 	/**
 	@PageName system_misc
 	@FuncTitle Dynamically change libtcod's internal renderer

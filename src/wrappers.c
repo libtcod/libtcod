@@ -352,7 +352,7 @@ void TCOD_namegen_get_sets_wrapper(char **sets) {
 	}
 }
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 int TCOD_sys_get_current_resolution_x()
 {
   int x, y;

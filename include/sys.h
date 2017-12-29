@@ -48,7 +48,7 @@ TCODLIB_API int TCOD_sys_get_fps(void);
 TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 #endif
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 TCODLIB_API void TCOD_sys_save_screenshot(const char *filename);
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
 TCODLIB_API void TCOD_sys_set_renderer(TCOD_renderer_t renderer);
@@ -62,12 +62,12 @@ TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 #endif
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 TCODLIB_API void *TCOD_sys_get_SDL_window(void);
 TCODLIB_API void *TCOD_sys_get_SDL_renderer(void);
 #endif
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 typedef enum {
   TCOD_EVENT_NONE=0,
   TCOD_EVENT_KEY_PRESS=1,
@@ -99,7 +99,7 @@ TCODLIB_API bool TCOD_sys_file_exists(const char * filename, ...);
 TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size);
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size);
 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 /* clipboard */
 TCODLIB_API bool TCOD_sys_clipboard_set(const char *value);
 TCODLIB_API char *TCOD_sys_clipboard_get(void);
@@ -137,7 +137,7 @@ TCODLIB_API TCOD_library_t TCOD_load_library(const char *path);
 TCODLIB_API void * TCOD_get_function_address(TCOD_library_t library, const char *function_name);
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 typedef void (*SDL_renderer_t) (void *sdl_renderer);
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #endif

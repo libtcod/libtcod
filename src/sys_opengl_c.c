@@ -28,7 +28,7 @@
 /*
  * This renderer is mostly copied and pasted from Antagonist's SkyFire GLSL roguelike engine
  */ 
-#ifdef TCOD_SDL2
+#ifndef TCOD_BARE
 #include <sys.h>
 
 #include "libtcod_int.h"
@@ -685,4 +685,4 @@ void * TCOD_opengl_get_screen(void) {
 
 #endif /* NO_OPENGL */
 
-#endif /* TCOD_SDL2 */
+#endif /* TCOD_BARE */

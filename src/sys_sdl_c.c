@@ -1101,6 +1101,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			SDL_TextInputEvent *iev=&ev->text;
 			*key = TCOD_ctx.key_state;
 			key->vk = TCODK_TEXT;
+			key->c = 0;
 			key->pressed = 1;
 			strncpy(key->text, iev->text, TCOD_KEY_TEXT_SIZE);
 			return retMask | TCOD_EVENT_KEY_PRESS; 

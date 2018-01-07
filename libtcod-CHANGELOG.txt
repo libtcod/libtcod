@@ -6,6 +6,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
 1.6.5 : Unreleased
 - Resolved header issues that were leaving some types and functions undefined. (Kyle Stewart)
+- key.c is no longer set when key.vk == TCODK_TEXT, this fixes a regression
+  which was causing events to be heard twice in the libtcod/Python tutorial. (Kyle Stewart)
 
 =========================================================
 1.6.4 : 2017-11-27

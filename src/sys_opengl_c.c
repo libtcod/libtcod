@@ -231,7 +231,7 @@ bool TCOD_opengl_init_state(int conw, int conh, void *font) {
 	} else {
 		glOrtho(0, conw, conh, 0.0f, -1.0f, 1.0f);
 		glEnable (GL_BLEND); 
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc (GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glMatrixMode( GL_MODELVIEW );

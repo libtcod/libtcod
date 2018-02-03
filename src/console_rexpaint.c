@@ -36,15 +36,15 @@
 #include <console_types.h>
 #include <color.h>
 
-struct RexPaintHeader {
+static struct RexPaintHeader {
 	int32_t version;
 	int32_t layer_count;
 };
-struct RexPaintLayerChunk {
+static struct RexPaintLayerChunk {
 	int32_t width;
 	int32_t height;
 };
-struct RexPaintTile {
+static struct RexPaintTile {
 	int32_t ch;
 	TCOD_color_t fg;
 	TCOD_color_t bg;
@@ -152,11 +152,11 @@ static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
 /**
  *  \brief Return a list of consoles from a REXPaint file.
  *
- *  \param [in] A path to the REXPaint file.
+ *  \param [in] filename A path to the REXPaint file.
  *  \return Returns a TCOD_list_t of TCOD_console_t objects.  Or NULL on an
  *  error.  You will need to delete this list and each console individually.
  *
- *  \details This function can load a REXPaint file with variable layer shapes,
+ *  This function can load a REXPaint file with variable layer shapes,
  *  which would cause issues for a function like TCOD_console_list_from_xp.
  */
 TCOD_list_t TCOD_console_list_from_xp(const char *filename) {
@@ -179,15 +179,10 @@ TCOD_list_t TCOD_console_list_from_xp(const char *filename) {
  *  \brief Return a new console loaded from a REXPaint ``.xp`` file.
  *
  *  \param [in] filename A path to the REXPaint file.
- *  \param [in] layer The specific layer to return, or ``0`` to return a
- *  console with all layers overlaid using REXPaint's rules for transparency.
  *  \return A new TCOD_console_t object.  New consoles will need
  *  to be deleted with a call to :any:`TCOD_console_delete`.
  *  Returns NULL on an error.
  *
- *  \details REXPaint gives special treatment to tiles with a magic pink
- *  ``{255, 0, 255}`` background color.  You can processes this color
- *  manually or set :any:`TCOD_console_set_key_color` to `TCOD_fuchsia`.
  */
 TCOD_console_t TCOD_console_from_xp(const char *filename) {
 	return combine_console_list(TCOD_console_list_from_xp(filename));
@@ -198,9 +193,8 @@ TCOD_console_t TCOD_console_from_xp(const char *filename) {
  *  \param [out] con A console instance to update from the REXPaint file.
  *  \param [in] filename A path to the REXPaint file.
  *
- *  \details REXPaint gives special treatment to tiles with a magic pink
- *  ``{255, 0, 255}`` background color.  You can processes this color
- *  manually or set :any:`TCOD_console_set_key_color` to `TCOD_fuchsia`.
+ *  In C++, you can pass the filepath directly to the :any:`TCODConsole`
+ *  constructor to load a REXPaint file.
  */
 bool TCOD_console_load_xp(TCOD_console_t con, const char *filename) {
 	TCOD_console_t xp_console = TCOD_console_from_xp(filename);
@@ -266,8 +260,7 @@ static int write_console(gzFile gz_file, TCOD_console_t console) {
  *  \return ``true`` when the file is saved succesfully, or ``false`` when an
  *  issue is detected.
  *
- *  \details REXPaint has enough fidelity to make a 1:1 copy of a libtcod
- *  console.
+ *  The REXPaint format can support a 1:1 copy of a libtcod console.
  */
 bool TCOD_console_save_xp(
 		TCOD_console_t con, const char *filename, int compress_level) {
@@ -287,18 +280,17 @@ bool TCOD_console_save_xp(
 /**
  *  \brief Save a list of consoles to a REXPaint file.
  *
- *  \param [in] A TCOD_list_t of TCOD_console_t objects.
- *  \param [in] Path to save to.
- *  \param [in] zlib compression level.
+ *  \param [in] console_list A TCOD_list_t of TCOD_console_t objects.
+ *  \param [in] filename Path to save to.
+ *  \param [in] compress_level zlib compression level.
  *  \return true on success, false on a failure such as not being able to write
  *  to the path provided.
  *
- *  \details The REXPaint tool can only work on files with up to 4 layers where
- *  all layers are the same size.
+ *  This function can save any number of layers with multiple
+ *  different sizes.
  *
- *  This function can save any number of layers with multiple different sizes,
- *  these files can be loaded without issues as long you use
- *  :any:`TCOD_console_list_from_xp` for loading.
+ *  The REXPaint tool only supports files with up to 4 layers where
+ *  all layers are the same size.
  */
 bool TCOD_console_list_save_xp(
 		TCOD_list_t console_list, const char *filename, int compress_level) {

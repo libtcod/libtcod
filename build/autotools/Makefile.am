@@ -178,11 +178,11 @@ samples_cpp_LDADD = libtcodxx.la libtcod.la
 endif
 
 dist_noinst_DATA = \
-	../../build.bat
+	../../build.bat \
 	../../libtcod-CHANGELOG.txt \
 	../../LIBTCOD-CREDITS.txt \
 	../../LIBTCOD-LICENSE.txt \
-	../../README-linux-SDL2.txt \
+	../../README-linux-SDL2.md \
 	../../README.md \
 	../../libtcod.cfg
 

@@ -1,4 +1,4 @@
-AC_INIT([libtcod], [1.6])
+AC_INIT([libtcod],[1.6])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -8,6 +8,8 @@ AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE([1.14 subdir-objects foreign])
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([enable])
+
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 LT_INIT
 

@@ -49,7 +49,7 @@ MacOS users with a working Homebrew installation, can install the necessary depe
 
 ## Getting Started ##
 
-The latest documentation is updated with every significant change made to libtcod.  You can find it in [the doc directory](https://bitbucket.org/libtcod/libtcod/src/tip/doc/index2.html?at=default&fileviewer=file-view-default).  Similarly, [the changelog]()https://bitbucket.org/libtcod/libtcod/src/tip/libtcod-CHANGELOG.txt?at=default provides a high level overview of the things you might need to be aware of when later updating libtcod.
+The latest documentation is updated with every significant change made to libtcod.  You can find it in [the doc directory](https://bitbucket.org/libtcod/libtcod/src/tip/doc/index2.html?at=default&fileviewer=file-view-default).  Similarly, [the changelog](https://bitbucket.org/libtcod/libtcod/src/tip/libtcod-CHANGELOG.txt?at=default) provides a high level overview of the things you might need to be aware of when later updating libtcod.
 
 libtcod comes with a sample application, implementations of which are provided in each of C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)), C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)) and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).  This provides a decent overview of the basic features, in an interactive fashion.  Each should be identical for the most part, so if you are using Windows, downloading the precompiled binaries and running the included `samples.exe` which is compiled from the C source code, should be representative of the other versions.
 

@@ -133,7 +133,7 @@ TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
 void TCOD_text_set_pos(TCOD_text_t txt, int x, int y) {
     text_t * data = (text_t*)txt;
 	data->x=x;
-	data->y=y;	
+	data->y=y;
 }
 
 /* set cursor and prompt */

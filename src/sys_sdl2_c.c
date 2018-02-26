@@ -192,7 +192,7 @@ static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *c
 	else {
 		TCOD_opengl_render(oldFade, NULL, console, ensure_cache(console));
 		TCOD_opengl_swap();
-	}  
+	}
 #endif
 	oldFade=(int)TCOD_console_get_fade();
 }
@@ -248,7 +248,7 @@ static void create_window(int w, int h, bool fullscreen) {
 #endif
 	if ( fullscreen  ) {
 		find_resolution();
-#ifndef NO_OPENGL	
+#ifndef NO_OPENGL
 		if (TCOD_ctx.renderer != TCOD_RENDERER_SDL ) {
 			TCOD_opengl_init_attributes();
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_OPENGL;
@@ -262,8 +262,8 @@ static void create_window(int w, int h, bool fullscreen) {
 				TCOD_LOG(("Fallback to SDL renderer...\n"));
 				TCOD_ctx.renderer = TCOD_RENDERER_SDL;
 			}
-		} 
-#endif		
+		}
+#endif
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 			winflags |= SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS;
 #	if defined(TCOD_ANDROID) && defined(FUTURE_SUPPORT)
@@ -276,7 +276,7 @@ static void create_window(int w, int h, bool fullscreen) {
 		SDL_GetWindowSize(window,&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
 		TCOD_sys_init_screen_offset();
 	} else {
-#ifndef NO_OPENGL	
+#ifndef NO_OPENGL
 		if (TCOD_ctx.renderer != TCOD_RENDERER_SDL ) {
 			TCOD_opengl_init_attributes();
 			winflags |= SDL_WINDOW_OPENGL;
@@ -287,8 +287,8 @@ static void create_window(int w, int h, bool fullscreen) {
 				TCOD_LOG(("Fallback to SDL renderer...\n"));
 				TCOD_ctx.renderer = TCOD_RENDERER_SDL;
 			}
-		} 
-#endif		
+		}
+#endif
 		if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,winflags);
 			TCOD_LOG(("Using SDL renderer...\n"));
@@ -303,7 +303,7 @@ static void create_window(int w, int h, bool fullscreen) {
 }
 
 static void destroy_window(void) {
-#ifndef NO_OPENGL	
+#ifndef NO_OPENGL
 	if (TCOD_ctx.renderer == TCOD_RENDERER_OPENGL || TCOD_ctx.renderer == TCOD_RENDERER_GLSL) {
 		TCOD_opengl_uninit_state();
 	}
@@ -323,7 +323,7 @@ static void destroy_window(void) {
 }
 
 static void set_fullscreen(bool fullscreen) {
-	bool mouseOn=SDL_ShowCursor(-1);	
+	bool mouseOn=SDL_ShowCursor(-1);
 	if ( fullscreen ) {
 		find_resolution();
 		SDL_SetWindowFullscreen(window, fullscreen);
@@ -381,12 +381,12 @@ static void save_screenshot(const char *filename) {
 			SDL_DestroyTexture(texture);
 		} else
 			TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_CreateTexture"));
-#ifndef NO_OPENGL		
+#ifndef NO_OPENGL
 	} else {
 		SDL_Surface *screenshot=(SDL_Surface *)TCOD_opengl_get_screen();
 		TCOD_sys_save_bitmap((void *)screenshot,filename);
 		SDL_FreeSurface(screenshot);
-#endif		
+#endif
 	}
 }
 /* get desktop resolution */
@@ -455,7 +455,7 @@ static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
 	if (!rwops) return false;
 	SDL_RWseek(rwops,0,RW_SEEK_END);
 	filesize=SDL_RWtell(rwops);
-	SDL_RWseek(rwops,0,RW_SEEK_SET);	
+	SDL_RWseek(rwops,0,RW_SEEK_SET);
 	/* allocate buffer */
 	*buf = (unsigned char *)malloc(sizeof(unsigned char)*filesize);
 	/* read from file */

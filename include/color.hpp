@@ -78,7 +78,7 @@
 A color is defined by its red, green and blue component between 0 and 255.
 You can use the following predefined colors (hover over a color to see its full name and R,G,B values):
 	@ColorTable
-	@CppEx 
+	@CppEx
 		TCODColor::desaturatedRed
 		TCODColor::lightestRed
 		TCODColor::lighterRed
@@ -87,7 +87,7 @@ You can use the following predefined colors (hover over a color to see its full 
 		TCODColor::darkRed
 		TCODColor::darkerRed
 		TCODColor::darkestRed
-	@CEx 
+	@CEx
 		TCOD_desaturated_red
 		TCOD_lightest_red
 		TCOD_lighter_red
@@ -96,7 +96,7 @@ You can use the following predefined colors (hover over a color to see its full 
 		TCOD_dark_red
 		TCOD_darker_red
 		TCOD_darkest_red
-	@PyEx 
+	@PyEx
 		libtcod.desaturated_red
 		libtcod.lightest_red
 		libtcod.lighter_red
@@ -105,7 +105,7 @@ You can use the following predefined colors (hover over a color to see its full 
 		libtcod.dark_red
 		libtcod.darker_red
 		libtcod.darkest_red
-	@C#Ex 
+	@C#Ex
 		TCODColor::desaturatedRed
 		TCODColor::lightestRed
 		TCODColor::lighterRed
@@ -134,10 +134,10 @@ public :
 	@PageName color
 	@FuncTitle Create your own colors
 	@FuncDesc You can create your own colours using a set of constructors, both for RGB and HSV values.
-	@CppEx 
+	@CppEx
 		TCODColor myColor(24,64,255); //RGB
 		TCODColor myOtherColor(321.0f,0.7f,1.0f); //HSV
-	@CEx 
+	@CEx
 		TCOD_color_t my_color={24,64,255}; <span>/</span>* RGB *<span>/</span>
 		TCOD_color_t my_other_color = TCOD_color_RGB(24,64,255); <span>/</span>* RGB too *<span>/</span>
 		TCOD_color_t my_yet_another_color = TCOD_color_HSV(321.0f,0.7f,1.0f); <span>/</span>* HSV *<span>/</span>
@@ -154,19 +154,19 @@ public :
 	/**
 	@PageName color
 	@FuncTitle Compare two colors
-	@CppEx 
+	@CppEx
 		if (myColor == TCODColor::yellow) { ... }
 		if (myColor != TCODColor::white) { ... }
-	@CEx 
+	@CEx
 		if (TCOD_color_equals(my_color,TCOD_yellow)) { ... }
 		if (!TCOD_color_equals(my_color,TCOD_white)) { ... }
-	@PyEx 
+	@PyEx
 		if my_color == libtcod.yellow : ...
 		if my_color != litbcod.white : ...
-	@C#Ex 
+	@C#Ex
 		if (myColor.Equal(TCODColor.yellow)) { ... }
 		if (myColor.NotEqual(TCODColor.white)) { ... }
-	@LuaEx 
+	@LuaEx
 		if myColor == tcod.color.yellow then ... end
 	*/
 	bool operator == (const TCODColor & c) const {
@@ -334,15 +334,15 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@PageName color
 	@FuncTitle Define a color's hue, saturation or lightness
 	@FuncDesc These functions set only a single component in the HSV color space.
-	@Cpp 
+	@Cpp
 		void TCODColor::setHue (float h)
 		void TCODColor::setSaturation (float s)
 		void TCODColor::setValue (float v)
-	@C 
+	@C
 		void TCOD_color_set_hue (TCOD_color_t *c, float h)
 		void TCOD_color_set_saturation (TCOD_color_t *c, float s)
 		void TCOD_color_set_value (TCOD_color_t *c, float v)
-	@Lua 
+	@Lua
 		Color:setHue(h)
 		Color:setSaturation(s)
 		Color:setValue(v)
@@ -373,11 +373,11 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@PageName color
 	@FuncTitle Get a color's hue, saturation or value
 	@FuncDesc Should you need to extract only one of the HSV components, these functions are what you should call. Note that if you need all three values, it's way less burdensome for the CPU to call TCODColor::getHSV().
-	@Cpp 
+	@Cpp
 		float TCODColor::getHue ()
 		float TCODColor::getSaturation ()
 		float TCODColor::getValue ()
-	@C 
+	@C
 		float TCOD_color_get_hue (TCOD_color_t c)
 		float TCOD_color_get_saturation (TCOD_color_t c)
 		float TCOD_color_get_value (TCOD_color_t c)
@@ -452,17 +452,17 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Param keyColor	Array of nbKey colors containing the color of each key
 	@Param keyIndex	Array of nbKey integers containing the index of each key.
 		If you want to fill the map array, keyIndex[0] must be 0 and keyIndex[nbKey-1] is the number of elements in map minus 1 but you can also use the function to fill only a part of the map array.
-	@CppEx 
+	@CppEx
 		int idx[] = { 0, 4, 8 }; // indexes of the keys
 		TCODColor col[] = { TCODColor( 0,0,0 ), TCODColor(255,0,0), TCODColor(255,255,255) }; // colors : black, red, white
 		TCODColor map[9];
 		TCODColor::genMap(map,3,col,idx);
-	@CEx 
+	@CEx
 		int idx[] = { 0, 4, 8 }; // indexes of the keys
 		TCOD_color_t col[] = { { 0,0,0 }, {255,0,0}, {255,255,255} }; // colors : black, red, white
 		TCOD_color_t map[9];
 		TCOD_color_gen_map(map,3,col,idx);
-	@PyEx 
+	@PyEx
 		idx = [ 0, 4, 8 ] # indexes of the keys
 		col = [ libtcod.Color( 0,0,0 ), libtcod.Color( 255,0,0 ), libtcod.Color(255,255,255) ] # colors : black, red, white
 		map=libtcod.color_gen_map(col,idx)

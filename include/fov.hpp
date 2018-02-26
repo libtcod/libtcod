@@ -52,9 +52,9 @@ class TCODLIB_API TCODMap {
 		@Py map_new (width, height)
 		@C# TCODMap::TCODMap(int width, int height)
 		@Param width, height	The size of the map (in map cells).
-		*/		
+		*/
 		TCODMap(int width, int height);
-		
+
 		/**
 		@PageName fov_init
 		@PageFather fov
@@ -68,9 +68,9 @@ class TCODLIB_API TCODMap {
 		@Param x, y	Coordinate of the cell that we want to update.
 		@Param isTransparent	If true, this cell will let the light pass else it will block the light.
 		@Param isWalkable	If true, creatures can walk true this cell (it is not a wall).
-		*/		
+		*/
 		void setProperties(int x,int y, bool isTransparent, bool isWalkable);
-		
+
 		/**
 		@PageName fov_init
 		@PageFather fov
@@ -86,9 +86,9 @@ class TCODLIB_API TCODMap {
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param walkable	Whether the cells should be walkable.
 		@Param transparent	Whether the cells should be transparent.
-		*/		
+		*/
 		void clear(bool transparent=false, bool walkable=false);
-		
+
 		/**
 		@PageName fov_init
 		@PageFather fov
@@ -100,22 +100,22 @@ class TCODLIB_API TCODMap {
 		@C# void TCODMap::copy (TCODMap source)
 		@Param source	The map containing the source data.
 		@Param dest	In C and Python version, the map where data is copied.
-		@CppEx 
+		@CppEx
 			TCODMap * map = new TCODMap(50,50); // allocate the map
 			map->setProperties(10,10,true,true); // set a cell as 'empty'
 			TCODMap * map2 = new TCODMap(10,10); // allocate another map
 			map2->copy(map); // copy map data into map2, reallocating it to 50x50
-		@CEx 
+		@CEx
 			TCOD_map_t map = TCOD_map_new(50,50);
 			TCOD_map_t map2 = TCOD_map_new(10,10);
 			TCOD_map_set_properties(map,10,10,true,true);
 			TCOD_map_copy(map,map2);
-		@PyEx 
+		@PyEx
 			map = libtcod.map_new(50,50)
 			map2 = libtcod.map_new(10,10)
 			libtcod.map_set_properties(map,10,10,True,True)
 			libtcod.map_copy(map,map2)
-		*/		
+		*/
 		void copy (const TCODMap *source);
 
 		/**
@@ -123,11 +123,11 @@ class TCODLIB_API TCODMap {
 		@PageTitle Computing the field of view
 		@PageFather fov
 		@FuncDesc Once your map is allocated and empty cells have been defined, you can calculate the field of view with :
-			<div class="code"><pre>typedef enum { FOV_BASIC, 
-               FOV_DIAMOND, 
-               FOV_SHADOW, 
+			<div class="code"><pre>typedef enum { FOV_BASIC,
+               FOV_DIAMOND,
+               FOV_SHADOW,
                FOV_PERMISSIVE_0,FOV_PERMISSIVE_1,FOV_PERMISSIVE_2,FOV_PERMISSIVE_3,
-               FOV_PERMISSIVE_4,FOV_PERMISSIVE_5,FOV_PERMISSIVE_6,FOV_PERMISSIVE_7,FOV_PERMISSIVE_8, 
+               FOV_PERMISSIVE_4,FOV_PERMISSIVE_5,FOV_PERMISSIVE_6,FOV_PERMISSIVE_7,FOV_PERMISSIVE_8,
                FOV_RESTRICTIVE,
                NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
             </pre></div>
@@ -135,13 +135,13 @@ class TCODLIB_API TCODMap {
 			* FOV_DIAMOND : based on <a href="http://www.geocities.com/temerra/los_rays.html">this</a> algorithm
 			* FOV_SHADOW : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting">this</a> algorithm
 			* FOV_PERMISSIVE_x : based on <a href="http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View">this</a> algorithm
-			Permissive has a variable permissiveness parameter. You can either use the constants FOV_PERMISSIVE_x, x between 0 (the less permissive) and 8 (the more permissive), or using the macro FOV_PERMISSIVE(x). 
+			Permissive has a variable permissiveness parameter. You can either use the constants FOV_PERMISSIVE_x, x between 0 (the less permissive) and 8 (the more permissive), or using the macro FOV_PERMISSIVE(x).
 			* FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (MRPAS). Original implementation <a href="http://umbrarumregnum.110mb.com/download/mrpas">here</a>. Comparison of the algorithms :
 			Check <a href="http://roguecentral.org/libtcod/fov/fov.pdf">this</a>.
 		@Cpp void TCODMap::computeFov(int playerX,int playerY, int maxRadius=0,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC)
 		@C void TCOD_map_compute_fov(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo)
 		@Py map_compute_fov(map, player_x, player_y, max_radius=0, light_walls=True, algo=FOV_BASIC )
-		@C# 
+		@C#
 			void TCODMap::computeFov(int playerX, int playerY)
 			void TCODMap::computeFov(int playerX, int playerY, int maxRadius)
 			void TCODMap::computeFov(int playerX, int playerY, int maxRadius,bool light_walls)
@@ -153,18 +153,18 @@ class TCODLIB_API TCODMap {
 		@Param maxRadius	If > 0, the fov is only computed up to maxRadius cells away from the player. Else, the range is unlimited.
 		@Param light_walls	Whether the wall cells near ground cells in fov must be in fov too.
 		@Param algo	FOV algorithm to use.
-		@CppEx 
+		@CppEx
 			TCODMap *map = new TCODMap(50,50); // allocate the map
 			map->setProperties(10,10,true,true); // set a cell as 'empty'
 			map->computeFov(10,10); // calculate fov from the cell 10x10 (basic raycasting, unlimited range, walls lighting on)
-		@CEx 
+		@CEx
 			TCOD_map_t map = TCOD_map_new(50,50);
 			TCOD_map_set_properties(map,10,10,true,true);
 			TCOD_map_compute_fov(map,10,10,0,true,FOV_SHADOW); // using shadow casting
-		@PyEx 
+		@PyEx
 			map = libtcod.map_new(50,50)
 			libtcod.map_set_properties(map,10,10,True,True)
-			libtcod.map_compute_fov(map,10,10,0,True,libtcod.FOV_PERMISSIVE(2)) 
+			libtcod.map_compute_fov(map,10,10,0,True,libtcod.FOV_PERMISSIVE(2))
 		*/
 		void computeFov(int playerX,int playerY, int maxRadius = 0,bool light_walls = true, TCOD_fov_algorithm_t algo = FOV_BASIC);
 
@@ -182,44 +182,44 @@ class TCODLIB_API TCODMap {
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
 			0 <= y < map height.
-		@CppEx 
+		@CppEx
 			TCODMap *map = new TCODMap(50,50); // allocate the map
 			map->setProperties(10,10,true,true); // set a cell as 'empty'
 			map->computeFov(10,10); // calculate fov from the cell 10x10
-			bool visible=map->isInFov(10,10); // is the cell 10x10 visible ?      
-		@CEx 
+			bool visible=map->isInFov(10,10); // is the cell 10x10 visible ?
+		@CEx
 			TCOD_map_t map = TCOD_map_new(50,50);
 			TCOD_map_set_properties(map,10,10,true,true);
 			TCOD_map_compute_fov(map,10,10);
 			bool visible = TCOD_map_is_in_fov(map,10,10);
-		@PyEx 
+		@PyEx
 			map = libtcod.map_new(50,50)
 			libtcod.map_set_properties(map,10,10,True,True)
 			libtcod.map_compute_fov(map,10,10)
 			visible = libtcod.map_is_in_fov(map,10,10)
-		*/		
+		*/
    		bool isInFov(int x,int y) const;
    		/**
    		@PageName fov_get
    		@FuncTitle Checking a cell transparency/walkability
    		@FuncDesc You can also retrieve transparent/walkable information with :
-		@Cpp 
+		@Cpp
 			bool TCODMap::isTransparent(int x, int y) const
 			bool TCODMap::isWalkable(int x, int y) const
-		@C 
+		@C
 			bool TCOD_map_is_transparent(TCOD_map_t map, int x, int y)
 			bool TCOD_map_is_walkable(TCOD_map_t map, int x, int y)
-		@Py 
+		@Py
 			map_is_transparent(map, x, y)
 			map_is_walkable(map, x, y)
-		@C# 
+		@C#
 			bool TCODMap::isTransparent(int x, int y)
 			bool TCODMap::isWalkable(int x, int y)
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
 		@Param x,y	Coordinates of the cell we want to check.
 			0 <= x < map width.
 			0 <= y < map height.
-		*/   		
+		*/
 		bool isTransparent(int x, int y) const;
 		bool isWalkable(int x, int y) const;
 
@@ -227,20 +227,20 @@ class TCODLIB_API TCODMap {
    		@PageName fov_get
    		@FuncTitle Getting the map size
    		@FuncDesc You can retrieve the map size with :
-		@Cpp 
+		@Cpp
 			int TCODMap::getWidth() const
 			int TCODMap::getHeight() const
-		@C 
+		@C
 			int TCOD_map_get_width(TCOD_map_t map)
 			int TCOD_map_get_height(TCOD_map_t map)
-		@Py 
+		@Py
 			map_get_width(map)
 			map_get_height(map)
 		@C#
 			int TCODMap::getWidth()
 			int TCODMap::getHeight()
 		@Param map	In the C version, the map handler returned by the TCOD_map_new function.
-		*/   		
+		*/
    		int getWidth() const;
 		int getHeight() const;
 

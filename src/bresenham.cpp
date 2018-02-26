@@ -46,5 +46,3 @@ bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *pl
 	listener=plistener;
 	return TCOD_line(xFrom,yFrom,xTo,yTo,internalListener) != 0;
 }
-
-

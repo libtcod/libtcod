@@ -333,7 +333,7 @@ void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float 
 	if ( scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE ) return;
 	TCOD_image_get_size(image,&width,&height);
 	rx = x - width * 0.5f;
-	ry = y - height * 0.5f; 
+	ry = y - height * 0.5f;
 	if ( scalex == 1.0f && scaley == 1.0f && angle == 0.0f && rx == ((int)rx) && ry == ((int)ry)) {
 		/* clip the image */
 		int ix = (int)(x - width*0.5f);

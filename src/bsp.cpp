@@ -165,4 +165,3 @@ TCODBsp *TCODBsp::findNode(int px, int py) {
 	}
 	return this;
 }
-

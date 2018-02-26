@@ -136,4 +136,3 @@ int TCODDijkstra::size() const {
 void TCODDijkstra::get(int index, int *x, int *y) const {
 	return TCOD_dijkstra_get(data,index,x,y);
 }
-

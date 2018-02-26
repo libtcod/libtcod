@@ -46,7 +46,7 @@ void TCODText::setPos(int x, int y) {
 }
 
 void TCODText::setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size){
-	TCOD_text_set_properties(data,cursor_char,blink_interval,prompt,tab_size);	                            
+	TCOD_text_set_properties(data,cursor_char,blink_interval,prompt,tab_size);
 }
 
 void TCODText::setColors(TCODColor fore, TCODColor back, float back_transparency){
@@ -63,7 +63,7 @@ void TCODText::render(TCODConsole * con){
 	TCOD_text_render(data,con->data);
 }
 
-const char *TCODText::getText(){        
+const char *TCODText::getText(){
 	return TCOD_text_get(data);
 }
 

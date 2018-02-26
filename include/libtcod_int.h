@@ -563,4 +563,3 @@ extern int oldFade;
 }
 #endif
 #endif
-

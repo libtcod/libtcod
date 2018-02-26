@@ -263,8 +263,8 @@ typedef enum {
 } TCOD_renderer_t;
 
 typedef enum {
-	TCOD_LEFT, 
-	TCOD_RIGHT, 
-	TCOD_CENTER 
+	TCOD_LEFT,
+	TCOD_RIGHT,
+	TCOD_CENTER
 } TCOD_alignment_t;
 #endif /* _TCOD_CONSOLE_TYPES_H */

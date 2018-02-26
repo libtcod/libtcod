@@ -157,7 +157,7 @@ class TCODLIB_API TCODNoise {
 		@PageFather noise
 		@PageTitle Choosing a noise type
 		@FuncTitle Choosing a noise type
-		@FuncDesc Use this function to define the default algorithm used by the noise functions. 
+		@FuncDesc Use this function to define the default algorithm used by the noise functions.
 			The default algorithm is simplex. It's much faster than Perlin, especially in 4 dimensions. It has a better contrast too.
 		@Cpp void TCODNoise::setType(TCOD_noise_type_t type)
 		@C void TCOD_noise_set_type(TCOD_noise_t noise, TCOD_noise_type_t type)
@@ -188,7 +188,7 @@ float TCOD_noise_get_ex(TCOD_noise_t noise, float *f, TCOD_noise_type_t type)
 		@C# float TCODNoise::get(float[] f, type=NoiseDefault)
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
-		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set) 
+		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set)
 		@CppEx
 			// 1d noise
 			TCODNoise * noise1d = new TCODNoise(1);
@@ -235,7 +235,7 @@ float TCOD_noise_get_fbm(TCOD_noise_t noise, float *f, float octaves, TCOD_noise
 		@Param noise	In the C version, the generator handler, returned by the initialization function.
 		@Param f	An array of coordinates, depending on the generator dimensions (between 1 and 4). The same array of coordinates will always return the same value.
 		@Param octaves	Number of iterations. Must be < TCOD_NOISE_MAX_OCTAVES = 128
-		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set) 
+		@Param type	The algorithm to use. If not defined, use the default one (set with setType or simplex if not set)
 		@CppEx
 			// 1d fbm
 			TCODNoise * noise1d = new TCODNoise(1);

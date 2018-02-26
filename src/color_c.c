@@ -559,5 +559,3 @@ void TCOD_color_gen_map(TCOD_color_t *map, int nb_key, TCOD_color_t const  *key_
 		}
 	}
 }
-
-

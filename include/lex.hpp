@@ -32,12 +32,12 @@
 #define _TCOD_LEX_HPP
 
 #include "lex.h"
- 
+
 class TCODLIB_API TCODLex {
 public :
 	TCODLex();
-	TCODLex( const char **symbols, const char **keywords, const char *simpleComment="//", 
-		const char *commentStart="/*", const char *commentStop="*/", const char *javadocCommentStart="/**", 
+	TCODLex( const char **symbols, const char **keywords, const char *simpleComment="//",
+		const char *commentStart="/*", const char *commentStop="*/", const char *javadocCommentStart="/**",
 		const char *stringDelim="\"", int flags=TCOD_LEX_FLAG_NESTING_COMMENT);
 	~TCODLex();
 

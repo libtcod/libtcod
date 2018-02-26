@@ -128,4 +128,3 @@ void Slider::onButtonRelease() {
 		TCODMouse::showCursor(true);
 	}
 }
-

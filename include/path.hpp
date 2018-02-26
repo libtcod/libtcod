@@ -552,4 +552,3 @@ class TCODLIB_API TCODDijkstra {
 };
 
 #endif
-

@@ -103,4 +103,3 @@ bool TCODLex::expect(int tokenType, const char *tokenValue)
 {
 	return TCOD_lex_expect_token_value((TCOD_lex_t *)data,tokenType,tokenValue) != 0;
 }
-

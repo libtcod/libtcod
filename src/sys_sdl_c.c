@@ -278,7 +278,7 @@ void TCOD_sys_load_font(void) {
 		cy=(i/TCOD_ctx.fontNbCharHoriz);
 		for( px=0; !end && px < TCOD_ctx.font_width; px++ ) {
 			for (py=0; !end && py < TCOD_ctx.font_height; py++ ) {
-					uint8_t*pixel=(uint8_t*)(charmap->pixels) + (cy*TCOD_ctx.font_height+py) * charmap->pitch 
+					uint8_t*pixel=(uint8_t*)(charmap->pixels) + (cy*TCOD_ctx.font_height+py) * charmap->pitch
 						+ (cx*TCOD_ctx.font_width+px) * charmap->format->BytesPerPixel;
 					uint8_t r=*((pixel)+charmap->format->Rshift/8);
 					uint8_t g=*((pixel)+charmap->format->Gshift/8);
@@ -295,7 +295,7 @@ void TCOD_sys_load_font(void) {
 					}
 			}
 		}
-	}	
+	}
 	/* convert 24/32 bits greyscale to 32bits font with alpha layer */
 	if ( ! hasTransparent && TCOD_ctx.font_greyscale ) {
 		bool invert=( fontKeyCol.r > 128 ); /* black on white font ? */
@@ -311,7 +311,7 @@ void TCOD_sys_load_font(void) {
 		for (i=0; i < TCOD_ctx.fontNbCharHoriz*TCOD_ctx.fontNbCharVertic; i++ ) {
 			int cx,cy;
 			cx=(i%TCOD_ctx.fontNbCharHoriz);
-			cy=(i/TCOD_ctx.fontNbCharHoriz);			
+			cy=(i/TCOD_ctx.fontNbCharHoriz);
 			/* fill the surface with white (except colored tiles), use alpha layer for characters */
 			for (x=cx*TCOD_ctx.font_width; x < (cx+1)*TCOD_ctx.font_width; x ++ ) {
 				for (y=cy*TCOD_ctx.font_height;y < (cy+1)*TCOD_ctx.font_height; y++ ) {
@@ -330,7 +330,7 @@ void TCOD_sys_load_font(void) {
 						if ( r == fontKeyCol.r && g == fontKeyCol.g && b == fontKeyCol.b ) {
 							*((pixel)+charmap->format->Ashift/8) = 0;
 						} else {
-							*((pixel)+charmap->format->Ashift/8) = 255;							
+							*((pixel)+charmap->format->Ashift/8) = 255;
 						}
 					}
 				}
@@ -538,7 +538,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 										}
 										h--;
 										pix += hdelta;
-										pixorig += hdelta_backup;								
+										pixorig += hdelta_backup;
 									}
 								}
 							} else	{
@@ -574,7 +574,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 												g = g * f.g / 255;
 												b = b * f.b / 255;
 												/* set the new color */
-												(*pix) |= (r<<charmap->format->Rshift)|(g<<charmap->format->Gshift)|(b<<charmap->format->Bshift); 
+												(*pix) |= (r<<charmap->format->Rshift)|(g<<charmap->format->Gshift)|(b<<charmap->format->Bshift);
 											}
 											w--;
 											pix = (uint32_t *) (((uint8_t*)pix)+3);
@@ -680,8 +680,8 @@ void TCOD_sys_shutdown(void) {
 }
 
 static void TCOD_sys_load_player_config(void) {
-	const char *renderer;	
-	const char *font;	
+	const char *renderer;
+	const char *font;
 	int fullscreenWidth,fullscreenHeight;
 
 	/* define file structure */
@@ -1079,21 +1079,21 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 	key->text[0] = '\0';
 	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
 	switch(ev->type) {
-		case SDL_KEYDOWN : {		 
+		case SDL_KEYDOWN : {
 			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
 			if ( (TCOD_EVENT_KEY_PRESS & eventMask) != 0) {
-				retMask|=TCOD_EVENT_KEY_PRESS; 
-				if ( key ) *key = tmpKey; 
-				return retMask;					
+				retMask|=TCOD_EVENT_KEY_PRESS;
+				if ( key ) *key = tmpKey;
+				return retMask;
 			}
 		}
 		break;
-		case SDL_KEYUP : { 
+		case SDL_KEYUP : {
 			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_RELEASED);
 			if ( (TCOD_EVENT_KEY_RELEASE & eventMask) != 0) {
-				retMask|=TCOD_EVENT_KEY_RELEASE; 
+				retMask|=TCOD_EVENT_KEY_RELEASE;
 				if ( key ) *key = tmpKey;
-				return retMask;					
+				return retMask;
 			}
 		}
 		break;
@@ -1104,7 +1104,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			key->c = 0;
 			key->pressed = 1;
 			strncpy(key->text, iev->text, TCOD_KEY_TEXT_SIZE);
-			return retMask | TCOD_EVENT_KEY_PRESS; 
+			return retMask | TCOD_EVENT_KEY_PRESS;
 		}
 		break;
 #ifdef TCOD_TOUCH_INPUT
@@ -1268,7 +1268,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			break;
 		}
 #endif
-		case SDL_MOUSEMOTION : 
+		case SDL_MOUSEMOTION :
 			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
 				SDL_MouseMotionEvent *mev=&ev->motion;
 				TCOD_sys_unproject_screen_coords(mev->x, mev->y, &mouse->x, &mouse->y);
@@ -1283,7 +1283,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 
 				return retMask | TCOD_EVENT_MOUSE_MOVE;
 			}
-		break; 
+		break;
 		case SDL_MOUSEWHEEL :
 			if (ev->wheel.y < 0)
 				mouse->wheel_down=true;
@@ -1291,7 +1291,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				mouse->wheel_up=true;
 			return retMask | TCOD_EVENT_MOUSE_PRESS;
 		break;
-		case SDL_MOUSEBUTTONDOWN : 
+		case SDL_MOUSEBUTTONDOWN :
 			if ( (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
 				SDL_MouseButtonEvent *mev=&ev->button;
 				retMask|=TCOD_EVENT_MOUSE_PRESS;
@@ -1309,8 +1309,8 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				}
 				return retMask;
 			}
-		break; 
-		case SDL_MOUSEBUTTONUP : 
+		break;
+		case SDL_MOUSEBUTTONUP :
 			if ( (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
 				SDL_MouseButtonEvent *mev=&ev->button;
 				retMask|=TCOD_EVENT_MOUSE_RELEASE;
@@ -1325,7 +1325,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 					mouse->y=mev->y;
 					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
 					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
-				}				
+				}
 				return retMask;
 			}
 		break;
@@ -1364,7 +1364,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 #endif
 			}
  		break;
-		default : break; 
+		default : break;
 	}
 	return retMask;
 }
@@ -1388,7 +1388,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_
 	if ( key ) {
 		key->vk=TCODK_NONE;
 		key->c=0;
-	}	
+	}
 	do {
 		SDL_WaitEvent(&ev);
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
@@ -1415,8 +1415,8 @@ TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse
 	while ( SDL_PollEvent(&ev) ) {
 		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
 		if ((retMask & TCOD_EVENT_KEY) != 0)
-			/* only one key event per frame */ 
-			break; 
+			/* only one key event per frame */
+			break;
 	}
 	if (mouse) { *mouse=tcod_mouse; }
 	return retMask;

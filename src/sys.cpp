@@ -229,12 +229,12 @@ void TCODSystem::deleteCondition( TCOD_cond_t cond) {
 }
 
 // custom post-renderer
-static ITCODSDLRenderer *renderer=NULL;
+static ITCODSDLRenderer *post_renderer=NULL;
 extern "C" void TCOD_CRenderer(void *sdl_surface) {
-	if ( renderer ) renderer->render(sdl_surface);
+	if ( post_renderer ) post_renderer->render(sdl_surface);
 }
 void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer) {
-	::renderer = renderer;
+	::post_renderer = renderer;
 #ifndef TCOD_BARE
 	TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
 #endif

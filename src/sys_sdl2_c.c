@@ -487,7 +487,7 @@ static bool file_write(const char *filename, unsigned char *buf, uint32_t size) 
 	return true;
 }
 
-static void shutdown(void) {
+static void shutdown_(void) {
 	if (last_clipboard_text) {
 		SDL_free(last_clipboard_text);
 		last_clipboard_text = NULL;
@@ -518,7 +518,7 @@ TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	ret->file_read = file_read;
 	ret->file_exists = file_exists;
 	ret->file_write = file_write;
-	ret->shutdown = shutdown;
+	ret->shutdown = shutdown_;
 	ret->get_root_console_cache = get_root_console_cache;
 	return ret;
 }

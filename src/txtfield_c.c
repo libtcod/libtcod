@@ -330,7 +330,7 @@ static void selectEnd(text_t *data, int oldpos, TCOD_key_t key) {
 }
 
 enum { TYPE_SYMBOL, TYPE_ALPHANUM, TYPE_SPACE };
-static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
+static const char txt_symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 
 /* check whether a character is a space */
 /* this is needed because cctype isspace() returns rubbish for many diacritics */
@@ -344,7 +344,7 @@ static bool is_space (int ch) {
 }
 
 static void typecheck (int * type, int ch) {
-    if (strchr(symbols,ch)) *type = TYPE_SYMBOL;
+    if (strchr(txt_symbols,ch)) *type = TYPE_SYMBOL;
     else if (is_space(ch)) *type = TYPE_SPACE;
     else *type = TYPE_ALPHANUM;
 }

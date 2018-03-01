@@ -37,6 +37,7 @@
 #include <wctype.h>
 #endif
 
+#include <console_rexpaint.h>
 #include <noise.h>
 #include <mersenne.h>
 #include <libtcod_int.h>

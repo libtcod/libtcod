@@ -36,6 +36,7 @@
 #include "bsp.h"
 #include "color.h"
 #include "console.h"
+#include "console_rexpaint.h"
 #include "fov.h"
 #include "heightmap.h"
 #include "image.h"

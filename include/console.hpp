@@ -29,6 +29,7 @@
 #define _TCOD_CONSOLE_HPP
 
 #include "console.h"
+#include "console_rexpaint.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 

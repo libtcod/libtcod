@@ -36,38 +36,50 @@ You can create your own colours using a set of constructors, both for RGB and HS
 Compare two colors
 ^^^^^^^^^^^^^^^^^^
 
-Multiply two colors
-^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_color_equals
 
-Multiply a color by a float
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Add and subtract Colors
+^^^^^^^^^^^^^^^^^^^^^^^
 
-Adding two colors
-^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_color_add
 
-Subtract two colors
-^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_color_subtract
+
+Multiply Colors together
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: TCOD_color_multiply
+
+.. doxygenfunction:: TCOD_color_multiply_scalar
 
 Interpolate between two colors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: TCOD_color_lerp
 
 Define a color by its hue, saturation and value
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After this function is called, the r,g,b fields of the color are calculated according to the h,s,v parameters.
 
-Define a color's hue, saturation or lightness
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_color_set_HSV
 
 These functions set only a single component in the HSV color space.
+
+.. doxygenfunction:: TCOD_color_set_hue
+.. doxygenfunction:: TCOD_color_set_saturation
+.. doxygenfunction:: TCOD_color_set_value
 
 Get a color hue, saturation and value components
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Get a color's hue, saturation or value
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_color_get_HSV
 
 Should you need to extract only one of the HSV components, these functions are what you should call. Note that if you need all three values, it's way less burdensome for the CPU to call `TCODColor::getHSV()`.
+
+.. doxygenfunction:: TCOD_color_get_hue
+.. doxygenfunction:: TCOD_color_get_saturation
+.. doxygenfunction:: TCOD_color_get_value
 
 Shift a color's hue up or down
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -75,8 +87,12 @@ Shift a color's hue up or down
 The hue shift value is the number of grades the color's hue will be shifted. The value can be negative for shift left, or positive for shift right.
 Resulting values H < 0 and H >= 360 are handled automatically.
 
+.. doxygenfunction:: TCOD_color_shift_hue
+
 Scale a color's saturation and value
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: TCOD_color_scale_HSV
 
 Generate a smooth color map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -88,3 +104,5 @@ You can define a color map from an array of color keys. Colors will be interpola
 Result:
 
 INSERT TABLE.
+
+.. doxygenfunction:: TCOD_color_gen_map

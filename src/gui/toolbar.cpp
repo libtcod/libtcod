@@ -60,7 +60,7 @@ public :
 	char *txt;
 };
 
-ToolBar::ToolBar(int x, int y, const char *name, const char *tip) 
+ToolBar::ToolBar(int x, int y, const char *name, const char *tip)
 	: Container(x,y,0,2),name(NULL),fixedWidth(0) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
@@ -69,7 +69,7 @@ ToolBar::ToolBar(int x, int y, const char *name, const char *tip)
 	if ( tip ) setTip(tip);
 }
 
-ToolBar::ToolBar(int x, int y, int w, const char *name, const char *tip) 
+ToolBar::ToolBar(int x, int y, int w, const char *name, const char *tip)
 	: Container(x,y,w,2),name(NULL),fixedWidth(w) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
@@ -117,9 +117,8 @@ void ToolBar::computeSize() {
 		if ( (*wid)->isVisible() ) {
 			(*wid)->expand(w-2,(*wid)->h);
 		}
-	}	
+	}
 }
 void ToolBar::addSeparator(const char *txt, const char *tip) {
 	addWidget(new Separator(txt,tip));
 }
-

@@ -34,5 +34,3 @@ void StatusBar::render() {
 		con->printRectEx(x+1,y,w,h,TCOD_BKGND_NONE,TCOD_LEFT,focus->tip);
 	}
 }
-
-

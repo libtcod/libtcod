@@ -26,11 +26,11 @@
 */
 #include <container.hpp>
 
-Container::~Container() { 
-	content.clearAndDelete(); 
+Container::~Container() {
+	content.clearAndDelete();
 }
 
-void Container::addWidget(Widget *wid) { 
+void Container::addWidget(Widget *wid) {
 	content.push(wid);
 	widgets.remove(wid);
 }
@@ -59,4 +59,3 @@ void Container::update(const TCOD_key_t k) {
 		if ( (*wid)->isVisible() ) (*wid)->update(k);
 	}
 }
-

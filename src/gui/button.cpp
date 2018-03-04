@@ -28,7 +28,7 @@
 
 #include <string.h>
 
-Button::Button(const char *label,const char *tip,widget_callback_t cbk, void *userData) 
+Button::Button(const char *label,const char *tip,widget_callback_t cbk, void *userData)
 	: pressed(false),label(NULL) {
 	if ( label != NULL ) {
 		setLabel(label);
@@ -40,7 +40,7 @@ Button::Button(const char *label,const char *tip,widget_callback_t cbk, void *us
 	this->cbk=cbk;
 }
 
-Button::Button(int x,int y,int width, int height,const char *label,const char *tip,widget_callback_t cbk, void *userData) 
+Button::Button(int x,int y,int width, int height,const char *label,const char *tip,widget_callback_t cbk, void *userData)
 	: pressed(false), label(NULL) {
 	if ( label != NULL ) setLabel(label);
 	if ( tip != NULL ) setTip(tip);
@@ -80,7 +80,7 @@ void Button::computeSize() {
 	} else {
 		w=4;
 	}
-	h=1;	
+	h=1;
 }
 
 void Button::expand(int width, int height) {
@@ -98,6 +98,3 @@ void Button::onButtonRelease() {
 void Button::onButtonClick() {
 	if ( cbk ) cbk(this,userData);
 }
-
-
-

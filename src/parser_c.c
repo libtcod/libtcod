@@ -930,4 +930,3 @@ TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char *name
 	value=TCOD_get_property(parser,TCOD_TYPE_LIST|type,name);
 	return value ? value->list : empty_list;
 }
-

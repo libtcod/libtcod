@@ -46,6 +46,5 @@ void HBox::computeSize() {
 		if ( (*wid)->isVisible() ) {
 			(*wid)->expand((*wid)->w,h);
 		}
-	}	
+	}
 }
-

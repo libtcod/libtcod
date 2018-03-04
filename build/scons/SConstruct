@@ -103,6 +103,12 @@ def samples_factory():
     return samples
 
 
+def filtered_glob(env, pattern, omit=[],
+                  ondisk=True, source=False, strings=False):
+    return filter(lambda f: os.path.basename(f.path) not in omit,
+                  env.Glob(pattern))
+
+
 def get_libtcod_version():
     """Return the latest version number from the CHANGELOG."""
     for filename in os.listdir(LIBTCOD_ROOT_DIR):
@@ -148,7 +154,7 @@ vars.Add('CPPDEFINES', 'Defined preprocessor values.',
          ' '.join(config.DEFINES))
 
 vars.Add('VERSION', 'libtcod version.', get_libtcod_version())
-vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT-$DATETIME')
+vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT')
 
 if sys.platform == 'win32':
     DEPENDANCY_DIR = './dependencies/$WINDOWS_TOOLSET'
@@ -156,6 +162,11 @@ else:
     DEPENDANCY_DIR = './dependencies'
 vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
 vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.5')
+
+vars.Add(EnumVariable(
+        'SOURCE_FILES', ('Auto-detect which source files to compile, '
+                         'or use libtcod_c.c and libtcod.cpp'),
+        'auto', allowed_values=('auto', 'static')))
 
 if windows_toolset == 'msvc':
     sdl2_zip_file = 'SDL2-devel-$SDL2_VERSION-VC.zip'
@@ -199,6 +210,8 @@ env = Environment(
     SDL2_DMG_PATH='$DEPENDANCY_DIR/$SDL2_DMG_FILE',
     SDL2_DMG_URL='https://www.libsdl.org/release/$SDL2_DMG_FILE',
     )
+
+env.AddMethod(filtered_glob, "FilteredGlob");
 
 env['CCFLAGS'] = Split(env['CCFLAGS'])
 env['LINKFLAGS'] = Split(env['LINKFLAGS'])
@@ -298,9 +311,17 @@ if 'NO_OPENGL' not in env['CPPDEFINES']:
     else:
         env_libtcod.Append(LIBS=['GL'])
 
+libtcod_sources = {
+    'auto': (env.FilteredGlob('$VARIANT/src/*.c*',
+                               omit=['libtcod_c.c','libtcod.cpp'])
+              + env.Glob('$VARIANT/src/*/*.c')),
+    'static': (env.Glob('$VARIANT/src/zlib/*.c')
+               + ['$VARIANT/src/libtcod_c.c', '$VARIANT/src/libtcod.cpp']),
+}
+
 libtcod = env_libtcod.SharedLibrary(
     target='$VARIANT/libtcod',
-    source=(env.Glob('$VARIANT/src/*.c*') + env.Glob('$VARIANT/src/*/*.c')),
+    source=libtcod_sources[env['SOURCE_FILES']],
     )
 
 env_libtcod_gui = env.Clone()

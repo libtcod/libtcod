@@ -142,4 +142,3 @@ void Widget::setTip(const char *tip) {
 	if ( this->tip ) free(this->tip);
 	this->tip = TCOD_strdup(tip);
 }
-

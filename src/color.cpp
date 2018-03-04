@@ -346,4 +346,3 @@ void TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int
 		}
 	}
 }
-

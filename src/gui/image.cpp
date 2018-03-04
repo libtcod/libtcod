@@ -46,4 +46,3 @@ void Image::expand(int width, int height) {
 	if ( width > w ) w=width;
 	if ( height > h ) h=height;
 }
-

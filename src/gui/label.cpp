@@ -45,4 +45,3 @@ void Label::computeSize() {
 void Label::expand(int width, int height) {
 	if ( w < width ) w=width;
 }
-

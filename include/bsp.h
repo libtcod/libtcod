@@ -63,7 +63,7 @@ TCODLIB_API bool TCOD_bsp_contains(TCOD_bsp_t *node, int x, int y);
 TCODLIB_API TCOD_bsp_t * TCOD_bsp_find_node(TCOD_bsp_t *node, int x, int y);
 TCODLIB_API void TCOD_bsp_resize(TCOD_bsp_t *node, int x,int y, int w, int h);
 TCODLIB_API void TCOD_bsp_split_once(TCOD_bsp_t *node, bool horizontal, int position);
-TCODLIB_API void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, 
+TCODLIB_API void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb,
 		int minHSize, int minVSize, float maxHRatio, float maxVRatio);
 TCODLIB_API void TCOD_bsp_remove_sons(TCOD_bsp_t *node);
 #ifdef __cplusplus

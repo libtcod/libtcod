@@ -77,7 +77,7 @@ static bool is_blocked(map_t *map, view_t *view, int startX, int startY, int x, 
 	int posy=y*dy/STEP_SIZE+startY;
 	int offset=posx + (posy)*map->width;
 	bool blocked=!map->cells[offset].transparent;
-	if (! blocked || light_walls) map->cells[offset].fov=1; 
+	if (! blocked || light_walls) map->cells[offset].fov=1;
 	return blocked;
 }
 
@@ -124,7 +124,7 @@ static bool check_view(TCOD_list_t active_views, view_t **it) {
 	line_t *shallow_line=&view->shallow_line;
 	line_t *steep_line=&view->steep_line;
 	if (LINE_COLINEAR(shallow_line,steep_line)
-		&& (COLINEAR(shallow_line,offset,limit) 
+		&& (COLINEAR(shallow_line,offset,limit)
 		|| COLINEAR(shallow_line,limit,offset)) ){
 /*printf ("deleting view %x\n",it); */
 		/* slow ! */
@@ -134,7 +134,7 @@ static bool check_view(TCOD_list_t active_views, view_t **it) {
 	return true;
 }
 
-static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, int dy, 
+static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, int dy,
 	TCOD_list_t active_views, bool light_walls) {
 	/* top left */
 	int tlx=x, tly=y+STEP_SIZE;
@@ -153,13 +153,13 @@ static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, 
 		return;
 	}
 	if ( !is_blocked(m,view,startX,startY,x,y,dx,dy,light_walls) ) return;
-	if (  ABOVE(&view->shallow_line,brx,bry) 
+	if (  ABOVE(&view->shallow_line,brx,bry)
 		&& BELOW(&view->steep_line,tlx,tly)) {
 		/* view blocked */
 		/* slow ! */
 		TCOD_list_remove_iterator(active_views,(void **)current_view);
 	} else if ( ABOVE(&view->shallow_line,brx,bry)) {
-		/* shallow bump */                
+		/* shallow bump */
 		add_shallow_bump(tlx,tly,view);
 		check_view(active_views,current_view);
 	} else if (BELOW(&view->steep_line,tlx,tly)) {
@@ -253,4 +253,3 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 	free(bumps);
 	free(views);
 }
-

@@ -638,4 +638,3 @@ void TCOD_namegen_destroy (void) {
     /* get rid of the parsed files list */
     TCOD_list_clear_and_delete(parsed_files);
 }
-

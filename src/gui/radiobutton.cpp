@@ -61,4 +61,3 @@ void RadioButton::onButtonClick() {
 	select();
 	Button::onButtonClick();
 }
-

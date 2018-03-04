@@ -198,4 +198,3 @@ void **TCOD_list_insert_before(TCOD_list_t l,const void *elt,int before) {
 bool TCOD_list_is_empty(TCOD_list_t l) {
 	return ( LIST(l)->fillSize == 0 );
 }
-

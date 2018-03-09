@@ -36,6 +36,7 @@
  *    You can get the development libraries from:
  *    https://www.libsdl.org/download-2.0.php
  *  * Add `GL` to be dynamically linked.
+ *  * Compile and link libtcod's src/png/lodepng.c file.
  *  * Link with `zlib`, and add its include directory.  You can include
  *    libtcod's src/zlib directory and compile all `.c` files in there to
  *    statically link it.
@@ -81,5 +82,3 @@
 #endif /* NO_OPENGL */
 
 #endif /* TCOD_BARE */
-
-#include "png/lodepng.c"

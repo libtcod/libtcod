@@ -60,7 +60,7 @@ TCODLIB_API void TCOD_image_put_pixel(TCOD_image_t image,int x, int y,TCOD_color
 #ifdef TCOD_CONSOLE_SUPPORT
 TCODLIB_API void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, float x, float y,
 	TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle);
-TCODLIB_API void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h, 
+TCODLIB_API void TCOD_image_blit_rect(TCOD_image_t image, TCOD_console_t console, int x, int y, int w, int h,
 	TCOD_bkgnd_flag_t bkgnd_flag);
 TCODLIB_API void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t dest, int dx, int dy, int sx, int sy, int w, int h);
 #endif

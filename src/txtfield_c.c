@@ -133,7 +133,7 @@ TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
 void TCOD_text_set_pos(TCOD_text_t txt, int x, int y) {
     text_t * data = (text_t*)txt;
 	data->x=x;
-	data->y=y;	
+	data->y=y;
 }
 
 /* set cursor and prompt */
@@ -330,7 +330,7 @@ static void selectEnd(text_t *data, int oldpos, TCOD_key_t key) {
 }
 
 enum { TYPE_SYMBOL, TYPE_ALPHANUM, TYPE_SPACE };
-static const char symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
+static const char txt_symbols[]="&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 
 /* check whether a character is a space */
 /* this is needed because cctype isspace() returns rubbish for many diacritics */
@@ -344,7 +344,7 @@ static bool is_space (int ch) {
 }
 
 static void typecheck (int * type, int ch) {
-    if (strchr(symbols,ch)) *type = TYPE_SYMBOL;
+    if (strchr(txt_symbols,ch)) *type = TYPE_SYMBOL;
     else if (is_space(ch)) *type = TYPE_SPACE;
     else *type = TYPE_ALPHANUM;
 }

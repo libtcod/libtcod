@@ -175,4 +175,3 @@ void TCODHeightMap::midPointDisplacement(TCODRandom *rnd, float roughness) {
 	if ( ! rnd ) rnd = TCODRandom::getInstance();
 	TCOD_heightmap_mid_point_displacement(&hm, rnd->data, roughness);
 }
-

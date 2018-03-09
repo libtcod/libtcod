@@ -186,4 +186,3 @@ void * TCODParser::getCustomProperty(const char *name) const {
 TCOD_list_t TCODParser::getListProperty(const char *name, TCOD_value_type_t type) const {
 	return TCOD_parser_get_list_property(data,name,type);
 }
-

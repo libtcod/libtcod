@@ -105,4 +105,3 @@ void TCOD_map_compute_fov_recursive_shadowcasting(TCOD_map_t map, int player_x, 
 		mult[0][oct],mult[1][oct],mult[2][oct],mult[3][oct],0,light_walls);
 	m->cells[player_x+player_y*m->width].fov=1;
 }
-

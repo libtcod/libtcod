@@ -45,4 +45,3 @@
 #include "image.hpp"
 
 #endif
-

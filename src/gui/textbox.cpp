@@ -156,4 +156,3 @@ void TextBox::update(TCOD_key_t k) {
 void TextBox::onButtonClick() {
 	if ( mouse.cx >= x+boxx && mouse.cx < x+boxx+boxw ) keyboardFocus=this;
 }
-

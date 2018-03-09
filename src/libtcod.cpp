@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.4
-* Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
+* libtcod
+* Copyright (c) 2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,8 +10,9 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice or Mingos may not be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+*     * The name of Jice or Mingos may not be used to endorse or promote
+*       products derived from this software without specific prior written
+*       permission.
 *
 * THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -24,18 +25,44 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef TCOD_GUI_IMAGE_HPP
-#define TCOD_GUI_IMAGE_HPP
-#include "widget.hpp"
-class TCODLIB_GUI_API Image : public Widget {
-public :
-	Image(int x,int y,int w, int h, const char *tip=NULL);
-	virtual ~Image();
-	void setBackgroundColor(const TCODColor col);
-	void render();
-protected :
-	void expand(int width, int height);
 
-	TCODColor back;
-};
-#endif /* TCOD_GUI_IMAGE_HPP */
+/** \file libtcod.cpp
+ *
+ *  To statically link a C++ program with libtcod you'll need to follow
+ *  the directions for compiling `libtcod_c.c` and then add `libtcod.cpp` to
+ *  your source files.
+ */
+#include "bresenham.cpp"
+#include "bsp.cpp"
+#include "color.cpp"
+#include "console.cpp"
+#include "fov.cpp"
+#include "heightmap.cpp"
+#include "image.cpp"
+#include "lex.cpp"
+#include "mersenne.cpp"
+#include "mouse.cpp"
+#include "namegen.cpp"
+#include "noise.cpp"
+#include "parser.cpp"
+#include "path.cpp"
+#include "sys.cpp"
+#include "txtfield.cpp"
+#include "zip.cpp"
+
+/*
+#include "gui/button.cpp"
+#include "gui/container.cpp"
+#include "gui/flatlist.cpp"
+#include "gui/hbox.cpp"
+#include "gui/image.cpp"
+#include "gui/label.cpp"
+#include "gui/radiobutton.cpp"
+#include "gui/slider.cpp"
+#include "gui/statusbar.cpp"
+#include "gui/textbox.cpp"
+#include "gui/togglebutton.cpp"
+#include "gui/toolbar.cpp"
+#include "gui/vbox.cpp"
+#include "gui/widget.cpp"
+*/

@@ -33,6 +33,7 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
+    'breathe',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -294,3 +295,25 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
     import sphinx_rtd_theme
     html_theme = 'sphinx_rtd_theme'
     html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
+# Breathe configuration
+breathe_projects = { "libtcod": "doxyxml/" }
+breathe_default_project = "libtcod"
+
+# Run Doxygen
+import subprocess, sys
+
+def run_doxygen(app):
+    """Runs the doxygen command."""
+
+    try:
+        retcode = subprocess.call(['doxygen', 'Doxyfile'])
+        if retcode < 0:
+            sys.stderr.write("doxygen terminated by signal %s" % (-retcode))
+    except OSError as e:
+        sys.stderr.write("doxygen execution failed: %s" % e)
+
+def setup(app):
+
+    # Add hook for building doxygen xml when needed
+    app.connect("builder-inited", run_doxygen)

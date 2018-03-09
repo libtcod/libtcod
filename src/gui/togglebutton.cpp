@@ -49,6 +49,3 @@ void ToggleButton::onButtonClick() {
 	pressed=!pressed;
 	if ( cbk ) cbk(this,userData);
 }
-
-
-

@@ -82,7 +82,7 @@ void FlatList::onButtonClick() {
 			while (*value) {
 				value++;
 			}
-		}		
+		}
 		value--;
 	} else if ( onRightArrow ) {
 		value++;
@@ -111,5 +111,3 @@ void FlatList::setList(const char **l) {
 	value=list=l;
 	valueToText();
 }
-
-

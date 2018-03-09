@@ -162,7 +162,7 @@ void TCOD_bsp_split_once(TCOD_bsp_t *node, bool horizontal, int position) {
 	TCOD_tree_add_son(&node->tree,&TCOD_bsp_new_intern(node,false)->tree);
 }
 
-void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb, 
+void TCOD_bsp_split_recursive(TCOD_bsp_t *node, TCOD_random_t randomizer, int nb,
 	int minHSize, int minVSize, float maxHRatio, float maxVRatio) {
 	bool horiz;
 	int position;
@@ -213,5 +213,3 @@ TCOD_bsp_t * TCOD_bsp_find_node(TCOD_bsp_t *node, int x, int y) {
 	}
 	return node;
 }
-
-

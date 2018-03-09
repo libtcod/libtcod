@@ -43,6 +43,5 @@ void VBox::computeSize() {
 		if ( (*wid)->isVisible() ) {
 			(*wid)->expand(w,(*wid)->h);
 		}
-	}	
+	}
 }
-

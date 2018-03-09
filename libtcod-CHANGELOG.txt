@@ -4,7 +4,14 @@ X API break
 - removed features, fixed bugs
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
-1.6.5 : Unreleased
+1.6.6 : TBA
++ Added `libtcod_c.c` and `libtcod.cpp` source files to assist with static
+  linking.
+% REXPaint functions now have their own header file: `console_rexpaint.h`
+% TCOD_color_set_HSV now normalizes bad hue/saturation/value parameters.
+
+=========================================================
+1.6.5 : 2018-02-20
 - Resolved header issues that were leaving some types and functions undefined. (Kyle Stewart)
 - key.c is no longer set when key.vk == TCODK_TEXT, this fixes a regression
   which was causing events to be heard twice in the libtcod/Python tutorial. (Kyle Stewart)

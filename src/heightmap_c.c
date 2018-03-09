@@ -89,7 +89,7 @@ void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max) {
 	for (y=0; y < hm->h; y++) {
 		for (x=0; x < hm->w; x++) {
 			*value = min + (*value - curmin) * invmax ;
-			value++;			
+			value++;
 		}
 	}
 }

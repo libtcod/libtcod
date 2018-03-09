@@ -147,4 +147,3 @@ int TCOD_map_get_nb_cells(TCOD_map_t map) {
 	TCOD_IFNOT(map != NULL) return 0;
 	return m->nbcells;
 }
-

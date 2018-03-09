@@ -73,7 +73,7 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 			int x2 = cx+dx;
 			int y2 = cy+dy;
 			unsigned int offset=cx+cy*map->width;
-			if ( offset < (unsigned)map->nbcells && map->cells[offset].fov == 1 
+			if ( offset < (unsigned)map->nbcells && map->cells[offset].fov == 1
 				&& map->cells[offset].transparent ) {
 				if ( x2 >= x0 && x2 <= x1 ) {
 					unsigned int offset2=x2+cy*map->width;
@@ -236,4 +236,3 @@ void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int 
 		TCOD_map_postproc(m,player_x,player_y,xmax-1,ymax-1,1,1);
 	}
 }
-

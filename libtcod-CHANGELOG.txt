@@ -9,6 +9,8 @@ This project does not adhere to Semantic Versioning. http://semver.org/
   linking.
 % REXPaint functions now have their own header file: `console_rexpaint.h`
 % TCOD_color_set_HSV now normalizes bad hue/saturation/value parameters.
+- Non-reentrant line functions `TCOD_line_init` and `TCOD_line_step` are now
+  deprecated.
 
 =========================================================
 1.6.5 : 2018-02-20

@@ -97,5 +97,6 @@ bool TCOD_line_step(int *xCur, int *yCur) {
 }
 
 bool TCOD_line(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener) {
+	TCOD_bresenham_data_t bresenham_data;
 	return TCOD_line_mt(xo,yo,xd,yd,listener,&bresenham_data);
 }

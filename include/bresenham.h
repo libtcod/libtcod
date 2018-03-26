@@ -71,6 +71,8 @@ typedef struct {
 
 TCODLIB_API void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t *data);
 TCODLIB_API bool TCOD_line_step_mt(int *xCur, int *yCur, TCOD_bresenham_data_t *data);
+
+TCOD_DEPRECATED
 TCODLIB_API bool TCOD_line_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener, TCOD_bresenham_data_t *data);
 #ifdef __cplusplus
 }

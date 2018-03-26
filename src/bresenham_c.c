@@ -25,10 +25,24 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <bresenham.h>
-
+/**
+ *  \file bresenham_c.c
+ *  \brief bresenham line drawing
+ */
+/* This static variable is deprecated since 1.6 */
 static TCOD_bresenham_data_t bresenham_data;
-
-/* ********** bresenham line drawing ********** */
+/**
+ *  \brief Initialize a TCOD_bresenham_data_t struct.
+ *
+ *  \param xFrom The starting x position.
+ *  \param yFrom The starting y position.
+ *  \param xTo The ending x position.
+ *  \param yTo The ending y position.
+ *  \param data Pointer to a TCOD_bresenham_data_t struct.
+ *
+ *  After calling this function you use TCOD_line_step_mt to iterate
+ *  over the individual points on the line.
+ */
 void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t *data) {
 	data->origx=xFrom;
 	data->origy=yFrom;
@@ -56,7 +70,17 @@ void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_da
 		data->deltay *= 2;
 	}
 }
-
+/**
+ *  \brief Get the next point on a line, returns true once the line has ended.
+ *
+ *  \param xCur An int pointer to fill with the next x position.
+ *  \param yCur An int pointer to fill with the next y position.
+ *  \param data Pointer to a initialized TCOD_bresenham_data_t struct.
+ *  \return true after the ending point has been reached.
+ *
+ *  The starting point is excluded by this function.
+ *  After the ending point is reached, the next call will return true.
+ */
 bool TCOD_line_step_mt(int *xCur, int *yCur, TCOD_bresenham_data_t *data) {
 	if ( data->stepx*data->deltax > data->stepy*data->deltay ) {
 		if ( data->origx == data->destx ) return true;
@@ -79,7 +103,20 @@ bool TCOD_line_step_mt(int *xCur, int *yCur, TCOD_bresenham_data_t *data) {
 	*yCur=data->origy;
 	return false;
 }
-
+/**
+ *  \brief Iterate over a line using a callback.
+ *
+ *  \param xo The origin x position.
+ *  \param yo The origin y position.
+ *  \param xd The destination x position.
+ *  \param yd The destination y position.
+ *  \param listener A TCOD_line_listener_t callback.
+ *  \param data Pointer to a TCOD_bresenham_data_t struct.
+ *  \return true if the line was completely exhausted by the callback.
+ *
+ *  The `data` parameter for this call is redundant, you may want to use
+ *  TCOD_line instead.
+ */
 bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener, TCOD_bresenham_data_t *data) {
 	TCOD_line_init_mt(xo,yo,xd,yd,data);
 	do {
@@ -87,15 +124,56 @@ bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener,
 	} while (! TCOD_line_step_mt(&xo,&yo,data));
 	return true;
 }
-
+/**
+ *  \brief Initialize a line using a global state.
+ *
+ *  \param xFrom The starting x position.
+ *  \param yFrom The starting y position.
+ *  \param xTo The ending x position.
+ *  \param yTo The ending y position.
+ *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. deprecated:: 1.6
+ *    This function is not reentrant and will fail if a new line is started
+ *    before the last is finished processing.
+ *
+ *    Use :any:`TCOD_line_init_mt` instead.
+ *  \endverbatim
+ */
 void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
 	TCOD_line_init_mt(xFrom,yFrom,xTo,yTo,&bresenham_data);
 }
-
+/**
+ *  \brief Get the next point in a line, returns true once the line has ended.
+ *
+ *  \param xCur An int pointer to fill with the next x position.
+ *  \param yCur An int pointer to fill with the next y position.
+ *  \return true once the ending point has been reached.
+ *
+ *  The starting point is excluded by this function.
+ *  After the ending point is reached, the next call will return true.
+ *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. deprecated:: 1.6
+ *    This function is not reentrant and will fail if a new line is started
+ *    before the last is finished processing.
+ *
+ *    Use :any:`TCOD_line_step_mt` instead.
+ *  \endverbatim
+ */
 bool TCOD_line_step(int *xCur, int *yCur) {
 	return TCOD_line_step_mt(xCur,yCur,&bresenham_data);
 }
-
+/**
+ *  \brief Iterate over a line using a callback.
+ *
+ *  \param xo The origin x position.
+ *  \param yo The origin y position.
+ *  \param xd The destination x position.
+ *  \param yd The destination y position.
+ *  \param listener A TCOD_line_listener_t callback.
+ *  \return true if the line was completely exhausted by the callback.
+ */
 bool TCOD_line(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener) {
 	TCOD_bresenham_data_t bresenham_data;
 	return TCOD_line_mt(xo,yo,xd,yd,listener,&bresenham_data);

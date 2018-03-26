@@ -33,6 +33,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/**
+ *  \brief A callback to be passed to TCOD_line
+ *
+ *  The points given to the callback include both the starting and ending
+ *  positions.
+ *
+ *  \param x
+ *  \param y
+ *  \return As long as this callback returns true it will be called with the
+ *          next x,y point on the line.
+ */
 typedef bool (*TCOD_line_listener_t) (int x, int y);
 
 TCOD_DEPRECATED TCODLIB_API
@@ -43,8 +54,9 @@ bool TCOD_line_step(int *xCur, int *yCur); /* advance one step. returns true if 
 
 /* atomic callback function. Stops when the callback returns false */
 TCODLIB_API bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener);
-
-/* thread-safe versions */
+/**
+ *  \brief A struct used for computing a bresenham line.
+ */
 typedef struct {
 	int stepx;
 	int stepy;

@@ -316,7 +316,9 @@ libtcod_sources = {
                                omit=['libtcod_c.c','libtcod.cpp'])
               + env.Glob('$VARIANT/src/*/*.c')),
     'static': (env.Glob('$VARIANT/src/zlib/*.c')
-               + ['$VARIANT/src/libtcod_c.c', '$VARIANT/src/libtcod.cpp']),
+               + ['$VARIANT/src/libtcod_c.c',
+                  '$VARIANT/src/libtcod.cpp',
+                  '$VARIANT/src/png/lodepng.c']),
 }
 
 libtcod = env_libtcod.SharedLibrary(

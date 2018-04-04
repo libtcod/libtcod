@@ -40,14 +40,15 @@ static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool lig
 	bool blocked=false;
 	bool end=false;
 	int offset;
-	TCOD_line_init(xo,yo,xd,yd);
+	TCOD_bresenham_data_t bresenham_data;
+	TCOD_line_init_mt(xo,yo,xd,yd,&bresenham_data);
 	offset=curx+cury*map->width;
 	if ( 0 <= offset && offset < map->nbcells ) {
 		in=true;
 		map->cells[offset].fov=1;
 	}
 	while (!end) {
-		end = TCOD_line_step(&curx,&cury);	/* reached xd,yd */
+		end = TCOD_line_step_mt(&curx,&cury,&bresenham_data);	/* reached xd,yd */
 		offset=curx+cury*map->width;
 		if ( r2 > 0 ) {
 			/* check radius */

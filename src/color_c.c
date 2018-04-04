@@ -584,11 +584,15 @@ void TCOD_color_scale_HSV(TCOD_color_t *color,
  *  \param key_color An array of colors to use, in order.
  *  \param key_index An array mapping key_color items to the map array.
  *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. code-block:: c
+ *
  *    TCOD_color_t[256] gradient;
  *    TCOD_color_t[4] key_color = {TCOD_black, TCOD_dark_amber,
  *                                 TCOD_cyan, TCOD_white};
  *    int[4] key_index = {0, 64, 192, 255};
  *    TCOD_color_gen_map(&gradient, 4, &key_color, &key_index);
+ *  \endverbatim
  */
 void TCOD_color_gen_map(TCOD_color_t *map, int nb_key,
                         const TCOD_color_t *key_color, const int *key_index) {

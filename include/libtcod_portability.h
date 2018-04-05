@@ -168,6 +168,15 @@ char *strcasestr (const char *haystack, const char *needle);
 #define vsnwprintf _vsnwprintf
 #endif
 
+/* cross platform deprecation */
+#if defined(_MSC_VER)
+#define TCOD_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define TCOD_DEPRECATED __attribute__ ((deprecated))
+#else
+#define TCOD_DEPRECATED
+#endif
+
 #ifdef __cplusplus
 }
 #endif

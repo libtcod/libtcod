@@ -14,6 +14,9 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - `TCOD_line` is now reentrant, and should be preferred over `TCOD_line_mt`.
 - `TCOD_line_mt` is deprecated.
 - `FOV_BASIC` (`fov_circular_raycasting`) implementation is now reentrant.
+- Fixed `external/pstdint.h` header not being installed correctly by Autotools.
+- Autotools libtools are no longer bundled, these are automatically installed
+  via `autoreconf -i`
 
 =========================================================
 1.6.5 : 2018-02-20

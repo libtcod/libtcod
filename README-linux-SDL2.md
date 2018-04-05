@@ -41,7 +41,7 @@ Download the latest libtcod version, build it and install it:
 
     $ hg clone https://bitbucket.org/libtcod/libtcod
     $ cd libtcod/build/autotools
-	$ autoreconf -i # if building from hg
+    $ autoreconf -i
     $ ./configure CFLAGS='-O2'
     $ make
 

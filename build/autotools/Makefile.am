@@ -34,6 +34,11 @@ libtcodgui_la_CXXFLAGS = $(CXXFLAGS) -I$(top_srcdir)/../../include/gui
 libtcodgui_la_LIBADD = libtcodxx.la libtcod.la
 
 
+externalincludedir = $(includedir)/libtcod/external
+externalinclude_HEADERS = \
+	../../include/external/pstdint.h
+
+
 otherincludedir = $(includedir)/libtcod/gui
 otherinclude_HEADERS = \
 	../../include/gui/button.hpp \
@@ -121,7 +126,6 @@ pkginclude_HEADERS = \
 	../../include/list.h \
 	../../include/zip.h \
 	../../include/mersenne.h \
-	../../include/external/pstdint.h \
 	../../include/bresenham.hpp \
 	../../include/mersenne.hpp \
 	../../include/bsp.hpp \
@@ -178,11 +182,11 @@ samples_cpp_LDADD = libtcodxx.la libtcod.la
 endif
 
 dist_noinst_DATA = \
-	../../build.bat
+	../../build.bat \
 	../../libtcod-CHANGELOG.txt \
 	../../LIBTCOD-CREDITS.txt \
 	../../LIBTCOD-LICENSE.txt \
-	../../README-linux-SDL2.txt \
+	../../README-linux-SDL2.md \
 	../../README.md \
 	../../libtcod.cfg
 

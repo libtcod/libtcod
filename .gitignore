@@ -155,3 +155,5 @@ ENV/
 # Additional rules
 docs/doxyxml/
 doc/doxyxml/
+.deps
+.dirstamp

@@ -4,7 +4,7 @@ X API break
 - removed features, fixed bugs
 This project does not adhere to Semantic Versioning. http://semver.org/
 =========================================================
-1.6.6 : TBA
+1.6.6 : 2018-04-06
 + Added `libtcod_c.c` and `libtcod.cpp` source files to assist with static
   linking.
 % REXPaint functions now have their own header file: `console_rexpaint.h`
@@ -14,6 +14,10 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 - `TCOD_line` is now reentrant, and should be preferred over `TCOD_line_mt`.
 - `TCOD_line_mt` is deprecated.
 - `FOV_BASIC` (`fov_circular_raycasting`) implementation is now reentrant.
+- Fixed `external/pstdint.h` header not being installed correctly by Autotools.
+  https://bitbucket.org/libtcod/libtcod/issues/121/include-of-external-pstdinth-fails
+- Autotools libtools are no longer bundled, these are automatically installed
+  via `autoreconf -i`
 
 =========================================================
 1.6.5 : 2018-02-20

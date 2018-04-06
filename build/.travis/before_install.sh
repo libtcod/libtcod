@@ -8,7 +8,9 @@ fi
 
 # Install SCons on MacOS via pip
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-    sudo easy_install virtualenv
+    wget https://bootstrap.pypa.io/get-pip.py
+    python get-pip.py --user
+    python -m pip install --user virtualenv
     python -m virtualenv ~/venv
     source ~/venv/bin/activate
     if [[ "$BUILD_TOOL" == "scons" ]]; then

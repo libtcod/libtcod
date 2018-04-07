@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "libtcod.h"
-#define _SDL_main_h
+#define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <math.h>
 

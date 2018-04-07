@@ -7,6 +7,7 @@ This project does not adhere to Semantic Versioning. http://semver.org/
 1.6.7 : TBA
 - REXPaint operations now save/load as little-endian on any platform.
   https://bitbucket.org/libtcod/libtcod/issues/91/fix-the-libtcod-types-endian-support
+- SCons builder now outputs `libtcodgui` instead of `libtcod-gui`
 
 =========================================================
 1.6.6 : 2018-04-06

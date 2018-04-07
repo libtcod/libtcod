@@ -77,9 +77,9 @@ def samples_factory():
         env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 
     if sys.platform == 'win32':
-        env_samples.Append(LIBS=['libtcod', 'libtcod-gui'])
+        env_samples.Append(LIBS=['libtcod', 'libtcodgui'])
     else:
-        env_samples.Append(LIBS=['tcod', 'tcod-gui'])
+        env_samples.Append(LIBS=['tcod', 'tcodgui'])
 
     for name in os.listdir(env.subst('$LIBTCOD_ROOT_DIR/samples')):
         path = os.path.join(env.subst('$LIBTCOD_ROOT_DIR/samples'), name)
@@ -333,7 +333,7 @@ env_libtcod_gui.Append(
     )
 
 libtcod_gui = env_libtcod_gui.SharedLibrary(
-    target='$VARIANT/libtcod-gui',
+    target='$VARIANT/libtcodgui',
     source=Glob(env.subst('$VARIANT/src/gui/*.cpp')),
     )
 
@@ -342,7 +342,7 @@ env.Depends(libtcod_gui, libtcod)
 if sys.platform == 'darwin':
     env_libtcod.Append(LINKFLAGS=['-install_name', '@rpath/libtcod.dylib'])
     env_libtcod_gui.Append(LINKFLAGS=['-install_name',
-                                      '@rpath/libtcod-gui.dylib'])
+                                      '@rpath/libtcodgui.dylib'])
 
 lib_build = [libtcod, libtcod_gui]
 lib_install =  env.Install('$INSTALL_DIR', lib_build) + sdl_install

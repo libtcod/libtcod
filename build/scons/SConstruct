@@ -161,7 +161,7 @@ if sys.platform == 'win32':
 else:
     DEPENDANCY_DIR = './dependencies'
 vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
-vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.5')
+vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.8')
 
 vars.Add(EnumVariable(
         'SOURCE_FILES', ('Auto-detect which source files to compile, '

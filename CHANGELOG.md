@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- Renamed `libtcod-CHANGELOG.txt` to `CHANGELOG.md`
+
 ### Fixed
 - REXPaint operations now save/load as little-endian on any platform.
   https://bitbucket.org/libtcod/libtcod/issues/91/fix-the-libtcod-types-endian-support

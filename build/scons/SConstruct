@@ -111,13 +111,11 @@ def filtered_glob(env, pattern, omit=[],
 
 def get_libtcod_version():
     """Return the latest version number from the CHANGELOG."""
-    for filename in os.listdir(LIBTCOD_ROOT_DIR):
-        if 'CHANGELOG' not in filename:
-            continue
-        with open(os.path.join(LIBTCOD_ROOT_DIR, filename), 'r') as changelog:
-            # Grab the first thing we see after a "===" separator.
-            return re.match(r'[^=]+=+(?:\r\n?|\n)([^ :]+)',
-                            changelog.read()).groups()[0]
+    with open(os.path.join(LIBTCOD_ROOT_DIR, 'include/libtcod_version.h'),
+              'r') as changelog:
+        # Grab the TCOD_STRVERSION literal from libtcod_version.h
+        return re.match(r'.*#define TCOD_STRVERSION "([^"]+)"',
+                        changelog.read(), re.DOTALL).groups()[0]
 
 
 LIBTCOD_ROOT_DIR = '../..'

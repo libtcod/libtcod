@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [[ "$BUILD_TOOL" == "scons" ]]; then
     cd build/scons
@@ -6,8 +7,8 @@ if [[ "$BUILD_TOOL" == "scons" ]]; then
     cd ../..
 elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd build/autotools
-    autoreconf --install || exit 1
-    ./configure --prefix=$HOME/.local || exit 1
+    autoreconf --install
+    ./configure --prefix=$HOME/.local
     make -j 3 install
     cd ../..
     export LIBTCOD_DLL_PATH=~/.local/lib

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Start X11 display on Linux
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then

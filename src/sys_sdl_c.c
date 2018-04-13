@@ -181,6 +181,22 @@ static void alloc_ascii_tables(void) {
 	first_draw =(bool *)calloc(sizeof(bool),TCOD_ctx.max_font_chars);
 	memcpy(TCOD_ctx.ascii_to_tcod,init_ascii_to_tcod,sizeof(int)*256);
 }
+/** Reallocate the TCOD_ctx.ascii_to_tcod array, usually to make it bigger.
+ */
+static int realloc_ascii_tables(int new_size) {
+  int *new_table = realloc(TCOD_ctx.ascii_to_tcod, sizeof(int) * new_size);
+  int i;
+  if (!new_table) {
+    return -1; /* failed to realloc table (old table pointer is still good) */
+  }
+  /* any new array indexes are undefined and need to be filled with zeros */
+  for (i = TCOD_ctx.max_font_chars; i < new_size; ++i) {
+    new_table[i] = 0;
+  }
+  TCOD_ctx.ascii_to_tcod = new_table;
+  TCOD_ctx.max_font_chars = new_size;
+  return 0;
+}
 
 static void check_ascii_to_tcod(void) {
 	if ( TCOD_ctx.fontNbCharHoriz * TCOD_ctx.fontNbCharVertic != TCOD_ctx.max_font_chars ) {
@@ -192,10 +208,17 @@ static void check_ascii_to_tcod(void) {
 void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
 	TCOD_ctx.sdl_cbk=renderer;
 }
-
+/** See TCOD_console_map_ascii_code_to_font */
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
-	if ( asciiCode > 0 && asciiCode < TCOD_ctx.max_font_chars )
-		TCOD_ctx.ascii_to_tcod[asciiCode] = fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
+	if (asciiCode <= 0) { return; } /* can't reassign 0 or negatives */
+	if (asciiCode >= TCOD_ctx.max_font_chars) {
+    /* reduce total allocations by resizing in increments of 256 */
+		if (realloc_ascii_tables((asciiCode & 0xff) + 1)) {
+			return; /* Failed to realloc table (old table pointer is still good) */
+		}
+	}
+	TCOD_ctx.ascii_to_tcod[asciiCode] =
+			fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
 }
 
 void TCOD_sys_load_font(void) {

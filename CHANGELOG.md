@@ -13,6 +13,10 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - REXPaint operations now save/load as little-endian on any platform.
   https://bitbucket.org/libtcod/libtcod/issues/91/fix-the-libtcod-types-endian-support
 - SCons builder now outputs `libtcodgui` instead of `libtcod-gui`
+- `TCOD_console_map_ascii_code_to_font` and related functions can now assign
+  character codes that were not automatically assigned during initialization.
+  Previously you could only assign codes up to the total number of tiles in the
+  font.
 
 ## [1.6.6] - 2018-04-06
 ### Added

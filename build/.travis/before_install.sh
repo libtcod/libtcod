@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+# Fix shell_session_update errors.
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    wget -O - https://rvm.io/mpapis.asc | gpg --import -
+    set +e
+    rvm get head
+fi
+
+set -e
+
 # Start X11 display on Linux
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
     export DISPLAY=:99.0

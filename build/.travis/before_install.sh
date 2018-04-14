@@ -24,7 +24,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     python -m virtualenv ~/venv
     source ~/venv/bin/activate
     if [[ "$BUILD_TOOL" == "scons" ]]; then
-        pip install --egg scons
+        brew install scons
     elif [[ "$BUILD_TOOL" == "autotools" ]]; then
         brew install sdl2
     fi

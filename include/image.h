@@ -28,6 +28,7 @@
 #ifndef _TCOD_IMAGE_H
 #define _TCOD_IMAGE_H
 
+#include "libtcod_portability.h"
 #include "color.h"
 
 #ifdef TCOD_IMAGE_SUPPORT

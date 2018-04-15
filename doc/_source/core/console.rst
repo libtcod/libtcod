@@ -8,11 +8,21 @@ Initializing the console
 Creating the game window
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: TCOD_console_init_root
+.. doxygenenum:: TCOD_renderer_t
+
 Using a custom bitmap font
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. doxygenfunction:: TCOD_console_set_custom_font
+.. doxygenenum:: TCOD_font_flags_t
+
 Using custom characters mapping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: TCOD_console_map_ascii_code_to_font
+.. doxygenfunction:: TCOD_console_map_ascii_codes_to_font
+.. doxygenfunction:: TCOD_console_map_string_to_font
 
 Fullscreen mode
 ^^^^^^^^^^^^^^^

@@ -24,18 +24,16 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libtcod_portability.h>
-
+#include "libtcod_portability.h"
 #ifdef TCOD_IMAGE_SUPPORT
+#include <image.h>
 
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 #include <math.h>
 
-#include <image.h>
-#ifdef TCOD_CONSOLE_SUPPORT
 #include <console.h>
-#endif
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 

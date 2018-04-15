@@ -1,4 +1,14 @@
 #!/bin/bash
+set -e
+
+# Fix shell_session_update errors.
+if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    wget -O - https://rvm.io/mpapis.asc | gpg --import -
+    set +e
+    rvm get head
+fi
+
+set -e
 
 # Start X11 display on Linux
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -14,7 +24,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     python -m virtualenv ~/venv
     source ~/venv/bin/activate
     if [[ "$BUILD_TOOL" == "scons" ]]; then
-        pip install --egg scons
+        brew install scons
     elif [[ "$BUILD_TOOL" == "autotools" ]]; then
         brew install sdl2
     fi

@@ -29,6 +29,8 @@
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
+#include <limits.h>
+
 #include <zlib.h>
 
 #include <console.h>
@@ -37,6 +39,26 @@
 #include <console_types.h>
 #include <color.h>
 
+/* Convert a little-endian number to native memory order. */
+static uint32_t decode_little_endian(uint32_t data) {
+  int i;
+  uint32_t result=0;
+  for(i=0; i<(int)sizeof(result);++i){
+    result += (unsigned int)((unsigned char*)&data)[i] << (CHAR_BIT * i);
+  }
+  return result;
+}
+/* Byte swaps a number into little-endian order to be saved to disk. */
+static uint32_t encode_little_endian(uint32_t number) {
+  int i;
+  uint32_t result=0;
+  for(i=0; i<(int)sizeof(result);++i){
+    ((unsigned char*)&result)[i] = number & UCHAR_MAX;
+    number >>= CHAR_BIT;
+  }
+  return result;
+}
+/* RexPaint structs */
 struct RexPaintHeader {
   int32_t version;
   int32_t layer_count;
@@ -55,15 +77,23 @@ static int load_gz_confirm(gzFile gz_file, void *data, size_t length) {
   if (gzread(gz_file, data, (int)length) != length) { return -1; }
   return 0;
 }
+/* Loads a little-endian 32 bit signed int into memory. */
+static int load_int32(gzFile gz_file, int32_t *out) {
+  if (load_gz_confirm(gz_file, out, sizeof(out[0]))) { return -1; }
+  *out = (int32_t)decode_little_endian((uint32_t)(out[0]));
+  return 0;
+}
 static int load_header(gzFile gz_file, struct RexPaintHeader *xp_header) {
-  return load_gz_confirm(gz_file, xp_header, sizeof(xp_header[0]));
+  return (load_int32(gz_file, &xp_header->version) ||
+          load_int32(gz_file, &xp_header->layer_count));
 }
 static int load_layer(gzFile gz_file, struct RexPaintLayerChunk *xp_layer) {
-  return load_gz_confirm(gz_file, xp_layer, sizeof(xp_layer[0]));
+  return (load_int32(gz_file, &xp_layer->width) ||
+          load_int32(gz_file, &xp_layer->height));
 }
 /* Read a single REXPaint tile, return 0 on success, or -1 on error. */
 static int load_tile(gzFile gz_file, struct RexPaintTile *tile) {
-  return (load_gz_confirm(gz_file, &tile->ch, sizeof(tile->ch)) ||
+  return (load_int32(gz_file, &tile->ch) ||
           load_gz_confirm(gz_file, &tile->fg, sizeof(tile->fg)) ||
           load_gz_confirm(gz_file, &tile->bg, sizeof(tile->bg)));
 }
@@ -207,20 +237,24 @@ bool TCOD_console_load_xp(TCOD_console_t con, const char *filename) {
   TCOD_console_delete(xp_console);
   return true;
 }
-static int write_header(gzFile gz_file, struct RexPaintHeader *xp_header) {
-  if (!gzwrite(gz_file, xp_header, sizeof(xp_header[0]))) {
+/* Saves a 32-bit signed int encoded as little-endian to gz_file. */
+static int write_int32(gzFile gz_file, int32_t number) {
+  uint32_t encoded = encode_little_endian((uint32_t)number);
+  if (!gzwrite(gz_file, &encoded, sizeof(encoded))) {
     return -1;
   }
   return 0;
+}
+static int write_header(gzFile gz_file, struct RexPaintHeader *xp_header) {
+  return (write_int32(gz_file, xp_header->version) ||
+          write_int32(gz_file, xp_header->layer_count));
 }
 static int write_layer(gzFile gz_file, struct RexPaintLayerChunk *xp_layer) {
-  if (!gzwrite(gz_file, xp_layer, sizeof(xp_layer[0]))) {
-    return -1;
-  }
-  return 0;
+  return (write_int32(gz_file, xp_layer->width) ||
+          write_int32(gz_file, xp_layer->height));
 }
 static int write_tile(gzFile gz_file, struct RexPaintTile *tile) {
-  if (!gzwrite(gz_file, &tile->ch, sizeof(tile->ch)) ||
+  if (write_int32(gz_file, tile->ch) ||
       !gzwrite(gz_file, &tile->fg, sizeof(tile->fg)) ||
       !gzwrite(gz_file, &tile->bg, sizeof(tile->bg))) {
     return -1;

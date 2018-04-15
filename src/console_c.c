@@ -1026,7 +1026,19 @@ int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int
 }
 
 #endif
-
+/**
+ *  \brief Initialize the libtcod graphical engine.
+ *
+ *  \param w The width in tiles.
+ *  \param h The height in tiles.
+ *  \param title The title for the window.
+ *  \param fullscreen Fullscreen option.
+ *  \param renderer Which renderer to use when rendering the console.
+ *
+ *  You may want to call TCOD_console_set_custom_font BEFORE calling this
+ *  function.  By default this function loads libtcod's `terminal.png` image
+ *  from the working directory.
+ */
 void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCOD_renderer_t renderer) {
 	TCOD_IF(w > 0 && h > 0) {
 		TCOD_console_data_t *con=(TCOD_console_data_t *)calloc(sizeof(TCOD_console_data_t),1);
@@ -1119,17 +1131,45 @@ TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con) {
 	TCOD_IFNOT(dat != NULL) return NULL;
 	return dat->bg_colors;
 }
-
+/**
+ *  \brief Set a font image to be loaded during initialization.
+ *
+ *  \param fontFile The path to a font image.
+ *  \param flags A TCOD_font_flags_t bit-field describing the font image
+ *               contents.
+ *  \param nb_char_horiz The number of columns in the font image.
+ *  \param nb_char_vertic The number of rows in the font image.
+ *
+ *  `fontFile` will be case-sensitive depending on the platform.
+ */
 void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic) {
 	TCOD_sys_set_custom_font(fontFile, nb_char_horiz, nb_char_vertic, flags);
 }
-
+/**
+ *  \brief Remap a character code to a tile.
+ *
+ *  \param asciiCode Character code to modify.
+ *  \param fontCharX X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY Y tile-coordinate, starting from the top at zero.
+ *
+ *  X,Y parameters are the coordinate of the tile, not pixel-coordinates.
+ */
 void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
 	/* cannot change mapping before initRoot is called */
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
 }
-
+/**
+ *  \brief Remap a series of character codes to a row of tiles.
+ *
+ *  \param asciiCode The starting character code.
+ *  \param nbCodes Number of character codes to assign.
+ *  \param fontCharX First X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY First Y tile-coordinate, starting from the top at zero.
+ *
+ *  This function always assigns tiles in row-major order, even if the
+ *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
+ */
 void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
 	int c;
 	/* cannot change mapping before initRoot is called */
@@ -1144,7 +1184,16 @@ void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCh
 		}
 	}
 }
-
+/**
+ *  \brief Remap a string of character codes to a row of tiles.
+ *
+ *  \param s A null-terminated string.
+ *  \param fontCharX First X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY First Y tile-coordinate, starting from the top at zero.
+ *
+ *  This function always assigns tiles in row-major order, even if the
+ *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
+ */
 void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
 	TCOD_IFNOT(s != NULL) return;
 	/* cannot change mapping before initRoot is called */

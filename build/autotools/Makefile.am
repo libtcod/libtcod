@@ -183,7 +183,7 @@ endif
 
 dist_noinst_DATA = \
 	../../build.bat \
-	../../libtcod-CHANGELOG.txt \
+	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \
 	../../LIBTCOD-LICENSE.txt \
 	../../README-linux-SDL2.md \

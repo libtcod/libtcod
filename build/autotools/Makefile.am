@@ -55,7 +55,8 @@ otherinclude_HEADERS = \
 	../../include/gui/togglebutton.hpp \
 	../../include/gui/toolbar.hpp \
 	../../include/gui/vbox.hpp \
-	../../include/gui/widget.hpp
+	../../include/gui/widget.hpp \
+	../../include/gui/gui_portability.hpp
 
 
 libtcod_la_SOURCES = \

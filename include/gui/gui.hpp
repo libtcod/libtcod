@@ -28,7 +28,7 @@
 #ifndef _GUI_HPP
 #define _GUI_HPP
 
-#include "libtcod.hpp"
+#include "../libtcod.hpp"
 
 #include "widget.hpp"
 #include "button.hpp"

@@ -1,6 +1,6 @@
 /*
 * libtcod
-* Copyright (c) 2018 Jice & Mingos & rmtew
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without

@@ -16,7 +16,7 @@ matrix:
     language: generic
     env: BUILD_TOOL=autotools
 
-sudo: required
+sudo: false
 dist: trusty
 
 addons:

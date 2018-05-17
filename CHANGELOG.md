@@ -18,6 +18,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   character codes that were not automatically assigned during initialization.
   Previously you could only assign codes up to the total number of tiles in the
   font.
+- `console_rexpaint.h` was missing from Autotools installs.
 
 ## [1.6.6] - 2018-04-06
 ### Added

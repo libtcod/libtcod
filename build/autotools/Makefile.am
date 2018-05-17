@@ -105,6 +105,7 @@ pkginclude_HEADERS = \
 	../../include/console.h \
 	../../include/namegen.h \
 	../../include/console_types.h \
+	../../include/console_rexpaint.h \
 	../../include/noise_defaults.h \
 	../../include/fov.h \
 	../../include/noise.h \

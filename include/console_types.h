@@ -251,47 +251,52 @@ typedef enum {
  *  TCOD_console_set_custom_font
  */
 typedef enum {
-	TCOD_FONT_LAYOUT_ASCII_INCOL=1,
-  /**< Tiles are arranged in column-major order.
+  /** Tiles are arranged in column-major order.
    *
    *       0 3 6
    *       1 4 7
    *       2 5 8
    */
-	TCOD_FONT_LAYOUT_ASCII_INROW=2,
-  /**< Tiles are arranged in row-major order.
+  TCOD_FONT_LAYOUT_ASCII_INCOL=1,
+  /** Tiles are arranged in row-major order.
    *
    *       0 1 2
    *       3 4 5
    *       6 7 8
    */
-	TCOD_FONT_TYPE_GREYSCALE=4,
-  /**< Converts all tiles into a monochrome gradient. */
-	TCOD_FONT_TYPE_GRAYSCALE=4,
-	TCOD_FONT_LAYOUT_TCOD=8,
-  /**< A unique layout used by some of libtcod's fonts. */
+  TCOD_FONT_LAYOUT_ASCII_INROW=2,
+  /** Converts all tiles into a monochrome gradient. */
+  TCOD_FONT_TYPE_GREYSCALE=4,
+  TCOD_FONT_TYPE_GRAYSCALE=4,
+  /** A unique layout used by some of libtcod's fonts. */
+  TCOD_FONT_LAYOUT_TCOD=8,
 } TCOD_font_flags_t;
 /**
  *  The available renderers.
  */
 typedef enum {
-	TCOD_RENDERER_GLSL,
-  /**< An OpenGL implementation using a shader. */
-	TCOD_RENDERER_OPENGL,
-  /**<
+  /** An OpenGL implementation using a shader. */
+  TCOD_RENDERER_GLSL,
+  /**
    *  An OpenGL implementation without a shader.
    *
    *  Performs worse than TCOD_RENDERER_GLSL without many benefits.
    */
-	TCOD_RENDERER_SDL,
-  /**<
+  TCOD_RENDERER_OPENGL,
+  /**
    *  A software based renderer.
    *
    *  The font file is loaded into RAM instead of VRAM in this implementation.
    */
-	TCOD_NB_RENDERERS,
+  TCOD_RENDERER_SDL,
+  TCOD_NB_RENDERERS,
 } TCOD_renderer_t;
 
+/**
+ *  \enum TCOD_alignment_t
+ *
+ *  Print justification options.
+ */
 typedef enum {
 	TCOD_LEFT,
 	TCOD_RIGHT,

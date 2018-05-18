@@ -1452,7 +1452,13 @@ TCOD_mouse_t TCOD_mouse_get_status(void) {
 
 
 /* classic keyboard functions (based on generic events) */
-
+/**
+ *  Return immediately with a recently pressed key.
+ *
+ *  \param flags A TCOD_event_t bit-field, for example: `TCOD_EVENT_KEY_PRESS`
+ *  \return A TCOD_key_t struct with a recently pressed key.
+ *          If no event exists then the `vk` attribute will be `TCODK_NONE`
+ */
 TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
 	static TCOD_key_t noret={TCODK_NONE,0};
 
@@ -1463,7 +1469,13 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
 
 	return key;
 }
-
+/**
+ *  Wait for a key press event, then return it.
+ *
+ *  \param flush If 1 then the event queue will be cleared before waiting for
+ *               the next event.  This should always be 0.
+ *  \return A TCOD_key_t struct with the most recent key data.
+ */
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 	static TCOD_key_t noret={TCODK_NONE,0};
 

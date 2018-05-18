@@ -7,100 +7,171 @@ Initializing the console
 
 Creating the game window
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: TCOD_console_init_root
 .. doxygenenum:: TCOD_renderer_t
+.. doxygenfunction:: TCOD_console_init_root
 
 Using a custom bitmap font
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. doxygenfunction:: TCOD_console_set_custom_font
 .. doxygenenum:: TCOD_font_flags_t
+.. doxygenfunction:: TCOD_console_set_custom_font
 
 Using custom characters mapping
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. doxygenfunction:: TCOD_console_map_ascii_code_to_font
 .. doxygenfunction:: TCOD_console_map_ascii_codes_to_font
 .. doxygenfunction:: TCOD_console_map_string_to_font
 
 Fullscreen mode
 ^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_set_fullscreen
+.. doxygenfunction:: TCOD_console_is_fullscreen
 
 Communicate with the window manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_is_active
+.. doxygenfunction:: TCOD_console_has_mouse_focus
+.. doxygenfunction:: TCOD_console_is_window_closed
+.. doxygenfunction:: TCOD_console_set_window_title
 
 libtcod's Credits
 ^^^^^^^^^^^^^^^^^
-
+.. doxygenfunction:: TCOD_console_credits
+.. doxygenfunction:: TCOD_console_credits_reset
+.. doxygenfunction:: TCOD_console_credits_render
 
 Drawing on the root console
 ===========================
 
 Basic printing functions
 ^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_set_default_foreground
+.. doxygenfunction:: TCOD_console_set_default_background
+.. doxygenfunction:: TCOD_console_set_background_flag
+
+.. doxygenfunction:: TCOD_console_clear
+
+.. doxygenfunction:: TCOD_console_put_char
+.. doxygenfunction:: TCOD_console_put_char_ex
+
+.. doxygenfunction:: TCOD_console_set_char
+.. doxygenfunction:: TCOD_console_set_char_foreground
+.. doxygenfunction:: TCOD_console_set_char_background
+
+.. doxygenfunction:: TCOD_console_rect
+
+.. doxygenfunction:: TCOD_console_hline
+.. doxygenfunction:: TCOD_console_vline
+.. doxygenfunction:: TCOD_console_print_frame
 
 Background effect flags
 ^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: TCOD_bkgnd_flag_t
 
-String drawing functions
-^^^^^^^^^^^^^^^^^^^^^^^^
+String printing alignment
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: TCOD_alignment_t
+.. doxygenfunction:: TCOD_console_set_alignment
+.. doxygenfunction:: TCOD_console_get_alignment
 
-Advanced printing functions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Printing functions using 8-bit encodings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_print
+.. doxygenfunction:: TCOD_console_print_ex
+.. doxygenfunction:: TCOD_console_print_rect
+.. doxygenfunction:: TCOD_console_print_rect_ex
+.. doxygenfunction:: TCOD_console_get_height_rect
+
+Printing functions using wchar_t
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
+    These functions say they are UTF, however they will behave as UCS2 or UCS4
+    depending on the platform.
+
+.. doxygenfunction:: TCOD_console_print_utf
+.. doxygenfunction:: TCOD_console_print_ex_utf
+.. doxygenfunction:: TCOD_console_print_rect_utf
+.. doxygenfunction:: TCOD_console_print_rect_ex_utf
+.. doxygenfunction:: TCOD_console_get_height_rect_utf
 
 Reading the content of the console
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_get_width
+.. doxygenfunction:: TCOD_console_get_height
+
+.. doxygenfunction:: TCOD_console_get_char
+.. doxygenfunction:: TCOD_console_get_char_foreground
+.. doxygenfunction:: TCOD_console_get_char_background
+
+.. doxygenfunction:: TCOD_console_get_default_foreground
+.. doxygenfunction:: TCOD_console_get_default_background
+.. doxygenfunction:: TCOD_console_get_background_flag
 
 Screen fading functions
 ^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_set_fade
+.. doxygenfunction:: TCOD_console_get_fade
+.. doxygenfunction:: TCOD_console_get_fading_color
 
 ASCII constants
 ^^^^^^^^^^^^^^^
+.. doxygenenum:: TCOD_chars_t
 
 Flushing the root console
 =========================
-
-ddddd
+.. doxygenfunction:: TCOD_console_flush
 
 Handling user input
 ===================
 
 Blocking user input
 ^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_wait_for_keypress
 
 Non blocking user input
 ^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_check_for_keypress
+.. doxygenfunction:: TCOD_console_is_key_pressed
 
 Keyboard event structure
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
-Mouse event structure
-^^^^^^^^^^^^^^^^^^^^^
+.. doxygenenum:: TCOD_key_status_t
+.. doxygenstruct:: TCOD_key_t
 
 Key codes
 ^^^^^^^^^
+.. doxygenenum:: TCOD_keycode_t
+
+Mouse event structure
+^^^^^^^^^^^^^^^^^^^^^
+.. doxygenstruct:: TCOD_mouse_t
 
 Using off-screen consoles
 =========================
 
-Creating an offscreen console
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Creating and deleting off-screen consoles
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_new
+.. doxygenfunction:: TCOD_console_delete
 
-Creating an offscreen console from a .asc or .apf file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Creating an off-screen console from any .asc/.apf/.xp file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_from_file
 
 Loading an offscreen console from a .asc file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_load_asc
 
 Loading an offscreen console from a .apf file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_load_apf
 
 Saving a console to a .asc file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_save_asc
 
 Saving a console to a .apf file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_save_apf
 
 Working with REXPaint ``.xp`` files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -127,10 +198,8 @@ background color.  You can processes this effect manually or by setting
 
 Blitting a console on another one
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_blit
 
 Define a blit-transparent color
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Destroying an offscreen console
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+.. doxygenfunction:: TCOD_console_set_key_color

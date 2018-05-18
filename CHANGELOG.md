@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.6.7] - 2018-05-17
 ### Changed
 - Renamed `libtcod-CHANGELOG.txt` to `CHANGELOG.md`
 - SCons builder now outputs `libtcodgui` instead of `libtcod-gui` to match
@@ -18,7 +20,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   character codes that were not automatically assigned during initialization.
   Previously you could only assign codes up to the total number of tiles in the
   font.
-- `console_rexpaint.h` was missing from Autotools installs.
+- Fixed including libtcod from Autotools installs, the `console_rexpaint.h`
+  header was missing. (James Byrnes)
 
 ## [1.6.6] - 2018-04-06
 ### Added

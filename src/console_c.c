@@ -118,8 +118,16 @@ bool TCOD_console_is_window_closed(void) {
 bool TCOD_console_has_mouse_focus(void) {
 	return TCOD_ctx.app_has_mouse_focus;
 }
-
 #ifndef TCOD_BARE
+/**
+ *  Return true if the window has keyboard focus.
+ *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. versionchanged: 1.7
+ *      This function was previously broken.  It now keeps track of keyboard
+ *      focus.
+ *  \endverbatim
+ */
 bool TCOD_console_is_active(void) {
 	return TCOD_ctx.app_is_active;
 }

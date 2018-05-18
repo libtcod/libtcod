@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- `TCOD_console_is_active()` now returns keyboard focus status.
+
+### Fixed
+- `TCOD_console_is_active()` was not returning any valid state until now.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

@@ -1374,9 +1374,9 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 				TCOD_ctx.app_has_mouse_focus=true; break;
 			case SDL_WINDOWEVENT_LEAVE:          /**< Window has lost mouse focus */
 				TCOD_ctx.app_has_mouse_focus=false; break;
-			case SDL_WINDOWEVENT_MAXIMIZED:      /**< Window has been maximized */
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
 				TCOD_ctx.app_is_active=true; break;
-			case SDL_WINDOWEVENT_MINIMIZED:      /**< Window has been minimized */
+			case SDL_WINDOWEVENT_FOCUS_LOST:
 				TCOD_ctx.app_is_active=false; break;
 			case SDL_WINDOWEVENT_EXPOSED:        /**< Window has been returned to and needs a refresh. */
 				TCOD_sys_render(NULL, TCOD_ctx.root);

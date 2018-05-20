@@ -16,6 +16,7 @@ environment:
       INSTALL_MINGW_64: yes
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
+    # The next item can't build the unittest because gcc is out-of-date.
     - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"

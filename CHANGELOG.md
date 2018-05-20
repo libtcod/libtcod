@@ -11,6 +11,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - `TCOD_console_is_active()` was not returning any valid state until now.
+- Fixed a missing space between a literal and identifier that may have
+  caused problems in some C++ programs.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

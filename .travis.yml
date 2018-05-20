@@ -4,8 +4,8 @@ python:
 - "3.4"
 os: linux
 env:
-  - BUILD_TOOL=scons
-  - BUILD_TOOL=autotools
+  - BUILD_TOOL=scons"
+  - BUILD_TOOL=autotools"
 
 matrix:
   include:
@@ -33,10 +33,11 @@ install:
 
 before_script:
 - pip install pytest pytest-cov
-- cd python
-- python setup.py develop
+- (cd python && python setup.py develop)
 
 script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | gcc -xc -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | gcc -xc++ -c -I$HOME/.local/include/libtcod -; fi'
-- pytest -v
+- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
+- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest; fi'
+- (cd python && pytest -v)

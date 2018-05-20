@@ -182,6 +182,14 @@ samples_cpp_SOURCES = ../../samples/samples_cpp.cpp
 samples_cpp_LDADD = libtcodxx.la libtcod.la
 endif
 
+check_scripts = unittest.sh
+check_PROGRAMS = unittest
+unittest_SOURCES = ../../tests/unittest.cpp
+unittest_LDADD = libtcodxx.la libtcod.la
+unittest_CXXFLAGS = $(CXXFLAGS) -std=c++11
+
+TESTS = unittest.sh
+
 dist_noinst_DATA = \
 	../../build.bat \
 	../../CHANGELOG.md \

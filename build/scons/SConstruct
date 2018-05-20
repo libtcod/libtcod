@@ -102,6 +102,25 @@ def samples_factory():
     env.Depends(samples, [libtcod, libtcod_gui])
     return samples
 
+def get_unittest():
+    """Return the unittest builder."""
+    env_unittest = env.Clone()
+    if env['TOOLSET'] == 'msvc': # Enable exception handler.
+        env_unittest.Append(CPPFLAGS='/EHsc')
+    if sys.platform == 'win32':
+        env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
+    else:
+        env_unittest.Append(LIBS=['tcod', 'tcodgui'])
+    env_unittest.Append(
+        CPPFLAGS=['-std=c++11'],
+    )
+    unittest = env_unittest.Program(
+        target=os.path.join("$VARIANT", "unittest"),
+        source=os.path.join("$VARIANT", "tests/unittest.cpp")
+    )
+    env.Depends(unittest, [libtcod, libtcod_gui])
+    return unittest
+
 
 def filtered_glob(env, pattern, omit=[],
                   ondisk=True, source=False, strings=False):
@@ -129,6 +148,8 @@ vars.Add(EnumVariable('TOOLSET', 'Force using this compiler. (Windows only)',
                       default_toolset, ('default', 'msvc', 'mingw')))
 
 vars.Add('CCFLAGS', 'Compiler flags', '')
+vars.Add('CFLAGS', 'C flags', '')
+vars.Add('CPPFLAGS', 'C++ flags', '')
 vars.Add('LINKFLAGS', 'Linker flags', '')
 
 vars.Add(EnumVariable('ARCH', 'Set target architecture. (Windows/Linux only)',
@@ -212,6 +233,8 @@ env = Environment(
 env.AddMethod(filtered_glob, "FilteredGlob");
 
 env['CCFLAGS'] = Split(env['CCFLAGS'])
+env['CFLAGS'] = Split(env['CFLAGS'])
+env['CPPFLAGS'] = Split(env['CPPFLAGS'])
 env['LINKFLAGS'] = Split(env['LINKFLAGS'])
 env['CPPDEFINES'] = Split(env['CPPDEFINES'])
 
@@ -349,8 +372,11 @@ Alias("develop_libtcod", lib_build + lib_install)
 
 samples_builders = samples_factory()
 samples_installers = env.Install('$INSTALL_DIR', samples_builders)
+unittest_builder = get_unittest()
+unittest_installer = env.Install('$INSTALL_DIR', unittest_builder)
 Alias("build_samples", samples_builders)
 Alias("develop_samples", samples_builders + samples_installers)
+Alias("develop_unittest", unittest_builder + unittest_installer)
 
 package_files = (
     lib_build + samples_builders + sdl_package +

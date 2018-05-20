@@ -3,7 +3,7 @@ set -e
 
 if [[ "$BUILD_TOOL" == "scons" ]]; then
     cd build/scons
-    scons develop dist -j 3 ARCH=x86_64
+    scons develop develop_unittest dist -j 3 ARCH=x86_64
     cd ../..
 elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd build/autotools

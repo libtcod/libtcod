@@ -3,20 +3,20 @@ version: 1.0.{build}
 environment:
   SCONSMODE: "MODE=DEBUG"
   matrix:
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc"
+    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc develop_unittest"
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static"
+    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static develop_unittest"
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
+    - SCONSOPTS: "ARCH=x86 TOOLSET=msvc develop_unittest"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=mingw -j 3"
+    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86_64 develop_unittest"
       INSTALL_MINGW_64: yes
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86 TOOLSET=mingw -j 3"
+    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
     - DEFAULT_BUILD: yes
@@ -40,6 +40,7 @@ build_script:
 - cmd: if defined DEFAULT_BUILD build.bat -d -p -r
 
 test_script:
+- cmd: if exist unittest.exe unittest.exe
 - cmd: cd python
 - cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pip install -U pytest pytest-cov
 - cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pytest -v

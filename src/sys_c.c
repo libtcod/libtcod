@@ -151,7 +151,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 		if ( ! (strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 ) )
 		{
 			if ( filename_match(dirent->d_name,pattern) )
-				TCOD_list_push(list,strdup(dirent->d_name));
+				TCOD_list_push(list,TCOD_strdup(dirent->d_name));
 		}
 	}
 	closedir(dir);

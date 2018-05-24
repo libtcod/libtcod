@@ -4,6 +4,7 @@ AM_CFLAGS = \
 	-I$(top_srcdir)/../../include \
 	-DNO_OPENGL \
 	-DNDEBUG -O2 \
+	-Wall \
 	$(SDL_CFLAGS) $(X11_CFLAGS) $(ZLIB_CFLAGS)
 
 AM_CPPFLAGS = $(AM_CFLAGS)

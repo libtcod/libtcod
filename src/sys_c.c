@@ -53,27 +53,6 @@
 #include <dlfcn.h>
 #endif
 
-#if defined(TCOD_WINDOWS)
-char *strcasestr (const char *haystack, const char *needle) {
-	const char *p, *startn = 0, *np = 0;
-
-	for (p = haystack; *p; p++) {
-		if (np) {
-			if (toupper(*p) == toupper(*np)) {
-				if (!*++np)
-					return (char *)startn;
-			} else
-				np = 0;
-		} else if (toupper(*p) == toupper(*needle)) {
-			np = needle + 1;
-			startn = p;
-		}
-	}
-
-	return 0;
-}
-#endif
-
 bool TCOD_sys_create_directory(const char *path) {
 #ifdef TCOD_WINDOWS
 	return (CreateDirectory(path,NULL) != 0 || GetLastError() == ERROR_ALREADY_EXISTS);

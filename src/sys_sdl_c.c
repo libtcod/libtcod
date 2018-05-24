@@ -808,9 +808,28 @@ void TCOD_sys_uninit(void) {
 	sdl->destroy_window();
 }
 
+static char *TCOD_strcasestr (const char *haystack, const char *needle) {
+	const char *p, *startn = 0, *np = 0;
+
+	for (p = haystack; *p; p++) {
+		if (np) {
+			if (toupper(*p) == toupper(*np)) {
+				if (!*++np)
+					return (char *)startn;
+			} else
+				np = 0;
+		} else if (toupper(*p) == toupper(*needle)) {
+			np = needle + 1;
+			startn = p;
+		}
+	}
+
+	return 0;
+}
+
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
 	image_support_t *img=image_type;
-	while ( img->extension != NULL && strcasestr(filename,img->extension) == NULL ) img++;
+	while ( img->extension != NULL && TCOD_strcasestr(filename,img->extension) == NULL ) img++;
 	if ( img->extension == NULL || img->write == NULL ) img=image_type; /* default to bmp */
 	img->write((SDL_Surface *)bitmap,filename);
 }

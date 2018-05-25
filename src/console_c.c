@@ -37,6 +37,7 @@
 #include <wctype.h>
 #endif
 
+#include "vendor/stb_sprintf.h"
 #include <console_rexpaint.h>
 #include <noise.h>
 #include <mersenne.h>
@@ -713,7 +714,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 	do {
 		/* warning ! depending on the compiler, vsnprintf return -1 or
 		 the expected string length if the buffer is not big enough */
-		int len = vsnprintf(msg[curbuf],buflen[curbuf],fmt,ap);
+		int len = stbsp_vsnprintf(msg[curbuf],buflen[curbuf],fmt,ap);
 		ok=true;
 		if (len < 0 || len >= buflen[curbuf]) {
 			/* buffer too small. */

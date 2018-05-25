@@ -208,6 +208,7 @@
     <ClCompile Include="..\..\src\wrappers.c" />
     <ClCompile Include="..\..\src\zip.cpp" />
     <ClCompile Include="..\..\src\zip_c.c" />
+    <ClCompile Include="..\..\src\vendor\stb.c" />
     <ClCompile Include="..\..\src\zlib\adler32.c" />
     <ClCompile Include="..\..\src\zlib\compress.c" />
     <ClCompile Include="..\..\src\zlib\crc32.c" />
@@ -275,6 +276,7 @@
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
     <ClInclude Include="..\..\src\png\lodepng.h" />
+    <ClInclude Include="..\..\src\vendor\stb_sprintf.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />
     <ClInclude Include="..\..\src\zlib\gzguts.h" />

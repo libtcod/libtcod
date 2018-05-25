@@ -91,7 +91,7 @@ libtcod_la_SOURCES = \
 	../../src/wrappers.c \
 	../../src/zip_c.c \
 	../../src/png/lodepng.c \
-	../../src/png/lodepng.h
+	../../src/vendor/stb.c
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
 libtcod_la_LIBADD = $(PTHREAD_LIBS)

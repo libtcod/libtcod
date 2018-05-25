@@ -8,21 +8,21 @@ Products :
    http://www.libsdl.org
 
 Many thanks to everyone who provided feedback and patches, and especially :
-- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra 
-  pathfinding, name generator, documentation skin, lots of bitmap fonts and 
+- Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra
+  pathfinding, name generator, documentation skin, lots of bitmap fonts and
   being the #1 libtcod user, supporter and contributor.
-- Joao 'Jotaf' Henriques for his long time support, priceless comments and 
+- Joao 'Jotaf' Henriques for his long time support, priceless comments and
   suggestions and the awesome Python tutorial.
 - Chris 'donblas' Hamons for libtcod-net, the cmake system, the swig wrappers...
 - Jonathon Duerig for the permissive field of view algorithm
-- dividee for polishing and optimizing the Python wrapper. 
+- dividee for polishing and optimizing the Python wrapper.
 - John Klimek for the early C# port and valuable bug fixes.
-- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution 
+- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution
   to the Python port.
-- Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL 
+- Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL
   renderer
 - Sandman for various tricky bug fixes.
-- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still 
+- Joe Osborn for the OSX port, bug fixes and the bresenham 3d routines (still
   to be backported from the old 1.5 branch...).
 - Paul Sexton for the common Lisp wrapper.
 - Bernard Helyer for the D wrapper.
@@ -31,13 +31,13 @@ Many thanks to everyone who provided feedback and patches, and especially :
 - Matt Sullivan for the py3k support
 - namor for the FreeBSD cmake support
 - Anylo for putting some of the demos in the cmake compilation
-- Michael De Rosa, Killer_X and Joe Rumsey for their work on OSX port 
+- Michael De Rosa, Killer_X and Joe Rumsey for their work on OSX port
 - Denis Belov for fixes on the heightmap toolkit
 - owners of projects using libtcod.
 
 Fonts :
 The celtic garamond and dundalk fonts are from 1001freefonts.com.
 The caeldera font is from blambot.com.
-Other fonts are included in windows. 
+Other fonts are included in windows.
 The celtic_garamond, arial, courier, dejavu, consolas, prestige and lucida 10x10/12x12 bitmap fonts were created by Mingos.
 

@@ -1,7 +1,7 @@
 This is the Doryen library source code.
 
-libtcod.h and libtcod.hpp are the main headers, included respectively by 
-the C and C++ programs that use libtcod. 
+libtcod.h and libtcod.hpp are the main headers, included respectively by
+the C and C++ programs that use libtcod.
 
 Each "toolkit" is in a separate file set. For each toolkit, you may have :
 *  include/<toolkit>.h : the C header
@@ -25,19 +25,19 @@ noise     : various noise generators.
 parser    : config file parser.
 path      : path finding module.
 sys       : system specific functions.
-txtfield  : work-in-progress text input utility 
+txtfield  : work-in-progress text input utility
 zip       : compression module
 
-Note that some of the sys toolkits rely on system dependent functions. 
+Note that some of the sys toolkits rely on system dependent functions.
 They have currently a single working implementation relying on SDL : sys_sdl_c.c
 As it is heavily system dependent, the mouse C implementation is in sys_sdl_c.c.
-As of 1.4, the image load/save functions are isolated in sys_sdl_XXX.c, 
+As of 1.4, the image load/save functions are isolated in sys_sdl_XXX.c,
 XXX being the image type (currently bmp and png).
 As of 1.5.1, sys_opengl_c.c contains OpenGL and GLSL renderers. Those two
 renderers are still dependent on SDL.
 
-libtcod_int.h contains everything that is exported by the toolkits 
-(implemented in a toolkit and used in another one) but should not be seen 
+libtcod_int.h contains everything that is exported by the toolkits
+(implemented in a toolkit and used in another one) but should not be seen
 by the user of the library.
 
 These are the private (or undocumented) modules :

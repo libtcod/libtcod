@@ -38,6 +38,7 @@ before_script:
 script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | gcc -xc -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | gcc -xc++ -c -I$HOME/.local/include/libtcod -; fi'
+- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | gcc -xc++ -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
 - 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest; fi'
 - (cd python && pytest -v)

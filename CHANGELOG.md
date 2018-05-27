@@ -13,6 +13,10 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - `TCOD_console_is_active()` was not returning any valid state until now.
 - Fixed a missing space between a literal and identifier that may have
   caused problems in some C++ programs.
+- Fixed implicit definitions that could potentially crash formatted console
+  printing functions and image saving functions.
+- Fixed including libtcod gui headers. (Fabian Wolff)
+- Fixed memory leaks when lexers error during creation. (Fabian Wolff)
 
 ## [1.6.7] - 2018-05-17
 ### Changed

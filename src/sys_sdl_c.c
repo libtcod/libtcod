@@ -835,22 +835,21 @@ void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
 }
 
 void TCOD_sys_save_screenshot(const char *filename) {
-	char buf[128];
-	if ( filename == NULL ) {
-		/* generate filename */
-		int idx=0;
-		do {
-		    FILE *f=NULL;
-			sprintf(buf,"./screenshot%03d.png",idx);
-			f=fopen(buf,"rb");
-			if ( ! f ) filename=buf;
-			else {
-				idx++;
-				fclose(f);
-			}
-		} while(!filename);
-	}
-	sdl->save_screenshot(filename);
+  char buf[128];
+  int idx = 0;
+  while (!filename) {
+    /* generate filename */
+    FILE *access_file = NULL;
+    sprintf(buf, "./screenshot%03d.png", idx);
+    access_file = fopen(buf, "rb");
+    if (!access_file) {
+      filename = buf;
+    } else {
+      idx++;
+      fclose(access_file);
+    }
+  }
+  sdl->save_screenshot(filename);
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {

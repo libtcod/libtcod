@@ -8,6 +8,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Changed
 - `TCOD_console_is_active()` now returns keyboard focus status.
+- Load font debug information is now suppressed when NDEBUG is defined.
 
 ### Fixed
 - `TCOD_console_is_active()` was not returning any valid state until now.

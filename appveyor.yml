@@ -51,3 +51,15 @@ test_script:
 artifacts:
 - path: build\scons\libtcod-*.zip
 - path: build\packages\libtcod-*.7z
+
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: Hm2kcIqd+9kCztgnckEijt1wsqWWGyzDdW5I9Co1p7IvzIGlzeyT16AF9sXlYhKA
+  artifact: /libtcod-.*\.zip/
+  draft: false
+  prerelease: false
+  force_update: false
+  on:
+    appveyor_repo_name: HexDecimal/libtcod
+    appveyor_repo_tag: true

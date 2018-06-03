@@ -2,8 +2,10 @@
 set -e
 
 if [[ "$BUILD_TOOL" == "scons" ]]; then
+    BUILDMODE="MODE=DEBUG"
+    if [[ -n "$TRAVIS_TAG" ]]; then BUILDMODE="MODE=RELEASE"; fi
     cd build/scons
-    scons develop develop_unittest dist -j 3 ARCH=x86_64
+    scons develop develop_unittest dist -j 3 ARCH=x86_64 $BUILDMODE
     cd ../..
 elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd build/autotools

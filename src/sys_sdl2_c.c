@@ -271,7 +271,7 @@ static void create_window(int w, int h, bool fullscreen) {
 			winflags |= SDL_WINDOW_RESIZABLE;
 #	endif
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TCOD_ctx.actual_fullscreen_width,TCOD_ctx.actual_fullscreen_height,winflags);
-			if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot set fullscreen video mode");
+			if ( window == NULL ) TCOD_fatal("SDL : cannot set fullscreen video mode: %s", SDL_GetError());
 		}
 		SDL_ShowCursor(0);
 		SDL_GetWindowSize(window,&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
@@ -294,11 +294,11 @@ static void create_window(int w, int h, bool fullscreen) {
 			window = SDL_CreateWindow(TCOD_ctx.window_title,SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,w*TCOD_ctx.font_width,h*TCOD_ctx.font_height,winflags);
 			TCOD_LOG(("Using SDL renderer...\n"));
 		}
-		if ( window == NULL ) TCOD_fatal_nopar("SDL : cannot create window");
+		if ( window == NULL ) TCOD_fatal("Cannot create SDL window: %s", SDL_GetError());
 	}
 	if (TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-		if ( renderer == NULL ) TCOD_fatal_nopar("SDL : cannot create renderer");
+		if ( renderer == NULL ) TCOD_fatal("Cannot create SDL renderer: %s", SDL_GetError());
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	}
 }

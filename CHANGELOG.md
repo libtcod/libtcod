@@ -9,6 +9,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 ### Changed
 - `TCOD_console_is_active()` now returns keyboard focus status.
 - Load font debug information is now suppressed when NDEBUG is defined.
+- Error messages when failing to create an SDL window should be a less vague.
 
 ### Fixed
 - `TCOD_console_is_active()` was not returning any valid state until now.

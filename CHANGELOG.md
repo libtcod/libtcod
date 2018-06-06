@@ -7,18 +7,19 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Changed
-- `TCOD_console_is_active()` now returns keyboard focus status.
+- `TCOD_console_is_active()` now returns keyboard focus, its previous return
+  value was undefined.
 - Load font debug information is now suppressed when NDEBUG is defined.
 - Error messages when failing to create an SDL window should be a less vague.
 
 ### Fixed
-- `TCOD_console_is_active()` was not returning any valid state until now.
-- Fixed a missing space between a literal and identifier that may have
-  caused problems in some C++ programs.
+- Fixed a missing space between a literal and identifier that causes problems
+  with some C++ compilers.
 - Fixed implicit definitions that could potentially crash formatted console
-  printing functions and image saving functions.
+  printing functions and image saving functions.  wchar_t functions still
+  have issues.
 - Fixed including libtcod gui headers. (Fabian Wolff)
-- Fixed memory leaks when lexers error during creation. (Fabian Wolff)
+- Fixed memory leaks when lexer creation fails. (Fabian Wolff)
 
 ## [1.6.7] - 2018-05-17
 ### Changed

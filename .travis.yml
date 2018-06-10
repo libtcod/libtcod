@@ -16,7 +16,8 @@ matrix:
     language: generic
     env: BUILD_TOOL=autotools
 
-sudo: false
+# sudo is required to prevent xvfb crashes from container-based workers.
+sudo: required
 dist: trusty
 
 addons:

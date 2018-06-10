@@ -7,8 +7,11 @@ import re
 import subprocess
 import tarfile
 import time
-import urllib
 import zipfile
+try:
+    from urllib.request import urlretrieve
+except ImportError: # Python 2
+    from urllib import urlretrieve
 
 import config
 
@@ -25,7 +28,7 @@ def download_sdl2_win32(env):
         return
     print(env.subst('Downloading $SDL2_ZIP_URL'))
     ensure_path(env.subst('$SDL2_ZIP_PATH'))
-    urllib.urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
+    urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
 
 
 def unpack_sdl2_win32(env):
@@ -49,7 +52,7 @@ def download_sdl2_darwin(env):
         return
     print(env.subst('Downloading $SDL2_DMG_URL'))
     ensure_path(env.subst('$SDL2_DMG_PATH'))
-    urllib.urlretrieve(env.subst('$SDL2_DMG_URL'), env.subst('$SDL2_DMG_PATH'))
+    urlretrieve(env.subst('$SDL2_DMG_URL'), env.subst('$SDL2_DMG_PATH'))
 
 
 def unpack_sdl2_darwin(env):

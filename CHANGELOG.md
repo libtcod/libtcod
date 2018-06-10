@@ -23,6 +23,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Fixed including libtcod gui headers. (Fabian Wolff)
 - Fixed memory leaks when lexer creation fails. (Fabian Wolff)
 - Avoid crashes if the root console has a character code higher than expected.
+- Fixed `AttributeError: module 'urllib' has no attribute 'urlretrieve'` when
+  running SCons builder with Python 3.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

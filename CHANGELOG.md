@@ -11,6 +11,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   value was undefined.
 - Load font debug information is now suppressed when NDEBUG is defined.
 - Error messages when failing to create an SDL window should be a less vague.
+- You no longer need to initialize libtcod before you can print to an
+  off-screen console.
 
 ### Fixed
 - Fixed a missing space between a literal and identifier that causes problems

@@ -392,7 +392,6 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
 	int offset;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
 	TCOD_image_put_pixel(dat->fg_colors, x, y, dat->fore);
@@ -412,7 +411,6 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
 	int offset;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
 	TCOD_image_put_pixel(dat->fg_colors, x, y, fore);

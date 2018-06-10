@@ -494,7 +494,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 				SDL_FillRect(bitmap,&dstRect,sdl_back);
 				if ( *c != ' ' ) {
 					/* draw foreground */
-					int ascii = TCOD_ctx.ascii_to_tcod[*c];
+					int ascii = TCOD_get_tileid_for_charcode_(*c);
 					TCOD_color_t *curtext = &charcols[ascii];
 					bool first = first_draw[ascii];
 					TCOD_color_t f=*nfg;
@@ -1755,5 +1755,14 @@ void TCOD_sys_set_dirty_character_code(int ch) {
 			dat->ch_array[i] = -1;
 		}
 	}
+}
+/**
+ *  Return the current tile index for a given character code.
+ */
+int TCOD_get_tileid_for_charcode_(int charcode) {
+  if (charcode >= 0 && charcode < TCOD_ctx.max_font_chars) {
+    return TCOD_ctx.ascii_to_tcod[charcode];
+  }
+  return 0;
 }
 #endif /* TCOD_BARE */

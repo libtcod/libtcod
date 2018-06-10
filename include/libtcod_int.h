@@ -238,6 +238,7 @@ void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
 void TCOD_sys_set_dirty_character_code(int ch);
+int TCOD_get_tileid_for_charcode_(int charcode);
 
 /* switch fullscreen mode */
 void TCOD_sys_set_fullscreen(bool fullscreen);

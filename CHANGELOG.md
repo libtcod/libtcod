@@ -20,6 +20,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   have issues.
 - Fixed including libtcod gui headers. (Fabian Wolff)
 - Fixed memory leaks when lexer creation fails. (Fabian Wolff)
+- Avoid crashes if the root console has a character code higher than expected.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

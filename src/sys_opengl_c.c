@@ -491,7 +491,7 @@ bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *
 				}
 			}
 			if ( changed ) {
-				TCOD_opengl_putchar_ex(x, y, TCOD_ctx.ascii_to_tcod[*c], *nfg, *nbg);
+				TCOD_opengl_putchar_ex(x, y, TCOD_get_tileid_for_charcode_(*c), *nfg, *nbg);
 			}
 			c++;
 			nfg++;

@@ -35,13 +35,15 @@ install:
 before_script:
 - pip install pytest pytest-cov
 - (cd python && python setup.py develop)
+- export UNITTEST_ARGS=""
+- 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export UNITTEST_ARGS="~~[!nonportable]"; fi'
 
 script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | gcc -xc -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | gcc -xc++ -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | gcc -xc++ -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
-- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest; fi'
+- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest $UNITTEST_ARGS; fi'
 - (cd python && pytest -v)
 deploy:
   provider: releases

@@ -43,7 +43,7 @@ TEST_CASE("Console utf-8", "[!mayfail]") {
   CHECK(console.getChar(1, 0) == 0x20);
 }
 
-TEST_CASE("Console wchar BMP") {
+TEST_CASE("Console wchar BMP", "[!nonportable]") {
   TCODConsole console = TCODConsole(2, 1);
   console.print(0, 0, L"\u2603");
   CHECK(console.getChar(0, 0) == 0x2603);
@@ -51,7 +51,7 @@ TEST_CASE("Console wchar BMP") {
 }
 
 /* Fails when sizeof(wchar_t) == 2 */
-TEST_CASE("Console wchar SMP", "[!mayfail]") {
+TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail]") {
   TCODConsole console = TCODConsole(2, 1);
   console.print(0, 0, L"\U0001F30D");
   /* libtcod does not support utf-16, both of these checks normally fail. */

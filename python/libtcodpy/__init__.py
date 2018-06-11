@@ -43,14 +43,14 @@ from ctypes import *
 is_python_3 = sys.version_info > (3, 0)
 
 if is_python_3:
-    def convert_to_ascii(v):
+    def convert_to_ascii(v, encoding='utf-8'):
         if type(v) is str:
-            return v.encode('ascii')
+            return v.encode(encoding)
         return v
 else:
-    def convert_to_ascii(v):
+    def convert_to_ascii(v, encoding='utf-8'):
         if type(v) is unicode:
-            return v.encode('ascii')
+            return v.encode(encoding)
         return v
 
 if not hasattr(ctypes, "c_bool"):   # for Python < 2.6
@@ -997,7 +997,8 @@ def console_get_alignment(con):
 _lib.TCOD_console_print.argtypes=[c_void_p,c_int,c_int,c_char_p]
 def console_print(con, x, y, fmt):
     if type(fmt) == bytes or is_python_3:
-        _lib.TCOD_console_print(con, x, y, convert_to_ascii(fmt))
+        _lib.TCOD_console_print(con, x, y,
+                                convert_to_ascii(fmt, encoding='latin-1'))
     else:
         _lib.TCOD_console_print_utf(con, x, y, fmt)
 
@@ -1005,7 +1006,8 @@ _lib.TCOD_console_print_ex.argtypes=[c_void_p,c_int,c_int,c_int,c_int,c_char_p]
 _lib.TCOD_console_print_ex_utf.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_wchar_p]
 def console_print_ex(con, x, y, flag, alignment, fmt):
     if type(fmt) == bytes or is_python_3:
-        _lib.TCOD_console_print_ex(con, x, y, flag, alignment, convert_to_ascii(fmt))
+        _lib.TCOD_console_print_ex(con, x, y, flag, alignment,
+                                   convert_to_ascii(fmt, encoding='latin-1'))
     else:
         _lib.TCOD_console_print_ex_utf(con, x, y, flag, alignment, fmt)
 
@@ -1013,7 +1015,8 @@ _lib.TCOD_console_print_rect.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_c
 _lib.TCOD_console_print_rect_utf.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_wchar_p]
 def console_print_rect(con, x, y, w, h, fmt):
     if type(fmt) == bytes or is_python_3:
-        return _lib.TCOD_console_print_rect(con, x, y, w, h, convert_to_ascii(fmt))
+        return _lib.TCOD_console_print_rect(
+            con, x, y, w, h, convert_to_ascii(fmt, encoding='latin-1'))
     else:
         return _lib.TCOD_console_print_rect_utf(con, x, y, w, h, fmt)
 
@@ -1021,7 +1024,8 @@ _lib.TCOD_console_print_rect_ex.argtypes=[c_void_p, c_int, c_int, c_int, c_int, 
 _lib.TCOD_console_print_rect_ex_utf.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_int, c_int, c_wchar_p]
 def console_print_rect_ex(con, x, y, w, h, flag, alignment, fmt):
     if type(fmt) == bytes or is_python_3:
-        return _lib.TCOD_console_print_rect_ex(con, x, y, w, h, flag, alignment, convert_to_ascii(fmt))
+        return _lib.TCOD_console_print_rect_ex(
+            con, x, y, w, h, flag, alignment, convert_to_ascii(fmt, encoding='latin-1'))
     else:
         return _lib.TCOD_console_print_rect_ex_utf(con, x, y, w, h, flag, alignment, fmt)
 
@@ -1029,7 +1033,8 @@ _lib.TCOD_console_get_height_rect.argtypes=[c_void_p, c_int, c_int, c_int, c_int
 _lib.TCOD_console_get_height_rect_utf.argtypes=[c_void_p, c_int, c_int, c_int, c_int, c_wchar_p]
 def console_get_height_rect(con, x, y, w, h, fmt):
     if type(fmt) == bytes or is_python_3:
-        return _lib.TCOD_console_get_height_rect(con, x, y, w, h, convert_to_ascii(fmt))
+        return _lib.TCOD_console_get_height_rect(
+            con, x, y, w, h, convert_to_ascii(fmt, encoding='latin-1'))
     else:
         return _lib.TCOD_console_get_height_rect_utf(con, x, y, w, h, fmt)
 
@@ -1047,7 +1052,8 @@ def console_vline(con, x, y, l, flag=BKGND_DEFAULT):
 
 _lib.TCOD_console_print_frame.argtypes=[c_void_p,c_int,c_int,c_int,c_int,c_int,c_int,c_char_p]
 def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt=''):
-    _lib.TCOD_console_print_frame(con, x, y, w, h, clear, flag, convert_to_ascii(fmt))
+    _lib.TCOD_console_print_frame(con, x, y, w, h, clear, flag,
+                                  convert_to_ascii(fmt, encoding='latin-1'))
 
 _lib.TCOD_console_get_foreground_color_image.restype=c_void_p
 _lib.TCOD_console_get_foreground_color_image.argtypes=[c_void_p]

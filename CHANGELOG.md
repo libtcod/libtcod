@@ -25,6 +25,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Avoid crashes if the root console has a character code higher than expected.
 - Fixed `AttributeError: module 'urllib' has no attribute 'urlretrieve'` when
   running SCons builder with Python 3.
+- Fixed `UnicodeEncodeError: ordinal not in range(128)` in places where
+  libtcodpy says it wants an ascii string.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

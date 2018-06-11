@@ -108,15 +108,15 @@ def samples_factory():
 def get_unittest():
     """Return the unittest builder."""
     env_unittest = env.Clone()
-    if env['TOOLSET'] == 'msvc': # Enable exception handler.
-        env_unittest.Append(CPPFLAGS='/EHsc')
+    if env['TOOLSET'] == 'msvc':
+        env_unittest.Append(CPPFLAGS=['/EHsc']) # Enable exception handler.
+    else: # Not MSVC, enforce C++11
+        env_unittest.Append(CPPFLAGS=['-std=c++11'])
     if sys.platform == 'win32':
         env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
     else:
         env_unittest.Append(LIBS=['tcod', 'tcodgui'])
-    env_unittest.Append(
-        CPPFLAGS=['-std=c++11'],
-    )
+
     unittest = env_unittest.Program(
         target=os.path.join("$VARIANT", "unittest"),
         source=os.path.join("$VARIANT", "tests/unittest.cpp")

@@ -127,8 +127,9 @@ def get_unittest():
 
 def filtered_glob(env, pattern, omit=[],
                   ondisk=True, source=False, strings=False):
-    return filter(lambda f: os.path.basename(f.path) not in omit,
-                  env.Glob(pattern))
+    """Like Glob, but can omit specific files from the results."""
+    return [f for f in env.Glob(pattern)
+            if os.path.basename(f.path) not in omit]
 
 
 def get_libtcod_version():

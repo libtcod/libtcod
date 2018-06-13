@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.4
-* Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
+* libtcod
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,8 +10,9 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice or Mingos may not be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+*     * The name of Jice or Mingos may not be used to endorse or promote
+*       products derived from this software without specific prior written
+*       permission.
 *
 * THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -50,27 +51,6 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <dlfcn.h>
-#endif
-
-#if defined(TCOD_WINDOWS)
-char *strcasestr (const char *haystack, const char *needle) {
-	const char *p, *startn = 0, *np = 0;
-
-	for (p = haystack; *p; p++) {
-		if (np) {
-			if (toupper(*p) == toupper(*np)) {
-				if (!*++np)
-					return (char *)startn;
-			} else
-				np = 0;
-		} else if (toupper(*p) == toupper(*needle)) {
-			np = needle + 1;
-			startn = p;
-		}
-	}
-
-	return 0;
-}
 #endif
 
 bool TCOD_sys_create_directory(const char *path) {
@@ -150,7 +130,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern
 		if ( ! (strcmp(dirent->d_name,".") == 0 || strcmp(dirent->d_name,"..") == 0 ) )
 		{
 			if ( filename_match(dirent->d_name,pattern) )
-				TCOD_list_push(list,strdup(dirent->d_name));
+				TCOD_list_push(list,TCOD_strdup(dirent->d_name));
 		}
 	}
 	closedir(dir);

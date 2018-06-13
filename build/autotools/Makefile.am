@@ -4,6 +4,7 @@ AM_CFLAGS = \
 	-I$(top_srcdir)/../../include \
 	-DNO_OPENGL \
 	-DNDEBUG -O2 \
+	-Wall \
 	$(SDL_CFLAGS) $(X11_CFLAGS) $(ZLIB_CFLAGS)
 
 AM_CPPFLAGS = $(AM_CFLAGS)
@@ -55,7 +56,8 @@ otherinclude_HEADERS = \
 	../../include/gui/togglebutton.hpp \
 	../../include/gui/toolbar.hpp \
 	../../include/gui/vbox.hpp \
-	../../include/gui/widget.hpp
+	../../include/gui/widget.hpp \
+	../../include/gui/gui_portability.hpp
 
 
 libtcod_la_SOURCES = \
@@ -89,9 +91,9 @@ libtcod_la_SOURCES = \
 	../../src/wrappers.c \
 	../../src/zip_c.c \
 	../../src/png/lodepng.c \
-	../../src/png/lodepng.h
+	../../src/vendor/stb.c
 
-libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
+libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
 libtcod_la_LIBADD = $(PTHREAD_LIBS)
 
 
@@ -105,6 +107,7 @@ pkginclude_HEADERS = \
 	../../include/console.h \
 	../../include/namegen.h \
 	../../include/console_types.h \
+	../../include/console_rexpaint.h \
 	../../include/noise_defaults.h \
 	../../include/fov.h \
 	../../include/noise.h \
@@ -181,9 +184,17 @@ samples_cpp_SOURCES = ../../samples/samples_cpp.cpp
 samples_cpp_LDADD = libtcodxx.la libtcod.la
 endif
 
+check_scripts = unittest.sh
+check_PROGRAMS = unittest
+unittest_SOURCES = ../../tests/unittest.cpp
+unittest_LDADD = libtcodxx.la libtcod.la
+unittest_CXXFLAGS = $(CXXFLAGS) -std=c++11
+
+TESTS = unittest.sh
+
 dist_noinst_DATA = \
 	../../build.bat \
-	../../libtcod-CHANGELOG.txt \
+	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \
 	../../LIBTCOD-LICENSE.txt \
 	../../README-linux-SDL2.md \

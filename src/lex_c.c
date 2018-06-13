@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.4
-* Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
+* libtcod
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,8 +10,9 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice or Mingos may not be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+*     * The name of Jice or Mingos may not be used to endorse or promote
+*       products derived from this software without specific prior written
+*       permission.
 *
 * THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,11 +35,11 @@
 #define MAX_JAVADOC_COMMENT_SIZE 16384
 
 /* damn ANSI C does not know strdup, strcasecmp, strncasecmp */
-char *TCOD_strdup(const char *s) {
-	size_t l=strlen(s)+1;
-	char *ret=malloc(sizeof(char)*l);
-	memcpy(ret,s,sizeof(char)*l);
-	return ret;
+char *TCOD_strdup(const char *str) {
+	size_t l = strlen(str) + 1;
+	char *duplicate = malloc(l);
+	if (duplicate) { strcpy(duplicate, str); }
+	return duplicate;
 }
 
 int TCOD_strcasecmp(const char *s1, const char *s2) {
@@ -112,6 +113,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				sprintf (msg, "symbol '%s' too long (max size %d)",
 				       _symbols[ lex->nb_symbols ], TCOD_LEX_SYMBOL_SIZE );
 				TCOD_last_error=TCOD_strdup(msg);
+				TCOD_lex_delete (lex);
 				return NULL;
 			}
 			strcpy(lex->symbols[ lex->nb_symbols ], _symbols[ lex->nb_symbols ] );
@@ -128,6 +130,7 @@ TCOD_lex_t * TCOD_lex_new( const char **_symbols, const char **_keywords, const 
 				sprintf(msg,"keyword '%s' too long (max size %d)",
 						   _keywords[ lex->nb_keywords ], TCOD_LEX_KEYWORD_SIZE);
 				TCOD_last_error=TCOD_strdup(msg);
+				TCOD_lex_delete (lex);
 				return NULL;
 			}
 			if ( lex->flags & TCOD_LEX_FLAG_NOCASE )

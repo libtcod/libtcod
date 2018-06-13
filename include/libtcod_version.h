@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.4
-* Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
+* libtcod
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -28,10 +28,10 @@
 #ifndef LIBTCOD_VERSION_H
 #define LIBTCOD_VERSION_H
 
-#define TCOD_HEXVERSION 0x010606
-#define TCOD_STRVERSION "1.6.6"
-#define TCOD_TECHVERSION 0x01060600
+#define TCOD_HEXVERSION 0x010700
+#define TCOD_STRVERSION "1.7.0"
+#define TCOD_TECHVERSION 0x01070000
 
-#define TCOD_STRVERSIONNAME "libtcod "TCOD_STRVERSION
+#define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
 
 #endif /* LIBTCOD_VERSION_H */

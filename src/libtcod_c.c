@@ -1,6 +1,6 @@
 /*
 * libtcod
-* Copyright (c) 2018 Jice & Mingos & rmtew
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,6 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 /** \file libtcod_c.c
  *
  *  To statically link a C program with libtcod:
@@ -45,6 +44,8 @@
  *  You can define `NO_OPENGL` to remove the dependency on the GL library.
  *  You can also define `TCOD_BARE` to remove the dependency on SDL2 and GL.
  */
+#include "vendor/stb.c"
+
 #include "bresenham_c.c"
 #include "bsp_c.c"
 #include "color_c.c"

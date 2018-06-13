@@ -1,13 +1,16 @@
 #!/bin/bash
+set -e
 
 if [[ "$BUILD_TOOL" == "scons" ]]; then
+    BUILDMODE="MODE=DEBUG"
+    if [[ -n "$TRAVIS_TAG" ]]; then BUILDMODE="MODE=RELEASE"; fi
     cd build/scons
-    scons develop dist -j 3 ARCH=x86_64
+    scons develop develop_unittest dist -j 3 ARCH=x86_64 $BUILDMODE
     cd ../..
 elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd build/autotools
-    autoreconf --install || exit 1
-    ./configure --prefix=$HOME/.local || exit 1
+    autoreconf --install
+    ./configure --prefix=$HOME/.local
     make -j 3 install
     cd ../..
     export LIBTCOD_DLL_PATH=~/.local/lib

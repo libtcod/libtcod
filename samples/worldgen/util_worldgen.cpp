@@ -161,6 +161,7 @@ float WorldGenerator::getRealAltitude(float x, float y) const {
 	for (idx=0; idx < MAX_ALT_KEY-1; idx++) {
 		if ( altIndexes[idx+1] > ih ) break;
 	}
+        --idx;
 	float alt = altitudes[idx] + (altitudes[idx+1]-altitudes[idx]) * (ih-altIndexes[idx])/(altIndexes[idx+1]-altIndexes[idx]);
 	return alt;
 }
@@ -172,6 +173,7 @@ float WorldGenerator::getPrecipitations(float x, float y) const {
 	for (idx=0; idx < MAX_PREC_KEY-1; idx++) {
 		if ( precIndexes[idx+1] > iprec ) break;
 	}
+        --idx;
 	float prec = precipitations[idx] + (precipitations[idx+1]-precipitations[idx]) * (iprec-precIndexes[idx])/(precIndexes[idx+1]-precIndexes[idx]);
 	return prec;
 }

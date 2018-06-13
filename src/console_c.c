@@ -1,6 +1,6 @@
 /*
-* libtcod 1.6.4
-* Copyright (c) 2008,2009,2010,2012,2013,2016,2017 Jice & Mingos & rmtew
+* libtcod
+* Copyright (c) 2008-2018 Jice & Mingos & rmtew
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -10,8 +10,9 @@
 *     * Redistributions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
-*     * The name of Jice or Mingos may not be used to endorse or promote products
-*       derived from this software without specific prior written permission.
+*     * The name of Jice or Mingos may not be used to endorse or promote
+*       products derived from this software without specific prior written
+*       permission.
 *
 * THIS SOFTWARE IS PROVIDED BY JICE, MINGOS AND RMTEW ``AS IS'' AND ANY
 * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -24,7 +25,6 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 #include <console.h>
 
 #include <stdio.h>
@@ -37,6 +37,7 @@
 #include <wctype.h>
 #endif
 
+#include "vendor/stb_sprintf.h"
 #include <console_rexpaint.h>
 #include <noise.h>
 #include <mersenne.h>
@@ -80,21 +81,34 @@ TCOD_internal_context_t TCOD_ctx={
 
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER];
 static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER];
-
+/**
+ *  Assign a foreground and background color to a color control index.
+ *
+ *  \param con Index to change, e.g. `TCOD_COLCTRL_1`
+ *  \param fore Foreground color to assign to this index.
+ *  \param back Background color to assign to this index.
+ */
 void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back) {
 	TCOD_IFNOT(con >= TCOD_COLCTRL_1 && con <= TCOD_COLCTRL_NUMBER ) return;
 	color_control_fore[con-1]=fore;
 	color_control_back[con-1]=back;
 }
-
+/**
+ *  Return a new console with a specific number of columns and rows.
+ *
+ *  \param w Number of columns.
+ *  \param h Number of columns.
+ *  \return A pointer to the new console, or NULL on error.
+ */
 TCOD_console_t TCOD_console_new(int w, int h)  {
 	TCOD_IFNOT(w > 0 && h > 0 ) {
 		return NULL;
 	} else {
 		TCOD_console_data_t *con=(TCOD_console_data_t *)calloc(sizeof(TCOD_console_data_t),1);
+		if (!con) { return NULL; }
 		con->w=w;
 		con->h=h;
-		TCOD_console_init(con,NULL,false);
+		TCOD_console_init(con,NULL,false); /* NOTE: CHECK THIS FOR ERORS */
 		if(TCOD_ctx.root) {
 			con->alignment=TCOD_ctx.root->alignment;
 			con->bkgnd_flag=TCOD_ctx.root->bkgnd_flag;
@@ -102,61 +116,111 @@ TCOD_console_t TCOD_console_new(int w, int h)  {
 		return (TCOD_console_t)con;
 	}
 }
-
+/**
+ *  Return immediately with a recently pressed key.
+ *
+ *  \param flags A TCOD_event_t bit-field, for example: `TCOD_EVENT_KEY_PRESS`
+ *  \return A TCOD_key_t struct with a recently pressed key.
+ *          If no event exists then the `vk` attribute will be `TCODK_NONE`
+ */
 TCOD_key_t TCOD_console_check_for_keypress(int flags) {
 	return TCOD_sys_check_for_keypress(flags);
 }
-
+/**
+ *  Wait for a key press event, then return it.
+ *
+ *  \param flush If 1 then the event queue will be cleared before waiting for
+ *               the next event.  This should always be 0.
+ *  \return A TCOD_key_t struct with the most recent key data.
+ *
+ *  Do not solve input lag issues by arbitrarily dropping events!
+ */
 TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
 	return TCOD_sys_wait_for_keypress(flush);
 }
-
+/**
+ *  Return true if the window is closing.
+ */
 bool TCOD_console_is_window_closed(void) {
 	return TCOD_ctx.is_window_closed;
 }
-
+/**
+ *  Return true if the window has mouse focus.
+ */
 bool TCOD_console_has_mouse_focus(void) {
 	return TCOD_ctx.app_has_mouse_focus;
 }
-
 #ifndef TCOD_BARE
+/**
+ *  Return true if the window has keyboard focus.
+ *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. versionchanged: 1.7
+ *      This function was previously broken.  It now keeps track of keyboard
+ *      focus.
+ *  \endverbatim
+ */
 bool TCOD_console_is_active(void) {
 	return TCOD_ctx.app_is_active;
 }
 #endif
-
+/**
+ *  Change the title string of the active window.
+ *
+ *  \param title A utf8 string.
+ */
 void TCOD_console_set_window_title(const char *title) {
 	TCOD_sys_set_window_title(title);
 }
-
+/**
+ *  Set the display to be full-screen or windowed.
+ *
+ *  \param fullscreen If true the display will go full-screen.
+ */
 void TCOD_console_set_fullscreen(bool fullscreen) {
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_set_fullscreen(fullscreen);
 	TCOD_ctx.fullscreen=fullscreen;
 }
-
+/**
+ *  Return true if the display is full-screen.
+ */
 bool TCOD_console_is_fullscreen(void) {
 	return TCOD_ctx.fullscreen;
 }
-
+/**
+ *  Set a consoles default background flag.
+ *
+ *  \param con A console pointer.
+ *  \param flag One of `TCOD_bkgnd_flag_t`.
+ */
 void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	dat->bkgnd_flag=flag;
 }
-
+/**
+ *  Return a consoles default background flag.
+ */
 TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return TCOD_BKGND_NONE;
 	return dat->bkgnd_flag;
 }
-
+/**
+ *  Set a consoles default alignment.
+ *
+ *  \param con A console pointer.
+ *  \param alignment One of TCOD_alignment_t
+ */
 void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	dat->alignment=alignment;
 }
-
+/**
+ *  Return a consoles default alignment.
+ */
 TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return TCOD_LEFT;
@@ -181,7 +245,14 @@ static void TCOD_console_data_free(TCOD_console_data_t *dat) {
 	dat->bg_array = NULL;
 	dat->ch_array = NULL;
 }
-
+/**
+ *  Delete a console.
+ *
+ *  \param con A console pointer.
+ *
+ *  If the console being deleted is the root console, then the display will be
+ *  uninitialized.
+ */
 void TCOD_console_delete(TCOD_console_t con) {
     TCOD_console_data_t *dat=(TCOD_console_data_t *)(con);
 	if (! dat ) {
@@ -271,6 +342,24 @@ void TCOD_console_blit_key_color(
 	if (dst->bg_colors) { TCOD_image_invalidate_mipmaps(dst->bg_colors); }
 }
 
+/**
+ *  Blit from one console to another.
+ *
+ *  \param srcCon Pointer to the source console.
+ *  \param xSrc The left region of the source console to blit from.
+ *  \param ySrc The top region of the source console to blit from.
+ *  \param wSrc The width of the region to blit from.
+ *              If 0 then it will fill to the maximum width.
+ *  \param hSrc The height of the region to blit from.
+ *              If 0 then it will fill to the maximum height.
+ *  \param dstCon Pointer to the destination console.
+ *  \param xDst The left corner to blit onto the destination console.
+ *  \param yDst The top corner to blit onto the destination console.
+ *  \param foreground_alpha Foreground blending alpha.
+ *  \param background_alpha Background blending alpha.
+ *
+ *  If the source console has a key color, this function will use it.
+ */
 void TCOD_console_blit(
 		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
 		TCOD_console_t dstCon, int xDst, int yDst,
@@ -287,50 +376,86 @@ void TCOD_console_blit(
 		);
 	}
 
+/**
+ *  Render and present the root console to the active display.
+ */
 void TCOD_console_flush(void) {
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_flush(true);
 }
-
+/**
+ *  Fade the color of the display.
+ *
+ *  \param val Where at 255 colors are normal and at 0 colors are completely
+ *             faded.
+ *  \param fadecol Color to fade towards.
+ */
 void TCOD_console_set_fade(uint8_t val, TCOD_color_t fadecol) {
 	TCOD_ctx.fade=val;
 	TCOD_ctx.fading_color=fadecol;
 }
-
+/**
+ *  Return the fade value.
+ *
+ *  \return At 255 colors are normal and at 0 colors are completely faded.
+ */
 uint8_t TCOD_console_get_fade(void) {
 	return TCOD_ctx.fade;
 }
-
+/**
+ *  Return the fade color.
+ *
+ *  \return The current fading color.
+ */
 TCOD_color_t TCOD_console_get_fading_color(void) {
 	return TCOD_ctx.fading_color;
 }
-
+/**
+ *  Draw a character on a console using the default colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \param c The character code to place.
+ *  \param flag A TCOD_bkgnd_flag_t flag.
+ */
 void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_flag_t flag) {
 	int offset;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
 	TCOD_console_set_char_foreground(dat, x, y, dat->fore);
 	TCOD_console_set_char_background(con, x, y, dat->back, (TCOD_bkgnd_flag_t)flag);
 }
-
+/**
+ *  Draw a character on the console with the given colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \param c The character code to place.
+ *  \param fore The foreground color.
+ *  \param back The background color.  This color will not be blended.
+ */
 void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
 	int offset;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	TCOD_IFNOT(c >= 0 && c < TCOD_ctx.max_font_chars) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
 	TCOD_console_set_char_foreground(dat, x, y, fore);
 	TCOD_console_set_char_background(dat, x, y, back, TCOD_BKGND_SET);
 }
-
+/**
+ *  Manually mark a region of a console as dirty.
+ */
 void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 	TCOD_sys_set_dirty(dx, dy, dw, dh);
 }
-
+/**
+ *  Clear a console to its default colors and the space character code.
+ */
 void TCOD_console_clear(TCOD_console_t con) {
 	int i;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
@@ -343,7 +468,14 @@ void TCOD_console_clear(TCOD_console_t con) {
 	/* clear the sdl renderer cache */
 	TCOD_sys_set_dirty(0, 0, dat->w, dat->h);
 }
-
+/**
+ *  Return the background color of a console at x,y
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \return A TCOD_color_t struct with a copy of the background color.
+ */
 TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
@@ -351,7 +483,14 @@ TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) 
 		return TCOD_black;
 	return dat->bg_array[y * dat->w + x];
 }
-
+/**
+ *  Change the foreground color of a console tile.
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \param col The foreground color to set.
+ */
 void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_color_t col) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
@@ -360,7 +499,14 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
 		return;
 	dat->fg_array[y * dat->w + x] = col;
 }
-
+/**
+ *  Return the foreground color of a console at x,y
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \return A TCOD_color_t struct with a copy of the foreground color.
+ */
 TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
@@ -368,7 +514,14 @@ TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) 
 		return TCOD_white;
 	return dat->fg_array[y * dat->w + x];
 }
-
+/**
+ *  Return a character code of a console at x,y
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \return The character code.
+ */
 int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
@@ -376,7 +529,15 @@ int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
 		return 0;
 	return dat->ch_array[y * dat->w + x];
 }
-
+/**
+ *  Blend a background color onto a console tile.
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \param col The background color to blend.
+ *  \param flag The blend mode to use.
+ */
 void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag) {
 	TCOD_color_t *back;
 	int newr, newg, newb;
@@ -475,7 +636,14 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 	default: break;
 	}
 }
-
+/**
+ *  Change a character on a console tile, without changing its colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The X coordinate, the left-most position being 0.
+ *  \param y The Y coordinate, the top-most position being 0.
+ *  \param c The character code to set.
+ */
 void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
@@ -494,7 +662,17 @@ static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, i
 		*y = cy;
 	}
 }
-
+/**
+ *  Draw a rectangle onto a console.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting region, the left-most position being 0.
+ *  \param y The starting region, the top-most position being 0.
+ *  \param rw The width of the rectangle.
+ *  \param rh The height of the rectangle.
+ *  \param clear If true the drawing region will be filled with spaces.
+ *  \param flag The blending flag to use.
+ */
 void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
 	int cx, cy;
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
@@ -513,12 +691,34 @@ void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool cl
 		}
 	}
 }
-
+/**
+ *  Draw a horizontal line using the default colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param l The width of the line.
+ *  \param flag The blending flag.
+ *
+ *  This function makes assumptions about the fonts character encoding.
+ *  It will fail if the font encoding is not `cp437`.
+ */
 void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 	int i;
 	for (i=x; i< x+l; i++) TCOD_console_put_char(con,i,y,TCOD_CHAR_HLINE,flag);
 }
-
+/**
+ *  Draw a vertical line using the default colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param l The height of the line.
+ *  \param flag The blending flag.
+ *
+ *  This function makes assumptions about the fonts character encoding.
+ *  It will fail if the font encoding is not `cp437`.
+ */
 void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 	int i;
 	for (i=y; i< y+l; i++) TCOD_console_put_char(con,x,i,TCOD_CHAR_VLINE,flag);
@@ -543,7 +743,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 	do {
 		/* warning ! depending on the compiler, vsnprintf return -1 or
 		 the expected string length if the buffer is not big enough */
-		int len = vsnprintf(msg[curbuf],buflen[curbuf],fmt,ap);
+		int len = stbsp_vsnprintf(msg[curbuf],buflen[curbuf],fmt,ap);
 		ok=true;
 		if (len < 0 || len >= buflen[curbuf]) {
 			/* buffer too small. */
@@ -561,7 +761,24 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
 	curbuf = (curbuf+1)%NB_BUFFERS;
 	return ret;
 }
-
+/**
+ *  Print a string inside of a framed region on a console, using default
+ *  colors and alignment.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param w The width of the frame.
+ *  \param h The height of the frame.
+ *  \param empty If true the characters inside of the frame will be cleared
+ *               with spaces.
+ *  \param flag The blending flag.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ *
+ *  This function makes assumptions about the fonts character encoding.
+ *  It will fail if the font encoding is not `cp437`.
+ */
 void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_NW,flag);
@@ -596,7 +813,15 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
 		dat->fore=tmp;
 	}
 }
-
+/**
+ *  Print a string on a console, using default colors and alignment.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ */
 void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 	va_list ap;
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
@@ -606,7 +831,17 @@ void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 		dat->alignment,TCOD_console_vsprint(fmt,ap), false, false);
 	va_end(ap);
 }
-
+/**
+ *  Print a string on a console, using default colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param flag The blending flag.
+ *  \param alignment The font alignment to use.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ */
 void TCOD_console_print_ex(TCOD_console_t con,int x, int y,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...) {
 	va_list ap;
@@ -617,7 +852,21 @@ void TCOD_console_print_ex(TCOD_console_t con,int x, int y,
 		TCOD_console_vsprint(fmt,ap), false, false);
 	va_end(ap);
 }
-
+/**
+ *  Print a string on a console constrained to a rectangle, using default
+ *  colors and alignment.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param w The width of the region.
+ *           If 0 then the maximum width will be used.
+ *  \param h The height of the region.
+ *           If 0 then the maximum height will be used.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ *  \return The number of lines actually printed.
+ */
 int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
 	int ret;
 	va_list ap;
@@ -629,7 +878,23 @@ int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const
 	va_end(ap);
 	return ret;
 }
-
+/**
+ *  Print a string on a console constrained to a rectangle, using default
+ *  colors.
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param w The width of the region.
+ *           If 0 then the maximum width will be used.
+ *  \param h The height of the region.
+ *           If 0 then the maximum height will be used.
+ *  \param flag The blending flag.
+ *  \param alignment The font alignment to use.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ *  \return The number of lines actually printed.
+ */
 int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...) {
 	int ret;
@@ -639,7 +904,20 @@ int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h,
 	va_end(ap);
 	return ret;
 }
-
+/**
+ *  Return the number of lines that would be printed by the
+ *
+ *  \param con A console pointer.
+ *  \param x The starting X coordinate, the left-most position being 0.
+ *  \param y The starting Y coordinate, the top-most position being 0.
+ *  \param w The width of the region.
+ *           If 0 then the maximum width will be used.
+ *  \param h The height of the region.
+ *           If 0 then the maximum height will be used.
+ *  \param fmt A format string as if passed to printf.
+ *  \param ... Variadic arguments as if passed to printf.
+ *  \return The number of lines that would have been printed.
+ */
 int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
 	int ret;
 	va_list ap;
@@ -1055,7 +1333,19 @@ int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int
 }
 
 #endif
-
+/**
+ *  \brief Initialize the libtcod graphical engine.
+ *
+ *  \param w The width in tiles.
+ *  \param h The height in tiles.
+ *  \param title The title for the window.
+ *  \param fullscreen Fullscreen option.
+ *  \param renderer Which renderer to use when rendering the console.
+ *
+ *  You may want to call TCOD_console_set_custom_font BEFORE calling this
+ *  function.  By default this function loads libtcod's `terminal.png` image
+ *  from the working directory.
+ */
 void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCOD_renderer_t renderer) {
 	TCOD_IF(w > 0 && h > 0) {
 		TCOD_console_data_t *con=(TCOD_console_data_t *)calloc(sizeof(TCOD_console_data_t),1);
@@ -1155,17 +1445,45 @@ TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con) {
 	TCOD_IFNOT(dat != NULL) return NULL;
 	return dat->bg_colors;
 }
-
+/**
+ *  \brief Set a font image to be loaded during initialization.
+ *
+ *  \param fontFile The path to a font image.
+ *  \param flags A TCOD_font_flags_t bit-field describing the font image
+ *               contents.
+ *  \param nb_char_horiz The number of columns in the font image.
+ *  \param nb_char_vertic The number of rows in the font image.
+ *
+ *  `fontFile` will be case-sensitive depending on the platform.
+ */
 void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic) {
 	TCOD_sys_set_custom_font(fontFile, nb_char_horiz, nb_char_vertic, flags);
 }
-
+/**
+ *  \brief Remap a character code to a tile.
+ *
+ *  \param asciiCode Character code to modify.
+ *  \param fontCharX X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY Y tile-coordinate, starting from the top at zero.
+ *
+ *  X,Y parameters are the coordinate of the tile, not pixel-coordinates.
+ */
 void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
 	/* cannot change mapping before initRoot is called */
 	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
 	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
 }
-
+/**
+ *  \brief Remap a series of character codes to a row of tiles.
+ *
+ *  \param asciiCode The starting character code.
+ *  \param nbCodes Number of character codes to assign.
+ *  \param fontCharX First X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY First Y tile-coordinate, starting from the top at zero.
+ *
+ *  This function always assigns tiles in row-major order, even if the
+ *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
+ */
 void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
 	int c;
 	/* cannot change mapping before initRoot is called */
@@ -1180,7 +1498,16 @@ void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCh
 		}
 	}
 }
-
+/**
+ *  \brief Remap a string of character codes to a row of tiles.
+ *
+ *  \param s A null-terminated string.
+ *  \param fontCharX First X tile-coordinate, starting from the left at zero.
+ *  \param fontCharY First Y tile-coordinate, starting from the top at zero.
+ *
+ *  This function always assigns tiles in row-major order, even if the
+ *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
+ */
 void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
 	TCOD_IFNOT(s != NULL) return;
 	/* cannot change mapping before initRoot is called */

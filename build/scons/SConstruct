@@ -7,8 +7,11 @@ import re
 import subprocess
 import tarfile
 import time
-import urllib
 import zipfile
+try:
+    from urllib.request import urlretrieve
+except ImportError: # Python 2
+    from urllib import urlretrieve
 
 import config
 
@@ -25,7 +28,7 @@ def download_sdl2_win32(env):
         return
     print(env.subst('Downloading $SDL2_ZIP_URL'))
     ensure_path(env.subst('$SDL2_ZIP_PATH'))
-    urllib.urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
+    urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
 
 
 def unpack_sdl2_win32(env):
@@ -49,7 +52,7 @@ def download_sdl2_darwin(env):
         return
     print(env.subst('Downloading $SDL2_DMG_URL'))
     ensure_path(env.subst('$SDL2_DMG_PATH'))
-    urllib.urlretrieve(env.subst('$SDL2_DMG_URL'), env.subst('$SDL2_DMG_PATH'))
+    urlretrieve(env.subst('$SDL2_DMG_URL'), env.subst('$SDL2_DMG_PATH'))
 
 
 def unpack_sdl2_darwin(env):
@@ -77,9 +80,9 @@ def samples_factory():
         env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 
     if sys.platform == 'win32':
-        env_samples.Append(LIBS=['libtcod', 'libtcod-gui'])
+        env_samples.Append(LIBS=['libtcod', 'libtcodgui'])
     else:
-        env_samples.Append(LIBS=['tcod', 'tcod-gui'])
+        env_samples.Append(LIBS=['tcod', 'tcodgui'])
 
     for name in os.listdir(env.subst('$LIBTCOD_ROOT_DIR/samples')):
         path = os.path.join(env.subst('$LIBTCOD_ROOT_DIR/samples'), name)
@@ -102,22 +105,40 @@ def samples_factory():
     env.Depends(samples, [libtcod, libtcod_gui])
     return samples
 
+def get_unittest():
+    """Return the unittest builder."""
+    env_unittest = env.Clone()
+    if env['TOOLSET'] == 'msvc':
+        env_unittest.Append(CPPFLAGS=['/EHsc']) # Enable exception handler.
+    else: # Not MSVC, enforce C++11
+        env_unittest.Append(CPPFLAGS=['-std=c++11'])
+    if sys.platform == 'win32':
+        env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
+    else:
+        env_unittest.Append(LIBS=['tcod', 'tcodgui'])
+
+    unittest = env_unittest.Program(
+        target=os.path.join("$VARIANT", "unittest"),
+        source=os.path.join("$VARIANT", "tests/unittest.cpp")
+    )
+    env.Depends(unittest, [libtcod, libtcod_gui])
+    return unittest
+
 
 def filtered_glob(env, pattern, omit=[],
                   ondisk=True, source=False, strings=False):
-    return filter(lambda f: os.path.basename(f.path) not in omit,
-                  env.Glob(pattern))
+    """Like Glob, but can omit specific files from the results."""
+    return [f for f in env.Glob(pattern)
+            if os.path.basename(f.path) not in omit]
 
 
 def get_libtcod_version():
     """Return the latest version number from the CHANGELOG."""
-    for filename in os.listdir(LIBTCOD_ROOT_DIR):
-        if 'CHANGELOG' not in filename:
-            continue
-        with open(os.path.join(LIBTCOD_ROOT_DIR, filename), 'r') as changelog:
-            # Grab the first thing we see after a "===" separator.
-            return re.match(r'[^=]+=+(?:\r\n?|\n)([^ :]+)',
-                            changelog.read()).groups()[0]
+    with open(os.path.join(LIBTCOD_ROOT_DIR, 'include/libtcod_version.h'),
+              'r') as changelog:
+        # Grab the TCOD_STRVERSION literal from libtcod_version.h
+        return re.match(r'.*#define TCOD_STRVERSION "([^"]+)"',
+                        changelog.read(), re.DOTALL).groups()[0]
 
 
 LIBTCOD_ROOT_DIR = '../..'
@@ -131,6 +152,8 @@ vars.Add(EnumVariable('TOOLSET', 'Force using this compiler. (Windows only)',
                       default_toolset, ('default', 'msvc', 'mingw')))
 
 vars.Add('CCFLAGS', 'Compiler flags', '')
+vars.Add('CFLAGS', 'C flags', '')
+vars.Add('CPPFLAGS', 'C++ flags', '')
 vars.Add('LINKFLAGS', 'Linker flags', '')
 
 vars.Add(EnumVariable('ARCH', 'Set target architecture. (Windows/Linux only)',
@@ -161,7 +184,7 @@ if sys.platform == 'win32':
 else:
     DEPENDANCY_DIR = './dependencies'
 vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
-vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.5')
+vars.Add('SDL2_VERSION', 'SDL version to fetch. (Windows/Mac only)', '2.0.8')
 
 vars.Add(EnumVariable(
         'SOURCE_FILES', ('Auto-detect which source files to compile, '
@@ -214,6 +237,8 @@ env = Environment(
 env.AddMethod(filtered_glob, "FilteredGlob");
 
 env['CCFLAGS'] = Split(env['CCFLAGS'])
+env['CFLAGS'] = Split(env['CFLAGS'])
+env['CPPFLAGS'] = Split(env['CPPFLAGS'])
 env['LINKFLAGS'] = Split(env['LINKFLAGS'])
 env['CPPDEFINES'] = Split(env['CPPDEFINES'])
 
@@ -298,7 +323,7 @@ env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
 env_libtcod = env.Clone()
 env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
 if not using_msvc:
-    env_libtcod.Prepend(CFLAGS=['-ansi'])
+    env_libtcod.Prepend(CFLAGS=['-std=c99'])
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])
@@ -311,14 +336,31 @@ if 'NO_OPENGL' not in env['CPPDEFINES']:
     else:
         env_libtcod.Append(LIBS=['GL'])
 
+# Which source files to compile into the main libtcod shared library.
+# libtcod-gui sources are not included here.
 libtcod_sources = {
-    'auto': (env.FilteredGlob('$VARIANT/src/*.c*',
-                               omit=['libtcod_c.c','libtcod.cpp'])
-              + env.Glob('$VARIANT/src/*/*.c')),
-    'static': (env.Glob('$VARIANT/src/zlib/*.c')
-               + ['$VARIANT/src/libtcod_c.c',
-                  '$VARIANT/src/libtcod.cpp',
-                  '$VARIANT/src/png/lodepng.c']),
+    # Compiles all source files under src/ with some exceptions.
+    'auto': (
+        env.FilteredGlob(
+            # All .c and .cpp sources in src/
+            '$VARIANT/src/*.c*',
+            # Except the composite sources.
+            omit=['libtcod_c.c', 'libtcod.cpp'],
+        )
+        # Vendor sources.
+        + env.Glob('$VARIANT/src/*/*.c'),
+    ),
+    # libtcod_c.c and libtcod.cpp are helper sources that include all other
+    # files needed to build libtcod.
+    'static': (
+        # Bundle zlib sources.
+        env.Glob('$VARIANT/src/zlib/*.c')
+        # Bundle lodepng.
+        + ['$VARIANT/src/png/lodepng.c']
+        # All other dependences are in the composite sources.
+        + ['$VARIANT/src/libtcod_c.c',
+           '$VARIANT/src/libtcod.cpp'],
+    ),
 }
 
 libtcod = env_libtcod.SharedLibrary(
@@ -333,7 +375,7 @@ env_libtcod_gui.Append(
     )
 
 libtcod_gui = env_libtcod_gui.SharedLibrary(
-    target='$VARIANT/libtcod-gui',
+    target='$VARIANT/libtcodgui',
     source=Glob(env.subst('$VARIANT/src/gui/*.cpp')),
     )
 
@@ -342,7 +384,7 @@ env.Depends(libtcod_gui, libtcod)
 if sys.platform == 'darwin':
     env_libtcod.Append(LINKFLAGS=['-install_name', '@rpath/libtcod.dylib'])
     env_libtcod_gui.Append(LINKFLAGS=['-install_name',
-                                      '@rpath/libtcod-gui.dylib'])
+                                      '@rpath/libtcodgui.dylib'])
 
 lib_build = [libtcod, libtcod_gui]
 lib_install =  env.Install('$INSTALL_DIR', lib_build) + sdl_install
@@ -351,8 +393,11 @@ Alias("develop_libtcod", lib_build + lib_install)
 
 samples_builders = samples_factory()
 samples_installers = env.Install('$INSTALL_DIR', samples_builders)
+unittest_builder = get_unittest()
+unittest_installer = env.Install('$INSTALL_DIR', unittest_builder)
 Alias("build_samples", samples_builders)
 Alias("develop_samples", samples_builders + samples_installers)
+Alias("develop_unittest", unittest_builder + unittest_installer)
 
 package_files = (
     lib_build + samples_builders + sdl_package +

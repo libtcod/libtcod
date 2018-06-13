@@ -27,6 +27,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   running SCons builder with Python 3.
 - Fixed `UnicodeEncodeError: ordinal not in range(128)` in places where
   libtcodpy says it wants an ascii string.
+- libtcodpy now escapes the `%` character on print functions.
+- Fixed libtcodpy print functions not supporting Unicode for Python 3.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

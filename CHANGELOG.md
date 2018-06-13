@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.7.0] - 2018-06-12
 ### Changed
 - `TCOD_console_is_active()` now returns keyboard focus, its previous return
   value was undefined.
@@ -18,18 +20,17 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Fixed a missing space between a literal and identifier that causes problems
   with some C++ compilers.
 - Fixed implicit definitions that could potentially crash formatted console
-  printing functions and image saving functions.  wchar_t functions still
-  have issues.
+  printing functions and image saving functions.
 - Fixed including libtcod gui headers. (Fabian Wolff)
 - Fixed memory leaks when lexer creation fails. (Fabian Wolff)
 - Avoid crashes if the root console has a character code higher than expected.
 - Fixed `AttributeError: module 'urllib' has no attribute 'urlretrieve'` when
   running SCons builder with Python 3.
 - Fixed `UnicodeEncodeError: ordinal not in range(128)` in places where
-  libtcodpy says it wants an ascii string.
+  libtcodpy says it wants an ASCII string.
 - libtcodpy now escapes the `%` character on print functions.
 - Fixed libtcodpy print functions not supporting Unicode for Python 3.
-- Fixed libtcod missing definition `TCOD_console_print_utf`.
+- Fixed libtcodpy missing definition `TCOD_console_print_utf`.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

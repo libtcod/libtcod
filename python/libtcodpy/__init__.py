@@ -1031,6 +1031,7 @@ def console_get_alignment(con):
     return _lib.TCOD_console_get_alignment(con)
 
 _lib.TCOD_console_print.argtypes=[c_void_p,c_int,c_int,c_char_p]
+_lib.TCOD_console_print_utf.argtypes=[c_void_p,c_int,c_int,c_wchar_p]
 def console_print(con, x, y, fmt):
     _lib.TCOD_console_print_utf(con, x, y, _fmt_unicode(fmt))
 

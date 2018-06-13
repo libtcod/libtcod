@@ -29,6 +29,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   libtcodpy says it wants an ascii string.
 - libtcodpy now escapes the `%` character on print functions.
 - Fixed libtcodpy print functions not supporting Unicode for Python 3.
+- Fixed libtcod missing definition `TCOD_console_print_utf`.
 
 ## [1.6.7] - 2018-05-17
 ### Changed

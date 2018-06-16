@@ -1,4 +1,15 @@
-[TOC]
+<!--ts-->
+      * [Introduction](#introduction)
+      * [What can it do?](#what-can-it-do)
+      * [How do I get set up?](#how-do-i-get-set-up)
+         * [Using one of our downloads](#using-one-of-our-downloads)
+         * [Compiling from source](#compiling-from-source)
+            * [SDL2](#sdl2)
+      * [Getting Started](#getting-started)
+
+<!-- Added by: Kyle, at: 2018-06-16T11:03-07:00 -->
+
+<!--te-->
 
 ## Introduction ##
 

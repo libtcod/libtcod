@@ -1,7 +1,8 @@
-Building Libtcod 1.6 on Linux with SDL2
-=======================================
+Building Libtcod 1.6 on Linux or MacOS
+======================================
 
-The following instructions have been tested on 32 and 64-bit versions of Ubuntu 14.04 and Fedora 22.
+The following instructions have been tested on 32 and 64-bit versions of
+Ubuntu 14.04 and Fedora 22.
 
 Dependencies
 ------------
@@ -15,11 +16,15 @@ For Fedora 22:
     $ sudo dnf -v groupinstall "C Development Tools and Libraries"
     $ sudo dnf install mercurial alsa-lib-devel audiofile-devel mesa-libGL-devel mesa-libGLU-devel mesa-libEGL-devel mesa-libGLES-devel libXext-devel libX11-devel libXi-devel libXrandr-devel libXrender-devel dbus-devel libXScrnSaver-devel libusb-devel pulseaudio-libs-devel libXinerama-devel libXcursor-devel systemd-devel
 
+MacOS users with a working Homebrew installation, can install the necessary
+dependencies with `brew install autoconf automake libtool pkg-build sdl2`.
 
 Building SDL2
 -------------
 
-It is recommended strongly that you install SDL2 using your package manager.  However, if you are unable to work out the package name, then you can take the harder route and build it yourself.
+It is recommended strongly that you install SDL2 using your package manager.
+However, if you are unable to work out the package name, then you can take the
+harder route and build it yourself.
 
 Download the supported SDL2 revision, build and install it if you must:
 
@@ -32,8 +37,8 @@ Download the supported SDL2 revision, build and install it if you must:
     $ make
     $ sudo make install
 
-This will place the libraries at `/usr/local/lib/` and the development headers at `/usr/local/include/SDL2/`.
-
+This will place the libraries at `/usr/local/lib/` and the development headers
+at `/usr/local/include/SDL2/`.
 
 Building Libtcod 1.6
 --------------------
@@ -45,6 +50,7 @@ Download the latest libtcod version, build it and install it:
     $ ./configure CFLAGS='-O2'
     $ make
 
-This will place the libraries in the top level of the libtcod checkout directory.
+This will place the libraries in the top level of the libtcod checkout
+directory.
 
 Note that the same makefile is used for 32 and 64 bit distributions.

@@ -1,23 +1,29 @@
-<!--ts-->
-      * [Introduction](#introduction)
-      * [What can it do?](#what-can-it-do)
-      * [How do I get set up?](#how-do-i-get-set-up)
-         * [Using one of our downloads](#using-one-of-our-downloads)
-         * [Compiling from source](#compiling-from-source)
-            * [SDL2](#sdl2)
-      * [Getting Started](#getting-started)
+# Table of contents #
 
-<!-- Added by: Kyle, at: 2018-06-16T11:03-07:00 -->
+<!--ts-->
+   * [Table of contents](#table-of-contents)
+   * [Introduction](#introduction)
+   * [What can it do?](#what-can-it-do)
+   * [How do I get set up?](#how-do-i-get-set-up)
+      * [Using one of our downloads](#using-one-of-our-downloads)
+      * [Compiling from source](#compiling-from-source)
+   * [Getting Started](#getting-started)
+
+<!-- Added by: Kyle, at: 2018-06-16T14:16-07:00 -->
 
 <!--te-->
 
-## Introduction ##
+# Introduction #
 
-libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing an advanced true color console, input, and lots of other utilities frequently used in roguelikes.
+libtcod is a free, fast, portable and uncomplicated API for roguelike
+developers providing an advanced true color console, input, and lots of other
+utilities frequently used in roguelikes.
 
-Status: [![Build status](https://ci.appveyor.com/api/projects/status/6jh07hq205iy0mlh/branch/default?svg=true)](https://ci.appveyor.com/project/rmtew/libtcod/branch/default)
+Status:
+[![Build status](https://ci.appveyor.com/api/projects/status/pemepxo2221f8heo/branch/master?svg=true)](https://ci.appveyor.com/project/HexDecimal/libtcod-6e1jk/branch/master)
+[![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 
-## What can it do? ##
+# What can it do? #
 
 If you want to get a quick overview of the features that libtcod provides, check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features) page.
 
@@ -25,43 +31,82 @@ If you want to get a quick overview of games which have used libtcod, check out 
 
 libtcod is also well known for it's [easy to follow tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod), which many people have used to get started developing a roguelike.  Follow the relevant links the tutorial gives, and it will point you to the right locations.
 
-## How do I get set up? ##
+# How do I get set up? #
 
-### Using one of our downloads ###
+## Using one of our downloads ##
 
-Currently, only Windows binaries are available from the Bitbucket [download section](https://bitbucket.org/libtcod/libtcod/downloads) for this project.  If you are programming in C or C++, various sample projects are included within the source code which can be used as examples of various features.  For those who wish to program in Python which is the only scripting language support that has been contributed so far, the basics are described in [part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up) of the tutorial.
+Windows and MacOS binaries are available from the
+[GitHub Releases page](https://github.com/libtcod/libtcod/releases).
 
-Two builds are currently provided for each release:
+If you are programming in C or C++, various sample projects are included within
+the repository which can be used as examples of various features.
 
-* 32 bit (Win32, SDL2 only) binaries also including source code.
-* 64 bit (x64, SDL2 only) binaries also including source code.
+For those who wish to program in Python which is the only scripting language
+support that has been contributed so far, the basics are described in
+[part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up)
+of the tutorial.
+It's currently recommended to install libtcodpy via
+[python-tdl](https://github.com/HexDecimal/python-tdl) rather than using the
+libtcodpy package included in this repository.
 
-**Warning:** If you download these builds, run `samples.exe` as your very first action.  If you are unable to and get an error about `vcruntime140.dll` being missing, you need to install the two [Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587).  Make sure you install the 32-bit runtime.  And make sure you also install the 64-bit runtime.  Then run `samples.exe` again, and it should now work.  Whether you plan to develop in C, C++, Python or some other language, this is required.
+**Warning:** If you download these builds, run `samples.exe` as your very first
+action.
+If you are unable to and get an error about `vcruntime140.dll` being missing,
+you need to install the two
+[Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587).
+Make sure you install the 32-bit runtime.
+And make sure you also install the 64-bit runtime.
+Then run `samples.exe` again, and it should now work.
+Whether you plan to develop in C, C++, Python or some other language, this is
+required.
 
-### Compiling from source ###
+## Compiling from source ##
 
-These are the recommended places to obtain the source code from:
+You can clone with Mercurial via the
+[BitBucket repository](https://bitbucket.org/libtcod/libtcod), or with Git via
+the [GitHub repository](https://github.com/libtcod/libtcod).
+You can then checkout a specific tag or get the in-development version from
+the default or master branches.
 
-* The latest source code release snapshot on the [downloads page](https://bitbucket.org/libtcod/libtcod/downloads).
-* Clone the repository with Mercurial and checkout the tag for the latest version in the `default` branch.
-* Clone the repository and checkout the bleeding edge from the tip in the default branch.
+All compilation methods, currently including Visual Studio (Windows),
+SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within
+the `build/` subdirectory.
 
-All compilation methods, currently including Visual Studio (Windows), SCons (Windows, Linux, MacOS) and autotools (Linux, MacOS), are located within the `build/` subdirectory.
+Windows users who prefer to use Visual Studio directly can either run the
+top-level 'build.bat' script, or locate and open the provided solution directly
+using Visual Studio.
+The solution is currently for Visual Studio 2015, and the
+[free community edition](https://www.visualstudio.com/vs/community/) is highly
+recommended.
 
-Windows users who prefer to use Visual Studio directly can either run the top-level 'build.bat' script, or locate and open the provided solution directly using Visual Studio.  The solution is currently for Visual Studio 2015, and the [free community edition](https://www.visualstudio.com/vs/community/) is highly recommended.
+SCons automatically downloads SDL2 and can be used on all platforms.
+Instructions are
+[provided here](https://github.com/libtcod/libtcod/tree/master/build/scons).
+The current release builds are built using SCons.
 
-Autotools is a standard approach used for decades, and if you are not familiar with it, you can Bing (or Google) the topic and learn more.  Explicit instructions for Linux, which should be relevant, are [provided here](README-linux-SDL2.md).  SCons is another popular approach, and explicit instructions are [provided here](https://bitbucket.org/libtcod/libtcod/src/tip/build/scons/?at=default) for those who prefer.
+Autotools is a common standard on Linux, and can be used for MacOS.
+Instructions are
+[provided here](https://github.com/libtcod/libtcod/tree/master/build/autotools).
 
-MacOS users with a working Homebrew installation, can install the necessary dependencies with `brew install autoconf automake libtool pkg-build sdl2`. To build from the current development version of libtcod (rather than downloading a source package), `brew install mercurial`. Then follow [the directions](README-linux-SDL2.md) for building libtcod on Linux (just the final section). Note that the actual libraries will be in libtcod/build/autotools/.lib, with several symlinks.
+If you ever need to statically compile libtcod the easiest method would be to
+use the `src/libtcod_c.c` and `src/libtcod.cpp` source files, which include all
+the other sources.  Further instructions are included in those files.
 
-#### SDL2 ####
+# Getting Started #
 
-[SDL2](http://hg.libsdl.org/SDL) is the latest version of SDL.  Release 2.0.5 (changeset 007dfe83abf8) of SDL2, is currently used for the official Windows builds.  If you choose to use a different version of SDL2, please be sure to mention it in any issues you create.  And if you are using the bleeding edge (the latest unreleased/untagged changes), please rule out that this is the cause of any problems you encounter, before creating issues.
+The latest documentation is [here](https://libtcod.readthedocs.io/en/latest).
+Currently it's very incomplete, so most people will want to read the
+[1.5.1 documentation](http://roguecentral.org/doryen/data/libtcod/doc/1.5.1/index2.html?c=true&cpp=true&cs=false&py=true&lua=false)
+instead.
 
-## Getting Started ##
-
-The latest documentation is updated with every significant change made to libtcod.  You can find it in [the doc directory](https://bitbucket.org/libtcod/libtcod/src/tip/doc/index2.html?at=default&fileviewer=file-view-default).  Similarly, [the changelog](https://bitbucket.org/libtcod/libtcod/src/tip/libtcod-CHANGELOG.txt?at=default) provides a high level overview of the things you might need to be aware of when later updating libtcod.
-
-libtcod comes with a sample application, implementations of which are provided in each of C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)), C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)) and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).  This provides a decent overview of the basic features, in an interactive fashion.  Each should be identical for the most part, so if you are using Windows, downloading the precompiled binaries and running the included `samples.exe` which is compiled from the C source code, should be representative of the other versions.
-
-The popular [Python tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod) is a good way to both build up a simple roguelike, and get familiar with the basics of libtcod.
+libtcod comes with a sample application, implementations of which are provided
+in each of
+C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)),
+C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)),
+and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).
+This provides a decent overview of the basic features, in an interactive
+fashion.
+Each should be identical for the most part, so if you are using Windows,
+downloading the pre-compiled binaries and running the included `samples.exe`
+which is compiled from the C source code, should be representative of the other
+versions.

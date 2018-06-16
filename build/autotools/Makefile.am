@@ -197,7 +197,6 @@ dist_noinst_DATA = \
 	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \
 	../../LIBTCOD-LICENSE.txt \
-	../../README-linux-SDL2.md \
 	../../README.md \
 	../../libtcod.cfg
 

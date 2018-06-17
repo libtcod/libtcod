@@ -1,6 +1,5 @@
 # Table of contents #
 
-<!--ts-->
    * [Table of contents](#table-of-contents)
    * [Introduction](#introduction)
    * [What can it do?](#what-can-it-do)
@@ -8,10 +7,6 @@
       * [Using one of our downloads](#using-one-of-our-downloads)
       * [Compiling from source](#compiling-from-source)
    * [Getting Started](#getting-started)
-
-<!-- Added by: Kyle, at: 2018-06-16T14:16-07:00 -->
-
-<!--te-->
 
 # Introduction #
 

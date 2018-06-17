@@ -53,5 +53,5 @@ deploy:
   file: "build/scons/libtcod-*.tar.gz"
   skip_cleanup: true
   on:
-    repo: HexDecimal/libtcod
+    repo: libtcod/libtcod
     tags: true

@@ -61,5 +61,5 @@ deploy:
   prerelease: false
   force_update: false
   on:
-    appveyor_repo_name: HexDecimal/libtcod
+    appveyor_repo_name: libtcod/libtcod
     appveyor_repo_tag: true

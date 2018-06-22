@@ -7,6 +7,9 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.
+
 ## [1.7.0] - 2018-06-12
 ### Changed
 - `TCOD_console_is_active()` now returns keyboard focus, its previous return

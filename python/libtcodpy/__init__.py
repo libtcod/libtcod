@@ -2073,10 +2073,10 @@ _lib.TCOD_map_set_properties.argtypes=[c_void_p , c_int, c_int, c_bool, c_bool]
 def map_set_properties(m, x, y, isTrans, isWalk):
     _lib.TCOD_map_set_properties(m, x, y, c_int(isTrans), c_int(isWalk))
 
-_lib.TCOD_map_clear.restype=c_void
-_lib.TCOD_map_clear.argtypes=[c_void_p , c_bool , c_bool ]
-def map_clear(m,walkable=False,transparent=False):
-    _lib.TCOD_map_clear(m,c_int(walkable),c_int(transparent))
+_lib.TCOD_map_clear.restype = c_void
+_lib.TCOD_map_clear.argtypes = [c_void_p , c_bool , c_bool]
+def map_clear(m, transparent=False, walkable=False):
+    _lib.TCOD_map_clear(m, c_int(transparent), c_int(walkable))
 
 _lib.TCOD_map_compute_fov.restype=c_void
 _lib.TCOD_map_compute_fov.argtypes=[c_void_p , c_int, c_int, c_int, c_bool, c_int ]

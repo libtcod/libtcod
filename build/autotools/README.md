@@ -1,5 +1,5 @@
-Building Libtcod 1.6 on Linux or MacOS
-======================================
+Building Libtcod using Autotools
+================================
 
 The following instructions have been tested on 32 and 64-bit versions of
 Ubuntu 14.04 and Fedora 22.
@@ -40,8 +40,8 @@ Download the supported SDL2 revision, build and install it if you must:
 This will place the libraries at `/usr/local/lib/` and the development headers
 at `/usr/local/include/SDL2/`.
 
-Building Libtcod 1.6
---------------------
+Building Libtcod
+----------------
 Download the latest libtcod version, build it and install it:
 
     $ hg clone https://bitbucket.org/libtcod/libtcod
@@ -49,8 +49,9 @@ Download the latest libtcod version, build it and install it:
     $ autoreconf -i
     $ ./configure CFLAGS='-O2'
     $ make
+    $ sudo make install
 
-This will place the libraries in the top level of the libtcod checkout
-directory.
+This will place libtcod static and shared libraries in the `/usr/local/lib`
+directory, and header files in the `/usr/local/include/libtcod` directory.
 
 Note that the same makefile is used for 32 and 64 bit distributions.

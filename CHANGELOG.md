@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- New `TCOD_MAJOR_VERSION`, `TCOD_MINOR_VERSION`, and `TCOD_PATCHLEVEL`
+  constants.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

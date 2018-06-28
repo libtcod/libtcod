@@ -34,7 +34,9 @@
 extern "C" {
 #endif
 
-typedef void *TCOD_list_t;
+struct TCOD_List;
+
+typedef struct TCOD_List *TCOD_list_t;
 
 TCODLIB_API TCOD_list_t TCOD_list_new(void);
 TCODLIB_API TCOD_list_t TCOD_list_allocate(int nb_elements);

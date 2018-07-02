@@ -32,8 +32,8 @@ libtcodgui_la_SOURCES = \
 	../../src/gui/widget.cpp
 
 libtcodgui_la_CXXFLAGS = $(CXXFLAGS) -I$(top_srcdir)/../../include/gui
+libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcodgui_la_LIBADD = libtcodxx.la libtcod.la
-
 
 externalincludedir = $(includedir)/libtcod/external
 externalinclude_HEADERS = \
@@ -94,6 +94,7 @@ libtcod_la_SOURCES = \
 	../../src/vendor/stb.c
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
+libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcod_la_LIBADD = $(PTHREAD_LIBS)
 
 
@@ -171,6 +172,7 @@ libtcodxx_la_SOURCES = \
 	../../src/txtfield.cpp \
 	../../src/zip.cpp
 
+libtcodxx_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcodxx_la_LIBADD = libtcod.la
 
 

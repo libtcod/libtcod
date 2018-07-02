@@ -1,4 +1,4 @@
-AC_INIT([libtcod],[1.6])
+AC_INIT([libtcod],[m4_esyscmd_s(./get_version.py)])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -49,6 +49,7 @@ AS_CASE([$host_os],
         AX_PTHREAD([:], [AC_MSG_ERROR([can't find pthreads])])
     ]
 )
+AC_SUBST([SOVERSION], [m4_esyscmd_s(./get_version.py --so)])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

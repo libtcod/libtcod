@@ -10,6 +10,9 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - New `TCOD_MAJOR_VERSION`, `TCOD_MINOR_VERSION`, and `TCOD_PATCHLEVEL`
   constants.
 
+### Changed
+- AutoTools now adds version numbers to the libraries it builds.
+
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.
 

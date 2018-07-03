@@ -217,8 +217,7 @@ env = Environment(
     INSTALL_DIR='$LIBTCOD_ROOT_DIR',
     CPPPATH=['$VARIANT/include',
              '$VARIANT/include/gui',
-             '$VARIANT/src/png',
-             '$VARIANT/src/zlib',
+             '$VARIANT/src/vendor/zlib',
              ],
     LIBPATH=['$VARIANT'],
     VARIANT='libtcod-$TAG',
@@ -348,13 +347,14 @@ libtcod_sources = {
             omit=['libtcod_c.c', 'libtcod.cpp'],
         )
         # Vendor sources.
-        + env.Glob('$VARIANT/src/*/*.c'),
+        + env.Glob('$VARIANT/src/vendor/*.c')
+        + env.Glob('$VARIANT/src/vendor/zlib/*.c'),
     ),
     # libtcod_c.c and libtcod.cpp are helper sources that include all other
     # files needed to build libtcod.
     'static': (
         # Bundle zlib sources.
-        env.Glob('$VARIANT/src/zlib/*.c')
+        env.Glob('$VARIANT/src/vendor/zlib/*.c')
         # Bundle lodepng.
         + ['$VARIANT/src/vendor/lodepng.c']
         # All other dependences are in the composite sources.

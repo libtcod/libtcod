@@ -37,8 +37,8 @@
  *  * Add `GL` to be dynamically linked.
  *  * Compile and link libtcod's src/vendor/lodepng.c file.
  *  * Link with `zlib`, and add its include directory.  You can include
- *    libtcod's src/zlib directory and compile all `.c` files in there to
- *    statically link it.
+ *    libtcod's src/vendor/zlib directory and compile all `.c` files in there
+ *    to statically link it.
  *  * If you're using C++ then add `libtcod.cpp` to your source files.
  *
  *  You can define `NO_OPENGL` to remove the dependency on the GL library.

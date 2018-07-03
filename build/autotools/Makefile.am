@@ -90,7 +90,7 @@ libtcod_la_SOURCES = \
 	../../src/txtfield_c.c \
 	../../src/wrappers.c \
 	../../src/zip_c.c \
-	../../src/png/lodepng.c \
+	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi

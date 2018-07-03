@@ -168,8 +168,8 @@
     <ClCompile Include="..\..\src\zlib\uncompr.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\png\lodepng.c">
-      <Filter>Source Files\png</Filter>
+    <ClCompile Include="..\..\src\vendor\lodepng.c">
+      <Filter>Source Files\vendor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\bresenham.cpp">
       <Filter>Source Files\cpp</Filter>
@@ -341,8 +341,8 @@
     <ClInclude Include="..\..\src\zlib\zutil.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\png\lodepng.h">
-      <Filter>Header Files\png</Filter>
+    <ClInclude Include="..\..\src\vendor\lodepng.h">
+      <Filter>Header Files\vendor</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\bresenham.hpp">
       <Filter>Header Files\cpp</Filter>

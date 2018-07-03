@@ -35,7 +35,7 @@
 #endif
 #include <SDL.h>
 
-#include "png/lodepng.h"
+#include "vendor/lodepng.h"
 
 #include <libtcod_int.h>
 

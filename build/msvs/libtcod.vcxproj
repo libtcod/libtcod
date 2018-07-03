@@ -194,7 +194,7 @@
     <ClCompile Include="..\..\src\parser_c.c" />
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
-    <ClCompile Include="..\..\src\png\lodepng.c" />
+    <ClCompile Include="..\..\src\vendor\lodepng.c" />
     <ClCompile Include="..\..\src\sys.cpp" />
     <ClCompile Include="..\..\src\sys_c.c" />
     <ClCompile Include="..\..\src\sys_opengl_c.c" />
@@ -275,7 +275,7 @@
     <ClInclude Include="..\..\include\wrappers.h" />
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
-    <ClInclude Include="..\..\src\png\lodepng.h" />
+    <ClInclude Include="..\..\src\vendor\lodepng.h" />
     <ClInclude Include="..\..\src\vendor\stb_sprintf.h" />
     <ClInclude Include="..\..\src\zlib\crc32.h" />
     <ClInclude Include="..\..\src\zlib\deflate.h" />

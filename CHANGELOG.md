@@ -13,6 +13,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 ### Changed
 - AutoTools now adds version numbers to the libraries it builds.
 - lodepng and zlib sources moved into `src/vendor/` folder.
+- Bundled zlib library updated from `1.2.8` to `1.2.11`.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

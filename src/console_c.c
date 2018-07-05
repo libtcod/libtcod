@@ -1088,7 +1088,7 @@ wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap) {
 	do {
 		/* warning ! depending on the compiler, vsnprintf return -1 or
 		 the expected string length if the buffer is not big enough */
-		int len = vsnwprintf(msg[curbuf],buflen[curbuf],fmt,ap);
+		int len = vswprintf(msg[curbuf],buflen[curbuf],fmt,ap);
 		ok=true;
 		if (len < 0 || len >= buflen[curbuf]) {
 			/* buffer too small. */

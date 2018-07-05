@@ -158,12 +158,10 @@ TCODLIB_API char *TCOD_strdup(const char *s);
 TCODLIB_API int TCOD_strcasecmp(const char *s1, const char *s2);
 TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 
-#if defined(TCOD_LINUX) || defined(TCOD_HAIKU) || defined(TCOD_FREEBSD) || defined(TCOD_MACOSX)
-#define vsnwprintf vswprintf
-#endif
-#ifdef TCOD_WINDOWS
-#define vsnwprintf _vsnwprintf
-#endif
+/* Define vswprintf across platforms. */
+#ifdef _WIN32
+#define vswprintf _vsnwprintf /* Windows */
+#endif /* _WIN32 */
 
 /* cross platform deprecation */
 #if defined(_MSC_VER)

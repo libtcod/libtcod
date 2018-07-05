@@ -18,6 +18,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.
+- Resolved build issues on PowerPC platforms.
 
 ## [1.7.0] - 2018-06-12
 ### Changed

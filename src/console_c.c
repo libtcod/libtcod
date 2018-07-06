@@ -228,22 +228,12 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 }
 
 static void TCOD_console_data_free(TCOD_console_data_t *dat) {
-	if (dat->fg_colors) {
-		TCOD_image_delete(dat->fg_colors);
-	} else {
-		free(dat->fg_array);
-	}
-	if (dat->bg_colors) {
-		TCOD_image_delete(dat->bg_colors);
-	} else {
-		free(dat->bg_array);
-	}
-	free(dat->ch_array);
-	dat->fg_colors = NULL;
-	dat->fg_array = NULL;
-	dat->bg_colors = NULL;
-	dat->bg_array = NULL;
-	dat->ch_array = NULL;
+  free(dat->ch_array);
+  free(dat->fg_array);
+  free(dat->bg_array);
+  dat->ch_array = NULL;
+  dat->fg_array = NULL;
+  dat->bg_array = NULL;
 }
 /**
  *  Delete a console.
@@ -338,8 +328,6 @@ void TCOD_console_blit_key_color(
 			dst->ch_array[dst_idx] = dstChar;
 		}
 	}
-	if (dst->fg_colors) { TCOD_image_invalidate_mipmaps(dst->fg_colors); }
-	if (dst->bg_colors) { TCOD_image_invalidate_mipmaps(dst->bg_colors); }
 }
 /**
  *  Blit from one console to another.
@@ -364,14 +352,10 @@ void TCOD_console_blit(
 		TCOD_console_t dstCon, int xDst, int yDst,
 		float foreground_alpha, float background_alpha) {
 	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
-	bool srcHasKeyColor = false;
-	TCOD_color_t srcKeyColor;
-	if (src->bg_colors) {
-		TCOD_image_get_key_data(src->bg_colors, &srcHasKeyColor, &srcKeyColor);
-	}
 	TCOD_console_blit_key_color(
 		srcCon, xSrc, ySrc, wSrc, hSrc, dstCon, xDst, yDst,
-		foreground_alpha, background_alpha, (srcHasKeyColor ? &srcKeyColor : NULL)
+		foreground_alpha, background_alpha,
+		(src->has_key_color ? &src->key_color : NULL)
 		);
 	}
 /**
@@ -1363,16 +1347,9 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 }
 
 static void TCOD_console_data_alloc(TCOD_console_data_t *dat) {
-	dat->ch_array = (int *)calloc(sizeof(int), dat->w*dat->h);
-#ifdef TCOD_IMAGE_SUPPORT
-	dat->fg_colors = TCOD_image_new(dat->w, dat->h);
-	dat->fg_array = TCOD_image_get_colors(dat->fg_colors);
-	dat->bg_colors = TCOD_image_new(dat->w, dat->h);
-	dat->bg_array = TCOD_image_get_colors(dat->bg_colors);
-#else
-	dat->fg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w*dat->h);
-	dat->bg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w*dat->h);
-#endif
+  dat->ch_array = (int *)calloc(sizeof(int), dat->w * dat->h);
+  dat->fg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
+  dat->bg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
 }
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
@@ -1430,18 +1407,6 @@ int TCOD_console_get_height(TCOD_console_t con) {
 	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return 0;
 	return dat->h;
-}
-
-TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return NULL;
-	return dat->fg_colors;
-}
-
-TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return NULL;
-	return dat->bg_colors;
 }
 /**
  *  \brief Set a font image to be loaded during initialization.
@@ -1525,10 +1490,10 @@ bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 	return TCOD_sys_is_key_pressed(key);
 }
 void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
-	TCOD_IF(dat != NULL) return;
-	TCOD_IF(dat->bg_colors != NULL) return;
-	TCOD_image_set_key_color(dat->bg_colors, col);
+  TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+  if (!dat) { return; }
+  dat->has_key_color = 1;
+  dat->key_color = col;
 }
 
 void TCOD_console_credits(void) {

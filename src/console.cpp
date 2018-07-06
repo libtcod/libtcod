@@ -247,16 +247,6 @@ void TCODConsole::vline(int x,int y, int l, TCOD_bkgnd_flag_t flag) {
 	TCOD_console_vline(data,x,y,l,flag);
 }
 
-/*
-TCODImage *TCODConsole::getForegroundColorImage() {
-	return new TCODImage(TCOD_console_get_foreground_color_image(data));
-}
-
-TCODImage *TCODConsole::getBackgroundColorImage() {
-	return new TCODImage(TCOD_console_get_background_color_image(data));
-}
-*/
-
 void TCODConsole::printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt , ...) {
 	if ( fmt ) {
 		va_list ap;

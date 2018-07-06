@@ -30,10 +30,8 @@ build_script:
 # SCons will build in release mode on a tag push.
 - cmd: if defined APPVEYOR_REPO_TAG_NAME set SCONSMODE=MODE=RELEASE VERSION=%APPVEYOR_REPO_TAG_NAME%
 # Install and run scons when there are any SCONSOPTS.
-# pip==9 is needed for the deprecated --egg option, it should be removed after
-# SCons is fixed, see https://github.com/SCons/scons/issues/2769
-- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip==9 distribute setuptools
-- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --egg scons
+- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip distribute setuptools wheel
+- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install scons
 - cmd: if defined SCONSOPTS cd build/scons
 - cmd: if defined SCONSOPTS scons develop dist %SCONSMODE% %SCONSOPTS%
 - cmd: if defined SCONSOPTS cd ../..
@@ -61,5 +59,5 @@ deploy:
   prerelease: false
   force_update: false
   on:
-    appveyor_repo_name: HexDecimal/libtcod
+    appveyor_repo_name: libtcod/libtcod
     appveyor_repo_tag: true

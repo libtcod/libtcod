@@ -1074,16 +1074,6 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt='')
     _lib.TCOD_console_print_frame(con, x, y, w, h, clear, flag,
                                   _fmt_bytes(fmt))
 
-_lib.TCOD_console_get_foreground_color_image.restype=c_void_p
-_lib.TCOD_console_get_foreground_color_image.argtypes=[c_void_p]
-def console_get_foreground_image(con):
-    return _lib.TCOD_console_get_foreground_color_image(con)
-
-_lib.TCOD_console_get_background_color_image.restype=c_void_p
-_lib.TCOD_console_get_background_color_image.argtypes=[c_void_p]
-def console_get_background_image(con):
-    return _lib.TCOD_console_get_background_color_image(con)
-
 _lib.TCOD_console_set_color_control.restype=c_void
 _lib.TCOD_console_set_color_control.argtypes=[c_void_p, Color, Color ]
 def console_set_color_control(con,fore,back) :
@@ -2073,10 +2063,10 @@ _lib.TCOD_map_set_properties.argtypes=[c_void_p , c_int, c_int, c_bool, c_bool]
 def map_set_properties(m, x, y, isTrans, isWalk):
     _lib.TCOD_map_set_properties(m, x, y, c_int(isTrans), c_int(isWalk))
 
-_lib.TCOD_map_clear.restype=c_void
-_lib.TCOD_map_clear.argtypes=[c_void_p , c_bool , c_bool ]
-def map_clear(m,walkable=False,transparent=False):
-    _lib.TCOD_map_clear(m,c_int(walkable),c_int(transparent))
+_lib.TCOD_map_clear.restype = c_void
+_lib.TCOD_map_clear.argtypes = [c_void_p , c_bool , c_bool]
+def map_clear(m, transparent=False, walkable=False):
+    _lib.TCOD_map_clear(m, c_int(transparent), c_int(walkable))
 
 _lib.TCOD_map_compute_fov.restype=c_void
 _lib.TCOD_map_compute_fov.argtypes=[c_void_p , c_int, c_int, c_int, c_bool, c_int ]

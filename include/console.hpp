@@ -1002,26 +1002,6 @@ public :
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
 
 	/**
-	@PageName console_advanced
-	@FuncTitle Manipulating foreground colors as an image
-	@FuncDesc This function obtains the image containing the console foreground colors.
-	@Cpp TCODImage *TCODConsole::getForegroundImage()
-	@C TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con)
-	@Py console_get_foreground_image(con)
-	*/
-	TCODImage *getForegroundColorImage();
-
-	/**
-	@PageName console_advanced
-	@FuncTitle Manipulating background colors as an image
-	@FuncDesc This function obtains the image containing the console background colors.
-	@Cpp TCODImage *TCODConsole::getBackgroundImage()
-	@C TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con)
-	@Py console_get_background_image(con)
-	*/
-	TCODImage *getBackgroundColorImage();
-
-	/**
 	@PageName console_read
 	@PageTitle Reading the content of the console
 	@PageFather console_draw

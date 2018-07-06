@@ -126,11 +126,14 @@ Handling user input
 Blocking user input
 ^^^^^^^^^^^^^^^^^^^
 .. doxygenfunction:: TCOD_console_wait_for_keypress
+.. doxygenfunction:: TCOD_sys_wait_for_event
 
 Non blocking user input
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenfunction:: TCOD_console_check_for_keypress
 .. doxygenfunction:: TCOD_console_is_key_pressed
+.. doxygenfunction:: TCOD_sys_check_for_event
+.. doxygenfunction:: TCOD_mouse_get_status
 
 Keyboard event structure
 ^^^^^^^^^^^^^^^^^^^^^^^^

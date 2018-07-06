@@ -1412,64 +1412,81 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 	}
 	return retMask;
 }
-
-TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
-	SDL_Event ev;
-	TCOD_event_t retMask=0;
-	if ( eventMask == 0 ) return 0;
-	if ( flush ) {
-		while ( SDL_PollEvent(&ev) ) {
-			TCOD_sys_SDLtoTCOD(&ev,0);
-		}
-	}
-	tcod_mouse.lbutton_pressed =false;
-	tcod_mouse.rbutton_pressed =false;
-	tcod_mouse.mbutton_pressed =false;
-	tcod_mouse.wheel_up=false;
-	tcod_mouse.wheel_down=false;
-	tcod_mouse.dx=0;
-	tcod_mouse.dy=0;
-	if ( key ) {
-		key->vk=TCODK_NONE;
-		key->c=0;
-	}
-	do {
-		SDL_WaitEvent(&ev);
-		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
-	} while ( ev.type != SDL_QUIT && (retMask & eventMask) == 0 );
-	if (mouse) { *mouse=tcod_mouse; }
-	return retMask;
+/**
+ *  Internal function containing code shared by TCOD_sys_wait_for_event
+ *  and TCOD_sys_check_for_event
+ */
+static TCOD_event_t TCOD_sys_check_for_event_(
+    SDL_Event *ev, int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
+  TCOD_event_t retMask = 0;
+  if (eventMask == 0) { return 0; }
+  tcod_mouse.lbutton_pressed = 0;
+  tcod_mouse.rbutton_pressed = 0;
+  tcod_mouse.mbutton_pressed = 0;
+  tcod_mouse.wheel_up = 0;
+  tcod_mouse.wheel_down = 0;
+  tcod_mouse.dx = 0;
+  tcod_mouse.dy = 0;
+  if (key) {
+    key->vk = TCODK_NONE;
+    key->c = 0;
+  }
+  while (SDL_PollEvent(ev)) {
+    retMask = TCOD_sys_handle_event(ev, eventMask, key, &tcod_mouse);
+    if (retMask & TCOD_EVENT_KEY) {
+      break; /* only one key event per frame */
+    }
+  }
+  if (mouse) { *mouse = tcod_mouse; }
+  return retMask;
 }
-
-TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
-	SDL_Event ev;
-	TCOD_event_t retMask=0;
-	if ( eventMask == 0 ) return 0;
-	tcod_mouse.lbutton_pressed =false;
-	tcod_mouse.rbutton_pressed =false;
-	tcod_mouse.mbutton_pressed =false;
-	tcod_mouse.wheel_up=false;
-	tcod_mouse.wheel_down=false;
-	tcod_mouse.dx=0;
-	tcod_mouse.dy=0;
-	if ( key ) {
-		key->vk=TCODK_NONE;
-		key->c=0;
-	}
-	while ( SDL_PollEvent(&ev) ) {
-		retMask=TCOD_sys_handle_event(&ev,eventMask,key,&tcod_mouse);
-		if ((retMask & TCOD_EVENT_KEY) != 0)
-			/* only one key event per frame */
-			break;
-	}
-	if (mouse) { *mouse=tcod_mouse; }
-	return retMask;
+/**
+ *  Wait for a specific type of event.
+ *
+ *  \param eventMask A bit-mask of TCOD_event_t flags.
+ *  \param key Optional pointer to a TCOD_key_t struct.
+ *  \param mouse Optional pointer to a TCOD_mouse_t struct.
+ *  \param flush This should always be false.
+ *  \return A TCOD_event_t flag showing which event was actually processed.
+ *
+ *  This function also returns when the SDL window is being closed.
+ */
+TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key,
+                                     TCOD_mouse_t *mouse, bool flush) {
+  SDL_Event ev;
+  TCOD_event_t retMask = 0;
+  if (eventMask == 0) { return 0; }
+  if (flush) {
+    while (SDL_PollEvent(&ev)) {
+      TCOD_sys_SDLtoTCOD(&ev, 0);
+    }
+  }
+  do {
+    SDL_WaitEvent(NULL);
+    retMask = TCOD_sys_check_for_event_(&ev, eventMask, key, mouse);
+  } while (ev.type != SDL_QUIT && (retMask & eventMask) == 0);
+  return retMask;
 }
-
+/**
+ *  Check for a specific type of event.
+ *
+ *  \param eventMask A bit-mask of TCOD_event_t flags.
+ *  \param key Optional pointer to a TCOD_key_t struct.
+ *  \param mouse Optional pointer to a TCOD_mouse_t struct.
+ *  \param flush This should always be false.
+ *  \return A TCOD_event_t flag showing which event was actually processed.
+ */
+TCOD_event_t TCOD_sys_check_for_event(
+    int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
+  SDL_Event ev;
+  return TCOD_sys_check_for_event_(&ev, eventMask, key, mouse);
+}
+/**
+ *  Return a copy of the current mouse state.
+ */
 TCOD_mouse_t TCOD_mouse_get_status(void) {
-	return tcod_mouse;
+  return tcod_mouse;
 }
-
 
 /* classic keyboard functions (based on generic events) */
 /**

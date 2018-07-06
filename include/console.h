@@ -99,9 +99,6 @@ TCODLIB_API TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int
 TCODLIB_API TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y);
 TCODLIB_API int TCOD_console_get_char(TCOD_console_t con,int x, int y);
 
-TCODLIB_API TCOD_image_t TCOD_console_get_background_color_image(TCOD_console_t con);
-TCODLIB_API TCOD_image_t TCOD_console_get_foreground_color_image(TCOD_console_t con);
-
 TCODLIB_API void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
 TCODLIB_API uint8_t TCOD_console_get_fade(void);
 TCODLIB_API TCOD_color_t TCOD_console_get_fading_color(void);
@@ -126,6 +123,10 @@ TCODLIB_API int TCOD_console_get_width(TCOD_console_t con);
 TCODLIB_API int TCOD_console_get_height(TCOD_console_t con);
 TCODLIB_API void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, float foreground_alpha, float background_alpha);
+TCODLIB_API void TCOD_console_blit_key_color(
+  TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc,
+  TCOD_console_t dst, int xDst, int yDst,
+  float foreground_alpha, float background_alpha, TCOD_color_t *key_color);
 TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 
 TCODLIB_API void TCOD_console_credits(void);

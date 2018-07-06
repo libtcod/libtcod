@@ -1074,16 +1074,6 @@ def console_print_frame(con, x, y, w, h, clear=True, flag=BKGND_DEFAULT, fmt='')
     _lib.TCOD_console_print_frame(con, x, y, w, h, clear, flag,
                                   _fmt_bytes(fmt))
 
-_lib.TCOD_console_get_foreground_color_image.restype=c_void_p
-_lib.TCOD_console_get_foreground_color_image.argtypes=[c_void_p]
-def console_get_foreground_image(con):
-    return _lib.TCOD_console_get_foreground_color_image(con)
-
-_lib.TCOD_console_get_background_color_image.restype=c_void_p
-_lib.TCOD_console_get_background_color_image.argtypes=[c_void_p]
-def console_get_background_image(con):
-    return _lib.TCOD_console_get_background_color_image(con)
-
 _lib.TCOD_console_set_color_control.restype=c_void
 _lib.TCOD_console_set_color_control.argtypes=[c_void_p, Color, Color ]
 def console_set_color_control(con,fore,back) :

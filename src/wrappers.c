@@ -166,7 +166,7 @@ void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade)
 void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	int i;
-	TCOD_color_t *curcolor = TCOD_image_get_colors(dat->bg_colors);
+	TCOD_color_t *curcolor = dat->bg_array;
 	for (i = 0; i < dat->w*dat->h; i++) {
 		curcolor->r = *r;
 		curcolor->g = *g;
@@ -181,7 +181,7 @@ void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
 void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
 	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
 	int i;
-	TCOD_color_t *curcolor = TCOD_image_get_colors(dat->fg_colors);
+	TCOD_color_t *curcolor = dat->fg_array;
 	for (i = 0; i < dat->w*dat->h; i++) {
 		curcolor->r = *r;
 		curcolor->g = *g;

@@ -675,7 +675,7 @@ void TCOD_parser_delete(TCOD_parser_t parser) {
 }
 
 /* parse a file */
-static TCOD_list_t *default_props;
+static struct TCOD_List *default_props;
 /* triggers callbacks in the listener for each event during parsing */
 void TCOD_parser_run(TCOD_parser_t parser,  const char *filename, TCOD_parser_listener_t *_listener) {
 	TCOD_parser_int_t *p=(TCOD_parser_int_t *)parser;

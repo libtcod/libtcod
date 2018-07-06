@@ -54,7 +54,8 @@ struct SDL_Renderer;
 #ifdef TCOD_CONSOLE_SUPPORT
 typedef struct {
 	int *ch_array; /* character code array */
-	TCOD_image_t fg_colors, bg_colors;
+  /* pointers to arrays of TCOD_color_t colors */
+  TCOD_color_t *fg_array, *bg_array;
 	/* console width and height (in characters,not pixels) */
 	int w,h;
 	/* default background operator for print & print_rect functions */
@@ -63,14 +64,18 @@ typedef struct {
 	TCOD_alignment_t alignment;
 	/* foreground (text), background colors */
 	TCOD_color_t fore, back;
+  /* True if a key color is being used. */
+  bool has_key_color;
+  /* The current key color for this console. */
+  TCOD_color_t key_color;
 } TCOD_console_data_t;
 #endif
 
 /* fov internal stuff */
 typedef struct {
-	bool transparent:1;
-	bool walkable:1;
-	bool fov:1;
+	bool transparent;
+	bool walkable;
+	bool fov;
 } cell_t;
 
 typedef struct {

@@ -451,12 +451,12 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 	} else {
 		hdelta=(charmap->pitch - TCOD_ctx.font_width*bpp);
 	}
-	nfg = TCOD_image_get_colors(console->fg_colors);
-	nbg = TCOD_image_get_colors(console->bg_colors);
+	nfg = console->fg_array;
+	nbg = console->bg_array;
 	if (track_changes) {
 		oc = cache->ch_array;
-		ofg = TCOD_image_get_colors(cache->fg_colors);
-		obg = TCOD_image_get_colors(cache->bg_colors);
+		ofg = cache->fg_array;
+		obg = cache->bg_array;
 	}
 	if ( charmap_backup == NULL ) {
 		charmap_backup=(SDL_Surface *)TCOD_sys_get_surface(charmap->w,charmap->h,true);
@@ -637,8 +637,10 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 		/* update previous values cache */
 		memcpy(cache->ch_array, console->ch_array,
 		       sizeof(console->ch_array[0]) * console->w * console->h);
-		TCOD_image_mipmap_copy_internal(console->fg_colors, cache->fg_colors);
-		TCOD_image_mipmap_copy_internal(console->bg_colors, cache->bg_colors);
+		memcpy(cache->fg_array, console->fg_array,
+		       sizeof(console->fg_array[0]) * console->w * console->h);
+		memcpy(cache->bg_array, console->bg_array,
+		       sizeof(console->bg_array[0]) * console->w * console->h);
 	}
 }
 

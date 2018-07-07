@@ -29,7 +29,7 @@
 
 
 TCODPath::TCODPath(const TCODMap *map, float diagonalCost) {
-	data=(void *)TCOD_path_new_using_map(map->data,diagonalCost);
+  data = TCOD_path_new_using_map(map->data, diagonalCost);
 }
 
 TCODPath::~TCODPath() {
@@ -44,7 +44,7 @@ float TCOD_path_func(int xFrom, int yFrom, int xTo,int yTo, void *data) {
 TCODPath::TCODPath(int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost) {
 	cppData.listener=listener;
 	cppData.userData=userData;
-	data=(void *)TCOD_path_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
+	data = TCOD_path_new_using_function(width, height, TCOD_path_func, (void *)&cppData, diagonalCost);
 }
 
 
@@ -94,7 +94,7 @@ TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
 TCODDijkstra::TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost) {
 	cppData.listener=listener;
 	cppData.userData=userData;
-	data=(void *)TCOD_dijkstra_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
+	data = TCOD_dijkstra_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
 }
 
 //dtor

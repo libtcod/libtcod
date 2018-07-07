@@ -35,7 +35,8 @@
 extern "C" {
 #endif
 typedef float (*TCOD_path_func_t)( int xFrom, int yFrom, int xTo, int yTo, void *user_data );
-typedef void *TCOD_path_t;
+struct TCOD_Path;
+typedef struct TCOD_Path *TCOD_path_t;
 
 TCODLIB_API TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost);
 TCODLIB_API TCOD_path_t TCOD_path_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost);
@@ -52,7 +53,8 @@ TCODLIB_API void TCOD_path_delete(TCOD_path_t path);
 
 /* Dijkstra stuff - by Mingos*/
 
-typedef void *TCOD_dijkstra_t;
+struct TCOD_Dijkstra;
+typedef struct TCOD_Dijkstra *TCOD_dijkstra_t;
 
 TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost);
 TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new_using_function(int map_width, int map_height, TCOD_path_func_t func, void *user_data, float diagonalCost);

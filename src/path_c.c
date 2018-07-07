@@ -41,7 +41,7 @@ static int dirx[]={-1,0,1,-1,0,1,-1,0,1};
 static int diry[]={-1,-1,-1,0,0,0,1,1,1};
 static int invdir[] = {SOUTH_EAST,SOUTH,SOUTH_WEST,EAST,NONE,WEST,NORTH_EAST,NORTH,NORTH_WEST};
 
-typedef struct {
+typedef struct TCOD_Path {
 	int ox,oy; /* coordinates of the creature position */
 	int dx,dy; /* coordinates of the creature's destination */
 	TCOD_list_t path; /* list of dir_t to follow the path */
@@ -452,7 +452,7 @@ void TCOD_path_get_destination(TCOD_path_t p, int *x, int *y) {
  * ------------------------------------------------------- */
 
 /* Dijkstra data structure */
-typedef struct {
+typedef struct TCOD_Dijkstra {
 	int diagonal_cost;
 	int width, height, nodes_max;
 	TCOD_map_t map; /* a TCODMap with walkability data */

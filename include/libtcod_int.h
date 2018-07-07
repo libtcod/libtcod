@@ -68,7 +68,7 @@ struct TCOD_Map {
 typedef struct TCOD_Map map_t;
 
 /* pseudorandom number generator toolkit */
-typedef struct {
+typedef struct TCOD_Random {
 	/* algorithm identifier */
 	TCOD_random_algo_t algo;
 	/* distribution */

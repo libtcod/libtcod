@@ -36,7 +36,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef void *TCOD_zip_t;
+struct TCOD_Zip;
+typedef struct TCOD_Zip *TCOD_zip_t;
 
 TCODLIB_API TCOD_zip_t TCOD_zip_new(void);
 TCODLIB_API void TCOD_zip_delete(TCOD_zip_t zip);

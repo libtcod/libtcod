@@ -34,7 +34,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef void *TCOD_noise_t;
+struct TCOD_Noise;
+typedef struct TCOD_Noise *TCOD_noise_t;
 
 typedef enum {
 	TCOD_NOISE_PERLIN = 1,

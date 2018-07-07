@@ -57,7 +57,7 @@ typedef struct {
 } namegen_syllables_t;
 
 /* and the generator struct */
-typedef struct {
+typedef struct TCOD_NameGen {
     /* the name that will be called */
     char * name;
     /* needs to use a random number generator */

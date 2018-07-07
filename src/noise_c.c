@@ -40,7 +40,7 @@
 #define SIMPLEX_SCALE 0.5f
 #define WAVELET_SCALE 2.0f
 
-typedef struct {
+typedef struct TCOD_Noise {
 	int ndim;
 	unsigned char map[256]; /* Randomized map of indexes into buffer */
 	float buffer[256][TCOD_NOISE_MAX_DIMENSIONS]; 	/* Random 256 x ndim buffer */

@@ -35,7 +35,7 @@
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 
-typedef struct {
+typedef struct TCOD_Zip {
 	TCOD_list_t buffer; /* list<int> */
 	uintptr_t ibuffer; /* byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS) */
 	int isize; /* number of bytes in ibuffer */

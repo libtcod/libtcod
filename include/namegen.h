@@ -41,7 +41,8 @@
 extern "C" {
 #endif
 /* the generator typedef */
-typedef void * TCOD_namegen_t;
+struct TCOD_NameGen;
+typedef struct TCOD_NameGen *TCOD_namegen_t;
 
 /* parse a file with syllable sets */
 TCODLIB_API void TCOD_namegen_parse (const char * filename, TCOD_random_t random);

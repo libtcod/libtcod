@@ -38,7 +38,7 @@
 
 #define MAX_INT 0x7FFFFFFF
 
-typedef struct {
+typedef struct TCOD_Text {
     int x, y; /* coordinates on parent console */
     int w, h; /* textfield display size */
     int max; /* maximum nb of characters */

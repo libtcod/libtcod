@@ -38,7 +38,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef void * TCOD_text_t;
+struct TCOD_Text;
+typedef struct TCOD_Text *TCOD_text_t;
 
 TCODLIB_API TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars);
 TCODLIB_API TCOD_text_t TCOD_text_init2(int w, int h, int max_chars);

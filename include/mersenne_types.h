@@ -27,8 +27,8 @@
 */
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
-
-typedef void *TCOD_random_t;
+struct TCOD_Random;
+typedef struct TCOD_Random *TCOD_random_t;
 
 /* dice roll */
 typedef struct {

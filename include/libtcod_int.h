@@ -58,12 +58,14 @@ typedef struct {
 	bool fov;
 } cell_t;
 
-typedef struct {
+struct TCOD_Map {
 	int width;
 	int height;
 	int nbcells;
 	cell_t *cells;
-} map_t;
+};
+
+typedef struct TCOD_Map map_t;
 
 /* pseudorandom number generator toolkit */
 typedef struct {

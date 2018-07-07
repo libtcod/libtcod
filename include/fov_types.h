@@ -31,7 +31,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef void *TCOD_map_t;
+struct TCOD_Map;
+
+typedef struct TCOD_Map *TCOD_map_t;
 
 /* FOV_BASIC : http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
    FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html

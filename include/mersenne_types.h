@@ -27,6 +27,9 @@
 */
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
+#ifdef __cplusplus
+extern "C" {
+#endif
 struct TCOD_Random;
 typedef struct TCOD_Random *TCOD_random_t;
 
@@ -51,4 +54,7 @@ typedef enum {
 	TCOD_DISTRIBUTION_GAUSSIAN_INVERSE,
 	TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE
 } TCOD_distribution_t;
+#ifdef __cplusplus
+}
+#endif
 #endif /* _TCOD_RANDOM_TYPES_H */

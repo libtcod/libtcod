@@ -96,7 +96,8 @@ typedef union {
 } TCOD_value_t;
 
 /* parser structures */
-typedef void *TCOD_parser_struct_t;
+struct TCOD_ParserStruct;
+typedef struct TCOD_ParserStruct *TCOD_parser_struct_t;
 TCODLIB_API const char *TCOD_struct_get_name(TCOD_parser_struct_t def);
 TCODLIB_API void TCOD_struct_add_property(TCOD_parser_struct_t def, const char *name,TCOD_value_type_t type, bool mandatory);
 TCODLIB_API void TCOD_struct_add_list_property(TCOD_parser_struct_t def, const char *name,TCOD_value_type_t type, bool mandatory);
@@ -121,7 +122,8 @@ typedef struct {
 typedef TCOD_value_t (*TCOD_parser_custom_t)(TCOD_lex_t *lex, TCOD_parser_listener_t *listener, TCOD_parser_struct_t str, char *propname);
 
 /* the parser */
-typedef void *TCOD_parser_t;
+struct TCOD_Parser;
+typedef struct TCOD_Parser *TCOD_parser_t;
 
 TCODLIB_API TCOD_parser_t TCOD_parser_new(void);
 TCODLIB_API TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name);
@@ -145,7 +147,7 @@ TCODLIB_API TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, cons
 
 /* parser internals (may be used by custom type parsers) */
 /* parser structures */
-typedef struct {
+typedef struct TCOD_ParserStruct {
 	char *name; /* entity type name */
 	/* list of flags */
 	TCOD_list_t flags;
@@ -157,7 +159,7 @@ typedef struct {
 	TCOD_list_t structs;
 } TCOD_struct_int_t;
 /* the parser */
-typedef struct {
+typedef struct TCOD_Parser {
 	/* list of structures */
 	TCOD_list_t structs;
 	/* list of custom type parsers */

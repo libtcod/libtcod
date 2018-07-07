@@ -516,7 +516,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 						}
 						TCOD_lex_parse(lex);
 						if (!listener->new_property(propname,TCOD_struct_get_type(def,propname),
-							TCOD_parse_property_value(parser, (TCOD_parser_struct_t *)def,propname,true))) return false;
+							TCOD_parse_property_value(parser, def, propname, true))) return false;
 						if ( lex->token_type == TCOD_LEX_ERROR ) return false;
 						found=true;
 						break;
@@ -551,7 +551,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 					for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
 						sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
 						if ( strcmp((*sub)->name,id) == 0 ) {
-							if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),lex->tok)) return false;
+							if (!listener->new_struct(*sub, lex->tok)) return false;
 							if (!TCOD_parser_parse_entity(parser,*sub)) return false;
 							blockFound=true;
 							found=true;
@@ -567,7 +567,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 					for ( sub = (TCOD_struct_int_t **)TCOD_list_begin(def->structs);
 						sub != (TCOD_struct_int_t **)TCOD_list_end(def->structs); sub ++ ) {
 						if ( strcmp((*sub)->name,type) == 0 ) {
-							if (!listener->new_struct((TCOD_parser_struct_t *)(*sub),subname)) return false;
+							if (!listener->new_struct(*sub, subname)) return false;
 							if (!TCOD_parser_parse_entity(parser,*sub)) return false;
 							blockFound=true;
 							found=true;
@@ -609,7 +609,7 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t *parser, TCOD_struct_int_
 		}
 		TCOD_lex_parse(lex);
 	}
-	if (!listener->end_struct((TCOD_parser_struct_t *)def,name)) return false;
+	if (!listener->end_struct(def, name)) return false;
 	return true;
 }
 

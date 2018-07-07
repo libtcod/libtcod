@@ -29,9 +29,11 @@
 #define _TCOD_CONSOLE_TYPES_H
 
 #include "libtcod_portability.h"
+#include "color.h"
 
-typedef void * TCOD_console_t;
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 typedef enum {
 	TCODK_NONE,
 	TCODK_ESCAPE,
@@ -302,4 +304,31 @@ typedef enum {
 	TCOD_RIGHT,
 	TCOD_CENTER
 } TCOD_alignment_t;
+
+/** Private console struct. */
+struct TCOD_Console {
+  /** Character code array. */
+  int *ch_array;
+  /** Pointers to arrays of TCOD_color_t colors. */
+  TCOD_color_t *fg_array, *bg_array;
+  /** Console width and height (in characters, not pixels.) */
+  int w,h;
+  /** Default background operator for print & print_rect functions. */
+  TCOD_bkgnd_flag_t bkgnd_flag;
+  /** Default alignment for print & print_rect functions. */
+  TCOD_alignment_t alignment;
+  /** Foreground (text) and background colors. */
+  TCOD_color_t fore, back;
+  /** True if a key color is being used. */
+  bool has_key_color;
+  /** The current key color for this console. */
+  TCOD_color_t key_color;
+};
+
+typedef struct TCOD_Console *TCOD_console_t;
+
+typedef struct TCOD_Console TCOD_console_data_t;
+#ifdef __cplusplus
+}
+#endif
 #endif /* _TCOD_CONSOLE_TYPES_H */

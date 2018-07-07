@@ -15,6 +15,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - lodepng and zlib sources moved into `src/vendor/` folder.
 - Bundled zlib library updated from `1.2.8` to `1.2.11`.
 - LodePNG updated from `20160501` to `20180611`.
+- libtcod C type declarations are stricter.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

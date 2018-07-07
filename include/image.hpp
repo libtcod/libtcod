@@ -457,7 +457,7 @@ public :
 protected :
 	friend class TCODLIB_API TCODSystem;
 	friend class TCODLIB_API TCODZip;
-	void *data;
+	struct TCOD_Image *data;
 	bool deleteData;
 };
 

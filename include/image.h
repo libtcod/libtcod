@@ -38,7 +38,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-typedef void *TCOD_image_t;
+struct TCOD_Image;
+
+typedef struct TCOD_Image *TCOD_image_t;
 
 TCODLIB_API TCOD_image_t TCOD_image_new(int width, int height);
 #ifdef TCOD_CONSOLE_SUPPORT

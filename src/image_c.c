@@ -45,13 +45,15 @@ typedef struct {
 	bool dirty;
 } mipmap_t;
 
-typedef struct {
+struct TCOD_Image {
 	void *sys_img;
 	int nb_mipmaps;
 	mipmap_t *mipmaps;
 	TCOD_color_t key_color;
 	bool has_key_color;
-} image_data_t;
+};
+
+typedef struct TCOD_Image image_data_t;
 
 /*
 Internal libtcod optimisation, direct colour manipulation in the images primary mipmap.

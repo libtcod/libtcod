@@ -30,16 +30,16 @@
 #ifdef TCOD_IMAGE_SUPPORT
 
 TCODImage::TCODImage(const char *filename) : deleteData(true) {
-	data=(void *)TCOD_image_load(filename);
+  data = TCOD_image_load(filename);
 }
 
 TCODImage::TCODImage(int width, int height) : deleteData(true) {
-	data=(void *)TCOD_image_new(width,height);
+  data = TCOD_image_new(width,height);
 }
 
 #ifdef TCOD_CONSOLE_SUPPORT
 TCODImage::TCODImage(const TCODConsole *con) {
-	data=(void *)TCOD_image_from_console(con->data);
+  data = TCOD_image_from_console(con->data);
 }
 #endif
 

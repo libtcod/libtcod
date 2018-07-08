@@ -35,7 +35,7 @@
  *  A lightweight and generic container that provides array, list, and stack
  *  paradigms.
  */
-typedef struct TCOD_List {
+struct TCOD_List {
   /**
    *  A pointer to an array of void pointers.
    */
@@ -44,7 +44,7 @@ typedef struct TCOD_List {
   int fillSize;
   /** The maximum number of items that `array` can currently hold. */
   int allocSize;
-} TCOD_list_int_t;
+};
 /**
  *  Initialize or expand the array of a TCOD_list_t struct.
  *
@@ -77,7 +77,7 @@ void TCOD_list_set_size(TCOD_list_t l, int size) {
  *  Return a new list.
  */
 TCOD_list_t TCOD_list_new(void) {
-  return (TCOD_list_t)calloc(1, sizeof(TCOD_list_int_t));
+  return (TCOD_list_t)calloc(1, sizeof(struct TCOD_List));
 }
 /**
  *  Return a new list which can hold up to `nb_elements` items.
@@ -94,7 +94,7 @@ TCOD_list_t TCOD_list_allocate(int nb_elements) {
 TCOD_list_t TCOD_list_duplicate(TCOD_list_t l) {
   int i = 0;
   void **t;
-  TCOD_list_int_t *ret = TCOD_list_allocate(l->allocSize);
+  TCOD_list_t ret = TCOD_list_allocate(l->allocSize);
   ret->fillSize = l->fillSize;
   for (t = TCOD_list_begin(l); t != TCOD_list_end(l); ++t) {
     ret->array[i++] = *t;

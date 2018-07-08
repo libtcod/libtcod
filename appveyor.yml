@@ -3,16 +3,16 @@ version: 1.0.{build}
 environment:
   SCONSMODE: "MODE=DEBUG"
   matrix:
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc develop_unittest"
+    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc"
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static develop_unittest"
+    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static"
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86 TOOLSET=msvc develop_unittest"
+    - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
-    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86_64 develop_unittest"
+    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86_64"
       INSTALL_MINGW_64: yes
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
@@ -33,7 +33,7 @@ build_script:
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip distribute setuptools wheel
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install scons
 - cmd: if defined SCONSOPTS cd build/scons
-- cmd: if defined SCONSOPTS scons develop dist %SCONSMODE% %SCONSOPTS%
+- cmd: if defined SCONSOPTS scons develop_all dist %SCONSMODE% %SCONSOPTS%
 - cmd: if defined SCONSOPTS cd ../..
 # Call build.bat on a DEFAULT_BUILD.
 - cmd: if defined DEFAULT_BUILD build.bat -d -p -r

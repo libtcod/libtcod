@@ -6,9 +6,8 @@ package before running this script.
 
 On Windows you will need an installation of Microsoft Visual Studio or MinGW.
 
-To test this SCons script you can use the `build` alias, which will build
-libtcod and all samples without touching any files outside of this
-subdirectory:
+To use this SCons script you can use the `build` alias, which will build
+libtcod in a subdirectory:
 
 ```
 scons build
@@ -17,21 +16,21 @@ scons build
 SCons can compile faster using multiple cores, use the`-j <threads>` flag.
 
 To build and install libtcod and all sample programs into the root libtcod
-folder, use the `develop` alias.  The default mode is `MODE=DEBUG`, so you'll
-also need to change `MODE` if you want a release build:
+folder, use the `develop_all` alias.  The default mode is `MODE=DEBUG`, so
+you'll also need to change `MODE` if you want a release build:
 
 ```
-scons develop MODE=RELEASE
+scons develop_all MODE=RELEASE
 ```
 
-If you only need to work with the libtcod shared library you can use
-`develop_libtcod` instead.
+For libtcod devs, if you only need to update the libtcod shared library you can
+use `develop` or `develop_libtcod` instead.
 
 The compiled binaries will be 32-bit by default.
 You can compile 64-bit binaries with the `ARCH=x86_64` variable:
 
 ```
-scons develop MODE=RELEASE ARCH=x86_64
+scons develop_all MODE=RELEASE ARCH=x86_64
 ```
 
 On Mac this script will always make a universal build, ignoring `ARCH`.

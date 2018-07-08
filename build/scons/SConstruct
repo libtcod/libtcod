@@ -191,6 +191,8 @@ vars.Add(EnumVariable(
                          'or use libtcod_c.c and libtcod.cpp'),
         'auto', allowed_values=('auto', 'static')))
 
+vars.Add('INSTALL_DIR', 'Installation directory.', '/usr/local')
+
 if windows_toolset == 'msvc':
     sdl2_zip_file = 'SDL2-devel-$SDL2_VERSION-VC.zip'
 else:
@@ -214,7 +216,7 @@ env = Environment(
     variables=vars,
     ENV=os.environ,
     LIBTCOD_ROOT_DIR=LIBTCOD_ROOT_DIR,
-    INSTALL_DIR='$LIBTCOD_ROOT_DIR',
+    DEVELOP_DIR='$LIBTCOD_ROOT_DIR',
     CPPPATH=['$VARIANT/include',
              '$VARIANT/include/gui',
              '$VARIANT/src/vendor/zlib',
@@ -264,7 +266,7 @@ if sys.platform == 'win32':
     if env['WINDOWS_TOOLSET'] == 'msvc':
         env.Append(CPPPATH=['$SDL2_PATH/include'],
                    LIBPATH=['$SDL2_PATH/lib/$SDL_ARCH'])
-        sdl_install = env.Install('$INSTALL_DIR',
+        sdl_install = env.Install('$DEVELOP_DIR',
                                   '$SDL2_PATH/lib/$SDL_ARCH/SDL2.dll')
         sdl_package = env.Install('$VARIANT',
                                   '$SDL2_PATH/lib/$SDL_ARCH/SDL2.dll')
@@ -280,7 +282,7 @@ if sys.platform == 'win32':
             )
 
         sdl_install = env.Install(
-            '$INSTALL_DIR',
+            '$DEVELOP_DIR',
             '$SDL2_PATH/$SDL_MINGW_ARCH-w64-mingw32/bin/SDL2.dll'
             )
         sdl_package = env.Install(
@@ -291,7 +293,7 @@ elif sys.platform == 'darwin':
     unpack_sdl2_darwin(env)
     env['ARCH'] = 'x86.x86_64'
     env.Append(CPPPATH=['$SDL2_PATH/Headers'])
-    sdl_install = env.Install('$INSTALL_DIR', '$SDL2_PATH')
+    sdl_install = env.Install('$DEVELOP_DIR', '$SDL2_PATH')
     sdl_package = env.Install('$VARIANT', '$SDL2_PATH')
 else:
     env.ParseConfig("sdl2-config --cflags --libs")
@@ -387,17 +389,19 @@ if sys.platform == 'darwin':
                                       '@rpath/libtcodgui.dylib'])
 
 lib_build = [libtcod, libtcod_gui]
-lib_install =  env.Install('$INSTALL_DIR', lib_build) + sdl_install
+lib_develop =  env.Install('$DEVELOP_DIR', lib_build) + sdl_install
 Alias("build_libtcod", lib_build)
-Alias("develop_libtcod", lib_build + lib_install)
+Alias("develop_libtcod", lib_build + lib_develop)
 
 samples_builders = samples_factory()
-samples_installers = env.Install('$INSTALL_DIR', samples_builders)
-unittest_builder = get_unittest()
-unittest_installer = env.Install('$INSTALL_DIR', unittest_builder)
+samples_develop = env.Install('$DEVELOP_DIR', samples_builders)
 Alias("build_samples", samples_builders)
-Alias("develop_samples", samples_builders + samples_installers)
-Alias("develop_unittest", unittest_builder + unittest_installer)
+Alias("develop_samples", samples_builders + samples_develop)
+
+unittest_builder = get_unittest()
+unittest_develop = env.Install('$DEVELOP_DIR', unittest_builder)
+Alias("build_unittest", unittest_builder)
+Alias("develop_unittest", unittest_builder + unittest_develop)
 
 package_files = (
     lib_build + samples_builders + sdl_package +
@@ -429,8 +433,12 @@ else:
 
 Alias("dist", zip)
 
-Alias("build", ["build_samples", "build_libtcod"])
-Alias("develop", ["develop_samples", "develop_libtcod"])
+Alias("build", ["build_libtcod"])
+Alias("develop", ["develop_libtcod"])
+
+Alias("build_all", ["build_libtcod", "build_samples", "build_unittest"])
+Alias("develop_all",
+      ["develop_libtcod", "develop_samples", "develop_unittest"])
 
 Default(None)
 Help(vars.GenerateHelpText(env))

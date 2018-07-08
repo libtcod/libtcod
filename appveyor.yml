@@ -13,19 +13,19 @@ environment:
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
     - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86_64"
-      INSTALL_MINGW_64: yes
+      INSTALL_MINGW: "--x64"
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    # The next item can't build the unittest because gcc is out-of-date.
     - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86"
+      INSTALL_MINGW: "--x86"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
     - DEFAULT_BUILD: yes
 
 build_script:
-# Replace MinGW with MinGW64 if INSTALL_MINGW_64 is defined.
-- cmd: if defined INSTALL_MINGW_64 rmdir /S /Q C:\MinGW
-- cmd: if defined INSTALL_MINGW_64 choco install mingw
+# Replace MinGW with MinGW64 if INSTALL_MINGW is defined.
+- cmd: if defined INSTALL_MINGW rmdir /S /Q C:\MinGW
+- cmd: if defined INSTALL_MINGW choco install mingw %INSTALL_MINGW%
 - cmd: refreshenv
 # SCons will build in release mode on a tag push.
 - cmd: if defined APPVEYOR_REPO_TAG_NAME set SCONSMODE=MODE=RELEASE VERSION=%APPVEYOR_REPO_TAG_NAME%

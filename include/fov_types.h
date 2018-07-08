@@ -28,9 +28,6 @@
 #ifndef _TCOD_FOV_TYPES_H
 #define _TCOD_FOV_TYPES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 struct TCOD_Map;
 
 typedef struct TCOD_Map *TCOD_map_t;
@@ -57,8 +54,4 @@ typedef enum {
 	FOV_RESTRICTIVE,
 	NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
-
-#ifdef __cplusplus
-}
-#endif
 #endif /* _TCOD_FOV_TYPES_H */

@@ -31,9 +31,6 @@
 #include "libtcod_portability.h"
 #include "color.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 typedef enum {
 	TCODK_NONE,
 	TCODK_ESCAPE,
@@ -328,7 +325,4 @@ struct TCOD_Console {
 typedef struct TCOD_Console *TCOD_console_t;
 
 typedef struct TCOD_Console TCOD_console_data_t;
-#ifdef __cplusplus
-}
-#endif
 #endif /* _TCOD_CONSOLE_TYPES_H */

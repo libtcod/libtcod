@@ -704,7 +704,7 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	static TCOD_path_t path=NULL;
 	static bool usingAstar=true;
 	static float dijkstraDist=0;
-	static TCOD_dijkstra_t *dijkstra = NULL;
+	static TCOD_dijkstra_t dijkstra = NULL;
 	static bool recalculatePath=false;
 	static float busy;
 	static int oldChar=' ';

@@ -1116,12 +1116,71 @@ void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy)
 	*cx = ssx / TCOD_ctx.font_width;
 	*cy = ssy / TCOD_ctx.font_height;
 }
-
+/** The global libtcod mouse state. */
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
+/**
+ *  Parse an SDL_Event into `mouse` and return the relevant TCOD_event_t.
+ *
+ *  Returns 0 if the event wasn't mouse related.
+ */
+static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
+                                                TCOD_mouse_t *mouse) {
+  switch(ev->type) {
+    case SDL_MOUSEMOTION:
+      TCOD_sys_unproject_screen_coords(ev->motion.x, ev->motion.y,
+                                       &mouse->x, &mouse->y);
+      if (scale_data.surface_width != 0) {
+        mouse->dx = (ev->motion.xrel * scale_data.src_proportionate_width
+                     / scale_data.surface_width);
+        mouse->dy = (ev->motion.yrel * scale_data.src_proportionate_height
+                     / scale_data.surface_height);
+      }
+      mouse->cx = mouse->x / TCOD_ctx.font_width;
+      mouse->cy = mouse->y / TCOD_ctx.font_height;
+      mouse->dcx = mouse->dx / TCOD_ctx.font_width;
+      mouse->dcy = mouse->dy / TCOD_ctx.font_height;
+
+      return TCOD_EVENT_MOUSE_MOVE;
+    case SDL_MOUSEWHEEL:
+      if (ev->wheel.y < 0) {
+        mouse->wheel_down = true;
+      } else {
+        mouse->wheel_up = true;
+      }
+      return TCOD_EVENT_MOUSE_PRESS;
+    case SDL_MOUSEBUTTONDOWN:
+      switch (ev->button.button) {
+        case SDL_BUTTON_LEFT: mouse->lbutton = mousebl = true; break;
+        case SDL_BUTTON_MIDDLE: mouse->mbutton = mousebm = true; break;
+        case SDL_BUTTON_RIGHT: mouse->rbutton = mousebr = true; break;
+        default: break;
+      }
+      return TCOD_EVENT_MOUSE_PRESS;
+    case SDL_MOUSEBUTTONUP:
+      switch (ev->button.button) {
+        case SDL_BUTTON_LEFT:
+        if (mousebl) { mouse->lbutton_pressed = mouse_force_bl = true; }
+        mouse->lbutton = mousebl = false;
+        break;
+        case SDL_BUTTON_MIDDLE:
+        if (mousebm) { mouse->mbutton_pressed = mouse_force_bm = true; }
+        mouse->mbutton = mousebm = false;
+        break;
+        case SDL_BUTTON_RIGHT:
+        if (mousebr) { mouse->rbutton_pressed = mouse_force_br = true; }
+        mouse->rbutton = mousebr = false;
+        break;
+      }
+      return TCOD_EVENT_MOUSE_RELEASE;
+    default:
+      return 0;
+  }
+}
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
 	key->text[0] = '\0';
 	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
+	retMask |= TCOD_sys_handle_mouse_event(ev, mouse) & eventMask;
 	switch(ev->type) {
 		case SDL_KEYDOWN : {
 			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
@@ -1312,67 +1371,6 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
 			break;
 		}
 #endif
-		case SDL_MOUSEMOTION :
-			if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) != 0) {
-				SDL_MouseMotionEvent *mev=&ev->motion;
-				TCOD_sys_unproject_screen_coords(mev->x, mev->y, &mouse->x, &mouse->y);
-				if (scale_data.surface_width != 0) {
-					mouse->dx += (mev->xrel * scale_data.src_proportionate_width) / scale_data.surface_width;
-					mouse->dy += (mev->yrel * scale_data.src_proportionate_height) / scale_data.surface_height;
-				}
-				mouse->cx = mouse->x / TCOD_ctx.font_width;
-				mouse->cy = mouse->y / TCOD_ctx.font_height;
-				mouse->dcx = mouse->dx / TCOD_ctx.font_width;
-				mouse->dcy = mouse->dy / TCOD_ctx.font_height;
-
-				return retMask | TCOD_EVENT_MOUSE_MOVE;
-			}
-		break;
-		case SDL_MOUSEWHEEL :
-			if (ev->wheel.y < 0)
-				mouse->wheel_down=true;
-			else
-				mouse->wheel_up=true;
-			return retMask | TCOD_EVENT_MOUSE_PRESS;
-		break;
-		case SDL_MOUSEBUTTONDOWN :
-			if ( (TCOD_EVENT_MOUSE_PRESS & eventMask) != 0) {
-				SDL_MouseButtonEvent *mev=&ev->button;
-				retMask|=TCOD_EVENT_MOUSE_PRESS;
-				switch (mev->button) {
-					case SDL_BUTTON_LEFT : mouse->lbutton=mousebl=true; break;
-					case SDL_BUTTON_MIDDLE : mouse->mbutton=mousebm=true; break;
-					case SDL_BUTTON_RIGHT : mouse->rbutton=mousebr=true; break;
-				}
-				/* update mouse position */
-				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
-					mouse->x=mev->x;
-					mouse->y=mev->y;
-					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
-					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
-				}
-				return retMask;
-			}
-		break;
-		case SDL_MOUSEBUTTONUP :
-			if ( (TCOD_EVENT_MOUSE_RELEASE & eventMask) != 0) {
-				SDL_MouseButtonEvent *mev=&ev->button;
-				retMask|=TCOD_EVENT_MOUSE_RELEASE;
-				switch (mev->button) {
-					case SDL_BUTTON_LEFT : if (mousebl) mouse->lbutton_pressed = mouse_force_bl=true; mouse->lbutton = mousebl=false; break;
-					case SDL_BUTTON_MIDDLE : if (mousebm) mouse->mbutton_pressed = mouse_force_bm=true; mouse->mbutton = mousebm=false; break;
-					case SDL_BUTTON_RIGHT : if (mousebr) mouse->rbutton_pressed = mouse_force_br=true; mouse->rbutton = mousebr=false; break;
-				}
-				/* update mouse position */
-				if ( (TCOD_EVENT_MOUSE_MOVE & eventMask) == 0) {
-					mouse->x=mev->x;
-					mouse->y=mev->y;
-					mouse->cx = (mouse->x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
-					mouse->cy = (mouse->y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
-				}
-				return retMask;
-			}
-		break;
 		case SDL_QUIT :
 			TCOD_ctx.is_window_closed=true;
 		break;

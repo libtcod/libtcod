@@ -47,7 +47,7 @@ static ray_data_t **raymap; /* result rays */
 static ray_data_t *raymap2; /* temporary rays */
 static int perimidx;
 
-static ray_data_t *new_ray(map_t *m,int x, int y) {
+static ray_data_t *new_ray(struct TCOD_Map *m,int x, int y) {
     ray_data_t *r;
 	if ( (unsigned) (x+origx) >= (unsigned)m->width ) return NULL;
 	if ( (unsigned) (y+origy) >= (unsigned)m->height ) return NULL;
@@ -57,7 +57,7 @@ static ray_data_t *new_ray(map_t *m,int x, int y) {
 	return r;
 }
 
-static void processRay(map_t *m, TCOD_list_t perim, ray_data_t *new_ray, ray_data_t *input_ray) {
+static void processRay(struct TCOD_Map *m, TCOD_list_t perim, ray_data_t *new_ray, ray_data_t *input_ray) {
 	if ( new_ray ) {
 		int mapx=origx+new_ray->xloc;
 		int mapy=origy+new_ray->yloc;
@@ -107,7 +107,7 @@ static void process_y_input(ray_data_t *new_ray, ray_data_t *yinput) {
 	}
 }
 
-static void merge_input(map_t *m, ray_data_t *r) {
+static void merge_input(struct TCOD_Map *m, ray_data_t *r) {
 	int rayidx=r->xloc+origx+(r->yloc+origy)*m->width;
 	ray_data_t *xi=r->xinput;
 	ray_data_t *yi=r->yinput;
@@ -126,7 +126,7 @@ static void merge_input(map_t *m, ray_data_t *r) {
 	}
 }
 
-static void expandPerimeterFrom(map_t *m,TCOD_list_t perim,ray_data_t *r) {
+static void expandPerimeterFrom(struct TCOD_Map *m,TCOD_list_t perim,ray_data_t *r) {
 	if ( r->xloc >= 0 ) {
 		processRay(m,perim,new_ray(m,r->xloc+1,r->yloc),r);
 	}
@@ -143,9 +143,9 @@ static void expandPerimeterFrom(map_t *m,TCOD_list_t perim,ray_data_t *r) {
 
 
 void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-	map_t *m = (map_t *)map;
+	struct TCOD_Map *m = (struct TCOD_Map *)map;
 	TCOD_list_t perim=TCOD_list_allocate(m->nbcells);
-	cell_t *c;
+	struct TCOD_MapCell *c;
 	ray_data_t **r;
 	int nbcells;
 	int r2=max_radius*max_radius;

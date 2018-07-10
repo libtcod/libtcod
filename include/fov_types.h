@@ -39,19 +39,12 @@ struct TCOD_MapCell {
 /**
  *  Private map struct.
  */
-struct TCOD_Map {
+typedef struct TCOD_Map {
   int width;
   int height;
   int nbcells;
   struct TCOD_MapCell *cells;
-};
-/* deprecated internal typedefs */
-TCOD_DEPRECATED
-typedef struct TCOD_Map map_t;
-TCOD_DEPRECATED
-typedef struct TCOD_MapCell cell_t;
-/* public hidden indirection typedef */
-typedef struct TCOD_Map *TCOD_map_t;
+} TCOD_Map, *TCOD_map_t;
 /**
  *  Field-of-view options.
  */

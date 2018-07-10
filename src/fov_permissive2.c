@@ -73,7 +73,7 @@ static int bumpidx=0;
 #define COLINEAR(l,x,y) (RELATIVE_SLOPE(l,x,y) == 0)
 #define LINE_COLINEAR(l,l2) (COLINEAR(l,(l2)->xi,(l2)->yi) && COLINEAR(l,(l2)->xf,(l2)->yf))
 
-static bool is_blocked(map_t *map, view_t *view, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {
+static bool is_blocked(struct TCOD_Map *map, view_t *view, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {
 	int posx=x*dx/STEP_SIZE+startX;
 	int posy=y*dy/STEP_SIZE+startY;
 	int offset=posx + (posy)*map->width;
@@ -135,7 +135,7 @@ static bool check_view(TCOD_list_t active_views, view_t **it) {
 	return true;
 }
 
-static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, int dy,
+static void visit_coords(struct TCOD_Map *m,int startX, int startY, int x, int y, int dx, int dy,
 	TCOD_list_t active_views, bool light_walls) {
 	/* top left */
 	int tlx=x, tly=y+STEP_SIZE;
@@ -187,7 +187,7 @@ static void visit_coords(map_t *m,int startX, int startY, int x, int y, int dx, 
 	}
 }
 
-static void check_quadrant(map_t *m,int startX,int startY,int dx, int dy, int extentX,int extentY, bool light_walls) {
+static void check_quadrant(struct TCOD_Map *m,int startX,int startY,int dx, int dy, int extentX,int extentY, bool light_walls) {
 	TCOD_list_t active_views=TCOD_list_new();
 	line_t shallow_line={offset,limit,extentX*STEP_SIZE,0};
 	line_t steep_line={limit,offset,0,extentY*STEP_SIZE};
@@ -218,7 +218,7 @@ static void check_quadrant(map_t *m,int startX,int startY,int dx, int dy, int ex
 
 void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, int fovType) {
 	int c,minx,maxx,miny,maxy;
-	map_t *m = (map_t *)map;
+	struct TCOD_Map *m = (struct TCOD_Map *)map;
 	if ( (unsigned)fovType>8 ) TCOD_fatal("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].\n",fovType);
 	offset=8-fovType;
 	limit=8+fovType;

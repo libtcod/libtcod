@@ -41,7 +41,7 @@ double * end_angle = NULL;
 /* number of allocated angle pairs */
 int allocated = 0;
 
-void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int player_x, int player_y, int max_radius, bool light_walls, int dx, int dy) {
+void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (struct TCOD_Map *m, int player_x, int player_y, int max_radius, bool light_walls, int dx, int dy) {
 	/* octant: vertical edge */
 	{
 		int iteration = 1; /* iteration of the algo for this octant */
@@ -263,7 +263,7 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (map_t *m, int play
 }
 
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-	map_t *m = (map_t *)map;
+	struct TCOD_Map *m = (struct TCOD_Map *)map;
 	int max_obstacles;
 	int c;
 

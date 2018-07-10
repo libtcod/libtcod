@@ -35,7 +35,7 @@
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 
-static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
+static void cast_ray(struct TCOD_Map *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
 	int curx=xo,cury=yo;
 	bool in=false;
 	bool blocked=false;
@@ -68,7 +68,7 @@ static void cast_ray(map_t *map, int xo, int yo, int xd, int yd, int r2,bool lig
 	}
 }
 
-void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy) {
+void TCOD_map_postproc(struct TCOD_Map *map,int x0,int y0, int x1, int y1, int dx, int dy) {
 	int cx,cy;
 	for (cx=x0; cx <= x1; cx++) {
 		for (cy=y0;cy <= y1; cy ++ ) {
@@ -100,7 +100,7 @@ void TCOD_map_postproc(map_t *map,int x0,int y0, int x1, int y1, int dx, int dy)
 
 void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	int xo,yo;
-	map_t *m = (map_t *)map;
+	struct TCOD_Map *m = (struct TCOD_Map *)map;
 	/* circular ray casting */
 	int xmin=0, ymin=0, xmax=m->width, ymax=m->height;
 	int c;
@@ -142,7 +142,7 @@ void TCOD_map_compute_fov_circular_raycastingi(TCOD_map_t map, int player_x, int
 #if 0
 #define CELL_RADIUS 0.4f
 #define RAY_RADIUS 0.2f
-static bool ray_blocked(map_t *map,float x, float y, int cx, int cy) {
+static bool ray_blocked(struct TCOD_Map *map,float x, float y, int cx, int cy) {
 	int offset=cx+cy*map->width;
 	float d;
 	if ( (unsigned)offset >= (unsigned)map->nbcells ) return false; /* out of the map */
@@ -150,7 +150,7 @@ static bool ray_blocked(map_t *map,float x, float y, int cx, int cy) {
 	d=(cx-x+0.5f)*(cx-x+0.5f)+(cy-y+0.5f)*(cy-y+0.5f);
 	return d < (CELL_RADIUS+RAY_RADIUS)*(CELL_RADIUS+RAY_RADIUS);
 }
-static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
+static void cast_rayf(struct TCOD_Map *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
 	float fxo=xo+0.5f, fyo=yo+0.5f;
 	float curx=fxo, cury=fyo;
 	float fxd=xd+0.5f;
@@ -200,7 +200,7 @@ static void cast_rayf(map_t *map, int xo, int yo, int xd, int yd, int r2,bool li
 
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
 	int xo,yo;
-	map_t *m = (map_t *)map;
+	struct TCOD_Map *m = (struct TCOD_Map *)map;
 	/* circular ray casting */
 	int xmin=0, ymin=0, xmax=m->width, ymax=m->height;
 	int c;

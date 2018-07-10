@@ -34,7 +34,8 @@ def download_sdl2_win32(env):
 def unpack_sdl2_win32(env):
     """Unpack an SDL2 zip/tar file."""
     if env.Dir('$SDL2_PATH').exists():
-        print(env.subst('SDL2 already exists at $SDL2_PATH'))
+        if not GetOption('silent'):
+            print(env.subst('SDL2 already exists at $SDL2_PATH'))
         return
     download_sdl2_win32(env)
     print(env.subst('Extracting $SDL2_ZIP_FILE to $DEPENDANCY_DIR'))

@@ -50,6 +50,7 @@
 #include "bsp_c.c"
 #include "color_c.c"
 #include "console_c.c"
+#include "console_printing.c"
 #include "console_rexpaint.c"
 #include "fov_c.c"
 #include "fov_circular_raycasting.c"

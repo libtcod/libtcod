@@ -48,6 +48,9 @@
     <ClCompile Include="..\..\src\console_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\console_printing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\fov_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -25,33 +25,65 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef _TCOD_FOV_TYPES_H
-#define _TCOD_FOV_TYPES_H
-
-struct TCOD_Map;
-
+#ifndef TCOD_FOV_TYPES_H_
+#define TCOD_FOV_TYPES_H_
+#include "libtcod_portability.h"
+/**
+ *  Private map cell struct.
+ */
+struct TCOD_MapCell {
+  bool transparent;
+  bool walkable;
+  bool fov;
+};
+/**
+ *  Private map struct.
+ */
+struct TCOD_Map {
+  int width;
+  int height;
+  int nbcells;
+  struct TCOD_MapCell *cells;
+};
+/* deprecated internal typedefs */
+TCOD_DEPRECATED
+typedef struct TCOD_Map map_t;
+TCOD_DEPRECATED
+typedef struct TCOD_MapCell cell_t;
+/* public hidden indirection typedef */
 typedef struct TCOD_Map *TCOD_map_t;
-
-/* FOV_BASIC : http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
-   FOV_DIAMOND : http://www.geocities.com/temerra/los_rays.html
-   FOV_SHADOW : http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
-   FOV_PERMISSIVE : http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
-   FOV_RESTRICTIVE : Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos) */
-
+/**
+ *  Field-of-view options.
+ */
 typedef enum {
-	FOV_BASIC,
-	FOV_DIAMOND,
-	FOV_SHADOW,
-	FOV_PERMISSIVE_0,
-	FOV_PERMISSIVE_1,
-	FOV_PERMISSIVE_2,
-	FOV_PERMISSIVE_3,
-	FOV_PERMISSIVE_4,
-	FOV_PERMISSIVE_5,
-	FOV_PERMISSIVE_6,
-	FOV_PERMISSIVE_7,
-	FOV_PERMISSIVE_8,
-	FOV_RESTRICTIVE,
-	NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
+  /**
+   *  Basic: http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
+   */
+  FOV_BASIC,
+  /**
+   *  Diamond: http://www.geocities.com/temerra/los_rays.html
+   */
+  FOV_DIAMOND,
+  /**
+   * Shadow casting: http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
+   */
+  FOV_SHADOW,
+  /**
+   *  Permissive: http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
+   */
+  FOV_PERMISSIVE_0,
+  FOV_PERMISSIVE_1,
+  FOV_PERMISSIVE_2,
+  FOV_PERMISSIVE_3,
+  FOV_PERMISSIVE_4,
+  FOV_PERMISSIVE_5,
+  FOV_PERMISSIVE_6,
+  FOV_PERMISSIVE_7,
+  FOV_PERMISSIVE_8,
+  /**
+   *  Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
+   */
+  FOV_RESTRICTIVE,
+  NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
-#endif /* _TCOD_FOV_TYPES_H */
+#endif /* TCOD_FOV_TYPES_H_ */

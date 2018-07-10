@@ -51,22 +51,6 @@ struct SDL_Surface;
 struct SDL_Window;
 struct SDL_Renderer;
 
-/* fov internal stuff */
-typedef struct {
-	bool transparent;
-	bool walkable;
-	bool fov;
-} cell_t;
-
-struct TCOD_Map {
-	int width;
-	int height;
-	int nbcells;
-	cell_t *cells;
-};
-
-typedef struct TCOD_Map map_t;
-
 /* pseudorandom number generator toolkit */
 typedef struct TCOD_Random {
 	/* algorithm identifier */

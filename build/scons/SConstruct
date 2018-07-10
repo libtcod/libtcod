@@ -392,17 +392,17 @@ if sys.platform == 'darwin':
 lib_build = [libtcod, libtcod_gui]
 lib_develop =  env.Install('$DEVELOP_DIR', lib_build) + sdl_install
 Alias("build_libtcod", lib_build)
-Alias("develop_libtcod", lib_build + lib_develop)
+Alias("develop_libtcod", lib_develop)
 
 samples_builders = samples_factory()
 samples_develop = env.Install('$DEVELOP_DIR', samples_builders)
 Alias("build_samples", samples_builders)
-Alias("develop_samples", samples_builders + samples_develop)
+Alias("develop_samples", lib_develop + samples_develop)
 
 unittest_builder = get_unittest()
 unittest_develop = env.Install('$DEVELOP_DIR', unittest_builder)
 Alias("build_unittest", unittest_builder)
-Alias("develop_unittest", unittest_builder + unittest_develop)
+Alias("develop_unittest", lib_develop + unittest_develop)
 
 package_files = (
     lib_build + samples_builders + sdl_package +

@@ -303,7 +303,7 @@ typedef enum {
 } TCOD_alignment_t;
 
 /** Private console struct. */
-struct TCOD_Console {
+typedef struct TCOD_Console {
   /** Character code array. */
   int *ch_array;
   /** Pointers to arrays of TCOD_color_t colors. */
@@ -320,9 +320,5 @@ struct TCOD_Console {
   bool has_key_color;
   /** The current key color for this console. */
   TCOD_color_t key_color;
-};
-
-typedef struct TCOD_Console *TCOD_console_t;
-
-typedef struct TCOD_Console TCOD_console_data_t;
+} TCOD_Console, *TCOD_console_t;
 #endif /* _TCOD_CONSOLE_TYPES_H */

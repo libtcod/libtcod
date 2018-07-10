@@ -104,7 +104,7 @@ TCOD_console_t TCOD_console_new(int w, int h)  {
 	TCOD_IFNOT(w > 0 && h > 0 ) {
 		return NULL;
 	} else {
-		TCOD_console_data_t *con=(TCOD_console_data_t *)calloc(sizeof(TCOD_console_data_t),1);
+		struct TCOD_Console *con=(struct TCOD_Console *)calloc(sizeof(struct TCOD_Console),1);
 		if (!con) { return NULL; }
 		con->w=w;
 		con->h=h;
@@ -195,7 +195,7 @@ bool TCOD_console_is_fullscreen(void) {
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
 void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	dat->bkgnd_flag=flag;
 }
@@ -203,7 +203,7 @@ void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag)
  *  Return a consoles default background flag.
  */
 TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return TCOD_BKGND_NONE;
 	return dat->bkgnd_flag;
 }
@@ -214,7 +214,7 @@ TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
  *  \param alignment One of TCOD_alignment_t
  */
 void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	dat->alignment=alignment;
 }
@@ -222,12 +222,12 @@ void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment) {
  *  Return a consoles default alignment.
  */
 TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return TCOD_LEFT;
 	return dat->alignment;
 }
 
-static void TCOD_console_data_free(TCOD_console_data_t *dat) {
+static void TCOD_console_data_free(struct TCOD_Console *dat) {
   free(dat->ch_array);
   free(dat->fg_array);
   free(dat->bg_array);
@@ -244,7 +244,7 @@ static void TCOD_console_data_free(TCOD_console_data_t *dat) {
  *  uninitialized.
  */
 void TCOD_console_delete(TCOD_console_t con) {
-    TCOD_console_data_t *dat=(TCOD_console_data_t *)(con);
+    struct TCOD_Console *dat=(struct TCOD_Console *)(con);
 	if (! dat ) {
 		dat=TCOD_ctx.root;
 		TCOD_sys_uninit();
@@ -258,8 +258,8 @@ void TCOD_console_blit_key_color(
 		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
 		TCOD_console_t dstCon, int xDst, int yDst,
 		float foreground_alpha, float background_alpha, TCOD_color_t *key_color) {
-	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
-	TCOD_console_data_t *dst = dstCon ? (TCOD_console_data_t *)dstCon : TCOD_ctx.root;
+	struct TCOD_Console *src = srcCon ? (struct TCOD_Console *)srcCon : TCOD_ctx.root;
+	struct TCOD_Console *dst = dstCon ? (struct TCOD_Console *)dstCon : TCOD_ctx.root;
 	TCOD_color_t *srcFgColors, *srcBgColors, *dstFgColors, *dstBgColors;
 	int cx, cy;
 	if (wSrc == 0) wSrc = src->w;
@@ -351,7 +351,7 @@ void TCOD_console_blit(
 		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
 		TCOD_console_t dstCon, int xDst, int yDst,
 		float foreground_alpha, float background_alpha) {
-	TCOD_console_data_t *src = srcCon ? (TCOD_console_data_t *)srcCon : TCOD_ctx.root;
+	struct TCOD_Console *src = srcCon ? (struct TCOD_Console *)srcCon : TCOD_ctx.root;
 	TCOD_console_blit_key_color(
 		srcCon, xSrc, ySrc, wSrc, hSrc, dstCon, xDst, yDst,
 		foreground_alpha, background_alpha,
@@ -403,7 +403,7 @@ TCOD_color_t TCOD_console_get_fading_color(void) {
  */
 void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_flag_t flag) {
 	int offset;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
@@ -422,7 +422,7 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
  */
 void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
 	int offset;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
 	offset = y * dat->w + x;
 	dat->ch_array[offset] = c;
@@ -440,7 +440,7 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
  */
 void TCOD_console_clear(TCOD_console_t con) {
 	int i;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	for (i = 0; i < dat->w * dat->h; i++) {
 		dat->ch_array[i] = ' ';
@@ -459,7 +459,7 @@ void TCOD_console_clear(TCOD_console_t con) {
  *  \return A TCOD_color_t struct with a copy of the background color.
  */
 TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_black;
@@ -474,7 +474,7 @@ TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) 
  *  \param col The foreground color to set.
  */
 void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_color_t col) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
@@ -490,7 +490,7 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
  *  \return A TCOD_color_t struct with a copy of the foreground color.
  */
 TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return TCOD_white;
@@ -505,7 +505,7 @@ TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) 
  *  \return The character code.
  */
 int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return 0;
@@ -524,7 +524,7 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
 	TCOD_color_t *back;
 	int newr, newg, newb;
 	int alpha;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
 		return;
@@ -627,7 +627,7 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
  *  \param c The character code to set.
  */
 void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
 	dat->ch_array[y * dat->w + x] = c;
 }
@@ -657,7 +657,7 @@ static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, i
  */
 void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
 	int cx, cy;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	TCOD_ASSERT((unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h);
 	TCOD_ASSERT(x + rw <= dat->w && y + rh <= dat->h);
@@ -762,7 +762,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
  *  It will fail if the font encoding is not `cp437`.
  */
 void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_NW,flag);
 	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_NE,flag);
 	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_SW,flag);
@@ -806,7 +806,7 @@ void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool e
  */
 void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal(con,x,y,0,0,dat->bkgnd_flag,
@@ -827,7 +827,7 @@ void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...) {
 void TCOD_console_print_ex(TCOD_console_t con,int x, int y,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal(con,x,y,0,0,flag,alignment,
@@ -852,7 +852,7 @@ void TCOD_console_print_ex(TCOD_console_t con,int x, int y,
 int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...) {
 	int ret;
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
 	ret = TCOD_console_print_internal(con,x,y,w,h,dat->bkgnd_flag,dat->alignment,
@@ -944,7 +944,7 @@ int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int rw, int rh, 
 	int minx,maxx,miny,maxy;
 	TCOD_color_t oldFore;
 	TCOD_color_t oldBack;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
@@ -1147,7 +1147,7 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 	int minx,maxx,miny,maxy;
 	TCOD_color_t oldFore;
 	TCOD_color_t oldBack;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL
 		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h )
 		return 0;
@@ -1264,7 +1264,7 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 
 void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal_utf(con,x,y,0,0,dat->bkgnd_flag,dat->alignment,
@@ -1275,7 +1275,7 @@ void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt,
 void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y,
 	TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal_utf(con,x,y,0,0,flag,alignment,TCOD_console_vsprint_utf(fmt,ap), false, false);
@@ -1286,7 +1286,7 @@ int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,
 	const wchar_t *fmt, ...) {
 	int ret;
 	va_list ap;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
 	ret = TCOD_console_print_internal_utf(con,x,y,w,h,dat->bkgnd_flag,dat->alignment,
@@ -1330,7 +1330,7 @@ int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int
  */
 void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCOD_renderer_t renderer) {
 	TCOD_IF(w > 0 && h > 0) {
-		TCOD_console_data_t *con=(TCOD_console_data_t *)calloc(sizeof(TCOD_console_data_t),1);
+		struct TCOD_Console *con=(struct TCOD_Console *)calloc(sizeof(struct TCOD_Console),1);
 		int i;
 		con->w=w;
 		con->h=h;
@@ -1346,7 +1346,7 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 	}
 }
 
-static void TCOD_console_data_alloc(TCOD_console_data_t *dat) {
+static void TCOD_console_data_alloc(struct TCOD_Console *dat) {
   dat->ch_array = (int *)calloc(sizeof(int), dat->w * dat->h);
   dat->fg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
   dat->bg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
@@ -1354,7 +1354,7 @@ static void TCOD_console_data_alloc(TCOD_console_data_t *dat) {
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 	int i;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return false;
 	dat->fore=TCOD_white;
 	dat->back=TCOD_black;
@@ -1374,37 +1374,37 @@ bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
 }
 
 void TCOD_console_set_default_foreground(TCOD_console_t con,TCOD_color_t col) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	dat->fore=col;
 }
 
 void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t col) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	dat->back=col;
 }
 
 TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return TCOD_white;
 	return dat->fore;
 }
 
 TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return TCOD_black;
 	return dat->back;
 }
 
 int TCOD_console_get_width(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return 0;
 	return dat->w;
 }
 
 int TCOD_console_get_height(TCOD_console_t con) {
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return 0;
 	return dat->h;
 }
@@ -1490,7 +1490,7 @@ bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 	return TCOD_sys_is_key_pressed(key);
 }
 void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
-  TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+  struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
   if (!dat) { return; }
   dat->has_key_color = 1;
   dat->key_color = col;
@@ -1770,7 +1770,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 
 static void TCOD_console_read_asc(TCOD_console_t con,FILE *f,int width, int height, float version) {
 	int x,y;
-	TCOD_console_data_t *dat=con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_IFNOT(dat != NULL) return;
 	while(fgetc(f) != '#');
 	for(x = 0; x < width; x++) {
@@ -1845,7 +1845,7 @@ bool TCOD_console_load_asc(TCOD_console_t pcon, const char *filename) {
 	float version;
 	int width,height;
 	FILE *f;
-	TCOD_console_data_t *con=pcon ? (TCOD_console_data_t *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
 	TCOD_IFNOT(con != NULL) return false;
 	TCOD_IFNOT( filename != NULL ) {
 		return false;
@@ -1881,7 +1881,7 @@ bool TCOD_console_save_asc(TCOD_console_t pcon, const char *filename) {
 	static float version = 0.3f;
 	FILE *f;
 	int x,y;
-	TCOD_console_data_t *con=pcon ? (TCOD_console_data_t *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
 	TCOD_IFNOT(con != NULL) return false;
 	TCOD_IFNOT( filename != NULL ) {
 		return false;
@@ -2090,7 +2090,7 @@ void fixLayerv2(LayerV2* l){
 /*********** ApfFile */
 
 bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
-	TCOD_console_data_t *con=pcon ? (TCOD_console_data_t *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
 	FILE* fp ;
 	TCOD_IFNOT(con != NULL) return false;
 	detectBigEndianness();
@@ -2225,7 +2225,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 	uint32_t layr = fourCC("layr");
 	FILE* fp ;
 	Data data;
-	TCOD_console_data_t *con=pcon ? (TCOD_console_data_t *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
 	TCOD_IFNOT(con != NULL) return false;
 
 	detectBigEndianness();

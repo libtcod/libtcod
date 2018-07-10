@@ -40,7 +40,7 @@
 
 static SDL_Surface* scale_screen=NULL;
 static bool clear_screen=false;
-static TCOD_console_data_t *root_console_cache; /* cache for previous values */
+static struct TCOD_Console *root_console_cache; /* cache for previous values */
 
 /* This just forces a complete redraw, bypassing the usual rendering of changes. */
 void TCOD_sys_set_clear_screen(void) {
@@ -92,7 +92,7 @@ static void actual_rendering(void) {
 
 /* Return an up-to-date cache for the root console, create or resize the cache
    if needed */
-static TCOD_console_data_t *ensure_cache(TCOD_console_data_t* root) {
+static struct TCOD_Console *ensure_cache(struct TCOD_Console* root) {
 	if (!root_console_cache ||
 			root_console_cache->w != root->w ||
 			root_console_cache->h != root->h) {
@@ -106,7 +106,7 @@ static TCOD_console_data_t *ensure_cache(TCOD_console_data_t* root) {
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
-static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *console) {
+static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *console) {
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		int console_width_p = console->w * TCOD_ctx.font_width;
 		int console_height_p = console->h * TCOD_ctx.font_height;
@@ -199,7 +199,7 @@ static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *c
 }
 
 /* Return the current root console cache if it exists, or NULL. */
-static TCOD_console_data_t *get_root_console_cache(void){
+static struct TCOD_Console *get_root_console_cache(void){
 	return root_console_cache;
 }
 

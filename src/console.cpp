@@ -260,7 +260,7 @@ void TCODConsole::printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_fla
 
 void TCODConsole::print(int x, int y, const char *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=(TCOD_console_data_t *)data;
+	struct TCOD_Console *dat=(struct TCOD_Console *)data;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal(data,x,y,0,0,dat->bkgnd_flag,dat->alignment,
@@ -301,7 +301,7 @@ void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_loc
 
 int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=(TCOD_console_data_t *)data;
+	struct TCOD_Console *dat=(struct TCOD_Console *)data;
 	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
 	int ret = TCOD_console_print_internal(data,x,y,w,h,dat->bkgnd_flag,dat->alignment,TCOD_console_vsprint(fmt,ap),true,false);
@@ -353,7 +353,7 @@ void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY
 
 void TCODConsole::print(int x, int y, const wchar_t *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=(TCOD_console_data_t *)data;
+	struct TCOD_Console *dat=(struct TCOD_Console *)data;
 	TCOD_IFNOT ( dat != NULL ) return;
 	va_start(ap,fmt);
 	TCOD_console_print_internal_utf(data,x,y,0,0,dat->bkgnd_flag,dat->alignment,TCOD_console_vsprint_utf(fmt,ap),false,false);
@@ -369,7 +369,7 @@ void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t
 
 int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...) {
 	va_list ap;
-	TCOD_console_data_t *dat=(TCOD_console_data_t *)data;
+	struct TCOD_Console *dat=(struct TCOD_Console *)data;
 	TCOD_IFNOT ( dat != NULL ) return 0;
 	va_start(ap,fmt);
 	int ret = TCOD_console_print_internal_utf(data,x,y,w,h,dat->bkgnd_flag,dat->alignment,

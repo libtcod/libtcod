@@ -164,7 +164,7 @@ void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade)
 }
 
 void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	int i;
 	TCOD_color_t *curcolor = dat->bg_array;
 	for (i = 0; i < dat->w*dat->h; i++) {
@@ -179,7 +179,7 @@ void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
 }
 
 void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	int i;
 	TCOD_color_t *curcolor = dat->fg_array;
 	for (i = 0; i < dat->w*dat->h; i++) {
@@ -194,7 +194,7 @@ void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
 }
 
 void TCOD_console_fill_char(TCOD_console_t con, int *arr) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	int i;
 	for (i = 0; i < dat->w*dat->h; i++) {
 		dat->ch_array[i] = arr[i];
@@ -287,7 +287,7 @@ void TCOD_console_double_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd
 
 
 void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)con : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,flag);
 	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,flag);
 	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_DSW,flag);

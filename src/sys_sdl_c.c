@@ -427,12 +427,12 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 	return TCOD_sys_get_surface(w,h,false);
 }
 
-static void TCOD_sys_render(void *vbitmap, TCOD_console_data_t* console) {
+static void TCOD_sys_render(void *vbitmap, struct TCOD_Console* console) {
 	sdl->render(sdl, vbitmap, console);
 }
 
 void TCOD_sys_console_to_bitmap(void *vbitmap,
-		TCOD_console_data_t* console, TCOD_console_data_t* cache) {
+		struct TCOD_Console* console, struct TCOD_Console* cache) {
 	static SDL_Surface *charmap_backup=NULL;
 	SDL_Surface *bitmap = (SDL_Surface *)vbitmap;
 	int x,y;
@@ -785,7 +785,7 @@ void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
 
-bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen) {
+bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
 	TCOD_sys_startup();
@@ -1738,7 +1738,7 @@ bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size
 /* Mark a rectangle of tiles dirty. */
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
 	int x, y;
-	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	struct TCOD_Console *dat = sdl->get_root_console_cache();
 	if (!dat) return;
 	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
 	TCOD_IFNOT(dx >= 0) {
@@ -1765,7 +1765,7 @@ void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
    It's recommended that this method stays non-public. */
 void TCOD_sys_set_dirty_character_code(int ch) {
 	int i;
-	TCOD_console_data_t *dat = sdl->get_root_console_cache();
+	struct TCOD_Console *dat = sdl->get_root_console_cache();
 	if (!dat) return;
 	for (i = 0; i < dat->w * dat->h; ++i) {
 		if (dat->ch_array[i] == ch) {

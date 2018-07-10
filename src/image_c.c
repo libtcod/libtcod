@@ -440,7 +440,7 @@ void TCOD_image_refresh_console(TCOD_image_t image, TCOD_console_t console) {
 	console = (console?console:TCOD_ctx.root);
 	/* We're copying the state and clearing part of the copy, no need to delete/free. */
 	TCOD_sys_console_to_bitmap(
-		img->sys_img, (TCOD_console_data_t*)console, NULL);
+		img->sys_img, (struct TCOD_Console*)console, NULL);
 }
 
 #endif /* TCOD_CONSOLE_SUPPORT */
@@ -792,7 +792,7 @@ void TCOD_image_blit_2x(TCOD_image_t image, TCOD_console_t con, int dx, int dy, 
 	TCOD_color_t cols[2];
 	int nbCols;
 	int width,height,ascii,cx,cy;
-	TCOD_console_data_t *dat = con ? (TCOD_console_data_t *)(con) : TCOD_ctx.root;
+	struct TCOD_Console *dat = con ? (struct TCOD_Console *)(con) : TCOD_ctx.root;
 	image_data_t *img=(image_data_t *)image;
 	int maxx,maxy;
 	TCOD_IFNOT(image != NULL && dat != NULL) return;

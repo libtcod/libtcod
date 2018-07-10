@@ -85,7 +85,7 @@ typedef struct {
 	bool *colored;
 #ifdef TCOD_CONSOLE_SUPPORT
 	/* the root console */
-	TCOD_console_data_t *root;
+	struct TCOD_Console *root;
 	/* nb chars in the font */
 	int max_font_chars;
 	/* fullscreen data */
@@ -158,7 +158,7 @@ void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
 void TCOD_opengl_uninit_state(void);
 bool TCOD_opengl_init_shaders(void);
-bool TCOD_opengl_render(int oldFade, bool *ascii_updated, TCOD_console_data_t *console, TCOD_console_data_t *cache);
+bool TCOD_opengl_render(int oldFade, bool *ascii_updated, struct TCOD_Console *console, struct TCOD_Console *cache);
 void TCOD_opengl_swap(void);
 void * TCOD_opengl_get_screen(void);
 #endif
@@ -194,7 +194,7 @@ void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
 #ifdef TCOD_CONSOLE_SUPPORT
-bool TCOD_sys_init(TCOD_console_data_t *console, bool fullscreen);
+bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
 void TCOD_sys_uninit(void);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
@@ -202,8 +202,8 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
 void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(void *bitmap);
-void TCOD_sys_console_to_bitmap(void *bitmap, TCOD_console_data_t *console,
-                                TCOD_console_data_t *cache);
+void TCOD_sys_console_to_bitmap(void *bitmap, struct TCOD_Console *console,
+                                struct TCOD_Console *cache);
 TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
@@ -254,7 +254,7 @@ typedef struct TCOD_SDL_driver_t {
 	/* get a fullscreen mode suitable for the console */
 	void (*get_closest_mode)(int *w, int *h);
 	/* render the console on a surface/texture */
-	void (*render)(struct TCOD_SDL_driver_t *sdl, void *vbitmap, TCOD_console_data_t *console);
+	void (*render)(struct TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *console);
 	/* create a new surface */
 	struct SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
 	/* create the game window */
@@ -281,7 +281,7 @@ typedef struct TCOD_SDL_driver_t {
 	/* clean stuff */
 	void (*shutdown)(void);
 	/* get root cache */
-	TCOD_console_data_t *(*get_root_console_cache)(void);
+	struct TCOD_Console *(*get_root_console_cache)(void);
 } TCOD_SDL_driver_t;
 
 /* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */

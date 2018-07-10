@@ -462,7 +462,7 @@ void TCOD_opengl_putchar_ex(int x, int y, int c, TCOD_color_t fore, TCOD_color_t
 
 }
 
-bool TCOD_opengl_render( int oldFade, bool *ascii_updated, TCOD_console_data_t *console, TCOD_console_data_t *cache) {
+bool TCOD_opengl_render( int oldFade, bool *ascii_updated, struct TCOD_Console *console, struct TCOD_Console *cache) {
 	int x,y,i;
 	int fade = (int)TCOD_console_get_fade();
 	bool track_changes = (cache && oldFade == fade);

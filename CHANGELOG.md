@@ -21,6 +21,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.
 - Resolved build issues on PowerPC platforms.
 - Mouse state is now tracked even when mouse events are not asked for.
+- libtcod sys event functions no longer crash if the given key pointer is NULL.
 
 ## [1.7.0] - 2018-06-12
 ### Changed

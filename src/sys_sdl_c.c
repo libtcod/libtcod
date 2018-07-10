@@ -926,8 +926,8 @@ static void TCOD_sys_set_vk(SDL_Keycode sdl_key, char tcod_key) {
 	}
 }
 
-static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
-	SDL_KeyboardEvent *kev=&ev->key;
+static void TCOD_sys_convert_event(const SDL_Event *ev, TCOD_key_t *ret) {
+	const SDL_KeyboardEvent *kev=&ev->key;
 	/* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
 		Presumably in order to avoid problems with different keyboard layouts, they
 		are expected to write their own key mapping editing code for the user.  */
@@ -1009,69 +1009,61 @@ static void TCOD_sys_convert_event(SDL_Event *ev, TCOD_key_t *ret) {
 	}
 
 }
-
-static TCOD_key_t TCOD_sys_SDLtoTCOD(SDL_Event *ev, int flags) {
-	TCOD_key_t *ret = &TCOD_ctx.key_state;
-	ret->vk=TCODK_NONE;
-	ret->c=0;
-	ret->pressed=0;
-	switch (ev->type) {
-		/* handled in TCOD_sys_handle_event */
-		/*
-		case SDL_QUIT :
-		case SDL_VIDEOEXPOSE :
-		case SDL_MOUSEBUTTONDOWN : {
-		case SDL_MOUSEBUTTONUP : {
-		break;
-		*/
-		case SDL_KEYUP : {
-			SDL_KeyboardEvent *kev=&ev->key;
-			TCOD_key_t tmpkey;
-			switch(kev->keysym.sym) {
-				case SDLK_LALT : ret->lalt=0; break;
-				case SDLK_RALT : ret->ralt=0; break;
-				case SDLK_LCTRL : ret->lctrl=0; break;
-				case SDLK_RCTRL : ret->rctrl=0; break;
-				case SDLK_LSHIFT : ret->shift=0; break;
-				case SDLK_RSHIFT : ret->shift=0; break;
-				case SDLK_LGUI : ret->lmeta=0; break;
-				case SDLK_RGUI : ret->rmeta=0; break;
-				default:break;
-			}
-			TCOD_sys_convert_event(ev,&tmpkey);
-			key_status[tmpkey.vk]=false;
-			if ( flags & TCOD_KEY_RELEASED ) {
-				ret->vk=tmpkey.vk;
-				ret->c=tmpkey.c;
-				ret->pressed=0;
-			}
-		}
-		break;
-		case SDL_KEYDOWN : {
-			SDL_KeyboardEvent *kev=&ev->key;
-			TCOD_key_t tmpkey;
-			switch(kev->keysym.sym) {
-				case SDLK_LALT : ret->lalt=1; break;
-				case SDLK_RALT : ret->ralt=1; break;
-				case SDLK_LCTRL : ret->lctrl=1; break;
-				case SDLK_RCTRL : ret->rctrl=1; break;
-				case SDLK_LSHIFT : ret->shift=1; break;
-				case SDLK_RSHIFT : ret->shift=1; break;
-				case SDLK_LGUI : ret->lmeta=1; break;
-				case SDLK_RGUI : ret->rmeta=1; break;
-				default : break;
-			}
-			TCOD_sys_convert_event(ev,&tmpkey);
-			key_status[tmpkey.vk]=true;
-			if ( flags & TCOD_KEY_PRESSED ) {
-				ret->vk=tmpkey.vk;
-				ret->c=tmpkey.c;
-				ret->pressed=1;
-			}
-		}
-		break;
-	}
-	return *ret;
+/**
+ *  Parse an SDL key-up or key-down event and return the global key state.
+ */
+static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event *ev, int flags) {
+  TCOD_key_t *ret = &TCOD_ctx.key_state;
+  ret->vk = TCODK_NONE;
+  ret->c = 0;
+  ret->pressed = 0;
+  switch (ev->type) {
+    case SDL_KEYUP: {
+      TCOD_key_t tmpkey;
+      switch(ev->key.keysym.sym) {
+        case SDLK_LALT: ret->lalt = 0; break;
+        case SDLK_RALT: ret->ralt = 0; break;
+        case SDLK_LCTRL: ret->lctrl = 0; break;
+        case SDLK_RCTRL: ret->rctrl = 0; break;
+        case SDLK_LSHIFT: ret->shift = 0; break;
+        case SDLK_RSHIFT: ret->shift = 0; break;
+        case SDLK_LGUI: ret->lmeta = 0; break;
+        case SDLK_RGUI: ret->rmeta = 0; break;
+        default: break;
+      }
+      TCOD_sys_convert_event(ev, &tmpkey);
+      key_status[tmpkey.vk] = false;
+      if (flags & TCOD_KEY_RELEASED) {
+        ret->vk = tmpkey.vk;
+        ret->c = tmpkey.c;
+        ret->pressed = 0;
+      }
+      break;
+    }
+    case SDL_KEYDOWN: {
+      TCOD_key_t tmpkey;
+      switch(ev->key.keysym.sym) {
+        case SDLK_LALT: ret->lalt = 1; break;
+        case SDLK_RALT: ret->ralt = 1; break;
+        case SDLK_LCTRL: ret->lctrl = 1; break;
+        case SDLK_RCTRL: ret->rctrl = 1; break;
+        case SDLK_LSHIFT: ret->shift = 1; break;
+        case SDLK_RSHIFT: ret->shift = 1; break;
+        case SDLK_LGUI: ret->lmeta = 1; break;
+        case SDLK_RGUI: ret->rmeta = 1; break;
+        default : break;
+      }
+      TCOD_sys_convert_event(ev, &tmpkey);
+      key_status[tmpkey.vk] = true;
+      if (flags & TCOD_KEY_PRESSED) {
+        ret->vk = tmpkey.vk;
+        ret->c = tmpkey.c;
+        ret->pressed = 1;
+      }
+    break;
+    }
+  }
+  return *ret;
 }
 
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
@@ -1125,6 +1117,7 @@ static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,fa
  */
 static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
                                                 TCOD_mouse_t *mouse) {
+  if (!ev || !mouse) { return 0; }
   switch(ev->type) {
     case SDL_MOUSEMOTION:
       TCOD_sys_unproject_screen_coords(ev->motion.x, ev->motion.y,
@@ -1176,40 +1169,40 @@ static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
       return 0;
   }
 }
+/**
+ *  Parse an SDL_Event into `key` and return the relevant TCOD_event_t.
+ *
+ *  Returns 0 if the event wasn't keyboard related.
+ */
+static TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event *ev,
+                                              TCOD_key_t *key) {
+  if (!ev || !key) { return 0; }
+  switch(ev->type) {
+    case SDL_KEYDOWN:
+      *key = TCOD_sys_SDLtoTCOD(ev, TCOD_KEY_PRESSED);
+      return TCOD_EVENT_KEY_PRESS;
+    case SDL_KEYUP:
+      *key = TCOD_sys_SDLtoTCOD(ev, TCOD_KEY_RELEASED);
+      return TCOD_EVENT_KEY_RELEASE;
+    case SDL_TEXTINPUT: {
+      *key = TCOD_ctx.key_state;
+      key->vk = TCODK_TEXT;
+      key->c = 0;
+      key->pressed = 1;
+      strncpy(key->text, ev->text.text, TCOD_KEY_TEXT_SIZE);
+      return TCOD_EVENT_KEY_PRESS;
+    }
+    break;
+    default:
+      return 0;
+  }
+}
 static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
 	TCOD_event_t retMask=0;
-	key->text[0] = '\0';
 	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
 	retMask |= TCOD_sys_handle_mouse_event(ev, mouse) & eventMask;
+  retMask |= TCOD_sys_handle_key_event(ev, key) & eventMask;
 	switch(ev->type) {
-		case SDL_KEYDOWN : {
-			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_PRESSED);
-			if ( (TCOD_EVENT_KEY_PRESS & eventMask) != 0) {
-				retMask|=TCOD_EVENT_KEY_PRESS;
-				if ( key ) *key = tmpKey;
-				return retMask;
-			}
-		}
-		break;
-		case SDL_KEYUP : {
-			TCOD_key_t tmpKey=TCOD_sys_SDLtoTCOD(ev,TCOD_KEY_RELEASED);
-			if ( (TCOD_EVENT_KEY_RELEASE & eventMask) != 0) {
-				retMask|=TCOD_EVENT_KEY_RELEASE;
-				if ( key ) *key = tmpKey;
-				return retMask;
-			}
-		}
-		break;
-		case SDL_TEXTINPUT: {
-			SDL_TextInputEvent *iev=&ev->text;
-			*key = TCOD_ctx.key_state;
-			key->vk = TCODK_TEXT;
-			key->c = 0;
-			key->pressed = 1;
-			strncpy(key->text, iev->text, TCOD_KEY_TEXT_SIZE);
-			return retMask | TCOD_EVENT_KEY_PRESS;
-		}
-		break;
 #ifdef TCOD_TOUCH_INPUT
 		/*
 		 * Need to distinguish between:
@@ -1428,6 +1421,7 @@ static TCOD_event_t TCOD_sys_check_for_event_(
   if (key) {
     key->vk = TCODK_NONE;
     key->c = 0;
+    key->text[0] = '\0';
   }
   while (SDL_PollEvent(ev)) {
     retMask = TCOD_sys_handle_event(ev, eventMask, key, &tcod_mouse);
@@ -1436,6 +1430,11 @@ static TCOD_event_t TCOD_sys_check_for_event_(
     }
   }
   if (mouse) { *mouse = tcod_mouse; }
+  if (key && !(eventMask & retMask & TCOD_EVENT_KEY)) {
+    key->vk = TCODK_NONE;
+    key->c = 0;
+    key->text[0] = '\0';
+  }
   return retMask;
 }
 /**
@@ -1456,7 +1455,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key,
   if (eventMask == 0) { return 0; }
   if (flush) {
     while (SDL_PollEvent(&ev)) {
-      TCOD_sys_SDLtoTCOD(&ev, 0);
+      TCOD_sys_check_for_event_(&ev, 0, NULL, NULL);
     }
   }
   do {

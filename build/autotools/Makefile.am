@@ -92,7 +92,8 @@ libtcod_la_SOURCES = \
 	../../src/wrappers.c \
 	../../src/zip_c.c \
 	../../src/vendor/lodepng.c \
-	../../src/vendor/stb.c
+	../../src/vendor/stb.c \
+	../../src/vendor/utf8proc/utf8proc.c
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)

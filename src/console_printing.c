@@ -38,12 +38,13 @@
 #endif
 
 #include "vendor/stb_sprintf.h"
+#include "vendor/utf8proc/utf8proc.h"
 #include <libtcod_int.h>
 #include <libtcod_utility.h>
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER] = {
     {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255},
     {255, 255, 255}};
-static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER] = { 0 };
+static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER];
 /**
  *  Assign a foreground and background color to a color control index.
  *
@@ -665,3 +666,245 @@ int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int
 }
 
 #endif /* NO_UNICODE */
+/**
+ *  Outputs the bounding box used for printing.
+ *
+ *  If `max_width` or `max_height` are zero, they will be set automatically.
+ */
+static int TCOD_get_print_bounds(
+    const struct TCOD_Console *con, TCOD_alignment_t align, int x, int y,
+    int *max_width, int *max_height,
+    int *left, int *right, int *top, int *bottom) {
+  if (!con) { return -1; }
+  /* Set default width/height if either is zero. */
+  if (*max_height == 0) { *max_height = con->h - y; }
+  if (*max_width == 0 ) {
+    switch(align) {
+      default: case TCOD_LEFT:
+        *max_width = con->w - x;
+        break;
+      case TCOD_RIGHT:
+        *max_width = x + 1;
+        break;
+      case TCOD_CENTER:
+        *max_width = con->w;
+        break;
+    }
+  }
+  /* Return printing boundary. */
+  *top = y;
+  *bottom = MIN(con->h - 1, y + *max_height - 1);
+  switch (align) {
+    case TCOD_LEFT:
+      *left = x;
+      *right = x + *max_width - 1;
+      break;
+    case TCOD_RIGHT:
+      *left = x - *max_width + 1;
+      *right = x;
+      break;
+    case TCOD_CENTER: default:
+      *left = x - *max_width / 2;
+      *right = x + *max_width / 2;
+      break;
+  }
+  *left = MAX(0, *left);
+  *right = MIN(*right, con->w - 1);
+  return 0;
+}
+/**
+ *  Parse ALL color codes on a utf8 string, returns the total length of the
+ *  string parsed.
+ *
+ *  Any `TCOD_color_t` parameters can be NULL.
+ */
+static utf8proc_ssize_t TCOD_utf8_parse_color(
+    const unsigned char *str, TCOD_color_t *fg_color, TCOD_color_t *bg_color,
+    const TCOD_color_t *old_fg_color, const TCOD_color_t *old_bg_color) {
+  const unsigned char *start = str;
+  utf8proc_int32_t codepoint;
+  utf8proc_ssize_t code_size;
+  code_size = utf8proc_iterate(str, -1, &codepoint);
+  str += code_size;
+  if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
+    /* Read colors from the color control array. */
+    int color_index = codepoint - TCOD_COLCTRL_1;
+    if (fg_color) { *fg_color = color_control_fore[color_index]; }
+    if (bg_color) { *bg_color = color_control_back[color_index]; }
+    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
+                                             old_fg_color, old_bg_color);
+  } else if (codepoint == TCOD_COLCTRL_STOP) {
+    /* Return colors to their original color. */
+    if (fg_color && old_fg_color) { *fg_color = *old_fg_color; }
+    if (bg_color && old_bg_color) { *bg_color = *old_bg_color; }
+    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
+                                             old_fg_color, old_bg_color);
+  } else if (codepoint == TCOD_COLCTRL_FORE_RGB
+      || codepoint == TCOD_COLCTRL_BACK_RGB) {
+    /* Read the next 3 code-points as 8-bit RGB color values. */
+    unsigned char *color_array = NULL;
+    int i;
+    if (codepoint == TCOD_COLCTRL_FORE_RGB && fg_color) {
+      color_array = (unsigned char *)fg_color;
+    } else if (codepoint == TCOD_COLCTRL_BACK_RGB && bg_color) {
+      color_array = (unsigned char *)bg_color;
+    }
+    for (i = 0; i < 3; ++i) {
+      code_size = utf8proc_iterate(str, -1, &codepoint);
+      if (code_size < 0) { break; }
+      if (color_array) { color_array[i] = (unsigned char)codepoint; }
+      str += code_size;
+    }
+    code_size = str - start;
+    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
+                                             old_fg_color, old_bg_color);
+  } else {
+    return 0; /* `str` is not on any color codes. */
+  }
+}
+/**
+ *  Check for and return the length of ALL control codes at `str`.
+ */
+static utf8proc_ssize_t TCOD_utf8_skip_control_codes(
+    const unsigned char *str) {
+  return TCOD_utf8_parse_color(str, NULL, NULL, NULL, NULL);
+}
+/**
+ *  Get the next line-break or null terminator, or break the string before
+ *  `max_width`.
+ *
+ *  Return 0 if a line-break or null terminator was found, or 1 if the line was
+ *  automatically split.
+ */
+int TCOD_utf8_next_split(
+    const unsigned char *str, int max_width, int can_split,
+    const unsigned char **endpoint, utf8proc_ssize_t *total_width) {
+  const unsigned char *break_point = NULL;
+  *total_width = 0;
+  *endpoint = str;
+  while (*str != '\0') {
+    utf8proc_int32_t codepoint;
+    utf8proc_ssize_t code_size;
+    const utf8proc_property_t *property;
+
+    str += TCOD_utf8_skip_control_codes(str);
+    code_size = utf8proc_iterate(str, -1, &codepoint);
+    property = utf8proc_get_property(codepoint);
+    if (code_size <= 0) { break; }
+    if (can_split && *total_width > 0
+        && *total_width + (int)property->charwidth > max_width) {
+      *endpoint = str;
+      if (break_point) { *endpoint = break_point; }
+      return 1;
+    }
+    switch (property->category) {
+      case UTF8PROC_CATEGORY_PD: /* Punctuation, dash */
+      case UTF8PROC_CATEGORY_ZS: /* Separator, space */
+        break_point = str;
+        break;
+      case UTF8PROC_CATEGORY_ZL: /* Separator, line */
+      case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
+        *endpoint = str;
+        return 0;
+      default:
+        break;
+    }
+    str += code_size;
+    *total_width += 1;
+  }
+  *endpoint = str;
+  return 0;
+}
+/**
+ *
+ */
+static int TCOD_console_print_internal_utf8(
+    TCOD_console_t con, int x, int y, int max_width, int max_height,
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
+    const unsigned char *string, int can_split, int count_only) {
+  int left, right, top, bottom; /* Print bounding box. */
+  TCOD_color_t old_fg, old_bg;
+  int cursor_x = 0;
+  con = con ? con : TCOD_ctx.root;
+  if (!con || !string) { return 0; }
+  old_fg = con->fore;
+  old_bg = con->back;
+  TCOD_get_print_bounds(con, align, x, y, &max_width, &max_height,
+                        &left, &right, &top, &bottom);
+  while (*string != '\0' && top >= bottom) {
+    const unsigned char *line_break;
+    utf8proc_ssize_t line_width;
+    utf8proc_int32_t codepoint;
+    utf8proc_ssize_t code_size;
+    const utf8proc_property_t *property;
+    int split_status;
+    code_size = utf8proc_iterate(string, -1, &codepoint);
+    if (code_size < 0) { return -1; }
+    property = utf8proc_get_property(codepoint);
+    /* Check for newlines. */
+    if (property->category == UTF8PROC_CATEGORY_ZL) { /* Separator, line */
+      string += code_size;
+      top += 1;
+      continue;
+    }
+    if (property->category == UTF8PROC_CATEGORY_ZP) { /* Separator,paragraph */
+      string += code_size;
+      top += 2;
+      continue;
+    }
+    /* Get the next line of characters. */
+    split_status = TCOD_utf8_next_split(string, max_width, can_split,
+                                        &line_break, &line_width);
+    switch (align) {
+      default:
+      case TCOD_LEFT:
+        cursor_x = x;
+        break;
+      case TCOD_RIGHT:
+        cursor_x = x - line_width;
+        break;
+      case TCOD_CENTER:
+        cursor_x = x - line_width / 2;
+        break;
+    }
+    while (string < line_break) {
+      /* Actually render this line of characters. */
+      string += TCOD_utf8_parse_color(string, &con->fore, &con->back,
+                                      &old_fg, &old_bg);
+      string += code_size = utf8proc_iterate(string, -1, &codepoint);
+      if (code_size < 0) { return -1; }
+      if (!count_only && left <= cursor_x && cursor_x <= right) {
+        TCOD_console_put_char(con, cursor_x, top, codepoint, flag);
+      }
+      cursor_x += 1;
+    }
+    /* Ignore any extra spaces. */
+    while (string != '\0') {
+      code_size = utf8proc_iterate(string, -1, &codepoint);
+      if (code_size < 0) { return -1; }
+      property = utf8proc_get_property(codepoint);
+      if (property->category == UTF8PROC_CATEGORY_ZS) { /* Separator, space */
+        string += code_size;
+      } else {
+        break;
+      }
+    }
+    /* If there was an automatic split earlier then the top is moved down. */
+    if (split_status == 1) {
+      top += 1;
+    }
+  }
+  return MIN(top, bottom) - y + 1;
+}
+
+void TCOD_console_printf(TCOD_console_t con, int x, int y,
+                         const char *fmt, ...) {
+  con = con ? con : TCOD_ctx.root;
+  if (!con) { return; }
+  va_list ap;
+  va_start(ap, fmt);
+  TCOD_console_print_internal_utf8(con, x, y, 0, 0, con->bkgnd_flag,
+      con->alignment, (const unsigned char *)TCOD_console_vsprint(fmt, ap),
+      false, false);
+  va_end(ap);
+}

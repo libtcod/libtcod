@@ -187,6 +187,7 @@
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
     <ClCompile Include="..\..\src\vendor\lodepng.c" />
+    <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c" />
     <ClCompile Include="..\..\src\sys.cpp" />
     <ClCompile Include="..\..\src\sys_c.c" />
     <ClCompile Include="..\..\src\sys_opengl_c.c" />

@@ -71,6 +71,7 @@ TCODLIB_API void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_
 TCODLIB_API TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con);
 TCODLIB_API void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment);
 TCODLIB_API TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con);
+
 TCODLIB_API void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...);
 TCODLIB_API void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
 TCODLIB_API int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
@@ -132,6 +133,9 @@ TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
+
+TCODLIB_API void TCOD_console_printf(TCOD_console_t con, int x, int y,
+                                     const char *fmt, ...);
 #ifdef __cplusplus
 }
 #endif

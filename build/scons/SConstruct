@@ -351,6 +351,7 @@ libtcod_sources = {
         )
         # Vendor sources.
         + env.Glob('$VARIANT/src/vendor/*.c')
+        + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
         + env.Glob('$VARIANT/src/vendor/zlib/*.c'),
     ),
     # libtcod_c.c and libtcod.cpp are helper sources that include all other
@@ -360,6 +361,7 @@ libtcod_sources = {
         env.Glob('$VARIANT/src/vendor/zlib/*.c')
         # Bundle lodepng.
         + ['$VARIANT/src/vendor/lodepng.c']
+        + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
         # All other dependences are in the composite sources.
         + ['$VARIANT/src/libtcod_c.c',
            '$VARIANT/src/libtcod.cpp'],

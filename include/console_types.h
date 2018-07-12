@@ -320,5 +320,6 @@ typedef struct TCOD_Console {
   bool has_key_color;
   /** The current key color for this console. */
   TCOD_color_t key_color;
-} TCOD_Console, *TCOD_console_t;
+} TCOD_Console;
+typedef TCOD_Console *TCOD_console_t;
 #endif /* _TCOD_CONSOLE_TYPES_H */

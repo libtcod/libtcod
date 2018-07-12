@@ -44,7 +44,8 @@ typedef struct TCOD_Map {
   int height;
   int nbcells;
   struct TCOD_MapCell *cells;
-} TCOD_Map, *TCOD_map_t;
+} TCOD_Map;
+typedef TCOD_Map *TCOD_map_t;
 /**
  *  Field-of-view options.
  */

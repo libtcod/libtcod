@@ -144,6 +144,12 @@ TCODLIB_API int TCOD_console_printf_rect(
 TCODLIB_API int TCOD_console_printf_rect_ex(
     TCOD_console_t con,int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+
+/* Private internal functions. */
+int TCOD_console_print_internal_utf8_(
+    TCOD_console_t con, int x, int y, int max_width, int max_height,
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
+    const unsigned char *string, int can_split, int count_only);
 #ifdef __cplusplus
 }
 #endif

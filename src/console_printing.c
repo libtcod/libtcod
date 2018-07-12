@@ -818,7 +818,7 @@ int TCOD_utf8_next_split(
 /**
  *
  */
-static int TCOD_console_print_internal_utf8(
+int TCOD_console_print_internal_utf8_(
     TCOD_console_t con, int x, int y, int max_width, int max_height,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
     const unsigned char *string, int can_split, int count_only) {
@@ -901,7 +901,8 @@ void TCOD_console_printf_ex(struct TCOD_Console *con, int x, int y,
       const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  TCOD_console_print_internal_utf8(con, x, y, 0, 0, flag, alignment,
+  TCOD_console_print_internal_utf8_(
+      con, x, y, 0, 0, flag, alignment,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
@@ -911,9 +912,9 @@ void TCOD_console_printf(struct TCOD_Console *con, int x, int y,
   con = con ? con : TCOD_ctx.root;
   if (!con) { return; }
   va_start(ap, fmt);
-  TCOD_console_print_internal_utf8(con, x, y, 0, 0, con->bkgnd_flag,
-      con->alignment, (const unsigned char *)TCOD_console_vsprint(fmt, ap),
-      false, false);
+  TCOD_console_print_internal_utf8_(
+      con, x, y, 0, 0, con->bkgnd_flag, con->alignment,
+      (const unsigned char *)TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
 int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
@@ -922,7 +923,8 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
   int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf8(con, x, y, w, h, flag, alignment,
+  ret = TCOD_console_print_internal_utf8_(
+      con, x, y, w, h, flag, alignment,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;
@@ -934,8 +936,8 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
   con = con ? con : TCOD_ctx.root;
   if (!con) { return 0; }
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf8(con, x, y, w, h,
-      con->bkgnd_flag,con->alignment,
+  ret = TCOD_console_print_internal_utf8_(
+      con, x, y, w, h, con->bkgnd_flag,con->alignment,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;

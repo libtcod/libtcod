@@ -136,6 +136,14 @@ TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
 
 TCODLIB_API void TCOD_console_printf(TCOD_console_t con, int x, int y,
                                      const char *fmt, ...);
+TCODLIB_API void TCOD_console_printf_ex(
+    TCOD_console_t con, int x, int y, TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment, const char *fmt, ...);
+TCODLIB_API int TCOD_console_printf_rect(
+    TCOD_console_t con, int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_printf_rect_ex(
+    TCOD_console_t con,int x, int y, int w, int h,
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
 #ifdef __cplusplus
 }
 #endif

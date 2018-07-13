@@ -28,6 +28,8 @@
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
+#include <string>
+
 #include "console.h"
 #include "console_rexpaint.h"
 
@@ -676,45 +678,67 @@ public :
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
 	TCOD_alignment_t getAlignment() const;
-
-	/**
-	@PageName console_print
-	@FuncTitle Printing a string with default parameters
-	@FuncDesc This function print a string at a specific position using current default alignment, background flag, foreground and background colors.
-	@Cpp void TCODConsole::print(int x, int y, const char *fmt, ...)
-	@C void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...)
-	@Py console_print(con, x, y, fmt)
-	@C# void TCODConsole::print(int x, int y, string fmt)
-	@Lua Console:print(x, y, fmt)
-	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param x,y coordinate of the character in the console, depending on the default alignment for this console :
-		* TCOD_LEFT : leftmost character of the string
-		* TCOD_CENTER : center character of the string
-		* TCOD_RIGHT : rightmost character of the string
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
-	*/
-	void print(int x, int y, const char *fmt, ...);
-
-	/**
-	@PageName console_print
-	@FuncTitle Printing a string with specific alignment and background mode
-	@FuncDesc This function print a string at a specific position using specific alignment and background flag, but default foreground and background colors.
-	@Cpp void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
-	@C void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
-	@Py console_print_ex(con, x, y, flag, alignment, fmt)
-	@C# void TCODConsole::printEx(int x, int y, TCODBackgroundFlag flag, TCODAlignment alignment, string fmt)
-	@Lua Console::printEx(x, y, flag, alignment, fmt)
-	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
-	@Param x,y coordinate of the character in the console, depending on the alignment :
-		* TCOD_LEFT : leftmost character of the string
-		* TCOD_CENTER : center character of the string
-		* TCOD_RIGHT : rightmost character of the string
-	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
-	@Param alignment defines how the strings are printed on screen.
-	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
-	*/
-	void printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
-
+  /**
+   *  Print an EASCII formatted string to the console.
+   *  /rst
+   *  .. deprecated:: 1.8
+   *    EASCII is being phased out.  Use TCODConsole::printf or one of the
+   *    UTF-8 overloads.
+   *  /endrst
+   */
+  [[deprecated("Use TCODConsole::printf or the std::string overload for"
+               " this function.")]]
+  void print(int x, int y, const char *fmt, ...);
+  /**
+   *  Print a UTF-8 string to the console.
+   *
+   *  This method will use this consoles default alignment, blend mode, and
+   *  colors.
+   *  /rst
+   *  .. versionadded:: 1.8
+   *  /endrst
+   */
+  void print(int x, int y, const std::string &str);
+  /**
+   *  Print a UTF-8 string to the console with specific alignment and blend
+   *  mode.
+   *  /rst
+   *  .. versionadded:: 1.8
+   *  /endrst
+   */
+  void print(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
+             const std::string &str);
+  /**
+   *  Format and print a UTF-8 string to the console.
+   *
+   *  This method will use this consoles default alignment, blend mode, and
+   *  colors.
+   *  /rst
+   *  .. versionadded:: 1.8
+   *  /endrst
+   */
+  void printf(int x, int y, const char *fmt, ...);
+  /**
+   *  Format and print a UTF-8 string to the console with specific alignment
+   *  and blend mode.
+   *  /rst
+   *  .. versionadded:: 1.8
+   *  /endrst
+   */
+  void printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
+              const char *fmt, ...);
+  /**
+   *  Print an EASCII formatted string to the console.
+   *  /rst
+   *  .. deprecated:: 1.8
+   *    Use `TCODConsole::print` or `TCODConsole::printf`.
+   *    These functions have overloads for specifying flag and alignment.
+   *  /endrst
+   */
+  [[deprecated("Use TCODConsole::print or TCODConsole::printf instead of this"
+               " function.")]]
+  void printEx(int x, int y, TCOD_bkgnd_flag_t flag,
+               TCOD_alignment_t alignment, const char *fmt, ...);
 	/**
 	@PageName console_print
 	@FuncTitle Printing a string with default parameters and autowrap

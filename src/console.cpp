@@ -257,22 +257,46 @@ void TCODConsole::printFrame(int x,int y,int w,int h, bool empty, TCOD_bkgnd_fla
 		TCOD_console_print_frame(data,x,y,w,h,empty,flag,NULL);
 	}
 }
-
+/** Deprecated EASCII function. */
 void TCODConsole::print(int x, int y, const char *fmt, ...) {
-	va_list ap;
-	struct TCOD_Console *dat=(struct TCOD_Console *)data;
-	TCOD_IFNOT ( dat != NULL ) return;
-	va_start(ap,fmt);
-	TCOD_console_print_internal(data,x,y,0,0,dat->bkgnd_flag,dat->alignment,
-		TCOD_console_vsprint(fmt,ap),false,false);
-	va_end(ap);
+  va_list ap;
+  va_start(ap, fmt);
+  TCOD_console_print_internal(
+      data, x, y, 0, 0, data->bkgnd_flag, data->alignment,
+      TCOD_console_vsprint(fmt, ap), false, false);
+  va_end(ap);
 }
-
-void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...) {
-	va_list ap;
-	va_start(ap,fmt);
-	TCOD_console_print_internal(data,x,y,0,0,flag,alignment,TCOD_console_vsprint(fmt,ap),false,false);
-	va_end(ap);
+void TCODConsole::print(int x, int y, const std::string &str) {
+  this->print(x, y, data->bkgnd_flag, data->alignment, str);
+}
+void TCODConsole::print(int x, int y, TCOD_bkgnd_flag_t flag,
+                        TCOD_alignment_t alignment, const std::string &str) {
+  TCOD_console_print_internal_utf8_(
+      data, x, y, 0, 0, flag, alignment,
+      reinterpret_cast<const unsigned char *>(str.c_str()), false, false);
+}
+void TCODConsole::printf(int x, int y, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  this->print(x, y, std::string(TCOD_console_vsprint(fmt, ap)));
+  va_end(ap);
+}
+void TCODConsole::printf(int x, int y, TCOD_bkgnd_flag_t flag,
+                         TCOD_alignment_t alignment, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  this->print(x, y, flag, alignment,
+              std::string(TCOD_console_vsprint(fmt, ap)));
+  va_end(ap);
+}
+/** Deprecated EASCII function. */
+void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag,
+                          TCOD_alignment_t alignment, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  TCOD_console_print_internal(data, x, y, 0, 0, flag, alignment,
+                              TCOD_console_vsprint(fmt,ap), false, false);
+  va_end(ap);
 }
 
 

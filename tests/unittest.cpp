@@ -35,11 +35,17 @@ TEST_CASE("Console eascii") {
   CHECK(console.getChar(1, 0) == 0x20);
 }
 
-/* libtcod needs new functionality to support utf-8 */
-TEST_CASE("Console utf-8", "[!mayfail]") {
+TEST_CASE("Console UTF-8 BMP") {
   TCODConsole console = TCODConsole(2, 1);
-  console.print(0, 0, u8"\u2603");
+  console.printf(0, 0, u8"\u2603");
   CHECK(console.getChar(0, 0) == 0x2603);
+  CHECK(console.getChar(1, 0) == 0x20);
+}
+
+TEST_CASE("Console UTF-8 SMP") {
+  TCODConsole console = TCODConsole(2, 1);
+  console.printf(0, 0, u8"\U0001F30D");
+  CHECK(console.getChar(0, 0) == 0x1F30D);
   CHECK(console.getChar(1, 0) == 0x20);
 }
 
@@ -54,7 +60,6 @@ TEST_CASE("Console wchar BMP", "[!nonportable]") {
 TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail]") {
   TCODConsole console = TCODConsole(2, 1);
   console.print(0, 0, L"\U0001F30D");
-  /* libtcod does not support utf-16, both of these checks normally fail. */
   CHECK(console.getChar(0, 0) == 0x1F30D);
   CHECK(console.getChar(1, 0) == 0x20);
 }

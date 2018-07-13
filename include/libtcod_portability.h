@@ -164,12 +164,14 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #endif /* _WIN32 */
 
 /* cross platform deprecation */
-#if defined(_MSC_VER)
-#define TCOD_DEPRECATED __declspec(deprecated)
+#if defined(__cplusplus) && __cplusplus >= 201402L
+#define TCOD_DEPRECATED(msg) [[deprecated(msg)]]
+#elif defined(_MSC_VER)
+#define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
 #elif defined(__GNUC__)
-#define TCOD_DEPRECATED __attribute__ ((deprecated))
+#define TCOD_DEPRECATED(msg) __attribute__ ((deprecated))
 #else
-#define TCOD_DEPRECATED
+#define TCOD_DEPRECATED(msg)
 #endif
 
 #ifdef __cplusplus

@@ -686,8 +686,8 @@ public :
    *    UTF-8 overloads.
    *  /endrst
    */
-  [[deprecated("Use TCODConsole::printf or the std::string overload for"
-               " this function.")]]
+  TCOD_DEPRECATED("Use TCODConsole::printf or the std::string overload for"
+                  " this function.")
   void print(int x, int y, const char *fmt, ...);
   /**
    *  Print a UTF-8 string to the console.
@@ -735,8 +735,8 @@ public :
    *    These functions have overloads for specifying flag and alignment.
    *  /endrst
    */
-  [[deprecated("Use TCODConsole::print or TCODConsole::printf instead of this"
-               " function.")]]
+  TCOD_DEPRECATED("Use TCODConsole::print or TCODConsole::printf instead of"
+                  " this function.")
   void printEx(int x, int y, TCOD_bkgnd_flag_t flag,
                TCOD_alignment_t alignment, const char *fmt, ...);
 	/**

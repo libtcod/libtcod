@@ -81,6 +81,13 @@ Printing functions using 8-bit encodings
 .. doxygenfunction:: TCOD_console_print_rect_ex
 .. doxygenfunction:: TCOD_console_get_height_rect
 
+Printing functions using UTF-8
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_printf
+.. doxygenfunction:: TCOD_console_printf_ex
+.. doxygenfunction:: TCOD_console_printf_rect
+.. doxygenfunction:: TCOD_console_printf_rect_ex
+
 Printing functions using wchar_t
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. note::

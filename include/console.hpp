@@ -706,8 +706,8 @@ public :
    *  .. versionadded:: 1.8
    *  /endrst
    */
-  void print(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
-             const std::string &str);
+  void print(int x, int y, const std::string &str,
+             TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag);
   /**
    *  Format and print a UTF-8 string to the console.
    *

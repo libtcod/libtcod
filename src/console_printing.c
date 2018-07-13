@@ -816,7 +816,7 @@ int TCOD_utf8_next_split(
   return 0;
 }
 /**
- *
+ *  Internal UTF-8 printer.
  */
 int TCOD_console_print_internal_utf8_(
     TCOD_console_t con, int x, int y, int max_width, int max_height,
@@ -896,6 +896,12 @@ int TCOD_console_print_internal_utf8_(
   }
   return MIN(top, bottom) - y + 1;
 }
+/**
+ *  Format and print a UTF-8 string to a console.
+ *  /rst
+ *  .. versionadded:: 1.8
+ *  /endrst
+ */
 void TCOD_console_printf_ex(struct TCOD_Console *con, int x, int y,
       TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
       const char *fmt, ...) {
@@ -906,6 +912,12 @@ void TCOD_console_printf_ex(struct TCOD_Console *con, int x, int y,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
+/**
+ *  Format and print a UTF-8 string to a console.
+ *  /rst
+ *  .. versionadded:: 1.8
+ *  /endrst
+ */
 void TCOD_console_printf(struct TCOD_Console *con, int x, int y,
                          const char *fmt, ...) {
   va_list ap;
@@ -917,6 +929,12 @@ void TCOD_console_printf(struct TCOD_Console *con, int x, int y,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
+/**
+ *  Format and print a UTF-8 string to a console.
+ *  /rst
+ *  .. versionadded:: 1.8
+ *  /endrst
+ */
 int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
     int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...) {
@@ -929,6 +947,12 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
   va_end(ap);
   return ret;
 }
+/**
+ *  Format and print a UTF-8 string to a console.
+ *  /rst
+ *  .. versionadded:: 1.8
+ *  /endrst
+ */
 int TCOD_console_printf_rect(struct TCOD_Console *con,
     int x, int y, int w, int h, const char *fmt, ...) {
   int ret;

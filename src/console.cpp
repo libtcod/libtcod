@@ -267,10 +267,10 @@ void TCODConsole::print(int x, int y, const char *fmt, ...) {
   va_end(ap);
 }
 void TCODConsole::print(int x, int y, const std::string &str) {
-  this->print(x, y, data->bkgnd_flag, data->alignment, str);
+  this->print(x, y, str, data->alignment, data->bkgnd_flag);
 }
-void TCODConsole::print(int x, int y, TCOD_bkgnd_flag_t flag,
-                        TCOD_alignment_t alignment, const std::string &str) {
+void TCODConsole::print(int x, int y, const std::string &str,
+                        TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag) {
   TCOD_console_print_internal_utf8_(
       data, x, y, 0, 0, flag, alignment,
       reinterpret_cast<const unsigned char *>(str.c_str()), false, false);
@@ -285,8 +285,8 @@ void TCODConsole::printf(int x, int y, TCOD_bkgnd_flag_t flag,
                          TCOD_alignment_t alignment, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  this->print(x, y, flag, alignment,
-              std::string(TCOD_console_vsprint(fmt, ap)));
+  this->print(x, y, std::string(TCOD_console_vsprint(fmt, ap)),
+              alignment, flag);
   va_end(ap);
 }
 /** Deprecated EASCII function. */

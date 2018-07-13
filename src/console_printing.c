@@ -612,7 +612,12 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
   } while ( c && cy < dat->h && (rh == 0 || cy < y+rh) );
   return cy-y+1;
 }
-
+/**
+ *  /rst
+ *  .. deprecated:: 1.8
+ *    Use :any:`TCOD_console_printf` instead.
+ *  /endrst
+ */
 void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...) {
   va_list ap;
   struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
@@ -622,7 +627,12 @@ void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt,
     TCOD_console_vsprint_utf(fmt,ap), false, false);
   va_end(ap);
 }
-
+/**
+ *  /rst
+ *  .. deprecated:: 1.8
+ *    Use :any:`TCOD_console_printf_ex` instead.
+ *  /endrst
+ */
 void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y,
   TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
   va_list ap;
@@ -645,7 +655,12 @@ int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,
   va_end(ap);
   return ret;
 }
-
+/**
+ *  /rst
+ *  .. deprecated:: 1.8
+ *    Use :any:`TCOD_console_printf_rect_ex` instead.
+ *  /endrst
+ */
 int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h,
   TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
   int ret;
@@ -655,7 +670,11 @@ int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h
   va_end(ap);
   return ret;
 }
-
+/**
+ *  /rst
+ *  .. deprecated:: 1.8
+ *  /endrst
+ */
 int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
   int ret;
   va_list ap;

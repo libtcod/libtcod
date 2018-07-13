@@ -72,9 +72,13 @@ TCODLIB_API TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t co
 TCODLIB_API void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment);
 TCODLIB_API TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con);
 
+TCOD_DEPRECATED("Use TCOD_console_printf instead.")
 TCODLIB_API void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
 TCODLIB_API void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
 
@@ -86,9 +90,13 @@ TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,i
 #ifndef NO_UNICODE
 /* unicode support */
 TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
+TCOD_DEPRECATED("Use TCOD_console_printf instead.")
 TCODLIB_API void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
 TCODLIB_API void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
 TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
 #endif

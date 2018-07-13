@@ -9,6 +9,11 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 ### Added
 - New `TCOD_MAJOR_VERSION`, `TCOD_MINOR_VERSION`, and `TCOD_PATCHLEVEL`
   constants.
+- Added UTF-8 print functions for C and C++:
+  - `TCOD_console_printf`, `TCOD_console_printf_ex`,
+    `TCOD_console_printf_rect`, and `TCOD_console_printf_rect_ex`.
+  - New overrides for `TCODConsole::print` which can take `std::string`.
+  - `TCODConsole::printf`.
 
 ### Changed
 - AutoTools now adds version numbers to the libraries it builds.
@@ -16,6 +21,9 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Bundled zlib library updated from `1.2.8` to `1.2.11`.
 - LodePNG updated from `20160501` to `20180611`.
 - libtcod C type declarations are stricter.
+
+### Deprecated
+- All functions replaced by the new UTF-8 functions are deprecated.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

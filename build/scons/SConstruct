@@ -110,9 +110,9 @@ def get_unittest():
     """Return the unittest builder."""
     env_unittest = env.Clone()
     if env['TOOLSET'] == 'msvc':
-        env_unittest.Append(CPPFLAGS=['/EHsc']) # Enable exception handler.
+        env_unittest.Append(CXXFLAGS=['/EHsc']) # Enable exception handler.
     else: # Not MSVC, enforce C++11
-        env_unittest.Append(CPPFLAGS=['-std=c++11'])
+        env_unittest.Append(CXXFLAGS=['-std=c++11'])
     if sys.platform == 'win32':
         env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
     else:
@@ -154,7 +154,7 @@ vars.Add(EnumVariable('TOOLSET', 'Force using this compiler. (Windows only)',
 
 vars.Add('CCFLAGS', 'Compiler flags', '')
 vars.Add('CFLAGS', 'C flags', '')
-vars.Add('CPPFLAGS', 'C++ flags', '')
+vars.Add('CXXFLAGS', 'C++ flags', '')
 vars.Add('LINKFLAGS', 'Linker flags', '')
 
 vars.Add(EnumVariable('ARCH', 'Set target architecture. (Windows/Linux only)',
@@ -240,7 +240,7 @@ env.AddMethod(filtered_glob, "FilteredGlob");
 
 env['CCFLAGS'] = Split(env['CCFLAGS'])
 env['CFLAGS'] = Split(env['CFLAGS'])
-env['CPPFLAGS'] = Split(env['CPPFLAGS'])
+env['CXXFLAGS'] = Split(env['CXXFLAGS'])
 env['LINKFLAGS'] = Split(env['LINKFLAGS'])
 env['CPPDEFINES'] = Split(env['CPPDEFINES'])
 

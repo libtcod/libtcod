@@ -30,12 +30,7 @@
 
 #include "libtcod_portability.h"
 #include "mersenne_types.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-struct TCOD_Noise;
-typedef struct TCOD_Noise *TCOD_noise_t;
+#include "noise_defaults.h"
 
 typedef enum {
 	TCOD_NOISE_PERLIN = 1,
@@ -44,8 +39,25 @@ typedef enum {
 	TCOD_NOISE_DEFAULT = 0
 } TCOD_noise_type_t;
 
-#include "noise_defaults.h"
-
+typedef struct TCOD_Noise {
+  int ndim;
+  /** Randomized map of indexes into buffer */
+  unsigned char map[256];
+  /** Random 256 x ndim buffer */
+  float buffer[256][TCOD_NOISE_MAX_DIMENSIONS];
+  /* fractal stuff */
+  float H;
+  float lacunarity;
+  float exponent[TCOD_NOISE_MAX_OCTAVES];
+  float *waveletTileData;
+  TCOD_random_t rand;
+  /* noise type */
+  TCOD_noise_type_t noise_type;
+} TCOD_Noise;
+typedef TCOD_Noise *TCOD_noise_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* create a new noise object */
 TCODLIB_API TCOD_noise_t TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random);
 

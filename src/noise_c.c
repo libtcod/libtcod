@@ -40,19 +40,7 @@
 #define SIMPLEX_SCALE 0.5f
 #define WAVELET_SCALE 2.0f
 
-typedef struct TCOD_Noise {
-	int ndim;
-	unsigned char map[256]; /* Randomized map of indexes into buffer */
-	float buffer[256][TCOD_NOISE_MAX_DIMENSIONS]; 	/* Random 256 x ndim buffer */
-	/* fractal stuff */
-	float H;
-	float lacunarity;
-	float exponent[TCOD_NOISE_MAX_OCTAVES];
-	float *waveletTileData;
-	TCOD_random_t rand;
-	/* noise type */
-	TCOD_noise_type_t noise_type;
-} perlin_data_t;
+typedef TCOD_Noise perlin_data_t;
 
 static float lattice( perlin_data_t *data, int ix, float fx, int iy, float fy, int iz, float fz, int iw, float fw)
 {

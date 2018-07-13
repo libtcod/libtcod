@@ -87,6 +87,8 @@ Printing functions using UTF-8
 .. doxygenfunction:: TCOD_console_printf_ex
 .. doxygenfunction:: TCOD_console_printf_rect
 .. doxygenfunction:: TCOD_console_printf_rect_ex
+.. doxygenfunction:: TCOD_console_get_height_rect_fmt
+.. doxygenfunction:: TCOD_console_printf_frame
 
 Printing functions using wchar_t
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

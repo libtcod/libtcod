@@ -95,8 +95,8 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap) {
   return ret;
 }
 /**
- *  Print a string inside of a framed region on a console, using default
- *  colors and alignment.
+ *  Print a titled, framed region on a console, using default colors and
+ *  alignment.
  *
  *  \param con A console pointer.
  *  \param x The starting X coordinate, the left-most position being 0.
@@ -984,4 +984,69 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
       (const unsigned char *)TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;
+}
+/**
+ *  Return the number of lines that would be printed by this formatted string.
+ */
+int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
+                                     int x, int y, int w, int h,
+                                     const char *fmt, ...) {
+  int ret;
+  va_list ap;
+  va_start(ap, fmt);
+  ret = TCOD_console_print_internal_utf8_(
+      con, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT,
+      (const unsigned char *)TCOD_console_vsprint(fmt, ap), true, true);
+  va_end(ap);
+  return ret;
+}
+/**
+ *  Print a framed and optionally titled region to a console, using default
+ *  colors and alignment.
+ *
+ *  This function uses Unicode box-drawing characters and a UTF-8 formatted
+ *  string.
+ */
+void TCOD_console_printf_frame(struct TCOD_Console *con,
+                               int x, int y, int w, int h, int empty,
+                               TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
+  const int left = x;
+  const int right = x + w - 1;
+  const int top = y;
+  const int bottom = y + h - 1;
+  int i;
+  con = con ? con : TCOD_ctx.root;
+  TCOD_console_put_char(con, left, top, 0x250C, flag); /* ┌ */
+  TCOD_console_put_char(con, right, top, 0x2510, flag); /* ┐ */
+  TCOD_console_put_char(con, left, bottom, 0x2514, flag); /* └ */
+  TCOD_console_put_char(con, right, bottom, 0x2518, flag); /* ┘ */
+  for (i = left + 1; i < right - 1; ++i) {
+    TCOD_console_put_char(con, i, top, 0x2500, flag); /* ─ */
+    TCOD_console_put_char(con, i, bottom, 0x2500,flag);
+  }
+  for (i = top + 1; i < bottom - 1; ++i) {
+    TCOD_console_put_char(con, left, i, 0x2502, flag); /* │ */
+    TCOD_console_put_char(con, right, i, 0x2502, flag);
+  }
+  if (empty) {
+    TCOD_console_rect(con, left + 1, top + 1, right - 1, bottom - 1, true,
+                      flag);
+  }
+  if (fmt && con) {
+    va_list ap;
+    TCOD_color_t tmp;
+    /* swap colors */
+    tmp = con->back;
+    con->back = con->fore;
+    con->fore = tmp;
+    /* print the title */
+    va_start(ap,fmt);
+    TCOD_console_printf_rect_ex(con, x + w / 2, y, w, 1,
+        TCOD_BKGND_SET, TCOD_CENTER, " %s ", TCOD_console_vsprint(fmt, ap));
+    va_end(ap);
+    /* swap colors */
+    tmp = con->back;
+    con->back = con->fore;
+    con->fore = tmp;
+  }
 }

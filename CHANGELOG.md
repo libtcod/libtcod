@@ -12,6 +12,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Added UTF-8 print functions for C and C++:
   - `TCOD_console_printf`, `TCOD_console_printf_ex`,
     `TCOD_console_printf_rect`, and `TCOD_console_printf_rect_ex`.
+  - `TCOD_console_printf_frame`
+  - `TCOD_console_get_height_rect_fmt`
   - New overrides for `TCODConsole::print` which can take `std::string`.
   - `TCODConsole::printf`.
 

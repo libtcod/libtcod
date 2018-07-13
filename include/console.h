@@ -142,6 +142,7 @@ TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
 
+/* UTF-8 functions */
 TCODLIB_API void TCOD_console_printf(TCOD_console_t con, int x, int y,
                                      const char *fmt, ...);
 TCODLIB_API void TCOD_console_printf_ex(
@@ -152,6 +153,14 @@ TCODLIB_API int TCOD_console_printf_rect(
 TCODLIB_API int TCOD_console_printf_rect_ex(
     TCOD_console_t con,int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCODLIB_API
+void TCOD_console_printf_frame(struct TCOD_Console *con,
+                               int x, int y, int w, int h, int empty,
+                               TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+TCODLIB_API
+int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
+                                     int x, int y, int w, int h,
+                                     const char *fmt, ...);
 
 /* Private internal functions. */
 int TCOD_console_print_internal_utf8_(

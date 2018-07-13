@@ -323,7 +323,7 @@ if (sys.platform != 'darwin' and sys.platform != 'win32') or env['TOOLSET'] == '
 env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
 
 env_libtcod = env.Clone()
-env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
+env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS', ('_HAS_EXCEPTIONS', 0)])
 if not using_msvc:
     env_libtcod.Prepend(CFLAGS=['-std=c99'])
 
@@ -375,7 +375,7 @@ libtcod = env_libtcod.SharedLibrary(
 
 env_libtcod_gui = env.Clone()
 env_libtcod_gui.Append(
-    CPPDEFINES=['LIBTCOD_GUI_EXPORTS'],
+    CPPDEFINES=['LIBTCOD_GUI_EXPORTS', ('_HAS_EXCEPTIONS', 0)],
     LIBS=['libtcod' if sys.platform == 'win32' else 'tcod'],
     )
 

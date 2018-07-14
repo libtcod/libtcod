@@ -179,6 +179,17 @@ $(LocalDebuggerEnvironment)</LocalDebuggerEnvironment>
   <ItemGroup>
     <ClCompile Include="..\..\samples\samples_c.c" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libtcod.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libtcod.vcxproj">
+      <Project>{d6197244-2beb-4aed-988e-cc1f0b647055}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

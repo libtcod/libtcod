@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D6197244-2BEB-4AED-988E-CC1F0B647055}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>libtcod_sdl</ProjectName>
+    <ProjectName>libtcod</ProjectName>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -77,42 +77,46 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\..\src\vendor\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\..\src\vendor\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\..\src\vendor\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\..\src\vendor\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NO_OPENGL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\include;$(SolutionDir)..\..\src\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
-      <AdditionalDependencies>SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NO_OPENGL;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -122,16 +126,15 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
-      <AdditionalDependencies>SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NO_OPENGL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\dependencies\include;$(SolutionDir)..\..\src\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -140,12 +143,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
-      <AdditionalDependencies>SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NO_OPENGL;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -156,7 +160,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
-      <AdditionalDependencies>SDL2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -237,7 +241,6 @@
     <ClInclude Include="..\..\include\console.h" />
     <ClInclude Include="..\..\include\console.hpp" />
     <ClInclude Include="..\..\include\console_types.h" />
-    <ClInclude Include="..\..\include\external\pstdint.h" />
     <ClInclude Include="..\..\include\fov.h" />
     <ClInclude Include="..\..\include\fov.hpp" />
     <ClInclude Include="..\..\include\fov_types.h" />
@@ -251,6 +254,9 @@
     <ClInclude Include="..\..\include\libtcod.h" />
     <ClInclude Include="..\..\include\libtcod.hpp" />
     <ClInclude Include="..\..\include\libtcod_int.h" />
+    <ClInclude Include="..\..\include\libtcod_portability.h" />
+    <ClInclude Include="..\..\include\libtcod_utility.h" />
+    <ClInclude Include="..\..\include\libtcod_version.h" />
     <ClInclude Include="..\..\include\list.h" />
     <ClInclude Include="..\..\include\list.hpp" />
     <ClInclude Include="..\..\include\mersenne.h" />
@@ -277,21 +283,23 @@
     <ClInclude Include="..\..\include\wrappers.h" />
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
-    <ClInclude Include="..\..\src\vendor\lodepng.h" />
-    <ClInclude Include="..\..\src\vendor\stb_sprintf.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\crc32.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\deflate.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\gzguts.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\inffast.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\inffixed.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\inflate.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\inftrees.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\trees.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\zconf.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\zlib.h" />
-    <ClInclude Include="..\..\src\vendor\zlib\zutil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libtcod.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\sdl2.new.redist.2.0.8\build\native\sdl2.new.redist.targets" Condition="Exists('packages\sdl2.new.redist.2.0.8\build\native\sdl2.new.redist.targets')" />
+    <Import Project="packages\sdl2.new.2.0.8\build\native\sdl2.new.targets" Condition="Exists('packages\sdl2.new.2.0.8\build\native\sdl2.new.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\sdl2.new.redist.2.0.8\build\native\sdl2.new.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.new.redist.2.0.8\build\native\sdl2.new.redist.targets'))" />
+    <Error Condition="!Exists('packages\sdl2.new.2.0.8\build\native\sdl2.new.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.new.2.0.8\build\native\sdl2.new.targets'))" />
+  </Target>
 </Project>

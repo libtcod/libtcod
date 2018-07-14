@@ -171,12 +171,6 @@
     <ClCompile Include="..\..\src\vendor\zlib\uncompr.c">
       <Filter>Source Files\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vendor\lodepng.c">
-      <Filter>Source Files\vendor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
-      <Filter>Source Files\vendor\utf8proc</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\bresenham.cpp">
       <Filter>Source Files\cpp</Filter>
     </ClCompile>
@@ -229,6 +223,12 @@
       <Filter>Source Files\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\console_rexpaint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\lodepng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -347,9 +347,6 @@
     <ClInclude Include="..\..\src\vendor\zlib\zutil.h">
       <Filter>Header Files\zlib</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\vendor\lodepng.h">
-      <Filter>Header Files\vendor</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\bresenham.hpp">
       <Filter>Header Files\cpp</Filter>
     </ClInclude>
@@ -423,6 +420,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\libtcod_version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\vendor\lodepng.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

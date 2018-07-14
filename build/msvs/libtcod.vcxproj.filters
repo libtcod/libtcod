@@ -16,23 +16,17 @@
     <Filter Include="Source Files\png">
       <UniqueIdentifier>{87278468-d8a8-4ddc-93c8-e49d383e2900}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\zlib">
-      <UniqueIdentifier>{f73c2e99-ca6d-46a1-8cf4-8ec93ba6ce01}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\zlib">
-      <UniqueIdentifier>{165e875a-1b94-4a1a-9d66-1901dfe3f661}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\png">
-      <UniqueIdentifier>{e6410117-0a59-4966-83ae-729990596a7a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\cpp">
       <UniqueIdentifier>{90ee66c0-9b9b-4dc9-89be-296a1b942da9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\cpp">
       <UniqueIdentifier>{63e6f9f2-e655-4ffa-8b82-c81e649624dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\external">
-      <UniqueIdentifier>{bac2f5e8-48b6-4377-93de-6b317a6bd50d}</UniqueIdentifier>
+    <Filter Include="Source Files\vendor">
+      <UniqueIdentifier>{dc746521-4b05-43fd-bfd7-cc4a155a1307}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\vendor\zlib">
+      <UniqueIdentifier>{f73c2e99-ca6d-46a1-8cf4-8ec93ba6ce01}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,55 +121,49 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\adler32.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\compress.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\crc32.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\inffast.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\inflate.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\inftrees.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\gzwrite.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\gzread.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\gzlib.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\gzclose.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\deflate.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\infback.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\trees.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\zutil.c">
-      <Filter>Source Files\zlib</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\uncompr.c">
-      <Filter>Source Files\zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vendor\lodepng.c">
-      <Filter>Source Files\vendor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
-      <Filter>Source Files\vendor\utf8proc</Filter>
+      <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\bresenham.cpp">
       <Filter>Source Files\cpp</Filter>
@@ -231,11 +219,17 @@
     <ClCompile Include="..\..\src\console_rexpaint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\vendor\stb.c">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\lodepng.c">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\vendor\zlib\zconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\bresenham.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -317,39 +311,6 @@
     <ClInclude Include="..\..\include\zip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\crc32.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\deflate.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\gzguts.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\inffixed.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\inffast.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\inflate.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\inftrees.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\trees.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\zlib.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\zlib\zutil.h">
-      <Filter>Header Files\zlib</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\vendor\lodepng.h">
-      <Filter>Header Files\vendor</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\bresenham.hpp">
       <Filter>Header Files\cpp</Filter>
     </ClInclude>
@@ -413,8 +374,22 @@
     <ClInclude Include="..\..\include\zip.hpp">
       <Filter>Header Files\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\external\pstdint.h">
-      <Filter>Header Files\external</Filter>
+    <ClInclude Include="..\..\include\libtcod_portability.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\libtcod_utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libtcod_version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="libtcod.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

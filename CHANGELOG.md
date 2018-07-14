@@ -33,6 +33,10 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Mouse state is now tracked even when mouse events are not asked for.
 - libtcod sys event functions no longer crash if the given key pointer is NULL.
 
+### Removed
+- Autotools no longer creates `libtcodxx` libraries, C++ programs should link
+  to `libtcod` instead.
+
 ## [1.7.0] - 2018-06-12
 ### Changed
 - `TCOD_console_is_active()` now returns keyboard focus, its previous return

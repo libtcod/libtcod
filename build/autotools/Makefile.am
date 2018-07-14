@@ -12,7 +12,7 @@ AM_CPPFLAGS = $(AM_CFLAGS)
 AM_LDFLAGS = $(SDL_LIBS) $(X11_LIBS) $(ZLIB_LIBS)
 
 
-lib_LTLIBRARIES = libtcod.la libtcodxx.la libtcodgui.la
+lib_LTLIBRARIES = libtcod.la libtcodgui.la
 
 
 libtcodgui_la_SOURCES = \
@@ -33,7 +33,7 @@ libtcodgui_la_SOURCES = \
 
 libtcodgui_la_CXXFLAGS = $(CXXFLAGS) -I$(top_srcdir)/../../include/gui
 libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
-libtcodgui_la_LIBADD = libtcodxx.la libtcod.la
+libtcodgui_la_LIBADD = libtcod.la
 
 externalincludedir = $(includedir)/libtcod/external
 externalinclude_HEADERS = \
@@ -93,7 +93,24 @@ libtcod_la_SOURCES = \
 	../../src/zip_c.c \
 	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c \
-	../../src/vendor/utf8proc/utf8proc.c
+	../../src/vendor/utf8proc/utf8proc.c \
+	../../src/bresenham.cpp \
+	../../src/bsp.cpp \
+	../../src/color.cpp \
+	../../src/console.cpp \
+	../../src/fov.cpp \
+	../../src/heightmap.cpp \
+	../../src/image.cpp \
+	../../src/lex.cpp \
+	../../src/mersenne.cpp \
+	../../src/mouse.cpp \
+	../../src/namegen.cpp \
+	../../src/noise.cpp \
+	../../src/parser.cpp \
+	../../src/path.cpp \
+	../../src/sys.cpp \
+	../../src/txtfield.cpp \
+	../../src/zip.cpp
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
@@ -155,29 +172,6 @@ pkginclude_HEADERS = \
 	../../include/list.hpp
 
 
-libtcodxx_la_SOURCES = \
-	../../src/bresenham.cpp \
-	../../src/bsp.cpp \
-	../../src/color.cpp \
-	../../src/console.cpp \
-	../../src/fov.cpp \
-	../../src/heightmap.cpp \
-	../../src/image.cpp \
-	../../src/lex.cpp \
-	../../src/mersenne.cpp \
-	../../src/mouse.cpp \
-	../../src/namegen.cpp \
-	../../src/noise.cpp \
-	../../src/parser.cpp \
-	../../src/path.cpp \
-	../../src/sys.cpp \
-	../../src/txtfield.cpp \
-	../../src/zip.cpp
-
-libtcodxx_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
-libtcodxx_la_LIBADD = libtcod.la
-
-
 if ENABLE_SAMPLES
 noinst_PROGRAMS = samples_c samples_cpp
 
@@ -185,13 +179,13 @@ samples_c_SOURCES = ../../samples/samples_c.c
 samples_c_LDADD = libtcod.la
 
 samples_cpp_SOURCES = ../../samples/samples_cpp.cpp
-samples_cpp_LDADD = libtcodxx.la libtcod.la
+samples_cpp_LDADD = libtcod.la
 endif
 
 check_scripts = unittest.sh
 check_PROGRAMS = unittest
 unittest_SOURCES = ../../tests/unittest.cpp
-unittest_LDADD = libtcodxx.la libtcod.la
+unittest_LDADD = libtcod.la
 unittest_CXXFLAGS = $(CXXFLAGS) -std=c++11
 
 TESTS = unittest.sh

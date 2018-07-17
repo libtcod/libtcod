@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/../../include \
@@ -31,7 +31,7 @@ libtcodgui_la_SOURCES = \
 	../../src/gui/vbox.cpp \
 	../../src/gui/widget.cpp
 
-libtcodgui_la_CXXFLAGS = $(CXXFLAGS) -I$(top_srcdir)/../../include/gui
+libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)/../../include/gui
 libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcodgui_la_LIBADD = libtcod.la
 

@@ -111,8 +111,6 @@ def get_unittest():
     env_unittest = env.Clone()
     if env['TOOLSET'] == 'msvc':
         env_unittest.Append(CXXFLAGS=['/EHsc']) # Enable exception handler.
-    else: # Not MSVC, enforce C++11
-        env_unittest.Append(CXXFLAGS=['-std=c++11'])
     if sys.platform == 'win32':
         env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
     else:
@@ -259,6 +257,9 @@ env.Prepend(**getattr(config, CONFIG_NAME))
 sdl_package = []
 sdl_install = []
 
+if not using_msvc:
+    env.Prepend(CFLAGS=['-std=c99'], CXXFLAGS=['-std=c++11'])
+
 if sys.platform == 'win32':
     unpack_sdl2_win32(env)
     if using_msvc:
@@ -324,8 +325,6 @@ env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
 
 env_libtcod = env.Clone()
 env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS', ('_HAS_EXCEPTIONS', 0)])
-if not using_msvc:
-    env_libtcod.Prepend(CFLAGS=['-std=c99'])
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])

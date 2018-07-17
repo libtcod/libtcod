@@ -28,6 +28,9 @@
     <Filter Include="Source Files\vendor\zlib">
       <UniqueIdentifier>{f73c2e99-ca6d-46a1-8cf4-8ec93ba6ce01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\tileset">
+      <UniqueIdentifier>{8ed2eeaa-2cfa-44d8-b9d7-99c78f568def}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\bresenham_c.c">
@@ -227,6 +230,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\lodepng.c">
       <Filter>Source Files\vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tileset\tile.cc">
+      <Filter>Source Files\tileset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\tileset\tileset.cc">
+      <Filter>Source Files\tileset</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

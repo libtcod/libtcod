@@ -171,6 +171,11 @@ pkginclude_HEADERS = \
 	../../include/zip.hpp \
 	../../include/list.hpp
 
+tilesetincludedir = $(includedir)/libtcod/tileset
+tilesetinclude_HEADERS = \
+	../../include/tileset/tileset.h \
+	../../include/tileset/tile.h
+
 
 if ENABLE_SAMPLES
 noinst_PROGRAMS = samples_c samples_cpp

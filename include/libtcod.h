@@ -53,4 +53,7 @@
 #include "txtfield.h"
 #include "zip.h"
 
+#include "tileset/tileset.h"
+#include "tileset/tile.h"
+
 #endif

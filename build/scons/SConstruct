@@ -359,6 +359,7 @@ libtcod_sources = {
             # Except the composite sources.
             omit=['libtcod_c.c', 'libtcod.cpp'],
         )
+        + env.Glob('$VARIANT/src/*/*.cc')
         # Vendor sources.
         + env.Glob('$VARIANT/src/vendor/*.c')
         + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']

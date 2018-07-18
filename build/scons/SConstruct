@@ -257,6 +257,8 @@ env.Prepend(**getattr(config, CONFIG_NAME))
 sdl_package = []
 sdl_install = []
 
+if using_msvc:
+    env.Prepend(CXXFLAGS=['-EHsc'])
 if not using_msvc:
     env.Prepend(CFLAGS=['-std=c99'], CXXFLAGS=['-std=c++11'])
 
@@ -324,7 +326,7 @@ if (sys.platform != 'darwin' and sys.platform != 'win32') or env['TOOLSET'] == '
 env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
 
 env_libtcod = env.Clone()
-env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS', ('_HAS_EXCEPTIONS', 0)])
+env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])

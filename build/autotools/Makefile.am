@@ -110,7 +110,10 @@ libtcod_la_SOURCES = \
 	../../src/path.cpp \
 	../../src/sys.cpp \
 	../../src/txtfield.cpp \
-	../../src/zip.cpp
+	../../src/zip.cpp \
+	../../src/tileset/observer.cc \
+	../../src/tileset/tile.cc \
+	../../src/tileset/tileset.cc
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
@@ -173,6 +176,7 @@ pkginclude_HEADERS = \
 
 tilesetincludedir = $(includedir)/libtcod/tileset
 tilesetinclude_HEADERS = \
+	../../include/tileset/observer.h \
 	../../include/tileset/tileset.h \
 	../../include/tileset/tile.h
 

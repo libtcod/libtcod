@@ -199,6 +199,7 @@
     <ClCompile Include="..\..\src\parser_c.c" />
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
+    <ClCompile Include="..\..\src\tileset\observer.cc" />
     <ClCompile Include="..\..\src\tileset\tile.cc" />
     <ClCompile Include="..\..\src\tileset\tileset.cc" />
     <ClCompile Include="..\..\src\vendor\lodepng.c" />

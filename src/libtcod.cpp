@@ -49,6 +49,10 @@
 #include "txtfield.cpp"
 #include "zip.cpp"
 
+#include "tileset/observer.cc"
+#include "tileset/tile.cc"
+#include "tileset/tileset.cc"
+
 /*
 #include "gui/button.cpp"
 #include "gui/container.cpp"

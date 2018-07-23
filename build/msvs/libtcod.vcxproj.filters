@@ -237,6 +237,9 @@
     <ClCompile Include="..\..\src\tileset\tileset.cc">
       <Filter>Source Files\tileset</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\tileset\observer.cc">
+      <Filter>Source Files\tileset</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\bresenham.h">

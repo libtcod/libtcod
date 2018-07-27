@@ -39,15 +39,14 @@ class TilesetSubject {
    *  TilesetObserver about the Tileset's current state.
    */
   void AttachTilesetObserver(std::weak_ptr<TilesetObserver> observer,
-                             const Tileset &tileset,
-                             const std::vector<Tile>& tiles);
+                             const Tileset &tileset);
   /**
    *  Notify observers about the state and changes to the subject.
    *
    *  `tiles` is the current state of the subject.
    *  `changes` is for specifically changed tiles, if any.
    */
-  void NotifyChanged(const Tileset &tileset, const std::vector<Tile>& tiles,
+  void NotifyChanged(const Tileset &tileset,
                      const IdTileRefPairVector_ &changes);
  private:
   /**
@@ -71,20 +70,18 @@ class TilesetObserver {
    *  By default this will pass the Tileset's current state to the
    *  OnTilesetChanged function.
    */
-  virtual void OnTilesetAttach(const Tileset &tileset,
-                               const std::vector<Tile>& tiles) {
-    OnTilesetChanged(tileset, tiles, IdTileRefPairVector_());
+  virtual void OnTilesetAttach(const Tileset &tileset) {
+    OnTilesetChanged(tileset, IdTileRefPairVector_());
   }
   /**
    *  Called on Tileset state changes.
    *
-   *  `tiles` is the current state.
    *  `changes` is a vector of index,Tile pairs.
    *
    *  The Tileset may have been resized.
    */
   virtual void OnTilesetChanged(
-      const Tileset &tileset, const std::vector<Tile>& tiles,
+      const Tileset &tileset,
       const std::vector<std::pair<int, Tile&>> &changes);
   /**
    *  Called when the observed Tileset is being deleted.

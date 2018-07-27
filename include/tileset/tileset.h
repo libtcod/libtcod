@@ -57,7 +57,13 @@ class Tileset: public std::enable_shared_from_this<Tileset> {
    *  at any time without issues.
    */
   void AttachTilesetObserver(std::weak_ptr<TilesetObserver> observer) {
-    tileset_subject_.AttachTilesetObserver(observer, *this, tiles_);
+    tileset_subject_.AttachTilesetObserver(observer, *this);
+  }
+  /**
+   *  Return a reference to this objects tile vector.
+   */
+  const std::vector<Tile>& GetTiles(void) const {
+    return tiles_;
   }
  private:
   /**

@@ -10,17 +10,15 @@ TilesetSubject::~TilesetSubject(void) {
 }
 void TilesetSubject::AttachTilesetObserver(
     std::weak_ptr<TilesetObserver> observer,
-    const Tileset &tileset,
-    const std::vector<Tile>& tiles) {
+    const Tileset &tileset) {
   observer_pointers_.push_back(observer);
-  observer.lock()->OnTilesetAttach(tileset, tiles);
+  observer.lock()->OnTilesetAttach(tileset);
 }
 void TilesetSubject::NotifyChanged(const Tileset &tileset,
-                                   const std::vector<Tile>& tiles,
                                    const IdTileRefPairVector_ &changes) {
   for (std::weak_ptr<TilesetObserver> weak_observer : observer_pointers_) {
     if (auto observer = weak_observer.lock()) {
-      observer->OnTilesetChanged(tileset, tiles, changes);
+      observer->OnTilesetChanged(tileset, changes);
     }
   }
 }

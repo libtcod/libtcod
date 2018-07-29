@@ -788,6 +788,35 @@ static utf8proc_ssize_t TCOD_utf8_skip_control_codes(
     const unsigned char *str) {
   return TCOD_utf8_parse_color(str, NULL, NULL, NULL, NULL);
 }
+
+/*
+ *  Check if the specified character is any line-break character
+ */
+static bool TCOD_utf8_is_newline_character(const utf8proc_property_t *property)
+{
+    switch (property->category) {
+      case UTF8PROC_CATEGORY_ZL: /* Separator, line */
+      case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
+        return true;
+
+      case UTF8PROC_CATEGORY_CC: /* Other, control */
+        switch(property->boundclass)
+        {
+        case UTF8PROC_BOUNDCLASS_CR:    // carriage return - \r
+        case UTF8PROC_BOUNDCLASS_LF:    // line feed - \n
+            return true;
+
+        default:
+            break;
+        }
+        break;
+
+      default:
+        break;
+    }
+    return false;
+}
+
 /**
  *  Get the next line-break or null terminator, or break the string before
  *  `max_width`.
@@ -821,13 +850,15 @@ int TCOD_utf8_next_split(
       case UTF8PROC_CATEGORY_ZS: /* Separator, space */
         break_point = str;
         break;
-      case UTF8PROC_CATEGORY_ZL: /* Separator, line */
-      case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
-        *endpoint = str;
-        return 0;
       default:
         break;
     }
+
+    if(TCOD_utf8_is_newline_character(property)) {
+        *endpoint = str;
+        return 0;
+    }
+
     str += code_size;
     *total_width += 1;
   }
@@ -850,7 +881,7 @@ int TCOD_console_print_internal_utf8_(
   old_bg = con->back;
   TCOD_get_print_bounds(con, align, x, y, &max_width, &max_height,
                         &left, &right, &top, &bottom);
-  while (*string != '\0' && top >= bottom) {
+  while (*string != '\0' && top <= bottom) {
     const unsigned char *line_break;
     utf8proc_ssize_t line_width;
     utf8proc_int32_t codepoint;
@@ -861,16 +892,19 @@ int TCOD_console_print_internal_utf8_(
     if (code_size < 0) { return -1; }
     property = utf8proc_get_property(codepoint);
     /* Check for newlines. */
-    if (property->category == UTF8PROC_CATEGORY_ZL) { /* Separator, line */
+    if(TCOD_utf8_is_newline_character(property))
+    {
       string += code_size;
-      top += 1;
+      if(property->category == UTF8PROC_CATEGORY_ZP)
+      {
+        top += 2;
+      }
+      else {
+        top += 1;
+      }
       continue;
     }
-    if (property->category == UTF8PROC_CATEGORY_ZP) { /* Separator,paragraph */
-      string += code_size;
-      top += 2;
-      continue;
-    }
+
     /* Get the next line of characters. */
     split_status = TCOD_utf8_next_split(string, max_width, can_split,
                                         &line_break, &line_width);

@@ -243,7 +243,7 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	LineListener listener;
 	TCODLine::line(xo,yo,xd,yd,&listener);
 	// print the current flag
-	sampleConsole.print(2,2,"%s (ENTER to change)",flagNames[bkFlag&0xff]);
+	sampleConsole.printf(2,2,"%s (ENTER to change)",flagNames[bkFlag&0xff]);
 }
 
 // ***************************
@@ -326,19 +326,19 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		if ( curfunc == func ) {
 				sampleConsole.setDefaultForeground(TCODColor::white);
 				sampleConsole.setDefaultBackground(TCODColor::lightBlue);
-				sampleConsole.printEx(2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
+				sampleConsole.printf(2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
 		} else {
 				sampleConsole.setDefaultForeground(TCODColor::grey);
-				sampleConsole.print(2,2+curfunc,funcName[curfunc]);
+				sampleConsole.printf(2,2+curfunc,funcName[curfunc]);
 		}
 	}
 	// draw parameters
 	sampleConsole.setDefaultForeground(TCODColor::white);
-	sampleConsole.print(2,11,"Y/H : zoom (%2.1f)",zoom);
+	sampleConsole.printf(2,11,"Y/H : zoom (%2.1f)",zoom);
 	if ( func > WAVELET ) {
-		sampleConsole.print(2,12,"E/D : hurst (%2.1f)",hurst);
-		sampleConsole.print(2,13,"R/F : lacunarity (%2.1f)",lacunarity);
-		sampleConsole.print(2,14,"T/G : octaves (%2.1f)",octaves);
+		sampleConsole.printf(2,12,"E/D : hurst (%2.1f)",hurst);
+		sampleConsole.printf(2,13,"R/F : lacunarity (%2.1f)",lacunarity);
+		sampleConsole.printf(2,14,"T/G : octaves (%2.1f)",octaves);
 	}
 	// handle keypress
 	if ( key->vk == TCODK_NONE) return;
@@ -444,7 +444,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		// draw the help text & player @
 		sampleConsole.clear();
 		sampleConsole.setDefaultForeground(TCODColor::white);
-		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
@@ -541,13 +541,13 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		// enable/disable the torch fx
 		torch=!torch;
 		sampleConsole.setDefaultForeground(TCODColor::white);
-		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setDefaultForeground(TCODColor::black);
 	} else if ( key->c == 'W' || key->c == 'w' ) {
 		light_walls=!light_walls;
 		sampleConsole.setDefaultForeground(TCODColor::white);
-		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
@@ -555,7 +555,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		algonum+= key->c == '+' ? 1 : -1;
 		algonum=CLAMP(0,NB_FOV_ALGORITHMS-1,algonum);
 		sampleConsole.setDefaultForeground(TCODColor::white);
-		sampleConsole.print(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
@@ -627,7 +627,7 @@ void render_mouse(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
   if ( mouse->lbutton_pressed ) lbut=!lbut;
   if ( mouse->rbutton_pressed ) rbut=!rbut;
   if ( mouse->mbutton_pressed ) mbut=!mbut;
-  sampleConsole.print(1,1,
+  sampleConsole.printf(1,1,
   	"%s\n"
     "Mouse position : %4dx%4d %s\n"
     "Mouse cell     : %4dx%4d\n"
@@ -644,7 +644,7 @@ void render_mouse(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
     mouse->rbutton ? " ON" : "OFF",rbut ? " ON" : "OFF",
     mouse->mbutton ? " ON" : "OFF",mbut ? " ON" : "OFF",
 	mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : "") );
-  sampleConsole.print(1,10,"1 : Hide cursor\n2 : Show cursor");
+  sampleConsole.printf(1,10,"1 : Hide cursor\n2 : Show cursor");
   if (key->c == '1') TCODMouse::showCursor(false);
   else if( key->c == '2' ) TCODMouse::showCursor(true);
 }
@@ -713,8 +713,8 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
-		sampleConsole.print(1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
-		sampleConsole.print(1,4,"Using : A*");
+		sampleConsole.printf(1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
+		sampleConsole.printf(1,4,"Using : A*");
 		// draw windows
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -833,9 +833,9 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	} else if ( key->vk == TCODK_TAB ) {
 		usingAstar = ! usingAstar;
 		if ( usingAstar )
-			sampleConsole.print(1,4,"Using : A*      ");
+			sampleConsole.printf(1,4,"Using : A*      ");
 		else
-			sampleConsole.print(1,4,"Using : Dijkstra");
+			sampleConsole.printf(1,4,"Using : Dijkstra");
 		recalculatePath=true;
 	}
 	mx = mouse->cx-SAMPLE_SCREEN_X;
@@ -1035,11 +1035,11 @@ void render_bsp(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	}
 	sampleConsole.clear();
 	sampleConsole.setDefaultForeground(TCODColor::white);
-	sampleConsole.print(1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
+	sampleConsole.printf(1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
 		bspDepth,minRoomSize,
 		randomRoom ? "ON" : "OFF");
 	if ( randomRoom )
-	sampleConsole.print(1,6,"2 : room walls %s",
+	sampleConsole.printf(1,6,"2 : room walls %s",
 		roomWalls ? "ON" : "OFF"	);
 	// render the level
 	for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -1115,12 +1115,12 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	sampleConsole.setDefaultBackground(TCODColor::lightBlue);
 	sampleConsole.clear();
 	sampleConsole.setDefaultForeground(TCODColor::white);
-	sampleConsole.print(1,1,"%s\n\n+ : next generator\n- : prev generator",
+	sampleConsole.printf(1,1,"%s\n\n+ : next generator\n- : prev generator",
 		sets.get(curSet));
 	for (i=0; i < names.size(); i++) {
 		char *name=names.get(i);
 		if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
-			sampleConsole.printEx(SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,TCOD_RIGHT,name);
+			sampleConsole.printf(SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,TCOD_RIGHT,name);
 	}
 
 	delay += TCODSystem::getLastFrameLength();
@@ -1494,14 +1494,14 @@ int main( int argc, char *argv[] ) {
 				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
 			// print the sample name
-			TCODConsole::root->printEx(2,46-(nbSamples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
+			TCODConsole::root->printf(2,46-(nbSamples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
 		}
 		// print the help message
 		TCODConsole::root->setDefaultForeground(TCODColor::grey);
-		TCODConsole::root->printEx(79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCODSystem::getLastFrameLength()*1000), 			TCODSystem::getFps());
-		TCODConsole::root->printEx(79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCODSystem::getElapsedMilli(),TCODSystem::getElapsedSeconds());
-		TCODConsole::root->print(2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
-		TCODConsole::root->print(2,48,"ALT-ENTER : switch to %s",
+		TCODConsole::root->printf(79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCODSystem::getLastFrameLength()*1000), 			TCODSystem::getFps());
+		TCODConsole::root->printf(79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCODSystem::getElapsedMilli(),TCODSystem::getElapsedSeconds());
+		TCODConsole::root->printf(2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
+		TCODConsole::root->printf(2,48,"ALT-ENTER : switch to %s",
 			TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode");
 
 		// render current sample
@@ -1513,7 +1513,7 @@ int main( int argc, char *argv[] ) {
 							TCODConsole::root,SAMPLE_SCREEN_X,SAMPLE_SCREEN_Y // the destination console & position
 						 );
 		// erase the renderer in debug mode (needed because the root console is not cleared each frame)
-		TCODConsole::root->print(1,1,"        ");
+		TCODConsole::root->printf(1,1,"        ");
 #ifndef NO_SDL_SAMPLE
 		if ( sdl_callback_enabled ) {
 			// we want libtcod to redraw the sample console even if nothing has changed in it
@@ -1524,7 +1524,7 @@ int main( int argc, char *argv[] ) {
 		cur_renderer=TCODSystem::getRenderer();
 		TCODConsole::root->setDefaultForeground(TCODColor::grey);
 		TCODConsole::root->setDefaultBackground(TCODColor::black);
-		TCODConsole::root->printEx(42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
+		TCODConsole::root->printf(42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
 		for (int i=0; i < TCOD_NB_RENDERERS; i++) {
 			if (i==cur_renderer) {
 				/* set colors for current renderer */
@@ -1535,7 +1535,7 @@ int main( int argc, char *argv[] ) {
 				TCODConsole::root->setDefaultForeground(TCODColor::grey);
 				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
-			TCODConsole::root->printEx(42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
+			TCODConsole::root->printf(42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
 		}
 
 		// update the game screen

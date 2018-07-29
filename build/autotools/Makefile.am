@@ -112,7 +112,7 @@ libtcod_la_SOURCES = \
 	../../src/txtfield.cpp \
 	../../src/zip.cpp
 
-libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS) -ansi
+libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcod_la_LIBADD = $(PTHREAD_LIBS)
 

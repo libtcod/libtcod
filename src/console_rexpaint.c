@@ -322,7 +322,7 @@ bool TCOD_console_save_xp(
  *  This function can save any number of layers with multiple
  *  different sizes.
  *
- *  The REXPaint tool only supports files with up to 4 layers where
+ *  The REXPaint tool only supports files with up to 9 layers where
  *  all layers are the same size.
  */
 bool TCOD_console_list_save_xp(

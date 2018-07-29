@@ -172,12 +172,19 @@ pkginclude_HEADERS = \
 	../../include/txtfield.hpp \
 	../../include/libtcod.hpp \
 	../../include/zip.hpp \
-	../../include/list.hpp
+	../../include/list.hpp \
+	../../include/backend.h
+
+colorincludedir = $(includedir)/libtcod/color
+colorinclude_HEADERS = \
+	../../include/color/color.h \
+	../../include/color/canvas.h
 
 tilesetincludedir = $(includedir)/libtcod/tileset
 tilesetinclude_HEADERS = \
 	../../include/tileset/observer.h \
 	../../include/tileset/tileset.h \
+	../../include/tileset/tilesheet.h \
 	../../include/tileset/tile.h
 
 

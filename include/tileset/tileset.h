@@ -1,8 +1,6 @@
 
 #ifndef LIBTCOD_TILESET_TILESET_H_
 #define LIBTCOD_TILESET_TILESET_H_
-#include "libtcod_portability.h"
-
 #ifdef __cplusplus
 #include <algorithm>
 #include <memory>
@@ -10,6 +8,7 @@
 #include <vector>
 #endif
 
+#include "../libtcod_portability.h"
 #include "observer.h"
 #include "tile.h"
 #ifdef __cplusplus

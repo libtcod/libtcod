@@ -2,7 +2,7 @@ syntax: regexp
 
 build/dependencies
 build/packages
-doc/_build
+docs/_build
 \.vcproj$
 \.vcxproj.user$
 cbproj

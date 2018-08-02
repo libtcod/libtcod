@@ -86,12 +86,12 @@ libtcod_la_SOURCES = \
 	../../src/sys_sdl2_c.c \
 	../../src/sys_sdl_c.c \
 	../../src/sys_sdl_img_bmp.c \
-	../../src/sys_sdl_img_png.c \
+	../../src/sys_sdl_img_png.cpp \
 	../../src/tree_c.c \
 	../../src/txtfield_c.c \
 	../../src/wrappers.c \
 	../../src/zip_c.c \
-	../../src/vendor/lodepng.c \
+	../../src/vendor/lodepng.cpp \
 	../../src/vendor/stb.c \
 	../../src/vendor/utf8proc/utf8proc.c \
 	../../src/bresenham.cpp \

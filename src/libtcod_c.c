@@ -35,7 +35,7 @@
  *    You can get the development libraries from:
  *    https://www.libsdl.org/download-2.0.php
  *  * Add `GL` to be dynamically linked.
- *  * Compile and link libtcod's src/vendor/lodepng.c file.
+ *  * Compile and link libtcod's src/vendor/lodepng.cpp file.
  *  * Compile and link `src/vendor/utf8proc/utf8proc.c`.
  *  * Link with `zlib`, and add its include directory.  You can include
  *    libtcod's src/vendor/zlib directory and compile all `.c` files in there
@@ -77,7 +77,6 @@
 #ifndef TCOD_BARE
 #include "sys_sdl_c.c"
 #include "sys_sdl_img_bmp.c"
-#include "sys_sdl_img_png.c"
 #include "sys_sdl2_c.c"
 
 #ifndef NO_OPENGL

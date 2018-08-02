@@ -38,7 +38,7 @@
 #include "vendor/lodepng.h"
 
 #include <libtcod_int.h>
-
+extern "C" {
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8_t magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
@@ -80,7 +80,7 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	}
 
 	/* create the SDL surface */
-	bitmap=TCOD_sys_get_surface(width,height,bpp==32);
+	bitmap=(SDL_Surface*)TCOD_sys_get_surface(width,height,bpp==32);
 	source=image;
 	rowsize=width*bpp/8;
 	for (y=0; y<  height; y++ ) {
@@ -119,5 +119,5 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 	}
 }
-
+} /* extern "C" */
 #endif /* TCOD_BARE */

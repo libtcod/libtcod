@@ -49,6 +49,10 @@
 #include "txtfield.cpp"
 #include "zip.cpp"
 
+#ifndef TCOD_BARE
+#include "sys_sdl_img_png.cpp"
+#endif /* TCOD_BARE */
+
 #include "tileset/observer.cc"
 #include "tileset/tile.cc"
 #include "tileset/tileset.cc"

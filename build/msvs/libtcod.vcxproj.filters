@@ -108,9 +108,6 @@
     <ClCompile Include="..\..\src\sys_sdl_img_bmp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl_img_png.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\tree_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -228,9 +225,6 @@
     <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\vendor\lodepng.c">
-      <Filter>Source Files\vendor</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\tileset\tile.cc">
       <Filter>Source Files\tileset</Filter>
     </ClCompile>
@@ -239,6 +233,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\tileset\observer.cc">
       <Filter>Source Files\tileset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\lodepng.cpp">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sys_sdl_img_png.cpp">
+      <Filter>Source Files\cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

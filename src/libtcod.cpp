@@ -56,6 +56,7 @@
 #include "tileset/observer.cc"
 #include "tileset/tile.cc"
 #include "tileset/tileset.cc"
+#include "tileset/tilesheet.cc"
 
 /*
 #include "gui/button.cpp"

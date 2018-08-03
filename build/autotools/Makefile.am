@@ -113,7 +113,8 @@ libtcod_la_SOURCES = \
 	../../src/zip.cpp \
 	../../src/tileset/observer.cc \
 	../../src/tileset/tile.cc \
-	../../src/tileset/tileset.cc
+	../../src/tileset/tileset.cc \
+	../../src/tileset/tilesheet.cc
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)

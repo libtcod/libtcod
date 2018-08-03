@@ -18,12 +18,11 @@ namespace tcod {
  */
 class Tileset: public std::enable_shared_from_this<Tileset> {
  public:
-  explicit Tileset(int tile_width, int tile_height) {
-    tile_width_ = std::max(0, tile_width);
-    tile_height_ = std::max(0, tile_height);
-    /* The tile at zero is always blank. */
-    tiles_.push_back(Tile(tile_width_, tile_height_));
-  }
+  explicit Tileset(int tile_width, int tile_height):
+      tile_width_(std::max(0, tile_width)),
+      tile_height_(std::max(0, tile_height)),
+      /* The tile at zero is always blank. */
+      tiles_{Tile(tile_width_, tile_height_)} {}
   static std::shared_ptr<Tileset> New(int tile_width, int tile_height) {
     return std::make_shared<Tileset>(tile_width, tile_height);
   }

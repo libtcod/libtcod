@@ -240,6 +240,9 @@
     <ClCompile Include="..\..\src\sys_sdl_img_png.cpp">
       <Filter>Source Files\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\tileset\tilesheet.cc">
+      <Filter>Source Files\tileset</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\bresenham.h">

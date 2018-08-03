@@ -1,17 +1,23 @@
 
 #ifndef LIBTCOD_COLOR_CANVAS_H_
 #define LIBTCOD_COLOR_CANVAS_H_
+#ifdef __cplusplus
+#include <algorithm>
+#include <stdexcept>
+#include <vector>
+#endif /* __cplusplus */
+
 #include "color.h"
 #ifdef __cplusplus
 namespace tcod {
 template <typename T=ColorRGBA>
 class Canvas {
  public:
-  Canvas() {}
-  Canvas(int width, int height) {
+  Canvas() = default;
+  explicit Canvas(int width, int height) {
     width_ = std::max(0, width);
     height_ = std::max(0, height);
-    pixels_.resize(width_ * height_ * 4);
+    pixels_.resize(width_ * height_);
   }
   Canvas(Canvas&&) = default;
   Canvas& operator=(Canvas&&) = default;
@@ -22,26 +28,22 @@ class Canvas {
   /** Return the height of this canvas. */
   int GetHeight(void) const noexcept { return height_; }
   /**
-   *  Return T for the pixel at `x`,`y`.
+   *  Return a reference for the pixel at `x`,`y`.
    *
-   *  Out-of-bounds coordinates will return `T{}`.
+   *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  T GetPixel(int x, int y) const noexcept {
-    if (IsInBounds(x, y)) {
-      return pixels_[y * width_ + x];
-    } else {
-      return T{};
-    }
+  T& at(int x, int y) {
+    RangeCheck(x, y);
+    return pixels_.at(y * width_ + x);
   }
   /**
-   *  Set the pixel at `x`,`y` to `rgba`.
+   *  Return a constant reference for the pixel at `x`,`y`.
    *
-   *  Out-of-bounds coordinates are silently ignored.
+   *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  void SetPixel(int x, int y, const T &rgba) noexcept {
-    if (IsInBounds(x, y)) {
-      pixels_[y * width_ + x] = rgba;
-    }
+  const T& at(int x, int y) const {
+    RangeCheck(x, y);
+    return pixels_.at(y * width_ + x);
   }
  private:
   /**
@@ -49,6 +51,14 @@ class Canvas {
    */
   bool IsInBounds(int x, int y) const noexcept {
     return 0 <= x && x < width_ && 0 <= y && y < height_;
+  }
+  /**
+   *  Immediately throws std::out_of_range if `x` or `y` are out of bounds.
+   */
+  void RangeCheck(int x, int y) const {
+    if (!IsInBounds(x, y)) {
+      throw std::out_of_range("Position on Canvas out of bounds.");
+    }
   }
   /** The width of this canvas. */
   int width_;

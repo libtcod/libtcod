@@ -203,6 +203,7 @@
     <ClCompile Include="..\..\src\tileset\observer.cc" />
     <ClCompile Include="..\..\src\tileset\tile.cc" />
     <ClCompile Include="..\..\src\tileset\tileset.cc" />
+    <ClCompile Include="..\..\src\tileset\tilesheet.cc" />
     <ClCompile Include="..\..\src\vendor\lodepng.cpp" />
     <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c" />
     <ClCompile Include="..\..\src\sys.cpp" />

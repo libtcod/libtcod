@@ -35,10 +35,6 @@ libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)/../../include/gui
 libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcodgui_la_LIBADD = libtcod.la
 
-externalincludedir = $(includedir)/libtcod/external
-externalinclude_HEADERS = \
-	../../include/external/pstdint.h
-
 
 otherincludedir = $(includedir)/libtcod/gui
 otherinclude_HEADERS = \

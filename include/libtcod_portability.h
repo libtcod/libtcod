@@ -133,21 +133,10 @@
 #endif
 
 /* int types */
-#include "external/pstdint.h"
+#include <stdint.h>
 
 /* bool type */
-#ifndef __bool_true_false_are_defined
-#ifndef __cplusplus
-#if defined(_MSC_VER) && _MSC_VER < 1800
-typedef uint8_t bool;
-#define true 1
-#define false 0
-#define __bool_true_false_are_defined 1
-#else
 #include <stdbool.h>
-#endif
-#endif /* __cplusplus */
-#endif /* __bool_true_false_are_defined */
 
 #ifdef __cplusplus
 extern "C" {

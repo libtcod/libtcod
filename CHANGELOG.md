@@ -23,6 +23,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Bundled zlib library updated from `1.2.8` to `1.2.11`.
 - LodePNG updated from `20160501` to `20180611`.
 - libtcod C type declarations are stricter.
+- libtcod now uses the C99 and C++14 standards.
 
 ### Deprecated
 - All functions replaced by the new UTF-8 functions are deprecated.

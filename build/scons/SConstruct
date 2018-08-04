@@ -330,7 +330,9 @@ if (sys.platform != 'darwin' and sys.platform != 'win32') or env['TOOLSET'] == '
     arch_flags = ['-m32'] if env['ARCH'] == 'x86' else ['-m64']
     env.Append(CCFLAGS=arch_flags, LINKFLAGS=arch_flags)
 
-env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR')
+# Duplicate only on dist.
+env.VariantDir(
+    '$VARIANT', '$LIBTCOD_ROOT_DIR', duplicate='dist' in sys.argv)
 
 env_libtcod = env.Clone()
 env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])

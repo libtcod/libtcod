@@ -245,6 +245,10 @@ env['CXXFLAGS'] = Split(env['CXXFLAGS'])
 env['LINKFLAGS'] = Split(env['LINKFLAGS'])
 env['CPPDEFINES'] = Split(env['CPPDEFINES'])
 
+# Prefer os.environ compilers.
+env['CC'] = os.environ.get('CC', env['CC'])
+env['CXX'] = os.environ.get('CXX', env['CXX'])
+
 if sys.platform != 'darwin':
     # Removing the lib prefix on Mac causes a link failure.
     env.Replace(LIBPREFIX='', SHLIBPREFIX='')
@@ -263,7 +267,7 @@ sdl_install = []
 if using_msvc:
     env.Prepend(CXXFLAGS=['-EHsc'])
 if not using_msvc:
-    env.Prepend(CFLAGS=['-std=c99'], CXXFLAGS=['-std=c++11'])
+    env.Prepend(CFLAGS=['-std=c99'], CXXFLAGS=['-std=c++14'])
 
 if sys.platform == 'win32':
     unpack_sdl2_win32(env)

@@ -51,7 +51,7 @@ AS_CASE([$host_os],
 )
 AC_SUBST([SOVERSION], [m4_esyscmd_s(./get_version.py --so)])
 
-AX_CXX_COMPILE_STDCXX([11], [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -4,8 +4,8 @@ python:
 - "3.4"
 os: linux
 env:
-  - BUILD_TOOL=scons"
-  - BUILD_TOOL=autotools"
+  - BUILD_TOOL=scons CC=gcc-8 CXX=g++-8
+  - BUILD_TOOL=autotools CC=gcc-8 CXX=g++-8
 
 matrix:
   include:
@@ -22,7 +22,10 @@ dist: trusty
 
 addons:
   apt:
+    sources:
+      - ubuntu-toolchain-r-test
     packages:
+      - g++-8
       - libsdl2-dev
       - scons
 

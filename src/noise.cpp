@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <noise.hpp>
+#include "noise.hpp"
 
 #include <stdlib.h>
 TCODNoise::TCODNoise(int dimensions, TCOD_noise_type_t type) {

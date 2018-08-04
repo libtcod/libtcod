@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 
 AM_CFLAGS = \
-	-I$(top_srcdir)/../../include \
+	-I$(top_srcdir)/../../src \
 	-DNO_OPENGL \
 	-DNDEBUG -O2 \
 	-Wall \
@@ -31,29 +31,29 @@ libtcodgui_la_SOURCES = \
 	../../src/gui/vbox.cpp \
 	../../src/gui/widget.cpp
 
-libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir)/../../include/gui
+libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS)
 libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
 libtcodgui_la_LIBADD = libtcod.la
 
 
 otherincludedir = $(includedir)/libtcod/gui
 otherinclude_HEADERS = \
-	../../include/gui/button.hpp \
-	../../include/gui/container.hpp \
-	../../include/gui/flatlist.hpp \
-	../../include/gui/gui.hpp \
-	../../include/gui/hbox.hpp \
-	../../include/gui/image.hpp \
-	../../include/gui/label.hpp \
-	../../include/gui/radiobutton.hpp \
-	../../include/gui/slider.hpp \
-	../../include/gui/statusbar.hpp \
-	../../include/gui/textbox.hpp \
-	../../include/gui/togglebutton.hpp \
-	../../include/gui/toolbar.hpp \
-	../../include/gui/vbox.hpp \
-	../../include/gui/widget.hpp \
-	../../include/gui/gui_portability.hpp
+	../../src/gui/button.hpp \
+	../../src/gui/container.hpp \
+	../../src/gui/flatlist.hpp \
+	../../src/gui/gui.hpp \
+	../../src/gui/hbox.hpp \
+	../../src/gui/image.hpp \
+	../../src/gui/label.hpp \
+	../../src/gui/radiobutton.hpp \
+	../../src/gui/slider.hpp \
+	../../src/gui/statusbar.hpp \
+	../../src/gui/textbox.hpp \
+	../../src/gui/togglebutton.hpp \
+	../../src/gui/toolbar.hpp \
+	../../src/gui/vbox.hpp \
+	../../src/gui/widget.hpp \
+	../../src/gui/gui_portability.hpp
 
 
 libtcod_la_SOURCES = \
@@ -118,71 +118,71 @@ libtcod_la_LIBADD = $(PTHREAD_LIBS)
 
 
 pkginclude_HEADERS = \
-	../../include/bresenham.h \
-	../../include/mersenne_types.h \
-	../../include/bsp.h \
-	../../include/mouse.h \
-	../../include/color.h \
-	../../include/mouse_types.h \
-	../../include/console.h \
-	../../include/namegen.h \
-	../../include/console_types.h \
-	../../include/console_rexpaint.h \
-	../../include/noise_defaults.h \
-	../../include/fov.h \
-	../../include/noise.h \
-	../../include/fov_types.h \
-	../../include/parser.h \
-	../../include/heightmap.h \
-	../../include/path.h \
-	../../include/image.h \
-	../../include/sys.h \
-	../../include/lex.h \
-	../../include/tree.h \
-	../../include/libtcod.h \
-	../../include/txtfield.h \
-	../../include/libtcod_int.h \
-	../../include/libtcod_portability.h \
-	../../include/libtcod_utility.h \
-	../../include/libtcod_version.h \
-	../../include/wrappers.h \
-	../../include/list.h \
-	../../include/zip.h \
-	../../include/mersenne.h \
-	../../include/bresenham.hpp \
-	../../include/mersenne.hpp \
-	../../include/bsp.hpp \
-	../../include/mouse.hpp \
-	../../include/color.hpp \
-	../../include/namegen.hpp \
-	../../include/console.hpp \
-	../../include/noise.hpp \
-	../../include/fov.hpp \
-	../../include/parser.hpp \
-	../../include/heightmap.hpp \
-	../../include/path.hpp \
-	../../include/howto.hpp \
-	../../include/sys.hpp \
-	../../include/image.hpp \
-	../../include/tree.hpp \
-	../../include/lex.hpp \
-	../../include/txtfield.hpp \
-	../../include/libtcod.hpp \
-	../../include/zip.hpp \
-	../../include/list.hpp \
-	../../include/backend.h
+	../../src/bresenham.h \
+	../../src/mersenne_types.h \
+	../../src/bsp.h \
+	../../src/mouse.h \
+	../../src/color.h \
+	../../src/mouse_types.h \
+	../../src/console.h \
+	../../src/namegen.h \
+	../../src/console_types.h \
+	../../src/console_rexpaint.h \
+	../../src/noise_defaults.h \
+	../../src/fov.h \
+	../../src/noise.h \
+	../../src/fov_types.h \
+	../../src/parser.h \
+	../../src/heightmap.h \
+	../../src/path.h \
+	../../src/image.h \
+	../../src/sys.h \
+	../../src/lex.h \
+	../../src/tree.h \
+	../../src/libtcod.h \
+	../../src/txtfield.h \
+	../../src/libtcod_int.h \
+	../../src/libtcod_portability.h \
+	../../src/libtcod_utility.h \
+	../../src/libtcod_version.h \
+	../../src/wrappers.h \
+	../../src/list.h \
+	../../src/zip.h \
+	../../src/mersenne.h \
+	../../src/bresenham.hpp \
+	../../src/mersenne.hpp \
+	../../src/bsp.hpp \
+	../../src/mouse.hpp \
+	../../src/color.hpp \
+	../../src/namegen.hpp \
+	../../src/console.hpp \
+	../../src/noise.hpp \
+	../../src/fov.hpp \
+	../../src/parser.hpp \
+	../../src/heightmap.hpp \
+	../../src/path.hpp \
+	../../src/howto.hpp \
+	../../src/sys.hpp \
+	../../src/image.hpp \
+	../../src/tree.hpp \
+	../../src/lex.hpp \
+	../../src/txtfield.hpp \
+	../../src/libtcod.hpp \
+	../../src/zip.hpp \
+	../../src/list.hpp \
+	../../src/backend.h
 
 colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \
-	../../include/color/color.h \
-	../../include/color/canvas.h
+	../../src/color/color.h \
+	../../src/color/canvas.h
 
 tilesetincludedir = $(includedir)/libtcod/tileset
 tilesetinclude_HEADERS = \
-	../../include/tileset/observer.h \
-	../../include/tileset/tileset.h \
-	../../include/tileset/tilesheet.h \
-	../../include/tileset/tile.h
+	../../src/tileset/observer.h \
+	../../src/tileset/tileset.h \
+	../../src/tileset/tilesheet.h \
+	../../src/tileset/tile.h
 
 
 if ENABLE_SAMPLES

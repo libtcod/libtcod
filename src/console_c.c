@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <console.h>
+#include "console.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -33,12 +33,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include <console_rexpaint.h>
-#include <noise.h>
-#include <mersenne.h>
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
-#include <libtcod_version.h>
+#include "console_rexpaint.h"
+#include "noise.h"
+#include "mersenne.h"
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
+#include "libtcod_version.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 

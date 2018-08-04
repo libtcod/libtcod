@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <bresenham.h>
+#include "bresenham.h"
 /**
  *  \file bresenham_c.c
  *  \brief bresenham line drawing

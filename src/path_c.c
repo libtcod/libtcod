@@ -25,14 +25,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <path.h>
+#include "path.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 enum { NORTH_WEST,NORTH, NORTH_EAST, WEST,NONE,EAST, SOUTH_WEST,SOUTH,SOUTH_EAST };
 typedef unsigned char dir_t;
 

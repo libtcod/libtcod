@@ -28,12 +28,12 @@
 /*
 * Mingos' Restrictive Precise Angle Shadowcasting (MRPAS) v1.2
 */
-#include <fov.h>
+#include "fov.h"
 
 #include <stdlib.h> /* for NULL in VS */
 
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 /* angle ranges */
 double * start_angle = NULL;

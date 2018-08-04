@@ -26,17 +26,16 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef TCOD_BARE
-
-#include <sys.h>
+#include "sys.h"
 
 #include <stdio.h>
 #include <string.h>
 
 #include <SDL.h>
 
-#include <console.h>
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "console.h"
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 static SDL_Surface* scale_screen=NULL;
 static bool clear_screen=false;

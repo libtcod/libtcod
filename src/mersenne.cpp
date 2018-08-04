@@ -25,11 +25,11 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mersenne.hpp>
+#include "mersenne.hpp"
 
 #include <stdlib.h>
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 
 static TCODRandom *instance=(TCODRandom *)NULL;
 

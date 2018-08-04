@@ -27,16 +27,16 @@
 */
 #include "libtcod_portability.h"
 #ifdef TCOD_IMAGE_SUPPORT
-#include <image.h>
+#include "image.h"
 
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
 
-#include <console.h>
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "console.h"
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 typedef struct {
 	int width,height;

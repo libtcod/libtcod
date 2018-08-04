@@ -1,5 +1,5 @@
 
-#include <tileset/observer.h>
+#include "observer.h"
 namespace tcod {
 TilesetSubject::~TilesetSubject(void) {
   for (std::weak_ptr<TilesetObserver> weak_observer : observer_pointers_) {

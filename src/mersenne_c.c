@@ -25,15 +25,15 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mersenne.h>
+#include "mersenne.h"
 
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 static TCOD_random_t instance=NULL;
 static float rand_div=1.0f/(float)(0xffffffff);

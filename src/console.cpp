@@ -25,14 +25,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <console.hpp>
+#include "console.hpp"
 
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 
-#include <libtcod_int.h>
-#include <image.hpp>
+#include "libtcod_int.h"
+#include "image.hpp"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 

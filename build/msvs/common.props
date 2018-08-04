@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <LibraryPath>$(SolutionDir)libtcod\$(Platform)\$(Configuration)\;$(SolutionDir)packages\sdl2.new.2.0.8\build\native\lib\$(PlatformShortName);$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)..\..\include;$(SolutionDir)packages\sdl2.new.2.0.8\build\native\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\src;$(SolutionDir)packages\sdl2.new.2.0.8\build\native\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

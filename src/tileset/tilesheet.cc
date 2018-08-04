@@ -1,5 +1,5 @@
 
-#include <tileset/tilesheet.h>
+#include "tilesheet.h"
 
 #include "../vendor/lodepng.h"
 namespace tcod {

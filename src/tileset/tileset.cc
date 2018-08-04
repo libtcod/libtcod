@@ -1,5 +1,5 @@
 
-#include <tileset/tileset.h>
+#include "tileset.h"
 
 namespace tcod {
 static std::vector<std::shared_ptr<Tileset>> c_tilesets;

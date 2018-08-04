@@ -78,7 +78,7 @@ def samples_factory():
     installers = []
 
     env_samples = env.Clone()
-    env_samples.Append(CPPDEFINES=['TCOD_SDL2'])
+    env_samples.Append(CPPDEFINES=['TCOD_SDL2'], CPPPATH=['$VARIANT/src'])
     if env['TOOLSET'] == 'mingw':
         # These might need to be statically linked somewhere.
         env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
@@ -112,6 +112,7 @@ def samples_factory():
 def get_unittest():
     """Return the unittest builder."""
     env_unittest = env.Clone()
+    env_unittest.Append(CPPPATH=['$VARIANT/src'])
     if env['TOOLSET'] == 'msvc':
         env_unittest.Append(CXXFLAGS=['/EHsc']) # Enable exception handler.
     if sys.platform == 'win32':
@@ -136,7 +137,7 @@ def filtered_glob(env, pattern, omit=[],
 
 def get_libtcod_version():
     """Return the latest version number from the CHANGELOG."""
-    with open(os.path.join(LIBTCOD_ROOT_DIR, 'include/libtcod_version.h'),
+    with open(os.path.join(LIBTCOD_ROOT_DIR, 'src/libtcod_version.h'),
               'r') as changelog:
         # Grab the TCOD_STRVERSION literal from libtcod_version.h
         return re.match(r'.*#define TCOD_STRVERSION "([^"]+)"',
@@ -219,10 +220,7 @@ env = Environment(
     ENV=os.environ,
     LIBTCOD_ROOT_DIR=LIBTCOD_ROOT_DIR,
     DEVELOP_DIR='$LIBTCOD_ROOT_DIR',
-    CPPPATH=['$VARIANT/include',
-             '$VARIANT/include/gui',
-             '$VARIANT/src/vendor/zlib',
-             ],
+    CPPPATH=['$VARIANT/src/vendor/zlib'],
     LIBPATH=['$VARIANT'],
     VARIANT='libtcod-$TAG',
     DATE=time.strftime("%Y-%m-%d"),
@@ -331,8 +329,10 @@ if (sys.platform != 'darwin' and sys.platform != 'win32') or env['TOOLSET'] == '
     env.Append(CCFLAGS=arch_flags, LINKFLAGS=arch_flags)
 
 # Duplicate only on dist.
-env.VariantDir(
-    '$VARIANT', '$LIBTCOD_ROOT_DIR', duplicate='dist' in sys.argv)
+env.VariantDir('$VARIANT', '$LIBTCOD_ROOT_DIR',
+               duplicate='dist' in COMMAND_LINE_TARGETS)
+env.VariantDir('$VARIANT/include', '$LIBTCOD_ROOT_DIR/src',
+               duplicate='dist' in COMMAND_LINE_TARGETS)
 
 env_libtcod = env.Clone()
 env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
@@ -425,7 +425,8 @@ package_files = (
     env.Glob('$VARIANT/data/**/*.*') +
     env.Glob('$VARIANT/doc/**/*.*') +
     env.Glob('$VARIANT/include/*.h*') +
-    env.Glob('$VARIANT/include/**/*.h*') +
+    env.FilteredGlob('$VARIANT/include/**/*.h*',
+                     omit=['lodepng.h', 'stb_sprintf.h']) +
     env.Glob('$VARIANT/lua/*.lua') +
     env.Glob('$VARIANT/python/*.py') +
     env.Glob('$VARIANT/python/**/*.py') +

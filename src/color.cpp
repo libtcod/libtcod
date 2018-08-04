@@ -25,9 +25,9 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <color.hpp>
+#include "color.hpp"
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 
 // grey levels
 const TCODColor TCODColor::black(TCOD_BLACK);

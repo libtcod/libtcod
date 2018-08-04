@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 
 TCODLex::TCODLex( const char **_symbols, const char **_keywords, const char *simpleComment,
 		const char *commentStart, const char *commentStop, const char *javadocCommentStart,

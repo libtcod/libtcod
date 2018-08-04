@@ -24,6 +24,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - LodePNG updated from `20160501` to `20180611`.
 - libtcod C type declarations are stricter.
 - libtcod now uses the C99 and C++14 standards.
+- In the repository `include/` headers have been moved into `src/`.
 
 ### Deprecated
 - All functions replaced by the new UTF-8 functions are deprecated.

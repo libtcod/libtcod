@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <bresenham.hpp>
+#include "bresenham.hpp"
 
 // ********** bresenham line drawing **********
 void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo) {

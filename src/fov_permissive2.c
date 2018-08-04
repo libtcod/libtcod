@@ -25,14 +25,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <fov.h>
+#include "fov.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 /* The size of each square in units */
 #define STEP_SIZE 16

@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <gui/image.hpp> /* header conflict with image.hpp */
+#include "image.hpp"
 
 Image::Image(int x,int y,int w, int h, const char *tip) : Widget(x,y,w,h), back(TCODColor::black) {
 	if ( tip ) setTip(tip);

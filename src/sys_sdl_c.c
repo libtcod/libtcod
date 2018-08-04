@@ -26,8 +26,8 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef TCOD_BARE
-#include <mouse.h>
-#include <sys.h>
+#include "mouse.h"
+#include "sys.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -36,9 +36,9 @@
 
 #include <SDL.h>
 
-#include <console.h>
-#include <libtcod_int.h>
-#include <parser.h>
+#include "console.h"
+#include "libtcod_int.h"
+#include "parser.h"
 
 static TCOD_SDL_driver_t *sdl=NULL;
 

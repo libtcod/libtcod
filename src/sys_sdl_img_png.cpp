@@ -26,8 +26,7 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef TCOD_BARE
-
-#include <sys.h>
+#include "sys.h"
 
 #if !defined (__HAIKU__) && !defined (__ANDROID__)
 #include <stdlib.h>
@@ -37,7 +36,7 @@
 
 #include "vendor/lodepng.h"
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 extern "C" {
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8_t magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};

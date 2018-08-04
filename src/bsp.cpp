@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <bsp.hpp>
+#include "bsp.hpp"
 
 TCODBsp::TCODBsp(TCODBsp *father, bool left) {
 	if ( father->horizontal ) {

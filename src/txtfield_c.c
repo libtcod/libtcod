@@ -25,16 +25,16 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <txtfield.h>
+#include "txtfield.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
 #include <stdlib.h>
 #include <string.h>
 
-#include <console.h>
-#include <libtcod_int.h>
-#include <libtcod_utility.h>
+#include "console.h"
+#include "libtcod_int.h"
+#include "libtcod_utility.h"
 
 #define MAX_INT 0x7FFFFFFF
 

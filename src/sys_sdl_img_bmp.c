@@ -26,12 +26,11 @@
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #ifndef TCOD_BARE
-
-#include <sys.h>
+#include "sys.h"
 
 #include <SDL.h>
 
-#include <libtcod_int.h>
+#include "libtcod_int.h"
 
 bool TCOD_sys_check_bmp(const char *filename) {
 	static uint8_t magic_number[]={0x42, 0x4d};

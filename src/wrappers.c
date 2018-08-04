@@ -25,14 +25,14 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <wrappers.h>
+#include "wrappers.h"
 
 #include <math.h>
 #include <string.h>
 
-#include <console.h>
-#include <libtcod_int.h>
-#include <namegen.h>
+#include "console.h"
+#include "libtcod_int.h"
+#include "namegen.h"
 
 #define RED_MASK   0x0000FF
 #define GREEN_MASK 0x00FF00

@@ -29,7 +29,7 @@
  * This renderer is mostly copied and pasted from Antagonist's SkyFire GLSL roguelike engine
  */
 #ifndef TCOD_BARE
-#include <sys.h>
+#include "sys.h"
 
 #include "libtcod_int.h"
 #include "console.h"

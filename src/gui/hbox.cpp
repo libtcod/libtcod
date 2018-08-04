@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <hbox.hpp>
+#include "hbox.hpp"
 
 HBox::HBox(int x, int y, int padding) : VBox(x,y,padding) {
 }

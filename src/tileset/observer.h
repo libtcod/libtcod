@@ -1,7 +1,7 @@
 
 #ifndef LIBTCOD_TILESET_OBSERVER_H_
 #define LIBTCOD_TILESET_OBSERVER_H_
-#include "libtcod_portability.h"
+#include "../libtcod_portability.h"
 
 #ifdef __cplusplus
 #include <algorithm>

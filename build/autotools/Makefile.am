@@ -184,6 +184,10 @@ tilesetinclude_HEADERS = \
 	../../src/tileset/tilesheet.h \
 	../../src/tileset/tile.h
 
+utilityincludedir = $(includedir)/libtcod/utility
+utilityinclude_HEADERS = \
+	../../src/utility/vector2.h
+
 
 if ENABLE_SAMPLES
 noinst_PROGRAMS = samples_c samples_cpp

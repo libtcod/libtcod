@@ -82,7 +82,7 @@ class Tileset: public std::enable_shared_from_this<Tileset> {
    *  Return -1 if it can't.
    */
   int VerifyTile(const Tile &tile) const {
-    if (tile.GetWidth() == tile_width_ && tile.GetHeight() == tile_height_) {
+    if (tile.width() == tile_width_ && tile.height() == tile_height_) {
       return 0;
     }
     return -1;

@@ -6,6 +6,7 @@
 #endif // __cplusplus
 
 #include "../color/canvas.h"
+#include "tile.h"
 #ifdef __cplusplus
 namespace tcod {
 /**
@@ -28,6 +29,22 @@ class Tilesheet {
   Tilesheet& operator=(Tilesheet&&) = default;
   Tilesheet(const Tilesheet&) = default;
   Tilesheet& operator=(const Tilesheet&) = default;
+  /**
+   *  Return the Tile at `x` and `y`.
+   */
+  Tile get_tile(int x, int y) const {
+    if (!(0 <= x && x < layout_.columns && 0 <= y && y < layout_.rows)) {
+      throw std::out_of_range("Tile not in Tilesheet layout.");
+    }
+    return new_tile(x * layout_.tile_width, y * layout_.tile_height,
+                    layout_.tile_width, layout_.tile_height);
+  }
+  /**
+   *  Return the Tile at `n`.
+   */
+  Tile get_tile(int n) const {
+    return get_tile(n % layout_.columns, n / layout_.columns);
+  }
  private:
   /**
    *  Automatically fill values which are 0 in layout_.
@@ -47,6 +64,22 @@ class Tilesheet {
     if (layout_.tile_height == 0 && layout_.rows > 0) {
       layout_.tile_height = canvas_.height() / layout_.rows;
     }
+    if (!layout_.columns || !layout_.rows) {
+      throw std::logic_error("Tilesheet layout is non-valid.");
+    }
+  }
+  /**
+   *  Return a new Tile from the given region on the Tilesheet.
+   */
+  Tile new_tile(int x, int y, int width, int height) const {
+    Canvas tile_canvas = Canvas(width, height);
+    for (int pixel_y = 0; pixel_y < height; ++pixel_y) {
+      for (int pixel_x = 0; pixel_x < width; ++pixel_x) {
+        tile_canvas.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x,
+                                                      y + pixel_y);
+      }
+    }
+    return Tile(tile_canvas);
   }
   Canvas canvas_;
   TilesheetLayout layout_;

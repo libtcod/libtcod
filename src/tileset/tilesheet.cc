@@ -4,7 +4,8 @@
 #include "../color/canvas.h"
 #include "../vendor/lodepng.h"
 namespace tcod {
-Tilesheet LoadTilesheet(const std::string& filename) {
+Tilesheet LoadTilesheet(const std::string& filename,
+                        const TilesheetLayout& layout) {
   unsigned img_width, img_height;
   std::vector<unsigned char> img_data;
   if (lodepng::decode(img_data, img_width, img_height, filename)) {
@@ -19,6 +20,6 @@ Tilesheet LoadTilesheet(const std::string& filename) {
       img_iter += 4;
     }
   }
-  return Tilesheet(canvas);
+  return Tilesheet(canvas, layout);
 }
 } // namespace tcod

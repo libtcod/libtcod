@@ -169,8 +169,11 @@ pkginclude_HEADERS = \
 	../../src/txtfield.hpp \
 	../../src/libtcod.hpp \
 	../../src/zip.hpp \
-	../../src/list.hpp \
-	../../src/backend.h
+	../../src/list.hpp
+
+backendincludedir = $(includedir)/libtcod/backend
+backendinclude_HEADERS = \
+	../../src/backend/backend.h
 
 colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \

@@ -32,6 +32,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - Resolved build issues on PowerPC platforms.
 - Mouse state is now tracked even when mouse events are not asked for.
 - libtcod sys event functions no longer crash if the given key pointer is NULL.
+- SCons no longer crashes downloading SDL2 for Windows.
 
 ### Removed
 - Autotools no longer creates `libtcodxx` libraries, C++ programs should link

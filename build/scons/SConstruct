@@ -2,6 +2,7 @@
 import os
 import sys
 
+import multiprocessing
 import platform
 import re
 import subprocess
@@ -28,8 +29,10 @@ def download_sdl2_win32(env):
         return
     print(env.subst('Downloading $SDL2_ZIP_URL'))
     ensure_path(env.subst('$SDL2_ZIP_PATH'))
-    urlretrieve(env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH'))
+    url, dest = env.subst('$SDL2_ZIP_URL'), env.subst('$SDL2_ZIP_PATH')
 
+    # workaround for https://github.com/SCons/scons/issues/3136
+    subprocess.check_call([sys.executable, 'urlretrieve.py', url, dest])
 
 def unpack_sdl2_win32(env):
     """Unpack an SDL2 zip/tar file."""

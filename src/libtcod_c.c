@@ -67,19 +67,7 @@
 #include "noise_c.c"
 #include "parser_c.c"
 #include "path_c.c"
-#include "sys_c.c"
 #include "tree_c.c"
 #include "txtfield_c.c"
 #include "wrappers.c"
 #include "zip_c.c"
-
-#ifndef TCOD_BARE
-#include "sys_sdl_c.c"
-#include "sys_sdl_img_bmp.c"
-#include "sys_sdl2_c.c"
-
-#ifndef NO_OPENGL
-#include "sys_opengl_c.c"
-#endif /* NO_OPENGL */
-
-#endif /* TCOD_BARE */

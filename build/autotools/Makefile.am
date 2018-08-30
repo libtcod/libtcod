@@ -78,10 +78,10 @@ libtcod_la_SOURCES = \
 	../../src/noise_c.c \
 	../../src/parser_c.c \
 	../../src/path_c.c \
-	../../src/sys_c.c \
-	../../src/sys_sdl2_c.c \
-	../../src/sys_sdl_c.c \
-	../../src/sys_sdl_img_bmp.c \
+	../../src/sys_c.cpp \
+	../../src/sys_sdl2_c.cpp \
+	../../src/sys_sdl_c.cpp \
+	../../src/sys_sdl_img_bmp.cpp \
 	../../src/sys_sdl_img_png.cpp \
 	../../src/tree_c.c \
 	../../src/txtfield_c.c \

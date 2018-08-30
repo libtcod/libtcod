@@ -25,60 +25,43 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/** \file libtcod.cpp
- *
- *  To statically link a C++ program with libtcod you'll need to follow
- *  the directions for compiling `libtcod_c.c` and then add `libtcod.cpp` to
- *  your source files.
- */
-#include "bresenham.cpp"
-#include "bsp.cpp"
-#include "color.cpp"
-#include "console.cpp"
-#include "console_c.cpp"
-#include "fov.cpp"
-#include "heightmap.cpp"
-#include "image.cpp"
-#include "lex.cpp"
-#include "mersenne.cpp"
-#include "mouse.cpp"
-#include "namegen.cpp"
-#include "noise.cpp"
-#include "parser.cpp"
-#include "path.cpp"
-#include "sys.cpp"
-#include "sys_c.cpp"
-#include "txtfield.cpp"
-#include "zip.cpp"
-
 #ifndef TCOD_BARE
-#include "sys_sdl_c.cpp"
-#include "sys_sdl2_c.cpp"
-#include "sys_sdl_img_bmp.cpp"
-#include "sys_sdl_img_png.cpp"
-#ifndef NO_OPENGL
-#include "sys_opengl_c.cpp"
-#endif /* NO_OPENGL */
+#include "sys.h"
+
+#include <SDL.h>
+
+#include "libtcod_int.h"
+bool TCOD_sys_check_bmp(const char *filename) {
+	static uint8_t magic_number[]={0x42, 0x4d};
+	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
+}
+
+SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
+	SDL_Surface *ret=SDL_LoadBMP(filename);
+	if( !ret ) TCOD_fatal("SDL : %s",SDL_GetError());
+	/* convert low color images to 24 bits */
+	if ( ret->format->BytesPerPixel != 3 ) {
+		uint32_t rmask,gmask,bmask;
+        SDL_Surface * tmp;
+		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
+			rmask=0xFF0000;
+			gmask=0x00FF00;
+			bmask=0x0000FF;
+		} else {
+			rmask=0x0000FF;
+			gmask=0x00FF00;
+			bmask=0xFF0000;
+		}
+		tmp=SDL_CreateRGBSurface(SDL_SWSURFACE,ret->w,ret->h,24, rmask, gmask, bmask, 0);
+		SDL_BlitSurface(ret,NULL,tmp,NULL);
+		SDL_FreeSurface(ret);
+		ret=tmp;
+	}
+
+	return ret;
+}
+
+void TCOD_sys_write_bmp(const SDL_Surface *surf, const char *filename) {
+	SDL_SaveBMP((SDL_Surface *)surf,filename);
+}
 #endif /* TCOD_BARE */
-
-#include "tileset/observer.cc"
-#include "tileset/tile.cc"
-#include "tileset/tileset.cc"
-#include "tileset/tilesheet.cc"
-
-/*
-#include "gui/button.cpp"
-#include "gui/container.cpp"
-#include "gui/flatlist.cpp"
-#include "gui/hbox.cpp"
-#include "gui/image.cpp"
-#include "gui/label.cpp"
-#include "gui/radiobutton.cpp"
-#include "gui/slider.cpp"
-#include "gui/statusbar.cpp"
-#include "gui/textbox.cpp"
-#include "gui/togglebutton.cpp"
-#include "gui/toolbar.cpp"
-#include "gui/vbox.cpp"
-#include "gui/widget.cpp"
-*/

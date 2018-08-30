@@ -199,6 +199,11 @@
     <ClCompile Include="..\..\src\parser_c.c" />
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
+    <ClCompile Include="..\..\src\sys_c.cpp" />
+    <ClCompile Include="..\..\src\sys_opengl_c.cpp" />
+    <ClCompile Include="..\..\src\sys_sdl2_c.cpp" />
+    <ClCompile Include="..\..\src\sys_sdl_c.cpp" />
+    <ClCompile Include="..\..\src\sys_sdl_img_bmp.cpp" />
     <ClCompile Include="..\..\src\sys_sdl_img_png.cpp" />
     <ClCompile Include="..\..\src\tileset\observer.cc" />
     <ClCompile Include="..\..\src\tileset\tile.cc" />
@@ -207,11 +212,6 @@
     <ClCompile Include="..\..\src\vendor\lodepng.cpp" />
     <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c" />
     <ClCompile Include="..\..\src\sys.cpp" />
-    <ClCompile Include="..\..\src\sys_c.c" />
-    <ClCompile Include="..\..\src\sys_opengl_c.c" />
-    <ClCompile Include="..\..\src\sys_sdl2_c.c" />
-    <ClCompile Include="..\..\src\sys_sdl_c.c" />
-    <ClCompile Include="..\..\src\sys_sdl_img_bmp.c" />
     <ClCompile Include="..\..\src\tree_c.c" />
     <ClCompile Include="..\..\src\txtfield.cpp" />
     <ClCompile Include="..\..\src\txtfield_c.c" />

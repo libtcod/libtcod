@@ -37,7 +37,6 @@
 #include "vendor/lodepng.h"
 
 #include "libtcod_int.h"
-extern "C" {
 bool TCOD_sys_check_png(const char *filename) {
 	static uint8_t magic_number[]={137, 80, 78, 71, 13, 10, 26, 10};
 	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
@@ -118,5 +117,4 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 	}
 }
-} /* extern "C" */
 #endif /* TCOD_BARE */

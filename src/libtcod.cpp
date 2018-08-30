@@ -35,6 +35,7 @@
 #include "bsp.cpp"
 #include "color.cpp"
 #include "console.cpp"
+#include "console_c.cpp"
 #include "fov.cpp"
 #include "heightmap.cpp"
 #include "image.cpp"

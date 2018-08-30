@@ -60,7 +60,7 @@ libtcod_la_SOURCES = \
 	../../src/bresenham_c.c \
 	../../src/bsp_c.c \
 	../../src/color_c.c \
-	../../src/console_c.c \
+	../../src/console_c.cpp \
 	../../src/console_printing.c \
 	../../src/console_rexpaint.c \
 	../../src/fov_c.c \

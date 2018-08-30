@@ -50,7 +50,6 @@
 #include "bresenham_c.c"
 #include "bsp_c.c"
 #include "color_c.c"
-#include "console_c.c"
 #include "console_printing.c"
 #include "console_rexpaint.c"
 #include "fov_c.c"

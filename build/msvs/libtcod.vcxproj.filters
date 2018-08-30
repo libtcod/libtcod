@@ -42,9 +42,6 @@
     <ClCompile Include="..\..\src\color_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\console_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\console_printing.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -242,6 +239,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\tileset\tilesheet.cc">
       <Filter>Source Files\tileset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\console_c.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

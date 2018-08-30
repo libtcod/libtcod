@@ -171,7 +171,7 @@
     <ClCompile Include="..\..\src\color.cpp" />
     <ClCompile Include="..\..\src\color_c.c" />
     <ClCompile Include="..\..\src\console.cpp" />
-    <ClCompile Include="..\..\src\console_c.c" />
+    <ClCompile Include="..\..\src\console_c.cpp" />
     <ClCompile Include="..\..\src\console_printing.c" />
     <ClCompile Include="..\..\src\console_rexpaint.c" />
     <ClCompile Include="..\..\src\fov.cpp" />

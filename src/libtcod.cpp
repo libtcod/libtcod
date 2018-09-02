@@ -61,6 +61,8 @@
 #endif /* NO_OPENGL */
 #endif /* TCOD_BARE */
 
+#include "backend/backend.cc"
+#include "sdl2/legacy_backend.cc"
 #include "tileset/observer.cc"
 #include "tileset/tile.cc"
 #include "tileset/tileset.cc"

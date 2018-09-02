@@ -107,6 +107,8 @@ libtcod_la_SOURCES = \
 	../../src/sys.cpp \
 	../../src/txtfield.cpp \
 	../../src/zip.cpp \
+	../../src/backend/backend.cc \
+	../../src/sdl2/legacy_backend.cc \
 	../../src/tileset/observer.cc \
 	../../src/tileset/tile.cc \
 	../../src/tileset/tileset.cc \
@@ -179,6 +181,10 @@ colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \
 	../../src/color/color.h \
 	../../src/color/canvas.h
+
+sdl2includedir = $(includedir)/libtcod/sdl2
+sdl2include_HEADERS = \
+	../../src/sdl2/legacy_backend.h
 
 tilesetincludedir = $(includedir)/libtcod/tileset
 tilesetinclude_HEADERS = \

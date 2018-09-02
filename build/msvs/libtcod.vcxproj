@@ -164,6 +164,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\backend\backend.cc" />
     <ClCompile Include="..\..\src\bresenham.cpp" />
     <ClCompile Include="..\..\src\bresenham_c.c" />
     <ClCompile Include="..\..\src\bsp.cpp" />
@@ -199,6 +200,7 @@
     <ClCompile Include="..\..\src\parser_c.c" />
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
+    <ClCompile Include="..\..\src\sdl2\legacy_backend.cc" />
     <ClCompile Include="..\..\src\sys_c.cpp" />
     <ClCompile Include="..\..\src\sys_opengl_c.cpp" />
     <ClCompile Include="..\..\src\sys_sdl2_c.cpp" />
@@ -287,6 +289,8 @@
     <ClInclude Include="..\..\include\wrappers.h" />
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
+    <ClInclude Include="..\..\src\backend\backend.h" />
+    <ClInclude Include="..\..\src\sdl2\legacy_backend.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

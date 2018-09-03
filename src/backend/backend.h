@@ -16,7 +16,13 @@ namespace backend {
 class Backend {
  public:
   virtual ~Backend() {}
+  /**
+   *  Called when this Backend is setup.
+   */
   virtual void activate() {}
+  /**
+   *  Called when this Backend is removed.
+   */
   virtual void deactivate() {}
   /**
    *  Legacy wait for event virtual function.
@@ -35,27 +41,20 @@ class Backend {
   virtual void legacy_flush() { }
 };
 /**
- *  Unique pointer to the active backend object.
- *
- *  This variable is private, use tcod::backend::get to get the active backend.
+ *  Change the active backend to another Backend instance.
  */
-extern std::unique_ptr<Backend> active_backend_;
+void set(std::unique_ptr<Backend>&& backend);
 /**
- *  Change the active backend to another Backend subclass.
+ *  Change the active backend to another Backend class.
  */
-template <class T>
-inline void change() {
-  if (active_backend_) { active_backend_->deactivate(); }
-  active_backend_ = std::make_unique<T>();
-  if (active_backend_) { active_backend_->activate(); }
+template <class BackendType>
+inline void set() {
+  set(std::make_unique<BackendType>());
 }
 /**
  *  Return the current backend interface.
  */
-inline Backend& get() {
-  if (!active_backend_) { change<Backend>(); }
-  return *active_backend_;
-}
+Backend& get();
 } // namespace backend
 } // namespace tcod
 #endif /* __cplusplus */

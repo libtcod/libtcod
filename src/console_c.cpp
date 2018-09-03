@@ -39,6 +39,7 @@
 #include "libtcod_int.h"
 #include "libtcod_utility.h"
 #include "libtcod_version.h"
+#include "sdl2/legacy_backend.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
@@ -343,8 +344,7 @@ void TCOD_console_blit(
  *  Render and present the root console to the active display.
  */
 void TCOD_console_flush(void) {
-	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
-	TCOD_sys_flush(true);
+  tcod::backend::get().legacy_flush();
 }
 /**
  *  Fade the color of the display.
@@ -708,7 +708,9 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 #ifndef TCOD_BARE
 		TCOD_ctx.renderer=renderer;
 #endif
-		TCOD_console_init((TCOD_console_t)con,title,fullscreen);
+		strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+		TCOD_ctx.fullscreen = fullscreen;
+		tcod::backend::set<tcod::sdl2::LegacyBackend>();
 	}
 }
 

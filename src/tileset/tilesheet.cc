@@ -4,6 +4,7 @@
 #include "../color/canvas.h"
 #include "../vendor/lodepng.h"
 namespace tcod {
+namespace tileset {
 Tilesheet LoadTilesheet(const std::string& filename,
                         const TilesheetLayout& layout) {
   unsigned img_width, img_height;
@@ -22,4 +23,5 @@ Tilesheet LoadTilesheet(const std::string& filename,
   }
   return Tilesheet(canvas, layout);
 }
+} // namespace tileset
 } // namespace tcod

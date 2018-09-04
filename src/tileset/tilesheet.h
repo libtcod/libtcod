@@ -9,6 +9,7 @@
 #include "tile.h"
 #ifdef __cplusplus
 namespace tcod {
+namespace tileset {
 /**
  *  The layout of tiles on a tile-sheet.
  */
@@ -88,6 +89,7 @@ class Tilesheet {
  *  Load a Tilesheet from an image file.
  */
 Tilesheet LoadTilesheet(const std::string &filename);
+} // namespace tileset
 } // namespace tcod
 #endif // __cplusplus
 #endif /* LIBTCOD_TILESET_TILESHEET_H_ */

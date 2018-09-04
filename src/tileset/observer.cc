@@ -1,6 +1,7 @@
 
 #include "observer.h"
 namespace tcod {
+namespace tileset {
 TilesetSubject::~TilesetSubject(void) {
   for (std::weak_ptr<TilesetObserver> weak_observer : observer_pointers_) {
     if (auto observer = weak_observer.lock()) {
@@ -22,4 +23,5 @@ void TilesetSubject::NotifyChanged(const Tileset &tileset,
     }
   }
 }
+} // namespace tileset
 } // namespace tcod

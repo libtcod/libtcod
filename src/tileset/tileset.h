@@ -13,6 +13,7 @@
 #include "tile.h"
 #ifdef __cplusplus
 namespace tcod {
+namespace tileset {
 /**
  *  This is a tile-set resource.
  */
@@ -102,7 +103,7 @@ class Tileset: public std::enable_shared_from_this<Tileset> {
 /**
  *  C API alias to the tcod::Tileset class.
  */
-typedef tcod::Tileset TCOD_Tileset;
+typedef Tileset TCOD_Tileset;
 extern "C" {
 #else
 typedef struct TCOD_Tileset TCOD_Tileset;
@@ -117,6 +118,7 @@ TCOD_Tileset *TCOD_tileset_new(int tile_width, int tile_height);
 void TCOD_tileset_delete(TCOD_Tileset *tileset);
 #ifdef __cplusplus
 } // extern "C"
+} // namespace tileset
 } // namespace tcod
 #endif
 #endif /* LIBTCOD_TILESET_TILESET_H_ */

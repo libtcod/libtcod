@@ -2,6 +2,7 @@
 #include "tileset.h"
 
 namespace tcod {
+namespace tileset {
 static std::vector<std::shared_ptr<Tileset>> c_tilesets;
 extern "C" {
 TCOD_Tileset *TCOD_tileset_new(int tile_width, int tile_height) {
@@ -12,4 +13,5 @@ TCOD_Tileset *TCOD_tileset_new(int tile_width, int tile_height) {
 void TCOD_tileset_delete(TCOD_Tileset *tileset) {
 }
 } // extern "C"
+} // namespace tileset
 } // namespace tcod

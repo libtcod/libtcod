@@ -11,6 +11,7 @@
 #include "../color/canvas.h"
 #ifdef __cplusplus
 namespace tcod {
+namespace tileset {
 class Tile {
  public:
   Tile();
@@ -27,6 +28,7 @@ class Tile {
  private:
   Canvas canvas_;
 };
+} // namespace tileset
 } // namespace tcod
 #endif // __cplusplus
 #endif // LIBTCOD_TILESET_TILE_H_

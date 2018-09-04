@@ -13,6 +13,7 @@
 #include "tile.h"
 #ifdef __cplusplus
 namespace tcod {
+namespace tileset {
 class Tileset;
 class TilesetObserver;
 typedef std::vector<std::pair<int, Tile&>> IdTileRefPairVector_;
@@ -88,6 +89,7 @@ class TilesetObserver {
    */
   virtual void OnTilesetDetach();
 };
-} /* namespace tcod */
+} // namespace tileset
+} // namespace tcod
 #endif /* __cplusplus */
 #endif /* LIBTCOD_TILESET_OBSERVER_H_ */

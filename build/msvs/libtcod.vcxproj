@@ -293,6 +293,10 @@
     <ClInclude Include="..\..\src\backend\backend.h" />
     <ClInclude Include="..\..\src\sdl2\legacy_backend.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_renderer.h" />
+    <ClInclude Include="..\..\src\tileset\observer.h" />
+    <ClInclude Include="..\..\src\tileset\tile.h" />
+    <ClInclude Include="..\..\src\tileset\tileset.h" />
+    <ClInclude Include="..\..\src\tileset\tilesheet.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

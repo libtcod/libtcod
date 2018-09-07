@@ -15,7 +15,7 @@ namespace tcod {
 namespace backend {
 class Backend {
  public:
-  virtual ~Backend() {}
+  virtual ~Backend() = default;
   /**
    *  Called when this Backend is setup.
    */

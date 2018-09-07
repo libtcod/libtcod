@@ -33,14 +33,7 @@ class TilesetSubject {
    *  On delete all attached observers are detached automatically.
    */
   ~TilesetSubject(void);
-  /**
-   *  Attach a TilesetObserver to this subject.
-   *
-   *  Called by Tileset, this function has enough information to notify the
-   *  TilesetObserver about the Tileset's current state.
-   */
-  void AttachTilesetObserver(std::weak_ptr<TilesetObserver> observer,
-                             const Tileset &tileset);
+ protected:
   /**
    *  Notify observers about the state and changes to the subject.
    *
@@ -53,17 +46,27 @@ class TilesetSubject {
   /**
    *  An array of weak pointers to observers.
    */
-  std::vector<std::weak_ptr<TilesetObserver>> observer_pointers_;
+  std::vector<TilesetObserver*> observers_;
 };
 class TilesetObserver {
  public:
   friend class TilesetSubject;
-  TilesetObserver() = default;
+  TilesetObserver();
+  TilesetObserver(TilesetSubject& subject) {
+    subject.observers_.emplace_back(this);
+  }
 
-  TilesetObserver(TilesetObserver&&) = default;
-  TilesetObserver& operator=(TilesetObserver&&) = default;
-  TilesetObserver(const TilesetObserver&) = default;
-  TilesetObserver& operator=(const TilesetObserver&) = default;
+  TilesetObserver(TilesetObserver&&) = delete;
+  TilesetObserver& operator=(TilesetObserver&&) = delete;
+  TilesetObserver(const TilesetObserver&) = delete;
+  TilesetObserver& operator=(const TilesetObserver&) = delete;
+  virtual ~TilesetObserver() {
+    unobserve();
+  }
+  void observe(TilesetSubject& subject) {
+    unobserve();
+    subject_ = &subject;
+  }
  protected:
   /**
    *  Called when this object starts observing a Tileset.
@@ -83,13 +86,22 @@ class TilesetObserver {
    */
   virtual void OnTilesetChanged(
       const Tileset &tileset,
-      const std::vector<std::pair<int, Tile&>> &changes);
+      const std::vector<std::pair<int, Tile&>> &changes) { };
   /**
    *  Called when the observed Tileset is being deleted.
    */
-  virtual void OnTilesetDetach();
+  virtual void OnTilesetDetach() { };
+  TilesetSubject* subject_;
+ private:
+  void unobserve() {
+    if (!subject_) { return; }
+    auto& observers = subject_->observers_;
+    observers.erase(std::find(observers.begin(), observers.end(), this));
+    subject_ = nullptr;
+  }
 };
 } // namespace tileset
 } // namespace tcod
+#include "tileset.h" // These classes are incomplete without tileset.h
 #endif /* __cplusplus */
 #endif /* LIBTCOD_TILESET_OBSERVER_H_ */

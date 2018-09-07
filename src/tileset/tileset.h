@@ -17,20 +17,17 @@ namespace tileset {
 /**
  *  This is a tile-set resource.
  */
-class Tileset: public std::enable_shared_from_this<Tileset> {
+class Tileset: public TilesetSubject {
  public:
   explicit Tileset(int tile_width, int tile_height):
       tile_width_(std::max(0, tile_width)),
       tile_height_(std::max(0, tile_height)),
       /* The tile at zero is always blank. */
       tiles_{Tile(tile_width_, tile_height_)} {}
-  static std::shared_ptr<Tileset> New(int tile_width, int tile_height) {
-    return std::make_shared<Tileset>(tile_width, tile_height);
-  }
   Tileset(Tileset&&) = default;
   Tileset& operator=(Tileset&&) = default;
-  Tileset(const Tileset&) = delete;
-  Tileset& operator=(const Tileset&) = delete;
+  Tileset(const Tileset&) = default;
+  Tileset& operator=(const Tileset&) = default;
   /**
    *  Assign `codepoint` to a new `tile` for this Tileset.
    *
@@ -49,15 +46,6 @@ class Tileset: public std::enable_shared_from_this<Tileset> {
   int GetTileWidth(void) { return tile_width_; }
   /** Return the height of each tile in this Tileset */
   int GetTileHeight(void) { return tile_height_; }
-  /**
-   *  Attach a TilesetObserver instance to this Tileset.
-   *
-   *  Detachment is automatic.  The Tileset or TilesetObserver may be deleted
-   *  at any time without issues.
-   */
-  void AttachTilesetObserver(std::weak_ptr<TilesetObserver> observer) {
-    tileset_subject_.AttachTilesetObserver(observer, *this);
-  }
   /**
    *  Return a reference to this objects tile vector.
    */
@@ -96,7 +84,6 @@ class Tileset: public std::enable_shared_from_this<Tileset> {
   int tiles_last_known_capacity;
   /** Mapping of Unicode code-points to the tiles of this tile-set. */
   std::vector<int> character_map_;
-  TilesetSubject tileset_subject_;
 };
 #endif /* __cplusplus */
 #ifdef __cplusplus

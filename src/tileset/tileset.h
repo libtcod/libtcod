@@ -52,6 +52,10 @@ class Tileset: public TilesetSubject {
   const std::vector<Tile>& GetTiles(void) const {
     return tiles_;
   }
+ protected:
+  virtual Tileset& as_tileset() override final {
+    return *this;
+  }
  private:
   /**
    *  Return the tile ID for a specific code-point.

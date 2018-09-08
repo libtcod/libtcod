@@ -1,6 +1,7 @@
 
 #ifndef LIBTCOD_SDL2_SDL2_RENDERER_H_
 #define LIBTCOD_SDL2_SDL2_RENDERER_H_
+#include "sdl2_alias.h"
 #include "../tileset/observer.h"
 #ifdef __cplusplus
 struct SDL_Renderer;

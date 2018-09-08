@@ -201,6 +201,7 @@
     <ClCompile Include="..\..\src\path.cpp" />
     <ClCompile Include="..\..\src\path_c.c" />
     <ClCompile Include="..\..\src\sdl2\legacy_backend.cc" />
+    <ClCompile Include="..\..\src\sdl2\sdl2_alias.cc" />
     <ClCompile Include="..\..\src\sdl2\sdl2_renderer.cc" />
     <ClCompile Include="..\..\src\sys_c.cpp" />
     <ClCompile Include="..\..\src\sys_opengl_c.cpp" />
@@ -292,6 +293,7 @@
     <ClInclude Include="..\..\include\zip.hpp" />
     <ClInclude Include="..\..\src\backend\backend.h" />
     <ClInclude Include="..\..\src\sdl2\legacy_backend.h" />
+    <ClInclude Include="..\..\src\sdl2\sdl2_alias.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_renderer.h" />
     <ClInclude Include="..\..\src\tileset\observer.h" />
     <ClInclude Include="..\..\src\tileset\tile.h" />

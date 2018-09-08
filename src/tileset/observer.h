@@ -11,6 +11,7 @@
 #endif
 
 #include "tile.h"
+// "tileset.h" included near end of header.
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
@@ -32,7 +33,7 @@ class TilesetSubject {
   /**
    *  On delete all attached observers are detached automatically.
    */
-  ~TilesetSubject(void);
+  virtual ~TilesetSubject();
  protected:
   /**
    *  Notify observers about the state and changes to the subject.
@@ -40,8 +41,12 @@ class TilesetSubject {
    *  `tiles` is the current state of the subject.
    *  `changes` is for specifically changed tiles, if any.
    */
-  void NotifyChanged(const Tileset &tileset,
-                     const IdTileRefPairVector_ &changes);
+  void notify_changed(const Tileset &tileset,
+                      const IdTileRefPairVector_ &changes);
+  /**
+   *  Return this object as a Tileset object.
+   */
+  virtual Tileset& as_tileset() = 0;
  private:
   /**
    *  An array of weak pointers to observers.
@@ -66,6 +71,7 @@ class TilesetObserver {
   void observe(TilesetSubject& subject) {
     unobserve();
     subject_ = &subject;
+    on_tileset_attached(subject.as_tileset());
   }
  protected:
   /**
@@ -74,8 +80,8 @@ class TilesetObserver {
    *  By default this will pass the Tileset's current state to the
    *  OnTilesetChanged function.
    */
-  virtual void OnTilesetAttach(const Tileset &tileset) {
-    OnTilesetChanged(tileset, IdTileRefPairVector_());
+  virtual void on_tileset_attached(const Tileset &tileset) {
+    on_tileset_changed(tileset, IdTileRefPairVector_());
   }
   /**
    *  Called on Tileset state changes.
@@ -84,17 +90,18 @@ class TilesetObserver {
    *
    *  The Tileset may have been resized.
    */
-  virtual void OnTilesetChanged(
+  virtual void on_tileset_changed(
       const Tileset &tileset,
       const std::vector<std::pair<int, Tile&>> &changes) { };
   /**
    *  Called when the observed Tileset is being deleted.
    */
-  virtual void OnTilesetDetach() { };
+  virtual void on_tileset_detached() { };
   TilesetSubject* subject_;
  private:
   void unobserve() {
     if (!subject_) { return; }
+    on_tileset_detached();
     auto& observers = subject_->observers_;
     observers.erase(std::find(observers.begin(), observers.end(), this));
     subject_ = nullptr;

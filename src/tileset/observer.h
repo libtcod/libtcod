@@ -56,7 +56,8 @@ class TilesetSubject {
 class TilesetObserver {
  public:
   friend class TilesetSubject;
-  TilesetObserver();
+  TilesetObserver() = default;
+
   TilesetObserver(TilesetSubject& subject) {
     subject.observers_.emplace_back(this);
   }

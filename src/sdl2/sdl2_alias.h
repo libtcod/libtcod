@@ -15,7 +15,8 @@ class SDL2InternalTilesetAlias_;
 
 class SDL2TilesetAlias: public TilesetObserver {
  public:
-  SDL2TilesetAlias(Tileset& tileset, struct SDL_Renderer* sdl2_renderer);
+  SDL2TilesetAlias(std::shared_ptr<Tileset>& tileset,
+                   struct SDL_Renderer* sdl2_renderer);
  private:
   std::shared_ptr<SDL2InternalTilesetAlias_> alias_;
 };

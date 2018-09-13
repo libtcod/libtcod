@@ -14,12 +14,10 @@ std::map<std::tuple<const Tileset*, const struct SDL_Renderer*>,
 class SDL2InternalTilesetAlias_: public TilesetObserver {
  public:
   using key_type = std::tuple<const Tileset*, const struct SDL_Renderer*>;
-  SDL2InternalTilesetAlias_(Tileset& tileset,
+  SDL2InternalTilesetAlias_(std::shared_ptr<Tileset>& tileset,
                            struct SDL_Renderer* sdl2_renderer)
   : TilesetObserver(tileset), renderer_(sdl2_renderer)
-  {
-    observe(tileset);
-  }
+  {}
  protected:
   virtual void on_tileset_attached(const Tileset &tileset) override
   {
@@ -40,11 +38,11 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
 
 };
 
-SDL2TilesetAlias::SDL2TilesetAlias(Tileset& tileset,
+SDL2TilesetAlias::SDL2TilesetAlias(std::shared_ptr<Tileset>& tileset,
                                    struct SDL_Renderer* sdl2_renderer)
 {
   SDL2InternalTilesetAlias_::key_type key =
-      std::make_tuple(&tileset, sdl2_renderer);
+      std::make_tuple(tileset.get(), sdl2_renderer);
   auto alias_it = sdl2_alias_pool.find(key);
   if (alias_it == sdl2_alias_pool.end()) {
     alias_it = sdl2_alias_pool.emplace(

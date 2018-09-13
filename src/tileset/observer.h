@@ -58,8 +58,9 @@ class TilesetObserver {
   friend class TilesetSubject;
   TilesetObserver() = default;
 
-  TilesetObserver(TilesetSubject& subject) {
-    subject.observers_.emplace_back(this);
+  TilesetObserver(std::shared_ptr<TilesetSubject> subject)
+  {
+    observe(subject);
   }
 
   TilesetObserver(TilesetObserver&&) = delete;
@@ -69,10 +70,16 @@ class TilesetObserver {
   virtual ~TilesetObserver() {
     unobserve();
   }
-  void observe(TilesetSubject& subject) {
+  void observe(std::shared_ptr<TilesetSubject>& subject)
+  {
     unobserve();
-    subject_ = &subject;
-    on_tileset_attached(subject.as_tileset());
+    subject_ = subject;
+    subject->observers_.emplace_back(this);
+    on_tileset_attached(get_tileset());
+  }
+  const Tileset& get_tileset()
+  {
+    return subject_->as_tileset();
   }
  protected:
   /**
@@ -98,7 +105,7 @@ class TilesetObserver {
    *  Called when the observed Tileset is being deleted.
    */
   virtual void on_tileset_detached() { };
-  TilesetSubject* subject_;
+  std::shared_ptr<TilesetSubject> subject_;
  private:
   void unobserve() {
     if (!subject_) { return; }

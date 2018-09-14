@@ -15,6 +15,7 @@ template <typename T>
  */
 class Vector2 {
  public:
+  using value_type = T;
   Vector2() = default;
   explicit Vector2(int width, int height)
   : width_(std::max(0, width)),
@@ -45,6 +46,10 @@ class Vector2 {
   const T& at(int x, int y) const {
     range_check(x, y);
     return vector_.at(y * width_ + x);
+  }
+  T* data() noexcept
+  {
+    return vector_.data();
   }
  private:
   /**

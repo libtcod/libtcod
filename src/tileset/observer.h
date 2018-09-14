@@ -41,8 +41,7 @@ class TilesetSubject {
    *  `tiles` is the current state of the subject.
    *  `changes` is for specifically changed tiles, if any.
    */
-  void notify_changed(const Tileset &tileset,
-                      const IdTileRefPairVector_ &changes);
+  void notify_changed(const IdTileRefPairVector_ &changes);
   /**
    *  Return this object as a Tileset object.
    */
@@ -60,6 +59,9 @@ class TilesetObserver {
 
   TilesetObserver(std::shared_ptr<TilesetSubject> subject)
   {
+    if (!subject) {
+      throw std::invalid_argument("tileset cannot be nullptr.");
+    }
     observe(subject);
   }
 
@@ -75,21 +77,11 @@ class TilesetObserver {
     unobserve();
     subject_ = subject;
     subject->observers_.emplace_back(this);
-    on_tileset_attached(get_tileset());
   }
+ protected:
   const Tileset& get_tileset()
   {
     return subject_->as_tileset();
-  }
- protected:
-  /**
-   *  Called when this object starts observing a Tileset.
-   *
-   *  By default this will pass the Tileset's current state to the
-   *  OnTilesetChanged function.
-   */
-  virtual void on_tileset_attached(const Tileset &tileset) {
-    on_tileset_changed(tileset, IdTileRefPairVector_());
   }
   /**
    *  Called on Tileset state changes.
@@ -99,17 +91,12 @@ class TilesetObserver {
    *  The Tileset may have been resized.
    */
   virtual void on_tileset_changed(
-      const Tileset &tileset,
-      const std::vector<std::pair<int, Tile&>> &changes) { };
-  /**
-   *  Called when the observed Tileset is being deleted.
-   */
-  virtual void on_tileset_detached() { };
+      const std::vector<std::pair<int, Tile&>> &changes)
+  {}
   std::shared_ptr<TilesetSubject> subject_;
  private:
   void unobserve() {
     if (!subject_) { return; }
-    on_tileset_detached();
     auto& observers = subject_->observers_;
     observers.erase(std::find(observers.begin(), observers.end(), this));
     subject_ = nullptr;

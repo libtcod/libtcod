@@ -6,6 +6,8 @@
 #include "sdl2_renderer.h"
 #include "../tileset/observer.h"
 #ifdef __cplusplus
+struct SDL_Renderer;
+
 namespace tcod {
 namespace sdl2 {
 using tileset::Tile;

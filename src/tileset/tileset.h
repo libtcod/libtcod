@@ -17,7 +17,8 @@ namespace tileset {
 /**
  *  This is a tile-set resource.
  */
-class Tileset: public TilesetSubject {
+class Tileset: public TilesetSubject,
+               public std::enable_shared_from_this<Tileset> {
  public:
   explicit Tileset(int tile_width, int tile_height):
       tile_width_(std::max(0, tile_width)),
@@ -43,13 +44,13 @@ class Tileset: public TilesetSubject {
     return 0;
   }
   /** Return the width of each tile in this Tileset */
-  int GetTileWidth(void) { return tile_width_; }
+  int get_tile_width() const { return tile_width_; }
   /** Return the height of each tile in this Tileset */
-  int GetTileHeight(void) { return tile_height_; }
+  int get_tile_height() const { return tile_height_; }
   /**
    *  Return a reference to this objects tile vector.
    */
-  const std::vector<Tile>& GetTiles(void) const {
+  const std::vector<Tile>& get_tiles() const {
     return tiles_;
   }
  protected:

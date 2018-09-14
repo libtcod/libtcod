@@ -25,6 +25,9 @@ class Tile {
 
   int width(void) const { return canvas_.width(); }
   int height(void) const { return canvas_.height(); }
+  Canvas get_image() const {
+    return canvas_;
+  }
  private:
   Canvas canvas_;
 };

@@ -24,7 +24,7 @@ AM_CONDITIONAL([ENABLE_SAMPLES], [test "x${enable_samples}" != "xno"])
 dnl -----------------------------------
 dnl From wiki.libsdl.org/FAQLinux
 dnl Check for SDL2
-SDL_VERSION=2.0.0
+SDL_VERSION=2.0.5
 AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 dnl -----------------------------------
 

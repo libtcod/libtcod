@@ -11,53 +11,18 @@
 #endif
 
 #include "tile.h"
-// "tileset.h" included near end of header.
+#include "tileset.h"
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
 class Tileset;
 class TilesetObserver;
 typedef std::vector<std::pair<int, Tile&>> IdTileRefPairVector_;
-/**
- *  An observable tile-set subject.  This is used internally.
- */
-class TilesetSubject {
- public:
-  friend class TilesetObserver;
-  TilesetSubject() = default;
-
-  TilesetSubject(TilesetSubject&&) = delete;
-  TilesetSubject& operator=(TilesetSubject&&) = delete;
-  TilesetSubject(const TilesetSubject&) = delete;
-  TilesetSubject& operator=(const TilesetSubject&) = delete;
-  /**
-   *  On delete all attached observers are detached automatically.
-   */
-  virtual ~TilesetSubject();
- protected:
-  /**
-   *  Notify observers about the state and changes to the subject.
-   *
-   *  `tiles` is the current state of the subject.
-   *  `changes` is for specifically changed tiles, if any.
-   */
-  void notify_changed(const IdTileRefPairVector_ &changes);
-  /**
-   *  Return this object as a Tileset object.
-   */
-  virtual Tileset& as_tileset() = 0;
- private:
-  /**
-   *  An array of weak pointers to observers.
-   */
-  std::vector<TilesetObserver*> observers_;
-};
 class TilesetObserver {
  public:
-  friend class TilesetSubject;
   TilesetObserver() = default;
 
-  TilesetObserver(std::shared_ptr<TilesetSubject> subject)
+  TilesetObserver(std::shared_ptr<Tileset> subject)
   {
     if (!subject) {
       throw std::invalid_argument("tileset cannot be nullptr.");
@@ -65,23 +30,16 @@ class TilesetObserver {
     observe(subject);
   }
 
+  TilesetObserver(TilesetObserver& subject)
+  : TilesetObserver(subject.tileset_)
+  {}
+
   TilesetObserver(TilesetObserver&&) = delete;
   TilesetObserver& operator=(TilesetObserver&&) = delete;
   TilesetObserver(const TilesetObserver&) = delete;
   TilesetObserver& operator=(const TilesetObserver&) = delete;
   virtual ~TilesetObserver() {
     unobserve();
-  }
-  void observe(std::shared_ptr<TilesetSubject>& subject)
-  {
-    unobserve();
-    subject_ = subject;
-    subject->observers_.emplace_back(this);
-  }
- protected:
-  const Tileset& get_tileset()
-  {
-    return subject_->as_tileset();
   }
   /**
    *  Called on Tileset state changes.
@@ -93,17 +51,27 @@ class TilesetObserver {
   virtual void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes)
   {}
-  std::shared_ptr<TilesetSubject> subject_;
+  std::shared_ptr<Tileset>& get_tileset()
+  {
+    return tileset_;
+  }
+ protected:
+  std::shared_ptr<Tileset> tileset_;
  private:
+  void observe(std::shared_ptr<Tileset> subject)
+  {
+    unobserve();
+    tileset_ = subject;
+    subject->observers_.emplace_back(this);
+  }
   void unobserve() {
-    if (!subject_) { return; }
-    auto& observers = subject_->observers_;
+    if (!tileset_) { return; }
+    auto& observers = tileset_->observers_;
     observers.erase(std::find(observers.begin(), observers.end(), this));
-    subject_ = nullptr;
+    tileset_ = nullptr;
   }
 };
 } // namespace tileset
 } // namespace tcod
-#include "tileset.h" // These classes are incomplete without tileset.h
 #endif /* __cplusplus */
 #endif /* LIBTCOD_TILESET_OBSERVER_H_ */

@@ -1,6 +1,8 @@
 
 #include "tileset.h"
 
+#include "observer.h"
+
 namespace tcod {
 namespace tileset {
 extern "C" {

@@ -9,7 +9,6 @@
 #endif
 
 #include "../libtcod_portability.h"
-#include "observer.h"
 #include "tile.h"
 #ifdef __cplusplus
 namespace tcod {
@@ -17,9 +16,9 @@ namespace tileset {
 /**
  *  This is a tile-set resource.
  */
-class Tileset: public TilesetSubject,
-               public std::enable_shared_from_this<Tileset> {
+class Tileset {
  public:
+  friend class TilesetObserver;
   explicit Tileset(int tile_width, int tile_height):
       tile_width_(std::max(0, tile_width)),
       tile_height_(std::max(0, tile_height)),
@@ -29,6 +28,8 @@ class Tileset: public TilesetSubject,
   Tileset& operator=(Tileset&&) = default;
   Tileset(const Tileset&) = default;
   Tileset& operator=(const Tileset&) = default;
+
+  ~Tileset() = default;
   /**
    *  Assign `codepoint` to a new `tile` for this Tileset.
    *
@@ -52,10 +53,6 @@ class Tileset: public TilesetSubject,
    */
   const std::vector<Tile>& get_tiles() const {
     return tiles_;
-  }
- protected:
-  virtual Tileset& as_tileset() override final {
-    return *this;
   }
  private:
   /**
@@ -89,6 +86,7 @@ class Tileset: public TilesetSubject,
   int tiles_last_known_capacity;
   /** Mapping of Unicode code-points to the tiles of this tile-set. */
   std::vector<int> character_map_;
+  std::vector<class TilesetObserver*> observers_;
 };
 #endif /* __cplusplus */
 #ifdef __cplusplus

@@ -28,6 +28,8 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
   {
     return texture_;
   }
+  struct SDL_Renderer* renderer_;
+  struct SDL_Texture* texture_;
  protected:
   virtual void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
@@ -62,8 +64,6 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     SDL_UpdateTexture(texture_, nullptr, alias.data(),
                       sizeof(alias.at(0,0)) * alias.width());
   }
-  struct SDL_Renderer* renderer_;
-  struct SDL_Texture* texture_;
 };
 
 SDL2TilesetAlias::SDL2TilesetAlias(struct SDL_Renderer* renderer,
@@ -83,6 +83,24 @@ SDL2TilesetAlias::SDL2TilesetAlias(struct SDL_Renderer* renderer,
 std::shared_ptr<Tileset>& SDL2TilesetAlias::get_tileset()
 {
   return alias_->get_tileset();
+}
+
+SDL_Texture*& SDL2TilesetAlias::get_texture_alias()
+{
+  return alias_->texture_;
+}
+SDL_Rect SDL2TilesetAlias::get_char_rect(int codepoint) {
+  auto& charmap = alias_->get_tileset()->get_character_map();
+  int tile_index = 0;
+  if (static_cast<unsigned int>(codepoint) < charmap.size()) {
+    tile_index = charmap.at(codepoint);
+  }
+  return SDL_Rect{
+      alias_->get_tileset()->get_tile_width() * tile_index,
+      0,
+      alias_->get_tileset()->get_tile_width(),
+      alias_->get_tileset()->get_tile_height(),
+  };
 }
 
 } // namespace sdl2

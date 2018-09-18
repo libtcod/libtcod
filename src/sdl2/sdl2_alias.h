@@ -6,6 +6,8 @@
 #include "../tileset/observer.h"
 #ifdef __cplusplus
 struct SDL_Renderer;
+struct SDL_Texture;
+struct SDL_Rect;
 
 namespace tcod {
 namespace sdl2 {
@@ -20,6 +22,9 @@ class SDL2TilesetAlias {
                    std::shared_ptr<Tileset> tileset);
 
   std::shared_ptr<Tileset>& get_tileset();
+
+  SDL_Texture*& get_texture_alias();
+  SDL_Rect get_char_rect(int codepoint);
  private:
   std::shared_ptr<SDL2InternalTilesetAlias_> alias_;
 };

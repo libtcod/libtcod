@@ -54,6 +54,10 @@ class Tileset {
   const std::vector<Tile>& get_tiles() const {
     return tiles_;
   }
+  const std::vector<int>& get_character_map() const
+  {
+    return character_map_;
+  }
  private:
   /**
    *  Return the tile ID for a specific code-point.

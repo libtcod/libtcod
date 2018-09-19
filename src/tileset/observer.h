@@ -30,14 +30,26 @@ class TilesetObserver {
     observe(subject);
   }
 
-  TilesetObserver(TilesetObserver& subject)
-  : TilesetObserver(subject.tileset_)
+  TilesetObserver(TilesetObserver&& rhs)
+  : TilesetObserver(rhs.tileset_)
   {}
-
-  TilesetObserver(TilesetObserver&&) = delete;
-  TilesetObserver& operator=(TilesetObserver&&) = delete;
-  TilesetObserver(const TilesetObserver&) = delete;
-  TilesetObserver& operator=(const TilesetObserver&) = delete;
+  TilesetObserver& operator=(TilesetObserver&& rhs)
+  {
+    if (this != &rhs) {
+      observe(rhs.tileset_);
+    }
+    return *this;
+  }
+  TilesetObserver(const TilesetObserver& rhs)
+  : TilesetObserver(rhs.tileset_)
+  {}
+  TilesetObserver& operator=(const TilesetObserver& rhs)
+  {
+    if (this != &rhs) {
+      observe(rhs.tileset_);
+    }
+    return *this;
+  }
   virtual ~TilesetObserver() {
     unobserve();
   }

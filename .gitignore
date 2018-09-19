@@ -491,3 +491,4 @@ doc/doxyxml/
 .dirstamp
 build/scons/*/
 build/msvs/*/
+Thumbs.db

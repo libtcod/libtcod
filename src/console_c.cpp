@@ -1680,7 +1680,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 								fclose(fp);
 								return false;
 							}
-							if ( con->w != data.details.width || con->h != data.details.height ) {
+							if (con->w != static_cast<int>(data.details.width) || con->h != static_cast<int>(data.details.height)) {
 								/* resize console */
 								TCOD_console_data_free(con);
 								con->w = data.details.width;

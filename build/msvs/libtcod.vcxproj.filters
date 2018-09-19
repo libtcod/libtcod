@@ -31,11 +31,11 @@
     <Filter Include="Source Files\tileset">
       <UniqueIdentifier>{8ed2eeaa-2cfa-44d8-b9d7-99c78f568def}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\backend">
-      <UniqueIdentifier>{e6010879-df47-4d4c-906a-16a753a5afc2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\sdl2">
       <UniqueIdentifier>{48cc4e20-9ff8-4436-add4-095c6b3c83ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{77e4cd46-c4d2-4e7c-8163-05791b3b5cc6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -249,9 +249,6 @@
     <ClCompile Include="..\..\src\sys_sdl2_c.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\backend\backend.cc">
-      <Filter>Source Files\backend</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\sdl2\legacy_backend.cc">
       <Filter>Source Files\sdl2</Filter>
     </ClCompile>
@@ -259,6 +256,15 @@
       <Filter>Source Files\sdl2</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\sdl2\sdl2_alias.cc">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\backend.cc">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\display.cc">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sdl2\sdl2_display.cc">
       <Filter>Source Files\sdl2</Filter>
     </ClCompile>
   </ItemGroup>
@@ -416,9 +422,6 @@
     <ClInclude Include="..\..\include\libtcod_version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\backend\backend.h">
-      <Filter>Source Files\backend</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\sdl2\legacy_backend.h">
       <Filter>Source Files\sdl2</Filter>
     </ClInclude>
@@ -438,6 +441,15 @@
       <Filter>Source Files\tileset</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\sdl2\sdl2_alias.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\backend.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\display.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sdl2\sdl2_display.h">
       <Filter>Source Files\sdl2</Filter>
     </ClInclude>
   </ItemGroup>

@@ -164,7 +164,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\backend\backend.cc" />
     <ClCompile Include="..\..\src\bresenham.cpp" />
     <ClCompile Include="..\..\src\bresenham_c.c" />
     <ClCompile Include="..\..\src\bsp.cpp" />
@@ -175,6 +174,8 @@
     <ClCompile Include="..\..\src\console_c.cpp" />
     <ClCompile Include="..\..\src\console_printing.c" />
     <ClCompile Include="..\..\src\console_rexpaint.c" />
+    <ClCompile Include="..\..\src\engine\backend.cc" />
+    <ClCompile Include="..\..\src\engine\display.cc" />
     <ClCompile Include="..\..\src\fov.cpp" />
     <ClCompile Include="..\..\src\fov_c.c" />
     <ClCompile Include="..\..\src\fov_circular_raycasting.c" />
@@ -202,6 +203,7 @@
     <ClCompile Include="..\..\src\path_c.c" />
     <ClCompile Include="..\..\src\sdl2\legacy_backend.cc" />
     <ClCompile Include="..\..\src\sdl2\sdl2_alias.cc" />
+    <ClCompile Include="..\..\src\sdl2\sdl2_display.cc" />
     <ClCompile Include="..\..\src\sdl2\sdl2_renderer.cc" />
     <ClCompile Include="..\..\src\sys_c.cpp" />
     <ClCompile Include="..\..\src\sys_opengl_c.cpp" />
@@ -291,9 +293,11 @@
     <ClInclude Include="..\..\include\wrappers.h" />
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
-    <ClInclude Include="..\..\src\backend\backend.h" />
+    <ClInclude Include="..\..\src\engine\backend.h" />
+    <ClInclude Include="..\..\src\engine\display.h" />
     <ClInclude Include="..\..\src\sdl2\legacy_backend.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_alias.h" />
+    <ClInclude Include="..\..\src\sdl2\sdl2_display.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_renderer.h" />
     <ClInclude Include="..\..\src\tileset\observer.h" />
     <ClInclude Include="..\..\src\tileset\tile.h" />

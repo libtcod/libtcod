@@ -107,10 +107,12 @@ libtcod_la_SOURCES = \
 	../../src/sys.cpp \
 	../../src/txtfield.cpp \
 	../../src/zip.cpp \
-	../../src/backend/backend.cc \
+	../../src/engine/backend.cc \
+	../../src/engine/display.cc \
 	../../src/sdl2/legacy_backend.cc \
-	../../src/sdl2/sdl2_renderer.cc \
 	../../src/sdl2/sdl2_alias.cc \
+	../../src/sdl2/sdl2_display.cc \
+	../../src/sdl2/sdl2_renderer.cc \
 	../../src/tileset/observer.cc \
 	../../src/tileset/tile.cc \
 	../../src/tileset/tileset.cc \
@@ -175,9 +177,10 @@ pkginclude_HEADERS = \
 	../../src/zip.hpp \
 	../../src/list.hpp
 
-backendincludedir = $(includedir)/libtcod/backend
-backendinclude_HEADERS = \
-	../../src/backend/backend.h
+engineincludedir = $(includedir)/libtcod/engine
+engineinclude_HEADERS = \
+	../../src/engine/backend.h \
+	../../src/engine/display.h
 
 colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \
@@ -188,6 +191,7 @@ sdl2includedir = $(includedir)/libtcod/sdl2
 sdl2include_HEADERS = \
 	../../src/sdl2/legacy_backend.h \
 	../../src/sdl2/sdl2_alias.h \
+	../../src/sdl2/sdl2_display.h \
 	../../src/sdl2/sdl2_renderer.h
 
 tilesetincludedir = $(includedir)/libtcod/tileset

@@ -1,6 +1,6 @@
 
-#ifndef LIBTCOD_BACKEND_BACKEND_H_
-#define LIBTCOD_BACKEND_BACKEND_H_
+#ifndef LIBTCOD_ENGINE_BACKEND_H_
+#define LIBTCOD_ENGINE_BACKEND_H_
 
 #ifdef __cplusplus
 #include <memory>
@@ -58,4 +58,4 @@ Backend& get();
 } // namespace backend
 } // namespace tcod
 #endif /* __cplusplus */
-#endif /* LIBTCOD_BACKEND_BACKEND_H_ */
+#endif /* LIBTCOD_ENGINE_BACKEND_H_ */

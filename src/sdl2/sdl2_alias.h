@@ -18,6 +18,7 @@ class SDL2InternalTilesetAlias_;
 
 class SDL2TilesetAlias {
  public:
+  SDL2TilesetAlias() = default;
   SDL2TilesetAlias(struct SDL_Renderer* renderer,
                    std::shared_ptr<Tileset> tileset);
 

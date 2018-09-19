@@ -1,6 +1,10 @@
 
 #ifndef LIBTCOD_SDL2_SDL2_RENDERER_H_
 #define LIBTCOD_SDL2_SDL2_RENDERER_H_
+#ifdef __cplusplus
+#include <tuple>
+#endif /* __cplusplus */
+
 #include "sdl2_alias.h"
 #include "../color/color.h"
 #include "../console_types.h"
@@ -13,9 +17,10 @@ struct SDL_Texture;
 namespace tcod {
 namespace sdl2 {
 using tcod::tileset::Tileset;
-using tcod::ColorRGBA;
 class SDL2Renderer: public TilesetObserver {
  public:
+  SDL2Renderer()
+  {}
   SDL2Renderer(struct SDL_Renderer* renderer, SDL2TilesetAlias alias)
   : TilesetObserver(alias.get_tileset()), alias_{alias}, renderer_{renderer}
   {}

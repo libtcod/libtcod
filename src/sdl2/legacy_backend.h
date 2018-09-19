@@ -2,7 +2,7 @@
 #ifndef LIBTCOD_SDL2_LEGACY_BACKEND_H_
 #define LIBTCOD_SDL2_LEGACY_BACKEND_H_
 
-#include "../backend/backend.h"
+#include "../engine/backend.h"
 
 #ifdef __cplusplus
 namespace tcod {

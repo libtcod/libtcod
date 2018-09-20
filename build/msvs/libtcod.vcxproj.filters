@@ -267,6 +267,9 @@
     <ClCompile Include="..\..\src\sdl2\sdl2_display.cc">
       <Filter>Source Files\sdl2</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\globals.cc">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\bresenham.h">
@@ -451,6 +454,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\sdl2\sdl2_display.h">
       <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\globals.h">
+      <Filter>Source Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

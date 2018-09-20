@@ -109,6 +109,7 @@ libtcod_la_SOURCES = \
 	../../src/zip.cpp \
 	../../src/engine/backend.cc \
 	../../src/engine/display.cc \
+	../../src/engine/globals.cc \
 	../../src/sdl2/legacy_backend.cc \
 	../../src/sdl2/sdl2_alias.cc \
 	../../src/sdl2/sdl2_display.cc \
@@ -180,7 +181,8 @@ pkginclude_HEADERS = \
 engineincludedir = $(includedir)/libtcod/engine
 engineinclude_HEADERS = \
 	../../src/engine/backend.h \
-	../../src/engine/display.h
+	../../src/engine/display.h \
+	../../src/engine/globals.h
 
 colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \

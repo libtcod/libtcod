@@ -63,6 +63,7 @@
 
 #include "engine/backend.cc"
 #include "engine/display.cc"
+#include "engine/globals.cc"
 #include "sdl2/legacy_backend.cc"
 #include "sdl2/sdl2_alias.cc"
 #include "sdl2/sdl2_display.cc"

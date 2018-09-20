@@ -39,7 +39,7 @@
 #include "libtcod_int.h"
 #include "libtcod_utility.h"
 #include "libtcod_version.h"
-#include "sdl2/legacy_backend.h"
+#include "engine/globals.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
@@ -344,7 +344,12 @@ void TCOD_console_blit(
  *  Render and present the root console to the active display.
  */
 void TCOD_console_flush(void) {
-  tcod::backend::get().legacy_flush();
+  std::shared_ptr<tcod::engine::Display> display = tcod::engine::get_display();
+  if (display && TCOD_ctx.root) {
+    display->present(TCOD_ctx.root);
+  } else {
+    TCOD_sys_flush(true);
+  }
 }
 /**
  *  Fade the color of the display.
@@ -710,7 +715,7 @@ void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCO
 #endif
 		strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
 		TCOD_ctx.fullscreen = fullscreen;
-		tcod::backend::set<tcod::sdl2::LegacyBackend>();
+		TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title, TCOD_ctx.fullscreen);
 	}
 }
 

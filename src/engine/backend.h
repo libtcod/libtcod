@@ -12,18 +12,10 @@
 
 #ifdef __cplusplus
 namespace tcod {
-namespace backend {
+namespace engine {
 class Backend {
  public:
   virtual ~Backend() = default;
-  /**
-   *  Called when this Backend is setup.
-   */
-  virtual void activate() {}
-  /**
-   *  Called when this Backend is removed.
-   */
-  virtual void deactivate() {}
   /**
    *  Legacy wait for event virtual function.
    */
@@ -38,24 +30,8 @@ class Backend {
       int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
     return TCOD_EVENT_NONE;
   }
-  virtual void legacy_flush() { }
 };
-/**
- *  Change the active backend to another Backend instance.
- */
-void set(std::unique_ptr<Backend>&& backend);
-/**
- *  Change the active backend to another Backend class.
- */
-template <class BackendType>
-inline void set() {
-  set(std::make_unique<BackendType>());
-}
-/**
- *  Return the current backend interface.
- */
-Backend& get();
-} // namespace backend
+} // namespace engine
 } // namespace tcod
 #endif /* __cplusplus */
 #endif /* LIBTCOD_ENGINE_BACKEND_H_ */

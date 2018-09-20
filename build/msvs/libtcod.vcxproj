@@ -176,6 +176,7 @@
     <ClCompile Include="..\..\src\console_rexpaint.c" />
     <ClCompile Include="..\..\src\engine\backend.cc" />
     <ClCompile Include="..\..\src\engine\display.cc" />
+    <ClCompile Include="..\..\src\engine\globals.cc" />
     <ClCompile Include="..\..\src\fov.cpp" />
     <ClCompile Include="..\..\src\fov_c.c" />
     <ClCompile Include="..\..\src\fov_circular_raycasting.c" />
@@ -295,6 +296,7 @@
     <ClInclude Include="..\..\include\zip.hpp" />
     <ClInclude Include="..\..\src\engine\backend.h" />
     <ClInclude Include="..\..\src\engine\display.h" />
+    <ClInclude Include="..\..\src\engine\globals.h" />
     <ClInclude Include="..\..\src\sdl2\legacy_backend.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_alias.h" />
     <ClInclude Include="..\..\src\sdl2\sdl2_display.h" />

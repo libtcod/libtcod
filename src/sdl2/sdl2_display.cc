@@ -29,6 +29,9 @@ SDL2Display::SDL2Display(int width, int height,
     width *= tileset->get_tile_width();
     height *= tileset->get_tile_height();
   }
+  if (SDL_Init(SDL_INIT_VIDEO)) {
+    throw std::runtime_error(SDL_GetError());
+  }
   if (SDL_CreateWindowAndRenderer(width, height, flags,
                                   &window_, &renderer_)) {
     throw std::runtime_error(SDL_GetError());

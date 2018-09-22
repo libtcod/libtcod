@@ -12,7 +12,7 @@ Tilesheet LoadTilesheet(const std::string& filename,
   if (lodepng::decode(img_data, img_width, img_height, filename)) {
     return Tilesheet();
   }
-  auto canvas = Canvas(img_width, img_height);
+  Image canvas(img_width, img_height);
   std::vector<unsigned char>::iterator img_iter = img_data.begin();
   for (int y = 0; y < canvas.height(); ++y) {
     for (int x = 0; y < canvas.width(); ++x) {

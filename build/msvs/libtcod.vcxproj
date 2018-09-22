@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\src\bsp.cpp" />
     <ClCompile Include="..\..\src\bsp_c.c" />
     <ClCompile Include="..\..\src\color.cpp" />
+    <ClCompile Include="..\..\src\color\canvas.cc" />
     <ClCompile Include="..\..\src\color_c.c" />
     <ClCompile Include="..\..\src\console.cpp" />
     <ClCompile Include="..\..\src\console_c.cpp" />
@@ -294,6 +295,8 @@
     <ClInclude Include="..\..\include\wrappers.h" />
     <ClInclude Include="..\..\include\zip.h" />
     <ClInclude Include="..\..\include\zip.hpp" />
+    <ClInclude Include="..\..\src\color\canvas.h" />
+    <ClInclude Include="..\..\src\color\color.h" />
     <ClInclude Include="..\..\src\engine\backend.h" />
     <ClInclude Include="..\..\src\engine\display.h" />
     <ClInclude Include="..\..\src\engine\globals.h" />

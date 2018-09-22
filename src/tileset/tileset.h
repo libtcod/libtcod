@@ -23,7 +23,9 @@ class Tileset {
       tile_width_(std::max(0, tile_width)),
       tile_height_(std::max(0, tile_height)),
       /* The tile at zero is always blank. */
-      tiles_{Tile(tile_width_, tile_height_)} {}
+      tiles_{Tile(0, tile_width_, tile_height_)}
+  {}
+
   Tileset(Tileset&&) = default;
   Tileset& operator=(Tileset&&) = default;
   Tileset(const Tileset&) = default;
@@ -35,12 +37,17 @@ class Tileset {
    *
    *  `codepoint` is a Unicode character.
    */
-  int SetTile(int codepoint, const Tile &tile) {
+  int set_tile(int codepoint, const Image &image)
+  {
+    return set_tile(Tile(codepoint, image));
+  }
+  int set_tile(const Tile& tile)
+  {
     if (VerifyTile(tile) < 0) { return -1; }
-    if (codepoint >= static_cast<int>(character_map_.size())) {
-      character_map_.resize(codepoint + 1, -1);
+    if (tile.codepoint >= static_cast<int>(character_map_.size())) {
+      character_map_.resize(tile.codepoint + 1, -1);
     }
-    character_map_[codepoint] = tiles_.size();
+    character_map_[tile.codepoint] = tiles_.size();
     tiles_.push_back(tile);
     return 0;
   }

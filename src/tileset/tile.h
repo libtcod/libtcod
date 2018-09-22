@@ -12,24 +12,26 @@
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
+using image::Image;
+
 class Tile {
  public:
   Tile();
-  Tile(int width, int height): canvas_(width, height) {};
-  Tile(const Canvas &canvas): canvas_(canvas) {};
+  explicit Tile(int codepoint, const Image &image)
+  : codepoint(codepoint), image_(image)
+  {}
+  explicit Tile(int codepoint, int width, int height)
+  : Tile(codepoint, Image(width, height))
+  {}
 
-  Tile(Tile&&) = default;
-  Tile& operator=(Tile&&) = default;
-  Tile(const Tile&) = default;
-  Tile& operator=(const Tile&) = default;
-
-  int width(void) const { return canvas_.width(); }
-  int height(void) const { return canvas_.height(); }
-  Canvas get_image() const {
-    return canvas_;
+  int width(void) const { return image_.width(); }
+  int height(void) const { return image_.height(); }
+  Image get_image() const {
+    return image_;
   }
+  const int codepoint;
  private:
-  Canvas canvas_;
+  Image image_;
 };
 } // namespace tileset
 } // namespace tcod

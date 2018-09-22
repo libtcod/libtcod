@@ -61,6 +61,7 @@
 #endif /* NO_OPENGL */
 #endif /* TCOD_BARE */
 
+#include "color/canvas.cc"
 #include "engine/backend.cc"
 #include "engine/display.cc"
 #include "engine/globals.cc"

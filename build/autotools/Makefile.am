@@ -107,6 +107,7 @@ libtcod_la_SOURCES = \
 	../../src/sys.cpp \
 	../../src/txtfield.cpp \
 	../../src/zip.cpp \
+	../../src/color/canvas.cc \
 	../../src/engine/backend.cc \
 	../../src/engine/display.cc \
 	../../src/engine/globals.cc \

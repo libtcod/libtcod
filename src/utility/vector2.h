@@ -51,6 +51,14 @@ class Vector2 {
   {
     return vector_.data();
   }
+  typename std::vector<T>::iterator begin()
+  {
+    return vector_.begin();
+  }
+  typename std::vector<T>::iterator end()
+  {
+    return vector_.end();
+  }
  private:
   /**
    *  Return true if x and y are in the bounds of this canvas.

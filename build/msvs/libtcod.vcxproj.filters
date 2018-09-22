@@ -37,6 +37,9 @@
     <Filter Include="Source Files\engine">
       <UniqueIdentifier>{77e4cd46-c4d2-4e7c-8163-05791b3b5cc6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\color">
+      <UniqueIdentifier>{5bf5288c-6f2b-498e-b5e9-395ef5483b53}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\bresenham_c.c">
@@ -270,6 +273,9 @@
     <ClCompile Include="..\..\src\engine\globals.cc">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\color\canvas.cc">
+      <Filter>Source Files\color</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\bresenham.h">
@@ -457,6 +463,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\globals.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\color\canvas.h">
+      <Filter>Source Files\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\color\color.h">
+      <Filter>Source Files\color</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

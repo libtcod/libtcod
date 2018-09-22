@@ -9,6 +9,7 @@
 #include <SDL.h>
 namespace tcod {
 namespace sdl2 {
+using image::Image;
 std::map<std::tuple<const Tileset*, const struct SDL_Renderer*>,
          std::shared_ptr<SDL2InternalTilesetAlias_>> sdl2_alias_pool = {};
 
@@ -52,9 +53,9 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     int height = tile_height;
     texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
                                  SDL_TEXTUREACCESS_STATIC, width, height);
-    Canvas alias(width, height);
+    Image alias(width, height);
     for (size_t i = 0; i < tiles.size(); ++i) {
-      Canvas tile = tiles.at(i).get_image();
+      Image tile = tiles.at(i).get_image();
       for (int y = 0; y < tile_height; ++y) {
         for (int x = 0; x < tile_width; ++x) {
           alias.at(x + tile_width * i, y) = tile.at(x, y);

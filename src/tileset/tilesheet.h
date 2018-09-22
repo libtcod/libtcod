@@ -10,6 +10,7 @@
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
+using image::Image;
 /**
  *  The layout of tiles on a tile-sheet.
  */
@@ -22,7 +23,7 @@ struct TilesheetLayout {
 class Tilesheet {
  public:
   Tilesheet() = default;
-  explicit Tilesheet(const Canvas& canvas, const TilesheetLayout& layout)
+  explicit Tilesheet(const Image& canvas, const TilesheetLayout& layout)
   : canvas_(canvas), layout_(layout) {
     fill_layout();
   }
@@ -33,7 +34,7 @@ class Tilesheet {
   /**
    *  Return the Tile at `x` and `y`.
    */
-  Tile get_tile(int x, int y) const {
+  Image get_tile(int x, int y) const {
     if (!(0 <= x && x < layout_.columns && 0 <= y && y < layout_.rows)) {
       throw std::out_of_range("Tile not in Tilesheet layout.");
     }
@@ -43,8 +44,17 @@ class Tilesheet {
   /**
    *  Return the Tile at `n`.
    */
-  Tile get_tile(int n) const {
+  Image get_tile(int n) const {
     return get_tile(n % layout_.columns, n / layout_.columns);
+  }
+  int columns() const {
+    return layout_.columns;
+  }
+  int rows() const {
+    return layout_.rows;
+  }
+  int count() const {
+    return columns() * rows();
   }
  private:
   /**
@@ -72,17 +82,38 @@ class Tilesheet {
   /**
    *  Return a new Tile from the given region on the Tilesheet.
    */
-  Tile new_tile(int x, int y, int width, int height) const {
-    Canvas tile_canvas = Canvas(width, height);
+  Image new_tile(int x, int y, int width, int height) const {
+    Image tile{width, height};
     for (int pixel_y = 0; pixel_y < height; ++pixel_y) {
       for (int pixel_x = 0; pixel_x < width; ++pixel_x) {
-        tile_canvas.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x,
+        tile.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x,
                                                       y + pixel_y);
       }
     }
-    return Tile(tile_canvas);
+    bool is_colored = false;
+    for (ColorRGBA& pixel : tile) {
+      if (tile.at(0, 0).r != pixel.r || tile.at(0, 0).g != pixel.g ||
+          tile.at(0, 0).b != pixel.b) {
+        is_colored = true;
+        break;
+      }
+    }
+    bool has_alpha = false;
+    for (ColorRGBA& pixel : tile) {
+      if (pixel.a != 0xff) {
+        has_alpha = true;
+        break;
+      }
+    }
+    if (!is_colored && !has_alpha) {
+      for (ColorRGBA& pixel : tile) {
+        pixel.a = pixel.r;
+        pixel.r = pixel.g = pixel.b = 0xff;
+      }
+    }
+    return tile;
   }
-  Canvas canvas_;
+  Image canvas_;
   TilesheetLayout layout_;
 };
 /**

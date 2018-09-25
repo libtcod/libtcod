@@ -3,6 +3,7 @@
 #define LIBTCOD_TILESET_TILESHEET_H_
 #ifdef __cplusplus
 #include <string>
+#include <utility>
 #endif // __cplusplus
 
 #include "../color/canvas.h"
@@ -27,6 +28,9 @@ class Tilesheet {
   : canvas_(canvas), layout_(layout) {
     fill_layout();
   }
+  explicit Tilesheet(const Image& canvas, const std::pair<int, int>& layout)
+  : Tilesheet(canvas, {0, 0, layout.first, layout.second})
+  {}
   Tilesheet(Tilesheet&&) = default;
   Tilesheet& operator=(Tilesheet&&) = default;
   Tilesheet(const Tilesheet&) = default;
@@ -47,14 +51,20 @@ class Tilesheet {
   Image get_tile(int n) const {
     return get_tile(n % layout_.columns, n / layout_.columns);
   }
-  int columns() const {
+  int get_tile_width() const {
+    return layout_.tile_width;
+  }
+  int get_tile_height() const {
+    return layout_.tile_height;
+  }
+  int get_columns() const {
     return layout_.columns;
   }
-  int rows() const {
+  int get_rows() const {
     return layout_.rows;
   }
   int count() const {
-    return columns() * rows();
+    return get_columns() * get_rows();
   }
  private:
   /**

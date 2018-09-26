@@ -9,6 +9,7 @@ Creating the game window
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenenum:: TCOD_renderer_t
 .. doxygenfunction:: TCOD_console_init_root
+.. doxygenfunction:: TCOD_quit
 
 Using a custom bitmap font
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

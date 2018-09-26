@@ -16,6 +16,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   - `TCOD_console_get_height_rect_fmt`
   - New overrides for `TCODConsole::print` which can take `std::string`.
   - `TCODConsole::printf`.
+- Added `TCOD_quit` function, this function must be called on exit.
 
 ### Changed
 - AutoTools now adds version numbers to the libraries it builds.

@@ -24,7 +24,7 @@ class SDL2TilesetAlias {
 
   std::shared_ptr<Tileset>& get_tileset();
 
-  SDL_Texture*& get_texture_alias();
+  SDL_Texture* get_texture_alias();
   SDL_Rect get_char_rect(int codepoint);
  private:
   std::shared_ptr<SDL2InternalTilesetAlias_> alias_;

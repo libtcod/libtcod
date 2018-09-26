@@ -1,6 +1,8 @@
 
 #include "globals.h"
 
+#include <cstdlib>
+
 namespace tcod {
 namespace engine {
 std::shared_ptr<Backend> active_backend = nullptr;

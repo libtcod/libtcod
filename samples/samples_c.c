@@ -1463,7 +1463,7 @@ int main( int argc, char *argv[] ) {
 	bool credits_end=false;
 	int cur_renderer=0;
 	static const char *renderer_name[TCOD_NB_RENDERERS] = {
-		"F1 GLSL   ","F2 OPENGL ","F3 SDL    "
+		"F1 GLSL   ","F2 OPENGL ","F3 SDL    ","F4 SDL2   "
 	};
 
 	/* initialize the root console (open the game window) */
@@ -1518,6 +1518,7 @@ int main( int argc, char *argv[] ) {
 		TCOD_sys_force_fullscreen_resolution(fullscreen_width,fullscreen_height);
 	}
 	TCOD_console_init_root(80,50,"libtcod C sample",fullscreen, renderer);
+	atexit(TCOD_quit);
 	/* initialize the offscreen console for the samples */
 	sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
 	do {
@@ -1611,6 +1612,8 @@ int main( int argc, char *argv[] ) {
 			TCOD_sys_set_renderer(TCOD_RENDERER_OPENGL);
 		} else if (key.vk==TCODK_F3) {
 			TCOD_sys_set_renderer(TCOD_RENDERER_SDL);
+		} else if (key.vk==TCODK_F4) {
+			TCOD_sys_set_renderer(TCOD_RENDERER_SDL2);
 		}
 	} while (!TCOD_console_is_window_closed());
 	return 0;

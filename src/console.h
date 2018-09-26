@@ -45,6 +45,7 @@ extern "C" {
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8_t)(alpha*255))<<8)))
 
 TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
+TCODLIB_API void TCOD_quit(void);
 TCODLIB_API void TCOD_console_set_window_title(const char *title);
 TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
 TCODLIB_API bool TCOD_console_is_fullscreen(void);

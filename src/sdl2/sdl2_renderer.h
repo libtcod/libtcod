@@ -32,7 +32,7 @@ class SDL2Renderer: public TilesetObserver {
 
   ~SDL2Renderer();
 
-  struct SDL_Texture*& render(const TCOD_Console* console);
+  struct SDL_Texture* render(const TCOD_Console* console);
  private:
   using cache_type = Vector2<std::tuple<int, ColorRGBA, ColorRGBA>>;
   SDL2TilesetAlias alias_;

@@ -32,9 +32,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
 #include <array>
 
+#include <SDL.h>
 #include "console_rexpaint.h"
 #include "noise.h"
 #include "mersenne.h"
@@ -42,6 +42,7 @@
 #include "libtcod_utility.h"
 #include "libtcod_version.h"
 #include "engine/globals.h"
+#include "sdl2/sdl2_display.h"
 #include "tileset/tileset.h"
 #include "tileset/tilesheet.h"
 
@@ -237,6 +238,7 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 }
 
 static void TCOD_console_data_free(struct TCOD_Console *dat) {
+  if (!dat) { return; }
   free(dat->ch_array);
   free(dat->fg_array);
   free(dat->bg_array);
@@ -261,6 +263,13 @@ void TCOD_console_delete(TCOD_console_t con) {
 	}
 	TCOD_console_data_free(dat);
 	free(dat);
+}
+/**
+ *  Shutdown libtcod.  This must be called before your program exits.
+ */
+void TCOD_quit(void)
+{
+  TCOD_console_delete(NULL);
 }
 
 void TCOD_console_blit_key_color(
@@ -371,12 +380,7 @@ void TCOD_console_blit(
  *  Render and present the root console to the active display.
  */
 void TCOD_console_flush(void) {
-  std::shared_ptr<tcod::engine::Display> display = tcod::engine::get_display();
-  if (display && TCOD_ctx.root) {
-    display->present(TCOD_ctx.root);
-  } else {
-    TCOD_sys_flush(true);
-  }
+  TCOD_sys_flush(true);
 }
 /**
  *  Fade the color of the display.
@@ -730,26 +734,53 @@ void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t
  *  You may want to call TCOD_console_set_custom_font BEFORE calling this
  *  function.  By default this function loads libtcod's `terminal.png` image
  *  from the working directory.
+ *
+ *  Afterwards TCOD_quit must be called before the program exits.
  */
-void TCOD_console_init_root(int w, int h, const char*title, bool fullscreen, TCOD_renderer_t renderer) {
-	TCOD_IF(w > 0 && h > 0) {
-		struct TCOD_Console *con=(struct TCOD_Console *)calloc(sizeof(struct TCOD_Console),1);
-		con->w=w;
-		con->h=h;
-		TCOD_ctx.root=con;
+void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
+                            TCOD_renderer_t renderer)
+{
+  TCOD_IF(w > 0 && h > 0) {
+    TCOD_console_delete(NULL);
+    TCOD_ctx.root = TCOD_console_new(w, h);
 #ifndef TCOD_BARE
-		TCOD_ctx.renderer=renderer;
+    TCOD_ctx.renderer=renderer;
 #endif
-		strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
-		TCOD_ctx.fullscreen = fullscreen;
-		TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title, TCOD_ctx.fullscreen);
-	}
+    strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+    TCOD_ctx.fullscreen = fullscreen;
+    switch (renderer) {
+      case TCOD_RENDERER_SDL2: {
+        auto tileset = tcod::engine::get_tileset();
+        auto display = std::make_shared<tcod::sdl2::SDL2Display>(
+            tileset,
+            std::make_pair(tileset->get_tile_width() * w,
+                           tileset->get_tile_height() * h),
+            (SDL_WINDOW_RESIZABLE |
+             (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)));
+        tcod::engine::set_display(display);
+        break;
+      }
+      default:
+        TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
+                          TCOD_ctx.fullscreen);
+        break;
+    }
+  }
 }
 
 static void TCOD_console_data_alloc(struct TCOD_Console *dat) {
-  dat->ch_array = (int *)calloc(sizeof(int), dat->w * dat->h);
-  dat->fg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
-  dat->bg_array = (TCOD_color_t*)calloc(sizeof(TCOD_color_t), dat->w * dat->h);
+  if (!dat->ch_array) {
+    dat->ch_array = static_cast<int*>(
+        calloc(sizeof(int), dat->w * dat->h));
+  }
+  if (!dat->fg_array) {
+    dat->fg_array = static_cast<TCOD_color_t*>(
+        calloc(sizeof(TCOD_color_t), dat->w * dat->h));
+  }
+  if (!dat->bg_array) {
+    dat->bg_array = static_cast<TCOD_color_t*>(
+        calloc(sizeof(TCOD_color_t), dat->w * dat->h));
+  }
 }
 
 bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
@@ -822,6 +853,28 @@ int TCOD_console_get_height(TCOD_console_t con) {
 void TCOD_console_set_custom_font(const char *fontFile, int flags,
                                   int nb_char_horiz, int nb_char_vertic)
 {
+  strcpy(TCOD_ctx.font_file, fontFile);
+  /* if layout not defined, assume ASCII_INCOL */
+  if (!(flags & (TCOD_FONT_LAYOUT_ASCII_INCOL
+                 | TCOD_FONT_LAYOUT_ASCII_INROW | TCOD_FONT_LAYOUT_TCOD))) {
+    flags |= TCOD_FONT_LAYOUT_ASCII_INCOL;
+  }
+  TCOD_ctx.font_in_row = ((flags & TCOD_FONT_LAYOUT_ASCII_INROW) != 0);
+  TCOD_ctx.font_greyscale = ((flags & TCOD_FONT_TYPE_GREYSCALE) != 0 );
+  TCOD_ctx.font_tcod_layout = ((flags & TCOD_FONT_LAYOUT_TCOD) != 0 );
+  if (nb_char_horiz > 0) {
+    TCOD_ctx.fontNbCharHoriz = nb_char_horiz;
+    TCOD_ctx.fontNbCharVertic = nb_char_vertic;
+  } else {
+    if ( ( flags & TCOD_FONT_LAYOUT_ASCII_INROW ) || ( flags & TCOD_FONT_LAYOUT_ASCII_INCOL )  ) {
+      TCOD_ctx.fontNbCharHoriz = nb_char_horiz = 16;
+      TCOD_ctx.fontNbCharVertic = nb_char_vertic = 16;
+    } else {
+      TCOD_ctx.fontNbCharHoriz = nb_char_horiz = 32;
+      TCOD_ctx.fontNbCharVertic = nb_char_vertic = 8;
+    }
+  }
+  if (TCOD_ctx.font_tcod_layout) { TCOD_ctx.font_in_row = true; }
   TCOD_sys_set_custom_font(fontFile, nb_char_horiz, nb_char_vertic, flags);
 
   using tcod::image::Image;
@@ -836,6 +889,7 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
 
     auto tileset = std::make_shared<Tileset>(tilesheet->get_tile_width(),
                                              tilesheet->get_tile_height());
+    tcod::engine::set_tileset(tileset);
     if (flags & TCOD_FONT_LAYOUT_TCOD) {
       for (int i = 0; i < static_cast<int>(tcod_codec_.size()); ++i) {
         tileset->set_tile(i, tilesheet->get_tile(tcod_codec_.at(i)));
@@ -844,7 +898,7 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
       for (int i = 0; i < tilesheet->count(); ++i) {
         tileset->set_tile(i, tilesheet->get_tile(i));
       }
-    } else { // Assume TCOD_FONT_LAYOUT_ASCII_INCOL.
+    } else if (flags & TCOD_FONT_LAYOUT_ASCII_INCOL) {
       for (int x = 0; x < tilesheet->get_columns(); ++x) {
         for (int y = 0; y < tilesheet->get_rows(); ++y) {
           int i = x * tilesheet->get_rows() + y;

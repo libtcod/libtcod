@@ -9,10 +9,12 @@ namespace sdl2 {
 using tileset::Tileset;
 SDL2Renderer::~SDL2Renderer()
 {
-  if (texture_) { SDL_DestroyTexture(texture_); }
+  if (texture_ && !SDL_WasInit(SDL_INIT_VIDEO)) {
+    SDL_DestroyTexture(texture_);
+  }
 }
 
-struct SDL_Texture*& SDL2Renderer::render(const TCOD_Console* console)
+struct SDL_Texture* SDL2Renderer::render(const TCOD_Console* console)
 {
   if (!console) { throw; }
   if (console->w != cache_.width() || console->h != cache_.height()) {
@@ -26,16 +28,16 @@ struct SDL_Texture*& SDL2Renderer::render(const TCOD_Console* console)
                                  tileset_->get_tile_height() * console->h);
   }
   SDL_SetRenderTarget(renderer_, texture_);
-  SDL_Texture*& alias_texture = alias_.get_texture_alias();
+  SDL_Texture* alias_texture = alias_.get_texture_alias();
   SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(alias_texture, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(alias_texture, 0xff);
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
-      const int i = y * console->w * y + x; // console index
-      const auto& ch = console->ch_array[i];
-      const auto& fg = console->fg_array[i];
-      const auto& bg = console->bg_array[i];
+      const int i = console->w * y + x; // console index
+      const int ch = console->ch_array[i];
+      const TCOD_color_t fg = console->fg_array[i];
+      const TCOD_color_t bg = console->bg_array[i];
       const SDL_Rect dest_rect{
           x * tileset_->get_tile_width(),
           y * tileset_->get_tile_height(),

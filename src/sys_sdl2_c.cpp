@@ -320,6 +320,10 @@ static void destroy_window(void) {
 		SDL_DestroyWindow(window);
 		window = NULL;
 	}
+  if (root_console_cache) {
+    TCOD_console_delete(root_console_cache);
+    root_console_cache = NULL;
+  }
 }
 
 static void set_fullscreen(bool fullscreen) {

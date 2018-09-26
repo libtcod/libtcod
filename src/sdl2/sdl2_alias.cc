@@ -10,6 +10,14 @@
 namespace tcod {
 namespace sdl2 {
 using image::Image;
+
+struct sdl_deleter
+{
+  void operator()(SDL_Window *p) const { SDL_DestroyWindow(p); }
+  void operator()(SDL_Renderer *p) const { SDL_DestroyRenderer(p); }
+  void operator()(SDL_Texture *p) const { SDL_DestroyTexture(p); }
+};
+
 std::map<std::tuple<const Tileset*, const struct SDL_Renderer*>,
          std::shared_ptr<SDL2InternalTilesetAlias_>> sdl2_alias_pool = {};
 
@@ -18,7 +26,7 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
   using key_type = std::tuple<const Tileset*, const struct SDL_Renderer*>;
   SDL2InternalTilesetAlias_(struct SDL_Renderer* renderer,
                             std::shared_ptr<Tileset> tileset)
-  : TilesetObserver(tileset), renderer_(renderer)
+  : TilesetObserver(tileset), renderer_(renderer), texture_(nullptr)
   {
     if (!renderer_) {
       throw std::invalid_argument("renderer cannot be nullptr.");
@@ -27,10 +35,10 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
   }
   SDL_Texture* get_texture_alias()
   {
-    return texture_;
+    return texture_.get();
   }
   struct SDL_Renderer* renderer_;
-  struct SDL_Texture* texture_;
+  struct std::unique_ptr<SDL_Texture, sdl_deleter> texture_;
  protected:
   virtual void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
@@ -40,7 +48,6 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
  private:
   void clear_alias()
   {
-    if (texture_) { SDL_DestroyTexture(texture_); }
     texture_ = nullptr;
   }
   void sync_alias()
@@ -51,8 +58,10 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     int tile_height = tileset_->get_tile_height();
     int width = tile_width * tiles.size();
     int height = tile_height;
-    texture_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
-                                 SDL_TEXTUREACCESS_STATIC, width, height);
+    texture_ = std::unique_ptr<SDL_Texture, sdl_deleter>(
+        SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
+                          SDL_TEXTUREACCESS_STATIC, width, height),
+        sdl_deleter());
     Image alias(width, height);
     for (size_t i = 0; i < tiles.size(); ++i) {
       Image tile = tiles.at(i).get_image();
@@ -62,7 +71,7 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
         }
       }
     }
-    SDL_UpdateTexture(texture_, nullptr, alias.data(),
+    SDL_UpdateTexture(texture_.get(), nullptr, alias.data(),
                       sizeof(alias.at(0,0)) * alias.width());
   }
 };
@@ -86,9 +95,9 @@ std::shared_ptr<Tileset>& SDL2TilesetAlias::get_tileset()
   return alias_->get_tileset();
 }
 
-SDL_Texture*& SDL2TilesetAlias::get_texture_alias()
+SDL_Texture* SDL2TilesetAlias::get_texture_alias()
 {
-  return alias_->texture_;
+  return alias_->texture_.get();
 }
 SDL_Rect SDL2TilesetAlias::get_char_rect(int codepoint) {
   auto& charmap = alias_->get_tileset()->get_character_map();

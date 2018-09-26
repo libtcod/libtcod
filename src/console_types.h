@@ -288,6 +288,7 @@ typedef enum {
    *  The font file is loaded into RAM instead of VRAM in this implementation.
    */
   TCOD_RENDERER_SDL,
+  TCOD_RENDERER_SDL2,
   TCOD_NB_RENDERERS,
 } TCOD_renderer_t;
 

@@ -35,10 +35,10 @@
 #include <ctype.h>
 
 #include <SDL.h>
-
 #include "console.h"
 #include "libtcod_int.h"
 #include "parser.h"
+#include "engine/globals.h"
 
 static TCOD_SDL_driver_t *sdl=NULL;
 
@@ -390,30 +390,7 @@ void TCOD_sys_load_font(void) {
 }
 
 void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int flags) {
-	strcpy(TCOD_ctx.font_file,fontFile);
-	/* if layout not defined, assume ASCII_INCOL */
-	if (flags == 0 || flags == TCOD_FONT_TYPE_GREYSCALE) flags |= TCOD_FONT_LAYOUT_ASCII_INCOL;
-	TCOD_ctx.font_in_row=((flags & TCOD_FONT_LAYOUT_ASCII_INROW) != 0);
-	TCOD_ctx.font_greyscale = ((flags & TCOD_FONT_TYPE_GREYSCALE) != 0 );
-	TCOD_ctx.font_tcod_layout = ((flags & TCOD_FONT_LAYOUT_TCOD) != 0 );
-	if ( nb_ch> 0 ) {
-		TCOD_ctx.fontNbCharHoriz=nb_ch;
-		TCOD_ctx.fontNbCharVertic=nb_cv;
-	} else {
-		if ( ( flags & TCOD_FONT_LAYOUT_ASCII_INROW ) || ( flags & TCOD_FONT_LAYOUT_ASCII_INCOL )  ) {
-			TCOD_ctx.fontNbCharHoriz=16;
-			TCOD_ctx.fontNbCharVertic=16;
-		} else {
-			TCOD_ctx.fontNbCharHoriz=32;
-			TCOD_ctx.fontNbCharVertic=8;
-		}
-	}
-	if ( TCOD_ctx.font_tcod_layout ) TCOD_ctx.font_in_row=true;
-	check_ascii_to_tcod();
-	/*
-	screw up things on linux64. apparently, useless
-	TCOD_sys_load_font();
-	*/
+  check_ascii_to_tcod();
 }
 
 void find_resolution(void) {
@@ -430,7 +407,9 @@ void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
 }
 
 static void TCOD_sys_render(void *vbitmap, struct TCOD_Console* console) {
-	sdl->render(sdl, vbitmap, console);
+  if (!tcod::engine::get_display()) {
+    sdl->render(sdl, vbitmap, console);
+  }
 }
 
 void TCOD_sys_console_to_bitmap(void *vbitmap,
@@ -774,12 +753,9 @@ TCOD_renderer_t TCOD_sys_get_renderer(void) {
 }
 
 void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
-	if ( renderer == TCOD_ctx.renderer ) return;
-	TCOD_ctx.renderer=renderer;
-	TCOD_sys_uninit();
-	TCOD_sys_init(TCOD_ctx.root, TCOD_ctx.fullscreen);
-	TCOD_console_set_window_title(TCOD_ctx.window_title);
-	TCOD_console_set_dirty(0,0,TCOD_ctx.root->w,TCOD_ctx.root->h);
+  if ( renderer == TCOD_ctx.renderer ) return;
+  TCOD_console_init_root(TCOD_ctx.root->w, TCOD_ctx.root->h,
+                         TCOD_ctx.window_title, TCOD_ctx.fullscreen, renderer);
 }
 
 void TCOD_sys_init_screen_offset(void) {
@@ -808,8 +784,9 @@ bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
 }
 
 void TCOD_sys_uninit(void) {
-	if (!has_startup) return;
-	sdl->destroy_window();
+  tcod::engine::set_display(nullptr);
+  if (!has_startup) return;
+  sdl->destroy_window();
 }
 
 static char *TCOD_strcasestr (const char *haystack, const char *needle) {
@@ -875,35 +852,52 @@ void TCOD_sys_set_window_title(const char *title) {
 	strcpy(TCOD_ctx.window_title,title);
 	sdl->set_window_title(title);
 }
+/**
+ *  Keep track of time and wait if the frame-rate is faster than the set FPS.
+ */
+static void sync_time(void) {
+  static uint32_t old_time = 0;
+  static uint32_t new_time = 0;
+  static uint32_t elapsed = 0;
+  int32_t frame_time;
+  int32_t time_to_wait;
 
+  old_time = new_time;
+  new_time = TCOD_sys_elapsed_milli();
+  /* If TCOD has been terminated and restarted. */
+  if (old_time > new_time)
+    old_time = elapsed = 0;
+  if ( new_time / 1000 != elapsed ) {
+    /* update fps every second */
+    fps = cur_fps;
+    cur_fps = 0;
+    elapsed = new_time / 1000;
+  }
+  /* if too fast, wait */
+  frame_time = (new_time - old_time);
+  last_frame_length = frame_time * 0.001f;
+  cur_fps++;
+  time_to_wait = min_frame_length - frame_time;
+  if (old_time > 0 && time_to_wait > 0) {
+    TCOD_sys_sleep_milli(time_to_wait);
+    new_time = TCOD_sys_elapsed_milli();
+    frame_time=(new_time - old_time);
+  }
+  last_frame_length = frame_time * 0.001f;
+}
+/**
+ *  Flush the screen, if `render` is true then the root console will be
+ *  presented (this is mostly ignored.)
+ */
 void TCOD_sys_flush(bool render) {
-	static uint32_t old_time,new_time=0, elapsed=0;
-	int32_t frame_time,time_to_wait;
-	if ( render ) {
-		TCOD_sys_render(NULL, TCOD_ctx.root);
-	}
-	old_time=new_time;
-	new_time=TCOD_sys_elapsed_milli();
-	/* If TCOD has been terminated and restarted. */
-	if (old_time > new_time)
-		old_time = elapsed = 0;
-	if ( new_time / 1000 != elapsed ) {
-		/* update fps every second */
-		fps=cur_fps;
-		cur_fps=0;
-		elapsed=new_time/1000;
-	}
-	/* if too fast, wait */
-	frame_time=(new_time - old_time);
-	last_frame_length = frame_time * 0.001f;
-	cur_fps++;
-	time_to_wait=min_frame_length-frame_time;
-	if (old_time > 0 && time_to_wait > 0) {
-		TCOD_sys_sleep_milli(time_to_wait);
-		new_time = TCOD_sys_elapsed_milli();
-		frame_time=(new_time - old_time);
-	}
-	last_frame_length = frame_time * 0.001f;
+  if (!TCOD_ctx.root) { return; }
+  std::shared_ptr<tcod::engine::Display> display = tcod::engine::get_display();
+  if (display) {
+    display->present(TCOD_ctx.root);
+  } else {
+    if (render) { TCOD_sys_render(NULL, TCOD_ctx.root); }
+  }
+  sync_time();
 }
 
 static char TCOD_sys_get_vk(SDL_Keycode sdl_key) {

@@ -26,8 +26,9 @@ scons develop_all MODE=RELEASE
 For libtcod devs, if you only need to update the libtcod shared library you can
 use `develop` or `develop_libtcod` instead.
 
-The compiled binaries will be 32-bit by default.
-You can compile 64-bit binaries with the `ARCH=x86_64` variable:
+The compiled binaries will default to your installed Python architecture.
+You can compile 32-bit or 64-bit binaries with the `ARCH=x86` or `ARCH=x86_64`
+variables respectfully:
 
 ```
 scons develop_all MODE=RELEASE ARCH=x86_64

@@ -26,6 +26,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - libtcod C type declarations are stricter.
 - libtcod now uses the C99 and C++14 standards.
 - In the repository `include/` headers have been moved into `src/`.
+- SCons default architecture is now automatic instead of just 32-bit.
 
 ### Deprecated
 - All functions replaced by the new UTF-8 functions are deprecated.

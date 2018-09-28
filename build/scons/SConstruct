@@ -159,8 +159,14 @@ vars.Add('CFLAGS', 'C flags', '')
 vars.Add('CXXFLAGS', 'C++ flags', '')
 vars.Add('LINKFLAGS', 'Linker flags', '')
 
-vars.Add(EnumVariable('ARCH', 'Set target architecture. (Windows/Linux only)',
-                      'x86', allowed_values=('x86', 'x86_64')))
+vars.Add(
+    EnumVariable(
+        'ARCH',
+        'Set target architecture. (Windows/Linux only)',
+        'x86' if platform.architecture()[0] == '32bit' else 'x86_64',
+        allowed_values=('x86', 'x86_64'),
+    )
+)
 
 # A dummy environment to check the current variables so far.
 env_vars = Environment(variables=vars)

@@ -28,10 +28,14 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
                             std::shared_ptr<Tileset> tileset)
   : TilesetObserver(tileset), renderer_(renderer), texture_(nullptr)
   {
+    SDL_AddEventWatch(on_sdl_event, this);
     if (!renderer_) {
       throw std::invalid_argument("renderer cannot be nullptr.");
     }
     sync_alias();
+  }
+  ~SDL2InternalTilesetAlias_() {
+    SDL_DelEventWatch(on_sdl_event, this);
   }
   SDL_Texture* get_texture_alias()
   {
@@ -73,6 +77,16 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     }
     SDL_UpdateTexture(texture_.get(), nullptr, alias.data(),
                       sizeof(alias.at(0,0)) * alias.width());
+  }
+  static int on_sdl_event(void* userdata, SDL_Event* event)
+  {
+    auto this_ = static_cast<SDL2InternalTilesetAlias_*>(userdata);
+    switch (event->type) {
+      case SDL_RENDER_DEVICE_RESET: // Lost all textures.
+        this_->sync_alias();
+        break;
+    }
+    return 0;
   }
 };
 

@@ -101,9 +101,8 @@ class Tilesheet {
       }
     }
     bool is_colored = false;
-    for (ColorRGBA& pixel : tile) {
-      if (tile.at(0, 0).r != pixel.r || tile.at(0, 0).g != pixel.g ||
-          tile.at(0, 0).b != pixel.b) {
+    for (const ColorRGBA& pixel : tile) {
+      if (pixel.r != pixel.g || pixel.r != pixel.b) {
         is_colored = true;
         break;
       }

@@ -38,7 +38,7 @@ class SDL2Renderer: public TilesetObserver {
   SDL2TilesetAlias alias_;
   cache_type cache_;
   struct SDL_Renderer* renderer_;
-  struct SDL_Texture* texture_;
+  struct SDL_Texture* texture_ = nullptr;
 };
 } // namespace sdl2
 } // namespace tcod

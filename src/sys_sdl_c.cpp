@@ -677,13 +677,24 @@ void TCOD_sys_startup(void) {
 	has_startup=true;
 }
 
-void TCOD_sys_shutdown(void) {
-	if (!has_startup) return;
-	TCOD_sys_uninit();
-	sdl->shutdown();
-	SDL_Quit();
-	memset(&scale_data, 0, sizeof(scale_data_t));
-	has_startup = false;
+void TCOD_sys_shutdown(void)
+{
+  if (TCOD_ctx.root) {
+    TCOD_console_data_free(TCOD_ctx.root);
+    free(TCOD_ctx.root);
+    TCOD_ctx.root = NULL;
+  }
+  if (tcod::engine::get_display()){
+    tcod::engine::set_display(nullptr);
+    return;
+  }
+  if (has_startup) {
+    sdl->destroy_window();
+    sdl->shutdown();
+    memset(&scale_data, 0, sizeof(scale_data_t));
+    has_startup = false;
+  }
+  SDL_Quit();
 }
 
 static void TCOD_sys_load_player_config(void) {
@@ -781,12 +792,6 @@ bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
 
 	return true;
-}
-
-void TCOD_sys_uninit(void) {
-  tcod::engine::set_display(nullptr);
-  if (!has_startup) return;
-  sdl->destroy_window();
 }
 
 static char *TCOD_strcasestr (const char *haystack, const char *needle) {

@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <tuple>
 
@@ -19,7 +20,7 @@ struct sdl_deleter
 };
 
 std::map<std::tuple<const Tileset*, const struct SDL_Renderer*>,
-         std::shared_ptr<SDL2InternalTilesetAlias_>> sdl2_alias_pool = {};
+         std::weak_ptr<SDL2InternalTilesetAlias_>> sdl2_alias_pool = {};
 
 class SDL2InternalTilesetAlias_: public TilesetObserver {
  public:
@@ -93,15 +94,15 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
 SDL2TilesetAlias::SDL2TilesetAlias(struct SDL_Renderer* renderer,
                                    std::shared_ptr<Tileset> tileset)
 {
+  static std::mutex mutex;
+  std::unique_lock<std::mutex> lock(mutex);
   SDL2InternalTilesetAlias_::key_type key =
       std::make_tuple(tileset.get(), renderer);
-  auto alias_it = sdl2_alias_pool.find(key);
-  if (alias_it == sdl2_alias_pool.end()) {
-    alias_it = sdl2_alias_pool.emplace(
-        key,
-        std::make_shared<SDL2InternalTilesetAlias_>(renderer, tileset)).first;
+  alias_ = sdl2_alias_pool[key].lock();
+  if (!alias_) {
+    sdl2_alias_pool[key] = alias_ =
+        std::make_shared<SDL2InternalTilesetAlias_>(renderer, tileset);
   }
-  alias_ = alias_it->second;
 }
 
 std::shared_ptr<Tileset>& SDL2TilesetAlias::get_tileset()

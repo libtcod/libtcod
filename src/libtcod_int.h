@@ -194,8 +194,8 @@ void TCOD_fatal_nopar(const char *msg);
 
 /* TCODSystem non public methods */
 #ifdef TCOD_CONSOLE_SUPPORT
+void TCOD_console_data_free(struct TCOD_Console *dat);
 bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
-void TCOD_sys_uninit(void);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);

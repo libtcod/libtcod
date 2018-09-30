@@ -75,9 +75,9 @@ class Vector2 {
     }
   }
   /** The width of this canvas. */
-  int width_;
+  int width_ = 0;
   /** The height of this canvas. */
-  int height_;
+  int height_ = 0;
   /** A 1d vector mapped to a 2d array of pixels. */
   std::vector<T> vector_;
 };

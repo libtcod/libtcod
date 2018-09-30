@@ -237,7 +237,8 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
 	return dat->alignment;
 }
 
-static void TCOD_console_data_free(struct TCOD_Console *dat) {
+void TCOD_console_data_free(struct TCOD_Console *dat)
+{
   if (!dat) { return; }
   free(dat->ch_array);
   free(dat->fg_array);
@@ -254,15 +255,16 @@ static void TCOD_console_data_free(struct TCOD_Console *dat) {
  *  If the console being deleted is the root console, then the display will be
  *  uninitialized.
  */
-void TCOD_console_delete(TCOD_console_t con) {
-    struct TCOD_Console *dat=(struct TCOD_Console *)(con);
-	if (! dat ) {
-		dat=TCOD_ctx.root;
-		TCOD_sys_uninit();
-		TCOD_ctx.root=NULL;
-	}
-	TCOD_console_data_free(dat);
-	free(dat);
+void TCOD_console_delete(TCOD_console_t con)
+{
+  if (con) {
+    TCOD_console_data_free(con);
+    free(con);
+  } else {
+    TCOD_sys_shutdown();
+    con=TCOD_ctx.root;
+    TCOD_ctx.root=NULL;
+  }
 }
 /**
  *  Shutdown libtcod.  This must be called before your program exits.
@@ -751,12 +753,14 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
     switch (renderer) {
       case TCOD_RENDERER_SDL2: {
         auto tileset = tcod::engine::get_tileset();
+        if (!tileset) { throw; }
         auto display = std::make_shared<tcod::sdl2::SDL2Display>(
             tileset,
             std::make_pair(tileset->get_tile_width() * w,
                            tileset->get_tile_height() * h),
             (SDL_WINDOW_RESIZABLE |
-             (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)));
+             (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)),
+            std::string(title));
         tcod::engine::set_display(display);
         break;
       }

@@ -18,14 +18,18 @@ struct SDL_Texture* SDL2Renderer::render(const TCOD_Console* console)
 {
   if (!console) { throw; }
   if (console->w != cache_.width() || console->h != cache_.height()) {
-    cache_ = cache_type(console->w, console->h);
     if (texture_) {
       SDL_DestroyTexture(texture_);
+      texture_ = nullptr;
     }
+  }
+  if (!texture_) {
+    cache_ = cache_type(console->w, console->h);
     const uint32_t format = 0;
     texture_ = SDL_CreateTexture(renderer_, format, SDL_TEXTUREACCESS_TARGET,
                                  tileset_->get_tile_width() * console->w,
                                  tileset_->get_tile_height() * console->h);
+    if(!texture_) { throw std::runtime_error(SDL_GetError()); }
   }
   SDL_SetRenderTarget(renderer_, texture_);
   SDL_Texture* alias_texture = alias_.get_texture_alias();

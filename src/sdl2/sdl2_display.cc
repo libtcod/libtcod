@@ -12,7 +12,7 @@
 namespace tcod {
 namespace sdl2 {
 WindowedDisplay::WindowedDisplay(std::pair<int, int> window_size,
-                                 int window_flags)
+                                 int window_flags, const std::string& title)
 {
   int width = window_size.first;
   int height = window_size.second;
@@ -24,14 +24,10 @@ WindowedDisplay::WindowedDisplay(std::pair<int, int> window_size,
   }
   window_ = std::shared_ptr<SDL_Window>(
       SDL_CreateWindow(
-          "Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+          title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
           width, height, window_flags),
       [](SDL_Window* window){ SDL_DestroyWindow(window); });
   if (!window_) { throw std::runtime_error(SDL_GetError()); }
-}
-WindowedDisplay::~WindowedDisplay()
-{
-  //if (window_) { SDL_DestroyWindow(window_); }
 }
 void WindowedDisplay::set_title(const std::string title)
 {
@@ -45,8 +41,9 @@ std::string WindowedDisplay::get_title()
 }
 
 SDL2Display::SDL2Display(std::shared_ptr<Tileset> tileset,
-                         std::pair<int, int> window_size, int window_flags)
-: WindowedDisplay(window_size, window_flags)
+                         std::pair<int, int> window_size, int window_flags,
+                         const std::string& title)
+: WindowedDisplay(window_size, window_flags, title)
 {
   // Configure SDL2 renderer.
   renderer_ = std::shared_ptr<SDL_Renderer>(
@@ -55,10 +52,6 @@ SDL2Display::SDL2Display(std::shared_ptr<Tileset> tileset,
   if (!renderer_) { throw std::runtime_error(SDL_GetError()); }
   // Configure libtcod renderer.
   set_tileset(tileset);
-}
-SDL2Display::~SDL2Display()
-{
-  //if (renderer_) { SDL_DestroyRenderer(renderer_); }
 }
 void SDL2Display::set_tileset(std::shared_ptr<Tileset> tileset)
 {

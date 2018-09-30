@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 #include <memory>
+#include <string>
 #include <utility>
 #endif // __cplusplus
 
@@ -20,8 +21,8 @@ namespace sdl2 {
  */
 class WindowedDisplay: public engine::Display {
  public:
-  WindowedDisplay(std::pair<int, int> window_size, int window_flags);
-  ~WindowedDisplay();
+  WindowedDisplay(std::pair<int, int> window_size, int window_flags,
+                  const std::string& title);
   virtual void set_title(const std::string title) override;
   virtual std::string get_title() override;
   SDL_Window* get_window() { return window_.get(); }
@@ -33,9 +34,11 @@ class WindowedDisplay: public engine::Display {
  */
 class SDL2Display: public WindowedDisplay {
  public:
-  SDL2Display(std::shared_ptr<Tileset> tileset,
-              std::pair<int, int> window_size, int fullscreen);
-  ~SDL2Display();
+  SDL2Display(
+      std::shared_ptr<Tileset> tileset,
+      std::pair<int, int> window_size,
+      int window_flags,
+      const std::string& title);
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;
   virtual void present(const TCOD_Console*) override;
  private:

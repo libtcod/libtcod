@@ -36,7 +36,7 @@
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
-TCODConsole * TCODConsole::root = NULL;
+TCODConsole* TCODConsole::root = new TCODConsole();
 
 TCODConsole::TCODConsole() {}
 TCODConsole::TCODConsole(int w, int h) {
@@ -139,11 +139,10 @@ void TCODConsole::setWindowTitle(const char *title) {
 }
 #endif
 
-void TCODConsole::initRoot(int w, int h, const char *title, bool fullscreen, TCOD_renderer_t renderer) {
-	TCODConsole *con=new TCODConsole();
-	TCOD_console_init_root(w,h,title,fullscreen,renderer);
-	con->data=TCOD_ctx.root;
-	TCODConsole::root=con;
+void TCODConsole::initRoot(int w, int h, const char *title, bool fullscreen,
+                           TCOD_renderer_t renderer)
+{
+  TCOD_console_init_root(w, h, title, fullscreen, renderer);
 }
 
 void TCODConsole::setFullscreen(bool fullscreen) {

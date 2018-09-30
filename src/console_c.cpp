@@ -35,6 +35,7 @@
 #include <array>
 
 #include <SDL.h>
+#include "console.hpp"
 #include "console_rexpaint.h"
 #include "noise.h"
 #include "mersenne.h"
@@ -744,7 +745,7 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
 {
   TCOD_IF(w > 0 && h > 0) {
     TCOD_console_delete(NULL);
-    TCOD_ctx.root = TCOD_console_new(w, h);
+    TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
 #ifndef TCOD_BARE
     TCOD_ctx.renderer=renderer;
 #endif

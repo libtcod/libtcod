@@ -1,6 +1,3 @@
-
-DEFINES = ['NDEBUG']
-
 # MODE options are DEBUG, SIZE, PERFORMANCE, and RELEASE.
 
 DEBUG_GCC = {

@@ -182,8 +182,10 @@ if env_vars['MODE'].upper() != 'RELEASE':
     default_tag += '-$MODE'
 
 vars.Add('TAG', 'Variant tag.', default_tag)
-vars.Add('CPPDEFINES', 'Defined preprocessor values.',
-         ' '.join(config.DEFINES))
+vars.Add(
+    'CPPDEFINES',
+    'Defined preprocessor values.',
+    '' if env_vars['MODE'] == 'DEBUG' else 'NDEBUG')
 
 vars.Add('VERSION', 'libtcod version.', get_libtcod_version())
 vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT')

@@ -660,7 +660,9 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img,
 	charcols[asciiCode]=pink;
 	TCOD_sys_set_dirty_character_code(asciiCode);
 }
-
+/**
+ *  Older startup function, mostly called from TCOD_sys_init.
+ */
 void TCOD_sys_startup(void) {
 	if (has_startup) return;
 #ifndef NDEBUG
@@ -676,7 +678,11 @@ void TCOD_sys_startup(void) {
 
 	has_startup=true;
 }
-
+/**
+ *  All shutdown routines call this function.
+ *
+ *  Mostly used internally. TCOD_quit should be called to shutdown the library.
+ */
 void TCOD_sys_shutdown(void)
 {
   if (TCOD_ctx.root) {

@@ -34,7 +34,7 @@ build_script:
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip distribute setuptools wheel
 - cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install scons
 - cmd: if defined SCONSOPTS cd build/scons
-- cmd: if defined SCONSOPTS scons develop_all dist %SCONSMODE% %SCONSOPTS%
+- cmd: if defined SCONSOPTS scons develop_all dist %SCONSMODE% %SCONSOPTS% CPPDEFINES=NDEBUG
 - cmd: if defined SCONSOPTS cd ../..
 # Run msbuild on MSBUILD define.
 - cmd: if defined MSBUILD nuget restore build\msvs\libtcod.sln

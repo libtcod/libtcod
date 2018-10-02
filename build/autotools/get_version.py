@@ -15,7 +15,7 @@ RE_PATCH = '.*#define TCOD_PATCHLEVEL *([0-9]+)'
 RE_VERSION = RE_MAJOR + RE_MINOR + RE_PATCH
 
 def main():
-    with open('../../src/libtcod_version.h') as f:
+    with open('../../src/libtcod/version.h') as f:
         header = f.read()
     major, minor, patch = re.match(RE_VERSION, header, re.DOTALL).groups()
     if '--so' in sys.argv:

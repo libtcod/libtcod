@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "libtcod.hpp"
-#include "gui/gui.hpp"
+#include "libtcod/gui/gui.hpp"
 #include "operation.hpp"
 
 // must match Operation::OpType enum

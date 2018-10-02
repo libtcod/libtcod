@@ -5,22 +5,9 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
-    </Filter>
-    <Filter Include="Source Files\png">
-      <UniqueIdentifier>{87278468-d8a8-4ddc-93c8-e49d383e2900}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\cpp">
-      <UniqueIdentifier>{90ee66c0-9b9b-4dc9-89be-296a1b942da9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\cpp">
-      <UniqueIdentifier>{63e6f9f2-e655-4ffa-8b82-c81e649624dc}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\vendor">
       <UniqueIdentifier>{dc746521-4b05-43fd-bfd7-cc4a155a1307}</UniqueIdentifier>
@@ -40,77 +27,14 @@
     <Filter Include="Source Files\color">
       <UniqueIdentifier>{5bf5288c-6f2b-498e-b5e9-395ef5483b53}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\utility">
+      <UniqueIdentifier>{1630d352-bfc9-40c1-8359-39ad80745efb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui">
+      <UniqueIdentifier>{5f6326e8-efa7-4a9f-a668-c5be8a21569b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\bresenham_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\bsp_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\color_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\console_printing.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_circular_raycasting.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_diamond_raycasting.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_permissive2.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_recursive_shadowcasting.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov_restrictive.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\heightmap_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\image_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lex_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\list_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\mersenne_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\namegen_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\noise_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\parser_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\path_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tree_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\txtfield_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\wrappers.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\zip_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vendor\zlib\adler32.c">
       <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
@@ -156,319 +80,481 @@
     <ClCompile Include="..\..\src\vendor\zlib\uncompr.c">
       <Filter>Source Files\vendor\zlib</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\bresenham.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\bsp.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\color.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\console.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\fov.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\heightmap.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\image.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\lex.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\mersenne.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\mouse.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\namegen.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\noise.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\parser.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\path.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sys.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\zip.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\txtfield.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\console_rexpaint.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vendor\stb.c">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\tileset\tile.cc">
-      <Filter>Source Files\tileset</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tileset\tileset.cc">
-      <Filter>Source Files\tileset</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tileset\observer.cc">
-      <Filter>Source Files\tileset</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\vendor\lodepng.cpp">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl_img_png.cpp">
-      <Filter>Source Files\cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\tileset\tilesheet.cc">
+    <ClCompile Include="..\..\src\libtcod\tileset\observer.cpp">
       <Filter>Source Files\tileset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\console_c.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\libtcod\tileset\tile.cpp">
+      <Filter>Source Files\tileset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_c.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\libtcod\tileset\tileset.cpp">
+      <Filter>Source Files\tileset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_opengl_c.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\..\src\libtcod\tileset\tilesheet.cpp">
+      <Filter>Source Files\tileset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl_c.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl_img_bmp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sys_sdl2_c.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sdl2\legacy_backend.cc">
-      <Filter>Source Files\sdl2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sdl2\sdl2_renderer.cc">
-      <Filter>Source Files\sdl2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sdl2\sdl2_alias.cc">
-      <Filter>Source Files\sdl2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\engine\backend.cc">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\engine\display.cc">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\sdl2\sdl2_display.cc">
-      <Filter>Source Files\sdl2</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\engine\globals.cc">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\color\canvas.cc">
+    <ClCompile Include="..\..\src\libtcod\color\canvas.cpp">
       <Filter>Source Files\color</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\engine\backend.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\engine\display.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\engine\globals.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\legacy_backend.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\sdl2_alias.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\sdl2_display.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\sdl2_renderer.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\bresenham.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\bresenham_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\bsp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\bsp_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\color_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console_printing.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console_rexpaint.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_circular_raycasting.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_diamond_raycasting.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_permissive2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_recursive_shadowcasting.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\fov_restrictive.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\heightmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\heightmap_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\image_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\lex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\lex_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\list_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\mersenne.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\mersenne_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\mouse.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\namegen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\namegen_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\noise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\noise_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\parser_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\path_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_opengl_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_sdl_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_sdl_img_bmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_sdl_img_png.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sys_sdl2_c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\tree_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\txtfield.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\txtfield_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\wrappers.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\zip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\zip_c.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\button.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\container.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\flatlist.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\hbox.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\image.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\label.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\radiobutton.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\slider.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\statusbar.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\textbox.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\togglebutton.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\toolbar.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\vbox.cpp">
+      <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\gui\widget.cpp">
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\bresenham.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\bsp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\console_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\fov.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\fov_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\heightmap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\lex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod_int.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mersenne.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mersenne_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mouse.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mouse_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\namegen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\noise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\noise_defaults.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\path.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\sys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\tree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\txtfield.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\wrappers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\zip.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\bresenham.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\bsp.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\color.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\console.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\heightmap.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\fov.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\image.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\howto.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\lex.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\list.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mersenne.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\mouse.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\namegen.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\noise.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\parser.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\path.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\sys.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\tree.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\txtfield.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\zip.hpp">
-      <Filter>Header Files\cpp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod_portability.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod_utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\libtcod_version.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\sdl2\legacy_backend.h">
-      <Filter>Source Files\sdl2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\sdl2\sdl2_renderer.h">
-      <Filter>Source Files\sdl2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\tileset\observer.h">
+    <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
       <Filter>Source Files\tileset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\tileset\tile.h">
+    <ClInclude Include="..\..\src\libtcod\tileset\tile.h">
       <Filter>Source Files\tileset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\tileset\tileset.h">
+    <ClInclude Include="..\..\src\libtcod\tileset\tileset.h">
       <Filter>Source Files\tileset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\tileset\tilesheet.h">
+    <ClInclude Include="..\..\src\libtcod\tileset\tilesheet.h">
       <Filter>Source Files\tileset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\sdl2\sdl2_alias.h">
-      <Filter>Source Files\sdl2</Filter>
+    <ClInclude Include="..\..\src\libtcod\utility\vector2.h">
+      <Filter>Source Files\utility</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\backend.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\display.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\sdl2\sdl2_display.h">
-      <Filter>Source Files\sdl2</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\globals.h">
-      <Filter>Source Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\color\canvas.h">
+    <ClInclude Include="..\..\src\libtcod\color\canvas.h">
       <Filter>Source Files\color</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\color\color.h">
+    <ClInclude Include="..\..\src\libtcod\color\color.h">
       <Filter>Source Files\color</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\engine\backend.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\engine\display.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\engine\globals.h">
+      <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\legacy_backend.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_alias.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_display.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_renderer.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\bresenham.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\bresenham.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\bsp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\bsp.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\color.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\color.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console_rexpaint.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\fov.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\fov.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\fov_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\heightmap.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\heightmap.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\image.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\image.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\lex.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\lex.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\libtcod.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\libtcod.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\libtcod_int.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\list.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\list.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mersenne.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mersenne.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mersenne_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mouse.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mouse.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\mouse_types.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\namegen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\namegen.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\noise.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\noise.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\noise_defaults.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\parser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\parser.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\path.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\path.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\portability.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sys.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sys.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\tree.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\tree.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\txtfield.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\txtfield.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\utility.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\version.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\wrappers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\zip.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\zip.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\button.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\container.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\flatlist.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\gui.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\gui_portability.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\hbox.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\image.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\label.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\radiobutton.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\slider.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\statusbar.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\textbox.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\togglebutton.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\toolbar.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\vbox.hpp">
+      <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\gui\widget.hpp">
+      <Filter>Source Files\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -478,5 +564,10 @@
     <ResourceCompile Include="libtcod.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\src\libtcod\gui\README.txt">
+      <Filter>Source Files\gui</Filter>
+    </Text>
   </ItemGroup>
 </Project>

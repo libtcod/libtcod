@@ -3,7 +3,7 @@
 
 #include "libtcod.hpp"
 #define _SDL_main_h
-#include "libtcod_int.h"
+#include "libtcod/libtcod_int.h"
 
 
 TCODColor frostCol[256];

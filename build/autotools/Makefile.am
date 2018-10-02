@@ -16,20 +16,20 @@ lib_LTLIBRARIES = libtcod.la libtcodgui.la
 
 
 libtcodgui_la_SOURCES = \
-	../../src/gui/button.cpp \
-	../../src/gui/container.cpp \
-	../../src/gui/flatlist.cpp \
-	../../src/gui/hbox.cpp \
-	../../src/gui/image.cpp \
-	../../src/gui/label.cpp \
-	../../src/gui/radiobutton.cpp \
-	../../src/gui/slider.cpp \
-	../../src/gui/statusbar.cpp \
-	../../src/gui/textbox.cpp \
-	../../src/gui/togglebutton.cpp \
-	../../src/gui/toolbar.cpp \
-	../../src/gui/vbox.cpp \
-	../../src/gui/widget.cpp
+	../../src/libtcod/gui/button.cpp \
+	../../src/libtcod/gui/container.cpp \
+	../../src/libtcod/gui/flatlist.cpp \
+	../../src/libtcod/gui/hbox.cpp \
+	../../src/libtcod/gui/image.cpp \
+	../../src/libtcod/gui/label.cpp \
+	../../src/libtcod/gui/radiobutton.cpp \
+	../../src/libtcod/gui/slider.cpp \
+	../../src/libtcod/gui/statusbar.cpp \
+	../../src/libtcod/gui/textbox.cpp \
+	../../src/libtcod/gui/togglebutton.cpp \
+	../../src/libtcod/gui/toolbar.cpp \
+	../../src/libtcod/gui/vbox.cpp \
+	../../src/libtcod/gui/widget.cpp
 
 libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS)
 libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
@@ -38,87 +38,87 @@ libtcodgui_la_LIBADD = libtcod.la
 
 otherincludedir = $(includedir)/libtcod/gui
 otherinclude_HEADERS = \
-	../../src/gui/button.hpp \
-	../../src/gui/container.hpp \
-	../../src/gui/flatlist.hpp \
-	../../src/gui/gui.hpp \
-	../../src/gui/hbox.hpp \
-	../../src/gui/image.hpp \
-	../../src/gui/label.hpp \
-	../../src/gui/radiobutton.hpp \
-	../../src/gui/slider.hpp \
-	../../src/gui/statusbar.hpp \
-	../../src/gui/textbox.hpp \
-	../../src/gui/togglebutton.hpp \
-	../../src/gui/toolbar.hpp \
-	../../src/gui/vbox.hpp \
-	../../src/gui/widget.hpp \
-	../../src/gui/gui_portability.hpp
+	../../src/libtcod/gui/button.hpp \
+	../../src/libtcod/gui/container.hpp \
+	../../src/libtcod/gui/flatlist.hpp \
+	../../src/libtcod/gui/gui.hpp \
+	../../src/libtcod/gui/hbox.hpp \
+	../../src/libtcod/gui/image.hpp \
+	../../src/libtcod/gui/label.hpp \
+	../../src/libtcod/gui/radiobutton.hpp \
+	../../src/libtcod/gui/slider.hpp \
+	../../src/libtcod/gui/statusbar.hpp \
+	../../src/libtcod/gui/textbox.hpp \
+	../../src/libtcod/gui/togglebutton.hpp \
+	../../src/libtcod/gui/toolbar.hpp \
+	../../src/libtcod/gui/vbox.hpp \
+	../../src/libtcod/gui/widget.hpp \
+	../../src/libtcod/gui/gui_portability.hpp
 
 
 libtcod_la_SOURCES = \
-	../../src/bresenham_c.c \
-	../../src/bsp_c.c \
-	../../src/color_c.c \
-	../../src/console_c.cpp \
-	../../src/console_printing.c \
-	../../src/console_rexpaint.c \
-	../../src/fov_c.c \
-	../../src/fov_circular_raycasting.c \
-	../../src/fov_diamond_raycasting.c \
-	../../src/fov_permissive2.c \
-	../../src/fov_recursive_shadowcasting.c \
-	../../src/fov_restrictive.c \
-	../../src/heightmap_c.c \
-	../../src/image_c.c \
-	../../src/lex_c.c \
-	../../src/list_c.c \
-	../../src/mersenne_c.c \
-	../../src/namegen_c.c \
-	../../src/noise_c.c \
-	../../src/parser_c.c \
-	../../src/path_c.c \
-	../../src/sys_c.cpp \
-	../../src/sys_sdl2_c.cpp \
-	../../src/sys_sdl_c.cpp \
-	../../src/sys_sdl_img_bmp.cpp \
-	../../src/sys_sdl_img_png.cpp \
-	../../src/tree_c.c \
-	../../src/txtfield_c.c \
-	../../src/wrappers.c \
-	../../src/zip_c.c \
 	../../src/vendor/lodepng.cpp \
 	../../src/vendor/stb.c \
 	../../src/vendor/utf8proc/utf8proc.c \
-	../../src/bresenham.cpp \
-	../../src/bsp.cpp \
-	../../src/color.cpp \
-	../../src/console.cpp \
-	../../src/fov.cpp \
-	../../src/heightmap.cpp \
-	../../src/image.cpp \
-	../../src/lex.cpp \
-	../../src/mersenne.cpp \
-	../../src/mouse.cpp \
-	../../src/namegen.cpp \
-	../../src/noise.cpp \
-	../../src/parser.cpp \
-	../../src/path.cpp \
-	../../src/sys.cpp \
-	../../src/txtfield.cpp \
-	../../src/zip.cpp \
-	../../src/color/canvas.cc \
-	../../src/engine/backend.cc \
-	../../src/engine/display.cc \
-	../../src/engine/globals.cc \
-	../../src/sdl2/legacy_backend.cc \
-	../../src/sdl2/sdl2_alias.cc \
-	../../src/sdl2/sdl2_display.cc \
-	../../src/sdl2/sdl2_renderer.cc \
-	../../src/tileset/observer.cc \
-	../../src/tileset/tile.cc \
-	../../src/tileset/tileset.cc \
-	../../src/tileset/tilesheet.cc
+	../../src/libtcod/bresenham_c.c \
+	../../src/libtcod/bsp_c.c \
+	../../src/libtcod/color_c.c \
+	../../src/libtcod/console_c.cpp \
+	../../src/libtcod/console_printing.c \
+	../../src/libtcod/console_rexpaint.c \
+	../../src/libtcod/fov_c.c \
+	../../src/libtcod/fov_circular_raycasting.c \
+	../../src/libtcod/fov_diamond_raycasting.c \
+	../../src/libtcod/fov_permissive2.c \
+	../../src/libtcod/fov_recursive_shadowcasting.c \
+	../../src/libtcod/fov_restrictive.c \
+	../../src/libtcod/heightmap_c.c \
+	../../src/libtcod/image_c.c \
+	../../src/libtcod/lex_c.c \
+	../../src/libtcod/list_c.c \
+	../../src/libtcod/mersenne_c.c \
+	../../src/libtcod/namegen_c.c \
+	../../src/libtcod/noise_c.c \
+	../../src/libtcod/parser_c.c \
+	../../src/libtcod/path_c.c \
+	../../src/libtcod/sys_c.cpp \
+	../../src/libtcod/sys_sdl2_c.cpp \
+	../../src/libtcod/sys_sdl_c.cpp \
+	../../src/libtcod/sys_sdl_img_bmp.cpp \
+	../../src/libtcod/sys_sdl_img_png.cpp \
+	../../src/libtcod/tree_c.c \
+	../../src/libtcod/txtfield_c.c \
+	../../src/libtcod/wrappers.c \
+	../../src/libtcod/zip_c.c \
+	../../src/libtcod/bresenham.cpp \
+	../../src/libtcod/bsp.cpp \
+	../../src/libtcod/color.cpp \
+	../../src/libtcod/console.cpp \
+	../../src/libtcod/fov.cpp \
+	../../src/libtcod/heightmap.cpp \
+	../../src/libtcod/image.cpp \
+	../../src/libtcod/lex.cpp \
+	../../src/libtcod/mersenne.cpp \
+	../../src/libtcod/mouse.cpp \
+	../../src/libtcod/namegen.cpp \
+	../../src/libtcod/noise.cpp \
+	../../src/libtcod/parser.cpp \
+	../../src/libtcod/path.cpp \
+	../../src/libtcod/sys.cpp \
+	../../src/libtcod/txtfield.cpp \
+	../../src/libtcod/zip.cpp \
+	../../src/libtcod/color/canvas.cpp \
+	../../src/libtcod/engine/backend.cpp \
+	../../src/libtcod/engine/display.cpp \
+	../../src/libtcod/engine/globals.cpp \
+	../../src/libtcod/sdl2/legacy_backend.cpp \
+	../../src/libtcod/sdl2/sdl2_alias.cpp \
+	../../src/libtcod/sdl2/sdl2_display.cpp \
+	../../src/libtcod/sdl2/sdl2_renderer.cpp \
+	../../src/libtcod/tileset/observer.cpp \
+	../../src/libtcod/tileset/tile.cpp \
+	../../src/libtcod/tileset/tileset.cpp \
+	../../src/libtcod/tileset/tilesheet.cpp
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
@@ -126,87 +126,86 @@ libtcod_la_LIBADD = $(PTHREAD_LIBS)
 
 
 pkginclude_HEADERS = \
-	../../src/bresenham.h \
-	../../src/mersenne_types.h \
-	../../src/bsp.h \
-	../../src/mouse.h \
-	../../src/color.h \
-	../../src/mouse_types.h \
-	../../src/console.h \
-	../../src/namegen.h \
-	../../src/console_types.h \
-	../../src/console_rexpaint.h \
-	../../src/noise_defaults.h \
-	../../src/fov.h \
-	../../src/noise.h \
-	../../src/fov_types.h \
-	../../src/parser.h \
-	../../src/heightmap.h \
-	../../src/path.h \
-	../../src/image.h \
-	../../src/sys.h \
-	../../src/lex.h \
-	../../src/tree.h \
-	../../src/libtcod.h \
-	../../src/txtfield.h \
-	../../src/libtcod_int.h \
-	../../src/libtcod_portability.h \
-	../../src/libtcod_utility.h \
-	../../src/libtcod_version.h \
-	../../src/wrappers.h \
-	../../src/list.h \
-	../../src/zip.h \
-	../../src/mersenne.h \
-	../../src/bresenham.hpp \
-	../../src/mersenne.hpp \
-	../../src/bsp.hpp \
-	../../src/mouse.hpp \
-	../../src/color.hpp \
-	../../src/namegen.hpp \
-	../../src/console.hpp \
-	../../src/noise.hpp \
-	../../src/fov.hpp \
-	../../src/parser.hpp \
-	../../src/heightmap.hpp \
-	../../src/path.hpp \
-	../../src/howto.hpp \
-	../../src/sys.hpp \
-	../../src/image.hpp \
-	../../src/tree.hpp \
-	../../src/lex.hpp \
-	../../src/txtfield.hpp \
-	../../src/libtcod.hpp \
-	../../src/zip.hpp \
-	../../src/list.hpp
+	../../src/libtcod/bresenham.h \
+	../../src/libtcod/mersenne_types.h \
+	../../src/libtcod/bsp.h \
+	../../src/libtcod/mouse.h \
+	../../src/libtcod/color.h \
+	../../src/libtcod/mouse_types.h \
+	../../src/libtcod/console.h \
+	../../src/libtcod/namegen.h \
+	../../src/libtcod/console_types.h \
+	../../src/libtcod/console_rexpaint.h \
+	../../src/libtcod/noise_defaults.h \
+	../../src/libtcod/fov.h \
+	../../src/libtcod/noise.h \
+	../../src/libtcod/fov_types.h \
+	../../src/libtcod/parser.h \
+	../../src/libtcod/heightmap.h \
+	../../src/libtcod/path.h \
+	../../src/libtcod/image.h \
+	../../src/libtcod/sys.h \
+	../../src/libtcod/lex.h \
+	../../src/libtcod/tree.h \
+	../../src/libtcod/libtcod.h \
+	../../src/libtcod/txtfield.h \
+	../../src/libtcod/libtcod_int.h \
+	../../src/libtcod/portability.h \
+	../../src/libtcod/utility.h \
+	../../src/libtcod/version.h \
+	../../src/libtcod/wrappers.h \
+	../../src/libtcod/list.h \
+	../../src/libtcod/zip.h \
+	../../src/libtcod/mersenne.h \
+	../../src/libtcod/bresenham.hpp \
+	../../src/libtcod/mersenne.hpp \
+	../../src/libtcod/bsp.hpp \
+	../../src/libtcod/mouse.hpp \
+	../../src/libtcod/color.hpp \
+	../../src/libtcod/namegen.hpp \
+	../../src/libtcod/console.hpp \
+	../../src/libtcod/noise.hpp \
+	../../src/libtcod/fov.hpp \
+	../../src/libtcod/parser.hpp \
+	../../src/libtcod/heightmap.hpp \
+	../../src/libtcod/path.hpp \
+	../../src/libtcod/sys.hpp \
+	../../src/libtcod/image.hpp \
+	../../src/libtcod/tree.hpp \
+	../../src/libtcod/lex.hpp \
+	../../src/libtcod/txtfield.hpp \
+	../../src/libtcod/libtcod.hpp \
+	../../src/libtcod/zip.hpp \
+	../../src/libtcod/list.hpp
 
 engineincludedir = $(includedir)/libtcod/engine
 engineinclude_HEADERS = \
-	../../src/engine/backend.h \
-	../../src/engine/display.h \
-	../../src/engine/globals.h
+	../../src/libtcod/engine/backend.h \
+	../../src/libtcod/engine/display.h \
+	../../src/libtcod/engine/globals.h
 
 colorincludedir = $(includedir)/libtcod/color
 colorinclude_HEADERS = \
-	../../src/color/color.h \
-	../../src/color/canvas.h
+	../../src/libtcod/color/color.h \
+	../../src/libtcod/color/canvas.h
 
 sdl2includedir = $(includedir)/libtcod/sdl2
 sdl2include_HEADERS = \
-	../../src/sdl2/legacy_backend.h \
-	../../src/sdl2/sdl2_alias.h \
-	../../src/sdl2/sdl2_display.h \
-	../../src/sdl2/sdl2_renderer.h
+	../../src/libtcod/sdl2/legacy_backend.h \
+	../../src/libtcod/sdl2/sdl2_alias.h \
+	../../src/libtcod/sdl2/sdl2_display.h \
+	../../src/libtcod/sdl2/sdl2_renderer.h
 
 tilesetincludedir = $(includedir)/libtcod/tileset
 tilesetinclude_HEADERS = \
-	../../src/tileset/observer.h \
-	../../src/tileset/tileset.h \
-	../../src/tileset/tilesheet.h \
-	../../src/tileset/tile.h
+	../../src/libtcod/tileset/observer.h \
+	../../src/libtcod/tileset/tileset.h \
+	../../src/libtcod/tileset/tilesheet.h \
+	../../src/libtcod/tileset/tile.h
 
 utilityincludedir = $(includedir)/libtcod/utility
 utilityinclude_HEADERS = \
-	../../src/utility/vector2.h
+	../../src/libtcod/utility/vector2.h
 
 
 if ENABLE_SAMPLES

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "libtcod.hpp"
-#include "gui/gui.hpp"
+#include "libtcod/gui/gui.hpp"
 #include "operation.hpp"
 
 TCODHeightMap *hm=NULL, *hmold=NULL;

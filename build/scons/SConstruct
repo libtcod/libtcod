@@ -137,7 +137,7 @@ def filtered_glob(env, pattern, omit=[],
 
 def get_libtcod_version():
     """Return the latest version number from the CHANGELOG."""
-    with open(os.path.join(LIBTCOD_ROOT_DIR, 'src/libtcod_version.h'),
+    with open(os.path.join(LIBTCOD_ROOT_DIR, 'src/libtcod/version.h'),
               'r') as changelog:
         # Grab the TCOD_STRVERSION literal from libtcod_version.h
         return re.match(r'.*#define TCOD_STRVERSION "([^"]+)"',
@@ -359,15 +359,10 @@ if 'NO_OPENGL' not in env['CPPDEFINES']:
 # Which source files to compile into the main libtcod shared library.
 # libtcod-gui sources are not included here.
 libtcod_sources = {
-    # Compiles all source files under src/ with some exceptions.
+    # Compiles all source files under src/libtcod
     'auto': (
-        env.FilteredGlob(
-            # All .c and .cpp sources in src/
-            '$VARIANT/src/*.c*',
-            # Except the composite sources.
-            omit=['libtcod_c.c', 'libtcod.cpp'],
-        )
-        + env.Glob('$VARIANT/src/*/*.cc')
+        env.Glob('$VARIANT/src/libtcod/*.c*')
+        + env.Glob('$VARIANT/src/libtcod/*/*.c*')
         # Vendor sources.
         + env.Glob('$VARIANT/src/vendor/*.c*')
         + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
@@ -433,8 +428,8 @@ package_files = (
     env.Glob('$VARIANT/data/**/*.*') +
     env.Glob('$VARIANT/doc/**/*.*') +
     env.Glob('$VARIANT/include/*.h*') +
-    env.FilteredGlob('$VARIANT/include/**/*.h*',
-                     omit=['lodepng.h', 'stb_sprintf.h']) +
+    env.Glob('$VARIANT/include/libtcod/*.h*') +
+    env.Glob('$VARIANT/include/libtcod/*/*.h*') +
     env.Glob('$VARIANT/lua/*.lua') +
     env.Glob('$VARIANT/python/*.py') +
     env.Glob('$VARIANT/python/**/*.py') +

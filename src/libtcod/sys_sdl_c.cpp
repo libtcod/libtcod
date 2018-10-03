@@ -213,15 +213,26 @@ void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
 }
 /** See TCOD_console_map_ascii_code_to_font */
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
-	if (asciiCode <= 0) { return; } /* can't reassign 0 or negatives */
-	if (asciiCode >= TCOD_ctx.max_font_chars) {
+  if (asciiCode <= 0) { return; } /* can't reassign 0 or negatives */
+  // Assign to new-style Tileset.
+  auto tileset = tcod::engine::get_tileset();
+  auto tilesheet = tcod::engine::get_tilesheet();
+  if (tileset && tilesheet) {
+    try {
+      tileset->set_tile(asciiCode, tilesheet->get_tile(fontCharX, fontCharY));
+    } catch (const std::runtime_error&) { // Ignore errors and continue.
+    } catch (const std::logic_error&) {
+    }
+  }
+  // Assign to legacy character table.
+  if (asciiCode >= TCOD_ctx.max_font_chars) {
     /* reduce total allocations by resizing in increments of 256 */
-		if (realloc_ascii_tables((asciiCode & 0xff) + 1)) {
-			return; /* Failed to realloc table (old table pointer is still good) */
-		}
-	}
-	TCOD_ctx.ascii_to_tcod[asciiCode] =
-			fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
+    if (realloc_ascii_tables((asciiCode & 0xff) + 1)) {
+      return; /* Failed to realloc table (old table pointer is still good) */
+    }
+  }
+  TCOD_ctx.ascii_to_tcod[asciiCode] =
+      fontCharX + fontCharY * TCOD_ctx.fontNbCharHoriz;
 }
 
 void TCOD_sys_load_font(void) {

@@ -84,9 +84,9 @@ def samples_factory():
         env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 
     if sys.platform == 'win32':
-        env_samples.Append(LIBS=['libtcod', 'libtcodgui'])
+        env_samples.Append(LIBS=['libtcod'])
     else:
-        env_samples.Append(LIBS=['tcod', 'tcodgui'])
+        env_samples.Append(LIBS=['tcod'])
 
     for name in os.listdir(env.subst('$LIBTCOD_ROOT_DIR/samples')):
         path = os.path.join(env.subst('$LIBTCOD_ROOT_DIR/samples'), name)
@@ -106,7 +106,7 @@ def samples_factory():
                 source=source,
                 )
             )
-    env.Depends(samples, [libtcod, libtcod_gui])
+    env.Depends(samples, [libtcod])
     return samples
 
 def get_unittest():
@@ -116,15 +116,15 @@ def get_unittest():
     if env['TOOLSET'] == 'msvc':
         env_unittest.Append(CXXFLAGS=['/EHsc']) # Enable exception handler.
     if sys.platform == 'win32':
-        env_unittest.Append(LIBS=['libtcod', 'libtcodgui'])
+        env_unittest.Append(LIBS=['libtcod'])
     else:
-        env_unittest.Append(LIBS=['tcod', 'tcodgui'])
+        env_unittest.Append(LIBS=['tcod'])
 
     unittest = env_unittest.Program(
         target=os.path.join("$VARIANT", "unittest"),
         source=os.path.join("$VARIANT", "tests/unittest.cpp")
     )
-    env.Depends(unittest, [libtcod, libtcod_gui])
+    env.Depends(unittest, [libtcod])
     return unittest
 
 
@@ -357,7 +357,6 @@ if 'NO_OPENGL' not in env['CPPDEFINES']:
         env_libtcod.Append(LIBS=['GL'])
 
 # Which source files to compile into the main libtcod shared library.
-# libtcod-gui sources are not included here.
 libtcod_sources = {
     # Compiles all source files under src/libtcod
     'auto': (
@@ -387,25 +386,10 @@ libtcod = env_libtcod.SharedLibrary(
     source=libtcod_sources[env['SOURCE_FILES']],
     )
 
-env_libtcod_gui = env.Clone()
-env_libtcod_gui.Append(
-    CPPDEFINES=['LIBTCOD_GUI_EXPORTS', ('_HAS_EXCEPTIONS', 0)],
-    LIBS=['libtcod' if sys.platform == 'win32' else 'tcod'],
-    )
-
-libtcod_gui = env_libtcod_gui.SharedLibrary(
-    target='$VARIANT/libtcodgui',
-    source=Glob(env.subst('$VARIANT/src/gui/*.cpp')),
-    )
-
-env.Depends(libtcod_gui, libtcod)
-
 if sys.platform == 'darwin':
     env_libtcod.Append(LINKFLAGS=['-install_name', '@rpath/libtcod.dylib'])
-    env_libtcod_gui.Append(LINKFLAGS=['-install_name',
-                                      '@rpath/libtcodgui.dylib'])
 
-lib_build = [libtcod, libtcod_gui]
+lib_build = [libtcod]
 lib_develop =  env.Install('$DEVELOP_DIR', lib_build) + sdl_install
 Alias("build_libtcod", lib_build)
 Alias("develop_libtcod", lib_develop)

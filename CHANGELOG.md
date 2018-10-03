@@ -43,8 +43,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - SCons no longer crashes downloading SDL2 for Windows.
 
 ### Removed
-- Autotools no longer creates `libtcodxx` libraries, C++ programs should link
-  to `libtcod` instead.
+- Autotools no longer creates `libtcodxx` or `libtcodgui` libraries, C++
+  programs should link to `libtcod` instead.
 
 ## [1.7.0] - 2018-06-12
 ### Changed

@@ -12,28 +12,7 @@ AM_CPPFLAGS = $(AM_CFLAGS)
 AM_LDFLAGS = $(SDL_LIBS) $(X11_LIBS) $(ZLIB_LIBS)
 
 
-lib_LTLIBRARIES = libtcod.la libtcodgui.la
-
-
-libtcodgui_la_SOURCES = \
-	../../src/libtcod/gui/button.cpp \
-	../../src/libtcod/gui/container.cpp \
-	../../src/libtcod/gui/flatlist.cpp \
-	../../src/libtcod/gui/hbox.cpp \
-	../../src/libtcod/gui/image.cpp \
-	../../src/libtcod/gui/label.cpp \
-	../../src/libtcod/gui/radiobutton.cpp \
-	../../src/libtcod/gui/slider.cpp \
-	../../src/libtcod/gui/statusbar.cpp \
-	../../src/libtcod/gui/textbox.cpp \
-	../../src/libtcod/gui/togglebutton.cpp \
-	../../src/libtcod/gui/toolbar.cpp \
-	../../src/libtcod/gui/vbox.cpp \
-	../../src/libtcod/gui/widget.cpp
-
-libtcodgui_la_CXXFLAGS = $(AM_CXXFLAGS)
-libtcodgui_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
-libtcodgui_la_LIBADD = libtcod.la
+lib_LTLIBRARIES = libtcod.la
 
 
 otherincludedir = $(includedir)/libtcod/gui
@@ -111,6 +90,20 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/engine/backend.cpp \
 	../../src/libtcod/engine/display.cpp \
 	../../src/libtcod/engine/globals.cpp \
+	../../src/libtcod/gui/button.cpp \
+	../../src/libtcod/gui/container.cpp \
+	../../src/libtcod/gui/flatlist.cpp \
+	../../src/libtcod/gui/hbox.cpp \
+	../../src/libtcod/gui/image.cpp \
+	../../src/libtcod/gui/label.cpp \
+	../../src/libtcod/gui/radiobutton.cpp \
+	../../src/libtcod/gui/slider.cpp \
+	../../src/libtcod/gui/statusbar.cpp \
+	../../src/libtcod/gui/textbox.cpp \
+	../../src/libtcod/gui/togglebutton.cpp \
+	../../src/libtcod/gui/toolbar.cpp \
+	../../src/libtcod/gui/vbox.cpp \
+	../../src/libtcod/gui/widget.cpp \
 	../../src/libtcod/sdl2/legacy_backend.cpp \
 	../../src/libtcod/sdl2/sdl2_alias.cpp \
 	../../src/libtcod/sdl2/sdl2_display.cpp \

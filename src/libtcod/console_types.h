@@ -288,6 +288,12 @@ typedef enum {
    *  The font file is loaded into RAM instead of VRAM in this implementation.
    */
   TCOD_RENDERER_SDL,
+  /**
+   *  A new SDL2 renderer.  Allows the window to be resized.
+   *  /rst
+   *  .. versionadded:: 2.0
+   *  /endrst
+   */
   TCOD_RENDERER_SDL2,
   TCOD_NB_RENDERERS,
 } TCOD_renderer_t;

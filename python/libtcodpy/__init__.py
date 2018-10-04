@@ -29,10 +29,17 @@
 from __future__ import print_function
 import os
 import sys
+import atexit
 import ctypes
 import struct
 import warnings
 from ctypes import *
+
+warnings.warn(
+    ("This implementation of libtcodpy is no longer maintained.\n"
+     "python-tcod can be used as a drop-in replacement."),
+    DeprecationWarning
+)
 
 # We do not have a fully unicode API on libtcod, so all unicode strings have to
 # be implicitly converted to ascii, and any unicode specific operations have to
@@ -860,11 +867,16 @@ COLCTRL_STOP=8
 RENDERER_GLSL=0
 RENDERER_OPENGL=1
 RENDERER_SDL=2
-NB_RENDERERS=3
+RENDERER_SDL2=3
+NB_RENDERERS=4
 # alignment
 LEFT=0
 RIGHT=1
 CENTER=2
+
+
+_lib.TCOD_quit.restype = c_void
+_lib.TCOD_quit.argtypes = []
 
 # initializing the console
 
@@ -872,6 +884,7 @@ _lib.TCOD_console_init_root.restype=c_void
 _lib.TCOD_console_init_root.argtypes=[c_int, c_int, c_char_p , c_bool , c_uint ]
 def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_SDL):
     _lib.TCOD_console_init_root(w, h, convert_to_ascii(title), fullscreen, renderer)
+    atexit.register(_lib.TCOD_quit)
 
 _lib.TCOD_console_set_custom_font.restype=c_void
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p, c_int,c_int, c_int]

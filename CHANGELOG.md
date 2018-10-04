@@ -17,6 +17,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
   - New overrides for `TCODConsole::print` which can take `std::string`.
   - `TCODConsole::printf`.
 - Added `TCOD_quit` function, this function must be called on exit.
+- New renderer: `TCOD_RENDERER_SDL2`
 
 ### Changed
 - AutoTools now adds version numbers to the libraries it builds.
@@ -34,6 +35,8 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 
 ### Deprecated
 - All functions replaced by the new UTF-8 functions are deprecated.
+- The ctypes implementation of libtcodpy will no longer be maintained, use
+  python-tcod as a drop-in replacement.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

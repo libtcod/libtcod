@@ -90,18 +90,28 @@ TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key
 #endif
 
 /* filesystem stuff */
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_create_directory(const char *path);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_delete_file(const char *path);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_delete_directory(const char *path);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_is_directory(const char *path);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_list_t TCOD_sys_get_directory_content(const char *path, const char *pattern);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_file_exists(const char * filename, ...);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size);
 
 #ifndef TCOD_BARE
 /* clipboard */
+TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
 TCODLIB_API bool TCOD_sys_clipboard_set(const char *value);
+TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
 TCODLIB_API char *TCOD_sys_clipboard_get(void);
 #endif
 
@@ -111,30 +121,50 @@ typedef void *TCOD_semaphore_t;
 typedef void *TCOD_mutex_t;
 typedef void *TCOD_cond_t;
 /* threads */
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_thread_delete(TCOD_thread_t th);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API int TCOD_sys_get_num_cores(void);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_thread_wait(TCOD_thread_t th);
 /* mutex */
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_mutex_t TCOD_mutex_new(void);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_mutex_in(TCOD_mutex_t mut);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_mutex_out(TCOD_mutex_t mut);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_mutex_delete(TCOD_mutex_t mut);
 /* semaphore */
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_semaphore_t TCOD_semaphore_new(int initVal);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_semaphore_lock(TCOD_semaphore_t sem);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_semaphore_unlock(TCOD_semaphore_t sem);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_semaphore_delete( TCOD_semaphore_t sem);
 /* condition */
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_cond_t TCOD_condition_new(void);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_signal(TCOD_cond_t sem);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_broadcast(TCOD_cond_t sem);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_delete( TCOD_cond_t sem);
 /* dynamic library */
 typedef void *TCOD_library_t;
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_library_t TCOD_load_library(const char *path);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void * TCOD_get_function_address(TCOD_library_t library, const char *function_name);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
 #ifndef TCOD_BARE

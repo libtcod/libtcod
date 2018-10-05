@@ -37,6 +37,7 @@ This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
 - All functions replaced by the new UTF-8 functions are deprecated.
 - The ctypes implementation of libtcodpy will no longer be maintained, use
   python-tcod as a drop-in replacement.
+- Deprecated file-system, threading, clipboard, and dynamic library functions.
 
 ### Fixed
 - `libtcodpy.map_clear`: `transparent` and `walkable` parameters were reversed.

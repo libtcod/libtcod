@@ -1786,7 +1786,7 @@ protected :
 	friend class TCODImage;
 	friend class TCODZip;
 	friend class TCODText;
-  friend void TCOD_console_init_root(
+  friend TCODLIB_API void TCOD_console_init_root(
       int w, int h, const char* title,
       bool fullscreen, TCOD_renderer_t renderer);
 	TCODConsole();

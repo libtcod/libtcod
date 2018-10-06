@@ -58,3 +58,4 @@ deploy:
   on:
     repo: libtcod/libtcod
     tags: true
+    condition: '"$TRAVIS_OS_NAME" == "osx"'

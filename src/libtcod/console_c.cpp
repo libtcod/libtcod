@@ -270,7 +270,7 @@ void TCOD_console_delete(TCOD_console_t con)
 /**
  *  Shutdown libtcod.  This must be called before your program exits.
  *  /rst
- *  .. versionadded:: 2.0
+ *  .. versionadded:: 1.8
  *  /endrst
  */
 void TCOD_quit(void)

@@ -3,9 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-This project DOES NOT adhere to [Semantic Versioning](http://semver.org/).
+This project attempts to adhere to [Semantic Versioning](http://semver.org/)
+since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.8.0] - 2018-10-07
 ### Added
 - New `TCOD_MAJOR_VERSION`, `TCOD_MINOR_VERSION`, and `TCOD_PATCHLEVEL`
   constants.

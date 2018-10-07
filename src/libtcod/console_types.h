@@ -291,7 +291,7 @@ typedef enum {
   /**
    *  A new SDL2 renderer.  Allows the window to be resized.
    *  /rst
-   *  .. versionadded:: 2.0
+   *  .. versionadded:: 1.8
    *  /endrst
    */
   TCOD_RENDERER_SDL2,

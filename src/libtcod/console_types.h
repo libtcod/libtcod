@@ -290,9 +290,9 @@ typedef enum {
   TCOD_RENDERER_SDL,
   /**
    *  A new SDL2 renderer.  Allows the window to be resized.
-   *  /rst
+   *  \rst
    *  .. versionadded:: 1.8
-   *  /endrst
+   *  \endrst
    */
   TCOD_RENDERER_SDL2,
   TCOD_NB_RENDERERS,

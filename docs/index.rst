@@ -3,6 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+Welcome to the libtcod documentation!
+======================================
+
 .. toctree::
    :maxdepth: 1
    :caption: Core
@@ -16,17 +19,17 @@
    :glob:
 
    base-toolkits/*
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: Roguelike toolkits
    :glob:
-   
+
    roguelike-toolkits/*
-   
+
 .. toctree::
    :maxdepth: 1
    :caption: How-tos
    :glob:
-   
+
    *

@@ -63,7 +63,7 @@ author = u'Richard Tew'
 # Just grab the version string from libtcod_version.h
 match = re.match(
     pattern=r'.*TCOD_STRVERSION *"(?P<release>(?P<version>\d+\.\d+)[^"]*)',
-    string=open('../include/libtcod_version.h').read(),
+    string=open('../src/libtcod/version.h').read(),
     flags=re.DOTALL,
 )
 assert match

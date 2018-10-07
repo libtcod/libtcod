@@ -105,7 +105,7 @@ void TCOD_map_delete(struct TCOD_Map *map) {
 /**
  *  Calculate the field-of-view.
  *
- *  /rst
+ *  \rst
  *  `player_x` and `player_y` are the used as the field-of-view source.
  *
  *  `max_radius` is the maximum distance for the field-of-view algorithm.
@@ -117,7 +117,7 @@ void TCOD_map_delete(struct TCOD_Map *map) {
  *
  *  After this call you may check if a cell is within the field-of-view by
  *  calling :any:`TCOD_map_is_in_fov`.
- *  /endrst
+ *  \endrst
  */
 void TCOD_map_compute_fov(struct TCOD_Map *map, int player_x, int player_y,
                           int max_radius, bool light_walls,

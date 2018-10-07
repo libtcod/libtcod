@@ -680,11 +680,11 @@ public :
 	TCOD_alignment_t getAlignment() const;
   /**
    *  Print an EASCII formatted string to the console.
-   *  /rst
+   *  \rst
    *  .. deprecated:: 1.8
    *    EASCII is being phased out.  Use TCODConsole::printf or one of the
    *    UTF-8 overloads.
-   *  /endrst
+   *  \endrst
    */
   TCOD_DEPRECATED("Use TCODConsole::printf or the std::string overload for"
                   " this function.")
@@ -694,17 +694,17 @@ public :
    *
    *  This method will use this consoles default alignment, blend mode, and
    *  colors.
-   *  /rst
+   *  \rst
    *  .. versionadded:: 1.8
-   *  /endrst
+   *  \endrst
    */
   void print(int x, int y, const std::string &str);
   /**
    *  Print a UTF-8 string to the console with specific alignment and blend
    *  mode.
-   *  /rst
+   *  \rst
    *  .. versionadded:: 1.8
-   *  /endrst
+   *  \endrst
    */
   void print(int x, int y, const std::string &str,
              TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag);
@@ -713,27 +713,27 @@ public :
    *
    *  This method will use this consoles default alignment, blend mode, and
    *  colors.
-   *  /rst
+   *  \rst
    *  .. versionadded:: 1.8
-   *  /endrst
+   *  \endrst
    */
   void printf(int x, int y, const char *fmt, ...);
   /**
    *  Format and print a UTF-8 string to the console with specific alignment
    *  and blend mode.
-   *  /rst
+   *  \rst
    *  .. versionadded:: 1.8
-   *  /endrst
+   *  \endrst
    */
   void printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
               const char *fmt, ...);
   /**
    *  Print an EASCII formatted string to the console.
-   *  /rst
+   *  \rst
    *  .. deprecated:: 1.8
    *    Use `TCODConsole::print` or `TCODConsole::printf`.
    *    These functions have overloads for specifying flag and alignment.
-   *  /endrst
+   *  \endrst
    */
   TCOD_DEPRECATED("Use TCODConsole::print or TCODConsole::printf instead of"
                   " this function.")

@@ -613,10 +613,10 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
   return cy-y+1;
 }
 /**
- *  /rst
+ *  \rst
  *  .. deprecated:: 1.8
  *    Use :any:`TCOD_console_printf` instead.
- *  /endrst
+ *  \endrst
  */
 void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...) {
   va_list ap;
@@ -628,10 +628,10 @@ void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt,
   va_end(ap);
 }
 /**
- *  /rst
+ *  \rst
  *  .. deprecated:: 1.8
  *    Use :any:`TCOD_console_printf_ex` instead.
- *  /endrst
+ *  \endrst
  */
 void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y,
   TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
@@ -656,10 +656,10 @@ int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h,
   return ret;
 }
 /**
- *  /rst
+ *  \rst
  *  .. deprecated:: 1.8
  *    Use :any:`TCOD_console_printf_rect_ex` instead.
- *  /endrst
+ *  \endrst
  */
 int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h,
   TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
@@ -671,9 +671,9 @@ int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h
   return ret;
 }
 /**
- *  /rst
+ *  \rst
  *  .. deprecated:: 1.8
- *  /endrst
+ *  \endrst
  */
 int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...) {
   int ret;
@@ -951,9 +951,9 @@ int TCOD_console_print_internal_utf8_(
 }
 /**
  *  Format and print a UTF-8 string to a console.
- *  /rst
+ *  \rst
  *  .. versionadded:: 1.8
- *  /endrst
+ *  \endrst
  */
 void TCOD_console_printf_ex(struct TCOD_Console *con, int x, int y,
       TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
@@ -967,9 +967,9 @@ void TCOD_console_printf_ex(struct TCOD_Console *con, int x, int y,
 }
 /**
  *  Format and print a UTF-8 string to a console.
- *  /rst
+ *  \rst
  *  .. versionadded:: 1.8
- *  /endrst
+ *  \endrst
  */
 void TCOD_console_printf(struct TCOD_Console *con, int x, int y,
                          const char *fmt, ...) {
@@ -984,9 +984,9 @@ void TCOD_console_printf(struct TCOD_Console *con, int x, int y,
 }
 /**
  *  Format and print a UTF-8 string to a console.
- *  /rst
+ *  \rst
  *  .. versionadded:: 1.8
- *  /endrst
+ *  \endrst
  */
 int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
     int x, int y, int w, int h,
@@ -1002,9 +1002,9 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
 }
 /**
  *  Format and print a UTF-8 string to a console.
- *  /rst
+ *  \rst
  *  .. versionadded:: 1.8
- *  /endrst
+ *  \endrst
  */
 int TCOD_console_printf_rect(struct TCOD_Console *con,
     int x, int y, int w, int h, const char *fmt, ...) {

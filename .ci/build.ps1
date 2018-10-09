@@ -21,7 +21,6 @@ if ($env:MSYSTEM) {
     pacman --noconfirm -Su
 }
 if ($env:APPVEYOR_REPO_TAG_NAME) {
-    $env:SCONSMODE="MODE=RELEASE"
     $env:VERSION=$env:APPVEYOR_REPO_TAG_NAME
 }
 if ($env:SCONSOPTS) {

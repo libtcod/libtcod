@@ -13,40 +13,28 @@ environment:
     - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
-    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86_64"
-      INSTALL_MINGW: "--x64"
+    - SCONSOPTS: "TOOLSET=mingw ARCH=x86_64 -j3"
+      MSYS2_ARCH: x86_64
+      MSYSTEM: MINGW64
       TEST_PYTHON2: "C:/Python27-x64/python.exe"
       TEST_PYTHON3: "C:/Python34-x64/python.exe"
-    - SCONSOPTS: "-j 3 TOOLSET=mingw ARCH=x86"
-      INSTALL_MINGW: "--x86"
+    - SCONSOPTS: "TOOLSET=mingw ARCH=x86 -j3"
+      MSYS2_ARCH: i686
+      MSYSTEM: MINGW32
       TEST_PYTHON2: "C:/Python27/python.exe"
       TEST_PYTHON3: "C:/Python34/python.exe"
     - MSBUILD: x64
 
 build_script:
-# Replace MinGW with MinGW64 if INSTALL_MINGW is defined.
-- cmd: if defined INSTALL_MINGW rmdir /S /Q C:\MinGW
-- cmd: if defined INSTALL_MINGW choco install mingw %INSTALL_MINGW%
-- cmd: refreshenv
-# SCons will build in release mode on a tag push.
-- cmd: if defined APPVEYOR_REPO_TAG_NAME set SCONSMODE=MODE=RELEASE VERSION=%APPVEYOR_REPO_TAG_NAME%
-# Install and run scons when there are any SCONSOPTS.
-- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install --upgrade pip distribute setuptools wheel
-- cmd: if defined SCONSOPTS C:/Python27/python.exe -m pip install scons
-- cmd: if defined SCONSOPTS cd build/scons
-- cmd: if defined SCONSOPTS scons develop_all dist %SCONSMODE% %SCONSOPTS% CPPDEFINES=NDEBUG
-- cmd: if defined SCONSOPTS cd ../..
-# Run msbuild on MSBUILD define.
-- cmd: if defined MSBUILD nuget restore build\msvs\libtcod.sln
-- cmd: if defined MSBUILD msbuild /nologo build\msvs\libtcod.sln /maxcpucount:2 /p:Configuration^=Debug /p:Platform^=%MSBUILD%
+- ps: '. .ci\build.ps1'
 
 test_script:
 - cmd: if exist unittest.exe unittest.exe
 - cmd: cd python
+- cmd: if defined TEST_PYTHON2 %TEST_PYTHON3% -m pip install -U pytest pytest-cov
+- cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -X faulthandler -m pytest -v
 - cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pip install -U pytest pytest-cov
 - cmd: if defined TEST_PYTHON2 %TEST_PYTHON2% -m pytest -v
-- cmd: if defined TEST_PYTHON2 %TEST_PYTHON3% -m pip install -U pytest pytest-cov
-- cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -m pytest -v
 
 artifacts:
 - path: build\scons\libtcod-*.zip

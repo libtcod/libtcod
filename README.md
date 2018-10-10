@@ -36,12 +36,11 @@ Windows and MacOS binaries are available from the
 If you are programming in C or C++, various sample projects are included within
 the repository which can be used as examples of various features.
 
-For those who wish to program in Python which is the only scripting language
-support that has been contributed so far, the basics are described in
+For those who wish to program in Python the basics are described in
 [part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up)
 of the tutorial.
 It's currently recommended to install libtcodpy via
-[python-tdl](https://github.com/HexDecimal/python-tdl) rather than using the
+[python-tcod](https://github.com/libtcod/python-tcod) rather than using the
 libtcodpy package included in this repository.
 
 **Warning:** If you download these builds, run `samples.exe` as your very first

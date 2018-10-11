@@ -181,6 +181,9 @@ else:
 if env_vars['MODE'].upper() != 'RELEASE':
     default_tag += '-$MODE'
 
+if sys.platform == 'darwin':
+    default_tag += '-macos'
+
 vars.Add('TAG', 'Variant tag.', default_tag)
 vars.Add(
     'CPPDEFINES',

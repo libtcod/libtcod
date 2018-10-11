@@ -8,6 +8,10 @@ since `1.7.0`.
 
 ## [Unreleased]
 
+## [1.8.1] - 2018-10-11
+### Changed
+- Updated the compiler used to deploy Windows MinGW builds.
+
 ## [1.8.0] - 2018-10-07
 ### Added
 - New `TCOD_MAJOR_VERSION`, `TCOD_MINOR_VERSION`, and `TCOD_PATCHLEVEL`

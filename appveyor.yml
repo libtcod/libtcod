@@ -26,7 +26,7 @@ environment:
     - MSBUILD: x64
 
 build_script:
-- ps: '. .ci\build.ps1'
+- ps: '. .ci\appveyor_build.ps1'
 
 test_script:
 - cmd: if exist unittest.exe unittest.exe

@@ -30,10 +30,10 @@ addons:
       - scons
 
 before_install:
-- source build/.travis/before_install.sh
+- source .ci/travis_before_install.sh
 
 install:
-- source build/.travis/install.sh
+- source .ci/travis_install.sh
 
 before_script:
 - pip install pytest pytest-cov

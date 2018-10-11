@@ -50,6 +50,7 @@ AS_CASE([$host_os],
     ]
 )
 AC_SUBST([SOVERSION], [m4_esyscmd_s(./get_version.py --so)])
+m4_esyscmd(./collect_files.py)
 
 AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 

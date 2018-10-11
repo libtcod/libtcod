@@ -215,7 +215,7 @@ check_scripts = unittest.sh
 check_PROGRAMS = unittest
 unittest_SOURCES = ../../tests/unittest.cpp
 unittest_LDADD = libtcod.la
-unittest_CXXFLAGS = $(CXXFLAGS) -std=c++11
+unittest_CXXFLAGS = $(CXXFLAGS)
 
 TESTS = unittest.sh
 

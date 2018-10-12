@@ -48,18 +48,13 @@
 #include "libtcod/path.cpp"
 #include "libtcod/sys.cpp"
 #include "libtcod/sys_c.cpp"
-#include "libtcod/txtfield.cpp"
-#include "libtcod/zip.cpp"
-
-#ifndef TCOD_BARE
+#include "libtcod/sys_opengl_c.cpp"
 #include "libtcod/sys_sdl_c.cpp"
-#include "libtcod/sys_sdl2_c.cpp"
 #include "libtcod/sys_sdl_img_bmp.cpp"
 #include "libtcod/sys_sdl_img_png.cpp"
-#ifndef NO_OPENGL
-#include "libtcod/sys_opengl_c.cpp"
-#endif /* NO_OPENGL */
-#endif /* TCOD_BARE */
+#include "libtcod/sys_sdl2_c.cpp"
+#include "libtcod/txtfield.cpp"
+#include "libtcod/zip.cpp"
 
 #include "libtcod/color/canvas.cpp"
 #include "libtcod/console/printing.cpp"

@@ -9,6 +9,7 @@ since `1.7.0`.
 ## [Unreleased]
 ### Fixed
 - Fixed potential crash when splitting lines in UTF-8 print functions.
+- Fixed possible hang in `TCOD_lex_parse_until_token_value`.
 
 ## [1.8.1] - 2018-10-11
 ### Changed

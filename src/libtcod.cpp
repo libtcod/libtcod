@@ -62,6 +62,8 @@
 #endif /* TCOD_BARE */
 
 #include "libtcod/color/canvas.cpp"
+#include "libtcod/console/printing.cpp"
+#include "libtcod/console/rexpaint.cpp"
 #include "libtcod/engine/backend.cpp"
 #include "libtcod/engine/display.cpp"
 #include "libtcod/engine/globals.cpp"

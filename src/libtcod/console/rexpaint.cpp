@@ -25,7 +25,7 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "console_rexpaint.h"
+#include "rexpaint.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
@@ -33,10 +33,10 @@
 
 #include <zlib.h>
 
-#include "console.h"
-#include "libtcod_int.h" /* Needed only for TCOD_fatal */
-#include "console_types.h"
-#include "color.h"
+#include "../console.h"
+#include "../libtcod_int.h" /* Needed only for TCOD_fatal */
+#include "../console_types.h"
+#include "../color.h"
 
 /* Convert a little-endian number to native memory order. */
 static uint32_t decode_little_endian(uint32_t data) {
@@ -99,7 +99,7 @@ static int load_tile(gzFile gz_file, struct RexPaintTile *tile) {
 /* Read a layer of REXPaint tiles onto a console.
    If transparent is true, then follow REXPaint's rules for transparency. */
 static int load_tiles(
-    gzFile gz_file, TCOD_console_t console, int transparent) {
+    gzFile gz_file, TCOD_Console* console, int transparent) {
   int x, y;
   const int width = TCOD_console_get_width(console);
   const int height = TCOD_console_get_height(console);
@@ -149,7 +149,8 @@ static TCOD_list_t load_consoleList(gzFile gz_file) {
     if (!console) {
       /* There was an issue then delete everything so far and return NULL */
       while (!TCOD_list_is_empty(console_list)) {
-        TCOD_console_delete(TCOD_list_pop(console_list));
+        TCOD_console_delete(
+            static_cast<TCOD_Console*>(TCOD_list_pop(console_list)));
       }
       TCOD_list_delete(console_list);
       return NULL;
@@ -165,9 +166,10 @@ static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
   if (!console_list) { return NULL; }
   /* Reverse the list so that elements will be dequeued. */
   TCOD_list_reverse(console_list);
-  main_console = TCOD_list_pop(console_list);
+  main_console = static_cast<TCOD_Console*>(TCOD_list_pop(console_list));
   while (!TCOD_list_is_empty(console_list)) {
-    TCOD_console_t console = TCOD_list_pop(console_list);
+    TCOD_console_t console =
+        static_cast<TCOD_Console*>(TCOD_list_pop(console_list));
     /* Set key color to {255, 0, 255} before blit. */
     TCOD_console_set_key_color(console, TCOD_fuchsia);
     /* This blit may fail if the consoles do not match shapes. */
@@ -260,7 +262,7 @@ static int write_tile(gzFile gz_file, struct RexPaintTile *tile) {
   }
   return 0;
 }
-static int write_console(gzFile gz_file, TCOD_console_t console) {
+static int write_console(gzFile gz_file, const TCOD_Console* console) {
   int x, y;
   struct RexPaintLayerChunk xp_layer;
   xp_layer.width = TCOD_console_get_width(console);
@@ -295,7 +297,7 @@ static int write_console(gzFile gz_file, TCOD_console_t console) {
  *  The REXPaint format can support a 1:1 copy of a libtcod console.
  */
 bool TCOD_console_save_xp(
-    TCOD_console_t con, const char *filename, int compress_level) {
+    const TCOD_Console* con, const char *filename, int compress_level) {
   struct RexPaintHeader xp_header;
   gzFile gz_file = gzopen(filename, "wb");
   if (!gz_file) { return false; /* could not open file */ }
@@ -338,7 +340,8 @@ bool TCOD_console_list_save_xp(
     return false; /* error writing metadata */
   }
   for (i = 0; i < xp_header.layer_count; ++i){
-    if (write_console(gz_file, TCOD_list_get(console_list, i))) {
+    if (write_console(
+        gz_file, static_cast<TCOD_Console*>(TCOD_list_get(console_list, i)))) {
       gzclose(gz_file);
       return false; /* error writing out console data */
     }

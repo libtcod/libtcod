@@ -36,7 +36,6 @@
 #include "bsp.h"
 #include "color.h"
 #include "console.h"
-#include "console_rexpaint.h"
 #include "fov.h"
 #include "heightmap.h"
 #include "image.h"
@@ -52,6 +51,9 @@
 #include "tree.h"
 #include "txtfield.h"
 #include "zip.h"
+
+#include "console/printing.h"
+#include "console/rexpaint.h"
 
 #include "tileset/observer.h"
 #include "tileset/tileset.h"

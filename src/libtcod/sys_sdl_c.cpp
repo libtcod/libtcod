@@ -45,7 +45,7 @@ static TCOD_SDL_driver_t *sdl=NULL;
 
 /* library initialization function */
 #ifdef TCOD_WINDOWS
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
 	switch (reason ) {

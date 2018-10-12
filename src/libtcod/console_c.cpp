@@ -36,7 +36,6 @@
 
 #include <SDL.h>
 #include "console.hpp"
-#include "console_rexpaint.h"
 #include "noise.h"
 #include "mersenne.h"
 #include "libtcod_int.h"
@@ -481,12 +480,14 @@ void TCOD_console_clear(TCOD_console_t con) {
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the background color.
  */
-TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con, int x, int y) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
+TCOD_color_t TCOD_console_get_char_background(
+    const TCOD_Console* con, int x, int y)
+{
+	con = TCOD_console_validate_(con);
+	TCOD_IFNOT(con != NULL
+		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
 		return TCOD_black;
-	return dat->bg_array[y * dat->w + x];
+	return con->bg_array[y * con->w + x];
 }
 /**
  *  Change the foreground color of a console tile.
@@ -512,12 +513,14 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the foreground color.
  */
-TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
+TCOD_color_t TCOD_console_get_char_foreground(
+    const TCOD_Console* con, int x, int y)
+{
+	con = TCOD_console_validate_(con);
+	TCOD_IFNOT(con != NULL
+		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
 		return TCOD_white;
-	return dat->fg_array[y * dat->w + x];
+	return con->fg_array[y * con->w + x];
 }
 /**
  *  Return a character code of a console at x,y
@@ -527,12 +530,12 @@ TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con, int x, int y) 
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return The character code.
  */
-int TCOD_console_get_char(TCOD_console_t con, int x, int y) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
+int TCOD_console_get_char(const TCOD_Console* con, int x, int y) {
+  con = TCOD_console_validate_(con);
+	TCOD_IFNOT(con != NULL
+		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
 		return 0;
-	return dat->ch_array[y * dat->w + x];
+	return con->ch_array[y * con->w + x];
 }
 /**
  *  Blend a background color onto a console tile.
@@ -835,17 +838,23 @@ TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con) {
 	TCOD_IFNOT(dat != NULL) return TCOD_black;
 	return dat->back;
 }
-
-int TCOD_console_get_width(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return 0;
-	return dat->w;
+/**
+ *  Return the width of a console.
+ */
+int TCOD_console_get_width(const TCOD_Console* con)
+{
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
+	return con->w;
 }
-
-int TCOD_console_get_height(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return 0;
-	return dat->h;
+/**
+ *  Return the height of a console.
+ */
+int TCOD_console_get_height(const TCOD_Console* con)
+{
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
+	return con->h;
 }
 /**
  *  \brief Set a font image to be loaded during initialization.

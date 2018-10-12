@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed potential crash when splitting lines in UTF-8 print functions.
 
 ## [1.8.1] - 2018-10-11
 ### Changed

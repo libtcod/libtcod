@@ -57,6 +57,9 @@ TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile, int flags,in
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
+#ifndef NO_UNICODE
+TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
+#endif
 
 TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
 TCODLIB_API void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t col);
@@ -73,41 +76,18 @@ TCODLIB_API TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t co
 TCODLIB_API void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment);
 TCODLIB_API TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con);
 
-TCOD_DEPRECATED("Use TCOD_console_printf instead.")
-TCODLIB_API void TCOD_console_print(TCOD_console_t con,int x, int y, const char *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
-TCODLIB_API void TCOD_console_print_ex(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
-TCODLIB_API int TCOD_console_print_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
-TCODLIB_API int TCOD_console_print_rect_ex(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
-TCODLIB_API int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...);
-
 TCODLIB_API void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
 TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
 
-#ifndef NO_UNICODE
-/* unicode support */
-TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
-TCOD_DEPRECATED("Use TCOD_console_printf instead.")
-TCODLIB_API void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
-TCODLIB_API void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
-TCODLIB_API int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
-TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
-TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
-TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...);
-#endif
-
-
 TCODLIB_API TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con);
 TCODLIB_API TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con);
-TCODLIB_API TCOD_color_t TCOD_console_get_char_background(TCOD_console_t con,int x, int y);
-TCODLIB_API TCOD_color_t TCOD_console_get_char_foreground(TCOD_console_t con,int x, int y);
-TCODLIB_API int TCOD_console_get_char(TCOD_console_t con,int x, int y);
+TCODLIB_API TCOD_color_t TCOD_console_get_char_background(
+    const TCOD_Console* con,int x, int y);
+TCODLIB_API TCOD_color_t TCOD_console_get_char_foreground(
+    const TCOD_Console* con,int x, int y);
+TCODLIB_API int TCOD_console_get_char(const TCOD_Console* con,int x, int y);
 
 TCODLIB_API void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
 TCODLIB_API uint8_t TCOD_console_get_fade(void);
@@ -129,8 +109,8 @@ TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char *filename)
 TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char *filename);
 
 TCODLIB_API TCOD_console_t TCOD_console_new(int w, int h);
-TCODLIB_API int TCOD_console_get_width(TCOD_console_t con);
-TCODLIB_API int TCOD_console_get_height(TCOD_console_t con);
+TCODLIB_API int TCOD_console_get_width(const TCOD_Console* con);
+TCODLIB_API int TCOD_console_get_height(const TCOD_Console* con);
 TCODLIB_API void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col);
 TCODLIB_API void TCOD_console_blit(TCOD_console_t src,int xSrc, int ySrc, int wSrc, int hSrc, TCOD_console_t dst, int xDst, int yDst, float foreground_alpha, float background_alpha);
 TCODLIB_API void TCOD_console_blit_key_color(
@@ -142,32 +122,6 @@ TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
-
-/* UTF-8 functions */
-TCODLIB_API void TCOD_console_printf(TCOD_console_t con, int x, int y,
-                                     const char *fmt, ...);
-TCODLIB_API void TCOD_console_printf_ex(
-    TCOD_console_t con, int x, int y, TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment, const char *fmt, ...);
-TCODLIB_API int TCOD_console_printf_rect(
-    TCOD_console_t con, int x, int y, int w, int h, const char *fmt, ...);
-TCODLIB_API int TCOD_console_printf_rect_ex(
-    TCOD_console_t con,int x, int y, int w, int h,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
-TCODLIB_API
-void TCOD_console_printf_frame(struct TCOD_Console *con,
-                               int x, int y, int w, int h, int empty,
-                               TCOD_bkgnd_flag_t flag, const char *fmt, ...);
-TCODLIB_API
-int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
-                                     int x, int y, int w, int h,
-                                     const char *fmt, ...);
-
-/* Private internal functions. */
-int TCOD_console_print_internal_utf8_(
-    TCOD_console_t con, int x, int y, int max_width, int max_height,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
-    const unsigned char *string, int can_split, int count_only);
 #ifdef __cplusplus
 }
 #endif

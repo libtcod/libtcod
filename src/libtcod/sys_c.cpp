@@ -41,7 +41,7 @@
 #include "libtcod_int.h"
 #include "version.h"
 #ifdef TCOD_WINDOWS
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 #else
 #include <unistd.h>

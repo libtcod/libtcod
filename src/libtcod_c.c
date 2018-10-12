@@ -50,8 +50,6 @@
 #include "libtcod/bresenham_c.c"
 #include "libtcod/bsp_c.c"
 #include "libtcod/color_c.c"
-#include "libtcod/console_printing.c"
-#include "libtcod/console_rexpaint.c"
 #include "libtcod/fov_c.c"
 #include "libtcod/fov_circular_raycasting.c"
 #include "libtcod/fov_diamond_raycasting.c"

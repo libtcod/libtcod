@@ -175,9 +175,9 @@
     <ClCompile Include="..\..\src\libtcod\color\canvas.cpp" />
     <ClCompile Include="..\..\src\libtcod\color_c.c" />
     <ClCompile Include="..\..\src\libtcod\console.cpp" />
+    <ClCompile Include="..\..\src\libtcod\console\printing.cpp" />
+    <ClCompile Include="..\..\src\libtcod\console\rexpaint.cpp" />
     <ClCompile Include="..\..\src\libtcod\console_c.cpp" />
-    <ClCompile Include="..\..\src\libtcod\console_printing.c" />
-    <ClCompile Include="..\..\src\libtcod\console_rexpaint.c" />
     <ClCompile Include="..\..\src\libtcod\engine\backend.cpp" />
     <ClCompile Include="..\..\src\libtcod\engine\display.cpp" />
     <ClCompile Include="..\..\src\libtcod\engine\globals.cpp" />
@@ -271,7 +271,8 @@
     <ClInclude Include="..\..\src\libtcod\color\color.h" />
     <ClInclude Include="..\..\src\libtcod\console.h" />
     <ClInclude Include="..\..\src\libtcod\console.hpp" />
-    <ClInclude Include="..\..\src\libtcod\console_rexpaint.h" />
+    <ClInclude Include="..\..\src\libtcod\console\printing.h" />
+    <ClInclude Include="..\..\src\libtcod\console\rexpaint.h" />
     <ClInclude Include="..\..\src\libtcod\console_types.h" />
     <ClInclude Include="..\..\src\libtcod\engine\backend.h" />
     <ClInclude Include="..\..\src\libtcod\engine\display.h" />

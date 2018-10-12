@@ -33,6 +33,9 @@
     <Filter Include="Source Files\gui">
       <UniqueIdentifier>{5f6326e8-efa7-4a9f-a668-c5be8a21569b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\console">
+      <UniqueIdentifier>{322f57a7-4855-43a8-a8aa-b40ac1f71844}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\vendor\zlib\adler32.c">
@@ -147,12 +150,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\libtcod\console_c.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\libtcod\console_printing.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\libtcod\console_rexpaint.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\libtcod\fov.cpp">
@@ -311,6 +308,12 @@
     <ClCompile Include="..\..\src\libtcod\gui\widget.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console\printing.cpp">
+      <Filter>Source Files\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console\rexpaint.cpp">
+      <Filter>Source Files\console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -377,9 +380,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\console.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\libtcod\console_rexpaint.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\console_types.h">
@@ -555,6 +555,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\gui\widget.hpp">
       <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console\printing.h">
+      <Filter>Source Files\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console\rexpaint.h">
+      <Filter>Source Files\console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

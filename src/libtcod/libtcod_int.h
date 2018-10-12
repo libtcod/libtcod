@@ -25,8 +25,8 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef _TCODLIB_INT_H
-#define _TCODLIB_INT_H
+#ifndef TCODLIB_INT_H_
+#define TCODLIB_INT_H_
 #include <stdarg.h>
 #include <assert.h>
 #if defined(__ANDROID__)
@@ -532,6 +532,27 @@ extern int oldFade;
 #define TCOD_PEACH 255,159,127
 
 #ifdef __cplusplus
+} // extern "C"
+#endif
+
+#ifdef __cplusplus
+/**
+ *  Validate and return a console.
+ */
+inline TCOD_Console* TCOD_console_validate_(TCOD_Console* console)
+{
+  console = (console ? console : TCOD_ctx.root);
+  TCOD_ASSERT(console);
+  return console;
 }
-#endif
-#endif
+/**
+ *  Validate and return a constant console.
+ */
+inline const TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
+{
+  console = (console ? console : TCOD_ctx.root);
+  TCOD_ASSERT(console);
+  return console;
+}
+#endif // __cplusplus
+#endif // TCODLIB_INT_H_

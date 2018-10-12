@@ -31,7 +31,8 @@
 #include <string>
 
 #include "console.h"
-#include "console_rexpaint.h"
+#include "console/printing.h"
+#include "console/rexpaint.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 

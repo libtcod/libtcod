@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.8.2] - 2018-10-13
 ### Fixed
 - Fixed potential crash when splitting lines in UTF-8 print functions.
 - Fixed possible hang in `TCOD_lex_parse_until_token_value`.

@@ -1121,6 +1121,9 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
 }
 /**
  *  Return the number of lines that would be printed by this formatted string.
+ *  \rst
+ *  .. versionadded:: 1.8
+ *  \endrst
  */
 int TCOD_console_get_height_rect_fmt(
     struct TCOD_Console *con, int x, int y, int w, int h, const char *fmt, ...)
@@ -1140,6 +1143,9 @@ int TCOD_console_get_height_rect_fmt(
  *
  *  This function uses Unicode box-drawing characters and a UTF-8 formatted
  *  string.
+ *  \rst
+ *  .. versionadded:: 1.8
+ *  \endrst
  */
 void TCOD_console_printf_frame(struct TCOD_Console *con,
                                int x, int y, int w, int h, int empty,

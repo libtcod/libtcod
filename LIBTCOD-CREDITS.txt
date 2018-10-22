@@ -12,6 +12,8 @@ Products :
 - utf8proc
    https://github.com/JuliaStrings/utf8proc
    (modified to be statically linkable, and to compile for C89)
+- glad
+   https://github.com/Dav1dde/glad
 
 Many thanks to everyone who provided feedback and patches, and especially :
 - Dominik 'Mingos' Marczuk for the restrictive shadowcasting fov, djikstra

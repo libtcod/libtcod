@@ -30,48 +30,46 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** \file libtcod_c.c
- *
- *  To statically link a C/C++ program with libtcod:
- *
- *  * Add `libtcod_c.c` and `libtcod.cpp` to your list of source files to
- *    compile.
- *  * Add `vendor/` as an include directory.
- *  * Add `SDL2` to be dynamically linked, and add its include directory.
- *    You can get the development libraries from:
- *    https://www.libsdl.org/download-2.0.php
- *  * Add `GL` to be dynamically linked.
- *  * Compile and link libtcod's src/vendor/glad.c file.
- *  * Compile and link libtcod's src/vendor/lodepng.cpp file.
- *  * Compile and link `src/vendor/utf8proc/utf8proc.c`.
- *  * Link with `zlib`, and add its include directory.  You can include
- *    libtcod's src/vendor/zlib directory and compile all `.c` files in there
- *    to statically link it.
- *
- *  You can define `NO_OPENGL` to remove the dependency on the GL library.
- *  You can also define `TCOD_BARE` to remove the dependency on SDL2 and GL.
- */
-#include "vendor/stb.c"
+#include "gl2_display.h"
 
-#include "libtcod/bresenham_c.c"
-#include "libtcod/bsp_c.c"
-#include "libtcod/color_c.c"
-#include "libtcod/fov_c.c"
-#include "libtcod/fov_circular_raycasting.c"
-#include "libtcod/fov_diamond_raycasting.c"
-#include "libtcod/fov_permissive2.c"
-#include "libtcod/fov_recursive_shadowcasting.c"
-#include "libtcod/fov_restrictive.c"
-#include "libtcod/heightmap_c.c"
-#include "libtcod/image_c.c"
-#include "libtcod/lex_c.c"
-#include "libtcod/list_c.c"
-#include "libtcod/mersenne_c.c"
-#include "libtcod/namegen_c.c"
-#include "libtcod/noise_c.c"
-#include "libtcod/parser_c.c"
-#include "libtcod/path_c.c"
-#include "libtcod/tree_c.c"
-#include "libtcod/txtfield_c.c"
-#include "libtcod/wrappers.c"
-#include "libtcod/zip_c.c"
+#include "gl2_ext_.h"
+#include <SDL.h>
+
+namespace tcod {
+namespace sdl2 {
+static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
+{
+  std::shared_ptr<void> new_context(
+      SDL_GL_CreateContext(self.get_window()),
+      [](SDL_GLContext context){ SDL_GL_DeleteContext(context); });
+  if (!new_context) { throw std::runtime_error(SDL_GetError()); }
+  if(!gladLoadGL()) {
+    throw std::runtime_error("Failed to invoke the GLAD loader.");
+  }
+  return new_context;
+}
+OpenGL2Display::OpenGL2Display(std::shared_ptr<Tileset> tileset,
+                         std::pair<int, int> window_size, int window_flags,
+                         const std::string& title)
+: WindowedDisplay(window_size, window_flags | SDL_WINDOW_OPENGL, title),
+  glcontext_(new_gl_context(*this)),
+  tcod_renderer_(tileset)
+{}
+void OpenGL2Display::set_tileset(std::shared_ptr<Tileset> tileset)
+{
+  if (!tileset) {
+    throw std::invalid_argument("tileset must not be nullptr.");
+  }
+  tcod_renderer_ = OpenGL2Renderer(tileset);
+}
+void OpenGL2Display::present(const TCOD_Console* console)
+{
+  int window_size[2];
+  SDL_GL_GetDrawableSize(get_window(), &window_size[0], &window_size[1]);
+  glViewport(0,0,window_size[0],window_size[1]);
+
+  tcod_renderer_.render(console);
+  SDL_GL_SwapWindow(get_window());
+}
+} // namespace sdl2
+} // namespace tcod

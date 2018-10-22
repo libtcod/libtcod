@@ -314,6 +314,21 @@
     <ClCompile Include="..\..\src\libtcod\console\rexpaint.cpp">
       <Filter>Source Files\console</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl_alias.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_display.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_raii.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_renderer.cpp">
+      <Filter>Source Files\sdl2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vendor\glad.c">
+      <Filter>Source Files\vendor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -561,6 +576,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\console\rexpaint.h">
       <Filter>Source Files\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl_alias.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_display.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_ext_.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_raii.h">
+      <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_renderer.h">
+      <Filter>Source Files\sdl2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

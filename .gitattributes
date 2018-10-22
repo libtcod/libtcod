@@ -127,3 +127,6 @@
 #*.props     merge=binary
 #*.filters   merge=binary
 #*.vcxitems merge=binary
+
+# OpenGL Shaders
+*.glsl* text

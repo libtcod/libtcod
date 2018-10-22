@@ -48,6 +48,7 @@
 #include "version.h"
 #include "engine/globals.h"
 #include "sdl2/sdl2_display.h"
+#include "sdl2/gl2_display.h"
 #include "tileset/tileset.h"
 #include "tileset/tilesheet.h"
 
@@ -772,8 +773,23 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
                            tileset->get_tile_height() * h),
             (SDL_WINDOW_RESIZABLE |
              (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)),
-            std::string(title));
+            std::string(title)
+        );
         tcod::engine::set_display(display);
+        break;
+      }
+      case TCOD_RENDERER_OPENGL2: {
+        auto tileset = tcod::engine::get_tileset();
+        tcod::engine::set_display(
+            std::make_shared<tcod::sdl2::OpenGL2Display>(
+                tcod::engine::get_tileset(),
+                std::make_pair(tileset->get_tile_width() * w,
+                               tileset->get_tile_height() * h),
+                (SDL_WINDOW_RESIZABLE |
+                 (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)),
+                std::string(title)
+            )
+        );
         break;
       }
       default:

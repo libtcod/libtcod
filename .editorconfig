@@ -23,6 +23,10 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+[*.glsl*]
+indent_style = space
+indent_size = 2
+
 [configure.ac]
 indent_style = space
 indent_size = 4

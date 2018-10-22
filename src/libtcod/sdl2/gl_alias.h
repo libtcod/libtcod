@@ -30,91 +30,39 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_TILESET_OBSERVER_H_
-#define LIBTCOD_TILESET_OBSERVER_H_
-#include "../portability.h"
-
-#ifdef __cplusplus
-#include <algorithm>
+#ifndef LIBTCOD_SDL2_GL_ALIAS_H_
+#define LIBTCOD_SDL2_GL_ALIAS_H_
+#include <cstdint>
+#include <array>
 #include <memory>
-#include <utility>
-#include <vector>
-#endif
 
-#include "tile.h"
-#include "tileset.h"
+#include "../tileset/observer.h"
 #ifdef __cplusplus
+struct SDL_Renderer;
+struct SDL_Texture;
+struct SDL_Rect;
+
 namespace tcod {
-namespace tileset {
-class Tileset;
-class TilesetObserver;
-typedef std::vector<std::pair<int, Tile&>> IdTileRefPairVector_;
-class TilesetObserver {
+namespace sdl2 {
+using tileset::Tile;
+using tileset::Tileset;
+using tileset::TilesetObserver;
+
+class OpenGLTilesetAlias {
  public:
-  TilesetObserver() = default;
+  OpenGLTilesetAlias() = default;
+  explicit OpenGLTilesetAlias(std::shared_ptr<Tileset> tileset);
+  ~OpenGLTilesetAlias() = default;
 
-  TilesetObserver(const std::shared_ptr<Tileset>& subject)
-  {
-    if (!subject) {
-      throw std::invalid_argument("tileset cannot be nullptr.");
-    }
-    observe(subject);
-  }
+  const std::shared_ptr<Tileset>& get_tileset();
 
-  TilesetObserver(TilesetObserver&& rhs)
-  : TilesetObserver(rhs.tileset_)
-  {}
-  TilesetObserver& operator=(TilesetObserver&& rhs)
-  {
-    if (this != &rhs) {
-      observe(rhs.tileset_);
-    }
-    return *this;
-  }
-  TilesetObserver(const TilesetObserver& rhs)
-  : TilesetObserver(rhs.tileset_)
-  {}
-  TilesetObserver& operator=(const TilesetObserver& rhs)
-  {
-    if (this != &rhs) {
-      observe(rhs.tileset_);
-    }
-    return *this;
-  }
-  virtual ~TilesetObserver() {
-    unobserve();
-  }
-  /**
-   *  Called on Tileset state changes.
-   *
-   *  `changes` is a vector of index,Tile pairs.
-   *
-   *  The Tileset may have been resized.
-   */
-  virtual void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes)
-  {}
-  std::shared_ptr<Tileset>& get_tileset()
-  {
-    return tileset_;
-  }
- protected:
-  std::shared_ptr<Tileset> tileset_;
+  uint32_t get_alias_texture();
+  std::array<int, 2> get_alias_shape();
+  std::array<int, 2> get_tile_position(int codepoint);
  private:
-  void observe(const std::shared_ptr<Tileset>& subject)
-  {
-    unobserve();
-    tileset_ = subject;
-    subject->observers_.emplace_back(this);
-  }
-  void unobserve() {
-    if (!tileset_) { return; }
-    auto& observers = tileset_->observers_;
-    observers.erase(std::find(observers.begin(), observers.end(), this));
-    tileset_ = nullptr;
-  }
+  std::shared_ptr<class OpenGLInternalTilesetAlias_> alias_;
 };
-} // namespace tileset
+} // namespace sdl2
 } // namespace tcod
-#endif /* __cplusplus */
-#endif /* LIBTCOD_TILESET_OBSERVER_H_ */
+#endif // __cplusplus
+#endif // LIBTCOD_SDL2_GL_ALIAS_H_

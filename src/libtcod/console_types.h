@@ -300,6 +300,13 @@ typedef enum {
    *  \endrst
    */
   TCOD_RENDERER_SDL2,
+  /**
+   *  A new OpenGL 2.1 renderer.  Allows the window to be resized.
+   *  \rst
+   *  .. versionadded:: 1.9
+   *  \endrst
+   */
+  TCOD_RENDERER_OPENGL2,
   TCOD_NB_RENDERERS,
 } TCOD_renderer_t;
 

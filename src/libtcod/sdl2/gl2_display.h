@@ -30,48 +30,27 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-/** \file libtcod_c.c
- *
- *  To statically link a C/C++ program with libtcod:
- *
- *  * Add `libtcod_c.c` and `libtcod.cpp` to your list of source files to
- *    compile.
- *  * Add `vendor/` as an include directory.
- *  * Add `SDL2` to be dynamically linked, and add its include directory.
- *    You can get the development libraries from:
- *    https://www.libsdl.org/download-2.0.php
- *  * Add `GL` to be dynamically linked.
- *  * Compile and link libtcod's src/vendor/glad.c file.
- *  * Compile and link libtcod's src/vendor/lodepng.cpp file.
- *  * Compile and link `src/vendor/utf8proc/utf8proc.c`.
- *  * Link with `zlib`, and add its include directory.  You can include
- *    libtcod's src/vendor/zlib directory and compile all `.c` files in there
- *    to statically link it.
- *
- *  You can define `NO_OPENGL` to remove the dependency on the GL library.
- *  You can also define `TCOD_BARE` to remove the dependency on SDL2 and GL.
- */
-#include "vendor/stb.c"
+#ifndef LIBTCOD_SDL2_GL2_DISPLAY_H_
+#define LIBTCOD_SDL2_GL2_DISPLAY_H_
 
-#include "libtcod/bresenham_c.c"
-#include "libtcod/bsp_c.c"
-#include "libtcod/color_c.c"
-#include "libtcod/fov_c.c"
-#include "libtcod/fov_circular_raycasting.c"
-#include "libtcod/fov_diamond_raycasting.c"
-#include "libtcod/fov_permissive2.c"
-#include "libtcod/fov_recursive_shadowcasting.c"
-#include "libtcod/fov_restrictive.c"
-#include "libtcod/heightmap_c.c"
-#include "libtcod/image_c.c"
-#include "libtcod/lex_c.c"
-#include "libtcod/list_c.c"
-#include "libtcod/mersenne_c.c"
-#include "libtcod/namegen_c.c"
-#include "libtcod/noise_c.c"
-#include "libtcod/parser_c.c"
-#include "libtcod/path_c.c"
-#include "libtcod/tree_c.c"
-#include "libtcod/txtfield_c.c"
-#include "libtcod/wrappers.c"
-#include "libtcod/zip_c.c"
+#include "gl2_renderer.h"
+#include "sdl2_display.h"
+
+namespace tcod {
+namespace sdl2 {
+class OpenGL2Display: public WindowedDisplay {
+ public:
+  explicit OpenGL2Display(
+      std::shared_ptr<Tileset> tileset,
+      std::pair<int, int> window_size,
+      int window_flags,
+      const std::string& title);
+  virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;
+  virtual void present(const TCOD_Console*) override;
+ private:
+  std::shared_ptr<void> glcontext_;
+  OpenGL2Renderer tcod_renderer_;
+};
+} // namespace sdl2
+} // namespace tcod
+#endif //LIBTCOD_SDL2_GL2_DISPLAY_H_

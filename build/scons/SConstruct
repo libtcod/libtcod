@@ -346,7 +346,10 @@ env.VariantDir('$VARIANT/include', '$LIBTCOD_ROOT_DIR/src',
                duplicate='dist' in COMMAND_LINE_TARGETS)
 
 env_libtcod = env.Clone()
-env_libtcod.Append(CPPDEFINES=['LIBTCOD_EXPORTS'])
+env_libtcod.Append(
+    CPPDEFINES=['LIBTCOD_EXPORTS'],
+    CPPPATH=['../../src/vendor'],
+)
 
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])
@@ -376,6 +379,7 @@ libtcod_sources = {
         # Bundle zlib sources.
         env.Glob('$VARIANT/src/vendor/zlib/*.c')
         # Bundle lodepng.
+        + ['$VARIANT/src/vendor/glad.c']
         + ['$VARIANT/src/vendor/lodepng.cpp']
         + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
         # All other dependences are in the composite sources.

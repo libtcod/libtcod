@@ -17,6 +17,7 @@ def collect():
     This might be run on Windows, but must return Unix line separators.
     """
     source_files = [
+        '../../src/vendor/glad.c',
         '../../src/vendor/lodepng.cpp',
         '../../src/vendor/stb.c',
         '../../src/vendor/utf8proc/utf8proc.c',

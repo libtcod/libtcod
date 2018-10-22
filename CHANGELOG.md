@@ -7,6 +7,12 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- New renderer: `TCOD_RENDERER_OPENGL2`
+
+## Changed
+- `src/vendor` must be included when building libtcod.
+- `glad.c` added to vendor directory.
 
 ## [1.8.2] - 2018-10-13
 ### Fixed

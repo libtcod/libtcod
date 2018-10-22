@@ -220,6 +220,10 @@
     <ClCompile Include="..\..\src\libtcod\parser_c.c" />
     <ClCompile Include="..\..\src\libtcod\path.cpp" />
     <ClCompile Include="..\..\src\libtcod\path_c.c" />
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_display.cpp" />
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_raii.cpp" />
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl2_renderer.cpp" />
+    <ClCompile Include="..\..\src\libtcod\sdl2\gl_alias.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\legacy_backend.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\sdl2_alias.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\sdl2_display.cpp" />
@@ -241,6 +245,7 @@
     <ClCompile Include="..\..\src\libtcod\wrappers.c" />
     <ClCompile Include="..\..\src\libtcod\zip.cpp" />
     <ClCompile Include="..\..\src\libtcod\zip_c.c" />
+    <ClCompile Include="..\..\src\vendor\glad.c" />
     <ClCompile Include="..\..\src\vendor\lodepng.cpp" />
     <ClCompile Include="..\..\src\vendor\utf8proc\utf8proc.c" />
     <ClCompile Include="..\..\src\vendor\stb.c" />
@@ -323,6 +328,11 @@
     <ClInclude Include="..\..\src\libtcod\path.h" />
     <ClInclude Include="..\..\src\libtcod\path.hpp" />
     <ClInclude Include="..\..\src\libtcod\portability.h" />
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_display.h" />
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_ext_.h" />
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_raii.h" />
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl2_renderer.h" />
+    <ClInclude Include="..\..\src\libtcod\sdl2\gl_alias.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\legacy_backend.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_alias.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_display.h" />

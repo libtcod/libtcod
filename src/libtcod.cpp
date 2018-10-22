@@ -36,6 +36,8 @@
  *  the directions for compiling `libtcod_c.c` and then add `libtcod.cpp` to
  *  your source files.
  */
+#define NO_OPENGL // Remove old OpenGL renderer which conflicts with GLAD.
+
 #include "libtcod/bresenham.cpp"
 #include "libtcod/bsp.cpp"
 #include "libtcod/color.cpp"
@@ -67,6 +69,10 @@
 #include "libtcod/engine/backend.cpp"
 #include "libtcod/engine/display.cpp"
 #include "libtcod/engine/globals.cpp"
+#include "libtcod/sdl2/gl_alias.cpp"
+#include "libtcod/sdl2/gl2_display.cpp"
+#include "libtcod/sdl2/gl2_raii.cpp"
+#include "libtcod/sdl2/gl2_renderer.cpp"
 #include "libtcod/sdl2/legacy_backend.cpp"
 #include "libtcod/sdl2/sdl2_alias.cpp"
 #include "libtcod/sdl2/sdl2_display.cpp"

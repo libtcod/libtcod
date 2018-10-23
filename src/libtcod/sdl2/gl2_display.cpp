@@ -46,6 +46,7 @@ static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
   if(!gladLoadGL()) {
     throw std::runtime_error("Failed to invoke the GLAD loader.");
   }
+  SDL_GL_SetSwapInterval(0);
   return new_context;
 }
 OpenGL2Display::OpenGL2Display(std::shared_ptr<Tileset> tileset,

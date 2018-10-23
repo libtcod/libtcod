@@ -166,8 +166,13 @@ GLBuffer::~GLBuffer() noexcept
 }
 void GLBuffer::allocate(int target, int size, const void* data, int usage)
 {
-  glBindBuffer(target, buffer_); gl_check();
-  glBufferData(target, size, data, usage); gl_check();
+  target_ = target;
+  bind();
+  glBufferData(target_, size, data, usage); gl_check();
+}
+void GLBuffer::bind()
+{
+  glBindBuffer(target_, buffer_); gl_check();
 }
 GLTexture::GLTexture()
 {
@@ -176,6 +181,10 @@ GLTexture::GLTexture()
 GLTexture::~GLTexture()
 {
   if (texture_) { glDeleteTextures(1, &texture_); }
+}
+void GLTexture::bind()
+{
+  glBindTexture(GL_TEXTURE_2D, texture_); gl_check();
 }
 
 } // namespace sdl2

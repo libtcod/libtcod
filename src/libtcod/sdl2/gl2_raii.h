@@ -129,8 +129,10 @@ class GLBuffer {
   {
     allocate(target, sizeof(data[0]) * data.size(), data.data(), usage);
   }
+  void bind();
  private:
   uint32_t buffer_{0};
+  int target_{-1};
 };
 class GLTexture {
  public:
@@ -152,6 +154,7 @@ class GLTexture {
   {
     return texture_;
   }
+  void bind();
  private:
   uint32_t texture_{0};
 };

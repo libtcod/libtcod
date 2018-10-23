@@ -34,6 +34,7 @@
 #define LIBTCOD_SDL2_GL2_RENDERER_H_
 #ifdef __cplusplus
 #endif /* __cplusplus */
+#include <memory>
 
 #include "gl_alias.h"
 #include "gl2_raii.h"
@@ -46,17 +47,22 @@
 namespace tcod {
 namespace sdl2 {
 using tcod::tileset::Tileset;
-class OpenGL2Renderer: public TilesetObserver {
+class OpenGL2Renderer {
  public:
   explicit OpenGL2Renderer(OpenGLTilesetAlias alias);
   explicit OpenGL2Renderer(std::shared_ptr<Tileset> tileset)
   : OpenGL2Renderer(OpenGLTilesetAlias(tileset))
   {}
+  OpenGL2Renderer(const OpenGL2Renderer&) = delete;
+  OpenGL2Renderer& operator=(const OpenGL2Renderer&) = delete;
+  OpenGL2Renderer(OpenGL2Renderer&&) noexcept;
+  OpenGL2Renderer& operator=(OpenGL2Renderer&&) noexcept;
+  ~OpenGL2Renderer() noexcept;
 
   void render(const TCOD_Console* console);
  private:
-  OpenGLTilesetAlias alias_;
-  GLProgram program_;
+  class impl;
+  std::unique_ptr<impl> impl_;
 };
 } // namespace sdl2
 } // namespace tcod

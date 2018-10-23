@@ -44,6 +44,7 @@ class opengl_error : public std::runtime_error {
   {};
 };
 inline void gl_check() {
+#ifndef NDEBUG
   switch(glGetError()) {
     case GL_NO_ERROR:
       return;
@@ -60,6 +61,7 @@ inline void gl_check() {
     default:
       throw opengl_error("Unknown OpenGL error.");
   }
+#endif // NDEBUG
 }
 } // namespace sdl2
 } // namespace tcod

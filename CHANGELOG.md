@@ -11,6 +11,7 @@ since `1.7.0`.
 - New renderer: `TCOD_RENDERER_OPENGL2`
 - `TCOD_RENDERER_SDL2` and `TCOD_RENDERER_OPENGL2` now have reliable fullscreen
   support.
+- SCons MSVC releases now include libtcod's `.pdb` file.
 
 ## Changed
 - `src/vendor` must be included when building libtcod.

@@ -5,7 +5,7 @@ DEBUG_GCC = {
     'CCFLAGS': ['-Wall', '-g'],
 }
 DEBUG_MSVC = {
-    'CCFLAGS': ['/nologo', '-W3', '-DEBUG'],
+    'CCFLAGS': ['/nologo', '-W3'],
     'LINKFLAGS': ['/nologo'],
 }
 

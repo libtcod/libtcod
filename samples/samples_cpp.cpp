@@ -1553,7 +1553,7 @@ int main( int argc, char *argv[] ) {
 			curSample--;
 			if ( curSample < 0 ) curSample = nbSamples-1;
 			first=true;
-		} else if ( key.vk == TCODK_ENTER && key.lalt ) {
+		} else if ( key.vk == TCODK_ENTER && (key.lalt | key.ralt) ) {
 			// ALT-ENTER : switch fullscreen
 			TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
 #ifdef TCOD_LINUX

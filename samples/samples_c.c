@@ -1594,7 +1594,7 @@ int main( int argc, char *argv[] ) {
 			cur_sample--;
 			if ( cur_sample < 0 ) cur_sample = nb_samples-1;
 			first=true;
-		} else if ( key.vk == TCODK_ENTER && key.lalt ) {
+		} else if ( key.vk == TCODK_ENTER && (key.lalt | key.ralt) ) {
 			/* ALT-ENTER : switch fullscreen */
 			TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
 		} else if ( key.vk == TCODK_PRINTSCREEN ) {

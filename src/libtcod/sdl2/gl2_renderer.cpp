@@ -61,7 +61,7 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     program_.use(); gl_check();
 
     vertex_buffer_.bind();
-    const int a_vertex = glGetAttribLocation(program_.get(), "a_vertex");
+    const int a_vertex = program_.get_attribute("a_vertex");
     glVertexAttribPointer(a_vertex, 2, GL_BYTE, GL_FALSE, 0, 0); gl_check();
     glEnableVertexAttribArray(a_vertex); gl_check();
 
@@ -91,6 +91,8 @@ class OpenGL2Renderer::impl : public TilesetObserver {
 
     glUniform2iv(program_.get_uniform("v_tiles_shape"), 1,
                  alias_.get_alias_shape().data());
+    glUniform2iv(program_.get_uniform("v_tiles_size"), 1,
+                 alias_.get_alias_size().data());
 
     if (cached_size.first != console->w || cached_size.second != console->h) {
       cached_size = {console->w, console->h};

@@ -136,6 +136,12 @@ void GLProgram::use() const
 {
   glUseProgram(program_); gl_check();
 }
+int GLProgram::get_attribute(const std::string& name) const
+{
+  int attribute = glGetAttribLocation(program_, name.c_str());
+  gl_check();
+  return attribute;
+}
 int GLProgram::get_variable(int name) const
 {
   int variable;

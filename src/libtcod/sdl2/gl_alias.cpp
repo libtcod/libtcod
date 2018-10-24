@@ -137,6 +137,14 @@ std::array<int, 2> OpenGLTilesetAlias::get_alias_shape()
       1,
   };
 }
+std::array<int, 2> OpenGLTilesetAlias::get_alias_size()
+{
+  auto shape = get_alias_shape();
+  return {
+      shape[0] * get_tileset()->get_tile_width(),
+      shape[1] * get_tileset()->get_tile_height(),
+  };
+}
 std::array<int, 2> OpenGLTilesetAlias::get_tile_position(int codepoint)
 {
   auto& charmap = alias_->get_tileset()->get_character_map();

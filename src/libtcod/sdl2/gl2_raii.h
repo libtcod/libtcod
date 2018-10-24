@@ -92,6 +92,7 @@ class GLProgram {
   void link();
   void validate();
   void use() const;
+  int get_attribute(const std::string& name) const;
   int get_variable(int name) const;
   int get_uniform(const std::string& name) const;
  private:

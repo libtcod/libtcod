@@ -58,6 +58,7 @@ class OpenGLTilesetAlias {
 
   uint32_t get_alias_texture();
   std::array<int, 2> get_alias_shape();
+  std::array<int, 2> get_alias_size();
   std::array<int, 2> get_tile_position(int codepoint);
  private:
   std::shared_ptr<class OpenGLInternalTilesetAlias_> alias_;

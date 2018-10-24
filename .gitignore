@@ -484,6 +484,10 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
 
+# Compressed zip files.
+*.zip
+*.tar
+*.tar.*
 
 ## Additional rules
 docs/doxyxml/

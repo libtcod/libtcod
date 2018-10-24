@@ -193,16 +193,28 @@ void TCOD_console_set_window_title(const char *title) {
  *
  *  \param fullscreen If true the display will go full-screen.
  */
-void TCOD_console_set_fullscreen(bool fullscreen) {
-	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
-	TCOD_sys_set_fullscreen(fullscreen);
-	TCOD_ctx.fullscreen=fullscreen;
+void TCOD_console_set_fullscreen(bool fullscreen)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    display->set_fullscreen(fullscreen);
+  } else {
+    TCOD_IFNOT(TCOD_ctx.root != NULL) { return; }
+    TCOD_sys_set_fullscreen(fullscreen);
+    TCOD_ctx.fullscreen = fullscreen;
+  }
 }
 /**
  *  Return true if the display is full-screen.
  */
-bool TCOD_console_is_fullscreen(void) {
-	return TCOD_ctx.fullscreen;
+bool TCOD_console_is_fullscreen(void)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    return display->get_fullscreen() == 1;
+  } else {
+    return TCOD_ctx.fullscreen;
+  }
 }
 /**
  *  Set a consoles default background flag.

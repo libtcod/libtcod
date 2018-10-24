@@ -73,7 +73,19 @@ std::string WindowedDisplay::get_title()
   if (!window_) { throw std::logic_error("Unresolved class invariant."); }
   return std::string(SDL_GetWindowTitle(window_.get()));
 }
-
+void WindowedDisplay::set_fullscreen(bool fullscreen)
+{
+  if (fullscreen) {
+    SDL_SetWindowFullscreen(window_.get(), SDL_WINDOW_FULLSCREEN_DESKTOP);
+  } else {
+    SDL_SetWindowFullscreen(window_.get(), 0);
+  }
+}
+int WindowedDisplay::get_fullscreen()
+{
+  return ((SDL_GetWindowFlags(window_.get())
+           & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) != 0);
+}
 SDL2Display::SDL2Display(std::shared_ptr<Tileset> tileset,
                          std::pair<int, int> window_size, int window_flags,
                          const std::string& title)

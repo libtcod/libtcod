@@ -9,6 +9,8 @@ since `1.7.0`.
 ## [Unreleased]
 ### Added
 - New renderer: `TCOD_RENDERER_OPENGL2`
+- `TCOD_RENDERER_SDL2` and `TCOD_RENDERER_OPENGL2` now have reliable fullscreen
+  support.
 
 ## Changed
 - `src/vendor` must be included when building libtcod.

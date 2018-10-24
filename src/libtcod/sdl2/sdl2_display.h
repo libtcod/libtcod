@@ -56,6 +56,8 @@ class WindowedDisplay: public engine::Display {
                   const std::string& title);
   virtual void set_title(const std::string title) override;
   virtual std::string get_title() override;
+  virtual void set_fullscreen(bool fullscreen) override;
+  virtual int get_fullscreen() override;
   SDL_Window* get_window() { return window_.get(); }
  private:
   std::shared_ptr<SDL_Window> window_;

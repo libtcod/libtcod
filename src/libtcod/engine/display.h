@@ -50,6 +50,19 @@ class Display {
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) = 0;
   virtual void set_title(const std::string title) = 0;
   virtual std::string get_title() = 0;
+  /**
+   *  Set the fullscreen status if the display supports it.
+   *
+   *  When it is suppered this can be used to switch between a window and
+   *  borderless fullscreen window.
+   */
+  virtual void set_fullscreen(bool fullscreen) = 0;
+  /**
+   *  Return true if the display is in fullscreen mode.
+   *
+   *  Returns a negative number if the display does not support fullscreen.
+   */
+  virtual int get_fullscreen() = 0;
   virtual void present(const TCOD_Console*) = 0;
 };
 /**
@@ -64,6 +77,18 @@ class TerminalDisplay: public Display {
   virtual std::string get_title() override
   {
     return {};
+  }
+  /**
+   *  Terminals do not support fullscreen modes.
+   */
+  virtual void set_fullscreen(bool fullscreen)
+  {}
+  /**
+   *  Return a negative error code.
+   */
+  virtual int get_fullscreen()
+  {
+    return -1;
   }
 };
 } // namespace sdl2

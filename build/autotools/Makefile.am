@@ -3,6 +3,8 @@ ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 AM_CFLAGS = \
 	-I$(top_srcdir)/../../src \
 	-I$(top_srcdir)/../../src/vendor \
+	-fvisibility=hidden \
+	-DLIBTCOD_EXPORTS \
 	-DNO_OPENGL \
 	-DNDEBUG -O2 \
 	-Wall \

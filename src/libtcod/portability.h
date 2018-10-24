@@ -114,16 +114,28 @@
 #endif
 
 /* DLL export */
+#if defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
 #ifndef TCODLIB_API
-#ifdef TCOD_WINDOWS
 #ifdef LIBTCOD_EXPORTS
+#ifdef __GNUC__
+#define TCODLIB_API __attribute__((dllexport))
+#else
 #define TCODLIB_API __declspec(dllexport)
+#endif // __GNUC__
+#else
+#ifdef __GNUC__
+#define TCODLIB_API __attribute__((dllimport))
 #else
 #define TCODLIB_API __declspec(dllimport)
-#endif
+#endif // __GNUC__
+#endif // LIBTCOD_EXPORTS
+#endif // TCODLIB_API
+#else
+#if __GNUC__ >= 4
+#define TCODLIB_API __attribute__((visibility("default")))
 #else
 #define TCODLIB_API
-#endif
+#endif // __GNUC__ >= 4
 #endif
 
 /* For now this encapsulates mouse, keyboard, and consoles themselves. */
@@ -158,7 +170,7 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #endif /* _WIN32 */
 
 /* cross platform deprecation */
-#if defined(__cplusplus) && __cplusplus >= 201402L
+#if defined(__cplusplus) && __cplusplus >= 201402L && !defined(__clang__)
 #define TCOD_DEPRECATED(msg) [[deprecated(msg)]]
 #define TCOD_DEPRECATED_NOMESSAGE [[deprecated]]
 #elif defined(_MSC_VER)

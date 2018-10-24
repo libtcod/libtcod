@@ -16,6 +16,7 @@ since `1.7.0`.
 ## Changed
 - `src/vendor` must be included when building libtcod.
 - `glad.c` added to vendor directory.
+- In GCC builds: non-public symbols are no longer visible by default.
 
 ## [1.8.2] - 2018-10-13
 ### Fixed

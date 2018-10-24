@@ -347,7 +347,6 @@ env.VariantDir('$VARIANT/include', '$LIBTCOD_ROOT_DIR/src',
 
 env_libtcod = env.Clone()
 env_libtcod.Append(
-    CPPDEFINES=['LIBTCOD_EXPORTS'],
     CPPPATH=['../../src/vendor'],
 )
 
@@ -390,6 +389,7 @@ libtcod_sources = {
 
 env_libtcod_dll = env_libtcod.Clone()
 env_libtcod_dll.Append(
+    CPPDEFINES=['LIBTCOD_EXPORTS'],
     PDB=['$VARIANT/libtcod.pdb'],
 )
 

@@ -41,14 +41,6 @@
 #endif
 
 // DLL export
-#ifdef TCOD_WINDOWS
-#ifdef LIBTCOD_EXPORTS
-#define TCODLIB_GUI_API __declspec(dllexport)
-#else
-#define TCODLIB_GUI_API __declspec(dllimport)
-#endif
-#else
-#define TCODLIB_GUI_API
-#endif
+#define TCODLIB_GUI_API TCODLIB_API
 
 #endif /* TCOD_GUI_PORTABILITY_HPP */

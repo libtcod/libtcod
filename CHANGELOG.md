@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
+## [Unreleased]
+### Fixed
+- `RENDERER_OPENGL2` constant was missing from libtcodpy.
+
 ## [1.9.0] - 2018-10-24
 ### Added
 - New renderer: `TCOD_RENDERER_OPENGL2`

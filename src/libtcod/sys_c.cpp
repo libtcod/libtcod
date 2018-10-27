@@ -36,8 +36,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <sys/stat.h>
+#include <exception>
 #include <string.h>
+#include <sys/stat.h>
 
 #if defined (__APPLE__) && defined (__MACH__)
 /* Is this necessary now the custom clipboard stuff is gone? */
@@ -522,22 +523,23 @@ bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size
 	return false;
 }
 #endif /* TCOD_BARE */
-
-void TCOD_fatal(const char *fmt, ...) {
-	va_list ap;
-	TCOD_sys_shutdown();
-	printf("%s\n", TCOD_STRVERSIONNAME);
-	va_start(ap, fmt);
-	vprintf(fmt, ap);
-	va_end(ap);
-	printf("\n");
-	exit(1);
+/**
+ *  Print formatted text as an error and then forcefully terminate the program.
+ */
+void TCOD_fatal(const char *fmt, ...)
+{
+  va_list ap;
+  TCOD_sys_shutdown();
+  fprintf(stderr, "%s FATAL ERROR:\n", TCOD_STRVERSIONNAME);
+  va_start(ap, fmt);
+  vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  fprintf(stderr, "\n");
+  std::terminate();
 }
-
-void TCOD_fatal_nopar(const char *msg) {
-	TCOD_sys_shutdown();
-	printf("%s\n%s\n", TCOD_STRVERSIONNAME, msg);
-	exit(1);
+void TCOD_fatal_nopar(const char *msg)
+{
+  TCOD_fatal("%s", msg);
 }
 
 /* dynamic library support */

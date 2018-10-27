@@ -34,16 +34,30 @@
 
 #include <stdexcept>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include "../../vendor/lodepng.h"
 
 namespace tcod {
 namespace image {
+/**
+ *  Return true if the file at `path` exists.
+ */
+static bool file_exists(const std::string& path)
+{
+  struct stat buffer;
+  return stat(path.c_str(), &buffer) == 0;
+}
 Image load(const std::string& filename)
 {
+  if (!file_exists(filename)) {
+    throw std::runtime_error("File does not exist: " + filename);
+  }
   unsigned img_width, img_height;
   std::vector<unsigned char> img_data;
-  if (lodepng::decode(img_data, img_width, img_height, filename)) {
-    throw std::runtime_error("File not found: " + filename);
+  if (auto err=lodepng::decode(img_data, img_width, img_height, filename)) {
+    throw std::runtime_error(lodepng_error_text(err));
   }
   Image image(img_width, img_height);
   std::vector<unsigned char>::iterator img_iter = img_data.begin();

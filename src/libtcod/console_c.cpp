@@ -750,6 +750,24 @@ void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t
 	for (i=y; i< y+l; i++) TCOD_console_put_char(con,x,i,TCOD_CHAR_VLINE,flag);
 }
 /**
+ *  Initialize the display using one of the new renderers.
+ */
+template <class T>
+static void init_display(int w, int h, const std::string& title,
+                         int fullscreen)
+{
+  auto tileset = tcod::engine::get_tileset();
+  if (!tileset) {
+    TCOD_fatal("A custom font is required to use the SDL2/OPENGL2 renderers.");
+  }
+  auto display_size = std::make_pair(tileset->get_tile_width() * w,
+                                     tileset->get_tile_height() * h);
+  int display_flags = (SDL_WINDOW_RESIZABLE |
+                       (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+  tcod::engine::set_display(
+      std::make_shared<T>(tileset, display_size, display_flags, title));
+}
+/**
  *  \brief Initialize the libtcod graphical engine.
  *
  *  \param w The width in tiles.
@@ -776,34 +794,12 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
     strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
     TCOD_ctx.fullscreen = fullscreen;
     switch (renderer) {
-      case TCOD_RENDERER_SDL2: {
-        auto tileset = tcod::engine::get_tileset();
-        if (!tileset) { throw; }
-        auto display = std::make_shared<tcod::sdl2::SDL2Display>(
-            tileset,
-            std::make_pair(tileset->get_tile_width() * w,
-                           tileset->get_tile_height() * h),
-            (SDL_WINDOW_RESIZABLE |
-             (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)),
-            std::string(title)
-        );
-        tcod::engine::set_display(display);
+      case TCOD_RENDERER_SDL2:
+        init_display<tcod::sdl2::SDL2Display>(w, h, title, fullscreen);
         break;
-      }
-      case TCOD_RENDERER_OPENGL2: {
-        auto tileset = tcod::engine::get_tileset();
-        tcod::engine::set_display(
-            std::make_shared<tcod::sdl2::OpenGL2Display>(
-                tcod::engine::get_tileset(),
-                std::make_pair(tileset->get_tile_width() * w,
-                               tileset->get_tile_height() * h),
-                (SDL_WINDOW_RESIZABLE |
-                 (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0)),
-                std::string(title)
-            )
-        );
+      case TCOD_RENDERER_OPENGL2:
+        init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
         break;
-      }
       default:
         TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
                           TCOD_ctx.fullscreen);

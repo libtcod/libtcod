@@ -64,6 +64,7 @@
 #include "libtcod/zip.cpp"
 
 #include "libtcod/color/canvas.cpp"
+#include "libtcod/console/drawing.cpp"
 #include "libtcod/console/printing.cpp"
 #include "libtcod/console/rexpaint.cpp"
 #include "libtcod/engine/backend.cpp"

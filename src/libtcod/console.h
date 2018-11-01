@@ -81,11 +81,6 @@ TCODLIB_API TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t co
 TCODLIB_API void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment);
 TCODLIB_API TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con);
 
-TCODLIB_API void TCOD_console_rect(TCOD_console_t con,int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag);
-TCODLIB_API void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
-TCODLIB_API void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag);
-TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
-
 TCODLIB_API TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con);
 TCODLIB_API TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con);
 TCODLIB_API TCOD_color_t TCOD_console_get_char_background(

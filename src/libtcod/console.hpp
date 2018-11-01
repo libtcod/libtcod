@@ -36,6 +36,7 @@
 #include <string>
 
 #include "console.h"
+#include "console/drawing.h"
 #include "console/printing.h"
 #include "console/rexpaint.h"
 

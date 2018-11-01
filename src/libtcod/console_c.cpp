@@ -46,6 +46,7 @@
 #include "libtcod_int.h"
 #include "utility.h"
 #include "version.h"
+#include "console/drawing.h"
 #include "engine/globals.h"
 #include "sdl2/sdl2_display.h"
 #include "sdl2/gl2_display.h"
@@ -674,80 +675,6 @@ void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
 	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
 	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
 	dat->ch_array[y * dat->w + x] = c;
-}
-
-static void TCOD_console_clamp(int cx, int cy, int cw, int ch, int *x, int *y, int *w, int *h) {
-	if (*x + *w > cw) *w = cw - *x;
-	if (*y + *h > ch) *h = ch - *y;
-	if (*x < cx) {
-		*w -= cx - *x;
-		*x = cx;
-	}
-	if (*y < cy) {
-		*h -= cy - *y;
-		*y = cy;
-	}
-}
-/**
- *  Draw a rectangle onto a console.
- *
- *  \param con A console pointer.
- *  \param x The starting region, the left-most position being 0.
- *  \param y The starting region, the top-most position being 0.
- *  \param rw The width of the rectangle.
- *  \param rh The height of the rectangle.
- *  \param clear If true the drawing region will be filled with spaces.
- *  \param flag The blending flag to use.
- */
-void TCOD_console_rect(TCOD_console_t con, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
-	int cx, cy;
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
-	TCOD_ASSERT((unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h);
-	TCOD_ASSERT(x + rw <= dat->w && y + rh <= dat->h);
-
-	TCOD_console_clamp(0, 0, dat->w, dat->h, &x, &y, &rw, &rh);
-	TCOD_IFNOT(rw > 0 && rh > 0) return;
-	for (cx = x; cx < x + rw; cx++) {
-		for (cy = y; cy<y + rh; cy++) {
-			TCOD_console_set_char_background(con, cx, cy, dat->back, flag);
-			if (clear) {
-				dat->ch_array[cx + cy*dat->w] = ' ';
-			}
-		}
-	}
-}
-/**
- *  Draw a horizontal line using the default colors.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param l The width of the line.
- *  \param flag The blending flag.
- *
- *  This function makes assumptions about the fonts character encoding.
- *  It will fail if the font encoding is not `cp437`.
- */
-void TCOD_console_hline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag) {
-	int i;
-	for (i=x; i< x+l; i++) TCOD_console_put_char(con,i,y,TCOD_CHAR_HLINE,flag);
-}
-/**
- *  Draw a vertical line using the default colors.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param l The height of the line.
- *  \param flag The blending flag.
- *
- *  This function makes assumptions about the fonts character encoding.
- *  It will fail if the font encoding is not `cp437`.
- */
-void TCOD_console_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd_flag_t flag) {
-	int i;
-	for (i=y; i< y+l; i++) TCOD_console_put_char(con,x,i,TCOD_CHAR_VLINE,flag);
 }
 /**
  *  Initialize the display using one of the new renderers.

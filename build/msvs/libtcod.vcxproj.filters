@@ -329,6 +329,9 @@
     <ClCompile Include="..\..\src\vendor\glad.c">
       <Filter>Source Files\vendor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console\drawing.cpp">
+      <Filter>Source Files\console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -591,6 +594,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\sdl2\gl2_renderer.h">
       <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console\drawing.h">
+      <Filter>Source Files\console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

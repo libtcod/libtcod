@@ -43,6 +43,7 @@
 #endif
 #include <algorithm>
 
+#include "drawing.h"
 #include "../console.h"
 #include "../libtcod_int.h"
 #include "../utility.h"

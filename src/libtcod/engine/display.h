@@ -48,7 +48,7 @@ class Display {
  public:
   virtual ~Display() = default;
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) = 0;
-  virtual void set_title(const std::string title) = 0;
+  virtual void set_title(const std::string& title) = 0;
   virtual std::string get_title() = 0;
   /**
    *  Set the fullscreen status if the display supports it.
@@ -72,7 +72,7 @@ class TerminalDisplay: public Display {
  public:
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override
   {}
-  virtual void set_title(const std::string title) override
+  virtual void set_title(const std::string& title) override
   {}
   virtual std::string get_title() override
   {
@@ -94,6 +94,65 @@ class TerminalDisplay: public Display {
 } // namespace sdl2
 } // namespace tcod
 #endif // __cplusplus
+/**
+ *  \brief Initialize the libtcod graphical engine.
+ *
+ *  \param w The width in tiles.
+ *  \param h The height in tiles.
+ *  \param title The title for the window.
+ *  \param fullscreen Fullscreen option.
+ *  \param renderer Which renderer to use when rendering the console.
+ *
+ *  You may want to call TCOD_console_set_custom_font BEFORE calling this
+ *  function.  By default this function loads libtcod's `terminal.png` image
+ *  from the working directory.
+ *
+ *  Afterwards TCOD_quit must be called before the program exits.
+ */
+TCODLIB_CAPI void TCOD_console_init_root(int w, int h, const char* title,
+                                         bool fullscreen,
+                                         TCOD_renderer_t renderer);
+/**
+ *  Shutdown libtcod.  This must be called before your program exits.
+ *  \rst
+ *  .. versionadded:: 1.8
+ *  \endrst
+ */
+TCODLIB_CAPI void TCOD_quit(void);
+/**
+ *  Change the title string of the active window.
+ *
+ *  \param title A utf8 string.
+ */
+TCODLIB_CAPI void TCOD_console_set_window_title(const char *title);
+/**
+ *  Set the display to be full-screen or windowed.
+ *
+ *  \param fullscreen If true the display will go full-screen.
+ */
+TCODLIB_CAPI void TCOD_console_set_fullscreen(bool fullscreen);
+/**
+ *  Return true if the display is full-screen.
+ */
+TCODLIB_CAPI bool TCOD_console_is_fullscreen(void);
+/**
+ *  Return true if the window has mouse focus.
+ */
+TCODLIB_CAPI bool TCOD_console_has_mouse_focus(void);
+/**
+ *  Return true if the window has keyboard focus.
+ *
+ *  \verbatim embed:rst:leading-asterisk
+ *  .. versionchanged: 1.7
+ *      This function was previously broken.  It now keeps track of keyboard
+ *      focus.
+ *  \endverbatim
+ */
+TCODLIB_CAPI bool TCOD_console_is_active(void);
+/**
+ *  Return true if the window is closing.
+ */
+TCODLIB_CAPI bool TCOD_console_is_window_closed(void);
 #endif // LIBTCOD_ENGINE_DISPLAY_H_
 
 

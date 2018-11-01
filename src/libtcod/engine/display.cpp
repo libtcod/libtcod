@@ -31,3 +31,101 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "display.h"
+
+#include <cstring>
+#include <string>
+
+#include <SDL.h>
+#include "globals.h"
+#include "../console.h"
+#include "../console.hpp"
+#include "../libtcod_int.h"
+#include "../sdl2/sdl2_display.h"
+#include "../sdl2/gl2_display.h"
+/**
+ *  Initialize the display using one of the new renderers.
+ */
+template <class T>
+static void init_display(int w, int h, const std::string& title,
+                         int fullscreen)
+{
+  auto tileset = tcod::engine::get_tileset();
+  if (!tileset) {
+    TCOD_fatal("A custom font is required to use the SDL2/OPENGL2 renderers.");
+  }
+  auto display_size = std::make_pair(tileset->get_tile_width() * w,
+                                     tileset->get_tile_height() * h);
+  int display_flags = (SDL_WINDOW_RESIZABLE |
+                       (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+  tcod::engine::set_display(
+      std::make_shared<T>(tileset, display_size, display_flags, title));
+}
+void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
+                            TCOD_renderer_t renderer)
+{
+  TCOD_IF(w > 0 && h > 0) {
+    TCOD_console_delete(NULL);
+    TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
+#ifndef TCOD_BARE
+    TCOD_ctx.renderer=renderer;
+#endif
+    strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+    TCOD_ctx.fullscreen = fullscreen;
+    switch (renderer) {
+      case TCOD_RENDERER_SDL2:
+        init_display<tcod::sdl2::SDL2Display>(w, h, title, fullscreen);
+        break;
+      case TCOD_RENDERER_OPENGL2:
+        init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
+        break;
+      default:
+        TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
+                          TCOD_ctx.fullscreen);
+        break;
+    }
+  }
+}
+void TCOD_quit(void)
+{
+  TCOD_console_delete(NULL);
+}
+void TCOD_console_set_window_title(const char *title)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    display->set_title(title);
+  } else {
+    TCOD_sys_set_window_title(title);
+  }
+}
+void TCOD_console_set_fullscreen(bool fullscreen)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    display->set_fullscreen(fullscreen);
+  } else {
+    TCOD_IFNOT(TCOD_ctx.root != NULL) { return; }
+    TCOD_sys_set_fullscreen(fullscreen);
+    TCOD_ctx.fullscreen = fullscreen;
+  }
+}
+bool TCOD_console_is_fullscreen(void)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    return display->get_fullscreen() == 1;
+  } else {
+    return TCOD_ctx.fullscreen;
+  }
+}
+bool TCOD_console_has_mouse_focus(void)
+{
+  return TCOD_ctx.app_has_mouse_focus;
+}
+bool TCOD_console_is_active(void)
+{
+  return TCOD_ctx.app_is_active;
+}
+bool TCOD_console_is_window_closed(void) {
+	return TCOD_ctx.is_window_closed;
+}

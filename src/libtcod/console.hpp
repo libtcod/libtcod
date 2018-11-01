@@ -39,6 +39,7 @@
 #include "console/drawing.h"
 #include "console/printing.h"
 #include "console/rexpaint.h"
+#include "engine/display.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 

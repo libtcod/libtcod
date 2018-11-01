@@ -61,6 +61,10 @@
 #include "console/printing.h"
 #include "console/rexpaint.h"
 
+#include "engine/backend.h"
+#include "engine/display.h"
+#include "engine/globals.h"
+
 #include "tileset/observer.h"
 #include "tileset/tileset.h"
 #include "tileset/tile.h"

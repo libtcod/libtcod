@@ -63,7 +63,7 @@ WindowedDisplay::WindowedDisplay(std::pair<int, int> window_size,
       [](SDL_Window* window){ SDL_DestroyWindow(window); });
   if (!window_) { throw std::runtime_error(SDL_GetError()); }
 }
-void WindowedDisplay::set_title(const std::string title)
+void WindowedDisplay::set_title(const std::string& title)
 {
   if (!window_) { throw std::logic_error("Unresolved class invariant."); }
   SDL_SetWindowTitle(window_.get(), title.c_str());

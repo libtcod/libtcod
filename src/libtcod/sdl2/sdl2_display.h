@@ -54,7 +54,7 @@ class WindowedDisplay: public engine::Display {
  public:
   WindowedDisplay(std::pair<int, int> window_size, int window_flags,
                   const std::string& title);
-  virtual void set_title(const std::string title) override;
+  virtual void set_title(const std::string& title) override;
   virtual std::string get_title() override;
   virtual void set_fullscreen(bool fullscreen) override;
   virtual int get_fullscreen() override;

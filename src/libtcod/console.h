@@ -49,15 +49,6 @@ extern "C" {
 #define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH|(((uint8_t)(alpha*255))<<8)))
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8_t)(alpha*255))<<8)))
 
-TCODLIB_API void TCOD_console_init_root(int w, int h, const char * title, bool fullscreen, TCOD_renderer_t renderer);
-TCODLIB_API void TCOD_quit(void);
-TCODLIB_API void TCOD_console_set_window_title(const char *title);
-TCODLIB_API void TCOD_console_set_fullscreen(bool fullscreen);
-TCODLIB_API bool TCOD_console_is_fullscreen(void);
-TCODLIB_API bool TCOD_console_is_window_closed(void);
-TCODLIB_API bool TCOD_console_has_mouse_focus(void);
-TCODLIB_API bool TCOD_console_is_active(void);
-
 TCODLIB_API void TCOD_console_set_custom_font(const char *fontFile, int flags,int nb_char_horiz, int nb_char_vertic);
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);

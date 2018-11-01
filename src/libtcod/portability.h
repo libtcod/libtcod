@@ -138,6 +138,14 @@
 #endif // __GNUC__ >= 4
 #endif
 
+#ifndef TCODLIB_CAPI
+#ifdef __cplusplus
+#define TCODLIB_CAPI extern "C" TCODLIB_API
+#else
+#define TCODLIB_CAPI TCODLIB_API
+#endif // __cplusplus
+#endif // TCODLIB_CAPI
+
 /* For now this encapsulates mouse, keyboard, and consoles themselves. */
 #undef TCOD_CONSOLE_SUPPORT
 #undef TCOD_IMAGE_SUPPORT

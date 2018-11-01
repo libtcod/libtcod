@@ -35,9 +35,6 @@
 #include "../console.h"
 #include "../console_types.h"
 #include "../portability.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
 /**
  *  Draw a rectangle onto a console.
  *
@@ -49,7 +46,7 @@ extern "C" {
  *  \param clear If true the drawing region will be filled with spaces.
  *  \param flag The blending flag to use.
  */
-TCODLIB_API void TCOD_console_rect(
+TCODLIB_CAPI void TCOD_console_rect(
     TCOD_Console* con, int x, int y, int w, int h, bool clear,
     TCOD_bkgnd_flag_t flag);
 /**
@@ -64,7 +61,7 @@ TCODLIB_API void TCOD_console_rect(
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
-TCODLIB_API void TCOD_console_hline(
+TCODLIB_CAPI void TCOD_console_hline(
     TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a vertical line using the default colors.
@@ -78,9 +75,6 @@ TCODLIB_API void TCOD_console_hline(
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
-TCODLIB_API void TCOD_console_vline(
+TCODLIB_CAPI void TCOD_console_vline(
     TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
-#ifdef __cplusplus
-} // extern "C"
-#endif
 #endif // TCOD_CONSOLE_DRAWING_H_

@@ -32,6 +32,10 @@ def collect():
                          if f.endswith('.h') or f.endswith('.hpp')]
         source_files.extend('/'.join([curpath, f]) for f in files
                             if f.endswith('.c') or f.endswith('.cpp'))
+        if '/.' in curpath[5:]:
+            continue # Skip hidden directories.
+        if not include_files:
+            continue
         yield('%sdir = %s' % (include_name, include_dir))
         yield('%s_HEADERS = \\\n\t%s' % (include_name,
                                    ' \\\n\t'.join(include_files)))

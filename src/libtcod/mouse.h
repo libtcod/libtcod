@@ -1,11 +1,6 @@
 /* libtcod
- * Copyright © 2008-2018 Jice and the libtcod contributers.
+ * Copyright © 2008-2018 Jice and the libtcod contributors.
  * All rights reserved.
- *
- * libtcod 'The Doryen library' is a cross-platform C/C++ library for roguelike
- * developers.
- * Its source code is available from:
- * https://github.com/libtcod/libtcod
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

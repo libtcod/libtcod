@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 This script will automatically update the copyright banner on all of libtcod's
 source files using LIBTCOD-LICENSE.txt as a reference.

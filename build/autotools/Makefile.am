@@ -110,3 +110,6 @@ dist_noinst_DATA += \
 	../../data/fonts/terminal8x8_gs_ro.png \
 	../../data/fonts/dejavu16x16_gs_tc.png \
 	../../data/fonts/dejavu10x10_gs_tc.png
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libtcod.pc

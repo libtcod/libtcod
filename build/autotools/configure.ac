@@ -54,5 +54,5 @@ m4_esyscmd(./collect_files.py)
 
 AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile libtcod.pc])
 AC_OUTPUT

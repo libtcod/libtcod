@@ -514,3 +514,4 @@ doc/doxyxml/
 build/scons/*/
 build/msvs/*/
 Thumbs.db
+libtcod.pc

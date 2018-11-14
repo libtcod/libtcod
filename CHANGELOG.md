@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added pkg-config for 'libtcod' on AutoTools builds.
+
 ### Fixed
 - `RENDERER_OPENGL2` constant was missing from libtcodpy.
 

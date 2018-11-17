@@ -73,8 +73,13 @@ class Tileset {
     if (tile.codepoint >= static_cast<int>(character_map_.size())) {
       character_map_.resize(tile.codepoint + 1, -1);
     }
-    character_map_[tile.codepoint] = tiles_.size();
-    tiles_.push_back(tile);
+    auto it = std::find(tiles_.begin(), tiles_.end(), tile);
+    if (it == tiles_.end()) {
+      character_map_[tile.codepoint] = tiles_.size();
+      tiles_.push_back(tile);
+    } else {
+      character_map_[tile.codepoint] = std::distance(tiles_.begin(), it);
+    }
     return 0;
   }
   /** Return the width of each tile in this Tileset */

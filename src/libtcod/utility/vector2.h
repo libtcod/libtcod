@@ -85,6 +85,10 @@ class Vector2 {
   {
     return vector_.end();
   }
+  bool operator==(const Vector2& rhs) const noexcept
+  {
+    return vector_ == rhs.vector_;
+  }
  private:
   /**
    *  Return true if x and y are in the bounds of this canvas.

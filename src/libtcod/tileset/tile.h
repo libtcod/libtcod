@@ -55,6 +55,10 @@ class Tile {
   Image get_image() const {
     return image_;
   }
+  bool operator==(const Tile& rhs) const noexcept
+  {
+    return image_ == rhs.image_;
+  }
   const int codepoint;
  private:
   Image image_;

@@ -32,6 +32,10 @@
 namespace tcod {
 struct ColorRGBA {
   uint8_t r, g, b, a;
+  bool operator==(const ColorRGBA& rhs) const noexcept
+  {
+    return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
+  }
 };
 } // namespace tcod
 #endif /* __cplusplus */

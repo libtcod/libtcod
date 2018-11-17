@@ -707,6 +707,7 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
   } catch (const std::logic_error&) {
     return; // Ignore logic errors from constructing objects.
   }
+  TCOD_sys_decode_font_();
 }
 /**
  *  \brief Remap a character code to a tile.

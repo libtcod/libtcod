@@ -32,7 +32,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <array>
 
 #include <SDL.h>
 #include "console.hpp"
@@ -78,30 +77,6 @@ TCOD_internal_context_t TCOD_ctx={
 	false,
 	/* application active ? */
 	true,
-};
-
-/**
- *  Codec for TCOD_FONT_LAYOUT_TCOD.
- *
- *  Converts from EASCII code-point -> raw tile position.
- */
-static constexpr std::array<int, 256> tcod_codec_{
-  0,  0,  0,  0,  0,  0,  0,  0,  0, 76, 77,  0,  0,  0,  0,  0, /* 0 to 15 */
- 71, 70, 72,  0,  0,  0,  0,  0, 64, 65, 67, 66,  0, 73, 68, 69, /* 16 to 31 */
-  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, /* 32 to 47 */
- 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, /* 48 to 63 */
- 32, 96, 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110, /* 64 to 79 */
-111,112,113,114,115,116,117,118,119,120,121, 33, 34, 35, 36, 37, /* 80 to 95 */
- 38,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142, /* 96 to 111 */
-143,144,145,146,147,148,149,150,151,152,153, 39, 40, 41, 42,  0, /* 112 to 127 */
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* 128 to 143 */
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* 144 to 159 */
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* 160 to 175 */
- 43, 44, 45, 46, 49,  0,  0,  0,  0, 81, 78, 87, 88,  0,  0, 55, /* 176 to 191 */
- 53, 50, 52, 51, 47, 48,  0,  0, 85, 86, 82, 84, 83, 79, 80,  0, /* 192 to 207 */
-  0,  0,  0,  0,  0,  0,  0,  0,  0, 56, 54,  0,  0,  0,  0,  0, /* 208 to 223 */
- 74, 75, 57, 58, 59, 60, 61, 62, 63,  0,  0,  0,  0,  0,  0,  0, /* 224 to 239 */
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* 240 to 255 */
 };
 /**
  *  Return a new console with a specific number of columns and rows.
@@ -724,22 +699,6 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
     auto tileset = std::make_shared<Tileset>(tilesheet->get_tile_width(),
                                              tilesheet->get_tile_height());
     tcod::engine::set_tileset(tileset);
-    if (flags & TCOD_FONT_LAYOUT_TCOD) {
-      for (int i = 0; i < static_cast<int>(tcod_codec_.size()); ++i) {
-        tileset->set_tile(i, tilesheet->get_tile(tcod_codec_.at(i)));
-      }
-    } else if (flags & TCOD_FONT_LAYOUT_ASCII_INROW) {
-      for (int i = 0; i < tilesheet->count(); ++i) {
-        tileset->set_tile(i, tilesheet->get_tile(i));
-      }
-    } else if (flags & TCOD_FONT_LAYOUT_ASCII_INCOL) {
-      for (int x = 0; x < tilesheet->get_columns(); ++x) {
-        for (int y = 0; y < tilesheet->get_rows(); ++y) {
-          int i = x * tilesheet->get_rows() + y;
-          tileset->set_tile(i, tilesheet->get_tile(x, y));
-        }
-      }
-    }
   } catch (const std::runtime_error&) {
     // Ignore any runtime error, will likely catch a missing file error.
     return;

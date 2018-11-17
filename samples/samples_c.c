@@ -108,7 +108,7 @@ void render_colors(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	}
 	/* the background behind the text is slightly darkened using the BKGND_MULTIPLY flag */
 	TCOD_console_set_default_background(sample_console,TCOD_grey);
-	TCOD_console_print_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,5,
+	TCOD_console_printf_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,5,
 		SAMPLE_SCREEN_WIDTH-2,SAMPLE_SCREEN_HEIGHT-1,TCOD_BKGND_MULTIPLY,TCOD_CENTER,
 		"The Doryen library uses 24 bits colors, for both background and foreground.");
 }
@@ -127,8 +127,8 @@ void render_offscreen(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		init=true;
 		secondary=TCOD_console_new(SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2);
 		screenshot=TCOD_console_new(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT);
-		TCOD_console_print_frame(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,TCOD_BKGND_SET,"Offscreen console");
-		TCOD_console_print_rect_ex(secondary,SAMPLE_SCREEN_WIDTH/4,2,SAMPLE_SCREEN_WIDTH/2-2,SAMPLE_SCREEN_HEIGHT/2,
+		TCOD_console_printf_frame(secondary,0,0,SAMPLE_SCREEN_WIDTH/2,SAMPLE_SCREEN_HEIGHT/2,false,TCOD_BKGND_SET,"Offscreen console");
+		TCOD_console_printf_rect_ex(secondary,SAMPLE_SCREEN_WIDTH/4,2,SAMPLE_SCREEN_WIDTH/2-2,SAMPLE_SCREEN_HEIGHT/2,
 			TCOD_BKGND_NONE,TCOD_CENTER,"You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
 	}
 	if ( first ) {
@@ -244,7 +244,7 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	/* render the line */
 	TCOD_line(xo,yo,xd,yd,line_listener);
 	/* print the current flag */
-	TCOD_console_print(sample_console,2,2,"%s (ENTER to change)",flag_names[bk_flag&0xff]);
+	TCOD_console_printf(sample_console,2,2,"%s (ENTER to change)",flag_names[bk_flag&0xff]);
 }
 
 /* ***************************
@@ -332,19 +332,19 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		if ( curfunc == func ) {
 				TCOD_console_set_default_foreground(sample_console,TCOD_white);
 				TCOD_console_set_default_background(sample_console,TCOD_light_blue);
-				TCOD_console_print_ex(sample_console,2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
+				TCOD_console_printf_ex(sample_console,2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
 		} else {
 				TCOD_console_set_default_foreground(sample_console,TCOD_grey);
-				TCOD_console_print(sample_console,2,2+curfunc,funcName[curfunc]);
+				TCOD_console_printf(sample_console,2,2+curfunc,funcName[curfunc]);
 		}
 	}
 	/* draw parameters */
 	TCOD_console_set_default_foreground(sample_console,TCOD_white);
-	TCOD_console_print(sample_console,2,11,"Y/H : zoom (%2.1f)",zoom);
+	TCOD_console_printf(sample_console,2,11,"Y/H : zoom (%2.1f)",zoom);
 	if ( func > WAVELET ) {
-		TCOD_console_print(sample_console,2,12,"E/D : hurst (%2.1f)",hurst);
-		TCOD_console_print(sample_console,2,13,"R/F : lacunarity (%2.1f)",lacunarity);
-		TCOD_console_print(sample_console,2,14,"T/G : octaves (%2.1f)",octaves);
+		TCOD_console_printf(sample_console,2,12,"E/D : hurst (%2.1f)",hurst);
+		TCOD_console_printf(sample_console,2,13,"R/F : lacunarity (%2.1f)",lacunarity);
+		TCOD_console_printf(sample_console,2,14,"T/G : octaves (%2.1f)",octaves);
 	}
 	/* handle keypress */
 	if ( key->vk == TCODK_NONE) return;
@@ -461,7 +461,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		/* draw the help text & player @ */
 		TCOD_console_clear(sample_console);
 		TCOD_console_set_default_foreground(sample_console,TCOD_white);
-		TCOD_console_print(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+		TCOD_console_printf(sample_console,1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
 		TCOD_console_set_default_foreground(sample_console,TCOD_black);
 		TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
@@ -551,14 +551,14 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		else if (key->text[0] == 'T' || key->text[0] == 't') {
 			torch = !torch;
 			TCOD_console_set_default_foreground(sample_console, TCOD_white);
-			TCOD_console_print(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			TCOD_console_printf(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 				torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
 			TCOD_console_set_default_foreground(sample_console, TCOD_black);
 		}
 		else if (key->text[0] == 'W' || key->text[0] == 'w') {
 			light_walls = !light_walls;
 			TCOD_console_set_default_foreground(sample_console, TCOD_white);
-			TCOD_console_print(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			TCOD_console_printf(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 				torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
 			TCOD_console_set_default_foreground(sample_console, TCOD_black);
 			recompute_fov = true;
@@ -567,7 +567,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 			algonum += key->text[0] == '+' ? 1 : -1;
 			algonum = CLAMP(0, NB_FOV_ALGORITHMS - 1, algonum);
 			TCOD_console_set_default_foreground(sample_console, TCOD_white);
-			TCOD_console_print(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+			TCOD_console_printf(sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
 				torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
 			TCOD_console_set_default_foreground(sample_console, TCOD_black);
 			recompute_fov = true;
@@ -642,7 +642,7 @@ void render_mouse(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
   if ( mouse->lbutton_pressed ) lbut=!lbut;
   if ( mouse->rbutton_pressed ) rbut=!rbut;
   if ( mouse->mbutton_pressed ) mbut=!mbut;
-  TCOD_console_print(sample_console,1,1,
+  TCOD_console_printf(sample_console,1,1,
   	"%s\n"
     "Mouse position : %4dx%4d %s\n"
     "Mouse cell     : %4dx%4d\n"
@@ -660,7 +660,7 @@ void render_mouse(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
     mouse->mbutton ? " ON" : "OFF",mbut ? " ON" : "OFF",
 	mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : "") );
 
-  TCOD_console_print(sample_console,1,10,"1 : Hide cursor\n2 : Show cursor");
+  TCOD_console_printf(sample_console,1,10,"1 : Hide cursor\n2 : Show cursor");
   if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
 	  if (key->text[0] == '1') TCOD_mouse_show_cursor(false);
 	  else if (key->text[0] == '2') TCOD_mouse_show_cursor(true);
@@ -731,8 +731,8 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_put_char(sample_console,dx,dy,'+',TCOD_BKGND_NONE);
 		TCOD_console_put_char(sample_console,px,py,'@',TCOD_BKGND_NONE);
-		TCOD_console_print(sample_console,1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
-		TCOD_console_print(sample_console,1,4,"Using : A*");
+		TCOD_console_printf(sample_console,1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
+		TCOD_console_printf(sample_console,1,4,"Using : A*");
 		/* draw windows */
 		for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -818,9 +818,9 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	if (key->vk == TCODK_TAB) {
 		usingAstar = !usingAstar;
 		if (usingAstar)
-			TCOD_console_print(sample_console, 1, 4, "Using : A*      ");
+			TCOD_console_printf(sample_console, 1, 4, "Using : A*      ");
 		else
-			TCOD_console_print(sample_console, 1, 4, "Using : Dijkstra");
+			TCOD_console_printf(sample_console, 1, 4, "Using : Dijkstra");
 		recalculatePath = true;
 	} else if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
 		if ((key->text[0] == 'I' || key->text[0] == 'i') && dy > 0) {
@@ -1058,11 +1058,11 @@ void render_bsp(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	}
 	TCOD_console_clear(sample_console);
 	TCOD_console_set_default_foreground(sample_console,TCOD_white);
-	TCOD_console_print(sample_console,1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
+	TCOD_console_printf(sample_console,1,1,"ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
 		bspDepth,minRoomSize,
 		randomRoom ? "ON" : "OFF");
 	if ( randomRoom )
-	TCOD_console_print(sample_console,1,6,"2 : room walls %s",
+	TCOD_console_printf(sample_console,1,6,"2 : room walls %s",
 		roomWalls ? "ON" : "OFF"	);
 	// render the level
 	for (y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
@@ -1149,12 +1149,12 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	TCOD_console_clear(sample_console);
 	TCOD_console_set_default_foreground(sample_console,TCOD_white);
 	if (TCOD_list_size(sets) > 0) {
-		TCOD_console_print(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator",
+		TCOD_console_printf(sample_console,1,1,"%s\n\n+ : next generator\n- : prev generator",
 			(char *)TCOD_list_get(sets,curSet));
 		for (i=0; i < TCOD_list_size(names); i++) {
 			char *name=(char *)TCOD_list_get(names,i);
 			if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
-				TCOD_console_print_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
+				TCOD_console_printf_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
 					TCOD_BKGND_NONE,TCOD_RIGHT,name);
 		}
 
@@ -1177,7 +1177,7 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 			}
 		}
 	} else {
-		TCOD_console_print(sample_console,1,1,"Unable to find name config data files.");
+		TCOD_console_printf(sample_console,1,1,"Unable to find name config data files.");
 	}
 }
 
@@ -1399,7 +1399,7 @@ void render_sdl(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		TCOD_console_set_default_background(sample_console,TCOD_light_blue);
 		TCOD_console_set_default_foreground(sample_console,TCOD_white);
 		TCOD_console_clear(sample_console);
-		TCOD_console_print_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
+		TCOD_console_printf_rect_ex(sample_console,SAMPLE_SCREEN_WIDTH/2,3,SAMPLE_SCREEN_WIDTH,0, TCOD_BKGND_NONE,
 			TCOD_CENTER,
 			"The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works with SDL renderer.");
 	}
@@ -1537,14 +1537,14 @@ int main( int argc, char *argv[] ) {
 				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
 			/* print the sample name */
-			TCOD_console_print_ex(NULL,2,46-(nb_samples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
+			TCOD_console_printf_ex(NULL,2,46-(nb_samples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
 		}
 		/* print the help message */
 		TCOD_console_set_default_foreground(NULL,TCOD_grey);
-		TCOD_console_print_ex(NULL,79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCOD_sys_get_last_frame_length()*1000), TCOD_sys_get_fps());
-		TCOD_console_print_ex(NULL,79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCOD_sys_elapsed_milli(),TCOD_sys_elapsed_seconds());
-		TCOD_console_print(NULL,2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N,TCOD_CHAR_ARROW_S);
-		TCOD_console_print(NULL,2,48,"ALT-ENTER : switch to %s",
+		TCOD_console_printf_ex(NULL,79,46,TCOD_BKGND_NONE,TCOD_RIGHT,"last frame : %3d ms (%3d fps)", (int)(TCOD_sys_get_last_frame_length()*1000), TCOD_sys_get_fps());
+		TCOD_console_printf_ex(NULL,79,47,TCOD_BKGND_NONE,TCOD_RIGHT,"elapsed : %8dms %4.2fs", TCOD_sys_elapsed_milli(),TCOD_sys_elapsed_seconds());
+		TCOD_console_printf(NULL,2,47,"%c%c : select a sample", TCOD_CHAR_ARROW_N,TCOD_CHAR_ARROW_S);
+		TCOD_console_printf(NULL,2,48,"ALT-ENTER : switch to %s",
 			TCOD_console_is_fullscreen() ? "windowed mode  " : "fullscreen mode");
 		/* render current sample */
 		samples[cur_sample].render(first,&key,&mouse);
@@ -1566,7 +1566,7 @@ int main( int argc, char *argv[] ) {
 		cur_renderer=TCOD_sys_get_renderer();
 		TCOD_console_set_default_foreground(NULL,TCOD_grey);
 		TCOD_console_set_default_background(NULL,TCOD_black);
-		TCOD_console_print_ex(NULL,42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
+		TCOD_console_printf_ex(NULL,42,46-(TCOD_NB_RENDERERS+1),TCOD_BKGND_SET,TCOD_LEFT,"Renderer :");
 		for (i=0; i < TCOD_NB_RENDERERS; i++) {
 			if (i==cur_renderer) {
 				/* set colors for current renderer */
@@ -1577,7 +1577,7 @@ int main( int argc, char *argv[] ) {
 				TCOD_console_set_default_foreground(NULL,TCOD_grey);
 				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
-			TCOD_console_print_ex(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
+			TCOD_console_printf_ex(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
 		}
 
 		/* update the game screen */

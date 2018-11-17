@@ -918,10 +918,11 @@ static bool TCOD_utf8_is_newline_character(const utf8proc_property_t *property)
  */
 int TCOD_utf8_next_split(
     const unsigned char *str, int max_width, int can_split,
-    const unsigned char **endpoint, utf8proc_ssize_t *total_width)
+    const unsigned char **endpoint, utf8proc_ssize_t *split_width)
 {
   const unsigned char *break_point = NULL;
-  *total_width = 0;
+  int current_width = 0;
+  *split_width = 0;
   *endpoint = str;
   while (*str != '\0') {
     utf8proc_int32_t codepoint;
@@ -932,15 +933,20 @@ int TCOD_utf8_next_split(
     code_size = utf8proc_iterate(str, -1, &codepoint);
     property = utf8proc_get_property(codepoint);
     if (code_size <= 0) { break; }
-    if (can_split && *total_width > 0
-        && *total_width + (int)property->charwidth > max_width) {
-      *endpoint = str;
-      if (break_point) { *endpoint = break_point; }
+    if (can_split && current_width > 0
+        && current_width + (int)property->charwidth > max_width) {
+      if (break_point) {
+        *endpoint = break_point;
+      } else {
+        *endpoint = str;
+        *split_width = current_width;
+      }
       return 1;
     }
     switch (property->category) {
       case UTF8PROC_CATEGORY_PD: /* Punctuation, dash */
       case UTF8PROC_CATEGORY_ZS: /* Separator, space */
+        *split_width = current_width;
         break_point = str;
         break;
       default:
@@ -953,8 +959,9 @@ int TCOD_utf8_next_split(
     }
 
     str += code_size;
-    *total_width += 1;
+    current_width += 1;
   }
+  *split_width = current_width;
   *endpoint = str;
   return 0;
 }
@@ -1158,11 +1165,11 @@ void TCOD_console_printf_frame(struct TCOD_Console *con,
   TCOD_console_put_char(con, right, top, 0x2510, flag); /* ┐ */
   TCOD_console_put_char(con, left, bottom, 0x2514, flag); /* └ */
   TCOD_console_put_char(con, right, bottom, 0x2518, flag); /* ┘ */
-  for (i = left + 1; i < right - 1; ++i) {
+  for (i = left + 1; i <= right - 1; ++i) {
     TCOD_console_put_char(con, i, top, 0x2500, flag); /* ─ */
     TCOD_console_put_char(con, i, bottom, 0x2500,flag);
   }
-  for (i = top + 1; i < bottom - 1; ++i) {
+  for (i = top + 1; i <= bottom - 1; ++i) {
     TCOD_console_put_char(con, left, i, 0x2502, flag); /* │ */
     TCOD_console_put_char(con, right, i, 0x2502, flag);
   }

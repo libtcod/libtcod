@@ -14,6 +14,8 @@ since `1.7.0`.
 ### Fixed
 - `RENDERER_OPENGL2` constant was missing from libtcodpy.
 - Fixed crash when assigning to larger code-points.
+- Fixed center alignment on printf functions.
+- Fixed missing border tiles on printf frame function.
 
 ## [1.9.0] - 2018-10-24
 ### Added

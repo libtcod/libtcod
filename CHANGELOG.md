@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.0] - 2018-11-17
 ### Added
 - Added pkg-config for 'libtcod' on AutoTools builds.
 - Added `TCOD_FONT_LAYOUT_CP437`.

@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `FONT_LAYOUT_CP437` constant was missing from libtcodpy.
 
 ## [1.10.0] - 2018-11-17
 ### Added

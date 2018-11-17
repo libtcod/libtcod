@@ -74,6 +74,7 @@ typedef struct {
 	bool font_tcod_layout;
 	bool font_in_row;
 	bool font_greyscale;
+  int font_flags;
 	/* character size in font */
 	int font_width;
 	int font_height;
@@ -198,6 +199,7 @@ void TCOD_console_data_free(struct TCOD_Console *dat);
 bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
+void TCOD_sys_decode_font_(void);
 void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
 void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);

@@ -58,6 +58,7 @@ TCOD_internal_context_t TCOD_ctx={
 	16,16,
 	/* font type and layout */
 	false,false,false,
+  0,
 	/* character size in font */
 	8,8,
 	"terminal.png","",
@@ -669,18 +670,19 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
     flags |= TCOD_FONT_LAYOUT_ASCII_INCOL;
   }
   TCOD_ctx.font_in_row = ((flags & TCOD_FONT_LAYOUT_ASCII_INROW) != 0);
-  TCOD_ctx.font_greyscale = ((flags & TCOD_FONT_TYPE_GREYSCALE) != 0 );
-  TCOD_ctx.font_tcod_layout = ((flags & TCOD_FONT_LAYOUT_TCOD) != 0 );
-  if (nb_char_horiz > 0) {
+  TCOD_ctx.font_greyscale = ((flags & TCOD_FONT_TYPE_GREYSCALE) != 0);
+  TCOD_ctx.font_tcod_layout = ((flags & TCOD_FONT_LAYOUT_TCOD) != 0);
+  TCOD_ctx.font_flags = flags;
+  if (nb_char_horiz > 0 && nb_char_vertic > 0) {
     TCOD_ctx.fontNbCharHoriz = nb_char_horiz;
     TCOD_ctx.fontNbCharVertic = nb_char_vertic;
   } else {
-    if ( ( flags & TCOD_FONT_LAYOUT_ASCII_INROW ) || ( flags & TCOD_FONT_LAYOUT_ASCII_INCOL )  ) {
-      TCOD_ctx.fontNbCharHoriz = nb_char_horiz = 16;
-      TCOD_ctx.fontNbCharVertic = nb_char_vertic = 16;
-    } else {
+    if (flags & TCOD_FONT_LAYOUT_TCOD) {
       TCOD_ctx.fontNbCharHoriz = nb_char_horiz = 32;
       TCOD_ctx.fontNbCharVertic = nb_char_vertic = 8;
+    } else {
+      TCOD_ctx.fontNbCharHoriz = nb_char_horiz = 16;
+      TCOD_ctx.fontNbCharVertic = nb_char_vertic = 16;
     }
   }
   if (TCOD_ctx.font_tcod_layout) { TCOD_ctx.font_in_row = true; }

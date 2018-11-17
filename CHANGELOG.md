@@ -9,9 +9,11 @@ since `1.7.0`.
 ## [Unreleased]
 ### Added
 - Added pkg-config for 'libtcod' on AutoTools builds.
+- Added `TCOD_FONT_LAYOUT_CP437`.
 
 ### Fixed
 - `RENDERER_OPENGL2` constant was missing from libtcodpy.
+- Fixed crash when assigning to larger code-points.
 
 ## [1.9.0] - 2018-10-24
 ### Added

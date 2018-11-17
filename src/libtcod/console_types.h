@@ -269,6 +269,13 @@ typedef enum {
   TCOD_FONT_TYPE_GRAYSCALE=4,
   /** A unique layout used by some of libtcod's fonts. */
   TCOD_FONT_LAYOUT_TCOD=8,
+  /**
+   *  Decode a code page 437 tileset into Unicode code-points.
+   *  \rst
+   *  .. versionadded:: 1.10
+   *  \endrst
+   */
+  TCOD_FONT_LAYOUT_CP437=16,
 } TCOD_font_flags_t;
 /**
  *  The available renderers.

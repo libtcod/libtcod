@@ -29,7 +29,7 @@
 #define LIBTCOD_SDL2_GL2_EXT_H_
 #include <stdexcept>
 
-#include <glad/glad.h>
+#include "../../vendor/glad.h"
 namespace tcod {
 namespace sdl2 {
 class opengl_error : public std::runtime_error {

@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+## Changed
+- `RENDERER_OPENGL2` now only needs OpenGL 2.0 to load.
+
 ### Fixed
 - `FONT_LAYOUT_CP437` constant was missing from libtcodpy.
 

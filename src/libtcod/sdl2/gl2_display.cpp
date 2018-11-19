@@ -38,7 +38,7 @@ static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
       SDL_GL_CreateContext(self.get_window()),
       [](SDL_GLContext context){ SDL_GL_DeleteContext(context); });
   if (!new_context) { throw std::runtime_error(SDL_GetError()); }
-  if(!gladLoadGL()) {
+  if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
     throw std::runtime_error("Failed to invoke the GLAD loader.");
   }
   SDL_GL_SetSwapInterval(0);

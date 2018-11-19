@@ -11,13 +11,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include <string>
+#include <vector>
 #include "libtcod.hpp"
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 
 // a sample has a name and a rendering function
 typedef struct {
-	char name[64];
+	std::string name;
 	void (*render)(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse);
 } sample_t;
 
@@ -171,7 +173,7 @@ class LineListener : public TCODLineListener {
 void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	static TCODConsole bk(SAMPLE_SCREEN_WIDTH,SAMPLE_SCREEN_HEIGHT); // colored background
 	static bool init=false;
-	static const char *flagNames[]={
+	static const std::vector<std::string> flagNames = {
 		"TCOD_BKGND_NONE",
 		"TCOD_BKGND_SET",
 		"TCOD_BKGND_MULTIPLY",
@@ -243,7 +245,7 @@ void render_lines(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	LineListener listener;
 	TCODLine::line(xo,yo,xd,yd,&listener);
 	// print the current flag
-	sampleConsole.printf(2,2,"%s (ENTER to change)",flagNames[bkFlag&0xff]);
+	sampleConsole.print(2, 2, flagNames[bkFlag & 0xff] + " (ENTER to change)");
 }
 
 // ***************************
@@ -254,7 +256,7 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		FBM_PERLIN,TURBULENCE_PERLIN,
 		FBM_SIMPLEX,TURBULENCE_SIMPLEX,
 		FBM_WAVELET,TURBULENCE_WAVELET }; // which function we render
-	static const char *funcName[]={
+	static const std::vector<std::string> funcName = {
 		"1 : perlin noise       ",
 		"2 : simplex noise      ",
 		"3 : wavelet noise      ",
@@ -326,10 +328,10 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		if ( curfunc == func ) {
 				sampleConsole.setDefaultForeground(TCODColor::white);
 				sampleConsole.setDefaultBackground(TCODColor::lightBlue);
-				sampleConsole.printf(2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
+				sampleConsole.print(2, 2 + curfunc, funcName[curfunc], TCOD_LEFT, TCOD_BKGND_SET);
 		} else {
 				sampleConsole.setDefaultForeground(TCODColor::grey);
-				sampleConsole.printf(2,2+curfunc,funcName[curfunc]);
+				sampleConsole.print(2,2 + curfunc, funcName[curfunc]);
 		}
 	}
 	// draw parameters
@@ -420,7 +422,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	static TCODNoise *noise=NULL;
 	static bool light_walls=true;
 	static int algonum=0;
-	static const char *algo_names[]={"BASIC      ", "DIAMOND    ", "SHADOW     ",
+	static const std::vector<std::string> algo_names={"BASIC      ", "DIAMOND    ", "SHADOW     ",
 		"PERMISSIVE0","PERMISSIVE1","PERMISSIVE2","PERMISSIVE3","PERMISSIVE4",
 		"PERMISSIVE5","PERMISSIVE6","PERMISSIVE7","PERMISSIVE8","RESTRICTIVE"};
 	static float torchx=0.0f; // torch light position in the perlin noise
@@ -445,7 +447,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		sampleConsole.clear();
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum].c_str());
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
 		// draw windows
@@ -542,13 +544,13 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		torch=!torch;
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum].c_str());
 		sampleConsole.setDefaultForeground(TCODColor::black);
 	} else if ( key->c == 'W' || key->c == 'w' ) {
 		light_walls=!light_walls;
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum].c_str());
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
 	} else if ( key->c == '+' || key->c == '-' ) {
@@ -556,7 +558,7 @@ void render_fov(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		algonum=CLAMP(0,NB_FOV_ALGORITHMS-1,algonum);
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.printf(1,0,"IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum]);
+			torch ? "on " : "off", light_walls ? "on "  : "off", algo_names[algonum].c_str());
 		sampleConsole.setDefaultForeground(TCODColor::black);
 		recomputeFov=true;
 	}
@@ -713,8 +715,8 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		sampleConsole.setDefaultForeground(TCODColor::white);
 		sampleConsole.putChar(dx,dy,'+',TCOD_BKGND_NONE);
 		sampleConsole.putChar(px,py,'@',TCOD_BKGND_NONE);
-		sampleConsole.printf(1,1,"IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
-		sampleConsole.printf(1,4,"Using : A*");
+		sampleConsole.print(1, 1, std::string("IJKL / mouse :\nmove destination\nTAB : A*/dijkstra"));
+		sampleConsole.print(1, 4, std::string("Using : A*"));
 		// draw windows
 		for (int y=0; y < SAMPLE_SCREEN_HEIGHT; y++ ) {
 			for (int x=0; x < SAMPLE_SCREEN_WIDTH; x++ ) {
@@ -833,9 +835,9 @@ void render_path(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	} else if ( key->vk == TCODK_TAB ) {
 		usingAstar = ! usingAstar;
 		if ( usingAstar )
-			sampleConsole.printf(1,4,"Using : A*      ");
+			sampleConsole.print(1, 4, std::string("Using : A*      "));
 		else
-			sampleConsole.printf(1,4,"Using : Dijkstra");
+			sampleConsole.print(1, 4, std::string("Using : Dijkstra"));
 		recalculatePath=true;
 	}
 	mx = mouse->cx-SAMPLE_SCREEN_X;
@@ -1384,7 +1386,7 @@ void render_sdl(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 // ***************************
 // the list of samples
 // ***************************
-sample_t samples[] = {
+const std::vector<sample_t> samples = {
 	{"  True colors        ",render_colors},
 	{"  Offscreen console  ",render_offscreen},
 	{"  Line drawing       ",render_lines},
@@ -1399,7 +1401,7 @@ sample_t samples[] = {
 	{"  SDL callback       ",render_sdl},
 #endif
 };
-int nbSamples = sizeof(samples)/sizeof(sample_t); // total number of samples
+const int nbSamples = samples.size(); // total number of samples
 
 // ***************************
 // the main function
@@ -1419,7 +1421,7 @@ int main( int argc, char *argv[] ) {
 	int fontFlags=TCOD_FONT_TYPE_GREYSCALE|TCOD_FONT_LAYOUT_TCOD, fontNewFlags=0;
 	bool creditsEnd=false;
 	int cur_renderer=0;
-	static const char *renderer_name[TCOD_NB_RENDERERS] = {
+	static const std::vector<std::string> renderer_name = {
 		"F1 GLSL   ","F2 OPENGL ","F3 SDL    ","F4 SDL2   ","F5 OPENGL2"
 	};
 
@@ -1495,7 +1497,7 @@ int main( int argc, char *argv[] ) {
 				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
 			// print the sample name
-			TCODConsole::root->printf(2,46-(nbSamples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
+			TCODConsole::root->print(2,46-(nbSamples-i),samples[i].name,TCOD_LEFT,TCOD_BKGND_SET);
 		}
 		// print the help message
 		TCODConsole::root->setDefaultForeground(TCODColor::grey);
@@ -1536,7 +1538,7 @@ int main( int argc, char *argv[] ) {
 				TCODConsole::root->setDefaultForeground(TCODColor::grey);
 				TCODConsole::root->setDefaultBackground(TCODColor::black);
 			}
-			TCODConsole::root->printf(42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
+			TCODConsole::root->print(42, 46 - (TCOD_NB_RENDERERS - i), renderer_name[i], TCOD_LEFT, TCOD_BKGND_SET);
 		}
 
 		// update the game screen

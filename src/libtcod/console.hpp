@@ -720,6 +720,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  TCODLIB_FORMAT(4, 5)
   void printf(int x, int y, const char *fmt, ...);
   /**
    *  Format and print a UTF-8 string to the console with specific alignment
@@ -728,6 +729,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  TCODLIB_FORMAT(6, 7)
   void printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
               const char *fmt, ...);
   /**
@@ -764,7 +766,8 @@ public :
 		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
-   	int printRect(int x, int y, int w, int h, const char *fmt, ...);
+  TCODLIB_FORMAT(6, 7)
+  int printRect(int x, int y, int w, int h, const char *fmt, ...);
 
 	/**
 	@PageName console_print
@@ -790,7 +793,9 @@ public :
 	@Param alignment defines how the strings are printed on screen.
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
-	int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+  TCODLIB_FORMAT(8, 9)
+  int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
+                  TCOD_alignment_t alignment, const char *fmt, ...);
 
 	/**
 	@PageName console_print
@@ -809,7 +814,8 @@ public :
 		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
-	int getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
+  TCODLIB_FORMAT(6, 7)
+  int getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
 
 	/**
 	@PageName console_print

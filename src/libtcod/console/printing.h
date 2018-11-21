@@ -58,21 +58,21 @@ TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_Console* con,int x, int y,
 #endif
 
 /* UTF-8 functions */
-TCODLIB_API void TCOD_console_printf(TCOD_Console* con, int x, int y,
-                                     const char *fmt, ...);
-TCODLIB_API void TCOD_console_printf_ex(
+TCODLIB_API TCODLIB_FORMAT(4, 5) void TCOD_console_printf(
+    TCOD_Console* con, int x, int y, const char *fmt, ...);
+TCODLIB_API TCODLIB_FORMAT(6, 7) void TCOD_console_printf_ex(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment, const char *fmt, ...);
-TCODLIB_API int TCOD_console_printf_rect(
+TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
     TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...);
-TCODLIB_API int TCOD_console_printf_rect_ex(
+TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
     TCOD_Console* con,int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
-TCODLIB_API
+TCODLIB_API TCODLIB_FORMAT(8, 9)
 void TCOD_console_printf_frame(struct TCOD_Console *con,
                                int x, int y, int w, int h, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...);
-TCODLIB_API
+TCODLIB_API TCODLIB_FORMAT(6, 7)
 int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
                                      int x, int y, int w, int h,
                                      const char *fmt, ...);

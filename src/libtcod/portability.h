@@ -187,6 +187,14 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #define TCOD_DEPRECATED_NOMESSAGE
 #endif
 
+/* Tells GCC the these functions are like printf. */
+#ifdef __GNUC__
+#define TCODLIB_FORMAT(str_index, first_arg) \
+    __attribute__((format(printf, str_index, first_arg)))
+#else
+#define TCODLIB_FORMAT(str_index, first_arg)
+#endif
+
 #ifdef __cplusplus
 }
 #endif

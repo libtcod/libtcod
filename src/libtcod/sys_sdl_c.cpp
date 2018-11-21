@@ -48,8 +48,8 @@ static TCOD_SDL_driver_t *sdl=NULL;
 #ifdef TCOD_WINDOWS
 #define NOMINMAX 1
 #include <windows.h>
-BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD reason, LPVOID reserved) {
-	switch (reason ) {
+BOOL APIENTRY DllMain(HINSTANCE, DWORD reason, LPVOID) {
+	switch (reason) {
 		case DLL_PROCESS_ATTACH : sdl = SDL_implementation_factory(); break;
 		default : break;
 	}
@@ -98,7 +98,7 @@ typedef struct {
 	void (*write)(const SDL_Surface *surf, const char *filename);
 } image_support_t;
 
-static image_support_t image_type[] = {
+static constexpr image_support_t image_type[] = {
 	{ "BMP", TCOD_sys_check_bmp, TCOD_sys_read_bmp, TCOD_sys_write_bmp },
 	{ "PNG", TCOD_sys_check_png, TCOD_sys_read_png, TCOD_sys_write_png },
 	{ NULL, NULL, NULL, NULL },
@@ -473,8 +473,13 @@ void TCOD_sys_decode_font_(void)
     TCOD_sys_map_clone_(0x2518, 0xD9);
   }
 }
-
-void TCOD_sys_set_custom_font(const char *fontFile,int nb_ch, int nb_cv, int flags) {
+/**
+ *  This function used to handle more stuff, now it only initializes the
+ *  legacy font system.
+ *
+ *  See TCOD_console_set_custom_font.
+ */
+void TCOD_sys_set_custom_font(const char*, int, int, int) {
   check_ascii_to_tcod();
 }
 
@@ -906,7 +911,7 @@ static char *TCOD_strcasestr (const char *haystack, const char *needle) {
 }
 
 void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
-	image_support_t *img=image_type;
+	const image_support_t *img=image_type;
 	while ( img->extension != NULL && TCOD_strcasestr(filename,img->extension) == NULL ) img++;
 	if ( img->extension == NULL || img->write == NULL ) img=image_type; /* default to bmp */
 	img->write((SDL_Surface *)bitmap,filename);
@@ -1290,13 +1295,14 @@ static TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event *ev,
       return TCOD_EVENT_NONE;
   }
 }
-static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
-	TCOD_event_t retMask = TCOD_EVENT_NONE;
+static TCOD_event_t TCOD_sys_handle_event(
+    SDL_Event *ev, TCOD_event_t eventMask,
+    TCOD_key_t *key, TCOD_mouse_t *mouse)
+{
+	int retMask = TCOD_EVENT_NONE;
 	/* printf("TCOD_sys_handle_event type=%04x\n", ev->type); */
-	retMask = static_cast<TCOD_event_t>(
-      retMask | TCOD_sys_handle_mouse_event(ev, mouse) & eventMask);
-  retMask = static_cast<TCOD_event_t>(
-      retMask | TCOD_sys_handle_key_event(ev, key) & eventMask);
+	retMask |= TCOD_sys_handle_mouse_event(ev, mouse) & eventMask;
+	retMask |= TCOD_sys_handle_key_event(ev, key) & eventMask;
 	switch(ev->type) {
 #ifdef TCOD_TOUCH_INPUT
 		/*
@@ -1496,7 +1502,7 @@ static TCOD_event_t TCOD_sys_handle_event(SDL_Event *ev,TCOD_event_t eventMask, 
  		break;
 		default : break;
 	}
-	return retMask;
+	return static_cast<TCOD_event_t>(retMask);
 }
 /**
  *  Internal function containing code shared by TCOD_sys_wait_for_event
@@ -1623,7 +1629,7 @@ void TCOD_sys_sleep_milli(uint32_t milliseconds) {
 }
 
 void *TCOD_sys_load_image(const char *filename) {
-	image_support_t *img=image_type;
+	const image_support_t *img=image_type;
 	while ( img->extension != NULL && !img->check_type(filename) ) img++;
 	if ( img->extension == NULL || img->read == NULL ) return NULL; /* unknown format */
 	return img->read(filename);

@@ -72,6 +72,7 @@ TCODLIB_API void TCOD_heightmap_add_voronoi(TCOD_heightmap_t *hm, int nbPoints, 
 TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t *hm, TCOD_random_t rnd, float roughness);
 TCODLIB_API void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale);
 TCODLIB_API void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale);
+TCOD_DEPRECATED("This function is not implemented.")
 TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t *hm, float seaLevel,TCOD_random_t rnd);
 #ifdef __cplusplus
 }

@@ -56,6 +56,10 @@ class SDL2Renderer: public TilesetObserver {
   : SDL2Renderer(renderer, SDL2TilesetAlias(renderer, tileset))
   {}
 
+  void on_tileset_changed(
+      const std::vector<std::pair<int, Tile&>> &changes) override
+  {}
+
   ~SDL2Renderer();
 
   struct SDL_Texture* render(const TCOD_Console* console);

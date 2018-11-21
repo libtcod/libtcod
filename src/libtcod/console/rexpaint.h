@@ -29,7 +29,8 @@
 #define TCOD_CONSOLE_REXPAINT_H_
 
 #include "../portability.h"
-#include "../console.h"
+#include "../console_types.h"
+#include "../list.h"
 TCODLIB_CAPI TCOD_console_t TCOD_console_from_xp(const char *filename);
 TCODLIB_CAPI bool TCOD_console_load_xp(TCOD_Console* con,
                                        const char *filename);

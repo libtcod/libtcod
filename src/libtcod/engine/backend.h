@@ -46,16 +46,12 @@ class Backend {
    *  Legacy wait for event virtual function.
    */
   virtual TCOD_event_t legacy_wait_for_event(
-      int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
-    return TCOD_EVENT_NONE;
-  }
+      int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) = 0;
   /**
    *  Legacy check for event virtual function.
    */
   virtual TCOD_event_t legacy_check_for_event(
-      int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
-    return TCOD_EVENT_NONE;
-  }
+      int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) = 0;
 };
 } // namespace engine
 } // namespace tcod

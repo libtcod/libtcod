@@ -28,6 +28,7 @@
 #include "drawing.h"
 
 #include "../libtcod_int.h"
+#include "../console.h"
 /**
  *  Clamp the given values to fit within a console.
  */

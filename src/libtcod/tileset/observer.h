@@ -87,8 +87,7 @@ class TilesetObserver {
    *  The Tileset may have been resized.
    */
   virtual void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes)
-  {}
+      const std::vector<std::pair<int, Tile&>> &changes) = 0;
   std::shared_ptr<Tileset>& get_tileset()
   {
     return tileset_;

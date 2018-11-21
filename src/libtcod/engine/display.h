@@ -65,9 +65,9 @@ class Display {
  */
 class TerminalDisplay: public Display {
  public:
-  virtual void set_tileset(std::shared_ptr<Tileset> tileset) override
+  virtual void set_tileset(std::shared_ptr<Tileset>) override
   {}
-  virtual void set_title(const std::string& title) override
+  virtual void set_title(const std::string&) override
   {}
   virtual std::string get_title() override
   {
@@ -76,12 +76,12 @@ class TerminalDisplay: public Display {
   /**
    *  Terminals do not support fullscreen modes.
    */
-  virtual void set_fullscreen(bool fullscreen)
+  virtual void set_fullscreen(bool) override
   {}
   /**
    *  Return a negative error code.
    */
-  virtual int get_fullscreen()
+  virtual int get_fullscreen() override
   {
     return -1;
   }

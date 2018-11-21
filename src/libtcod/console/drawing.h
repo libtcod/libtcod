@@ -27,7 +27,6 @@
  */
 #ifndef TCOD_CONSOLE_DRAWING_H_
 #define TCOD_CONSOLE_DRAWING_H_
-#include "../console.h"
 #include "../console_types.h"
 #include "../portability.h"
 /**

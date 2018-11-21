@@ -1081,9 +1081,6 @@ static void TCOD_console_read_asc(TCOD_console_t con,FILE *f,int width, int heig
     fclose(f);
 }
 
-static void TCOD_console_read_apf(TCOD_console_t con,FILE *f,int width, int height, float version) {
-}
-
 static int string_ends_with(const char *str, const char *suffix) {
 	size_t str_len = strlen(str);
 	size_t suffix_len = strlen(suffix);
@@ -1122,8 +1119,6 @@ TCOD_console_t TCOD_console_from_file(const char *filename) {
 	con=TCOD_console_new(width,height);
 	if (string_ends_with(filename, ".asc")) {
 		TCOD_console_read_asc(con,f,width,height,version);
-	} else {
-		TCOD_console_read_apf(con,f,width,height,version);
 	}
 	return con;
 }

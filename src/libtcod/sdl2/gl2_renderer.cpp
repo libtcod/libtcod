@@ -140,6 +140,9 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     gl_check();
   }
+  void on_tileset_changed(
+      const std::vector<std::pair<int, Tile&>> &changes) override
+  {}
  private:
   OpenGLTilesetAlias alias_;
   GLProgram program_;

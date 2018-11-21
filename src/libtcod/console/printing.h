@@ -29,7 +29,7 @@
 #define TCOD_CONSOLE_PRINTING_H_
 
 #include "../portability.h"
-#include "../console.h"
+#include "../console_types.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -6,8 +6,11 @@ AM_CFLAGS = \
 	-fvisibility=hidden \
 	-DLIBTCOD_EXPORTS \
 	-DNO_OPENGL \
-	-DNDEBUG -O2 \
+	-DNDEBUG \
+	-O3 \
 	-Wall \
+	-Wextra \
+	-Wpedantic \
 	$(SDL_CFLAGS) $(X11_CFLAGS) $(ZLIB_CFLAGS)
 
 AM_CPPFLAGS = $(AM_CFLAGS)

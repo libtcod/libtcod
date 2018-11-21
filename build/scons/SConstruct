@@ -364,28 +364,41 @@ if 'NO_OPENGL' not in env['CPPDEFINES']:
 # Which source files to compile into the main libtcod shared library.
 libtcod_sources = {
     # Compiles all source files under src/libtcod
-    'auto': (
-        env.Glob('$VARIANT/src/libtcod/*.c*')
-        + env.Glob('$VARIANT/src/libtcod/*/*.c*')
-        # Vendor sources.
-        + env.Glob('$VARIANT/src/vendor/*.c*')
-        + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
-        + env.Glob('$VARIANT/src/vendor/zlib/*.c'),
-    ),
+    'auto': {
+        'source': (
+            env.Glob('$VARIANT/src/libtcod/*.c*')
+            + env.Glob('$VARIANT/src/libtcod/*/*.c*')
+        ),
+        'vendor': (
+            env.Glob('$VARIANT/src/vendor/*.c*')
+            + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
+            + env.Glob('$VARIANT/src/vendor/zlib/*.c'),
+        ),
+    },
     # libtcod_c.c and libtcod.cpp are helper sources that include all other
     # files needed to build libtcod.
-    'static': (
-        # Bundle zlib sources.
-        env.Glob('$VARIANT/src/vendor/zlib/*.c')
-        # Bundle lodepng.
-        + ['$VARIANT/src/vendor/glad.c']
-        + ['$VARIANT/src/vendor/lodepng.cpp']
-        + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
-        # All other dependences are in the composite sources.
-        + ['$VARIANT/src/libtcod_c.c',
-           '$VARIANT/src/libtcod.cpp'],
-    ),
+    'static': {
+        'source' : ['$VARIANT/src/libtcod_c.c', '$VARIANT/src/libtcod.cpp'],
+        'vendor': (
+            # Bundle zlib sources.
+            env.Glob('$VARIANT/src/vendor/zlib/*.c')
+            # Bundle lodepng.
+            + ['$VARIANT/src/vendor/glad.c']
+            + ['$VARIANT/src/vendor/lodepng.cpp']
+            + ['$VARIANT/src/vendor/utf8proc/utf8proc.c']
+        ),
+    },
 }
+
+env_vendored = env_libtcod.Clone()
+env_vendored.Append(
+    CCFLAGS=['-w'], # Hide all warnings for vendored sources.
+    PDB=['$VARIANT/libtcod.pdb'],
+)
+
+vendors = env_vendored.SharedObject(
+    source=libtcod_sources[env['SOURCE_FILES']]['vendor'],
+)
 
 env_libtcod_dll = env_libtcod.Clone()
 env_libtcod_dll.Append(
@@ -395,7 +408,7 @@ env_libtcod_dll.Append(
 
 libtcod = env_libtcod_dll.SharedLibrary(
     target='$VARIANT/libtcod',
-    source=libtcod_sources[env['SOURCE_FILES']],
+    source=libtcod_sources[env['SOURCE_FILES']]['source'] + vendors,
 )
 
 if sys.platform == 'darwin':

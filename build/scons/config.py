@@ -2,7 +2,11 @@
 
 DEBUG_GCC = {
     #'CFLAGS': ['-Wstrict-prototypes'],
-    'CCFLAGS': ['-Wall', '-g', '-fvisibility=hidden'],
+    'CCFLAGS': [
+        '-Wall', '-Wextra', '-Wpedantic',
+        '-g',
+        '-fvisibility=hidden'
+    ],
 }
 DEBUG_MSVC = {
     'CCFLAGS': ['/nologo', '-W3'],
@@ -10,7 +14,12 @@ DEBUG_MSVC = {
 }
 
 SIZE_GCC = {
-    'CCFLAGS': ['-Wall', '-Os', '-flto', '-fvisibility=hidden'],
+    'CCFLAGS': [
+        '-Wall', '-Wextra', '-Wpedantic',
+        '-Os',
+        '-flto',
+        '-fvisibility=hidden'
+    ],
     'LINKFLAGS': ['-Os', '-flto'],
 }
 SIZE_MSVC = {
@@ -19,7 +28,12 @@ SIZE_MSVC = {
 }
 
 PERFORMANCE_GCC = {
-    'CCFLAGS': ['-Wall', '-O3', '-flto', '-fvisibility=hidden'],
+    'CCFLAGS': [
+        '-Wall', '-Wextra', '-Wpedantic',
+        '-O3',
+        '-flto',
+        '-fvisibility=hidden'
+    ],
     'LINKFLAGS': ['-O3', '-flto'],
 }
 PERFORMANCE_MSVC = {

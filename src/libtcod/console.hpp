@@ -1779,6 +1779,11 @@ public :
 		... use off1
 		off1=nil -- release the reference
 	*/
+  TCOD_DEPRECATED("This function is a stub and will do nothing.")
+  static void setKeyboardRepeat(int initialDelay,int interval);
+  TCOD_DEPRECATED("This function is a stub and will do nothing.")
+  static void disableKeyboardRepeat();
+
 	virtual ~TCODConsole();
 
 	void setDirty(int x, int y, int w, int h);

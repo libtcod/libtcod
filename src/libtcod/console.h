@@ -111,6 +111,12 @@ TCODLIB_API void TCOD_console_delete(TCOD_console_t console);
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
+
+TCOD_DEPRECATED("This function is a stub and will do nothing.")
+TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay,
+                                                  int interval);
+TCOD_DEPRECATED("This function is a stub and will do nothing.")
+TCODLIB_API void TCOD_console_disable_keyboard_repeat();
 #ifdef __cplusplus
 }
 #endif

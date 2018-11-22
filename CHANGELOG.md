@@ -12,6 +12,9 @@ since `1.7.0`.
 
 ### Fixed
 - `FONT_LAYOUT_CP437` constant was missing from libtcodpy.
+- Function stubs for `TCOD_console_set_keyboard_repeat` and
+  `TCOD_console_disable_keyboard_repeat` have been added to the ABI, this
+  should fix older programs which depended on them existing.
 
 ## [1.10.0] - 2018-11-17
 ### Added
@@ -259,7 +262,8 @@ since `1.7.0`.
 
 ### Removed
 - Removed SDL1 support.
-- Removed C/C++/Python API functions TCOD_sys_set_keyboard_repeat and TCOD_sys_disable_keyboard_repeat.  This was SDL1 functionality, and not supported in SDL2.
+- Removed C/C++/Python API functions `TCOD_console_set_keyboard_repeat` and
+  `TCOD_console_disable_keyboard_repeat`.  This was SDL1 functionality, and not supported in SDL2.
 
 ## [1.6.1] - 2016-09-23
 ### Changed

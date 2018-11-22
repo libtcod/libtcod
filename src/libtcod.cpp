@@ -38,6 +38,7 @@
 #include "libtcod/color.cpp"
 #include "libtcod/console.cpp"
 #include "libtcod/console_c.cpp"
+#include "libtcod/deprecated.cpp"
 #include "libtcod/fov.cpp"
 #include "libtcod/heightmap.cpp"
 #include "libtcod/image.cpp"

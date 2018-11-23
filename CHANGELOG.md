@@ -7,7 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
-## Changed
+
+## [1.10.1] - 2018-11-23
+### Changed
 - `RENDERER_OPENGL2` now only needs OpenGL 2.0 to load.
 
 ### Fixed

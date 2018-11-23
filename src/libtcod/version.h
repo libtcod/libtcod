@@ -30,9 +30,9 @@
 
 #define TCOD_MAJOR_VERSION  1
 #define TCOD_MINOR_VERSION  10
-#define TCOD_PATCHLEVEL     0
+#define TCOD_PATCHLEVEL     2
 
-#define TCOD_STRVERSION "1.10.0"
+#define TCOD_STRVERSION "1.10.2"
 
 #define TCOD_HEXVERSION (0x010000 * TCOD_MAJOR_VERSION \
                          + 0x0100 * TCOD_MINOR_VERSION \
@@ -42,3 +42,4 @@
 #define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
 
 #endif /* LIBTCOD_VERSION_H */
+

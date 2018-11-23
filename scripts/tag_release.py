@@ -106,7 +106,7 @@ def main():
         )
         subprocess.check_call(
             ['git', 'tag', args.tag, '-a', '-m',
-             '%s\n%s' % (args.tag, changes)] + edit,
+             '%s\n\n%s' % (args.tag, changes)] + edit,
         )
         subprocess.check_call(
             ['git', 'push', '--follow-tags'],

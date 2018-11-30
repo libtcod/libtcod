@@ -322,14 +322,16 @@ void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_loc
 }
 */
 
-int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...) {
-	va_list ap;
-	struct TCOD_Console *dat=(struct TCOD_Console *)data;
-	TCOD_IFNOT ( dat != NULL ) return 0;
-	va_start(ap,fmt);
-	int ret = TCOD_console_print_internal(data,x,y,w,h,dat->bkgnd_flag,dat->alignment,TCOD_console_vsprint(fmt,ap),true,false);
-	va_end(ap);
-	return ret;
+int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...)
+{
+  va_list ap;
+  TCOD_IFNOT (data != NULL) { return 0; }
+  va_start(ap,fmt);
+  int ret = TCOD_console_print_internal(
+      data, x, y, w, h, data->bkgnd_flag, data->alignment,
+      TCOD_console_vsprint(fmt, ap), true, false);
+  va_end(ap);
+  return ret;
 }
 
 int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
@@ -374,13 +376,15 @@ void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY
 	TCOD_console_map_string_to_font_utf(s, fontCharX, fontCharY);
 }
 
-void TCODConsole::print(int x, int y, const wchar_t *fmt, ...) {
-	va_list ap;
-	struct TCOD_Console *dat=(struct TCOD_Console *)data;
-	TCOD_IFNOT ( dat != NULL ) return;
-	va_start(ap,fmt);
-	TCOD_console_print_internal_utf(data,x,y,0,0,dat->bkgnd_flag,dat->alignment,TCOD_console_vsprint_utf(fmt,ap),false,false);
-	va_end(ap);
+void TCODConsole::print(int x, int y, const wchar_t *fmt, ...)
+{
+  va_list ap;
+  TCOD_IFNOT (data != NULL) { return; }
+  va_start(ap, fmt);
+  TCOD_console_print_internal_utf(
+      data, x, y, 0, 0, data->bkgnd_flag, data->alignment,
+      TCOD_console_vsprint_utf(fmt, ap), false, false);
+  va_end(ap);
 }
 
 void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...) {
@@ -390,15 +394,16 @@ void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t
 	va_end(ap);
 }
 
-int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...) {
-	va_list ap;
-	struct TCOD_Console *dat=(struct TCOD_Console *)data;
-	TCOD_IFNOT ( dat != NULL ) return 0;
-	va_start(ap,fmt);
-	int ret = TCOD_console_print_internal_utf(data,x,y,w,h,dat->bkgnd_flag,dat->alignment,
-		TCOD_console_vsprint_utf(fmt,ap),true,false);
-	va_end(ap);
-	return ret;
+int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...)
+{
+  va_list ap;
+  TCOD_IFNOT (data != NULL) { return 0; }
+  va_start(ap,fmt);
+  int ret = TCOD_console_print_internal_utf(
+      data, x, y, w, h, data->bkgnd_flag, data->alignment,
+      TCOD_console_vsprint_utf(fmt, ap), true, false);
+  va_end(ap);
+  return ret;
 }
 
 int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
@@ -423,30 +428,31 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, .
 
 // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
 #define NB_BUFFERS 10
-const char *TCODConsole::getColorControlString( TCOD_colctrl_t ctrl ) {
-	static char buf[NB_BUFFERS][2];
-	static int buf_nb=0;
-	const char *ret;
-	buf[buf_nb][0]=ctrl;
-	buf[buf_nb][1]=0;
-	ret = (const char *)(&buf[buf_nb][0]);
-	buf_nb = (buf_nb+1) % NB_BUFFERS;
-	return ret;
+const char *TCODConsole::getColorControlString(TCOD_colctrl_t ctrl)
+{
+  static char buf[NB_BUFFERS][2];
+  static int buf_nb = 0;
+  buf[buf_nb][0] = ctrl;
+  buf[buf_nb][1] = 0;
+  const char* ret = buf[buf_nb];
+  buf_nb = (buf_nb + 1) % NB_BUFFERS;
+  return ret;
 }
 
 // ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
-const char *TCODConsole::getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col ) {
-	static char buf[NB_BUFFERS][5];
-	static int buf_nb=0;
-	const char *ret;
-	buf[buf_nb][0]=ctrl;
-	buf[buf_nb][1]=col.r;
-	buf[buf_nb][2]=col.g;
-	buf[buf_nb][3]=col.b;
-	buf[buf_nb][4]=0;
-	ret = (const char *)(&buf[buf_nb][0]);
-	buf_nb = (buf_nb+1) % NB_BUFFERS;
-	return ret;
+const char *TCODConsole::getRGBColorControlString(TCOD_colctrl_t ctrl,
+                                                  const TCODColor& col)
+{
+  static char buf[NB_BUFFERS][5];
+  static int buf_nb = 0;
+  buf[buf_nb][0] = ctrl;
+  buf[buf_nb][1] = col.r;
+  buf[buf_nb][2] = col.g;
+  buf[buf_nb][3] = col.b;
+  buf[buf_nb][4] = 0;
+  const char* ret = buf[buf_nb];
+  buf_nb = (buf_nb + 1) % NB_BUFFERS;
+  return ret;
 }
 
 #endif

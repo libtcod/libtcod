@@ -278,13 +278,13 @@ You can use it if you changed the nodes size and position while using the BSP tr
 	@Param node	In the C version, the node reference.
 	*/
 	TCODBsp *getLeft() const {
-		return (TCODBsp *)sons;
+		return static_cast<TCODBsp*>(sons);
 	}
 	TCODBsp *getRight() const {
-		return sons ? (TCODBsp *)(sons->next) : NULL;
+		return sons ? static_cast<TCODBsp*>(sons->next) : NULL;
 	}
 	TCODBsp *getFather() const {
-		return (TCODBsp *)father;
+		return static_cast<TCODBsp*>(father);
 	}
 
 	/**

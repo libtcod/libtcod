@@ -85,13 +85,14 @@ public :
 		TCOD_list_push(intList,(const void *)5);
 		TCOD_list_t intList2 = TCOD_list_duplicate(intList); // intList2 contains two elements : 3 and 5
 	*/
-	TCODList(const TCOD_list_t l) {
-		array=NULL;
-		fillSize=allocSize=0;
-		for ( void **it=TCOD_list_begin(l); it != TCOD_list_end(l); it++ ) {
-			push(*((T *)(it)));
-		}
-	}
+  TCODList(const TCOD_list_t l)
+  {
+    array = NULL;
+    fillSize = allocSize = 0;
+    for (void** it = TCOD_list_begin(l); it != TCOD_list_end(l); ++it) {
+      push(*reinterpret_cast<T*>(it));
+    }
+  }
 	TCODList(const TCODList<T> &l2) {
 		array=NULL;
 		fillSize=allocSize=0;
@@ -244,12 +245,13 @@ public :
 		bool has3 = TCOD_list_contains(intList,(const void *)3); // has3 == true
 		bool has4 = TCOD_list_contains(intList,(const void *)4); // has4 == false
 	*/
-	bool contains(const T elt) const {
-		for ( T* curElt = begin(); curElt != end(); curElt ++) {
-			if ( *curElt == elt ) return true;
-		}
-		return false;
-	}
+  bool contains(const T elt) const
+  {
+    for (T* curElt = begin(); curElt != end(); ++curElt) {
+      if (*curElt == elt) { return true; }
+    }
+    return false;
+  }
 
 	/**
 	@PageName list_list
@@ -470,7 +472,7 @@ public :
 		val = (int)TCOD_list_pop(intList);
 	*/
 	T pop() {
-		if ( fillSize == 0 ) return (T)0;
+		if ( fillSize == 0 ) return T{};
 		return array[--fillSize];
 	}
 
@@ -495,7 +497,7 @@ public :
 		val = (int)TCOD_list_peek(intList);
 	*/
 	T peek() const {
-		if ( fillSize == 0 ) return (T)0;
+		if ( fillSize == 0 ) return T{};
 		return array[fillSize-1];
 	}
 

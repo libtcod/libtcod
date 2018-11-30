@@ -99,9 +99,9 @@ bool TCODBsp::traverseInvertedLevelOrder(ITCODBspCallback *listener, void *userD
 }
 
 void TCODBsp::removeSons() {
-	TCODBsp *node=(TCODBsp *)sons;
+	TCODBsp *node = static_cast<TCODBsp*>(sons);
 	while ( node ) {
-		TCODBsp *nextNode=(TCODBsp *)node->next;
+		TCODBsp *nextNode = static_cast<TCODBsp*>(node->next);
 		node->removeSons();
 		delete node;
 		node=nextNode;

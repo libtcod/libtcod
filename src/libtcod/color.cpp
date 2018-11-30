@@ -337,13 +337,18 @@ TCODColor operator *(float value, const TCODColor &c) {
 	return c*value;
 }
 
-void TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex) {
-	for (int segment=0; segment < nbKey-1; segment++) {
-		int idxStart=keyIndex[segment];
-		int idxEnd=keyIndex[segment+1];
-		int idx;
-		for ( idx=idxStart;idx <= idxEnd; idx++) {
-			map[idx]=TCODColor::lerp(keyColor[segment],keyColor[segment+1],(float)(idx-idxStart)/(idxEnd-idxStart));
-		}
-	}
+void TCODColor::genMap(TCODColor *map, int nbKey, TCODColor const *keyColor,
+                       int const *keyIndex)
+{
+  for (int segment = 0; segment < nbKey - 1; ++segment) {
+    int idxStart = keyIndex[segment];
+    int idxEnd = keyIndex[segment + 1];
+    for (int idx = idxStart; idx <= idxEnd; ++idx) {
+      map[idx] = TCODColor::lerp(
+          keyColor[segment],
+          keyColor[segment + 1],
+          static_cast<float>(idx - idxStart) / (idxEnd - idxStart)
+      );
+    }
+  }
 }

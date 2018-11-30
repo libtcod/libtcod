@@ -556,5 +556,13 @@ inline const TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
   TCOD_ASSERT(console);
   return console;
 }
+/**
+ *  Return true if the console is valid and the index is within it.
+ */
+inline bool TCOD_console_is_index_valid_(const TCOD_Console* console,
+                                         int x, int y)
+{
+  return console && 0 <= x && x < console->w && 0 <= y && y < console->h;
+}
 #endif // __cplusplus
 #endif // TCODLIB_INT_H_

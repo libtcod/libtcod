@@ -1804,7 +1804,7 @@ protected :
       int w, int h, const char* title,
       bool fullscreen, TCOD_renderer_t renderer);
 	TCODConsole();
-	TCOD_console_t data;
+	TCOD_Console* data;
 };
 
 #endif /* TCOD_CONSOLE_SUPPORT */

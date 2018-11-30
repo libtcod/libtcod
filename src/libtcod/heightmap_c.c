@@ -106,7 +106,7 @@ void TCOD_heightmap_add_hill(TCOD_heightmap_t *hm, float hx, float hy, float hra
 		float xdist=( x - hx )*( x - hx );
 		for (y=miny; y < maxy; y++) {
 			float z = hradius2 - xdist - (y - hy)*(y - hy);
-			if ( z > 0.0 ) GET_VALUE(hm,x,y) += z * coef;
+			if (z > 0) { GET_VALUE(hm, x, y) += z * coef; }
 		}
 	}
 }
@@ -125,7 +125,7 @@ void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float hx, float hy, float hra
 			float dist=xdist + (y - hy)*(y - hy);
 			if ( dist < hradius2 ) {
 				float z = (hradius2 - dist) * coef;
-				if ( hheight > 0.0 ) {
+				if (hheight > 0) {
 					if ( GET_VALUE(hm,x,y) < z ) GET_VALUE(hm,x,y) = z;
 				} else {
 					if ( GET_VALUE(hm,x,y) > z ) GET_VALUE(hm,x,y) = z;

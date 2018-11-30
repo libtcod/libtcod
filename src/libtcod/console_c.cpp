@@ -32,6 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <algorithm>
 
 #include <SDL.h>
 #include "console.hpp"
@@ -86,21 +87,20 @@ TCOD_internal_context_t TCOD_ctx={
  *  \param h Number of columns.
  *  \return A pointer to the new console, or NULL on error.
  */
-TCOD_console_t TCOD_console_new(int w, int h)  {
-	TCOD_IFNOT(w > 0 && h > 0 ) {
-		return NULL;
-	} else {
-		struct TCOD_Console *con=(struct TCOD_Console *)calloc(sizeof(struct TCOD_Console),1);
-		if (!con) { return NULL; }
-		con->w=w;
-		con->h=h;
-		TCOD_console_init(con,NULL,false); /* NOTE: CHECK THIS FOR ERORS */
-		if(TCOD_ctx.root) {
-			con->alignment=TCOD_ctx.root->alignment;
-			con->bkgnd_flag=TCOD_ctx.root->bkgnd_flag;
-		}
-		return (TCOD_console_t)con;
-	}
+TCOD_Console* TCOD_console_new(int w, int h)
+{
+  TCOD_IFNOT(w > 0 && h > 0 ) { return NULL; }
+  struct TCOD_Console *con = static_cast<struct TCOD_Console*>(
+      calloc(sizeof(*con), 1));
+  if (!con) { return NULL; }
+  con->w = w;
+  con->h = h;
+  TCOD_console_init(con, NULL, false); /* NOTE: CHECK THIS FOR ERORRS */
+  if (TCOD_ctx.root) {
+    con->alignment = TCOD_ctx.root->alignment;
+    con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
+  }
+  return con;
 }
 /**
  *  Return immediately with a recently pressed key.
@@ -130,18 +130,19 @@ TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
  *  \param con A console pointer.
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
-void TCOD_console_set_background_flag(TCOD_console_t con,TCOD_bkgnd_flag_t flag) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT ( dat != NULL ) return;
-	dat->bkgnd_flag=flag;
+void TCOD_console_set_background_flag(TCOD_Console* con,
+                                      TCOD_bkgnd_flag_t flag)
+{
+  con = TCOD_console_validate_(con);
+  if (con) { con->bkgnd_flag = flag; }
 }
 /**
  *  Return a consoles default background flag.
  */
-TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT ( dat != NULL ) return TCOD_BKGND_NONE;
-	return dat->bkgnd_flag;
+TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_Console* con)
+{
+  con = TCOD_console_validate_(con);
+  return (con ? con->bkgnd_flag : TCOD_BKGND_NONE);
 }
 /**
  *  Set a consoles default alignment.
@@ -149,29 +150,29 @@ TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_console_t con) {
  *  \param con A console pointer.
  *  \param alignment One of TCOD_alignment_t
  */
-void TCOD_console_set_alignment(TCOD_console_t con,TCOD_alignment_t alignment) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT ( dat != NULL ) return;
-	dat->alignment=alignment;
+void TCOD_console_set_alignment(TCOD_Console* con, TCOD_alignment_t alignment)
+{
+  con = TCOD_console_validate_(con);
+  if (con) { con->alignment = alignment; }
 }
 /**
  *  Return a consoles default alignment.
  */
-TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT ( dat != NULL ) return TCOD_LEFT;
-	return dat->alignment;
+TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
+{
+  con = TCOD_console_validate_(con);
+  return (con ? con->alignment : TCOD_LEFT);
 }
 
-void TCOD_console_data_free(struct TCOD_Console *dat)
+void TCOD_console_data_free(struct TCOD_Console *con)
 {
-  if (!dat) { return; }
-  free(dat->ch_array);
-  free(dat->fg_array);
-  free(dat->bg_array);
-  dat->ch_array = NULL;
-  dat->fg_array = NULL;
-  dat->bg_array = NULL;
+  if (!con) { return; }
+  free(con->ch_array);
+  free(con->fg_array);
+  free(con->bg_array);
+  con->ch_array = NULL;
+  con->fg_array = NULL;
+  con->bg_array = NULL;
 }
 /**
  *  Delete a console.
@@ -181,7 +182,7 @@ void TCOD_console_data_free(struct TCOD_Console *dat)
  *  If the console being deleted is the root console, then the display will be
  *  uninitialized.
  */
-void TCOD_console_delete(TCOD_console_t con)
+void TCOD_console_delete(TCOD_Console* con)
 {
   if (con) {
     TCOD_console_data_free(con);
@@ -193,79 +194,70 @@ void TCOD_console_delete(TCOD_console_t con)
   }
 }
 void TCOD_console_blit_key_color(
-		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
-		TCOD_console_t dstCon, int xDst, int yDst,
-		float foreground_alpha, float background_alpha, TCOD_color_t *key_color) {
-	struct TCOD_Console *src = srcCon ? (struct TCOD_Console *)srcCon : TCOD_ctx.root;
-	struct TCOD_Console *dst = dstCon ? (struct TCOD_Console *)dstCon : TCOD_ctx.root;
-	TCOD_color_t *srcFgColors, *srcBgColors, *dstFgColors, *dstBgColors;
-	int cx, cy;
-	if (wSrc == 0) wSrc = src->w;
-	if (hSrc == 0) hSrc = src->h;
-	TCOD_IFNOT(wSrc > 0 && hSrc > 0) return;
-	TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0 && xDst < dst->w && yDst < dst->h) return;
-	srcFgColors = src->fg_array;
-	srcBgColors = src->bg_array;
-	dstFgColors = dst->fg_array;
-	dstBgColors = dst->bg_array;
-	for (cx = xSrc; cx < xSrc + wSrc; cx++) {
-		for (cy = ySrc; cy < ySrc + hSrc; cy++) {
-			/* check if we're outside the dest console */
-			int dx = cx - xSrc + xDst;
-			int dy = cy - ySrc + yDst;
-			int dst_idx = dy * dst->w + dx;
-			int src_idx = cy * src->w + cx;
-			int srcChar, dstChar;
-			TCOD_color_t srcFgColor, srcBgColor, dstFgColor, dstBgColor;
-			if ((unsigned)cx >= (unsigned)src->w || (unsigned)cy >= (unsigned)src->h) continue;
-			if ((unsigned)dx >= (unsigned)dst->w || (unsigned)dy >= (unsigned)dst->h) continue;
-			srcChar = src->ch_array[src_idx];
-			srcFgColor = srcFgColors[src_idx];
-			srcBgColor = srcBgColors[src_idx];
-			/* check if source pixel is transparent */
-			if (key_color &&
-					srcBgColor.r == key_color->r &&
-					srcBgColor.g == key_color->g &&
-					srcBgColor.b == key_color->b) { continue; }
-
-			if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
-				dstChar = srcChar;
-				dstFgColor = srcFgColor;
-				dstBgColor = srcBgColor;
-			}
-			else {
-				dstChar = dst->ch_array[dst_idx];
-				dstFgColor = dstFgColors[dst_idx];
-				dstBgColor = dstBgColors[dst_idx];
-
-				dstBgColor = TCOD_color_lerp(dstBgColor, srcBgColor, background_alpha);
-				if (srcChar == ' ') {
-					dstFgColor = TCOD_color_lerp(dstFgColor, srcBgColor, background_alpha);
-				}
-				else if (dstChar == ' ') {
-					dstChar = srcChar;
-					dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor, foreground_alpha);
-				}
-				else if (dstChar == srcChar) {
-					dstFgColor = TCOD_color_lerp(dstFgColor, srcFgColor, foreground_alpha);
-				}
-				else {
-					if (foreground_alpha < 0.5f) {
-						dstFgColor = TCOD_color_lerp(dstFgColor, dstBgColor,
-							foreground_alpha * 2);
-					}
-					else {
-						dstChar = srcChar;
-						dstFgColor = TCOD_color_lerp(dstBgColor, srcFgColor,
-							(foreground_alpha - 0.5f) * 2);
-					}
-				}
-			}
-			dstFgColors[dst_idx] = dstFgColor;
-			dstBgColors[dst_idx] = dstBgColor;
-			dst->ch_array[dst_idx] = dstChar;
-		}
-	}
+    TCOD_Console* src, int xSrc, int ySrc, int wSrc, int hSrc,
+    TCOD_Console* dst, int xDst, int yDst,
+    float foreground_alpha, float background_alpha,
+    const TCOD_color_t* key_color)
+{
+  src = TCOD_console_validate_(src);
+  dst = TCOD_console_validate_(dst);
+  if (!src || !dst) { return; }
+  if (wSrc == 0) { wSrc = src->w; }
+  if (hSrc == 0) { hSrc = src->h; }
+  TCOD_IFNOT(wSrc > 0 && hSrc > 0) { return; }
+	TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0
+             && xDst < dst->w && yDst < dst->h) { return; }
+  for (int cx = xSrc; cx < xSrc + wSrc; ++cx) {
+    for (int cy = ySrc; cy < ySrc + hSrc; ++cy) {
+      /* Check if we're outside the dest console. */
+      int dx = cx - xSrc + xDst;
+      int dy = cy - ySrc + yDst;
+      int dst_idx = dy * dst->w + dx;
+      int src_idx = cy * src->w + cx;
+      if (!TCOD_console_is_index_valid_(src, cx, cy)) { continue; }
+      if (!TCOD_console_is_index_valid_(dst, dx, dy)) { continue; }
+      /* Source references. */
+      const int& src_ch = src->ch_array[src_idx];
+      const TCOD_color_t& src_fg = src->fg_array[src_idx];
+      const TCOD_color_t& src_bg = src->bg_array[src_idx];
+      /* Check if source pixel is transparent. */
+      if (key_color
+          && src_bg.r == key_color->r
+          && src_bg.g == key_color->g
+          && src_bg.b == key_color->b) { continue; }
+      /* Destination references. */
+      int& dst_ch = dst->ch_array[dst_idx];
+      TCOD_color_t& dst_fg = dst->fg_array[dst_idx];
+      TCOD_color_t& dst_bg = dst->bg_array[dst_idx];
+      if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
+        /* No alpha, so perform a plain copy. */
+        dst_ch = src_ch;
+        dst_fg = src_fg;
+        dst_bg = src_bg;
+        continue;
+      }
+      dst_bg = TCOD_color_lerp(dst_bg, src_bg, background_alpha);
+      if (src_ch == ' ') {
+        /* Source is space, so keep the current glyph. */
+        dst_fg = TCOD_color_lerp(dst_fg, src_bg, background_alpha);
+      } else if (dst_ch == ' ') {
+        /* Destination is space, so use the glyph from source. */
+        dst_ch = src_ch;
+        dst_fg = TCOD_color_lerp(dst_bg, src_fg, foreground_alpha);
+      } else if (dst_ch == src_ch) {
+        dst_fg = TCOD_color_lerp(dst_fg, src_fg, foreground_alpha);
+      } else {
+        /* Pick the glyph based on foreground_alpha. */
+        if (foreground_alpha < 0.5f) {
+          dst_fg = TCOD_color_lerp(dst_fg, dst_bg, foreground_alpha * 2);
+        } else {
+          dst_ch = src_ch;
+          dst_fg = TCOD_color_lerp(
+              dst_bg, src_fg, (foreground_alpha - 0.5f) * 2);
+        }
+      }
+    }
+  }
 }
 /**
  *  Blit from one console to another.
@@ -286,16 +278,16 @@ void TCOD_console_blit_key_color(
  *  If the source console has a key color, this function will use it.
  */
 void TCOD_console_blit(
-		TCOD_console_t srcCon, int xSrc, int ySrc, int wSrc, int hSrc,
-		TCOD_console_t dstCon, int xDst, int yDst,
-		float foreground_alpha, float background_alpha) {
-	struct TCOD_Console *src = srcCon ? (struct TCOD_Console *)srcCon : TCOD_ctx.root;
-	TCOD_console_blit_key_color(
-		srcCon, xSrc, ySrc, wSrc, hSrc, dstCon, xDst, yDst,
-		foreground_alpha, background_alpha,
-		(src->has_key_color ? &src->key_color : NULL)
-		);
-	}
+    TCOD_Console* src, int xSrc, int ySrc, int wSrc, int hSrc,
+    TCOD_Console* dst, int xDst, int yDst,
+    float foreground_alpha, float background_alpha) {
+  src = TCOD_console_validate_(src);
+  if (!src) { return; }
+  TCOD_console_blit_key_color(
+      src, xSrc, ySrc, wSrc, hSrc, dst, xDst, yDst,
+      foreground_alpha, background_alpha,
+      (src->has_key_color ? &src->key_color : NULL));
+  }
 /**
  *  Render and present the root console to the active display.
  */
@@ -338,14 +330,14 @@ TCOD_color_t TCOD_console_get_fading_color(void) {
  *  \param c The character code to place.
  *  \param flag A TCOD_bkgnd_flag_t flag.
  */
-void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_flag_t flag) {
-	int offset;
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	offset = y * dat->w + x;
-	dat->ch_array[offset] = c;
-	TCOD_console_set_char_foreground(dat, x, y, dat->fore);
-	TCOD_console_set_char_background(con, x, y, dat->back, (TCOD_bkgnd_flag_t)flag);
+void TCOD_console_put_char(TCOD_Console* con, int x, int y, int c,
+                           TCOD_bkgnd_flag_t flag)
+{
+  con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
+  con->ch_array[y * con->w + x] = c;
+  TCOD_console_set_char_foreground(con, x, y, con->fore);
+  TCOD_console_set_char_background(con, x, y, con->back, flag);
 }
 /**
  *  Draw a character on the console with the given colors.
@@ -357,14 +349,14 @@ void TCOD_console_put_char(TCOD_console_t con, int x, int y, int c, TCOD_bkgnd_f
  *  \param fore The foreground color.
  *  \param back The background color.  This color will not be blended.
  */
-void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
-	int offset;
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL && (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h) return;
-	offset = y * dat->w + x;
-	dat->ch_array[offset] = c;
-	TCOD_console_set_char_foreground(dat, x, y, fore);
-	TCOD_console_set_char_background(dat, x, y, back, TCOD_BKGND_SET);
+void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c,
+                              TCOD_color_t fore, TCOD_color_t back)
+{
+  con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
+  con->ch_array[y * con->w + x] = c;
+  TCOD_console_set_char_foreground(con, x, y, fore);
+  TCOD_console_set_char_background(con, x, y, back, TCOD_BKGND_SET);
 }
 /**
  *  Manually mark a region of a console as dirty.
@@ -375,17 +367,17 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
 /**
  *  Clear a console to its default colors and the space character code.
  */
-void TCOD_console_clear(TCOD_console_t con) {
-	int i;
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
-	for (i = 0; i < dat->w * dat->h; i++) {
-		dat->ch_array[i] = ' ';
-		dat->fg_array[i] = dat->fore;
-		dat->bg_array[i] = dat->back;
-	}
-	/* clear the sdl renderer cache */
-	TCOD_sys_set_dirty(0, 0, dat->w, dat->h);
+void TCOD_console_clear(TCOD_console_t con)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return; }
+  for (int i = 0; i < con->w * con->h; ++i) {
+    con->ch_array[i] = ' ';
+    con->fg_array[i] = con->fore;
+    con->bg_array[i] = con->back;
+  }
+  /* clear the sdl renderer cache */
+  TCOD_sys_set_dirty(0, 0, con->w, con->h);
 }
 /**
  *  Return the background color of a console at x,y
@@ -395,14 +387,12 @@ void TCOD_console_clear(TCOD_console_t con) {
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the background color.
  */
-TCOD_color_t TCOD_console_get_char_background(
-    const TCOD_Console* con, int x, int y)
+TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con,
+                                              int x, int y)
 {
-	con = TCOD_console_validate_(con);
-	TCOD_IFNOT(con != NULL
-		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
-		return TCOD_black;
-	return con->bg_array[y * con->w + x];
+  con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_black; }
+  return con->bg_array[y * con->w + x];
 }
 /**
  *  Change the foreground color of a console tile.
@@ -412,13 +402,12 @@ TCOD_color_t TCOD_console_get_char_background(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param col The foreground color to set.
  */
-void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_color_t col) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
-	TCOD_IFNOT(dat != NULL
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
-		return;
-	dat->fg_array[y * dat->w + x] = col;
+void TCOD_console_set_char_foreground(TCOD_Console* con,
+                                      int x, int y, TCOD_color_t col)
+{
+  con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
+  con->fg_array[y * con->w + x] = col;
 }
 /**
  *  Return the foreground color of a console at x,y
@@ -428,13 +417,11 @@ void TCOD_console_set_char_foreground(TCOD_console_t con, int x, int y, TCOD_col
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the foreground color.
  */
-TCOD_color_t TCOD_console_get_char_foreground(
-    const TCOD_Console* con, int x, int y)
+TCOD_color_t TCOD_console_get_char_foreground(const TCOD_Console* con,
+                                              int x, int y)
 {
 	con = TCOD_console_validate_(con);
-	TCOD_IFNOT(con != NULL
-		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
-		return TCOD_white;
+	if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_white; }
 	return con->fg_array[y * con->w + x];
 }
 /**
@@ -445,12 +432,27 @@ TCOD_color_t TCOD_console_get_char_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return The character code.
  */
-int TCOD_console_get_char(const TCOD_Console* con, int x, int y) {
+int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
+{
   con = TCOD_console_validate_(con);
-	TCOD_IFNOT(con != NULL
-		&& (unsigned)(x) < (unsigned)con->w && (unsigned)(y) < (unsigned)con->h)
-		return 0;
+	if (!TCOD_console_is_index_valid_(con, x, y)) { return 0; }
 	return con->ch_array[y * con->w + x];
+}
+/**
+ *  Mix two colors using a lambda.
+ */
+template <typename F>
+static TCOD_color_t blend_color_(const TCOD_color_t& bg,
+                                 const TCOD_color_t& fg, const F& lambda)
+{
+  return {
+      static_cast<uint8_t>(
+          std::max<int>(0, std::min<int>(lambda(bg.r, fg.r), 255))),
+      static_cast<uint8_t>(
+          std::max<int>(0, std::min<int>(lambda(bg.g, fg.g), 255))),
+      static_cast<uint8_t>(
+          std::max<int>(0, std::min<int>(lambda(bg.b, fg.b), 255))),
+  };
 }
 /**
  *  Blend a background color onto a console tile.
@@ -461,103 +463,71 @@ int TCOD_console_get_char(const TCOD_Console* con, int x, int y) {
  *  \param col The background color to blend.
  *  \param flag The blend mode to use.
  */
-void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag) {
-	TCOD_color_t *back;
-	int newr, newg, newb;
-	int alpha;
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL
-		&& (unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h)
-		return;
-	back = &(dat->bg_array[y*dat->w + x]);
-	if (flag == TCOD_BKGND_DEFAULT) flag = dat->bkgnd_flag;
-	switch (flag & 0xff) {
-	case TCOD_BKGND_SET: *back = col; break;
-	case TCOD_BKGND_MULTIPLY: *back = TCOD_color_multiply(*back, col); break;
-	case TCOD_BKGND_LIGHTEN:
-		back->r = MAX(back->r, col.r);
-		back->g = MAX(back->g, col.g);
-		back->b = MAX(back->b, col.b);
-		break;
-	case TCOD_BKGND_DARKEN:
-		back->r = MIN(back->r, col.r);
-		back->g = MIN(back->g, col.g);
-		back->b = MIN(back->b, col.b);
-		break;
-	case TCOD_BKGND_SCREEN:
-		/* newbk = white - (white - oldbk) * (white - curbk) */
-		back->r = (uint8_t)(255 - (int)(255 - back->r)*(255 - col.r) / 255);
-		back->g = (uint8_t)(255 - (int)(255 - back->g)*(255 - col.g) / 255);
-		back->b = (uint8_t)(255 - (int)(255 - back->b)*(255 - col.b) / 255);
-		break;
-	case TCOD_BKGND_COLOR_DODGE:
-		/* newbk = curbk / (white - oldbk) */
-		if (back->r != 255) newr = (int)(255 * col.r) / (255 - back->r);
-		else newr = 255;
-		if (back->g != 255) newg = (int)(255 * col.g) / (255 - back->g);
-		else newg = 255;
-		if (back->b != 255) newb = (int)(255 * col.b) / (255 - back->b);
-		else newb = 255;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_COLOR_BURN:
-		/* newbk = white - (white - oldbk) / curbk */
-		if (col.r > 0) newr = 255 - (int)(255 * (255 - back->r)) / col.r;
-		else newr = 0;
-		if (col.g > 0) newg = 255 - (int)(255 * (255 - back->g)) / col.g;
-		else newg = 0;
-		if (col.b > 0) newb = 255 - (int)(255 * (255 - back->b)) / col.b;
-		else newb = 0;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_ADD:
-		/* newbk = oldbk + curbk */
-		newr = (int)(back->r) + col.r;
-		newg = (int)(back->g) + col.g;
-		newb = (int)(back->b) + col.b;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_ADDA:
-		alpha = (flag >> 8);
-		/* newbk = oldbk + alpha * curbk */
-		newr = (int)(back->r) + alpha * col.r / 255;
-		newg = (int)(back->g) + alpha * col.g / 255;
-		newb = (int)(back->b) + alpha * col.b / 255;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_BURN:
-		/* newbk = oldbk + curbk - white */
-		newr = (int)(back->r) + col.r - 255;
-		newg = (int)(back->g) + col.g - 255;
-		newb = (int)(back->b) + col.b - 255;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_OVERLAY:
-		/* newbk = curbk.x <= 0.5 ? 2*curbk*oldbk : white - 2*(white-curbk)*(white-oldbk) */
-		newr = col.r <= 128 ? 2 * (int)(col.r) * back->r / 255 : 255 - 2 * (int)(255 - col.r)*(255 - back->r) / 255;
-		newg = col.g <= 128 ? 2 * (int)(col.g) * back->g / 255 : 255 - 2 * (int)(255 - col.g)*(255 - back->g) / 255;
-		newb = col.b <= 128 ? 2 * (int)(col.b) * back->b / 255 : 255 - 2 * (int)(255 - col.b)*(255 - back->b) / 255;
-		back->r = (uint8_t)CLAMP(0, 255, newr);
-		back->g = (uint8_t)CLAMP(0, 255, newg);
-		back->b = (uint8_t)CLAMP(0, 255, newb);
-		break;
-	case TCOD_BKGND_ALPH:
-		/* newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk) */
-		alpha = (flag >> 8);
-		*back = TCOD_color_lerp(*back, col, (float)(alpha / 255.0f));
-		break;
-	default: break;
-	}
+void TCOD_console_set_char_background(
+    TCOD_Console* con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag)
+{
+  con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
+	TCOD_color_t& bg = con->bg_array[y * con->w + x];
+  if (flag == TCOD_BKGND_DEFAULT) { flag = con->bkgnd_flag; }
+  int alpha = flag >> 8;
+  switch (flag & 0xff) {
+    case TCOD_BKGND_SET:
+      bg = col;
+      break;
+    case TCOD_BKGND_MULTIPLY:
+      bg = TCOD_color_multiply(bg, col);
+      break;
+    case TCOD_BKGND_LIGHTEN:
+      bg = blend_color_(bg, col,
+          [](uint8_t a, uint8_t b){ return std::max<uint8_t>(a, b); });
+      break;
+    case TCOD_BKGND_DARKEN:
+      bg = blend_color_(bg, col,
+          [](uint8_t a, uint8_t b){ return std::min<uint8_t>(a, b); });
+      break;
+    case TCOD_BKGND_SCREEN:
+      // newbk = white - (white - oldbk) * (white - curbk)
+      bg = blend_color_(bg, col,
+          [](int a, int b){ return 255 - (255 - a) * (255 - b) / 255; });
+      break;
+    case TCOD_BKGND_COLOR_DODGE:
+      // newbk = curbk / (white - oldbk)
+      bg = blend_color_(bg, col,
+          [](int a, int b){ return (a == 255 ? 255 : 255 * b / (255 - a)); });
+      break;
+    case TCOD_BKGND_COLOR_BURN:
+      // newbk = white - (white - oldbk) / curbk
+      bg = blend_color_(bg, col,
+          [](int a, int b){
+              return (b == 0 ? 0 : 255 - (255 * (255 - a)) / b); });
+      break;
+    case TCOD_BKGND_ADD:
+      // newbk = oldbk + curbk
+      bg = blend_color_(bg, col, [](int a, int b){ return a + b; });
+      break;
+    case TCOD_BKGND_ADDA:
+      // newbk = oldbk + alpha * curbk
+      bg = blend_color_(bg, col,
+          [=](int a, int b){ return a + alpha * b / 255; });
+      break;
+    case TCOD_BKGND_BURN:
+      // newbk = oldbk + curbk - white
+      bg = blend_color_(bg, col, [](int a, int b){ return a + b - 255; });
+      break;
+    case TCOD_BKGND_OVERLAY:
+      // newbk = curbk.x <= 0.5 ? 2*curbk*oldbk
+      //                        : white - 2*(white-curbk)*(white-oldbk)
+      bg = blend_color_(bg, col, [](int a, int b){
+        return (b <= 128 ? 2 * b * a / 255
+                         : 255 - 2 * (255 - b) * (255 - a) / 255); });
+      break;
+    case TCOD_BKGND_ALPH:
+      // newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
+      bg = TCOD_color_lerp(bg, col, alpha / 255.0f);
+      break;
+    default: break;
+  }
 }
 /**
  *  Change a character on a console tile, without changing its colors.
@@ -567,69 +537,74 @@ void TCOD_console_set_char_background(TCOD_console_t con, int x, int y, TCOD_col
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param c The character code to set.
  */
-void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	if ((unsigned)(x) >= (unsigned)dat->w || (unsigned)(y) >= (unsigned)dat->h) return;
-	dat->ch_array[y * dat->w + x] = c;
+void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c)
+{
+	con = TCOD_console_validate_(con);
+  if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
+	con->ch_array[y * con->w + x] = c;
 }
-static void TCOD_console_data_alloc(struct TCOD_Console *dat) {
-  if (!dat->ch_array) {
-    dat->ch_array = static_cast<int*>(
-        calloc(sizeof(int), dat->w * dat->h));
+static void TCOD_console_data_alloc(struct TCOD_Console *con)
+{
+  if (!con->ch_array) {
+    con->ch_array = static_cast<int*>(
+        calloc(sizeof(con->ch_array[0]), con->w * con->h));
   }
-  if (!dat->fg_array) {
-    dat->fg_array = static_cast<TCOD_color_t*>(
-        calloc(sizeof(TCOD_color_t), dat->w * dat->h));
+  if (!con->fg_array) {
+    con->fg_array = static_cast<TCOD_color_t*>(
+        calloc(sizeof(con->fg_array[0]), con->w * con->h));
   }
-  if (!dat->bg_array) {
-    dat->bg_array = static_cast<TCOD_color_t*>(
-        calloc(sizeof(TCOD_color_t), dat->w * dat->h));
+  if (!con->bg_array) {
+    con->bg_array = static_cast<TCOD_color_t*>(
+        calloc(sizeof(con->bg_array[0]), con->w * con->h));
   }
 }
 
-bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen) {
-	int i;
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return false;
-	dat->fore=TCOD_white;
-	dat->back=TCOD_black;
+bool TCOD_console_init(TCOD_Console* con, const char *title, bool fullscreen)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return false; }
+  con->fore = TCOD_white;
+  con->back = TCOD_black;
 
-	TCOD_console_data_alloc(dat);
+  TCOD_console_data_alloc(con);
 
-	dat->bkgnd_flag=TCOD_BKGND_NONE;
-	dat->alignment=TCOD_LEFT;
-	for (i=0; i< dat->w*dat->h; i++) {
-		dat->ch_array[i] = ' ';
-	}
-	if ( title ) {
-		if (! TCOD_sys_init(dat, fullscreen) ) return false;
-		TCOD_sys_set_window_title(title);
-	}
-	return true;
+  con->bkgnd_flag = TCOD_BKGND_NONE;
+  con->alignment = TCOD_LEFT;
+  for (int i = 0; i < con->w * con->h; ++i) {
+    con->ch_array[i] = ' ';
+  }
+  if (title) {
+    if (!TCOD_sys_init(con, fullscreen) ) { return false; }
+    TCOD_sys_set_window_title(title);
+  }
+  return true;
 }
 
-void TCOD_console_set_default_foreground(TCOD_console_t con,TCOD_color_t col) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
-	dat->fore=col;
+void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return; }
+  con->fore = col;
 }
 
-void TCOD_console_set_default_background(TCOD_console_t con,TCOD_color_t col) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
-	dat->back=col;
+void TCOD_console_set_default_background(TCOD_Console* con,TCOD_color_t col)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return; }
+  con->back = col;
 }
 
-TCOD_color_t TCOD_console_get_default_foreground(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return TCOD_white;
-	return dat->fore;
+TCOD_color_t TCOD_console_get_default_foreground(TCOD_Console* con)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return TCOD_white; }
+  return con->fore;
 }
 
-TCOD_color_t TCOD_console_get_default_background(TCOD_console_t con) {
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return TCOD_black;
-	return dat->back;
+TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con) {
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return TCOD_black; }
+  return con->back;
 }
 /**
  *  Return the width of a console.
@@ -638,7 +613,7 @@ int TCOD_console_get_width(const TCOD_Console* con)
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-	return con->w;
+  return con->w;
 }
 /**
  *  Return the height of a console.
@@ -647,7 +622,7 @@ int TCOD_console_get_height(const TCOD_Console* con)
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-	return con->h;
+  return con->h;
 }
 /**
  *  \brief Set a font image to be loaded during initialization.
@@ -718,10 +693,12 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
  *
  *  X,Y parameters are the coordinate of the tile, not pixel-coordinates.
  */
-void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY) {
-	/* cannot change mapping before initRoot is called */
-	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
-	TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
+void TCOD_console_map_ascii_code_to_font(int asciiCode,
+                                         int fontCharX, int fontCharY)
+{
+  /* cannot change mapping before initRoot is called */
+  TCOD_IFNOT(TCOD_ctx.root) { return; }
+  TCOD_sys_map_ascii_to_font(asciiCode, fontCharX, fontCharY);
 }
 /**
  *  \brief Remap a series of character codes to a row of tiles.
@@ -734,19 +711,22 @@ void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontC
  *  This function always assigns tiles in row-major order, even if the
  *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
  */
-void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY) {
-	int c;
-	/* cannot change mapping before initRoot is called */
-	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
-	TCOD_IFNOT(asciiCode >= 0 && asciiCode+nbCodes <= TCOD_ctx.max_font_chars) return;
-	for (c=asciiCode; c < asciiCode+nbCodes; c++ ) {
-		TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
-		fontCharX++;
-		if ( fontCharX == TCOD_ctx.fontNbCharHoriz ) {
-			fontCharX=0;
-			fontCharY++;
-		}
-	}
+void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes,
+                                          int fontCharX, int fontCharY)
+{
+  /* cannot change mapping before initRoot is called */
+  TCOD_IFNOT(TCOD_ctx.root) { return; }
+  TCOD_IFNOT(asciiCode >= 0 && asciiCode+nbCodes <= TCOD_ctx.max_font_chars) {
+    return;
+  }
+  for (int c = asciiCode; c < asciiCode + nbCodes; ++c) {
+    TCOD_sys_map_ascii_to_font(c, fontCharX, fontCharY);
+    ++fontCharX;
+    if (fontCharX == TCOD_ctx.fontNbCharHoriz) {
+      fontCharX = 0;
+      ++fontCharY;
+    }
+  }
 }
 /**
  *  \brief Remap a string of character codes to a row of tiles.
@@ -758,29 +738,31 @@ void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCh
  *  This function always assigns tiles in row-major order, even if the
  *  TCOD_FONT_LAYOUT_ASCII_INCOL flag was set.
  */
-void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY) {
-	TCOD_IFNOT(s != NULL) return;
-	/* cannot change mapping before initRoot is called */
-	TCOD_IFNOT(TCOD_ctx.root != NULL) return;
-	while (*s) {
-		TCOD_console_map_ascii_code_to_font(*s, fontCharX, fontCharY);
-		fontCharX++;
-		if ( fontCharX == TCOD_ctx.fontNbCharHoriz ) {
-			fontCharX=0;
-			fontCharY++;
-		}
-		s++;
-	}
+void TCOD_console_map_string_to_font(const char *s,
+                                     int fontCharX, int fontCharY)
+{
+  TCOD_IFNOT(s) { return; }
+  /* cannot change mapping before initRoot is called */
+  TCOD_IFNOT(TCOD_ctx.root) { return; }
+  while (*s) {
+    TCOD_console_map_ascii_code_to_font(*s, fontCharX, fontCharY);
+    ++fontCharX;
+    if (fontCharX == TCOD_ctx.fontNbCharHoriz) {
+      fontCharX = 0;
+      ++fontCharY;
+    }
+    ++s;
+  }
 }
 
 bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 	return TCOD_sys_is_key_pressed(key);
 }
-void TCOD_console_set_key_color(TCOD_console_t con,TCOD_color_t col) {
-  struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-  if (!dat) { return; }
-  dat->has_key_color = 1;
-  dat->key_color = col;
+void TCOD_console_set_key_color(TCOD_Console* con,TCOD_color_t col) {
+  con = TCOD_console_validate_(con);
+  if (!con) { return; }
+  con->has_key_color = 1;
+  con->key_color = col;
 }
 
 void TCOD_console_credits(void) {
@@ -860,7 +842,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-		len=(int)strlen(poweredby);
+		len=static_cast<int>(strlen(poweredby));
 		len1=11; /* sizeof "Powered by\n" */
 		left=MAX(x-4,0);
 		top=MAX(y-4,0);
@@ -901,18 +883,18 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		img = TCOD_image_new(width*2,height*2);
 	}
 	fbackup=TCOD_console_get_default_foreground(NULL);
-	if ( xstr < (float)len1 ) {
+	if ( xstr < len1 ) {
 		sparklex=x+xstr;
-		sparkley=(float)y;
+		sparkley=y;
 	} else {
 		sparklex=x-len1+xstr;
-		sparkley=(float)y+1;
+		sparkley=y+1;
 	}
 	noisex=xstr*6;
 	sparklerad=3.0f+2*TCOD_noise_get(noise,&noisex);
 	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
 	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
-	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
+	else if ( poweredby[ static_cast<int>(xstr+0.5f) ] == ' ' || poweredby[ static_cast<int>(xstr+0.5f) ] == '\n' ) sparklerad/=2;
 	sparklerad2=sparklerad*sparklerad*4;
 
 	/* draw the light */
@@ -921,7 +903,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
 			TCOD_color_t pixcol;
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
-				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2) + TCOD_random_get_int(NULL,-10,10);
+				int colidx=63-static_cast<int>(63*(sparklerad2-dist)/sparklerad2) + TCOD_random_get_int(NULL,-10,10);
 				colidx=CLAMP(0,63,colidx);
 				pixcol=colmap_light[colidx];
 			} else {
@@ -957,9 +939,9 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 						bk = TCOD_console_get_char_foreground(NULL,xc/2,yc/2);
 					}
 				}
-				pixcol.r = MIN(255,(int)(bk.r)+pixcol.r);
-				pixcol.g = MIN(255,(int)(bk.g)+pixcol.g);
-				pixcol.b = MIN(255,(int)(bk.b)+pixcol.b);
+				pixcol.r = std::min<int>(255, bk.r + pixcol.r);
+				pixcol.g = std::min<int>(255, bk.g + pixcol.g);
+				pixcol.b = std::min<int>(255, bk.b + pixcol.b);
 			}
 			TCOD_image_put_pixel(img,xi,yi,pixcol);
 		}
@@ -968,13 +950,13 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw and update the particules */
 	j=nbpart;i=firstpart;
 	while (j > 0) {
-		int colidx=(int)(64*(1.0f-pheat[i]));
+		int colidx=(64*(1.0f-pheat[i]));
 		TCOD_color_t col;
-		colidx=MIN(63,colidx);
+		colidx=std::min(63, colidx);
 		col=colmap[colidx];
-		if ( (int)py[i]< (bottom-top+1)*2 ) {
-			int ipx = (int)px[i];
-			int ipy = (int)py[i];
+		if (py[i] < (bottom - top + 1) * 2) {
+			int ipx = px[i];
+			int ipy = py[i];
 			float fpx = px[i]-ipx;
 			float fpy = py[i]-ipy;
 			TCOD_color_t col2=TCOD_image_get_pixel(img,ipx,ipy);
@@ -1020,7 +1002,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw the text */
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
-			int colidx=(int)(64*char_heat[i]);
+			int colidx=(64*char_heat[i]);
 			TCOD_color_t col;
 			colidx=MIN(63,colidx);
 			col=colmap[colidx];
@@ -1028,9 +1010,9 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				float coef=(xstr-len)/len;
 				if ( alpha ) {
 					TCOD_color_t fore=TCOD_console_get_char_background(NULL,char_x[i],char_y[i]);
-					int r=(int)(coef*fore.r + (1.0f-coef)*col.r);
-					int g=(int)(coef*fore.g + (1.0f-coef)*col.g);
-					int b=(int)(coef*fore.b + (1.0f-coef)*col.b);
+					int r=(coef*fore.r + (1.0f-coef)*col.r);
+					int g=(coef*fore.g + (1.0f-coef)*col.g);
+					int b=(coef*fore.b + (1.0f-coef)*col.b);
 					col.r = CLAMP(0,255,r);
 					col.g = CLAMP(0,255,g);
 					col.b = CLAMP(0,255,b);
@@ -1045,7 +1027,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	}
 	/* update letters heat */
 	xstr += elapsed * 4;
-	for (i=0; i < (int)(xstr+0.5f); i++) {
+	for (i = 0; i < static_cast<int>(xstr+0.5f); ++i) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}
 	/* restore fg color */
@@ -1055,28 +1037,29 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	return true;
 }
 
-static void TCOD_console_read_asc(TCOD_console_t con,FILE *f,int width, int height, float version) {
-	int x,y;
-	struct TCOD_Console *dat=con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	TCOD_IFNOT(dat != NULL) return;
-	while(fgetc(f) != '#');
-	for(x = 0; x < width; x++) {
-	    for(y = 0; y < height; y++) {
-	    	TCOD_color_t fore,back;
-		    int c = fgetc(f);
-		    fore.r = fgetc(f);
-		    fore.g = fgetc(f);
-		    fore.b = fgetc(f);
-		    back.r = fgetc(f);
-		    back.g = fgetc(f);
-		    back.b = fgetc(f);
-		    /* skip solid/walkable info */
-		    if ( version >= 0.3f ) {
-		    	fgetc(f);
-		    	fgetc(f);
-		    }
-		    TCOD_console_put_char_ex(con,x,y,c,fore,back);
-	    }
+static void TCOD_console_read_asc(TCOD_console_t con, FILE *f,
+                                  int width, int height, float version)
+{
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return; }
+  while(fgetc(f) != '#');
+  for(int x = 0; x < width; ++x) {
+      for(int y = 0; y < height; ++y) {
+        TCOD_color_t fore, back;
+        int c = fgetc(f);
+        fore.r = fgetc(f);
+        fore.g = fgetc(f);
+        fore.b = fgetc(f);
+        back.r = fgetc(f);
+        back.g = fgetc(f);
+        back.b = fgetc(f);
+        /* skip solid/walkable info */
+        if (version >= 0.3f) {
+          fgetc(f);
+          fgetc(f);
+        }
+        TCOD_console_put_char_ex(con, x, y, c, fore, back);
+      }
     }
     fclose(f);
 }
@@ -1127,7 +1110,7 @@ bool TCOD_console_load_asc(TCOD_console_t pcon, const char *filename) {
 	float version;
 	int width,height;
 	FILE *f;
-	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con = TCOD_console_validate_(pcon);
 	TCOD_IFNOT(con != NULL) return false;
 	TCOD_IFNOT( filename != NULL ) {
 		return false;
@@ -1163,7 +1146,7 @@ bool TCOD_console_save_asc(TCOD_console_t pcon, const char *filename) {
 	static float version = 0.3f;
 	FILE *f;
 	int x,y;
-	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con = TCOD_console_validate_(pcon);
 	TCOD_IFNOT(con != NULL) return false;
 	TCOD_IFNOT( filename != NULL ) {
 		return false;
@@ -1171,7 +1154,7 @@ bool TCOD_console_save_asc(TCOD_console_t pcon, const char *filename) {
 	TCOD_IFNOT(con->w > 0 && con->h > 0) return false;
 	f=fopen(filename,"wb");
 	TCOD_IFNOT( f != NULL ) return false;
-	fprintf(f, "ASCII-Paint v%g\n", version);
+	fprintf(f, "ASCII-Paint v%g\n", static_cast<double>(version));
 	fprintf(f, "%i %i\n", con->w, con->h);
 	fputc('#', f);
 	for(x = 0; x < con->w; x++) {
@@ -1200,7 +1183,7 @@ static bool isBigEndian;
 void detectBigEndianness(void) {
 	if (!hasDetectedBigEndianness){
 		uint32_t Value32;
-		uint8_t *VPtr = (uint8_t *)&Value32;
+		uint8_t *VPtr = reinterpret_cast<uint8_t *>(&Value32);
 		VPtr[0] = VPtr[1] = VPtr[2] = 0; VPtr[3] = 1;
 		if(Value32 == 1) isBigEndian = true;
 		else isBigEndian = false;
@@ -1209,18 +1192,18 @@ void detectBigEndianness(void) {
 }
 
 uint16_t bswap16(uint16_t s){
-	uint8_t* ps = (uint8_t*)&s;
+	uint8_t* ps = reinterpret_cast<uint8_t*>(&s);
 	uint16_t res;
-	uint8_t* pres = (uint8_t*)&res;
+	uint8_t* pres = reinterpret_cast<uint8_t*>(&res);
 	pres[0] = ps[1];
 	pres[1] = ps[0];
 	return res;
 }
 
 uint32_t bswap32(uint32_t s){
-	uint8_t *ps=(uint8_t *)(&s);
+	uint8_t *ps = reinterpret_cast<uint8_t*>(&s);
 	uint32_t res;
-	uint8_t *pres=(uint8_t *)&res;
+	uint8_t *pres = reinterpret_cast<uint8_t*>(&res);
 	pres[0]=ps[3];
 	pres[1]=ps[2];
 	pres[2]=ps[1];
@@ -1248,7 +1231,7 @@ void fix32(uint32_t* u){
 /************ RIFF helpers  */
 
 uint32_t fourCC(const char* c){
-	return (*(uint32_t*)c);
+	return (*reinterpret_cast<const uint32_t*>(c));
 }
 
 /* checks if u equals str */
@@ -1257,7 +1240,7 @@ bool fourCCequals(uint32_t u, const char* str){
 }
 
 void fromFourCC(uint32_t u, char*s){
-	const char* c = (const char*)(&u);
+	const char* c = reinterpret_cast<const char*>(&u);
 	s[0]=c[0];
 	s[1]=c[1];
 	s[2]=c[2];
@@ -1286,15 +1269,15 @@ void putData(void* what, int length, FILE* fp){
 }
 
 bool get8(uint8_t* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint8_t),1,fp);
+	return 1==fread(u, sizeof(uint8_t),1,fp);
 }
 
 bool get16(uint16_t* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint16_t),1,fp);
+	return 1==fread(u, sizeof(uint16_t),1,fp);
 }
 
 bool get32(uint32_t* u, FILE* fp){
-	return 1==fread((void*)u, sizeof(uint32_t),1,fp);
+	return 1==fread(u, sizeof(uint32_t),1,fp);
 }
 
 bool getData(void* u, size_t sz, FILE* fp){
@@ -1372,7 +1355,7 @@ void fixLayerv2(LayerV2* l){
 /*********** ApfFile */
 
 bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
-	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con = TCOD_console_validate_(pcon);
 	FILE* fp ;
 	TCOD_IFNOT(con != NULL) return false;
 	detectBigEndianness();
@@ -1408,7 +1391,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 				putFourCC("sett",fp);
 				put32(l32(settingsSz),fp);
 				put32(l32(1),fp);
-				putData((void*)&settingsData,sizeof settingsData,fp);
+				putData(&settingsData,sizeof settingsData,fp);
 				if (settingsSz&1){
 					put8(0,fp);
 					riffSize++;
@@ -1424,7 +1407,7 @@ bool TCOD_console_save_apf(TCOD_console_t pcon, const char *filename) {
 				putFourCC("imgd",fp);
 				put32(l32(imgDetailsSize),fp);
 				put32(l32(1),fp);
-				putData((void*)&imgData,sizeof imgData,fp);
+				putData(&imgData,sizeof imgData,fp);
 				if (imgDetailsSize&1){
 					put8(0,fp);
 					riffSize++;
@@ -1507,7 +1490,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 	uint32_t layr = fourCC("layr");
 	FILE* fp ;
 	Data data;
-	struct TCOD_Console *con=pcon ? (struct TCOD_Console *)pcon : TCOD_ctx.root;
+	struct TCOD_Console *con = TCOD_console_validate_(pcon);
 	TCOD_IFNOT(con != NULL) return false;
 
 	detectBigEndianness();
@@ -1567,7 +1550,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 							fix32(&ver);
 							if (ver!=1) ERR_NEWER("settings");
 							/* ver must be 1 */
-							if (! getData((void*)&settingsData,sizeof settingsData,fp)) ERR("Can't read settings.");
+							if (! getData(&settingsData,sizeof settingsData,fp)) ERR("Can't read settings.");
 							data.settings = settingsData;
 							fixSettings(&data.settings);
 
@@ -1585,7 +1568,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 							fix32(&ver);
 							if (ver!=1) ERR_NEWER("image details");
 							/* ver must be 1 */
-							if (! getData((void*)&dets, sizeof dets, fp)) ERR("Can't read image details.");
+							if (! getData(&dets, sizeof dets, fp)) ERR("Can't read image details.");
 							data.details = dets;
 							fixImage(&data.details);
 
@@ -1615,20 +1598,20 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 							if (ver>2) ERR_NEWER("layer spec");
 
 							if (ver==1){
-								if (! getData((void*)&data.layer.headerv1, sizeof( LayerV1 ), fp)) ERR("Can't read layer header.");
+								if (! getData(static_cast<void*>(&data.layer.headerv1), sizeof( LayerV1 ), fp)) ERR("Can't read layer header.");
 								fixLayerv1(&data.layer.headerv1);
 
 								/* Read in the data chunk*/
-								data.layer.data = (uint8_t*)malloc(sizeof(uint8_t)*data.layer.headerv1.dataSize);
-								getData((void*) data.layer.data, data.layer.headerv1.dataSize, fp);
+								data.layer.data = static_cast<uint8_t*>(malloc(sizeof(uint8_t)*data.layer.headerv1.dataSize));
+								getData(static_cast<void*>(data.layer.data), data.layer.headerv1.dataSize, fp);
 							}
 							else if (ver==2){
-								if (! getData((void*)&data.layer.headerv2, sizeof( LayerV2 ), fp)) ERR("Can't read layer header.");
+								if (! getData(static_cast<void*>(&data.layer.headerv2), sizeof( LayerV2 ), fp)) ERR("Can't read layer header.");
 								fixLayerv2(&data.layer.headerv2);
 
 								/* Read in the data chunk */
-								data.layer.data = (uint8_t*)malloc(sizeof(uint8_t)*data.layer.headerv2.dataSize);
-								getData((void*) data.layer.data, data.layer.headerv2.dataSize, fp);
+								data.layer.data = static_cast<uint8_t*>(malloc(sizeof(uint8_t)*data.layer.headerv2.dataSize));
+								getData(static_cast<void*>(data.layer.data), data.layer.headerv2.dataSize, fp);
 
 							}
 						}
@@ -1657,13 +1640,13 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 		for(x = 0; x < con->w; x++) {
 			for(y = 0; y < con->h; y++) {
 	    	TCOD_color_t fore,back;
-		    int c = (unsigned char)(imgData[index++]);
-		    fore.r = (uint8_t)(imgData[index++]);
-		    fore.g = (uint8_t)(imgData[index++]);
-		    fore.b = (uint8_t)(imgData[index++]);
-		    back.r = (uint8_t)(imgData[index++]);
-		    back.g = (uint8_t)(imgData[index++]);
-		    back.b = (uint8_t)(imgData[index++]);
+		    int c = imgData[index++];
+		    fore.r = imgData[index++];
+		    fore.g = imgData[index++];
+		    fore.b = imgData[index++];
+		    back.r = imgData[index++];
+		    back.g = imgData[index++];
+		    back.b = imgData[index++];
 		    TCOD_console_put_char_ex(con,x,y,c,fore,back);
 			}
 		}

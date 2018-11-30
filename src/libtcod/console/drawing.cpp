@@ -49,18 +49,18 @@ static void TCOD_console_clamp(int cx, int cy, int cw, int ch,
 void TCOD_console_rect(TCOD_Console* con, int x, int y, int rw, int rh,
                        bool clear, TCOD_bkgnd_flag_t flag)
 {
-  struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-  TCOD_IFNOT(dat != NULL) { return; }
-  TCOD_ASSERT((unsigned)(x) < (unsigned)dat->w && (unsigned)(y) < (unsigned)dat->h);
-  TCOD_ASSERT(x + rw <= dat->w && y + rh <= dat->h);
+  con = TCOD_console_validate_(con);
+  TCOD_IFNOT(con) { return; }
+  TCOD_ASSERT(TCOD_console_is_index_valid_(con, x, y));
+  TCOD_ASSERT(x + rw <= con->w && y + rh <= con->h);
 
-  TCOD_console_clamp(0, 0, dat->w, dat->h, &x, &y, &rw, &rh);
+  TCOD_console_clamp(0, 0, con->w, con->h, &x, &y, &rw, &rh);
   TCOD_IFNOT(rw > 0 && rh > 0) { return; }
   for (int cx = x; cx < x + rw; ++cx) {
     for (int cy = y; cy < y + rh; ++cy) {
-      TCOD_console_set_char_background(con, cx, cy, dat->back, flag);
+      TCOD_console_set_char_background(con, cx, cy, con->back, flag);
       if (clear) {
-        dat->ch_array[cx + cy * dat->w] = ' ';
+        con->ch_array[cx + cy * con->w] = ' ';
       }
     }
   }

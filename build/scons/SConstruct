@@ -207,6 +207,14 @@ vars.Add(EnumVariable(
 
 vars.Add('INSTALL_DIR', 'Installation directory.', '/usr/local')
 
+vars.Add(
+    BoolVariable(
+        key='LIBRARY_DEPRECATION',
+        help='Show deprecation warnings in library sources.',
+        default=False,
+    )
+)
+
 if windows_toolset == 'msvc':
     sdl2_zip_file = 'SDL2-devel-$SDL2_VERSION-VC.zip'
 else:
@@ -405,6 +413,10 @@ env_libtcod_dll.Append(
     CPPDEFINES=['LIBTCOD_EXPORTS'],
     PDB=['$VARIANT/libtcod.pdb'],
 )
+if not using_msvc and not env['LIBRARY_DEPRECATION']:
+    env_libtcod_dll.Append(
+        CCFLAGS=['-Wno-deprecated', '-Wno-deprecated-declarations'],
+    )
 
 libtcod = env_libtcod_dll.SharedLibrary(
     target='$VARIANT/libtcod',

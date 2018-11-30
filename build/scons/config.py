@@ -1,12 +1,33 @@
 # MODE options are DEBUG, SIZE, PERFORMANCE, and RELEASE.
 
+GCC_CC_WARNINGS = [
+    '-Wall',
+    '-Wextra',
+    '-Wpedantic',
+    '-Wshadow=local',
+    '-Wcast-align',
+    '-Wduplicated-cond',
+    '-Wduplicated-branches',
+    '-Wlogical-op',
+    '-Wnull-dereference',
+    '-Wdouble-promotion',
+    '-Wformat=2',
+]
+
+GCC_CXX_WARNINGS = [
+    '-Wnon-virtual-dtor',
+    '-Wold-style-cast',
+    '-Woverloaded-virtual',
+    '-Wuseless-cast',
+]
+
 DEBUG_GCC = {
     #'CFLAGS': ['-Wstrict-prototypes'],
-    'CCFLAGS': [
-        '-Wall', '-Wextra', '-Wpedantic',
+    'CCFLAGS': GCC_CC_WARNINGS + [
         '-g',
         '-fvisibility=hidden'
     ],
+    'CXXFLAGS': GCC_CXX_WARNINGS,
 }
 DEBUG_MSVC = {
     'CCFLAGS': ['/nologo', '-W3'],
@@ -14,12 +35,12 @@ DEBUG_MSVC = {
 }
 
 SIZE_GCC = {
-    'CCFLAGS': [
-        '-Wall', '-Wextra', '-Wpedantic',
+    'CCFLAGS': GCC_CC_WARNINGS + [
         '-Os',
         '-flto',
         '-fvisibility=hidden'
     ],
+    'CXXFLAGS': GCC_CXX_WARNINGS,
     'LINKFLAGS': ['-Os', '-flto'],
 }
 SIZE_MSVC = {
@@ -28,12 +49,12 @@ SIZE_MSVC = {
 }
 
 PERFORMANCE_GCC = {
-    'CCFLAGS': [
-        '-Wall', '-Wextra', '-Wpedantic',
+    'CCFLAGS': GCC_CC_WARNINGS + [
         '-O3',
         '-flto',
         '-fvisibility=hidden'
     ],
+    'CXXFLAGS': GCC_CXX_WARNINGS,
     'LINKFLAGS': ['-O3', '-flto'],
 }
 PERFORMANCE_MSVC = {

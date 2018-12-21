@@ -36,6 +36,9 @@
     <Filter Include="Source Files\console">
       <UniqueIdentifier>{322f57a7-4855-43a8-a8aa-b40ac1f71844}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\pathfinding">
+      <UniqueIdentifier>{fb38dba8-4690-41b2-a85c-1aa23273793b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\vendor\zlib\adler32.c">
@@ -332,6 +335,9 @@
     <ClCompile Include="..\..\src\libtcod\console\drawing.cpp">
       <Filter>Source Files\console</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\pathfinding\dijkstra.cpp">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -597,6 +603,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\console\drawing.h">
       <Filter>Source Files\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\pathfinding\dijkstra.h">
+      <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

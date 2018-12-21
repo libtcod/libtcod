@@ -66,6 +66,7 @@
 #include "libtcod/engine/backend.cpp"
 #include "libtcod/engine/display.cpp"
 #include "libtcod/engine/globals.cpp"
+#include "libtcod/pathfinding/dijkstra.cpp"
 #include "libtcod/sdl2/gl_alias.cpp"
 #include "libtcod/sdl2/gl2_display.cpp"
 #include "libtcod/sdl2/gl2_raii.cpp"

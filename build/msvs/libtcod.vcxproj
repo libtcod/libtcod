@@ -220,6 +220,7 @@
     <ClCompile Include="..\..\src\libtcod\parser.cpp" />
     <ClCompile Include="..\..\src\libtcod\parser_c.c" />
     <ClCompile Include="..\..\src\libtcod\path.cpp" />
+    <ClCompile Include="..\..\src\libtcod\pathfinding\dijkstra.cpp" />
     <ClCompile Include="..\..\src\libtcod\path_c.c" />
     <ClCompile Include="..\..\src\libtcod\sdl2\gl2_display.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\gl2_raii.cpp" />
@@ -329,6 +330,7 @@
     <ClInclude Include="..\..\src\libtcod\parser.hpp" />
     <ClInclude Include="..\..\src\libtcod\path.h" />
     <ClInclude Include="..\..\src\libtcod\path.hpp" />
+    <ClInclude Include="..\..\src\libtcod\pathfinding\dijkstra.h" />
     <ClInclude Include="..\..\src\libtcod\portability.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\gl2_display.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\gl2_ext_.h" />

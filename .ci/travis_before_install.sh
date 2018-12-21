@@ -4,8 +4,11 @@ set -e
 # Fix shell_session_update errors.
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     wget -O - https://rvm.io/mpapis.asc | gpg --import -
+    wget -O - https://rvm.io/pkuczynski.asc | gpg --import -
     set +e
-    rvm get head
+    curl -sSL https://get.rvm.io | bash
+    rvm reload
+    rvm get stable
 fi
 
 set -e

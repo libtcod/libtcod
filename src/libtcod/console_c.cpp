@@ -439,19 +439,24 @@ int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
 	return con->ch_array[y * con->w + x];
 }
 /**
+ *  Clamp colors channels that are outside of uint8_t's range.
+ */
+static constexpr uint8_t clamp_color_(uint8_t c) noexcept { return c; }
+static constexpr uint8_t clamp_color_(int c) noexcept
+{
+  return static_cast<uint8_t>(std::max<int>(0, std::min<int>(c, 255)));
+}
+/**
  *  Mix two colors using a lambda.
  */
 template <typename F>
-static TCOD_color_t blend_color_(const TCOD_color_t& bg,
-                                 const TCOD_color_t& fg, const F& lambda)
+static constexpr TCOD_color_t blend_color_(
+    const TCOD_color_t& bg, const TCOD_color_t& fg, const F& lambda)
 {
   return {
-      static_cast<uint8_t>(
-          std::max<int>(0, std::min<int>(lambda(bg.r, fg.r), 255))),
-      static_cast<uint8_t>(
-          std::max<int>(0, std::min<int>(lambda(bg.g, fg.g), 255))),
-      static_cast<uint8_t>(
-          std::max<int>(0, std::min<int>(lambda(bg.b, fg.b), 255))),
+      clamp_color_(lambda(bg.r, fg.r)),
+      clamp_color_(lambda(bg.g, fg.g)),
+      clamp_color_(lambda(bg.b, fg.b)),
   };
 }
 /**

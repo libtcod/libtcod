@@ -43,6 +43,11 @@ class Vector2 {
  public:
   using value_type = T;
   Vector2() = default;
+  explicit Vector2(int width, int height, const T& fill)
+  : width_(std::max(0, width)),
+    height_(std::max(0, height)),
+    vector_(width_ * height_, fill)
+  {}
   explicit Vector2(int width, int height)
   : width_(std::max(0, width)),
     height_(std::max(0, height)),

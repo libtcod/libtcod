@@ -11,10 +11,10 @@ matrix:
   include:
   - os: osx
     language: generic
-    env: BUILD_TOOL=scons
+    env: BUILD_TOOL=scons CC=gcc
   - os: osx
     language: generic
-    env: BUILD_TOOL=autotools
+    env: BUILD_TOOL=autotools CC=gcc
 
 # sudo is required to prevent xvfb crashes from container-based workers.
 sudo: required
@@ -42,9 +42,9 @@ before_script:
 - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export UNITTEST_ARGS="~~[!nonportable]"; fi'
 
 script:
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | gcc -xc -c -I$HOME/.local/include/libtcod -; fi'
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | gcc -xc++ -std=c++11 -c -I$HOME/.local/include/libtcod -; fi'
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | gcc -xc++ -std=c++11 -c -I$HOME/.local/include/libtcod -; fi'
+- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | $CC -xc -c -I$HOME/.local/include/libtcod -; fi'
+- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
+- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
 - 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest $UNITTEST_ARGS; fi'
 - (cd python && pytest -v)

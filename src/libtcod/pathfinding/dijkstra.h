@@ -216,14 +216,28 @@ void distance_clear(DistGrid& dist_grid) noexcept
 /**
  *  Clear a path map, setting all paths to themselves.
  */
-template <typename PathGrid>
-void path_clear(PathGrid& path_grid) noexcept
+template <typename IndexType>
+void path_clear(Vector2<IndexType>& path_grid) noexcept
 {
   for (ptrdiff_t y = 0; y < path_grid.height(); ++y) {
     for (ptrdiff_t x = 0; x < path_grid.width(); ++x) {
       path_grid.at(x, y) = {x, y};
     }
   }
+}
+template <typename IndexType>
+auto get_path(const Vector2<IndexType>& path_grid,
+                     const IndexType& start) -> std::vector<IndexType>
+{
+  std::vector<IndexType> path;
+  IndexType current = start;
+  IndexType next = path_grid.at(current);
+  while (current != next) {
+    path.emplace_back(next);
+    current = next;
+    next = path_grid.at(current);
+  }
+  return path;
 }
 } // namespace pathfinding
 } // namespace tcod

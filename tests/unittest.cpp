@@ -80,23 +80,28 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail]") {
 
 TEST_CASE("New Dijkstra")
 {
+  using Catch::Matchers::Equals;
+  using index_type = std::pair<ptrdiff_t, ptrdiff_t>;
   auto dist = tcod::Vector2<int>(3, 2, INT_MAX);
-  auto path = tcod::Vector2<std::pair<ptrdiff_t, ptrdiff_t>>(3, 2);
-  tcod::pathfinding::path_clear(path);
+  auto path_map = tcod::Vector2<index_type>(3, 2);
+  tcod::pathfinding::path_clear(path_map);
   dist.at(0, 0) = 0;
   tcod::Vector2<int> cost{
       {1, 1, 1},
       {0, 1, 2},
   };
-  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path);
+  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
   const tcod::Vector2<int> EXPECTED_DIST{
       {0, 2, 4},
       {INT_MAX, 3, 7},
   };
   CHECK(dist == EXPECTED_DIST);
-  const tcod::Vector2<std::pair<ptrdiff_t, ptrdiff_t>> EXPECTED_PATH{
+  const tcod::Vector2<index_type> EXPECTED_PATH_MAP{
       {{0, 0}, {0, 0}, {1, 0}},
       {{0, 1}, {0, 0}, {1, 1}},
   };
-  CHECK(path == EXPECTED_PATH);
+  CHECK(path_map == EXPECTED_PATH_MAP);
+  const std::vector<index_type> EXPECTED_TRAVEL_PATH{{1, 1}, {0, 0}};
+  CHECK_THAT(tcod::pathfinding::get_path(path_map, {2, 1}),
+             Equals(EXPECTED_TRAVEL_PATH));
 }

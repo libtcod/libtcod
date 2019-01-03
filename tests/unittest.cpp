@@ -1,6 +1,7 @@
 
 #include <climits>
 #include <cstddef>
+#include <iostream>
 #include <utility>
 
 #include <libtcod.h>
@@ -12,11 +13,13 @@
 #include "catch_reporter_automake.hpp"
 #include "catch_reporter_tap.hpp"
 
-std::ostream& operator<<(std::ostream &out,
-                         const std::pair<ptrdiff_t, ptrdiff_t>& data)
+namespace std {
+ostream& operator<<(ostream &out,
+                         const pair<ptrdiff_t, ptrdiff_t>& data)
 {
   return out << '{' << data.first << ',' << ' ' << data.second << '}';
 }
+} // namespace std
 
 const int WIDTH = 20;
 const int HEIGHT = 10;

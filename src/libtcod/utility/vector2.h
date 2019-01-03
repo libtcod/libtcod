@@ -147,9 +147,8 @@ class Vector2 {
   /** A 1d vector mapped to a 2d array of pixels. */
   std::vector<T> vector_;
 };
-} // namespace tcod
 template <typename T>
-std::ostream& operator<< (std::ostream &out, const tcod::Vector2<T>& data)
+std::ostream& operator<< (std::ostream &out, const Vector2<T>& data)
 {
   out << '{';
   for (int y = 0; y < data.height(); ++y) {
@@ -164,5 +163,6 @@ std::ostream& operator<< (std::ostream &out, const tcod::Vector2<T>& data)
   out << '}';
   return out;
 }
+} // namespace tcod
 #endif // __cplusplus
 #endif // LIBTCOD_UTILITY_VECTOR2_H_

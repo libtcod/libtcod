@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <tuple>
 #include <utility>
 #include <vector>
 #endif // __cplusplus
@@ -42,69 +43,158 @@
 namespace tcod {
 namespace pathfinding {
 
-// {distance, {x, y}}
-using DijkstraNode_ = std::pair<ptrdiff_t, std::pair<ptrdiff_t, ptrdiff_t>>;
-using DijkstraHeap_ = std::vector<DijkstraNode_>;
-bool dijkstra_heap_cmp_(DijkstraNode_ a, DijkstraNode_ b)
+template <typename IndexType, typename DistType = ptrdiff_t>
+class Pathfinder
 {
-  return a.first < b.first;
-}
+ public:
+  using heap_node = std::pair<DistType, IndexType>;
+  using heap_type = std::vector<heap_node>;
+  Pathfinder() = default;
+  /**
+   *  Continue the computation until is_goal is met or the heap runs empty.
+   *
+   *  distance_at(IndexType index) -> DistType&
+   *  Return a reference to the distance value at index.  This function will
+   *  read and write to these values.
+   *
+   *  get_edges(IndexType index, auto new_edge)
+   *  Get the edges for index.  Edges are added using the new_edge callback:
+   *  new_edge(IndexType destination, DistType cost)
+   *
+   *  is_goal(DistType dist, IndexType index) -> bool
+   *  When this returns True or when all paths are exhausted the computation
+   *  will end.
+   *
+   *  heuristic(DistType dist, IndexType index) -> DistType
+   *  Determine the order of when nodes will be checked.  The lowest values
+   *  are checked before higher values.
+   */
+  template <typename DistanceAt, typename GetEdges, typename IsGoal,
+            typename Heuristic>
+  void compute(
+      DistanceAt& distance_at,
+      GetEdges& get_edges,
+      IsGoal& is_goal,
+      Heuristic& heuristic)
+  {
+    while (heap_.size()) {
+      const heap_node current_node = heap_.front();
+      if (is_goal(current_node.first, current_node.second)) { return; }
+      std::pop_heap(heap_.begin(), heap_.end(), heap_compare);
+      heap_.pop_back();
+      const DistType current_dist = current_node.first;
+      const IndexType current_pos = current_node.second;
+      if (current_dist > distance_at(current_pos)) { continue; }
+      auto edge_lambda = [&](IndexType dest, DistType cost) {
+          add_edge(current_pos, dest, cost, distance_at, heuristic);
+      };
+      get_edges(current_pos, edge_lambda);
+    }
+  }
+  /**
+   *  Compute a new distance map, using a new heap.
+   */
+  template <typename DistanceAt, typename GetEdges, typename IsGoal,
+            typename Heuristic>
+  void compute(DistanceAt& distance_at, GetEdges& get_edges, IsGoal& is_goal,
+               Heuristic& heuristic, heap_type&& heap)
+  {
+    heap_ = std::move(heap);
+    std::make_heap(heap_.begin(), heap_.end(), heap_compare);
+    compute(distance_at, get_edges, is_goal, heuristic);
+  }
+ private:
+  /**
+   *  Compute an edge, adding the results to the distance map and heap.
+   */
+  template <typename DistanceAt, typename Heuristic>
+  void add_edge(IndexType origin, IndexType dest, DistType cost,
+                DistanceAt& distance_at, Heuristic& heuristic)
+  {
+    if (cost <= 0) { return; }
+    DistType distance = distance_at(origin) + cost;
+    if (distance >= distance_at(dest)) { return; }
+    distance_at(dest) = distance;
+    heap_.emplace_back(heuristic(distance, dest), dest);
+    std::push_heap(heap_.begin(), heap_.end(), heap_compare);
+  }
+  /**
+   *  Compare values in the heap.
+   */
+  static bool heap_compare(const heap_node& a, const heap_node& b) noexcept
+  {
+    return a.first < b.first;
+  }
+  /**
+   *  A priority queue of which nodes to check next.
+   */
+  heap_type heap_ = {};
+};
 /**
- *  Create a heap from a distance map.
+ *  Create an unsorted heap from a distance map.
  */
-template <typename GridType>
-auto dijkstra_make_heap(const GridType& dist_grid) -> DijkstraHeap_
+template <typename GridType,
+          typename IndexSize=ptrdiff_t,
+          typename DistType=typename GridType::value_type>
+auto dijkstra_make_heap(const GridType& dist_grid)
 {
   const typename GridType::value_type MAX_DIST =
       std::numeric_limits<typename GridType::value_type>::max();
-  DijkstraHeap_ heap = {};
-  for (ptrdiff_t y = 0; y < dist_grid.height(); ++y) {
-    for (ptrdiff_t x = 0; x < dist_grid.width(); ++x) {
+  using node_type = std::pair<DistType, std::pair<IndexSize, IndexSize>>;
+  std::vector<node_type> heap = {};
+  for (IndexSize y = 0; y < dist_grid.height(); ++y) {
+    for (IndexSize x = 0; x < dist_grid.width(); ++x) {
       if (dist_grid.at(x, y) == MAX_DIST) { continue; }
-      heap.emplace_back({dist_grid.at(x, y), {x, y}});
+      heap.emplace_back(node_type(dist_grid.at(x, y), {x, y}));
     }
   }
-  std::make_heap(heap.begin(), heap.end(), dijkstra_heap_cmp_);
   return heap;
 }
 /**
- *  Hard-coded edge positions.
+ *  Private hard-coded edge positions.
+ *
+ *  {x, y, is_diagonal}
  */
-static constexpr std::array<std::array<int, 2>, 8> EDGES_{{
-    {{-1, -1}}, {{0, -1}}, {{1, -1}}, {{-1, -0}}, {{1, 0}},
-    {{-1, 1}}, {{0, 1}}, {{1, 1}},
+static constexpr std::array<std::tuple<int, int, bool>, 8> EDGES_{{
+    {-1, -1, 1}, {0, -1, 0}, {1, -1, 1},
+    {-1, 0, 0}, {1, 0, 0},
+    {-1, 1, 1}, {0, 1, 0}, {1, 1, 1},
 }};
-
-template <typename GridType, typename EdgeCostFunc>
-void dijkstra_compute(GridType& dist_grid, EdgeCostFunc& cost_func)
+/**
+ *  Recompute a Dijkstra distance map.
+ */
+template <typename DistGrid, typename CostGrid, typename CostType>
+void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
+                      CostType cardinal=2, CostType diagonal=3)
 {
-  using dist_type = typename GridType::value_type;
-  DijkstraHeap_ heap = dijkstra_make_heap(dist_grid);
-  while (heap.size()) {
-    const DijkstraNode_ current_node = heap.front();
-    std::pop_heap(heap.begin(), heap.end(), dijkstra_heap_cmp_);
-    heap.pop_back();
-    const dist_type& current_dist = current_node.first;
-    const auto& current_pos = current_node.second;
-    if (current_dist > dist_grid.at(current_node.second)) { continue; }
+  using dist_type = typename DistGrid::value_type;
+  using index_type = std::pair<ptrdiff_t, ptrdiff_t>;
+
+  auto distance_at = [&](index_type index) -> dist_type& {
+    return dist_grid.at(index);
+  };
+  auto get_edges = [&](index_type index, auto new_edge) {
     for (const auto& edge : EDGES_) {
       std::pair<ptrdiff_t, ptrdiff_t> other_pos{
-          current_pos.first + edge.at(0),
-          current_pos.second + edge.at(1),
+          index.first + std::get<0>(edge),
+          index.second + std::get<1>(edge),
       };
       if (other_pos.first < 0 || other_pos.first >= dist_grid.width() ||
           other_pos.second < 0 || other_pos.second >= dist_grid.height()) {
         continue;
       }
-      dist_type edge_cost = cost_func(other_pos, current_pos);
-      if (edge_cost <= 0) { continue; }
-      dist_type other_dist = current_dist + edge_cost;
-      if (other_dist > dist_grid.at(other_pos)) { continue; }
-      dist_grid.at(other_pos) = other_dist;
-      heap.emplace_back({other_dist, other_pos});
-      std::push_heap(heap.begin(), heap.end(), dijkstra_heap_cmp_);
+      auto cost = cost_grid.at(other_pos);
+      cost *= std::get<2>(edge) ? diagonal : cardinal;
+      if (cost <= 0) { continue; }
+      new_edge(other_pos, cost);
     }
-  }
+  };
+  auto is_goal = [](auto, auto) { return 0; };
+  auto heuristic = [](auto dist, auto){ return dist; };
+
+  Pathfinder<index_type, dist_type> pathfinder;
+  pathfinder.compute(distance_at, get_edges, is_goal, heuristic,
+                     dijkstra_make_heap(dist_grid));
 }
 /**
  *  Clear a Dijkstra distance map by setting all values to maximum.

@@ -1,11 +1,14 @@
 
+#include <climits>
+
+#include <libtcod.h>
+#include <libtcod.hpp>
+#include <libtcod/pathfinding/dijkstra.h>
+
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "catch_reporter_automake.hpp"
 #include "catch_reporter_tap.hpp"
-
-#include <libtcod.h>
-#include <libtcod.hpp>
 
 const int WIDTH = 20;
 const int HEIGHT = 10;
@@ -62,4 +65,20 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail]") {
   console.print(0, 0, L"\U0001F30D");
   CHECK(console.getChar(0, 0) == 0x1F30D);
   CHECK(console.getChar(1, 0) == 0x20);
+}
+
+TEST_CASE("New Dijkstra")
+{
+  auto dist = tcod::Vector2<int>(3, 2, INT_MAX);
+  dist.at(0, 0) = 0;
+  tcod::Vector2<int> cost{
+      {1, 1, 1},
+      {0, 1, 2},
+  };
+  const tcod::Vector2<int> EXPECTED{
+      {0, 2, 4},
+      {INT_MAX, 3, 7},
+  };
+  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3);
+  CHECK(dist == EXPECTED);
 }

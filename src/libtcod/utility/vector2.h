@@ -29,7 +29,10 @@
 #define LIBTCOD_UTILITY_VECTOR2_H_
 #ifdef __cplusplus
 #include <algorithm>
+#include <initializer_list>
+#include <iostream>
 #include <stdexcept>
+#include <tuple>
 #include <vector>
 #endif // __cplusplus
 
@@ -52,6 +55,20 @@ class Vector2 {
   : width_(std::max(0, width)),
     height_(std::max(0, height)),
     vector_(width_ * height_) {}
+  explicit Vector2(
+      const std::initializer_list<std::initializer_list<T>>& array)
+  : Vector2(
+      std::max(array,
+               [](auto a, auto b){ return a.size() < b.size(); }).size(),
+      array.size()
+    )
+  {
+    auto iter_out = vector_.begin();
+    for (const auto row : array) {
+      std::copy(row.begin(), row.end(), iter_out);
+      iter_out += width_;
+    }
+  }
   Vector2(Vector2&&) = default;
   Vector2& operator=(Vector2&&) = default;
   Vector2(const Vector2&) = default;
@@ -70,6 +87,13 @@ class Vector2 {
     return vector_.at(y * width_ + x);
   }
   /**
+   *  Return a reference for the value at `index`.
+   */
+  T& at(std::tuple<int, int> index)
+  {
+    return at(std::get<0>(index), std::get<1>(index));
+  }
+  /**
    *  Return a constant reference for the pixel at `x`,`y`.
    *
    *  Throws std::out_of_range if `x` or `y` are out of bounds.
@@ -77,6 +101,13 @@ class Vector2 {
   const T& at(int x, int y) const {
     range_check(x, y);
     return vector_.at(y * width_ + x);
+  }
+  /**
+   *  Return a constant reference for the value at `index`.
+   */
+  const T& at(std::tuple<int, int> index) const
+  {
+    return at(std::get<0>(index), std::get<1>(index));
   }
   T* data() noexcept
   {
@@ -92,7 +123,7 @@ class Vector2 {
   }
   bool operator==(const Vector2& rhs) const noexcept
   {
-    return vector_ == rhs.vector_;
+    return width_ == rhs.width_ && vector_ == rhs.vector_;
   }
  private:
   /**
@@ -117,5 +148,21 @@ class Vector2 {
   std::vector<T> vector_;
 };
 } // namespace tcod
+template <typename T>
+std::ostream& operator<< (std::ostream &out, const tcod::Vector2<T>& data)
+{
+  out << '{';
+  for (int y = 0; y < data.height(); ++y) {
+    out << '{';
+    for (int x = 0; x < data.width(); ++x) {
+      out << data.at(x, y);
+      if (x != data.width() - 1) { out << ',' << ' '; }
+    }
+    out << '}';
+    if (y != data.height() - 1) { out << ',' << ' '; }
+  }
+  out << '}';
+  return out;
+}
 #endif // __cplusplus
 #endif // LIBTCOD_UTILITY_VECTOR2_H_

@@ -1,5 +1,7 @@
 
 #include <climits>
+#include <cstddef>
+#include <utility>
 
 #include <libtcod.h>
 #include <libtcod.hpp>
@@ -9,6 +11,12 @@
 #include "catch.hpp"
 #include "catch_reporter_automake.hpp"
 #include "catch_reporter_tap.hpp"
+
+std::ostream& operator<<(std::ostream &out,
+                         const std::pair<ptrdiff_t, ptrdiff_t>& data)
+{
+  return out << '{' << data.first << ',' << ' ' << data.second << '}';
+}
 
 const int WIDTH = 20;
 const int HEIGHT = 10;
@@ -70,15 +78,22 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail]") {
 TEST_CASE("New Dijkstra")
 {
   auto dist = tcod::Vector2<int>(3, 2, INT_MAX);
+  auto path = tcod::Vector2<std::pair<ptrdiff_t, ptrdiff_t>>(3, 2);
+  tcod::pathfinding::path_clear(path);
   dist.at(0, 0) = 0;
   tcod::Vector2<int> cost{
       {1, 1, 1},
       {0, 1, 2},
   };
-  const tcod::Vector2<int> EXPECTED{
+  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path);
+  const tcod::Vector2<int> EXPECTED_DIST{
       {0, 2, 4},
       {INT_MAX, 3, 7},
   };
-  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3);
-  CHECK(dist == EXPECTED);
+  CHECK(dist == EXPECTED_DIST);
+  const tcod::Vector2<std::pair<ptrdiff_t, ptrdiff_t>> EXPECTED_PATH{
+      {{0, 0}, {0, 0}, {1, 0}},
+      {{0, 1}, {0, 0}, {1, 1}},
+  };
+  CHECK(path == EXPECTED_PATH);
 }

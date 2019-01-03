@@ -68,14 +68,18 @@ class Pathfinder
    *  heuristic(DistType dist, IndexType index) -> DistType
    *  Determine the order of when nodes will be checked.  The lowest values
    *  are checked before higher values.
+   *
+   *  mark_path(IndexType current, IndexType next)
+   *  Provides the best path from the current index so far.
    */
   template <typename DistanceAt, typename GetEdges, typename IsGoal,
-            typename Heuristic>
+            typename Heuristic, typename MarkPath>
   void compute(
       DistanceAt& distance_at,
       GetEdges& get_edges,
       IsGoal& is_goal,
-      Heuristic& heuristic)
+      Heuristic& heuristic,
+      MarkPath& mark_path)
   {
     while (heap_.size()) {
       const heap_node current_node = heap_.front();
@@ -86,35 +90,33 @@ class Pathfinder
       const IndexType current_pos = current_node.second;
       if (current_dist > distance_at(current_pos)) { continue; }
       auto edge_lambda = [&](IndexType dest, DistType cost) {
-          add_edge(current_pos, dest, cost, distance_at, heuristic);
+          add_edge(current_pos, dest, cost, distance_at, heuristic, mark_path);
       };
       get_edges(current_pos, edge_lambda);
     }
   }
   /**
-   *  Compute a new distance map, using a new heap.
+   *  Configure the heap.
    */
-  template <typename DistanceAt, typename GetEdges, typename IsGoal,
-            typename Heuristic>
-  void compute(DistanceAt& distance_at, GetEdges& get_edges, IsGoal& is_goal,
-               Heuristic& heuristic, heap_type&& heap)
+  void set_heap(heap_type&& heap) noexcept
   {
     heap_ = std::move(heap);
     std::make_heap(heap_.begin(), heap_.end(), heap_compare);
-    compute(distance_at, get_edges, is_goal, heuristic);
   }
  private:
   /**
    *  Compute an edge, adding the results to the distance map and heap.
    */
-  template <typename DistanceAt, typename Heuristic>
+  template <typename DistanceAt, typename Heuristic, typename MarkPath>
   void add_edge(IndexType origin, IndexType dest, DistType cost,
-                DistanceAt& distance_at, Heuristic& heuristic)
+                DistanceAt& distance_at, Heuristic& heuristic,
+                MarkPath& mark_path)
   {
     if (cost <= 0) { return; }
     DistType distance = distance_at(origin) + cost;
     if (distance >= distance_at(dest)) { return; }
     distance_at(dest) = distance;
+    mark_path(dest, origin);
     heap_.emplace_back(heuristic(distance, dest), dest);
     std::push_heap(heap_.begin(), heap_.end(), heap_compare);
   }
@@ -163,9 +165,11 @@ static constexpr std::array<std::tuple<int, int, bool>, 8> EDGES_{{
 /**
  *  Recompute a Dijkstra distance map.
  */
-template <typename DistGrid, typename CostGrid, typename CostType>
+template <typename DistGrid, typename CostGrid, typename CostType,
+          typename PathGrid>
 void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
-                      CostType cardinal=2, CostType diagonal=3)
+                      CostType cardinal=2, CostType diagonal=3,
+                      PathGrid* path_grid=nullptr)
 {
   using dist_type = typename DistGrid::value_type;
   using index_type = std::pair<ptrdiff_t, ptrdiff_t>;
@@ -191,19 +195,34 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
   };
   auto is_goal = [](auto, auto) { return 0; };
   auto heuristic = [](auto dist, auto){ return dist; };
+  auto mark_path = [&](auto index, auto next) {
+    if(path_grid) { path_grid->at(index) = next; }
+  };
 
   Pathfinder<index_type, dist_type> pathfinder;
-  pathfinder.compute(distance_at, get_edges, is_goal, heuristic,
-                     dijkstra_make_heap(dist_grid));
+  pathfinder.set_heap(dijkstra_make_heap(dist_grid));
+  pathfinder.compute(distance_at, get_edges, is_goal, heuristic, mark_path);
 }
 /**
- *  Clear a Dijkstra distance map by setting all values to maximum.
+ *  Clear a distance map by setting all values to maximum.
  */
-template <typename GridType>
-void dijkstra_clear(GridType& dist_grid) noexcept
+template <typename DistGrid>
+void distance_clear(DistGrid& dist_grid) noexcept
 {
   for (auto& i : dist_grid) {
-    i = std::numeric_limits<typename GridType::value_type>::max();
+    i = std::numeric_limits<typename DistGrid::value_type>::max();
+  }
+}
+/**
+ *  Clear a path map, setting all paths to themselves.
+ */
+template <typename PathGrid>
+void path_clear(PathGrid& path_grid) noexcept
+{
+  for (ptrdiff_t y = 0; y < path_grid.height(); ++y) {
+    for (ptrdiff_t x = 0; x < path_grid.width(); ++x) {
+      path_grid.at(x, y) = {x, y};
+    }
   }
 }
 } // namespace pathfinding

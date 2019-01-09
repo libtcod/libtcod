@@ -36,6 +36,7 @@
 
 #ifndef NO_OPENGL
 #include <stdio.h>
+#include <string.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 

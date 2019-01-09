@@ -1,5 +1,5 @@
 /* libtcod
- * Copyright © 2008-2018 Jice and the libtcod contributors.
+ * Copyright © 2008-2019 Jice and the libtcod contributors.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

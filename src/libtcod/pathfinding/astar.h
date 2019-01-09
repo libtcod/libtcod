@@ -25,4 +25,12 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "dijkstra.h"
+#ifndef LIBTCOD_PATHFINDING_ASTAR_H_
+#define LIBTCOD_PATHFINDING_ASTAR_H_
+#ifdef __cplusplus
+namespace tcod {
+namespace pathfinding {
+} // namespace pathfinding
+} // namespace tcod
+#endif // __cplusplus
+#endif // LIBTCOD_PATHFINDING_ASTAR_H_

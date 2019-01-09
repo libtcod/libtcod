@@ -1,7 +1,7 @@
 language: python
 python:
 - "2.7"
-- "3.4"
+- "3.5"
 os: linux
 env:
   - BUILD_TOOL=scons CC=gcc-8 CXX=g++-8
@@ -36,7 +36,7 @@ install:
 - source .ci/travis_install.sh
 
 before_script:
-- pip install pytest pytest-cov
+- pip install --upgrade pytest pytest-cov pytest-faulthandler
 - (cd python && python setup.py develop)
 - export UNITTEST_ARGS=""
 - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export UNITTEST_ARGS="~~[!nonportable]"; fi'

@@ -35,72 +35,71 @@
 
 #include "libtcod_int.h"
 
-TCODLex::TCODLex( const char **_symbols, const char **_keywords, const char *simpleComment,
-		const char *commentStart, const char *commentStop, const char *javadocCommentStart,
-		const char *_stringDelim, int _flags)
+TCODLex::TCODLex(
+    const char** _symbols,
+    const char** _keywords,
+    const char* simpleComment,
+    const char* commentStart,
+    const char* commentStop,
+    const char* javadocCommentStart,
+    const char* _stringDelim,
+    int _flags)
 {
-	data=(void *)TCOD_lex_new(_symbols,_keywords,simpleComment,commentStart,commentStop,javadocCommentStart,_stringDelim,_flags);
-
+  data = TCOD_lex_new(
+      _symbols,
+      _keywords,
+      simpleComment,
+      commentStart,
+      commentStop,
+      javadocCommentStart,
+      _stringDelim,
+      _flags);
 }
-
 TCODLex::TCODLex()
 {
-	data= (void *)TCOD_lex_new_intern();
+  data = TCOD_lex_new_intern();
 }
-
 TCODLex::~TCODLex()
 {
-	TCOD_lex_delete((TCOD_lex_t *)data);
+  TCOD_lex_delete(data);
 }
-
-char *TCODLex::getLastJavadoc()
+char* TCODLex::getLastJavadoc()
 {
-	return TCOD_lex_get_last_javadoc((TCOD_lex_t *)data);
+  return TCOD_lex_get_last_javadoc(data);
 }
-
-
-void TCODLex::setDataBuffer(char *dat)
+void TCODLex::setDataBuffer(char* dat)
 {
-	TCOD_lex_set_data_buffer((TCOD_lex_t *)data,dat);
+  TCOD_lex_set_data_buffer(data, dat);
 }
-
-bool TCODLex::setDataFile(const char *_filename)
+bool TCODLex::setDataFile(const char* _filename)
 {
-	return TCOD_lex_set_data_file((TCOD_lex_t *)data,_filename) != 0;
+  return TCOD_lex_set_data_file(data, _filename) != 0;
 }
-
 int TCODLex::parse()
 {
-	return TCOD_lex_parse((TCOD_lex_t *)data);
+  return TCOD_lex_parse(data);
 }
-
-
 int TCODLex::parseUntil(int tokenType)
 {
-	return TCOD_lex_parse_until_token_type((TCOD_lex_t *)data,tokenType);
+  return TCOD_lex_parse_until_token_type(data, tokenType);
 }
-
-int TCODLex::parseUntil(const char *tokenValue)
+int TCODLex::parseUntil(const char* tokenValue)
 {
-	return TCOD_lex_parse_until_token_value((TCOD_lex_t *)data,tokenValue);
+  return TCOD_lex_parse_until_token_value(data, tokenValue);
 }
-
-void TCODLex::savepoint(TCODLex *savepoint)
+void TCODLex::savepoint(TCODLex* savepoint)
 {
-	TCOD_lex_savepoint((TCOD_lex_t *)data,(TCOD_lex_t *)(savepoint->data));
+  TCOD_lex_savepoint(data, savepoint->data);
 }
-
-void TCODLex::restore(TCODLex *savepoint)
+void TCODLex::restore(TCODLex* savepoint)
 {
-	TCOD_lex_restore((TCOD_lex_t *)data,(TCOD_lex_t *)(savepoint->data));
+  TCOD_lex_restore(data, savepoint->data);
 }
-
 bool TCODLex::expect(int tokenType)
 {
-	return TCOD_lex_expect_token_type((TCOD_lex_t *)data,tokenType) != 0;
+  return TCOD_lex_expect_token_type(data, tokenType) != 0;
 }
-
-bool TCODLex::expect(int tokenType, const char *tokenValue)
+bool TCODLex::expect(int tokenType, const char* tokenValue)
 {
-	return TCOD_lex_expect_token_value((TCOD_lex_t *)data,tokenType,tokenValue) != 0;
+  return TCOD_lex_expect_token_value(data, tokenType, tokenValue) != 0;
 }

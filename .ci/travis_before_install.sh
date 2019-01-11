@@ -34,6 +34,6 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     if [[ "$BUILD_TOOL" == "scons" ]]; then
         python -m pip install scons
     elif [[ "$BUILD_TOOL" == "autotools" ]]; then
-        brew install sdl2
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2
     fi
 fi

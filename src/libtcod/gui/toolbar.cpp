@@ -28,6 +28,7 @@
 #include "toolbar.hpp"
 
 #include <string.h>
+#include <algorithm>
 
 class Separator : public Widget {
 public :
@@ -42,12 +43,14 @@ public :
 			free(txt);
 		}
 	}
-	void computeSize() {
-		w = (txt ? (int)strlen(txt)+2 : 0 );
-	}
-	void expand(int width, int height) {
-		if ( w < width ) w=width;
-	}
+  void computeSize()
+  {
+    w = txt ? static_cast<int>(strlen(txt) + 2) : 0;
+  }
+  void expand(int width, int)
+  {
+    w = std::max(w, width);
+  }
 	void render() {
 		con->setDefaultBackground(back);
 		con->setDefaultForeground(fore);
@@ -65,7 +68,7 @@ ToolBar::ToolBar(int x, int y, const char *name, const char *tip)
 	: Container(x,y,0,2),name(NULL),fixedWidth(0) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		w = (int)strlen(name)+4;
+		w = static_cast<int>(strlen(name) + 4);
 	}
 	if ( tip ) setTip(tip);
 }
@@ -74,7 +77,7 @@ ToolBar::ToolBar(int x, int y, int w, const char *name, const char *tip)
 	: Container(x,y,w,2),name(NULL),fixedWidth(w) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		fixedWidth = w = MAX((int)strlen(name)+4,w);
+		fixedWidth = w = std::max<int>(strlen(name) + 4, w);
 	}
 	if ( tip ) setTip(tip);
 }
@@ -87,7 +90,7 @@ void ToolBar::setName(const char *name) {
 	if ( this->name ) free(this->name);
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		fixedWidth = MAX((int)strlen(name)+4,fixedWidth);
+		fixedWidth = std::max<int>(strlen(name) + 4, fixedWidth);
 	} else {
 		name=NULL;
 	}
@@ -102,7 +105,7 @@ void ToolBar::render() {
 
 void ToolBar::computeSize() {
 	int cury=y+1;
-	w=name ? (int)strlen(name)+4 : 2;
+	w = name ? static_cast<int>(strlen(name) + 4) : 2;
 	for (Widget **wid=content.begin(); wid != content.end(); wid ++ ) {
 		if ( (*wid)->isVisible() ) {
 			(*wid)->x=x+1;

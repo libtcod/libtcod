@@ -57,7 +57,7 @@ public :
 	static void renderWidgets();
 	static TCOD_mouse_t mouse;
 	static TCODColor fore;
-	virtual void expand(int width, int height) {}
+  virtual void expand(int, int) {} // parameters: width, height
 protected :
 	friend class StatusBar;
 	friend class ToolBar;

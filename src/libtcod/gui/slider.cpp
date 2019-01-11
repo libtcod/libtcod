@@ -75,8 +75,8 @@ void Slider::update(TCOD_key_t k) {
 			dragx = mouse.x;
 			dragy = mouse.y;
 		} else {
-			float mdx = (float)((mouse.x-dragx)*sensitivity) / (con->getWidth()*8);
-			float mdy = (float)((mouse.y-dragy)*sensitivity) / (con->getHeight()*8);
+			float mdx = ((mouse.x-dragx)*sensitivity) / (con->getWidth()*8);
+			float mdy = ((mouse.y-dragy)*sensitivity) / (con->getHeight()*8);
 			float oldValue=value;
 			if ( fabs(mdy) > fabs(mdx) ) mdx=-mdy;
 			value = dragValue+(max-min)*mdx;
@@ -92,10 +92,11 @@ void Slider::update(TCOD_key_t k) {
 	}
 }
 
-void Slider::valueToText() {
-	char tmp[128];
-	sprintf(tmp, fmt ? fmt : "%.2f",value);
-	setText(tmp);
+void Slider::valueToText()
+{
+  char tmp[128];
+  sprintf(tmp, fmt ? fmt : "%.2f", static_cast<double>(value));
+  setText(tmp);
 }
 
 void Slider::textToValue() {

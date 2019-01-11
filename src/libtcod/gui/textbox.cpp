@@ -45,7 +45,7 @@ TextBox::TextBox(int x,int y,int w, int maxw, const char *label, const char *val
 	if ( label ) this->label=TCOD_strdup(label);
 	boxw=w;
 	if (label ) {
-		boxx=(int)strlen(label)+1;
+		boxx=static_cast<int>(strlen(label) + 1);
 		this->w+= boxx;
 	}
 }
@@ -68,7 +68,7 @@ void TextBox::render() {
 	con->setDefaultBackground(keyboardFocus == this ? foreFocus : fore);
 	con->setDefaultForeground(keyboardFocus == this ? backFocus : back);
 	con->rect(x+boxx,y,boxw,h,false,TCOD_BKGND_SET);
-	int len=(int)strlen(txt)-offset;
+	int len = static_cast<int>(strlen(txt) - offset);
 	if (len > boxw) len = boxw;
 	if ( txt ) con->printEx(x+boxx,y,TCOD_BKGND_NONE,TCOD_LEFT,"%.*s",len,&txt[offset]);
 	if (keyboardFocus == this && blink > 0.0f) {
@@ -89,9 +89,9 @@ void TextBox::update(TCOD_key_t k) {
 		if ( k.vk == TCODK_CHAR ||
 			(k.vk >= TCODK_0 && k.vk <= TCODK_9) ||
 			(k.vk >= TCODK_KP0 && k.vk <= TCODK_KP9) ) {
-			if ( ! insert || (int)strlen(txt) < maxw ) {
-				if ( insert && pos < (int)strlen(txt) )  {
-					for (int i=(int)strlen(txt); i >= pos; i-- ) {
+			if (!insert || static_cast<int>(strlen(txt)) < maxw) {
+				if (insert && pos < static_cast<int>(strlen(txt)))  {
+					for (int i = static_cast<int>(strlen(txt)); i >= pos; --i) {
 						txt[i+1]=txt[i];
 					}
 				}
@@ -109,7 +109,7 @@ void TextBox::update(TCOD_key_t k) {
 				blink=blinkingDelay;
 			break;
 			case TCODK_RIGHT :
-				if (pos < (int)strlen(txt)) pos++;
+				if (pos < static_cast<int>(strlen(txt))) { pos++; }
 				if ( pos >= w ) offset = pos-w+1;
 				blink=blinkingDelay;
 			break;
@@ -129,7 +129,7 @@ void TextBox::update(TCOD_key_t k) {
 				blink=blinkingDelay;
 			break;
 			case TCODK_DELETE :
-				if (pos < (int)strlen(txt)) {
+				if (pos < static_cast<int>(strlen(txt))) {
 					for (uint32_t i=pos; i <= strlen(txt); i++ ) {
 						txt[i]=txt[i+1];
 					}
@@ -144,7 +144,7 @@ void TextBox::update(TCOD_key_t k) {
 			break;
 */
 			case TCODK_END :
-				pos = (int)strlen(txt);
+				pos = static_cast<int>(strlen(txt));
 				if ( pos >= w ) offset = pos-w+1;
 				blink=blinkingDelay;
 			break;

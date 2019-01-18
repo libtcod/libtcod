@@ -30,6 +30,7 @@
 
 #ifdef __cplusplus
 #include <string>
+#include <utility>
 #endif // __cplusplus
 
 #include "../tileset/tileset.h"
@@ -59,6 +60,8 @@ class Display {
    */
   virtual int get_fullscreen() = 0;
   virtual void present(const TCOD_Console*) = 0;
+  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
+      -> std::pair<double, double> = 0;
 };
 /**
  *  Incomplete interface for subclasses which don't need an SDL2 window.
@@ -84,6 +87,11 @@ class TerminalDisplay: public Display {
   virtual int get_fullscreen() override
   {
     return -1;
+  }
+  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
+      -> std::pair<double, double> override
+  {
+    return xy;
   }
 };
 } // namespace sdl2

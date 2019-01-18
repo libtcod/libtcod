@@ -81,6 +81,18 @@ int WindowedDisplay::get_fullscreen()
   return ((SDL_GetWindowFlags(window_.get())
            & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) != 0);
 }
+void WindowedDisplay::update_pixel_to_tile_scale(const TCOD_Console* console)
+{
+  int width, height;
+  SDL_GetWindowSize(window_.get(), &width, &height);
+  pixel_to_tile_scale = {
+    static_cast<double>(TCOD_console_get_width(console))
+    / static_cast<double>(width),
+    static_cast<double>(TCOD_console_get_height(console))
+    / static_cast<double>(height),
+  };
+}
+
 SDL2Display::SDL2Display(std::shared_ptr<Tileset> tileset,
                          std::pair<int, int> window_size, int window_flags,
                          const std::string& title)
@@ -109,6 +121,7 @@ void SDL2Display::present(const TCOD_Console* console)
   SDL_RenderClear(renderer_.get());
   SDL_RenderCopy(renderer_.get(), backbuffer, nullptr, nullptr);
   SDL_RenderPresent(renderer_.get());
+  update_pixel_to_tile_scale(console);
 }
 } // namespace sdl2
 } // namespace tcod

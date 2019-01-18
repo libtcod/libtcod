@@ -1234,14 +1234,25 @@ static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
       break;
     default: return;
   }
-  mouse.x -= TCOD_ctx.fullscreen_offsetx;
-  mouse.y -= TCOD_ctx.fullscreen_offsety;
-  mouse.cx = mouse.x / TCOD_ctx.font_width;
-  mouse.cy = mouse.y / TCOD_ctx.font_height;
-  int prev_cx = (mouse.x - mouse.dx) / TCOD_ctx.font_width;
-  int prev_cy = (mouse.y - mouse.dy) / TCOD_ctx.font_height;
-  mouse.dcx = mouse.cx - prev_cx;
-  mouse.dcy = mouse.cy - prev_cy;
+  auto display = tcod::engine::get_display();
+  if (display) {
+    std::pair<int, int> cell_xy = display->pixel_to_tile({mouse.x, mouse.y});
+    std::pair<int, int> prev_cell_xy = display->pixel_to_tile(
+        {mouse.x - mouse.dx, mouse.y - mouse.dy});
+    mouse.cx = cell_xy.first;
+    mouse.cy = cell_xy.second;
+    mouse.dcx = cell_xy.first - prev_cell_xy.first;
+    mouse.dcy = cell_xy.second - prev_cell_xy.second;
+  } else {
+    mouse.x -= TCOD_ctx.fullscreen_offsetx;
+    mouse.y -= TCOD_ctx.fullscreen_offsety;
+    mouse.cx = mouse.x / TCOD_ctx.font_width;
+    mouse.cy = mouse.y / TCOD_ctx.font_height;
+    int prev_cx = (mouse.x - mouse.dx) / TCOD_ctx.font_width;
+    int prev_cy = (mouse.y - mouse.dy) / TCOD_ctx.font_height;
+    mouse.dcx = mouse.cx - prev_cx;
+    mouse.dcy = mouse.cy - prev_cy;
+  }
 }
 /**
  *  Parse an SDL_Event into `mouse` and return the relevant TCOD_event_t.

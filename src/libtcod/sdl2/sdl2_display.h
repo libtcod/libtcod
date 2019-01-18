@@ -54,8 +54,28 @@ class WindowedDisplay: public engine::Display {
   virtual void set_fullscreen(bool fullscreen) override;
   virtual int get_fullscreen() override;
   SDL_Window* get_window() { return window_.get(); }
+  /**
+   *  Return the tile coordinate of the last console given to present.
+   */
+  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
+      -> std::pair<double, double> override
+  {
+    return {
+        xy.first * pixel_to_tile_scale.first,
+        xy.second * pixel_to_tile_scale.second,
+    };
+  }
+ protected:
+  /**
+   *  Update the scale using a console/tileset and the current window size.
+   */
+  void update_pixel_to_tile_scale(const TCOD_Console* console);
  private:
   std::shared_ptr<SDL_Window> window_;
+  /**
+   *  Scale used to convert from pixel coordinate to tile coordinate.
+   */
+  std::pair<double, double> pixel_to_tile_scale = {1.0, 1.0};
 };
 /**
  *  Display interface using a basic SDL2 renderer.

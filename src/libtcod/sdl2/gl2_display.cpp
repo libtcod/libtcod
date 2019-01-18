@@ -66,6 +66,8 @@ void OpenGL2Display::present(const TCOD_Console* console)
 
   tcod_renderer_.render(console);
   SDL_GL_SwapWindow(get_window());
+
+  update_pixel_to_tile_scale(console);
 }
 } // namespace sdl2
 } // namespace tcod

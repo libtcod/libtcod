@@ -1209,6 +1209,41 @@ void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy)
 /** The global libtcod mouse state. */
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 /**
+ *  Parse the coordinates and motion of an SDL event into a libtcod mouse
+ *  struct.
+ */
+static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
+{
+  switch(ev.type) {
+    case SDL_MOUSEMOTION:
+      mouse.x = ev.motion.x;
+      mouse.y = ev.motion.y;
+      mouse.dx = ev.motion.xrel;
+      mouse.dy = ev.motion.yrel;
+      break;
+    case SDL_MOUSEWHEEL:
+      mouse.x = ev.wheel.x;
+      mouse.y = ev.wheel.y;
+      mouse.dx = mouse.dy = 0;
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      mouse.x = ev.button.x;
+      mouse.y = ev.button.y;
+      mouse.dx = mouse.dy = 0;
+      break;
+    default: return;
+  }
+  mouse.x -= TCOD_ctx.fullscreen_offsetx;
+  mouse.y -= TCOD_ctx.fullscreen_offsety;
+  mouse.cx = mouse.x / TCOD_ctx.font_width;
+  mouse.cy = mouse.y / TCOD_ctx.font_height;
+  int prev_cx = (mouse.x - mouse.dx) / TCOD_ctx.font_width;
+  int prev_cy = (mouse.y - mouse.dy) / TCOD_ctx.font_height;
+  mouse.dcx = mouse.cx - prev_cx;
+  mouse.dcy = mouse.cy - prev_cy;
+}
+/**
  *  Parse an SDL_Event into `mouse` and return the relevant TCOD_event_t.
  *
  *  Returns 0 if the event wasn't mouse related.
@@ -1216,21 +1251,9 @@ static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,fa
 static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
                                                 TCOD_mouse_t *mouse) {
   if (!ev || !mouse) { return TCOD_EVENT_NONE; }
+  sdl_parse_mouse_(*ev, *mouse);
   switch(ev->type) {
     case SDL_MOUSEMOTION:
-      TCOD_sys_unproject_screen_coords(ev->motion.x, ev->motion.y,
-                                       &mouse->x, &mouse->y);
-      if (scale_data.surface_width != 0) {
-        mouse->dx = (ev->motion.xrel * scale_data.src_proportionate_width
-                     / scale_data.surface_width);
-        mouse->dy = (ev->motion.yrel * scale_data.src_proportionate_height
-                     / scale_data.surface_height);
-      }
-      mouse->cx = mouse->x / TCOD_ctx.font_width;
-      mouse->cy = mouse->y / TCOD_ctx.font_height;
-      mouse->dcx = mouse->dx / TCOD_ctx.font_width;
-      mouse->dcy = mouse->dy / TCOD_ctx.font_height;
-
       return TCOD_EVENT_MOUSE_MOVE;
     case SDL_MOUSEWHEEL:
       if (ev->wheel.y < 0) {

@@ -81,7 +81,7 @@ def samples_factory():
     env_samples.Append(CPPDEFINES=['TCOD_SDL2'], CPPPATH=['$VARIANT/src'])
     if env['TOOLSET'] == 'mingw':
         # These might need to be statically linked somewhere.
-        env_libtcod.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
+        env_samples.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
 
     if sys.platform == 'win32':
         env_samples.Append(LIBS=['libtcod'])

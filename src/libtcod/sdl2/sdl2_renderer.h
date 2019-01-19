@@ -43,32 +43,24 @@ struct SDL_Texture;
 namespace tcod {
 namespace sdl2 {
 using tcod::tileset::Tileset;
-class SDL2Renderer: public TilesetObserver {
+class SDL2Renderer {
  public:
-  SDL2Renderer()
-  {}
-  SDL2Renderer(struct SDL_Renderer* renderer, SDL2TilesetAlias alias)
-  : TilesetObserver(alias.get_tileset()), alias_{alias}, renderer_{renderer}
-  {}
-
+  SDL2Renderer();
+  SDL2Renderer(struct SDL_Renderer* renderer, SDL2TilesetAlias alias);
   SDL2Renderer(struct SDL_Renderer* renderer,
-               std::shared_ptr<Tileset> tileset)
-  : SDL2Renderer(renderer, SDL2TilesetAlias(renderer, tileset))
-  {}
+               std::shared_ptr<Tileset> tileset);
 
-  void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes) override
-  {}
+  SDL2Renderer(const SDL2Renderer&) = delete;
+  SDL2Renderer& operator=(const SDL2Renderer&) = delete;
+  SDL2Renderer(SDL2Renderer&&) noexcept;
+  SDL2Renderer& operator=(SDL2Renderer&&) noexcept;
 
   ~SDL2Renderer();
 
   struct SDL_Texture* render(const TCOD_Console* console);
  private:
-  using cache_type = Vector2<std::tuple<int, ColorRGBA, ColorRGBA>>;
-  SDL2TilesetAlias alias_;
-  cache_type cache_;
-  struct SDL_Renderer* renderer_;
-  struct SDL_Texture* texture_ = nullptr;
+  class impl;
+  std::unique_ptr<impl> impl_;
 };
 } // namespace sdl2
 } // namespace tcod

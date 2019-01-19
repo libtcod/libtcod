@@ -10,6 +10,7 @@ since `1.7.0`.
 ### Fixed
 - Use correct math for tile-based delta in mouse events.
 - New renderers now support tile-based mouse coordinates.
+- SDL2 renderer will now properly refresh after the window is resized.
 
 ## [1.10.2] - 2018-11-23
 ### Fixed

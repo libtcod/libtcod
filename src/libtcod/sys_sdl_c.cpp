@@ -1209,6 +1209,22 @@ void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy)
 /** The global libtcod mouse state. */
 static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,false,false,false};
 /**
+ *  Convert a pixel coordinate to a tile coordinate using global state.
+ */
+void TCOD_sys_pixel_to_tile(double* x, double* y)
+{
+  if (!x || !y) { return; }
+  auto display = tcod::engine::get_display();
+  if (display) {
+    std::pair<double, double> xy = display->pixel_to_tile({*x, *y});
+    *x = xy.first;
+    *y = xy.second;
+  } else {
+    *x = (*x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
+    *y = (*y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
+  }
+}
+/**
  *  Parse the coordinates and motion of an SDL event into a libtcod mouse
  *  struct.
  */

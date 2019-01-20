@@ -224,6 +224,7 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
+void TCOD_sys_pixel_to_tile(double* x, double* y);
 #endif
 
 /* UTF-8 stuff */

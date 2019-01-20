@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.3] - 2019-01-19
 ### Fixed
 - Use correct math for tile-based delta in mouse events.
 - New renderers now support tile-based mouse coordinates.

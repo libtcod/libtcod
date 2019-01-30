@@ -2122,7 +2122,9 @@ INCLUDE_FILE_PATTERNS  =
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
 PREDEFINED             = TCODLIB_API= \
-                         TCOD_DEPRECATED(msg)= \
+                         TCODLIB_CAPI= \
+                         "TCODLIB_FORMAT(int,int)= " \
+                         "TCOD_DEPRECATED(msg)= " \
                          TCOD_DEPRECATED_NOMESSAGE=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

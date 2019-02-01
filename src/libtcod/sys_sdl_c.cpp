@@ -1238,8 +1238,9 @@ static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
       mouse.dy = ev.motion.yrel;
       break;
     case SDL_MOUSEWHEEL:
-      mouse.x = ev.wheel.x;
-      mouse.y = ev.wheel.y;
+      // Leave x,y attributes as is to preserve the original libtcod behaviour.
+      mouse.wheel_up = ev.wheel.y > 0;
+      mouse.wheel_down = ev.wheel.y < 0;
       mouse.dx = mouse.dy = 0;
       break;
     case SDL_MOUSEBUTTONDOWN:
@@ -1283,11 +1284,6 @@ static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
     case SDL_MOUSEMOTION:
       return TCOD_EVENT_MOUSE_MOVE;
     case SDL_MOUSEWHEEL:
-      if (ev->wheel.y < 0) {
-        mouse->wheel_down = true;
-      } else {
-        mouse->wheel_up = true;
-      }
       return TCOD_EVENT_MOUSE_PRESS;
     case SDL_MOUSEBUTTONDOWN:
       switch (ev->button.button) {

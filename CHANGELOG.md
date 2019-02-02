@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.4] - 2019-02-01
 ### Fixed
 - Fixed regression where mouse wheel events unset mouse coordinates.
 

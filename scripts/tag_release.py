@@ -59,8 +59,7 @@ VERSION_SOURCE = """\
 #define TCOD_PATCHLEVEL     {patch}
 
 #define TCOD_STRVERSION "{tag}"
-{tail}
-"""
+{tail}"""
 
 def update_version_header(args):
     """Update version.h to use the given tag."""

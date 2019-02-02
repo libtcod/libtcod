@@ -42,6 +42,3 @@
 #define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
 
 #endif /* LIBTCOD_VERSION_H */
-
-
-

@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `TCOD_console_printf_frame` was clearing tiles outside if it's bounds.
 
 ## [1.10.4] - 2019-02-01
 ### Fixed

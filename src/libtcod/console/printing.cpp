@@ -1180,8 +1180,7 @@ void TCOD_console_printf_frame(struct TCOD_Console *con,
     TCOD_console_put_char(con, right, i, 0x2502, flag);
   }
   if (empty) {
-    TCOD_console_rect(con, left + 1, top + 1, right - 1, bottom - 1, true,
-                      flag);
+    TCOD_console_rect(con, x + 1, y + 1, w - 2, h - 2, true, flag);
   }
   if (fmt && con) {
     va_list ap;

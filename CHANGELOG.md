@@ -9,6 +9,7 @@ since `1.7.0`.
 ## [Unreleased]
 ### Fixed
 - `TCOD_console_printf_frame` was clearing tiles outside if it's bounds.
+- The `TCOD_FONT_LAYOUT_CP437` layout was incorrect.
 
 ## [1.10.4] - 2019-02-01
 ### Fixed

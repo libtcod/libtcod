@@ -439,7 +439,7 @@ void TCOD_sys_decode_font_(void)
 {
   if (TCOD_ctx.font_flags & TCOD_FONT_LAYOUT_CP437) {
     for (int i = 0; i < static_cast<int>(cp437_codec_.size()); ++i) {
-      TCOD_sys_map_ascii_to_font(tcod_codec_.at(i), i, 0);
+      TCOD_sys_map_ascii_to_font(cp437_codec_.at(i), i, 0);
     }
   } else if (TCOD_ctx.font_tcod_layout) {
     for (int i = 0; i < static_cast<int>(tcod_codec_.size()); ++i) {

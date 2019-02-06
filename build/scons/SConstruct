@@ -78,7 +78,7 @@ def samples_factory():
     installers = []
 
     env_samples = env.Clone()
-    env_samples.Append(CPPDEFINES=['TCOD_SDL2'], CPPPATH=['$VARIANT/src'])
+    env_samples.Append(CPPPATH=['$VARIANT/src'])
     if env['TOOLSET'] == 'mingw':
         # These might need to be statically linked somewhere.
         env_samples.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])

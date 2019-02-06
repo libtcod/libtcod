@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- The SDL2/OPENGL2 renderers will now auto-detect a custom fonts key-color.
 ### Fixed
 - `TCOD_console_printf_frame` was clearing tiles outside if it's bounds.
 - The `TCOD_FONT_LAYOUT_CP437` layout was incorrect.

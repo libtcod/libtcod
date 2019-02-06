@@ -37,6 +37,7 @@ class Tilesheet::impl {
   explicit impl(const Image& canvas, const TilesheetLayout& layout)
   : canvas_(canvas), layout_(layout) {
     fill_layout();
+    color_key_ = guess_color_key();
   }
   impl(impl&&) = default;
   impl& operator=(impl&&) = default;
@@ -97,14 +98,31 @@ class Tilesheet::impl {
     }
   }
   /**
+   *  Attempt to figure out a tile-sheets color key automatically.
+   */
+  ColorRGBA guess_color_key()
+  {
+    Image tile(get_tile(0)); // Check the NULL tile.
+    const ColorRGBA color_key(tile.at(0, 0));
+    if (color_key.a != 255) {
+      return {0, 0, 0, 0};
+    }
+    // Tile must be a solid color.
+    for (const ColorRGBA& pixel : tile) {
+      if (pixel != color_key) {
+        return {0, 0, 0, 0};
+      }
+    }
+    return color_key;
+  }
+  /**
    *  Return a new Tile from the given region on the Tilesheet.
    */
   Image new_tile(int x, int y, int width, int height) const {
     Image tile{width, height};
     for (int pixel_y = 0; pixel_y < height; ++pixel_y) {
       for (int pixel_x = 0; pixel_x < width; ++pixel_x) {
-        tile.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x,
-                                                      y + pixel_y);
+        tile.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x, y + pixel_y);
       }
     }
     bool is_colored = false;
@@ -121,16 +139,24 @@ class Tilesheet::impl {
         break;
       }
     }
+    // Convert a grey-scale tiles to white-with-alpha.
     if (!is_colored && !has_alpha) {
       for (ColorRGBA& pixel : tile) {
         pixel.a = pixel.r;
         pixel.r = pixel.g = pixel.b = 0xff;
       }
     }
+    // Set key-color pixels to zero.
+    for (ColorRGBA& pixel : tile) {
+      if (pixel == color_key_) {
+        pixel.r = pixel.g = pixel.b = pixel.a = 0;
+      }
+    }
     return tile;
   }
   Image canvas_;
   TilesheetLayout layout_;
+  ColorRGBA color_key_;
 };
 
 Tilesheet::Tilesheet() = default;

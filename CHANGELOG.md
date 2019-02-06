@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.5] - 2019-02-06
 ### Changed
 - The SDL2/OPENGL2 renderers will now auto-detect a custom fonts key-color.
 ### Fixed

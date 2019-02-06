@@ -28,6 +28,7 @@
 #ifndef LIBTCOD_TILESET_TILESHEET_H_
 #define LIBTCOD_TILESET_TILESHEET_H_
 #ifdef __cplusplus
+#include <memory>
 #include <string>
 #include <utility>
 #endif // __cplusplus
@@ -49,107 +50,30 @@ struct TilesheetLayout {
 };
 class Tilesheet {
  public:
-  Tilesheet() = default;
-  explicit Tilesheet(const Image& canvas, const TilesheetLayout& layout)
-  : canvas_(canvas), layout_(layout) {
-    fill_layout();
-  }
-  explicit Tilesheet(const Image& canvas, const std::pair<int, int>& layout)
-  : Tilesheet(canvas, {0, 0, layout.first, layout.second})
-  {}
-  Tilesheet(Tilesheet&&) = default;
-  Tilesheet& operator=(Tilesheet&&) = default;
-  Tilesheet(const Tilesheet&) = default;
-  Tilesheet& operator=(const Tilesheet&) = default;
+  Tilesheet();
+  explicit Tilesheet(const Image& canvas, const TilesheetLayout& layout);
+  explicit Tilesheet(const Image& canvas, const std::pair<int, int>& layout);
+  Tilesheet(Tilesheet&&) noexcept;
+  Tilesheet& operator=(Tilesheet&&) noexcept;
+  Tilesheet(const Tilesheet&);
+  Tilesheet& operator=(const Tilesheet&);
+  ~Tilesheet() noexcept;
   /**
-   *  Return the Tile at `x` and `y`.
+   *  Return the tile at `x` and `y`.
    */
-  Image get_tile(int x, int y) const {
-    if (!(0 <= x && x < layout_.columns && 0 <= y && y < layout_.rows)) {
-      throw std::out_of_range("Tile not in Tilesheet layout.");
-    }
-    return new_tile(x * layout_.tile_width, y * layout_.tile_height,
-                    layout_.tile_width, layout_.tile_height);
-  }
+  Image get_tile(int x, int y) const;
   /**
-   *  Return the Tile at `n`.
+   *  Return the tile at `n`.
    */
-  Image get_tile(int n) const {
-    return get_tile(n % layout_.columns, n / layout_.columns);
-  }
-  int get_tile_width() const {
-    return layout_.tile_width;
-  }
-  int get_tile_height() const {
-    return layout_.tile_height;
-  }
-  int get_columns() const {
-    return layout_.columns;
-  }
-  int get_rows() const {
-    return layout_.rows;
-  }
-  int count() const {
-    return get_columns() * get_rows();
-  }
+  Image get_tile(int n) const;
+  int get_tile_width() const noexcept;
+  int get_tile_height() const noexcept;
+  int get_columns() const noexcept;
+  int get_rows() const noexcept;
+  int count() const noexcept;
  private:
-  /**
-   *  Automatically fill values which are 0 in layout_.
-   */
-  void fill_layout() {
-    // Find undefined columns/rows from tile size and canvas_ size.
-    if (layout_.columns == 0 && layout_.tile_width > 0) {
-      layout_.columns = canvas_.width() / layout_.tile_width;
-    }
-    if (layout_.rows == 0 && layout_.tile_height > 0) {
-      layout_.rows = canvas_.height() / layout_.tile_height;
-    }
-    // Find undefined tile width/height from columns/rows and canvas_ size.
-    if (layout_.tile_width == 0 && layout_.columns > 0) {
-      layout_.tile_width = canvas_.width() / layout_.columns;
-    }
-    if (layout_.tile_height == 0 && layout_.rows > 0) {
-      layout_.tile_height = canvas_.height() / layout_.rows;
-    }
-    if (!layout_.columns || !layout_.rows) {
-      throw std::logic_error("Tilesheet layout is non-valid.");
-    }
-  }
-  /**
-   *  Return a new Tile from the given region on the Tilesheet.
-   */
-  Image new_tile(int x, int y, int width, int height) const {
-    Image tile{width, height};
-    for (int pixel_y = 0; pixel_y < height; ++pixel_y) {
-      for (int pixel_x = 0; pixel_x < width; ++pixel_x) {
-        tile.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x,
-                                                      y + pixel_y);
-      }
-    }
-    bool is_colored = false;
-    for (const ColorRGBA& pixel : tile) {
-      if (pixel.r != pixel.g || pixel.r != pixel.b) {
-        is_colored = true;
-        break;
-      }
-    }
-    bool has_alpha = false;
-    for (ColorRGBA& pixel : tile) {
-      if (pixel.a != 0xff) {
-        has_alpha = true;
-        break;
-      }
-    }
-    if (!is_colored && !has_alpha) {
-      for (ColorRGBA& pixel : tile) {
-        pixel.a = pixel.r;
-        pixel.r = pixel.g = pixel.b = 0xff;
-      }
-    }
-    return tile;
-  }
-  Image canvas_;
-  TilesheetLayout layout_;
+  class impl;
+  std::unique_ptr<impl> impl_;
 };
 /**
  *  Load a Tilesheet from an image file.

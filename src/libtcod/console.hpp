@@ -1800,8 +1800,8 @@ protected :
 	friend class TCODImage;
 	friend class TCODZip;
 	friend class TCODText;
-  friend TCODLIB_API void TCOD_console_init_root(
-      int w, int h, const char* title,
+  friend TCODLIB_API void tcod::console::init_root(
+      int w, int h, const std::string& title,
       bool fullscreen, TCOD_renderer_t renderer);
 	TCODConsole();
 	TCOD_Console* data;

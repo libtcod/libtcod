@@ -26,7 +26,7 @@ const int HEIGHT = 10;
 const char *TITLE = "Unittest";
 
 TEST_CASE("SDL renderer") {
-  TCOD_console_init_root(WIDTH, HEIGHT, TITLE, 0, TCOD_RENDERER_SDL);
+  tcod::console::init_root(WIDTH, HEIGHT, TITLE, 0, TCOD_RENDERER_SDL);
   REQUIRE(TCOD_console_get_width(NULL) == WIDTH);
   REQUIRE(TCOD_console_get_height(NULL) == HEIGHT);
 

@@ -95,6 +95,10 @@ class TerminalDisplay: public Display {
   }
 };
 } // namespace sdl2
+namespace console {
+TCODLIB_API void init_root(int w, int h, const std::string& title,
+                           bool fullscreen, TCOD_renderer_t renderer);
+} // namespace console
 } // namespace tcod
 #endif // __cplusplus
 /**

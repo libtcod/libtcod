@@ -28,6 +28,7 @@
 #include "display.h"
 
 #include <cstring>
+#include <stdexcept>
 #include <string>
 
 #include <SDL.h>
@@ -37,6 +38,7 @@
 #include "../libtcod_int.h"
 #include "../sdl2/sdl2_display.h"
 #include "../sdl2/gl2_display.h"
+namespace tcod {
 /**
  *  Initialize the display using one of the new renderers.
  */
@@ -55,29 +57,41 @@ static void init_display(int w, int h, const std::string& title,
   tcod::engine::set_display(
       std::make_shared<T>(tileset, display_size, display_flags, title));
 }
+namespace console {
+void init_root(int w, int h, const std::string& title, bool fullscreen,
+               TCOD_renderer_t renderer)
+{
+  if (w <= 0 || h <= 0) {
+    throw std::invalid_argument("Width and height must be greater than zero.");
+  }
+  TCOD_console_delete(NULL);
+  TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
+#ifndef TCOD_BARE
+  TCOD_ctx.renderer=renderer;
+#endif
+  strncpy(TCOD_ctx.window_title, title.c_str(),
+          sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_ctx.fullscreen = fullscreen;
+  switch (renderer) {
+    case TCOD_RENDERER_SDL2:
+      init_display<tcod::sdl2::SDL2Display>(w, h, title, fullscreen);
+      break;
+    case TCOD_RENDERER_OPENGL2:
+      init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
+      break;
+    default:
+      TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
+                        TCOD_ctx.fullscreen);
+      break;
+  }
+}
+} // namespace console
+} // namespace tcod
 void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
                             TCOD_renderer_t renderer)
 {
   TCOD_IF(w > 0 && h > 0) {
-    TCOD_console_delete(NULL);
-    TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
-#ifndef TCOD_BARE
-    TCOD_ctx.renderer=renderer;
-#endif
-    strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
-    TCOD_ctx.fullscreen = fullscreen;
-    switch (renderer) {
-      case TCOD_RENDERER_SDL2:
-        init_display<tcod::sdl2::SDL2Display>(w, h, title, fullscreen);
-        break;
-      case TCOD_RENDERER_OPENGL2:
-        init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
-        break;
-      default:
-        TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
-                          TCOD_ctx.fullscreen);
-        break;
-    }
+    tcod::console::init_root(w, h, title, fullscreen, renderer);
   }
 }
 void TCOD_quit(void)

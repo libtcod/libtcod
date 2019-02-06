@@ -38,7 +38,7 @@ endif
 
 check_scripts = unittest.sh
 check_PROGRAMS = unittest
-unittest_SOURCES = ../../tests/unittest.cpp
+unittest_SOURCES = ../../tests/catch.cpp ../../tests/unittest.cpp
 unittest_LDADD = libtcod.la
 unittest_CXXFLAGS = $(CXXFLAGS)
 

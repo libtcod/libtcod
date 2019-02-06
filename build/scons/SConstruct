@@ -122,7 +122,10 @@ def get_unittest():
 
     unittest = env_unittest.Program(
         target=os.path.join("$VARIANT", "unittest"),
-        source=os.path.join("$VARIANT", "tests/unittest.cpp")
+        source=[
+            os.path.join("$VARIANT", "tests/catch.cpp"),
+            os.path.join("$VARIANT", "tests/unittest.cpp"),
+        ]
     )
     env.Depends(unittest, [libtcod])
     return unittest

@@ -564,7 +564,8 @@ static void TCOD_console_data_alloc(struct TCOD_Console *con)
   }
 }
 
-bool TCOD_console_init(TCOD_Console* con, const char *title, bool fullscreen)
+bool TCOD_console_init(TCOD_Console* con, const std::string& title,
+                       bool fullscreen)
 {
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return false; }
@@ -578,9 +579,9 @@ bool TCOD_console_init(TCOD_Console* con, const char *title, bool fullscreen)
   for (int i = 0; i < con->w * con->h; ++i) {
     con->ch_array[i] = ' ';
   }
-  if (title) {
+  if (title.length()) {
     if (!TCOD_sys_init(con, fullscreen) ) { return false; }
-    TCOD_sys_set_window_title(title);
+    TCOD_sys_set_window_title(title.c_str());
   }
   return true;
 }

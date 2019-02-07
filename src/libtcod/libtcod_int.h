@@ -32,6 +32,9 @@
 #if defined(__ANDROID__)
 #include <android/log.h>
 #endif
+#ifdef __cplusplus
+#include <string>
+#endif // __cplusplus
 
 #include "portability.h"
 #include "color.h"
@@ -180,38 +183,9 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_postproc(TCOD_map_t map,int x0,int y0, int x1, int y1, int dx, int dy);
 
-#ifdef TCOD_CONSOLE_SUPPORT
-/* TCODConsole non public methods*/
-bool TCOD_console_init(TCOD_console_t con,const char *title, bool fullscreen);
-int TCOD_console_print_internal(TCOD_console_t con,int x,int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char *msg, bool can_split, bool count_only);
-int TCOD_console_stringLength(const unsigned char *s);
-unsigned char * TCOD_console_forward(unsigned char *s,int l);
-char *TCOD_console_vsprint(const char *fmt, va_list ap);
-#endif
-
 /* fatal errors */
 void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
-
-/* TCODSystem non public methods */
-#ifdef TCOD_CONSOLE_SUPPORT
-void TCOD_console_data_free(struct TCOD_Console *dat);
-bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
-void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
-void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
-void TCOD_sys_decode_font_(void);
-void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
-void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
-void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
-void TCOD_sys_delete_bitmap(void *bitmap);
-void TCOD_sys_console_to_bitmap(void *bitmap, struct TCOD_Console *console,
-                                struct TCOD_Console *cache);
-TCODLIB_API void *TCOD_sys_get_surface(int width, int height, bool alpha);
-void TCOD_sys_save_fps(void);
-void TCOD_sys_restore_fps(void);
-void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
-void TCOD_sys_set_dirty_character_code(int ch);
-int TCOD_get_tileid_for_charcode_(int charcode);
 
 /* switch fullscreen mode */
 void TCOD_sys_set_fullscreen(bool fullscreen);
@@ -225,8 +199,12 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_set_window_title(const char *title);
 void TCOD_sys_pixel_to_tile(double* x, double* y);
-#endif
 
+int TCOD_console_print_internal(
+    TCOD_Console* con, int x,int y, int w, int h, TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align, char* msg, bool can_split, bool count_only
+);
+char* TCOD_console_vsprint(const char* fmt, va_list ap);
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
 wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap);
@@ -539,6 +517,29 @@ extern int oldFade;
 #endif
 
 #ifdef __cplusplus
+// TCODConsole non public methods
+bool TCOD_console_init(TCOD_Console* con, const std::string& title,
+                       bool fullscreen);
+int TCOD_console_stringLength(const unsigned char* s);
+unsigned char* TCOD_console_forward(unsigned char* s,int l);
+// TCODSystem non public methods
+void TCOD_console_data_free(struct TCOD_Console *dat);
+bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
+void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
+void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
+void TCOD_sys_decode_font_(void);
+void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console);
+void TCOD_sys_save_bitmap(void *bitmap, const char *filename);
+void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
+void TCOD_sys_delete_bitmap(void *bitmap);
+void TCOD_sys_console_to_bitmap(void *bitmap, struct TCOD_Console *console,
+                                struct TCOD_Console *cache);
+TCODLIB_CAPI void *TCOD_sys_get_surface(int width, int height, bool alpha);
+void TCOD_sys_save_fps(void);
+void TCOD_sys_restore_fps(void);
+void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
+void TCOD_sys_set_dirty_character_code(int ch);
+int TCOD_get_tileid_for_charcode_(int charcode);
 /**
  *  Validate and return a console.
  */

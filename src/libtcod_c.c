@@ -58,7 +58,6 @@
 #include "libtcod/fov_recursive_shadowcasting.c"
 #include "libtcod/fov_restrictive.c"
 #include "libtcod/heightmap_c.c"
-#include "libtcod/image_c.c"
 #include "libtcod/lex_c.c"
 #include "libtcod/list_c.c"
 #include "libtcod/mersenne_c.c"

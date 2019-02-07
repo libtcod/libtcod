@@ -42,6 +42,7 @@
 #include "libtcod/fov.cpp"
 #include "libtcod/heightmap.cpp"
 #include "libtcod/image.cpp"
+#include "libtcod/image_c.cpp"
 #include "libtcod/lex.cpp"
 #include "libtcod/mersenne.cpp"
 #include "libtcod/mouse.cpp"

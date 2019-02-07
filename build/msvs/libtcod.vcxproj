@@ -206,7 +206,7 @@
     <ClCompile Include="..\..\src\libtcod\heightmap.cpp" />
     <ClCompile Include="..\..\src\libtcod\heightmap_c.c" />
     <ClCompile Include="..\..\src\libtcod\image.cpp" />
-    <ClCompile Include="..\..\src\libtcod\image_c.c" />
+    <ClCompile Include="..\..\src\libtcod\image_c.cpp" />
     <ClCompile Include="..\..\src\libtcod\lex.cpp" />
     <ClCompile Include="..\..\src\libtcod\lex_c.c" />
     <ClCompile Include="..\..\src\libtcod\list_c.c" />

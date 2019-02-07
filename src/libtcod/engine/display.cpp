@@ -91,7 +91,7 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
                             TCOD_renderer_t renderer)
 {
   TCOD_IF(w > 0 && h > 0) {
-    tcod::console::init_root(w, h, title, fullscreen, renderer);
+    tcod::console::init_root(w, h, title ? title : " ", fullscreen, renderer);
   }
 }
 void TCOD_quit(void)

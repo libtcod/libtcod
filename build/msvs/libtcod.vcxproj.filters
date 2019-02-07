@@ -185,7 +185,7 @@
     <ClCompile Include="..\..\src\libtcod\image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\libtcod\image_c.c">
+    <ClCompile Include="..\..\src\libtcod\image_c.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\libtcod\lex.cpp">

@@ -22,14 +22,8 @@ const int WIDTH = 20;
 const int HEIGHT = 10;
 const char *TITLE = "Unittest";
 
-TEST_CASE("Console init root") {
-  TCOD_renderer_t renderer = GENERATE(
-      TCOD_RENDERER_SDL2,
-      TCOD_RENDERER_OPENGL2,
-      TCOD_RENDERER_SDL,
-      TCOD_RENDERER_OPENGL,
-      TCOD_RENDERER_GLSL
-  );
+void test_renderer(TCOD_renderer_t renderer)
+{
   TCOD_console_set_custom_font(
       "data/fonts/terminal8x8_gs_ro.png",
       TCOD_FONT_LAYOUT_CP437 | TCOD_FONT_TYPE_GREYSCALE,
@@ -38,6 +32,22 @@ TEST_CASE("Console init root") {
   REQUIRE(TCOD_console_get_width(NULL) == WIDTH);
   REQUIRE(TCOD_console_get_height(NULL) == HEIGHT);
   TCOD_console_delete(NULL);
+}
+
+TEST_CASE("SDL2 Renderer") {
+  test_renderer(TCOD_RENDERER_SDL2);
+}
+TEST_CASE("SDL Renderer") {
+  test_renderer(TCOD_RENDERER_SDL);
+}
+TEST_CASE("OPENGL Renderer") {
+  test_renderer(TCOD_RENDERER_OPENGL);
+}
+TEST_CASE("GLSL Renderer", "[!nonportable]") {
+  test_renderer(TCOD_RENDERER_SDL);
+}
+TEST_CASE("OPENGL2 Renderer", "[!nonportable]") {
+  test_renderer(TCOD_RENDERER_OPENGL2);
 }
 
 TEST_CASE("Console ascii") {

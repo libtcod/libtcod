@@ -29,7 +29,7 @@ build_script:
 - ps: '. .ci\appveyor_build.ps1'
 
 test_script:
-- cmd: if exist unittest.exe unittest.exe
+- cmd: if exist unittest.exe unittest.exe ~[!nonportable]
 - cmd: cd python
 - cmd: if defined TEST_PYTHON2 %TEST_PYTHON3% -m pip install -U pytest pytest-cov
 - cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -X faulthandler -m pytest -v

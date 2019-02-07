@@ -39,14 +39,13 @@ before_script:
 - pip install --upgrade pytest pytest-cov pytest-faulthandler
 - (cd python && python setup.py develop)
 - export UNITTEST_ARGS=""
-- 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export UNITTEST_ARGS="~~[!nonportable]"; fi'
 
 script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | $CC -xc -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
-- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest $UNITTEST_ARGS; fi'
+- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest ~[!nonportable]; fi'
 - (cd python && pytest -v)
 deploy:
   provider: releases

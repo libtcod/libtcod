@@ -42,10 +42,12 @@ SIZE_GCC = {
     ],
     'CXXFLAGS': GCC_CXX_WARNINGS,
     'LINKFLAGS': ['-Os', '-flto'],
+    'CPPDEFINES': ['NDEBUG'],
 }
 SIZE_MSVC = {
     'CCFLAGS': ['/nologo', '-W3', '-O1', '-GL', '-GS-'],
     'LINKFLAGS': ['/nologo', '-LTCG'],
+    'CPPDEFINES': ['NDEBUG'],
 }
 
 PERFORMANCE_GCC = {
@@ -56,11 +58,24 @@ PERFORMANCE_GCC = {
     ],
     'CXXFLAGS': GCC_CXX_WARNINGS,
     'LINKFLAGS': ['-O3', '-flto'],
+    'CPPDEFINES': ['NDEBUG'],
 }
 PERFORMANCE_MSVC = {
     'CCFLAGS': ['/nologo', '-W3', '-O2', '-GL', '-GS-'],
     'LINKFLAGS': ['/nologo', '-LTCG'],
+    'CPPDEFINES': ['NDEBUG'],
 }
 
 RELEASE_GCC = PERFORMANCE_GCC
 RELEASE_MSVC = PERFORMANCE_MSVC
+
+# DEBUG_RELEASE is like RELEASE but with debug flags and without NDEBUG.
+DEBUG_RELEASE_GCC = {
+    'CCFLAGS': RELEASE_GCC['CCFLAGS'] + ['-g'],
+    'CXXFLAGS': RELEASE_GCC['CXXFLAGS'],
+    'LINKFLAGS': RELEASE_GCC['LINKFLAGS'],
+}
+DEBUG_RELEASE_MSVC = {
+    'CCFLAGS': RELEASE_MSVC['CCFLAGS'],
+    'LINKFLAGS': RELEASE_MSVC['LINKFLAGS'],
+}

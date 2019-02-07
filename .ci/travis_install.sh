@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ "$BUILD_TOOL" == "scons" ]]; then
-    BUILDMODE="MODE=DEBUG"
+    BUILDMODE="MODE=DEBUG_RELEASE"
     if [[ -n "$TRAVIS_TAG" ]]; then
         BUILDMODE="MODE=RELEASE"
     fi

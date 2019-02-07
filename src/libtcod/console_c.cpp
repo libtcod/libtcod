@@ -95,7 +95,7 @@ TCOD_Console* TCOD_console_new(int w, int h)
   if (!con) { return NULL; }
   con->w = w;
   con->h = h;
-  TCOD_console_init(con, NULL, false); /* NOTE: CHECK THIS FOR ERORRS */
+  TCOD_console_init(con);
   if (TCOD_ctx.root) {
     con->alignment = TCOD_ctx.root->alignment;
     con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
@@ -564,8 +564,7 @@ static void TCOD_console_data_alloc(struct TCOD_Console *con)
   }
 }
 
-bool TCOD_console_init(TCOD_Console* con, const std::string& title,
-                       bool fullscreen)
+bool TCOD_console_init(TCOD_Console* con)
 {
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return false; }
@@ -579,12 +578,17 @@ bool TCOD_console_init(TCOD_Console* con, const std::string& title,
   for (int i = 0; i < con->w * con->h; ++i) {
     con->ch_array[i] = ' ';
   }
-  if (title.length()) {
-    if (!TCOD_sys_init(con, fullscreen) ) { return false; }
-    TCOD_sys_set_window_title(title.c_str());
-  }
   return true;
 }
+bool TCOD_console_init(TCOD_Console* con, const std::string& title,
+                       bool fullscreen)
+{
+  if (!TCOD_console_init(con)) { return false; }
+  if (!TCOD_sys_init(con, fullscreen) ) { return false; }
+  TCOD_sys_set_window_title(title.c_str());
+  return true;
+}
+
 
 void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col)
 {

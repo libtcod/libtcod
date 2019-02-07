@@ -518,6 +518,7 @@ extern int oldFade;
 
 #ifdef __cplusplus
 // TCODConsole non public methods
+bool TCOD_console_init(TCOD_Console* con);
 bool TCOD_console_init(TCOD_Console* con, const std::string& title,
                        bool fullscreen);
 int TCOD_console_stringLength(const unsigned char* s);

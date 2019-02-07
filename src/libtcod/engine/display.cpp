@@ -81,7 +81,7 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
       init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
       break;
     default:
-      TCOD_console_init(TCOD_ctx.root, title.c_str(), fullscreen);
+      TCOD_console_init(TCOD_ctx.root, title, fullscreen);
       break;
   }
 }
@@ -91,7 +91,9 @@ void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
                             TCOD_renderer_t renderer)
 {
   TCOD_IF(w > 0 && h > 0) {
-    tcod::console::init_root(w, h, title ? title : " ", fullscreen, renderer);
+    tcod::console::init_root(
+        w, h, title ? title : "", fullscreen, renderer
+    );
   }
 }
 void TCOD_quit(void)

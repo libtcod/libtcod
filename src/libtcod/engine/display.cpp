@@ -71,6 +71,7 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
 #endif
   strncpy(TCOD_ctx.window_title, title.c_str(),
           sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
   TCOD_ctx.fullscreen = fullscreen;
   switch (renderer) {
     case TCOD_RENDERER_SDL2:
@@ -80,8 +81,7 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
       init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
       break;
     default:
-      TCOD_console_init(TCOD_ctx.root, TCOD_ctx.window_title,
-                        TCOD_ctx.fullscreen);
+      TCOD_console_init(TCOD_ctx.root, title.c_str(), fullscreen);
       break;
   }
 }

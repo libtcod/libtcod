@@ -951,8 +951,9 @@ void TCOD_sys_set_scale_factor(float value) {
 }
 
 void TCOD_sys_set_window_title(const char *title) {
-	strcpy(TCOD_ctx.window_title,title);
-	sdl->set_window_title(title);
+  strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+  TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
+  sdl->set_window_title(title);
 }
 /**
  *  Keep track of time and wait if the frame-rate is faster than the set FPS.

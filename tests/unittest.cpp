@@ -23,24 +23,18 @@ const int HEIGHT = 10;
 const char *TITLE = "Unittest";
 
 TEST_CASE("Console init root") {
-  auto renderer = GENERATE(
+  TCOD_renderer_t renderer = GENERATE(
+      TCOD_RENDERER_SDL2,
+      TCOD_RENDERER_OPENGL2,
       TCOD_RENDERER_SDL,
       TCOD_RENDERER_OPENGL,
       TCOD_RENDERER_GLSL
   );
+  TCOD_console_set_custom_font(
+      "data/fonts/terminal8x8_gs_ro.png",
+      TCOD_FONT_LAYOUT_CP437 | TCOD_FONT_TYPE_GREYSCALE,
+      0, 0);
   tcod::console::init_root(WIDTH, HEIGHT, TITLE, 0, renderer);
-  REQUIRE(TCOD_console_get_width(NULL) == WIDTH);
-  REQUIRE(TCOD_console_get_height(NULL) == HEIGHT);
-  TCOD_console_delete(NULL);
-}
-
-TEST_CASE("Console init root C") {
-  auto renderer = GENERATE(
-      TCOD_RENDERER_SDL,
-      TCOD_RENDERER_OPENGL,
-      TCOD_RENDERER_GLSL
-  );
-  TCOD_console_init_root(WIDTH, HEIGHT, TITLE, 0, renderer);
   REQUIRE(TCOD_console_get_width(NULL) == WIDTH);
   REQUIRE(TCOD_console_get_height(NULL) == HEIGHT);
   TCOD_console_delete(NULL);

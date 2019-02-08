@@ -40,7 +40,7 @@ TEST_CASE("SDL2 Renderer") {
 TEST_CASE("SDL Renderer") {
   test_renderer(TCOD_RENDERER_SDL);
 }
-TEST_CASE("OPENGL Renderer") {
+TEST_CASE("OPENGL Renderer", "[!nonportable]") {
   test_renderer(TCOD_RENDERER_OPENGL);
 }
 TEST_CASE("GLSL Renderer", "[!nonportable]") {

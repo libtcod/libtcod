@@ -5,7 +5,6 @@ AM_CFLAGS = \
 	-I$(top_srcdir)/../../src/vendor \
 	-fvisibility=hidden \
 	-DLIBTCOD_EXPORTS \
-	-DNO_OPENGL \
 	-DNDEBUG \
 	-O3 \
 	-Wall \

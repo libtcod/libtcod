@@ -159,12 +159,12 @@ extern TCOD_internal_context_t TCOD_ctx;
 #if !defined(TCOD_BARE) && !defined(NO_OPENGL)
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
-bool TCOD_opengl_init_state(int conw, int conh, void *font_tex);
+bool TCOD_opengl_init_state(int conw, int conh, struct SDL_Surface* font_tex);
 void TCOD_opengl_uninit_state(void);
 bool TCOD_opengl_init_shaders(void);
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, struct TCOD_Console *console, struct TCOD_Console *cache);
 void TCOD_opengl_swap(void);
-void * TCOD_opengl_get_screen(void);
+struct SDL_Surface* TCOD_opengl_get_screen(void);
 #endif
 
 #ifdef TCOD_IMAGE_SUPPORT
@@ -535,7 +535,8 @@ void *TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(void *bitmap);
 void TCOD_sys_console_to_bitmap(void *bitmap, struct TCOD_Console *console,
                                 struct TCOD_Console *cache);
-TCODLIB_CAPI void *TCOD_sys_get_surface(int width, int height, bool alpha);
+TCODLIB_CAPI struct SDL_Surface* TCOD_sys_get_surface(int width, int height,
+                                                      bool alpha);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);

@@ -715,7 +715,7 @@ void TCOD_sys_console_to_bitmap(void *vbitmap,
 	}
 }
 
-void *TCOD_sys_get_surface(int width, int height, bool alpha) {
+SDL_Surface *TCOD_sys_get_surface(int width, int height, bool alpha) {
 	return sdl->create_surface(width,height,alpha);
 }
 

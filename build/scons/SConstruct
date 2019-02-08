@@ -365,14 +365,6 @@ env_libtcod.Append(
 if sys.platform != 'darwin':
     env_libtcod.Append(LIBS=['SDL2'])
 
-if 'NO_OPENGL' not in env['CPPDEFINES']:
-    if sys.platform == 'win32':
-        env_libtcod.Append(LIBS=['opengl32'])
-    elif sys.platform == 'darwin':
-        env_libtcod.Append(LINKFLAGS=['-framework', 'OpenGL'])
-    else:
-        env_libtcod.Append(LIBS=['GL'])
-
 # Which source files to compile into the main libtcod shared library.
 libtcod_sources = {
     # Compiles all source files under src/libtcod

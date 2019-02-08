@@ -58,6 +58,7 @@ inline void gl_check() {
   }
 #endif // NDEBUG
 }
+inline void gl_debug() { gl_check(); }
 } // namespace sdl2
 } // namespace tcod
 #endif // LIBTCOD_SDL2_GL2_EXT_H_

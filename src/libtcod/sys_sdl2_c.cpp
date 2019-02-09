@@ -372,7 +372,7 @@ static void save_screenshot(const char *filename) {
 					uint32_t rmask, gmask, bmask, amask;
 					if (SDL_TRUE == SDL_PixelFormatEnumToMasks(format, &depth, &rmask, &gmask, &bmask, &amask)) {
 						SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(pixels, rect.w, rect.h, depth, pitch, rmask, gmask, bmask, amask);
-						TCOD_sys_save_bitmap((void *)surface,filename);
+						TCOD_sys_save_bitmap(surface, filename);
 						SDL_FreeSurface(surface);
 					} else
 						TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_PixelFormatEnumToMasks"));
@@ -387,8 +387,8 @@ static void save_screenshot(const char *filename) {
 			TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_CreateTexture"));
 #ifndef NO_OPENGL
 	} else {
-		SDL_Surface *screenshot=(SDL_Surface *)TCOD_opengl_get_screen();
-		TCOD_sys_save_bitmap((void *)screenshot,filename);
+		SDL_Surface *screenshot = TCOD_opengl_get_screen();
+		TCOD_sys_save_bitmap(screenshot, filename);
 		SDL_FreeSurface(screenshot);
 #endif
 	}

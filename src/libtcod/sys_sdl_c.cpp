@@ -104,13 +104,13 @@ static constexpr image_support_t image_type[] = {
 	{ NULL, NULL, NULL, NULL },
 };
 
-scale_data_t scale_data={0};
-SDL_Window* window=NULL;
-SDL_Renderer* renderer=NULL;
-float scale_factor=1.0f;
-SDL_Surface* charmap=NULL;
-char *last_clipboard_text = NULL;
-static bool has_startup=false;
+scale_data_t scale_data = {};
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
+float scale_factor = 1.0f;
+SDL_Surface* charmap = nullptr;
+char *last_clipboard_text = nullptr;
+static bool has_startup = false;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* font transparent color */
@@ -489,11 +489,10 @@ void find_resolution(void) {
 	sdl->get_closest_mode(&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
 }
 
-void *TCOD_sys_create_bitmap_for_console(TCOD_console_t console) {
-	int w,h;
-	w = TCOD_console_get_width(console) * TCOD_ctx.font_width;
-	h = TCOD_console_get_height(console) * TCOD_ctx.font_height;
-	return TCOD_sys_get_surface(w,h,false);
+SDL_Surface* TCOD_sys_create_bitmap_for_console(TCOD_Console* console) {
+  int w = TCOD_console_get_width(console) * TCOD_ctx.font_width;
+  int h = TCOD_console_get_height(console) * TCOD_ctx.font_height;
+  return TCOD_sys_get_surface(w, h, false);
 }
 
 static void TCOD_sys_render(void *vbitmap, struct TCOD_Console* console) {
@@ -910,11 +909,16 @@ static char *TCOD_strcasestr (const char *haystack, const char *needle) {
 	return 0;
 }
 
-void TCOD_sys_save_bitmap(void *bitmap, const char *filename) {
-	const image_support_t *img=image_type;
-	while ( img->extension != NULL && TCOD_strcasestr(filename,img->extension) == NULL ) img++;
-	if ( img->extension == NULL || img->write == NULL ) img=image_type; /* default to bmp */
-	img->write((SDL_Surface *)bitmap,filename);
+void TCOD_sys_save_bitmap(SDL_Surface* bitmap, const char *filename) {
+  const image_support_t *img = image_type;
+  while (img->extension != NULL
+         && TCOD_strcasestr(filename,img->extension) == NULL ) {
+    ++img;
+  }
+  if (img->extension == NULL || img->write == NULL) {
+    img = image_type; // default to bmp
+  }
+  img->write(bitmap, filename);
 }
 
 void TCOD_sys_save_screenshot(const char *filename) {
@@ -1643,14 +1647,11 @@ TCOD_mouse_t TCOD_mouse_get_status(void) {
  *          If no event exists then the `vk` attribute will be `TCODK_NONE`
  */
 TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
-	static TCOD_key_t noret={TCODK_NONE,0};
-
-	TCOD_key_t key;
-	TCOD_event_t ev = TCOD_sys_check_for_event(flags & TCOD_EVENT_KEY, &key, NULL);
-
-	if ((ev & TCOD_EVENT_KEY) == 0) return noret;
-
-	return key;
+  TCOD_key_t key;
+  TCOD_event_t ev = TCOD_sys_check_for_event(flags & TCOD_EVENT_KEY,
+                                             &key, nullptr);
+  if ((ev & TCOD_EVENT_KEY) == 0) { return {}; }
+  return key;
 }
 /**
  *  Wait for a key press event, then return it.
@@ -1660,61 +1661,51 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
  *  \return A TCOD_key_t struct with the most recent key data.
  */
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
-	static TCOD_key_t noret={TCODK_NONE,0};
-
-	TCOD_key_t key;
-	TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS, &key, NULL, flush);
-
-	if ((ev & TCOD_EVENT_KEY_PRESS) == 0) return noret;
-
-	return key;
+  TCOD_key_t key;
+  TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS,
+                                            &key, nullptr, flush);
+  if ((ev & TCOD_EVENT_KEY_PRESS) == 0) { return {}; }
+  return key;
 }
-
 
 void TCOD_sys_sleep_milli(uint32_t milliseconds) {
 	SDL_Delay(milliseconds);
 }
 
-void *TCOD_sys_load_image(const char *filename) {
-	const image_support_t *img=image_type;
-	while ( img->extension != NULL && !img->check_type(filename) ) img++;
-	if ( img->extension == NULL || img->read == NULL ) return NULL; /* unknown format */
-	return img->read(filename);
+SDL_Surface* TCOD_sys_load_image(const char *filename) {
+  const image_support_t* img = image_type;
+  while (img->extension != NULL && !img->check_type(filename)) { img++; }
+  if (img->extension == NULL || img->read == NULL) { return NULL; } /* unknown format */
+  return img->read(filename);
 }
 
-void TCOD_sys_get_image_size(const void *image, int *w, int *h) {
-	SDL_Surface *surf=(SDL_Surface *)image;
-    *w = surf->w;
-    *h = surf->h;
+void TCOD_sys_get_image_size(const SDL_Surface* image, int *w, int *h)
+{
+  *w = image->w;
+  *h = image->h;
 }
-
-TCOD_color_t TCOD_sys_get_image_pixel(const void *image,int x, int y) {
-	TCOD_color_t ret;
-	SDL_Surface *surf=(SDL_Surface *)image;
-	uint8_t bpp;
-	uint8_t*bits;
-	if ( x < 0 || y < 0 || x >= surf->w || y >= surf->h ) return TCOD_black;
-	bpp = surf->format->BytesPerPixel;
-	bits = ((uint8_t*)surf->pixels)+y*surf->pitch+x*bpp;
-	switch (bpp) {
-		case 1 :
-		{
-			if (surf->format->palette) {
-				SDL_Color col = surf->format->palette->colors[(*bits)];
-				ret.r=col.r;
-				ret.g=col.g;
-				ret.b=col.b;
-			} else return TCOD_black;
-		}
-		break;
-		default :
-			ret.r =  *((bits)+surf->format->Rshift/8);
-			ret.g =  *((bits)+surf->format->Gshift/8);
-			ret.b =  *((bits)+surf->format->Bshift/8);
-		break;
-	}
-
-	return ret;
+TCOD_color_t TCOD_sys_get_image_pixel(const SDL_Surface* image, int x, int y)
+{
+  if (x < 0 || y < 0 || x >= image->w || y >= image->h) { return TCOD_black; }
+  uint8_t bpp = image->format->BytesPerPixel;
+  uint8_t* bits = static_cast<uint8_t*>(image->pixels);
+  bits += y * image->pitch + x * bpp;
+  switch (bpp) {
+    case 1:
+      if (image->format->palette) {
+        SDL_Color col = image->format->palette->colors[(*bits)];
+        return {col.r, col.g, col.b};
+      } else {
+        return TCOD_black;
+      }
+      break;
+    default:
+      return {
+          *((bits)+image->format->Rshift/8),
+          *((bits)+image->format->Gshift/8),
+          *((bits)+image->format->Bshift/8),
+      };
+  }
 }
 
 int TCOD_sys_get_image_alpha(const void *image,int x, int y) {
@@ -1742,7 +1733,8 @@ void TCOD_sys_force_fullscreen_resolution(int width, int height) {
 	TCOD_ctx.fullscreen_height=height;
 }
 
-void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
+SDL_Surface* TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf)
+{
 	int x,y;
 	SDL_PixelFormat fmt;
 	SDL_Surface *bitmap;
@@ -1774,11 +1766,11 @@ void * TCOD_sys_create_bitmap(int width, int height, TCOD_color_t *buf) {
 			SDL_FillRect(bitmap,&rect,col);
 		}
 	}
-	return (void *)bitmap;
+	return bitmap;
 }
 
-void TCOD_sys_delete_bitmap(void *bitmap) {
-	SDL_FreeSurface((SDL_Surface *)bitmap);
+void TCOD_sys_delete_bitmap(SDL_Surface* bitmap) {
+	SDL_FreeSurface(bitmap);
 }
 
 void TCOD_sys_set_fps(int val) {

@@ -35,10 +35,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#if defined (__APPLE__) && defined (__MACH__)
-/* Is this necessary now the custom clipboard stuff is gone? */
-#include <ApplicationServices/ApplicationServices.h>
-#endif
 #include "libtcod_int.h"
 #include "version.h"
 #ifdef TCOD_WINDOWS

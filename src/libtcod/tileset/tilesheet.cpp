@@ -177,7 +177,7 @@ Tilesheet& Tilesheet::operator=(const Tilesheet& rhs)
   impl_ = std::make_unique<impl>(*rhs.impl_);
   return *this;
 }
-Tilesheet::~Tilesheet() = default;
+Tilesheet::~Tilesheet() noexcept = default;
 
 Image Tilesheet::get_tile(int x, int y) const
 {

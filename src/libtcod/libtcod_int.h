@@ -169,10 +169,12 @@ struct SDL_Surface* TCOD_opengl_get_screen(void);
 
 #ifdef TCOD_IMAGE_SUPPORT
 /* image internal stuff */
-bool TCOD_image_mipmap_copy_internal(TCOD_image_t srcImage, TCOD_image_t dstImage);
-TCOD_color_t *TCOD_image_get_colors(TCOD_image_t *image);
-void TCOD_image_invalidate_mipmaps(TCOD_image_t *image);
-void TCOD_image_get_key_data(TCOD_image_t image, bool *has_key_color, TCOD_color_t *key_color);
+bool TCOD_image_mipmap_copy_internal(const TCOD_Image* srcImage,
+                                     TCOD_Image* dstImage);
+TCOD_color_t *TCOD_image_get_colors(TCOD_Image* image);
+void TCOD_image_invalidate_mipmaps(TCOD_Image* image);
+void TCOD_image_get_key_data(const TCOD_Image* image,
+                             bool *has_key_color, TCOD_color_t *key_color);
 #endif
 
 /* fov internal stuff */

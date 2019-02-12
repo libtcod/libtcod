@@ -158,7 +158,7 @@ OpenGL2Renderer::OpenGL2Renderer(OpenGLTilesetAlias alias)
 {}
 OpenGL2Renderer::OpenGL2Renderer(OpenGL2Renderer&&) noexcept = default;
 OpenGL2Renderer& OpenGL2Renderer::operator=(OpenGL2Renderer&&) noexcept = default;
-OpenGL2Renderer::~OpenGL2Renderer() = default;
+OpenGL2Renderer::~OpenGL2Renderer() noexcept = default;
 void OpenGL2Renderer::render(const TCOD_Console* console)
 {
   impl_->render(console);

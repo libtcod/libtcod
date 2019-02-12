@@ -179,7 +179,7 @@ GLTexture::GLTexture()
 {
   glGenTextures(1, &texture_);
 }
-GLTexture::~GLTexture()
+GLTexture::~GLTexture() noexcept
 {
   if (texture_) { glDeleteTextures(1, &texture_); }
 }

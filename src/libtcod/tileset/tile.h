@@ -50,8 +50,8 @@ class Tile {
   : Tile(codepoint, Image(width, height))
   {}
 
-  int width(void) const { return image_.width(); }
-  int height(void) const { return image_.height(); }
+  int width(void) const { return static_cast<int>(image_.width()); }
+  int height(void) const { return static_cast<int>(image_.height()); }
   Image get_image() const {
     return image_;
   }

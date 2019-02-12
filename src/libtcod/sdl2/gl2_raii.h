@@ -28,6 +28,7 @@
 #ifndef LIBTCOD_SDL2_GL2_RAII_H_
 #define LIBTCOD_SDL2_GL2_RAII_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -119,7 +120,7 @@ class GLBuffer {
   {
     return buffer_;
   }
-  void allocate(int target, int size, const void* data, int usage);
+  void allocate(int target, size_t size, const void* data, int usage);
   template <typename T>
   void allocate(int target, const T& data, int usage)
   {

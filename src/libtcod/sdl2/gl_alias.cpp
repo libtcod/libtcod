@@ -84,10 +84,10 @@ class OpenGLInternalTilesetAlias_ : public TilesetObserver {
     const std::vector<Tile>& tiles = tileset_->get_tiles();
     int tile_width = tileset_->get_tile_width();
     int tile_height = tileset_->get_tile_height();
-    int width = tile_width * tiles.size();
+    int width = static_cast<int>(tile_width * tiles.size());
     int height = tile_height;
     Image alias(width, height);
-    for (size_t i = 0; i < tiles.size(); ++i) {
+    for (int i = 0; i < tiles.size(); ++i) {
       Image tile = tiles.at(i).get_image();
       for (int y = 0; y < tile_height; ++y) {
         for (int x = 0; x < tile_width; ++x) {

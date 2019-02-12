@@ -77,7 +77,7 @@ ToolBar::ToolBar(int x, int y, int w, const char *name, const char *tip)
 	: Container(x,y,w,2),name(NULL),fixedWidth(w) {
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		fixedWidth = w = std::max<int>(strlen(name) + 4, w);
+		fixedWidth = w = std::max<int>(static_cast<int>(strlen(name) + 4), w);
 	}
 	if ( tip ) setTip(tip);
 }
@@ -90,7 +90,7 @@ void ToolBar::setName(const char *name) {
 	if ( this->name ) free(this->name);
 	if ( name ) {
 		this->name = TCOD_strdup(name);
-		fixedWidth = std::max<int>(strlen(name) + 4, fixedWidth);
+		fixedWidth = std::max<int>(static_cast<int>(strlen(name) + 4), fixedWidth);
 	} else {
 		name=NULL;
 	}

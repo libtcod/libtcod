@@ -661,19 +661,27 @@ coef should be between 0.0 and 1.0 but you can as well use other values
    */
   template <typename F>
   TCODColor(const TCODColor& color, const F& lambda)
-  : r(std::max<int>(0, std::min<int>(lambda(color.r), 255))),
-    g(std::max<int>(0, std::min<int>(lambda(color.g), 255))),
-    b(std::max<int>(0, std::min<int>(lambda(color.b), 255)))
+  : r(clamp_(lambda(color.r))),
+    g(clamp_(lambda(color.g))),
+    b(clamp_(lambda(color.b)))
   {}
   /**
    *  Return a color from two colors combined using a lambda.
    */
   template <typename F>
   TCODColor(const TCODColor& color1, const TCODColor& color2, const F& lambda)
-  : r(std::max<int>(0, std::min<int>(lambda(color1.r, color2.r), 255))),
-    g(std::max<int>(0, std::min<int>(lambda(color1.g, color2.g), 255))),
-    b(std::max<int>(0, std::min<int>(lambda(color1.b, color2.b), 255)))
+  : r(clamp_(lambda(color1.r, color2.r))),
+    g(clamp_(lambda(color1.g, color2.g))),
+    b(clamp_(lambda(color1.b, color2.b)))
   {}
+  /**
+   *  Return a color value clamped between 0 to 255.
+   */
+  template <typename T>
+  static constexpr uint8_t clamp_(const T& value) noexcept
+  {
+    return static_cast<uint8_t>(std::max<T>(0, std::min<T>(value, 255)));
+  }
 };
 
 TCODLIB_API TCODColor operator *(float value, const TCODColor &c);

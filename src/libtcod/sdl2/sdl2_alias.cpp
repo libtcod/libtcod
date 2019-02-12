@@ -69,7 +69,7 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     return texture_.get();
   }
   struct SDL_Renderer* renderer_;
-  struct std::unique_ptr<SDL_Texture, sdl_deleter> texture_;
+  std::unique_ptr<SDL_Texture, sdl_deleter> texture_;
  protected:
   virtual void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
@@ -87,7 +87,7 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
     const std::vector<Tile>& tiles = tileset_->get_tiles();
     int tile_width = tileset_->get_tile_width();
     int tile_height = tileset_->get_tile_height();
-    int width = tile_width * tiles.size();
+    int width = static_cast<int>(tile_width * tiles.size());
     int height = tile_height;
     texture_ = std::unique_ptr<SDL_Texture, sdl_deleter>(
         SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA32,
@@ -103,7 +103,7 @@ class SDL2InternalTilesetAlias_: public TilesetObserver {
       }
     }
     SDL_UpdateTexture(texture_.get(), nullptr, alias.data(),
-                      sizeof(alias.at(0,0)) * alias.width());
+                      static_cast<int>(sizeof(alias.at(0,0)) * alias.width()));
   }
   static int on_sdl_event(void* userdata, SDL_Event* event)
   {

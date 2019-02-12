@@ -29,6 +29,7 @@
 #define LIBTCOD_UTILITY_VECTOR2_H_
 #ifdef __cplusplus
 #include <algorithm>
+#include <cstddef>
 #include <initializer_list>
 #include <iostream>
 #include <stdexcept>
@@ -45,15 +46,16 @@ template <typename T>
 class Vector2 {
  public:
   using value_type = T;
+  using size_type = ptrdiff_t;
   Vector2() = default;
-  explicit Vector2(int width, int height, const T& fill)
-  : width_(std::max(0, width)),
-    height_(std::max(0, height)),
+  explicit Vector2(size_type width, size_type height, const T& fill)
+  : width_(std::max<size_type>(0, width)),
+    height_(std::max<size_type>(0, height)),
     vector_(width_ * height_, fill)
   {}
-  explicit Vector2(int width, int height)
-  : width_(std::max(0, width)),
-    height_(std::max(0, height)),
+  explicit Vector2(size_type width, size_type height)
+  : width_(std::max<size_type>(0, width)),
+    height_(std::max<size_type>(0, height)),
     vector_(width_ * height_) {}
   explicit Vector2(
       const std::initializer_list<std::initializer_list<T>>& array)
@@ -74,22 +76,22 @@ class Vector2 {
   Vector2(const Vector2&) = default;
   Vector2& operator=(const Vector2&) = default;
   /** Return the width of this 2d vector. */
-  int width(void) const noexcept { return width_; }
+  size_type width(void) const noexcept { return width_; }
   /** Return the height of this 2d vector. */
-  int height(void) const noexcept { return height_; }
+  size_type height(void) const noexcept { return height_; }
   /**
    *  Return a reference for the pixel at `x`,`y`.
    *
    *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  T& at(int x, int y) {
+  T& at(size_type x, size_type y) {
     range_check(x, y);
     return vector_.at(y * width_ + x);
   }
   /**
    *  Return a reference for the value at `index`.
    */
-  T& at(std::tuple<int, int> index)
+  T& at(std::tuple<size_type, size_type> index)
   {
     return at(std::get<0>(index), std::get<1>(index));
   }
@@ -98,14 +100,14 @@ class Vector2 {
    *
    *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  const T& at(int x, int y) const {
+  const T& at(size_type x, size_type y) const {
     range_check(x, y);
     return vector_.at(y * width_ + x);
   }
   /**
    *  Return a constant reference for the value at `index`.
    */
-  const T& at(std::tuple<int, int> index) const
+  const T& at(std::tuple<size_type, size_type> index) const
   {
     return at(std::get<0>(index), std::get<1>(index));
   }
@@ -129,21 +131,21 @@ class Vector2 {
   /**
    *  Return true if x and y are in the bounds of this canvas.
    */
-  bool in_bounds(int x, int y) const noexcept {
+  bool in_bounds(size_type x, size_type y) const noexcept {
     return 0 <= x && x < width_ && 0 <= y && y < height_;
   }
   /**
    *  Immediately throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  void range_check(int x, int y) const {
+  void range_check(size_type x, size_type y) const {
     if (!in_bounds(x, y)) {
       throw std::out_of_range("Out of bounds lookup on Vector2.");
     }
   }
   /** The width of this canvas. */
-  int width_ = 0;
+  size_type width_ = 0;
   /** The height of this canvas. */
-  int height_ = 0;
+  size_type height_ = 0;
   /** A 1d vector mapped to a 2d array of pixels. */
   std::vector<T> vector_;
 };

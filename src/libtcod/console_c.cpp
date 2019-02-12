@@ -960,13 +960,13 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw and update the particules */
 	j=nbpart;i=firstpart;
 	while (j > 0) {
-		int colidx=(64*(1.0f-pheat[i]));
+		int colidx = static_cast<int>(64 * (1.0f - pheat[i]));
 		TCOD_color_t col;
 		colidx=std::min(63, colidx);
 		col=colmap[colidx];
 		if (py[i] < (bottom - top + 1) * 2) {
-			int ipx = px[i];
-			int ipy = py[i];
+			int ipx = static_cast<int>(px[i]);
+			int ipy = static_cast<int>(py[i]);
 			float fpx = px[i]-ipx;
 			float fpy = py[i]-ipy;
 			TCOD_color_t col2=TCOD_image_get_pixel(img,ipx,ipy);
@@ -1012,7 +1012,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw the text */
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
-			int colidx=(64*char_heat[i]);
+			int colidx = static_cast<int>(64 * char_heat[i]);
 			TCOD_color_t col;
 			colidx=MIN(63,colidx);
 			col=colmap[colidx];
@@ -1020,12 +1020,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				float coef=(xstr-len)/len;
 				if ( alpha ) {
 					TCOD_color_t fore=TCOD_console_get_char_background(NULL,char_x[i],char_y[i]);
-					int r=(coef*fore.r + (1.0f-coef)*col.r);
-					int g=(coef*fore.g + (1.0f-coef)*col.g);
-					int b=(coef*fore.b + (1.0f-coef)*col.b);
-					col.r = CLAMP(0,255,r);
-					col.g = CLAMP(0,255,g);
-					col.b = CLAMP(0,255,b);
+					int r = static_cast<int>(coef * fore.r + (1.0f - coef) * col.r);
+					int g = static_cast<int>(coef * fore.g + (1.0f - coef) * col.g);
+					int b = static_cast<int>(coef * fore.b + (1.0f - coef) * col.b);
+					col.r = std::max(0, std::min(r, 255));
+					col.g = std::max(0, std::min(g, 255));
+					col.b = std::max(0, std::min(b, 255));
 					TCOD_console_set_char_foreground(NULL,char_x[i],char_y[i],col);
 				} else {
 					col=TCOD_color_lerp(col,TCOD_black,coef);

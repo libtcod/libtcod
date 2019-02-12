@@ -81,17 +81,17 @@ class Tilesheet::impl {
   void fill_layout() {
     // Find undefined columns/rows from tile size and canvas_ size.
     if (layout_.columns == 0 && layout_.tile_width > 0) {
-      layout_.columns = canvas_.width() / layout_.tile_width;
+      layout_.columns = static_cast<int>(canvas_.width() / layout_.tile_width);
     }
     if (layout_.rows == 0 && layout_.tile_height > 0) {
-      layout_.rows = canvas_.height() / layout_.tile_height;
+      layout_.rows = static_cast<int>(canvas_.height() / layout_.tile_height);
     }
     // Find undefined tile width/height from columns/rows and canvas_ size.
     if (layout_.tile_width == 0 && layout_.columns > 0) {
-      layout_.tile_width = canvas_.width() / layout_.columns;
+      layout_.tile_width = static_cast<int>(canvas_.width() / layout_.columns);
     }
     if (layout_.tile_height == 0 && layout_.rows > 0) {
-      layout_.tile_height = canvas_.height() / layout_.rows;
+      layout_.tile_height = static_cast<int>(canvas_.height() / layout_.rows);
     }
     if (!layout_.columns || !layout_.rows) {
       throw std::logic_error("Tilesheet layout is non-valid.");

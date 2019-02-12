@@ -52,7 +52,12 @@ GLShader::GLShader(int shader_type, const std::string& source)
       GLSL_VERSION_DIRECTIVE,
       source.c_str(),
   };
-  glShaderSource(shader_, sources.size(), sources.data(), nullptr); gl_check();
+  glShaderSource(
+      shader_,
+      static_cast<GLsizei>(sources.size()),
+      sources.data(),
+      nullptr);
+  gl_check();
   glCompileShader(shader_); gl_check();
   verify_shader();
 }
@@ -64,7 +69,11 @@ std::string GLShader::get_log() const
 {
   std::vector<char> info_log(get_variable(GL_INFO_LOG_LENGTH));
   if (info_log.size() == 0) { return ""; }
-  glGetShaderInfoLog(shader_, info_log.size(), nullptr, info_log.data());
+  glGetShaderInfoLog(
+      shader_,
+      static_cast<GLsizei>(info_log.size()),
+      nullptr,
+      info_log.data());
   gl_check();
   return std::string(info_log.data());
 }
@@ -107,7 +116,11 @@ std::string GLProgram::get_log() const
 {
   std::vector<char> info_log(get_variable(GL_INFO_LOG_LENGTH));
   if (info_log.size() == 0) { return ""; }
-  glGetProgramInfoLog(program_, info_log.size(), nullptr, info_log.data());
+  glGetProgramInfoLog(
+      program_,
+      static_cast<GLsizei>(info_log.size()),
+      nullptr,
+      info_log.data());
   gl_check();
   return std::string(info_log.data());
 }
@@ -165,7 +178,7 @@ GLBuffer::~GLBuffer() noexcept
 {
   if (buffer_) { glDeleteBuffers(1, &buffer_); gl_check(); }
 }
-void GLBuffer::allocate(int target, int size, const void* data, int usage)
+void GLBuffer::allocate(int target, size_t size, const void* data, int usage)
 {
   target_ = target;
   bind();

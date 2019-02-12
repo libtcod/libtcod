@@ -75,10 +75,11 @@ class Tileset {
     }
     auto it = std::find(tiles_.begin(), tiles_.end(), tile);
     if (it == tiles_.end()) {
-      character_map_[tile.codepoint] = tiles_.size();
+      character_map_[tile.codepoint] = static_cast<int>(tiles_.size());
       tiles_.push_back(tile);
     } else {
-      character_map_[tile.codepoint] = std::distance(tiles_.begin(), it);
+      character_map_[tile.codepoint] = static_cast<int>(
+          std::distance(tiles_.begin(), it));
     }
     return 0;
   }

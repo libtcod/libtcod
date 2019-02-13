@@ -63,8 +63,8 @@ TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_
 #endif
 
 #ifndef TCOD_BARE
-TCODLIB_API void *TCOD_sys_get_SDL_window(void);
-TCODLIB_API void *TCOD_sys_get_SDL_renderer(void);
+TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
+TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
 #endif
 
 #ifndef TCOD_BARE

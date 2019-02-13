@@ -74,42 +74,40 @@ void Widget::setConsole(TCODConsole *console) {
 	con=console;
 }
 
-void Widget::update(const TCOD_key_t k) {
-	bool curs=TCODMouse::isCursorVisible();
-	if ( curs ) {
-		if ( mouse.cx >= x && mouse.cx < x+w && mouse.cy >= y && mouse.cy < y+h ) {
-			if ( ! mouseIn ) {
-				mouseIn = true;
-				onMouseIn();
-			}
-			if ( focus != this ) {
-				focus=this;
-			}
-		} else {
-			if ( mouseIn ) {
-				mouseIn = false;
-				onMouseOut();
-			}
-			mouseL=false;
-			if ( this == focus ) {
-				focus = NULL;
-			}
-		}
-	}
-	if ( mouseIn || (! curs && this == focus ) ) {
-		if ( mouse.lbutton && ! mouseL ) {
-			mouseL = true;
-			onButtonPress();
-		} else if (! mouse.lbutton && mouseL ) {
-			onButtonRelease();
-			keyboardFocus=NULL;
-			if ( mouseL ) onButtonClick();
-			mouseL=false;
-		} else if ( mouse.lbutton_pressed ) {
-			keyboardFocus=NULL;
-			onButtonClick();
-		}
-	}
+void Widget::update(const TCOD_key_t)
+{
+  bool curs = TCODMouse::isCursorVisible();
+  if (curs) {
+    if (mouse.cx >= x && mouse.cx < x + w
+        && mouse.cy >= y && mouse.cy < y + h) {
+      if (!mouseIn) {
+        mouseIn = true;
+        onMouseIn();
+      }
+      focus = this;
+    } else {
+      if (mouseIn) {
+        mouseIn = false;
+        onMouseOut();
+      }
+      mouseL = false;
+      if (this == focus) { focus = NULL; }
+    }
+  }
+  if (mouseIn || (!curs && this == focus)) {
+    if (mouse.lbutton && !mouseL) {
+      mouseL = true;
+      onButtonPress();
+    } else if (!mouse.lbutton && mouseL) {
+      onButtonRelease();
+      keyboardFocus = NULL;
+      if (mouseL) { onButtonClick(); }
+      mouseL = false;
+    } else if (mouse.lbutton_pressed) {
+      keyboardFocus = NULL;
+      onButtonClick();
+    }
+  }
 }
 
 void Widget::updateWidgetsIntern(const TCOD_key_t k) {

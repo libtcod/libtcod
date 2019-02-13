@@ -65,31 +65,34 @@ void Slider::render() {
 }
 
 void Slider::update(TCOD_key_t k) {
-	float oldValue=value;
-	TextBox::update(k);
-	textToValue();
-	if ( mouse.cx >= x+w-2 && mouse.cx < x+w && mouse.cy == y ) onArrows=true;
-	else onArrows=false;
-	if ( drag ) {
-		if ( dragy == -1 ) {
-			dragx = mouse.x;
-			dragy = mouse.y;
-		} else {
-			float mdx = ((mouse.x-dragx)*sensitivity) / (con->getWidth()*8);
-			float mdy = ((mouse.y-dragy)*sensitivity) / (con->getHeight()*8);
-			float oldValue=value;
-			if ( fabs(mdy) > fabs(mdx) ) mdx=-mdy;
-			value = dragValue+(max-min)*mdx;
-			value=CLAMP(min,max,value);
-			if ( value != oldValue ) {
-				valueToText();
-				textToValue();
-			}
-		}
-	}
-	if ( value != oldValue && cbk ) {
-		cbk(this,value,data);
-	}
+  float old_value = value;
+  TextBox::update(k);
+  textToValue();
+  if (mouse.cx >= x + w - 2 && mouse.cx < x + w && mouse.cy == y) {
+    onArrows = true;
+  } else {
+    onArrows = false;
+  }
+  if (drag) {
+    if (dragy == -1) {
+      dragx = mouse.x;
+      dragy = mouse.y;
+    } else {
+      float mdx = ((mouse.x - dragx) * sensitivity) / (con->getWidth() * 8);
+      float mdy = ((mouse.y - dragy) * sensitivity) / (con->getHeight() * 8);
+      float old_value2 = value;
+      if (fabs(mdy) > fabs(mdx)) { mdx = -mdy; }
+      value = dragValue + (max - min) * mdx;
+      value = std::max(min, std::min(value, max));
+      if (value != old_value2) {
+        valueToText();
+        textToValue();
+      }
+    }
+  }
+  if (value != old_value && cbk) {
+    cbk(this, value, data);
+  }
 }
 
 void Slider::valueToText()

@@ -39,6 +39,16 @@ extern "C" {
  */
 typedef struct TCOD_color_t {
   uint8_t r, g, b;
+#ifdef __cplusplus
+  bool operator==(const TCOD_color_t& rhs) const noexcept
+  {
+    return r == rhs.r && g == rhs.g && b == rhs.b;
+  }
+  bool operator!=(const TCOD_color_t& rhs) const noexcept
+  {
+    return !(*this == rhs);
+  }
+#endif // __cplusplus
 } TCOD_color_t;
 
 /* constructors */

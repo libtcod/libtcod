@@ -220,7 +220,7 @@ TCODLIB_API struct SDL_Surface* TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const struct SDL_Surface *image, int *w,int *h);
 TCOD_color_t TCOD_sys_get_image_pixel(const struct SDL_Surface *image,
                                       int x, int y);
-int TCOD_sys_get_image_alpha(const void *image,int x, int y);
+int TCOD_sys_get_image_alpha(const struct SDL_Surface* image, int x, int y);
 bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t *data);
 #endif
 
@@ -537,8 +537,10 @@ void TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char *filename);
 struct SDL_Surface* TCOD_sys_create_bitmap(int width, int height,
                                            TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(struct SDL_Surface* bitmap);
-void TCOD_sys_console_to_bitmap(void *bitmap, struct TCOD_Console *console,
-                                struct TCOD_Console *cache);
+void TCOD_sys_console_to_bitmap(
+    struct SDL_Surface* bitmap,
+    struct TCOD_Console *console,
+    struct TCOD_Console *cache);
 TCODLIB_CAPI struct SDL_Surface* TCOD_sys_get_surface(int width, int height,
                                                       bool alpha);
 void TCOD_sys_save_fps(void);

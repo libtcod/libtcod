@@ -37,8 +37,8 @@ extern "C" {
 /**
  *  \brief An RGB color struct.
  */
-typedef struct {
-	uint8_t r,g,b;
+typedef struct TCOD_color_t {
+  uint8_t r, g, b;
 } TCOD_color_t;
 
 /* constructors */

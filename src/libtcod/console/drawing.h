@@ -71,4 +71,42 @@ TCODLIB_CAPI void TCOD_console_hline(
  */
 TCODLIB_CAPI void TCOD_console_vline(
     TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
+#ifdef __cplusplus
+namespace tcod {
+namespace console {
+/**
+ *  Place a single tile on a `console` at `x`,`y`.
+ *
+ *  If `ch` is 0 then the character code will not be updated.
+ *
+ *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
+ */
+void put(
+    TCOD_Console* console,
+    int x,
+    int y,
+    int ch,
+    const TCOD_color_t* fg = &TCOD_white,
+    const TCOD_color_t* bg = &TCOD_black,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
+/**
+ *  Draw a rectangle on a `console` with a shape of `x`,`y`,`width`,`height`.
+ *
+ *  If `ch` is 0 then the character code will not be updated.
+ *
+ *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
+ */
+void draw_rect(
+    TCOD_Console* console,
+    int x,
+    int y,
+    int width,
+    int height,
+    int ch,
+    const TCOD_color_t* fg = &TCOD_white,
+    const TCOD_color_t* bg = &TCOD_black,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
+} // namespace console
+} // namespace tcod
+#endif // __cplusplus
 #endif // TCOD_CONSOLE_DRAWING_H_

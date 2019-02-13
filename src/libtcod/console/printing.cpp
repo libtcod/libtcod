@@ -727,12 +727,11 @@ void TCOD_console_print_ex_utf(
 int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int w, int h,
                                 const wchar_t *fmt, ...)
 {
-  int ret;
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
   va_list ap;
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf(
+  int ret = TCOD_console_print_internal_utf(
       con, x, y, w, h, con->bkgnd_flag, con->alignment,
       TCOD_console_vsprint_utf(fmt, ap), true, false);
   va_end(ap);
@@ -748,10 +747,9 @@ int TCOD_console_print_rect_ex_utf(
     TCOD_Console* con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment, const wchar_t *fmt, ...)
 {
-  int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret=TCOD_console_print_internal_utf(
+  int ret = TCOD_console_print_internal_utf(
       con, x, y, w, h, flag, alignment,
       TCOD_console_vsprint_utf(fmt, ap), true, false);
   va_end(ap);
@@ -765,10 +763,9 @@ int TCOD_console_print_rect_ex_utf(
 int TCOD_console_get_height_rect_utf(
     TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...)
 {
-  int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf(
+  int ret = TCOD_console_print_internal_utf(
       con, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT,
       TCOD_console_vsprint_utf(fmt, ap), true, true);
   va_end(ap);
@@ -835,8 +832,7 @@ static utf8proc_ssize_t TCOD_utf8_parse_color(
 {
   const unsigned char *start = str;
   utf8proc_int32_t codepoint;
-  utf8proc_ssize_t code_size;
-  code_size = utf8proc_iterate(str, -1, &codepoint);
+  utf8proc_ssize_t code_size = utf8proc_iterate(str, -1, &codepoint);
   str += code_size;
   if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
     /* Read colors from the color control array. */
@@ -855,13 +851,12 @@ static utf8proc_ssize_t TCOD_utf8_parse_color(
       || codepoint == TCOD_COLCTRL_BACK_RGB) {
     /* Read the next 3 code-points as 8-bit RGB color values. */
     unsigned char *color_array = NULL;
-    int i;
     if (codepoint == TCOD_COLCTRL_FORE_RGB && fg_color) {
       color_array = reinterpret_cast<unsigned char *>(fg_color);
     } else if (codepoint == TCOD_COLCTRL_BACK_RGB && bg_color) {
       color_array = reinterpret_cast<unsigned char *>(bg_color);
     }
-    for (i = 0; i < 3; ++i) {
+    for (int i = 0; i < 3; ++i) {
       code_size = utf8proc_iterate(str, -1, &codepoint);
       if (code_size < 0) { break; }
       if (color_array) {
@@ -927,12 +922,9 @@ int TCOD_utf8_next_split(
   *endpoint = str;
   while (*str != '\0') {
     utf8proc_int32_t codepoint;
-    utf8proc_ssize_t code_size;
-    const utf8proc_property_t *property;
-
     str += TCOD_utf8_skip_control_codes(str);
-    code_size = utf8proc_iterate(str, -1, &codepoint);
-    property = utf8proc_get_property(codepoint);
+    utf8proc_ssize_t code_size = utf8proc_iterate(str, -1, &codepoint);
+    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     if (code_size <= 0) { break; }
     if (can_split && current_width > 0
         && current_width + static_cast<int>(property->charwidth) > max_width) {
@@ -975,24 +967,18 @@ int TCOD_console_print_internal_utf8_(
     const unsigned char *string, int can_split, int count_only)
 {
   int left, right, top, bottom; /* Print bounding box. */
-  TCOD_color_t old_fg, old_bg;
   int cursor_x = 0;
   con = TCOD_console_validate_(con);
   if (!con || !string) { return 0; }
-  old_fg = con->fore;
-  old_bg = con->back;
+  TCOD_color_t old_fg = con->fore;
+  TCOD_color_t old_bg = con->back;
   TCOD_get_print_bounds(con, align, x, y, &max_width, &max_height,
                         &left, &right, &top, &bottom);
   while (*string != '\0' && top <= bottom) {
-    const unsigned char *line_break;
-    utf8proc_ssize_t line_width;
     utf8proc_int32_t codepoint;
-    utf8proc_ssize_t code_size;
-    const utf8proc_property_t *property;
-    int split_status;
-    code_size = utf8proc_iterate(string, -1, &codepoint);
+    utf8proc_ssize_t code_size = utf8proc_iterate(string, -1, &codepoint);
     if (code_size < 0) { return -1; }
-    property = utf8proc_get_property(codepoint);
+    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     /* Check for newlines. */
     if(TCOD_utf8_is_newline_character(property))
     {
@@ -1008,8 +994,10 @@ int TCOD_console_print_internal_utf8_(
     }
 
     /* Get the next line of characters. */
-    split_status = TCOD_utf8_next_split(string, max_width, can_split,
-                                        &line_break, &line_width);
+    const unsigned char *line_break;
+    utf8proc_ssize_t line_width;
+    int split_status = TCOD_utf8_next_split(string, max_width, can_split,
+                                            &line_break, &line_width);
     switch (align) {
       default:
       case TCOD_LEFT:
@@ -1096,10 +1084,9 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
     int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...)
 {
-  int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf8_(
+  int ret = TCOD_console_print_internal_utf8_(
       con, x, y, w, h, flag, alignment,
       reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
       true, false);
@@ -1115,12 +1102,11 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
 int TCOD_console_printf_rect(struct TCOD_Console *con,
     int x, int y, int w, int h, const char *fmt, ...)
 {
-  int ret;
   va_list ap;
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf8_(
+  int ret = TCOD_console_print_internal_utf8_(
       con, x, y, w, h, con->bkgnd_flag,con->alignment,
       reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
       true, false);
@@ -1136,10 +1122,9 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
 int TCOD_console_get_height_rect_fmt(
     struct TCOD_Console *con, int x, int y, int w, int h, const char *fmt, ...)
 {
-  int ret;
   va_list ap;
   va_start(ap, fmt);
-  ret = TCOD_console_print_internal_utf8_(
+  int ret = TCOD_console_print_internal_utf8_(
       con, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT,
       reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
       true, true);
@@ -1157,46 +1142,41 @@ int TCOD_console_get_height_rect_fmt(
  *  \endrst
  */
 void TCOD_console_printf_frame(struct TCOD_Console *con,
-                               int x, int y, int w, int h, int empty,
+                               int x, int y, int width, int height, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 {
   const int left = x;
-  const int right = x + w - 1;
+  const int right = x + width - 1;
   const int top = y;
-  const int bottom = y + h - 1;
-  int i;
+  const int bottom = y + height - 1;
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  TCOD_console_put_char(con, left, top, 0x250C, flag); /* ┌ */
-  TCOD_console_put_char(con, right, top, 0x2510, flag); /* ┐ */
-  TCOD_console_put_char(con, left, bottom, 0x2514, flag); /* └ */
-  TCOD_console_put_char(con, right, bottom, 0x2518, flag); /* ┘ */
-  for (i = left + 1; i <= right - 1; ++i) {
-    TCOD_console_put_char(con, i, top, 0x2500, flag); /* ─ */
-    TCOD_console_put_char(con, i, bottom, 0x2500,flag);
-  }
-  for (i = top + 1; i <= bottom - 1; ++i) {
-    TCOD_console_put_char(con, left, i, 0x2502, flag); /* │ */
-    TCOD_console_put_char(con, right, i, 0x2502, flag);
-  }
+  TCOD_console_put_char(con, left, top, 0x250C, flag); // ┌
+  TCOD_console_put_char(con, right, top, 0x2510, flag); // ┐
+  TCOD_console_put_char(con, left, bottom, 0x2514, flag); // └
+  TCOD_console_put_char(con, right, bottom, 0x2518, flag); // ┘
+  tcod::console::draw_rect(con, x + 1, y, width - 2, 1,
+                           0x2500, &con->fore, &con->back, flag); // ─
+  tcod::console::draw_rect(con, x + 1, y + height - 1, width - 2, 1,
+                           0x2500, &con->fore, &con->back, flag);
+  tcod::console::draw_rect(con, x, y + 1, 1, height - 2,
+                           0x2502, &con->fore, &con->back, flag); // │
+  tcod::console::draw_rect(con, x + width - 1, y + 1, 1, height - 2,
+                           0x2502, &con->fore, &con->back, flag);
   if (empty) {
-    TCOD_console_rect(con, x + 1, y + 1, w - 2, h - 2, true, flag);
+    tcod::console::draw_rect(con, x + 1, y + 1, width -2, height - 2,
+                             0x20, &con->fore, &con->back, flag);
   }
   if (fmt && con) {
     va_list ap;
-    TCOD_color_t tmp;
     /* swap colors */
-    tmp = con->back;
-    con->back = con->fore;
-    con->fore = tmp;
+    std::swap(con->fore, con->back);
     /* print the title */
-    va_start(ap,fmt);
-    TCOD_console_printf_rect_ex(con, x + w / 2, y, w, 1,
+    va_start(ap, fmt);
+    TCOD_console_printf_rect_ex(con, x + width / 2, y, width, 1,
         TCOD_BKGND_SET, TCOD_CENTER, " %s ", TCOD_console_vsprint(fmt, ap));
     va_end(ap);
     /* swap colors */
-    tmp = con->back;
-    con->back = con->fore;
-    con->fore = tmp;
+    std::swap(con->fore, con->back);
   }
 }

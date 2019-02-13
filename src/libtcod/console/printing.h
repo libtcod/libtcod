@@ -28,6 +28,10 @@
 #ifndef TCOD_CONSOLE_PRINTING_H_
 #define TCOD_CONSOLE_PRINTING_H_
 
+#ifdef __cplusplus
+#include <cstdbool>
+#include <string>
+#endif
 #include "../portability.h"
 #include "../console_types.h"
 
@@ -42,7 +46,9 @@ TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect(TCOD_Console* con,int x, int y, int w, int h, const char *fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex(TCOD_Console* con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_printf_frame instead.")
 TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con,int x, int y, int w, int h, const char *fmt, ...);
 
 #ifndef NO_UNICODE
@@ -54,6 +60,7 @@ TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect_utf(TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_Console* con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
+TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...);
 #endif
 
@@ -76,14 +83,51 @@ TCODLIB_API TCODLIB_FORMAT(6, 7)
 int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
                                      int x, int y, int w, int h,
                                      const char *fmt, ...);
-
-/* Private internal functions. */
-int TCOD_console_print_internal_utf8_(
-    TCOD_Console* con, int x, int y, int max_width, int max_height,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
-    const unsigned char *string, int can_split, int count_only);
 #ifdef __cplusplus
 }
 #endif
-
+#ifdef __cplusplus
+namespace tcod {
+namespace console {
+void print(
+    TCOD_Console* con,
+    int x,
+    int y,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment);
+int print_rect(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment);
+int get_height_rect(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str);
+void print_frame(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& title,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    bool empty);
+} // namespace console
+} // namespace tcod
+#endif // __cplusplus
 #endif /* TCOD_CONSOLE_PRINTING_H_ */

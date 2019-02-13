@@ -27,16 +27,20 @@
  */
 #include "printing.h"
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <ctype.h>
 #ifndef NO_UNICODE
 #include <wchar.h>
 #include <wctype.h>
 #endif
 #include <algorithm>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+#include <tuple>
 
 #include "drawing.h"
 #include "../console.h"
@@ -773,231 +777,359 @@ int TCOD_console_get_height_rect_utf(
 }
 
 #endif /* NO_UNICODE */
+namespace tcod {
+namespace console {
+static auto vsprint_(const char *fmt, va_list ap) -> std::string
+{
+  std::string result(std::vsnprintf(nullptr, 0, fmt, ap), 0);
+  std::vsnprintf(&result[0], result.size() + 1, fmt, ap);
+  return result;
+}
+class UnicodeIterator: public std::iterator<std::forward_iterator_tag,
+                                            unsigned char> {
+ public:
+  UnicodeIterator()
+  : p_(nullptr), end_(nullptr)
+  {}
+  UnicodeIterator(const utf8proc_uint8_t* start, const utf8proc_uint8_t* end)
+  : p_(start), end_(end)
+  {
+    parse_unicode();
+  }
+  UnicodeIterator(const char* start, const char* end)
+  : UnicodeIterator(reinterpret_cast<const utf8proc_uint8_t*>(start),
+                    reinterpret_cast<const utf8proc_uint8_t*>(end))
+  {}
+  UnicodeIterator(const std::string& str)
+  : UnicodeIterator(str.empty() ? nullptr : &str.front(),
+                    str.empty() ? nullptr : &str.back() + 1)
+  {}
+  UnicodeIterator& operator++()
+  {
+    if (p_ >= end_) {
+      throw std::out_of_range("Moved past the end of the string.");
+    }
+    p_ += code_size_;
+    parse_unicode();
+    return *this;
+  }
+  UnicodeIterator operator++(int)
+  {
+    UnicodeIterator tmp(*this);
+    operator++();
+    return tmp;
+  }
+  bool operator==(const UnicodeIterator& rhs) const noexcept
+  {
+    return p_ == rhs.p_;
+  }
+  bool operator!=(const UnicodeIterator& rhs) const noexcept
+  {
+    return p_ != rhs.p_;
+  }
+  bool operator<(const UnicodeIterator& rhs) const noexcept
+  {
+    return p_ < rhs.p_;
+  }
+  int operator*() const
+  {
+    if (p_ == end_) {
+      throw std::out_of_range("Dereferenced past the end of the iterator.");
+    }
+    return codepoint_;
+  }
+  auto get_property() const noexcept -> const utf8proc_property_t*
+  {
+    return utf8proc_get_property(codepoint_);
+  }
+  bool empty() const noexcept
+  {
+    return p_ == end_;
+  }
+  auto end() const -> const UnicodeIterator
+  {
+    return UnicodeIterator(end_, end_);
+  }
+  /*
+   *  Check if the specified character is any line-break character
+   */
+  bool is_newline() const noexcept
+  {
+    switch (get_property()->category) {
+      case UTF8PROC_CATEGORY_ZL: /* Separator, line */
+      case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
+        return true;
+      case UTF8PROC_CATEGORY_CC: /* Other, control */
+        switch(get_property()->boundclass) {
+          case UTF8PROC_BOUNDCLASS_CR:    // carriage return - \r
+          case UTF8PROC_BOUNDCLASS_LF:    // line feed - \n
+            return true;
+          default: break;
+        }
+        break;
+      default: break;
+    }
+    return false;
+  }
+ private:
+  void parse_unicode()
+  {
+    if (p_ == end_) {
+      codepoint_ = 0;
+      code_size_ = 1;
+      return;
+    }
+    code_size_ = utf8proc_iterate(p_, end_ - p_, &codepoint_);
+    if (code_size_ < 0) {
+      throw std::logic_error(utf8proc_errmsg(code_size_));
+    }
+  }
+  const utf8proc_uint8_t* p_;
+  const utf8proc_uint8_t* end_;
+  utf8proc_int32_t codepoint_;
+  utf8proc_ssize_t code_size_;
+};
+class FormattedUnicodeIterator: public UnicodeIterator {
+ public:
+  FormattedUnicodeIterator()
+  : UnicodeIterator(), default_fg_(nullptr), default_bg_(nullptr),
+    fg_(nullptr), bg_(nullptr)
+  {}
+  FormattedUnicodeIterator(const std::string& str,
+                           const TCOD_color_t* fg, const TCOD_color_t* bg)
+  : UnicodeIterator(str), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
+  {}
+  FormattedUnicodeIterator(const UnicodeIterator& mit,
+                           const TCOD_color_t* fg, const TCOD_color_t* bg)
+  : UnicodeIterator(mit), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
+  {}
+  FormattedUnicodeIterator(const FormattedUnicodeIterator& rhs)
+  : UnicodeIterator(rhs),
+    default_fg_(rhs.default_fg_), default_bg_(rhs.default_bg_),
+    fg_(rhs.fg_), bg_(rhs.bg_)
+  {
+    // Avoid pointing to the temporary colors of other iterators.
+    if (fg_ == &rhs.temp_fg_) { temp_fg_ = rhs.temp_fg_; fg_ = &temp_fg_; }
+    if (bg_ == &rhs.temp_bg_) { temp_bg_ = rhs.temp_bg_; bg_ = &temp_bg_; }
+  }
+  FormattedUnicodeIterator& operator++()
+  {
+    UnicodeIterator::operator++();
+    parse_special_codes();
+    return *this;
+  }
+  auto get_fg() const noexcept -> const TCOD_color_t*
+  {
+    return fg_;
+  }
+  auto get_bg() const noexcept -> const TCOD_color_t*
+  {
+    return bg_;
+  }
+ private:
+  auto parse_rgb() -> TCOD_color_t {
+    TCOD_color_t color;
+    UnicodeIterator::operator++();
+    color.r = **this;
+    UnicodeIterator::operator++();
+    color.g = **this;
+    UnicodeIterator::operator++();
+    color.b = **this;
+    return color;
+  }
+  void parse_special_codes()
+  {
+    if (*this == (*this).end()) { return; }
+    if (TCOD_COLCTRL_1 <= **this && **this <= TCOD_COLCTRL_NUMBER) {
+      // Read colors from the color control array.
+      int color_index = (**this) - TCOD_COLCTRL_1;
+      fg_ = &color_control_fore[color_index];
+      bg_ = &color_control_back[color_index];
+      ++(*this);
+      return;
+    } else if (**this == TCOD_COLCTRL_STOP) {
+      // Return colors to their original color.
+      fg_ = default_fg_;
+      bg_ = default_bg_;
+      ++(*this);
+      return;
+    } else if (**this == TCOD_COLCTRL_FORE_RGB) {
+      temp_fg_ = parse_rgb();
+      fg_ = &temp_fg_;
+      ++(*this);
+      return;
+    } else if (**this == TCOD_COLCTRL_BACK_RGB) {
+      temp_bg_ = parse_rgb();
+      bg_ = &temp_bg_;
+      ++(*this);
+      return;
+    }
+  }
+  // Original colors
+  const TCOD_color_t* default_fg_;
+  const TCOD_color_t* default_bg_;
+  // Current active colors.
+  const TCOD_color_t* fg_;
+  const TCOD_color_t* bg_;
+  // Colors generated from RGB codes.
+  TCOD_color_t temp_fg_;
+  TCOD_color_t temp_bg_;
+};
 /**
  *  Outputs the bounding box used for printing.
  *
  *  If `max_width` or `max_height` are zero, they will be set automatically.
  */
-static int TCOD_get_print_bounds(
-    const TCOD_Console* con, TCOD_alignment_t align, int x, int y,
-    int *max_width, int *max_height,
-    int *left, int *right, int *top, int *bottom)
+static int print_bounds_(
+    const TCOD_Console& con,
+    TCOD_alignment_t align,
+    int x,
+    int y,
+    int& max_width,
+    int& max_height,
+    int& left,
+    int& right,
+    int& top,
+    int& bottom)
 {
-  if (!con) { return -1; }
-  /* Set default width/height if either is zero. */
-  if (*max_height == 0) { *max_height = con->h - y; }
-  if (*max_width == 0 ) {
+  // Set default width/height if either is zero.
+  if (max_height == 0) { max_height = con.h - y; }
+  if (max_width == 0) {
     switch(align) {
       default: case TCOD_LEFT:
-        *max_width = con->w - x;
+        max_width = con.w - x;
         break;
       case TCOD_RIGHT:
-        *max_width = x + 1;
+        max_width = x + 1;
         break;
       case TCOD_CENTER:
-        *max_width = con->w;
+        max_width = con.w;
         break;
     }
   }
-  /* Return printing boundary. */
-  *top = y;
-  *bottom = std::min(con->h - 1, y + *max_height - 1);
+  // Return printing boundary.
+  top = y;
+  bottom = std::min(con.h - 1, y + max_height - 1);
   switch (align) {
+    default:
     case TCOD_LEFT:
-      *left = x;
-      *right = x + *max_width - 1;
+      left = x;
+      right = x + max_width - 1;
       break;
     case TCOD_RIGHT:
-      *left = x - *max_width + 1;
-      *right = x;
+      left = x - max_width + 1;
+      right = x;
       break;
-    case TCOD_CENTER: default:
-      *left = x - *max_width / 2;
-      *right = x + *max_width / 2;
+    case TCOD_CENTER:
+      left = x - max_width / 2;
+      right = x + max_width / 2;
       break;
   }
-  *left = std::max(0, *left);
-  *right = std::min(*right, con->w - 1);
+  left = std::max(0, left);
+  right = std::min(right, con.w - 1);
   return 0;
-}
-/**
- *  Parse ALL color codes on a utf8 string, returns the total length of the
- *  string parsed.
- *
- *  Any `TCOD_color_t` parameters can be NULL.
- */
-static utf8proc_ssize_t TCOD_utf8_parse_color(
-    const unsigned char *str, TCOD_color_t *fg_color, TCOD_color_t *bg_color,
-    const TCOD_color_t *old_fg_color, const TCOD_color_t *old_bg_color)
-{
-  const unsigned char *start = str;
-  utf8proc_int32_t codepoint;
-  utf8proc_ssize_t code_size = utf8proc_iterate(str, -1, &codepoint);
-  str += code_size;
-  if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
-    /* Read colors from the color control array. */
-    int color_index = codepoint - TCOD_COLCTRL_1;
-    if (fg_color) { *fg_color = color_control_fore[color_index]; }
-    if (bg_color) { *bg_color = color_control_back[color_index]; }
-    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
-                                             old_fg_color, old_bg_color);
-  } else if (codepoint == TCOD_COLCTRL_STOP) {
-    /* Return colors to their original color. */
-    if (fg_color && old_fg_color) { *fg_color = *old_fg_color; }
-    if (bg_color && old_bg_color) { *bg_color = *old_bg_color; }
-    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
-                                             old_fg_color, old_bg_color);
-  } else if (codepoint == TCOD_COLCTRL_FORE_RGB
-      || codepoint == TCOD_COLCTRL_BACK_RGB) {
-    /* Read the next 3 code-points as 8-bit RGB color values. */
-    unsigned char *color_array = NULL;
-    if (codepoint == TCOD_COLCTRL_FORE_RGB && fg_color) {
-      color_array = reinterpret_cast<unsigned char *>(fg_color);
-    } else if (codepoint == TCOD_COLCTRL_BACK_RGB && bg_color) {
-      color_array = reinterpret_cast<unsigned char *>(bg_color);
-    }
-    for (int i = 0; i < 3; ++i) {
-      code_size = utf8proc_iterate(str, -1, &codepoint);
-      if (code_size < 0) { break; }
-      if (color_array) {
-        color_array[i] = static_cast<unsigned char>(codepoint);
-      }
-      str += code_size;
-    }
-    code_size = str - start;
-    return code_size + TCOD_utf8_parse_color(str, fg_color, bg_color,
-                                             old_fg_color, old_bg_color);
-  } else {
-    return 0; /* `str` is not on any color codes. */
-  }
-}
-/**
- *  Check for and return the length of ALL control codes at `str`.
- */
-static utf8proc_ssize_t TCOD_utf8_skip_control_codes(const unsigned char *str)
-{
-  return TCOD_utf8_parse_color(str, NULL, NULL, NULL, NULL);
-}
-/*
- *  Check if the specified character is any line-break character
- */
-static bool TCOD_utf8_is_newline_character(const utf8proc_property_t *property)
-{
-    switch (property->category) {
-      case UTF8PROC_CATEGORY_ZL: /* Separator, line */
-      case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
-        return true;
-
-      case UTF8PROC_CATEGORY_CC: /* Other, control */
-        switch(property->boundclass)
-        {
-        case UTF8PROC_BOUNDCLASS_CR:    // carriage return - \r
-        case UTF8PROC_BOUNDCLASS_LF:    // line feed - \n
-            return true;
-
-        default:
-            break;
-        }
-        break;
-
-      default:
-        break;
-    }
-    return false;
 }
 /**
  *  Get the next line-break or null terminator, or break the string before
  *  `max_width`.
  *
- *  Return 0 if a line-break or null terminator was found, or 1 if the line was
- *  automatically split.
+ *  Returns {break_point, line_width, status}
  */
-int TCOD_utf8_next_split(
-    const unsigned char *str, int max_width, int can_split,
-    const unsigned char **endpoint, utf8proc_ssize_t *split_width)
+static std::tuple<UnicodeIterator, int, int> next_split_(
+    FormattedUnicodeIterator it,
+    const UnicodeIterator& end,
+    int max_width,
+    int can_split)
 {
-  const unsigned char *break_point = NULL;
-  int current_width = 0;
-  *split_width = 0;
-  *endpoint = str;
-  while (*str != '\0') {
-    utf8proc_int32_t codepoint;
-    str += TCOD_utf8_skip_control_codes(str);
-    utf8proc_ssize_t code_size = utf8proc_iterate(str, -1, &codepoint);
-    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
-    if (code_size <= 0) { break; }
-    if (can_split && current_width > 0
-        && current_width + static_cast<int>(property->charwidth) > max_width) {
-      if (break_point) {
-        *endpoint = break_point;
-      } else {
-        *endpoint = str;
-        *split_width = current_width;
+  // The break point and width of the line.
+  UnicodeIterator break_point(end);
+  int break_width = 0;
+  // The current line width.
+  int char_width = 0;
+  bool separating = false; // True if the last iteration was breakable.
+  while (it != end) {
+    if (can_split && char_width > 0) {
+      switch (it.get_property()->category) {
+        default:
+          if (char_width + it.get_property()->charwidth > max_width) {
+            // The next character would go over the max width, so return now.
+            if (break_point != end) {
+              // Use latest line break if one exists.
+              return {break_point, break_width, 1};
+            } else {
+              // Force a line break here.
+              return {it, char_width, 1};
+            }
+          }
+          separating = false;
+          break;
+        case UTF8PROC_CATEGORY_PD: // Punctuation, dash
+          if (char_width + it.get_property()->charwidth > max_width) {
+            return {it, char_width, 1};
+          } else {
+            break_point = it;
+            ++break_point;
+            break_width = char_width + it.get_property()->charwidth;
+            separating = true;
+          }
+          break;
+        case UTF8PROC_CATEGORY_ZS: // Separator, space
+          if (!separating) {
+            break_point = it;
+            break_width = char_width;
+            separating = true;
+          }
+          break;
       }
-      return 1;
     }
-    switch (property->category) {
-      case UTF8PROC_CATEGORY_PD: /* Punctuation, dash */
-      case UTF8PROC_CATEGORY_ZS: /* Separator, space */
-        *split_width = current_width;
-        break_point = str;
-        break;
-      default:
-        break;
+    if (it.is_newline()) {
+      // Always break on newlines.
+      return {it, char_width, 0};
     }
-
-    if(TCOD_utf8_is_newline_character(property)) {
-        *endpoint = str;
-        return 0;
-    }
-
-    str += code_size;
-    current_width += 1;
+    char_width += it.get_property()->charwidth;
+    ++it;
   }
-  *split_width = current_width;
-  *endpoint = str;
-  return 0;
+  // Return end of iteration.
+  return {it, char_width, 0};
 }
-/**
- *  Internal UTF-8 printer.
- */
-int TCOD_console_print_internal_utf8_(
-    TCOD_Console* con, int x, int y, int max_width, int max_height,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t align,
-    const unsigned char *string, int can_split, int count_only)
+static int print_internal_(
+    TCOD_Console& con,
+    int x,
+    int y,
+    int max_width,
+    int max_height,
+    const std::string& string,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    int can_split,
+    int count_only)
 {
   int left, right, top, bottom; /* Print bounding box. */
   int cursor_x = 0;
-  con = TCOD_console_validate_(con);
-  if (!con || !string) { return 0; }
-  TCOD_color_t old_fg = con->fore;
-  TCOD_color_t old_bg = con->back;
-  TCOD_get_print_bounds(con, align, x, y, &max_width, &max_height,
-                        &left, &right, &top, &bottom);
-  while (*string != '\0' && top <= bottom) {
-    utf8proc_int32_t codepoint;
-    utf8proc_ssize_t code_size = utf8proc_iterate(string, -1, &codepoint);
-    if (code_size < 0) { return -1; }
-    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
-    /* Check for newlines. */
-    if(TCOD_utf8_is_newline_character(property))
-    {
-      string += code_size;
-      if(property->category == UTF8PROC_CATEGORY_ZP)
-      {
+  FormattedUnicodeIterator it(string, fg, bg);
+  UnicodeIterator end = it.end();
+  print_bounds_(con, align, x, y, max_width, max_height,
+                left, right, top, bottom);
+  while (it != end && top <= bottom) {
+    // Check for newlines.
+    if(it.is_newline()) {
+      if(it.get_property()->category == UTF8PROC_CATEGORY_ZP) {
         top += 2;
-      }
-      else {
+      } else {
         top += 1;
       }
+      ++it;
       continue;
     }
-
-    /* Get the next line of characters. */
-    const unsigned char *line_break;
-    utf8proc_ssize_t line_width;
-    int split_status = TCOD_utf8_next_split(string, max_width, can_split,
-                                            &line_break, &line_width);
+    // Get the next line of characters.
+    UnicodeIterator line_break;
+    int line_width;
+    int split_status;
+    std::tie(line_break, line_width, split_status) =
+        next_split_(it, end, max_width, can_split);
+    // Set cursor_x from alignment.
     switch (align) {
       default:
       case TCOD_LEFT:
@@ -1010,50 +1142,130 @@ int TCOD_console_print_internal_utf8_(
         cursor_x = x - line_width / 2;
         break;
     }
-    while (string < line_break) {
-      /* Actually render this line of characters. */
-      string += TCOD_utf8_parse_color(string, &con->fore, &con->back,
-                                      &old_fg, &old_bg);
-      string += code_size = utf8proc_iterate(string, -1, &codepoint);
-      if (code_size < 0) { return -1; }
+    for (; it < line_break; ++it) {
+      // Actually render this line of characters.
       if (!count_only && left <= cursor_x && cursor_x <= right) {
-        TCOD_console_put_char(con, cursor_x, top, codepoint, flag);
+        put(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
       }
-      cursor_x += 1;
+      cursor_x += it.get_property()->charwidth;
     }
-    /* Ignore any extra spaces. */
-    while (*string != '\0') {
-      code_size = utf8proc_iterate(string, -1, &codepoint);
-      if (code_size < 0) { return -1; }
-      property = utf8proc_get_property(codepoint);
-      if (property->category == UTF8PROC_CATEGORY_ZS) { /* Separator, space */
-        string += code_size;
-      } else {
-        break;
-      }
+    // Ignore any extra spaces.
+    while (it != end) {
+      // Separator, space
+      if (it.get_property()->category != UTF8PROC_CATEGORY_ZS) { break; }
+      ++it;
     }
-    /* If there was an automatic split earlier then the top is moved down. */
-    if (split_status == 1) {
-      top += 1;
-    }
+    // If there was an automatic split earlier then the top is moved down.
+    if (split_status == 1) { top += 1; }
   }
   return std::min(top, bottom) - y + 1;
 }
+void print(
+    TCOD_Console* con,
+    int x,
+    int y,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment)
+{
+  con = TCOD_console_validate_(con);
+  if (!con) { return; }
+  print_internal_(*con, x, y, 0, 0, str, fg, bg, flag, alignment,
+                  false, false);
+}
+int print_rect(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment)
+{
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
+  return print_internal_(*con, x, y, width, height, str, fg, bg,
+                         flag, alignment, true, false);
+}
+int get_height_rect(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str)
+{
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
+  return print_internal_(*con, x, y, width, height, str, nullptr, nullptr,
+                         TCOD_BKGND_NONE, TCOD_LEFT, true, true);
+}
+void print_frame(
+    struct TCOD_Console *con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& title,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    bool empty)
+{
+  const int left = x;
+  const int right = x + width - 1;
+  const int top = y;
+  const int bottom = y + height - 1;
+  con = TCOD_console_validate_(con);
+  if (!con) { return; }
+  put(con, left, top, 0x250C, fg, bg, flag); // ┌
+  put(con, right, top, 0x2510, fg, bg, flag); // ┐
+  put(con, left, bottom, 0x2514, fg, bg, flag); // └
+  put(con, right, bottom, 0x2518, fg, bg, flag); // ┘
+  draw_rect(con, x + 1, y, width - 2, 1,
+            0x2500, &con->fore, &con->back, flag); // ─
+  draw_rect(con, x + 1, y + height - 1, width - 2, 1,
+            0x2500, &con->fore, &con->back, flag);
+  draw_rect(con, x, y + 1, 1, height - 2,
+            0x2502, &con->fore, &con->back, flag); // │
+  draw_rect(con, x + width - 1, y + 1, 1, height - 2,
+            0x2502, &con->fore, &con->back, flag);
+  if (empty) {
+    draw_rect(con, x + 1, y + 1, width -2, height - 2,
+              0x20, &con->fore, &con->back, flag);
+  }
+  if (!title.empty()) {
+    print_rect(con, x + width / 2, y, width, 1,
+               " " + title + " ", bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
+  }
+}
+} // namespace console
+} // namespace tcod
 /**
  *  Format and print a UTF-8 string to a console.
  *  \rst
  *  .. versionadded:: 1.8
  *  \endrst
  */
-void TCOD_console_printf_ex(TCOD_Console* con, int x, int y,
-      TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
+void TCOD_console_printf_ex(
+    TCOD_Console* con,
+    int x,
+    int y,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char *fmt, ...)
 {
+  con = TCOD_console_validate_(con);
+  if (!con) { return; }
   va_list ap;
   va_start(ap, fmt);
-  TCOD_console_print_internal_utf8_(
-      con, x, y, 0, 0, flag, alignment,
-      reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
-      false, false);
+  tcod::console::print(con, x, y, tcod::console::vsprint_(fmt, ap),
+                       &con->fore, &con->back, flag, alignment);
   va_end(ap);
 }
 /**
@@ -1064,14 +1276,13 @@ void TCOD_console_printf_ex(TCOD_Console* con, int x, int y,
  */
 void TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
 {
-  va_list ap;
   con = TCOD_console_validate_(con);
   if (!con) { return; }
+  va_list ap;
   va_start(ap, fmt);
-  TCOD_console_print_internal_utf8_(
-      con, x, y, 0, 0, con->bkgnd_flag, con->alignment,
-      reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
-      false, false);
+  tcod::console::print(
+      con, x, y, tcod::console::vsprint_(fmt, ap),
+      &con->fore, &con->back, con->bkgnd_flag, con->alignment);
   va_end(ap);
 }
 /**
@@ -1082,14 +1293,13 @@ void TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
  */
 int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
     int x, int y, int w, int h,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,const char *fmt, ...)
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
-  int ret = TCOD_console_print_internal_utf8_(
-      con, x, y, w, h, flag, alignment,
-      reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
-      true, false);
+  int ret = tcod::console::print_rect(
+      con, x, y, w, h, tcod::console::vsprint_(fmt, ap),
+      &con->fore, &con->back, flag, alignment);
   va_end(ap);
   return ret;
 }
@@ -1106,10 +1316,9 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
   va_start(ap, fmt);
-  int ret = TCOD_console_print_internal_utf8_(
-      con, x, y, w, h, con->bkgnd_flag,con->alignment,
-      reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
-      true, false);
+  int ret = tcod::console::print_rect(
+      con, x, y, w, h, tcod::console::vsprint_(fmt, ap),
+      &con->fore, &con->back, con->bkgnd_flag, con->alignment);
   va_end(ap);
   return ret;
 }
@@ -1124,10 +1333,8 @@ int TCOD_console_get_height_rect_fmt(
 {
   va_list ap;
   va_start(ap, fmt);
-  int ret = TCOD_console_print_internal_utf8_(
-      con, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT,
-      reinterpret_cast<const unsigned char*>(TCOD_console_vsprint(fmt, ap)),
-      true, true);
+  int ret = tcod::console::get_height_rect(con, x, y, w, h,
+                                           tcod::console::vsprint_(fmt, ap));
   va_end(ap);
   return ret;
 }
@@ -1145,38 +1352,12 @@ void TCOD_console_printf_frame(struct TCOD_Console *con,
                                int x, int y, int width, int height, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 {
-  const int left = x;
-  const int right = x + width - 1;
-  const int top = y;
-  const int bottom = y + height - 1;
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  TCOD_console_put_char(con, left, top, 0x250C, flag); // ┌
-  TCOD_console_put_char(con, right, top, 0x2510, flag); // ┐
-  TCOD_console_put_char(con, left, bottom, 0x2514, flag); // └
-  TCOD_console_put_char(con, right, bottom, 0x2518, flag); // ┘
-  tcod::console::draw_rect(con, x + 1, y, width - 2, 1,
-                           0x2500, &con->fore, &con->back, flag); // ─
-  tcod::console::draw_rect(con, x + 1, y + height - 1, width - 2, 1,
-                           0x2500, &con->fore, &con->back, flag);
-  tcod::console::draw_rect(con, x, y + 1, 1, height - 2,
-                           0x2502, &con->fore, &con->back, flag); // │
-  tcod::console::draw_rect(con, x + width - 1, y + 1, 1, height - 2,
-                           0x2502, &con->fore, &con->back, flag);
-  if (empty) {
-    tcod::console::draw_rect(con, x + 1, y + 1, width -2, height - 2,
-                             0x20, &con->fore, &con->back, flag);
-  }
-  if (fmt && con) {
-    va_list ap;
-    /* swap colors */
-    std::swap(con->fore, con->back);
-    /* print the title */
-    va_start(ap, fmt);
-    TCOD_console_printf_rect_ex(con, x + width / 2, y, width, 1,
-        TCOD_BKGND_SET, TCOD_CENTER, " %s ", TCOD_console_vsprint(fmt, ap));
-    va_end(ap);
-    /* swap colors */
-    std::swap(con->fore, con->back);
-  }
+  va_list ap;
+  va_start(ap, fmt);
+  tcod::console::print_frame(
+      con, x, y, width, height, tcod::console::vsprint_(fmt, ap),
+      &con->fore, &con->back, flag, empty);
+  va_end(ap);
 }

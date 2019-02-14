@@ -7,8 +7,12 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- Printing generates more compact layouts.
 ### Fixed
-- Fixed potential segmentation faults in the newer print functions.
+- Fixed segmentation faults in the newer print functions caused by bad color
+  codes.
+- The `OPENGL` and `GLSL` renders work again in static builds.
 
 ## [1.10.5] - 2019-02-06
 ### Changed

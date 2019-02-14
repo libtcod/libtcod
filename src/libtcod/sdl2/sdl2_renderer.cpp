@@ -47,9 +47,21 @@ class SDL2Renderer::impl: public TilesetObserver {
     }
     SDL_DelEventWatch(on_sdl_event, this);
   }
+  /**
+   *  Selectively reset the cache so that only changed tiles are redrawn.
+   */
   void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
-  {}
+  {
+    for (const auto& changed : changes) {
+      int codepoint = changed.second.codepoint;
+      for (auto& cache_it : cache_) {
+        if (std::get<0>(cache_it) == codepoint) {
+          std::get<0>(cache_it) = -1;
+        }
+      }
+    }
+  }
   auto render(const TCOD_Console* console) -> struct SDL_Texture*
   {
     if (!console) { throw; }
@@ -68,7 +80,7 @@ class SDL2Renderer::impl: public TilesetObserver {
       if(!texture_) { throw std::runtime_error(SDL_GetError()); }
     }
     SDL_SetRenderTarget(renderer_, texture_);
-    SDL_Texture* alias_texture = alias_.get_texture_alias();
+    SDL_Texture* alias_texture = alias_.prepare_alias(*console);
     SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
     SDL_SetTextureBlendMode(alias_texture, SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(alias_texture, 0xff);

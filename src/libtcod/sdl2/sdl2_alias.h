@@ -29,6 +29,7 @@
 #define LIBTCOD_SDL2_SDL2_ALIAS_H_
 #include <memory>
 
+#include "../console.h"
 #include "../tileset/observer.h"
 #ifdef __cplusplus
 struct SDL_Renderer;
@@ -41,19 +42,31 @@ using tileset::Tile;
 using tileset::Tileset;
 using tileset::TilesetObserver;
 class SDL2InternalTilesetAlias_;
-
+/**
+ *  A texture alias manager for SDL2 renderers.
+ */
 class SDL2TilesetAlias {
  public:
   SDL2TilesetAlias() = default;
   SDL2TilesetAlias(struct SDL_Renderer* renderer,
-                   std::shared_ptr<Tileset> tileset);
+                   const std::shared_ptr<Tileset>& tileset);
 
   std::shared_ptr<Tileset>& get_tileset();
-
-  SDL_Texture* get_texture_alias();
-  SDL_Rect get_char_rect(int codepoint);
+  /**
+   *  Return a texture alias containing all the glyphs required by `console`.
+   *
+   *  The returned pointer is owned by this object, and will expire on the next
+   *  call to `prepare_alias`;
+   */
+  auto prepare_alias(const TCOD_Console& console) -> struct SDL_Texture*;
+  /**
+   *  Return the rectangle where a codepoint exists on the texture alias.
+   */
+  auto get_char_rect(int codepoint) const -> SDL_Rect;
  private:
-  std::shared_ptr<SDL2InternalTilesetAlias_> alias_;
+  friend class SDL2AliasPool;
+  class impl;
+  std::shared_ptr<impl> impl_;
 };
 } // namespace sdl2
 } // namespace tcod

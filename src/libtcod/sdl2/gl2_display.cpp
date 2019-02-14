@@ -69,5 +69,9 @@ void OpenGL2Display::present(const TCOD_Console* console)
 
   update_pixel_to_tile_scale(console);
 }
+auto OpenGL2Display::read_pixels() const -> Image
+{
+  return tcod_renderer_.read_pixels();
+}
 } // namespace sdl2
 } // namespace tcod

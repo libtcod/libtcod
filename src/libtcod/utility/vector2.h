@@ -47,6 +47,8 @@ class Vector2 {
  public:
   using value_type = T;
   using size_type = ptrdiff_t;
+  using iterator = typename std::vector<T>::iterator;
+  using const_iterator = typename std::vector<T>::const_iterator;
   Vector2() = default;
   explicit Vector2(size_type width, size_type height, const T& fill)
   : width_(std::max<size_type>(0, width)),
@@ -115,11 +117,23 @@ class Vector2 {
   {
     return vector_.data();
   }
-  typename std::vector<T>::iterator begin()
+  const T* data() const noexcept
+  {
+    return vector_.data();
+  }
+  iterator begin() noexcept
   {
     return vector_.begin();
   }
-  typename std::vector<T>::iterator end()
+  iterator end() noexcept
+  {
+    return vector_.end();
+  }
+  const_iterator begin() const noexcept
+  {
+    return vector_.begin();
+  }
+  const_iterator end() const noexcept
   {
     return vector_.end();
   }

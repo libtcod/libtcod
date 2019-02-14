@@ -50,7 +50,7 @@ class SDL2Renderer::impl: public TilesetObserver {
   void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
   {}
-  struct SDL_Texture* render(const TCOD_Console* console)
+  auto render(const TCOD_Console* console) -> struct SDL_Texture*
   {
     if (!console) { throw; }
     if (console->w != cache_.width() || console->h != cache_.height()) {
@@ -112,6 +112,21 @@ class SDL2Renderer::impl: public TilesetObserver {
     SDL_SetRenderTarget(renderer_, nullptr);
     return texture_;
   }
+  auto read_pixels() const -> Image
+  {
+    SDL_SetRenderTarget(renderer_, texture_);
+    int width, height;
+    SDL_QueryTexture(texture_, nullptr, nullptr, &width, &height);
+    Image pixels(width, height);
+    SDL_RenderReadPixels(
+        renderer_,
+        nullptr,
+        SDL_PIXELFORMAT_RGBA32,
+        static_cast<void*>(pixels.data()),
+        width * 4);
+    SDL_SetRenderTarget(renderer_, nullptr);
+    return pixels;
+  }
  private:
   static int on_sdl_event(void* userdata, SDL_Event* event)
   {
@@ -151,6 +166,10 @@ SDL2Renderer::~SDL2Renderer() = default;
 struct SDL_Texture* SDL2Renderer::render(const TCOD_Console* console)
 {
   return impl_->render(console);
+}
+auto SDL2Renderer::read_pixels() const -> Image
+{
+  return impl_->read_pixels();
 }
 } // namespace sdl2
 } // namespace tcod

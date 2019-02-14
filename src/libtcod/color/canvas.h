@@ -41,6 +41,7 @@ namespace image {
  */
 typedef Vector2<ColorRGBA> Image;
 Image load(const std::string& filename);
+void save(const Image& image, const std::string& filename);
 } // namespace image
 } // namespace tcod
 #endif /* __cplusplus */

@@ -65,5 +65,14 @@ Image load(const std::string& filename)
   }
   return image;
 }
+void save(const Image& image, const std::string& filename)
+{
+  const unsigned char* buffer =
+      reinterpret_cast<const unsigned char*>(image.data());
+  if (auto err=lodepng::encode(filename, buffer,
+                               image.width(), image.height())) {
+    throw std::runtime_error(lodepng_error_text(err));
+  }
+}
 } // namespace image
 } // namespace tcod

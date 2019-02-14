@@ -140,6 +140,10 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     gl_check();
   }
+  auto read_pixels() const -> Image
+  {
+    return {};
+  }
   void on_tileset_changed(
       const std::vector<std::pair<int, Tile&>> &changes) override
   {}
@@ -162,6 +166,10 @@ OpenGL2Renderer::~OpenGL2Renderer() noexcept = default;
 void OpenGL2Renderer::render(const TCOD_Console* console)
 {
   impl_->render(console);
+}
+auto OpenGL2Renderer::read_pixels() const -> Image
+{
+  return impl_->read_pixels();
 }
 } // namespace sdl2
 } // namespace tcod

@@ -33,12 +33,14 @@
 #include <utility>
 #endif // __cplusplus
 
+#include "../color/canvas.h"
 #include "../tileset/tileset.h"
 #include "../console_types.h"
 
 #ifdef __cplusplus
 namespace tcod {
 namespace engine {
+using tcod::image::Image;
 using tcod::tileset::Tileset;
 class Display {
  public:
@@ -62,6 +64,8 @@ class Display {
   virtual void present(const TCOD_Console*) = 0;
   virtual auto pixel_to_tile(const std::pair<double, double>& xy)
       -> std::pair<double, double> = 0;
+
+  virtual auto read_pixels() const -> Image = 0;
 };
 /**
  *  Incomplete interface for subclasses which don't need an SDL2 window.

@@ -41,6 +41,7 @@
 #ifdef __cplusplus
 namespace tcod {
 namespace sdl2 {
+using tcod::image::Image;
 using tcod::tileset::Tileset;
 class OpenGL2Renderer {
  public:
@@ -55,6 +56,7 @@ class OpenGL2Renderer {
   ~OpenGL2Renderer() noexcept;
 
   void render(const TCOD_Console* console);
+  auto read_pixels() const -> Image;
  private:
   class impl;
   std::unique_ptr<impl> impl_;

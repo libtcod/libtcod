@@ -42,6 +42,7 @@ struct SDL_Renderer;
 #ifdef __cplusplus
 namespace tcod {
 namespace sdl2 {
+using tcod::image::Image;
 /**
  *  Incomplete interface for subclasses expecting an SDL2 window.
  */
@@ -89,6 +90,7 @@ class SDL2Display: public WindowedDisplay {
       const std::string& title);
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;
   virtual void present(const TCOD_Console*) override;
+  virtual auto read_pixels() const -> Image override;
  private:
   std::shared_ptr<SDL_Renderer> renderer_;
   SDL2Renderer tcod_renderer_;

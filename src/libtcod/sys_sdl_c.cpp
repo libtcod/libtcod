@@ -39,6 +39,7 @@
 #include "console.h"
 #include "libtcod_int.h"
 #include "parser.h"
+#include "color/canvas.h"
 #include "engine/globals.h"
 
 static TCOD_SDL_driver_t *sdl=NULL;
@@ -957,7 +958,12 @@ void TCOD_sys_save_screenshot(const char *filename) {
       fclose(access_file);
     }
   }
-  sdl->save_screenshot(filename);
+  auto display = tcod::engine::get_display();
+  if (display) {
+    tcod::image::save(display->read_pixels(), filename);
+  } else {
+    sdl->save_screenshot(filename);
+  }
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {

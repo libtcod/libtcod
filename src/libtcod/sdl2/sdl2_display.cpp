@@ -123,5 +123,9 @@ void SDL2Display::present(const TCOD_Console* console)
   SDL_RenderPresent(renderer_.get());
   update_pixel_to_tile_scale(console);
 }
+auto SDL2Display::read_pixels() const -> Image
+{
+  return tcod_renderer_.read_pixels();
+}
 } // namespace sdl2
 } // namespace tcod

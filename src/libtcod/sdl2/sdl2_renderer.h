@@ -42,6 +42,7 @@ struct SDL_Renderer;
 struct SDL_Texture;
 namespace tcod {
 namespace sdl2 {
+using tcod::image::Image;
 using tcod::tileset::Tileset;
 class SDL2Renderer {
  public:
@@ -57,7 +58,9 @@ class SDL2Renderer {
 
   ~SDL2Renderer();
 
-  struct SDL_Texture* render(const TCOD_Console* console);
+  auto render(const TCOD_Console* console) -> struct SDL_Texture*;
+  auto read_pixels() const -> Image;
+
  private:
   class impl;
   std::unique_ptr<impl> impl_;

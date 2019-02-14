@@ -1291,10 +1291,13 @@ void TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
  *  .. versionadded:: 1.8
  *  \endrst
  */
-int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
+int TCOD_console_printf_rect_ex(
+    struct TCOD_Console* con,
     int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 {
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
   va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::print_rect(
@@ -1309,12 +1312,12 @@ int TCOD_console_printf_rect_ex(struct TCOD_Console *con,
  *  .. versionadded:: 1.8
  *  \endrst
  */
-int TCOD_console_printf_rect(struct TCOD_Console *con,
-    int x, int y, int w, int h, const char *fmt, ...)
+int TCOD_console_printf_rect(
+    struct TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...)
 {
-  va_list ap;
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
+  va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::print_rect(
       con, x, y, w, h, tcod::console::vsprint_(fmt, ap),
@@ -1329,8 +1332,10 @@ int TCOD_console_printf_rect(struct TCOD_Console *con,
  *  \endrst
  */
 int TCOD_console_get_height_rect_fmt(
-    struct TCOD_Console *con, int x, int y, int w, int h, const char *fmt, ...)
+    struct TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...)
 {
+  con = TCOD_console_validate_(con);
+  if (!con) { return 0; }
   va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::get_height_rect(con, x, y, w, h,

@@ -781,6 +781,7 @@ namespace tcod {
 namespace console {
 static auto vsprint_(const char *fmt, va_list ap) -> std::string
 {
+  if (!fmt) { return ""; }
   std::string result(std::vsnprintf(nullptr, 0, fmt, ap), 0);
   std::vsnprintf(&result[0], result.size() + 1, fmt, ap);
   return result;

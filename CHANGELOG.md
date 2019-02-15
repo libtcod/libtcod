@@ -13,6 +13,7 @@ since `1.7.0`.
 - Fixed segmentation faults in the newer print functions caused by bad color
   codes.
 - The `OPENGL` and `GLSL` renders work again in static builds.
+- The `SDL2` and `OPENGL2` renders can now handle larger amounts of tiles.
 
 ## [1.10.5] - 2019-02-06
 ### Changed

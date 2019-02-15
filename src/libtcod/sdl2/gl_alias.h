@@ -31,6 +31,7 @@
 #include <array>
 #include <memory>
 
+#include "../console.h"
 #include "../tileset/observer.h"
 #ifdef __cplusplus
 struct SDL_Renderer;
@@ -51,12 +52,13 @@ class OpenGLTilesetAlias {
 
   const std::shared_ptr<Tileset>& get_tileset();
 
-  uint32_t get_alias_texture();
-  std::array<int, 2> get_alias_shape();
-  std::array<int, 2> get_alias_size();
-  std::array<int, 2> get_tile_position(int codepoint);
+  auto get_alias_texture(const TCOD_Console& console) -> uint32_t;
+  auto get_alias_shape() const -> std::array<float, 2>;
+  auto get_alias_size() const -> std::array<float, 2>;
+  auto get_tile_position(int codepoint) const -> std::array<int, 2>;
  private:
-  std::shared_ptr<class OpenGLInternalTilesetAlias_> alias_;
+  class impl;
+  std::shared_ptr<class impl> impl_;
 };
 } // namespace sdl2
 } // namespace tcod

@@ -84,9 +84,9 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     //glClear(GL_COLOR_BUFFER_BIT); gl_check();
     program_.use(); gl_check();
 
-    glUniform2iv(program_.get_uniform("v_tiles_shape"), 1,
+    glUniform2fv(program_.get_uniform("v_tiles_shape"), 1,
                  alias_.get_alias_shape().data());
-    glUniform2iv(program_.get_uniform("v_tiles_size"), 1,
+    glUniform2fv(program_.get_uniform("v_tiles_size"), 1,
                  alias_.get_alias_size().data());
 
     if (cached_size.first != console->w || cached_size.second != console->h) {
@@ -107,7 +107,7 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture());
+    glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture(*console));
     glUniform1i(program_.get_uniform("t_tileset"), 0);
 
     glActiveTexture(GL_TEXTURE0 + 1);

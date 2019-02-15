@@ -7,13 +7,15 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.6] - 2019-02-15
 ### Changed
 - Printing generates more compact layouts.
 ### Fixed
 - Fixed segmentation faults in the newer print functions caused by bad color
   codes.
 - The `OPENGL` and `GLSL` renders work again in static builds.
-- The `SDL2` and `OPENGL2` renders can now handle larger amounts of tiles.
+- The `SDL2` and `OPENGL2` renders can now large numbers of tiles.
 
 ## [1.10.5] - 2019-02-06
 ### Changed

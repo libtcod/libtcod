@@ -31,9 +31,11 @@
 
 #include <cstring>
 
-TCODHeightMap::TCODHeightMap(int w, int h) : w(w),h(h) {
-	values = new float[w*h];
-	memset(values,0,sizeof(float)*w*h);
+TCODHeightMap::TCODHeightMap(int width, int height)
+: w(width), h(height)
+{
+  values = new float[w * h];
+  memset(values, 0, sizeof(float) * w * h);
 }
 TCODHeightMap::~TCODHeightMap() {
 	delete [] values;

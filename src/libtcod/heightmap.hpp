@@ -66,7 +66,7 @@ public :
 		map=libtcod.heightmap_new(50,50)
 		print map.w, map.h
 	*/
-	TCODHeightMap(int w, int h);
+	TCODHeightMap(int width, int height);
 
 	/**
 	@PageName heightmap_init

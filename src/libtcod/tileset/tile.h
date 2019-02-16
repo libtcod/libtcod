@@ -43,11 +43,11 @@ using image::Image;
 class Tile {
  public:
   Tile();
-  explicit Tile(int codepoint, const Image &image)
-  : codepoint(codepoint), image_(image)
+  explicit Tile(int codepoint_, const Image &image)
+  : codepoint(codepoint_), image_(image)
   {}
-  explicit Tile(int codepoint, int width, int height)
-  : Tile(codepoint, Image(width, height))
+  explicit Tile(int codepoint_, int width, int height)
+  : Tile(codepoint_, Image(width, height))
   {}
 
   int width(void) const { return static_cast<int>(image_.width()); }

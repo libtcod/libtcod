@@ -148,8 +148,12 @@ public :
 	     TCODColor myColor = new TCODColor(321.0f,0.7f,1.0f); //HSV
 	@LuaEx myColor = tcod.Color(24,24,255)
 	*/
-	TCODColor(uint8_t r, uint8_t g, uint8_t b): r(r), g(g), b(b) {}
-	TCODColor(int r, int g, int b): r(r), g(g), b(b) {}
+	TCODColor(uint8_t r_, uint8_t g_, uint8_t b_)
+  : r(r_), g(g_), b(b_)
+  {}
+	TCODColor(int r_, int g_, int b_)
+  : r(r_), g(g_), b(b_)
+  {}
 	TCODColor(const TCOD_color_t &col): r(col.r), g(col.g), b(col.b) {}
 	TCODColor(float h, float s, float v);
 
@@ -197,7 +201,7 @@ public :
 	*/
   TCODColor operator*(const TCODColor& rhs) const
   {
-    return TCODColor(*this, rhs, [](int a, int b){ return a * b / 255; });
+    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 * c2 / 255; });
   }
 
 	/**
@@ -237,7 +241,7 @@ public :
 	*/
   TCODColor operator+(const TCODColor & rhs) const
   {
-    return TCODColor(*this, rhs, [](int a, int b){ return a + b; });
+    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 + c2; });
   }
 
 	/**
@@ -256,7 +260,7 @@ public :
 	*/
   TCODColor operator-(const TCODColor& rhs) const
   {
-    return TCODColor(*this, rhs, [](int a, int b){ return a - b; });
+    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 - c2; });
   }
 
 	/**
@@ -278,9 +282,9 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@C#Ex TCODColor myColor = TCODColor.Interpolate( TCODColor.darkGrey, TCODColor.lightRed, coef );
 	@LuaEx myColor = tcod.color.Interpolate( tcod.color.darkGrey, tcod.color.lightRed, coef )
 	*/
-  static TCODColor lerp(const TCODColor &a, const TCODColor &b, float coef)
+  static TCODColor lerp(const TCODColor &c1, const TCODColor &c2, float coef)
   {
-    return TCODColor(a, b, [=](int c, int d){ return c + (d - c) * coef; });
+    return TCODColor(c1, c2, [=](int c, int d){ return c + (d - c) * coef; });
   }
 
 	/**

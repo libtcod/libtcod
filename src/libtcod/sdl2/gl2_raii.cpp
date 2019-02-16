@@ -37,9 +37,9 @@
 namespace tcod {
 namespace sdl2 {
 #ifdef GL_ES_VERSION_2_0 // OpenGL ES 2.0
-static const char* GLSL_VERSION_DIRECTIVE = "#version 100";
+static const char* GLSL_VERSION_DIRECTIVE = "#version 100\n";
 #else // OpenGL 2.0
-static const char* GLSL_VERSION_DIRECTIVE = "#version 110";
+static const char* GLSL_VERSION_DIRECTIVE = "#version 110\n";
 #endif
 GLShader::GLShader(int shader_type, const std::string& source)
 : shader_{glCreateShader(shader_type)}

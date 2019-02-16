@@ -34,6 +34,8 @@
 #include "gl2_ext_.h"
 #include "../console.h"
 
+#define SHADER_STRINGIFY(...) #__VA_ARGS__
+
 namespace tcod {
 namespace sdl2 {
 

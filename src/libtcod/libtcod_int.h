@@ -33,6 +33,7 @@
 #include <android/log.h>
 #endif
 #ifdef __cplusplus
+#include <stdexcept>
 #include <string>
 #endif // __cplusplus
 
@@ -548,10 +549,12 @@ void TCOD_sys_restore_fps(void);
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
 void TCOD_sys_set_dirty_character_code(int ch);
 int TCOD_get_tileid_for_charcode_(int charcode);
+namespace tcod {
+namespace console {
 /**
  *  Validate and return a console.
  */
-inline TCOD_Console* TCOD_console_validate_(TCOD_Console* console)
+inline TCOD_Console* validate_(TCOD_Console* console)
 {
   console = (console ? console : TCOD_ctx.root);
   TCOD_ASSERT(console);
@@ -560,11 +563,49 @@ inline TCOD_Console* TCOD_console_validate_(TCOD_Console* console)
 /**
  *  Validate and return a constant console.
  */
-inline const TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
+inline const TCOD_Console* validate_(const TCOD_Console* console)
 {
   console = (console ? console : TCOD_ctx.root);
   TCOD_ASSERT(console);
   return console;
+}
+/**
+ *  Return a console reference from a valid console pointer.
+ */
+inline TCOD_Console& ensure_(TCOD_Console* console)
+{
+  console = validate_(console);
+  if (!console) {
+    throw std::logic_error("libtcod has not been initialized yet.");
+  }
+  return *console;
+}
+/**
+ *  Return a console reference from a valid constant console pointer.
+ */
+inline const TCOD_Console& ensure_(const TCOD_Console* console)
+{
+  console = validate_(console);
+  if (!console) {
+    throw std::logic_error("libtcod has not been initialized yet.");
+  }
+  return *console;
+}
+} // namespace console
+} // namespace tcod
+/**
+ *  Validate and return a console.
+ */
+inline TCOD_Console* TCOD_console_validate_(TCOD_Console* console)
+{
+  return tcod::console::validate_(console);
+}
+/**
+ *  Validate and return a constant console.
+ */
+inline const TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
+{
+  return tcod::console::validate_(console);
 }
 /**
  *  Return true if the console is valid and the index is within it.

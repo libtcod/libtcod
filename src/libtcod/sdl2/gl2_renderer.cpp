@@ -33,6 +33,7 @@
 
 #include "gl2_ext_.h"
 #include "../console.h"
+#include "../libtcod_int.h"
 
 #define SHADER_STRINGIFY(...) #__VA_ARGS__
 
@@ -51,11 +52,10 @@ constexpr int round_to_pow2(int i)
   return ++i;
 }
 
-class OpenGL2Renderer::impl : public TilesetObserver {
+class OpenGL2Renderer::impl {
  public:
   explicit impl(OpenGLTilesetAlias alias)
-  : TilesetObserver(alias.get_tileset()),
-    alias_(alias),
+  : alias_(alias),
     program_(
 #include "console_2tris.glslv"
         ,
@@ -93,8 +93,16 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }
-  void render(const TCOD_Console* console)
+  void render(const TCOD_Console& console)
   {
+    glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    glDisable(GL_SAMPLE_COVERAGE);
+    glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_STENCIL_TEST);
     //glClear(GL_COLOR_BUFFER_BIT); gl_check();
     program_.use(); gl_check();
 
@@ -103,16 +111,16 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glUniform2fv(program_.get_uniform("v_tiles_size"), 1,
                  alias_.get_alias_size().data());
 
-    if (cached_size.first != console->w || cached_size.second != console->h) {
-      cached_size = {console->w, console->h};
-      int tex_width = round_to_pow2(console->w);
-      int tex_height = round_to_pow2(console->h);
+    if (cached_size.first != console.w || cached_size.second != console.h) {
+      cached_size = {console.w, console.h};
+      int tex_width = round_to_pow2(console.w);
+      int tex_height = round_to_pow2(console.h);
 
       glUniform2f(program_.get_uniform("v_console_shape"),
                   tex_width, tex_height);
       glUniform2f(program_.get_uniform("v_console_size"),
-                  static_cast<float>(console->w) / tex_width,
-                  static_cast<float>(console->h) / tex_height);
+                  static_cast<float>(console.w) / tex_width,
+                  static_cast<float>(console.h) / tex_height);
       bg_tex_.bind();
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB,
                    GL_UNSIGNED_BYTE, nullptr);
@@ -127,33 +135,33 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
     glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture(*console));
+    glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture(console));
     glUniform1i(program_.get_uniform("t_tileset"), 0);
 
     glActiveTexture(GL_TEXTURE0 + 1);
     bg_tex_.bind();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGB,
-                    GL_UNSIGNED_BYTE, console->bg_array);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
+                    GL_UNSIGNED_BYTE, console.bg_array);
     glUniform1i(program_.get_uniform("t_console_bg"), 1);
 
     glActiveTexture(GL_TEXTURE0 + 2);
     fg_tex_.bind();
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGB,
-                    GL_UNSIGNED_BYTE, console->fg_array);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
+                    GL_UNSIGNED_BYTE, console.fg_array);
     glUniform1i(program_.get_uniform("t_console_fg"), 2);
 
     glActiveTexture(GL_TEXTURE0 + 3);
     ch_tex_.bind();
-    std::vector<uint8_t> tile_indexes(console->w * console->h * 4);
+    std::vector<uint8_t> tile_indexes(console.w * console.h * 4);
     int tile_i = 0;
-    for (int i = 0; i < console->w * console->h; ++i) {
-      auto tile = alias_.get_tile_position(console->ch_array[i]);
+    for (int i = 0; i < console.w * console.h; ++i) {
+      auto tile = alias_.get_tile_position(console.ch_array[i]);
       tile_indexes[tile_i++] = tile.at(0) & 0xff;
       tile_indexes[tile_i++] = tile.at(0) >> 8;
       tile_indexes[tile_i++] = tile.at(1) & 0xff;
       tile_indexes[tile_i++] = tile.at(1) >> 8;
     }
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA,
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
                     GL_UNSIGNED_BYTE, tile_indexes.data());
     glUniform1i(program_.get_uniform("t_console_tile"), 3);
 
@@ -165,9 +173,6 @@ class OpenGL2Renderer::impl : public TilesetObserver {
   {
     return {};
   }
-  void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes) override
-  {}
  private:
   OpenGLTilesetAlias alias_;
   GLProgram program_;
@@ -186,7 +191,7 @@ OpenGL2Renderer& OpenGL2Renderer::operator=(OpenGL2Renderer&&) noexcept = defaul
 OpenGL2Renderer::~OpenGL2Renderer() noexcept = default;
 void OpenGL2Renderer::render(const TCOD_Console* console)
 {
-  impl_->render(console);
+  impl_->render(tcod::console::ensure_(console));
 }
 auto OpenGL2Renderer::read_pixels() const -> Image
 {

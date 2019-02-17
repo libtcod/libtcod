@@ -155,7 +155,30 @@ class GLTexture {
  private:
   uint32_t texture_{0};
 };
-
+class GLFramebuffer {
+ public:
+  GLFramebuffer();
+  GLFramebuffer(const GLFramebuffer&) = delete;
+  GLFramebuffer& operator=(const GLFramebuffer&) = delete;
+  GLFramebuffer(GLFramebuffer&& rhs) noexcept
+  : framebuffer_(rhs.framebuffer_)
+  {
+    rhs.framebuffer_ = 0;
+  }
+  GLFramebuffer& operator=(GLFramebuffer&& rhs) noexcept
+  {
+    std::swap(framebuffer_, rhs.framebuffer_);
+    return *this;
+  }
+  ~GLFramebuffer() noexcept;
+  uint32_t get() const noexcept
+  {
+    return framebuffer_;
+  }
+  void bind();
+ private:
+  uint32_t framebuffer_{0};
+};
 } // namespace sdl2
 } // namespace tcod
 #endif // LIBTCOD_SDL2_GL2_RAII_H_

@@ -38,6 +38,18 @@
 
 namespace tcod {
 namespace sdl2 {
+/**
+ *  Return a number rounded up to a power of 2.
+ */
+constexpr int round_to_pow2(int i)
+{
+  if (i <= 0) { i = 1; }
+  i |= i >> 1;
+  i |= i >> 2;
+  i |= i >> 4;
+  i |= i >> 8;
+  return ++i;
+}
 
 class OpenGL2Renderer::impl : public TilesetObserver {
  public:
@@ -93,16 +105,22 @@ class OpenGL2Renderer::impl : public TilesetObserver {
 
     if (cached_size.first != console->w || cached_size.second != console->h) {
       cached_size = {console->w, console->h};
-      glUniform2i(program_.get_uniform("v_console_shape"),
-                  console->w, console->h);
+      int tex_width = round_to_pow2(console->w);
+      int tex_height = round_to_pow2(console->h);
+
+      glUniform2f(program_.get_uniform("v_console_shape"),
+                  tex_width, tex_height);
+      glUniform2f(program_.get_uniform("v_console_size"),
+                  static_cast<float>(console->w) / tex_width,
+                  static_cast<float>(console->h) / tex_height);
       bg_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, console->w, console->h, 0, GL_RGB,
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB,
                    GL_UNSIGNED_BYTE, nullptr);
       fg_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, console->w, console->h, 0, GL_RGB,
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB,
                    GL_UNSIGNED_BYTE, nullptr);
       ch_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, console->w, console->h, 0, GL_RGBA,
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA,
                    GL_UNSIGNED_BYTE, nullptr);
     }
 
@@ -140,6 +158,7 @@ class OpenGL2Renderer::impl : public TilesetObserver {
     glUniform1i(program_.get_uniform("t_console_tile"), 3);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glFlush();
     gl_check();
   }
   auto read_pixels() const -> Image

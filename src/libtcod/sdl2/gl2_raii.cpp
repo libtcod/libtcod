@@ -200,6 +200,20 @@ void GLTexture::bind()
 {
   glBindTexture(GL_TEXTURE_2D, texture_); gl_check();
 }
-
+// Framebuffers
+/*
+GLFramebuffer::GLFramebuffer()
+{
+  glGenFramebuffers(1, &framebuffer_);
+}
+GLFramebuffer::~GLFramebuffer() noexcept
+{
+  if (framebuffer_) { glDeleteFramebuffers(1, &framebuffer_); }
+}
+void GLFramebuffer::bind()
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_); gl_check();
+}
+*/
 } // namespace sdl2
 } // namespace tcod

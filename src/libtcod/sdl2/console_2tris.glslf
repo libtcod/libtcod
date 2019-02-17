@@ -3,23 +3,23 @@ uniform vec2 v_tiles_shape; // Tileset columns/rows.
 uniform vec2 v_tiles_size; // Tileset texture size.
 uniform sampler2D t_tileset;
 
-uniform ivec2 v_console_shape; // Size of the console.
+uniform vec2 v_console_shape; // The true size of the textures.
 uniform sampler2D t_console_tile; // Packed tileset coordinates.
 uniform sampler2D t_console_fg;
 uniform sampler2D t_console_bg;
 
-varying vec2 v_coord; // Simple 0-1 quad coordinate.
+varying vec2 v_coord; // Console coordinates.
 
 void main(void)
 {
   vec2 tile_size = v_tiles_size / v_tiles_shape;
   // The sample coordinate for per-tile console variables.
-  vec2 console_pos = floor(v_coord * v_console_shape);
+  vec2 console_pos = floor(v_coord);
   console_pos += vec2(0.5, 0.5); // Offset to the center (for sampling.)
   console_pos /= v_console_shape; // Scale to fit in t_console_X textures.
 
   // Coordinates within a tile.
-  vec2 tile_interp = fract(v_coord * v_console_shape);
+  vec2 tile_interp = fract(v_coord);
 
   vec4 tile_encoded = vec4(texture2D(t_console_tile, console_pos));
 

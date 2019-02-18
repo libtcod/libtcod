@@ -52,9 +52,9 @@ constexpr int round_to_pow2(int i)
   return ++i;
 }
 
-class OpenGL2Renderer::impl {
+class TwoTranglesRenderer {
  public:
-  explicit impl(OpenGLTilesetAlias alias)
+  explicit TwoTranglesRenderer(OpenGLTilesetAlias alias)
   : alias_(alias),
     program_(
 #include "console_2tris.glslv"
@@ -111,8 +111,8 @@ class OpenGL2Renderer::impl {
     glUniform2fv(program_.get_uniform("v_tiles_size"), 1,
                  alias_.get_alias_size().data());
 
-    if (cached_size.first != console.w || cached_size.second != console.h) {
-      cached_size = {console.w, console.h};
+    if (cached_size_[0] != console.w || cached_size_[0] != console.h) {
+      cached_size_ = {console.w, console.h};
       int tex_width = round_to_pow2(console.w);
       int tex_height = round_to_pow2(console.h);
 
@@ -169,6 +169,196 @@ class OpenGL2Renderer::impl {
     glFlush();
     gl_check();
   }
+ private:
+  OpenGLTilesetAlias alias_;
+  GLProgram program_;
+  GLBuffer vertex_buffer_;
+  GLTexture ch_tex_;
+  GLTexture fg_tex_;
+  GLTexture bg_tex_;
+  std::array<int, 2> cached_size_{-1, -1};
+};
+class GridRenderer {
+ public:
+  GridRenderer(OpenGLTilesetAlias alias)
+  : alias_(alias),
+    program_(
+#include "console_grid.glslv"
+        ,
+#include "console_grid.glslf"
+    )
+  {
+    program_.use(); gl_check();
+    const std::array<float, 4*4> matrix{
+      2, 0, 0, 0,
+      0, 2, 0, 0,
+      0, 0, 1, 0,
+      -1, -1, 0, 1,
+    };
+    glUniformMatrix4fv(program_.get_uniform("mvp_matrix"),
+                       1, GL_FALSE, matrix.data()); gl_check();
+  }
+  void setup_static(const TCOD_Console& console)
+  {
+    std::vector<float> vertices;
+    std::vector<uint16_t> elements;
+    vertices.reserve(console.w * console.h * 4 * 2);
+    elements.reserve(console.w * console.h * 6);
+    auto add_vertex = [&](float x, float y) {
+      vertices.emplace_back(x / console.w);
+      vertices.emplace_back(1.0f - y / console.h);
+    };
+    for (float y = 0; y < console.h; ++y) {
+      for (float x = 0; x < console.w; ++x) {
+        for (int i : {0, 1, 2, 2, 1, 3}) {
+          elements.emplace_back((y * console.w + x) * 4 + i);
+        }
+        add_vertex(x, y);
+        add_vertex(x, y + 1);
+        add_vertex(x + 1, y);
+        add_vertex(x + 1, y + 1);
+      }
+    }
+    vertex_buffer_ = GLBuffer(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+    vertex_buffer_.bind();
+    const int a_vertex = program_.get_attribute("a_vertex");
+    glEnableVertexAttribArray(a_vertex); gl_check();
+    glVertexAttribPointer(a_vertex, 2, GL_FLOAT, GL_FALSE, 0, 0); gl_check();
+    element_buffer_ = GLBuffer(GL_ELEMENT_ARRAY_BUFFER, elements,
+                               GL_STATIC_DRAW);
+  }
+  void setup_attributes(const TCOD_Console& console)
+  {
+    attribute_buffer_ = GLBuffer(
+        GL_ARRAY_BUFFER,
+        std::vector<TileAttribute>(console.w * console.h * 4),
+        GL_STREAM_DRAW); gl_check();
+    attribute_buffer_.bind();
+    const int a_tile = program_.get_attribute("a_tile");
+    glEnableVertexAttribArray(a_tile); gl_check();
+    glVertexAttribPointer(
+        a_tile,
+        2,
+        GL_UNSIGNED_SHORT,
+        GL_FALSE,
+        sizeof(TileAttribute),
+        reinterpret_cast<void*>(offsetof(TileAttribute, tile))); gl_check();
+
+    const int a_fg = program_.get_attribute("a_fg");
+    glEnableVertexAttribArray(a_fg); gl_check();
+    glVertexAttribPointer(
+        a_fg,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(TileAttribute),
+        reinterpret_cast<void*>(offsetof(TileAttribute, fg))); gl_check();
+
+    const int a_bg = program_.get_attribute("a_bg");
+    glEnableVertexAttribArray(a_bg); gl_check();
+    glVertexAttribPointer(
+        a_bg,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        sizeof(TileAttribute),
+        reinterpret_cast<void*>(offsetof(TileAttribute, bg))); gl_check();
+  }
+  void update_attributes(const TCOD_Console& console)
+  {
+    // Setup tileset texture.
+    glActiveTexture(GL_TEXTURE0);
+    // get_alias_texture must be called before get_tile_position.
+    glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture(console));
+    glUniform1i(program_.get_uniform("t_tileset"), 0);
+
+    const std::array<float, 3 * 3> tileset_matrix{alias_.get_alias_matrix()};
+    glUniformMatrix3fv(program_.get_uniform("tileset_matrix"),
+                       1, GL_FALSE, tileset_matrix.data()); gl_check();
+
+    // Upload console attributes.
+    std::vector<TileAttribute> attributes;
+    attributes.reserve(console.w * console.h * 4);
+    for (int y = 0; y < console.h; ++y) {
+      for (int x = 0; x < console.w; ++x) {
+        int i = y * console.w + x;
+        TilePos tile_pos(alias_.get_tile_position(console.ch_array[i]));
+        ColorRGBA fg(console.fg_array[i]);
+        ColorRGBA bg(console.bg_array[i]);
+        attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y), fg, bg);
+        attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y + 1), fg, bg);
+        attributes.emplace_back(TilePos(tile_pos.x + 1, tile_pos.y), fg, bg);
+        attributes.emplace_back(TilePos(tile_pos.x + 1, tile_pos.y + 1), fg, bg);
+      }
+    }
+    attribute_buffer_.update(attributes);
+  }
+  void setup(const TCOD_Console& console)
+  {
+    if (cached_size_[0] == console.w && cached_size_[0] == console.h) {
+      return;
+    }
+    cached_size_ = {console.w, console.h};
+    setup_static(console);
+    setup_attributes(console);
+  }
+  void render(const TCOD_Console& console)
+  {
+    program_.use();
+    setup(console);
+    update_attributes(console);
+
+    glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_POLYGON_OFFSET_FILL);
+    glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    glDisable(GL_SAMPLE_COVERAGE);
+    glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_STENCIL_TEST);
+
+    element_buffer_.bind();
+    glDrawElements(
+        GL_TRIANGLES,
+        cached_size_[0] * cached_size_[1] * 6,
+        GL_UNSIGNED_SHORT,
+        0); gl_check();
+    glFlush(); gl_check();
+  }
+ private:
+  struct TilePos {
+    TilePos() = default;
+    TilePos(uint16_t x_, uint16_t y_)
+    : x(x_), y(y_)
+    {}
+    TilePos(const std::array<int, 2>& pos)
+    : TilePos(pos[0], pos[1])
+    {}
+    uint16_t x, y;
+  };
+  struct TileAttribute {
+    TileAttribute() = default;
+    TileAttribute(
+        const TilePos& tile_, const ColorRGBA& fg_, const ColorRGBA& bg_)
+    : tile(tile_), fg(fg_), bg(bg_)
+    {}
+    TilePos tile;
+    ColorRGBA fg;
+    ColorRGBA bg;
+  };
+  OpenGLTilesetAlias alias_;
+  GLProgram program_;
+  GLBuffer vertex_buffer_;
+  GLBuffer element_buffer_;
+  GLBuffer attribute_buffer_;
+  std::array<int, 2> cached_size_{-1, -1};
+};
+typedef TwoTranglesRenderer ActiveOpenGL2Renderer;
+class OpenGL2Renderer::impl : public ActiveOpenGL2Renderer {
+ public:
+  explicit impl(OpenGLTilesetAlias alias)
+  : ActiveOpenGL2Renderer(alias)
+  {}
   auto read_pixels() const -> Image
   {
     int rect[4];
@@ -183,14 +373,6 @@ class OpenGL2Renderer::impl {
     }
     return image;
   }
- private:
-  OpenGLTilesetAlias alias_;
-  GLProgram program_;
-  GLBuffer vertex_buffer_;
-  GLTexture ch_tex_;
-  GLTexture fg_tex_;
-  GLTexture bg_tex_;
-  std::pair<int, int> cached_size{-1, -1};
 };
 
 OpenGL2Renderer::OpenGL2Renderer(OpenGLTilesetAlias alias)

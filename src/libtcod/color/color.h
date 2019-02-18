@@ -28,10 +28,18 @@
 #ifndef LIBTCOD_COLOR_COLOR_H_
 #define LIBTCOD_COLOR_COLOR_H_
 #include <stdint.h>
+
+#include "../color.h"
 #ifdef __cplusplus
 namespace tcod {
 struct ColorRGBA {
-  uint8_t r, g, b, a;
+  ColorRGBA() = default;
+  ColorRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0xff)
+  : r(red), g(green), b(blue), a(alpha)
+  {}
+  explicit ColorRGBA(const TCOD_color_t& color)
+  : ColorRGBA(color.r, color.g, color.b)
+  {}
   bool operator==(const ColorRGBA& rhs) const noexcept
   {
     return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
@@ -40,6 +48,10 @@ struct ColorRGBA {
   {
     return !(*this == rhs);
   }
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+  uint8_t a;
 };
 } // namespace tcod
 #endif /* __cplusplus */

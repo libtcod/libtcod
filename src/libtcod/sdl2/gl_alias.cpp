@@ -100,6 +100,18 @@ class OpenGLTilesetAlias::impl : public TilesetObserver {
         static_cast<float>(rows() * tile_height()),
     };
   }
+  auto get_alias_matrix() const -> std::array<float, 3 * 3>
+  {
+    float x = 1.0f / columns();
+    x *= static_cast<float>(columns() * tile_width()) / texture_size_;
+    float y = 1.0f / rows();
+    y *= static_cast<float>(rows() * tile_height()) / texture_size_;
+    return {
+        x, 0, 0,
+        0, y, 0,
+        0, 0, 0,
+    };
+  }
   static pool_type pool_;
  protected:
   virtual void on_tileset_changed(
@@ -256,6 +268,10 @@ auto OpenGLTilesetAlias::get_tile_position(int codepoint) const
 -> std::array<int, 2>
 {
   return impl_->get_tile_position(codepoint);
+}
+auto OpenGLTilesetAlias::get_alias_matrix() const -> std::array<float, 3 * 3>
+{
+  return impl_->get_alias_matrix();
 }
 } // namespace sdl2
 } // namespace tcod

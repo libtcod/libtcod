@@ -55,6 +55,7 @@ class OpenGLTilesetAlias {
   auto get_alias_texture(const TCOD_Console& console) -> uint32_t;
   auto get_alias_shape() const -> std::array<float, 2>;
   auto get_alias_size() const -> std::array<float, 2>;
+  auto get_alias_matrix() const -> std::array<float, 3 * 3>;
   auto get_tile_position(int codepoint) const -> std::array<int, 2>;
  private:
   class impl;

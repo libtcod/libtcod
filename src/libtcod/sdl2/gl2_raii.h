@@ -113,6 +113,7 @@ class GLBuffer {
   GLBuffer& operator=(GLBuffer&& rhs) noexcept
   {
     std::swap(buffer_, rhs.buffer_);
+    std::swap(target_, rhs.target_);
     return *this;
   }
   ~GLBuffer() noexcept;
@@ -125,6 +126,12 @@ class GLBuffer {
   void allocate(int target, const T& data, int usage)
   {
     allocate(target, sizeof(data[0]) * data.size(), data.data(), usage);
+  }
+  void update(size_t size, const void* data);
+  template <typename T>
+  void update(const T& data)
+  {
+    update(sizeof(data[0]) * data.size(), data.data());
   }
   void bind();
  private:

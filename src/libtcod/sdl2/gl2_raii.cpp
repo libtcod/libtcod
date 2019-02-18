@@ -184,6 +184,11 @@ void GLBuffer::allocate(int target, size_t size, const void* data, int usage)
   bind();
   glBufferData(target_, size, data, usage); gl_check();
 }
+void GLBuffer::update(size_t size, const void* data)
+{
+  bind();
+  glBufferSubData(target_, 0, size, data); gl_check();
+}
 void GLBuffer::bind()
 {
   glBindBuffer(target_, buffer_); gl_check();

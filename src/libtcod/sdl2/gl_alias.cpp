@@ -236,7 +236,7 @@ typename OpenGLTilesetAlias::impl::pool_type OpenGLTilesetAlias::impl::pool_;
 OpenGLTilesetAlias::OpenGLTilesetAlias(std::shared_ptr<Tileset> tileset)
 : impl_(OpenGLTilesetAlias::impl::pool_.get(tileset.get(), tileset))
 {}
-const std::shared_ptr<Tileset>& OpenGLTilesetAlias::get_tileset()
+const std::shared_ptr<Tileset> OpenGLTilesetAlias::get_tileset() const
 {
   return impl_->get_tileset();
 }

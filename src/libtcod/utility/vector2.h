@@ -153,7 +153,16 @@ class Vector2 {
    */
   void range_check(size_type x, size_type y) const {
     if (!in_bounds(x, y)) {
-      throw std::out_of_range("Out of bounds lookup on Vector2.");
+      throw std::out_of_range(
+          std::string("Out of bounds lookup {")
+          + std::to_string(x)
+          + ", "
+          + std::to_string(y)
+          + "} on Vector2 of size {"
+          + std::to_string(width_)
+          + ", "
+          + std::to_string(height_)
+          + "}.");
     }
   }
   /** The width of this canvas. */

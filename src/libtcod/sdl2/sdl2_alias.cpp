@@ -275,7 +275,7 @@ SDL2TilesetAlias::SDL2TilesetAlias(struct SDL_Renderer* renderer,
 : impl_(sdl2_alias_pool.get_instance({tileset.get(), renderer},
                                      {tileset, renderer}))
 {}
-std::shared_ptr<Tileset>& SDL2TilesetAlias::get_tileset()
+const std::shared_ptr<Tileset> SDL2TilesetAlias::get_tileset() const
 {
   return impl_->get_tileset();
 }

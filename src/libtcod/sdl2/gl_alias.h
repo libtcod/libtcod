@@ -50,7 +50,7 @@ class OpenGLTilesetAlias {
   explicit OpenGLTilesetAlias(std::shared_ptr<Tileset> tileset);
   ~OpenGLTilesetAlias() = default;
 
-  const std::shared_ptr<Tileset>& get_tileset();
+  const std::shared_ptr<Tileset> get_tileset() const;
 
   auto get_alias_texture(const TCOD_Console& console) -> uint32_t;
   auto get_alias_shape() const -> std::array<float, 2>;

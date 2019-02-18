@@ -171,7 +171,17 @@ class OpenGL2Renderer::impl {
   }
   auto read_pixels() const -> Image
   {
-    return {};
+    int rect[4];
+    glGetIntegerv(GL_VIEWPORT, rect); gl_check();
+    Image image(rect[2], rect[3]);
+    glReadPixels(0, 0, image.width(), image.height(),
+                 GL_RGBA, GL_UNSIGNED_BYTE, image.data()); gl_check();
+    for (int y = 0; y < image.height() / 2; ++y) {
+      for (int x = 0; x < image.width(); ++x) {
+        std::swap(image.at(x, y), image.at(x, image.height() - 1 - y));
+      }
+    }
+    return image;
   }
  private:
   OpenGLTilesetAlias alias_;

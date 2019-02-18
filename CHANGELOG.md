@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `SDL2` and `OPENGL2` now support screenshots.
 
 ## [1.10.6] - 2019-02-15
 ### Changed

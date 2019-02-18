@@ -51,7 +51,7 @@ class SDL2TilesetAlias {
   SDL2TilesetAlias(struct SDL_Renderer* renderer,
                    const std::shared_ptr<Tileset>& tileset);
 
-  std::shared_ptr<Tileset>& get_tileset();
+  const std::shared_ptr<Tileset> get_tileset() const;
   /**
    *  Return a texture alias containing all the glyphs required by `console`.
    *

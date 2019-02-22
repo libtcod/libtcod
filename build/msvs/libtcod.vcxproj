@@ -243,6 +243,7 @@
     <ClCompile Include="..\..\src\libtcod\tileset\tile.cpp" />
     <ClCompile Include="..\..\src\libtcod\tileset\tileset.cpp" />
     <ClCompile Include="..\..\src\libtcod\tileset\tilesheet.cpp" />
+    <ClCompile Include="..\..\src\libtcod\tileset\truetype.cpp" />
     <ClCompile Include="..\..\src\libtcod\tree_c.c" />
     <ClCompile Include="..\..\src\libtcod\txtfield.cpp" />
     <ClCompile Include="..\..\src\libtcod\txtfield_c.c" />
@@ -351,6 +352,7 @@
     <ClInclude Include="..\..\src\libtcod\tileset\tile.h" />
     <ClInclude Include="..\..\src\libtcod\tileset\tileset.h" />
     <ClInclude Include="..\..\src\libtcod\tileset\tilesheet.h" />
+    <ClInclude Include="..\..\src\libtcod\tileset\truetype.h" />
     <ClInclude Include="..\..\src\libtcod\tree.h" />
     <ClInclude Include="..\..\src\libtcod\tree.hpp" />
     <ClInclude Include="..\..\src\libtcod\txtfield.h" />

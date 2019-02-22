@@ -9,6 +9,8 @@ Products :
 - stb_sprintf, originally by Jeff Roberts / RAD Game Tools, 2015/10/20
    http://github.com/nothings/stb
    (modified to compile for C89)
+- stb_truetype, authored from 2009-2016 by Sean Barrett / RAD Game Tools
+   http://github.com/nothings/stb
 - utf8proc
    https://github.com/JuliaStrings/utf8proc
    (modified to be statically linkable, and to compile for C89)

@@ -344,6 +344,9 @@
     <ClCompile Include="..\..\src\libtcod\pathfinding\generic.cpp">
       <Filter>Source Files\pathfinding</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\tileset\truetype.cpp">
+      <Filter>Source Files\tileset</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -618,6 +621,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\pathfinding\generic.h">
       <Filter>Source Files\pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\tileset\truetype.h">
+      <Filter>Source Files\tileset</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

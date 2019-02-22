@@ -80,6 +80,7 @@
 #include "libtcod/tileset/tile.cpp"
 #include "libtcod/tileset/tileset.cpp"
 #include "libtcod/tileset/tilesheet.cpp"
+#include "libtcod/tileset/truetype.cpp"
 
 #include "libtcod/gui/button.cpp"
 #include "libtcod/gui/container.cpp"

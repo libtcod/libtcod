@@ -1458,7 +1458,7 @@ int main( int argc, char *argv[] ) {
 	int fullscreen_height=0;
 	int font_flags=TCOD_FONT_TYPE_GREYSCALE|TCOD_FONT_LAYOUT_TCOD;
 	int font_new_flags=0;
-	TCOD_renderer_t renderer=TCOD_RENDERER_SDL;
+	TCOD_renderer_t renderer=TCOD_RENDERER_SDL2;
 	bool fullscreen=false;
 	bool credits_end=false;
 	int cur_renderer=0;

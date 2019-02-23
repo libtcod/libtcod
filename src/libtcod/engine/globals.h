@@ -58,8 +58,15 @@ void set_display(std::shared_ptr<Display> display);
  *  Return a shared pointer to the active display.  Might be nullptr.
  */
 std::shared_ptr<Display> get_display();
-
+/**
+ *  Replace the active tileset with a new one, can be nullptr.
+ *
+ *  If there is an active display then its tileset will be set to this one.
+ */
 void set_tileset(std::shared_ptr<Tileset> tileset);
+/**
+ *  Return the current active tileset.  This might be nullptr.
+ */
 auto get_tileset() -> std::shared_ptr<Tileset>;
 void set_tilesheet(std::shared_ptr<Tilesheet> sheet);
 auto get_tilesheet() -> std::shared_ptr<Tilesheet>;

@@ -55,6 +55,9 @@ std::shared_ptr<Display> get_display()
 void set_tileset(std::shared_ptr<Tileset> tileset)
 {
   active_tileset = tileset;
+  if (tileset && active_display) {
+    active_display->set_tileset(tileset);
+  }
 }
 auto get_tileset() -> std::shared_ptr<Tileset>
 {

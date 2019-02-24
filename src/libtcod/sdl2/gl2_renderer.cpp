@@ -42,7 +42,7 @@ namespace sdl2 {
 /**
  *  Return a number rounded up to a power of 2.
  */
-constexpr int round_to_pow2(int i)
+int round_to_pow2(int i)
 {
   if (i <= 0) { i = 1; }
   i |= i >> 1;

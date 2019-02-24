@@ -29,6 +29,7 @@
 #define TCOD_CONSOLE_PRINTING_H_
 
 #ifdef __cplusplus
+#include <array>
 #include <cstdbool>
 #include <string>
 #endif
@@ -109,6 +110,20 @@ int print_rect(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
+/**
+ *  Return the total number lines that a function with similar arguments would
+ *  print.
+ */
+int get_height_rect(
+    std::array<int, 2> console_size,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str);
+int get_height_rect(
+    int width,
+    const std::string& str);
 int get_height_rect(
     struct TCOD_Console *con,
     int x,

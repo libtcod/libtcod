@@ -38,6 +38,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -1176,6 +1177,27 @@ int print_rect(
                          flag, alignment, true, false);
 }
 int get_height_rect(
+    std::array<int, 2> console_size,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str)
+{
+  struct TCOD_Console console{};
+  console.w = console_size[0];
+  console.h = console_size[1];
+  return print_internal_(console, x, y, width, height, str, nullptr, nullptr,
+                         TCOD_BKGND_NONE, TCOD_LEFT, true, true);
+}
+int get_height_rect(
+    int width,
+    const std::string& str)
+{
+  auto MAX_INT = std::numeric_limits<int>::max();
+  return get_height_rect({width, MAX_INT}, 0, 0, width, MAX_INT, str);
+}
+int get_height_rect(
     struct TCOD_Console *con,
     int x,
     int y,
@@ -1185,8 +1207,7 @@ int get_height_rect(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-  return print_internal_(*con, x, y, width, height, str, nullptr, nullptr,
-                         TCOD_BKGND_NONE, TCOD_LEFT, true, true);
+  return get_height_rect({con->w, con->h}, x, y, width, height, str);
 }
 void print_frame(
     struct TCOD_Console *con,

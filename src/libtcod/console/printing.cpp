@@ -977,60 +977,6 @@ class FormattedUnicodeIterator: public UnicodeIterator {
   TCOD_color_t temp_bg_;
 };
 /**
- *  Outputs the bounding box used for printing.
- *
- *  If `max_width` or `max_height` are zero, they will be set automatically.
- */
-static int print_bounds_(
-    const TCOD_Console& con,
-    TCOD_alignment_t align,
-    int x,
-    int y,
-    int& max_width,
-    int& max_height,
-    int& left,
-    int& right,
-    int& top,
-    int& bottom)
-{
-  // Set default width/height if either is zero.
-  if (max_height == 0) { max_height = con.h - y; }
-  if (max_width == 0) {
-    switch(align) {
-      default: case TCOD_LEFT:
-        max_width = con.w - x;
-        break;
-      case TCOD_RIGHT:
-        max_width = x + 1;
-        break;
-      case TCOD_CENTER:
-        max_width = con.w;
-        break;
-    }
-  }
-  // Return printing boundary.
-  top = y;
-  bottom = std::min(con.h - 1, y + max_height - 1);
-  switch (align) {
-    default:
-    case TCOD_LEFT:
-      left = x;
-      right = x + max_width - 1;
-      break;
-    case TCOD_RIGHT:
-      left = x - max_width + 1;
-      right = x;
-      break;
-    case TCOD_CENTER:
-      left = x - max_width / 2;
-      right = x + max_width / 2;
-      break;
-  }
-  left = std::max(0, left);
-  right = std::min(right, con.w - 1);
-  return 0;
-}
-/**
  *  Get the next line-break or null terminator, or break the string before
  *  `max_width`.
  *
@@ -1097,8 +1043,8 @@ static int print_internal_(
     TCOD_Console& con,
     int x,
     int y,
-    int max_width,
-    int max_height,
+    int width,
+    int height,
     const std::string& string,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
@@ -1107,13 +1053,15 @@ static int print_internal_(
     int can_split,
     int count_only)
 {
-  int left, right, top, bottom; /* Print bounding box. */
-  int cursor_x = 0;
   FormattedUnicodeIterator it(string, fg, bg);
   UnicodeIterator end = it.end();
-  print_bounds_(con, align, x, y, max_width, max_height,
-                left, right, top, bottom);
-  while (it != end && top <= bottom) {
+  // Print bounding box.
+  int left = x;
+  int right = x + width;
+  int top = y;
+  int bottom = y + height;
+  if (!can_split) { bottom = con.h; }
+  while (it != end && top < bottom) {
     // Check for newlines.
     if(it.is_newline()) {
       if(it.get_property()->category == UTF8PROC_CATEGORY_ZP) {
@@ -1129,23 +1077,24 @@ static int print_internal_(
     int line_width;
     int split_status;
     std::tie(line_break, line_width, split_status) =
-        next_split_(it, end, max_width, can_split);
+        next_split_(it, end, width, can_split);
     // Set cursor_x from alignment.
+    int cursor_x = 0;
     switch (align) {
       default:
       case TCOD_LEFT:
-        cursor_x = x;
+        cursor_x = left;
         break;
       case TCOD_RIGHT:
-        cursor_x = x - line_width;
+        cursor_x = right - line_width;
         break;
       case TCOD_CENTER:
-        cursor_x = x - line_width / 2;
+        cursor_x = left + (width - line_width) / 2;
         break;
     }
     for (; it < line_break; ++it) {
       // Actually render this line of characters.
-      if (!count_only && left <= cursor_x && cursor_x <= right) {
+      if (!count_only && left <= cursor_x && cursor_x < right) {
         put(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
       }
       cursor_x += it.get_property()->charwidth;
@@ -1161,6 +1110,34 @@ static int print_internal_(
   }
   return std::min(top, bottom) - y + 1;
 }
+/**
+ *  Normalize rectangle values using old libtcod rules where alignment can move
+ *  the rectangle position.
+ */
+static void normalize_old_rect_(
+    TCOD_Console& console,
+    TCOD_alignment_t alignment,
+    int& x,
+    int& y,
+    int& width,
+    int& height)
+{
+  // Set default width/height if either is zero.
+  if (width == 0) { width = console.w; }
+  if (height == 0) { height = console.h - y; }
+  switch(alignment) {
+    default:
+    case TCOD_LEFT:
+      break;
+    case TCOD_RIGHT:
+      x -= width;
+      break;
+    case TCOD_CENTER:
+      x -= width / 2;
+      break;
+  }
+  return;
+}
 void print(
     TCOD_Console* con,
     int x,
@@ -1173,7 +1150,12 @@ void print(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  print_internal_(*con, x, y, 0, 0, str, fg, bg, flag, alignment,
+  switch (alignment) {
+    default: break;
+    case TCOD_RIGHT: x -= con->w; break;
+    case TCOD_CENTER: x -= con->w / 2; break;
+  }
+  print_internal_(*con, x, y, con->w, con->h, str, fg, bg, flag, alignment,
                   false, false);
 }
 int print_rect(
@@ -1241,7 +1223,7 @@ void print_frame(
               0x20, &con->fore, &con->back, flag);
   }
   if (!title.empty()) {
-    print_rect(con, x + width / 2, y, width, 1,
+    print_rect(con, x, y, width, 1,
                " " + title + " ", bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
   }
 }
@@ -1299,6 +1281,7 @@ int TCOD_console_printf_rect_ex(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
+  tcod::console::normalize_old_rect_(*con, alignment, x, y, w, h);
   va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::print_rect(
@@ -1318,6 +1301,7 @@ int TCOD_console_printf_rect(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
+  tcod::console::normalize_old_rect_(*con, con->alignment, x, y, w, h);
   va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::print_rect(
@@ -1337,6 +1321,7 @@ int TCOD_console_get_height_rect_fmt(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
+  tcod::console::normalize_old_rect_(*con, TCOD_LEFT, x, y, w, h);
   va_list ap;
   va_start(ap, fmt);
   int ret = tcod::console::get_height_rect(con, x, y, w, h,

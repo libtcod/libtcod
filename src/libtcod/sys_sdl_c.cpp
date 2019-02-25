@@ -1821,8 +1821,14 @@ float TCOD_sys_get_last_frame_length(void) {
 }
 
 void TCOD_sys_get_char_size(int *w, int *h) {
-  *w = TCOD_ctx.font_width;
-  *h = TCOD_ctx.font_height;
+  auto tileset = tcod::engine::get_tileset();
+  if (tileset) {
+    *w = tileset->get_tile_width();
+    *h = tileset->get_tile_height();
+  } else {
+    *w = TCOD_ctx.font_width;
+    *h = TCOD_ctx.font_height;
+  }
 }
 
 void TCOD_sys_get_current_resolution(int *w, int *h) {

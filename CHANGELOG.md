@@ -9,6 +9,7 @@ since `1.7.0`.
 ## [Unreleased]
 ### Fixed
 - `SDL2` and `OPENGL2` now support screenshots.
+- `TCOD_sys_get_char_size` fixed on the newer renderers.
 
 ## [1.10.6] - 2019-02-15
 ### Changed

@@ -60,8 +60,8 @@ TCOD_internal_context_t TCOD_ctx={
 	/* font type and layout */
 	false,false,false,
   0,
-	/* character size in font */
-	8,8,
+  /* character size in font */
+  0, 0,
 	"terminal.png","",
 	NULL,NULL,NULL,0,false,0,0,0,0,0,0,
 #ifndef TCOD_BARE

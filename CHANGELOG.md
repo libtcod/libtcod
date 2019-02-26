@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- GCC releases now include debug symbols.
 ### Fixed
 - `SDL2` and `OPENGL2` now support screenshots.
 - `TCOD_sys_get_char_size` fixed on the newer renderers.

@@ -25,7 +25,7 @@ parser.add_argument(
 parser.add_argument(
     '-n', '--dry-run',
     action='store_true',
-    help="Don't modify files or push to git.",
+    help="Don't modify files.",
 )
 
 parser.add_argument(
@@ -106,9 +106,6 @@ def main():
         subprocess.check_call(
             ['git', 'tag', args.tag, '-a', '-m',
              '%s\n\n%s' % (args.tag, changes)] + edit,
-        )
-        subprocess.check_call(
-            ['git', 'push', '--follow-tags'],
         )
 
 if __name__ == '__main__':

@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.8] - 2019-03-01
 ### Deprecated
 - Updated libtcodpy deprecation warning with instructions on how to update to
   python-tcod.

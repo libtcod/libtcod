@@ -36,9 +36,24 @@ import warnings
 from ctypes import *
 
 warnings.warn(
-    ("This implementation of libtcodpy is no longer maintained.\n"
-     "python-tcod can be used as a drop-in replacement."),
-    DeprecationWarning
+    """
+This implementation of libtcodpy is no longer maintained.
+python-tcod should be used as a drop-in replacement.
+
+To switch from libtcodpy to python-tcod:
+* Update your current code base to Python 3.
+* If on Linux, run: "sudo apt install gcc python3-dev libsdl2-dev libffi-dev"
+* Install python-tcod using pip: "python3 -m pip install tcod"
+* Delete the "libtcodpy/" directory and all related ".dll"/".so" files.
+* Make sure that the python installation you run is the one you've installed
+  python-tcod on.
+
+No additional changes are required, you can continue with a tutorial or with
+documentation designed for libtcodpy.
+
+Binary distributions can be made using PyInstaller.""",
+    DeprecationWarning,
+    stacklevel=2,
 )
 
 # We do not have a fully unicode API on libtcod, so all unicode strings have to

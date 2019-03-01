@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.10.7] - 2019-03-01
 ### Changed
 - GCC releases now include debug symbols.
 ### Fixed

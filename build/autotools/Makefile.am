@@ -47,7 +47,7 @@ dist_noinst_DATA = \
 	../../build.bat \
 	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \
-	../../LIBTCOD-LICENSE.txt \
+	../../LICENSE.txt \
 	../../README.md \
 	../../libtcod.cfg
 

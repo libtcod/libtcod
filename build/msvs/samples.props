@@ -16,4 +16,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
+
+  <ItemGroup>
+    <SourceFiles Include="$(SolutionDir)libtcod\$(Platform)\$(Configuration)\libtcod.dll;"/>
+    <SourceFiles Include="$(SolutionDir)libtcod\$(Platform)\$(Configuration)\libtcod.pdb;"/>
+    <SourceFiles Include="$(SolutionDir)libtcod\$(Platform)\$(Configuration)\SDL2.dll;"/>
+  </ItemGroup>
+
+  <Target Name="CopyFilesToOutput" AfterTargets="AfterBuild">
+    <Copy
+    SourceFiles="@(SourceFiles)"
+    DestinationFolder="$(OutDir)\%(RecursiveDir)"
+    SkipUnchangedFiles="true"
+    />
+  </Target>
 </Project>

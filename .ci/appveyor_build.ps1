@@ -24,9 +24,9 @@ if ($env:APPVEYOR_REPO_TAG_NAME) {
     $env:VERSION=$env:APPVEYOR_REPO_TAG_NAME
 }
 if ($env:SCONSOPTS) {
-    .ci\run-scons.bat
+    & .ci\run-scons.bat
 }
 if ($env:MSBUILD) {
-    nuget restore build\msvs\libtcod.sln
-    msbuild /nologo build\msvs\libtcod.sln /maxcpucount:2 /p:Configuration^=Debug /p:Platform^=$env:MSBUILD
+    $ErrorActionPreference = "Stop"
+    & .ci\run-msbuild.bat
 }

@@ -37,3 +37,6 @@ indent_style = tab
 [*.sh]
 indent_style = space
 indent_size = 4
+
+[*.props]
+insert_final_newline = false

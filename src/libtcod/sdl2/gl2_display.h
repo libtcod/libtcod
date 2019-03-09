@@ -41,7 +41,7 @@ class OpenGL2Display: public WindowedDisplay {
  public:
   explicit OpenGL2Display(
       std::shared_ptr<Tileset> tileset,
-      std::pair<int, int> window_size,
+      std::array<int, 2> window_size,
       int window_flags,
       const std::string& title);
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;

@@ -49,7 +49,7 @@ static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
   return new_context;
 }
 OpenGL2Display::OpenGL2Display(std::shared_ptr<Tileset> tileset,
-                         std::pair<int, int> window_size, int window_flags,
+                         std::array<int, 2> window_size, int window_flags,
                          const std::string& title)
 : WindowedDisplay(window_size, window_flags | SDL_WINDOW_OPENGL, title),
   glcontext_(new_gl_context(*this)),

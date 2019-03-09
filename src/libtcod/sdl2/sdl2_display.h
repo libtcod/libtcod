@@ -33,9 +33,9 @@
 #define LIBTCOD_SDL2_SDL2_DISPLAY_H_
 
 #ifdef __cplusplus
+#include <array>
 #include <memory>
 #include <string>
-#include <utility>
 #endif // __cplusplus
 
 #include "sdl2_renderer.h"
@@ -52,7 +52,8 @@ using tcod::image::Image;
  */
 class WindowedDisplay: public engine::Display {
  public:
-  WindowedDisplay(std::pair<int, int> window_size, int window_flags,
+  explicit WindowedDisplay(std::shared_ptr<struct SDL_Window> window);
+  WindowedDisplay(const std::array<int, 2>& window_size, int window_flags,
                   const std::string& title);
   virtual void set_title(const std::string& title) override;
   virtual std::string get_title() override;
@@ -61,12 +62,12 @@ class WindowedDisplay: public engine::Display {
   /**
    *  Return the tile coordinate of the last console given to present.
    */
-  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
-      -> std::pair<double, double> override
+  virtual auto pixel_to_tile(const std::array<double, 2>& xy)
+      -> std::array<double, 2> override
   {
     return {
-        xy.first * pixel_to_tile_scale.first,
-        xy.second * pixel_to_tile_scale.second,
+        std::get<0>(xy) * std::get<0>(pixel_to_tile_scale),
+        std::get<1>(xy) * std::get<1>(pixel_to_tile_scale),
     };
   }
   virtual auto get_sdl_window() -> struct SDL_Window* override
@@ -83,7 +84,7 @@ class WindowedDisplay: public engine::Display {
   /**
    *  Scale used to convert from pixel coordinate to tile coordinate.
    */
-  std::pair<double, double> pixel_to_tile_scale = {1.0, 1.0};
+  std::array<double, 2> pixel_to_tile_scale = {1.0, 1.0};
 };
 /**
  *  Display interface using a basic SDL2 renderer.
@@ -92,7 +93,7 @@ class SDL2Display: public WindowedDisplay {
  public:
   SDL2Display(
       std::shared_ptr<Tileset> tileset,
-      std::pair<int, int> window_size,
+      const std::array<int, 2>& window_size,
       int window_flags,
       const std::string& title);
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;

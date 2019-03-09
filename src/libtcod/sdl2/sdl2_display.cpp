@@ -41,11 +41,20 @@
 
 namespace tcod {
 namespace sdl2 {
-WindowedDisplay::WindowedDisplay(std::pair<int, int> window_size,
-                                 int window_flags, const std::string& title)
+/**
+ *  Initialize a return a new SDL2 window.
+ *
+ *  If the SDL_WINDOW_OPENGL flag is set then it will create an OpenGL 2.0
+ *  context.
+ */
+static auto init_sdl2_window(
+    const std::array<int, 2>& window_size,
+    int window_flags,
+    const std::string& title)
+-> std::shared_ptr<struct SDL_Window>
 {
-  int width = window_size.first;
-  int height = window_size.second;
+  int width = window_size.at(0);
+  int height = window_size.at(1);
   if (width < 0 || height < 0) {
     throw std::invalid_argument("width and height must be non-negative.");
   }
@@ -55,13 +64,21 @@ WindowedDisplay::WindowedDisplay(std::pair<int, int> window_size,
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-  window_ = std::shared_ptr<SDL_Window>(
+  auto window = std::shared_ptr<SDL_Window>(
       SDL_CreateWindow(
           title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
           width, height, window_flags),
-      [](SDL_Window* window){ SDL_DestroyWindow(window); });
-  if (!window_) { throw std::runtime_error(SDL_GetError()); }
+      [](SDL_Window* window_ptr){ SDL_DestroyWindow(window_ptr); });
+  if (!window) { throw std::runtime_error(SDL_GetError()); }
+  return window;
 }
+WindowedDisplay::WindowedDisplay(std::shared_ptr<struct SDL_Window> window)
+: window_(window)
+{}
+WindowedDisplay::WindowedDisplay(const std::array<int, 2>& window_size,
+                                 int window_flags, const std::string& title)
+: WindowedDisplay(init_sdl2_window(window_size, window_flags, title))
+{}
 void WindowedDisplay::set_title(const std::string& title)
 {
   if (!window_) { throw std::logic_error("Unresolved class invariant."); }
@@ -97,9 +114,11 @@ void WindowedDisplay::update_pixel_to_tile_scale(const TCOD_Console* console)
   };
 }
 
-SDL2Display::SDL2Display(std::shared_ptr<Tileset> tileset,
-                         std::pair<int, int> window_size, int window_flags,
-                         const std::string& title)
+SDL2Display::SDL2Display(
+    std::shared_ptr<Tileset> tileset,
+    const std::array<int, 2>& window_size,
+    int window_flags,
+    const std::string& title)
 : WindowedDisplay(window_size, window_flags, title)
 {
   // Configure SDL2 renderer.

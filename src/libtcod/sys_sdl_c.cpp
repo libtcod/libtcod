@@ -1252,9 +1252,9 @@ void TCOD_sys_pixel_to_tile(double* x, double* y)
   if (!x || !y) { return; }
   auto display = tcod::engine::get_display();
   if (display) {
-    std::pair<double, double> xy = display->pixel_to_tile({*x, *y});
-    *x = xy.first;
-    *y = xy.second;
+    std::array<double, 2> xy = display->pixel_to_tile({*x, *y});
+    *x = std::get<0>(xy);
+    *y = std::get<1>(xy);
   } else {
     *x = (*x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
     *y = (*y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
@@ -1289,13 +1289,18 @@ static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
   }
   auto display = tcod::engine::get_display();
   if (display) {
-    std::pair<int, int> cell_xy = display->pixel_to_tile({mouse.x, mouse.y});
-    std::pair<int, int> prev_cell_xy = display->pixel_to_tile(
-        {mouse.x - mouse.dx, mouse.y - mouse.dy});
-    mouse.cx = cell_xy.first;
-    mouse.cy = cell_xy.second;
-    mouse.dcx = cell_xy.first - prev_cell_xy.first;
-    mouse.dcy = cell_xy.second - prev_cell_xy.second;
+    auto to_tile = [&](double x, double y) -> std::array<int, 2> {
+      std::array<double, 2> result(display->pixel_to_tile({x, y}));
+      return {static_cast<int>(result.at(0)), static_cast<int>(result.at(1))};
+    };
+    std::array<int, 2> cell_xy(to_tile(mouse.x, mouse.y));
+    std::array<int, 2> prev_cell_xy(
+        to_tile(mouse.x - mouse.dx, mouse.y - mouse.dy)
+    );
+    mouse.cx = cell_xy.at(0);
+    mouse.cy = cell_xy.at(1);
+    mouse.dcx = cell_xy.at(0) - prev_cell_xy.at(0);
+    mouse.dcy = cell_xy.at(1) - prev_cell_xy.at(1);
   } else {
     mouse.x -= TCOD_ctx.fullscreen_offsetx;
     mouse.y -= TCOD_ctx.fullscreen_offsety;

@@ -33,8 +33,8 @@
 #define LIBTCOD_ENGINE_DISPLAY_H_
 
 #ifdef __cplusplus
+#include <array>
 #include <string>
-#include <utility>
 #endif // __cplusplus
 
 #include "../color/canvas.h"
@@ -67,8 +67,8 @@ class Display {
    */
   virtual int get_fullscreen() = 0;
   virtual void present(const TCOD_Console*) = 0;
-  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
-      -> std::pair<double, double> = 0;
+  virtual auto pixel_to_tile(const std::array<double, 2>& xy)
+      -> std::array<double, 2> = 0;
 
   virtual auto read_pixels() const -> Image = 0;
   /**
@@ -101,8 +101,8 @@ class TerminalDisplay: public Display {
   {
     return -1;
   }
-  virtual auto pixel_to_tile(const std::pair<double, double>& xy)
-      -> std::pair<double, double> override
+  virtual auto pixel_to_tile(const std::array<double, 2>& xy)
+      -> std::array<double, 2> override
   {
     return xy;
   }

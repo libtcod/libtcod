@@ -54,8 +54,8 @@ static void init_display(int w, int h, const std::string& title,
   if (!tileset) {
     TCOD_fatal("A custom font is required to use the SDL2/OPENGL2 renderers.");
   }
-  auto display_size = std::make_pair(tileset->get_tile_width() * w,
-                                     tileset->get_tile_height() * h);
+  std::array<int, 2> display_size{tileset->get_tile_width() * w,
+                                  tileset->get_tile_height() * h};
   int display_flags = (SDL_WINDOW_RESIZABLE |
                        (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
   tcod::engine::set_display(

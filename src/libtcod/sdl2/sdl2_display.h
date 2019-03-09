@@ -58,7 +58,6 @@ class WindowedDisplay: public engine::Display {
   virtual std::string get_title() override;
   virtual void set_fullscreen(bool fullscreen) override;
   virtual int get_fullscreen() override;
-  SDL_Window* get_window() { return window_.get(); }
   /**
    *  Return the tile coordinate of the last console given to present.
    */
@@ -69,6 +68,10 @@ class WindowedDisplay: public engine::Display {
         xy.first * pixel_to_tile_scale.first,
         xy.second * pixel_to_tile_scale.second,
     };
+  }
+  virtual auto get_sdl_window() -> struct SDL_Window* override
+  {
+    return window_.get();
   }
  protected:
   /**

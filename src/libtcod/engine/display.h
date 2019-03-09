@@ -41,6 +41,7 @@
 #include "../tileset/tileset.h"
 #include "../console_types.h"
 
+struct SDL_Window;
 #ifdef __cplusplus
 namespace tcod {
 namespace engine {
@@ -55,7 +56,7 @@ class Display {
   /**
    *  Set the fullscreen status if the display supports it.
    *
-   *  When it is suppered this can be used to switch between a window and
+   *  If it is supported this can be used to switch between a window and
    *  borderless fullscreen window.
    */
   virtual void set_fullscreen(bool fullscreen) = 0;
@@ -70,6 +71,10 @@ class Display {
       -> std::pair<double, double> = 0;
 
   virtual auto read_pixels() const -> Image = 0;
+  /**
+   *  Return the pointer to an SDL2 window, if this display uses SDL.
+   */
+  virtual auto get_sdl_window() -> struct SDL_Window* = 0;
 };
 /**
  *  Incomplete interface for subclasses which don't need an SDL2 window.
@@ -100,6 +105,10 @@ class TerminalDisplay: public Display {
       -> std::pair<double, double> override
   {
     return xy;
+  }
+  virtual auto get_sdl_window() -> struct SDL_Window* override
+  {
+    return nullptr;
   }
 };
 } // namespace sdl2

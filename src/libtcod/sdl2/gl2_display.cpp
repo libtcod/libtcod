@@ -39,7 +39,7 @@ namespace sdl2 {
 static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
 {
   std::shared_ptr<void> new_context(
-      SDL_GL_CreateContext(self.get_window()),
+      SDL_GL_CreateContext(self.get_sdl_window()),
       [](SDL_GLContext context){ SDL_GL_DeleteContext(context); });
   if (!new_context) { throw std::runtime_error(SDL_GetError()); }
   if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
@@ -65,11 +65,11 @@ void OpenGL2Display::set_tileset(std::shared_ptr<Tileset> tileset)
 void OpenGL2Display::present(const TCOD_Console* console)
 {
   int window_size[2];
-  SDL_GL_GetDrawableSize(get_window(), &window_size[0], &window_size[1]);
+  SDL_GL_GetDrawableSize(get_sdl_window(), &window_size[0], &window_size[1]);
   glViewport(0,0,window_size[0],window_size[1]);
 
   tcod_renderer_.render(console);
-  SDL_GL_SwapWindow(get_window());
+  SDL_GL_SwapWindow(get_sdl_window());
 
   update_pixel_to_tile_scale(console);
 }

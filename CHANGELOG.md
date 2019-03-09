@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `TCOD_console_has_mouse_focus` and `TCOD_console_is_active` are now more
+  reliable with the newer renderers.
 
 ## [1.10.8] - 2019-03-01
 ### Deprecated

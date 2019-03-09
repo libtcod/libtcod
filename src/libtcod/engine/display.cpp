@@ -135,10 +135,24 @@ bool TCOD_console_is_fullscreen(void)
 }
 bool TCOD_console_has_mouse_focus(void)
 {
+  auto display = tcod::engine::get_display();
+  if (display) {
+    auto window = display->get_sdl_window();
+    if (window) {
+      return (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
+    }
+  }
   return TCOD_ctx.app_has_mouse_focus;
 }
 bool TCOD_console_is_active(void)
 {
+  auto display = tcod::engine::get_display();
+  if (display) {
+    auto window = display->get_sdl_window();
+    if (window) {
+      return (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
+    }
+  }
   return TCOD_ctx.app_is_active;
 }
 bool TCOD_console_is_window_closed(void) {

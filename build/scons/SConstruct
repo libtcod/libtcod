@@ -181,7 +181,7 @@ else:
     default_tag = '$VERSION-$ARCH-$TOOLSET'
     windows_toolset = env_vars['TOOLSET']
 
-if env_vars['MODE'].upper() != 'RELEASE':
+if env_vars['MODE'].upper() != 'DEBUG_RELEASE':
     default_tag += '-$MODE'
 
 if sys.platform == 'darwin':

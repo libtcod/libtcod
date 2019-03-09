@@ -619,5 +619,9 @@ inline bool TCOD_console_is_index_valid_(const TCOD_Console* console,
 {
   return console && 0 <= x && x < console->w && 0 <= y && y < console->h;
 }
+TCOD_event_t TCOD_sys_handle_mouse_event(
+    const union SDL_Event* ev, TCOD_mouse_t* mouse);
+TCOD_event_t TCOD_sys_handle_key_event(
+    const union SDL_Event* ev, TCOD_key_t* key);
 #endif // __cplusplus
 #endif // TCODLIB_INT_H_

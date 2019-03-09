@@ -1317,8 +1317,9 @@ static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
  *
  *  Returns 0 if the event wasn't mouse related.
  */
-static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
-                                                TCOD_mouse_t *mouse) {
+TCOD_event_t TCOD_sys_handle_mouse_event(
+    const SDL_Event* ev, TCOD_mouse_t* mouse)
+{
   if (!ev || !mouse) { return TCOD_EVENT_NONE; }
   sdl_parse_mouse_(*ev, *mouse);
   switch(ev->type) {
@@ -1359,8 +1360,8 @@ static TCOD_event_t TCOD_sys_handle_mouse_event(const SDL_Event *ev,
  *
  *  Returns 0 if the event wasn't keyboard related.
  */
-static TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event *ev,
-                                              TCOD_key_t *key) {
+TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event* ev, TCOD_key_t* key)
+{
   if (!ev || !key) { return TCOD_EVENT_NONE; }
   switch(ev->type) {
     case SDL_KEYDOWN:

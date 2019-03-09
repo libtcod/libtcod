@@ -64,6 +64,8 @@
 #include "engine/display.h"
 #include "engine/globals.h"
 
+#include "sdl2/event.h"
+
 #include "tileset/observer.h"
 #include "tileset/tileset.h"
 #include "tileset/tile.h"

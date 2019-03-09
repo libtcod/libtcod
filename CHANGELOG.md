@@ -7,6 +7,12 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added new functions which convert from SDL events to libtcod events:
+  - `TCOD_sys_process_key_event`
+  - `TCOD_sys_process_mouse_event`
+  - `tcod::sdl2::process_event`
+
 ### Fixed
 - `TCOD_console_has_mouse_focus` and `TCOD_console_is_active` are now more
   reliable with the newer renderers.

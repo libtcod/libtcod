@@ -78,10 +78,18 @@ def samples_factory():
     installers = []
 
     env_samples = env.Clone()
-    env_samples.Append(CPPPATH=['$VARIANT/src'])
+    env_samples.Append(
+        CPPPATH=['$VARIANT/src'],
+    )
+    if sys.platform != 'darwin':
+        env_samples.Append(
+            LIBS=["SDL2", "SDL2main"],
+        )
     if env['TOOLSET'] == 'mingw':
         # These might need to be statically linked somewhere.
         env_samples.Append(LINKFLAGS=['-static-libgcc', '-static-libstdc++'])
+    if using_msvc:
+        env_samples.Append(LINKFLAGS=["/SUBSYSTEM:CONSOLE"])
 
     if sys.platform == 'win32':
         env_samples.Append(LIBS=['libtcod'])

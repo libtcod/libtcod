@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 #include "libtcod.hpp"
-#define SDL_MAIN_HANDLED
 #include <SDL.h>
 
 // a sample has a name and a rendering function

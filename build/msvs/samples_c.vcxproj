@@ -58,6 +58,7 @@
     <Import Project="common.props" />
     <Import Project="sdl12.props" />
     <Import Project="samples.props" />
+    <Import Project="SDL2main.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -65,12 +66,14 @@
     <Import Project="sdl12.props" />
     <Import Project="samples.props" />
     <Import Project="samples64.props" />
+    <Import Project="SDL2main.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="common.props" />
     <Import Project="sdl12.props" />
     <Import Project="samples.props" />
+    <Import Project="SDL2main.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -78,6 +81,7 @@
     <Import Project="sdl12.props" />
     <Import Project="samples.props" />
     <Import Project="samples64.props" />
+    <Import Project="SDL2main.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

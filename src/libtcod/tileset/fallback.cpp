@@ -29,37 +29,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "event.h"
+#include "fallback.h"
 
-#include <cstring>
+#include <cstdlib>
+#include <string>
 
-#include "../libtcod_int.h"
-#include "../engine/globals.h"
-
-#include <SDL.h>
+#include "truetype.h"
 namespace tcod {
-namespace sdl2 {
-TCOD_event_t process_event(const union SDL_Event& ev,
-                           TCOD_key_t& key) noexcept
+namespace tileset {
+auto new_fallback_tileset_() -> std::unique_ptr<Tileset>
 {
-  return TCOD_sys_handle_key_event(&ev, &key);
+  std::string font_path(std::getenv("SystemRoot"));
+  font_path += "\\Fonts\\LUCON.TTF";
+  return load_truetype(font_path, 12, 16);
 }
-TCOD_event_t process_event(const union SDL_Event& ev,
-                           TCOD_mouse_t& mouse) noexcept
-{
-  return TCOD_sys_handle_mouse_event(&ev, &mouse);
-}
-} // namespace sdl2
+} // namespace tileset
 } // namespace tcod
-TCOD_event_t TCOD_sys_process_key_event(
-    const union SDL_Event* in, TCOD_key_t* out)
-{
-  if (!in || !out) { return TCOD_EVENT_NONE; }
-  return tcod::sdl2::process_event(*in, *out);
-}
-TCOD_event_t TCOD_sys_process_mouse_event(
-    const union SDL_Event* in, TCOD_mouse_t* out)
-{
-  if (!in || !out) { return TCOD_EVENT_NONE; }
-  return tcod::sdl2::process_event(*in, *out);
-}

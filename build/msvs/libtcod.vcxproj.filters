@@ -350,6 +350,9 @@
     <ClCompile Include="..\..\src\libtcod\sdl2\event.cpp">
       <Filter>Source Files\sdl2</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\tileset\fallback.cpp">
+      <Filter>Source Files\tileset</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -630,6 +633,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\sdl2\event.h">
       <Filter>Source Files\sdl2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\tileset\fallback.h">
+      <Filter>Source Files\tileset</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

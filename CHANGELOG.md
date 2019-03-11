@@ -12,6 +12,7 @@ since `1.7.0`.
   - `TCOD_sys_process_key_event`
   - `TCOD_sys_process_mouse_event`
   - `tcod::sdl2::process_event`
+- The new renderers can potentially use a fall-back font when none is provided.
 
 ### Fixed
 - `TCOD_console_has_mouse_focus` and `TCOD_console_is_active` are now more

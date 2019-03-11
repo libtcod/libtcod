@@ -29,37 +29,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "event.h"
+#ifndef LIBTCOD_TILESET_FALLBACK_H_
+#define LIBTCOD_TILESET_FALLBACK_H_
+#include <memory>
 
-#include <cstring>
-
-#include "../libtcod_int.h"
-#include "../engine/globals.h"
-
-#include <SDL.h>
+#include "tileset.h"
+#ifdef __cplusplus
 namespace tcod {
-namespace sdl2 {
-TCOD_event_t process_event(const union SDL_Event& ev,
-                           TCOD_key_t& key) noexcept
-{
-  return TCOD_sys_handle_key_event(&ev, &key);
-}
-TCOD_event_t process_event(const union SDL_Event& ev,
-                           TCOD_mouse_t& mouse) noexcept
-{
-  return TCOD_sys_handle_mouse_event(&ev, &mouse);
-}
-} // namespace sdl2
+namespace tileset {
+/**
+ *  Try to return a fall-back Tileset, may return nullptr or crash.
+ *
+ *  Used when one is needed, but was not provided by the user.
+ */
+auto new_fallback_tileset_() -> std::unique_ptr<Tileset>;
+} // namespace tileset
 } // namespace tcod
-TCOD_event_t TCOD_sys_process_key_event(
-    const union SDL_Event* in, TCOD_key_t* out)
-{
-  if (!in || !out) { return TCOD_EVENT_NONE; }
-  return tcod::sdl2::process_event(*in, *out);
-}
-TCOD_event_t TCOD_sys_process_mouse_event(
-    const union SDL_Event* in, TCOD_mouse_t* out)
-{
-  if (!in || !out) { return TCOD_EVENT_NONE; }
-  return tcod::sdl2::process_event(*in, *out);
-}
+#endif // __cplusplus
+#endif // LIBTCOD_TILESET_FALLBACK_H_

@@ -240,6 +240,7 @@
     <ClCompile Include="..\..\src\libtcod\sys_sdl_c.cpp" />
     <ClCompile Include="..\..\src\libtcod\sys_sdl_img_bmp.cpp" />
     <ClCompile Include="..\..\src\libtcod\sys_sdl_img_png.cpp" />
+    <ClCompile Include="..\..\src\libtcod\tileset\fallback.cpp" />
     <ClCompile Include="..\..\src\libtcod\tileset\observer.cpp" />
     <ClCompile Include="..\..\src\libtcod\tileset\tile.cpp" />
     <ClCompile Include="..\..\src\libtcod\tileset\tileset.cpp" />
@@ -350,6 +351,7 @@
     <ClInclude Include="..\..\src\libtcod\sdl2\sdl2_renderer.h" />
     <ClInclude Include="..\..\src\libtcod\sys.h" />
     <ClInclude Include="..\..\src\libtcod\sys.hpp" />
+    <ClInclude Include="..\..\src\libtcod\tileset\fallback.h" />
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h" />
     <ClInclude Include="..\..\src\libtcod\tileset\tile.h" />
     <ClInclude Include="..\..\src\libtcod\tileset\tileset.h" />

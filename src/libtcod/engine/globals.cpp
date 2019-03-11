@@ -31,7 +31,10 @@
  */
 #include "globals.h"
 
+#include "../tileset/fallback.h"
+
 #include <cstdlib>
+#include <stdexcept>
 
 namespace tcod {
 namespace engine {
@@ -65,6 +68,14 @@ void set_tileset(std::shared_ptr<Tileset> tileset)
 }
 auto get_tileset() -> std::shared_ptr<Tileset>
 {
+  if (!active_tileset) {
+    // Try to load a fall-back Tileset, but ignore a failure.
+    try {
+      set_tileset(tcod::tileset::new_fallback_tileset_());
+    } catch (std::runtime_error e) {
+      // active_tileset is nullptr.
+    }
+  }
   return active_tileset;
 }
 void set_tilesheet(std::shared_ptr<Tilesheet> sheet)

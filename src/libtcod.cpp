@@ -81,6 +81,7 @@
 #include "libtcod/sdl2/sdl2_alias.cpp"
 #include "libtcod/sdl2/sdl2_display.cpp"
 #include "libtcod/sdl2/sdl2_renderer.cpp"
+#include "libtcod/tileset/fallback.cpp"
 #include "libtcod/tileset/observer.cpp"
 #include "libtcod/tileset/tile.cpp"
 #include "libtcod/tileset/tileset.cpp"

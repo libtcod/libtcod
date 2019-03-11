@@ -42,6 +42,7 @@
 #include "../libtcod_int.h"
 #include "../sdl2/sdl2_display.h"
 #include "../sdl2/gl2_display.h"
+#include "../tileset/fallback.h"
 namespace tcod {
 /**
  *  Initialize the display using one of the new renderers.
@@ -52,7 +53,13 @@ static void init_display(int w, int h, const std::string& title,
 {
   auto tileset = tcod::engine::get_tileset();
   if (!tileset) {
-    TCOD_fatal("A custom font is required to use the SDL2/OPENGL2 renderers.");
+    try { // Try to load a fall-back Tileset, but ignore failure.
+      tileset = tcod::tileset::new_fallback_tileset();
+      tcod::engine::set_tileset(tileset);
+    } catch (const std::runtime_error& e) {
+      throw std::runtime_error(
+          "Couldn't load a fallback font for the SDL2/OPENGL2 renderer.");
+    }
   }
   std::array<int, 2> display_size{tileset->get_tile_width() * w,
                                   tileset->get_tile_height() * h};

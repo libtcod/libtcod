@@ -37,11 +37,21 @@
 #include "truetype.h"
 namespace tcod {
 namespace tileset {
-auto new_fallback_tileset_() -> std::unique_ptr<Tileset>
+auto new_fallback_tileset(const std::array<int, 2>& tile_size)
+-> std::unique_ptr<Tileset>
 {
+#if defined(_WIN32) // Windows.
   std::string font_path(std::getenv("SystemRoot"));
   font_path += "\\Fonts\\LUCON.TTF";
-  return load_truetype(font_path, 12, 16);
+  return load_truetype(font_path, tile_size);
+#elif defined(__APPLE__) // MacOS.
+  return load_truetype("/System/Library/Fonts/SFCompactDisplay-Regular.otf",
+                       tile_size);
+#else // Linux?
+  return load_truetype(
+      "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+      tile_size);
+#endif
 }
 } // namespace tileset
 } // namespace tcod

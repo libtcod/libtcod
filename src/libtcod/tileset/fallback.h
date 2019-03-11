@@ -31,18 +31,21 @@
  */
 #ifndef LIBTCOD_TILESET_FALLBACK_H_
 #define LIBTCOD_TILESET_FALLBACK_H_
+#ifdef __cplusplus
+#include <array>
 #include <memory>
-
+#endif // __cplusplus
 #include "tileset.h"
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
 /**
- *  Try to return a fall-back Tileset, may return nullptr or crash.
+ *  Try to return a fall-back Tileset, may return nullptr or throw an error.
  *
  *  Used when one is needed, but was not provided by the user.
  */
-auto new_fallback_tileset_() -> std::unique_ptr<Tileset>;
+auto new_fallback_tileset(const std::array<int, 2>& tile_size = {12, 16})
+-> std::unique_ptr<Tileset>;
 } // namespace tileset
 } // namespace tcod
 #endif // __cplusplus

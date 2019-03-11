@@ -139,10 +139,12 @@ class TTFontLoader {
   float ascent_;
   float descent_;
 };
-auto load_truetype(const std::string& path, int tile_width, int tile_height)
+auto load_truetype(
+    const std::string& path,
+    const std::array<int, 2>& tile_size)
 -> std::unique_ptr<Tileset>
 {
-  return TTFontLoader(path, tile_width, tile_height).generate_tileset();
+  return TTFontLoader(path, tile_size[0], tile_size[1]).generate_tileset();
 }
 } // namespace tileset
 } // namespace tcod
@@ -154,6 +156,6 @@ int TCOD_tileset_load_truetype_(
   using tcod::engine::set_tileset;
   using tcod::tileset::load_truetype;
   if (!path) { return -1; }
-  set_tileset(load_truetype(path, tile_width, tile_height));
+  set_tileset(load_truetype(path, {tile_width, tile_height}));
   return 0;
 }

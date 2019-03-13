@@ -67,6 +67,13 @@ class Display {
    *  Returns a negative number if the display does not support fullscreen.
    */
   virtual int get_fullscreen() = 0;
+  /**
+   *  Render a console over this display.
+   */
+  virtual void accumulate(const TCOD_Console*) = 0;
+  /**
+   *  Render a console and present the display.
+   */
   virtual void present(const TCOD_Console*) = 0;
   virtual auto pixel_to_tile(const std::array<double, 2>& xy)
       -> std::array<double, 2> = 0;
@@ -213,7 +220,25 @@ TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  *  Private function, gets pointers of an old renderer.
  */
 struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
-
+/**
+ *  Render a console over the display.
+ *  \rst
+ *  `console` can be any size, the active render will try to scale it to fit
+ *  the screen.
+ *
+ *  The function will only work for the SDL2/OPENGL2 renderers.
+ *
+ *  Unlike :any:`TCOD_console_flush` this will not present the display.
+ *  You will need to do that manually, likely with the SDL API.
+ *
+ *  Returns 0 on success, or a negative number on a failure such as the
+ *  incorrect renderer being active.
+ *
+ *  .. versionadded:: 1.11
+ *
+ *  .. seealso::
+ *      :any:`TCOD_sys_get_sdl_window` :any:`TCOD_sys_get_sdl_renderer`
+ *  \endrst
+ */
+int TCOD_sys_accumulate_console(const TCOD_Console* console);
 #endif // LIBTCOD_ENGINE_DISPLAY_H_
-
-

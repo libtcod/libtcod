@@ -129,6 +129,7 @@ ASCII constants
 Flushing the root console
 =========================
 .. doxygenfunction:: TCOD_console_flush
+.. doxygenfunction:: TCOD_sys_accumulate_console
 
 Handling user input
 ===================

@@ -62,16 +62,18 @@ void OpenGL2Display::set_tileset(std::shared_ptr<Tileset> tileset)
   }
   tcod_renderer_ = OpenGL2Renderer(tileset);
 }
-void OpenGL2Display::present(const TCOD_Console* console)
+void OpenGL2Display::accumulate(const TCOD_Console* console)
 {
   int window_size[2];
   SDL_GL_GetDrawableSize(get_sdl_window(), &window_size[0], &window_size[1]);
   glViewport(0,0,window_size[0],window_size[1]);
-
   tcod_renderer_.render(console);
-  SDL_GL_SwapWindow(get_sdl_window());
-
   update_pixel_to_tile_scale(console);
+}
+void OpenGL2Display::present(const TCOD_Console* console)
+{
+  accumulate(console);
+  SDL_GL_SwapWindow(get_sdl_window());
 }
 auto OpenGL2Display::read_pixels() const -> Image
 {

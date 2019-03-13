@@ -15,6 +15,8 @@ since `1.7.0`.
 - Added a way to access libtcod's SDL variables.
   - `TCOD_sys_get_sdl_window`
   - `TCOD_sys_get_sdl_renderer`
+- Added `TCOD_sys_accumulate_console` which renders a console to the display
+  without automatically presenting it.
 - The new renderers can potentially use a fall-back font when none is provided.
 
 ### Fixed

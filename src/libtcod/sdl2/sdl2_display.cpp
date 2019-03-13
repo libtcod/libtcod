@@ -137,14 +137,19 @@ void SDL2Display::set_tileset(std::shared_ptr<Tileset> tileset)
   }
   tcod_renderer_ = SDL2Renderer(renderer_.get(), tileset);
 }
-void SDL2Display::present(const TCOD_Console* console)
+void SDL2Display::accumulate(const TCOD_Console* console)
 {
   if (!renderer_) { throw std::logic_error("Unresolved class invariant."); }
   SDL_Texture* backbuffer = tcod_renderer_.render(console);
   SDL_RenderClear(renderer_.get());
   SDL_RenderCopy(renderer_.get(), backbuffer, nullptr, nullptr);
-  SDL_RenderPresent(renderer_.get());
   update_pixel_to_tile_scale(console);
+}
+void SDL2Display::present(const TCOD_Console* console)
+{
+  if (!renderer_) { throw std::logic_error("Unresolved class invariant."); }
+  accumulate(console);
+  SDL_RenderPresent(renderer_.get());
 }
 auto SDL2Display::read_pixels() const -> Image
 {

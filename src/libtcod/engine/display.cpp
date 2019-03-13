@@ -181,3 +181,11 @@ struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
   }
   return TCOD_sys_get_sdl_renderer_();
 }
+int TCOD_sys_accumulate_console(const TCOD_Console* console)
+{
+  console = tcod::console::validate_(console);
+  auto display = tcod::engine::get_display();
+  if (!console || !display) { return -1; }
+  display->accumulate(console);
+  return 0;
+}

@@ -165,3 +165,19 @@ bool TCOD_console_is_active(void)
 bool TCOD_console_is_window_closed(void) {
 	return TCOD_ctx.is_window_closed;
 }
+struct SDL_Window* TCOD_sys_get_sdl_window(void)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    return display->get_sdl_window();
+  }
+  return TCOD_sys_get_sdl_window_();
+}
+struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
+{
+  auto display = tcod::engine::get_display();
+  if (display) {
+    return display->get_sdl_renderer();
+  }
+  return TCOD_sys_get_sdl_renderer_();
+}

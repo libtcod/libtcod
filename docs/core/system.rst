@@ -35,6 +35,9 @@ Draw custom graphics on top of the root console
 Miscellaneous utilities
 =======================
 
+.. doxygenfunction:: TCOD_sys_get_sdl_window
+.. doxygenfunction:: TCOD_sys_get_sdl_renderer
+
 Clipboard integration
 =====================
 

@@ -42,6 +42,7 @@
 #include "../console_types.h"
 
 struct SDL_Window;
+struct SDL_Renderer;
 #ifdef __cplusplus
 namespace tcod {
 namespace engine {
@@ -73,8 +74,17 @@ class Display {
   virtual auto read_pixels() const -> Image = 0;
   /**
    *  Return the pointer to an SDL2 window, if this display uses SDL.
+   *
+   *  Could return nullptr.
    */
   virtual auto get_sdl_window() -> struct SDL_Window* = 0;
+  /**
+   *  Return the pointer to an SDL2 renderer, if this display uses SDL's
+   *  renderer.
+   *
+   *  Could return nullptr.
+   */
+  virtual auto get_sdl_renderer() -> struct SDL_Renderer* = 0;
 };
 /**
  *  Incomplete interface for subclasses which don't need an SDL2 window.
@@ -107,6 +117,10 @@ class TerminalDisplay: public Display {
     return xy;
   }
   virtual auto get_sdl_window() -> struct SDL_Window* override
+  {
+    return nullptr;
+  }
+  virtual auto get_sdl_renderer() -> struct SDL_Renderer* override
   {
     return nullptr;
   }
@@ -177,6 +191,29 @@ TCODLIB_CAPI bool TCOD_console_is_active(void);
  *  Return true if the window is closing.
  */
 TCODLIB_CAPI bool TCOD_console_is_window_closed(void);
+/**
+ *  Return an SDL_Window pointer if one is in use, returns NULL otherwise.
+ *  \rst
+ *  .. versionadded:: 1.11
+ *  \endrst
+ */
+TCODLIB_CAPI struct SDL_Window* TCOD_sys_get_sdl_window(void);
+/**
+ *  Private function, gets pointers of an old renderer.
+ */
+struct SDL_Window* TCOD_sys_get_sdl_window_(void);
+/**
+ *  Return an SDL_Renderer pointer if one is in use, returns NULL otherwise.
+ *  \rst
+ *  .. versionadded:: 1.11
+ *  \endrst
+ */
+TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
+/**
+ *  Private function, gets pointers of an old renderer.
+ */
+struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
+
 #endif // LIBTCOD_ENGINE_DISPLAY_H_
 
 

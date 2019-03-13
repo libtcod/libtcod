@@ -1966,4 +1966,12 @@ int TCOD_get_tileid_for_charcode_(int charcode) {
   }
   return 0;
 }
+struct SDL_Window* TCOD_sys_get_sdl_window_(void)
+{
+  return window;
+}
+struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void)
+{
+  return renderer;
+}
 #endif /* TCOD_BARE */

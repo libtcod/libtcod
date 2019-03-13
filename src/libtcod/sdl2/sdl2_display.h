@@ -74,6 +74,10 @@ class WindowedDisplay: public engine::Display {
   {
     return window_.get();
   }
+  virtual auto get_sdl_renderer() -> struct SDL_Renderer* override
+  {
+    return nullptr;
+  }
  protected:
   /**
    *  Update the scale using a console/tileset and the current window size.
@@ -99,6 +103,10 @@ class SDL2Display: public WindowedDisplay {
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;
   virtual void present(const TCOD_Console*) override;
   virtual auto read_pixels() const -> Image override;
+  virtual auto get_sdl_renderer() -> struct SDL_Renderer* override
+  {
+    return renderer_.get();
+  }
  private:
   std::shared_ptr<SDL_Renderer> renderer_;
   SDL2Renderer tcod_renderer_;

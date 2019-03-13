@@ -12,6 +12,9 @@ since `1.7.0`.
   - `TCOD_sys_process_key_event`
   - `TCOD_sys_process_mouse_event`
   - `tcod::sdl2::process_event`
+- Added a way to access libtcod's SDL variables.
+  - `TCOD_sys_get_sdl_window`
+  - `TCOD_sys_get_sdl_renderer`
 - The new renderers can potentially use a fall-back font when none is provided.
 
 ### Fixed

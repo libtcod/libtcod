@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.11.0] - 2019-03-15
 ### Added
 - Added new functions which convert from SDL events to libtcod events:
   - `TCOD_sys_process_key_event`

@@ -623,5 +623,13 @@ TCOD_event_t TCOD_sys_handle_mouse_event(
     const union SDL_Event* ev, TCOD_mouse_t* mouse);
 TCOD_event_t TCOD_sys_handle_key_event(
     const union SDL_Event* ev, TCOD_key_t* key);
+/**
+ *  Private function, gets pointers of an old renderer.
+ */
+struct SDL_Window* TCOD_sys_get_sdl_window_(void);
+/**
+ *  Private function, gets pointers of an old renderer.
+ */
+struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
 #endif // __cplusplus
 #endif // TCODLIB_INT_H_

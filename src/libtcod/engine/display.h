@@ -206,20 +206,12 @@ TCODLIB_CAPI bool TCOD_console_is_window_closed(void);
  */
 TCODLIB_CAPI struct SDL_Window* TCOD_sys_get_sdl_window(void);
 /**
- *  Private function, gets pointers of an old renderer.
- */
-struct SDL_Window* TCOD_sys_get_sdl_window_(void);
-/**
  *  Return an SDL_Renderer pointer if one is in use, returns NULL otherwise.
  *  \rst
  *  .. versionadded:: 1.11
  *  \endrst
  */
 TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
-/**
- *  Private function, gets pointers of an old renderer.
- */
-struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
 /**
  *  Render a console over the display.
  *  \rst
@@ -240,5 +232,5 @@ struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
  *      :any:`TCOD_sys_get_sdl_window` :any:`TCOD_sys_get_sdl_renderer`
  *  \endrst
  */
-int TCOD_sys_accumulate_console(const TCOD_Console* console);
+TCODLIB_CAPI int TCOD_sys_accumulate_console(const TCOD_Console* console);
 #endif // LIBTCOD_ENGINE_DISPLAY_H_

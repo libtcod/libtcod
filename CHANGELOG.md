@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- Releases will no longer display debug messages.
 
 ## [1.11.1] - 2019-03-15
 ### Fixed

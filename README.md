@@ -17,50 +17,50 @@ utilities frequently used in roguelikes.
 Status:
 [![Build status](https://ci.appveyor.com/api/projects/status/pemepxo2221f8heo/branch/master?svg=true)](https://ci.appveyor.com/project/HexDecimal/libtcod-6e1jk/branch/master)
 [![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
+[![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 
 # What can it do? #
 
-If you want to get a quick overview of the features that libtcod provides, check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features) page.
+If you want to get a quick overview of the features that libtcod provides,
+check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features)
+page.
 
-If you want to get a quick overview of games which have used libtcod, check out the [Projects](http://roguecentral.org/doryen/projects-2/) page.
-
-libtcod is also well known for its [easy to follow tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod), which many people have used to get started developing a roguelike.  Follow the relevant links the tutorial gives, and it will point you to the right locations.
+If you want to get a quick overview of games which have used libtcod, check out
+the [Projects](http://roguecentral.org/doryen/projects-2/) page.
 
 # How do I get set up? #
 
 ## Using one of our downloads ##
 
+If you are programming in C or C++ then
 Windows and MacOS binaries are available from the
 [GitHub Releases page](https://github.com/libtcod/libtcod/releases).
 
-If you are programming in C or C++, various sample projects are included within
+Various C/C++ sample projects are included within
 the repository which can be used as examples of various features.
 
-For those who wish to program in Python the basics are described in
-[part 1](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python%2Blibtcod,_part_1#Setting_it_up)
-of the tutorial.
-It's currently recommended to install libtcodpy via
-[python-tcod](https://github.com/libtcod/python-tcod) rather than using the
-libtcodpy package included in this repository.
+Keep in mind that as a C++14 library, you will need to distribute the
+appropriate runtime with your program such as the
+[Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587)
+or else the program will fail to run.  This is required even when using Python.
 
-**Warning:** If you download these builds, run `samples.exe` as your very first
-action.
-If you are unable to and get an error about `vcruntime140.dll` being missing,
-you need to install the two
-[Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587).
-Make sure you install the 32-bit runtime.
-And make sure you also install the 64-bit runtime.
-Then run `samples.exe` again, and it should now work.
-Whether you plan to develop in C, C++, Python or some other language, this is
-required.
+For those who wish to program in Python you can install python-tcod using
+[this installation guide](https://python-tcod.readthedocs.io/en/latest/installation.html).
+Once installed you can follow
+[the Python 3 tutorial](http://rogueliketutorials.com/libtcod/1)
+or you can find Python example scripts on the
+[python-tcod repository](https://github.com/libtcod/python-tcod).
+
+A alternative version of the Python library (libtcodpy) exists in the binary
+downloads, but you should avoid using this version as it is not as well
+maintained.
 
 ## Compiling from source ##
 
-You can clone with Mercurial via the
-[BitBucket repository](https://bitbucket.org/libtcod/libtcod), or with Git via
-the [GitHub repository](https://github.com/libtcod/libtcod).
+You can clone with Git via the
+[GitHub repository](https://github.com/libtcod/libtcod).
 You can then checkout a specific tag or get the in-development version from
-the default or master branches.
+the master branch.
 
 All compilation methods, currently including Visual Studio (Windows),
 SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within
@@ -92,12 +92,14 @@ The latest documentation is [here](https://libtcod.readthedocs.io/en/latest).
 Currently it's very incomplete, so most people will want to read the
 [1.5.1 documentation](http://roguecentral.org/doryen/data/libtcod/doc/1.5.1/index2.html?c=true&cpp=true&cs=false&py=true&lua=false)
 instead.
+Python users should use the
+[python-tcod documentation](http://python-tcod.readthedocs.io).
 
 libtcod comes with a sample application, implementations of which are provided
 in each of
-C ([samples_c.c](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_c.c?at=default)),
-C++ ([samples_cpp.cpp](https://bitbucket.org/libtcod/libtcod/src/tip/samples/samples_cpp.cpp?at=default)),
-and Python ([samples_py.py](https://bitbucket.org/libtcod/libtcod/src/tip/python/samples_py.py?at=default)).
+C ([samples_c.c](https://github.com/libtcod/libtcod/blob/master/samples/samples_c.c)),
+C++ ([samples_cpp.cpp](https://github.com/libtcod/libtcod/blob/master/samples/samples_cpp.cpp)),
+and Python ([samples_py.py](https://github.com/libtcod/python-tcod/blob/master/examples/samples_tcod.py)).
 This provides a decent overview of the basic features, in an interactive
 fashion.
 Each should be identical for the most part, so if you are using Windows,

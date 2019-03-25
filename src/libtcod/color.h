@@ -33,28 +33,11 @@
 #define _TCOD_COLOR_H
 
 #include "portability.h"
+#include "color/color.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- *  \brief An RGB color struct.
- */
-typedef struct TCOD_color_t {
-  uint8_t r, g, b;
-#ifdef __cplusplus
-  bool operator==(const TCOD_color_t& rhs) const noexcept
-  {
-    return r == rhs.r && g == rhs.g && b == rhs.b;
-  }
-  bool operator!=(const TCOD_color_t& rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
-#endif // __cplusplus
-} TCOD_color_t;
-
 /* constructors */
 TCODLIB_API TCOD_color_t TCOD_color_RGB(uint8_t r, uint8_t g, uint8_t b);
 TCODLIB_API TCOD_color_t TCOD_color_HSV(float hue, float saturation,

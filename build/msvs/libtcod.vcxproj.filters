@@ -353,6 +353,9 @@
     <ClCompile Include="..\..\src\libtcod\tileset\fallback.cpp">
       <Filter>Source Files\tileset</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\console\console.cpp">
+      <Filter>Source Files\console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -636,6 +639,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\tileset\fallback.h">
       <Filter>Source Files\tileset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\console\console.h">
+      <Filter>Source Files\console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -643,6 +643,9 @@
     <ClInclude Include="..\..\src\libtcod\console\console.h">
       <Filter>Source Files\console</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\utility\matrix.h">
+      <Filter>Source Files\utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

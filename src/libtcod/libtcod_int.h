@@ -532,7 +532,6 @@ bool TCOD_console_init(TCOD_Console* con, const std::string& title,
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s,int l);
 // TCODSystem non public methods
-void TCOD_console_data_free(struct TCOD_Console *dat);
 bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);

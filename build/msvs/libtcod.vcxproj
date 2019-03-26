@@ -364,6 +364,7 @@
     <ClInclude Include="..\..\src\libtcod\txtfield.h" />
     <ClInclude Include="..\..\src\libtcod\txtfield.hpp" />
     <ClInclude Include="..\..\src\libtcod\utility.h" />
+    <ClInclude Include="..\..\src\libtcod\utility\matrix.h" />
     <ClInclude Include="..\..\src\libtcod\utility\vector2.h" />
     <ClInclude Include="..\..\src\libtcod\version.h" />
     <ClInclude Include="..\..\src\libtcod\wrappers.h" />

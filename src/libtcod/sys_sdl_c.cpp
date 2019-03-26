@@ -801,11 +801,7 @@ void TCOD_sys_startup(void) {
  */
 void TCOD_sys_shutdown(void)
 {
-  if (TCOD_ctx.root) {
-    TCOD_console_data_free(TCOD_ctx.root);
-    free(TCOD_ctx.root);
-    TCOD_ctx.root = NULL;
-  }
+  TCOD_console_delete(TCOD_ctx.root);
   if (tcod::engine::get_display()){
     tcod::engine::set_display(nullptr);
     return;

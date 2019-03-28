@@ -92,11 +92,11 @@ class SDL2Renderer::impl: public TilesetObserver {
       for (int x = 0; x < console->w; ++x) {
         const int i = console->w * y + x; // console index
         const int ch = console->tiles[i].ch;
-        const ColorRGBA& fg = console->tiles[i].fg;
-        const ColorRGBA& bg = console->tiles[i].bg;
+        const TCOD_ColorRGBA& fg = console->tiles[i].fg;
+        const TCOD_ColorRGBA& bg = console->tiles[i].bg;
         int& cache_ch = std::get<0>(cache_.at(x, y));
-        ColorRGBA& cache_fg = std::get<1>(cache_.at(x, y));
-        ColorRGBA& cache_bg = std::get<2>(cache_.at(x, y));
+        TCOD_ColorRGBA& cache_fg = std::get<1>(cache_.at(x, y));
+        TCOD_ColorRGBA& cache_bg = std::get<2>(cache_.at(x, y));
         if (cache_ch == ch && cache_fg == fg && cache_bg == bg) {
           continue; // This tile was already rendered on a previous frame.
         }
@@ -151,7 +151,7 @@ class SDL2Renderer::impl: public TilesetObserver {
     }
     return 0;
   }
-  using cache_type = Vector2<std::tuple<int, ColorRGBA, ColorRGBA>>;
+  using cache_type = Vector2<std::tuple<int, TCOD_ColorRGBA, TCOD_ColorRGBA>>;
   SDL2TilesetAlias alias_;
   cache_type cache_;
   struct SDL_Renderer* renderer_;

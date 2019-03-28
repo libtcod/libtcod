@@ -565,7 +565,7 @@ void TCOD_sys_console_to_bitmap(
         }
         old = current;
       }
-      TCOD_ColorRGB b = TCOD_ColorRGB(nbg);
+      TCOD_ColorRGB b = tcod::ColorRGB(nbg);
       dstRect.x = x * TCOD_ctx.font_width;
       dstRect.y = y * TCOD_ctx.font_height;
       dstRect.w = TCOD_ctx.font_width;
@@ -579,7 +579,7 @@ void TCOD_sys_console_to_bitmap(
         int ascii = TCOD_get_tileid_for_charcode_(c);
         TCOD_ColorRGB *curtext = &charcols[ascii];
         bool first = first_draw[ascii];
-        TCOD_ColorRGB f = TCOD_ColorRGB(nfg);
+        TCOD_ColorRGB f = tcod::ColorRGB(nfg);
         f = blend_fade_color_(f, fading_color, fade);
         /* only draw character if foreground color != background color */
         if (f != b) {

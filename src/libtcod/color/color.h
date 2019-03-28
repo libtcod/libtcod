@@ -32,17 +32,11 @@
 #ifndef LIBTCOD_COLOR_COLOR_H_
 #define LIBTCOD_COLOR_COLOR_H_
 #include <stdint.h>
-struct TCOD_ColorRGBA;
 /**
  *  A three channel color struct.
  */
 struct TCOD_ColorRGB {
 #ifdef __cplusplus
-  TCOD_ColorRGB() = default;
-  TCOD_ColorRGB(uint8_t red, uint8_t green, uint8_t blue)
-  : r{red}, g{green}, b{blue}
-  {}
-  explicit inline TCOD_ColorRGB(const struct TCOD_ColorRGBA& rhs);
   bool operator==(const TCOD_ColorRGB& rhs) const noexcept
   {
     return r == rhs.r && g == rhs.g && b == rhs.b;
@@ -62,14 +56,6 @@ typedef struct TCOD_ColorRGB TCOD_color_t;
  */
 struct TCOD_ColorRGBA {
 #ifdef __cplusplus
-  TCOD_ColorRGBA() = default;
-  TCOD_ColorRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0xff)
-  : r{red}, g{green}, b{blue}, a{alpha}
-  {}
-  explicit TCOD_ColorRGBA(const struct TCOD_ColorRGB& color,
-                          uint8_t alpha=0xff)
-  : TCOD_ColorRGBA(color.r, color.g, color.b, alpha)
-  {}
   bool operator==(const TCOD_ColorRGBA& rhs) const noexcept
   {
     return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
@@ -85,12 +71,32 @@ struct TCOD_ColorRGBA {
   uint8_t a;
 };
 #ifdef __cplusplus
-TCOD_ColorRGB::TCOD_ColorRGB(const struct TCOD_ColorRGBA& rhs)
-: r{rhs.r}, g{rhs.g}, b{rhs.b}
-{}
 namespace tcod {
-  typedef struct TCOD_ColorRGBA ColorRGBA;
-  typedef struct TCOD_ColorRGB ColorRGB;
+  struct ColorRGB: TCOD_ColorRGB {
+    ColorRGB() = default;
+    ColorRGB(uint8_t red, uint8_t green, uint8_t blue)
+    : TCOD_ColorRGB{red, green, blue}
+    {}
+    ColorRGB(const struct TCOD_ColorRGB& rhs)
+    : TCOD_ColorRGB{rhs}
+    {}
+    explicit ColorRGB(const struct TCOD_ColorRGBA& rhs)
+    : TCOD_ColorRGB{rhs.r, rhs.g, rhs.b}
+    {}
+  };
+  struct ColorRGBA: TCOD_ColorRGBA {
+    ColorRGBA() = default;
+    ColorRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0xff)
+    : TCOD_ColorRGBA{red, green, blue, alpha}
+    {}
+    explicit ColorRGBA(const struct TCOD_ColorRGB& color,
+                            uint8_t alpha=0xff)
+    : TCOD_ColorRGBA{color.r, color.g, color.b, alpha}
+    {}
+    ColorRGBA(const struct TCOD_ColorRGBA& rhs)
+    : TCOD_ColorRGBA{rhs}
+    {}
+  };
 } // namespace tcod
 #endif /* __cplusplus */
 #endif /* LIBTCOD_COLOR_COLOR_H_ */

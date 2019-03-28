@@ -336,7 +336,8 @@ TCODLIB_CAPI uint8_t TCOD_console_get_fade(void);
  *  \return The current fading color.
  */
 TCODLIB_CAPI TCOD_color_t TCOD_console_get_fading_color(void);
-void TCOD_console_resize_(TCOD_Console* console, int width, int height);
+TCODLIB_CAPI void TCOD_console_resize_(
+    TCOD_Console* console, int width, int height);
 #ifdef __cplusplus
 namespace tcod {
 namespace console {

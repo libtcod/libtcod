@@ -146,7 +146,7 @@ class TwoTranglesRenderer {
     bg_tex_.bind();
     std::vector<TCOD_ColorRGB> tile_colors(console.w * console.h);
     for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = TCOD_ColorRGB(console.tiles[i].bg);
+      tile_colors[i] = ColorRGB(console.tiles[i].bg);
     }
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
                     GL_UNSIGNED_BYTE, tile_colors.data());
@@ -155,7 +155,7 @@ class TwoTranglesRenderer {
     glActiveTexture(GL_TEXTURE0 + 2);
     fg_tex_.bind();
     for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = TCOD_ColorRGB(console.tiles[i].fg);
+      tile_colors[i] = ColorRGB(console.tiles[i].fg);
     }
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
                     GL_UNSIGNED_BYTE, tile_colors.data());
@@ -294,8 +294,8 @@ class GridRenderer {
       for (int x = 0; x < console.w; ++x) {
         int i = y * console.w + x;
         TilePos tile_pos(alias_.get_tile_position(console.tiles[i].ch));
-        ColorRGBA fg(console.tiles[i].fg);
-        ColorRGBA bg(console.tiles[i].bg);
+        const TCOD_ColorRGBA& fg = console.tiles[i].fg;
+        const TCOD_ColorRGBA& bg = console.tiles[i].bg;
         attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y), fg, bg);
         attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y + 1), fg, bg);
         attributes.emplace_back(TilePos(tile_pos.x + 1, tile_pos.y), fg, bg);
@@ -350,12 +350,12 @@ class GridRenderer {
   struct TileAttribute {
     TileAttribute() = default;
     TileAttribute(
-        const TilePos& tile_, const ColorRGBA& fg_, const ColorRGBA& bg_)
+        const TilePos& tile_, const TCOD_ColorRGBA& fg_, const TCOD_ColorRGBA& bg_)
     : tile(tile_), fg(fg_), bg(bg_)
     {}
     TilePos tile;
-    ColorRGBA fg;
-    ColorRGBA bg;
+    TCOD_ColorRGBA fg;
+    TCOD_ColorRGBA bg;
   };
   OpenGLTilesetAlias alias_;
   GLProgram program_;

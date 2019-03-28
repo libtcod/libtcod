@@ -172,7 +172,7 @@ void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
   con = tcod::console::validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].bg = TCOD_ColorRGBA(r[i], g[i], b[i]);
+    con->tiles[i].bg = tcod::ColorRGBA(r[i], g[i], b[i]);
   }
 }
 void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
@@ -180,7 +180,7 @@ void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
   con = tcod::console::validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].fg = TCOD_ColorRGBA(r[i], g[i], b[i]);
+    con->tiles[i].fg = tcod::ColorRGBA(r[i], g[i], b[i]);
   }
 }
 void TCOD_console_fill_char(TCOD_Console* con, int *arr)

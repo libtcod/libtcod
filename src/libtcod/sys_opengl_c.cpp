@@ -451,8 +451,8 @@ bool TCOD_opengl_render(
       TCOD_opengl_putchar_ex(
           x, y,
           TCOD_get_tileid_for_charcode_(console->tiles[i].ch),
-          TCOD_ColorRGB(console->tiles[i].fg),
-          TCOD_ColorRGB(console->tiles[i].bg)
+          tcod::ColorRGB(console->tiles[i].fg),
+          tcod::ColorRGB(console->tiles[i].bg)
       );
     }
   }
@@ -494,8 +494,8 @@ bool TCOD_opengl_render(
       for (int x = 0; x < conwidth; ++x) {
         int i = y * conwidth + x;
         if (console->tiles[i].ch == ' ') { continue; }
-        const TCOD_ColorRGB f = TCOD_ColorRGB(console->tiles[i].fg);
-        const TCOD_ColorRGB b = TCOD_ColorRGB(console->tiles[i].bg);
+        const TCOD_ColorRGB f = tcod::ColorRGB(console->tiles[i].fg);
+        const TCOD_ColorRGB b = tcod::ColorRGB(console->tiles[i].bg);
         // only draw character if foreground color != background color
         if (f == b) { continue; }
         int destx = x;/* *TCOD_font_width; */

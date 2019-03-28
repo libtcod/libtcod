@@ -167,15 +167,15 @@ void TCOD_console_blit_key_color(
       /* Source references. */
       const struct TCOD_ConsoleTile& src_tile = src->tiles[src_idx];
       const int& src_ch = src_tile.ch;
-      const TCOD_color_t src_fg = TCOD_color_t(src_tile.fg);
-      const TCOD_color_t src_bg = TCOD_color_t(src_tile.bg);
+      const TCOD_ColorRGB src_fg = tcod::ColorRGB(src_tile.fg);
+      const TCOD_ColorRGB src_bg = tcod::ColorRGB(src_tile.bg);
       /* Check if source pixel is transparent. */
-      if (key_color && TCOD_color_t(src_tile.bg) == *key_color) { continue; }
+      if (key_color && tcod::ColorRGB(src_tile.bg) == *key_color) { continue; }
       /* Destination references. */
       struct TCOD_ConsoleTile& dst_tile = dst->tiles[dst_idx];
       int& dst_ch = dst_tile.ch;
-      TCOD_color_t dst_fg = TCOD_color_t(dst_tile.fg);
-      TCOD_color_t dst_bg = TCOD_color_t(dst_tile.bg);
+      TCOD_ColorRGB dst_fg = tcod::ColorRGB(dst_tile.fg);
+      TCOD_ColorRGB dst_bg = tcod::ColorRGB(dst_tile.bg);
       if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
         /* No alpha, so perform a plain copy. */
         dst_tile = src_tile;
@@ -201,8 +201,8 @@ void TCOD_console_blit_key_color(
               dst_bg, src_fg, (foreground_alpha - 0.5f) * 2);
         }
       }
-      dst_tile.fg = TCOD_ColorRGBA(dst_fg, dst_tile.fg.a);
-      dst_tile.bg = TCOD_ColorRGBA(dst_bg, dst_tile.bg.a);
+      dst_tile.fg = tcod::ColorRGBA(dst_fg, dst_tile.fg.a);
+      dst_tile.bg = tcod::ColorRGBA(dst_bg, dst_tile.bg.a);
     }
   }
 }
@@ -248,7 +248,7 @@ void TCOD_console_clear(TCOD_console_t con)
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i] = {' ', TCOD_ColorRGBA(con->fore), TCOD_ColorRGBA(con->back)};
+    con->tiles[i] = {' ', tcod::ColorRGBA(con->fore), tcod::ColorRGBA(con->back)};
   }
   /* clear the sdl renderer cache */
   TCOD_sys_set_dirty(0, 0, con->w, con->h);
@@ -258,21 +258,21 @@ TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con,
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_black; }
-  return TCOD_color_t(con->tiles[y * con->w + x].bg);
+  return tcod::ColorRGB(con->tiles[y * con->w + x].bg);
 }
 void TCOD_console_set_char_foreground(TCOD_Console* con,
                                       int x, int y, TCOD_color_t col)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->tiles[y * con->w + x].fg = TCOD_ColorRGBA(col);
+  con->tiles[y * con->w + x].fg = tcod::ColorRGBA(col);
 }
 TCOD_color_t TCOD_console_get_char_foreground(const TCOD_Console* con,
                                               int x, int y)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_white; }
-  return TCOD_color_t(con->tiles[y * con->w + x].fg);
+  return tcod::ColorRGB(con->tiles[y * con->w + x].fg);
 }
 int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
 {
@@ -312,10 +312,10 @@ void TCOD_console_set_char_background(
   int alpha = flag >> 8;
   switch (flag & 0xff) {
     case TCOD_BKGND_SET:
-      bg = TCOD_ColorRGBA(col, bg.a);
+      bg = tcod::ColorRGBA(col, bg.a);
       break;
     case TCOD_BKGND_MULTIPLY:
-      bg = TCOD_ColorRGBA(TCOD_color_multiply(TCOD_ColorRGB(bg), col), bg.a);
+      bg = tcod::ColorRGBA(TCOD_color_multiply(tcod::ColorRGB(bg), col), bg.a);
       break;
     case TCOD_BKGND_LIGHTEN:
       bg = blend_color_(bg, col,
@@ -363,7 +363,7 @@ void TCOD_console_set_char_background(
       break;
     case TCOD_BKGND_ALPH:
       // newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
-      bg = TCOD_ColorRGBA(TCOD_color_lerp(TCOD_ColorRGB(bg), col, alpha / 255.0f), bg.a);
+      bg = tcod::ColorRGBA(TCOD_color_lerp(tcod::ColorRGB(bg), col, alpha / 255.0f), bg.a);
       break;
     default: break;
   }

@@ -71,5 +71,4 @@
 #include "libtcod/path_c.c"
 #include "libtcod/tree_c.c"
 #include "libtcod/txtfield_c.c"
-#include "libtcod/wrappers.c"
 #include "libtcod/zip_c.c"

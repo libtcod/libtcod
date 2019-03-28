@@ -539,21 +539,11 @@ void TCOD_sys_console_to_bitmap(
   /* can only track changes on the root console */
   bool track_changes = (cache && oldFade == fade);
   uint8_t bpp = charmap->format->BytesPerPixel;
-  int *c = console->ch_array;
-  int *oc;
-  TCOD_color_t *ofg, *obg, *nfg, *nbg;
   int hdelta;
   if (bpp == 4) {
     hdelta = (charmap->pitch - TCOD_ctx.font_width * bpp) / 4;
   } else {
     hdelta = (charmap->pitch - TCOD_ctx.font_width * bpp);
-  }
-  nfg = console->fg_array;
-  nbg = console->bg_array;
-  if (track_changes) {
-    oc = cache->ch_array;
-    ofg = cache->fg_array;
-    obg = cache->bg_array;
   }
   if (charmap_backup == NULL) {
     charmap_backup = TCOD_sys_get_surface(charmap->w, charmap->h, true);
@@ -561,75 +551,135 @@ void TCOD_sys_console_to_bitmap(
   }
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
+      using tcod::console::Tile;
+      int console_i = y * console->w + x;
+      const Tile& current = console->tiles[console_i];
+      const int& c = current.ch;
+      const TCOD_ColorRGBA& nfg = current.fg;
+      const TCOD_ColorRGBA& nbg = current.bg;
       SDL_Rect srcRect, dstRect;
-      bool changed = true;
       if (track_changes) {
-        changed = false;
-        if (*nbg != *obg || *nfg != *ofg || *c != *oc) {
-          changed = true;
+        Tile& old = cache->tiles[console_i];
+        if (current == old) {
+          continue;
         }
+        old = current;
       }
-      if (changed) {
-        TCOD_color_t b = *nbg;
-        dstRect.x = x * TCOD_ctx.font_width;
-        dstRect.y = y * TCOD_ctx.font_height;
-        dstRect.w = TCOD_ctx.font_width;
-        dstRect.h = TCOD_ctx.font_height;
-        /* draw background */
-        b = blend_fade_color_(b, fading_color, fade);
-        sdl_back = SDL_MapRGB(bitmap->format, b.r, b.g, b.b);
-        SDL_FillRect(bitmap, &dstRect, sdl_back);
-        if (*c != ' ') {
-          /* draw foreground */
-          int ascii = TCOD_get_tileid_for_charcode_(*c);
-          TCOD_color_t *curtext = &charcols[ascii];
-          bool first = first_draw[ascii];
-          TCOD_color_t f = *nfg;
-          f = blend_fade_color_(f, fading_color, fade);
-          /* only draw character if foreground color != background color */
-          if (f != b) {
-            if (charmap->format->Amask == 0 && f == fontKeyCol) {
-              /* cannot draw with the key color... */
-              if (f.r < 255) { f.r++; } else { f.r--; }
-            }
-            srcRect.x = (ascii % TCOD_ctx.fontNbCharHoriz)
-                        * TCOD_ctx.font_width;
-            srcRect.y = (ascii / TCOD_ctx.fontNbCharHoriz)
-                        * TCOD_ctx.font_height;
-            srcRect.w = TCOD_ctx.font_width;
-            srcRect.h = TCOD_ctx.font_height;
+      TCOD_ColorRGB b = TCOD_ColorRGB(nbg);
+      dstRect.x = x * TCOD_ctx.font_width;
+      dstRect.y = y * TCOD_ctx.font_height;
+      dstRect.w = TCOD_ctx.font_width;
+      dstRect.h = TCOD_ctx.font_height;
+      /* draw background */
+      b = blend_fade_color_(b, fading_color, fade);
+      sdl_back = SDL_MapRGB(bitmap->format, b.r, b.g, b.b);
+      SDL_FillRect(bitmap, &dstRect, sdl_back);
+      if (c != ' ') {
+        /* draw foreground */
+        int ascii = TCOD_get_tileid_for_charcode_(c);
+        TCOD_ColorRGB *curtext = &charcols[ascii];
+        bool first = first_draw[ascii];
+        TCOD_ColorRGB f = TCOD_ColorRGB(nfg);
+        f = blend_fade_color_(f, fading_color, fade);
+        /* only draw character if foreground color != background color */
+        if (f != b) {
+          if (charmap->format->Amask == 0 && f == fontKeyCol) {
+            /* cannot draw with the key color... */
+            if (f.r < 255) { f.r++; } else { f.r--; }
+          }
+          srcRect.x = (ascii % TCOD_ctx.fontNbCharHoriz)
+                      * TCOD_ctx.font_width;
+          srcRect.y = (ascii / TCOD_ctx.fontNbCharHoriz)
+                      * TCOD_ctx.font_height;
+          srcRect.w = TCOD_ctx.font_width;
+          srcRect.h = TCOD_ctx.font_height;
 
-            if (charmap && (first || *curtext != f)) {
-              /* change the character color in the font */
-              first_draw[ascii] = false;
-              sdl_fore = SDL_MapRGB(charmap->format, f.r, f.g, f.b) & rgb_mask;
-              *curtext = f;
-              if (bpp == 4) {
-                /* 32 bits font : fill the whole character with foreground color */
-                uint32_t *pix = reinterpret_cast<uint32_t *>(
-                    reinterpret_cast<uint8_t*>(charmap->pixels) + srcRect.x * bpp
-                    + srcRect.y * charmap->pitch);
-                int h = TCOD_ctx.font_height;
-                if (!TCOD_ctx.colored[ascii]) {
-                  while (h--) {
-                    int w = TCOD_ctx.font_width;
-                    while (w--) {
+          if (charmap && (first || *curtext != f)) {
+            /* change the character color in the font */
+            first_draw[ascii] = false;
+            sdl_fore = SDL_MapRGB(charmap->format, f.r, f.g, f.b) & rgb_mask;
+            *curtext = f;
+            if (bpp == 4) {
+              /* 32 bits font : fill the whole character with foreground color */
+              uint32_t *pix = reinterpret_cast<uint32_t *>(
+                  reinterpret_cast<uint8_t*>(charmap->pixels) + srcRect.x * bpp
+                  + srcRect.y * charmap->pitch);
+              int h = TCOD_ctx.font_height;
+              if (!TCOD_ctx.colored[ascii]) {
+                while (h--) {
+                  int w = TCOD_ctx.font_width;
+                  while (w--) {
+                    (*pix) &= nrgb_mask;
+                    (*pix) |= sdl_fore;
+                    ++pix;
+                  }
+                  pix += hdelta;
+                }
+              } else {
+                /* colored character : multiply color with foreground color */
+                uint32_t *pixorig = reinterpret_cast<uint32_t *>(
+                    reinterpret_cast<uint8_t*>(charmap_backup->pixels)
+                    + srcRect.x * bpp + srcRect.y * charmap_backup->pitch);
+                int hdelta_backup = (charmap_backup->pitch
+                                      - TCOD_ctx.font_width * 4) / 4;
+                while (h > 0) {
+                  int w = TCOD_ctx.font_width;
+                  while (w > 0) {
+                    int r = reinterpret_cast<uint8_t*>(pixorig)[
+                        charmap_backup->format->Rshift / 8];
+                    int g = reinterpret_cast<uint8_t*>(pixorig)[
+                        charmap_backup->format->Gshift / 8];
+                    int b = reinterpret_cast<uint8_t*>(pixorig)[
+                        charmap_backup->format->Bshift / 8];
+                    (*pix) &= nrgb_mask; /* erase the color */
+                    r = r * f.r / 255;
+                    g = g * f.g / 255;
+                    b = b * f.b / 255;
+                    /* set the new color */
+                    (*pix) |= (r << charmap->format->Rshift)
+                              | (g <<charmap->format->Gshift)
+                              | (b <<charmap->format->Bshift);
+                    w--;
+                    pix++;
+                    pixorig++;
+                  }
+                  h--;
+                  pix += hdelta;
+                  pixorig += hdelta_backup;
+                }
+              }
+            } else {
+              /* 24 bits font : fill only non key color pixels */
+              uint32_t *pix = reinterpret_cast<uint32_t*>(
+                  reinterpret_cast<uint8_t*>(charmap->pixels)
+                  + srcRect.x*bpp + srcRect.y * charmap->pitch);
+              int h = TCOD_ctx.font_height;
+              if (!TCOD_ctx.colored[ascii]) {
+                while (h--) {
+                  int w = TCOD_ctx.font_width;
+                  while (w--) {
+                    if (((*pix) & rgb_mask) != sdl_key ) {
                       (*pix) &= nrgb_mask;
                       (*pix) |= sdl_fore;
-                      ++pix;
                     }
-                    pix += hdelta;
+                    pix = reinterpret_cast<uint32_t*>(
+                        reinterpret_cast<uint8_t*>(pix) + 3);
                   }
-                } else {
-                  /* colored character : multiply color with foreground color */
-                  uint32_t *pixorig = reinterpret_cast<uint32_t *>(
-                      reinterpret_cast<uint8_t*>(charmap_backup->pixels)
-                      + srcRect.x * bpp + srcRect.y * charmap_backup->pitch);
-                  int hdelta_backup = (charmap_backup->pitch
-                                       - TCOD_ctx.font_width * 4) / 4;
-                  while (h > 0) {
-                    int w = TCOD_ctx.font_width;
-                    while (w > 0) {
+                  pix = reinterpret_cast<uint32_t*>(
+                      reinterpret_cast<uint8_t*>(pix) + hdelta);
+                }
+              } else {
+                /* colored character : multiply color with foreground color */
+                uint32_t *pixorig = reinterpret_cast<uint32_t*>(
+                    reinterpret_cast<uint8_t*>(charmap_backup->pixels)
+                    + srcRect.x * 4 + srcRect.y * charmap_backup->pitch);
+                /* charmap_backup is always 32 bits */
+                int hdelta_backup = (charmap_backup->pitch
+                                      - TCOD_ctx.font_width * 4) / 4;
+                while (h > 0) {
+                  int w = TCOD_ctx.font_width;
+                  while (w > 0) {
+                    if (((*pixorig) & rgb_mask) != sdl_key) {
                       int r = reinterpret_cast<uint8_t*>(pixorig)[
                           charmap_backup->format->Rshift / 8];
                       int g = reinterpret_cast<uint8_t*>(pixorig)[
@@ -642,103 +692,30 @@ void TCOD_sys_console_to_bitmap(
                       b = b * f.b / 255;
                       /* set the new color */
                       (*pix) |= (r << charmap->format->Rshift)
-                                | (g <<charmap->format->Gshift)
-                                | (b <<charmap->format->Bshift);
-                      w--;
-                      pix++;
-                      pixorig++;
+                                | (g << charmap->format->Gshift)
+                                | (b << charmap->format->Bshift);
                     }
-                    h--;
-                    pix += hdelta;
-                    pixorig += hdelta_backup;
-                  }
-                }
-              } else {
-                /* 24 bits font : fill only non key color pixels */
-                uint32_t *pix = reinterpret_cast<uint32_t*>(
-                    reinterpret_cast<uint8_t*>(charmap->pixels)
-                    + srcRect.x*bpp + srcRect.y * charmap->pitch);
-                int h = TCOD_ctx.font_height;
-                if (!TCOD_ctx.colored[ascii]) {
-                  while (h--) {
-                    int w = TCOD_ctx.font_width;
-                    while (w--) {
-                      if (((*pix) & rgb_mask) != sdl_key ) {
-                        (*pix) &= nrgb_mask;
-                        (*pix) |= sdl_fore;
-                      }
-                      pix = reinterpret_cast<uint32_t*>(
-                          reinterpret_cast<uint8_t*>(pix) + 3);
-                    }
+                    w--;
                     pix = reinterpret_cast<uint32_t*>(
-                        reinterpret_cast<uint8_t*>(pix) + hdelta);
+                        reinterpret_cast<uint8_t*>(pix) + 3);
+                    pixorig++;
                   }
-                } else {
-                  /* colored character : multiply color with foreground color */
-                  uint32_t *pixorig = reinterpret_cast<uint32_t*>(
-                      reinterpret_cast<uint8_t*>(charmap_backup->pixels)
-                      + srcRect.x * 4 + srcRect.y * charmap_backup->pitch);
-                  /* charmap_backup is always 32 bits */
-                  int hdelta_backup = (charmap_backup->pitch
-                                       - TCOD_ctx.font_width * 4) / 4;
-                  while (h > 0) {
-                    int w = TCOD_ctx.font_width;
-                    while (w > 0) {
-                      if (((*pixorig) & rgb_mask) != sdl_key) {
-                        int r = reinterpret_cast<uint8_t*>(pixorig)[
-                            charmap_backup->format->Rshift / 8];
-                        int g = reinterpret_cast<uint8_t*>(pixorig)[
-                            charmap_backup->format->Gshift / 8];
-                        int b = reinterpret_cast<uint8_t*>(pixorig)[
-                            charmap_backup->format->Bshift / 8];
-                        (*pix) &= nrgb_mask; /* erase the color */
-                        r = r * f.r / 255;
-                        g = g * f.g / 255;
-                        b = b * f.b / 255;
-                        /* set the new color */
-                        (*pix) |= (r << charmap->format->Rshift)
-                                  | (g << charmap->format->Gshift)
-                                  | (b << charmap->format->Bshift);
-                      }
-                      w--;
-                      pix = reinterpret_cast<uint32_t*>(
-                          reinterpret_cast<uint8_t*>(pix) + 3);
-                      pixorig++;
-                    }
-                    h--;
-                    pix = reinterpret_cast<uint32_t*>(
-                        reinterpret_cast<uint8_t*>(pix) + hdelta);
-                    pixorig += hdelta_backup;
-                  }
+                  h--;
+                  pix = reinterpret_cast<uint32_t*>(
+                      reinterpret_cast<uint8_t*>(pix) + hdelta);
+                  pixorig += hdelta_backup;
                 }
               }
             }
-            SDL_BlitSurface(charmap, &srcRect, bitmap, &dstRect);
           }
+          SDL_BlitSurface(charmap, &srcRect, bitmap, &dstRect);
         }
-      }
-      c++;
-      nfg++;
-      nbg++;
-      if (track_changes) {
-        oc++;
-        ofg++;
-        obg++;
       }
     }
   }
 #ifdef USE_SDL_LOCKS
   if (SDL_MUSTLOCK(bitmap)) { SDL_UnlockSurface(bitmap); }
 #endif
-  if (cache) {
-    /* update previous values cache */
-    memcpy(cache->ch_array, console->ch_array,
-           sizeof(console->ch_array[0]) * console->w * console->h);
-    memcpy(cache->fg_array, console->fg_array,
-           sizeof(console->fg_array[0]) * console->w * console->h);
-    memcpy(cache->bg_array, console->bg_array,
-           sizeof(console->bg_array[0]) * console->w * console->h);
-  }
 }
 
 SDL_Surface *TCOD_sys_get_surface(int width, int height, bool alpha) {
@@ -1934,7 +1911,7 @@ void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
 
 	for (x = dx; x < dx + dw; ++x) {
 		for (y = dy; y < dy + dh; ++y) {
-			dat->ch_array[dat->w * y + x] = -1;
+			dat->tiles[dat->w * y + x].ch = -1;
 		}
 	}
 }
@@ -1948,8 +1925,8 @@ void TCOD_sys_set_dirty_character_code(int ch) {
 	struct TCOD_Console *dat = sdl->get_root_console_cache();
 	if (!dat) return;
 	for (i = 0; i < dat->w * dat->h; ++i) {
-		if (dat->ch_array[i] == ch) {
-			dat->ch_array[i] = -1;
+		if (dat->tiles[i].ch == ch) {
+			dat->tiles[i].ch = -1;
 		}
 	}
 }

@@ -445,21 +445,14 @@ bool TCOD_opengl_render(
   for (int y = 0; y < conheight; ++y) {
     for (int x = 0; x < conwidth; ++x) {
       int i = y * conwidth + x;
-      if (track_changes
-          && console->bg_array[i].r == cache->bg_array[i].r
-          && console->bg_array[i].g == cache->bg_array[i].g
-          && console->bg_array[i].b == cache->bg_array[i].b
-          && console->fg_array[i].r == cache->fg_array[i].r
-          && console->fg_array[i].g == cache->fg_array[i].g
-          && console->fg_array[i].b == cache->fg_array[i].b
-          && console->ch_array[i] == cache->ch_array[i]) {
+      if (track_changes && console->tiles[i] == cache->tiles[i]) {
         continue;
       }
       TCOD_opengl_putchar_ex(
           x, y,
-          TCOD_get_tileid_for_charcode_(console->ch_array[i]),
-          console->fg_array[i],
-          console->bg_array[i]
+          TCOD_get_tileid_for_charcode_(console->tiles[i].ch),
+          TCOD_ColorRGB(console->tiles[i].fg),
+          TCOD_ColorRGB(console->tiles[i].bg)
       );
     }
   }
@@ -500,11 +493,11 @@ bool TCOD_opengl_render(
     for (int y = 0; y < conheight; ++y) {
       for (int x = 0; x < conwidth; ++x) {
         int i = y * conwidth + x;
-        if (console->ch_array[i] == ' ') { continue; }
-        const TCOD_color_t& f = console->fg_array[i];
-        const TCOD_color_t& b = console->bg_array[i];
+        if (console->tiles[i].ch == ' ') { continue; }
+        const TCOD_ColorRGB f = TCOD_ColorRGB(console->tiles[i].fg);
+        const TCOD_ColorRGB b = TCOD_ColorRGB(console->tiles[i].bg);
         // only draw character if foreground color != background color
-        if (f.r == b.r && f.g == b.g && f.b == b.b) { continue; }
+        if (f == b) { continue; }
         int destx = x;/* *TCOD_font_width; */
         int desty = y;/* *TCOD_font_height; */
         if (TCOD_ctx.fullscreen) {
@@ -512,7 +505,7 @@ bool TCOD_opengl_render(
           desty += TCOD_ctx.fullscreen_offsety / TCOD_ctx.font_height;
         }
         // draw foreground
-        int ascii = TCOD_ctx.ascii_to_tcod[console->ch_array[i]];
+        int ascii = TCOD_ctx.ascii_to_tcod[console->tiles[i].ch];
         int srcx = ascii % TCOD_ctx.fontNbCharHoriz;
         int srcy = ascii / TCOD_ctx.fontNbCharHoriz;
         glBegin(GL_QUADS);

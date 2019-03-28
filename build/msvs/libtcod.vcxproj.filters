@@ -260,9 +260,6 @@
     <ClCompile Include="..\..\src\libtcod\txtfield_c.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\libtcod\wrappers.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\libtcod\zip.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -355,6 +352,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\libtcod\console\console.cpp">
       <Filter>Source Files\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\wrappers.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

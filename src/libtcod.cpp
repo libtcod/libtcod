@@ -60,6 +60,7 @@
 #include "libtcod/sys_sdl_img_png.cpp"
 #include "libtcod/sys_sdl2_c.cpp"
 #include "libtcod/txtfield.cpp"
+#include "libtcod/wrappers.cpp"
 #include "libtcod/zip.cpp"
 
 #include "libtcod/color/canvas.cpp"

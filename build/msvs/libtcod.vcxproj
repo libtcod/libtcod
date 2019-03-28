@@ -250,7 +250,7 @@
     <ClCompile Include="..\..\src\libtcod\tree_c.c" />
     <ClCompile Include="..\..\src\libtcod\txtfield.cpp" />
     <ClCompile Include="..\..\src\libtcod\txtfield_c.c" />
-    <ClCompile Include="..\..\src\libtcod\wrappers.c" />
+    <ClCompile Include="..\..\src\libtcod\wrappers.cpp" />
     <ClCompile Include="..\..\src\libtcod\zip.cpp" />
     <ClCompile Include="..\..\src\libtcod\zip_c.c" />
     <ClCompile Include="..\..\src\vendor\glad.c" />

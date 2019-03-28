@@ -167,42 +167,29 @@ void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade)
   TCOD_console_set_fade (val, int_to_color(fade));
 }
 
-void TCOD_console_fill_background(TCOD_console_t con, int *r, int *g, int *b) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	int i;
-	TCOD_color_t *curcolor = dat->bg_array;
-	for (i = 0; i < dat->w*dat->h; i++) {
-		curcolor->r = *r;
-		curcolor->g = *g;
-		curcolor->b = *b;
-		curcolor++;
-		r++;
-		g++;
-		b++;
-	}
+void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
+{
+  con = tcod::console::validate_(con);
+  if (!con) { return; }
+  for (int i = 0; i < con->w * con->h; ++i) {
+    con->tiles[i].bg = TCOD_ColorRGBA(r[i], g[i], b[i]);
+  }
 }
-
-void TCOD_console_fill_foreground(TCOD_console_t con, int *r, int *g, int *b) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	int i;
-	TCOD_color_t *curcolor = dat->fg_array;
-	for (i = 0; i < dat->w*dat->h; i++) {
-		curcolor->r = *r;
-		curcolor->g = *g;
-		curcolor->b = *b;
-		curcolor++;
-		r++;
-		g++;
-		b++;
-	}
+void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
+{
+  con = tcod::console::validate_(con);
+  if (!con) { return; }
+  for (int i = 0; i < con->w * con->h; ++i) {
+    con->tiles[i].fg = TCOD_ColorRGBA(r[i], g[i], b[i]);
+  }
 }
-
-void TCOD_console_fill_char(TCOD_console_t con, int *arr) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
-	int i;
-	for (i = 0; i < dat->w*dat->h; i++) {
-		dat->ch_array[i] = arr[i];
-	}
+void TCOD_console_fill_char(TCOD_Console* con, int *arr)
+{
+  con = tcod::console::validate_(con);
+  if (!con) { return; }
+  for (int i = 0; i < con->w * con->h; ++i) {
+    con->tiles[i].ch = arr[i];
+  }
 }
 
 colornum_t

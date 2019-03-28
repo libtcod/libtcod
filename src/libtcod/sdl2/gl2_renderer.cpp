@@ -144,14 +144,21 @@ class TwoTranglesRenderer {
 
     glActiveTexture(GL_TEXTURE0 + 1);
     bg_tex_.bind();
+    std::vector<TCOD_ColorRGB> tile_colors(console.w * console.h);
+    for (int i = 0; i < console.w * console.h; ++i) {
+      tile_colors[i] = TCOD_ColorRGB(console.tiles[i].bg);
+    }
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
-                    GL_UNSIGNED_BYTE, console.bg_array);
+                    GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_bg"), 1);
 
     glActiveTexture(GL_TEXTURE0 + 2);
     fg_tex_.bind();
+    for (int i = 0; i < console.w * console.h; ++i) {
+      tile_colors[i] = TCOD_ColorRGB(console.tiles[i].fg);
+    }
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
-                    GL_UNSIGNED_BYTE, console.fg_array);
+                    GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_fg"), 2);
 
     glActiveTexture(GL_TEXTURE0 + 3);
@@ -159,7 +166,7 @@ class TwoTranglesRenderer {
     std::vector<uint8_t> tile_indexes(console.w * console.h * 4);
     int tile_i = 0;
     for (int i = 0; i < console.w * console.h; ++i) {
-      auto tile = alias_.get_tile_position(console.ch_array[i]);
+      auto tile = alias_.get_tile_position(console.tiles[i].ch);
       tile_indexes[tile_i++] = tile.at(0) & 0xff;
       tile_indexes[tile_i++] = tile.at(0) >> 8;
       tile_indexes[tile_i++] = tile.at(1) & 0xff;
@@ -286,9 +293,9 @@ class GridRenderer {
     for (int y = 0; y < console.h; ++y) {
       for (int x = 0; x < console.w; ++x) {
         int i = y * console.w + x;
-        TilePos tile_pos(alias_.get_tile_position(console.ch_array[i]));
-        ColorRGBA fg(console.fg_array[i]);
-        ColorRGBA bg(console.bg_array[i]);
+        TilePos tile_pos(alias_.get_tile_position(console.tiles[i].ch));
+        ColorRGBA fg(console.tiles[i].fg);
+        ColorRGBA bg(console.tiles[i].bg);
         attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y), fg, bg);
         attributes.emplace_back(TilePos(tile_pos.x, tile_pos.y + 1), fg, bg);
         attributes.emplace_back(TilePos(tile_pos.x + 1, tile_pos.y), fg, bg);

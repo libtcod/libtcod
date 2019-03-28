@@ -45,22 +45,16 @@ TCOD_Console* TCOD_console_new(int w, int h)
   }
   return con;
 }
-static void TCOD_console_data_alloc(struct TCOD_Console *con)
+static void TCOD_console_data_alloc(struct TCOD_Console& console)
 {
-  int size = con->w * con->h;
-  if (!con->ch_array) { con->ch_array = new int[size](); }
-  if (!con->fg_array) { con->fg_array = new TCOD_ColorRGB[size](); }
-  if (!con->bg_array) { con->bg_array = new TCOD_ColorRGB[size](); }
+  int size = console.w * console.h;
+  if (!console.tiles) { console.tiles = new struct TCOD_ConsoleTile[size](); }
 }
 static void TCOD_console_data_free(struct TCOD_Console *con)
 {
   if (!con) { return; }
-  delete[] con->ch_array;
-  delete[] con->fg_array;
-  delete[] con->bg_array;
-  con->ch_array = NULL;
-  con->fg_array = NULL;
-  con->bg_array = NULL;
+  delete[] con->tiles;
+  con->tiles = nullptr;
 }
 bool TCOD_console_init(TCOD_Console* con)
 {
@@ -69,12 +63,12 @@ bool TCOD_console_init(TCOD_Console* con)
   con->fore = TCOD_white;
   con->back = TCOD_black;
 
-  TCOD_console_data_alloc(con);
+  TCOD_console_data_alloc(*con);
 
   con->bkgnd_flag = TCOD_BKGND_NONE;
   con->alignment = TCOD_LEFT;
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->ch_array[i] = ' ';
+    con->tiles[i].ch = ' ';
   }
   return true;
 }
@@ -107,7 +101,7 @@ void TCOD_console_resize_(TCOD_Console* console, int width, int height)
   TCOD_console_data_free(console);
   console->w = width;
   console->h = height;
-  TCOD_console_data_alloc(console);
+  TCOD_console_data_alloc(*console);
 }
 int TCOD_console_get_width(const TCOD_Console* con)
 {
@@ -171,23 +165,20 @@ void TCOD_console_blit_key_color(
       if (!TCOD_console_is_index_valid_(src, cx, cy)) { continue; }
       if (!TCOD_console_is_index_valid_(dst, dx, dy)) { continue; }
       /* Source references. */
-      const int& src_ch = src->ch_array[src_idx];
-      const TCOD_color_t& src_fg = src->fg_array[src_idx];
-      const TCOD_color_t& src_bg = src->bg_array[src_idx];
+      const struct TCOD_ConsoleTile& src_tile = src->tiles[src_idx];
+      const int& src_ch = src_tile.ch;
+      const TCOD_color_t src_fg = TCOD_color_t(src_tile.fg);
+      const TCOD_color_t src_bg = TCOD_color_t(src_tile.bg);
       /* Check if source pixel is transparent. */
-      if (key_color
-          && src_bg.r == key_color->r
-          && src_bg.g == key_color->g
-          && src_bg.b == key_color->b) { continue; }
+      if (key_color && TCOD_color_t(src_tile.bg) == *key_color) { continue; }
       /* Destination references. */
-      int& dst_ch = dst->ch_array[dst_idx];
-      TCOD_color_t& dst_fg = dst->fg_array[dst_idx];
-      TCOD_color_t& dst_bg = dst->bg_array[dst_idx];
+      struct TCOD_ConsoleTile& dst_tile = dst->tiles[dst_idx];
+      int& dst_ch = dst_tile.ch;
+      TCOD_color_t dst_fg = TCOD_color_t(dst_tile.fg);
+      TCOD_color_t dst_bg = TCOD_color_t(dst_tile.bg);
       if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
         /* No alpha, so perform a plain copy. */
-        dst_ch = src_ch;
-        dst_fg = src_fg;
-        dst_bg = src_bg;
+        dst_tile = src_tile;
         continue;
       }
       dst_bg = TCOD_color_lerp(dst_bg, src_bg, background_alpha);
@@ -210,6 +201,8 @@ void TCOD_console_blit_key_color(
               dst_bg, src_fg, (foreground_alpha - 0.5f) * 2);
         }
       }
+      dst_tile.fg = TCOD_ColorRGBA(dst_fg, dst_tile.fg.a);
+      dst_tile.bg = TCOD_ColorRGBA(dst_bg, dst_tile.bg.a);
     }
   }
 }
@@ -237,7 +230,7 @@ void TCOD_console_put_char(TCOD_Console* con, int x, int y, int c,
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->ch_array[y * con->w + x] = c;
+  con->tiles[y * con->w + x].ch = c;
   TCOD_console_set_char_foreground(con, x, y, con->fore);
   TCOD_console_set_char_background(con, x, y, con->back, flag);
 }
@@ -246,7 +239,7 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c,
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->ch_array[y * con->w + x] = c;
+  con->tiles[y * con->w + x].ch = c;
   TCOD_console_set_char_foreground(con, x, y, fore);
   TCOD_console_set_char_background(con, x, y, back, TCOD_BKGND_SET);
 }
@@ -255,9 +248,7 @@ void TCOD_console_clear(TCOD_console_t con)
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->ch_array[i] = ' ';
-    con->fg_array[i] = con->fore;
-    con->bg_array[i] = con->back;
+    con->tiles[i] = {' ', TCOD_ColorRGBA(con->fore), TCOD_ColorRGBA(con->back)};
   }
   /* clear the sdl renderer cache */
   TCOD_sys_set_dirty(0, 0, con->w, con->h);
@@ -267,27 +258,27 @@ TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con,
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_black; }
-  return con->bg_array[y * con->w + x];
+  return TCOD_color_t(con->tiles[y * con->w + x].bg);
 }
 void TCOD_console_set_char_foreground(TCOD_Console* con,
                                       int x, int y, TCOD_color_t col)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->fg_array[y * con->w + x] = col;
+  con->tiles[y * con->w + x].fg = TCOD_ColorRGBA(col);
 }
 TCOD_color_t TCOD_console_get_char_foreground(const TCOD_Console* con,
                                               int x, int y)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_white; }
-  return con->fg_array[y * con->w + x];
+  return TCOD_color_t(con->tiles[y * con->w + x].fg);
 }
 int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return 0; }
-  return con->ch_array[y * con->w + x];
+  return con->tiles[y * con->w + x].ch;
 }
 /**
  *  Clamp colors channels that are outside of uint8_t's range.
@@ -301,13 +292,14 @@ static constexpr uint8_t clamp_color_(int c) noexcept
  *  Mix two colors using a lambda.
  */
 template <typename F>
-static constexpr TCOD_color_t blend_color_(
-    const TCOD_color_t& bg, const TCOD_color_t& fg, const F& lambda)
+static constexpr TCOD_ColorRGBA blend_color_(
+    const TCOD_ColorRGBA& bg, const TCOD_color_t& fg, const F& lambda)
 {
   return {
       clamp_color_(lambda(bg.r, fg.r)),
       clamp_color_(lambda(bg.g, fg.g)),
       clamp_color_(lambda(bg.b, fg.b)),
+      bg.a,
   };
 }
 void TCOD_console_set_char_background(
@@ -315,15 +307,15 @@ void TCOD_console_set_char_background(
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  TCOD_color_t& bg = con->bg_array[y * con->w + x];
+  TCOD_ColorRGBA& bg = con->tiles[y * con->w + x].bg;
   if (flag == TCOD_BKGND_DEFAULT) { flag = con->bkgnd_flag; }
   int alpha = flag >> 8;
   switch (flag & 0xff) {
     case TCOD_BKGND_SET:
-      bg = col;
+      bg = TCOD_ColorRGBA(col, bg.a);
       break;
     case TCOD_BKGND_MULTIPLY:
-      bg = TCOD_color_multiply(bg, col);
+      bg = TCOD_ColorRGBA(TCOD_color_multiply(TCOD_ColorRGB(bg), col), bg.a);
       break;
     case TCOD_BKGND_LIGHTEN:
       bg = blend_color_(bg, col,
@@ -371,7 +363,7 @@ void TCOD_console_set_char_background(
       break;
     case TCOD_BKGND_ALPH:
       // newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
-      bg = TCOD_color_lerp(bg, col, alpha / 255.0f);
+      bg = TCOD_ColorRGBA(TCOD_color_lerp(TCOD_ColorRGB(bg), col, alpha / 255.0f), bg.a);
       break;
     default: break;
   }
@@ -380,7 +372,7 @@ void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->ch_array[y * con->w + x] = c;
+  con->tiles[y * con->w + x].ch = c;
 }
 void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col)
 {

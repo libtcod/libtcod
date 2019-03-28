@@ -99,7 +99,7 @@ class SDL2TilesetAlias::impl : public TilesetObserver {
   auto prepare_alias(const TCOD_Console& console) -> SDL_Texture*
   {
     for (int i = 0; i < console.w * console.h; ++i) {
-      int codepoint = console.ch_array[i];
+      int codepoint = console.tiles[i].ch;
       if (codepoint >= static_cast<int>(local_map_.size())
           || local_map_.at(codepoint) < 0) {
         if (ensure_tile(codepoint) == -1) {

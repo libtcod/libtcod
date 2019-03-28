@@ -70,6 +70,16 @@ typedef enum {
  *  A console tile.
  */
 struct TCOD_ConsoleTile {
+#ifdef __cplusplus
+  bool operator==(const TCOD_ConsoleTile& rhs) const noexcept
+  {
+    return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg;
+  }
+  bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept
+  {
+    return !(*this == rhs);
+  }
+#endif // __cplusplus
   /**
    *  The Unicode codepoint for this tile.
    */
@@ -89,14 +99,10 @@ struct TCOD_ConsoleTile {
  *  All attributes should be considered private.
  */
 struct TCOD_Console {
-  /** A contiguous array of console tiles. */
-  struct TCOD_ConsoleTile* data;
-  /** Character code array. */
-  int *ch_array;
-  /** Pointers to arrays of TCOD_color_t colors. */
-  TCOD_color_t *fg_array, *bg_array;
   /** Console width and height (in characters, not pixels.) */
   int w,h;
+  /** A contiguous array of console tiles. */
+  struct TCOD_ConsoleTile* tiles;
   /** Default background operator for print & print_rect functions. */
   TCOD_bkgnd_flag_t bkgnd_flag;
   /** Default alignment for print & print_rect functions. */
@@ -338,11 +344,11 @@ namespace console {
   typedef MatrixView<Tile, 2> ConsoleView;
   inline ConsoleView as_view_(struct TCOD_Console& console)
   {
-    return {console.data, {console.h, console.w}};
+    return {console.tiles, {console.h, console.w}};
   }
   inline const ConsoleView as_view_(const struct TCOD_Console& console)
   {
-    return {console.data, {console.h, console.w}};
+    return {console.tiles, {console.h, console.w}};
   }
 } // namespace console
 } // namespace tcod

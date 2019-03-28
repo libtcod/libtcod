@@ -65,8 +65,8 @@ void put(
   if (!console) { return; }
   if (!TCOD_console_is_index_valid_(console, x, y)) { return; }
   int console_index = y * console->w + x;
-  if (ch > 0) { console->ch_array[console_index] = ch; }
-  if (fg) { console->fg_array[console_index] = *fg; }
+  if (ch > 0) { console->tiles[console_index].ch = ch; }
+  if (fg) { TCOD_console_set_char_foreground(console, x, y, *fg); }
   if (bg) { TCOD_console_set_char_background(console, x, y, *bg, flag); }
 }
 void draw_rect(

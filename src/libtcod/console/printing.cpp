@@ -904,11 +904,15 @@ class FormattedUnicodeIterator: public UnicodeIterator {
   FormattedUnicodeIterator(const std::string& str,
                            const TCOD_color_t* fg, const TCOD_color_t* bg)
   : UnicodeIterator(str), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
-  {}
+  {
+    parse_special_codes();
+  }
   FormattedUnicodeIterator(const UnicodeIterator& mit,
                            const TCOD_color_t* fg, const TCOD_color_t* bg)
   : UnicodeIterator(mit), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
-  {}
+  {
+    parse_special_codes();
+  }
   FormattedUnicodeIterator(const FormattedUnicodeIterator& rhs)
   : UnicodeIterator(rhs),
     default_fg_(rhs.default_fg_), default_bg_(rhs.default_bg_),

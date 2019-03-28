@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Changed
 - Releases will no longer display debug messages.
 
+### Fixed
+- Console printing was ignoring color codes at the beginning of a string.
+
 ## [1.11.1] - 2019-03-15
 ### Fixed
 - Fixed header declaration for `TCOD_sys_accumulate_console`.

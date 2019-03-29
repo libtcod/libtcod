@@ -7,11 +7,11 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
-### Changed
-- Releases will no longer display debug messages.
 
+## [1.11.2] - 2019-03-29
 ### Fixed
 - Console printing was ignoring color codes at the beginning of a string.
+- Releases no longer display debug messages.
 
 ## [1.11.1] - 2019-03-15
 ### Fixed

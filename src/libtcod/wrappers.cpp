@@ -50,7 +50,10 @@ TCOD_color_t int_to_color (colornum_t col) {
   return ret;
 }
 
-#define color_to_int(col) (int)(((int)((col).b) << 16) | ((col).g << 8) | (col).r)
+static constexpr colornum_t color_to_int(const TCOD_ColorRGB& color)
+{
+  return (color.b << 16) | (color.g << 8) | color.r;
+}
 
 bool TCOD_color_equals_wrapper (colornum_t c1, colornum_t c2) {
   return TCOD_color_equals (int_to_color(c1), int_to_color(c2));
@@ -276,9 +279,19 @@ void TCOD_console_double_vline(TCOD_console_t con,int x,int y, int l, TCOD_bkgnd
 	for (i=y; i< y+l; i++) TCOD_console_put_char(con,x,i,TCOD_CHAR_DVLINE,flag);
 }
 
-
-void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...) {
-	struct TCOD_Console *dat = con ? (struct TCOD_Console *)con : TCOD_ctx.root;
+void TCOD_console_print_double_frame(
+    TCOD_Console* con,
+    int x,
+    int y,
+    int w,
+    int h,
+    bool empty,
+    TCOD_bkgnd_flag_t flag,
+    const char *fmt,
+    ...)
+{
+  struct TCOD_Console *dat = tcod::console::validate_(con);
+  if (!dat) { return; }
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,flag);
 	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,flag);
 	TCOD_console_put_char(con,x,y+h-1,TCOD_CHAR_DSW,flag);
@@ -303,7 +316,7 @@ void TCOD_console_print_double_frame(TCOD_console_t con,int x,int y,int w,int h,
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
 		title[w-3]=0; /* truncate if needed */
-		xs = x + (w-(int)strlen(title)-2)/2;
+    xs = x + (w - static_cast<int>(strlen(title)) - 2) / 2;
 		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
@@ -339,7 +352,9 @@ void TCOD_namegen_get_sets_wrapper(char **sets) {
 	TCOD_list_t l=TCOD_namegen_get_sets();
 	char **it;
 	int i=0;
-	for (it=(char**)TCOD_list_begin(l); it != (char **)TCOD_list_end(l); it++) {
+  for (it = reinterpret_cast<char**>(TCOD_list_begin(l));
+       it != reinterpret_cast<char**>(TCOD_list_end(l));
+       ++it) {
 		sets[i++]=*it;
 	}
 }

@@ -32,6 +32,12 @@
 #ifndef TCOD_CONSOLE_CONSOLE_H_
 #define TCOD_CONSOLE_CONSOLE_H_
 
+#ifdef __cplusplus
+#include <array>
+#include <stdexcept>
+#include <string>
+#endif // __cplusplus
+
 #include "../portability.h"
 #include "../color/color.h"
 #include "../utility/matrix.h"
@@ -97,8 +103,68 @@ struct TCOD_ConsoleTile {
  *  The libtcod console struct.
  *
  *  All attributes should be considered private.
+ *
+ *  All C++ methods should be considered provisional, and are subject to
+ *  change.
  */
 struct TCOD_Console {
+#ifdef __cplusplus
+  struct TCOD_ConsoleTile* begin() noexcept
+  {
+    return tiles;
+  }
+  const struct TCOD_ConsoleTile* begin() const noexcept
+  {
+    return tiles;
+  }
+  struct TCOD_ConsoleTile* end() noexcept
+  {
+    return tiles + w * h;
+  }
+  const struct TCOD_ConsoleTile* end() const noexcept
+  {
+    return tiles + w * h;
+  }
+  auto operator[](const std::array<int, 2>& yx) noexcept
+  -> struct TCOD_ConsoleTile&
+  {
+    return tiles[w * yx[0] + yx[1]];
+  }
+  auto operator[](const std::array<int, 2>& yx) const noexcept
+  -> const struct TCOD_ConsoleTile&
+  {
+    return tiles[w * yx[0] + yx[1]];
+  }
+  struct TCOD_ConsoleTile& at(int y, int x)
+  {
+    range_check_(y, x);
+    return (*this)[{y, x}];
+  }
+  const struct TCOD_ConsoleTile& at(int y, int x) const
+  {
+    range_check_(y, x);
+    return (*this)[{y, x}];
+  }
+  void range_check_(int y, int x) const
+  {
+    if (!in_bounds(y, x)) {
+      throw std::out_of_range(
+        std::string("Out of bounds lookup {x=")
+        + std::to_string(x)
+        + ", y="
+        + std::to_string(y)
+        + "} on console of shape {"
+        + std::to_string(w)
+        + ", "
+        + std::to_string(h)
+        + "}.");
+    }
+  }
+  bool in_bounds(int y, int x) const noexcept
+  {
+    return 0 <= x && x < w && 0 <= y && y < h;
+  }
+#endif // __cplusplus
   /** Console width and height (in characters, not pixels.) */
   int w,h;
   /** A contiguous array of console tiles. */

@@ -67,9 +67,7 @@ bool TCOD_console_init(TCOD_Console* con)
 
   con->bkgnd_flag = TCOD_BKGND_NONE;
   con->alignment = TCOD_LEFT;
-  for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].ch = ' ';
-  }
+  TCOD_console_clear(con);
   return true;
 }
 bool TCOD_console_init(TCOD_Console* con, const std::string& title,
@@ -134,6 +132,61 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
   con = TCOD_console_validate_(con);
   return (con ? con->alignment : TCOD_LEFT);
 }
+/**
+ *  A modified lerp operation which can accept RGBA types.
+ */
+static auto TCOD_console_blit_lerp_(
+    const struct TCOD_ColorRGBA color1,
+    const struct TCOD_ColorRGBA color2,
+    float interp)
+-> struct TCOD_ColorRGBA
+{
+  return tcod::ColorRGBA{
+      TCOD_color_lerp(tcod::ColorRGB(color1), tcod::ColorRGB(color2), interp),
+      color1.a,
+  };
+}
+/**
+ *  Return the tile for a blit operation between src and dst.
+ */
+static auto TCOD_console_blit_cell_(
+    const struct TCOD_ConsoleTile& src,
+    const struct TCOD_ConsoleTile& dst,
+    float fg_alpha,
+    float bg_alpha,
+    const TCOD_ColorRGB* key_color)
+-> struct TCOD_ConsoleTile
+{
+  if (key_color && tcod::ColorRGB(src.bg) == *key_color) {
+    return dst; // Source pixel is transparent.
+  }
+  if (fg_alpha >= 1.0f && bg_alpha >= 1.0f) {
+    return src; // No alpha. Perform a plain copy.
+  }
+  int ch = dst.ch;
+  tcod::ColorRGBA bg(dst.bg);
+  tcod::ColorRGBA fg(dst.fg);
+  bg = TCOD_console_blit_lerp_(bg, src.bg, bg_alpha);
+  if (src.ch == ' ') {
+    // Source is space, so keep the current glyph.
+    fg = TCOD_console_blit_lerp_(fg, src.bg, bg_alpha);
+  } else if (ch == ' ') {
+    // Destination is space, so use the glyph from source.
+    ch = src.ch;
+    fg = TCOD_console_blit_lerp_(bg, src.fg, fg_alpha);
+  } else if (ch == src.ch) {
+    fg = TCOD_console_blit_lerp_(fg, src.fg, fg_alpha);
+  } else {
+    /* Pick the glyph based on foreground_alpha. */
+    if (fg_alpha < 0.5f) {
+      fg = TCOD_console_blit_lerp_(fg, bg, fg_alpha * 2);
+    } else {
+      ch = src.ch;
+      fg = TCOD_console_blit_lerp_(bg, src.fg, (fg_alpha - 0.5f) * 2);
+    }
+  }
+  return {ch, fg, bg};
+}
 void TCOD_console_blit_key_color(
     const TCOD_Console* src,
     int xSrc,
@@ -160,49 +213,14 @@ void TCOD_console_blit_key_color(
       /* Check if we're outside the dest console. */
       int dx = cx - xSrc + xDst;
       int dy = cy - ySrc + yDst;
-      int dst_idx = dy * dst->w + dx;
-      int src_idx = cy * src->w + cx;
-      if (!TCOD_console_is_index_valid_(src, cx, cy)) { continue; }
-      if (!TCOD_console_is_index_valid_(dst, dx, dy)) { continue; }
-      /* Source references. */
-      const struct TCOD_ConsoleTile& src_tile = src->tiles[src_idx];
-      const int& src_ch = src_tile.ch;
-      const TCOD_ColorRGB src_fg = tcod::ColorRGB(src_tile.fg);
-      const TCOD_ColorRGB src_bg = tcod::ColorRGB(src_tile.bg);
-      /* Check if source pixel is transparent. */
-      if (key_color && tcod::ColorRGB(src_tile.bg) == *key_color) { continue; }
-      /* Destination references. */
-      struct TCOD_ConsoleTile& dst_tile = dst->tiles[dst_idx];
-      int& dst_ch = dst_tile.ch;
-      TCOD_ColorRGB dst_fg = tcod::ColorRGB(dst_tile.fg);
-      TCOD_ColorRGB dst_bg = tcod::ColorRGB(dst_tile.bg);
-      if (foreground_alpha == 1.0f && background_alpha == 1.0f) {
-        /* No alpha, so perform a plain copy. */
-        dst_tile = src_tile;
-        continue;
-      }
-      dst_bg = TCOD_color_lerp(dst_bg, src_bg, background_alpha);
-      if (src_ch == ' ') {
-        /* Source is space, so keep the current glyph. */
-        dst_fg = TCOD_color_lerp(dst_fg, src_bg, background_alpha);
-      } else if (dst_ch == ' ') {
-        /* Destination is space, so use the glyph from source. */
-        dst_ch = src_ch;
-        dst_fg = TCOD_color_lerp(dst_bg, src_fg, foreground_alpha);
-      } else if (dst_ch == src_ch) {
-        dst_fg = TCOD_color_lerp(dst_fg, src_fg, foreground_alpha);
-      } else {
-        /* Pick the glyph based on foreground_alpha. */
-        if (foreground_alpha < 0.5f) {
-          dst_fg = TCOD_color_lerp(dst_fg, dst_bg, foreground_alpha * 2);
-        } else {
-          dst_ch = src_ch;
-          dst_fg = TCOD_color_lerp(
-              dst_bg, src_fg, (foreground_alpha - 0.5f) * 2);
-        }
-      }
-      dst_tile.fg = tcod::ColorRGBA(dst_fg, dst_tile.fg.a);
-      dst_tile.bg = tcod::ColorRGBA(dst_bg, dst_tile.bg.a);
+      if (!src->in_bounds(cy, cx)) { continue; }
+      if (!dst->in_bounds(dy, dx)) { continue; }
+      dst->at(dy, dx) = TCOD_console_blit_cell_(
+          src->at(cy, cx),
+          dst->at(dy, dx),
+          foreground_alpha,
+          background_alpha,
+          key_color);
     }
   }
 }
@@ -247,8 +265,8 @@ void TCOD_console_clear(TCOD_console_t con)
 {
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return; }
-  for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i] = {' ', tcod::ColorRGBA(con->fore), tcod::ColorRGBA(con->back)};
+  for (auto& tile : *con) {
+    tile = {' ', tcod::ColorRGBA(con->fore), tcod::ColorRGBA(con->back)};
   }
   /* clear the sdl renderer cache */
   TCOD_sys_set_dirty(0, 0, con->w, con->h);

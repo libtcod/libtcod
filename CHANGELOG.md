@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- New consoles are initialized as if clear was called.
 
 ## [1.11.2] - 2019-03-29
 ### Fixed

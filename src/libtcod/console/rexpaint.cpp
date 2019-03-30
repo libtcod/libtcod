@@ -33,7 +33,7 @@
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
-#include <limits.h>
+#include <limits>
 
 #include <zlib.h>
 
@@ -43,21 +43,22 @@
 #include "../color.h"
 
 /* Convert a little-endian number to native memory order. */
-static uint32_t decode_little_endian(uint32_t data) {
-  int i;
-  uint32_t result=0;
-  for(i=0; i<(int)sizeof(result);++i){
-    result += (unsigned int)((unsigned char*)&data)[i] << (CHAR_BIT * i);
+static uint32_t decode_little_endian(uint32_t data)
+{
+  uint32_t result = 0;
+  const uint8_t* p = reinterpret_cast<uint8_t*>(&data);
+  for(int i = 0; i < static_cast<int>(sizeof(result)); ++i) {
+      result += p[i] << (std::numeric_limits<uint8_t>::digits * i);
   }
   return result;
 }
 /* Byte swaps a number into little-endian order to be saved to disk. */
 static uint32_t encode_little_endian(uint32_t number) {
-  int i;
-  uint32_t result=0;
-  for(i=0; i<(int)sizeof(result);++i){
-    ((unsigned char*)&result)[i] = number & UCHAR_MAX;
-    number >>= CHAR_BIT;
+  uint32_t result = 0;
+  uint8_t* p = reinterpret_cast<uint8_t*>(&result);
+  for(int i = 0; i < static_cast<int>(sizeof(result)); ++i) {
+    p[i] = number & std::numeric_limits<uint8_t>::max();
+    number >>= std::numeric_limits<uint8_t>::digits;
   }
   return result;
 }
@@ -77,13 +78,16 @@ struct RexPaintTile {
 };
 /* Read data from a gz file, returns 0 on success, or -1 on any error. */
 static int load_gz_confirm(gzFile gz_file, void *data, size_t length) {
-  if (gzread(gz_file, data, (int)length) != length) { return -1; }
+  int length_ = static_cast<int>(length);
+  if (gzread(gz_file, data, length_) != length_) { return -1; }
   return 0;
 }
 /* Loads a little-endian 32 bit signed int into memory. */
 static int load_int32(gzFile gz_file, int32_t *out) {
   if (load_gz_confirm(gz_file, out, sizeof(out[0]))) { return -1; }
-  *out = (int32_t)decode_little_endian((uint32_t)(out[0]));
+  *out = static_cast<int32_t>(
+      decode_little_endian(static_cast<uint32_t>(out[0]))
+  );
   return 0;
 }
 static int load_header(gzFile gz_file, struct RexPaintHeader *xp_header) {
@@ -244,7 +248,7 @@ bool TCOD_console_load_xp(TCOD_console_t con, const char *filename) {
 }
 /* Saves a 32-bit signed int encoded as little-endian to gz_file. */
 static int write_int32(gzFile gz_file, int32_t number) {
-  uint32_t encoded = encode_little_endian((uint32_t)number);
+  uint32_t encoded = encode_little_endian(static_cast<uint32_t>(number));
   if (!gzwrite(gz_file, &encoded, sizeof(encoded))) {
     return -1;
   }

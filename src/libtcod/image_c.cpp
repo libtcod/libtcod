@@ -743,9 +743,7 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
 
   /* Ignore all duplicates... */
   for (i = 1; i < 4; i++) {
-    if (desired[i].r != palette[0].r
-        || desired[i].g != palette[0].g
-        || desired[i].b != palette[0].b) { break; }
+    if (desired[i] != palette[0]) { break; }
   }
 
   /* All the same. */
@@ -763,13 +761,9 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   /* remaining colours */
   ++i;
   while (i < 4) {
-    if (desired[i].r == palette[0].r
-        && desired[i].g == palette[0].g
-        && desired[i].b == palette[0].b) {
+    if (desired[i] == palette[0]) {
       ++weight[0];
-    } else if (desired[i].r == palette[1].r
-               && desired[i].g == palette[1].g
-               && desired[i].b == palette[1].b)  {
+    } else if (desired[i] == palette[1])  {
       flag |= 1 << (i - 1);
       ++weight[1];
     } else {
@@ -860,18 +854,12 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       TCOD_color_t consoleBack =
           TCOD_console_get_char_background(con, conx, cony);
       grid[0] = TCOD_image_get_pixel(image, cx, cy);
-      if (image->has_key_color
-          && grid[0].r == image->key_color.r
-          && grid[0].g == image->key_color.g
-          && grid[0].b == image->key_color.b) {
+      if (image->has_key_color && grid[0] == image->key_color) {
         grid[0] = consoleBack;
       }
       if (cx < maxx - 1) {
         grid[1] = TCOD_image_get_pixel(image, cx + 1, cy);
-        if (image->has_key_color
-            && grid[1].r == image->key_color.r
-            && grid[1].g == image->key_color.g
-            && grid[1].b == image->key_color.b) {
+        if (image->has_key_color && grid[1] == image->key_color) {
           grid[1] = consoleBack;
         }
       } else {
@@ -879,10 +867,7 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       }
       if (cy < maxy-1) {
         grid[2] = TCOD_image_get_pixel(image, cx, cy + 1);
-        if (image->has_key_color
-            && grid[2].r == image->key_color.r
-            && grid[2].g == image->key_color.g
-            && grid[2].b == image->key_color.b) {
+        if (image->has_key_color && grid[2] == image->key_color) {
           grid[2] = consoleBack;
         }
       } else {
@@ -890,10 +875,7 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       }
       if (cx < maxx-1 && cy < maxy-1) {
         grid[3] = TCOD_image_get_pixel(image, cx + 1, cy + 1);
-        if (image->has_key_color
-            && grid[3].r == image->key_color.r
-            && grid[3].g == image->key_color.g
-            && grid[3].b == image->key_color.b) {
+        if (image->has_key_color && grid[3] == image->key_color) {
           grid[3] = consoleBack;
         }
       } else {

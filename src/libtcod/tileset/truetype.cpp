@@ -29,7 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <exception>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 
 #include "truetype.h"
@@ -63,6 +65,9 @@ class TTFontLoader {
     int raw_ascent;
     int raw_descent;
     int raw_line_gap;
+    if (width_ <= 0) {
+      width_ = guess_font_width();
+    }
     stbtt_GetFontVMetrics(&font_info_, &raw_ascent, &raw_descent, &raw_line_gap);
     ascent_ = raw_ascent * scale_;
     descent_ = raw_descent * scale_;
@@ -109,12 +114,35 @@ class TTFontLoader {
     int right;
     int bottom;
   };
+  /**
+   *  Return the bounding box for this glyph.
+   */
   auto get_glyph_bbox(int glyph) const -> BBox
   {
     BBox bbox;
     stbtt_GetGlyphBitmapBox(&font_info_, glyph, scale_, scale_,
                             &bbox.left, &bbox.top, &bbox.right, &bbox.bottom);
     return bbox;
+  }
+  /**
+   *  Return the bounding box for all possible glyphs.
+   */
+  auto get_font_bbox() const -> BBox
+  {
+    BBox bbox;
+    stbtt_GetFontBoundingBox(
+        &font_info_, &bbox.left, &bbox.top, &bbox.right, &bbox.bottom);
+    return bbox;
+  }
+  /**
+   *  Try to return a decent guess for this fonts width.
+   */
+  int guess_font_width() const
+  {
+    BBox font_bbox = get_font_bbox();
+    return static_cast<int>(
+        static_cast<float>(font_bbox.right - font_bbox.left) * scale_
+    );
   }
   /**
    *  Data buffer for the font file.
@@ -156,6 +184,11 @@ int TCOD_tileset_load_truetype_(
   using tcod::engine::set_tileset;
   using tcod::tileset::load_truetype;
   if (!path) { return -1; }
-  set_tileset(load_truetype(path, {tile_width, tile_height}));
+  try {
+    set_tileset(load_truetype(path, {tile_width, tile_height}));
+  } catch (const std::exception& e) {
+    std::cerr << "Error while loading font: " << e.what();
+    return -1;
+  }
   return 0;
 }

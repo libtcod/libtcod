@@ -145,6 +145,10 @@ struct TCOD_Console {
     range_check_(y, x);
     return (*this)[{y, x}];
   }
+  int size() const
+  {
+    return w * h;
+  }
   void range_check_(int y, int x) const
   {
     if (!in_bounds(y, x)) {

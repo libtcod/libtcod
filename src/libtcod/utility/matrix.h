@@ -172,10 +172,10 @@ class Matrix {
   using strides_type = typename view_type::strides_type;
   Matrix() = default;
   Matrix(const shape_type& shape)
-  : data_{get_size_from_shape(shape)}, view_{data_.data(), shape}
+  : data_(get_size_from_shape(shape)), view_(data_.data(), shape)
   {}
   Matrix(const shape_type& shape, const value_type& fill)
-  : data_{get_size_from_shape(shape), fill}, view_{data_.data(), shape}
+  : data_(get_size_from_shape(shape), fill), view_(data_.data(), shape)
   {}
   auto begin() noexcept
   {

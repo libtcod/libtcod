@@ -36,6 +36,7 @@
 #include <utility>
 
 #include "gl2_ext_.h"
+#include "../utility/matrix.h"
 #include "../console.h"
 #include "../libtcod_int.h"
 
@@ -97,6 +98,41 @@ class TwoTranglesRenderer {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }
+  /**
+   *  Upload color data to the currently bound texture.
+   */
+  template<typename F>
+  void upload_colors(const TCOD_Console& console, const F& color_at)
+  {
+    std::vector<TCOD_ColorRGBA> tile_colors;
+    tile_colors.reserve(console.size());
+    for (int y = 0; y < console.h; ++y) {
+      for (int x = 0; x < console.w; ++x) {
+        tile_colors.emplace_back(color_at(y, x));
+      }
+    }
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
+        GL_UNSIGNED_BYTE, tile_colors.data());
+  }
+  /**
+   *  Upload glyph positions to the currently bound texture.
+   */
+  void upload_characters(const TCOD_Console& console)
+  {
+    std::vector<uint8_t> tile_indexes;
+    tile_indexes.reserve(console.size() * 4);
+    for (int i = 0; i < console.size(); ++i) {
+      auto tile = alias_.get_tile_position(console.tiles[i].ch);
+      tile_indexes.emplace_back(tile.at(0) & 0xff);
+      tile_indexes.emplace_back(tile.at(0) >> 8);
+      tile_indexes.emplace_back(tile.at(1) & 0xff);
+      tile_indexes.emplace_back(tile.at(1) >> 8);
+    }
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
+        GL_UNSIGNED_BYTE, tile_indexes.data());
+  }
   void render(const TCOD_Console& console)
   {
     glDisable(GL_BLEND);
@@ -115,8 +151,8 @@ class TwoTranglesRenderer {
     glUniform2fv(program_.get_uniform("v_tiles_size"), 1,
                  alias_.get_alias_size().data());
 
-    if (cached_size_[0] != console.w || cached_size_[0] != console.h) {
-      cached_size_ = {console.w, console.h};
+    if (console.h > cached_size_[0] || console.w > cached_size_[1]) {
+      cached_size_ = {console.h, console.w};
       int tex_width = round_to_pow2(console.w);
       int tex_height = round_to_pow2(console.h);
 
@@ -139,7 +175,7 @@ class TwoTranglesRenderer {
           GL_UNSIGNED_BYTE, nullptr);
     }
 
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
     glActiveTexture(GL_TEXTURE0 + 0);
     glBindTexture(GL_TEXTURE_2D, alias_.get_alias_texture(console));
@@ -147,39 +183,18 @@ class TwoTranglesRenderer {
 
     glActiveTexture(GL_TEXTURE0 + 1);
     bg_tex_.bind();
-    std::vector<TCOD_ColorRGBA> tile_colors(console.w * console.h);
-    for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = console.tiles[i].bg;
-    }
-    glTexSubImage2D(
-        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
-        GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_bg"), 1);
+    upload_colors(console, [&](int y, int x){ return console.at(y, x).bg; });
 
     glActiveTexture(GL_TEXTURE0 + 2);
     fg_tex_.bind();
-    for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = console.tiles[i].fg;
-    }
-    glTexSubImage2D(
-        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
-        GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_fg"), 2);
+    upload_colors(console, [&](int y, int x){ return console.at(y, x).fg; });
 
     glActiveTexture(GL_TEXTURE0 + 3);
     ch_tex_.bind();
-    std::vector<uint8_t> tile_indexes(console.w * console.h * 4);
-    int tile_i = 0;
-    for (int i = 0; i < console.w * console.h; ++i) {
-      auto tile = alias_.get_tile_position(console.tiles[i].ch);
-      tile_indexes[tile_i++] = tile.at(0) & 0xff;
-      tile_indexes[tile_i++] = tile.at(0) >> 8;
-      tile_indexes[tile_i++] = tile.at(1) & 0xff;
-      tile_indexes[tile_i++] = tile.at(1) >> 8;
-    }
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
-                    GL_UNSIGNED_BYTE, tile_indexes.data());
     glUniform1i(program_.get_uniform("t_console_tile"), 3);
+    upload_characters(console);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glFlush();
@@ -192,7 +207,7 @@ class TwoTranglesRenderer {
   GLTexture ch_tex_;
   GLTexture fg_tex_;
   GLTexture bg_tex_;
-  std::array<int, 2> cached_size_{-1, -1};
+  std::array<ptrdiff_t, 2> cached_size_{-1, -1};
 };
 class GridRenderer {
  public:

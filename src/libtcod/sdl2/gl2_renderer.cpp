@@ -126,14 +126,17 @@ class TwoTranglesRenderer {
                   static_cast<float>(console.w) / tex_width,
                   static_cast<float>(console.h) / tex_height);
       bg_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB,
-                   GL_UNSIGNED_BYTE, nullptr);
+      glTexImage2D(
+          GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA,
+          GL_UNSIGNED_BYTE, nullptr);
       fg_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex_width, tex_height, 0, GL_RGB,
-                   GL_UNSIGNED_BYTE, nullptr);
+      glTexImage2D(
+          GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA,
+          GL_UNSIGNED_BYTE, nullptr);
       ch_tex_.bind();
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA,
-                   GL_UNSIGNED_BYTE, nullptr);
+      glTexImage2D(
+          GL_TEXTURE_2D, 0, GL_RGBA, tex_width, tex_height, 0, GL_RGBA,
+          GL_UNSIGNED_BYTE, nullptr);
     }
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -144,21 +147,23 @@ class TwoTranglesRenderer {
 
     glActiveTexture(GL_TEXTURE0 + 1);
     bg_tex_.bind();
-    std::vector<TCOD_ColorRGB> tile_colors(console.w * console.h);
+    std::vector<TCOD_ColorRGBA> tile_colors(console.w * console.h);
     for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = ColorRGB(console.tiles[i].bg);
+      tile_colors[i] = console.tiles[i].bg;
     }
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
-                    GL_UNSIGNED_BYTE, tile_colors.data());
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
+        GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_bg"), 1);
 
     glActiveTexture(GL_TEXTURE0 + 2);
     fg_tex_.bind();
     for (int i = 0; i < console.w * console.h; ++i) {
-      tile_colors[i] = ColorRGB(console.tiles[i].fg);
+      tile_colors[i] = console.tiles[i].fg;
     }
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGB,
-                    GL_UNSIGNED_BYTE, tile_colors.data());
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, console.w, console.h, GL_RGBA,
+        GL_UNSIGNED_BYTE, tile_colors.data());
     glUniform1i(program_.get_uniform("t_console_fg"), 2);
 
     glActiveTexture(GL_TEXTURE0 + 3);

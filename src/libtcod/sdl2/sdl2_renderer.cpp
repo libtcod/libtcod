@@ -33,6 +33,8 @@
 
 #include <map>
 
+#include "../utility/matrix.h"
+
 #include <SDL.h>
 namespace tcod {
 namespace sdl2 {
@@ -59,64 +61,76 @@ class SDL2Renderer::impl: public TilesetObserver {
   {
     for (const auto& changed : changes) {
       int codepoint = changed.second.codepoint;
-      for (auto& cache_it : cache_) {
-        if (std::get<0>(cache_it) == codepoint) {
-          std::get<0>(cache_it) = -1;
+      for (auto& it : cache_) {
+        if (it.ch == codepoint) {
+          it.ch = -1;
         }
       }
     }
   }
-  auto render(const TCOD_Console* console) -> struct SDL_Texture*
+  auto render(const TCOD_Console& console) -> struct SDL_Texture*
   {
-    if (!console) { throw; }
-    if (console->w != cache_.width() || console->h != cache_.height()) {
+    if (cache_.get_shape()
+        != cache_type::shape_type{{console.h, console.w}}) {
       if (texture_) {
         SDL_DestroyTexture(texture_);
         texture_ = nullptr;
       }
     }
     if (!texture_) {
-      cache_ = cache_type(console->w, console->h);
+      cache_ = cache_type({console.h, console.w});
       const uint32_t format = 0;
-      texture_ = SDL_CreateTexture(renderer_, format, SDL_TEXTUREACCESS_TARGET,
-                                   tileset_->get_tile_width() * console->w,
-                                   tileset_->get_tile_height() * console->h);
+      texture_ = SDL_CreateTexture(
+          renderer_, format, SDL_TEXTUREACCESS_TARGET,
+          tileset_->get_tile_width() * console.w,
+          tileset_->get_tile_height() * console.h);
+      SDL_SetTextureBlendMode(texture_, SDL_BLENDMODE_BLEND);
       if(!texture_) { throw std::runtime_error(SDL_GetError()); }
     }
     SDL_SetRenderTarget(renderer_, texture_);
-    SDL_Texture* alias_texture = alias_.prepare_alias(*console);
+    SDL_Texture* alias_texture = alias_.prepare_alias(console);
     SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_NONE);
     SDL_SetTextureBlendMode(alias_texture, SDL_BLENDMODE_BLEND);
     SDL_SetTextureAlphaMod(alias_texture, 0xff);
-    for (int y = 0; y < console->h; ++y) {
-      for (int x = 0; x < console->w; ++x) {
-        const int i = console->w * y + x; // console index
-        const int ch = console->tiles[i].ch;
-        const TCOD_ColorRGBA& fg = console->tiles[i].fg;
-        const TCOD_ColorRGBA& bg = console->tiles[i].bg;
-        int& cache_ch = std::get<0>(cache_.at(x, y));
-        TCOD_ColorRGBA& cache_fg = std::get<1>(cache_.at(x, y));
-        TCOD_ColorRGBA& cache_bg = std::get<2>(cache_.at(x, y));
-        if (cache_ch == ch && cache_fg == fg && cache_bg == bg) {
-          continue; // This tile was already rendered on a previous frame.
+    for (int y = 0; y < console.h; ++y) {
+      for (int x = 0; x < console.w; ++x) {
+        auto tile = console.at(y, x);
+        if (tile.ch == 0x20 || tile.fg.a == 0) {
+          // Tile is the space character or has no alpha.
+          tile.ch = 0; // Skip drawing this glyph.
         }
-        cache_ch = ch;
-        cache_fg = fg;
-        cache_bg = bg;
+        if (tcod::ColorRGB(tile.fg) == tcod::ColorRGB(tile.bg)
+            && tile.bg.a == 0xff) {
+          // Foreground color is the same as the background.
+          tile.ch = 0; // Skip drawing this glyph.
+        }
+        if (tile.ch == 0) {
+          // There is no foreground glyph, so ignore the color.
+          tile.fg = {0, 0, 0, 0};
+        }
+        auto& cache = cache_.at({y, x});
+        if (tile == cache) {
+          continue; // This tile was already rendered from the last frame.
+        }
+        cache = tile;
         const SDL_Rect dest_rect{
             x * tileset_->get_tile_width(),
             y * tileset_->get_tile_height(),
             tileset_->get_tile_width(),
             tileset_->get_tile_height(),
         };
-        SDL_SetRenderDrawColor(renderer_, bg.r, bg.g, bg.b, 0xff);
+        // Fill the background of the tile with a solid color.
+        SDL_SetRenderDrawColor(
+            renderer_, tile.bg.r, tile.bg.g, tile.bg.b, tile.bg.a);
         SDL_RenderFillRect(renderer_, &dest_rect);
-        if (fg.r != bg.r || fg.g != bg.g || fg.b != bg.b) {
-          SDL_SetTextureColorMod(alias_texture, fg.r, fg.g, fg.b);
-          const SDL_Rect alias_rect = alias_.get_char_rect(ch);
-          SDL_RenderCopy(renderer_, alias_texture,
-                         &alias_rect, &dest_rect);
+        if (tile.ch == 0) {
+          continue; // No foreground glyph.
         }
+        // Blend the foreground glyph on top of the background.
+        SDL_SetTextureColorMod(alias_texture, tile.fg.r, tile.fg.g, tile.fg.b);
+        SDL_SetTextureAlphaMod(alias_texture, tile.fg.a);
+        const SDL_Rect alias_rect = alias_.get_char_rect(tile.ch);
+        SDL_RenderCopy(renderer_, alias_texture, &alias_rect, &dest_rect);
       }
     }
     SDL_SetRenderTarget(renderer_, nullptr);
@@ -138,6 +152,7 @@ class SDL2Renderer::impl: public TilesetObserver {
     return pixels;
   }
  private:
+  using cache_type = Matrix<struct TCOD_ConsoleTile, 2>;
   static int on_sdl_event(void* userdata, SDL_Event* event)
   {
     auto this_ = static_cast<impl*>(userdata);
@@ -151,7 +166,6 @@ class SDL2Renderer::impl: public TilesetObserver {
     }
     return 0;
   }
-  using cache_type = Vector2<std::tuple<int, TCOD_ColorRGBA, TCOD_ColorRGBA>>;
   SDL2TilesetAlias alias_;
   cache_type cache_;
   struct SDL_Renderer* renderer_;
@@ -175,7 +189,8 @@ SDL2Renderer::~SDL2Renderer() = default;
 
 struct SDL_Texture* SDL2Renderer::render(const TCOD_Console* console)
 {
-  return impl_->render(console);
+  if (!console) { throw; }
+  return impl_->render(*console);
 }
 auto SDL2Renderer::read_pixels() const -> Image
 {

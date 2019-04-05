@@ -39,6 +39,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 #endif // __cplusplus
 #ifdef __cplusplus
@@ -75,14 +76,18 @@ class MatrixView {
     range_check(index);
     return (*this)[index];
   }
+  shape_type get_shape() const
+  {
+    return shape_;
+  }
  private:
   T* get_data_at(shape_type index)
   {
     auto ptr = data_;
-    for (size_type i = 0; i < shape_.size(); ++i) {
+    for (size_t i = 0; i < shape_.size(); ++i) {
       ptr += index.at(i) * strides_.at(i);
     }
-    return *reinterpret_cast<T*>(ptr);
+    return reinterpret_cast<T*>(ptr);
   }
   MatrixView<T, D-1> get_submatrix(size_type n)
   {
@@ -98,7 +103,7 @@ class MatrixView {
   }
   bool in_bounds(shape_type index) const noexcept
   {
-    for (size_type i = 0; i < shape_.size(); ++i) {
+    for (size_t i = 0; i < shape_.size(); ++i) {
       if (index.at(i) < 0 || index.at(i) >= shape_.at(i)) {
         return false;
       }
@@ -112,7 +117,7 @@ class MatrixView {
         std::string("Out of bounds lookup {")
         + std::to_string(n)
         + "} on matrix of shape "
-        + std::to_string(shape_)
+        + array_as_string(shape_)
         + ".");
   }
   void range_check(shape_type index) const
@@ -120,10 +125,21 @@ class MatrixView {
     if (in_bounds(index)) { return; }
     throw std::out_of_range(
         std::string("Out of bounds lookup ")
-        + std::to_string(index)
+        + array_as_string(index)
         + " on matrix of shape "
-        + std::to_string(shape_)
+        + array_as_string(shape_)
         + ".");
+  }
+  template <typename ArrayType>
+  static std::string array_as_string(const ArrayType& arr)
+  {
+    std::string result{"{ "};
+    for (const auto& it : arr) {
+      result += std::to_string(it);
+      if (it != arr.back()) { result += ", "; }
+    }
+    result += " }";
+    return result;
   }
   auto pop_array(const std::array<size_type, D>& array) const noexcept
   -> std::array<size_type, D-1>
@@ -145,6 +161,69 @@ class MatrixView {
   char* data_{nullptr};
   shape_type shape_;
   strides_type strides_;
+};
+template <typename T, size_t D>
+class Matrix {
+ public:
+  using view_type = MatrixView<T, D>;
+  using value_type = typename view_type::value_type;
+  using size_type = typename view_type::size_type;
+  using shape_type = typename view_type::shape_type;
+  using strides_type = typename view_type::strides_type;
+  Matrix() = default;
+  Matrix(const shape_type& shape)
+  : data_{get_size_from_shape(shape)}, view_{data_.data(), shape}
+  {}
+  Matrix(const shape_type& shape, const value_type& fill)
+  : data_{get_size_from_shape(shape), fill}, view_{data_.data(), shape}
+  {}
+  auto begin() noexcept
+  {
+    return data_.begin();
+  }
+  auto begin() const noexcept
+  {
+    return data_.cbegin();
+  }
+  auto end() noexcept
+  {
+    return data_.end();
+  }
+  auto end() const noexcept
+  {
+    return data_.cend();
+  }
+  value_type& operator[](shape_type index) noexcept
+  {
+    return view_[index];
+  }
+  const value_type& operator[](shape_type index) const noexcept
+  {
+    return view_[index];
+  }
+  value_type& at(shape_type index)
+  {
+    return view_.at(index);
+  }
+  const value_type& at(shape_type index) const
+  {
+    return view_.at(index);
+  }
+  shape_type get_shape() const
+  {
+    return view_.get_shape();
+  }
+ private:
+  static size_t get_size_from_shape(const shape_type& shape) noexcept
+  {
+    size_t size = 1;
+    for (size_t i = 0; i < shape.size(); ++i) {
+      size *= shape.at(i);
+    }
+    return size;
+  }
+  std::vector<T> data_;
+  view_type view_;
 };
 } // namespace tcod
 #endif // __cplusplus

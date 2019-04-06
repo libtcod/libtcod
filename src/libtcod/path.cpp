@@ -41,14 +41,19 @@ TCODPath::~TCODPath() {
 }
 
 float TCOD_path_func(int xFrom, int yFrom, int xTo,int yTo, void *data) {
-	TCODPath::WrapperData *cppData=(TCODPath::WrapperData *)data;
+	TCODPath::WrapperData *cppData = static_cast<TCODPath::WrapperData*>(data);
 	return cppData->listener->getWalkCost(xFrom,yFrom,xTo,yTo,cppData->userData);
 }
 
-TCODPath::TCODPath(int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost) {
-	cppData.listener=listener;
-	cppData.userData=userData;
-	data = TCOD_path_new_using_function(width, height, TCOD_path_func, (void *)&cppData, diagonalCost);
+TCODPath::TCODPath(
+    int width, int height,
+    const ITCODPathCallback *listener, void *userData, float diagonalCost)
+{
+  cppData.listener = listener;
+  cppData.userData = userData;
+  data = TCOD_path_new_using_function(
+      width, height,
+      TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
 }
 
 
@@ -95,10 +100,14 @@ TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
 }
 
 //another ctor
-TCODDijkstra::TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost) {
-	cppData.listener=listener;
-	cppData.userData=userData;
-	data = TCOD_dijkstra_new_using_function(width, height, TCOD_path_func, (void *)&cppData,diagonalCost);
+TCODDijkstra::TCODDijkstra (
+    int width, int height,
+    const ITCODPathCallback *listener, void *userData, float diagonalCost)
+{
+  cppData.listener = listener;
+  cppData.userData = userData;
+  data = TCOD_dijkstra_new_using_function(
+      width, height, TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
 }
 
 //dtor

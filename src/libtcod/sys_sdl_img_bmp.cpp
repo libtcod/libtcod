@@ -65,7 +65,7 @@ SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
 	return ret;
 }
 
-void TCOD_sys_write_bmp(const SDL_Surface *surf, const char *filename) {
-	SDL_SaveBMP((SDL_Surface *)surf,filename);
+void TCOD_sys_write_bmp(SDL_Surface *surf, const char *filename) {
+	SDL_SaveBMP(surf, filename);
 }
 #endif /* TCOD_BARE */

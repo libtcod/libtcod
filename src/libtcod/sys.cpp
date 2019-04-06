@@ -157,7 +157,7 @@ bool TCODSystem::setClipboard(const char *value) {
 }
 
 char *TCODSystem::getClipboard() {
-	return TCOD_sys_clipboard_get();
+  return TCOD_sys_clipboard_get();
 }
 #endif
 
@@ -235,8 +235,8 @@ void TCODSystem::deleteCondition( TCOD_cond_t cond) {
 
 // custom post-renderer
 static ITCODSDLRenderer *post_renderer=NULL;
-extern "C" void TCOD_CRenderer(void *sdl_surface) {
-	if ( post_renderer ) post_renderer->render(sdl_surface);
+extern "C" void TCOD_CRenderer(struct SDL_Surface* sdl_surface) {
+  if (post_renderer) { post_renderer->render(sdl_surface); }
 }
 void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer) {
 	::post_renderer = renderer;

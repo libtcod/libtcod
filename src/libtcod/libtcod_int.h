@@ -261,7 +261,7 @@ typedef struct TCOD_SDL_driver_t {
 	/* change the mouse cursor position */
 	void (*set_mouse_position)(int x, int y);
 	/* clipboard */
-	char *(*get_clipboard_text)(void);
+	const char *(*get_clipboard_text)(void);
 	bool (*set_clipboard_text)(const char *text);
 	/* android compatible file access functions */
 	bool (*file_read)(const char *filename, unsigned char **buf, size_t *size);

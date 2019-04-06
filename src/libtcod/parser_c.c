@@ -639,7 +639,7 @@ TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser, TCOD_parser_
 	return type;
 }
 
-TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name) {
+TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, const char *name) {
 	TCOD_struct_int_t *ent = (TCOD_struct_int_t*)calloc(1,sizeof(TCOD_struct_int_t));
 	ent->name=TCOD_strdup(name);
 	ent->flags=TCOD_list_new();

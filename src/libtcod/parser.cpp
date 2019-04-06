@@ -76,7 +76,7 @@ TCOD_value_type_t TCODParserStruct::getPropertyType(const char *propname) const 
 
 TCODParserStruct *TCODParser::newStructure(const char *name) {
 	TCODParserStruct *ent = new TCODParserStruct();
-	ent->data = TCOD_parser_new_struct(data,(char *)name);
+	ent->data = TCOD_parser_new_struct(data, name);
 	defs.push(ent);
 	return ent;
 }
@@ -130,11 +130,15 @@ TCODParser::~TCODParser() {
 	TCOD_parser_delete(data);
 }
 
-void TCODParser::run(const char *filename, ITCODParserListener *_listener) {
-	listener=_listener;
-	parser=this;
-	if ( listener )	TCOD_parser_run(data,(char *)filename,&c_to_cpp_listener);
-	else TCOD_parser_run(data,(char *)filename, NULL);
+void TCODParser::run(const char *filename, ITCODParserListener *_listener)
+{
+  listener = _listener;
+  parser = this;
+  if (listener) {
+    TCOD_parser_run(data, filename, &c_to_cpp_listener);
+  } else {
+    TCOD_parser_run(data, filename, NULL);
+  }
 }
 
 TCOD_value_type_t TCODParser::newCustomType(TCOD_parser_custom_t custom_type_parser) {

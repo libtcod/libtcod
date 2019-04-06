@@ -130,7 +130,7 @@ struct TCOD_Parser;
 typedef struct TCOD_Parser *TCOD_parser_t;
 
 TCODLIB_API TCOD_parser_t TCOD_parser_new(void);
-TCODLIB_API TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, char *name);
+TCODLIB_API TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, const char *name);
 TCODLIB_API TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser,TCOD_parser_custom_t custom_type_parser);
 TCODLIB_API void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener);
 TCODLIB_API void TCOD_parser_delete(TCOD_parser_t parser);

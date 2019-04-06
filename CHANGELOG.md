@@ -9,6 +9,10 @@ since `1.7.0`.
 ## [Unreleased]
 ### Changed
 - New consoles are initialized as if clear was called.
+- The SDL callback type now uses a typed argument instead of void pointer.
+
+### Deprecated
+- The SDL callback feature has been deprecated.
 
 ## [1.11.2] - 2019-03-29
 ### Fixed

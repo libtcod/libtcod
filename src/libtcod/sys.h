@@ -172,7 +172,8 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
 #ifndef TCOD_BARE
-typedef void (*SDL_renderer_t) (void *sdl_renderer);
+typedef void (*SDL_renderer_t) (struct SDL_Surface* sdl_renderer);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #endif
 #ifdef __cplusplus

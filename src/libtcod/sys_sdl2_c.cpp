@@ -86,7 +86,7 @@ static void actual_rendering(void) {
 		dstRect.w=scale_data.dst_display_width; dstRect.h=scale_data.dst_display_height;
 	}
 	if ( TCOD_ctx.sdl_cbk ) {
-		TCOD_ctx.sdl_cbk((void *)scale_screen);
+		TCOD_ctx.sdl_cbk(scale_screen);
 	}
 	texture = SDL_CreateTextureFromSurface(renderer, scale_screen);
 	SDL_RenderCopy(renderer, texture, &srcRect, &dstRect);
@@ -109,7 +109,11 @@ static struct TCOD_Console *ensure_cache(struct TCOD_Console* root) {
  * faults, this should only be called when it would normally be and not
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
-static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *console) {
+static void render(
+    TCOD_SDL_driver_t *sdl,
+    void*, // vbitmap
+    struct TCOD_Console *console)
+{
 	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
 		int console_width_p = console->w * TCOD_ctx.font_width;
 		int console_height_p = console->h * TCOD_ctx.font_height;
@@ -154,17 +158,26 @@ static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *c
 				scale_data.surface_width = console_width_p;
 				scale_data.surface_height = console_height_p;
 			}
-			scale_data.min_scale_factor = MAX((float)console_width_p/scale_data.surface_width, (float)console_height_p/scale_data.surface_height);
+			scale_data.min_scale_factor = std::max<float>(
+          static_cast<float>(console_width_p) / scale_data.surface_width,
+          static_cast<float>(console_height_p) / scale_data.surface_height);
 			if (scale_data.min_scale_factor > 1.0f)
 				scale_data.min_scale_factor = 1.0f;
 			/*printf("min_scale_factor %0.3f = MAX(%d/%d, %d/%d)", scale_data.min_scale_factor, console_width_p, scale_data.surface_width, console_height_p, scale_data.surface_height);*/
 
-			scale_data.dst_height_width_ratio = (float)scale_data.surface_height/scale_data.surface_width;
-			scale_data.src_proportionate_width = (int)(console_width_p / scale_factor);
-			scale_data.src_proportionate_height = (int)((console_width_p * scale_data.dst_height_width_ratio) / scale_factor);
+			scale_data.dst_height_width_ratio =
+          static_cast<float>(scale_data.surface_height)
+          / scale_data.surface_width;
+			scale_data.src_proportionate_width =
+          static_cast<int>(console_width_p / scale_factor);
+			scale_data.src_proportionate_height = static_cast<int>(
+          (console_width_p * scale_data.dst_height_width_ratio)
+          / scale_factor);
 
 			/* Work out how much of the console to copy. */
-			scale_data.src_x0 = (int)((sdl->scale_xc * console_width_p) - (0.5f * scale_data.src_proportionate_width));
+			scale_data.src_x0 = static_cast<int>(
+          (sdl->scale_xc * console_width_p)
+          - (0.5f * scale_data.src_proportionate_width));
 			if (scale_data.src_x0 + scale_data.src_proportionate_width > console_width_p)
 				scale_data.src_x0 = console_width_p - scale_data.src_proportionate_width;
 			if (scale_data.src_x0 < 0)
@@ -173,7 +186,9 @@ static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *c
 			if (scale_data.src_x0 + scale_data.src_copy_width > console_width_p)
 				scale_data.src_copy_width = console_width_p - scale_data.src_x0;
 
-			scale_data.src_y0 = (int)((sdl->scale_yc * console_height_p) - (0.5f * scale_data.src_proportionate_height));
+			scale_data.src_y0 = static_cast<int>(
+          (sdl->scale_yc * console_height_p)
+          - (0.5f * scale_data.src_proportionate_height));
 			if (scale_data.src_y0 + scale_data.src_proportionate_height > console_height_p)
 				scale_data.src_y0 = console_height_p - scale_data.src_proportionate_height;
 			if (scale_data.src_y0 < 0)
@@ -198,7 +213,7 @@ static void render(TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *c
 		TCOD_opengl_swap();
 	}
 #endif
-	oldFade=(int)TCOD_console_get_fade();
+  oldFade = TCOD_console_get_fade();
 }
 
 /* Return the current root console cache if it exists, or NULL. */
@@ -378,17 +393,20 @@ static void save_screenshot(const char *filename) {
 						SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(pixels, rect.w, rect.h, depth, pitch, rmask, gmask, bmask, amask);
 						TCOD_sys_save_bitmap(surface, filename);
 						SDL_FreeSurface(surface);
-					} else
+          } else {
 						TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_PixelFormatEnumToMasks"));
-
+          }
 					SDL_UnlockTexture(texture);
-				} else
+        } else {
 					TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_QueryTexture or SDL_LockTexture"));
-			} else
+        }
+      } else {
 				TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_SetRenderTarget"));
+      }
 			SDL_DestroyTexture(texture);
-		} else
+    } else {
 			TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_CreateTexture"));
+    }
 #ifndef NO_OPENGL
 	} else {
 		SDL_Surface *screenshot = TCOD_opengl_get_screen();
@@ -416,10 +434,11 @@ static void get_current_resolution(int *w, int *h) {
 }
 
 static void set_mouse_position(int x, int y) {
-  SDL_WarpMouseInWindow(window, (uint16_t)x,(uint16_t)y);
+  SDL_WarpMouseInWindow(
+      window, static_cast<uint16_t>(x), static_cast<uint16_t>(y));
 }
 
-static char *get_clipboard_text(void) {
+static const char *get_clipboard_text(void) {
 #ifdef TCOD_LINUX
 	/*
 		X11 clipboard is inaccessible without an open window.
@@ -457,7 +476,7 @@ static bool set_clipboard_text(const char *text) {
 
 /* android compatible file access functions */
 static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
-	int64_t filesize;
+	size_t filesize;
 	/* get file size */
 	SDL_RWops *rwops= SDL_RWFromFile(filename,"rb");
 	if (!rwops) return false;
@@ -465,9 +484,9 @@ static bool file_read(const char *filename, unsigned char **buf, size_t *size) {
 	filesize=SDL_RWtell(rwops);
 	SDL_RWseek(rwops,0,RW_SEEK_SET);
 	/* allocate buffer */
-	*buf = (unsigned char *)malloc(sizeof(unsigned char)*filesize);
+	*buf = static_cast<unsigned char*>(malloc(sizeof(unsigned char) * filesize));
 	/* read from file */
-	if (SDL_RWread(rwops,*buf,sizeof(unsigned char),filesize) != filesize) {
+	if (SDL_RWread(rwops, *buf, sizeof(unsigned char), filesize) != filesize) {
 		SDL_RWclose(rwops);
 		free(*buf);
 		return false;
@@ -507,7 +526,8 @@ static void shutdown_(void) {
 }
 
 TCOD_SDL_driver_t *SDL_implementation_factory(void) {
-	TCOD_SDL_driver_t *ret=(TCOD_SDL_driver_t *)calloc(1,sizeof(TCOD_SDL_driver_t));
+	TCOD_SDL_driver_t *ret =
+      static_cast<TCOD_SDL_driver_t *>(calloc(1, sizeof(TCOD_SDL_driver_t)));
     ret->scale_xc = 0.5f;
     ret->scale_yc = 0.5f;
 

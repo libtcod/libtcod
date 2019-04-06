@@ -57,7 +57,8 @@ TCODRandom::~TCODRandom() {
 }
 
 TCODRandom *TCODRandom::save() const {
-	TCODRandom *ret=new TCODRandom(((mersenne_data_t *)data)->algo,false);
+  TCODRandom *ret =
+      new TCODRandom(data->algo, false);
 	ret->data=TCOD_random_save(data);
 	return ret;
 }

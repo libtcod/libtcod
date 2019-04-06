@@ -254,6 +254,7 @@ public :
 	@C bool TCOD_sys_create_directory(const char *path)
 	@Param path Directory path. The immediate father directory (<path>/..) must exist and be writable.
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool createDirectory(const char *path);
 
 	/**
@@ -263,6 +264,7 @@ public :
 	@C bool TCOD_sys_delete_directory(const char *path)
 	@Param path directory path. This directory must exist, be writable and empty
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool deleteDirectory(const char *path);
 
 	/**
@@ -272,6 +274,7 @@ public :
 	@C bool TCOD_sys_delete_file(const char *path)
 	@Param path File path. This file must exist and be writable.
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool deleteFile(const char *path);
 
 	/**
@@ -281,6 +284,7 @@ public :
 	@C bool TCOD_sys_is_directory(const char *path)
 	@Param path a path to check
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool isDirectory(const char *path);
 
 	/**
@@ -293,6 +297,7 @@ public :
 	@Param path a directory
 	@Param pattern If NULL or empty, returns all directory entries. Else returns only entries matching the pattern. The pattern is NOT a regular expression. It can only handle one '*' wildcard. Examples : *.png, saveGame*, font*.png
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static TCOD_list_t getDirectoryContent(const char *path, const char *pattern);
 
 	/**
@@ -312,6 +317,7 @@ public :
 		    fprintf(stderr,"no such file!");
 		}
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool fileExists(const char * filename, ...);
 	/**
 	@PageName system_filesystem
@@ -336,6 +342,7 @@ public :
 		    free(buf);
 		}
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool readFile(const char *filename, unsigned char **buf, size_t *size);
 	/**
 	@PageName system_filesystem
@@ -351,6 +358,7 @@ public :
 	@CEx
 		TCOD_sys_write_file("myfile.dat",buf,size));
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool writeFile(const char *filename, unsigned char *buf, uint32_t size);
 	/**
 	@PageName system_sdlcbk
@@ -394,6 +402,7 @@ public :
 			... draw something on sdl_surface using pygame
 		libtcod.sys_register_SDL_renderer(my_renderer)
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static void registerSDLRenderer(ITCODSDLRenderer *renderer);
 
 	/**
@@ -526,6 +535,7 @@ public :
 	@Py sys_clipboard_set(value)
 	@Param value UTF-8 text to copy into the clipboard
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static bool setClipboard(const char *value);
 
 	/**
@@ -536,29 +546,47 @@ public :
 	@C char *TCOD_sys_clipboard_get()
 	@Py sys_clipboard_get() # Returns UTF-8 string
 	*/
+  TCOD_DEPRECATED_NOMESSAGE
 	static char *getClipboard();
 #endif
 
 	// thread stuff
+  TCOD_DEPRECATED_NOMESSAGE
 	static int getNumCores();
+  TCOD_DEPRECATED_NOMESSAGE
 	static TCOD_thread_t newThread(int (*func)(void *), void *data);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void deleteThread(TCOD_thread_t th);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void waitThread(TCOD_thread_t th);
 	// mutex
+  TCOD_DEPRECATED_NOMESSAGE
 	static TCOD_mutex_t newMutex();
+  TCOD_DEPRECATED_NOMESSAGE
 	static void mutexIn(TCOD_mutex_t mut);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void mutexOut(TCOD_mutex_t mut);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void deleteMutex(TCOD_mutex_t mut);
 	// semaphore
+  TCOD_DEPRECATED_NOMESSAGE
 	static TCOD_semaphore_t newSemaphore(int initVal);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void lockSemaphore(TCOD_semaphore_t sem);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void unlockSemaphore(TCOD_semaphore_t sem);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void deleteSemaphore( TCOD_semaphore_t sem);
 	// condition
+  TCOD_DEPRECATED_NOMESSAGE
 	static TCOD_cond_t newCondition();
+  TCOD_DEPRECATED_NOMESSAGE
 	static void signalCondition(TCOD_cond_t sem);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void broadcastCondition(TCOD_cond_t sem);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void waitCondition(TCOD_cond_t sem, TCOD_mutex_t mut);
+  TCOD_DEPRECATED_NOMESSAGE
 	static void deleteCondition( TCOD_cond_t sem);
 };
 

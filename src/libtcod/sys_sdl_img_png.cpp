@@ -82,11 +82,12 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	}
 
 	/* create the SDL surface */
-	bitmap=(SDL_Surface*)TCOD_sys_get_surface(width,height,bpp==32);
+	bitmap = TCOD_sys_get_surface(width, height, bpp==32);
 	source=image;
 	rowsize=width*bpp/8;
 	for (y=0; y<  height; y++ ) {
-		uint8_t*row_pointer=(uint8_t*)(bitmap->pixels) + y * bitmap->pitch;
+		uint8_t* row_pointer = static_cast<uint8_t*>(bitmap->pixels)
+        + y * bitmap->pitch;
 		memcpy(row_pointer,source,rowsize);
 		source+=rowsize;
 	}
@@ -96,8 +97,8 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	return bitmap;
 }
 
-void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
-	unsigned char *image, *dest=(unsigned char *)malloc(surf->h*surf->w*3*sizeof(char));
+void TCOD_sys_write_png(SDL_Surface *surf, const char *filename) {
+	unsigned char *image, *dest=static_cast<unsigned char *>(malloc(surf->h * surf->w * 3 * sizeof(char)));
 	int x,y;
 	unsigned char *buf;
 	size_t size;
@@ -106,7 +107,8 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	image=dest;
 	for (y=0; y<  surf->h; y++ ) {
 		for (x=0; x < surf->w; x++ ) {
-			uint8_t*pixel=(uint8_t*)(surf->pixels) + y * surf->pitch + x * surf->format->BytesPerPixel;
+			uint8_t* pixel = static_cast<uint8_t*>(surf->pixels)
+          + y * surf->pitch + x * surf->format->BytesPerPixel;
 			*dest++=*((pixel)+surf->format->Rshift/8);
 			*dest++=*((pixel)+surf->format->Gshift/8);
 			*dest++=*((pixel)+surf->format->Bshift/8);
@@ -115,7 +117,7 @@ void TCOD_sys_write_png(const SDL_Surface *surf, const char *filename) {
 	error=lodepng_encode_memory(&buf,&size,image,surf->w,surf->h,LCT_RGB,8);
 	free(image);
 	if ( ! error ) {
-		TCOD_sys_write_file(filename,buf,(uint32_t)size);
+		TCOD_sys_write_file(filename, buf, static_cast<uint32_t>(size));
 		free(buf);
 	} else {
 		printf("error %u: %s\n", error, lodepng_error_text(error));

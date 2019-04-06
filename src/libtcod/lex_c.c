@@ -647,19 +647,18 @@ int TCOD_lex_parse(TCOD_lex_t *lex)
 }
 
 
-int TCOD_lex_parse_until_token_type(TCOD_lex_t *lex,int tokenType)
+int TCOD_lex_parse_until_token_type(TCOD_lex_t *lex, int tokenType)
 {
-	int token;
+  int token;
+  token = TCOD_lex_parse(lex);
+  if (token == TCOD_LEX_ERROR) { return token; }
+  while (token != TCOD_LEX_EOF)
+  {
+    if (token == tokenType) { return token; }
     token = TCOD_lex_parse(lex);
-    if ( token == TCOD_LEX_ERROR ) return token;
-    while ( token != TCOD_LEX_EOF )
-    {
-        if ( token == tokenType )
-            return token;
-	    token = TCOD_lex_parse(lex);
-	    if ( token == TCOD_LEX_ERROR ) return token;
-    }
-    return token;
+    if (token == TCOD_LEX_ERROR) { return token; }
+  }
+  return token;
 }
 
 int TCOD_lex_parse_until_token_value(TCOD_lex_t *lex, const char *tokenValue)

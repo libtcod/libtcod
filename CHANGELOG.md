@@ -11,6 +11,9 @@ since `1.7.0`.
 - New consoles are initialized as if clear was called.
 - The SDL callback type now uses a typed argument instead of void pointer.
 
+### Fixed
+- Fixed horizontal alignment for TrueType fonts.
+
 ### Deprecated
 - The SDL callback feature has been deprecated.
 

@@ -81,9 +81,7 @@ class TTFontLoader {
       Image image(width_, height_, {0xff, 0xff, 0xff, 0x00});
       Vector2<unsigned char> alpha(width_, height_);
       BBox bbox = get_glyph_bbox(glyph);
-      float shift_x = (width_ - bbox.right) / 2.0f;
-      float shift_y = bbox.top + ascent_;
-      stbtt_MakeGlyphBitmapSubpixel(
+      stbtt_MakeGlyphBitmap(
           &font_info_,
           alpha.data(),
           width_,
@@ -91,14 +89,14 @@ class TTFontLoader {
           static_cast<int>(sizeof(alpha.data()[0]) * alpha.width()),
           scale_,
           scale_,
-          0.0f, // shift_x
-          0.0f, // shift_y
           glyph);
+      int shift_x = (width_ - bbox.width()) / 2;
+      int shift_y = bbox.top + ascent_;
       for (int img_y = 0; img_y < image.height(); ++img_y) {
-        int alpha_y = img_y - static_cast<int>(shift_y);
+        int alpha_y = img_y - shift_y;
         if (alpha_y < 0 || alpha.height() <= alpha_y) { continue; }
         for (int img_x = 0; img_x < image.width(); ++img_x) {
-          int alpha_x = img_x - static_cast<int>(shift_x);
+          int alpha_x = img_x - shift_x;
           if (alpha_x < 0 || alpha.width() <= alpha_x) { continue; }
           image.at(img_x, img_y).a = alpha.at(alpha_x, alpha_y);
         }
@@ -109,6 +107,14 @@ class TTFontLoader {
   }
  private:
   struct BBox {
+    int width() const noexcept
+    {
+      return right - left;
+    }
+    int height() const noexcept
+    {
+      return bottom - top;
+    }
     int left;
     int top;
     int right;
@@ -140,9 +146,7 @@ class TTFontLoader {
   int guess_font_width() const
   {
     BBox font_bbox = get_font_bbox();
-    return static_cast<int>(
-        static_cast<float>(font_bbox.right - font_bbox.left) * scale_
-    );
+    return static_cast<int>(static_cast<float>(font_bbox.width()) * scale_);
   }
   /**
    *  Data buffer for the font file.

@@ -37,7 +37,8 @@
 #include "truetype.h"
 #include "../engine/globals.h"
 #include "../../vendor/stb_truetype.h"
-
+// You can look here for a reference on glyph metrics:
+// https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
 namespace tcod {
 namespace tileset {
 /**
@@ -55,6 +56,9 @@ static auto load_data_file(const std::string& path)
       std::istreambuf_iterator<char>()
   );
 }
+/**
+ *  Converts TrueType fonts into tiles.
+ */
 class TTFontLoader {
  public:
   TTFontLoader(const std::string& path, int tile_width, int tile_height)
@@ -62,46 +66,26 @@ class TTFontLoader {
   {
     stbtt_InitFont(&font_info_, font_data_.data(), 0);
     scale_ = stbtt_ScaleForPixelHeight(&font_info_, height_);
-    int raw_ascent;
-    int raw_descent;
-    int raw_line_gap;
     if (width_ <= 0) {
       width_ = guess_font_width();
     }
-    stbtt_GetFontVMetrics(&font_info_, &raw_ascent, &raw_descent, &raw_line_gap);
-    ascent_ = raw_ascent * scale_;
-    descent_ = raw_descent * scale_;
   }
   auto generate_tileset() const -> std::unique_ptr<Tileset>
   {
+    int ascent;
+    int descent;
+    int line_gap;
+    stbtt_GetFontVMetrics(&font_info_, &ascent, &descent, &line_gap);
     auto tileset = std::make_unique<Tileset>(width_, height_);
     for (int codepoint = 1; codepoint <= 0x1ffff; ++codepoint) {
       int glyph = stbtt_FindGlyphIndex(&font_info_, codepoint);
       if (!glyph) { continue; }
-      Image image(width_, height_, {0xff, 0xff, 0xff, 0x00});
-      Vector2<unsigned char> alpha(width_, height_);
       BBox bbox = get_glyph_bbox(glyph);
-      stbtt_MakeGlyphBitmap(
-          &font_info_,
-          alpha.data(),
-          width_,
-          height_,
-          static_cast<int>(sizeof(alpha.data()[0]) * alpha.width()),
-          scale_,
-          scale_,
-          glyph);
-      int shift_x = (width_ - bbox.width()) / 2;
-      int shift_y = bbox.top + ascent_;
-      for (int img_y = 0; img_y < image.height(); ++img_y) {
-        int alpha_y = img_y - shift_y;
-        if (alpha_y < 0 || alpha.height() <= alpha_y) { continue; }
-        for (int img_x = 0; img_x < image.width(); ++img_x) {
-          int alpha_x = img_x - shift_x;
-          if (alpha_x < 0 || alpha.width() <= alpha_x) { continue; }
-          image.at(img_x, img_y).a = alpha.at(alpha_x, alpha_y);
-        }
-      }
-      tileset->set_tile(codepoint, image);
+      Point<float> shift = {
+          (width_ - bbox.width() * scale_) / 2.0f,
+          (bbox.yMin + ascent) * scale_,
+      };
+      tileset->set_tile(codepoint, render_glyph(glyph, shift));
     }
     return tileset;
   }
@@ -109,25 +93,60 @@ class TTFontLoader {
   struct BBox {
     int width() const noexcept
     {
-      return right - left;
+      return xMax - xMin;
     }
     int height() const noexcept
     {
-      return bottom - top;
+      return yMax - yMin;
     }
-    int left;
-    int top;
-    int right;
-    int bottom;
+    int xMin;
+    int yMin;
+    int xMax;
+    int yMax;
   };
+  template<typename T>
+  struct Point {
+    T x;
+    T y;
+  };
+  /**
+   *  Return the Image for a specific glyph.
+   */
+  auto render_glyph(
+      int glyph, const Point<float>& shift) const -> Image
+  {
+    Image image(width_, height_, {0xff, 0xff, 0xff, 0x00});
+    Vector2<unsigned char> alpha(width_, height_);
+    stbtt_MakeGlyphBitmapSubpixel(
+        &font_info_,
+        alpha.data(),
+        width_,
+        height_,
+        static_cast<int>(sizeof(alpha.data()[0]) * alpha.width()),
+        scale_,
+        scale_,
+        shift.x,
+        shift.y,
+        glyph);
+    for (int img_y = 0; img_y < image.height(); ++img_y) {
+      for (int img_x = 0; img_x < image.width(); ++img_x) {
+        int alpha_y = img_y - static_cast<int>(shift.y);
+        int alpha_x = img_x - static_cast<int>(shift.x);
+        if (alpha_y < 0 || alpha.height() <= alpha_y) { continue; }
+        if (alpha_x < 0 || alpha.width() <= alpha_x) { continue; }
+        image.at(img_x, img_y).a = alpha.at(alpha_x, alpha_y);
+      }
+    }
+    return image;
+  }
   /**
    *  Return the bounding box for this glyph.
    */
-  auto get_glyph_bbox(int glyph) const -> BBox
+  auto get_glyph_bbox(int glyph, float scale=1.0f) const -> BBox
   {
     BBox bbox;
-    stbtt_GetGlyphBitmapBox(&font_info_, glyph, scale_, scale_,
-                            &bbox.left, &bbox.top, &bbox.right, &bbox.bottom);
+    stbtt_GetGlyphBitmapBox(&font_info_, glyph, scale, scale,
+                            &bbox.xMin, &bbox.yMin, &bbox.xMax, &bbox.yMax);
     return bbox;
   }
   /**
@@ -137,7 +156,7 @@ class TTFontLoader {
   {
     BBox bbox;
     stbtt_GetFontBoundingBox(
-        &font_info_, &bbox.left, &bbox.top, &bbox.right, &bbox.bottom);
+        &font_info_, &bbox.xMin, &bbox.yMin, &bbox.xMax, &bbox.yMax);
     return bbox;
   }
   /**
@@ -168,8 +187,6 @@ class TTFontLoader {
    *  Font scale needed to fit the current height.
    */
   float scale_;
-  float ascent_;
-  float descent_;
 };
 auto load_truetype(
     const std::string& path,

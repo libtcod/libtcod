@@ -67,7 +67,13 @@ class TTFontLoader {
     stbtt_InitFont(&font_info_, font_data_.data(), 0);
     scale_ = stbtt_ScaleForPixelHeight(&font_info_, height_);
     if (width_ <= 0) {
-      width_ = guess_font_width();
+      tile_width = width_ = guess_font_width();
+    }
+    BBox font_bbox = get_font_bbox();
+    float font_width = font_bbox.width() * scale_;
+    if (font_width > tile_width) {
+      // Shrink the font to fit its tile width.
+      scale_ *= static_cast<float>(tile_width) / font_width;
     }
   }
   auto generate_tileset() const -> std::unique_ptr<Tileset>

@@ -40,6 +40,7 @@
 #include "console.h"
 #include "libtcod_int.h"
 #include "utility.h"
+#include "color/canvas.h"
 
 static SDL_Surface* scale_screen=NULL;
 static bool clear_screen=false;
@@ -367,53 +368,30 @@ static void set_window_title(const char *title) {
 	SDL_SetWindowTitle(window, title);
 }
 
-static void save_screenshot(const char *filename) {
-	if ( TCOD_ctx.renderer == TCOD_RENDERER_SDL ) {
-		/* This would be a lot easier if image saving could do textures. */
-	    SDL_Rect rect;
-		uint32_t format;
-		SDL_Texture *texture;
-		SDL_RenderGetViewport(renderer, &rect);
-		format = SDL_GetWindowPixelFormat(window);
-		texture = SDL_CreateTexture(renderer, format, SDL_TEXTUREACCESS_TARGET, rect.w, rect.h);
-		if (0 != texture) {
-			if (SDL_SetRenderTarget(renderer, texture)) {
-				void *pixels;
-				int pitch, access;
-
-				actual_rendering();
-				SDL_SetRenderTarget(renderer, NULL);
-
-				rect.x = rect.y = rect.w = rect.h = 0;
-				if (-1 != SDL_QueryTexture(texture, &format, &access, &rect.w, &rect.h) &&
-						-1 != SDL_LockTexture(texture, NULL, &pixels, &pitch)) {
-					int depth;
-					uint32_t rmask, gmask, bmask, amask;
-					if (SDL_TRUE == SDL_PixelFormatEnumToMasks(format, &depth, &rmask, &gmask, &bmask, &amask)) {
-						SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(pixels, rect.w, rect.h, depth, pitch, rmask, gmask, bmask, amask);
-						TCOD_sys_save_bitmap(surface, filename);
-						SDL_FreeSurface(surface);
-          } else {
-						TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_PixelFormatEnumToMasks"));
-          }
-					SDL_UnlockTexture(texture);
-        } else {
-					TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_QueryTexture or SDL_LockTexture"));
-        }
-      } else {
-				TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_SetRenderTarget"));
-      }
-			SDL_DestroyTexture(texture);
-    } else {
-			TCOD_LOG(("TCOD_sys_save_screenshot - failed call to SDL_CreateTexture"));
+static void save_screenshot(const char* filename)
+{
+  switch (TCOD_ctx.renderer) {
+    case TCOD_RENDERER_SDL: {
+      int width, height;
+      SDL_GetRendererOutputSize(renderer, &width, &height);
+      tcod::image::Image pixels(width, height);
+      SDL_RenderReadPixels(
+          renderer,
+          nullptr,
+          SDL_PIXELFORMAT_RGBA32,
+          static_cast<void*>(pixels.data()),
+          width * 4);
+      tcod::image::save(pixels, filename);
+      break;
     }
 #ifndef NO_OPENGL
-	} else {
-		SDL_Surface *screenshot = TCOD_opengl_get_screen();
-		TCOD_sys_save_bitmap(screenshot, filename);
-		SDL_FreeSurface(screenshot);
+    case TCOD_RENDERER_OPENGL:
+      SDL_Surface* screenshot = TCOD_opengl_get_screen();
+      TCOD_sys_save_bitmap(screenshot, filename);
+      SDL_FreeSurface(screenshot);
+      break;
 #endif
-	}
+  }
 }
 /* get desktop resolution */
 static void get_current_resolution(int *w, int *h) {

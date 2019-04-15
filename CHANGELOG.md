@@ -13,6 +13,7 @@ since `1.7.0`.
 
 ### Fixed
 - Fixed horizontal alignment for TrueType fonts.
+- Fixed screenshots with the older SDL renderer.
 
 ### Deprecated
 - The SDL callback feature has been deprecated.

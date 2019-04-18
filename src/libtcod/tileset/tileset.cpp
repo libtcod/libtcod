@@ -53,12 +53,12 @@ void TCOD_tileset_delete(TCOD_Tileset* tileset)
 }
 int TCOD_tileset_get_tile_width_(const TCOD_Tileset* tileset)
 {
-  if (!tileset) { return 0; }
+  if (!tileset || !(*tileset)) { return 0; }
   return (*tileset)->get_tile_width();
 }
 int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset)
 {
-  if (!tileset) { return 0; }
+  if (!tileset || !(*tileset)) { return 0; }
   return (*tileset)->get_tile_height();
 }
 int TCOD_tileset_get_tile_(
@@ -66,7 +66,7 @@ int TCOD_tileset_get_tile_(
     int codepoint,
     struct TCOD_ColorRGBA* buffer)
 {
-  if (!tileset) { return -1; }
+  if (!tileset || !(*tileset)) { return -1; }
   if (!(*tileset)->has_tile_(codepoint)) {
     return -1; // No tile for the given codepoint in this tileset.
   }
@@ -82,7 +82,7 @@ int TCOD_tileset_set_tile_(
     int codepoint,
     const struct TCOD_ColorRGBA* buffer)
 {
-  if (!tileset) { return -1; }
+  if (!tileset || !(*tileset)) { return -1; }
   Image tile((*tileset)->get_tile_width(), (*tileset)->get_tile_height());
   std::copy(buffer, buffer + (tile.width() * tile.height()), tile.begin());
   (*tileset)->set_tile(codepoint, tile);

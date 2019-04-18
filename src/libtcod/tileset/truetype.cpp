@@ -33,6 +33,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <utility>
 
 #include "truetype.h"
 #include "../engine/globals.h"
@@ -203,16 +204,32 @@ auto load_truetype(
 }
 } // namespace tileset
 } // namespace tcod
+TCODLIB_CAPI TCOD_Tileset* TCOD_load_truetype_font_(
+    const char* path,
+    int tile_width,
+    int tile_height)
+{
+  using tcod::tileset::load_truetype;
+  using tcod::tileset::Tileset;
+  if (!path) { return nullptr; }
+  try {
+    auto tileset = load_truetype(path, {tile_width, tile_height});
+    return new TCOD_Tileset(std::move(tileset));
+  } catch (const std::exception& e) {
+    std::cerr << "Error while loading font: " << e.what();
+    return nullptr;
+  }
+}
 int TCOD_tileset_load_truetype_(
     const char* path,
     int tile_width,
     int tile_height)
 {
-  using tcod::engine::set_tileset;
-  using tcod::tileset::load_truetype;
-  if (!path) { return -1; }
+  TCOD_Tileset* tileset = TCOD_load_truetype_font_(path,
+                                                   tile_width, tile_height);
+  if (!tileset) { return -1; }
   try {
-    set_tileset(load_truetype(path, {tile_width, tile_height}));
+    tcod::engine::set_tileset(*tileset);
   } catch (const std::exception& e) {
     std::cerr << "Error while loading font: " << e.what();
     return -1;

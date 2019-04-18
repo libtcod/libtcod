@@ -36,6 +36,7 @@
 #include <memory>
 #endif // __cplusplus
 
+#include "../portability.h"
 #include "backend.h"
 #include "display.h"
 #include "../tileset/tileset.h"
@@ -77,6 +78,18 @@ auto get_tilesheet() -> std::shared_ptr<Tilesheet>;
 } // namespace sdl2
 } // namespace tcod
 #endif // __cplusplus
+/**
+ *  Return the default tileset, may be NULL.
+ *
+ *  This function is provisional, the API may change in the future.
+ */
+TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
+/**
+ *  Set the default tileset and update the default display to use it.
+ *
+ *  This function is provisional, the API may change in the future.
+ */
+TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
 #endif // LIBTCOD_ENGINE_GLOBALS_H_
 
 

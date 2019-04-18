@@ -75,5 +75,13 @@ auto get_tilesheet() -> std::shared_ptr<Tilesheet>
 {
   return active_tilesheet;
 }
-} // namespace sdl2
+} // namespace engine
 } // namespace tcod
+TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
+{
+  return new TCOD_Tileset(tcod::engine::get_tileset());
+}
+TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
+{
+  tcod::engine::set_tileset(tileset ? (*tileset) : nullptr);
+}

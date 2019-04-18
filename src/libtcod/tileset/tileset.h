@@ -101,6 +101,16 @@ class Tileset {
   {
     return character_map_;
   }
+  Image get_tile_(int codepoint) const {
+    if(!has_tile_(codepoint)) {
+      return Image(tile_width_, tile_height_);
+    }
+    return tiles_.at(character_map_.at(codepoint)).get_image();
+  }
+  bool has_tile_(int codepoint) const {
+    return (codepoint < static_cast<int>(character_map_.size())
+            && character_map_.at(codepoint) >= 0);
+  }
  private:
   /**
    *  Return the tile ID for a specific code-point.
@@ -135,27 +145,67 @@ class Tileset {
   std::vector<int> character_map_;
   std::vector<class TilesetObserver*> observers_;
 };
-#endif /* __cplusplus */
+} // namespace tileset
+} // namespace tcod
+#endif // __cplusplus
 #ifdef __cplusplus
 /**
  *  C API alias to the tcod::Tileset class.
  */
-typedef Tileset TCOD_Tileset;
-extern "C" {
+typedef std::shared_ptr<tcod::tileset::Tileset> TCOD_Tileset;
 #else
 typedef struct TCOD_Tileset TCOD_Tileset;
 #endif
 /**
  *  Create a new tile-set with the given tile size.
  */
-TCOD_Tileset *TCOD_tileset_new(int tile_width, int tile_height);
+TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_new(int tile_width, int tile_height);
 /**
  *  Delete a tile-set.
  */
-void TCOD_tileset_delete(TCOD_Tileset *tileset);
-#ifdef __cplusplus
-} // extern "C"
-} // namespace tileset
-} // namespace tcod
-#endif
+TCODLIB_CAPI void TCOD_tileset_delete(TCOD_Tileset* tileset);
+/**
+ *  Return the pixel width of tiles in this tileset.
+ *
+ *  The tileset functions are provisional, the API may change in the future.
+ */
+TCODLIB_CAPI int TCOD_tileset_get_tile_width_(const TCOD_Tileset* tileset);
+/**
+ *  Return the pixel height of tiles in this tileset.
+ *
+ *  The tileset functions are provisional, the API may change in the future.
+ */
+TCODLIB_CAPI int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
+/**
+ *  Fetch a tile, outputting its data to a pixel buffer.
+ *
+ *  `codepoint` is the index for the tile.  Unicode is recommend.
+ *
+ *  `buffer` is a pointer to a contiguous row-major array of pixels.  The tile
+ *  data will be outputted here.  This pointer can be NULL if you only want to
+ *  know if the tileset has a specific tile.
+ *
+ *  Returns 0 if the tile exists.  Returns a negative value on an error or if
+ *  the tileset does not have a tile for this codepoint.
+ *
+ *  The tileset functions are provisional, the API may change in the future.
+ */
+TCODLIB_CAPI int TCOD_tileset_get_tile_(
+    const TCOD_Tileset* tileset,
+    int codepoint,
+    struct TCOD_ColorRGBA* buffer);
+/**
+ *  Upload a tile from a pixel buffer into this tileset.
+ *
+ *  `codepoint` is the index for the tile.  Unicode is recommend.
+ *
+ *  `buffer` is a pointer to a contiguous row-major array of pixels.
+ *  This can not be NULL.
+ *
+ *  The tileset functions are provisional, the API may change in the future.
+ */
+TCODLIB_CAPI int TCOD_tileset_set_tile_(
+    TCOD_Tileset* tileset,
+    int codepoint,
+    const struct TCOD_ColorRGBA* buffer);
 #endif /* LIBTCOD_TILESET_TILESET_H_ */

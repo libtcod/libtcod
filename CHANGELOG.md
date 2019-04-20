@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.11.3] - 2019-04-19
 ### Changed
 - New consoles are initialized as if clear was called.
 - The SDL callback type now uses a typed argument instead of void pointer.

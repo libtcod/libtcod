@@ -678,8 +678,9 @@ void detectBigEndianness(void) {
 		hasDetectedBigEndianness = true;
 	}
 }
-
-uint16_t bswap16(uint16_t s){
+#ifndef bswap16
+static uint16_t bswap16(uint16_t s)
+{
 	uint8_t* ps = reinterpret_cast<uint8_t*>(&s);
 	uint16_t res;
 	uint8_t* pres = reinterpret_cast<uint8_t*>(&res);
@@ -687,8 +688,10 @@ uint16_t bswap16(uint16_t s){
 	pres[1] = ps[0];
 	return res;
 }
-
-uint32_t bswap32(uint32_t s){
+#endif
+#ifndef bswap32
+static uint32_t bswap32(uint32_t s)
+{
 	uint8_t *ps = reinterpret_cast<uint8_t*>(&s);
 	uint32_t res;
 	uint8_t *pres = reinterpret_cast<uint8_t*>(&res);
@@ -698,7 +701,7 @@ uint32_t bswap32(uint32_t s){
 	pres[3]=ps[0];
 	return res;
 }
-
+#endif
 uint16_t l16(uint16_t s){
 	if (isBigEndian) return bswap16(s); else return s;
 }

@@ -8,6 +8,10 @@ since `1.7.0`.
 
 ## [Unreleased]
 
+## [1.11.4] - 2019-04-26
+### Fixed
+- Fixed a name conflict with endianness macros on FreeBSD.
+
 ## [1.11.3] - 2019-04-19
 ### Changed
 - New consoles are initialized as if clear was called.

@@ -1064,11 +1064,24 @@ static int print_internal_(
 {
   FormattedUnicodeIterator it(string, fg, bg);
   UnicodeIterator end = it.end();
+  // Expand the width/height of 0 to the edge of the console.
+  if (!width) { width = con.w; }
+  if (!height) { height = con.h; }
   // Print bounding box.
   int left = x;
   int right = x + width;
   int top = y;
   int bottom = y + height;
+  // Clamp the bounding box to the console bounds.
+  left = std::max(0, left);
+  right = std::min(right, con.w);
+  top = std::max(0, top);
+  bottom = std::min(bottom, con.h);
+  width = right - left;
+  height = bottom - top;
+  if (width <= 0 || height <= 0) {
+    return 0; // The bounding box is invalid.
+  }
   if (!can_split) { bottom = con.h; }
   while (it != end && top < bottom) {
     // Check for newlines.

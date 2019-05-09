@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Corrected bounding box issues with the stateless UTF-8 print functions.
 
 ## [1.11.4] - 2019-04-26
 ### Fixed

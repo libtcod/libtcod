@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Several functions in the `tcod::console` namespace are now accessible.
+  These functions are provisional, so the API may change at anytime.
+
 ### Fixed
 - Corrected bounding box issues with the stateless UTF-8 print functions.
 

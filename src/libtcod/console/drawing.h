@@ -78,6 +78,7 @@ TCODLIB_CAPI void TCOD_console_vline(
 #ifdef __cplusplus
 namespace tcod {
 namespace console {
+// All functions here are provisional unless given an added version.
 /**
  *  Place a single tile on a `console` at `x`,`y`.
  *
@@ -85,7 +86,7 @@ namespace console {
  *
  *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
  */
-void put(
+TCODLIB_API void put(
     TCOD_Console* console,
     int x,
     int y,
@@ -100,7 +101,7 @@ void put(
  *
  *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
  */
-void draw_rect(
+TCODLIB_API void draw_rect(
     TCOD_Console* console,
     int x,
     int y,

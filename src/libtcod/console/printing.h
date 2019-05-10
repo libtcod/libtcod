@@ -94,7 +94,8 @@ int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
 #ifdef __cplusplus
 namespace tcod {
 namespace console {
-void print(
+// All functions here are provisional unless given an added version.
+TCODLIB_API void print(
     TCOD_Console* con,
     int x,
     int y,
@@ -103,7 +104,7 @@ void print(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
-int print_rect(
+TCODLIB_API int print_rect(
     struct TCOD_Console *con,
     int x,
     int y,
@@ -118,24 +119,24 @@ int print_rect(
  *  Return the total number lines that a function with similar arguments would
  *  print.
  */
-int get_height_rect(
+TCODLIB_API int get_height_rect(
     std::array<int, 2> console_size,
     int x,
     int y,
     int width,
     int height,
     const std::string& str);
-int get_height_rect(
+TCODLIB_API int get_height_rect(
     int width,
     const std::string& str);
-int get_height_rect(
+TCODLIB_API int get_height_rect(
     struct TCOD_Console *con,
     int x,
     int y,
     int width,
     int height,
     const std::string& str);
-void print_frame(
+TCODLIB_API void print_frame(
     struct TCOD_Console *con,
     int x,
     int y,

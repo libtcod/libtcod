@@ -45,36 +45,37 @@
 #ifdef __cplusplus
 namespace tcod {
 namespace engine {
+// All functions here are provisional unless given an added version.
 using tileset::Tileset;
 using tileset::Tilesheet;
 /**
  *  Replace the active backend with a new instance, can be nullptr.
  */
-void set_backend(std::shared_ptr<Backend> backend);
+TCODLIB_API void set_backend(std::shared_ptr<Backend> backend);
 /**
  *  Return a shared pointer to the active backend.  Might be nullptr.
  */
-std::shared_ptr<Backend> get_backend();
+TCODLIB_API std::shared_ptr<Backend> get_backend();
 /**
  *  Replace the active display with a new instance, can be nullptr.
  */
-void set_display(std::shared_ptr<Display> display);
+TCODLIB_API void set_display(std::shared_ptr<Display> display);
 /**
  *  Return a shared pointer to the active display.  Might be nullptr.
  */
-std::shared_ptr<Display> get_display();
+TCODLIB_API std::shared_ptr<Display> get_display();
 /**
  *  Replace the active tileset with a new one, can be nullptr.
  *
  *  If there is an active display then its tileset will be set to this one.
  */
-void set_tileset(std::shared_ptr<Tileset> tileset);
+TCODLIB_API void set_tileset(std::shared_ptr<Tileset> tileset);
 /**
  *  Return the current active tileset.  This might be nullptr.
  */
-auto get_tileset() -> std::shared_ptr<Tileset>;
-void set_tilesheet(std::shared_ptr<Tilesheet> sheet);
-auto get_tilesheet() -> std::shared_ptr<Tilesheet>;
+TCODLIB_API auto get_tileset() -> std::shared_ptr<Tileset>;
+TCODLIB_API void set_tilesheet(std::shared_ptr<Tilesheet> sheet);
+TCODLIB_API auto get_tilesheet() -> std::shared_ptr<Tilesheet>;
 } // namespace sdl2
 } // namespace tcod
 #endif // __cplusplus

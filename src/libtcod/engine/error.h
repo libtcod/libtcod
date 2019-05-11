@@ -29,68 +29,45 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
-
-#include "portability.h"
-#include "utility.h"
-#include "version.h"
-
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
-#include "console.h"
-#include "fov.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "path.h"
-#include "parser.h"
-#include "sys.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "zip.h"
-
-#include "console/drawing.h"
-#include "console/printing.h"
-#include "console/rexpaint.h"
-
-#include "engine/backend.h"
-#include "engine/display.h"
-#include "engine/error.h"
-#include "engine/globals.h"
-
-#include "sdl2/event.h"
-
-#include "tileset/observer.h"
-#include "tileset/tileset.h"
-#include "tileset/tile.h"
+#ifndef LIBTCOD_ENGINE_ERROR_H_
+#define LIBTCOD_ENGINE_ERROR_H_
 
 #ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
+#include <exception>
+#include <string>
 #endif // __cplusplus
 
-#endif
+#include "../portability.h"
+
+#ifdef __cplusplus
+namespace tcod {
+/**
+ *  Set an error message and return a relevant error code, usually -1.
+ *
+ *  Used internally.
+ */
+TCODLIB_FORMAT(1, 2)
+int set_errorf(const char* fmt, ...);
+int set_error(const char* msg);
+int set_error(const std::string& msg);
+int set_error(const std::exception& e);
+} // namespace tcod
+#endif // __cplusplus
+/**
+ *  Return the last error message.  If there is no error then the string will
+ *  have a length of zero.
+ *
+ *  The error state is thread specific.
+ *  \rst
+ *  .. versionadded:: 1.12
+ *  \endrst
+ */
+TCODLIB_CAPI const char* TCOD_sys_get_error();
+/**
+ *  Set an error message and return -1.
+ *  \rst
+ *  .. versionadded:: 1.12
+ *  \endrst
+ */
+TCODLIB_CAPI int TCOD_sys_set_error(const char*);
+#endif // LIBTCOD_ENGINE_ERROR_H_

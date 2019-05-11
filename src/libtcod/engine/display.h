@@ -153,10 +153,17 @@ TCODLIB_API void init_root(int w, int h, const std::string& title,
  *  from the working directory.
  *
  *  Afterwards TCOD_quit must be called before the program exits.
+ *
+ *  Returns 0 on success, or -1 on an error, you can check the error with
+ *  TCOD_sys_get_error()
+ *  \rst
+ *  .. versionchanged:: 1.12
+ *      Now returns -1 on error instead of crashing.
+ *  \endrst
  */
-TCODLIB_CAPI void TCOD_console_init_root(int w, int h, const char* title,
-                                         bool fullscreen,
-                                         TCOD_renderer_t renderer);
+TCODLIB_CAPI int TCOD_console_init_root(int w, int h, const char* title,
+                                        bool fullscreen,
+                                        TCOD_renderer_t renderer);
 /**
  *  Shutdown libtcod.  This must be called before your program exits.
  *  \rst

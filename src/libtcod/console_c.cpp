@@ -46,6 +46,7 @@
 #include "utility.h"
 #include "version.h"
 #include "console/drawing.h"
+#include "engine/error.h"
 #include "engine/globals.h"
 #include "tileset/tileset.h"
 #include "tileset/tilesheet.h"
@@ -128,9 +129,19 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
  *  \param nb_char_vertic The number of rows in the font image.
  *
  *  `fontFile` will be case-sensitive depending on the platform.
+ *
+ *  Returns 0 on success, or -1 on an error, you can check the error with
+ *  TCOD_sys_get_error()
+ *  \rst
+ *  .. versionchanged:: 1.12
+ *      Now returns -1 on error instead of crashing.
+ *  \endrst
  */
-void TCOD_console_set_custom_font(const char *fontFile, int flags,
-                                  int nb_char_horiz, int nb_char_vertic)
+int TCOD_console_set_custom_font(
+    const char *fontFile,
+    int flags,
+    int nb_char_horiz,
+    int nb_char_vertic)
 {
   strcpy(TCOD_ctx.font_file, fontFile);
   /* if layout not defined, assume ASCII_INCOL */
@@ -170,13 +181,11 @@ void TCOD_console_set_custom_font(const char *fontFile, int flags,
     auto tileset = std::make_shared<Tileset>(tilesheet->get_tile_width(),
                                              tilesheet->get_tile_height());
     tcod::engine::set_tileset(tileset);
-  } catch (const std::runtime_error&) {
-    // Ignore any runtime error, will likely catch a missing file error.
-    return;
-  } catch (const std::logic_error&) {
-    return; // Ignore logic errors from constructing objects.
+  } catch (const std::exception& e) {
+    return tcod::set_error(e);
   }
   TCOD_sys_decode_font_();
+  return 0;
 }
 /**
  *  \brief Remap a character code to a tile.

@@ -70,6 +70,7 @@
 #include "libtcod/console/rexpaint.cpp"
 #include "libtcod/engine/backend.cpp"
 #include "libtcod/engine/display.cpp"
+#include "libtcod/engine/error.cpp"
 #include "libtcod/engine/globals.cpp"
 #include "libtcod/pathfinding/astar.cpp"
 #include "libtcod/pathfinding/generic.cpp"

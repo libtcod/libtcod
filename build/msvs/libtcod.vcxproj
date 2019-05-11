@@ -182,6 +182,7 @@
     <ClCompile Include="..\..\src\libtcod\console_c.cpp" />
     <ClCompile Include="..\..\src\libtcod\engine\backend.cpp" />
     <ClCompile Include="..\..\src\libtcod\engine\display.cpp" />
+    <ClCompile Include="..\..\src\libtcod\engine\error.cpp" />
     <ClCompile Include="..\..\src\libtcod\engine\globals.cpp" />
     <ClCompile Include="..\..\src\libtcod\fov.cpp" />
     <ClCompile Include="..\..\src\libtcod\fov_c.c" />
@@ -291,6 +292,7 @@
     <ClInclude Include="..\..\src\libtcod\console_types.h" />
     <ClInclude Include="..\..\src\libtcod\engine\backend.h" />
     <ClInclude Include="..\..\src\libtcod\engine\display.h" />
+    <ClInclude Include="..\..\src\libtcod\engine\error.h" />
     <ClInclude Include="..\..\src\libtcod\engine\globals.h" />
     <ClInclude Include="..\..\src\libtcod\fov.h" />
     <ClInclude Include="..\..\src\libtcod\fov.hpp" />

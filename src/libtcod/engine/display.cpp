@@ -36,6 +36,7 @@
 #include <string>
 
 #include <SDL.h>
+#include "error.h"
 #include "globals.h"
 #include "../console.h"
 #include "../console.hpp"
@@ -92,20 +93,23 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
       init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
       break;
     default:
-      TCOD_console_init(TCOD_ctx.root, title, fullscreen);
+      if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
+        throw std::runtime_error(TCOD_sys_get_error());
+      }
       break;
   }
 }
 } // namespace console
 } // namespace tcod
-void TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
-                            TCOD_renderer_t renderer)
+int TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
+                           TCOD_renderer_t renderer)
 {
-  TCOD_IF(w > 0 && h > 0) {
-    tcod::console::init_root(
-        w, h, title ? title : "", fullscreen, renderer
-    );
+  try {
+    tcod::console::init_root(w, h, title ? title : "", fullscreen, renderer);
+  } catch (const std::exception& e) {
+    return tcod::set_error(e);
   }
+  return 0;
 }
 void TCOD_quit(void)
 {

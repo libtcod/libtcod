@@ -29,68 +29,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
+#include "error.h"
 
-#include "portability.h"
-#include "utility.h"
-#include "version.h"
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
 
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
-#include "console.h"
-#include "fov.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "path.h"
-#include "parser.h"
-#include "sys.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "zip.h"
-
-#include "console/drawing.h"
-#include "console/printing.h"
-#include "console/rexpaint.h"
-
-#include "engine/backend.h"
-#include "engine/display.h"
-#include "engine/error.h"
-#include "engine/globals.h"
-
-#include "sdl2/event.h"
-
-#include "tileset/observer.h"
-#include "tileset/tileset.h"
-#include "tileset/tile.h"
-
-#ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
-#endif // __cplusplus
-
-#endif
+namespace tcod {
+static thread_local char error_msg_[256] = {};
+int set_errorf(const char* fmt, ...)
+{
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(error_msg_, sizeof(error_msg_) - 1, fmt, ap);
+  va_end(ap);
+  return -1;
+}
+int set_error(const char* msg)
+{
+  std::strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
+  return -1;
+}
+int set_error(const std::string& msg)
+{
+  return set_error(msg.c_str());
+}
+int set_error(const std::exception& e)
+{
+  return set_error(e.what());
+}
+} // namespace tcod
+const char* TCOD_sys_get_error()
+{
+  return tcod::error_msg_;
+}
+int TCOD_sys_set_error(const char* msg)
+{
+  return tcod::set_error(msg);
+}

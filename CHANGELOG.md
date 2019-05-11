@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.11.5] - 2019-05-10
 ### Added
 - Several functions in the `tcod::console` namespace are now accessible.
   These functions are provisional, so the API may change at anytime.

@@ -34,9 +34,9 @@
 
 #define TCOD_MAJOR_VERSION  1
 #define TCOD_MINOR_VERSION  11
-#define TCOD_PATCHLEVEL     4
+#define TCOD_PATCHLEVEL     5
 
-#define TCOD_STRVERSION "1.11.4"
+#define TCOD_STRVERSION "1.11.5"
 
 #define TCOD_HEXVERSION (0x010000 * TCOD_MAJOR_VERSION \
                          + 0x0100 * TCOD_MINOR_VERSION \

@@ -59,11 +59,11 @@ int set_error(const std::exception& e)
   return set_error(e.what());
 }
 } // namespace tcod
-const char* TCOD_sys_get_error()
+const char* TCOD_get_error()
 {
   return tcod::error_msg_;
 }
-int TCOD_sys_set_error(const char* msg)
+int TCOD_set_error(const char* msg)
 {
   return tcod::set_error(msg);
 }

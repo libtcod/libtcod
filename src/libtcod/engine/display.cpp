@@ -94,7 +94,7 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
       break;
     default:
       if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
-        throw std::runtime_error(TCOD_sys_get_error());
+        throw std::runtime_error(TCOD_get_error());
       }
       break;
   }

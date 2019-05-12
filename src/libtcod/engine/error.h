@@ -62,12 +62,12 @@ int set_error(const std::exception& e);
  *  .. versionadded:: 1.12
  *  \endrst
  */
-TCODLIB_CAPI const char* TCOD_sys_get_error();
+TCODLIB_CAPI const char* TCOD_get_error();
 /**
  *  Set an error message and return -1.
  *  \rst
  *  .. versionadded:: 1.12
  *  \endrst
  */
-TCODLIB_CAPI int TCOD_sys_set_error(const char*);
+TCODLIB_CAPI int TCOD_set_error(const char*);
 #endif // LIBTCOD_ENGINE_ERROR_H_

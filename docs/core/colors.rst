@@ -106,3 +106,9 @@ Result:
 INSERT TABLE.
 
 .. doxygenfunction:: TCOD_color_gen_map
+
+C++
+^^^
+
+.. doxygenclass:: TCODColor
+    :members:

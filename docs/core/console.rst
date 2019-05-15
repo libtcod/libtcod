@@ -224,3 +224,8 @@ Blitting a console on another one
 Define a blit-transparent color
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenfunction:: TCOD_console_set_key_color
+
+C++
+===
+.. doxygenclass:: TCODConsole
+    :members:

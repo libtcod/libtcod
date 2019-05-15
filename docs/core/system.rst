@@ -2,35 +2,20 @@
 System layer
 ************
 
-High precision time functions
-=============================
+Time functions
+==============
 
-Limit the frames per second
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Get the number of frames rendered during the last second
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Get the duration of the last frame
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Pause the program
-^^^^^^^^^^^^^^^^^
-
-Get global timer in milliseconds
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Get global timer in seconds
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_sys_elapsed_milli
+.. doxygenfunction:: TCOD_sys_elapsed_seconds
+.. doxygenfunction:: TCOD_sys_sleep_milli
+.. doxygenfunction:: TCOD_sys_set_fps
+.. doxygenfunction:: TCOD_sys_get_fps
+.. doxygenfunction:: TCOD_sys_get_last_frame_length
 
 Easy screenshots
 ================
 
-Filesystem utilities
-====================
-
-Draw custom graphics on top of the root console
-===============================================
+.. doxygenfunction:: TCOD_sys_save_screenshot
 
 Miscellaneous utilities
 =======================
@@ -38,6 +23,8 @@ Miscellaneous utilities
 .. doxygenfunction:: TCOD_sys_get_sdl_window
 .. doxygenfunction:: TCOD_sys_get_sdl_renderer
 
-Clipboard integration
-=====================
+C++
+===
 
+.. doxygenclass:: TCODSystem
+    :members:

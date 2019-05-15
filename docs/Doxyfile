@@ -437,7 +437,7 @@ LOOKUP_CACHE_SIZE      = 0
 # normally produced when WARNINGS is set to YES.
 # The default value is: NO.
 
-EXTRACT_ALL            = NO
+EXTRACT_ALL            = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES, all private members of a class will
 # be included in the documentation.
@@ -2125,7 +2125,8 @@ PREDEFINED             = TCODLIB_API= \
                          TCODLIB_CAPI= \
                          "TCODLIB_FORMAT(int,int)= " \
                          "TCOD_DEPRECATED(msg)= " \
-                         TCOD_DEPRECATED_NOMESSAGE=
+                         TCOD_DEPRECATED_NOMESSAGE= \
+                         __cplusplus
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

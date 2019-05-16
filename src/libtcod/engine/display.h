@@ -41,6 +41,7 @@
 #include "../tileset/tileset.h"
 #include "../console_types.h"
 
+struct SDL_Rect;
 struct SDL_Window;
 struct SDL_Renderer;
 #ifdef __cplusplus
@@ -71,6 +72,7 @@ class Display {
    *  Render a console over this display.
    */
   virtual void accumulate(const TCOD_Console*) = 0;
+  virtual void accumulate(const TCOD_Console*, const struct SDL_Rect* viewport) = 0;
   /**
    *  Render a console and present the display.
    */
@@ -98,6 +100,7 @@ class Display {
  */
 class TerminalDisplay: public Display {
  public:
+  using Display::accumulate;
   virtual void set_tileset(std::shared_ptr<Tileset>) override
   {}
   virtual void set_title(const std::string&) override
@@ -130,6 +133,10 @@ class TerminalDisplay: public Display {
   virtual auto get_sdl_renderer() -> struct SDL_Renderer* override
   {
     return nullptr;
+  }
+  virtual void accumulate(const TCOD_Console* console, const struct SDL_Rect*) override
+  {
+    accumulate(console);
   }
 };
 } // namespace sdl2
@@ -240,4 +247,5 @@ TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  *  \endrst
  */
 TCODLIB_CAPI int TCOD_sys_accumulate_console(const TCOD_Console* console);
+TCODLIB_CAPI int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
 #endif // LIBTCOD_ENGINE_DISPLAY_H_

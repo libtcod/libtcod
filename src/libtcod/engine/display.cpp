@@ -187,9 +187,13 @@ struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
 }
 int TCOD_sys_accumulate_console(const TCOD_Console* console)
 {
+  return TCOD_sys_accumulate_console_(console, nullptr);
+}
+int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport)
+{
   console = tcod::console::validate_(console);
   auto display = tcod::engine::get_display();
   if (!console || !display) { return -1; }
-  display->accumulate(console);
+  display->accumulate(console, viewport);
   return 0;
 }

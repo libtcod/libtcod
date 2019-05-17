@@ -63,7 +63,9 @@ GLShader::GLShader(int shader_type, const std::string& source)
       nullptr);
   gl_check();
   glCompileShader(shader_); gl_check();
+#ifndef NDEBUG
   verify_shader();
+#endif
 }
 GLShader::~GLShader() noexcept
 {

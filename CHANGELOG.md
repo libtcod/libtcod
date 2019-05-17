@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed shader compilation issues in the OPENGL2 renderer.
 
 ## [1.12.0] - 2019-05-17
 ### Added

@@ -10,8 +10,8 @@ varying vec2 v_coord; // Simple quad coordinate.
 
 void main(void)
 {
-  gl_Position = mvp_matrix * vec4(a_vertex, 0, 1);
-  v_coord = vec2(a_vertex.x, 1 - a_vertex.y); // Flip Y
+  gl_Position = mvp_matrix * vec4(a_vertex, 0.0, 1.0);
+  v_coord = vec2(a_vertex.x, 1.0 - a_vertex.y); // Flip Y
   // Expand to console coordinates.
   v_coord *= v_console_shape * v_console_size;
 }

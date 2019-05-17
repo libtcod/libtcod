@@ -24,11 +24,13 @@ void main(void)
   vec4 tile_encoded = vec4(texture2D(t_console_tile, console_pos));
 
   // Unpack tileset index.
-  vec2 tile_address = vec2(tile_encoded.x * 0xff + tile_encoded.y * 0xff00,
-                           tile_encoded.z * 0xff + tile_encoded.w * 0xff00);
+  vec2 tile_address = vec2(
+      tile_encoded.x * float(0xff) + tile_encoded.y * float(0xff00),
+      tile_encoded.z * float(0xff) + tile_encoded.w * float(0xff00)
+  );
 
   // Clamp the edges of tile_interp to prevent alias bleeding.
-  tile_interp = clamp(tile_interp, 0.5 / tile_size, 1 - 0.5 / tile_size);
+  tile_interp = clamp(tile_interp, 0.5 / tile_size, 1.0 - 0.5 / tile_size);
 
   // Apply tile_interp and scale.
   tile_address = (tile_address + tile_interp) / v_tiles_shape;

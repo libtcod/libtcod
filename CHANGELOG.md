@@ -7,12 +7,14 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.12.0] - 2019-05-17
 ### Added
 - Added the `TCOD_get_error` and `TCOD_set_error` functions.
 
 ### Changed
-- `TCOD_console_init_root` and `TCOD_console_set_custom_font` can now return
-  an error code instead of only being able to crash on an error.
+- `TCOD_console_init_root` and `TCOD_console_set_custom_font` will now return
+  an error code instead of terminating on a known error.
 
 ## [1.11.5] - 2019-05-10
 ### Added

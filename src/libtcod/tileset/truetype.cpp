@@ -33,9 +33,11 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <stdexcept>
 #include <utility>
 
 #include "truetype.h"
+#include "../engine/error.h"
 #include "../engine/globals.h"
 #include "../../vendor/stb_truetype.h"
 // You can look here for a reference on glyph metrics:
@@ -50,7 +52,7 @@ static auto load_data_file(const std::string& path)
 {
   std::ifstream file(path, std::ios::in | std::ios::binary);
   if (!file.is_open()) {
-    return {};
+    throw std::runtime_error(std::string("File not found: ") + path);
   }
   return std::basic_string<unsigned char>(
       std::istreambuf_iterator<char>(file),
@@ -216,7 +218,7 @@ TCODLIB_CAPI TCOD_Tileset* TCOD_load_truetype_font_(
     auto tileset = load_truetype(path, {tile_width, tile_height});
     return new TCOD_Tileset(std::move(tileset));
   } catch (const std::exception& e) {
-    std::cerr << "Error while loading font: " << e.what();
+    tcod::set_error(e);
     return nullptr;
   }
 }
@@ -231,8 +233,7 @@ int TCOD_tileset_load_truetype_(
   try {
     tcod::engine::set_tileset(*tileset);
   } catch (const std::exception& e) {
-    std::cerr << "Error while loading font: " << e.what();
-    return -1;
+    return tcod::set_error(e);
   }
   return 0;
 }

@@ -44,6 +44,7 @@ namespace tileset {
  *
  *  Used when one is needed, but was not provided by the user.
  */
+TCODLIB_API
 auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
 -> std::unique_ptr<Tileset>;
 } // namespace tileset

@@ -7,6 +7,7 @@
 #include <libtcod.h>
 #include <libtcod.hpp>
 #include <libtcod/pathfinding/dijkstra.h>
+#include <libtcod/tileset/fallback.h>
 
 #include "catch.hpp"
 
@@ -121,4 +122,9 @@ TEST_CASE("New Dijkstra")
   const std::vector<index_type> EXPECTED_TRAVEL_PATH{{1, 1}, {0, 0}};
   CHECK_THAT(tcod::pathfinding::get_path(path_map, {2, 1}),
              Equals(EXPECTED_TRAVEL_PATH));
+}
+
+TEST_CASE("Fallback font.")
+{
+  REQUIRE(tcod::tileset::new_fallback_tileset({{0, 12}}));
 }

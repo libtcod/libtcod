@@ -31,12 +31,36 @@
  */
 #include "fallback.h"
 
+#include <array>
+#include <cstdio>
 #include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 #include <string>
 
 #include "truetype.h"
 namespace tcod {
 namespace tileset {
+#ifdef __unix__
+/**
+ *  Run and return the output from the given command.
+ *
+ *  https://stackoverflow.com/questions/478898/how-do-i-execute-a-command-and-get-output-of-command-within-c-using-posix
+ */
+std::string exec_(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
+#endif
 auto new_fallback_tileset(const std::array<int, 2>& tile_size)
 -> std::unique_ptr<Tileset>
 {
@@ -47,10 +71,12 @@ auto new_fallback_tileset(const std::array<int, 2>& tile_size)
 #elif defined(__APPLE__) // MacOS.
   return load_truetype("/System/Library/Fonts/SFCompactDisplay-Regular.otf",
                        tile_size);
-#else // Linux?
+#elif defined(__unix__) // Linux
   return load_truetype(
-      "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
-      tile_size);
+      exec_("fc-match --format=%{file} monospace"), tile_size
+  );
+#else
+  throw std::runtime_error("Fallback font not supported for this OS.");
 #endif
 }
 } // namespace tileset

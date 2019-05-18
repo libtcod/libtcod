@@ -7,8 +7,11 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.12.1] - 2019-05-17
 ### Fixed
 - Fixed shader compilation issues in the OPENGL2 renderer.
+- Fallback fonts should fail less on Linux.
 
 ## [1.12.0] - 2019-05-17
 ### Added

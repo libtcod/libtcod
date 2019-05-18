@@ -145,7 +145,6 @@ void SDL2Display::accumulate(const TCOD_Console* console, const struct SDL_Rect*
 {
   if (!renderer_) { throw std::logic_error("Unresolved class invariant."); }
   SDL_Texture* backbuffer = tcod_renderer_.render(console);
-  SDL_RenderClear(renderer_.get());
   SDL_RenderCopy(renderer_.get(), backbuffer, nullptr, viewport);
   update_pixel_to_tile_scale(console);
 }

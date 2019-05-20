@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed crashes and bad output when using printf-style functions.
 
 ## [1.12.1] - 2019-05-17
 ### Fixed

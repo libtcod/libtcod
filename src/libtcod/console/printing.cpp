@@ -51,7 +51,6 @@
 #include "../console.h"
 #include "../libtcod_int.h"
 #include "../utility.h"
-#include "../../vendor/stb_sprintf.h"
 #include "../../vendor/utf8proc/utf8proc.h"
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER] = {
     {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255},
@@ -91,7 +90,10 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap)
   do {
     /* warning ! depending on the compiler, vsnprintf return -1 or
      the expected string length if the buffer is not big enough */
-    int len = stbsp_vsnprintf(msg[curbuf], buflen[curbuf], fmt, ap);
+    va_list ap_clone;
+    va_copy(ap_clone, ap);
+    int len = std::vsnprintf(msg[curbuf], buflen[curbuf], fmt, ap_clone);
+    va_end(ap_clone);
     ok=true;
     if (len < 0 || len >= buflen[curbuf]) {
       /* buffer too small. */
@@ -787,7 +789,10 @@ namespace console {
 static auto vsprint_(const char *fmt, va_list ap) -> std::string
 {
   if (!fmt) { return ""; }
-  std::string result(std::vsnprintf(nullptr, 0, fmt, ap), 0);
+  va_list ap_clone;
+  va_copy(ap_clone, ap);
+  std::string result(std::vsnprintf(nullptr, 0, fmt, ap_clone), 0);
+  va_end(ap_clone);
   std::vsnprintf(&result[0], result.size() + 1, fmt, ap);
   return result;
 }

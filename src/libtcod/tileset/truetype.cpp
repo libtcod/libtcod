@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <array>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -60,15 +61,27 @@ static auto load_data_file(const std::string& path)
   );
 }
 /**
+ *  Return the stbtt_fontinfo for the given `font_data`.
+ */
+static auto init_font_info(const std::basic_string<unsigned char>& font_data)
+-> stbtt_fontinfo
+{
+  stbtt_fontinfo font_info;
+  stbtt_InitFont(&font_info, font_data.data(), 0);
+  return font_info;
+}
+/**
  *  Converts TrueType fonts into tiles.
  */
 class TTFontLoader {
  public:
   TTFontLoader(const std::string& path, int tile_width, int tile_height)
-  : font_data_(load_data_file(path)), width_(tile_width), height_(tile_height)
+  : font_data_(load_data_file(path)),
+    font_info_(init_font_info(font_data_)),
+    width_(tile_width),
+    height_(tile_height),
+    scale_(stbtt_ScaleForPixelHeight(&font_info_, height_))
   {
-    stbtt_InitFont(&font_info_, font_data_.data(), 0);
-    scale_ = stbtt_ScaleForPixelHeight(&font_info_, height_);
     if (width_ <= 0) {
       tile_width = width_ = guess_font_width();
     }
@@ -81,20 +94,11 @@ class TTFontLoader {
   }
   auto generate_tileset() const -> std::unique_ptr<Tileset>
   {
-    int ascent;
-    int descent;
-    int line_gap;
-    stbtt_GetFontVMetrics(&font_info_, &ascent, &descent, &line_gap);
     auto tileset = std::make_unique<Tileset>(width_, height_);
     for (int codepoint = 1; codepoint <= 0x1ffff; ++codepoint) {
       int glyph = stbtt_FindGlyphIndex(&font_info_, codepoint);
       if (!glyph) { continue; }
-      BBox bbox = get_glyph_bbox(glyph);
-      Point<float> shift = {
-          (width_ - bbox.width() * scale_) / 2.0f,
-          (bbox.yMin + ascent) * scale_,
-      };
-      tileset->set_tile(codepoint, render_glyph(glyph, shift));
+      tileset->set_tile(codepoint, render_glyph(glyph));
     }
     return tileset;
   }
@@ -121,9 +125,9 @@ class TTFontLoader {
   /**
    *  Return the Image for a specific glyph.
    */
-  auto render_glyph(
-      int glyph, const Point<float>& shift) const -> Image
+  auto render_glyph(int glyph) const -> Image
   {
+    Point<float> shift(get_glyph_shift(glyph));
     Image image(width_, height_, {0xff, 0xff, 0xff, 0x00});
     Vector2<unsigned char> alpha(width_, height_);
     stbtt_MakeGlyphBitmapSubpixel(
@@ -177,9 +181,31 @@ class TTFontLoader {
     return static_cast<int>(static_cast<float>(font_bbox.width()) * scale_);
   }
   /**
-   *  Data buffer for the font file.
+   *  Return the shift needed to align this glyph with the current tile size.
+   */
+  auto get_glyph_shift(int glyph) const -> Point<float>
+  {
+    int ascent;
+    int descent;
+    int line_gap;
+    stbtt_GetFontVMetrics(&font_info_, &ascent, &descent, &line_gap);
+    BBox font_bbox = get_font_bbox();
+    BBox bbox = get_glyph_bbox(glyph);
+    return {
+        (width_ - bbox.width() * scale_) * alignment_.at(0),
+        (bbox.yMin + ascent) * scale_
+        + static_cast<int>((height_ - (ascent - descent) * scale_)
+                           * alignment_.at(1)),
+    };
+  }
+  /**
+   *  A data buffer referenced by `font_info_`.
    */
   std::basic_string<unsigned char> font_data_;
+  /**
+   *  stb_truetype font info struct.
+   */
+  stbtt_fontinfo font_info_;
   /**
    *  Tile width.
    */
@@ -189,13 +215,13 @@ class TTFontLoader {
    */
   int height_;
   /**
-   *  stb_truetype font info struct.
-   */
-  stbtt_fontinfo font_info_;
-  /**
    *  Font scale needed to fit the current height.
    */
   float scale_;
+  /**
+   *  Font glyph alignment inside of a tile.
+   */
+  std::array<float, 2> alignment_{0.5f, 0.5f};
 };
 auto load_truetype(
     const std::string& path,

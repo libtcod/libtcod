@@ -48,9 +48,9 @@ namespace tcod {
 /**
  *  Initialize the display using one of the new renderers.
  */
-template <class T>
+template <class T, class ...Args>
 static void init_display(int w, int h, const std::string& title,
-                         int fullscreen)
+                         int fullscreen, Args... args)
 {
   auto tileset = tcod::engine::get_tileset();
   if (!tileset) {
@@ -67,11 +67,11 @@ static void init_display(int w, int h, const std::string& title,
   int display_flags = (SDL_WINDOW_RESIZABLE |
                        (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
   tcod::engine::set_display(
-      std::make_shared<T>(tileset, display_size, display_flags, title));
+      std::make_shared<T>(tileset, display_size, display_flags, title, args...));
 }
 namespace console {
 void init_root(int w, int h, const std::string& title, bool fullscreen,
-               TCOD_renderer_t renderer)
+               TCOD_renderer_t renderer, bool vsync)
 {
   if (w <= 0 || h <= 0) {
     throw std::invalid_argument("Width and height must be greater than zero.");
@@ -86,11 +86,14 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
   TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
   TCOD_ctx.fullscreen = fullscreen;
   switch (renderer) {
-    case TCOD_RENDERER_SDL2:
-      init_display<tcod::sdl2::SDL2Display>(w, h, title, fullscreen);
+    case TCOD_RENDERER_SDL2: {
+      using tcod::sdl2::SDL2Display;
+      int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
+      init_display<SDL2Display>(w, h, title, fullscreen, renderer_flags);
       break;
+    }
     case TCOD_RENDERER_OPENGL2:
-      init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen);
+      init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen, vsync);
       break;
     default:
       if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
@@ -99,17 +102,33 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
       break;
   }
 }
+void init_root(int w, int h, const std::string& title, bool fullscreen,
+               TCOD_renderer_t renderer)
+{
+  init_root(w, h, title, fullscreen, renderer, false);
+}
 } // namespace console
 } // namespace tcod
-int TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
-                           TCOD_renderer_t renderer)
+int TCOD_console_init_root_(
+    int w,
+    int h,
+    const char* title,
+    bool fullscreen,
+    TCOD_renderer_t renderer,
+    bool vsync)
 {
+  using tcod::console::init_root;
   try {
-    tcod::console::init_root(w, h, title ? title : "", fullscreen, renderer);
+    init_root(w, h, title ? title : "", fullscreen, renderer, vsync);
   } catch (const std::exception& e) {
     return tcod::set_error(e);
   }
   return 0;
+}
+int TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
+                           TCOD_renderer_t renderer)
+{
+  return TCOD_console_init_root_(w, h, title, fullscreen, renderer, false);
 }
 void TCOD_quit(void)
 {

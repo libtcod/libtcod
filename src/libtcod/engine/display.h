@@ -143,6 +143,13 @@ class TerminalDisplay: public Display {
 namespace console {
 TCODLIB_API void init_root(int w, int h, const std::string& title,
                            bool fullscreen, TCOD_renderer_t renderer);
+TCODLIB_API void init_root(
+    int w,
+    int h,
+    const std::string& title,
+    bool fullscreen,
+    TCOD_renderer_t renderer,
+    bool vsync);
 } // namespace console
 } // namespace tcod
 #endif // __cplusplus
@@ -171,6 +178,13 @@ TCODLIB_API void init_root(int w, int h, const std::string& title,
 TCODLIB_CAPI int TCOD_console_init_root(int w, int h, const char* title,
                                         bool fullscreen,
                                         TCOD_renderer_t renderer);
+TCODLIB_CAPI int TCOD_console_init_root_(
+    int w,
+    int h,
+    const char* title,
+    bool fullscreen,
+    TCOD_renderer_t renderer,
+    bool vsync);
 /**
  *  Shutdown libtcod.  This must be called before your program exits.
  *  \rst

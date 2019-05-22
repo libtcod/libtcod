@@ -99,7 +99,8 @@ class SDL2Display: public WindowedDisplay {
       std::shared_ptr<Tileset> tileset,
       const std::array<int, 2>& window_size,
       int window_flags,
-      const std::string& title);
+      const std::string& title,
+      int renderer_flags);
   virtual void set_tileset(std::shared_ptr<Tileset> tileset) override;
   virtual void accumulate(const TCOD_Console*) override;
   virtual void accumulate(const TCOD_Console*, const struct SDL_Rect*) override;

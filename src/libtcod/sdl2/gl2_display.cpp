@@ -36,7 +36,7 @@
 
 namespace tcod {
 namespace sdl2 {
-static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
+static std::shared_ptr<void> new_gl_context(OpenGL2Display& self, bool vsync)
 {
   std::shared_ptr<void> new_context(
       SDL_GL_CreateContext(self.get_sdl_window()),
@@ -45,14 +45,14 @@ static std::shared_ptr<void> new_gl_context(OpenGL2Display& self)
   if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
     throw std::runtime_error("Failed to invoke the GLAD loader.");
   }
-  SDL_GL_SetSwapInterval(0);
+  SDL_GL_SetSwapInterval(vsync);
   return new_context;
 }
 OpenGL2Display::OpenGL2Display(std::shared_ptr<Tileset> tileset,
                          std::array<int, 2> window_size, int window_flags,
-                         const std::string& title)
+                         const std::string& title, bool vsync)
 : WindowedDisplay(window_size, window_flags | SDL_WINDOW_OPENGL, title),
-  glcontext_(new_gl_context(*this)),
+  glcontext_(new_gl_context(*this, vsync)),
   tcod_renderer_(tileset)
 {}
 void OpenGL2Display::set_tileset(std::shared_ptr<Tileset> tileset)

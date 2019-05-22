@@ -1806,7 +1806,7 @@ protected :
 	friend class TCODText;
   friend TCODLIB_API void tcod::console::init_root(
       int w, int h, const std::string& title,
-      bool fullscreen, TCOD_renderer_t renderer);
+      bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 	TCODConsole();
 	TCOD_Console* data;
 };

@@ -118,12 +118,14 @@ SDL2Display::SDL2Display(
     std::shared_ptr<Tileset> tileset,
     const std::array<int, 2>& window_size,
     int window_flags,
-    const std::string& title)
+    const std::string& title,
+    int renderer_flags)
 : WindowedDisplay(window_size, window_flags, title)
 {
   // Configure SDL2 renderer.
+  renderer_flags |= SDL_RENDERER_TARGETTEXTURE;
   renderer_ = std::shared_ptr<SDL_Renderer>(
-      SDL_CreateRenderer(get_sdl_window(), -1, SDL_RENDERER_TARGETTEXTURE),
+      SDL_CreateRenderer(get_sdl_window(), -1, renderer_flags),
       [](SDL_Renderer* renderer){ SDL_DestroyRenderer(renderer); });
   if (!renderer_) { throw std::runtime_error(SDL_GetError()); }
   // Configure libtcod renderer.

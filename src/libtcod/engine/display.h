@@ -262,4 +262,10 @@ TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  */
 TCODLIB_CAPI int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCODLIB_CAPI int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
+TCODLIB_CAPI int TCOD_sys_init_sdl2_renderer_(
+    int width,
+    int height,
+    const char* title,
+    int window_flags,
+    int renderer_flags);
 #endif // LIBTCOD_ENGINE_DISPLAY_H_

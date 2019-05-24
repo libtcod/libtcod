@@ -45,6 +45,24 @@
 #include "../sdl2/gl2_display.h"
 #include "../tileset/fallback.h"
 namespace tcod {
+static auto ensure_tileset() -> std::shared_ptr<tcod::tileset::Tileset>
+{
+  using tcod::engine::get_tileset;
+  using tcod::engine::set_tileset;
+  using tcod::tileset::new_fallback_tileset;
+  if (!get_tileset()) {
+    try {
+      set_tileset(new_fallback_tileset());
+    }
+    catch (const std::runtime_error& e) {
+      throw std::runtime_error(
+        std::string()
+        + "Couldn't load a fallback font for the SDL2/OPENGL2 renderer: "
+        + e.what());
+    }
+  }
+  return get_tileset();
+}
 /**
  *  Initialize the display using one of the new renderers.
  */
@@ -52,16 +70,7 @@ template <class T, class ...Args>
 static void init_display(int w, int h, const std::string& title,
                          int fullscreen, Args... args)
 {
-  auto tileset = tcod::engine::get_tileset();
-  if (!tileset) {
-    try { // Try to load a fall-back Tileset, but ignore failure.
-      tileset = tcod::tileset::new_fallback_tileset();
-      tcod::engine::set_tileset(tileset);
-    } catch (const std::runtime_error& e) {
-      throw std::runtime_error(
-          "Couldn't load a fallback font for the SDL2/OPENGL2 renderer.");
-    }
-  }
+  auto tileset = ensure_tileset();
   std::array<int, 2> display_size{tileset->get_tile_width() * w,
                                   tileset->get_tile_height() * h};
   int display_flags = (SDL_WINDOW_RESIZABLE |
@@ -136,19 +145,17 @@ void TCOD_quit(void)
 }
 void TCOD_console_set_window_title(const char *title)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
+  if (auto display = tcod::engine::get_display()) {
     display->set_title(title);
-  } else {
+  } else { // Deprecated renderer.
     TCOD_sys_set_window_title(title);
   }
 }
 void TCOD_console_set_fullscreen(bool fullscreen)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
+  if (auto display = tcod::engine::get_display()) {
     display->set_fullscreen(fullscreen);
-  } else {
+  } else { // Deprecated renderer.
     TCOD_IFNOT(TCOD_ctx.root != NULL) { return; }
     TCOD_sys_set_fullscreen(fullscreen);
     TCOD_ctx.fullscreen = fullscreen;
@@ -156,19 +163,16 @@ void TCOD_console_set_fullscreen(bool fullscreen)
 }
 bool TCOD_console_is_fullscreen(void)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
+  if (auto display = tcod::engine::get_display()) {
     return display->get_fullscreen() == 1;
-  } else {
+  } else { // Deprecated renderer.
     return TCOD_ctx.fullscreen;
   }
 }
 bool TCOD_console_has_mouse_focus(void)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
-    auto window = display->get_sdl_window();
-    if (window) {
+  if (auto display = tcod::engine::get_display()) {
+    if (auto window = display->get_sdl_window()) {
       return (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
     }
   }
@@ -176,10 +180,8 @@ bool TCOD_console_has_mouse_focus(void)
 }
 bool TCOD_console_is_active(void)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
-    auto window = display->get_sdl_window();
-    if (window) {
+  if (auto display = tcod::engine::get_display()) {
+    if (auto window = display->get_sdl_window()) {
       return (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
     }
   }
@@ -190,16 +192,14 @@ bool TCOD_console_is_window_closed(void) {
 }
 struct SDL_Window* TCOD_sys_get_sdl_window(void)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
+  if (auto display = tcod::engine::get_display()) {
     return display->get_sdl_window();
   }
   return TCOD_sys_get_sdl_window_();
 }
 struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
 {
-  auto display = tcod::engine::get_display();
-  if (display) {
+  if (auto display = tcod::engine::get_display()) {
     return display->get_sdl_renderer();
   }
   return TCOD_sys_get_sdl_renderer_();
@@ -214,5 +214,24 @@ int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_R
   auto display = tcod::engine::get_display();
   if (!console || !display) { return -1; }
   display->accumulate(console, viewport);
+  return 0;
+}
+int TCOD_sys_init_sdl2_renderer_(
+    int width,
+    int height,
+    const char* title,
+    int window_flags,
+    int renderer_flags)
+{
+  using tcod::sdl2::SDL2Display;
+  try {
+    auto tileset = tcod::ensure_tileset();
+    std::array<int, 2> window_size{ width, height };
+    auto display = std::make_shared<SDL2Display>(
+      tileset, window_size, window_flags, title, renderer_flags);
+    tcod::engine::set_display(display);
+  } catch (const std::exception& e) {
+    return tcod::set_error(e);
+  }
   return 0;
 }

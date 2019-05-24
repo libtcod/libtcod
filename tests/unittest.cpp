@@ -12,10 +12,9 @@
 #include "catch.hpp"
 
 namespace std {
-ostream& operator<<(ostream &out,
-                         const pair<ptrdiff_t, ptrdiff_t>& data)
+ostream& operator<<(ostream &out, const array<ptrdiff_t, 2>& data)
 {
-  return out << '{' << data.first << ',' << ' ' << data.second << '}';
+  return out << '{' << data.at(0) << ',' << ' ' << data.at(1) << '}';
 }
 } // namespace std
 
@@ -99,11 +98,11 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][!hide]") {
 TEST_CASE("New Dijkstra")
 {
   using Catch::Matchers::Equals;
-  using index_type = std::pair<ptrdiff_t, ptrdiff_t>;
+  using index_type = std::array<ptrdiff_t, 2>;
   auto dist = tcod::Vector2<int>(3, 2, INT_MAX);
   auto path_map = tcod::Vector2<index_type>(3, 2);
   tcod::pathfinding::path_clear(path_map);
-  dist.at(0, 0) = 0;
+  dist.atf(0, 0) = 0;
   tcod::Vector2<int> cost{
       {1, 1, 1},
       {0, 1, 2},

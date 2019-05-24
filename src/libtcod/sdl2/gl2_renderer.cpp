@@ -399,7 +399,7 @@ class OpenGL2Renderer::impl : public ActiveOpenGL2Renderer {
                  GL_RGBA, GL_UNSIGNED_BYTE, image.data()); gl_check();
     for (int y = 0; y < image.height() / 2; ++y) {
       for (int x = 0; x < image.width(); ++x) {
-        std::swap(image.at(x, y), image.at(x, image.height() - 1 - y));
+        std::swap(image.atf(x, y), image.atf(x, image.height() - 1 - y));
       }
     }
     return image;

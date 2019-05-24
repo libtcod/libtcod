@@ -147,7 +147,7 @@ class TTFontLoader {
         int alpha_x = img_x - static_cast<int>(shift.x);
         if (alpha_y < 0 || alpha.height() <= alpha_y) { continue; }
         if (alpha_x < 0 || alpha.width() <= alpha_x) { continue; }
-        image.at(img_x, img_y).a = alpha.at(alpha_x, alpha_y);
+        image.atf(img_x, img_y).a = alpha.atf(alpha_x, alpha_y);
       }
     }
     return image;

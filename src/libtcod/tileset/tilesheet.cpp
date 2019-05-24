@@ -107,7 +107,7 @@ class Tilesheet::impl {
   ColorRGBA guess_color_key()
   {
     Image tile(get_tile(0)); // Check the NULL tile.
-    const ColorRGBA color_key(tile.at(0, 0));
+    const ColorRGBA color_key(tile.atf(0, 0));
     if (color_key.a != 255) {
       return {0, 0, 0, 0};
     }
@@ -126,7 +126,7 @@ class Tilesheet::impl {
     Image tile{width, height};
     for (int pixel_y = 0; pixel_y < height; ++pixel_y) {
       for (int pixel_x = 0; pixel_x < width; ++pixel_x) {
-        tile.at(pixel_x, pixel_y) = canvas_.at(x + pixel_x, y + pixel_y);
+        tile.atf(pixel_x, pixel_y) = canvas_.atf(x + pixel_x, y + pixel_y);
       }
     }
     bool is_colored = false;
@@ -222,8 +222,9 @@ Tilesheet LoadTilesheet(const std::string& filename,
   std::vector<unsigned char>::iterator img_iter = img_data.begin();
   for (int y = 0; y < canvas.height(); ++y) {
     for (int x = 0; y < canvas.width(); ++x) {
-      canvas.at(x, y) = ColorRGBA{img_iter[0], img_iter[1],
-                                  img_iter[2], img_iter[3]};
+      canvas.atf(x, y) = ColorRGBA{
+          img_iter[0], img_iter[1], img_iter[2], img_iter[3]
+      };
       img_iter += 4;
     }
   }

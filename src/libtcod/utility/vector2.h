@@ -33,6 +33,7 @@
 #define LIBTCOD_UTILITY_VECTOR2_H_
 #ifdef __cplusplus
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <initializer_list>
 #include <iostream>
@@ -90,32 +91,41 @@ class Vector2 {
    *
    *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  T& at(size_type x, size_type y) {
+  T& atf(size_type x, size_type y) {
     range_check(x, y);
     return vector_.at(y * width_ + x);
   }
   /**
    *  Return a reference for the value at `index`.
    */
-  T& at(std::tuple<size_type, size_type> index)
+  T& atf(const std::tuple<size_type, size_type>& index)
   {
-    return at(std::get<0>(index), std::get<1>(index));
+    return atf(std::get<0>(index), std::get<1>(index));
+  }
+  T& atf(const std::array<size_type, 2>& index)
+  {
+    return atf(index.at(0), index.at(1));
   }
   /**
    *  Return a constant reference for the pixel at `x`,`y`.
    *
    *  Throws std::out_of_range if `x` or `y` are out of bounds.
    */
-  const T& at(size_type x, size_type y) const {
+  const T& atf(size_type x, size_type y) const
+  {
     range_check(x, y);
     return vector_.at(y * width_ + x);
+  }
+  const T& atf(const std::array<size_type, 2>& index) const
+  {
+    return atf(index.at(0), index.at(1));
   }
   /**
    *  Return a constant reference for the value at `index`.
    */
-  const T& at(std::tuple<size_type, size_type> index) const
+  const T& atf(const std::tuple<size_type, size_type>& index) const
   {
-    return at(std::get<0>(index), std::get<1>(index));
+    return atf(std::get<0>(index), std::get<1>(index));
   }
   T* data() noexcept
   {
@@ -149,14 +159,14 @@ class Vector2 {
   /**
    *  Return true if x and y are in the bounds of this canvas.
    */
-  bool in_bounds(size_type x, size_type y) const noexcept {
+  bool in_boundsf(size_type x, size_type y) const noexcept {
     return 0 <= x && x < width_ && 0 <= y && y < height_;
   }
   /**
    *  Immediately throws std::out_of_range if `x` or `y` are out of bounds.
    */
   void range_check(size_type x, size_type y) const {
-    if (!in_bounds(x, y)) {
+    if (!in_boundsf(x, y)) {
       throw std::out_of_range(
           std::string("Out of bounds lookup {")
           + std::to_string(x)
@@ -183,7 +193,7 @@ std::ostream& operator<< (std::ostream &out, const Vector2<T>& data)
   for (int y = 0; y < data.height(); ++y) {
     out << '{';
     for (int x = 0; x < data.width(); ++x) {
-      out << data.at(x, y);
+      out << data.atf(x, y);
       if (x != data.width() - 1) { out << ',' << ' '; }
     }
     out << '}';

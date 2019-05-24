@@ -62,7 +62,7 @@ Image load(const std::string& filename)
   std::vector<unsigned char>::iterator img_iter = img_data.begin();
   for (int y = 0; y < image.height(); ++y) {
     for (int x = 0; x < image.width(); ++x) {
-      image.at(x, y) = ColorRGBA{
+      image.atf(x, y) = ColorRGBA{
           img_iter[0], img_iter[1], img_iter[2], img_iter[3]};
       img_iter += 4;
     }

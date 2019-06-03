@@ -1069,26 +1069,25 @@ static int print_internal_(
 {
   FormattedUnicodeIterator it(string, fg, bg);
   UnicodeIterator end = it.end();
+  if (!can_split && align == TCOD_RIGHT) {
+    // In general `can_split = false` is deprecated.
+    x -= con.w - 1;
+    width = con.w;
+  }
   // Expand the width/height of 0 to the edge of the console.
-  if (!width) { width = con.w; }
-  if (!height) { height = con.h; }
+  if (!width) { width = con.w - x; }
+  if (!height) { height = con.h - y; }
   // Print bounding box.
   int left = x;
   int right = x + width;
   int top = y;
   int bottom = y + height;
-  // Clamp the bounding box to the console bounds.
-  left = std::max(0, left);
-  right = std::min(right, con.w);
-  top = std::max(0, top);
-  bottom = std::min(bottom, con.h);
   width = right - left;
   height = bottom - top;
-  if (width <= 0 || height <= 0) {
+  if (can_split && (width <= 0 || height <= 0)) {
     return 0; // The bounding box is invalid.
   }
-  if (!can_split) { bottom = con.h; }
-  while (it != end && top < bottom) {
+  while (it != end && top < bottom && top < con.h) {
     // Check for newlines.
     if(it.is_newline()) {
       if(it.get_property()->category == UTF8PROC_CATEGORY_ZP) {
@@ -1116,15 +1115,19 @@ static int print_internal_(
         cursor_x = right - line_width;
         break;
       case TCOD_CENTER:
-        cursor_x = left + (width - line_width) / 2;
+        if (can_split) {
+          cursor_x = left + (width - line_width) / 2;
+        } else {
+          cursor_x = left - (line_width / 2);  // Deprecated.
+        }
         break;
     }
-    for (; it < line_break; ++it) {
+    for (; it < line_break; cursor_x += it.get_property()->charwidth, ++it) {
+      if(count_only) { continue; }
+      if (can_split && (left > cursor_x || cursor_x >= right)) { continue; }
+      if (!can_split && (0 > cursor_x || cursor_x >= con.w)) { continue; }
       // Actually render this line of characters.
-      if (!count_only && left <= cursor_x && cursor_x < right) {
-        put(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
-      }
-      cursor_x += it.get_property()->charwidth;
+      put(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
     }
     // Ignore any extra spaces.
     while (it != end) {
@@ -1177,11 +1180,6 @@ void print(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  switch (alignment) {
-    default: break;
-    case TCOD_RIGHT: x -= con->w; break;
-    case TCOD_CENTER: x -= con->w / 2; break;
-  }
   print_internal_(*con, x, y, con->w, con->h, str, fg, bg, flag, alignment,
                   false, false);
 }

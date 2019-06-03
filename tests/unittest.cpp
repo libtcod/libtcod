@@ -127,3 +127,61 @@ TEST_CASE("Fallback font.")
 {
   REQUIRE(tcod::tileset::new_fallback_tileset({{0, 12}}));
 }
+
+std::string to_string(const TCOD_Console& console)
+{
+  std::string result;
+  for (const auto& tile : console) {
+    result += static_cast<char>(tile.ch);
+  }
+  return result;
+}
+
+void test_alignment(TCOD_alignment_t alignment)
+{
+  // Compare alignment between the new and old functions.
+  int x = GENERATE(0, 1, 2, 3, 4, 5, 6);
+  int width = GENERATE(11, 12);
+  INFO("x=" << x << ", width=" << width);
+  TCOD_Console* console1 = TCOD_console_new(width, 1);
+  TCOD_Console* console2 = TCOD_console_new(width, 1);
+  SECTION("Print text.") {
+    for (auto& tile : *console1) { tile.ch = static_cast<int>('.'); }
+    for (auto& tile : *console2) { tile.ch = static_cast<int>('.'); }
+    TCOD_console_print_ex(console1, x, 0, TCOD_BKGND_NONE, alignment, "123");
+    TCOD_console_printf_ex(console2, x, 0, TCOD_BKGND_NONE, alignment, "123");
+    CHECK(to_string(*console1) == to_string(*console2));
+  }
+  SECTION("Print rect.") {
+  }
+  TCOD_console_delete(console1);
+  TCOD_console_delete(console2);
+}
+TEST_CASE("Left alignment regression.")
+{
+  test_alignment(TCOD_LEFT);
+}
+TEST_CASE("Center alignment regression.")
+{
+  test_alignment(TCOD_CENTER);
+}
+TEST_CASE("Right alignment regression.")
+{
+  test_alignment(TCOD_RIGHT);
+}
+TEST_CASE("Rectangle text alignment.")
+{
+  TCOD_Console* console = TCOD_console_new(12, 1);
+  for (auto& tile : *console) { tile.ch = static_cast<int>('.'); }
+  tcod::console::print_rect(
+      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT
+  );
+  tcod::console::print_rect(
+      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER
+  );
+  tcod::console::print_rect(
+      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT
+  );
+  CHECK(to_string(*console) == "123.123..123");
+  TCOD_console_delete(console);
+}

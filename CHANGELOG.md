@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed regressions in text alignment for non-rectangle-bound text on UTF-8
+  print functions.
 
 ## [1.12.2] - 2019-05-24
 ### Fixed

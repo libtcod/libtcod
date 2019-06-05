@@ -804,7 +804,9 @@ void TCOD_sys_startup(void) {
  */
 void TCOD_sys_shutdown(void)
 {
-  TCOD_console_delete(TCOD_ctx.root);
+  if (TCOD_ctx.root) {
+    TCOD_console_delete(TCOD_ctx.root);
+  }
   if (tcod::engine::get_display()){
     tcod::engine::set_display(nullptr);
     return;

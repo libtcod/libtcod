@@ -230,6 +230,7 @@ int TCOD_sys_init_sdl2_renderer_(
     auto display = std::make_shared<SDL2Display>(
       tileset, window_size, window_flags, title, renderer_flags);
     tcod::engine::set_display(display);
+    TCOD_ctx.renderer = TCOD_RENDERER_SDL2;
   } catch (const std::exception& e) {
     return tcod::set_error(e);
   }

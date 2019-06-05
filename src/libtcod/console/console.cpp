@@ -81,9 +81,10 @@ bool TCOD_console_init(TCOD_Console* con, const std::string& title,
 void TCOD_console_delete(TCOD_Console* con)
 {
   TCOD_Console* console = (con ? con : TCOD_ctx.root);
-  if (!console) { return; }
-  TCOD_console_data_free(console);
-  delete console;
+  if (console) {
+    TCOD_console_data_free(console);
+    delete console;
+  }
   if (console == TCOD_ctx.root) {
     TCOD_ctx.root = nullptr;
   }

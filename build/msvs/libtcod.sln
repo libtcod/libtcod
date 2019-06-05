@@ -40,6 +40,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "weather", "weather.vcxproj"
 		{D6197244-2BEB-4AED-988E-CC1F0B647055} = {D6197244-2BEB-4AED-988E-CC1F0B647055}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcxproj", "{051139AA-CD5A-4EB4-BC95-1B57412B75C9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D6197244-2BEB-4AED-988E-CC1F0B647055} = {D6197244-2BEB-4AED-988E-CC1F0B647055}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,6 +135,16 @@ Global
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|Win32.Build.0 = Release|Win32
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|x64.ActiveCfg = Release|x64
 		{2158F1B7-DDE9-4F0E-9D38-70EFFC153AD8}.Release|x64.Build.0 = Release|x64
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Debug|Win32.Build.0 = Debug|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Debug|x64.ActiveCfg = Debug|x64
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Debug|x64.Build.0 = Debug|x64
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Release|Any CPU.ActiveCfg = Release|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Release|Win32.ActiveCfg = Release|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Release|Win32.Build.0 = Release|Win32
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Release|x64.ActiveCfg = Release|x64
+		{051139AA-CD5A-4EB4-BC95-1B57412B75C9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,9 +25,6 @@ If you want to get a quick overview of the features that libtcod provides,
 check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features)
 page.
 
-If you want to get a quick overview of games which have used libtcod, check out
-the [Projects](http://roguecentral.org/doryen/projects-2/) page.
-
 # How do I get set up? #
 
 ## Using one of our downloads ##
@@ -90,7 +87,7 @@ the other sources.  Further instructions are included in those files.
 
 The latest documentation is [here](https://libtcod.readthedocs.io/en/latest).
 Currently it's very incomplete, so most people will want to read the
-[1.5.1 documentation](http://roguecentral.org/doryen/data/libtcod/doc/1.5.1/index2.html?c=true&cpp=true&cs=false&py=true&lua=false)
+[1.6.4 documentation](https://libtcod.github.io/docs/index2.html?c=true&cpp=true&cs=false&py=false&lua=false)
 instead.
 Python users should use the
 [python-tcod documentation](http://python-tcod.readthedocs.io).

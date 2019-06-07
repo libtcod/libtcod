@@ -50,8 +50,8 @@ static std::shared_ptr<void> new_gl_context(OpenGL2Display& self, bool vsync)
 }
 
 struct OpenGL2Display::impl {
-  impl(std::shared_ptr<void>&& glcontext, OpenGL2Renderer&& tcod_renderer)
-  : glcontext(std::move(glcontext)), tcod_renderer(std::move(tcod_renderer))
+  impl(OpenGL2Display& self, bool vsync, std::shared_ptr<Tileset> tileset)
+  : glcontext(new_gl_context(self, vsync)), tcod_renderer(tileset)
   {}
   std::shared_ptr<void> glcontext;
   OpenGL2Renderer tcod_renderer;
@@ -64,7 +64,7 @@ OpenGL2Display::OpenGL2Display(
     const std::string& title,
     bool vsync)
 : WindowedDisplay(window_size, window_flags | SDL_WINDOW_OPENGL, title),
-  impl_(std::make_unique<impl>(new_gl_context(*this, vsync), OpenGL2Renderer(tileset)))
+  impl_(std::make_unique<impl>(*this, vsync, tileset))
 {}
 
 OpenGL2Display::OpenGL2Display(OpenGL2Display&&) noexcept = default;

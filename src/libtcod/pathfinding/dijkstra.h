@@ -70,12 +70,11 @@ auto dijkstra_make_heap(const GridType& dist_grid)
 /**
  *  Private hard-coded edge positions.
  *
- *  {x, y, is_diagonal}
+ *  {x, y}
  */
-static constexpr std::array<std::tuple<int, int, bool>, 8> EDGES_{{
-    {-1, -1, 1}, {0, -1, 0}, {1, -1, 1},
-    {-1, 0, 0}, {1, 0, 0},
-    {-1, 1, 1}, {0, 1, 0}, {1, 1, 1},
+static constexpr std::array<std::tuple<int, int>, 8> EDGES_{{
+    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
+    {-1, -1}, {1, -1}, {-1, 1}, {1, 1},
 }};
 /**
  *  Recompute a Dijkstra distance map.
@@ -105,12 +104,13 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
           index.at(0) + std::get<0>(edge),
           index.at(1) + std::get<1>(edge),
       };
-      if (std::get<0>(edge) && (other_pos.at(0) < 0 || other_pos.at(0) >= dist_grid.height()) ||
-        std::get<1>(edge) && (other_pos.at(1) < 0 || other_pos.at(1) >= dist_grid.width())) {
+      if ((std::get<0>(edge) && (other_pos.at(0) < 0 || other_pos.at(0) >= dist_grid.height())) ||
+          (std::get<1>(edge) && (other_pos.at(1) < 0 || other_pos.at(1) >= dist_grid.width()))) {
         continue;
       }
       auto cost = cost_grid[other_pos];
-      cost *= std::get<2>(edge) ? diagonal : cardinal;
+      const bool is_diagonal = std::get<0>(edge) && std::get<1>(edge);
+      cost *= is_diagonal ? diagonal : cardinal;
       if (cost <= 0) { continue; }
       new_edge(other_pos, cost);
     }
@@ -122,7 +122,7 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
   };
 
   Pathfinder<index_type, dist_type> pathfinder;
-  pathfinder.set_heap(dijkstra_make_heap(dist_grid));
+  pathfinder.set_heap(dijkstra_make_heap(dist_grid), heuristic);
   pathfinder.compute(distance_at, get_edges, is_goal, heuristic, mark_path);
 }
 } // namespace pathfinding

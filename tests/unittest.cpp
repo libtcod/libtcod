@@ -122,16 +122,27 @@ TEST_CASE("New Dijkstra")
   CHECK_THAT(tcod::pathfinding::get_path(path_map, {1, 2}),
              Equals(EXPECTED_TRAVEL_PATH));
 }
-TEST_CASE("New Dijkstra Large")
+TEST_CASE("Dijkstra Benchmarks", "[benchmark]")
 {
-  const int SIZE = 75;
-  using index_type = std::array<ptrdiff_t, 2>;
-  auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
-  auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
-  tcod::pathfinding::path_clear(path_map);
-  dist.atf(0, 0) = 0;
-  auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
-  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
+  BENCHMARK("New Dijkstra 75x75") {
+    const int SIZE = 75;
+    using index_type = std::array<ptrdiff_t, 2>;
+    auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
+    auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
+    tcod::pathfinding::path_clear(path_map);
+    dist.at({ 0, 0 }) = 0;
+    auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
+    tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
+  }
+  BENCHMARK("Old Dijkstra 100x100") {
+    const int SIZE = 100;
+    TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
+    TCOD_map_clear(map, 1, 1);
+    TCOD_Dijkstra* dijkstra = TCOD_dijkstra_new(map, 1.5);
+    TCOD_dijkstra_compute(dijkstra, 0, 0);
+    TCOD_dijkstra_delete(dijkstra);
+    TCOD_map_delete(map);
+  }
 }
 
 TEST_CASE("Fallback font.")

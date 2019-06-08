@@ -61,8 +61,8 @@ auto dijkstra_make_heap(const GridType& dist_grid)
   std::vector<node_type> heap = {};
   for (IndexSize y = 0; y < dist_grid.height(); ++y) {
     for (IndexSize x = 0; x < dist_grid.width(); ++x) {
-      if (dist_grid.atf(x, y) == MAX_DIST) { continue; }
-      heap.emplace_back(node_type(dist_grid.atf(x, y), {x, y}));
+      if (dist_grid.at({ y, x }) == MAX_DIST) { continue; }
+      heap.emplace_back(node_type(dist_grid.at({ y, x }), { y, x }));
     }
   }
   return heap;
@@ -89,8 +89,15 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
   using dist_type = typename DistGrid::value_type;
   using index_type = std::array<ptrdiff_t, 2>;
 
+  if (cost_grid.width() > dist_grid.width() || cost_grid.height() > dist_grid.height()) {
+    throw std::invalid_argument("cost_grid must be smaller than the dist_grid.");
+  }
+  if (path_grid && (path_grid->width() > dist_grid.width() || path_grid->height() > dist_grid.height())) {
+    throw std::invalid_argument("path_grid must be smaller than the dist_grid.");
+  }
+
   auto distance_at = [&](index_type index) -> dist_type& {
-    return dist_grid.atf(index);
+    return dist_grid[index];
   };
   auto get_edges = [&](index_type index, auto new_edge) {
     for (const auto& edge : EDGES_) {
@@ -98,11 +105,11 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
           index.at(0) + std::get<0>(edge),
           index.at(1) + std::get<1>(edge),
       };
-      if (other_pos.at(0) < 0 || other_pos.at(0) >= dist_grid.width() ||
-          other_pos.at(1) < 0 || other_pos.at(1) >= dist_grid.height()) {
+      if (std::get<0>(edge) && (other_pos.at(0) < 0 || other_pos.at(0) >= dist_grid.height()) ||
+        std::get<1>(edge) && (other_pos.at(1) < 0 || other_pos.at(1) >= dist_grid.width())) {
         continue;
       }
-      auto cost = cost_grid.atf(other_pos);
+      auto cost = cost_grid[other_pos];
       cost *= std::get<2>(edge) ? diagonal : cardinal;
       if (cost <= 0) { continue; }
       new_edge(other_pos, cost);
@@ -111,7 +118,7 @@ void dijkstra_compute(DistGrid& dist_grid, const CostGrid& cost_grid,
   auto is_goal = [](auto, auto) { return 0; };
   auto heuristic = [](auto dist, auto){ return dist; };
   auto mark_path = [&](auto index, auto next) {
-    if(path_grid) { path_grid->atf(index) = next; }
+    if(path_grid) { (*path_grid)[index] = next; }
   };
 
   Pathfinder<index_type, dist_type> pathfinder;

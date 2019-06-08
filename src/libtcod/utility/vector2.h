@@ -86,6 +86,24 @@ class Vector2 {
   size_type width(void) const noexcept { return width_; }
   /** Return the height of this 2d vector. */
   size_type height(void) const noexcept { return height_; }
+  value_type& operator[](const std::array<size_type, 2>& index) noexcept
+  {
+    return vector_[index[0] * width_ + index[1]];
+  }
+  const value_type& operator[](const std::array<size_type, 2>& index) const noexcept
+  {
+    return vector_[index[0] * width_ + index[1]];
+  }
+  value_type& at(const std::array<size_type, 2>& index)
+  {
+    range_check(index[1], index[0]);
+    return (*this)[index];
+  }
+  const value_type& at(const std::array<size_type, 2>& index) const
+  {
+    range_check(index[1], index[0]);
+    return (*this)[index];
+  }
   /**
    *  Return a reference for the pixel at `x`,`y`.
    *

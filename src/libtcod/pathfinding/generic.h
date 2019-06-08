@@ -155,7 +155,7 @@ void path_clear(Vector2<IndexType>& path_grid) noexcept
 {
   for (ptrdiff_t y = 0; y < path_grid.height(); ++y) {
     for (ptrdiff_t x = 0; x < path_grid.width(); ++x) {
-      path_grid.atf(x, y) = {x, y};
+      path_grid.at({ y, x }) = { y, x };
     }
   }
 }
@@ -165,11 +165,11 @@ auto get_path(const Vector2<IndexType>& path_grid,
 {
   std::vector<IndexType> path;
   IndexType current = start;
-  IndexType next = path_grid.atf(current);
+  IndexType next = path_grid.at(current);
   while (current != next) {
     path.emplace_back(next);
     current = next;
-    next = path_grid.atf(current);
+    next = path_grid.at(current);
   }
   return path;
 }

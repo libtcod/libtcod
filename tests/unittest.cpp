@@ -114,13 +114,24 @@ TEST_CASE("New Dijkstra")
   };
   CHECK(dist == EXPECTED_DIST);
   const tcod::Vector2<index_type> EXPECTED_PATH_MAP{
-      {{0, 0}, {0, 0}, {1, 0}},
-      {{0, 1}, {0, 0}, {1, 1}},
+      {{0, 0}, {0, 0}, {0, 1}},
+      {{1, 0}, {0, 0}, {1, 1}},
   };
   CHECK(path_map == EXPECTED_PATH_MAP);
   const std::vector<index_type> EXPECTED_TRAVEL_PATH{{1, 1}, {0, 0}};
-  CHECK_THAT(tcod::pathfinding::get_path(path_map, {2, 1}),
+  CHECK_THAT(tcod::pathfinding::get_path(path_map, {1, 2}),
              Equals(EXPECTED_TRAVEL_PATH));
+}
+TEST_CASE("New Dijkstra Large")
+{
+  const int SIZE = 75;
+  using index_type = std::array<ptrdiff_t, 2>;
+  auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
+  auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
+  tcod::pathfinding::path_clear(path_map);
+  dist.atf(0, 0) = 0;
+  auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
+  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
 }
 
 TEST_CASE("Fallback font.")

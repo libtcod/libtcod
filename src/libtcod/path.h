@@ -34,6 +34,7 @@
 
 #include "portability.h"
 #include "fov_types.h"
+#include "list.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,8 +57,21 @@ TCODLIB_API void TCOD_path_get_destination(TCOD_path_t path, int *x, int *y);
 TCODLIB_API void TCOD_path_delete(TCOD_path_t path);
 
 /* Dijkstra stuff - by Mingos*/
-
-struct TCOD_Dijkstra;
+/**
+ *  Dijkstra data structure
+ *
+ *  All attributes are considered private.
+ */
+typedef struct TCOD_Dijkstra {
+  int diagonal_cost;
+  int width, height, nodes_max;
+  TCOD_map_t map; /* a TCODMap with walkability data */
+  TCOD_path_func_t func;
+  void *user_data;
+  unsigned int * distances; /* distances grid */
+  unsigned int * nodes; /* the processed nodes */
+  TCOD_list_t path;
+} TCOD_Dijkstra;
 typedef struct TCOD_Dijkstra *TCOD_dijkstra_t;
 
 TCODLIB_API TCOD_dijkstra_t TCOD_dijkstra_new (TCOD_map_t map, float diagonalCost);

@@ -42,6 +42,7 @@
 #include <vector>
 #endif // __cplusplus
 #include "generic.h"
+#include "graph.h"
 #include "../utility/vector2.h"
 
 #ifdef __cplusplus
@@ -67,15 +68,6 @@ auto dijkstra_make_heap(const GridType& dist_grid)
   }
   return heap;
 }
-/**
- *  Private hard-coded edge positions.
- *
- *  {x, y}
- */
-static constexpr std::array<std::tuple<int, int>, 8> EDGES_{{
-    {-1, 0}, {1, 0}, {0, -1}, {0, 1},
-    {-1, -1}, {1, -1}, {-1, 1}, {1, 1},
-}};
 /**
  *  Recompute a Dijkstra distance map.
  */

@@ -80,8 +80,29 @@ class MatrixView {
   {
     return shape_;
   }
+  bool in_range(size_type n) const noexcept
+  {
+    return 0 <= n && n < shape_.at(0);
+  }
+  bool in_range(shape_type index) const noexcept
+  {
+    for (size_t i = 0; i < shape_.size(); ++i) {
+      if (index.at(i) < 0 || index.at(i) >= shape_.at(i)) {
+        return false;
+      }
+    }
+    return true;
+  }
  private:
   T* get_data_at(shape_type index)
+  {
+    auto ptr = data_;
+    for (size_t i = 0; i < shape_.size(); ++i) {
+      ptr += index.at(i) * strides_.at(i);
+    }
+    return reinterpret_cast<T*>(ptr);
+  }
+  const T* get_data_at(shape_type index) const
   {
     auto ptr = data_;
     for (size_t i = 0; i < shape_.size(); ++i) {
@@ -97,22 +118,9 @@ class MatrixView {
         pop_array(strides_)
     };
   }
-  bool in_bounds(size_type n) const noexcept
-  {
-    return 0 <= n && n < shape_.at(0);
-  }
-  bool in_bounds(shape_type index) const noexcept
-  {
-    for (size_t i = 0; i < shape_.size(); ++i) {
-      if (index.at(i) < 0 || index.at(i) >= shape_.at(i)) {
-        return false;
-      }
-    }
-    return true;
-  }
   void range_check(size_type n) const
   {
-    if (in_bounds(n)) { return; }
+    if (in_range(n)) { return; }
     throw std::out_of_range(
         std::string("Out of bounds lookup {")
         + std::to_string(n)
@@ -122,7 +130,7 @@ class MatrixView {
   }
   void range_check(shape_type index) const
   {
-    if (in_bounds(index)) { return; }
+    if (in_range(index)) { return; }
     throw std::out_of_range(
         std::string("Out of bounds lookup ")
         + array_as_string(index)
@@ -212,6 +220,14 @@ class Matrix {
   shape_type get_shape() const
   {
     return view_.get_shape();
+  }
+  bool in_range(size_type n) const noexcept
+  {
+    return view_.in_range(n);
+  }
+  bool in_range(shape_type index) const noexcept
+  {
+    return view_.in_range(index);
   }
  private:
   static size_t get_size_from_shape(const shape_type& shape) noexcept

@@ -6,6 +6,7 @@
 
 #include <libtcod.h>
 #include <libtcod.hpp>
+#include <libtcod/pathfinding/breadth-first.h>
 #include <libtcod/pathfinding/dijkstra.h>
 #include <libtcod/tileset/fallback.h>
 
@@ -122,26 +123,23 @@ TEST_CASE("New Dijkstra")
   CHECK_THAT(tcod::pathfinding::get_path(path_map, {1, 2}),
              Equals(EXPECTED_TRAVEL_PATH));
 }
-TEST_CASE("Dijkstra Benchmarks", "[benchmark]")
+TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
 {
-  BENCHMARK("New Dijkstra 75x75") {
-    const int SIZE = 75;
-    using index_type = std::array<ptrdiff_t, 2>;
-    auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
-    auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
-    tcod::pathfinding::path_clear(path_map);
-    dist.at({ 0, 0 }) = 0;
-    auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
-    tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
-  }
-  BENCHMARK("Old Dijkstra 100x100") {
-    const int SIZE = 100;
+  BENCHMARK("Old Dijkstra 1000x1000") {
+    const int SIZE = 1000;
     TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
     TCOD_map_clear(map, 1, 1);
     TCOD_Dijkstra* dijkstra = TCOD_dijkstra_new(map, 1.5);
     TCOD_dijkstra_compute(dijkstra, 0, 0);
     TCOD_dijkstra_delete(dijkstra);
     TCOD_map_delete(map);
+  }
+  BENCHMARK("Breadth-first 1000x1000") {
+    const int SIZE = 1000;
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
+    tcod::pathfinding::breadth_first2d(map, cost, { {0, 0} });
+    CHECK(map.at({ 999, 999 }) == 999);
   }
 }
 

@@ -359,6 +359,12 @@
     <ClCompile Include="..\..\src\libtcod\engine\error.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\pathfinding\breadth-first.cpp">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\pathfinding\graph.cpp">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -651,6 +657,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\engine\error.h">
       <Filter>Source Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\pathfinding\breadth-first.h">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\pathfinding\graph.h">
+      <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

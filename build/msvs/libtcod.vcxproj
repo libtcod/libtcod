@@ -223,8 +223,10 @@
     <ClCompile Include="..\..\src\libtcod\parser_c.c" />
     <ClCompile Include="..\..\src\libtcod\path.cpp" />
     <ClCompile Include="..\..\src\libtcod\pathfinding\astar.cpp" />
+    <ClCompile Include="..\..\src\libtcod\pathfinding\breadth-first.cpp" />
     <ClCompile Include="..\..\src\libtcod\pathfinding\dijkstra.cpp" />
     <ClCompile Include="..\..\src\libtcod\pathfinding\generic.cpp" />
+    <ClCompile Include="..\..\src\libtcod\pathfinding\graph.cpp" />
     <ClCompile Include="..\..\src\libtcod\path_c.c" />
     <ClCompile Include="..\..\src\libtcod\sdl2\event.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\gl2_display.cpp" />
@@ -340,8 +342,10 @@
     <ClInclude Include="..\..\src\libtcod\path.h" />
     <ClInclude Include="..\..\src\libtcod\path.hpp" />
     <ClInclude Include="..\..\src\libtcod\pathfinding\astar.h" />
+    <ClInclude Include="..\..\src\libtcod\pathfinding\breadth-first.h" />
     <ClInclude Include="..\..\src\libtcod\pathfinding\dijkstra.h" />
     <ClInclude Include="..\..\src\libtcod\pathfinding\generic.h" />
+    <ClInclude Include="..\..\src\libtcod\pathfinding\graph.h" />
     <ClInclude Include="..\..\src\libtcod\portability.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\event.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\gl2_display.h" />

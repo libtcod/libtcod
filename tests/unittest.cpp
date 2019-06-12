@@ -139,8 +139,27 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
     tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
     tcod::pathfinding::breadth_first2d(map, cost, { {0, 0} });
-    CHECK(map.at({ 999, 999 }) == 999);
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
   }
+  BENCHMARK("New Dijkstra 1000x1000") {
+    const int SIZE = 1000;
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
+    map.at({ 0, 0 }) = 0;
+    tcod::pathfinding::dijkstra2d(map, cost);
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+  }
+  BENCHMARK("Advanced Dijkstra 1000x1000") {
+    const int SIZE = 1000;
+    using index_type = std::array<ptrdiff_t, 2>;
+    auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
+    auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
+    tcod::pathfinding::path_clear(path_map);
+    dist.at({ 0, 0 }) = 0;
+    auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
+    tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
+  }
+
 }
 
 TEST_CASE("Fallback font.")

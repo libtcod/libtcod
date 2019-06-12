@@ -85,7 +85,7 @@ class Pathfinder
       MarkPath& mark_path)
   {
     auto compare = [&](const heap_node& a, const heap_node& b) {
-      return heuristic(std::get<0>(a), std::get<1>(a)) < heuristic(std::get<0>(b), std::get<1>(b));
+      return heuristic(std::get<0>(a), std::get<1>(a)) > heuristic(std::get<0>(b), std::get<1>(b));
     };
     while (heap_.size()) {
       std::pop_heap(heap_.begin(), heap_.end(), compare);

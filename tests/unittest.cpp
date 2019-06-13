@@ -6,6 +6,7 @@
 
 #include <libtcod.h>
 #include <libtcod.hpp>
+#include <libtcod/pathfinding/astar.h>
 #include <libtcod/pathfinding/breadth-first.h>
 #include <libtcod/pathfinding/dijkstra.h>
 #include <libtcod/tileset/fallback.h>
@@ -129,7 +130,7 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     const int SIZE = 1000;
     TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
     TCOD_map_clear(map, 1, 1);
-    TCOD_Dijkstra* dijkstra = TCOD_dijkstra_new(map, 1.5);
+    TCOD_Dijkstra* dijkstra = TCOD_dijkstra_new(map, 1.5f);
     TCOD_dijkstra_compute(dijkstra, 0, 0);
     TCOD_dijkstra_delete(dijkstra);
     TCOD_map_delete(map);
@@ -159,7 +160,23 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
     tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
   }
-
+  BENCHMARK("Old A* 1000x1000") {
+    const int SIZE = 1000;
+    TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
+    TCOD_map_clear(map, 1, 1);
+    TCOD_Path* astar = TCOD_path_new_using_map(map, 1.0f);
+    TCOD_path_compute(astar, 0, 0, SIZE - 1, SIZE - 1);
+    TCOD_path_delete(astar);
+    TCOD_map_delete(map);
+  }
+  BENCHMARK("New A* 1000x1000") {
+    const int SIZE = 1000;
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
+    map.at({ 0, 0 }) = 0;
+    tcod::pathfinding::astar2d(map, cost, { SIZE - 1, SIZE - 1 });
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+  }
 }
 
 TEST_CASE("Fallback font.")

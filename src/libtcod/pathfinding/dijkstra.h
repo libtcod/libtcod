@@ -121,7 +121,7 @@ template <typename HeapNode>
 inline bool dijktra_heap_sort_(const HeapNode& a, const HeapNode& b) noexcept
 {
   return std::get<0>(a) > std::get<0>(b);
-};
+}
 template <typename DistMatrix, typename CostMatrix>
 inline void dijkstra2d(
   DistMatrix& dist_map,

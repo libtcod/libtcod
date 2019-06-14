@@ -50,4 +50,5 @@ auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
 } // namespace tileset
 } // namespace tcod
 #endif // __cplusplus
+TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #endif // LIBTCOD_TILESET_FALLBACK_H_

@@ -40,6 +40,7 @@
 #include <string>
 
 #include "truetype.h"
+#include "../engine/error.h"
 namespace tcod {
 namespace tileset {
 #ifdef __unix__
@@ -81,3 +82,14 @@ auto new_fallback_tileset(const std::array<int, 2>& tile_size)
 }
 } // namespace tileset
 } // namespace tcod
+TCOD_Tileset* TCOD_tileset_new_fallback_font_(int tile_width, int tile_height)
+{
+  using tcod::tileset::Tileset;
+  using tcod::tileset::new_fallback_tileset;
+  try {
+    return new std::shared_ptr<Tileset>(new_fallback_tileset({ tile_width , tile_height }));
+  } catch (const std::exception& e) {
+    tcod::set_error(e);
+    return nullptr;
+  }
+}

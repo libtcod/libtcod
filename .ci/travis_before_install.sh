@@ -8,7 +8,7 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     set +e
     curl -sSL https://get.rvm.io | bash
     rvm reload
-    rvm get stable
+    rvm get 1.29.8
 fi
 
 set -e

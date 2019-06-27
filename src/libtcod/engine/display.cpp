@@ -31,6 +31,7 @@
  */
 #include "display.h"
 
+#include <cstdlib>
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -64,6 +65,46 @@ static auto ensure_tileset() -> std::shared_ptr<tcod::tileset::Tileset>
   return get_tileset();
 }
 /**
+ *  Return an environment value as a std::string.
+ *
+ *  The returned string will be empty if the environment value does not exist.
+ */
+static std::string get_env(const char* key)
+{
+  char* value = std::getenv(key);
+  return value ? value : "";
+}
+/**
+ *  Set `renderer` from the TCOD_RENDERER environment variable if it exists.
+ */
+static void get_env_renderer(TCOD_renderer_t& renderer)
+{
+  const std::string value(get_env("TCOD_RENDERER"));
+  if (value == "sdl") {
+    renderer = TCOD_RENDERER_SDL;
+  } else if (value == "opengl") {
+    renderer = TCOD_RENDERER_OPENGL;
+  } else if (value == "glsl") {
+    renderer = TCOD_RENDERER_GLSL;
+  } else if (value == "sdl2") {
+    renderer = TCOD_RENDERER_SDL2;
+  } else if (value == "opengl2") {
+    renderer = TCOD_RENDERER_OPENGL2;
+  }
+}
+/**
+ *  Set `vsync` from the TCOD_VSYNC environment variable if it exists.
+ */
+static void get_env_vsync(bool& vsync)
+{
+  const std::string value(get_env("TCOD_RENDERER"));
+  if (value == "0") {
+    vsync = 0;
+  } else if (value == "1") {
+    vsync = 1;
+  }
+}
+/**
  *  Initialize the display using one of the new renderers.
  */
 template <class T, class ...Args>
@@ -85,6 +126,8 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
   if (w <= 0 || h <= 0) {
     throw std::invalid_argument("Width and height must be greater than zero.");
   }
+  get_env_renderer(renderer);
+  get_env_vsync(vsync);
   TCOD_console_delete(NULL);
   TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
 #ifndef TCOD_BARE

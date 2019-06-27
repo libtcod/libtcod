@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- You can now set the `TCOD_RENDERER` and `TCOD_VSYNC` environment variables to
+  force specific options to be used.
+  Example: ``TCOD_RENDERER=sdl2 TCOD_VSYNC=1``
 
 ## [1.12.3] - 2019-06-02
 ### Fixed

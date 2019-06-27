@@ -15,6 +15,8 @@ if ($env:MSYSTEM) {
     if ($env:MSYSTEM -eq "MINGW32") {
         pacman --noconfirm -Rs mingw-w64-x86_64-toolchain
     }
+	# Remove MSYS2 scons.
+	pacman --noconfirm -Rs scons
 
     # Update MSYS2 toolset.
     pacman --noconfirm -Syu

@@ -886,11 +886,15 @@ TCOD_renderer_t TCOD_sys_get_renderer(void) {
 	return TCOD_ctx.renderer;
 }
 
-void TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
-  if ( renderer == TCOD_ctx.renderer ) return;
-  TCOD_console_init_root(TCOD_ctx.root->w, TCOD_ctx.root->h,
-                         TCOD_ctx.window_title, TCOD_console_is_fullscreen(),
-                         renderer);
+int TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
+  if (renderer == TCOD_ctx.renderer) { return 0; }
+  return TCOD_console_init_root(
+      TCOD_ctx.root->w,
+      TCOD_ctx.root->h,
+      TCOD_ctx.window_title,
+      TCOD_console_is_fullscreen(),
+      renderer
+  );
 }
 
 void TCOD_sys_init_screen_offset(void) {

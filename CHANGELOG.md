@@ -12,6 +12,11 @@ since `1.7.0`.
   force specific options to be used.
   Example: ``TCOD_RENDERER=sdl2 TCOD_VSYNC=1``
 
+### Changed
+- `TCOD_sys_set_renderer` now returns an error status.
+- `TCODSystem::setRenderer` will now throw instead of terminating on an error.
+- `TCOD_console_init_root` and `TCOD_sys_set_renderer` are now no-discard.
+
 ## [1.12.3] - 2019-06-02
 ### Fixed
 - Fixed regressions in text alignment for non-rectangle-bound text on UTF-8

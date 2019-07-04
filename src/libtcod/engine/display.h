@@ -191,10 +191,10 @@ TCODLIB_API void init_root(
  *      Added the `TCOD_RENDERER` and `TCOD_VSYNC` overrides.
  *  \endrst
  */
-TCODLIB_CAPI int TCOD_console_init_root(int w, int h, const char* title,
-                                        bool fullscreen,
-                                        TCOD_renderer_t renderer);
-TCODLIB_CAPI int TCOD_console_init_root_(
+
+TCODLIB_CAPI TCOD_NODISCARD int TCOD_console_init_root(
+    int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
+TCODLIB_CAPI TCOD_NODISCARD int TCOD_console_init_root_(
     int w,
     int h,
     const char* title,
@@ -278,7 +278,7 @@ TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  */
 TCODLIB_CAPI int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCODLIB_CAPI int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
-TCODLIB_CAPI int TCOD_sys_init_sdl2_renderer_(
+TCODLIB_CAPI TCOD_NODISCARD int TCOD_sys_init_sdl2_renderer_(
     int width,
     int height,
     const char* title,

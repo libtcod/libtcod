@@ -31,8 +31,11 @@
  */
 #include "sys.hpp"
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
+
+#include "libtcod_int.h"
+#include "engine/display.h"
 
 #ifdef TCOD_OSUTIL_SUPPORT
 void TCODSystem::sleepMilli(uint32_t milliseconds) {
@@ -58,7 +61,14 @@ void TCODSystem::forceFullscreenResolution(int width, int height) {
 }
 
 void TCODSystem::setRenderer(TCOD_renderer_t renderer) {
-	TCOD_sys_set_renderer(renderer);
+  if (renderer == TCOD_ctx.renderer) { return; }
+  tcod::console::init_root(
+      TCOD_ctx.root->w,
+      TCOD_ctx.root->h,
+      TCOD_ctx.window_title,
+      TCOD_console_is_fullscreen(),
+      renderer
+  );
 }
 TCOD_event_t TCODSystem::waitForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
 	return TCOD_sys_wait_for_event(eventMask,key,mouse,flush);

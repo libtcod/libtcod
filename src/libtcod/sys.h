@@ -55,7 +55,7 @@ TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 #ifndef TCOD_BARE
 TCODLIB_API void TCOD_sys_save_screenshot(const char *filename);
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
-TCODLIB_API void TCOD_sys_set_renderer(TCOD_renderer_t renderer);
+TCODLIB_API int TCOD_NODISCARD TCOD_sys_set_renderer(TCOD_renderer_t renderer);
 TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
 TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);

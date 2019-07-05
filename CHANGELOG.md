@@ -17,6 +17,10 @@ since `1.7.0`.
 - `TCODSystem::setRenderer` will now throw instead of terminating on an error.
 - `TCOD_console_init_root` and `TCOD_sys_set_renderer` are now no-discard.
 
+### Fixed
+- `TCOD_console_map_ascii_code_to_font` functions will now work when called
+  before `TCOD_console_init_root`.
+
 ## [1.12.3] - 2019-06-02
 ### Fixed
 - Fixed regressions in text alignment for non-rectangle-bound text on UTF-8

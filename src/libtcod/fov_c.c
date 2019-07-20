@@ -111,6 +111,7 @@ void TCOD_map_delete(struct TCOD_Map *map) {
  *
  *  \rst
  *  `player_x` and `player_y` are the used as the field-of-view source.
+ *  These coordinates must be within the map.
  *
  *  `max_radius` is the maximum distance for the field-of-view algorithm.
  *
@@ -127,6 +128,7 @@ void TCOD_map_compute_fov(struct TCOD_Map *map, int player_x, int player_y,
                           int max_radius, bool light_walls,
                           TCOD_fov_algorithm_t algo) {
   if (!map) { return; }
+  if (!TCOD_map_in_bounds(map, player_x, player_y)) { return; }
   switch(algo) {
     case FOV_BASIC:
       TCOD_map_compute_fov_circular_raycasting(map, player_x, player_y,

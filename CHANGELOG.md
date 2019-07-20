@@ -8,6 +8,10 @@ since `1.7.0`.
 
 ## [Unreleased]
 
+### Fixed
+- `TCOD_map_compute_fov` will now silently ignore out-of-bounds coordinates
+  instead of crashing.
+
 ## [1.13.0] - 2019-07-05
 ### Added
 - You can now set the `TCOD_RENDERER` and `TCOD_VSYNC` environment variables to

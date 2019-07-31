@@ -85,6 +85,7 @@ class Tileset {
       character_map_[tile.codepoint] = static_cast<int>(
           std::distance(tiles_.begin(), it));
     }
+    notify_changed(tile);
     return 0;
   }
   /** Return the width of each tile in this Tileset */
@@ -112,6 +113,7 @@ class Tileset {
             && character_map_.at(codepoint) >= 0);
   }
  private:
+  using changed_tiles = std::vector<std::pair<int, const Tile&>>;
   /**
    *  Return the tile ID for a specific code-point.
    *
@@ -135,6 +137,8 @@ class Tileset {
     }
     return -1;
   }
+  void notify_changed(const Tile& tile);
+  void notify_changed(const changed_tiles& changed);
   /** Width and height of each tile in pixels. */
   int tile_width_;
   int tile_height_;

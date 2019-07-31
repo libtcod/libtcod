@@ -46,10 +46,9 @@
 namespace tcod {
 namespace tileset {
 class Tileset;
-class TilesetObserver;
-typedef std::vector<std::pair<int, Tile&>> IdTileRefPairVector_;
 class TilesetObserver {
  public:
+  using changed_tiles = std::vector<std::pair<int, const Tile&>>;
   TilesetObserver() = default;
 
   TilesetObserver(const std::shared_ptr<Tileset>& subject)
@@ -91,7 +90,7 @@ class TilesetObserver {
    *  The Tileset may have been resized.
    */
   virtual void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes) = 0;
+      const changed_tiles &changes) = 0;
   std::shared_ptr<Tileset> get_tileset()
   {
     return tileset_;
@@ -99,18 +98,8 @@ class TilesetObserver {
  protected:
   std::shared_ptr<Tileset> tileset_;
  private:
-  void observe(const std::shared_ptr<Tileset>& subject)
-  {
-    unobserve();
-    tileset_ = subject;
-    subject->observers_.emplace_back(this);
-  }
-  void unobserve() {
-    if (!tileset_) { return; }
-    auto& observers = tileset_->observers_;
-    observers.erase(std::find(observers.begin(), observers.end(), this));
-    tileset_ = nullptr;
-  }
+  void observe(const std::shared_ptr<Tileset>& subject);
+  void unobserve();
 };
 } // namespace tileset
 } // namespace tcod

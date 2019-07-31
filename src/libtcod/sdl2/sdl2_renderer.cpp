@@ -56,8 +56,7 @@ class SDL2Renderer::impl: public TilesetObserver {
   /**
    *  Selectively reset the cache so that only changed tiles are redrawn.
    */
-  void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes) override
+  void on_tileset_changed(const changed_tiles &changes) override
   {
     for (const auto& changed : changes) {
       int codepoint = changed.second.codepoint;

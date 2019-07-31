@@ -11,6 +11,7 @@ since `1.7.0`.
 ### Fixed
 - `TCOD_map_compute_fov` will now silently ignore out-of-bounds coordinates
   instead of crashing.
+- Changing the tiles of an active tileset will now work correctly.
 
 ## [1.13.0] - 2019-07-05
 ### Added

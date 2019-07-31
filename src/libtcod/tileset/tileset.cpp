@@ -41,6 +41,16 @@
 
 namespace tcod {
 namespace tileset {
+void Tileset::notify_changed(const Tile& tile)
+{
+  return notify_changed({{tile.codepoint, tile}});
+}
+void Tileset::notify_changed(const changed_tiles& changed)
+{
+  for (auto& observer : observers_) {
+    observer->on_tileset_changed(changed);
+  }
+}
 extern "C" {
 TCOD_Tileset* TCOD_tileset_new(int tile_width, int tile_height)
 {

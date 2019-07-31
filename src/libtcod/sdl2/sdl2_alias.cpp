@@ -124,8 +124,7 @@ class SDL2TilesetAlias::impl : public TilesetObserver {
   /**
    *  Keep the texture alias in a valid state during tileset changes.
    */
-  virtual void on_tileset_changed(
-      const std::vector<std::pair<int, Tile&>> &changes) override
+  virtual void on_tileset_changed(const changed_tiles &changes) override
   {
     for (const auto& changed : changes) {
       // If this glyph is already in this alias then update it.

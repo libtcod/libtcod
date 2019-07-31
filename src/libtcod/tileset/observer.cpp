@@ -32,5 +32,18 @@
 #include "observer.h"
 namespace tcod {
 namespace tileset {
+void TilesetObserver::observe(const std::shared_ptr<Tileset>& subject)
+{
+  unobserve();
+  tileset_ = subject;
+  subject->observers_.emplace_back(this);
+}
+void TilesetObserver::unobserve()
+{
+  if (!tileset_) { return; }
+  auto& observers = tileset_->observers_;
+  observers.erase(std::find(observers.begin(), observers.end(), this));
+  tileset_ = nullptr;
+}
 } // namespace tileset
 } // namespace tcod

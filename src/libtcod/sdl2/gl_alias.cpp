@@ -166,6 +166,7 @@ class OpenGLTilesetAlias::impl : public TilesetObserver {
     SDL_Rect alias_rect;
     if (unallocated_.size()) {
       alias_rect = get_alias_rect(unallocated_.back());
+      local_map_.at(codepoint) = unallocated_.back();
       unallocated_.pop_back();
     } else {
       alias_rect = get_alias_rect(next_alias_index_);

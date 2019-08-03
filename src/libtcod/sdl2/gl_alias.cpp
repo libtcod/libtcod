@@ -73,14 +73,10 @@ class OpenGLTilesetAlias::impl : public TilesetObserver {
   auto prepare_alias(const TCOD_Console& console) -> uint32_t
   {
     for (int i = 0; i < console.w * console.h; ++i) {
-      int codepoint = console.tiles[i].ch;
-      if (codepoint >= static_cast<int>(local_map_.size())
-          || local_map_.at(codepoint) < 0) {
-        if (ensure_tile(codepoint) == -1) {
-          // The texture alias was replaced by a bigger one.
-          i = -1; // Need to start over from the beginning.
-          continue;
-        }
+      if (ensure_tile(console.tiles[i].ch) == -1) {
+        // The texture alias was replaced by a bigger one.
+        i = -1; // Need to start over from the beginning.
+        continue;
       }
     }
     return gltexture_;
@@ -155,6 +151,9 @@ class OpenGLTilesetAlias::impl : public TilesetObserver {
   {
     if (codepoint >= static_cast<int>(local_map_.size())) {
       local_map_.resize(codepoint + 1, -1);
+    }
+    if (local_map_.at(codepoint) >= 0) {
+      return 0; // Tile already assigned.
     }
     if (next_alias_index_ == capacity()) {
       // Replace the current texture with a larger one.

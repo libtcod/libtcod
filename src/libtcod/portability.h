@@ -162,14 +162,10 @@
 /* bool type */
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* ansi C lacks support for those functions */
-TCODLIB_API char *TCOD_strdup(const char *s);
-TCODLIB_API int TCOD_strcasecmp(const char *s1, const char *s2);
-TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
+TCODLIB_CAPI char *TCOD_strdup(const char *s);
+TCODLIB_CAPI int TCOD_strcasecmp(const char *s1, const char *s2);
+TCODLIB_CAPI int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 
 /* Define vswprintf across platforms. */
 #ifdef _WIN32
@@ -207,10 +203,6 @@ TCODLIB_API int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #define TCOD_NODISCARD __attribute__ ((warn_unused_result))
 #else
 #define TCOD_NODISCARD
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* LIBTCOD_PORTABILITY_H */

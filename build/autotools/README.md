@@ -1,15 +1,12 @@
 Building Libtcod using Autotools
 ================================
 
-The following instructions have been tested on 32 and 64-bit versions of
-Ubuntu 14.04 and Fedora 22.
-
 Dependencies
 ------------
 
-For Ubuntu 14.04, install these dependencies:
+For Ubuntu 16.04, install these dependencies:
 
-    $ sudo apt-get install curl build-essential make cmake autoconf automake libtool mercurial libasound2-dev libpulse-dev libaudio-dev libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev libxxf86vm-dev libxss-dev libgl1-mesa-dev libesd0-dev libdbus-1-dev libudev-dev libgles1-mesa-dev libgles2-mesa-dev libegl1-mesa-dev
+    $ sudo apt install build-essential autoconf automake libtool git libsdl2-dev
 
 For Fedora 22:
 
@@ -26,32 +23,21 @@ It is recommended strongly that you install SDL2 using your package manager.
 However, if you are unable to work out the package name, then you can take the
 harder route and build it yourself.
 
-Download the supported SDL2 revision, build and install it if you must:
-
-    $ curl -o sdl.tar.gz http://hg.libsdl.org/SDL/archive/007dfe83abf8.tar.gz
-    $ tar -xf sdl.tar.gz
-    $ cd SDL-007dfe83abf8/
-    $ mkdir -p build
-    $ cd build
-    $ ../configure
-    $ make
-    $ sudo make install
-
-This will place the libraries at `/usr/local/lib/` and the development headers
-at `/usr/local/include/SDL2/`.
+https://wiki.libsdl.org/Installation
 
 Building Libtcod
 ----------------
-Download the latest libtcod version, build it and install it:
+Download the latest libtcod version, build it, and install it:
 
-    $ hg clone https://bitbucket.org/libtcod/libtcod
+    $ git clone https://github.com/libtcod/libtcod.git
     $ cd libtcod/build/autotools
     $ autoreconf -i
-    $ ./configure CFLAGS='-O2'
+    $ ./configure
     $ make
     $ sudo make install
 
 This will place libtcod static and shared libraries in the `/usr/local/lib`
 directory, and header files in the `/usr/local/include/libtcod` directory.
 
-Note that the same makefile is used for 32 and 64 bit distributions.
+Once installed you can get the necessary compile flags for a libtcod project
+with the `pkg-config libtcod --cflags --libs` command.

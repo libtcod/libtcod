@@ -205,4 +205,10 @@ TCODLIB_CAPI int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #define TCOD_NODISCARD
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#if __GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 1)
+#error "GCC must be version 6.1 or later."
+#endif
+#endif
+
 #endif /* LIBTCOD_PORTABILITY_H */

@@ -70,6 +70,31 @@ inline void breadth_first2d(
     }
   }
 }
+template <typename DistMatrix, typename Graph>
+inline void breadth_first2d_graph(
+    DistMatrix& dist_map,
+    const Graph& graph,
+    const std::initializer_list<std::array<ptrdiff_t, 2>>& start)
+{
+  using cost_type = typename DistMatrix::value_type;
+  const cost_type MAX_COST = std::numeric_limits<cost_type>::max();
+  using index_type = std::array<ptrdiff_t, 2>;
+  for (const auto& start_point : start) {
+    dist_map.at(start_point) = 0;
+  }
+  std::queue<index_type> queue(start);
+  while (queue.size()) {
+    const index_type current_point = queue.front();
+    queue.pop();
+    auto add_edge = [&](const index_type& next_point, auto) {
+      if (dist_map[next_point] < MAX_COST) { return; }
+      dist_map[next_point] = dist_map[current_point] + 1;
+      queue.push(next_point);
+    };
+    graph.with_edges(add_edge, current_point);
+  }
+}
+
 } // namespace tcod
 } // namespace pathfinding
 #endif // __cplusplus

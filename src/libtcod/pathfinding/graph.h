@@ -33,7 +33,9 @@
 #define LIBTCOD_PATHFINDING_GRAPH_H_
 #ifdef __cplusplus
 #include <array>
+#include <memory>
 #include <tuple>
+#include <utility>
 #endif // __cplusplus
 #ifdef __cplusplus
 namespace tcod {
@@ -47,6 +49,54 @@ static constexpr std::array<std::tuple<int, int>, 8> EDGES_{ {
     {-1, 0}, {1, 0}, {0, -1}, {0, 1},
     {-1, -1}, {1, -1}, {-1, 1}, {1, 1},
 } };
+
+template <typename CostMatrix>
+class SimpleGraph2D
+{
+ public:
+  SimpleGraph2D(std::shared_ptr<const CostMatrix> cost,
+                int cardinal=1, int diagonal=1)
+  : cost_{std::move(cost)}, edges_{make_edges(cardinal, diagonal)}
+  {}
+  SimpleGraph2D(const CostMatrix& cost, int cardinal=1, int diagonal=1)
+  : SimpleGraph2D{std::make_shared<const CostMatrix>(cost), cardinal, diagonal}
+  {}
+  SimpleGraph2D(CostMatrix&& cost, int cardinal=1, int diagonal=1)
+  : SimpleGraph2D{std::make_shared<const CostMatrix>(cost), cardinal, diagonal}
+  {}
+  /**
+   *  Calls `edge_func(index, cost) -> void` with the edges from `index`.
+   *
+   *  Within the lambda parameters `index` is the destination node, and `cost`
+   *  is the cost between nodes.
+   */
+  template <typename F, typename index_type>
+  void with_edges(const F& edge_func, const index_type& index) const
+  {
+    for (const auto& edge : edges_) {
+      if (std::get<2>(edge) <= 0) { continue; }
+      index_type node{
+          index.at(0) + std::get<0>(edge), index.at(1) + std::get<1>(edge)
+      };
+      if (!cost_->in_range(node)) { continue; }
+      int cost = std::get<2>(edge) * (*cost_)[node];
+      if (cost <= 0) { continue; }
+      edge_func(node, cost);
+    }
+  }
+ private:
+  using edge_array = std::array<std::tuple<int, int, int>, 8>;
+  std::shared_ptr<const CostMatrix> cost_;
+  edge_array edges_;
+  static edge_array make_edges(int cardinal, int diagonal)
+  {
+    return edge_array{{
+      {-1, 0, cardinal}, {1, 0, cardinal}, {0, -1, cardinal}, {0, 1, cardinal},
+      {-1, -1, diagonal}, {1, -1, diagonal}, {-1, 1, diagonal}, {1, 1, diagonal},
+    }};
+  }
+};
+
 } // namespace pathfinding
 } // namespace tcod
 #endif // __cplusplus

@@ -159,6 +159,39 @@ inline void dijkstra2d(
     }
   }
 }
+template <typename DistMatrix, typename Graph>
+inline void dijkstra2d_graph(
+  DistMatrix& dist_map,
+  const Graph& graph)
+{
+  using dist_type = typename DistMatrix::value_type;
+  const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
+  using index_type = std::array<ptrdiff_t, 2>;
+  using heap_node = std::tuple<dist_type, index_type>;
+  std::vector<heap_node> heap;
+  for (ptrdiff_t i = 0; i < dist_map.get_shape().at(0); ++i) {
+    for (ptrdiff_t j = 0; j < dist_map.get_shape().at(1); ++j) {
+      if (dist_map[{i, j}] >= MAX_DIST) { continue; }
+      heap.emplace_back(heap_node{ dist_map[{i, j}], {i, j} });
+    }
+  }
+  std::make_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+  while (heap.size()) {
+    const heap_node current_node = heap.front();
+    std::pop_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+    heap.pop_back();
+    const dist_type& current_distance = std::get<0>(current_node);
+    const index_type& current_point = std::get<1>(current_node);
+    auto add_edge = [&](const index_type& next, const dist_type& cost) {
+      dist_type next_distance = current_distance + cost;
+      if (dist_map[next] <= next_distance) { return; }
+      dist_map[next] = next_distance;
+      heap.emplace_back(heap_node{ next_distance, next });
+      std::push_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+    };
+    graph.with_edges(add_edge, current_point);
+  }
+}
 } // namespace pathfinding
 } // namespace tcod
 #endif // __cplusplus

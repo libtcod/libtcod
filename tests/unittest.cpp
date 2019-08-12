@@ -142,6 +142,14 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     tcod::pathfinding::breadth_first2d(map, cost, { {0, 0} });
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
   }
+  BENCHMARK("Breadth-first (graph) 1000x1000") {
+    const int SIZE = 1000;
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
+    tcod::pathfinding::SimpleGraph2D<tcod::Matrix<int8_t, 2>> graph{ cost };
+    tcod::pathfinding::breadth_first2d_graph(map, graph, { {0, 0} });
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+  }
   BENCHMARK("New Dijkstra 1000x1000") {
     const int SIZE = 1000;
     tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
@@ -150,6 +158,16 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     tcod::pathfinding::dijkstra2d(map, cost);
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
   }
+  BENCHMARK("New Dijkstra (graph) 1000x1000") {
+    const int SIZE = 1000;
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    tcod::Matrix<int8_t, 2> cost({ SIZE, SIZE }, 1);
+    tcod::pathfinding::SimpleGraph2D<tcod::Matrix<int8_t, 2>> graph{ cost };
+    map.at({ 0, 0 }) = 0;
+    tcod::pathfinding::dijkstra2d_graph(map, graph);
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+  }
+
   BENCHMARK("Advanced Dijkstra 1000x1000") {
     const int SIZE = 1000;
     using index_type = std::array<ptrdiff_t, 2>;

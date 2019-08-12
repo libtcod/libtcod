@@ -71,7 +71,7 @@ inline void breadth_first2d(
   }
 }
 template <typename DistMatrix, typename Graph>
-inline void breadth_first2d_graph(
+inline void breadth_first(
     DistMatrix& dist_map,
     const Graph& graph,
     const std::initializer_list<std::array<ptrdiff_t, 2>>& start)

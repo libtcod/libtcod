@@ -160,7 +160,7 @@ inline void dijkstra2d(
   }
 }
 template <typename DistMatrix, typename Graph>
-inline void dijkstra2d_graph(
+inline void dijkstra(
   DistMatrix& dist_map,
   const Graph& graph)
 {

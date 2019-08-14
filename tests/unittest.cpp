@@ -185,6 +185,12 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     tcod::pathfinding::astar2d(map, cost, { SIZE - 1, SIZE - 1 });
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
   }
+  BENCHMARK("New A* (graph) 1000x1000") {
+    tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
+    map.at({ 0, 0 }) = 0;
+    tcod::pathfinding::astar(map, plain_graph, { SIZE - 1, SIZE - 1 });
+    CHECK(map.at({ SIZE - 1, SIZE - 1 }) == (SIZE - 1));
+  }
 }
 
 TEST_CASE("Fallback font.")

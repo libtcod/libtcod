@@ -89,6 +89,39 @@ inline void astar2d(
     }
   }
 }
+template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type>
+inline void astar(
+  DistMatrix& dist_map,
+  const Graph& graph,
+  const IndexType& goal_point)
+{
+  using dist_type = typename DistMatrix::value_type;
+  const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
+  using heap_node = std::tuple<dist_type, IndexType>;
+  std::vector<heap_node> heap;
+  for (ptrdiff_t i = 0; i < dist_map.get_shape().at(0); ++i) {
+    for (ptrdiff_t j = 0; j < dist_map.get_shape().at(1); ++j) {
+      if (dist_map[{i, j}] >= MAX_DIST) { continue; }
+      heap.emplace_back(heap_node{ dist_map[{i, j}] + graph.heuristic({i, j}, goal_point), {i, j} });
+    }
+  }
+  std::make_heap(heap.begin(), heap.end(), astar_heap_sort_<heap_node>);
+  while (heap.size()) {
+    const IndexType current_point = std::get<1>(heap.front());
+    if (current_point == goal_point) { break; }
+    std::pop_heap(heap.begin(), heap.end(), astar_heap_sort_<heap_node>);
+    heap.pop_back();
+    const dist_type current_distance = dist_map[current_point];
+    auto add_edge = [&](const IndexType& next, const dist_type& cost) {
+      dist_type next_distance = current_distance + cost;
+      if (dist_map[next] <= next_distance) { return; }
+      dist_map[next] = next_distance;
+      heap.emplace_back(heap_node{ next_distance + graph.heuristic(next, goal_point), next });
+      std::push_heap(heap.begin(), heap.end(), astar_heap_sort_<heap_node>);
+    };
+    graph.with_edges(add_edge, current_point);
+  }
+}
 } // namespace pathfinding
 } // namespace tcod
 #endif // __cplusplus

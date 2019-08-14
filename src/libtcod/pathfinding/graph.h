@@ -32,7 +32,9 @@
 #ifndef LIBTCOD_PATHFINDING_GRAPH_H_
 #define LIBTCOD_PATHFINDING_GRAPH_H_
 #ifdef __cplusplus
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -56,7 +58,10 @@ class SimpleGraph2D
  public:
   SimpleGraph2D(std::shared_ptr<const CostMatrix> cost,
                 int cardinal=1, int diagonal=1)
-  : cost_{std::move(cost)}, edges_{make_edges(cardinal, diagonal)}
+  : cost_{std::move(cost)},
+    edges_{make_edges(cardinal, diagonal)},
+    cardinal_{cardinal},
+    diagonal_{diagonal}
   {}
   SimpleGraph2D(const CostMatrix& cost, int cardinal=1, int diagonal=1)
   : SimpleGraph2D{std::make_shared<const CostMatrix>(cost), cardinal, diagonal}
@@ -84,10 +89,23 @@ class SimpleGraph2D
       edge_func(node, cost);
     }
   }
+  /**
+   *  Return the heuristic between two points.
+   */
+  template <typename index_type>
+  int heuristic(const index_type& a, const index_type& b) const
+  {
+    index_type diff{std::abs(a.at(0) - b.at(0)), std::abs(a.at(1) - b.at(1))};
+    int diagonal = std::min(diff.at(0), diff.at(1));
+    int cardinal = std::max(diff.at(0), diff.at(1)) - diagonal;
+    return cardinal * cardinal_ + diagonal * diagonal_;
+  }
  private:
   using edge_array = std::array<std::tuple<int, int, int>, 8>;
   std::shared_ptr<const CostMatrix> cost_;
   edge_array edges_;
+  int cardinal_;
+  int diagonal_;
   static edge_array make_edges(int cardinal, int diagonal)
   {
     return edge_array{{

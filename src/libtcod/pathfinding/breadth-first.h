@@ -42,34 +42,6 @@
 #ifdef __cplusplus
 namespace tcod {
 namespace pathfinding {
-template <typename DistMatrix, typename CostMatrix>
-inline void breadth_first2d(
-    DistMatrix& dist_map,
-    const CostMatrix& cost_map,
-    const std::initializer_list<std::array<ptrdiff_t, 2>>& start)
-{
-  using cost_type = typename DistMatrix::value_type;
-  const cost_type MAX_COST = std::numeric_limits<cost_type>::max();
-  using index_type = std::array<ptrdiff_t, 2>;
-  for (const auto& start_point : start) {
-    dist_map.at(start_point) = 0;
-  }
-  std::queue<index_type> queue(start);
-  while (queue.size()) {
-    const index_type current_point = queue.front();
-    queue.pop();
-    for (const auto& edge : EDGES_) {
-      const index_type next_point{
-          current_point.at(0) + std::get<0>(edge), current_point.at(1) + std::get<1>(edge)
-      };
-      if (!dist_map.in_range(next_point)) { continue; }
-      if (dist_map[next_point] < MAX_COST) { continue; }
-      if (cost_map[next_point] <= 0) { continue;  }
-      dist_map[next_point] = dist_map[current_point] + 1;
-      queue.push(next_point);
-    }
-  }
-}
 template <typename DistMatrix, typename Graph>
 inline void breadth_first(
     DistMatrix& dist_map,
@@ -94,7 +66,17 @@ inline void breadth_first(
     graph.with_edges(add_edge, current_point);
   }
 }
-
+template <typename DistMatrix, typename CostMatrix>
+inline void breadth_first2d(
+    DistMatrix& dist_map,
+    const CostMatrix& cost_map,
+    const std::initializer_list<std::array<ptrdiff_t, 2>>& start,
+    int cardinal=1,
+    int diagonal=1)
+{
+  auto graph = SimpleGraph2D<CostMatrix>(cost_map, cardinal, diagonal);
+  breadth_first(dist_map, graph, start);
+}
 } // namespace tcod
 } // namespace pathfinding
 #endif // __cplusplus

@@ -122,43 +122,6 @@ inline bool dijktra_heap_sort_(const HeapNode& a, const HeapNode& b) noexcept
 {
   return std::get<0>(a) > std::get<0>(b);
 }
-template <typename DistMatrix, typename CostMatrix>
-inline void dijkstra2d(
-  DistMatrix& dist_map,
-  const CostMatrix& cost_map)
-{
-  using dist_type = typename DistMatrix::value_type;
-  const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
-  using index_type = std::array<ptrdiff_t, 2>;
-  using heap_node = std::tuple<dist_type, index_type>;
-  std::vector<heap_node> heap;
-  for (ptrdiff_t i = 0; i < dist_map.get_shape().at(0); ++i) {
-    for (ptrdiff_t j = 0; j < dist_map.get_shape().at(1); ++j) {
-      if (dist_map[{i, j}] >= MAX_DIST) { continue; }
-      heap.emplace_back(heap_node{ dist_map[{i, j}], {i, j} });
-    }
-  }
-  std::make_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
-  while (heap.size()) {
-    const heap_node current_node = heap.front();
-    std::pop_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
-    heap.pop_back();
-    const dist_type& current_distance = std::get<0>(current_node);
-    const index_type& current_point = std::get<1>(current_node);
-    for (const auto& edge : EDGES_) {
-      const index_type next_point{
-          current_point.at(0) + std::get<0>(edge), current_point.at(1) + std::get<1>(edge)
-      };
-      if (!dist_map.in_range(next_point)) { continue; }
-      dist_type cost = cost_map[next_point];
-      dist_type next_distance = current_distance + cost;
-      if (dist_map[next_point] <= next_distance) { continue; }
-      dist_map[next_point] = next_distance;
-      heap.emplace_back(heap_node{ next_distance, next_point });
-      std::push_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
-    }
-  }
-}
 template <typename DistMatrix, typename Graph>
 inline void dijkstra(
   DistMatrix& dist_map,
@@ -168,6 +131,9 @@ inline void dijkstra(
   const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
   using index_type = std::array<ptrdiff_t, 2>;
   using heap_node = std::tuple<dist_type, index_type>;
+  auto heap_compare = [](const heap_node& a, const heap_node& b) {
+    return std::get<0>(a) > std::get<0>(b);
+  };
   std::vector<heap_node> heap;
   for (ptrdiff_t i = 0; i < dist_map.get_shape().at(0); ++i) {
     for (ptrdiff_t j = 0; j < dist_map.get_shape().at(1); ++j) {
@@ -175,10 +141,10 @@ inline void dijkstra(
       heap.emplace_back(heap_node{ dist_map[{i, j}], {i, j} });
     }
   }
-  std::make_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+  std::make_heap(heap.begin(), heap.end(), heap_compare);
   while (heap.size()) {
     const heap_node current_node = heap.front();
-    std::pop_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+    std::pop_heap(heap.begin(), heap.end(), heap_compare);
     heap.pop_back();
     const dist_type& current_distance = std::get<0>(current_node);
     const index_type& current_point = std::get<1>(current_node);
@@ -187,10 +153,20 @@ inline void dijkstra(
       if (dist_map[next] <= next_distance) { return; }
       dist_map[next] = next_distance;
       heap.emplace_back(heap_node{ next_distance, next });
-      std::push_heap(heap.begin(), heap.end(), dijktra_heap_sort_<heap_node>);
+      std::push_heap(heap.begin(), heap.end(), heap_compare);
     };
     graph.with_edges(add_edge, current_point);
   }
+}
+template <typename DistMatrix, typename CostMatrix>
+inline void dijkstra2d(
+    DistMatrix& dist_map,
+    const CostMatrix& cost_map,
+    int cardinal=1,
+    int diagonal=1)
+{
+  auto graph = SimpleGraph2D<CostMatrix>(cost_map, cardinal, diagonal);
+  dijkstra(dist_map, graph);
 }
 } // namespace pathfinding
 } // namespace tcod

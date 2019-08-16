@@ -227,6 +227,7 @@
     <ClCompile Include="..\..\src\libtcod\pathfinding\dijkstra.cpp" />
     <ClCompile Include="..\..\src\libtcod\pathfinding\generic.cpp" />
     <ClCompile Include="..\..\src\libtcod\pathfinding\graph.cpp" />
+    <ClCompile Include="..\..\src\libtcod\pathfinding\hill-climb.cpp" />
     <ClCompile Include="..\..\src\libtcod\path_c.c" />
     <ClCompile Include="..\..\src\libtcod\sdl2\event.cpp" />
     <ClCompile Include="..\..\src\libtcod\sdl2\gl2_display.cpp" />
@@ -346,6 +347,7 @@
     <ClInclude Include="..\..\src\libtcod\pathfinding\dijkstra.h" />
     <ClInclude Include="..\..\src\libtcod\pathfinding\generic.h" />
     <ClInclude Include="..\..\src\libtcod\pathfinding\graph.h" />
+    <ClInclude Include="..\..\src\libtcod\pathfinding\hill-climb.h" />
     <ClInclude Include="..\..\src\libtcod\portability.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\event.h" />
     <ClInclude Include="..\..\src\libtcod\sdl2\gl2_display.h" />

@@ -9,6 +9,7 @@
 #include <libtcod/pathfinding/astar.h>
 #include <libtcod/pathfinding/breadth-first.h>
 #include <libtcod/pathfinding/dijkstra.h>
+#include <libtcod/pathfinding/hill-climb.h>
 #include <libtcod/tileset/fallback.h>
 
 #include "catch.hpp"
@@ -147,6 +148,7 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
     tcod::pathfinding::breadth_first(map, plain_graph, { {0, 0} });
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, { SIZE - 1, SIZE - 1 }).size() == SIZE);
   }
   BENCHMARK("New Dijkstra 1000x1000") {
     tcod::Matrix<int, 2> map({ SIZE, SIZE }, std::numeric_limits<int>::max());
@@ -160,6 +162,7 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     map.at({ 0, 0 }) = 0;
     tcod::pathfinding::dijkstra(map, plain_graph);
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == SIZE - 1);
+    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, { SIZE - 1, SIZE - 1 }).size() == SIZE);
   }
   BENCHMARK("Advanced Dijkstra 1000x1000") {
     using index_type = std::array<ptrdiff_t, 2>;
@@ -190,6 +193,7 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
     map.at({ 0, 0 }) = 0;
     tcod::pathfinding::astar(map, plain_graph, { SIZE - 1, SIZE - 1 });
     CHECK(map.at({ SIZE - 1, SIZE - 1 }) == (SIZE - 1));
+    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, { SIZE - 1, SIZE - 1 }).size() == SIZE);
   }
 }
 

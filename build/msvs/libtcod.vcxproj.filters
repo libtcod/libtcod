@@ -365,6 +365,9 @@
     <ClCompile Include="..\..\src\libtcod\pathfinding\graph.cpp">
       <Filter>Source Files\pathfinding</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\libtcod\pathfinding\hill-climb.cpp">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libtcod\tileset\observer.h">
@@ -662,6 +665,9 @@
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\libtcod\pathfinding\graph.h">
+      <Filter>Source Files\pathfinding</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\libtcod\pathfinding\hill-climb.h">
       <Filter>Source Files\pathfinding</Filter>
     </ClInclude>
   </ItemGroup>

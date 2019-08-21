@@ -43,11 +43,12 @@
 #include "graph.h"
 namespace tcod {
 namespace pathfinding {
-template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type>
+template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type, typename NewEdgeFunc>
 inline void astar(
   DistMatrix& dist_map,
   const Graph& graph,
-  const IndexType& goal_point)
+  const IndexType& goal_point,
+  const NewEdgeFunc& on_new_edge)
 {
   using dist_type = typename DistMatrix::value_type;
   const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
@@ -73,11 +74,21 @@ inline void astar(
       dist_type next_distance = current_distance + cost;
       if (dist_map[next] <= next_distance) { return; }
       dist_map[next] = next_distance;
+      on_new_edge(current_point, next);
       heap.emplace_back(heap_node{ next_distance + graph.heuristic(next, goal_point), next });
       std::push_heap(heap.begin(), heap.end(), heap_compare);
     };
     graph.with_edges(add_edge, current_point);
   }
+}
+template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type>
+inline void astar(
+  DistMatrix& dist_map,
+  const Graph& graph,
+  const IndexType& goal_point)
+{
+  auto on_new_edge = [](auto, auto){};
+  astar(dist_map, graph, goal_point, on_new_edge);
 }
 template <typename DistMatrix, typename CostMatrix, typename IndexType = typename DistMatrix::index_type>
 inline void astar2d(

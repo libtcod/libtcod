@@ -1121,7 +1121,7 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 	for (i=0; i < names.size(); i++) {
 		char *name=names.get(i);
 		if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
-			sampleConsole.printf(SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,TCOD_RIGHT,name);
+			sampleConsole.printf(SAMPLE_SCREEN_WIDTH-2,2+i,TCOD_BKGND_NONE,TCOD_RIGHT,"%s",name);
 	}
 
 	delay += TCODSystem::getLastFrameLength();

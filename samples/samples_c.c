@@ -331,10 +331,10 @@ void render_noise(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 		if ( curfunc == func ) {
 				TCOD_console_set_default_foreground(sample_console,TCOD_white);
 				TCOD_console_set_default_background(sample_console,TCOD_light_blue);
-				TCOD_console_printf_ex(sample_console,2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,funcName[curfunc]);
+				TCOD_console_printf_ex(sample_console,2,2+curfunc,TCOD_BKGND_SET,TCOD_LEFT,"%s",funcName[curfunc]);
 		} else {
 				TCOD_console_set_default_foreground(sample_console,TCOD_grey);
-				TCOD_console_printf(sample_console,2,2+curfunc,funcName[curfunc]);
+				TCOD_console_printf(sample_console,2,2+curfunc,"%s",funcName[curfunc]);
 		}
 	}
 	/* draw parameters */
@@ -1154,7 +1154,7 @@ void render_name(bool first, TCOD_key_t*key, TCOD_mouse_t *mouse) {
 			char *name=(char *)TCOD_list_get(names,i);
 			if ( strlen(name)< SAMPLE_SCREEN_WIDTH )
 				TCOD_console_printf_ex(sample_console,SAMPLE_SCREEN_WIDTH-2,2+i,
-					TCOD_BKGND_NONE,TCOD_RIGHT,name);
+					TCOD_BKGND_NONE,TCOD_RIGHT,"%s",name);
 		}
 
 		delay += TCOD_sys_get_last_frame_length();
@@ -1536,7 +1536,7 @@ int main( int argc, char *argv[] ) {
 				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
 			/* print the sample name */
-			TCOD_console_printf_ex(NULL,2,46-(nb_samples-i),TCOD_BKGND_SET,TCOD_LEFT,samples[i].name);
+			TCOD_console_printf_ex(NULL,2,46-(nb_samples-i),TCOD_BKGND_SET,TCOD_LEFT,"%s",samples[i].name);
 		}
 		/* print the help message */
 		TCOD_console_set_default_foreground(NULL,TCOD_grey);
@@ -1576,7 +1576,7 @@ int main( int argc, char *argv[] ) {
 				TCOD_console_set_default_foreground(NULL,TCOD_grey);
 				TCOD_console_set_default_background(NULL,TCOD_black);
 			}
-			TCOD_console_printf_ex(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,renderer_name[i]);
+			TCOD_console_printf_ex(NULL,42,46-(TCOD_NB_RENDERERS-i),TCOD_BKGND_SET,TCOD_LEFT,"%s",renderer_name[i]);
 		}
 
 		/* update the game screen */

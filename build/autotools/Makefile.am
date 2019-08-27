@@ -22,8 +22,8 @@ lib_LTLIBRARIES = libtcod.la
 include $(srcdir)/collected_files.am
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
-libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION)
-libtcod_la_LIBADD = $(PTHREAD_LIBS)
+libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION) -lpthread
+libtcod_la_LIBADD = $(PTHREAD_LIBS) -lpthread
 
 if ENABLE_SAMPLES
 noinst_PROGRAMS = samples_c samples_cpp

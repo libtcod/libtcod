@@ -7,9 +7,8 @@ This script will update the collected_files.md file.
 
 import os
 
-import re
-
 BANNER = '# This file is automatically updated by running collect_files.py'
+
 
 def collect():
     """Return an iterator of AutoMake commands.
@@ -33,14 +32,15 @@ def collect():
         source_files.extend('/'.join([curpath, f]) for f in files
                             if f.endswith('.c') or f.endswith('.cpp'))
         if '/.' in curpath[5:]:
-            continue # Skip hidden directories.
+            continue  # Skip hidden directories.
         if not include_files:
             continue
-        yield('%sdir = %s' % (include_name, include_dir))
-        yield('%s_HEADERS = \\\n\t%s' % (include_name,
-                                   ' \\\n\t'.join(include_files)))
-        yield('')
-    yield('libtcod_la_SOURCES = \\\n\t%s' % (' \\\n\t'.join(source_files),))
+        yield ('%sdir = %s' % (include_name, include_dir))
+        yield ('%s_HEADERS = \\\n\t%s' % (include_name,
+                                          ' \\\n\t'.join(include_files)))
+        yield ('')
+    yield ('libtcod_la_SOURCES = \\\n\t%s' % (' \\\n\t'.join(source_files),))
+
 
 def main():
     with open('collected_files.am', 'w') as file:
@@ -48,6 +48,7 @@ def main():
         file.write('\n\n')
         file.write('\n'.join(collect()))
         file.write('\n')
+
 
 if __name__ == '__main__':
     main()

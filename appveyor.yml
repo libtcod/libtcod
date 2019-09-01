@@ -22,9 +22,9 @@ environment:
     - MSBUILD: x64
 
 build_script:
-- cmd: "C:/Python37-x64/python.exe -m pip install --upgrade pip"
 - cmd: "C:/Python37-x64/python.exe -m venv --system-site-packages venv"
 - cmd: venv/Scripts/activate.bat
+- cmd: python -m pip install --disable-pip-version-check --upgrade pip
 - ps: '. .ci\appveyor_build.ps1'
 
 test_script:

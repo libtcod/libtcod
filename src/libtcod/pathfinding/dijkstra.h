@@ -122,10 +122,12 @@ inline bool dijktra_heap_sort_(const HeapNode& a, const HeapNode& b) noexcept
 {
   return std::get<0>(a) > std::get<0>(b);
 }
-template <typename DistMatrix, typename Graph>
+template <typename DistMatrix, typename Graph, typename GoalFunc, typename EdgeFunc>
 inline void dijkstra(
   DistMatrix& dist_map,
-  const Graph& graph)
+  const Graph& graph,
+  const GoalFunc& goal_func, // goal_func(position) -> bool
+  const EdgeFunc& edge_func) // edge_func(origin, destination)
 {
   using dist_type = typename DistMatrix::value_type;
   const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
@@ -144,6 +146,9 @@ inline void dijkstra(
   std::make_heap(heap.begin(), heap.end(), heap_compare);
   while (heap.size()) {
     const heap_node current_node = heap.front();
+    if(goal_func(std::get<1>(current_node))) {
+      return;
+    }
     std::pop_heap(heap.begin(), heap.end(), heap_compare);
     heap.pop_back();
     const dist_type& current_distance = std::get<0>(current_node);
@@ -154,9 +159,19 @@ inline void dijkstra(
       dist_map[next] = next_distance;
       heap.emplace_back(heap_node{ next_distance, next });
       std::push_heap(heap.begin(), heap.end(), heap_compare);
+      edge_func(current_point, next);
     };
     graph.with_edges(add_edge, current_point);
   }
+}
+template <typename DistMatrix, typename Graph>
+inline void dijkstra(
+  DistMatrix& dist_map,
+  const Graph& graph)
+{
+  const auto goal_func = [](auto){ return 0; };
+  const auto edge_func = [](auto, auto){ return; };
+  return dijkstra(dist_map, graph, goal_func, edge_func);
 }
 template <typename DistMatrix, typename CostMatrix>
 inline void dijkstra2d(

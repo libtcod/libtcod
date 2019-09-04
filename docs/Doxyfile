@@ -2126,6 +2126,7 @@ PREDEFINED             = TCODLIB_API= \
                          "TCODLIB_FORMAT(int,int)= " \
                          "TCOD_DEPRECATED(msg)= " \
                          TCOD_DEPRECATED_NOMESSAGE= \
+                         TCOD_NODISCARD= \
                          __cplusplus
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

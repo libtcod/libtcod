@@ -43,7 +43,7 @@ TCODImage::TCODImage(int width, int height) : deleteData(true) {
 
 #ifdef TCOD_CONSOLE_SUPPORT
 TCODImage::TCODImage(const TCODConsole *con) {
-  data = TCOD_image_from_console(con->data);
+  data = TCOD_image_from_console(con->get_data());
 }
 #endif
 
@@ -81,12 +81,14 @@ void TCODImage::putPixel(int x, int y, const TCODColor col) {
 }
 
 #ifdef TCOD_CONSOLE_SUPPORT
-void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle) const {
-	TCOD_image_blit(data,console->data,x,y,bkgnd_flag,scalex,scaley,angle);
+void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle) const
+{
+  TCOD_image_blit(data, console->get_data(), x, y, bkgnd_flag, scalex, scaley, angle);
 }
 
-void TCODImage::blitRect(TCODConsole *console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag) const {
-	TCOD_image_blit_rect(data,console->data,x,y,w,h,bkgnd_flag);
+void TCODImage::blitRect(TCODConsole *console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag) const
+{
+  TCOD_image_blit_rect(data, console->get_data(), x, y, w, h, bkgnd_flag);
 }
 #endif /* TCOD_CONSOLE_SUPPORT */
 
@@ -104,8 +106,9 @@ bool TCODImage::isPixelTransparent(int x, int y) const {
 }
 
 #ifdef TCOD_CONSOLE_SUPPORT
-void TCODImage::refreshConsole(const TCODConsole *console) {
-	TCOD_image_refresh_console(data,console->data);
+void TCODImage::refreshConsole(const TCODConsole *console)
+{
+  TCOD_image_refresh_console(data,console->get_data());
 }
 #endif /* TCOD_CONSOLE_SUPPORT */
 
@@ -130,8 +133,9 @@ void TCODImage::scale(int neww, int newh) {
 }
 
 #ifdef TCOD_CONSOLE_SUPPORT
-void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h) const {
-	TCOD_image_blit_2x(data,dest->data,dx,dy,sx,sy,w,h);
+void TCODImage::blit2x(TCODConsole *dest, int dx, int dy, int sx, int sy, int w, int h) const
+{
+  TCOD_image_blit_2x(data, dest->get_data(), dx, dy, sx, sy, w, h);
 }
 #endif /* TCOD_CONSOLE_SUPPORT */
 

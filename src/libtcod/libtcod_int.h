@@ -536,14 +536,14 @@ bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
-struct SDL_Surface* TCOD_sys_create_bitmap_for_console(TCOD_Console* console);
+struct SDL_Surface* TCOD_sys_create_bitmap_for_console(const TCOD_Console* console);
 void TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char *filename);
 struct SDL_Surface* TCOD_sys_create_bitmap(int width, int height,
                                            TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(struct SDL_Surface* bitmap);
 void TCOD_sys_console_to_bitmap(
     struct SDL_Surface* bitmap,
-    struct TCOD_Console *console,
+    const struct TCOD_Console *console,
     struct TCOD_Console *cache);
 TCODLIB_CAPI struct SDL_Surface* TCOD_sys_get_surface(int width, int height,
                                                       bool alpha);

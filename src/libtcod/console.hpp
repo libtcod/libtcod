@@ -1799,16 +1799,26 @@ public :
 	static const char *getColorControlString( TCOD_colctrl_t ctrl );
 	// ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
 	static const char *getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col );
-
+  /**
+   *  Return a pointer to the underlying TCOD_Console struct.
+   *  \rst
+   *  .. versionadded:: 1.14
+   *  \endrst
+   */
+  TCOD_Console* get_data() noexcept
+  {
+    return data;
+  }
+  const TCOD_Console* get_data() const noexcept
+  {
+    return data;
+  }
 protected :
-	friend class TCODImage;
-	friend class TCODZip;
-	friend class TCODText;
   friend TCODLIB_API void tcod::console::init_root(
       int w, int h, const std::string& title,
       bool fullscreen, TCOD_renderer_t renderer, bool vsync);
-	TCODConsole();
-	TCOD_Console* data;
+  TCODConsole();
+  TCOD_Console* data;
 };
 
 #endif /* TCOD_CONSOLE_SUPPORT */

@@ -56,7 +56,7 @@ TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val);
 TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val);
 #endif
 #ifdef TCOD_CONSOLE_SUPPORT
-TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val);
+TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val);
 #endif
 TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data);
 TCODLIB_API uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t zip);

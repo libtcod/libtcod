@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- `TCODConsole::get_data` method for getting the C struct pointer from C++.
 
 ### Fixed
 - `TCOD_map_compute_fov` will now silently ignore out-of-bounds coordinates

@@ -152,7 +152,8 @@ void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val) {
 #endif
 
 #ifdef TCOD_CONSOLE_SUPPORT
-void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_console_t val) {
+void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val)
+{
 	int w,h,x,y;
 	w=TCOD_console_get_width(val);
 	h=TCOD_console_get_height(val);

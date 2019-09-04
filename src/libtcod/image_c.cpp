@@ -439,17 +439,18 @@ void TCOD_image_blit_rect(
                   scalex, scaley, 0.0f);
 }
 
-TCOD_Image* TCOD_image_from_console(TCOD_Console* console) {
+TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
   TCOD_Image* ret = static_cast<TCOD_Image*>(calloc(sizeof(TCOD_Image), 1));
   ret->sys_img = TCOD_sys_create_bitmap_for_console(console);
   TCOD_image_refresh_console(ret, console);
   return ret;
 }
 
-void TCOD_image_refresh_console(TCOD_Image* image, TCOD_console_t console) {
+void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
+{
   /* We're copying the state and clearing part of the copy, no need to delete/free. */
   TCOD_sys_console_to_bitmap(
-    image->sys_img, TCOD_console_validate_(console), NULL);
+    image->sys_img, tcod::console::validate_(console), NULL);
 }
 
 #endif /* TCOD_CONSOLE_SUPPORT */

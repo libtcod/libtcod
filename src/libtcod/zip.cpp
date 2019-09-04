@@ -68,14 +68,16 @@ void TCODZip::putColor(const TCODColor *val) {
 }
 
 #ifdef TCOD_IMAGE_SUPPORT
-void TCODZip::putImage(const TCODImage *val) {
-	TCOD_zip_put_image(data,val->data);
+void TCODZip::putImage(const TCODImage *val)
+{
+  TCOD_zip_put_image(data,val->data);
 }
 #endif
 
 #ifdef TCOD_CONSOLE_SUPPORT
-void TCODZip::putConsole(const TCODConsole *val) {
-	TCOD_zip_put_console(data,val->data);
+void TCODZip::putConsole(const TCODConsole *val)
+{
+  TCOD_zip_put_console(data, val->get_data());
 }
 #endif
 

@@ -62,8 +62,16 @@ typedef TCOD_Image *TCOD_image_t;
 
 TCODLIB_API TCOD_Image* TCOD_image_new(int width, int height);
 #ifdef TCOD_CONSOLE_SUPPORT
-TCODLIB_API TCOD_Image* TCOD_image_from_console(TCOD_console_t console);
-TCODLIB_API void TCOD_image_refresh_console(TCOD_Image* image, TCOD_console_t console);
+/**
+ *  Return a new image rendered from a console.
+ *
+ *  This effectively returns a screenshot of the console.
+ */
+TCODLIB_API TCOD_Image* TCOD_image_from_console(const TCOD_Console* console);
+/**
+ *  Same as TCOD_image_from_console, but with an existing image.
+ */
+TCODLIB_API void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console);
 #endif
 TCODLIB_API TCOD_Image* TCOD_image_load(const char *filename);
 TCODLIB_API void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color);

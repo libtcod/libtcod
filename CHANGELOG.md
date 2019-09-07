@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.14.0] - 2019-09-06
 ### Added
 - `TCODConsole::get_data` method for getting the C struct pointer from C++.
 

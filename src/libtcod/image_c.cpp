@@ -728,13 +728,13 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   */
   static int flagToAscii[8] = {
       0,
-      TCOD_CHAR_SUBP_NE,
-      TCOD_CHAR_SUBP_SW,
-      -TCOD_CHAR_SUBP_DIAG,
-      TCOD_CHAR_SUBP_SE,
-      TCOD_CHAR_SUBP_E,
-      -TCOD_CHAR_SUBP_N,
-      -TCOD_CHAR_SUBP_NW
+      0x259D, // Quadrant lower right.
+      0x2597, // Quadrant lower left.
+      -0x259A, // Quadrant upper left and lower right.
+      0x2596, // Quadrant lower right.
+      0x2590, // Right half block.
+      -0x2580, // Upper half block.
+      -0x2598 // Quadrant upper left.
   };
   int weight[2] = { 0, 0 };
   int i;

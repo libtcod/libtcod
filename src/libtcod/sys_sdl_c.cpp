@@ -476,12 +476,21 @@ void TCOD_sys_decode_font_(void)
     for (int i = 0; i < static_cast<int>(tcod_codec_.size()); ++i) {
       TCOD_sys_map_ascii_to_font(i, tcod_codec_.at(i), 0);
     }
+    // Clones for frame drawing:
     TCOD_sys_map_clone_(0x2500, TCOD_CHAR_HLINE);
     TCOD_sys_map_clone_(0x2502, TCOD_CHAR_VLINE);
     TCOD_sys_map_clone_(0x250C, TCOD_CHAR_NW);
     TCOD_sys_map_clone_(0x2510, TCOD_CHAR_NE);
     TCOD_sys_map_clone_(0x2514, TCOD_CHAR_SW);
     TCOD_sys_map_clone_(0x2518, TCOD_CHAR_SE);
+    // Clones for blit2x:
+    TCOD_sys_map_clone_(0x2596, TCOD_CHAR_SUBP_SE);
+    TCOD_sys_map_clone_(0x2597, TCOD_CHAR_SUBP_SW);
+    TCOD_sys_map_clone_(0x2598, TCOD_CHAR_SUBP_NW);
+    TCOD_sys_map_clone_(0x259A, TCOD_CHAR_SUBP_DIAG);
+    TCOD_sys_map_clone_(0x259D, TCOD_CHAR_SUBP_NE);
+    TCOD_sys_map_clone_(0x2580, TCOD_CHAR_SUBP_N);
+    TCOD_sys_map_clone_(0x2590, TCOD_CHAR_SUBP_E);
   } else {
     if (TCOD_ctx.font_in_row) {
       /* for font in row */

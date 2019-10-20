@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- `TCOD_image_blit_2x` now prints Unicode block elements.
 
 ## [1.14.0] - 2019-09-06
 ### Added

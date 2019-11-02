@@ -113,8 +113,10 @@
 #endif
 
 /* DLL export */
-#if defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
 #ifndef TCODLIB_API
+#ifdef LIBTCOD_STATIC
+#define TCODLIB_API
+#elif defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
 #ifdef LIBTCOD_EXPORTS
 #ifdef __GNUC__
 #define TCODLIB_API __attribute__((dllexport))
@@ -128,14 +130,12 @@
 #define TCODLIB_API __declspec(dllimport)
 #endif // __GNUC__
 #endif // LIBTCOD_EXPORTS
-#endif // TCODLIB_API
-#else
-#if __GNUC__ >= 4
+#elif __GNUC__ >= 4
 #define TCODLIB_API __attribute__((visibility("default")))
 #else
 #define TCODLIB_API
-#endif // __GNUC__ >= 4
 #endif
+#endif // TCODLIB_API
 
 #ifndef TCODLIB_CAPI
 #ifdef __cplusplus

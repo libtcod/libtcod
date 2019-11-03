@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.0)
 
 project (libtcod C CXX)
 
-include(conanbuildinfo.cmake)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 add_library(TCOD)
@@ -14,6 +14,8 @@ target_include_directories(TCOD PRIVATE src/vendor)
 target_sources(TCOD PRIVATE src/libtcod.cpp src/libtcod_c.c)
 target_sources(TCOD PRIVATE src/vendor/glad.c src/vendor/lodepng.cpp src/vendor/utf8proc/utf8proc.c)
 
-if(NOT BUILD_SHARED_LIBS)
+if(BUILD_SHARED_LIBS)
+    add_compile_definitions(LIBTCOD_EXPORTS)
+else()
     add_compile_definitions(LIBTCOD_STATIC)
 endif()

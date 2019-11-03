@@ -9,8 +9,7 @@ class LibtcodTestConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        # Current dir is "test_package/build/<build_id>" and CMakeLists.txt is
-        # in "test_package"
+        # Current dir is "test_package/build/<build_id>"
         cmake.configure()
         cmake.build()
 
@@ -22,4 +21,4 @@ class LibtcodTestConan(ConanFile):
     def test(self):
         if not tools.cross_building(self.settings):
             os.chdir("bin")
-            self.run(".%sexample" % os.sep)
+            self.run(".%sunittest" % os.sep)

@@ -243,7 +243,7 @@ typedef struct TCOD_SDL_driver_t {
 	/* get a fullscreen mode suitable for the console */
 	void (*get_closest_mode)(int *w, int *h);
 	/* render the console on a surface/texture */
-	void (*render)(struct TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *console);
+	void (*render)(const struct TCOD_SDL_driver_t *sdl, void *vbitmap, struct TCOD_Console *console);
 	/* create a new surface */
 	struct SDL_Surface *(*create_surface) (int width, int height, bool with_alpha);
 	/* create the game window */

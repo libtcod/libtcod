@@ -47,25 +47,14 @@
 #include "engine/error.h"
 #include "engine/globals.h"
 
-static TCOD_SDL_driver_t *sdl=NULL;
-
-
-/* library initialization function */
-#ifdef TCOD_WINDOWS
-#define NOMINMAX 1
-#include <windows.h>
-BOOL APIENTRY DllMain(HINSTANCE, DWORD reason, LPVOID) {
-	switch (reason) {
-		case DLL_PROCESS_ATTACH : sdl = SDL_implementation_factory(); break;
-		default : break;
-	}
-	return TRUE;
+/** Lazy library initialization function. */
+static const TCOD_SDL_driver_t* get_sdl(void) {
+  static TCOD_SDL_driver_t* sdl = nullptr;
+  if (!sdl) {
+    sdl = SDL_implementation_factory();
+  }
+  return sdl;
 }
-#else
-	void __attribute__ ((constructor)) DllMain(void) {
-		sdl = SDL_implementation_factory();
-	}
-#endif
 
 #if defined(__ANDROID__)
 #define TCOD_TOUCH_INPUT
@@ -526,7 +515,7 @@ void TCOD_sys_set_custom_font(const char*, int, int, int) {
 void find_resolution(void) {
 	TCOD_ctx.actual_fullscreen_width=TCOD_ctx.fullscreen_width>TCOD_ctx.root->w*TCOD_ctx.font_width?TCOD_ctx.fullscreen_width:TCOD_ctx.root->w*TCOD_ctx.font_width;
 	TCOD_ctx.actual_fullscreen_height=TCOD_ctx.fullscreen_height>TCOD_ctx.root->h*TCOD_ctx.font_height?TCOD_ctx.fullscreen_height:TCOD_ctx.root->h*TCOD_ctx.font_height;
-	sdl->get_closest_mode(&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
+  get_sdl()->get_closest_mode(&TCOD_ctx.actual_fullscreen_width,&TCOD_ctx.actual_fullscreen_height);
 }
 
 SDL_Surface* TCOD_sys_create_bitmap_for_console(const TCOD_Console* console)
@@ -538,7 +527,7 @@ SDL_Surface* TCOD_sys_create_bitmap_for_console(const TCOD_Console* console)
 
 static void TCOD_sys_render(void *vbitmap, struct TCOD_Console* console) {
   if (!tcod::engine::get_display()) {
-    sdl->render(sdl, vbitmap, console);
+    get_sdl()->render(get_sdl(), vbitmap, console);
   }
 }
 
@@ -755,7 +744,7 @@ void TCOD_sys_console_to_bitmap(
 }
 
 SDL_Surface *TCOD_sys_get_surface(int width, int height, bool alpha) {
-	return sdl->create_surface(width,height,alpha);
+	return get_sdl()->create_surface(width,height,alpha);
 }
 
 void TCOD_sys_update_char(int asciiCode, int fontx, int fonty,
@@ -822,8 +811,8 @@ void TCOD_sys_shutdown(void)
     return;
   }
   if (has_startup) {
-    sdl->destroy_window();
-    sdl->shutdown();
+    get_sdl()->destroy_window();
+    get_sdl()->shutdown();
     memset(&scale_data, 0, sizeof(scale_data_t));
     has_startup = false;
   }
@@ -926,7 +915,7 @@ bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
 		/* reload the font when switching renderer to restore original character colors */
 		if (TCOD_sys_load_font() < 0) { return false; }
 	}
-	sdl->create_window(console->w, console->h, fullscreen);
+  get_sdl()->create_window(console->w, console->h, fullscreen);
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
 
 	return true;
@@ -981,13 +970,13 @@ void TCOD_sys_save_screenshot(const char *filename) {
   if (display) {
     tcod::image::save(display->read_pixels(), filename);
   } else {
-    sdl->save_screenshot(filename);
+    get_sdl()->save_screenshot(filename);
   }
 }
 
 void TCOD_sys_set_fullscreen(bool fullscreen) {
 	TCOD_ctx.fullscreen=fullscreen;
-	sdl->set_fullscreen(fullscreen);
+  get_sdl()->set_fullscreen(fullscreen);
 }
 
 void TCOD_sys_set_scale_factor(float value)
@@ -1003,7 +992,7 @@ void TCOD_sys_set_scale_factor(float value)
 void TCOD_sys_set_window_title(const char *title) {
   strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
-  sdl->set_window_title(title);
+  get_sdl()->set_window_title(title);
 }
 /**
  *  Keep track of time and wait if the frame-rate is faster than the set FPS.
@@ -1859,7 +1848,7 @@ void TCOD_sys_get_char_size(int *w, int *h) {
 void TCOD_sys_get_current_resolution(int *w, int *h) {
 	/* be sure that SDL is initialized */
 	TCOD_sys_startup();
-	sdl->get_current_resolution(w,h);
+  get_sdl()->get_current_resolution(w,h);
 }
 
 /* image stuff */
@@ -1897,7 +1886,7 @@ bool TCOD_mouse_is_cursor_visible(void) {
 }
 
 void TCOD_mouse_move(int x, int y) {
-	sdl->set_mouse_position(x,y);
+  get_sdl()->set_mouse_position(x,y);
 }
 
 #ifdef TCOD_TOUCH_INPUT
@@ -1913,16 +1902,16 @@ void TCOD_mouse_includes_touch(bool)
 /*clipboard stuff */
 bool TCOD_sys_clipboard_set(const char *value) {
 	if (!has_startup) { return false; }
-	return sdl->set_clipboard_text(value);
+	return get_sdl()->set_clipboard_text(value);
 }
 
 char *TCOD_sys_clipboard_get() {
 	if (!has_startup) { return const_cast<char*>(""); }
-	return const_cast<char*>(sdl->get_clipboard_text());
+	return const_cast<char*>(get_sdl()->get_clipboard_text());
 }
 
 bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
-	return sdl->file_read(filename,buf,size);
+	return get_sdl()->file_read(filename,buf,size);
 }
 
 bool TCOD_sys_file_exists(const char * filename, ...) {
@@ -1931,17 +1920,17 @@ bool TCOD_sys_file_exists(const char * filename, ...) {
 	va_start(ap,filename);
 	vsprintf(f,filename,ap);
 	va_end(ap);
-	return sdl->file_exists(f);
+	return get_sdl()->file_exists(f);
 }
 
 bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size) {
-	return sdl->file_write(filename,buf,size);
+	return get_sdl()->file_write(filename,buf,size);
 }
 
 /* Mark a rectangle of tiles dirty. */
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
 	int x, y;
-	struct TCOD_Console *dat = sdl->get_root_console_cache();
+	struct TCOD_Console *dat = get_sdl()->get_root_console_cache();
 	if (!dat) return;
 	TCOD_IFNOT(dx < dat->w && dy < dat->h && dx + dw >= 0 && dy + dh >= 0) return;
 	TCOD_IFNOT(dx >= 0) {
@@ -1968,7 +1957,7 @@ void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh) {
    It's recommended that this method stays non-public. */
 void TCOD_sys_set_dirty_character_code(int ch) {
 	int i;
-	struct TCOD_Console *dat = sdl->get_root_console_cache();
+	struct TCOD_Console *dat = get_sdl()->get_root_console_cache();
 	if (!dat) return;
 	for (i = 0; i < dat->w * dat->h; ++i) {
 		if (dat->tiles[i].ch == ch) {

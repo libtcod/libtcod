@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Changed
 - `TCOD_image_blit_2x` now prints Unicode block elements.
 
+### Fixed
+- Libtcod will no longer segfault when linked as a static library.
+
 ## [1.14.0] - 2019-09-06
 ### Added
 - `TCODConsole::get_data` method for getting the C struct pointer from C++.

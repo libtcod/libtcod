@@ -111,7 +111,7 @@ static struct TCOD_Console *ensure_cache(struct TCOD_Console* root) {
  * specifically to force screen refreshes.  To this end, and to avoid
  * threading complications it takes care of special cases internally.  */
 static void render(
-    TCOD_SDL_driver_t *sdl,
+    const TCOD_SDL_driver_t *sdl,
     void*, // vbitmap
     struct TCOD_Console *console)
 {

@@ -26,3 +26,7 @@ if(BUILD_SHARED_LIBS)
 else()
     add_compile_definitions(LIBTCOD_STATIC)
 endif()
+
+if(MSVC)
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
+endif()

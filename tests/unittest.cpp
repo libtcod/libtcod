@@ -2,6 +2,7 @@
 #include <climits>
 #include <cstddef>
 #include <iostream>
+#include <string>
 #include <utility>
 
 #include <libtcod.h>
@@ -25,10 +26,17 @@ const int WIDTH = 20;
 const int HEIGHT = 10;
 const char *TITLE = "Unittest";
 
+std::string get_file(const std::string& path) {
+  static const char* DEFAULT_DIR = "data";
+  const char* data_dir = std::getenv("DATA_DIR");
+  if (!data_dir) { data_dir = DEFAULT_DIR; }
+  return std::string(data_dir) + "/" + path;
+}
+
 void test_renderer(TCOD_renderer_t renderer)
 {
   TCOD_console_set_custom_font(
-      "data/fonts/terminal8x8_gs_ro.png",
+      get_file("fonts/terminal8x8_gs_ro.png").c_str(),
       TCOD_FONT_LAYOUT_CP437 | TCOD_FONT_TYPE_GREYSCALE,
       0, 0);
   tcod::console::init_root(WIDTH, HEIGHT, TITLE, 0, renderer);

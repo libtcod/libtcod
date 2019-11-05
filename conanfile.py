@@ -3,7 +3,6 @@ from conans import ConanFile, CMake, tools
 
 class LibtcodConan(ConanFile):
     name = "libtcod"
-    version = "0.0.0"
     license = "BSD 3-Clause License"
     author = "Kyle Stewart 4b796c65+libtcod@gmail.com"
     url = "https://github.com/libtcod/libtcod"
@@ -22,6 +21,11 @@ class LibtcodConan(ConanFile):
         "url": "https://github.com/libtcod/libtcod.git",
         "revision": "auto"
     }
+
+    def set_version(self):
+        """Use `git describe` for the version string."""
+        git = tools.Git()
+        self.version = git.run("describe")
 
     def build(self):
         cmake = CMake(self)

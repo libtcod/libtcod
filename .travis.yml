@@ -27,8 +27,9 @@ matrix:
 
 # sudo is required to prevent xvfb crashes from container-based workers.
 sudo: required
-dist: trusty
-
+dist: xenial
+services:
+  - xvfb
 addons:
   apt:
     sources:

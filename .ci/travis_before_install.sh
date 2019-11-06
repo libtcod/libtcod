@@ -15,9 +15,6 @@ set -e
 
 # Start X11 display on Linux
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    export DISPLAY=:99.0
-    sh -e /etc/init.d/xvfb start
-
     if [[ "$BUILD_TOOL" != "conan" ]]; then
         # Update SDL2 to a recent version.
         wget -O - https://www.libsdl.org/release/SDL2-2.0.8.tar.gz | tar xz

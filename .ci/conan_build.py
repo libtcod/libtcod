@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+import subprocess
+
+from cpt.packager import ConanMultiPackager
+
+if __name__ == "__main__":
+    builder = ConanMultiPackager(
+        username="hexdecimal",
+        channel="conan",
+        upload="https://api.bintray.com/conan/hexdecimal/conan",
+        upload_only_when_tag=True,
+        reference="libtcod/"
+        + subprocess.check_output(["git", "describe"], universal_newlines=True),
+        remotes=[
+            "https://conan.bintray.com",
+            "https://api.bintray.com/conan/bincrafters/public-conan",
+        ],
+        cppstds=["14"],
+        visual_runtimes=["MD", "MDd"],
+    )
+    builder.add_common_builds(pure_c=False)
+    builder.run()

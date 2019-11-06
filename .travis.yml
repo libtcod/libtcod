@@ -9,6 +9,15 @@ env:
 
 matrix:
   include:
+  - os: linux
+    dist: bionic
+    language: python
+    python: 3.7
+    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=7
+  - os: osx
+    language: shell
+    osx_image: xcode11.2
+    env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
   - os: osx
     language: generic
     env: BUILD_TOOL=scons CC=gcc

@@ -13,16 +13,6 @@ fi
 
 set -e
 
-# Start X11 display on Linux
-if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    if [[ "$BUILD_TOOL" != "conan" ]]; then
-        # Update SDL2 to a recent version.
-        wget -O - https://www.libsdl.org/release/SDL2-2.0.8.tar.gz | tar xz
-        (cd SDL2-* && ./configure --prefix=$HOME/.local && make -j 3 install)
-        PATH=~/.local/bin:$PATH
-    fi
-fi
-
 # Install SCons on MacOS via pip
 if [[ "$TRAVIS_OS_NAME" == "osx" && "$BUILD_TOOL" != "conan" ]]; then
     wget https://bootstrap.pypa.io/get-pip.py

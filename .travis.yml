@@ -26,6 +26,8 @@ matrix:
   - os: osx
     language: generic
     env: BUILD_TOOL=autotools CC=gcc
+  allow_failures:
+    - env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
 
 # sudo is required to prevent xvfb crashes from container-based workers.
 sudo: required

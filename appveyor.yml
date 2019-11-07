@@ -20,12 +20,17 @@ environment:
       MSYSTEM: MINGW32
       TEST_PYTHON3: "C:/Python34/python.exe"
     - MSBUILD: x64
+    - CONAN_BUILD: True
+      CONAN_VISUAL_VERSIONS: 15
+      CONAN_PASSWORD:
+        secure: /oF4w+hmQPXWuANB2bQOks3rTLEAimrYPGRt4VBuZQY23Bk1ElBJetGBTuT5Pd2e
 
 build_script:
 - cmd: "C:/Python37-x64/python.exe -m venv --system-site-packages venv"
 - cmd: venv/Scripts/activate.bat
 - cmd: python -m pip install --disable-pip-version-check --upgrade pip
 - ps: '. .ci\appveyor_build.ps1'
+- cmd: if defined CONAN_BUILD python .ci\conan_build.py
 
 test_script:
 - cmd: if exist unittest.exe unittest.exe ~[!nonportable]

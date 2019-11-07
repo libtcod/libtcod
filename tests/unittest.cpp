@@ -48,7 +48,7 @@ void test_renderer(TCOD_renderer_t renderer)
 TEST_CASE("SDL2 Renderer") {
   test_renderer(TCOD_RENDERER_SDL2);
 }
-TEST_CASE("SDL Renderer") {
+TEST_CASE("SDL Renderer", "[!nonportable]") {
   test_renderer(TCOD_RENDERER_SDL);
 }
 TEST_CASE("OPENGL Renderer", "[!nonportable]") {

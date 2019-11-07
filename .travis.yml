@@ -30,8 +30,6 @@ matrix:
 # sudo is required to prevent xvfb crashes from container-based workers.
 sudo: required
 dist: bionic
-services:
-  - xvfb
 addons:
   apt:
     sources:
@@ -51,6 +49,7 @@ before_script:
 - pip install --upgrade pytest pytest-cov pytest-faulthandler
 - (cd python && python setup.py develop)
 - export UNITTEST_ARGS=""
+- export SDL_VIDEODRIVER=dummy
 
 script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | $CC -xc -c -I$HOME/.local/include/libtcod -; fi'

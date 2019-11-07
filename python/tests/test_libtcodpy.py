@@ -265,6 +265,7 @@ def test_sys_time(console):
 def test_sys_screenshot(console, tmpdir):
     libtcodpy.sys_save_screenshot(tmpdir.join('test.png').strpath)
 
+@pytest.mark.skip('not portable')
 def test_sys_custom_render(console):
     escape = []
     def sdl_callback(sdl_surface):
@@ -297,12 +298,14 @@ def test_image(console, tmpdir):
     libtcodpy.image_save(img, tmpdir.join('test.png').strpath)
     libtcodpy.image_delete(img)
 
-    img = libtcodpy.image_from_console(console)
-    libtcodpy.image_refresh_console(img, console)
-    libtcodpy.image_delete(img)
+    # Not portable.
+    #img = libtcodpy.image_from_console(console)
+    #libtcodpy.image_refresh_console(img, console)
+    #libtcodpy.image_delete(img)
 
     libtcodpy.image_delete(libtcodpy.image_load('../data/img/circle.png'))
 
+@pytest.mark.skip('not portable')
 @pytest.mark.parametrize('sample', ['@', u'\u2603']) # Unicode snowman
 def test_clipboard(console, sample):
     saved = libtcodpy.sys_clipboard_get()

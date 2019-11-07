@@ -10,12 +10,12 @@ WIDTH = 12
 HEIGHT = 10
 TITLE = 'libtcodpy tests'
 FULLSCREEN = False
-RENDERER = libtcodpy.RENDERER_SDL
+RENDERER = libtcodpy.RENDERER_SDL2
 
 @pytest.fixture(scope="module")
 def session_console():
     libtcodpy.console_set_custom_font(FONT_FILE)
-    console = libtcodpy.console_init_root(WIDTH, HEIGHT, TITLE, FULLSCREEN)
+    console = libtcodpy.console_init_root(WIDTH, HEIGHT, TITLE, FULLSCREEN, RENDERER)
 
     assert libtcodpy.console_get_width(console) == WIDTH
     assert libtcodpy.console_get_height(console) == HEIGHT

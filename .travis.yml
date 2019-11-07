@@ -57,7 +57,7 @@ script:
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
 - 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
 - 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest ~[!nonportable]; fi'
-- (cd python && pytest -v)
+- 'if [[ "$BUILD_TOOL" != "conan" ]]; then (cd python && pytest -v); fi'
 deploy:
   provider: releases
   api_key:

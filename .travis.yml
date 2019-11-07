@@ -13,7 +13,9 @@ matrix:
     dist: bionic
     language: python
     python: 3.7
-    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=7
+    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=7 CONAN_DOCKER_IMAGE=conanio/gcc7
+    services:
+      - docker
   - os: osx
     language: shell
     osx_image: xcode11.2

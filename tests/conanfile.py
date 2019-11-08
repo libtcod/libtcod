@@ -19,7 +19,11 @@ class LibtcodTestConan(ConanFile):
         self.copy('*.so*', dst='bin', src='lib')
 
     def test(self):
-        os.environ["DATA_DIR"] = os.path.join(self.source_folder, "../data")
         if not tools.cross_building(self.settings):
+            os.environ["DATA_DIR"] = os.path.join(self.source_folder, "../data")
+            os.environ["SDL_VIDEODRIVER"] = "dummy"
+            args = ["~[!nonportable]"]
+            if self.settings.build_type == "Debug":
+                args.append("~[benchmark]")
             os.chdir("bin")
-            self.run(".%sunittest" % os.sep)
+            self.run(".%sunittest %s" % (os.sep, " ".join(args)))

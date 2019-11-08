@@ -69,6 +69,18 @@ TEST_CASE("Console ascii") {
   }
 }
 
+TEST_CASE("Console print") {
+  TCODConsole console = TCODConsole(5, 1);
+  console.print(0, 0, std::string("plop"));
+  for (int i = 0; i < 5; ++i) {
+    CHECK(console.getChar(i, 0) == static_cast<int>("plop "[i]));
+  }
+}
+TEST_CASE("Console print empty") {
+  TCODConsole console = TCODConsole(5, 1);
+  console.print(0, 0, std::string(""));
+}
+
 TEST_CASE("Console eascii") {
   TCODConsole console = TCODConsole(2, 1);
   const char test_str[] = { static_cast<char>(0xff), static_cast<char>(0x00) };

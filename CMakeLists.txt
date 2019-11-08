@@ -10,11 +10,11 @@ endif()
 project (libtcod C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+conan_basic_setup(TARGETS)
 
 add_library(TCOD)
 target_compile_features(TCOD PUBLIC cxx_std_14)
-target_link_libraries(TCOD ${CONAN_LIBS})
+target_link_libraries(TCOD CONAN_PKG::sdl2 CONAN_PKG::zlib)
 
 target_include_directories(TCOD PUBLIC src/)
 target_include_directories(TCOD PRIVATE src/vendor)

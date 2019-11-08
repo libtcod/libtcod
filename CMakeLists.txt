@@ -31,6 +31,4 @@ if(MSVC)
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()
 
-if(CMAKE_COMPILER_IS_GNU)
-    add_compile_options("-Wno-deprecated -Wno-deprecated-declarations")
-endif()
+add_compile_definitions(TCOD_IGNORE_DEPRECATED)

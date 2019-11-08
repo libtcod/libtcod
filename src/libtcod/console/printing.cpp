@@ -812,8 +812,7 @@ class UnicodeIterator: public std::iterator<std::forward_iterator_tag,
                     reinterpret_cast<const utf8proc_uint8_t*>(end))
   {}
   UnicodeIterator(const std::string& str)
-  : UnicodeIterator(str.empty() ? nullptr : &str.front(),
-                    str.empty() ? nullptr : &str.back() + 1)
+  : UnicodeIterator(str.data(), str.data() + str.size())
   {}
   UnicodeIterator& operator++()
   {

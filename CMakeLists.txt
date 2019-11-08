@@ -14,6 +14,7 @@ conan_basic_setup()
 
 add_library(TCOD)
 target_compile_features(TCOD PUBLIC cxx_std_14)
+target_link_libraries(TCOD ${CONAN_LIBS})
 
 target_include_directories(TCOD PUBLIC src/)
 target_include_directories(TCOD PRIVATE src/vendor)

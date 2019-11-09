@@ -6,10 +6,9 @@ env:
   - BUILD_TOOL=scons CC=gcc-8 CXX=g++-8
   - BUILD_TOOL=autotools CC=gcc-8 CXX=g++-8
 
-matrix:
+jobs:
   include:
   - os: linux
-    dist: bionic
     language: python
     python: 3.7
     env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=7 CONAN_DOCKER_IMAGE=conanio/gcc7
@@ -20,16 +19,14 @@ matrix:
     osx_image: xcode11.2
     env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
   - os: osx
-    language: generic
+    language: shell
     env: BUILD_TOOL=scons CC=gcc
   - os: osx
-    language: generic
+    language: shell
     env: BUILD_TOOL=autotools CC=gcc
   allow_failures:
     - env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
 
-# sudo is required to prevent xvfb crashes from container-based workers.
-sudo: required
 dist: bionic
 addons:
   apt:
@@ -53,19 +50,15 @@ before_script:
 - export SDL_VIDEODRIVER=dummy
 
 script:
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.h>" | $CC -xc -c -I$HOME/.local/include/libtcod -; fi'
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <libtcod.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then echo "#include <gui/gui.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -; fi'
-- 'if [[ "$BUILD_TOOL" == "autotools" ]]; then (cd build/autotools && make check); fi'
-- 'if [[ "$BUILD_TOOL" == "scons" ]]; then LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest ~[!nonportable]; fi'
-- 'if [[ "$BUILD_TOOL" != "conan" ]]; then (cd python && pytest -v); fi'
+- .ci/travis_script.sh
 deploy:
+  edge: true
   provider: releases
-  api_key:
+  token:
     secure: oZQmlAWgh6QPSedG1Bxp7WPnYvsr+j896MZF1BBa1FhxLyHPLCie0dDELKvY4t16NT8s8xyrfobLWEPyzQdXwKpY/OcVguKQTwDkU9VmSeHEVoxD7Wa51OQea9WcACHdzMhgzIqjSpbdVYn9t9hnNIWHbcqNSMjIwelFzZx9Pypcdrf7NQx0C5QLg7oKy7SYKDReR0GPe1TfS3D97FjqEBixe27uPdqinslCtUYv1zP5eAfivlZKEPlVAhIY7U67UVCJ+/eCMl9MoaeppV/06fIC/+ltH2au2mwTrcj9kDZdplBgcyjl6MQERv9T88ZCpgHT84cWnkLeEcu7rHMNozKQ5mOLCZplNyFFQwfn303vpXUIhDfiN5WZ/fnOfYnd4F0oJXKXXX+4LvW9HyTlMIYQ3g5Mr/6jGQv+GThFpoA0ba4Dhb+KPjt+8foLd8YqJ+1xF3ZW15x8jo4mGs9hBJPHGvEQiQ+TVDt/u7BCTIYlbYWN5B6mp22qVAFVuKL55mADZUvCpcRvHZw9vEl4XNTCqfDpi9Px1mQGDihQjsR4tpPZlp9x3gNI96itjFvTfN4froWkC3Y65ImR1BhsGz6x98z+viMIPI2nbs6KF2olMMZjw3lfetPu5nYcEmuRV8Ax516FJwq/+goV/TvS0D+g2/bDhV7aZo+dW/Cr5X4=
   file_glob: true
   file: "build/scons/libtcod-*.tar.gz"
-  skip_cleanup: true
+  cleanup: false
   on:
     repo: libtcod/libtcod
     tags: true

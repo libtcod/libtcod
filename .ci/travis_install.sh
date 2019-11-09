@@ -9,7 +9,7 @@ elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd ../..
     export LIBTCOD_DLL_PATH=~/.local/lib
 elif [[ "$BUILD_TOOL" == "conan" ]]; then
-    .ci/conan_build.py
+    :
 else
     echo "BUILD_TOOL not defined correctly, is currently: $BUILD_TOOL"
     exit 1

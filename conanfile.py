@@ -29,7 +29,7 @@ class LibtcodConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure(source_folder=".")
+        cmake.configure(source_folder="src")
         cmake.build()
 
     def package(self):

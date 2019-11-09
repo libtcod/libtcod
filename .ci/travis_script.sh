@@ -4,7 +4,7 @@ if [[ "$BUILD_TOOL" == "autotools" ]]; then
     echo "#include <libtcod.h>" | $CC -xc -c -I$HOME/.local/include/libtcod -
     echo "#include <libtcod.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -
     echo "#include <gui/gui.hpp>" | $CC -xc++ -std=c++14 -c -I$HOME/.local/include/libtcod -
-    (cd build/autotools && make check)
+    (cd buildsys/autotools && make check)
 elif [[ "$BUILD_TOOL" == "scons" ]]; then
     LD_LIBRARY_PATH=$TRAVIS_BUILD_DIR ./unittest ~[!nonportable]
 elif [[ "$BUILD_TOOL" == "conan" ]]; then

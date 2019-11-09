@@ -42,8 +42,8 @@ test_script:
 - cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -m pytest -v
 
 artifacts:
-- path: build\scons\libtcod-*.zip
-- path: build\packages\libtcod-*.7z
+- path: buildsys\scons\libtcod-*.zip
+- path: buildsys\packages\libtcod-*.7z
 
 deploy:
 - provider: GitHub

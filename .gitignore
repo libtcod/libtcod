@@ -67,7 +67,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-#build/
+build/
 develop-eggs/
 dist/
 downloads/
@@ -511,7 +511,7 @@ docs/doxyxml/
 doc/doxyxml/
 .deps
 .dirstamp
-build/scons/*/
-build/msvs/*/
+buildsys/scons/*/
+buildsys/msvs/*/
 Thumbs.db
 libtcod.pc

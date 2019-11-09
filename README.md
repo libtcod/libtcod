@@ -61,7 +61,7 @@ the master branch.
 
 All compilation methods, currently including Visual Studio (Windows),
 SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within
-the `build/` subdirectory.
+the `buildsys/` subdirectory.
 
 Windows users who prefer to use Visual Studio directly can either run the
 top-level 'build.bat' script, or locate and open the provided solution directly

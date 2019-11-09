@@ -57,7 +57,7 @@ deploy:
   token:
     secure: oZQmlAWgh6QPSedG1Bxp7WPnYvsr+j896MZF1BBa1FhxLyHPLCie0dDELKvY4t16NT8s8xyrfobLWEPyzQdXwKpY/OcVguKQTwDkU9VmSeHEVoxD7Wa51OQea9WcACHdzMhgzIqjSpbdVYn9t9hnNIWHbcqNSMjIwelFzZx9Pypcdrf7NQx0C5QLg7oKy7SYKDReR0GPe1TfS3D97FjqEBixe27uPdqinslCtUYv1zP5eAfivlZKEPlVAhIY7U67UVCJ+/eCMl9MoaeppV/06fIC/+ltH2au2mwTrcj9kDZdplBgcyjl6MQERv9T88ZCpgHT84cWnkLeEcu7rHMNozKQ5mOLCZplNyFFQwfn303vpXUIhDfiN5WZ/fnOfYnd4F0oJXKXXX+4LvW9HyTlMIYQ3g5Mr/6jGQv+GThFpoA0ba4Dhb+KPjt+8foLd8YqJ+1xF3ZW15x8jo4mGs9hBJPHGvEQiQ+TVDt/u7BCTIYlbYWN5B6mp22qVAFVuKL55mADZUvCpcRvHZw9vEl4XNTCqfDpi9Px1mQGDihQjsR4tpPZlp9x3gNI96itjFvTfN4froWkC3Y65ImR1BhsGz6x98z+viMIPI2nbs6KF2olMMZjw3lfetPu5nYcEmuRV8Ax516FJwq/+goV/TvS0D+g2/bDhV7aZo+dW/Cr5X4=
   file_glob: true
-  file: "build/scons/libtcod-*.tar.gz"
+  file: "buildsys/scons/libtcod-*.tar.gz"
   cleanup: false
   on:
     repo: libtcod/libtcod

@@ -19,7 +19,7 @@ AM_LDFLAGS = $(SDL_LIBS) $(X11_LIBS) $(ZLIB_LIBS)
 
 lib_LTLIBRARIES = libtcod.la
 
-include $(srcdir)/collected_files.am
+include $(srcdir)/sources.am
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
 libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION) -lpthread

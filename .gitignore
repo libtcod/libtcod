@@ -515,3 +515,4 @@ buildsys/scons/*/
 buildsys/msvs/*/
 Thumbs.db
 libtcod.pc
+.mypy_cache/

@@ -7,11 +7,14 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.15.0] - 2019-11-08
 ### Changed
-- `TCOD_image_blit_2x` now prints Unicode block elements.
+- `TCOD_image_blit_2x` now renders using Unicode block elements instead of a
+  custom encoding.
 
 ### Fixed
-- Libtcod will no longer segfault when linked as a static library.
+- Libtcod will no longer segfault if it's statically linked to an executable.
 
 ## [1.14.0] - 2019-09-06
 ### Added

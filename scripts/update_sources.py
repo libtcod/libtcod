@@ -72,12 +72,29 @@ def generate_am() -> str:
     return out
 
 
+def generate_cmake() -> str:
+    """Returns a CMake script with libtcod's sources."""
+    out = f"{BANNER}"
+    out += "\ntarget_sources(TCOD PRIVATE\n    "
+    out += "\n    ".join(os.path.relpath(f, "src") for f in all_sources())
+    out += "\n)"
+    for group, files in get_sources(sources=True, includes=True):
+        group = group.replace("/", r"\\")
+        out += f"\nsource_group({group} FILES\n    "
+        out += "\n    ".join(os.path.relpath(f, "src") for f in files)
+        out += "\n)"
+    out += "\n"
+    return out
+
+
 def main() -> None:
     # Change to project root directory, using this file as a reference.
     os.chdir(os.path.join(os.path.split(__file__)[0], ".."))
 
     with open("buildsys/autotools/sources.am", "w") as file:
         file.write(generate_am())
+    with open("src/sources.cmake", "w") as file:
+        file.write(generate_cmake())
 
 
 if __name__ == "__main__":

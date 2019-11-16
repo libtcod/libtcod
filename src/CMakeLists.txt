@@ -3,8 +3,6 @@ cmake_minimum_required (VERSION 3.9)
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED)
 
-project (libtcod C CXX)
-
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 

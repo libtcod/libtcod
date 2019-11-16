@@ -533,8 +533,8 @@ bool TCOD_opengl_render(
     DBGCHECKGL(
         glUniform2f(
             glGetUniformLocation(conProgram,"termsize"),
-            conwidth,
-            conheight
+            static_cast<float>(conwidth),
+            static_cast<float>(conheight)
         )
     );
     DBGCHECKGL(

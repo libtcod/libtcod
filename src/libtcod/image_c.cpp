@@ -154,8 +154,8 @@ static void TCOD_image_init_mipmaps(TCOD_Image* image)
           TCOD_sys_get_image_pixel(image->sys_img, x, y);
     }
   }
-  float fw = w;
-  float fh = h;
+  float fw = static_cast<float>(w);
+  float fh = static_cast<float>(h);
   for (int i = 0; i < image->nb_mipmaps; ++i) {
     image->mipmaps[i].width = w;
     image->mipmaps[i].height = h;
@@ -196,8 +196,8 @@ TCOD_Image* TCOD_image_new(int width, int height)
   for (int i = 0; i < width * height; ++i) {
     ret->mipmaps[0].buf[i] = TCOD_black;
   }
-  float fw = width;
-  float fh = height;
+  float fw = static_cast<float>(width);
+  float fh = static_cast<float>(height);
   for (int i = 0; i < ret->nb_mipmaps; ++i) {
     ret->mipmaps[i].width = width;
     ret->mipmaps[i].height = height;
@@ -380,22 +380,22 @@ void TCOD_image_blit(
     float newy_y = -newx_x;
     // image corners coordinates
     /* 0 = P - w/2 x' +h/2 y' */
-    float x0 = x - iw * newx_x + ih * newy_x;
-    float y0 = y - iw * newx_y + ih * newy_y;
+    int x0 = static_cast<int>(x - iw * newx_x + ih * newy_x);
+    int y0 = static_cast<int>(y - iw * newx_y + ih * newy_y);
     /* 1 = P + w/2 x' + h/2 y' */
-    float x1 = x + iw * newx_x + ih * newy_x;
-    float y1 = y + iw * newx_y + ih * newy_y;
+    int x1 = static_cast<int>(x + iw * newx_x + ih * newy_x);
+    int y1 = static_cast<int>(y + iw * newx_y + ih * newy_y);
     /* 2 = P + w/2 x' - h/2 y' */
-    float x2 = x + iw * newx_x - ih * newy_x;
-    float y2 = y + iw * newx_y - ih * newy_y;
+    int x2 = static_cast<int>(x + iw * newx_x - ih * newy_x);
+    int y2 = static_cast<int>(y + iw * newx_y - ih * newy_y);
     /* 3 = P - w/2 x' - h/2 y' */
-    float x3 = x - iw * newx_x - ih * newy_x;
-    float y3 = y - iw * newx_y - ih * newy_y;
+    int x3 = static_cast<int>(x - iw * newx_x - ih * newy_x);
+    int y3 = static_cast<int>(y - iw * newx_y - ih * newy_y);
     /* get the affected rectangular area in the console */
-    int rx = std::min(std::min<int>(x0, x1), std::min<int>(x2, x3));
-    int ry = std::min(std::min<int>(y0, y1), std::min<int>(y2, y3));
-    int rw = std::max(std::max<int>(x0, x1), std::max<int>(x2, x3)) - rx;
-    int rh = std::max(std::max<int>(y0, y1), std::max<int>(y2, y3)) - ry;
+    int rx = std::min(std::min(x0, x1), std::min(x2, x3));
+    int ry = std::min(std::min(y0, y1), std::min(y2, y3));
+    int rw = std::max(std::max(x0, x1), std::max(x2, x3)) - rx;
+    int rh = std::max(std::max(y0, y1), std::max(y2, y3)) - ry;
     /* clip it */
     int minx = std::max(rx, 0);
     int miny = std::max(ry, 0);
@@ -408,7 +408,9 @@ void TCOD_image_blit(
         /* map the console pixel to the image world */
         float ix = (iw + (cx - x) * newx_x + (cy - y) * (-newy_x)) * invscalex;
         float iy = (ih + (cx - x) * newx_y - (cy - y) * newy_y) * invscaley;
-        TCOD_color_t col = TCOD_image_get_pixel(image, ix, iy);
+        TCOD_color_t col = TCOD_image_get_pixel(
+            image, static_cast<int>(ix), static_cast<int>(iy)
+        );
         if (!image->has_key_color
             || image->key_color.r != col.r
             || image->key_color.g != col.g
@@ -679,9 +681,9 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
         r = r * sumweight + 0.5f;
         g = g * sumweight + 0.5f;
         b = b * sumweight + 0.5f;
-        col.r = r;
-        col.g = g;
-        col.b = b;
+        col.r = static_cast<uint8_t>(r);
+        col.g = static_cast<uint8_t>(g);
+        col.b = static_cast<uint8_t>(b);
         TCOD_image_put_pixel(newimg, px, py, col);
       }
     }

@@ -282,7 +282,7 @@ typedef struct {
 	float force_recalc;
 	float last_scale_xc, last_scale_yc;
 	float last_scale_factor;
-	float last_fullscreen;
+	bool last_fullscreen;
 
 	float min_scale_factor;
 

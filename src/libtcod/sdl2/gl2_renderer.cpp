@@ -157,7 +157,8 @@ class TwoTranglesRenderer {
       int tex_height = round_to_pow2(console.h);
 
       glUniform2f(program_.get_uniform("v_console_shape"),
-                  tex_width, tex_height);
+                  static_cast<float>(tex_width),
+                  static_cast<float>(tex_height));
       glUniform2f(program_.get_uniform("v_console_size"),
                   static_cast<float>(console.w) / tex_width,
                   static_cast<float>(console.h) / tex_height);
@@ -235,14 +236,16 @@ class GridRenderer {
     std::vector<uint16_t> elements;
     vertices.reserve(console.w * console.h * 4 * 2);
     elements.reserve(console.w * console.h * 6);
-    auto add_vertex = [&](float x, float y) {
-      vertices.emplace_back(x / console.w);
-      vertices.emplace_back(1.0f - y / console.h);
+    auto add_vertex = [&](int x, int y) {
+      vertices.emplace_back(static_cast<float>(x) / console.w);
+      vertices.emplace_back(1.0f - static_cast<float>(y) / console.h);
     };
-    for (float y = 0; y < console.h; ++y) {
-      for (float x = 0; x < console.w; ++x) {
+    for (int y = 0; y < console.h; ++y) {
+      for (int x = 0; x < console.w; ++x) {
         for (int i : {0, 1, 2, 2, 1, 3}) {
-          elements.emplace_back((y * console.w + x) * 4 + i);
+          elements.emplace_back(static_cast<uint16_t>(
+              (y * console.w + x) * 4 + i)
+          );
         }
         add_vertex(x, y);
         add_vertex(x, y + 1);
@@ -395,8 +398,15 @@ class OpenGL2Renderer::impl : public ActiveOpenGL2Renderer {
     int rect[4];
     glGetIntegerv(GL_VIEWPORT, rect); gl_check();
     Image image(rect[2], rect[3]);
-    glReadPixels(0, 0, image.width(), image.height(),
-                 GL_RGBA, GL_UNSIGNED_BYTE, image.data()); gl_check();
+    glReadPixels(
+        0,
+        0,
+        static_cast<GLsizei>(image.width()),
+        static_cast<GLsizei>(image.height()),
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        image.data()
+    ); gl_check();
     for (int y = 0; y < image.height() / 2; ++y) {
       for (int x = 0; x < image.width(); ++x) {
         std::swap(image.atf(x, y), image.atf(x, image.height() - 1 - y));

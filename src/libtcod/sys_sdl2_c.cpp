@@ -143,8 +143,11 @@ static void render(
 
 		/* Scale the rendered bitmap to the screen, preserving aspect ratio, and blit it.
 		 * This data is also used for console coordinate resolution.. */
-		if (scale_data.last_scale_factor != scale_factor || scale_data.last_scale_xc != sdl->scale_xc || scale_data.last_scale_yc != sdl->scale_yc ||
-				scale_data.last_fullscreen != TCOD_ctx.fullscreen || scale_data.force_recalc) {
+    if (scale_data.last_scale_factor != scale_factor ||
+        scale_data.last_scale_xc != sdl->scale_xc ||
+        scale_data.last_scale_yc != sdl->scale_yc ||
+        scale_data.last_fullscreen != TCOD_ctx.fullscreen ||
+        scale_data.force_recalc) {
 			/* Preserve old value of input variables, to enable recalculation if they change. */
 			scale_data.last_scale_factor = scale_factor;
 			scale_data.last_scale_xc = sdl->scale_xc;

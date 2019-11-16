@@ -381,10 +381,10 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	fbackup=TCOD_console_get_default_foreground(NULL);
 	if ( xstr < len1 ) {
 		sparklex=x+xstr;
-		sparkley=y;
+		sparkley = static_cast<float>(y);
 	} else {
 		sparklex=x-len1+xstr;
-		sparkley=y+1;
+		sparkley = static_cast<float>(y + 1);
 	}
 	noisex=xstr*6;
 	sparklerad=3.0f+2*TCOD_noise_get(noise,&noisex);

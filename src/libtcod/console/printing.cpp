@@ -1011,7 +1011,8 @@ static std::tuple<UnicodeIterator, int, int> next_split_(
     if (can_split && char_width > 0) {
       switch (it.get_property()->category) {
         default:
-          if (char_width + it.get_property()->charwidth > max_width) {
+          if (char_width + static_cast<int>(it.get_property()->charwidth)
+              > max_width) {
             // The next character would go over the max width, so return now.
             if (break_point != end) {
               // Use latest line break if one exists.
@@ -1024,7 +1025,8 @@ static std::tuple<UnicodeIterator, int, int> next_split_(
           separating = false;
           break;
         case UTF8PROC_CATEGORY_PD: // Punctuation, dash
-          if (char_width + it.get_property()->charwidth > max_width) {
+          if (char_width + static_cast<int>(it.get_property()->charwidth)
+              > max_width) {
             return {it, char_width, 1};
           } else {
             break_point = it;

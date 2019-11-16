@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""Build script for conan-package-tools:
+https://github.com/conan-io/conan-package-tools
+"""
 import subprocess
 
 from cpt.packager import ConanMultiPackager

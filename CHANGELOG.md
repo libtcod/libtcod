@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- Renamed build systems directory from `build/` to `buildsys/`.
 
 ## [1.15.0] - 2019-11-08
 ### Changed

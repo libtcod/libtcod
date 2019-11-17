@@ -72,12 +72,12 @@ recommended.
 
 SCons automatically downloads SDL2 and can be used on all platforms.
 Instructions are
-[provided here](https://github.com/libtcod/libtcod/tree/master/build/scons).
+[provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/scons).
 The current release builds are built using SCons.
 
 Autotools is a common standard on Linux, and can be used for MacOS.
 Instructions are
-[provided here](https://github.com/libtcod/libtcod/tree/master/build/autotools).
+[provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
 
 If you ever need to statically compile libtcod the easiest method would be to
 use the `src/libtcod_c.c` and `src/libtcod.cpp` source files, which include all

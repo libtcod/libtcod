@@ -36,12 +36,16 @@ class LibtcodConan(ConanFile):
         self.copy("*.h", dst="include", src="src", excludes="vendor/*")
         self.copy("*.hpp", dst="include", src="src", excludes="vendor/*")
         self.copy("*.lib", dst="lib", src="lib", keep_path=False)
-        self.copy("TCOD.dll", dst="bin", src="bin", keep_path=False)
+        self.copy("*.dll", dst="bin", src="bin", keep_path=False)
+        self.copy("*.pdb", dst="bin", src="bin", keep_path=False)
         self.copy("*.so", dst="lib", src="lib", keep_path=False)
         self.copy("*.dylib", dst="lib", src="lib", keep_path=False)
         self.copy("*.a", dst="lib", src="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["TCOD"]
+        if self.settings.compiler == "Visual Studio":
+            self.cpp_info.libs = ["libtcod"]
+        else:
+            self.cpp_info.libs = ["tcod"]
         if not self.options.shared:
             self.cpp_info.defines = ["LIBTCOD_STATIC"]

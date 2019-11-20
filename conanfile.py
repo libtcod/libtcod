@@ -19,7 +19,7 @@ class LibtcodConan(ConanFile):
     scm = {
         "type": "git",
         "url": "https://github.com/libtcod/libtcod.git",
-        "revision": "auto"
+        "revision": "auto",
     }
 
     def set_version(self):
@@ -29,7 +29,7 @@ class LibtcodConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        cmake.configure(source_folder=".")
+        cmake.configure(source_folder="src")
         cmake.build()
 
     def package(self):

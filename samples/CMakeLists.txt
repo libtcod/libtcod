@@ -5,25 +5,26 @@ project (libtcod_samples C CXX)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-# Copy project data directory to the runtime folder.
 add_custom_target(copy_data_dir
+    COMMENT "Copy project data directory to the runtime folder."
     COMMAND cmake -E copy_directory
         ${CMAKE_SOURCE_DIR}/../data
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data)
-
-# Copy terminal.png to the runtime folder.
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
+)
 add_custom_target(copy_font
+    COMMENT "Copy terminal.png to the runtime folder."
     COMMAND cmake -E copy_if_different
         ${CMAKE_SOURCE_DIR}/../terminal.png
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png)
+        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
+)
 
 add_executable(samples_c samples_c.c)
 target_link_libraries(samples_c CONAN_PKG::libtcod)
-add_dependencies(samples_c copy_font copy_data_dir)
+add_dependencies(samples_c copy_data_dir)
 
 add_executable(samples_cpp samples_cpp.cpp)
 target_link_libraries(samples_cpp CONAN_PKG::libtcod)
-add_dependencies(samples_cpp copy_font copy_data_dir)
+add_dependencies(samples_cpp copy_data_dir)
 
 add_executable(frost frost/frost.cpp)
 target_link_libraries(frost CONAN_PKG::libtcod)

@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Changed
 - Renamed build systems directory from `build/` to `buildsys/`.
 
+### Fixed
+- TCOD_RENDERER_OPENGL was not properly clearing space characters.
+
 ## [1.15.0] - 2019-11-08
 ### Changed
 - `TCOD_image_blit_2x` now renders using Unicode block elements instead of a

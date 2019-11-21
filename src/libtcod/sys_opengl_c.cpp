@@ -454,6 +454,11 @@ bool TCOD_opengl_render(
           tcod::ColorRGB(console->tiles[i].fg),
           tcod::ColorRGB(console->tiles[i].bg)
       );
+
+      if (track_changes)
+      {
+        cache->tiles[i] = console->tiles[i];
+      }
     }
   }
   /* check if any of the textures have changed since they were last uploaded */

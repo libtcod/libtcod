@@ -13,7 +13,7 @@ since `1.7.0`.
 - Renamed build systems directory from `build/` to `buildsys/`.
 
 ### Fixed
-- TCOD_RENDERER_OPENGL was not properly clearing space characters.
+- `OPENGL` and `GLSL` renderers were not properly clearing space characters.
 
 ## [1.15.0] - 2019-11-08
 ### Changed

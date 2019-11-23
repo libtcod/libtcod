@@ -28,10 +28,6 @@ if ($env:APPVEYOR_REPO_TAG_NAME) {
 if ($env:SCONSOPTS) {
     & .ci\run-scons.bat
 }
-if ($env:MSBUILD) {
-    $ErrorActionPreference = "Stop"
-    & .ci\run-msbuild.bat
-}
 if ($env:CONAN_BUILD) {
     pip install -U conan conan_package_tools
 }

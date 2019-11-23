@@ -44,7 +44,6 @@ unittest_CXXFLAGS = $(CXXFLAGS)
 TESTS = unittest.sh
 
 dist_noinst_DATA = \
-	../../build.bat \
 	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \
 	../../LICENSE.txt \

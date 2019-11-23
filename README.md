@@ -59,16 +59,9 @@ You can clone with Git via the
 You can then checkout a specific tag or get the in-development version from
 the master branch.
 
-All compilation methods, currently including Visual Studio (Windows),
+All compilation methods, currently including
 SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within
 the `buildsys/` subdirectory.
-
-Windows users who prefer to use Visual Studio directly can either run the
-top-level 'build.bat' script, or locate and open the provided solution directly
-using Visual Studio.
-The solution is currently for Visual Studio 2015, and the
-[free community edition](https://www.visualstudio.com/vs/community/) is highly
-recommended.
 
 SCons automatically downloads SDL2 and can be used on all platforms.
 Instructions are
@@ -78,10 +71,6 @@ The current release builds are built using SCons.
 Autotools is a common standard on Linux, and can be used for MacOS.
 Instructions are
 [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
-
-If you ever need to statically compile libtcod the easiest method would be to
-use the `src/libtcod_c.c` and `src/libtcod.cpp` source files, which include all
-the other sources.  Further instructions are included in those files.
 
 # Getting Started #
 

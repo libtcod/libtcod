@@ -16,6 +16,7 @@ class LibtcodSamplesConan(ConanFile):
         cmake.build()
 
     def imports(self):
-        self.copy("*.dll", "bin", "bin")
-        self.copy("*.pdb", "bin", "bin")
-        self.copy("*.dylib", "bin", "lib")
+        self.copy("*.dll", dst="bin", src="bin")
+        self.copy("*.pdb", dst="bin", src="bin")
+        self.copy("*.dylib*", dst="bin", src="lib")
+        self.copy("*.so*", dst="bin", src="lib")

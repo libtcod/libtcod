@@ -198,7 +198,7 @@ TCODLIB_CAPI int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #define TCODLIB_FORMAT(str_index, first_arg)
 #endif
 
-#if defined(__cplusplus) && __cplusplus >= 201703L
+#if defined(__cplusplus) && __cplusplus >= 201703L && !defined(__clang__)
 #define TCOD_NODISCARD [[nodiscard]]
 #elif defined(_MSC_VER)
 #define TCOD_NODISCARD _Check_return_

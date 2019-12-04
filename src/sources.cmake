@@ -33,6 +33,7 @@ target_sources(TCOD PRIVATE
     libtcod/parser.cpp
     libtcod/parser_c.c
     libtcod/path.cpp
+    libtcod/pathfinder.c
     libtcod/path_c.c
     libtcod/sys.cpp
     libtcod/sys_c.cpp
@@ -168,6 +169,8 @@ source_group(libtcod FILES
     libtcod/path.cpp
     libtcod/path.h
     libtcod/path.hpp
+    libtcod/pathfinder.c
+    libtcod/pathfinder.h
     libtcod/path_c.c
     libtcod/portability.h
     libtcod/sys.cpp

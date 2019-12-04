@@ -40,6 +40,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/parser.hpp \
 	../../src/libtcod/path.h \
 	../../src/libtcod/path.hpp \
+	../../src/libtcod/pathfinder.h \
 	../../src/libtcod/portability.h \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
@@ -161,6 +162,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/parser.cpp \
 	../../src/libtcod/parser_c.c \
 	../../src/libtcod/path.cpp \
+	../../src/libtcod/pathfinder.c \
 	../../src/libtcod/path_c.c \
 	../../src/libtcod/sys.cpp \
 	../../src/libtcod/sys_c.cpp \

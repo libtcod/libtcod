@@ -144,7 +144,7 @@ static auto TCOD_console_blit_lerp_(
 {
   return tcod::ColorRGBA{
       TCOD_color_lerp(tcod::ColorRGB(color1), tcod::ColorRGB(color2), interp),
-      color1.a,
+      static_cast<uint8_t>(color1.a + (color2.a - color1.a) * interp),
   };
 }
 /**
@@ -161,7 +161,9 @@ static auto TCOD_console_blit_cell_(
   if (key_color && tcod::ColorRGB(src.bg) == *key_color) {
     return dst; // Source pixel is transparent.
   }
-  if (fg_alpha >= 1.0f && bg_alpha >= 1.0f) {
+  fg_alpha *= src.fg.a / 255.0f;
+  bg_alpha *= src.bg.a / 255.0f;
+  if (fg_alpha > 254.5f / 255.0f && bg_alpha > 254.5f / 255.0f) {
     return src; // No alpha. Perform a plain copy.
   }
   int ch = dst.ch;

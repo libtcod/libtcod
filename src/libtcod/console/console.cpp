@@ -134,17 +134,31 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
   return (con ? con->alignment : TCOD_LEFT);
 }
 /**
+ *  Perform alpha blending on a single channel.
+ */
+static uint8_t alpha_blend(
+    int src_c, int src_a, int dst_c, int dst_a, int out_a)
+{
+  return static_cast<uint8_t>(
+      ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
+  );
+}
+/**
  *  A modified lerp operation which can accept RGBA types.
  */
 static auto TCOD_console_blit_lerp_(
-    const struct TCOD_ColorRGBA color1,
-    const struct TCOD_ColorRGBA color2,
+    const struct TCOD_ColorRGBA dst,
+    const struct TCOD_ColorRGBA src,
     float interp)
 -> struct TCOD_ColorRGBA
 {
+  uint8_t out_a = static_cast<uint8_t>(src.a + dst.a * (255 - src.a) / 255);
+  uint8_t src_a = static_cast<uint8_t>(src.a * interp);
   return tcod::ColorRGBA{
-      TCOD_color_lerp(tcod::ColorRGB(color1), tcod::ColorRGB(color2), interp),
-      static_cast<uint8_t>(color1.a + (color2.a - color1.a) * interp),
+      alpha_blend(src.r, src_a, dst.r, dst.a, out_a),
+      alpha_blend(src.g, src_a, dst.g, dst.a, out_a),
+      alpha_blend(src.b, src_a, dst.b, dst.a, out_a),
+      out_a,
   };
 }
 /**

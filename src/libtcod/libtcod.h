@@ -50,6 +50,7 @@
 #include "namegen.h"
 #include "noise.h"
 #include "path.h"
+#include "pathfinder.h"
 #include "parser.h"
 #include "sys.h"
 #include "tree.h"

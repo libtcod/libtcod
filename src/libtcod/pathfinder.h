@@ -55,6 +55,7 @@ TCODLIB_CAPI void TCOD_pf_set_traversal_pointer(
 
 TCODLIB_CAPI int TCOD_pf_recompile(struct TCOD_Pathfinder* path);
 TCODLIB_CAPI int TCOD_pf_compute(struct TCOD_Pathfinder* path);
+TCODLIB_CAPI int TCOD_pf_compute_step(struct TCOD_Pathfinder* path);
 
 
 #endif // TCOD_PATHFINDER_H

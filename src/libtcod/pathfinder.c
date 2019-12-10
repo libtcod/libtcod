@@ -333,10 +333,12 @@ static void TCOD_pf_basic2d_edges(
   }
 }
 
-static int TCOD_pf_step(struct TCOD_Pathfinder* path)
+int TCOD_pf_compute_step(struct TCOD_Pathfinder* path)
 {
+  if (!path) { return -1; }
+  if (path->heap.size == 0) { return 0; }
   int current_pos[PATHFINDER_MAX_DIMENSIONS];
-  memcpy(&current_pos, &path->heap.heap[0].data, path->heap.data_size);
+  memcpy(current_pos, &path->heap.heap[0].data, path->heap.data_size);
   int current_dist = array_get(&path->distance, &current_pos);
   minheap_pop(&path->heap);
   TCOD_pf_basic2d_edges(path, current_dist, current_pos);
@@ -427,7 +429,7 @@ int TCOD_pf_compute(struct TCOD_Pathfinder* path)
 {
   if (!path) { return -1; }
   while (path->heap.size) {
-    TCOD_pf_step(path);
+    TCOD_pf_compute_step(path);
   }
   return 0;
 }

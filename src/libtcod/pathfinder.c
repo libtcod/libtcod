@@ -142,9 +142,12 @@ static void minheap_heapify(struct Heap* minheap)
   }
 }
 
-static void minheap_pop(struct Heap* minheap)
+static void minheap_pop(struct Heap* minheap, void* out)
 {
   if (minheap->size == 0) { return; }
+  if (out) {
+    memcpy(out, &minheap->heap[0].data, minheap->data_size);
+  }
   heap_copy(minheap, 0, minheap->size - 1);
   --minheap->size;
   minheap_heapify_down(minheap, 0);
@@ -287,9 +290,10 @@ static bool TCOD_pf_in_bounds(
 }
 
 static void TCOD_pf_add_edge(
-    struct TCOD_Pathfinder* path, const int* origin, const int* dest, int total_dist)
+    struct TCOD_Pathfinder* path, const int* origin, const int* dest, int cost)
 {
   if (!TCOD_pf_in_bounds(path, dest)) { return; }
+  int total_dist = array_get(&path->distance, origin) + cost;
   if (array_get(&path->distance, dest) >= total_dist) { return; }
   array_set(&path->distance, dest, total_dist);
   minheap_push(&path->heap, total_dist, dest);
@@ -304,31 +308,28 @@ static void TCOD_pf_add_edge(
 }
 
 static void TCOD_pf_basic2d_edges(
-    struct TCOD_Pathfinder* path, int dist, const int* origin)
+    struct TCOD_Pathfinder* path, const int* origin)
 {
   if (path->graph.cardinal > 0) {
-    int cardinal = dist + path->graph.cardinal;
-    int dest[] = {
+    const int dest[] = {
         origin[0] - 1, origin[1],
         origin[0], origin[1] - 1,
         origin[0], origin[1] + 1,
         origin[0] + 1, origin[1],
     };
     for (size_t i = 0; i < sizeof(dest) / sizeof(dest[0]); i += 2) {
-      TCOD_pf_add_edge(path, origin, &dest[i], cardinal);
+      TCOD_pf_add_edge(path, origin, &dest[i], path->graph.cardinal);
     }
   }
   if (path->graph.diagonal > 0) {
-    int diagonal = dist + path->graph.diagonal;
-
-    int dest[] = {
+    const int dest[] = {
         origin[0] - 1, origin[1] - 1,
         origin[0] - 1, origin[1] + 1,
         origin[0] + 1, origin[1] - 1,
         origin[0] + 1, origin[1] + 1,
     };
     for (size_t i = 0; i < sizeof(dest) / sizeof(dest[0]); i += 2) {
-      TCOD_pf_add_edge(path, origin, &dest[i], diagonal);
+      TCOD_pf_add_edge(path, origin, &dest[i], path->graph.diagonal);
     }
   }
 }
@@ -338,14 +339,12 @@ int TCOD_pf_compute_step(struct TCOD_Pathfinder* path)
   if (!path) { return -1; }
   if (path->heap.size == 0) { return 0; }
   int current_pos[PATHFINDER_MAX_DIMENSIONS];
-  memcpy(current_pos, &path->heap.heap[0].data, path->heap.data_size);
-  int current_dist = array_get(&path->distance, &current_pos);
-  minheap_pop(&path->heap);
-  TCOD_pf_basic2d_edges(path, current_dist, current_pos);
+  minheap_pop(&path->heap, current_pos);
+  TCOD_pf_basic2d_edges(path, current_pos);
   return 0;
 }
 
-struct TCOD_Pathfinder* TCOD_pf_new(int ndim, size_t* shape)
+struct TCOD_Pathfinder* TCOD_pf_new(int ndim, const size_t* shape)
 {
   struct TCOD_Pathfinder* path = calloc(sizeof(struct TCOD_Pathfinder), 1);
   if (!path) { return NULL; }
@@ -361,7 +360,10 @@ void TCOD_pf_delete(struct TCOD_Pathfinder* path)
 }
 
 void TCOD_pf_set_distance_pointer(
-    struct TCOD_Pathfinder* path, void* data, int int_type, size_t* strides)
+    struct TCOD_Pathfinder* path,
+    void* data,
+    int int_type,
+    const size_t* strides)
 {
   if (!path) { return; }
   path->distance.ndim = path->ndim;
@@ -377,7 +379,7 @@ void TCOD_pf_set_graph2d_pointer(
     struct TCOD_Pathfinder* path,
     void* data,
     int int_type,
-    size_t* strides,
+    const size_t* strides,
     int cardinal,
     int diagonal)
 {
@@ -394,7 +396,10 @@ void TCOD_pf_set_graph2d_pointer(
 }
 
 void TCOD_pf_set_traversal_pointer(
-    struct TCOD_Pathfinder* path, void* data, int int_type, size_t* strides)
+    struct TCOD_Pathfinder* path,
+    void* data,
+    int int_type,
+    const size_t* strides)
 {
   if (!path) { return; }
   path->traversal.ndim = path->ndim + 1;

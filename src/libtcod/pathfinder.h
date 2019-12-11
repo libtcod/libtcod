@@ -38,20 +38,26 @@
 
 struct TCOD_Pathfinder;
 
-TCODLIB_CAPI struct TCOD_Pathfinder* TCOD_pf_new(int ndim, size_t* shape);
+TCODLIB_CAPI struct TCOD_Pathfinder* TCOD_pf_new(int ndim, const size_t* shape);
 TCODLIB_CAPI void TCOD_pf_delete(struct TCOD_Pathfinder* path);
 
 TCODLIB_CAPI void TCOD_pf_set_distance_pointer(
-    struct TCOD_Pathfinder* path, void* data, int int_type, size_t* strides);
+    struct TCOD_Pathfinder* path,
+    void* data,
+    int int_type,
+    const size_t* strides);
 TCODLIB_CAPI void TCOD_pf_set_graph2d_pointer(
     struct TCOD_Pathfinder* path,
     void* data,
     int int_type,
-    size_t* strides,
+    const size_t* strides,
     int cardinal,
     int diagonal);
 TCODLIB_CAPI void TCOD_pf_set_traversal_pointer(
-    struct TCOD_Pathfinder* path, void* data, int int_type, size_t* strides);
+    struct TCOD_Pathfinder* path,
+    void* data,
+    int int_type,
+    const size_t* strides);
 
 TCODLIB_CAPI int TCOD_pf_recompile(struct TCOD_Pathfinder* path);
 TCODLIB_CAPI int TCOD_pf_compute(struct TCOD_Pathfinder* path);

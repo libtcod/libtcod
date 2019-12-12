@@ -29,68 +29,36 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_PATHFINDER_H
-#define TCOD_PATHFINDER_H
+#ifndef TCOD_HEAPQ_H
+#define TCOD_HEAPQ_H
 
-#include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
 
 #include "portability.h"
-#include "heapq.h"
 
-#define TCOD_PATHFINDER_MAX_DIMENSIONS 4
+#define TCOD_HEAP_DEFAULT_CAPACITY 256
+#define TCOD_HEAP_MAX_NODE_SIZE 256
 
-struct TCOD_ArrayData {
-  int8_t ndim;
-  int int_type;
-  size_t shape[TCOD_PATHFINDER_MAX_DIMENSIONS + 1];
-  size_t strides[TCOD_PATHFINDER_MAX_DIMENSIONS + 1];
-  unsigned char* data;
+struct TCOD_HeapNode {
+  int priority;
+  unsigned char data[];
 };
 
-struct TCOD_BasicGraph2D {
-  struct TCOD_ArrayData cost;
-  int cardinal;
-  int diagonal;
+struct TCOD_Heap {
+  struct TCOD_HeapNode* heap;
+  int size;
+  int capacity;
+  size_t node_size;
+  size_t data_size;
 };
 
-struct TCOD_Pathfinder {
-  int8_t ndim;
-  size_t shape[TCOD_PATHFINDER_MAX_DIMENSIONS];
-  bool owns_distance;
-  bool owns_graph;
-  bool owns_traversal;
-  struct TCOD_ArrayData distance;
-  struct TCOD_BasicGraph2D graph;
-  struct TCOD_ArrayData traversal;
-  struct TCOD_Heap heap;
-};
+TCODLIB_CAPI int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size);
+TCODLIB_CAPI void TCOD_heap_uninit(struct TCOD_Heap* heap);
 
-TCODLIB_CAPI struct TCOD_Pathfinder* TCOD_pf_new(int ndim, const size_t* shape);
-TCODLIB_CAPI void TCOD_pf_delete(struct TCOD_Pathfinder* path);
+TCODLIB_CAPI void TCOD_heap_clear(struct TCOD_Heap* heap);
 
-TCODLIB_CAPI void TCOD_pf_set_distance_pointer(
-    struct TCOD_Pathfinder* path,
-    void* data,
-    int int_type,
-    const size_t* strides);
-TCODLIB_CAPI void TCOD_pf_set_graph2d_pointer(
-    struct TCOD_Pathfinder* path,
-    void* data,
-    int int_type,
-    const size_t* strides,
-    int cardinal,
-    int diagonal);
-TCODLIB_CAPI void TCOD_pf_set_traversal_pointer(
-    struct TCOD_Pathfinder* path,
-    void* data,
-    int int_type,
-    const size_t* strides);
+TCODLIB_CAPI int TCOD_minheap_push(
+    struct TCOD_Heap* minheap, int priority, const void* data);
+TCODLIB_CAPI void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out);
 
-TCODLIB_CAPI int TCOD_pf_recompile(struct TCOD_Pathfinder* path);
-TCODLIB_CAPI int TCOD_pf_compute(struct TCOD_Pathfinder* path);
-TCODLIB_CAPI int TCOD_pf_compute_step(struct TCOD_Pathfinder* path);
-
-
-#endif // TCOD_PATHFINDER_H
+#endif // TCOD_HEAPQ_H

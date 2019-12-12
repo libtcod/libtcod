@@ -31,171 +31,7 @@
  */
 #include "pathfinder.h"
 
-#include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
-
-static const int HEAP_DEFAULT_CAPACITY = 256;
-#define HEAP_MAX_NODE_SIZE 256
-#define PATHFINDER_MAX_DIMENSIONS 4
-
-struct TCOD_HeapNode {
-  int priority;
-  unsigned char data[];
-};
-
-struct TCOD_Heap {
-  struct TCOD_HeapNode* heap;
-  int size;
-  int capacity;
-  size_t node_size;
-  size_t data_size;
-};
-
-static void heap_free(struct TCOD_Heap* heap)
-{
-  if (heap->heap) { free(heap->heap); }
-  heap->heap = NULL;
-  heap->size = 0;
-  heap->capacity = 0;
-}
-
-int heap_init(struct TCOD_Heap* heap, size_t data_size)
-{
-  size_t node_size = sizeof(struct TCOD_HeapNode) + data_size;
-  if (node_size > HEAP_MAX_NODE_SIZE) { return -1; }
-  if (heap->node_size == node_size) { return 0; }
-  heap_free(heap);
-  heap->node_size = node_size;
-  heap->data_size = data_size;
-  return 0;
-}
-
-static void heap_clear(struct TCOD_Heap* heap)
-{
-  heap->size = 0;
-}
-
-static struct TCOD_HeapNode* heap_get(struct TCOD_Heap* heap, int index)
-{
-  return (struct TCOD_HeapNode*)((char*)(heap->heap) + index);
-}
-
-static void heap_swap(struct TCOD_Heap* heap, int lhs, int rhs)
-{
-  unsigned char buffer[HEAP_MAX_NODE_SIZE];
-  memcpy(buffer, heap_get(heap, lhs), heap->node_size);
-  memcpy(heap_get(heap, lhs), heap_get(heap, rhs), heap->node_size);
-  memcpy(heap_get(heap, rhs), buffer, heap->node_size);
-}
-
-static void heap_set(
-    struct TCOD_Heap* heap, int index, int priority, const void* data)
-{
-  struct TCOD_HeapNode* node = heap_get(heap, index);
-  node->priority = priority;
-  memcpy(&node->data, &data, heap->node_size - sizeof(struct TCOD_HeapNode));
-}
-
-static void heap_copy(struct TCOD_Heap* heap, int dest, int src)
-{
-  memcpy(heap_get(heap, dest), heap_get(heap, src), heap->node_size);
-}
-
-static bool minheap_compare(struct TCOD_Heap* minheap, int lhs, int rhs)
-{
-  return heap_get(minheap, lhs)->priority < heap_get(minheap, rhs)->priority;
-}
-
-static void minheap_heapify_down(struct TCOD_Heap* minheap, int index)
-{
-  int canidate = index;
-  int left = index * 2 + 1;
-  int right = index * 2 + 2;
-  if (left < minheap->size && minheap_compare(minheap, left, canidate)) {
-    canidate = left;
-  }
-  if (right < minheap->size && minheap_compare(minheap, right, canidate)) {
-    canidate = right;
-  }
-  if (canidate != index) {
-    heap_swap(minheap, index, canidate);
-    minheap_heapify_down(minheap, canidate);
-  }
-}
-
-static void minheap_heapify_up(struct TCOD_Heap* minheap, int index)
-{
-  if (index == 0) { return; }
-  int parent = (index - 1) >> 1;
-  if (minheap_compare(minheap, index, parent)) {
-    heap_swap(minheap, index, parent);
-    minheap_heapify_up(minheap, parent);
-  }
-}
-
-static void minheap_heapify(struct TCOD_Heap* minheap)
-{
-  for (int i = minheap->size / 2; i >= 0; --i) {
-    minheap_heapify_down(minheap, i);
-  }
-}
-
-static void minheap_pop(struct TCOD_Heap* minheap, void* out)
-{
-  if (minheap->size == 0) { return; }
-  if (out) {
-    memcpy(out, &minheap->heap[0].data, minheap->data_size);
-  }
-  heap_copy(minheap, 0, minheap->size - 1);
-  --minheap->size;
-  minheap_heapify_down(minheap, 0);
-}
-
-static int minheap_push(
-    struct TCOD_Heap* minheap, int priority, const void* data)
-{
-  if (minheap->size == minheap->capacity) {
-    int new_capacity = (
-        minheap->capacity ? minheap->capacity * 2 : HEAP_DEFAULT_CAPACITY
-    );
-    void* new_heap = realloc(minheap->heap, minheap->node_size * new_capacity);
-    if (!new_heap) { return -1; } // Out of memory.
-    minheap->capacity = new_capacity;
-    minheap->heap = (struct TCOD_HeapNode*)new_heap;
-  }
-  ++minheap->size;
-  heap_set(minheap, minheap->size - 1, priority, data);
-  minheap_heapify_up(minheap, minheap->size - 1);
-  return 0;
-}
-
-struct TCOD_ArrayData {
-  int8_t ndim;
-  int int_type;
-  size_t shape[PATHFINDER_MAX_DIMENSIONS + 1];
-  size_t strides[PATHFINDER_MAX_DIMENSIONS + 1];
-  unsigned char* data;
-};
-
-struct TCOD_BasicGraph2D {
-  struct TCOD_ArrayData cost;
-  int cardinal;
-  int diagonal;
-};
-
-struct TCOD_Pathfinder {
-  int8_t ndim;
-  size_t shape[PATHFINDER_MAX_DIMENSIONS];
-  bool owns_distance;
-  bool owns_graph;
-  bool owns_traversal;
-  struct TCOD_ArrayData distance;
-  struct TCOD_BasicGraph2D graph;
-  struct TCOD_ArrayData traversal;
-  struct TCOD_Heap heap;
-};
 
 static void* array_index(const struct TCOD_ArrayData* arr, const int* index)
 {
@@ -277,7 +113,7 @@ static void array_recursion(
 static void array_traverse(
     struct TCOD_ArrayData* arr, ArrayTraverseFunc callback, void* userdata)
 {
-  int index[PATHFINDER_MAX_DIMENSIONS + 1];
+  int index[TCOD_PATHFINDER_MAX_DIMENSIONS + 1];
   array_recursion(arr, callback, userdata, index, 0);
 }
 
@@ -297,9 +133,9 @@ static void TCOD_pf_add_edge(
   int total_dist = array_get(&path->distance, origin) + cost;
   if (array_get(&path->distance, dest) >= total_dist) { return; }
   array_set(&path->distance, dest, total_dist);
-  minheap_push(&path->heap, total_dist, dest);
+  TCOD_minheap_push(&path->heap, total_dist, dest);
   if(path->traversal.data) {
-    int travel_index[PATHFINDER_MAX_DIMENSIONS + 1];
+    int travel_index[TCOD_PATHFINDER_MAX_DIMENSIONS + 1];
     for (int i = 0; i < path->ndim; ++i) { travel_index[i] = origin[i]; }
     for (int i = 0; i < path->ndim; ++i) {
       travel_index[path->ndim] = i;
@@ -339,8 +175,8 @@ int TCOD_pf_compute_step(struct TCOD_Pathfinder* path)
 {
   if (!path) { return -1; }
   if (path->heap.size == 0) { return 0; }
-  int current_pos[PATHFINDER_MAX_DIMENSIONS];
-  minheap_pop(&path->heap, current_pos);
+  int current_pos[TCOD_PATHFINDER_MAX_DIMENSIONS];
+  TCOD_minheap_pop(&path->heap, current_pos);
   TCOD_pf_basic2d_edges(path, current_pos);
   return 0;
 }
@@ -349,14 +185,16 @@ struct TCOD_Pathfinder* TCOD_pf_new(int ndim, const size_t* shape)
 {
   struct TCOD_Pathfinder* path = calloc(sizeof(struct TCOD_Pathfinder), 1);
   if (!path) { return NULL; }
-  path->ndim = ndim;
+  path->ndim = (int8_t)ndim;
   for (int i = 0; i < ndim; ++i) { path->shape[i] = shape[i]; }
-  heap_init(&path->heap, sizeof(int) * (size_t)path->ndim);
+  TCOD_heap_init(&path->heap, sizeof(int) * (size_t)path->ndim);
   return path;
 }
 
 void TCOD_pf_delete(struct TCOD_Pathfinder* path)
 {
+  if (!path) { return; }
+  TCOD_heap_uninit(&path->heap);
   free(path);
 }
 
@@ -420,13 +258,13 @@ void TCOD_pf_recompile_cb(void* userdata, const int* index)
 {
   struct TCOD_Pathfinder* path = (struct TCOD_Pathfinder*)userdata;
   if (array_is_max(&path->distance, index)) { return; }
-  minheap_push(&path->heap, array_get(&path->distance, index), index);
+  TCOD_minheap_push(&path->heap, array_get(&path->distance, index), index);
 }
 
 int TCOD_pf_recompile(struct TCOD_Pathfinder* path)
 {
   if (!path) { return -1; }
-  heap_clear(&path->heap);
+  TCOD_heap_clear(&path->heap);
   array_traverse(&path->distance, &TCOD_pf_recompile_cb, path);
   return 0;
 }

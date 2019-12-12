@@ -16,6 +16,7 @@ target_sources(TCOD PRIVATE
     libtcod/fov_permissive2.c
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
+    libtcod/heapq.c
     libtcod/heightmap.cpp
     libtcod/heightmap_c.c
     libtcod/image.cpp
@@ -126,6 +127,8 @@ source_group(libtcod FILES
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
     libtcod/fov_types.h
+    libtcod/heapq.c
+    libtcod/heapq.h
     libtcod/heightmap.cpp
     libtcod/heightmap.h
     libtcod/heightmap.hpp

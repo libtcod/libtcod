@@ -40,20 +40,20 @@ static const int HEAP_DEFAULT_CAPACITY = 256;
 #define HEAP_MAX_NODE_SIZE 256
 #define PATHFINDER_MAX_DIMENSIONS 4
 
-struct HeapNode {
+struct TCOD_HeapNode {
   int priority;
   unsigned char data[];
 };
 
-struct Heap {
-  struct HeapNode* heap;
+struct TCOD_Heap {
+  struct TCOD_HeapNode* heap;
   int size;
   int capacity;
   size_t node_size;
   size_t data_size;
 };
 
-static void heap_free(struct Heap* heap)
+static void heap_free(struct TCOD_Heap* heap)
 {
   if (heap->heap) { free(heap->heap); }
   heap->heap = NULL;
@@ -61,9 +61,9 @@ static void heap_free(struct Heap* heap)
   heap->capacity = 0;
 }
 
-int heap_init(struct Heap* heap, size_t data_size)
+int heap_init(struct TCOD_Heap* heap, size_t data_size)
 {
-  size_t node_size = sizeof(struct HeapNode) + data_size;
+  size_t node_size = sizeof(struct TCOD_HeapNode) + data_size;
   if (node_size > HEAP_MAX_NODE_SIZE) { return -1; }
   if (heap->node_size == node_size) { return 0; }
   heap_free(heap);
@@ -72,17 +72,17 @@ int heap_init(struct Heap* heap, size_t data_size)
   return 0;
 }
 
-static void heap_clear(struct Heap* heap)
+static void heap_clear(struct TCOD_Heap* heap)
 {
   heap->size = 0;
 }
 
-static struct HeapNode* heap_get(struct Heap* heap, int index)
+static struct TCOD_HeapNode* heap_get(struct TCOD_Heap* heap, int index)
 {
-  return (struct HeapNode*)((char*)(heap->heap) + index);
+  return (struct TCOD_HeapNode*)((char*)(heap->heap) + index);
 }
 
-static void heap_swap(struct Heap* heap, int lhs, int rhs)
+static void heap_swap(struct TCOD_Heap* heap, int lhs, int rhs)
 {
   unsigned char buffer[HEAP_MAX_NODE_SIZE];
   memcpy(buffer, heap_get(heap, lhs), heap->node_size);
@@ -91,24 +91,24 @@ static void heap_swap(struct Heap* heap, int lhs, int rhs)
 }
 
 static void heap_set(
-    struct Heap* heap, int index, int priority, const void* data)
+    struct TCOD_Heap* heap, int index, int priority, const void* data)
 {
-  struct HeapNode* node = heap_get(heap, index);
+  struct TCOD_HeapNode* node = heap_get(heap, index);
   node->priority = priority;
-  memcpy(&node->data, &data, heap->node_size - sizeof(struct HeapNode));
+  memcpy(&node->data, &data, heap->node_size - sizeof(struct TCOD_HeapNode));
 }
 
-static void heap_copy(struct Heap* heap, int dest, int src)
+static void heap_copy(struct TCOD_Heap* heap, int dest, int src)
 {
   memcpy(heap_get(heap, dest), heap_get(heap, src), heap->node_size);
 }
 
-static bool minheap_compare(struct Heap* minheap, int lhs, int rhs)
+static bool minheap_compare(struct TCOD_Heap* minheap, int lhs, int rhs)
 {
   return heap_get(minheap, lhs)->priority < heap_get(minheap, rhs)->priority;
 }
 
-static void minheap_heapify_down(struct Heap* minheap, int index)
+static void minheap_heapify_down(struct TCOD_Heap* minheap, int index)
 {
   int canidate = index;
   int left = index * 2 + 1;
@@ -125,7 +125,7 @@ static void minheap_heapify_down(struct Heap* minheap, int index)
   }
 }
 
-static void minheap_heapify_up(struct Heap* minheap, int index)
+static void minheap_heapify_up(struct TCOD_Heap* minheap, int index)
 {
   if (index == 0) { return; }
   int parent = (index - 1) >> 1;
@@ -135,14 +135,14 @@ static void minheap_heapify_up(struct Heap* minheap, int index)
   }
 }
 
-static void minheap_heapify(struct Heap* minheap)
+static void minheap_heapify(struct TCOD_Heap* minheap)
 {
   for (int i = minheap->size / 2; i >= 0; --i) {
     minheap_heapify_down(minheap, i);
   }
 }
 
-static void minheap_pop(struct Heap* minheap, void* out)
+static void minheap_pop(struct TCOD_Heap* minheap, void* out)
 {
   if (minheap->size == 0) { return; }
   if (out) {
@@ -153,7 +153,8 @@ static void minheap_pop(struct Heap* minheap, void* out)
   minheap_heapify_down(minheap, 0);
 }
 
-static int minheap_push(struct Heap* minheap, int priority, const void* data)
+static int minheap_push(
+    struct TCOD_Heap* minheap, int priority, const void* data)
 {
   if (minheap->size == minheap->capacity) {
     int new_capacity = (
@@ -162,7 +163,7 @@ static int minheap_push(struct Heap* minheap, int priority, const void* data)
     void* new_heap = realloc(minheap->heap, minheap->node_size * new_capacity);
     if (!new_heap) { return -1; } // Out of memory.
     minheap->capacity = new_capacity;
-    minheap->heap = (struct HeapNode*)new_heap;
+    minheap->heap = (struct TCOD_HeapNode*)new_heap;
   }
   ++minheap->size;
   heap_set(minheap, minheap->size - 1, priority, data);
@@ -193,7 +194,7 @@ struct TCOD_Pathfinder {
   struct TCOD_ArrayData distance;
   struct TCOD_BasicGraph2D graph;
   struct TCOD_ArrayData traversal;
-  struct Heap heap;
+  struct TCOD_Heap heap;
 };
 
 static void* array_index(const struct TCOD_ArrayData* arr, const int* index)

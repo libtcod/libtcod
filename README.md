@@ -44,7 +44,7 @@ or else the program will fail to run.  This is required even when using Python.
 For those who wish to program in Python you can install python-tcod using
 [this installation guide](https://python-tcod.readthedocs.io/en/latest/installation.html).
 Once installed you can follow
-[the Python 3 tutorial](http://rogueliketutorials.com/libtcod/1)
+[the Python 3 tutorial](http://rogueliketutorials.com/tutorials/tcod/)
 or you can find Python example scripts on the
 [python-tcod repository](https://github.com/libtcod/python-tcod).
 

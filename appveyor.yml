@@ -5,19 +5,19 @@ environment:
   SCONSMODE: "MODE=DEBUG"
   matrix:
     - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc"
-      TEST_PYTHON3: "C:/Python34-x64/python.exe"
+      TEST_PYTHON3: "C:/Python35-x64/python.exe"
     - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static"
-      TEST_PYTHON3: "C:/Python34-x64/python.exe"
+      TEST_PYTHON3: "C:/Python35-x64/python.exe"
     - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
-      TEST_PYTHON3: "C:/Python34/python.exe"
+      TEST_PYTHON3: "C:/Python35/python.exe"
     - SCONSOPTS: "TOOLSET=mingw ARCH=x86_64 -j3"
       MSYS2_ARCH: x86_64
       MSYSTEM: MINGW64
-      TEST_PYTHON3: "C:/Python34-x64/python.exe"
+      TEST_PYTHON3: "C:/Python35-x64/python.exe"
     - SCONSOPTS: "TOOLSET=mingw ARCH=x86 -j3"
       MSYS2_ARCH: i686
       MSYSTEM: MINGW32
-      TEST_PYTHON3: "C:/Python34/python.exe"
+      TEST_PYTHON3: "C:/Python35/python.exe"
     - CONAN_BUILD: True
       CONAN_VISUAL_VERSIONS: 15
       CONAN_PASSWORD:

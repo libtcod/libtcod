@@ -221,6 +221,10 @@ TCODLIB_CAPI void TCOD_console_set_key_color(
  *  \param background_alpha Background blending alpha.
  *
  *  If the source console has a key color, this function will use it.
+ *  \rst
+ *  .. versionchanged:: 1.16
+ *      Blits can now handle per-cell alpha transparency.
+ *  \endrst
  */
 TCODLIB_CAPI void TCOD_console_blit(
     const TCOD_Console* src,

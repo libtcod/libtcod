@@ -1,0 +1,9 @@
+editables:
+    samples/None@user/testing:
+        path: ../../samples
+    libtcod/None@user/testing:
+        path: ../..
+layout: conanws
+generators: cmake_multi
+workspace_generator: cmake
+root: libtcod/None@user/testing, samples/None@user/testing

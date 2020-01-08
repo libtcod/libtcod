@@ -32,12 +32,18 @@ jobs:
     env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
   - os: osx
     language: shell
+    osx_image: xcode10.3
+    env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=10.0
+  - os: osx
+    language: shell
+    osx_image: xcode9.4
+    env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=9.1
+  - os: osx
+    language: shell
     env: BUILD_TOOL=scons CC=gcc
   - os: osx
     language: shell
     env: BUILD_TOOL=autotools CC=gcc
-  allow_failures:
-    - env: BUILD_TOOL=conan CONAN_APPLE_CLANG_VERSIONS=11.0
 
 dist: bionic
 addons:

@@ -221,6 +221,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/tileset/observer.cpp \
 	../../src/libtcod/tileset/tile.cpp \
 	../../src/libtcod/tileset/tileset.cpp \
+	../../src/libtcod/tileset/tileset_c.c \
 	../../src/libtcod/tileset/tilesheet.cpp \
 	../../src/libtcod/tileset/truetype.cpp \
 	../../src/vendor/glad.c \

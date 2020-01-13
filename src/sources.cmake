@@ -91,6 +91,7 @@ target_sources(TCOD PRIVATE
     libtcod/tileset/observer.cpp
     libtcod/tileset/tile.cpp
     libtcod/tileset/tileset.cpp
+    libtcod/tileset/tileset_c.c
     libtcod/tileset/tilesheet.cpp
     libtcod/tileset/truetype.cpp
     vendor/glad.c
@@ -302,6 +303,7 @@ source_group(libtcod\\tileset FILES
     libtcod/tileset/tile.h
     libtcod/tileset/tileset.cpp
     libtcod/tileset/tileset.h
+    libtcod/tileset/tileset_c.c
     libtcod/tileset/tilesheet.cpp
     libtcod/tileset/tilesheet.h
     libtcod/tileset/truetype.cpp

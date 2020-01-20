@@ -41,12 +41,14 @@
 #include "../portability.h"
 #include "../color/color.h"
 #include "tile.h"
-struct TCOD_TilesetAtlas {
-  int type;
-  struct TCOD_TilesetAtlas* next;
+struct TCOD_Tileset;
+struct TCOD_TilesetObserver {
+  struct TCOD_Tileset* tileset;
+  struct TCOD_TilesetObserver* next;
   void* userdata;
-  void (*destructor)(void* userdata);
-  int (*notify_changed)(void* userdata, int tile_id);
+  void (*on_observer_delete)(struct TCOD_TilesetObserver* observer);
+  int (*on_tileset_changed)(
+      struct TCOD_TilesetObserver* observer, int tile_id);
 };
 struct TCOD_Tileset {
   int tile_width;
@@ -57,7 +59,7 @@ struct TCOD_Tileset {
   struct TCOD_ColorRGBA* pixels;
   int character_map_length;
   int* character_map;
-  struct TCOD_TilesetAtlas* atlas_list;
+  struct TCOD_TilesetObserver* observer_list;
   int virtual_columns;
   volatile int ref_count;
 };
@@ -226,4 +228,8 @@ TCODLIB_CAPI int TCOD_tileset_set_tile_(
     TCOD_Tileset* tileset,
     int codepoint,
     const struct TCOD_ColorRGBA* buffer);
+struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
+    struct TCOD_Tileset* tileset);
+void TCOD_tileset_observer_delete(
+    struct TCOD_TilesetObserver* observer);
 #endif /* LIBTCOD_TILESET_TILESET_H_ */

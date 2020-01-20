@@ -36,6 +36,8 @@ target_sources(TCOD PRIVATE
     libtcod/path.cpp
     libtcod/pathfinder.c
     libtcod/path_c.c
+    libtcod/renderer.c
+    libtcod/renderer_sdl2.c
     libtcod/sys.cpp
     libtcod/sys_c.cpp
     libtcod/sys_opengl_c.cpp
@@ -177,6 +179,10 @@ source_group(libtcod FILES
     libtcod/pathfinder.h
     libtcod/path_c.c
     libtcod/portability.h
+    libtcod/renderer.c
+    libtcod/renderer.h
+    libtcod/renderer_sdl2.c
+    libtcod/renderer_sdl2.h
     libtcod/sys.cpp
     libtcod/sys.h
     libtcod/sys.hpp

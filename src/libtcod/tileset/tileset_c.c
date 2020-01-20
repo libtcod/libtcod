@@ -48,14 +48,36 @@ void TCOD_tileset_delete(TCOD_Tileset* tileset)
 {
   if (!tileset) { return; }
   if (--tileset->ref_count != 0) { return; }
-  while (struct TCOD_TilesetAtlas* it = tileset->atlas_list) {
-    tileset->atlas_list = it->next;
-    if (it->destructor) { it->destructor(it->userdata); }
-    free(it);
+  while (tileset->observer_list) {
+    TCOD_tileset_observer_delete(tileset->observer_list);
   }
   free(tileset->pixels);
   free(tileset->character_map);
   free(tileset);
+}
+struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
+    struct TCOD_Tileset* tileset)
+{
+  if (!tileset) { return NULL; }
+  struct TCOD_TilesetObserver* observer = calloc(sizeof(*observer), 1);
+  observer->tileset = tileset;
+  observer->next = tileset->observer_list;
+  tileset->observer_list = observer;
+}
+void TCOD_tileset_observer_delete(struct TCOD_TilesetObserver* observer)
+{
+  if (!observer) { return; }
+  for (struct TCOD_TilesetObserver** it = &observer->tileset->observer_list;
+       *it; it = &(*it)->next) {
+    if (*it != observer) { continue; }
+    *it = observer->next;
+    if (observer->on_observer_delete) {
+      observer->on_observer_delete(observer);
+    }
+    free(observer);
+    return;
+  }
+  return;
 }
 int TCOD_tileset_get_tile_width_(const TCOD_Tileset* tileset)
 {
@@ -155,9 +177,10 @@ int TCOD_tileset_set_tile_(
   struct TCOD_ColorRGBA* tile =
       tileset->pixels + tileset->tile_length * tile_id;
   memcpy(tile, buffer, sizeof(tile[0]) * tileset->tile_length);
-  for (struct TCOD_TilesetAtlas* it = tileset->atlas_list; it; it = it->next) {
-    if (!it->notify_changed) { continue; }
-    int err = it->notify_changed(it->userdata, tile_id);
+  for (struct TCOD_TilesetObserver* it = tileset->observer_list;
+       it; it = it->next) {
+    if (!it->on_tileset_changed) { continue; }
+    int err = it->on_tileset_changed(it, tile_id);
     if (err) { return err; }
   }
   return 0; // Tile uploaded successfully.

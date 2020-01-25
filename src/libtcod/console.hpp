@@ -1817,11 +1817,11 @@ public :
     return data;
   }
 protected :
-  friend TCODLIB_API void tcod::console::init_root(
-      int w, int h, const std::string& title,
-      bool fullscreen, TCOD_renderer_t renderer, bool vsync);
   TCODConsole();
   TCOD_Console* data;
+  friend TCODLIB_API int TCOD_console_init_root_(
+      int w, int h, const char* title,
+      bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 };
 
 #endif /* TCOD_CONSOLE_SUPPORT */

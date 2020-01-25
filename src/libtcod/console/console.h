@@ -41,6 +41,7 @@
 #include "../portability.h"
 #include "../color/color.h"
 #include "../utility/matrix.h"
+#include "../tileset.h"
 /**
  *  \enum TCOD_bkgnd_flag_t
  *

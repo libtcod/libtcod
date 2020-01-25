@@ -37,7 +37,7 @@
 #include "portability.h"
 #include "console.h"
 #include "renderer.h"
-#include "tileset/tileset.h"
+#include "tileset.h"
 
 struct SDL_Window;
 struct SDL_Renderer;

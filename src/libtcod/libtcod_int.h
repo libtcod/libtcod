@@ -48,6 +48,8 @@
 #include "fov_types.h"
 #include "mersenne_types.h"
 #include "sys.h"
+#include "tileset.h"
+#include "renderer.h"
 
 /* tcodlib internal stuff */
 #ifdef __cplusplus
@@ -128,6 +130,8 @@ typedef struct {
 	/* application is active (not iconified) */
 	bool app_is_active;
 #endif
+  struct TCOD_Tileset* tileset;
+  struct TCOD_Renderer* engine;
 } TCOD_internal_context_t;
 
 extern TCOD_internal_context_t TCOD_ctx;
@@ -527,7 +531,7 @@ extern int oldFade;
 #ifdef __cplusplus
 // TCODConsole non public methods
 bool TCOD_console_init(TCOD_Console* con);
-bool TCOD_console_init(TCOD_Console* con, const std::string& title,
+bool TCOD_console_init(TCOD_Console* con, const char* title,
                        bool fullscreen);
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s,int l);

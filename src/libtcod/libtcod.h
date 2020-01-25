@@ -68,9 +68,7 @@
 
 #include "sdl2/event.h"
 
-#include "tileset/observer.h"
-#include "tileset/tileset.h"
-#include "tileset/tile.h"
+#include "tileset.h"
 
 #ifdef __cplusplus
 #include "bresenham.hpp"

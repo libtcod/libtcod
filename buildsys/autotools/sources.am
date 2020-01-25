@@ -47,6 +47,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/renderer_sdl2.h \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
+	../../src/libtcod/tileset.h \
 	../../src/libtcod/tree.h \
 	../../src/libtcod/tree.hpp \
 	../../src/libtcod/txtfield.h \
@@ -107,23 +108,11 @@ libtcod_pathfinding_include_HEADERS = \
 libtcod_sdl2_includedir = $(includedir)/libtcod/sdl2
 libtcod_sdl2_include_HEADERS = \
 	../../src/libtcod/sdl2/event.h \
-	../../src/libtcod/sdl2/gl2_display.h \
-	../../src/libtcod/sdl2/gl2_ext_.h \
-	../../src/libtcod/sdl2/gl2_raii.h \
-	../../src/libtcod/sdl2/gl2_renderer.h \
-	../../src/libtcod/sdl2/gl_alias.h \
-	../../src/libtcod/sdl2/legacy_backend.h \
-	../../src/libtcod/sdl2/sdl2_alias.h \
-	../../src/libtcod/sdl2/sdl2_display.h \
-	../../src/libtcod/sdl2/sdl2_renderer.h
+	../../src/libtcod/sdl2/gl2_ext_.h
 
 libtcod_tileset_includedir = $(includedir)/libtcod/tileset
 libtcod_tileset_include_HEADERS = \
 	../../src/libtcod/tileset/fallback.h \
-	../../src/libtcod/tileset/observer.h \
-	../../src/libtcod/tileset/tile.h \
-	../../src/libtcod/tileset/tileset.h \
-	../../src/libtcod/tileset/tilesheet.h \
 	../../src/libtcod/tileset/truetype.h
 
 libtcod_utility_includedir = $(includedir)/libtcod/utility
@@ -177,13 +166,13 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/sys_sdl_c.cpp \
 	../../src/libtcod/sys_sdl_img_bmp.cpp \
 	../../src/libtcod/sys_sdl_img_png.cpp \
+	../../src/libtcod/tileset.c \
 	../../src/libtcod/tree_c.c \
 	../../src/libtcod/txtfield.cpp \
 	../../src/libtcod/txtfield_c.c \
 	../../src/libtcod/wrappers.cpp \
 	../../src/libtcod/zip.cpp \
 	../../src/libtcod/zip_c.c \
-	../../src/libtcod/color/canvas.cpp \
 	../../src/libtcod/console/console.cpp \
 	../../src/libtcod/console/drawing.cpp \
 	../../src/libtcod/console/printing.cpp \
@@ -213,22 +202,9 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/pathfinding/graph.cpp \
 	../../src/libtcod/pathfinding/hill-climb.cpp \
 	../../src/libtcod/sdl2/event.cpp \
-	../../src/libtcod/sdl2/gl2_display.cpp \
-	../../src/libtcod/sdl2/gl2_raii.cpp \
-	../../src/libtcod/sdl2/gl2_renderer.cpp \
-	../../src/libtcod/sdl2/gl_alias.cpp \
-	../../src/libtcod/sdl2/legacy_backend.cpp \
-	../../src/libtcod/sdl2/sdl2_alias.cpp \
-	../../src/libtcod/sdl2/sdl2_display.cpp \
-	../../src/libtcod/sdl2/sdl2_renderer.cpp \
-	../../src/libtcod/tileset/fallback.cpp \
-	../../src/libtcod/tileset/observer.cpp \
-	../../src/libtcod/tileset/tile.cpp \
-	../../src/libtcod/tileset/tileset.cpp \
-	../../src/libtcod/tileset/tileset_c.c \
-	../../src/libtcod/tileset/tilesheet.cpp \
-	../../src/libtcod/tileset/truetype.cpp \
+	../../src/libtcod/tileset/fallback.c \
+	../../src/libtcod/tileset/truetype.c \
 	../../src/vendor/glad.c \
-	../../src/vendor/lodepng.cpp \
+	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c \
 	../../src/vendor/utf8proc/utf8proc.c

@@ -97,11 +97,16 @@ def samples_factory():
         env_samples.Append(LIBS=['tcod'])
 
     for name in os.listdir(env.subst('$LIBTCOD_ROOT_DIR/samples')):
+        if name == "build":
+            continue
         path = os.path.join(env.subst('$LIBTCOD_ROOT_DIR/samples'), name)
         path_variant = os.path.join(env.subst('$VARIANT/samples'), name)
         if os.path.isdir(path):
             target = name
-            source=Glob(os.path.join(path_variant, '*.c*'))
+            source = (
+                Glob(os.path.join(path_variant, '*.c'))
+                + Glob(os.path.join(path_variant, '*.cpp'))
+            )
         elif name[-2:] == '.c' or name[-4:] == '.cpp':
             target=name.rsplit('.')[0]
             source=path_variant

@@ -45,13 +45,13 @@ target_sources(TCOD PRIVATE
     libtcod/sys_sdl_c.cpp
     libtcod/sys_sdl_img_bmp.cpp
     libtcod/sys_sdl_img_png.cpp
+    libtcod/tileset.c
     libtcod/tree_c.c
     libtcod/txtfield.cpp
     libtcod/txtfield_c.c
     libtcod/wrappers.cpp
     libtcod/zip.cpp
     libtcod/zip_c.c
-    libtcod/color/canvas.cpp
     libtcod/console/console.cpp
     libtcod/console/drawing.cpp
     libtcod/console/printing.cpp
@@ -81,23 +81,10 @@ target_sources(TCOD PRIVATE
     libtcod/pathfinding/graph.cpp
     libtcod/pathfinding/hill-climb.cpp
     libtcod/sdl2/event.cpp
-    libtcod/sdl2/gl2_display.cpp
-    libtcod/sdl2/gl2_raii.cpp
-    libtcod/sdl2/gl2_renderer.cpp
-    libtcod/sdl2/gl_alias.cpp
-    libtcod/sdl2/legacy_backend.cpp
-    libtcod/sdl2/sdl2_alias.cpp
-    libtcod/sdl2/sdl2_display.cpp
-    libtcod/sdl2/sdl2_renderer.cpp
-    libtcod/tileset/fallback.cpp
-    libtcod/tileset/observer.cpp
-    libtcod/tileset/tile.cpp
-    libtcod/tileset/tileset.cpp
-    libtcod/tileset/tileset_c.c
-    libtcod/tileset/tilesheet.cpp
-    libtcod/tileset/truetype.cpp
+    libtcod/tileset/fallback.c
+    libtcod/tileset/truetype.c
     vendor/glad.c
-    vendor/lodepng.cpp
+    vendor/lodepng.c
     vendor/stb.c
     vendor/utf8proc/utf8proc.c
 )
@@ -192,6 +179,8 @@ source_group(libtcod FILES
     libtcod/sys_sdl_c.cpp
     libtcod/sys_sdl_img_bmp.cpp
     libtcod/sys_sdl_img_png.cpp
+    libtcod/tileset.c
+    libtcod/tileset.h
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c
@@ -209,7 +198,6 @@ source_group(libtcod FILES
     libtcod/zip_c.c
 )
 source_group(libtcod\\color FILES
-    libtcod/color/canvas.cpp
     libtcod/color/canvas.h
     libtcod/color/color.h
 )
@@ -282,37 +270,12 @@ source_group(libtcod\\pathfinding FILES
 source_group(libtcod\\sdl2 FILES
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
-    libtcod/sdl2/gl2_display.cpp
-    libtcod/sdl2/gl2_display.h
     libtcod/sdl2/gl2_ext_.h
-    libtcod/sdl2/gl2_raii.cpp
-    libtcod/sdl2/gl2_raii.h
-    libtcod/sdl2/gl2_renderer.cpp
-    libtcod/sdl2/gl2_renderer.h
-    libtcod/sdl2/gl_alias.cpp
-    libtcod/sdl2/gl_alias.h
-    libtcod/sdl2/legacy_backend.cpp
-    libtcod/sdl2/legacy_backend.h
-    libtcod/sdl2/sdl2_alias.cpp
-    libtcod/sdl2/sdl2_alias.h
-    libtcod/sdl2/sdl2_display.cpp
-    libtcod/sdl2/sdl2_display.h
-    libtcod/sdl2/sdl2_renderer.cpp
-    libtcod/sdl2/sdl2_renderer.h
 )
 source_group(libtcod\\tileset FILES
-    libtcod/tileset/fallback.cpp
+    libtcod/tileset/fallback.c
     libtcod/tileset/fallback.h
-    libtcod/tileset/observer.cpp
-    libtcod/tileset/observer.h
-    libtcod/tileset/tile.cpp
-    libtcod/tileset/tile.h
-    libtcod/tileset/tileset.cpp
-    libtcod/tileset/tileset.h
-    libtcod/tileset/tileset_c.c
-    libtcod/tileset/tilesheet.cpp
-    libtcod/tileset/tilesheet.h
-    libtcod/tileset/truetype.cpp
+    libtcod/tileset/truetype.c
     libtcod/tileset/truetype.h
 )
 source_group(libtcod\\utility FILES
@@ -321,7 +284,7 @@ source_group(libtcod\\utility FILES
 )
 source_group(vendor FILES
     vendor/glad.c
-    vendor/lodepng.cpp
+    vendor/lodepng.c
     vendor/stb.c
     vendor/utf8proc/utf8proc.c
 )

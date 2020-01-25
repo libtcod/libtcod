@@ -32,56 +32,15 @@
 #include "globals.h"
 
 #include <cstdlib>
+#include "../libtcod_int.h"
 
-namespace tcod {
-namespace engine {
-std::shared_ptr<Backend> active_backend = nullptr;
-std::shared_ptr<Display> active_display = nullptr;
-std::shared_ptr<Tileset> active_tileset = nullptr;
-std::shared_ptr<Tilesheet> active_tilesheet = nullptr;
-
-void set_backend(std::shared_ptr<Backend> backend)
-{
-  active_backend = backend;
-}
-std::shared_ptr<Backend> get_backend()
-{
-  return active_backend;
-}
-void set_display(std::shared_ptr<Display> display)
-{
-  active_display = display;
-}
-std::shared_ptr<Display> get_display()
-{
-  return active_display;
-}
-void set_tileset(std::shared_ptr<Tileset> tileset)
-{
-  active_tileset = tileset;
-  if (tileset && active_display) {
-    active_display->set_tileset(tileset);
-  }
-}
-auto get_tileset() -> std::shared_ptr<Tileset>
-{
-  return active_tileset;
-}
-void set_tilesheet(std::shared_ptr<Tilesheet> sheet)
-{
-  active_tilesheet = sheet;
-}
-auto get_tilesheet() -> std::shared_ptr<Tilesheet>
-{
-  return active_tilesheet;
-}
-} // namespace engine
-} // namespace tcod
 TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
 {
-  return new TCOD_Tileset(tcod::engine::get_tileset());
+  return TCOD_ctx.tileset;
 }
 TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
 {
-  tcod::engine::set_tileset(tileset ? (*tileset) : nullptr);
+  TCOD_tileset_delete(TCOD_ctx.tileset);
+  TCOD_ctx.tileset = tileset;
+  if (tileset) { ++tileset->ref_count; }
 }

@@ -34,6 +34,7 @@
 #include "stdlib.h"
 
 #include <SDL.h>
+#include "../vendor/lodepng.h"
 
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
@@ -214,19 +215,35 @@ int TCOD_sdl2_render_console(
 }
 // ----------------------------------------------------------------------------
 // SDL2 Rendering
-static void sdl2_destructor(void* userdata)
+int sdl2_handle_event(void* userdata, SDL_Event* event)
 {
   struct TCOD_RendererSDL2* context = userdata;
+  switch(event->type) {
+    case SDL_RENDER_TARGETS_RESET:
+      if (context->cache_console) {
+        TCOD_console_delete(context->cache_console);
+        context->cache_console = NULL;
+      }
+    break;
+  }
+  return 0;
+}
+static void sdl2_destructor(struct TCOD_Renderer* self)
+{
+  struct TCOD_RendererSDL2* context = self->userdata;
   if (!context) { return; }
-  TCOD_console_delete(context->cache_console);
+  SDL_DelEventWatch(sdl2_handle_event, context);
+  if (context->cache_console) { TCOD_console_delete(context->cache_console); }
   if (context->cache_texture) { SDL_DestroyTexture(context->cache_texture); }
   if (context->renderer) { SDL_DestroyRenderer(context->renderer); }
   if (context->window) { SDL_DestroyWindow(context->window); }
   free(context);
 }
-static int sdl2_present(void* userdata, const struct TCOD_Console* console)
+static int sdl2_accumulate(struct TCOD_Renderer* self,
+                           const struct TCOD_Console* console,
+                          const struct SDL_Rect* viewport)
 {
-  struct TCOD_RendererSDL2* context = userdata;
+  struct TCOD_RendererSDL2* context = self->userdata;
   if (!context || !console) { return -1; }
   SDL_RendererInfo renderer_info;
   SDL_GetRendererInfo(context->renderer, &renderer_info);
@@ -256,13 +273,58 @@ static int sdl2_present(void* userdata, const struct TCOD_Console* console)
   SDL_SetRenderTarget(context->renderer, context->cache_texture);
   TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
   SDL_SetRenderTarget(context->renderer, NULL);
+  SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
+  return 0;
+}
+static int sdl2_present(struct TCOD_Renderer* self,
+                        const struct TCOD_Console* console)
+{
+  struct TCOD_RendererSDL2* context = self->userdata;
+  SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(context->renderer, 0, 0, 0, 255);
   SDL_RenderClear(context->renderer);
-  SDL_RenderCopy(context->renderer, context->cache_texture, NULL, NULL);
+  sdl2_accumulate(self, console, NULL);
   SDL_RenderPresent(context->renderer);
   return 0;
 }
-
+static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
+{
+  struct TCOD_RendererSDL2* context = self->userdata;
+  *x /= context->atlas->tileset->tile_width;
+  *y /= context->atlas->tileset->tile_height;
+}
+static int sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename)
+{
+  struct TCOD_RendererSDL2* context = self->userdata;
+  if (!context->cache_texture) { return -1; }
+  SDL_SetRenderTarget(context->renderer, context->cache_texture);
+  int width;
+  int height;
+  SDL_QueryTexture(context->cache_texture, NULL, NULL, &width, &height);
+  void* pixels = malloc(sizeof(uint8_t) * 4 * width * height);
+  if (!pixels) {
+    SDL_SetRenderTarget(context->renderer, NULL);
+    return -1;
+  }
+  SDL_RenderReadPixels(
+      context->renderer,
+      NULL,
+      SDL_PIXELFORMAT_RGBA32,
+      pixels,
+      (int)(sizeof(uint8_t) * 4 * width));
+  lodepng_encode32_file(filename, pixels, (unsigned)width, (unsigned)height);
+  free(pixels);
+  SDL_SetRenderTarget(context->renderer, NULL);
+  return 0;
+}
+static struct SDL_Window* sdl2_get_window(struct TCOD_Renderer* self)
+{
+  return ((struct TCOD_RendererSDL2*)self->userdata)->window;
+}
+static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Renderer* self)
+{
+  return ((struct TCOD_RendererSDL2*)self->userdata)->renderer;
+}
 struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
     struct SDL_Window* sdl_window,
     struct SDL_Renderer* sdl_renderer,
@@ -280,10 +342,16 @@ struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
     TCOD_renderer_delete(renderer);
     return NULL;
   }
+  SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   renderer->type = TCOD_RENDERER_SDL2;
   renderer->userdata = sdl2_data;
   renderer->destructor = sdl2_destructor;
   renderer->present = sdl2_present;
+  renderer->accumulate = sdl2_accumulate;
+  renderer->get_sdl_window = sdl2_get_window;
+  renderer->get_sdl_renderer = sdl2_get_renderer;
+  renderer->pixel_to_tile = sdl2_pixel_to_tile;
+  renderer->save_screenshot = sdl2_save_screenshot;
   return renderer;
 }
 struct TCOD_Renderer* TCOD_renderer_init_sdl2(

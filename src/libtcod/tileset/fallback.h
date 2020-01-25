@@ -33,22 +33,26 @@
 #define LIBTCOD_TILESET_FALLBACK_H_
 #ifdef __cplusplus
 #include <array>
-#include <memory>
 #endif // __cplusplus
-#include "tileset.h"
-#ifdef __cplusplus
-namespace tcod {
-namespace tileset {
+#include "../tileset.h"
 /**
- *  Try to return a fall-back Tileset, may return nullptr or throw an error.
+ *  Try to return a fall-back Tileset, may return NULL.
  *
  *  Used when one is needed, but was not provided by the user.
  */
-TCODLIB_API
+TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
+#ifdef __cplusplus
+namespace tcod {
+namespace tileset {
 auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
--> std::unique_ptr<Tileset>;
+-> TilesetPtr
+{
+  TilesetPtr tileset{
+      TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))
+  };
+  return tileset;
+}
 } // namespace tileset
 } // namespace tcod
 #endif // __cplusplus
-TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #endif // LIBTCOD_TILESET_FALLBACK_H_

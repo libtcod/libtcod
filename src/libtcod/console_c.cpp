@@ -48,8 +48,7 @@
 #include "console/drawing.h"
 #include "engine/error.h"
 #include "engine/globals.h"
-#include "tileset/tileset.h"
-#include "tileset/tilesheet.h"
+#include "tileset.h"
 
 #ifdef TCOD_CONSOLE_SUPPORT
 
@@ -84,6 +83,8 @@ TCOD_internal_context_t TCOD_ctx={
 	false,
 	/* application active ? */
 	true,
+  NULL,
+  NULL,
 };
 /**
  *  Wait for a key press event, then return it.
@@ -168,22 +169,10 @@ int TCOD_console_set_custom_font(
   if (TCOD_ctx.font_tcod_layout) { TCOD_ctx.font_in_row = true; }
   TCOD_sys_set_custom_font(fontFile, nb_char_horiz, nb_char_vertic, flags);
 
-  using tcod::image::Image;
-  using tcod::tileset::Tileset;
-  using tcod::tileset::Tilesheet;
+  TCOD_tileset_delete(TCOD_ctx.tileset);
 
-  try {
-    Image image = tcod::image::load(TCOD_ctx.font_file);
-    auto tilesheet = std::make_shared<Tilesheet>(
-        image, std::make_pair(nb_char_horiz, nb_char_vertic));
-    tcod::engine::set_tilesheet(tilesheet);
-
-    auto tileset = std::make_shared<Tileset>(tilesheet->get_tile_width(),
-                                             tilesheet->get_tile_height());
-    tcod::engine::set_tileset(tileset);
-  } catch (const std::exception& e) {
-    return tcod::set_error(e);
-  }
+  TCOD_ctx.tileset =
+      TCOD_tileset_load(fontFile, nb_char_horiz, nb_char_vertic, 0, NULL);
   TCOD_sys_decode_font_();
   return 0;
 }

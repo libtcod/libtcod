@@ -62,13 +62,12 @@ void TCODSystem::forceFullscreenResolution(int width, int height) {
 
 void TCODSystem::setRenderer(TCOD_renderer_t renderer) {
   if (renderer == TCOD_ctx.renderer) { return; }
-  tcod::console::init_root(
+  TCOD_console_init_root(
       TCOD_ctx.root->w,
       TCOD_ctx.root->h,
       TCOD_ctx.window_title,
       TCOD_console_is_fullscreen(),
-      renderer
-  );
+      renderer);
 }
 TCOD_event_t TCODSystem::waitForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
 	return TCOD_sys_wait_for_event(eventMask,key,mouse,flush);

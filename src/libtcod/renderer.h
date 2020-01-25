@@ -35,11 +35,24 @@
 #include "portability.h"
 #include "console.h"
 
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Rect;
+
 struct TCOD_Renderer {
   int type;
   void* userdata;
-  void (*destructor)(void* userdata);
-  int (*present)(void* userdata, const struct TCOD_Console* console);
+  void (*destructor)(struct TCOD_Renderer* self);
+  int (*present)(struct TCOD_Renderer* self,
+                 const struct TCOD_Console* console);
+  void (*pixel_to_tile)(struct TCOD_Renderer* self, double* x, double* y);
+  int (*save_screenshot)(struct TCOD_Renderer* self, const char* filename);
+  struct SDL_Window* (*get_sdl_window)(struct TCOD_Renderer* self);
+  struct SDL_Renderer* (*get_sdl_renderer)(struct TCOD_Renderer* self);
+  int (*accumulate)(
+      struct TCOD_Renderer* self,
+      const struct TCOD_Console* console,
+      const struct SDL_Rect* viewport);
 };
 
 TCODLIB_CAPI struct TCOD_Renderer* TCOD_renderer_init_custom();

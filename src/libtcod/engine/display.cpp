@@ -42,28 +42,20 @@
 #include "../console.h"
 #include "../console.hpp"
 #include "../libtcod_int.h"
-#include "../sdl2/sdl2_display.h"
-#include "../sdl2/gl2_display.h"
 #include "../tileset/fallback.h"
-namespace tcod {
-static auto ensure_tileset() -> std::shared_ptr<tcod::tileset::Tileset>
+#include "../renderer_sdl2.h"
+static struct TCOD_Tileset* ensure_tileset()
 {
-  using tcod::engine::get_tileset;
-  using tcod::engine::set_tileset;
-  using tcod::tileset::new_fallback_tileset;
-  if (!get_tileset()) {
-    try {
-      set_tileset(new_fallback_tileset());
-    }
-    catch (const std::runtime_error& e) {
-      throw std::runtime_error(
-        std::string()
-        + "Couldn't load a fallback font for the SDL2/OPENGL2 renderer: "
-        + e.what());
-    }
+  if (!TCOD_ctx.tileset) {
+    TCOD_ctx.tileset = TCOD_tileset_load_fallback_font_(0, 12);
   }
-  return get_tileset();
+  if (!TCOD_ctx.tileset) {
+    // "Couldn't load a fallback font for the SDL2/OPENGL2 renderer: "
+    return NULL;
+  }
+  return TCOD_ctx.tileset;
 }
+namespace tcod {
 /**
  *  Return an environment value as a std::string.
  *
@@ -104,60 +96,16 @@ static void get_env_vsync(bool& vsync)
     vsync = 1;
   }
 }
-/**
- *  Initialize the display using one of the new renderers.
- */
-template <class T, class ...Args>
-static void init_display(int w, int h, const std::string& title,
-                         int fullscreen, Args... args)
-{
-  auto tileset = ensure_tileset();
-  std::array<int, 2> display_size{tileset->get_tile_width() * w,
-                                  tileset->get_tile_height() * h};
-  int display_flags = (SDL_WINDOW_RESIZABLE |
-                       (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-  tcod::engine::set_display(
-      std::make_shared<T>(tileset, display_size, display_flags, title, args...));
-}
 namespace console {
 void init_root(int w, int h, const std::string& title, bool fullscreen,
                TCOD_renderer_t renderer, bool vsync)
 {
-  if (w <= 0 || h <= 0) {
-    throw std::invalid_argument("Width and height must be greater than zero.");
-  }
-  get_env_renderer(renderer);
-  get_env_vsync(vsync);
-  TCOD_console_delete(NULL);
-  TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
-#ifndef TCOD_BARE
-  TCOD_ctx.renderer=renderer;
-#endif
-  strncpy(TCOD_ctx.window_title, title.c_str(),
-          sizeof(TCOD_ctx.window_title) - 1);
-  TCOD_ctx.window_title[sizeof(TCOD_ctx.window_title) - 1] = '\0';
-  TCOD_ctx.fullscreen = fullscreen;
-  switch (renderer) {
-    case TCOD_RENDERER_SDL2: {
-      using tcod::sdl2::SDL2Display;
-      int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
-      init_display<SDL2Display>(w, h, title, fullscreen, renderer_flags);
-      break;
-    }
-    case TCOD_RENDERER_OPENGL2:
-      init_display<tcod::sdl2::OpenGL2Display>(w, h, title, fullscreen, vsync);
-      break;
-    default:
-      if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
-        throw std::runtime_error(TCOD_get_error());
-      }
-      break;
-  }
+  TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync);
 }
 void init_root(int w, int h, const std::string& title, bool fullscreen,
                TCOD_renderer_t renderer)
 {
-  init_root(w, h, title, fullscreen, renderer, false);
+  TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, false);
 }
 } // namespace console
 } // namespace tcod
@@ -169,11 +117,37 @@ int TCOD_console_init_root_(
     TCOD_renderer_t renderer,
     bool vsync)
 {
-  using tcod::console::init_root;
-  try {
-    init_root(w, h, title ? title : "", fullscreen, renderer, vsync);
-  } catch (const std::exception& e) {
-    return tcod::set_error(e);
+  if (w <= 0 || h <= 0) {
+    throw std::invalid_argument("Width and height must be greater than zero.");
+  }
+  tcod::get_env_renderer(renderer);
+  tcod::get_env_vsync(vsync);
+  TCOD_console_delete(NULL);
+  TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
+#ifndef TCOD_BARE
+  TCOD_ctx.renderer=renderer;
+#endif
+  if (title) {
+    strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
+  }
+  TCOD_ctx.fullscreen = fullscreen;
+  switch (renderer) {
+    case TCOD_RENDERER_OPENGL2:
+    case TCOD_RENDERER_SDL2: {
+      int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
+      int window_flags = (SDL_WINDOW_RESIZABLE |
+                          (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+      struct TCOD_Tileset* tileset = ensure_tileset();
+      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, renderer_flags, tileset);
+      break;
+    }
+    default:
+      if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
+        throw std::runtime_error(TCOD_get_error());
+      }
+      break;
   }
   return 0;
 }
@@ -188,62 +162,55 @@ void TCOD_quit(void)
 }
 void TCOD_console_set_window_title(const char *title)
 {
-  if (auto display = tcod::engine::get_display()) {
-    display->set_title(title);
-  } else { // Deprecated renderer.
-    TCOD_sys_set_window_title(title);
-  }
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
+  SDL_SetWindowTitle(window, title);
+  strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
 }
 void TCOD_console_set_fullscreen(bool fullscreen)
 {
-  if (auto display = tcod::engine::get_display()) {
-    display->set_fullscreen(fullscreen);
+  TCOD_ctx.fullscreen = fullscreen;
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
+  if (window) {
+    SDL_SetWindowFullscreen(
+        window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   } else { // Deprecated renderer.
     TCOD_IFNOT(TCOD_ctx.root != NULL) { return; }
     TCOD_sys_set_fullscreen(fullscreen);
-    TCOD_ctx.fullscreen = fullscreen;
   }
 }
 bool TCOD_console_is_fullscreen(void)
 {
-  if (auto display = tcod::engine::get_display()) {
-    return display->get_fullscreen() == 1;
-  } else { // Deprecated renderer.
-    return TCOD_ctx.fullscreen;
-  }
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
+  if (!window) { return TCOD_ctx.fullscreen; }
+  return (SDL_GetWindowFlags(window)
+          & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) != 0;
 }
 bool TCOD_console_has_mouse_focus(void)
 {
-  if (auto display = tcod::engine::get_display()) {
-    if (auto window = display->get_sdl_window()) {
-      return (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
-    }
-  }
-  return TCOD_ctx.app_has_mouse_focus;
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
+  if (!window) { return TCOD_ctx.app_has_mouse_focus; }
+  return (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
 }
 bool TCOD_console_is_active(void)
 {
-  if (auto display = tcod::engine::get_display()) {
-    if (auto window = display->get_sdl_window()) {
-      return (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
-    }
-  }
-  return TCOD_ctx.app_is_active;
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
+  if (!window) { return TCOD_ctx.app_is_active; }
+  return (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
 }
 bool TCOD_console_is_window_closed(void) {
 	return TCOD_ctx.is_window_closed;
 }
 struct SDL_Window* TCOD_sys_get_sdl_window(void)
 {
-  if (auto display = tcod::engine::get_display()) {
-    return display->get_sdl_window();
+  if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_window) {
+    return TCOD_ctx.engine->get_sdl_window(TCOD_ctx.engine);
   }
   return TCOD_sys_get_sdl_window_();
 }
 struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
 {
-  if (auto display = tcod::engine::get_display()) {
-    return display->get_sdl_renderer();
+  if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_renderer) {
+    return TCOD_ctx.engine->get_sdl_renderer(TCOD_ctx.engine);
   }
   return TCOD_sys_get_sdl_renderer_();
 }
@@ -254,28 +221,9 @@ int TCOD_sys_accumulate_console(const TCOD_Console* console)
 int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport)
 {
   console = tcod::console::validate_(console);
-  auto display = tcod::engine::get_display();
-  if (!console || !display) { return -1; }
-  display->accumulate(console, viewport);
-  return 0;
-}
-int TCOD_sys_init_sdl2_renderer_(
-    int width,
-    int height,
-    const char* title,
-    int window_flags,
-    int renderer_flags)
-{
-  using tcod::sdl2::SDL2Display;
-  try {
-    auto tileset = tcod::ensure_tileset();
-    std::array<int, 2> window_size{ width, height };
-    auto display = std::make_shared<SDL2Display>(
-      tileset, window_size, window_flags, title, renderer_flags);
-    tcod::engine::set_display(display);
-    TCOD_ctx.renderer = TCOD_RENDERER_SDL2;
-  } catch (const std::exception& e) {
-    return tcod::set_error(e);
+  if (!console) { return -1; }
+  if (TCOD_ctx.engine && TCOD_ctx.engine->accumulate) {
+    return TCOD_ctx.engine->accumulate(TCOD_ctx.engine, console, viewport);
   }
-  return 0;
+  return -1;
 }

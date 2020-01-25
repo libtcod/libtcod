@@ -38,7 +38,10 @@
 #endif
 #include <SDL.h>
 
+#define LODEPNG_NO_COMPILE_CPP
+extern "C" {
 #include "../vendor/lodepng.h"
+}
 
 #include "libtcod_int.h"
 bool TCOD_sys_check_png(const char *filename) {

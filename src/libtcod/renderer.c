@@ -42,6 +42,6 @@ struct TCOD_Renderer* TCOD_renderer_init_custom()
 void TCOD_renderer_delete(struct TCOD_Renderer* renderer)
 {
   if (!renderer) { return; }
-  if (renderer->destructor) { renderer->destructor(renderer->userdata); }
+  if (renderer->destructor) { renderer->destructor(renderer); }
   free(renderer);
 }

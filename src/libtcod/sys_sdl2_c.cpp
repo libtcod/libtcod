@@ -37,6 +37,11 @@
 
 #include <SDL.h>
 
+#define LODEPNG_NO_COMPILE_CPP
+extern "C" {
+#include "../vendor/lodepng.h"
+}
+
 #include "console.h"
 #include "libtcod_int.h"
 #include "utility.h"
@@ -377,14 +382,15 @@ static void save_screenshot(const char* filename)
     case TCOD_RENDERER_SDL: {
       int width, height;
       SDL_GetRendererOutputSize(renderer, &width, &height);
-      tcod::image::Image pixels(width, height);
+      unsigned char* pixels = (unsigned char*)malloc(sizeof(*pixels) + width * height);
       SDL_RenderReadPixels(
           renderer,
           nullptr,
           SDL_PIXELFORMAT_RGBA32,
-          static_cast<void*>(pixels.data()),
+          static_cast<void*>(pixels),
           width * 4);
-      tcod::image::save(pixels, filename);
+      lodepng_encode32_file(filename, pixels, (unsigned)width, (unsigned)height);
+      free(pixels);
       break;
     }
 #ifndef NO_OPENGL

@@ -70,12 +70,12 @@ bool TCOD_console_init(TCOD_Console* con)
   TCOD_console_clear(con);
   return true;
 }
-bool TCOD_console_init(TCOD_Console* con, const std::string& title,
+bool TCOD_console_init(TCOD_Console* con, const char* title,
                        bool fullscreen)
 {
   if (!TCOD_console_init(con)) { return false; }
   if (!TCOD_sys_init(con, fullscreen) ) { return false; }
-  TCOD_sys_set_window_title(title.c_str());
+  TCOD_sys_set_window_title(title);
   return true;
 }
 void TCOD_console_delete(TCOD_Console* con)

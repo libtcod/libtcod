@@ -31,25 +31,8 @@
  */
 #ifndef LIBTCOD_TILESET_TRUETYPE_H_
 #define LIBTCOD_TILESET_TRUETYPE_H_
-#ifdef __cplusplus
-#include <array>
-#include <memory>
-#endif // __cplusplus
-#include "tileset.h"
+#include "../tileset.h"
 
-#ifdef __cplusplus
-namespace tcod {
-namespace tileset {
-/**
- *  Return a Tileset from a `.ttf` or `.otf` font file.
- */
-auto load_truetype(
-    const std::string& path,
-    const std::array<int, 2>& tile_size)
--> std::unique_ptr<Tileset>;
-} // namespace tileset
-} // namespace tcod
-#endif // __cplusplus
 /**
  *  Return a tileset from a TrueType font file.
  */

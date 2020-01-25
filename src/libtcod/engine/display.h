@@ -32,13 +32,8 @@
 #ifndef LIBTCOD_ENGINE_DISPLAY_H_
 #define LIBTCOD_ENGINE_DISPLAY_H_
 
-#ifdef __cplusplus
-#include <array>
-#include <string>
-#endif // __cplusplus
-
 #include "../color/canvas.h"
-#include "../tileset/tileset.h"
+#include "../tileset.h"
 #include "../console_types.h"
 
 struct SDL_Rect;
@@ -46,100 +41,6 @@ struct SDL_Window;
 struct SDL_Renderer;
 #ifdef __cplusplus
 namespace tcod {
-namespace engine {
-using tcod::image::Image;
-using tcod::tileset::Tileset;
-class Display {
- public:
-  virtual ~Display() = default;
-  virtual void set_tileset(std::shared_ptr<Tileset> tileset) = 0;
-  virtual void set_title(const std::string& title) = 0;
-  virtual std::string get_title() = 0;
-  /**
-   *  Set the fullscreen status if the display supports it.
-   *
-   *  If it is supported this can be used to switch between a window and
-   *  borderless fullscreen window.
-   */
-  virtual void set_fullscreen(bool fullscreen) = 0;
-  /**
-   *  Return true if the display is in fullscreen mode.
-   *
-   *  Returns a negative number if the display does not support fullscreen.
-   */
-  virtual int get_fullscreen() = 0;
-  /**
-   *  Render a console over this display.
-   */
-  virtual void accumulate(const TCOD_Console*) = 0;
-  virtual void accumulate(const TCOD_Console*, const struct SDL_Rect* viewport) = 0;
-  /**
-   *  Render a console and present the display.
-   */
-  virtual void present(const TCOD_Console*) = 0;
-  virtual auto pixel_to_tile(const std::array<double, 2>& xy)
-      -> std::array<double, 2> = 0;
-
-  virtual auto read_pixels() const -> Image = 0;
-  /**
-   *  Return the pointer to an SDL2 window, if this display uses SDL.
-   *
-   *  Could return nullptr.
-   */
-  virtual auto get_sdl_window() -> struct SDL_Window* = 0;
-  /**
-   *  Return the pointer to an SDL2 renderer, if this display uses SDL's
-   *  renderer.
-   *
-   *  Could return nullptr.
-   */
-  virtual auto get_sdl_renderer() -> struct SDL_Renderer* = 0;
-};
-/**
- *  Incomplete interface for subclasses which don't need an SDL2 window.
- */
-class TerminalDisplay: public Display {
- public:
-  using Display::accumulate;
-  virtual void set_tileset(std::shared_ptr<Tileset>) override
-  {}
-  virtual void set_title(const std::string&) override
-  {}
-  virtual std::string get_title() override
-  {
-    return {};
-  }
-  /**
-   *  Terminals do not support fullscreen modes.
-   */
-  virtual void set_fullscreen(bool) override
-  {}
-  /**
-   *  Return a negative error code.
-   */
-  virtual int get_fullscreen() override
-  {
-    return -1;
-  }
-  virtual auto pixel_to_tile(const std::array<double, 2>& xy)
-      -> std::array<double, 2> override
-  {
-    return xy;
-  }
-  virtual auto get_sdl_window() -> struct SDL_Window* override
-  {
-    return nullptr;
-  }
-  virtual auto get_sdl_renderer() -> struct SDL_Renderer* override
-  {
-    return nullptr;
-  }
-  virtual void accumulate(const TCOD_Console* console, const struct SDL_Rect*) override
-  {
-    accumulate(console);
-  }
-};
-} // namespace sdl2
 namespace console {
 TCODLIB_API void init_root(int w, int h, const std::string& title,
                            bool fullscreen, TCOD_renderer_t renderer);

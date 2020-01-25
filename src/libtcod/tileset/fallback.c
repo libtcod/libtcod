@@ -29,4 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "legacy_backend.h"
+#include "fallback.h"
+
+#include "stdlib.h"
+#include "string.h"
+#include "stdio.h"
+
+#include "truetype.h"
+#include "../engine/error.h"
+TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height)
+{
+#if defined(_WIN32) // Windows.
+  const char* sys_root = getenv("SystemRoot");
+  const char* filename = "\\Fonts\\LUCON.TTF";
+  char path[4096] = "";
+  strncpy(path, sys_root, sizeof(path) - 1);
+  strncat(path, filename, sizeof(path) - 1 - strlen(path));
+  return TCOD_load_truetype_font_(path, tile_width, tile_height);
+#elif defined(__APPLE__) // MacOS.
+  return TCOD_load_truetype_font_(
+      "/System/Library/Fonts/SFCompactDisplay-Regular.otf",
+      tile_width, tile_height);
+#elif defined(__unix__) // Linux
+  FILE* pipe = popen("fc-match --format=%{file} monospace", "r");
+  char path[4096] = "";
+  if (!pipe) {
+    return;
+  }
+  fgets(path, sizeof(path) - 1, pipe);
+  pclose(pipe);
+  return TCOD_load_truetype_font_(path, tile_width, tile_height);
+#else
+  return NULL;
+  //throw std::runtime_error("Fallback font not supported for this OS.");
+#endif
+}

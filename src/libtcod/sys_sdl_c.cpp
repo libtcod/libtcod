@@ -44,6 +44,7 @@
 #include "libtcod_int.h"
 #include "parser.h"
 #include "color/canvas.h"
+#include "engine/display.h"
 #include "engine/error.h"
 #include "engine/globals.h"
 
@@ -249,15 +250,11 @@ void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) {
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
   if (asciiCode <= 0) { return; } /* can't reassign 0 or negatives */
   // Assign to new-style Tileset.
-  auto tileset = tcod::engine::get_tileset();
-  auto tilesheet = tcod::engine::get_tilesheet();
-  if (tileset && tilesheet) {
-    try {
-      int tile_id = fontCharX + fontCharY * tilesheet->get_columns();
-      tileset->set_tile(asciiCode, tilesheet->get_tile(tile_id));
-    } catch (const std::runtime_error&) { // Ignore errors and continue.
-    } catch (const std::logic_error&) {
-    }
+  if(TCOD_ctx.tileset) {
+    TCOD_tileset_assign_charmap(
+        TCOD_ctx.tileset,
+        asciiCode,
+        TCOD_ctx.tileset->virtual_columns * fontCharY + fontCharX);
   }
   // Assign to legacy character table.
   if (asciiCode >= TCOD_ctx.max_font_chars) {
@@ -526,7 +523,7 @@ SDL_Surface* TCOD_sys_create_bitmap_for_console(const TCOD_Console* console)
 }
 
 static void TCOD_sys_render(void *vbitmap, struct TCOD_Console* console) {
-  if (!tcod::engine::get_display()) {
+  if (!TCOD_ctx.engine) {
     get_sdl()->render(get_sdl(), vbitmap, console);
   }
 }
@@ -806,8 +803,9 @@ void TCOD_sys_shutdown(void)
   if (TCOD_ctx.root) {
     TCOD_console_delete(TCOD_ctx.root);
   }
-  if (tcod::engine::get_display()){
-    tcod::engine::set_display(nullptr);
+  if (TCOD_ctx.engine){
+    TCOD_renderer_delete(TCOD_ctx.engine);
+    TCOD_ctx.engine = NULL;
     return;
   }
   if (has_startup) {
@@ -966,9 +964,8 @@ void TCOD_sys_save_screenshot(const char *filename) {
       fclose(access_file);
     }
   }
-  auto display = tcod::engine::get_display();
-  if (display) {
-    tcod::image::save(display->read_pixels(), filename);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->save_screenshot) {
+    TCOD_ctx.engine->save_screenshot(TCOD_ctx.engine, filename);
   } else {
     get_sdl()->save_screenshot(filename);
   }
@@ -1033,9 +1030,8 @@ static void sync_time(void) {
  */
 void TCOD_sys_flush(bool render) {
   if (!TCOD_ctx.root) { return; }
-  std::shared_ptr<tcod::engine::Display> display = tcod::engine::get_display();
-  if (display) {
-    display->present(TCOD_ctx.root);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->present) {
+    TCOD_ctx.engine->present(TCOD_ctx.engine, TCOD_ctx.root);
   } else {
     if (render) { TCOD_sys_render(NULL, TCOD_ctx.root); }
   }
@@ -1254,11 +1250,8 @@ static TCOD_mouse_t tcod_mouse={0,0,0,0,0,0,0,0,false,false,false,false,false,fa
 void TCOD_sys_pixel_to_tile(double* x, double* y)
 {
   if (!x || !y) { return; }
-  auto display = tcod::engine::get_display();
-  if (display) {
-    std::array<double, 2> xy = display->pixel_to_tile({*x, *y});
-    *x = std::get<0>(xy);
-    *y = std::get<1>(xy);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->pixel_to_tile) {
+    TCOD_ctx.engine->pixel_to_tile(TCOD_ctx.engine, x, y);
   } else {
     *x = (*x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
     *y = (*y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
@@ -1291,20 +1284,21 @@ static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
       break;
     default: return;
   }
-  auto display = tcod::engine::get_display();
-  if (display) {
-    auto to_tile = [&](double x, double y) -> std::array<int, 2> {
-      std::array<double, 2> result(display->pixel_to_tile({x, y}));
-      return {static_cast<int>(result.at(0)), static_cast<int>(result.at(1))};
-    };
-    std::array<int, 2> cell_xy(to_tile(mouse.x, mouse.y));
-    std::array<int, 2> prev_cell_xy(
-        to_tile(mouse.x - mouse.dx, mouse.y - mouse.dy)
-    );
-    mouse.cx = cell_xy.at(0);
-    mouse.cy = cell_xy.at(1);
-    mouse.dcx = cell_xy.at(0) - prev_cell_xy.at(0);
-    mouse.dcy = cell_xy.at(1) - prev_cell_xy.at(1);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->pixel_to_tile) {
+    double x = mouse.x;
+    double y = mouse.y;
+    TCOD_ctx.engine->pixel_to_tile(TCOD_ctx.engine, &x, &y);
+    int cell_x = (int)x;
+    int cell_y = (int)y;
+    x = mouse.x - mouse.dx;
+    y = mouse.y - mouse.dy;
+    TCOD_ctx.engine->pixel_to_tile(TCOD_ctx.engine, &x, &y);
+    int prev_cell_x = (int)x;
+    int prev_cell_y = (int)y;
+    mouse.cx = cell_x;
+    mouse.cy = cell_y;
+    mouse.dcx = cell_x - prev_cell_x;
+    mouse.dcy = cell_y - prev_cell_y;
   } else {
     mouse.x -= TCOD_ctx.fullscreen_offsetx;
     mouse.y -= TCOD_ctx.fullscreen_offsety;
@@ -1835,10 +1829,9 @@ float TCOD_sys_get_last_frame_length(void) {
 }
 
 void TCOD_sys_get_char_size(int *w, int *h) {
-  auto tileset = tcod::engine::get_tileset();
-  if (tileset) {
-    *w = tileset->get_tile_width();
-    *h = tileset->get_tile_height();
+  if (TCOD_ctx.tileset) {
+    *w = TCOD_ctx.tileset->tile_width;
+    *h = TCOD_ctx.tileset->tile_height;
   } else {
     *w = TCOD_ctx.font_width;
     *h = TCOD_ctx.font_height;

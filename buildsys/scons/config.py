@@ -16,7 +16,7 @@ GCC_CC_WARNINGS = [
 
 GCC_CXX_WARNINGS = [
     '-Wnon-virtual-dtor',
-    '-Wold-style-cast',
+    #'-Wold-style-cast',
     '-Woverloaded-virtual',
     '-Wuseless-cast',
 ]

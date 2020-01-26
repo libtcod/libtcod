@@ -184,6 +184,10 @@ struct TCOD_Console {
   bool has_key_color;
   /** The current key color for this console. */
   TCOD_color_t key_color;
+  /** Added 1.16 */
+  void* userdata;
+  /** Added 1.16 */
+  void (*on_delete)(struct TCOD_Console* self);
 };
 typedef struct TCOD_Console TCOD_Console;
 typedef struct TCOD_Console *TCOD_console_t;

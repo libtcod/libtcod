@@ -43,7 +43,7 @@ struct TCOD_TilesetObserver {
   void* userdata;
   void (*on_observer_delete)(struct TCOD_TilesetObserver* observer);
   int (*on_tileset_changed)(
-      struct TCOD_TilesetObserver* observer, int tile_id);
+      struct TCOD_TilesetObserver* observer, int tile_id, int codepoint);
 };
 struct TCOD_Tileset {
   int tile_width;
@@ -116,9 +116,10 @@ TCODLIB_CAPI int TCOD_tileset_set_tile_(
  */
 TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load(
   const char* filename, int columns, int rows, int n, int* charmap);
-struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
+TCODLIB_CAPI struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
     struct TCOD_Tileset* tileset);
-void TCOD_tileset_observer_delete(struct TCOD_TilesetObserver* observer);
+TCODLIB_CAPI void TCOD_tileset_observer_delete(
+    struct TCOD_TilesetObserver* observer);
 TCODLIB_CAPI int TCOD_tileset_assign_charmap(
     struct TCOD_Tileset* tileset, int codepoint, int tile_id);
 

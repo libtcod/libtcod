@@ -103,8 +103,9 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas)
   return 0; // No action.
 }
 int sdl2_atlas_on_tileset_changed(
-    struct TCOD_TilesetObserver* observer, int tile_id)
+    struct TCOD_TilesetObserver* observer, int tile_id, int codepoint)
 {
+  (void)codepoint; // Unused parameter.
   struct TCOD_TilesetAtlasSDL2* atlas = observer->userdata;
   if (prepare_sdl2_atlas(atlas) == 1) {
     return 0; // Tile updated as a side-effect of prepare_sdl2_atlas.
@@ -137,29 +138,70 @@ void TCOD_sdl2_atlas_delete(
   if (atlas->texture) { SDL_DestroyTexture(atlas->texture); }
   free(atlas);
 }
-int TCOD_sdl2_render_console(
+int cache_console_update(
+    struct TCOD_TilesetObserver* observer, int tile_id, int codepoint)
+{
+  (void)tile_id; // Unused parameter.
+  struct TCOD_Console* console = observer->userdata;
+  for (struct TCOD_ConsoleTile* it = console->tiles;
+       it < console->tiles + (console->w * console->h);
+       ++it) {
+    if (it->ch == codepoint) { it->ch = -1; }
+  }
+  return 0;
+}
+void cache_console_on_delete(struct TCOD_Console* console)
+{
+  if (!console->userdata) { return; }
+  TCOD_tileset_observer_delete(console->userdata);
+}
+void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
+{
+  ((struct TCOD_Console*)observer->userdata)->userdata = NULL;
+}
+static int setup_cache_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache)
 {
   if (!atlas || !console) { return -1; }
-  if (cache && *cache) {
+  if (!cache) { return 0; }
+  if (*cache) {
     if ((*cache)->w != console->w || (*cache)->h != console->h) {
       TCOD_console_delete(*cache);
       *cache = NULL;
     }
   }
-  if (cache && !*cache) {
+  if (!*cache) {
     *cache = TCOD_console_new(console->w, console->h);
-    if (!*cache) {
+    struct TCOD_TilesetObserver* observer =
+        TCOD_tileset_observer_new(atlas->tileset);
+    if (!*cache || !observer) {
+      TCOD_console_delete(*cache);
+      *cache = NULL;
+      TCOD_tileset_observer_delete(observer);
       return -1; // Failed to allocate cache.
     }
+    observer->userdata = *cache;
+    (*cache)->userdata = observer;
+    observer->on_tileset_changed = cache_console_update;
+    (*cache)->on_delete = cache_console_on_delete;
+    observer->on_observer_delete = cache_console_observer_delete;
     for (struct TCOD_ConsoleTile* it = (*cache)->tiles;
          it < (*cache)->tiles + ((*cache)->w * (*cache)->h);
          ++it) {
       it->ch = -1;
     }
   }
+  return 0;
+}
+int TCOD_sdl2_render_console(
+    const struct TCOD_TilesetAtlasSDL2* atlas,
+    const struct TCOD_Console* console,
+    struct TCOD_Console** cache)
+{
+  if (!atlas || !console) { return -1; }
+  setup_cache_console(atlas, console, cache);
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(atlas->texture, 0xff);
@@ -180,7 +222,7 @@ int TCOD_sdl2_render_console(
         // Clear foreground color if the foreground glyph is skipped.
         tile.fg.r = tile.fg.g = tile.fg.b = tile.fg.a = 0;
       }
-      if (cache) {
+      if (cache && *cache) {
         const struct TCOD_ConsoleTile cached =
             (*cache)->tiles[(*cache)->w * y + x];
         if (tile.ch == cached.ch

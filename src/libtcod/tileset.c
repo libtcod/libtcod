@@ -200,7 +200,7 @@ int TCOD_tileset_set_tile_(
   for (struct TCOD_TilesetObserver* it = tileset->observer_list;
        it; it = it->next) {
     if (!it->on_tileset_changed) { continue; }
-    int err = it->on_tileset_changed(it, tile_id);
+    int err = it->on_tileset_changed(it, tile_id, codepoint);
     if (err) { return err; }
   }
   return 0; // Tile uploaded successfully.

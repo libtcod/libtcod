@@ -82,6 +82,9 @@ void TCOD_console_delete(TCOD_Console* con)
 {
   TCOD_Console* console = (con ? con : TCOD_ctx.root);
   if (console) {
+    if (console->on_delete) {
+      console->on_delete(console);
+    }
     TCOD_console_data_free(console);
     delete console;
   }

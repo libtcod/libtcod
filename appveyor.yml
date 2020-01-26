@@ -6,8 +6,6 @@ environment:
   matrix:
     - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc"
       TEST_PYTHON3: "C:/Python35-x64/python.exe"
-    - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc SOURCE_FILES=static"
-      TEST_PYTHON3: "C:/Python35-x64/python.exe"
     - SCONSOPTS: "ARCH=x86 TOOLSET=msvc"
       TEST_PYTHON3: "C:/Python35/python.exe"
     - SCONSOPTS: "TOOLSET=mingw ARCH=x86_64 -j3"

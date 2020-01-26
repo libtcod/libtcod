@@ -50,8 +50,6 @@
 #include "engine/globals.h"
 #include "tileset.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
-
 #if defined( TCOD_VISUAL_STUDIO )
 static const char *version_string = "libtcod " TCOD_STRVERSION;
 #else
@@ -68,11 +66,9 @@ TCOD_internal_context_t TCOD_ctx={
   0, 0,
 	"terminal.png","",
 	NULL,NULL,NULL,0,false,0,0,0,0,0,0,
-#ifndef TCOD_BARE
 	/* default renderer to use */
 	TCOD_RENDERER_GLSL,
 	NULL,
-#endif
 	/* fading data */
 	{0,0,0},255,
 	/*key state*/
@@ -1359,5 +1355,3 @@ bool ApfFile::Load(std::string filename){
 	return true;
 }
 */
-
-#endif /* TCOD_CONSOLE_SUPPORT */

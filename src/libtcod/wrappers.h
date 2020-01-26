@@ -62,7 +62,6 @@ TCODLIB_API float TCOD_color_get_hue_wrapper (colornum_t c);
 TCODLIB_API float TCOD_color_get_saturation_wrapper (colornum_t c);
 TCODLIB_API float TCOD_color_get_value_wrapper(colornum_t c);
 
-#ifdef TCOD_CONSOLE_SUPPORT
 /* console module */
 /* TCODLIB_API void TCOD_console_set_custom_font_wrapper(const char *fontFile,
                         int char_width, int char_height, int nb_char_horiz,
@@ -115,9 +114,7 @@ TCODLIB_API char *TCOD_console_print_return_string(TCOD_console_t con,int x,
 						   bool can_split,
 						   bool count_only);
 TCODLIB_API void TCOD_console_set_key_color_wrapper (TCOD_console_t con, colornum_t c);
-#endif
 
-#ifdef TCOD_IMAGE_SUPPORT
 /* image module */
 
 TCODLIB_API void TCOD_image_clear_wrapper(TCOD_image_t image,
@@ -130,12 +127,9 @@ TCODLIB_API void TCOD_image_put_pixel_wrapper(TCOD_image_t image,int x, int y,
 				      colornum_t col);
 TCODLIB_API void TCOD_image_set_key_color_wrapper(TCOD_image_t image,
 					  colornum_t key_color);
-#endif
 
-#ifdef TCOD_CONSOLE_SUPPORT
 /* mouse module */
 TCODLIB_API void TCOD_mouse_get_status_wrapper(TCOD_mouse_t *holder);
-#endif
 
 /* parser module */
 TCODLIB_API colornum_t TCOD_parser_get_color_property_wrapper(TCOD_parser_t parser, const char *name);

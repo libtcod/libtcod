@@ -43,16 +43,13 @@ extern "C" {
 TCODLIB_API void TCOD_sys_startup(void);
 TCODLIB_API void TCOD_sys_shutdown(void);
 
-#ifdef TCOD_OSUTIL_SUPPORT
 TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
 TCODLIB_API float TCOD_sys_elapsed_seconds(void);
 TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
 TCODLIB_API void TCOD_sys_set_fps(int val);
 TCODLIB_API int TCOD_sys_get_fps(void);
 TCODLIB_API float TCOD_sys_get_last_frame_length(void);
-#endif
 
-#ifndef TCOD_BARE
 TCODLIB_API void TCOD_sys_save_screenshot(const char *filename);
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
 TCODLIB_API int TCOD_NODISCARD TCOD_sys_set_renderer(TCOD_renderer_t renderer);
@@ -60,18 +57,12 @@ TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
 TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
-#endif
 
-#ifdef TCOD_IMAGE_SUPPORT
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
-#endif
 
-#ifndef TCOD_BARE
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
 TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
-#endif
 
-#ifndef TCOD_BARE
 typedef enum {
   TCOD_EVENT_NONE=0,
   TCOD_EVENT_KEY_PRESS=1,
@@ -91,7 +82,6 @@ typedef enum {
 } TCOD_event_t;
 TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush);
 TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
-#endif
 
 /* filesystem stuff */
 TCOD_DEPRECATED_NOMESSAGE
@@ -111,13 +101,11 @@ TCODLIB_API bool TCOD_sys_read_file(const char *filename, unsigned char **buf, s
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size);
 
-#ifndef TCOD_BARE
 /* clipboard */
 TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
 TCODLIB_API bool TCOD_sys_clipboard_set(const char *value);
 TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
 TCODLIB_API char *TCOD_sys_clipboard_get(void);
-#endif
 
 /* thread stuff */
 typedef void *TCOD_thread_t;
@@ -171,11 +159,9 @@ TCODLIB_API void * TCOD_get_function_address(TCOD_library_t library, const char 
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
-#ifndef TCOD_BARE
 typedef void (*SDL_renderer_t) (struct SDL_Surface* sdl_renderer);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
-#endif
 #ifdef __cplusplus
 }
 #endif

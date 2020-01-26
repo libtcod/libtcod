@@ -139,7 +139,6 @@ public :
 	*/
 	void putColor(const TCODColor *val);
 
-#ifdef TCOD_IMAGE_SUPPORT
 	/**
 	@PageName zip_put
 	@FuncTitle Putting an image in the buffer
@@ -149,9 +148,7 @@ public :
 	@Param val	An image to store in the buffer
 	*/
 	void putImage(const TCODImage *val);
-#endif
 
-#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName zip_put
 	@FuncTitle Putting a console in the buffer
@@ -161,7 +158,6 @@ public :
 	@Param val	A console to store in the buffer
 	*/
 	void putConsole(const TCODConsole *val);
-#endif
 
 	/**
 	@PageName zip_put
@@ -271,7 +267,6 @@ public :
 	*/
 	TCODColor getColor();
 
-#ifdef TCOD_IMAGE_SUPPORT
 	/**
 	@PageName zip_load
 	@FuncTitle Reading a color from the buffer
@@ -280,9 +275,7 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/
 	TCODImage *getImage();
-#endif
 
-#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName zip_load
 	@FuncTitle Reading a console from the buffer
@@ -291,7 +284,6 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/
 	TCODConsole *getConsole();
-#endif
 
 	/**
 	@PageName zip_load

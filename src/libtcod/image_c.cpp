@@ -30,7 +30,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "portability.h"
-#ifdef TCOD_IMAGE_SUPPORT
 #include "image.h"
 
 #include <stdlib.h>
@@ -309,9 +308,7 @@ void TCOD_image_delete_internal(TCOD_Image* image) {
     free(image->mipmaps);
   }
   if (image->sys_img) {
-#ifndef TCOD_BARE
     TCOD_sys_delete_bitmap(image->sys_img);
-#endif
   }
 }
 
@@ -331,8 +328,6 @@ bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y) {
   if (TCOD_image_get_alpha(image, x, y) == 0) { return true; }
   return false;
 }
-
-#ifdef TCOD_CONSOLE_SUPPORT
 
 void TCOD_image_blit(
     const TCOD_Image* image, TCOD_console_t console, float x, float y,
@@ -454,8 +449,6 @@ void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
   TCOD_sys_console_to_bitmap(
     image->sys_img, tcod::console::validate_(console), NULL);
 }
-
-#endif /* TCOD_CONSOLE_SUPPORT */
 
 void TCOD_image_save(const TCOD_Image* image, const char *filename)
 {
@@ -818,7 +811,6 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   }
   *ascii = flagToAscii[flag];
 }
-#ifdef TCOD_CONSOLE_SUPPORT
 
 void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       int dx, int dy, int sx, int sy, int w, int h) {
@@ -908,5 +900,3 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
     }
   }
 }
-#endif /* TCOD_CONSOLE_SUPPORT */
-#endif /* TCOD_IMAGE_SUPPORT */

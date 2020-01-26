@@ -94,7 +94,6 @@ typedef struct {
 	int *ascii_to_tcod;
 	/* whether each character in the font is a colored tile */
 	bool *colored;
-#ifdef TCOD_CONSOLE_SUPPORT
 	/* the root console */
 	struct TCOD_Console *root;
 	/* nb chars in the font */
@@ -109,27 +108,20 @@ typedef struct {
 	/* actual resolution */
 	int actual_fullscreen_width;
 	int actual_fullscreen_height;
-#endif
-#ifndef TCOD_BARE
 	/* renderer to use */
 	TCOD_renderer_t renderer;
 	/* user post-processing callback */
 	SDL_renderer_t sdl_cbk;
-#endif
 	/* fading data */
 	TCOD_color_t fading_color;
 	uint8_t fade;
-#ifdef TCOD_CONSOLE_SUPPORT
 	TCOD_key_t key_state;
-#endif
-#ifndef TCOD_BARE
 	/* application window was closed */
 	bool is_window_closed;
 	/* application has mouse focus */
 	bool app_has_mouse_focus;
 	/* application is active (not iconified) */
 	bool app_is_active;
-#endif
   struct TCOD_Tileset* tileset;
   struct TCOD_Renderer* engine;
 } TCOD_internal_context_t;
@@ -165,7 +157,6 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_LOG(x) printf x
 #endif
 
-#if !defined(TCOD_BARE) && !defined(NO_OPENGL)
 /* opengl utilities */
 void TCOD_opengl_init_attributes(void);
 bool TCOD_opengl_init_state(int conw, int conh, struct SDL_Surface* font_tex);
@@ -174,9 +165,7 @@ bool TCOD_opengl_init_shaders(void);
 bool TCOD_opengl_render(int oldFade, bool *ascii_updated, struct TCOD_Console *console, struct TCOD_Console *cache);
 void TCOD_opengl_swap(void);
 struct SDL_Surface* TCOD_opengl_get_screen(void);
-#endif
 
-#ifdef TCOD_IMAGE_SUPPORT
 /* image internal stuff */
 bool TCOD_image_mipmap_copy_internal(const TCOD_Image* srcImage,
                                      TCOD_Image* dstImage);
@@ -184,7 +173,6 @@ TCOD_color_t *TCOD_image_get_colors(TCOD_Image* image);
 void TCOD_image_invalidate_mipmaps(TCOD_Image* image);
 void TCOD_image_get_key_data(const TCOD_Image* image,
                              bool *has_key_color, TCOD_color_t *key_color);
-#endif
 
 /* fov internal stuff */
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
@@ -223,7 +211,6 @@ int TCOD_console_print_internal_utf(TCOD_console_t con,int x,int y, int rw, int 
 	TCOD_alignment_t align, wchar_t *msg, bool can_split, bool count_only);
 #endif
 
-#ifdef TCOD_IMAGE_SUPPORT
 /* image manipulation */
 TCODLIB_API struct SDL_Surface* TCOD_sys_load_image(const char *filename);
 void TCOD_sys_get_image_size(const struct SDL_Surface *image, int *w,int *h);
@@ -231,12 +218,10 @@ TCOD_color_t TCOD_sys_get_image_pixel(const struct SDL_Surface *image,
                                       int x, int y);
 int TCOD_sys_get_image_alpha(const struct SDL_Surface* image, int x, int y);
 bool TCOD_sys_check_magic_number(const char *filename, size_t size, uint8_t *data);
-#endif
 
 /* TCOD_list nonpublic methods */
 void TCOD_list_set_size(TCOD_list_t l, int size);
 
-#ifndef TCOD_BARE
 /*
 	SDL12/SDL2 abstraction layer
 */
@@ -306,7 +291,6 @@ extern struct SDL_Surface* charmap;
 extern struct SDL_Window* window;
 extern struct SDL_Renderer* renderer;
 extern char *last_clipboard_text;
-#endif
 
 /* SDL & OpenGL */
 extern int oldFade;

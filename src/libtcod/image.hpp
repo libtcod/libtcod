@@ -34,16 +34,10 @@
 
 #include "color.hpp"
 
-#ifdef TCOD_IMAGE_SUPPORT
-
-#ifdef TCOD_CONSOLE_SUPPORT
 #include "console.hpp"
-#endif
 #include "image.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
 class TCODConsole;
-#endif
 
 class TCODLIB_API TCODImage {
 public :
@@ -87,7 +81,6 @@ public :
 	*/
 	TCODImage(const char *filename);
 
-#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName image_create
 	@FuncTitle Creating an image from a console
@@ -129,7 +122,6 @@ public :
 		libtcod.image_refresh_console(pix,0)
 	*/
 	void refreshConsole(const TCODConsole *console);
-#endif
 
 	/**
 	@PageName image_read
@@ -353,7 +345,6 @@ public :
 	  */
 	void save(const char *filename) const;
 
-#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName image_blit
 	@PageFather image
@@ -398,7 +389,6 @@ public :
 	@Param angle	Rotation angle in radians.
 	*/
 	void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const;
-#endif
 
 	/**
 	@PageName image_blit
@@ -426,7 +416,6 @@ public :
 	*/
 	void setKeyColor(const TCODColor keyColor);
 
-#ifdef TCOD_CONSOLE_SUPPORT
 	/**
 	@PageName image_blit
 	@FuncTitle Blitting with subcell resolution
@@ -453,7 +442,6 @@ public :
 	@Param sx,sy,w,h	Part of the image to blit. Use -1 in w and h to blit the whole image.
 	*/
 	void blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1) const;
-#endif
 
 	TCODImage(TCOD_image_t img) : data(img), deleteData(false) {}
 	virtual ~TCODImage();
@@ -464,7 +452,4 @@ protected :
 	struct TCOD_Image *data;
 	bool deleteData;
 };
-
-#endif /* TCOD_IMAGE_SUPPORT */
-
 #endif /* _TCOD_IMAGE_HPP */

@@ -502,28 +502,10 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 #endif
 }
 
-#ifndef TCOD_BARE
 void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy) {
 	if ( offx ) *offx = TCOD_ctx.fullscreen_offsetx;
 	if ( offy ) *offy = TCOD_ctx.fullscreen_offsety;
 }
-#else
-void TCOD_sys_startup(void) {
-	//TCOD_ctx.max_font_chars = 256;
-	//alloc_ascii_tables();
-}
-
-void TCOD_sys_shutdown(void) {
-}
-
-bool TCOD_sys_read_file(const char *filename, unsigned char **buf, size_t *size) {
-	return false;
-}
-
-bool TCOD_sys_write_file(const char *filename, unsigned char *buf, uint32_t size) {
-	return false;
-}
-#endif /* TCOD_BARE */
 /**
  *  Print formatted text as an error and then forcefully terminate the program.
  */

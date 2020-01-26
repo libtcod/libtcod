@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_BARE
 #include "mouse.h"
 #include "sys.h"
 
@@ -1975,4 +1974,3 @@ struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void)
 {
   return renderer;
 }
-#endif /* TCOD_BARE */

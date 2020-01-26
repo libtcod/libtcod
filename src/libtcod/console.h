@@ -34,8 +34,6 @@
 
 #include "portability.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
-
 #include "console/console.h"
 #include "console/drawing.h"
 #include "console/printing.h"
@@ -93,7 +91,4 @@ TCODLIB_API void TCOD_console_disable_keyboard_repeat();
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TCOD_CONSOLE_SUPPORT */
-
 #endif /* _TCOD_CONSOLE_H */

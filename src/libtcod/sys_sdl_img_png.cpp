@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_BARE
 #include "sys.h"
 
 #if !defined (__HAIKU__) && !defined (__ANDROID__)
@@ -126,4 +125,3 @@ void TCOD_sys_write_png(SDL_Surface *surf, const char *filename) {
 		printf("error %u: %s\n", error, lodepng_error_text(error));
 	}
 }
-#endif /* TCOD_BARE */

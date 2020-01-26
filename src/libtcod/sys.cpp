@@ -37,7 +37,6 @@
 #include "libtcod_int.h"
 #include "engine/display.h"
 
-#ifdef TCOD_OSUTIL_SUPPORT
 void TCODSystem::sleepMilli(uint32_t milliseconds) {
 	TCOD_sys_sleep_milli(milliseconds);
 }
@@ -49,9 +48,7 @@ uint32_t TCODSystem::getElapsedMilli() {
 float TCODSystem::getElapsedSeconds() {
 	return TCOD_sys_elapsed_seconds();
 }
-#endif
 
-#ifndef TCOD_BARE
 void TCODSystem::saveScreenshot(const char *filename) {
 	TCOD_sys_save_screenshot(filename);
 }
@@ -80,9 +77,7 @@ TCOD_event_t TCODSystem::checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mous
 TCOD_renderer_t TCODSystem::getRenderer() {
 	return TCOD_sys_get_renderer();
 }
-#endif
 
-#ifdef TCOD_OSUTIL_SUPPORT
 void TCODSystem::setFps(int val) {
 	TCOD_sys_set_fps(val);
 }
@@ -94,9 +89,7 @@ int TCODSystem::getFps() {
 float TCODSystem::getLastFrameLength() {
 	return TCOD_sys_get_last_frame_length();
 }
-#endif
 
-#ifndef TCOD_BARE
 void TCODSystem::getCurrentResolution(int *w, int *h) {
 	TCOD_sys_get_current_resolution(w, h);
 }
@@ -112,7 +105,6 @@ void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage 
 void TCODSystem::getCharSize(int *w, int *h) {
 	TCOD_sys_get_char_size(w, h);
 }
-#endif
 
 // filesystem stuff
 bool TCODSystem::createDirectory(const char *path) {
@@ -159,7 +151,6 @@ bool TCODSystem::writeFile(const char *filename, unsigned char *buf, uint32_t si
 	return TCOD_sys_write_file(filename,buf,size) != 0;
 }
 
-#ifndef TCOD_BARE
 // clipboard stuff
 bool TCODSystem::setClipboard(const char *value) {
 	return TCOD_sys_clipboard_set(value) != 0;
@@ -168,7 +159,6 @@ bool TCODSystem::setClipboard(const char *value) {
 char *TCODSystem::getClipboard() {
   return TCOD_sys_clipboard_get();
 }
-#endif
 
 // thread stuff
 int TCODSystem::getNumCores() {
@@ -249,7 +239,5 @@ extern "C" void TCOD_CRenderer(struct SDL_Surface* sdl_surface) {
 }
 void TCODSystem::registerSDLRenderer(ITCODSDLRenderer *renderer) {
 	::post_renderer = renderer;
-#ifndef TCOD_BARE
 	TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
-#endif
 }

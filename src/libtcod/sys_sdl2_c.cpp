@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_BARE
 #include "sys.h"
 
 #include <stdio.h>
@@ -537,5 +536,3 @@ TCOD_SDL_driver_t *SDL_implementation_factory(void) {
 	ret->get_root_console_cache = get_root_console_cache;
 	return ret;
 }
-
-#endif /* TCOD_BARE */

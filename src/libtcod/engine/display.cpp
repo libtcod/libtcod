@@ -129,9 +129,7 @@ TCOD_Error TCOD_console_init_root_(
   tcod::get_env_vsync(vsync);
   TCOD_console_delete(NULL);
   TCODConsole::root->data = TCOD_ctx.root = TCOD_console_new(w, h);
-#ifndef TCOD_BARE
   TCOD_ctx.renderer=renderer;
-#endif
   if (title) {
     strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
   }

@@ -35,8 +35,6 @@
 #include "portability.h"
 #include "color.h"
 
-#ifdef TCOD_IMAGE_SUPPORT
-
 #include "console_types.h"
 
 #ifdef __cplusplus
@@ -61,7 +59,6 @@ typedef struct TCOD_Image {
 typedef TCOD_Image *TCOD_image_t;
 
 TCODLIB_API TCOD_Image* TCOD_image_new(int width, int height);
-#ifdef TCOD_CONSOLE_SUPPORT
 /**
  *  Return a new image rendered from a console.
  *
@@ -72,7 +69,6 @@ TCODLIB_API TCOD_Image* TCOD_image_from_console(const TCOD_Console* console);
  *  Same as TCOD_image_from_console, but with an existing image.
  */
 TCODLIB_API void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console);
-#endif
 TCODLIB_API TCOD_Image* TCOD_image_load(const char *filename);
 TCODLIB_API void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color);
 TCODLIB_API void TCOD_image_invert(TCOD_Image* image);
@@ -89,7 +85,6 @@ TCODLIB_API TCOD_color_t TCOD_image_get_mipmap_pixel(
     const TCOD_Image* image, float x0, float y0, float x1, float y1);
 TCODLIB_API void TCOD_image_put_pixel(
     TCOD_Image* image, int x, int y, TCOD_color_t col);
-#ifdef TCOD_CONSOLE_SUPPORT
 TCODLIB_API void TCOD_image_blit(
     const TCOD_Image* image, TCOD_console_t console, float x, float y,
     TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle);
@@ -99,7 +94,6 @@ TCODLIB_API void TCOD_image_blit_rect(
 TCODLIB_API void TCOD_image_blit_2x(
     const TCOD_Image* image, TCOD_console_t dest,
     int dx, int dy, int sx, int sy, int w, int h);
-#endif
 TCODLIB_API void TCOD_image_delete(TCOD_Image* image);
 TCODLIB_API void TCOD_image_set_key_color(TCOD_Image* image,
                                           TCOD_color_t key_color);
@@ -109,7 +103,5 @@ TCODLIB_API bool TCOD_image_is_pixel_transparent(
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* TCOD_IMAGE_SUPPORT */
 
 #endif /* _TCOD_IMAGE_H */

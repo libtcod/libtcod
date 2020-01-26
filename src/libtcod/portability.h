@@ -145,17 +145,6 @@
 #endif // __cplusplus
 #endif // TCODLIB_CAPI
 
-/* For now this encapsulates mouse, keyboard, and consoles themselves. */
-#undef TCOD_CONSOLE_SUPPORT
-#undef TCOD_IMAGE_SUPPORT
-#undef TCOD_OSUTIL_SUPPORT
-
-#ifndef TCOD_BARE
-#define TCOD_CONSOLE_SUPPORT
-#define TCOD_IMAGE_SUPPORT
-#define TCOD_OSUTIL_SUPPORT
-#endif
-
 /* int types */
 #include <stdint.h>
 

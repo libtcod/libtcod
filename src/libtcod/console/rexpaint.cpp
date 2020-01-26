@@ -31,8 +31,6 @@
  */
 #include "rexpaint.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
-
 #include <limits>
 
 #include <zlib.h>
@@ -357,5 +355,3 @@ bool TCOD_console_list_save_xp(
   if (gzclose(gz_file)) { return false; /* error writing to file */ }
   return true;
 }
-
-#endif /* TCOD_CONSOLE_SUPPORT */

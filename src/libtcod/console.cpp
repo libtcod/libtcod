@@ -39,8 +39,6 @@
 #include "image.hpp"
 #include "engine/display.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
-
 TCODConsole* TCODConsole::root = new TCODConsole();
 
 TCODConsole::TCODConsole() {}
@@ -138,11 +136,9 @@ void TCODConsole::setDefaultForeground(TCODColor fore) {
 	TCOD_console_set_default_foreground(data,b);
 }
 
-#ifndef TCOD_BARE
 void TCODConsole::setWindowTitle(const char *title) {
 	TCOD_sys_set_window_title(title);
 }
-#endif
 
 void TCODConsole::initRoot(int w, int h, const char *title, bool fullscreen,
                            TCOD_renderer_t renderer)
@@ -460,7 +456,4 @@ const char *TCODConsole::getRGBColorControlString(TCOD_colctrl_t ctrl,
   buf_nb = (buf_nb + 1) % NB_BUFFERS;
   return ret;
 }
-
-#endif
-
-#endif /* TCOD_CONSOLE_SUPPORT */
+#endif // NO_UNICODE

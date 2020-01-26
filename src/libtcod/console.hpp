@@ -40,8 +40,6 @@
 #include "console/rexpaint.h"
 #include "engine/display.h"
 
-#ifdef TCOD_CONSOLE_SUPPORT
-
 #include "image.hpp"
 #include "color.hpp"
 
@@ -1823,7 +1821,4 @@ protected :
       int w, int h, const char* title,
       bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 };
-
-#endif /* TCOD_CONSOLE_SUPPORT */
-
 #endif /* _TCOD_CONSOLE_HPP */

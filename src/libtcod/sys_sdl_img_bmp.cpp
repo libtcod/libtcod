@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_BARE
 #include "sys.h"
 
 #include <SDL.h>
@@ -68,4 +67,3 @@ SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
 void TCOD_sys_write_bmp(SDL_Surface *surf, const char *filename) {
 	SDL_SaveBMP(surf, filename);
 }
-#endif /* TCOD_BARE */

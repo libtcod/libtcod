@@ -41,7 +41,9 @@
 
 struct TCOD_HeapNode {
   int priority;
+#if !defined(__cplusplus)
   unsigned char data[];
+#endif // !defined(__cplusplus)
 };
 
 struct TCOD_Heap {

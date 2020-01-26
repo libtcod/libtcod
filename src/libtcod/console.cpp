@@ -147,7 +147,9 @@ void TCODConsole::setWindowTitle(const char *title) {
 void TCODConsole::initRoot(int w, int h, const char *title, bool fullscreen,
                            TCOD_renderer_t renderer)
 {
-  TCOD_console_init_root(w, h, title, fullscreen, renderer);
+  tcod::check_throw_error(
+      TCOD_console_init_root(w, h, title, fullscreen, renderer)
+  );
 }
 
 void TCODConsole::setFullscreen(bool fullscreen) {

@@ -31,13 +31,28 @@
  */
 #include "error.h"
 
-#include <cstdarg>
-#include <cstdio>
-#include <cstring>
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
-namespace tcod {
-static thread_local char error_msg_[256] = {};
-int set_errorf(const char* fmt, ...)
+// Define __thread for MSVC.
+#if !defined(__thread) && defined(_MSC_VER)
+#define __thread __declspec(thread)
+#endif
+
+// Maximum error length in bytes.
+#define MAX_ERROR_LENGTH 1024
+static __thread char error_msg_[MAX_ERROR_LENGTH] = "";
+const char* TCOD_get_error()
+{
+  return error_msg_;
+}
+int TCOD_set_error(const char* msg)
+{
+  strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
+  return -1;
+}
+int TCOD_set_errorf(const char* fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
@@ -45,25 +60,7 @@ int set_errorf(const char* fmt, ...)
   va_end(ap);
   return -1;
 }
-int set_error(const char* msg)
+void TCOD_clear_error(void)
 {
-  std::strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
-  return -1;
-}
-int set_error(const std::string& msg)
-{
-  return set_error(msg.c_str());
-}
-int set_error(const std::exception& e)
-{
-  return set_error(e.what());
-}
-} // namespace tcod
-const char* TCOD_get_error()
-{
-  return tcod::error_msg_;
-}
-int TCOD_set_error(const char* msg)
-{
-  return tcod::set_error(msg);
+  error_msg_[0] = '\0';
 }

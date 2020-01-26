@@ -34,7 +34,7 @@
 #include "stdlib.h"
 
 #include "truetype.h"
-#include "../engine/error.h"
+#include "../error.h"
 #include "../engine/globals.h"
 #include "../../vendor/stb_truetype.h"
 // You can look here for a reference on glyph metrics:

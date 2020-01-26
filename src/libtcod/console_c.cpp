@@ -46,7 +46,7 @@
 #include "utility.h"
 #include "version.h"
 #include "console/drawing.h"
-#include "engine/error.h"
+#include "error.h"
 #include "engine/globals.h"
 #include "tileset.h"
 

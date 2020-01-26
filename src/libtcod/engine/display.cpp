@@ -37,7 +37,6 @@
 #include <string>
 
 #include <SDL.h>
-#include "error.h"
 #include "globals.h"
 #include "../console.h"
 #include "../console.hpp"
@@ -100,16 +99,20 @@ namespace console {
 void init_root(int w, int h, const std::string& title, bool fullscreen,
                TCOD_renderer_t renderer, bool vsync)
 {
-  TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync);
+  check_throw_error(
+    TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync)
+  );
 }
 void init_root(int w, int h, const std::string& title, bool fullscreen,
                TCOD_renderer_t renderer)
 {
-  TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, false);
+  check_throw_error(
+    TCOD_console_init_root(w, h, title.c_str(), fullscreen, renderer)
+  );
 }
 } // namespace console
 } // namespace tcod
-int TCOD_console_init_root_(
+TCOD_Error TCOD_console_init_root_(
     int w,
     int h,
     const char* title,
@@ -118,7 +121,9 @@ int TCOD_console_init_root_(
     bool vsync)
 {
   if (w <= 0 || h <= 0) {
-    throw std::invalid_argument("Width and height must be greater than zero.");
+    TCOD_set_errorvf("Width and height must be greater than zero. Not %i,%i",
+                     w, h);
+    return TCOD_E_INVALID_ARGUMENT;
   }
   tcod::get_env_renderer(renderer);
   tcod::get_env_vsync(vsync);
@@ -145,14 +150,14 @@ int TCOD_console_init_root_(
     }
     default:
       if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
-        throw std::runtime_error(TCOD_get_error());
+        return TCOD_E_ERROR;
       }
       break;
   }
-  return 0;
+  return TCOD_E_OK;
 }
-int TCOD_console_init_root(int w, int h, const char* title, bool fullscreen,
-                           TCOD_renderer_t renderer)
+TCOD_Error TCOD_console_init_root(int w, int h, const char* title,
+                                  bool fullscreen, TCOD_renderer_t renderer)
 {
   return TCOD_console_init_root_(w, h, title, fullscreen, renderer, false);
 }

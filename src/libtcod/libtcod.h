@@ -63,7 +63,7 @@
 
 #include "engine/backend.h"
 #include "engine/display.h"
-#include "engine/error.h"
+#include "error.h"
 #include "engine/globals.h"
 
 #include "sdl2/event.h"

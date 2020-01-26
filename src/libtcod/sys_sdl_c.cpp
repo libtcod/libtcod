@@ -45,7 +45,7 @@
 #include "parser.h"
 #include "color/canvas.h"
 #include "engine/display.h"
-#include "engine/error.h"
+#include "error.h"
 #include "engine/globals.h"
 
 /** Lazy library initialization function. */
@@ -276,7 +276,7 @@ static void TCOD_sys_map_clone_(int new_codepoint, int old_codepoint) {
       new_codepoint, TCOD_ctx.ascii_to_tcod[old_codepoint], 0);
 }
 
-static int TCOD_sys_load_font(void) {
+static TCOD_Error TCOD_sys_load_font(void) {
 	int i;
 	bool hasTransparent=false;
 	int x,y;
@@ -284,13 +284,13 @@ static int TCOD_sys_load_font(void) {
   if (charmap) { SDL_FreeSurface(charmap); }
   charmap = TCOD_sys_load_image(TCOD_ctx.font_file);
   if (charmap == NULL) {
-    return tcod::set_errorf("SDL : cannot load %s", TCOD_ctx.font_file);
+    return TCOD_set_errorvf("SDL : cannot load %s", TCOD_ctx.font_file);
   }
 	if ((static_cast<float>(charmap->w / TCOD_ctx.fontNbCharHoriz)
        != charmap->w / TCOD_ctx.fontNbCharHoriz)
       || (static_cast<float>(charmap->h / TCOD_ctx.fontNbCharVertic)
           != charmap->h / TCOD_ctx.fontNbCharVertic)) {
-    return tcod::set_errorf(
+    return TCOD_set_errorvf(
         " %s size is not a multiple of font layout (%dx%d)\n",
         TCOD_ctx.font_file,
         TCOD_ctx.fontNbCharHoriz,
@@ -447,7 +447,7 @@ static int TCOD_sys_load_font(void) {
 	}
 	check_ascii_to_tcod();
   TCOD_sys_decode_font_();
-  return 0;
+  return TCOD_E_OK;
 }
 /**
  *  Decode the font layout depending on the current flags.

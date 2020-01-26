@@ -159,12 +159,18 @@ void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
 {
   ((struct TCOD_Console*)observer->userdata)->userdata = NULL;
 }
-static int setup_cache_console(
+TCOD_NODISCARD
+static TCOD_Error setup_cache_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache)
 {
-  if (!atlas || !console) { return -1; }
+  if (!atlas) {
+    TCOD_set_errorv("Atlas can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!console) {
+    TCOD_set_errorv("Console can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
+  }
   if (!cache) { return 0; }
   if (*cache) {
     if ((*cache)->w != console->w || (*cache)->h != console->h) {
@@ -195,12 +201,18 @@ static int setup_cache_console(
   }
   return 0;
 }
-int TCOD_sdl2_render_console(
+TCOD_Error TCOD_sdl2_render_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache)
 {
-  if (!atlas || !console) { return -1; }
+  if (!atlas) {
+    TCOD_set_errorv("Atlas can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!console) {
+    TCOD_set_errorv("Console can not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   setup_cache_console(atlas, console, cache);
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
@@ -253,7 +265,7 @@ int TCOD_sdl2_render_console(
       SDL_RenderCopy(atlas->renderer, atlas->texture, &src, &dest);
     }
   }
-  return 0;
+  return TCOD_E_OK;
 }
 // ----------------------------------------------------------------------------
 // SDL2 Rendering
@@ -290,7 +302,7 @@ static int sdl2_accumulate(struct TCOD_Renderer* self,
   SDL_RendererInfo renderer_info;
   SDL_GetRendererInfo(context->renderer, &renderer_info);
   if (!(renderer_info.flags & SDL_RENDERER_TARGETTEXTURE)) {
-    return -1; // SDL_RENDERER_TARGETTEXTURE is required.
+    return TCOD_set_errorv("SDL_RENDERER_TARGETTEXTURE is required.");
   }
   if (context->cache_texture) {
     int tex_width;
@@ -316,7 +328,7 @@ static int sdl2_accumulate(struct TCOD_Renderer* self,
   TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
-  return 0;
+  return TCOD_E_OK;
 }
 static int sdl2_present(struct TCOD_Renderer* self,
                         const struct TCOD_Console* console)

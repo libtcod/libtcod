@@ -38,6 +38,7 @@
 #include "console.h"
 #include "renderer.h"
 #include "tileset.h"
+#include "error.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -58,9 +59,11 @@ struct TCOD_RendererSDL2 {
   struct TCOD_Console* cache_console;
   struct SDL_Texture* cache_texture;
 };
-
-
-TCODLIB_CAPI struct TCOD_Renderer* TCOD_renderer_init_sdl2(
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+TCODLIB_API TCOD_NODISCARD
+struct TCOD_Renderer* TCOD_renderer_init_sdl2(
     int width,
     int height,
     const char* title,
@@ -68,19 +71,26 @@ TCODLIB_CAPI struct TCOD_Renderer* TCOD_renderer_init_sdl2(
     int renderer_flags,
     struct TCOD_Tileset* tileset);
 
-TCODLIB_CAPI struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
+TCODLIB_API TCOD_NODISCARD
+struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
     struct SDL_Window* sdl_window,
     struct SDL_Renderer* sdl_renderer,
     struct TCOD_Tileset* tileset);
 
-
-TCODLIB_CAPI struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
+TCODLIB_API TCOD_NODISCARD
+struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
     struct SDL_Renderer* renderer,
     struct TCOD_Tileset* tileset);
-TCODLIB_CAPI void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
 
-TCODLIB_CAPI int TCOD_sdl2_render_console(
+TCODLIB_API
+void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
+
+TCODLIB_API TCOD_NODISCARD
+TCOD_Error TCOD_sdl2_render_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache);
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
 #endif // LIBTCOD_RENDERER_SDL2_H_

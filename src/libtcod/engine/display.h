@@ -35,6 +35,7 @@
 #include "../color/canvas.h"
 #include "../tileset.h"
 #include "../console_types.h"
+#include "../error.h"
 
 struct SDL_Rect;
 struct SDL_Window;
@@ -93,9 +94,9 @@ TCODLIB_API void init_root(
  *  \endrst
  */
 
-TCODLIB_CAPI TCOD_NODISCARD int TCOD_console_init_root(
+TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_console_init_root(
     int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
-TCODLIB_CAPI TCOD_NODISCARD int TCOD_console_init_root_(
+TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_console_init_root_(
     int w,
     int h,
     const char* title,

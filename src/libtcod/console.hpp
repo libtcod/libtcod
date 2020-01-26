@@ -1819,7 +1819,7 @@ public :
 protected :
   TCODConsole();
   TCOD_Console* data;
-  friend TCODLIB_API int TCOD_console_init_root_(
+  friend TCODLIB_API TCOD_Error TCOD_console_init_root_(
       int w, int h, const char* title,
       bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 };

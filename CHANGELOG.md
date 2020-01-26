@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added the `TCOD_clear_error` and `TCOD_set_errorf` functions.
+- Added an error code enum: `TCOD_Error`.
+
 ### Changed
 - Console blit operations now perform per-cell alpha transparency.
 

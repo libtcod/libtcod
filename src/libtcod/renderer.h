@@ -54,8 +54,13 @@ struct TCOD_Renderer {
       const struct TCOD_Console* console,
       const struct SDL_Rect* viewport);
 };
-
-TCODLIB_CAPI struct TCOD_Renderer* TCOD_renderer_init_custom();
-TCODLIB_CAPI void TCOD_renderer_delete(struct TCOD_Renderer* renderer);
-
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+TCOD_NODISCARD
+TCODLIB_API struct TCOD_Renderer* TCOD_renderer_init_custom();
+TCODLIB_API void TCOD_renderer_delete(struct TCOD_Renderer* renderer);
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
 #endif // LIBTCOD_RENDERER_H_

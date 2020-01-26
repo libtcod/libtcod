@@ -36,7 +36,7 @@
 #include "stdio.h"
 
 #include "truetype.h"
-#include "../engine/error.h"
+#include "../error.h"
 TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height)
 {
 #if defined(_WIN32) // Windows.

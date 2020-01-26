@@ -9,6 +9,7 @@ target_sources(TCOD PRIVATE
     libtcod/console.cpp
     libtcod/console_c.cpp
     libtcod/deprecated.cpp
+    libtcod/error.c
     libtcod/fov.cpp
     libtcod/fov_c.c
     libtcod/fov_circular_raycasting.c
@@ -58,7 +59,6 @@ target_sources(TCOD PRIVATE
     libtcod/console/rexpaint.cpp
     libtcod/engine/backend.cpp
     libtcod/engine/display.cpp
-    libtcod/engine/error.cpp
     libtcod/engine/globals.cpp
     libtcod/gui/button.cpp
     libtcod/gui/container.cpp
@@ -107,6 +107,8 @@ source_group(libtcod FILES
     libtcod/console_c.cpp
     libtcod/console_types.h
     libtcod/deprecated.cpp
+    libtcod/error.c
+    libtcod/error.h
     libtcod/fov.cpp
     libtcod/fov.h
     libtcod/fov.hpp
@@ -216,8 +218,6 @@ source_group(libtcod\\engine FILES
     libtcod/engine/backend.h
     libtcod/engine/display.cpp
     libtcod/engine/display.h
-    libtcod/engine/error.cpp
-    libtcod/engine/error.h
     libtcod/engine/globals.cpp
     libtcod/engine/globals.h
 )

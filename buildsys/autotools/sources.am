@@ -11,6 +11,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/console.h \
 	../../src/libtcod/console.hpp \
 	../../src/libtcod/console_types.h \
+	../../src/libtcod/error.h \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
 	../../src/libtcod/fov_types.h \
@@ -74,7 +75,6 @@ libtcod_engine_includedir = $(includedir)/libtcod/engine
 libtcod_engine_include_HEADERS = \
 	../../src/libtcod/engine/backend.h \
 	../../src/libtcod/engine/display.h \
-	../../src/libtcod/engine/error.h \
 	../../src/libtcod/engine/globals.h
 
 libtcod_gui_includedir = $(includedir)/libtcod/gui
@@ -130,6 +130,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console.cpp \
 	../../src/libtcod/console_c.cpp \
 	../../src/libtcod/deprecated.cpp \
+	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
 	../../src/libtcod/fov_c.c \
 	../../src/libtcod/fov_circular_raycasting.c \
@@ -179,7 +180,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console/rexpaint.cpp \
 	../../src/libtcod/engine/backend.cpp \
 	../../src/libtcod/engine/display.cpp \
-	../../src/libtcod/engine/error.cpp \
 	../../src/libtcod/engine/globals.cpp \
 	../../src/libtcod/gui/button.cpp \
 	../../src/libtcod/gui/container.cpp \

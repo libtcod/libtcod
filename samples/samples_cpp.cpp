@@ -1405,7 +1405,8 @@ const int nbSamples = samples.size(); // total number of samples
 // ***************************
 // the main function
 // ***************************
-int main( int argc, char *argv[] ) {
+int main(int argc, char *argv[]) {
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
 	int curSample=0; // index of the current sample
 	bool first=true; // first time we render a sample
 	TCOD_key_t key = {TCODK_NONE,0};

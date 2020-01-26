@@ -1439,12 +1439,8 @@ int nb_samples = sizeof(samples)/sizeof(sample_t); /* total number of samples */
 /* ***************************
  * the main function
  * ***************************/
-
-#ifdef __ANDROID__
-int SDL_main( int argc, char *argv[] ) {
-#else
-int main( int argc, char *argv[] ) {
-#endif
+int main(int argc, char *argv[]) {
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
 	int cur_sample=0; /* index of the current sample */
 	bool first=true; /* first time we render a sample */
 	int i;

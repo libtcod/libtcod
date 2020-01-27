@@ -32,18 +32,21 @@
 #ifndef LIBTCOD_TILESET_TRUETYPE_H_
 #define LIBTCOD_TILESET_TRUETYPE_H_
 #include "../tileset.h"
+#include "../error.h"
 
 /**
  *  Return a tileset from a TrueType font file.
  */
-TCODLIB_CAPI TCOD_Tileset* TCOD_load_truetype_font_(
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Tileset* TCOD_load_truetype_font_(
     const char* path,
     int tile_width,
     int tile_height);
 /**
  *  Set the global tileset from a TrueType font file.
  */
-TCODLIB_CAPI int TCOD_tileset_load_truetype_(
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Error TCOD_tileset_load_truetype_(
     const char* path,
     int tile_width,
     int tile_height);

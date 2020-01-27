@@ -54,10 +54,14 @@ TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height)
   FILE* pipe = popen("fc-match --format=%{file} monospace", "r");
   char path[4096] = "";
   if (!pipe) {
-    return;
+    TCOD_set_errorv("Failed to run fc-match cmd.");
+    return NULL;
   }
   fgets(path, sizeof(path) - 1, pipe);
-  pclose(pipe);
+  if (pclose(pipe) != 0) {
+    TCOD_set_errorv("Could not get a font from fc-match.");
+    return NULL;
+  }
   return TCOD_load_truetype_font_(path, tile_width, tile_height);
 #else
   return NULL;

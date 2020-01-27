@@ -217,9 +217,9 @@ TEST_CASE("Pathfinder Benchmarks", "[benchmark]")
   }
 }
 
-TEST_CASE("Fallback font.")
+TEST_CASE("Fallback font.", "[!mayfail]")
 {
-  REQUIRE(tcod::tileset::new_fallback_tileset({{0, 12}}));
+  REQUIRE(tcod::tileset::new_fallback_tileset());
 }
 
 std::string to_string(const TCOD_Console& console)

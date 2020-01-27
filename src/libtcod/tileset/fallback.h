@@ -35,21 +35,27 @@
 #include <array>
 #endif // __cplusplus
 #include "../tileset.h"
+#include "../error.h"
 /**
  *  Try to return a fall-back Tileset, may return NULL.
  *
  *  Used when one is needed, but was not provided by the user.
  */
-TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
+[[nodiscard]]
 auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
 -> TilesetPtr
 {
   TilesetPtr tileset{
       TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))
   };
+  if (!tileset) {
+    throw std::runtime_error(TCOD_get_error());
+  }
   return tileset;
 }
 } // namespace tileset

@@ -44,12 +44,21 @@
  *
  *  The returned buffer is allocated and must be freed manually.
  */
+TCOD_NODISCARD
 static unsigned char* alloc_read_whole_file(const char* path, int* size) {
+  if (!path) { TCOD_set_errorv("Given path was NULL."); return NULL; }
   FILE* file = fopen(path, "r");
+  if (!file) {
+    TCOD_set_errorvf("Could not open file:\n%s", path);
+    return NULL;
+  }
   fseek(file, 0, SEEK_END);
   long int fsize = ftell(file);
   fseek(file, 0, SEEK_SET);
   unsigned char *buffer = malloc(fsize);
+  if (!buffer) {
+    TCOD_set_errorvf("Could not allocate %i bytes for file.", (int)fsize);
+  }
   fread(buffer, 1, fsize, file);
   fclose(file);
   if (size) { *size = (int)fsize; }
@@ -85,6 +94,7 @@ struct FontLoader {
 /**
  *  Return the bounding box for this glyph.
  */
+TCOD_NODISCARD
 static struct BBox get_glyph_bbox(const stbtt_fontinfo* font_info,
                            int glyph, float scale)
 {
@@ -140,6 +150,7 @@ void render_glyph(const struct FontLoader* loader, int glyph)
     }
   }
 }
+TCOD_NODISCARD
 static struct TCOD_Tileset* tileset_from_ttf(
     const stbtt_fontinfo* font_info, int tile_width, int tile_height)
 {
@@ -176,7 +187,12 @@ static struct TCOD_Tileset* tileset_from_ttf(
     int glyph = stbtt_FindGlyphIndex(font_info, codepoint);
     if (!glyph) { continue; }
     render_glyph(&loader, glyph);
-    TCOD_tileset_set_tile_(loader.tileset, codepoint, loader.tile);
+    if(TCOD_tileset_set_tile_(loader.tileset, codepoint, loader.tile) < 0) {
+      TCOD_set_errorv("Out of memory while loading tileset.");
+      TCOD_tileset_delete(loader.tileset);
+      loader.tileset = NULL;
+      break;
+    }
   }
   free(loader.tile);
   free(loader.tile_alpha);
@@ -188,11 +204,13 @@ TCODLIB_CAPI TCOD_Tileset* TCOD_load_truetype_font_(
     int tile_width,
     int tile_height)
 {
-  if (!path) { return NULL; }
   unsigned char* font_data = alloc_read_whole_file(path, NULL);
-  if (!font_data) { return NULL; }
+  if (!font_data) {
+    return NULL;
+  }
   stbtt_fontinfo font_info;
   if (!stbtt_InitFont(&font_info, font_data, 0)) {
+    TCOD_set_errorvf("Failed to read font file:\n%s", path);
     free(font_data);
     return NULL;
   }
@@ -208,6 +226,6 @@ int TCOD_tileset_load_truetype_(
 {
   TCOD_Tileset* tileset = TCOD_load_truetype_font_(path,
                                                    tile_width, tile_height);
-  if (!tileset) { return -1; }
-  return 0;
+  if (!tileset) { return TCOD_E_ERROR; }
+  return TCOD_E_OK;
 }

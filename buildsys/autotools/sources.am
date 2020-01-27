@@ -8,6 +8,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/bsp.hpp \
 	../../src/libtcod/color.h \
 	../../src/libtcod/color.hpp \
+	../../src/libtcod/config.h \
 	../../src/libtcod/console.h \
 	../../src/libtcod/console.hpp \
 	../../src/libtcod/console_types.h \

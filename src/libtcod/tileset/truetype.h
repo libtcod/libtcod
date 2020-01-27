@@ -31,6 +31,7 @@
  */
 #ifndef LIBTCOD_TILESET_TRUETYPE_H_
 #define LIBTCOD_TILESET_TRUETYPE_H_
+#include "../config.h"
 #include "../tileset.h"
 #include "../error.h"
 

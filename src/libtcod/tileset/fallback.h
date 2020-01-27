@@ -34,6 +34,7 @@
 #ifdef __cplusplus
 #include <array>
 #endif // __cplusplus
+#include "../config.h"
 #include "../tileset.h"
 #include "../error.h"
 /**

@@ -38,7 +38,7 @@
 #include <stdexcept>
 #endif // __cplusplus
 
-#include "portability.h"
+#include "config.h"
 #include "version.h"
 /**
  *  An enum of libtcod error codes.

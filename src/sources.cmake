@@ -101,6 +101,7 @@ source_group(libtcod FILES
     libtcod/color.h
     libtcod/color.hpp
     libtcod/color_c.c
+    libtcod/config.h
     libtcod/console.cpp
     libtcod/console.h
     libtcod/console.hpp

@@ -34,7 +34,7 @@
 
 #include "stdbool.h"
 
-#include "portability.h"
+#include "config.h"
 #include "console.h"
 #include "renderer.h"
 #include "tileset.h"

@@ -31,6 +31,7 @@
  */
 #ifndef LIBTCOD_PORTABILITY_H
 #define LIBTCOD_PORTABILITY_H
+#include "config.h"
 /* uncomment to disable unicode support */
 /*#define NO_UNICODE */
 
@@ -112,39 +113,6 @@
 #include <wchar.h>
 #endif
 
-/* DLL export */
-#ifndef TCODLIB_API
-#ifdef LIBTCOD_STATIC
-#define TCODLIB_API
-#elif defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
-#ifdef LIBTCOD_EXPORTS
-#ifdef __GNUC__
-#define TCODLIB_API __attribute__((dllexport))
-#else
-#define TCODLIB_API __declspec(dllexport)
-#endif // __GNUC__
-#else
-#ifdef __GNUC__
-#define TCODLIB_API __attribute__((dllimport))
-#else
-#define TCODLIB_API __declspec(dllimport)
-#endif // __GNUC__
-#endif // LIBTCOD_EXPORTS
-#elif __GNUC__ >= 4
-#define TCODLIB_API __attribute__((visibility("default")))
-#else
-#define TCODLIB_API
-#endif
-#endif // TCODLIB_API
-
-#ifndef TCODLIB_CAPI
-#ifdef __cplusplus
-#define TCODLIB_CAPI extern "C" TCODLIB_API
-#else
-#define TCODLIB_CAPI TCODLIB_API
-#endif // __cplusplus
-#endif // TCODLIB_CAPI
-
 /* int types */
 #include <stdint.h>
 
@@ -160,42 +128,6 @@ TCODLIB_CAPI int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
 #ifdef _WIN32
 #define vswprintf _vsnwprintf /* Windows */
 #endif /* _WIN32 */
-
-/* cross platform deprecation */
-#ifdef TCOD_IGNORE_DEPRECATED
-#define TCOD_DEPRECATED(msg)
-#define TCOD_DEPRECATED_NOMESSAGE
-#elif defined(__cplusplus) && __cplusplus >= 201402L && !defined(__clang__)
-#define TCOD_DEPRECATED(msg) [[deprecated(msg)]]
-#define TCOD_DEPRECATED_NOMESSAGE [[deprecated]]
-#elif defined(_MSC_VER)
-#define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
-#define TCOD_DEPRECATED_NOMESSAGE __declspec(deprecated)
-#elif defined(__GNUC__)
-#define TCOD_DEPRECATED(msg) __attribute__ ((deprecated))
-#define TCOD_DEPRECATED_NOMESSAGE __attribute__ ((deprecated))
-#else
-#define TCOD_DEPRECATED(msg)
-#define TCOD_DEPRECATED_NOMESSAGE
-#endif
-
-/* Tells GCC the these functions are like printf. */
-#ifdef __GNUC__
-#define TCODLIB_FORMAT(str_index, first_arg) \
-    __attribute__((format(printf, str_index, first_arg)))
-#else
-#define TCODLIB_FORMAT(str_index, first_arg)
-#endif
-
-#if defined(__cplusplus) && __cplusplus >= 201703L && !defined(__clang__)
-#define TCOD_NODISCARD [[nodiscard]]
-#elif defined(_MSC_VER)
-#define TCOD_NODISCARD _Check_return_
-#elif defined(__GNUC__)
-#define TCOD_NODISCARD __attribute__ ((warn_unused_result))
-#else
-#define TCOD_NODISCARD
-#endif
 
 #if defined(__GNUC__) && !defined(__clang__)
 #if __GNUC__ < 6 || (__GNUC__ == 6 && __GNUC_MINOR__ < 1)

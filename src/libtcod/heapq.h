@@ -32,9 +32,10 @@
 #ifndef TCOD_HEAPQ_H
 #define TCOD_HEAPQ_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
-#include "portability.h"
+#include "config.h"
 
 #define TCOD_HEAP_DEFAULT_CAPACITY 256
 #define TCOD_HEAP_MAX_NODE_SIZE 256

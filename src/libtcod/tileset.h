@@ -34,7 +34,7 @@
 #ifdef __cplusplus
 #include <memory>
 #endif // __cplusplus
-#include "portability.h"
+#include "config.h"
 #include "color/color.h"
 struct TCOD_Tileset;
 struct TCOD_TilesetObserver {

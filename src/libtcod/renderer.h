@@ -32,7 +32,7 @@
 #ifndef LIBTCOD_RENDERER_H_
 #define LIBTCOD_RENDERER_H_
 
-#include "portability.h"
+#include "config.h"
 #include "console.h"
 
 struct SDL_Window;

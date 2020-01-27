@@ -450,7 +450,7 @@ struct ConsoleDeleter {
   }
 };
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
-TCOD_PUBLIC TCOD_NODISCARD
+TCOD_NODISCARD
 inline auto new_console(int width, int height)
 -> ConsolePtr
 {

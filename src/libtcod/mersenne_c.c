@@ -253,8 +253,8 @@ double TCOD_random_get_gaussian_double (TCOD_random_t mersenne, double mean, dou
 		/* MT */
 		if (r->algo == TCOD_RNG_MT) {
 			do {
-				x1 = frandom01(r) * 2.0 - 1.0;
-				x2 = frandom01(r) * 2.0 - 1.0;
+				x1 = (double)frandom01(r) * 2.0 - 1.0;
+				x2 = (double)frandom01(r) * 2.0 - 1.0;
 				w = x1 * x1 + x2 * x2;
 			} while (w >= 1.0);
 		}
@@ -370,8 +370,8 @@ double TCOD_random_get_gaussian_double_inv (TCOD_random_t mersenne, double mean,
 }
 
 float TCOD_random_get_gaussian_float_inv (TCOD_random_t mersenne, float mean, float std_deviation) {
-	double num = TCOD_random_get_gaussian_double(mersenne,(double)mean,(double)std_deviation);
-	return (num >= mean ? (float)(num - (3 * std_deviation)) : (float)(num + (3 * std_deviation)));
+	float num = (float)TCOD_random_get_gaussian_double(mersenne,(double)mean,(double)std_deviation);
+	return (num >= mean ? (num - (3 * std_deviation)) : (num + (3 * std_deviation)));
 }
 
 int TCOD_random_get_gaussian_int_inv (TCOD_random_t mersenne, int mean, int std_deviation) {

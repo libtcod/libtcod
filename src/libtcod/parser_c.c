@@ -87,15 +87,16 @@ static bool string_copy(char *dest, char *source, int len) {
 }
 
 void TCOD_parser_error(const char *msg, ...) {
-	char buf[2048];
-	char buf2[2048];
-	va_list ap;
-	va_start(ap,msg);
-	vsprintf(buf,msg,ap);
-	va_end(ap);
-	sprintf(buf2,"error in %s line %d : %s",lex->filename,lex->file_line,buf);
-	listener->error(buf2);
-	lex->token_type = TCOD_LEX_ERROR;
+  char buf[2048] = "";
+  char buf2[2048] = "";
+  va_list ap;
+  va_start(ap,msg);
+  vsnprintf(buf, sizeof(buf) - 1, msg, ap);
+  va_end(ap);
+  snprintf(buf2, sizeof(buf2) - 1,
+           "error in %s line %d : %s", lex->filename, lex->file_line, buf);
+  listener->error(buf2);
+  lex->token_type = TCOD_LEX_ERROR;
 }
 
 const char *TCOD_struct_get_name(TCOD_parser_struct_t def) {
@@ -783,25 +784,25 @@ static bool default_new_struct(TCOD_parser_struct_t str,const char *name) {
 }
 
 static bool default_new_flag(const char *name) {
-	char tmp[512];
-	prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
-	sprintf(tmp,"%s.%s",cur_prop_name,name);
-	prop->name=TCOD_strdup(tmp);
-	prop->type=TCOD_TYPE_BOOL;
-	prop->value.b=true;
-	TCOD_list_push(default_props,prop);
-	return true;
+  char tmp[512] = "";
+  prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
+  snprintf(tmp, sizeof(tmp) - 1, "%s.%s", cur_prop_name, name);
+  prop->name=TCOD_strdup(tmp);
+  prop->type=TCOD_TYPE_BOOL;
+  prop->value.b=true;
+  TCOD_list_push(default_props,prop);
+  return true;
 }
 
 static bool default_new_property(const char *propname, TCOD_value_type_t type, TCOD_value_t value) {
-	char tmp[512];
-	prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
-	sprintf(tmp,"%s.%s",cur_prop_name,propname);
-	prop->name=TCOD_strdup(tmp);
-	prop->type=type;
-	prop->value=value;
-	TCOD_list_push(default_props,prop);
-	return true;
+  char tmp[512] = "";
+  prop_t *prop=(prop_t *)calloc(sizeof(prop_t),1);
+  snprintf(tmp, sizeof(tmp) - 1, "%s.%s", cur_prop_name, propname);
+  prop->name=TCOD_strdup(tmp);
+  prop->type=type;
+  prop->value=value;
+  TCOD_list_push(default_props,prop);
+  return true;
 }
 
 static bool default_end_struct(TCOD_parser_struct_t str, const char *name) {

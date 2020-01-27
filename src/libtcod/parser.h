@@ -135,6 +135,7 @@ TCODLIB_API TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_parser_t parser,T
 TCODLIB_API void TCOD_parser_run(TCOD_parser_t parser, const char *filename, TCOD_parser_listener_t *listener);
 TCODLIB_API void TCOD_parser_delete(TCOD_parser_t parser);
 /* error during parsing. can be called by the parser listener */
+TCODLIB_FORMAT(1, 2)
 TCODLIB_API void TCOD_parser_error(const char *msg, ...);
 /* default parser listener */
 TCODLIB_API bool TCOD_parser_has_property(TCOD_parser_t parser, const char *name);

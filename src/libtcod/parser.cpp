@@ -151,7 +151,7 @@ void TCODParser::error(const char *msg, ...) {
 	va_start(ap,msg);
 	vsprintf(buf,msg,ap);
 	va_end(ap);
-	TCOD_parser_error(buf);
+	TCOD_parser_error("%s", buf);
 }
 
 // default parser

@@ -12,6 +12,7 @@
 #include <libtcod/pathfinding/dijkstra.h>
 #include <libtcod/pathfinding/hill-climb.h>
 #include <libtcod/tileset/fallback.h>
+#include <libtcod/utility/matrix.h>
 
 #include "catch.hpp"
 

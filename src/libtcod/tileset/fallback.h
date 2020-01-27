@@ -46,8 +46,8 @@ TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
-[[nodiscard]]
-auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
+TCOD_NODISCARD
+inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
 -> TilesetPtr
 {
   TilesetPtr tileset{

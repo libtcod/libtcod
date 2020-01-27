@@ -572,19 +572,18 @@ void TCOD_sys_console_to_bitmap(
   }
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
-      using tcod::console::Tile;
       int console_i = y * console->w + x;
-      const Tile& current = console->tiles[console_i];
-      const int& c = current.ch;
-      const TCOD_ColorRGBA& nfg = current.fg;
-      const TCOD_ColorRGBA& nbg = current.bg;
+      const struct TCOD_ConsoleTile current = console->tiles[console_i];
+      const int c = current.ch;
+      const struct TCOD_ColorRGBA nfg = current.fg;
+      const struct TCOD_ColorRGBA nbg = current.bg;
       SDL_Rect srcRect, dstRect;
       if (track_changes) {
-        Tile& old = cache->tiles[console_i];
-        if (current == old) {
+        struct TCOD_ConsoleTile* old = &cache->tiles[console_i];
+        if (current == *old) {
           continue;
         }
-        old = current;
+        *old = current;
       }
       TCOD_ColorRGB b = tcod::ColorRGB(nbg);
       dstRect.x = x * TCOD_ctx.font_width;

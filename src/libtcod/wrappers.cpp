@@ -170,7 +170,7 @@ void TCOD_console_set_fade_wrapper(uint8_t val, colornum_t fade)
 
 void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
 {
-  con = tcod::console::validate_(con);
+  con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
     con->tiles[i].bg = tcod::ColorRGBA(r[i], g[i], b[i]);
@@ -178,7 +178,7 @@ void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
 }
 void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
 {
-  con = tcod::console::validate_(con);
+  con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
     con->tiles[i].fg = tcod::ColorRGBA(r[i], g[i], b[i]);
@@ -186,7 +186,7 @@ void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
 }
 void TCOD_console_fill_char(TCOD_Console* con, int *arr)
 {
-  con = tcod::console::validate_(con);
+  con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
     con->tiles[i].ch = arr[i];
@@ -282,7 +282,7 @@ void TCOD_console_print_double_frame(
     const char *fmt,
     ...)
 {
-  struct TCOD_Console *dat = tcod::console::validate_(con);
+  struct TCOD_Console *dat = TCOD_console_validate_(con);
   if (!dat) { return; }
 	TCOD_console_put_char(con,x,y,TCOD_CHAR_DNW,flag);
 	TCOD_console_put_char(con,x+w-1,y,TCOD_CHAR_DNE,flag);

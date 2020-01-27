@@ -223,7 +223,7 @@ int TCOD_sys_accumulate_console(const TCOD_Console* console)
 }
 int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport)
 {
-  console = tcod::console::validate_(console);
+  console = TCOD_console_validate_(console);
   if (!console) { return -1; }
   if (TCOD_ctx.engine && TCOD_ctx.engine->accumulate) {
     return TCOD_ctx.engine->accumulate(TCOD_ctx.engine, console, viewport);

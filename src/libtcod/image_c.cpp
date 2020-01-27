@@ -447,7 +447,7 @@ void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
 {
   /* We're copying the state and clearing part of the copy, no need to delete/free. */
   TCOD_sys_console_to_bitmap(
-    image->sys_img, tcod::console::validate_(console), NULL);
+    image->sys_img, TCOD_console_validate_(console), NULL);
 }
 
 void TCOD_image_save(const TCOD_Image* image, const char *filename)

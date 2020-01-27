@@ -32,16 +32,17 @@
 #ifndef TCOD_CONSOLE_CONSOLE_H_
 #define TCOD_CONSOLE_CONSOLE_H_
 
+#include "stdbool.h"
 #ifdef __cplusplus
 #include <array>
 #include <stdexcept>
-#include <string>
+#include <memory>
 #endif // __cplusplus
 
-#include "../portability.h"
+#include "../config.h"
 #include "../color/color.h"
-#include "../utility/matrix.h"
 #include "../tileset.h"
+#include "../error.h"
 /**
  *  \enum TCOD_bkgnd_flag_t
  *
@@ -120,11 +121,11 @@ struct TCOD_Console {
   }
   struct TCOD_ConsoleTile* end() noexcept
   {
-    return tiles + w * h;
+    return tiles + size();
   }
   const struct TCOD_ConsoleTile* end() const noexcept
   {
-    return tiles + w * h;
+    return tiles + size();
   }
   auto operator[](const std::array<int, 2>& yx) noexcept
   -> struct TCOD_ConsoleTile&
@@ -148,7 +149,7 @@ struct TCOD_Console {
   }
   int size() const
   {
-    return w * h;
+    return length;
   }
   void range_check_(int y, int x) const
   {
@@ -184,6 +185,12 @@ struct TCOD_Console {
   bool has_key_color;
   /** The current key color for this console. */
   TCOD_color_t key_color;
+  /**
+   *  The total length of the tiles array.  Same as `w * h`.
+   *
+   *  Added in 1.16
+   */
+  int length;
   /** Added 1.16 */
   void* userdata;
   /** Added 1.16 */
@@ -191,6 +198,9 @@ struct TCOD_Console {
 };
 typedef struct TCOD_Console TCOD_Console;
 typedef struct TCOD_Console *TCOD_console_t;
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 /**
  *  Return a new console with a specific number of columns and rows.
  *
@@ -198,16 +208,19 @@ typedef struct TCOD_Console *TCOD_console_t;
  *  \param h Number of columns.
  *  \return A pointer to the new console, or NULL on error.
  */
-TCODLIB_CAPI TCOD_Console* TCOD_console_new(int w, int h);
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_Console* TCOD_console_new(int w, int h);
 /**
  *  Return the width of a console.
  */
-TCODLIB_CAPI int TCOD_console_get_width(const TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD
+int TCOD_console_get_width(const TCOD_Console* con);
 /**
  *  Return the height of a console.
  */
-TCODLIB_CAPI int TCOD_console_get_height(const TCOD_Console* con);
-TCODLIB_CAPI void TCOD_console_set_key_color(
+TCOD_PUBLIC TCOD_NODISCARD
+int TCOD_console_get_height(const TCOD_Console* con);
+TCOD_PUBLIC void TCOD_console_set_key_color(
     TCOD_Console* con, TCOD_color_t col);
 /**
  *  Blit from one console to another.
@@ -231,7 +244,7 @@ TCODLIB_CAPI void TCOD_console_set_key_color(
  *      Blits can now handle per-cell alpha transparency.
  *  \endrst
  */
-TCODLIB_CAPI void TCOD_console_blit(
+TCOD_PUBLIC void TCOD_console_blit(
     const TCOD_Console* src,
     int xSrc,
     int ySrc,
@@ -242,7 +255,7 @@ TCODLIB_CAPI void TCOD_console_blit(
     int yDst,
     float foreground_alpha,
     float background_alpha);
-TCODLIB_CAPI void TCOD_console_blit_key_color(
+TCOD_PUBLIC void TCOD_console_blit_key_color(
     const TCOD_Console* src,
     int xSrc,
     int ySrc,
@@ -262,16 +275,16 @@ TCODLIB_CAPI void TCOD_console_blit_key_color(
  *  If the console being deleted is the root console, then the display will be
  *  uninitialized.
  */
-TCODLIB_CAPI void TCOD_console_delete(TCOD_Console* console);
+TCOD_PUBLIC void TCOD_console_delete(TCOD_Console* console);
 
-TCODLIB_CAPI void TCOD_console_set_default_background(
+TCOD_PUBLIC void TCOD_console_set_default_background(
     TCOD_Console* con, TCOD_color_t col);
-TCODLIB_CAPI void TCOD_console_set_default_foreground(
+TCOD_PUBLIC void TCOD_console_set_default_foreground(
     TCOD_Console* con, TCOD_color_t col);
 /**
  *  Clear a console to its default colors and the space character code.
  */
-TCODLIB_CAPI void TCOD_console_clear(TCOD_Console* con);
+TCOD_PUBLIC void TCOD_console_clear(TCOD_Console* con);
 /**
  *  Blend a background color onto a console tile.
  *
@@ -281,7 +294,7 @@ TCODLIB_CAPI void TCOD_console_clear(TCOD_Console* con);
  *  \param col The background color to blend.
  *  \param flag The blend mode to use.
  */
-TCODLIB_CAPI void TCOD_console_set_char_background(
+TCOD_PUBLIC void TCOD_console_set_char_background(
     TCOD_Console* con,
     int x,
     int y,
@@ -295,7 +308,7 @@ TCODLIB_CAPI void TCOD_console_set_char_background(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param col The foreground color to set.
  */
-TCODLIB_CAPI void TCOD_console_set_char_foreground(
+TCOD_PUBLIC void TCOD_console_set_char_foreground(
     TCOD_Console* con, int x, int y, TCOD_color_t col);
 /**
  *  Change a character on a console tile, without changing its colors.
@@ -305,7 +318,7 @@ TCODLIB_CAPI void TCOD_console_set_char_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param c The character code to set.
  */
-TCODLIB_CAPI void TCOD_console_set_char(
+TCOD_PUBLIC void TCOD_console_set_char(
     TCOD_Console* con, int x, int y, int c);
 /**
  *  Draw a character on a console using the default colors.
@@ -316,7 +329,7 @@ TCODLIB_CAPI void TCOD_console_set_char(
  *  \param c The character code to place.
  *  \param flag A TCOD_bkgnd_flag_t flag.
  */
-TCODLIB_CAPI void TCOD_console_put_char(
+TCOD_PUBLIC void TCOD_console_put_char(
     TCOD_Console* con, int x, int y, int c, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a character on the console with the given colors.
@@ -328,7 +341,7 @@ TCODLIB_CAPI void TCOD_console_put_char(
  *  \param fore The foreground color.
  *  \param back The background color.  This color will not be blended.
  */
-TCODLIB_CAPI void TCOD_console_put_char_ex(
+TCOD_PUBLIC void TCOD_console_put_char_ex(
     TCOD_Console* con,
     int x,
     int y,
@@ -340,13 +353,14 @@ TCODLIB_CAPI void TCOD_console_put_char_ex(
  *  \param con A console pointer.
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
-TCODLIB_CAPI void TCOD_console_set_background_flag(
+TCOD_PUBLIC void TCOD_console_set_background_flag(
     TCOD_Console* con,
     TCOD_bkgnd_flag_t flag);
 /**
  *  Return a consoles default background flag.
  */
-TCODLIB_CAPI TCOD_bkgnd_flag_t TCOD_console_get_background_flag(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_bkgnd_flag_t TCOD_console_get_background_flag(
     TCOD_Console* con);
 /**
  *  Set a consoles default alignment.
@@ -354,17 +368,20 @@ TCODLIB_CAPI TCOD_bkgnd_flag_t TCOD_console_get_background_flag(
  *  \param con A console pointer.
  *  \param alignment One of TCOD_alignment_t
  */
-TCODLIB_CAPI void TCOD_console_set_alignment(
+TCOD_PUBLIC void TCOD_console_set_alignment(
     TCOD_Console* con,
     TCOD_alignment_t alignment);
 /**
  *  Return a consoles default alignment.
  */
-TCODLIB_CAPI TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
 
-TCODLIB_CAPI TCOD_color_t TCOD_console_get_default_background(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_color_t TCOD_console_get_default_background(
     TCOD_Console* con);
-TCODLIB_CAPI TCOD_color_t TCOD_console_get_default_foreground(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_color_t TCOD_console_get_default_foreground(
     TCOD_Console* con);
 /**
  *  Return the background color of a console at x,y
@@ -374,7 +391,8 @@ TCODLIB_CAPI TCOD_color_t TCOD_console_get_default_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the background color.
  */
-TCODLIB_CAPI TCOD_color_t TCOD_console_get_char_background(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_color_t TCOD_console_get_char_background(
     const TCOD_Console* con, int x, int y);
 /**
  *  Return the foreground color of a console at x,y
@@ -384,7 +402,8 @@ TCODLIB_CAPI TCOD_color_t TCOD_console_get_char_background(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the foreground color.
  */
-TCODLIB_CAPI TCOD_color_t TCOD_console_get_char_foreground(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_color_t TCOD_console_get_char_foreground(
     const TCOD_Console* con, int x, int y);
 /**
  *  Return a character code of a console at x,y
@@ -394,7 +413,8 @@ TCODLIB_CAPI TCOD_color_t TCOD_console_get_char_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return The character code.
  */
-TCODLIB_CAPI int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
+TCOD_PUBLIC TCOD_NODISCARD
+int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
 /**
  *  Fade the color of the display.
  *
@@ -402,34 +422,42 @@ TCODLIB_CAPI int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
  *             faded.
  *  \param fadecol Color to fade towards.
  */
-TCODLIB_CAPI void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
+TCOD_PUBLIC
+void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
 /**
  *  Return the fade value.
  *
  *  \return At 255 colors are normal and at 0 colors are completely faded.
  */
-TCODLIB_CAPI uint8_t TCOD_console_get_fade(void);
+TCOD_PUBLIC TCOD_NODISCARD
+uint8_t TCOD_console_get_fade(void);
 /**
  *  Return the fade color.
  *
  *  \return The current fading color.
  */
-TCODLIB_CAPI TCOD_color_t TCOD_console_get_fading_color(void);
-TCODLIB_CAPI void TCOD_console_resize_(
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_color_t TCOD_console_get_fading_color(void);
+void TCOD_console_resize_(
     TCOD_Console* console, int width, int height);
 #ifdef __cplusplus
+} // extern "C"
 namespace tcod {
 namespace console {
-  typedef struct TCOD_ConsoleTile Tile;
-  typedef MatrixView<Tile, 2> ConsoleView;
-  inline ConsoleView as_view_(struct TCOD_Console& console)
-  {
-    return {console.tiles, {console.h, console.w}};
+struct ConsoleDeleter {
+  void operator()(TCOD_Console* console) const {
+    TCOD_console_delete(console);
   }
-  inline const ConsoleView as_view_(const struct TCOD_Console& console)
-  {
-    return {console.tiles, {console.h, console.w}};
-  }
+};
+typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
+TCOD_PUBLIC TCOD_NODISCARD
+inline auto new_console(int width, int height)
+-> ConsolePtr
+{
+  ConsolePtr console{TCOD_console_new(width, height)};
+  if (!console) { throw std::runtime_error(TCOD_get_error()); }
+  return console;
+}
 } // namespace console
 } // namespace tcod
 #endif // __cplusplus

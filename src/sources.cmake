@@ -53,7 +53,7 @@ target_sources(TCOD PRIVATE
     libtcod/wrappers.cpp
     libtcod/zip.cpp
     libtcod/zip_c.c
-    libtcod/console/console.cpp
+    libtcod/console/console.c
     libtcod/console/drawing.cpp
     libtcod/console/printing.cpp
     libtcod/console/rexpaint.cpp
@@ -205,7 +205,7 @@ source_group(libtcod\\color FILES
     libtcod/color/color.h
 )
 source_group(libtcod\\console FILES
-    libtcod/console/console.cpp
+    libtcod/console/console.c
     libtcod/console/console.h
     libtcod/console/drawing.cpp
     libtcod/console/drawing.h

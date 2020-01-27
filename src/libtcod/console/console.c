@@ -29,51 +29,62 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "stdlib.h"
+
 #include "console.h"
 #include "../libtcod_int.h"
-TCOD_Console* TCOD_console_new(int w, int h)
+#include "../utility.h"
+static TCOD_Error TCOD_console_data_alloc(struct TCOD_Console* console)
 {
-  TCOD_IFNOT(w > 0 && h > 0 ) { return NULL; }
-  struct TCOD_Console *con = new TCOD_Console{};
-  if (!con) { return NULL; }
-  con->w = w;
-  con->h = h;
-  TCOD_console_init(con);
-  if (TCOD_ctx.root) {
-    con->alignment = TCOD_ctx.root->alignment;
-    con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
-  }
-  return con;
-}
-static void TCOD_console_data_alloc(struct TCOD_Console& console)
-{
-  int size = console.w * console.h;
-  if (!console.tiles) { console.tiles = new struct TCOD_ConsoleTile[size](); }
+  if (!console) { return TCOD_E_ERROR; }
+  if (console->tiles) { return TCOD_E_ERROR; }
+  console->tiles = calloc(sizeof(*console->tiles), console->length);
+  return TCOD_E_OK;
 }
 static void TCOD_console_data_free(struct TCOD_Console *con)
 {
   if (!con) { return; }
-  delete[] con->tiles;
-  con->tiles = nullptr;
+  if (con->tiles) { free(con->tiles); con->tiles = NULL; }
 }
-bool TCOD_console_init(TCOD_Console* con)
+static bool TCOD_console_init_(TCOD_Console* con)
 {
   con = TCOD_console_validate_(con);
-  TCOD_IFNOT(con) { return false; }
+  if (!con) { return false; }
   con->fore = TCOD_white;
   con->back = TCOD_black;
 
-  TCOD_console_data_alloc(*con);
+  TCOD_console_data_alloc(con);
 
   con->bkgnd_flag = TCOD_BKGND_NONE;
   con->alignment = TCOD_LEFT;
   TCOD_console_clear(con);
   return true;
 }
+TCOD_Console* TCOD_console_new(int w, int h)
+{
+  if (w < 0 || h < 0) {
+    TCOD_set_errorvf("Width and height can not be negative: got %i,%i", w, h);
+    return NULL;
+  }
+  struct TCOD_Console *con = calloc(sizeof(*con), 1);
+  if (!con) {
+    TCOD_set_errorv("Could not allocate memory for a console.");
+    return NULL;
+  }
+  con->w = w;
+  con->h = h;
+  con->length = w * h;
+  TCOD_console_init_(con);
+  if (TCOD_ctx.root) {
+    con->alignment = TCOD_ctx.root->alignment;
+    con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
+  }
+  return con;
+}
 bool TCOD_console_init(TCOD_Console* con, const char* title,
                        bool fullscreen)
 {
-  if (!TCOD_console_init(con)) { return false; }
+  if (!TCOD_console_init_(con)) { return false; }
   if (!TCOD_sys_init(con, fullscreen) ) { return false; }
   TCOD_sys_set_window_title(title);
   return true;
@@ -86,12 +97,12 @@ void TCOD_console_delete(TCOD_Console* con)
       console->on_delete(console);
     }
     TCOD_console_data_free(console);
-    delete console;
+    free(console);
   }
   if (console == TCOD_ctx.root) {
-    TCOD_ctx.root = nullptr;
+    TCOD_ctx.root = NULL;
   }
-  if (con == nullptr) {
+  if (con == NULL) {
     TCOD_sys_shutdown();
   }
 }
@@ -103,7 +114,8 @@ void TCOD_console_resize_(TCOD_Console* console, int width, int height)
   TCOD_console_data_free(console);
   console->w = width;
   console->h = height;
-  TCOD_console_data_alloc(*console);
+  console->length = width * height;
+  TCOD_console_data_alloc(console);
 }
 int TCOD_console_get_width(const TCOD_Console* con)
 {
@@ -142,70 +154,68 @@ TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con)
 static uint8_t alpha_blend(
     int src_c, int src_a, int dst_c, int dst_a, int out_a)
 {
-  return static_cast<uint8_t>(
+  return (uint8_t)(
       ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
   );
 }
 /**
  *  A modified lerp operation which can accept RGBA types.
  */
-static auto TCOD_console_blit_lerp_(
+static struct TCOD_ColorRGBA TCOD_console_blit_lerp_(
     const struct TCOD_ColorRGBA dst,
     const struct TCOD_ColorRGBA src,
     float interp)
--> struct TCOD_ColorRGBA
 {
-  uint8_t out_a = static_cast<uint8_t>(src.a + dst.a * (255 - src.a) / 255);
-  uint8_t src_a = static_cast<uint8_t>(src.a * interp);
-  return tcod::ColorRGBA{
+  uint8_t out_a = (uint8_t)(src.a + dst.a * (255 - src.a) / 255);
+  uint8_t src_a = (uint8_t)(src.a * interp);
+  struct TCOD_ColorRGBA out = {
       alpha_blend(src.r, src_a, dst.r, dst.a, out_a),
       alpha_blend(src.g, src_a, dst.g, dst.a, out_a),
       alpha_blend(src.b, src_a, dst.b, dst.a, out_a),
       out_a,
   };
+  return out;
 }
 /**
  *  Return the tile for a blit operation between src and dst.
  */
-static auto TCOD_console_blit_cell_(
-    const struct TCOD_ConsoleTile& src,
-    const struct TCOD_ConsoleTile& dst,
+static struct TCOD_ConsoleTile TCOD_console_blit_cell_(
+    const struct TCOD_ConsoleTile* src,
+    const struct TCOD_ConsoleTile* dst,
     float fg_alpha,
     float bg_alpha,
-    const TCOD_ColorRGB* key_color)
--> struct TCOD_ConsoleTile
+    const struct TCOD_ColorRGB* key_color)
 {
-  if (key_color && tcod::ColorRGB(src.bg) == *key_color) {
-    return dst; // Source pixel is transparent.
+  if (key_color && key_color->r == src->bg.r
+      && key_color->g == src->bg.g && key_color->b == src->bg.b) {
+    return *dst; // Source pixel is transparent.
   }
-  fg_alpha *= src.fg.a / 255.0f;
-  bg_alpha *= src.bg.a / 255.0f;
+  fg_alpha *= src->fg.a / 255.0f;
+  bg_alpha *= src->bg.a / 255.0f;
   if (fg_alpha > 254.5f / 255.0f && bg_alpha > 254.5f / 255.0f) {
-    return src; // No alpha. Perform a plain copy.
+    return *src; // No alpha. Perform a plain copy.
   }
-  int ch = dst.ch;
-  tcod::ColorRGBA bg(dst.bg);
-  tcod::ColorRGBA fg(dst.fg);
-  bg = TCOD_console_blit_lerp_(bg, src.bg, bg_alpha);
-  if (src.ch == ' ') {
+  struct TCOD_ConsoleTile out = *dst;
+  out.bg = TCOD_console_blit_lerp_(out.bg, src->bg, bg_alpha);
+  if (src->ch == ' ') {
     // Source is space, so keep the current glyph.
-    fg = TCOD_console_blit_lerp_(fg, src.bg, bg_alpha);
-  } else if (ch == ' ') {
+    out.fg = TCOD_console_blit_lerp_(out.fg, src->bg, bg_alpha);
+  } else if (out.ch == ' ') {
     // Destination is space, so use the glyph from source.
-    ch = src.ch;
-    fg = TCOD_console_blit_lerp_(bg, src.fg, fg_alpha);
-  } else if (ch == src.ch) {
-    fg = TCOD_console_blit_lerp_(fg, src.fg, fg_alpha);
+    out.ch = src->ch;
+    out.fg = TCOD_console_blit_lerp_(out.bg, src->fg, fg_alpha);
+  } else if (out.ch == src->ch) {
+    out.fg = TCOD_console_blit_lerp_(out.fg, src->fg, fg_alpha);
   } else {
     /* Pick the glyph based on foreground_alpha. */
     if (fg_alpha < 0.5f) {
-      fg = TCOD_console_blit_lerp_(fg, bg, fg_alpha * 2);
+      out.fg = TCOD_console_blit_lerp_(out.fg, out.bg, fg_alpha * 2);
     } else {
-      ch = src.ch;
-      fg = TCOD_console_blit_lerp_(bg, src.fg, (fg_alpha - 0.5f) * 2);
+      out.ch = src->ch;
+      out.fg = TCOD_console_blit_lerp_(out.bg, src->fg, (fg_alpha - 0.5f) * 2);
     }
   }
-  return {ch, fg, bg};
+  return out;
 }
 void TCOD_console_blit_key_color(
     const TCOD_Console* src,
@@ -225,19 +235,20 @@ void TCOD_console_blit_key_color(
   if (!src || !dst) { return; }
   if (wSrc == 0) { wSrc = src->w; }
   if (hSrc == 0) { hSrc = src->h; }
-  TCOD_IFNOT(wSrc > 0 && hSrc > 0) { return; }
-  TCOD_IFNOT(xDst + wSrc >= 0 && yDst + hSrc >= 0
-             && xDst < dst->w && yDst < dst->h) { return; }
+  if (wSrc <= 0 || hSrc <= 0) { return; }
+  if (xDst + wSrc < 0 || yDst + hSrc < 0 || xDst >= dst->w || yDst >= dst->h) {
+    return;
+  }
   for (int cx = xSrc; cx < xSrc + wSrc; ++cx) {
     for (int cy = ySrc; cy < ySrc + hSrc; ++cy) {
       /* Check if we're outside the dest console. */
       int dx = cx - xSrc + xDst;
       int dy = cy - ySrc + yDst;
-      if (!src->in_bounds(cy, cx)) { continue; }
-      if (!dst->in_bounds(dy, dx)) { continue; }
-      dst->at(dy, dx) = TCOD_console_blit_cell_(
-          src->at(cy, cx),
-          dst->at(dy, dx),
+      if (!TCOD_console_is_index_valid_(src, cx, cy)) { continue; }
+      if (!TCOD_console_is_index_valid_(dst, dx, dy)) { continue; }
+      dst->tiles[dy * dst->w + dx] = TCOD_console_blit_cell_(
+          &src->tiles[cy * src->w + cx],
+          &dst->tiles[dy * dst->w + dx],
           foreground_alpha,
           background_alpha,
           key_color);
@@ -284,9 +295,14 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c,
 void TCOD_console_clear(TCOD_console_t con)
 {
   con = TCOD_console_validate_(con);
-  TCOD_IFNOT(con) { return; }
-  for (auto& tile : *con) {
-    tile = {' ', tcod::ColorRGBA(con->fore), tcod::ColorRGBA(con->back)};
+  if(!con) { return; }
+  struct TCOD_ConsoleTile fill = {
+    ' ',
+    { con->fore.r, con->fore.g, con->fore.b, 255 },
+    { con->back.r, con->back.g, con->back.b, 255 },
+  };
+  for (int i = 0; i < con->length; ++i) {
+    con->tiles[i] = fill;
   }
   /* clear the sdl renderer cache */
   TCOD_sys_set_dirty(0, 0, con->w, con->h);
@@ -296,21 +312,29 @@ TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con,
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_black; }
-  return tcod::ColorRGB(con->tiles[y * con->w + x].bg);
+  const struct TCOD_ColorRGBA* color = &con->tiles[y * con->w + x].bg;
+  struct TCOD_ColorRGB out = {color->r, color->g, color->b};
+  return out;
 }
 void TCOD_console_set_char_foreground(TCOD_Console* con,
                                       int x, int y, TCOD_color_t col)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  con->tiles[y * con->w + x].fg = tcod::ColorRGBA(col);
+  struct TCOD_ColorRGBA* out = &con->tiles[y * con->w + x].fg;
+  out->r = col.r;
+  out->g = col.g;
+  out->b = col.b;
+  out->a = 255;
 }
 TCOD_color_t TCOD_console_get_char_foreground(const TCOD_Console* con,
                                               int x, int y)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return TCOD_white; }
-  return tcod::ColorRGB(con->tiles[y * con->w + x].fg);
+  const struct TCOD_ColorRGBA* color = &con->tiles[y * con->w + x].fg;
+  struct TCOD_ColorRGB out = {color->r, color->g, color->b};
+  return out;
 }
 int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
 {
@@ -321,88 +345,129 @@ int TCOD_console_get_char(const TCOD_Console* con, int x, int y)
 /**
  *  Clamp colors channels that are outside of uint8_t's range.
  */
-static constexpr uint8_t clamp_color_(uint8_t c) noexcept { return c; }
-static constexpr uint8_t clamp_color_(int c) noexcept
+static uint8_t clamp_color_(int c)
 {
-  return static_cast<uint8_t>(std::max<int>(0, std::min<int>(c, 255)));
+  return (uint8_t)(MAX(0, MIN(c, 255)));
 }
 /**
  *  Mix two colors using a lambda.
  */
-template <typename F>
-static constexpr TCOD_ColorRGBA blend_color_(
-    const TCOD_ColorRGBA& bg, const TCOD_color_t& fg, const F& lambda)
+static struct TCOD_ColorRGBA blend_color_(
+    const struct TCOD_ColorRGBA* bg,
+    const struct TCOD_ColorRGB* fg,
+    int (*lambda)(uint8_t, uint8_t))
 {
-  return {
-      clamp_color_(lambda(bg.r, fg.r)),
-      clamp_color_(lambda(bg.g, fg.g)),
-      clamp_color_(lambda(bg.b, fg.b)),
-      bg.a,
+  struct TCOD_ColorRGBA out = {
+      clamp_color_(lambda(bg->r, fg->r)),
+      clamp_color_(lambda(bg->g, fg->g)),
+      clamp_color_(lambda(bg->b, fg->b)),
+      bg->a,
   };
+  return out;
+}
+static int channel_multiply(uint8_t dst, uint8_t src)
+{
+  return (int)dst * (int)src / 255;
+}
+static int channel_lighten(uint8_t dst, uint8_t src)
+{
+  return MAX(dst, src);
+}
+static int channel_darken(uint8_t dst, uint8_t src)
+{
+  return MIN(dst, src);
+}
+static int channel_screen(uint8_t dst, uint8_t src)
+{
+  // newbk = white - (white - oldbk) * (white - curbk)
+  return 255 - (255 - (int)dst) * (255 - (int)src) / 255;
+}
+static int channel_color_dodge(uint8_t dst, uint8_t src)
+{
+  // newbk = curbk / (white - oldbk)
+  return (int)dst == 255 ? 255 : 255 * (int)src / (255 - (int)dst);
+}
+static int channel_color_burn(uint8_t dst, uint8_t src)
+{
+  // newbk = white - (white - oldbk) / curbk
+  return src == 0 ? 0 : 255 - (255 * (255 - (int)dst)) / (int)src;
+}
+static int channel_add(uint8_t dst, uint8_t src)
+{
+  return (int)dst + (int)src;
+}
+static int channel_burn(uint8_t dst, uint8_t src)
+{
+  // newbk = oldbk + curbk - white
+  return (int)dst + (int)src - 255;
+}
+static int channel_overlay(uint8_t dst, uint8_t src)
+{
+  // newbk = curbk.x <= 0.5 ? 2*curbk*oldbk
+  //                        : white - 2*(white-curbk)*(white-oldbk)
+  return ((int)src <= 128 ? 2 * (int)src * (int)dst / 255
+                  : 255 - 2 * (255 - (int)src) * (255 - (int)dst) / 255);
 }
 void TCOD_console_set_char_background(
     TCOD_Console* con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag)
 {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) { return; }
-  TCOD_ColorRGBA& bg = con->tiles[y * con->w + x].bg;
+  struct TCOD_ColorRGBA* bg = &con->tiles[y * con->w + x].bg;
   if (flag == TCOD_BKGND_DEFAULT) { flag = con->bkgnd_flag; }
   int alpha = flag >> 8;
   switch (flag & 0xff) {
     case TCOD_BKGND_SET:
-      bg = tcod::ColorRGBA(col, bg.a);
+      bg->r = col.r;
+      bg->g = col.g;
+      bg->b = col.b;
       break;
     case TCOD_BKGND_MULTIPLY:
-      bg = tcod::ColorRGBA(TCOD_color_multiply(tcod::ColorRGB(bg), col), bg.a);
+      *bg = blend_color_(bg, &col, channel_multiply);
       break;
     case TCOD_BKGND_LIGHTEN:
-      bg = blend_color_(bg, col,
-          [](uint8_t a, uint8_t b){ return std::max<uint8_t>(a, b); });
+      *bg = blend_color_(bg, &col, channel_lighten);
       break;
     case TCOD_BKGND_DARKEN:
-      bg = blend_color_(bg, col,
-          [](uint8_t a, uint8_t b){ return std::min<uint8_t>(a, b); });
+      *bg = blend_color_(bg, &col, channel_darken);
       break;
     case TCOD_BKGND_SCREEN:
       // newbk = white - (white - oldbk) * (white - curbk)
-      bg = blend_color_(bg, col,
-          [](int a, int b){ return 255 - (255 - a) * (255 - b) / 255; });
+      *bg = blend_color_(bg, &col, channel_screen);
       break;
     case TCOD_BKGND_COLOR_DODGE:
       // newbk = curbk / (white - oldbk)
-      bg = blend_color_(bg, col,
-          [](int a, int b){ return (a == 255 ? 255 : 255 * b / (255 - a)); });
+      *bg = blend_color_(bg, &col, channel_color_dodge);
       break;
     case TCOD_BKGND_COLOR_BURN:
       // newbk = white - (white - oldbk) / curbk
-      bg = blend_color_(bg, col,
-          [](int a, int b){
-              return (b == 0 ? 0 : 255 - (255 * (255 - a)) / b); });
+      *bg = blend_color_(bg, &col, channel_color_burn);
       break;
     case TCOD_BKGND_ADD:
       // newbk = oldbk + curbk
-      bg = blend_color_(bg, col, [](int a, int b){ return a + b; });
+      *bg = blend_color_(bg, &col, channel_add);
       break;
     case TCOD_BKGND_ADDA:
       // newbk = oldbk + alpha * curbk
-      bg = blend_color_(bg, col,
-          [=](int a, int b){ return a + alpha * b / 255; });
+      bg->r = clamp_color_((int)bg->r + alpha * (int)col.r / 255);
+      bg->g = clamp_color_((int)bg->g + alpha * (int)col.g / 255);
+      bg->b = clamp_color_((int)bg->b + alpha * (int)col.b / 255);
       break;
     case TCOD_BKGND_BURN:
       // newbk = oldbk + curbk - white
-      bg = blend_color_(bg, col, [](int a, int b){ return a + b - 255; });
+      *bg = blend_color_(bg, &col, channel_burn);
       break;
     case TCOD_BKGND_OVERLAY:
       // newbk = curbk.x <= 0.5 ? 2*curbk*oldbk
       //                        : white - 2*(white-curbk)*(white-oldbk)
-      bg = blend_color_(bg, col, [](int a, int b){
-        return (b <= 128 ? 2 * b * a / 255
-                         : 255 - 2 * (255 - b) * (255 - a) / 255); });
+      *bg = blend_color_(bg, &col, channel_overlay);
       break;
-    case TCOD_BKGND_ALPH:
+    case TCOD_BKGND_ALPH: {
       // newbk = (1.0f-alpha)*oldbk + alpha*(curbk-oldbk)
-      bg = tcod::ColorRGBA(TCOD_color_lerp(tcod::ColorRGB(bg), col, alpha / 255.0f), bg.a);
+      struct TCOD_ColorRGBA col_rgba = {col.r, col.g, col.b, alpha};
+      *bg = TCOD_console_blit_lerp_(*bg, col_rgba, 1.0f);
       break;
+    }
     default: break;
   }
 }

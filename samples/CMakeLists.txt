@@ -3,7 +3,15 @@ cmake_minimum_required (VERSION 3.9)
 project (libtcod_samples C CXX)
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+conan_basic_setup(TARGETS KEEP_RPATHS)
+
+# This and KEEP_RPATHS is required to handle RPATH's on MacOS.
+if (APPLE)
+    set(CMAKE_INSTALL_RPATH "@executable_path")
+else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN")
+endif()
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
 add_custom_target(copy_data_dir
     COMMENT "Copy project data directory to the runtime folder."

@@ -107,8 +107,8 @@ static int TCOD_tileset_get_charmap(
   }
   return tileset->character_map[codepoint];
 }
-int TCOD_tileset_assign_charmap(
-    struct TCOD_Tileset* tileset, int codepoint, int tile_id)
+int TCOD_tileset_assign_tile(
+    struct TCOD_Tileset* tileset, int tile_id, int codepoint)
 {
   if (!tileset) { return -1; }
   if (tile_id < 0 || tile_id >= tileset->tiles_count) { return -1; }
@@ -155,7 +155,7 @@ static int TCOD_tileset_generate_charmap(
     tileset->tiles_count = 1; // Keep tile at zero blank.
   }
   tile_id = tileset->tiles_count++;
-  return TCOD_tileset_assign_charmap(tileset, codepoint, tile_id);
+  return TCOD_tileset_assign_tile(tileset, tile_id, codepoint);
 }
 static struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
     const TCOD_Tileset* tileset,
@@ -277,7 +277,7 @@ TCOD_Tileset* TCOD_tileset_load(
   if (!charmap) { n = font_tiles; }
   for (int i = 0; i < n; ++i) {
     int codepoint = charmap ? charmap[i] : i;
-    if (TCOD_tileset_assign_charmap(tileset, codepoint, i) < 0) {
+    if (TCOD_tileset_assign_tile(tileset, i, codepoint) < 0) {
       TCOD_tileset_delete(tileset);
       return NULL;
     }

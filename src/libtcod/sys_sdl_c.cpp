@@ -250,10 +250,10 @@ void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
   if (asciiCode <= 0) { return; } /* can't reassign 0 or negatives */
   // Assign to new-style Tileset.
   if(TCOD_ctx.tileset) {
-    TCOD_tileset_assign_charmap(
+    TCOD_tileset_assign_tile(
         TCOD_ctx.tileset,
-        asciiCode,
-        TCOD_ctx.tileset->virtual_columns * fontCharY + fontCharX);
+        TCOD_ctx.tileset->virtual_columns * fontCharY + fontCharX,
+        asciiCode);
   }
   // Assign to legacy character table.
   if (asciiCode >= TCOD_ctx.max_font_chars) {

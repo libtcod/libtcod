@@ -59,26 +59,32 @@ struct TCOD_Tileset {
   volatile int ref_count;
 };
 typedef struct TCOD_Tileset TCOD_Tileset;
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 /**
  *  Create a new tile-set with the given tile size.
  */
-TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_new(int tile_width, int tile_height);
+TCOD_NODISCARD
+TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_new(int tile_width, int tile_height);
 /**
  *  Delete a tile-set.
  */
-TCODLIB_CAPI void TCOD_tileset_delete(TCOD_Tileset* tileset);
+TCOD_PUBLIC void TCOD_tileset_delete(TCOD_Tileset* tileset);
 /**
  *  Return the pixel width of tiles in this tileset.
  *
  *  The tileset functions are provisional, the API may change in the future.
  */
-TCODLIB_CAPI int TCOD_tileset_get_tile_width_(const TCOD_Tileset* tileset);
+TCOD_NODISCARD
+TCOD_PUBLIC int TCOD_tileset_get_tile_width_(const TCOD_Tileset* tileset);
 /**
  *  Return the pixel height of tiles in this tileset.
  *
  *  The tileset functions are provisional, the API may change in the future.
  */
-TCODLIB_CAPI int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
+TCOD_NODISCARD
+TCOD_PUBLIC int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
 /**
  *  Fetch a tile, outputting its data to a pixel buffer.
  *
@@ -93,7 +99,8 @@ TCODLIB_CAPI int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
  *
  *  The tileset functions are provisional, the API may change in the future.
  */
-TCODLIB_CAPI int TCOD_tileset_get_tile_(
+TCOD_NODISCARD
+TCOD_PUBLIC int TCOD_tileset_get_tile_(
     const TCOD_Tileset* tileset,
     int codepoint,
     struct TCOD_ColorRGBA* buffer);
@@ -107,23 +114,35 @@ TCODLIB_CAPI int TCOD_tileset_get_tile_(
  *
  *  The tileset functions are provisional, the API may change in the future.
  */
-TCODLIB_CAPI int TCOD_tileset_set_tile_(
+TCOD_NODISCARD
+TCOD_PUBLIC int TCOD_tileset_set_tile_(
     TCOD_Tileset* tileset,
     int codepoint,
     const struct TCOD_ColorRGBA* buffer);
 /**
  *  Load a font from a tilesheet.
  */
-TCODLIB_CAPI TCOD_Tileset* TCOD_tileset_load(
+TCOD_NODISCARD
+TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
   const char* filename, int columns, int rows, int n, int* charmap);
-TCODLIB_CAPI struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
+/**
+ *  Assign a codepoint to an existing tile based on its tile ID.
+ *
+ *  Returns the tile ID on success.
+ *
+ *  Returns a negative value on error.
+ */
+TCOD_NODISCARD
+TCOD_PUBLIC int TCOD_tileset_assign_tile(
+    struct TCOD_Tileset* tileset, int tile_id, int codepoint);
+// Private
+TCOD_NODISCARD
+struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
     struct TCOD_Tileset* tileset);
-TCODLIB_CAPI void TCOD_tileset_observer_delete(
+void TCOD_tileset_observer_delete(
     struct TCOD_TilesetObserver* observer);
-TCODLIB_CAPI int TCOD_tileset_assign_charmap(
-    struct TCOD_Tileset* tileset, int codepoint, int tile_id);
-
 #ifdef __cplusplus
+} // extern "C"
 namespace tcod {
 struct TilesetDeleter {
   void operator()(TCOD_Tileset* tileset) const {

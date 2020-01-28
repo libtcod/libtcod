@@ -104,7 +104,7 @@
 #if defined(__cplusplus) && __cplusplus >= 201703L && !defined(__clang__)
 #define TCOD_NODISCARD [[nodiscard]]
 #elif defined(_MSC_VER)
-#define TCOD_NODISCARD _Check_return_
+#define TCOD_NODISCARD
 #elif defined(__GNUC__)
 #define TCOD_NODISCARD __attribute__ ((warn_unused_result))
 #else

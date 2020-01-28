@@ -170,18 +170,31 @@ static TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int want)
   }
   return TCOD_E_OK;
 }
-static int TCOD_tileset_get_charmap(
+/**
+ *  Return the tile ID that `codepoint` is assigned to.
+ *
+ *  Returns 0 for unassigned codepoints.
+ */
+static int TCOD_tileset_get_tile_id(
     const TCOD_Tileset* tileset, int codepoint)
 {
-  if (!tileset) { return -1; }
+  if (!tileset) { return 0; }
   if (codepoint < 0 || codepoint >= tileset->character_map_length) {
-    return -1;
+    return 0;
   }
   return tileset->character_map[codepoint];
 }
 int TCOD_tileset_assign_tile(
     struct TCOD_Tileset* tileset, int tile_id, int codepoint)
 {
+  if (tile_id < 0 || tile_id >= tileset->tiles_count) {
+    TCOD_set_errorv("Tile_ID is out of bounds.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (codepoint < 0) {
+    TCOD_set_errorv("Codepoint argument can not be negative.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   TCOD_Error err = TCOD_tileset_charmap_reserve(tileset, codepoint + 1);
   if (err < 0) { return err; }
   tileset->character_map[codepoint] = tile_id;
@@ -192,63 +205,135 @@ int TCOD_tileset_assign_tile(
  *
  *  Returns a negative value on error.
  */
-static int TCOD_tileset_generate_tile(
-    struct TCOD_Tileset* tileset, int codepoint)
+static int TCOD_tileset_generate_tile(struct TCOD_Tileset* tileset)
 {
   TCOD_Error err = TCOD_tileset_reserve(tileset, tileset->tiles_count + 1);
-  if (err < 0) { return err; }
-  int tile_id = tileset->tiles_count++;
+  if (err){ return err; }
+  return tileset->tiles_count++;
+}
+/**
+ *  Ensure a tile exists for a codepoint and return its ID.
+ *
+ *  If `codepoint` is zero then this is the same as
+ *  `TCOD_tileset_generate_tile`.
+ *
+ *  Returns a negative value on error.
+ */
+static int TCOD_tileset_generate_codepoint(struct TCOD_Tileset* tileset,
+                                           int codepoint)
+{
+  int tile_id = TCOD_tileset_get_tile_id(tileset, codepoint);
+  if (tile_id != 0) { return tile_id; }
+  tile_id = TCOD_tileset_generate_tile(tileset);
+  if (tile_id < 0) { return tile_id; }
   return TCOD_tileset_assign_tile(tileset, tile_id, codepoint);
 }
-static struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
+static const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
     const TCOD_Tileset* tileset,
     int codepoint)
 {
   if (!tileset) { return NULL; }
-  int tile_id = TCOD_tileset_get_charmap(tileset, codepoint);
+  int tile_id = TCOD_tileset_get_tile_id(tileset, codepoint);
   if (tile_id < 0) {
     return NULL; // No tile for the given codepoint in this tileset.
   }
   return tileset->pixels + tileset->tile_length * tile_id;
 }
-
-int TCOD_tileset_get_tile_(
+TCOD_Error TCOD_tileset_get_tile_(
     const TCOD_Tileset* tileset,
     int codepoint,
     struct TCOD_ColorRGBA* buffer)
 {
-  if (!tileset) { return -1; }
-  struct TCOD_ColorRGBA* tile = TCOD_tileset_get_tile(tileset, codepoint);
-  if (!tile) { return -1; }
-  if (!buffer) {
-    return 0; // buffer is NULL, just return an OK status.
+  if (!tileset) {
+    TCOD_set_errorv("Tileset argument must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
-  memcpy(buffer, tile, sizeof(tile[0]) * tileset->tile_length);
-  return 0; // Tile exists and was copied to buffer.
+  const struct TCOD_ColorRGBA* tile =
+      TCOD_tileset_get_tile(tileset, codepoint);
+  if (!tile) {
+    TCOD_set_errorvf("Codepoint %i is not assigned to a tile in this tileset.",
+                    codepoint);
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!buffer) {
+    return TCOD_E_OK; // buffer is NULL, just return an OK status.
+  }
+  memcpy(buffer, tile, sizeof(*tile) * tileset->tile_length);
+  return TCOD_E_OK; // Tile exists and was copied to buffer.
 }
-int TCOD_tileset_set_tile_(
+static TCOD_Error TCOD_tileset_set_tile_rgba(
+    TCOD_Tileset* tileset, int codepoint, const void* pixels, int stride)
+{
+  int tile_id = TCOD_tileset_generate_codepoint(tileset, codepoint);
+  if (!pixels) {
+    TCOD_set_errorv("Pixels argument must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (tile_id < 0) { return (TCOD_Error)tile_id; }
+  for (int y = 0; y < tileset->tile_height; ++y) {
+    const char* ptr_in = pixels;
+    const struct TCOD_ColorRGBA* in = (const void*)(ptr_in + y * stride);
+    for (int x = 0; x < tileset->tile_width; ++x) {
+      tileset->pixels[
+          tile_id * tileset->tile_length + y * tileset->tile_width + x
+          ] = in[x];
+    }
+  }
+  for (struct TCOD_TilesetObserver* it = tileset->observer_list;
+       it; it = it->next) {
+    if (it->on_tileset_changed) {
+      it->on_tileset_changed(it, tile_id, codepoint);
+    }
+  }
+  return TCOD_E_OK;
+}
+TCOD_Error TCOD_tileset_set_tile_(
     TCOD_Tileset* tileset,
     int codepoint,
     const struct TCOD_ColorRGBA* buffer)
 {
-  if (!tileset) { return -1; }
-  int tile_id = TCOD_tileset_get_charmap(tileset, codepoint);
-  if (tile_id < 0) {
-    tile_id = TCOD_tileset_generate_tile(tileset, codepoint);
+  if (!tileset) {
+    TCOD_set_errorv("Tileset argument must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
-  if (tile_id < 0) { return tile_id; }
-  struct TCOD_ColorRGBA* tile =
-      tileset->pixels + tileset->tile_length * tile_id;
-  memcpy(tile, buffer, sizeof(tile[0]) * tileset->tile_length);
-  for (struct TCOD_TilesetObserver* it = tileset->observer_list;
-       it; it = it->next) {
-    if (!it->on_tileset_changed) { continue; }
-    int err = it->on_tileset_changed(it, tile_id, codepoint);
-    if (err) { return err; }
-  }
-  return 0; // Tile uploaded successfully.
+  return TCOD_tileset_set_tile_rgba(tileset, codepoint, buffer,
+                                    sizeof(*buffer) * tileset->tile_width);
 }
-
+static void upload_tile_by_id_normalized(
+    TCOD_Tileset* tileset, int tile_id, const void* pixels, int stride,
+    const struct TCOD_ColorRGBA* color_key)
+{
+  // Analyse this tiles traits.
+  bool has_color = false;
+  bool has_alpha = false;
+  for (int y = 0; y < tileset->tile_height; ++y) {
+    for (int x = 0; x < tileset->tile_width; ++x) {
+      const struct TCOD_ColorRGBA pixel =
+          ((struct TCOD_ColorRGBA*)((char*)pixels + y * stride))[x];
+      if (pixel.a != 255) { has_alpha = true; }
+      if (pixel.r != pixel.g || pixel.r != pixel.b) { has_color = true; }
+    }
+  }
+  // Normalize and copy the tile.
+  for (int y = 0; y < tileset->tile_height; ++y) {
+    for (int x = 0; x < tileset->tile_width; ++x) {
+      struct TCOD_ColorRGBA pixel =
+          ((struct TCOD_ColorRGBA*)((char*)pixels + y * stride))[x];
+      // Convert any grey-scale tiles to white-with-alpha.
+      if (!has_color && !has_alpha) {
+        pixel.a = pixel.r;
+        pixel.r = pixel.g = pixel.b = 0xff;
+      }
+      // Set key-color pixels to zero.
+      if (color_key && color_key->r == pixel.r && color_key->g == pixel.g
+          && color_key->b == pixel.b && color_key->a == pixel.a) {
+        pixel.r = pixel.g = pixel.b = pixel.a = 0;
+      }
+      tileset->pixels[tile_id * tileset->tile_length
+                      + y * tileset->tile_width + x] = pixel;
+    }
+  }
+}
 TCOD_Tileset* TCOD_tileset_load(
   const char* filename, int columns, int rows, int n, int* charmap)
 {
@@ -256,22 +341,23 @@ TCOD_Tileset* TCOD_tileset_load(
   struct TCOD_ColorRGBA* font;
   unsigned int font_width;
   unsigned int font_height;
-  unsigned int err = lodepng_decode32_file((unsigned char**)&font,
-                                       &font_width, &font_height, filename);
-  if (err) {
+  unsigned int lodepng_err;
+  lodepng_err = lodepng_decode32_file((unsigned char**)&font,
+                                      &font_width, &font_height, filename);
+  if (lodepng_err) {
+    TCOD_set_errorvf("Error loading font image:\n%s",
+                     lodepng_error_text(lodepng_err));
     return NULL; // Error decoding file.
   }
   TCOD_Tileset* tileset =
       TCOD_tileset_new(font_width / columns, font_height / rows);
-  TCOD_Error terr;
-  terr = TCOD_tileset_reserve(tileset, font_tiles);
-  if (terr < 0) {
-      free(font);
-      TCOD_tileset_delete(tileset);
-      return NULL;
+  if (!tileset) { free(font); return NULL; }
+  if (TCOD_tileset_reserve(tileset, font_tiles) < 0) {
+    TCOD_tileset_delete(NULL);
+    free(font);
+    return NULL;
   }
-  tileset->virtual_columns = columns;
-  tileset->tiles_capacity = tileset->tiles_count = font_tiles;
+  tileset->tiles_count = font_tiles;
   // Check for a color key in the first tile.
   struct TCOD_ColorRGBA* color_key = &font[0];
   for (int y = 0; y < tileset->tile_height; ++y) {
@@ -284,38 +370,17 @@ TCOD_Tileset* TCOD_tileset_load(
       }
     }
   }
-  for (int i = 0; i < font_tiles; ++i) {
-    int font_y = i / columns * tileset->tile_height;
-    int font_x = i % columns * tileset->tile_width;
-    int font_i = font_y * font_width + font_x;
-    int tile_i = i * tileset->tile_length;
-    // Analyse a tile from the font.
-    bool has_color = false;
-    bool has_alpha = false;
-    for (int y = 0; y < tileset->tile_height; ++y) {
-      for (int x = 0; x < tileset->tile_width; ++x) {
-        const struct TCOD_ColorRGBA pixel = font[font_i + y * font_width + x];
-        if (pixel.a != 255) { has_alpha = true; }
-        if (pixel.r != pixel.g || pixel.r != pixel.b) { has_color = true; }
-      }
-    }
-    // Normalize and copy the tile.
-    for (int y = 0; y < tileset->tile_height; ++y) {
-      for (int x = 0; x < tileset->tile_width; ++x) {
-        struct TCOD_ColorRGBA pixel = font[font_i + y * font_width + x];
-        // Convert any grey-scale tiles to white-with-alpha.
-        if (!has_color && !has_alpha) {
-          pixel.a = pixel.r;
-          pixel.r = pixel.g = pixel.b = 0xff;
-        }
-        // Set key-color pixels to zero.
-        if (color_key && color_key->r == pixel.r && color_key->g == pixel.g
-            && color_key->b == pixel.b && color_key->a == pixel.a) {
-          pixel.r = pixel.g = pixel.b = pixel.a = 0;
-        }
-        tileset->pixels[tile_i + y * tileset->tile_width + x] = pixel;
-      }
-    }
+  for (int tile_id = 0; tile_id < font_tiles; ++tile_id) {
+    int font_x = tile_id % columns;
+    int font_y = tile_id / columns;
+    upload_tile_by_id_normalized(
+        tileset,
+        tile_id,
+        (font
+         + font_y * columns * tileset->tile_length
+         + font_x * tileset->tile_width),
+        sizeof(*font) * font_width,
+        color_key);
   }
   free(font);
   if (!charmap) { n = font_tiles; }

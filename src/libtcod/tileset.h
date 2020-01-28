@@ -101,7 +101,7 @@ TCOD_PUBLIC int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
  *  The tileset functions are provisional, the API may change in the future.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC int TCOD_tileset_get_tile_(
+TCOD_PUBLIC TCOD_Error TCOD_tileset_get_tile_(
     const TCOD_Tileset* tileset,
     int codepoint,
     struct TCOD_ColorRGBA* buffer);
@@ -116,7 +116,7 @@ TCOD_PUBLIC int TCOD_tileset_get_tile_(
  *  The tileset functions are provisional, the API may change in the future.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC int TCOD_tileset_set_tile_(
+TCOD_PUBLIC TCOD_Error TCOD_tileset_set_tile_(
     TCOD_Tileset* tileset,
     int codepoint,
     const struct TCOD_ColorRGBA* buffer);

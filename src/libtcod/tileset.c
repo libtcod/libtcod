@@ -98,6 +98,78 @@ int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset)
 {
   return tileset ? tileset->tile_height : 0;
 }
+/**
+ *  Reserve memory for the character mapping array.
+ */
+TCOD_NODISCARD
+static TCOD_Error TCOD_tileset_charmap_reserve(TCOD_Tileset* tileset, int want)
+{
+  if (!tileset) {
+    TCOD_set_errorv("Tileset argument must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (want < 0) {
+    TCOD_set_errorv("Can not take a negative number.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (want <= tileset->character_map_length) {
+    return TCOD_E_OK;
+  }
+  int new_length = tileset->character_map_length;
+  if (new_length == 0) { new_length = DEFAULT_CHARMAP_LENGTH; }
+  while (want > new_length) { new_length *= 2; }
+  int* new_charmap = realloc(
+      tileset->character_map, sizeof(int) * new_length);
+  if (!new_charmap) {
+    TCOD_set_errorv("Could not allocate enough memory for the tileset.");
+    return TCOD_E_OUT_OF_MEMORY;
+  }
+  for (int i = tileset->character_map_length; i < new_length; ++i) {
+    new_charmap[i] = 0;
+  }
+  tileset->character_map_length = new_length;
+  tileset->character_map = new_charmap;
+  return TCOD_E_OK;
+}
+/**
+ *  Reserve memory for a specific amount of tiles.
+ */
+TCOD_NODISCARD
+static TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int want)
+{
+  if (!tileset) {
+    TCOD_set_errorv("Tileset argument must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (want < 0) {
+    TCOD_set_errorv("Can not take a negative number.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (want <= tileset->tiles_capacity) {
+    return TCOD_E_OK;
+  }
+  int new_capacity = tileset->tiles_capacity * 2;
+  if (new_capacity == 0) { new_capacity = DEFAULT_TILES_LENGTH; }
+  if (new_capacity < want) { new_capacity = want; }
+  struct TCOD_ColorRGBA* new_pixels = realloc(
+      tileset->pixels,
+      sizeof(tileset->pixels[0]) * new_capacity * tileset->tile_length);
+  if (!new_pixels) {
+    TCOD_set_errorv("Could not allocate enough memory for the tileset.");
+    return TCOD_E_OUT_OF_MEMORY;
+  }
+  for (int i = tileset->tiles_capacity * tileset->tile_length;
+       i < new_capacity * tileset->tile_length; ++i) {
+    // Clear allocated tiles.
+    new_pixels[i] = (struct TCOD_ColorRGBA){0, 0, 0, 0};
+  }
+  tileset->tiles_capacity = new_capacity;
+  tileset->pixels = new_pixels;
+  if (tileset->tiles_count == 0) {
+    tileset->tiles_count = 1; // Keep tile at zero blank.
+  }
+  return TCOD_E_OK;
+}
 static int TCOD_tileset_get_charmap(
     const TCOD_Tileset* tileset, int codepoint)
 {
@@ -110,51 +182,22 @@ static int TCOD_tileset_get_charmap(
 int TCOD_tileset_assign_tile(
     struct TCOD_Tileset* tileset, int tile_id, int codepoint)
 {
-  if (!tileset) { return -1; }
-  if (tile_id < 0 || tile_id >= tileset->tiles_count) { return -1; }
-  if (codepoint < 0) { return -1; }
-  if (codepoint >= tileset->character_map_length) {
-    int new_length = tileset->character_map_length;
-    if (new_length == 0) { new_length = DEFAULT_CHARMAP_LENGTH; }
-    while (codepoint >= new_length) { new_length *= 2; }
-    int* new_charmap = realloc(
-        tileset->character_map, sizeof(int) * new_length);
-    if (!new_charmap) { return -1; }
-    for (int i = tileset->character_map_length; i < new_length; ++i) {
-      new_charmap[i] = 0;
-    }
-    tileset->character_map_length = new_length;
-    tileset->character_map = new_charmap;
-  }
+  TCOD_Error err = TCOD_tileset_charmap_reserve(tileset, codepoint + 1);
+  if (err < 0) { return err; }
   tileset->character_map[codepoint] = tile_id;
   return tile_id;
 }
-static int TCOD_tileset_generate_charmap(
+/**
+ *  Reserve space for an additional tile and return its ID.
+ *
+ *  Returns a negative value on error.
+ */
+static int TCOD_tileset_generate_tile(
     struct TCOD_Tileset* tileset, int codepoint)
 {
-  if (!tileset) { return -1; }
-  int tile_id = TCOD_tileset_get_charmap(tileset, codepoint);
-  if (tile_id > 0) { return tile_id; }
-  if (tileset->tiles_count == tileset->tiles_capacity) {
-    int new_capacity = tileset->tiles_capacity * 2;
-    if (new_capacity == 0) { new_capacity = DEFAULT_TILES_LENGTH; }
-    struct TCOD_ColorRGBA* new_pixels = realloc(
-        tileset->pixels,
-        sizeof(tileset->pixels[0]) * new_capacity * tileset->tile_length);
-    if (!new_pixels) { return -1; }
-    for (struct TCOD_ColorRGBA* it =
-             new_pixels + tileset->tiles_capacity * tileset->tile_length;
-         it < new_pixels + new_capacity * tileset->tile_length; ++it) {
-      // Clear allocated tiles.
-      it->r = it->g = it->b = it->a = 0;
-    }
-    tileset->tiles_capacity = new_capacity;
-    tileset->pixels = new_pixels;
-  }
-  if (tileset->tiles_count == 0) {
-    tileset->tiles_count = 1; // Keep tile at zero blank.
-  }
-  tile_id = tileset->tiles_count++;
+  TCOD_Error err = TCOD_tileset_reserve(tileset, tileset->tiles_count + 1);
+  if (err < 0) { return err; }
+  int tile_id = tileset->tiles_count++;
   return TCOD_tileset_assign_tile(tileset, tile_id, codepoint);
 }
 static struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
@@ -191,7 +234,7 @@ int TCOD_tileset_set_tile_(
   if (!tileset) { return -1; }
   int tile_id = TCOD_tileset_get_charmap(tileset, codepoint);
   if (tile_id < 0) {
-    tile_id = TCOD_tileset_generate_charmap(tileset, codepoint);
+    tile_id = TCOD_tileset_generate_tile(tileset, codepoint);
   }
   if (tile_id < 0) { return tile_id; }
   struct TCOD_ColorRGBA* tile =
@@ -220,13 +263,14 @@ TCOD_Tileset* TCOD_tileset_load(
   }
   TCOD_Tileset* tileset =
       TCOD_tileset_new(font_width / columns, font_height / rows);
-  tileset->virtual_columns = columns;
-  tileset->pixels = malloc(sizeof(*tileset->pixels) * tileset->tile_length * font_tiles);
-  if (!tileset->pixels) {
+  TCOD_Error terr;
+  terr = TCOD_tileset_reserve(tileset, font_tiles);
+  if (terr < 0) {
       free(font);
       TCOD_tileset_delete(tileset);
       return NULL;
   }
+  tileset->virtual_columns = columns;
   tileset->tiles_capacity = tileset->tiles_count = font_tiles;
   // Check for a color key in the first tile.
   struct TCOD_ColorRGBA* color_key = &font[0];

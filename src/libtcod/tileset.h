@@ -35,6 +35,7 @@
 #include <memory>
 #endif // __cplusplus
 #include "config.h"
+#include "error.h"
 #include "color/color.h"
 struct TCOD_Tileset;
 struct TCOD_TilesetObserver {

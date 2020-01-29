@@ -281,8 +281,8 @@ static TCOD_Error TCOD_tileset_set_tile_rgba(
   }
   for (struct TCOD_TilesetObserver* it = tileset->observer_list;
        it; it = it->next) {
-    if (it->on_tileset_changed) {
-      it->on_tileset_changed(it, tile_id, codepoint);
+    if (it->on_tile_changed) {
+      it->on_tile_changed(it, tile_id);
     }
   }
   return TCOD_E_OK;

@@ -43,8 +43,8 @@ struct TCOD_TilesetObserver {
   struct TCOD_TilesetObserver* next;
   void* userdata;
   void (*on_observer_delete)(struct TCOD_TilesetObserver* observer);
-  int (*on_tileset_changed)(
-      struct TCOD_TilesetObserver* observer, int tile_id, int codepoint);
+  int (*on_tile_changed)(
+      struct TCOD_TilesetObserver* observer, int tile_id);
 };
 struct TCOD_Tileset {
   int tile_width;

@@ -102,10 +102,9 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas)
   }
   return 0; // No action.
 }
-int sdl2_atlas_on_tileset_changed(
-    struct TCOD_TilesetObserver* observer, int tile_id, int codepoint)
+int sdl2_atlas_on_tile_changed(
+    struct TCOD_TilesetObserver* observer, int tile_id)
 {
-  (void)codepoint; // Unused parameter.
   struct TCOD_TilesetAtlasSDL2* atlas = observer->userdata;
   if (prepare_sdl2_atlas(atlas) == 1) {
     return 0; // Tile updated as a side-effect of prepare_sdl2_atlas.
@@ -125,7 +124,7 @@ struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
   atlas->tileset = tileset;
   atlas->tileset->ref_count += 1;
   atlas->observer->userdata = atlas;
-  atlas->observer->on_tileset_changed = sdl2_atlas_on_tileset_changed;
+  atlas->observer->on_tile_changed = sdl2_atlas_on_tile_changed;
   prepare_sdl2_atlas(atlas);
   return atlas;
 }
@@ -138,15 +137,21 @@ void TCOD_sdl2_atlas_delete(
   if (atlas->texture) { SDL_DestroyTexture(atlas->texture); }
   free(atlas);
 }
-int cache_console_update(
-    struct TCOD_TilesetObserver* observer, int tile_id, int codepoint)
+/**
+ *  Update a cache console be resetting tiles which point to the updated tile.
+ */
+static int cache_console_update(
+    struct TCOD_TilesetObserver* observer, int tile_id)
 {
-  (void)tile_id; // Unused parameter.
   struct TCOD_Console* console = observer->userdata;
-  for (struct TCOD_ConsoleTile* it = console->tiles;
-       it < console->tiles + (console->w * console->h);
-       ++it) {
-    if (it->ch == codepoint) { it->ch = -1; }
+  for (int c = 0; c < observer->tileset->character_map_length; ++c) {
+    // Find codepoints that point to the tile_id.
+    if (observer->tileset->character_map[c] != tile_id) { continue; }
+    for (int i = 0; i < console->length; ++i) {
+      // Compare matched codepoints to the cache console characters.
+      if (console->tiles[i].ch != c) { continue; }
+      console->tiles[i].ch = -1;
+    }
   }
   return 0;
 }
@@ -190,7 +195,7 @@ static TCOD_Error setup_cache_console(
     }
     observer->userdata = *cache;
     (*cache)->userdata = observer;
-    observer->on_tileset_changed = cache_console_update;
+    observer->on_tile_changed = cache_console_update;
     (*cache)->on_delete = cache_console_on_delete;
     observer->on_observer_delete = cache_console_observer_delete;
     for (struct TCOD_ConsoleTile* it = (*cache)->tiles;

@@ -21,7 +21,7 @@ target_sources(TCOD PRIVATE
     libtcod/heightmap.cpp
     libtcod/heightmap_c.c
     libtcod/image.cpp
-    libtcod/image_c.cpp
+    libtcod/image_c.c
     libtcod/lex.cpp
     libtcod/lex_c.c
     libtcod/list_c.c
@@ -129,7 +129,7 @@ source_group(libtcod FILES
     libtcod/image.cpp
     libtcod/image.h
     libtcod/image.hpp
-    libtcod/image_c.cpp
+    libtcod/image_c.c
     libtcod/lex.cpp
     libtcod/lex.h
     libtcod/lex.hpp

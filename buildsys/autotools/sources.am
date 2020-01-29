@@ -143,7 +143,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/heightmap.cpp \
 	../../src/libtcod/heightmap_c.c \
 	../../src/libtcod/image.cpp \
-	../../src/libtcod/image_c.cpp \
+	../../src/libtcod/image_c.c \
 	../../src/libtcod/lex.cpp \
 	../../src/libtcod/lex_c.c \
 	../../src/libtcod/list_c.c \

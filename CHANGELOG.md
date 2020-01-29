@@ -14,6 +14,12 @@ since `1.7.0`.
 ### Changed
 - Console blit operations now perform per-cell alpha transparency.
 
+### Fixed
+- The following are no longer mislabeled as taking const images:
+  - `TCOD_image_get_mipmap_pixel`
+  - `TCOD_image_blit`
+  - `TCOD_image_blit_rect`
+
 ## [1.15.1] - 2019-11-22
 ### Changed
 - Renamed build systems directory from `build/` to `buildsys/`.

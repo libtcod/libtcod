@@ -35,8 +35,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include <algorithm>
-#include <cmath>
+#include <math.h>
 
 #include "console.h"
 #include "libtcod_int.h"
@@ -79,9 +78,7 @@ static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
   struct TCOD_mipmap_* orig = &image->mipmaps[0];
   struct TCOD_mipmap_* cur = &image->mipmaps[mip];
   if (!cur->buf) {
-    cur->buf = static_cast<TCOD_color_t*>(
-        calloc(sizeof(TCOD_color_t), cur->width * cur->height)
-    );
+    cur->buf = calloc(sizeof(*cur->buf), cur->width * cur->height);
   }
   cur->dirty = false;
   for (int x = 0; x < cur->width; ++x) {
@@ -99,10 +96,10 @@ static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
           b += orig->buf[offset].b;
         }
       }
-      cur->buf[x + y * cur->width] = {
-          static_cast<uint8_t>(r / count),
-          static_cast<uint8_t>(g / count),
-          static_cast<uint8_t>(b / count),
+      cur->buf[x + y * cur->width] = (struct TCOD_ColorRGB){
+          (uint8_t)(r / count),
+          (uint8_t)(g / count),
+          (uint8_t)(b / count),
       };
     }
   }
@@ -126,7 +123,7 @@ bool TCOD_image_mipmap_copy_internal(const TCOD_Image* img_src,
   memcpy(
       img_dst->mipmaps[0].buf,
       img_src->mipmaps[0].buf,
-      (sizeof(TCOD_color_t)
+      (sizeof(*img_src->mipmaps->buf)
        * (img_src->mipmaps[0].width) * (img_src->mipmaps[0].height))
   );
   for (int i = 1; i < img_src->nb_mipmaps; ++i) {
@@ -141,20 +138,16 @@ static void TCOD_image_init_mipmaps(TCOD_Image* image)
   if (!image->sys_img) { return; }
   TCOD_sys_get_image_size(image->sys_img, &w, &h);
   image->nb_mipmaps = TCOD_image_get_mipmap_levels(w, h);
-  image->mipmaps = static_cast<struct TCOD_mipmap_*>(
-      calloc(sizeof(struct TCOD_mipmap_), image->nb_mipmaps)
-  );
-  image->mipmaps[0].buf = static_cast<TCOD_color_t*>(
-      calloc(sizeof(TCOD_color_t), w * h)
-  );
+  image->mipmaps = calloc(sizeof(*image->mipmaps), image->nb_mipmaps);
+  image->mipmaps[0].buf = calloc(sizeof(*image->mipmaps->buf), w * h);
   for (int x = 0; x < w; ++x) {
     for (int y = 0; y < h; ++y) {
       image->mipmaps[0].buf[x + y * w] =
           TCOD_sys_get_image_pixel(image->sys_img, x, y);
     }
   }
-  float fw = static_cast<float>(w);
-  float fh = static_cast<float>(h);
+  float fw = (float)w;
+  float fh = (float)h;
   for (int i = 0; i < image->nb_mipmaps; ++i) {
     image->mipmaps[i].width = w;
     image->mipmaps[i].height = h;
@@ -185,18 +178,16 @@ void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color)
 
 TCOD_Image* TCOD_image_new(int width, int height)
 {
-  TCOD_Image* ret=static_cast<TCOD_Image*>(calloc(sizeof(TCOD_Image), 1));
+  TCOD_Image* ret = calloc(sizeof(*ret), 1);
   ret->nb_mipmaps = TCOD_image_get_mipmap_levels(width, height);
-  ret->mipmaps = static_cast<struct TCOD_mipmap_*>(
-      calloc(sizeof(struct TCOD_mipmap_), ret->nb_mipmaps));
-  ret->mipmaps[0].buf = static_cast<TCOD_color_t*>(
-      calloc(sizeof(TCOD_color_t), width * height));
+  ret->mipmaps = calloc(sizeof(*ret->mipmaps), ret->nb_mipmaps);
+  ret->mipmaps[0].buf = calloc(sizeof(*ret->mipmaps->buf), width * height);
 
   for (int i = 0; i < width * height; ++i) {
     ret->mipmaps[0].buf[i] = TCOD_black;
   }
-  float fw = static_cast<float>(width);
-  float fh = static_cast<float>(height);
+  float fw = (float)width;
+  float fh = (float)height;
   for (int i = 0; i < ret->nb_mipmaps; ++i) {
     ret->mipmaps[i].width = width;
     ret->mipmaps[i].height = height;
@@ -211,7 +202,7 @@ TCOD_Image* TCOD_image_new(int width, int height)
 }
 
 TCOD_Image* TCOD_image_load(const char *filename) {
-  TCOD_Image* ret = static_cast<TCOD_Image*>(calloc(sizeof(TCOD_Image), 1));
+  TCOD_Image* ret = calloc(sizeof(*ret), 1);
   ret->sys_img = TCOD_sys_load_image(filename);
   return ret;
 }
@@ -253,29 +244,29 @@ int TCOD_image_get_alpha(const TCOD_Image* image,int x, int y) {
 }
 
 TCOD_color_t TCOD_image_get_mipmap_pixel(
-    const TCOD_Image* image, float x0, float y0, float x1, float y1) {
+    TCOD_Image* image, float x0, float y0, float x1, float y1) {
   int cur_size = 1;
   int mip = 0;
   if (!image->mipmaps && !image->sys_img) {
     return TCOD_black; // no image data
   }
-  if (!image->mipmaps) TCOD_image_init_mipmaps(const_cast<TCOD_Image*>(image));
-  int texel_xsize = static_cast<int>(x1 - x0);
-  int texel_ysize = static_cast<int>(y1 - y0);
+  if (!image->mipmaps) { TCOD_image_init_mipmaps(image); }
+  int texel_xsize = (int)(x1 - x0);
+  int texel_ysize = (int)(y1 - y0);
   int texel_size = texel_xsize < texel_ysize ? texel_ysize : texel_xsize;
   while (mip < image->nb_mipmaps - 1 && cur_size < texel_size) {
     ++mip;
     cur_size <<= 1;
   }
   if (mip > 0) { --mip; }
-  int texel_x = static_cast<int>(
+  int texel_x = (int)(
       x0 * (image->mipmaps[mip].width) / image->mipmaps[0].fwidth
   );
-  int texel_y = static_cast<int>(
+  int texel_y = (int)(
       y0 * (image->mipmaps[mip].height) / image->mipmaps[0].fheight
   );
   if (image->mipmaps[mip].buf == NULL || image->mipmaps[mip].dirty) {
-    TCOD_image_generate_mip(const_cast<TCOD_Image*>(image), mip);
+    TCOD_image_generate_mip(image, mip);
   }
   if (texel_x < 0 || texel_y < 0
       || texel_x >= image->mipmaps[mip].width
@@ -330,7 +321,7 @@ bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y) {
 }
 
 void TCOD_image_blit(
-    const TCOD_Image* image, TCOD_console_t console, float x, float y,
+    TCOD_Image* image, TCOD_console_t console, float x, float y,
     TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
 {
   if (scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE) {
@@ -341,14 +332,14 @@ void TCOD_image_blit(
   float rx_ = x - width * 0.5f;
   float ry_ = y - height * 0.5f;
   if (scalex == 1.0f && scaley == 1.0f && angle == 0.0f
-      && rx_ == static_cast<int>(rx_) && ry_ == static_cast<int>(ry_)) {
+      && rx_ == (int)rx_ && ry_ == (int)ry_) {
     /* clip the image */
-    int ix = static_cast<int>(x - width * 0.5f);
-    int iy = static_cast<int>(y - height * 0.5f);
-    int minx = std::max(ix, 0);
-    int miny = std::max(iy, 0);
-    int maxx = std::min(ix + width, TCOD_console_get_width(console));
-    int maxy = std::min(iy + height, TCOD_console_get_height(console));
+    int ix = (int)(x - width * 0.5f);
+    int iy = (int)(y - height * 0.5f);
+    int minx = MAX(ix, 0);
+    int miny = MAX(iy, 0);
+    int maxx = MIN(ix + width, TCOD_console_get_width(console));
+    int maxy = MIN(iy + height, TCOD_console_get_height(console));
     int offx = 0;
     int offy = 0;
     if (ix < 0) { offx = -ix; }
@@ -369,33 +360,33 @@ void TCOD_image_blit(
     float iw = width / 2 * scalex;
     float ih = height / 2 * scaley;
     /* get the coordinates of the image corners in the console */
-    float newx_x = std::cos(angle);
-    float newx_y = -std::sin(angle);
+    float newx_x = cosf(angle);
+    float newx_y = -sinf(angle);
     float newy_x = newx_y;
     float newy_y = -newx_x;
     // image corners coordinates
     /* 0 = P - w/2 x' +h/2 y' */
-    int x0 = static_cast<int>(x - iw * newx_x + ih * newy_x);
-    int y0 = static_cast<int>(y - iw * newx_y + ih * newy_y);
+    int x0 = (int)(x - iw * newx_x + ih * newy_x);
+    int y0 = (int)(y - iw * newx_y + ih * newy_y);
     /* 1 = P + w/2 x' + h/2 y' */
-    int x1 = static_cast<int>(x + iw * newx_x + ih * newy_x);
-    int y1 = static_cast<int>(y + iw * newx_y + ih * newy_y);
+    int x1 = (int)(x + iw * newx_x + ih * newy_x);
+    int y1 = (int)(y + iw * newx_y + ih * newy_y);
     /* 2 = P + w/2 x' - h/2 y' */
-    int x2 = static_cast<int>(x + iw * newx_x - ih * newy_x);
-    int y2 = static_cast<int>(y + iw * newx_y - ih * newy_y);
+    int x2 = (int)(x + iw * newx_x - ih * newy_x);
+    int y2 = (int)(y + iw * newx_y - ih * newy_y);
     /* 3 = P - w/2 x' - h/2 y' */
-    int x3 = static_cast<int>(x - iw * newx_x - ih * newy_x);
-    int y3 = static_cast<int>(y - iw * newx_y - ih * newy_y);
+    int x3 = (int)(x - iw * newx_x - ih * newy_x);
+    int y3 = (int)(y - iw * newx_y - ih * newy_y);
     /* get the affected rectangular area in the console */
-    int rx = std::min(std::min(x0, x1), std::min(x2, x3));
-    int ry = std::min(std::min(y0, y1), std::min(y2, y3));
-    int rw = std::max(std::max(x0, x1), std::max(x2, x3)) - rx;
-    int rh = std::max(std::max(y0, y1), std::max(y2, y3)) - ry;
+    int rx = MIN(MIN(x0, x1), MIN(x2, x3));
+    int ry = MIN(MIN(y0, y1), MIN(y2, y3));
+    int rw = MAX(MAX(x0, x1), MAX(x2, x3)) - rx;
+    int rh = MAX(MAX(y0, y1), MAX(y2, y3)) - ry;
     /* clip it */
-    int minx = std::max(rx, 0);
-    int miny = std::max(ry, 0);
-    int maxx = std::min(rx + rw, TCOD_console_get_width(console));
-    int maxy = std::min(ry + rh, TCOD_console_get_height(console));
+    int minx = MAX(rx, 0);
+    int miny = MAX(ry, 0);
+    int maxx = MIN(rx + rw, TCOD_console_get_width(console));
+    int maxy = MIN(ry + rh, TCOD_console_get_height(console));
     float invscalex = 1.0f / scalex;
     float invscaley = 1.0f / scaley;
     for (int cx = minx; cx < maxx; ++cx) {
@@ -403,9 +394,7 @@ void TCOD_image_blit(
         /* map the console pixel to the image world */
         float ix = (iw + (cx - x) * newx_x + (cy - y) * (-newy_x)) * invscalex;
         float iy = (ih + (cx - x) * newx_y - (cy - y) * newy_y) * invscaley;
-        TCOD_color_t col = TCOD_image_get_pixel(
-            image, static_cast<int>(ix), static_cast<int>(iy)
-        );
+        TCOD_color_t col = TCOD_image_get_pixel(image, (int)ix, (int)iy);
         if (!image->has_key_color
             || image->key_color.r != col.r
             || image->key_color.g != col.g
@@ -422,7 +411,7 @@ void TCOD_image_blit(
 }
 
 void TCOD_image_blit_rect(
-    const TCOD_Image* image, TCOD_console_t console,
+    TCOD_Image* image, TCOD_console_t console,
     int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag)
 {
   int width, height;
@@ -430,14 +419,14 @@ void TCOD_image_blit_rect(
   if (w == -1) { w = width; }
   if (h == -1) { h = height; }
   if (w <= 0 || h <= 0 || bkgnd_flag == TCOD_BKGND_NONE) { return; }
-  float scalex = static_cast<float>(w) / width;
-  float scaley = static_cast<float>(h) / height;
+  float scalex = (float)w / width;
+  float scaley = (float)h / height;
   TCOD_image_blit(image, console, x + w * 0.5f, y + h * 0.5f, bkgnd_flag,
                   scalex, scaley, 0.0f);
 }
 
 TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
-  TCOD_Image* ret = static_cast<TCOD_Image*>(calloc(sizeof(TCOD_Image), 1));
+  TCOD_Image* ret = calloc(sizeof(*ret), 1);
   ret->sys_img = TCOD_sys_create_bitmap_for_console(console);
   TCOD_image_refresh_console(ret, console);
   return ret;
@@ -452,7 +441,7 @@ void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
 
 void TCOD_image_save(const TCOD_Image* image, const char *filename)
 {
-  SDL_Surface* bitmap = nullptr;
+  struct SDL_Surface* bitmap = NULL;
   bool must_free = false;
   if (image->sys_img) {
     bitmap = image->sys_img;
@@ -591,31 +580,31 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
   if (neww < width && newh < height) {
     /* scale down image, using supersampling */
     for (int py = 0; py < newh; ++py) {
-      float y0 = static_cast<float>(py) * height / newh;
-      float y0floor = std::floor(y0);
+      float y0 = (float)py * height / newh;
+      float y0floor = floorf(y0);
       float y0weight = 1.0f - (y0 - y0floor);
-      int iy0 = static_cast<int>(y0floor);
+      int iy0 = (int)y0floor;
 
-      float y1 = static_cast<float>(py + 1) * height / newh;
-      float y1floor = std::floor(y1 - 0.00001f);
+      float y1 = (float)(py + 1) * height / newh;
+      float y1floor = floorf(y1 - 0.00001f);
       float y1weight = (y1 - y1floor);
-      int iy1 = static_cast<int>(y1floor);
+      int iy1 = (int)y1floor;
 
       for (int px = 0; px < neww; ++px) {
-        float x0 = static_cast<float>(px) * width / neww;
-        float x0floor = std::floor(x0);
+        float x0 = (float)px * width / neww;
+        float x0floor = floorf(x0);
         float x0weight = 1.0f - (x0 - x0floor);
-        int ix0 = static_cast<int>(x0floor);
+        int ix0 = (int)x0floor;
 
-        float x1 = static_cast<float>(px+1) * width / neww;
-        float x1floor = std::floor(x1 - 0.00001f);
+        float x1 = (float)(px + 1) * width / neww;
+        float x1floor = floorf(x1 - 0.00001f);
         float x1weight = (x1 - x1floor);
-        int ix1 = static_cast<int>(x1floor);
+        int ix1 = (int)x1floor;
 
         float r=0,g=0,b=0,sumweight=0.0f;
         /* left & right fractional edges */
-        for (int srcy = static_cast<int>(y0 + 1);
-             srcy < static_cast<int>(y1);
+        for (int srcy = (int)y0 + 1;
+             srcy < (int)y1;
              ++srcy) {
           TCOD_color_t col_left = TCOD_image_get_pixel(image, ix0, srcy);
           TCOD_color_t col_right = TCOD_image_get_pixel(image, ix1, srcy);
@@ -625,8 +614,8 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
           sumweight += x0weight + x1weight;
         }
         /* top & bottom fractional edges */
-        for (int srcx = static_cast<int>(x0 + 1);
-             srcx < static_cast<int>(x1);
+        for (int srcx = (int)x0 + 1;
+             srcx < (int)x1;
              ++srcx) {
           TCOD_color_t col_top = TCOD_image_get_pixel(image, srcx, iy0);
           TCOD_color_t col_bottom = TCOD_image_get_pixel(image, srcx, iy1);
@@ -636,11 +625,11 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
           sumweight += y0weight + y1weight;
         }
         /* center */
-        for (int srcy = static_cast<int>(y0 + 1);
-             srcy < static_cast<int>(y1);
+        for (int srcy = (int)y0 + 1;
+             srcy < (int)y1;
              ++srcy) {
-          for (int srcx = static_cast<int>(x0 + 1);
-               srcx < static_cast<int>(x1);
+          for (int srcx = (int)x0 + 1;
+               srcx < (int)x1;
                ++srcx) {
             TCOD_color_t sample = TCOD_image_get_pixel(image, srcx, srcy);
             r += sample.r;
@@ -674,9 +663,9 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
         r = r * sumweight + 0.5f;
         g = g * sumweight + 0.5f;
         b = b * sumweight + 0.5f;
-        col.r = static_cast<uint8_t>(r);
-        col.g = static_cast<uint8_t>(g);
-        col.b = static_cast<uint8_t>(b);
+        col.r = (uint8_t)r;
+        col.g = (uint8_t)g;
+        col.b = (uint8_t)b;
         TCOD_image_put_pixel(newimg, px, py, col);
       }
     }
@@ -705,9 +694,9 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
 /* distance between two colors */
 int rgbdist(const TCOD_color_t *c1, const TCOD_color_t *c2)
 {
-  int dr = static_cast<int>(c1->r) - c2->r;
-  int dg = static_cast<int>(c1->g) - c2->g;
-  int db = static_cast<int>(c1->b) - c2->b;
+  int dr = (int)c1->r - c2->r;
+  int dg = (int)c1->g - c2->g;
+  int db = (int)c1->b - c2->b;
   return dr * dr + dg * dg + db * db;
 }
 
@@ -739,7 +728,7 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
 
   /* Ignore all duplicates... */
   for (i = 1; i < 4; i++) {
-    if (desired[i] != palette[0]) { break; }
+    if (!TCOD_color_equals(desired[i], palette[0])) { break; }
   }
 
   /* All the same. */
@@ -757,9 +746,9 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   /* remaining colours */
   ++i;
   while (i < 4) {
-    if (desired[i] == palette[0]) {
+    if (TCOD_color_equals(desired[i], palette[0])) {
       ++weight[0];
-    } else if (desired[i] == palette[1])  {
+    } else if (TCOD_color_equals(desired[i], palette[1])) {
       flag |= 1 << (i - 1);
       ++weight[1];
     } else {
@@ -780,7 +769,7 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
           palette[0] = TCOD_color_lerp(
               palette[0],
               palette[1],
-              static_cast<float>(weight[1]) / (weight[0] + weight[1])
+              (float)weight[1] / (weight[0] + weight[1])
           );
           ++weight[0];
           palette[1] = desired[i];
@@ -799,7 +788,7 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
           palette[0] = TCOD_color_lerp(
               palette[0],
               palette[1],
-              static_cast<float>(weight[1]) / (weight[0] + weight[1])
+              (float)weight[1] / (weight[0] + weight[1])
           );
           ++weight[0];
           palette[1] = desired[i];
@@ -828,10 +817,10 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
   TCOD_ASSERT(sx >= 0 && sy >= 0 && sx+w <= width && sy+h <= height);
   TCOD_IFNOT(w > 0 && h > 0) { return; }
 
-  sx = std::max(0, sx);
-  sy = std::max(0, sy);
-  w = std::min(w, width - sx);
-  h = std::min(h, height - sy);
+  sx = MAX(0, sx);
+  sy = MAX(0, sy);
+  w = MIN(w, width - sx);
+  h = MIN(h, height - sy);
 
   int maxx = dx + w / 2 <= con->w ? w : (con->w - dx) * 2;
   int maxy = dy + h / 2 <= con->h ? h : (con->h - dy) * 2;
@@ -849,12 +838,14 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       TCOD_color_t consoleBack =
           TCOD_console_get_char_background(con, conx, cony);
       grid[0] = TCOD_image_get_pixel(image, cx, cy);
-      if (image->has_key_color && grid[0] == image->key_color) {
+      if (image->has_key_color
+          && TCOD_color_equals(grid[0], image->key_color)) {
         grid[0] = consoleBack;
       }
       if (cx < maxx - 1) {
         grid[1] = TCOD_image_get_pixel(image, cx + 1, cy);
-        if (image->has_key_color && grid[1] == image->key_color) {
+        if (image->has_key_color
+            && TCOD_color_equals(grid[1], image->key_color)) {
           grid[1] = consoleBack;
         }
       } else {
@@ -862,7 +853,8 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       }
       if (cy < maxy-1) {
         grid[2] = TCOD_image_get_pixel(image, cx, cy + 1);
-        if (image->has_key_color && grid[2] == image->key_color) {
+        if (image->has_key_color
+            && TCOD_color_equals(grid[2], image->key_color)) {
           grid[2] = consoleBack;
         }
       } else {
@@ -870,7 +862,8 @@ void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
       }
       if (cx < maxx-1 && cy < maxy-1) {
         grid[3] = TCOD_image_get_pixel(image, cx + 1, cy + 1);
-        if (image->has_key_color && grid[3] == image->key_color) {
+        if (image->has_key_color
+            && TCOD_color_equals(grid[3], image->key_color)) {
           grid[3] = consoleBack;
         }
       } else {

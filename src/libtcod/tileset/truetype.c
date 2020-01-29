@@ -47,7 +47,7 @@
 TCOD_NODISCARD
 static unsigned char* alloc_read_whole_file(const char* path, int* size) {
   if (!path) { TCOD_set_errorv("Given path was NULL."); return NULL; }
-  FILE* file = fopen(path, "r");
+  FILE* file = fopen(path, "rb");
   if (!file) {
     TCOD_set_errorvf("Could not open file:\n%s", path);
     return NULL;

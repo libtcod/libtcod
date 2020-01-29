@@ -136,10 +136,21 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
 TCOD_NODISCARD
 TCOD_PUBLIC int TCOD_tileset_assign_tile(
     struct TCOD_Tileset* tileset, int tile_id, int codepoint);
-// Private
+/**
+ *  Return a new observer to this tileset.
+ *
+ *  For internal use.
+ */
 TCOD_NODISCARD
 struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
     struct TCOD_Tileset* tileset);
+/**
+ *  Delete an existing observer.
+ *
+ *  Will call this observers on_observer_delete callback.
+ *
+ *  For internal use.
+ */
 void TCOD_tileset_observer_delete(
     struct TCOD_TilesetObserver* observer);
 #ifdef __cplusplus

@@ -272,11 +272,11 @@ static TCOD_Error TCOD_tileset_set_tile_rgba(
   if (tile_id < 0) { return (TCOD_Error)tile_id; }
   for (int y = 0; y < tileset->tile_height; ++y) {
     const char* ptr_in = pixels;
-    const struct TCOD_ColorRGBA* in = (const void*)(ptr_in + y * stride);
+    const struct TCOD_ColorRGBA* row_in = (const void*)(ptr_in + y * stride);
     for (int x = 0; x < tileset->tile_width; ++x) {
       tileset->pixels[
           tile_id * tileset->tile_length + y * tileset->tile_width + x
-          ] = in[x];
+          ] = row_in[x];
     }
   }
   for (struct TCOD_TilesetObserver* it = tileset->observer_list;

@@ -32,29 +32,17 @@
 #ifndef LIBTCOD_ENGINE_DISPLAY_H_
 #define LIBTCOD_ENGINE_DISPLAY_H_
 
-#include "../color/canvas.h"
+#include "../config.h"
+#include "../error.h"
 #include "../tileset.h"
 #include "../console_types.h"
-#include "../error.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 struct SDL_Rect;
 struct SDL_Window;
 struct SDL_Renderer;
-#ifdef __cplusplus
-namespace tcod {
-namespace console {
-TCODLIB_API void init_root(int w, int h, const std::string& title,
-                           bool fullscreen, TCOD_renderer_t renderer);
-TCODLIB_API void init_root(
-    int w,
-    int h,
-    const std::string& title,
-    bool fullscreen,
-    TCOD_renderer_t renderer,
-    bool vsync);
-} // namespace console
-} // namespace tcod
-#endif // __cplusplus
 /**
  *  \brief Initialize the libtcod graphical engine.
  *
@@ -94,9 +82,9 @@ TCODLIB_API void init_root(
  *  \endrst
  */
 
-TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_console_init_root(
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_console_init_root(
     int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
-TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_console_init_root_(
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_console_init_root_(
     int w,
     int h,
     const char* title,
@@ -109,27 +97,27 @@ TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_console_init_root_(
  *  .. versionadded:: 1.8
  *  \endrst
  */
-TCODLIB_CAPI void TCOD_quit(void);
+TCOD_PUBLIC void TCOD_quit(void);
 /**
  *  Change the title string of the active window.
  *
  *  \param title A utf8 string.
  */
-TCODLIB_CAPI void TCOD_console_set_window_title(const char *title);
+TCOD_PUBLIC void TCOD_console_set_window_title(const char *title);
 /**
  *  Set the display to be full-screen or windowed.
  *
  *  \param fullscreen If true the display will go full-screen.
  */
-TCODLIB_CAPI void TCOD_console_set_fullscreen(bool fullscreen);
+TCOD_PUBLIC void TCOD_console_set_fullscreen(bool fullscreen);
 /**
  *  Return true if the display is full-screen.
  */
-TCODLIB_CAPI bool TCOD_console_is_fullscreen(void);
+TCOD_PUBLIC bool TCOD_console_is_fullscreen(void);
 /**
  *  Return true if the window has mouse focus.
  */
-TCODLIB_CAPI bool TCOD_console_has_mouse_focus(void);
+TCOD_PUBLIC bool TCOD_console_has_mouse_focus(void);
 /**
  *  Return true if the window has keyboard focus.
  *
@@ -139,25 +127,25 @@ TCODLIB_CAPI bool TCOD_console_has_mouse_focus(void);
  *      focus.
  *  \endverbatim
  */
-TCODLIB_CAPI bool TCOD_console_is_active(void);
+TCOD_PUBLIC bool TCOD_console_is_active(void);
 /**
  *  Return true if the window is closing.
  */
-TCODLIB_CAPI bool TCOD_console_is_window_closed(void);
+TCOD_PUBLIC bool TCOD_console_is_window_closed(void);
 /**
  *  Return an SDL_Window pointer if one is in use, returns NULL otherwise.
  *  \rst
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_CAPI struct SDL_Window* TCOD_sys_get_sdl_window(void);
+TCOD_PUBLIC struct SDL_Window* TCOD_sys_get_sdl_window(void);
 /**
  *  Return an SDL_Renderer pointer if one is in use, returns NULL otherwise.
  *  \rst
  *  .. versionadded:: 1.11
  *  \endrst
  */
-TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
+TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
 /**
  *  Render a console over the display.
  *  \rst
@@ -178,12 +166,35 @@ TCODLIB_CAPI struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  *      :any:`TCOD_sys_get_sdl_window` :any:`TCOD_sys_get_sdl_renderer`
  *  \endrst
  */
-TCODLIB_CAPI int TCOD_sys_accumulate_console(const TCOD_Console* console);
-TCODLIB_CAPI int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
-TCODLIB_CAPI TCOD_NODISCARD int TCOD_sys_init_sdl2_renderer_(
+TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
+TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
+TCOD_PUBLIC TCOD_NODISCARD int TCOD_sys_init_sdl2_renderer_(
     int width,
     int height,
     const char* title,
     int window_flags,
     int renderer_flags);
+/**
+ *  This function is needed to send the root console to the C++ part of the
+ *  code.
+ *
+ *  Used internally only.
+ */
+void TCOD_internal_force_cpp_console_(TCOD_Console* console);
+#ifdef __cplusplus
+} // extern "C"
+namespace tcod {
+namespace console {
+TCOD_PUBLIC void init_root(int w, int h, const std::string& title,
+                           bool fullscreen, TCOD_renderer_t renderer);
+TCOD_PUBLIC void init_root(
+    int w,
+    int h,
+    const std::string& title,
+    bool fullscreen,
+    TCOD_renderer_t renderer,
+    bool vsync);
+} // namespace console
+} // namespace tcod
+#endif // __cplusplus
 #endif // LIBTCOD_ENGINE_DISPLAY_H_

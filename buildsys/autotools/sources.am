@@ -180,7 +180,8 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console/printing.cpp \
 	../../src/libtcod/console/rexpaint.cpp \
 	../../src/libtcod/engine/backend.cpp \
-	../../src/libtcod/engine/display.cpp \
+	../../src/libtcod/engine/display.c \
+	../../src/libtcod/engine/display_cpp.cpp \
 	../../src/libtcod/engine/globals.cpp \
 	../../src/libtcod/gui/button.cpp \
 	../../src/libtcod/gui/container.cpp \

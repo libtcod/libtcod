@@ -34,6 +34,7 @@
 #include <cstdio>
 #include <cstdarg>
 
+#include "error.h"
 #include "libtcod_int.h"
 #include "engine/display.h"
 
@@ -59,12 +60,13 @@ void TCODSystem::forceFullscreenResolution(int width, int height) {
 
 void TCODSystem::setRenderer(TCOD_renderer_t renderer) {
   if (renderer == TCOD_ctx.renderer) { return; }
-  TCOD_console_init_root(
+  auto err = TCOD_console_init_root(
       TCOD_ctx.root->w,
       TCOD_ctx.root->h,
       TCOD_ctx.window_title,
       TCOD_console_is_fullscreen(),
       renderer);
+  tcod::check_throw_error(err);
 }
 TCOD_event_t TCODSystem::waitForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush) {
 	return TCOD_sys_wait_for_event(eventMask,key,mouse,flush);

@@ -58,7 +58,8 @@ target_sources(TCOD PRIVATE
     libtcod/console/printing.cpp
     libtcod/console/rexpaint.cpp
     libtcod/engine/backend.cpp
-    libtcod/engine/display.cpp
+    libtcod/engine/display.c
+    libtcod/engine/display_cpp.cpp
     libtcod/engine/globals.cpp
     libtcod/gui/button.cpp
     libtcod/gui/container.cpp
@@ -217,8 +218,9 @@ source_group(libtcod\\console FILES
 source_group(libtcod\\engine FILES
     libtcod/engine/backend.cpp
     libtcod/engine/backend.h
-    libtcod/engine/display.cpp
+    libtcod/engine/display.c
     libtcod/engine/display.h
+    libtcod/engine/display_cpp.cpp
     libtcod/engine/globals.cpp
     libtcod/engine/globals.h
 )

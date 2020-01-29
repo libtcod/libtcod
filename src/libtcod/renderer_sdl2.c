@@ -171,12 +171,14 @@ static TCOD_Error setup_cache_console(
     struct TCOD_Console** cache)
 {
   if (!atlas) {
-    TCOD_set_errorv("Atlas can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
+    TCOD_set_errorv("Atlas can not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   if (!console) {
-    TCOD_set_errorv("Console can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
+    TCOD_set_errorv("Console can not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
-  if (!cache) { return 0; }
+  if (!cache) { return TCOD_E_OK; }
   if (*cache) {
     if ((*cache)->w != console->w || (*cache)->h != console->h) {
       TCOD_console_delete(*cache);
@@ -191,20 +193,19 @@ static TCOD_Error setup_cache_console(
       TCOD_console_delete(*cache);
       *cache = NULL;
       TCOD_tileset_observer_delete(observer);
-      return -1; // Failed to allocate cache.
+      TCOD_set_errorv("Failed to create an internal cache console.");
+      return TCOD_E_OUT_OF_MEMORY; // Failed to allocate cache.
     }
     observer->userdata = *cache;
     (*cache)->userdata = observer;
     observer->on_tile_changed = cache_console_update;
     (*cache)->on_delete = cache_console_on_delete;
     observer->on_observer_delete = cache_console_observer_delete;
-    for (struct TCOD_ConsoleTile* it = (*cache)->tiles;
-         it < (*cache)->tiles + ((*cache)->w * (*cache)->h);
-         ++it) {
-      it->ch = -1;
+    for (int i = 0; i < (*cache)->length; ++i) {
+      (*cache)->tiles[i].ch = -1;
     }
   }
-  return 0;
+  return TCOD_E_OK;
 }
 TCOD_Error TCOD_sdl2_render_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
@@ -212,13 +213,15 @@ TCOD_Error TCOD_sdl2_render_console(
     struct TCOD_Console** cache)
 {
   if (!atlas) {
-    TCOD_set_errorv("Atlas can not be NULL."); return TCOD_E_INVALID_ARGUMENT;
-  }
-  if (!console) {
-    TCOD_set_errorv("Console can not be NULL.");
+    TCOD_set_errorv("Atlas must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  setup_cache_console(atlas, console, cache);
+  if (!console) {
+    TCOD_set_errorv("Console must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  TCOD_Error err = setup_cache_console(atlas, console, cache);
+  if (err < 0) { return err; }
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(atlas->texture, 0xff);
@@ -330,8 +333,10 @@ static int sdl2_accumulate(struct TCOD_Renderer* self,
     if (!context->cache_texture) { return -1; }
   }
   SDL_SetRenderTarget(context->renderer, context->cache_texture);
-  TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
+  TCOD_Error err =
+    TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
   SDL_SetRenderTarget(context->renderer, NULL);
+  if (err < 0) { return err; }
   SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
   return TCOD_E_OK;
 }

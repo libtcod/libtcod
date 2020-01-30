@@ -35,6 +35,7 @@
 
 #include <SDL.h>
 #include "../vendor/lodepng.h"
+#include "libtcod_int.h"
 
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
@@ -337,7 +338,32 @@ static int sdl2_accumulate(struct TCOD_Renderer* self,
     TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
   SDL_SetRenderTarget(context->renderer, NULL);
   if (err < 0) { return err; }
-  SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
+  if (!TCOD_ctx.sdl_cbk) {
+    // Normal rendering.
+    SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
+  } else {
+    // Deprecated callback rendering.
+    int tex_width;
+    int tex_height;
+    SDL_QueryTexture(context->cache_texture, NULL, NULL,
+                     &tex_width, &tex_height);
+    SDL_Surface* canvas = SDL_CreateRGBSurfaceWithFormat(
+        0, tex_width, tex_height, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_SetRenderTarget(context->renderer, context->cache_texture);
+    SDL_RenderReadPixels(
+        context->renderer,
+        NULL,
+        SDL_PIXELFORMAT_RGBA32,
+        canvas->pixels,
+        tex_width * 4);
+    SDL_SetRenderTarget(context->renderer, NULL);
+    TCOD_ctx.sdl_cbk(canvas);
+    SDL_Texture* canvas_tex = SDL_CreateTextureFromSurface(
+        context->renderer, canvas);
+    SDL_RenderCopy(context->renderer, canvas_tex, NULL, viewport);
+    SDL_DestroyTexture(canvas_tex);
+    SDL_FreeSurface(canvas);
+  }
   return TCOD_E_OK;
 }
 static int sdl2_present(struct TCOD_Renderer* self,

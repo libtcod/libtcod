@@ -131,11 +131,7 @@ static TCOD_Error TCOD_tileset_charmap_reserve(TCOD_Tileset* tileset, int want)
   tileset->character_map = new_charmap;
   return TCOD_E_OK;
 }
-/**
- *  Reserve memory for a specific amount of tiles.
- */
-TCOD_NODISCARD
-static TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int want)
+TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int want)
 {
   if (!tileset) {
     TCOD_set_errorv("Tileset argument must not be NULL.");
@@ -261,6 +257,15 @@ TCOD_Error TCOD_tileset_get_tile_(
   memcpy(buffer, tile, sizeof(*tile) * tileset->tile_length);
   return TCOD_E_OK; // Tile exists and was copied to buffer.
 }
+void TCOD_tileset_notify_tile_changed(TCOD_Tileset* tileset, int tile_id)
+{
+  for (struct TCOD_TilesetObserver* it = tileset->observer_list;
+       it; it = it->next) {
+    if (it->on_tile_changed) {
+      it->on_tile_changed(it, tile_id);
+    }
+  }
+}
 static TCOD_Error TCOD_tileset_set_tile_rgba(
     TCOD_Tileset* tileset, int codepoint, const void* pixels, int stride)
 {
@@ -279,12 +284,7 @@ static TCOD_Error TCOD_tileset_set_tile_rgba(
           ] = row_in[x];
     }
   }
-  for (struct TCOD_TilesetObserver* it = tileset->observer_list;
-       it; it = it->next) {
-    if (it->on_tile_changed) {
-      it->on_tile_changed(it, tile_id);
-    }
-  }
+  TCOD_tileset_notify_tile_changed(tileset, tile_id);
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_tileset_set_tile_(

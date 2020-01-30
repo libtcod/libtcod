@@ -742,11 +742,40 @@ SDL_Surface *TCOD_sys_get_surface(int width, int height, bool alpha) {
 	return get_sdl()->create_surface(width,height,alpha);
 }
 
+static void TCOD_sys_update_char_tileset(
+    int asciiCode, int fontx, int fonty, TCOD_Image* img, int x, int y)
+{
+  static const TCOD_color_t pink = {255, 0, 255};
+  int img_width;
+  int img_height;
+  TCOD_image_get_size(img, &img_width, &img_height);
+  if (!TCOD_ctx.tileset) { return; }
+  int tile_id = fonty * TCOD_ctx.tileset->virtual_columns + fontx;
+  if (TCOD_tileset_reserve(TCOD_ctx.tileset, tile_id + 1) < 0) { return; }
+  struct TCOD_ColorRGBA* tile_out =
+      TCOD_ctx.tileset->pixels + tile_id * TCOD_ctx.tileset->tile_length;
+  for (int px = 0; px < TCOD_ctx.tileset->tile_width; ++px) {
+    for (int py = 0; py < TCOD_ctx.tileset->tile_height; ++py) {
+      TCOD_color_t col = TCOD_image_get_pixel(img, x + px, y + py);
+      struct TCOD_ColorRGBA* out =
+          tile_out + py * TCOD_ctx.tileset->tile_width + px;
+      if (TCOD_color_equals(col, pink)) {
+        *out = {255, 255, 255, 0};
+        continue;
+      }
+      *out = {col.r, col.g, col.b, 255};
+    }
+  }
+  TCOD_tileset_assign_tile(TCOD_ctx.tileset, tile_id, asciiCode);
+  TCOD_tileset_notify_tile_changed(TCOD_ctx.tileset, tile_id);
+}
+
 void TCOD_sys_update_char(int asciiCode, int fontx, int fonty,
                           TCOD_Image* img, int x, int y)
 {
   static const TCOD_color_t pink = {255, 0, 255};
   TCOD_sys_map_ascii_to_font(asciiCode, fontx, fonty);
+  TCOD_sys_update_char_tileset(asciiCode, fontx, fonty, img, x, y);
   int iw, ih;
   TCOD_image_get_size(img, &iw, &ih);
   for (int px = 0; px < TCOD_ctx.font_width; ++px) {

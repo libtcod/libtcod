@@ -43,8 +43,7 @@ struct TCOD_TilesetObserver {
   struct TCOD_TilesetObserver* next;
   void* userdata;
   void (*on_observer_delete)(struct TCOD_TilesetObserver* observer);
-  int (*on_tile_changed)(
-      struct TCOD_TilesetObserver* observer, int tile_id);
+  int (*on_tile_changed)(struct TCOD_TilesetObserver* observer, int tile_id);
 };
 struct TCOD_Tileset {
   int tile_width;
@@ -153,6 +152,20 @@ struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
  */
 void TCOD_tileset_observer_delete(
     struct TCOD_TilesetObserver* observer);
+/**
+ *  Called to notify any observers that a tile has been changed.  This may
+ *  cause running atlases to update or mark cache consoles as dirty.
+ *
+ *  For internal use.
+ */
+void TCOD_tileset_notify_tile_changed(TCOD_Tileset* tileset, int tile_id);
+/**
+ *  Reserve memory for a specific amount of tiles.
+ *
+ *  For internal use.
+ */
+TCOD_NODISCARD
+TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int desired);
 #ifdef __cplusplus
 } // extern "C"
 namespace tcod {

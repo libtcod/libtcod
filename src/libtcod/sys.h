@@ -58,6 +58,17 @@ TCODLIB_API void TCOD_sys_get_current_resolution(int *w, int *h);
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy);
 TCODLIB_API void TCOD_sys_get_char_size(int *w, int *h);
 
+/**
+ *  Upload a tile to the active tileset.
+ *
+ *  `asciiCode` is the Unicode codepoint for this tile.
+ *
+ *  `fontx` and `fonty` are the tile-coordinates on the active tilemap.
+ *
+ *  `img` is the tile to upload.
+ *
+ *  `x` and `y` are the upper-left pixel-coordinates of the tile on the `img`.
+ */
 TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
 
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);

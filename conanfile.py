@@ -1,5 +1,6 @@
-from conans import ConanFile, CMake, tools
+import subprocess
 
+from conans import ConanFile, CMake, tools
 
 class LibtcodConan(ConanFile):
     name = "libtcod"
@@ -25,7 +26,10 @@ class LibtcodConan(ConanFile):
     def set_version(self):
         """Use `git describe` for the version string."""
         git = tools.Git()
-        self.version = git.run("describe")
+        try:
+            self.version = git.run("describe")
+        except subprocess.CalledProcessError:
+            self.version = "0.0"
 
     def build(self):
         cmake = CMake(self)

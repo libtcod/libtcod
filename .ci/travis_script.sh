@@ -11,5 +11,9 @@ elif [[ "$BUILD_TOOL" == "conan" ]]; then
     .ci/conan_build.py
 fi
 if [[ "$BUILD_TOOL" != "conan" ]]; then
-    (cd python && pytest -v)
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        (cd python && pytest -v)
+    else
+        (cd python && PYTHONMALLOC=malloc valgrind --show-leak-kinds=definite pytest -v)
+    fi
 fi

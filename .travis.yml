@@ -54,6 +54,7 @@ addons:
       - g++-8
       - libsdl2-dev
       - scons
+      - valgrind
 
 before_install:
 - source .ci/travis_before_install.sh

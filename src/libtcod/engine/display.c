@@ -100,6 +100,7 @@ TCOD_Error TCOD_console_init_root_(
   get_env_vsync(&vsync);
   TCOD_console_delete(NULL);
   TCOD_ctx.root = TCOD_console_new(w, h);
+  if (!TCOD_ctx.root) { return TCOD_E_ERROR; }
   TCOD_internal_force_cpp_console_(TCOD_ctx.root);
   TCOD_ctx.renderer = renderer;
   strncpy(TCOD_ctx.window_title, title ? title : "",
@@ -116,6 +117,9 @@ TCOD_Error TCOD_console_init_root_(
       TCOD_ctx.engine = TCOD_renderer_init_sdl2(
           w * tileset->tile_width, h * tileset->tile_height,
           title, window_flags, renderer_flags, tileset);
+      if (!TCOD_ctx.engine) {
+        return TCOD_E_ERROR;
+      }
       break;
     }
     default:

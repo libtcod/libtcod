@@ -897,11 +897,11 @@ _lib.TCOD_quit.argtypes = []
 
 # initializing the console
 
-_lib.TCOD_console_init_root.restype=c_void
+_lib.TCOD_console_init_root.restype=c_int
 _lib.TCOD_console_init_root.argtypes=[c_int, c_int, c_char_p , c_bool , c_uint ]
 def console_init_root(w, h, title, fullscreen=False, renderer=RENDERER_SDL):
-    _lib.TCOD_console_init_root(w, h, convert_to_ascii(title), fullscreen, renderer)
     atexit.register(_lib.TCOD_quit)
+    return _lib.TCOD_console_init_root(w, h, convert_to_ascii(title), fullscreen, renderer)
 
 _lib.TCOD_console_set_custom_font.restype=c_void
 _lib.TCOD_console_set_custom_font.argtypes=[c_char_p, c_int,c_int, c_int]

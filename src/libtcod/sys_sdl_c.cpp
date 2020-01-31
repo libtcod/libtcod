@@ -810,7 +810,7 @@ void TCOD_sys_startup(void) {
 #ifndef NDEBUG
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
-	TCOD_IFNOT(SDL_Init(SDL_INIT_VIDEO) >= 0 ) return;
+  if(SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) { return; }
 	memset(&TCOD_ctx.key_state,0,sizeof(TCOD_key_t));
 	TCOD_ctx.max_font_chars=256;
 	alloc_ascii_tables();
@@ -839,9 +839,9 @@ void TCOD_sys_shutdown(void)
     get_sdl()->destroy_window();
     get_sdl()->shutdown();
     memset(&scale_data, 0, sizeof(scale_data_t));
+    SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     has_startup = false;
   }
-  SDL_Quit();
 }
 
 static void TCOD_sys_load_player_config(void) {

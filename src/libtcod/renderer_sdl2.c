@@ -421,7 +421,7 @@ static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Renderer* self)
 {
   return ((struct TCOD_RendererSDL2*)self->userdata)->renderer;
 }
-struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
+TCOD_NODISCARD static struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
     struct SDL_Window* sdl_window,
     struct SDL_Renderer* sdl_renderer,
     struct TCOD_Tileset* tileset)
@@ -458,6 +458,7 @@ struct TCOD_Renderer* TCOD_renderer_init_sdl2(
     int renderer_flags,
     struct TCOD_Tileset* tileset)
 {
+  TCOD_sys_startup();
   struct SDL_Window* window = SDL_CreateWindow(
       title,
       SDL_WINDOWPOS_UNDEFINED,

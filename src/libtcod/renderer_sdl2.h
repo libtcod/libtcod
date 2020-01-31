@@ -72,12 +72,6 @@ struct TCOD_Renderer* TCOD_renderer_init_sdl2(
     struct TCOD_Tileset* tileset);
 
 TCODLIB_API TCOD_NODISCARD
-struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
-    struct SDL_Window* sdl_window,
-    struct SDL_Renderer* sdl_renderer,
-    struct TCOD_Tileset* tileset);
-
-TCODLIB_API TCOD_NODISCARD
 struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
     struct SDL_Renderer* renderer,
     struct TCOD_Tileset* tileset);

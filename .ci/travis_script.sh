@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 export VALGRIND=""
+export VALGRIND_PY=""
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    VALGRIND="PYTHONMALLOC='malloc' valgrind --show-leak-kinds=definite --gen-suppressions=all --error-exitcode=0"
+    VALGRIND="valgrind --gen-suppressions=all --error-exitcode=1"
+    VALGRIND_PY="PYTHONMALLOC='malloc' $VALGRIND --show-leak-kinds=definite --suppressions=$TRAVIS_BUILD_DIR/.ci/python.supp"
 fi
 
 if [[ "$BUILD_TOOL" == "autotools" ]]; then
@@ -16,5 +18,5 @@ elif [[ "$BUILD_TOOL" == "conan" ]]; then
     .ci/conan_build.py
 fi
 if [[ "$BUILD_TOOL" != "conan" ]]; then
-    (cd python && env $VALGRIND pytest -v)
+    (cd python && env $VALGRIND_PY pytest -v)
 fi

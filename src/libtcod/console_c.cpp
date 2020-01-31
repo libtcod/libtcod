@@ -107,8 +107,8 @@ TCOD_key_t TCOD_console_check_for_keypress(int flags) {
 /**
  *  Render and present the root console to the active display.
  */
-void TCOD_console_flush(void) {
-  TCOD_sys_flush(true);
+TCOD_Error TCOD_console_flush(void) {
+  return TCOD_sys_flush(true);
 }
 /**
  *  Manually mark a region of a console as dirty.

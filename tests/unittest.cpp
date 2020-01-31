@@ -43,6 +43,7 @@ void test_renderer(TCOD_renderer_t renderer)
   tcod::console::init_root(WIDTH, HEIGHT, TITLE, 0, renderer);
   REQUIRE(TCOD_console_get_width(NULL) == WIDTH);
   REQUIRE(TCOD_console_get_height(NULL) == HEIGHT);
+  TCODConsole::flush();
   TCOD_console_delete(NULL);
 }
 

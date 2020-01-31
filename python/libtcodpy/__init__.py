@@ -983,10 +983,10 @@ _lib.TCOD_console_credits_render.argtypes=[c_int, c_int, c_bool ]
 def console_credits_render(x, y, alpha):
     return _lib.TCOD_console_credits_render(x, y, c_int(alpha))
 
-_lib.TCOD_console_flush.restype=c_void
+_lib.TCOD_console_flush.restype=c_int
 _lib.TCOD_console_flush.argtypes=[]
 def console_flush():
-    _lib.TCOD_console_flush()
+    return _lib.TCOD_console_flush()
 
 # drawing on a console
 

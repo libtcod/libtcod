@@ -302,7 +302,7 @@ static void sdl2_destructor(struct TCOD_Renderer* self)
   if (context->window) { SDL_DestroyWindow(context->window); }
   free(context);
 }
-static int sdl2_accumulate(struct TCOD_Renderer* self,
+static TCOD_Error sdl2_accumulate(struct TCOD_Renderer* self,
                            const struct TCOD_Console* console,
                           const struct SDL_Rect* viewport)
 {
@@ -366,16 +366,17 @@ static int sdl2_accumulate(struct TCOD_Renderer* self,
   }
   return TCOD_E_OK;
 }
-static int sdl2_present(struct TCOD_Renderer* self,
+static TCOD_Error sdl2_present(struct TCOD_Renderer* self,
                         const struct TCOD_Console* console)
 {
   struct TCOD_RendererSDL2* context = self->userdata;
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(context->renderer, 0, 0, 0, 255);
   SDL_RenderClear(context->renderer);
-  sdl2_accumulate(self, console, NULL);
+  TCOD_Error err = sdl2_accumulate(self, console, NULL);
+  if (err) { return err; }
   SDL_RenderPresent(context->renderer);
-  return 0;
+  return TCOD_E_OK;
 }
 static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
 {
@@ -383,10 +384,14 @@ static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
   *x /= context->atlas->tileset->tile_width;
   *y /= context->atlas->tileset->tile_height;
 }
-static int sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename)
+static TCOD_Error sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename)
 {
   struct TCOD_RendererSDL2* context = self->userdata;
-  if (!context->cache_texture) { return -1; }
+  if (!context->cache_texture) {
+    TCOD_set_errorv("Nothing to save before the first frame.");
+    lodepng_encode32_file(filename, NULL, 0, 0);
+    return TCOD_E_WARN;
+  }
   SDL_SetRenderTarget(context->renderer, context->cache_texture);
   int width;
   int height;
@@ -394,7 +399,8 @@ static int sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename
   void* pixels = malloc(sizeof(uint8_t) * 4 * width * height);
   if (!pixels) {
     SDL_SetRenderTarget(context->renderer, NULL);
-    return -1;
+    TCOD_set_errorv("Out of memory.");
+    return TCOD_E_OUT_OF_MEMORY;
   }
   SDL_RenderReadPixels(
       context->renderer,
@@ -405,7 +411,7 @@ static int sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename
   lodepng_encode32_file(filename, pixels, (unsigned)width, (unsigned)height);
   free(pixels);
   SDL_SetRenderTarget(context->renderer, NULL);
-  return 0;
+  return TCOD_E_OK;
 }
 static struct SDL_Window* sdl2_get_window(struct TCOD_Renderer* self)
 {

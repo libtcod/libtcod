@@ -42,6 +42,7 @@
 #include "console_types.h"
 #include "image.h"
 #include "list.h"
+#include "error.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,8 +64,11 @@ TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontC
 #endif
 
 TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
-
-TCODLIB_API void TCOD_console_flush(void);
+/**
+ *  Present the root console to the display.
+ */
+TCOD_PUBLIC TCOD_NODISCARD
+TCOD_Error TCOD_console_flush(void);
 
 TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 

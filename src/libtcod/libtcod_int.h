@@ -193,7 +193,7 @@ void TCOD_sys_set_clear_screen(void);
 void TCOD_sys_set_scale_factor(float value);
 void TCOD_sys_convert_console_to_screen_coords(int cx, int cy, int *sx, int *sy);
 void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy);
-void TCOD_sys_flush(bool render);
+TCOD_NODISCARD TCOD_Error TCOD_sys_flush(bool render);
 TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);

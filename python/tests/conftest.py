@@ -38,7 +38,7 @@ def console(session_console):
     Be sure to use this fixture if the GUI needs to be initialized for a test.
     """
     console = session_console
-    libtcodpy.console_flush()
+    assert libtcodpy.console_flush() == 0
     libtcodpy.console_set_default_foreground(console, libtcodpy.white)
     libtcodpy.console_set_default_background(console, libtcodpy.black)
     libtcodpy.console_set_background_flag(console, libtcodpy.BKGND_SET)

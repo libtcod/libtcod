@@ -1055,14 +1055,19 @@ static void sync_time(void) {
  *  Flush the screen, if `render` is true then the root console will be
  *  presented (this is mostly ignored.)
  */
-void TCOD_sys_flush(bool render) {
-  if (!TCOD_ctx.root) { return; }
+TCOD_Error TCOD_sys_flush(bool render) {
+  if (!TCOD_ctx.root) {
+    TCOD_set_errorv("Root console is not initilized.");
+    return TCOD_E_ERROR;
+  }
+  TCOD_Error err = TCOD_E_OK;
   if (TCOD_ctx.engine && TCOD_ctx.engine->present) {
-    TCOD_ctx.engine->present(TCOD_ctx.engine, TCOD_ctx.root);
+    err = TCOD_ctx.engine->present(TCOD_ctx.engine, TCOD_ctx.root);
   } else {
     if (render) { TCOD_sys_render(NULL, TCOD_ctx.root); }
   }
   sync_time();
+  return err;
 }
 
 static char TCOD_sys_get_vk(SDL_Keycode sdl_key) {

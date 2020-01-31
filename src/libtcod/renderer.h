@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include "console.h"
+#include "error.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -43,13 +44,12 @@ struct TCOD_Renderer {
   int type;
   void* userdata;
   void (*destructor)(struct TCOD_Renderer* self);
-  int (*present)(struct TCOD_Renderer* self,
-                 const struct TCOD_Console* console);
+  TCOD_Error (*present)(struct TCOD_Renderer* self, const struct TCOD_Console* console);
   void (*pixel_to_tile)(struct TCOD_Renderer* self, double* x, double* y);
-  int (*save_screenshot)(struct TCOD_Renderer* self, const char* filename);
+  TCOD_Error (*save_screenshot)(struct TCOD_Renderer* self, const char* filename);
   struct SDL_Window* (*get_sdl_window)(struct TCOD_Renderer* self);
   struct SDL_Renderer* (*get_sdl_renderer)(struct TCOD_Renderer* self);
-  int (*accumulate)(
+  TCOD_Error (*accumulate)(
       struct TCOD_Renderer* self,
       const struct TCOD_Console* console,
       const struct SDL_Rect* viewport);

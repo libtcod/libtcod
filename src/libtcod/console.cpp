@@ -183,7 +183,7 @@ void TCODConsole::blit(const TCODConsole *srcCon,int xSrc, int ySrc, int wSrc, i
 
 
 void TCODConsole::flush() {
-	TCOD_console_flush();
+	tcod::check_throw_error(TCOD_console_flush());
 }
 
 void TCODConsole::setFade(uint8_t val, const TCODColor &fade) {

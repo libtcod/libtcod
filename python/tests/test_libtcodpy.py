@@ -272,7 +272,7 @@ def test_sys_custom_render(console):
         escape.append(True)
         libtcodpy.console_set_dirty(0, 0, 0, 0)
     libtcodpy.sys_register_SDL_renderer(sdl_callback)
-    libtcodpy.console_flush()
+    assert libtcodpy.console_flush() == 0
     assert escape, 'proof that sdl_callback was called'
 
 def test_image(console, tmpdir):

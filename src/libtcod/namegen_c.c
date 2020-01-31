@@ -421,14 +421,13 @@ void namegen_word_prune_spaces (char * str) {
 /* prune repeated "syllables", such as Arnarn */
 bool namegen_word_prune_syllables (char *str) {
     char * data = TCOD_strdup(str);
-    size_t len = strlen(data); /* length of the string */
+    int len = (int)strlen(data);
     char check[8];
-    size_t i; /* iteration in for loops */
     /* change to lowercase */
-    for (i = 0; i < len; i++) data[i] = (char)(tolower(data[i]));
+    for (int i = 0; i < len; i++) data[i] = (char)(tolower(data[i]));
     /* start pruning */
     /* 2-character direct repetitions */
-    for (i = 0; i < len - 4; i++) {
+    for (int i = 0; i < len - 4; i++) {
         memset(check,'\0',8);
         strncpy(check,data+i,2);
         strncat(check,data+i,2);
@@ -438,7 +437,7 @@ bool namegen_word_prune_syllables (char *str) {
             }
     }
     /* 3-character repetitions (anywhere in the word) - prunes everything, even 10-char repetitions */
-    for (i = 0; i < len - 6; i++) {
+    for (int i = 0; i < len - 6; i++) {
         memset(check,'\0',8);
         strncpy(check,data+i,3);
         if (strstr(data+i+3,check) != NULL) {

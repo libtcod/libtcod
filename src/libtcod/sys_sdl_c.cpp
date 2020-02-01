@@ -844,11 +844,14 @@ void TCOD_sys_shutdown(void)
   }
 }
 
-static void TCOD_sys_load_player_config(void) {
+TCOD_Error TCOD_sys_load_player_config(void)
+{
 	const char *renderer;
 	const char *font;
 	int fullscreenWidth,fullscreenHeight;
-
+  if (!TCOD_sys_file_exists("./libtcod.cfg")) {
+    return TCOD_E_OK;
+  }
 	/* define file structure */
 	TCOD_parser_t parser=TCOD_parser_new();
 	TCOD_parser_struct_t libtcod = TCOD_parser_new_struct(parser, "libtcod");
@@ -876,33 +879,45 @@ static void TCOD_sys_load_player_config(void) {
 		else if ( TCOD_strcasecmp(renderer,"SDL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_SDL;
 		else printf ("Warning : unknown renderer '%s' in libtcod.cfg\n", renderer);
 	}
-	font=TCOD_parser_get_string_property(parser, "libtcod.font");
-	if ( font != NULL ) {
-		/* custom font */
-		if ( TCOD_sys_file_exists(font)) {
-			int fontNbCharHoriz,fontNbCharVertic;
-			strcpy(TCOD_ctx.font_file,font);
-			TCOD_ctx.font_in_row=TCOD_parser_get_bool_property(parser,"libtcod.fontInRow");
-			TCOD_ctx.font_greyscale=TCOD_parser_get_bool_property(parser,"libtcod.fontGreyscale");
-			TCOD_ctx.font_tcod_layout=TCOD_parser_get_bool_property(parser,"libtcod.fontTcodLayout");
-			fontNbCharHoriz=TCOD_parser_get_int_property(parser,"libtcod.fontNbCharHoriz");
-			fontNbCharVertic=TCOD_parser_get_int_property(parser,"libtcod.fontNbCharVertic");
-			if ( fontNbCharHoriz > 0 ) TCOD_ctx.fontNbCharHoriz=fontNbCharHoriz;
-			if ( fontNbCharVertic > 0 ) TCOD_ctx.fontNbCharVertic=fontNbCharVertic;
-			if ( charmap ) {
-				SDL_FreeSurface(charmap);
-				charmap=NULL;
-			}
-		} else {
-			printf ("Warning : font file '%s' does not exist\n",font);
-		}
-	}
-	/* custom fullscreen resolution */
-	TCOD_ctx.fullscreen=TCOD_parser_get_bool_property(parser,"libtcod.fullscreen");
-	fullscreenWidth=TCOD_parser_get_int_property(parser,"libtcod.fullscreenWidth");
-	fullscreenHeight=TCOD_parser_get_int_property(parser,"libtcod.fullscreenHeight");
-	if ( fullscreenWidth > 0 ) TCOD_ctx.fullscreen_width=fullscreenWidth;
-	if ( fullscreenHeight > 0 ) TCOD_ctx.fullscreen_height=fullscreenHeight;
+  // Custom fullscreen resolution.
+  TCOD_ctx.fullscreen = TCOD_parser_get_bool_property(parser, "libtcod.fullscreen");
+  fullscreenWidth = TCOD_parser_get_int_property(parser, "libtcod.fullscreenWidth");
+  fullscreenHeight = TCOD_parser_get_int_property(parser, "libtcod.fullscreenHeight");
+  if (fullscreenWidth > 0) { TCOD_ctx.fullscreen_width = fullscreenWidth; }
+  if (fullscreenHeight > 0) { TCOD_ctx.fullscreen_height = fullscreenHeight; }
+  // Custom Font.
+  font = TCOD_parser_get_string_property(parser, "libtcod.font");
+  if ( font != NULL ) {
+    /* custom font */
+    if ( TCOD_sys_file_exists(font)) {
+      int fontNbCharHoriz,fontNbCharVertic;
+      strcpy(TCOD_ctx.font_file, font);
+      TCOD_ctx.font_in_row = TCOD_parser_get_bool_property(parser, "libtcod.fontInRow");
+      TCOD_ctx.font_greyscale = TCOD_parser_get_bool_property(parser, "libtcod.fontGreyscale");
+      TCOD_ctx.font_tcod_layout = TCOD_parser_get_bool_property(parser, "libtcod.fontTcodLayout");
+      fontNbCharHoriz = TCOD_parser_get_int_property(parser, "libtcod.fontNbCharHoriz");
+      fontNbCharVertic = TCOD_parser_get_int_property(parser, "libtcod.fontNbCharVertic");
+      if (fontNbCharHoriz > 0) { TCOD_ctx.fontNbCharHoriz = fontNbCharHoriz; }
+      if (fontNbCharVertic > 0) { TCOD_ctx.fontNbCharVertic = fontNbCharVertic; }
+      if (charmap) {
+        SDL_FreeSurface(charmap);
+        charmap = NULL;
+      }
+      TCOD_Error err = TCOD_console_set_custom_font(
+          font,
+          (TCOD_ctx.font_in_row ? TCOD_FONT_LAYOUT_ASCII_INROW : TCOD_FONT_LAYOUT_ASCII_INCOL)
+          | (TCOD_ctx.font_greyscale ? TCOD_FONT_TYPE_GREYSCALE : 0)
+          | (TCOD_ctx.font_tcod_layout ? TCOD_FONT_LAYOUT_TCOD : 0),
+          fontNbCharHoriz,
+          fontNbCharVertic);
+      if (err < 0) { return err; }
+    } else {
+      printf ("Warning : font file '%s' does not exist\n", font);
+    }
+  }
+  printf("Warning: The use of libtcod.cfg is deprecated.\n");
+  TCOD_set_error("The use of libtcod.cfg is deprecated.");
+  return TCOD_E_WARN;
 }
 
 
@@ -926,24 +941,21 @@ void TCOD_sys_init_screen_offset(void) {
 	TCOD_ctx.fullscreen_offsety=(TCOD_ctx.actual_fullscreen_height-TCOD_ctx.root->h*TCOD_ctx.font_height)/2;
 }
 
-bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
+TCOD_Error TCOD_sys_init(struct TCOD_Console *console, bool fullscreen) {
 	static TCOD_renderer_t last_renderer=TCOD_RENDERER_SDL;
 	static char last_font[512]="";
 	TCOD_sys_startup();
 	/* check if there is a user (player) config file */
-	if ( TCOD_sys_file_exists("./libtcod.cfg")) {
-		/* yes, read it */
-		TCOD_sys_load_player_config();
-		if (TCOD_ctx.fullscreen) fullscreen=true;
-	}
+  TCOD_Error err = TCOD_sys_load_player_config();
+  if (TCOD_ctx.fullscreen) fullscreen=true;
 	if (last_renderer != TCOD_ctx.renderer || ! charmap || strcmp(last_font,TCOD_ctx.font_file) != 0) {
 		/* reload the font when switching renderer to restore original character colors */
-		if (TCOD_sys_load_font() < 0) { return false; }
+		if (TCOD_sys_load_font() < 0) { return TCOD_E_ERROR; }
 	}
   get_sdl()->create_window(console->w, console->h, fullscreen);
 	memset(key_status,0,sizeof(bool)*(TCODK_CHAR+1));
 
-	return true;
+	return err;
 }
 TCOD_DEPRECATED_NOMESSAGE
 static char* TCOD_strcasestr(const char *haystack, const char *needle)

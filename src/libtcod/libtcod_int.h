@@ -510,12 +510,11 @@ extern int oldFade;
 #define TCOD_PEACH 255,159,127
 
 // TCODConsole non public methods
-bool TCOD_console_init(TCOD_Console* con, const char* title,
-                       bool fullscreen);
+TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscreen);
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s,int l);
 // TCODSystem non public methods
-bool TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
+TCOD_Error TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
 void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
@@ -534,6 +533,7 @@ void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
 void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
 void TCOD_sys_set_dirty_character_code(int ch);
+TCODLIB_CAPI TCOD_Error TCOD_sys_load_player_config(void);
 int TCOD_get_tileid_for_charcode_(int charcode);
 /**
  *  Validate and return a constant console.

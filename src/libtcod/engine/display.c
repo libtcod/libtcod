@@ -96,6 +96,8 @@ TCOD_Error TCOD_console_init_root_(
                      w, h);
     return TCOD_E_INVALID_ARGUMENT;
   }
+  TCOD_Error err = TCOD_sys_load_player_config();
+  if (err < 0) { return err; }
   get_env_renderer(&renderer);
   get_env_vsync(&vsync);
   TCOD_console_delete(NULL);
@@ -123,12 +125,9 @@ TCOD_Error TCOD_console_init_root_(
       break;
     }
     default:
-      if(!TCOD_console_init(TCOD_ctx.root, title, fullscreen)) {
-        return TCOD_E_ERROR;
-      }
-      break;
+      return TCOD_console_init(TCOD_ctx.root, title, fullscreen);
   }
-  return TCOD_E_OK;
+  return err;
 }
 TCOD_Error TCOD_console_init_root(int w, int h, const char* title,
                                   bool fullscreen, TCOD_renderer_t renderer)

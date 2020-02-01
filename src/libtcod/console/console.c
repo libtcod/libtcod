@@ -81,13 +81,13 @@ TCOD_Console* TCOD_console_new(int w, int h)
   }
   return con;
 }
-bool TCOD_console_init(TCOD_Console* con, const char* title,
-                       bool fullscreen)
+TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscreen)
 {
   if (!TCOD_console_init_(con)) { return false; }
-  if (!TCOD_sys_init(con, fullscreen) ) { return false; }
+  TCOD_Error err = TCOD_sys_init(con, fullscreen);
+  if (err < 0) { return err; }
   TCOD_sys_set_window_title(title);
-  return true;
+  return err;
 }
 void TCOD_console_delete(TCOD_Console* con)
 {

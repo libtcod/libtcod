@@ -13,6 +13,10 @@ since `1.7.0`.
 
 ### Changed
 - Console blit operations now perform per-cell alpha transparency.
+- New renderers can load fonts from libtcod.cfg.
+
+### Deprecated
+- The use of `libtcod.cfg` is now deprecated.
 
 ### Fixed
 - The following are no longer mislabeled as taking const images:

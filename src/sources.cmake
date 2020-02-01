@@ -7,7 +7,7 @@ target_sources(TCOD PRIVATE
     libtcod/color.cpp
     libtcod/color_c.c
     libtcod/console.cpp
-    libtcod/console_c.cpp
+    libtcod/console_c.c
     libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/fov.cpp
@@ -106,7 +106,7 @@ source_group(libtcod FILES
     libtcod/console.cpp
     libtcod/console.h
     libtcod/console.hpp
-    libtcod/console_c.cpp
+    libtcod/console_c.c
     libtcod/console_types.h
     libtcod/deprecated.cpp
     libtcod/error.c

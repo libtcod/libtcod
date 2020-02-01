@@ -129,7 +129,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/color.cpp \
 	../../src/libtcod/color_c.c \
 	../../src/libtcod/console.cpp \
-	../../src/libtcod/console_c.cpp \
+	../../src/libtcod/console_c.c \
 	../../src/libtcod/deprecated.cpp \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \

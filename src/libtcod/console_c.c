@@ -36,10 +36,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <algorithm>
 
 #include <SDL.h>
-#include "console.hpp"
 #include "noise.h"
 #include "mersenne.h"
 #include "libtcod_int.h"
@@ -72,7 +70,7 @@ TCOD_internal_context_t TCOD_ctx={
 	/* fading data */
 	{0,0,0},255,
 	/*key state*/
-	{},
+	{0},
 	/* window closed ? */
 	false,
 	/* mouse focus ? */
@@ -169,8 +167,9 @@ int TCOD_console_set_custom_font(
 
   TCOD_ctx.tileset =
       TCOD_tileset_load(fontFile, nb_char_horiz, nb_char_vertic, 0, NULL);
+  if (!TCOD_ctx.tileset) { return TCOD_E_ERROR; }
   TCOD_sys_decode_font_();
-  return 0;
+  return TCOD_E_OK;
 }
 /**
  *  \brief Remap a character code to a tile.
@@ -260,7 +259,7 @@ void TCOD_console_credits(void) {
 		if ( fade == 260 && k.vk != TCODK_NONE ) {
 			fade -= 10;
 		}
-		TCOD_console_flush();
+		if (TCOD_console_flush() < 0) { break; }
 		if ( fade < 260 ) {
 			fade -= 10;
 			TCOD_console_set_fade(fade,TCOD_black);
@@ -323,7 +322,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 		TCOD_color_gen_map(colmap_light,4,colkeys_light,colpos);
 		sprintf(poweredby,"Powered by\n%s",version_string);
 		noise=TCOD_noise_new(1,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,NULL);
-		len=static_cast<int>(strlen(poweredby));
+		len=(int)strlen(poweredby);
 		len1=11; /* sizeof "Powered by\n" */
 		left=MAX(x-4,0);
 		top=MAX(y-4,0);
@@ -366,16 +365,16 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	fbackup=TCOD_console_get_default_foreground(NULL);
 	if ( xstr < len1 ) {
 		sparklex=x+xstr;
-		sparkley = static_cast<float>(y);
+		sparkley = (float)y;
 	} else {
 		sparklex=x-len1+xstr;
-		sparkley = static_cast<float>(y + 1);
+		sparkley = (float)(y + 1);
 	}
 	noisex=xstr*6;
 	sparklerad=3.0f+2*TCOD_noise_get(noise,&noisex);
 	if ( xstr >= len-1 ) sparklerad -= (xstr-len+1)*4.0f;
 	else if ( xstr < 0.0f ) sparklerad += xstr*4.0f;
-	else if ( poweredby[ static_cast<int>(xstr+0.5f) ] == ' ' || poweredby[ static_cast<int>(xstr+0.5f) ] == '\n' ) sparklerad/=2;
+	else if ( poweredby[ (int)(xstr+0.5f) ] == ' ' || poweredby[ (int)(xstr+0.5f) ] == '\n' ) sparklerad/=2;
 	sparklerad2=sparklerad*sparklerad*4;
 
 	/* draw the light */
@@ -384,7 +383,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 			float dist=((xc-2*sparklex)*(xc-2*sparklex)+(yc-2*sparkley)*(yc-2*sparkley));
 			TCOD_color_t pixcol;
 			if ( sparklerad >= 0.0f && dist < sparklerad2 ) {
-				int colidx=63-static_cast<int>(63*(sparklerad2-dist)/sparklerad2) + TCOD_random_get_int(NULL,-10,10);
+				int colidx=63-(int)(63*(sparklerad2-dist)/sparklerad2) + TCOD_random_get_int(NULL,-10,10);
 				colidx=CLAMP(0,63,colidx);
 				pixcol=colmap_light[colidx];
 			} else {
@@ -420,9 +419,9 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 						bk = TCOD_console_get_char_foreground(NULL,xc/2,yc/2);
 					}
 				}
-				pixcol.r = std::min<int>(255, bk.r + pixcol.r);
-				pixcol.g = std::min<int>(255, bk.g + pixcol.g);
-				pixcol.b = std::min<int>(255, bk.b + pixcol.b);
+				pixcol.r = MIN(255, bk.r + pixcol.r);
+				pixcol.g = MIN(255, bk.g + pixcol.g);
+				pixcol.b = MIN(255, bk.b + pixcol.b);
 			}
 			TCOD_image_put_pixel(img,xi,yi,pixcol);
 		}
@@ -431,13 +430,13 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw and update the particules */
 	j=nbpart;i=firstpart;
 	while (j > 0) {
-		int colidx = static_cast<int>(64 * (1.0f - pheat[i]));
+		int colidx = (int)(64 * (1.0f - pheat[i]));
 		TCOD_color_t col;
-		colidx=std::min(63, colidx);
+		colidx=MIN(63, colidx);
 		col=colmap[colidx];
 		if (py[i] < (bottom - top + 1) * 2) {
-			int ipx = static_cast<int>(px[i]);
-			int ipy = static_cast<int>(py[i]);
+			int ipx = (int)px[i];
+			int ipy = (int)py[i];
 			float fpx = px[i]-ipx;
 			float fpy = py[i]-ipy;
 			TCOD_color_t col2=TCOD_image_get_pixel(img,ipx,ipy);
@@ -483,7 +482,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	/* draw the text */
 	for (i=0; i < len ;i++) {
 		if ( char_heat[i] >= 0.0f && poweredby[i]!='\n') {
-			int colidx = static_cast<int>(64 * char_heat[i]);
+			int colidx = (int)(64 * char_heat[i]);
 			TCOD_color_t col;
 			colidx=MIN(63,colidx);
 			col=colmap[colidx];
@@ -491,12 +490,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 				float coef=(xstr-len)/len;
 				if ( alpha ) {
 					TCOD_color_t fore=TCOD_console_get_char_background(NULL,char_x[i],char_y[i]);
-					int r = static_cast<int>(coef * fore.r + (1.0f - coef) * col.r);
-					int g = static_cast<int>(coef * fore.g + (1.0f - coef) * col.g);
-					int b = static_cast<int>(coef * fore.b + (1.0f - coef) * col.b);
-					col.r = std::max(0, std::min(r, 255));
-					col.g = std::max(0, std::min(g, 255));
-					col.b = std::max(0, std::min(b, 255));
+					int r = (int)(coef * fore.r + (1.0f - coef) * col.r);
+					int g = (int)(coef * fore.g + (1.0f - coef) * col.g);
+					int b = (int)(coef * fore.b + (1.0f - coef) * col.b);
+					col.r = MAX(0, MIN(r, 255));
+					col.g = MAX(0, MIN(g, 255));
+					col.b = MAX(0, MIN(b, 255));
 					TCOD_console_set_char_foreground(NULL,char_x[i],char_y[i],col);
 				} else {
 					col=TCOD_color_lerp(col,TCOD_black,coef);
@@ -508,7 +507,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	}
 	/* update letters heat */
 	xstr += elapsed * 4;
-	for (i = 0; i < static_cast<int>(xstr+0.5f); ++i) {
+	for (i = 0; i < (int)(xstr+0.5f); ++i) {
 		char_heat[i]=(xstr-i)/(len/2);
 	}
 	/* restore fg color */
@@ -629,7 +628,7 @@ bool TCOD_console_save_asc(TCOD_console_t pcon, const char *filename) {
 	TCOD_IFNOT(con->w > 0 && con->h > 0) return false;
 	f=fopen(filename,"wb");
 	TCOD_IFNOT( f != NULL ) return false;
-	fprintf(f, "ASCII-Paint v%g\n", static_cast<double>(version));
+	fprintf(f, "ASCII-Paint v%g\n", (double)version);
 	fprintf(f, "%i %i\n", con->w, con->h);
 	fputc('#', f);
 	for(x = 0; x < con->w; x++) {
@@ -658,7 +657,7 @@ static bool isBigEndian;
 void detectBigEndianness(void) {
 	if (!hasDetectedBigEndianness){
 		uint32_t Value32;
-		uint8_t *VPtr = reinterpret_cast<uint8_t *>(&Value32);
+		uint8_t *VPtr = (uint8_t*)&Value32;
 		VPtr[0] = VPtr[1] = VPtr[2] = 0; VPtr[3] = 1;
 		if(Value32 == 1) isBigEndian = true;
 		else isBigEndian = false;
@@ -668,9 +667,9 @@ void detectBigEndianness(void) {
 #ifndef bswap16
 static uint16_t bswap16(uint16_t s)
 {
-	uint8_t* ps = reinterpret_cast<uint8_t*>(&s);
+	uint8_t* ps = (uint8_t*)&s;
 	uint16_t res;
-	uint8_t* pres = reinterpret_cast<uint8_t*>(&res);
+	uint8_t* pres = (uint8_t*)&res;
 	pres[0] = ps[1];
 	pres[1] = ps[0];
 	return res;
@@ -679,9 +678,9 @@ static uint16_t bswap16(uint16_t s)
 #ifndef bswap32
 static uint32_t bswap32(uint32_t s)
 {
-	uint8_t *ps = reinterpret_cast<uint8_t*>(&s);
+	uint8_t *ps = (uint8_t*)&s;
 	uint32_t res;
-	uint8_t *pres = reinterpret_cast<uint8_t*>(&res);
+	uint8_t *pres = (uint8_t*)&res;
 	pres[0]=ps[3];
 	pres[1]=ps[2];
 	pres[2]=ps[1];
@@ -709,7 +708,7 @@ void fix32(uint32_t* u){
 /************ RIFF helpers  */
 
 uint32_t fourCC(const char* c){
-	return (*reinterpret_cast<const uint32_t*>(c));
+	return (*(const uint32_t*)c);
 }
 
 /* checks if u equals str */
@@ -718,7 +717,7 @@ bool fourCCequals(uint32_t u, const char* str){
 }
 
 void fromFourCC(uint32_t u, char*s){
-	const char* c = reinterpret_cast<const char*>(&u);
+	const char* c = (const char*)&u;
 	s[0]=c[0];
 	s[1]=c[1];
 	s[2]=c[2];
@@ -1070,20 +1069,20 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char *filename) {
 							if (ver>2) ERR_NEWER("layer spec");
 
 							if (ver==1){
-								if (! getData(static_cast<void*>(&data.layer.headerv1), sizeof( LayerV1 ), fp)) ERR("Can't read layer header.");
+								if (! getData(&data.layer.headerv1, sizeof( LayerV1 ), fp)) ERR("Can't read layer header.");
 								fixLayerv1(&data.layer.headerv1);
 
 								/* Read in the data chunk*/
-								data.layer.data = static_cast<uint8_t*>(malloc(sizeof(uint8_t)*data.layer.headerv1.dataSize));
-								getData(static_cast<void*>(data.layer.data), data.layer.headerv1.dataSize, fp);
+								data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t)*data.layer.headerv1.dataSize));
+								getData(data.layer.data, data.layer.headerv1.dataSize, fp);
 							}
 							else if (ver==2){
-								if (! getData(static_cast<void*>(&data.layer.headerv2), sizeof( LayerV2 ), fp)) ERR("Can't read layer header.");
+								if (! getData(&data.layer.headerv2, sizeof( LayerV2 ), fp)) ERR("Can't read layer header.");
 								fixLayerv2(&data.layer.headerv2);
 
 								/* Read in the data chunk */
-								data.layer.data = static_cast<uint8_t*>(malloc(sizeof(uint8_t)*data.layer.headerv2.dataSize));
-								getData(static_cast<void*>(data.layer.data), data.layer.headerv2.dataSize, fp);
+								data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t)*data.layer.headerv2.dataSize));
+								getData(data.layer.data, data.layer.headerv2.dataSize, fp);
 
 							}
 						}

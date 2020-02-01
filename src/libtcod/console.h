@@ -51,7 +51,7 @@ extern "C" {
 #define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH|(((uint8_t)(alpha*255))<<8)))
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8_t)(alpha*255))<<8)))
 
-TCODLIB_API int TCOD_console_set_custom_font(
+TCODLIB_API TCOD_Error TCOD_console_set_custom_font(
     const char *fontFile,
     int flags,
     int nb_char_horiz,

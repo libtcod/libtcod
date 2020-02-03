@@ -1128,7 +1128,7 @@ static int print_internal_(
       if (can_split && (left > cursor_x || cursor_x >= right)) { continue; }
       if (!can_split && (0 > cursor_x || cursor_x >= con.w)) { continue; }
       // Actually render this line of characters.
-      put(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
+      TCOD_console_put_rgb(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
     }
     // Ignore any extra spaces.
     while (it != end) {
@@ -1252,25 +1252,19 @@ void print_frame(
   const int bottom = y + height - 1;
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  put(con, left, top, 0x250C, fg, bg, flag); // ┌
-  put(con, right, top, 0x2510, fg, bg, flag); // ┐
-  put(con, left, bottom, 0x2514, fg, bg, flag); // └
-  put(con, right, bottom, 0x2518, fg, bg, flag); // ┘
-  draw_rect(con, x + 1, y, width - 2, 1,
-            0x2500, &con->fore, &con->back, flag); // ─
-  draw_rect(con, x + 1, y + height - 1, width - 2, 1,
-            0x2500, &con->fore, &con->back, flag);
-  draw_rect(con, x, y + 1, 1, height - 2,
-            0x2502, &con->fore, &con->back, flag); // │
-  draw_rect(con, x + width - 1, y + 1, 1, height - 2,
-            0x2502, &con->fore, &con->back, flag);
+  TCOD_console_put_rgb(con, left, top, 0x250C, fg, bg, flag); // ┌
+  TCOD_console_put_rgb(con, right, top, 0x2510, fg, bg, flag); // ┐
+  TCOD_console_put_rgb(con, left, bottom, 0x2514, fg, bg, flag); // └
+  TCOD_console_put_rgb(con, right, bottom, 0x2518, fg, bg, flag); // ┘
+  TCOD_console_draw_rect_rgb(con, x + 1, y, width - 2, 1, 0x2500, &con->fore, &con->back, flag); // ─
+  TCOD_console_draw_rect_rgb(con, x + 1, y + height - 1, width - 2, 1, 0x2500, &con->fore, &con->back, flag);
+  TCOD_console_draw_rect_rgb(con, x, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag); // │
+  TCOD_console_draw_rect_rgb(con, x + width - 1, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag);
   if (empty) {
-    draw_rect(con, x + 1, y + 1, width -2, height - 2,
-              0x20, &con->fore, &con->back, flag);
+    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width -2, height - 2, 0x20, &con->fore, &con->back, flag);
   }
   if (!title.empty()) {
-    print_rect(con, x, y, width, 1,
-               " " + title + " ", bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
+    print_rect(con, x, y, width, 1, " " + title + " ", bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
   }
 }
 } // namespace console

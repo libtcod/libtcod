@@ -33,6 +33,9 @@
 #define TCOD_CONSOLE_DRAWING_H_
 #include "../console_types.h"
 #include "../portability.h"
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
 /**
  *  Draw a rectangle onto a console.
  *
@@ -44,7 +47,7 @@
  *  \param clear If true the drawing region will be filled with spaces.
  *  \param flag The blending flag to use.
  */
-TCODLIB_CAPI void TCOD_console_rect(
+TCOD_PUBLIC void TCOD_console_rect(
     TCOD_Console* con, int x, int y, int w, int h, bool clear,
     TCOD_bkgnd_flag_t flag);
 /**
@@ -59,7 +62,7 @@ TCODLIB_CAPI void TCOD_console_rect(
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
-TCODLIB_CAPI void TCOD_console_hline(
+TCOD_PUBLIC void TCOD_console_hline(
     TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a vertical line using the default colors.
@@ -73,45 +76,42 @@ TCODLIB_CAPI void TCOD_console_hline(
  *  This function makes assumptions about the fonts character encoding.
  *  It will fail if the font encoding is not `cp437`.
  */
-TCODLIB_CAPI void TCOD_console_vline(
+TCOD_PUBLIC void TCOD_console_vline(
     TCOD_Console* con, int x, int y, int l, TCOD_bkgnd_flag_t flag);
-#ifdef __cplusplus
-namespace tcod {
-namespace console {
-// All functions here are provisional unless given an added version.
+// Next functions are provisional unless given an added version.
 /**
  *  Place a single tile on a `console` at `x`,`y`.
  *
  *  If `ch` is 0 then the character code will not be updated.
  *
- *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
+ *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
-TCODLIB_API void put(
+void TCOD_console_put_rgb(
     TCOD_Console* console,
     int x,
     int y,
     int ch,
-    const TCOD_color_t* fg = &TCOD_white,
-    const TCOD_color_t* bg = &TCOD_black,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a rectangle on a `console` with a shape of `x`,`y`,`width`,`height`.
  *
  *  If `ch` is 0 then the character code will not be updated.
  *
- *  If `fg`,`bg` is nullptr then their respective colors will not be updated.
+ *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
-TCODLIB_API void draw_rect(
+void TCOD_console_draw_rect_rgb(
     TCOD_Console* console,
     int x,
     int y,
     int width,
     int height,
     int ch,
-    const TCOD_color_t* fg = &TCOD_white,
-    const TCOD_color_t* bg = &TCOD_black,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
-} // namespace console
-} // namespace tcod
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag);
+#ifdef __cplusplus
+} // extern "C"
 #endif // __cplusplus
 #endif // TCOD_CONSOLE_DRAWING_H_

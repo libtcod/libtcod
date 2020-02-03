@@ -33,26 +33,24 @@
 
 #include "../libtcod_int.h"
 #include "../console.h"
-namespace tcod {
-namespace console {
 /**
  *  Clamp the given values to fit within a console.
  */
 static void clamp_rect_(int cx, int cy, int cw, int ch,
-                        int& x, int& y, int& w, int& h)
+                        int* x, int* y, int* w, int* h)
 {
-  if (x + w > cw) { w = cw - x; }
-  if (y + h > ch) { h = ch - y; }
-  if (x < cx) {
-    w -= cx - x;
-    x = cx;
+  if (*x + *w > cw) { *w = cw - *x; }
+  if (*y + *h > ch) { *h = ch - *y; }
+  if (*x < cx) {
+    *w -= cx - *x;
+    *x = cx;
   }
-  if (y < cy) {
-    h -= cy - y;
-    y = cy;
+  if (*y < cy) {
+    *h -= cy - *y;
+    *y = cy;
   }
 }
-void put(
+void TCOD_console_put_rgb(
     TCOD_Console* console,
     int x,
     int y,
@@ -69,7 +67,7 @@ void put(
   if (fg) { TCOD_console_set_char_foreground(console, x, y, *fg); }
   if (bg) { TCOD_console_set_char_background(console, x, y, *bg, flag); }
 }
-void draw_rect(
+void TCOD_console_draw_rect_rgb(
     TCOD_Console* console,
     int x,
     int y,
@@ -82,37 +80,32 @@ void draw_rect(
 {
   console = TCOD_console_validate_(console);
   if (!console) { return; }
-  clamp_rect_(0, 0, console->w, console->h, x, y, width, height);
+  clamp_rect_(0, 0, console->w, console->h, &x, &y, &width, &height);
   TCOD_ASSERT(x + width <= console->w && y + height <= console->h);
   for (int console_y = y; console_y < y + height; ++console_y) {
     for (int console_x = x; console_x < x + width; ++console_x) {
-      put(console, console_x, console_y, ch, fg, bg, flag);
+      TCOD_console_put_rgb(console, console_x, console_y, ch, fg, bg, flag);
     }
   }
 }
-} // namespace console
-} // namespace tcod
 void TCOD_console_rect(TCOD_Console* console, int x, int y, int rw, int rh,
                        bool clear, TCOD_bkgnd_flag_t flag)
 {
   console = TCOD_console_validate_(console);
   if (!console) { return; }
-  tcod::console::draw_rect(console, x, y, rw, rh,
-                           clear ? 0x20 : 0, nullptr, &console->back, flag);
+  TCOD_console_draw_rect_rgb(console, x, y, rw, rh, clear ? 0x20 : 0, NULL, &console->back, flag);
 }
 void TCOD_console_hline(TCOD_Console* console,int x, int y, int l,
                         TCOD_bkgnd_flag_t flag)
 {
   console = TCOD_console_validate_(console);
   if (!console) { return; }
-  tcod::console::draw_rect(console, x, y, l, 1,
-                           0x2500, &console->fore, &console->back, flag); // ─
+  TCOD_console_draw_rect_rgb(console, x, y, l, 1, 0x2500, &console->fore, &console->back, flag); // ─
 }
 void TCOD_console_vline(TCOD_Console* console,int x, int y, int l,
                         TCOD_bkgnd_flag_t flag)
 {
   console = TCOD_console_validate_(console);
   if (!console) { return; }
-  tcod::console::draw_rect(console, x, y, 1, l,
-                           0x2502, &console->fore, &console->back, flag); // │
+  TCOD_console_draw_rect_rgb(console, x, y, 1, l, 0x2502, &console->fore, &console->back, flag); // │
 }

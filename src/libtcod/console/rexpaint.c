@@ -31,7 +31,7 @@
  */
 #include "rexpaint.h"
 
-#include <limits>
+#include <limits.h>
 
 #include <zlib.h>
 
@@ -44,19 +44,19 @@
 static uint32_t decode_little_endian(uint32_t data)
 {
   uint32_t result = 0;
-  const uint8_t* p = reinterpret_cast<uint8_t*>(&data);
-  for(int i = 0; i < static_cast<int>(sizeof(result)); ++i) {
-      result += p[i] << (std::numeric_limits<uint8_t>::digits * i);
+  const uint8_t* p = (uint8_t*)&data;
+  for(int i = 0; i < (int)sizeof(result); ++i) {
+      result += p[i] << (CHAR_BIT * i);
   }
   return result;
 }
 /* Byte swaps a number into little-endian order to be saved to disk. */
 static uint32_t encode_little_endian(uint32_t number) {
   uint32_t result = 0;
-  uint8_t* p = reinterpret_cast<uint8_t*>(&result);
-  for(int i = 0; i < static_cast<int>(sizeof(result)); ++i) {
-    p[i] = number & std::numeric_limits<uint8_t>::max();
-    number >>= std::numeric_limits<uint8_t>::digits;
+  uint8_t* p = (uint8_t*)&result;
+  for(int i = 0; i < (int)sizeof(result); ++i) {
+    p[i] = number & UCHAR_MAX;
+    number >>= CHAR_BIT;
   }
   return result;
 }
@@ -76,16 +76,14 @@ struct RexPaintTile {
 };
 /* Read data from a gz file, returns 0 on success, or -1 on any error. */
 static int load_gz_confirm(gzFile gz_file, void *data, size_t length) {
-  int length_ = static_cast<int>(length);
+  int length_ = (int)length;
   if (gzread(gz_file, data, length_) != length_) { return -1; }
   return 0;
 }
 /* Loads a little-endian 32 bit signed int into memory. */
 static int load_int32(gzFile gz_file, int32_t *out) {
   if (load_gz_confirm(gz_file, out, sizeof(out[0]))) { return -1; }
-  *out = static_cast<int32_t>(
-      decode_little_endian(static_cast<uint32_t>(out[0]))
-  );
+  *out = (int32_t)decode_little_endian((uint32_t)out[0]);
   return 0;
 }
 static int load_header(gzFile gz_file, struct RexPaintHeader *xp_header) {
@@ -155,8 +153,7 @@ static TCOD_list_t load_consoleList(gzFile gz_file) {
     if (!console) {
       /* There was an issue then delete everything so far and return NULL */
       while (!TCOD_list_is_empty(console_list)) {
-        TCOD_console_delete(
-            static_cast<TCOD_Console*>(TCOD_list_pop(console_list)));
+        TCOD_console_delete(TCOD_list_pop(console_list));
       }
       TCOD_list_delete(console_list);
       return NULL;
@@ -168,14 +165,13 @@ static TCOD_list_t load_consoleList(gzFile gz_file) {
 /* Convert a list of consoles into a single console, deleting the list.
   Follows REXPaint's rules for transparency. */
 static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
-  TCOD_console_t main_console;
+  TCOD_Console* main_console;
   if (!console_list) { return NULL; }
   /* Reverse the list so that elements will be dequeued. */
   TCOD_list_reverse(console_list);
-  main_console = static_cast<TCOD_Console*>(TCOD_list_pop(console_list));
+  main_console = TCOD_list_pop(console_list);
   while (!TCOD_list_is_empty(console_list)) {
-    TCOD_console_t console =
-        static_cast<TCOD_Console*>(TCOD_list_pop(console_list));
+    TCOD_console_t console = TCOD_list_pop(console_list);
     /* Set key color to {255, 0, 255} before blit. */
     TCOD_console_set_key_color(console, TCOD_fuchsia);
     /* This blit may fail if the consoles do not match shapes. */
@@ -246,7 +242,7 @@ bool TCOD_console_load_xp(TCOD_console_t con, const char *filename) {
 }
 /* Saves a 32-bit signed int encoded as little-endian to gz_file. */
 static int write_int32(gzFile gz_file, int32_t number) {
-  uint32_t encoded = encode_little_endian(static_cast<uint32_t>(number));
+  uint32_t encoded = encode_little_endian((uint32_t)number);
   if (!gzwrite(gz_file, &encoded, sizeof(encoded))) {
     return -1;
   }
@@ -346,8 +342,7 @@ bool TCOD_console_list_save_xp(
     return false; /* error writing metadata */
   }
   for (i = 0; i < xp_header.layer_count; ++i){
-    if (write_console(
-        gz_file, static_cast<TCOD_Console*>(TCOD_list_get(console_list, i)))) {
+    if (write_console(gz_file, TCOD_list_get(console_list, i))) {
       gzclose(gz_file);
       return false; /* error writing out console data */
     }

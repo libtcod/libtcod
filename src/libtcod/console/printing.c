@@ -32,20 +32,15 @@
 #include "printing.h"
 
 #include <ctype.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
 #ifndef NO_UNICODE
 #include <wchar.h>
 #include <wctype.h>
 #endif
-#include <algorithm>
-#include <cstdarg>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iterator>
-#include <limits>
-#include <stdexcept>
-#include <string>
-#include <tuple>
 
 #include "drawing.h"
 #include "../console.h"
@@ -84,7 +79,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap)
     int i;
     for (i = 0; i < NB_BUFFERS; i++) {
       buflen[i] = INITIAL_SIZE;
-      msg[i] = static_cast<char*>(calloc(sizeof(char), INITIAL_SIZE));
+      msg[i] = calloc(sizeof(char), INITIAL_SIZE);
     }
   }
   do {
@@ -92,7 +87,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap)
      the expected string length if the buffer is not big enough */
     va_list ap_clone;
     va_copy(ap_clone, ap);
-    int len = std::vsnprintf(msg[curbuf], buflen[curbuf], fmt, ap_clone);
+    int len = vsnprintf(msg[curbuf], buflen[curbuf], fmt, ap_clone);
     va_end(ap_clone);
     ok=true;
     if (len < 0 || len >= buflen[curbuf]) {
@@ -103,7 +98,7 @@ char *TCOD_console_vsprint(const char *fmt, va_list ap)
         buflen[curbuf] *= 2;
       }
       free(msg[curbuf]);
-      msg[curbuf] = static_cast<char*>(calloc(sizeof(char), buflen[curbuf]));
+      msg[curbuf] = calloc(sizeof(char), buflen[curbuf]);
       ok = false;
     }
   } while (!ok);
@@ -156,11 +151,16 @@ void TCOD_console_print_frame(
     title = TCOD_console_vsprint(fmt, ap);
     va_end(ap);
     title[w - 3] = 0; /* truncate if needed */
-    xs = x + (w - static_cast<int>(strlen(title)) - 2) / 2;
-    std::swap(con->fore, con->back);
+    xs = x + (w - (int)(strlen(title)) - 2) / 2;
+    TCOD_color_t tmp;
+    tmp = con->fore;
+    con->fore = con->back;
+    con->back = tmp;
     TCOD_console_print_ex(con, xs, y, TCOD_BKGND_SET, TCOD_LEFT,
                           " %s ", title);
-    std::swap(con->fore, con->back);
+    tmp = con->fore;
+    con->fore = con->back;
+    con->back = tmp;
   }
 }
 /**
@@ -324,7 +324,7 @@ int TCOD_console_print_internal(
     TCOD_Console* con, int x,int y, int rw, int rh, TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t align, char *msg, bool can_split, bool count_only)
 {
-  unsigned char *c = reinterpret_cast<unsigned char *>(msg);
+  unsigned char *c = (unsigned char*)msg;
   int cx = 0;
   int cy = y;
   int minx, maxx, miny, maxy;
@@ -346,19 +346,19 @@ int TCOD_console_print_internal(
   oldBack = con->back;
   miny = y;
   maxy = con->h - 1;
-  if (rh > 0) { maxy = std::min(maxy, y + rh - 1); }
+  if (rh > 0) { maxy = MIN(maxy, y + rh - 1); }
   switch (align) {
     case TCOD_LEFT:
-      minx = std::max(0,x);
-      maxx = std::min(con->w - 1, x + rw - 1);
+      minx = MAX(0,x);
+      maxx = MIN(con->w - 1, x + rw - 1);
       break;
     case TCOD_RIGHT:
-      minx = std::max(0, x - rw + 1);
-      maxx = std::min(con->w - 1, x);
+      minx = MAX(0, x - rw + 1);
+      maxx = MIN(con->w - 1, x);
       break;
     case TCOD_CENTER: default:
-      minx = std::max(0, x - rw / 2);
-      maxx = std::min(con->w - 1, x + rw / 2);
+      minx = MAX(0, x - rw / 2);
+      maxx = MIN(con->w - 1, x + rw / 2);
       break;
   }
 
@@ -505,7 +505,7 @@ wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap)
     int i;
     for (i = 0; i < NB_BUFFERS; i++) {
       buflen[i] = INITIAL_SIZE;
-      msg[i] = static_cast<wchar_t*>(calloc(sizeof(wchar_t), INITIAL_SIZE));
+      msg[i] = calloc(sizeof(wchar_t), INITIAL_SIZE);
     }
   }
   do {
@@ -521,8 +521,7 @@ wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap)
         buflen[curbuf] *= 2;
       }
       free(msg[curbuf]);
-      msg[curbuf] = static_cast<wchar_t*>(
-          calloc(sizeof(wchar_t), buflen[curbuf]));
+      msg[curbuf] = calloc(sizeof(wchar_t), buflen[curbuf]);
       ok = false;
     }
   } while (!ok);
@@ -581,19 +580,19 @@ int TCOD_console_print_internal_utf(
   oldBack = con->back;
   miny = y;
   maxy = con->h - 1;
-  if (rh > 0) maxy = std::min(maxy, y + rh - 1);
+  if (rh > 0) maxy = MIN(maxy, y + rh - 1);
   switch (align) {
     case TCOD_LEFT:
-      minx = std::max(0,x);
-      maxx = std::min(con->w-1,x+rw-1);
+      minx = MAX(0,x);
+      maxx = MIN(con->w-1,x+rw-1);
       break;
     case TCOD_RIGHT:
-      minx = std::max(0, x - rw + 1);
-      maxx = std::min(con->w - 1, x);
+      minx = MAX(0, x - rw + 1);
+      maxx = MIN(con->w - 1, x);
       break;
     case TCOD_CENTER: default:
-      minx = std::max(0, x - rw / 2);
-      maxx = std::min(con->w - 1, x + rw / 2);
+      minx = MAX(0, x - rw / 2);
+      maxx = MIN(con->w - 1, x + rw / 2);
       break;
   }
 
@@ -661,24 +660,24 @@ int TCOD_console_print_internal_utf(
       if (cy >= 0 && cy < con->h)
       while (*c) {
         if (*c >= TCOD_COLCTRL_1 && *c <= TCOD_COLCTRL_NUMBER) {
-          con->fore = color_control_fore[static_cast<int>(*c) - 1];
-          con->back = color_control_back[static_cast<int>(*c) - 1];
+          con->fore = color_control_fore[(int)(*c) - 1];
+          con->back = color_control_back[(int)(*c) - 1];
         } else if (*c == TCOD_COLCTRL_FORE_RGB) {
           c++;
-          con->fore.r = static_cast<uint8_t>(*c++);
-          con->fore.g = static_cast<uint8_t>(*c++);
-          con->fore.b = static_cast<uint8_t>(*c);
+          con->fore.r = (uint8_t)(*c++);
+          con->fore.g = (uint8_t)(*c++);
+          con->fore.b = (uint8_t)(*c);
         } else if (*c == TCOD_COLCTRL_BACK_RGB) {
           c++;
-          con->back.r = static_cast<uint8_t>(*c++);
-          con->back.g = static_cast<uint8_t>(*c++);
-          con->back.b = static_cast<uint8_t>(*c);
+          con->back.r = (uint8_t)(*c++);
+          con->back.g = (uint8_t)(*c++);
+          con->back.b = (uint8_t)(*c);
         } else if (*c == TCOD_COLCTRL_STOP) {
           con->fore = oldFore;
           con->back = oldBack;
         } else {
           if (!count_only) {
-            TCOD_console_put_char(con, cx, cy, static_cast<int>(*c), flag);
+            TCOD_console_put_char(con, cx, cy, (int)*c, flag);
           }
           cx++;
         }
@@ -784,93 +783,106 @@ int TCOD_console_get_height_rect_utf(
 }
 
 #endif /* NO_UNICODE */
-namespace tcod {
-namespace console {
-static auto vsprint_(const char *fmt, va_list ap) -> std::string
+// ----------------------------------------------------------------------------
+// New UTF-8 parser.
+/**
+ *  Allocates the formatted string to `out` and returns the size.
+ *
+ *  Returns a negative number on error.
+ */
+static int vsprint_(char** out, const char *fmt, va_list ap)
 {
-  if (!fmt) { return ""; }
+  if (!fmt) { return -1; }
   va_list ap_clone;
   va_copy(ap_clone, ap);
-  std::string result(std::vsnprintf(nullptr, 0, fmt, ap_clone), 0);
+  int size = vsnprintf(NULL, 0, fmt, ap_clone);
   va_end(ap_clone);
-  std::vsnprintf(&result[0], result.size() + 1, fmt, ap);
-  return result;
+  if (size < 0) { return size; }
+  *out = malloc(size + 1);
+  if (!*out) { return -1; }
+  vsprintf(*out, fmt, ap);
+  return size;
 }
-class UnicodeIterator: public std::iterator<std::forward_iterator_tag,
-                                            unsigned char> {
- public:
-  UnicodeIterator()
-  : p_(nullptr), end_(nullptr)
-  {}
-  UnicodeIterator(const utf8proc_uint8_t* start, const utf8proc_uint8_t* end)
-  : p_(start), end_(end)
-  {
-    parse_unicode();
-  }
-  UnicodeIterator(const char* start, const char* end)
-  : UnicodeIterator(reinterpret_cast<const utf8proc_uint8_t*>(start),
-                    reinterpret_cast<const utf8proc_uint8_t*>(end))
-  {}
-  UnicodeIterator(const std::string& str)
-  : UnicodeIterator(str.data(), str.data() + str.size())
-  {}
-  UnicodeIterator& operator++()
-  {
-    if (p_ >= end_) {
-      throw std::out_of_range("Moved past the end of the string.");
+struct FormattedPrinter {
+  const unsigned char* string;
+  const unsigned char* end;
+  struct TCOD_ColorRGB fg;
+  struct TCOD_ColorRGB bg;
+  const struct TCOD_ColorRGB default_fg;
+  const struct TCOD_ColorRGB default_bg;
+};
+static int fp_peak(const struct FormattedPrinter* printer)
+{
+  int codepoint;
+  utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  return codepoint;
+}
+static int fp_next_raw(struct FormattedPrinter* printer)
+{
+  int codepoint;
+  int len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  if (len > 0) { printer->string += len; }
+  return codepoint;
+}
+static struct TCOD_ColorRGB fp_next_rgb(struct FormattedPrinter* printer)
+{
+  struct TCOD_ColorRGB rgb = {
+      fp_next_raw(printer),
+      fp_next_raw(printer),
+      fp_next_raw(printer),
+  };
+  return rgb;
+}
+static void fp_handle_special_codes(struct FormattedPrinter* printer)
+{
+  while(printer->string < printer->end) {
+    int codepoint = fp_peak(printer);
+    switch (codepoint) {
+      case -1:
+        return;
+      case TCOD_COLCTRL_STOP:
+        fp_next_raw(printer);
+        printer->fg = printer->default_fg;
+        printer->bg = printer->default_bg;
+        break;
+      case TCOD_COLCTRL_FORE_RGB:
+        fp_next_raw(printer);
+        printer->fg = fp_next_rgb(printer);
+        break;
+      case TCOD_COLCTRL_BACK_RGB:
+        fp_next_raw(printer);
+        printer->bg = fp_next_rgb(printer);
+        break;
+      default:
+        if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
+          fp_next_raw(printer);
+          int color_index = codepoint - TCOD_COLCTRL_1;
+          printer->fg = color_control_fore[color_index];
+          printer->bg = color_control_back[color_index];
+        } else {
+          return;
+        }
+        break;
     }
-    p_ += code_size_;
-    parse_unicode();
-    return *this;
   }
-  UnicodeIterator operator++(int)
-  {
-    UnicodeIterator tmp(*this);
-    operator++();
-    return tmp;
-  }
-  bool operator==(const UnicodeIterator& rhs) const noexcept
-  {
-    return p_ == rhs.p_;
-  }
-  bool operator!=(const UnicodeIterator& rhs) const noexcept
-  {
-    return p_ != rhs.p_;
-  }
-  bool operator<(const UnicodeIterator& rhs) const noexcept
-  {
-    return p_ < rhs.p_;
-  }
-  int operator*() const
-  {
-    if (p_ == end_) {
-      throw std::out_of_range("Dereferenced past the end of the iterator.");
-    }
-    return codepoint_;
-  }
-  auto get_property() const noexcept -> const utf8proc_property_t*
-  {
-    return utf8proc_get_property(codepoint_);
-  }
-  bool empty() const noexcept
-  {
-    return p_ == end_;
-  }
-  auto end() const -> const UnicodeIterator
-  {
-    return UnicodeIterator(end_, end_);
-  }
-  /*
-   *  Check if the specified character is any line-break character
-   */
-  bool is_newline() const noexcept
-  {
-    switch (get_property()->category) {
+}
+static int fp_next(struct FormattedPrinter* printer)
+{
+  fp_handle_special_codes(printer);
+  return fp_next_raw(printer);
+}
+/*
+ *  Check if the specified character is any line-break character
+ */
+static bool is_newline(int codepoint)
+{
+  const utf8proc_property_t* property = utf8proc_get_property(codepoint);
+  switch (property->category) {
       case UTF8PROC_CATEGORY_ZL: /* Separator, line */
       case UTF8PROC_CATEGORY_ZP: /* Separator, paragraph */
         return true;
       case UTF8PROC_CATEGORY_CC: /* Other, control */
-        switch(get_property()->boundclass) {
+        switch(property->boundclass) {
           case UTF8PROC_BOUNDCLASS_CR:    // carriage return - \r
           case UTF8PROC_BOUNDCLASS_LF:    // line feed - \n
             return true;
@@ -880,187 +892,97 @@ class UnicodeIterator: public std::iterator<std::forward_iterator_tag,
       default: break;
     }
     return false;
-  }
- private:
-  void parse_unicode()
-  {
-    if (p_ == end_) {
-      codepoint_ = 0;
-      code_size_ = 1;
-      return;
-    }
-    code_size_ = utf8proc_iterate(p_, end_ - p_, &codepoint_);
-    if (code_size_ < 0) {
-      throw std::logic_error(utf8proc_errmsg(code_size_));
-    }
-  }
-  const utf8proc_uint8_t* p_;
-  const utf8proc_uint8_t* end_;
-  utf8proc_int32_t codepoint_;
-  utf8proc_ssize_t code_size_;
-};
-class FormattedUnicodeIterator: public UnicodeIterator {
- public:
-  FormattedUnicodeIterator()
-  : UnicodeIterator(), default_fg_(nullptr), default_bg_(nullptr),
-    fg_(nullptr), bg_(nullptr)
-  {}
-  FormattedUnicodeIterator(const std::string& str,
-                           const TCOD_color_t* fg, const TCOD_color_t* bg)
-  : UnicodeIterator(str), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
-  {
-    parse_special_codes();
-  }
-  FormattedUnicodeIterator(const UnicodeIterator& mit,
-                           const TCOD_color_t* fg, const TCOD_color_t* bg)
-  : UnicodeIterator(mit), default_fg_(fg), default_bg_(bg), fg_(fg), bg_(bg)
-  {
-    parse_special_codes();
-  }
-  FormattedUnicodeIterator(const FormattedUnicodeIterator& rhs)
-  : UnicodeIterator(rhs),
-    default_fg_(rhs.default_fg_), default_bg_(rhs.default_bg_),
-    fg_(rhs.fg_), bg_(rhs.bg_)
-  {
-    // Avoid pointing to the temporary colors of other iterators.
-    if (fg_ == &rhs.temp_fg_) { temp_fg_ = rhs.temp_fg_; fg_ = &temp_fg_; }
-    if (bg_ == &rhs.temp_bg_) { temp_bg_ = rhs.temp_bg_; bg_ = &temp_bg_; }
-  }
-  FormattedUnicodeIterator& operator++()
-  {
-    UnicodeIterator::operator++();
-    parse_special_codes();
-    return *this;
-  }
-  auto get_fg() const noexcept -> const TCOD_color_t*
-  {
-    return fg_;
-  }
-  auto get_bg() const noexcept -> const TCOD_color_t*
-  {
-    return bg_;
-  }
- private:
-  auto parse_rgb() -> TCOD_color_t {
-    TCOD_color_t color;
-    UnicodeIterator::operator++();
-    color.r = **this;
-    UnicodeIterator::operator++();
-    color.g = **this;
-    UnicodeIterator::operator++();
-    color.b = **this;
-    return color;
-  }
-  void parse_special_codes()
-  {
-    if (*this == (*this).end()) { return; }
-    if (TCOD_COLCTRL_1 <= **this && **this <= TCOD_COLCTRL_NUMBER) {
-      // Read colors from the color control array.
-      int color_index = (**this) - TCOD_COLCTRL_1;
-      fg_ = &color_control_fore[color_index];
-      bg_ = &color_control_back[color_index];
-      ++(*this);
-      return;
-    } else if (**this == TCOD_COLCTRL_STOP) {
-      // Return colors to their original color.
-      fg_ = default_fg_;
-      bg_ = default_bg_;
-      ++(*this);
-      return;
-    } else if (**this == TCOD_COLCTRL_FORE_RGB) {
-      temp_fg_ = parse_rgb();
-      fg_ = &temp_fg_;
-      ++(*this);
-      return;
-    } else if (**this == TCOD_COLCTRL_BACK_RGB) {
-      temp_bg_ = parse_rgb();
-      bg_ = &temp_bg_;
-      ++(*this);
-      return;
-    }
-  }
-  // Original colors
-  const TCOD_color_t* default_fg_;
-  const TCOD_color_t* default_bg_;
-  // Current active colors.
-  const TCOD_color_t* fg_;
-  const TCOD_color_t* bg_;
-  // Colors generated from RGB codes.
-  TCOD_color_t temp_fg_;
-  TCOD_color_t temp_bg_;
-};
+}
 /**
  *  Get the next line-break or null terminator, or break the string before
  *  `max_width`.
  *
- *  Returns {break_point, line_width, status}
+ *  `break_point` is the pointer to the line end position.
+ *
+ *  `break_width` is the width of the line.
+ *
+ *  Returns true if this function is breaking a line, or false where the line
+ *  doesn't break or breaks on its own (line a new-line.)
  */
-static std::tuple<UnicodeIterator, int, int> next_split_(
-    FormattedUnicodeIterator it,
-    const UnicodeIterator& end,
+static bool next_split_(
+    const struct FormattedPrinter* printer,
     int max_width,
-    int can_split)
+    int can_split,
+    const unsigned char** break_point,
+    int* break_width)
 {
+  struct FormattedPrinter it = *printer;
   // The break point and width of the line.
-  UnicodeIterator break_point(end);
-  int break_width = 0;
+  *break_point = it.end;
+  *break_width = 0;
   // The current line width.
   int char_width = 0;
   bool separating = false; // True if the last iteration was breakable.
-  while (it != end) {
+  while (it.string != it.end) {
+    int codepoint = fp_peak(&it);
+    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     if (can_split && char_width > 0) {
-      switch (it.get_property()->category) {
+      switch (property->category) {
         default:
-          if (char_width + static_cast<int>(it.get_property()->charwidth)
-              > max_width) {
+          if (char_width + (int)property->charwidth > max_width) {
             // The next character would go over the max width, so return now.
-            if (break_point != end) {
+            if (*break_point != it.end) {
               // Use latest line break if one exists.
-              return {break_point, break_width, 1};
+              return 1;
             } else {
               // Force a line break here.
-              return {it, char_width, 1};
+              *break_point = it.string;
+              *break_width = char_width;
+              return 1;
             }
           }
           separating = false;
           break;
         case UTF8PROC_CATEGORY_PD: // Punctuation, dash
-          if (char_width + static_cast<int>(it.get_property()->charwidth)
-              > max_width) {
-            return {it, char_width, 1};
+          if (char_width + (int)property->charwidth > max_width) {
+            *break_point = it.string;
+            *break_width = char_width;
+            return 1;
           } else {
-            break_point = it;
-            ++break_point;
-            break_width = char_width + it.get_property()->charwidth;
+            char_width += property->charwidth;
+            fp_next(&it);
+            *break_point = it.string;
+            *break_width = char_width;
             separating = true;
+            continue;
           }
           break;
         case UTF8PROC_CATEGORY_ZS: // Separator, space
           if (!separating) {
-            break_point = it;
-            break_width = char_width;
+            *break_point = it.string;
+            *break_width = char_width;
             separating = true;
           }
           break;
       }
     }
-    if (it.is_newline()) {
+    if (is_newline(codepoint)) {
       // Always break on newlines.
-      return {it, char_width, 0};
+      *break_point = it.string;
+      *break_width = char_width;
+      return 0;
     }
-    char_width += it.get_property()->charwidth;
-    ++it;
+    char_width += property->charwidth;
+    fp_next(&it);
   }
   // Return end of iteration.
-  return {it, char_width, 0};
+  *break_point = it.string;
+  *break_width = char_width;
+  return 0;
 }
 static int print_internal_(
-    TCOD_Console& con,
+    TCOD_Console* con,
     int x,
     int y,
     int width,
     int height,
-    const std::string& string,
+    int n,
+    const char* string,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
@@ -1068,16 +990,27 @@ static int print_internal_(
     int can_split,
     int count_only)
 {
-  FormattedUnicodeIterator it(string, fg, bg);
-  UnicodeIterator end = it.end();
+  static const TCOD_color_t color_default = {255, 0, 255};
+  if (!fg) { fg = &color_default; }
+  if (!bg) { bg = &color_default; }
+  struct FormattedPrinter printer = {
+      .string = (const unsigned char*)string,
+      .end = (const unsigned char*)string + n,
+      .fg = *fg,
+      .bg = *bg,
+      .default_fg = *fg,
+      .default_bg = *bg,
+  };
+  //FormattedUnicodeIterator it(string, fg, bg);
+  //UnicodeIterator end = it.end();
   if (!can_split && align == TCOD_RIGHT) {
     // In general `can_split = false` is deprecated.
-    x -= con.w - 1;
-    width = con.w;
+    x -= con->w - 1;
+    width = con->w;
   }
   // Expand the width/height of 0 to the edge of the console.
-  if (!width) { width = con.w - x; }
-  if (!height) { height = con.h - y; }
+  if (!width) { width = con->w - x; }
+  if (!height) { height = con->h - y; }
   // Print bounding box.
   int left = x;
   int right = x + width;
@@ -1088,23 +1021,23 @@ static int print_internal_(
   if (can_split && (width <= 0 || height <= 0)) {
     return 0; // The bounding box is invalid.
   }
-  while (it != end && top < bottom && top < con.h) {
+  while (printer.string != printer.end && top < bottom && top < con->h) {
+    int codepoint = fp_peak(&printer);
+    const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     // Check for newlines.
-    if(it.is_newline()) {
-      if(it.get_property()->category == UTF8PROC_CATEGORY_ZP) {
+    if(is_newline(codepoint)) {
+      if(property->category == UTF8PROC_CATEGORY_ZP) {
         top += 2;
       } else {
         top += 1;
       }
-      ++it;
+      fp_next(&printer);
       continue;
     }
     // Get the next line of characters.
-    UnicodeIterator line_break;
+    const unsigned char* line_break;
     int line_width;
-    int split_status;
-    std::tie(line_break, line_width, split_status) =
-        next_split_(it, end, width, can_split);
+    int split_status = next_split_(&printer, width, can_split, &line_break, &line_width);
     // Set cursor_x from alignment.
     int cursor_x = 0;
     switch (align) {
@@ -1123,57 +1056,62 @@ static int print_internal_(
         }
         break;
     }
-    for (; it < line_break; cursor_x += it.get_property()->charwidth, ++it) {
+    for (;
+         printer.string < line_break;
+         cursor_x += utf8proc_get_property(fp_peak(&printer))->charwidth, fp_next(&printer)) {
       if(count_only) { continue; }
       if (can_split && (left > cursor_x || cursor_x >= right)) { continue; }
-      if (!can_split && (0 > cursor_x || cursor_x >= con.w)) { continue; }
+      if (!can_split && (0 > cursor_x || cursor_x >= con->w)) { continue; }
       // Actually render this line of characters.
-      TCOD_console_put_rgb(&con, cursor_x, top, *it, it.get_fg(), it.get_bg(), flag);
+      TCOD_console_put_rgb(con, cursor_x, top, fp_peak(&printer), &printer.fg, &printer.bg, flag);
     }
     // Ignore any extra spaces.
-    while (it != end) {
+    while (printer.string != printer.end) {
       // Separator, space
-      if (it.get_property()->category != UTF8PROC_CATEGORY_ZS) { break; }
-      ++it;
+      if (utf8proc_get_property(fp_peak(&printer))->category != UTF8PROC_CATEGORY_ZS) {
+        break;
+      }
+      fp_next(&printer);
     }
     // If there was an automatic split earlier then the top is moved down.
     if (split_status == 1) { top += 1; }
   }
-  return std::min(top, bottom) - y + 1;
+  return MIN(top, bottom) - y + 1;
 }
 /**
  *  Normalize rectangle values using old libtcod rules where alignment can move
  *  the rectangle position.
  */
 static void normalize_old_rect_(
-    TCOD_Console& console,
+    TCOD_Console* console,
     TCOD_alignment_t alignment,
-    int& x,
-    int& y,
-    int& width,
-    int& height)
+    int* x,
+    int* y,
+    int* width,
+    int* height)
 {
   // Set default width/height if either is zero.
-  if (width == 0) { width = console.w; }
-  if (height == 0) { height = console.h - y; }
+  if (*width == 0) { *width = console->w; }
+  if (*height == 0) { *height = console->h - *y; }
   switch(alignment) {
     default:
     case TCOD_LEFT:
       break;
     case TCOD_RIGHT:
-      x -= width;
+      *x -= *width;
       break;
     case TCOD_CENTER:
-      x -= width / 2;
+      *x -= *width / 2;
       break;
   }
   return;
 }
-void print(
+void TCOD_console_printn(
     TCOD_Console* con,
     int x,
     int y,
-    const std::string& str,
+    int n,
+    const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
@@ -1181,16 +1119,16 @@ void print(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return; }
-  print_internal_(*con, x, y, con->w, con->h, str, fg, bg, flag, alignment,
-                  false, false);
+  print_internal_(con, x, y, con->w, con->h, n, str, fg, bg, flag, alignment, false, false);
 }
-int print_rect(
-    struct TCOD_Console *con,
+int TCOD_console_printn_rect(
+    TCOD_Console *con,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str,
+    int n,
+    const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
@@ -1198,49 +1136,39 @@ int print_rect(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-  return print_internal_(*con, x, y, width, height, str, fg, bg,
-                         flag, alignment, true, false);
+  return print_internal_(con, x, y, width, height, n, str, fg, bg, flag, alignment, true, false);
 }
-int get_height_rect(
-    std::array<int, 2> console_size,
+
+int TCOD_console_get_height_rect_n(
+    TCOD_Console *console,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str)
+    int n,
+    const char* str)
 {
-  struct TCOD_Console console{};
-  console.w = console_size[0];
-  console.h = console_size[1];
-  return print_internal_(console, x, y, width, height, str, nullptr, nullptr,
+  console = TCOD_console_validate_(console);
+  if (!console) { return 0; }
+  return print_internal_(console, x, y, width, height, n, str, NULL, NULL,
                          TCOD_BKGND_NONE, TCOD_LEFT, true, true);
 }
-int get_height_rect(
+int TCOD_console_get_height_rect_wn(
     int width,
-    const std::string& str)
+    int n,
+    const char* str)
 {
-  auto MAX_INT = std::numeric_limits<int>::max();
-  return get_height_rect({width, MAX_INT}, 0, 0, width, MAX_INT, str);
+  TCOD_Console console = { .w = width, .h = INT_MAX };
+  return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
-int get_height_rect(
+void TCOD_console_printn_frame(
     struct TCOD_Console *con,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str)
-{
-  con = TCOD_console_validate_(con);
-  if (!con) { return 0; }
-  return get_height_rect({con->w, con->h}, x, y, width, height, str);
-}
-void print_frame(
-    struct TCOD_Console *con,
-    int x,
-    int y,
-    int width,
-    int height,
-    const std::string& title,
+    int n,
+    const char* title,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
@@ -1261,14 +1189,18 @@ void print_frame(
   TCOD_console_draw_rect_rgb(con, x, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag); // │
   TCOD_console_draw_rect_rgb(con, x + width - 1, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag);
   if (empty) {
-    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width -2, height - 2, 0x20, &con->fore, &con->back, flag);
+    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width - 2, height - 2, 0x20, &con->fore, &con->back, flag);
   }
-  if (!title.empty()) {
-    print_rect(con, x, y, width, 1, " " + title + " ", bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
+  if (title) {
+    char* tmp_string = malloc(n + 2);
+    if (!tmp_string) { return; }
+    memcpy(&tmp_string[1], title, n);
+    tmp_string[0] = ' ';
+    tmp_string[n + 1] = ' ';
+    TCOD_console_printn_rect(con, x, y, width, 1, n + 2, tmp_string, bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
+    free(tmp_string);
   }
 }
-} // namespace console
-} // namespace tcod
 /**
  *  Format and print a UTF-8 string to a console.
  *  \rst
@@ -1287,9 +1219,12 @@ void TCOD_console_printf_ex(
   if (!con) { return; }
   va_list ap;
   va_start(ap, fmt);
-  tcod::console::print(con, x, y, tcod::console::vsprint_(fmt, ap),
-                       &con->fore, &con->back, flag, alignment);
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return; }
+  TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, flag, alignment);
+  free(str);
 }
 /**
  *  Format and print a UTF-8 string to a console.
@@ -1303,10 +1238,12 @@ void TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
   if (!con) { return; }
   va_list ap;
   va_start(ap, fmt);
-  tcod::console::print(
-      con, x, y, tcod::console::vsprint_(fmt, ap),
-      &con->fore, &con->back, con->bkgnd_flag, con->alignment);
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return; }
+  TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
+  free(str);
 }
 /**
  *  Format and print a UTF-8 string to a console.
@@ -1321,13 +1258,15 @@ int TCOD_console_printf_rect_ex(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-  tcod::console::normalize_old_rect_(*con, alignment, x, y, w, h);
+  normalize_old_rect_(con, alignment, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
-  int ret = tcod::console::print_rect(
-      con, x, y, w, h, tcod::console::vsprint_(fmt, ap),
-      &con->fore, &con->back, flag, alignment);
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return 0; }
+  int ret = TCOD_console_printn_rect(con, x, y, w, h, len, str, &con->fore, &con->back, flag, alignment);
+  free(str);
   return ret;
 }
 /**
@@ -1341,13 +1280,15 @@ int TCOD_console_printf_rect(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-  tcod::console::normalize_old_rect_(*con, con->alignment, x, y, w, h);
+  normalize_old_rect_(con, con->alignment, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
-  int ret = tcod::console::print_rect(
-      con, x, y, w, h, tcod::console::vsprint_(fmt, ap),
-      &con->fore, &con->back, con->bkgnd_flag, con->alignment);
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return 0; }
+  int ret = TCOD_console_printn_rect( con, x, y, w, h, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
+  free(str);
   return ret;
 }
 /**
@@ -1361,12 +1302,15 @@ int TCOD_console_get_height_rect_fmt(
 {
   con = TCOD_console_validate_(con);
   if (!con) { return 0; }
-  tcod::console::normalize_old_rect_(*con, TCOD_LEFT, x, y, w, h);
+  normalize_old_rect_(con, TCOD_LEFT, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
-  int ret = tcod::console::get_height_rect(con, x, y, w, h,
-                                           tcod::console::vsprint_(fmt, ap));
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return 0; }
+  int ret = TCOD_console_get_height_rect_n(con, x, y, w, h, len, str);
+  free(str);
   return ret;
 }
 /**
@@ -1387,8 +1331,10 @@ void TCOD_console_printf_frame(struct TCOD_Console *con,
   if (!con) { return; }
   va_list ap;
   va_start(ap, fmt);
-  tcod::console::print_frame(
-      con, x, y, width, height, tcod::console::vsprint_(fmt, ap),
-      &con->fore, &con->back, flag, empty);
+  char* str = NULL;
+  int len = vsprint_(&str, fmt, ap);
   va_end(ap);
+  if (len < 0) { return; }
+  TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
+  free(str);
 }

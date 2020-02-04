@@ -32,11 +32,6 @@
 #ifndef TCOD_CONSOLE_PRINTING_H_
 #define TCOD_CONSOLE_PRINTING_H_
 
-#ifdef __cplusplus
-#include <array>
-#include <cstdbool>
-#include <string>
-#endif
 #include "../portability.h"
 #include "../console_types.h"
 
@@ -88,66 +83,54 @@ TCODLIB_API TCODLIB_FORMAT(6, 7)
 int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
                                      int x, int y, int w, int h,
                                      const char *fmt, ...);
-#ifdef __cplusplus
-}
-#endif
-#ifdef __cplusplus
-namespace tcod {
-namespace console {
-// All functions here are provisional unless given an added version.
-TCODLIB_API void print(
+
+TCOD_PUBLIC void TCOD_console_printn(
     TCOD_Console* con,
     int x,
     int y,
-    const std::string& str,
+    int n,
+    const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
-TCODLIB_API int print_rect(
-    struct TCOD_Console *con,
+TCOD_PUBLIC int TCOD_console_printn_rect(
+    TCOD_Console *con,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str,
+    int n,
+    const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
-/**
- *  Return the total number lines that a function with similar arguments would
- *  print.
- */
-TCODLIB_API int get_height_rect(
-    std::array<int, 2> console_size,
+TCOD_PUBLIC int TCOD_console_get_height_rect_n(
+    TCOD_Console *console,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str);
-TCODLIB_API int get_height_rect(
+    int n,
+    const char* str);
+TCOD_PUBLIC int TCOD_console_get_height_rect_wn(
     int width,
-    const std::string& str);
-TCODLIB_API int get_height_rect(
+    int n,
+    const char* str);
+TCOD_PUBLIC void TCOD_console_printn_frame(
     struct TCOD_Console *con,
     int x,
     int y,
     int width,
     int height,
-    const std::string& str);
-TCODLIB_API void print_frame(
-    struct TCOD_Console *con,
-    int x,
-    int y,
-    int width,
-    int height,
-    const std::string& title,
+    int n,
+    const char* title,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     bool empty);
-} // namespace console
-} // namespace tcod
+#ifdef __cplusplus
+} // extern "C"
 #endif // __cplusplus
 #endif /* TCOD_CONSOLE_PRINTING_H_ */

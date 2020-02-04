@@ -55,7 +55,7 @@ target_sources(TCOD PRIVATE
     libtcod/zip_c.c
     libtcod/console/console.c
     libtcod/console/drawing.c
-    libtcod/console/printing.cpp
+    libtcod/console/printing.c
     libtcod/console/rexpaint.c
     libtcod/engine/backend.cpp
     libtcod/engine/display.c
@@ -210,7 +210,7 @@ source_group(libtcod\\console FILES
     libtcod/console/console.h
     libtcod/console/drawing.c
     libtcod/console/drawing.h
-    libtcod/console/printing.cpp
+    libtcod/console/printing.c
     libtcod/console/printing.h
     libtcod/console/rexpaint.c
     libtcod/console/rexpaint.h

@@ -538,14 +538,14 @@ int TCOD_get_tileid_for_charcode_(int charcode);
 /**
  *  Validate and return a constant console.
  */
-inline TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
+static inline TCOD_Console* TCOD_console_validate_(const TCOD_Console* console)
 {
   return (TCOD_Console*)(console ? console : TCOD_ctx.root);
 }
 /**
  *  Return true if the console is valid and the index is within it.
  */
-inline bool TCOD_console_is_index_valid_(const TCOD_Console* console,
+static inline bool TCOD_console_is_index_valid_(const TCOD_Console* console,
                                          int x, int y)
 {
   return console && 0 <= x && x < console->w && 0 <= y && y < console->h;

@@ -177,7 +177,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/zip_c.c \
 	../../src/libtcod/console/console.c \
 	../../src/libtcod/console/drawing.c \
-	../../src/libtcod/console/printing.cpp \
+	../../src/libtcod/console/printing.c \
 	../../src/libtcod/console/rexpaint.c \
 	../../src/libtcod/engine/backend.cpp \
 	../../src/libtcod/engine/display.c \

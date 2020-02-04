@@ -273,8 +273,8 @@ void TCODConsole::print(int x, int y, const std::string &str) {
 }
 void TCODConsole::print(int x, int y, const std::string &str,
                         TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag) {
-  tcod::console::print(data, x, y, str,
-                       &data->fore, &data->back, flag, alignment);
+  TCOD_console_printn(data, x, y, str.size(), str.c_str(),
+                      &data->fore, &data->back, flag, alignment);
 }
 void TCODConsole::printf(int x, int y, const char *fmt, ...) {
   va_list ap;

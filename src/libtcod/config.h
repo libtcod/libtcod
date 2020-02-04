@@ -86,7 +86,7 @@
 #define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
 #define TCOD_DEPRECATED_NOMESSAGE __declspec(deprecated)
 #elif defined(__GNUC__)
-#define TCOD_DEPRECATED(msg) __attribute__ ((deprecated))
+#define TCOD_DEPRECATED(msg) __attribute__ ((deprecated(msg)))
 #define TCOD_DEPRECATED_NOMESSAGE __attribute__ ((deprecated))
 #else
 #define TCOD_DEPRECATED(msg)

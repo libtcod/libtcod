@@ -443,7 +443,6 @@ void TCOD_console_resize_(
 #ifdef __cplusplus
 } // extern "C"
 namespace tcod {
-namespace console {
 struct ConsoleDeleter {
   void operator()(TCOD_Console* console) const {
     TCOD_console_delete(console);
@@ -458,7 +457,6 @@ inline auto new_console(int width, int height)
   if (!console) { throw std::runtime_error(TCOD_get_error()); }
   return console;
 }
-} // namespace console
 } // namespace tcod
 #endif // __cplusplus
 #endif // TCOD_CONSOLE_CONSOLE_H_

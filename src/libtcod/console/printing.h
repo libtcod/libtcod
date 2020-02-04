@@ -32,7 +32,14 @@
 #ifndef TCOD_CONSOLE_PRINTING_H_
 #define TCOD_CONSOLE_PRINTING_H_
 
-#include "../portability.h"
+#ifdef __cplusplus
+#include <array>
+#include <string>
+#endif
+
+#include <stdbool.h>
+
+#include "../config.h"
 #include "../console_types.h"
 
 #ifdef __cplusplus
@@ -132,5 +139,63 @@ TCOD_PUBLIC void TCOD_console_printn_frame(
     bool empty);
 #ifdef __cplusplus
 } // extern "C"
+namespace tcod {
+inline void print(
+    TCOD_Console& con,
+    int x,
+    int y,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment)
+{
+  TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment);
+}
+inline int print_rect(
+    TCOD_Console &con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment)
+{
+  return TCOD_console_printn_rect(&con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment);
+}
+inline int get_height_rect(
+    TCOD_Console &console,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& str)
+{
+  return TCOD_console_get_height_rect_n(&console, x, y, width, height, str.size(), str.data());
+}
+inline int get_height_rect(
+    int width,
+    const std::string& str)
+{
+  return TCOD_console_get_height_rect_wn(width, str.size(), str.data());
+}
+inline void print_frame(
+    struct TCOD_Console &con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::string& title,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    bool empty)
+{
+  TCOD_console_printn_frame(&con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty);
+}
+} // namespace tcod
 #endif // __cplusplus
 #endif /* TCOD_CONSOLE_PRINTING_H_ */

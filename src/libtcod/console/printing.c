@@ -1191,7 +1191,7 @@ void TCOD_console_printn_frame(
   if (empty) {
     TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width - 2, height - 2, 0x20, &con->fore, &con->back, flag);
   }
-  if (title) {
+  if (n > 0 && title) {
     char* tmp_string = malloc(n + 2);
     if (!tmp_string) { return; }
     memcpy(&tmp_string[1], title, n);

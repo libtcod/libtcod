@@ -267,17 +267,17 @@ TEST_CASE("Right alignment regression.")
 }
 TEST_CASE("Rectangle text alignment.")
 {
-  TCOD_Console* console = TCOD_console_new(12, 1);
+  auto console = tcod::new_console(12, 1);
+  //TCOD_Console* console = TCOD_console_new(12, 1);
   for (auto& tile : *console) { tile.ch = static_cast<int>('.'); }
-  tcod::console::print_rect(
-      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT
+  tcod::print_rect(
+      *console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT
   );
-  tcod::console::print_rect(
-      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER
+  tcod::print_rect(
+      *console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER
   );
-  tcod::console::print_rect(
-      console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT
+  tcod::print_rect(
+      *console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT
   );
   CHECK(to_string(*console) == "123.123..123");
-  TCOD_console_delete(console);
 }

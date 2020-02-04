@@ -25,6 +25,7 @@ if __name__ == "__main__":
         cppstds=["14"],
         visual_runtimes=["MD", "MDd"],
         test_folder="tests/",
+        build_policy="missing",
     )
     builder.add_common_builds(pure_c=False)
     builder.run()

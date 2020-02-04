@@ -26,6 +26,7 @@ if __name__ == "__main__":
         visual_runtimes=["MD", "MDd"],
         test_folder="tests/",
         build_policy="missing",
+        upload_dependencies="all",
     )
     builder.add_common_builds(pure_c=False)
     builder.run()

@@ -33,13 +33,13 @@
 
 #include "stdlib.h"
 
-struct TCOD_Renderer* TCOD_renderer_init_custom()
+struct TCOD_Context* TCOD_renderer_init_custom()
 {
-  struct TCOD_Renderer* renderer = calloc(sizeof(*renderer), 1);
+  struct TCOD_Context* renderer = calloc(sizeof(*renderer), 1);
   return renderer;
 }
 
-void TCOD_renderer_delete(struct TCOD_Renderer* renderer)
+void TCOD_renderer_delete(struct TCOD_Context* renderer)
 {
   if (!renderer) { return; }
   if (renderer->destructor_) { renderer->destructor_(renderer); }

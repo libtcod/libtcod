@@ -39,18 +39,20 @@
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Rect;
-
-struct TCOD_Renderer {
+/**
+ *  A rendering context for libtcod.
+ */
+struct TCOD_Context {
   int type;
   void* contextdata;
-  void (*destructor_)(struct TCOD_Renderer* self);
-  TCOD_Error (*present_)(struct TCOD_Renderer* self, const struct TCOD_Console* console);
-  void (*pixel_to_tile_)(struct TCOD_Renderer* self, double* x, double* y);
-  TCOD_Error (*save_screenshot_)(struct TCOD_Renderer* self, const char* filename);
-  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Renderer* self);
-  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Renderer* self);
+  void (*destructor_)(struct TCOD_Context* self);
+  TCOD_Error (*present_)(struct TCOD_Context* self, const struct TCOD_Console* console);
+  void (*pixel_to_tile_)(struct TCOD_Context* self, double* x, double* y);
+  TCOD_Error (*save_screenshot_)(struct TCOD_Context* self, const char* filename);
+  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* self);
+  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* self);
   TCOD_Error (*accumulate_)(
-      struct TCOD_Renderer* self,
+      struct TCOD_Context* self,
       const struct TCOD_Console* console,
       const struct SDL_Rect* viewport);
 };
@@ -58,8 +60,8 @@ struct TCOD_Renderer {
 extern "C" {
 #endif // __cplusplus
 TCOD_NODISCARD
-TCODLIB_API struct TCOD_Renderer* TCOD_renderer_init_custom();
-TCODLIB_API void TCOD_renderer_delete(struct TCOD_Renderer* renderer);
+TCOD_PUBLIC struct TCOD_Context* TCOD_renderer_init_custom();
+TCOD_PUBLIC void TCOD_renderer_delete(struct TCOD_Context* renderer);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

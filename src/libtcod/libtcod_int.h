@@ -124,7 +124,7 @@ typedef struct {
 	/* application is active (not iconified) */
 	bool app_is_active;
   struct TCOD_Tileset* tileset;
-  struct TCOD_Renderer* engine;
+  struct TCOD_Context* engine;
 } TCOD_internal_context_t;
 
 extern TCOD_internal_context_t TCOD_ctx;

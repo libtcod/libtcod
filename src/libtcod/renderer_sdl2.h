@@ -63,7 +63,7 @@ struct TCOD_RendererSDL2 {
 extern "C" {
 #endif // __cplusplus
 TCODLIB_API TCOD_NODISCARD
-struct TCOD_Renderer* TCOD_renderer_init_sdl2(
+struct TCOD_Context* TCOD_renderer_init_sdl2(
     int width,
     int height,
     const char* title,

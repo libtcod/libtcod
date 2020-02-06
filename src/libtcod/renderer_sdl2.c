@@ -39,6 +39,9 @@
 
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
+/**
+ *  Return a rectangle shaped for a tile at `x`,`y`.
+ */
 static SDL_Rect get_aligned_tile(
     const struct TCOD_Tileset* tileset, int x, int y)
 {
@@ -50,6 +53,9 @@ static SDL_Rect get_aligned_tile(
   };
   return tile_rect;
 }
+/**
+ *  Return the rectangle for the tile at `tile_id`.
+ */
 static SDL_Rect get_sdl2_atlas_tile(
     const struct TCOD_TilesetAtlasSDL2* atlas, int tile_id)
 {
@@ -59,6 +65,9 @@ static SDL_Rect get_sdl2_atlas_tile(
       tile_id / atlas->texture_columns
   );
 }
+/**
+ *  Upload a single tile to the atlas texture.
+ */
 static int update_sdl2_tile(struct TCOD_TilesetAtlasSDL2* atlas, int tile_id)
 {
   const SDL_Rect dest = get_sdl2_atlas_tile(atlas, tile_id);
@@ -68,6 +77,9 @@ static int update_sdl2_tile(struct TCOD_TilesetAtlasSDL2* atlas, int tile_id)
       atlas->tileset->pixels + (tile_id * atlas->tileset->tile_length),
       atlas->tileset->tile_width * sizeof(*atlas->tileset->pixels));
 }
+/**
+ *  Setup a atlas texture and upload the tileset graphics.
+ */
 static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas)
 {
   if (!atlas) { return -1; }
@@ -103,7 +115,10 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas)
   }
   return 0; // No action.
 }
-int sdl2_atlas_on_tile_changed(
+/**
+ *  Respond to changes in a tileset.
+ */
+static int sdl2_atlas_on_tile_changed(
     struct TCOD_TilesetObserver* observer, int tile_id)
 {
   struct TCOD_TilesetAtlasSDL2* atlas = observer->userdata;
@@ -139,7 +154,7 @@ void TCOD_sdl2_atlas_delete(
   free(atlas);
 }
 /**
- *  Update a cache console be resetting tiles which point to the updated tile.
+ *  Update a cache console by resetting tiles which point to the updated tile.
  */
 static int cache_console_update(
     struct TCOD_TilesetObserver* observer, int tile_id)
@@ -156,15 +171,24 @@ static int cache_console_update(
   }
   return 0;
 }
-void cache_console_on_delete(struct TCOD_Console* console)
+/**
+ *  Delete a consoles observer if it exists.
+ */
+static void cache_console_on_delete(struct TCOD_Console* console)
 {
   if (!console->userdata) { return; }
   TCOD_tileset_observer_delete(console->userdata);
 }
-void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
+/**
+ *  Clear an observers pointer to a console.
+ */
+static void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
 {
   ((struct TCOD_Console*)observer->userdata)->userdata = NULL;
 }
+/**
+ *  Setup the console at `cache` to match the current console size.
+ */
 TCOD_NODISCARD
 static TCOD_Error setup_cache_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
@@ -278,7 +302,12 @@ TCOD_Error TCOD_sdl2_render_console(
 }
 // ----------------------------------------------------------------------------
 // SDL2 Rendering
-int sdl2_handle_event(void* userdata, SDL_Event* event)
+/**
+ *  Handle events from SDL2.
+ *
+ *  Target textures need to be reset on an SDL_RENDER_TARGETS_RESET event.
+ */
+static int sdl2_handle_event(void* userdata, SDL_Event* event)
 {
   struct TCOD_RendererSDL2* context = userdata;
   switch(event->type) {
@@ -291,6 +320,9 @@ int sdl2_handle_event(void* userdata, SDL_Event* event)
   }
   return 0;
 }
+/**
+ *  Deconstruct an SDL2 rendering context.
+ */
 static void sdl2_destructor(struct TCOD_Renderer* self)
 {
   struct TCOD_RendererSDL2* context = self->userdata;
@@ -302,6 +334,9 @@ static void sdl2_destructor(struct TCOD_Renderer* self)
   if (context->window) { SDL_DestroyWindow(context->window); }
   free(context);
 }
+/**
+ *  Render to the SDL2 renderer without presenting the screen.
+ */
 static TCOD_Error sdl2_accumulate(struct TCOD_Renderer* self,
                            const struct TCOD_Console* console,
                           const struct SDL_Rect* viewport)
@@ -366,6 +401,9 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Renderer* self,
   }
   return TCOD_E_OK;
 }
+/**
+ *  Clear, render, and present a libtcod console to the screen.
+ */
 static TCOD_Error sdl2_present(struct TCOD_Renderer* self,
                         const struct TCOD_Console* console)
 {
@@ -378,12 +416,18 @@ static TCOD_Error sdl2_present(struct TCOD_Renderer* self,
   SDL_RenderPresent(context->renderer);
   return TCOD_E_OK;
 }
+/**
+ *  Convert pixel coordinates to tile coordinates.
+ */
 static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
 {
   struct TCOD_RendererSDL2* context = self->userdata;
   *x /= context->atlas->tileset->tile_width;
   *y /= context->atlas->tileset->tile_height;
 }
+/**
+ *  Save a PNG screen-shot to `file`.
+ */
 static TCOD_Error sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename)
 {
   struct TCOD_RendererSDL2* context = self->userdata;
@@ -413,10 +457,16 @@ static TCOD_Error sdl2_save_screenshot(struct TCOD_Renderer* self, const char* f
   SDL_SetRenderTarget(context->renderer, NULL);
   return TCOD_E_OK;
 }
+/**
+ *  Return a pointer to the SDL2 window.
+ */
 static struct SDL_Window* sdl2_get_window(struct TCOD_Renderer* self)
 {
   return ((struct TCOD_RendererSDL2*)self->userdata)->window;
 }
+/**
+ *  Return a pointer to the SDL2 renderer.
+ */
 static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Renderer* self)
 {
   return ((struct TCOD_RendererSDL2*)self->userdata)->renderer;

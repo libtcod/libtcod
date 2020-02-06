@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include "console.h"
+#include "console_printing.h"
 #include "libtcod_int.h"
 #include "utility.h"
 

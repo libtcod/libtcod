@@ -40,12 +40,12 @@
 
 #include <SDL.h>
 #include "console.h"
+#include "console_etc.h"
 #include "libtcod_int.h"
 #include "parser.h"
-#include "color/canvas.h"
-#include "engine/display.h"
+#include "console_init.h"
 #include "error.h"
-#include "engine/globals.h"
+#include "globals.h"
 
 /** Lazy library initialization function. */
 static const TCOD_SDL_driver_t* get_sdl(void) {
@@ -585,7 +585,7 @@ void TCOD_sys_console_to_bitmap(
         }
         *old = current;
       }
-      TCOD_ColorRGB b = tcod::ColorRGB(nbg);
+      TCOD_ColorRGB b = {nbg.r, nbg.g, nbg.b};
       dstRect.x = x * TCOD_ctx.font_width;
       dstRect.y = y * TCOD_ctx.font_height;
       dstRect.w = TCOD_ctx.font_width;
@@ -599,7 +599,7 @@ void TCOD_sys_console_to_bitmap(
         int ascii = TCOD_get_tileid_for_charcode_(c);
         TCOD_ColorRGB *curtext = &charcols[ascii];
         bool first = first_draw[ascii];
-        TCOD_ColorRGB f = tcod::ColorRGB(nfg);
+        TCOD_ColorRGB f = {nfg.r, nfg.g, nfg.b};
         f = blend_fade_color_(f, fading_color, fade);
         /* only draw character if foreground color != background color */
         if (f != b) {

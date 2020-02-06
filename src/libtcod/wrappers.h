@@ -34,6 +34,7 @@
 
 #include "portability.h"
 #include "console_types.h"
+#include "console_printing.h"
 #include "image.h"
 #include "mouse.h"
 #include "parser.h"

@@ -31,8 +31,8 @@
  */
 #ifndef TCOD_CONSOLE_DRAWING_H_
 #define TCOD_CONSOLE_DRAWING_H_
-#include "../console_types.h"
-#include "../portability.h"
+#include "config.h"
+#include "console_types.h"
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus

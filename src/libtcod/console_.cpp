@@ -37,7 +37,8 @@
 
 #include "libtcod_int.h"
 #include "image.hpp"
-#include "engine/display.h"
+#include "console_init.h"
+#include "console_printing.h"
 
 TCODConsole* TCODConsole::root = new TCODConsole();
 

@@ -29,18 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef TCOD_CONSOLE_REXPAINT_H_
-#define TCOD_CONSOLE_REXPAINT_H_
+#include "globals.h"
 
-#include "../portability.h"
-#include "../console_types.h"
-#include "../list.h"
-TCODLIB_CAPI TCOD_console_t TCOD_console_from_xp(const char *filename);
-TCODLIB_CAPI bool TCOD_console_load_xp(TCOD_Console* con,
-                                       const char *filename);
-TCODLIB_CAPI bool TCOD_console_save_xp(
-    const TCOD_Console* con, const char *filename, int compress_level);
-TCODLIB_CAPI TCOD_list_t TCOD_console_list_from_xp(const char *filename);
-TCODLIB_CAPI bool TCOD_console_list_save_xp(
-    TCOD_list_t console_list, const char *filename, int compress_level);
-#endif /* TCOD_CONSOLE_REXPAINT_H_ */
+#include "libtcod_int.h"
+
+TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
+{
+  return TCOD_ctx.tileset;
+}
+TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
+{
+  TCOD_tileset_delete(TCOD_ctx.tileset);
+  TCOD_ctx.tileset = tileset;
+  if (tileset) { ++tileset->ref_count; }
+}

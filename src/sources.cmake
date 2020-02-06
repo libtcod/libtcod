@@ -4,10 +4,16 @@ target_sources(TCOD PRIVATE
     libtcod/bresenham_c.c
     libtcod/bsp.cpp
     libtcod/bsp_c.c
-    libtcod/color.cpp
-    libtcod/color_c.c
-    libtcod/console.cpp
-    libtcod/console_c.c
+    libtcod/color.c
+    libtcod/color_.cpp
+    libtcod/console.c
+    libtcod/console_.cpp
+    libtcod/console_drawing.c
+    libtcod/console_etc.c
+    libtcod/console_init.c
+    libtcod/console_init_.cpp
+    libtcod/console_printing.c
+    libtcod/console_rexpaint.c
     libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/fov.cpp
@@ -17,6 +23,7 @@ target_sources(TCOD PRIVATE
     libtcod/fov_permissive2.c
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
+    libtcod/globals.c
     libtcod/heapq.c
     libtcod/heightmap.cpp
     libtcod/heightmap_c.c
@@ -47,20 +54,14 @@ target_sources(TCOD PRIVATE
     libtcod/sys_sdl_img_bmp.cpp
     libtcod/sys_sdl_img_png.cpp
     libtcod/tileset.c
+    libtcod/tileset_fallback.c
+    libtcod/tileset_truetype.c
     libtcod/tree_c.c
     libtcod/txtfield.cpp
     libtcod/txtfield_c.c
     libtcod/wrappers.cpp
     libtcod/zip.cpp
     libtcod/zip_c.c
-    libtcod/console/console.c
-    libtcod/console/drawing.c
-    libtcod/console/printing.c
-    libtcod/console/rexpaint.c
-    libtcod/engine/backend.cpp
-    libtcod/engine/display.c
-    libtcod/engine/display_cpp.cpp
-    libtcod/engine/globals.cpp
     libtcod/gui/button.cpp
     libtcod/gui/container.cpp
     libtcod/gui/flatlist.cpp
@@ -82,8 +83,6 @@ target_sources(TCOD PRIVATE
     libtcod/pathfinding/graph.cpp
     libtcod/pathfinding/hill-climb.cpp
     libtcod/sdl2/event.cpp
-    libtcod/tileset/fallback.c
-    libtcod/tileset/truetype.c
     vendor/glad.c
     vendor/lodepng.c
     vendor/stb.c
@@ -98,15 +97,26 @@ source_group(libtcod FILES
     libtcod/bsp.h
     libtcod/bsp.hpp
     libtcod/bsp_c.c
-    libtcod/color.cpp
+    libtcod/color.c
     libtcod/color.h
     libtcod/color.hpp
-    libtcod/color_c.c
+    libtcod/color_.cpp
     libtcod/config.h
-    libtcod/console.cpp
+    libtcod/console.c
     libtcod/console.h
     libtcod/console.hpp
-    libtcod/console_c.c
+    libtcod/console_.cpp
+    libtcod/console_drawing.c
+    libtcod/console_drawing.h
+    libtcod/console_etc.c
+    libtcod/console_etc.h
+    libtcod/console_init.c
+    libtcod/console_init.h
+    libtcod/console_init_.cpp
+    libtcod/console_printing.c
+    libtcod/console_printing.h
+    libtcod/console_rexpaint.c
+    libtcod/console_rexpaint.h
     libtcod/console_types.h
     libtcod/deprecated.cpp
     libtcod/error.c
@@ -121,6 +131,8 @@ source_group(libtcod FILES
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
     libtcod/fov_types.h
+    libtcod/globals.c
+    libtcod/globals.h
     libtcod/heapq.c
     libtcod/heapq.h
     libtcod/heightmap.cpp
@@ -185,6 +197,10 @@ source_group(libtcod FILES
     libtcod/sys_sdl_img_png.cpp
     libtcod/tileset.c
     libtcod/tileset.h
+    libtcod/tileset_fallback.c
+    libtcod/tileset_fallback.h
+    libtcod/tileset_truetype.c
+    libtcod/tileset_truetype.h
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c
@@ -200,29 +216,6 @@ source_group(libtcod FILES
     libtcod/zip.h
     libtcod/zip.hpp
     libtcod/zip_c.c
-)
-source_group(libtcod\\color FILES
-    libtcod/color/canvas.h
-    libtcod/color/color.h
-)
-source_group(libtcod\\console FILES
-    libtcod/console/console.c
-    libtcod/console/console.h
-    libtcod/console/drawing.c
-    libtcod/console/drawing.h
-    libtcod/console/printing.c
-    libtcod/console/printing.h
-    libtcod/console/rexpaint.c
-    libtcod/console/rexpaint.h
-)
-source_group(libtcod\\engine FILES
-    libtcod/engine/backend.cpp
-    libtcod/engine/backend.h
-    libtcod/engine/display.c
-    libtcod/engine/display.h
-    libtcod/engine/display_cpp.cpp
-    libtcod/engine/globals.cpp
-    libtcod/engine/globals.h
 )
 source_group(libtcod\\gui FILES
     libtcod/gui/button.cpp
@@ -274,12 +267,6 @@ source_group(libtcod\\sdl2 FILES
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
     libtcod/sdl2/gl2_ext_.h
-)
-source_group(libtcod\\tileset FILES
-    libtcod/tileset/fallback.c
-    libtcod/tileset/fallback.h
-    libtcod/tileset/truetype.c
-    libtcod/tileset/truetype.h
 )
 source_group(libtcod\\utility FILES
     libtcod/utility/matrix.h

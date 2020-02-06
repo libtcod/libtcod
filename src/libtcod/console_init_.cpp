@@ -29,23 +29,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_ENGINE_GLOBALS_H_
-#define LIBTCOD_ENGINE_GLOBALS_H_
+#include "console_init.h"
 
-#include "../portability.h"
-#include "../tileset.h"
-/**
- *  Return the default tileset, may be NULL.
- *
- *  This function is provisional, the API may change in the future.
- */
-TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
-/**
- *  Set the default tileset and update the default display to use it.
- *
- *  This function is provisional, the API may change in the future.
- */
-TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
-#endif // LIBTCOD_ENGINE_GLOBALS_H_
+#include "error.h"
+#include "console.hpp"
+namespace tcod {
+namespace console {
+void init_root(int w, int h, const std::string& title, bool fullscreen,
+               TCOD_renderer_t renderer, bool vsync)
+{
+  check_throw_error(
+    TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync)
+  );
+}
+void init_root(int w, int h, const std::string& title, bool fullscreen,
+               TCOD_renderer_t renderer)
+{
+  check_throw_error(
+    TCOD_console_init_root(w, h, title.c_str(), fullscreen, renderer)
+  );
+}
+} // namespace console
+} // namespace tcod
 
-
+void TCOD_internal_force_cpp_console_(TCOD_Console* console)
+{
+  TCODConsole::root->data = console;
+}

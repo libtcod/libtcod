@@ -42,9 +42,9 @@ extern "C" {
 }
 
 #include "console.h"
+#include "console_etc.h"
 #include "libtcod_int.h"
 #include "utility.h"
-#include "color/canvas.h"
 
 static SDL_Surface* scale_screen=NULL;
 static bool clear_screen=false;

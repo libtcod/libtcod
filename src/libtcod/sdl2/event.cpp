@@ -34,7 +34,6 @@
 #include <cstring>
 
 #include "../libtcod_int.h"
-#include "../engine/globals.h"
 
 #include <SDL.h>
 namespace tcod {

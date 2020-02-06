@@ -32,8 +32,8 @@
 #include "stdlib.h"
 
 #include "console.h"
-#include "../libtcod_int.h"
-#include "../utility.h"
+#include "libtcod_int.h"
+#include "utility.h"
 static TCOD_Error TCOD_console_data_alloc(struct TCOD_Console* console)
 {
   if (!console) { return TCOD_E_ERROR; }

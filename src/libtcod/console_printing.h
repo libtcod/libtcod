@@ -38,9 +38,12 @@
 #endif
 
 #include <stdbool.h>
+#ifndef NO_UNICODE
+#include <wchar.h>
+#endif
 
-#include "../config.h"
-#include "../console_types.h"
+#include "config.h"
+#include "console_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,6 +73,20 @@ TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_Console* con,int x, int y, i
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...);
 #endif
+
+typedef enum {
+  TCOD_COLCTRL_1 = 1,
+  TCOD_COLCTRL_2,
+  TCOD_COLCTRL_3,
+  TCOD_COLCTRL_4,
+  TCOD_COLCTRL_5,
+  TCOD_COLCTRL_NUMBER=5,
+  TCOD_COLCTRL_FORE_RGB,
+  TCOD_COLCTRL_BACK_RGB,
+  TCOD_COLCTRL_STOP
+} TCOD_colctrl_t;
+
+TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 
 /* UTF-8 functions */
 TCODLIB_API TCODLIB_FORMAT(4, 5) void TCOD_console_printf(

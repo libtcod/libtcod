@@ -29,74 +29,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_COLOR_COLOR_H_
-#define LIBTCOD_COLOR_COLOR_H_
-#include <stdint.h>
-/**
- *  A three channel color struct.
- */
-struct TCOD_ColorRGB {
+#ifndef LIBTCOD_TILESET_FALLBACK_H_
+#define LIBTCOD_TILESET_FALLBACK_H_
 #ifdef __cplusplus
-  bool operator==(const TCOD_ColorRGB& rhs) const noexcept
-  {
-    return r == rhs.r && g == rhs.g && b == rhs.b;
-  }
-  bool operator!=(const TCOD_ColorRGB& rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
+#include <array>
 #endif // __cplusplus
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-};
-typedef struct TCOD_ColorRGB TCOD_color_t;
+#include "config.h"
+#include "tileset.h"
+#include "error.h"
 /**
- *  A four channel color struct.
+ *  Try to return a fall-back Tileset, may return NULL.
+ *
+ *  Used when one is needed, but was not provided by the user.
  */
-struct TCOD_ColorRGBA {
-#ifdef __cplusplus
-  bool operator==(const TCOD_ColorRGBA& rhs) const noexcept
-  {
-    return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
-  }
-  bool operator!=(const TCOD_ColorRGBA& rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
-#endif // __cplusplus
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-  uint8_t a;
-};
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #ifdef __cplusplus
 namespace tcod {
-  struct ColorRGB: TCOD_ColorRGB {
-    ColorRGB() = default;
-    ColorRGB(uint8_t red, uint8_t green, uint8_t blue)
-    : TCOD_ColorRGB{red, green, blue}
-    {}
-    ColorRGB(const struct TCOD_ColorRGB& rhs)
-    : TCOD_ColorRGB{rhs}
-    {}
-    explicit ColorRGB(const struct TCOD_ColorRGBA& rhs)
-    : TCOD_ColorRGB{rhs.r, rhs.g, rhs.b}
-    {}
+namespace tileset {
+TCOD_NODISCARD
+inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
+-> TilesetPtr
+{
+  TilesetPtr tileset{
+      TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))
   };
-  struct ColorRGBA: TCOD_ColorRGBA {
-    ColorRGBA() = default;
-    ColorRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0xff)
-    : TCOD_ColorRGBA{red, green, blue, alpha}
-    {}
-    explicit ColorRGBA(const struct TCOD_ColorRGB& color,
-                            uint8_t alpha=0xff)
-    : TCOD_ColorRGBA{color.r, color.g, color.b, alpha}
-    {}
-    ColorRGBA(const struct TCOD_ColorRGBA& rhs)
-    : TCOD_ColorRGBA{rhs}
-    {}
-  };
+  if (!tileset) {
+    throw std::runtime_error(TCOD_get_error());
+  }
+  return tileset;
+}
+} // namespace tileset
 } // namespace tcod
-#endif /* __cplusplus */
-#endif /* LIBTCOD_COLOR_COLOR_H_ */
+#endif // __cplusplus
+#endif // LIBTCOD_TILESET_FALLBACK_H_

@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "console.h"
+#include "console_etc.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -43,9 +43,10 @@
 #include "libtcod_int.h"
 #include "utility.h"
 #include "version.h"
-#include "console/drawing.h"
+#include "console_drawing.h"
+#include "console_rexpaint.h"
 #include "error.h"
-#include "engine/globals.h"
+#include "globals.h"
 #include "tileset.h"
 
 #if defined( TCOD_VISUAL_STUDIO )
@@ -234,7 +235,20 @@ void TCOD_console_map_string_to_font(const char *s,
     ++s;
   }
 }
-
+void TCOD_console_map_string_to_font_utf(const wchar_t *s,
+                                         int fontCharX, int fontCharY)
+{
+  TCOD_IFNOT(s != NULL) return;
+  while (*s) {
+    TCOD_sys_map_ascii_to_font(*s, fontCharX, fontCharY);
+    fontCharX++;
+    if (fontCharX == TCOD_ctx.fontNbCharHoriz) {
+      fontCharX = 0;
+      fontCharY++;
+    }
+    s++;
+  }
+}
 bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
 	return TCOD_sys_is_key_pressed(key);
 }

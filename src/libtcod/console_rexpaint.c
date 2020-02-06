@@ -29,16 +29,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "rexpaint.h"
+#include "console_rexpaint.h"
 
 #include <limits.h>
 
 #include <zlib.h>
 
-#include "../console.h"
-#include "../libtcod_int.h" /* Needed only for TCOD_fatal */
-#include "../console_types.h"
-#include "../color.h"
+#include "console.h"
+#include "libtcod_int.h" /* Needed only for TCOD_fatal */
+#include "console_types.h"
+#include "color.h"
 
 /* Convert a little-endian number to native memory order. */
 static uint32_t decode_little_endian(uint32_t data)

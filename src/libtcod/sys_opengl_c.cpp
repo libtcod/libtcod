@@ -421,7 +421,7 @@ static void updateChar(ConsoleDataEnum dataType, int BufferPos,
 }
 
 void TCOD_opengl_putchar_ex(int x, int y, int c,
-                            TCOD_color_t fore, TCOD_color_t back)
+                            TCOD_ColorRGBA fore, TCOD_ColorRGBA back)
 {
   int loc = x + y * conwidth;
   if (TCOD_ctx.renderer == TCOD_RENDERER_GLSL) {
@@ -450,8 +450,8 @@ bool TCOD_opengl_render(
       TCOD_opengl_putchar_ex(
           x, y,
           TCOD_get_tileid_for_charcode_(console->tiles[i].ch),
-          tcod::ColorRGB(console->tiles[i].fg),
-          tcod::ColorRGB(console->tiles[i].bg)
+          console->tiles[i].fg,
+          console->tiles[i].bg
       );
 
       if (track_changes)
@@ -498,8 +498,8 @@ bool TCOD_opengl_render(
       for (int x = 0; x < conwidth; ++x) {
         int i = y * conwidth + x;
         if (console->tiles[i].ch == ' ') { continue; }
-        const TCOD_ColorRGB f = tcod::ColorRGB(console->tiles[i].fg);
-        const TCOD_ColorRGB b = tcod::ColorRGB(console->tiles[i].bg);
+        const TCOD_ColorRGBA f = console->tiles[i].fg;
+        const TCOD_ColorRGBA b = console->tiles[i].bg;
         // only draw character if foreground color != background color
         if (f == b) { continue; }
         int destx = x;/* *TCOD_font_width; */

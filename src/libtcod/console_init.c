@@ -29,17 +29,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "display.h"
+#include "console_init.h"
 
 #include "stdbool.h"
 #include "stdlib.h"
 #include "string.h"
 
 #include <SDL.h>
-#include "../console.h"
-#include "../libtcod_int.h"
-#include "../tileset/fallback.h"
-#include "../renderer_sdl2.h"
+#include "console.h"
+#include "libtcod_int.h"
+#include "tileset_fallback.h"
+#include "renderer_sdl2.h"
 static struct TCOD_Tileset* ensure_tileset()
 {
   if (!TCOD_ctx.tileset) {

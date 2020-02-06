@@ -40,7 +40,14 @@
 #include "bsp.h"
 #include "color.h"
 #include "console.h"
+#include "console_drawing.h"
+#include "console_etc.h"
+#include "console_init.h"
+#include "console_printing.h"
+#include "console_rexpaint.h"
+#include "error.h"
 #include "fov.h"
+#include "globals.h"
 #include "heightmap.h"
 #include "image.h"
 #include "lex.h"
@@ -53,22 +60,12 @@
 #include "pathfinder.h"
 #include "parser.h"
 #include "sys.h"
+#include "tileset.h"
 #include "tree.h"
 #include "txtfield.h"
 #include "zip.h"
 
-#include "console/drawing.h"
-#include "console/printing.h"
-#include "console/rexpaint.h"
-
-#include "engine/backend.h"
-#include "engine/display.h"
-#include "error.h"
-#include "engine/globals.h"
-
 #include "sdl2/event.h"
-
-#include "tileset.h"
 
 #ifdef __cplusplus
 #include "bresenham.hpp"

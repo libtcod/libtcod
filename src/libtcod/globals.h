@@ -29,18 +29,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "globals.h"
+#ifndef LIBTCOD_GLOBALS_H_
+#define LIBTCOD_GLOBALS_H_
 
-#include <cstdlib>
-#include "../libtcod_int.h"
+#include "config.h"
+#include "tileset.h"
+/**
+ *  Return the default tileset, may be NULL.
+ *
+ *  This function is provisional, the API may change in the future.
+ */
+TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
+/**
+ *  Set the default tileset and update the default display to use it.
+ *
+ *  This function is provisional, the API may change in the future.
+ */
+TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
+#endif // LIBTCOD_GLOBALS_H_
 
-TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
-{
-  return TCOD_ctx.tileset;
-}
-TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
-{
-  TCOD_tileset_delete(TCOD_ctx.tileset);
-  TCOD_ctx.tileset = tileset;
-  if (tileset) { ++tileset->ref_count; }
-}
+

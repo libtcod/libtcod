@@ -29,37 +29,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_TILESET_FALLBACK_H_
-#define LIBTCOD_TILESET_FALLBACK_H_
-#ifdef __cplusplus
-#include <array>
-#endif // __cplusplus
-#include "../config.h"
-#include "../tileset.h"
-#include "../error.h"
-/**
- *  Try to return a fall-back Tileset, may return NULL.
- *
- *  Used when one is needed, but was not provided by the user.
- */
-TCODLIB_CAPI TCOD_NODISCARD
-TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
-#ifdef __cplusplus
-namespace tcod {
-namespace tileset {
-TCOD_NODISCARD
-inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
--> TilesetPtr
-{
-  TilesetPtr tileset{
-      TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))
-  };
-  if (!tileset) {
-    throw std::runtime_error(TCOD_get_error());
-  }
-  return tileset;
-}
-} // namespace tileset
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_TILESET_FALLBACK_H_
+#ifndef TCOD_CONSOLE_REXPAINT_H_
+#define TCOD_CONSOLE_REXPAINT_H_
+
+#include "config.h"
+#include "console_types.h"
+#include "list.h"
+TCODLIB_CAPI TCOD_console_t TCOD_console_from_xp(const char *filename);
+TCODLIB_CAPI bool TCOD_console_load_xp(TCOD_Console* con,
+                                       const char *filename);
+TCODLIB_CAPI bool TCOD_console_save_xp(
+    const TCOD_Console* con, const char *filename, int compress_level);
+TCODLIB_CAPI TCOD_list_t TCOD_console_list_from_xp(const char *filename);
+TCODLIB_CAPI bool TCOD_console_list_save_xp(
+    TCOD_list_t console_list, const char *filename, int compress_level);
+#endif /* TCOD_CONSOLE_REXPAINT_H_ */

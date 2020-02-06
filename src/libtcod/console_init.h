@@ -29,13 +29,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_ENGINE_DISPLAY_H_
-#define LIBTCOD_ENGINE_DISPLAY_H_
+#ifndef LIBTCOD_CONSOLE_INIT_H_
+#define LIBTCOD_CONSOLE_INIT_H_
 
-#include "../config.h"
-#include "../error.h"
-#include "../tileset.h"
-#include "../console_types.h"
+#include "config.h"
+#include "error.h"
+#include "tileset.h"
+#include "console_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -197,4 +197,4 @@ TCOD_PUBLIC void init_root(
 } // namespace console
 } // namespace tcod
 #endif // __cplusplus
-#endif // LIBTCOD_ENGINE_DISPLAY_H_
+#endif // LIBTCOD_CONSOLE_INIT_H_

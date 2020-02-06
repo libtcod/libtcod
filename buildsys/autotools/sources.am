@@ -11,11 +11,17 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/config.h \
 	../../src/libtcod/console.h \
 	../../src/libtcod/console.hpp \
+	../../src/libtcod/console_drawing.h \
+	../../src/libtcod/console_etc.h \
+	../../src/libtcod/console_init.h \
+	../../src/libtcod/console_printing.h \
+	../../src/libtcod/console_rexpaint.h \
 	../../src/libtcod/console_types.h \
 	../../src/libtcod/error.h \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
 	../../src/libtcod/fov_types.h \
+	../../src/libtcod/globals.h \
 	../../src/libtcod/heapq.h \
 	../../src/libtcod/heightmap.h \
 	../../src/libtcod/heightmap.hpp \
@@ -50,6 +56,8 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
 	../../src/libtcod/tileset.h \
+	../../src/libtcod/tileset_fallback.h \
+	../../src/libtcod/tileset_truetype.h \
 	../../src/libtcod/tree.h \
 	../../src/libtcod/tree.hpp \
 	../../src/libtcod/txtfield.h \
@@ -59,24 +67,6 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/wrappers.h \
 	../../src/libtcod/zip.h \
 	../../src/libtcod/zip.hpp
-
-libtcod_color_includedir = $(includedir)/libtcod/color
-libtcod_color_include_HEADERS = \
-	../../src/libtcod/color/canvas.h \
-	../../src/libtcod/color/color.h
-
-libtcod_console_includedir = $(includedir)/libtcod/console
-libtcod_console_include_HEADERS = \
-	../../src/libtcod/console/console.h \
-	../../src/libtcod/console/drawing.h \
-	../../src/libtcod/console/printing.h \
-	../../src/libtcod/console/rexpaint.h
-
-libtcod_engine_includedir = $(includedir)/libtcod/engine
-libtcod_engine_include_HEADERS = \
-	../../src/libtcod/engine/backend.h \
-	../../src/libtcod/engine/display.h \
-	../../src/libtcod/engine/globals.h
 
 libtcod_gui_includedir = $(includedir)/libtcod/gui
 libtcod_gui_include_HEADERS = \
@@ -111,11 +101,6 @@ libtcod_sdl2_include_HEADERS = \
 	../../src/libtcod/sdl2/event.h \
 	../../src/libtcod/sdl2/gl2_ext_.h
 
-libtcod_tileset_includedir = $(includedir)/libtcod/tileset
-libtcod_tileset_include_HEADERS = \
-	../../src/libtcod/tileset/fallback.h \
-	../../src/libtcod/tileset/truetype.h
-
 libtcod_utility_includedir = $(includedir)/libtcod/utility
 libtcod_utility_include_HEADERS = \
 	../../src/libtcod/utility/matrix.h \
@@ -126,10 +111,16 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/bresenham_c.c \
 	../../src/libtcod/bsp.cpp \
 	../../src/libtcod/bsp_c.c \
-	../../src/libtcod/color.cpp \
-	../../src/libtcod/color_c.c \
-	../../src/libtcod/console.cpp \
-	../../src/libtcod/console_c.c \
+	../../src/libtcod/color.c \
+	../../src/libtcod/color_.cpp \
+	../../src/libtcod/console.c \
+	../../src/libtcod/console_.cpp \
+	../../src/libtcod/console_drawing.c \
+	../../src/libtcod/console_etc.c \
+	../../src/libtcod/console_init.c \
+	../../src/libtcod/console_init_.cpp \
+	../../src/libtcod/console_printing.c \
+	../../src/libtcod/console_rexpaint.c \
 	../../src/libtcod/deprecated.cpp \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
@@ -139,6 +130,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/fov_permissive2.c \
 	../../src/libtcod/fov_recursive_shadowcasting.c \
 	../../src/libtcod/fov_restrictive.c \
+	../../src/libtcod/globals.c \
 	../../src/libtcod/heapq.c \
 	../../src/libtcod/heightmap.cpp \
 	../../src/libtcod/heightmap_c.c \
@@ -169,20 +161,14 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/sys_sdl_img_bmp.cpp \
 	../../src/libtcod/sys_sdl_img_png.cpp \
 	../../src/libtcod/tileset.c \
+	../../src/libtcod/tileset_fallback.c \
+	../../src/libtcod/tileset_truetype.c \
 	../../src/libtcod/tree_c.c \
 	../../src/libtcod/txtfield.cpp \
 	../../src/libtcod/txtfield_c.c \
 	../../src/libtcod/wrappers.cpp \
 	../../src/libtcod/zip.cpp \
 	../../src/libtcod/zip_c.c \
-	../../src/libtcod/console/console.c \
-	../../src/libtcod/console/drawing.c \
-	../../src/libtcod/console/printing.c \
-	../../src/libtcod/console/rexpaint.c \
-	../../src/libtcod/engine/backend.cpp \
-	../../src/libtcod/engine/display.c \
-	../../src/libtcod/engine/display_cpp.cpp \
-	../../src/libtcod/engine/globals.cpp \
 	../../src/libtcod/gui/button.cpp \
 	../../src/libtcod/gui/container.cpp \
 	../../src/libtcod/gui/flatlist.cpp \
@@ -204,8 +190,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/pathfinding/graph.cpp \
 	../../src/libtcod/pathfinding/hill-climb.cpp \
 	../../src/libtcod/sdl2/event.cpp \
-	../../src/libtcod/tileset/fallback.c \
-	../../src/libtcod/tileset/truetype.c \
 	../../src/vendor/glad.c \
 	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c \

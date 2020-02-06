@@ -37,7 +37,7 @@
 
 #include "../vendor/lodepng.h"
 
-#include "color/color.h"
+#include "color.h"
 
 // Starting sizes of arrays:
 #define DEFAULT_TILES_LENGTH 256

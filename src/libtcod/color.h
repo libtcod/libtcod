@@ -32,9 +32,50 @@
 #ifndef _TCOD_COLOR_H
 #define _TCOD_COLOR_H
 
-#include "portability.h"
-#include "color/color.h"
+#include <stdbool.h>
+#include <stdint.h>
 
+#include "config.h"
+/**
+ *  A three channel color struct.
+ */
+struct TCOD_ColorRGB {
+#ifdef __cplusplus
+  bool operator==(const TCOD_ColorRGB& rhs) const noexcept
+  {
+    return r == rhs.r && g == rhs.g && b == rhs.b;
+  }
+  bool operator!=(const TCOD_ColorRGB& rhs) const noexcept
+  {
+    return !(*this == rhs);
+  }
+#endif // __cplusplus
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+};
+typedef struct TCOD_ColorRGB TCOD_color_t;
+typedef struct TCOD_ColorRGB TCOD_ColorRGB;
+/**
+ *  A four channel color struct.
+ */
+struct TCOD_ColorRGBA {
+#ifdef __cplusplus
+  bool operator==(const TCOD_ColorRGBA& rhs) const noexcept
+  {
+    return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
+  }
+  bool operator!=(const TCOD_ColorRGBA& rhs) const noexcept
+  {
+    return !(*this == rhs);
+  }
+#endif // __cplusplus
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+  uint8_t a;
+};
+typedef struct TCOD_ColorRGBA TCOD_ColorRGBA;
 #ifdef __cplusplus
 extern "C" {
 #endif

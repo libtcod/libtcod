@@ -35,10 +35,11 @@
 #include <string>
 
 #include "console.h"
-#include "console/drawing.h"
-#include "console/printing.h"
-#include "console/rexpaint.h"
-#include "engine/display.h"
+#include "console_etc.h"
+#include "console_init.h"
+#include "console_drawing.h"
+#include "console_printing.h"
+#include "console_rexpaint.h"
 
 #include "image.hpp"
 #include "color.hpp"

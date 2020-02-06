@@ -29,7 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "printing.h"
+#include "console_printing.h"
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -42,11 +42,11 @@
 #include <wctype.h>
 #endif
 
-#include "drawing.h"
-#include "../console.h"
-#include "../libtcod_int.h"
-#include "../utility.h"
-#include "../../vendor/utf8proc/utf8proc.h"
+#include "console_drawing.h"
+#include "console.h"
+#include "libtcod_int.h"
+#include "utility.h"
+#include "../vendor/utf8proc/utf8proc.h"
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER] = {
     {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255},
     {255, 255, 255}};
@@ -476,20 +476,6 @@ wchar_t *TCOD_console_strchr_utf(wchar_t *s, char c)
     s++;
   }
   return (*s ? s : NULL);
-}
-void TCOD_console_map_string_to_font_utf(const wchar_t *s,
-                                         int fontCharX, int fontCharY)
-{
-  TCOD_IFNOT(s != NULL) return;
-  while (*s) {
-    TCOD_sys_map_ascii_to_font(*s, fontCharX, fontCharY);
-    fontCharX++;
-    if (fontCharX == TCOD_ctx.fontNbCharHoriz) {
-      fontCharX = 0;
-      fontCharY++;
-    }
-    s++;
-  }
 }
 wchar_t *TCOD_console_vsprint_utf(const wchar_t *fmt, va_list ap)
 {

@@ -29,10 +29,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "drawing.h"
+#include "console_drawing.h"
 
-#include "../libtcod_int.h"
-#include "../console.h"
+#include "libtcod_int.h"
+#include "console.h"
 /**
  *  Clamp the given values to fit within a console.
  */

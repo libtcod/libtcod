@@ -33,10 +33,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-#include "truetype.h"
-#include "../error.h"
-#include "../engine/globals.h"
-#include "../../vendor/stb_truetype.h"
+#include "tileset_truetype.h"
+#include "error.h"
+#include "globals.h"
+#include "../vendor/stb_truetype.h"
 // You can look here for a reference on glyph metrics:
 // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
 /**

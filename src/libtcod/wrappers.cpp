@@ -35,6 +35,9 @@
 #include <string.h>
 
 #include "console.h"
+#include "console_drawing.h"
+#include "console_etc.h"
+#include "console_printing.h"
 #include "libtcod_int.h"
 #include "namegen.h"
 
@@ -173,7 +176,7 @@ void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
   con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].bg = tcod::ColorRGBA(r[i], g[i], b[i]);
+    con->tiles[i].bg = {(uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
   }
 }
 void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
@@ -181,7 +184,7 @@ void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
   con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].fg = tcod::ColorRGBA(r[i], g[i], b[i]);
+    con->tiles[i].fg = {(uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
   }
 }
 void TCOD_console_fill_char(TCOD_Console* con, int *arr)

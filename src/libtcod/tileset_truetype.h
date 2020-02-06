@@ -29,30 +29,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "display.h"
+#ifndef LIBTCOD_TILESET_TRUETYPE_H_
+#define LIBTCOD_TILESET_TRUETYPE_H_
+#include "config.h"
+#include "tileset.h"
+#include "error.h"
 
-#include "../error.h"
-#include "../console.hpp"
-namespace tcod {
-namespace console {
-void init_root(int w, int h, const std::string& title, bool fullscreen,
-               TCOD_renderer_t renderer, bool vsync)
-{
-  check_throw_error(
-    TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync)
-  );
-}
-void init_root(int w, int h, const std::string& title, bool fullscreen,
-               TCOD_renderer_t renderer)
-{
-  check_throw_error(
-    TCOD_console_init_root(w, h, title.c_str(), fullscreen, renderer)
-  );
-}
-} // namespace console
-} // namespace tcod
-
-void TCOD_internal_force_cpp_console_(TCOD_Console* console)
-{
-  TCODConsole::root->data = console;
-}
+/**
+ *  Return a tileset from a TrueType font file.
+ */
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Tileset* TCOD_load_truetype_font_(
+    const char* path,
+    int tile_width,
+    int tile_height);
+/**
+ *  Set the global tileset from a TrueType font file.
+ */
+TCODLIB_CAPI TCOD_NODISCARD
+TCOD_Error TCOD_tileset_load_truetype_(
+    const char* path,
+    int tile_width,
+    int tile_height);
+#endif // LIBTCOD_TILESET_TRUETYPE_H_

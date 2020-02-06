@@ -32,9 +32,9 @@
 #ifndef _TCOD_CONSOLE_TYPES_H
 #define _TCOD_CONSOLE_TYPES_H
 
-#include "portability.h"
+#include "config.h"
 #include "color.h"
-#include "console/console.h"
+#include "console.h"
 
 typedef enum {
 	TCODK_NONE,
@@ -215,18 +215,6 @@ typedef enum {
 	TCOD_CHAR_BULLET_SQUARE = 254,
 	/* diacritics */
 } TCOD_chars_t;
-
-typedef enum {
-	TCOD_COLCTRL_1 = 1,
-	TCOD_COLCTRL_2,
-	TCOD_COLCTRL_3,
-	TCOD_COLCTRL_4,
-	TCOD_COLCTRL_5,
-	TCOD_COLCTRL_NUMBER=5,
-	TCOD_COLCTRL_FORE_RGB,
-	TCOD_COLCTRL_BACK_RGB,
-	TCOD_COLCTRL_STOP
-} TCOD_colctrl_t;
 
 typedef enum {
 	TCOD_KEY_PRESSED=1,

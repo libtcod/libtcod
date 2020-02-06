@@ -36,7 +36,7 @@
 
 #include "error.h"
 #include "libtcod_int.h"
-#include "engine/display.h"
+#include "console_init.h"
 
 void TCODSystem::sleepMilli(uint32_t milliseconds) {
 	TCOD_sys_sleep_milli(milliseconds);

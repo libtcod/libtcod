@@ -180,7 +180,7 @@ static void cache_console_on_delete(struct TCOD_Console* console)
   TCOD_tileset_observer_delete(console->userdata);
 }
 /**
- *  Clear an observers pointer to a console.
+ *  Clear the observer of a console pointed to by this observer.
  */
 static void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
 {
@@ -325,7 +325,7 @@ static int sdl2_handle_event(void* userdata, SDL_Event* event)
  */
 static void sdl2_destructor(struct TCOD_Renderer* self)
 {
-  struct TCOD_RendererSDL2* context = self->userdata;
+  struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context) { return; }
   SDL_DelEventWatch(sdl2_handle_event, context);
   if (context->cache_console) { TCOD_console_delete(context->cache_console); }
@@ -341,7 +341,7 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Renderer* self,
                            const struct TCOD_Console* console,
                           const struct SDL_Rect* viewport)
 {
-  struct TCOD_RendererSDL2* context = self->userdata;
+  struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context || !console) { return -1; }
   SDL_RendererInfo renderer_info;
   SDL_GetRendererInfo(context->renderer, &renderer_info);
@@ -407,7 +407,7 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Renderer* self,
 static TCOD_Error sdl2_present(struct TCOD_Renderer* self,
                         const struct TCOD_Console* console)
 {
-  struct TCOD_RendererSDL2* context = self->userdata;
+  struct TCOD_RendererSDL2* context = self->contextdata;
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(context->renderer, 0, 0, 0, 255);
   SDL_RenderClear(context->renderer);
@@ -421,7 +421,7 @@ static TCOD_Error sdl2_present(struct TCOD_Renderer* self,
  */
 static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
 {
-  struct TCOD_RendererSDL2* context = self->userdata;
+  struct TCOD_RendererSDL2* context = self->contextdata;
   *x /= context->atlas->tileset->tile_width;
   *y /= context->atlas->tileset->tile_height;
 }
@@ -430,7 +430,7 @@ static void sdl2_pixel_to_tile(struct TCOD_Renderer* self, double* x, double* y)
  */
 static TCOD_Error sdl2_save_screenshot(struct TCOD_Renderer* self, const char* filename)
 {
-  struct TCOD_RendererSDL2* context = self->userdata;
+  struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context->cache_texture) {
     TCOD_set_errorv("Nothing to save before the first frame.");
     lodepng_encode32_file(filename, NULL, 0, 0);
@@ -462,14 +462,14 @@ static TCOD_Error sdl2_save_screenshot(struct TCOD_Renderer* self, const char* f
  */
 static struct SDL_Window* sdl2_get_window(struct TCOD_Renderer* self)
 {
-  return ((struct TCOD_RendererSDL2*)self->userdata)->window;
+  return ((struct TCOD_RendererSDL2*)self->contextdata)->window;
 }
 /**
  *  Return a pointer to the SDL2 renderer.
  */
 static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Renderer* self)
 {
-  return ((struct TCOD_RendererSDL2*)self->userdata)->renderer;
+  return ((struct TCOD_RendererSDL2*)self->contextdata)->renderer;
 }
 TCOD_NODISCARD static struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
     struct SDL_Window* sdl_window,
@@ -490,14 +490,14 @@ TCOD_NODISCARD static struct TCOD_Renderer* TCOD_renderer_init_sdl2_from(
   }
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   renderer->type = TCOD_RENDERER_SDL2;
-  renderer->userdata = sdl2_data;
-  renderer->destructor = sdl2_destructor;
-  renderer->present = sdl2_present;
-  renderer->accumulate = sdl2_accumulate;
-  renderer->get_sdl_window = sdl2_get_window;
-  renderer->get_sdl_renderer = sdl2_get_renderer;
-  renderer->pixel_to_tile = sdl2_pixel_to_tile;
-  renderer->save_screenshot = sdl2_save_screenshot;
+  renderer->contextdata = sdl2_data;
+  renderer->destructor_ = sdl2_destructor;
+  renderer->present_ = sdl2_present;
+  renderer->accumulate_ = sdl2_accumulate;
+  renderer->get_sdl_window_ = sdl2_get_window;
+  renderer->get_sdl_renderer_ = sdl2_get_renderer;
+  renderer->pixel_to_tile_ = sdl2_pixel_to_tile;
+  renderer->save_screenshot_ = sdl2_save_screenshot;
   return renderer;
 }
 struct TCOD_Renderer* TCOD_renderer_init_sdl2(

@@ -108,14 +108,14 @@ TCOD_Error TCOD_console_init_root_(
   strncpy(TCOD_ctx.window_title, title ? title : "",
           sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.fullscreen = fullscreen;
+  struct TCOD_Tileset* tileset = ensure_tileset();
+  if (!tileset) { return TCOD_E_ERROR; }
+  int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
+  int window_flags = (SDL_WINDOW_RESIZABLE |
+                      (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
   switch (renderer) {
-    case TCOD_RENDERER_OPENGL2:
-    case TCOD_RENDERER_SDL2: {
-      int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
-      int window_flags = (SDL_WINDOW_RESIZABLE |
-                          (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-      struct TCOD_Tileset* tileset = ensure_tileset();
-      if (!tileset) { return TCOD_E_ERROR; }
+    case TCOD_RENDERER_SDL:
+      renderer_flags |= SDL_RENDERER_SOFTWARE;
       TCOD_ctx.engine = TCOD_renderer_init_sdl2(
           w * tileset->tile_width, h * tileset->tile_height,
           title, window_flags, renderer_flags, tileset);
@@ -123,7 +123,15 @@ TCOD_Error TCOD_console_init_root_(
         return TCOD_E_ERROR;
       }
       break;
-    }
+    case TCOD_RENDERER_OPENGL2:
+    case TCOD_RENDERER_SDL2:
+      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, renderer_flags, tileset);
+      if (!TCOD_ctx.engine) {
+        return TCOD_E_ERROR;
+      }
+      break;
     default:
       return TCOD_console_init(TCOD_ctx.root, title, fullscreen);
   }

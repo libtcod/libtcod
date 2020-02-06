@@ -29,5 +29,5 @@ if ($env:SCONSOPTS) {
     & .ci\run-scons.bat
 }
 if ($env:CONAN_BUILD) {
-    pip install -U conan conan_package_tools
+    pip install -U conan_package_tools
 }

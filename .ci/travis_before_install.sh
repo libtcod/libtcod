@@ -27,5 +27,5 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
 fi
 
 if [[ "$BUILD_TOOL" == "conan" ]]; then
-    pip install -U conan conan_package_tools
+    pip install -U conan_package_tools
 fi

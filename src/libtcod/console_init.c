@@ -40,6 +40,7 @@
 #include "libtcod_int.h"
 #include "tileset_fallback.h"
 #include "renderer_sdl2.h"
+#include "renderer_gl1.h"
 static struct TCOD_Tileset* ensure_tileset()
 {
   if (!TCOD_ctx.tileset) {
@@ -123,11 +124,18 @@ TCOD_Error TCOD_console_init_root_(
         return TCOD_E_ERROR;
       }
       break;
-    case TCOD_RENDERER_OPENGL2:
     case TCOD_RENDERER_SDL2:
       TCOD_ctx.engine = TCOD_renderer_init_sdl2(
           w * tileset->tile_width, h * tileset->tile_height,
           title, window_flags, renderer_flags, tileset);
+      if (!TCOD_ctx.engine) {
+        return TCOD_E_ERROR;
+      }
+      break;
+    case TCOD_RENDERER_OPENGL2:
+      TCOD_ctx.engine = TCOD_renderer_init_gl1(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, vsync, tileset);
       if (!TCOD_ctx.engine) {
         return TCOD_E_ERROR;
       }

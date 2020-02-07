@@ -52,6 +52,8 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/pathfinder.h \
 	../../src/libtcod/portability.h \
 	../../src/libtcod/renderer.h \
+	../../src/libtcod/renderer_gl.h \
+	../../src/libtcod/renderer_gl1.h \
 	../../src/libtcod/renderer_sdl2.h \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
@@ -152,6 +154,8 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/pathfinder.c \
 	../../src/libtcod/path_c.c \
 	../../src/libtcod/renderer.c \
+	../../src/libtcod/renderer_gl.c \
+	../../src/libtcod/renderer_gl1.c \
 	../../src/libtcod/renderer_sdl2.c \
 	../../src/libtcod/sys.cpp \
 	../../src/libtcod/sys_c.cpp \

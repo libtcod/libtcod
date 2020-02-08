@@ -132,6 +132,7 @@ TCOD_Error TCOD_console_init_root_(
         return TCOD_E_ERROR;
       }
       break;
+    case TCOD_RENDERER_OPENGL:
     case TCOD_RENDERER_OPENGL2:
       TCOD_ctx.engine = TCOD_renderer_init_gl1(
           w * tileset->tile_width, h * tileset->tile_height,

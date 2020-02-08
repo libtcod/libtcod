@@ -259,7 +259,7 @@ typedef enum {
   /** An OpenGL implementation using a shader. */
   TCOD_RENDERER_GLSL,
   /**
-   *  An OpenGL implementation without a shader.
+   *  An OpenGL 1.1 implementation.
    *
    *  Performs worse than TCOD_RENDERER_GLSL without many benefits.
    */

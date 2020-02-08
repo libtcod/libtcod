@@ -31,6 +31,8 @@
  */
 #include "renderer_gl1.h"
 
+#include <stddef.h>
+
 #include "libtcod_int.h"
 #include "console.h"
 #include "renderer.h"
@@ -40,9 +42,17 @@
 #include "../vendor/glad.h"
 #include "../vendor/lodepng.h"
 /**
+ *  Attribute data for the foreground vertices.
+ */
+struct ForegroundVertexBuffer {
+  int16_t vertex[2]; // Simple vertex integers.
+  TCOD_ColorRGBA color; // Foreground color.
+  float tex_uv[2]; // Texture coordinates.
+};
+/**
  *  Get the texture coordinates for a codepoint.
  */
-void get_tex_coord(const struct TCOD_RendererGL1* renderer, int ch, float* out)
+static void get_tex_coord(const struct TCOD_RendererGL1* renderer, int ch, struct ForegroundVertexBuffer* out)
 {
   const struct TCOD_Tileset* tileset = renderer->atlas->tileset;
   float tex_tile_width = 1.0f / renderer->atlas->texture_size * tileset->tile_width;
@@ -53,43 +63,71 @@ void get_tex_coord(const struct TCOD_RendererGL1* renderer, int ch, float* out)
   }
   int x = tile_id % renderer->atlas->texture_columns;
   int y = tile_id / renderer->atlas->texture_columns;
-  out[0] = x * tex_tile_width;
-  out[1] = y * tex_tile_height;
-  out[2] = (x + 1) * tex_tile_width;
-  out[3] = y * tex_tile_height;
-  out[4] = x * tex_tile_width;
-  out[5] = (y + 1) * tex_tile_height;
-  out[6] = (x + 1) * tex_tile_width;
-  out[7] = (y + 1) * tex_tile_height;
+  out[0].tex_uv[0] = x * tex_tile_width;
+  out[0].tex_uv[1] = y * tex_tile_height;
+  out[1].tex_uv[0] = (x + 1) * tex_tile_width;
+  out[1].tex_uv[1] = y * tex_tile_height;
+  out[2].tex_uv[0] = x * tex_tile_width;
+  out[2].tex_uv[1] = (y + 1) * tex_tile_height;
+  out[3].tex_uv[0] = (x + 1) * tex_tile_width;
+  out[3].tex_uv[1] = (y + 1) * tex_tile_height;
 }
-void render_background(struct TCOD_Context* context, const TCOD_Console* console)
+/**
+ *  Render the background.
+ */
+static TCOD_Error render_background(struct TCOD_Context* context, const TCOD_Console* console)
 {
+  struct TCOD_RendererGL1* renderer = context->contextdata;
+  // Setup background texture.
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, renderer->background_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  if (renderer->background_width < console->w || renderer->background_height < console->h) {
+    int max_size;
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
+    if (renderer->background_width == 0) { renderer->background_width = 2; }
+    if (renderer->background_height == 0) { renderer->background_height = 2; }
+    while (renderer->background_width < console->w) {
+      renderer->background_width *= 2;
+    }
+    while (renderer->background_height < console->h) {
+      renderer->background_height *= 2;
+    }
+    if (renderer->background_width > max_size || renderer->background_height > max_size) {
+      renderer->background_width = 0;
+      renderer->background_height = 0;
+      TCOD_set_errorv("Tried to allocate a texture size above the maximum limit!");
+      return TCOD_E_ERROR;
+    }
+    glTexImage2D(
+          GL_TEXTURE_2D,
+          0,
+          GL_RGBA,
+          renderer->background_width,
+          renderer->background_height,
+          0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE,
+          NULL);
+  }
+
+  // Upload background color to a texture.
   TCOD_ColorRGBA* color = malloc(sizeof(*color) * console->length);
+  if (!color) {
+    TCOD_set_errorv("Out of memory.");
+    return TCOD_E_OUT_OF_MEMORY;
+  }
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       int i = y * console->w + x;
       color[i] = console->tiles[i].bg;
     }
   }
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, color);
+  free(color);
 
-  // Setup background texture.
-  uint32_t bg_tex = 0;
-  glGenTextures(1, &bg_tex);
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, bg_tex);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexImage2D(
-      GL_TEXTURE_2D,
-      0,
-      GL_RGBA,
-      console->w,
-      console->h,
-      0,
-      GL_RGBA,
-      GL_UNSIGNED_BYTE,
-      color);
-
+  // Setup OpenGL.
   glEnable(GL_TEXTURE_2D);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -97,50 +135,26 @@ void render_background(struct TCOD_Context* context, const TCOD_Console* console
 
   // Render background.
   int16_t bg_vertex[] = {0, 0, console->w, 0, 0, console->h, console->w, console->h};
-  float bg_tex_coord[] = {0, 0, 1, 0, 0, 1, 1, 1};
+  float bg_tex_w = (float)console->w / renderer->background_width;
+  float bg_tex_h = (float)console->h / renderer->background_height;
+  float bg_tex_coord[] = {0, 0, bg_tex_w, 0, 0, bg_tex_h, bg_tex_w, bg_tex_h};
   uint8_t bg_indices[] = {0, 1, 2, 3, 2, 1};
   glVertexPointer(2, GL_SHORT, 0, bg_vertex);
   glTexCoordPointer(2, GL_FLOAT, 0, bg_tex_coord);
   glDrawElements(GL_TRIANGLES, 6,  GL_UNSIGNED_BYTE, bg_indices);
 
-  glDeleteTextures(1, &bg_tex);
+  // Clean up.
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glDisable(GL_TEXTURE_2D);
-  free(color);
+  return TCOD_E_OK;
 }
-void render_foreground(struct TCOD_Context* context, const TCOD_Console* console)
+/**
+ *  Render the alpha-transparent foreground characters.
+ */
+static TCOD_Error render_foreground(struct TCOD_Context* context, const TCOD_Console* console)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
-  // Prepare buffers.
-  int16_t* vertex = malloc(sizeof(*vertex) * console->length * 2 * 4);
-  TCOD_ColorRGBA* color = malloc(sizeof(*color) * console->length * 4);
-  float* tex_coord = malloc(sizeof(*tex_coord) * console->length * 2 * 4);
-  uint16_t* indices = malloc(sizeof(*indices) * console->length * 6);
-  for (int y = 0; y < console->h; ++y) {
-    for (int x = 0; x < console->w; ++x) {
-      int i = y * console->w + x;
-      int16_t* v = vertex + i * 2 * 4;
-      v[0] = x;
-      v[1] = y;
-      v[2] = x + 1;
-      v[3] = y;
-      v[4] = x;
-      v[5] = y + 1;
-      v[6] = x + 1;
-      v[7] = y + 1;
-      TCOD_ColorRGBA* c = color + i * 4;
-      c[0] = c[1] = c[2] = c[3] = console->tiles[i].fg;
-      get_tex_coord(renderer, console->tiles[i].ch, tex_coord + i * 2 * 4);
-      uint16_t* ind = indices + i * 6;
-      ind[0] = i * 4;
-      ind[1] = i * 4 + 1;
-      ind[2] = i * 4 + 2;
-      ind[3] = i * 4 + 2;
-      ind[4] = i * 4 + 3;
-      ind[5] = i * 4 + 1;
-    }
-  }
   // Setup OpenGL.
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
@@ -152,25 +166,67 @@ void render_foreground(struct TCOD_Context* context, const TCOD_Console* console
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  // Render characters.
-  glVertexPointer(2, GL_SHORT, 0, vertex);
-  glColorPointer(4, GL_UNSIGNED_BYTE, 0, color);
-  glTexCoordPointer(2, GL_FLOAT, 0, tex_coord);
-  glDrawElements(GL_TRIANGLES, console->length * 6,  GL_UNSIGNED_SHORT, indices);
+  // Prepare buffers.
+  uint16_t* indices = malloc(sizeof(*indices) * console->w * 6);
+  struct ForegroundVertexBuffer* buffer = malloc(sizeof(*buffer) * console->w * 4);
+  if (!indices || !buffer) {
+    free(indices);
+    free(buffer);
+    TCOD_set_errorv("Out of memory.");
+    return TCOD_E_OUT_OF_MEMORY;
+  }
+  glVertexPointer(2, GL_SHORT, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, vertex));
+  glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, color));
+  glTexCoordPointer(2, GL_FLOAT, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, tex_uv));
+  for (int x = 0; x < console->w; ++x) {
+      indices[x * 6] = x * 4;
+      indices[x * 6 + 1] = x * 4 + 1;
+      indices[x * 6 + 2] = x * 4 + 2;
+      indices[x * 6 + 3] = x * 4 + 2;
+      indices[x * 6 + 4] = x * 4 + 3;
+      indices[x * 6 + 5] = x * 4 + 1;
+  }
 
-  // Cleanup.
+  // Render characters.
+  for (int y = 0; y < console->h; ++y) {
+    for (int x = 0; x < console->w; ++x) {
+      int console_i = y * console->w + x;
+      // Buffer vertices are in a "Z" shape.
+      buffer[x * 4].vertex[0] = x;
+      buffer[x * 4].vertex[1] = y;
+      buffer[x * 4 + 1].vertex[0] = x + 1;
+      buffer[x * 4 + 1].vertex[1] = y;
+      buffer[x * 4 + 2].vertex[0] = x;
+      buffer[x * 4 + 2].vertex[1] = y + 1;
+      buffer[x * 4 + 3].vertex[0] = x + 1;
+      buffer[x * 4 + 3].vertex[1] = y + 1;
+      buffer[x * 4].color = console->tiles[console_i].fg;
+      buffer[x * 4 + 1].color = buffer[x * 4].color;
+      buffer[x * 4 + 2].color = buffer[x * 4].color;
+      buffer[x * 4 + 3].color = buffer[x * 4].color;
+      get_tex_coord(renderer, console->tiles[console_i].ch, &buffer[x * 4]);
+    }
+    glDrawElements(GL_TRIANGLES, console->w * 6,  GL_UNSIGNED_SHORT, indices);
+  }
+
+  // Clean up.
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
-  free(vertex);
-  free(color);
-  free(tex_coord);
+  free(buffer);
   free(indices);
+  return TCOD_E_OK;
 }
-TCOD_Error gl1_accumulate(struct TCOD_Context* context, const TCOD_Console* console, const struct SDL_Rect* viewport)
+/**
+ *  Render the console onto the screen.
+ */
+static TCOD_Error gl1_accumulate(
+    struct TCOD_Context* context,
+    const TCOD_Console* console,
+    const struct SDL_Rect* viewport)
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -183,16 +239,20 @@ TCOD_Error gl1_accumulate(struct TCOD_Context* context, const TCOD_Console* cons
   };
   glLoadMatrixf(matrix);
 
-  render_background(context, console);
-  render_foreground(context, console);
+  TCOD_Error err;
+  if ((err = render_background(context, console)) < 0) { return err; }
+  if ((err = render_foreground(context, console)) < 0) { return err; }
   glFlush();
   if (glGetError()) {
+    TCOD_set_errorv("Unexpected OpenGL error.");
     return TCOD_E_ERROR;
   }
   return TCOD_E_OK;
 }
-
-TCOD_Error gl1_present(struct TCOD_Context* context, const TCOD_Console* console)
+/**
+ *  Clear, render, and swap the screen.
+ */
+static TCOD_Error gl1_present(struct TCOD_Context* context, const TCOD_Console* console)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   int window_width;
@@ -205,7 +265,10 @@ TCOD_Error gl1_present(struct TCOD_Context* context, const TCOD_Console* console
   SDL_GL_SwapWindow(renderer->window);
   return err;
 }
-TCOD_Error gl1_screenshot(struct TCOD_Context* context, const char* filename)
+/**
+ *  Save a screen capture.
+ */
+static TCOD_Error gl1_screenshot(struct TCOD_Context* context, const char* filename)
 {
   (void)context; // Unused parameter.
   int rect[4];
@@ -228,8 +291,10 @@ TCOD_Error gl1_screenshot(struct TCOD_Context* context, const char* filename)
   free(pixels);
   return TCOD_E_OK;
 }
-
-struct SDL_Window* gl1_get_sdl_window(struct TCOD_Context* context)
+/**
+ *  Return the SDL2 window.
+ */
+static struct SDL_Window* gl1_get_sdl_window(struct TCOD_Context* context)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   return renderer->window;
@@ -247,6 +312,7 @@ void gl1_destructor(struct TCOD_Context* context)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   if (!renderer) { return; }
+  if (renderer->background_texture) { glDeleteTextures(1, &renderer->background_texture); }
   if (renderer->glcontext) { SDL_GL_DeleteContext(renderer->glcontext); }
   if (renderer->window) { SDL_DestroyWindow(renderer->window); }
   free(renderer);

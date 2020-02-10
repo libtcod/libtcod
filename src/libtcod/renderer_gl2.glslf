@@ -1,4 +1,3 @@
-SHADER_STRINGIFY(
 uniform vec2 v_tiles_shape; // Tileset columns/rows.
 uniform vec2 v_tiles_size; // Tileset texture size.
 uniform sampler2D t_tileset;
@@ -43,4 +42,3 @@ void main(void)
 
   gl_FragColor = mix(bg, fg, tile_color.a);
 }
-)

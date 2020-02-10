@@ -1,4 +1,3 @@
-SHADER_STRINGIFY(
 uniform mat4 mvp_matrix; // Model-view-projection matrix
 
 attribute vec2 a_vertex; // Simple vertex quad.
@@ -15,4 +14,3 @@ void main(void)
   // Expand to console coordinates.
   v_coord *= v_console_shape * v_console_size;
 }
-)

@@ -41,6 +41,7 @@
 #include "tileset_fallback.h"
 #include "renderer_sdl2.h"
 #include "renderer_gl1.h"
+#include "renderer_gl2.h"
 static struct TCOD_Tileset* ensure_tileset()
 {
   if (!TCOD_ctx.tileset) {
@@ -133,8 +134,15 @@ TCOD_Error TCOD_console_init_root_(
       }
       break;
     case TCOD_RENDERER_OPENGL:
-    case TCOD_RENDERER_OPENGL2:
       TCOD_ctx.engine = TCOD_renderer_init_gl1(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, vsync, tileset);
+      if (!TCOD_ctx.engine) {
+        return TCOD_E_ERROR;
+      }
+      break;
+    case TCOD_RENDERER_OPENGL2:
+      TCOD_ctx.engine = TCOD_renderer_new_gl2(
           w * tileset->tile_width, h * tileset->tile_height,
           title, window_flags, vsync, tileset);
       if (!TCOD_ctx.engine) {

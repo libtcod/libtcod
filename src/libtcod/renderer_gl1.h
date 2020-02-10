@@ -41,9 +41,7 @@
 struct SDL_Window;
 
 struct TCOD_RendererGL1 {
-  struct SDL_Window* window;
-  void* glcontext;
-  struct TCOD_TilesetAtlasOpenGL* atlas;
+  struct TCOD_RendererGLCommon common;
   uint32_t background_texture;
   int background_width;
   int background_height;

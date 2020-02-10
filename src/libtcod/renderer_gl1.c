@@ -33,14 +33,13 @@
 
 #include <stddef.h>
 
-#include "libtcod_int.h"
+#include <SDL.h>
+#include "../vendor/glad.h"
+
 #include "console.h"
 #include "renderer.h"
 #include "renderer_gl.h"
-
-#include <SDL.h>
-#include "../vendor/glad.h"
-#include "../vendor/lodepng.h"
+#include "renderer_gl_internal.h"
 /**
  *  Attribute data for the foreground vertices.
  */
@@ -52,17 +51,17 @@ struct ForegroundVertexBuffer {
 /**
  *  Get the texture coordinates for a codepoint.
  */
-static void get_tex_coord(const struct TCOD_RendererGL1* renderer, int ch, struct ForegroundVertexBuffer* out)
+static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* atlas, int ch, struct ForegroundVertexBuffer* out)
 {
-  const struct TCOD_Tileset* tileset = renderer->atlas->tileset;
-  float tex_tile_width = 1.0f / renderer->atlas->texture_size * tileset->tile_width;
-  float tex_tile_height = 1.0f / renderer->atlas->texture_size * tileset->tile_height;
+  const struct TCOD_Tileset* tileset = atlas->tileset;
+  float tex_tile_width = 1.0f / atlas->texture_size * tileset->tile_width;
+  float tex_tile_height = 1.0f / atlas->texture_size * tileset->tile_height;
   int tile_id = 0;
   if (ch < tileset->character_map_length) {
     tile_id = tileset->character_map[ch];
   }
-  int x = tile_id % renderer->atlas->texture_columns;
-  int y = tile_id / renderer->atlas->texture_columns;
+  int x = tile_id % atlas->texture_columns;
+  int y = tile_id / atlas->texture_columns;
   out[0].tex_uv[0] = x * tex_tile_width;
   out[0].tex_uv[1] = y * tex_tile_height;
   out[1].tex_uv[0] = (x + 1) * tex_tile_width;
@@ -160,7 +159,7 @@ static TCOD_Error render_foreground(struct TCOD_Context* context, const TCOD_Con
   glEnable(GL_TEXTURE_2D);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, renderer->atlas->texture);
+  glBindTexture(GL_TEXTURE_2D, renderer->common.atlas->texture);
   glClientActiveTexture(GL_TEXTURE0);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
@@ -204,7 +203,8 @@ static TCOD_Error render_foreground(struct TCOD_Context* context, const TCOD_Con
       buffer[x * 4 + 1].color = buffer[x * 4].color;
       buffer[x * 4 + 2].color = buffer[x * 4].color;
       buffer[x * 4 + 3].color = buffer[x * 4].color;
-      get_tex_coord(renderer, console->tiles[console_i].ch, &buffer[x * 4]);
+      get_tex_coord(renderer->common.atlas,
+                    console->tiles[console_i].ch, &buffer[x * 4]);
     }
     glDrawElements(GL_TRIANGLES, console->w * 6,  GL_UNSIGNED_SHORT, indices);
   }
@@ -257,67 +257,22 @@ static TCOD_Error gl1_present(struct TCOD_Context* context, const TCOD_Console* 
   struct TCOD_RendererGL1* renderer = context->contextdata;
   int window_width;
   int window_height;
-  SDL_GL_GetDrawableSize(renderer->window, &window_width, &window_height);
+  SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl1_accumulate(context, console, NULL);
-  SDL_GL_SwapWindow(renderer->window);
+  SDL_GL_SwapWindow(renderer->common.window);
   return err;
-}
-/**
- *  Save a screen capture.
- */
-static TCOD_Error gl1_screenshot(struct TCOD_Context* context, const char* filename)
-{
-  (void)context; // Unused parameter.
-  int rect[4];
-  glGetIntegerv(GL_VIEWPORT, rect);
-  TCOD_ColorRGBA* pixels = malloc(sizeof(*pixels) * rect[2] * rect[3]);
-  if (!pixels) {
-    TCOD_set_errorv("Could not allocae memory for a screenshot.");
-    return TCOD_E_OUT_OF_MEMORY;
-  }
-  glReadPixels(0, 0, rect[2], rect[3], GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-  // Flip image on Y axis.
-  for (int y = 0; y < rect[3] / 2; ++y) {
-    for (int x = 0; x < rect[2]; ++x) {
-      TCOD_ColorRGBA tmp = pixels[y * rect[2] + x];
-      pixels[y * rect[2] + x] = pixels[(rect[3] - 1 - y) * rect[2] + x];
-      pixels[(rect[3] - 1 - y) * rect[2] + x] = tmp;
-    }
-  }
-  lodepng_encode32_file(filename, (const unsigned char*)pixels, (unsigned)rect[2], (unsigned)rect[3]);
-  free(pixels);
-  return TCOD_E_OK;
-}
-/**
- *  Return the SDL2 window.
- */
-static struct SDL_Window* gl1_get_sdl_window(struct TCOD_Context* context)
-{
-  struct TCOD_RendererGL1* renderer = context->contextdata;
-  return renderer->window;
-}
-/**
- *  Convert pixel coordinates to tile coordinates.
- */
-static void gl1_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
-{
-  struct TCOD_RendererGL1* renderer = self->contextdata;
-  *x /= renderer->atlas->tileset->tile_width;
-  *y /= renderer->atlas->tileset->tile_height;
 }
 void gl1_destructor(struct TCOD_Context* context)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   if (!renderer) { return; }
   if (renderer->background_texture) { glDeleteTextures(1, &renderer->background_texture); }
-  if (renderer->glcontext) { SDL_GL_DeleteContext(renderer->glcontext); }
-  if (renderer->window) { SDL_DestroyWindow(renderer->window); }
+  TCOD_renderer_gl_common_uninit(&renderer->common);
   free(renderer);
 }
-
 TCODLIB_API TCOD_NODISCARD
 struct TCOD_Context* TCOD_renderer_init_gl1(
     int pixel_width,
@@ -327,38 +282,31 @@ struct TCOD_Context* TCOD_renderer_init_gl1(
     bool vsync,
     struct TCOD_Tileset* tileset)
 {
-  if (!tileset) { return NULL; }
-  TCOD_sys_startup();
   struct TCOD_Context* context = TCOD_renderer_init_custom();
   if (!context) { return NULL; }
-  context->destructor_ = gl1_destructor;
   struct TCOD_RendererGL1* renderer = calloc(sizeof(*renderer), 1);
   if (!renderer) { TCOD_renderer_delete(context); return NULL; }
+  context->destructor_ = gl1_destructor;
   context->contextdata = renderer;
-  context->get_sdl_window_ = gl1_get_sdl_window;
-  context->accumulate_ = gl1_accumulate;
-  context->present_ = gl1_present;
-  context->pixel_to_tile_ = gl1_pixel_to_tile;
-  context->save_screenshot_ = gl1_screenshot;
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  renderer->window = SDL_CreateWindow(
-      title,
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
+  TCOD_Error err = TCOD_renderer_gl_common_init(
       pixel_width,
       pixel_height,
-      window_flags | SDL_WINDOW_OPENGL);
-  if (!renderer->window) { TCOD_renderer_delete(context); return NULL; }
-  renderer->glcontext = SDL_GL_CreateContext(renderer->window);
-  if (!renderer->glcontext) { TCOD_renderer_delete(context); return NULL; }
-  if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-    TCOD_set_errorv("Failed to invoke the GLAD loader.");
+      title,
+      window_flags,
+      vsync,
+      tileset,
+      1,
+      1,
+      SDL_GL_CONTEXT_PROFILE_CORE,
+      &renderer->common);
+  if (err < 0) {
+    TCOD_renderer_delete(context);
     return NULL;
   }
-  SDL_GL_SetSwapInterval(vsync);
-  renderer->atlas = TCOD_gl_atlas_new(tileset);
-  if (!renderer->atlas) { TCOD_renderer_delete(context); return NULL; }
+  context->get_sdl_window_ = gl_get_sdl_window;
+  context->pixel_to_tile_ = gl_pixel_to_tile;
+  context->save_screenshot_ = gl_screenshot;
+  context->accumulate_ = gl1_accumulate;
+  context->present_ = gl1_present;
   return context;
 }

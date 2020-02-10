@@ -29,35 +29,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_RENDERER_GL_H_
-#define LIBTCOD_RENDERER_GL_H_
+#ifndef LIBTCOD_RENDERER_GL2_H_
+#define LIBTCOD_RENDERER_GL2_H_
 #include "config.h"
 
-#include <stdint.h>
+#include <stdbool.h>
 
 #include "tileset.h"
+#include "renderer_gl.h"
 
-struct TCOD_TilesetAtlasOpenGL {
-  struct TCOD_Tileset* tileset;
-  struct TCOD_TilesetObserver* observer;
-  uint32_t texture;
-  int texture_size;
-  int texture_columns;
-  int texture_rows;
+struct SDL_Window;
+
+struct TCOD_RendererGL2 {
+  struct TCOD_RendererGLCommon common;
+  uint32_t program;
+  uint32_t console_textures[3]; // ch, fg, bg
+  int console_width;
+  int console_height;
+  uint32_t vertex_buffer;
 };
 
-struct TCOD_RendererGLCommon {
-  struct SDL_Window* window;
-  void* glcontext;
-  struct TCOD_TilesetAtlasOpenGL* atlas;
-};
-
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-struct TCOD_TilesetAtlasOpenGL* TCOD_gl_atlas_new(struct TCOD_Tileset* tileset);
-void TCOD_gl_atlas_delete(struct TCOD_TilesetAtlasOpenGL* atlas);
-#ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_RENDERER_GL_H_
+TCOD_PUBLIC TCOD_NODISCARD
+struct TCOD_Context* TCOD_renderer_new_gl2(
+    int width,
+    int height,
+    const char* title,
+    int window_flags,
+    bool vsync,
+    struct TCOD_Tileset* tileset);
+#endif // LIBTCOD_RENDERER_GL2_H_

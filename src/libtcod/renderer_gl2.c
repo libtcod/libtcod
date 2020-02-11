@@ -37,7 +37,7 @@
 #include "../vendor/glad.h"
 
 #include "console.h"
-#include "renderer.h"
+#include "context.h"
 #include "renderer_gl.h"
 #include "renderer_gl_internal.h"
 static const char* VERTEX_SOURCE = "\
@@ -378,10 +378,10 @@ struct TCOD_Context* TCOD_renderer_new_gl2(
     bool vsync,
     struct TCOD_Tileset* tileset)
 {
-  struct TCOD_Context* context = TCOD_renderer_init_custom();
+  struct TCOD_Context* context = TCOD_context_new_();
   if (!context) { return NULL; }
   struct TCOD_RendererGL2* renderer = calloc(sizeof(*renderer), 1);
-  if (!renderer) { TCOD_renderer_delete(context); return NULL; }
+  if (!renderer) { TCOD_context_delete(context); return NULL; }
   context->destructor_ = gl2_destructor;
   context->contextdata = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
@@ -396,11 +396,11 @@ struct TCOD_Context* TCOD_renderer_new_gl2(
       SDL_GL_CONTEXT_PROFILE_CORE,
       &renderer->common);
   if (err < 0) {
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
   if (gl2_build_shader(&renderer->program) < 0) {
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
 

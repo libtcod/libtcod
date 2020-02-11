@@ -49,7 +49,7 @@
 #include "mersenne_types.h"
 #include "sys.h"
 #include "tileset.h"
-#include "renderer.h"
+#include "context.h"
 
 /* tcodlib internal stuff */
 #ifdef __cplusplus

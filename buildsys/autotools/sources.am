@@ -17,6 +17,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/console_printing.h \
 	../../src/libtcod/console_rexpaint.h \
 	../../src/libtcod/console_types.h \
+	../../src/libtcod/context.h \
 	../../src/libtcod/error.h \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
@@ -51,7 +52,6 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/path.hpp \
 	../../src/libtcod/pathfinder.h \
 	../../src/libtcod/portability.h \
-	../../src/libtcod/renderer.h \
 	../../src/libtcod/renderer_gl.h \
 	../../src/libtcod/renderer_gl1.h \
 	../../src/libtcod/renderer_gl2.h \
@@ -125,6 +125,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console_init_.cpp \
 	../../src/libtcod/console_printing.c \
 	../../src/libtcod/console_rexpaint.c \
+	../../src/libtcod/context.c \
 	../../src/libtcod/deprecated.cpp \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
@@ -155,7 +156,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/path.cpp \
 	../../src/libtcod/pathfinder.c \
 	../../src/libtcod/path_c.c \
-	../../src/libtcod/renderer.c \
 	../../src/libtcod/renderer_gl.c \
 	../../src/libtcod/renderer_gl1.c \
 	../../src/libtcod/renderer_gl2.c \

@@ -36,7 +36,7 @@
 
 #include "config.h"
 #include "console.h"
-#include "renderer.h"
+#include "context.h"
 #include "tileset.h"
 #include "error.h"
 

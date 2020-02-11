@@ -14,6 +14,7 @@ target_sources(TCOD PRIVATE
     libtcod/console_init_.cpp
     libtcod/console_printing.c
     libtcod/console_rexpaint.c
+    libtcod/context.c
     libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/fov.cpp
@@ -44,7 +45,6 @@ target_sources(TCOD PRIVATE
     libtcod/path.cpp
     libtcod/pathfinder.c
     libtcod/path_c.c
-    libtcod/renderer.c
     libtcod/renderer_gl.c
     libtcod/renderer_gl1.c
     libtcod/renderer_gl2.c
@@ -121,6 +121,8 @@ source_group(libtcod FILES
     libtcod/console_rexpaint.c
     libtcod/console_rexpaint.h
     libtcod/console_types.h
+    libtcod/context.c
+    libtcod/context.h
     libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/error.h
@@ -185,8 +187,6 @@ source_group(libtcod FILES
     libtcod/pathfinder.h
     libtcod/path_c.c
     libtcod/portability.h
-    libtcod/renderer.c
-    libtcod/renderer.h
     libtcod/renderer_gl.c
     libtcod/renderer_gl.h
     libtcod/renderer_gl1.c

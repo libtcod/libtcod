@@ -831,7 +831,7 @@ void TCOD_sys_shutdown(void)
     TCOD_console_delete(TCOD_ctx.root);
   }
   if (TCOD_ctx.engine){
-    TCOD_renderer_delete(TCOD_ctx.engine);
+    TCOD_context_delete(TCOD_ctx.engine);
     TCOD_ctx.engine = NULL;
     return;
   }

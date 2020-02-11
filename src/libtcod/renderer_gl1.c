@@ -37,7 +37,7 @@
 #include "../vendor/glad.h"
 
 #include "console.h"
-#include "renderer.h"
+#include "context.h"
 #include "renderer_gl.h"
 #include "renderer_gl_internal.h"
 /**
@@ -282,10 +282,10 @@ struct TCOD_Context* TCOD_renderer_init_gl1(
     bool vsync,
     struct TCOD_Tileset* tileset)
 {
-  struct TCOD_Context* context = TCOD_renderer_init_custom();
+  struct TCOD_Context* context = TCOD_context_new_();
   if (!context) { return NULL; }
   struct TCOD_RendererGL1* renderer = calloc(sizeof(*renderer), 1);
-  if (!renderer) { TCOD_renderer_delete(context); return NULL; }
+  if (!renderer) { TCOD_context_delete(context); return NULL; }
   context->destructor_ = gl1_destructor;
   context->contextdata = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
@@ -300,7 +300,7 @@ struct TCOD_Context* TCOD_renderer_init_gl1(
       SDL_GL_CONTEXT_PROFILE_CORE,
       &renderer->common);
   if (err < 0) {
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
   context->get_sdl_window_ = gl_get_sdl_window;

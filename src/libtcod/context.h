@@ -29,19 +29,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "renderer.h"
+#ifndef LIBTCOD_CONTEXT_H_
+#define LIBTCOD_CONTEXT_H_
 
-#include "stdlib.h"
+#include "config.h"
+#include "console.h"
+#include "error.h"
 
-struct TCOD_Context* TCOD_renderer_init_custom()
-{
-  struct TCOD_Context* renderer = calloc(sizeof(*renderer), 1);
-  return renderer;
-}
-
-void TCOD_renderer_delete(struct TCOD_Context* renderer)
-{
-  if (!renderer) { return; }
-  if (renderer->destructor_) { renderer->destructor_(renderer); }
-  free(renderer);
-}
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Rect;
+/**
+ *  A rendering context for libtcod.
+ */
+struct TCOD_Context {
+  int type;
+  void* contextdata;
+  void (*destructor_)(struct TCOD_Context* self);
+  TCOD_Error (*present_)(struct TCOD_Context* self, const struct TCOD_Console* console);
+  void (*pixel_to_tile_)(struct TCOD_Context* self, double* x, double* y);
+  TCOD_Error (*save_screenshot_)(struct TCOD_Context* self, const char* filename);
+  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* self);
+  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* self);
+  TCOD_Error (*accumulate_)(
+      struct TCOD_Context* self,
+      const struct TCOD_Console* console,
+      const struct SDL_Rect* viewport);
+};
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+/**
+ *  Delete a rendering context.
+ *  \rst
+ *  .. versionadded:: 1.16
+ *  \endrst
+ */
+TCOD_PUBLIC void TCOD_context_delete(struct TCOD_Context* renderer);
+/**
+ *  Create an uninitialized rendering context.
+ *
+ *  Used internally.
+ */
+TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_();
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
+#endif // LIBTCOD_CONTEXT_H_

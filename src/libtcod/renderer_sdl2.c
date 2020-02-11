@@ -484,16 +484,16 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     TCOD_set_errorv("Tileset must not be NULL.");
     return NULL;
   }
-  struct TCOD_Context* context = TCOD_renderer_init_custom();
+  struct TCOD_Context* context = TCOD_context_new_();
   if (!context) { return NULL; }
   struct TCOD_RendererSDL2* sdl2_data = calloc(sizeof(*sdl2_data), 1);
   if (!sdl2_data) {
     TCOD_set_errorv("Out of memory.");
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
     return NULL;
   }
@@ -521,19 +521,19 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
       window_flags);
   if (!sdl2_data->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
   renderer_flags |= SDL_RENDERER_TARGETTEXTURE;
   sdl2_data->renderer = SDL_CreateRenderer(sdl2_data->window, -1, renderer_flags);
   if (!sdl2_data->renderer) {
     TCOD_set_errorvf("Could not create SDL renderer:\n%s", SDL_GetError());
-    TCOD_renderer_delete(context);
+    TCOD_context_delete(context);
     return NULL;
   }
   sdl2_data->atlas = TCOD_sdl2_atlas_new(sdl2_data->renderer, tileset);
   if (!sdl2_data->atlas) {
-    TCOD_renderer_delete(renderer);
+    TCOD_context_delete(context);
     return NULL;
   }
   return context;

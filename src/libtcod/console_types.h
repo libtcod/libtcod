@@ -256,7 +256,7 @@ typedef enum {
  *  The available renderers.
  */
 typedef enum {
-  /** An OpenGL implementation using a shader. */
+  /** Alias for TCOD_RENDERER_OPENGL2. */
   TCOD_RENDERER_GLSL,
   /**
    *  An OpenGL 1.1 implementation.

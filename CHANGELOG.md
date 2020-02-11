@@ -14,6 +14,8 @@ since `1.7.0`.
 ### Changed
 - Console blit operations now perform per-cell alpha transparency.
 - New renderers can load fonts from libtcod.cfg.
+- When a renderer fails to load it will now fallback to a different one.
+  The order is: OPENGL2 -> OPENGL -> SDL2.
 
 ### Deprecated
 - The use of `libtcod.cfg` is now deprecated.

@@ -125,26 +125,28 @@ TCOD_Error TCOD_console_init_root_(
         return TCOD_E_ERROR;
       }
       break;
-    case TCOD_RENDERER_SDL2:
-      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, renderer_flags, tileset);
-      if (!TCOD_ctx.engine) {
-        return TCOD_E_ERROR;
-      }
-      break;
-    case TCOD_RENDERER_OPENGL:
-      TCOD_ctx.engine = TCOD_renderer_init_gl1(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, vsync, tileset);
-      if (!TCOD_ctx.engine) {
-        return TCOD_E_ERROR;
-      }
-      break;
+    case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
+      TCOD_ctx.renderer = TCOD_RENDERER_OPENGL2;
       TCOD_ctx.engine = TCOD_renderer_new_gl2(
           w * tileset->tile_width, h * tileset->tile_height,
           title, window_flags, vsync, tileset);
+      if (TCOD_ctx.engine) { break; }
+      err = TCOD_E_WARN;
+      //@fallthrough@
+    case TCOD_RENDERER_OPENGL:
+      TCOD_ctx.renderer = TCOD_RENDERER_OPENGL;
+      TCOD_ctx.engine = TCOD_renderer_init_gl1(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, vsync, tileset);
+      if (TCOD_ctx.engine) { break; }
+      err = TCOD_E_WARN;
+      //@fallthrough@
+    case TCOD_RENDERER_SDL2:
+      TCOD_ctx.renderer = TCOD_RENDERER_SDL2;
+      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
+          w * tileset->tile_width, h * tileset->tile_height,
+          title, window_flags, renderer_flags, tileset);
       if (!TCOD_ctx.engine) {
         return TCOD_E_ERROR;
       }

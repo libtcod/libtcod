@@ -58,6 +58,7 @@ struct TCOD_RendererSDL2 {
   struct TCOD_TilesetAtlasSDL2* atlas;
   struct TCOD_Console* cache_console;
   struct SDL_Texture* cache_texture;
+  uint32_t sdl_subsystems;
 };
 #ifdef __cplusplus
 extern "C" {

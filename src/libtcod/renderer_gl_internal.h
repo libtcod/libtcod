@@ -59,6 +59,8 @@ static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
     SDL_DestroyWindow(common->window);
     common->window = NULL;
   }
+  SDL_QuitSubSystem(common->sdl_subsystems);
+  common->sdl_subsystems = 0;
 }
 TCOD_NODISCARD
 static TCOD_Error TCOD_renderer_gl_common_init(
@@ -74,7 +76,11 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     struct TCOD_RendererGLCommon* out)
 {
   if (!tileset) { return TCOD_E_ERROR; }
-  TCOD_sys_startup();
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
+    return TCOD_E_ERROR;
+  }
+  out->sdl_subsystems = SDL_INIT_VIDEO;
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
@@ -86,11 +92,13 @@ static TCOD_Error TCOD_renderer_gl_common_init(
       pixel_height,
       window_flags | SDL_WINDOW_OPENGL);
   if (!out->window) {
+    TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
     TCOD_renderer_gl_common_uninit(out);
     return TCOD_E_ERROR;
   }
   out->glcontext = SDL_GL_CreateContext(out->window);
   if (!out->glcontext) {
+    TCOD_set_errorvf("Could not create GL context:\n%s", SDL_GetError());
     TCOD_renderer_gl_common_uninit(out);
     return TCOD_E_ERROR;
   }

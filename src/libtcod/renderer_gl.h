@@ -50,6 +50,7 @@ struct TCOD_RendererGLCommon {
   struct SDL_Window* window;
   void* glcontext;
   struct TCOD_TilesetAtlasOpenGL* atlas;
+  uint32_t sdl_subsystems;
 };
 
 #ifdef __cplusplus

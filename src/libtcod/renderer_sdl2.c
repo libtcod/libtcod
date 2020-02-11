@@ -332,6 +332,7 @@ static void sdl2_destructor(struct TCOD_Context* self)
   if (context->cache_texture) { SDL_DestroyTexture(context->cache_texture); }
   if (context->renderer) { SDL_DestroyRenderer(context->renderer); }
   if (context->window) { SDL_DestroyWindow(context->window); }
+  SDL_QuitSubSystem(context->sdl_subsystems);
   free(context);
 }
 /**
@@ -471,35 +472,6 @@ static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* self)
 {
   return ((struct TCOD_RendererSDL2*)self->contextdata)->renderer;
 }
-TCOD_NODISCARD static struct TCOD_Context* TCOD_renderer_init_sdl2_from(
-    struct SDL_Window* sdl_window,
-    struct SDL_Renderer* sdl_renderer,
-    struct TCOD_Tileset* tileset)
-{
-  if (!sdl_window || !sdl_renderer || !tileset) { return NULL; }
-  struct TCOD_Context* renderer = TCOD_renderer_init_custom();
-  if (!renderer) { return NULL; }
-  struct TCOD_RendererSDL2* sdl2_data = calloc(sizeof(*sdl2_data), 1);
-  if (!sdl2_data) { TCOD_renderer_delete(renderer); return NULL; }
-  sdl2_data->window = sdl_window;
-  sdl2_data->renderer = sdl_renderer;
-  sdl2_data->atlas = TCOD_sdl2_atlas_new(sdl_renderer, tileset);
-  if (!sdl2_data->atlas) {
-    TCOD_renderer_delete(renderer);
-    return NULL;
-  }
-  SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
-  renderer->type = TCOD_RENDERER_SDL2;
-  renderer->contextdata = sdl2_data;
-  renderer->destructor_ = sdl2_destructor;
-  renderer->present_ = sdl2_present;
-  renderer->accumulate_ = sdl2_accumulate;
-  renderer->get_sdl_window_ = sdl2_get_window;
-  renderer->get_sdl_renderer_ = sdl2_get_renderer;
-  renderer->pixel_to_tile_ = sdl2_pixel_to_tile;
-  renderer->save_screenshot_ = sdl2_save_screenshot;
-  return renderer;
-}
 struct TCOD_Context* TCOD_renderer_init_sdl2(
     int pixel_width,
     int pixel_height,
@@ -508,24 +480,61 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     int renderer_flags,
     struct TCOD_Tileset* tileset)
 {
-  TCOD_sys_startup();
-  struct SDL_Window* window = SDL_CreateWindow(
+  if (!tileset) {
+    TCOD_set_errorv("Tileset must not be NULL.");
+    return NULL;
+  }
+  struct TCOD_Context* context = TCOD_renderer_init_custom();
+  if (!context) { return NULL; }
+  struct TCOD_RendererSDL2* sdl2_data = calloc(sizeof(*sdl2_data), 1);
+  if (!sdl2_data) {
+    TCOD_set_errorv("Out of memory.");
+    TCOD_renderer_delete(context);
+    return NULL;
+  }
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+    TCOD_renderer_delete(context);
+    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
+    return NULL;
+  }
+  sdl2_data->sdl_subsystems = SDL_INIT_VIDEO;
+  context->type = TCOD_RENDERER_SDL2;
+  if (renderer_flags & SDL_RENDERER_SOFTWARE) {
+    context->type = TCOD_RENDERER_SDL;
+  }
+  context->contextdata = sdl2_data;
+  context->destructor_ = sdl2_destructor;
+  context->present_ = sdl2_present;
+  context->accumulate_ = sdl2_accumulate;
+  context->get_sdl_window_ = sdl2_get_window;
+  context->get_sdl_renderer_ = sdl2_get_renderer;
+  context->pixel_to_tile_ = sdl2_pixel_to_tile;
+  context->save_screenshot_ = sdl2_save_screenshot;
+
+  SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
+  sdl2_data->window = SDL_CreateWindow(
       title,
       SDL_WINDOWPOS_UNDEFINED,
       SDL_WINDOWPOS_UNDEFINED,
       pixel_width,
       pixel_height,
       window_flags);
-  if (!window) { return NULL; }
+  if (!sdl2_data->window) {
+    TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
+    TCOD_renderer_delete(context);
+    return NULL;
+  }
   renderer_flags |= SDL_RENDERER_TARGETTEXTURE;
-  struct SDL_Renderer* renderer = SDL_CreateRenderer(window, -1,
-                                                     renderer_flags);
-  if (!renderer) { SDL_DestroyWindow(window); return NULL; }
-  struct TCOD_Context* context = TCOD_renderer_init_sdl2_from(
-      window, renderer, tileset);
-  if (!context) {
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
+  sdl2_data->renderer = SDL_CreateRenderer(sdl2_data->window, -1, renderer_flags);
+  if (!sdl2_data->renderer) {
+    TCOD_set_errorvf("Could not create SDL renderer:\n%s", SDL_GetError());
+    TCOD_renderer_delete(context);
+    return NULL;
+  }
+  sdl2_data->atlas = TCOD_sdl2_atlas_new(sdl2_data->renderer, tileset);
+  if (!sdl2_data->atlas) {
+    TCOD_renderer_delete(renderer);
+    return NULL;
   }
   return context;
 }

@@ -162,8 +162,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/renderer_sdl2.c \
 	../../src/libtcod/sys.cpp \
 	../../src/libtcod/sys_c.cpp \
-	../../src/libtcod/sys_opengl_c.cpp \
-	../../src/libtcod/sys_sdl2_c.cpp \
 	../../src/libtcod/sys_sdl_c.cpp \
 	../../src/libtcod/sys_sdl_img_bmp.cpp \
 	../../src/libtcod/sys_sdl_img_png.cpp \

@@ -80,9 +80,7 @@ void TCODConsole::mapStringToFont(const char *s, int fontCharX, int fontCharY) {
 	TCOD_console_map_string_to_font(s, fontCharX, fontCharY);
 }
 
-void TCODConsole::setDirty(int x, int y, int w, int h) {
-	TCOD_console_set_dirty(x,y,w,h);
-}
+void TCODConsole::setDirty(int, int, int, int) {}
 
 TCOD_key_t TCODConsole::checkForKeypress(int flags) {
 	return TCOD_sys_check_for_keypress(flags);
@@ -138,7 +136,7 @@ void TCODConsole::setDefaultForeground(TCODColor fore) {
 }
 
 void TCODConsole::setWindowTitle(const char *title) {
-	TCOD_sys_set_window_title(title);
+	TCOD_console_set_window_title(title);
 }
 
 void TCODConsole::initRoot(int w, int h, const char *title, bool fullscreen,

@@ -158,15 +158,6 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_LOG(x) printf x
 #endif
 
-/* opengl utilities */
-void TCOD_opengl_init_attributes(void);
-bool TCOD_opengl_init_state(int conw, int conh, struct SDL_Surface* font_tex);
-void TCOD_opengl_uninit_state(void);
-bool TCOD_opengl_init_shaders(void);
-bool TCOD_opengl_render(int oldFade, bool *ascii_updated, struct TCOD_Console *console, struct TCOD_Console *cache);
-void TCOD_opengl_swap(void);
-struct SDL_Surface* TCOD_opengl_get_screen(void);
-
 /* image internal stuff */
 bool TCOD_image_mipmap_copy_internal(const TCOD_Image* srcImage,
                                      TCOD_Image* dstImage);
@@ -188,16 +179,9 @@ void TCOD_fatal(const char *fmt, ...);
 void TCOD_fatal_nopar(const char *msg);
 
 /* switch fullscreen mode */
-void TCOD_sys_set_fullscreen(bool fullscreen);
-void TCOD_sys_set_clear_screen(void);
-void TCOD_sys_set_scale_factor(float value);
-void TCOD_sys_convert_console_to_screen_coords(int cx, int cy, int *sx, int *sy);
-void TCOD_sys_convert_screen_to_console_coords(int sx, int sy, int *cx, int *cy);
-TCOD_NODISCARD TCOD_Error TCOD_sys_flush(bool render);
 TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
-void TCOD_sys_set_window_title(const char *title);
 void TCOD_sys_pixel_to_tile(double* x, double* y);
 
 int TCOD_console_print_internal(
@@ -263,11 +247,6 @@ typedef struct TCOD_SDL_driver_t {
 	struct TCOD_Console *(*get_root_console_cache)(void);
 } TCOD_SDL_driver_t;
 
-/* defined in TCOD_sys_sdl12_c.c and TCOD_sys_sdl2_c.c */
-TCOD_SDL_driver_t *SDL_implementation_factory(void);
-
-void find_resolution(void);
-void TCOD_sys_init_screen_offset(void);
 typedef struct {
 	float force_recalc;
 	float last_scale_xc, last_scale_yc;
@@ -289,9 +268,6 @@ extern scale_data_t scale_data;
 
 extern float scale_factor;
 extern struct SDL_Surface* charmap;
-extern struct SDL_Window* window;
-extern struct SDL_Renderer* renderer;
-extern char *last_clipboard_text;
 
 /* SDL & OpenGL */
 extern int oldFade;
@@ -514,27 +490,16 @@ TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscre
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s,int l);
 // TCODSystem non public methods
-TCOD_Error TCOD_sys_init(struct TCOD_Console *console, bool fullscreen);
-void TCOD_sys_set_custom_font(const char *font_name,int nb_ch, int nb_cv,int flags);
+void sync_time_(void);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
-struct SDL_Surface* TCOD_sys_create_bitmap_for_console(const TCOD_Console* console);
 void TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char *filename);
 struct SDL_Surface* TCOD_sys_create_bitmap(int width, int height,
                                            TCOD_color_t *buf);
 void TCOD_sys_delete_bitmap(struct SDL_Surface* bitmap);
-void TCOD_sys_console_to_bitmap(
-    struct SDL_Surface* bitmap,
-    const struct TCOD_Console *console,
-    struct TCOD_Console *cache);
-TCODLIB_CAPI struct SDL_Surface* TCOD_sys_get_surface(int width, int height,
-                                                      bool alpha);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
-void TCOD_sys_set_dirty(int dx, int dy, int dw, int dh);
-void TCOD_sys_set_dirty_character_code(int ch);
 TCODLIB_CAPI TCOD_Error TCOD_sys_load_player_config(void);
-int TCOD_get_tileid_for_charcode_(int charcode);
 /**
  *  Validate and return a constant console.
  */
@@ -554,14 +519,6 @@ TCOD_event_t TCOD_sys_handle_mouse_event(
     const union SDL_Event* ev, TCOD_mouse_t* mouse);
 TCOD_event_t TCOD_sys_handle_key_event(
     const union SDL_Event* ev, TCOD_key_t* key);
-/**
- *  Private function, gets pointers of an old renderer.
- */
-struct SDL_Window* TCOD_sys_get_sdl_window_(void);
-/**
- *  Private function, gets pointers of an old renderer.
- */
-struct SDL_Renderer* TCOD_sys_get_sdl_renderer_(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif

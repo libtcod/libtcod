@@ -178,9 +178,6 @@ void TCOD_console_set_fullscreen(bool fullscreen)
   if (window) {
     SDL_SetWindowFullscreen(
         window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-  } else { // Deprecated renderer.
-    TCOD_IFNOT(TCOD_ctx.root != NULL) { return; }
-    TCOD_sys_set_fullscreen(fullscreen);
   }
 }
 bool TCOD_console_is_fullscreen(void)
@@ -210,14 +207,14 @@ struct SDL_Window* TCOD_sys_get_sdl_window(void)
   if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_window_) {
     return TCOD_ctx.engine->get_sdl_window_(TCOD_ctx.engine);
   }
-  return TCOD_sys_get_sdl_window_();
+  return NULL;
 }
 struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
 {
   if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_renderer_) {
     return TCOD_ctx.engine->get_sdl_renderer_(TCOD_ctx.engine);
   }
-  return TCOD_sys_get_sdl_renderer_();
+  return NULL;
 }
 int TCOD_sys_accumulate_console(const TCOD_Console* console)
 {

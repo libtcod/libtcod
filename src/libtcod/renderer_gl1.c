@@ -284,6 +284,7 @@ struct TCOD_Context* TCOD_renderer_init_gl1(
 {
   struct TCOD_Context* context = TCOD_context_new_();
   if (!context) { return NULL; }
+  context->type = TCOD_RENDERER_OPENGL;
   struct TCOD_RendererGL1* renderer = calloc(sizeof(*renderer), 1);
   if (!renderer) { TCOD_context_delete(context); return NULL; }
   context->destructor_ = gl1_destructor;

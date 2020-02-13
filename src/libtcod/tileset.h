@@ -136,6 +136,14 @@ TCOD_NODISCARD
 TCOD_PUBLIC int TCOD_tileset_assign_tile(
     struct TCOD_Tileset* tileset, int tile_id, int codepoint);
 /**
+ *  Return a pointer to the tile for `codepoint`.
+ *
+ *  Returns NULL if no tile exists for codepoint.
+ */
+TCOD_NODISCARD
+TCOD_PUBLIC const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
+    const TCOD_Tileset* tileset, int codepoint);
+/**
  *  Return a new observer to this tileset.
  *
  *  For internal use.

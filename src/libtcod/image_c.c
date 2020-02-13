@@ -41,6 +41,8 @@
 #include "libtcod_int.h"
 #include "utility.h"
 
+#include <SDL.h>
+
 /*
 Internal libtcod optimisation, direct colour manipulation in the images primary mipmap.
 */
@@ -426,17 +428,70 @@ void TCOD_image_blit_rect(
 }
 
 TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
-  TCOD_Image* ret = calloc(sizeof(*ret), 1);
-  ret->sys_img = TCOD_sys_create_bitmap_for_console(console);
+  if (!TCOD_ctx.tileset) { return NULL; }
+  TCOD_Image* ret = TCOD_image_new(
+      TCOD_console_get_width(console) * TCOD_ctx.tileset->tile_width,
+      TCOD_console_get_height(console) * TCOD_ctx.tileset->tile_height);
   TCOD_image_refresh_console(ret, console);
   return ret;
 }
-
-void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
+/**
+ *  Perform alpha blending on a single channel.
+ */
+static uint8_t alpha_blend(
+    int dst_c, int dst_a, int src_c, int src_a, int out_a)
 {
-  /* We're copying the state and clearing part of the copy, no need to delete/free. */
-  TCOD_sys_console_to_bitmap(
-    image->sys_img, TCOD_console_validate_(console), NULL);
+  return (uint8_t)(
+      ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
+  );
+}
+/**
+ *  A modified lerp operation which can accept RGBA types.
+ */
+static void TCOD_color_alpha_blend(
+    struct TCOD_ColorRGBA* dst,
+    const struct TCOD_ColorRGBA* src)
+{
+  uint8_t out_a = (uint8_t)(src->a + dst->a * (255 - src->a) / 255);
+  dst->r = alpha_blend(dst->r, dst->a, src->r, src->a, out_a);
+  dst->g = alpha_blend(dst->g, dst->a, src->g, src->a, out_a);
+  dst->b = alpha_blend(dst->b, dst->a, src->b, src->a, out_a);
+  dst->a = out_a;
+}
+void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console_)
+{
+  if (!image) { return; }
+  if (!TCOD_ctx.tileset) { return; }
+  const TCOD_Console* console = TCOD_console_validate_(console_);
+  for (int console_y = 0; console_y < console->h; ++console_y) {
+    for (int console_x = 0; console_x < console->w; ++console_x) {
+      // Get the console index and tileset graphic.
+      int console_i = console_y * console->w + console_x;
+      const struct TCOD_ConsoleTile* tile = &console->tiles[console_i];
+      const TCOD_ColorRGBA* graphic =
+          TCOD_tileset_get_tile(TCOD_ctx.tileset, tile->ch);
+      for (int y = 0; y < TCOD_ctx.tileset->tile_height; ++y) {
+        for (int x = 0; x < TCOD_ctx.tileset->tile_width; ++x) {
+          struct TCOD_ColorRGBA out_rgba = tile->bg;
+          if (graphic) {
+            // Multiply the foreground and tileset colors, then blend with bg.
+            int graphic_i = y * TCOD_ctx.tileset->tile_width + x;
+            struct TCOD_ColorRGBA fg = {
+                tile->fg.r * graphic[graphic_i].r / 255,
+                tile->fg.g * graphic[graphic_i].g / 255,
+                tile->fg.b * graphic[graphic_i].b / 255,
+                tile->fg.a * graphic[graphic_i].a / 255,
+            };
+            TCOD_color_alpha_blend(&out_rgba, &fg);
+          }
+          int out_x = console_x * TCOD_ctx.tileset->tile_width + x;
+          int out_y = console_y * TCOD_ctx.tileset->tile_width + y;
+          struct TCOD_ColorRGB out_rgb = {out_rgba.r, out_rgba.g, out_rgba.b};
+          TCOD_image_put_pixel(image, out_x, out_y, out_rgb);
+        }
+      }
+    }
+  }
 }
 
 void TCOD_image_save(const TCOD_Image* image, const char *filename)

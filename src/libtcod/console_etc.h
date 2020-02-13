@@ -65,6 +65,7 @@ TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, i
 TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
 #endif
 
+TCOD_DEPRECATED("This function does nothing.")
 TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
 /**
  *  Present the root console to the display.

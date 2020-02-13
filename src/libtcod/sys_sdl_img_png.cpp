@@ -84,7 +84,11 @@ SDL_Surface *TCOD_sys_read_png(const char *filename) {
 	}
 
 	/* create the SDL surface */
-	bitmap = TCOD_sys_get_surface(width, height, bpp==32);
+  if (bpp == 32) {
+    bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA32);
+  } else {
+    bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 24, SDL_PIXELFORMAT_RGB24);
+  }
 	source=image;
 	rowsize=width*bpp/8;
 	for (y=0; y<  height; y++ ) {

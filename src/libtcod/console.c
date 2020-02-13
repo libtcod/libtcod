@@ -83,11 +83,9 @@ TCOD_Console* TCOD_console_new(int w, int h)
 }
 TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscreen)
 {
-  if (!TCOD_console_init_(con)) { return false; }
-  TCOD_Error err = TCOD_sys_init(con, fullscreen);
-  if (err < 0) { return err; }
-  TCOD_sys_set_window_title(title);
-  return err;
+  (void)title; (void)fullscreen; // Ignored.
+  if (!TCOD_console_init_(con)) { return TCOD_E_ERROR; }
+  return TCOD_E_OK;
 }
 void TCOD_console_delete(TCOD_Console* con)
 {
@@ -304,8 +302,6 @@ void TCOD_console_clear(TCOD_console_t con)
   for (int i = 0; i < con->length; ++i) {
     con->tiles[i] = fill;
   }
-  /* clear the sdl renderer cache */
-  TCOD_sys_set_dirty(0, 0, con->w, con->h);
 }
 TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con,
                                               int x, int y)

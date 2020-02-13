@@ -380,6 +380,7 @@ struct TCOD_Context* TCOD_renderer_new_gl2(
 {
   struct TCOD_Context* context = TCOD_context_new_();
   if (!context) { return NULL; }
+  context->type = TCOD_RENDERER_OPENGL2;
   struct TCOD_RendererGL2* renderer = calloc(sizeof(*renderer), 1);
   if (!renderer) { TCOD_context_delete(context); return NULL; }
   context->destructor_ = gl2_destructor;

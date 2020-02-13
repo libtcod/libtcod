@@ -107,13 +107,22 @@ TCOD_key_t TCOD_console_check_for_keypress(int flags) {
  *  Render and present the root console to the active display.
  */
 TCOD_Error TCOD_console_flush(void) {
-  return TCOD_sys_flush(true);
+  if (!TCOD_ctx.root) {
+    TCOD_set_errorv("Root console is not initilized.");
+    return TCOD_E_ERROR;
+  }
+  TCOD_Error err = TCOD_E_OK;
+  if (TCOD_ctx.engine && TCOD_ctx.engine->present_) {
+    err = TCOD_ctx.engine->present_(TCOD_ctx.engine, TCOD_ctx.root);
+  }
+  sync_time_();
+  return err;
 }
 /**
  *  Manually mark a region of a console as dirty.
  */
 void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
-	TCOD_sys_set_dirty(dx, dy, dw, dh);
+  (void)dx; (void)dy; (void)dw; (void)dh; // Ignore.
 }
 /**
  *  \brief Set a font image to be loaded during initialization.
@@ -162,7 +171,6 @@ int TCOD_console_set_custom_font(
     }
   }
   if (TCOD_ctx.font_tcod_layout) { TCOD_ctx.font_in_row = true; }
-  TCOD_sys_set_custom_font(fontFile, nb_char_horiz, nb_char_vertic, flags);
 
   TCOD_tileset_delete(TCOD_ctx.tileset);
 

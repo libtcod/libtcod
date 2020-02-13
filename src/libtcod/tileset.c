@@ -224,7 +224,7 @@ static int TCOD_tileset_generate_codepoint(struct TCOD_Tileset* tileset,
   if (tile_id < 0) { return tile_id; }
   return TCOD_tileset_assign_tile(tileset, tile_id, codepoint);
 }
-static const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
+const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
     const TCOD_Tileset* tileset,
     int codepoint)
 {

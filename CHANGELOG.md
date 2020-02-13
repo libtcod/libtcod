@@ -27,6 +27,7 @@ since `1.7.0`.
   - `TCOD_image_blit_rect`
 - `TCOD_sys_update_char` now works with the newer renderers.
 - Fixed buffer overflow in name generator.
+- `TCOD_image_from_console` now works with the newer renderers.
 
 ## [1.15.1] - 2019-11-22
 ### Changed

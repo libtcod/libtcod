@@ -2744,9 +2744,6 @@ _lib.TCOD_lex_get_last_error.argtypes=[]
 _lib.TCOD_lex_hextoint.restype=c_int
 _lib.TCOD_lex_hextoint.argtypes=[c_char]
 
-_lib.TCOD_sys_get_surface.restype=c_void_p
-_lib.TCOD_sys_get_surface.argtypes=[c_int, c_int, c_bool ]
-
 _lib.TCOD_sys_load_image.restype=c_void_p
 _lib.TCOD_sys_load_image.argtypes=[c_char_p]
 

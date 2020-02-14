@@ -792,10 +792,10 @@ static int vsprint_(char** out, const char *fmt, va_list ap)
 struct FormattedPrinter {
   const unsigned char* string;
   const unsigned char* end;
-  struct TCOD_ColorRGB fg;
-  struct TCOD_ColorRGB bg;
-  const struct TCOD_ColorRGB default_fg;
-  const struct TCOD_ColorRGB default_bg;
+  struct TCOD_ColorRGBA fg;
+  struct TCOD_ColorRGBA bg;
+  const struct TCOD_ColorRGBA default_fg;
+  const struct TCOD_ColorRGBA default_bg;
 };
 static int fp_peak(const struct FormattedPrinter* printer)
 {
@@ -810,12 +810,13 @@ static int fp_next_raw(struct FormattedPrinter* printer)
   if (len > 0) { printer->string += len; }
   return codepoint;
 }
-static struct TCOD_ColorRGB fp_next_rgb(struct FormattedPrinter* printer)
+static struct TCOD_ColorRGBA fp_next_rgba(struct FormattedPrinter* printer)
 {
-  struct TCOD_ColorRGB rgb = {
+  struct TCOD_ColorRGBA rgb = {
       fp_next_raw(printer),
       fp_next_raw(printer),
       fp_next_raw(printer),
+      255,
   };
   return rgb;
 }
@@ -833,18 +834,20 @@ static void fp_handle_special_codes(struct FormattedPrinter* printer)
         break;
       case TCOD_COLCTRL_FORE_RGB:
         fp_next_raw(printer);
-        printer->fg = fp_next_rgb(printer);
+        printer->fg = fp_next_rgba(printer);
         break;
       case TCOD_COLCTRL_BACK_RGB:
         fp_next_raw(printer);
-        printer->bg = fp_next_rgb(printer);
+        printer->bg = fp_next_rgba(printer);
         break;
       default:
         if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
           fp_next_raw(printer);
           int color_index = codepoint - TCOD_COLCTRL_1;
-          printer->fg = color_control_fore[color_index];
-          printer->bg = color_control_back[color_index];
+          *(TCOD_ColorRGB*)&printer->fg = color_control_fore[color_index];
+          printer->fg.a = 255;
+          *(TCOD_ColorRGB*)&printer->bg = color_control_back[color_index];
+          printer->bg.a = 255;
         } else {
           return;
         }
@@ -969,26 +972,36 @@ static int print_internal_(
     int height,
     int n,
     const char* string,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const TCOD_color_t* fg_in,
+    const TCOD_color_t* bg_in,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t align,
     int can_split,
     int count_only)
 {
-  static const TCOD_color_t color_default = {255, 0, 255};
-  if (!fg) { fg = &color_default; }
-  if (!bg) { bg = &color_default; }
+  static const TCOD_ColorRGBA color_default = {255, 255, 255, 0};
+  TCOD_ColorRGBA fg = color_default;
+  TCOD_ColorRGBA bg = color_default;
+  if (fg_in) {
+    fg.r = fg_in->r;
+    fg.g = fg_in->g;
+    fg.b = fg_in->b;
+    fg.a = 255;
+  }
+  if (bg_in) {
+    bg.r = bg_in->r;
+    bg.g = bg_in->g;
+    bg.b = bg_in->b;
+    bg.a = 255;
+  }
   struct FormattedPrinter printer = {
       .string = (const unsigned char*)string,
       .end = (const unsigned char*)string + n,
-      .fg = *fg,
-      .bg = *bg,
-      .default_fg = *fg,
-      .default_bg = *bg,
+      .fg = fg,
+      .bg = bg,
+      .default_fg = fg,
+      .default_bg = bg,
   };
-  //FormattedUnicodeIterator it(string, fg, bg);
-  //UnicodeIterator end = it.end();
   if (!can_split && align == TCOD_RIGHT) {
     // In general `can_split = false` is deprecated.
     x -= con->w - 1;
@@ -1049,7 +1062,9 @@ static int print_internal_(
       if (can_split && (left > cursor_x || cursor_x >= right)) { continue; }
       if (!can_split && (0 > cursor_x || cursor_x >= con->w)) { continue; }
       // Actually render this line of characters.
-      TCOD_console_put_rgb(con, cursor_x, top, fp_peak(&printer), &printer.fg, &printer.bg, flag);
+      TCOD_ColorRGB* fg_rgb = printer.fg.a ? (TCOD_ColorRGB*)&printer.fg : NULL;
+      TCOD_ColorRGB* bg_rgb = printer.bg.a ? (TCOD_ColorRGB*)&printer.bg : NULL;
+      TCOD_console_put_rgb(con, cursor_x, top, fp_peak(&printer), fg_rgb, bg_rgb, flag);
     }
     // Ignore any extra spaces.
     while (printer.string != printer.end) {

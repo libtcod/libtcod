@@ -289,6 +289,8 @@ static TCOD_Error render(
   // Bind textures to program.
   glActiveTexture(GL_TEXTURE0 + 3); // Tileset atlas.
   glBindTexture(GL_TEXTURE_2D, atlas->texture);
+  // Texels are clamped by the shader, GL_LINEAR can be used without bleeding.
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glUniform1i(t_tileset, 3);
   glActiveTexture(GL_TEXTURE0 + 0); // Tile position.
   glBindTexture(GL_TEXTURE_2D, renderer->console_textures[0]);

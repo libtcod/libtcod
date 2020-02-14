@@ -778,6 +778,7 @@ typedef struct {
 } prop_t;
 static char cur_prop_name[512]="";
 static bool default_new_struct(TCOD_parser_struct_t str,const char *name) {
+  (void)name; // Ignored parameters.
 	if ( cur_prop_name[0] ) strcat(cur_prop_name,".");
 	strcat(cur_prop_name,((TCOD_struct_int_t *)str)->name);
 	return true;
@@ -806,6 +807,7 @@ static bool default_new_property(const char *propname, TCOD_value_type_t type, T
 }
 
 static bool default_end_struct(TCOD_parser_struct_t str, const char *name) {
+  (void)str; (void)name; // Ignored parameters.
 	char *ptr=strrchr(cur_prop_name,'.');
 	if ( ptr ) *ptr='\0';
 	else cur_prop_name[0]='\0';

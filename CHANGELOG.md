@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed possible crash in `TCOD_mouse_move`.
 
 ## [1.16.0-alpha.1] - 2020-02-14
 ### Added

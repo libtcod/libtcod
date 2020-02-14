@@ -1168,7 +1168,7 @@ bool TCOD_mouse_is_cursor_visible(void) {
 }
 
 void TCOD_mouse_move(int x, int y) {
-  static SDL_Window* window = TCOD_sys_get_sdl_window();
+  struct SDL_Window* window = TCOD_sys_get_sdl_window();
   if (!window) { return; }
   SDL_WarpMouseInWindow(window, x, y);
 }

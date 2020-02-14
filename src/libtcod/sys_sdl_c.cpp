@@ -198,10 +198,11 @@ void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
  *  Set a code-point to point to an already existing code-point.
  */
 static void TCOD_sys_map_clone_(int new_codepoint, int old_codepoint) {
+  if (!TCOD_ctx.tileset) { return; }
   if (old_codepoint < 0) { return; }
-  if (old_codepoint >= TCOD_ctx.max_font_chars) { return; }
+  if (old_codepoint >= TCOD_ctx.tileset->character_map_length) { return; }
   TCOD_sys_map_ascii_to_font(
-      new_codepoint, TCOD_ctx.ascii_to_tcod[old_codepoint], 0);
+      new_codepoint, TCOD_ctx.tileset->character_map[old_codepoint], 0);
 }
 /**
  *  Decode the font layout depending on the current flags.

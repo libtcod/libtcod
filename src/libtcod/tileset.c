@@ -358,6 +358,7 @@ TCOD_Tileset* TCOD_tileset_load(
     return NULL;
   }
   tileset->tiles_count = font_tiles;
+  tileset->virtual_columns = columns;
   // Check for a color key in the first tile.
   struct TCOD_ColorRGBA* color_key = &font[0];
   for (int y = 0; y < tileset->tile_height; ++y) {

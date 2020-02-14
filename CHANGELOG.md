@@ -13,12 +13,11 @@ since `1.7.0`.
 
 ### Changed
 - Console blit operations now perform per-cell alpha transparency.
-- New renderers can load fonts from libtcod.cfg.
 - When a renderer fails to load it will now fallback to a different one.
   The order is: OPENGL2 -> OPENGL -> SDL2.
 
 ### Deprecated
-- The use of `libtcod.cfg` is now deprecated.
+- The use of `libtcod.cfg` or `terminal.png` is deprecated.
 
 ### Fixed
 - The following are no longer mislabeled as taking const images:
@@ -28,6 +27,7 @@ since `1.7.0`.
 - `TCOD_sys_update_char` now works with the newer renderers.
 - Fixed buffer overflow in name generator.
 - `TCOD_image_from_console` now works with the newer renderers.
+- New renderers now auto-load fonts from `libtcod.cfg` or `terminal.png`.
 
 ## [1.15.1] - 2019-11-22
 ### Changed

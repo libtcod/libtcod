@@ -37,6 +37,7 @@
 
 #include <SDL.h>
 #include "console.h"
+#include "console_etc.h"
 #include "libtcod_int.h"
 #include "tileset_fallback.h"
 #include "renderer_sdl2.h"
@@ -44,6 +45,10 @@
 #include "renderer_gl2.h"
 static struct TCOD_Tileset* ensure_tileset()
 {
+  if (!TCOD_ctx.tileset) {
+    TCOD_console_set_custom_font(
+        "terminal.png", TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
+  }
   if (!TCOD_ctx.tileset) {
     TCOD_ctx.tileset = TCOD_tileset_load_fallback_font_(0, 12);
   }

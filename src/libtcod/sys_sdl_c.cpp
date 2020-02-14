@@ -209,6 +209,7 @@ static void TCOD_sys_map_clone_(int new_codepoint, int old_codepoint) {
  */
 void TCOD_sys_decode_font_(void)
 {
+  if (!TCOD_ctx.tileset) { return; }
   if (TCOD_ctx.font_flags & TCOD_FONT_LAYOUT_CP437) {
     for (int i = 0; i < static_cast<int>(cp437_codec_.size()); ++i) {
       TCOD_sys_map_ascii_to_font(cp437_codec_.at(i), i, 0);
@@ -235,14 +236,14 @@ void TCOD_sys_decode_font_(void)
   } else {
     if (TCOD_ctx.font_in_row) {
       /* for font in row */
-      for (int i = 0; i < TCOD_ctx.max_font_chars; ++i) {
+      for (int i = 0; i < TCOD_ctx.tileset->tiles_count; ++i) {
         TCOD_sys_map_ascii_to_font(i, i, 0);
       }
     } else {
       /* for font in column */
-      for (int i = 0; i < TCOD_ctx.max_font_chars; ++i) {
-        int fy = i % TCOD_ctx.fontNbCharVertic;
-        int fx = i / TCOD_ctx.fontNbCharVertic;
+      for (int i = 0; i < TCOD_ctx.tileset->tiles_count; ++i) {
+        int fy = i % TCOD_ctx.tileset->virtual_columns;
+        int fx = i / TCOD_ctx.tileset->virtual_columns;
         TCOD_sys_map_ascii_to_font(i, fx, fy);
       }
     }

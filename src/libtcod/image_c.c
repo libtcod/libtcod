@@ -767,7 +767,7 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   */
   static int flagToAscii[8] = {
       0,
-      0x259D, // Quadrant lower right.
+      0x259D, // Quadrant upper right.
       0x2597, // Quadrant lower left.
       -0x259A, // Quadrant upper left and lower right.
       0x2596, // Quadrant lower right.

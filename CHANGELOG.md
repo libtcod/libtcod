@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.1] - 2020-02-14
 ### Added
 - Added the `TCOD_clear_error` and `TCOD_set_errorf` functions.
 - Added an error code enum: `TCOD_Error`.

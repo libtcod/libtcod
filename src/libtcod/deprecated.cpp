@@ -33,6 +33,6 @@
 #include "console.hpp"
 
 void TCOD_console_set_keyboard_repeat(int, int) {}
-void TCOD_console_disable_keyboard_repeat() {}
+void TCOD_console_disable_keyboard_repeat(void) {}
 void TCODConsole::setKeyboardRepeat(int, int) {}
 void TCODConsole::disableKeyboardRepeat() {}

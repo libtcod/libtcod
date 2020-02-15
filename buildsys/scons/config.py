@@ -22,7 +22,7 @@ GCC_CXX_WARNINGS = [
 ]
 
 DEBUG_GCC = {
-    #'CFLAGS': ['-Wstrict-prototypes'],
+    'CFLAGS': ['-Wstrict-prototypes'],
     'CCFLAGS': GCC_CC_WARNINGS + [
         '-g',
         '-fvisibility=hidden'

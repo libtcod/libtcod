@@ -43,7 +43,7 @@
 #include "renderer_sdl2.h"
 #include "renderer_gl1.h"
 #include "renderer_gl2.h"
-static struct TCOD_Tileset* ensure_tileset()
+static struct TCOD_Tileset* ensure_tileset(void)
 {
   if (!TCOD_ctx.tileset) {
     TCOD_console_set_custom_font(

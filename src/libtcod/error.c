@@ -43,7 +43,7 @@
 // Maximum error length in bytes.
 #define MAX_ERROR_LENGTH 1024
 static __thread char error_msg_[MAX_ERROR_LENGTH] = "";
-const char* TCOD_get_error()
+const char* TCOD_get_error(void)
 {
   return error_msg_;
 }

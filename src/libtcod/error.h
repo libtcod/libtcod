@@ -90,7 +90,7 @@ extern "C" {
  *  \endrst
  */
 TCOD_NODISCARD
-TCODLIB_API const char* TCOD_get_error();
+TCODLIB_API const char* TCOD_get_error(void);
 /**
  *  Set an error message and return TCOD_E_ERROR.
  *  \rst

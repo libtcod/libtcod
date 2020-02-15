@@ -71,7 +71,7 @@ TCOD_PUBLIC void TCOD_context_delete(struct TCOD_Context* renderer);
  *
  *  Used internally.
  */
-TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_();
+TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

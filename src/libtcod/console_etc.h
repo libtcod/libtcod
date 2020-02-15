@@ -92,7 +92,7 @@ TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay,
                                                   int interval);
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
-TCODLIB_API void TCOD_console_disable_keyboard_repeat();
+TCODLIB_API void TCOD_console_disable_keyboard_repeat(void);
 #ifdef __cplusplus
 }
 #endif

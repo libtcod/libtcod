@@ -521,22 +521,22 @@ static float TCOD_noise_fbm_int(TCOD_noise_t noise,  float *f, float octaves, TC
 	float tf[TCOD_NOISE_MAX_DIMENSIONS];
 	perlin_data_t *data=(perlin_data_t *)noise;
 	/* Initialize locals */
-	double value = 0;
+	float value = 0;
 	int i,j;
 	memcpy(tf,f,sizeof(float)*data->ndim);
 
 	/* Inner loop of spectral construction, where the fractal is built */
 	for(i=0; i<(int)octaves; i++)
 	{
-		value += (double)(func(noise,tf)) * data->exponent[i];
+		value += func(noise,tf) * data->exponent[i];
 		for (j=0; j < data->ndim; j++) tf[j] *= data->lacunarity;
 	}
 
 	/* Take care of remainder in octaves */
 	octaves -= (int)octaves;
 	if(octaves > DELTA)
-		value += (double)(octaves * func(noise,tf)) * data->exponent[i];
-	return CLAMP(-0.99999f, 0.99999f, (float)value);
+		value += octaves * func(noise,tf) * data->exponent[i];
+	return CLAMP(-0.99999f, 0.99999f, value);
 }
 
 float TCOD_noise_fbm_perlin( TCOD_noise_t noise,  float *f, float octaves )
@@ -554,7 +554,7 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 	float tf[TCOD_NOISE_MAX_DIMENSIONS];
 	perlin_data_t *data=(perlin_data_t *)noise;
 	/* Initialize locals */
-	double value = 0;
+	float value = 0;
 	int i,j;
 	memcpy(tf,f,sizeof(float)*data->ndim);
 
@@ -562,7 +562,7 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 	for(i=0; i<(int)octaves; i++)
 	{
 		float nval=func(noise,tf);
-		value += (double)(ABS(nval)) * data->exponent[i];
+		value += ABS(nval) * data->exponent[i];
 		for (j=0; j < data->ndim; j++) tf[j] *= data->lacunarity;
 	}
 
@@ -570,9 +570,9 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 	octaves -= (int)octaves;
 	if(octaves > DELTA) {
 		float nval=func(noise,tf);
-		value += (double)(octaves * ABS(nval)) * data->exponent[i];
+		value += octaves * ABS(nval) * data->exponent[i];
 	}
-	return CLAMP(-0.99999f, 0.99999f, (float)value);
+	return CLAMP(-0.99999f, 0.99999f, value);
 }
 
 float TCOD_noise_turbulence_perlin( TCOD_noise_t noise, float *f, float octaves ) {

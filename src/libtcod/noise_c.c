@@ -34,6 +34,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 
 #include "mersenne.h"
 #include "utility.h"
@@ -45,6 +46,19 @@
 #define WAVELET_SCALE 2.0f
 
 typedef TCOD_Noise perlin_data_t;
+
+/**
+ *  Return a floating point value clamped between -1.0f and 1.0f exclusively.
+ *
+ *  The return value excludes -1.0f and 1.0f to avoid rounding issues.
+ */
+static float clamp_signed_f(float value) {
+  static const float LOW = -1.0f + FLT_EPSILON;
+  static const float HIGH = 1.0f - FLT_EPSILON;
+  if (value < LOW) { return LOW; }
+  if (value > HIGH) { return HIGH; }
+  return value;
+}
 
 static float lattice( perlin_data_t *data, int ix, float fx, int iy, float fy, int iz, float fz, int iw, float fw)
 {
@@ -197,7 +211,7 @@ float TCOD_noise_perlin( TCOD_noise_t noise, float *f )
 						  w[3]);
 			break;
 	}
-	return CLAMP(-0.99999f, 0.99999f, value);
+	return clamp_signed_f(value);
 }
 
 static int absmod(int x, int n) {
@@ -536,7 +550,7 @@ static float TCOD_noise_fbm_int(TCOD_noise_t noise,  float *f, float octaves, TC
 	octaves -= (int)octaves;
 	if(octaves > DELTA)
 		value += octaves * func(noise,tf) * data->exponent[i];
-	return CLAMP(-0.99999f, 0.99999f, value);
+	return clamp_signed_f(value);
 }
 
 float TCOD_noise_fbm_perlin( TCOD_noise_t noise,  float *f, float octaves )
@@ -572,7 +586,7 @@ static float TCOD_noise_turbulence_int( TCOD_noise_t noise, float *f, float octa
 		float nval=func(noise,tf);
 		value += octaves * ABS(nval) * data->exponent[i];
 	}
-	return CLAMP(-0.99999f, 0.99999f, value);
+	return clamp_signed_f(value);
 }
 
 float TCOD_noise_turbulence_perlin( TCOD_noise_t noise, float *f, float octaves ) {
@@ -699,7 +713,7 @@ float TCOD_noise_wavelet (TCOD_noise_t noise, float *f) {
 			}
 		}
 	}
-	return CLAMP(-1.0f,1.0f,result);
+	return clamp_signed_f(result);
 }
 
 float TCOD_noise_fbm_wavelet(TCOD_noise_t noise, float *f, float octaves) {

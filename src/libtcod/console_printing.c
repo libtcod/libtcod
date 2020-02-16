@@ -1185,12 +1185,17 @@ void TCOD_console_printn_frame(
   TCOD_console_put_rgb(con, right, top, 0x2510, fg, bg, flag); // ┐
   TCOD_console_put_rgb(con, left, bottom, 0x2514, fg, bg, flag); // └
   TCOD_console_put_rgb(con, right, bottom, 0x2518, fg, bg, flag); // ┘
-  TCOD_console_draw_rect_rgb(con, x + 1, y, width - 2, 1, 0x2500, &con->fore, &con->back, flag); // ─
-  TCOD_console_draw_rect_rgb(con, x + 1, y + height - 1, width - 2, 1, 0x2500, &con->fore, &con->back, flag);
-  TCOD_console_draw_rect_rgb(con, x, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag); // │
-  TCOD_console_draw_rect_rgb(con, x + width - 1, y + 1, 1, height - 2, 0x2502, &con->fore, &con->back, flag);
+  TCOD_console_draw_rect_rgb(
+      con, x + 1, y, width - 2, 1, 0x2500, fg, bg, flag); // ─
+  TCOD_console_draw_rect_rgb(
+      con, x + 1, y + height - 1, width - 2, 1, 0x2500, fg, bg, flag);
+  TCOD_console_draw_rect_rgb(
+      con, x, y + 1, 1, height - 2, 0x2502, fg, bg, flag); // │
+  TCOD_console_draw_rect_rgb(
+      con, x + width - 1, y + 1, 1, height - 2, 0x2502, fg, bg, flag);
   if (empty) {
-    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width - 2, height - 2, 0x20, &con->fore, &con->back, flag);
+    TCOD_console_draw_rect_rgb(
+        con, x + 1, y + 1, width - 2, height - 2, 0x20, fg, bg, flag);
   }
   if (n > 0 && title) {
     char* tmp_string = malloc(n + 2);
@@ -1198,7 +1203,8 @@ void TCOD_console_printn_frame(
     memcpy(&tmp_string[1], title, n);
     tmp_string[0] = ' ';
     tmp_string[n + 1] = ' ';
-    TCOD_console_printn_rect(con, x, y, width, 1, n + 2, tmp_string, bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
+    TCOD_console_printn_rect(
+        con, x, y, width, 1, n + 2, tmp_string, bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
     free(tmp_string);
   }
 }

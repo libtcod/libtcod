@@ -614,3 +614,25 @@ void TCOD_color_gen_map(TCOD_color_t *map, int nb_key,
     }
   }
 }
+/**
+ *  Perform alpha blending on a single channel.
+ */
+static uint8_t alpha_blend_channel(
+    int dst_c, int dst_a, int src_c, int src_a, int out_a)
+{
+  return (uint8_t)(
+      ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
+  );
+}
+/**
+ *  A modified lerp operation which can accept RGBA types.
+ */
+void TCOD_color_alpha_blend(TCOD_ColorRGBA* dst, const TCOD_ColorRGBA* src)
+{
+  if (!dst || !src) { return; }
+  uint8_t out_a = (uint8_t)(src->a + dst->a * (255 - src->a) / 255);
+  dst->r = alpha_blend_channel(dst->r, dst->a, src->r, src->a, out_a);
+  dst->g = alpha_blend_channel(dst->g, dst->a, src->g, src->a, out_a);
+  dst->b = alpha_blend_channel(dst->b, dst->a, src->b, src->a, out_a);
+  dst->a = out_a;
+}

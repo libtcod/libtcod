@@ -41,6 +41,9 @@ struct SDL_Renderer;
 struct SDL_Rect;
 /**
  *  A rendering context for libtcod.
+ *  \rst
+ *  .. versionadded:: 1.16
+ *  \endrst
  */
 struct TCOD_Context {
   int type;
@@ -72,6 +75,11 @@ TCOD_PUBLIC void TCOD_context_delete(struct TCOD_Context* renderer);
  *  Used internally.
  */
 TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
+/**
+ *  Present a console to the screen, using a rendering context.
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_present(
+    struct TCOD_Context* context, struct TCOD_Console* console);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

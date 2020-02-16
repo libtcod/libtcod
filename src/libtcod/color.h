@@ -92,6 +92,14 @@ TCODLIB_API TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1,
                                                     float value);
 TCODLIB_API TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2,
                                          float coef);
+/**
+ *  Blend `src` into `dst` as an alpha blending operation.
+ *  \rst
+ *  .. versionadded:: 1.16
+ *  \endrst
+ */
+void TCOD_color_alpha_blend(TCOD_ColorRGBA* dst, const TCOD_ColorRGBA* src);
+
 /* HSV transformations */
 TCODLIB_API void TCOD_color_set_HSV(TCOD_color_t *color,
                                     float hue, float saturation, float value);

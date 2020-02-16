@@ -45,6 +45,7 @@
 #include "version.h"
 #include "console_drawing.h"
 #include "console_rexpaint.h"
+#include "context.h"
 #include "error.h"
 #include "globals.h"
 #include "tileset.h"
@@ -108,12 +109,32 @@ TCOD_key_t TCOD_console_check_for_keypress(int flags) {
  */
 TCOD_Error TCOD_console_flush(void) {
   if (!TCOD_ctx.root) {
-    TCOD_set_errorv("Root console is not initilized.");
+    TCOD_set_errorv("Root console is not initialized.");
     return TCOD_E_ERROR;
   }
-  TCOD_Error err = TCOD_E_OK;
-  if (TCOD_ctx.engine && TCOD_ctx.engine->present_) {
-    err = TCOD_ctx.engine->present_(TCOD_ctx.engine, TCOD_ctx.root);
+  if (!TCOD_ctx.engine) {
+    return TCOD_set_errorv("Rendering context is not yet initialized.");
+  }
+  TCOD_Error err;
+  if (TCOD_ctx.fade == 255) {
+    err = TCOD_context_present(TCOD_ctx.engine, TCOD_ctx.root);
+  } else {
+    // Apply the global fading color before presenting.
+    TCOD_Console* root_copy = TCOD_console_new(TCOD_ctx.root->w, TCOD_ctx.root->h);
+    if (!root_copy) { return TCOD_E_ERROR; }
+    const TCOD_ColorRGBA fade_color = {
+        TCOD_ctx.fading_color.r,
+        TCOD_ctx.fading_color.g,
+        TCOD_ctx.fading_color.b,
+        255 - TCOD_ctx.fade,
+    };
+    for (int i = 0; i < root_copy->length; ++i) {
+      root_copy->tiles[i] = TCOD_ctx.root->tiles[i];
+      TCOD_color_alpha_blend(&root_copy->tiles[i].fg, &fade_color);
+      TCOD_color_alpha_blend(&root_copy->tiles[i].bg, &fade_color);
+    }
+    err = TCOD_context_present(TCOD_ctx.engine, root_copy);
+    TCOD_console_delete(root_copy);
   }
   sync_time_();
   return err;

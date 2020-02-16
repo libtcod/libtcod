@@ -45,3 +45,17 @@ void TCOD_context_delete(struct TCOD_Context* renderer)
   if (renderer->destructor_) { renderer->destructor_(renderer); }
   free(renderer);
 }
+
+TCOD_PUBLIC TCOD_Error TCOD_context_present(
+    struct TCOD_Context* context, struct TCOD_Console* console)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!console) {
+    TCOD_set_errorv("Console must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->present_(context, console);
+}

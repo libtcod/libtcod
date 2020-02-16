@@ -9,6 +9,7 @@ since `1.7.0`.
 ## [Unreleased]
 ### Fixed
 - The wavelet noise generator now excludes -1.0f and 1.0f as return values.
+- Fixed console fading color.
 
 ## [1.16.0-alpha.2] - 2020-02-14
 ### Fixed

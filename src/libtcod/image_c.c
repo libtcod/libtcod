@@ -435,29 +435,6 @@ TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
   TCOD_image_refresh_console(ret, console);
   return ret;
 }
-/**
- *  Perform alpha blending on a single channel.
- */
-static uint8_t alpha_blend(
-    int dst_c, int dst_a, int src_c, int src_a, int out_a)
-{
-  return (uint8_t)(
-      ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
-  );
-}
-/**
- *  A modified lerp operation which can accept RGBA types.
- */
-static void TCOD_color_alpha_blend(
-    struct TCOD_ColorRGBA* dst,
-    const struct TCOD_ColorRGBA* src)
-{
-  uint8_t out_a = (uint8_t)(src->a + dst->a * (255 - src->a) / 255);
-  dst->r = alpha_blend(dst->r, dst->a, src->r, src->a, out_a);
-  dst->g = alpha_blend(dst->g, dst->a, src->g, src->a, out_a);
-  dst->b = alpha_blend(dst->b, dst->a, src->b, src->a, out_a);
-  dst->a = out_a;
-}
 void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console_)
 {
   if (!image) { return; }

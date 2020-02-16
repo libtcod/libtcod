@@ -291,15 +291,18 @@ void namegen_parser_prepare (void) {
 
 /* parser listener */
 bool namegen_parser_new_struct (TCOD_parser_struct_t str, const char *name) {
+    (void)str; (void)name; // Ignored parameters.
     parser_data = namegen_syllables_new();
     return true;
 }
 
 bool namegen_parser_flag (const char *name) {
+    (void)name; // Ignored parameter.
     return true;
 }
 
 bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_value_t value) {
+    (void)type; // Ignored parameter.
     if (strcmp(name,"syllablesStart") == 0)             parser_data->start = TCOD_strdup(value.s);
     else if (strcmp(name,"syllablesMiddle") == 0)       parser_data->middle = TCOD_strdup(value.s);
     else if (strcmp(name,"syllablesEnd") == 0)          parser_data->end = TCOD_strdup(value.s);
@@ -320,6 +323,7 @@ bool namegen_parser_property(const char *name, TCOD_value_type_t type, TCOD_valu
 }
 
 bool namegen_parser_end_struct(TCOD_parser_struct_t str, const char *name) {
+    (void)str; // Ignored parameter.
     /* if there's no syllable set by this name, add it to the list */
     if (namegen_generator_check(name) == false) {
         parser_data->name = TCOD_strdup(name);

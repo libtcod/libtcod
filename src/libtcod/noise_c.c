@@ -78,8 +78,8 @@ static float lattice( perlin_data_t *data, int ix, float fx, int iy, float fy, i
 #define DELTA				1e-6f
 #define SWAP(a, b, t)		t = a; a = b; b = t
 
-#define FLOOR(a) ((a)> 0 ? ((int)a) : (((int)a)-1) )
-#define CUBIC(a)	( a * a * (3 - 2*a) )
+#define FLOOR(a) ((a) > 0 ? (int)(a) : ((int)(a) - 1) )
+#define CUBIC(a) ((a) * (a) * (3 - 2 * (a)))
 
 static void normalize(perlin_data_t *data, float *f)
 {

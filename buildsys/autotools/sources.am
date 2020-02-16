@@ -126,7 +126,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console_printing.c \
 	../../src/libtcod/console_rexpaint.c \
 	../../src/libtcod/context.c \
-	../../src/libtcod/deprecated.cpp \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
 	../../src/libtcod/fov_c.c \

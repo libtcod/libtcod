@@ -15,7 +15,6 @@ target_sources(TCOD PRIVATE
     libtcod/console_printing.c
     libtcod/console_rexpaint.c
     libtcod/context.c
-    libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/fov.cpp
     libtcod/fov_c.c
@@ -121,7 +120,6 @@ source_group(libtcod FILES
     libtcod/console_types.h
     libtcod/context.c
     libtcod/context.h
-    libtcod/deprecated.cpp
     libtcod/error.c
     libtcod/error.h
     libtcod/fov.cpp

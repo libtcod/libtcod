@@ -456,3 +456,7 @@ const char *TCODConsole::getRGBColorControlString(TCOD_colctrl_t ctrl,
   return ret;
 }
 #endif // NO_UNICODE
+
+// Deprecated keyboard functions.
+void TCODConsole::setKeyboardRepeat(int, int) {}
+void TCODConsole::disableKeyboardRepeat() {}

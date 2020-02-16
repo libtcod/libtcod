@@ -539,6 +539,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
 	return true;
 }
 
+void TCOD_console_set_keyboard_repeat(int initial_delay, int interval)
+{
+  (void)initial_delay; (void)interval;
+}
+void TCOD_console_disable_keyboard_repeat(void) {}
+
 static void TCOD_console_read_asc(TCOD_console_t con, FILE *f,
                                   int width, int height, float version)
 {

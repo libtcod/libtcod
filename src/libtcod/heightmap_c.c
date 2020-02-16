@@ -260,7 +260,7 @@ bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t *hm, float waterLe
 }
 
 void TCOD_heightmap_islandify(TCOD_heightmap_t *hm, float seaLevel,TCOD_random_t rnd) {
-	/* TODO */
+  (void)hm; (void)seaLevel; (void)rnd; // This function is pending removal.
 }
 
 void TCOD_heightmap_add(TCOD_heightmap_t *hm, float value) {

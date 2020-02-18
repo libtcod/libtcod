@@ -170,7 +170,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/tree_c.c \
 	../../src/libtcod/txtfield.cpp \
 	../../src/libtcod/txtfield_c.c \
-	../../src/libtcod/wrappers.cpp \
+	../../src/libtcod/wrappers.c \
 	../../src/libtcod/zip.cpp \
 	../../src/libtcod/zip_c.c \
 	../../src/libtcod/gui/button.cpp \

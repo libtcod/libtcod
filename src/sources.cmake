@@ -59,7 +59,7 @@ target_sources(TCOD PRIVATE
     libtcod/tree_c.c
     libtcod/txtfield.cpp
     libtcod/txtfield_c.c
-    libtcod/wrappers.cpp
+    libtcod/wrappers.c
     libtcod/zip.cpp
     libtcod/zip_c.c
     libtcod/gui/button.cpp
@@ -214,7 +214,7 @@ source_group(libtcod FILES
     libtcod/txtfield_c.c
     libtcod/utility.h
     libtcod/version.h
-    libtcod/wrappers.cpp
+    libtcod/wrappers.c
     libtcod/wrappers.h
     libtcod/zip.cpp
     libtcod/zip.h

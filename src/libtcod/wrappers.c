@@ -53,7 +53,7 @@ TCOD_color_t int_to_color (colornum_t col) {
   return ret;
 }
 
-static constexpr colornum_t color_to_int(const TCOD_ColorRGB& color)
+static colornum_t color_to_int(const TCOD_ColorRGB color)
 {
   return (color.b << 16) | (color.g << 8) | color.r;
 }
@@ -63,34 +63,29 @@ bool TCOD_color_equals_wrapper (colornum_t c1, colornum_t c2) {
 }
 
 colornum_t TCOD_color_add_wrapper (colornum_t c1, colornum_t c2) {
-  return color_to_int(TCOD_color_add (int_to_color(c1),
-				      int_to_color(c2)));
+  return color_to_int(TCOD_color_add(int_to_color(c1), int_to_color(c2)));
 }
 
 colornum_t TCOD_color_subtract_wrapper (colornum_t c1, colornum_t c2) {
-  return color_to_int(TCOD_color_subtract (int_to_color(c1),
-				      int_to_color(c2)));
+  return color_to_int(TCOD_color_subtract(int_to_color(c1), int_to_color(c2)));
 }
 
 colornum_t TCOD_color_multiply_wrapper (colornum_t c1, colornum_t c2)
 {
-  return color_to_int(TCOD_color_multiply (int_to_color(c1), int_to_color(c2)));
+  return color_to_int(TCOD_color_multiply(int_to_color(c1), int_to_color(c2)));
 }
 
 colornum_t TCOD_color_multiply_scalar_wrapper (colornum_t c1, float value)
 {
-  return color_to_int(TCOD_color_multiply_scalar (int_to_color(c1),
-						  value));
+  return color_to_int(TCOD_color_multiply_scalar(int_to_color(c1), value));
 }
 
 colornum_t TCOD_color_lerp_wrapper(colornum_t c1, colornum_t c2, float coef)
 {
-  return color_to_int(TCOD_color_lerp (int_to_color(c1),int_to_color(c2),
-				       coef));
+  return color_to_int(TCOD_color_lerp(int_to_color(c1),int_to_color(c2),coef));
 }
 
-void TCOD_color_get_HSV_wrapper(colornum_t c,float * h,
-				float * s, float * v)
+void TCOD_color_get_HSV_wrapper(colornum_t c,float * h, float * s, float * v)
 {
   TCOD_color_get_HSV (int_to_color(c), h, s, v);
 }
@@ -176,7 +171,8 @@ void TCOD_console_fill_background(TCOD_Console* con, int *r, int *g, int *b)
   con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].bg = {(uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
+    con->tiles[i].bg = (TCOD_ColorRGBA){
+        (uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
   }
 }
 void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
@@ -184,7 +180,8 @@ void TCOD_console_fill_foreground(TCOD_Console* con, int *r, int *g, int *b)
   con = TCOD_console_validate_(con);
   if (!con) { return; }
   for (int i = 0; i < con->w * con->h; ++i) {
-    con->tiles[i].fg = {(uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
+    con->tiles[i].fg = (TCOD_ColorRGBA){
+        (uint8_t)r[i], (uint8_t)g[i], (uint8_t)b[i], 255};
   }
 }
 void TCOD_console_fill_char(TCOD_Console* con, int *arr)
@@ -311,7 +308,7 @@ void TCOD_console_print_double_frame(
 		title = TCOD_console_vsprint(fmt,ap);
 		va_end(ap);
 		title[w-3]=0; /* truncate if needed */
-    xs = x + (w - static_cast<int>(strlen(title)) - 2) / 2;
+    xs = x + (w - (int)strlen(title) - 2) / 2;
 		tmp=dat->back; /* swap colors */
 		dat->back=dat->fore;
 		dat->fore=tmp;
@@ -345,9 +342,7 @@ void TCOD_namegen_get_sets_wrapper(char **sets) {
 	TCOD_list_t l=TCOD_namegen_get_sets();
 	char **it;
 	int i=0;
-  for (it = reinterpret_cast<char**>(TCOD_list_begin(l));
-       it != reinterpret_cast<char**>(TCOD_list_end(l));
-       ++it) {
+  for (it = (char**)TCOD_list_begin(l); it != (char**)TCOD_list_end(l); ++it) {
 		sets[i++]=*it;
 	}
 }

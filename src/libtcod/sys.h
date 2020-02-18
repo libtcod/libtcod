@@ -170,6 +170,7 @@ TCODLIB_API void * TCOD_get_function_address(TCOD_library_t library, const char 
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 /* SDL renderer callback */
+struct SDL_Surface;
 typedef void (*SDL_renderer_t) (struct SDL_Surface* sdl_renderer);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);

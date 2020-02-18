@@ -44,14 +44,14 @@ extern "C" {
 struct TCOD_mipmap_{
   int width, height;
   float fwidth, fheight;
-  TCOD_color_t* buf;
+  TCOD_ColorRGB* buf;
   bool dirty;
 };
 
 typedef struct TCOD_Image {
   int nb_mipmaps;
   struct TCOD_mipmap_* mipmaps;
-  TCOD_color_t key_color;
+  TCOD_ColorRGB key_color;
   bool has_key_color;
 } TCOD_Image;
 

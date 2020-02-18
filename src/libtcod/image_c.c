@@ -45,6 +45,7 @@
 
 static void TCOD_image_invalidate_mipmaps(TCOD_Image* image)
 {
+  if (!image) { return; }
   for (int i = 1; i < image->nb_mipmaps; ++i) {
     image->mipmaps[i].dirty = true;
   }
@@ -63,11 +64,13 @@ static int TCOD_image_get_mipmap_levels(int width, int height)
   return nb_mipmap;
 }
 
-static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
+static void TCOD_image_generate_mip(TCOD_Image* image, int mip)
+{
+  if (!image) { return; }
   struct TCOD_mipmap_* orig = &image->mipmaps[0];
   struct TCOD_mipmap_* cur = &image->mipmaps[mip];
   if (!cur->buf) {
-    cur->buf = calloc(sizeof(*cur->buf), cur->width * cur->height);
+    cur->buf = malloc(sizeof(*cur->buf) * cur->width * cur->height);
   }
   cur->dirty = false;
   for (int x = 0; x < cur->width; ++x) {
@@ -75,7 +78,7 @@ static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
       int r = 0;
       int g = 0;
       int b = 0;
-      int count=0;
+      int count = 0;
       for (int sx = x << mip; sx < (x + 1) << mip; ++sx) {
         for (int sy = y << mip; sy < (y + 1) << mip; ++sy) {
           int offset = sx + sy * orig->width;
@@ -96,6 +99,7 @@ static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
 
 void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color)
 {
+  if (!image) { return; }
   for (int i = 0; i < image->mipmaps[0].width * image->mipmaps[0].height; ++i) {
     image->mipmaps[0].buf[i] = color;
   }
@@ -107,12 +111,21 @@ void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color)
 TCOD_Image* TCOD_image_new(int width, int height)
 {
   TCOD_Image* ret = calloc(sizeof(*ret), 1);
+  if (!ret) { return NULL; }
   ret->nb_mipmaps = TCOD_image_get_mipmap_levels(width, height);
   ret->mipmaps = calloc(sizeof(*ret->mipmaps), ret->nb_mipmaps);
-  ret->mipmaps[0].buf = calloc(sizeof(*ret->mipmaps->buf), width * height);
+  if (!ret->mipmaps) {
+    TCOD_image_delete(ret);
+    return NULL;
+  }
+  ret->mipmaps[0].buf = malloc(sizeof(*ret->mipmaps->buf) * width * height);
+  if (!ret->mipmaps[0].buf) {
+    TCOD_image_delete(ret);
+    return NULL;
+  }
 
   for (int i = 0; i < width * height; ++i) {
-    ret->mipmaps[0].buf[i] = TCOD_black;
+    ret->mipmaps[0].buf[i] = (TCOD_ColorRGB){0, 0, 0};
   }
   float fw = (float)width;
   float fh = (float)height;
@@ -129,7 +142,8 @@ TCOD_Image* TCOD_image_new(int width, int height)
   return ret;
 }
 
-TCOD_Image* TCOD_image_load(const char *filename) {
+TCOD_Image* TCOD_image_load(const char *filename)
+{
   TCOD_Image* image = NULL;
   SDL_Surface* surface = TCOD_sys_load_image(filename);
   if (surface) {
@@ -153,25 +167,31 @@ TCOD_Image* TCOD_image_load(const char *filename) {
 
 void TCOD_image_get_size(const TCOD_Image* image, int *w,int *h)
 {
+  if (!image) { return; }
   *w = image->mipmaps[0].width;
   *h = image->mipmaps[0].height;
 }
 
 TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y)
 {
+  if (!image) { return (TCOD_ColorRGB){0, 0, 0}; }
   if (x >= 0 && x < image->mipmaps[0].width
       && y >= 0 && y < image->mipmaps[0].height) {
     return image->mipmaps[0].buf[x + y * image->mipmaps[0].width];
   }
-  return TCOD_black;
+  return (TCOD_ColorRGB){0, 0, 0};
 }
 
-int TCOD_image_get_alpha(const TCOD_Image* image,int x, int y) {
+int TCOD_image_get_alpha(const TCOD_Image* image,int x, int y)
+{
+  if (!image) { return 0; }
   return 255;
 }
 
 TCOD_color_t TCOD_image_get_mipmap_pixel(
-    TCOD_Image* image, float x0, float y0, float x1, float y1) {
+    TCOD_Image* image, float x0, float y0, float x1, float y1)
+{
+  if (!image) { return (TCOD_ColorRGB){0, 0, 0}; }
   int cur_size = 1;
   int mip = 0;
   int texel_xsize = (int)(x1 - x0);
@@ -194,13 +214,15 @@ TCOD_color_t TCOD_image_get_mipmap_pixel(
   if (texel_x < 0 || texel_y < 0
       || texel_x >= image->mipmaps[mip].width
       || texel_y >= image->mipmaps[mip].height) {
-    return TCOD_black;
+    return (TCOD_ColorRGB){0, 0, 0};
   }
   return image->mipmaps[mip].buf[texel_x
                                  + texel_y * image->mipmaps[mip].width];
 }
 
-void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col) {
+void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col)
+{
+  if (!image) { return; }
   if (x >= 0 && x < image->mipmaps[0].width
       && y >= 0 && y < image->mipmaps[0].height) {
     image->mipmaps[0].buf[x + y * image->mipmaps[0].width] = col;
@@ -210,7 +232,9 @@ void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col) {
   }
 }
 
-static void TCOD_image_delete_internal(TCOD_Image* image) {
+static void TCOD_image_delete_internal(TCOD_Image* image)
+{
+  if (!image) { return; }
   if (image->mipmaps) {
     for (int i=0; i < image->nb_mipmaps; ++i) {
       if (image->mipmaps[i].buf) { free(image->mipmaps[i].buf); }
@@ -220,12 +244,16 @@ static void TCOD_image_delete_internal(TCOD_Image* image) {
   }
 }
 
-void TCOD_image_delete(TCOD_Image* image) {
+void TCOD_image_delete(TCOD_Image* image)
+{
+  if (!image) { return; }
   TCOD_image_delete_internal(image);
   free(image);
 }
 
-bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y) {
+bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y)
+{
+  if (!image) { return false; }
   TCOD_color_t col = TCOD_image_get_pixel(image, x, y);
   if (image->has_key_color
       && image->key_color.r == col.r
@@ -238,9 +266,12 @@ bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y) {
 }
 
 void TCOD_image_blit(
-    TCOD_Image* image, TCOD_console_t console, float x, float y,
+    TCOD_Image* image, TCOD_Console* console, float x, float y,
     TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
 {
+  if (!image) { return; }
+  console = TCOD_console_validate_(console);
+  if (!console) { return; }
   if (scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE) {
     return;
   }
@@ -328,9 +359,12 @@ void TCOD_image_blit(
 }
 
 void TCOD_image_blit_rect(
-    TCOD_Image* image, TCOD_console_t console,
+    TCOD_Image* image, TCOD_Console* console,
     int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag)
 {
+  if (!image) { return; }
+  console = TCOD_console_validate_(console);
+  if (!console) { return; }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   if (w == -1) { w = width; }
@@ -342,19 +376,24 @@ void TCOD_image_blit_rect(
                   scalex, scaley, 0.0f);
 }
 
-TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
+TCOD_Image* TCOD_image_from_console(const TCOD_Console* console)
+{
+  console = TCOD_console_validate_(console);
+  if (!console) { return NULL; }
   if (!TCOD_ctx.tileset) { return NULL; }
   TCOD_Image* ret = TCOD_image_new(
       TCOD_console_get_width(console) * TCOD_ctx.tileset->tile_width,
       TCOD_console_get_height(console) * TCOD_ctx.tileset->tile_height);
+  if (!ret) { return NULL; }
   TCOD_image_refresh_console(ret, console);
   return ret;
 }
-void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console_)
+void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
 {
   if (!image) { return; }
   if (!TCOD_ctx.tileset) { return; }
-  const TCOD_Console* console = TCOD_console_validate_(console_);
+  console = TCOD_console_validate_(console);
+  if (!console) { return; }
   for (int console_y = 0; console_y < console->h; ++console_y) {
     for (int console_x = 0; console_x < console->w; ++console_x) {
       // Get the console index and tileset graphic.
@@ -388,6 +427,7 @@ void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console_)
 
 void TCOD_image_save(const TCOD_Image* image, const char *filename)
 {
+  if (!image) { return; }
   struct SDL_Surface* bitmap = NULL;
   bool must_free = false;
   bitmap = TCOD_sys_create_bitmap(
@@ -406,12 +446,14 @@ void TCOD_image_save(const TCOD_Image* image, const char *filename)
 
 void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color)
 {
+  if (!image) { return; }
   image->has_key_color = true;
   image->key_color = key_color;
 }
 
 void TCOD_image_invert(TCOD_Image* image)
 {
+  if (!image) { return; }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   for (int i = 0; i < width * height; ++i) {
@@ -428,6 +470,7 @@ void TCOD_image_invert(TCOD_Image* image)
 
 void TCOD_image_hflip(TCOD_Image* image)
 {
+  if (!image) { return; }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   for (int py = 0; py < height; ++py) {
@@ -442,6 +485,7 @@ void TCOD_image_hflip(TCOD_Image* image)
 
 void TCOD_image_vflip(TCOD_Image* image)
 {
+  if (!image) { return; }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   for (int px = 0; px < width; ++px) {
@@ -456,6 +500,7 @@ void TCOD_image_vflip(TCOD_Image* image)
 
 void TCOD_image_rotate90(TCOD_Image* image, int numRotations)
 {
+  if (!image) { return; }
   numRotations = numRotations % 4;
   if (numRotations == 0) { return; }
   if (numRotations < 0) numRotations += 4;
@@ -508,6 +553,7 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations)
 
 void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
 {
+  if (!image) { return; }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   if ( neww == width && newh == height ) { return; }
@@ -738,9 +784,11 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
 }
 
 void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
-      int dx, int dy, int sx, int sy, int w, int h) {
+      int dx, int dy, int sx, int sy, int w, int h)
+{
+  if (!image) { return; }
   con = TCOD_console_validate_(con);
-  TCOD_IFNOT(image != NULL && con != NULL) { return; }
+  if (!con) { return; }
   TCOD_color_t grid[4];
   TCOD_color_t cols[2];
 

@@ -27,6 +27,10 @@ environment:
       CONAN_PASSWORD:
         secure: /oF4w+hmQPXWuANB2bQOks3rTLEAimrYPGRt4VBuZQY23Bk1ElBJetGBTuT5Pd2e
 
+matrix:
+  allow_failures:
+    - CONAN_ARCHS: x86
+
 init:
 - cmd: if defined CONAN_BUILD git config --system core.autocrlf input
 

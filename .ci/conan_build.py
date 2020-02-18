@@ -7,7 +7,9 @@ import subprocess
 from cpt.packager import ConanMultiPackager
 
 try:
-    version = subprocess.check_output(["git", "describe"], universal_newlines=True)
+    version = subprocess.check_output(
+        ["git", "describe", "--abbrev=0"], universal_newlines=True
+    )
 except subprocess.CalledProcessError:
     version = "0.0"
 

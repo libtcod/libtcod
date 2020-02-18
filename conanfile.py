@@ -27,7 +27,7 @@ class LibtcodConan(ConanFile):
         """Use `git describe` for the version string."""
         git = tools.Git()
         try:
-            self.version = git.run("describe")
+            self.version = git.run("describe --abbrev=0")
         except subprocess.CalledProcessError:
             self.version = "0.0"
 

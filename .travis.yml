@@ -11,19 +11,67 @@ jobs:
   - os: linux
     language: python
     python: 3.7
-    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=7 CONAN_ARCHS=x86_64 CONAN_DOCKER_IMAGE=conanio/gcc7
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=7
+      CONAN_DOCKER_IMAGE=conanio/gcc7
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Debug
     services:
       - docker
   - os: linux
     language: python
     python: 3.7
-    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=8 CONAN_ARCHS=x86_64 CONAN_DOCKER_IMAGE=conanio/gcc8
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=7
+      CONAN_DOCKER_IMAGE=conanio/gcc7
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Release
     services:
       - docker
   - os: linux
     language: python
     python: 3.7
-    env: BUILD_TOOL=conan CONAN_GCC_VERSIONS=9 CONAN_ARCHS=x86_64 CONAN_DOCKER_IMAGE=conanio/gcc9
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=8
+      CONAN_DOCKER_IMAGE=conanio/gcc8
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Debug
+    services:
+      - docker
+  - os: linux
+    language: python
+    python: 3.7
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=8
+      CONAN_DOCKER_IMAGE=conanio/gcc8
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Release
+    services:
+      - docker
+  - os: linux
+    language: python
+    python: 3.7
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=9
+      CONAN_DOCKER_IMAGE=conanio/gcc9
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Debug
+    services:
+      - docker
+  - os: linux
+    language: python
+    python: 3.7
+    env:
+      BUILD_TOOL=conan
+      CONAN_GCC_VERSIONS=9
+      CONAN_DOCKER_IMAGE=conanio/gcc9
+      CONAN_ARCHS=x86_64
+      CONAN_BUILD_TYPES=Release
     services:
       - docker
   - os: osx

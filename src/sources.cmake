@@ -49,7 +49,7 @@ target_sources(TCOD PRIVATE
     libtcod/renderer_gl2.c
     libtcod/renderer_sdl2.c
     libtcod/sys.cpp
-    libtcod/sys_c.cpp
+    libtcod/sys_c.c
     libtcod/sys_sdl_c.cpp
     libtcod/sys_sdl_img_bmp.cpp
     libtcod/sys_sdl_img_png.cpp
@@ -195,7 +195,7 @@ source_group(libtcod FILES
     libtcod/sys.cpp
     libtcod/sys.h
     libtcod/sys.hpp
-    libtcod/sys_c.cpp
+    libtcod/sys_c.c
     libtcod/sys_sdl_c.cpp
     libtcod/sys_sdl_img_bmp.cpp
     libtcod/sys_sdl_img_png.cpp

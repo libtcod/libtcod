@@ -35,7 +35,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <exception>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -147,7 +146,7 @@ static DWORD CountSetBits(ULONG_PTR bitMask)
 {
     DWORD LSHIFT = sizeof(ULONG_PTR)*8 - 1;
     DWORD bitSetCount = 0;
-    ULONG_PTR bitTest = static_cast<ULONG_PTR>(1) << LSHIFT;
+    ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
     DWORD i;
 
     for (i = 0; i <= LSHIFT; ++i)
@@ -196,7 +195,7 @@ int TCOD_sys_get_num_cores(void) {
 	    } NumaNode;
 	    CACHE_DESCRIPTOR Cache;
 	    ULONGLONG Reserved[2];
-	  };
+	  } Union;
 	} SYSTEM_LOGICAL_PROCESSOR_INFORMATION,
 	 *PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
 	typedef BOOL (WINAPI *LPFN_GLPI)(
@@ -211,9 +210,8 @@ int TCOD_sys_get_num_cores(void) {
     DWORD logicalProcessorCount = 0;
     DWORD byteOffset = 0;
 
-    glpi = reinterpret_cast<LPFN_GLPI>(
-        GetProcAddress(GetModuleHandle(TEXT("kernel32")),
-                       "GetLogicalProcessorInformation"));
+    glpi = (LPFN_GLPI)GetProcAddress(GetModuleHandle(TEXT("kernel32")),
+                                     "GetLogicalProcessorInformation");
     if (! glpi) {
         return 1;
     }
@@ -227,8 +225,7 @@ int TCOD_sys_get_num_cores(void) {
                 if (buffer)
                     free(buffer);
 
-                buffer = static_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION>(
-                    malloc(returnLength));
+                buffer = malloc(returnLength);
 
                 if (NULL == buffer) {
                     return 1;
@@ -267,7 +264,7 @@ TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data)
 {
 #ifdef TCOD_WINDOWS
 	HANDLE ret = CreateThread(
-      NULL, 0, reinterpret_cast<DWORD (WINAPI*)(LPVOID)>(func), data, 0, NULL);
+      NULL, 0, (DWORD (WINAPI*)(LPVOID))func, data, 0, NULL);
 	return ret;
 #else
 	pthread_t id;
@@ -275,10 +272,9 @@ TCOD_thread_t TCOD_thread_new(int (*func)(void *), void *data)
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
-	iret =pthread_create(
-      &id, &attr, reinterpret_cast<void *(*)(void *)>(func), data);
+	iret =pthread_create(&id, &attr, (void *(*)(void *))func, data);
 	if ( iret != 0 ) id=0;
-	return reinterpret_cast<TCOD_thread_t>(id);
+	return (TCOD_thread_t)id;
 #endif
 }
 
@@ -293,7 +289,7 @@ void TCOD_thread_wait(TCOD_thread_t th) {
 #ifdef TCOD_WINDOWS
 	WaitForSingleObject(th, INFINITE);
 #else
-	pthread_t id = reinterpret_cast<pthread_t>(th);
+	pthread_t id = (pthread_t)th;
 	pthread_join(id,NULL);
 #endif
 }
@@ -301,44 +297,42 @@ void TCOD_thread_wait(TCOD_thread_t th) {
 TCOD_mutex_t TCOD_mutex_new()
 {
 #ifdef TCOD_WINDOWS
-	CRITICAL_SECTION *cs =
-      static_cast<CRITICAL_SECTION*>(calloc(sizeof(CRITICAL_SECTION), 1));
+	CRITICAL_SECTION *cs = calloc(sizeof(CRITICAL_SECTION), 1);
 	InitializeCriticalSection(cs);
-	return static_cast<TCOD_mutex_t>(cs);
+	return cs;
 #else
 	static pthread_mutex_t tmp=PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_t *mut =
-      static_cast<pthread_mutex_t*>(calloc(sizeof(pthread_mutex_t), 1));
+	pthread_mutex_t *mut = calloc(sizeof(pthread_mutex_t), 1);
 	*mut = tmp;
-	return static_cast<TCOD_mutex_t>(mut);
+	return (TCOD_mutex_t)mut;
 #endif
 }
 
 void TCOD_mutex_in(TCOD_mutex_t mut)
 {
 #ifdef TCOD_WINDOWS
-	EnterCriticalSection(static_cast<CRITICAL_SECTION*>(mut));
+	EnterCriticalSection((CRITICAL_SECTION*)mut);
 #else
-	pthread_mutex_lock(static_cast<pthread_mutex_t*>(mut));
+	pthread_mutex_lock((pthread_mutex_t*)mut);
 #endif
 }
 
 void TCOD_mutex_out(TCOD_mutex_t mut)
 {
 #ifdef TCOD_WINDOWS
-	LeaveCriticalSection(static_cast<CRITICAL_SECTION*>(mut));
+	LeaveCriticalSection((CRITICAL_SECTION*)mut);
 #else
-	pthread_mutex_unlock(static_cast<pthread_mutex_t*>(mut));
+	pthread_mutex_unlock((pthread_mutex_t*)mut);
 #endif
 }
 
 void TCOD_mutex_delete(TCOD_mutex_t mut)
 {
 #ifdef TCOD_WINDOWS
-	DeleteCriticalSection(static_cast<CRITICAL_SECTION*>(mut));
+	DeleteCriticalSection((CRITICAL_SECTION*)mut);
 	free(mut);
 #else
-	pthread_mutex_destroy(static_cast<pthread_mutex_t*>(mut));
+	pthread_mutex_destroy((pthread_mutex_t*)mut);
 	free(mut);
 #endif
 }
@@ -349,9 +343,9 @@ TCOD_semaphore_t TCOD_semaphore_new(int initVal)
 	HANDLE ret = CreateSemaphore(NULL,initVal,255,NULL);
 	return ret;
 #else
-	sem_t *ret = static_cast<sem_t*>(calloc(sizeof(sem_t), 1));
+	sem_t *ret = calloc(sizeof(sem_t), 1);
 	if ( ret ) sem_init(ret, 0, initVal);
-	return static_cast<TCOD_semaphore_t>(ret);
+	return (TCOD_semaphore_t)ret;
 #endif
 }
 
@@ -360,7 +354,7 @@ void TCOD_semaphore_lock(TCOD_semaphore_t sem)
 #ifdef TCOD_WINDOWS
 	WaitForSingleObject(sem, INFINITE);
 #else
-	if ( sem ) sem_wait(static_cast<sem_t*>(sem));
+	if ( sem ) sem_wait((sem_t*)sem);
 #endif
 }
 
@@ -369,7 +363,7 @@ void TCOD_semaphore_unlock(TCOD_semaphore_t sem)
 #ifdef TCOD_WINDOWS
 	ReleaseSemaphore(sem, 1, NULL);
 #else
-	if ( sem ) sem_post(static_cast<sem_t*>(sem));
+	if ( sem ) sem_post((sem_t*)sem);
 #endif
 }
 
@@ -380,7 +374,7 @@ void TCOD_semaphore_delete( TCOD_semaphore_t sem)
 #else
 	if ( sem )
 	{
-		sem_destroy(static_cast<sem_t*>(sem));
+		sem_destroy((sem_t*)sem);
 		free (sem);
 	}
 #endif
@@ -399,22 +393,21 @@ typedef struct {
 
 TCOD_cond_t TCOD_condition_new(void) {
 #ifdef TCOD_WINDOWS
-	cond_t *ret = static_cast<cond_t*>(calloc(sizeof(cond_t), 1));
+	cond_t *ret = calloc(sizeof(cond_t), 1);
 	ret->mutex = TCOD_mutex_new();
 	ret->waiting = TCOD_semaphore_new(0);
 	ret->waitDone = TCOD_semaphore_new(0);
 	return ret;
 #else
-	pthread_cond_t *ret =
-    static_cast<pthread_cond_t*>(calloc(sizeof(pthread_cond_t), 1));
+	pthread_cond_t *ret = calloc(sizeof(pthread_cond_t), 1);
 	if ( ret ) pthread_cond_init(ret,NULL);
-	return static_cast<TCOD_cond_t>(ret);
+	return (TCOD_cond_t)ret;
 #endif
 }
 
 void TCOD_condition_signal(TCOD_cond_t pcond) {
 #ifdef TCOD_WINDOWS
-	cond_t* cond = static_cast<cond_t*>(pcond);
+	cond_t* cond = pcond;
 	if ( cond ) {
 		TCOD_mutex_in(cond->mutex);
 		if ( cond->nbWaiting > cond->nbSignals ) {
@@ -428,14 +421,14 @@ void TCOD_condition_signal(TCOD_cond_t pcond) {
 	}
 #else
 	if ( pcond ) {
-		pthread_cond_signal(static_cast<pthread_cond_t*>(pcond));
+		pthread_cond_signal((pthread_cond_t*)pcond);
 	}
 #endif
 }
 
 void TCOD_condition_broadcast(TCOD_cond_t pcond) {
 #ifdef TCOD_WINDOWS
-	cond_t *cond = static_cast<cond_t*>(pcond);
+	cond_t *cond = pcond;
 	if ( cond ) {
 		TCOD_mutex_in(cond->mutex);
 		if ( cond->nbWaiting > cond->nbSignals ) {
@@ -455,14 +448,14 @@ void TCOD_condition_broadcast(TCOD_cond_t pcond) {
 	}
 #else
 	if ( pcond ) {
-		pthread_cond_broadcast(static_cast<pthread_cond_t*>(pcond));
+		pthread_cond_broadcast((pthread_cond_t*)pcond);
 	}
 #endif
 }
 
 void TCOD_condition_wait(TCOD_cond_t pcond, TCOD_mutex_t mut) {
 #ifdef TCOD_WINDOWS
-	cond_t *cond = static_cast<cond_t*>(pcond);
+	cond_t *cond = pcond;
 	if ( cond ) {
 		TCOD_mutex_in(cond->mutex);
 		cond->nbWaiting++;
@@ -479,15 +472,14 @@ void TCOD_condition_wait(TCOD_cond_t pcond, TCOD_mutex_t mut) {
 	}
 #else
 	if ( pcond && mut ) {
-		pthread_cond_wait(static_cast<pthread_cond_t*>(pcond),
-                      static_cast<pthread_mutex_t*>(mut));
+		pthread_cond_wait((pthread_cond_t*)pcond, (pthread_mutex_t*)mut);
 	}
 #endif
 }
 
 void TCOD_condition_delete( TCOD_cond_t pcond) {
 #ifdef TCOD_WINDOWS
-  cond_t* cond = static_cast<cond_t*>(pcond);
+  cond_t* cond = pcond;
 	if ( cond ) {
 		TCOD_mutex_delete(cond->mutex);
 		TCOD_semaphore_delete(cond->waiting);
@@ -496,7 +488,7 @@ void TCOD_condition_delete( TCOD_cond_t pcond) {
 	}
 #else
 	if ( pcond ) {
-    pthread_cond_destroy(static_cast<pthread_cond_t*>(pcond));
+    pthread_cond_destroy((pthread_cond_t*)pcond);
 		free (pcond);
 	}
 #endif
@@ -518,7 +510,7 @@ void TCOD_fatal(const char *fmt, ...)
   vfprintf(stderr, fmt, ap);
   va_end(ap);
   fprintf(stderr, "\n");
-  std::terminate();
+  exit(EXIT_FAILURE);
 }
 void TCOD_fatal_nopar(const char *msg)
 {
@@ -529,17 +521,16 @@ void TCOD_fatal_nopar(const char *msg)
 #ifdef TCOD_WINDOWS
 TCOD_library_t TCOD_load_library(const char *path)
 {
-  return static_cast<TCOD_library_t>(LoadLibrary(path));
+  return (TCOD_library_t)LoadLibrary(path);
 }
 void* TCOD_get_function_address(
     TCOD_library_t library, const char *function_name)
 {
-  return reinterpret_cast<void*>(GetProcAddress(static_cast<HMODULE>(library),
-                                                function_name));
+  return (void*)GetProcAddress((HMODULE)library, function_name);
 }
 void TCOD_close_library(TCOD_library_t library)
 {
-  FreeLibrary(static_cast<HMODULE>(library));
+  FreeLibrary((HMODULE)library);
 }
 #else
 TCOD_library_t TCOD_load_library(const char *path)

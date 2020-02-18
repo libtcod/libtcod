@@ -43,21 +43,8 @@
 
 #include <SDL.h>
 
-/*
-Internal libtcod optimisation, direct colour manipulation in the images primary mipmap.
-*/
-TCOD_color_t *TCOD_image_get_colors(TCOD_Image* image) {
-  return image->mipmaps[0].buf;
-}
-
-void TCOD_image_get_key_data(const TCOD_Image* image, bool* has_key_color,
-                             TCOD_color_t* key_color)
+static void TCOD_image_invalidate_mipmaps(TCOD_Image* image)
 {
-  *has_key_color = image->has_key_color;
-  *key_color = image->key_color;
-}
-
-void TCOD_image_invalidate_mipmaps(TCOD_Image* image) {
   for (int i = 1; i < image->nb_mipmaps; ++i) {
     image->mipmaps[i].dirty = true;
   }
@@ -106,70 +93,9 @@ static void TCOD_image_generate_mip(TCOD_Image* image, int mip) {
     }
   }
 }
-/*
-Internal way of copying rendering fg/bg color frame data.
-*/
-bool TCOD_image_mipmap_copy_internal(const TCOD_Image* img_src,
-                                     TCOD_Image* img_dst)
-{
-  if (!img_src->mipmaps || img_src->sys_img || !img_dst->mipmaps
-      || img_dst->sys_img) { // Both internal images.
-    return false;
-  }
-  if (img_src->mipmaps[0].width != img_dst->mipmaps[0].width
-      || img_src->mipmaps[0].height != img_dst->mipmaps[0].height) {
-    return false;
-  }
-  // Copy all mipmaps?
-  img_dst->mipmaps[0].dirty = img_src->mipmaps[0].dirty;
-  memcpy(
-      img_dst->mipmaps[0].buf,
-      img_src->mipmaps[0].buf,
-      (sizeof(*img_src->mipmaps->buf)
-       * (img_src->mipmaps[0].width) * (img_src->mipmaps[0].height))
-  );
-  for (int i = 1; i < img_src->nb_mipmaps; ++i) {
-    img_dst->mipmaps[i].dirty = true;
-  }
-  return true;
-}
-
-static void TCOD_image_init_mipmaps(TCOD_Image* image)
-{
-  int w, h;
-  if (!image->sys_img) { return; }
-  TCOD_sys_get_image_size(image->sys_img, &w, &h);
-  image->nb_mipmaps = TCOD_image_get_mipmap_levels(w, h);
-  image->mipmaps = calloc(sizeof(*image->mipmaps), image->nb_mipmaps);
-  image->mipmaps[0].buf = calloc(sizeof(*image->mipmaps->buf), w * h);
-  for (int x = 0; x < w; ++x) {
-    for (int y = 0; y < h; ++y) {
-      image->mipmaps[0].buf[x + y * w] =
-          TCOD_sys_get_image_pixel(image->sys_img, x, y);
-    }
-  }
-  float fw = (float)w;
-  float fh = (float)h;
-  for (int i = 0; i < image->nb_mipmaps; ++i) {
-    image->mipmaps[i].width = w;
-    image->mipmaps[i].height = h;
-    image->mipmaps[i].fwidth = fw;
-    image->mipmaps[i].fheight = fh;
-    image->mipmaps[i].dirty = true;
-    w >>= 1;
-    h >>= 1;
-    fw *= 0.5f;
-    fh *= 0.5f;
-  }
-  image->mipmaps[0].dirty = false;
-}
 
 void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color)
 {
-  if (!image->mipmaps && !image->sys_img) { return; } /* no image data */
-  if (!image->mipmaps) {
-    TCOD_image_init_mipmaps(image);
-  }
   for (int i = 0; i < image->mipmaps[0].width * image->mipmaps[0].height; ++i) {
     image->mipmaps[0].buf[i] = color;
   }
@@ -204,44 +130,43 @@ TCOD_Image* TCOD_image_new(int width, int height)
 }
 
 TCOD_Image* TCOD_image_load(const char *filename) {
-  TCOD_Image* ret = calloc(sizeof(*ret), 1);
-  ret->sys_img = TCOD_sys_load_image(filename);
-  return ret;
+  TCOD_Image* image = NULL;
+  SDL_Surface* surface = TCOD_sys_load_image(filename);
+  if (surface) {
+    image = TCOD_image_new(surface->w, surface->h);
+    if (image) {
+      SDL_ConvertPixels(
+          surface->w,
+          surface->h,
+          surface->format->format,
+          surface->pixels,
+          surface->pitch,
+          SDL_PIXELFORMAT_RGB24,
+          image->mipmaps[0].buf,
+          (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
+      TCOD_image_invalidate_mipmaps(image);
+    }
+    SDL_FreeSurface(surface);
+  }
+  return image;
 }
 
 void TCOD_image_get_size(const TCOD_Image* image, int *w,int *h)
 {
-  if (!image->mipmaps && !image->sys_img) { return; } // no image data
-  if (image->mipmaps) {
-    *w = image->mipmaps[0].width;
-    *h = image->mipmaps[0].height;
-  } else {
-    TCOD_sys_get_image_size(image->sys_img, w, h);
-  }
+  *w = image->mipmaps[0].width;
+  *h = image->mipmaps[0].height;
 }
 
 TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y)
 {
-  if (!image->mipmaps && !image->sys_img) {
-    return TCOD_black; // no image data
+  if (x >= 0 && x < image->mipmaps[0].width
+      && y >= 0 && y < image->mipmaps[0].height) {
+    return image->mipmaps[0].buf[x + y * image->mipmaps[0].width];
   }
-  if (image->mipmaps) {
-    if (x >= 0 && x < image->mipmaps[0].width
-        && y >= 0 && y < image->mipmaps[0].height) {
-      return image->mipmaps[0].buf[x + y * image->mipmaps[0].width];
-    } else {
-      return TCOD_black;
-    }
-  } else {
-    return TCOD_sys_get_image_pixel(image->sys_img, x, y);
-  }
+  return TCOD_black;
 }
 
 int TCOD_image_get_alpha(const TCOD_Image* image,int x, int y) {
-
-  if (image->sys_img) {
-    return TCOD_sys_get_image_alpha(image->sys_img, x, y);
-  }
   return 255;
 }
 
@@ -249,10 +174,6 @@ TCOD_color_t TCOD_image_get_mipmap_pixel(
     TCOD_Image* image, float x0, float y0, float x1, float y1) {
   int cur_size = 1;
   int mip = 0;
-  if (!image->mipmaps && !image->sys_img) {
-    return TCOD_black; // no image data
-  }
-  if (!image->mipmaps) { TCOD_image_init_mipmaps(image); }
   int texel_xsize = (int)(x1 - x0);
   int texel_ysize = (int)(y1 - y0);
   int texel_size = texel_xsize < texel_ysize ? texel_ysize : texel_xsize;
@@ -280,10 +201,6 @@ TCOD_color_t TCOD_image_get_mipmap_pixel(
 }
 
 void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col) {
-  if (!image->mipmaps && !image->sys_img) { return; } /* no image data */
-  if (!image->mipmaps) {
-    TCOD_image_init_mipmaps(image);
-  }
   if (x >= 0 && x < image->mipmaps[0].width
       && y >= 0 && y < image->mipmaps[0].height) {
     image->mipmaps[0].buf[x + y * image->mipmaps[0].width] = col;
@@ -293,15 +210,13 @@ void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col) {
   }
 }
 
-void TCOD_image_delete_internal(TCOD_Image* image) {
+static void TCOD_image_delete_internal(TCOD_Image* image) {
   if (image->mipmaps) {
     for (int i=0; i < image->nb_mipmaps; ++i) {
       if (image->mipmaps[i].buf) { free(image->mipmaps[i].buf); }
     }
     free(image->mipmaps);
-  }
-  if (image->sys_img) {
-    TCOD_sys_delete_bitmap(image->sys_img);
+    image->mipmaps = NULL;
   }
 }
 
@@ -475,16 +390,12 @@ void TCOD_image_save(const TCOD_Image* image, const char *filename)
 {
   struct SDL_Surface* bitmap = NULL;
   bool must_free = false;
-  if (image->sys_img) {
-    bitmap = image->sys_img;
-  } else if (image->mipmaps){
-    bitmap = TCOD_sys_create_bitmap(
-        image->mipmaps[0].width,
-        image->mipmaps[0].height,
-        image->mipmaps[0].buf
-    );
-    must_free=true;
-  }
+  bitmap = TCOD_sys_create_bitmap(
+      image->mipmaps[0].width,
+      image->mipmaps[0].height,
+      image->mipmaps[0].buf
+  );
+  must_free=true;
   if (bitmap) {
     TCOD_sys_save_bitmap(bitmap, filename);
     if (must_free) {
@@ -501,10 +412,6 @@ void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color)
 
 void TCOD_image_invert(TCOD_Image* image)
 {
-  if (!image->mipmaps && !image->sys_img) { return; } /* no image data */
-  if (!image->mipmaps) {
-    TCOD_image_init_mipmaps(image);
-  }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   for (int i = 0; i < width * height; ++i) {
@@ -566,7 +473,6 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations)
     TCOD_image_delete_internal(image);
     /* update image with the new image content */
     image->mipmaps = img2->mipmaps;
-    image->sys_img = NULL;
     image->nb_mipmaps = img2->nb_mipmaps;
     free(img2);
   } else if (numRotations == 2) {
@@ -595,7 +501,6 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations)
     TCOD_image_delete_internal(image);
     /* update image with the new image content */
     image->mipmaps = newImg->mipmaps;
-    image->sys_img = NULL;
     image->nb_mipmaps = newImg->nb_mipmaps;
     free(newImg);
   }
@@ -717,7 +622,6 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh)
   TCOD_image_delete_internal(image);
   /* update image with the new image content */
   image->mipmaps = newimg->mipmaps;
-  image->sys_img = NULL;
   image->nb_mipmaps = newimg->nb_mipmaps;
   free(newimg);
 }

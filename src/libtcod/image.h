@@ -49,7 +49,6 @@ struct TCOD_mipmap_{
 };
 
 typedef struct TCOD_Image {
-  struct SDL_Surface* sys_img;
   int nb_mipmaps;
   struct TCOD_mipmap_* mipmaps;
   TCOD_color_t key_color;

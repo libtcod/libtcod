@@ -158,14 +158,6 @@ extern TCOD_internal_context_t TCOD_ctx;
 #define TCOD_LOG(x) printf x
 #endif
 
-/* image internal stuff */
-bool TCOD_image_mipmap_copy_internal(const TCOD_Image* srcImage,
-                                     TCOD_Image* dstImage);
-TCOD_color_t *TCOD_image_get_colors(TCOD_Image* image);
-void TCOD_image_invalidate_mipmaps(TCOD_Image* image);
-void TCOD_image_get_key_data(const TCOD_Image* image,
-                             bool *has_key_color, TCOD_color_t *key_color);
-
 /* fov internal stuff */
 void TCOD_map_compute_fov_circular_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);

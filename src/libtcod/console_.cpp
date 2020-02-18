@@ -263,17 +263,21 @@ void TCODConsole::print(int x, int y, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   TCOD_console_print_internal(
-      data, x, y, 0, 0, data->bkgnd_flag, data->alignment,
+      data, x, y, 0, 0, getBackgroundFlag(), getAlignment(),
       TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
 void TCODConsole::print(int x, int y, const std::string &str) {
-  this->print(x, y, str, data->alignment, data->bkgnd_flag);
+  this->print(x, y, str, getAlignment(), getBackgroundFlag());
 }
 void TCODConsole::print(int x, int y, const std::string &str,
                         TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag) {
-  TCOD_console_printn(data, x, y, str.size(), str.c_str(),
-                      &data->fore, &data->back, flag, alignment);
+  auto fg_ = getDefaultForeground();
+  auto bg_ = getDefaultBackground();
+  TCOD_ColorRGB fg{fg_.r, fg_.g, fg_.b};
+  TCOD_ColorRGB bg{bg_.r, bg_.g, bg_.b};
+  TCOD_console_printn(
+      data, x, y, str.size(), str.c_str(), &fg, &bg, flag, alignment);
 }
 void TCODConsole::printf(int x, int y, const char *fmt, ...) {
   va_list ap;
@@ -326,10 +330,9 @@ void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_loc
 int TCODConsole::printRect(int x, int y, int w, int h, const char *fmt, ...)
 {
   va_list ap;
-  TCOD_IFNOT (data != NULL) { return 0; }
   va_start(ap,fmt);
   int ret = TCOD_console_print_internal(
-      data, x, y, w, h, data->bkgnd_flag, data->alignment,
+      data, x, y, w, h, getBackgroundFlag(), getAlignment(),
       TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;
@@ -380,10 +383,9 @@ void TCODConsole::mapStringToFont(const wchar_t *s, int fontCharX, int fontCharY
 void TCODConsole::print(int x, int y, const wchar_t *fmt, ...)
 {
   va_list ap;
-  TCOD_IFNOT (data != NULL) { return; }
   va_start(ap, fmt);
   TCOD_console_print_internal_utf(
-      data, x, y, 0, 0, data->bkgnd_flag, data->alignment,
+      data, x, y, 0, 0, getBackgroundFlag(), getAlignment(),
       TCOD_console_vsprint_utf(fmt, ap), false, false);
   va_end(ap);
 }
@@ -398,10 +400,9 @@ void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t
 int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...)
 {
   va_list ap;
-  TCOD_IFNOT (data != NULL) { return 0; }
   va_start(ap,fmt);
   int ret = TCOD_console_print_internal_utf(
-      data, x, y, w, h, data->bkgnd_flag, data->alignment,
+      data, x, y, w, h, getBackgroundFlag(), getAlignment(),
       TCOD_console_vsprint_utf(fmt, ap), true, false);
   va_end(ap);
   return ret;

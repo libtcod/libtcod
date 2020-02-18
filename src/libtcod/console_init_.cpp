@@ -51,8 +51,3 @@ void init_root(int w, int h, const std::string& title, bool fullscreen,
 }
 } // namespace console
 } // namespace tcod
-
-void TCOD_internal_force_cpp_console_(TCOD_Console* console)
-{
-  TCODConsole::root->data = console;
-}

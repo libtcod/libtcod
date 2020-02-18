@@ -1817,7 +1817,6 @@ public :
   }
 protected :
   TCODConsole();
-  TCOD_Console* data;
-  friend void TCOD_internal_force_cpp_console_(TCOD_Console* console);
+  TCOD_Console* data = nullptr;
 };
 #endif /* _TCOD_CONSOLE_HPP */

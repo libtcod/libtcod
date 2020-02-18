@@ -110,7 +110,6 @@ TCOD_Error TCOD_console_init_root_(
   TCOD_console_delete(NULL);
   TCOD_ctx.root = TCOD_console_new(w, h);
   if (!TCOD_ctx.root) { return TCOD_E_ERROR; }
-  TCOD_internal_force_cpp_console_(TCOD_ctx.root);
   TCOD_ctx.renderer = renderer;
   strncpy(TCOD_ctx.window_title, title ? title : "",
           sizeof(TCOD_ctx.window_title) - 1);

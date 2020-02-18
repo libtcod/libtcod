@@ -168,13 +168,6 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  */
 TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
-/**
- *  This function is needed to send the root console to the C++ part of the
- *  code.
- *
- *  Used internally only.
- */
-void TCOD_internal_force_cpp_console_(TCOD_Console* console);
 #ifdef __cplusplus
 } // extern "C"
 namespace tcod {

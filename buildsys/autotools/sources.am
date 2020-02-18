@@ -161,9 +161,9 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/renderer_sdl2.c \
 	../../src/libtcod/sys.cpp \
 	../../src/libtcod/sys_c.c \
-	../../src/libtcod/sys_sdl_c.cpp \
-	../../src/libtcod/sys_sdl_img_bmp.cpp \
-	../../src/libtcod/sys_sdl_img_png.cpp \
+	../../src/libtcod/sys_sdl_c.c \
+	../../src/libtcod/sys_sdl_img_bmp.c \
+	../../src/libtcod/sys_sdl_img_png.c \
 	../../src/libtcod/tileset.c \
 	../../src/libtcod/tileset_fallback.c \
 	../../src/libtcod/tileset_truetype.c \

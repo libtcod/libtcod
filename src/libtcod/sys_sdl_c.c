@@ -32,7 +32,6 @@
 #include "mouse.h"
 #include "sys.h"
 
-#include <array>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -84,15 +83,15 @@ typedef struct {
 	void (*write)(SDL_Surface *surf, const char *filename);
 } image_support_t;
 
-static constexpr image_support_t image_type[] = {
+static image_support_t image_type[] = {
 	{ "BMP", TCOD_sys_check_bmp, TCOD_sys_read_bmp, TCOD_sys_write_bmp },
 	{ "PNG", TCOD_sys_check_png, TCOD_sys_read_png, TCOD_sys_write_png },
 	{ NULL, NULL, NULL, NULL },
 };
 
-scale_data_t scale_data = {};
+scale_data_t scale_data = {0};
 float scale_factor = 1.0f;
-SDL_Surface* charmap = nullptr;
+SDL_Surface* charmap = NULL;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* mouse stuff */
@@ -131,7 +130,7 @@ static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
  *
  *  Converts from EASCII code-point -> raw tile position.
  */
-constexpr std::array<int, 256> tcod_codec_{
+int tcod_codec_[256] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0, 76, 77,  0,  0,  0,  0,  0, /* 0 to 15 */
  71, 70, 72,  0,  0,  0,  0,  0, 64, 65, 67, 66,  0, 73, 68, 69, /* 16 to 31 */
   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, /* 32 to 47 */
@@ -149,7 +148,7 @@ constexpr std::array<int, 256> tcod_codec_{
  74, 75, 57, 58, 59, 60, 61, 62, 63,  0,  0,  0,  0,  0,  0,  0, /* 224 to 239 */
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, /* 240 to 255 */
 };
-constexpr std::array<int, 256> cp437_codec_{
+int cp437_codec_[256] = {
 0x0000, 0x263A, 0x263B, 0x2665, 0x2666, 0x2663, 0x2660, 0x2022,
 0x25D8, 0x25CB, 0x25D9, 0x2642, 0x2640, 0x266A, 0x266B, 0x263C,
 0x25BA, 0x25C4, 0x2195, 0x203C, 0x00B6, 0x00A7, 0x25AC, 0x21A8,
@@ -211,12 +210,12 @@ void TCOD_sys_decode_font_(void)
 {
   if (!TCOD_ctx.tileset) { return; }
   if (TCOD_ctx.font_flags & TCOD_FONT_LAYOUT_CP437) {
-    for (int i = 0; i < static_cast<int>(cp437_codec_.size()); ++i) {
-      TCOD_sys_map_ascii_to_font(cp437_codec_.at(i), i, 0);
+    for (int i = 0; i < (int)(sizeof(cp437_codec_) / sizeof(*cp437_codec_)); ++i) {
+      TCOD_sys_map_ascii_to_font(cp437_codec_[i], i, 0);
     }
   } else if (TCOD_ctx.font_tcod_layout) {
-    for (int i = 0; i < static_cast<int>(tcod_codec_.size()); ++i) {
-      TCOD_sys_map_ascii_to_font(i, tcod_codec_.at(i), 0);
+    for (int i = 0; i < (int)(sizeof(tcod_codec_) / sizeof(*tcod_codec_)); ++i) {
+      TCOD_sys_map_ascii_to_font(i, tcod_codec_[i], 0);
     }
     // Clones for frame drawing:
     TCOD_sys_map_clone_(0x2500, TCOD_CHAR_HLINE);
@@ -274,10 +273,10 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty,
       struct TCOD_ColorRGBA* out =
           tile_out + py * TCOD_ctx.tileset->tile_width + px;
       if (TCOD_color_equals(col, pink)) {
-        *out = {255, 255, 255, 0};
+        *out = (TCOD_ColorRGBA){255, 255, 255, 0};
         continue;
       }
-      *out = {col.r, col.g, col.b, 255};
+      *out = (TCOD_ColorRGBA){col.r, col.g, col.b, 255};
     }
   }
   TCOD_tileset_assign_tile(TCOD_ctx.tileset, tile_id, asciiCode);
@@ -386,7 +385,7 @@ TCOD_renderer_t TCOD_sys_get_renderer(void) {
 }
 
 int TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
-  if (TCOD_ctx.engine && renderer == TCOD_ctx.engine->type) { return 0; }
+  if (TCOD_ctx.engine && (int)renderer == TCOD_ctx.engine->type) { return 0; }
   return TCOD_console_init_root(
       TCOD_ctx.root->w,
       TCOD_ctx.root->h,
@@ -402,7 +401,7 @@ static char* TCOD_strcasestr(const char *haystack, const char *needle)
   for (const char* p = haystack; *p; p++) {
     if (np) {
       if (toupper(*p) == toupper(*np)) {
-        if (!*++np) { return const_cast<char*>(startn); }
+        if (!*++np) { return (char*)startn; } // Const cast.
       } else {
         np = 0;
       }
@@ -710,53 +709,54 @@ void TCOD_sys_pixel_to_tile(double* x, double* y)
  *  Parse the coordinates and motion of an SDL event into a libtcod mouse
  *  struct.
  */
-static void sdl_parse_mouse_(const SDL_Event& ev, TCOD_mouse_t& mouse)
+static void sdl_parse_mouse_(const SDL_Event* ev, TCOD_mouse_t* mouse)
 {
-  switch(ev.type) {
+  if (!ev || !mouse) { return; }
+  switch(ev->type) {
     case SDL_MOUSEMOTION:
-      mouse.x = ev.motion.x;
-      mouse.y = ev.motion.y;
-      mouse.dx = ev.motion.xrel;
-      mouse.dy = ev.motion.yrel;
+      mouse->x = ev->motion.x;
+      mouse->y = ev->motion.y;
+      mouse->dx = ev->motion.xrel;
+      mouse->dy = ev->motion.yrel;
       break;
     case SDL_MOUSEWHEEL:
       // Leave x,y attributes as is to preserve the original libtcod behaviour.
-      mouse.wheel_up = ev.wheel.y > 0;
-      mouse.wheel_down = ev.wheel.y < 0;
-      mouse.dx = mouse.dy = 0;
+      mouse->wheel_up = ev->wheel.y > 0;
+      mouse->wheel_down = ev->wheel.y < 0;
+      mouse->dx = mouse->dy = 0;
       break;
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP:
-      mouse.x = ev.button.x;
-      mouse.y = ev.button.y;
-      mouse.dx = mouse.dy = 0;
+      mouse->x = ev->button.x;
+      mouse->y = ev->button.y;
+      mouse->dx = mouse->dy = 0;
       break;
     default: return;
   }
   if (TCOD_ctx.engine && TCOD_ctx.engine->pixel_to_tile_) {
-    double x = mouse.x;
-    double y = mouse.y;
+    double x = mouse->x;
+    double y = mouse->y;
     TCOD_ctx.engine->pixel_to_tile_(TCOD_ctx.engine, &x, &y);
     int cell_x = (int)x;
     int cell_y = (int)y;
-    x = mouse.x - mouse.dx;
-    y = mouse.y - mouse.dy;
+    x = mouse->x - mouse->dx;
+    y = mouse->y - mouse->dy;
     TCOD_ctx.engine->pixel_to_tile_(TCOD_ctx.engine, &x, &y);
     int prev_cell_x = (int)x;
     int prev_cell_y = (int)y;
-    mouse.cx = cell_x;
-    mouse.cy = cell_y;
-    mouse.dcx = cell_x - prev_cell_x;
-    mouse.dcy = cell_y - prev_cell_y;
+    mouse->cx = cell_x;
+    mouse->cy = cell_y;
+    mouse->dcx = cell_x - prev_cell_x;
+    mouse->dcy = cell_y - prev_cell_y;
   } else {
-    mouse.x -= TCOD_ctx.fullscreen_offsetx;
-    mouse.y -= TCOD_ctx.fullscreen_offsety;
-    mouse.cx = mouse.x / TCOD_ctx.font_width;
-    mouse.cy = mouse.y / TCOD_ctx.font_height;
-    int prev_cx = (mouse.x - mouse.dx) / TCOD_ctx.font_width;
-    int prev_cy = (mouse.y - mouse.dy) / TCOD_ctx.font_height;
-    mouse.dcx = mouse.cx - prev_cx;
-    mouse.dcy = mouse.cy - prev_cy;
+    mouse->x -= TCOD_ctx.fullscreen_offsetx;
+    mouse->y -= TCOD_ctx.fullscreen_offsety;
+    mouse->cx = mouse->x / TCOD_ctx.font_width;
+    mouse->cy = mouse->y / TCOD_ctx.font_height;
+    int prev_cx = (mouse->x - mouse->dx) / TCOD_ctx.font_width;
+    int prev_cy = (mouse->y - mouse->dy) / TCOD_ctx.font_height;
+    mouse->dcx = mouse->cx - prev_cx;
+    mouse->dcy = mouse->cy - prev_cy;
   }
 }
 /**
@@ -768,7 +768,7 @@ TCOD_event_t TCOD_sys_handle_mouse_event(
     const SDL_Event* ev, TCOD_mouse_t* mouse)
 {
   if (!ev || !mouse) { return TCOD_EVENT_NONE; }
-  sdl_parse_mouse_(*ev, *mouse);
+  sdl_parse_mouse_(ev, mouse);
   switch(ev->type) {
     case SDL_MOUSEMOTION:
       return TCOD_EVENT_MOUSE_MOVE;
@@ -875,7 +875,7 @@ static TCOD_event_t TCOD_sys_handle_event(
  		break;
 		default : break;
 	}
-	return static_cast<TCOD_event_t>(retMask);
+	return (TCOD_event_t)retMask;
 }
 /**
  *  Internal function containing code shared by TCOD_sys_wait_for_event
@@ -898,7 +898,7 @@ static TCOD_event_t TCOD_sys_check_for_event_(
     key->text[0] = '\0';
   }
   while (SDL_PollEvent(ev)) {
-    retMask = TCOD_sys_handle_event(ev, static_cast<TCOD_event_t>(eventMask),
+    retMask = TCOD_sys_handle_event(ev, (TCOD_event_t)eventMask,
                                     key, &tcod_mouse);
     if (retMask & TCOD_EVENT_KEY) {
       break; /* only one key event per frame */
@@ -971,8 +971,8 @@ TCOD_mouse_t TCOD_mouse_get_status(void) {
 TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
   TCOD_key_t key;
   TCOD_event_t ev = TCOD_sys_check_for_event(flags & TCOD_EVENT_KEY,
-                                             &key, nullptr);
-  if ((ev & TCOD_EVENT_KEY) == 0) { return {}; }
+                                             &key, NULL);
+  if ((ev & TCOD_EVENT_KEY) == 0) { return (TCOD_key_t){0}; }
   return key;
 }
 /**
@@ -985,8 +985,8 @@ TCOD_key_t TCOD_sys_check_for_keypress(int flags) {
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
   TCOD_key_t key;
   TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_KEY_PRESS,
-                                            &key, nullptr, flush);
-  if ((ev & TCOD_EVENT_KEY_PRESS) == 0) { return {}; }
+                                            &key, NULL, flush);
+  if ((ev & TCOD_EVENT_KEY_PRESS) == 0) { return (TCOD_key_t){0}; }
   return key;
 }
 
@@ -1010,19 +1010,19 @@ TCOD_color_t TCOD_sys_get_image_pixel(const SDL_Surface* image, int x, int y)
 {
   if (x < 0 || y < 0 || x >= image->w || y >= image->h) { return TCOD_black; }
   uint8_t bpp = image->format->BytesPerPixel;
-  uint8_t* bits = static_cast<uint8_t*>(image->pixels);
+  uint8_t* bits = image->pixels;
   bits += y * image->pitch + x * bpp;
   switch (bpp) {
     case 1:
       if (image->format->palette) {
         SDL_Color col = image->format->palette->colors[(*bits)];
-        return {col.r, col.g, col.b};
+        return (TCOD_ColorRGB){col.r, col.g, col.b};
       } else {
         return TCOD_black;
       }
       break;
     default:
-      return {
+      return (TCOD_ColorRGB){
           *((bits)+image->format->Rshift/8),
           *((bits)+image->format->Gshift/8),
           *((bits)+image->format->Bshift/8),
@@ -1035,7 +1035,7 @@ int TCOD_sys_get_image_alpha(const SDL_Surface *surf, int x, int y)
   if (x < 0 || y < 0 || x >= surf->w || y >= surf->h) { return 255; }
   uint8_t bpp = surf->format->BytesPerPixel;
   if (bpp != 4) { return 255; }
-  uint8_t* bits = static_cast<uint8_t*>(surf->pixels);
+  uint8_t* bits = surf->pixels;
   bits += y * surf->pitch + x * bpp;
   return bits[surf->format->Ashift / 8];
 }

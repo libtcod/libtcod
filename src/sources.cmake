@@ -50,9 +50,9 @@ target_sources(TCOD PRIVATE
     libtcod/renderer_sdl2.c
     libtcod/sys.cpp
     libtcod/sys_c.c
-    libtcod/sys_sdl_c.cpp
-    libtcod/sys_sdl_img_bmp.cpp
-    libtcod/sys_sdl_img_png.cpp
+    libtcod/sys_sdl_c.c
+    libtcod/sys_sdl_img_bmp.c
+    libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset_fallback.c
     libtcod/tileset_truetype.c
@@ -196,9 +196,9 @@ source_group(libtcod FILES
     libtcod/sys.h
     libtcod/sys.hpp
     libtcod/sys_c.c
-    libtcod/sys_sdl_c.cpp
-    libtcod/sys_sdl_img_bmp.cpp
-    libtcod/sys_sdl_img_png.cpp
+    libtcod/sys_sdl_c.c
+    libtcod/sys_sdl_img_bmp.c
+    libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset.h
     libtcod/tileset_fallback.c

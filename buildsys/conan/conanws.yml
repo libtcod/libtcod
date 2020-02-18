@@ -1,9 +1,9 @@
 editables:
-    samples/None@user/testing:
+    samples/1.16.0-alpha.2@user/testing:
         path: ../../samples
-    libtcod/None@user/testing:
+    libtcod/1.16.0-alpha.2@user/testing:
         path: ../..
 layout: conanws
 generators: cmake_multi
 workspace_generator: cmake
-root: libtcod/None@user/testing, samples/None@user/testing
+root: libtcod/1.16.0-alpha.2@user/testing, samples/1.16.0-alpha.2@user/testing

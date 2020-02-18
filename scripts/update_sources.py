@@ -46,9 +46,9 @@ def get_sources(
         yield "vendor", VENDOR_SOURCES
 
 
-def all_sources() -> Iterable[str]:
+def all_sources(includes: bool = False) -> Iterable[str]:
     """Iterate over all sources needed to compile libtcod."""
-    for _, sources in get_sources(sources=True):
+    for _, sources in get_sources(sources=True, includes=includes):
         yield from sources
 
 
@@ -76,7 +76,7 @@ def generate_cmake() -> str:
     """Returns a CMake script with libtcod's sources."""
     out = f"{BANNER}"
     out += "\ntarget_sources(TCOD PRIVATE\n    "
-    out += "\n    ".join(os.path.relpath(f, "src") for f in all_sources())
+    out += "\n    ".join(os.path.relpath(f, "src") for f in all_sources(includes=True))
     out += "\n)"
     for group, files in get_sources(sources=True, includes=True):
         group = group.replace("/", r"\\")

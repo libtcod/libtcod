@@ -1,7 +1,6 @@
 Instructions on how to build these sample files:
 
-Install a common set of build tools such as [Microsoft Visual Studio]
-(https://visualstudio.microsoft.com/vs/community/).
+Install a common set of build tools such as [Microsoft Visual Studio](https://visualstudio.microsoft.com/vs/community/).
 This will be used by Conan.
 
 [Install Conan](https://docs.conan.io/en/latest/installation.html).

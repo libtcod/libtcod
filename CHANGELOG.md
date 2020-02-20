@@ -7,9 +7,15 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Deprecated
+- Mouse state and keyboard state functions are deprecated.
+- Mouse functions with SDL alternatives are deprecated.
+
 ### Fixed
 - The wavelet noise generator now excludes -1.0f and 1.0f as return values.
 - Fixed console fading color.
+- Fixed keyboard state and mouse state functions losing state when events were
+  flushed.
 
 ## [1.16.0-alpha.2] - 2020-02-14
 ### Fixed

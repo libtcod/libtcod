@@ -39,10 +39,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+TCOD_DEPRECATED("Use SDL to handle the mouse cursor.")
 TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
+TCOD_DEPRECATED("Use SDL to check the mouse state.")
 TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status(void);
+TCOD_DEPRECATED("Use SDL to handle the mouse cursor.")
 TCODLIB_API bool TCOD_mouse_is_cursor_visible(void);
+TCOD_DEPRECATED("Use SDL to handle the mouse cursor.")
 TCODLIB_API void TCOD_mouse_move(int x, int y);
+TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_mouse_includes_touch(bool enable);
 #ifdef __cplusplus
 }

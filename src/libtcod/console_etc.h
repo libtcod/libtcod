@@ -75,6 +75,7 @@ TCOD_Error TCOD_console_flush(void);
 
 TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
+TCOD_DEPRECATED("Use SDL to check the keyboard state.")
 TCODLIB_API bool TCOD_console_is_key_pressed(TCOD_keycode_t key);
 
 /* ASCII paint file support */

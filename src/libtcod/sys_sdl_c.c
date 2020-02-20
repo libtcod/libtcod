@@ -95,12 +95,6 @@ SDL_Surface* charmap = NULL;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* mouse stuff */
-static bool mousebl=false;
-static bool mousebm=false;
-static bool mousebr=false;
-static bool mouse_force_bl=false;
-static bool mouse_force_bm=false;
-static bool mouse_force_br=false;
 #ifdef TCOD_TOUCH_INPUT
 static bool mouse_touch=true;
 #endif
@@ -767,7 +761,8 @@ static void sdl_parse_mouse_(const SDL_Event* ev, TCOD_mouse_t* mouse)
 TCOD_event_t TCOD_sys_handle_mouse_event(
     const SDL_Event* ev, TCOD_mouse_t* mouse)
 {
-  if (!ev || !mouse) { return TCOD_EVENT_NONE; }
+  if (!ev) { return TCOD_EVENT_NONE; }
+  if (!mouse) { mouse = &tcod_mouse; }
   sdl_parse_mouse_(ev, mouse);
   switch(ev->type) {
     case SDL_MOUSEMOTION:
@@ -776,25 +771,25 @@ TCOD_event_t TCOD_sys_handle_mouse_event(
       return TCOD_EVENT_MOUSE_PRESS;
     case SDL_MOUSEBUTTONDOWN:
       switch (ev->button.button) {
-        case SDL_BUTTON_LEFT: mouse->lbutton = mousebl = true; break;
-        case SDL_BUTTON_MIDDLE: mouse->mbutton = mousebm = true; break;
-        case SDL_BUTTON_RIGHT: mouse->rbutton = mousebr = true; break;
+        case SDL_BUTTON_LEFT: mouse->lbutton = true; break;
+        case SDL_BUTTON_MIDDLE: mouse->mbutton = true; break;
+        case SDL_BUTTON_RIGHT: mouse->rbutton = true; break;
         default: break;
       }
       return TCOD_EVENT_MOUSE_PRESS;
     case SDL_MOUSEBUTTONUP:
       switch (ev->button.button) {
         case SDL_BUTTON_LEFT:
-        if (mousebl) { mouse->lbutton_pressed = mouse_force_bl = true; }
-        mouse->lbutton = mousebl = false;
+        if (mouse->lbutton) { mouse->lbutton_pressed = true; }
+        mouse->lbutton = false;
         break;
         case SDL_BUTTON_MIDDLE:
-        if (mousebm) { mouse->mbutton_pressed = mouse_force_bm = true; }
-        mouse->mbutton = mousebm = false;
+        if (mouse->mbutton) { mouse->mbutton_pressed = true; }
+        mouse->mbutton = false;
         break;
         case SDL_BUTTON_RIGHT:
-        if (mousebr) { mouse->rbutton_pressed = mouse_force_br = true; }
-        mouse->rbutton = mousebr = false;
+        if (mouse->rbutton) { mouse->rbutton_pressed = true; }
+        mouse->rbutton = false;
         break;
       }
       return TCOD_EVENT_MOUSE_RELEASE;

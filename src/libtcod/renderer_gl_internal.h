@@ -34,6 +34,7 @@
 #include "config.h"
 
 #include <stdbool.h>
+#include <math.h>
 
 #include "libtcod_int.h"
 #include "renderer_gl.h"
@@ -157,6 +158,61 @@ static void gl_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   *x /= renderer->atlas->tileset->tile_width;
   *y /= renderer->atlas->tileset->tile_height;
+}
+static inline float minf(float a, float b) {
+  return a < b ? a : b;
+}
+static inline float maxf(float a, float b) {
+  return a > b ? a : b;
+}
+static inline float clampf(float v, float low, float high) {
+  return maxf(low, minf(v, high));
+}
+static void gl_get_viewport_scale(
+    const struct TCOD_TilesetAtlasOpenGL* atlas,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport,
+    float matrix_4x4_out[16])
+{
+  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
+  SDL_Rect gl_viewport;
+  glGetIntegerv(GL_VIEWPORT, (int*)&gl_viewport);
+  const int tile_width = atlas->tileset->tile_width;
+  const int tile_height = atlas->tileset->tile_height;
+  const int recommended_columns = gl_viewport.w / tile_width;
+  const int recommended_rows = gl_viewport.h / tile_height;
+  float scale_w = 1;//(float)gl_viewport.w / (float)(console->w * tile_width);
+  float scale_h = 1;//(float)gl_viewport.h / (float)(console->h * tile_height);
+  if (viewport->snap_to_integer
+      && console->w == recommended_columns && console->h == recommended_rows) {
+    scale_w = (float)(console->w * tile_width) / (float)gl_viewport.w;
+    scale_h = (float)(console->h * tile_height) / (float)gl_viewport.h;
+  } else {
+    scale_w = (float)gl_viewport.w / (float)(console->w * tile_width);
+    scale_h = (float)gl_viewport.h / (float)(console->h * tile_height);
+    if (viewport->integer_scaling) {
+      scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
+      scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
+    }
+    if (viewport->keep_aspect) {
+      scale_w = scale_h = minf(scale_w, scale_h);
+    }
+    scale_w *= (float)(console->w * tile_width) / (float)gl_viewport.w;
+    scale_h *= (float)(console->h * tile_height) / (float)gl_viewport.h;
+  }
+  float translate_x = ((1.0f - scale_w) * clampf(viewport->align_x, 0, 1));
+  float translate_y = ((1.0f - scale_h) * clampf(viewport->align_y, 0, 1));
+  translate_x = roundf(translate_x * gl_viewport.w) / gl_viewport.w;
+  translate_y = roundf(translate_y * gl_viewport.h) / gl_viewport.h;
+  translate_x = -1.0f + 2.0f * translate_x;
+  translate_y = -1.0f + 2.0f * translate_y;
+  float matrix[4*4] = {
+      2.0f * scale_w, 0, 0, 0,
+      0, 2.0f * scale_h, 0, 0,
+      0, 0, 1, 0,
+      translate_x, translate_y, 1, 1,
+  };
+  memcpy(matrix_4x4_out, matrix, sizeof(matrix));
 }
 #ifdef __cplusplus
 } // extern "C"

@@ -86,6 +86,19 @@ struct TCOD_ViewportOptions {
   float align_x;
   float align_y;
 };
+#if !defined(__cplusplus)
+/**
+    Default viewport options if none are provided.
+ */
+static const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_ = {
+    .keep_aspect = false,
+    .integer_scaling = false,
+    .snap_to_integer = true,
+    .clear_color = {0, 0, 0, 255},
+    .align_x = 0.5f,
+    .align_y = 0.5f,
+};
+#endif // !defined(__cplusplus)
 /**
  *  A rendering context for libtcod.
  *  \rst

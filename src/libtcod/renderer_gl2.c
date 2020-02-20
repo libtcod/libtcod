@@ -211,7 +211,9 @@ static void get_tex_coord(
 }
 TCOD_NODISCARD
 static TCOD_Error render(
-    struct TCOD_RendererGL2* renderer, const TCOD_Console* console)
+    struct TCOD_RendererGL2* renderer,
+    const TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
 {
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
@@ -256,12 +258,8 @@ static TCOD_Error render(
   int t_console_fg = glGetUniformLocation(renderer->program, "t_console_fg");
   int t_console_tile = glGetUniformLocation(renderer->program, "t_console_tile");
 
-  const float matrix[4*4] = {
-      2, 0, 0, 0,
-      0, 2, 0, 0,
-      0, 0, 1, 0,
-      -1, -1, 0, 1,
-  };
+  float matrix[4*4];
+  gl_get_viewport_scale(renderer->common.atlas, console, viewport, matrix);
   glUniformMatrix4fv(mvp_matrix, 1, GL_FALSE, matrix);
 
   // Upload data of texture shapes.
@@ -336,7 +334,7 @@ static TCOD_Error gl2_accumulate(
   struct TCOD_RendererGL2* renderer = context->contextdata;
   TCOD_Error err;
   if ((err = resize_textures(renderer, console)) < 0) { return err; }
-  if ((err = render(renderer, console)) < 0) { return err; }
+  if ((err = render(renderer, console, viewport)) < 0) { return err; }
 
   glFlush();
   if (glGetError()) {
@@ -353,12 +351,17 @@ static TCOD_Error gl2_present(
     const TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
+  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   struct TCOD_RendererGL2* renderer = context->contextdata;
   int window_width;
   int window_height;
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(
+      (float)viewport->clear_color.r / 255.0f,
+      (float)viewport->clear_color.g / 255.0f,
+      (float)viewport->clear_color.b / 255.0f,
+      (float)viewport->clear_color.a / 255.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl2_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);

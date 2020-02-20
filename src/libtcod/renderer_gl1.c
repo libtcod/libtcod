@@ -230,15 +230,15 @@ static TCOD_Error gl1_accumulate(
     const TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
+  struct TCOD_RendererGL1* renderer = context->contextdata;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
-  float matrix[] = {
-    2.0f / console->w, 0, 0, 0,
-    0, -2.0f / console->h, 0, 0,
-    0, 0, 1, 0,
-    -1, 1, 1, 1,
-  };
+  float matrix[16];
+  gl_get_viewport_scale(renderer->common.atlas, console, viewport, matrix);
+  matrix[0] /= console->w;
+  matrix[5] /= -console->h;
+  matrix[13] = -matrix[13];
   glLoadMatrixf(matrix);
 
   TCOD_Error err;
@@ -259,12 +259,17 @@ static TCOD_Error gl1_present(
     const TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
+  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   struct TCOD_RendererGL1* renderer = context->contextdata;
   int window_width;
   int window_height;
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(
+      (float)viewport->clear_color.r / 255.0f,
+      (float)viewport->clear_color.g / 255.0f,
+      (float)viewport->clear_color.b / 255.0f,
+      (float)viewport->clear_color.a / 255.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl1_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);

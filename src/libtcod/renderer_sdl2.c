@@ -47,17 +47,6 @@ static inline float maxf(float a, float b) {
 static inline float clampf(float v, float low, float high) {
   return maxf(low, minf(v, high));
 }
-/**
-    Default viewport options if none are provided.
- */
-static const struct TCOD_ViewportOptions DEFAULT_VIEWPORT = {
-    .keep_aspect = false,
-    .integer_scaling = false,
-    .snap_to_integer = true,
-    .clear_color = {0, 0, 0, 255},
-    .align_x = 0.5f,
-    .align_y = 0.5f,
-};
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
 /**
@@ -362,7 +351,7 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
-  if (!viewport) { viewport = &DEFAULT_VIEWPORT; }
+  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   const int tile_width = context->atlas->tileset->tile_width;
   const int tile_height = context->atlas->tileset->tile_height;
   int output_w;
@@ -469,7 +458,7 @@ static TCOD_Error sdl2_present(
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
-  if (!viewport) { viewport = &DEFAULT_VIEWPORT; }
+  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   struct TCOD_RendererSDL2* context = self->contextdata;
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(

@@ -149,7 +149,7 @@ struct TCOD_Console {
   }
   int size() const
   {
-    return length;
+    return elements;
   }
   void range_check_(int y, int x) const
   {
@@ -186,14 +186,20 @@ struct TCOD_Console {
   /** The current key color for this console. */
   TCOD_color_t key_color;
   /**
-   *  The total length of the tiles array.  Same as `w * h`.
-   *
-   *  Added in 1.16
+      The total length of the tiles array.  Same as `w * h`.
+
+      \rst
+      .. versionadded:: 1.16
+      \endrst
    */
-  int length;
-  /** Added 1.16 */
+  int elements;
+  /**
+      \rst
+      .. versionadded:: 1.16
+      \endrst
+   */
   void* userdata;
-  /** Added 1.16 */
+  /** Internal use. */
   void (*on_delete)(struct TCOD_Console* self);
 };
 typedef struct TCOD_Console TCOD_Console;

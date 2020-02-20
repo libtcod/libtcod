@@ -38,7 +38,7 @@ static TCOD_Error TCOD_console_data_alloc(struct TCOD_Console* console)
 {
   if (!console) { return TCOD_E_ERROR; }
   if (console->tiles) { return TCOD_E_ERROR; }
-  console->tiles = calloc(sizeof(*console->tiles), console->length);
+  console->tiles = calloc(sizeof(*console->tiles), console->elements);
   return TCOD_E_OK;
 }
 static void TCOD_console_data_free(struct TCOD_Console *con)
@@ -73,7 +73,7 @@ TCOD_Console* TCOD_console_new(int w, int h)
   }
   con->w = w;
   con->h = h;
-  con->length = w * h;
+  con->elements = w * h;
   TCOD_console_init_(con);
   if (TCOD_ctx.root) {
     con->alignment = TCOD_ctx.root->alignment;
@@ -112,7 +112,7 @@ void TCOD_console_resize_(TCOD_Console* console, int width, int height)
   TCOD_console_data_free(console);
   console->w = width;
   console->h = height;
-  console->length = width * height;
+  console->elements = width * height;
   TCOD_console_data_alloc(console);
 }
 int TCOD_console_get_width(const TCOD_Console* con)
@@ -299,7 +299,7 @@ void TCOD_console_clear(TCOD_console_t con)
     { con->fore.r, con->fore.g, con->fore.b, 255 },
     { con->back.r, con->back.g, con->back.b, 255 },
   };
-  for (int i = 0; i < con->length; ++i) {
+  for (int i = 0; i < con->elements; ++i) {
     con->tiles[i] = fill;
   }
 }

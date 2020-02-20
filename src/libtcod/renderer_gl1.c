@@ -112,7 +112,7 @@ static TCOD_Error render_background(struct TCOD_Context* context, const TCOD_Con
   }
 
   // Upload background color to a texture.
-  TCOD_ColorRGBA* color = malloc(sizeof(*color) * console->length);
+  TCOD_ColorRGBA* color = malloc(sizeof(*color) * console->elements);
   if (!color) {
     TCOD_set_errorv("Out of memory.");
     return TCOD_E_OUT_OF_MEMORY;

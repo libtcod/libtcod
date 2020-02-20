@@ -213,9 +213,9 @@ TCOD_NODISCARD
 static TCOD_Error render(
     struct TCOD_RendererGL2* renderer, const TCOD_Console* console)
 {
-  uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->length * 4);
-  TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->length);
-  TCOD_ColorRGBA* bg_buffer = malloc(sizeof(*bg_buffer) * console->length);
+  uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
+  TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
+  TCOD_ColorRGBA* bg_buffer = malloc(sizeof(*bg_buffer) * console->elements);
   if (!ch_buffer || !fg_buffer || !bg_buffer) {
     free(ch_buffer);
     free(fg_buffer);
@@ -223,7 +223,7 @@ static TCOD_Error render(
     TCOD_set_errorv("Out of memory.");
     return TCOD_E_OUT_OF_MEMORY;
   }
-  for (int i = 0; i < console->length; ++i) {
+  for (int i = 0; i < console->elements; ++i) {
     get_tex_coord(renderer->common.atlas, console->tiles[i].ch, ch_buffer + i * 4);
     fg_buffer[i] = console->tiles[i].fg;
     bg_buffer[i] = console->tiles[i].bg;

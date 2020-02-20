@@ -184,7 +184,7 @@ static int cache_console_update(
   for (int c = 0; c < observer->tileset->character_map_length; ++c) {
     // Find codepoints that point to the tile_id.
     if (observer->tileset->character_map[c] != tile_id) { continue; }
-    for (int i = 0; i < console->length; ++i) {
+    for (int i = 0; i < console->elements; ++i) {
       // Compare matched codepoints to the cache console characters.
       if (console->tiles[i].ch != c) { continue; }
       console->tiles[i].ch = -1;
@@ -247,7 +247,7 @@ static TCOD_Error setup_cache_console(
     observer->on_tile_changed = cache_console_update;
     (*cache)->on_delete = cache_console_on_delete;
     observer->on_observer_delete = cache_console_observer_delete;
-    for (int i = 0; i < (*cache)->length; ++i) {
+    for (int i = 0; i < (*cache)->elements; ++i) {
       (*cache)->tiles[i].ch = -1;
     }
   }

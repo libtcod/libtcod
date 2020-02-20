@@ -128,7 +128,7 @@ TCOD_Error TCOD_console_flush(void) {
         TCOD_ctx.fading_color.b,
         255 - TCOD_ctx.fade,
     };
-    for (int i = 0; i < root_copy->length; ++i) {
+    for (int i = 0; i < root_copy->elements; ++i) {
       root_copy->tiles[i] = TCOD_ctx.root->tiles[i];
       TCOD_color_alpha_blend(&root_copy->tiles[i].fg, &fade_color);
       TCOD_color_alpha_blend(&root_copy->tiles[i].bg, &fade_color);

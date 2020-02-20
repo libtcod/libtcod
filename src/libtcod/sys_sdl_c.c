@@ -809,7 +809,8 @@ TCOD_event_t TCOD_sys_handle_mouse_event(
  */
 TCOD_event_t TCOD_sys_handle_key_event(const SDL_Event* ev, TCOD_key_t* key)
 {
-  if (!ev || !key) { return TCOD_EVENT_NONE; }
+  if (!ev) { return TCOD_EVENT_NONE; }
+  if (!key) { key = &TCOD_ctx.key_state; }
   switch(ev->type) {
     case SDL_KEYDOWN:
       *key = TCOD_sys_SDLtoTCOD(ev, TCOD_KEY_PRESSED);
@@ -884,7 +885,6 @@ static TCOD_event_t TCOD_sys_handle_event(
 static TCOD_event_t TCOD_sys_check_for_event_(
     SDL_Event *ev, int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse) {
   TCOD_event_t retMask = TCOD_EVENT_NONE;
-  if (eventMask == 0) { return TCOD_EVENT_NONE; }
   tcod_mouse.lbutton_pressed = 0;
   tcod_mouse.rbutton_pressed = 0;
   tcod_mouse.mbutton_pressed = 0;
@@ -929,7 +929,7 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t *key,
   TCOD_event_t retMask = TCOD_EVENT_NONE;
   if (eventMask == 0) { return TCOD_EVENT_NONE; }
   if (flush) {
-    while (SDL_PollEvent(&ev)) {
+    while (SDL_PollEvent(NULL)) {
       TCOD_sys_check_for_event_(&ev, 0, NULL, NULL);
     }
   }

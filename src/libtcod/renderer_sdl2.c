@@ -32,11 +32,32 @@
 #include "renderer_sdl2.h"
 
 #include "stdlib.h"
+#include "math.h"
 
 #include <SDL.h>
 #include "../vendor/lodepng.h"
 #include "libtcod_int.h"
 
+static inline float minf(float a, float b) {
+  return a < b ? a : b;
+}
+static inline float maxf(float a, float b) {
+  return a > b ? a : b;
+}
+static inline float clampf(float v, float low, float high) {
+  return maxf(low, minf(v, high));
+}
+/**
+    Default viewport options if none are provided.
+ */
+static const struct TCOD_ViewportOptions DEFAULT_VIEWPORT = {
+    .keep_aspect = false,
+    .integer_scaling = false,
+    .snap_to_integer = true,
+    .clear_color = {0, 0, 0, 255},
+    .align_x = 0.5f,
+    .align_y = 0.5f,
+};
 // ----------------------------------------------------------------------------
 // SDL2 Atlas
 /**
@@ -335,12 +356,49 @@ static void sdl2_destructor(struct TCOD_Context* self)
   SDL_QuitSubSystem(context->sdl_subsystems);
   free(context);
 }
+/** Return the destination rectangle for these inputs. */
+TCOD_NODISCARD static SDL_Rect get_destination_rect(
+    const struct TCOD_RendererSDL2* context,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
+{
+  if (!viewport) { viewport = &DEFAULT_VIEWPORT; }
+  const int tile_width = context->atlas->tileset->tile_width;
+  const int tile_height = context->atlas->tileset->tile_height;
+  int output_w;
+  int output_h;
+  SDL_GetRendererOutputSize(context->renderer, &output_w, &output_h);
+  const int recommended_columns = output_w / tile_width;
+  const int recommended_rows = output_h / tile_height;
+  SDL_Rect out = {0, 0, output_w, output_h};
+  if (viewport->snap_to_integer
+      && console->w == recommended_columns && console->h == recommended_rows) {
+    out.w = console->w * tile_width;
+    out.h = console->h * tile_height;
+  } else {
+    float scale_w = (float)output_w / (float)(console->w * tile_width);
+    float scale_h = (float)output_h / (float)(console->h * tile_height);
+    if (viewport->integer_scaling) {
+      scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
+      scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
+    }
+    if (viewport->keep_aspect) {
+      scale_w = scale_h = minf(scale_w, scale_h);
+    }
+    out.w = (int)((float)(console->w * tile_width) * scale_w);
+    out.h = (int)((float)(console->h * tile_height) * scale_h);
+  }
+  out.x = (int)((float)(output_w - out.w) * clampf(viewport->align_x, 0, 1));
+  out.y = (int)((float)(output_h - out.h) * clampf(viewport->align_y, 0, 1));
+  return out;
+}
 /**
  *  Render to the SDL2 renderer without presenting the screen.
  */
-static TCOD_Error sdl2_accumulate(struct TCOD_Context* self,
-                           const struct TCOD_Console* console,
-                          const struct SDL_Rect* viewport)
+static TCOD_Error sdl2_accumulate(
+    struct TCOD_Context* self,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
 {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context || !console) { return -1; }
@@ -374,9 +432,10 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Context* self,
     TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
   SDL_SetRenderTarget(context->renderer, NULL);
   if (err < 0) { return err; }
+  SDL_Rect dest = get_destination_rect(context, console, viewport);
   if (!TCOD_ctx.sdl_cbk) {
     // Normal rendering.
-    SDL_RenderCopy(context->renderer, context->cache_texture, NULL, viewport);
+    SDL_RenderCopy(context->renderer, context->cache_texture, NULL, &dest);
   } else {
     // Deprecated callback rendering.
     int tex_width;
@@ -396,7 +455,7 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Context* self,
     TCOD_ctx.sdl_cbk(canvas);
     SDL_Texture* canvas_tex = SDL_CreateTextureFromSurface(
         context->renderer, canvas);
-    SDL_RenderCopy(context->renderer, canvas_tex, NULL, viewport);
+    SDL_RenderCopy(context->renderer, canvas_tex, NULL, &dest);
     SDL_DestroyTexture(canvas_tex);
     SDL_FreeSurface(canvas);
   }
@@ -405,14 +464,22 @@ static TCOD_Error sdl2_accumulate(struct TCOD_Context* self,
 /**
  *  Clear, render, and present a libtcod console to the screen.
  */
-static TCOD_Error sdl2_present(struct TCOD_Context* self,
-                        const struct TCOD_Console* console)
+static TCOD_Error sdl2_present(
+    struct TCOD_Context* self,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
 {
+  if (!viewport) { viewport = &DEFAULT_VIEWPORT; }
   struct TCOD_RendererSDL2* context = self->contextdata;
   SDL_SetRenderTarget(context->renderer, NULL);
-  SDL_SetRenderDrawColor(context->renderer, 0, 0, 0, 255);
+  SDL_SetRenderDrawColor(
+      context->renderer,
+      viewport->clear_color.r,
+      viewport->clear_color.g,
+      viewport->clear_color.b,
+      viewport->clear_color.a);
   SDL_RenderClear(context->renderer);
-  TCOD_Error err = sdl2_accumulate(self, console, NULL);
+  TCOD_Error err = sdl2_accumulate(self, console, viewport);
   if (err) { return err; }
   SDL_RenderPresent(context->renderer);
   return TCOD_E_OK;

@@ -117,7 +117,7 @@ TCOD_Error TCOD_console_flush(void) {
   }
   TCOD_Error err;
   if (TCOD_ctx.fade == 255) {
-    err = TCOD_context_present(TCOD_ctx.engine, TCOD_ctx.root);
+    err = TCOD_context_present(TCOD_ctx.engine, TCOD_ctx.root, NULL);
   } else {
     // Apply the global fading color before presenting.
     TCOD_Console* root_copy = TCOD_console_new(TCOD_ctx.root->w, TCOD_ctx.root->h);
@@ -133,7 +133,7 @@ TCOD_Error TCOD_console_flush(void) {
       TCOD_color_alpha_blend(&root_copy->tiles[i].fg, &fade_color);
       TCOD_color_alpha_blend(&root_copy->tiles[i].bg, &fade_color);
     }
-    err = TCOD_context_present(TCOD_ctx.engine, root_copy);
+    err = TCOD_context_present(TCOD_ctx.engine, root_copy, NULL);
     TCOD_console_delete(root_copy);
   }
   sync_time_();

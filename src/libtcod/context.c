@@ -47,7 +47,9 @@ void TCOD_context_delete(struct TCOD_Context* renderer)
 }
 
 TCOD_PUBLIC TCOD_Error TCOD_context_present(
-    struct TCOD_Context* context, struct TCOD_Console* console)
+    struct TCOD_Context* context,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
 {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
@@ -57,5 +59,5 @@ TCOD_PUBLIC TCOD_Error TCOD_context_present(
     TCOD_set_errorv("Console must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  return context->present_(context, console);
+  return context->present_(context, console, viewport);
 }

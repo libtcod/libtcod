@@ -331,7 +331,7 @@ static TCOD_Error render(
 static TCOD_Error gl2_accumulate(
     struct TCOD_Context* context,
     const TCOD_Console* console,
-    const struct SDL_Rect* viewport)
+    const struct TCOD_ViewportOptions* viewport)
 {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   TCOD_Error err;
@@ -348,7 +348,10 @@ static TCOD_Error gl2_accumulate(
 /**
  *  Clear, render, and swap the screen.
  */
-static TCOD_Error gl2_present(struct TCOD_Context* context, const TCOD_Console* console)
+static TCOD_Error gl2_present(
+    struct TCOD_Context* context,
+    const TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport)
 {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   int window_width;
@@ -357,7 +360,7 @@ static TCOD_Error gl2_present(struct TCOD_Context* context, const TCOD_Console* 
   glViewport(0, 0, window_width, window_height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  TCOD_Error err = gl2_accumulate(context, console, NULL);
+  TCOD_Error err = gl2_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);
   return err;
 }

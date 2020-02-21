@@ -137,7 +137,7 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_sdl2_accumulate(
+TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache,

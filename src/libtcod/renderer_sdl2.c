@@ -254,7 +254,7 @@ static TCOD_Error setup_cache_console(
 
     Returns a negative value on an error, check `TCOD_get_error`.
  */
-static TCOD_Error TCOD_sdl2_render_console(
+static TCOD_Error TCOD_sdl2_render(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache)
@@ -322,14 +322,14 @@ static TCOD_Error TCOD_sdl2_render_console(
   }
   return TCOD_E_OK;
 }
-TCOD_Error TCOD_sdl2_accumulate(
+TCOD_Error TCOD_sdl2_render_texture(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache,
     struct SDL_Texture** target)
 {
   if (!target) { // Render without a managed target.
-    return TCOD_sdl2_render_console(atlas, console, cache);
+    return TCOD_sdl2_render(atlas, console, cache);
   }
   if (!atlas) {
     TCOD_set_errorv("Atlas must not be NULL.");
@@ -368,7 +368,7 @@ TCOD_Error TCOD_sdl2_accumulate(
   }
   SDL_Texture* old_target = SDL_GetRenderTarget(atlas->renderer);
   SDL_SetRenderTarget(atlas->renderer, *target);
-  TCOD_Error err = TCOD_sdl2_render_console(atlas, console, cache);
+  TCOD_Error err = TCOD_sdl2_render(atlas, console, cache);
   SDL_SetRenderTarget(atlas->renderer, old_target);
   return err;
 }
@@ -453,7 +453,7 @@ static TCOD_Error sdl2_accumulate(
 {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context || !console) { return -1; }
-  TCOD_Error err = TCOD_sdl2_accumulate(
+  TCOD_Error err = TCOD_sdl2_render_texture(
       context->atlas, console, &context->cache_console, &context->cache_texture);
   if (err < 0) { return err; }
   SDL_Rect dest = get_destination_rect(context->atlas, console, viewport);

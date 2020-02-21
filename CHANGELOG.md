@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.3] - 2020-02-21
 ### Deprecated
 - Mouse state and keyboard state functions are deprecated.
 - Mouse functions with SDL alternatives are deprecated.

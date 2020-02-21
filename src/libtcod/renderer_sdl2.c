@@ -242,7 +242,19 @@ static TCOD_Error setup_cache_console(
   }
   return TCOD_E_OK;
 }
-TCOD_Error TCOD_sdl2_render_console(
+/**
+    Render a console onto the current render target.
+
+    `atlas` is an SDL2 atlas created with `TCOD_sdl2_atlas_new`.
+
+    `console` is the libtcod console you want to render.  Must not be NULL.
+
+    `cache` can be NULL, or a pointer to a console pointer.
+    `cache` should be NULL unless you are using a non-default render target.
+
+    Returns a negative value on an error, check `TCOD_get_error`.
+ */
+static TCOD_Error TCOD_sdl2_render_console(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     struct TCOD_Console** cache)
@@ -310,6 +322,56 @@ TCOD_Error TCOD_sdl2_render_console(
   }
   return TCOD_E_OK;
 }
+TCOD_Error TCOD_sdl2_accumulate(
+    const struct TCOD_TilesetAtlasSDL2* atlas,
+    const struct TCOD_Console* console,
+    struct TCOD_Console** cache,
+    struct SDL_Texture** target)
+{
+  if (!target) { // Render without a managed target.
+    return TCOD_sdl2_render_console(atlas, console, cache);
+  }
+  if (!atlas) {
+    TCOD_set_errorv("Atlas must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!console) {
+    TCOD_set_errorv("Console must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  SDL_RendererInfo renderer_info;
+  SDL_GetRendererInfo(atlas->renderer, &renderer_info);
+  if (!(renderer_info.flags & SDL_RENDERER_TARGETTEXTURE)) {
+    return TCOD_set_errorv("SDL_RENDERER_TARGETTEXTURE is required.");
+  }
+  if (*target) {
+    int tex_width;
+    int tex_height;
+    SDL_QueryTexture(*target, NULL, NULL,
+                     &tex_width, &tex_height);
+    if (tex_width != atlas->tileset->tile_width * console->w
+        || tex_height != atlas->tileset->tile_height * console->h) {
+      SDL_DestroyTexture(*target);
+      *target = NULL;
+    }
+  }
+  if (!*target) {
+    *target = SDL_CreateTexture(
+        atlas->renderer,
+        SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_TARGET,
+        atlas->tileset->tile_width * console->w,
+        atlas->tileset->tile_height * console->h);
+    if (!*target) {
+      return TCOD_set_errorv("Failed to create a new target texture.");
+    }
+  }
+  SDL_Texture* old_target = SDL_GetRenderTarget(atlas->renderer);
+  SDL_SetRenderTarget(atlas->renderer, *target);
+  TCOD_Error err = TCOD_sdl2_render_console(atlas, console, cache);
+  SDL_SetRenderTarget(atlas->renderer, old_target);
+  return err;
+}
 // ----------------------------------------------------------------------------
 // SDL2 Rendering
 /**
@@ -347,16 +409,16 @@ static void sdl2_destructor(struct TCOD_Context* self)
 }
 /** Return the destination rectangle for these inputs. */
 TCOD_NODISCARD static SDL_Rect get_destination_rect(
-    const struct TCOD_RendererSDL2* context,
+    const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
 {
   if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
-  const int tile_width = context->atlas->tileset->tile_width;
-  const int tile_height = context->atlas->tileset->tile_height;
+  const int tile_width = atlas->tileset->tile_width;
+  const int tile_height = atlas->tileset->tile_height;
   int output_w;
   int output_h;
-  SDL_GetRendererOutputSize(context->renderer, &output_w, &output_h);
+  SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
   const int recommended_columns = output_w / tile_width;
   const int recommended_rows = output_h / tile_height;
   SDL_Rect out = {0, 0, output_w, output_h};
@@ -391,37 +453,10 @@ static TCOD_Error sdl2_accumulate(
 {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context || !console) { return -1; }
-  SDL_RendererInfo renderer_info;
-  SDL_GetRendererInfo(context->renderer, &renderer_info);
-  if (!(renderer_info.flags & SDL_RENDERER_TARGETTEXTURE)) {
-    return TCOD_set_errorv("SDL_RENDERER_TARGETTEXTURE is required.");
-  }
-  if (context->cache_texture) {
-    int tex_width;
-    int tex_height;
-    SDL_QueryTexture(context->cache_texture, NULL, NULL,
-                     &tex_width, &tex_height);
-    if (tex_width != context->atlas->tileset->tile_width * console->w
-        || tex_height != context->atlas->tileset->tile_height * console->h) {
-      SDL_DestroyTexture(context->cache_texture);
-      context->cache_texture = NULL;
-    }
-  }
-  if (!context->cache_texture) {
-    context->cache_texture = SDL_CreateTexture(
-        context->renderer,
-        SDL_PIXELFORMAT_RGBA32,
-        SDL_TEXTUREACCESS_TARGET,
-        context->atlas->tileset->tile_width * console->w,
-        context->atlas->tileset->tile_height * console->h);
-    if (!context->cache_texture) { return -1; }
-  }
-  SDL_SetRenderTarget(context->renderer, context->cache_texture);
-  TCOD_Error err =
-    TCOD_sdl2_render_console(context->atlas, console, &context->cache_console);
-  SDL_SetRenderTarget(context->renderer, NULL);
+  TCOD_Error err = TCOD_sdl2_accumulate(
+      context->atlas, console, &context->cache_console, &context->cache_texture);
   if (err < 0) { return err; }
-  SDL_Rect dest = get_destination_rect(context, console, viewport);
+  SDL_Rect dest = get_destination_rect(context->atlas, console, viewport);
   if (!TCOD_ctx.sdl_cbk) {
     // Normal rendering.
     SDL_RenderCopy(context->renderer, context->cache_texture, NULL, &dest);

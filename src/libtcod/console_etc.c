@@ -104,20 +104,29 @@ TCOD_key_t TCOD_console_wait_for_keypress(bool flush) {
 TCOD_key_t TCOD_console_check_for_keypress(int flags) {
 	return TCOD_sys_check_for_keypress(flags);
 }
-/**
- *  Render and present the root console to the active display.
- */
+TCOD_Error TCOD_console_flush_ex(
+    TCOD_Console* console,
+    struct TCOD_ViewportOptions* viewport)
+{
+  if (!console) {
+    TCOD_set_errorv("Console must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!TCOD_ctx.engine) {
+    return TCOD_set_errorv("Rendering context is not yet initialized.");
+  }
+  TCOD_Error err = TCOD_context_present(TCOD_ctx.engine, console, viewport);
+  sync_time_();
+  return err;
+}
 TCOD_Error TCOD_console_flush(void) {
   if (!TCOD_ctx.root) {
     TCOD_set_errorv("Root console is not initialized.");
     return TCOD_E_ERROR;
   }
-  if (!TCOD_ctx.engine) {
-    return TCOD_set_errorv("Rendering context is not yet initialized.");
-  }
   TCOD_Error err;
   if (TCOD_ctx.fade == 255) {
-    err = TCOD_context_present(TCOD_ctx.engine, TCOD_ctx.root, NULL);
+    err = TCOD_console_flush_ex(TCOD_ctx.root, NULL);
   } else {
     // Apply the global fading color before presenting.
     TCOD_Console* root_copy = TCOD_console_new(TCOD_ctx.root->w, TCOD_ctx.root->h);
@@ -133,10 +142,9 @@ TCOD_Error TCOD_console_flush(void) {
       TCOD_color_alpha_blend(&root_copy->tiles[i].fg, &fade_color);
       TCOD_color_alpha_blend(&root_copy->tiles[i].bg, &fade_color);
     }
-    err = TCOD_context_present(TCOD_ctx.engine, root_copy, NULL);
+    err = TCOD_console_flush_ex(root_copy, NULL);
     TCOD_console_delete(root_copy);
   }
-  sync_time_();
   return err;
 }
 /**

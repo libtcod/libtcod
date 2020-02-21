@@ -40,6 +40,7 @@
 #include "config.h"
 
 #include "console.h"
+#include "context.h"
 #include "color.h"
 #include "console_types.h"
 #include "image.h"
@@ -68,10 +69,24 @@ TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontC
 TCOD_DEPRECATED("This function does nothing.")
 TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
 /**
- *  Present the root console to the display.
+    Render and present a console with optional viewport options.
+
+    `console` is the console to render and must not be NULL.
+
+    `viewport` is optional.
+
+    Returns a negative values on error.  See `TCOD_get_error`.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_Error TCOD_console_flush(void);
+TCOD_PUBLIC TCOD_Error TCOD_console_flush_ex(
+    TCOD_Console* console,
+    struct TCOD_ViewportOptions* viewport);
+/**
+ *  Render and present the root console to the active display.
+ */
+TCOD_PUBLIC TCOD_Error TCOD_console_flush(void);
 
 TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);

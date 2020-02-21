@@ -29,65 +29,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
+#ifndef LIBTCOD_TILESET_RENDER_H_
+#define LIBTCOD_TILESET_RENDER_H_
 
-#include "portability.h"
-#include "utility.h"
-#include "version.h"
-
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
 #include "console.h"
-#include "console_drawing.h"
-#include "console_etc.h"
-#include "console_init.h"
-#include "console_printing.h"
-#include "console_rexpaint.h"
-#include "error.h"
-#include "fov.h"
-#include "globals.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "path.h"
-#include "pathfinder.h"
-#include "parser.h"
-#include "sys.h"
 #include "tileset.h"
-#include "tileset_render.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "zip.h"
 
-#include "sdl2/event.h"
-
+struct SDL_Surface;
 #ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
+extern "C" {
 #endif // __cplusplus
+/**
+    Render a console to a SDL_Surface with a software renderer.
 
-#endif
+    `tileset` is the tiles to render with, must not be NULL.
+
+    `console` is the console to render, must not be NULL.
+
+    `cache` is an optional pointer to a consoled used as a cache.  The console
+    at `*cache` will be created or modified.  The `cache` will be used to skip
+    drawing already drawn tiles on any subsequent calls.
+
+    `surface_out` is a pointer to where to put the surface will be managed.
+    The surface at `*surface_out` will be created or modified and will change
+    to match the size of `console` and `tileset`.  The pixel format will be
+    SDL_PIXELFORMAT_RGBA32.
+
+    Returns a negative value on error, see `TCOD_get_error`.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_Error TCOD_tileset_render_to_surface(
+    const TCOD_Tileset* tileset,
+    const TCOD_Console* console,
+    TCOD_Console** cache,
+    struct SDL_Surface** surface_out);
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
+#endif // LIBTCOD_TILESET_RENDER_H_

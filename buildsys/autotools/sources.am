@@ -61,6 +61,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/sys.hpp \
 	../../src/libtcod/tileset.h \
 	../../src/libtcod/tileset_fallback.h \
+	../../src/libtcod/tileset_render.h \
 	../../src/libtcod/tileset_truetype.h \
 	../../src/libtcod/tree.h \
 	../../src/libtcod/tree.hpp \
@@ -166,6 +167,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/sys_sdl_img_png.c \
 	../../src/libtcod/tileset.c \
 	../../src/libtcod/tileset_fallback.c \
+	../../src/libtcod/tileset_render.c \
 	../../src/libtcod/tileset_truetype.c \
 	../../src/libtcod/tree_c.c \
 	../../src/libtcod/txtfield.cpp \

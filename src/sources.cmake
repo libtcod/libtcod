@@ -114,6 +114,8 @@ target_sources(TCOD PRIVATE
     libtcod/tileset.h
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
+    libtcod/tileset_render.c
+    libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
     libtcod/tree.h
@@ -298,6 +300,8 @@ source_group(libtcod FILES
     libtcod/tileset.h
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
+    libtcod/tileset_render.c
+    libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
     libtcod/tree.h

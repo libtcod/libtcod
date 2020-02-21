@@ -108,25 +108,17 @@ TCOD_Error TCOD_console_flush_ex(
     TCOD_Console* console,
     struct TCOD_ViewportOptions* viewport)
 {
+  console = TCOD_console_validate_(console);
   if (!console) {
-    TCOD_set_errorv("Console must not be NULL.");
+    TCOD_set_errorv("Console must not be NULL or root console must exist.");
     return TCOD_E_INVALID_ARGUMENT;
   }
   if (!TCOD_ctx.engine) {
     return TCOD_set_errorv("Rendering context is not yet initialized.");
   }
   TCOD_Error err = TCOD_context_present(TCOD_ctx.engine, console, viewport);
-  sync_time_();
-  return err;
-}
-TCOD_Error TCOD_console_flush(void) {
-  if (!TCOD_ctx.root) {
-    TCOD_set_errorv("Root console is not initialized.");
-    return TCOD_E_ERROR;
-  }
-  TCOD_Error err;
   if (TCOD_ctx.fade == 255) {
-    err = TCOD_console_flush_ex(TCOD_ctx.root, NULL);
+    err = TCOD_context_present(TCOD_ctx.engine, console, viewport);
   } else {
     // Apply the global fading color before presenting.
     TCOD_Console* root_copy = TCOD_console_new(TCOD_ctx.root->w, TCOD_ctx.root->h);
@@ -142,10 +134,14 @@ TCOD_Error TCOD_console_flush(void) {
       TCOD_color_alpha_blend(&root_copy->tiles[i].fg, &fade_color);
       TCOD_color_alpha_blend(&root_copy->tiles[i].bg, &fade_color);
     }
-    err = TCOD_console_flush_ex(root_copy, NULL);
+    err = TCOD_context_present(TCOD_ctx.engine, root_copy, viewport);
     TCOD_console_delete(root_copy);
   }
+  sync_time_();
   return err;
+}
+TCOD_Error TCOD_console_flush(void) {
+  return TCOD_console_flush_ex(NULL, NULL);
 }
 /**
  *  Manually mark a region of a console as dirty.

@@ -71,7 +71,7 @@ TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
 /**
     Render and present a console with optional viewport options.
 
-    `console` is the console to render and must not be NULL.
+    `console` is the console to render.
 
     `viewport` is optional.
 

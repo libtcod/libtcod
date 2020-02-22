@@ -36,7 +36,7 @@
 #define TCOD_MINOR_VERSION  16
 #define TCOD_PATCHLEVEL     0
 
-#define TCOD_STRVERSION "1.16.0-alpha.3"
+#define TCOD_STRVERSION "1.16.0-alpha.4"
 
 #define TCOD_HEXVERSION (0x010000 * TCOD_MAJOR_VERSION \
                          + 0x0100 * TCOD_MINOR_VERSION \

@@ -235,7 +235,8 @@ static TCOD_Error gl1_accumulate(
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
   float matrix[16];
-  gl_get_viewport_scale(renderer->common.atlas, console, viewport, matrix);
+  gl_get_viewport_scale(
+      renderer->common.atlas, console, viewport, matrix, &renderer->common);
   matrix[0] /= console->w;
   matrix[5] /= -console->h;
   matrix[13] = -matrix[13];

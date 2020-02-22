@@ -73,6 +73,11 @@ struct TCOD_RendererSDL2 {
   struct TCOD_Console* cache_console;
   struct SDL_Texture* cache_texture;
   uint32_t sdl_subsystems;
+  // Mouse cursor transform values of the last viewport used.
+  double last_offset_x;
+  double last_offset_y;
+  double last_scale_x;
+  double last_scale_y;
 };
 #ifdef __cplusplus
 extern "C" {

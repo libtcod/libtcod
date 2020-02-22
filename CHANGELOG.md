@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Mouse tile coordinates are now correct on any resized window.
 
 ## [1.16.0-alpha.3] - 2020-02-21
 ### Deprecated

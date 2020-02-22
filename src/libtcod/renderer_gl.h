@@ -51,6 +51,11 @@ struct TCOD_RendererGLCommon {
   void* glcontext;
   struct TCOD_TilesetAtlasOpenGL* atlas;
   uint32_t sdl_subsystems;
+  // Mouse cursor transform values of the last viewport used.
+  double last_offset_x;
+  double last_offset_y;
+  double last_scale_x;
+  double last_scale_y;
 };
 
 #ifdef __cplusplus

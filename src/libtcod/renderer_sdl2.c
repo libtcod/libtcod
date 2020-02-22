@@ -457,6 +457,11 @@ static TCOD_Error sdl2_accumulate(
       context->atlas, console, &context->cache_console, &context->cache_texture);
   if (err < 0) { return err; }
   SDL_Rect dest = get_destination_rect(context->atlas, console, viewport);
+  // Set mouse coordinate scaling.
+  context->last_offset_x = dest.x;
+  context->last_offset_y = dest.y;
+  context->last_scale_x = (double)console->w / (double)dest.w;
+  context->last_scale_y = (double)console->h / (double)dest.h;
   if (!TCOD_ctx.sdl_cbk) {
     // Normal rendering.
     SDL_RenderCopy(context->renderer, context->cache_texture, NULL, &dest);
@@ -514,8 +519,9 @@ static TCOD_Error sdl2_present(
 static void sdl2_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
 {
   struct TCOD_RendererSDL2* context = self->contextdata;
-  *x /= context->atlas->tileset->tile_width;
-  *y /= context->atlas->tileset->tile_height;
+  if (!context->last_scale_x || !context->last_scale_y) { return; }
+  *x = (*x - context->last_offset_x) * context->last_scale_x;
+  *y = (*y - context->last_offset_y) * context->last_scale_y;
 }
 /**
  *  Save a PNG screen-shot to `file`.

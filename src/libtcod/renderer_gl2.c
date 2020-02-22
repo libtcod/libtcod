@@ -259,7 +259,8 @@ static TCOD_Error render(
   int t_console_tile = glGetUniformLocation(renderer->program, "t_console_tile");
 
   float matrix[4*4];
-  gl_get_viewport_scale(renderer->common.atlas, console, viewport, matrix);
+  gl_get_viewport_scale(
+      renderer->common.atlas, console, viewport, matrix, &renderer->common);
   glUniformMatrix4fv(mvp_matrix, 1, GL_FALSE, matrix);
 
   // Upload data of texture shapes.

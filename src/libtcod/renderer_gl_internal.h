@@ -156,8 +156,9 @@ static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context)
 static void gl_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
 {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
-  *x /= renderer->atlas->tileset->tile_width;
-  *y /= renderer->atlas->tileset->tile_height;
+  if (!renderer->last_scale_x || !renderer->last_scale_y) { return; }
+  *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
+  *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
 }
 static inline float minf(float a, float b) {
   return a < b ? a : b;
@@ -172,7 +173,8 @@ static void gl_get_viewport_scale(
     const struct TCOD_TilesetAtlasOpenGL* atlas,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport,
-    float matrix_4x4_out[16])
+    float matrix_4x4_out[16],
+    struct TCOD_RendererGLCommon* common_out)
 {
   if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   SDL_Rect gl_viewport;
@@ -204,15 +206,20 @@ static void gl_get_viewport_scale(
   float translate_y = ((1.0f - scale_h) * clampf(viewport->align_y, 0, 1));
   translate_x = roundf(translate_x * gl_viewport.w) / gl_viewport.w;
   translate_y = roundf(translate_y * gl_viewport.h) / gl_viewport.h;
-  translate_x = -1.0f + 2.0f * translate_x;
-  translate_y = -1.0f + 2.0f * translate_y;
   float matrix[4*4] = {
       2.0f * scale_w, 0, 0, 0,
       0, 2.0f * scale_h, 0, 0,
       0, 0, 1, 0,
-      translate_x, translate_y, 1, 1,
+      -1.0f + 2.0f * translate_x, -1.0f + 2.0f * translate_y, 1, 1,
   };
   memcpy(matrix_4x4_out, matrix, sizeof(matrix));
+  // Track viewport scaling for mouse coordinates.
+  common_out->last_offset_x = (double)translate_x * (double)gl_viewport.w;
+  common_out->last_offset_y = (double)translate_x * (double)gl_viewport.h;
+  common_out->last_scale_x =
+      (double)scale_w * (double)console->w / (double)gl_viewport.w;
+  common_out->last_scale_y =
+      (double)scale_h * (double)console->h / (double)gl_viewport.h;
 }
 #ifdef __cplusplus
 } // extern "C"

@@ -38,7 +38,7 @@
 static void render_tile(
     const TCOD_Tileset* tileset,
     const struct TCOD_ConsoleTile* tile,
-    const TCOD_ColorRGBA* out_rgba,
+    struct TCOD_ColorRGBA* out_rgba,
     int stride)
 {
   const TCOD_ColorRGBA* graphic = TCOD_tileset_get_tile(tileset, tile->ch);
@@ -125,8 +125,10 @@ TCOD_Error TCOD_tileset_render_to_surface(
         ) { continue; }
       }
       TCOD_ColorRGBA* out = (TCOD_ColorRGBA*)(
-          (char*)(*surface_out)->pixels + console_y * (*surface_out)->pitch);
-      out += console_x * tileset->tile_width;
+          (char*)(*surface_out)->pixels
+          + console_y * tileset->tile_height * (*surface_out)->pitch
+          + console_x * tileset->tile_width * sizeof(*out)
+      );
       render_tile(tileset, tile, out, (*surface_out)->pitch);
     }
   }

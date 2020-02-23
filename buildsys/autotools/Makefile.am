@@ -19,6 +19,9 @@ AM_LDFLAGS = $(SDL_LIBS) $(X11_LIBS) $(ZLIB_LIBS)
 
 lib_LTLIBRARIES = libtcod.la
 
+libtcod_root_includedir = $(includedir)
+libtcod_root_include_HEADERS = ../../src/libtcod.h ../../src/libtcod.hpp
+
 include $(srcdir)/sources.am
 
 libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)

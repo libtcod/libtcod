@@ -60,7 +60,7 @@ extern "C" {
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_Error TCOD_tileset_render_to_surface(
+TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
     const TCOD_Tileset* tileset,
     const TCOD_Console* console,
     TCOD_Console** cache,

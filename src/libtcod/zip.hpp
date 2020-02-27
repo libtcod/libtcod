@@ -299,7 +299,7 @@ public :
 	/**
 	@PageName zip_load
 	@FuncTitle Reading a random number generator state from the buffer
-	@Cpp TCODConsole *TCODZip::getRandom()
+	@Cpp TCODRandom *TCODZip::getRandom()
 	@C TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip)
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/

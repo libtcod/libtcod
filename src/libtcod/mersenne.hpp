@@ -394,14 +394,14 @@ In these cases, the selected mean will appear with the lowest frequency.
 
 		TCODRandom(TCOD_random_t mersenne) : data(mersenne) {}
 
-  		TCOD_Random* get_data() noexcept
-  		{
-  		  return data;
-  		}
-  		const TCOD_Random* get_data() const noexcept
-  		{
-  		  return data;
-  		}
+		TCOD_Random* get_data() noexcept
+		{
+			return data;
+		}
+		const TCOD_Random* get_data() const noexcept
+		{
+			return data;
+		}
 	protected :
 		friend class TCODLIB_API TCODNoise;
 		friend class TCODLIB_API TCODHeightMap;

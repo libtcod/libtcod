@@ -35,6 +35,7 @@
 #include "color.hpp"
 #include "console.hpp"
 #include "image.hpp"
+#include "mersenne.hpp"
 #include "zip.h"
 /**
  @PageName zip
@@ -161,6 +162,16 @@ public :
 
 	/**
 	@PageName zip_put
+	@FuncTitle Putting a random number generator state in the buffer
+	@Cpp void TCODZip::putRandom(const TCOD_random_t val)
+	@C void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_random_t val)
+	@Param zip	In the C version, the buffer handler, returned by the constructor.
+	@Param val	An RNG state to store in the buffer
+	*/
+	void putRandom(const TCODRandom *val);
+
+	/**
+	@PageName zip_put
 	@FuncTitle Putting some custom data in the buffer
 	@Cpp void TCODZip::putData(int nbBytes, const void *data)
 	@C void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data)
@@ -284,6 +295,15 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	*/
 	TCODConsole *getConsole();
+
+	/**
+	@PageName zip_load
+	@FuncTitle Reading a random number generator state from the buffer
+	@Cpp TCODConsole *TCODZip::getRandom()
+	@C TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip)
+	@Param zip	In the C version, the buffer handler, returned by the constructor.
+	*/
+	TCODRandom *getRandom();
 
 	/**
 	@PageName zip_load

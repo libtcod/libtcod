@@ -392,6 +392,16 @@ In these cases, the selected mean will appear with the lowest frequency.
 		inline int diceRoll (TCOD_dice_t dice) { return TCOD_random_dice_roll(data,dice); }
 		inline int diceRoll (const char * s) { return TCOD_random_dice_roll(data,TCOD_random_dice_new(s)); }
 
+		TCODRandom(TCOD_random_t mersenne) : data(mersenne) {}
+
+  		TCOD_Random* get_data() noexcept
+  		{
+  		  return data;
+  		}
+  		const TCOD_Random* get_data() const noexcept
+  		{
+  		  return data;
+  		}
 	protected :
 		friend class TCODLIB_API TCODNoise;
 		friend class TCODLIB_API TCODHeightMap;

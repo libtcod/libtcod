@@ -77,6 +77,11 @@ void TCODZip::putConsole(const TCODConsole *val)
   TCOD_zip_put_console(data, val->get_data());
 }
 
+void TCODZip::putRandom(const TCODRandom *val)
+{
+	TCOD_zip_put_random(data, val->get_data());
+}
+
 int TCODZip::saveToFile(const char *filename) {
 	return TCOD_zip_save_to_file(data,filename);
 }
@@ -115,6 +120,10 @@ TCODImage *TCODZip::getImage() {
 
 TCODConsole *TCODZip::getConsole() {
 	return new TCODConsole(TCOD_zip_get_console(data));
+}
+
+TCODRandom *TCODZip::getRandom() {
+	return new TCODRandom(TCOD_zip_get_random(data));
 }
 
 uint32_t TCODZip::getCurrentBytes() const {

@@ -165,6 +165,12 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val)
 	}
 }
 
+void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random *val) {
+	int s = (int)sizeof(*val);
+	TCOD_zip_put_int(zip, s);
+	TCOD_zip_put_data(zip, s, val);
+}
+
 int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char *filename) {
 	zip_data_t *zip=(zip_data_t *)pzip;
 	gzFile f=gzopen(filename,"wb");
@@ -359,6 +365,15 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 			TCOD_console_set_char_background(ret, x,y,TCOD_zip_get_color(pzip), TCOD_BKGND_SET);
 		}
 	}
+	return ret;
+}
+
+TCODLIB_API TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip)
+{
+	TCOD_random_t ret;
+	size_t s = TCOD_zip_get_int(zip);
+	ret = (TCOD_random_t)malloc(s);
+	TCOD_zip_get_data(zip, s, ret);
 	return ret;
 }
 

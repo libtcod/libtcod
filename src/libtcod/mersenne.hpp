@@ -400,6 +400,12 @@ In these cases, the selected mean will appear with the lowest frequency.
 		inline int diceRoll (TCOD_dice_t dice) { return TCOD_random_dice_roll(data,dice); }
 		inline int diceRoll (const char * s) { return TCOD_random_dice_roll(data,TCOD_random_dice_new(s)); }
 
+    /**
+        Return this objects `TCOD_Random*` pointer.
+        \rst
+        .. versionadded:: 1.16
+        \endrst
+     */
 		TCOD_Random* get_data() noexcept
 		{
 			return data;

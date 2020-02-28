@@ -55,6 +55,12 @@ TCODLIB_API void TCOD_zip_put_string(TCOD_zip_t zip, const char *val);
 TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val);
 TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val);
 TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val);
+/**
+    Write a TCOD_Random* object.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
 TCODLIB_API void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random *val);
 TCODLIB_API void TCOD_zip_put_data(TCOD_zip_t zip, int nbBytes, const void *data);
 TCODLIB_API uint32_t TCOD_zip_get_current_bytes(TCOD_zip_t zip);
@@ -69,6 +75,12 @@ TCODLIB_API const char *TCOD_zip_get_string(TCOD_zip_t zip);
 TCODLIB_API TCOD_color_t TCOD_zip_get_color(TCOD_zip_t zip);
 TCODLIB_API TCOD_image_t TCOD_zip_get_image(TCOD_zip_t zip);
 TCODLIB_API TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip);
+/**
+    Read a TCOD_Random* object.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
 TCODLIB_API TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void *data);
 TCODLIB_API uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t zip);

@@ -166,7 +166,7 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val)
 }
 
 void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random *val) {
-	size_t s = sizeof(*val);
+	int s = (int)sizeof(*val);
 	TCOD_zip_put_int(zip, s);
 	TCOD_zip_put_data(zip, s, val);
 }

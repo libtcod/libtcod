@@ -156,7 +156,6 @@ static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context)
 static void gl_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
 {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
-  if (!renderer->last_scale_x || !renderer->last_scale_y) { return; }
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
   *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
 }

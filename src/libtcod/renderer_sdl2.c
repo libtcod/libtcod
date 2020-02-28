@@ -519,7 +519,6 @@ static TCOD_Error sdl2_present(
 static void sdl2_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
 {
   struct TCOD_RendererSDL2* context = self->contextdata;
-  if (!context->last_scale_x || !context->last_scale_y) { return; }
   *x = (*x - context->last_offset_x) * context->last_scale_x;
   *y = (*y - context->last_offset_y) * context->last_scale_y;
 }

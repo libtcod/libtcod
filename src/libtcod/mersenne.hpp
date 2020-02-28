@@ -151,6 +151,14 @@ class TCODLIB_API TCODRandom {
 		*/
 		TCODRandom(uint32_t seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
 
+    /**
+        Take ownership of a `TCOD_Random*` pointer.
+        \rst
+        .. versionadded:: 1.16
+        \endrst
+     */
+    explicit TCODRandom(TCOD_Random*&& mersenne) : data(mersenne) {}
+
 		/**
 		@PageName random_init
 		@FuncTitle Destroying a RNG
@@ -391,8 +399,6 @@ In these cases, the selected mean will appear with the lowest frequency.
 		inline TCOD_dice_t dice (const char * s) { return TCOD_random_dice_new(s); }
 		inline int diceRoll (TCOD_dice_t dice) { return TCOD_random_dice_roll(data,dice); }
 		inline int diceRoll (const char * s) { return TCOD_random_dice_roll(data,TCOD_random_dice_new(s)); }
-
-		TCODRandom(TCOD_random_t mersenne) : data(mersenne) {}
 
 		TCOD_Random* get_data() noexcept
 		{

@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.5] - 2020-02-28
 ### Changed
 - Mouse tile coordinates are now always zero before the first call to
   TCOD_console_flush.

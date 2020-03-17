@@ -35,15 +35,23 @@
 #include "config.h"
 #include "tileset.h"
 /**
- *  Return the default tileset, may be NULL.
- *
- *  This function is provisional, the API may change in the future.
+    Return the default tileset, may be NULL.
+
+    A non-NULL return value is a new reference to the global tileset.
+    When you are done you will need to call `TCOD_tileset_delete` on this
+    pointer.
+
+    This function is provisional, the API may change in the future.
  */
 TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
 /**
- *  Set the default tileset and update the default display to use it.
- *
- *  This function is provisional, the API may change in the future.
+    Set the default tileset and update the default display to use it.
+
+    This will keep alive a reference to the given tileset.  If you no longer
+    need the pointer then you should call `TCOD_tileset_delete` on it after
+    this function.
+
+    This function is provisional, the API may change in the future.
  */
 TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
 #endif // LIBTCOD_GLOBALS_H_

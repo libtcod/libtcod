@@ -35,6 +35,7 @@
 
 TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
 {
+  if (TCOD_ctx.tileset) { ++TCOD_ctx.tileset->ref_count; }
   return TCOD_ctx.tileset;
 }
 TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)

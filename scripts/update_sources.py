@@ -76,12 +76,16 @@ def generate_cmake() -> str:
     """Returns a CMake script with libtcod's sources."""
     out = f"{BANNER}"
     out += "\ntarget_sources(TCOD PRIVATE\n    "
-    out += "\n    ".join(os.path.relpath(f, "src") for f in all_sources(includes=True))
+    out += "\n    ".join(
+        os.path.relpath(f, "src").replace("\\", "/") for f in all_sources(includes=True)
+    )
     out += "\n)"
     for group, files in get_sources(sources=True, includes=True):
         group = group.replace("/", r"\\")
         out += f"\nsource_group({group} FILES\n    "
-        out += "\n    ".join(os.path.relpath(f, "src") for f in files)
+        out += "\n    ".join(
+            os.path.relpath(f, "src").replace("\\", "/") for f in files
+        )
         out += "\n)"
     out += "\n"
     return out

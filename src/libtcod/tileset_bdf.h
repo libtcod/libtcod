@@ -29,73 +29,61 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
-
-#include "portability.h"
-#include "utility.h"
-#include "version.h"
-
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
-#include "console.h"
-#include "console_drawing.h"
-#include "console_etc.h"
-#include "console_init.h"
-#include "console_printing.h"
-#include "console_rexpaint.h"
-#include "context.h"
-#include "error.h"
-#include "fov.h"
-#include "globals.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "path.h"
-#include "pathfinder.h"
-#include "parser.h"
-#include "renderer_gl.h"
-#include "renderer_gl1.h"
-#include "renderer_gl2.h"
-#include "renderer_sdl2.h"
-#include "sys.h"
-#include "tileset.h"
-#include "tileset_bdf.h"
-#include "tileset_fallback.h"
-#include "tileset_render.h"
-#include "tileset_truetype.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "zip.h"
-
-#include "sdl2/event.h"
+#ifndef LIBTCOD_TILESET_BDF_H_
+#define LIBTCOD_TILESET_BDF_H_
 
 #ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
+#include <string>
 #endif // __cplusplus
 
-#endif
+#include "config.h"
+#include "tileset.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+/**
+    Load a BDF font from a file path.
+
+    For the best results, you should use a BDF font with a cell-based
+    monospace alignment.
+
+    May return NULL on failure.  See `TCOD_get_error` for the error message.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCODLIB_API TCOD_NODISCARD
+TCOD_Tileset* TCOD_load_bdf(const char* path);
+/**
+    Load a BDF font from memory.
+
+    `size` is the byte length of `buffer`.  `buffer` is the BDF data to load.
+
+    May return NULL on failure.  See `TCOD_get_error` for the error message.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCODLIB_API TCOD_NODISCARD
+TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
+#ifdef __cplusplus
+} // extern "C"
+namespace tcod {
+/**
+    Load a Tileset from a BDF font file.
+
+    Will throw on an error.
+ */
+TCOD_NODISCARD
+inline auto load_bdf(const std::string& path) -> TilesetPtr
+{
+  TilesetPtr tileset {TCOD_load_bdf(path.c_str())};
+  if (!tileset) { throw std::runtime_error(TCOD_get_error()); }
+  return tileset;
+}
+} // namespace tcod
+#endif // __cplusplus
+#endif // LIBTCOD_TILESET_BDF_H_

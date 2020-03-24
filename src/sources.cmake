@@ -112,6 +112,8 @@ target_sources(TCOD PRIVATE
     libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset.h
+    libtcod/tileset_bdf.c
+    libtcod/tileset_bdf.h
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
     libtcod/tileset_render.c
@@ -298,6 +300,8 @@ source_group(libtcod FILES
     libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset.h
+    libtcod/tileset_bdf.c
+    libtcod/tileset_bdf.h
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
     libtcod/tileset_render.c

@@ -281,3 +281,7 @@ TEST_CASE("Rectangle text alignment.")
   );
   CHECK(to_string(*console) == "123.123..123");
 }
+TEST_CASE("Load BDF.", "[!nonportable]")
+{
+  REQUIRE(tcod::load_bdf(get_file("fonts/ucs-fonts/4x6.bdf")));
+}

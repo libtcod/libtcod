@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added `TCOD_load_bdf` and `TCOD_load_bdf_memory`.
 
 ## [1.16.0-alpha.5] - 2020-02-28
 ### Changed

@@ -184,8 +184,8 @@ static int parse_bitmap(
   }
   for (int bitmap_y = 0; bitmap_y < glyph_bbox->height; ++bitmap_y) {
     goto_next_line(loader);
+    int bitmask = 0;
     for (int bitmap_x = 0; bitmap_x < glyph_bbox->width; ++bitmap_x) {
-      int bitmask;
       if (bitmap_x % 8 == 0) {
         bitmask = read_next_bitmap_byte(loader);
         if (bitmask < 0) { return -1; }

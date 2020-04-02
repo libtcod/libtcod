@@ -568,6 +568,20 @@ static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* self)
 {
   return ((struct TCOD_RendererSDL2*)self->contextdata)->renderer;
 }
+/**
+    Change the atlas to the given tileset.
+ */
+static TCOD_Error sdl2_set_tileset(
+    struct TCOD_Context* self, TCOD_Tileset* tileset)
+{
+  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_TilesetAtlasSDL2* atlas =
+      TCOD_sdl2_atlas_new(context->renderer, tileset);
+  if (!atlas) { return TCOD_E_ERROR; }
+  if (context->atlas) { TCOD_sdl2_atlas_delete(context->atlas); }
+  context->atlas = atlas;
+  return TCOD_E_OK;
+}
 struct TCOD_Context* TCOD_renderer_init_sdl2(
     int pixel_width,
     int pixel_height,
@@ -606,6 +620,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->get_sdl_renderer_ = sdl2_get_renderer;
   context->pixel_to_tile_ = sdl2_pixel_to_tile;
   context->save_screenshot_ = sdl2_save_screenshot;
+  context->set_tileset = sdl2_set_tileset;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   sdl2_data->window = SDL_CreateWindow(
@@ -627,8 +642,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     TCOD_context_delete(context);
     return NULL;
   }
-  sdl2_data->atlas = TCOD_sdl2_atlas_new(sdl2_data->renderer, tileset);
-  if (!sdl2_data->atlas) {
+  if (context->set_tileset(context, tileset) < 0) {
     TCOD_context_delete(context);
     return NULL;
   }

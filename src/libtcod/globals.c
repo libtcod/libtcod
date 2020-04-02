@@ -43,4 +43,7 @@ TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
   TCOD_tileset_delete(TCOD_ctx.tileset);
   TCOD_ctx.tileset = tileset;
   if (tileset) { ++tileset->ref_count; }
+  if (tileset && TCOD_ctx.engine) {
+    TCOD_ctx.engine->set_tileset(TCOD_ctx.engine, tileset);
+  }
 }

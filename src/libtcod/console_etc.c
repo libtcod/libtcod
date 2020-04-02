@@ -197,11 +197,10 @@ int TCOD_console_set_custom_font(
   }
   if (TCOD_ctx.font_tcod_layout) { TCOD_ctx.font_in_row = true; }
 
-  TCOD_tileset_delete(TCOD_ctx.tileset);
-
-  TCOD_ctx.tileset =
+  TCOD_Tileset* tileset =
       TCOD_tileset_load(fontFile, nb_char_horiz, nb_char_vertic, 0, NULL);
-  if (!TCOD_ctx.tileset) { return TCOD_E_ERROR; }
+  if (!tileset) { return TCOD_E_ERROR; }
+  TCOD_set_default_tileset(tileset);
   TCOD_sys_decode_font_();
   return TCOD_E_OK;
 }

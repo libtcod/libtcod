@@ -404,7 +404,7 @@ struct TCOD_Context* TCOD_renderer_new_gl2(
       2,
       0,
       SDL_GL_CONTEXT_PROFILE_CORE,
-      &renderer->common);
+      context);
   if (err < 0) {
     TCOD_context_delete(context);
     return NULL;
@@ -428,10 +428,6 @@ struct TCOD_Context* TCOD_renderer_new_gl2(
   glBufferData(GL_ARRAY_BUFFER, 8, VERTEX_BUFFER_DATA, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-  context->get_sdl_window_ = gl_get_sdl_window;
-  context->pixel_to_tile_ = gl_pixel_to_tile;
-  context->save_screenshot_ = gl_screenshot;
   context->accumulate_ = gl2_accumulate;
   context->present_ = gl2_present;
   return context;

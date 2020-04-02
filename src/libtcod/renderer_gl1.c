@@ -310,14 +310,11 @@ struct TCOD_Context* TCOD_renderer_init_gl1(
       1,
       1,
       SDL_GL_CONTEXT_PROFILE_CORE,
-      &renderer->common);
+      context);
   if (err < 0) {
     TCOD_context_delete(context);
     return NULL;
   }
-  context->get_sdl_window_ = gl_get_sdl_window;
-  context->pixel_to_tile_ = gl_pixel_to_tile;
-  context->save_screenshot_ = gl_screenshot;
   context->accumulate_ = gl1_accumulate;
   context->present_ = gl1_present;
   return context;

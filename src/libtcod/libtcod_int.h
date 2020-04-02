@@ -123,6 +123,12 @@ typedef struct {
 	bool app_has_mouse_focus;
 	/* application is active (not iconified) */
 	bool app_is_active;
+  /**
+    Active tileset for libtcod.
+
+    Use TCOD_set_default_tileset when you want to change this value, since it
+    needs to trigger some important side-effects.
+   */
   struct TCOD_Tileset* tileset;
   struct TCOD_Context* engine;
 } TCOD_internal_context_t;

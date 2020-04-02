@@ -46,76 +46,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
-static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
-{
-  if (common->atlas) {
-    TCOD_gl_atlas_delete(common->atlas);
-    common->atlas = NULL;
-  }
-  if (common->glcontext) {
-    SDL_GL_DeleteContext(common->glcontext);
-    common->glcontext = NULL;
-  }
-  if (common->window) {
-    SDL_DestroyWindow(common->window);
-    common->window = NULL;
-  }
-  SDL_QuitSubSystem(common->sdl_subsystems);
-  common->sdl_subsystems = 0;
-}
-TCOD_NODISCARD
-static TCOD_Error TCOD_renderer_gl_common_init(
-    int pixel_width,
-    int pixel_height,
-    const char* title,
-    int window_flags,
-    bool vsync,
-    struct TCOD_Tileset* tileset,
-    int gl_major,
-    int gl_minor,
-    int gl_profile,
-    struct TCOD_RendererGLCommon* out)
-{
-  if (!tileset) { return TCOD_E_ERROR; }
-  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
-    return TCOD_E_ERROR;
-  }
-  out->sdl_subsystems = SDL_INIT_VIDEO;
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
-  out->window = SDL_CreateWindow(
-      title,
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
-      pixel_width,
-      pixel_height,
-      window_flags | SDL_WINDOW_OPENGL);
-  if (!out->window) {
-    TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
-    TCOD_renderer_gl_common_uninit(out);
-    return TCOD_E_ERROR;
-  }
-  out->glcontext = SDL_GL_CreateContext(out->window);
-  if (!out->glcontext) {
-    TCOD_set_errorvf("Could not create GL context:\n%s", SDL_GetError());
-    TCOD_renderer_gl_common_uninit(out);
-    return TCOD_E_ERROR;
-  }
-  if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
-    TCOD_set_errorv("Failed to invoke the GLAD loader.");
-    TCOD_renderer_gl_common_uninit(out);
-    return TCOD_E_ERROR;
-  }
-  SDL_GL_SetSwapInterval(vsync);
-  out->atlas = TCOD_gl_atlas_new(tileset);
-  if (!out->atlas) {
-    TCOD_renderer_gl_common_uninit(out);
-    return TCOD_E_ERROR;
-  }
-  return TCOD_E_OK;
-}
 /**
  *  Save a screen capture.
  */
@@ -158,6 +88,93 @@ static void gl_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
   *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
+}
+/**
+    Change the atlas to the given tileset.
+ */
+static TCOD_Error gl_set_tileset(
+    struct TCOD_Context* self, TCOD_Tileset* tileset)
+{
+  struct TCOD_RendererGLCommon* renderer = self->contextdata;
+  struct TCOD_TilesetAtlasOpenGL* atlas = TCOD_gl_atlas_new(tileset);
+  if (!atlas) { return TCOD_E_ERROR; }
+  if (renderer->atlas) { TCOD_gl_atlas_delete(renderer->atlas); }
+  renderer->atlas = atlas;
+  return TCOD_E_OK;
+}
+static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
+{
+  if (common->atlas) {
+    TCOD_gl_atlas_delete(common->atlas);
+    common->atlas = NULL;
+  }
+  if (common->glcontext) {
+    SDL_GL_DeleteContext(common->glcontext);
+    common->glcontext = NULL;
+  }
+  if (common->window) {
+    SDL_DestroyWindow(common->window);
+    common->window = NULL;
+  }
+  SDL_QuitSubSystem(common->sdl_subsystems);
+  common->sdl_subsystems = 0;
+}
+TCOD_NODISCARD
+static TCOD_Error TCOD_renderer_gl_common_init(
+    int pixel_width,
+    int pixel_height,
+    const char* title,
+    int window_flags,
+    bool vsync,
+    struct TCOD_Tileset* tileset,
+    int gl_major,
+    int gl_minor,
+    int gl_profile,
+    struct TCOD_Context* out)
+{
+  out->get_sdl_window_ = gl_get_sdl_window;
+  out->pixel_to_tile_ = gl_pixel_to_tile;
+  out->save_screenshot_ = gl_screenshot;
+  out->set_tileset = gl_set_tileset;
+  struct TCOD_RendererGLCommon* renderer = out->contextdata;
+  if (!tileset) { return TCOD_E_ERROR; }
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
+    return TCOD_E_ERROR;
+  }
+  renderer->sdl_subsystems = SDL_INIT_VIDEO;
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
+  renderer->window = SDL_CreateWindow(
+      title,
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      pixel_width,
+      pixel_height,
+      window_flags | SDL_WINDOW_OPENGL);
+  if (!renderer->window) {
+    TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
+    TCOD_renderer_gl_common_uninit(renderer);
+    return TCOD_E_ERROR;
+  }
+  renderer->glcontext = SDL_GL_CreateContext(renderer->window);
+  if (!renderer->glcontext) {
+    TCOD_set_errorvf("Could not create GL context:\n%s", SDL_GetError());
+    TCOD_renderer_gl_common_uninit(renderer);
+    return TCOD_E_ERROR;
+  }
+  if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+    TCOD_set_errorv("Failed to invoke the GLAD loader.");
+    TCOD_renderer_gl_common_uninit(renderer);
+    return TCOD_E_ERROR;
+  }
+  SDL_GL_SetSwapInterval(vsync);
+  if (out->set_tileset(out, tileset) < 0) {
+    TCOD_renderer_gl_common_uninit(renderer);
+    return TCOD_E_ERROR;
+  }
+  return TCOD_E_OK;
 }
 static inline float minf(float a, float b) {
   return a < b ? a : b;

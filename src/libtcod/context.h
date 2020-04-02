@@ -38,6 +38,7 @@
 #include "color.h"
 #include "console.h"
 #include "error.h"
+#include "tileset.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -121,6 +122,10 @@ struct TCOD_Context {
       struct TCOD_Context* self,
       const struct TCOD_Console* console,
       const struct TCOD_ViewportOptions* viewport);
+  /**
+      Change the tileset used by this context.
+  */
+  TCOD_Error (*set_tileset)(struct TCOD_Context* self, TCOD_Tileset* tileset);
 };
 #ifdef __cplusplus
 extern "C" {

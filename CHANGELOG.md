@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Changing the active tileset will now properly show it on the next render.
 
 ## [1.16.0-alpha.6] - 2020-03-26
 ### Added

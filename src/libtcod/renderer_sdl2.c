@@ -353,6 +353,10 @@ TCOD_Error TCOD_sdl2_render_texture(
         || tex_height != atlas->tileset->tile_height * console->h) {
       SDL_DestroyTexture(*target);
       *target = NULL;
+      if (cache && *cache) {
+        TCOD_console_delete(*cache);
+        *cache = NULL;
+      }
     }
   }
   if (!*target) {
@@ -580,6 +584,10 @@ static TCOD_Error sdl2_set_tileset(
   if (!atlas) { return TCOD_E_ERROR; }
   if (context->atlas) { TCOD_sdl2_atlas_delete(context->atlas); }
   context->atlas = atlas;
+  if (context->cache_console) {
+    TCOD_console_delete(context->cache_console);
+    context->cache_console = NULL;
+  }
   return TCOD_E_OK;
 }
 struct TCOD_Context* TCOD_renderer_init_sdl2(

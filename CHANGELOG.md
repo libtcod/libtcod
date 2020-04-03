@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Changing the active tileset now redraws tiles correctly on the next frame.
 
 ## [1.16.0-alpha.7] - 2020-04-02
 ### Fixed

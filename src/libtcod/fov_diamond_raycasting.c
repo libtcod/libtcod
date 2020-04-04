@@ -180,8 +180,8 @@ void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t m, int player_x, int pla
 
 	fov.origx = player_x;
 	fov.origy = player_y;
-	fov.raymap = (ray_data_t**)calloc(sizeof(ray_data_t*), nbcells);
-	fov.raymap2 = (ray_data_t*)calloc(sizeof(ray_data_t), nbcells);
+	fov.raymap = calloc(sizeof(*fov.raymap), nbcells);
+	fov.raymap2 = calloc(sizeof(*fov.raymap2), nbcells);
 
 	expandPerimeterFrom(&fov, new_ray(&fov,0,0));
 

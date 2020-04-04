@@ -232,8 +232,8 @@ void TCOD_map_compute_fov_permissive2(TCOD_map_t map, int player_x, int player_y
 	}
 	m->cells[player_x+player_y*m->width].fov=1;
 	/* preallocate views and bumps */
-	views=(view_t *)calloc(sizeof(view_t),m->width*m->height);
-	bumps=(viewbump_t *)calloc(sizeof(viewbump_t),m->width*m->height);
+	views = calloc(sizeof(*views), m->width * m->height);
+	bumps = calloc(sizeof(*bumps), m->width * m->height);
 	/* set the fov range */
 	if ( max_radius > 0 ) {
 		minx=MIN(player_x,max_radius);

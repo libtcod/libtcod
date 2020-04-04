@@ -39,14 +39,12 @@
  *  Return a new TCOD_Map with `width` and `height`.
  */
 struct TCOD_Map *TCOD_map_new(int width, int height) {
-  struct TCOD_Map *map = NULL;
   if (width <= 0 || height <= 0) { return NULL; }
-  map = (struct TCOD_Map *)calloc(sizeof(struct TCOD_Map), 1);
+  struct TCOD_Map* map = calloc(sizeof(*map), 1);
   map->width = width;
   map->height = height;
   map->nbcells = width * height;
-  map->cells = (struct TCOD_MapCell *)calloc(sizeof(struct TCOD_MapCell),
-                                             map->nbcells);
+  map->cells = calloc(sizeof(*map->cells), map->nbcells);
   return map;
 }
 /**
@@ -58,14 +56,12 @@ void TCOD_map_copy(const struct TCOD_Map *source, struct TCOD_Map *dest) {
   if (!source || !dest) { return; }
   if (dest->nbcells != source->nbcells) {
     free(dest->cells);
-    dest->cells = (struct TCOD_MapCell *)malloc(sizeof(struct TCOD_MapCell)
-                                                * dest->nbcells);
+    dest->cells = malloc(sizeof(*dest->cells) * dest->nbcells);
   }
   dest->width = source->width;
   dest->height = source->height;
   dest->nbcells = source->nbcells;
-  memcpy(dest->cells, source->cells, sizeof(struct TCOD_MapCell)
-                                     * source->nbcells);
+  memcpy(dest->cells, source->cells, sizeof(*dest->cells) * source->nbcells);
 }
 /**
  *  Set all cell values on `map` to the given parameters.

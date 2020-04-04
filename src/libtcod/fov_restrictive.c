@@ -271,8 +271,8 @@ void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x
 
 	/* calculate an approximated (excessive, just in case) maximum number of obstacles per octant */
 	const int max_obstacles = map->nbcells / 7;
-	double* start_angle = (double*)malloc(max_obstacles * sizeof(double));
-	double* end_angle   = (double*)malloc(max_obstacles * sizeof(double));
+	double* start_angle = malloc(max_obstacles * sizeof(*start_angle));
+	double* end_angle = malloc(max_obstacles * sizeof(*end_angle));
 
 	/* compute the 4 quadrants of the map */
 	compute_quadrant(map, player_x, player_y, max_radius, light_walls, 1, 1, start_angle, end_angle);

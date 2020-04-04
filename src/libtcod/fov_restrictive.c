@@ -39,13 +39,7 @@
 #include "libtcod_int.h"
 #include "utility.h"
 
-/* angle ranges */
-double * start_angle = NULL;
-double * end_angle = NULL;
-/* number of allocated angle pairs */
-int allocated = 0;
-
-void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (struct TCOD_Map *m, int player_x, int player_y, int max_radius, bool light_walls, int dx, int dy) {
+static void compute_quadrant (struct TCOD_Map *m, int player_x, int player_y, int max_radius, bool light_walls, int dx, int dy, double* start_angle, double* end_angle) {
 	/* octant: vertical edge */
 	{
 		int iteration = 1; /* iteration of the algo for this octant */
@@ -267,33 +261,25 @@ void TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (struct TCOD_Map *m
 }
 
 void TCOD_map_compute_fov_restrictive_shadowcasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-	struct TCOD_Map *m = (struct TCOD_Map *)map;
-	int max_obstacles;
-	int c;
-
 	/* first, zero the FOV map */
-	for(c = m->nbcells - 1; c >= 0; c--) {
-		m->cells[c].fov = false;
-	}
-
-	/* calculate an approximated (excessive, just in case) maximum number of obstacles per octant */
-	max_obstacles = m->nbcells / 7;
-
-	/* check memory for angles */
-	if (max_obstacles > allocated) {
-		allocated = max_obstacles;
-		if (start_angle != NULL) free(start_angle);
-		if (end_angle != NULL) free(end_angle);
-		start_angle = (double*)calloc(max_obstacles, sizeof(double));
-		end_angle = (double*)calloc(max_obstacles, sizeof(double));
+	for(int i = 0, e = map->nbcells; i != e; i++) {
+		map->cells[i].fov = false;
 	}
 
 	/* set PC's position as visible */
-	m->cells[player_x+(player_y*m->width)].fov = true;
+	map->cells[player_x + (player_y*map->width)].fov = true;
+
+	/* calculate an approximated (excessive, just in case) maximum number of obstacles per octant */
+	const int max_obstacles = map->nbcells / 7;
+	double* start_angle = (double*)malloc(max_obstacles * sizeof(double));
+	double* end_angle   = (double*)malloc(max_obstacles * sizeof(double));
 
 	/* compute the 4 quadrants of the map */
-	TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (m, player_x, player_y, max_radius, light_walls, 1, 1);
-	TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (m, player_x, player_y, max_radius, light_walls, 1, -1);
-	TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (m, player_x, player_y, max_radius, light_walls, -1, 1);
-	TCOD_map_compute_fov_restrictive_shadowcasting_quadrant (m, player_x, player_y, max_radius, light_walls, -1, -1);
+	compute_quadrant(map, player_x, player_y, max_radius, light_walls, 1, 1, start_angle, end_angle);
+	compute_quadrant(map, player_x, player_y, max_radius, light_walls, 1, -1, start_angle, end_angle);
+	compute_quadrant(map, player_x, player_y, max_radius, light_walls, -1, 1, start_angle, end_angle);
+	compute_quadrant(map, player_x, player_y, max_radius, light_walls, -1, -1, start_angle, end_angle);
+
+	free(end_angle);
+	free(start_angle);
 }

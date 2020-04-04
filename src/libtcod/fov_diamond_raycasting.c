@@ -46,38 +46,56 @@ typedef struct _ray_data_t {
 	bool ignore; /* non visible. don't bother processing it */
 } ray_data_t;
 
-static int origx,origy; /* fov origin */
-static ray_data_t **raymap; /* result rays */
-static ray_data_t *raymap2; /* temporary rays */
-static int perimidx;
+static int ray_length_sq(ray_data_t *ray) {
+	return (ray->xloc * ray->xloc) + (ray->yloc * ray->yloc);
+}
 
-static ray_data_t *new_ray(struct TCOD_Map *m,int x, int y) {
-    ray_data_t *r;
-	if ( (unsigned) (x+origx) >= (unsigned)m->width ) return NULL;
-	if ( (unsigned) (y+origy) >= (unsigned)m->height ) return NULL;
-	r=&raymap2[ x+origx + (y+origy)*m->width ];
-	r->xloc=x;
-	r->yloc=y;
+typedef struct _fov_t {
+	struct TCOD_Map* map;
+	TCOD_list_t perim;
+
+	int origx, origy; /* fov origin */
+	ray_data_t **raymap; /* result rays */
+	ray_data_t *raymap2; /* temporary rays */
+} fov_t;
+
+static ray_data_t *new_ray(fov_t *fov, int rx, int ry) {
+	struct TCOD_Map* map = fov->map;
+	const int x = fov->origx + rx;
+	const int y = fov->origy + ry;
+
+	if ( x < 0 || y < 0 ) return NULL;
+	if ( x >= map->width ) return NULL;
+	if ( y >= map->height ) return NULL;
+
+	ray_data_t *r = &fov->raymap2[x + (y * map->width)];
+	r->xloc = rx;
+	r->yloc = ry;
 	return r;
 }
 
-static void processRay(struct TCOD_Map *m, TCOD_list_t perim, ray_data_t *new_ray, ray_data_t *input_ray) {
+static void processRay(fov_t* fov, ray_data_t *new_ray, ray_data_t *input_ray) {
 	if ( new_ray ) {
-		int mapx=origx+new_ray->xloc;
-		int mapy=origy+new_ray->yloc;
-		int newrayidx;
-		newrayidx=mapx+mapy*m->width;
-		if ( new_ray->yloc == input_ray->yloc ) new_ray->xinput=input_ray;
-		else new_ray->yinput=input_ray;
+		const int mapx = fov->origx + new_ray->xloc;
+		const int mapy = fov->origy + new_ray->yloc;
+		const int newrayidx = mapx + (mapy * fov->map->width);
+		if ( new_ray->yloc == input_ray->yloc ) {
+			new_ray->xinput = input_ray;
+		} else {
+			new_ray->yinput = input_ray;
+		}
 		if (! new_ray->added) {
-			TCOD_list_push(perim,new_ray);
-			new_ray->added=true;
-			raymap[newrayidx] = new_ray;
+			TCOD_list_push(fov->perim, new_ray);
+			new_ray->added = true;
+			fov->raymap[newrayidx] = new_ray;
 		}
 	}
 }
 
-#define IS_OBSCURE(r) ((r->xerr > 0 && r->xerr <= r->xob) || (r->yerr > 0 && r->yerr <= r->yob) )
+static bool is_obscure(ray_data_t *r) {
+	return (r->xerr > 0 && r->xerr <= r->xob) || (r->yerr > 0 && r->yerr <= r->yob);
+}
+
 
 static void process_x_input(ray_data_t *new_ray, ray_data_t *xinput) {
 	if ( xinput->xob == 0 && xinput->yob == 0 ) return;
@@ -111,84 +129,85 @@ static void process_y_input(ray_data_t *new_ray, ray_data_t *yinput) {
 	}
 }
 
-static void merge_input(struct TCOD_Map *m, ray_data_t *r) {
-	int rayidx=r->xloc+origx+(r->yloc+origy)*m->width;
-	ray_data_t *xi=r->xinput;
-	ray_data_t *yi=r->yinput;
+static void merge_input(fov_t *fov, ray_data_t *r) {
+	TCOD_Map* map = fov->map;
+	const int x = r->xloc + fov->origx;
+	const int y = r->yloc + fov->origy;
+	const int rayidx = x + y*map->width;
+
+	ray_data_t *xi = r->xinput;
+	ray_data_t *yi = r->yinput;
 	if ( xi ) process_x_input(r,xi);
 	if ( yi ) process_y_input(r,yi);
 	if ( ! xi ) {
-		if ( IS_OBSCURE(yi) ) r->ignore=true;
+		if ( is_obscure(yi) ) r->ignore=true;
 	} else if ( ! yi ) {
-		if ( IS_OBSCURE(xi) ) r->ignore=true;
-	} else if ( IS_OBSCURE(xi) && IS_OBSCURE(yi) ) {
+		if ( is_obscure(xi) ) r->ignore=true;
+	} else if ( is_obscure(xi) && is_obscure(yi) ) {
 		r->ignore=true;
 	}
-	if (! r->ignore && !m->cells[rayidx].transparent) {
+	if ( !r->ignore && !map->cells[rayidx].transparent) {
 		r->xerr = r->xob = ABS(r->xloc);
 		r->yerr = r->yob = ABS(r->yloc);
 	}
 }
 
-static void expandPerimeterFrom(struct TCOD_Map *m,TCOD_list_t perim,ray_data_t *r) {
-	if ( r->xloc >= 0 ) {
-		processRay(m,perim,new_ray(m,r->xloc+1,r->yloc),r);
+static void expandPerimeterFrom(fov_t* fov, ray_data_t *r) {
+	const int rx = r->xloc;
+	const int ry = r->yloc;
+	if ( rx >= 0 ) {
+		processRay(fov, new_ray(fov, rx+1, ry), r);
 	}
-	if ( r->xloc <= 0 ) {
-		processRay(m,perim,new_ray(m,r->xloc-1,r->yloc),r);
+	if ( rx <= 0 ) {
+		processRay(fov, new_ray(fov, rx-1, ry), r);
 	}
-	if ( r->yloc >= 0 ) {
-		processRay(m,perim,new_ray(m,r->xloc,r->yloc+1),r);
+	if ( ry >= 0 ) {
+		processRay(fov, new_ray(fov, rx, ry+1), r);
 	}
-	if ( r->yloc <= 0 ) {
-		processRay(m,perim,new_ray(m,r->xloc,r->yloc-1),r);
+	if ( ry <= 0 ) {
+		processRay(fov, new_ray(fov, rx, ry-1), r);
 	}
 }
 
 
-void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-	struct TCOD_Map *m = (struct TCOD_Map *)map;
-	TCOD_list_t perim=TCOD_list_allocate(m->nbcells);
-	struct TCOD_MapCell *c;
-	ray_data_t **r;
-	int nbcells;
-	int r2=max_radius*max_radius;
+void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t m, int player_x, int player_y, int max_radius, bool light_walls) {
+	const int radius_sq = max_radius*max_radius;
+	const int nbcells  = m->nbcells;
 
-	perimidx=0;
-	raymap=(ray_data_t **)calloc(sizeof(ray_data_t*),m->nbcells);
-	raymap2=(ray_data_t *)calloc(sizeof(ray_data_t),m->nbcells);
-	origx=player_x;
-	origy=player_y;
-	expandPerimeterFrom(m,perim,new_ray(m,0,0));
-	while ( perimidx < TCOD_list_size(perim) ) {
-		ray_data_t *ray=(ray_data_t *)TCOD_list_get(perim,perimidx);
-		int distance = 0;
-		if ( r2 > 0 ) distance = ((ray->xloc * ray->xloc) + (ray->yloc * ray->yloc));
-		perimidx++;
-		if ( distance <= r2) {
-			merge_input(m, ray);
-			if ( !ray->ignore ) expandPerimeterFrom(m,perim,ray);
-		} else ray->ignore=true;
+	fov_t fov;
+	fov.map = m;
+	fov.perim = TCOD_list_allocate(nbcells);
+
+	fov.origx = player_x;
+	fov.origy = player_y;
+	fov.raymap = (ray_data_t**)calloc(sizeof(ray_data_t*), nbcells);
+	fov.raymap2 = (ray_data_t*)calloc(sizeof(ray_data_t), nbcells);
+
+	expandPerimeterFrom(&fov, new_ray(&fov,0,0));
+
+	for (int perimidx = 0; perimidx < TCOD_list_size(fov.perim); perimidx++) {
+		ray_data_t *ray = (ray_data_t *)TCOD_list_get(fov.perim, perimidx);
+		if ( radius_sq == 0 || ray_length_sq(ray) <= radius_sq ) {
+			merge_input(&fov, ray);
+			if (!ray->ignore) expandPerimeterFrom(&fov, ray);
+		} else {
+			ray->ignore = true;
+		}
 	}
 
 	/* set fov data */
-	c=m->cells;
-	r=raymap;
-	nbcells=m->nbcells;
-	while ( nbcells!= 0 ) {
-		if ( *r == NULL || (*r)->ignore
-			|| ((*r)->xerr > 0 && (*r)->xerr <= (*r)->xob )
-			|| ((*r)->yerr > 0 && (*r)->yerr <= (*r)->yob )
-		) {
-			c->fov=0;
-		} else {
-			c->fov=1;
-		}
-		c++;
-		r++;
-		nbcells--;
+	for (int i = 0; i != nbcells; ++i) {
+		struct TCOD_MapCell *cell = &m->cells[i];
+		ray_data_t *ray = fov.raymap[i];
+
+		cell->fov = false;
+		if (ray == NULL) continue;
+		if (ray->ignore) continue;
+		if (ray->xerr > 0 && ray->xerr <= ray->xob) continue;
+		if (ray->yerr > 0 && ray->yerr <= ray->yob) continue;
+		cell->fov = true;
 	}
-	m->cells[origx+origy*m->width].fov=1;
+	m->cells[player_x + player_y*m->width].fov = true;
 
 	/* light walls */
 	if ( light_walls ) {
@@ -205,7 +224,7 @@ void TCOD_map_compute_fov_diamond_raycasting(TCOD_map_t map, int player_x, int p
 		TCOD_map_postproc(m,player_x,player_y,xmax-1,ymax-1,1,1);
 	}
 
-	free(raymap);
-	free(raymap2);
-	TCOD_list_delete(perim);
+	free(fov.raymap);
+	free(fov.raymap2);
+	TCOD_list_delete(fov.perim);
 }

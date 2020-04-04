@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `FOV_DIAMOND` and `FOV_RESTRICTIVE` algorithms are now reentrant.
+  [#48](https://github.com/libtcod/libtcod/pull/48)
 
 ## [1.16.0-alpha.8] - 2020-04-03
 ### Fixed

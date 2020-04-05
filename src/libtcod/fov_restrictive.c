@@ -39,7 +39,17 @@
 #include "libtcod_int.h"
 #include "utility.h"
 
-static void compute_quadrant (struct TCOD_Map *m, int player_x, int player_y, int max_radius, bool light_walls, int dx, int dy, double* start_angle, double* end_angle) {
+static void compute_quadrant (
+    struct TCOD_Map *m,
+    int player_x,
+    int player_y,
+    int max_radius,
+    bool light_walls,
+    int dx,
+    int dy,
+    double*__restrict start_angle,
+    double*__restrict end_angle)
+{
 	/* octant: vertical edge */
 	{
 		int iteration = 1; /* iteration of the algo for this octant */

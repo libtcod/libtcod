@@ -67,14 +67,14 @@ void TextBox::render() {
 	con->setDefaultBackground(back);
 	con->setDefaultForeground(fore);
 	con->rect(x,y,w,h,true,TCOD_BKGND_SET);
-	if ( label ) con->printEx(x,y,TCOD_BKGND_NONE,TCOD_LEFT,label);
+	if ( label ) con->printf(x,y,TCOD_BKGND_NONE,TCOD_LEFT, "%s", label);
 
 	con->setDefaultBackground(keyboardFocus == this ? foreFocus : fore);
 	con->setDefaultForeground(keyboardFocus == this ? backFocus : back);
 	con->rect(x+boxx,y,boxw,h,false,TCOD_BKGND_SET);
 	int len = static_cast<int>(strlen(txt) - offset);
 	if (len > boxw) len = boxw;
-	if ( txt ) con->printEx(x+boxx,y,TCOD_BKGND_NONE,TCOD_LEFT,"%.*s",len,&txt[offset]);
+	if ( txt ) con->printf(x+boxx,y,TCOD_BKGND_NONE,TCOD_LEFT,"%.*s",len,&txt[offset]);
 	if (keyboardFocus == this && blink > 0.0f) {
 		if (insert) {
 			con->setCharBackground(x+boxx+pos-offset,y,fore);

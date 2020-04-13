@@ -63,7 +63,7 @@ public :
 		con->setChar(x+w,y,TCOD_CHAR_TEEW);
 		con->setDefaultBackground(fore);
 		con->setDefaultForeground(back);
-		con->printEx(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
+		con->printf(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
 	}
 	char *txt;
 };

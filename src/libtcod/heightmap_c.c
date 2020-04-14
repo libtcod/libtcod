@@ -50,9 +50,11 @@ static bool in_bounds(const TCOD_heightmap_t *hm, int x, int y) {
 	if (y < 0 || y >= hm->h) return false;
 	return true;
 }
-
-static bool same_size(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2) {
-	return hm1->w == hm2->w && hm1->h == hm2->h;
+/**
+    Returns true if these heighmaps have the same shape and are non-NULL.
+ */
+static bool is_same_size(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2) {
+	return hm1 && hm2 && hm1->w == hm2->w && hm1->h == hm2->h;
 }
 
 TCOD_heightmap_t *TCOD_heightmap_new(int w,int h) {
@@ -300,7 +302,7 @@ void TCOD_heightmap_clamp(TCOD_heightmap_t *hm, float min, float max) {
 }
 
 void TCOD_heightmap_lerp_hm(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2, TCOD_heightmap_t *hmres, float coef) {
-	if (!same_size(hm1, hm2) || !same_size(hm1, hmres)) {
+	if (!is_same_size(hm1, hm2) || !is_same_size(hm1, hmres)) {
 		return;
 	}
 	for (int i=0; i < hm1->w*hm1->h; i++ ) {
@@ -309,7 +311,7 @@ void TCOD_heightmap_lerp_hm(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t 
 }
 
 void TCOD_heightmap_add_hm(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2, TCOD_heightmap_t *hmres) {
-	if (!same_size(hm1, hm2) || !same_size(hm1, hmres)) {
+	if (!is_same_size(hm1, hm2) || !is_same_size(hm1, hmres)) {
 		return;
 	}
 	for (int i=0; i < hm1->w*hm1->h; i++ ) {
@@ -318,7 +320,7 @@ void TCOD_heightmap_add_hm(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *
 }
 
 void TCOD_heightmap_multiply_hm(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2, TCOD_heightmap_t *hmres) {
-	if (!same_size(hm1, hm2) || !same_size(hm1, hmres)) {
+	if (!is_same_size(hm1, hm2) || !is_same_size(hm1, hmres)) {
 		return;
 	}
 	for (int i=0; i < hm1->w*hm1->h; i++ ) {

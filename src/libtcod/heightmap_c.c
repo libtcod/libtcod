@@ -51,11 +51,6 @@ static bool same_size(const TCOD_heightmap_t *hm1, const TCOD_heightmap_t *hm2) 
 	return hm1->w == hm2->w && hm1->h == hm2->h;
 }
 
-static void minmax(float* min, float* max, float val) {
-	if (val > *max) *max = val;
-	else if (val < *min) *min = val;
-}
-
 TCOD_heightmap_t *TCOD_heightmap_new(int w,int h) {
 	TCOD_heightmap_t *hm=malloc(sizeof(*hm));
 	hm->values = calloc(sizeof(*hm->values),w*h);
@@ -88,13 +83,14 @@ void TCOD_heightmap_set_value(TCOD_heightmap_t *hm, int x, int y, float value) {
 }
 
 void TCOD_heightmap_get_minmax(const TCOD_heightmap_t *hm, float *min, float *max) {
-	float curmax=hm->values[0];
-	float curmin=hm->values[0];
+	if (!in_bounds(hm, 0, 0)) { return; }
+	if (min) { *min = hm->values[0]; }
+	if (max) { *max = hm->values[0]; }
 	for (int i=0; i != hm->h*hm->w; i++) {
-		minmax(&curmin, &curmax, hm->values[i]);
+		const float value = hm->values[i];
+		if (min) { *min = MIN(*min, value); }
+		if (max) { *max = MAX(*max, value); }
 	}
-	*min=curmin;
-	*max=curmax;
 }
 
 void TCOD_heightmap_normalize(TCOD_heightmap_t *hm, float min, float max) {
@@ -339,7 +335,8 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t *hm, int x, int y) {
 		const int ny=y+diy[i];
 		if ( in_bounds(hm, nx, ny) ) {
 			const float nslope=GET_VALUE(hm,nx,ny)-v;
-			minmax(&mindy, &maxdy, nslope);
+			mindy = MIN(mindy, nslope);
+			maxdy = MAX(maxdy, nslope);
 		}
 	}
 	return (float)atan2(maxdy+mindy,1.0f);

@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Fixed
 - `FOV_DIAMOND` and `FOV_RESTRICTIVE` algorithms are now reentrant.
   [#48](https://github.com/libtcod/libtcod/pull/48)
+- Heightmap functions will crash less often when given out-of-bounds parameters.
+  [#13](https://github.com/libtcod/libtcod/issues/13)
+  [#50](https://github.com/libtcod/libtcod/pull/50)
 
 ## [1.16.0-alpha.8] - 2020-04-03
 ### Fixed

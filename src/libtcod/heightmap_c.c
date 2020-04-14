@@ -33,6 +33,7 @@
 
 #include <float.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,8 +41,11 @@
 #include "mersenne.h"
 
 #define GET_VALUE(hm,x,y) (hm)->values[(x)+(y)*(hm)->w]
-
+/**
+    Returns true if `x`,`y` are valid coordinates for this heightmap.
+ */
 static bool in_bounds(const TCOD_heightmap_t *hm, int x, int y) {
+	if (!hm) { return false; } // No valid coordinates on a NULL pointer.
 	if (x < 0 || x >= hm->w) return false;
 	if (y < 0 || y >= hm->h) return false;
 	return true;

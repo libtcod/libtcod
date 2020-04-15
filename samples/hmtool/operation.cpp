@@ -10,7 +10,7 @@ const char *Operation::names[]= {
 	"+fbm",
 	"*fbm",
 	"hill",
-	"\x18\x19 z",
+	"\u2191\u2193 z",
 	"smooth",
 	"rain",
 	"lerp fbm",

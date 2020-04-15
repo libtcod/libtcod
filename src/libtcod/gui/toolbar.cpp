@@ -63,7 +63,7 @@ public :
 		con->setChar(x+w,y,TCOD_CHAR_TEEW);
 		con->setDefaultBackground(fore);
 		con->setDefaultForeground(back);
-		con->printEx(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
+		con->printf(x+w/2,y,TCOD_BKGND_SET,TCOD_CENTER," %s ",txt);
 	}
 	char *txt;
 };
@@ -103,7 +103,7 @@ void ToolBar::setName(const char *name) {
 void ToolBar::render() {
 	con->setDefaultBackground(back);
 	con->setDefaultForeground(fore);
-	con->printFrame(x,y,w,h,true,TCOD_BKGND_SET,name);
+	TCOD_console_printf_frame(con->get_data(), x, y, w, h, true, TCOD_BKGND_SET, "%s", name);
 	Container::render();
 }
 

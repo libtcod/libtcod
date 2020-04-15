@@ -42,7 +42,7 @@ Label::Label(int x, int y, const char *label, const char *tip)
 void Label::render() {
   con->setDefaultBackground(back);
   con->setDefaultForeground(fore);
-  con->printEx(x, y, TCOD_BKGND_NONE, TCOD_LEFT, label);
+  con->printf(x, y, TCOD_BKGND_NONE, TCOD_LEFT, "%s", label);
 }
 void Label::computeSize() {
   w = label ? static_cast<int>(strlen(label)) : 0;

@@ -140,8 +140,8 @@ void render() {
 	sprintf(maxZTxt,"max z    : %.2f",mapmax);
 	sprintf(seedTxt,"seed     : %X",seed);
 	float landProportion=100.0f - 100.0f*backup.countCells(0.0f,sandHeight) / (hm->w*hm->h);
-	sprintf(landMassTxt,"landMass : %d %%%%",(int)landProportion);
-	if ( ! isNormalized ) TCODConsole::root->printEx(HM_WIDTH/2,HM_HEIGHT-1,TCOD_BKGND_NONE,TCOD_CENTER,"the map is not normalized !");
+	sprintf(landMassTxt,"landMass : %d %%",(int)landProportion);
+	if ( ! isNormalized ) TCODConsole::root->printf(HM_WIDTH/2,HM_HEIGHT-1,TCOD_BKGND_NONE,TCOD_CENTER,"the map is not normalized !");
 	// message
 	msgDelay-=TCODSystem::getLastFrameLength();
 	if ( msg[0] != 0 && msgDelay > 0.0f ) {

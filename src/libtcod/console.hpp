@@ -1038,6 +1038,7 @@ public :
 	@Param fmt if NULL, the function only draws a rectangle.
 		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
+	TCODLIB_FORMAT(8, 9)
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
 
 	/**

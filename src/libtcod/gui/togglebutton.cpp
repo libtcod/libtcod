@@ -37,11 +37,11 @@ void ToggleButton::render() {
 	con->setDefaultBackground(mouseIn ? backFocus : back);
 	con->setDefaultForeground(mouseIn ? foreFocus : fore);
 	con->rect(x,y,w,h,true,TCOD_BKGND_SET);
-	const char  check = pressed ? TCOD_CHAR_CHECKBOX_SET : TCOD_CHAR_CHECKBOX_UNSET;
+	const char* check = pressed ? "\u2611" : "\u2610";
 	if ( label ) {
-		con->printf(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%c %s", check, label);
+		con->printf(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%s %s", check, label);
 	} else {
-		con->printf(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%c", check);
+		con->printf(x,y,TCOD_BKGND_NONE,TCOD_LEFT,"%s", check);
 	}
 }
 

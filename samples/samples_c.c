@@ -1446,7 +1446,7 @@ int main(int argc, char *argv[]) {
 	int i;
 	TCOD_key_t key = {TCODK_NONE,0};
 	TCOD_mouse_t mouse;
-	char *font="data/fonts/consolas10x10_gs_tc.png";
+	char *font="data/fonts/dejavu10x10_gs_tc.png";
 	int nb_char_horiz=0,nb_char_vertic=0;
 	int argn;
 	int fullscreen_width=0;

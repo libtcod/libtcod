@@ -1411,7 +1411,7 @@ int main(int argc, char *argv[]) {
 	bool first=true; // first time we render a sample
 	TCOD_key_t key = {TCODK_NONE,0};
 	TCOD_mouse_t mouse;
-	const char *font="data/fonts/consolas10x10_gs_tc.png";
+	const char *font="data/fonts/dejavu10x10_gs_tc.png";
 	int nbCharHoriz=0,nbCharVertic=0;
 	int argn;
 	int fullscreenWidth=0;

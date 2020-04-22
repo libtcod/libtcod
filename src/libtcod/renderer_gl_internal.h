@@ -197,27 +197,17 @@ static void gl_get_viewport_scale(
   glGetIntegerv(GL_VIEWPORT, (int*)&gl_viewport);
   const int tile_width = atlas->tileset->tile_width;
   const int tile_height = atlas->tileset->tile_height;
-  const int recommended_columns = gl_viewport.w / tile_width;
-  const int recommended_rows = gl_viewport.h / tile_height;
-  float scale_w = 1;//(float)gl_viewport.w / (float)(console->w * tile_width);
-  float scale_h = 1;//(float)gl_viewport.h / (float)(console->h * tile_height);
-  if (viewport->snap_to_integer
-      && console->w == recommended_columns && console->h == recommended_rows) {
-    scale_w = (float)(console->w * tile_width) / (float)gl_viewport.w;
-    scale_h = (float)(console->h * tile_height) / (float)gl_viewport.h;
-  } else {
-    scale_w = (float)gl_viewport.w / (float)(console->w * tile_width);
-    scale_h = (float)gl_viewport.h / (float)(console->h * tile_height);
-    if (viewport->integer_scaling) {
-      scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
-      scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
-    }
-    if (viewport->keep_aspect) {
-      scale_w = scale_h = minf(scale_w, scale_h);
-    }
-    scale_w *= (float)(console->w * tile_width) / (float)gl_viewport.w;
-    scale_h *= (float)(console->h * tile_height) / (float)gl_viewport.h;
+  float scale_w = (float)gl_viewport.w / (float)(console->w * tile_width);
+  float scale_h = (float)gl_viewport.h / (float)(console->h * tile_height);
+  if (viewport->integer_scaling) {
+    scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
+    scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
   }
+  if (viewport->keep_aspect) {
+    scale_w = scale_h = minf(scale_w, scale_h);
+  }
+  scale_w *= (float)(console->w * tile_width) / (float)gl_viewport.w;
+  scale_h *= (float)(console->h * tile_height) / (float)gl_viewport.h;
   float translate_x = ((1.0f - scale_w) * clampf(viewport->align_x, 0, 1));
   float translate_y = ((1.0f - scale_h) * clampf(viewport->align_y, 0, 1));
   translate_x = roundf(translate_x * gl_viewport.w) / gl_viewport.w;

@@ -18,6 +18,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/console_rexpaint.h \
 	../../src/libtcod/console_types.h \
 	../../src/libtcod/context.h \
+	../../src/libtcod/context_viewport.h \
 	../../src/libtcod/error.h \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
@@ -128,6 +129,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/console_printing.c \
 	../../src/libtcod/console_rexpaint.c \
 	../../src/libtcod/context.c \
+	../../src/libtcod/context_viewport.c \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
 	../../src/libtcod/fov_c.c \

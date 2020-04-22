@@ -37,7 +37,7 @@
 #include "../vendor/glad.h"
 
 #include "console.h"
-#include "context.h"
+#include "context_viewport.h"
 #include "renderer_gl.h"
 #include "renderer_gl_internal.h"
 /**

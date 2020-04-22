@@ -29,69 +29,78 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_CONTEXT_H_
-#define LIBTCOD_CONTEXT_H_
+#ifndef LIBTCOD_CONTEXT_VIEWPORT_H_
+#define LIBTCOD_CONTEXT_VIEWPORT_H_
 
-#include "config.h"
-#include "context_viewport.h"
-#include "console.h"
-#include "error.h"
-#include "tileset.h"
+#include "stdbool.h"
 
-struct SDL_Window;
-struct SDL_Renderer;
-struct SDL_Rect;
+#include "color.h"
 /**
- *  A rendering context for libtcod.
- *  \rst
- *  .. versionadded:: 1.16
- *  \endrst
+    Viewport options for the rendering context.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
  */
-struct TCOD_Context {
-  int type;
-  void* contextdata;
-  void (*destructor_)(struct TCOD_Context* self);
-  TCOD_Error (*present_)(
-      struct TCOD_Context* self,
-      const struct TCOD_Console* console,
-      const struct TCOD_ViewportOptions* viewport);
-  void (*pixel_to_tile_)(struct TCOD_Context* self, double* x, double* y);
-  TCOD_Error (*save_screenshot_)(struct TCOD_Context* self, const char* filename);
-  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* self);
-  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* self);
-  TCOD_Error (*accumulate_)(
-      struct TCOD_Context* self,
-      const struct TCOD_Console* console,
-      const struct TCOD_ViewportOptions* viewport);
+struct TCOD_ViewportOptions {
   /**
-      Change the tileset used by this context.
-  */
-  TCOD_Error (*set_tileset)(struct TCOD_Context* self, TCOD_Tileset* tileset);
+      If true then the aspect ratio will be kept square when the console is
+      scaled.  The view will be letter-boxed.
+
+      If false the console will be stretched to fill the screen.
+
+      Set this is true if your tileset is deigned for square pixels.
+   */
+  bool keep_aspect;
+  /**
+      If true then console scaling will be fixed to integer increments.
+
+      Has no effect if the console must be scaled down.
+   */
+  bool integer_scaling;
+  /**
+      Not used.
+   */
+  bool reserved_;
+  /**
+      The color to clear the screen with before rendering the console.
+   */
+  TCOD_ColorRGBA clear_color;
+  /**
+      Alignment of the console when it is letter-boxed: 0.0f renders the
+      console in the upper-left corner, and 1.0f in the lower-right.
+
+      Values of 0.5f will center the console.
+      Values outside of the range 0.0f to 1.0f are clamped.
+   */
+  float align_x;
+  float align_y;
 };
+typedef struct TCOD_ViewportOptions TCOD_ViewportOptions;
+/**
+    Default viewport options if none are provided.
+ */
+extern const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_;
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
 /**
- *  Delete a rendering context.
- *  \rst
- *  .. versionadded:: 1.16
- *  \endrst
+    Allocate a new viewport options struct.
+
+    You should not allocate this struct manually since the size of it may change
+    between versions.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
  */
-TCOD_PUBLIC void TCOD_context_delete(struct TCOD_Context* renderer);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_ViewportOptions* TCOD_viewport_new(void);
 /**
- *  Create an uninitialized rendering context.
- *
- *  Used internally.
+    Delete a viewport.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
  */
-TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
-/**
- *  Present a console to the screen, using a rendering context.
- */
-TCOD_PUBLIC TCOD_Error TCOD_context_present(
-    struct TCOD_Context* context,
-    const struct TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport);
+TCOD_PUBLIC void TCOD_viewport_delete(TCOD_ViewportOptions* viewport);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus
-#endif // LIBTCOD_CONTEXT_H_
+#endif // LIBTCOD_CONTEXT_VIEWPORT_H_

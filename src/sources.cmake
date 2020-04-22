@@ -31,6 +31,8 @@ target_sources(TCOD PRIVATE
     libtcod/console_types.h
     libtcod/context.c
     libtcod/context.h
+    libtcod/context_viewport.c
+    libtcod/context_viewport.h
     libtcod/error.c
     libtcod/error.h
     libtcod/fov.cpp
@@ -219,6 +221,8 @@ source_group(libtcod FILES
     libtcod/console_types.h
     libtcod/context.c
     libtcod/context.h
+    libtcod/context_viewport.c
+    libtcod/context_viewport.h
     libtcod/error.c
     libtcod/error.h
     libtcod/fov.cpp

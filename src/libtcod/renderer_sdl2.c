@@ -423,26 +423,18 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
   int output_w;
   int output_h;
   SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
-  const int recommended_columns = output_w / tile_width;
-  const int recommended_rows = output_h / tile_height;
   SDL_Rect out = {0, 0, output_w, output_h};
-  if (viewport->snap_to_integer
-      && console->w == recommended_columns && console->h == recommended_rows) {
-    out.w = console->w * tile_width;
-    out.h = console->h * tile_height;
-  } else {
-    float scale_w = (float)output_w / (float)(console->w * tile_width);
-    float scale_h = (float)output_h / (float)(console->h * tile_height);
-    if (viewport->integer_scaling) {
-      scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
-      scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
-    }
-    if (viewport->keep_aspect) {
-      scale_w = scale_h = minf(scale_w, scale_h);
-    }
-    out.w = (int)((float)(console->w * tile_width) * scale_w);
-    out.h = (int)((float)(console->h * tile_height) * scale_h);
+  float scale_w = (float)output_w / (float)(console->w * tile_width);
+  float scale_h = (float)output_h / (float)(console->h * tile_height);
+  if (viewport->integer_scaling) {
+    scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
+    scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
   }
+  if (viewport->keep_aspect) {
+    scale_w = scale_h = minf(scale_w, scale_h);
+  }
+  out.w = (int)((float)(console->w * tile_width) * scale_w);
+  out.h = (int)((float)(console->h * tile_height) * scale_h);
   out.x = (int)((float)(output_w - out.w) * clampf(viewport->align_x, 0, 1));
   out.y = (int)((float)(output_h - out.h) * clampf(viewport->align_y, 0, 1));
   return out;

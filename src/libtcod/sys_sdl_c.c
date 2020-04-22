@@ -123,7 +123,7 @@ static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
     Converts TCOD_FONT_LAYOUT_TCOD tile position to Extended ASCII code-point.
  */
 static const int tcod_codec_eascii_[256] = {
-   0,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,
+  32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,
   48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,
   64,  91,  92,  93,  94,  95,  96, 123, 124, 125, 126, 176, 177, 178, 179, 196,
  197, 180, 193, 195, 194, 192, 218, 191, 217, 226, 227, 228, 229, 230, 231, 232,
@@ -144,7 +144,7 @@ static const int tcod_codec_eascii_[256] = {
     Converts TCOD_FONT_LAYOUT_TCOD tile position to Unicode.
  */
 static const int tcod_codec_[256] = {
-  0x00,  0x21,  0x22,  0x23,  0x24,  0x25,  0x26,  0x27,
+  0x20,  0x21,  0x22,  0x23,  0x24,  0x25,  0x26,  0x27,
   0x28,  0x29,  0x2A,  0x2B,  0x2C,  0x2D,  0x2E,  0x2F,
   0x30,  0x31,  0x32,  0x33,  0x34,  0x35,  0x36,  0x37,
   0x38,  0x39,  0x3A,  0x3B,  0x3C,  0x3D,  0x3E,  0x3F,

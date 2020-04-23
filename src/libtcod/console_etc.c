@@ -66,9 +66,7 @@ TCOD_internal_context_t TCOD_ctx={
   0, 0,
 	"terminal.png","",
 	NULL,NULL,NULL,0,false,0,0,0,0,0,0,
-	/* default renderer to use */
-	TCOD_RENDERER_GLSL,
-	NULL,
+	NULL, // sdl_cbk
 	/* fading data */
 	{0,0,0},255,
 	/*key state*/

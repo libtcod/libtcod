@@ -327,7 +327,6 @@ void TCOD_sys_shutdown(void)
 
 TCOD_Error TCOD_sys_load_player_config(void)
 {
-	const char *renderer;
 	const char *font;
 	int fullscreenWidth,fullscreenHeight;
   if (!TCOD_sys_file_exists("./libtcod.cfg")) {
@@ -351,15 +350,7 @@ TCOD_Error TCOD_sys_load_player_config(void)
 	/* parse file */
 	TCOD_parser_run(parser,"./libtcod.cfg",NULL);
 
-	/* set user preferences */
-	renderer=TCOD_parser_get_string_property(parser, "libtcod.renderer");
-	if ( renderer != NULL ) {
-		/* custom renderer */
-		if ( TCOD_strcasecmp(renderer,"GLSL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_GLSL;
-		else if ( TCOD_strcasecmp(renderer,"OPENGL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_OPENGL;
-		else if ( TCOD_strcasecmp(renderer,"SDL") == 0 ) TCOD_ctx.renderer=TCOD_RENDERER_SDL;
-		else printf ("Warning : unknown renderer '%s' in libtcod.cfg\n", renderer);
-	}
+  // Set user preferences.
   // Custom fullscreen resolution.
   TCOD_ctx.fullscreen = TCOD_parser_get_bool_property(parser, "libtcod.fullscreen");
   fullscreenWidth = TCOD_parser_get_int_property(parser, "libtcod.fullscreenWidth");
@@ -403,11 +394,11 @@ TCOD_Error TCOD_sys_load_player_config(void)
 
 TCOD_renderer_t TCOD_sys_get_renderer(void) {
   if (!TCOD_ctx.engine) { return TCOD_RENDERER_SDL2; }
-  return (TCOD_renderer_t)TCOD_ctx.engine->type;
+  return (TCOD_renderer_t)TCOD_context_get_renderer_type(TCOD_ctx.engine);
 }
 
 int TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
-  if (TCOD_ctx.engine && (int)renderer == TCOD_ctx.engine->type) { return 0; }
+  if (TCOD_ctx.engine && renderer == TCOD_sys_get_renderer()) { return 0; }
   return TCOD_console_init_root(
       TCOD_ctx.root->w,
       TCOD_ctx.root->h,

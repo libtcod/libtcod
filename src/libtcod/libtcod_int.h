@@ -109,8 +109,6 @@ typedef struct {
 	/* actual resolution */
 	int actual_fullscreen_width;
 	int actual_fullscreen_height;
-	/* renderer to use */
-	TCOD_renderer_t renderer;
 	/* user post-processing callback */
 	SDL_renderer_t sdl_cbk;
 	/* fading data */

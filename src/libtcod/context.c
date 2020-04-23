@@ -117,3 +117,11 @@ TCOD_Error TCOD_context_change_tileset(
   }
   return context->set_tileset(context, tileset);
 }
+int TCOD_context_get_renderer_type(struct TCOD_Context* context)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->type;
+}

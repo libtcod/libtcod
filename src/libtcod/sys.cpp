@@ -59,7 +59,7 @@ void TCODSystem::forceFullscreenResolution(int width, int height) {
 }
 
 void TCODSystem::setRenderer(TCOD_renderer_t renderer) {
-  if (renderer == TCOD_ctx.renderer) { return; }
+  if (TCOD_ctx.engine && renderer == TCOD_sys_get_renderer()) { return; }
   auto err = TCOD_console_init_root(
       TCOD_ctx.root->w,
       TCOD_ctx.root->h,

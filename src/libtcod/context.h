@@ -165,6 +165,16 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(
     struct TCOD_Context* self, TCOD_Tileset* tileset);
+/**
+    Return the `TCOD_renderer_t` renderer type for this context.
+
+    Returns a negative number on error, such as `context` being NULL.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

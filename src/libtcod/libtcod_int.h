@@ -484,7 +484,6 @@ extern int oldFade;
 #define TCOD_PEACH 255,159,127
 
 // TCODConsole non public methods
-TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscreen);
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s,int l);
 // TCODSystem non public methods

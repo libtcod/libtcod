@@ -147,6 +147,7 @@ TCOD_Error TCOD_console_init_root_(
       if (TCOD_ctx.engine) { break; }
       err = TCOD_E_WARN;
       //@fallthrough@
+    default:
     case TCOD_RENDERER_SDL2:
       TCOD_ctx.renderer = TCOD_RENDERER_SDL2;
       TCOD_ctx.engine = TCOD_renderer_init_sdl2(
@@ -156,8 +157,6 @@ TCOD_Error TCOD_console_init_root_(
         return TCOD_E_ERROR;
       }
       break;
-    default:
-      return TCOD_console_init(TCOD_ctx.root, title, fullscreen);
   }
   return err;
 }

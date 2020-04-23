@@ -76,16 +76,11 @@ TCOD_Console* TCOD_console_new(int w, int h)
   con->elements = w * h;
   TCOD_console_init_(con);
   if (TCOD_ctx.root) {
+    // Default values for the root console are set by TCOD_console_init_.
     con->alignment = TCOD_ctx.root->alignment;
     con->bkgnd_flag = TCOD_ctx.root->bkgnd_flag;
   }
   return con;
-}
-TCOD_Error TCOD_console_init(TCOD_Console* con, const char* title, bool fullscreen)
-{
-  (void)title; (void)fullscreen; // Ignored.
-  if (!TCOD_console_init_(con)) { return TCOD_E_ERROR; }
-  return TCOD_E_OK;
 }
 void TCOD_console_delete(TCOD_Console* con)
 {

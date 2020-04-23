@@ -32,65 +32,13 @@
 #include "console_init.h"
 
 #include "stdbool.h"
-#include "stdlib.h"
 #include "string.h"
 
 #include <SDL.h>
 #include "console.h"
 #include "console_etc.h"
-#include "globals.h"
+#include "context_init.h"
 #include "libtcod_int.h"
-#include "tileset_fallback.h"
-#include "renderer_sdl2.h"
-#include "renderer_gl1.h"
-#include "renderer_gl2.h"
-static struct TCOD_Tileset* ensure_tileset(void)
-{
-  if (!TCOD_ctx.tileset) {
-    TCOD_console_set_custom_font(
-        "terminal.png", TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
-  }
-  if (!TCOD_ctx.tileset) {
-    TCOD_set_default_tileset(TCOD_tileset_load_fallback_font_(0, 12));
-  }
-  if (!TCOD_ctx.tileset) {
-    TCOD_set_errorv("No font loaded and couldn't load a fallback font!");
-    return NULL;
-  }
-  return TCOD_ctx.tileset;
-}
-/**
- *  Set `renderer` from the TCOD_RENDERER environment variable if it exists.
- */
-static void get_env_renderer(TCOD_renderer_t* renderer)
-{
-  const char* value = getenv("TCOD_RENDERER");
-  if (!value) { return; }
-  if (strcmp(value, "sdl")) {
-    *renderer = TCOD_RENDERER_SDL;
-  } else if (strcmp(value, "opengl")) {
-    *renderer = TCOD_RENDERER_OPENGL;
-  } else if (strcmp(value, "glsl")) {
-    *renderer = TCOD_RENDERER_GLSL;
-  } else if (strcmp(value, "sdl2")) {
-    *renderer = TCOD_RENDERER_SDL2;
-  } else if (strcmp(value, "opengl2")) {
-    *renderer = TCOD_RENDERER_OPENGL2;
-  }
-}
-/**
- *  Set `vsync` from the TCOD_VSYNC environment variable if it exists.
- */
-static void get_env_vsync(bool* vsync)
-{
-  const char* value = getenv("TCOD_VSYNC");
-  if (!value) { return; }
-  if (strcmp(value, "0")) {
-    *vsync = 0;
-  } else if (strcmp(value, "1")) {
-    *vsync = 1;
-  }
-}
 TCOD_Error TCOD_console_init_root_(
     int w,
     int h,
@@ -106,55 +54,16 @@ TCOD_Error TCOD_console_init_root_(
   }
   TCOD_Error err = TCOD_sys_load_player_config();
   if (err < 0) { return err; }
-  get_env_renderer(&renderer);
-  get_env_vsync(&vsync);
   TCOD_console_delete(NULL);
   TCOD_ctx.root = TCOD_console_new(w, h);
   if (!TCOD_ctx.root) { return TCOD_E_ERROR; }
   strncpy(TCOD_ctx.window_title, title ? title : "",
           sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.fullscreen = fullscreen;
-  struct TCOD_Tileset* tileset = ensure_tileset();
-  if (!tileset) { return TCOD_E_ERROR; }
-  int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
   int window_flags = (SDL_WINDOW_RESIZABLE |
                       (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-  switch (renderer) {
-    case TCOD_RENDERER_SDL:
-      renderer_flags |= SDL_RENDERER_SOFTWARE;
-      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, renderer_flags, tileset);
-      if (!TCOD_ctx.engine) {
-        return TCOD_E_ERROR;
-      }
-      break;
-    case TCOD_RENDERER_GLSL:
-    case TCOD_RENDERER_OPENGL2:
-      TCOD_ctx.engine = TCOD_renderer_new_gl2(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, vsync, tileset);
-      if (TCOD_ctx.engine) { break; }
-      err = TCOD_E_WARN;
-      //@fallthrough@
-    case TCOD_RENDERER_OPENGL:
-      TCOD_ctx.engine = TCOD_renderer_init_gl1(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, vsync, tileset);
-      if (TCOD_ctx.engine) { break; }
-      err = TCOD_E_WARN;
-      //@fallthrough@
-    default:
-    case TCOD_RENDERER_SDL2:
-      TCOD_ctx.engine = TCOD_renderer_init_sdl2(
-          w * tileset->tile_width, h * tileset->tile_height,
-          title, window_flags, renderer_flags, tileset);
-      if (!TCOD_ctx.engine) {
-        return TCOD_E_ERROR;
-      }
-      break;
-  }
-  return err;
+  return TCOD_context_new_terminal(
+      w, h, renderer, NULL, vsync, window_flags, title, &TCOD_ctx.engine);
 }
 TCOD_Error TCOD_console_init_root(int w, int h, const char* title,
                                   bool fullscreen, TCOD_renderer_t renderer)

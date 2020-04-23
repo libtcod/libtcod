@@ -68,6 +68,7 @@ struct TCOD_Context {
   */
   TCOD_Error (*set_tileset)(struct TCOD_Context* self, TCOD_Tileset* tileset);
 };
+typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus

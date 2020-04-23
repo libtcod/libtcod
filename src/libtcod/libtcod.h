@@ -46,6 +46,7 @@
 #include "console_printing.h"
 #include "console_rexpaint.h"
 #include "context.h"
+#include "context_init.h"
 #include "error.h"
 #include "fov.h"
 #include "globals.h"

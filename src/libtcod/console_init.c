@@ -83,7 +83,7 @@ static void get_env_renderer(TCOD_renderer_t* renderer)
  */
 static void get_env_vsync(bool* vsync)
 {
-  const char* value = getenv("TCOD_RENDERER");
+  const char* value = getenv("TCOD_VSYNC");
   if (!value) { return; }
   if (strcmp(value, "0")) {
     *vsync = 0;

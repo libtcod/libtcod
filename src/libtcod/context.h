@@ -85,12 +85,86 @@ TCOD_PUBLIC void TCOD_context_delete(struct TCOD_Context* renderer);
  */
 TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
 /**
- *  Present a console to the screen, using a rendering context.
+    Present a console to the screen, using a rendering context.
+
+    `console` is the console to present, the console can be any size.
+
+    `viewport` is the optional viewport options to use.
+    This will affect the scaling of the console with the current context.
+    This can be NULL to use the default options, which are to stretch the
+    console to fit the screen.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_present(
     struct TCOD_Context* context,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport);
+/**
+    Convert the screen coordinates to tile coordinates for this context.
+
+    `x` and `y` are the pointers to the screen coordinates, these will be
+    converted to tile coordinates after the call to this function.
+
+    The parameters given to the last call to `TCOD_context_present` will
+    determine where the tiles are for this call.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(
+    struct TCOD_Context* context, double* x, double* y);
+/**
+    Convert the screen coordinates to integer tile coordinates for this context.
+
+    Save as `TCOD_context_screen_pixel_to_tile` but the inputs and results are
+    integers.  This is useful if you don't need sub-tile coordinates.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(
+    struct TCOD_Context* context, int* x, int* y);
+/**
+    Save the last presented console to a PNG file.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(
+    struct TCOD_Context* context, const char* filename);
+/**
+    Return a pointer the SDL_Window for this context if it uses one.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(
+    struct TCOD_Context* context);
+/**
+    Return a pointer the SDL_Renderer for this context if it uses one.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(
+    struct TCOD_Context* context);
+/**
+    Change the active tileset for this context.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(
+    struct TCOD_Context* self, TCOD_Tileset* tileset);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

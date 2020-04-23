@@ -32,6 +32,7 @@
 #include "context.h"
 
 #include "stdlib.h"
+#include "math.h"
 
 struct TCOD_Context* TCOD_context_new_(void)
 {
@@ -45,8 +46,7 @@ void TCOD_context_delete(struct TCOD_Context* renderer)
   if (renderer->destructor_) { renderer->destructor_(renderer); }
   free(renderer);
 }
-
-TCOD_PUBLIC TCOD_Error TCOD_context_present(
+TCOD_Error TCOD_context_present(
     struct TCOD_Context* context,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport)
@@ -60,4 +60,60 @@ TCOD_PUBLIC TCOD_Error TCOD_context_present(
     return TCOD_E_INVALID_ARGUMENT;
   }
   return context->present_(context, console, viewport);
+}
+TCOD_Error TCOD_context_screen_pixel_to_tile_d(
+    struct TCOD_Context* context, double* x, double* y)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  context->pixel_to_tile_(context, x, y);
+  return TCOD_E_OK;
+}
+TCOD_Error TCOD_context_screen_pixel_to_tile_i(
+    struct TCOD_Context* context, int* x, int* y)
+{
+  double xd = x ? (double)(*x) : 0;
+  double yd = y ? (double)(*y) : 0;
+  TCOD_Error err = TCOD_context_screen_pixel_to_tile_d(context, &xd, &yd);
+  if (x) { *x = (int)floor(xd); }
+  if (y) { *y = (int)floor(yd); }
+  return err;
+}
+TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(
+    struct TCOD_Context* context, const char* filename)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->save_screenshot_(context, filename);
+}
+TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(
+    struct TCOD_Context* context)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return NULL;
+  }
+  return context->get_sdl_window_(context);
+}
+TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(
+    struct TCOD_Context* context)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return NULL;
+  }
+  return context->get_sdl_renderer_(context);
+}
+TCOD_Error TCOD_context_change_tileset(
+    struct TCOD_Context* context, TCOD_Tileset* tileset)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->set_tileset(context, tileset);
 }

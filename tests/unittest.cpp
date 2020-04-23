@@ -34,6 +34,15 @@ std::string get_file(const std::string& path) {
   return std::string(data_dir) + "/" + path;
 }
 
+std::string to_string(const TCOD_Console& console)
+{
+  std::string result;
+  for (const auto& tile : console) {
+    result += static_cast<char>(tile.ch);
+  }
+  return result;
+}
+
 void test_renderer(TCOD_renderer_t renderer)
 {
   TCOD_console_set_custom_font(
@@ -66,17 +75,13 @@ TEST_CASE("OPENGL2 Renderer", "[!nonportable]") {
 TEST_CASE("Console ascii") {
   TCODConsole console = TCODConsole(5, 1);
   console.print(0, 0, "Test");
-  for (int i = 0; i < 5; ++i) {
-    CHECK(console.getChar(i, 0) == static_cast<int>("Test "[i]));
-  }
+  CHECK(to_string(*console.get_data()) == "Test ");
 }
 
 TEST_CASE("Console print") {
   TCODConsole console = TCODConsole(5, 1);
   console.print(0, 0, std::string("plop"));
-  for (int i = 0; i < 5; ++i) {
-    CHECK(console.getChar(i, 0) == static_cast<int>("plop "[i]));
-  }
+  CHECK(to_string(*console.get_data()) == "plop ");
 }
 TEST_CASE("Console print empty") {
   TCODConsole console = TCODConsole(5, 1);
@@ -224,15 +229,6 @@ TEST_CASE("Fallback font.", "[!mayfail]")
   REQUIRE(tcod::tileset::new_fallback_tileset());
 }
 
-std::string to_string(const TCOD_Console& console)
-{
-  std::string result;
-  for (const auto& tile : console) {
-    result += static_cast<char>(tile.ch);
-  }
-  return result;
-}
-
 void test_alignment(TCOD_alignment_t alignment)
 {
   // Compare alignment between the new and old functions.
@@ -284,4 +280,24 @@ TEST_CASE("Rectangle text alignment.")
 TEST_CASE("Load BDF.")
 {
   REQUIRE(tcod::load_bdf(get_file("fonts/ucs-fonts/4x6.bdf")));
+}
+TEST_CASE("Print color codes.")
+{
+  using namespace std::string_literals;
+  auto console = tcod::new_console(8, 1);
+  std::string text = "1\u0006\u0001\u0002\u00032\u00083"s;
+  tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+  REQUIRE(to_string(*console) == "123     ");
+  CHECK(console->at(0, 0).fg.r == 255);
+  CHECK(console->at(0, 0).fg.g == 255);
+  CHECK(console->at(0, 0).fg.b == 255);
+  CHECK(console->at(0, 0).fg.a == 255);
+  CHECK(console->at(0, 1).fg.r == 1);
+  CHECK(console->at(0, 1).fg.g == 2);
+  CHECK(console->at(0, 1).fg.b == 3);
+  CHECK(console->at(0, 1).fg.a == 255);
+  CHECK(console->at(0, 2).fg.r == 255);
+  CHECK(console->at(0, 2).fg.g == 255);
+  CHECK(console->at(0, 2).fg.b == 255);
+  CHECK(console->at(0, 2).fg.a == 255);
 }

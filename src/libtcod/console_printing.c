@@ -1055,16 +1055,25 @@ static int print_internal_(
         }
         break;
     }
-    for (;
-         printer.string < line_break;
-         cursor_x += utf8proc_get_property(fp_peak(&printer))->charwidth, fp_next(&printer)) {
+    // True clipping area.  Prevent drawing outside of these bounds.
+    int clip_left = left;
+    int clip_right = right;
+    if (!can_split) {
+      // Bounds are ignored if splitting is off.
+      clip_left = 0;
+      clip_right = con->w;
+    }
+    while (printer.string < line_break) {
+      // Iterate over a line of characters.
+      codepoint = fp_next(&printer);
       if(count_only) { continue; }
-      if (can_split && (left > cursor_x || cursor_x >= right)) { continue; }
-      if (!can_split && (0 > cursor_x || cursor_x >= con->w)) { continue; }
-      // Actually render this line of characters.
-      TCOD_ColorRGB* fg_rgb = printer.fg.a ? (TCOD_ColorRGB*)&printer.fg : NULL;
-      TCOD_ColorRGB* bg_rgb = printer.bg.a ? (TCOD_ColorRGB*)&printer.bg : NULL;
-      TCOD_console_put_rgb(con, cursor_x, top, fp_peak(&printer), fg_rgb, bg_rgb, flag);
+      if (clip_left <= cursor_x && cursor_x < clip_right) {
+        // Actually render this line of characters.
+        TCOD_ColorRGB* fg_rgb = printer.fg.a ? (TCOD_ColorRGB*)&printer.fg : NULL;
+        TCOD_ColorRGB* bg_rgb = printer.bg.a ? (TCOD_ColorRGB*)&printer.bg : NULL;
+        TCOD_console_put_rgb(con, cursor_x, top, codepoint, fg_rgb, bg_rgb, flag);
+      }
+      cursor_x += utf8proc_get_property(codepoint)->charwidth;
     }
     // Ignore any extra spaces.
     while (printer.string != printer.end) {

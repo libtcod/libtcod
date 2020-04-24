@@ -47,6 +47,10 @@ test_script:
 - cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -m pip install -U pytest pytest-cov pytest-faulthandler
 - cmd: if defined TEST_PYTHON3 %TEST_PYTHON3% -m pytest -v
 
+artifacts:
+- path: buildsys\scons\libtcod-*.zip
+- path: buildsys\packages\libtcod-*.7z
+
 deploy:
 - provider: GitHub
   auth_token:

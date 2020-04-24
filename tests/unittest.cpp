@@ -301,3 +301,11 @@ TEST_CASE("Print color codes.")
   CHECK(console->at(0, 2).fg.b == 255);
   CHECK(console->at(0, 2).fg.a == 255);
 }
+TEST_CASE("Malformed UTF-8.", "[!throws]")
+{
+  auto console = tcod::new_console(8, 1);
+  std::string text = "\x80";
+  REQUIRE_THROWS(
+      tcod::print(
+          *console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
+}

@@ -43,6 +43,7 @@
 #endif
 
 #include "config.h"
+#include "error.h"
 #include "console_types.h"
 
 #ifdef __cplusplus
@@ -89,26 +90,84 @@ typedef enum {
 TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 
 /* UTF-8 functions */
-TCODLIB_API TCODLIB_FORMAT(4, 5) void TCOD_console_printf(
+/**
+    Format and print a UTF-8 string to a console.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
+TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error TCOD_console_printf(
     TCOD_Console* con, int x, int y, const char *fmt, ...);
-TCODLIB_API TCODLIB_FORMAT(6, 7) void TCOD_console_printf_ex(
+/**
+    Format and print a UTF-8 string to a console.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
+TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment, const char *fmt, ...);
+/**
+    Format and print a UTF-8 string to a console.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
     TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...);
+/**
+    Format and print a UTF-8 string to a console.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
 TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
     TCOD_Console* con,int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+/**
+    Print a framed and optionally titled region to a console, using default
+    colors and alignment.
+
+    This function uses Unicode box-drawing characters and a UTF-8 formatted
+    string.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
 TCODLIB_API TCODLIB_FORMAT(8, 9)
-void TCOD_console_printf_frame(struct TCOD_Console *con,
+TCOD_Error TCOD_console_printf_frame(struct TCOD_Console *con,
                                int x, int y, int w, int h, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+/**
+    Return the number of lines that would be printed by this formatted string.
+    \rst
+    .. versionadded:: 1.8
+
+    .. versionchanged:: 1.16
+        Now returns a negative error code on failure.
+    \endrst
+ */
 TCODLIB_API TCODLIB_FORMAT(6, 7)
 int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
                                      int x, int y, int w, int h,
                                      const char *fmt, ...);
 
-TCOD_PUBLIC void TCOD_console_printn(
+TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     TCOD_Console* con,
     int x,
     int y,
@@ -142,7 +201,7 @@ TCOD_PUBLIC int TCOD_console_get_height_rect_wn(
     int width,
     int n,
     const char* str);
-TCOD_PUBLIC void TCOD_console_printn_frame(
+TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     struct TCOD_Console *con,
     int x,
     int y,
@@ -167,7 +226,8 @@ inline void print(
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment)
 {
-  TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment);
+  check_throw_error(
+      TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment));
 }
 inline int print_rect(
     TCOD_Console &con,
@@ -181,7 +241,9 @@ inline int print_rect(
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment)
 {
-  return TCOD_console_printn_rect(&con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment);
+  return check_throw_error(
+      TCOD_console_printn_rect(
+          &con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
 }
 inline int get_height_rect(
     TCOD_Console &console,
@@ -191,13 +253,16 @@ inline int get_height_rect(
     int height,
     const std::string& str)
 {
-  return TCOD_console_get_height_rect_n(&console, x, y, width, height, str.size(), str.data());
+  return check_throw_error(
+      TCOD_console_get_height_rect_n(
+          &console, x, y, width, height, str.size(), str.data()));
 }
 inline int get_height_rect(
     int width,
     const std::string& str)
 {
-  return TCOD_console_get_height_rect_wn(width, str.size(), str.data());
+  return check_throw_error(
+      TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
 }
 inline void print_frame(
     struct TCOD_Console &con,
@@ -211,7 +276,9 @@ inline void print_frame(
     TCOD_bkgnd_flag_t flag,
     bool empty)
 {
-  TCOD_console_printn_frame(&con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty);
+  check_throw_error(
+      TCOD_console_printn_frame(
+          &con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty));
 }
 } // namespace tcod
 #endif // __cplusplus

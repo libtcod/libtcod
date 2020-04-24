@@ -150,7 +150,7 @@ inline TCOD_Error set_error(const std::exception& e)
  *
  *  Used internally.
  */
-inline TCOD_Error check_throw_error(TCOD_Error error)
+inline int check_throw_error(int error)
 {
   if (error >= 0) { return error; }
   switch (error) {
@@ -162,6 +162,9 @@ inline TCOD_Error check_throw_error(TCOD_Error error)
       throw std::invalid_argument(TCOD_get_error());
       break;
   }
+}
+inline TCOD_Error check_throw_error(TCOD_Error error) {
+  return static_cast<TCOD_Error>(check_throw_error(static_cast<int>(error)));
 }
 } // namespace tcod
 #endif // __cplusplus

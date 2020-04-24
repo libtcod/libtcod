@@ -797,17 +797,35 @@ struct FormattedPrinter {
   const struct TCOD_ColorRGBA default_fg;
   const struct TCOD_ColorRGBA default_bg;
 };
+static TCOD_Error utf8_report_error(int err) {
+  switch (err) {
+    case UTF8PROC_ERROR_NOMEM:
+      TCOD_set_errorv("Out of memory while parsing a UTF-8 string.");
+      return TCOD_E_OUT_OF_MEMORY;
+    case UTF8PROC_ERROR_INVALIDUTF8:
+      TCOD_set_errorv("UTF-8 string is malformed.");
+      return TCOD_E_ERROR;
+    default:
+      if (err < 0) {
+        TCOD_set_errorvf("Unexpected error while processing UTF-8 string: %d", err);
+        return TCOD_E_ERROR;
+      }
+      return TCOD_E_OK;
+  }
+}
 static int fp_peak(const struct FormattedPrinter* printer)
 {
   int codepoint;
-  utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  int err = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  if (err < 0) { return utf8_report_error(err); }
   return codepoint;
 }
 static int fp_next_raw(struct FormattedPrinter* printer)
 {
   int codepoint;
   int len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
-  if (len > 0) { printer->string += len; }
+  if (len < 0) { return utf8_report_error(len); }
+  printer->string += len;
   return codepoint;
 }
 static struct TCOD_ColorRGBA fp_next_rgba(struct FormattedPrinter* printer)
@@ -825,8 +843,6 @@ static void fp_handle_special_codes(struct FormattedPrinter* printer)
   while(printer->string < printer->end) {
     int codepoint = fp_peak(printer);
     switch (codepoint) {
-      case -1:
-        return;
       case TCOD_COLCTRL_STOP:
         fp_next_raw(printer);
         printer->fg = printer->default_fg;
@@ -841,6 +857,7 @@ static void fp_handle_special_codes(struct FormattedPrinter* printer)
         printer->bg = fp_next_rgba(printer);
         break;
       default:
+        if (codepoint < 0) { return; }
         if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
           fp_next_raw(printer);
           int color_index = codepoint - TCOD_COLCTRL_1;
@@ -909,6 +926,7 @@ static bool next_split_(
   bool separating = false; // True if the last iteration was breakable.
   while (it.string != it.end) {
     int codepoint = fp_peak(&it);
+    if (codepoint < 0) { return 0; } // Break out of function on error.
     const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     if (can_split && char_width > 0) {
       switch (property->category) {
@@ -1022,6 +1040,7 @@ static int print_internal_(
   }
   while (printer.string != printer.end && top < bottom && top < con->h) {
     int codepoint = fp_peak(&printer);
+    if (codepoint < 0) { return codepoint; } // Return error code.
     const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     // Check for newlines.
     if(is_newline(codepoint)) {
@@ -1066,6 +1085,7 @@ static int print_internal_(
     while (printer.string < line_break) {
       // Iterate over a line of characters.
       codepoint = fp_next(&printer);
+      if (codepoint < 0) { return codepoint; } // Return error code.
       if(count_only) { continue; }
       if (clip_left <= cursor_x && cursor_x < clip_right) {
         // Actually render this line of characters.
@@ -1081,7 +1101,8 @@ static int print_internal_(
       if (utf8proc_get_property(fp_peak(&printer))->category != UTF8PROC_CATEGORY_ZS) {
         break;
       }
-      fp_next(&printer);
+      codepoint = fp_next(&printer);
+      if (codepoint < 0) { return codepoint; } // Return error code.
     }
     // If there was an automatic split earlier then the top is moved down.
     if (split_status == 1) { top += 1; }
@@ -1116,7 +1137,7 @@ static void normalize_old_rect_(
   }
   return;
 }
-void TCOD_console_printn(
+TCOD_Error TCOD_console_printn(
     TCOD_Console* con,
     int x,
     int y,
@@ -1128,8 +1149,14 @@ void TCOD_console_printn(
     TCOD_alignment_t alignment)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return; }
-  print_internal_(con, x, y, con->w, con->h, n, str, fg, bg, flag, alignment, false, false);
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  int err = print_internal_(con, x, y, con->w, con->h, n, str,
+                            fg, bg, flag, alignment, false, false);
+  if (err < 0) { return (TCOD_Error)err; }
+  return TCOD_E_OK;
 }
 int TCOD_console_printn_rect(
     TCOD_Console *con,
@@ -1145,7 +1172,10 @@ int TCOD_console_printn_rect(
     TCOD_alignment_t alignment)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return 0; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   return print_internal_(con, x, y, width, height, n, str, fg, bg, flag, alignment, true, false);
 }
 
@@ -1159,7 +1189,10 @@ int TCOD_console_get_height_rect_n(
     const char* str)
 {
   console = TCOD_console_validate_(console);
-  if (!console) { return 0; }
+  if (!console) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   return print_internal_(console, x, y, width, height, n, str, NULL, NULL,
                          TCOD_BKGND_NONE, TCOD_LEFT, true, true);
 }
@@ -1171,7 +1204,7 @@ int TCOD_console_get_height_rect_wn(
   TCOD_Console console = { .w = width, .h = INT_MAX };
   return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
-void TCOD_console_printn_frame(
+TCOD_Error TCOD_console_printn_frame(
     struct TCOD_Console *con,
     int x,
     int y,
@@ -1189,7 +1222,10 @@ void TCOD_console_printn_frame(
   const int top = y;
   const int bottom = y + height - 1;
   con = TCOD_console_validate_(con);
-  if (!con) { return; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   TCOD_console_put_rgb(con, left, top, 0x250C, fg, bg, flag); // ┌
   TCOD_console_put_rgb(con, right, top, 0x2510, fg, bg, flag); // ┐
   TCOD_console_put_rgb(con, left, bottom, 0x2514, fg, bg, flag); // └
@@ -1208,22 +1244,21 @@ void TCOD_console_printn_frame(
   }
   if (n > 0 && title) {
     char* tmp_string = malloc(n + 2);
-    if (!tmp_string) { return; }
+    if (!tmp_string) {
+      TCOD_set_errorv("Out of memory.");
+      return TCOD_E_OUT_OF_MEMORY;
+    }
     memcpy(&tmp_string[1], title, n);
     tmp_string[0] = ' ';
     tmp_string[n + 1] = ' ';
-    TCOD_console_printn_rect(
+    int err = TCOD_console_printn_rect(
         con, x, y, width, 1, n + 2, tmp_string, bg, fg, TCOD_BKGND_SET, TCOD_CENTER);
     free(tmp_string);
+    if (err < 0) { return (TCOD_Error)err; }
   }
+  return TCOD_E_OK;
 }
-/**
- *  Format and print a UTF-8 string to a console.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
-void TCOD_console_printf_ex(
+TCOD_Error TCOD_console_printf_ex(
     TCOD_Console* con,
     int x,
     int y,
@@ -1232,125 +1267,131 @@ void TCOD_console_printf_ex(
     const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return; }
-  TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, flag, alignment);
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
+  TCOD_Error err =
+      TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, flag, alignment);
   free(str);
+  return err;
 }
-/**
- *  Format and print a UTF-8 string to a console.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
-void TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
+TCOD_Error TCOD_console_printf(TCOD_Console* con, int x, int y, const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return; }
-  TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
+  int err = TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
   free(str);
+  return (TCOD_Error)err;
 }
-/**
- *  Format and print a UTF-8 string to a console.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
 int TCOD_console_printf_rect_ex(
     struct TCOD_Console* con,
     int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return 0; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   normalize_old_rect_(con, alignment, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return 0; }
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
   int ret = TCOD_console_printn_rect(con, x, y, w, h, len, str, &con->fore, &con->back, flag, alignment);
   free(str);
   return ret;
 }
-/**
- *  Format and print a UTF-8 string to a console.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
 int TCOD_console_printf_rect(
     struct TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return 0; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   normalize_old_rect_(con, con->alignment, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return 0; }
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
   int ret = TCOD_console_printn_rect( con, x, y, w, h, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
   free(str);
   return ret;
 }
-/**
- *  Return the number of lines that would be printed by this formatted string.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
 int TCOD_console_get_height_rect_fmt(
     struct TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return 0; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   normalize_old_rect_(con, TCOD_LEFT, &x, &y, &w, &h);
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return 0; }
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
   int ret = TCOD_console_get_height_rect_n(con, x, y, w, h, len, str);
   free(str);
   return ret;
 }
-/**
- *  Print a framed and optionally titled region to a console, using default
- *  colors and alignment.
- *
- *  This function uses Unicode box-drawing characters and a UTF-8 formatted
- *  string.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
-void TCOD_console_printf_frame(struct TCOD_Console *con,
+TCOD_Error TCOD_console_printf_frame(struct TCOD_Console *con,
                                int x, int y, int width, int height, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...)
 {
   con = TCOD_console_validate_(con);
-  if (!con) { return; }
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   va_list ap;
   va_start(ap, fmt);
   char* str = NULL;
   int len = vsprint_(&str, fmt, ap);
   va_end(ap);
-  if (len < 0) { return; }
-  TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
+  if (len < 0) {
+    TCOD_set_errorv("Error while resolving formatting string.");
+    return TCOD_E_ERROR;
+  }
+  int err = TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
   free(str);
+  return (TCOD_Error)err;
 }

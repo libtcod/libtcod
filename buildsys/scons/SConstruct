@@ -126,6 +126,8 @@ def get_unittest():
     """Return the unittest builder."""
     env_unittest = env.Clone()
     env_unittest.Append(CPPPATH=['$VARIANT/src'])
+    if not using_msvc and not env['LIBRARY_DEPRECATION']:
+        env_unittest.Append(CCFLAGS=['-Wno-deprecated-declarations'])
     if env['TOOLSET'] == 'msvc':
         env_unittest.Append(CXXFLAGS=['/EHsc']) # Enable exception handler.
     if sys.platform == 'win32':

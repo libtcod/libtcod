@@ -15,6 +15,7 @@ since `1.7.0`.
   [#50](https://github.com/libtcod/libtcod/pull/50)
 - The `TCOD_VSYNC` environment variable was being ignored.
 - Fixed characters being dropped when color codes were used.
+- Malformed UTF-8 strings will no longer hang printing functions.
 
 ## [1.16.0-alpha.8] - 2020-04-03
 ### Fixed

@@ -102,6 +102,17 @@ static TCOD_Error gl_set_tileset(
   renderer->atlas = atlas;
   return TCOD_E_OK;
 }
+static TCOD_Error gl_recommended_console_size(
+    struct TCOD_Context* self, int* columns, int* rows)
+{
+  struct TCOD_RendererGLCommon* context = self->contextdata;
+  int w;
+  int h;
+  SDL_GL_GetDrawableSize(context->window, &w, &h);
+  if (columns) { *columns = w / context->atlas->tileset->tile_width; }
+  if (rows) { *rows = h / context->atlas->tileset->tile_height; }
+  return TCOD_E_OK;
+}
 static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
 {
   if (common->atlas) {
@@ -136,6 +147,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
   out->pixel_to_tile_ = gl_pixel_to_tile;
   out->save_screenshot_ = gl_screenshot;
   out->set_tileset = gl_set_tileset;
+  out->cb_recommended_console_size_ = gl_recommended_console_size;
   struct TCOD_RendererGLCommon* renderer = out->contextdata;
   if (!tileset) { return TCOD_E_ERROR; }
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {

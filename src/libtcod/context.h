@@ -67,6 +67,11 @@ struct TCOD_Context {
       Change the tileset used by this context.
   */
   TCOD_Error (*set_tileset)(struct TCOD_Context* self, TCOD_Tileset* tileset);
+  /**
+      Output the recommended console size to `columns` and `rows`.
+  */
+  TCOD_Error (*cb_recommended_console_size_)(
+      struct TCOD_Context* self, int* columns, int* rows);
 };
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
@@ -176,6 +181,15 @@ TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(
     \endrst
  */
 TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
+/**
+    Set `columns` and `rows` to the recommended console size for this context.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
+    struct TCOD_Context* context, int* columns, int* rows);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

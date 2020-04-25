@@ -125,3 +125,16 @@ int TCOD_context_get_renderer_type(struct TCOD_Context* context)
   }
   return context->type;
 }
+TCOD_Error TCOD_context_recommended_console_size(
+    struct TCOD_Context* context, int* columns, int* rows)
+{
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!context->cb_recommended_console_size_) {
+    TCOD_set_errorv("Context is missing configuration..");
+    return TCOD_E_ERROR;
+  }
+  return context->cb_recommended_console_size_(context, columns, rows);
+}

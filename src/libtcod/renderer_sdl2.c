@@ -582,6 +582,20 @@ static TCOD_Error sdl2_set_tileset(
   }
   return TCOD_E_OK;
 }
+static TCOD_Error sdl2_recommended_console_size(
+    struct TCOD_Context* self, int* columns, int* rows)
+{
+  struct TCOD_RendererSDL2* context = self->contextdata;
+  int w;
+  int h;
+  if (SDL_GetRendererOutputSize(context->renderer, &w, &h) < 0) {
+    TCOD_set_errorvf("SDL Error: %s", SDL_GetError());
+    return TCOD_E_ERROR;
+  }
+  if (columns) { *columns = w / context->atlas->tileset->tile_width; }
+  if (rows) { *rows = h / context->atlas->tileset->tile_height; }
+  return TCOD_E_OK;
+}
 struct TCOD_Context* TCOD_renderer_init_sdl2(
     int pixel_width,
     int pixel_height,
@@ -621,6 +635,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->pixel_to_tile_ = sdl2_pixel_to_tile;
   context->save_screenshot_ = sdl2_save_screenshot;
   context->set_tileset = sdl2_set_tileset;
+  context->cb_recommended_console_size_ = sdl2_recommended_console_size;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   sdl2_data->window = SDL_CreateWindow(

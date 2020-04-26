@@ -69,50 +69,7 @@ dist_noinst_DATA += \
 	../../data/namegen/jice_fantasy.cfg \
 	../../data/namegen/mingos_standard.cfg \
 	../../data/namegen/jice_mesopotamian.cfg \
-	../../data/fonts/dejavu8x8_gs_tc.png \
-	../../data/fonts/consolas10x10_gs_tc.png \
-	../../data/fonts/dundalk12x12_gs_tc.png \
-	../../data/fonts/terminal8x8_gs_as.png \
 	../../data/fonts/README.txt \
-	../../data/fonts/terminal8x12_gs_tc.png \
-	../../data/fonts/courier12x12_aa_tc.png \
-	../../data/fonts/arial10x10.png \
-	../../data/fonts/prestige12x12_gs_tc.png \
-	../../data/fonts/terminal8x8_aa_as.png \
-	../../data/fonts/terminal8x14_gs_ro.png \
-	../../data/fonts/terminal8x12_gs_ro.png \
-	../../data/fonts/terminal16x16_gs_ro.png \
-	../../data/fonts/prestige10x10_gs_tc.png \
-	../../data/fonts/caeldera8x8_gs_tc.png \
-	../../data/fonts/terminal7x7_gs_tc.png \
-	../../data/fonts/terminal10x18_gs_ro.png \
-	../../data/fonts/terminal10x16_gs_tc.png \
-	../../data/fonts/dejavu_wide12x12_gs_tc.png \
-	../../data/fonts/consolas_unicode_8x8.png \
-	../../data/fonts/arial8x8.png \
-	../../data/fonts/terminal8x8_gs_tc.png \
-	../../data/fonts/dejavu12x12_gs_tc.png \
-	../../data/fonts/consolas_unicode_12x12.png \
-	../../data/fonts/lucida12x12_gs_tc.png \
-	../../data/fonts/arial12x12.png \
-	../../data/fonts/consolas8x8_gs_tc.png \
-	../../data/fonts/consolas_unicode_16x16.png \
-	../../data/fonts/lucida8x8_gs_tc.png \
-	../../data/fonts/terminal10x16_gs_ro.png \
-	../../data/fonts/dejavu_wide16x16_gs_tc.png \
-	../../data/fonts/consolas12x12_gs_tc.png \
-	../../data/fonts/terminal8x8_aa_ro.png \
-	../../data/fonts/terminal10x10_gs_tc.png \
-	../../data/fonts/prestige8x8_gs_tc.png \
-	../../data/fonts/terminal8x8_aa_tc.png \
-	../../data/fonts/terminal12x12_gs_ro.png \
-	../../data/fonts/celtic_garamond_10x10_gs_tc.png \
-	../../data/fonts/courier8x8_aa_tc.png \
-	../../data/fonts/lucida10x10_gs_tc.png \
-	../../data/fonts/consolas_unicode_10x10.png \
-	../../data/fonts/courier10x10_aa_tc.png \
-	../../data/fonts/terminal8x8_gs_ro.png \
-	../../data/fonts/dejavu16x16_gs_tc.png \
 	../../data/fonts/dejavu10x10_gs_tc.png
 
 pkgconfigdir = $(libdir)/pkgconfig

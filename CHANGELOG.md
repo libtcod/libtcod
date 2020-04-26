@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.10] - 2020-04-26
 ### Fixed
 - Fixed characters being dropped when color codes were used.
 

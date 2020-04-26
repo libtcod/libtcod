@@ -37,8 +37,11 @@ std::string get_file(const std::string& path) {
 std::string to_string(const TCOD_Console& console)
 {
   std::string result;
-  for (const auto& tile : console) {
-    result += static_cast<char>(tile.ch);
+  for (int y = 0; y < console.h; ++y) {
+    if (y != 0) { result += '\n'; }
+    for (int x = 0; x < console.w; ++x) {
+      result += static_cast<char>(console.at(y, x).ch);
+    }
   }
   return result;
 }
@@ -300,6 +303,17 @@ TEST_CASE("Print color codes.")
   CHECK(console->at(0, 2).fg.g == 255);
   CHECK(console->at(0, 2).fg.b == 255);
   CHECK(console->at(0, 2).fg.a == 255);
+}
+TEST_CASE("Color code formatting.")
+{
+  using namespace std::string_literals;
+  auto console = tcod::new_console(3, 3);
+  std::string text = "1\u0006\u0001\u0002\u0003\n2 \u0008\n 3"s;
+  for (auto& tile : *console) {
+    tile.ch = static_cast<int>('.');
+  }
+  tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+  REQUIRE(to_string(*console) == ("1..\n2 .\n 3."));
 }
 TEST_CASE("Malformed UTF-8.", "[!throws]")
 {

@@ -813,13 +813,19 @@ static TCOD_Error utf8_report_error(int err) {
       return TCOD_E_OK;
   }
 }
-static int fp_peak(const struct FormattedPrinter* printer)
+/**
+    Return the next codepoint without advancing the string pointer.
+ */
+static int fp_peak_raw(const struct FormattedPrinter* printer)
 {
   int codepoint;
   int err = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
   if (err < 0) { return utf8_report_error(err); }
   return codepoint;
 }
+/**
+    Return the next codepoint and advance the string pointer.
+ */
 static int fp_next_raw(struct FormattedPrinter* printer)
 {
   int codepoint;
@@ -828,6 +834,9 @@ static int fp_next_raw(struct FormattedPrinter* printer)
   printer->string += len;
   return codepoint;
 }
+/**
+    Return the next 3 codepoints as a TCOD_ColorRGBA struct and advance.
+ */
 static struct TCOD_ColorRGBA fp_next_rgba(struct FormattedPrinter* printer)
 {
   struct TCOD_ColorRGBA rgb = {
@@ -838,10 +847,16 @@ static struct TCOD_ColorRGBA fp_next_rgba(struct FormattedPrinter* printer)
   };
   return rgb;
 }
+/**
+    Apply and special formatting codes to this printer and advance.
+
+    Special codes are the libtcod color formatting codes, these change the state
+    if the FormattedPrinter struct.
+ */
 static void fp_handle_special_codes(struct FormattedPrinter* printer)
 {
   while(printer->string < printer->end) {
-    int codepoint = fp_peak(printer);
+    int codepoint = fp_peak_raw(printer);
     switch (codepoint) {
       case TCOD_COLCTRL_STOP:
         fp_next_raw(printer);
@@ -872,10 +887,21 @@ static void fp_handle_special_codes(struct FormattedPrinter* printer)
     }
   }
 }
+/**
+    Return the next non-special codepoint and apply any states up to that point.
+ */
 static int fp_next(struct FormattedPrinter* printer)
 {
   fp_handle_special_codes(printer);
   return fp_next_raw(printer);
+}
+/**
+    Return the next non-special codepoint without advancing the string pointer.
+ */
+static int fp_peak(const struct FormattedPrinter* printer)
+{
+  struct FormattedPrinter temp = *printer;
+  return fp_next(&temp);
 }
 /*
  *  Check if the specified character is any line-break character

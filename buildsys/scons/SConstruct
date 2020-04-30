@@ -177,12 +177,16 @@ vars.Add('CFLAGS', 'C flags', '')
 vars.Add('CXXFLAGS', 'C++ flags', '')
 vars.Add('LINKFLAGS', 'Linker flags', '')
 
+ARCH_OPTIONS = ('x86', 'x86_64')
+if sys.platform == 'darwin':
+    ARCH_OPTIONS += ("x86.x86_64",)
+
 vars.Add(
     EnumVariable(
         'ARCH',
-        'Set target architecture. (Windows/Linux only)',
+        'Set target architecture.',
         'x86' if platform.architecture()[0] == '32bit' else 'x86_64',
-        allowed_values=('x86', 'x86_64'),
+        allowed_values=ARCH_OPTIONS,
     )
 )
 
@@ -338,7 +342,6 @@ if sys.platform == 'win32':
             )
 elif sys.platform == 'darwin':
     unpack_sdl2_darwin(env)
-    env['ARCH'] = 'x86.x86_64'
     env.Append(CPPPATH=['$SDL2_PATH/Headers'])
     sdl_install = env.Install('$DEVELOP_DIR', '$SDL2_PATH')
     sdl_package = env.Install('$VARIANT', '$SDL2_PATH')
@@ -347,10 +350,14 @@ else:
     env.Append(LIBS=['m'])
 
 if sys.platform == 'darwin':
-    OSX_FLAGS = ['-arch', 'i386', '-arch', 'x86_64']
+    OSX_FLAGS = []
+    if env['ARCH'] == "x86" or env['ARCH'] == "x86.x86_64":
+        OSX_FLAGS.extend(['-arch', 'i386'])
+    if env['ARCH'] == "x86_64" or env['ARCH'] == "x86.x86_64":
+        OSX_FLAGS.extend(['-arch', 'x86_64'])
     env.Append(CCFLAGS=OSX_FLAGS,
                LINKFLAGS=OSX_FLAGS)
-    # Added a ton ot rpath's.
+    # Added a ton of rpath's.
     # Only '@loader_path/' is actually needed.
     env.Append(LINKFLAGS=['-framework', 'ApplicationServices',
                           '-framework', 'SDL2',

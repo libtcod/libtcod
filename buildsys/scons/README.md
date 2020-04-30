@@ -34,7 +34,7 @@ variables respectfully:
 scons develop_all MODE=RELEASE ARCH=x86_64
 ```
 
-On Mac this script will always make a universal build, ignoring `ARCH`.
+On MacOS this script can make a universal build with `ARCH=x86.x86_64`.
 
 Windows has the option of using the MSVC compiler (default) or MinGW compiler.
 To use MinGW set the `TOOLSET=mingw` variable.

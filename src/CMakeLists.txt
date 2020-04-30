@@ -17,6 +17,9 @@ target_link_libraries(TCOD PRIVATE CONAN_PKG::zlib)
 target_include_directories(TCOD PUBLIC ./)
 target_include_directories(TCOD PRIVATE ./vendor)
 
+find_package(Threads REQUIRED)
+target_link_libraries(TCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(TCOD PRIVATE LIBTCOD_EXPORTS)
 else()

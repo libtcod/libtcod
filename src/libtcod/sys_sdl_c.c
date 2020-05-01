@@ -762,14 +762,10 @@ static void sdl_parse_mouse_(const SDL_Event* ev, TCOD_mouse_t* mouse)
     mouse->dcx = cell_x - prev_cell_x;
     mouse->dcy = cell_y - prev_cell_y;
   } else {
-    mouse->x -= TCOD_ctx.fullscreen_offsetx;
-    mouse->y -= TCOD_ctx.fullscreen_offsety;
-    mouse->cx = mouse->x / TCOD_ctx.font_width;
-    mouse->cy = mouse->y / TCOD_ctx.font_height;
-    int prev_cx = (mouse->x - mouse->dx) / TCOD_ctx.font_width;
-    int prev_cy = (mouse->y - mouse->dy) / TCOD_ctx.font_height;
-    mouse->dcx = mouse->cx - prev_cx;
-    mouse->dcy = mouse->cy - prev_cy;
+    mouse->cx = 0;
+    mouse->cy = 0;
+    mouse->dcx = 0;
+    mouse->dcy = 0;
   }
 }
 /**

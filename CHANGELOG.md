@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed divide by zero when handing mouse input without a global context.
 
 ## [1.16.0-alpha.10] - 2020-04-26
 ### Fixed

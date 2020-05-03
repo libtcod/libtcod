@@ -926,6 +926,28 @@ static bool is_newline(int codepoint)
     return false;
 }
 /**
+    A variable that toggles double wide character handing in print functions.
+
+    In theory this option could be made public.
+ */
+static const bool TCOD_double_width_print_mode = 0;
+/**
+    Return the tile-width for this character.
+
+    The result for normally double-width characters will depend on
+    `TCOD_double_width_print_mode`.
+ */
+static int get_character_width(int codepoint)
+{
+  const utf8proc_property_t* property = utf8proc_get_property(codepoint);
+  switch(property->charwidth) {
+    default:
+      return (int)property->charwidth;
+    case 2:
+      return TCOD_double_width_print_mode ? 2 : 1;
+  }
+}
+/**
  *  Get the next line-break or null terminator, or break the string before
  *  `max_width`.
  *
@@ -957,7 +979,7 @@ static bool next_split_(
     if (can_split && char_width > 0) {
       switch (property->category) {
         default:
-          if (char_width + (int)property->charwidth > max_width) {
+          if (char_width + get_character_width(codepoint) > max_width) {
             // The next character would go over the max width, so return now.
             if (*break_point != it.end) {
               // Use latest line break if one exists.
@@ -972,12 +994,12 @@ static bool next_split_(
           separating = false;
           break;
         case UTF8PROC_CATEGORY_PD: // Punctuation, dash
-          if (char_width + (int)property->charwidth > max_width) {
+          if (char_width + get_character_width(codepoint) > max_width) {
             *break_point = it.string;
             *break_width = char_width;
             return 1;
           } else {
-            char_width += property->charwidth;
+            char_width += get_character_width(codepoint);
             fp_next(&it);
             *break_point = it.string;
             *break_width = char_width;
@@ -1000,7 +1022,7 @@ static bool next_split_(
       *break_width = char_width;
       return 0;
     }
-    char_width += property->charwidth;
+    char_width += get_character_width(codepoint);
     fp_next(&it);
   }
   // Return end of iteration.
@@ -1119,7 +1141,7 @@ static int print_internal_(
         TCOD_ColorRGB* bg_rgb = printer.bg.a ? (TCOD_ColorRGB*)&printer.bg : NULL;
         TCOD_console_put_rgb(con, cursor_x, top, codepoint, fg_rgb, bg_rgb, flag);
       }
-      cursor_x += utf8proc_get_property(codepoint)->charwidth;
+      cursor_x += get_character_width(codepoint);
     }
     // Ignore any extra spaces.
     while (printer.string != printer.end) {

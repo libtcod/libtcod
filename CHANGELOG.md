@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- Print functions will no longer treat special glyphs as double wide.
+
 ### Fixed
 - Fixed divide by zero when handing mouse input without a global context.
 

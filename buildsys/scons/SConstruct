@@ -357,8 +357,9 @@ if sys.platform == 'darwin':
         OSX_FLAGS.extend(['-arch', 'x86_64'])
     env.Append(CCFLAGS=OSX_FLAGS,
                LINKFLAGS=OSX_FLAGS)
-    # Added a ton of rpath's.
-    # Only '@loader_path/' is actually needed.
+    # Only '@loader_path/' is actually needed for the release archive.
+    # However, to build from source & run the samples without errors, the
+    # dependencies folder needs to be included in the rpath.
     env.Append(LINKFLAGS=['-framework', 'ApplicationServices',
                           '-framework', 'SDL2',
                           '-F$SDL2_PATH/..',

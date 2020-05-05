@@ -218,6 +218,8 @@ vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT')
 
 if sys.platform == 'win32':
     DEPENDANCY_DIR = './dependencies/$WINDOWS_TOOLSET'
+elif sys.platform == 'darwin':
+    DEPENDANCY_DIR = './Frameworks'
 else:
     DEPENDANCY_DIR = './dependencies'
 vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
@@ -358,13 +360,10 @@ if sys.platform == 'darwin':
     env.Append(CCFLAGS=OSX_FLAGS,
                LINKFLAGS=OSX_FLAGS)
     # Only '@loader_path/' is actually needed for the release archive.
-    # However, to build from source & run the samples without errors, the
-    # dependencies folder needs to be included in the rpath.
     env.Append(LINKFLAGS=['-framework', 'ApplicationServices',
                           '-framework', 'SDL2',
                           '-F$SDL2_PATH/..',
                           '-rpath', '@loader_path/',
-                          '-rpath', '@loader_path/../$SDL2_PATH/..',
                           '-rpath', '@loader_path/../Frameworks',
                           '-rpath', '/Library/Frameworks',
                           '-rpath', '/System/Library/Frameworks',

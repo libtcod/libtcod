@@ -363,7 +363,7 @@ if sys.platform == 'darwin':
                           '-framework', 'SDL2',
                           '-F$SDL2_PATH/..',
                           '-rpath', '@loader_path/',
-                          '-rpath', '@loader_path/../' + DEPENDANCY_DIR,
+                          '-rpath', '@loader_path/../$SDL2_PATH/..',
                           '-rpath', '@loader_path/../Frameworks',
                           '-rpath', '/Library/Frameworks',
                           '-rpath', '/System/Library/Frameworks',

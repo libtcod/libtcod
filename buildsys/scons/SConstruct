@@ -218,6 +218,8 @@ vars.Add('DIST_NAME', 'Name of the output zip file.', '$VARIANT')
 
 if sys.platform == 'win32':
     DEPENDANCY_DIR = './dependencies/$WINDOWS_TOOLSET'
+elif sys.platform == 'darwin':
+    DEPENDANCY_DIR = './Frameworks'
 else:
     DEPENDANCY_DIR = './dependencies'
 vars.Add('DEPENDANCY_DIR', 'Directory to cache SDL2.', DEPENDANCY_DIR)
@@ -357,8 +359,7 @@ if sys.platform == 'darwin':
         OSX_FLAGS.extend(['-arch', 'x86_64'])
     env.Append(CCFLAGS=OSX_FLAGS,
                LINKFLAGS=OSX_FLAGS)
-    # Added a ton of rpath's.
-    # Only '@loader_path/' is actually needed.
+    # Only '@loader_path/' is actually needed for the release archive.
     env.Append(LINKFLAGS=['-framework', 'ApplicationServices',
                           '-framework', 'SDL2',
                           '-F$SDL2_PATH/..',

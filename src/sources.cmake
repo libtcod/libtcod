@@ -96,6 +96,8 @@ target_sources(TCOD PRIVATE
     libtcod/path.hpp
     libtcod/pathfinder.c
     libtcod/pathfinder.h
+    libtcod/pathfinder_frontier.c
+    libtcod/pathfinder_frontier.h
     libtcod/path_c.c
     libtcod/portability.h
     libtcod/renderer_gl.c
@@ -288,6 +290,8 @@ source_group(libtcod FILES
     libtcod/path.hpp
     libtcod/pathfinder.c
     libtcod/pathfinder.h
+    libtcod/pathfinder_frontier.c
+    libtcod/pathfinder_frontier.h
     libtcod/path_c.c
     libtcod/portability.h
     libtcod/renderer_gl.c

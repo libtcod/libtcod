@@ -60,6 +60,7 @@
 #include "noise.h"
 #include "path.h"
 #include "pathfinder.h"
+#include "pathfinder_frontier.h"
 #include "parser.h"
 #include "renderer_gl.h"
 #include "renderer_gl1.h"

@@ -34,20 +34,27 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 void TCOD_heap_uninit(struct TCOD_Heap* heap)
 {
   if (heap->heap) { free(heap->heap); }
   heap->heap = NULL;
   heap->size = 0;
   heap->capacity = 0;
+  heap->node_size = 0;
+  heap->data_size = 0;
 }
 
 int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size)
 {
   size_t node_size = sizeof(struct TCOD_HeapNode) + data_size;
-  if (node_size > TCOD_HEAP_MAX_NODE_SIZE) { return -1; }
-  if (heap->node_size == node_size) { return 0; }
-  TCOD_heap_uninit(heap);
+  if (node_size > TCOD_HEAP_MAX_NODE_SIZE) {
+    return TCOD_set_errorvf("Heap data size is too large: %i", node_size);
+  }
+  heap->heap = NULL;
+  heap->size = 0;
+  heap->capacity = 0;
   heap->node_size = node_size;
   heap->data_size = data_size;
   return 0;
@@ -60,7 +67,7 @@ void TCOD_heap_clear(struct TCOD_Heap* heap)
 
 static struct TCOD_HeapNode* TCOD_heap_get(struct TCOD_Heap* heap, int index)
 {
-  return (struct TCOD_HeapNode*)((char*)(heap->heap) + index);
+  return (struct TCOD_HeapNode*)((char*)(heap->heap) + index * heap->node_size);
 }
 
 static void TCOD_heap_swap(struct TCOD_Heap* heap, int lhs, int rhs)
@@ -76,7 +83,7 @@ static void TCOD_heap_set(
 {
   struct TCOD_HeapNode* node = TCOD_heap_get(heap, index);
   node->priority = priority;
-  memcpy(&node->data, &data, heap->node_size - sizeof(struct TCOD_HeapNode));
+  memcpy(node->data, data, heap->node_size - sizeof(struct TCOD_HeapNode));
 }
 
 static void TCOD_heap_copy(struct TCOD_Heap* heap, int dest, int src)
@@ -128,7 +135,7 @@ void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out)
 {
   if (minheap->size == 0) { return; }
   if (out) {
-    memcpy(out, &minheap->heap[0].data, minheap->data_size);
+    memcpy(out, minheap->heap[0].data, minheap->data_size);
   }
   TCOD_heap_copy(minheap, 0, minheap->size - 1);
   --minheap->size;

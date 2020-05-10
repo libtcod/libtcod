@@ -35,8 +35,8 @@
 
 struct TCOD_Frontier* TCOD_frontier_new(int ndim)
 {
-  if (0 >= ndim || ndim < TCOD_PATHFINDER_MAX_DIMENSIONS) {
-    TCOD_set_errorvf("Could not make pathfinder with %i dimensions.", ndim);
+  if (ndim <= 0 || TCOD_PATHFINDER_MAX_DIMENSIONS < ndim) {
+    TCOD_set_errorvf("Can not make a pathfinder with %i dimensions.", ndim);
     return NULL;
   }
   struct TCOD_Frontier* frontier = calloc(sizeof(*frontier), 1);
@@ -65,7 +65,7 @@ TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier)
     return TCOD_E_ERROR;
   }
   int node[TCOD_PATHFINDER_MAX_DIMENSIONS + 1];
-  TCOD_minheap_pop(&frontier->heap, &node);
+  TCOD_minheap_pop(&frontier->heap, node);
   frontier->active_dist = node[0];
   for (int i = 0; i < frontier->ndim; ++i) {
     frontier->active_index[i] = node[i + 1];
@@ -84,7 +84,7 @@ TCOD_Error TCOD_frontier_push(
   for (int i = 0; i < frontier->ndim; ++i) {
     node[i + 1] = index[i];
   }
-  TCOD_minheap_push(&frontier->heap, heuristic, &node);
+  TCOD_minheap_push(&frontier->heap, heuristic, node);
   return TCOD_E_OK;
 }
 int TCOD_frontier_size(const struct TCOD_Frontier* frontier)

@@ -323,3 +323,20 @@ TEST_CASE("Malformed UTF-8.", "[!throws]")
       tcod::print(
           *console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
 }
+TEST_CASE("Heap test.")
+{
+  struct TCOD_Heap heap;
+  TCOD_heap_init(&heap, sizeof(int));
+  std::vector<int> INPUT{0, 1, 2, 3, 4, 5, 6, 7};
+  for (int& it : INPUT) {
+    TCOD_minheap_push(&heap, it, &it);
+  }
+  std::vector<int> output;
+  while (heap.size) {
+    int out;
+    TCOD_minheap_pop(&heap, &out);
+    output.emplace_back(out);
+  }
+  REQUIRE(INPUT == output);
+  TCOD_heap_uninit(&heap);
+}

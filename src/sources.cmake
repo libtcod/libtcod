@@ -193,6 +193,132 @@ target_sources(TCOD PRIVATE
     vendor/stb.c
     vendor/utf8proc/utf8proc.c
 )
+install(FILES
+    libtcod.h
+    libtcod.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/.
+    COMPONENT IncludeFiles
+)
+install(FILES
+    libtcod/bresenham.h
+    libtcod/bresenham.hpp
+    libtcod/bsp.h
+    libtcod/bsp.hpp
+    libtcod/color.h
+    libtcod/color.hpp
+    libtcod/config.h
+    libtcod/console.h
+    libtcod/console.hpp
+    libtcod/console_drawing.h
+    libtcod/console_etc.h
+    libtcod/console_init.h
+    libtcod/console_printing.h
+    libtcod/console_rexpaint.h
+    libtcod/console_types.h
+    libtcod/context.h
+    libtcod/context_init.h
+    libtcod/context_viewport.h
+    libtcod/error.h
+    libtcod/fov.h
+    libtcod/fov.hpp
+    libtcod/fov_types.h
+    libtcod/globals.h
+    libtcod/heapq.h
+    libtcod/heightmap.h
+    libtcod/heightmap.hpp
+    libtcod/image.h
+    libtcod/image.hpp
+    libtcod/lex.h
+    libtcod/lex.hpp
+    libtcod/libtcod.h
+    libtcod/libtcod.hpp
+    libtcod/libtcod_int.h
+    libtcod/list.h
+    libtcod/list.hpp
+    libtcod/mersenne.h
+    libtcod/mersenne.hpp
+    libtcod/mersenne_types.h
+    libtcod/mouse.h
+    libtcod/mouse.hpp
+    libtcod/mouse_types.h
+    libtcod/namegen.h
+    libtcod/namegen.hpp
+    libtcod/noise.h
+    libtcod/noise.hpp
+    libtcod/noise_defaults.h
+    libtcod/parser.h
+    libtcod/parser.hpp
+    libtcod/path.h
+    libtcod/path.hpp
+    libtcod/pathfinder.h
+    libtcod/pathfinder_frontier.h
+    libtcod/portability.h
+    libtcod/renderer_gl.h
+    libtcod/renderer_gl1.h
+    libtcod/renderer_gl2.h
+    libtcod/renderer_gl_internal.h
+    libtcod/renderer_sdl2.h
+    libtcod/sys.h
+    libtcod/sys.hpp
+    libtcod/tileset.h
+    libtcod/tileset_bdf.h
+    libtcod/tileset_fallback.h
+    libtcod/tileset_render.h
+    libtcod/tileset_truetype.h
+    libtcod/tree.h
+    libtcod/tree.hpp
+    libtcod/txtfield.h
+    libtcod/txtfield.hpp
+    libtcod/utility.h
+    libtcod/version.h
+    libtcod/wrappers.h
+    libtcod/zip.h
+    libtcod/zip.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod
+    COMPONENT IncludeFiles
+)
+install(FILES
+    libtcod/gui/button.hpp
+    libtcod/gui/container.hpp
+    libtcod/gui/flatlist.hpp
+    libtcod/gui/gui.hpp
+    libtcod/gui/gui_portability.hpp
+    libtcod/gui/hbox.hpp
+    libtcod/gui/image.hpp
+    libtcod/gui/label.hpp
+    libtcod/gui/radiobutton.hpp
+    libtcod/gui/slider.hpp
+    libtcod/gui/statusbar.hpp
+    libtcod/gui/textbox.hpp
+    libtcod/gui/togglebutton.hpp
+    libtcod/gui/toolbar.hpp
+    libtcod/gui/vbox.hpp
+    libtcod/gui/widget.hpp
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/gui
+    COMPONENT IncludeFiles
+)
+install(FILES
+    libtcod/pathfinding/astar.h
+    libtcod/pathfinding/breadth-first.h
+    libtcod/pathfinding/dijkstra.h
+    libtcod/pathfinding/generic.h
+    libtcod/pathfinding/graph.h
+    libtcod/pathfinding/hill-climb.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/pathfinding
+    COMPONENT IncludeFiles
+)
+install(FILES
+    libtcod/sdl2/event.h
+    libtcod/sdl2/gl2_ext_.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/sdl2
+    COMPONENT IncludeFiles
+)
+install(FILES
+    libtcod/utility/matrix.h
+    libtcod/utility/vector2.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/utility
+    COMPONENT IncludeFiles
+)
 source_group(libtcod FILES
     libtcod/bresenham.cpp
     libtcod/bresenham.h

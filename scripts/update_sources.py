@@ -22,7 +22,7 @@ VENDOR_SOURCES = (
 
 
 def get_sources(
-    sources: bool = False, includes: bool = False
+    sources: bool = False, includes: bool = False, directory="src/libtcod"
 ) -> Iterable[Tuple[str, Sequence[str]]]:
     """Iterate over sources and headers with sub-folders grouped together."""
     re_inclusion = []
@@ -32,7 +32,7 @@ def get_sources(
         re_inclusion.append("h|hpp")
     re_valid = re.compile(r".*\.(%s)$" % ("|".join(re_inclusion),))
 
-    for curpath, dirs, files in os.walk("src/libtcod"):
+    for curpath, dirs, files in os.walk(directory):
         # Ignore hidden directories.
         dirs[:] = [dir for dir in dirs if not dir.startswith(".")]
         files = [
@@ -46,10 +46,10 @@ def get_sources(
         yield "vendor", VENDOR_SOURCES
 
 
-def all_sources(includes: bool = False) -> Iterable[str]:
+def all_sources(sources: bool = True, includes: bool = False) -> Iterable[str]:
     """Iterate over all sources needed to compile libtcod."""
-    for _, sources in get_sources(sources=True, includes=includes):
-        yield from sources
+    for _, sources_ in get_sources(sources=sources, includes=includes):
+        yield from sources_
 
 
 def generate_am() -> str:
@@ -80,6 +80,17 @@ def generate_cmake() -> str:
         os.path.relpath(f, "src").replace("\\", "/") for f in all_sources(includes=True)
     )
     out += "\n)"
+    for group, files in get_sources(sources=False, includes=True, directory="src/"):
+        if group.startswith("vendor"):
+            continue
+        group = group.replace("\\", "/")
+        out += "\ninstall(FILES\n    "
+        out += "\n    ".join(
+            os.path.relpath(f, "src").replace("\\", "/") for f in files
+        )
+        out += "\n    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/%s" % group
+        out += "\n    COMPONENT IncludeFiles"
+        out += "\n)"
     for group, files in get_sources(sources=True, includes=True):
         group = group.replace("/", r"\\")
         out += f"\nsource_group({group} FILES\n    "

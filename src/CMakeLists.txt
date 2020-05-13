@@ -5,7 +5,21 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
       CACHE STRING "")
 endif()
 
-project (libtcod C CXX)
+file(STRINGS libtcod/version.h LIBTCOD_VERSION_LINE REGEX "TCOD_STRVERSION")
+string(REGEX MATCH "TCOD_STRVERSION \"([^\"]+)\"" LIBTCOD_VERSION_LINE ${LIBTCOD_VERSION_LINE})
+set(LIBTCOD_VERSION_FULL ${CMAKE_MATCH_1})
+string(REGEX MATCH "([0-9]+\.[0-9]+\.[0-9]+)" LIBTCOD_VERSION ${LIBTCOD_VERSION_FULL})
+message(STATUS "Libtcod version: ${LIBTCOD_VERSION}")
+
+project(
+    libtcod
+    VERSION ${LIBTCOD_VERSION}
+    LANGUAGES C CXX
+)
+
+set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/lib CACHE STRING "")
+set(CMAKE_INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/libtcod/cmake CACHE STRING "")
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_CURRENT_BINARY_DIR}/include CACHE STRING "")
 
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED)
@@ -15,59 +29,88 @@ if(CONAN_FILE)
     conan_basic_setup(TARGETS)
 endif()
 
-add_library(TCOD)
-add_library(TCOD::TCOD ALIAS TCOD)
-target_compile_features(TCOD PUBLIC cxx_std_14)
+add_library(LIBTCOD)
+add_library(LIBTCOD::LIBTCOD ALIAS LIBTCOD)
+target_compile_features(LIBTCOD PUBLIC cxx_std_14)
 
 if(CONAN_FILE)
     message(STATUS "Fetching dependencies from Conan.")
-    target_link_libraries(TCOD PUBLIC CONAN_PKG::sdl2)
-    target_link_libraries(TCOD PRIVATE CONAN_PKG::zlib)
+    target_link_libraries(LIBTCOD PUBLIC CONAN_PKG::sdl2)
+    target_link_libraries(LIBTCOD PRIVATE CONAN_PKG::zlib)
 else()
     message(STATUS "Fetching dependencies from Vcpkg or other sources.")
     find_package(SDL2 CONFIG REQUIRED)
     find_package(ZLIB REQUIRED)
-    target_link_libraries(TCOD PUBLIC SDL2::SDL2)
-    target_link_libraries(TCOD PRIVATE ZLIB::ZLIB)
+    target_link_libraries(LIBTCOD PUBLIC SDL2::SDL2)
+    target_link_libraries(LIBTCOD PRIVATE ZLIB::ZLIB)
 endif()
 
-target_include_directories(TCOD PUBLIC ./)
-target_include_directories(TCOD PRIVATE ./vendor)
+target_include_directories(LIBTCOD PRIVATE ./vendor)
 
 find_package(Threads REQUIRED)
-target_link_libraries(TCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(LIBTCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(TCOD PRIVATE LIBTCOD_EXPORTS)
+    target_compile_definitions(LIBTCOD PRIVATE LIBTCOD_EXPORTS)
 else()
-    target_compile_definitions(TCOD PUBLIC LIBTCOD_STATIC)
+    target_compile_definitions(LIBTCOD PUBLIC LIBTCOD_STATIC)
 endif()
 
 if(MSVC)
-    target_compile_definitions(TCOD PRIVATE _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(LIBTCOD PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-target_compile_definitions(TCOD PRIVATE TCOD_IGNORE_DEPRECATED)
+target_compile_definitions(LIBTCOD PRIVATE TCOD_IGNORE_DEPRECATED)
 
 include(sources.cmake)
 
 if(IPO_SUPPORTED)
-    set_property(TARGET TCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-    set_property(TARGET TCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
+    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
 endif()
 
 if(MSVC)
-    set_property(TARGET TCOD PROPERTY OUTPUT_NAME libtcod)
+    set_property(TARGET LIBTCOD PROPERTY OUTPUT_NAME libtcod)
 else()
-    set_property(TARGET TCOD PROPERTY OUTPUT_NAME tcod)
+    set_property(TARGET LIBTCOD PROPERTY OUTPUT_NAME tcod)
 endif()
 
 if(MSVC)
-  target_compile_options(TCOD PRIVATE /W4)
+  target_compile_options(LIBTCOD PRIVATE /W4)
 else()
-  target_compile_options(TCOD PRIVATE -Wall -Wextra)
+  target_compile_options(LIBTCOD PRIVATE -Wall -Wextra)
 endif()
 
 if(NOT CONAN_FILE)
-    install(TARGETS TCOD RUNTIME LIBRARY ARCHIVE COMPONENT Library)
+    install(
+        TARGETS LIBTCOD
+        EXPORT libtcodTargets
+        RUNTIME LIBRARY ARCHIVE
+        COMPONENT Library
+    )
+    include(CMakePackageConfigHelpers)
+    get_filename_component(
+        INSTALL_FULL_INCLUDEDIR
+        ${CMAKE_INSTALL_INCLUDEDIR}
+        REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    install(
+        EXPORT libtcodTargets
+        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+        NAMESPACE LIBTCOD::
+    )
+    configure_package_config_file(LibtcodConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+        PATH_VARS INSTALL_FULL_INCLUDEDIR)
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
+        COMPATIBILITY SameMajorVersion
+    )
+    install(
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+    )
 endif()

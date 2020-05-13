@@ -75,7 +75,7 @@ def generate_am() -> str:
 def generate_cmake() -> str:
     """Returns a CMake script with libtcod's sources."""
     out = f"{BANNER}"
-    out += "\ntarget_sources(TCOD PRIVATE\n    "
+    out += "\ntarget_sources(LIBTCOD PRIVATE\n    "
     out += "\n    ".join(
         os.path.relpath(f, "src").replace("\\", "/") for f in all_sources(includes=True)
     )

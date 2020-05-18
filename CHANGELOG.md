@@ -10,6 +10,10 @@ since `1.7.0`.
 ### Changed
 - CMake can now create packages.
 
+### Fixed
+- `TCOD_console_init_root` and context initializing functions were not
+  returning error codes on failure.
+
 ## [1.16.0-alpha.11] - 2020-05-13
 ### Changed
 - Print functions will no longer treat special glyphs as double wide.

@@ -144,6 +144,7 @@ TCOD_Error TCOD_context_new_window(
       *out = TCOD_renderer_init_sdl2(
           pixel_width, pixel_height,
           window_title, sdl_window_flags, renderer_flags, tileset);
+      if (!*out) { return TCOD_E_ERROR; }
       return TCOD_E_OK;
     case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
@@ -165,6 +166,7 @@ TCOD_Error TCOD_context_new_window(
       *out = TCOD_renderer_init_sdl2(
           pixel_width, pixel_height,
           window_title, sdl_window_flags, renderer_flags, tileset);
+      if (!*out) { return TCOD_E_ERROR; }
       return err;
   }
 }

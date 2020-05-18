@@ -123,14 +123,12 @@ static void TCOD_TCOD_minheap_heapify_up(struct TCOD_Heap* minheap, int index)
     TCOD_TCOD_minheap_heapify_up(minheap, parent);
   }
 }
-#if 0
-static void TCOD_minheap_heapify(struct TCOD_Heap* minheap)
+void TCOD_minheap_heapify(struct TCOD_Heap* minheap)
 {
   for (int i = minheap->size / 2; i >= 0; --i) {
     TCOD_TCOD_minheap_heapify_down(minheap, i);
   }
 }
-#endif
 void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out)
 {
   if (minheap->size == 0) { return; }

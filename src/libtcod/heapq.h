@@ -55,13 +55,19 @@ struct TCOD_Heap {
   size_t data_size;
 };
 
-TCODLIB_CAPI int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size);
-TCODLIB_CAPI void TCOD_heap_uninit(struct TCOD_Heap* heap);
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+TCOD_PUBLIC int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size);
+TCOD_PUBLIC void TCOD_heap_uninit(struct TCOD_Heap* heap);
 
-TCODLIB_CAPI void TCOD_heap_clear(struct TCOD_Heap* heap);
+TCOD_PUBLIC void TCOD_heap_clear(struct TCOD_Heap* heap);
 
-TCODLIB_CAPI int TCOD_minheap_push(
+TCOD_PUBLIC int TCOD_minheap_push(
     struct TCOD_Heap* minheap, int priority, const void* data);
-TCODLIB_CAPI void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out);
-
+TCOD_PUBLIC void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out);
+TCOD_PUBLIC void TCOD_minheap_heapify(struct TCOD_Heap* minheap);
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
 #endif // TCOD_HEAPQ_H

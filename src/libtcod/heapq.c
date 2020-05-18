@@ -50,7 +50,7 @@ int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size)
 {
   size_t node_size = sizeof(struct TCOD_HeapNode) + data_size;
   if (node_size > TCOD_HEAP_MAX_NODE_SIZE) {
-    return TCOD_set_errorvf("Heap data size is too large: %i", node_size);
+    return TCOD_set_errorvf("Heap data size is too large: %i", (int)node_size);
   }
   heap->heap = NULL;
   heap->size = 0;

@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.12] - 2020-05-22
 ### Changed
 - CMake can now create packages.
 

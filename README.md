@@ -72,6 +72,14 @@ Autotools is a common standard on Linux, and can be used for MacOS.
 Instructions are
 [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
 
+Conan, the first that you should be is install conan: `sudo pip3 install conan`,
+the second step is added a remote used for libtcod: 
+`conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan`,
+the third step is use conan in the project: 
+`conan install . -s build_type=Debug --install-folder=cmake-build-debug`,
+the fourth step is: `cd cmake-build-debug` and then: `cmake ..`, finally: `make`
+
+
 # Getting Started #
 
 The latest documentation is [here](https://libtcod.readthedocs.io/en/latest).

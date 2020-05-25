@@ -13,39 +13,41 @@ else()
 endif()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
+MESSAGE(STATUS ${PATH_TO_DATA})
+
 add_custom_target(copy_data_dir
-    COMMENT "Copy project data directory to the runtime folder."
-    COMMAND cmake -E copy_directory
-        ${CMAKE_SOURCE_DIR}/../data
+        COMMENT "Copy project data directory to the runtime folder."
+        COMMAND cmake -E copy_directory
+        ${PATH_TO_DATA}
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
-)
+        )
 add_custom_target(copy_font
-    COMMENT "Copy terminal.png to the runtime folder."
-    COMMAND cmake -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/../terminal.png
+        COMMENT "Copy terminal.png to the runtime folder."
+        COMMAND cmake -E copy_if_different
+        ${PATH_TO_DATA}
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
-)
+        )
 
 add_executable(samples_c samples_c.c)
-target_link_libraries(samples_c CONAN_PKG::libtcod)
+target_link_libraries(samples_c LIBTCOD)
 add_dependencies(samples_c copy_data_dir)
 
 add_executable(samples_cpp samples_cpp.cpp)
-target_link_libraries(samples_cpp CONAN_PKG::libtcod)
+target_link_libraries(samples_cpp LIBTCOD)
 add_dependencies(samples_cpp copy_data_dir)
 
 add_executable(frost frost/frost.cpp)
-target_link_libraries(frost CONAN_PKG::libtcod)
+target_link_libraries(frost LIBTCOD)
 add_dependencies(frost copy_font)
 
 add_executable(hmtool
     hmtool/hmtool.cpp hmtool/operation.cpp hmtool/operation.hpp
 )
-target_link_libraries(hmtool CONAN_PKG::libtcod)
+target_link_libraries(hmtool LIBTCOD)
 add_dependencies(hmtool copy_font)
 
 add_executable(navier navier/main.cpp navier/main.hpp)
-target_link_libraries(navier CONAN_PKG::libtcod)
+target_link_libraries(navier LIBTCOD)
 add_dependencies(navier copy_font)
 
 add_executable(rad
@@ -57,7 +59,7 @@ add_executable(rad
     rad/rad_shader_photon.cpp
     rad/rad_shader_standard.cpp
 )
-target_link_libraries(rad CONAN_PKG::libtcod)
+target_link_libraries(rad LIBTCOD)
 add_dependencies(rad copy_font)
 
 add_executable(ripples
@@ -66,7 +68,7 @@ add_executable(ripples
     ripples/util_ripples.cpp
     ripples/util_ripples.hpp
 )
-target_link_libraries(ripples CONAN_PKG::libtcod)
+target_link_libraries(ripples LIBTCOD)
 add_dependencies(ripples copy_font)
 
 add_executable(weather
@@ -75,7 +77,7 @@ add_executable(weather
     weather/util_weather.cpp
     weather/util_weather.hpp
 )
-target_link_libraries(weather CONAN_PKG::libtcod)
+target_link_libraries(weather LIBTCOD)
 add_dependencies(weather copy_font)
 
 add_executable(worldgen
@@ -84,5 +86,7 @@ add_executable(worldgen
     worldgen/util_worldgen.cpp
     worldgen/util_worldgen.hpp
 )
-target_link_libraries(worldgen CONAN_PKG::libtcod)
+target_link_libraries(worldgen LIBTCOD)
 add_dependencies(worldgen copy_font)
+
+FILE(COPY ../data/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/samples/)

@@ -45,7 +45,12 @@ else()
     target_link_libraries(LIBTCOD PRIVATE ZLIB::ZLIB)
 endif()
 
-target_include_directories(LIBTCOD PRIVATE ./vendor)
+target_include_directories(LIBTCOD
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libtcod/>
+            $<INSTALL_INTERFACE:libtcod/>
+        PRIVATE
+            ./vendor)
 
 find_package(Threads REQUIRED)
 target_link_libraries(LIBTCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})

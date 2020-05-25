@@ -24,7 +24,7 @@ add_custom_target(copy_data_dir
 add_custom_target(copy_font
         COMMENT "Copy terminal.png to the runtime folder."
         COMMAND cmake -E copy_if_different
-        ${PATH_TO_DATA}
+        ${PATH_TO_TERMINAL_PNG}
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
         )
 

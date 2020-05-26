@@ -504,7 +504,6 @@ Makefile
 config.status
 libtool
 .libs/
-samples_c*
 
 ## Additional rules
 docs/doxyxml/

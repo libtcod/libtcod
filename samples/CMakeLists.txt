@@ -30,15 +30,11 @@ add_executable(samples_c samples_c.c)
 target_link_libraries(samples_c LIBTCOD)
 add_dependencies(samples_c copy_data_dir)
 
-ADD_SUBDIRECTORY(showcase)
-
-add_executable(frost frost/frost.cpp)
-target_link_libraries(frost LIBTCOD)
-add_dependencies(frost copy_font)
-
+ADD_SUBDIRECTORY(frost)
 ADD_SUBDIRECTORY(hmtool)
 ADD_SUBDIRECTORY(navier)
 ADD_SUBDIRECTORY(rad)
 ADD_SUBDIRECTORY(ripples)
+ADD_SUBDIRECTORY(showcase)
 ADD_SUBDIRECTORY(weather)
 ADD_SUBDIRECTORY(worldgen)

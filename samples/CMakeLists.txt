@@ -46,18 +46,7 @@ add_executable(navier navier/main.cpp navier/main.hpp)
 target_link_libraries(navier LIBTCOD)
 add_dependencies(navier copy_font)
 
-add_executable(rad
-    rad/main.cpp
-    rad/bsp_helper.cpp
-    rad/bsp_helper.hpp
-    rad/rad_shader.cpp
-    rad/rad_shader.hpp
-    rad/rad_shader_photon.cpp
-    rad/rad_shader_standard.cpp
-)
-target_link_libraries(rad LIBTCOD)
-add_dependencies(rad copy_font)
-
+ADD_SUBDIRECTORY(rad)
 ADD_SUBDIRECTORY(ripples)
 ADD_SUBDIRECTORY(weather)
 ADD_SUBDIRECTORY(worldgen)

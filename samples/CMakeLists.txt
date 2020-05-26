@@ -58,14 +58,6 @@ add_executable(rad
 target_link_libraries(rad LIBTCOD)
 add_dependencies(rad copy_font)
 
-add_executable(ripples
-    ripples/main.cpp
-    ripples/main.hpp
-    ripples/util_ripples.cpp
-    ripples/util_ripples.hpp
-)
-target_link_libraries(ripples LIBTCOD)
-add_dependencies(ripples copy_font)
-
+ADD_SUBDIRECTORY(ripples)
 ADD_SUBDIRECTORY(weather)
 ADD_SUBDIRECTORY(worldgen)

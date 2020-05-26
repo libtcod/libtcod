@@ -36,12 +36,7 @@ add_executable(frost frost/frost.cpp)
 target_link_libraries(frost LIBTCOD)
 add_dependencies(frost copy_font)
 
-add_executable(hmtool
-    hmtool/hmtool.cpp hmtool/operation.cpp hmtool/operation.hpp
-)
-target_link_libraries(hmtool LIBTCOD)
-add_dependencies(hmtool copy_font)
-
+ADD_SUBDIRECTORY(hmtool)
 ADD_SUBDIRECTORY(navier)
 ADD_SUBDIRECTORY(rad)
 ADD_SUBDIRECTORY(ripples)

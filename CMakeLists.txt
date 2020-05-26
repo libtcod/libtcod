@@ -29,7 +29,10 @@ find_package(ZLIB REQUIRED)
 
 target_link_libraries(LIBTCOD PUBLIC ${SDL2_LIBRARIES})
 target_link_libraries(LIBTCOD PRIVATE ${ZLIB_LIBRARIES})
-TARGET_LINK_LIBRARIES(LIBTCOD PUBLIC ${CMAKE_DL_LIBS})
+
+# The not use of this line throw the follow problem:
+# undefined reference to symbol 'dlclose@@GLIBC_2.2.5'
+TARGET_LINK_LIBRARIES(LIBTCOD PRIVATE ${CMAKE_DL_LIBS})
 
 target_include_directories(LIBTCOD
         PUBLIC

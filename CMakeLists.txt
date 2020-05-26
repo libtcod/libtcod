@@ -27,11 +27,18 @@ target_compile_features(LIBTCOD PUBLIC cxx_std_14)
 find_package(SDL2 REQUIRED)
 find_package(ZLIB REQUIRED)
 
-target_link_libraries(LIBTCOD PRIVATE ${SDL2_LIBRARIES})
+target_link_libraries(LIBTCOD PUBLIC ${SDL2_LIBRARIES})
 target_link_libraries(LIBTCOD PRIVATE ${ZLIB_LIBRARIES})
+TARGET_LINK_LIBRARIES(LIBTCOD PUBLIC ${CMAKE_DL_LIBS})
 
-target_include_directories(LIBTCOD PRIVATE ./vendor)
-TARGET_INCLUDE_DIRECTORIES(LIBTCOD PRIVATE ${SDL2_INCLUDE_DIRS})
+target_include_directories(LIBTCOD
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/libtcod/>
+            $<INSTALL_INTERFACE:src/libtcod/>
+        PRIVATE
+            ./vendor)
+
+TARGET_INCLUDE_DIRECTORIES(LIBTCOD PUBLIC ${SDL2_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 target_link_libraries(LIBTCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})
@@ -99,3 +106,5 @@ install(
 #        ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
 #        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
 #)
+
+ADD_SUBDIRECTORY(samples/)

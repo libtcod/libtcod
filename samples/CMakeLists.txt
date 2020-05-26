@@ -42,10 +42,7 @@ add_executable(hmtool
 target_link_libraries(hmtool LIBTCOD)
 add_dependencies(hmtool copy_font)
 
-add_executable(navier navier/main.cpp navier/main.hpp)
-target_link_libraries(navier LIBTCOD)
-add_dependencies(navier copy_font)
-
+ADD_SUBDIRECTORY(navier)
 ADD_SUBDIRECTORY(rad)
 ADD_SUBDIRECTORY(ripples)
 ADD_SUBDIRECTORY(weather)

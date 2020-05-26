@@ -13,23 +13,6 @@ else ()
 endif ()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
-add_custom_target(copy_data_dir
-        COMMENT "Copy project data directory to the runtime folder."
-        COMMAND cmake -E copy_directory
-        ${CMAKE_SOURCE_DIR}/../data
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/data
-        )
-add_custom_target(copy_font
-        COMMENT "Copy terminal.png to the runtime folder."
-        COMMAND cmake -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/../terminal.png
-        ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
-        )
-
-add_executable(samples_c samples_c.c)
-target_link_libraries(samples_c LIBTCOD)
-add_dependencies(samples_c copy_data_dir)
-
 add_subdirectory(frost)
 add_subdirectory(hmtool)
 add_subdirectory(navier)

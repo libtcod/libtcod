@@ -67,13 +67,5 @@ add_executable(ripples
 target_link_libraries(ripples LIBTCOD)
 add_dependencies(ripples copy_font)
 
-add_executable(weather
-    weather/main.cpp
-    weather/main.hpp
-    weather/util_weather.cpp
-    weather/util_weather.hpp
-)
-target_link_libraries(weather LIBTCOD)
-add_dependencies(weather copy_font)
-
+ADD_SUBDIRECTORY(weather)
 ADD_SUBDIRECTORY(worldgen)

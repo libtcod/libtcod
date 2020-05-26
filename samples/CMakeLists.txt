@@ -76,11 +76,4 @@ add_executable(weather
 target_link_libraries(weather LIBTCOD)
 add_dependencies(weather copy_font)
 
-add_executable(worldgen
-    worldgen/main.cpp
-    worldgen/main.hpp
-    worldgen/util_worldgen.cpp
-    worldgen/util_worldgen.hpp
-)
-target_link_libraries(worldgen LIBTCOD)
-add_dependencies(worldgen copy_font)
+ADD_SUBDIRECTORY(worldgen)

@@ -1,9 +1,9 @@
-cmake_minimum_required (VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+if (DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             CACHE STRING "")
-endif()
+endif ()
 
 file(STRINGS src/libtcod/version.h LIBTCOD_VERSION_LINE REGEX "TCOD_STRVERSION")
 string(REGEX MATCH "TCOD_STRVERSION \"([^\"]+)\"" LIBTCOD_VERSION_LINE ${LIBTCOD_VERSION_LINE})
@@ -32,50 +32,50 @@ target_link_libraries(LIBTCOD PRIVATE ${ZLIB_LIBRARIES})
 
 # The not use of this line throw the follow problem:
 # undefined reference to symbol 'dlclose@@GLIBC_2.2.5'
-TARGET_LINK_LIBRARIES(LIBTCOD PRIVATE ${CMAKE_DL_LIBS})
+target_link_libraries(LIBTCOD PRIVATE ${CMAKE_DL_LIBS})
 
 target_include_directories(LIBTCOD
         PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/libtcod/>
-            $<INSTALL_INTERFACE:src/libtcod/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/libtcod/>
+        $<INSTALL_INTERFACE:src/libtcod/>
         PRIVATE
-            ./vendor)
+        ./vendor)
 
-TARGET_INCLUDE_DIRECTORIES(LIBTCOD PUBLIC ${SDL2_INCLUDE_DIRS})
+target_include_directories(LIBTCOD PUBLIC ${SDL2_INCLUDE_DIRS})
 
 find_package(Threads REQUIRED)
 target_link_libraries(LIBTCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
-if(BUILD_SHARED_LIBS)
+if (BUILD_SHARED_LIBS)
     target_compile_definitions(LIBTCOD PRIVATE LIBTCOD_EXPORTS)
-else()
+else ()
     target_compile_definitions(LIBTCOD PUBLIC LIBTCOD_STATIC)
-endif()
+endif ()
 
-if(MSVC)
+if (MSVC)
     target_compile_definitions(LIBTCOD PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif()
+endif ()
 
 target_compile_definitions(LIBTCOD PRIVATE TCOD_IGNORE_DEPRECATED)
 
 include(src/sources.cmake)
 
-if(IPO_SUPPORTED)
+if (IPO_SUPPORTED)
     set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
-endif()
+endif ()
 
-if(MSVC)
+if (MSVC)
     set_property(TARGET LIBTCOD PROPERTY OUTPUT_NAME libtcod)
-else()
+else ()
     set_property(TARGET LIBTCOD PROPERTY OUTPUT_NAME tcod)
-endif()
+endif ()
 
-if(MSVC)
+if (MSVC)
     target_compile_options(LIBTCOD PRIVATE /W4)
-else()
+else ()
     target_compile_options(LIBTCOD PRIVATE -Wall -Wextra)
-endif()
+endif ()
 
 install(
         TARGETS LIBTCOD
@@ -110,4 +110,4 @@ install(
 #        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
 #)
 
-ADD_SUBDIRECTORY(samples/)
+add_subdirectory(samples/)

@@ -31,7 +31,9 @@
  */
 #include "renderer_sdl2.h"
 
+#include "stdbool.h"
 #include "stdlib.h"
+#include "stdio.h"
 #include "math.h"
 
 #include <SDL.h>
@@ -596,6 +598,39 @@ static TCOD_Error sdl2_recommended_console_size(
   if (rows) { *rows = h / context->atlas->tileset->tile_height; }
   return TCOD_E_OK;
 }
+/**
+    Lists SDL2's video driver status to `log_out[log_length]`.
+
+    The output will always be NULL terminated.
+ */
+static void TCOD_sdl2_debug_video_drivers(int log_length, char* log_out)
+{
+  if (log_length < 1) { return; }
+  log_out[0] = '\0';
+  if (SDL_GetCurrentVideoDriver() != NULL) { return; }
+  int driver_count = SDL_GetNumVideoDrivers();
+  for (int i = 0; i < driver_count; ++i) {
+    if (log_length <= 1) { return; }
+    const char* driver_name = SDL_GetVideoDriver(i);
+    bool is_working;
+    if (SDL_VideoInit(driver_name) == 0) {
+      SDL_VideoQuit();
+      is_working = 1;
+    } else {
+      is_working = 0;
+    }
+    int print_length = snprintf(
+        log_out,
+        log_length,
+        "%sVideo driver '%s' %s.",
+        i == 0 ? "" : "\n",
+        driver_name,
+        is_working ? "is available" : "is not working");
+    if (print_length < 0) { return; }
+    log_out += print_length;
+    log_length -= print_length;
+  }
+}
 struct TCOD_Context* TCOD_renderer_init_sdl2(
     int pixel_width,
     int pixel_height,
@@ -618,7 +653,11 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   }
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
     TCOD_context_delete(context);
-    TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
+    char video_driver_log[512];
+    TCOD_sdl2_debug_video_drivers(
+        (int)sizeof(video_driver_log), video_driver_log);
+    TCOD_set_errorvf(
+        "Could not initialize SDL:\n%s\n%s", SDL_GetError(), video_driver_log);
     return NULL;
   }
   sdl2_data->sdl_subsystems = SDL_INIT_VIDEO;

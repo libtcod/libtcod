@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- Video driver status info has been added to SDL video driver errors.
 
 ## [1.16.0-alpha.12] - 2020-05-22
 ### Changed

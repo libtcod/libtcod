@@ -56,7 +56,7 @@ int TCOD_set_errorf(const char* fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
-  vsnprintf(error_msg_, sizeof(error_msg_) - 1, fmt, ap);
+  vsnprintf(error_msg_, sizeof(error_msg_), fmt, ap);
   va_end(ap);
   return -1;
 }

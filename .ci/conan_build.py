@@ -2,6 +2,8 @@
 """Build script for conan-package-tools:
 https://github.com/conan-io/conan-package-tools
 """
+import os
+
 import subprocess
 
 from cpt.packager import ConanMultiPackager
@@ -14,6 +16,9 @@ except subprocess.CalledProcessError:
     version = "0.0"
 
 if __name__ == "__main__":
+    if 'CI' in os.environ:
+        os.environ["CONAN_SYSREQUIRES_MODE"] = "enabled"
+
     builder = ConanMultiPackager(
         username="hexdecimal",
         channel="conan",

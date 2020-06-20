@@ -83,7 +83,10 @@ TCOD_PUBLIC TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier);
     goal.
  */
 TCOD_PUBLIC TCOD_Error TCOD_frontier_push(
-    struct TCOD_Frontier* frontier, const int* index, int dist, int heuristic);
+    struct TCOD_Frontier*__restrict frontier,
+    const int*__restrict index,
+    int dist,
+    int heuristic);
 /**
     Return the current number of nodes in this frontier.
  */

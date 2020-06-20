@@ -36,9 +36,9 @@
     Render a single tile.
  */
 static void render_tile(
-    const TCOD_Tileset* tileset,
-    const struct TCOD_ConsoleTile* tile,
-    struct TCOD_ColorRGBA* out_rgba,
+    const TCOD_Tileset*__restrict tileset,
+    const struct TCOD_ConsoleTile*__restrict tile,
+    struct TCOD_ColorRGBA*__restrict out_rgba,
     int stride)
 {
   const TCOD_ColorRGBA* graphic = TCOD_tileset_get_tile(tileset, tile->ch);
@@ -64,10 +64,10 @@ static void render_tile(
   }
 }
 TCOD_Error TCOD_tileset_render_to_surface(
-    const TCOD_Tileset* tileset,
-    const TCOD_Console* console,
-    TCOD_Console** cache,
-    struct SDL_Surface** surface_out)
+    const TCOD_Tileset*__restrict tileset,
+    const TCOD_Console*__restrict console,
+    TCOD_Console*__restrict* cache,
+    struct SDL_Surface*__restrict* surface_out)
 {
   if (!tileset) {
     TCOD_set_errorv("Tileset argument must not be NULL.");

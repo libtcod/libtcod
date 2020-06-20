@@ -51,7 +51,10 @@ struct ForegroundVertexBuffer {
 /**
  *  Get the texture coordinates for a codepoint.
  */
-static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* atlas, int ch, struct ForegroundVertexBuffer* out)
+static void get_tex_coord(
+    const struct TCOD_TilesetAtlasOpenGL*__restrict atlas,
+    int ch,
+    struct ForegroundVertexBuffer*__restrict out)
 {
   const struct TCOD_Tileset* tileset = atlas->tileset;
   float tex_tile_width = 1.0f / atlas->texture_size * tileset->tile_width;
@@ -74,7 +77,9 @@ static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* atlas, int ch, s
 /**
  *  Render the background.
  */
-static TCOD_Error render_background(struct TCOD_Context* context, const TCOD_Console* console)
+static TCOD_Error render_background(
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   // Setup background texture.
@@ -151,7 +156,9 @@ static TCOD_Error render_background(struct TCOD_Context* context, const TCOD_Con
 /**
  *  Render the alpha-transparent foreground characters.
  */
-static TCOD_Error render_foreground(struct TCOD_Context* context, const TCOD_Console* console)
+static TCOD_Error render_foreground(
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   // Setup OpenGL.
@@ -226,9 +233,9 @@ static TCOD_Error render_foreground(struct TCOD_Context* context, const TCOD_Con
  *  Render the console onto the screen.
  */
 static TCOD_Error gl1_accumulate(
-    struct TCOD_Context* context,
-    const TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport)
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console,
+    const struct TCOD_ViewportOptions*__restrict viewport)
 {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   glMatrixMode(GL_PROJECTION);
@@ -256,9 +263,9 @@ static TCOD_Error gl1_accumulate(
  *  Clear, render, and swap the screen.
  */
 static TCOD_Error gl1_present(
-    struct TCOD_Context* context,
-    const TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport)
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console,
+    const struct TCOD_ViewportOptions*__restrict viewport)
 {
   if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   struct TCOD_RendererGL1* renderer = context->contextdata;

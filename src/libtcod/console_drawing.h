@@ -87,7 +87,7 @@ TCOD_PUBLIC void TCOD_console_vline(
  *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
 void TCOD_console_put_rgb(
-    TCOD_Console* console,
+    TCOD_Console*__restrict console,
     int x,
     int y,
     int ch,
@@ -102,7 +102,7 @@ void TCOD_console_put_rgb(
  *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
 void TCOD_console_draw_rect_rgb(
-    TCOD_Console* console,
+    TCOD_Console*__restrict console,
     int x,
     int y,
     int width,

@@ -236,9 +236,9 @@ const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
   return tileset->pixels + tileset->tile_length * tile_id;
 }
 TCOD_Error TCOD_tileset_get_tile_(
-    const TCOD_Tileset* tileset,
+    const TCOD_Tileset*__restrict tileset,
     int codepoint,
-    struct TCOD_ColorRGBA* buffer)
+    struct TCOD_ColorRGBA*__restrict buffer)
 {
   if (!tileset) {
     TCOD_set_errorv("Tileset argument must not be NULL.");
@@ -267,7 +267,10 @@ void TCOD_tileset_notify_tile_changed(TCOD_Tileset* tileset, int tile_id)
   }
 }
 static TCOD_Error TCOD_tileset_set_tile_rgba(
-    TCOD_Tileset* tileset, int codepoint, const void* pixels, int stride)
+    TCOD_Tileset*__restrict tileset,
+    int codepoint,
+    const void*__restrict pixels,
+    int stride)
 {
   int tile_id = TCOD_tileset_generate_codepoint(tileset, codepoint);
   if (!pixels) {
@@ -288,9 +291,9 @@ static TCOD_Error TCOD_tileset_set_tile_rgba(
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_tileset_set_tile_(
-    TCOD_Tileset* tileset,
+    TCOD_Tileset*__restrict tileset,
     int codepoint,
-    const struct TCOD_ColorRGBA* buffer)
+    const struct TCOD_ColorRGBA*__restrict buffer)
 {
   if (!tileset) {
     TCOD_set_errorv("Tileset argument must not be NULL.");
@@ -300,8 +303,11 @@ TCOD_Error TCOD_tileset_set_tile_(
                                     sizeof(*buffer) * tileset->tile_width);
 }
 static void upload_tile_by_id_normalized(
-    TCOD_Tileset* tileset, int tile_id, const void* pixels, int stride,
-    const struct TCOD_ColorRGBA* color_key)
+    TCOD_Tileset*__restrict tileset,
+    int tile_id,
+    const void*__restrict pixels,
+    int stride,
+    const struct TCOD_ColorRGBA*__restrict color_key)
 {
   // Analyse this tiles traits.
   bool has_color = false;
@@ -335,7 +341,7 @@ static void upload_tile_by_id_normalized(
   }
 }
 TCOD_Tileset* TCOD_tileset_load(
-  const char* filename, int columns, int rows, int n, int* charmap)
+  const char* filename, int columns, int rows, int n, int*__restrict charmap)
 {
   int font_tiles = columns * rows;
   struct TCOD_ColorRGBA* font;

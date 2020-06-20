@@ -79,12 +79,12 @@ int bbox_height(const struct BBox* bbox)
   return bbox->yMax - bbox->yMin;
 }
 struct FontLoader {
-  const stbtt_fontinfo* info;
+  const stbtt_fontinfo*__restrict info;
   float scale;
   struct BBox font_bbox;
   struct TCOD_Tileset* tileset;
   struct TCOD_ColorRGBA* tile;
-  uint8_t* tile_alpha;
+  uint8_t*__restrict tile_alpha;
   int ascent;
   int descent;
   int line_gap;
@@ -106,8 +106,11 @@ static struct BBox get_glyph_bbox(const stbtt_fontinfo* font_info,
 /**
  *  Return the shift needed to align this glyph with the current tile size.
  */
-void get_glyph_shift(const struct FontLoader* loader,
-                     int glyph, float* shift_x, float* shift_y)
+void get_glyph_shift(
+    const struct FontLoader*__restrict loader,
+    int glyph,
+    float*__restrict shift_x,
+    float*__restrict shift_y)
 {
   struct BBox bbox = get_glyph_bbox(loader->info, glyph, 1.0f);
   *shift_x = (loader->tileset->tile_width - bbox_width(&bbox) * loader->scale)
@@ -121,7 +124,7 @@ void get_glyph_shift(const struct FontLoader* loader,
 /**
  *  Render the tile for a specific glyph.
  */
-void render_glyph(const struct FontLoader* loader, int glyph)
+void render_glyph(const struct FontLoader*__restrict loader, int glyph)
 {
   float shift_x;
   float shift_y;

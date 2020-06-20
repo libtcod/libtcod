@@ -44,13 +44,13 @@ extern "C" {
 struct TCOD_mipmap_{
   int width, height;
   float fwidth, fheight;
-  TCOD_ColorRGB* buf;
+  TCOD_ColorRGB*__restrict buf;
   bool dirty;
 };
 
 typedef struct TCOD_Image {
   int nb_mipmaps;
-  struct TCOD_mipmap_* mipmaps;
+  struct TCOD_mipmap_*__restrict mipmaps;
   TCOD_ColorRGB key_color;
   bool has_key_color;
 } TCOD_Image;
@@ -97,7 +97,8 @@ TCODLIB_API void TCOD_image_blit_rect(
     TCOD_Image* image, TCOD_console_t console,
     int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag);
 TCODLIB_API void TCOD_image_blit_2x(
-    const TCOD_Image* image, TCOD_console_t dest,
+    const TCOD_Image*__restrict image,
+    TCOD_Console*__restrict dest,
     int dx, int dy, int sx, int sy, int w, int h);
 TCODLIB_API void TCOD_image_delete(TCOD_Image* image);
 TCODLIB_API void TCOD_image_set_key_color(TCOD_Image* image,

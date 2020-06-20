@@ -48,7 +48,7 @@ struct TCOD_HeapNode {
 };
 
 struct TCOD_Heap {
-  struct TCOD_HeapNode* heap;
+  struct TCOD_HeapNode*__restrict heap;
   int size;
   int capacity;
   size_t node_size;
@@ -64,8 +64,11 @@ TCOD_PUBLIC void TCOD_heap_uninit(struct TCOD_Heap* heap);
 TCOD_PUBLIC void TCOD_heap_clear(struct TCOD_Heap* heap);
 
 TCOD_PUBLIC int TCOD_minheap_push(
-    struct TCOD_Heap* minheap, int priority, const void* data);
-TCOD_PUBLIC void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out);
+    struct TCOD_Heap*__restrict minheap,
+    int priority,
+    const void*__restrict data);
+TCOD_PUBLIC void TCOD_minheap_pop(
+    struct TCOD_Heap*__restrict minheap, void*__restrict out);
 TCOD_PUBLIC void TCOD_minheap_heapify(struct TCOD_Heap* minheap);
 #ifdef __cplusplus
 } // extern "C"

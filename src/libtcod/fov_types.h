@@ -47,7 +47,7 @@ typedef struct TCOD_Map {
   int width;
   int height;
   int nbcells;
-  struct TCOD_MapCell *cells;
+  struct TCOD_MapCell*__restrict cells;
 } TCOD_Map;
 typedef TCOD_Map *TCOD_map_t;
 /**

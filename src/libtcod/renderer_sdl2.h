@@ -69,9 +69,9 @@ typedef struct TCOD_TilesetAtlasSDL2 TCOD_TilesetAtlasSDL2;
 struct TCOD_RendererSDL2 {
   struct SDL_Window* window;
   struct SDL_Renderer* renderer;
-  struct TCOD_TilesetAtlasSDL2* atlas;
-  struct TCOD_Console* cache_console;
-  struct SDL_Texture* cache_texture;
+  struct TCOD_TilesetAtlasSDL2*__restrict atlas;
+  struct TCOD_Console*__restrict cache_console;
+  struct SDL_Texture*__restrict cache_texture;
   uint32_t sdl_subsystems;
   // Mouse cursor transform values of the last viewport used.
   double last_offset_x;
@@ -143,10 +143,10 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture(
-    const struct TCOD_TilesetAtlasSDL2* atlas,
-    const struct TCOD_Console* console,
-    struct TCOD_Console** cache,
-    struct SDL_Texture** target);
+    const struct TCOD_TilesetAtlasSDL2*__restrict atlas,
+    const struct TCOD_Console*__restrict console,
+    struct TCOD_Console*__restrict* cache,
+    struct SDL_Texture*__restrict* target);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

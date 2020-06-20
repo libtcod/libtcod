@@ -195,7 +195,9 @@ static TCOD_Error resize_textures(
  *  Get the texture coordinates for a codepoint.
  */
 static void get_tex_coord(
-    const struct TCOD_TilesetAtlasOpenGL* atlas, int ch, uint8_t* out)
+    const struct TCOD_TilesetAtlasOpenGL*__restrict atlas,
+    int ch,
+    uint8_t*__restrict out)
 {
   const struct TCOD_Tileset* tileset = atlas->tileset;
   int tile_id = 0;
@@ -211,9 +213,9 @@ static void get_tex_coord(
 }
 TCOD_NODISCARD
 static TCOD_Error render(
-    struct TCOD_RendererGL2* renderer,
-    const TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport)
+    struct TCOD_RendererGL2*__restrict renderer,
+    const TCOD_Console*__restrict console,
+    const struct TCOD_ViewportOptions*__restrict viewport)
 {
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
@@ -328,9 +330,9 @@ static TCOD_Error render(
  *  Render the console onto the screen.
  */
 static TCOD_Error gl2_accumulate(
-    struct TCOD_Context* context,
-    const TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport)
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console,
+    const struct TCOD_ViewportOptions*__restrict viewport)
 {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   TCOD_Error err;
@@ -348,9 +350,9 @@ static TCOD_Error gl2_accumulate(
  *  Clear, render, and swap the screen.
  */
 static TCOD_Error gl2_present(
-    struct TCOD_Context* context,
-    const TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport)
+    struct TCOD_Context*__restrict context,
+    const TCOD_Console*__restrict console,
+    const struct TCOD_ViewportOptions*__restrict viewport)
 {
   if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
   struct TCOD_RendererGL2* renderer = context->contextdata;

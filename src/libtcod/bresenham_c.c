@@ -86,7 +86,11 @@ void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_da
  *  The starting point is excluded by this function.
  *  After the ending point is reached, the next call will return true.
  */
-bool TCOD_line_step_mt(int *xCur, int *yCur, TCOD_bresenham_data_t *data) {
+bool TCOD_line_step_mt(
+    int*__restrict xCur,
+    int*__restrict yCur,
+    TCOD_bresenham_data_t*__restrict data)
+{
 	if ( data->stepx*data->deltax > data->stepy*data->deltay ) {
 		if ( data->origx == data->destx ) return true;
 		data->origx+=data->stepx;
@@ -169,7 +173,7 @@ void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
  *    Use :any:`TCOD_line_step_mt` instead.
  *  \endverbatim
  */
-bool TCOD_line_step(int *xCur, int *yCur) {
+bool TCOD_line_step(int *__restrict xCur, int *__restrict yCur) {
 	return TCOD_line_step_mt(xCur,yCur,&bresenham_data);
 }
 /**

@@ -36,8 +36,9 @@
 /**
  *  Clamp the given values to fit within a console.
  */
-static void clamp_rect_(int cx, int cy, int cw, int ch,
-                        int* x, int* y, int* w, int* h)
+static void clamp_rect_(
+    int cx, int cy, int cw, int ch,
+    int*__restrict x, int*__restrict y, int*__restrict w, int*__restrict h)
 {
   if (*x + *w > cw) { *w = cw - *x; }
   if (*y + *h > ch) { *h = ch - *y; }
@@ -51,7 +52,7 @@ static void clamp_rect_(int cx, int cy, int cw, int ch,
   }
 }
 void TCOD_console_put_rgb(
-    TCOD_Console* console,
+    TCOD_Console*__restrict console,
     int x,
     int y,
     int ch,
@@ -68,7 +69,7 @@ void TCOD_console_put_rgb(
   if (bg) { TCOD_console_set_char_background(console, x, y, *bg, flag); }
 }
 void TCOD_console_draw_rect_rgb(
-    TCOD_Console* console,
+    TCOD_Console*__restrict console,
     int x,
     int y,
     int width,

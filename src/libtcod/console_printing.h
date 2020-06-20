@@ -100,7 +100,7 @@ TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error TCOD_console_printf(
-    TCOD_Console* con, int x, int y, const char *fmt, ...);
+    TCOD_Console*__restrict con, int x, int y, const char *fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -111,7 +111,7 @@ TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error TCOD_console_printf(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
-    TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag,
+    TCOD_Console*__restrict con, int x, int y, TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment, const char *fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
@@ -123,7 +123,8 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
-    TCOD_Console* con, int x, int y, int w, int h, const char *fmt, ...);
+    TCOD_Console*__restrict con,
+    int x, int y, int w, int h, const char *fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -134,7 +135,7 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
-    TCOD_Console* con,int x, int y, int w, int h,
+    TCOD_Console*__restrict con,int x, int y, int w, int h,
     TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
 /**
     Print a framed and optionally titled region to a console, using default
@@ -150,7 +151,7 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(8, 9)
-TCOD_Error TCOD_console_printf_frame(struct TCOD_Console *con,
+TCOD_Error TCOD_console_printf_frame(struct TCOD_Console*__restrict con,
                                int x, int y, int w, int h, int empty,
                                TCOD_bkgnd_flag_t flag, const char *fmt, ...);
 /**
@@ -168,7 +169,7 @@ int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
                                      const char *fmt, ...);
 
 TCOD_PUBLIC TCOD_Error TCOD_console_printn(
-    TCOD_Console* con,
+    TCOD_Console*__restrict con,
     int x,
     int y,
     int n,
@@ -178,7 +179,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
 TCOD_PUBLIC int TCOD_console_printn_rect(
-    TCOD_Console *con,
+    TCOD_Console*__restrict con,
     int x,
     int y,
     int width,
@@ -190,19 +191,19 @@ TCOD_PUBLIC int TCOD_console_printn_rect(
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
 TCOD_PUBLIC int TCOD_console_get_height_rect_n(
-    TCOD_Console *console,
+    TCOD_Console*__restrict console,
     int x,
     int y,
     int width,
     int height,
     int n,
-    const char* str);
+    const char*__restrict str);
 TCOD_PUBLIC int TCOD_console_get_height_rect_wn(
     int width,
     int n,
     const char* str);
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
-    struct TCOD_Console *con,
+    struct TCOD_Console*__restrict con,
     int x,
     int y,
     int width,

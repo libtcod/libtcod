@@ -61,10 +61,10 @@ extern "C" {
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
-    const TCOD_Tileset* tileset,
-    const TCOD_Console* console,
-    TCOD_Console** cache,
-    struct SDL_Surface** surface_out);
+    const TCOD_Tileset*__restrict tileset,
+    const TCOD_Console*__restrict console,
+    TCOD_Console*__restrict* cache,
+    struct SDL_Surface*__restrict* surface_out);
 #ifdef __cplusplus
 } // extern "C"
 #endif // __cplusplus

@@ -388,7 +388,8 @@ TCOD_Image* TCOD_image_from_console(const TCOD_Console* console)
   TCOD_image_refresh_console(ret, console);
   return ret;
 }
-void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
+void TCOD_image_refresh_console(
+    TCOD_Image*__restrict image, const TCOD_Console*__restrict console)
 {
   if (!image) { return; }
   if (!TCOD_ctx.tileset) { return; }
@@ -399,7 +400,7 @@ void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console)
       // Get the console index and tileset graphic.
       int console_i = console_y * console->w + console_x;
       const struct TCOD_ConsoleTile* tile = &console->tiles[console_i];
-      const TCOD_ColorRGBA* graphic =
+      const TCOD_ColorRGBA*__restrict graphic =
           TCOD_tileset_get_tile(TCOD_ctx.tileset, tile->ch);
       for (int y = 0; y < TCOD_ctx.tileset->tile_height; ++y) {
         for (int x = 0; x < TCOD_ctx.tileset->tile_width; ++x) {
@@ -683,7 +684,7 @@ int rgbdist(const TCOD_color_t *c1, const TCOD_color_t *c2)
 }
 
 void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
-                int* nbCols, int* ascii) {
+                int*__restrict nbCols, int*__restrict ascii) {
   /* adapted from Jeff Lait's code posted on r.g.r.d */
   int flag = 0;
   /*
@@ -783,8 +784,10 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2],
   *ascii = flagToAscii[flag];
 }
 
-void TCOD_image_blit_2x(const TCOD_Image* image, TCOD_Console* con,
-      int dx, int dy, int sx, int sy, int w, int h)
+void TCOD_image_blit_2x(
+    const TCOD_Image*__restrict image,
+    TCOD_Console*__restrict con,
+    int dx, int dy, int sx, int sy, int w, int h)
 {
   if (!image) { return; }
   con = TCOD_console_validate_(con);

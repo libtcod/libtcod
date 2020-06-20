@@ -41,7 +41,7 @@ extern "C" {
 #endif
 typedef struct {
 	int w,h;
-	float *values;
+	float*__restrict values;
 } TCOD_heightmap_t;
 
 TCODLIB_API TCOD_heightmap_t *TCOD_heightmap_new(int w,int h);

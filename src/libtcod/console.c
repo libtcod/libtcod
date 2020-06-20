@@ -173,11 +173,11 @@ static struct TCOD_ColorRGBA TCOD_console_blit_lerp_(
  *  Return the tile for a blit operation between src and dst.
  */
 static struct TCOD_ConsoleTile TCOD_console_blit_cell_(
-    const struct TCOD_ConsoleTile* src,
-    const struct TCOD_ConsoleTile* dst,
+    const struct TCOD_ConsoleTile*__restrict src,
+    const struct TCOD_ConsoleTile*__restrict dst,
     float fg_alpha,
     float bg_alpha,
-    const struct TCOD_ColorRGB* key_color)
+    const struct TCOD_ColorRGB*__restrict key_color)
 {
   if (key_color && key_color->r == src->bg.r
       && key_color->g == src->bg.g && key_color->b == src->bg.b) {
@@ -211,12 +211,12 @@ static struct TCOD_ConsoleTile TCOD_console_blit_cell_(
   return out;
 }
 void TCOD_console_blit_key_color(
-    const TCOD_Console* src,
+    const TCOD_Console*__restrict src,
     int xSrc,
     int ySrc,
     int wSrc,
     int hSrc,
-    TCOD_Console* dst,
+    TCOD_Console*__restrict dst,
     int xDst,
     int yDst,
     float foreground_alpha,
@@ -249,12 +249,12 @@ void TCOD_console_blit_key_color(
   }
 }
 void TCOD_console_blit(
-    const TCOD_Console* src,
+    const TCOD_Console*__restrict src,
     int xSrc,
     int ySrc,
     int wSrc,
     int hSrc,
-    TCOD_Console* dst,
+    TCOD_Console*__restrict dst,
     int xDst,
     int yDst,
     float foreground_alpha,

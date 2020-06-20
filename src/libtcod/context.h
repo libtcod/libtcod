@@ -49,7 +49,7 @@ struct SDL_Rect;
  */
 struct TCOD_Context {
   int type;
-  void* contextdata;
+  void*__restrict contextdata;
   void (*destructor_)(struct TCOD_Context* self);
   TCOD_Error (*present_)(
       struct TCOD_Context* self,

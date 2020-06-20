@@ -83,7 +83,8 @@ static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context)
 /**
  *  Convert pixel coordinates to tile coordinates.
  */
-static void gl_pixel_to_tile(struct TCOD_Context* self, double* x, double* y)
+static void gl_pixel_to_tile(
+    struct TCOD_Context* self, double*__restrict x, double*__restrict y)
 {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
@@ -103,7 +104,7 @@ static TCOD_Error gl_set_tileset(
   return TCOD_E_OK;
 }
 static TCOD_Error gl_recommended_console_size(
-    struct TCOD_Context* self, int* columns, int* rows)
+    struct TCOD_Context* self, int*__restrict columns, int*__restrict rows)
 {
   struct TCOD_RendererGLCommon* context = self->contextdata;
   int w;

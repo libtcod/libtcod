@@ -51,9 +51,9 @@ struct TCOD_Tileset {
   int tile_length;
   int tiles_capacity;
   int tiles_count;
-  struct TCOD_ColorRGBA* pixels;
+  struct TCOD_ColorRGBA*__restrict pixels;
   int character_map_length;
-  int* character_map;
+  int*__restrict character_map;
   struct TCOD_TilesetObserver* observer_list;
   int virtual_columns;
   volatile int ref_count;
@@ -101,9 +101,9 @@ TCOD_PUBLIC int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Error TCOD_tileset_get_tile_(
-    const TCOD_Tileset* tileset,
+    const TCOD_Tileset*__restrict tileset,
     int codepoint,
-    struct TCOD_ColorRGBA* buffer);
+    struct TCOD_ColorRGBA*__restrict buffer);
 /**
  *  Upload a tile from a pixel buffer into this tileset.
  *
@@ -116,15 +116,15 @@ TCOD_PUBLIC TCOD_Error TCOD_tileset_get_tile_(
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Error TCOD_tileset_set_tile_(
-    TCOD_Tileset* tileset,
+    TCOD_Tileset*__restrict tileset,
     int codepoint,
-    const struct TCOD_ColorRGBA* buffer);
+    const struct TCOD_ColorRGBA*__restrict buffer);
 /**
  *  Load a font from a tilesheet.
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
-  const char* filename, int columns, int rows, int n, int* charmap);
+  const char* filename, int columns, int rows, int n, int*__restrict charmap);
 /**
  *  Assign a codepoint to an existing tile based on its tile ID.
  *

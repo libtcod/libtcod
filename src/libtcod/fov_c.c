@@ -52,7 +52,10 @@ struct TCOD_Map *TCOD_map_new(int width, int height) {
  *
  *  `dest` will be resized to match `source` if necessary.
  */
-void TCOD_map_copy(const struct TCOD_Map *source, struct TCOD_Map *dest) {
+void TCOD_map_copy(
+    const struct TCOD_Map*__restrict source,
+    struct TCOD_Map*__restrict dest)
+{
   if (!source || !dest) { return; }
   if (dest->nbcells != source->nbcells) {
     free(dest->cells);

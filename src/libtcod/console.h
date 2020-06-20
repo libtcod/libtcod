@@ -174,7 +174,7 @@ struct TCOD_Console {
   /** Console width and height (in characters, not pixels.) */
   int w,h;
   /** A contiguous array of console tiles. */
-  struct TCOD_ConsoleTile* tiles;
+  struct TCOD_ConsoleTile*__restrict tiles;
   /** Default background operator for print & print_rect functions. */
   TCOD_bkgnd_flag_t bkgnd_flag;
   /** Default alignment for print & print_rect functions. */
@@ -251,23 +251,23 @@ TCOD_PUBLIC void TCOD_console_set_key_color(
  *  \endrst
  */
 TCOD_PUBLIC void TCOD_console_blit(
-    const TCOD_Console* src,
+    const TCOD_Console*__restrict src,
     int xSrc,
     int ySrc,
     int wSrc,
     int hSrc,
-    TCOD_Console* dst,
+    TCOD_Console*__restrict dst,
     int xDst,
     int yDst,
     float foreground_alpha,
     float background_alpha);
 TCOD_PUBLIC void TCOD_console_blit_key_color(
-    const TCOD_Console* src,
+    const TCOD_Console*__restrict src,
     int xSrc,
     int ySrc,
     int wSrc,
     int hSrc,
-    TCOD_Console* dst,
+    TCOD_Console*__restrict dst,
     int xDst,
     int yDst,
     float foreground_alpha,

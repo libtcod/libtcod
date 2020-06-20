@@ -73,7 +73,10 @@ TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier)
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_frontier_push(
-    struct TCOD_Frontier* frontier, const int* index, int dist, int heuristic)
+    struct TCOD_Frontier*__restrict frontier,
+    const int*__restrict index,
+    int dist,
+    int heuristic)
 {
   if (!frontier) {
     TCOD_set_errorv("Pointer argument must not be NULL.");

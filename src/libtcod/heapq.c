@@ -79,7 +79,10 @@ static void TCOD_heap_swap(struct TCOD_Heap* heap, int lhs, int rhs)
 }
 
 static void TCOD_heap_set(
-    struct TCOD_Heap* heap, int index, int priority, const void* data)
+    struct TCOD_Heap*__restrict heap,
+    int index,
+    int priority,
+    const void*__restrict data)
 {
   struct TCOD_HeapNode* node = TCOD_heap_get(heap, index);
   node->priority = priority;
@@ -129,7 +132,7 @@ void TCOD_minheap_heapify(struct TCOD_Heap* minheap)
     TCOD_TCOD_minheap_heapify_down(minheap, i);
   }
 }
-void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out)
+void TCOD_minheap_pop(struct TCOD_Heap*__restrict minheap, void*__restrict out)
 {
   if (minheap->size == 0) { return; }
   if (out) {
@@ -141,7 +144,9 @@ void TCOD_minheap_pop(struct TCOD_Heap* minheap, void* out)
 }
 
 int TCOD_minheap_push(
-    struct TCOD_Heap* minheap, int priority, const void* data)
+    struct TCOD_Heap*__restrict minheap,
+    int priority,
+    const void*__restrict data)
 {
   if (minheap->size == minheap->capacity) {
     int new_capacity = (

@@ -34,14 +34,14 @@
 
 #ifdef __cplusplus
 #include <string>
-#endif // __cplusplus
+#endif  // __cplusplus
 
 #include "config.h"
 #include "tileset.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
     Load a BDF font from a file path.
 
@@ -54,8 +54,7 @@ extern "C" {
     .. versionadded:: 1.16
     \endrst
  */
-TCODLIB_API TCOD_NODISCARD
-TCOD_Tileset* TCOD_load_bdf(const char* path);
+TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
 /**
     Load a BDF font from memory.
 
@@ -67,10 +66,9 @@ TCOD_Tileset* TCOD_load_bdf(const char* path);
     .. versionadded:: 1.16
     \endrst
  */
-TCODLIB_API TCOD_NODISCARD
-TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
+TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 /**
     Load a Tileset from a BDF font file.
@@ -78,12 +76,13 @@ namespace tcod {
     Will throw on an error.
  */
 TCOD_NODISCARD
-inline auto load_bdf(const std::string& path) -> TilesetPtr
-{
-  TilesetPtr tileset {TCOD_load_bdf(path.c_str())};
-  if (!tileset) { throw std::runtime_error(TCOD_get_error()); }
+inline auto load_bdf(const std::string& path) -> TilesetPtr {
+  TilesetPtr tileset{TCOD_load_bdf(path.c_str())};
+  if (!tileset) {
+    throw std::runtime_error(TCOD_get_error());
+  }
   return tileset;
 }
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_TILESET_BDF_H_
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_TILESET_BDF_H_

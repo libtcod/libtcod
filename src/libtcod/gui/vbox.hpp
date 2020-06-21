@@ -33,10 +33,11 @@
 #define TCOD_GUI_VBOX_HPP
 #include "container.hpp"
 class TCODLIB_GUI_API VBox : public Container {
-public :
-	VBox(int x, int y, int padding) : Container(x,y,0,0),padding(padding) {}
-	void computeSize();
-protected :
-	int padding;
+ public:
+  VBox(int x, int y, int padding) : Container(x, y, 0, 0), padding(padding) {}
+  void computeSize();
+
+ protected:
+  int padding;
 };
 #endif /* TCOD_GUI_VBOX_HPP */

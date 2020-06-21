@@ -34,9 +34,9 @@
 
 #ifdef __cplusplus
 #include <exception>
-#include <string>
 #include <stdexcept>
-#endif // __cplusplus
+#include <string>
+#endif  // __cplusplus
 
 #include "config.h"
 #include "version.h"
@@ -79,7 +79,7 @@ typedef enum TCOD_Error {
 } TCOD_Error;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
  *  Return the last error message.  If there is no error then the string will
  *  have a length of zero.
@@ -118,41 +118,33 @@ TCODLIB_API void TCOD_clear_error(void);
  *
  *  Used internally.
  */
-#define TCOD_set_errorv(msg) \
-    TCOD_set_errorf("%s:%i\n%s", \
-                    TCOD_STRVERSIONNAME " " __FILE__, __LINE__, (msg))
+#define TCOD_set_errorv(msg) TCOD_set_errorf("%s:%i\n%s", TCOD_STRVERSIONNAME " " __FILE__, __LINE__, (msg))
 /**
  *  Format an error with version, file, and line info added to the output.
  *
  *  Used internally.
  */
 #define TCOD_set_errorvf(fmt, ...) \
-    TCOD_set_errorf("%s:%i\n" fmt, \
-                    TCOD_STRVERSIONNAME " " __FILE__, __LINE__, __VA_ARGS__)
+  TCOD_set_errorf("%s:%i\n" fmt, TCOD_STRVERSIONNAME " " __FILE__, __LINE__, __VA_ARGS__)
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 /**
  *  Set an error message and return a relevant error code, usually -1.
  *
  *  Used internally.
  */
-inline TCOD_Error set_error(const std::string& msg)
-{
-  return TCOD_set_errorv(msg.c_str());
-}
-inline TCOD_Error set_error(const std::exception& e)
-{
-  return TCOD_set_errorv(e.what());
-}
+inline TCOD_Error set_error(const std::string& msg) { return TCOD_set_errorv(msg.c_str()); }
+inline TCOD_Error set_error(const std::exception& e) { return TCOD_set_errorv(e.what()); }
 /**
  *  Check and throw error messages.
  *
  *  Used internally.
  */
-inline int check_throw_error(int error)
-{
-  if (error >= 0) { return error; }
+inline int check_throw_error(int error) {
+  if (error >= 0) {
+    return error;
+  }
   switch (error) {
     case TCOD_E_ERROR:
     default:
@@ -166,6 +158,6 @@ inline int check_throw_error(int error)
 inline TCOD_Error check_throw_error(TCOD_Error error) {
   return static_cast<TCOD_Error>(check_throw_error(static_cast<int>(error)));
 }
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_ENGINE_ERROR_H_
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_ENGINE_ERROR_H_

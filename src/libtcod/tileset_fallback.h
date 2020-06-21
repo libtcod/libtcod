@@ -33,33 +33,28 @@
 #define LIBTCOD_TILESET_FALLBACK_H_
 #ifdef __cplusplus
 #include <array>
-#endif // __cplusplus
+#endif  // __cplusplus
 #include "config.h"
-#include "tileset.h"
 #include "error.h"
+#include "tileset.h"
 /**
  *  Try to return a fall-back Tileset, may return NULL.
  *
  *  Used when one is needed, but was not provided by the user.
  */
-TCODLIB_CAPI TCOD_NODISCARD
-TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
+TCODLIB_CAPI TCOD_NODISCARD TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height);
 #ifdef __cplusplus
 namespace tcod {
 namespace tileset {
 TCOD_NODISCARD
-inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12})
--> TilesetPtr
-{
-  TilesetPtr tileset{
-      TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))
-  };
+inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12}) -> TilesetPtr {
+  TilesetPtr tileset{TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))};
   if (!tileset) {
     throw std::runtime_error(TCOD_get_error());
   }
   return tileset;
 }
-} // namespace tileset
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_TILESET_FALLBACK_H_
+}  // namespace tileset
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_TILESET_FALLBACK_H_

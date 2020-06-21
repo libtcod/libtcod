@@ -33,20 +33,19 @@
 #define _GUI_HPP
 
 #include "../libtcod.hpp"
-
-#include "widget.hpp"
 #include "button.hpp"
-#include "radiobutton.hpp"
 #include "container.hpp"
+#include "flatlist.hpp"
+#include "hbox.hpp"
+#include "image.hpp"
 #include "label.hpp"
+#include "radiobutton.hpp"
+#include "slider.hpp"
 #include "statusbar.hpp"
 #include "textbox.hpp"
-#include "flatlist.hpp"
-#include "slider.hpp"
 #include "togglebutton.hpp"
 #include "toolbar.hpp"
 #include "vbox.hpp"
-#include "hbox.hpp"
-#include "image.hpp"
+#include "widget.hpp"
 
 #endif

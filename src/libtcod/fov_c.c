@@ -29,17 +29,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "fov.h"
-
 #include <stdlib.h>
 #include <string.h>
 
+#include "fov.h"
 #include "libtcod_int.h"
 /**
  *  Return a new TCOD_Map with `width` and `height`.
  */
-struct TCOD_Map *TCOD_map_new(int width, int height) {
-  if (width <= 0 || height <= 0) { return NULL; }
+struct TCOD_Map* TCOD_map_new(int width, int height) {
+  if (width <= 0 || height <= 0) {
+    return NULL;
+  }
   struct TCOD_Map* map = calloc(sizeof(*map), 1);
   map->width = width;
   map->height = height;
@@ -52,11 +53,10 @@ struct TCOD_Map *TCOD_map_new(int width, int height) {
  *
  *  `dest` will be resized to match `source` if necessary.
  */
-void TCOD_map_copy(
-    const struct TCOD_Map*__restrict source,
-    struct TCOD_Map*__restrict dest)
-{
-  if (!source || !dest) { return; }
+void TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __restrict dest) {
+  if (!source || !dest) {
+    return;
+  }
   if (dest->nbcells != source->nbcells) {
     free(dest->cells);
     dest->cells = malloc(sizeof(*dest->cells) * dest->nbcells);
@@ -71,9 +71,11 @@ void TCOD_map_copy(
  *
  *  This call also zeroes out the field of view flag.
  */
-void TCOD_map_clear(struct TCOD_Map *map, bool transparent, bool walkable) {
+void TCOD_map_clear(struct TCOD_Map* map, bool transparent, bool walkable) {
   int i;
-  if (!map) { return; }
+  if (!map) {
+    return;
+  }
   for (i = 0; i < map->nbcells; ++i) {
     map->cells[i].transparent = transparent;
     map->cells[i].walkable = walkable;
@@ -85,23 +87,26 @@ void TCOD_map_clear(struct TCOD_Map *map, bool transparent, bool walkable) {
  *
  *  Returns false if `map` is NULL.
  */
-static int TCOD_map_in_bounds(const struct TCOD_Map *map, int x, int y) {
+static int TCOD_map_in_bounds(const struct TCOD_Map* map, int x, int y) {
   return map && 0 <= x && x < map->width && 0 <= y && y < map->height;
 }
 /**
  *  Set the properties of a single cell.
  */
-void TCOD_map_set_properties(struct TCOD_Map *map, int x, int y,
-                             bool is_transparent, bool is_walkable) {
-  if (!TCOD_map_in_bounds(map, x, y)) { return; }
+void TCOD_map_set_properties(struct TCOD_Map* map, int x, int y, bool is_transparent, bool is_walkable) {
+  if (!TCOD_map_in_bounds(map, x, y)) {
+    return;
+  }
   map->cells[x + y * map->width].transparent = is_transparent;
   map->cells[x + y * map->width].walkable = is_walkable;
 }
 /**
  *  Free all memory belonging to `map`.
  */
-void TCOD_map_delete(struct TCOD_Map *map) {
-  if (!map) { return; }
+void TCOD_map_delete(struct TCOD_Map* map) {
+  if (!map) {
+    return;
+  }
   free(map->cells);
   free(map);
 }
@@ -123,23 +128,23 @@ void TCOD_map_delete(struct TCOD_Map *map) {
  *  calling :any:`TCOD_map_is_in_fov`.
  *  \endrst
  */
-void TCOD_map_compute_fov(struct TCOD_Map *map, int player_x, int player_y,
-                          int max_radius, bool light_walls,
-                          TCOD_fov_algorithm_t algo) {
-  if (!map) { return; }
-  if (!TCOD_map_in_bounds(map, player_x, player_y)) { return; }
-  switch(algo) {
+void TCOD_map_compute_fov(
+    struct TCOD_Map* map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo) {
+  if (!map) {
+    return;
+  }
+  if (!TCOD_map_in_bounds(map, player_x, player_y)) {
+    return;
+  }
+  switch (algo) {
     case FOV_BASIC:
-      TCOD_map_compute_fov_circular_raycasting(map, player_x, player_y,
-                                               max_radius, light_walls);
+      TCOD_map_compute_fov_circular_raycasting(map, player_x, player_y, max_radius, light_walls);
       return;
     case FOV_DIAMOND:
-      TCOD_map_compute_fov_diamond_raycasting(map, player_x, player_y,
-                                              max_radius, light_walls);
+      TCOD_map_compute_fov_diamond_raycasting(map, player_x, player_y, max_radius, light_walls);
       return;
     case FOV_SHADOW:
-      TCOD_map_compute_fov_recursive_shadowcasting(map, player_x, player_y,
-                                                   max_radius, light_walls);
+      TCOD_map_compute_fov_recursive_shadowcasting(map, player_x, player_y, max_radius, light_walls);
       return;
     case FOV_PERMISSIVE_0:
     case FOV_PERMISSIVE_1:
@@ -150,62 +155,75 @@ void TCOD_map_compute_fov(struct TCOD_Map *map, int player_x, int player_y,
     case FOV_PERMISSIVE_6:
     case FOV_PERMISSIVE_7:
     case FOV_PERMISSIVE_8:
-      TCOD_map_compute_fov_permissive2(map, player_x, player_y, max_radius,
-                                       light_walls, algo - FOV_PERMISSIVE_0);
+      TCOD_map_compute_fov_permissive2(map, player_x, player_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
       return;
     case FOV_RESTRICTIVE:
-      TCOD_map_compute_fov_restrictive_shadowcasting(map, player_x, player_y,
-                                                     max_radius, light_walls);
+      TCOD_map_compute_fov_restrictive_shadowcasting(map, player_x, player_y, max_radius, light_walls);
       return;
-    default: return;
+    default:
+      return;
   }
 }
 /**
  *  Return true if this cell was touched by the current field-of-view.
  */
-bool TCOD_map_is_in_fov(const struct TCOD_Map *map, int x, int y) {
-  if (!TCOD_map_in_bounds(map, x, y)) { return 0; }
+bool TCOD_map_is_in_fov(const struct TCOD_Map* map, int x, int y) {
+  if (!TCOD_map_in_bounds(map, x, y)) {
+    return 0;
+  }
   return map->cells[x + y * map->width].fov;
 }
 /**
  *  Set the fov flag on a specific cell.
  */
-void TCOD_map_set_in_fov(struct TCOD_Map *map, int x, int y, bool fov) {
-  if (!TCOD_map_in_bounds(map, x, y)) { return; }
+void TCOD_map_set_in_fov(struct TCOD_Map* map, int x, int y, bool fov) {
+  if (!TCOD_map_in_bounds(map, x, y)) {
+    return;
+  }
   map->cells[x + y * map->width].fov = fov;
 }
 /**
  *  Return true if this cell is transparent.
  */
-bool TCOD_map_is_transparent(const struct TCOD_Map *map, int x, int y) {
-  if (!TCOD_map_in_bounds(map, x, y)) { return 0; }
+bool TCOD_map_is_transparent(const struct TCOD_Map* map, int x, int y) {
+  if (!TCOD_map_in_bounds(map, x, y)) {
+    return 0;
+  }
   return map->cells[x + y * map->width].transparent;
 }
 /**
  *  Return true if this cell is walkable.
  */
-bool TCOD_map_is_walkable(struct TCOD_Map *map, int x, int y) {
-  if (!TCOD_map_in_bounds(map, x, y)) { return 0; }
+bool TCOD_map_is_walkable(struct TCOD_Map* map, int x, int y) {
+  if (!TCOD_map_in_bounds(map, x, y)) {
+    return 0;
+  }
   return map->cells[x + y * map->width].walkable;
 }
 /**
  *  Return the width of `map`.
  */
-int TCOD_map_get_width(const struct TCOD_Map *map) {
-  if (!map) { return 0; }
+int TCOD_map_get_width(const struct TCOD_Map* map) {
+  if (!map) {
+    return 0;
+  }
   return map->width;
 }
 /**
  *  Return the height of `map`.
  */
-int TCOD_map_get_height(const struct TCOD_Map *map) {
-  if (!map) { return 0; }
+int TCOD_map_get_height(const struct TCOD_Map* map) {
+  if (!map) {
+    return 0;
+  }
   return map->height;
 }
 /**
  *  Return the total number of cells in `map`.
  */
-int TCOD_map_get_nb_cells(const struct TCOD_Map *map) {
-  if (!map) { return 0; }
+int TCOD_map_get_nb_cells(const struct TCOD_Map* map) {
+  if (!map) {
+    return 0;
+  }
   return map->nbcells;
 }

@@ -31,109 +31,91 @@
  */
 #include "console_init.h"
 
-#include "stdbool.h"
-#include "string.h"
-
 #include <SDL.h>
+
 #include "console.h"
 #include "console_etc.h"
 #include "context_init.h"
 #include "libtcod_int.h"
+#include "stdbool.h"
+#include "string.h"
 TCOD_Error TCOD_console_init_root_(
-    int w,
-    int h,
-    const char* title,
-    bool fullscreen,
-    TCOD_renderer_t renderer,
-    bool vsync)
-{
+    int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync) {
   if (w < 0 || h < 0) {
-    TCOD_set_errorvf("Width and height must be non-negative. Not %i,%i",
-                     w, h);
+    TCOD_set_errorvf("Width and height must be non-negative. Not %i,%i", w, h);
     return TCOD_E_INVALID_ARGUMENT;
   }
   TCOD_Error err = TCOD_sys_load_player_config();
-  if (err < 0) { return err; }
+  if (err < 0) {
+    return err;
+  }
   TCOD_console_delete(NULL);
   TCOD_ctx.root = TCOD_console_new(w, h);
-  if (!TCOD_ctx.root) { return TCOD_E_ERROR; }
-  strncpy(TCOD_ctx.window_title, title ? title : "",
-          sizeof(TCOD_ctx.window_title) - 1);
+  if (!TCOD_ctx.root) {
+    return TCOD_E_ERROR;
+  }
+  strncpy(TCOD_ctx.window_title, title ? title : "", sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.fullscreen = fullscreen;
-  int window_flags = (SDL_WINDOW_RESIZABLE |
-                      (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-  return TCOD_context_new_terminal(
-      w, h, renderer, NULL, vsync, window_flags, title, &TCOD_ctx.engine);
+  int window_flags = (SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+  return TCOD_context_new_terminal(w, h, renderer, NULL, vsync, window_flags, title, &TCOD_ctx.engine);
 }
-TCOD_Error TCOD_console_init_root(int w, int h, const char* title,
-                                  bool fullscreen, TCOD_renderer_t renderer)
-{
+TCOD_Error TCOD_console_init_root(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer) {
   return TCOD_console_init_root_(w, h, title, fullscreen, renderer, false);
 }
-void TCOD_quit(void)
-{
-  TCOD_console_delete(NULL);
-}
-void TCOD_console_set_window_title(const char *title)
-{
+void TCOD_quit(void) { TCOD_console_delete(NULL); }
+void TCOD_console_set_window_title(const char* title) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   SDL_SetWindowTitle(window, title);
   strncpy(TCOD_ctx.window_title, title, sizeof(TCOD_ctx.window_title) - 1);
 }
-void TCOD_console_set_fullscreen(bool fullscreen)
-{
+void TCOD_console_set_fullscreen(bool fullscreen) {
   TCOD_ctx.fullscreen = fullscreen;
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   if (window) {
-    SDL_SetWindowFullscreen(
-        window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
   }
 }
-bool TCOD_console_is_fullscreen(void)
-{
+bool TCOD_console_is_fullscreen(void) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
-  if (!window) { return TCOD_ctx.fullscreen; }
-  return (SDL_GetWindowFlags(window)
-          & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) != 0;
+  if (!window) {
+    return TCOD_ctx.fullscreen;
+  }
+  return (SDL_GetWindowFlags(window) & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP)) != 0;
 }
-bool TCOD_console_has_mouse_focus(void)
-{
+bool TCOD_console_has_mouse_focus(void) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
-  if (!window) { return TCOD_ctx.app_has_mouse_focus; }
+  if (!window) {
+    return TCOD_ctx.app_has_mouse_focus;
+  }
   return (SDL_GetWindowFlags(window) & SDL_WINDOW_MOUSE_FOCUS) != 0;
 }
-bool TCOD_console_is_active(void)
-{
+bool TCOD_console_is_active(void) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
-  if (!window) { return TCOD_ctx.app_is_active; }
+  if (!window) {
+    return TCOD_ctx.app_is_active;
+  }
   return (SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS) != 0;
 }
-bool TCOD_console_is_window_closed(void) {
-	return TCOD_ctx.is_window_closed;
-}
-struct SDL_Window* TCOD_sys_get_sdl_window(void)
-{
+bool TCOD_console_is_window_closed(void) { return TCOD_ctx.is_window_closed; }
+struct SDL_Window* TCOD_sys_get_sdl_window(void) {
   if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_window_) {
     return TCOD_ctx.engine->get_sdl_window_(TCOD_ctx.engine);
   }
   return NULL;
 }
-struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void)
-{
+struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void) {
   if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_renderer_) {
     return TCOD_ctx.engine->get_sdl_renderer_(TCOD_ctx.engine);
   }
   return NULL;
 }
-int TCOD_sys_accumulate_console(const TCOD_Console* console)
-{
-  return TCOD_sys_accumulate_console_(console, NULL);
-}
-int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport)
-{
-  (void)viewport; // Ignored parameter.
+int TCOD_sys_accumulate_console(const TCOD_Console* console) { return TCOD_sys_accumulate_console_(console, NULL); }
+int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport) {
+  (void)viewport;  // Ignored parameter.
   console = TCOD_console_validate_(console);
-  if (!console) { return -1; }
+  if (!console) {
+    return -1;
+  }
   if (TCOD_ctx.engine && TCOD_ctx.engine->accumulate_) {
     return TCOD_ctx.engine->accumulate_(TCOD_ctx.engine, console, NULL);
   }

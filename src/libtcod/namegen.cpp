@@ -30,27 +30,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /*
-* Mingos' NameGen
-* This file was written by Dominik "Mingos" Marczuk.
-*/
+ * Mingos' NameGen
+ * This file was written by Dominik "Mingos" Marczuk.
+ */
 #include "namegen.hpp"
 
-void TCODNamegen::parse (const char * filename, TCODRandom * random) {
-	TCOD_namegen_parse (filename, random ? random->data : NULL);
+void TCODNamegen::parse(const char* filename, TCODRandom* random) {
+  TCOD_namegen_parse(filename, random ? random->data : NULL);
 }
 
-char * TCODNamegen::generate (char * name, bool allocate) {
-	return TCOD_namegen_generate (name, allocate);
+char* TCODNamegen::generate(char* name, bool allocate) { return TCOD_namegen_generate(name, allocate); }
+
+char* TCODNamegen::generateCustom(char* name, char* rule, bool allocate) {
+  return TCOD_namegen_generate_custom(name, rule, allocate);
 }
 
-char * TCODNamegen::generateCustom (char * name, char * rule, bool allocate) {
-	return TCOD_namegen_generate_custom (name, rule, allocate);
-}
+TCOD_list_t TCODNamegen::getSets(void) { return TCOD_namegen_get_sets(); }
 
-TCOD_list_t TCODNamegen::getSets (void) {
-    return TCOD_namegen_get_sets ();
-}
-
-void TCODNamegen::destroy (void) {
-	TCOD_namegen_destroy ();
-}
+void TCODNamegen::destroy(void) { TCOD_namegen_destroy(); }

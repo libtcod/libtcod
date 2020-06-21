@@ -33,16 +33,18 @@
 
 #include "libtcod_int.h"
 
-TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void)
-{
-  if (TCOD_ctx.tileset) { ++TCOD_ctx.tileset->ref_count; }
+TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void) {
+  if (TCOD_ctx.tileset) {
+    ++TCOD_ctx.tileset->ref_count;
+  }
   return TCOD_ctx.tileset;
 }
-TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset)
-{
+TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset) {
   TCOD_tileset_delete(TCOD_ctx.tileset);
   TCOD_ctx.tileset = tileset;
-  if (tileset) { ++tileset->ref_count; }
+  if (tileset) {
+    ++tileset->ref_count;
+  }
   if (tileset && TCOD_ctx.engine) {
     TCOD_ctx.engine->set_tileset(TCOD_ctx.engine, tileset);
   }

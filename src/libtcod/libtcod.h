@@ -32,10 +32,6 @@
 #ifndef _LIBTCOD_H
 #define _LIBTCOD_H
 
-#include "portability.h"
-#include "utility.h"
-#include "version.h"
-
 #include "bresenham.h"
 #include "bsp.h"
 #include "color.h"
@@ -58,14 +54,16 @@
 #include "mouse.h"
 #include "namegen.h"
 #include "noise.h"
+#include "parser.h"
 #include "path.h"
 #include "pathfinder.h"
 #include "pathfinder_frontier.h"
-#include "parser.h"
+#include "portability.h"
 #include "renderer_gl.h"
 #include "renderer_gl1.h"
 #include "renderer_gl2.h"
 #include "renderer_sdl2.h"
+#include "sdl2/event.h"
 #include "sys.h"
 #include "tileset.h"
 #include "tileset_bdf.h"
@@ -74,9 +72,9 @@
 #include "tileset_truetype.h"
 #include "tree.h"
 #include "txtfield.h"
+#include "utility.h"
+#include "version.h"
 #include "zip.h"
-
-#include "sdl2/event.h"
 
 #ifdef __cplusplus
 #include "bresenham.hpp"
@@ -98,6 +96,6 @@
 #include "tree.hpp"
 #include "txtfield.hpp"
 #include "zip.hpp"
-#endif // __cplusplus
+#endif  // __cplusplus
 
 #endif

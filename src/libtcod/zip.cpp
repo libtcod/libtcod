@@ -31,109 +31,58 @@
  */
 #include "zip.hpp"
 
-TCODZip::TCODZip() {
-	data=TCOD_zip_new();
+TCODZip::TCODZip() { data = TCOD_zip_new(); }
+
+TCODZip::~TCODZip() { TCOD_zip_delete(data); }
+
+void TCODZip::putChar(char val) { TCOD_zip_put_char(data, val); }
+
+void TCODZip::putInt(int val) { TCOD_zip_put_int(data, val); }
+
+void TCODZip::putFloat(float val) { TCOD_zip_put_float(data, val); }
+
+void TCODZip::putString(const char* val) { TCOD_zip_put_string(data, val); }
+
+void TCODZip::putData(int nbBytes, const void* pdata) { TCOD_zip_put_data(data, nbBytes, pdata); }
+
+void TCODZip::putColor(const TCODColor* val) {
+  TCOD_color_t col;
+  col.r = val->r;
+  col.g = val->g;
+  col.b = val->b;
+  TCOD_zip_put_color(data, col);
 }
 
-TCODZip::~TCODZip() {
-	TCOD_zip_delete(data);
-}
+void TCODZip::putImage(const TCODImage* val) { TCOD_zip_put_image(data, val->data); }
 
-void TCODZip::putChar(char val) {
-	TCOD_zip_put_char(data,val);
-}
+void TCODZip::putConsole(const TCODConsole* val) { TCOD_zip_put_console(data, val->get_data()); }
 
-void TCODZip::putInt(int val) {
-	TCOD_zip_put_int(data,val);
-}
+void TCODZip::putRandom(const TCODRandom* val) { TCOD_zip_put_random(data, val->get_data()); }
 
-void TCODZip::putFloat(float val) {
-	TCOD_zip_put_float(data,val);
-}
+int TCODZip::saveToFile(const char* filename) { return TCOD_zip_save_to_file(data, filename); }
 
-void TCODZip::putString(const char *val) {
-	TCOD_zip_put_string(data,val);
-}
+int TCODZip::loadFromFile(const char* filename) { return TCOD_zip_load_from_file(data, filename); }
 
-void TCODZip::putData(int nbBytes, const void *pdata) {
-	TCOD_zip_put_data(data,nbBytes,pdata);
-}
+char TCODZip::getChar() { return TCOD_zip_get_char(data); }
 
-void TCODZip::putColor(const TCODColor *val) {
-	TCOD_color_t col;
-	col.r=val->r;
-	col.g=val->g;
-	col.b=val->b;
-	TCOD_zip_put_color(data,col);
-}
+int TCODZip::getInt() { return TCOD_zip_get_int(data); }
 
-void TCODZip::putImage(const TCODImage *val)
-{
-  TCOD_zip_put_image(data,val->data);
-}
+float TCODZip::getFloat() { return TCOD_zip_get_float(data); }
 
-void TCODZip::putConsole(const TCODConsole *val)
-{
-  TCOD_zip_put_console(data, val->get_data());
-}
+const char* TCODZip::getString() { return TCOD_zip_get_string(data); }
 
-void TCODZip::putRandom(const TCODRandom *val)
-{
-	TCOD_zip_put_random(data, val->get_data());
-}
+int TCODZip::getData(int nbBytes, void* pdata) { return TCOD_zip_get_data(data, nbBytes, pdata); }
 
-int TCODZip::saveToFile(const char *filename) {
-	return TCOD_zip_save_to_file(data,filename);
-}
+TCODColor TCODZip::getColor() { return TCODColor(TCOD_zip_get_color(data)); }
 
-int TCODZip::loadFromFile(const char *filename) {
-	return TCOD_zip_load_from_file(data,filename);
-}
+TCODImage* TCODZip::getImage() { return new TCODImage(TCOD_zip_get_image(data)); }
 
-char TCODZip::getChar() {
-	return TCOD_zip_get_char(data);
-}
+TCODConsole* TCODZip::getConsole() { return new TCODConsole(TCOD_zip_get_console(data)); }
 
-int TCODZip::getInt() {
-	return TCOD_zip_get_int(data);
-}
+TCODRandom* TCODZip::getRandom() { return new TCODRandom(TCOD_zip_get_random(data)); }
 
-float TCODZip::getFloat() {
-	return TCOD_zip_get_float(data);
-}
+uint32_t TCODZip::getCurrentBytes() const { return TCOD_zip_get_current_bytes(data); }
 
-const char *TCODZip::getString() {
-	return TCOD_zip_get_string(data);
-}
+uint32_t TCODZip::getRemainingBytes() const { return TCOD_zip_get_remaining_bytes(data); }
 
-int TCODZip::getData(int nbBytes, void *pdata) {
-	return TCOD_zip_get_data(data,nbBytes,pdata);
-}
-
-TCODColor TCODZip::getColor() {
-	return TCODColor(TCOD_zip_get_color(data));
-}
-
-TCODImage *TCODZip::getImage() {
-	return new TCODImage(TCOD_zip_get_image(data));
-}
-
-TCODConsole *TCODZip::getConsole() {
-	return new TCODConsole(TCOD_zip_get_console(data));
-}
-
-TCODRandom *TCODZip::getRandom() {
-	return new TCODRandom(TCOD_zip_get_random(data));
-}
-
-uint32_t TCODZip::getCurrentBytes() const {
-	return TCOD_zip_get_current_bytes(data);
-}
-
-uint32_t TCODZip::getRemainingBytes() const {
-	return TCOD_zip_get_remaining_bytes(data);
-}
-
-void TCODZip::skipBytes(uint32_t nbBytes) {
-	TCOD_zip_skip_bytes(data,nbBytes);
-}
+void TCODZip::skipBytes(uint32_t nbBytes) { TCOD_zip_skip_bytes(data, nbBytes); }

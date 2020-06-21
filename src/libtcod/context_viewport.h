@@ -32,9 +32,8 @@
 #ifndef LIBTCOD_CONTEXT_VIEWPORT_H_
 #define LIBTCOD_CONTEXT_VIEWPORT_H_
 
-#include "stdbool.h"
-
 #include "color.h"
+#include "stdbool.h"
 /**
     Viewport options for the rendering context.
     \rst
@@ -82,7 +81,7 @@ typedef struct TCOD_ViewportOptions TCOD_ViewportOptions;
 extern const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
     Allocate a new viewport options struct.
 
@@ -101,6 +100,6 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_ViewportOptions* TCOD_viewport_new(void);
  */
 TCOD_PUBLIC void TCOD_viewport_delete(TCOD_ViewportOptions* viewport);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_CONTEXT_VIEWPORT_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_CONTEXT_VIEWPORT_H_

@@ -32,9 +32,8 @@
 #ifndef _TCOD_MOUSE_H
 #define _TCOD_MOUSE_H
 
-#include "portability.h"
-
 #include "mouse_types.h"
+#include "portability.h"
 
 #ifdef __cplusplus
 extern "C" {

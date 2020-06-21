@@ -48,32 +48,34 @@ static TCOD_bresenham_data_t bresenham_data;
  *  After calling this function you use TCOD_line_step_mt to iterate
  *  over the individual points on the line.
  */
-void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t *data) {
-	data->origx=xFrom;
-	data->origy=yFrom;
-	data->destx=xTo;
-	data->desty=yTo;
-	data->deltax=xTo - xFrom;
-	data->deltay=yTo - yFrom;
-	if ( data->deltax > 0 ) {
-		data->stepx=1;
-	} else if ( data->deltax < 0 ){
-		data->stepx=-1;
-	} else data->stepx=0;
-	if ( data->deltay > 0 ) {
-		data->stepy=1;
-	} else if ( data->deltay < 0 ){
-		data->stepy=-1;
-	} else data->stepy = 0;
-	if ( data->stepx*data->deltax > data->stepy*data->deltay ) {
-		data->e = data->stepx*data->deltax;
-		data->deltax *= 2;
-		data->deltay *= 2;
-	} else {
-		data->e = data->stepy*data->deltay;
-		data->deltax *= 2;
-		data->deltay *= 2;
-	}
+void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t* data) {
+  data->origx = xFrom;
+  data->origy = yFrom;
+  data->destx = xTo;
+  data->desty = yTo;
+  data->deltax = xTo - xFrom;
+  data->deltay = yTo - yFrom;
+  if (data->deltax > 0) {
+    data->stepx = 1;
+  } else if (data->deltax < 0) {
+    data->stepx = -1;
+  } else
+    data->stepx = 0;
+  if (data->deltay > 0) {
+    data->stepy = 1;
+  } else if (data->deltay < 0) {
+    data->stepy = -1;
+  } else
+    data->stepy = 0;
+  if (data->stepx * data->deltax > data->stepy * data->deltay) {
+    data->e = data->stepx * data->deltax;
+    data->deltax *= 2;
+    data->deltay *= 2;
+  } else {
+    data->e = data->stepy * data->deltay;
+    data->deltax *= 2;
+    data->deltay *= 2;
+  }
 }
 /**
  *  \brief Get the next point on a line, returns true once the line has ended.
@@ -86,31 +88,27 @@ void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_da
  *  The starting point is excluded by this function.
  *  After the ending point is reached, the next call will return true.
  */
-bool TCOD_line_step_mt(
-    int*__restrict xCur,
-    int*__restrict yCur,
-    TCOD_bresenham_data_t*__restrict data)
-{
-	if ( data->stepx*data->deltax > data->stepy*data->deltay ) {
-		if ( data->origx == data->destx ) return true;
-		data->origx+=data->stepx;
-		data->e -= data->stepy*data->deltay;
-		if ( data->e < 0) {
-			data->origy+=data->stepy;
-			data->e+=data->stepx*data->deltax;
-		}
-	} else {
-		if ( data->origy == data->desty ) return true;
-		data->origy+=data->stepy;
-		data->e -= data->stepx*data->deltax;
-		if ( data->e < 0) {
-			data->origx+=data->stepx;
-			data->e+=data->stepy*data->deltay;
-		}
-	}
-	*xCur=data->origx;
-	*yCur=data->origy;
-	return false;
+bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCOD_bresenham_data_t* __restrict data) {
+  if (data->stepx * data->deltax > data->stepy * data->deltay) {
+    if (data->origx == data->destx) return true;
+    data->origx += data->stepx;
+    data->e -= data->stepy * data->deltay;
+    if (data->e < 0) {
+      data->origy += data->stepy;
+      data->e += data->stepx * data->deltax;
+    }
+  } else {
+    if (data->origy == data->desty) return true;
+    data->origy += data->stepy;
+    data->e -= data->stepx * data->deltax;
+    if (data->e < 0) {
+      data->origx += data->stepx;
+      data->e += data->stepy * data->deltay;
+    }
+  }
+  *xCur = data->origx;
+  *yCur = data->origy;
+  return false;
 }
 /**
  *  \brief Iterate over a line using a callback.
@@ -129,12 +127,12 @@ bool TCOD_line_step_mt(
  *    :any:`TCOD_line` instead.
  *  \endverbatim
  */
-bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener, TCOD_bresenham_data_t *data) {
-	TCOD_line_init_mt(xo,yo,xd,yd,data);
-	do {
-		if (! listener(xo,yo)) return false;
-	} while (! TCOD_line_step_mt(&xo,&yo,data));
-	return true;
+bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data) {
+  TCOD_line_init_mt(xo, yo, xd, yd, data);
+  do {
+    if (!listener(xo, yo)) return false;
+  } while (!TCOD_line_step_mt(&xo, &yo, data));
+  return true;
 }
 /**
  *  \brief Initialize a line using a global state.
@@ -153,7 +151,7 @@ bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener,
  *  \endverbatim
  */
 void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
-	TCOD_line_init_mt(xFrom,yFrom,xTo,yTo,&bresenham_data);
+  TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &bresenham_data);
 }
 /**
  *  \brief Get the next point in a line, returns true once the line has ended.
@@ -173,8 +171,8 @@ void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
  *    Use :any:`TCOD_line_step_mt` instead.
  *  \endverbatim
  */
-bool TCOD_line_step(int *__restrict xCur, int *__restrict yCur) {
-	return TCOD_line_step_mt(xCur,yCur,&bresenham_data);
+bool TCOD_line_step(int* __restrict xCur, int* __restrict yCur) {
+  return TCOD_line_step_mt(xCur, yCur, &bresenham_data);
 }
 /**
  *  \brief Iterate over a line using a callback.
@@ -192,6 +190,6 @@ bool TCOD_line_step(int *__restrict xCur, int *__restrict yCur) {
  *  \endverbatim
  */
 bool TCOD_line(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener) {
-	TCOD_bresenham_data_t bresenham_data;
-	return TCOD_line_mt(xo,yo,xd,yd,listener,&bresenham_data);
+  TCOD_bresenham_data_t bresenham_data;
+  return TCOD_line_mt(xo, yo, xd, yd, listener, &bresenham_data);
 }

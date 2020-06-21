@@ -32,53 +32,55 @@
 #include "button.hpp"
 
 #include <string.h>
+
 #include <algorithm>
 
-Button::Button(
-    const char* label,
-    const char* tip,
-    widget_callback_t cbk,
-    void* userData)
-: pressed(false), label(NULL)
-{
-  if (label) { setLabel(label); }
-  if (tip) { setTip(tip); }
-  this->x=0;
-  this->y=0;
-  this->userData=userData;
-  this->cbk=cbk;
+Button::Button(const char* label, const char* tip, widget_callback_t cbk, void* userData)
+    : pressed(false), label(NULL) {
+  if (label) {
+    setLabel(label);
+  }
+  if (tip) {
+    setTip(tip);
+  }
+  this->x = 0;
+  this->y = 0;
+  this->userData = userData;
+  this->cbk = cbk;
 }
 Button::Button(
-    int x,
-    int y,
-    int width,
-    int height,
-    const char* label,
-    const char* tip,
-    widget_callback_t cbk,
-    void* userData)
-: pressed(false), label(NULL)
-{
-  if (label) { setLabel(label); }
-  if (tip) { setTip(tip); }
+    int x, int y, int width, int height, const char* label, const char* tip, widget_callback_t cbk, void* userData)
+    : pressed(false), label(NULL) {
+  if (label) {
+    setLabel(label);
+  }
+  if (tip) {
+    setTip(tip);
+  }
   w = width;
   h = height;
-  this->x=x;
-  this->y=y;
-  this->userData=userData;
-  this->cbk=cbk;
+  this->x = x;
+  this->y = y;
+  this->userData = userData;
+  this->cbk = cbk;
 }
 Button::~Button() {
-  if (label) { free(label); }
+  if (label) {
+    free(label);
+  }
 }
 void Button::setLabel(const char* newLabel) {
-  if (label) { free(label); }
+  if (label) {
+    free(label);
+  }
   label = TCOD_strdup(newLabel);
 }
 void Button::render() {
   con->setDefaultBackground(mouseIn ? backFocus : back);
   con->setDefaultForeground(mouseIn ? foreFocus : fore);
-  if (w > 0 && h > 0) { con->rect(x, y, w, h, true, TCOD_BKGND_SET); }
+  if (w > 0 && h > 0) {
+    con->rect(x, y, w, h, true, TCOD_BKGND_SET);
+  }
   if (label) {
     if (pressed && mouseIn) {
       con->printf(x + w / 2, y, TCOD_BKGND_NONE, TCOD_CENTER, "-%s-", label);
@@ -87,24 +89,15 @@ void Button::render() {
     }
   }
 }
-void Button::computeSize()
-{
+void Button::computeSize() {
   w = label ? static_cast<int>(strlen(label) + 2) : 4;
   h = 1;
 }
-void Button::expand(int width, int)
-{
-  w = std::max(w, width);
-}
-void Button::onButtonPress()
-{
-  pressed = true;
-}
-void Button::onButtonRelease()
-{
-  pressed = false;
-}
-void Button::onButtonClick()
-{
-  if (cbk) { cbk(this, userData); }
+void Button::expand(int width, int) { w = std::max(w, width); }
+void Button::onButtonPress() { pressed = true; }
+void Button::onButtonRelease() { pressed = false; }
+void Button::onButtonClick() {
+  if (cbk) {
+    cbk(this, userData);
+  }
 }

@@ -31,18 +31,10 @@
  */
 #include "mouse.hpp"
 
-void TCODMouse::showCursor(bool visible) {
-	TCOD_mouse_show_cursor(visible);
-}
+void TCODMouse::showCursor(bool visible) { TCOD_mouse_show_cursor(visible); }
 
-bool TCODMouse::isCursorVisible() {
-	return TCOD_mouse_is_cursor_visible() != 0;
-}
+bool TCODMouse::isCursorVisible() { return TCOD_mouse_is_cursor_visible() != 0; }
 
-void TCODMouse::move(int x, int y) {
-	TCOD_mouse_move(x,y);
-}
+void TCODMouse::move(int x, int y) { TCOD_mouse_move(x, y); }
 
-TCOD_mouse_t TCODMouse::getStatus() {
-	return TCOD_mouse_get_status();
-}
+TCOD_mouse_t TCODMouse::getStatus() { return TCOD_mouse_get_status(); }

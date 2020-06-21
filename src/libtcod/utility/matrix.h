@@ -41,7 +41,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#endif // __cplusplus
+#endif  // __cplusplus
 #ifdef __cplusplus
 namespace tcod {
 template <typename T, size_t D>
@@ -54,39 +54,21 @@ class MatrixView {
   using index_type = std::array<size_type, D>;
   MatrixView() = default;
   MatrixView(T* ptr, const shape_type& shape, const strides_type& strides)
-  : data_{reinterpret_cast<char*>(ptr)}, shape_{shape}, strides_{strides}
-  {}
-  MatrixView(T* ptr, const shape_type& shape)
-  : MatrixView(ptr, shape, get_contiguous_strides(shape))
-  {}
-  T& operator[](index_type index) noexcept
-  {
-    return *get_data_at(index);
-  }
-  const T& operator[](index_type index) const noexcept
-  {
-    return *get_data_at(index);
-  }
-  T& at(index_type index)
-  {
+      : data_{reinterpret_cast<char*>(ptr)}, shape_{shape}, strides_{strides} {}
+  MatrixView(T* ptr, const shape_type& shape) : MatrixView(ptr, shape, get_contiguous_strides(shape)) {}
+  T& operator[](index_type index) noexcept { return *get_data_at(index); }
+  const T& operator[](index_type index) const noexcept { return *get_data_at(index); }
+  T& at(index_type index) {
     range_check(index);
     return (*this)[index];
   }
-  const T& at(index_type index) const
-  {
+  const T& at(index_type index) const {
     range_check(index);
     return (*this)[index];
   }
-  shape_type get_shape() const
-  {
-    return shape_;
-  }
-  bool in_range(size_type n) const noexcept
-  {
-    return 0 <= n && n < shape_.at(0);
-  }
-  bool in_range(index_type index) const noexcept
-  {
+  shape_type get_shape() const { return shape_; }
+  bool in_range(size_type n) const noexcept { return 0 <= n && n < shape_.at(0); }
+  bool in_range(index_type index) const noexcept {
     for (size_t i = 0; i < shape_.size(); ++i) {
       if (index.at(i) < 0 || index.at(i) >= shape_.at(i)) {
         return false;
@@ -94,71 +76,59 @@ class MatrixView {
     }
     return true;
   }
+
  private:
-  T* get_data_at(index_type index)
-  {
+  T* get_data_at(index_type index) {
     auto ptr = data_;
     for (size_t i = 0; i < shape_.size(); ++i) {
       ptr += index.at(i) * strides_.at(i);
     }
     return reinterpret_cast<T*>(ptr);
   }
-  const T* get_data_at(index_type index) const
-  {
+  const T* get_data_at(index_type index) const {
     auto ptr = data_;
     for (size_t i = 0; i < shape_.size(); ++i) {
       ptr += index.at(i) * strides_.at(i);
     }
     return reinterpret_cast<T*>(ptr);
   }
-  MatrixView<T, D-1> get_submatrix(size_type n)
-  {
-    return {
-        data_ + n * strides_.at(0),
-        pop_array(shape_),
-        pop_array(strides_)
-    };
+  MatrixView<T, D - 1> get_submatrix(size_type n) {
+    return {data_ + n * strides_.at(0), pop_array(shape_), pop_array(strides_)};
   }
-  void range_check(size_type n) const
-  {
-    if (in_range(n)) { return; }
+  void range_check(size_type n) const {
+    if (in_range(n)) {
+      return;
+    }
     throw std::out_of_range(
-        std::string("Out of bounds lookup {")
-        + std::to_string(n)
-        + "} on matrix of shape "
-        + array_as_string(shape_)
-        + ".");
+        std::string("Out of bounds lookup {") + std::to_string(n) + "} on matrix of shape " + array_as_string(shape_) +
+        ".");
   }
-  void range_check(index_type index) const
-  {
-    if (in_range(index)) { return; }
+  void range_check(index_type index) const {
+    if (in_range(index)) {
+      return;
+    }
     throw std::out_of_range(
-        std::string("Out of bounds lookup ")
-        + array_as_string(index)
-        + " on matrix of shape "
-        + array_as_string(shape_)
-        + ".");
+        std::string("Out of bounds lookup ") + array_as_string(index) + " on matrix of shape " +
+        array_as_string(shape_) + ".");
   }
   template <typename ArrayType>
-  static std::string array_as_string(const ArrayType& arr)
-  {
+  static std::string array_as_string(const ArrayType& arr) {
     std::string result{"{ "};
     for (const auto& it : arr) {
       result += std::to_string(it);
-      if (it != arr.back()) { result += ", "; }
+      if (it != arr.back()) {
+        result += ", ";
+      }
     }
     result += " }";
     return result;
   }
-  auto pop_array(const std::array<size_type, D>& array) const noexcept
-  -> std::array<size_type, D-1>
-  {
-    std::array<size_type, D-1> new_array;
+  auto pop_array(const std::array<size_type, D>& array) const noexcept -> std::array<size_type, D - 1> {
+    std::array<size_type, D - 1> new_array;
     std::copy(array[1], array.end(), new_array.begin());
     return new_array;
   }
-  static strides_type get_contiguous_strides(shape_type shape)
-  {
+  static strides_type get_contiguous_strides(shape_type shape) {
     strides_type strides;
     size_type stride = static_cast<size_type>(sizeof(T));
     for (size_type i = strides.size() - 1; i >= 0; --i) {
@@ -181,59 +151,23 @@ class Matrix {
   using strides_type = typename view_type::strides_type;
   using index_type = typename view_type::shape_type;
   Matrix() = default;
-  Matrix(const shape_type& shape)
-  : data_(get_size_from_shape(shape)), view_(data_.data(), shape)
-  {}
+  Matrix(const shape_type& shape) : data_(get_size_from_shape(shape)), view_(data_.data(), shape) {}
   Matrix(const shape_type& shape, const value_type& fill)
-  : data_(get_size_from_shape(shape), fill), view_(data_.data(), shape)
-  {}
-  auto begin() noexcept
-  {
-    return data_.begin();
-  }
-  auto begin() const noexcept
-  {
-    return data_.cbegin();
-  }
-  auto end() noexcept
-  {
-    return data_.end();
-  }
-  auto end() const noexcept
-  {
-    return data_.cend();
-  }
-  value_type& operator[](index_type index) noexcept
-  {
-    return view_[index];
-  }
-  const value_type& operator[](index_type index) const noexcept
-  {
-    return view_[index];
-  }
-  value_type& at(index_type index)
-  {
-    return view_.at(index);
-  }
-  const value_type& at(index_type index) const
-  {
-    return view_.at(index);
-  }
-  shape_type get_shape() const
-  {
-    return view_.get_shape();
-  }
-  bool in_range(size_type n) const noexcept
-  {
-    return view_.in_range(n);
-  }
-  bool in_range(index_type index) const noexcept
-  {
-    return view_.in_range(index);
-  }
+      : data_(get_size_from_shape(shape), fill), view_(data_.data(), shape) {}
+  auto begin() noexcept { return data_.begin(); }
+  auto begin() const noexcept { return data_.cbegin(); }
+  auto end() noexcept { return data_.end(); }
+  auto end() const noexcept { return data_.cend(); }
+  value_type& operator[](index_type index) noexcept { return view_[index]; }
+  const value_type& operator[](index_type index) const noexcept { return view_[index]; }
+  value_type& at(index_type index) { return view_.at(index); }
+  const value_type& at(index_type index) const { return view_.at(index); }
+  shape_type get_shape() const { return view_.get_shape(); }
+  bool in_range(size_type n) const noexcept { return view_.in_range(n); }
+  bool in_range(index_type index) const noexcept { return view_.in_range(index); }
+
  private:
-  static size_t get_size_from_shape(const shape_type& shape) noexcept
-  {
+  static size_t get_size_from_shape(const shape_type& shape) noexcept {
     size_t size = 1;
     for (size_t i = 0; i < shape.size(); ++i) {
       size *= shape.at(i);
@@ -243,6 +177,6 @@ class Matrix {
   std::vector<T> data_;
   view_type view_;
 };
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_UTILITY_MATRIX_H_
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_UTILITY_MATRIX_H_

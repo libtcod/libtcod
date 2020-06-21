@@ -31,52 +31,31 @@
  */
 #include "renderer_gl.h"
 
-#include "error.h"
-
 #include <SDL.h>
+
 #include "../vendor/glad.h"
+#include "error.h"
 /**
  *  Return a rectangle shaped for a tile at `x`,`y`.
  */
-static SDL_Rect get_aligned_tile(
-    const struct TCOD_Tileset* tileset, int x, int y)
-{
-  SDL_Rect tile_rect = {
-      x * tileset->tile_width,
-      y * tileset->tile_height,
-      tileset->tile_width,
-      tileset->tile_height
-  };
+static SDL_Rect get_aligned_tile(const struct TCOD_Tileset* tileset, int x, int y) {
+  SDL_Rect tile_rect = {x * tileset->tile_width, y * tileset->tile_height, tileset->tile_width, tileset->tile_height};
   return tile_rect;
 }
 /**
  *  Return the rectangle for the tile at `tile_id`.
  */
-static SDL_Rect get_gl_atlas_tile(
-    const struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id)
-{
-  return get_aligned_tile(
-      atlas->tileset,
-      tile_id % atlas->texture_columns,
-      tile_id / atlas->texture_columns
-  );
+static SDL_Rect get_gl_atlas_tile(const struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id) {
+  return get_aligned_tile(atlas->tileset, tile_id % atlas->texture_columns, tile_id / atlas->texture_columns);
 }
 /**
  *  Upload a single tile to the atlas texture.
  */
-static int upload_gl_tile(struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id)
-{
+static int upload_gl_tile(struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id) {
   SDL_Rect dest = get_gl_atlas_tile(atlas, tile_id);
   glBindTexture(GL_TEXTURE_2D, atlas->texture);
   glTexSubImage2D(
-      GL_TEXTURE_2D,
-      0,
-      dest.x,
-      dest.y,
-      dest.w,
-      dest.h,
-      GL_RGBA,
-      GL_UNSIGNED_BYTE,
+      GL_TEXTURE_2D, 0, dest.x, dest.y, dest.w, dest.h, GL_RGBA, GL_UNSIGNED_BYTE,
       atlas->tileset->pixels + (tile_id * atlas->tileset->tile_length));
   glBindTexture(GL_TEXTURE_2D, 0);
   return 0;
@@ -85,8 +64,7 @@ static int upload_gl_tile(struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id)
  *  Setup a atlas texture and upload the tileset graphics.
  */
 TCOD_NODISCARD
-static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas)
-{
+static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
   int new_size = atlas->texture_size ? atlas->texture_size : 64;
   int max_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
@@ -95,7 +73,9 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas)
   while (1) {
     rows = new_size / atlas->tileset->tile_width;
     columns = new_size / atlas->tileset->tile_height;
-    if (rows * columns >= atlas->tileset->tiles_capacity) { break; }
+    if (rows * columns >= atlas->tileset->tiles_capacity) {
+      break;
+    }
     new_size *= 2;
   }
   if (new_size > max_size) {
@@ -110,15 +90,7 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RGBA,
-        atlas->texture_size,
-        atlas->texture_size,
-        0,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        NULL);
+        GL_TEXTURE_2D, 0, GL_RGBA, atlas->texture_size, atlas->texture_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
     switch (glGetError()) {
       case GL_NO_ERROR:
@@ -135,29 +107,33 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas)
         return -1;
       }
     }
-    return 1; // Atlas texture has been resized and refreshed.
+    return 1;  // Atlas texture has been resized and refreshed.
   }
-  return 0; // No action.
+  return 0;  // No action.
 }
 /**
  *  Respond to changes in a tileset.
  */
-static int gl_atlas_on_tile_changed(
-    struct TCOD_TilesetObserver* observer, int tile_id)
-{
+static int gl_atlas_on_tile_changed(struct TCOD_TilesetObserver* observer, int tile_id) {
   struct TCOD_TilesetAtlasOpenGL* atlas = observer->userdata;
   if (prepare_gl_atlas(atlas) == 1) {
-    return 0; // Tile updated as a side-effect of prepare_gl_atlas.
+    return 0;  // Tile updated as a side-effect of prepare_gl_atlas.
   }
   return upload_gl_tile(atlas, tile_id);
 }
-struct TCOD_TilesetAtlasOpenGL* TCOD_gl_atlas_new(struct TCOD_Tileset* tileset)
-{
-  if (!tileset) { return NULL; }
+struct TCOD_TilesetAtlasOpenGL* TCOD_gl_atlas_new(struct TCOD_Tileset* tileset) {
+  if (!tileset) {
+    return NULL;
+  }
   struct TCOD_TilesetAtlasOpenGL* atlas = calloc(sizeof(*atlas), 1);
-  if (!atlas) { return NULL; }
+  if (!atlas) {
+    return NULL;
+  }
   atlas->observer = TCOD_tileset_observer_new(tileset);
-  if (!atlas->observer) { TCOD_gl_atlas_delete(atlas); return NULL; }
+  if (!atlas->observer) {
+    TCOD_gl_atlas_delete(atlas);
+    return NULL;
+  }
   atlas->tileset = tileset;
   atlas->tileset->ref_count += 1;
   atlas->observer->userdata = atlas;
@@ -169,10 +145,15 @@ struct TCOD_TilesetAtlasOpenGL* TCOD_gl_atlas_new(struct TCOD_Tileset* tileset)
   }
   return atlas;
 }
-void TCOD_gl_atlas_delete(struct TCOD_TilesetAtlasOpenGL* atlas)
-{
-  if (!atlas) { return; }
-  if (atlas->tileset) { TCOD_tileset_delete(atlas->tileset); }
-  if (atlas->texture) { glDeleteTextures(1, &atlas->texture); }
+void TCOD_gl_atlas_delete(struct TCOD_TilesetAtlasOpenGL* atlas) {
+  if (!atlas) {
+    return;
+  }
+  if (atlas->tileset) {
+    TCOD_tileset_delete(atlas->tileset);
+  }
+  if (atlas->texture) {
+    glDeleteTextures(1, &atlas->texture);
+  }
   free(atlas);
 }

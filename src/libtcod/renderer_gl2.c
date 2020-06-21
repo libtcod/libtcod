@@ -31,16 +31,16 @@
  */
 #include "renderer_gl2.h"
 
+#include <SDL.h>
 #include <stdint.h>
 
-#include <SDL.h>
 #include "../vendor/glad.h"
-
 #include "console.h"
 #include "context_viewport.h"
 #include "renderer_gl.h"
 #include "renderer_gl_internal.h"
-static const char* VERTEX_SOURCE = "\
+static const char* VERTEX_SOURCE =
+    "\
 uniform mat4 mvp_matrix; // Model-view-projection matrix\n\
 attribute vec2 a_vertex; // Simple vertex quad.\n\
 uniform vec2 v_console_shape; // The true size of the textures.\n\
@@ -54,7 +54,8 @@ void main(void)\n\
   v_coord *= v_console_shape * v_console_size;\n\
 }\n\
 ";
-static const char* FRAGMENT_SOURCE = "\
+static const char* FRAGMENT_SOURCE =
+    "\
 uniform vec2 v_tiles_shape; // Tileset columns/rows.\n\
 uniform vec2 v_tiles_size; // Tileset texture size.\n\
 uniform sampler2D t_tileset;\n\
@@ -103,8 +104,7 @@ void main(void)\n\
 /**
  *  Compile the shader program and return error status.
  */
-static TCOD_Error gl2_build_shader(uint32_t* program_out)
-{
+static TCOD_Error gl2_build_shader(uint32_t* program_out) {
   uint32_t program = glCreateProgram();
   uint32_t v_shader = glCreateShader(GL_VERTEX_SHADER);
   uint32_t f_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -162,25 +162,24 @@ static TCOD_Error gl2_build_shader(uint32_t* program_out)
  *  Grow texture sizes if they're too small.
  */
 TCOD_NODISCARD
-static TCOD_Error resize_textures(
-    struct TCOD_RendererGL2* renderer, const TCOD_Console* console)
-{
+static TCOD_Error resize_textures(struct TCOD_RendererGL2* renderer, const TCOD_Console* console) {
   if (console->w > renderer->console_width || console->h > renderer->console_height) {
-    if (renderer->console_width == 0) { renderer->console_width = 2; }
-    if (renderer->console_height == 0) { renderer->console_height = 2; }
-    while (renderer->console_width < console->w) { renderer->console_width *= 2; }
-    while (renderer->console_height < console->w) { renderer->console_height *= 2; }
+    if (renderer->console_width == 0) {
+      renderer->console_width = 2;
+    }
+    if (renderer->console_height == 0) {
+      renderer->console_height = 2;
+    }
+    while (renderer->console_width < console->w) {
+      renderer->console_width *= 2;
+    }
+    while (renderer->console_height < console->w) {
+      renderer->console_height *= 2;
+    }
     for (int i = 0; i < 3; ++i) {
       glBindTexture(GL_TEXTURE_2D, renderer->console_textures[i]);
       glTexImage2D(
-          GL_TEXTURE_2D,
-          0,
-          GL_RGBA,
-          renderer->console_width,
-          renderer->console_height,
-          0,
-          GL_RGBA,
-          GL_UNSIGNED_BYTE,
+          GL_TEXTURE_2D, 0, GL_RGBA, renderer->console_width, renderer->console_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
           NULL);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -189,16 +188,13 @@ static TCOD_Error resize_textures(
     TCOD_set_errorv("Unexpected OpenGL error.");
     return TCOD_E_ERROR;
   }
-  return TCOD_E_OK;;
+  return TCOD_E_OK;
+  ;
 }
 /**
  *  Get the texture coordinates for a codepoint.
  */
-static void get_tex_coord(
-    const struct TCOD_TilesetAtlasOpenGL*__restrict atlas,
-    int ch,
-    uint8_t*__restrict out)
-{
+static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas, int ch, uint8_t* __restrict out) {
   const struct TCOD_Tileset* tileset = atlas->tileset;
   int tile_id = 0;
   if (ch < tileset->character_map_length) {
@@ -213,10 +209,8 @@ static void get_tex_coord(
 }
 TCOD_NODISCARD
 static TCOD_Error render(
-    struct TCOD_RendererGL2*__restrict renderer,
-    const TCOD_Console*__restrict console,
-    const struct TCOD_ViewportOptions*__restrict viewport)
-{
+    struct TCOD_RendererGL2* __restrict renderer, const TCOD_Console* __restrict console,
+    const struct TCOD_ViewportOptions* __restrict viewport) {
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
   TCOD_ColorRGBA* bg_buffer = malloc(sizeof(*bg_buffer) * console->elements);
@@ -232,18 +226,12 @@ static TCOD_Error render(
     fg_buffer[i] = console->tiles[i].fg;
     bg_buffer[i] = console->tiles[i].bg;
   }
-  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[0]); // ch
-  glTexSubImage2D(
-      GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, ch_buffer
-  );
-  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[1]); // fg
-  glTexSubImage2D(
-      GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, fg_buffer
-  );
-  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[2]); // bg
-  glTexSubImage2D(
-      GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, bg_buffer
-  );
+  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[0]);  // ch
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, ch_buffer);
+  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[1]);  // fg
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, fg_buffer);
+  glBindTexture(GL_TEXTURE_2D, renderer->console_textures[2]);  // bg
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, console->w, console->h, GL_RGBA, GL_UNSIGNED_BYTE, bg_buffer);
   free(ch_buffer);
   free(fg_buffer);
   free(bg_buffer);
@@ -260,9 +248,8 @@ static TCOD_Error render(
   int t_console_fg = glGetUniformLocation(renderer->program, "t_console_fg");
   int t_console_tile = glGetUniformLocation(renderer->program, "t_console_tile");
 
-  float matrix[4*4];
-  gl_get_viewport_scale(
-      renderer->common.atlas, console, viewport, matrix, &renderer->common);
+  float matrix[4 * 4];
+  gl_get_viewport_scale(renderer->common.atlas, console, viewport, matrix, &renderer->common);
   glUniformMatrix4fv(mvp_matrix, 1, GL_FALSE, matrix);
 
   // Upload data of texture shapes.
@@ -288,18 +275,18 @@ static TCOD_Error render(
   glUniform2fv(v_console_size, 1, console_size);
 
   // Bind textures to program.
-  glActiveTexture(GL_TEXTURE0 + 3); // Tileset atlas.
+  glActiveTexture(GL_TEXTURE0 + 3);  // Tileset atlas.
   glBindTexture(GL_TEXTURE_2D, atlas->texture);
   // Texels are clamped by the shader, GL_LINEAR can be used without bleeding.
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glUniform1i(t_tileset, 3);
-  glActiveTexture(GL_TEXTURE0 + 0); // Tile position.
+  glActiveTexture(GL_TEXTURE0 + 0);  // Tile position.
   glBindTexture(GL_TEXTURE_2D, renderer->console_textures[0]);
   glUniform1i(t_console_tile, 0);
-  glActiveTexture(GL_TEXTURE0 + 1); // Foreground color.
+  glActiveTexture(GL_TEXTURE0 + 1);  // Foreground color.
   glBindTexture(GL_TEXTURE_2D, renderer->console_textures[1]);
   glUniform1i(t_console_fg, 1);
-  glActiveTexture(GL_TEXTURE0 + 2); // Background color.
+  glActiveTexture(GL_TEXTURE0 + 2);  // Background color.
   glBindTexture(GL_TEXTURE_2D, renderer->console_textures[2]);
   glUniform1i(t_console_bg, 2);
 
@@ -330,14 +317,16 @@ static TCOD_Error render(
  *  Render the console onto the screen.
  */
 static TCOD_Error gl2_accumulate(
-    struct TCOD_Context*__restrict context,
-    const TCOD_Console*__restrict console,
-    const struct TCOD_ViewportOptions*__restrict viewport)
-{
+    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   TCOD_Error err;
-  if ((err = resize_textures(renderer, console)) < 0) { return err; }
-  if ((err = render(renderer, console, viewport)) < 0) { return err; }
+  if ((err = resize_textures(renderer, console)) < 0) {
+    return err;
+  }
+  if ((err = render(renderer, console, viewport)) < 0) {
+    return err;
+  }
 
   glFlush();
   if (glGetError()) {
@@ -350,63 +339,51 @@ static TCOD_Error gl2_accumulate(
  *  Clear, render, and swap the screen.
  */
 static TCOD_Error gl2_present(
-    struct TCOD_Context*__restrict context,
-    const TCOD_Console*__restrict console,
-    const struct TCOD_ViewportOptions*__restrict viewport)
-{
-  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
+    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    const struct TCOD_ViewportOptions* __restrict viewport) {
+  if (!viewport) {
+    viewport = &TCOD_VIEWPORT_DEFAULT_;
+  }
   struct TCOD_RendererGL2* renderer = context->contextdata;
   int window_width;
   int window_height;
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
   glClearColor(
-      (float)viewport->clear_color.r / 255.0f,
-      (float)viewport->clear_color.g / 255.0f,
-      (float)viewport->clear_color.b / 255.0f,
-      (float)viewport->clear_color.a / 255.0f);
+      (float)viewport->clear_color.r / 255.0f, (float)viewport->clear_color.g / 255.0f,
+      (float)viewport->clear_color.b / 255.0f, (float)viewport->clear_color.a / 255.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl2_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);
   return err;
 }
-void gl2_destructor(struct TCOD_Context* context)
-{
+void gl2_destructor(struct TCOD_Context* context) {
   struct TCOD_RendererGL2* renderer = context->contextdata;
-  if (!renderer) { return; }
+  if (!renderer) {
+    return;
+  }
   glDeleteBuffers(1, &renderer->vertex_buffer);
   glDeleteTextures(3, renderer->console_textures);
   glDeleteProgram(renderer->program);
   TCOD_renderer_gl_common_uninit(&renderer->common);
   free(renderer);
 }
-TCODLIB_API TCOD_NODISCARD
-struct TCOD_Context* TCOD_renderer_new_gl2(
-    int pixel_width,
-    int pixel_height,
-    const char* title,
-    int window_flags,
-    bool vsync,
-    struct TCOD_Tileset* tileset)
-{
+TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
+    int pixel_width, int pixel_height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset) {
   struct TCOD_Context* context = TCOD_context_new_();
-  if (!context) { return NULL; }
+  if (!context) {
+    return NULL;
+  }
   context->type = TCOD_RENDERER_OPENGL2;
   struct TCOD_RendererGL2* renderer = calloc(sizeof(*renderer), 1);
-  if (!renderer) { TCOD_context_delete(context); return NULL; }
+  if (!renderer) {
+    TCOD_context_delete(context);
+    return NULL;
+  }
   context->destructor_ = gl2_destructor;
   context->contextdata = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
-      pixel_width,
-      pixel_height,
-      title,
-      window_flags,
-      vsync,
-      tileset,
-      2,
-      0,
-      SDL_GL_CONTEXT_PROFILE_CORE,
-      context);
+      pixel_width, pixel_height, title, window_flags, vsync, tileset, 2, 0, SDL_GL_CONTEXT_PROFILE_CORE, context);
   if (err < 0) {
     TCOD_context_delete(context);
     return NULL;

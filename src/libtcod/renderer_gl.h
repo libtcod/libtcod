@@ -31,10 +31,9 @@
  */
 #ifndef LIBTCOD_RENDERER_GL_H_
 #define LIBTCOD_RENDERER_GL_H_
-#include "config.h"
-
 #include <stdint.h>
 
+#include "config.h"
 #include "tileset.h"
 
 struct TCOD_TilesetAtlasOpenGL {
@@ -60,10 +59,10 @@ struct TCOD_RendererGLCommon {
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 struct TCOD_TilesetAtlasOpenGL* TCOD_gl_atlas_new(struct TCOD_Tileset* tileset);
 void TCOD_gl_atlas_delete(struct TCOD_TilesetAtlasOpenGL* atlas);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_RENDERER_GL_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_RENDERER_GL_H_

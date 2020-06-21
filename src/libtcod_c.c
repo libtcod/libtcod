@@ -50,8 +50,6 @@
  *  You can define `NO_OPENGL` to remove the dependency on the GL library.
  *  You can also define `TCOD_BARE` to remove the dependency on SDL2 and GL.
  */
-#include "vendor/stb.c"
-
 #include "libtcod/bresenham_c.c"
 #include "libtcod/bsp_c.c"
 #include "libtcod/color_c.c"
@@ -72,3 +70,4 @@
 #include "libtcod/tree_c.c"
 #include "libtcod/txtfield_c.c"
 #include "libtcod/zip_c.c"
+#include "vendor/stb.c"

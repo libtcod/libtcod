@@ -31,10 +31,9 @@
  */
 #include "context_viewport.h"
 
+#include "error.h"
 #include "stdlib.h"
 #include "string.h"
-
-#include "error.h"
 
 const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_ = {
     .keep_aspect = false,
@@ -44,9 +43,7 @@ const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_ = {
     .align_y = 0.5f,
 };
 
-
-TCOD_ViewportOptions* TCOD_viewport_new(void)
-{
+TCOD_ViewportOptions* TCOD_viewport_new(void) {
   TCOD_ViewportOptions* viewport = malloc(sizeof(*viewport));
   if (!viewport) {
     TCOD_set_errorv("Could not allocate memory.");
@@ -55,7 +52,4 @@ TCOD_ViewportOptions* TCOD_viewport_new(void)
   memcpy(viewport, &TCOD_VIEWPORT_DEFAULT_, sizeof(*viewport));
   return viewport;
 }
-void TCOD_viewport_delete(TCOD_ViewportOptions* viewport)
-{
-  free(viewport);
-}
+void TCOD_viewport_delete(TCOD_ViewportOptions* viewport) { free(viewport); }

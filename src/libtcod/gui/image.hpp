@@ -33,14 +33,15 @@
 #define TCOD_GUI_IMAGE_HPP
 #include "widget.hpp"
 class TCODLIB_GUI_API Image : public Widget {
-public :
-	Image(int x,int y,int w, int h, const char *tip=NULL);
-	virtual ~Image();
-	void setBackgroundColor(const TCODColor col);
-	void render();
-protected :
-	void expand(int width, int height);
+ public:
+  Image(int x, int y, int w, int h, const char* tip = NULL);
+  virtual ~Image();
+  void setBackgroundColor(const TCODColor col);
+  void render();
 
-	TCODColor back;
+ protected:
+  void expand(int width, int height);
+
+  TCODColor back;
 };
 #endif /* TCOD_GUI_IMAGE_HPP */

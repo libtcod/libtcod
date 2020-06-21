@@ -32,13 +32,12 @@
 #ifndef LIBTCOD_RENDERER_SDL2_H_
 #define LIBTCOD_RENDERER_SDL2_H_
 
-#include "stdbool.h"
-
 #include "config.h"
 #include "console.h"
 #include "context.h"
-#include "tileset.h"
 #include "error.h"
+#include "stdbool.h"
+#include "tileset.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -69,9 +68,9 @@ typedef struct TCOD_TilesetAtlasSDL2 TCOD_TilesetAtlasSDL2;
 struct TCOD_RendererSDL2 {
   struct SDL_Window* window;
   struct SDL_Renderer* renderer;
-  struct TCOD_TilesetAtlasSDL2*__restrict atlas;
-  struct TCOD_Console*__restrict cache_console;
-  struct SDL_Texture*__restrict cache_texture;
+  struct TCOD_TilesetAtlasSDL2* __restrict atlas;
+  struct TCOD_Console* __restrict cache_console;
+  struct SDL_Texture* __restrict cache_texture;
   uint32_t sdl_subsystems;
   // Mouse cursor transform values of the last viewport used.
   double last_offset_x;
@@ -81,18 +80,12 @@ struct TCOD_RendererSDL2 {
 };
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
     Return a libtcod rendering context using an SDL2 renderer.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-struct TCOD_Context* TCOD_renderer_init_sdl2(
-    int width,
-    int height,
-    const char* title,
-    int window_flags,
-    int renderer_flags,
-    struct TCOD_Tileset* tileset);
+TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_sdl2(
+    int width, int height, const char* title, int window_flags, int renderer_flags, struct TCOD_Tileset* tileset);
 /**
     Return a new SDL2 atlas created from a tileset for an SDL2 renderer.
 
@@ -101,10 +94,8 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     Will return NULL on an error, you can check the error with
     `TCOD_get_error`.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
-    struct SDL_Renderer* renderer,
-    struct TCOD_Tileset* tileset);
+TCOD_PUBLIC TCOD_NODISCARD struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(
+    struct SDL_Renderer* renderer, struct TCOD_Tileset* tileset);
 /**
     Delete an SDL2 tileset atlas.
  */
@@ -143,11 +134,9 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture(
-    const struct TCOD_TilesetAtlasSDL2*__restrict atlas,
-    const struct TCOD_Console*__restrict console,
-    struct TCOD_Console*__restrict* cache,
-    struct SDL_Texture*__restrict* target);
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas, const struct TCOD_Console* __restrict console,
+    struct TCOD_Console* __restrict* cache, struct SDL_Texture* __restrict* target);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_RENDERER_SDL2_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_RENDERER_SDL2_H_

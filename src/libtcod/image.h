@@ -32,30 +32,29 @@
 #ifndef _TCOD_IMAGE_H
 #define _TCOD_IMAGE_H
 
-#include "portability.h"
 #include "color.h"
-
 #include "console_types.h"
+#include "portability.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct TCOD_mipmap_{
+struct TCOD_mipmap_ {
   int width, height;
   float fwidth, fheight;
-  TCOD_ColorRGB*__restrict buf;
+  TCOD_ColorRGB* __restrict buf;
   bool dirty;
 };
 
 typedef struct TCOD_Image {
   int nb_mipmaps;
-  struct TCOD_mipmap_*__restrict mipmaps;
+  struct TCOD_mipmap_* __restrict mipmaps;
   TCOD_ColorRGB key_color;
   bool has_key_color;
 } TCOD_Image;
 
-typedef TCOD_Image *TCOD_image_t;
+typedef TCOD_Image* TCOD_image_t;
 
 TCODLIB_API TCOD_Image* TCOD_image_new(int width, int height);
 /**
@@ -68,17 +67,16 @@ TCODLIB_API TCOD_Image* TCOD_image_from_console(const TCOD_Console* console);
  *  Same as TCOD_image_from_console, but with an existing image.
  */
 TCODLIB_API void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console);
-TCODLIB_API TCOD_Image* TCOD_image_load(const char *filename);
+TCODLIB_API TCOD_Image* TCOD_image_load(const char* filename);
 TCODLIB_API void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color);
 TCODLIB_API void TCOD_image_invert(TCOD_Image* image);
 TCODLIB_API void TCOD_image_hflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_rotate90(TCOD_Image* image, int numRotations);
 TCODLIB_API void TCOD_image_vflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int neww, int newh);
-TCODLIB_API void TCOD_image_save(const TCOD_Image* image, const char *filename);
-TCODLIB_API void TCOD_image_get_size(const TCOD_Image* image, int *w,int *h);
-TCODLIB_API TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image,
-                                              int x, int y);
+TCODLIB_API void TCOD_image_save(const TCOD_Image* image, const char* filename);
+TCODLIB_API void TCOD_image_get_size(const TCOD_Image* image, int* w, int* h);
+TCODLIB_API TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y);
 TCODLIB_API int TCOD_image_get_alpha(const TCOD_Image* image, int x, int y);
 /**
  *  Return a mipmapped pixel of image.
@@ -86,25 +84,18 @@ TCODLIB_API int TCOD_image_get_alpha(const TCOD_Image* image, int x, int y);
  *  Mipmaps are updated when you call this, so it can't be called from multiple
  *  threads.
  */
-TCODLIB_API TCOD_color_t TCOD_image_get_mipmap_pixel(
-    TCOD_Image* image, float x0, float y0, float x1, float y1);
-TCODLIB_API void TCOD_image_put_pixel(
-    TCOD_Image* image, int x, int y, TCOD_color_t col);
+TCODLIB_API TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_Image* image, float x0, float y0, float x1, float y1);
+TCODLIB_API void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col);
 TCODLIB_API void TCOD_image_blit(
-    TCOD_Image* image, TCOD_console_t console, float x, float y,
-    TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle);
+    TCOD_Image* image, TCOD_console_t console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex,
+    float scaley, float angle);
 TCODLIB_API void TCOD_image_blit_rect(
-    TCOD_Image* image, TCOD_console_t console,
-    int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag);
+    TCOD_Image* image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag);
 TCODLIB_API void TCOD_image_blit_2x(
-    const TCOD_Image*__restrict image,
-    TCOD_Console*__restrict dest,
-    int dx, int dy, int sx, int sy, int w, int h);
+    const TCOD_Image* __restrict image, TCOD_Console* __restrict dest, int dx, int dy, int sx, int sy, int w, int h);
 TCODLIB_API void TCOD_image_delete(TCOD_Image* image);
-TCODLIB_API void TCOD_image_set_key_color(TCOD_Image* image,
-                                          TCOD_color_t key_color);
-TCODLIB_API bool TCOD_image_is_pixel_transparent(
-    const TCOD_Image* image, int x, int y);
+TCODLIB_API void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color);
+TCODLIB_API bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y);
 
 #ifdef __cplusplus
 }

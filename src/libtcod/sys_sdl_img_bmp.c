@@ -29,41 +29,38 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "sys.h"
-
 #include <SDL.h>
 
 #include "libtcod_int.h"
-bool TCOD_sys_check_bmp(const char *filename) {
-	static uint8_t magic_number[]={0x42, 0x4d};
-	return TCOD_sys_check_magic_number(filename,sizeof(magic_number),magic_number);
+#include "sys.h"
+bool TCOD_sys_check_bmp(const char* filename) {
+  static uint8_t magic_number[] = {0x42, 0x4d};
+  return TCOD_sys_check_magic_number(filename, sizeof(magic_number), magic_number);
 }
 
-SDL_Surface *TCOD_sys_read_bmp(const char *filename) {
-	SDL_Surface *ret=SDL_LoadBMP(filename);
-	if( !ret ) TCOD_fatal("SDL : %s",SDL_GetError());
-	/* convert low color images to 24 bits */
-	if ( ret->format->BytesPerPixel != 3 ) {
-		uint32_t rmask,gmask,bmask;
-        SDL_Surface * tmp;
-		if ( SDL_BYTEORDER == SDL_LIL_ENDIAN ) {
-			rmask=0xFF0000;
-			gmask=0x00FF00;
-			bmask=0x0000FF;
-		} else {
-			rmask=0x0000FF;
-			gmask=0x00FF00;
-			bmask=0xFF0000;
-		}
-		tmp=SDL_CreateRGBSurface(SDL_SWSURFACE,ret->w,ret->h,24, rmask, gmask, bmask, 0);
-		SDL_BlitSurface(ret,NULL,tmp,NULL);
-		SDL_FreeSurface(ret);
-		ret=tmp;
-	}
+SDL_Surface* TCOD_sys_read_bmp(const char* filename) {
+  SDL_Surface* ret = SDL_LoadBMP(filename);
+  if (!ret) TCOD_fatal("SDL : %s", SDL_GetError());
+  /* convert low color images to 24 bits */
+  if (ret->format->BytesPerPixel != 3) {
+    uint32_t rmask, gmask, bmask;
+    SDL_Surface* tmp;
+    if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
+      rmask = 0xFF0000;
+      gmask = 0x00FF00;
+      bmask = 0x0000FF;
+    } else {
+      rmask = 0x0000FF;
+      gmask = 0x00FF00;
+      bmask = 0xFF0000;
+    }
+    tmp = SDL_CreateRGBSurface(SDL_SWSURFACE, ret->w, ret->h, 24, rmask, gmask, bmask, 0);
+    SDL_BlitSurface(ret, NULL, tmp, NULL);
+    SDL_FreeSurface(ret);
+    ret = tmp;
+  }
 
-	return ret;
+  return ret;
 }
 
-void TCOD_sys_write_bmp(SDL_Surface *surf, const char *filename) {
-	SDL_SaveBMP(surf, filename);
-}
+void TCOD_sys_write_bmp(SDL_Surface* surf, const char* filename) { SDL_SaveBMP(surf, filename); }

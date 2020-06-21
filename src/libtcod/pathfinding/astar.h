@@ -34,8 +34,8 @@
 #ifdef __cplusplus
 #include <algorithm>
 #include <array>
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <tuple>
 #include <vector>
@@ -43,65 +43,57 @@
 #include "graph.h"
 namespace tcod {
 namespace pathfinding {
-template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type, typename NewEdgeFunc>
+template <
+    typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type, typename NewEdgeFunc>
 inline void astar(
-  DistMatrix& dist_map,
-  const Graph& graph,
-  const IndexType& goal_point,
-  const NewEdgeFunc& on_new_edge)
-{
+    DistMatrix& dist_map, const Graph& graph, const IndexType& goal_point, const NewEdgeFunc& on_new_edge) {
   using dist_type = typename DistMatrix::value_type;
   const dist_type MAX_DIST = std::numeric_limits<dist_type>::max();
   using heap_node = std::tuple<dist_type, IndexType>;
-  auto heap_compare = [](const heap_node& a, const heap_node& b) {
-    return std::get<0>(a) > std::get<0>(b);
-  };
+  auto heap_compare = [](const heap_node& a, const heap_node& b) { return std::get<0>(a) > std::get<0>(b); };
   std::vector<heap_node> heap;
   for (ptrdiff_t i = 0; i < dist_map.get_shape().at(0); ++i) {
     for (ptrdiff_t j = 0; j < dist_map.get_shape().at(1); ++j) {
-      if (dist_map[{i, j}] >= MAX_DIST) { continue; }
-      heap.emplace_back(heap_node{ dist_map[{i, j}] + graph.heuristic({i, j}, goal_point), {i, j} });
+      if (dist_map[{i, j}] >= MAX_DIST) {
+        continue;
+      }
+      heap.emplace_back(heap_node{dist_map[{i, j}] + graph.heuristic({i, j}, goal_point), {i, j}});
     }
   }
   std::make_heap(heap.begin(), heap.end(), heap_compare);
   while (heap.size()) {
     const IndexType current_point = std::get<1>(heap.front());
-    if (current_point == goal_point) { break; }
+    if (current_point == goal_point) {
+      break;
+    }
     std::pop_heap(heap.begin(), heap.end(), heap_compare);
     heap.pop_back();
     const dist_type current_distance = dist_map[current_point];
     auto add_edge = [&](const IndexType& next, const dist_type& cost) {
       dist_type next_distance = current_distance + cost;
-      if (dist_map[next] <= next_distance) { return; }
+      if (dist_map[next] <= next_distance) {
+        return;
+      }
       dist_map[next] = next_distance;
       on_new_edge(current_point, next);
-      heap.emplace_back(heap_node{ next_distance + graph.heuristic(next, goal_point), next });
+      heap.emplace_back(heap_node{next_distance + graph.heuristic(next, goal_point), next});
       std::push_heap(heap.begin(), heap.end(), heap_compare);
     };
     graph.with_edges(add_edge, current_point);
   }
 }
 template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type>
-inline void astar(
-  DistMatrix& dist_map,
-  const Graph& graph,
-  const IndexType& goal_point)
-{
-  auto on_new_edge = [](auto, auto){};
+inline void astar(DistMatrix& dist_map, const Graph& graph, const IndexType& goal_point) {
+  auto on_new_edge = [](auto, auto) {};
   astar(dist_map, graph, goal_point, on_new_edge);
 }
 template <typename DistMatrix, typename CostMatrix, typename IndexType = typename DistMatrix::index_type>
 inline void astar2d(
-    DistMatrix& dist_map,
-    const CostMatrix& cost_map,
-    const IndexType& goal_point,
-    int cardinal=1,
-    int diagonal=1)
-{
+    DistMatrix& dist_map, const CostMatrix& cost_map, const IndexType& goal_point, int cardinal = 1, int diagonal = 1) {
   auto graph = SimpleGraph2D<CostMatrix>(cost_map, cardinal, diagonal);
   astar(dist_map, graph, goal_point);
 }
-} // namespace pathfinding
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_PATHFINDING_ASTAR_H_
+}  // namespace pathfinding
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_PATHFINDING_ASTAR_H_

@@ -31,27 +31,24 @@
  */
 #ifndef LIBTCOD_RENDERER_GL_INTERNAL_H_
 #define LIBTCOD_RENDERER_GL_INTERNAL_H_
-#include "config.h"
-
-#include <stdbool.h>
+#include <SDL.h>
 #include <math.h>
+#include <stdbool.h>
 
+#include "../vendor/glad.h"
+#include "../vendor/lodepng.h"
+#include "config.h"
 #include "libtcod_int.h"
 #include "renderer_gl.h"
 
-#include <SDL.h>
-#include "../vendor/glad.h"
-#include "../vendor/lodepng.h"
-
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
  *  Save a screen capture.
  */
-static TCOD_Error gl_screenshot(struct TCOD_Context* context, const char* filename)
-{
-  (void)context; // Unused parameter.
+static TCOD_Error gl_screenshot(struct TCOD_Context* context, const char* filename) {
+  (void)context;  // Unused parameter.
   int rect[4];
   glGetIntegerv(GL_VIEWPORT, rect);
   TCOD_ColorRGBA* pixels = malloc(sizeof(*pixels) * rect[2] * rect[3]);
@@ -75,17 +72,14 @@ static TCOD_Error gl_screenshot(struct TCOD_Context* context, const char* filena
 /**
  *  Return the SDL2 window.
  */
-static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context)
-{
+static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context) {
   struct TCOD_RendererGLCommon* renderer = context->contextdata;
   return renderer->window;
 }
 /**
  *  Convert pixel coordinates to tile coordinates.
  */
-static void gl_pixel_to_tile(
-    struct TCOD_Context* self, double*__restrict x, double*__restrict y)
-{
+static void gl_pixel_to_tile(struct TCOD_Context* self, double* __restrict x, double* __restrict y) {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
   *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
@@ -93,29 +87,33 @@ static void gl_pixel_to_tile(
 /**
     Change the atlas to the given tileset.
  */
-static TCOD_Error gl_set_tileset(
-    struct TCOD_Context* self, TCOD_Tileset* tileset)
-{
+static TCOD_Error gl_set_tileset(struct TCOD_Context* self, TCOD_Tileset* tileset) {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   struct TCOD_TilesetAtlasOpenGL* atlas = TCOD_gl_atlas_new(tileset);
-  if (!atlas) { return TCOD_E_ERROR; }
-  if (renderer->atlas) { TCOD_gl_atlas_delete(renderer->atlas); }
+  if (!atlas) {
+    return TCOD_E_ERROR;
+  }
+  if (renderer->atlas) {
+    TCOD_gl_atlas_delete(renderer->atlas);
+  }
   renderer->atlas = atlas;
   return TCOD_E_OK;
 }
 static TCOD_Error gl_recommended_console_size(
-    struct TCOD_Context* self, int*__restrict columns, int*__restrict rows)
-{
+    struct TCOD_Context* self, int* __restrict columns, int* __restrict rows) {
   struct TCOD_RendererGLCommon* context = self->contextdata;
   int w;
   int h;
   SDL_GL_GetDrawableSize(context->window, &w, &h);
-  if (columns) { *columns = w / context->atlas->tileset->tile_width; }
-  if (rows) { *rows = h / context->atlas->tileset->tile_height; }
+  if (columns) {
+    *columns = w / context->atlas->tileset->tile_width;
+  }
+  if (rows) {
+    *rows = h / context->atlas->tileset->tile_height;
+  }
   return TCOD_E_OK;
 }
-static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
-{
+static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common) {
   if (common->atlas) {
     TCOD_gl_atlas_delete(common->atlas);
     common->atlas = NULL;
@@ -133,24 +131,17 @@ static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
 }
 TCOD_NODISCARD
 static TCOD_Error TCOD_renderer_gl_common_init(
-    int pixel_width,
-    int pixel_height,
-    const char* title,
-    int window_flags,
-    bool vsync,
-    struct TCOD_Tileset* tileset,
-    int gl_major,
-    int gl_minor,
-    int gl_profile,
-    struct TCOD_Context* out)
-{
+    int pixel_width, int pixel_height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset,
+    int gl_major, int gl_minor, int gl_profile, struct TCOD_Context* out) {
   out->get_sdl_window_ = gl_get_sdl_window;
   out->pixel_to_tile_ = gl_pixel_to_tile;
   out->save_screenshot_ = gl_screenshot;
   out->set_tileset = gl_set_tileset;
   out->cb_recommended_console_size_ = gl_recommended_console_size;
   struct TCOD_RendererGLCommon* renderer = out->contextdata;
-  if (!tileset) { return TCOD_E_ERROR; }
+  if (!tileset) {
+    return TCOD_E_ERROR;
+  }
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
     TCOD_set_errorvf("Could not initialize SDL:\n%s", SDL_GetError());
     return TCOD_E_ERROR;
@@ -160,11 +151,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
   renderer->window = SDL_CreateWindow(
-      title,
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
-      pixel_width,
-      pixel_height,
+      title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pixel_width, pixel_height,
       window_flags | SDL_WINDOW_OPENGL);
   if (!renderer->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
@@ -177,7 +164,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     TCOD_renderer_gl_common_uninit(renderer);
     return TCOD_E_ERROR;
   }
-  if(!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+  if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
     TCOD_set_errorv("Failed to invoke the GLAD loader.");
     TCOD_renderer_gl_common_uninit(renderer);
     return TCOD_E_ERROR;
@@ -189,23 +176,15 @@ static TCOD_Error TCOD_renderer_gl_common_init(
   }
   return TCOD_E_OK;
 }
-static inline float minf(float a, float b) {
-  return a < b ? a : b;
-}
-static inline float maxf(float a, float b) {
-  return a > b ? a : b;
-}
-static inline float clampf(float v, float low, float high) {
-  return maxf(low, minf(v, high));
-}
+static inline float minf(float a, float b) { return a < b ? a : b; }
+static inline float maxf(float a, float b) { return a > b ? a : b; }
+static inline float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
 static void gl_get_viewport_scale(
-    const struct TCOD_TilesetAtlasOpenGL* atlas,
-    const struct TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport,
-    float matrix_4x4_out[16],
-    struct TCOD_RendererGLCommon* common_out)
-{
-  if (!viewport) { viewport = &TCOD_VIEWPORT_DEFAULT_; }
+    const struct TCOD_TilesetAtlasOpenGL* atlas, const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport, float matrix_4x4_out[16], struct TCOD_RendererGLCommon* common_out) {
+  if (!viewport) {
+    viewport = &TCOD_VIEWPORT_DEFAULT_;
+  }
   SDL_Rect gl_viewport;
   glGetIntegerv(GL_VIEWPORT, (int*)&gl_viewport);
   const int tile_width = atlas->tileset->tile_width;
@@ -225,22 +204,32 @@ static void gl_get_viewport_scale(
   float translate_y = ((1.0f - scale_h) * clampf(viewport->align_y, 0, 1));
   translate_x = roundf(translate_x * gl_viewport.w) / gl_viewport.w;
   translate_y = roundf(translate_y * gl_viewport.h) / gl_viewport.h;
-  float matrix[4*4] = {
-      2.0f * scale_w, 0, 0, 0,
-      0, 2.0f * scale_h, 0, 0,
-      0, 0, 1, 0,
-      -1.0f + 2.0f * translate_x, -1.0f + 2.0f * translate_y, 1, 1,
+  float matrix[4 * 4] = {
+      2.0f * scale_w,
+      0,
+      0,
+      0,
+      0,
+      2.0f * scale_h,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1.0f + 2.0f * translate_x,
+      -1.0f + 2.0f * translate_y,
+      1,
+      1,
   };
   memcpy(matrix_4x4_out, matrix, sizeof(matrix));
   // Track viewport scaling for mouse coordinates.
   common_out->last_offset_x = (double)translate_x * (double)gl_viewport.w;
   common_out->last_offset_y = (double)translate_x * (double)gl_viewport.h;
-  common_out->last_scale_x =
-      (double)scale_w * (double)console->w / (double)gl_viewport.w;
-  common_out->last_scale_y =
-      (double)scale_h * (double)console->h / (double)gl_viewport.h;
+  common_out->last_scale_x = (double)scale_w * (double)console->w / (double)gl_viewport.w;
+  common_out->last_scale_y = (double)scale_h * (double)console->h / (double)gl_viewport.h;
 }
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_RENDERER_GL_INTERNAL_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_RENDERER_GL_INTERNAL_H_

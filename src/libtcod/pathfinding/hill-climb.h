@@ -38,12 +38,8 @@ namespace tcod {
 namespace pathfinding {
 template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type, typename Compare>
 inline auto simple_hillclimb(
-    const DistMatrix& cost_map,
-    const Graph& graph,
-    const IndexType& start,
-    const Compare& compare)
--> std::vector<IndexType>
-{
+    const DistMatrix& cost_map, const Graph& graph, const IndexType& start, const Compare& compare)
+    -> std::vector<IndexType> {
   std::vector<IndexType> results;
   IndexType current = start;
   IndexType next = start;
@@ -60,16 +56,11 @@ inline auto simple_hillclimb(
   return results;
 }
 template <typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type>
-inline auto simple_hillclimb(
-    const DistMatrix& cost_map,
-    const Graph& graph,
-    const IndexType& start)
--> std::vector<IndexType>
-{
-  return simple_hillclimb(cost_map, graph, start,
-                          std::less<typename DistMatrix::value_type>());
+inline auto simple_hillclimb(const DistMatrix& cost_map, const Graph& graph, const IndexType& start)
+    -> std::vector<IndexType> {
+  return simple_hillclimb(cost_map, graph, start, std::less<typename DistMatrix::value_type>());
 }
-} // namespace pathfinding
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_PATHFINDING_HILL_CLIMB_H_
+}  // namespace pathfinding
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_PATHFINDING_HILL_CLIMB_H_

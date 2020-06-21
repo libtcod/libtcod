@@ -49,7 +49,7 @@ struct TCOD_Frontier {
 };
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
     Create a new pathfinder frontier.
 
@@ -82,21 +82,17 @@ TCOD_PUBLIC TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier);
     For A* this should be `dist` plus the maximum possible distance to the
     goal.
  */
-TCOD_PUBLIC TCOD_Error TCOD_frontier_push(
-    struct TCOD_Frontier*__restrict frontier,
-    const int*__restrict index,
-    int dist,
-    int heuristic);
+TCOD_PUBLIC TCOD_Error
+TCOD_frontier_push(struct TCOD_Frontier* __restrict frontier, const int* __restrict index, int dist, int heuristic);
 /**
     Return the current number of nodes in this frontier.
  */
-TCOD_PUBLIC TCOD_NODISCARD int TCOD_frontier_size(
-    const struct TCOD_Frontier* frontier);
+TCOD_PUBLIC TCOD_NODISCARD int TCOD_frontier_size(const struct TCOD_Frontier* frontier);
 /**
     Remove all nodes from this frontier.
  */
 TCOD_PUBLIC TCOD_Error TCOD_frontier_clear(struct TCOD_Frontier* frontier);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // TCOD_PATHFINDER_FRONTIER_H
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // TCOD_PATHFINDER_FRONTIER_H

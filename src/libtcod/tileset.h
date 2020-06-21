@@ -33,10 +33,10 @@
 #define LIBTCOD_TILESET_H_
 #ifdef __cplusplus
 #include <memory>
-#endif // __cplusplus
+#endif  // __cplusplus
+#include "color.h"
 #include "config.h"
 #include "error.h"
-#include "color.h"
 struct TCOD_Tileset;
 struct TCOD_TilesetObserver {
   struct TCOD_Tileset* tileset;
@@ -51,9 +51,9 @@ struct TCOD_Tileset {
   int tile_length;
   int tiles_capacity;
   int tiles_count;
-  struct TCOD_ColorRGBA*__restrict pixels;
+  struct TCOD_ColorRGBA* __restrict pixels;
   int character_map_length;
-  int*__restrict character_map;
+  int* __restrict character_map;
   struct TCOD_TilesetObserver* observer_list;
   int virtual_columns;
   volatile int ref_count;
@@ -61,7 +61,7 @@ struct TCOD_Tileset {
 typedef struct TCOD_Tileset TCOD_Tileset;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
  *  Create a new tile-set with the given tile size.
  */
@@ -100,10 +100,8 @@ TCOD_PUBLIC int TCOD_tileset_get_tile_height_(const TCOD_Tileset* tileset);
  *  The tileset functions are provisional, the API may change in the future.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC TCOD_Error TCOD_tileset_get_tile_(
-    const TCOD_Tileset*__restrict tileset,
-    int codepoint,
-    struct TCOD_ColorRGBA*__restrict buffer);
+TCOD_PUBLIC TCOD_Error
+TCOD_tileset_get_tile_(const TCOD_Tileset* __restrict tileset, int codepoint, struct TCOD_ColorRGBA* __restrict buffer);
 /**
  *  Upload a tile from a pixel buffer into this tileset.
  *
@@ -115,16 +113,14 @@ TCOD_PUBLIC TCOD_Error TCOD_tileset_get_tile_(
  *  The tileset functions are provisional, the API may change in the future.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC TCOD_Error TCOD_tileset_set_tile_(
-    TCOD_Tileset*__restrict tileset,
-    int codepoint,
-    const struct TCOD_ColorRGBA*__restrict buffer);
+TCOD_PUBLIC TCOD_Error
+TCOD_tileset_set_tile_(TCOD_Tileset* __restrict tileset, int codepoint, const struct TCOD_ColorRGBA* __restrict buffer);
 /**
  *  Load a font from a tilesheet.
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
-  const char* filename, int columns, int rows, int n, int*__restrict charmap);
+    const char* filename, int columns, int rows, int n, int* __restrict charmap);
 /**
  *  Assign a codepoint to an existing tile based on its tile ID.
  *
@@ -133,24 +129,21 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
  *  Returns a negative value on error.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC int TCOD_tileset_assign_tile(
-    struct TCOD_Tileset* tileset, int tile_id, int codepoint);
+TCOD_PUBLIC int TCOD_tileset_assign_tile(struct TCOD_Tileset* tileset, int tile_id, int codepoint);
 /**
  *  Return a pointer to the tile for `codepoint`.
  *
  *  Returns NULL if no tile exists for codepoint.
  */
 TCOD_NODISCARD
-TCOD_PUBLIC const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(
-    const TCOD_Tileset* tileset, int codepoint);
+TCOD_PUBLIC const struct TCOD_ColorRGBA* TCOD_tileset_get_tile(const TCOD_Tileset* tileset, int codepoint);
 /**
  *  Return a new observer to this tileset.
  *
  *  For internal use.
  */
 TCOD_NODISCARD
-struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
-    struct TCOD_Tileset* tileset);
+struct TCOD_TilesetObserver* TCOD_tileset_observer_new(struct TCOD_Tileset* tileset);
 /**
  *  Delete an existing observer.
  *
@@ -158,8 +151,7 @@ struct TCOD_TilesetObserver* TCOD_tileset_observer_new(
  *
  *  For internal use.
  */
-void TCOD_tileset_observer_delete(
-    struct TCOD_TilesetObserver* observer);
+void TCOD_tileset_observer_delete(struct TCOD_TilesetObserver* observer);
 /**
  *  Called to notify any observers that a tile has been changed.  This may
  *  cause running atlases to update or mark cache consoles as dirty.
@@ -175,14 +167,12 @@ void TCOD_tileset_notify_tile_changed(TCOD_Tileset* tileset, int tile_id);
 TCOD_NODISCARD
 TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int desired);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 struct TilesetDeleter {
-  void operator()(TCOD_Tileset* tileset) const {
-    TCOD_tileset_delete(tileset);
-  }
+  void operator()(TCOD_Tileset* tileset) const { TCOD_tileset_delete(tileset); }
 };
 typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
-} // namespace tcod
-#endif // __cplusplus
-#endif /* LIBTCOD_TILESET_TILESET_H_ */
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  /* LIBTCOD_TILESET_TILESET_H_ */

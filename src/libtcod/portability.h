@@ -58,54 +58,54 @@
    TCOD_FREEBSD64 : 64 bits FreeBSD
    TCOD_FREEBSD32 : 32 bits FreeBSD */
 
-#if defined( _MSC_VER )
-#  define TCOD_VISUAL_STUDIO
-#  define TCOD_WINDOWS
-#  ifdef _WIN64
-#    define TCOD_WIN64
-#    define TCOD_64BITS
-#  else
-#    define TCOD_WIN32
-#  endif
-#elif defined( __MINGW32__ )
-#  define TCOD_WINDOWS
-#  define TCOD_MINGW32
-#  ifdef _WIN64
-#    define TCOD_WIN64
-#    define TCOD_64BITS
-#  else
-#    define TCOD_WIN32
-#  endif
-#elif defined( __HAIKU__ )
-#  define TCOD_HAIKU
-#  define TCOD_GCC
-#  if __WORDSIZE == 64
-#    define TCOD_64BITS
-#  endif
-#elif defined( __linux )
-#  define TCOD_LINUX
-#  define TCOD_GCC
-#  if __WORDSIZE == 64
-#    define TCOD_LINUX64
-#    define TCOD_64BITS
-#  else
-#    define TCOD_LINUX32
-#  endif
-#elif defined( __FreeBSD__ )
-#  define TCOD_FREEBSD
-#  define TCOD_GCC
-#  if __WORDSIZE == 64
-#    define TCOD_FREEBSD64
-#    define TCOD_64BITS
-#  else
-#    define TCOD_FREEBSD32
-#  endif
-#elif defined (__APPLE__) && defined (__MACH__)
-#  define TCOD_MACOSX
-#  define TCOD_GCC
-#  if __WORDSIZE == 64
-#    define TCOD_64BITS
-#  endif
+#if defined(_MSC_VER)
+#define TCOD_VISUAL_STUDIO
+#define TCOD_WINDOWS
+#ifdef _WIN64
+#define TCOD_WIN64
+#define TCOD_64BITS
+#else
+#define TCOD_WIN32
+#endif
+#elif defined(__MINGW32__)
+#define TCOD_WINDOWS
+#define TCOD_MINGW32
+#ifdef _WIN64
+#define TCOD_WIN64
+#define TCOD_64BITS
+#else
+#define TCOD_WIN32
+#endif
+#elif defined(__HAIKU__)
+#define TCOD_HAIKU
+#define TCOD_GCC
+#if __WORDSIZE == 64
+#define TCOD_64BITS
+#endif
+#elif defined(__linux)
+#define TCOD_LINUX
+#define TCOD_GCC
+#if __WORDSIZE == 64
+#define TCOD_LINUX64
+#define TCOD_64BITS
+#else
+#define TCOD_LINUX32
+#endif
+#elif defined(__FreeBSD__)
+#define TCOD_FREEBSD
+#define TCOD_GCC
+#if __WORDSIZE == 64
+#define TCOD_FREEBSD64
+#define TCOD_64BITS
+#else
+#define TCOD_FREEBSD32
+#endif
+#elif defined(__APPLE__) && defined(__MACH__)
+#define TCOD_MACOSX
+#define TCOD_GCC
+#if __WORDSIZE == 64
+#define TCOD_64BITS
+#endif
 #endif
 
 /* unicode rendering functions support */
@@ -120,12 +120,12 @@
 #include <stdbool.h>
 
 /* ansi C lacks support for those functions */
-TCODLIB_CAPI char *TCOD_strdup(const char *s);
-TCODLIB_CAPI int TCOD_strcasecmp(const char *s1, const char *s2);
-TCODLIB_CAPI int TCOD_strncasecmp(const char *s1, const char *s2, size_t n);
+TCODLIB_CAPI char* TCOD_strdup(const char* s);
+TCODLIB_CAPI int TCOD_strcasecmp(const char* s1, const char* s2);
+TCODLIB_CAPI int TCOD_strncasecmp(const char* s1, const char* s2, size_t n);
 
 /* Define vswprintf across platforms. */
 #ifdef _WIN32
 #define vswprintf _vsnwprintf /* Windows */
-#endif /* _WIN32 */
-#endif /* LIBTCOD_PORTABILITY_H */
+#endif                        /* _WIN32 */
+#endif                        /* LIBTCOD_PORTABILITY_H */

@@ -36,11 +36,8 @@
     Render a single tile.
  */
 static void render_tile(
-    const TCOD_Tileset*__restrict tileset,
-    const struct TCOD_ConsoleTile*__restrict tile,
-    struct TCOD_ColorRGBA*__restrict out_rgba,
-    int stride)
-{
+    const TCOD_Tileset* __restrict tileset, const struct TCOD_ConsoleTile* __restrict tile,
+    struct TCOD_ColorRGBA* __restrict out_rgba, int stride) {
   const TCOD_ColorRGBA* graphic = TCOD_tileset_get_tile(tileset, tile->ch);
   for (int y = 0; y < tileset->tile_height; ++y) {
     TCOD_ColorRGBA* out = (TCOD_ColorRGBA*)((char*)out_rgba + stride * y);
@@ -64,11 +61,8 @@ static void render_tile(
   }
 }
 TCOD_Error TCOD_tileset_render_to_surface(
-    const TCOD_Tileset*__restrict tileset,
-    const TCOD_Console*__restrict console,
-    TCOD_Console*__restrict* cache,
-    struct SDL_Surface*__restrict* surface_out)
-{
+    const TCOD_Tileset* __restrict tileset, const TCOD_Console* __restrict console, TCOD_Console* __restrict* cache,
+    struct SDL_Surface* __restrict* surface_out) {
   if (!tileset) {
     TCOD_set_errorv("Tileset argument must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -84,16 +78,14 @@ TCOD_Error TCOD_tileset_render_to_surface(
   const int total_width = tileset->tile_width * console->w;
   const int total_height = tileset->tile_height * console->h;
   if (*surface_out) {
-    if ((*surface_out)->w != total_width
-        || (*surface_out)->h != total_height
-        || (*surface_out)->format->format != SDL_PIXELFORMAT_RGBA32) {
-          SDL_FreeSurface(*surface_out);
-          *surface_out = NULL;
+    if ((*surface_out)->w != total_width || (*surface_out)->h != total_height ||
+        (*surface_out)->format->format != SDL_PIXELFORMAT_RGBA32) {
+      SDL_FreeSurface(*surface_out);
+      *surface_out = NULL;
     }
   }
   if (!*surface_out) {
-    *surface_out = SDL_CreateRGBSurfaceWithFormat(
-        0, total_width, total_height, 32, SDL_PIXELFORMAT_RGBA32);
+    *surface_out = SDL_CreateRGBSurfaceWithFormat(0, total_width, total_height, 32, SDL_PIXELFORMAT_RGBA32);
   }
   if (cache) {
     if (*cache) {
@@ -113,16 +105,11 @@ TCOD_Error TCOD_tileset_render_to_surface(
       const struct TCOD_ConsoleTile* tile = &console->tiles[console_i];
       if (cache && *cache) {
         const struct TCOD_ConsoleTile* cache_tile = &(*cache)->tiles[console_i];
-        if (cache_tile->ch == tile->ch
-            && cache_tile->fg.r == tile->fg.r
-            && cache_tile->fg.g == tile->fg.g
-            && cache_tile->fg.b == tile->fg.b
-            && cache_tile->fg.a == tile->fg.a
-            && cache_tile->bg.r == tile->bg.r
-            && cache_tile->bg.g == tile->bg.g
-            && cache_tile->bg.b == tile->bg.b
-            && cache_tile->bg.a == tile->bg.a
-        ) { continue; }
+        if (cache_tile->ch == tile->ch && cache_tile->fg.r == tile->fg.r && cache_tile->fg.g == tile->fg.g &&
+            cache_tile->fg.b == tile->fg.b && cache_tile->fg.a == tile->fg.a && cache_tile->bg.r == tile->bg.r &&
+            cache_tile->bg.g == tile->bg.g && cache_tile->bg.b == tile->bg.b && cache_tile->bg.a == tile->bg.a) {
+          continue;
+        }
       }
       TCOD_ColorRGBA* out = (TCOD_ColorRGBA*)(
           (char*)(*surface_out)->pixels

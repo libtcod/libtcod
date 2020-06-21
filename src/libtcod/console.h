@@ -35,14 +35,14 @@
 #include "stdbool.h"
 #ifdef __cplusplus
 #include <array>
-#include <stdexcept>
 #include <memory>
-#endif // __cplusplus
+#include <stdexcept>
+#endif  // __cplusplus
 
-#include "config.h"
 #include "color.h"
-#include "tileset.h"
+#include "config.h"
 #include "error.h"
+#include "tileset.h"
 /**
  *  \enum TCOD_bkgnd_flag_t
  *
@@ -69,25 +69,15 @@ typedef enum {
  *
  *  Print justification options.
  */
-typedef enum {
-  TCOD_LEFT,
-  TCOD_RIGHT,
-  TCOD_CENTER
-} TCOD_alignment_t;
+typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
 /**
  *  A console tile.
  */
 struct TCOD_ConsoleTile {
 #ifdef __cplusplus
-  bool operator==(const TCOD_ConsoleTile& rhs) const noexcept
-  {
-    return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg;
-  }
-  bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept
-  {
-    return !(*this == rhs);
-  }
-#endif // __cplusplus
+  bool operator==(const TCOD_ConsoleTile& rhs) const noexcept { return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg; }
+  bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
+#endif  // __cplusplus
   /**
    *  The Unicode codepoint for this tile.
    */
@@ -111,70 +101,42 @@ struct TCOD_ConsoleTile {
  */
 struct TCOD_Console {
 #ifdef __cplusplus
-  struct TCOD_ConsoleTile* begin() noexcept
-  {
+  struct TCOD_ConsoleTile* begin() noexcept {
     return tiles;
   }
-  const struct TCOD_ConsoleTile* begin() const noexcept
-  {
-    return tiles;
-  }
-  struct TCOD_ConsoleTile* end() noexcept
-  {
+  const struct TCOD_ConsoleTile* begin() const noexcept { return tiles; }
+  struct TCOD_ConsoleTile* end() noexcept {
     return tiles + size();
   }
-  const struct TCOD_ConsoleTile* end() const noexcept
-  {
-    return tiles + size();
-  }
-  auto operator[](const std::array<int, 2>& yx) noexcept
-  -> struct TCOD_ConsoleTile&
-  {
+  const struct TCOD_ConsoleTile* end() const noexcept { return tiles + size(); }
+  auto operator[](const std::array<int, 2>& yx) noexcept -> struct TCOD_ConsoleTile& {
     return tiles[w * yx[0] + yx[1]];
   }
-  auto operator[](const std::array<int, 2>& yx) const noexcept
-  -> const struct TCOD_ConsoleTile&
-  {
+  auto operator[](const std::array<int, 2>& yx) const noexcept -> const struct TCOD_ConsoleTile& {
     return tiles[w * yx[0] + yx[1]];
   }
-  struct TCOD_ConsoleTile& at(int y, int x)
-  {
+  struct TCOD_ConsoleTile& at(int y, int x) {
     range_check_(y, x);
     return (*this)[{y, x}];
   }
-  const struct TCOD_ConsoleTile& at(int y, int x) const
-  {
+  const struct TCOD_ConsoleTile& at(int y, int x) const {
     range_check_(y, x);
     return (*this)[{y, x}];
   }
-  int size() const
-  {
-    return elements;
-  }
-  void range_check_(int y, int x) const
-  {
+  int size() const { return elements; }
+  void range_check_(int y, int x) const {
     if (!in_bounds(y, x)) {
       throw std::out_of_range(
-        std::string("Out of bounds lookup {x=")
-        + std::to_string(x)
-        + ", y="
-        + std::to_string(y)
-        + "} on console of shape {"
-        + std::to_string(w)
-        + ", "
-        + std::to_string(h)
-        + "}.");
+          std::string("Out of bounds lookup {x=") + std::to_string(x) + ", y=" + std::to_string(y) +
+          "} on console of shape {" + std::to_string(w) + ", " + std::to_string(h) + "}.");
     }
   }
-  bool in_bounds(int y, int x) const noexcept
-  {
-    return 0 <= x && x < w && 0 <= y && y < h;
-  }
-#endif // __cplusplus
+  bool in_bounds(int y, int x) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
+#endif  // __cplusplus
   /** Console width and height (in characters, not pixels.) */
-  int w,h;
+  int w, h;
   /** A contiguous array of console tiles. */
-  struct TCOD_ConsoleTile*__restrict tiles;
+  struct TCOD_ConsoleTile* __restrict tiles;
   /** Default background operator for print & print_rect functions. */
   TCOD_bkgnd_flag_t bkgnd_flag;
   /** Default alignment for print & print_rect functions. */
@@ -203,10 +165,10 @@ struct TCOD_Console {
   void (*on_delete)(struct TCOD_Console* self);
 };
 typedef struct TCOD_Console TCOD_Console;
-typedef struct TCOD_Console *TCOD_console_t;
+typedef struct TCOD_Console* TCOD_console_t;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
  *  Return a new console with a specific number of columns and rows.
  *
@@ -214,20 +176,16 @@ extern "C" {
  *  \param h Number of columns.
  *  \return A pointer to the new console, or NULL on error.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_Console* TCOD_console_new(int w, int h);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Console* TCOD_console_new(int w, int h);
 /**
  *  Return the width of a console.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-int TCOD_console_get_width(const TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_width(const TCOD_Console* con);
 /**
  *  Return the height of a console.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-int TCOD_console_get_height(const TCOD_Console* con);
-TCOD_PUBLIC void TCOD_console_set_key_color(
-    TCOD_Console* con, TCOD_color_t col);
+TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_height(const TCOD_Console* con);
+TCOD_PUBLIC void TCOD_console_set_key_color(TCOD_Console* con, TCOD_color_t col);
 /**
  *  Blit from one console to another.
  *
@@ -251,28 +209,11 @@ TCOD_PUBLIC void TCOD_console_set_key_color(
  *  \endrst
  */
 TCOD_PUBLIC void TCOD_console_blit(
-    const TCOD_Console*__restrict src,
-    int xSrc,
-    int ySrc,
-    int wSrc,
-    int hSrc,
-    TCOD_Console*__restrict dst,
-    int xDst,
-    int yDst,
-    float foreground_alpha,
-    float background_alpha);
+    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
+    int yDst, float foreground_alpha, float background_alpha);
 TCOD_PUBLIC void TCOD_console_blit_key_color(
-    const TCOD_Console*__restrict src,
-    int xSrc,
-    int ySrc,
-    int wSrc,
-    int hSrc,
-    TCOD_Console*__restrict dst,
-    int xDst,
-    int yDst,
-    float foreground_alpha,
-    float background_alpha,
-    const TCOD_color_t *key_color);
+    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
+    int yDst, float foreground_alpha, float background_alpha, const TCOD_color_t* key_color);
 /**
  *  Delete a console.
  *
@@ -283,10 +224,8 @@ TCOD_PUBLIC void TCOD_console_blit_key_color(
  */
 TCOD_PUBLIC void TCOD_console_delete(TCOD_Console* console);
 
-TCOD_PUBLIC void TCOD_console_set_default_background(
-    TCOD_Console* con, TCOD_color_t col);
-TCOD_PUBLIC void TCOD_console_set_default_foreground(
-    TCOD_Console* con, TCOD_color_t col);
+TCOD_PUBLIC void TCOD_console_set_default_background(TCOD_Console* con, TCOD_color_t col);
+TCOD_PUBLIC void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col);
 /**
  *  Clear a console to its default colors and the space character code.
  */
@@ -301,11 +240,7 @@ TCOD_PUBLIC void TCOD_console_clear(TCOD_Console* con);
  *  \param flag The blend mode to use.
  */
 TCOD_PUBLIC void TCOD_console_set_char_background(
-    TCOD_Console* con,
-    int x,
-    int y,
-    TCOD_color_t col,
-    TCOD_bkgnd_flag_t flag);
+    TCOD_Console* con, int x, int y, TCOD_color_t col, TCOD_bkgnd_flag_t flag);
 /**
  *  Change the foreground color of a console tile.
  *
@@ -314,8 +249,7 @@ TCOD_PUBLIC void TCOD_console_set_char_background(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param col The foreground color to set.
  */
-TCOD_PUBLIC void TCOD_console_set_char_foreground(
-    TCOD_Console* con, int x, int y, TCOD_color_t col);
+TCOD_PUBLIC void TCOD_console_set_char_foreground(TCOD_Console* con, int x, int y, TCOD_color_t col);
 /**
  *  Change a character on a console tile, without changing its colors.
  *
@@ -324,8 +258,7 @@ TCOD_PUBLIC void TCOD_console_set_char_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \param c The character code to set.
  */
-TCOD_PUBLIC void TCOD_console_set_char(
-    TCOD_Console* con, int x, int y, int c);
+TCOD_PUBLIC void TCOD_console_set_char(TCOD_Console* con, int x, int y, int c);
 /**
  *  Draw a character on a console using the default colors.
  *
@@ -335,8 +268,7 @@ TCOD_PUBLIC void TCOD_console_set_char(
  *  \param c The character code to place.
  *  \param flag A TCOD_bkgnd_flag_t flag.
  */
-TCOD_PUBLIC void TCOD_console_put_char(
-    TCOD_Console* con, int x, int y, int c, TCOD_bkgnd_flag_t flag);
+TCOD_PUBLIC void TCOD_console_put_char(TCOD_Console* con, int x, int y, int c, TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a character on the console with the given colors.
  *
@@ -347,48 +279,32 @@ TCOD_PUBLIC void TCOD_console_put_char(
  *  \param fore The foreground color.
  *  \param back The background color.  This color will not be blended.
  */
-TCOD_PUBLIC void TCOD_console_put_char_ex(
-    TCOD_Console* con,
-    int x,
-    int y,
-    int c,
-    TCOD_color_t fore, TCOD_color_t back);
+TCOD_PUBLIC void TCOD_console_put_char_ex(TCOD_Console* con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back);
 /**
  *  Set a consoles default background flag.
  *
  *  \param con A console pointer.
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
-TCOD_PUBLIC void TCOD_console_set_background_flag(
-    TCOD_Console* con,
-    TCOD_bkgnd_flag_t flag);
+TCOD_PUBLIC void TCOD_console_set_background_flag(TCOD_Console* con, TCOD_bkgnd_flag_t flag);
 /**
  *  Return a consoles default background flag.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_bkgnd_flag_t TCOD_console_get_background_flag(
-    TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_Console* con);
 /**
  *  Set a consoles default alignment.
  *
  *  \param con A console pointer.
  *  \param alignment One of TCOD_alignment_t
  */
-TCOD_PUBLIC void TCOD_console_set_alignment(
-    TCOD_Console* con,
-    TCOD_alignment_t alignment);
+TCOD_PUBLIC void TCOD_console_set_alignment(TCOD_Console* con, TCOD_alignment_t alignment);
 /**
  *  Return a consoles default alignment.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
 
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_color_t TCOD_console_get_default_background(
-    TCOD_Console* con);
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_color_t TCOD_console_get_default_foreground(
-    TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_foreground(TCOD_Console* con);
 /**
  *  Return the background color of a console at x,y
  *
@@ -397,9 +313,7 @@ TCOD_color_t TCOD_console_get_default_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the background color.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_color_t TCOD_console_get_char_background(
-    const TCOD_Console* con, int x, int y);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_char_background(const TCOD_Console* con, int x, int y);
 /**
  *  Return the foreground color of a console at x,y
  *
@@ -408,9 +322,7 @@ TCOD_color_t TCOD_console_get_char_background(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return A TCOD_color_t struct with a copy of the foreground color.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_color_t TCOD_console_get_char_foreground(
-    const TCOD_Console* con, int x, int y);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_char_foreground(const TCOD_Console* con, int x, int y);
 /**
  *  Return a character code of a console at x,y
  *
@@ -419,8 +331,7 @@ TCOD_color_t TCOD_console_get_char_foreground(
  *  \param y The Y coordinate, the top-most position being 0.
  *  \return The character code.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
+TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
 /**
  *  Fade the color of the display.
  *
@@ -435,34 +346,29 @@ void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
  *
  *  \return At 255 colors are normal and at 0 colors are completely faded.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-uint8_t TCOD_console_get_fade(void);
+TCOD_PUBLIC TCOD_NODISCARD uint8_t TCOD_console_get_fade(void);
 /**
  *  Return the fade color.
  *
  *  \return The current fading color.
  */
-TCOD_PUBLIC TCOD_NODISCARD
-TCOD_color_t TCOD_console_get_fading_color(void);
-void TCOD_console_resize_(
-    TCOD_Console* console, int width, int height);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_fading_color(void);
+void TCOD_console_resize_(TCOD_Console* console, int width, int height);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 struct ConsoleDeleter {
-  void operator()(TCOD_Console* console) const {
-    TCOD_console_delete(console);
-  }
+  void operator()(TCOD_Console* console) const { TCOD_console_delete(console); }
 };
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
 TCOD_NODISCARD
-inline auto new_console(int width, int height)
--> ConsolePtr
-{
+inline auto new_console(int width, int height) -> ConsolePtr {
   ConsolePtr console{TCOD_console_new(width, height)};
-  if (!console) { throw std::runtime_error(TCOD_get_error()); }
+  if (!console) {
+    throw std::runtime_error(TCOD_get_error());
+  }
   return console;
 }
-} // namespace tcod
-#endif // __cplusplus
-#endif // TCOD_CONSOLE_H_
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // TCOD_CONSOLE_H_

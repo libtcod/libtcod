@@ -35,12 +35,9 @@
 #include "config.h"
 #include "console_types.h"
 #include "list.h"
-TCODLIB_CAPI TCOD_console_t TCOD_console_from_xp(const char *filename);
-TCODLIB_CAPI bool TCOD_console_load_xp(TCOD_Console* con,
-                                       const char *filename);
-TCODLIB_CAPI bool TCOD_console_save_xp(
-    const TCOD_Console* con, const char *filename, int compress_level);
-TCODLIB_CAPI TCOD_list_t TCOD_console_list_from_xp(const char *filename);
-TCODLIB_CAPI bool TCOD_console_list_save_xp(
-    TCOD_list_t console_list, const char *filename, int compress_level);
+TCODLIB_CAPI TCOD_console_t TCOD_console_from_xp(const char* filename);
+TCODLIB_CAPI bool TCOD_console_load_xp(TCOD_Console* con, const char* filename);
+TCODLIB_CAPI bool TCOD_console_save_xp(const TCOD_Console* con, const char* filename, int compress_level);
+TCODLIB_CAPI TCOD_list_t TCOD_console_list_from_xp(const char* filename);
+TCODLIB_CAPI bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level);
 #endif /* TCOD_CONSOLE_REXPAINT_H_ */

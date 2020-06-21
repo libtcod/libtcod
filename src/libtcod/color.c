@@ -37,31 +37,31 @@
 #include "utility.h"
 
 /* grey levels */
-const TCOD_color_t TCOD_black={TCOD_BLACK};
-const TCOD_color_t TCOD_darkest_grey={TCOD_DARKEST_GREY};
-const TCOD_color_t TCOD_darker_grey={TCOD_DARKER_GREY};
-const TCOD_color_t TCOD_dark_grey={TCOD_DARK_GREY};
-const TCOD_color_t TCOD_grey={TCOD_GREY};
-const TCOD_color_t TCOD_light_grey={TCOD_LIGHT_GREY};
-const TCOD_color_t TCOD_lighter_grey={TCOD_LIGHTER_GREY};
-const TCOD_color_t TCOD_lightest_grey={TCOD_LIGHTEST_GREY};
-const TCOD_color_t TCOD_darkest_gray={TCOD_DARKEST_GREY};
-const TCOD_color_t TCOD_darker_gray={TCOD_DARKER_GREY};
-const TCOD_color_t TCOD_dark_gray={TCOD_DARK_GREY};
-const TCOD_color_t TCOD_gray={TCOD_GREY};
-const TCOD_color_t TCOD_light_gray={TCOD_LIGHT_GREY};
-const TCOD_color_t TCOD_lighter_gray={TCOD_LIGHTER_GREY};
-const TCOD_color_t TCOD_lightest_gray={TCOD_LIGHTEST_GREY};
-const TCOD_color_t TCOD_white={TCOD_WHITE};
+const TCOD_color_t TCOD_black = {TCOD_BLACK};
+const TCOD_color_t TCOD_darkest_grey = {TCOD_DARKEST_GREY};
+const TCOD_color_t TCOD_darker_grey = {TCOD_DARKER_GREY};
+const TCOD_color_t TCOD_dark_grey = {TCOD_DARK_GREY};
+const TCOD_color_t TCOD_grey = {TCOD_GREY};
+const TCOD_color_t TCOD_light_grey = {TCOD_LIGHT_GREY};
+const TCOD_color_t TCOD_lighter_grey = {TCOD_LIGHTER_GREY};
+const TCOD_color_t TCOD_lightest_grey = {TCOD_LIGHTEST_GREY};
+const TCOD_color_t TCOD_darkest_gray = {TCOD_DARKEST_GREY};
+const TCOD_color_t TCOD_darker_gray = {TCOD_DARKER_GREY};
+const TCOD_color_t TCOD_dark_gray = {TCOD_DARK_GREY};
+const TCOD_color_t TCOD_gray = {TCOD_GREY};
+const TCOD_color_t TCOD_light_gray = {TCOD_LIGHT_GREY};
+const TCOD_color_t TCOD_lighter_gray = {TCOD_LIGHTER_GREY};
+const TCOD_color_t TCOD_lightest_gray = {TCOD_LIGHTEST_GREY};
+const TCOD_color_t TCOD_white = {TCOD_WHITE};
 
 /* sepia */
-const TCOD_color_t TCOD_darkest_sepia={TCOD_DARKEST_SEPIA};
-const TCOD_color_t TCOD_darker_sepia={TCOD_DARKER_SEPIA};
-const TCOD_color_t TCOD_dark_sepia={TCOD_DARK_SEPIA};
-const TCOD_color_t TCOD_sepia={TCOD_SEPIA};
-const TCOD_color_t TCOD_light_sepia={TCOD_LIGHT_SEPIA};
-const TCOD_color_t TCOD_lighter_sepia={TCOD_LIGHTER_SEPIA};
-const TCOD_color_t TCOD_lightest_sepia={TCOD_LIGHTEST_SEPIA};
+const TCOD_color_t TCOD_darkest_sepia = {TCOD_DARKEST_SEPIA};
+const TCOD_color_t TCOD_darker_sepia = {TCOD_DARKER_SEPIA};
+const TCOD_color_t TCOD_dark_sepia = {TCOD_DARK_SEPIA};
+const TCOD_color_t TCOD_sepia = {TCOD_SEPIA};
+const TCOD_color_t TCOD_light_sepia = {TCOD_LIGHT_SEPIA};
+const TCOD_color_t TCOD_lighter_sepia = {TCOD_LIGHTER_SEPIA};
+const TCOD_color_t TCOD_lightest_sepia = {TCOD_LIGHTEST_SEPIA};
 
 /* standard colors */
 const TCOD_color_t TCOD_red = {TCOD_RED};
@@ -259,28 +259,174 @@ const TCOD_color_t TCOD_peach = {TCOD_PEACH};
 
 /* color array */
 const TCOD_color_t TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
- {{TCOD_DESATURATED_RED},{TCOD_LIGHTEST_RED},{TCOD_LIGHTER_RED},{TCOD_LIGHT_RED},{TCOD_RED},{TCOD_DARK_RED},{TCOD_DARKER_RED},{TCOD_DARKEST_RED}},
- {{TCOD_DESATURATED_FLAME},{TCOD_LIGHTEST_FLAME},{TCOD_LIGHTER_FLAME},{TCOD_LIGHT_FLAME},{TCOD_FLAME},{TCOD_DARK_FLAME},{TCOD_DARKER_FLAME},{TCOD_DARKEST_FLAME}},
- {{TCOD_DESATURATED_ORANGE},{TCOD_LIGHTEST_ORANGE},{TCOD_LIGHTER_ORANGE},{TCOD_LIGHT_ORANGE},{TCOD_ORANGE},{TCOD_DARK_ORANGE},{TCOD_DARKER_ORANGE},{TCOD_DARKEST_ORANGE}},
- {{TCOD_DESATURATED_AMBER},{TCOD_LIGHTEST_AMBER},{TCOD_LIGHTER_AMBER},{TCOD_LIGHT_AMBER},{TCOD_AMBER},{TCOD_DARK_AMBER},{TCOD_DARKER_AMBER},{TCOD_DARKEST_AMBER}},
- {{TCOD_DESATURATED_YELLOW},{TCOD_LIGHTEST_YELLOW},{TCOD_LIGHTER_YELLOW},{TCOD_LIGHT_YELLOW},{TCOD_YELLOW},{TCOD_DARK_YELLOW},{TCOD_DARKER_YELLOW},{TCOD_DARKEST_YELLOW}},
- {{TCOD_DESATURATED_LIME},{TCOD_LIGHTEST_LIME},{TCOD_LIGHTER_LIME},{TCOD_LIGHT_LIME},{TCOD_LIME},{TCOD_DARK_LIME},{TCOD_DARKER_LIME},{TCOD_DARKEST_LIME}},
- {{TCOD_DESATURATED_CHARTREUSE},{TCOD_LIGHTEST_CHARTREUSE},{TCOD_LIGHTER_CHARTREUSE},{TCOD_LIGHT_CHARTREUSE},{TCOD_CHARTREUSE},{TCOD_DARK_CHARTREUSE},{TCOD_DARKER_CHARTREUSE},{TCOD_DARKEST_CHARTREUSE}},
- {{TCOD_DESATURATED_GREEN},{TCOD_LIGHTEST_GREEN},{TCOD_LIGHTER_GREEN},{TCOD_LIGHT_GREEN},{TCOD_GREEN},{TCOD_DARK_GREEN},{TCOD_DARKER_GREEN},{TCOD_DARKEST_GREEN}},
- {{TCOD_DESATURATED_SEA},{TCOD_LIGHTEST_SEA},{TCOD_LIGHTER_SEA},{TCOD_LIGHT_SEA},{TCOD_SEA},{TCOD_DARK_SEA},{TCOD_DARKER_SEA},{TCOD_DARKEST_SEA}},
- {{TCOD_DESATURATED_TURQUOISE},{TCOD_LIGHTEST_TURQUOISE},{TCOD_LIGHTER_TURQUOISE},{TCOD_LIGHT_TURQUOISE},{TCOD_TURQUOISE},{TCOD_DARK_TURQUOISE},{TCOD_DARKER_TURQUOISE},{TCOD_DARKEST_TURQUOISE}},
- {{TCOD_DESATURATED_CYAN},{TCOD_LIGHTEST_CYAN},{TCOD_LIGHTER_CYAN},{TCOD_LIGHT_CYAN},{TCOD_CYAN},{TCOD_DARK_CYAN},{TCOD_DARKER_CYAN},{TCOD_DARKEST_CYAN}},
- {{TCOD_DESATURATED_SKY},{TCOD_LIGHTEST_SKY},{TCOD_LIGHTER_SKY},{TCOD_LIGHT_SKY},{TCOD_SKY},{TCOD_DARK_SKY},{TCOD_DARKER_SKY},{TCOD_DARKEST_SKY}},
- {{TCOD_DESATURATED_AZURE},{TCOD_LIGHTEST_AZURE},{TCOD_LIGHTER_AZURE},{TCOD_LIGHT_AZURE},{TCOD_AZURE},{TCOD_DARK_AZURE},{TCOD_DARKER_AZURE},{TCOD_DARKEST_AZURE}},
- {{TCOD_DESATURATED_BLUE},{TCOD_LIGHTEST_BLUE},{TCOD_LIGHTER_BLUE},{TCOD_LIGHT_BLUE},{TCOD_BLUE},{TCOD_DARK_BLUE},{TCOD_DARKER_BLUE},{TCOD_DARKEST_BLUE}},
- {{TCOD_DESATURATED_HAN},{TCOD_LIGHTEST_HAN},{TCOD_LIGHTER_HAN},{TCOD_LIGHT_HAN},{TCOD_HAN},{TCOD_DARK_HAN},{TCOD_DARKER_HAN},{TCOD_DARKEST_HAN}},
- {{TCOD_DESATURATED_VIOLET},{TCOD_LIGHTEST_VIOLET},{TCOD_LIGHTER_VIOLET},{TCOD_LIGHT_VIOLET},{TCOD_VIOLET},{TCOD_DARK_VIOLET},{TCOD_DARKER_VIOLET},{TCOD_DARKEST_VIOLET}},
- {{TCOD_DESATURATED_PURPLE},{TCOD_LIGHTEST_PURPLE},{TCOD_LIGHTER_PURPLE},{TCOD_LIGHT_PURPLE},{TCOD_PURPLE},{TCOD_DARK_PURPLE},{TCOD_DARKER_PURPLE},{TCOD_DARKEST_PURPLE}},
- {{TCOD_DESATURATED_FUCHSIA},{TCOD_LIGHTEST_FUCHSIA},{TCOD_LIGHTER_FUCHSIA},{TCOD_LIGHT_FUCHSIA},{TCOD_FUCHSIA},{TCOD_DARK_FUCHSIA},{TCOD_DARKER_FUCHSIA},{TCOD_DARKEST_FUCHSIA}},
- {{TCOD_DESATURATED_MAGENTA},{TCOD_LIGHTEST_MAGENTA},{TCOD_LIGHTER_MAGENTA},{TCOD_LIGHT_MAGENTA},{TCOD_MAGENTA},{TCOD_DARK_MAGENTA},{TCOD_DARKER_MAGENTA},{TCOD_DARKEST_MAGENTA}},
- {{TCOD_DESATURATED_PINK},{TCOD_LIGHTEST_PINK},{TCOD_LIGHTER_PINK},{TCOD_LIGHT_PINK},{TCOD_PINK},{TCOD_DARK_PINK},{TCOD_DARKER_PINK},{TCOD_DARKEST_PINK}},
- {{TCOD_DESATURATED_CRIMSON},{TCOD_LIGHTEST_CRIMSON},{TCOD_LIGHTER_CRIMSON},{TCOD_LIGHT_CRIMSON},{TCOD_CRIMSON},{TCOD_DARK_CRIMSON},{TCOD_DARKER_CRIMSON},{TCOD_DARKEST_CRIMSON}}
-};
+    {{TCOD_DESATURATED_RED},
+     {TCOD_LIGHTEST_RED},
+     {TCOD_LIGHTER_RED},
+     {TCOD_LIGHT_RED},
+     {TCOD_RED},
+     {TCOD_DARK_RED},
+     {TCOD_DARKER_RED},
+     {TCOD_DARKEST_RED}},
+    {{TCOD_DESATURATED_FLAME},
+     {TCOD_LIGHTEST_FLAME},
+     {TCOD_LIGHTER_FLAME},
+     {TCOD_LIGHT_FLAME},
+     {TCOD_FLAME},
+     {TCOD_DARK_FLAME},
+     {TCOD_DARKER_FLAME},
+     {TCOD_DARKEST_FLAME}},
+    {{TCOD_DESATURATED_ORANGE},
+     {TCOD_LIGHTEST_ORANGE},
+     {TCOD_LIGHTER_ORANGE},
+     {TCOD_LIGHT_ORANGE},
+     {TCOD_ORANGE},
+     {TCOD_DARK_ORANGE},
+     {TCOD_DARKER_ORANGE},
+     {TCOD_DARKEST_ORANGE}},
+    {{TCOD_DESATURATED_AMBER},
+     {TCOD_LIGHTEST_AMBER},
+     {TCOD_LIGHTER_AMBER},
+     {TCOD_LIGHT_AMBER},
+     {TCOD_AMBER},
+     {TCOD_DARK_AMBER},
+     {TCOD_DARKER_AMBER},
+     {TCOD_DARKEST_AMBER}},
+    {{TCOD_DESATURATED_YELLOW},
+     {TCOD_LIGHTEST_YELLOW},
+     {TCOD_LIGHTER_YELLOW},
+     {TCOD_LIGHT_YELLOW},
+     {TCOD_YELLOW},
+     {TCOD_DARK_YELLOW},
+     {TCOD_DARKER_YELLOW},
+     {TCOD_DARKEST_YELLOW}},
+    {{TCOD_DESATURATED_LIME},
+     {TCOD_LIGHTEST_LIME},
+     {TCOD_LIGHTER_LIME},
+     {TCOD_LIGHT_LIME},
+     {TCOD_LIME},
+     {TCOD_DARK_LIME},
+     {TCOD_DARKER_LIME},
+     {TCOD_DARKEST_LIME}},
+    {{TCOD_DESATURATED_CHARTREUSE},
+     {TCOD_LIGHTEST_CHARTREUSE},
+     {TCOD_LIGHTER_CHARTREUSE},
+     {TCOD_LIGHT_CHARTREUSE},
+     {TCOD_CHARTREUSE},
+     {TCOD_DARK_CHARTREUSE},
+     {TCOD_DARKER_CHARTREUSE},
+     {TCOD_DARKEST_CHARTREUSE}},
+    {{TCOD_DESATURATED_GREEN},
+     {TCOD_LIGHTEST_GREEN},
+     {TCOD_LIGHTER_GREEN},
+     {TCOD_LIGHT_GREEN},
+     {TCOD_GREEN},
+     {TCOD_DARK_GREEN},
+     {TCOD_DARKER_GREEN},
+     {TCOD_DARKEST_GREEN}},
+    {{TCOD_DESATURATED_SEA},
+     {TCOD_LIGHTEST_SEA},
+     {TCOD_LIGHTER_SEA},
+     {TCOD_LIGHT_SEA},
+     {TCOD_SEA},
+     {TCOD_DARK_SEA},
+     {TCOD_DARKER_SEA},
+     {TCOD_DARKEST_SEA}},
+    {{TCOD_DESATURATED_TURQUOISE},
+     {TCOD_LIGHTEST_TURQUOISE},
+     {TCOD_LIGHTER_TURQUOISE},
+     {TCOD_LIGHT_TURQUOISE},
+     {TCOD_TURQUOISE},
+     {TCOD_DARK_TURQUOISE},
+     {TCOD_DARKER_TURQUOISE},
+     {TCOD_DARKEST_TURQUOISE}},
+    {{TCOD_DESATURATED_CYAN},
+     {TCOD_LIGHTEST_CYAN},
+     {TCOD_LIGHTER_CYAN},
+     {TCOD_LIGHT_CYAN},
+     {TCOD_CYAN},
+     {TCOD_DARK_CYAN},
+     {TCOD_DARKER_CYAN},
+     {TCOD_DARKEST_CYAN}},
+    {{TCOD_DESATURATED_SKY},
+     {TCOD_LIGHTEST_SKY},
+     {TCOD_LIGHTER_SKY},
+     {TCOD_LIGHT_SKY},
+     {TCOD_SKY},
+     {TCOD_DARK_SKY},
+     {TCOD_DARKER_SKY},
+     {TCOD_DARKEST_SKY}},
+    {{TCOD_DESATURATED_AZURE},
+     {TCOD_LIGHTEST_AZURE},
+     {TCOD_LIGHTER_AZURE},
+     {TCOD_LIGHT_AZURE},
+     {TCOD_AZURE},
+     {TCOD_DARK_AZURE},
+     {TCOD_DARKER_AZURE},
+     {TCOD_DARKEST_AZURE}},
+    {{TCOD_DESATURATED_BLUE},
+     {TCOD_LIGHTEST_BLUE},
+     {TCOD_LIGHTER_BLUE},
+     {TCOD_LIGHT_BLUE},
+     {TCOD_BLUE},
+     {TCOD_DARK_BLUE},
+     {TCOD_DARKER_BLUE},
+     {TCOD_DARKEST_BLUE}},
+    {{TCOD_DESATURATED_HAN},
+     {TCOD_LIGHTEST_HAN},
+     {TCOD_LIGHTER_HAN},
+     {TCOD_LIGHT_HAN},
+     {TCOD_HAN},
+     {TCOD_DARK_HAN},
+     {TCOD_DARKER_HAN},
+     {TCOD_DARKEST_HAN}},
+    {{TCOD_DESATURATED_VIOLET},
+     {TCOD_LIGHTEST_VIOLET},
+     {TCOD_LIGHTER_VIOLET},
+     {TCOD_LIGHT_VIOLET},
+     {TCOD_VIOLET},
+     {TCOD_DARK_VIOLET},
+     {TCOD_DARKER_VIOLET},
+     {TCOD_DARKEST_VIOLET}},
+    {{TCOD_DESATURATED_PURPLE},
+     {TCOD_LIGHTEST_PURPLE},
+     {TCOD_LIGHTER_PURPLE},
+     {TCOD_LIGHT_PURPLE},
+     {TCOD_PURPLE},
+     {TCOD_DARK_PURPLE},
+     {TCOD_DARKER_PURPLE},
+     {TCOD_DARKEST_PURPLE}},
+    {{TCOD_DESATURATED_FUCHSIA},
+     {TCOD_LIGHTEST_FUCHSIA},
+     {TCOD_LIGHTER_FUCHSIA},
+     {TCOD_LIGHT_FUCHSIA},
+     {TCOD_FUCHSIA},
+     {TCOD_DARK_FUCHSIA},
+     {TCOD_DARKER_FUCHSIA},
+     {TCOD_DARKEST_FUCHSIA}},
+    {{TCOD_DESATURATED_MAGENTA},
+     {TCOD_LIGHTEST_MAGENTA},
+     {TCOD_LIGHTER_MAGENTA},
+     {TCOD_LIGHT_MAGENTA},
+     {TCOD_MAGENTA},
+     {TCOD_DARK_MAGENTA},
+     {TCOD_DARKER_MAGENTA},
+     {TCOD_DARKEST_MAGENTA}},
+    {{TCOD_DESATURATED_PINK},
+     {TCOD_LIGHTEST_PINK},
+     {TCOD_LIGHTER_PINK},
+     {TCOD_LIGHT_PINK},
+     {TCOD_PINK},
+     {TCOD_DARK_PINK},
+     {TCOD_DARKER_PINK},
+     {TCOD_DARKEST_PINK}},
+    {{TCOD_DESATURATED_CRIMSON},
+     {TCOD_LIGHTEST_CRIMSON},
+     {TCOD_LIGHTER_CRIMSON},
+     {TCOD_LIGHT_CRIMSON},
+     {TCOD_CRIMSON},
+     {TCOD_DARK_CRIMSON},
+     {TCOD_DARKER_CRIMSON},
+     {TCOD_DARKEST_CRIMSON}}};
 /**
  *  \brief Return a new TCOD_color_t from RGB values.
  *
@@ -314,9 +460,7 @@ TCOD_color_t TCOD_color_HSV(float hue, float saturation, float value) {
 /**
  *  \brief Return a true value if c1 and c2 are equal.
  */
-bool TCOD_color_equals(TCOD_color_t c1, TCOD_color_t  c2) {
-  return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b);
-}
+bool TCOD_color_equals(TCOD_color_t c1, TCOD_color_t c2) { return (c1.r == c2.r && c1.g == c2.g && c1.b == c2.b); }
 /**
  *  \brief Add two colors together and return the result.
  *
@@ -326,9 +470,7 @@ bool TCOD_color_equals(TCOD_color_t c1, TCOD_color_t  c2) {
  */
 TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
-      (uint8_t)MIN(255, (int)c1.r + c2.r),
-      (uint8_t)MIN(255, (int)c1.g + c2.g),
-      (uint8_t)MIN(255, (int)c1.b + c2.b)};
+      (uint8_t)MIN(255, (int)c1.r + c2.r), (uint8_t)MIN(255, (int)c1.g + c2.g), (uint8_t)MIN(255, (int)c1.b + c2.b)};
   return new_color;
 }
 /**
@@ -340,9 +482,7 @@ TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_subtract(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
-      (uint8_t)MAX(0, (int)c1.r - c2.r),
-      (uint8_t)MAX(0, (int)c1.g - c2.g),
-      (uint8_t)MAX(0, (int)c1.b - c2.b)};
+      (uint8_t)MAX(0, (int)c1.r - c2.r), (uint8_t)MAX(0, (int)c1.g - c2.g), (uint8_t)MAX(0, (int)c1.b - c2.b)};
   return new_color;
 }
 /**
@@ -354,9 +494,7 @@ TCOD_color_t TCOD_color_subtract(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_multiply(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
-      (uint8_t)(((int)c1.r) * c2.r / 255),
-      (uint8_t)(((int)c1.g) * c2.g / 255),
-      (uint8_t)(((int)c1.b) * c2.b / 255)};
+      (uint8_t)(((int)c1.r) * c2.r / 255), (uint8_t)(((int)c1.g) * c2.g / 255), (uint8_t)(((int)c1.b) * c2.b / 255)};
   return new_color;
 }
 /**
@@ -368,8 +506,7 @@ TCOD_color_t TCOD_color_multiply(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
   TCOD_color_t new_color = {
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.r * value),
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.g * value),
+      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.r * value), (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.g * value),
       (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.b * value)};
   return new_color;
 }
@@ -383,15 +520,14 @@ TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
  */
 TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
   TCOD_color_t new_color = {
-      (uint8_t)(c1.r + (c2.r - c1.r) * coef),
-      (uint8_t)(c1.g + (c2.g - c1.g) * coef),
+      (uint8_t)(c1.r + (c2.r - c1.r) * coef), (uint8_t)(c1.g + (c2.g - c1.g) * coef),
       (uint8_t)(c1.b + (c2.b - c1.b) * coef)};
   return new_color;
 }
 /* Return floor modulo for double values. */
 static double fabsmod(double x, double n) {
   double m = fmod(x, n);
-  return m < 0 ? m+n : m;
+  return m < 0 ? m + n : m;
 }
 
 /**
@@ -402,20 +538,19 @@ static double fabsmod(double x, double n) {
  *  \param saturation The colors saturation (from 0 to 1)
  *  \param value The colors value (from 0 to 1)
  */
-void TCOD_color_set_HSV(TCOD_color_t *color,
-                        float hue, float saturation, float value) {
+void TCOD_color_set_HSV(TCOD_color_t* color, float hue, float saturation, float value) {
   int hue_section;
   float hue_fraction, p, q, t;
 
   saturation = CLAMP(0.0f, 1.0f, saturation);
   value = CLAMP(0.0f, 1.0f, value);
-  if( saturation == 0.0f ) { /* achromatic (grey) */
+  if (saturation == 0.0f) { /* achromatic (grey) */
     color->r = color->g = color->b = (uint8_t)(value * 255.0f + 0.5f);
     return;
   }
 
   hue = (float)fabsmod(hue, 360.0f);
-  hue /= 60.0f;  /* sector 0 to 5 */
+  hue /= 60.0f; /* sector 0 to 5 */
   hue_section = (int)floor(hue);
   hue_fraction = hue - hue_section; /* fraction between sections */
   p = value * (1 - saturation);
@@ -466,8 +601,7 @@ void TCOD_color_set_HSV(TCOD_color_t *color,
  *
  *  The hue, saturation, and value parameters can not be NULL pointers,
  */
-void TCOD_color_get_HSV(TCOD_color_t color,
-                        float *hue, float *saturation, float *value) {
+void TCOD_color_get_HSV(TCOD_color_t color, float* hue, float* saturation, float* value) {
   *hue = TCOD_color_get_hue(color);
   *saturation = TCOD_color_get_saturation(color);
   *value = TCOD_color_get_value(color);
@@ -484,7 +618,9 @@ float TCOD_color_get_hue(TCOD_color_t color) {
   uint8_t min = MIN(color.r, MIN(color.g, color.b));
   float delta = (float)max - (float)min;
   float hue; /* degrees */
-  if (delta == 0.0f) { return 0.0f; } /* achromatic, including black */
+  if (delta == 0.0f) {
+    return 0.0f;
+  } /* achromatic, including black */
   if (color.r == max) {
     hue = (float)(color.g - color.b) / delta;
   } else if (color.g == max) {
@@ -502,11 +638,8 @@ float TCOD_color_get_hue(TCOD_color_t color) {
  *  \param color Pointer to a color struct.
  *  \param hue The hue in degrees.
  */
-void TCOD_color_set_hue(TCOD_color_t *color, float hue) {
-  TCOD_color_set_HSV(color,
-                     hue,
-                     TCOD_color_get_saturation(*color),
-                     TCOD_color_get_value(*color));
+void TCOD_color_set_hue(TCOD_color_t* color, float hue) {
+  TCOD_color_set_HSV(color, hue, TCOD_color_get_saturation(*color), TCOD_color_get_value(*color));
 }
 /**
  *  \brief Return a colors saturation.
@@ -514,11 +647,13 @@ void TCOD_color_set_hue(TCOD_color_t *color, float hue) {
  *  \param color A color struct.
  *  \return The colors saturation. (0 to 1)
  */
-float TCOD_color_get_saturation (TCOD_color_t color) {
+float TCOD_color_get_saturation(TCOD_color_t color) {
   float max = (float)(MAX(color.r, MAX(color.g, color.b))) / 255.0f;
   float min = (float)(MIN(color.r, MIN(color.g, color.b))) / 255.0f;
   float delta = max - min;
-  if (max == 0.0f) { return 0.0f; }
+  if (max == 0.0f) {
+    return 0.0f;
+  }
   return delta / max;
 }
 /**
@@ -527,11 +662,8 @@ float TCOD_color_get_saturation (TCOD_color_t color) {
  *  \param color Pointer to a color struct.
  *  \param saturation The desired saturation value.
  */
-void TCOD_color_set_saturation(TCOD_color_t *color, float saturation) {
-  TCOD_color_set_HSV(color,
-                     TCOD_color_get_hue(*color),
-                     saturation,
-                     TCOD_color_get_value(*color));
+void TCOD_color_set_saturation(TCOD_color_t* color, float saturation) {
+  TCOD_color_set_HSV(color, TCOD_color_get_hue(*color), saturation, TCOD_color_get_value(*color));
 }
 /**
  *  \brief Get a colors value.
@@ -539,20 +671,15 @@ void TCOD_color_set_saturation(TCOD_color_t *color, float saturation) {
  *  \param color A color struct.
  *  \return The colors value. (0 to 1)
  */
-float TCOD_color_get_value(TCOD_color_t color) {
-  return (float)(MAX(color.r, MAX(color.g, color.b))) / 255.0f;
-}
+float TCOD_color_get_value(TCOD_color_t color) { return (float)(MAX(color.r, MAX(color.g, color.b))) / 255.0f; }
 /**
  *  \brief Change a colors value.
  *
  *  \param color Pointer to a color struct.
  *  \param value The desired value.
  */
-void TCOD_color_set_value(TCOD_color_t *color, float value) {
-  TCOD_color_set_HSV(color,
-                     TCOD_color_get_hue(*color),
-                     TCOD_color_get_saturation(*color),
-                     value);
+void TCOD_color_set_value(TCOD_color_t* color, float value) {
+  TCOD_color_set_HSV(color, TCOD_color_get_hue(*color), TCOD_color_get_saturation(*color), value);
 }
 /**
  *  \brief Shift a colors hue by an amount.
@@ -560,12 +687,12 @@ void TCOD_color_set_value(TCOD_color_t *color, float value) {
  *  \param color Pointer to a color struct.
  *  \param hue_shift The distance to shift the hue, in degrees.
  */
-void TCOD_color_shift_hue(TCOD_color_t *color, float hue_shift) {
-  if (hue_shift == 0.0f) { return; }
-  TCOD_color_set_HSV(color,
-                     TCOD_color_get_hue(*color) + hue_shift,
-                     TCOD_color_get_saturation(*color),
-                     TCOD_color_get_value(*color));
+void TCOD_color_shift_hue(TCOD_color_t* color, float hue_shift) {
+  if (hue_shift == 0.0f) {
+    return;
+  }
+  TCOD_color_set_HSV(
+      color, TCOD_color_get_hue(*color) + hue_shift, TCOD_color_get_saturation(*color), TCOD_color_get_value(*color));
 }
 /**
  *  \brief Scale a colors saturation and value.
@@ -574,12 +701,10 @@ void TCOD_color_shift_hue(TCOD_color_t *color, float hue_shift) {
  *  \param saturation_coef Multiplier for this colors saturation.
  *  \param value_coef Multiplier for this colors value.
  */
-void TCOD_color_scale_HSV(TCOD_color_t *color,
-                          float saturation_coef, float value_coef) {
-  TCOD_color_set_HSV(color,
-                     TCOD_color_get_hue(*color),
-                     TCOD_color_get_saturation(*color) * saturation_coef,
-                     TCOD_color_get_value(*color) * value_coef);
+void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef, float value_coef) {
+  TCOD_color_set_HSV(
+      color, TCOD_color_get_hue(*color), TCOD_color_get_saturation(*color) * saturation_coef,
+      TCOD_color_get_value(*color) * value_coef);
 }
 /**
  *  \brief Generate an interpolated gradient of colors.
@@ -599,37 +724,31 @@ void TCOD_color_scale_HSV(TCOD_color_t *color,
  *    TCOD_color_gen_map(&gradient, 4, &key_color, &key_index);
  *  \endverbatim
  */
-void TCOD_color_gen_map(TCOD_color_t *map, int nb_key,
-                        const TCOD_color_t *key_color, const int *key_index) {
+void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_color_t* key_color, const int* key_index) {
   int segment = 0;
   for (segment = 0; segment < nb_key - 1; ++segment) {
     int idx_start = key_index[segment];
     int idx_end = key_index[segment + 1];
     int idx;
     for (idx = idx_start; idx <= idx_end; ++idx) {
-      map[idx] = TCOD_color_lerp(
-          key_color[segment],
-          key_color[segment + 1],
-          (float)(idx - idx_start) / (idx_end - idx_start));
+      map[idx] =
+          TCOD_color_lerp(key_color[segment], key_color[segment + 1], (float)(idx - idx_start) / (idx_end - idx_start));
     }
   }
 }
 /**
  *  Perform alpha blending on a single channel.
  */
-static uint8_t alpha_blend_channel(
-    int dst_c, int dst_a, int src_c, int src_a, int out_a)
-{
-  return (uint8_t)(
-      ((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a
-  );
+static uint8_t alpha_blend_channel(int dst_c, int dst_a, int src_c, int src_a, int out_a) {
+  return (uint8_t)(((src_c * src_a) + (dst_c * dst_a * (255 - src_a) / 255)) / out_a);
 }
 /**
  *  A modified lerp operation which can accept RGBA types.
  */
-void TCOD_color_alpha_blend(TCOD_ColorRGBA* dst, const TCOD_ColorRGBA* src)
-{
-  if (!dst || !src) { return; }
+void TCOD_color_alpha_blend(TCOD_ColorRGBA* dst, const TCOD_ColorRGBA* src) {
+  if (!dst || !src) {
+    return;
+  }
   uint8_t out_a = (uint8_t)(src->a + dst->a * (255 - src->a) / 255);
   dst->r = alpha_blend_channel(dst->r, dst->a, src->r, src->a, out_a);
   dst->g = alpha_blend_channel(dst->g, dst->a, src->g, src->a, out_a);

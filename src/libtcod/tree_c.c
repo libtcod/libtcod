@@ -29,21 +29,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "tree.h"
-
 #include <stdlib.h>
 
-TCOD_tree_t *TCOD_tree_new(void) {
-	return (TCOD_tree_t *)calloc(1,sizeof(TCOD_tree_t));
-}
+#include "tree.h"
 
-void TCOD_tree_add_son(TCOD_tree_t *node, TCOD_tree_t *son) {
-	TCOD_tree_t *lastson = node->sons;
-	son->father=node;
-	while ( lastson && lastson->next ) lastson=lastson->next;
-	if ( lastson ) {
-		lastson->next=son;
-	} else {
-		node->sons=son;
-	}
+TCOD_tree_t* TCOD_tree_new(void) { return (TCOD_tree_t*)calloc(1, sizeof(TCOD_tree_t)); }
+
+void TCOD_tree_add_son(TCOD_tree_t* node, TCOD_tree_t* son) {
+  TCOD_tree_t* lastson = node->sons;
+  son->father = node;
+  while (lastson && lastson->next) lastson = lastson->next;
+  if (lastson) {
+    lastson->next = son;
+  } else {
+    node->sons = son;
+  }
 }

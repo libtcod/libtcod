@@ -35,17 +35,17 @@
 #include "portability.h"
 /* mouse data */
 typedef struct {
-  int x,y; /* absolute position */
-  int dx,dy; /* movement since last update in pixels */
-  int cx,cy; /* cell coordinates in the root console */
-  int dcx,dcy; /* movement since last update in console cells */
-  bool lbutton ; /* left button status */
-  bool rbutton ; /* right button status */
-  bool mbutton ; /* middle button status */
-  bool lbutton_pressed ; /* left button pressed event */
-  bool rbutton_pressed ; /* right button pressed event */
-  bool mbutton_pressed ; /* middle button pressed event */
-  bool wheel_up ; /* wheel up event */
-  bool wheel_down ; /* wheel down event */
+  int x, y;             /* absolute position */
+  int dx, dy;           /* movement since last update in pixels */
+  int cx, cy;           /* cell coordinates in the root console */
+  int dcx, dcy;         /* movement since last update in console cells */
+  bool lbutton;         /* left button status */
+  bool rbutton;         /* right button status */
+  bool mbutton;         /* middle button status */
+  bool lbutton_pressed; /* left button pressed event */
+  bool rbutton_pressed; /* right button pressed event */
+  bool mbutton_pressed; /* middle button pressed event */
+  bool wheel_up;        /* wheel up event */
+  bool wheel_down;      /* wheel down event */
 } TCOD_mouse_t;
 #endif /* _TCOD_MOUSE_TYPES_H */

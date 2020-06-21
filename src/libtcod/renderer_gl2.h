@@ -31,30 +31,23 @@
  */
 #ifndef LIBTCOD_RENDERER_GL2_H_
 #define LIBTCOD_RENDERER_GL2_H_
-#include "config.h"
-
 #include <stdbool.h>
 
-#include "tileset.h"
+#include "config.h"
 #include "renderer_gl.h"
+#include "tileset.h"
 
 struct SDL_Window;
 
 struct TCOD_RendererGL2 {
   struct TCOD_RendererGLCommon common;
   uint32_t program;
-  uint32_t console_textures[3]; // ch, fg, bg
+  uint32_t console_textures[3];  // ch, fg, bg
   int console_width;
   int console_height;
   uint32_t vertex_buffer;
 };
 
-TCOD_PUBLIC TCOD_NODISCARD
-struct TCOD_Context* TCOD_renderer_new_gl2(
-    int width,
-    int height,
-    const char* title,
-    int window_flags,
-    bool vsync,
-    struct TCOD_Tileset* tileset);
-#endif // LIBTCOD_RENDERER_GL2_H_
+TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
+    int width, int height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset);
+#endif  // LIBTCOD_RENDERER_GL2_H_

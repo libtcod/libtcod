@@ -47,9 +47,9 @@ typedef struct TCOD_Map {
   int width;
   int height;
   int nbcells;
-  struct TCOD_MapCell*__restrict cells;
+  struct TCOD_MapCell* __restrict cells;
 } TCOD_Map;
-typedef TCOD_Map *TCOD_map_t;
+typedef TCOD_Map* TCOD_map_t;
 /**
  *  Field-of-view options.
  */
@@ -82,6 +82,7 @@ typedef enum {
    *  Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
    */
   FOV_RESTRICTIVE,
-  NB_FOV_ALGORITHMS } TCOD_fov_algorithm_t;
+  NB_FOV_ALGORITHMS
+} TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
 #endif /* TCOD_FOV_TYPES_H_ */

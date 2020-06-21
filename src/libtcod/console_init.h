@@ -33,13 +33,13 @@
 #define LIBTCOD_CONSOLE_INIT_H_
 
 #include "config.h"
+#include "console_types.h"
 #include "error.h"
 #include "tileset.h"
-#include "console_types.h"
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 struct SDL_Rect;
 struct SDL_Window;
 struct SDL_Renderer;
@@ -82,15 +82,10 @@ struct SDL_Renderer;
  *  \endrst
  */
 
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_console_init_root(
-    int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_console_init_root_(
-    int w,
-    int h,
-    const char* title,
-    bool fullscreen,
-    TCOD_renderer_t renderer,
-    bool vsync);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error
+TCOD_console_init_root(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error
+TCOD_console_init_root_(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 /**
  *  Shutdown libtcod.  This must be called before your program exits.
  *  \rst
@@ -103,7 +98,7 @@ TCOD_PUBLIC void TCOD_quit(void);
  *
  *  \param title A utf8 string.
  */
-TCOD_PUBLIC void TCOD_console_set_window_title(const char *title);
+TCOD_PUBLIC void TCOD_console_set_window_title(const char* title);
 /**
  *  Set the display to be full-screen or windowed.
  *
@@ -169,19 +164,13 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
 TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 namespace console {
-TCOD_PUBLIC void init_root(int w, int h, const std::string& title,
-                           bool fullscreen, TCOD_renderer_t renderer);
+TCOD_PUBLIC void init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer);
 TCOD_PUBLIC void init_root(
-    int w,
-    int h,
-    const std::string& title,
-    bool fullscreen,
-    TCOD_renderer_t renderer,
-    bool vsync);
-} // namespace console
-} // namespace tcod
-#endif // __cplusplus
-#endif // LIBTCOD_CONSOLE_INIT_H_
+    int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
+}  // namespace console
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // LIBTCOD_CONSOLE_INIT_H_

@@ -31,12 +31,11 @@
  */
 #ifndef LIBTCOD_RENDERER_GL1_H_
 #define LIBTCOD_RENDERER_GL1_H_
-#include "config.h"
-
 #include <stdbool.h>
 
-#include "tileset.h"
+#include "config.h"
 #include "renderer_gl.h"
+#include "tileset.h"
 
 struct SDL_Window;
 
@@ -47,13 +46,7 @@ struct TCOD_RendererGL1 {
   int background_height;
 };
 
-TCOD_PUBLIC TCOD_NODISCARD
-struct TCOD_Context* TCOD_renderer_init_gl1(
-    int width,
-    int height,
-    const char* title,
-    int window_flags,
-    bool vsync,
-    struct TCOD_Tileset* tileset);
+TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
+    int width, int height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset);
 
-#endif // LIBTCOD_RENDERER_GL1_H_
+#endif  // LIBTCOD_RENDERER_GL1_H_

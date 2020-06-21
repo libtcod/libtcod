@@ -33,8 +33,7 @@
 
 #include <stdlib.h>
 
-struct TCOD_Frontier* TCOD_frontier_new(int ndim)
-{
+struct TCOD_Frontier* TCOD_frontier_new(int ndim) {
   if (ndim <= 0 || TCOD_PATHFINDER_MAX_DIMENSIONS < ndim) {
     TCOD_set_errorvf("Can not make a pathfinder with %i dimensions.", ndim);
     return NULL;
@@ -48,14 +47,14 @@ struct TCOD_Frontier* TCOD_frontier_new(int ndim)
   TCOD_heap_init(&frontier->heap, sizeof(int) * (ndim + 1));
   return frontier;
 }
-void TCOD_frontier_delete(struct TCOD_Frontier* frontier)
-{
-  if (!frontier) { return; }
+void TCOD_frontier_delete(struct TCOD_Frontier* frontier) {
+  if (!frontier) {
+    return;
+  }
   TCOD_heap_uninit(&frontier->heap);
   free(frontier);
 }
-TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier)
-{
+TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier) {
   if (!frontier) {
     TCOD_set_errorv("Pointer argument must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -73,11 +72,7 @@ TCOD_Error TCOD_frontier_pop(struct TCOD_Frontier* frontier)
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_frontier_push(
-    struct TCOD_Frontier*__restrict frontier,
-    const int*__restrict index,
-    int dist,
-    int heuristic)
-{
+    struct TCOD_Frontier* __restrict frontier, const int* __restrict index, int dist, int heuristic) {
   if (!frontier) {
     TCOD_set_errorv("Pointer argument must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -90,16 +85,14 @@ TCOD_Error TCOD_frontier_push(
   TCOD_minheap_push(&frontier->heap, heuristic, node);
   return TCOD_E_OK;
 }
-int TCOD_frontier_size(const struct TCOD_Frontier* frontier)
-{
+int TCOD_frontier_size(const struct TCOD_Frontier* frontier) {
   if (!frontier) {
     TCOD_set_errorv("Pointer argument must not be NULL.");
     return 0;
   }
   return frontier->heap.size;
 }
-TCOD_Error TCOD_frontier_clear(struct TCOD_Frontier* frontier)
-{
+TCOD_Error TCOD_frontier_clear(struct TCOD_Frontier* frontier) {
   if (!frontier) {
     TCOD_set_errorv("Pointer argument must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;

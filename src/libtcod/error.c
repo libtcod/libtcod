@@ -43,24 +43,16 @@
 // Maximum error length in bytes.
 #define MAX_ERROR_LENGTH 1024
 static __thread char error_msg_[MAX_ERROR_LENGTH] = "";
-const char* TCOD_get_error(void)
-{
-  return error_msg_;
-}
-int TCOD_set_error(const char* msg)
-{
+const char* TCOD_get_error(void) { return error_msg_; }
+int TCOD_set_error(const char* msg) {
   strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
   return -1;
 }
-int TCOD_set_errorf(const char* fmt, ...)
-{
+int TCOD_set_errorf(const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   vsnprintf(error_msg_, sizeof(error_msg_), fmt, ap);
   va_end(ap);
   return -1;
 }
-void TCOD_clear_error(void)
-{
-  error_msg_[0] = '\0';
-}
+void TCOD_clear_error(void) { error_msg_[0] = '\0'; }

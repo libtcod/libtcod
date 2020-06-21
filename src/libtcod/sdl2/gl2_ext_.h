@@ -38,13 +38,11 @@ namespace tcod {
 namespace sdl2 {
 class opengl_error : public std::runtime_error {
  public:
-  explicit opengl_error(const std::string& what_arg)
-  : runtime_error(what_arg)
-  {};
+  explicit opengl_error(const std::string& what_arg) : runtime_error(what_arg){};
 };
 inline void gl_check() {
 #ifndef NDEBUG
-  switch(glGetError()) {
+  switch (glGetError()) {
     case GL_NO_ERROR:
       return;
     case GL_INVALID_ENUM:
@@ -53,16 +51,16 @@ inline void gl_check() {
       throw opengl_error("GL_INVALID_VALUE");
     case GL_INVALID_OPERATION:
       throw opengl_error("GL_INVALID_OPERATION");
-    //case GL_INVALID_FRAMEBUFFER_OPERATION:
+    // case GL_INVALID_FRAMEBUFFER_OPERATION:
     //  throw opengl_error("GL_INVALID_FRAMEBUFFER_OPERATION");
     case GL_OUT_OF_MEMORY:
       throw opengl_error("GL_OUT_OF_MEMORY");
     default:
       throw opengl_error("Unknown OpenGL error.");
   }
-#endif // NDEBUG
+#endif  // NDEBUG
 }
 inline void gl_debug() { gl_check(); }
-} // namespace sdl2
-} // namespace tcod
-#endif // LIBTCOD_SDL2_GL2_EXT_H_
+}  // namespace sdl2
+}  // namespace tcod
+#endif  // LIBTCOD_SDL2_GL2_EXT_H_

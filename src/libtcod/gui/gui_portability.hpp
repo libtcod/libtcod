@@ -35,8 +35,8 @@
 #include "../portability.h"
 
 #ifdef TCOD_VISUAL_STUDIO
-#pragma warning(disable:4996)
-#pragma warning(disable:4251)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4251)
 #endif
 
 // DLL export

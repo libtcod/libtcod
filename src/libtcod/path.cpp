@@ -31,122 +31,74 @@
  */
 #include "path.hpp"
 
+TCODPath::TCODPath(const TCODMap* map, float diagonalCost) { data = TCOD_path_new_using_map(map->data, diagonalCost); }
 
-TCODPath::TCODPath(const TCODMap *map, float diagonalCost) {
-  data = TCOD_path_new_using_map(map->data, diagonalCost);
+TCODPath::~TCODPath() { TCOD_path_delete(data); }
+
+float TCOD_path_func(int xFrom, int yFrom, int xTo, int yTo, void* data) {
+  TCODPath::WrapperData* cppData = static_cast<TCODPath::WrapperData*>(data);
+  return cppData->listener->getWalkCost(xFrom, yFrom, xTo, yTo, cppData->userData);
 }
 
-TCODPath::~TCODPath() {
-	TCOD_path_delete(data);
-}
-
-float TCOD_path_func(int xFrom, int yFrom, int xTo,int yTo, void *data) {
-	TCODPath::WrapperData *cppData = static_cast<TCODPath::WrapperData*>(data);
-	return cppData->listener->getWalkCost(xFrom,yFrom,xTo,yTo,cppData->userData);
-}
-
-TCODPath::TCODPath(
-    int width, int height,
-    const ITCODPathCallback *listener, void *userData, float diagonalCost)
-{
+TCODPath::TCODPath(int width, int height, const ITCODPathCallback* listener, void* userData, float diagonalCost) {
   cppData.listener = listener;
   cppData.userData = userData;
-  data = TCOD_path_new_using_function(
-      width, height,
-      TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
+  data = TCOD_path_new_using_function(width, height, TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
 }
 
+bool TCODPath::compute(int ox, int oy, int dx, int dy) { return TCOD_path_compute(data, ox, oy, dx, dy) != 0; }
 
-bool TCODPath::compute(int ox, int oy, int dx, int dy) {
-	return TCOD_path_compute(data,ox,oy,dx,dy) != 0;
+bool TCODPath::walk(int* x, int* y, bool recalculateWhenNeeded) {
+  return TCOD_path_walk(data, x, y, recalculateWhenNeeded) != 0;
 }
 
-bool TCODPath::walk(int *x, int *y, bool recalculateWhenNeeded) {
-	return TCOD_path_walk(data,x,y,recalculateWhenNeeded) != 0;
-}
+bool TCODPath::isEmpty() const { return TCOD_path_is_empty(data) != 0; }
 
-bool TCODPath::isEmpty() const {
-	return TCOD_path_is_empty(data) != 0;
-}
+void TCODPath::reverse() { TCOD_path_reverse(data); }
 
-void TCODPath::reverse() {
-	TCOD_path_reverse(data);
-}
+int TCODPath::size() const { return TCOD_path_size(data); }
 
-int TCODPath::size() const {
-	return TCOD_path_size(data);
-}
+void TCODPath::get(int index, int* x, int* y) const { return TCOD_path_get(data, index, x, y); }
 
-void TCODPath::get(int index, int *x, int *y) const {
-	return TCOD_path_get(data,index,x,y);
-}
+void TCODPath::getOrigin(int* x, int* y) const { TCOD_path_get_origin(data, x, y); }
 
-void TCODPath::getOrigin(int *x,int *y) const {
-	TCOD_path_get_origin(data,x,y);
-}
-
-void TCODPath::getDestination(int *x,int *y) const {
-	TCOD_path_get_destination(data,x,y);
-}
+void TCODPath::getDestination(int* x, int* y) const { TCOD_path_get_destination(data, x, y); }
 
 // ----------------- //
 // Dijkstra          //
 // written by Mingos //
 // ----------------- //
 
-//ctor
-TCODDijkstra::TCODDijkstra (TCODMap *map, float diagonalCost) {
-    data = TCOD_dijkstra_new(map->data,diagonalCost);
-}
+// ctor
+TCODDijkstra::TCODDijkstra(TCODMap* map, float diagonalCost) { data = TCOD_dijkstra_new(map->data, diagonalCost); }
 
-//another ctor
-TCODDijkstra::TCODDijkstra (
-    int width, int height,
-    const ITCODPathCallback *listener, void *userData, float diagonalCost)
-{
+// another ctor
+TCODDijkstra::TCODDijkstra(
+    int width, int height, const ITCODPathCallback* listener, void* userData, float diagonalCost) {
   cppData.listener = listener;
   cppData.userData = userData;
-  data = TCOD_dijkstra_new_using_function(
-      width, height, TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
+  data = TCOD_dijkstra_new_using_function(width, height, TCOD_path_func, static_cast<void*>(&cppData), diagonalCost);
 }
 
-//dtor
-TCODDijkstra::~TCODDijkstra (void) {
-    TCOD_dijkstra_delete(data);
-}
+// dtor
+TCODDijkstra::~TCODDijkstra(void) { TCOD_dijkstra_delete(data); }
 
-//compute distances grid
-void TCODDijkstra::compute (int rootX, int rootY) {
-    TCOD_dijkstra_compute(data,rootX,rootY);
-}
+// compute distances grid
+void TCODDijkstra::compute(int rootX, int rootY) { TCOD_dijkstra_compute(data, rootX, rootY); }
 
-//retrieve distance to a given cell
-float TCODDijkstra::getDistance (int x, int y) {
-    return TCOD_dijkstra_get_distance(data,x,y);
-}
+// retrieve distance to a given cell
+float TCODDijkstra::getDistance(int x, int y) { return TCOD_dijkstra_get_distance(data, x, y); }
 
-//create a path
-bool TCODDijkstra::setPath (int toX, int toY) {
-    return (TCOD_dijkstra_path_set(data,toX,toY) != 0);
-}
+// create a path
+bool TCODDijkstra::setPath(int toX, int toY) { return (TCOD_dijkstra_path_set(data, toX, toY) != 0); }
 
-void TCODDijkstra::reverse() {
-	TCOD_dijkstra_reverse(data);
-}
+void TCODDijkstra::reverse() { TCOD_dijkstra_reverse(data); }
 
-//walk a path
-bool TCODDijkstra::walk (int *x, int *y) {
-    return TCOD_dijkstra_path_walk(data,x,y) != 0;
-}
+// walk a path
+bool TCODDijkstra::walk(int* x, int* y) { return TCOD_dijkstra_path_walk(data, x, y) != 0; }
 
-bool TCODDijkstra::isEmpty() const {
-	return TCOD_dijkstra_is_empty(data) != 0;
-}
+bool TCODDijkstra::isEmpty() const { return TCOD_dijkstra_is_empty(data) != 0; }
 
-int TCODDijkstra::size() const {
-	return TCOD_dijkstra_size(data);
-}
+int TCODDijkstra::size() const { return TCOD_dijkstra_size(data); }
 
-void TCODDijkstra::get(int index, int *x, int *y) const {
-	return TCOD_dijkstra_get(data,index,x,y);
-}
+void TCODDijkstra::get(int index, int* x, int* y) const { return TCOD_dijkstra_get(data, index, x, y); }

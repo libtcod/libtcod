@@ -54,6 +54,4 @@ TCODLIB_CAPI TCOD_Tileset* TCOD_get_default_tileset(void);
     This function is provisional, the API may change in the future.
  */
 TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset);
-#endif // LIBTCOD_GLOBALS_H_
-
-
+#endif  // LIBTCOD_GLOBALS_H_

@@ -31,45 +31,28 @@
  */
 #include "txtfield.hpp"
 
-TCODText::TCODText(int x, int y, int w, int h, int max_chars){
-	data=TCOD_text_init(x,y,w,h,max_chars);
+TCODText::TCODText(int x, int y, int w, int h, int max_chars) { data = TCOD_text_init(x, y, w, h, max_chars); }
+
+TCODText::TCODText(int w, int h, int max_chars) { data = TCOD_text_init2(w, h, max_chars); }
+
+TCODText::~TCODText() { TCOD_text_delete(data); }
+
+void TCODText::setPos(int x, int y) { TCOD_text_set_pos(data, x, y); }
+
+void TCODText::setProperties(int cursor_char, int blink_interval, const char* prompt, int tab_size) {
+  TCOD_text_set_properties(data, cursor_char, blink_interval, prompt, tab_size);
 }
 
-TCODText::TCODText(int w, int h, int max_chars){
-	data=TCOD_text_init2(w,h,max_chars);
+void TCODText::setColors(TCODColor fore, TCODColor back, float back_transparency) {
+  TCOD_color_t foreground = {fore.r, fore.g, fore.b};
+  TCOD_color_t background = {back.r, back.g, back.b};
+  TCOD_text_set_colors(data, foreground, background, back_transparency);
 }
 
-TCODText::~TCODText(){
-	TCOD_text_delete(data);
-}
+bool TCODText::update(TCOD_key_t key) { return TCOD_text_update(data, key) != 0; }
 
-void TCODText::setPos(int x, int y) {
-	TCOD_text_set_pos(data,x,y);
-}
+void TCODText::render(TCODConsole* con) { TCOD_text_render(data, con->get_data()); }
 
-void TCODText::setProperties(int cursor_char, int blink_interval, const char * prompt, int tab_size){
-	TCOD_text_set_properties(data,cursor_char,blink_interval,prompt,tab_size);
-}
+const char* TCODText::getText() { return TCOD_text_get(data); }
 
-void TCODText::setColors(TCODColor fore, TCODColor back, float back_transparency){
-	TCOD_color_t foreground = {fore.r,fore.g,fore.b};
-	TCOD_color_t background = {back.r,back.g,back.b};
-	TCOD_text_set_colors(data,foreground,background,back_transparency);
-}
-
-bool TCODText::update(TCOD_key_t key){
-	return TCOD_text_update(data,key) != 0;
-}
-
-void TCODText::render(TCODConsole * con)
-{
-  TCOD_text_render(data,con->get_data());
-}
-
-const char *TCODText::getText(){
-	return TCOD_text_get(data);
-}
-
-void TCODText::reset(){
-	TCOD_text_reset(data);
-}
+void TCODText::reset() { TCOD_text_reset(data); }

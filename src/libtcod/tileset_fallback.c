@@ -31,26 +31,22 @@
  */
 #include "tileset_fallback.h"
 
+#include "error.h"
+#include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
-#include "stdio.h"
-
 #include "tileset_truetype.h"
-#include "error.h"
-TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height)
-{
-#if defined(_WIN32) // Windows.
+TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) {
+#if defined(_WIN32)  // Windows.
   const char* sys_root = getenv("SystemRoot");
   const char* filename = "\\Fonts\\LUCON.TTF";
   char path[4096] = "";
   strncpy(path, sys_root, sizeof(path) - 1);
   strncat(path, filename, sizeof(path) - 1 - strlen(path));
   return TCOD_load_truetype_font_(path, tile_width, tile_height);
-#elif defined(__APPLE__) // MacOS.
-  return TCOD_load_truetype_font_(
-      "/System/Library/Fonts/SFNSMono.ttf",
-      tile_width, tile_height);
-#elif defined(__unix__) // Linux
+#elif defined(__APPLE__)  // MacOS.
+  return TCOD_load_truetype_font_("/System/Library/Fonts/SFNSMono.ttf", tile_width, tile_height);
+#elif defined(__unix__)   // Linux
   FILE* pipe = popen("fc-match --format=%{file} monospace", "r");
   char path[4096] = "";
   if (!pipe) {
@@ -65,6 +61,6 @@ TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height)
   return TCOD_load_truetype_font_(path, tile_width, tile_height);
 #else
   return NULL;
-  //throw std::runtime_error("Fallback font not supported for this OS.");
+  // throw std::runtime_error("Fallback font not supported for this OS.");
 #endif
 }

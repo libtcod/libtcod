@@ -44,11 +44,11 @@ struct TCOD_HeapNode {
   int priority;
 #if !defined(__cplusplus)
   unsigned char data[];
-#endif // !defined(__cplusplus)
+#endif  // !defined(__cplusplus)
 };
 
 struct TCOD_Heap {
-  struct TCOD_HeapNode*__restrict heap;
+  struct TCOD_HeapNode* __restrict heap;
   int size;
   int capacity;
   size_t node_size;
@@ -57,20 +57,16 @@ struct TCOD_Heap {
 
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 TCOD_PUBLIC int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size);
 TCOD_PUBLIC void TCOD_heap_uninit(struct TCOD_Heap* heap);
 
 TCOD_PUBLIC void TCOD_heap_clear(struct TCOD_Heap* heap);
 
-TCOD_PUBLIC int TCOD_minheap_push(
-    struct TCOD_Heap*__restrict minheap,
-    int priority,
-    const void*__restrict data);
-TCOD_PUBLIC void TCOD_minheap_pop(
-    struct TCOD_Heap*__restrict minheap, void*__restrict out);
+TCOD_PUBLIC int TCOD_minheap_push(struct TCOD_Heap* __restrict minheap, int priority, const void* __restrict data);
+TCOD_PUBLIC void TCOD_minheap_pop(struct TCOD_Heap* __restrict minheap, void* __restrict out);
 TCOD_PUBLIC void TCOD_minheap_heapify(struct TCOD_Heap* minheap);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // TCOD_HEAPQ_H
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // TCOD_HEAPQ_H

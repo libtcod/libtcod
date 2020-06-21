@@ -30,34 +30,34 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /*
-* Mingos' NameGen
-* This file was written by Dominik "Mingos" Marczuk.
-*/
+ * Mingos' NameGen
+ * This file was written by Dominik "Mingos" Marczuk.
+ */
 
 #ifndef _TCOD_NAMEGEN_H
 #define _TCOD_NAMEGEN_H
 
-#include "portability.h"
 #include "list.h"
 #include "mersenne.h"
+#include "portability.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /* the generator typedef */
 struct TCOD_NameGen;
-typedef struct TCOD_NameGen *TCOD_namegen_t;
+typedef struct TCOD_NameGen* TCOD_namegen_t;
 
 /* parse a file with syllable sets */
-TCODLIB_API void TCOD_namegen_parse (const char * filename, TCOD_random_t random);
+TCODLIB_API void TCOD_namegen_parse(const char* filename, TCOD_random_t random);
 /* generate a name */
-TCODLIB_API char * TCOD_namegen_generate (char * name, bool allocate);
+TCODLIB_API char* TCOD_namegen_generate(char* name, bool allocate);
 /* generate a name using a custom generation rule */
-TCODLIB_API char * TCOD_namegen_generate_custom (char * name, char * rule, bool allocate);
+TCODLIB_API char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate);
 /* retrieve the list of all available syllable set names */
-TCODLIB_API TCOD_list_t TCOD_namegen_get_sets (void);
+TCODLIB_API TCOD_list_t TCOD_namegen_get_sets(void);
 /* delete a generator */
-TCODLIB_API void TCOD_namegen_destroy (void);
+TCODLIB_API void TCOD_namegen_destroy(void);
 #ifdef __cplusplus
 }
 #endif

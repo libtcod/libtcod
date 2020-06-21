@@ -33,8 +33,8 @@
 #define LIBTCOD_CONTEXT_H_
 
 #include "config.h"
-#include "context_viewport.h"
 #include "console.h"
+#include "context_viewport.h"
 #include "error.h"
 #include "tileset.h"
 
@@ -49,20 +49,16 @@ struct SDL_Rect;
  */
 struct TCOD_Context {
   int type;
-  void*__restrict contextdata;
+  void* __restrict contextdata;
   void (*destructor_)(struct TCOD_Context* self);
   TCOD_Error (*present_)(
-      struct TCOD_Context* self,
-      const struct TCOD_Console* console,
-      const struct TCOD_ViewportOptions* viewport);
+      struct TCOD_Context* self, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
   void (*pixel_to_tile_)(struct TCOD_Context* self, double* x, double* y);
   TCOD_Error (*save_screenshot_)(struct TCOD_Context* self, const char* filename);
   struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* self);
   struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* self);
   TCOD_Error (*accumulate_)(
-      struct TCOD_Context* self,
-      const struct TCOD_Console* console,
-      const struct TCOD_ViewportOptions* viewport);
+      struct TCOD_Context* self, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
   /**
       Change the tileset used by this context.
   */
@@ -70,13 +66,12 @@ struct TCOD_Context {
   /**
       Output the recommended console size to `columns` and `rows`.
   */
-  TCOD_Error (*cb_recommended_console_size_)(
-      struct TCOD_Context* self, int* columns, int* rows);
+  TCOD_Error (*cb_recommended_console_size_)(struct TCOD_Context* self, int* columns, int* rows);
 };
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
  *  Delete a rendering context.
  *  \rst
@@ -105,9 +100,7 @@ TCOD_NODISCARD struct TCOD_Context* TCOD_context_new_(void);
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_present(
-    struct TCOD_Context* context,
-    const struct TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport);
+    struct TCOD_Context* context, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
 /**
     Convert the screen coordinates to tile coordinates for this context.
 
@@ -121,8 +114,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_present(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(
-    struct TCOD_Context* context, double* x, double* y);
+TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* context, double* x, double* y);
 /**
     Convert the screen coordinates to integer tile coordinates for this context.
 
@@ -133,8 +125,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(
-    struct TCOD_Context* context, int* x, int* y);
+TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int* x, int* y);
 /**
     Save the last presented console to a PNG file.
 
@@ -142,8 +133,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(
-    struct TCOD_Context* context, const char* filename);
+TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context, const char* filename);
 /**
     Return a pointer the SDL_Window for this context if it uses one.
 
@@ -151,8 +141,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(
-    struct TCOD_Context* context);
+TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(struct TCOD_Context* context);
 /**
     Return a pointer the SDL_Renderer for this context if it uses one.
 
@@ -160,8 +149,7 @@ TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(
-    struct TCOD_Context* context);
+TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(struct TCOD_Context* context);
 /**
     Change the active tileset for this context.
 
@@ -169,8 +157,7 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(
-    struct TCOD_Context* self, TCOD_Tileset* tileset);
+TCOD_PUBLIC TCOD_Error TCOD_context_change_tileset(struct TCOD_Context* self, TCOD_Tileset* tileset);
 /**
     Return the `TCOD_renderer_t` renderer type for this context.
 
@@ -188,9 +175,8 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
-    struct TCOD_Context* context, int* columns, int* rows);
+TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(struct TCOD_Context* context, int* columns, int* rows);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_CONTEXT_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_CONTEXT_H_

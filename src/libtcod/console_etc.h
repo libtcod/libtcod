@@ -37,33 +37,29 @@
 #include <wchar.h>
 #endif
 
-#include "config.h"
-
-#include "console.h"
-#include "context.h"
 #include "color.h"
+#include "config.h"
+#include "console.h"
 #include "console_types.h"
+#include "context.h"
+#include "error.h"
 #include "image.h"
 #include "list.h"
-#include "error.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH|(((uint8_t)(alpha*255))<<8)))
-#define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA|(((uint8_t)(alpha*255))<<8)))
+#define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH | (((uint8_t)(alpha * 255)) << 8)))
+#define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA | (((uint8_t)(alpha * 255)) << 8)))
 
-TCODLIB_API TCOD_Error TCOD_console_set_custom_font(
-    const char *fontFile,
-    int flags,
-    int nb_char_horiz,
-    int nb_char_vertic);
+TCODLIB_API TCOD_Error
+TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic);
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
-TCODLIB_API void TCOD_console_map_string_to_font(const char *s, int fontCharX, int fontCharY);
+TCODLIB_API void TCOD_console_map_string_to_font(const char* s, int fontCharX, int fontCharY);
 #ifndef NO_UNICODE
-TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t *s, int fontCharX, int fontCharY);
+TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t* s, int fontCharX, int fontCharY);
 #endif
 
 TCOD_DEPRECATED("This function does nothing.")
@@ -80,9 +76,7 @@ TCODLIB_API void TCOD_console_set_dirty(int x, int y, int w, int h);
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_console_flush_ex(
-    TCOD_Console* console,
-    struct TCOD_ViewportOptions* viewport);
+TCOD_PUBLIC TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_ViewportOptions* viewport);
 /**
  *  Render and present the root console to the active display.
  */
@@ -94,22 +88,21 @@ TCOD_DEPRECATED("Use SDL to check the keyboard state.")
 TCODLIB_API bool TCOD_console_is_key_pressed(TCOD_keycode_t key);
 
 /* ASCII paint file support */
-TCODLIB_API TCOD_console_t TCOD_console_from_file(const char *filename);
-TCODLIB_API bool TCOD_console_load_asc(TCOD_console_t con, const char *filename);
-TCODLIB_API bool TCOD_console_load_apf(TCOD_console_t con, const char *filename);
-TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char *filename);
-TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char *filename);
+TCODLIB_API TCOD_console_t TCOD_console_from_file(const char* filename);
+TCODLIB_API bool TCOD_console_load_asc(TCOD_console_t con, const char* filename);
+TCODLIB_API bool TCOD_console_load_apf(TCOD_console_t con, const char* filename);
+TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char* filename);
+TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char* filename);
 
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
 
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
-TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay,
-                                                  int interval);
+TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay, int interval);
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_disable_keyboard_repeat(void);
 #ifdef __cplusplus
 }
 #endif
-#endif // TCOD_CONSOLE_ETC_H_
+#endif  // TCOD_CONSOLE_ETC_H_

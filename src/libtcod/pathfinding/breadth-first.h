@@ -36,7 +36,7 @@
 #include <initializer_list>
 #include <limits>
 #include <queue>
-#endif // __cplusplus
+#endif  // __cplusplus
 #include "graph.h"
 
 #ifdef __cplusplus
@@ -44,10 +44,7 @@ namespace tcod {
 namespace pathfinding {
 template <typename DistMatrix, typename Graph>
 inline void breadth_first(
-    DistMatrix& dist_map,
-    const Graph& graph,
-    const std::initializer_list<std::array<ptrdiff_t, 2>>& start)
-{
+    DistMatrix& dist_map, const Graph& graph, const std::initializer_list<std::array<ptrdiff_t, 2>>& start) {
   using cost_type = typename DistMatrix::value_type;
   const cost_type MAX_COST = std::numeric_limits<cost_type>::max();
   using index_type = std::array<ptrdiff_t, 2>;
@@ -59,7 +56,9 @@ inline void breadth_first(
     const index_type current_point = queue.front();
     queue.pop();
     auto add_edge = [&](const index_type& next_point, auto) {
-      if (dist_map[next_point] < MAX_COST) { return; }
+      if (dist_map[next_point] < MAX_COST) {
+        return;
+      }
       dist_map[next_point] = dist_map[current_point] + 1;
       queue.push(next_point);
     };
@@ -68,18 +67,13 @@ inline void breadth_first(
 }
 template <typename DistMatrix, typename CostMatrix>
 inline void breadth_first2d(
-    DistMatrix& dist_map,
-    const CostMatrix& cost_map,
-    const std::initializer_list<std::array<ptrdiff_t, 2>>& start,
-    int cardinal=1,
-    int diagonal=1)
-{
+    DistMatrix& dist_map, const CostMatrix& cost_map, const std::initializer_list<std::array<ptrdiff_t, 2>>& start,
+    int cardinal = 1, int diagonal = 1) {
   auto graph = SimpleGraph2D<CostMatrix>(cost_map, cardinal, diagonal);
   breadth_first(dist_map, graph, start);
 }
-} // namespace tcod
-} // namespace pathfinding
-#endif // __cplusplus
+}  // namespace pathfinding
+}  // namespace tcod
+#endif  // __cplusplus
 
-
-#endif // LIBTCOD_PATHFINDING_BREADTH_FIRST_H_
+#endif  // LIBTCOD_PATHFINDING_BREADTH_FIRST_H_

@@ -42,28 +42,28 @@
 #define TCODLIB_API __attribute__((dllexport))
 #else
 #define TCODLIB_API __declspec(dllexport)
-#endif // __GNUC__
+#endif  // __GNUC__
 #else
 #ifdef __GNUC__
 #define TCODLIB_API __attribute__((dllimport))
 #else
 #define TCODLIB_API __declspec(dllimport)
-#endif // __GNUC__
-#endif // LIBTCOD_EXPORTS
+#endif  // __GNUC__
+#endif  // LIBTCOD_EXPORTS
 #elif __GNUC__ >= 4
 #define TCODLIB_API __attribute__((visibility("default")))
 #else
 #define TCODLIB_API
 #endif
-#endif // TCODLIB_API
+#endif  // TCODLIB_API
 
 #ifndef TCODLIB_CAPI
 #ifdef __cplusplus
 #define TCODLIB_CAPI extern "C" TCODLIB_API
 #else
 #define TCODLIB_CAPI TCODLIB_API
-#endif // __cplusplus
-#endif // TCODLIB_CAPI
+#endif  // __cplusplus
+#endif  // TCODLIB_CAPI
 
 // Publicly visible symbols and functions.
 #define TCOD_PUBLIC TCODLIB_API
@@ -73,7 +73,7 @@
 #define TCOD_PRIVATE __attribute__((visibility("hidden")))
 #else
 #define TCOD_PRIVATE
-#endif // __GNUC__ >= 4
+#endif  // __GNUC__ >= 4
 
 // Cross platform deprecation.
 #ifdef TCOD_IGNORE_DEPRECATED
@@ -86,8 +86,8 @@
 #define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
 #define TCOD_DEPRECATED_NOMESSAGE __declspec(deprecated)
 #elif defined(__GNUC__)
-#define TCOD_DEPRECATED(msg) __attribute__ ((deprecated(msg)))
-#define TCOD_DEPRECATED_NOMESSAGE __attribute__ ((deprecated))
+#define TCOD_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#define TCOD_DEPRECATED_NOMESSAGE __attribute__((deprecated))
 #else
 #define TCOD_DEPRECATED(msg)
 #define TCOD_DEPRECATED_NOMESSAGE
@@ -95,8 +95,7 @@
 
 // Tells GCC the these functions are like printf.
 #ifdef __GNUC__
-#define TCODLIB_FORMAT(str_index, first_arg) \
-    __attribute__((format(printf, str_index, first_arg)))
+#define TCODLIB_FORMAT(str_index, first_arg) __attribute__((format(printf, str_index, first_arg)))
 #else
 #define TCODLIB_FORMAT(str_index, first_arg)
 #endif
@@ -106,9 +105,9 @@
 #elif defined(_MSC_VER)
 #define TCOD_NODISCARD
 #elif defined(__GNUC__)
-#define TCOD_NODISCARD __attribute__ ((warn_unused_result))
+#define TCOD_NODISCARD __attribute__((warn_unused_result))
 #else
 #define TCOD_NODISCARD
 #endif
 
-#endif // LIBTCOD_CONFIG_H_
+#endif  // LIBTCOD_CONFIG_H_

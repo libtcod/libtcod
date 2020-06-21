@@ -35,34 +35,27 @@
 
 #include "libtcod_int.h"
 
-static TCODRandom *instance=(TCODRandom *)NULL;
+static TCODRandom* instance = (TCODRandom*)NULL;
 
-TCODRandom *TCODRandom::getInstance(void) {
-	if (! instance ) {
-		instance=new TCODRandom(TCOD_RNG_CMWC,true);
-	}
-	return instance;
+TCODRandom* TCODRandom::getInstance(void) {
+  if (!instance) {
+    instance = new TCODRandom(TCOD_RNG_CMWC, true);
+  }
+  return instance;
 }
 
 TCODRandom::TCODRandom(TCOD_random_algo_t algo, bool allocate) {
-	if ( allocate ) data = TCOD_random_new(algo);
+  if (allocate) data = TCOD_random_new(algo);
 }
 
-TCODRandom::TCODRandom(uint32_t seed, TCOD_random_algo_t algo) {
-	data=TCOD_random_new_from_seed(algo, seed);
+TCODRandom::TCODRandom(uint32_t seed, TCOD_random_algo_t algo) { data = TCOD_random_new_from_seed(algo, seed); }
+
+TCODRandom::~TCODRandom() { TCOD_random_delete(data); }
+
+TCODRandom* TCODRandom::save() const {
+  TCODRandom* ret = new TCODRandom(data->algo, false);
+  ret->data = TCOD_random_save(data);
+  return ret;
 }
 
-TCODRandom::~TCODRandom() {
-	TCOD_random_delete(data);
-}
-
-TCODRandom *TCODRandom::save() const {
-  TCODRandom *ret =
-      new TCODRandom(data->algo, false);
-	ret->data=TCOD_random_save(data);
-	return ret;
-}
-
-void TCODRandom::restore(const TCODRandom *backup) {
-	TCOD_random_restore(data,backup->data);
-}
+void TCODRandom::restore(const TCODRandom* backup) { TCOD_random_restore(data, backup->data); }

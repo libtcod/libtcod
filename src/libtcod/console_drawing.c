@@ -31,17 +31,19 @@
  */
 #include "console_drawing.h"
 
-#include "libtcod_int.h"
 #include "console.h"
+#include "libtcod_int.h"
 /**
  *  Clamp the given values to fit within a console.
  */
 static void clamp_rect_(
-    int cx, int cy, int cw, int ch,
-    int*__restrict x, int*__restrict y, int*__restrict w, int*__restrict h)
-{
-  if (*x + *w > cw) { *w = cw - *x; }
-  if (*y + *h > ch) { *h = ch - *y; }
+    int cx, int cy, int cw, int ch, int* __restrict x, int* __restrict y, int* __restrict w, int* __restrict h) {
+  if (*x + *w > cw) {
+    *w = cw - *x;
+  }
+  if (*y + *h > ch) {
+    *h = ch - *y;
+  }
   if (*x < cx) {
     *w -= cx - *x;
     *x = cx;
@@ -52,35 +54,33 @@ static void clamp_rect_(
   }
 }
 void TCOD_console_put_rgb(
-    TCOD_Console*__restrict console,
-    int x,
-    int y,
-    int ch,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag)
-{
+    TCOD_Console* __restrict console, int x, int y, int ch, const TCOD_color_t* fg, const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
-  if (!console) { return; }
-  if (!TCOD_console_is_index_valid_(console, x, y)) { return; }
+  if (!console) {
+    return;
+  }
+  if (!TCOD_console_is_index_valid_(console, x, y)) {
+    return;
+  }
   int console_index = y * console->w + x;
-  if (ch > 0) { console->tiles[console_index].ch = ch; }
-  if (fg) { TCOD_console_set_char_foreground(console, x, y, *fg); }
-  if (bg) { TCOD_console_set_char_background(console, x, y, *bg, flag); }
+  if (ch > 0) {
+    console->tiles[console_index].ch = ch;
+  }
+  if (fg) {
+    TCOD_console_set_char_foreground(console, x, y, *fg);
+  }
+  if (bg) {
+    TCOD_console_set_char_background(console, x, y, *bg, flag);
+  }
 }
 void TCOD_console_draw_rect_rgb(
-    TCOD_Console*__restrict console,
-    int x,
-    int y,
-    int width,
-    int height,
-    int ch,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag)
-{
+    TCOD_Console* __restrict console, int x, int y, int width, int height, int ch, const TCOD_color_t* fg,
+    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
-  if (!console) { return; }
+  if (!console) {
+    return;
+  }
   clamp_rect_(0, 0, console->w, console->h, &x, &y, &width, &height);
   TCOD_ASSERT(x + width <= console->w && y + height <= console->h);
   for (int console_y = y; console_y < y + height; ++console_y) {
@@ -89,24 +89,24 @@ void TCOD_console_draw_rect_rgb(
     }
   }
 }
-void TCOD_console_rect(TCOD_Console* console, int x, int y, int rw, int rh,
-                       bool clear, TCOD_bkgnd_flag_t flag)
-{
+void TCOD_console_rect(TCOD_Console* console, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
-  if (!console) { return; }
+  if (!console) {
+    return;
+  }
   TCOD_console_draw_rect_rgb(console, x, y, rw, rh, clear ? 0x20 : 0, NULL, &console->back, flag);
 }
-void TCOD_console_hline(TCOD_Console* console,int x, int y, int l,
-                        TCOD_bkgnd_flag_t flag)
-{
+void TCOD_console_hline(TCOD_Console* console, int x, int y, int l, TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
-  if (!console) { return; }
-  TCOD_console_draw_rect_rgb(console, x, y, l, 1, 0x2500, &console->fore, &console->back, flag); // ─
+  if (!console) {
+    return;
+  }
+  TCOD_console_draw_rect_rgb(console, x, y, l, 1, 0x2500, &console->fore, &console->back, flag);  // ─
 }
-void TCOD_console_vline(TCOD_Console* console,int x, int y, int l,
-                        TCOD_bkgnd_flag_t flag)
-{
+void TCOD_console_vline(TCOD_Console* console, int x, int y, int l, TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
-  if (!console) { return; }
-  TCOD_console_draw_rect_rgb(console, x, y, 1, l, 0x2502, &console->fore, &console->back, flag); // │
+  if (!console) {
+    return;
+  }
+  TCOD_console_draw_rect_rgb(console, x, y, 1, l, 0x2502, &console->fore, &console->back, flag);  // │
 }

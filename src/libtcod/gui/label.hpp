@@ -33,14 +33,15 @@
 #define TCOD_GUI_LABEL_HPP
 #include "widget.hpp"
 class TCODLIB_GUI_API Label : public Widget {
-public :
-	Label(int x, int y, const char *label, const char *tip=NULL );
-	void render();
-	void computeSize();
-	void setValue(const char *label) { this->label=label; }
-protected :
-	const char *label;
+ public:
+  Label(int x, int y, const char* label, const char* tip = NULL);
+  void render();
+  void computeSize();
+  void setValue(const char* label) { this->label = label; }
 
-	void expand(int width, int height);
+ protected:
+  const char* label;
+
+  void expand(int width, int height);
 };
 #endif /* TCOD_GUI_LABEL_HPP */

@@ -38,7 +38,7 @@
 struct SDL_Surface;
 #ifdef __cplusplus
 extern "C" {
-#endif // __cplusplus
+#endif  // __cplusplus
 /**
     Render a console to a SDL_Surface with a software renderer.
 
@@ -61,11 +61,9 @@ extern "C" {
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
-    const TCOD_Tileset*__restrict tileset,
-    const TCOD_Console*__restrict console,
-    TCOD_Console*__restrict* cache,
-    struct SDL_Surface*__restrict* surface_out);
+    const TCOD_Tileset* __restrict tileset, const TCOD_Console* __restrict console, TCOD_Console* __restrict* cache,
+    struct SDL_Surface* __restrict* surface_out);
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
-#endif // LIBTCOD_TILESET_RENDER_H_
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_TILESET_RENDER_H_

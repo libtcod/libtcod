@@ -36,9 +36,10 @@
 
 #include "error.h"
 
-void TCOD_heap_uninit(struct TCOD_Heap* heap)
-{
-  if (heap->heap) { free(heap->heap); }
+void TCOD_heap_uninit(struct TCOD_Heap* heap) {
+  if (heap->heap) {
+    free(heap->heap);
+  }
   heap->heap = NULL;
   heap->size = 0;
   heap->capacity = 0;
@@ -46,8 +47,7 @@ void TCOD_heap_uninit(struct TCOD_Heap* heap)
   heap->data_size = 0;
 }
 
-int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size)
-{
+int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size) {
   size_t node_size = sizeof(struct TCOD_HeapNode) + data_size;
   if (node_size > TCOD_HEAP_MAX_NODE_SIZE) {
     return TCOD_set_errorvf("Heap data size is too large: %i", (int)node_size);
@@ -60,48 +60,34 @@ int TCOD_heap_init(struct TCOD_Heap* heap, size_t data_size)
   return 0;
 }
 
-void TCOD_heap_clear(struct TCOD_Heap* heap)
-{
-  heap->size = 0;
-}
+void TCOD_heap_clear(struct TCOD_Heap* heap) { heap->size = 0; }
 
-static struct TCOD_HeapNode* TCOD_heap_get(struct TCOD_Heap* heap, int index)
-{
+static struct TCOD_HeapNode* TCOD_heap_get(struct TCOD_Heap* heap, int index) {
   return (struct TCOD_HeapNode*)((char*)(heap->heap) + index * heap->node_size);
 }
 
-static void TCOD_heap_swap(struct TCOD_Heap* heap, int lhs, int rhs)
-{
+static void TCOD_heap_swap(struct TCOD_Heap* heap, int lhs, int rhs) {
   unsigned char buffer[TCOD_HEAP_MAX_NODE_SIZE];
   memcpy(buffer, TCOD_heap_get(heap, lhs), heap->node_size);
   memcpy(TCOD_heap_get(heap, lhs), TCOD_heap_get(heap, rhs), heap->node_size);
   memcpy(TCOD_heap_get(heap, rhs), buffer, heap->node_size);
 }
 
-static void TCOD_heap_set(
-    struct TCOD_Heap*__restrict heap,
-    int index,
-    int priority,
-    const void*__restrict data)
-{
+static void TCOD_heap_set(struct TCOD_Heap* __restrict heap, int index, int priority, const void* __restrict data) {
   struct TCOD_HeapNode* node = TCOD_heap_get(heap, index);
   node->priority = priority;
   memcpy(node->data, data, heap->node_size - sizeof(struct TCOD_HeapNode));
 }
 
-static void TCOD_heap_copy(struct TCOD_Heap* heap, int dest, int src)
-{
+static void TCOD_heap_copy(struct TCOD_Heap* heap, int dest, int src) {
   memcpy(TCOD_heap_get(heap, dest), TCOD_heap_get(heap, src), heap->node_size);
 }
 
-static bool TCOD_minheap_compare(struct TCOD_Heap* minheap, int lhs, int rhs)
-{
-  return (TCOD_heap_get(minheap, lhs)->priority
-          < TCOD_heap_get(minheap, rhs)->priority);
+static bool TCOD_minheap_compare(struct TCOD_Heap* minheap, int lhs, int rhs) {
+  return (TCOD_heap_get(minheap, lhs)->priority < TCOD_heap_get(minheap, rhs)->priority);
 }
 
-static void TCOD_TCOD_minheap_heapify_down(struct TCOD_Heap* minheap, int index)
-{
+static void TCOD_TCOD_minheap_heapify_down(struct TCOD_Heap* minheap, int index) {
   int canidate = index;
   int left = index * 2 + 1;
   int right = index * 2 + 2;
@@ -117,24 +103,25 @@ static void TCOD_TCOD_minheap_heapify_down(struct TCOD_Heap* minheap, int index)
   }
 }
 
-static void TCOD_TCOD_minheap_heapify_up(struct TCOD_Heap* minheap, int index)
-{
-  if (index == 0) { return; }
+static void TCOD_TCOD_minheap_heapify_up(struct TCOD_Heap* minheap, int index) {
+  if (index == 0) {
+    return;
+  }
   int parent = (index - 1) >> 1;
   if (TCOD_minheap_compare(minheap, index, parent)) {
     TCOD_heap_swap(minheap, index, parent);
     TCOD_TCOD_minheap_heapify_up(minheap, parent);
   }
 }
-void TCOD_minheap_heapify(struct TCOD_Heap* minheap)
-{
+void TCOD_minheap_heapify(struct TCOD_Heap* minheap) {
   for (int i = minheap->size / 2; i >= 0; --i) {
     TCOD_TCOD_minheap_heapify_down(minheap, i);
   }
 }
-void TCOD_minheap_pop(struct TCOD_Heap*__restrict minheap, void*__restrict out)
-{
-  if (minheap->size == 0) { return; }
+void TCOD_minheap_pop(struct TCOD_Heap* __restrict minheap, void* __restrict out) {
+  if (minheap->size == 0) {
+    return;
+  }
   if (out) {
     memcpy(out, minheap->heap[0].data, minheap->data_size);
   }
@@ -143,17 +130,13 @@ void TCOD_minheap_pop(struct TCOD_Heap*__restrict minheap, void*__restrict out)
   TCOD_TCOD_minheap_heapify_down(minheap, 0);
 }
 
-int TCOD_minheap_push(
-    struct TCOD_Heap*__restrict minheap,
-    int priority,
-    const void*__restrict data)
-{
+int TCOD_minheap_push(struct TCOD_Heap* __restrict minheap, int priority, const void* __restrict data) {
   if (minheap->size == minheap->capacity) {
-    int new_capacity = (
-        minheap->capacity ? minheap->capacity * 2 : TCOD_HEAP_DEFAULT_CAPACITY
-    );
+    int new_capacity = (minheap->capacity ? minheap->capacity * 2 : TCOD_HEAP_DEFAULT_CAPACITY);
     void* new_heap = realloc(minheap->heap, minheap->node_size * new_capacity);
-    if (!new_heap) { return -1; } // Out of memory.
+    if (!new_heap) {
+      return -1;
+    }  // Out of memory.
     minheap->capacity = new_capacity;
     minheap->heap = (struct TCOD_HeapNode*)new_heap;
   }

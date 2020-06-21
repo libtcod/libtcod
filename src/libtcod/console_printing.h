@@ -43,36 +43,44 @@
 #endif
 
 #include "config.h"
-#include "error.h"
 #include "console_types.h"
+#include "error.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
-TCODLIB_API void TCOD_console_print(TCOD_Console* con,int x, int y, const char *fmt, ...);
+TCODLIB_API void TCOD_console_print(TCOD_Console* con, int x, int y, const char* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
-TCODLIB_API void TCOD_console_print_ex(TCOD_Console* con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCODLIB_API void TCOD_console_print_ex(
+    TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
-TCODLIB_API int TCOD_console_print_rect(TCOD_Console* con,int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
-TCODLIB_API int TCOD_console_print_rect_ex(TCOD_Console* con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_ex(
+    TCOD_Console* con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt,
+    ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_frame instead.")
-TCODLIB_API void TCOD_console_print_frame(TCOD_console_t con,int x,int y,int w,int h, bool empty, TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+TCODLIB_API void TCOD_console_print_frame(
+    TCOD_console_t con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
-TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con,int x, int y, int w, int h, const char *fmt, ...);
+TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
 
 #ifndef NO_UNICODE
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
-TCODLIB_API void TCOD_console_print_utf(TCOD_Console* con,int x, int y, const wchar_t *fmt, ...);
+TCODLIB_API void TCOD_console_print_utf(TCOD_Console* con, int x, int y, const wchar_t* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
-TCODLIB_API void TCOD_console_print_ex_utf(TCOD_Console* con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
+TCODLIB_API void TCOD_console_print_ex_utf(
+    TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
-TCODLIB_API int TCOD_console_print_rect_utf(TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int w, int h, const wchar_t* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
-TCODLIB_API int TCOD_console_print_rect_ex_utf(TCOD_Console* con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
+TCODLIB_API int TCOD_console_print_rect_ex_utf(
+    TCOD_Console* con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
+    const wchar_t* fmt, ...);
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
-TCODLIB_API int TCOD_console_get_height_rect_utf(TCOD_Console* con,int x, int y, int w, int h, const wchar_t *fmt, ...);
+TCODLIB_API int TCOD_console_get_height_rect_utf(
+    TCOD_Console* con, int x, int y, int w, int h, const wchar_t* fmt, ...);
 #endif
 
 typedef enum {
@@ -81,7 +89,7 @@ typedef enum {
   TCOD_COLCTRL_3,
   TCOD_COLCTRL_4,
   TCOD_COLCTRL_5,
-  TCOD_COLCTRL_NUMBER=5,
+  TCOD_COLCTRL_NUMBER = 5,
   TCOD_COLCTRL_FORE_RGB,
   TCOD_COLCTRL_BACK_RGB,
   TCOD_COLCTRL_STOP
@@ -99,8 +107,8 @@ TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t
         Now returns a negative error code on failure.
     \endrst
  */
-TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error TCOD_console_printf(
-    TCOD_Console*__restrict con, int x, int y, const char *fmt, ...);
+TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error
+    TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -111,8 +119,8 @@ TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error TCOD_console_printf(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
-    TCOD_Console*__restrict con, int x, int y, TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment, const char *fmt, ...);
+    TCOD_Console* __restrict con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt,
+    ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -123,8 +131,7 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
-    TCOD_Console*__restrict con,
-    int x, int y, int w, int h, const char *fmt, ...);
+    TCOD_Console* __restrict con, int x, int y, int w, int h, const char* fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -135,8 +142,8 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
-    TCOD_Console*__restrict con,int x, int y, int w, int h,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char *fmt, ...);
+    TCOD_Console* __restrict con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
+    const char* fmt, ...);
 /**
     Print a framed and optionally titled region to a console, using default
     colors and alignment.
@@ -150,10 +157,9 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
         Now returns a negative error code on failure.
     \endrst
  */
-TCODLIB_API TCODLIB_FORMAT(8, 9)
-TCOD_Error TCOD_console_printf_frame(struct TCOD_Console*__restrict con,
-                               int x, int y, int w, int h, int empty,
-                               TCOD_bkgnd_flag_t flag, const char *fmt, ...);
+TCODLIB_API TCODLIB_FORMAT(8, 9) TCOD_Error TCOD_console_printf_frame(
+    struct TCOD_Console* __restrict con, int x, int y, int w, int h, int empty, TCOD_bkgnd_flag_t flag, const char* fmt,
+    ...);
 /**
     Return the number of lines that would be printed by this formatted string.
     \rst
@@ -163,124 +169,47 @@ TCOD_Error TCOD_console_printf_frame(struct TCOD_Console*__restrict con,
         Now returns a negative error code on failure.
     \endrst
  */
-TCODLIB_API TCODLIB_FORMAT(6, 7)
-int TCOD_console_get_height_rect_fmt(struct TCOD_Console *con,
-                                     int x, int y, int w, int h,
-                                     const char *fmt, ...);
+TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_get_height_rect_fmt(
+    struct TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
 
 TCOD_PUBLIC TCOD_Error TCOD_console_printn(
-    TCOD_Console*__restrict con,
-    int x,
-    int y,
-    int n,
-    const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment);
+    TCOD_Console* __restrict con, int x, int y, int n, const char* str, const TCOD_color_t* fg, const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment);
 TCOD_PUBLIC int TCOD_console_printn_rect(
-    TCOD_Console*__restrict con,
-    int x,
-    int y,
-    int width,
-    int height,
-    int n,
-    const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment);
+    TCOD_Console* __restrict con, int x, int y, int width, int height, int n, const char* str, const TCOD_color_t* fg,
+    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment);
 TCOD_PUBLIC int TCOD_console_get_height_rect_n(
-    TCOD_Console*__restrict console,
-    int x,
-    int y,
-    int width,
-    int height,
-    int n,
-    const char*__restrict str);
-TCOD_PUBLIC int TCOD_console_get_height_rect_wn(
-    int width,
-    int n,
-    const char* str);
+    TCOD_Console* __restrict console, int x, int y, int width, int height, int n, const char* __restrict str);
+TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, int n, const char* str);
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
-    struct TCOD_Console*__restrict con,
-    int x,
-    int y,
-    int width,
-    int height,
-    int n,
-    const char* title,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    bool empty);
+    struct TCOD_Console* __restrict con, int x, int y, int width, int height, int n, const char* title,
+    const TCOD_color_t* fg, const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, bool empty);
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 namespace tcod {
 inline void print(
-    TCOD_Console& con,
-    int x,
-    int y,
-    const std::string& str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment)
-{
-  check_throw_error(
-      TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment));
+    TCOD_Console& con, int x, int y, const std::string& str, const TCOD_color_t* fg, const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment) {
+  check_throw_error(TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment));
 }
 inline int print_rect(
-    TCOD_Console &con,
-    int x,
-    int y,
-    int width,
-    int height,
-    const std::string& str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment)
-{
+    TCOD_Console& con, int x, int y, int width, int height, const std::string& str, const TCOD_color_t* fg,
+    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment) {
   return check_throw_error(
-      TCOD_console_printn_rect(
-          &con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
+      TCOD_console_printn_rect(&con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
 }
-inline int get_height_rect(
-    TCOD_Console &console,
-    int x,
-    int y,
-    int width,
-    int height,
-    const std::string& str)
-{
-  return check_throw_error(
-      TCOD_console_get_height_rect_n(
-          &console, x, y, width, height, str.size(), str.data()));
+inline int get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str) {
+  return check_throw_error(TCOD_console_get_height_rect_n(&console, x, y, width, height, str.size(), str.data()));
 }
-inline int get_height_rect(
-    int width,
-    const std::string& str)
-{
-  return check_throw_error(
-      TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
+inline int get_height_rect(int width, const std::string& str) {
+  return check_throw_error(TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
 }
 inline void print_frame(
-    struct TCOD_Console &con,
-    int x,
-    int y,
-    int width,
-    int height,
-    const std::string& title,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    bool empty)
-{
+    struct TCOD_Console& con, int x, int y, int width, int height, const std::string& title, const TCOD_color_t* fg,
+    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, bool empty) {
   check_throw_error(
-      TCOD_console_printn_frame(
-          &con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty));
+      TCOD_console_printn_frame(&con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty));
 }
-} // namespace tcod
-#endif // __cplusplus
-#endif /* TCOD_CONSOLE_PRINTING_H_ */
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  /* TCOD_CONSOLE_PRINTING_H_ */

@@ -108,7 +108,6 @@ static int cur_fps = 0;
 /* length of the last rendering loop */
 static float last_frame_length = 0.0f;
 
-static bool key_status[TCODK_CHAR + 1] = {0};
 int oldFade = -1;
 
 /* convert SDL vk to a char (depends on the keyboard layout) */
@@ -800,7 +799,6 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
           break;
       }
       TCOD_sys_convert_event(ev, &tmpkey);
-      key_status[tmpkey.vk] = false;
       if (flags & TCOD_KEY_RELEASED) {
         ret->vk = tmpkey.vk;
         ret->c = tmpkey.c;
@@ -839,7 +837,6 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
           break;
       }
       TCOD_sys_convert_event(ev, &tmpkey);
-      key_status[tmpkey.vk] = true;
       if (flags & TCOD_KEY_PRESSED) {
         ret->vk = tmpkey.vk;
         ret->c = tmpkey.c;
@@ -851,7 +848,135 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
   return *ret;
 }
 
-bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) { return key_status[key]; }
+bool TCOD_sys_is_key_pressed(TCOD_keycode_t key) {
+  const uint8_t* state = SDL_GetKeyboardState(NULL);
+  switch (key) {
+    case TCODK_ESCAPE:
+      return state[SDL_SCANCODE_ESCAPE] != 0;
+    case TCODK_SPACE:
+      return state[SDL_SCANCODE_SPACE] != 0;
+    case TCODK_BACKSPACE:
+      return state[SDL_SCANCODE_BACKSPACE] != 0;
+    case TCODK_TAB:
+      return state[SDL_SCANCODE_TAB] != 0;
+    case TCODK_ENTER:
+      return state[SDL_SCANCODE_RETURN] != 0;
+    case TCODK_PAUSE:
+      return state[SDL_SCANCODE_PAUSE] != 0;
+    case TCODK_PAGEUP:
+      return state[SDL_SCANCODE_PAGEUP] != 0;
+    case TCODK_PAGEDOWN:
+      return state[SDL_SCANCODE_PAGEDOWN] != 0;
+    case TCODK_HOME:
+      return state[SDL_SCANCODE_HOME] != 0;
+    case TCODK_END:
+      return state[SDL_SCANCODE_END] != 0;
+    case TCODK_DELETE:
+      return state[SDL_SCANCODE_DELETE] != 0;
+    case TCODK_INSERT:
+      return state[SDL_SCANCODE_INSERT] != 0;
+    case TCODK_ALT:
+      return (state[SDL_SCANCODE_LALT] | state[SDL_SCANCODE_RALT]) != 0;
+    case TCODK_CONTROL:
+      return (state[SDL_SCANCODE_LCTRL] | state[SDL_SCANCODE_RCTRL]) != 0;
+    case TCODK_SHIFT:
+      return (state[SDL_SCANCODE_LSHIFT] | state[SDL_SCANCODE_RSHIFT]) != 0;
+    case TCODK_PRINTSCREEN:
+      return state[SDL_SCANCODE_PRINTSCREEN] != 0;
+    case TCODK_LEFT:
+      return state[SDL_SCANCODE_LEFT] != 0;
+    case TCODK_UP:
+      return state[SDL_SCANCODE_UP] != 0;
+    case TCODK_RIGHT:
+      return state[SDL_SCANCODE_RIGHT] != 0;
+    case TCODK_DOWN:
+      return state[SDL_SCANCODE_DOWN] != 0;
+    case TCODK_F1:
+      return state[SDL_SCANCODE_F1] != 0;
+    case TCODK_F2:
+      return state[SDL_SCANCODE_F2] != 0;
+    case TCODK_F3:
+      return state[SDL_SCANCODE_F3] != 0;
+    case TCODK_F4:
+      return state[SDL_SCANCODE_F4] != 0;
+    case TCODK_F5:
+      return state[SDL_SCANCODE_F5] != 0;
+    case TCODK_F6:
+      return state[SDL_SCANCODE_F6] != 0;
+    case TCODK_F7:
+      return state[SDL_SCANCODE_F7] != 0;
+    case TCODK_F8:
+      return state[SDL_SCANCODE_F8] != 0;
+    case TCODK_F9:
+      return state[SDL_SCANCODE_F9] != 0;
+    case TCODK_F10:
+      return state[SDL_SCANCODE_F10] != 0;
+    case TCODK_F11:
+      return state[SDL_SCANCODE_F11] != 0;
+    case TCODK_F12:
+      return state[SDL_SCANCODE_F12] != 0;
+    case TCODK_0:
+      return state[SDL_SCANCODE_0] != 0;
+    case TCODK_1:
+      return state[SDL_SCANCODE_1] != 0;
+    case TCODK_2:
+      return state[SDL_SCANCODE_2] != 0;
+    case TCODK_3:
+      return state[SDL_SCANCODE_3] != 0;
+    case TCODK_4:
+      return state[SDL_SCANCODE_4] != 0;
+    case TCODK_5:
+      return state[SDL_SCANCODE_5] != 0;
+    case TCODK_6:
+      return state[SDL_SCANCODE_6] != 0;
+    case TCODK_7:
+      return state[SDL_SCANCODE_7] != 0;
+    case TCODK_8:
+      return state[SDL_SCANCODE_8] != 0;
+    case TCODK_9:
+      return state[SDL_SCANCODE_9] != 0;
+    case TCODK_RWIN:
+      return state[SDL_SCANCODE_RGUI] != 0;
+    case TCODK_LWIN:
+      return state[SDL_SCANCODE_LGUI] != 0;
+    case TCODK_NUMLOCK:
+      return state[SDL_SCANCODE_NUMLOCKCLEAR] != 0;
+    case TCODK_KP0:
+      return state[SDL_SCANCODE_KP_0] != 0;
+    case TCODK_KP1:
+      return state[SDL_SCANCODE_KP_1] != 0;
+    case TCODK_KP2:
+      return state[SDL_SCANCODE_KP_2] != 0;
+    case TCODK_KP3:
+      return state[SDL_SCANCODE_KP_3] != 0;
+    case TCODK_KP4:
+      return state[SDL_SCANCODE_KP_4] != 0;
+    case TCODK_KP5:
+      return state[SDL_SCANCODE_KP_5] != 0;
+    case TCODK_KP6:
+      return state[SDL_SCANCODE_KP_6] != 0;
+    case TCODK_KP7:
+      return state[SDL_SCANCODE_KP_7] != 0;
+    case TCODK_KP8:
+      return state[SDL_SCANCODE_KP_8] != 0;
+    case TCODK_KP9:
+      return state[SDL_SCANCODE_KP_9] != 0;
+    case TCODK_KPDIV:
+      return state[SDL_SCANCODE_KP_DIVIDE] != 0;
+    case TCODK_KPMUL:
+      return state[SDL_SCANCODE_KP_MULTIPLY] != 0;
+    case TCODK_KPADD:
+      return state[SDL_SCANCODE_KP_PLUS] != 0;
+    case TCODK_KPSUB:
+      return state[SDL_SCANCODE_KP_MINUS] != 0;
+    case TCODK_KPENTER:
+      return state[SDL_SCANCODE_KP_ENTER] != 0;
+    case TCODK_KPDEC:
+      return state[SDL_SCANCODE_KP_PERIOD] != 0;
+    default:
+      return 0;
+  }
+}
 
 void TCOD_sys_unproject_screen_coords(int sx, int sy, int* ssx, int* ssy) {
   if (scale_data.dst_display_width != 0) {

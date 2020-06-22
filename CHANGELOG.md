@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Changed
 - Video driver status info has been added to SDL video driver errors.
 
+### Fixed
+- `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.
+
 ## [1.16.0-alpha.12] - 2020-05-22
 ### Changed
 - CMake can now create packages.

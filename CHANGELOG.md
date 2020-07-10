@@ -7,6 +7,11 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Tilesets can now be loaded from an in-memory PNG file or from raw data.
+- The character mappings `TCOD_CHARMAP_CP437` and `TCOD_CHARMAP_TCOD` are now
+  public.
+
 ### Changed
 - Video driver status info has been added to SDL video driver errors.
 

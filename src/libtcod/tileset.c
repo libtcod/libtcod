@@ -325,34 +325,25 @@ static void upload_tile_by_id_normalized(
     }
   }
 }
-TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int n, int* __restrict charmap) {
+TCOD_Tileset* TCOD_tileset_load_raw(
+    int width, int height, const struct TCOD_ColorRGBA* __restrict pixels, int columns, int rows, int n,
+    const int* __restrict charmap) {
   int font_tiles = columns * rows;
-  struct TCOD_ColorRGBA* font;
-  unsigned int font_width;
-  unsigned int font_height;
-  unsigned int lodepng_err;
-  lodepng_err = lodepng_decode32_file((unsigned char**)&font, &font_width, &font_height, filename);
-  if (lodepng_err) {
-    TCOD_set_errorvf("Error loading font image:\n%s", lodepng_error_text(lodepng_err));
-    return NULL;  // Error decoding file.
-  }
-  TCOD_Tileset* tileset = TCOD_tileset_new(font_width / columns, font_height / rows);
+  TCOD_Tileset* tileset = TCOD_tileset_new(width / columns, height / rows);
   if (!tileset) {
-    free(font);
     return NULL;
   }
   if (TCOD_tileset_reserve(tileset, font_tiles) < 0) {
     TCOD_tileset_delete(NULL);
-    free(font);
     return NULL;
   }
   tileset->tiles_count = font_tiles;
   tileset->virtual_columns = columns;
   // Check for a color key in the first tile.
-  struct TCOD_ColorRGBA* color_key = &font[0];
+  const struct TCOD_ColorRGBA* color_key = &pixels[0];
   for (int y = 0; y < tileset->tile_height; ++y) {
     for (int x = 0; x < tileset->tile_width; ++x) {
-      struct TCOD_ColorRGBA pixel = font[y * font_width + x];
+      struct TCOD_ColorRGBA pixel = pixels[y * width + x];
       if (color_key &&
           (pixel.r != color_key->r || pixel.g != color_key->g || pixel.b != color_key->b || pixel.a != color_key->a)) {
         color_key = NULL;
@@ -363,10 +354,9 @@ TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int
     int font_x = tile_id % columns;
     int font_y = tile_id / columns;
     upload_tile_by_id_normalized(
-        tileset, tile_id, (font + font_y * columns * tileset->tile_length + font_x * tileset->tile_width),
-        sizeof(*font) * font_width, color_key);
+        tileset, tile_id, (pixels + font_y * columns * tileset->tile_length + font_x * tileset->tile_width),
+        sizeof(*pixels) * width, color_key);
   }
-  free(font);
   if (!charmap) {
     n = font_tiles;
   }
@@ -377,5 +367,33 @@ TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int
       return NULL;
     }
   }
+  return tileset;
+}
+TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int n, const int* __restrict charmap) {
+  struct TCOD_ColorRGBA* font;
+  unsigned int font_width;
+  unsigned int font_height;
+  unsigned int lodepng_err;
+  lodepng_err = lodepng_decode32_file((unsigned char**)&font, &font_width, &font_height, filename);
+  if (lodepng_err) {
+    TCOD_set_errorvf("Error loading font image:\n%s", lodepng_error_text(lodepng_err));
+    return NULL;  // Error decoding file.
+  }
+  TCOD_Tileset* tileset = TCOD_tileset_load_raw((int)font_width, (int)font_height, font, columns, rows, n, charmap);
+  free(font);
+  return tileset;
+}
+TCOD_Tileset* TCOD_tileset_load_mem(
+    size_t buffer_length, const unsigned char* buffer, int columns, int rows, int n, const int* __restrict charmap) {
+  struct TCOD_ColorRGBA* pixels;
+  unsigned int width;
+  unsigned int height;
+  unsigned int lodepng_err = lodepng_decode32((unsigned char**)&pixels, &width, &height, buffer, buffer_length);
+  if (lodepng_err) {
+    TCOD_set_errorvf("Error decoding font image:\n%s", lodepng_error_text(lodepng_err));
+    return NULL;
+  }
+  TCOD_Tileset* tileset = TCOD_tileset_load_raw((int)width, (int)height, pixels, columns, rows, n, charmap);
+  free(pixels);
   return tileset;
 }

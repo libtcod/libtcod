@@ -31,6 +31,7 @@
  */
 #ifndef LIBTCOD_TILESET_H_
 #define LIBTCOD_TILESET_H_
+#include <stddef.h>
 #ifdef __cplusplus
 #include <memory>
 #endif  // __cplusplus

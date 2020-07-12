@@ -50,6 +50,16 @@ static void TCOD_image_invalidate_mipmaps(TCOD_Image* image) {
   }
 }
 
+/**
+    Return true if `x` and `y` are in the bounds of `image`.
+ */
+static bool TCOD_image_in_bounds(TCOD_Image* image, int x, int y) {
+  if (!image) {
+    return 0;
+  }
+  return (0 <= x && 0 <= y && x < image->mipmaps[0].width && y < image->mipmaps[0].height);
+}
+
 static int TCOD_image_get_mipmap_levels(int width, int height) {
   int curw = width;
   int curh = height;
@@ -103,9 +113,7 @@ void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color) {
   for (int i = 0; i < image->mipmaps[0].width * image->mipmaps[0].height; ++i) {
     image->mipmaps[0].buf[i] = color;
   }
-  for (int i = 1; i < image->nb_mipmaps; ++i) {
-    image->mipmaps[i].dirty = true;
-  }
+  TCOD_image_invalidate_mipmaps(image);
 }
 
 TCOD_Image* TCOD_image_new(int width, int height) {
@@ -171,7 +179,8 @@ TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y) {
   if (!image) {
     return (TCOD_ColorRGB){0, 0, 0};
   }
-  if (x >= 0 && x < image->mipmaps[0].width && y >= 0 && y < image->mipmaps[0].height) {
+
+  if (TCOD_image_in_bounds(image, x, y)) {
     return image->mipmaps[0].buf[x + y * image->mipmaps[0].width];
   }
   return (TCOD_ColorRGB){0, 0, 0};
@@ -215,11 +224,9 @@ void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col) {
   if (!image) {
     return;
   }
-  if (x >= 0 && x < image->mipmaps[0].width && y >= 0 && y < image->mipmaps[0].height) {
+  if (TCOD_image_in_bounds(image, x, y)) {
     image->mipmaps[0].buf[x + y * image->mipmaps[0].width] = col;
-    for (int mip = 1; mip < image->nb_mipmaps; ++mip) {
-      image->mipmaps[mip].dirty = true;
-    }
+    TCOD_image_invalidate_mipmaps(image);
   }
 }
 
@@ -474,9 +481,7 @@ void TCOD_image_invert(TCOD_Image* image) {
     col.b = 255 - col.b;
     image->mipmaps[0].buf[i] = col;
   }
-  for (int mip = 1; mip < image->nb_mipmaps; ++mip) {
-    image->mipmaps[mip].dirty = true;
-  }
+  TCOD_image_invalidate_mipmaps(image);
 }
 
 void TCOD_image_hflip(TCOD_Image* image) {

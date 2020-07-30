@@ -53,7 +53,7 @@ static void TCOD_image_invalidate_mipmaps(TCOD_Image* image) {
 /**
     Return true if `x` and `y` are in the bounds of `image`.
  */
-static bool TCOD_image_in_bounds(TCOD_Image* image, int x, int y) {
+static bool TCOD_image_in_bounds(const TCOD_Image* image, int x, int y) {
   if (!image) {
     return 0;
   }

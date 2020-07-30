@@ -159,6 +159,9 @@ static uint8_t alpha_blend(int src_c, int src_a, int dst_c, int dst_a, int out_a
 static struct TCOD_ColorRGBA TCOD_console_blit_lerp_(
     const struct TCOD_ColorRGBA dst, const struct TCOD_ColorRGBA src, float interp) {
   uint8_t out_a = (uint8_t)(src.a + dst.a * (255 - src.a) / 255);
+  if (out_a == 0) {  // This would cause division by zero.
+    return dst;      // Ignore alpha compositing and leave dst unchanged.
+  }
   uint8_t src_a = (uint8_t)(src.a * interp);
   struct TCOD_ColorRGBA out = {
       alpha_blend(src.r, src_a, dst.r, dst.a, out_a),

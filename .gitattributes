@@ -130,3 +130,11 @@
 
 # OpenGL Shaders
 *.glsl* text
+
+
+# Exclude VCS configuration files from archive generation
+# https://feeding.cloud.geek.nz/posts/excluding-files-from-git-archive/
+.gitattributes export-ignore
+.gitignore export-ignore
+.hgtags export-ignore
+.hgignore export-ignore

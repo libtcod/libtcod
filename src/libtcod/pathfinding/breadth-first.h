@@ -67,8 +67,11 @@ inline void breadth_first(
 }
 template <typename DistMatrix, typename CostMatrix>
 inline void breadth_first2d(
-    DistMatrix& dist_map, const CostMatrix& cost_map, const std::initializer_list<std::array<ptrdiff_t, 2>>& start,
-    int cardinal = 1, int diagonal = 1) {
+    DistMatrix& dist_map,
+    const CostMatrix& cost_map,
+    const std::initializer_list<std::array<ptrdiff_t, 2>>& start,
+    int cardinal = 1,
+    int diagonal = 1) {
   auto graph = SimpleGraph2D<CostMatrix>(cost_map, cardinal, diagonal);
   breadth_first(dist_map, graph, start);
 }

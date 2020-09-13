@@ -96,8 +96,14 @@ static void get_env_vsync(bool* vsync) {
   }
 }
 TCOD_Error TCOD_context_new_terminal(
-    int columns, int rows, int renderer_type, TCOD_Tileset* tileset, bool vsync, int sdl_window_flags,
-    const char* window_title, TCOD_Context** out) {
+    int columns,
+    int rows,
+    int renderer_type,
+    TCOD_Tileset* tileset,
+    bool vsync,
+    int sdl_window_flags,
+    const char* window_title,
+    TCOD_Context** out) {
   get_env_renderer(&renderer_type);
   get_env_vsync(&vsync);
   TCOD_Error err = ensure_tileset(&tileset);
@@ -109,8 +115,14 @@ TCOD_Error TCOD_context_new_terminal(
   return TCOD_context_new_window(width, height, renderer_type, tileset, vsync, sdl_window_flags, window_title, out);
 }
 TCOD_Error TCOD_context_new_window(
-    int pixel_width, int pixel_height, int renderer_type, TCOD_Tileset* tileset, bool vsync, int sdl_window_flags,
-    const char* window_title, TCOD_Context** out) {
+    int pixel_width,
+    int pixel_height,
+    int renderer_type,
+    TCOD_Tileset* tileset,
+    bool vsync,
+    int sdl_window_flags,
+    const char* window_title,
+    TCOD_Context** out) {
   if (!out) {
     TCOD_set_errorv("Output parameter is NULL.");
     return TCOD_E_INVALID_ARGUMENT;

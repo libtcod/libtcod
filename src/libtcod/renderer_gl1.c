@@ -102,8 +102,15 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
       return TCOD_E_ERROR;
     }
     glTexImage2D(
-        GL_TEXTURE_2D, 0, GL_RGBA, renderer->background_width, renderer->background_height, 0, GL_RGBA,
-        GL_UNSIGNED_BYTE, NULL);
+        GL_TEXTURE_2D,
+        0,
+        GL_RGBA,
+        renderer->background_width,
+        renderer->background_height,
+        0,
+        GL_RGBA,
+        GL_UNSIGNED_BYTE,
+        NULL);
   }
 
   // Upload background color to a texture.
@@ -219,7 +226,8 @@ static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, con
  *  Render the console onto the screen.
  */
 static TCOD_Error gl1_accumulate(
-    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict context,
+    const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererGL1* renderer = context->contextdata;
   glMatrixMode(GL_PROJECTION);
@@ -250,7 +258,8 @@ static TCOD_Error gl1_accumulate(
  *  Clear, render, and swap the screen.
  */
 static TCOD_Error gl1_present(
-    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict context,
+    const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
@@ -261,8 +270,10 @@ static TCOD_Error gl1_present(
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
   glClearColor(
-      (float)viewport->clear_color.r / 255.0f, (float)viewport->clear_color.g / 255.0f,
-      (float)viewport->clear_color.b / 255.0f, (float)viewport->clear_color.a / 255.0f);
+      (float)viewport->clear_color.r / 255.0f,
+      (float)viewport->clear_color.g / 255.0f,
+      (float)viewport->clear_color.b / 255.0f,
+      (float)viewport->clear_color.a / 255.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl1_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);

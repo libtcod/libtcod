@@ -55,7 +55,14 @@ static int upload_gl_tile(struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id) {
   SDL_Rect dest = get_gl_atlas_tile(atlas, tile_id);
   glBindTexture(GL_TEXTURE_2D, atlas->texture);
   glTexSubImage2D(
-      GL_TEXTURE_2D, 0, dest.x, dest.y, dest.w, dest.h, GL_RGBA, GL_UNSIGNED_BYTE,
+      GL_TEXTURE_2D,
+      0,
+      dest.x,
+      dest.y,
+      dest.w,
+      dest.h,
+      GL_RGBA,
+      GL_UNSIGNED_BYTE,
       atlas->tileset->pixels + (tile_id * atlas->tileset->tile_length));
   glBindTexture(GL_TEXTURE_2D, 0);
   return 0;

@@ -195,8 +195,15 @@ void TCOD_heightmap_copy(const TCOD_heightmap_t* hm_source, TCOD_heightmap_t* hm
 }
 
 void TCOD_heightmap_add_fbm(
-    TCOD_heightmap_t* hm, TCOD_noise_t noise, float mulx, float muly, float addx, float addy, float octaves,
-    float delta, float scale) {
+    TCOD_heightmap_t* hm,
+    TCOD_noise_t noise,
+    float mulx,
+    float muly,
+    float addx,
+    float addy,
+    float octaves,
+    float delta,
+    float scale) {
   if (!hm) {
     return;
   }
@@ -211,8 +218,15 @@ void TCOD_heightmap_add_fbm(
 }
 
 void TCOD_heightmap_scale_fbm(
-    TCOD_heightmap_t* hm, TCOD_noise_t noise, float mulx, float muly, float addx, float addy, float octaves,
-    float delta, float scale) {
+    TCOD_heightmap_t* hm,
+    TCOD_noise_t noise,
+    float mulx,
+    float muly,
+    float addx,
+    float addy,
+    float octaves,
+    float delta,
+    float scale) {
   if (!hm) {
     return;
   }
@@ -498,7 +512,12 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 #endif
 
 void TCOD_heightmap_kernel_transform(
-    TCOD_heightmap_t* hm, int kernelsize, const int* dx, const int* dy, const float* weight, float minLevel,
+    TCOD_heightmap_t* hm,
+    int kernelsize,
+    const int* dx,
+    const int* dy,
+    const float* weight,
+    float minLevel,
     float maxLevel) {
   if (!hm) {
     return;

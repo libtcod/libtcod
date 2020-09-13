@@ -46,7 +46,7 @@ TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) 
   return TCOD_load_truetype_font_(path, tile_width, tile_height);
 #elif defined(__APPLE__)  // MacOS.
   return TCOD_load_truetype_font_("/System/Library/Fonts/SFNSMono.ttf", tile_width, tile_height);
-#elif defined(__unix__)   // Linux
+#elif defined(__unix__)  // Linux
   FILE* pipe = popen("fc-match --format=%{file} monospace", "r");
   char path[4096] = "";
   if (!pipe) {

@@ -158,7 +158,8 @@ bool namegen_generator_check(const char* name) {
   else {
     namegen_t** it;
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list);
-         it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+         it < (namegen_t**)TCOD_list_end(namegen_generators_list);
+         it++) {
       if (strcmp((*it)->name, name) == 0) return true;
     }
     return false;
@@ -170,7 +171,8 @@ void namegen_get_sets_on_error(void) {
   namegen_t** it;
   fprintf(stderr, "Registered syllable sets are:\n");
   for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list);
-       it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+       it < (namegen_t**)TCOD_list_end(namegen_generators_list);
+       it++) {
     fprintf(stderr, " * \"%s\"\n", (*it)->name);
   }
 }
@@ -180,7 +182,8 @@ namegen_t* namegen_generator_get(const char* name) {
   if (namegen_generator_check(name) == true) {
     namegen_t** it;
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list);
-         it != (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+         it != (namegen_t**)TCOD_list_end(namegen_generators_list);
+         it++) {
       if (strcmp((*it)->name, name) == 0) return (*it);
     }
   }
@@ -358,7 +361,10 @@ void namegen_parser_error(const char* msg) {
 }
 
 TCOD_parser_listener_t namegen_listener = {
-    namegen_parser_new_struct, namegen_parser_flag, namegen_parser_property, namegen_parser_end_struct,
+    namegen_parser_new_struct,
+    namegen_parser_flag,
+    namegen_parser_property,
+    namegen_parser_end_struct,
     namegen_parser_error};
 
 /* run the parser */
@@ -578,8 +584,10 @@ char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate) {
           }
           if (TCOD_list_size(lst) == 0)
             fprintf(
-                stderr, "No data found in the requested string (wildcard *%c). Check your name generation rule %s.\n",
-                *it, rule);
+                stderr,
+                "No data found in the requested string (wildcard *%c). Check your name generation rule %s.\n",
+                *it,
+                rule);
           else
             strcat(buf, (char*)TCOD_list_get(lst, TCOD_random_get_int(data->random, 0, TCOD_list_size(lst) - 1)));
         }
@@ -659,7 +667,8 @@ TCOD_list_t TCOD_namegen_get_sets(void) {
   if (namegen_generators_list != NULL) {
     namegen_t** it;
     for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list);
-         it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++) {
+         it < (namegen_t**)TCOD_list_end(namegen_generators_list);
+         it++) {
       TCOD_list_push(l, (const void*)((*it)->name));
     }
   }
@@ -671,7 +680,8 @@ void TCOD_namegen_destroy(void) {
   /* delete all generators */
   namegen_t** it;
   for (it = (namegen_t**)TCOD_list_begin(namegen_generators_list);
-       it < (namegen_t**)TCOD_list_end(namegen_generators_list); it++)
+       it < (namegen_t**)TCOD_list_end(namegen_generators_list);
+       it++)
     namegen_generator_delete(*it);
   /* clear the generators list */
   TCOD_list_clear(namegen_generators_list);

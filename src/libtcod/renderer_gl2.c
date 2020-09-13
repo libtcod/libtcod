@@ -179,7 +179,14 @@ static TCOD_Error resize_textures(struct TCOD_RendererGL2* renderer, const TCOD_
     for (int i = 0; i < 3; ++i) {
       glBindTexture(GL_TEXTURE_2D, renderer->console_textures[i]);
       glTexImage2D(
-          GL_TEXTURE_2D, 0, GL_RGBA, renderer->console_width, renderer->console_height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+          GL_TEXTURE_2D,
+          0,
+          GL_RGBA,
+          renderer->console_width,
+          renderer->console_height,
+          0,
+          GL_RGBA,
+          GL_UNSIGNED_BYTE,
           NULL);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -209,7 +216,8 @@ static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas
 }
 TCOD_NODISCARD
 static TCOD_Error render(
-    struct TCOD_RendererGL2* __restrict renderer, const TCOD_Console* __restrict console,
+    struct TCOD_RendererGL2* __restrict renderer,
+    const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
@@ -317,7 +325,8 @@ static TCOD_Error render(
  *  Render the console onto the screen.
  */
 static TCOD_Error gl2_accumulate(
-    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict context,
+    const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   TCOD_Error err;
@@ -339,7 +348,8 @@ static TCOD_Error gl2_accumulate(
  *  Clear, render, and swap the screen.
  */
 static TCOD_Error gl2_present(
-    struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict context,
+    const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
@@ -350,8 +360,10 @@ static TCOD_Error gl2_present(
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
   glClearColor(
-      (float)viewport->clear_color.r / 255.0f, (float)viewport->clear_color.g / 255.0f,
-      (float)viewport->clear_color.b / 255.0f, (float)viewport->clear_color.a / 255.0f);
+      (float)viewport->clear_color.r / 255.0f,
+      (float)viewport->clear_color.g / 255.0f,
+      (float)viewport->clear_color.b / 255.0f,
+      (float)viewport->clear_color.a / 255.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   TCOD_Error err = gl2_accumulate(context, console, viewport);
   SDL_GL_SwapWindow(renderer->common.window);

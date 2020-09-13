@@ -83,7 +83,12 @@ TCOD_PUBLIC void TCOD_console_vline(TCOD_Console* con, int x, int y, int l, TCOD
  *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
 void TCOD_console_put_rgb(
-    TCOD_Console* __restrict console, int x, int y, int ch, const TCOD_color_t* fg, const TCOD_color_t* bg,
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    int ch,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag);
 /**
  *  Draw a rectangle on a `console` with a shape of `x`,`y`,`width`,`height`.
@@ -93,8 +98,15 @@ void TCOD_console_put_rgb(
  *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
 void TCOD_console_draw_rect_rgb(
-    TCOD_Console* __restrict console, int x, int y, int width, int height, int ch, const TCOD_color_t* fg,
-    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag);
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    int width,
+    int height,
+    int ch,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

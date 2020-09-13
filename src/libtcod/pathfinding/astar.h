@@ -44,7 +44,10 @@
 namespace tcod {
 namespace pathfinding {
 template <
-    typename DistMatrix, typename Graph, typename IndexType = typename DistMatrix::index_type, typename NewEdgeFunc>
+    typename DistMatrix,
+    typename Graph,
+    typename IndexType = typename DistMatrix::index_type,
+    typename NewEdgeFunc>
 inline void astar(
     DistMatrix& dist_map, const Graph& graph, const IndexType& goal_point, const NewEdgeFunc& on_new_edge) {
   using dist_type = typename DistMatrix::value_type;

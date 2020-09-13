@@ -37,7 +37,13 @@ class TCODLIB_GUI_API RadioButton : public Button {
   RadioButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = NULL)
       : Button(label, tip, cbk, userData), group(defaultGroup) {}
   RadioButton(
-      int x, int y, int width, int height, const char* label, const char* tip, widget_callback_t cbk,
+      int x,
+      int y,
+      int width,
+      int height,
+      const char* label,
+      const char* tip,
+      widget_callback_t cbk,
       void* userData = NULL)
       : Button(x, y, width, height, label, tip, cbk, userData), group(defaultGroup) {}
 

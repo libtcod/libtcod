@@ -144,10 +144,12 @@ float TCOD_noise_perlin(TCOD_noise_t noise, float* f) {
       value = LERP(
           LERP(
               lattice(data, n[0], r[0], n[1], r[1], 0, 0, 0, 0),
-              lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], 0, 0, 0, 0), w[0]),
+              lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], 0, 0, 0, 0),
+              w[0]),
           LERP(
               lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, 0, 0, 0, 0),
-              lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, 0, 0, 0, 0), w[0]),
+              lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, 0, 0, 0, 0),
+              w[0]),
           w[1]);
       break;
     case 3:
@@ -155,18 +157,22 @@ float TCOD_noise_perlin(TCOD_noise_t noise, float* f) {
           LERP(
               LERP(
                   lattice(data, n[0], r[0], n[1], r[1], n[2], r[2], 0, 0),
-                  lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], 0, 0), w[0]),
+                  lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], 0, 0),
+                  w[0]),
               LERP(
                   lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2], r[2], 0, 0),
-                  lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], 0, 0), w[0]),
+                  lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], 0, 0),
+                  w[0]),
               w[1]),
           LERP(
               LERP(
                   lattice(data, n[0], r[0], n[1], r[1], n[2] + 1, r[2] - 1, 0, 0),
-                  lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, 0, 0), w[0]),
+                  lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, 0, 0),
+                  w[0]),
               LERP(
                   lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, 0, 0),
-                  lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, 0, 0), w[0]),
+                  lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, 0, 0),
+                  w[0]),
               w[1]),
           w[2]);
       break;
@@ -177,33 +183,40 @@ float TCOD_noise_perlin(TCOD_noise_t noise, float* f) {
               LERP(
                   LERP(
                       lattice(data, n[0], r[0], n[1], r[1], n[2], r[2], n[3], r[3]),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], n[3], r[3]), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], n[3], r[3]),
+                      w[0]),
                   LERP(
                       lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2], r[2], n[3], r[3]),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], n[3], r[3]), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], n[3], r[3]),
+                      w[0]),
                   w[1]),
               LERP(
                   LERP(
                       lattice(data, n[0], r[0], n[1], r[1], n[2] + 1, r[2] - 1, n[3], r[3]),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, n[3], r[3]), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, n[3], r[3]),
+                      w[0]),
                   LERP(
                       lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, 0, 0),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, n[3], r[3]), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, n[3], r[3]),
+                      w[0]),
                   w[1]),
               w[2]),
           LERP(
               LERP(
                   LERP(
                       lattice(data, n[0], r[0], n[1], r[1], n[2], r[2], n[3] + 1, r[3] - 1),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], n[3] + 1, r[3] - 1), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2], r[2], n[3] + 1, r[3] - 1),
+                      w[0]),
                   LERP(
                       lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2], r[2], n[3] + 1, r[3] - 1),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], n[3] + 1, r[3] - 1), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2], r[2], n[3] + 1, r[3] - 1),
+                      w[0]),
                   w[1]),
               LERP(
                   LERP(
                       lattice(data, n[0], r[0], n[1], r[1], n[2] + 1, r[2] - 1, n[3] + 1, r[3] - 1),
-                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, n[3] + 1, r[3] - 1), w[0]),
+                      lattice(data, n[0] + 1, r[0] - 1, n[1], r[1], n[2] + 1, r[2] - 1, n[3] + 1, r[3] - 1),
+                      w[0]),
                   LERP(
                       lattice(data, n[0], r[0], n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, 0, 0),
                       lattice(data, n[0] + 1, r[0] - 1, n[1] + 1, r[1] - 1, n[2] + 1, r[2] - 1, n[3] + 1, r[3] - 1),

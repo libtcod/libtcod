@@ -65,8 +65,8 @@ void TCODImage::putPixel(int x, int y, const TCODColor col) {
 }
 
 void TCODImage::blit(
-    TCODConsole* console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley,
-    float angle) const {
+    TCODConsole* console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
+    const {
   TCOD_image_blit(data, console->get_data(), x, y, bkgnd_flag, scalex, scaley, angle);
 }
 

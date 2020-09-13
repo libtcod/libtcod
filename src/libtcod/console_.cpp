@@ -129,8 +129,16 @@ TCOD_alignment_t TCODConsole::getAlignment() const { return TCOD_console_get_ali
 TCODConsole::~TCODConsole() { TCOD_console_delete(data); }
 
 void TCODConsole::blit(
-    const TCODConsole* srcCon, int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole* dstCon, int xDst, int yDst,
-    float foreground_alpha, float background_alpha) {
+    const TCODConsole* srcCon,
+    int xSrc,
+    int ySrc,
+    int wSrc,
+    int hSrc,
+    TCODConsole* dstCon,
+    int xDst,
+    int yDst,
+    float foreground_alpha,
+    float background_alpha) {
   TCOD_console_blit(srcCon->data, xSrc, ySrc, wSrc, hSrc, dstCon->data, xDst, yDst, foreground_alpha, background_alpha);
 }
 

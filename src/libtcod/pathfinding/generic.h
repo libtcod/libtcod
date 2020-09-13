@@ -116,8 +116,13 @@ class Pathfinder {
    */
   template <typename DistanceAt, typename Heuristic, typename MarkPath, typename CompareFunc>
   void add_edge(
-      IndexType origin, IndexType dest, DistType cost, DistanceAt& distance_at, Heuristic& heuristic,
-      MarkPath& mark_path, CompareFunc& compare) {
+      IndexType origin,
+      IndexType dest,
+      DistType cost,
+      DistanceAt& distance_at,
+      Heuristic& heuristic,
+      MarkPath& mark_path,
+      CompareFunc& compare) {
     if (cost <= 0) {
       return;
     }

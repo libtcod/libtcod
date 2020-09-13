@@ -40,8 +40,14 @@
 #include "libtcod_int.h"
 
 TCODLex::TCODLex(
-    const char** _symbols, const char** _keywords, const char* simpleComment, const char* commentStart,
-    const char* commentStop, const char* javadocCommentStart, const char* _stringDelim, int _flags) {
+    const char** _symbols,
+    const char** _keywords,
+    const char* simpleComment,
+    const char* commentStart,
+    const char* commentStop,
+    const char* javadocCommentStart,
+    const char* _stringDelim,
+    int _flags) {
   data = TCOD_lex_new(
       _symbols, _keywords, simpleComment, commentStart, commentStop, javadocCommentStart, _stringDelim, _flags);
 }

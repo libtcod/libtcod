@@ -54,7 +54,12 @@ static void clamp_rect_(
   }
 }
 void TCOD_console_put_rgb(
-    TCOD_Console* __restrict console, int x, int y, int ch, const TCOD_color_t* fg, const TCOD_color_t* bg,
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    int ch,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
   if (!console) {
@@ -75,8 +80,15 @@ void TCOD_console_put_rgb(
   }
 }
 void TCOD_console_draw_rect_rgb(
-    TCOD_Console* __restrict console, int x, int y, int width, int height, int ch, const TCOD_color_t* fg,
-    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag) {
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    int width,
+    int height,
+    int ch,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
   if (!console) {
     return;

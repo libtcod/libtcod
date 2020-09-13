@@ -189,15 +189,31 @@ bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_pixel_to_tile(double* x, double* y);
 
 int TCOD_console_print_internal(
-    TCOD_Console* con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char* msg,
-    bool can_split, bool count_only);
+    TCOD_Console* con,
+    int x,
+    int y,
+    int w,
+    int h,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    char* msg,
+    bool can_split,
+    bool count_only);
 char* TCOD_console_vsprint(const char* fmt, va_list ap);
 /* UTF-8 stuff */
 #ifndef NO_UNICODE
 wchar_t* TCOD_console_vsprint_utf(const wchar_t* fmt, va_list ap);
 int TCOD_console_print_internal_utf(
-    TCOD_console_t con, int x, int y, int rw, int rh, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, wchar_t* msg,
-    bool can_split, bool count_only);
+    TCOD_console_t con,
+    int x,
+    int y,
+    int rw,
+    int rh,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    wchar_t* msg,
+    bool can_split,
+    bool count_only);
 #endif
 
 /* image manipulation */

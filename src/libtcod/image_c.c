@@ -158,8 +158,14 @@ TCOD_Image* TCOD_image_load(const char* filename) {
     image = TCOD_image_new(surface->w, surface->h);
     if (image) {
       SDL_ConvertPixels(
-          surface->w, surface->h, surface->format->format, surface->pixels, surface->pitch, SDL_PIXELFORMAT_RGB24,
-          image->mipmaps[0].buf, (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
+          surface->w,
+          surface->h,
+          surface->format->format,
+          surface->pixels,
+          surface->pitch,
+          SDL_PIXELFORMAT_RGB24,
+          image->mipmaps[0].buf,
+          (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
       TCOD_image_invalidate_mipmaps(image);
     }
     SDL_FreeSurface(surface);
@@ -269,8 +275,14 @@ bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x, int y) {
 }
 
 void TCOD_image_blit(
-    TCOD_Image* image, TCOD_Console* console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex,
-    float scaley, float angle) {
+    TCOD_Image* image,
+    TCOD_Console* console,
+    float x,
+    float y,
+    TCOD_bkgnd_flag_t bkgnd_flag,
+    float scalex,
+    float scaley,
+    float angle) {
   if (!image) {
     return;
   }

@@ -139,7 +139,14 @@ static bool check_view(TCOD_list_t active_views, view_t** it) {
 }
 
 static void visit_coords(
-    struct TCOD_Map* m, int startX, int startY, int x, int y, int dx, int dy, TCOD_list_t active_views,
+    struct TCOD_Map* m,
+    int startX,
+    int startY,
+    int x,
+    int y,
+    int dx,
+    int dy,
+    TCOD_list_t active_views,
     bool light_walls) {
   /* top left */
   int tlx = x, tly = y + STEP_SIZE;

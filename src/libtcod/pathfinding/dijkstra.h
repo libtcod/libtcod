@@ -71,7 +71,10 @@ auto dijkstra_make_heap(const GridType& dist_grid) {
  */
 template <typename DistGrid, typename CostGrid, typename CostType, typename PathGrid>
 void dijkstra_compute(
-    DistGrid& dist_grid, const CostGrid& cost_grid, CostType cardinal = 2, CostType diagonal = 3,
+    DistGrid& dist_grid,
+    const CostGrid& cost_grid,
+    CostType cardinal = 2,
+    CostType diagonal = 3,
     PathGrid* path_grid = nullptr) {
   using dist_type = typename DistGrid::value_type;
   using index_type = std::array<ptrdiff_t, 2>;
@@ -121,7 +124,8 @@ inline bool dijktra_heap_sort_(const HeapNode& a, const HeapNode& b) noexcept {
 }
 template <typename DistMatrix, typename Graph, typename GoalFunc, typename EdgeFunc>
 inline void dijkstra(
-    DistMatrix& dist_map, const Graph& graph,
+    DistMatrix& dist_map,
+    const Graph& graph,
     const GoalFunc& goal_func,  // goal_func(position) -> bool
     const EdgeFunc& edge_func)  // edge_func(origin, destination)
 {

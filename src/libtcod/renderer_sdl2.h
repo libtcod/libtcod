@@ -134,8 +134,10 @@ TCOD_PUBLIC void TCOD_sdl2_atlas_delete(struct TCOD_TilesetAtlasSDL2* atlas);
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture(
-    const struct TCOD_TilesetAtlasSDL2* __restrict atlas, const struct TCOD_Console* __restrict console,
-    struct TCOD_Console* __restrict* cache, struct SDL_Texture* __restrict* target);
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const struct TCOD_Console* __restrict console,
+    struct TCOD_Console* __restrict* cache,
+    struct SDL_Texture* __restrict* target);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

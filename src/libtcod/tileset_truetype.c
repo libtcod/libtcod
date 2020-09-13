@@ -124,8 +124,16 @@ void render_glyph(const struct FontLoader* __restrict loader, int glyph) {
     loader->tile_alpha[i] = 0;
   }
   stbtt_MakeGlyphBitmapSubpixel(
-      loader->info, loader->tile_alpha, tileset->tile_width, tileset->tile_height, tileset->tile_width, loader->scale,
-      loader->scale, shift_x, shift_y, glyph);
+      loader->info,
+      loader->tile_alpha,
+      tileset->tile_width,
+      tileset->tile_height,
+      tileset->tile_width,
+      loader->scale,
+      loader->scale,
+      shift_x,
+      shift_y,
+      glyph);
   for (int img_y = 0; img_y < tileset->tile_height; ++img_y) {
     for (int img_x = 0; img_x < tileset->tile_width; ++img_x) {
       int alpha_y = img_y - (int)shift_y;

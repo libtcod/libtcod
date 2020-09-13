@@ -87,8 +87,14 @@ TCODLIB_API int TCOD_image_get_alpha(const TCOD_Image* image, int x, int y);
 TCODLIB_API TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_Image* image, float x0, float y0, float x1, float y1);
 TCODLIB_API void TCOD_image_put_pixel(TCOD_Image* image, int x, int y, TCOD_color_t col);
 TCODLIB_API void TCOD_image_blit(
-    TCOD_Image* image, TCOD_console_t console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex,
-    float scaley, float angle);
+    TCOD_Image* image,
+    TCOD_console_t console,
+    float x,
+    float y,
+    TCOD_bkgnd_flag_t bkgnd_flag,
+    float scalex,
+    float scaley,
+    float angle);
 TCODLIB_API void TCOD_image_blit_rect(
     TCOD_Image* image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag);
 TCODLIB_API void TCOD_image_blit_2x(

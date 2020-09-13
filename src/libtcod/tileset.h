@@ -229,7 +229,12 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_mem(
  */
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_raw(
-    int width, int height, const struct TCOD_ColorRGBA* __restrict pixels, int columns, int rows, int n,
+    int width,
+    int height,
+    const struct TCOD_ColorRGBA* __restrict pixels,
+    int columns,
+    int rows,
+    int n,
     const int* __restrict charmap);
 
 /**
@@ -286,4 +291,4 @@ struct TilesetDeleter {
 typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
 }  // namespace tcod
 #endif  // __cplusplus
-#endif  /* LIBTCOD_TILESET_TILESET_H_ */
+#endif /* LIBTCOD_TILESET_TILESET_H_ */

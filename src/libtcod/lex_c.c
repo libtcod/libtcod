@@ -71,8 +71,8 @@ int TCOD_strncasecmp(const char* s1, const char* s2, size_t n) {
   return (int)c1 - c2;
 }
 
-static const char* TCOD_LEX_names[] = {"unknown token", "symbol", "keyword", "identifier", "string",
-                                       "integer",       "float",  "char",    "eof"};
+static const char* TCOD_LEX_names[] = {
+    "unknown token", "symbol", "keyword", "identifier", "string", "integer", "float", "char", "eof"};
 
 static char* TCOD_last_error = NULL;
 
@@ -89,8 +89,14 @@ char* TCOD_lex_get_last_error(void) { return TCOD_last_error; }
 TCOD_lex_t* TCOD_lex_new_intern(void) { return (TCOD_lex_t*)calloc(1, sizeof(TCOD_lex_t)); }
 
 TCOD_lex_t* TCOD_lex_new(
-    const char** _symbols, const char** _keywords, const char* simpleComment, const char* commentStart,
-    const char* commentStop, const char* javadocCommentStart, const char* _stringDelim, int _flags) {
+    const char** _symbols,
+    const char** _keywords,
+    const char* simpleComment,
+    const char* commentStart,
+    const char* commentStop,
+    const char* javadocCommentStart,
+    const char* _stringDelim,
+    int _flags) {
   TCOD_lex_t* lex = (TCOD_lex_t*)TCOD_lex_new_intern();
   lex->flags = _flags;
   lex->last_javadoc_comment = (char*)calloc(sizeof(char), MAX_JAVADOC_COMMENT_SIZE);

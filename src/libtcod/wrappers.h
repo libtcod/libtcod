@@ -89,8 +89,16 @@ TCODLIB_API void TCOD_console_print_double_frame(
     TCOD_console_t con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...);
 
 TCODLIB_API char* TCOD_console_print_return_string(
-    TCOD_console_t con, int x, int y, int rw, int rh, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char* msg,
-    bool can_split, bool count_only);
+    TCOD_console_t con,
+    int x,
+    int y,
+    int rw,
+    int rh,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    char* msg,
+    bool can_split,
+    bool count_only);
 TCODLIB_API void TCOD_console_set_key_color_wrapper(TCOD_console_t con, colornum_t c);
 
 /* image module */

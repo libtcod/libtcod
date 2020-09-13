@@ -244,7 +244,14 @@ int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const
  *  \return The number of lines actually printed.
  */
 int TCOD_console_print_rect_ex(
-    TCOD_Console* con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt,
+    TCOD_Console* con,
+    int x,
+    int y,
+    int w,
+    int h,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
     ...) {
   int ret;
   va_list ap;
@@ -311,8 +318,16 @@ unsigned char* TCOD_console_strchr(unsigned char* s, unsigned char c) {
 }
 
 int TCOD_console_print_internal(
-    TCOD_Console* con, int x, int y, int rw, int rh, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, char* msg,
-    bool can_split, bool count_only) {
+    TCOD_Console* con,
+    int x,
+    int y,
+    int rw,
+    int rh,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    char* msg,
+    bool can_split,
+    bool count_only) {
   unsigned char* c = (unsigned char*)msg;
   int cx = 0;
   int cy = y;
@@ -558,8 +573,16 @@ wchar_t* TCOD_console_forward_utf(wchar_t* s, int l) {
   return s;
 }
 int TCOD_console_print_internal_utf(
-    TCOD_Console* con, int x, int y, int rw, int rh, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, wchar_t* msg,
-    bool can_split, bool count_only) {
+    TCOD_Console* con,
+    int x,
+    int y,
+    int rw,
+    int rh,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    wchar_t* msg,
+    bool can_split,
+    bool count_only) {
   wchar_t* c = msg;
   int cx = 0;
   int cy = y;
@@ -781,8 +804,15 @@ int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int w, int h, c
  *  \endrst
  */
 int TCOD_console_print_rect_ex_utf(
-    TCOD_Console* con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
-    const wchar_t* fmt, ...) {
+    TCOD_Console* con,
+    int x,
+    int y,
+    int w,
+    int h,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const wchar_t* fmt,
+    ...) {
   va_list ap;
   va_start(ap, fmt);
   int ret =
@@ -1000,7 +1030,10 @@ static int get_character_width(int codepoint) {
  *  doesn't break or breaks on its own (line a new-line.)
  */
 static bool next_split_(
-    const struct FormattedPrinter* printer, int max_width, int can_split, const unsigned char** break_point,
+    const struct FormattedPrinter* printer,
+    int max_width,
+    int can_split,
+    const unsigned char** break_point,
     int* break_width) {
   struct FormattedPrinter it = *printer;
   // The break point and width of the line.
@@ -1070,8 +1103,18 @@ static bool next_split_(
   return 0;
 }
 static int print_internal_(
-    TCOD_Console* __restrict con, int x, int y, int width, int height, int n, const char* __restrict string,
-    const TCOD_color_t* fg_in, const TCOD_color_t* bg_in, TCOD_bkgnd_flag_t flag, TCOD_alignment_t align, int can_split,
+    TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    int n,
+    const char* __restrict string,
+    const TCOD_color_t* fg_in,
+    const TCOD_color_t* bg_in,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t align,
+    int can_split,
     int count_only) {
   static const TCOD_ColorRGBA color_default = {255, 255, 255, 0};
   TCOD_ColorRGBA fg = color_default;
@@ -1204,7 +1247,11 @@ static int print_internal_(
  *  the rectangle position.
  */
 static void normalize_old_rect_(
-    TCOD_Console* console, TCOD_alignment_t alignment, int* __restrict x, int* __restrict y, int* __restrict width,
+    TCOD_Console* console,
+    TCOD_alignment_t alignment,
+    int* __restrict x,
+    int* __restrict y,
+    int* __restrict width,
     int* __restrict height) {
   // Set default width/height if either is zero.
   if (*width == 0) {
@@ -1227,8 +1274,15 @@ static void normalize_old_rect_(
   return;
 }
 TCOD_Error TCOD_console_printn(
-    TCOD_Console* __restrict con, int x, int y, int n, const char* str, const TCOD_color_t* fg, const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment) {
+    TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int n,
+    const char* str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1241,8 +1295,17 @@ TCOD_Error TCOD_console_printn(
   return TCOD_E_OK;
 }
 int TCOD_console_printn_rect(
-    TCOD_Console* __restrict con, int x, int y, int width, int height, int n, const char* str, const TCOD_color_t* fg,
-    const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment) {
+    TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    int n,
+    const char* str,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1264,8 +1327,17 @@ int TCOD_console_get_height_rect_wn(int width, int n, const char* str) {
   return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
 TCOD_Error TCOD_console_printn_frame(
-    struct TCOD_Console* __restrict con, int x, int y, int width, int height, int n, const char* title,
-    const TCOD_color_t* fg, const TCOD_color_t* bg, TCOD_bkgnd_flag_t flag, bool empty) {
+    struct TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    int n,
+    const char* title,
+    const TCOD_color_t* fg,
+    const TCOD_color_t* bg,
+    TCOD_bkgnd_flag_t flag,
+    bool empty) {
   const int left = x;
   const int right = x + width - 1;
   const int top = y;
@@ -1304,7 +1376,12 @@ TCOD_Error TCOD_console_printn_frame(
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_console_printf_ex(
-    TCOD_Console* __restrict con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt,
+    TCOD_Console* __restrict con,
+    int x,
+    int y,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
     ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
@@ -1344,8 +1421,15 @@ TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const
   return (TCOD_Error)err;
 }
 int TCOD_console_printf_rect_ex(
-    struct TCOD_Console* __restrict con, int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
-    const char* fmt, ...) {
+    struct TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int w,
+    int h,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1408,8 +1492,15 @@ int TCOD_console_get_height_rect_fmt(
   return ret;
 }
 TCOD_Error TCOD_console_printf_frame(
-    struct TCOD_Console* __restrict con, int x, int y, int width, int height, int empty, TCOD_bkgnd_flag_t flag,
-    const char* fmt, ...) {
+    struct TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    int empty,
+    TCOD_bkgnd_flag_t flag,
+    const char* fmt,
+    ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");

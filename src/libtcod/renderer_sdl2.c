@@ -64,7 +64,9 @@ static SDL_Rect get_sdl2_atlas_tile(const struct TCOD_TilesetAtlasSDL2* atlas, i
 static int update_sdl2_tile(struct TCOD_TilesetAtlasSDL2* atlas, int tile_id) {
   const SDL_Rect dest = get_sdl2_atlas_tile(atlas, tile_id);
   return SDL_UpdateTexture(
-      atlas->texture, &dest, atlas->tileset->pixels + (tile_id * atlas->tileset->tile_length),
+      atlas->texture,
+      &dest,
+      atlas->tileset->pixels + (tile_id * atlas->tileset->tile_length),
       atlas->tileset->tile_width * sizeof(*atlas->tileset->pixels));
 }
 /**
@@ -194,7 +196,8 @@ static void cache_console_observer_delete(struct TCOD_TilesetObserver* observer)
  */
 TCOD_NODISCARD
 static TCOD_Error setup_cache_console(
-    const struct TCOD_TilesetAtlasSDL2* __restrict atlas, const struct TCOD_Console* __restrict console,
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const struct TCOD_Console* __restrict console,
     struct TCOD_Console* __restrict* cache) {
   if (!atlas) {
     TCOD_set_errorv("Atlas can not be NULL.");
@@ -247,7 +250,8 @@ static TCOD_Error setup_cache_console(
     Returns a negative value on an error, check `TCOD_get_error`.
  */
 static TCOD_Error TCOD_sdl2_render(
-    const struct TCOD_TilesetAtlasSDL2* __restrict atlas, const struct TCOD_Console* __restrict console,
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const struct TCOD_Console* __restrict console,
     struct TCOD_Console* __restrict* cache) {
   if (!atlas) {
     TCOD_set_errorv("Atlas must not be NULL.");
@@ -307,8 +311,10 @@ static TCOD_Error TCOD_sdl2_render(
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_sdl2_render_texture(
-    const struct TCOD_TilesetAtlasSDL2* __restrict atlas, const struct TCOD_Console* __restrict console,
-    struct TCOD_Console* __restrict* cache, struct SDL_Texture* __restrict* target) {
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const struct TCOD_Console* __restrict console,
+    struct TCOD_Console* __restrict* cache,
+    struct SDL_Texture* __restrict* target) {
   if (!target) {  // Render without a managed target.
     return TCOD_sdl2_render(atlas, console, cache);
   }
@@ -341,7 +347,10 @@ TCOD_Error TCOD_sdl2_render_texture(
   }
   if (!*target) {
     *target = SDL_CreateTexture(
-        atlas->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, atlas->tileset->tile_width * console->w,
+        atlas->renderer,
+        SDL_PIXELFORMAT_RGBA32,
+        SDL_TEXTUREACCESS_TARGET,
+        atlas->tileset->tile_width * console->w,
         atlas->tileset->tile_height * console->h);
     if (!*target) {
       return TCOD_set_errorv("Failed to create a new target texture.");
@@ -398,7 +407,8 @@ static void sdl2_destructor(struct TCOD_Context* self) {
 }
 /** Return the destination rectangle for these inputs. */
 TCOD_NODISCARD static SDL_Rect get_destination_rect(
-    const struct TCOD_TilesetAtlasSDL2* atlas, const struct TCOD_Console* console,
+    const struct TCOD_TilesetAtlasSDL2* atlas,
+    const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport) {
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
@@ -428,7 +438,8 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
  *  Render to the SDL2 renderer without presenting the screen.
  */
 static TCOD_Error sdl2_accumulate(
-    struct TCOD_Context* __restrict self, const struct TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict self,
+    const struct TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context || !console) {
@@ -468,7 +479,8 @@ static TCOD_Error sdl2_accumulate(
  *  Clear, render, and present a libtcod console to the screen.
  */
 static TCOD_Error sdl2_present(
-    struct TCOD_Context* __restrict self, const struct TCOD_Console* __restrict console,
+    struct TCOD_Context* __restrict self,
+    const struct TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
@@ -476,7 +488,10 @@ static TCOD_Error sdl2_present(
   struct TCOD_RendererSDL2* context = self->contextdata;
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(
-      context->renderer, viewport->clear_color.r, viewport->clear_color.g, viewport->clear_color.b,
+      context->renderer,
+      viewport->clear_color.r,
+      viewport->clear_color.g,
+      viewport->clear_color.b,
       viewport->clear_color.a);
   SDL_RenderClear(context->renderer);
   TCOD_Error err = sdl2_accumulate(self, console, viewport);
@@ -595,7 +610,11 @@ static void TCOD_sdl2_debug_video_drivers(int log_length, char* log_out) {
       is_working = 0;
     }
     int print_length = snprintf(
-        log_out, log_length, "%sVideo driver '%s' %s.", i == 0 ? "" : "\n", driver_name,
+        log_out,
+        log_length,
+        "%sVideo driver '%s' %s.",
+        i == 0 ? "" : "\n",
+        driver_name,
         is_working ? "is available" : "is not working");
     if (print_length < 0) {
       return;
@@ -605,7 +624,11 @@ static void TCOD_sdl2_debug_video_drivers(int log_length, char* log_out) {
   }
 }
 struct TCOD_Context* TCOD_renderer_init_sdl2(
-    int pixel_width, int pixel_height, const char* title, int window_flags, int renderer_flags,
+    int pixel_width,
+    int pixel_height,
+    const char* title,
+    int window_flags,
+    int renderer_flags,
     struct TCOD_Tileset* tileset) {
   if (!tileset) {
     TCOD_set_errorv("Tileset must not be NULL.");

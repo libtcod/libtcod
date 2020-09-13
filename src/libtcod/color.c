@@ -506,7 +506,8 @@ TCOD_color_t TCOD_color_multiply(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
   TCOD_color_t new_color = {
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.r * value), (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.g * value),
+      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.r * value),
+      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.g * value),
       (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.b * value)};
   return new_color;
 }
@@ -520,7 +521,8 @@ TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
  */
 TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
   TCOD_color_t new_color = {
-      (uint8_t)(c1.r + (c2.r - c1.r) * coef), (uint8_t)(c1.g + (c2.g - c1.g) * coef),
+      (uint8_t)(c1.r + (c2.r - c1.r) * coef),
+      (uint8_t)(c1.g + (c2.g - c1.g) * coef),
       (uint8_t)(c1.b + (c2.b - c1.b) * coef)};
   return new_color;
 }
@@ -703,7 +705,9 @@ void TCOD_color_shift_hue(TCOD_color_t* color, float hue_shift) {
  */
 void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef, float value_coef) {
   TCOD_color_set_HSV(
-      color, TCOD_color_get_hue(*color), TCOD_color_get_saturation(*color) * saturation_coef,
+      color,
+      TCOD_color_get_hue(*color),
+      TCOD_color_get_saturation(*color) * saturation_coef,
       TCOD_color_get_value(*color) * value_coef);
 }
 /**

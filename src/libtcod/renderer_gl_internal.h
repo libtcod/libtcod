@@ -131,8 +131,16 @@ static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
 }
 TCOD_NODISCARD
 static TCOD_Error TCOD_renderer_gl_common_init(
-    int pixel_width, int pixel_height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset,
-    int gl_major, int gl_minor, int gl_profile, struct TCOD_Context* out) {
+    int pixel_width,
+    int pixel_height,
+    const char* title,
+    int window_flags,
+    bool vsync,
+    struct TCOD_Tileset* tileset,
+    int gl_major,
+    int gl_minor,
+    int gl_profile,
+    struct TCOD_Context* out) {
   out->get_sdl_window_ = gl_get_sdl_window;
   out->pixel_to_tile_ = gl_pixel_to_tile;
   out->save_screenshot_ = gl_screenshot;
@@ -151,7 +159,11 @@ static TCOD_Error TCOD_renderer_gl_common_init(
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
   renderer->window = SDL_CreateWindow(
-      title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pixel_width, pixel_height,
+      title,
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      pixel_width,
+      pixel_height,
       window_flags | SDL_WINDOW_OPENGL);
   if (!renderer->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
@@ -180,8 +192,11 @@ static inline float minf(float a, float b) { return a < b ? a : b; }
 static inline float maxf(float a, float b) { return a > b ? a : b; }
 static inline float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
 static void gl_get_viewport_scale(
-    const struct TCOD_TilesetAtlasOpenGL* atlas, const struct TCOD_Console* console,
-    const struct TCOD_ViewportOptions* viewport, float matrix_4x4_out[16], struct TCOD_RendererGLCommon* common_out) {
+    const struct TCOD_TilesetAtlasOpenGL* atlas,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport,
+    float matrix_4x4_out[16],
+    struct TCOD_RendererGLCommon* common_out) {
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
   }

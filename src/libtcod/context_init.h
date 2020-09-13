@@ -52,8 +52,14 @@
     \endrst
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
-    int columns, int rows, int renderer_type, TCOD_Tileset* tileset, bool vsync, int sdl_window_flags,
-    const char* window_title, TCOD_Context** out);
+    int columns,
+    int rows,
+    int renderer_type,
+    TCOD_Tileset* tileset,
+    bool vsync,
+    int sdl_window_flags,
+    const char* window_title,
+    TCOD_Context** out);
 /**
     Create a new context with a window of the given size.
 
@@ -88,6 +94,12 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
     \endrst
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(
-    int pixel_width, int pixel_height, int renderer_type, TCOD_Tileset* tileset, bool vsync, int sdl_window_flags,
-    const char* window_title, TCOD_Context** out);
+    int pixel_width,
+    int pixel_height,
+    int renderer_type,
+    TCOD_Tileset* tileset,
+    bool vsync,
+    int sdl_window_flags,
+    const char* window_title,
+    TCOD_Context** out);
 #endif  // LIBTCOD_CONTEXT_INIT_H_

@@ -86,8 +86,14 @@ typedef struct {
 
 TCODLIB_API TCOD_lex_t* TCOD_lex_new_intern(void);
 TCODLIB_API TCOD_lex_t* TCOD_lex_new(
-    const char** symbols, const char** keywords, const char* simpleComment, const char* commentStart,
-    const char* commentStop, const char* javadocCommentStart, const char* stringDelim, int flags);
+    const char** symbols,
+    const char** keywords,
+    const char* simpleComment,
+    const char* commentStart,
+    const char* commentStop,
+    const char* javadocCommentStart,
+    const char* stringDelim,
+    int flags);
 TCODLIB_API void TCOD_lex_delete(TCOD_lex_t* lex);
 
 TCODLIB_API void TCOD_lex_set_data_buffer(TCOD_lex_t* lex, char* dat);

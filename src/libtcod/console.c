@@ -175,8 +175,11 @@ static struct TCOD_ColorRGBA TCOD_console_blit_lerp_(
  *  Return the tile for a blit operation between src and dst.
  */
 static struct TCOD_ConsoleTile TCOD_console_blit_cell_(
-    const struct TCOD_ConsoleTile* __restrict src, const struct TCOD_ConsoleTile* __restrict dst, float fg_alpha,
-    float bg_alpha, const struct TCOD_ColorRGB* __restrict key_color) {
+    const struct TCOD_ConsoleTile* __restrict src,
+    const struct TCOD_ConsoleTile* __restrict dst,
+    float fg_alpha,
+    float bg_alpha,
+    const struct TCOD_ColorRGB* __restrict key_color) {
   if (key_color && key_color->r == src->bg.r && key_color->g == src->bg.g && key_color->b == src->bg.b) {
     return *dst;  // Source pixel is transparent.
   }
@@ -208,8 +211,17 @@ static struct TCOD_ConsoleTile TCOD_console_blit_cell_(
   return out;
 }
 void TCOD_console_blit_key_color(
-    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
-    int yDst, float foreground_alpha, float background_alpha, const TCOD_color_t* key_color) {
+    const TCOD_Console* __restrict src,
+    int xSrc,
+    int ySrc,
+    int wSrc,
+    int hSrc,
+    TCOD_Console* __restrict dst,
+    int xDst,
+    int yDst,
+    float foreground_alpha,
+    float background_alpha,
+    const TCOD_color_t* key_color) {
   src = TCOD_console_validate_(src);
   dst = TCOD_console_validate_(dst);
   if (!src || !dst) {
@@ -244,14 +256,31 @@ void TCOD_console_blit_key_color(
   }
 }
 void TCOD_console_blit(
-    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
-    int yDst, float foreground_alpha, float background_alpha) {
+    const TCOD_Console* __restrict src,
+    int xSrc,
+    int ySrc,
+    int wSrc,
+    int hSrc,
+    TCOD_Console* __restrict dst,
+    int xDst,
+    int yDst,
+    float foreground_alpha,
+    float background_alpha) {
   src = TCOD_console_validate_(src);
   if (!src) {
     return;
   }
   TCOD_console_blit_key_color(
-      src, xSrc, ySrc, wSrc, hSrc, dst, xDst, yDst, foreground_alpha, background_alpha,
+      src,
+      xSrc,
+      ySrc,
+      wSrc,
+      hSrc,
+      dst,
+      xDst,
+      yDst,
+      foreground_alpha,
+      background_alpha,
       (src->has_key_color ? &src->key_color : NULL));
 }
 void TCOD_console_put_char(TCOD_Console* con, int x, int y, int c, TCOD_bkgnd_flag_t flag) {

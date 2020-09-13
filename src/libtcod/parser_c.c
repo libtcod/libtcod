@@ -146,7 +146,8 @@ void TCOD_struct_add_structure(TCOD_parser_struct_t def, TCOD_parser_struct_t su
 bool TCOD_struct_is_mandatory(TCOD_parser_struct_t def, const char* propname) {
   TCOD_struct_prop_t** iprop;
   for (iprop = (TCOD_struct_prop_t**)TCOD_list_begin(DEF_PROPS(def));
-       iprop != (TCOD_struct_prop_t**)TCOD_list_end(DEF_PROPS(def)); iprop++) {
+       iprop != (TCOD_struct_prop_t**)TCOD_list_end(DEF_PROPS(def));
+       iprop++) {
     if (strcmp((*iprop)->name, propname) == 0) return (*iprop)->mandat;
   }
   return false;
@@ -158,7 +159,8 @@ TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t def, const char* pro
   TCOD_struct_prop_t** iprop;
   char** iflag;
   for (iprop = (TCOD_struct_prop_t**)TCOD_list_begin(DEF_PROPS(def));
-       iprop != (TCOD_struct_prop_t**)TCOD_list_end(DEF_PROPS(def)); iprop++) {
+       iprop != (TCOD_struct_prop_t**)TCOD_list_end(DEF_PROPS(def));
+       iprop++) {
     if (strcmp((*iprop)->name, propname) == 0) return (*iprop)->value;
   }
   for (iflag = (char**)TCOD_list_begin(DEF_FLAGS(def)); iflag != (char**)TCOD_list_end(DEF_FLAGS(def)); iflag++) {
@@ -446,7 +448,9 @@ TCOD_value_t TCOD_parse_property_value(TCOD_parser_int_t* parser, TCOD_parser_st
           return parser->customs[type - TCOD_TYPE_CUSTOM00](lex, listener, def, propname);
         } else {
           TCOD_parser_error(
-              "parse_property_value : no custom parser for property type %d for entity %s prop %s", type, DEF_NAME(def),
+              "parse_property_value : no custom parser for property type %d for entity %s prop %s",
+              type,
+              DEF_NAME(def),
               propname);
         }
         break;
@@ -534,7 +538,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
         /* is it a property ? */
         TCOD_struct_prop_t** iprop;
         for (iprop = (TCOD_struct_prop_t**)TCOD_list_begin(def->props);
-             iprop != (TCOD_struct_prop_t**)TCOD_list_end(def->props); iprop++) {
+             iprop != (TCOD_struct_prop_t**)TCOD_list_end(def->props);
+             iprop++) {
           if (strcmp((*iprop)->name, lex->tok) == 0) {
             char propname[BIG_NAME_LEN];
             string_copy(propname, lex->tok, BIG_NAME_LEN);
@@ -545,7 +550,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
             }
             TCOD_lex_parse(lex);
             if (!listener->new_property(
-                    propname, TCOD_struct_get_type(def, propname),
+                    propname,
+                    TCOD_struct_get_type(def, propname),
                     TCOD_parse_property_value(parser, def, propname, true)))
               return false;
             if (lex->token_type == TCOD_LEX_ERROR) return false;
@@ -580,7 +586,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
           subname = TCOD_strdup(lex->tok);
           TCOD_lex_restore(lex, &save);
           for (sub = (TCOD_struct_int_t**)TCOD_list_begin(def->structs);
-               sub != (TCOD_struct_int_t**)TCOD_list_end(def->structs); sub++) {
+               sub != (TCOD_struct_int_t**)TCOD_list_end(def->structs);
+               sub++) {
             if (strcmp((*sub)->name, id) == 0) {
               if (!listener->new_struct(*sub, lex->tok)) return false;
               if (!TCOD_parser_parse_entity(parser, *sub)) return false;
@@ -596,7 +603,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
           /* <type> alone */
           TCOD_struct_int_t** sub;
           for (sub = (TCOD_struct_int_t**)TCOD_list_begin(def->structs);
-               sub != (TCOD_struct_int_t**)TCOD_list_end(def->structs); sub++) {
+               sub != (TCOD_struct_int_t**)TCOD_list_end(def->structs);
+               sub++) {
             if (strcmp((*sub)->name, type) == 0) {
               if (!listener->new_struct(*sub, subname)) return false;
               if (!TCOD_parser_parse_entity(parser, *sub)) return false;
@@ -611,7 +619,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
           TCOD_struct_int_t** idef;
           TCOD_struct_int_t* s = NULL;
           for (idef = (TCOD_struct_int_t**)TCOD_list_begin(parser->structs);
-               idef != (TCOD_struct_int_t**)TCOD_list_end(parser->structs); idef++) {
+               idef != (TCOD_struct_int_t**)TCOD_list_end(parser->structs);
+               idef++) {
             if (strcmp((*idef)->name, id) == 0) {
               s = *idef;
               break;
@@ -620,7 +629,8 @@ static bool TCOD_parser_parse_entity(TCOD_parser_int_t* parser, TCOD_struct_int_
           if (s == NULL && named) {
             /* look for general definition <type> for entity <type>#<name> */
             for (idef = (TCOD_struct_int_t**)TCOD_list_begin(parser->structs);
-                 idef != (TCOD_struct_int_t**)TCOD_list_end(parser->structs); idef++) {
+                 idef != (TCOD_struct_int_t**)TCOD_list_end(parser->structs);
+                 idef++) {
               if (strcmp((*idef)->name, type) == 0) {
                 s = *idef;
                 break;
@@ -691,7 +701,8 @@ void TCOD_parser_delete(TCOD_parser_t parser) {
     free((*idef)->name);
 
     for (propCleanup = (TCOD_struct_prop_t**)TCOD_list_begin((*idef)->props);
-         propCleanup != (TCOD_struct_prop_t**)TCOD_list_end((*idef)->props); propCleanup++) {
+         propCleanup != (TCOD_struct_prop_t**)TCOD_list_end((*idef)->props);
+         propCleanup++) {
       free((*propCleanup)->name);
     }
     TCOD_list_clear_and_delete((*idef)->props);
@@ -765,7 +776,8 @@ void TCOD_parser_run(TCOD_parser_t parser, const char* filename, TCOD_parser_lis
     do {
       /* look for a definition for id */
       for (idef = (TCOD_struct_int_t**)TCOD_list_begin(p->structs);
-           idef != (TCOD_struct_int_t**)TCOD_list_end(p->structs); idef++) {
+           idef != (TCOD_struct_int_t**)TCOD_list_end(p->structs);
+           idef++) {
         if (strcmp((*idef)->name, id) == 0) {
           def = *idef;
           break;
@@ -774,7 +786,8 @@ void TCOD_parser_run(TCOD_parser_t parser, const char* filename, TCOD_parser_lis
       if (def == NULL && named) {
         /* look for general definition <type> for entity <type>#<name> */
         for (idef = (TCOD_struct_int_t**)TCOD_list_begin(p->structs);
-             idef != (TCOD_struct_int_t**)TCOD_list_end(p->structs); idef++) {
+             idef != (TCOD_struct_int_t**)TCOD_list_end(p->structs);
+             idef++) {
           if (strcmp((*idef)->name, type) == 0) {
             def = (*idef);
             break;

@@ -316,7 +316,8 @@ TCOD_Error TCOD_sys_load_player_config(void) {
           (TCOD_ctx.font_in_row ? TCOD_FONT_LAYOUT_ASCII_INROW : TCOD_FONT_LAYOUT_ASCII_INCOL) |
               (TCOD_ctx.font_greyscale ? TCOD_FONT_TYPE_GREYSCALE : 0) |
               (TCOD_ctx.font_tcod_layout ? TCOD_FONT_LAYOUT_TCOD : 0),
-          fontNbCharHoriz, fontNbCharVertic);
+          fontNbCharHoriz,
+          fontNbCharVertic);
       if (err < 0) {
         return err;
       }

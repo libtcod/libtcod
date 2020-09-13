@@ -127,5 +127,5 @@ TCODLIB_CAPI int TCOD_strncasecmp(const char* s1, const char* s2, size_t n);
 /* Define vswprintf across platforms. */
 #ifdef _WIN32
 #define vswprintf _vsnwprintf /* Windows */
-#endif                        /* _WIN32 */
-#endif                        /* LIBTCOD_PORTABILITY_H */
+#endif /* _WIN32 */
+#endif /* LIBTCOD_PORTABILITY_H */

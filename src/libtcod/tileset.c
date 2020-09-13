@@ -291,7 +291,10 @@ TCOD_Error TCOD_tileset_set_tile_(
   return TCOD_tileset_set_tile_rgba(tileset, codepoint, buffer, sizeof(*buffer) * tileset->tile_width);
 }
 static void upload_tile_by_id_normalized(
-    TCOD_Tileset* __restrict tileset, int tile_id, const void* __restrict pixels, int stride,
+    TCOD_Tileset* __restrict tileset,
+    int tile_id,
+    const void* __restrict pixels,
+    int stride,
     const struct TCOD_ColorRGBA* __restrict color_key) {
   // Analyse this tiles traits.
   bool has_color = false;
@@ -326,7 +329,12 @@ static void upload_tile_by_id_normalized(
   }
 }
 TCOD_Tileset* TCOD_tileset_load_raw(
-    int width, int height, const struct TCOD_ColorRGBA* __restrict pixels, int columns, int rows, int n,
+    int width,
+    int height,
+    const struct TCOD_ColorRGBA* __restrict pixels,
+    int columns,
+    int rows,
+    int n,
     const int* __restrict charmap) {
   int font_tiles = columns * rows;
   TCOD_Tileset* tileset = TCOD_tileset_new(width / columns, height / rows);
@@ -354,8 +362,11 @@ TCOD_Tileset* TCOD_tileset_load_raw(
     int font_x = tile_id % columns;
     int font_y = tile_id / columns;
     upload_tile_by_id_normalized(
-        tileset, tile_id, (pixels + font_y * columns * tileset->tile_length + font_x * tileset->tile_width),
-        sizeof(*pixels) * width, color_key);
+        tileset,
+        tile_id,
+        (pixels + font_y * columns * tileset->tile_length + font_x * tileset->tile_width),
+        sizeof(*pixels) * width,
+        color_key);
   }
   if (!charmap) {
     n = font_tiles;

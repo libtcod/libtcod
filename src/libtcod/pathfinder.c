@@ -173,7 +173,14 @@ static void TCOD_pf_add_edge(struct TCOD_Pathfinder* path, const int* origin, co
 static void TCOD_pf_basic2d_edges(struct TCOD_Pathfinder* path, const int* origin) {
   if (path->graph.cardinal > 0) {
     const int dest[] = {
-        origin[0] - 1, origin[1], origin[0], origin[1] - 1, origin[0], origin[1] + 1, origin[0] + 1, origin[1],
+        origin[0] - 1,
+        origin[1],
+        origin[0],
+        origin[1] - 1,
+        origin[0],
+        origin[1] + 1,
+        origin[0] + 1,
+        origin[1],
     };
     for (size_t i = 0; i < sizeof(dest) / sizeof(dest[0]); i += 2) {
       TCOD_pf_add_edge(path, origin, &dest[i], path->graph.cardinal);
@@ -181,8 +188,14 @@ static void TCOD_pf_basic2d_edges(struct TCOD_Pathfinder* path, const int* origi
   }
   if (path->graph.diagonal > 0) {
     const int dest[] = {
-        origin[0] - 1, origin[1] - 1, origin[0] - 1, origin[1] + 1,
-        origin[0] + 1, origin[1] - 1, origin[0] + 1, origin[1] + 1,
+        origin[0] - 1,
+        origin[1] - 1,
+        origin[0] - 1,
+        origin[1] + 1,
+        origin[0] + 1,
+        origin[1] - 1,
+        origin[0] + 1,
+        origin[1] + 1,
     };
     for (size_t i = 0; i < sizeof(dest) / sizeof(dest[0]); i += 2) {
       TCOD_pf_add_edge(path, origin, &dest[i], path->graph.diagonal);

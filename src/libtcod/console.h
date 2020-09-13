@@ -209,11 +209,28 @@ TCOD_PUBLIC void TCOD_console_set_key_color(TCOD_Console* con, TCOD_color_t col)
  *  \endrst
  */
 TCOD_PUBLIC void TCOD_console_blit(
-    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
-    int yDst, float foreground_alpha, float background_alpha);
+    const TCOD_Console* __restrict src,
+    int xSrc,
+    int ySrc,
+    int wSrc,
+    int hSrc,
+    TCOD_Console* __restrict dst,
+    int xDst,
+    int yDst,
+    float foreground_alpha,
+    float background_alpha);
 TCOD_PUBLIC void TCOD_console_blit_key_color(
-    const TCOD_Console* __restrict src, int xSrc, int ySrc, int wSrc, int hSrc, TCOD_Console* __restrict dst, int xDst,
-    int yDst, float foreground_alpha, float background_alpha, const TCOD_color_t* key_color);
+    const TCOD_Console* __restrict src,
+    int xSrc,
+    int ySrc,
+    int wSrc,
+    int hSrc,
+    TCOD_Console* __restrict dst,
+    int xDst,
+    int yDst,
+    float foreground_alpha,
+    float background_alpha,
+    const TCOD_color_t* key_color);
 /**
  *  Delete a console.
  *

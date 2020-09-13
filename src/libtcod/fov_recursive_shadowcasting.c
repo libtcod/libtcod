@@ -45,8 +45,20 @@ static int mult[4][8] = {
 };
 
 static void cast_light(
-    struct TCOD_Map* map, int cx, int cy, int row, float start, float end, int radius, int r2, int xx, int xy, int yx,
-    int yy, int id, bool light_walls) {
+    struct TCOD_Map* map,
+    int cx,
+    int cy,
+    int row,
+    float start,
+    float end,
+    int radius,
+    int r2,
+    int xx,
+    int xy,
+    int yx,
+    int yy,
+    int id,
+    bool light_walls) {
   int j;
   float new_start = 0.0f;
   if (start < end) return;
@@ -110,7 +122,19 @@ void TCOD_map_compute_fov_recursive_shadowcasting(
   /* recursive shadow casting */
   for (oct = 0; oct < 8; oct++)
     cast_light(
-        m, player_x, player_y, 1, 1.0, 0.0, max_radius, r2, mult[0][oct], mult[1][oct], mult[2][oct], mult[3][oct], 0,
+        m,
+        player_x,
+        player_y,
+        1,
+        1.0,
+        0.0,
+        max_radius,
+        r2,
+        mult[0][oct],
+        mult[1][oct],
+        mult[2][oct],
+        mult[3][oct],
+        0,
         light_walls);
   m->cells[player_x + player_y * m->width].fov = 1;
 }

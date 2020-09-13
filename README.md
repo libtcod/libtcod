@@ -2,7 +2,6 @@
 
    * [Table of contents](#table-of-contents)
    * [Introduction](#introduction)
-   * [What can it do?](#what-can-it-do)
    * [How do I get set up?](#how-do-i-get-set-up)
       * [Using one of our downloads](#using-one-of-our-downloads)
       * [Compiling from source](#compiling-from-source)
@@ -19,12 +18,6 @@ Status:
 [![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 
-# What can it do? #
-
-If you want to get a quick overview of the features that libtcod provides,
-check out the [Features](https://bitbucket.org/libtcod/libtcod/wiki/Features)
-page.
-
 # How do I get set up? #
 
 ## Using one of our downloads ##
@@ -36,10 +29,10 @@ Windows and MacOS binaries are available from the
 Various C/C++ sample projects are included within
 the repository which can be used as examples of various features.
 
-Keep in mind that as a C++14 library, you will need to distribute the
+Keep in mind that as a C++ library, you may need to distribute the
 appropriate runtime with your program such as the
 [Visual Studio 2015 runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=53587)
-or else the program will fail to run.  This is required even when using Python.
+or else the program will fail to run.
 
 For those who wish to program in Python you can install python-tcod using
 [this installation guide](https://python-tcod.readthedocs.io/en/latest/installation.html).

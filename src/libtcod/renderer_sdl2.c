@@ -32,13 +32,13 @@
 #include "renderer_sdl2.h"
 
 #include <SDL.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "../vendor/lodepng.h"
 #include "libtcod_int.h"
-#include "math.h"
-#include "stdbool.h"
-#include "stdio.h"
-#include "stdlib.h"
 
 static inline float minf(float a, float b) { return a < b ? a : b; }
 static inline float maxf(float a, float b) { return a > b ? a : b; }
@@ -252,7 +252,7 @@ static TCOD_Error setup_cache_console(
 static TCOD_Error TCOD_sdl2_render(
     const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
     const struct TCOD_Console* __restrict console,
-    struct TCOD_Console* __restrict* cache) {
+    struct TCOD_Console* __restrict cache) {
   if (!atlas) {
     TCOD_set_errorv("Atlas must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -261,9 +261,9 @@ static TCOD_Error TCOD_sdl2_render(
     TCOD_set_errorv("Console must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  TCOD_Error err = setup_cache_console(atlas, console, cache);
-  if (err < 0) {
-    return err;
+  if (cache && (cache->w != console->w || cache->h != console->h)) {
+    TCOD_set_errorv("Cache console must match the size of the input console.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
@@ -285,14 +285,14 @@ static TCOD_Error TCOD_sdl2_render(
         // Clear foreground color if the foreground glyph is skipped.
         tile.fg.r = tile.fg.g = tile.fg.b = tile.fg.a = 0;
       }
-      if (cache && *cache) {
-        const struct TCOD_ConsoleTile cached = (*cache)->tiles[(*cache)->w * y + x];
+      if (cache) {
+        const struct TCOD_ConsoleTile cached = cache->tiles[cache->w * y + x];
         if (tile.ch == cached.ch && tile.fg.r == cached.fg.r && tile.fg.g == cached.fg.g && tile.fg.b == cached.fg.b &&
             tile.fg.a == cached.fg.a && tile.bg.r == cached.bg.r && tile.bg.g == cached.bg.g &&
             tile.bg.b == cached.bg.b && tile.bg.a == cached.bg.a) {
           continue;
         }
-        (*cache)->tiles[(*cache)->w * y + x] = tile;
+        cache->tiles[cache->w * y + x] = tile;
       }
       // Fill the background of the tile with a solid color.
       SDL_SetRenderDrawColor(atlas->renderer, tile.bg.r, tile.bg.g, tile.bg.b, tile.bg.a);
@@ -310,14 +310,11 @@ static TCOD_Error TCOD_sdl2_render(
   }
   return TCOD_E_OK;
 }
-TCOD_Error TCOD_sdl2_render_texture(
+TCOD_Error TCOD_sdl2_render_texture_setup(
     const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
     const struct TCOD_Console* __restrict console,
     struct TCOD_Console* __restrict* cache,
     struct SDL_Texture* __restrict* target) {
-  if (!target) {  // Render without a managed target.
-    return TCOD_sdl2_render(atlas, console, cache);
-  }
   if (!atlas) {
     TCOD_set_errorv("Atlas must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -326,12 +323,19 @@ TCOD_Error TCOD_sdl2_render_texture(
     TCOD_set_errorv("Console must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  if (!target) {
+    TCOD_set_errorv("target must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
   SDL_RendererInfo renderer_info;
-  SDL_GetRendererInfo(atlas->renderer, &renderer_info);
+  if (SDL_GetRendererInfo(atlas->renderer, &renderer_info)) {
+    return TCOD_set_errorvf("SDL error getting renderer info: %s", SDL_GetError());
+  }
   if (!(renderer_info.flags & SDL_RENDERER_TARGETTEXTURE)) {
     return TCOD_set_errorv("SDL_RENDERER_TARGETTEXTURE is required.");
   }
   if (*target) {
+    // Checks if *target texture is still valid for the current parameters, deletes *target if not.
     int tex_width;
     int tex_height;
     SDL_QueryTexture(*target, NULL, NULL, &tex_width, &tex_height);
@@ -346,6 +350,7 @@ TCOD_Error TCOD_sdl2_render_texture(
     }
   }
   if (!*target) {
+    // If *target is missing or deleted then create a new texture.
     *target = SDL_CreateTexture(
         atlas->renderer,
         SDL_PIXELFORMAT_RGBA32,
@@ -356,8 +361,22 @@ TCOD_Error TCOD_sdl2_render_texture(
       return TCOD_set_errorv("Failed to create a new target texture.");
     }
   }
+  TCOD_Error err = TCOD_E_OK;
+  if (cache) {
+    err = setup_cache_console(atlas, console, cache);
+  }
+  return err;
+}
+TCOD_Error TCOD_sdl2_render_texture(
+    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const struct TCOD_Console* __restrict console,
+    struct TCOD_Console* __restrict cache,
+    struct SDL_Texture* __restrict target) {
+  if (!target) {  // Render without a managed target.
+    return TCOD_sdl2_render(atlas, console, cache);
+  }
   SDL_Texture* old_target = SDL_GetRenderTarget(atlas->renderer);
-  SDL_SetRenderTarget(atlas->renderer, *target);
+  SDL_SetRenderTarget(atlas->renderer, target);
   TCOD_Error err = TCOD_sdl2_render(atlas, console, cache);
   SDL_SetRenderTarget(atlas->renderer, old_target);
   return err;
@@ -445,7 +464,12 @@ static TCOD_Error sdl2_accumulate(
   if (!context || !console) {
     return -1;
   }
-  TCOD_Error err = TCOD_sdl2_render_texture(context->atlas, console, &context->cache_console, &context->cache_texture);
+  TCOD_Error err;
+  err = TCOD_sdl2_render_texture_setup(context->atlas, console, &context->cache_console, &context->cache_texture);
+  if (err < 0) {
+    return err;
+  }
+  err = TCOD_sdl2_render_texture(context->atlas, console, context->cache_console, context->cache_texture);
   if (err < 0) {
     return err;
   }

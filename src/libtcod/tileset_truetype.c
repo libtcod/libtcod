@@ -194,7 +194,7 @@ static struct TCOD_Tileset* tileset_from_ttf(const stbtt_fontinfo* font_info, in
   return loader.tileset;
 }
 
-TCODLIB_CAPI TCOD_Tileset* TCOD_load_truetype_font_(const char* path, int tile_width, int tile_height) {
+TCOD_Tileset* TCOD_load_truetype_font_(const char* path, int tile_width, int tile_height) {
   unsigned char* font_data = alloc_read_whole_file(path, NULL);
   if (!font_data) {
     return NULL;

@@ -36,11 +36,17 @@
 #include "tileset.h"
 
 /**
- *  Return a tileset from a TrueType font file.
+    Return a tileset from a TrueType font file.
+
+    This function is provisional and may change in future releases.
  */
 TCODLIB_CAPI TCOD_NODISCARD TCOD_Tileset* TCOD_load_truetype_font_(const char* path, int tile_width, int tile_height);
 /**
- *  Set the global tileset from a TrueType font file.
+    Set the global tileset from a TrueType font file.
+
+    This can be used in place of TCOD_console_set_custom_font.
+
+    This function is provisional and may change in future releases.
  */
 TCODLIB_CAPI TCOD_NODISCARD TCOD_Error TCOD_tileset_load_truetype_(const char* path, int tile_width, int tile_height);
 #endif  // LIBTCOD_TILESET_TRUETYPE_H_

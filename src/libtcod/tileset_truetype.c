@@ -214,5 +214,7 @@ int TCOD_tileset_load_truetype_(const char* path, int tile_width, int tile_heigh
   if (!tileset) {
     return TCOD_E_ERROR;
   }
+  TCOD_set_default_tileset(tileset);
+  TCOD_tileset_delete(tileset);
   return TCOD_E_OK;
 }

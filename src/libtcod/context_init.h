@@ -36,6 +36,10 @@
 #include "error.h"
 #include "stdbool.h"
 #include "tileset.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
 /**
     Create a new context with the given console size.
 
@@ -102,4 +106,7 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(
     int sdl_window_flags,
     const char* window_title,
     TCOD_Context** out);
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
 #endif  // LIBTCOD_CONTEXT_INIT_H_

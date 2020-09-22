@@ -209,7 +209,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     TCOD_Console* __restrict con,
     int x,
     int y,
-    int n,
+    size_t n,
     const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
@@ -221,22 +221,22 @@ TCOD_PUBLIC int TCOD_console_printn_rect(
     int y,
     int width,
     int height,
-    int n,
+    size_t n,
     const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
 TCOD_PUBLIC int TCOD_console_get_height_rect_n(
-    TCOD_Console* __restrict console, int x, int y, int width, int height, int n, const char* __restrict str);
-TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, int n, const char* str);
+    TCOD_Console* __restrict console, int x, int y, int width, int height, size_t n, const char* __restrict str);
+TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str);
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     struct TCOD_Console* __restrict con,
     int x,
     int y,
     int width,
     int height,
-    int n,
+    size_t n,
     const char* title,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,

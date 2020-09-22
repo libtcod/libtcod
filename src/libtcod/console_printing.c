@@ -1108,7 +1108,7 @@ static int print_internal_(
     int y,
     int width,
     int height,
-    int n,
+    size_t n,
     const char* __restrict string,
     const TCOD_color_t* fg_in,
     const TCOD_color_t* bg_in,
@@ -1277,7 +1277,7 @@ TCOD_Error TCOD_console_printn(
     TCOD_Console* __restrict con,
     int x,
     int y,
-    int n,
+    size_t n,
     const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
@@ -1300,7 +1300,7 @@ int TCOD_console_printn_rect(
     int y,
     int width,
     int height,
-    int n,
+    size_t n,
     const char* str,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
@@ -1314,7 +1314,8 @@ int TCOD_console_printn_rect(
   return print_internal_(con, x, y, width, height, n, str, fg, bg, flag, alignment, true, false);
 }
 
-int TCOD_console_get_height_rect_n(TCOD_Console* console, int x, int y, int width, int height, int n, const char* str) {
+int TCOD_console_get_height_rect_n(
+    TCOD_Console* console, int x, int y, int width, int height, size_t n, const char* str) {
   console = TCOD_console_validate_(console);
   if (!console) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1322,7 +1323,7 @@ int TCOD_console_get_height_rect_n(TCOD_Console* console, int x, int y, int widt
   }
   return print_internal_(console, x, y, width, height, n, str, NULL, NULL, TCOD_BKGND_NONE, TCOD_LEFT, true, true);
 }
-int TCOD_console_get_height_rect_wn(int width, int n, const char* str) {
+int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str) {
   TCOD_Console console = {.w = width, .h = INT_MAX};
   return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
@@ -1332,7 +1333,7 @@ TCOD_Error TCOD_console_printn_frame(
     int y,
     int width,
     int height,
-    int n,
+    size_t n,
     const char* title,
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,

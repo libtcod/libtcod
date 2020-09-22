@@ -137,12 +137,12 @@ void Widget::renderWidgets() {
   }
 }
 
-void Widget::move(int x, int y) {
-  this->x = x;
-  this->y = y;
+void Widget::move(int x_, int y_) {
+  this->x = x_;
+  this->y = y_;
 }
 
-void Widget::setTip(const char* tip) {
+void Widget::setTip(const char* tip_) {
   if (this->tip) free(this->tip);
-  this->tip = TCOD_strdup(tip);
+  this->tip = TCOD_strdup(tip_);
 }

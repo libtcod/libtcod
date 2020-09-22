@@ -152,7 +152,7 @@ TCOD_NODISCARD
 static struct TCOD_Tileset* tileset_from_ttf(const stbtt_fontinfo* font_info, int tile_width, int tile_height) {
   struct FontLoader loader = {
       .info = font_info,
-      .scale = stbtt_ScaleForPixelHeight(font_info, tile_height),
+      .scale = stbtt_ScaleForPixelHeight(font_info, (float)tile_height),
       .align_x = 0.5f,
       .align_y = 0.5f,
   };

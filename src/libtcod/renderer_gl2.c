@@ -210,9 +210,9 @@ static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas
   int x = tile_id % atlas->texture_columns;
   int y = tile_id / atlas->texture_columns;
   out[0] = x & 0xff;
-  out[1] = x >> 8;
+  out[1] = (x >> 8) & 0xff;
   out[2] = y & 0xff;
-  out[3] = y >> 8;
+  out[3] = (y >> 8) & 0xff;
 }
 TCOD_NODISCARD
 static TCOD_Error render(
@@ -269,12 +269,12 @@ static TCOD_Error render(
   };
   glUniform2fv(v_tiles_shape, 1, tiles_shape);
   float tiles_size[2] = {
-      atlas->texture_columns * atlas->tileset->tile_width,
-      atlas->texture_rows * atlas->tileset->tile_height,
+      (float)atlas->texture_columns * atlas->tileset->tile_width,
+      (float)atlas->texture_rows * atlas->tileset->tile_height,
   };
   glUniform2fv(v_tiles_size, 1, tiles_size);
 
-  float console_shape[2] = {renderer->console_width, renderer->console_height};
+  float console_shape[2] = {(float)renderer->console_width, (float)renderer->console_height};
   glUniform2fv(v_console_shape, 1, console_shape);
   float console_size[2] = {
       (float)console->w / console_shape[0],

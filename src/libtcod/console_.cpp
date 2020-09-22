@@ -350,7 +350,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t* fmt, .
 const char* TCODConsole::getColorControlString(TCOD_colctrl_t ctrl) {
   static char buf[NB_BUFFERS][2];
   static int buf_nb = 0;
-  buf[buf_nb][0] = ctrl;
+  buf[buf_nb][0] = (char)ctrl;
   buf[buf_nb][1] = 0;
   const char* ret = buf[buf_nb];
   buf_nb = (buf_nb + 1) % NB_BUFFERS;
@@ -361,7 +361,7 @@ const char* TCODConsole::getColorControlString(TCOD_colctrl_t ctrl) {
 const char* TCODConsole::getRGBColorControlString(TCOD_colctrl_t ctrl, const TCODColor& col) {
   static char buf[NB_BUFFERS][5];
   static int buf_nb = 0;
-  buf[buf_nb][0] = ctrl;
+  buf[buf_nb][0] = (char)ctrl;
   buf[buf_nb][1] = col.r;
   buf[buf_nb][2] = col.g;
   buf[buf_nb][3] = col.b;

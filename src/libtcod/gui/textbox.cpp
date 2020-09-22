@@ -66,7 +66,7 @@ TextBox::~TextBox() {
   if (label) free(label);
 }
 
-void TextBox::setText(const char* txt) { strncpy(this->txt, txt, maxw); }
+void TextBox::setText(const char* txt_) { strncpy(this->txt, txt_, maxw); }
 
 void TextBox::render() {
   con->setDefaultBackground(back);

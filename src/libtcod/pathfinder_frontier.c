@@ -43,7 +43,7 @@ struct TCOD_Frontier* TCOD_frontier_new(int ndim) {
     TCOD_set_errorv("Out of memory allocating pathfinder.");
     return NULL;
   }
-  frontier->ndim = ndim;
+  frontier->ndim = (int8_t)ndim;
   TCOD_heap_init(&frontier->heap, sizeof(int) * (ndim + 1));
   return frontier;
 }

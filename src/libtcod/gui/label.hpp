@@ -37,7 +37,7 @@ class TCODLIB_GUI_API Label : public Widget {
   Label(int x, int y, const char* label, const char* tip = NULL);
   void render();
   void computeSize();
-  void setValue(const char* label) { this->label = label; }
+  void setValue(const char* label_) { this->label = label_; }
 
  protected:
   const char* label;

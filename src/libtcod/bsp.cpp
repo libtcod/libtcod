@@ -111,9 +111,9 @@ void TCODBsp::removeSons() {
   sons = NULL;
 }
 
-void TCODBsp::splitOnce(bool horizontal, int position) {
-  this->horizontal = horizontal;
-  this->position = position;
+void TCODBsp::splitOnce(bool horizontal_, int position_) {
+  this->horizontal = horizontal_;
+  this->position = position_;
   addSon(new TCODBsp(this, true));
   addSon(new TCODBsp(this, false));
 }
@@ -130,22 +130,22 @@ void TCODBsp::splitRecursive(
     horiz = true;
   else
     horiz = randomizer->getInt(0, 1) == 0;
-  int position;
+  int split_position;
   if (horiz) {
-    position = randomizer->getInt(y + minVSize, y + h - minVSize);
+    split_position = randomizer->getInt(y + minVSize, y + h - minVSize);
   } else {
-    position = randomizer->getInt(x + minHSize, x + w - minHSize);
+    split_position = randomizer->getInt(x + minHSize, x + w - minHSize);
   }
-  splitOnce(horiz, position);
+  splitOnce(horiz, split_position);
   getLeft()->splitRecursive(randomizer, nb - 1, minHSize, minVSize, maxHRatio, maxVRatio);
   getRight()->splitRecursive(randomizer, nb - 1, minHSize, minVSize, maxHRatio, maxVRatio);
 }
 
-void TCODBsp::resize(int x, int y, int w, int h) {
-  this->x = x;
-  this->y = y;
-  this->w = w;
-  this->h = h;
+void TCODBsp::resize(int x_, int y_, int w_, int h_) {
+  this->x = x_;
+  this->y = y_;
+  this->w = w_;
+  this->h = h_;
   if (getLeft()) {
     if (horizontal) {
       getLeft()->resize(x, y, w, position - y);

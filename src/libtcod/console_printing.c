@@ -868,7 +868,7 @@ struct FormattedPrinter {
   const struct TCOD_ColorRGBA default_fg;
   const struct TCOD_ColorRGBA default_bg;
 };
-static TCOD_Error utf8_report_error(int err) {
+static TCOD_Error utf8_report_error(utf8proc_ssize_t err) {
   switch (err) {
     case UTF8PROC_ERROR_NOMEM:
       TCOD_set_errorv("Out of memory while parsing a UTF-8 string.");
@@ -878,7 +878,7 @@ static TCOD_Error utf8_report_error(int err) {
       return TCOD_E_ERROR;
     default:
       if (err < 0) {
-        TCOD_set_errorvf("Unexpected error while processing UTF-8 string: %d", err);
+        TCOD_set_errorvf("Unexpected error while processing UTF-8 string: %d", (int)err);
         return TCOD_E_ERROR;
       }
       return TCOD_E_OK;
@@ -889,7 +889,7 @@ static TCOD_Error utf8_report_error(int err) {
  */
 static int fp_peak_raw(const struct FormattedPrinter* printer) {
   int codepoint;
-  int err = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  utf8proc_ssize_t err = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
   if (err < 0) {
     return utf8_report_error(err);
   }
@@ -900,7 +900,7 @@ static int fp_peak_raw(const struct FormattedPrinter* printer) {
  */
 static int fp_next_raw(struct FormattedPrinter* printer) {
   int codepoint;
-  int len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
+  utf8proc_ssize_t len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
   if (len < 0) {
     return utf8_report_error(len);
   }

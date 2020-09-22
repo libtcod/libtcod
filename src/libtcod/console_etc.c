@@ -580,12 +580,12 @@ static void TCOD_console_read_asc(TCOD_console_t con, FILE* f, int width, int he
     for (int y = 0; y < height; ++y) {
       TCOD_color_t fore, back;
       int c = fgetc(f);
-      fore.r = fgetc(f);
-      fore.g = fgetc(f);
-      fore.b = fgetc(f);
-      back.r = fgetc(f);
-      back.g = fgetc(f);
-      back.b = fgetc(f);
+      fore.r = (uint8_t)fgetc(f);
+      fore.g = (uint8_t)fgetc(f);
+      fore.b = (uint8_t)fgetc(f);
+      back.r = (uint8_t)fgetc(f);
+      back.g = (uint8_t)fgetc(f);
+      back.b = (uint8_t)fgetc(f);
       /* skip solid/walkable info */
       if (version >= 0.3f) {
         fgetc(f);

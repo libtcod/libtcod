@@ -121,4 +121,4 @@ void ToolBar::computeSize() {
     }
   }
 }
-void ToolBar::addSeparator(const char* txt, const char* tip) { addWidget(new Separator(txt, tip)); }
+void ToolBar::addSeparator(const char* txt, const char* tip_) { addWidget(new Separator(txt, tip_)); }

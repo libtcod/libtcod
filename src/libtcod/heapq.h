@@ -40,12 +40,15 @@
 #define TCOD_HEAP_DEFAULT_CAPACITY 256
 #define TCOD_HEAP_MAX_NODE_SIZE 256
 
+#pragma warning(push)
+#pragma warning(disable : 4200)  // MSVC complains about standard C99.
 struct TCOD_HeapNode {
   int priority;
 #if !defined(__cplusplus)
   unsigned char data[];
 #endif  // !defined(__cplusplus)
 };
+#pragma warning(pop)
 
 struct TCOD_Heap {
   struct TCOD_HeapNode* __restrict heap;

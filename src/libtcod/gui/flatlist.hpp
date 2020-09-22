@@ -38,8 +38,8 @@ class TCODLIB_GUI_API FlatList : public TextBox {
   virtual ~FlatList();
   void render();
   void update(const TCOD_key_t k);
-  void setCallback(void (*cbk)(Widget* wid, const char* val, void* data), void* data) {
-    this->cbk = cbk;
+  void setCallback(void (*cbk_)(Widget* wid, const char* val, void* data), void* data) {
+    this->cbk = cbk_;
     this->data = data;
   }
   void setValue(const char* value);

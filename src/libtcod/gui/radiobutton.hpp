@@ -47,7 +47,7 @@ class TCODLIB_GUI_API RadioButton : public Button {
       void* userData = NULL)
       : Button(x, y, width, height, label, tip, cbk, userData), group(defaultGroup) {}
 
-  void setGroup(int group) { this->group = group; }
+  void setGroup(int group_) { this->group = group_; }
   void render();
   void select();
   void unSelect();

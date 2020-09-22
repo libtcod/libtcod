@@ -157,7 +157,7 @@ public :
   : r(r_), g(g_), b(b_)
   {}
 	TCODColor(int r_, int g_, int b_)
-  : r(r_), g(g_), b(b_)
+  : r((uint8_t)r_), g((uint8_t)g_), b((uint8_t)b_)
   {}
 	TCODColor(const TCOD_color_t &col): r(col.r), g(col.g), b(col.b) {}
 	TCODColor(float h, float s, float v);

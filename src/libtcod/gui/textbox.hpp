@@ -40,9 +40,9 @@ class TCODLIB_GUI_API TextBox : public Widget {
   void update(const TCOD_key_t k);
   void setText(const char* txt);
   const char* getValue() { return txt; }
-  void setCallback(void (*cbk)(Widget* wid, char* val, void* data), void* data) {
+  void setCallback(void (*cbk)(Widget* wid, char* val, void* data), void* data_) {
     txtcbk = cbk;
-    this->data = data;
+    this->data = data_;
   }
   static void setBlinkingDelay(float delay) { blinkingDelay = delay; }
 

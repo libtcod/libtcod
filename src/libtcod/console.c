@@ -402,7 +402,7 @@ void TCOD_console_set_char_background(TCOD_Console* con, int x, int y, TCOD_colo
   if (flag == TCOD_BKGND_DEFAULT) {
     flag = con->bkgnd_flag;
   }
-  int alpha = flag >> 8;
+  uint8_t alpha = (flag >> 8) & 0xFF;
   switch (flag & 0xff) {
     case TCOD_BKGND_SET:
       bg->r = col.r;

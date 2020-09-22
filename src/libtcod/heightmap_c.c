@@ -144,10 +144,10 @@ void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float hra
   }
   const float hradius2 = hradius * hradius;
   const float coef = hheight / hradius2;
-  const int minx = MAX(floorf(hx - hradius), 0);
-  const int miny = MAX(floorf(hy - hradius), 0);
-  const int maxx = MIN(ceilf(hx + hradius), hm->w);
-  const int maxy = MIN(ceilf(hy + hradius), hm->h);
+  const int minx = (int)MAX(floorf(hx - hradius), 0);
+  const int miny = (int)MAX(floorf(hy - hradius), 0);
+  const int maxx = (int)MIN(ceilf(hx + hradius), hm->w);
+  const int maxy = (int)MIN(ceilf(hy + hradius), hm->h);
   for (int y = miny; y < maxy; y++) {
     const float ydist = (y - hy) * (y - hy);
     for (int x = minx; x < maxx; x++) {
@@ -166,10 +166,10 @@ void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float hra
   }
   const float hradius2 = hradius * hradius;
   const float coef = hheight / hradius2;
-  const int minx = MAX(floorf(hx - hradius), 0);
-  const int miny = MAX(floorf(hy - hradius), 0);
-  const int maxx = MIN(ceilf(hx + hradius), hm->w);
-  const int maxy = MIN(ceilf(hy + hradius), hm->h);
+  const int minx = (int)MAX(floorf(hx - hradius), 0);
+  const int miny = (int)MAX(floorf(hy - hradius), 0);
+  const int maxx = (int)MIN(ceilf(hx + hradius), hm->w);
+  const int maxy = (int)MIN(ceilf(hy + hradius), hm->h);
   for (int y = miny; y < maxy; y++) {
     for (int x = minx; x < maxx; x++) {
       const float xdist = (x - hx) * (x - hx);
@@ -250,8 +250,8 @@ float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x,
   float fiy;
   float fx = modff(x, &fix);
   float fy = modff(y, &fiy);
-  int ix = fix;
-  int iy = fiy;
+  int ix = (int)fix;
+  int iy = (int)fiy;
 
   if (ix >= hm->w - 1) {
     ix = hm->w - 2;
@@ -309,12 +309,12 @@ void TCOD_heightmap_dig_bezier(
   for (int i = 0; i <= 1000; ++i) {
     const float t = i / 1000.f;
     const float it = 1.0f - t;
-    const int xTo = (px[0] * it * it * it + 3 * px[1] * t * it * it + 3 * px[2] * t * t * it + px[3] * t * t * t);
-    const int yTo = (py[0] * it * it * it + 3 * py[1] * t * it * it + 3 * py[2] * t * t * it + py[3] * t * t * t);
+    const int xTo = (int)(px[0] * it * it * it + 3 * px[1] * t * it * it + 3 * px[2] * t * t * it + px[3] * t * t * t);
+    const int yTo = (int)(py[0] * it * it * it + 3 * py[1] * t * it * it + 3 * py[2] * t * t * it + py[3] * t * t * t);
     if (xTo != xFrom || yTo != yFrom) {
       float radius = startRadius + (endRadius - startRadius) * t;
       float depth = startDepth + (endDepth - startDepth) * t;
-      TCOD_heightmap_dig_hill(hm, xTo, yTo, radius, depth);
+      TCOD_heightmap_dig_hill(hm, (float)xTo, (float)yTo, radius, depth);
       xFrom = xTo;
       yFrom = yTo;
     }
@@ -562,7 +562,7 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, 
       for (int i = 0; i < nbPoints; i++) {
         const int dx = pt[i].x - x;
         const int dy = pt[i].y - y;
-        pt[i].dist = dx * dx + dy * dy;
+        pt[i].dist = (float)(dx * dx + dy * dy);
       }
       for (int i = 0; i < nbCoef; i++) {
         /* get closest point */

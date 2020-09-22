@@ -54,10 +54,10 @@ Slider::~Slider() {
   if (fmt) free(fmt);
 }
 
-void Slider::setFormat(const char* fmt) {
+void Slider::setFormat(const char* fmt_) {
   if (this->fmt) free(this->fmt);
-  if (fmt)
-    this->fmt = TCOD_strdup(fmt);
+  if (fmt_)
+    this->fmt = TCOD_strdup(fmt_);
   else
     this->fmt = NULL;
   valueToText();
@@ -123,8 +123,8 @@ void Slider::textToValue() {
 #endif
 }
 
-void Slider::setValue(float value) {
-  this->value = CLAMP(min, max, value);
+void Slider::setValue(float value_) {
+  this->value = CLAMP(min, max, value_);
   valueToText();
 }
 

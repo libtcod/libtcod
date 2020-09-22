@@ -47,9 +47,9 @@
 
 TCOD_color_t int_to_color(colornum_t col) {
   TCOD_color_t ret;
-  ret.r = col & RED_MASK;
-  ret.g = (col & GREEN_MASK) >> 8;
-  ret.b = (col & BLUE_MASK) >> 16;
+  ret.r = col & 0xFF;
+  ret.g = (col >> 8) & 0xFF;
+  ret.b = (col >> 16) & 0xFF;
   return ret;
 }
 

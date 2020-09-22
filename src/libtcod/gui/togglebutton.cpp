@@ -37,7 +37,7 @@ void ToggleButton::render() {
   con->setDefaultBackground(mouseIn ? backFocus : back);
   con->setDefaultForeground(mouseIn ? foreFocus : fore);
   con->rect(x, y, w, h, true, TCOD_BKGND_SET);
-  const char* check = pressed ? "\u2611" : "\u2610";
+  const char* check = pressed ? u8"\u2611" : u8"\u2610";
   if (label) {
     con->printf(x, y, TCOD_BKGND_NONE, TCOD_LEFT, "%s %s", check, label);
   } else {

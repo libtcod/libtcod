@@ -269,9 +269,9 @@ TCOD_value_t TCOD_parse_color_value(void) {
     r = (TCOD_lex_hextoint(lex->tok[1]) << 4) + TCOD_lex_hextoint(lex->tok[2]);
     g = (TCOD_lex_hextoint(lex->tok[3]) << 4) + TCOD_lex_hextoint(lex->tok[4]);
     b = (TCOD_lex_hextoint(lex->tok[5]) << 4) + TCOD_lex_hextoint(lex->tok[6]);
-    ret.col.r = r;
-    ret.col.g = g;
-    ret.col.b = b;
+    ret.col.r = (uint8_t)r;
+    ret.col.g = (uint8_t)g;
+    ret.col.b = (uint8_t)b;
   } else {
     /* standard format : rrr,ggg,bbb */
     char* begin = lex->tok;
@@ -281,15 +281,15 @@ TCOD_value_t TCOD_parse_color_value(void) {
       ok = false;
     else {
       *end = 0;
-      ret.col.r = atoi(begin);
+      ret.col.r = (uint8_t)atoi(begin);
       begin = end + 1;
       end = strchr(begin, ',');
       if (!end)
         ok = false;
       else {
-        ret.col.g = atoi(begin);
+        ret.col.g = (uint8_t)atoi(begin);
         begin = end + 1;
-        ret.col.b = atoi(begin);
+        ret.col.b = (uint8_t)atoi(begin);
       }
     }
     if (!ok) TCOD_parser_error("parseColorValue : bad color format 'rrr,ggg,bbb' expected instead of '%s'", lex->tok);

@@ -38,17 +38,17 @@ class TCODLIB_GUI_API Slider : public TextBox {
   virtual ~Slider();
   void render();
   void update(const TCOD_key_t k);
-  void setMinMax(float min, float max) {
-    this->min = min;
-    this->max = max;
+  void setMinMax(float min_, float max_) {
+    this->min = min_;
+    this->max = max_;
   }
-  void setCallback(void (*cbk)(Widget* wid, float val, void* data), void* data) {
-    this->cbk = cbk;
-    this->data = data;
+  void setCallback(void (*cbk_)(Widget* wid, float val, void* data), void* data_) {
+    this->cbk = cbk_;
+    this->data = data_;
   }
   void setFormat(const char* fmt);
   void setValue(float value);
-  void setSensitivity(float sensitivity) { this->sensitivity = sensitivity; }
+  void setSensitivity(float sensitivity_) { this->sensitivity = sensitivity_; }
 
  protected:
   float min, max, value, sensitivity;

@@ -403,7 +403,7 @@ static int sdl2_handle_event(void* userdata, SDL_Event* event) {
 /**
  *  Deconstruct an SDL2 rendering context.
  */
-static void sdl2_destructor(struct TCOD_Context* self) {
+static void sdl2_destructor(struct TCOD_Context* __restrict self) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context) {
     return;
@@ -528,7 +528,7 @@ static TCOD_Error sdl2_present(
 /**
  *  Convert pixel coordinates to tile coordinates.
  */
-static void sdl2_pixel_to_tile(struct TCOD_Context* self, double* __restrict x, double* __restrict y) {
+static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   *x = (*x - context->last_offset_x) * context->last_scale_x;
   *y = (*y - context->last_offset_y) * context->last_scale_y;
@@ -536,7 +536,7 @@ static void sdl2_pixel_to_tile(struct TCOD_Context* self, double* __restrict x, 
 /**
  *  Save a PNG screen-shot to `file`.
  */
-static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* self, const char* filename) {
+static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* __restrict self, const char* __restrict filename) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   if (!context->cache_texture) {
     TCOD_set_errorv("Nothing to save before the first frame.");
@@ -562,19 +562,19 @@ static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* self, const char* fi
 /**
  *  Return a pointer to the SDL2 window.
  */
-static struct SDL_Window* sdl2_get_window(struct TCOD_Context* self) {
+static struct SDL_Window* sdl2_get_window(struct TCOD_Context* __restrict self) {
   return ((struct TCOD_RendererSDL2*)self->contextdata)->window;
 }
 /**
  *  Return a pointer to the SDL2 renderer.
  */
-static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* self) {
+static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* __restrict self) {
   return ((struct TCOD_RendererSDL2*)self->contextdata)->renderer;
 }
 /**
     Change the atlas to the given tileset.
  */
-static TCOD_Error sdl2_set_tileset(struct TCOD_Context* self, TCOD_Tileset* tileset) {
+static TCOD_Error sdl2_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   struct TCOD_TilesetAtlasSDL2* atlas = TCOD_sdl2_atlas_new(context->renderer, tileset);
   if (!atlas) {
@@ -591,7 +591,7 @@ static TCOD_Error sdl2_set_tileset(struct TCOD_Context* self, TCOD_Tileset* tile
   return TCOD_E_OK;
 }
 static TCOD_Error sdl2_recommended_console_size(
-    struct TCOD_Context* self, int* __restrict columns, int* __restrict rows) {
+    struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   int w;
   int h;

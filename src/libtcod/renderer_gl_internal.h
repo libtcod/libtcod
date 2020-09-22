@@ -47,7 +47,7 @@ extern "C" {
 /**
  *  Save a screen capture.
  */
-static TCOD_Error gl_screenshot(struct TCOD_Context* context, const char* filename) {
+static TCOD_Error gl_screenshot(struct TCOD_Context* __restrict context, const char* __restrict filename) {
   (void)context;  // Unused parameter.
   int rect[4];
   glGetIntegerv(GL_VIEWPORT, rect);
@@ -72,14 +72,14 @@ static TCOD_Error gl_screenshot(struct TCOD_Context* context, const char* filena
 /**
  *  Return the SDL2 window.
  */
-static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* context) {
+static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* __restrict context) {
   struct TCOD_RendererGLCommon* renderer = context->contextdata;
   return renderer->window;
 }
 /**
  *  Convert pixel coordinates to tile coordinates.
  */
-static void gl_pixel_to_tile(struct TCOD_Context* self, double* __restrict x, double* __restrict y) {
+static void gl_pixel_to_tile(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y) {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
   *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
@@ -87,7 +87,7 @@ static void gl_pixel_to_tile(struct TCOD_Context* self, double* __restrict x, do
 /**
     Change the atlas to the given tileset.
  */
-static TCOD_Error gl_set_tileset(struct TCOD_Context* self, TCOD_Tileset* tileset) {
+static TCOD_Error gl_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset) {
   struct TCOD_RendererGLCommon* renderer = self->contextdata;
   struct TCOD_TilesetAtlasOpenGL* atlas = TCOD_gl_atlas_new(tileset);
   if (!atlas) {
@@ -100,7 +100,7 @@ static TCOD_Error gl_set_tileset(struct TCOD_Context* self, TCOD_Tileset* tilese
   return TCOD_E_OK;
 }
 static TCOD_Error gl_recommended_console_size(
-    struct TCOD_Context* self, int* __restrict columns, int* __restrict rows) {
+    struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows) {
   struct TCOD_RendererGLCommon* context = self->contextdata;
   int w;
   int h;

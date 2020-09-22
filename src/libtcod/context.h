@@ -50,23 +50,28 @@ struct SDL_Rect;
 struct TCOD_Context {
   int type;
   void* __restrict contextdata;
-  void (*destructor_)(struct TCOD_Context* self);
+  void (*destructor_)(struct TCOD_Context* __restrict self);
   TCOD_Error (*present_)(
-      struct TCOD_Context* self, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
-  void (*pixel_to_tile_)(struct TCOD_Context* self, double* x, double* y);
-  TCOD_Error (*save_screenshot_)(struct TCOD_Context* self, const char* filename);
-  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* self);
-  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* self);
+      struct TCOD_Context* __restrict self,
+      const struct TCOD_Console* __restrict console,
+      const struct TCOD_ViewportOptions* __restrict viewport);
+  void (*pixel_to_tile_)(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y);
+  TCOD_Error (*save_screenshot_)(struct TCOD_Context* __restrict self, const char* __restrict filename);
+  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* __restrict self);
+  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* __restrict self);
   TCOD_Error (*accumulate_)(
-      struct TCOD_Context* self, const struct TCOD_Console* console, const struct TCOD_ViewportOptions* viewport);
+      struct TCOD_Context* __restrict self,
+      const struct TCOD_Console* __restrict console,
+      const struct TCOD_ViewportOptions* __restrict viewport);
   /**
       Change the tileset used by this context.
   */
-  TCOD_Error (*set_tileset)(struct TCOD_Context* self, TCOD_Tileset* tileset);
+  TCOD_Error (*set_tileset)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
   /**
       Output the recommended console size to `columns` and `rows`.
   */
-  TCOD_Error (*cb_recommended_console_size_)(struct TCOD_Context* self, int* columns, int* rows);
+  TCOD_Error (*cb_recommended_console_size_)(
+      struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows);
 };
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus

@@ -369,7 +369,7 @@ static TCOD_Error gl2_present(
   SDL_GL_SwapWindow(renderer->common.window);
   return err;
 }
-void gl2_destructor(struct TCOD_Context* context) {
+void gl2_destructor(struct TCOD_Context* __restrict context) {
   struct TCOD_RendererGL2* renderer = context->contextdata;
   if (!renderer) {
     return;

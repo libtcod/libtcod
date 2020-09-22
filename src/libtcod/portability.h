@@ -120,6 +120,9 @@
 #include <stdbool.h>
 
 /* ansi C lacks support for those functions */
+/**
+    Allocate and return a duplicate of string `s`.  The returned memory must be freed manually.
+ */
 TCODLIB_CAPI char* TCOD_strdup(const char* s);
 TCODLIB_CAPI int TCOD_strcasecmp(const char* s1, const char* s2);
 TCODLIB_CAPI int TCOD_strncasecmp(const char* s1, const char* s2, size_t n);

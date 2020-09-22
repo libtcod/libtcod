@@ -84,20 +84,22 @@ ToolBar::~ToolBar() {
   if (name) free(name);
 }
 
-void ToolBar::setName(const char* name) {
+void ToolBar::setName(const char* name_) {
   if (this->name) free(this->name);
-  if (name) {
-    this->name = TCOD_strdup(name);
-    fixedWidth = std::max<int>(static_cast<int>(strlen(name) + 4), fixedWidth);
+  if (name_) {
+    this->name = TCOD_strdup(name_);
+    fixedWidth = std::max<int>(static_cast<int>(strlen(name_) + 4), fixedWidth);
   } else {
-    name = NULL;
+    this->name = NULL;
   }
 }
 
 void ToolBar::render() {
   con->setDefaultBackground(back);
   con->setDefaultForeground(fore);
-  TCOD_console_printf_frame(con->get_data(), x, y, w, h, true, TCOD_BKGND_SET, "%s", name);
+  if (name) {
+    TCOD_console_printf_frame(con->get_data(), x, y, w, h, true, TCOD_BKGND_SET, "%s", name);
+  }
   Container::render();
 }
 

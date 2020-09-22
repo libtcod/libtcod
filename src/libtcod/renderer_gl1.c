@@ -71,9 +71,25 @@ static void get_tex_coord(
   out[3].tex_uv[1] = (y + 1) * tex_tile_height;
 }
 /**
+    Verify that this console is not too large for this renderer.
+
+    Returns TCOD_E_ERROR if the size will be an issue, or TCOD_E_OK otherwise.
+ */
+static TCOD_Error verify_console_size(const TCOD_Console* __restrict console) {
+  if (console->w > 0x7FFE || console->h > 0x7FFE) {
+    // Render background step would fail or foreground vectors would overflow.
+    TCOD_set_errorvf("Console of size {%d, %d} is too large for the OpenGL1 renderer!", console->w, console->h);
+    return TCOD_E_ERROR;
+  }
+  return TCOD_E_OK;
+}
+/**
  *  Render the background.
  */
 static TCOD_Error render_background(struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console) {
+  if (verify_console_size(console)) {
+    return TCOD_E_ERROR;
+  }
   struct TCOD_RendererGL1* renderer = context->contextdata;
   // Setup background texture.
   glActiveTexture(GL_TEXTURE0);
@@ -96,9 +112,13 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
       renderer->background_height *= 2;
     }
     if (renderer->background_width > max_size || renderer->background_height > max_size) {
+      TCOD_set_errorvf(
+          "Tried to allocate a texture of size {%d, %d} which is above the maximum limit of %d!",
+          renderer->background_width,
+          renderer->background_height,
+          max_size);
       renderer->background_width = 0;
       renderer->background_height = 0;
-      TCOD_set_errorv("Tried to allocate a texture size above the maximum limit!");
       return TCOD_E_ERROR;
     }
     glTexImage2D(
@@ -135,7 +155,8 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
   glClientActiveTexture(GL_TEXTURE0);
 
   // Render background.
-  int16_t bg_vertex[] = {0, 0, console->w, 0, 0, console->h, console->w, console->h};
+  int16_t bg_vertex[] = {
+      0, 0, (int16_t)console->w, 0, 0, (int16_t)console->h, (int16_t)console->w, (int16_t)console->h};
   float bg_tex_w = (float)console->w / renderer->background_width;
   float bg_tex_h = (float)console->h / renderer->background_height;
   float bg_tex_coord[] = {0, 0, bg_tex_w, 0, 0, bg_tex_h, bg_tex_w, bg_tex_h};
@@ -154,6 +175,9 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
  *  Render the alpha-transparent foreground characters.
  */
 static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, const TCOD_Console* __restrict console) {
+  if (verify_console_size(console)) {
+    return TCOD_E_ERROR;
+  }
   struct TCOD_RendererGL1* renderer = context->contextdata;
   // Setup OpenGL.
   glEnable(GL_BLEND);
@@ -169,6 +193,11 @@ static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, con
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
   // Prepare buffers.
+  if (console->w * 4 > 0xFFFF) {
+    // Buffer array would be too long for the indices array to index it.
+    TCOD_set_errorvf("Console of size {%d, %d} is too wide for the OpenGL1 renderer!", console->w, console->h);
+    return TCOD_E_ERROR;
+  }
   uint16_t* indices = malloc(sizeof(*indices) * console->w * 6);
   struct ForegroundVertexBuffer* buffer = malloc(sizeof(*buffer) * console->w * 4);
   if (!indices || !buffer) {
@@ -180,7 +209,7 @@ static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, con
   glVertexPointer(2, GL_SHORT, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, vertex));
   glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, color));
   glTexCoordPointer(2, GL_FLOAT, sizeof(*buffer), (char*)buffer + offsetof(struct ForegroundVertexBuffer, tex_uv));
-  for (int x = 0; x < console->w; ++x) {
+  for (uint16_t x = 0; x < console->w; ++x) {
     indices[x * 6] = x * 4;
     indices[x * 6 + 1] = x * 4 + 1;
     indices[x * 6 + 2] = x * 4 + 2;
@@ -190,8 +219,8 @@ static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, con
   }
 
   // Render characters.
-  for (int y = 0; y < console->h; ++y) {
-    for (int x = 0; x < console->w; ++x) {
+  for (int16_t y = 0; y < console->h; ++y) {
+    for (int16_t x = 0; x < console->w; ++x) {
       int console_i = y * console->w + x;
       // Buffer vertices are in a "Z" shape.
       buffer[x * 4].vertex[0] = x;

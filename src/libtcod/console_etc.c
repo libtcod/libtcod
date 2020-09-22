@@ -541,9 +541,9 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
           int r = (int)(coef * fore.r + (1.0f - coef) * col.r);
           int g = (int)(coef * fore.g + (1.0f - coef) * col.g);
           int b = (int)(coef * fore.b + (1.0f - coef) * col.b);
-          col.r = MAX(0, MIN(r, 255));
-          col.g = MAX(0, MIN(g, 255));
-          col.b = MAX(0, MIN(b, 255));
+          col.r = (uint8_t)MAX(0, MIN(r, 255));
+          col.g = (uint8_t)MAX(0, MIN(g, 255));
+          col.b = (uint8_t)MAX(0, MIN(b, 255));
           TCOD_console_set_char_foreground(NULL, char_x[i], char_y[i], col);
         } else {
           col = TCOD_color_lerp(col, TCOD_black, coef);

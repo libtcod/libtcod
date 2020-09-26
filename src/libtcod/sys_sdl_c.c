@@ -91,7 +91,6 @@ static image_support_t image_type[] = {
 
 scale_data_t scale_data = {0};
 float scale_factor = 1.0f;
-SDL_Surface* charmap = NULL;
 #define MAX_SCALE_FACTOR 5.0f
 
 /* mouse stuff */
@@ -306,10 +305,6 @@ TCOD_Error TCOD_sys_load_player_config(void) {
       }
       if (fontNbCharVertic > 0) {
         TCOD_ctx.fontNbCharVertic = fontNbCharVertic;
-      }
-      if (charmap) {
-        SDL_FreeSurface(charmap);
-        charmap = NULL;
       }
       TCOD_Error err = TCOD_console_set_custom_font(
           font,
@@ -1323,20 +1318,16 @@ SDL_Surface* TCOD_sys_create_bitmap(int width, int height, TCOD_color_t* buf) {
   SDL_PixelFormat fmt;
   SDL_Surface* bitmap;
   memset(&fmt, 0, sizeof(SDL_PixelFormat));
-  if (charmap != NULL) {
-    fmt = *charmap->format;
+  fmt.BitsPerPixel = 24;
+  fmt.Amask = 0;
+  if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
+    fmt.Rmask = 0x0000FF;
+    fmt.Gmask = 0x00FF00;
+    fmt.Bmask = 0xFF0000;
   } else {
-    fmt.BitsPerPixel = 24;
-    fmt.Amask = 0;
-    if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
-      fmt.Rmask = 0x0000FF;
-      fmt.Gmask = 0x00FF00;
-      fmt.Bmask = 0xFF0000;
-    } else {
-      fmt.Rmask = 0xFF0000;
-      fmt.Gmask = 0x00FF00;
-      fmt.Bmask = 0x0000FF;
-    }
+    fmt.Rmask = 0xFF0000;
+    fmt.Gmask = 0x00FF00;
+    fmt.Bmask = 0x0000FF;
   }
   bitmap =
       SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, fmt.BitsPerPixel, fmt.Rmask, fmt.Gmask, fmt.Bmask, fmt.Amask);

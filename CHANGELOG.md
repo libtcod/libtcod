@@ -20,6 +20,8 @@ since `1.7.0`.
 
 ### Fixed
 - `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.
+- Fixed images only saving as a red channel.
+  [#75](https://github.com/libtcod/libtcod/pull/75)
 
 ## [1.16.0-alpha.12] - 2020-05-22
 ### Changed

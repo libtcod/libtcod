@@ -1313,40 +1313,6 @@ void TCOD_sys_force_fullscreen_resolution(int width, int height) {
   TCOD_ctx.fullscreen_height = height;
 }
 
-SDL_Surface* TCOD_sys_create_bitmap(int width, int height, TCOD_color_t* buf) {
-  int x, y;
-  SDL_PixelFormat fmt;
-  SDL_Surface* bitmap;
-  memset(&fmt, 0, sizeof(SDL_PixelFormat));
-  fmt.BitsPerPixel = 24;
-  fmt.Amask = 0;
-  if (SDL_BYTEORDER == SDL_LIL_ENDIAN) {
-    fmt.Rmask = 0x0000FF;
-    fmt.Gmask = 0x00FF00;
-    fmt.Bmask = 0xFF0000;
-  } else {
-    fmt.Rmask = 0xFF0000;
-    fmt.Gmask = 0x00FF00;
-    fmt.Bmask = 0x0000FF;
-  }
-  bitmap =
-      SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, fmt.BitsPerPixel, fmt.Rmask, fmt.Gmask, fmt.Bmask, fmt.Amask);
-  for (x = 0; x < width; x++) {
-    for (y = 0; y < height; y++) {
-      SDL_Rect rect;
-      uint32_t col = SDL_MapRGB(bitmap->format, buf[x + y * width].r, buf[x + y * width].g, buf[x + y * width].b);
-      rect.x = x;
-      rect.y = y;
-      rect.w = 1;
-      rect.h = 1;
-      SDL_FillRect(bitmap, &rect, col);
-    }
-  }
-  return bitmap;
-}
-
-void TCOD_sys_delete_bitmap(SDL_Surface* bitmap) { SDL_FreeSurface(bitmap); }
-
 void TCOD_sys_set_fps(int val) {
   if (val == 0)
     min_frame_length = 0;

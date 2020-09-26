@@ -512,8 +512,6 @@ void sync_time_(void);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
 void TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char* filename);
-struct SDL_Surface* TCOD_sys_create_bitmap(int width, int height, TCOD_color_t* buf);
-void TCOD_sys_delete_bitmap(struct SDL_Surface* bitmap);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
 TCODLIB_CAPI TCOD_Error TCOD_sys_load_player_config(void);

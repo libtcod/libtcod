@@ -460,16 +460,19 @@ void TCOD_image_save(const TCOD_Image* image, const char* filename) {
   if (!image) {
     return;
   }
-  struct SDL_Surface* bitmap = NULL;
-  bool must_free = false;
-  bitmap = TCOD_sys_create_bitmap(image->mipmaps[0].width, image->mipmaps[0].height, image->mipmaps[0].buf);
-  must_free = true;
-  if (bitmap) {
-    TCOD_sys_save_bitmap(bitmap, filename);
-    if (must_free) {
-      TCOD_sys_delete_bitmap(bitmap);
-    }
+  struct SDL_Surface* bitmap = SDL_CreateRGBSurfaceWithFormatFrom(
+      image->mipmaps[0].buf,
+      image->mipmaps[0].width,
+      image->mipmaps[0].height,
+      24,
+      (int)sizeof(image->mipmaps[0].buf[0]) * image->mipmaps[0].width,
+      SDL_PIXELFORMAT_RGB24);
+  if (!bitmap) {
+    TCOD_set_errorvf("SDL error: %s", SDL_GetError());
+    return;
   }
+  TCOD_sys_save_bitmap(bitmap, filename);
+  SDL_FreeSurface(bitmap);
 }
 
 void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color) {

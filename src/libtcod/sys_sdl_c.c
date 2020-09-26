@@ -1343,7 +1343,7 @@ SDL_Surface* TCOD_sys_create_bitmap(int width, int height, TCOD_color_t* buf) {
   for (x = 0; x < width; x++) {
     for (y = 0; y < height; y++) {
       SDL_Rect rect;
-      uint32_t col = SDL_MapRGB(&fmt, buf[x + y * width].r, buf[x + y * width].g, buf[x + y * width].b);
+      uint32_t col = SDL_MapRGB(bitmap->format, buf[x + y * width].r, buf[x + y * width].g, buf[x + y * width].b);
       rect.x = x;
       rect.y = y;
       rect.w = 1;

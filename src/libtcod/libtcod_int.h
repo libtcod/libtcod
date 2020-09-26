@@ -511,7 +511,7 @@ unsigned char* TCOD_console_forward(unsigned char* s, int l);
 void sync_time_(void);
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
-void TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char* filename);
+TCOD_Error TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char* filename);
 void TCOD_sys_save_fps(void);
 void TCOD_sys_restore_fps(void);
 TCODLIB_CAPI TCOD_Error TCOD_sys_load_player_config(void);

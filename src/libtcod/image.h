@@ -34,6 +34,7 @@
 
 #include "color.h"
 #include "console_types.h"
+#include "error.h"
 #include "portability.h"
 
 #ifdef __cplusplus
@@ -74,7 +75,16 @@ TCODLIB_API void TCOD_image_hflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_rotate90(TCOD_Image* image, int numRotations);
 TCODLIB_API void TCOD_image_vflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int neww, int newh);
-TCODLIB_API void TCOD_image_save(const TCOD_Image* image, const char* filename);
+/**
+    Save an image to a PNG or BMP file.
+
+    Returns a negative error code on failure.  Check TCOD_get_error for details.
+    \rst
+    .. versionchanged:: 1.16
+        Now returns TCOD_Error.
+    \endrst
+ */
+TCODLIB_API TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename);
 TCODLIB_API void TCOD_image_get_size(const TCOD_Image* image, int* w, int* h);
 TCODLIB_API TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y);
 TCODLIB_API int TCOD_image_get_alpha(const TCOD_Image* image, int x, int y);

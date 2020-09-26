@@ -456,9 +456,10 @@ void TCOD_image_refresh_console(TCOD_Image* __restrict image, const TCOD_Console
   }
 }
 
-void TCOD_image_save(const TCOD_Image* image, const char* filename) {
+TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename) {
   if (!image) {
-    return;
+    TCOD_set_errorv("Image parameter must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   struct SDL_Surface* bitmap = SDL_CreateRGBSurfaceWithFormatFrom(
       image->mipmaps[0].buf,
@@ -468,11 +469,11 @@ void TCOD_image_save(const TCOD_Image* image, const char* filename) {
       (int)sizeof(image->mipmaps[0].buf[0]) * image->mipmaps[0].width,
       SDL_PIXELFORMAT_RGB24);
   if (!bitmap) {
-    TCOD_set_errorvf("SDL error: %s", SDL_GetError());
-    return;
+    return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
   }
-  TCOD_sys_save_bitmap(bitmap, filename);
+  TCOD_Error err = TCOD_sys_save_bitmap(bitmap, filename);
   SDL_FreeSurface(bitmap);
+  return err;
 }
 
 void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color) {

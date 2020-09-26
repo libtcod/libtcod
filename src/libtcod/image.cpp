@@ -31,6 +31,8 @@
  */
 #include "image.hpp"
 
+#include <stdexcept>
+
 TCODImage::TCODImage(const char* filename) : deleteData(true) { data = TCOD_image_load(filename); }
 
 TCODImage::TCODImage(int width, int height) : deleteData(true) { data = TCOD_image_new(width, height); }
@@ -74,7 +76,11 @@ void TCODImage::blitRect(TCODConsole* console, int x, int y, int w, int h, TCOD_
   TCOD_image_blit_rect(data, console->get_data(), x, y, w, h, bkgnd_flag);
 }
 
-void TCODImage::save(const char* filename) const { TCOD_image_save(data, filename); }
+void TCODImage::save(const char* filename) const {
+  if (TCOD_image_save(data, filename) < 0) {
+    throw std::runtime_error(TCOD_get_error());
+  }
+}
 
 void TCODImage::setKeyColor(const TCODColor keyColor) {
   TCOD_color_t ccol = {keyColor.r, keyColor.g, keyColor.b};

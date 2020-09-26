@@ -71,16 +71,16 @@ typedef struct {
 /* image support stuff */
 bool TCOD_sys_check_bmp(const char* filename);
 SDL_Surface* TCOD_sys_read_bmp(const char* filename);
-void TCOD_sys_write_bmp(SDL_Surface* surf, const char* filename);
+TCOD_Error TCOD_sys_write_bmp(SDL_Surface* surf, const char* filename);
 bool TCOD_sys_check_png(const char* filename);
 SDL_Surface* TCOD_sys_read_png(const char* filename);
-void TCOD_sys_write_png(SDL_Surface* surf, const char* filename);
+TCOD_Error TCOD_sys_write_png(SDL_Surface* surf, const char* filename);
 
 typedef struct {
   const char* extension;
   bool (*check_type)(const char* filename);
   SDL_Surface* (*read)(const char* filename);
-  void (*write)(SDL_Surface* surf, const char* filename);
+  TCOD_Error (*write)(SDL_Surface* surf, const char* filename);
 } image_support_t;
 
 static image_support_t image_type[] = {
@@ -359,7 +359,7 @@ static char* TCOD_strcasestr(const char* haystack, const char* needle) {
   return 0;
 }
 
-void TCOD_sys_save_bitmap(SDL_Surface* bitmap, const char* filename) {
+TCOD_Error TCOD_sys_save_bitmap(SDL_Surface* bitmap, const char* filename) {
   const image_support_t* img = image_type;
   while (img->extension != NULL && TCOD_strcasestr(filename, img->extension) == NULL) {
     ++img;
@@ -367,7 +367,7 @@ void TCOD_sys_save_bitmap(SDL_Surface* bitmap, const char* filename) {
   if (img->extension == NULL || img->write == NULL) {
     img = image_type;  // default to bmp
   }
-  img->write(bitmap, filename);
+  return img->write(bitmap, filename);
 }
 
 void TCOD_sys_save_screenshot(const char* filename) {

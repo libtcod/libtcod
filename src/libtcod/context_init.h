@@ -31,10 +31,11 @@
  */
 #ifndef LIBTCOD_CONTEXT_INIT_H_
 #define LIBTCOD_CONTEXT_INIT_H_
+#include <stdbool.h>
+
 #include "config.h"
 #include "context.h"
 #include "error.h"
-#include "stdbool.h"
 #include "tileset.h"
 
 #ifdef __cplusplus
@@ -63,6 +64,8 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
     bool vsync,
     int sdl_window_flags,
     const char* window_title,
+    int argc,
+    const char* const* argv,
     TCOD_Context** out);
 /**
     Create a new context with a window of the given size.
@@ -92,6 +95,11 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
 
     `window_title` is the title of the opened window.
 
+    `argc` and `argv` are optional CLI parameters.
+    You can pass `0` and `NULL` repecfuly to ignore them.
+    If user attention is required then TCOD_E_COMMAND_OUT will be returned and
+    on this error code you should print TCOD_get_error to stdout and exit.
+
     `out` is the output for the `TCOD_Context`, must not be NULL.
 
     Returns a negative error code on failure, `out` will unlikely be set in this
@@ -111,6 +119,8 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(
     bool vsync,
     int sdl_window_flags,
     const char* window_title,
+    int argc,
+    const char* const* argv,
     TCOD_Context** out);
 #ifdef __cplusplus
 }  // extern "C"

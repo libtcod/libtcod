@@ -18,6 +18,8 @@ since `1.7.0`.
   zero.
 - Image loading now returns an error code.
 - Added window `x, y` coordinates when creating contexts.
+- Added `argc` and `argv` to contexts so that they can optionaly support CLI
+  commands.
 
 ### Fixed
 - `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.

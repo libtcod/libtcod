@@ -17,6 +17,7 @@ since `1.7.0`.
 - Console blits now ignore alpha compositing which would result in division by
   zero.
 - Image loading now returns an error code.
+- Added window `x, y` coordinates when creating contexts.
 
 ### Fixed
 - `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.

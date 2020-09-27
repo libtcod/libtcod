@@ -131,6 +131,8 @@ static void TCOD_renderer_gl_common_uninit(struct TCOD_RendererGLCommon* common)
 }
 TCOD_NODISCARD
 static TCOD_Error TCOD_renderer_gl_common_init(
+    int x,
+    int y,
     int pixel_width,
     int pixel_height,
     const char* title,
@@ -158,13 +160,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, gl_major);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, gl_minor);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, gl_profile);
-  renderer->window = SDL_CreateWindow(
-      title,
-      SDL_WINDOWPOS_UNDEFINED,
-      SDL_WINDOWPOS_UNDEFINED,
-      pixel_width,
-      pixel_height,
-      window_flags | SDL_WINDOW_OPENGL);
+  renderer->window = SDL_CreateWindow(title, x, y, pixel_width, pixel_height, window_flags | SDL_WINDOW_OPENGL);
   if (!renderer->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
     TCOD_renderer_gl_common_uninit(renderer);

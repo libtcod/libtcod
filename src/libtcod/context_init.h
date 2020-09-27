@@ -67,8 +67,12 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
 /**
     Create a new context with a window of the given size.
 
-    Same as `TCOD_context_new_terminal`, but the following parameters have
+    Similar to `TCOD_context_new_terminal`, but the following parameters have
     different effects:
+
+    `x` and `y` is the starting position of the window.  These are SDL
+    parameters so values like `SDL_WINDOWPOS_UNDEFINED` and
+    `SDL_WINDOWPOS_CENTERED` are acceptable.
 
     `pixel_width` and `pixel_height` are the desired size of the window in
     pixels.
@@ -98,6 +102,8 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
     \endrst
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(
+    int x,
+    int y,
     int pixel_width,
     int pixel_height,
     int renderer_type,

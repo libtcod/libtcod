@@ -112,9 +112,21 @@ TCOD_Error TCOD_context_new_terminal(
   }
   int width = columns * tileset->tile_width;
   int height = rows * tileset->tile_height;
-  return TCOD_context_new_window(width, height, renderer_type, tileset, vsync, sdl_window_flags, window_title, out);
+  return TCOD_context_new_window(
+      SDL_WINDOWPOS_UNDEFINED,
+      SDL_WINDOWPOS_UNDEFINED,
+      width,
+      height,
+      renderer_type,
+      tileset,
+      vsync,
+      sdl_window_flags,
+      window_title,
+      out);
 }
 TCOD_Error TCOD_context_new_window(
+    int x,
+    int y,
     int pixel_width,
     int pixel_height,
     int renderer_type,
@@ -142,22 +154,22 @@ TCOD_Error TCOD_context_new_window(
   switch (renderer_type) {
     case TCOD_RENDERER_SDL:
       renderer_flags |= SDL_RENDERER_SOFTWARE;
-      *out =
-          TCOD_renderer_init_sdl2(pixel_width, pixel_height, window_title, sdl_window_flags, renderer_flags, tileset);
+      *out = TCOD_renderer_init_sdl2(
+          x, y, pixel_width, pixel_height, window_title, sdl_window_flags, renderer_flags, tileset);
       if (!*out) {
         return TCOD_E_ERROR;
       }
       return TCOD_E_OK;
     case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
-      *out = TCOD_renderer_new_gl2(pixel_width, pixel_height, window_title, sdl_window_flags, vsync, tileset);
+      *out = TCOD_renderer_new_gl2(x, y, pixel_width, pixel_height, window_title, sdl_window_flags, vsync, tileset);
       if (*out) {
         return err;
       }
       err = TCOD_E_WARN;
       //@fallthrough@
     case TCOD_RENDERER_OPENGL:
-      *out = TCOD_renderer_init_gl1(pixel_width, pixel_height, window_title, sdl_window_flags, vsync, tileset);
+      *out = TCOD_renderer_init_gl1(x, y, pixel_width, pixel_height, window_title, sdl_window_flags, vsync, tileset);
       if (*out) {
         return err;
       }
@@ -165,8 +177,8 @@ TCOD_Error TCOD_context_new_window(
       //@fallthrough@
     default:
     case TCOD_RENDERER_SDL2:
-      *out =
-          TCOD_renderer_init_sdl2(pixel_width, pixel_height, window_title, sdl_window_flags, renderer_flags, tileset);
+      *out = TCOD_renderer_init_sdl2(
+          x, y, pixel_width, pixel_height, window_title, sdl_window_flags, renderer_flags, tileset);
       if (!*out) {
         return TCOD_E_ERROR;
       }

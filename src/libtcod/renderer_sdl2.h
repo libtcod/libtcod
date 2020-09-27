@@ -40,7 +40,6 @@
 #include "error.h"
 #include "tileset.h"
 
-
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -87,7 +86,14 @@ extern "C" {
     Return a libtcod rendering context using an SDL2 renderer.
  */
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_sdl2(
-    int width, int height, const char* title, int window_flags, int renderer_flags, struct TCOD_Tileset* tileset);
+    int x,
+    int y,
+    int width,
+    int height,
+    const char* title,
+    int window_flags,
+    int renderer_flags,
+    struct TCOD_Tileset* tileset);
 /**
     Return a new SDL2 atlas created from a tileset for an SDL2 renderer.
 

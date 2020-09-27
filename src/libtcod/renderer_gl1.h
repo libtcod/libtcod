@@ -47,6 +47,6 @@ struct TCOD_RendererGL1 {
 };
 
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
-    int width, int height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset);
+    int x, int y, int width, int height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset);
 
 #endif  // LIBTCOD_RENDERER_GL1_H_

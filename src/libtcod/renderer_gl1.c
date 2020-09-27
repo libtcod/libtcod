@@ -320,7 +320,14 @@ void gl1_destructor(struct TCOD_Context* __restrict context) {
   free(renderer);
 }
 TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
-    int pixel_width, int pixel_height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset) {
+    int x,
+    int y,
+    int pixel_width,
+    int pixel_height,
+    const char* title,
+    int window_flags,
+    bool vsync,
+    struct TCOD_Tileset* tileset) {
   struct TCOD_Context* context = TCOD_context_new_();
   if (!context) {
     return NULL;
@@ -334,7 +341,7 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
   context->destructor_ = gl1_destructor;
   context->contextdata = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
-      pixel_width, pixel_height, title, window_flags, vsync, tileset, 1, 1, SDL_GL_CONTEXT_PROFILE_CORE, context);
+      x, y, pixel_width, pixel_height, title, window_flags, vsync, tileset, 1, 1, SDL_GL_CONTEXT_PROFILE_CORE, context);
   if (err < 0) {
     TCOD_context_delete(context);
     return NULL;

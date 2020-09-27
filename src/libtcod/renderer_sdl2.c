@@ -648,6 +648,8 @@ static void TCOD_sdl2_debug_video_drivers(int log_length, char* log_out) {
   }
 }
 struct TCOD_Context* TCOD_renderer_init_sdl2(
+    int x,
+    int y,
     int pixel_width,
     int pixel_height,
     const char* title,
@@ -692,8 +694,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->cb_recommended_console_size_ = sdl2_recommended_console_size;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
-  sdl2_data->window = SDL_CreateWindow(
-      title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, pixel_width, pixel_height, window_flags);
+  sdl2_data->window = SDL_CreateWindow(title, x, y, pixel_width, pixel_height, window_flags);
   if (!sdl2_data->window) {
     TCOD_set_errorvf("Could not create SDL window:\n%s", SDL_GetError());
     TCOD_context_delete(context);

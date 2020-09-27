@@ -62,23 +62,32 @@ static TCOD_Error ensure_tileset(TCOD_Tileset** tileset) {
   return TCOD_E_OK;
 }
 /**
+    Return the renderer from a string object.  Returns -1 on failure.
+ */
+static int get_renderer_from_str(const char* string) {
+  if (!string) {
+    return -1;
+  } else if (strcmp(string, "sdl") == 0) {
+    return TCOD_RENDERER_SDL;
+  } else if (strcmp(string, "opengl") == 0) {
+    return TCOD_RENDERER_OPENGL;
+  } else if (strcmp(string, "glsl") == 0) {
+    return TCOD_RENDERER_GLSL;
+  } else if (strcmp(string, "sdl2") == 0) {
+    return TCOD_RENDERER_SDL2;
+  } else if (strcmp(string, "opengl2") == 0) {
+    return TCOD_RENDERER_OPENGL2;
+  } else {
+    return -1;
+  }
+}
+/**
  *  Set `renderer` from the TCOD_RENDERER environment variable if it exists.
  */
 static void get_env_renderer(int* renderer_type) {
   const char* value = getenv("TCOD_RENDERER");
-  if (!value) {
-    return;
-  }
-  if (strcmp(value, "sdl")) {
-    *renderer_type = TCOD_RENDERER_SDL;
-  } else if (strcmp(value, "opengl")) {
-    *renderer_type = TCOD_RENDERER_OPENGL;
-  } else if (strcmp(value, "glsl")) {
-    *renderer_type = TCOD_RENDERER_GLSL;
-  } else if (strcmp(value, "sdl2")) {
-    *renderer_type = TCOD_RENDERER_SDL2;
-  } else if (strcmp(value, "opengl2")) {
-    *renderer_type = TCOD_RENDERER_OPENGL2;
+  if (get_renderer_from_str(value) >= 0) {
+    *renderer_type = get_renderer_from_str(value);
   }
 }
 /**
@@ -89,9 +98,9 @@ static void get_env_vsync(bool* vsync) {
   if (!value) {
     return;
   }
-  if (strcmp(value, "0")) {
+  if (strcmp(value, "0") == 0) {
     *vsync = 0;
-  } else if (strcmp(value, "1")) {
+  } else if (strcmp(value, "1") == 0) {
     *vsync = 1;
   }
 }

@@ -1339,26 +1339,12 @@ TCOD_Error TCOD_console_printn_frame(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     bool empty) {
-  const int left = x;
-  const int right = x + width - 1;
-  const int top = y;
-  const int bottom = y + height - 1;
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  TCOD_console_put_rgb(con, left, top, 0x250C, fg, bg, flag);                     // ┌
-  TCOD_console_put_rgb(con, right, top, 0x2510, fg, bg, flag);                    // ┐
-  TCOD_console_put_rgb(con, left, bottom, 0x2514, fg, bg, flag);                  // └
-  TCOD_console_put_rgb(con, right, bottom, 0x2518, fg, bg, flag);                 // ┘
-  TCOD_console_draw_rect_rgb(con, x + 1, y, width - 2, 1, 0x2500, fg, bg, flag);  // ─
-  TCOD_console_draw_rect_rgb(con, x + 1, y + height - 1, width - 2, 1, 0x2500, fg, bg, flag);
-  TCOD_console_draw_rect_rgb(con, x, y + 1, 1, height - 2, 0x2502, fg, bg, flag);  // │
-  TCOD_console_draw_rect_rgb(con, x + width - 1, y + 1, 1, height - 2, 0x2502, fg, bg, flag);
-  if (empty) {
-    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width - 2, height - 2, 0x20, fg, bg, flag);
-  }
+  TCOD_console_draw_frame_rgb(con, x, y, width, height, NULL, fg, bg, flag, empty);
   if (n > 0 && title) {
     char* tmp_string = malloc(n + 2);
     if (!tmp_string) {

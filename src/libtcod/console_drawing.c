@@ -122,3 +122,48 @@ void TCOD_console_vline(TCOD_Console* console, int x, int y, int l, TCOD_bkgnd_f
   }
   TCOD_console_draw_rect_rgb(console, x, y, 1, l, 0x2502, &console->fore, &console->back, flag);  // │
 }
+/**
+    Single pipe frame decotraion:
+
+        ┌─┐
+        │ │
+        └─┘
+ */
+static const int TCOD_FRAME_SINGLE_PIPE[9] = {0x250C, 0x2500, 0x2510, 0x2502, 0x20, 0x2502, 0x2514, 0x2500, 0x2518};
+
+TCOD_Error TCOD_console_draw_frame_rgb(
+    struct TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const int* __restrict decoration,
+    const TCOD_ColorRGB* __restrict fg,
+    const TCOD_ColorRGB* __restrict bg,
+    TCOD_bkgnd_flag_t flag,
+    bool clear) {
+  con = TCOD_console_validate_(con);
+  if (!con) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!decoration) {
+    decoration = TCOD_FRAME_SINGLE_PIPE;
+  }
+  const int left = x;
+  const int right = x + width - 1;
+  const int top = y;
+  const int bottom = y + height - 1;
+  TCOD_console_put_rgb(con, left, top, decoration[0], fg, bg, flag);                      // Top-left.
+  TCOD_console_draw_rect_rgb(con, x + 1, y, width - 2, 1, decoration[1], fg, bg, flag);   // Top.
+  TCOD_console_put_rgb(con, right, top, decoration[2], fg, bg, flag);                     // Top-right.
+  TCOD_console_draw_rect_rgb(con, x, y + 1, 1, height - 2, decoration[3], fg, bg, flag);  // Left.
+  if (clear) {
+    TCOD_console_draw_rect_rgb(con, x + 1, y + 1, width - 2, height - 2, decoration[4], fg, bg, flag);  // Center fill.
+  }
+  TCOD_console_draw_rect_rgb(con, right, y + 1, 1, height - 2, decoration[5], fg, bg, flag);  // Right.
+  TCOD_console_put_rgb(con, left, bottom, decoration[6], fg, bg, flag);                       // Bottom-left.
+  TCOD_console_draw_rect_rgb(con, x + 1, bottom, width - 2, 1, decoration[7], fg, bg, flag);  // Bottom.
+  TCOD_console_put_rgb(con, right, bottom, decoration[8], fg, bg, flag);                      // Bottom-right.
+  return TCOD_E_OK;
+}

@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <SDL.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -150,96 +151,7 @@ static DWORD CountSetBits(ULONG_PTR bitMask) {
 }
 #endif
 
-int TCOD_sys_get_num_cores(void) {
-#ifdef TCOD_WINDOWS
-  /* what a crap !!! works only on xp sp3 & vista */
-  typedef enum _PROCESSOR_CACHE_TYPE { CacheUnified, CacheInstruction, CacheData, CacheTrace } PROCESSOR_CACHE_TYPE;
-
-  typedef struct _CACHE_DESCRIPTOR {
-    BYTE Level;
-    BYTE Associativity;
-    WORD LineSize;
-    DWORD Size;
-    PROCESSOR_CACHE_TYPE Type;
-  } CACHE_DESCRIPTOR;
-  typedef enum _LOGICAL_PROCESSOR_RELATIONSHIP {
-    RelationProcessorCore,
-    RelationNumaNode,
-    RelationCache,
-    RelationProcessorPackage
-  } LOGICAL_PROCESSOR_RELATIONSHIP;
-
-  typedef struct _SYSTEM_LOGICAL_PROCESSOR_INFORMATION {
-    ULONG_PTR ProcessorMask;
-    LOGICAL_PROCESSOR_RELATIONSHIP Relationship;
-    union {
-      struct {
-        BYTE Flags;
-      } ProcessorCore;
-      struct {
-        DWORD NodeNumber;
-      } NumaNode;
-      CACHE_DESCRIPTOR Cache;
-      ULONGLONG Reserved[2];
-    } Union;
-  } SYSTEM_LOGICAL_PROCESSOR_INFORMATION, *PSYSTEM_LOGICAL_PROCESSOR_INFORMATION;
-  typedef BOOL(WINAPI * LPFN_GLPI)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
-
-  LPFN_GLPI glpi;
-  BOOL done = FALSE;
-  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = NULL;
-  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = NULL;
-  DWORD returnLength = 0;
-  DWORD logicalProcessorCount = 0;
-  DWORD byteOffset = 0;
-
-  glpi = (LPFN_GLPI)GetProcAddress(GetModuleHandle(TEXT("kernel32")), "GetLogicalProcessorInformation");
-  if (!glpi) {
-    return 1;
-  }
-
-  while (!done) {
-    DWORD rc = glpi(buffer, &returnLength);
-
-    if (FALSE == rc) {
-      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-        if (buffer) free(buffer);
-
-        buffer = malloc(returnLength);
-
-        if (NULL == buffer) {
-          return 1;
-        }
-      } else {
-        return 1;
-      }
-    } else {
-      done = TRUE;
-    }
-  }
-
-  ptr = buffer;
-
-  while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) {
-    switch (ptr->Relationship) {
-      case RelationProcessorCore:
-        /* A hyperthreaded core supplies more than one logical processor. */
-        logicalProcessorCount += CountSetBits(ptr->ProcessorMask);
-        break;
-      default:
-        break;
-    }
-    byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
-    ptr++;
-  }
-
-  free(buffer);
-
-  return logicalProcessorCount;
-#else
-  return sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-}
+int TCOD_sys_get_num_cores(void) { return SDL_GetCPUCount(); }
 
 TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data) {
 #ifdef TCOD_WINDOWS

@@ -31,12 +31,14 @@
  */
 #include "tileset_truetype.h"
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../vendor/stb_truetype.h"
 #include "error.h"
 #include "globals.h"
-#include "stdint.h"
-#include "stdio.h"
-#include "stdlib.h"
+
 // You can look here for a reference on glyph metrics:
 // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
 /**

@@ -32,8 +32,10 @@
 #ifndef LIBTCOD_CONTEXT_VIEWPORT_H_
 #define LIBTCOD_CONTEXT_VIEWPORT_H_
 
+#include <stdbool.h>
+
 #include "color.h"
-#include "stdbool.h"
+
 /**
     Viewport options for the rendering context.
     \rst

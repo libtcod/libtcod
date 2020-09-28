@@ -32,13 +32,14 @@
 #include "console_init.h"
 
 #include <SDL.h>
+#include <stdbool.h>
+#include <string.h>
 
 #include "console.h"
 #include "console_etc.h"
 #include "context_init.h"
 #include "libtcod_int.h"
-#include "stdbool.h"
-#include "string.h"
+
 TCOD_Error TCOD_console_init_root_(
     int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync) {
   if (w < 0 || h < 0) {

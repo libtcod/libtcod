@@ -32,7 +32,7 @@
 #ifndef TCOD_CONSOLE_H_
 #define TCOD_CONSOLE_H_
 
-#include "stdbool.h"
+#include <stdbool.h>
 #ifdef __cplusplus
 #include <array>
 #include <memory>

@@ -31,9 +31,11 @@
  */
 #include "context_viewport.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "error.h"
-#include "stdlib.h"
-#include "string.h"
+
 
 const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_ = {
     .keep_aspect = false,

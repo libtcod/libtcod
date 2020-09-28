@@ -31,8 +31,8 @@
  */
 #include "context.h"
 
-#include "math.h"
-#include "stdlib.h"
+#include <math.h>
+#include <stdlib.h>
 
 struct TCOD_Context* TCOD_context_new_(void) {
   struct TCOD_Context* renderer = calloc(sizeof(*renderer), 1);

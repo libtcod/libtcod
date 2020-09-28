@@ -31,11 +31,13 @@
  */
 #include "tileset_fallback.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "error.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
 #include "tileset_truetype.h"
+
 TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) {
 #if defined(_WIN32)  // Windows.
   const char* sys_root = getenv("SystemRoot");

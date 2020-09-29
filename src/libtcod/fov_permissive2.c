@@ -46,14 +46,8 @@ typedef struct {
   int xi, yi, xf, yf;
 } line_t;
 
-/* Defines the parameters of the permissiveness */
-/* Derived values defining the actual part of the square used as a range. */
-static int offset;
-static int limit;
-
 typedef struct _viewbump_t {
   int x, y;
-  int refcount;
   struct _viewbump_t* parent;
 } viewbump_t;
 
@@ -64,10 +58,10 @@ typedef struct {
   viewbump_t* steep_bump;
 } view_t;
 
-static view_t** current_view = NULL;
-static view_t* views = NULL;
-static viewbump_t* bumps = NULL;
-static int bumpidx = 0;
+typedef struct {
+  int count;         // Current number of elements in this container.
+  viewbump_t* data;  // This array is preallocated.
+} viewbump_container_t;
 
 static int RELATIVE_SLOPE(const line_t* line, int x, int y) {
   return (line->yf - line->yi) * (line->xf - x) - (line->xf - line->xi) * (line->yf - y);
@@ -81,21 +75,20 @@ static bool LINE_COLINEAR(const line_t* line1, const line_t* line2) {
   return COLINEAR(line1, line2->xi, line2->yi) && COLINEAR(line1, line2->xf, line2->yf);
 }
 
-static bool is_blocked(
-    struct TCOD_Map* map, view_t* view, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {
+static bool is_blocked(struct TCOD_Map* map, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {
   int posx = x * dx / STEP_SIZE + startX;
   int posy = y * dy / STEP_SIZE + startY;
-  int offset = posx + (posy)*map->width;
-  bool blocked = !map->cells[offset].transparent;
-  if (!blocked || light_walls) map->cells[offset].fov = 1;
+  int cells_offset = posx + (posy)*map->width;
+  bool blocked = !map->cells[cells_offset].transparent;
+  if (!blocked || light_walls) map->cells[cells_offset].fov = 1;
   return blocked;
 }
 
-static void add_shallow_bump(int x, int y, view_t* view) {
+static void add_shallow_bump(int x, int y, view_t* view, viewbump_container_t* bumps) {
   viewbump_t *shallow, *curbump;
   view->shallow_line.xf = x;
   view->shallow_line.yf = y;
-  shallow = &bumps[bumpidx++];
+  shallow = &bumps->data[bumps->count++];
   shallow->x = x;
   shallow->y = y;
   shallow->parent = view->shallow_bump;
@@ -110,11 +103,11 @@ static void add_shallow_bump(int x, int y, view_t* view) {
   }
 }
 
-static void add_steep_bump(int x, int y, view_t* view) {
+static void add_steep_bump(int x, int y, view_t* view, viewbump_container_t* bumps) {
   viewbump_t *steep, *curbump;
   view->steep_line.xf = x;
   view->steep_line.yf = y;
-  steep = &bumps[bumpidx++];
+  steep = &bumps->data[bumps->count++];
   steep->x = x;
   steep->y = y;
   steep->parent = view->steep_bump;
@@ -129,7 +122,7 @@ static void add_steep_bump(int x, int y, view_t* view) {
   }
 }
 
-static bool check_view(TCOD_list_t active_views, view_t** it) {
+static bool check_view(TCOD_list_t active_views, view_t** it, int offset, int limit) {
   view_t* view = *it;
   line_t* shallow_line = &view->shallow_line;
   line_t* steep_line = &view->steep_line;
@@ -152,58 +145,75 @@ static void visit_coords(
     int dx,
     int dy,
     TCOD_list_t active_views,
-    bool light_walls) {
+    view_t*** current_view,
+    bool light_walls,
+    int offset,
+    int limit,
+    view_t* views,
+    viewbump_container_t* bumps) {
   /* top left */
   int tlx = x, tly = y + STEP_SIZE;
   /* bottom right */
   int brx = x + STEP_SIZE, bry = y;
   view_t* view = NULL;
-  while (current_view != (view_t**)TCOD_list_end(active_views)) {
-    view = *current_view;
+  while (*current_view != (view_t**)TCOD_list_end(active_views)) {
+    view = **current_view;
     if (!BELOW_OR_COLINEAR(&view->steep_line, brx, bry)) {
       break;
     }
-    current_view++;
+    (*current_view)++;
   }
-  if (current_view == (view_t**)TCOD_list_end(active_views) || ABOVE_OR_COLINEAR(&view->shallow_line, tlx, tly)) {
+  if (*current_view == (view_t**)TCOD_list_end(active_views) || ABOVE_OR_COLINEAR(&view->shallow_line, tlx, tly)) {
     /* no more active view */
     return;
   }
-  if (!is_blocked(m, view, startX, startY, x, y, dx, dy, light_walls)) return;
+  if (!is_blocked(m, startX, startY, x, y, dx, dy, light_walls)) return;
   if (ABOVE(&view->shallow_line, brx, bry) && BELOW(&view->steep_line, tlx, tly)) {
     /* view blocked */
     /* slow ! */
-    TCOD_list_remove_iterator(active_views, (void**)current_view);
+    TCOD_list_remove_iterator(active_views, (void**)*current_view);
   } else if (ABOVE(&view->shallow_line, brx, bry)) {
     /* shallow bump */
-    add_shallow_bump(tlx, tly, view);
-    check_view(active_views, current_view);
+    add_shallow_bump(tlx, tly, view, bumps);
+    check_view(active_views, *current_view, offset, limit);
   } else if (BELOW(&view->steep_line, tlx, tly)) {
     /* steep bump */
-    add_steep_bump(brx, bry, view);
-    check_view(active_views, current_view);
+    add_steep_bump(brx, bry, view, bumps);
+    check_view(active_views, *current_view, offset, limit);
   } else {
     /* view split */
-    int offset = startX + x * dx / STEP_SIZE + (startY + y * dy / STEP_SIZE) * m->width;
-    view_t* shallower_view = &views[offset];
-    int view_index = (int)(current_view - (view_t**)TCOD_list_begin(active_views));
+    int views_offset = startX + x * dx / STEP_SIZE + (startY + y * dy / STEP_SIZE) * m->width;
+    view_t* shallower_view = &views[views_offset];
+    int view_index = (int)(*current_view - (view_t**)TCOD_list_begin(active_views));
     view_t** shallower_view_it;
     view_t** steeper_view_it;
-    *shallower_view = **current_view;
+    *shallower_view = ***current_view;
     /* slow ! */
     shallower_view_it = (view_t**)TCOD_list_insert_before(active_views, shallower_view, view_index);
     steeper_view_it = shallower_view_it + 1;
-    current_view = shallower_view_it;
-    add_steep_bump(brx, bry, shallower_view);
-    if (!check_view(active_views, shallower_view_it)) steeper_view_it--;
-    add_shallow_bump(tlx, tly, *steeper_view_it);
-    check_view(active_views, steeper_view_it);
-    if (view_index > TCOD_list_size(active_views)) current_view = (view_t**)TCOD_list_end(active_views);
+    *current_view = shallower_view_it;
+    add_steep_bump(brx, bry, shallower_view, bumps);
+    if (!check_view(active_views, shallower_view_it, offset, limit)) steeper_view_it--;
+    add_shallow_bump(tlx, tly, *steeper_view_it, bumps);
+    check_view(active_views, steeper_view_it, offset, limit);
+    if (view_index > TCOD_list_size(active_views)) *current_view = (view_t**)TCOD_list_end(active_views);
   }
 }
 
 static void check_quadrant(
-    struct TCOD_Map* m, int startX, int startY, int dx, int dy, int extentX, int extentY, bool light_walls) {
+    struct TCOD_Map* m,
+    int startX,
+    int startY,
+    int dx,
+    int dy,
+    int extentX,
+    int extentY,
+    bool light_walls,
+    int offset,
+    int limit,
+    view_t* views,
+    viewbump_container_t* bumps) {
+  bumps->count = 0;
   TCOD_list_t active_views = TCOD_list_new();
   line_t shallow_line = {offset, limit, extentX * STEP_SIZE, 0};
   line_t steep_line = {limit, offset, 0, extentY * STEP_SIZE};
@@ -215,7 +225,7 @@ static void check_quadrant(
   view->shallow_bump = NULL;
   view->steep_bump = NULL;
   TCOD_list_push(active_views, view);
-  current_view = (view_t**)TCOD_list_begin(active_views);
+  view_t** current_view = (view_t**)TCOD_list_begin(active_views);
   while (i != maxI + 1 && !TCOD_list_is_empty(active_views)) {
     int startJ = MAX(i - extentX, 0);
     int maxJ = MIN(i, extentY);
@@ -224,7 +234,8 @@ static void check_quadrant(
            current_view != (view_t**)TCOD_list_end(active_views)) {
       int x = (i - j) * STEP_SIZE;
       int y = j * STEP_SIZE;
-      visit_coords(m, startX, startY, x, y, dx, dy, active_views, light_walls);
+      visit_coords(
+          m, startX, startY, x, y, dx, dy, active_views, &current_view, light_walls, offset, limit, views, bumps);
       j++;
     }
     i++;
@@ -239,16 +250,18 @@ void TCOD_map_compute_fov_permissive2(
   struct TCOD_Map* m = (struct TCOD_Map*)map;
   if ((unsigned)fovType > 8)
     TCOD_fatal("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].\n", fovType);
-  offset = 8 - fovType;
-  limit = 8 + fovType;
+  /* Defines the parameters of the permissiveness */
+  /* Derived values defining the actual part of the square used as a range. */
+  int offset = 8 - fovType;
+  int limit = 8 + fovType;
   /* clean the map */
   for (c = m->nbcells - 1; c >= 0; c--) {
     m->cells[c].fov = 0;
   }
   m->cells[player_x + player_y * m->width].fov = 1;
   /* preallocate views and bumps */
-  views = calloc(sizeof(*views), m->width * m->height);
-  bumps = calloc(sizeof(*bumps), m->width * m->height);
+  view_t* views = malloc(sizeof(*views) * m->width * m->height);
+  viewbump_container_t bumps = {0, malloc(sizeof(*bumps.data) * m->width * m->height)};
   /* set the fov range */
   if (max_radius > 0) {
     minx = MIN(player_x, max_radius);
@@ -262,14 +275,10 @@ void TCOD_map_compute_fov_permissive2(
     maxy = m->height - player_y - 1;
   }
   /* calculate fov. precise permissive field of view */
-  bumpidx = 0;
-  check_quadrant(m, player_x, player_y, 1, 1, maxx, maxy, light_walls);
-  bumpidx = 0;
-  check_quadrant(m, player_x, player_y, 1, -1, maxx, miny, light_walls);
-  bumpidx = 0;
-  check_quadrant(m, player_x, player_y, -1, -1, minx, miny, light_walls);
-  bumpidx = 0;
-  check_quadrant(m, player_x, player_y, -1, 1, minx, maxy, light_walls);
-  free(bumps);
+  check_quadrant(m, player_x, player_y, 1, 1, maxx, maxy, light_walls, offset, limit, views, &bumps);
+  check_quadrant(m, player_x, player_y, 1, -1, maxx, miny, light_walls, offset, limit, views, &bumps);
+  check_quadrant(m, player_x, player_y, -1, -1, minx, miny, light_walls, offset, limit, views, &bumps);
+  check_quadrant(m, player_x, player_y, -1, 1, minx, maxy, light_walls, offset, limit, views, &bumps);
+  free(bumps.data);
   free(views);
 }

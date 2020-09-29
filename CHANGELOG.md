@@ -26,6 +26,7 @@ since `1.7.0`.
 - Fixed images only saving as a red channel.
   [#75](https://github.com/libtcod/libtcod/pull/75)
 - The `TCOD_RENDERER` and `TCOD_VSYNC` environment variables should work now.
+- `FOV_PERMISSIVE` algorithms are now reentrant.
 
 ## [1.16.0-alpha.12] - 2020-05-22
 ### Changed

@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,13 +69,17 @@ static view_t* views = NULL;
 static viewbump_t* bumps = NULL;
 static int bumpidx = 0;
 
-#define RELATIVE_SLOPE(l, x, y) (((l)->yf - (l)->yi) * ((l)->xf - (x)) - ((l)->xf - (l)->xi) * ((l)->yf - (y)))
-#define BELOW(l, x, y) (RELATIVE_SLOPE(l, x, y) > 0)
-#define BELOW_OR_COLINEAR(l, x, y) (RELATIVE_SLOPE(l, x, y) >= 0)
-#define ABOVE(l, x, y) (RELATIVE_SLOPE(l, x, y) < 0)
-#define ABOVE_OR_COLINEAR(l, x, y) (RELATIVE_SLOPE(l, x, y) <= 0)
-#define COLINEAR(l, x, y) (RELATIVE_SLOPE(l, x, y) == 0)
-#define LINE_COLINEAR(l, l2) (COLINEAR(l, (l2)->xi, (l2)->yi) && COLINEAR(l, (l2)->xf, (l2)->yf))
+static int RELATIVE_SLOPE(const line_t* line, int x, int y) {
+  return (line->yf - line->yi) * (line->xf - x) - (line->xf - line->xi) * (line->yf - y);
+}
+static bool BELOW(const line_t* line, int x, int y) { return RELATIVE_SLOPE(line, x, y) > 0; }
+static bool BELOW_OR_COLINEAR(const line_t* line, int x, int y) { return RELATIVE_SLOPE(line, x, y) >= 0; }
+static bool ABOVE(const line_t* line, int x, int y) { return RELATIVE_SLOPE(line, x, y) < 0; }
+static bool ABOVE_OR_COLINEAR(const line_t* line, int x, int y) { return RELATIVE_SLOPE(line, x, y) <= 0; }
+static bool COLINEAR(const line_t* line, int x, int y) { return RELATIVE_SLOPE(line, x, y) == 0; }
+static bool LINE_COLINEAR(const line_t* line1, const line_t* line2) {
+  return COLINEAR(line1, line2->xi, line2->yi) && COLINEAR(line1, line2->xf, line2->yf);
+}
 
 static bool is_blocked(
     struct TCOD_Map* map, view_t* view, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {

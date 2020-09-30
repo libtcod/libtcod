@@ -13,8 +13,6 @@ libtcod in a subdirectory:
 scons build
 ```
 
-SCons can compile faster using multiple cores, use the`-j <threads>` flag.
-
 To build and install libtcod and all sample programs into the root libtcod
 folder, use the `develop_all` alias.  The default mode is `MODE=DEBUG`, so
 you'll also need to change `MODE` if you want a release build:

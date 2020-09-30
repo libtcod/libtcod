@@ -12,6 +12,10 @@
     "editor.formatOnSave": true,
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.generator": "Visual Studio 16 2019",
+    "cmake.configureSettings": {
+        "BUILD_SAMPLES": "ON",
+        "BUILD_TESTS": "ON"
+    },
     "doxdocgen.c.triggerSequence": "/**",
     "doxdocgen.c.firstLine": "/**",
     "doxdocgen.c.commentPrefix": "    ",

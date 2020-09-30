@@ -2,8 +2,16 @@ cmake_minimum_required (VERSION 3.9)
 
 project (libtcod_samples C CXX)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS KEEP_RPATHS)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL RESULT_VARIABLE CONAN_FILE)
+if(CONAN_FILE)
+    conan_basic_setup(TARGETS)
+    set(LINK_TCOD CONAN_PKG::libtcod)
+    set(SDL2MAIN)
+else()
+    find_package(SDL2 CONFIG REQUIRED)
+    set(LINK_TCOD LIBTCOD::LIBTCOD)
+    set(SDL2MAIN SDL2::SDL2main)
+endif()
 
 # This and KEEP_RPATHS is required to handle RPATH's on MacOS.
 if (APPLE)
@@ -27,26 +35,36 @@ add_custom_target(copy_font
 )
 
 add_executable(samples_c samples_c.c)
-target_link_libraries(samples_c CONAN_PKG::libtcod)
-add_dependencies(samples_c copy_data_dir)
+target_link_libraries(samples_c ${LINK_TCOD} ${SDL2MAIN})
+if (CONAN_FILE)
+    add_dependencies(samples_c copy_data_dir)
+endif()
 
 add_executable(samples_cpp samples_cpp.cpp)
-target_link_libraries(samples_cpp CONAN_PKG::libtcod)
-add_dependencies(samples_cpp copy_data_dir)
+target_link_libraries(samples_cpp ${LINK_TCOD} ${SDL2MAIN})
+if (CONAN_FILE)
+    add_dependencies(samples_cpp copy_data_dir)
+endif()
 
 add_executable(frost frost/frost.cpp)
-target_link_libraries(frost CONAN_PKG::libtcod)
-add_dependencies(frost copy_font)
+target_link_libraries(frost ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(frost copy_font)
+endif()
 
 add_executable(hmtool
     hmtool/hmtool.cpp hmtool/operation.cpp hmtool/operation.hpp
 )
-target_link_libraries(hmtool CONAN_PKG::libtcod)
-add_dependencies(hmtool copy_font)
+target_link_libraries(hmtool ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(hmtool copy_font)
+endif()
 
 add_executable(navier navier/main.cpp navier/main.hpp)
-target_link_libraries(navier CONAN_PKG::libtcod)
-add_dependencies(navier copy_font)
+target_link_libraries(navier ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(navier copy_font)
+endif()
 
 add_executable(rad
     rad/main.cpp
@@ -57,8 +75,10 @@ add_executable(rad
     rad/rad_shader_photon.cpp
     rad/rad_shader_standard.cpp
 )
-target_link_libraries(rad CONAN_PKG::libtcod)
-add_dependencies(rad copy_font)
+target_link_libraries(rad ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(rad copy_font)
+endif()
 
 add_executable(ripples
     ripples/main.cpp
@@ -66,8 +86,10 @@ add_executable(ripples
     ripples/util_ripples.cpp
     ripples/util_ripples.hpp
 )
-target_link_libraries(ripples CONAN_PKG::libtcod)
-add_dependencies(ripples copy_font)
+target_link_libraries(ripples ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(ripples copy_font)
+endif()
 
 add_executable(weather
     weather/main.cpp
@@ -75,8 +97,10 @@ add_executable(weather
     weather/util_weather.cpp
     weather/util_weather.hpp
 )
-target_link_libraries(weather CONAN_PKG::libtcod)
-add_dependencies(weather copy_font)
+target_link_libraries(weather ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(weather copy_font)
+endif()
 
 add_executable(worldgen
     worldgen/main.cpp
@@ -84,5 +108,7 @@ add_executable(worldgen
     worldgen/util_worldgen.cpp
     worldgen/util_worldgen.hpp
 )
-target_link_libraries(worldgen CONAN_PKG::libtcod)
-add_dependencies(worldgen copy_font)
+target_link_libraries(worldgen ${LINK_TCOD})
+if (CONAN_FILE)
+    add_dependencies(worldgen copy_font)
+endif()

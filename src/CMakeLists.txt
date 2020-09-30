@@ -28,6 +28,9 @@ else()
     target_link_libraries(LIBTCOD PRIVATE ZLIB::ZLIB)
 endif()
 
+target_include_directories(LIBTCOD INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
 target_include_directories(LIBTCOD PRIVATE ./vendor)
 
 find_package(Threads REQUIRED)

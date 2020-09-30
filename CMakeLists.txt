@@ -24,4 +24,13 @@ project(
     LANGUAGES C CXX
 )
 
+set(BUILD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
+set(BUILD_TESTS OFF CACHE BOOL "Build unit tests.")
+
 add_subdirectory(src)
+if(BUILD_SAMPLES)
+    add_subdirectory(samples)
+endif()
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

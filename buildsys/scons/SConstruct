@@ -161,6 +161,10 @@ def get_libtcod_version():
         return re.match(r'.*#define TCOD_STRVERSION "([^"]+)"',
                         changelog.read(), re.DOTALL).groups()[0]
 
+try:
+    SetOption('num_jobs', os.cpu_count() or 1)
+except AttributeError:
+    pass
 
 LIBTCOD_ROOT_DIR = '../..'
 

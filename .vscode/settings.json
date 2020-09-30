@@ -15,6 +15,11 @@
         "BUILD_SAMPLES": "ON",
         "BUILD_TESTS": "ON"
     },
+    "cmake.debugConfig": {
+        // Workaround for launching the debugger from the CMake toolbar.
+        // Running from the CMake tools toolbar without a debugger will still have working directory issues.
+        "cwd": "${workspaceFolder}"
+    },
     "doxdocgen.c.triggerSequence": "/**",
     "doxdocgen.c.firstLine": "/**",
     "doxdocgen.c.commentPrefix": "    ",

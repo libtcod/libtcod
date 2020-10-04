@@ -11,6 +11,7 @@ since `1.7.0`.
 - Tilesets can now be loaded from an in-memory PNG file or from raw data.
 - The character mappings `TCOD_CHARMAP_CP437` and `TCOD_CHARMAP_TCOD` are now
   public.
+- Added `TCOD_rng_splitmix64_next`.
 
 ### Changed
 - Video driver status info has been added to SDL video driver errors.

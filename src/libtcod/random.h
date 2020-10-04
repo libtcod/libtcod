@@ -29,74 +29,34 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
+#ifndef LIBTCOD_RANDOM_H_
+#define LIBTCOD_RANDOM_H_
+#include <stdint.h>
 
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
-#include "console.h"
-#include "console_drawing.h"
-#include "console_etc.h"
-#include "console_init.h"
-#include "console_printing.h"
-#include "console_rexpaint.h"
-#include "context.h"
-#include "context_init.h"
-#include "error.h"
-#include "fov.h"
-#include "globals.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "parser.h"
-#include "path.h"
-#include "pathfinder.h"
-#include "pathfinder_frontier.h"
-#include "portability.h"
-#include "random.h"
-#include "renderer_gl.h"
-#include "renderer_gl1.h"
-#include "renderer_gl2.h"
-#include "renderer_sdl2.h"
-#include "sdl2/event.h"
-#include "sys.h"
-#include "tileset.h"
-#include "tileset_bdf.h"
-#include "tileset_fallback.h"
-#include "tileset_render.h"
-#include "tileset_truetype.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "utility.h"
-#include "version.h"
-#include "zip.h"
+#include "config.h"
 
 #ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
+extern "C" {
 #endif  // __cplusplus
+/**
+    Return the next random uint64_t from a SplitMix64 generator.
 
-#endif
+    `state[1]` is a non-NULL pointer to the internal state of the generator.
+    There is no initializer function because the first value of `state[1]` is
+    itself the seed which can start at any value.
+    `state[1]` will be updated by this call.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC inline uint64_t TCOD_rng_splitmix64_next(uint64_t* state) {
+  // Based on http://xoshiro.di.unimi.it/splitmix64.c
+  uint64_t z = (*state += 0x9e3779b97f4a7c15);
+  z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;
+  z = (z ^ (z >> 27)) * 0x94d049bb133111eb;
+  return z ^ (z >> 31);
+}
+#ifdef __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
+#endif  // LIBTCOD_RANDOM_H_

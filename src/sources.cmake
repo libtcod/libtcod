@@ -100,6 +100,8 @@ target_sources(LIBTCOD PRIVATE
     libtcod/pathfinder_frontier.h
     libtcod/path_c.c
     libtcod/portability.h
+    libtcod/random.c
+    libtcod/random.h
     libtcod/renderer_gl.c
     libtcod/renderer_gl.h
     libtcod/renderer_gl1.c
@@ -253,6 +255,7 @@ install(FILES
     libtcod/pathfinder.h
     libtcod/pathfinder_frontier.h
     libtcod/portability.h
+    libtcod/random.h
     libtcod/renderer_gl.h
     libtcod/renderer_gl1.h
     libtcod/renderer_gl2.h
@@ -420,6 +423,8 @@ source_group(libtcod FILES
     libtcod/pathfinder_frontier.h
     libtcod/path_c.c
     libtcod/portability.h
+    libtcod/random.c
+    libtcod/random.h
     libtcod/renderer_gl.c
     libtcod/renderer_gl.h
     libtcod/renderer_gl1.c

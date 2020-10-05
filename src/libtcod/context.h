@@ -183,5 +183,11 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
 TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(struct TCOD_Context* context, int* columns, int* rows);
 #ifdef __cplusplus
 }  // extern "C"
+namespace tcod {
+struct ContextDeleter {
+  void operator()(TCOD_Context* console) const { TCOD_context_delete(console); }
+};
+typedef std::unique_ptr<struct TCOD_Context, ContextDeleter> ContextPtr;
+}  // namespace tcod
 #endif  // __cplusplus
 #endif  // LIBTCOD_CONTEXT_H_

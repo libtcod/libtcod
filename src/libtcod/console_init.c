@@ -57,8 +57,18 @@ TCOD_Error TCOD_console_init_root_(
   }
   strncpy(TCOD_ctx.window_title, title ? title : "", sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.fullscreen = fullscreen;
-  int window_flags = (SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
-  return TCOD_context_new_terminal(w, h, renderer, NULL, vsync, window_flags, title, 0, NULL, &TCOD_ctx.engine);
+  struct TCOD_ContextParams params = {
+      .version = TCOD_HEXVERSION,
+      .x = SDL_WINDOWPOS_UNDEFINED,
+      .y = SDL_WINDOWPOS_UNDEFINED,
+      .columns = w,
+      .rows = h,
+      .vsync = vsync,
+      .sdl_window_flags = SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0),
+      .window_title = title,
+      .renderer_type = renderer,
+  };
+  return TCOD_context_new(&params, &TCOD_ctx.engine);
 }
 TCOD_Error TCOD_console_init_root(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer) {
   return TCOD_console_init_root_(w, h, title, fullscreen, renderer, false);

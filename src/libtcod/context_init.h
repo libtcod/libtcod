@@ -37,48 +37,24 @@
 #include "context.h"
 #include "error.h"
 #include "tileset.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
 /**
-    Create a new context with the given console size.
+    A struct of paramers used to create a new context.
 
-
-    Same as `TCOD_context_new_window`, but the following parameters have
-    different effects:
-
-    `columns` and `rows` is the desired size of the terminal window.
-    The actual size of the window will be derived from this and the given
-    `tileset`.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
- */
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
-    int columns,
-    int rows,
-    int renderer_type,
-    TCOD_Tileset* tileset,
-    bool vsync,
-    int sdl_window_flags,
-    const char* window_title,
-    int argc,
-    const char* const* argv,
-    TCOD_Context** out);
-/**
-    Create a new context with a window of the given size.
-
-    Similar to `TCOD_context_new_terminal`, but the following parameters have
-    different effects:
+    `version` should always be set to the constant: `TCOD_HEXVERSION`.
 
     `x` and `y` is the starting position of the window.  These are SDL
     parameters so values like `SDL_WINDOWPOS_UNDEFINED` and
     `SDL_WINDOWPOS_CENTERED` are acceptable.
+    If unsure then use `SDL_WINDOWPOS_UNDEFINED` for both, even when you don't
+    desire a window.
 
     `pixel_width` and `pixel_height` are the desired size of the window in
     pixels.
+    If these are zero then they'll be derived from `columns`, `rows`, and the
+    `tileset`.
+
+    `columns` and `rows` are the desired size of the terminal window.
+    Usually you'll set either these or the pixel resolution.
 
     `renderer_type` is a `TCOD_renderer_t` type.
 
@@ -93,12 +69,49 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
     ``SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP`` is recommended.
     You should avoid the ``SDL_WINDOW_FULLSCREEN`` flag whenever possible.
 
-    `window_title` is the title of the opened window.
+    `window_title` will be the title of the opened window.
 
     `argc` and `argv` are optional CLI parameters.
     You can pass `0` and `NULL` repecfuly to ignore them.
     If user attention is required then TCOD_E_COMMAND_OUT will be returned and
     on this error code you should print TCOD_get_error to stdout and exit.
+ */
+typedef struct TCOD_ContextParams {
+  int version;  // Should be `TCOD_HEXVERSION`.
+  int x;
+  int y;
+  int pixel_width;
+  int pixel_height;
+  int columns;
+  int rows;
+  int renderer_type;
+  TCOD_Tileset* tileset;
+  int vsync;
+  int sdl_window_flags;
+  const char* window_title;
+  int argc;
+  const char* const* argv;
+} TCOD_ContextParams;
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
+/**
+    Create a new context with the given parameters.
+
+    `params` is a non-NULL pointer to a TCOD_ContextParams struct.
+    See its documetnation for info on the parameters.
+
+    `out` is the output for the `TCOD_Context`, must not be NULL.
+
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out);
+/**
+    Create a new context with a window of the given size.
+
+    `columns` and `rows` parameters are ignored.
 
     `out` is the output for the `TCOD_Context`, must not be NULL.
 
@@ -109,20 +122,16 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_terminal(
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(
-    int x,
-    int y,
-    int pixel_width,
-    int pixel_height,
-    int renderer_type,
-    TCOD_Tileset* tileset,
-    bool vsync,
-    int sdl_window_flags,
-    const char* window_title,
-    int argc,
-    const char* const* argv,
-    TCOD_Context** out);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(const TCOD_ContextParams* params, TCOD_Context** out);
 #ifdef __cplusplus
 }  // extern "C"
+namespace tcod {
+TCOD_NODISCARD
+inline auto new_context(const TCOD_ContextParams& params) -> ContextPtr {
+  struct TCOD_Context* context = nullptr;
+  check_throw_error(TCOD_context_new(&params, &context));
+  return ContextPtr{context};
+}
+}  // namespace tcod
 #endif  // __cplusplus
 #endif  // LIBTCOD_CONTEXT_INIT_H_

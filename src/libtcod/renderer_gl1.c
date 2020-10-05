@@ -326,7 +326,7 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
     int pixel_height,
     const char* title,
     int window_flags,
-    bool vsync,
+    int vsync,
     struct TCOD_Tileset* tileset) {
   struct TCOD_Context* context = TCOD_context_new_();
   if (!context) {

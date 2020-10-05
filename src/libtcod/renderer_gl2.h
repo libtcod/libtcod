@@ -49,5 +49,5 @@ struct TCOD_RendererGL2 {
 };
 
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
-    int x, int y, int width, int height, const char* title, int window_flags, bool vsync, struct TCOD_Tileset* tileset);
+    int x, int y, int width, int height, const char* title, int window_flags, int vsync, struct TCOD_Tileset* tileset);
 #endif  // LIBTCOD_RENDERER_GL2_H_

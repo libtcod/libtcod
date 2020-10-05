@@ -137,7 +137,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     int pixel_height,
     const char* title,
     int window_flags,
-    bool vsync,
+    int vsync,
     struct TCOD_Tileset* tileset,
     int gl_major,
     int gl_minor,

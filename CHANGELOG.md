@@ -21,6 +21,7 @@ since `1.7.0`.
 - Added window `x, y` coordinates when creating contexts.
 - Added `argc` and `argv` to contexts so that they can optionaly support CLI
   commands.
+- A struct is used to pass paramaters for creating contexts.
 
 ### Fixed
 - `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.

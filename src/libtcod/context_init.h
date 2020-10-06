@@ -38,7 +38,7 @@
 #include "error.h"
 #include "tileset.h"
 /**
-    A struct of paramers used to create a new context.
+    A struct of paramers used to create a new context with `TCOD_context_new`.
 
     `version` should always be set to the constant: `TCOD_HEXVERSION`.
 
@@ -59,8 +59,11 @@
     `renderer_type` is a `TCOD_renderer_t` type.
 
     `tileset` is an optional pointer to a tileset object.
+    If this is NULL then a platform specific fallback tileset will be used.
+    This fallback is known to be unreliable, but it should work well enough for
+    prototyping code.
 
-    If `vsync` is True, then vertical sync will be enabled whenever possible.
+    If `vsync` is true, then vertical sync will be enabled whenever possible.
     A value of true is recommended.
 
     `sdl_window_flags` is a bitfield of SDL_WindowFlags flags.
@@ -73,8 +76,12 @@
 
     `argc` and `argv` are optional CLI parameters.
     You can pass `0` and `NULL` repecfuly to ignore them.
-    If user attention is required then TCOD_E_COMMAND_OUT will be returned and
-    on this error code you should print TCOD_get_error to stdout and exit.
+
+    If user attention is required for the given CLI parameters then
+    `cli_output` will be called with an error or help message.
+    If `cli_output` is NULL then it will print the message to stdout and
+    terminate the program.  If `cli_output` returns normally then
+    TCOD_E_REQUIRES_ATTENTION will be returned from `TCOD_context_new`.
  */
 typedef struct TCOD_ContextParams {
   int version;  // Should be `TCOD_HEXVERSION`.
@@ -91,6 +98,7 @@ typedef struct TCOD_ContextParams {
   const char* window_title;
   int argc;
   const char* const* argv;
+  void (*cli_output)(const char* output);
 } TCOD_ContextParams;
 #ifdef __cplusplus
 extern "C" {

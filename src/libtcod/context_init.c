@@ -106,6 +106,34 @@ static void get_env_vsync(int* vsync) {
   }
 }
 /**
+    Default command line message behavior.  Print to stdout and terminate.
+ */
+static void default_cli_output(const char* output) {
+  printf("%s", output);
+  exit(0);
+}
+/**
+    Sends formatted output to `cli_output`.
+
+    If `cli_output` is NULL then `default_cli_output` is used.
+
+    Always returns `TCOD_E_REQUIRES_ATTENTION`.
+ */
+TCODLIB_FORMAT(2, 3)
+static TCOD_Error send_to_cli_out(void (*cli_output)(const char* output), const char* fmt, ...) {
+  if (!cli_output) {
+    cli_output = default_cli_output;
+  }
+  va_list vlist;
+  va_start(vlist, fmt);
+  char buffer[4096] = "";
+  vsnprintf(buffer, sizeof(buffer), fmt, vlist);
+  va_end(vlist);
+  cli_output(buffer);  // This is normally expected to terminate the program.
+  TCOD_set_error("The provided command line arguments require attention.");
+  return TCOD_E_REQUIRES_ATTENTION;
+}
+/**
     The message displayed when "-help" is given.
  */
 static const char TCOD_help_msg[] =
@@ -131,7 +159,7 @@ static const char TCOD_help_msg[] =
  */
 TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out) {
   if (!params) {
-    TCOD_set_errorv("params must not be NULL.");
+    TCOD_set_errorv("Params must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
   if (!out) {
@@ -154,8 +182,7 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
   // Parse CLI arguments.
   for (int i = 0; i < params->argc; ++i) {
     if (strcmp(params->argv[i], "-h") == 0 || TCOD_CHECK_ARGUMENT(params->argv[i], "help")) {
-      TCOD_set_error(TCOD_help_msg);
-      return TCOD_E_COMMAND_OUT;
+      return send_to_cli_out(params->cli_output, "%s", TCOD_help_msg);
     } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "windowed")) {
       sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
       sdl_window_flags |= SDL_WINDOW_RESIZABLE;
@@ -173,28 +200,26 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
       if (++i < params->argc) {
         pixel_width = atoi(params->argv[i]);
       } else {
-        TCOD_set_error("Width must be given a number.");
-        return TCOD_E_COMMAND_OUT;
+        return send_to_cli_out(params->cli_output, "Width must be given a number.");
       }
     } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "height")) {
       if (++i < params->argc) {
         pixel_height = atoi(params->argv[i]);
       } else {
         TCOD_set_error("Height must be given a number.");
-        return TCOD_E_COMMAND_OUT;
+        return send_to_cli_out(params->cli_output, "Height must be given a number.");
       }
     } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "renderer")) {
       if (++i < params->argc && get_renderer_from_str(params->argv[i]) >= 0) {
         renderer_type = get_renderer_from_str(params->argv[i]);
       } else {
         TCOD_set_error("Renderer should be one of [sdl|sdl2|opengl|opengl2]");
-        return TCOD_E_COMMAND_OUT;
+        return send_to_cli_out(params->cli_output, "Renderer should be one of [sdl|sdl2|opengl|opengl2]");
       }
     } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "resolution")) {
       if (++i < params->argc && sscanf(params->argv[i], "%dx%d", &pixel_width, &pixel_height) == 2) {
       } else {
-        TCOD_set_error("Resolution argument should be in the format: <width>x<height>");
-        return TCOD_E_COMMAND_OUT;
+        return send_to_cli_out(params->cli_output, "Resolution argument should be in the format: <width>x<height>");
       }
     }
   }

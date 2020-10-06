@@ -73,14 +73,13 @@ typedef enum TCOD_Error {
    */
   TCOD_E_OUT_OF_MEMORY = -3,
   /**
-      The the argv values passed to this function need attention.
-
-      The program should print TCOD_get_error to stdout and exit.
+      This function needs additional attention, but is otherwise functioning
+      correctly.  See its documentation.
       \rst
       .. versionadded:: 1.16
       \endrst
    */
-  TCOD_E_COMMAND_OUT = -4,
+  TCOD_E_REQUIRES_ATTENTION = -4,
   /**
    *  The function completed, but a minor issue was detected.
    */

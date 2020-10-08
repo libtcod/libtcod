@@ -6,9 +6,6 @@ Products :
    http://lodev.org/lodepng
 - SDL 2, by Sam Lantinga
    http://www.libsdl.org
-- stb_sprintf, originally by Jeff Roberts / RAD Game Tools, 2015/10/20
-   http://github.com/nothings/stb
-   (modified to compile for C89)
 - stb_truetype, authored from 2009-2016 by Sean Barrett / RAD Game Tools
    http://github.com/nothings/stb
 - utf8proc

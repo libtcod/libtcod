@@ -885,98 +885,106 @@ static TCOD_Error utf8_report_error(utf8proc_ssize_t err) {
   }
 }
 /**
-    Return the next codepoint without advancing the string pointer.
+    Set `*out` to the next codepoint and advance the string pointer.
+
+    An error may be returned.  `out` can be NULL.
  */
-static int fp_peak_raw(const struct FormattedPrinter* printer) {
-  int codepoint;
-  utf8proc_ssize_t err = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
-  if (err < 0) {
-    return utf8_report_error(err);
-  }
-  return codepoint;
-}
-/**
-    Return the next codepoint and advance the string pointer.
- */
-static int fp_next_raw(struct FormattedPrinter* printer) {
+TCOD_NODISCARD
+static TCOD_Error fp_next_raw(struct FormattedPrinter* printer, int* out) {
   int codepoint;
   utf8proc_ssize_t len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
   if (len < 0) {
     return utf8_report_error(len);
   }
   printer->string += len;
-  return codepoint;
+  if (out) {
+    *out = codepoint;
+  }
+  return TCOD_E_OK;
 }
 /**
-    Return the next 3 codepoints as a TCOD_ColorRGBA struct and advance.
+    Output the next 3 codepoints to a TCOD_ColorRGBA struct and advance.
  */
-static struct TCOD_ColorRGBA fp_next_rgba(struct FormattedPrinter* printer) {
-  struct TCOD_ColorRGBA rgb = {
-      fp_next_raw(printer),
-      fp_next_raw(printer),
-      fp_next_raw(printer),
-      255,
-  };
-  return rgb;
+TCOD_NODISCARD
+static TCOD_Error fp_next_rgba(struct FormattedPrinter* printer, struct TCOD_ColorRGBA* out) {
+  int r, g, b;
+  TCOD_Error err;
+  if ((err = fp_next_raw(printer, &r)) < 0 || (err = fp_next_raw(printer, &g)) < 0 ||
+      (err = fp_next_raw(printer, &b)) < 0) {
+    return err;
+  }
+  if (out) {
+    *out = (struct TCOD_ColorRGBA){(uint8_t)r, (uint8_t)g, (uint8_t)b, 255};
+  }
+  return TCOD_E_OK;
 }
 /**
     Apply and special formatting codes to this printer and advance.
 
     Special codes are the libtcod color formatting codes, these change the state
     if the FormattedPrinter struct.
+
+    If the string ends with formatting with no plain characters afterwards
+    then `*out` is set to a zero-width space.
  */
-static void fp_handle_special_codes(struct FormattedPrinter* printer) {
-  while (printer->string < printer->end) {
-    int codepoint = fp_peak_raw(printer);
+TCOD_NODISCARD
+static TCOD_Error fp_next(struct FormattedPrinter* printer, int* out) {
+  do {
+    int codepoint;
+    TCOD_Error err = fp_next_raw(printer, &codepoint);
+    if (err < 0) {
+      return err;
+    }
     switch (codepoint) {
       case TCOD_COLCTRL_STOP:
-        fp_next_raw(printer);
         printer->fg = printer->default_fg;
         printer->bg = printer->default_bg;
         break;
       case TCOD_COLCTRL_FORE_RGB:
-        fp_next_raw(printer);
-        printer->fg = fp_next_rgba(printer);
+        if ((err = fp_next_rgba(printer, &printer->fg)) < 0) {
+          return err;
+        }
         break;
       case TCOD_COLCTRL_BACK_RGB:
-        fp_next_raw(printer);
-        printer->bg = fp_next_rgba(printer);
+        if ((err = fp_next_rgba(printer, &printer->bg)) < 0) {
+          return err;
+        }
         break;
       default:
-        if (codepoint < 0) {
-          return;
-        }
         if (TCOD_COLCTRL_1 <= codepoint && codepoint <= TCOD_COLCTRL_NUMBER) {
-          fp_next_raw(printer);
           int color_index = codepoint - TCOD_COLCTRL_1;
           *(TCOD_ColorRGB*)&printer->fg = color_control_fore[color_index];
           printer->fg.a = 255;
           *(TCOD_ColorRGB*)&printer->bg = color_control_back[color_index];
           printer->bg.a = 255;
         } else {
-          return;
+          // Non-formatting character.
+          if (out) {
+            *out = codepoint;
+          }
+          return TCOD_E_OK;
         }
         break;
     }
+  } while (printer->string < printer->end);
+  // The string ended with formatting without a plain character afterwards.
+  if (out) {
+    *out = 0x200B;  // Zero-width space.
   }
-}
-/**
-    Return the next non-special codepoint and apply any states up to that point.
- */
-static int fp_next(struct FormattedPrinter* printer) {
-  fp_handle_special_codes(printer);
-  return fp_next_raw(printer);
+  return TCOD_E_OK;
 }
 /**
     Return the next non-special codepoint without advancing the string pointer.
  */
-static int fp_peak(const struct FormattedPrinter* printer) {
+TCOD_NODISCARD
+static TCOD_Error fp_peek(const struct FormattedPrinter* printer, int* out) {
   struct FormattedPrinter temp = *printer;
-  return fp_next(&temp);
+  return fp_next(&temp, out);
 }
 /*
- *  Check if the specified character is any line-break character
+    Check if the specified character is any line-break character
  */
+TCOD_NODISCARD
 static bool is_newline(int codepoint) {
   const utf8proc_property_t* property = utf8proc_get_property(codepoint);
   switch (property->category) {
@@ -1009,6 +1017,7 @@ static const bool TCOD_double_width_print_mode = 0;
     The result for normally double-width characters will depend on
     `TCOD_double_width_print_mode`.
  */
+TCOD_NODISCARD
 static int get_character_width(int codepoint) {
   const utf8proc_property_t* property = utf8proc_get_property(codepoint);
   switch (property->charwidth) {
@@ -1019,34 +1028,38 @@ static int get_character_width(int codepoint) {
   }
 }
 /**
- *  Get the next line-break or null terminator, or break the string before
- *  `max_width`.
- *
- *  `break_point` is the pointer to the line end position.
- *
- *  `break_width` is the width of the line.
- *
- *  Returns true if this function is breaking a line, or false where the line
- *  doesn't break or breaks on its own (line a new-line.)
+    Get the next line-break or null terminator, or break the string before
+    `max_width`.
+
+    `break_point` is the pointer to the line end position.
+
+    `break_width` is the width of the line.
+
+    `add_line_break` will be set to true if this function is breaking a line,
+    or false where the line doesn't break or breaks on its own.
  */
-static bool next_split_(
+TCOD_NODISCARD
+static TCOD_Error next_split_(
     const struct FormattedPrinter* printer,
     int max_width,
     int can_split,
     const unsigned char** break_point,
-    int* break_width) {
+    int* break_width,
+    bool* add_line_break) {
   struct FormattedPrinter it = *printer;
   // The break point and width of the line.
   *break_point = it.end;
   *break_width = 0;
+  *add_line_break = false;
   // The current line width.
   int char_width = 0;
   bool separating = false;  // True if the last iteration was breakable.
   while (it.string != it.end) {
-    int codepoint = fp_peak(&it);
-    if (codepoint < 0) {
-      return 0;
-    }  // Break out of function on error.
+    int codepoint;
+    TCOD_Error err;
+    if ((err = fp_peek(&it, &codepoint)) < 0) {
+      return err;
+    }
     const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     if (can_split && char_width > 0) {
       switch (property->category) {
@@ -1055,12 +1068,14 @@ static bool next_split_(
             // The next character would go over the max width, so return now.
             if (*break_point != it.end) {
               // Use latest line break if one exists.
+              *add_line_break = true;
               return 1;
             } else {
               // Force a line break here.
               *break_point = it.string;
               *break_width = char_width;
-              return 1;
+              *add_line_break = true;
+              return TCOD_E_OK;
             }
           }
           separating = false;
@@ -1069,10 +1084,13 @@ static bool next_split_(
           if (char_width + get_character_width(codepoint) > max_width) {
             *break_point = it.string;
             *break_width = char_width;
-            return 1;
+            *add_line_break = true;
+            return TCOD_E_OK;
           } else {
             char_width += get_character_width(codepoint);
-            fp_next(&it);
+            if ((err = fp_next(&it, NULL)) < 0) {
+              return err;
+            }
             *break_point = it.string;
             *break_width = char_width;
             separating = true;
@@ -1092,16 +1110,19 @@ static bool next_split_(
       // Always break on newlines.
       *break_point = it.string;
       *break_width = char_width;
-      return 0;
+      return TCOD_E_OK;
     }
     char_width += get_character_width(codepoint);
-    fp_next(&it);
+    if ((err = fp_next(&it, NULL)) < 0) {
+      return err;
+    }
   }
   // Return end of iteration.
   *break_point = it.string;
   *break_width = char_width;
-  return 0;
+  return TCOD_E_OK;
 }
+TCOD_NODISCARD
 static int print_internal_(
     TCOD_Console* __restrict con,
     int x,
@@ -1162,10 +1183,11 @@ static int print_internal_(
     return 0;  // The bounding box is invalid.
   }
   while (printer.string != printer.end && top < bottom && top < con->h) {
-    int codepoint = fp_peak(&printer);
-    if (codepoint < 0) {
-      return codepoint;
-    }  // Return error code.
+    int codepoint;
+    TCOD_Error err = fp_peek(&printer, &codepoint);
+    if (err < 0) {
+      return err;
+    }
     const utf8proc_property_t* property = utf8proc_get_property(codepoint);
     // Check for newlines.
     if (is_newline(codepoint)) {
@@ -1174,13 +1196,18 @@ static int print_internal_(
       } else {
         top += 1;
       }
-      fp_next(&printer);
+      if ((err = fp_next(&printer, NULL)) < 0) {
+        return err;
+      }
       continue;
     }
     // Get the next line of characters.
     const unsigned char* line_break;
     int line_width;
-    int split_status = next_split_(&printer, width, can_split, &line_break, &line_width);
+    bool add_line_break;
+    if ((err = next_split_(&printer, width, can_split, &line_break, &line_width, &add_line_break)) < 0) {
+      return err;
+    }
     // Set cursor_x from alignment.
     int cursor_x = 0;
     switch (align) {
@@ -1209,10 +1236,12 @@ static int print_internal_(
     }
     while (printer.string < line_break) {
       // Iterate over a line of characters.
-      codepoint = fp_next(&printer);
-      if (codepoint < 0) {
-        return codepoint;
-      }  // Return error code.
+      if ((err = fp_next(&printer, &codepoint)) < 0) {
+        return err;
+      }
+      if (get_character_width(codepoint) == 0) {
+        continue;
+      }
       if (count_only) {
         continue;
       }
@@ -1227,16 +1256,18 @@ static int print_internal_(
     // Ignore any extra spaces.
     while (printer.string != printer.end) {
       // Separator, space
-      if (utf8proc_get_property(fp_peak(&printer))->category != UTF8PROC_CATEGORY_ZS) {
+      if ((err = fp_peek(&printer, &codepoint)) < 0) {
+        return err;
+      }
+      if (utf8proc_get_property(codepoint)->category != UTF8PROC_CATEGORY_ZS) {
         break;
       }
-      codepoint = fp_next(&printer);
-      if (codepoint < 0) {
-        return codepoint;
-      }  // Return error code.
+      if ((err = fp_next(&printer, NULL)) < 0) {
+        return err;
+      }
     }
     // If there was an automatic split earlier then the top is moved down.
-    if (split_status == 1) {
+    if (add_line_break) {
       top += 1;
     }
   }

@@ -271,20 +271,34 @@ typedef enum {
    */
   TCOD_RENDERER_SDL,
   /**
-   *  A new SDL2 renderer.  Allows the window to be resized.
-   *  \rst
-   *  .. versionadded:: 1.8
-   *  \endrst
+      A new SDL2 renderer.  Allows the window to be resized.
+
+      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to detrmine the tileset
+      upscaling filter.  Either nearest or linear.  The hint will only take
+      effect if it's set before this renderer is created.
+
+      \rst
+      .. versionadded:: 1.8
+      \endrst
    */
   TCOD_RENDERER_SDL2,
   /**
-   *  A new OpenGL 2.0 core renderer.  Allows the window to be resized.
-   *  \rst
-   *  .. versionadded:: 1.9
-   *
-   *  .. versionchanged:: 1.11.0
-   *      This renderer now uses OpenGL 2.0 instead of 2.1.
-   *  \endrst
+      A new OpenGL 2.0 core renderer.  Allows the window to be resized.
+
+      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to detrmine the tileset
+      upscaling filter.  Either nearest or linear.  The hint will take effect
+      on the next frame.
+
+      \rst
+      .. versionadded:: 1.9
+
+      .. versionchanged:: 1.11
+          This renderer now uses OpenGL 2.0 instead of 2.1.
+
+      .. versionchanged:: 1.16
+          Now checks the `SDL_HINT_RENDER_SCALE_QUALITY` hint.
+
+      \endrst
    */
   TCOD_RENDERER_OPENGL2,
   TCOD_NB_RENDERERS,

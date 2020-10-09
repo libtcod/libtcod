@@ -33,6 +33,7 @@
 
 #include <SDL.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "../vendor/glad.h"
 #include "console.h"
@@ -214,6 +215,21 @@ static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas
   out[2] = y & 0xff;
   out[3] = (y >> 8) & 0xff;
 }
+/**
+    Return a OpenGL texture filter setting based on SDL's
+    SDL_HINT_RENDER_SCALE_QUALITY hint.
+ */
+TCOD_NODISCARD
+static int gl_filter_from_sdl_hint() {
+  const char* value = SDL_GetHint(SDL_HINT_RENDER_SCALE_QUALITY);
+  if (!value) {
+    return GL_LINEAR;  // Default option.
+  }
+  if (strcmp(value, "0") == 0 || strcmp(value, "nearest")) {
+    return GL_NEAREST;
+  }
+  return GL_LINEAR;
+}
 TCOD_NODISCARD
 static TCOD_Error render(
     struct TCOD_RendererGL2* __restrict renderer,
@@ -286,7 +302,7 @@ static TCOD_Error render(
   glActiveTexture(GL_TEXTURE0 + 3);  // Tileset atlas.
   glBindTexture(GL_TEXTURE_2D, atlas->texture);
   // Texels are clamped by the shader, GL_LINEAR can be used without bleeding.
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_from_sdl_hint());
   glUniform1i(t_tileset, 3);
   glActiveTexture(GL_TEXTURE0 + 0);  // Tile position.
   glBindTexture(GL_TEXTURE_2D, renderer->console_textures[0]);

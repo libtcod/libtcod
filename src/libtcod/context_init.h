@@ -75,7 +75,9 @@
     `window_title` will be the title of the opened window.
 
     `argc` and `argv` are optional CLI parameters.
-    You can pass `0` and `NULL` repecfuly to ignore them.
+    You can pass `0` and `NULL` respectfully to ignore them.
+    If unsure then you should pass the `argc` and `argv` arguments from your
+    `main` function.
 
     If user attention is required for the given CLI parameters then
     `cli_output` will be called with an error or help message.

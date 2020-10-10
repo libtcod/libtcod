@@ -38,9 +38,43 @@
 
 #define TCOD_STRVERSION "1.16.0-alpha.12"
 
-#define TCOD_HEXVERSION (0x010000 * TCOD_MAJOR_VERSION + 0x0100 * TCOD_MINOR_VERSION + 0x01 * TCOD_PATCHLEVEL)
+/**
+    Converts version numbers into a numeric value.
+    \rst
+    (1, 2, 3) -> 0x10203
+
+    .. versionadded:: 1.16
+    \endrst
+ */
+#define TCOD_VERSIONNUM(major, minor, patch) ((major)*0x010000 + (minor)*0x0100 + (patch))
+
+/**
+    The version of libtcod currently being compiled.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+#define TCOD_COMPILEDVERSION TCOD_VERSIONNUM(TCOD_MAJOR_VERSION, TCOD_MINOR_VERSION, TCOD_PATCHLEVEL)
+
+/**
+    \rst
+    .. deprecated:: 1.16
+    \endrst
+ */
+#define TCOD_HEXVERSION TCOD_COMPILEDVERSION
+
+/**
+    \rst
+    .. deprecated:: 1.16
+    \endrst
+ */
 #define TCOD_TECHVERSION (TCOD_HEXVERSION * 0x100)
 
+/**
+    \rst
+    .. deprecated:: 1.16
+    \endrst
+ */
 #define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
 
 #endif /* LIBTCOD_VERSION_H */

@@ -44,9 +44,9 @@
  */
 struct TCOD_ViewportOptions {
   /**
-      Must be set to `TCOD_HEXVERSION`.
+      Must be set to `TCOD_COMPILEDVERSION`.
    */
-  int version;
+  int tcod_version;
   /**
       If true then the aspect ratio will be kept square when the console is
       scaled.  The view will be letter-boxed.

@@ -58,7 +58,7 @@ TCOD_Error TCOD_console_init_root_(
   strncpy(TCOD_ctx.window_title, title ? title : "", sizeof(TCOD_ctx.window_title) - 1);
   TCOD_ctx.fullscreen = fullscreen;
   struct TCOD_ContextParams params = {
-      .version = TCOD_HEXVERSION,
+      .tcod_version = TCOD_COMPILEDVERSION,
       .x = SDL_WINDOWPOS_UNDEFINED,
       .y = SDL_WINDOWPOS_UNDEFINED,
       .columns = w,

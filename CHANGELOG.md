@@ -12,6 +12,7 @@ since `1.7.0`.
 - The character mappings `TCOD_CHARMAP_CP437` and `TCOD_CHARMAP_TCOD` are now
   public.
 - Added `TCOD_rng_splitmix64_next`.
+- Added the `TCOD_VERSIONNUM` and `TCOD_COMPILEDVERSION` macros.
 
 ### Changed
 - Video driver status info has been added to SDL video driver errors.
@@ -24,6 +25,10 @@ since `1.7.0`.
 - A struct is used to pass paramaters for creating contexts.
 - The OpenGL 2 renderer can now use `SDL_HINT_RENDER_SCALE_QUALITY` to
   determine the tileset upscaling filter.
+
+### Deprecated
+- Depercated the following macros:
+  `TCOD_HEXVERSION`, `TCOD_TECHVERSION`, and `TCOD_STRVERSIONNAME`.
 
 ### Fixed
 - `TCOD_console_is_key_pressed` should work even if libtcod events are ignored.

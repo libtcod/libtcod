@@ -40,7 +40,7 @@
 /**
     A struct of paramers used to create a new context with `TCOD_context_new`.
 
-    `version` should always be set to the constant: `TCOD_HEXVERSION`.
+    `tcod_version` should always be set to the constant: `TCOD_COMPILEDVERSION`.
 
     `x` and `y` is the starting position of the window.  These are SDL
     parameters so values like `SDL_WINDOWPOS_UNDEFINED` and
@@ -84,7 +84,7 @@
     TCOD_E_REQUIRES_ATTENTION will be returned from `TCOD_context_new`.
  */
 typedef struct TCOD_ContextParams {
-  int version;  // Should be `TCOD_HEXVERSION`.
+  int tcod_version;  // Should be `TCOD_COMPILEDVERSION`.
   int x;
   int y;
   int pixel_width;

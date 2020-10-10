@@ -37,7 +37,7 @@
 #include "error.h"
 
 const struct TCOD_ViewportOptions TCOD_VIEWPORT_DEFAULT_ = {
-    .version = TCOD_HEXVERSION,
+    .tcod_version = TCOD_COMPILEDVERSION,
     .keep_aspect = false,
     .integer_scaling = false,
     .clear_color = {0, 0, 0, 255},

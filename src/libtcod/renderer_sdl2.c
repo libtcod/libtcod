@@ -384,17 +384,21 @@ TCOD_Error TCOD_sdl2_render_texture(
 // ----------------------------------------------------------------------------
 // SDL2 Rendering
 /**
- *  Handle events from SDL2.
- *
- *  Target textures need to be reset on an SDL_RENDER_TARGETS_RESET event.
+    Handle events from SDL2.
+
+    Target textures need to be reset on an SDL_RENDER_TARGETS_RESET event.
+
+    This is sometimes called while the renderer is holding a reference to the
+    cache console.
  */
 static int sdl2_handle_event(void* userdata, SDL_Event* event) {
   struct TCOD_RendererSDL2* context = userdata;
   switch (event->type) {
     case SDL_RENDER_TARGETS_RESET:
       if (context->cache_console) {
-        TCOD_console_delete(context->cache_console);
-        context->cache_console = NULL;
+        for (int i = 0; i < context->cache_console->elements; ++i) {
+          context->cache_console->tiles[i] = (struct TCOD_ConsoleTile){-1, {0, 0, 0}, {0, 0, 0}};
+        }
       }
       break;
   }

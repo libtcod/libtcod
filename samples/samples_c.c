@@ -45,7 +45,6 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   TCOD_color_t textColor;
   /* ==== slighty modify the corner colors ==== */
   if (first) {
-    TCOD_sys_set_fps(0); /* unlimited fps */
     TCOD_console_clear(sample_console);
   }
   /* ==== slighty modify the corner colors ==== */
@@ -130,7 +129,7 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_console_t secondary;  /* second screen */
   static TCOD_console_t screenshot; /* second screen */
   static bool init = false;         /* draw the secondary screen only the first time */
-  static int counter = 0;
+  static int counter;
   static int x = 0, y = 0;       /* secondary screen position */
   static int xdir = 1, ydir = 1; /* movement direction */
   if (!init) {
@@ -150,13 +149,12 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
         "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
   }
   if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
+    counter = SDL_GetTicks();
     /* get a "screenshot" of the current sample screen */
     TCOD_console_blit(sample_console, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, screenshot, 0, 0, 1.0f, 1.0f);
   }
-  counter++;
-  if (counter % 20 == 0) {
-    /* move the secondary screen every 2 seconds */
+  if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
+    counter = SDL_GetTicks();
     x += xdir;
     y += ydir;
     if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
@@ -236,7 +234,6 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     init = true;
   }
   if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
     TCOD_console_set_default_foreground(sample_console, TCOD_white);
   }
   /* blit the background */
@@ -294,7 +291,6 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   };
   static int func = PERLIN;
   static TCOD_noise_t noise = NULL;
-  static float dx = 0.0f, dy = 0.0f;
   static float octaves = 4.0f;
   static float hurst = TCOD_NOISE_DEFAULT_HURST;
   static float lacunarity = TCOD_NOISE_DEFAULT_LACUNARITY;
@@ -305,13 +301,11 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
     img = TCOD_image_new(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
   }
-  if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
-  }
   TCOD_console_clear(sample_console);
   /* texture animation */
-  dx += 0.01f;
-  dy += 0.01f;
+  const float dx = SDL_GetTicks() * 0.0005f;
+  const float dy = dx;
+
   /* render the 2d noise function */
   for (y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; y++) {
     for (x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; x++) {
@@ -505,7 +499,6 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     noise = TCOD_noise_new(1, 1.0f, 1.0f, NULL); /* 1d noise for the torch flickering */
   }
   if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
@@ -657,9 +650,6 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_image_set_key_color(img, TCOD_black);
     circle = TCOD_image_load("data/img/circle.png");
   }
-  if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
-  }
   TCOD_console_set_default_background(sample_console, TCOD_black);
   TCOD_console_clear(sample_console);
   x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
@@ -702,7 +692,6 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
     TCOD_mouse_move(320, 200);
     TCOD_mouse_show_cursor(true);
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
   }
 
   TCOD_console_clear(sample_console);
@@ -805,7 +794,6 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dijkstra = TCOD_dijkstra_new(map, 1.41f);
   }
   if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
@@ -1215,9 +1203,6 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     sets = TCOD_namegen_get_sets();
     nbSets = TCOD_list_size(sets);
   }
-  if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
-  }
 
   while (TCOD_list_size(names) >= 15) {
     // remove the first element.
@@ -1485,7 +1470,6 @@ void SDL_render(void* sdlSurface) {
 
 void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (first) {
-    TCOD_sys_set_fps(30); /* limited to 30 fps */
     // use noise sample as background. rendering is done in SampleRenderer
     TCOD_console_set_default_background(sample_console, TCOD_light_blue);
     TCOD_console_set_default_foreground(sample_console, TCOD_white);

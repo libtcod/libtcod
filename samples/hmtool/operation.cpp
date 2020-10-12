@@ -8,7 +8,15 @@
 
 // must match Operation::OpType enum
 const char* Operation::names[] = {
-    "norm", "+fbm", "*fbm", "hill", "\u2191\u2193 z", "smooth", "rain", "lerp fbm", "voronoi",
+    "norm",
+    "+fbm",
+    "*fbm",
+    "hill",
+    "\u2191\u2193 z",
+    "smooth",
+    "rain",
+    "lerp fbm",
+    "voronoi",
 };
 const char* Operation::tips[] = {
     "Normalize heightmap so that values are between 0.0 and 1.0",
@@ -373,7 +381,13 @@ const char* AddFbmOperation::getCode(CodeType type) {
   switch (type) {
     case C:
       return format(
-          "\tTCOD_heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n", zoom, zoom, offsetx, offsety, octaves, offset,
+          "\tTCOD_heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n",
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
           scale);
       break;
     case CPP:
@@ -382,8 +396,14 @@ const char* AddFbmOperation::getCode(CodeType type) {
       break;
     case PY:
       return format(
-          "    libtcod.heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n", zoom, zoom, offsetx, offsety, octaves,
-          offset, scale);
+          "    libtcod.heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n",
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale);
       break;
     default:
       break;
@@ -508,19 +528,37 @@ const char* ScaleFbmOperation::getCode(CodeType type) {
       return format(
           "\tTCOD_heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n"
           "\tscaleFbmDelta += HM_WIDTH;\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale);
       break;
     case CPP:
       return format(
           "\thm->scaleFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
           "\tscaleFbmDelta += HM_WIDTH;\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale);
       break;
     case PY:
       return format(
           "    libtcod.heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n"
           "    scaleFbmDelta += HM_WIDTH\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale);
       break;
     default:
       break;
@@ -757,7 +795,10 @@ const char* SmoothOperation::getCode(CodeType type) {
           "g,%g);\n"
           "\t\t}\n"
           "\t}\n",
-          20 - radius * 19, count, minLevel, maxLevel);
+          20 - radius * 19,
+          count,
+          minLevel,
+          maxLevel);
       break;
     case CPP:
       return format(
@@ -765,7 +806,10 @@ const char* SmoothOperation::getCode(CodeType type) {
           "\tfor (int i=%d; i>= 0; i--) {\n"
           "\t\thm->kernelTransform(smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g);\n"
           "\t}\n",
-          20 - radius * 19, count, minLevel, maxLevel);
+          20 - radius * 19,
+          count,
+          minLevel,
+          maxLevel);
       break;
     case PY:
       return format(
@@ -774,7 +818,10 @@ const char* SmoothOperation::getCode(CodeType type) {
           "        "
           "libtcod.heightmap_kernel_transform(hm,smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%"
           "g)\n",
-          20 - radius * 19, count, minLevel, maxLevel);
+          20 - radius * 19,
+          count,
+          minLevel,
+          maxLevel);
       break;
     default:
       break;
@@ -864,14 +911,24 @@ void SmoothOperation::createParamUi() {
   params->setVisible(true);
 
   Slider* slider = new Slider(
-      0, 0, 8, MIN(0.0f, minLevel), MAX(1.0f, maxLevel), "minLevel",
+      0,
+      0,
+      8,
+      MIN(0.0f, minLevel),
+      MAX(1.0f, maxLevel),
+      "minLevel",
       "Land level above which the smooth operation is applied");
   slider->setCallback(smoothMinValueCbk, this);
   params->addWidget(slider);
   slider->setValue(minLevel);
 
   slider = new Slider(
-      0, 0, 8, MIN(0.0f, minLevel), MAX(1.0f, maxLevel), "maxLevel",
+      0,
+      0,
+      8,
+      MIN(0.0f, minLevel),
+      MAX(1.0f, maxLevel),
+      "maxLevel",
       "Land level below which the smooth operation is applied");
   slider->setCallback(smoothMaxValueCbk, this);
   params->addWidget(slider);
@@ -986,7 +1043,14 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
           "\t\tTCOD_heightmap_lerp(hm,tmp,hm,%g);\n"
           "\t\tTCOD_heightmap_delete(tmp);\n"
           "\t}\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale, coef);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale,
+          coef);
       break;
     case CPP:
       return format(
@@ -995,7 +1059,14 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
           "\t\ttmp.addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
           "\t\thm->lerp(hm,&tmp,%g);\n"
           "\t}\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale, coef);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale,
+          coef);
       break;
     case PY:
       return format(
@@ -1003,7 +1074,14 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
           "    libtcod.heightmap_add_fbm(tmp,noise,%g,%g,%g,%g,%g,%g,%g)\n"
           "    libtcod.heightmap_lerp(hm,tmp,hm,%g)\n"
           "    libtcod.heightmap_delete(tmp)\n",
-          zoom, zoom, offsetx, offsety, octaves, offset, scale, coef);
+          zoom,
+          zoom,
+          offsetx,
+          offsety,
+          octaves,
+          offset,
+          scale,
+          coef);
       break;
     default:
       break;
@@ -1076,7 +1154,9 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\tTCOD_heightmap_add_hm(hm,tmp,hm);\n"
           "\t\tTCOD_heightmap_delete(tmp);\n"
           "\t}\n",
-          coefstr, nbPoints, nbCoef);
+          coefstr,
+          nbPoints,
+          nbCoef);
       break;
     case CPP:
       return format(
@@ -1087,7 +1167,9 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\ttmp.normalize();\n"
           "\t\thm->add(hm,&tmp);\n"
           "\t}\n",
-          coefstr, nbPoints, nbCoef);
+          coefstr,
+          nbPoints,
+          nbCoef);
       break;
     case PY:
       return format(
@@ -1097,7 +1179,9 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "    libtcod.heightmap_normalize(tmp)\n"
           "    libtcod.heightmap_add_hm(hm,tmp,hm)\n"
           "    libtcod.heightmap_delete(tmp)\n",
-          coefstr, nbPoints, nbCoef);
+          coefstr,
+          nbPoints,
+          nbCoef);
       break;
     default:
       break;

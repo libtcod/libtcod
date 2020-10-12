@@ -113,8 +113,14 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   /* the background behind the text is slightly darkened using the BKGND_MULTIPLY flag */
   TCOD_console_set_default_background(sample_console, TCOD_grey);
   TCOD_console_printf_rect_ex(
-      sample_console, SAMPLE_SCREEN_WIDTH / 2, 5, SAMPLE_SCREEN_WIDTH - 2, SAMPLE_SCREEN_HEIGHT - 1,
-      TCOD_BKGND_MULTIPLY, TCOD_CENTER, "The Doryen library uses 24 bits colors, for both background and foreground.");
+      sample_console,
+      SAMPLE_SCREEN_WIDTH / 2,
+      5,
+      SAMPLE_SCREEN_WIDTH - 2,
+      SAMPLE_SCREEN_HEIGHT - 1,
+      TCOD_BKGND_MULTIPLY,
+      TCOD_CENTER,
+      "The Doryen library uses 24 bits colors, for both background and foreground.");
 }
 
 /* ***************************
@@ -134,7 +140,12 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_printf_frame(
         secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, false, TCOD_BKGND_SET, "Offscreen console");
     TCOD_console_printf_rect_ex(
-        secondary, SAMPLE_SCREEN_WIDTH / 4, 2, SAMPLE_SCREEN_WIDTH / 2 - 2, SAMPLE_SCREEN_HEIGHT / 2, TCOD_BKGND_NONE,
+        secondary,
+        SAMPLE_SCREEN_WIDTH / 4,
+        2,
+        SAMPLE_SCREEN_WIDTH / 2 - 2,
+        SAMPLE_SCREEN_HEIGHT / 2,
+        TCOD_BKGND_NONE,
         TCOD_CENTER,
         "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
   }
@@ -178,11 +189,20 @@ bool line_listener(int x, int y) {
 void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_console_t bk; /* colored background */
   static bool init = false;
-  static char* flag_names[] = {"TCOD_BKGND_NONE",        "TCOD_BKGND_SET",        "TCOD_BKGND_MULTIPLY",
-                               "TCOD_BKGND_LIGHTEN",     "TCOD_BKGND_DARKEN",     "TCOD_BKGND_SCREEN",
-                               "TCOD_BKGND_COLOR_DODGE", "TCOD_BKGND_COLOR_BURN", "TCOD_BKGND_ADD",
-                               "TCOD_BKGND_ADDALPHA",    "TCOD_BKGND_BURN",       "TCOD_BKGND_OVERLAY",
-                               "TCOD_BKGND_ALPHA"};
+  static char* flag_names[] = {
+      "TCOD_BKGND_NONE",
+      "TCOD_BKGND_SET",
+      "TCOD_BKGND_MULTIPLY",
+      "TCOD_BKGND_LIGHTEN",
+      "TCOD_BKGND_DARKEN",
+      "TCOD_BKGND_SCREEN",
+      "TCOD_BKGND_COLOR_DODGE",
+      "TCOD_BKGND_COLOR_BURN",
+      "TCOD_BKGND_ADD",
+      "TCOD_BKGND_ADDALPHA",
+      "TCOD_BKGND_BURN",
+      "TCOD_BKGND_OVERLAY",
+      "TCOD_BKGND_ALPHA"};
   int xo, yo, xd, yd, x, y;          /* segment starting, ending, current position */
   float alpha;                       /* alpha value when blending mode = TCOD_BKGND_ALPHA */
   float angle, cos_angle, sin_angle; /* segment angle data */
@@ -262,9 +282,15 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TURBULENCE_WAVELET
   }; /* which function we render */
   static char* funcName[] = {
-      "1 : perlin noise       ", "2 : simplex noise      ", "3 : wavelet noise      ",
-      "4 : perlin fbm         ", "5 : perlin turbulence  ", "6 : simplex fbm        ",
-      "7 : simplex turbulence ", "8 : wavelet fbm        ", "9 : wavelet turbulence ",
+      "1 : perlin noise       ",
+      "2 : simplex noise      ",
+      "3 : wavelet noise      ",
+      "4 : perlin fbm         ",
+      "5 : perlin turbulence  ",
+      "6 : simplex fbm        ",
+      "7 : simplex turbulence ",
+      "8 : wavelet fbm        ",
+      "9 : wavelet turbulence ",
   };
   static int func = PERLIN;
   static TCOD_noise_t noise = NULL;
@@ -448,9 +474,20 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_color_t light_ground = {200, 180, 50};
   static TCOD_noise_t noise;
   static int algonum = 0;
-  static char* algo_names[] = {"BASIC      ", "DIAMOND    ", "SHADOW     ", "PERMISSIVE0", "PERMISSIVE1",
-                               "PERMISSIVE2", "PERMISSIVE3", "PERMISSIVE4", "PERMISSIVE5", "PERMISSIVE6",
-                               "PERMISSIVE7", "PERMISSIVE8", "RESTRICTIVE"};
+  static char* algo_names[] = {
+      "BASIC      ",
+      "DIAMOND    ",
+      "SHADOW     ",
+      "PERMISSIVE0",
+      "PERMISSIVE1",
+      "PERMISSIVE2",
+      "PERMISSIVE3",
+      "PERMISSIVE4",
+      "PERMISSIVE5",
+      "PERMISSIVE6",
+      "PERMISSIVE7",
+      "PERMISSIVE8",
+      "RESTRICTIVE"};
   static float torchx = 0.0f; /* torch light position in the perlin noise */
   int x, y;
   /* torch position & intensity variation */
@@ -476,8 +513,13 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_clear(sample_console);
     TCOD_console_set_default_foreground(sample_console, TCOD_white);
     TCOD_console_printf(
-        sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-        torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
+        sample_console,
+        1,
+        0,
+        "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+        torch ? "on " : "off",
+        light_walls ? "on " : "off",
+        algo_names[algonum]);
     TCOD_console_set_default_foreground(sample_console, TCOD_black);
     TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
     /* draw windows */
@@ -562,15 +604,25 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       torch = !torch;
       TCOD_console_set_default_foreground(sample_console, TCOD_white);
       TCOD_console_printf(
-          sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
+          sample_console,
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum]);
       TCOD_console_set_default_foreground(sample_console, TCOD_black);
     } else if (key->text[0] == 'W' || key->text[0] == 'w') {
       light_walls = !light_walls;
       TCOD_console_set_default_foreground(sample_console, TCOD_white);
       TCOD_console_printf(
-          sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
+          sample_console,
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum]);
       TCOD_console_set_default_foreground(sample_console, TCOD_black);
       recompute_fov = true;
     } else if (key->text[0] == '+' || key->text[0] == '-') {
@@ -578,8 +630,13 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       algonum = CLAMP(0, NB_FOV_ALGORITHMS - 1, algonum);
       TCOD_console_set_default_foreground(sample_console, TCOD_white);
       TCOD_console_printf(
-          sample_console, 1, 0, "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off", light_walls ? "on " : "off", algo_names[algonum]);
+          sample_console,
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum]);
       TCOD_console_set_default_foreground(sample_console, TCOD_black);
       recompute_fov = true;
     }
@@ -653,7 +710,9 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (mouse->rbutton_pressed) rbut = !rbut;
   if (mouse->mbutton_pressed) mbut = !mbut;
   TCOD_console_printf(
-      sample_console, 1, 1,
+      sample_console,
+      1,
+      1,
       "%s\n"
       "Mouse position : %4dx%4d %s\n"
       "Mouse cell     : %4dx%4d\n"
@@ -662,10 +721,21 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "Right button   : %s (toggle %s)\n"
       "Middle button  : %s (toggle %s)\n"
       "Wheel          : %s\n",
-      TCOD_console_is_active() ? "" : "APPLICATION INACTIVE", mouse->x, mouse->y,
-      TCOD_console_has_mouse_focus() ? "" : "OUT OF FOCUS", mouse->cx, mouse->cy, mouse->dx, mouse->dy,
-      mouse->lbutton ? " ON" : "OFF", lbut ? " ON" : "OFF", mouse->rbutton ? " ON" : "OFF", rbut ? " ON" : "OFF",
-      mouse->mbutton ? " ON" : "OFF", mbut ? " ON" : "OFF", mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
+      TCOD_console_is_active() ? "" : "APPLICATION INACTIVE",
+      mouse->x,
+      mouse->y,
+      TCOD_console_has_mouse_focus() ? "" : "OUT OF FOCUS",
+      mouse->cx,
+      mouse->cy,
+      mouse->dx,
+      mouse->dy,
+      mouse->lbutton ? " ON" : "OFF",
+      lbut ? " ON" : "OFF",
+      mouse->rbutton ? " ON" : "OFF",
+      rbut ? " ON" : "OFF",
+      mouse->mbutton ? " ON" : "OFF",
+      mbut ? " ON" : "OFF",
+      mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
 
   TCOD_console_printf(sample_console, 1, 10, "1 : Hide cursor\n2 : Show cursor");
   if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
@@ -800,7 +870,10 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
         if (!wall) {
           float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
           TCOD_console_set_char_background(
-              sample_console, x, y, TCOD_color_lerp(light_ground, dark_ground, 0.9f * d / dijkstraDist),
+              sample_console,
+              x,
+              y,
+              TCOD_color_lerp(light_ground, dark_ground, 0.9f * d / dijkstraDist),
               TCOD_BKGND_SET);
         }
       }
@@ -1074,9 +1147,13 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   TCOD_console_clear(sample_console);
   TCOD_console_set_default_foreground(sample_console, TCOD_white);
   TCOD_console_printf(
-      sample_console, 1, 1,
+      sample_console,
+      1,
+      1,
       "ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
-      bspDepth, minRoomSize, randomRoom ? "ON" : "OFF");
+      bspDepth,
+      minRoomSize,
+      randomRoom ? "ON" : "OFF");
   if (randomRoom) TCOD_console_printf(sample_console, 1, 6, "2 : room walls %s", roomWalls ? "ON" : "OFF");
   // render the level
   for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
@@ -1414,7 +1491,13 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_set_default_foreground(sample_console, TCOD_white);
     TCOD_console_clear(sample_console);
     TCOD_console_printf_rect_ex(
-        sample_console, SAMPLE_SCREEN_WIDTH / 2, 3, SAMPLE_SCREEN_WIDTH, 0, TCOD_BKGND_NONE, TCOD_CENTER,
+        sample_console,
+        SAMPLE_SCREEN_WIDTH / 2,
+        3,
+        SAMPLE_SCREEN_WIDTH,
+        0,
+        TCOD_BKGND_NONE,
+        TCOD_CENTER,
         "The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL "
         "API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the "
         "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
@@ -1438,11 +1521,16 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * the list of samples
  * ***************************/
 sample_t samples[] = {
-    {"  True colors        ", render_colors}, {"  Offscreen console  ", render_offscreen},
-    {"  Line drawing       ", render_lines},  {"  Noise              ", render_noise},
-    {"  Field of view      ", render_fov},    {"  Path finding       ", render_path},
-    {"  Bsp toolkit        ", render_bsp},    {"  Image toolkit      ", render_image},
-    {"  Mouse support      ", render_mouse},  {"  Name generator     ", render_name},
+    {"  True colors        ", render_colors},
+    {"  Offscreen console  ", render_offscreen},
+    {"  Line drawing       ", render_lines},
+    {"  Noise              ", render_noise},
+    {"  Field of view      ", render_fov},
+    {"  Path finding       ", render_path},
+    {"  Bsp toolkit        ", render_bsp},
+    {"  Image toolkit      ", render_image},
+    {"  Mouse support      ", render_mouse},
+    {"  Name generator     ", render_name},
 #ifndef NO_SDL_SAMPLE
     {"  SDL callback       ", render_sdl},
 #endif
@@ -1549,10 +1637,22 @@ int main(int argc, char* argv[]) {
     /* print the help message */
     TCOD_console_set_default_foreground(NULL, TCOD_grey);
     TCOD_console_printf_ex(
-        NULL, 79, 46, TCOD_BKGND_NONE, TCOD_RIGHT, "last frame : %3d ms (%3d fps)",
-        (int)(TCOD_sys_get_last_frame_length() * 1000), TCOD_sys_get_fps());
+        NULL,
+        79,
+        46,
+        TCOD_BKGND_NONE,
+        TCOD_RIGHT,
+        "last frame : %3d ms (%3d fps)",
+        (int)(TCOD_sys_get_last_frame_length() * 1000),
+        TCOD_sys_get_fps());
     TCOD_console_printf_ex(
-        NULL, 79, 47, TCOD_BKGND_NONE, TCOD_RIGHT, "elapsed : %8dms %4.2fs", TCOD_sys_elapsed_milli(),
+        NULL,
+        79,
+        47,
+        TCOD_BKGND_NONE,
+        TCOD_RIGHT,
+        "elapsed : %8dms %4.2fs",
+        TCOD_sys_elapsed_milli(),
         TCOD_sys_elapsed_seconds());
     TCOD_console_printf(NULL, 2, 47, "%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
     TCOD_console_printf(
@@ -1563,9 +1663,16 @@ int main(int argc, char* argv[]) {
 
     /* blit the sample console on the root console */
     TCOD_console_blit(
-        sample_console, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, /* the source console & zone to blit */
-        NULL, SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y,                          /* the destination console & position */
-        1.0f, 1.0f                                                       /* alpha coefs */
+        sample_console,
+        0,
+        0,
+        SAMPLE_SCREEN_WIDTH,
+        SAMPLE_SCREEN_HEIGHT, /* the source console & zone to blit */
+        NULL,
+        SAMPLE_SCREEN_X,
+        SAMPLE_SCREEN_Y, /* the destination console & position */
+        1.0f,
+        1.0f /* alpha coefs */
     );
 #ifndef NO_SDL_SAMPLE
     if (sdl_callback_enabled) {

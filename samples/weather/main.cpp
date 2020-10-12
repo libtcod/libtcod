@@ -114,7 +114,8 @@ void render() {
   }
   TCODConsole::root->setDefaultForeground(TCODColor::white);
   TCODConsole::root->print(
-      5, CON_H - 12,
+      5,
+      CON_H - 12,
       "TCOD's weather system :\n"
       "- wind with varying speed and direction\n"
       "- rain\n"
@@ -124,7 +125,9 @@ void render() {
       "Weather : %s\n\n"
       "Weather evolves automatically\nbut you can alter it by holding + or - : %.1f\n"
       "Accelerate time with ENTER",
-      getDaytime(), weather.getWeather(), weather.getIndicatorDelta());
+      getDaytime(),
+      weather.getWeather(),
+      weather.getIndicatorDelta());
 }
 
 int main(int argc, char* argv[]) {

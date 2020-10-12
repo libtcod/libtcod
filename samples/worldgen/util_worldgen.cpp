@@ -109,8 +109,8 @@ static const TCODColor keyColor[MAX_COLOR_KEY] = {
 
 // altitude color map
 static const int MAX_ALT_KEY = 8;
-static const int altIndexes[MAX_ALT_KEY] = {0,   15, (int)(sandHeight * 255), (int)(sandHeight * 255) + 1, 80, 130,
-                                            195, 255};
+static const int altIndexes[MAX_ALT_KEY] = {
+    0, 15, (int)(sandHeight * 255), (int)(sandHeight * 255) + 1, 80, 130, 195, 255};
 static const float altitudes[MAX_ALT_KEY] = {
     -2000, -1000, -100, 0, 500, 1000, 2500, 4000  // in meters
 };
@@ -127,8 +127,8 @@ static const TCODColor altColors[MAX_ALT_KEY] = {
 
 // precipitation color map
 static const int MAX_PREC_KEY = 19;
-static const int precIndexes[MAX_PREC_KEY] = {4,  8,  12, 16, 20,  24,  28,  32,  36, 40,
-                                              50, 60, 70, 80, 100, 120, 140, 160, 255};
+static const int precIndexes[MAX_PREC_KEY] = {
+    4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 50, 60, 70, 80, 100, 120, 140, 160, 255};
 static const float precipitations[MAX_PREC_KEY] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18, 20, 25, 30, 35, 40  // cm / m² / year
 };
@@ -341,8 +341,8 @@ void WorldGenerator::smoothMap() {
 
 static const int dirx[9] = {0, -1, 0, 1, -1, 1, -1, 0, 1};
 static const int diry[9] = {0, -1, -1, -1, 0, 0, 1, 1, 1};
-static const float dircoef[9] = {1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f, 1.0f,
-                                 1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f};
+static const float dircoef[9] = {
+    1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f};
 static const int oppdir[9] = {0, 8, 7, 6, 5, 4, 3, 2, 1};
 
 // erosion parameters

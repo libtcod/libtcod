@@ -104,9 +104,13 @@ void render() {
         5, 47, "Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my));
   } else {
     TCODConsole::root->print(
-        5, 47, "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
-        (int)worldGen.getRealAltitude(mx, my), (int)worldGen.getPrecipitations(mx, my),
-        (int)worldGen.getTemperature(mx, my), biomeNames[worldGen.getBiome(mx, my)]);
+        5,
+        47,
+        "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
+        (int)worldGen.getRealAltitude(mx, my),
+        (int)worldGen.getPrecipitations(mx, my),
+        (int)worldGen.getTemperature(mx, my),
+        biomeNames[worldGen.getBiome(mx, my)]);
   }
 }
 

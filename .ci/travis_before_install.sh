@@ -19,13 +19,13 @@ if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
     python3 -m pip install --user virtualenv
     python3 -m virtualenv ~/venv
     source ~/venv/bin/activate
-    if [[ "$BUILD_TOOL" == "scons" ]]; then
-        pip install scons
-    elif [[ "$BUILD_TOOL" == "autotools" ]]; then
+    if [[ "$BUILD_TOOL" == "autotools" ]]; then
         HOMEBREW_NO_AUTO_UPDATE=1 brew install sdl2
     fi
 fi
 
 if [[ "$BUILD_TOOL" == "conan" ]]; then
     pip install -U conan_package_tools
+elif [[ "$BUILD_TOOL" == "scons" ]]; then
+    pip install -U scons
 fi

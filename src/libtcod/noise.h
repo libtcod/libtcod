@@ -77,6 +77,78 @@ TCOD_PUBLIC float TCOD_noise_get_fbm(TCOD_Noise* __restrict noise, const float* 
 TCOD_PUBLIC float TCOD_noise_get_turbulence(TCOD_Noise* __restrict noise, const float* __restrict f, float octaves);
 /* delete the noise object */
 TCOD_PUBLIC void TCOD_noise_delete(TCOD_Noise* __restrict noise);
+
+/**
+    Generate noise as a vectorized operation.
+
+    `noise` is the TCOD_Noise object to be used.  Its dimensions will
+    determine how many input arrays are required.
+
+    `type` is which noise generator should be used.
+    Can be `TCOD_NOISE_DEFAULT` to use the type set by the TCOD_Noise object.
+
+    `n` is the length of the input and output arrrays.
+
+    `x[n]`, `y[n]`, `z[n]`, `w[n]` are the input coordinates for the noise
+    generator.  For a 2D generator you'd provide the `x[n]` and `y[n]` arrays
+    and leave the remaining arrays as NULL.
+
+    `out[n]` is the output array, which will receive the noise values.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC void TCOD_noise_get_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out);
+
+/**
+    Generate noise as a vectorized operation with fractional Brownian motion.
+
+    `octaves` are the number of samples to take.
+
+    The remaining parameters are the same as `TCOD_noise_get_vectorized`.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC void TCOD_noise_get_fbm_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    float octaves,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out);
+
+/**
+    Generate noise as a vectorized operation with turbulence.
+
+    `octaves` are the number of samples to take.
+
+    The remaining parameters are the same as `TCOD_noise_get_vectorized`.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+TCOD_PUBLIC void TCOD_noise_get_turbulence_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    float octaves,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out);
 #ifdef __cplusplus
 }
 #endif

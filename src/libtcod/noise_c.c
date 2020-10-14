@@ -885,8 +885,109 @@ float TCOD_noise_get_turbulence(TCOD_Noise* __restrict noise, const float* __res
 }
 
 void TCOD_noise_delete(TCOD_Noise* __restrict noise) {
-  if (noise->waveletTileData) {
+  if (noise && noise->waveletTileData) {
     free(noise->waveletTileData);
   }
   free(noise);
+}
+
+void TCOD_noise_get_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out) {
+  for (int i = 0; i < n; ++i) {
+    const float point[4] = {
+        x ? x[i] : 0,
+        y && noise->ndim >= 2 ? y[i] : 0,
+        z && noise->ndim >= 3 ? z[i] : 0,
+        w && noise->ndim >= 4 ? w[i] : 0,
+    };
+    switch (type ? type : noise->noise_type) {
+      case (TCOD_NOISE_PERLIN):
+        out[i] = TCOD_noise_perlin(noise, point);
+        break;
+      case (TCOD_NOISE_SIMPLEX):
+        out[i] = TCOD_noise_simplex(noise, point);
+        break;
+      case (TCOD_NOISE_WAVELET):
+        out[i] = TCOD_noise_wavelet(noise, point);
+        break;
+      default:
+        out[i] = NAN;
+        break;
+    }
+  }
+}
+
+void TCOD_noise_get_fbm_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    float octaves,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out) {
+  for (int i = 0; i < n; ++i) {
+    const float point[4] = {
+        x ? x[i] : 0,
+        y && noise->ndim >= 2 ? y[i] : 0,
+        z && noise->ndim >= 3 ? z[i] : 0,
+        w && noise->ndim >= 4 ? w[i] : 0,
+    };
+    switch (type ? type : noise->noise_type) {
+      case (TCOD_NOISE_PERLIN):
+        out[i] = TCOD_noise_fbm_perlin(noise, point, octaves);
+        break;
+      case (TCOD_NOISE_SIMPLEX):
+        out[i] = TCOD_noise_fbm_simplex(noise, point, octaves);
+        break;
+      case (TCOD_NOISE_WAVELET):
+        out[i] = TCOD_noise_fbm_wavelet(noise, point, octaves);
+        break;
+      default:
+        out[i] = NAN;
+        break;
+    }
+  }
+}
+
+void TCOD_noise_get_turbulence_vectorized(
+    TCOD_Noise* __restrict noise,
+    TCOD_noise_type_t type,
+    float octaves,
+    int n,
+    float* __restrict x,
+    float* __restrict y,
+    float* __restrict z,
+    float* __restrict w,
+    float* __restrict out) {
+  for (int i = 0; i < n; ++i) {
+    const float point[4] = {
+        x ? x[i] : 0,
+        y && noise->ndim >= 2 ? y[i] : 0,
+        z && noise->ndim >= 3 ? z[i] : 0,
+        w && noise->ndim >= 4 ? w[i] : 0,
+    };
+    switch (type ? type : noise->noise_type) {
+      case (TCOD_NOISE_PERLIN):
+        out[i] = TCOD_noise_turbulence_perlin(noise, point, octaves);
+        break;
+      case (TCOD_NOISE_SIMPLEX):
+        out[i] = TCOD_noise_turbulence_simplex(noise, point, octaves);
+        break;
+      case (TCOD_NOISE_WAVELET):
+        out[i] = TCOD_noise_turbulence_wavelet(noise, point, octaves);
+        break;
+      default:
+        out[i] = NAN;
+        break;
+    }
+  }
 }

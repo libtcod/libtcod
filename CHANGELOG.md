@@ -13,6 +13,7 @@ since `1.7.0`.
   public.
 - Added `TCOD_rng_splitmix64_next`.
 - Added the `TCOD_VERSIONNUM` and `TCOD_COMPILEDVERSION` macros.
+- Added vectorized noise generator functions.
 
 ### Changed
 - Video driver status info has been added to SDL video driver errors.

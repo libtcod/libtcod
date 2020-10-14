@@ -187,7 +187,6 @@ static float TCOD_noise_perlin(TCOD_Noise* __restrict data, const float* __restr
           w[2]);
       break;
     case 4:
-    default:
       value = LERP(
           LERP(
               LERP(
@@ -235,6 +234,8 @@ static float TCOD_noise_perlin(TCOD_Noise* __restrict data, const float* __restr
               w[2]),
           w[3]);
       break;
+    default:
+      return NAN;
   }
   return clamp_signed_f(value);
 }
@@ -319,7 +320,7 @@ static float TCOD_noise_simplex(TCOD_Noise* __restrict data, const float* __rest
       i1 = data->map[i1 & 0xFF];
       TCOD_NOISE_SIMPLEX_GRADIENT_1D(n1, i1, x1);
       n1 *= t1 * t1;
-      return 0.25f * (n0 + n1);
+      return clamp_signed_f(0.25f * (n0 + n1));
     } break;
     case 2: {
 #define F2 0.366025403f /* 0.5f * (sqrtf(3.0f)-1.0f); */
@@ -378,7 +379,7 @@ static float TCOD_noise_simplex(TCOD_Noise* __restrict data, const float* __rest
         TCOD_NOISE_SIMPLEX_GRADIENT_2D(n2, idx, x2, y2);
         n2 *= t2 * t2;
       }
-      return 40.0f * (n0 + n1 + n2);
+      return clamp_signed_f(40.0f * (n0 + n1 + n2));
     } break;
     case 3: {
 #define F3 0.333333333f
@@ -495,7 +496,7 @@ static float TCOD_noise_simplex(TCOD_Noise* __restrict data, const float* __rest
         TCOD_NOISE_SIMPLEX_GRADIENT_3D(n3, idx, x3, y3, z3);
         n3 *= t3 * t3;
       }
-      return 32.0f * (n0 + n1 + n2 + n3);
+      return clamp_signed_f(32.0f * (n0 + n1 + n2 + n3));
 
     } break;
     case 4: {
@@ -623,11 +624,12 @@ static float TCOD_noise_simplex(TCOD_Noise* __restrict data, const float* __rest
         TCOD_NOISE_SIMPLEX_GRADIENT_4D(n4, idx, x4, y4, z4, w4);
         n4 *= t4 * t4;
       }
-      return 27.0f * (n0 + n1 + n2 + n3 + n4);
+      return clamp_signed_f(27.0f * (n0 + n1 + n2 + n3 + n4));
 
     } break;
+    default:
+      return NAN;
   }
-  return 0.0f;
 }
 
 static float TCOD_noise_fbm_int(
@@ -785,8 +787,8 @@ static float TCOD_noise_wavelet(TCOD_Noise* __restrict data, const float* __rest
   float pf[3];
   int p[3], c[3], mid[3], n = WAVELET_TILE_SIZE;
   float w[3][3], t, result = 0.0f;
-  if (data->ndim > 3) {
-    return 0.0f; /* not supported */
+  if (data->ndim < 0 || data->ndim > 3) {
+    return NAN; /* not supported */
   }
   if (!data->waveletTileData) {
     TCOD_noise_wavelet_init(data);
@@ -830,146 +832,56 @@ static float TCOD_noise_turbulence_wavelet(TCOD_Noise* __restrict noise, const f
 void TCOD_noise_set_type(TCOD_Noise* __restrict noise, TCOD_noise_type_t type) { noise->noise_type = type; }
 
 float TCOD_noise_get_ex(TCOD_Noise* __restrict noise, const float* __restrict f, TCOD_noise_type_t type) {
-  switch (type) {
+  switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_perlin(noise, f);
-      break;
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_simplex(noise, f);
-      break;
     case (TCOD_NOISE_WAVELET):
       return TCOD_noise_wavelet(noise, f);
-      break;
     default:
-      switch (noise->noise_type) {
-        case (TCOD_NOISE_PERLIN):
-          return TCOD_noise_perlin(noise, f);
-          break;
-        case (TCOD_NOISE_SIMPLEX):
-          return TCOD_noise_simplex(noise, f);
-          break;
-        case (TCOD_NOISE_WAVELET):
-          return TCOD_noise_wavelet(noise, f);
-          break;
-        default:
-          return TCOD_noise_simplex(noise, f);
-          break;
-      }
-      break;
+      return NAN;
   }
 }
 
 float TCOD_noise_get_fbm_ex(
     TCOD_Noise* __restrict noise, const float* __restrict f, float octaves, TCOD_noise_type_t type) {
-  switch (type) {
+  switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_fbm_perlin(noise, f, octaves);
-      break;
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_fbm_simplex(noise, f, octaves);
-      break;
     case (TCOD_NOISE_WAVELET):
       return TCOD_noise_fbm_wavelet(noise, f, octaves);
-      break;
     default:
-      switch (noise->noise_type) {
-        case (TCOD_NOISE_PERLIN):
-          return TCOD_noise_fbm_perlin(noise, f, octaves);
-          break;
-        case (TCOD_NOISE_SIMPLEX):
-          return TCOD_noise_fbm_simplex(noise, f, octaves);
-          break;
-        case (TCOD_NOISE_WAVELET):
-          return TCOD_noise_fbm_wavelet(noise, f, octaves);
-          break;
-        default:
-          return TCOD_noise_fbm_simplex(noise, f, octaves);
-          break;
-      }
-      break;
+      return NAN;
   }
 }
 
 float TCOD_noise_get_turbulence_ex(
     TCOD_Noise* __restrict noise, const float* __restrict f, float octaves, TCOD_noise_type_t type) {
-  switch (type) {
+  switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_turbulence_perlin(noise, f, octaves);
-      break;
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_turbulence_simplex(noise, f, octaves);
-      break;
     case (TCOD_NOISE_WAVELET):
       return TCOD_noise_turbulence_wavelet(noise, f, octaves);
-      break;
     default:
-      switch (noise->noise_type) {
-        case (TCOD_NOISE_PERLIN):
-          return TCOD_noise_turbulence_perlin(noise, f, octaves);
-          break;
-        case (TCOD_NOISE_SIMPLEX):
-          return TCOD_noise_turbulence_simplex(noise, f, octaves);
-          break;
-        case (TCOD_NOISE_WAVELET):
-          return TCOD_noise_turbulence_wavelet(noise, f, octaves);
-          break;
-        default:
-          return TCOD_noise_turbulence_simplex(noise, f, octaves);
-          break;
-      }
-      break;
+      return NAN;
   }
 }
 
 float TCOD_noise_get(TCOD_Noise* __restrict noise, const float* __restrict f) {
-  switch (noise->noise_type) {
-    case (TCOD_NOISE_PERLIN):
-      return TCOD_noise_perlin(noise, f);
-      break;
-    case (TCOD_NOISE_SIMPLEX):
-      return TCOD_noise_simplex(noise, f);
-      break;
-    case (TCOD_NOISE_WAVELET):
-      return TCOD_noise_wavelet(noise, f);
-      break;
-    default:
-      return TCOD_noise_simplex(noise, f);
-      break;
-  }
+  return TCOD_noise_get_ex(noise, f, noise->noise_type);
 }
 
 float TCOD_noise_get_fbm(TCOD_Noise* __restrict noise, const float* __restrict f, float octaves) {
-  switch (noise->noise_type) {
-    case (TCOD_NOISE_PERLIN):
-      return TCOD_noise_fbm_perlin(noise, f, octaves);
-      break;
-    case (TCOD_NOISE_SIMPLEX):
-      return TCOD_noise_fbm_simplex(noise, f, octaves);
-      break;
-    case (TCOD_NOISE_WAVELET):
-      return TCOD_noise_fbm_wavelet(noise, f, octaves);
-      break;
-    default:
-      return TCOD_noise_fbm_simplex(noise, f, octaves);
-      break;
-  }
+  return TCOD_noise_get_fbm_ex(noise, f, octaves, noise->noise_type);
 }
 
 float TCOD_noise_get_turbulence(TCOD_Noise* __restrict noise, const float* __restrict f, float octaves) {
-  switch (noise->noise_type) {
-    case (TCOD_NOISE_PERLIN):
-      return TCOD_noise_turbulence_perlin(noise, f, octaves);
-      break;
-    case (TCOD_NOISE_SIMPLEX):
-      return TCOD_noise_turbulence_simplex(noise, f, octaves);
-      break;
-    case (TCOD_NOISE_WAVELET):
-      return TCOD_noise_turbulence_wavelet(noise, f, octaves);
-      break;
-    default:
-      return TCOD_noise_turbulence_simplex(noise, f, octaves);
-      break;
-  }
+  return TCOD_noise_get_turbulence_ex(noise, f, octaves, noise->noise_type);
 }
 
 void TCOD_noise_delete(TCOD_Noise* __restrict noise) {

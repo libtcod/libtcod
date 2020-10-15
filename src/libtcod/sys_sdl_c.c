@@ -203,7 +203,7 @@ void TCOD_sys_decode_font_(void) {
     TCOD_sys_map_clone_(0x2518, 0xD9);
   }
 }
-void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_Image* img, int x, int y) {
+void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_Image* img, int x, int y) {
   static const TCOD_color_t pink = {255, 0, 255};
   int img_width;
   int img_height;
@@ -214,7 +214,7 @@ void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_Image* img, 
   if (!TCOD_ctx.tileset) {
     return;
   }
-  int tile_id = fonty * TCOD_ctx.tileset->virtual_columns + fontx;
+  int tile_id = font_y * TCOD_ctx.tileset->virtual_columns + font_x;
   if (TCOD_tileset_reserve(TCOD_ctx.tileset, tile_id + 1) < 0) {
     return;
   }
@@ -341,19 +341,19 @@ int TCOD_sys_set_renderer(TCOD_renderer_t renderer) {
 }
 TCOD_DEPRECATED_NOMESSAGE
 static char* TCOD_strcasestr(const char* haystack, const char* needle) {
-  const char *startn = NULL, *np = NULL;
+  const char *start_n = NULL, *np = NULL;
   for (const char* p = haystack; *p; p++) {
     if (np) {
       if (toupper(*p) == toupper(*np)) {
         if (!*++np) {
-          return (char*)startn;
+          return (char*)start_n;
         }  // Const cast.
       } else {
         np = 0;
       }
     } else if (toupper(*p) == toupper(*needle)) {
       np = needle + 1;
-      startn = p;
+      start_n = p;
     }
   }
   return 0;

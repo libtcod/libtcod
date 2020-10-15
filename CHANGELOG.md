@@ -21,14 +21,14 @@ since `1.7.0`.
   zero.
 - Image loading now returns an error code.
 - Added window `x, y` coordinates when creating contexts.
-- Added `argc` and `argv` to contexts so that they can optionaly support CLI
+- Added `argc` and `argv` to contexts so that they can optionally support CLI
   commands.
-- A struct is used to pass paramaters for creating contexts.
+- A struct is used to pass parameters for creating contexts.
 - The OpenGL 2 renderer can now use `SDL_HINT_RENDER_SCALE_QUALITY` to
   determine the tileset upscaling filter.
 
 ### Deprecated
-- Depercated the following macros:
+- Deprecated the following macros:
   `TCOD_HEXVERSION`, `TCOD_TECHVERSION`, and `TCOD_STRVERSIONNAME`.
 
 ### Fixed
@@ -397,7 +397,7 @@ since `1.7.0`.
 ### Changed
 - Renamed `libtcod-CHANGELOG.txt` to `CHANGELOG.md`
 - SCons builder now outputs `libtcodgui` instead of `libtcod-gui` to match
-  Autotools behaviour.
+  Autotools behavior.
 
 ### Fixed
 - REXPaint operations now save/load as little-endian on any platform.
@@ -422,7 +422,7 @@ since `1.7.0`.
 - Non-reentrant line functions `TCOD_line_init` and `TCOD_line_step` are now
   deprecated.
 - `TCOD_line_mt` is deprecated.  `TCOD_line` is the same function with an
-  unnecessary parameter, and should be prefered.
+  unnecessary parameter, and should be preferred.
 
 ### Fixed
 - `TCOD_line` is now reentrant.
@@ -533,7 +533,7 @@ since `1.7.0`.
 ### Fixed
 - C++ TCODParser memory leak fixed.
   https://bitbucket.org/libtcod/libtcod/issues/27/tcodparser-memory-leaks
-- Frost sample fixed for a non-initialised data structure crash.
+- Frost sample fixed for a non-initialized data structure crash.
 
 ### Removed
 - Removed SDL1 support.
@@ -664,7 +664,7 @@ since `1.7.0`.
     instead of BKGND_SET, except if you call setBackgroundFlag before using them.
 - `TCODConsole::getHeight[Left/Right/Center]Rect` replaced by
   `TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...);`
-  (the 3 functions were useless, the height does not depend on the alignement... X( )
+  (the 3 functions were useless, the height does not depend on the alignment... X( )
 - `TCODConsole::initRoot` has an additional renderer parameter:
   `static void TCODConsole::initRoot(int w, int h, const char * title, bool fullscreen = false, TCOD_renderer_t renderer=TCOD_RENDERER_SDL);`
   Possible values:
@@ -676,7 +676,7 @@ since `1.7.0`.
   `void TCOD_map_clear` (TCOD_map_t map, bool transparent, bool walkable)
   map_clear (map, transparent, walkable)
 - cmake compilation works on FreeBSD thanks to namor_
-- Restrictive FOV algo updated to MRPAS v1.1 (faster, better-looking, improved symmetry)
+- Restrictive FOV algorithm updated to MRPAS v1.1 (faster, better-looking, improved symmetry)
 - Gaussian distribution in `TCODRandom` now uses a more precise Box-Muller transform algorithm
 - More default values for `printFrame`:
   `void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)`
@@ -746,7 +746,7 @@ since `1.7.0`.
 - the random number generator module now support two algorithms (Mingos)
   Mersenne twister, used in previous versions of libtcod
   Complementary Multiply With Carry, 2 to 3 times faster and has a much better
-  period. This is the default algo.
+  period. This is the default algorithm.
   You can choose the algorithm in the constructor:
   ```c
   typedef enum {
@@ -784,7 +784,7 @@ since `1.7.0`.
 ## [1.4.2] - 2009-10-06
 ### Added
 - added possibility to use SDL drawing functions on top of the root console with TCODSystem::registerSDLRenderer
-- added Mingos' restrictive precise angle shadowcasting fov algorithm as FOV_RESTRICTIVE
+- added Mingos' restrictive precise angle shadow casting fov algorithm as FOV_RESTRICTIVE
 - heightmap: added missing `TCOD_heightmap_set_value` function
 - new consolas, dejavu, lucida and prestige fonts from Mingos
 

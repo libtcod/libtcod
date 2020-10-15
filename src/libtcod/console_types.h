@@ -273,7 +273,7 @@ typedef enum {
   /**
       A new SDL2 renderer.  Allows the window to be resized.
 
-      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to detrmine the tileset
+      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to determine the tileset
       upscaling filter.  Either nearest or linear.  The hint will only take
       effect if it's set before this renderer is created.
 
@@ -285,7 +285,7 @@ typedef enum {
   /**
       A new OpenGL 2.0 core renderer.  Allows the window to be resized.
 
-      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to detrmine the tileset
+      You may set `SDL_HINT_RENDER_SCALE_QUALITY` to determine the tileset
       upscaling filter.  Either nearest or linear.  The hint will take effect
       on the next frame.
 

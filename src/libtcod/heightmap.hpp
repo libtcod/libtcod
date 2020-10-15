@@ -250,10 +250,10 @@ public :
 	@FuncTitle Dig hills
 	@FuncDesc This function takes the highest value (if height > 0) or the lowest (if height < 0) between the map and the hill.
 		It's main goal is to carve things in maps (like rivers) by digging hills along a curve.
-	@Cpp void TCODHeightMap::digHill(float hx, float hy, float hradius, float height)
+	@Cpp void TCODHeightMap::digHill(float hx, float hy, float h_radius, float height)
 	@C void TCOD_heightmap_dig_hill(TCOD_heightmap_t *hm, float x, float y, float radius, float height)
 	@Py heightmap_dig_hill(hm, x, y, radius, height)
-	@C# void TCODHeightMap::digHill(float hx, float hy, float hradius, float height)
+	@C# void TCODHeightMap::digHill(float hx, float hy, float h_radius, float height)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param x,y	Coordinates of the center of the hill.
 		0 <= x < map width
@@ -261,7 +261,7 @@ public :
 	@Param radius	The hill radius.
 	@Param height	The hill height. Can be < 0 or > 0
 	*/
-	void digHill(float hx, float hy, float hradius, float height);
+	void digHill(float hx, float hy, float h_radius, float height);
 
 	/**
 	@PageName heightmap_modify
@@ -331,30 +331,30 @@ public :
 	@PageName heightmap_modify
 	@FuncTitle Add a fbm
 		This function adds values from a simplex fbm function to the map.
-	@Cpp void TCODHeightMap::addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
-	@C void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
-	@Py heightmap_add_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
-	@C# void TCODHeightMap::addFbm(TCODNoise noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+	@Cpp void TCODHeightMap::addFbm(TCODNoise *noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
+	@C void TCOD_heightmap_add_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
+	@Py heightmap_add_fbm(hm, noise,mul_x, mul_y, add_x, add_y, octaves, delta, scale)
+	@C# void TCODHeightMap::addFbm(TCODNoise noise, float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 	@Param noise	The 2D noise to use.
-	@Param mulx, muly / addx, addy	The noise coordinate for map cell (x,y) are (x + addx)*mulx / width , (y + addy)*muly / height.
+	@Param mul_x, mul_y / add_x, add_y	The noise coordinate for map cell (x,y) are (x + add_x)*mul_x / width , (y + add_y)*mul_y / height.
 		Those values allow you to scale and translate the noise function over the heightmap.
 	@Param octaves	Number of octaves in the fbm sum.
 	@Param delta / scale	The value added to the heightmap is delta + noise * scale.
 	@Param noise is between -1.0 and 1.0
 	*/
-	void addFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale);
+	void addFbm(TCODNoise *noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale);
 
 	/**
 	@PageName heightmap_modify
 	@FuncTitle Scale with a fbm
 	@FuncDesc This function works exactly as the previous one, but it multiplies the resulting value instead of adding it to the heightmap.
-	@Cpp void TCODHeightMap::scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
-	@C void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
-	@Py heightmap_scale_fbm(hm, noise,mulx, muly, addx, addy, octaves, delta, scale)
-	@C# void TCODHeightMap::scaleFbm(TCODNoise noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale)
+	@Cpp void TCODHeightMap::scaleFbm(TCODNoise *noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
+	@C void TCOD_heightmap_scale_fbm(TCOD_heightmap_t *hm, TCOD_noise_t noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
+	@Py heightmap_scale_fbm(hm, noise,mul_x, mul_y, add_x, add_y, octaves, delta, scale)
+	@C# void TCODHeightMap::scaleFbm(TCODNoise noise, float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale)
 	*/
-	void scaleFbm(TCODNoise *noise,float mulx, float muly, float addx, float addy, float octaves, float delta, float scale);
+	void scaleFbm(TCODNoise *noise,float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale);
 
 	/**
 	@PageName heightmap_modify

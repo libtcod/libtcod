@@ -108,7 +108,7 @@ TCOD_PUBLIC void TCOD_console_draw_rect_rgb(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag);
 /**
-    Draw a decortaed frame onto `console` with the shape of `x`, `y`, `width`,
+    Draw a decorated frame onto `console` with the shape of `x`, `y`, `width`,
     `height`.
 
     `decoration[9]` is an optional array of Unicode codepoints.  If left as
@@ -124,7 +124,7 @@ TCOD_PUBLIC void TCOD_console_draw_rect_rgb(
     If `fg` or `bg` is NULL then their respective colors will not be updated.
 
     If `clear` is true then the inner area of the frame is filled with the
-    inner decoraction, which is typicaly space.
+    inner decoraction, which is typically space.
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_draw_frame_rgb(
     struct TCOD_Console* __restrict con,

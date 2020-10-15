@@ -53,7 +53,7 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(114, 150, 71),   // sand
     TCODColor(80, 120, 10),    // sand-grass transition
     TCODColor(17, 109, 7),     // grass
-    TCODColor(120, 220, 120),  // grass-snow transisiton
+    TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
 

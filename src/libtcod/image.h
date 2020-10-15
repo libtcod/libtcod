@@ -74,7 +74,7 @@ TCODLIB_API void TCOD_image_invert(TCOD_Image* image);
 TCODLIB_API void TCOD_image_hflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_rotate90(TCOD_Image* image, int numRotations);
 TCODLIB_API void TCOD_image_vflip(TCOD_Image* image);
-TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int neww, int newh);
+TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h);
 /**
     Save an image to a PNG or BMP file.
 
@@ -102,8 +102,8 @@ TCODLIB_API void TCOD_image_blit(
     float x,
     float y,
     TCOD_bkgnd_flag_t bkgnd_flag,
-    float scalex,
-    float scaley,
+    float scale_x,
+    float scale_y,
     float angle);
 TCODLIB_API void TCOD_image_blit_rect(
     TCOD_Image* image, TCOD_console_t console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag);

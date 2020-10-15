@@ -123,7 +123,7 @@ void TCOD_console_vline(TCOD_Console* console, int x, int y, int l, TCOD_bkgnd_f
   TCOD_console_draw_rect_rgb(console, x, y, 1, l, 0x2502, &console->fore, &console->back, flag);  // │
 }
 /**
-    Single pipe frame decotraion:
+    Single pipe frame decoration:
 
         ┌─┐
         │ │

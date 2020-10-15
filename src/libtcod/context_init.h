@@ -109,7 +109,7 @@ extern "C" {
     Create a new context with the given parameters.
 
     `params` is a non-NULL pointer to a TCOD_ContextParams struct.
-    See its documetnation for info on the parameters.
+    See its documentation for info on the parameters.
 
     `out` is the output for the `TCOD_Context`, must not be NULL.
 

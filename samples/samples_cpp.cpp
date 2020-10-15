@@ -47,49 +47,49 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       TCODColor(240, 85, 5),
       TCODColor(50, 35, 240),
       TCODColor(10, 200, 130)};  // random corner colors
-  static int dirr[4] = {1, -1, 1, 1}, dirg[4] = {1, -1, -1, 1}, dirb[4] = {1, 1, 1, -1};
+  static int dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
   if (first) {
     sampleConsole.clear();
   }
-  // ==== slighty modify the corner colors ====
+  // ==== slightly modify the corner colors ====
   for (int c = 0; c < 4; c++) {
     // move each corner color
     int component = TCODRandom::getInstance()->getInt(0, 2);
     switch (component) {
       case 0:
-        cols[c].r += 5 * dirr[c];
+        cols[c].r += 5 * dir_r[c];
         if (cols[c].r == 255)
-          dirr[c] = -1;
+          dir_r[c] = -1;
         else if (cols[c].r == 0)
-          dirr[c] = 1;
+          dir_r[c] = 1;
         break;
       case 1:
-        cols[c].g += 5 * dirg[c];
+        cols[c].g += 5 * dir_g[c];
         if (cols[c].g == 255)
-          dirg[c] = -1;
+          dir_g[c] = -1;
         else if (cols[c].g == 0)
-          dirg[c] = 1;
+          dir_g[c] = 1;
         break;
       case 2:
-        cols[c].b += 5 * dirb[c];
+        cols[c].b += 5 * dir_b[c];
         if (cols[c].b == 255)
-          dirb[c] = -1;
+          dir_b[c] = -1;
         else if (cols[c].b == 0)
-          dirb[c] = 1;
+          dir_b[c] = 1;
         break;
     }
   }
 
   // ==== scan the whole screen, interpolating corner colors ====
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    float xcoef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+    float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
     // get the current column top and bottom colors
-    TCODColor top = TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], xcoef);
-    TCODColor bottom = TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], xcoef);
+    TCODColor top = TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
+    TCODColor bottom = TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      float ycoef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+      float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
       // get the current cell color
-      TCODColor curColor = TCODColor::lerp(top, bottom, ycoef);
+      TCODColor curColor = TCODColor::lerp(top, bottom, y_coef);
       sampleConsole.setCharBackground(x, y, curColor, TCOD_BKGND_SET);
     }
   }
@@ -139,8 +139,8 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCODConsole screenshot(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);         // second screen
   static bool init = false;  // draw the secondary screen only the first time
   static int counter;
-  static int x = 0, y = 0;        // secondary screen position
-  static int xdir = 1, ydir = 1;  // movement direction
+  static int x = 0, y = 0;          // secondary screen position
+  static int x_dir = 1, y_dir = 1;  // movement direction
   if (!init) {
     init = true;
     secondary.printFrame(
@@ -162,16 +162,16 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
     counter = SDL_GetTicks();
     // move the secondary screen every 2 seconds
-    x += xdir;
-    y += ydir;
+    x += x_dir;
+    y += y_dir;
     if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
-      xdir = -1;
+      x_dir = -1;
     else if (x == -5)
-      xdir = 1;
+      x_dir = 1;
     if (y == SAMPLE_SCREEN_HEIGHT / 2 + 5)
-      ydir = -1;
+      y_dir = -1;
     else if (y == -5)
-      ydir = 1;
+      y_dir = 1;
   }
   // restore the initial screen
   TCODConsole::blit(&screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
@@ -243,15 +243,15 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // blit the background
   TCODConsole::blit(&bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
   // render the gradient
-  int recty = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
+  int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
     TCODColor col;
     col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
     col.g = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
     col.b = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    sampleConsole.setCharBackground(x, recty, col, (TCOD_bkgnd_flag_t)bkFlag);
-    sampleConsole.setCharBackground(x, recty + 1, col, (TCOD_bkgnd_flag_t)bkFlag);
-    sampleConsole.setCharBackground(x, recty + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
+    sampleConsole.setCharBackground(x, rect_y, col, (TCOD_bkgnd_flag_t)bkFlag);
+    sampleConsole.setCharBackground(x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bkFlag);
+    sampleConsole.setCharBackground(x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
   }
   // calculate the segment ends
   float angle = TCODSystem::getElapsedSeconds() * 2.0f;
@@ -429,7 +429,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static const char* smap[] = {
+  static const char* s_map[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -479,15 +479,15 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "PERMISSIVE7",
       "PERMISSIVE8",
       "RESTRICTIVE"};
-  static float torchx = 0.0f;  // torch light position in the perlin noise
+  static float torch_x = 0.0f;  // torch light position in the perlin noise
   if (!map) {
     // initialize the map for the fov toolkit
     map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == ' ')
+        if (s_map[y][x] == ' ')
           map->setProperties(x, y, true, true);  // ground
-        else if (smap[y][x] == '=')
+        else if (s_map[y][x] == '=')
           map->setProperties(x, y, true, false);  // window
       }
     }
@@ -513,7 +513,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     // draw windows
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == '=') {
+        if (s_map[y][x] == '=') {
           sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -528,20 +528,20 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   float dx = 0.0f, dy = 0.0f, di = 0.0f;
   if (torch) {
     // slightly change the perlin noise parameter
-    torchx += 0.2f;
+    torch_x += 0.2f;
     // randomize the light position between -1.5 and 1.5
-    float tdx = torchx + 20.0f;
+    float tdx = torch_x + 20.0f;
     dx = noise->get(&tdx) * 1.5f;
     tdx += 30.0f;
     dy = noise->get(&tdx) * 1.5f;
     // randomize the light intensity between -0.2 and 0.2
-    di = 0.2f * noise->get(&torchx);
+    di = 0.2f * noise->get(&torch_x);
   }
   // draw the dungeon
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
       bool visible = map->isInFov(x, y);
-      bool wall = smap[y][x] == '#';
+      bool wall = s_map[y][x] == '#';
       if (!visible) {
         sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
       } else {
@@ -569,7 +569,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if (key->c == 'I' || key->c == 'i') {
     // player move north
-    if (smap[py - 1][px] == ' ') {
+    if (s_map[py - 1][px] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       py--;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -577,7 +577,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'K' || key->c == 'k') {
     // player move south
-    if (smap[py + 1][px] == ' ') {
+    if (s_map[py + 1][px] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       py++;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -585,7 +585,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'J' || key->c == 'j') {
     // player move west
-    if (smap[py][px - 1] == ' ') {
+    if (s_map[py][px - 1] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       px--;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -593,7 +593,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'L' || key->c == 'l') {
     // player move east
-    if (smap[py][px + 1] == ' ') {
+    if (s_map[py][px + 1] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       px++;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -655,8 +655,8 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   sampleConsole.clear();
   float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCODSystem::getElapsedSeconds()) * 10.0f;
   float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-  float scalex = 0.2f + 1.8f * (1.0f + cosf(TCODSystem::getElapsedSeconds() / 2)) / 2.0f;
-  float scaley = scalex;
+  float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCODSystem::getElapsedSeconds() / 2)) / 2.0f;
+  float scale_y = scale_x;
   float angle = TCODSystem::getElapsedSeconds();
   long elapsed = TCODSystem::getElapsedMilli() / 2000;
   if (elapsed & 1) {
@@ -679,14 +679,14 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     circle->blitRect(&sampleConsole, 15, 3, -1, -1, TCOD_BKGND_SET);
     circle->blitRect(&sampleConsole, 30, 3, -1, -1, TCOD_BKGND_SET);
   }
-  img->blit(&sampleConsole, x, y, TCOD_BKGND_SET, scalex, scaley, angle);
+  img->blit(&sampleConsole, x, y, TCOD_BKGND_SET, scale_x, scale_y, angle);
 }
 
 // ***************************
 // mouse sample
 // ***************************/
 void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static bool lbut = false, rbut = false, mbut = false;
+  static bool left_button = false, right_button = false, middle_button = false;
 
   if (first) {
     sampleConsole.setDefaultBackground(TCODColor::grey);
@@ -696,9 +696,9 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
 
   sampleConsole.clear();
-  if (mouse->lbutton_pressed) lbut = !lbut;
-  if (mouse->rbutton_pressed) rbut = !rbut;
-  if (mouse->mbutton_pressed) mbut = !mbut;
+  if (mouse->lbutton_pressed) left_button = !left_button;
+  if (mouse->rbutton_pressed) right_button = !right_button;
+  if (mouse->mbutton_pressed) middle_button = !middle_button;
   sampleConsole.printf(
       1,
       1,
@@ -719,11 +719,11 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       mouse->dx,
       mouse->dy,
       mouse->lbutton ? " ON" : "OFF",
-      lbut ? " ON" : "OFF",
+      left_button ? " ON" : "OFF",
       mouse->rbutton ? " ON" : "OFF",
-      rbut ? " ON" : "OFF",
+      right_button ? " ON" : "OFF",
       mouse->mbutton ? " ON" : "OFF",
-      mbut ? " ON" : "OFF",
+      middle_button ? " ON" : "OFF",
       mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
   sampleConsole.printf(1, 10, "1 : Hide cursor\n2 : Show cursor");
   if (key->c == '1')
@@ -737,7 +737,7 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static const char* smap[] = {
+  static const char* s_map[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -781,9 +781,9 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == ' ')
+        if (s_map[y][x] == ' ')
           map->setProperties(x, y, true, true);  // ground
-        else if (smap[y][x] == '=')
+        else if (s_map[y][x] == '=')
           map->setProperties(x, y, true, false);  // window
       }
     }
@@ -804,7 +804,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     // draw windows
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == '=') {
+        if (s_map[y][x] == '=') {
           sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -834,7 +834,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // draw the dungeon
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = smap[y][x] == '#';
+      bool wall = s_map[y][x] == '#';
       sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
     }
   }
@@ -848,7 +848,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   } else {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        bool wall = smap[y][x] == '#';
+        bool wall = s_map[y][x] == '#';
         if (!wall) {
           float d = dijkstra->getDistance(x, y);
           sampleConsole.setCharBackground(
@@ -887,7 +887,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy--;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'K' || key->c == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
@@ -896,7 +896,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy++;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'J' || key->c == 'j') && dx > 0) {
@@ -905,7 +905,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dx--;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'L' || key->c == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
@@ -914,7 +914,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dx++;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if (key->vk == TCODK_TAB) {
@@ -933,7 +933,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy = my;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   }
@@ -1240,11 +1240,11 @@ class SampleRenderer : public ITCODSDLRenderer {
     SDL_Surface* screen = (SDL_Surface*)sdlSurface;
     // now we have almighty access to the screen's precious pixels !!
     // get the font character size
-    int charw, charh;
-    TCODSystem::getCharSize(&charw, &charh);
+    int char_w, char_h;
+    TCODSystem::getCharSize(&char_w, &char_h);
     // compute the sample console position in pixels
-    int samplex = SAMPLE_SCREEN_X * charw;
-    int sampley = SAMPLE_SCREEN_Y * charh;
+    int sample_x = SAMPLE_SCREEN_X * char_w;
+    int sample_y = SAMPLE_SCREEN_Y * char_h;
     delay -= TCODSystem::getLastFrameLength();
     if (delay < 0.0f) {
       delay = 3.0f;
@@ -1256,13 +1256,13 @@ class SampleRenderer : public ITCODSDLRenderer {
     }
     switch (effectNum) {
       case 0:
-        blur(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+        blur(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
         break;
       case 1:
-        explode(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+        explode(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
         break;
       case 2:
-        burn(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+        burn(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
         break;
     }
   }
@@ -1272,50 +1272,50 @@ class SampleRenderer : public ITCODSDLRenderer {
   int effectNum;
   float delay;
 
-  void burn(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
-    int ridx = screen->format->Rshift / 8;
-    int gidx = screen->format->Gshift / 8;
-    int bidx = screen->format->Bshift / 8;
-    for (int x = samplex; x < samplex + samplew; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-      for (int y = sampley; y < sampley + sampleh; y++) {
+  void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+    int r_idx = screen->format->Rshift / 8;
+    int g_idx = screen->format->Gshift / 8;
+    int b_idx = screen->format->Bshift / 8;
+    for (int x = sample_x; x < sample_x + sample_w; x++) {
+      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
         uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
-        ir += p2[ridx];
-        ig += p2[gidx];
-        ib += p2[bidx];
+        ir += p2[r_idx];
+        ig += p2[g_idx];
+        ib += p2[b_idx];
         p2 -= 2 * screen->format->BytesPerPixel;  // get pixel at x-1,y
-        ir += p2[ridx];
-        ig += p2[gidx];
-        ib += p2[bidx];
+        ir += p2[r_idx];
+        ig += p2[g_idx];
+        ib += p2[b_idx];
         p2 += screen->format->BytesPerPixel + screen->pitch;  // get pixel at x,y+1
-        ir += p2[ridx];
-        ig += p2[gidx];
-        ib += p2[bidx];
+        ir += p2[r_idx];
+        ig += p2[g_idx];
+        ib += p2[b_idx];
         p2 -= 2 * screen->pitch;  // get pixel at x,y-1
-        ir += p2[ridx];
-        ig += p2[gidx];
-        ib += p2[bidx];
+        ir += p2[r_idx];
+        ig += p2[g_idx];
+        ib += p2[b_idx];
         ir /= 4;
         ig /= 4;
         ib /= 4;
-        p[ridx] = ir;
-        p[gidx] = ig;
-        p[bidx] = ib;
+        p[r_idx] = ir;
+        p[g_idx] = ig;
+        p[b_idx] = ib;
         p += screen->pitch;
       }
     }
   }
 
-  void explode(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
-    int ridx = screen->format->Rshift / 8;
-    int gidx = screen->format->Gshift / 8;
-    int bidx = screen->format->Bshift / 8;
+  void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+    int r_idx = screen->format->Rshift / 8;
+    int g_idx = screen->format->Gshift / 8;
+    int b_idx = screen->format->Bshift / 8;
     TCODRandom* rng = TCODRandom::getInstance();
     int dist = (int)(10 * (3.0f - delay));
-    for (int x = samplex; x < samplex + samplew; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-      for (int y = sampley; y < sampley + sampleh; y++) {
+    for (int x = sample_x; x < sample_x + sample_w; x++) {
+      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
         for (int i = 0; i < 3; i++) {
           int dx = rng->getInt(-dist, dist);
@@ -1323,35 +1323,35 @@ class SampleRenderer : public ITCODSDLRenderer {
           uint8_t* p2;
           p2 = p + dx * screen->format->BytesPerPixel;
           p2 += dy * screen->pitch;
-          ir += p2[ridx];
-          ig += p2[gidx];
-          ib += p2[bidx];
+          ir += p2[r_idx];
+          ig += p2[g_idx];
+          ib += p2[b_idx];
         }
         ir /= 3;
         ig /= 3;
         ib /= 3;
-        p[ridx] = ir;
-        p[gidx] = ig;
-        p[bidx] = ib;
+        p[r_idx] = ir;
+        p[g_idx] = ig;
+        p[b_idx] = ib;
         p += screen->pitch;
       }
     }
   }
 
-  void blur(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
+  void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
     // let's blur that sample console
     float f[3], n = 0.0f;
-    int ridx = screen->format->Rshift / 8;
-    int gidx = screen->format->Gshift / 8;
-    int bidx = screen->format->Bshift / 8;
+    int r_idx = screen->format->Rshift / 8;
+    int g_idx = screen->format->Gshift / 8;
+    int b_idx = screen->format->Bshift / 8;
     f[2] = TCODSystem::getElapsedSeconds();
-    for (int x = samplex; x < samplex + samplew; x++) {
-      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-      f[0] = (float)(x) / samplew;
-      for (int y = sampley; y < sampley + sampleh; y++) {
+    for (int x = sample_x; x < sample_x + sample_w; x++) {
+      uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+      f[0] = (float)(x) / sample_w;
+      for (int y = sample_y; y < sample_y + sample_h; y++) {
         int ir = 0, ig = 0, ib = 0;
-        if ((y - sampley) % 8 == 0) {
-          f[1] = (float)(y) / sampleh;
+        if ((y - sample_y) % 8 == 0) {
+          f[1] = (float)(y) / sample_h;
           n = noise->getFbm(f, 3.0f);
         }
         int dec = (int)(3 * (n + 1.0f));
@@ -1360,85 +1360,85 @@ class SampleRenderer : public ITCODSDLRenderer {
           case 4:
             count += 4;
             // get pixel at x,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= 2 * screen->pitch;  // get pixel at x+2,y+2
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += 2 * screen->pitch;
           case 3:
             count += 4;
             // get pixel at x,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += 2 * screen->pitch;  // get pixel at x+2,y+2
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= 2 * screen->pitch;
           case 2:
             count += 4;
             // get pixel at x,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= screen->format->BytesPerPixel;  // get pixel at x-1,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= screen->pitch;  // get pixel at x-1,y-1
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += screen->format->BytesPerPixel;  // get pixel at x,y-1
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += screen->pitch;
           case 1:
             count += 4;
             // get pixel at x,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += screen->format->BytesPerPixel;  // get pixel at x+1,y
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p += screen->pitch;  // get pixel at x+1,y+1
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= screen->format->BytesPerPixel;  // get pixel at x,y+1
-            ir += p[ridx];
-            ig += p[gidx];
-            ib += p[bidx];
+            ir += p[r_idx];
+            ig += p[g_idx];
+            ib += p[b_idx];
             p -= screen->pitch;
             ir /= count;
             ig /= count;
             ib /= count;
-            p[ridx] = ir;
-            p[gidx] = ig;
-            p[bidx] = ib;
+            p[r_idx] = ir;
+            p[g_idx] = ig;
+            p[b_idx] = ib;
             break;
           default:
             break;

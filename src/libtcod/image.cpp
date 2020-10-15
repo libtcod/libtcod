@@ -40,11 +40,11 @@ TCODImage::TCODImage(int width, int height) : deleteData(true) { data = TCOD_ima
 TCODImage::TCODImage(const TCODConsole* con) { data = TCOD_image_from_console(con->get_data()); }
 
 void TCODImage::clear(const TCODColor col) {
-  TCOD_color_t ccol;
-  ccol.r = col.r;
-  ccol.g = col.g;
-  ccol.b = col.b;
-  TCOD_image_clear(data, ccol);
+  TCOD_color_t clear_color;
+  clear_color.r = col.r;
+  clear_color.g = col.g;
+  clear_color.b = col.b;
+  TCOD_image_clear(data, clear_color);
 }
 
 void TCODImage::getSize(int* w, int* h) const { TCOD_image_get_size(data, w, h); }
@@ -62,14 +62,14 @@ TCODColor TCODImage::getMipmapPixel(float x0, float y0, float x1, float y1) {
 }
 
 void TCODImage::putPixel(int x, int y, const TCODColor col) {
-  TCOD_color_t ccol = {col.r, col.g, col.b};
-  TCOD_image_put_pixel(data, x, y, ccol);
+  TCOD_color_t color = {col.r, col.g, col.b};
+  TCOD_image_put_pixel(data, x, y, color);
 }
 
 void TCODImage::blit(
-    TCODConsole* console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
+    TCODConsole* console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag, float scale_x, float scale_y, float angle)
     const {
-  TCOD_image_blit(data, console->get_data(), x, y, bkgnd_flag, scalex, scaley, angle);
+  TCOD_image_blit(data, console->get_data(), x, y, bkgnd_flag, scale_x, scale_y, angle);
 }
 
 void TCODImage::blitRect(TCODConsole* console, int x, int y, int w, int h, TCOD_bkgnd_flag_t bkgnd_flag) const {
@@ -83,8 +83,8 @@ void TCODImage::save(const char* filename) const {
 }
 
 void TCODImage::setKeyColor(const TCODColor keyColor) {
-  TCOD_color_t ccol = {keyColor.r, keyColor.g, keyColor.b};
-  TCOD_image_set_key_color(data, ccol);
+  TCOD_color_t color = {keyColor.r, keyColor.g, keyColor.b};
+  TCOD_image_set_key_color(data, color);
 }
 
 bool TCODImage::isPixelTransparent(int x, int y) const { return TCOD_image_is_pixel_transparent(data, x, y) != 0; }
@@ -99,7 +99,7 @@ void TCODImage::rotate90(int numRotations) { TCOD_image_rotate90(data, numRotati
 
 void TCODImage::vflip() { TCOD_image_vflip(data); }
 
-void TCODImage::scale(int neww, int newh) { TCOD_image_scale(data, neww, newh); }
+void TCODImage::scale(int new_w, int new_h) { TCOD_image_scale(data, new_w, new_h); }
 
 void TCODImage::blit2x(TCODConsole* dest, int dx, int dy, int sx, int sy, int w, int h) const {
   TCOD_image_blit_2x(data, dest->get_data(), dx, dy, sx, sy, w, h);

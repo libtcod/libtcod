@@ -510,7 +510,7 @@ public :
 	@PageName list_iterator
 	@PageFather list
 	@PageTitle Iterators
-	@FuncDesc You can iterate through the elements of the list using an iterator. begin() returns the address of the first element of the list. You go to the next element using the increment operator ++. When the iterator's value is equal to end(), you've gone through all the elements. <b>Warning ! You cannot insert elements in the list while iterating through it. Inserting elements can result in reallocation of the list and your iterator will not longer be valid.</b>
+	@FuncDesc You can iterate through the elements of the list using an iterator. begin() returns the address of the first element of the list. You go to the next element using the increment operator ++. When the iterators value is equal to end(), you've gone through all the elements. <b>Warning ! You cannot insert elements in the list while iterating through it. Inserting elements can result in reallocation of the list and your iterator will not longer be valid.</b>
 	@Cpp
 		template <class T> T * TCODList::begin() const
 		template <class T> T * TCODList::end() const

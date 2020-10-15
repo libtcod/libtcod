@@ -212,7 +212,7 @@ Essentially, this is the same as TCOD_DISTRIBUTION_GAUSSIAN. The difference is t
 5. TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE
 Essentially, this is the same as TCOD_DISTRIBUTION_GAUSSIAN_RANGE, but the min and max values have the greatest probability of appearing, while the values between them, the lowest.
 
-There exist functions to also specify both a min-max range AND a custom mean, which can be any value (possibly either min or max, but it can even be outside that range). In case such a function is used, the distributions will trigger a slihtly different behaviour:
+There exist functions to also specify both a min-max range AND a custom mean, which can be any value (possibly either min or max, but it can even be outside that range). In case such a function is used, the distributions will trigger a slightly different behaviour:
 * TCOD_DISTRIBUTION_LINEAR
 * TCOD_DISTRIBUTION_GAUSSIAN
 * TCOD_DISTRIBUTION_GAUSSIAN_RANGE

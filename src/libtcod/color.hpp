@@ -173,7 +173,7 @@ public :
 		if (!TCOD_color_equals(my_color,TCOD_white)) { ... }
 	@PyEx
 		if my_color == libtcod.yellow : ...
-		if my_color != litbcod.white : ...
+		if my_color != libtcod.white : ...
 	@C#Ex
 		if (myColor.Equal(TCODColor.yellow)) { ... }
 		if (myColor.NotEqual(TCODColor.white)) { ... }
@@ -221,7 +221,7 @@ public :
 </tbody>
 	@CppEx TCODColor myDarkishRed = TCODColor::lightRed * 0.5f;
 	@CEx TCOD_color_t my_darkish_red = TCOD_color_multiply_scalar(TCOD_light_red, 0.5f);
-	@PyEx myDarkishRed = litbcod.light_red * 0.5
+	@PyEx myDarkishRed = libtcod.light_red * 0.5
 	@C#Ex TCODColor myDarkishRed = TCODColor.lightRed.Multiply(0.5f);
 	@LuaEx myDarkishRed = tcod.color.lightRed * 0.5
 	*/
@@ -283,7 +283,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	<tr><td style="background-color: rgb(255, 0, 0); color: rgb(255, 255, 255);" align="center">coef == 1.0f</td><td style="background-color: rgb(96, 96, 96); width: 60px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td></tr></table>
 	@CppEx TCODColor myColor = TCODColor::lerp ( TCODColor::darkGrey, TCODColor::lightRed,coef );
 	@CEx TCOD_color_t my_color = TCOD_color_lerp ( TCOD_dark_grey, TCOD_light_red,coef);
-	@PyEx my_color = libtcod.color_lerp ( libtcod.dark_grey, litbcod.light_red,coef)
+	@PyEx my_color = libtcod.color_lerp ( libtcod.dark_grey, libtcod.light_red,coef)
 	@C#Ex TCODColor myColor = TCODColor.Interpolate( TCODColor.darkGrey, TCODColor.lightRed, coef );
 	@LuaEx myColor = tcod.color.Interpolate( tcod.color.darkGrey, tcod.color.lightRed, coef )
 	*/

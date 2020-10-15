@@ -53,7 +53,7 @@ static TCOD_Error gl_screenshot(struct TCOD_Context* __restrict context, const c
   glGetIntegerv(GL_VIEWPORT, rect);
   TCOD_ColorRGBA* pixels = malloc(sizeof(*pixels) * rect[2] * rect[3]);
   if (!pixels) {
-    TCOD_set_errorv("Could not allocae memory for a screenshot.");
+    TCOD_set_errorv("Could not allocate memory for a screenshot.");
     return TCOD_E_OUT_OF_MEMORY;
   }
   glReadPixels(0, 0, rect[2], rect[3], GL_RGBA, GL_UNSIGNED_BYTE, pixels);

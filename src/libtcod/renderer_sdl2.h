@@ -145,7 +145,7 @@ TCOD_PUBLIC TCOD_Error TCOD_sdl2_render_texture_setup(
 /**
     Render a console onto a managed target texture.
 
-    This funtion assumes that `cache` and `target` are valid.
+    This function assumes that `cache` and `target` are valid.
     You can use `TCOD_sdl2_render_texture_setup` to automatically prepare these
     objects for use with this function.
 

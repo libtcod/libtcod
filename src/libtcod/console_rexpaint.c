@@ -300,7 +300,7 @@ static int write_console(gzFile gz_file, const TCOD_Console* console) {
  *  \param [in] filename The filepath to save to.
  *  \param [in] compress_level A zlib compression level, from 0 to 9.
  *  1=fast, 6=balanced, 9=slowest, 0=uncompressed.
- *  \return ``true`` when the file is saved succesfully, or ``false`` when an
+ *  \return ``true`` when the file is saved successfully, or ``false`` when an
  *  issue is detected.
  *
  *  The REXPaint format can support a 1:1 copy of a libtcod console.

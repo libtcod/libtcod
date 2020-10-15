@@ -155,7 +155,7 @@ static const char TCOD_help_msg[] =
 #define TCOD_CHECK_ARGUMENT(arg, name) (strcmp((arg), ("-" name)) == 0 || strcmp((arg), ("--" name)) == 0)
 /**
     Create a new context while filling incomplete values as needed and
-    unpacking values from the envrioment and the command line.
+    unpacking values from the envrionment and the command line.
  */
 TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out) {
   if (!params) {
@@ -244,7 +244,7 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     pixel_height = rows * tileset->tile_height;
   }
 
-  // Initilize the renderer.
+  // Initialize the renderer.
   int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
   err = TCOD_E_OK;
   switch (renderer_type) {

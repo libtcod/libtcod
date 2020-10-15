@@ -97,14 +97,14 @@ public :
 		TCOD_path_t path = TCOD_path_new_using_map(my_map,1.41f);
 		// Dijkstra :
 		TCOD_map_t my_map=TCOD_map_new(50,50,true);
-		TCOD_dijkstra_t dijk = TCOD_dijkstra_new(my_map,1.41f);
+		TCOD_dijkstra_t dijkstra = TCOD_dijkstra_new(my_map,1.41f);
 	@PyEx
 		# A* :
 		my_map=libtcod.map_new(50,50,True)
 		path = libtcod.path_new_using_map(my_map)
 		# Dijkstra
 		my_map=libtcod.map_new(50,50,True)
-		dijk = libtcod.dijkstra_new(my_map)
+		dijkstra = libtcod.dijkstra_new(my_map)
 	*/
 	TCODPath(const TCODMap *map, float diagonalCost=1.41f);
 	/**
@@ -360,7 +360,7 @@ public :
 		for (i=0; i < TCOD_dijkstra_size(dijkstra); i++ ) {
 			int x,y;
 			TCOD_dijkstra_get(dijkstra,i,&x,&y);
-			printf ("Dijsktra coord : %d %d\n", x,y );
+			printf ("Dijkstra coord : %d %d\n", x,y );
 		}
 	@PyEx
 		for i in range (libtcod.path_size(path)) :

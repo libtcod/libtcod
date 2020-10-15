@@ -66,7 +66,7 @@ class TCODLIB_API TCODNamegen {
 		@C#
 			static void TCODNameGenerator::parse(string filename)
 			static void TCODNameGenerator::parse(string filename, TCODRandom random)
-		@Param filename 	The file where the desired syllable set is saved, along with its relative parh, for instance, "data/names.txt".
+		@Param filename 	The file where the desired syllable set is saved, along with its relative path, for instance, "data/names.txt".
 		@Param random 	A random number generator object. Use NULL for the default random number generator
 		@CppEx
 			TCODNamegen::parse("data/names.txt",TCODRandom::getInstance());
@@ -145,7 +145,7 @@ class TCODLIB_API TCODNamegen {
 		/**
 		@PageName namegen_generate
 		@FuncTitle Retrieving available set names
-		@FuncDesc If you wish to check the sylable set names that are currently available, you may call:
+		@FuncDesc If you wish to check the syllable set names that are currently available, you may call:
 		This will create a list with all the available syllable set names. Remember to delete that list after you don't need it anymore!
 		@Cpp static TCODList TCODNamegen::getSets ()
 		@C TCOD_list_t TCOD_namegen_get_sets ()
@@ -262,7 +262,7 @@ The above structure only uses three syllable lists and has three different rules
 
 $s_$m - this will output a Start syllable and a Middle syllable, separated with a space.
 
-$s_$50m_$e - This will output a Start syllable, followed by a Middle syllable, followed by an End sylable, all separated with spaces. However, the Middle syllable has only 50% chance of appearing at all, so 50% of the time the rule will actually produce a Start syllable followed directly by an End syllable, separated with a space.
+$s_$50m_$e - This will output a Start syllable, followed by a Middle syllable, followed by an End syllable, all separated with spaces. However, the Middle syllable has only 50% chance of appearing at all, so 50% of the time the rule will actually produce a Start syllable followed directly by an End syllable, separated with a space.
 
 As you may have noticed, the third rule may produce a double space if the Middle syllable is not chosen. You do not have to worry about such cases, as the generator will automatically reduce all double spaces to single spaces, and leading/ending spaces will be removed completely.
 

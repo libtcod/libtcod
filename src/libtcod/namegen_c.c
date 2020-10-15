@@ -222,7 +222,7 @@ void namegen_populate_list(char* source, TCOD_list_t list, bool wildcards) {
                                                if the entire string is a single token?*/
   memset(token, '\0', strlen(source) + 1);
   do {
-    /* do the tokenising using an iterator immitation :) */
+    /* do the tokenizing using an iterator imitation :) */
     char* it = source + i;
     /* append a normal character */
     if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || *it == '-') strncat(token, it, 1);
@@ -540,7 +540,7 @@ char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate) {
       else if (*it == '$') {
         int chance = 100;
         it++;
-        /* food for the randomiser */
+        /* food for the randomizer */
         if (*it >= '0' && *it <= '9') {
           chance = 0;
           while (*it >= '0' && *it <= '9') {

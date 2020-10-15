@@ -426,7 +426,7 @@ public :
 	/**
 	@PageName console_credits
 	@FuncTitle Restart the credits animation
-	@FuncDesc When using rederCredits, you can restart the credits animation from the beginning before it's finished by calling this function.
+	@FuncDesc When using renderCredits, you can restart the credits animation from the beginning before it's finished by calling this function.
 	@Cpp static void TCODConsole::resetCredits()
 	@C void TCOD_console_credits_reset()
 	@Py console_credits_reset()
@@ -456,7 +456,7 @@ public :
 	@Param back the new default background color for this console
 	@CppEx TCODConsole::root->setDefaultBackground(myColor)
 	@CEx TCOD_console_set_default_background(NULL, my_color)
-	@PyEx litbcod.console_set_default_background(0, my_color)
+	@PyEx libtcod.console_set_default_background(0, my_color)
 	@Lua libtcod.TCODConsole_root:setBackgroundColor( myColor )
 	*/
 	void setDefaultBackground(TCODColor back);
@@ -474,7 +474,7 @@ public :
 	@Param fore the new default foreground color for this console
 	@CppEx TCODConsole::root->setDefaultForeground(myColor)
 	@CEx TCOD_console_set_default_foreground(NULL, my_color)
-	@PyEx litbcod.console_set_default_foreground(0, my_color)
+	@PyEx libtcod.console_set_default_foreground(0, my_color)
 	@LuaEx libtcod.TCODConsole_root:setForegroundColor( myColor )
 	*/
 	void setDefaultForeground(TCODColor fore);
@@ -618,7 +618,7 @@ public :
 		TCOD_BKGND_DEFAULT : use the console's default background flag
 		Note that TCOD_BKGND_ALPHA and TCOD_BKGND_ADDALPHA are MACROS that needs a float parameter between (0.0 and 1.0). TCOD_BKGND_ALPH and TCOD_BKGND_ADDA should not be used directly (else they will have the same effect as TCOD_BKGND_NONE).
 		For Python, remove TCOD_ : libtcod.BKGND_NONE
-		For C# : None, Set, Multiply, Lighten, Darken, Screen, ColodDodge, ColorBurn, Add, Burn Overlay, Default
+		For C# : None, Set, Multiply, Lighten, Darken, Screen, ColorDodge, ColorBurn, Add, Burn Overlay, Default
 		With lua, use tcod.None, ..., tcod.Default, BUT tcod.console.Alpha(value) and tcod.console.AddAlpha(value)
 	*/
 
@@ -876,10 +876,10 @@ public :
 			TCOD_COLCTRL_FORE_RGB,255,1,1,TCOD_COLCTRL_BACK_RGB,1,1,1,TCOD_COLCTRL_STOP);
 	@PyEx
 		# A string with a red over black word, using predefined color control codes
-		libtcod.console_set_color_control(libtcod.COLCTRL_1,litbcod.red,litbcod.black)
+		libtcod.console_set_color_control(libtcod.COLCTRL_1,libtcod.red,libtcod.black)
 		libtcod.console_print(0,1,1,"String with a %cred%c word."%(libtcod.COLCTRL_1,libtcod.COLCTRL_STOP))
 		# A string with a red word (over default background color), using generic color control codes
-		litbcod.console_print(0,1,1,"String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
+		libtcod.console_print(0,1,1,"String with a %c%c%c%cred%c word."%(libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_STOP))
 		# A string with a red over black word, using generic color control codes
 		libtcod.console_print(0,1,1,"String with a %c%c%c%c%c%c%c%cred%c word."%
 		        (libtcod.COLCTRL_FORE_RGB,255,1,1,libtcod.COLCTRL_BACK_RGB,1,1,1,libtcod.COLCTRL_STOP))
@@ -1724,9 +1724,9 @@ public :
 		libtcod.console_wait_for_keypress(True)
 		# do a cross-fading from off1 to off2
 		for i in range(1,256) :
-			litbcod.console_blit(off1,0,0,80,50,0,0,0) # renders the first screen (opaque)
-			litbcod.console_blit(off2,0,0,80,50,0,0,0,i/255.0,i/255.0) # renders the second screen (transparent)
-			litbcod.console_flush()
+			libtcod.console_blit(off1,0,0,80,50,0,0,0) # renders the first screen (opaque)
+			libtcod.console_blit(off2,0,0,80,50,0,0,0,i/255.0,i/255.0) # renders the second screen (transparent)
+			libtcod.console_flush()
 	@LuaEx
 		-- Cross-fading between two offscreen consoles. We use two offscreen consoles with the same size as the root console. We render a different screen on each offscreen console. When the user hits a key, we do a cross-fading from the first screen to the second screen.
 		off1 = tcod.Console(80,50)

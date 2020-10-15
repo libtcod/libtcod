@@ -34,7 +34,7 @@
 
 // temperature / precipitation Biome diagram (Whittaker diagram)
 EBiome biomeDiagram[5][5] = {
-    // artic/alpine climate (below -5캜)
+    // arctic/alpine climate (below -5째C)
     {
         TUNDRA,
         TUNDRA,
@@ -42,7 +42,7 @@ EBiome biomeDiagram[5][5] = {
         TUNDRA,
         TUNDRA,
     },
-    // cold climate (-5 / 5 캜)
+    // cold climate (-5 / 5 째C)
     {
         COLD_DESERT,
         GRASSLAND,
@@ -50,7 +50,7 @@ EBiome biomeDiagram[5][5] = {
         BOREAL_FOREST,
         BOREAL_FOREST,
     },
-    // temperate climate (5 / 15 캜)
+    // temperate climate (5 / 15 째C)
     {
         COLD_DESERT,
         GRASSLAND,
@@ -58,7 +58,7 @@ EBiome biomeDiagram[5][5] = {
         TEMPERATE_FOREST,
         TROPICAL_MONTANE_FOREST,
     },
-    // warm climate (15 - 20캜)
+    // warm climate (15 - 20째C)
     {
         HOT_DESERT,
         SAVANNA,
@@ -66,7 +66,7 @@ EBiome biomeDiagram[5][5] = {
         TROPICAL_EVERGREEN_FOREST,
         TROPICAL_EVERGREEN_FOREST,
     },
-    // tropical climate (above 20 캜)
+    // tropical climate (above 20 째C)
     {
         HOT_DESERT,
         THORN_FOREST,
@@ -101,9 +101,9 @@ static const TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(134, 180, 101),  // sand
     TCODColor(80, 120, 10),    // sand-grass transition
     TCODColor(17, 109, 7),     // grass
-    TCODColor(30, 85, 12),     // grass-rock transisiton
+    TCODColor(30, 85, 12),     // grass-rock transistion
     TCODColor(64, 70, 20),     // rock
-    TCODColor(120, 140, 40),   // rock-snow transisiton
+    TCODColor(120, 140, 40),   // rock-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
 
@@ -130,7 +130,7 @@ static const int MAX_PREC_KEY = 19;
 static const int precIndexes[MAX_PREC_KEY] = {
     4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 50, 60, 70, 80, 100, 120, 140, 160, 255};
 static const float precipitations[MAX_PREC_KEY] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18, 20, 25, 30, 35, 40  // cm / m� / year
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18, 20, 25, 30, 35, 40  // cm / m짼 / year
 };
 static const TCODColor precColors[MAX_PREC_KEY] = {
     TCODColor(128, 0, 0),      // < 4
@@ -159,13 +159,13 @@ static const int MAX_TEMP_KEY = 7;
 static const int tempIndexes[MAX_TEMP_KEY] = {0, 42, 84, 126, 168, 210, 255};
 static const int temperatures[MAX_TEMP_KEY] = {-30, -20, -10, 0, 10, 20, 30};
 static const TCODColor tempKeyColor[MAX_TEMP_KEY] = {
-    TCODColor(180, 8, 130),   // -30 캜
-    TCODColor(32, 1, 139),    // -20 캜
-    TCODColor(0, 65, 252),    // -10 캜
-    TCODColor(37, 255, 236),  // 0 캜
-    TCODColor(255, 255, 1),   // 10 캜
-    TCODColor(255, 29, 4),    // 20 캜
-    TCODColor(80, 3, 0),      // 30 캜
+    TCODColor(180, 8, 130),   // -30 째C
+    TCODColor(32, 1, 139),    // -20 째C
+    TCODColor(0, 65, 252),    // -10 째C
+    TCODColor(37, 255, 236),  // 0 째C
+    TCODColor(255, 255, 1),   // 10 째C
+    TCODColor(255, 29, 4),    // 20 째C
+    TCODColor(80, 3, 0),      // 30 째C
 };
 
 int WorldGenerator::getWidth() const { return HM_WIDTH; }
@@ -188,14 +188,14 @@ float WorldGenerator::getRealAltitude(float x, float y) const {
 }
 
 float WorldGenerator::getPrecipitations(float x, float y) const {
-  int iprec = (int)(256 * precipitation->getValue((int)x, (int)y));
+  int i_prec = (int)(256 * precipitation->getValue((int)x, (int)y));
   int idx;
-  iprec = CLAMP(0, 255, iprec);
+  i_prec = CLAMP(0, 255, i_prec);
   for (idx = 0; idx < MAX_PREC_KEY - 1; idx++) {
-    if (precIndexes[idx + 1] > iprec) break;
+    if (precIndexes[idx + 1] > i_prec) break;
   }
   --idx;
-  float prec = precipitations[idx] + (precipitations[idx + 1] - precipitations[idx]) * (iprec - precIndexes[idx]) /
+  float prec = precipitations[idx] + (precipitations[idx + 1] - precipitations[idx]) * (i_prec - precIndexes[idx]) /
                                          (precIndexes[idx + 1] - precIndexes[idx]);
   return prec;
 }
@@ -339,9 +339,9 @@ void WorldGenerator::smoothMap() {
 #endif
 }
 
-static const int dirx[9] = {0, -1, 0, 1, -1, 1, -1, 0, 1};
-static const int diry[9] = {0, -1, -1, -1, 0, 0, 1, 1, 1};
-static const float dircoef[9] = {
+static const int dir_x[9] = {0, -1, 0, 1, -1, 1, -1, 0, 1};
+static const int dir_y[9] = {0, -1, -1, -1, 0, 0, 1, 1, 1};
+static const float dir_coef[9] = {
     1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f};
 static const int oppdir[9] = {0, 8, 7, 6, 5, 4, 3, 2, 1};
 
@@ -359,26 +359,26 @@ void WorldGenerator::erodeMap() {
     for (int y = 0; y < HM_HEIGHT; y++) {
       for (int x = 0; x < HM_WIDTH; x++) {
         float h = hm->getValue(x, y);
-        float hmin = h, hmax = h;
+        float h_min = h, h_max = h;
         int minDir = 0, maxDir = 0;
         for (int i = 1; i < 9; i++) {
-          int ix = x + dirx[i];
-          int iy = y + diry[i];
+          int ix = x + dir_x[i];
+          int iy = y + dir_y[i];
           if (IN_RECTANGLE(ix, iy, HM_WIDTH, HM_HEIGHT)) {
             float h2 = hm->getValue(ix, iy);
-            if (h2 < hmin) {
-              hmin = h2;
+            if (h2 < h_min) {
+              h_min = h2;
               minDir = i;
-            } else if (h2 > hmax) {
-              hmax = h2;
+            } else if (h2 > h_max) {
+              h_max = h2;
               maxDir = i;
             }
           }
         }
         md->flowDir = minDir;
         md->upDir = maxDir;
-        float slope = hmin - h;  // this is negative
-        slope *= dircoef[minDir];
+        float slope = h_min - h;  // this is negative
+        slope *= dir_coef[minDir];
         md->slope = slope;
         md++;
       }
@@ -406,8 +406,8 @@ void WorldGenerator::erodeMap() {
             sediment -= md2->slope;
             hm->setValue(ix, iy, h);
             oldFlow = md2->flowDir;
-            ix += dirx[oldFlow];
-            iy += diry[oldFlow];
+            ix += dir_x[oldFlow];
+            iy += dir_y[oldFlow];
             md2 = &mapData[ix + iy * HM_WIDTH];
           }
         }
@@ -428,8 +428,8 @@ void WorldGenerator::erodeMap() {
         float sumDelta1 = 0.0f, sumDelta2 = 0.0f;
         int nb1 = 1, nb2 = 1;
         for (int i = 1; i < 9; i++) {
-          int ix = x + dirx[i];
-          int iy = y + diry[i];
+          int ix = x + dir_x[i];
+          int iy = y + dir_y[i];
           if (IN_RECTANGLE(ix, iy, HM_WIDTH, HM_HEIGHT)) {
             float ih = hm->getValue(ix, iy);
             if (ih < h) {
@@ -445,11 +445,11 @@ void WorldGenerator::erodeMap() {
             }
           }
         }
-        // average height difference with lower neighbours
+        // average height difference with lower neighbors
         float dh = sumDelta1 / nb1 + sumDelta2 / nb2;
         dh *= MUDSLIDE_COEF;
-        float hcoef = (h - sandHeight) * sandCoef;
-        dh *= (1.0f - hcoef * hcoef * hcoef);  // less smoothing at high altitudes
+        float h_coef = (h - sandHeight) * sandCoef;
+        dh *= (1.0f - h_coef * h_coef * h_coef);  // less smoothing at high altitudes
 
         newMap.setValue(x, y, h + dh);
       }
@@ -681,19 +681,19 @@ void WorldGenerator::generateRivers() {
     int ry = randPt.get(i) / HM_WIDTH;
 
     float minDist = 1E10;
-    int bestx = -1, besty = -1;
+    int best_x = -1, best_y = -1;
     for (int j = 0; j < tree.size(); j++) {
       int tx = tree.get(j) % HM_WIDTH;
       int ty = tree.get(j) / HM_WIDTH;
       float dist = (tx - rx) * (tx - rx) + (ty - ry) * (ty - ry);
       if (dist < minDist) {
         minDist = dist;
-        bestx = tx;
-        besty = ty;
+        best_x = tx;
+        best_y = ty;
       }
     }
-    TCODLine::init(bestx, besty, rx, ry);
-    int len = 3, cx = bestx, cy = besty;
+    TCODLine::init(best_x, best_y, rx, ry);
+    int len = 3, cx = best_x, cy = best_y;
     map_data_t* md = &mapData[cx + cy * HM_WIDTH];
     if (md->riverId == riverId) md->riverId = 0;
     do {
@@ -711,7 +711,7 @@ void WorldGenerator::generateRivers() {
       len--;
     } while (len > 0);
     int newNode = cx + cy * HM_WIDTH;
-    if (newNode != bestx + besty * HM_WIDTH) {
+    if (newNode != best_x + best_y * HM_WIDTH) {
       tree.push(newNode);
     }
   }
@@ -744,12 +744,12 @@ void WorldGenerator::generateRivers() {
         dy = sy;
         DBG( ("source : %d %d\n",sx,sy));
         // travel down to the see
-        // get the hiwest point around current position
+        // get the highest point around current position
         bool deadEnd=false;
         int len=0;
         river_t *river=new river_t();
         rivers.push(river);
-        int maxlen=HM_WIDTH,lastdx=1,lastdy=1;
+        int maxlen=HM_WIDTH,last_dx=1,last_dy=1;
         do {
         int coord = sx + sy*HM_WIDTH;
             map_data_t *md=&mapData[coord];
@@ -769,16 +769,16 @@ void WorldGenerator::generateRivers() {
         river->coords.push(coord);
         river->strength.push(1);
                 if ( md->upDir != 0 ) {
-                    lastdx=dirx[md->upDir];
-                        sx += lastdx;
-                        lastdy=diry[md->upDir];
-                        sy += lastdy;
+                    last_dx=dir_x[md->upDir];
+                        sx += last_dx;
+                        last_dy=dir_y[md->upDir];
+                        sy += last_dy;
                         deadEnd=false;
                 } else if ( deadEnd ) {
                     break;
                 } else {
-                        sx += lastdx;
-                        sy += lastdy;
+                        sx += last_dx;
+                        sy += last_dy;
                         if ( ! IN_RECTANGLE(sx,sy,HM_WIDTH,HM_HEIGHT ) ) break;
                         deadEnd=true;
                 }
@@ -790,7 +790,7 @@ void WorldGenerator::generateRivers() {
 */
 
 EClimate WorldGenerator::getClimateFromTemp(float temp) {
-  if (temp <= -5) return ARTIC_ALPINE;
+  if (temp <= -5) return ARCTIC_ALPINE;
   if (temp <= 5) return COLD;
   if (temp <= 15) return TEMPERATE;
   if (temp <= 20) return WARM;
@@ -826,23 +826,23 @@ void WorldGenerator::computePrecipitations() {
   static const float basePrecip = 0.01f;  // precipitation coef when slope == 0
   float t0 = TCODSystem::getElapsedSeconds();
   // north/south winds
-  for (int diry = -1; diry <= 1; diry += 2) {
+  for (int dir_y = -1; dir_y <= 1; dir_y += 2) {
     for (int x = 0; x < HM_WIDTH; x++) {
-      float noisex = (float)(x)*5 / HM_WIDTH;
-      // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noisex,3.0f));
-      float waterAmount = (1.0f + noise1d.getFbm(&noisex, 3.0f, TCOD_NOISE_SIMPLEX));
-      int starty = (diry == -1 ? HM_HEIGHT - 1 : 0);
-      int endy = (diry == -1 ? -1 : HM_HEIGHT);
-      for (int y = starty; y != endy; y += diry) {
+      float noise_x = (float)(x)*5 / HM_WIDTH;
+      // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noise_x,3.0f));
+      float waterAmount = (1.0f + noise1d.getFbm(&noise_x, 3.0f, TCOD_NOISE_SIMPLEX));
+      int start_y = (dir_y == -1 ? HM_HEIGHT - 1 : 0);
+      int end_y = (dir_y == -1 ? -1 : HM_HEIGHT);
+      for (int y = start_y; y != end_y; y += dir_y) {
         float h = hm->getValue(x, y);
         if (h < sandHeight) {
           waterAmount += waterAdd;
         } else if (waterAmount > 0.0f) {
           float slope;
-          if ((unsigned)(y + diry) < (unsigned)HM_HEIGHT)
-            slope = hm->getValue(x, y + diry) - h;
+          if ((unsigned)(y + dir_y) < (unsigned)HM_HEIGHT)
+            slope = hm->getValue(x, y + dir_y) - h;
           else
-            slope = h - hm->getValue(x, y - diry);
+            slope = h - hm->getValue(x, y - dir_y);
           if (slope >= 0.0f) {
             float precip = waterAmount * (basePrecip + slope * slopeCoef);
             precipitation->setValue(x, y, precipitation->getValue(x, y) + precip);
@@ -858,23 +858,23 @@ void WorldGenerator::computePrecipitations() {
   t0 = t1;
 
   // east/west winds
-  for (int dirx = -1; dirx <= 1; dirx += 2) {
+  for (int dir_x = -1; dir_x <= 1; dir_x += 2) {
     for (int y = 0; y < HM_HEIGHT; y++) {
-      float noisey = (float)(y)*5 / HM_HEIGHT;
-      // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noisey,3.0f));
-      float waterAmount = (1.0f + noise1d.getFbm(&noisey, 3.0f, TCOD_NOISE_SIMPLEX));
-      int startx = (dirx == -1 ? HM_WIDTH - 1 : 0);
-      int endx = (dirx == -1 ? -1 : HM_WIDTH);
-      for (int x = startx; x != endx; x += dirx) {
+      float noise_y = (float)(y)*5 / HM_HEIGHT;
+      // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noise_y,3.0f));
+      float waterAmount = (1.0f + noise1d.getFbm(&noise_y, 3.0f, TCOD_NOISE_SIMPLEX));
+      int start_x = (dir_x == -1 ? HM_WIDTH - 1 : 0);
+      int end_x = (dir_x == -1 ? -1 : HM_WIDTH);
+      for (int x = start_x; x != end_x; x += dir_x) {
         float h = hm->getValue(x, y);
         if (h < sandHeight) {
           waterAmount += waterAdd;
         } else if (waterAmount > 0.0f) {
           float slope;
-          if ((unsigned)(x + dirx) < (unsigned)HM_WIDTH)
-            slope = hm->getValue(x + dirx, y) - h;
+          if ((unsigned)(x + dir_x) < (unsigned)HM_WIDTH)
+            slope = hm->getValue(x + dir_x, y) - h;
           else
-            slope = h - hm->getValue(x - dirx, y);
+            slope = h - hm->getValue(x - dir_x, y);
           if (slope >= 0.0f) {
             float precip = waterAmount * (basePrecip + slope * slopeCoef);
             precipitation->setValue(x, y, precipitation->getValue(x, y) + precip);
@@ -899,10 +899,10 @@ void WorldGenerator::computePrecipitations() {
     float coef = sinf(2 * 3.1415926 * lat);
     for (int x = 0; x < HM_WIDTH; x++) {
       float f[2] = {(float)(x) / HM_WIDTH, (float)(y) / HM_HEIGHT};
-      // float xcoef = coef + 0.5f*noise2d.getFbmSimplex(f,3.0f);
-      float xcoef = coef + 0.5f * noise2d.getFbm(f, 3.0f, TCOD_NOISE_SIMPLEX);
+      // float x_coef = coef + 0.5f*noise2d.getFbmSimplex(f,3.0f);
+      float x_coef = coef + 0.5f * noise2d.getFbm(f, 3.0f, TCOD_NOISE_SIMPLEX);
       float precip = precipitation->getValue(x, y);
-      precip += (max - min) * xcoef * 0.1f;
+      precip += (max - min) * x_coef * 0.1f;
       precipitation->setValue(x, y, precip);
     }
   }
@@ -939,8 +939,8 @@ void WorldGenerator::smoothPrecipitations() {
 
   // better quality polishing blur using a 5x5 kernel
   // faster than TCODHeightmap kernelTransform function
-  TCODHeightMap temphm(HM_WIDTH, HM_HEIGHT);
-  temphm.copy(precipitation);
+  TCODHeightMap temp_hm(HM_WIDTH, HM_HEIGHT);
+  temp_hm.copy(precipitation);
   for (int i = 4; i != 0; i--) {
     for (int x = 0; x < HM_WIDTH; x++) {
       int minx = x - 2;
@@ -958,7 +958,7 @@ void WorldGenerator::smoothPrecipitations() {
           count++;
         }
       }
-      temphm.setValue(x, 0, sum / count);
+      temp_hm.setValue(x, 0, sum / count);
       for (int y = 1; y < HM_HEIGHT; y++) {
         if (y - 2 >= 0) {
           // remove the top-line sum
@@ -974,11 +974,11 @@ void WorldGenerator::smoothPrecipitations() {
             count++;
           }
         }
-        temphm.setValue(x, y, sum / count);
+        temp_hm.setValue(x, y, sum / count);
       }
     }
   }
-  precipitation->copy(&temphm);
+  precipitation->copy(&temp_hm);
 
   float t1 = TCODSystem::getElapsedSeconds();
   DBG(("  Blur... %g\n", t1 - t0));
@@ -991,8 +991,8 @@ void WorldGenerator::smoothPrecipitations() {
 }
 
 void WorldGenerator::computeTemperaturesAndBiomes() {
-  // temperature shift with altitude : -25캜 at 6000 m
-  // mean temp at sea level : 25캜 at lat 0  5캜 at lat 45 -25캜 at lat 90 (sinusoide)
+  // temperature shift with altitude : -25째C at 6000 m
+  // mean temp at sea level : 25째C at lat 0  5째C at lat 45 -25째C at lat 90 (sinusoide)
   float sandCoef = 1.0f / (1.0f - sandHeight);
   float waterCoef = 1.0f / sandHeight;
   for (int y = 0; y < HM_HEIGHT; y++) {
@@ -1293,21 +1293,21 @@ void WorldGenerator::saveBiomeMap(const char* filename) {
   }
   drawCoasts(&img);
   // blit legend
-  int legendx = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
+  int legend_x = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
   for (int x = 0; x < legendWidth; x++) {
     for (int y = 0; y < legendHeight; y++) {
-      img.putPixel(legendx + x, HM_HEIGHT + y, legend->getPixel(x, y));
+      img.putPixel(legend_x + x, HM_HEIGHT + y, legend->getPixel(x, y));
     }
   }
   // fill legend colors
   for (int i = 0; i < 6; i++) {
     for (int x = 17; x < 47; x++)
-      for (int y = 4 + i * 14; y < 14 + i * 14; y++) img.putPixel(legendx + x, HM_HEIGHT + y, biomeColors[i]);
+      for (int y = 4 + i * 14; y < 14 + i * 14; y++) img.putPixel(legend_x + x, HM_HEIGHT + y, biomeColors[i]);
   }
   for (int i = 6; i < NB_BIOMES; i++) {
     for (int x = 221; x < 251; x++)
       for (int y = 4 + (i - 6) * 14; y < 14 + (i - 6) * 14; y++)
-        img.putPixel(legendx + x, HM_HEIGHT + y, biomeColors[i]);
+        img.putPixel(legend_x + x, HM_HEIGHT + y, biomeColors[i]);
   }
   img.save(filename);
 }
@@ -1345,10 +1345,10 @@ void WorldGenerator::saveTemperatureMap(const char* filename) {
   drawCoasts(&img);
 
   // blit legend
-  int legendx = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
+  int legend_x = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
   for (int x = 0; x < legendWidth; x++) {
     for (int y = 0; y < legendHeight; y++) {
-      img.putPixel(legendx + x, HM_HEIGHT + y, legend->getPixel(x, y));
+      img.putPixel(legend_x + x, HM_HEIGHT + y, legend->getPixel(x, y));
     }
   }
   img.save(filename);
@@ -1372,9 +1372,9 @@ void WorldGenerator::savePrecipitationMap(const char* filename) {
         img.putPixel(x, y, TCODColor(100, 100, 255));
       else {
         float prec = precipitation->getValue(x, y);
-        int iprec = (int)(prec * 180);
+        int i_prec = (int)(prec * 180);
         int colorIdx = 0;
-        while (colorIdx < MAX_PREC_KEY && iprec > precIndexes[colorIdx]) colorIdx++;
+        while (colorIdx < MAX_PREC_KEY && i_prec > precIndexes[colorIdx]) colorIdx++;
         colorIdx = CLAMP(0, MAX_PREC_KEY, colorIdx);
         img.putPixel(x, y, precColors[colorIdx]);
       }
@@ -1383,10 +1383,10 @@ void WorldGenerator::savePrecipitationMap(const char* filename) {
   drawCoasts(&img);
 
   // blit legend
-  int legendx = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
+  int legend_x = MAX(HM_WIDTH, legendWidth) / 2 - legendWidth / 2;
   for (int x = 0; x < legendWidth; x++) {
     for (int y = 0; y < legendHeight; y++) {
-      img.putPixel(legendx + x, HM_HEIGHT + y, legend->getPixel(x, y));
+      img.putPixel(legend_x + x, HM_HEIGHT + y, legend->getPixel(x, y));
     }
   }
   img.save(filename);
@@ -1409,17 +1409,17 @@ void WorldGenerator::saveAltitudeMap(const char* filename) {
   for (int x = 0; x < HM_WIDTH; x++) {
     for (int y = 0; y < HM_HEIGHT; y++) {
       float h = hm->getValue(x, y);
-      int ialt = (int)(h * 256);
-      ialt = CLAMP(0, 255, ialt);
-      img.putPixel(x, y, altGradient[ialt]);
+      int i_alt = (int)(h * 256);
+      i_alt = CLAMP(0, 255, i_alt);
+      img.putPixel(x, y, altGradient[i_alt]);
     }
   }
 
   // blit legend
-  int legendy = MAX(HM_HEIGHT, legendHeight) / 2 - legendHeight / 2;
+  int legend_y = MAX(HM_HEIGHT, legendHeight) / 2 - legendHeight / 2;
   for (int x = 0; x < legendWidth; x++) {
     for (int y = 0; y < legendHeight; y++) {
-      img.putPixel(HM_WIDTH + x, legendy + y, legend->getPixel(x, y));
+      img.putPixel(HM_WIDTH + x, legend_y + y, legend->getPixel(x, y));
     }
   }
   img.save(filename);

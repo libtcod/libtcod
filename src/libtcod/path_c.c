@@ -40,8 +40,8 @@ enum { NORTH_WEST, NORTH, NORTH_EAST, WEST, NONE, EAST, SOUTH_WEST, SOUTH, SOUTH
 typedef unsigned char dir_t;
 
 /* convert dir_t to dx,dy */
-static int dirx[] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-static int diry[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
+static int dir_x[] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
+static int dir_y[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
 static int invdir[] = {SOUTH_EAST, SOUTH, SOUTH_WEST, EAST, NONE, WEST, NORTH_EAST, NORTH, NORTH_WEST};
 
 typedef struct TCOD_Path {
@@ -49,11 +49,11 @@ typedef struct TCOD_Path {
   int dx, dy;       /* coordinates of the creature's destination */
   TCOD_list_t path; /* list of dir_t to follow the path */
   int w, h;         /* map size */
-  float* grid;      /* wxh djikstra distance grid (covered distance) */
-  float* heur;      /* wxh A* score grid (covered distance + estimated remaining distance) */
+  float* grid;      /* wxh dijkstra distance grid (covered distance) */
+  float* heuristic; /* wxh A* score grid (covered distance + estimated remaining distance) */
   dir_t* prev;      /* wxh 'previous' grid : direction to the previous cell */
   float diagonalCost;
-  TCOD_list_t heap; /* min_heap used in the algorithm. stores the offset in grid/heur (offset=x+y*w) */
+  TCOD_list_t heap; /* min_heap used in the algorithm. stores the offset in grid/heuristic (offset=x+y*w) */
   TCOD_map_t map;
   TCOD_path_func_t func;
   void* user_data;
@@ -69,10 +69,10 @@ static void heap_sift_down(TCOD_path_data_t* path, TCOD_list_t heap) {
   while (child <= end) {
     int toSwap = cur;
     uintptr_t off_cur = array[cur];
-    float cur_dist = path->heur[off_cur];
+    float cur_dist = path->heuristic[off_cur];
     float swapValue = cur_dist;
     uintptr_t off_child = array[child];
-    float child_dist = path->heur[off_child];
+    float child_dist = path->heuristic[off_child];
     if (child_dist < cur_dist) {
       toSwap = child;
       swapValue = child_dist;
@@ -80,7 +80,7 @@ static void heap_sift_down(TCOD_path_data_t* path, TCOD_list_t heap) {
     if (child < end) {
       /* get the min between child and child+1 */
       uintptr_t off_child2 = array[child + 1];
-      float child2_dist = path->heur[off_child2];
+      float child2_dist = path->heuristic[off_child2];
       if (swapValue > child2_dist) {
         toSwap = child + 1;
         swapValue = child2_dist;
@@ -105,10 +105,10 @@ static void heap_sift_up(TCOD_path_data_t* path, TCOD_list_t heap) {
   uintptr_t* array = (uintptr_t*)TCOD_list_begin(heap);
   while (child > 0) {
     uintptr_t off_child = array[child];
-    float child_dist = path->heur[off_child];
+    float child_dist = path->heuristic[off_child];
     int parent = (child - 1) / 2;
     uintptr_t off_parent = array[parent];
-    float parent_dist = path->heur[off_parent];
+    float parent_dist = path->heuristic[off_parent];
     if (parent_dist > child_dist) {
       /* get up one level */
       uintptr_t tmp = array[child];
@@ -160,12 +160,12 @@ static void heap_reorder(TCOD_path_data_t* path, uint32_t offset) {
   }
   if (cur == end) return;
   off_idx = array[idx];
-  value = path->heur[off_idx];
+  value = path->heuristic[off_idx];
   if (idx > 0) {
     int parent = (idx - 1) / 2;
     /* compare to its parent */
     uintptr_t off_parent = array[parent];
-    float parent_value = path->heur[off_parent];
+    float parent_value = path->heuristic[off_parent];
     if (value < parent_value) {
       /* smaller. bubble it up */
       while (idx > 0 && value < parent_value) {
@@ -176,7 +176,7 @@ static void heap_reorder(TCOD_path_data_t* path, uint32_t offset) {
         if (idx > 0) {
           parent = (idx - 1) / 2;
           off_parent = array[parent];
-          parent_value = path->heur[off_parent];
+          parent_value = path->heuristic[off_parent];
         }
       }
       return;
@@ -189,15 +189,15 @@ static void heap_reorder(TCOD_path_data_t* path, uint32_t offset) {
     int toSwap = idx;
     int child2;
     float swapValue = value;
-    if (path->heur[off_child] < value) {
+    if (path->heuristic[off_child] < value) {
       /* swap with son1 ? */
       toSwap = child;
-      swapValue = path->heur[off_child];
+      swapValue = path->heuristic[off_child];
     }
     child2 = child + 1;
     if (child2 < heap_size) {
       uintptr_t off_child2 = array[child2];
-      if (path->heur[off_child2] < swapValue) {
+      if (path->heuristic[off_child2] < swapValue) {
         /* swap with son2 */
         toSwap = child2;
       }
@@ -224,10 +224,10 @@ static TCOD_path_data_t* TCOD_path_new_intern(int w, int h) {
   path->w = w;
   path->h = h;
   path->grid = (float*)calloc(sizeof(float), w * h);
-  path->heur = (float*)calloc(sizeof(float), w * h);
+  path->heuristic = (float*)calloc(sizeof(float), w * h);
   path->prev = (dir_t*)calloc(sizeof(dir_t), w * h);
-  if (!path->grid || !path->heur || !path->prev) {
-    TCOD_fatal("Fatal error : path finding module cannot allocate djikstra grids (size %dx%d)\n", w, h);
+  if (!path->grid || !path->heuristic || !path->prev) {
+    TCOD_fatal("Fatal error : path finding module cannot allocate dijkstra grids (size %dx%d)\n", w, h);
     exit(1);
   }
   path->path = TCOD_list_new();
@@ -268,12 +268,12 @@ bool TCOD_path_compute(TCOD_path_t p, int ox, int oy, int dx, int dy) {
   /* check that origin and destination are inside the map */
   TCOD_IFNOT((unsigned)ox < (unsigned)path->w && (unsigned)oy < (unsigned)path->h) return false;
   TCOD_IFNOT((unsigned)dx < (unsigned)path->w && (unsigned)dy < (unsigned)path->h) return false;
-  /* initialize djikstra grids */
+  /* initialize dijkstra grids */
   memset(path->grid, 0, sizeof(float) * path->w * path->h);
   memset(path->prev, NONE, sizeof(dir_t) * path->w * path->h);
-  path->heur[ox + oy * path->w] = 1.0f; /* anything != 0 */
-  TCOD_path_push_cell(path, ox, oy);    /* put the origin cell as a bootstrap */
-  /* fill the djikstra grid until we reach dx,dy */
+  path->heuristic[ox + oy * path->w] = 1.0f; /* anything != 0 */
+  TCOD_path_push_cell(path, ox, oy);         /* put the origin cell as a bootstrap */
+  /* fill the dijkstra grid until we reach dx,dy */
   TCOD_path_set_cells(path);
   if (path->grid[dx + dy * path->w] == 0) return false; /* no path found */
   /* there is a path. retrieve it */
@@ -281,8 +281,8 @@ bool TCOD_path_compute(TCOD_path_t p, int ox, int oy, int dx, int dy) {
     /* walk from destination to origin, using the 'prev' array */
     int step = path->prev[dx + dy * path->w];
     TCOD_list_push(path->path, (void*)(uintptr_t)step);
-    dx -= dirx[step];
-    dy -= diry[step];
+    dx -= dir_x[step];
+    dy -= dir_y[step];
   } while (dx != ox || dy != oy);
   return true;
 }
@@ -305,26 +305,24 @@ void TCOD_path_reverse(TCOD_path_t p) {
 }
 
 bool TCOD_path_walk(TCOD_path_t p, int* x, int* y, bool recalculate_when_needed) {
-  int newx, newy;
-  int d;
   TCOD_path_data_t* path = (TCOD_path_data_t*)p;
   TCOD_IFNOT(p != NULL) return false;
   if (TCOD_path_is_empty(path)) return false;
-  d = (int)(uintptr_t)TCOD_list_pop(path->path);
-  newx = path->ox + dirx[d];
-  newy = path->oy + diry[d];
+  int d = (int)(uintptr_t)TCOD_list_pop(path->path);
+  int new_x = path->ox + dir_x[d];
+  int new_y = path->oy + dir_y[d];
   /* check if the path is still valid */
-  if (TCOD_path_walk_cost(path, path->ox, path->oy, newx, newy) <= 0.0f) {
+  if (TCOD_path_walk_cost(path, path->ox, path->oy, new_x, new_y) <= 0.0f) {
     /* path is blocked */
     if (!recalculate_when_needed) return false; /* don't walk */
     /* calculate a new path */
     if (!TCOD_path_compute(path, path->ox, path->oy, path->dx, path->dy)) return false; /* cannot find a new path */
     return TCOD_path_walk(p, x, y, true);                                               /* walk along the new path */
   }
-  if (x) *x = newx;
-  if (y) *y = newy;
-  path->ox = newx;
-  path->oy = newy;
+  if (x) *x = new_x;
+  if (y) *y = new_y;
+  path->ox = new_x;
+  path->oy = new_y;
   return true;
 }
 
@@ -349,8 +347,8 @@ void TCOD_path_get(TCOD_path_t p, int index, int* x, int* y) {
   pos = TCOD_list_size(path->path) - 1;
   do {
     int step = (int)(uintptr_t)TCOD_list_get(path->path, pos);
-    if (x) *x += dirx[step];
-    if (y) *y += diry[step];
+    if (x) *x += dir_x[step];
+    if (y) *y += dir_y[step];
     pos--;
     index--;
   } while (index >= 0);
@@ -360,7 +358,7 @@ void TCOD_path_delete(TCOD_path_t p) {
   TCOD_path_data_t* path = (TCOD_path_data_t*)p;
   TCOD_IFNOT(p != NULL) return;
   if (path->grid) free(path->grid);
-  if (path->heur) free(path->heur);
+  if (path->heuristic) free(path->heuristic);
   if (path->prev) free(path->prev);
   if (path->path) TCOD_list_delete(path->path);
   if (path->heap) TCOD_list_delete(path->heap);
@@ -383,19 +381,19 @@ static void TCOD_path_get_cell(TCOD_path_data_t* path, int* x, int* y, float* di
 /* fill the grid, starting from the origin until we reach the destination */
 static void TCOD_path_set_cells(TCOD_path_data_t* path) {
   while (path->grid[path->dx + path->dy * path->w] == 0 && !TCOD_list_is_empty(path->heap)) {
-    int x, y, i, imax;
+    int x, y;
     float distance;
     TCOD_path_get_cell(path, &x, &y, &distance);
-    imax = (path->diagonalCost == 0.0f ? 4 : 8);
-    for (i = 0; i < imax; i++) {
+    int i_max = (path->diagonalCost == 0.0f ? 4 : 8);
+    for (int i = 0; i < i_max; i++) {
       /* convert i to dx,dy */
-      static int idirx[] = {0, -1, 1, 0, -1, 1, -1, 1};
-      static int idiry[] = {-1, 0, 0, 1, -1, -1, 1, 1};
+      static int i_dir_x[] = {0, -1, 1, 0, -1, 1, -1, 1};
+      static int i_dir_y[] = {-1, 0, 0, 1, -1, -1, 1, 1};
       /* convert i to direction */
       static dir_t prevdirs[] = {NORTH, WEST, EAST, SOUTH, NORTH_WEST, NORTH_EAST, SOUTH_WEST, SOUTH_EAST};
       /* coordinate of the adjacent cell */
-      int cx = x + idirx[i];
-      int cy = y + idiry[i];
+      int cx = x + i_dir_x[i];
+      int cy = y + i_dir_y[i];
       if (cx >= 0 && cy >= 0 && cx < path->w && cy < path->h) {
         float walk_cost = TCOD_path_walk_cost(path, x, y, cx, cy);
         if (walk_cost > 0.0f) {
@@ -408,14 +406,14 @@ static void TCOD_path_set_cells(TCOD_path_data_t* path) {
             /* A* heuristic : remaining distance */
             float remaining = (float)sqrt((cx - path->dx) * (cx - path->dx) + (cy - path->dy) * (cy - path->dy));
             path->grid[offset] = covered;
-            path->heur[offset] = covered + remaining;
+            path->heuristic[offset] = covered + remaining;
             path->prev[offset] = prevdirs[i];
             TCOD_path_push_cell(path, cx, cy);
           } else if (previousCovered > covered) {
             /* we found a better path to a cell already in the heap */
             int offset = cx + cy * path->w;
             path->grid[offset] = covered;
-            path->heur[offset] -= (previousCovered - covered); /* fix the A* score */
+            path->heuristic[offset] -= (previousCovered - covered); /* fix the A* score */
             path->prev[offset] = prevdirs[i];
             /* reorder the heap */
             heap_reorder(path, offset);
@@ -495,7 +493,7 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
   /* map size data */
   unsigned int mx = data->width;
   unsigned int my = data->height;
-  unsigned int mmax = data->nodes_max;
+  unsigned int m_max = data->nodes_max;
   /* encode the root coords in one integer */
   unsigned int root = (root_y * mx) + root_x;
   /* some stuff to walk through the nodes table */
@@ -508,13 +506,13 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
   /* and distances for each index */
   int dd[8] = {100, 100, 100, 100, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost, data->diagonal_cost};
   /* if diagonal_cost is 0, disallow diagonal moves */
-  int imax = (data->diagonal_cost == 0 ? 4 : 8);
-  /* aight, now set the distances table and set everything to infinity */
+  int i_max = (data->diagonal_cost == 0 ? 4 : 8);
+  /* alright, now set the distances table and set everything to infinity */
   unsigned int* distances = data->distances;
   TCOD_IFNOT(data != NULL) return;
   TCOD_IFNOT((unsigned)root_x < (unsigned)mx && (unsigned)root_y < (unsigned)my) return;
-  memset(distances, 0xFFFFFFFF, mmax * sizeof(int));
-  memset(nodes, 0xFFFFFFFF, mmax * sizeof(int));
+  memset(distances, 0xFFFFFFFF, m_max * sizeof(int));
+  memset(nodes, 0xFFFFFFFF, m_max * sizeof(int));
   /* data for root node is known... */
   distances[root] = 0;
   nodes[index] = root; /*set starting note to root */
@@ -531,7 +529,7 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
     y = nodes[index] / mx;
 
     /* check adjacent nodes */
-    for (i = 0; i < imax; i++) {
+    for (i = 0; i < i_max; i++) {
       /* checked node's coordinates */
       unsigned int tx = x + dx[i];
       unsigned int ty = y + dy[i];
@@ -577,7 +575,7 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
         }
       }
     }
-  } while (mmax > ++index);
+  } while (m_max > ++index);
 }
 
 /* get distance from source */
@@ -602,7 +600,7 @@ bool TCOD_dijkstra_path_set(TCOD_Dijkstra* data, int x, int y) {
   static int dy[9] = {0, -1, 0, 1, -1, -1, 1, 1, 0};
   unsigned int distances[8] = {0};
   int lowest_index;
-  int imax = (data->diagonal_cost == 0 ? 4 : 8);
+  int i_max = (data->diagonal_cost == 0 ? 4 : 8);
   TCOD_IFNOT(data != NULL) return false;
   TCOD_IFNOT((unsigned)x < (unsigned)data->width && (unsigned)y < (unsigned)data->height) return false;
   /* check that destination is reachable */
@@ -612,7 +610,7 @@ bool TCOD_dijkstra_path_set(TCOD_Dijkstra* data, int x, int y) {
     unsigned int lowest;
     int i;
     TCOD_list_push(data->path, (const void*)(uintptr_t)((py * data->width) + px));
-    for (i = 0; i < imax; i++) {
+    for (i = 0; i < i_max; i++) {
       int cx = px + dx[i];
       int cy = py + dy[i];
       if ((unsigned)cx < (unsigned)data->width && (unsigned)cy < (unsigned)data->height)
@@ -622,7 +620,7 @@ bool TCOD_dijkstra_path_set(TCOD_Dijkstra* data, int x, int y) {
     }
     lowest = dijkstra_get_int_distance(data, px, py);
     lowest_index = 8;
-    for (i = 0; i < imax; i++)
+    for (i = 0; i < i_max; i++)
       if (distances[i] < lowest) {
         lowest = distances[i];
         lowest_index = i;

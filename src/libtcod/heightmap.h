@@ -63,14 +63,13 @@ TCODLIB_API void TCOD_heightmap_clamp(TCOD_heightmap_t* hm, float min, float max
 TCODLIB_API void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max);
 TCODLIB_API void TCOD_heightmap_clear(TCOD_heightmap_t* hm);
 TCODLIB_API void TCOD_heightmap_lerp_hm(
-    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* hmres, float coef);
-TCODLIB_API void TCOD_heightmap_add_hm(
-    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* hmres);
+    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out, float coef);
+TCODLIB_API void TCOD_heightmap_add_hm(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out);
 TCODLIB_API void TCOD_heightmap_multiply_hm(
-    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* hmres);
+    const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2, TCOD_heightmap_t* out);
 
-TCODLIB_API void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float hradius, float hheight);
-TCODLIB_API void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float hradius, float hheight);
+TCODLIB_API void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_radius, float h_height);
+TCODLIB_API void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_radius, float h_height);
 TCODLIB_API void TCOD_heightmap_dig_bezier(
     TCOD_heightmap_t* hm, int px[4], int py[4], float startRadius, float startDepth, float endRadius, float endDepth);
 TCODLIB_API void TCOD_heightmap_rain_erosion(
@@ -91,20 +90,20 @@ TCODLIB_API void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCO
 TCODLIB_API void TCOD_heightmap_add_fbm(
     TCOD_heightmap_t* hm,
     TCOD_noise_t noise,
-    float mulx,
-    float muly,
-    float addx,
-    float addy,
+    float mul_x,
+    float mul_y,
+    float add_x,
+    float add_y,
     float octaves,
     float delta,
     float scale);
 TCODLIB_API void TCOD_heightmap_scale_fbm(
     TCOD_heightmap_t* hm,
     TCOD_noise_t noise,
-    float mulx,
-    float muly,
-    float addx,
-    float addy,
+    float mul_x,
+    float mul_y,
+    float add_x,
+    float add_y,
     float octaves,
     float delta,
     float scale);

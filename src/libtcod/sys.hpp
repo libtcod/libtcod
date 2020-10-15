@@ -456,12 +456,12 @@ public :
 	@PageName system_misc
 	@FuncTitle Get fullscreen offset
 	@FuncDesc If the fullscreen resolution does not matches the console size in pixels, black borders are added. This function returns the position in pixels of the console top left corner in the screen.
-	@Cpp static void TCODSystem::getFullscreenOffsets(int *offx, int *offy)
-	@C void TCOD_sys_get_fullscreen_offsets(int *offx, int *offy)
-	@C# static void TCODSystem::getFullscreenOffsets(out int offx, out int offy);
-	@Param offx,offy contains the position of the console on the screen when using fullscreen mode.
+	@Cpp static void TCODSystem::getFullscreenOffsets(int *offset_x, int *offset_y)
+	@C void TCOD_sys_get_fullscreen_offsets(int *offset_x, int *offset_y)
+	@C# static void TCODSystem::getFullscreenOffsets(out int offset_x, out int offset_y);
+	@Param offset_x,offset_y contains the position of the console on the screen when using fullscreen mode.
 	*/
-	static void getFullscreenOffsets(int *offx, int *offy);
+	static void getFullscreenOffsets(int *offset_x, int *offset_y);
 
 	/**
 	@PageName system_misc
@@ -479,15 +479,15 @@ public :
 	@PageName system_misc
 	@FuncTitle Dynamically updating the font bitmap
 	@FuncDesc You can dynamically change the bitmap of a character in the font. All cells using this ascii code will be updated at next flush call.
-	@Cpp static void TCODSystem::updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y)
-	@C void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y)
-	@Py sys_update_char(asciiCode,fontx,fonty,img,x,y)
+	@Cpp static void TCODSystem::updateChar(int asciiCode, int font_x, int font_y,const TCODImage *img,int x,int y)
+	@C void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_image_t img, int x, int y)
+	@Py sys_update_char(asciiCode,font_x,font_y,img,x,y)
 	@Param asciiCode ascii code corresponding to the character to update
-	@Param fontx,fonty coordinate of the character in the bitmap font (in characters, not pixels)
+	@Param font_x,font_y coordinate of the character in the bitmap font (in characters, not pixels)
 	@Param img image containing the new character bitmap
 	@Param x,y position in pixels of the top-left corner of the character in the image
 	*/
-	static void updateChar(int asciiCode, int fontx, int fonty,const TCODImage *img,int x,int y);
+	static void updateChar(int asciiCode, int font_x, int font_y,const TCODImage *img,int x,int y);
 
 	/**
 	@PageName system_misc

@@ -293,7 +293,7 @@ public :
 		TCOD_struct_add_value_list(item_type_struct, "damage_type", damage_types, true);
 	@PyEx
 		damage_types = [ "slash", "pierce", "bludgeon" ]
-		litbcod.struct_add_value_list(item_type_struct, "damage_type", damage_types, True)
+		libtcod.struct_add_value_list(item_type_struct, "damage_type", damage_types, True)
 	*/
 	TCODParserStruct* addValueList(const char *propname, const char **value_list, bool mandatory);
 

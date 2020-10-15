@@ -32,7 +32,7 @@ TCODNoise noise1d(1);
 TCODNoise noise2d(2);
 WorldGenerator worldGen;
 // world map panning
-float wx = 0, wy = 0, curwx = 0, curwy = 0;
+float wx = 0, wy = 0, cur_w_x = 0, cur_w_y = 0;
 // mouse coordinates in world map
 float mx = 0, my = 0;
 
@@ -40,10 +40,10 @@ void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
   // destination wanted
   wx = (worldGen.getWidth() - 2 * WIDTH) * mouse.cx / WIDTH;
   wy = (worldGen.getHeight() - 2 * HEIGHT) * mouse.cy / HEIGHT;
-  curwx += (wx - curwx) * elapsed;
-  curwy += (wy - curwy) * elapsed;
-  mx = curwx + mouse.cx * 2;
-  my = curwy + mouse.cy * 2;
+  cur_w_x += (wx - cur_w_x) * elapsed;
+  cur_w_y += (wy - cur_w_y) * elapsed;
+  mx = cur_w_x + mouse.cx * 2;
+  my = cur_w_y + mouse.cy * 2;
   worldGen.updateClouds(elapsed);
 }
 
@@ -78,8 +78,8 @@ void render() {
   for (int px = 0; px < 2 * WIDTH; px++) {
     for (int py = 0; py < 2 * HEIGHT; py++) {
       // world texel coordinate (with fisheye distorsion)
-      float wx = px + curwx;
-      float wy = py + curwy;
+      float wx = px + cur_w_x;
+      float wy = py + cur_w_y;
       map.putPixel(px, py, getMapShadedColor(wx, wy, true));
     }
   }

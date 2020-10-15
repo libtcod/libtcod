@@ -388,8 +388,8 @@ float TCOD_random_get_gaussian_float_inv(TCOD_random_t mersenne, float mean, flo
 
 int TCOD_random_get_gaussian_int_inv(TCOD_random_t mersenne, int mean, int std_deviation) {
   double num = TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
-  int inum = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
-  return (num >= mean ? inum - (3 * std_deviation) : inum + (3 * std_deviation));
+  int i_num = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+  return (num >= mean ? i_num - (3 * std_deviation) : i_num + (3 * std_deviation));
 }
 
 /* Box-Muller, ranges, inverted distribution */

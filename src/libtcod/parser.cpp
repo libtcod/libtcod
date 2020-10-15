@@ -82,25 +82,25 @@ TCODParserStruct* TCODParser::newStructure(const char* name) {
 static ITCODParserListener* listener = NULL;
 static TCODParser* parser = NULL;
 extern "C" bool new_struct(TCOD_parser_struct_t def, const char* name) {
-  for (TCODParserStruct** idef = parser->defs.begin(); idef != parser->defs.end(); idef++) {
-    if ((*idef)->data == def) {
-      return listener->parserNewStruct(parser, *idef, name) ? 1 : 0;
+  for (TCODParserStruct** i_def = parser->defs.begin(); i_def != parser->defs.end(); i_def++) {
+    if ((*i_def)->data == def) {
+      return listener->parserNewStruct(parser, *i_def, name) ? 1 : 0;
     }
   }
   // not found. autodeclaring struct
-  TCODParserStruct* idef = new TCODParserStruct();
-  idef->data = def;
-  parser->defs.push(idef);
-  return listener->parserNewStruct(parser, idef, name) ? 1 : 0;
+  TCODParserStruct* i_def = new TCODParserStruct();
+  i_def->data = def;
+  parser->defs.push(i_def);
+  return listener->parserNewStruct(parser, i_def, name) ? 1 : 0;
 }
 extern "C" bool new_flag(const char* name) { return listener->parserFlag(parser, name) ? 1 : 0; }
 extern "C" bool new_property(const char* propname, TCOD_value_type_t type, TCOD_value_t value) {
   return listener->parserProperty(parser, propname, type, value) ? 1 : 0;
 }
 extern "C" bool end_struct(TCOD_parser_struct_t def, const char* name) {
-  for (TCODParserStruct** idef = parser->defs.begin(); idef != parser->defs.end(); idef++) {
-    if ((*idef)->data == def) {
-      return listener->parserEndStruct(parser, *idef, name) ? 1 : 0;
+  for (TCODParserStruct** i_def = parser->defs.begin(); i_def != parser->defs.end(); i_def++) {
+    if ((*i_def)->data == def) {
+      return listener->parserEndStruct(parser, *i_def, name) ? 1 : 0;
     }
   }
   return 0;

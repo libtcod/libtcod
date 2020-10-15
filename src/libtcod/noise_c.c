@@ -678,8 +678,8 @@ static float TCOD_noise_turbulence_int(
   int i;
   float value = 0;
   for (i = 0; i < (int)octaves; i++) {
-    float nval = func(noise, tf);
-    value += ABS(nval) * noise->exponent[i];
+    float noise_value = func(noise, tf);
+    value += ABS(noise_value) * noise->exponent[i];
     for (int j = 0; j < noise->ndim; j++) {
       tf[j] *= noise->lacunarity;
     }
@@ -688,8 +688,8 @@ static float TCOD_noise_turbulence_int(
   /* Take care of remainder in octaves */
   octaves -= (int)octaves;
   if (octaves > DELTA) {
-    float nval = func(noise, tf);
-    value += octaves * ABS(nval) * noise->exponent[i];
+    float noise_value = func(noise, tf);
+    value += octaves * ABS(noise_value) * noise->exponent[i];
   }
   return clamp_signed_f(value);
 }
@@ -705,13 +705,13 @@ static float TCOD_noise_turbulence_simplex(TCOD_Noise* __restrict noise, const f
 /* wavelet noise, adapted from Robert L. Cook and Tony Derose 'Wavelet noise' paper */
 
 static void TCOD_noise_wavelet_downsample(const float* __restrict from, float* __restrict to, int stride) {
-  static const float acoeffs[2 * WAVELET_ARAD] = {
+  static const float a_coefficients[2 * WAVELET_ARAD] = {
       0.000334f,  -0.001528f, 0.000410f,  0.003545f,  -0.000938f, -0.008233f, 0.002172f,  0.019120f,
       -0.005040f, -0.044412f, 0.011655f,  0.103311f,  -0.025936f, -0.243780f, 0.033979f,  0.655340f,
       0.655340f,  0.033979f,  -0.243780f, -0.025936f, 0.103311f,  0.011655f,  -0.044412f, -0.005040f,
       0.019120f,  0.002172f,  -0.008233f, -0.000938f, 0.003546f,  0.000410f,  -0.001528f, 0.000334f,
   };
-  static const float* a = &acoeffs[WAVELET_ARAD];
+  static const float* a = &a_coefficients[WAVELET_ARAD];
   for (int i = 0; i < WAVELET_TILE_SIZE / 2; i++) {
     to[i * stride] = 0;
     for (int k = 2 * i - WAVELET_ARAD; k < 2 * i + WAVELET_ARAD; k++) {
@@ -721,8 +721,8 @@ static void TCOD_noise_wavelet_downsample(const float* __restrict from, float* _
 }
 
 static void TCOD_noise_wavelet_upsample(const float* __restrict from, float* __restrict to, int stride) {
-  static const float pcoeffs[4] = {0.25f, 0.75f, 0.75f, 0.25f};
-  static const float* p = &pcoeffs[2];
+  static const float p_coefficient[4] = {0.25f, 0.75f, 0.75f, 0.25f};
+  static const float* p = &p_coefficient[2];
   for (int i = 0; i < WAVELET_TILE_SIZE; i++) {
     to[i * stride] = 0;
     for (int k = i / 2; k < i / 2 + 1; k++) {

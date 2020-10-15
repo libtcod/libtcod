@@ -55,14 +55,14 @@ void TCODHeightMap::getMinMax(float* min, float* max) const {
   TCOD_heightmap_get_minmax(&hm, min, max);
 }
 
-void TCODHeightMap::addHill(float hx, float hy, float hradius, float height) {
+void TCODHeightMap::addHill(float hx, float hy, float h_radius, float height) {
   TCOD_heightmap_t hm = {w, h, values};
-  TCOD_heightmap_add_hill(&hm, hx, hy, hradius, height);
+  TCOD_heightmap_add_hill(&hm, hx, hy, h_radius, height);
 }
 
-void TCODHeightMap::digHill(float hx, float hy, float hradius, float height) {
+void TCODHeightMap::digHill(float hx, float hy, float h_radius, float height) {
   TCOD_heightmap_t hm = {w, h, values};
-  TCOD_heightmap_dig_hill(&hm, hx, hy, hradius, height);
+  TCOD_heightmap_dig_hill(&hm, hx, hy, h_radius, height);
 }
 
 void TCODHeightMap::copy(const TCODHeightMap* source) {
@@ -72,14 +72,14 @@ void TCODHeightMap::copy(const TCODHeightMap* source) {
 }
 
 void TCODHeightMap::addFbm(
-    TCODNoise* noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale) {
+    TCODNoise* noise, float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale) {
   TCOD_heightmap_t hm = {w, h, values};
-  TCOD_heightmap_add_fbm(&hm, noise->data, mulx, muly, addx, addy, octaves, delta, scale);
+  TCOD_heightmap_add_fbm(&hm, noise->data, mul_x, mul_y, add_x, add_y, octaves, delta, scale);
 }
 void TCODHeightMap::scaleFbm(
-    TCODNoise* noise, float mulx, float muly, float addx, float addy, float octaves, float delta, float scale) {
+    TCODNoise* noise, float mul_x, float mul_y, float add_x, float add_y, float octaves, float delta, float scale) {
   TCOD_heightmap_t hm = {w, h, values};
-  TCOD_heightmap_scale_fbm(&hm, noise->data, mulx, muly, addx, addy, octaves, delta, scale);
+  TCOD_heightmap_scale_fbm(&hm, noise->data, mul_x, mul_y, add_x, add_y, octaves, delta, scale);
 }
 
 float TCODHeightMap::getInterpolatedValue(float x, float y) const {
@@ -131,22 +131,22 @@ void TCODHeightMap::clamp(float min, float max) {
 void TCODHeightMap::lerp(const TCODHeightMap* a, const TCODHeightMap* b, float coef) {
   TCOD_heightmap_t hm1 = {a->w, a->h, a->values};
   TCOD_heightmap_t hm2 = {b->w, b->h, b->values};
-  TCOD_heightmap_t hmres = {w, h, values};
-  TCOD_heightmap_lerp_hm(&hm1, &hm2, &hmres, coef);
+  TCOD_heightmap_t hm_out = {w, h, values};
+  TCOD_heightmap_lerp_hm(&hm1, &hm2, &hm_out, coef);
 }
 
 void TCODHeightMap::add(const TCODHeightMap* a, const TCODHeightMap* b) {
   TCOD_heightmap_t hm1 = {a->w, a->h, a->values};
   TCOD_heightmap_t hm2 = {b->w, b->h, b->values};
-  TCOD_heightmap_t hmres = {w, h, values};
-  TCOD_heightmap_add_hm(&hm1, &hm2, &hmres);
+  TCOD_heightmap_t hm_out = {w, h, values};
+  TCOD_heightmap_add_hm(&hm1, &hm2, &hm_out);
 }
 
 void TCODHeightMap::multiply(const TCODHeightMap* a, const TCODHeightMap* b) {
   TCOD_heightmap_t hm1 = {a->w, a->h, a->values};
   TCOD_heightmap_t hm2 = {b->w, b->h, b->values};
-  TCOD_heightmap_t hmres = {w, h, values};
-  TCOD_heightmap_multiply_hm(&hm1, &hm2, &hmres);
+  TCOD_heightmap_t hm_out = {w, h, values};
+  TCOD_heightmap_multiply_hm(&hm1, &hm2, &hm_out);
 }
 
 float TCODHeightMap::getSlope(int x, int y) const {
@@ -154,9 +154,9 @@ float TCODHeightMap::getSlope(int x, int y) const {
   return TCOD_heightmap_get_slope(&hm, x, y);
 }
 
-void TCODHeightMap::rainErosion(int nbDrops, float erosionCoef, float agregationCoef, TCODRandom* rnd) {
+void TCODHeightMap::rainErosion(int nbDrops, float erosionCoef, float aggregationCoef, TCODRandom* rnd) {
   TCOD_heightmap_t hm = {w, h, values};
-  TCOD_heightmap_rain_erosion(&hm, nbDrops, erosionCoef, agregationCoef, rnd->data);
+  TCOD_heightmap_rain_erosion(&hm, nbDrops, erosionCoef, aggregationCoef, rnd->data);
 }
 
 void TCODHeightMap::kernelTransform(
@@ -171,9 +171,9 @@ void TCODHeightMap::addVoronoi(int nbPoints, int nbCoef, const float* coef, TCOD
 }
 
 #if 0
-void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,float agregationCoef,TCODRandom *rnd) {
+void TCODHeightMap::heatErosion(int nbPass,float minSlope,float erosionCoef,float aggregationCoef,TCODRandom *rnd) {
 	TCOD_heightmap_t hm={w,h,values};
-	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, agregationCoef, rnd->data);
+	TCOD_heightmap_heat_erosion(&hm, nbPass, minSlope, erosionCoef, aggregationCoef, rnd->data);
 }
 #endif
 

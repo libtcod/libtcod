@@ -191,8 +191,8 @@ void TCOD_console_wait_for_keypress_wrapper(TCOD_key_t* holder, bool flush) {
 
 void TCOD_mouse_get_status_wrapper(TCOD_mouse_t* mouse) { *mouse = TCOD_mouse_get_status(); }
 
-/* Routines to draw hlines, vlines and frames using the double-lined
- * characters. */
+/* Routines to draw horizontal lines, vertical lines, or frames using the
+   double-lined characters. */
 
 void TCOD_console_double_hline(TCOD_console_t con, int x, int y, int l, TCOD_bkgnd_flag_t flag) {
   int i;

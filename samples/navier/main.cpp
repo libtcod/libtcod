@@ -62,7 +62,7 @@ float force = 40.0f;
 float source = 5000.0f;
 float stepDelay = 0.0f;
 
-int playerx = N / 4, playery = N / 4;
+int player_x = N / 4, player_y = N / 4;
 
 // set boundary conditions
 void set_bnd(int b, float* x) {
@@ -213,26 +213,26 @@ void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t k, TCOD
 
   stepDelay -= elapsed;
   if (stepDelay < 0.0f) {
-    if (TCODConsole::isKeyPressed(TCODK_UP) && playery > 0) {
-      playery--;
+    if (TCODConsole::isKeyPressed(TCODK_UP) && player_y > 0) {
+      player_y--;
       vy -= force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_DOWN) && playery < N / 2 - 1) {
-      playery++;
+    if (TCODConsole::isKeyPressed(TCODK_DOWN) && player_y < N / 2 - 1) {
+      player_y++;
       vx += force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_LEFT) && playerx > 0) {
-      playerx--;
+    if (TCODConsole::isKeyPressed(TCODK_LEFT) && player_x > 0) {
+      player_x--;
       vx -= force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_RIGHT) && playerx < N / 2 - 1) {
-      playerx++;
+    if (TCODConsole::isKeyPressed(TCODK_RIGHT) && player_x < N / 2 - 1) {
+      player_x++;
       vx += force;
     }
     stepDelay = 0.2f;  // move 5 cells per second
     // try to move smoke when you walk inside it. doesn't seem to work...
-    u[IX(playerx * 2, playery * 2)] = 5 * vx;
-    v[IX(playerx * 2, playery * 2)] = 5 * vy;
+    u[IX(player_x * 2, player_y * 2)] = 5 * vx;
+    v[IX(player_x * 2, player_y * 2)] = 5 * vy;
   }
 
   for (i = 0; i < SIZE; i++) {
@@ -247,16 +247,16 @@ void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t k, TCOD
 
   if (mouse.lbutton) {
     float dx, dy, l;
-    dx = (float)(mouse.cx - playerx);
-    dy = (float)(mouse.cy - playery);
+    dx = (float)(mouse.cx - player_x);
+    dy = (float)(mouse.cy - player_y);
     l = sqrtf(dx * dx + dy * dy);
     if (l > 0) {
       l = 1.0f / l;
       dx *= l;
       dy *= l;
-      u[IX(playerx * 2, playery * 2)] = force * dx;
-      v[IX(playerx * 2, playery * 2)] = force * dy;
-      d[IX(playerx * 2, playery * 2)] = source;
+      u[IX(player_x * 2, player_y * 2)] = force * dx;
+      v[IX(player_x * 2, player_y * 2)] = force * dy;
+      d[IX(player_x * 2, player_y * 2)] = source;
     }
   }
 }
@@ -280,7 +280,7 @@ void render() {
   img.blit2x(TCODConsole::root, 0, 0);
   TCODConsole::root->print(2, HEIGHT - 2, "%4d fps", TCODSystem::getFps());
   TCODConsole::root->setDefaultForeground(TCODColor::white);
-  TCODConsole::root->putChar(playerx, playery, '@');
+  TCODConsole::root->putChar(player_x, player_y, '@');
 }
 
 int main(int argc, char* argv[]) {

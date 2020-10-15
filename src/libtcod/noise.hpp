@@ -149,11 +149,11 @@ class TCODLIB_API TCODNoise {
 			TCOD_noise_delete(noise);
 		@PyEx
 			# create a generator
-			noise = libtcod.noise_new(2,litbcod.NOISE_DEFAULT_HURST, litbcod.NOISE_DEFAUT_LACUNARITY, 0)
+			noise = libtcod.noise_new(2,libtcod.NOISE_DEFAULT_HURST, libtcod.NOISE_DEFAUT_LACUNARITY, 0)
 			# use it
 			...
 			# destroy it
-			litbcod.noise_delete(noise)
+			libtcod.noise_delete(noise)
 		*/
 		virtual ~TCODNoise();
 

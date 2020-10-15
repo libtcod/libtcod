@@ -55,7 +55,7 @@ TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
 TCODLIB_API TCOD_NODISCARD int TCOD_sys_set_renderer(TCOD_renderer_t renderer);
 TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
 TCODLIB_API void TCOD_sys_get_current_resolution(int* w, int* h);
-TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int* offx, int* offy);
+TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y);
 TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
 
 /**
@@ -63,13 +63,13 @@ TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
  *
  *  `asciiCode` is the Unicode codepoint for this tile.
  *
- *  `fontx` and `fonty` are the tile-coordinates on the active tilemap.
+ *  `font_x` and `font_y` are the tile-coordinates on the active tilemap.
  *
  *  `img` is the tile to upload.
  *
  *  `x` and `y` are the upper-left pixel-coordinates of the tile on the `img`.
  */
-TCODLIB_API void TCOD_sys_update_char(int asciiCode, int fontx, int fonty, TCOD_image_t img, int x, int y);
+TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_image_t img, int x, int y);
 
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
 TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);

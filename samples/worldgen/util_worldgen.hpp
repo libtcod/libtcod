@@ -29,7 +29,7 @@
 #define HM_HEIGHT 400
 
 // biome and climate list. based on Whittaker Biome Diagram
-enum EClimate { ARTIC_ALPINE, COLD, TEMPERATE, WARM, TROPICAL, NB_CLIMATES };
+enum EClimate { ARCTIC_ALPINE, COLD, TEMPERATE, WARM, TROPICAL, NB_CLIMATES };
 
 // grassland : might be either grassland, shrubland or woodland depending on the vegetation level
 // savanna : might be either savanna or thorn forest depending on the vegetation level
@@ -58,7 +58,7 @@ class WorldGenerator {
   TCODHeightMap* hm2;
   // complete world map (not shaded)
   TCODImage* worldmap;
-  // temperature map (in °C)
+  // temperature map (in Â°C)
   TCODHeightMap* temperature;
   // precipitation map (0.0 - 1.0)
   TCODHeightMap* precipitation;
@@ -85,8 +85,8 @@ class WorldGenerator {
 
   // data
   float getRealAltitude(float x, float y) const;    // altitude in meters
-  float getPrecipitations(float x, float y) const;  // in centimeter/m²/year
-  float getTemperature(float x, float y) const;     // in °C
+  float getPrecipitations(float x, float y) const;  // in centimeter/mÂ²/year
+  float getTemperature(float x, float y) const;     // in Â°C
   EBiome getBiome(float x, float y) const;
 
   // map generators

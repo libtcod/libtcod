@@ -41,7 +41,7 @@ static TCODLineListener* line_listener = NULL;
 // C to C++ bridge
 extern "C" bool internalListener(int x, int y) { return line_listener->putPoint(x, y) ? 1 : 0; }
 
-bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener* plistener) {
-  line_listener = plistener;
+bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener* listener) {
+  line_listener = listener;
   return TCOD_line(xFrom, yFrom, xTo, yTo, internalListener) != 0;
 }

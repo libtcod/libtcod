@@ -493,20 +493,20 @@ int TCOD_lex_get_char(TCOD_lex_t* lex) {
 }
 
 int TCOD_lex_get_symbol(TCOD_lex_t* lex) {
-  int symb = 0;
+  int symbol = 0;
   static char msg[255];
 
-  while (symb < lex->nb_symbols) {
+  while (symbol < lex->nb_symbols) {
     if (((lex->flags & TCOD_LEX_FLAG_NOCASE) &&
-         TCOD_strncasecmp(lex->symbols[symb], lex->pos, strlen(lex->symbols[symb])) == 0) ||
-        (strncmp(lex->symbols[symb], lex->pos, strlen(lex->symbols[symb])) == 0)) {
-      strcpy(lex->tok, lex->symbols[symb]);
-      lex->pos += strlen(lex->symbols[symb]);
-      lex->token_idx = symb;
+         TCOD_strncasecmp(lex->symbols[symbol], lex->pos, strlen(lex->symbols[symbol])) == 0) ||
+        (strncmp(lex->symbols[symbol], lex->pos, strlen(lex->symbols[symbol])) == 0)) {
+      strcpy(lex->tok, lex->symbols[symbol]);
+      lex->pos += strlen(lex->symbols[symbol]);
+      lex->token_idx = symbol;
       lex->token_type = TCOD_LEX_SYMBOL;
       return TCOD_LEX_SYMBOL;
     }
-    symb++;
+    symbol++;
   }
 
   lex->pos++;

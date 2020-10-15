@@ -61,13 +61,13 @@ static bool TCOD_image_in_bounds(const TCOD_Image* image, int x, int y) {
 }
 
 static int TCOD_image_get_mipmap_levels(int width, int height) {
-  int curw = width;
-  int curh = height;
+  int cur_w = width;
+  int cur_h = height;
   int nb_mipmap = 0;
-  while (curw > 0 && curh > 0) {
+  while (cur_w > 0 && cur_h > 0) {
     ++nb_mipmap;
-    curw >>= 1;
-    curh >>= 1;
+    cur_w >>= 1;
+    cur_h >>= 1;
   }
   return nb_mipmap;
 }
@@ -205,9 +205,9 @@ TCOD_color_t TCOD_image_get_mipmap_pixel(TCOD_Image* image, float x0, float y0, 
   }
   int cur_size = 1;
   int mip = 0;
-  int texel_xsize = (int)(x1 - x0);
-  int texel_ysize = (int)(y1 - y0);
-  int texel_size = texel_xsize < texel_ysize ? texel_ysize : texel_xsize;
+  int texel_x_size = (int)(x1 - x0);
+  int texel_y_size = (int)(y1 - y0);
+  int texel_size = texel_x_size < texel_y_size ? texel_y_size : texel_x_size;
   while (mip < image->nb_mipmaps - 1 && cur_size < texel_size) {
     ++mip;
     cur_size <<= 1;
@@ -280,8 +280,8 @@ void TCOD_image_blit(
     float x,
     float y,
     TCOD_bkgnd_flag_t bkgnd_flag,
-    float scalex,
-    float scaley,
+    float scale_x,
+    float scale_y,
     float angle) {
   if (!image) {
     return;
@@ -290,32 +290,32 @@ void TCOD_image_blit(
   if (!console) {
     return;
   }
-  if (scalex == 0.0f || scaley == 0.0f || bkgnd_flag == TCOD_BKGND_NONE) {
+  if (scale_x == 0.0f || scale_y == 0.0f || bkgnd_flag == TCOD_BKGND_NONE) {
     return;
   }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
   float rx_ = x - width * 0.5f;
   float ry_ = y - height * 0.5f;
-  if (scalex == 1.0f && scaley == 1.0f && angle == 0.0f && rx_ == (int)rx_ && ry_ == (int)ry_) {
+  if (scale_x == 1.0f && scale_y == 1.0f && angle == 0.0f && rx_ == (int)rx_ && ry_ == (int)ry_) {
     /* clip the image */
     int ix = (int)(x - width * 0.5f);
     int iy = (int)(y - height * 0.5f);
-    int minx = MAX(ix, 0);
-    int miny = MAX(iy, 0);
-    int maxx = MIN(ix + width, TCOD_console_get_width(console));
-    int maxy = MIN(iy + height, TCOD_console_get_height(console));
-    int offx = 0;
-    int offy = 0;
+    int min_x = MAX(ix, 0);
+    int min_y = MAX(iy, 0);
+    int max_x = MIN(ix + width, TCOD_console_get_width(console));
+    int max_y = MIN(iy + height, TCOD_console_get_height(console));
+    int offset_x = 0;
+    int offset_y = 0;
     if (ix < 0) {
-      offx = -ix;
+      offset_x = -ix;
     }
     if (iy < 0) {
-      offy = -iy;
+      offset_y = -iy;
     }
-    for (int cx = minx; cx < maxx; ++cx) {
-      for (int cy = miny; cy < maxy; ++cy) {
-        TCOD_color_t col = TCOD_image_get_pixel(image, cx - minx + offx, cy - miny + offy);
+    for (int cx = min_x; cx < max_x; ++cx) {
+      for (int cy = min_y; cy < max_y; ++cy) {
+        TCOD_color_t col = TCOD_image_get_pixel(image, cx - min_x + offset_x, cy - min_y + offset_y);
         if (!image->has_key_color || image->key_color.r != col.r || image->key_color.g != col.g ||
             image->key_color.b != col.b) {
           TCOD_console_set_char_background(console, cx, cy, col, bkgnd_flag);
@@ -323,47 +323,47 @@ void TCOD_image_blit(
       }
     }
   } else {
-    float iw = width / 2 * scalex;
-    float ih = height / 2 * scaley;
+    float iw = width / 2 * scale_x;
+    float ih = height / 2 * scale_y;
     /* get the coordinates of the image corners in the console */
-    float newx_x = cosf(angle);
-    float newx_y = -sinf(angle);
-    float newy_x = newx_y;
-    float newy_y = -newx_x;
+    float new_xx = cosf(angle);
+    float new_xy = -sinf(angle);
+    float new_yx = new_xy;
+    float new_yy = -new_xx;
     // image corners coordinates
     /* 0 = P - w/2 x' +h/2 y' */
-    int x0 = (int)(x - iw * newx_x + ih * newy_x);
-    int y0 = (int)(y - iw * newx_y + ih * newy_y);
+    int x0 = (int)(x - iw * new_xx + ih * new_yx);
+    int y0 = (int)(y - iw * new_xy + ih * new_yy);
     /* 1 = P + w/2 x' + h/2 y' */
-    int x1 = (int)(x + iw * newx_x + ih * newy_x);
-    int y1 = (int)(y + iw * newx_y + ih * newy_y);
+    int x1 = (int)(x + iw * new_xx + ih * new_yx);
+    int y1 = (int)(y + iw * new_xy + ih * new_yy);
     /* 2 = P + w/2 x' - h/2 y' */
-    int x2 = (int)(x + iw * newx_x - ih * newy_x);
-    int y2 = (int)(y + iw * newx_y - ih * newy_y);
+    int x2 = (int)(x + iw * new_xx - ih * new_yx);
+    int y2 = (int)(y + iw * new_xy - ih * new_yy);
     /* 3 = P - w/2 x' - h/2 y' */
-    int x3 = (int)(x - iw * newx_x - ih * newy_x);
-    int y3 = (int)(y - iw * newx_y - ih * newy_y);
+    int x3 = (int)(x - iw * new_xx - ih * new_yx);
+    int y3 = (int)(y - iw * new_xy - ih * new_yy);
     /* get the affected rectangular area in the console */
     int rx = MIN(MIN(x0, x1), MIN(x2, x3));
     int ry = MIN(MIN(y0, y1), MIN(y2, y3));
     int rw = MAX(MAX(x0, x1), MAX(x2, x3)) - rx;
     int rh = MAX(MAX(y0, y1), MAX(y2, y3)) - ry;
     /* clip it */
-    int minx = MAX(rx, 0);
-    int miny = MAX(ry, 0);
-    int maxx = MIN(rx + rw, TCOD_console_get_width(console));
-    int maxy = MIN(ry + rh, TCOD_console_get_height(console));
-    float invscalex = 1.0f / scalex;
-    float invscaley = 1.0f / scaley;
-    for (int cx = minx; cx < maxx; ++cx) {
-      for (int cy = miny; cy < maxy; ++cy) {
+    int min_x = MAX(rx, 0);
+    int min_y = MAX(ry, 0);
+    int max_x = MIN(rx + rw, TCOD_console_get_width(console));
+    int max_y = MIN(ry + rh, TCOD_console_get_height(console));
+    float inv_scale_x = 1.0f / scale_x;
+    float inv_scale_y = 1.0f / scale_y;
+    for (int cx = min_x; cx < max_x; ++cx) {
+      for (int cy = min_y; cy < max_y; ++cy) {
         /* map the console pixel to the image world */
-        float ix = (iw + (cx - x) * newx_x + (cy - y) * (-newy_x)) * invscalex;
-        float iy = (ih + (cx - x) * newx_y - (cy - y) * newy_y) * invscaley;
+        float ix = (iw + (cx - x) * new_xx + (cy - y) * (-new_yx)) * inv_scale_x;
+        float iy = (ih + (cx - x) * new_xy - (cy - y) * new_yy) * inv_scale_y;
         TCOD_color_t col = TCOD_image_get_pixel(image, (int)ix, (int)iy);
         if (!image->has_key_color || image->key_color.r != col.r || image->key_color.g != col.g ||
             image->key_color.b != col.b) {
-          if (scalex < 1.0f || scaley < 1.0f) {
+          if (scale_x < 1.0f || scale_y < 1.0f) {
             col = TCOD_image_get_mipmap_pixel(image, ix, iy, ix + 1.0f, iy + 1.0f);
           }
           TCOD_console_set_char_background(console, cx, cy, col, bkgnd_flag);
@@ -393,9 +393,9 @@ void TCOD_image_blit_rect(
   if (w <= 0 || h <= 0 || bkgnd_flag == TCOD_BKGND_NONE) {
     return;
   }
-  float scalex = (float)w / width;
-  float scaley = (float)h / height;
-  TCOD_image_blit(image, console, x + w * 0.5f, y + h * 0.5f, bkgnd_flag, scalex, scaley, 0.0f);
+  float scale_x = (float)w / width;
+  float scale_y = (float)h / height;
+  TCOD_image_blit(image, console, x + w * 0.5f, y + h * 0.5f, bkgnd_flag, scale_x, scale_y, 0.0f);
 }
 
 TCOD_Image* TCOD_image_from_console(const TCOD_Console* console) {
@@ -559,9 +559,9 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations) {
     free(img2);
   } else if (numRotations == 2) {
     /* rotate 180 degrees */
-    int maxy = height / 2 + ((height & 1) == 1 ? 1 : 0);
+    int max_y = height / 2 + ((height & 1) == 1 ? 1 : 0);
     for (int px = 0; px < width; ++px) {
-      for (int py = 0; py < maxy; ++py) {
+      for (int py = 0; py < max_y; ++py) {
         if (py != height - 1 - py || px < width / 2) {
           TCOD_color_t col1 = TCOD_image_get_pixel(image, px, py);
           TCOD_color_t col2 = TCOD_image_get_pixel(image, width - 1 - px, height - 1 - py);
@@ -587,40 +587,40 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations) {
   }
 }
 
-void TCOD_image_scale(TCOD_Image* image, int neww, int newh) {
+void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
   if (!image) {
     return;
   }
   int width, height;
   TCOD_image_get_size(image, &width, &height);
-  if (neww == width && newh == height) {
+  if (new_w == width && new_h == height) {
     return;
   }
-  if (neww == 0 || newh == 0) {
+  if (new_w == 0 || new_h == 0) {
     return;
   }
-  TCOD_Image* newimg = TCOD_image_new(neww, newh);
+  TCOD_Image* newimg = TCOD_image_new(new_w, new_h);
 
-  if (neww < width && newh < height) {
+  if (new_w < width && new_h < height) {
     /* scale down image, using supersampling */
-    for (int py = 0; py < newh; ++py) {
-      float y0 = (float)py * height / newh;
+    for (int py = 0; py < new_h; ++py) {
+      float y0 = (float)py * height / new_h;
       float y0floor = floorf(y0);
       float y0weight = 1.0f - (y0 - y0floor);
       int iy0 = (int)y0floor;
 
-      float y1 = (float)(py + 1) * height / newh;
+      float y1 = (float)(py + 1) * height / new_h;
       float y1floor = floorf(y1 - 0.00001f);
       float y1weight = (y1 - y1floor);
       int iy1 = (int)y1floor;
 
-      for (int px = 0; px < neww; ++px) {
-        float x0 = (float)px * width / neww;
+      for (int px = 0; px < new_w; ++px) {
+        float x0 = (float)px * width / new_w;
         float x0floor = floorf(x0);
         float x0weight = 1.0f - (x0 - x0floor);
         int ix0 = (int)x0floor;
 
-        float x1 = (float)(px + 1) * width / neww;
+        float x1 = (float)(px + 1) * width / new_w;
         float x1floor = floorf(x1 - 0.00001f);
         float x1weight = (x1 - x1floor);
         int ix1 = (int)x1floor;
@@ -686,11 +686,11 @@ void TCOD_image_scale(TCOD_Image* image, int neww, int newh) {
       }
     }
   } else {
-    /* scale up image, using nearest neightbor */
-    for (int py = 0; py < newh; ++py) {
-      int srcy = py * height / newh;
-      for (int px = 0; px < neww; ++px) {
-        int srcx = px * width / neww;
+    /* scale up image, using nearest neighbor */
+    for (int py = 0; py < new_h; ++py) {
+      int srcy = py * height / new_h;
+      for (int px = 0; px < new_w; ++px) {
+        int srcx = px * width / new_w;
         TCOD_image_put_pixel(newimg, px, py, TCOD_image_get_pixel(image, srcx, srcy));
       }
     }
@@ -831,24 +831,24 @@ void TCOD_image_blit_2x(
   w = MIN(w, width - sx);
   h = MIN(h, height - sy);
 
-  int maxx = dx + w / 2 <= con->w ? w : (con->w - dx) * 2;
-  int maxy = dy + h / 2 <= con->h ? h : (con->h - dy) * 2;
+  int max_x = dx + w / 2 <= con->w ? w : (con->w - dx) * 2;
+  int max_y = dy + h / 2 <= con->h ? h : (con->h - dy) * 2;
   /* check that the image is not blitted outside the console */
-  TCOD_IFNOT(dx + maxx / 2 >= 0 && dy + maxy / 2 >= 0 && dx < con->w && dy < con->h) { return; }
-  maxx += sx;
-  maxy += sy;
+  TCOD_IFNOT(dx + max_x / 2 >= 0 && dy + max_y / 2 >= 0 && dx < con->w && dy < con->h) { return; }
+  max_x += sx;
+  max_y += sy;
 
-  for (int cx = sx; cx < maxx; cx += 2) {
-    for (int cy = sy; cy < maxy; cy += 2) {
+  for (int cx = sx; cx < max_x; cx += 2) {
+    for (int cy = sy; cy < max_y; cy += 2) {
       /* get the 2x2 super pixel colors from the image */
-      int conx = dx + (cx - sx) / 2;
-      int cony = dy + (cy - sy) / 2;
-      TCOD_color_t consoleBack = TCOD_console_get_char_background(con, conx, cony);
+      int con_x = dx + (cx - sx) / 2;
+      int con_y = dy + (cy - sy) / 2;
+      TCOD_color_t consoleBack = TCOD_console_get_char_background(con, con_x, con_y);
       grid[0] = TCOD_image_get_pixel(image, cx, cy);
       if (image->has_key_color && TCOD_color_equals(grid[0], image->key_color)) {
         grid[0] = consoleBack;
       }
-      if (cx < maxx - 1) {
+      if (cx < max_x - 1) {
         grid[1] = TCOD_image_get_pixel(image, cx + 1, cy);
         if (image->has_key_color && TCOD_color_equals(grid[1], image->key_color)) {
           grid[1] = consoleBack;
@@ -856,7 +856,7 @@ void TCOD_image_blit_2x(
       } else {
         grid[1] = consoleBack;
       }
-      if (cy < maxy - 1) {
+      if (cy < max_y - 1) {
         grid[2] = TCOD_image_get_pixel(image, cx, cy + 1);
         if (image->has_key_color && TCOD_color_equals(grid[2], image->key_color)) {
           grid[2] = consoleBack;
@@ -864,7 +864,7 @@ void TCOD_image_blit_2x(
       } else {
         grid[2] = consoleBack;
       }
-      if (cx < maxx - 1 && cy < maxy - 1) {
+      if (cx < max_x - 1 && cy < max_y - 1) {
         grid[3] = TCOD_image_get_pixel(image, cx + 1, cy + 1);
         if (image->has_key_color && TCOD_color_equals(grid[3], image->key_color)) {
           grid[3] = consoleBack;
@@ -878,17 +878,17 @@ void TCOD_image_blit_2x(
       getPattern(grid, cols, &nbCols, &ascii);
       if (nbCols == 1) {
         /* single color */
-        TCOD_console_set_char_background(con, conx, cony, cols[0], TCOD_BKGND_SET);
-        TCOD_console_set_char(con, conx, cony, ' ');
+        TCOD_console_set_char_background(con, con_x, con_y, cols[0], TCOD_BKGND_SET);
+        TCOD_console_set_char(con, con_x, con_y, ' ');
       } else if (ascii >= 0) {
-        TCOD_console_set_char_background(con, conx, cony, cols[0], TCOD_BKGND_SET);
-        TCOD_console_set_char_foreground(con, conx, cony, cols[1]);
-        TCOD_console_set_char(con, conx, cony, ascii);
+        TCOD_console_set_char_background(con, con_x, con_y, cols[0], TCOD_BKGND_SET);
+        TCOD_console_set_char_foreground(con, con_x, con_y, cols[1]);
+        TCOD_console_set_char(con, con_x, con_y, ascii);
       } else {
         /* negative ascii code means we need to invert back/fore colors */
-        TCOD_console_set_char_background(con, conx, cony, cols[1], TCOD_BKGND_SET);
-        TCOD_console_set_char_foreground(con, conx, cony, cols[0]);
-        TCOD_console_set_char(con, conx, cony, -ascii);
+        TCOD_console_set_char_background(con, con_x, con_y, cols[1], TCOD_BKGND_SET);
+        TCOD_console_set_char_foreground(con, con_x, con_y, cols[0]);
+        TCOD_console_set_char(con, con_x, con_y, -ascii);
       }
     }
   }

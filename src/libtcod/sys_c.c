@@ -159,12 +159,12 @@ TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data) {
   return ret;
 #else
   pthread_t id;
-  int iret;
+  int i_ret;
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  iret = pthread_create(&id, &attr, (void* (*)(void*))func, data);
-  if (iret != 0) id = 0;
+  i_ret = pthread_create(&id, &attr, (void* (*)(void*))func, data);
+  if (i_ret != 0) id = 0;
   return (TCOD_thread_t)id;
 #endif
 }
@@ -286,9 +286,9 @@ TCOD_cond_t TCOD_condition_new(void) {
 #endif
 }
 
-void TCOD_condition_signal(TCOD_cond_t pcond) {
+void TCOD_condition_signal(TCOD_cond_t p_cond) {
 #ifdef TCOD_WINDOWS
-  cond_t* cond = pcond;
+  cond_t* cond = p_cond;
   if (cond) {
     TCOD_mutex_in(cond->mutex);
     if (cond->nbWaiting > cond->nbSignals) {
@@ -301,15 +301,15 @@ void TCOD_condition_signal(TCOD_cond_t pcond) {
     }
   }
 #else
-  if (pcond) {
-    pthread_cond_signal((pthread_cond_t*)pcond);
+  if (p_cond) {
+    pthread_cond_signal((pthread_cond_t*)p_cond);
   }
 #endif
 }
 
-void TCOD_condition_broadcast(TCOD_cond_t pcond) {
+void TCOD_condition_broadcast(TCOD_cond_t p_cond) {
 #ifdef TCOD_WINDOWS
-  cond_t* cond = pcond;
+  cond_t* cond = p_cond;
   if (cond) {
     TCOD_mutex_in(cond->mutex);
     if (cond->nbWaiting > cond->nbSignals) {
@@ -328,15 +328,15 @@ void TCOD_condition_broadcast(TCOD_cond_t pcond) {
     }
   }
 #else
-  if (pcond) {
-    pthread_cond_broadcast((pthread_cond_t*)pcond);
+  if (p_cond) {
+    pthread_cond_broadcast((pthread_cond_t*)p_cond);
   }
 #endif
 }
 
-void TCOD_condition_wait(TCOD_cond_t pcond, TCOD_mutex_t mut) {
+void TCOD_condition_wait(TCOD_cond_t p_cond, TCOD_mutex_t mut) {
 #ifdef TCOD_WINDOWS
-  cond_t* cond = pcond;
+  cond_t* cond = p_cond;
   if (cond) {
     TCOD_mutex_in(cond->mutex);
     cond->nbWaiting++;
@@ -352,15 +352,15 @@ void TCOD_condition_wait(TCOD_cond_t pcond, TCOD_mutex_t mut) {
     TCOD_mutex_out(cond->mutex);
   }
 #else
-  if (pcond && mut) {
-    pthread_cond_wait((pthread_cond_t*)pcond, (pthread_mutex_t*)mut);
+  if (p_cond && mut) {
+    pthread_cond_wait((pthread_cond_t*)p_cond, (pthread_mutex_t*)mut);
   }
 #endif
 }
 
-void TCOD_condition_delete(TCOD_cond_t pcond) {
+void TCOD_condition_delete(TCOD_cond_t p_cond) {
 #ifdef TCOD_WINDOWS
-  cond_t* cond = pcond;
+  cond_t* cond = p_cond;
   if (cond) {
     TCOD_mutex_delete(cond->mutex);
     TCOD_semaphore_delete(cond->waiting);
@@ -368,16 +368,16 @@ void TCOD_condition_delete(TCOD_cond_t pcond) {
     free(cond);
   }
 #else
-  if (pcond) {
-    pthread_cond_destroy((pthread_cond_t*)pcond);
-    free(pcond);
+  if (p_cond) {
+    pthread_cond_destroy((pthread_cond_t*)p_cond);
+    free(p_cond);
   }
 #endif
 }
 
-void TCOD_sys_get_fullscreen_offsets(int* offx, int* offy) {
-  if (offx) *offx = TCOD_ctx.fullscreen_offsetx;
-  if (offy) *offy = TCOD_ctx.fullscreen_offsety;
+void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
+  if (offset_x) *offset_x = TCOD_ctx.fullscreen_offsetx;
+  if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
 }
 /**
  *  Print formatted text as an error and then forcefully terminate the program.

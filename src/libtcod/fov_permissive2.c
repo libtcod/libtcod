@@ -76,9 +76,9 @@ static bool LINE_COLINEAR(const line_t* line1, const line_t* line2) {
 }
 
 static bool is_blocked(struct TCOD_Map* map, int startX, int startY, int x, int y, int dx, int dy, bool light_walls) {
-  int posx = x * dx / STEP_SIZE + startX;
-  int posy = y * dy / STEP_SIZE + startY;
-  int cells_offset = posx + (posy)*map->width;
+  int pos_x = x * dx / STEP_SIZE + startX;
+  int pos_y = y * dy / STEP_SIZE + startY;
+  int cells_offset = pos_x + (pos_y)*map->width;
   bool blocked = !map->cells[cells_offset].transparent;
   if (!blocked || light_walls) map->cells[cells_offset].fov = 1;
   return blocked;

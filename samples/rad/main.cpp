@@ -43,7 +43,7 @@
 
 TCODMap* map;
 BspHelper bsp;
-int playerx = 0, playery = 0, playerBack;
+int player_x = 0, player_y = 0, playerBack;
 Shader* leftShader = NULL;
 Shader* rightShader = NULL;
 TCODColor darkWall(50, 50, 150);
@@ -103,14 +103,14 @@ void init() {
   }
 
   // find a starting position for the player
-  findPos(&playerx, &playery);
-  playerBack = TCODConsole::root->getChar(playerx, playery);
-  TCODConsole::root->setChar(playerx, playery, '@');
-  TCODConsole::root->setChar(playerx + CON_WIDTH / 2, playery, '@');
+  findPos(&player_x, &player_y);
+  playerBack = TCODConsole::root->getChar(player_x, player_y);
+  TCODConsole::root->setChar(player_x, player_y, '@');
+  TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
 
   // add the player's torch
-  torchIndex = leftShader->addLight(playerx, playery, 10, TCODColor::white);
-  rightShader->addLight(playerx, playery, LIGHT_RADIUS, TCODColor::white);
+  torchIndex = leftShader->addLight(player_x, player_y, 10, TCODColor::white);
+  rightShader->addLight(player_x, player_y, LIGHT_RADIUS, TCODColor::white);
 
   // init shaders (must be done after adding lights for photon shader)
   leftShader->init(map);
@@ -180,20 +180,20 @@ void render() {
 }
 
 void move(int dx, int dy) {
-  if (map->isWalkable(playerx + dx, playery + dy)) {
+  if (map->isWalkable(player_x + dx, player_y + dy)) {
     // restore the previous map char
-    TCODConsole::root->setChar(playerx, playery, playerBack);
-    TCODConsole::root->setChar(playerx + CON_WIDTH / 2, playery, playerBack);
+    TCODConsole::root->setChar(player_x, player_y, playerBack);
+    TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, playerBack);
     // move the player
-    playerx += dx;
-    playery += dy;
-    playerBack = TCODConsole::root->getChar(playerx, playery);
+    player_x += dx;
+    player_y += dy;
+    playerBack = TCODConsole::root->getChar(player_x, player_y);
     // render the player
-    TCODConsole::root->setChar(playerx, playery, '@');
-    TCODConsole::root->setChar(playerx + CON_WIDTH / 2, playery, '@');
+    TCODConsole::root->setChar(player_x, player_y, '@');
+    TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
     // update the player's torch position
-    leftShader->updateLight(torchIndex, playerx, playery, LIGHT_RADIUS, TCODColor::white);
-    rightShader->updateLight(torchIndex, playerx, playery, LIGHT_RADIUS, TCODColor::white);
+    leftShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, TCODColor::white);
+    rightShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, TCODColor::white);
   }
 }
 

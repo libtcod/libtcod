@@ -479,17 +479,17 @@ float TCODColor::getValue() {
   return TCOD_color_get_value(c);
 }
 
-void TCODColor::shiftHue(float hshift) {
+void TCODColor::shiftHue(float h_shift) {
   TCOD_color_t c = {r, g, b};
-  TCOD_color_shift_hue(&c, hshift);
+  TCOD_color_shift_hue(&c, h_shift);
   r = c.r;
   g = c.g;
   b = c.b;
 }
 
-void TCODColor::scaleHSV(float sscale, float vscale) {
+void TCODColor::scaleHSV(float s_scale, float v_scale) {
   TCOD_color_t c = {r, g, b};
-  TCOD_color_scale_HSV(&c, sscale, vscale);
+  TCOD_color_scale_HSV(&c, s_scale, v_scale);
   r = c.r;
   g = c.g;
   b = c.b;

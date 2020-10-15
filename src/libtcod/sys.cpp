@@ -76,10 +76,12 @@ float TCODSystem::getLastFrameLength() { return TCOD_sys_get_last_frame_length()
 
 void TCODSystem::getCurrentResolution(int* w, int* h) { TCOD_sys_get_current_resolution(w, h); }
 
-void TCODSystem::getFullscreenOffsets(int* offx, int* offy) { TCOD_sys_get_fullscreen_offsets(offx, offy); }
+void TCODSystem::getFullscreenOffsets(int* offset_x, int* offset_y) {
+  TCOD_sys_get_fullscreen_offsets(offset_x, offset_y);
+}
 
-void TCODSystem::updateChar(int asciiCode, int fontx, int fonty, const TCODImage* img, int x, int y) {
-  TCOD_sys_update_char(asciiCode, fontx, fonty, img->data, x, y);
+void TCODSystem::updateChar(int asciiCode, int font_x, int font_y, const TCODImage* img, int x, int y) {
+  TCOD_sys_update_char(asciiCode, font_x, font_y, img->data, x, y);
 }
 
 void TCODSystem::getCharSize(int* w, int* h) { TCOD_sys_get_char_size(w, h); }

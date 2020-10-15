@@ -62,7 +62,7 @@ public :
 	@Param width,height	Size of the image in pixels.
 	@CppEx TCODImage *pix = new TCODImage(80,50);
 	@CEx TCOD_image_t pix = TCOD_image_new(80,50);
-	@PyEx pix = litbcod.image_new(80,50)
+	@PyEx pix = libtcod.image_new(80,50)
 	*/
 	TCODImage(int width, int height);
 
@@ -170,8 +170,8 @@ public :
 		TCOD_image_t pix = TCOD_image_new(80,50);
 		TCOD_color_t col=TCOD_image_get_pixel(pix,40,25);
 	@PyEx
-		pix = litbcod.image_new(80,50)
-		col=litbcod.image_get_pixel(pix,40,25)
+		pix = libtcod.image_new(80,50)
+		col=libtcod.image_get_pixel(pix,40,25)
 	*/
 	TCODColor getPixel(int x, int y) const;
 
@@ -267,15 +267,15 @@ public :
 	/**
 	@PageName image_update
 	@FuncTitle Scaling an image
-	@FuncDesc You can resize an image and scale its content. If neww < oldw or newh < oldh, supersampling is used to scale down the image. Else the image is scaled up using nearest neightbor.
-	@Cpp void TCODImage::scale(int neww, int newh)
-	@C void TCOD_image_scale(TCOD_image_t image,int neww, int newh)
-	@Py image_scale(image, neww,newh)
-	@C# void TCODImage::scale(int neww, int newh)
+	@FuncDesc You can resize an image and scale its content. If new_w < old_w or new_h < old_h, supersampling is used to scale down the image. Else the image is scaled up using nearest neighbor.
+	@Cpp void TCODImage::scale(int new_w, int new_h)
+	@C void TCOD_image_scale(TCOD_image_t image,int new_w, int new_h)
+	@Py image_scale(image, new_w,new_h)
+	@C# void TCODImage::scale(int new_w, int new_h)
 	@Param image	In the C and Python version, the image handler, obtained with the load function.
-	@Param neww,newh	The new size of the image.
+	@Param new_w,new_h	The new size of the image.
 	*/
-	void scale(int neww, int newh);
+	void scale(int new_w, int new_h);
 
 	/**
 	@PageName image_update
@@ -373,23 +373,23 @@ public :
 	@FuncTitle Blitting with scaling and/or rotation
 	@FuncDesc This function allows you to specify the floating point coordinates of the center
 		of the image, its scale and its rotation angle.
-	@Cpp void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const
-	@C void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scalex, float scaley, float angle)
-	@Py image_blit(image, console, x, y, bkgnd_flag, scalex, scaley, angle)
+	@Cpp void TCODImage::blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scale_x=1.0f, float scale_y=1.0f, float angle=0.0f) const
+	@C void TCOD_image_blit(TCOD_image_t image, TCOD_console_t console, int x, int y, TCOD_bkgnd_flag_t bkgnd_flag, float scale_x, float scale_y, float angle)
+	@Py image_blit(image, console, x, y, bkgnd_flag, scale_x, scale_y, angle)
 	@C#
 		void TCODImage::blit(TCODConsole console, float x, float y)
 		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag)
-		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex)
-		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex, float scaley)
-		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scalex, float scaley, float angle)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scale_x)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scale_x, float scale_y)
+		void TCODImage::blit(TCODConsole console, float x, float y, TCODBackgroundFlag bkgnd_flag, float scale_x, float scale_y, float angle)
 	@Param image	In the C version, the image handler, obtained with the load function.
 	@Param console	The console on which the image will be drawn. In the C version, use NULL for the root console.
 	@Param x,y	Coordinates in the console of the center of the image.
 	@Param flag	This flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t.
-	@Param scalex,scaley	Scale coefficient. Must be > 0.0.
+	@Param scale_x,scale_y	Scale coefficient. Must be > 0.0.
 	@Param angle	Rotation angle in radians.
 	*/
-	void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scalex=1.0f, float scaley=1.0f, float angle=0.0f) const;
+	void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scale_x=1.0f, float scale_y=1.0f, float angle=0.0f) const;
 
 	/**
 	@PageName image_blit
@@ -438,7 +438,7 @@ public :
 		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w);
 		void TCODImage::blit2x(TCODConsole dest, int dx, int dy, int sx, int sy, int w, int h);
 	@Param image	In the C and Python version, the image handler, obtained with the load function.
-	@Param dest	The console of which the image will be blited. Foreground, background and character data will be overwritten.
+	@Param dest	The console of which the image will be blitted. Foreground, background and character data will be overwritten.
 	@Param dx,dy	Coordinate of the console cell where the upper left corner of the blitted image will be.
 	@Param sx,sy,w,h	Part of the image to blit. Use -1 in w and h to blit the whole image.
 	*/

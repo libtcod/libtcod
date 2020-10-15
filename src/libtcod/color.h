@@ -96,7 +96,7 @@ TCODLIB_API float TCOD_color_get_saturation(TCOD_color_t color);
 TCODLIB_API void TCOD_color_set_saturation(TCOD_color_t* color, float saturation);
 TCODLIB_API float TCOD_color_get_value(TCOD_color_t color);
 TCODLIB_API void TCOD_color_set_value(TCOD_color_t* color, float value);
-TCODLIB_API void TCOD_color_shift_hue(TCOD_color_t* color, float hshift);
+TCODLIB_API void TCOD_color_shift_hue(TCOD_color_t* color, float shift);
 TCODLIB_API void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef, float value_coef);
 /* color map */
 TCODLIB_API void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_color_t* key_color, const int* key_index);

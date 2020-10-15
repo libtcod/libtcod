@@ -322,7 +322,7 @@ static bool init2 = false;
 void TCOD_console_credits_reset(void) { init2 = false; }
 
 bool TCOD_console_credits_render(int x, int y, bool alpha) {
-  static char poweredby[128];
+  static char powered_by[128];
   static float char_heat[128];
   static int char_x[128];
   static int char_y[128];
@@ -348,24 +348,24 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
   static TCOD_image_t img = NULL;
   int i, xc, yc, xi, yi, j;
   static int left, right, top, bottom;
-  float sparklex, sparkley, sparklerad, sparklerad2, noisex;
-  /* mini particule system */
+  float sparkle_x, sparkle_y, sparkle_rad, sparkle_rad2, noise_x;
+  /* mini particle system */
 #define MAX_PARTICULES 50
-  static float pheat[MAX_PARTICULES];
+  static float p_heat[MAX_PARTICULES];
   static float px[MAX_PARTICULES], py[MAX_PARTICULES], pvx[MAX_PARTICULES], pvy[MAX_PARTICULES];
-  static int nbpart = 0, firstpart = 0;
+  static int nb_part = 0, first_part = 0;
   static float partDelay = 0.1f;
   float elapsed = TCOD_sys_get_last_frame_length();
-  TCOD_color_t fbackup; /* backup fg color */
+  TCOD_color_t fg_backup; /* backup fg color */
 
   if (!init1) {
     /* initialize all static data, colormaps, ... */
     TCOD_color_t col;
     TCOD_color_gen_map(colmap, 4, colkeys, colpos);
     TCOD_color_gen_map(colmap_light, 4, colkeys_light, colpos);
-    sprintf(poweredby, "Powered by\n%s", version_string);
+    sprintf(powered_by, "Powered by\n%s", version_string);
     noise = TCOD_noise_new(1, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
-    len = (int)strlen(poweredby);
+    len = (int)strlen(powered_by);
     len1 = 11; /* sizeof "Powered by\n" */
     left = MAX(x - 4, 0);
     top = MAX(y - 4, 0);
@@ -385,12 +385,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
       char_x[i] = curx;
       char_y[i] = cury;
       curx++;
-      if (poweredby[i] == '\n') {
+      if (powered_by[i] == '\n') {
         curx = x;
         cury++;
       }
     }
-    nbpart = firstpart = 0;
+    nb_part = first_part = 0;
     init2 = true;
   }
   if (TCOD_console_get_width(NULL) != cw || TCOD_console_get_height(NULL) != ch) {
@@ -405,31 +405,31 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
     if (img) TCOD_image_delete(img);
     img = TCOD_image_new(width * 2, height * 2);
   }
-  fbackup = TCOD_console_get_default_foreground(NULL);
+  fg_backup = TCOD_console_get_default_foreground(NULL);
   if (xstr < len1) {
-    sparklex = x + xstr;
-    sparkley = (float)y;
+    sparkle_x = x + xstr;
+    sparkle_y = (float)y;
   } else {
-    sparklex = x - len1 + xstr;
-    sparkley = (float)(y + 1);
+    sparkle_x = x - len1 + xstr;
+    sparkle_y = (float)(y + 1);
   }
-  noisex = xstr * 6;
-  sparklerad = 3.0f + 2 * TCOD_noise_get(noise, &noisex);
+  noise_x = xstr * 6;
+  sparkle_rad = 3.0f + 2 * TCOD_noise_get(noise, &noise_x);
   if (xstr >= len - 1)
-    sparklerad -= (xstr - len + 1) * 4.0f;
+    sparkle_rad -= (xstr - len + 1) * 4.0f;
   else if (xstr < 0.0f)
-    sparklerad += xstr * 4.0f;
-  else if (poweredby[(int)(xstr + 0.5f)] == ' ' || poweredby[(int)(xstr + 0.5f)] == '\n')
-    sparklerad /= 2;
-  sparklerad2 = sparklerad * sparklerad * 4;
+    sparkle_rad += xstr * 4.0f;
+  else if (powered_by[(int)(xstr + 0.5f)] == ' ' || powered_by[(int)(xstr + 0.5f)] == '\n')
+    sparkle_rad /= 2;
+  sparkle_rad2 = sparkle_rad * sparkle_rad * 4;
 
   /* draw the light */
   for (xc = left * 2, xi = 0; xc < (right + 1) * 2; xc++, xi++) {
     for (yc = top * 2, yi = 0; yc < (bottom + 1) * 2; yc++, yi++) {
-      float dist = ((xc - 2 * sparklex) * (xc - 2 * sparklex) + (yc - 2 * sparkley) * (yc - 2 * sparkley));
+      float dist = ((xc - 2 * sparkle_x) * (xc - 2 * sparkle_x) + (yc - 2 * sparkle_y) * (yc - 2 * sparkle_y));
       TCOD_color_t pixcol;
-      if (sparklerad >= 0.0f && dist < sparklerad2) {
-        int colidx = 63 - (int)(63 * (sparklerad2 - dist) / sparklerad2) + TCOD_random_get_int(NULL, -10, 10);
+      if (sparkle_rad >= 0.0f && dist < sparkle_rad2) {
+        int colidx = 63 - (int)(63 * (sparkle_rad2 - dist) / sparkle_rad2) + TCOD_random_get_int(NULL, -10, 10);
         colidx = CLAMP(0, 63, colidx);
         pixcol = colmap_light[colidx];
       } else {
@@ -454,12 +454,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
         if (conc >= TCOD_CHAR_SUBP_NW && conc <= TCOD_CHAR_SUBP_SW) {
           /* merge two subcell chars...
              get the flag for the existing cell on root console */
-          int bkflag = asciiToFlag[conc - TCOD_CHAR_SUBP_NW];
-          int xflag = (xc & 1);
-          int yflag = (yc & 1);
+          int bk_flag = asciiToFlag[conc - TCOD_CHAR_SUBP_NW];
+          int x_flag = (xc & 1);
+          int y_flag = (yc & 1);
           /* get the flag for the current subcell */
-          int credflag = (1 + 3 * yflag) * (xflag + 1);
-          if ((credflag & bkflag) != 0) {
+          int credflag = (1 + 3 * y_flag) * (x_flag + 1);
+          if ((credflag & bk_flag) != 0) {
             /* the color for this subcell on root console
                is foreground, not background */
             bk = TCOD_console_get_char_foreground(NULL, xc / 2, yc / 2);
@@ -474,10 +474,10 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
   }
 
   /* draw and update the particules */
-  j = nbpart;
-  i = firstpart;
+  j = nb_part;
+  i = first_part;
   while (j > 0) {
-    int colidx = (int)(64 * (1.0f - pheat[i]));
+    int colidx = (int)(64 * (1.0f - p_heat[i]));
     TCOD_color_t col;
     colidx = MIN(63, colidx);
     col = colmap[colidx];
@@ -498,38 +498,38 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
     } else
       pvy[i] = -pvy[i] * 0.5f;
     pvx[i] *= (1.0f - elapsed);
-    pvy[i] += (1.0f - pheat[i]) * elapsed * 300.0f;
+    pvy[i] += (1.0f - p_heat[i]) * elapsed * 300.0f;
     px[i] += pvx[i] * elapsed;
     py[i] += pvy[i] * elapsed;
-    pheat[i] -= elapsed * 0.3f;
-    if (pheat[i] < 0.0f) {
-      firstpart = (firstpart + 1) % MAX_PARTICULES;
-      nbpart--;
+    p_heat[i] -= elapsed * 0.3f;
+    if (p_heat[i] < 0.0f) {
+      first_part = (first_part + 1) % MAX_PARTICULES;
+      nb_part--;
     }
     i = (i + 1) % MAX_PARTICULES;
     j--;
   }
   partDelay -= elapsed;
-  if (partDelay < 0.0f && nbpart < MAX_PARTICULES && sparklerad > 2.0f) {
-    /* fire a new particule */
-    int lastpart = firstpart;
-    int nb = nbpart;
+  if (partDelay < 0.0f && nb_part < MAX_PARTICULES && sparkle_rad > 2.0f) {
+    /* fire a new particle */
+    int lastpart = first_part;
+    int nb = nb_part;
     while (nb > 0) {
       lastpart = (lastpart + 1) % MAX_PARTICULES;
       nb--;
     }
-    nbpart++;
-    px[lastpart] = 2 * (sparklex - left);
-    py[lastpart] = 2 * (sparkley - top) + 2;
+    nb_part++;
+    px[lastpart] = 2 * (sparkle_x - left);
+    py[lastpart] = 2 * (sparkle_y - top) + 2;
     pvx[lastpart] = TCOD_random_get_float(NULL, -5.0f, 5.0f);
     pvy[lastpart] = TCOD_random_get_float(NULL, -0.5f, -15.0f);
-    pheat[lastpart] = 1.0f;
+    p_heat[lastpart] = 1.0f;
     partDelay += 0.1f;
   }
   TCOD_image_blit_2x(img, NULL, left, top, 0, 0, -1, -1);
   /* draw the text */
   for (i = 0; i < len; i++) {
-    if (char_heat[i] >= 0.0f && poweredby[i] != '\n') {
+    if (char_heat[i] >= 0.0f && powered_by[i] != '\n') {
       int colidx = (int)(64 * char_heat[i]);
       TCOD_color_t col;
       colidx = MIN(63, colidx);
@@ -549,7 +549,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
           col = TCOD_color_lerp(col, TCOD_black, coef);
         }
       }
-      TCOD_console_set_char(NULL, char_x[i], char_y[i], poweredby[i]);
+      TCOD_console_set_char(NULL, char_x[i], char_y[i], powered_by[i]);
       TCOD_console_set_char_foreground(NULL, char_x[i], char_y[i], col);
     }
   }
@@ -559,7 +559,7 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
     char_heat[i] = (xstr - i) / (len / 2);
   }
   /* restore fg color */
-  TCOD_console_set_default_foreground(NULL, fbackup);
+  TCOD_console_set_default_foreground(NULL, fg_backup);
   if (xstr <= 2 * len) return false;
   init2 = false;
   return true;
@@ -633,11 +633,11 @@ TCOD_console_t TCOD_console_from_file(const char* filename) {
   return con;
 }
 
-bool TCOD_console_load_asc(TCOD_console_t pcon, const char* filename) {
+bool TCOD_console_load_asc(TCOD_Console* con, const char* filename) {
   float version;
   int width, height;
   FILE* f;
-  struct TCOD_Console* con = TCOD_console_validate_(pcon);
+  con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
   TCOD_IFNOT(filename != NULL) { return false; }
   f = fopen(filename, "rb");
@@ -659,11 +659,11 @@ bool TCOD_console_load_asc(TCOD_console_t pcon, const char* filename) {
   return true;
 }
 
-bool TCOD_console_save_asc(TCOD_console_t pcon, const char* filename) {
+bool TCOD_console_save_asc(TCOD_Console* con, const char* filename) {
   static float version = 0.3f;
   FILE* f;
   int x, y;
-  struct TCOD_Console* con = TCOD_console_validate_(pcon);
+  con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
   TCOD_IFNOT(filename != NULL) { return false; }
   TCOD_IFNOT(con->w > 0 && con->h > 0) return false;
@@ -851,8 +851,8 @@ void fixLayerv2(LayerV2* l) {
 
 /*********** ApfFile */
 
-bool TCOD_console_save_apf(TCOD_console_t pcon, const char* filename) {
-  struct TCOD_Console* con = TCOD_console_validate_(pcon);
+bool TCOD_console_save_apf(TCOD_console_t con, const char* filename) {
+  con = TCOD_console_validate_(con);
   FILE* fp;
   TCOD_IFNOT(con != NULL) return false;
   detectBigEndianness();
@@ -976,7 +976,7 @@ typedef struct {
   LayerData layer;
 } Data;
 
-bool TCOD_console_load_apf(TCOD_console_t pcon, const char* filename) {
+bool TCOD_console_load_apf(TCOD_Console* con, const char* filename) {
   uint32_t sett = fourCC("sett");
   uint32_t imgd = fourCC("imgd");
   /*
@@ -986,7 +986,7 @@ bool TCOD_console_load_apf(TCOD_console_t pcon, const char* filename) {
   uint32_t layr = fourCC("layr");
   FILE* fp;
   Data data;
-  struct TCOD_Console* con = TCOD_console_validate_(pcon);
+  con = TCOD_console_validate_(con);
   TCOD_IFNOT(con != NULL) return false;
 
   detectBigEndianness();
@@ -1271,7 +1271,7 @@ fp)) ERR("Can't read layer header."); fix(&layerHeader);
 
                                                                 // creat new layer data
                                                                 LayerData* ld = new LayerData;
-                                                                ld->header = layerHeader; // already fix'd
+                                                                ld->header = layerHeader; // already fixed
                                                                 ld->data = new uint8[ld->header.dataSize];
 
                                                                 // Read in the data chunk
@@ -1288,7 +1288,7 @@ fp)) ERR("Can't read layer header."); fix(&layerHeader);
 
                                                                 // creat new layer data
                                                                 LayerData* ld = new LayerData;
-                                                                ld->header = layerHeader; // already fix'd
+                                                                ld->header = layerHeader; // already fixed
                                                                 ld->data = new uint8[ld->header.dataSize];
 
                                                                 // Read in the data chunk

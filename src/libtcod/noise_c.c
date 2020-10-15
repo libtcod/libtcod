@@ -835,6 +835,7 @@ float TCOD_noise_get_ex(TCOD_Noise* __restrict noise, const float* __restrict f,
   switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_perlin(noise, f);
+    case TCOD_NOISE_DEFAULT:
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_simplex(noise, f);
     case (TCOD_NOISE_WAVELET):
@@ -849,6 +850,7 @@ float TCOD_noise_get_fbm_ex(
   switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_fbm_perlin(noise, f, octaves);
+    case TCOD_NOISE_DEFAULT:
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_fbm_simplex(noise, f, octaves);
     case (TCOD_NOISE_WAVELET):
@@ -863,6 +865,7 @@ float TCOD_noise_get_turbulence_ex(
   switch (type ? type : noise->noise_type) {
     case (TCOD_NOISE_PERLIN):
       return TCOD_noise_turbulence_perlin(noise, f, octaves);
+    case TCOD_NOISE_DEFAULT:
     case (TCOD_NOISE_SIMPLEX):
       return TCOD_noise_turbulence_simplex(noise, f, octaves);
     case (TCOD_NOISE_WAVELET):
@@ -911,6 +914,7 @@ void TCOD_noise_get_vectorized(
       case (TCOD_NOISE_PERLIN):
         out[i] = TCOD_noise_perlin(noise, point);
         break;
+      case TCOD_NOISE_DEFAULT:
       case (TCOD_NOISE_SIMPLEX):
         out[i] = TCOD_noise_simplex(noise, point);
         break;
@@ -945,6 +949,7 @@ void TCOD_noise_get_fbm_vectorized(
       case (TCOD_NOISE_PERLIN):
         out[i] = TCOD_noise_fbm_perlin(noise, point, octaves);
         break;
+      case TCOD_NOISE_DEFAULT:
       case (TCOD_NOISE_SIMPLEX):
         out[i] = TCOD_noise_fbm_simplex(noise, point, octaves);
         break;
@@ -979,6 +984,7 @@ void TCOD_noise_get_turbulence_vectorized(
       case (TCOD_NOISE_PERLIN):
         out[i] = TCOD_noise_turbulence_perlin(noise, point, octaves);
         break;
+      case TCOD_NOISE_DEFAULT:
       case (TCOD_NOISE_SIMPLEX):
         out[i] = TCOD_noise_turbulence_simplex(noise, point, octaves);
         break;

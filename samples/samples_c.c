@@ -40,52 +40,52 @@ TCOD_console_t sample_console;
 void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
   static TCOD_color_t cols[4] = {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}; /* random corner colors */
-  static int dirr[4] = {1, -1, 1, 1}, dirg[4] = {1, -1, -1, 1}, dirb[4] = {1, 1, 1, -1};
+  static int dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
   int c, x, y;
   TCOD_color_t textColor;
-  /* ==== slighty modify the corner colors ==== */
+  /* ==== slightly modify the corner colors ==== */
   if (first) {
     TCOD_console_clear(sample_console);
   }
-  /* ==== slighty modify the corner colors ==== */
+  /* ==== slightly modify the corner colors ==== */
   for (c = 0; c < 4; c++) {
     /* move each corner color */
     int component = TCOD_random_get_int(NULL, 0, 2);
     switch (component) {
       case 0:
-        cols[c].r += 5 * dirr[c];
+        cols[c].r += 5 * dir_r[c];
         if (cols[c].r == 255)
-          dirr[c] = -1;
+          dir_r[c] = -1;
         else if (cols[c].r == 0)
-          dirr[c] = 1;
+          dir_r[c] = 1;
         break;
       case 1:
-        cols[c].g += 5 * dirg[c];
+        cols[c].g += 5 * dir_g[c];
         if (cols[c].g == 255)
-          dirg[c] = -1;
+          dir_g[c] = -1;
         else if (cols[c].g == 0)
-          dirg[c] = 1;
+          dir_g[c] = 1;
         break;
       case 2:
-        cols[c].b += 5 * dirb[c];
+        cols[c].b += 5 * dir_b[c];
         if (cols[c].b == 255)
-          dirb[c] = -1;
+          dir_b[c] = -1;
         else if (cols[c].b == 0)
-          dirb[c] = 1;
+          dir_b[c] = 1;
         break;
     }
   }
 
   /* ==== scan the whole screen, interpolating corner colors ==== */
   for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    float xcoef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+    float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
     /* get the current column top and bottom colors */
-    TCOD_color_t top = TCOD_color_lerp(cols[TOPLEFT], cols[TOPRIGHT], xcoef);
-    TCOD_color_t bottom = TCOD_color_lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], xcoef);
+    TCOD_color_t top = TCOD_color_lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
+    TCOD_color_t bottom = TCOD_color_lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      float ycoef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+      float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
       /* get the current cell color */
-      TCOD_color_t curColor = TCOD_color_lerp(top, bottom, ycoef);
+      TCOD_color_t curColor = TCOD_color_lerp(top, bottom, y_coef);
       TCOD_console_set_char_background(sample_console, x, y, curColor, TCOD_BKGND_SET);
     }
   }
@@ -130,8 +130,8 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_console_t screenshot; /* second screen */
   static bool init = false;         /* draw the secondary screen only the first time */
   static int counter;
-  static int x = 0, y = 0;       /* secondary screen position */
-  static int xdir = 1, ydir = 1; /* movement direction */
+  static int x = 0, y = 0;         /* secondary screen position */
+  static int x_dir = 1, y_dir = 1; /* movement direction */
   if (!init) {
     init = true;
     secondary = TCOD_console_new(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);
@@ -155,16 +155,16 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
     counter = SDL_GetTicks();
-    x += xdir;
-    y += ydir;
+    x += x_dir;
+    y += y_dir;
     if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
-      xdir = -1;
+      x_dir = -1;
     else if (x == -5)
-      xdir = 1;
+      x_dir = 1;
     if (y == SAMPLE_SCREEN_HEIGHT / 2 + 5)
-      ydir = -1;
+      y_dir = -1;
     else if (y == -5)
-      ydir = 1;
+      y_dir = 1;
   }
   /* restore the initial screen */
   TCOD_console_blit(screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
@@ -204,7 +204,7 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   int xo, yo, xd, yd, x, y;          /* segment starting, ending, current position */
   float alpha;                       /* alpha value when blending mode = TCOD_BKGND_ALPHA */
   float angle, cos_angle, sin_angle; /* segment angle data */
-  int recty;                         /* gradient vertical position */
+  int rect_y;                        /* gradient vertical position */
   if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
     /* switch to the next blending mode */
     bk_flag++;
@@ -239,15 +239,15 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   /* blit the background */
   TCOD_console_blit(bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
   /* render the gradient */
-  recty = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCOD_sys_elapsed_seconds())) / 2.0f));
+  rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCOD_sys_elapsed_seconds())) / 2.0f));
   for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
     TCOD_color_t col;
     col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
     col.g = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
     col.b = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    TCOD_console_set_char_background(sample_console, x, recty, col, (TCOD_bkgnd_flag_t)bk_flag);
-    TCOD_console_set_char_background(sample_console, x, recty + 1, col, (TCOD_bkgnd_flag_t)bk_flag);
-    TCOD_console_set_char_background(sample_console, x, recty + 2, col, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_set_char_background(sample_console, x, rect_y, col, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_set_char_background(sample_console, x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bk_flag);
+    TCOD_console_set_char_background(sample_console, x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bk_flag);
   }
   /* calculate the segment ends */
   angle = TCOD_sys_elapsed_seconds() * 2.0f;
@@ -432,7 +432,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * ***************************/
 void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static char* smap[] = {
+  static char* s_map[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -482,7 +482,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "PERMISSIVE7",
       "PERMISSIVE8",
       "RESTRICTIVE"};
-  static float torchx = 0.0f; /* torch light position in the perlin noise */
+  static float torch_x = 0.0f; /* torch light position in the perlin noise */
   int x, y;
   /* torch position & intensity variation */
   float dx = 0.0f, dy = 0.0f, di = 0.0f;
@@ -490,9 +490,9 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     map = TCOD_map_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == ' ')
+        if (s_map[y][x] == ' ')
           TCOD_map_set_properties(map, x, y, true, true); /* ground */
-        else if (smap[y][x] == '=')
+        else if (s_map[y][x] == '=')
           TCOD_map_set_properties(map, x, y, true, false); /* window */
       }
     }
@@ -518,7 +518,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     /* draw windows */
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == '=') {
+        if (s_map[y][x] == '=') {
           TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -531,18 +531,18 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (torch) {
     float tdx;
     /* slightly change the perlin noise parameter */
-    torchx += 0.2f;
+    torch_x += 0.2f;
     /* randomize the light position between -1.5 and 1.5 */
-    tdx = torchx + 20.0f;
+    tdx = torch_x + 20.0f;
     dx = TCOD_noise_get(noise, &tdx) * 1.5f;
     tdx += 30.0f;
     dy = TCOD_noise_get(noise, &tdx) * 1.5f;
-    di = 0.2f * TCOD_noise_get(noise, &torchx);
+    di = 0.2f * TCOD_noise_get(noise, &torch_x);
   }
   for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
       bool visible = TCOD_map_is_in_fov(map, x, y);
-      bool wall = smap[y][x] == '#';
+      bool wall = s_map[y][x] == '#';
       if (!visible) {
         TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
 
@@ -566,28 +566,28 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
     if (key->text[0] == 'I' || key->text[0] == 'i') {
-      if (smap[py - 1][px] == ' ') {
+      if (s_map[py - 1][px] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
         py--;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'K' || key->text[0] == 'k') {
-      if (smap[py + 1][px] == ' ') {
+      if (s_map[py + 1][px] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
         py++;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'J' || key->text[0] == 'j') {
-      if (smap[py][px - 1] == ' ') {
+      if (s_map[py][px - 1] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
         px--;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'L' || key->text[0] == 'l') {
-      if (smap[py][px + 1] == ' ') {
+      if (s_map[py][px + 1] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
         px++;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
@@ -643,7 +643,7 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_image_t img = NULL, circle = NULL;
   static TCOD_color_t blue = {0, 0, 255};
   static TCOD_color_t green = {0, 255, 0};
-  float x, y, scalex, scaley, angle;
+  float x, y, scale_x, scale_y, angle;
   long elapsed;
   if (img == NULL) {
     img = TCOD_image_load("data/img/skull.png");
@@ -654,8 +654,8 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   TCOD_console_clear(sample_console);
   x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
   y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-  scalex = 0.2f + 1.8f * (1.0f + cosf(TCOD_sys_elapsed_seconds() / 2)) / 2.0f;
-  scaley = scalex;
+  scale_x = 0.2f + 1.8f * (1.0f + cosf(TCOD_sys_elapsed_seconds() / 2)) / 2.0f;
+  scale_y = scale_x;
   angle = TCOD_sys_elapsed_seconds();
   elapsed = TCOD_sys_elapsed_milli() / 2000;
   if (elapsed & 1) {
@@ -678,14 +678,14 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_image_blit_rect(circle, sample_console, 15, 3, -1, -1, TCOD_BKGND_SET);
     TCOD_image_blit_rect(circle, sample_console, 30, 3, -1, -1, TCOD_BKGND_SET);
   }
-  TCOD_image_blit(img, sample_console, x, y, TCOD_BKGND_SET, scalex, scaley, angle);
+  TCOD_image_blit(img, sample_console, x, y, TCOD_BKGND_SET, scale_x, scale_y, angle);
 }
 
 /* ***************************
  * mouse sample
  * ***************************/
 void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static bool lbut = false, rbut = false, mbut = false;
+  static bool left_button = false, right_button = false, middle_button = false;
 
   if (first) {
     TCOD_console_set_default_background(sample_console, TCOD_grey);
@@ -695,9 +695,9 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
 
   TCOD_console_clear(sample_console);
-  if (mouse->lbutton_pressed) lbut = !lbut;
-  if (mouse->rbutton_pressed) rbut = !rbut;
-  if (mouse->mbutton_pressed) mbut = !mbut;
+  if (mouse->lbutton_pressed) left_button = !left_button;
+  if (mouse->rbutton_pressed) right_button = !right_button;
+  if (mouse->mbutton_pressed) middle_button = !middle_button;
   TCOD_console_printf(
       sample_console,
       1,
@@ -719,11 +719,11 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       mouse->dx,
       mouse->dy,
       mouse->lbutton ? " ON" : "OFF",
-      lbut ? " ON" : "OFF",
+      left_button ? " ON" : "OFF",
       mouse->rbutton ? " ON" : "OFF",
-      rbut ? " ON" : "OFF",
+      right_button ? " ON" : "OFF",
       mouse->mbutton ? " ON" : "OFF",
-      mbut ? " ON" : "OFF",
+      middle_button ? " ON" : "OFF",
       mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
 
   TCOD_console_printf(sample_console, 1, 10, "1 : Hide cursor\n2 : Show cursor");
@@ -741,7 +741,7 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * ***************************/
 void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static const char* smap[] = {
+  static const char* s_map[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -785,9 +785,9 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     map = TCOD_map_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == ' ')
+        if (s_map[y][x] == ' ')
           TCOD_map_set_properties(map, x, y, true, true); /* ground */
-        else if (smap[y][x] == '=')
+        else if (s_map[y][x] == '=')
           TCOD_map_set_properties(map, x, y, true, false); /* window */
       }
     }
@@ -808,7 +808,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     /* draw windows */
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (smap[y][x] == '=') {
+        if (s_map[y][x] == '=') {
           TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -840,7 +840,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // draw the dungeon
   for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = smap[y][x] == '#';
+      bool wall = s_map[y][x] == '#';
       TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
     }
   }
@@ -855,7 +855,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     int x, y, i;
     for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        bool wall = smap[y][x] == '#';
+        bool wall = s_map[y][x] == '#';
         if (!wall) {
           float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
           TCOD_console_set_char_background(
@@ -906,7 +906,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       dy--;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (smap[dy][dx] == ' ') {
+      if (s_map[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'K' || key->text[0] == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
@@ -915,7 +915,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       dy++;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (smap[dy][dx] == ' ') {
+      if (s_map[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'J' || key->text[0] == 'j') && dx > 0) {
@@ -924,7 +924,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       dx--;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (smap[dy][dx] == ' ') {
+      if (s_map[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'L' || key->text[0] == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
@@ -933,7 +933,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       dx++;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (smap[dy][dx] == ' ') {
+      if (s_map[dy][dx] == ' ') {
         recalculatePath = true;
       }
     }
@@ -946,7 +946,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy = my;
     oldChar = TCOD_console_get_char(sample_console, dx, dy);
     TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-    if (smap[dy][dx] == ' ') {
+    if (s_map[dy][dx] == ' ') {
       recalculatePath = true;
     }
   }
@@ -1259,51 +1259,51 @@ bool sdl_callback_enabled = false;
 int effectNum = 0;
 float delay = 3.0f;
 
-void burn(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
-  int ridx = screen->format->Rshift / 8;
-  int gidx = screen->format->Gshift / 8;
-  int bidx = screen->format->Bshift / 8;
+void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+  int r_idx = screen->format->Rshift / 8;
+  int g_idx = screen->format->Gshift / 8;
+  int b_idx = screen->format->Bshift / 8;
   int x, y;
-  for (x = samplex; x < samplex + samplew; x++) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-    for (y = sampley; y < sampley + sampleh; y++) {
+  for (x = sample_x; x < sample_x + sample_w; x++) {
+    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    for (y = sample_y; y < sample_y + sample_h; y++) {
       int ir = 0, ig = 0, ib = 0;
       uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
-      ir += p2[ridx];
-      ig += p2[gidx];
-      ib += p2[bidx];
+      ir += p2[r_idx];
+      ig += p2[g_idx];
+      ib += p2[b_idx];
       p2 -= 2 * screen->format->BytesPerPixel;  // get pixel at x-1,y
-      ir += p2[ridx];
-      ig += p2[gidx];
-      ib += p2[bidx];
+      ir += p2[r_idx];
+      ig += p2[g_idx];
+      ib += p2[b_idx];
       p2 += screen->format->BytesPerPixel + screen->pitch;  // get pixel at x,y+1
-      ir += p2[ridx];
-      ig += p2[gidx];
-      ib += p2[bidx];
+      ir += p2[r_idx];
+      ig += p2[g_idx];
+      ib += p2[b_idx];
       p2 -= 2 * screen->pitch;  // get pixel at x,y-1
-      ir += p2[ridx];
-      ig += p2[gidx];
-      ib += p2[bidx];
+      ir += p2[r_idx];
+      ig += p2[g_idx];
+      ib += p2[b_idx];
       ir /= 4;
       ig /= 4;
       ib /= 4;
-      p[ridx] = ir;
-      p[gidx] = ig;
-      p[bidx] = ib;
+      p[r_idx] = ir;
+      p[g_idx] = ig;
+      p[b_idx] = ib;
       p += screen->pitch;
     }
   }
 }
 
-void explode(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
-  int ridx = screen->format->Rshift / 8;
-  int gidx = screen->format->Gshift / 8;
-  int bidx = screen->format->Bshift / 8;
+void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
+  int r_idx = screen->format->Rshift / 8;
+  int g_idx = screen->format->Gshift / 8;
+  int b_idx = screen->format->Bshift / 8;
   int dist = (int)(10 * (3.0f - delay));
   int x, y;
-  for (x = samplex; x < samplex + samplew; x++) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-    for (y = sampley; y < sampley + sampleh; y++) {
+  for (x = sample_x; x < sample_x + sample_w; x++) {
+    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    for (y = sample_y; y < sample_y + sample_h; y++) {
       int ir = 0, ig = 0, ib = 0, i;
       for (i = 0; i < 3; i++) {
         int dx = TCOD_random_get_int(NULL, -dist, dist);
@@ -1311,37 +1311,37 @@ void explode(SDL_Surface* screen, int samplex, int sampley, int samplew, int sam
         uint8_t* p2;
         p2 = p + dx * screen->format->BytesPerPixel;
         p2 += dy * screen->pitch;
-        ir += p2[ridx];
-        ig += p2[gidx];
-        ib += p2[bidx];
+        ir += p2[r_idx];
+        ig += p2[g_idx];
+        ib += p2[b_idx];
       }
       ir /= 3;
       ig /= 3;
       ib /= 3;
-      p[ridx] = ir;
-      p[gidx] = ig;
-      p[bidx] = ib;
+      p[r_idx] = ir;
+      p[g_idx] = ig;
+      p[b_idx] = ib;
       p += screen->pitch;
     }
   }
 }
 
-void blur(SDL_Surface* screen, int samplex, int sampley, int samplew, int sampleh) {
+void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
   // let's blur that sample console
   float f[3], n = 0.0f;
-  int ridx = screen->format->Rshift / 8;
-  int gidx = screen->format->Gshift / 8;
-  int bidx = screen->format->Bshift / 8;
+  int r_idx = screen->format->Rshift / 8;
+  int g_idx = screen->format->Gshift / 8;
+  int b_idx = screen->format->Bshift / 8;
   int x, y;
   f[2] = TCOD_sys_elapsed_seconds();
   if (noise == NULL) noise = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
-  for (x = samplex; x < samplex + samplew; x++) {
-    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sampley * screen->pitch;
-    f[0] = (float)(x) / samplew;
-    for (y = sampley; y < sampley + sampleh; y++) {
+  for (x = sample_x; x < sample_x + sample_w; x++) {
+    uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
+    f[0] = (float)(x) / sample_w;
+    for (y = sample_y; y < sample_y + sample_h; y++) {
       int ir = 0, ig = 0, ib = 0, dec, count;
-      if ((y - sampley) % 8 == 0) {
-        f[1] = (float)(y) / sampleh;
+      if ((y - sample_y) % 8 == 0) {
+        f[1] = (float)(y) / sample_h;
         n = TCOD_noise_get_fbm(noise, f, 3.0f);
       }
       dec = (int)(3 * (n + 1.0f));
@@ -1350,85 +1350,85 @@ void blur(SDL_Surface* screen, int samplex, int sampley, int samplew, int sample
         case 4:
           count += 4;
           // get pixel at x,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= 2 * screen->pitch;  // get pixel at x+2,y+2
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += 2 * screen->pitch;
         case 3:
           count += 4;
           // get pixel at x,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += 2 * screen->format->BytesPerPixel;  // get pixel at x+2,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += 2 * screen->pitch;  // get pixel at x+2,y+2
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= 2 * screen->format->BytesPerPixel;  // get pixel at x,y+2
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= 2 * screen->pitch;
         case 2:
           count += 4;
           // get pixel at x,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= screen->format->BytesPerPixel;  // get pixel at x-1,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= screen->pitch;  // get pixel at x-1,y-1
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += screen->format->BytesPerPixel;  // get pixel at x,y-1
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += screen->pitch;
         case 1:
           count += 4;
           // get pixel at x,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += screen->format->BytesPerPixel;  // get pixel at x+1,y
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p += screen->pitch;  // get pixel at x+1,y+1
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= screen->format->BytesPerPixel;  // get pixel at x,y+1
-          ir += p[ridx];
-          ig += p[gidx];
-          ib += p[bidx];
+          ir += p[r_idx];
+          ig += p[g_idx];
+          ib += p[b_idx];
           p -= screen->pitch;
           ir /= count;
           ig /= count;
           ib /= count;
-          p[ridx] = ir;
-          p[gidx] = ig;
-          p[bidx] = ib;
+          p[r_idx] = ir;
+          p[g_idx] = ig;
+          p[b_idx] = ib;
           break;
         default:
           break;
@@ -1442,11 +1442,11 @@ void SDL_render(void* sdlSurface) {
   SDL_Surface* screen = (SDL_Surface*)sdlSurface;
   // now we have almighty access to the screen's precious pixels !!
   // get the font character size
-  int charw, charh, samplex, sampley;
-  TCOD_sys_get_char_size(&charw, &charh);
+  int char_w, char_h, sample_x, sample_y;
+  TCOD_sys_get_char_size(&char_w, &char_h);
   // compute the sample console position in pixels
-  samplex = SAMPLE_SCREEN_X * charw;
-  sampley = SAMPLE_SCREEN_Y * charh;
+  sample_x = SAMPLE_SCREEN_X * char_w;
+  sample_y = SAMPLE_SCREEN_Y * char_h;
   delay -= TCOD_sys_get_last_frame_length();
   if (delay < 0.0f) {
     delay = 3.0f;
@@ -1458,13 +1458,13 @@ void SDL_render(void* sdlSurface) {
   }
   switch (effectNum) {
     case 0:
-      blur(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+      blur(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
       break;
     case 1:
-      explode(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+      explode(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
       break;
     case 2:
-      burn(screen, samplex, sampley, SAMPLE_SCREEN_WIDTH * charw, SAMPLE_SCREEN_HEIGHT * charh);
+      burn(screen, sample_x, sample_y, SAMPLE_SCREEN_WIDTH * char_w, SAMPLE_SCREEN_HEIGHT * char_h);
       break;
   }
 }
@@ -1655,7 +1655,7 @@ int main(int argc, char* argv[]) {
         SAMPLE_SCREEN_X,
         SAMPLE_SCREEN_Y, /* the destination console & position */
         1.0f,
-        1.0f /* alpha coefs */
+        1.0f /* alpha coefficients */
     );
     /* display renderer list and current renderer */
     cur_renderer = TCOD_sys_get_renderer();

@@ -1579,7 +1579,7 @@ int main(int argc, char* argv[]) {
   atexit(TCOD_quit);
   do {
     if (!creditsEnd) {
-      creditsEnd = TCODConsole::renderCredits(60, 43, false);
+      creditsEnd = TCODConsole::renderCredits(56, 43, false);
     }
 
     // print the list of samples

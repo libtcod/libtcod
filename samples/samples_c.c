@@ -1602,7 +1602,7 @@ int main(int argc, char* argv[]) {
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
   do {
     if (!credits_end) {
-      credits_end = TCOD_console_credits_render(60, 43, false);
+      credits_end = TCOD_console_credits_render(56, 43, false);
     }
     /* print the list of samples */
     for (i = 0; i < nb_samples; i++) {

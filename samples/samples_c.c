@@ -690,8 +690,8 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (first) {
     TCOD_console_set_default_background(sample_console, TCOD_grey);
     TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
-    TCOD_mouse_move(320, 200);
-    TCOD_mouse_show_cursor(true);
+    SDL_WarpMouseInWindow(NULL, 320, 200);
+    SDL_ShowCursor(1);
   }
 
   TCOD_console_clear(sample_console);
@@ -728,10 +728,11 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 
   TCOD_console_printf(sample_console, 1, 10, "1 : Hide cursor\n2 : Show cursor");
   if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if (key->text[0] == '1')
-      TCOD_mouse_show_cursor(false);
-    else if (key->text[0] == '2')
-      TCOD_mouse_show_cursor(true);
+    if (key->text[0] == '1') {
+      SDL_ShowCursor(0);
+    } else if (key->text[0] == '2') {
+      SDL_ShowCursor(1);
+    }
   }
 }
 
@@ -1195,8 +1196,8 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     files = TCOD_sys_get_directory_content("data/namegen", "*.cfg");
     // parse all the files
     for (it = (char**)TCOD_list_begin(files); it != (char**)TCOD_list_end(files); it++) {
-      char tmp[236];
-      sprintf(tmp, "data/namegen/%s", *it);
+      char tmp[256] = "";
+      snprintf(tmp, sizeof(tmp), "data/namegen/%s", *it);
       TCOD_namegen_parse(tmp, NULL);
     }
     // get the sets list
@@ -1493,8 +1494,6 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       TCOD_sys_register_SDL_renderer(SDL_render);
     } else {
       TCOD_sys_register_SDL_renderer(NULL);
-      // we want libtcod to redraw the sample console even if nothing has changed in it
-      TCOD_console_set_dirty(SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     }
   }
 }
@@ -1658,13 +1657,6 @@ int main(int argc, char* argv[]) {
         1.0f,
         1.0f /* alpha coefs */
     );
-#ifndef NO_SDL_SAMPLE
-    if (sdl_callback_enabled) {
-      // we want libtcod to redraw the sample console even if nothing has changed in it
-      TCOD_console_set_dirty(SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    }
-#endif
-
     /* display renderer list and current renderer */
     cur_renderer = TCOD_sys_get_renderer();
     TCOD_console_set_default_foreground(NULL, TCOD_grey);

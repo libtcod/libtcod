@@ -9,11 +9,11 @@
 
 #include <SDL.h>
 #include <libtcod.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -691,8 +691,8 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (first) {
     sampleConsole.setDefaultBackground(TCODColor::grey);
     sampleConsole.setDefaultForeground(TCODColor::lightYellow);
-    TCODMouse::move(320, 200);
-    TCODMouse::showCursor(true);
+    SDL_WarpMouseInWindow(NULL, 320, 200);
+    SDL_ShowCursor(1);
   }
 
   sampleConsole.clear();
@@ -726,10 +726,11 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       middle_button ? " ON" : "OFF",
       mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
   sampleConsole.printf(1, 10, "1 : Hide cursor\n2 : Show cursor");
-  if (key->c == '1')
-    TCODMouse::showCursor(false);
-  else if (key->c == '2')
-    TCODMouse::showCursor(true);
+  if (key->c == '1') {
+    SDL_ShowCursor(0);
+  } else if (key->c == '2') {
+    SDL_ShowCursor(1);
+  }
 }
 
 // ***************************
@@ -1179,8 +1180,8 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCODList<char*> files = TCODSystem::getDirectoryContent("data/namegen", "*.cfg");
     // parse all the files
     for (char** it = files.begin(); it != files.end(); it++) {
-      char tmp[256];
-      sprintf(tmp, "data/namegen/%s", *it);
+      char tmp[256] = "";
+      std::snprintf(tmp, sizeof(tmp), "data/namegen/%s", *it);
       TCODNamegen::parse(tmp);
     }
     // get the sets list
@@ -1473,8 +1474,6 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       TCODSystem::registerSDLRenderer(new SampleRenderer());
     } else {
       TCODSystem::registerSDLRenderer(NULL);
-      // we want libtcod to redraw the sample console even if nothing has changed in it
-      TCODConsole::root->setDirty(SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     }
   }
 }
@@ -1498,7 +1497,6 @@ const std::vector<sample_t> samples = {
     {"  SDL callback       ", render_sdl},
 #endif
 };
-const int nbSamples = samples.size();  // total number of samples
 
 // ***************************
 // the main function
@@ -1583,7 +1581,7 @@ int main(int argc, char* argv[]) {
     }
 
     // print the list of samples
-    for (int i = 0; i < nbSamples; i++) {
+    for (int i = 0; i < samples.size(); i++) {
       if (i == curSample) {
         // set colors for currently selected sample
         TCODConsole::root->setDefaultForeground(TCODColor::white);
@@ -1594,7 +1592,8 @@ int main(int argc, char* argv[]) {
         TCODConsole::root->setDefaultBackground(TCODColor::black);
       }
       // print the sample name
-      TCODConsole::root->print(2, 46 - (nbSamples - i), samples[i].name, TCOD_LEFT, TCOD_BKGND_SET);
+      TCODConsole::root->print(
+          2, 46 - (static_cast<int>(samples.size()) - i), samples[i].name, TCOD_LEFT, TCOD_BKGND_SET);
     }
     // print the help message
     TCODConsole::root->setDefaultForeground(TCODColor::grey);
@@ -1635,12 +1634,6 @@ int main(int argc, char* argv[]) {
     );
     // erase the renderer in debug mode (needed because the root console is not cleared each frame)
     TCODConsole::root->printf(1, 1, "        ");
-#ifndef NO_SDL_SAMPLE
-    if (sdl_callback_enabled) {
-      // we want libtcod to redraw the sample console even if nothing has changed in it
-      TCODConsole::root->setDirty(SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    }
-#endif
     /* display renderer list and current renderer */
     cur_renderer = TCODSystem::getRenderer();
     TCODConsole::root->setDefaultForeground(TCODColor::grey);
@@ -1666,12 +1659,12 @@ int main(int argc, char* argv[]) {
     TCODSystem::checkForEvent((TCOD_event_t)(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE), &key, &mouse);
     if (key.vk == TCODK_DOWN) {
       // down arrow : next sample
-      curSample = (curSample + 1) % nbSamples;
+      curSample = (curSample + 1) % samples.size();
       first = true;
     } else if (key.vk == TCODK_UP) {
       // up arrow : previous sample
       curSample--;
-      if (curSample < 0) curSample = nbSamples - 1;
+      if (curSample < 0) curSample = static_cast<int>(samples.size()) - 1;
       first = true;
     } else if (key.vk == TCODK_ENTER && (key.lalt | key.ralt)) {
       // ALT-ENTER : switch fullscreen

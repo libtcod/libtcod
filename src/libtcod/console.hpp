@@ -1794,6 +1794,7 @@ public :
 
 	virtual ~TCODConsole();
 
+  TCOD_DEPRECATED("This function does nothing.")
 	void setDirty(int x, int y, int w, int h);
 
 

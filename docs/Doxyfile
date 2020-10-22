@@ -2129,6 +2129,7 @@ PREDEFINED             = TCODLIB_API= \
                          TCOD_NODISCARD= \
                          TCOD_PUBLIC= \
                          TCOD_PRIVATE= \
+                         __restrict= \
                          __cplusplus
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this

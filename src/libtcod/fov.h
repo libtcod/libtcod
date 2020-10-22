@@ -32,41 +32,90 @@
 #ifndef _TCOD_FOV_H
 #define _TCOD_FOV_H
 
+#include <stdbool.h>
 #ifdef __cplusplus
 #include <memory>
 #endif  // __cplusplus
+#include "config.h"
 #include "fov_types.h"
-#include "portability.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-/* allocate a new map */
-TCODLIB_API TCOD_Map* TCOD_map_new(int width, int height);
-/* set all cells as solid rock (cannot see through nor walk) */
-TCODLIB_API void TCOD_map_clear(TCOD_Map* map, bool transparent, bool walkable);
-/* copy a map to another, reallocating it when needed */
-TCODLIB_API void TCOD_map_copy(const TCOD_Map* source, TCOD_Map* dest);
-/* change a cell properties */
-TCODLIB_API void TCOD_map_set_properties(TCOD_Map* map, int x, int y, bool is_transparent, bool is_walkable);
-/* destroy a map */
-TCODLIB_API void TCOD_map_delete(TCOD_Map* map);
+/**
+    Return a new TCOD_Map with `width` and `height`.
+ */
+TCOD_PUBLIC TCOD_Map* TCOD_map_new(int width, int height);
+/**
+    Set all cell values on `map` to the given parameters.
 
-/* calculate the field of view (potentially visible cells from player_x,player_y) */
-TCODLIB_API void TCOD_map_compute_fov(
-    TCOD_Map* map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
-/* check if a cell is in the last computed field of view */
-TCODLIB_API bool TCOD_map_is_in_fov(const TCOD_Map* map, int x, int y);
-TCODLIB_API void TCOD_map_set_in_fov(TCOD_Map* map, int x, int y, bool fov);
+    This call also zeroes out the field-of-view attribute.
+ */
+TCOD_PUBLIC void TCOD_map_clear(TCOD_Map* map, bool transparent, bool walkable);
+/**
+    Clone map data from `source` to `dest`.
 
-/* retrieve properties from the map */
-TCODLIB_API bool TCOD_map_is_transparent(const TCOD_Map* map, int x, int y);
-TCODLIB_API bool TCOD_map_is_walkable(TCOD_Map* map, int x, int y);
-TCODLIB_API int TCOD_map_get_width(const TCOD_Map* map);
-TCODLIB_API int TCOD_map_get_height(const TCOD_Map* map);
-TCODLIB_API int TCOD_map_get_nb_cells(const TCOD_Map* map);
+    `dest` will be resized to match `source` if necessary.
+ */
+TCOD_PUBLIC void TCOD_map_copy(const TCOD_Map* __restrict source, TCOD_Map* __restrict dest);
+/**
+    Change the properties of a single cell.
+ */
+TCOD_PUBLIC void TCOD_map_set_properties(TCOD_Map* map, int x, int y, bool is_transparent, bool is_walkable);
+/**
+    Free a TCOD_Map object.
+ */
+TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
+/**
+    Calculate the field-of-view.
+
+    \rst
+    `player_x` and `player_y` are the used as the field-of-view source.
+    These coordinates must be within the map.
+
+    `max_radius` is the maximum distance for the field-of-view algorithm.
+
+    If `light_walls` is false then only transparent cells will be touched by
+    the field-of-view.
+
+    `algo` is one of the :any:`TCOD_fov_algorithm_t` algorithms.
+
+    After this call you may check if a cell is within the field-of-view by
+    calling :any:`TCOD_map_is_in_fov`.
+    \endrst
+ */
+TCOD_PUBLIC void TCOD_map_compute_fov(
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
+/**
+    Return true if this cell was touched by the current field-of-view.
+ */
+TCOD_PUBLIC bool TCOD_map_is_in_fov(const TCOD_Map* map, int x, int y);
+/**
+    Set the fov flag on a specific cell.
+ */
+TCOD_PUBLIC void TCOD_map_set_in_fov(TCOD_Map* map, int x, int y, bool fov);
+/**
+    Return true if this cell is transparent.
+ */
+TCOD_PUBLIC bool TCOD_map_is_transparent(const TCOD_Map* map, int x, int y);
+/**
+    Return true if this cell is walkable.
+ */
+TCOD_PUBLIC bool TCOD_map_is_walkable(TCOD_Map* map, int x, int y);
+/**
+    Return the width of `map`.
+ */
+TCOD_PUBLIC int TCOD_map_get_width(const TCOD_Map* map);
+/**
+    Return the height of `map`.
+ */
+TCOD_PUBLIC int TCOD_map_get_height(const TCOD_Map* map);
+/**
+    Return the total number of cells in `map`.
+ */
+TCOD_PUBLIC int TCOD_map_get_nb_cells(const TCOD_Map* map);
 #ifdef __cplusplus
-}
+}  // extern "C"
 namespace tcod {
 struct MapDeleter_ {
   void operator()(TCOD_Map* map) const { TCOD_map_delete(map); }

@@ -34,9 +34,6 @@
 
 #include "fov.h"
 #include "libtcod_int.h"
-/**
- *  Return a new TCOD_Map with `width` and `height`.
- */
 struct TCOD_Map* TCOD_map_new(int width, int height) {
   if (width <= 0 || height <= 0) {
     return NULL;
@@ -48,11 +45,6 @@ struct TCOD_Map* TCOD_map_new(int width, int height) {
   map->cells = calloc(sizeof(*map->cells), map->nbcells);
   return map;
 }
-/**
- *  Clone map data from `source` to `dest`.
- *
- *  `dest` will be resized to match `source` if necessary.
- */
 void TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __restrict dest) {
   if (!source || !dest) {
     return;
@@ -66,11 +58,6 @@ void TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __
   dest->nbcells = source->nbcells;
   memcpy(dest->cells, source->cells, sizeof(*dest->cells) * source->nbcells);
 }
-/**
- *  Set all cell values on `map` to the given parameters.
- *
- *  This call also zeroes out the field of view flag.
- */
 void TCOD_map_clear(struct TCOD_Map* map, bool transparent, bool walkable) {
   int i;
   if (!map) {
@@ -83,16 +70,13 @@ void TCOD_map_clear(struct TCOD_Map* map, bool transparent, bool walkable) {
   }
 }
 /**
- *  Return true if `x` and `y` are in the boundaries of `map`.
- *
- *  Returns false if `map` is NULL.
+    Return true if `x` and `y` are in the boundaries of `map`.
+
+    Returns false if `map` is NULL.
  */
 static int TCOD_map_in_bounds(const struct TCOD_Map* map, int x, int y) {
   return map && 0 <= x && x < map->width && 0 <= y && y < map->height;
 }
-/**
- *  Set the properties of a single cell.
- */
 void TCOD_map_set_properties(struct TCOD_Map* map, int x, int y, bool is_transparent, bool is_walkable) {
   if (!TCOD_map_in_bounds(map, x, y)) {
     return;
@@ -100,9 +84,6 @@ void TCOD_map_set_properties(struct TCOD_Map* map, int x, int y, bool is_transpa
   map->cells[x + y * map->width].transparent = is_transparent;
   map->cells[x + y * map->width].walkable = is_walkable;
 }
-/**
- *  Free all memory belonging to `map`.
- */
 void TCOD_map_delete(struct TCOD_Map* map) {
   if (!map) {
     return;
@@ -110,26 +91,13 @@ void TCOD_map_delete(struct TCOD_Map* map) {
   free(map->cells);
   free(map);
 }
-/**
- *  Calculate the field-of-view.
- *
- *  \rst
- *  `player_x` and `player_y` are the used as the field-of-view source.
- *  These coordinates must be within the map.
- *
- *  `max_radius` is the maximum distance for the field-of-view algorithm.
- *
- *  If `light_walls` is false then only transparent cells will be touched by
- *  the field-of-view.
- *
- *  `algo` is one of the :any:`TCOD_fov_algorithm_t` algorithms.
- *
- *  After this call you may check if a cell is within the field-of-view by
- *  calling :any:`TCOD_map_is_in_fov`.
- *  \endrst
- */
 void TCOD_map_compute_fov(
-    struct TCOD_Map* map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo) {
+    struct TCOD_Map* __restrict map,
+    int player_x,
+    int player_y,
+    int max_radius,
+    bool light_walls,
+    TCOD_fov_algorithm_t algo) {
   if (!map) {
     return;
   }
@@ -164,63 +132,42 @@ void TCOD_map_compute_fov(
       return;
   }
 }
-/**
- *  Return true if this cell was touched by the current field-of-view.
- */
 bool TCOD_map_is_in_fov(const struct TCOD_Map* map, int x, int y) {
   if (!TCOD_map_in_bounds(map, x, y)) {
     return 0;
   }
   return map->cells[x + y * map->width].fov;
 }
-/**
- *  Set the fov flag on a specific cell.
- */
 void TCOD_map_set_in_fov(struct TCOD_Map* map, int x, int y, bool fov) {
   if (!TCOD_map_in_bounds(map, x, y)) {
     return;
   }
   map->cells[x + y * map->width].fov = fov;
 }
-/**
- *  Return true if this cell is transparent.
- */
 bool TCOD_map_is_transparent(const struct TCOD_Map* map, int x, int y) {
   if (!TCOD_map_in_bounds(map, x, y)) {
     return 0;
   }
   return map->cells[x + y * map->width].transparent;
 }
-/**
- *  Return true if this cell is walkable.
- */
 bool TCOD_map_is_walkable(struct TCOD_Map* map, int x, int y) {
   if (!TCOD_map_in_bounds(map, x, y)) {
     return 0;
   }
   return map->cells[x + y * map->width].walkable;
 }
-/**
- *  Return the width of `map`.
- */
 int TCOD_map_get_width(const struct TCOD_Map* map) {
   if (!map) {
     return 0;
   }
   return map->width;
 }
-/**
- *  Return the height of `map`.
- */
 int TCOD_map_get_height(const struct TCOD_Map* map) {
   if (!map) {
     return 0;
   }
   return map->height;
 }
-/**
- *  Return the total number of cells in `map`.
- */
 int TCOD_map_get_nb_cells(const struct TCOD_Map* map) {
   if (!map) {
     return 0;

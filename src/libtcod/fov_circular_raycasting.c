@@ -38,7 +38,6 @@
 #include "fov.h"
 #include "libtcod_int.h"
 #include "utility.h"
-
 /**
     Cast a Bresenham ray marking tiles along the line as lit.
 
@@ -80,7 +79,6 @@ static void cast_ray(
     map->cells[map_index].fov = true;
   }
 }
-
 /**
     Spread lighting to walls to avoid lighting artifacts.
 
@@ -117,7 +115,6 @@ void TCOD_map_postproc(struct TCOD_Map* __restrict map, int x0, int y0, int x1, 
     }
   }
 }
-
 void TCOD_map_compute_fov_circular_raycasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
   int x_min = 0;  // Field-of-view bounds.

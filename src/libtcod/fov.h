@@ -32,6 +32,9 @@
 #ifndef _TCOD_FOV_H
 #define _TCOD_FOV_H
 
+#ifdef __cplusplus
+#include <memory>
+#endif  // __cplusplus
 #include "fov_types.h"
 #include "portability.h"
 
@@ -64,5 +67,11 @@ TCODLIB_API int TCOD_map_get_height(const TCOD_Map* map);
 TCODLIB_API int TCOD_map_get_nb_cells(const TCOD_Map* map);
 #ifdef __cplusplus
 }
-#endif
-#endif
+namespace tcod {
+struct MapDeleter_ {
+  void operator()(TCOD_Map* map) const { TCOD_map_delete(map); }
+};
+typedef std::unique_ptr<struct TCOD_Map, MapDeleter_> MapPtr_;
+}  // namespace tcod
+#endif  // __cplusplus
+#endif  // _TCOD_FOV_H

@@ -88,7 +88,7 @@ TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
     Return True if the libtcod keycode is held.
 
     \rst
-    .. deprecaed:: 1.16
+    .. deprecated:: 1.16
         You should instead use SDL_GetKeyboardState to check if keys are held.
     \endrst
  */

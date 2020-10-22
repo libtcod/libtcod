@@ -126,12 +126,12 @@ void TCOD_map_compute_fov_circular_raycastingi(
   }
   xo = xmax - 2;
   yo = ymax - 1;
-  while (xo >= 0) {
+  while (xo >= xmin) {
     cast_ray(m, player_x, player_y, xo--, yo, r2, light_walls);
   }
   xo = xmin;
   yo = ymax - 2;
-  while (yo > 0) {
+  while (yo > ymin) {
     cast_ray(m, player_x, player_y, xo, yo--, r2, light_walls);
   }
   if (light_walls) {
@@ -231,12 +231,12 @@ void TCOD_map_compute_fov_circular_raycasting(
   }
   xo = xmax - 2;
   yo = ymax - 1;
-  while (xo >= 0) {
+  while (xo >= xmin) {
     cast_ray(m, player_x, player_y, xo--, yo, r2, light_walls);
   }
   xo = xmin;
   yo = ymax - 2;
-  while (yo > 0) {
+  while (yo > ymin) {
     cast_ray(m, player_x, player_y, xo, yo--, r2, light_walls);
   }
   if (light_walls) {

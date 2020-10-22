@@ -26,6 +26,8 @@ since `1.7.0`.
 - A struct is used to pass parameters for creating contexts.
 - The OpenGL 2 renderer can now use `SDL_HINT_RENDER_SCALE_QUALITY` to
   determine the tileset upscaling filter.
+- Improved performance of the FOV_BASIC algorithm.
+  [#77](https://github.com/libtcod/libtcod/issues/77)
 
 ### Deprecated
 - Deprecated the following macros:

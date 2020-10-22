@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -38,212 +39,123 @@
 #include "libtcod_int.h"
 #include "utility.h"
 
-static void cast_ray(struct TCOD_Map* map, int xo, int yo, int xd, int yd, int r2, bool light_walls) {
-  int curx = xo, cury = yo;
-  bool in = false;
-  bool blocked = false;
-  bool end = false;
-  int offset;
+/**
+    Cast a Bresenham ray marking tiles along the line as lit.
+
+    `radius_squared` is the max distance or zero if there is no limit.
+
+    If `light_walls` is true then blocking walls are marked as visible.
+ */
+static void cast_ray(
+    struct TCOD_Map* __restrict map,
+    int x_origin,
+    int y_origin,
+    int x_dest,
+    int y_dest,
+    int radius_squared,
+    bool light_walls) {
   TCOD_bresenham_data_t bresenham_data;
-  TCOD_line_init_mt(xo, yo, xd, yd, &bresenham_data);
-  offset = curx + cury * map->width;
-  if (0 <= offset && offset < map->nbcells) {
-    in = true;
-    map->cells[offset].fov = 1;
-  }
-  while (!end) {
-    end = TCOD_line_step_mt(&curx, &cury, &bresenham_data); /* reached xd,yd */
-    offset = curx + cury * map->width;
-    if (r2 > 0) {
-      /* check radius */
-      int cur_radius = (curx - xo) * (curx - xo) + (cury - yo) * (cury - yo);
-      if (cur_radius > r2) return;
+  int current_x;
+  int current_y;
+  TCOD_line_init_mt(x_origin, y_origin, x_dest, y_dest, &bresenham_data);
+  while (!TCOD_line_step_mt(&current_x, &current_y, &bresenham_data)) {
+    if (!(0 <= current_x && 0 <= current_y && current_x < map->width && current_y < map->height)) {
+      return;  // Out of bounds.
     }
-    if (0 <= offset && offset < map->nbcells) {
-      in = true;
-      if (!blocked && !map->cells[offset].transparent) {
-        blocked = true;
-      } else if (blocked) {
-        return; /* wall */
+    if (radius_squared > 0) {
+      const int current_radius =
+          (current_x - x_origin) * (current_x - x_origin) + (current_y - y_origin) * (current_y - y_origin);
+      if (current_radius > radius_squared) {
+        return;  // Outside of radius.
       }
-      if (light_walls || !blocked) map->cells[offset].fov = 1;
-    } else if (in)
-      return; /* ray out of map */
+    }
+    const int map_index = current_x + current_y * map->width;
+    if (!map->cells[map_index].transparent) {
+      if (light_walls) {
+        map->cells[map_index].fov = true;
+      }
+      return;  // Blocked by wall.
+    }
+    // Tile is transparent.
+    map->cells[map_index].fov = true;
   }
 }
 
-void TCOD_map_postproc(struct TCOD_Map* map, int x0, int y0, int x1, int y1, int dx, int dy) {
-  int cx, cy;
-  for (cx = x0; cx <= x1; cx++) {
-    for (cy = y0; cy <= y1; cy++) {
-      int x2 = cx + dx;
-      int y2 = cy + dy;
-      unsigned int offset = cx + cy * map->width;
-      if (offset < (unsigned)map->nbcells && map->cells[offset].fov == 1 && map->cells[offset].transparent) {
+/**
+    Spread lighting to walls to avoid lighting artifacts.
+
+    `x0`, `y0` are the lower bounds.  `x1`, `y1` are the upper bounds.
+
+    `dx`, `dy` is the cast direction.
+ */
+void TCOD_map_postproc(struct TCOD_Map* __restrict map, int x0, int y0, int x1, int y1, int dx, int dy) {
+  for (int cx = x0; cx <= x1; cx++) {
+    for (int cy = y0; cy <= y1; cy++) {
+      const int x2 = cx + dx;
+      const int y2 = cy + dy;
+      const int offset = cx + cy * map->width;
+      if (offset < map->nbcells && map->cells[offset].fov == 1 && map->cells[offset].transparent) {
         if (x2 >= x0 && x2 <= x1) {
-          unsigned int offset2 = x2 + cy * map->width;
-          if (offset2 < (unsigned)map->nbcells && !map->cells[offset2].transparent) map->cells[offset2].fov = 1;
+          const int offset2 = x2 + cy * map->width;
+          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
+            map->cells[offset2].fov = 1;
+          }
         }
         if (y2 >= y0 && y2 <= y1) {
-          unsigned int offset2 = cx + y2 * map->width;
-          if (offset2 < (unsigned)map->nbcells && !map->cells[offset2].transparent) map->cells[offset2].fov = 1;
+          const int offset2 = cx + y2 * map->width;
+          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
+            map->cells[offset2].fov = 1;
+          }
         }
         if (x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1) {
-          unsigned int offset2 = x2 + y2 * map->width;
-          if (offset2 < (unsigned)map->nbcells && !map->cells[offset2].transparent) map->cells[offset2].fov = 1;
+          const int offset2 = x2 + y2 * map->width;
+          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
+            map->cells[offset2].fov = 1;
+          }
         }
       }
     }
   }
 }
 
-void TCOD_map_compute_fov_circular_raycastingi(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-  int xo, yo;
-  struct TCOD_Map* m = (struct TCOD_Map*)map;
-  /* circular ray casting */
-  int xmin = 0, ymin = 0, xmax = m->width, ymax = m->height;
-  int c;
-  int r2 = max_radius * max_radius;
-  if (max_radius > 0) {
-    xmin = MAX(0, player_x - max_radius);
-    ymin = MAX(0, player_y - max_radius);
-    xmax = MIN(m->width, player_x + max_radius + 1);
-    ymax = MIN(m->height, player_y + max_radius + 1);
-  }
-  for (c = m->nbcells - 1; c >= 0; c--) {
-    m->cells[c].fov = 0;
-  }
-  xo = xmin;
-  yo = ymin;
-  while (xo < xmax) {
-    cast_ray(m, player_x, player_y, xo++, yo, r2, light_walls);
-  }
-  xo = xmax - 1;
-  yo = ymin + 1;
-  while (yo < ymax) {
-    cast_ray(m, player_x, player_y, xo, yo++, r2, light_walls);
-  }
-  xo = xmax - 2;
-  yo = ymax - 1;
-  while (xo >= xmin) {
-    cast_ray(m, player_x, player_y, xo--, yo, r2, light_walls);
-  }
-  xo = xmin;
-  yo = ymax - 2;
-  while (yo > ymin) {
-    cast_ray(m, player_x, player_y, xo, yo--, r2, light_walls);
-  }
-  if (light_walls) {
-    /* post-processing artefact fix */
-    TCOD_map_postproc(m, xmin, ymin, player_x, player_y, -1, -1);
-    TCOD_map_postproc(m, player_x, ymin, xmax - 1, player_y, 1, -1);
-    TCOD_map_postproc(m, xmin, player_y, player_x, ymax - 1, -1, 1);
-    TCOD_map_postproc(m, player_x, player_y, xmax - 1, ymax - 1, 1, 1);
-  }
-}
-
-#if 0
-#define CELL_RADIUS 0.4f
-#define RAY_RADIUS 0.2f
-static bool ray_blocked(struct TCOD_Map *map,float x, float y, int cx, int cy) {
-	int offset=cx+cy*map->width;
-	float d;
-	if ( (unsigned)offset >= (unsigned)map->nbcells ) return false; /* out of the map */
-	if ( map->cells[offset].transparent ) return false; /* empty cell */
-	d=(cx-x+0.5f)*(cx-x+0.5f)+(cy-y+0.5f)*(cy-y+0.5f);
-	return d < (CELL_RADIUS+RAY_RADIUS)*(CELL_RADIUS+RAY_RADIUS);
-}
-static void cast_rayf(struct TCOD_Map *map, int xo, int yo, int xd, int yd, int r2,bool light_walls) {
-	float fxo=xo+0.5f, fyo=yo+0.5f;
-	float curx=fxo, cury=fyo;
-	float fxd=xd+0.5f;
-	float fyd=yd+0.5f;
-	bool in=false;
-	bool end=false;
-	int offset;
-	float dx=(float)(fxd-curx), dy=(float)(fyd-cury),idx,idy;
-	if ( dx == 0 && dy == 0 ) return;
-	if ( fabs(dx) > fabs(dy) ) {
-		idy = (float)(dy/fabs(dx));
-		idx = (float)(dx/fabs(dx));
-	} else {
-		idx = (float)(dx/fabs(dy));
-		idy = (float)(dy/fabs(dy));
-	}
-	offset=(int)(curx)+(int)(cury)*map->width;
-	if ( (unsigned)offset < (unsigned)map->nbcells ) {
-		in=true;
-		map->cells[offset].fov=1;
-	}
-	while (!end) {
-		int cx,cy;
-		curx+=idx;
-		cury+=idy;
-		cx=(int)curx;
-		cy=(int)cury;
-		end = (cx==xd && cy==yd);
-		offset=cx+cy*map->width;
-		if ( r2 > 0 ) {
-			/* check radius */
-			int cur_radius=(int)((curx-fxo)*(curx-fxo)+(cury-fyo)*(cury-fyo));
-			if ( cur_radius > r2 ) return;
-		}
-		if ( (unsigned)offset < (unsigned)map->nbcells ) {
-			in=true;
-			if ( ray_blocked(map,curx,cury,cx,cy) ) return;
-			if ( curx+RAY_RADIUS > cx+0.5f-CELL_RADIUS && ray_blocked(map,curx,cury,cx+1,cy) ) return;
-			if ( curx-RAY_RADIUS < cx-0.5f+CELL_RADIUS && ray_blocked(map,curx,cury,cx-1,cy) ) return;
-			if ( cury+RAY_RADIUS > cy+0.5f-CELL_RADIUS && ray_blocked(map,curx,cury,cx,cy+1) ) return;
-			if ( cury-RAY_RADIUS < cy-0.5f+CELL_RADIUS && ray_blocked(map,curx,cury,cx,cy-1) ) return;
-			map->cells[offset].fov=1;
-		} else if (in) return; /* ray out of map */
-	}
-}
-#endif
-
 void TCOD_map_compute_fov_circular_raycasting(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-  int xo, yo;
-  struct TCOD_Map* m = (struct TCOD_Map*)map;
-  /* circular ray casting */
-  int xmin = 0, ymin = 0, xmax = m->width, ymax = m->height;
-  int c;
-  int r2 = max_radius * max_radius;
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+  int x_min = 0;  // Field-of-view bounds.
+  int y_min = 0;
+  int x_max = map->width;
+  int y_max = map->height;
   if (max_radius > 0) {
-    xmin = MAX(0, player_x - max_radius);
-    ymin = MAX(0, player_y - max_radius);
-    xmax = MIN(m->width, player_x + max_radius + 1);
-    ymax = MIN(m->height, player_y + max_radius + 1);
+    x_min = MAX(x_min, player_x - max_radius);
+    y_min = MAX(y_min, player_y - max_radius);
+    x_max = MIN(x_max, player_x + max_radius + 1);
+    y_max = MIN(y_max, player_y + max_radius + 1);
   }
-  for (c = m->nbcells - 1; c >= 0; c--) {
-    m->cells[c].fov = 0;
+  for (int i = 0; i < map->nbcells; ++i) {
+    map->cells[i].fov = 0;
   }
-  xo = xmin;
-  yo = ymin;
-  while (xo < xmax) {
-    cast_ray(m, player_x, player_y, xo++, yo, r2, light_walls);
+  if (0 <= player_x && 0 <= player_y && player_x < map->width && player_y < map->height) {
+    map->cells[player_x + player_y * map->width].fov = true;  // Mark point-of-view as visible.
   }
-  xo = xmax - 1;
-  yo = ymin + 1;
-  while (yo < ymax) {
-    cast_ray(m, player_x, player_y, xo, yo++, r2, light_walls);
+
+  // Cast rays along the perimeter.
+  const int radius_squared = max_radius * max_radius;
+  for (int x = x_min; x < x_max; ++x) {
+    cast_ray(map, player_x, player_y, x, y_min, radius_squared, light_walls);
   }
-  xo = xmax - 2;
-  yo = ymax - 1;
-  while (xo >= xmin) {
-    cast_ray(m, player_x, player_y, xo--, yo, r2, light_walls);
+  for (int y = y_min + 1; y < y_max; ++y) {
+    cast_ray(map, player_x, player_y, x_max - 1, y, radius_squared, light_walls);
   }
-  xo = xmin;
-  yo = ymax - 2;
-  while (yo > ymin) {
-    cast_ray(m, player_x, player_y, xo, yo--, r2, light_walls);
+  for (int x = x_max - 2; x >= x_min; --x) {
+    cast_ray(map, player_x, player_y, x, y_max - 1, radius_squared, light_walls);
   }
+  for (int y = y_max - 2; y > y_min; --y) {
+    cast_ray(map, player_x, player_y, x_min, y, radius_squared, light_walls);
+  }
+
   if (light_walls) {
-    /* post-processing artefact fix */
-    TCOD_map_postproc(m, xmin, ymin, player_x, player_y, -1, -1);
-    TCOD_map_postproc(m, player_x, ymin, xmax - 1, player_y, 1, -1);
-    TCOD_map_postproc(m, xmin, player_y, player_x, ymax - 1, -1, 1);
-    TCOD_map_postproc(m, player_x, player_y, xmax - 1, ymax - 1, 1, 1);
+    TCOD_map_postproc(map, x_min, y_min, player_x, player_y, -1, -1);
+    TCOD_map_postproc(map, player_x, y_min, x_max - 1, player_y, 1, -1);
+    TCOD_map_postproc(map, x_min, player_y, player_x, y_max - 1, -1, 1);
+    TCOD_map_postproc(map, player_x, player_y, x_max - 1, y_max - 1, 1, 1);
   }
 }

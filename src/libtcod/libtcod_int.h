@@ -167,7 +167,7 @@ extern TCOD_internal_context_t TCOD_ctx;
 
 /* fov internal stuff */
 void TCOD_map_compute_fov_circular_raycasting(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_diamond_raycasting(
     TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_recursive_shadowcasting(

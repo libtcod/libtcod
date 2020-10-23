@@ -80,7 +80,8 @@
     `main` function.
 
     If user attention is required for the given CLI parameters then
-    `cli_output` will be called with an error or help message.
+    `cli_output` will be called with `cli_userdata` and an error or help
+    message.
     If `cli_output` is NULL then it will print the message to stdout and
     terminate the program.  If `cli_output` returns normally then
     TCOD_E_REQUIRES_ATTENTION will be returned from `TCOD_context_new`.
@@ -100,7 +101,8 @@ typedef struct TCOD_ContextParams {
   const char* window_title;
   int argc;
   const char* const* argv;
-  void (*cli_output)(const char* output);
+  void (*cli_output)(void* userdata, const char* output);
+  void* cli_userdata;
 } TCOD_ContextParams;
 #ifdef __cplusplus
 extern "C" {

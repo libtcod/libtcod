@@ -30,58 +30,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include <math.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "fov.h"
 #include "libtcod_int.h"
 #include "utility.h"
-
+/**
+    Quadrant matrixes.
+ */
 static int mult[4][8] = {
     {1, 0, 0, -1, -1, 0, 0, 1},
     {0, 1, -1, 0, 0, -1, 1, 0},
     {0, 1, 1, 0, 0, -1, -1, 0},
     {1, 0, 0, 1, -1, 0, 0, -1},
 };
-
+/**
+    Cast visiblity using shadowcasting.
+ */
 static void cast_light(
-    struct TCOD_Map* map,
-    int cx,
-    int cy,
+    struct TCOD_Map* __restrict map,
+    int pov_x,
+    int pov_y,
     int row,
     float start,
     float end,
     int radius,
-    int r2,
     int xx,
     int xy,
     int yx,
     int yy,
-    int id,
     bool light_walls) {
-  int j;
+  const int radius_squared = radius * radius;
   float new_start = 0.0f;
-  if (start < end) return;
-  for (j = row; j < radius + 1; j++) {
-    int dx = -j - 1;
-    int dy = -j;
+  if (start < end) {
+    return;
+  }
+  for (; row < radius + 1; ++row) {
     bool blocked = false;
-    while (dx <= 0) {
-      int X, Y;
-      dx++;
-      X = cx + dx * xx + dy * xy;
-      Y = cy + dx * yx + dy * yy;
-      if ((unsigned)X < (unsigned)map->width && (unsigned)Y < (unsigned)map->height) {
-        float l_slope, r_slope;
-        int offset;
-        offset = X + Y * map->width;
-        l_slope = (dx - 0.5f) / (dy + 0.5f);
-        r_slope = (dx + 0.5f) / (dy - 0.5f);
-        if (start < r_slope)
+    const int dy = -row;
+    for (int dx = -row; dx <= 0; ++dx) {
+      const int map_x = pov_x + dx * xx + dy * xy;
+      const int map_y = pov_y + dx * yx + dy * yy;
+      if (0 <= map_x && 0 <= map_y && map_x < map->width && map_y < map->height) {
+        const int offset = map_x + map_y * map->width;
+        const float l_slope = (dx - 0.5f) / (dy + 0.5f);
+        const float r_slope = (dx + 0.5f) / (dy - 0.5f);
+        if (start < r_slope) {
           continue;
-        else if (end > l_slope)
+        } else if (end > l_slope) {
           break;
-        if (dx * dx + dy * dy <= r2 && (light_walls || map->cells[offset].transparent)) map->cells[offset].fov = 1;
+        }
+        if (dx * dx + dy * dy <= radius_squared && (light_walls || map->cells[offset].transparent)) {
+          map->cells[offset].fov = 1;
+        }
         if (blocked) {
           if (!map->cells[offset].transparent) {
             new_start = r_slope;
@@ -91,50 +94,45 @@ static void cast_light(
             start = new_start;
           }
         } else {
-          if (!map->cells[offset].transparent && j < radius) {
+          if (!map->cells[offset].transparent && row < radius) {
             blocked = true;
-            cast_light(map, cx, cy, j + 1, start, l_slope, radius, r2, xx, xy, yx, yy, id + 1, light_walls);
+            cast_light(map, pov_x, pov_y, row + 1, start, l_slope, radius, xx, xy, yx, yy, light_walls);
             new_start = r_slope;
           }
         }
       }
     }
-    if (blocked) break;
+    if (blocked) {
+      break;
+    }
   }
 }
 
 void TCOD_map_compute_fov_recursive_shadowcasting(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
-  int oct, c, r2;
-  struct TCOD_Map* m = (struct TCOD_Map*)map;
-  /* clean the map */
-  for (c = m->nbcells - 1; c >= 0; c--) {
-    m->cells[c].fov = 0;
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+  for (int i = 0; i < map->nbcells; ++i) {
+    map->cells[i].fov = false;
   }
-  if (max_radius == 0) {
-    int max_radius_x = m->width - player_x;
-    int max_radius_y = m->height - player_y;
-    max_radius_x = MAX(max_radius_x, player_x);
-    max_radius_y = MAX(max_radius_y, player_y);
+  if (max_radius <= 0) {
+    int max_radius_x = MAX(map->width - player_x, player_x);
+    int max_radius_y = MAX(map->height - player_y, player_y);
     max_radius = (int)(sqrt(max_radius_x * max_radius_x + max_radius_y * max_radius_y)) + 1;
   }
-  r2 = max_radius * max_radius;
   /* recursive shadow casting */
-  for (oct = 0; oct < 8; oct++)
+  for (int octant = 0; octant < 8; ++octant) {
     cast_light(
-        m,
+        map,
         player_x,
         player_y,
         1,
         1.0,
         0.0,
         max_radius,
-        r2,
-        mult[0][oct],
-        mult[1][oct],
-        mult[2][oct],
-        mult[3][oct],
-        0,
+        mult[0][octant],
+        mult[1][octant],
+        mult[2][octant],
+        mult[3][octant],
         light_walls);
-  m->cells[player_x + player_y * m->width].fov = 1;
+  }
+  map->cells[player_x + player_y * map->width].fov = 1;
 }

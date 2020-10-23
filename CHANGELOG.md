@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0-alpha.13] - 2020-10-23
 ### Added
 - Tilesets can now be loaded from an in-memory PNG file or from raw data.
 - The character mappings `TCOD_CHARMAP_CP437` and `TCOD_CHARMAP_TCOD` are now

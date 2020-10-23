@@ -118,21 +118,6 @@ extern "C" {
     \endrst
  */
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out);
-/**
-    Create a new context with a window of the given size.
-
-    `columns` and `rows` parameters are ignored.
-
-    `out` is the output for the `TCOD_Context`, must not be NULL.
-
-    Returns a negative error code on failure, `out` will unlikely be set in this
-    case.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
- */
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new_window(const TCOD_ContextParams* params, TCOD_Context** out);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {

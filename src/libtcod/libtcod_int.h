@@ -286,7 +286,6 @@ typedef struct {
 extern scale_data_t scale_data;
 
 extern float scale_factor;
-extern struct SDL_Surface* charmap;
 
 /* SDL & OpenGL */
 extern int oldFade;

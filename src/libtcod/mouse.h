@@ -38,26 +38,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-TCOD_DEPRECATED(
-    "Use SDL_ShowCursor to handle the mouse cursor:"
-    "\n\tSDL_ShowCursor(visible);")
+TCOD_DEPRECATED("Use SDL_ShowCursor to handle the mouse cursor.")
 TCODLIB_API void TCOD_mouse_show_cursor(bool visible);
 
-TCOD_DEPRECATED(
-    "Use SDL_GetMouseState to check the mouse state:"
-    "\n\tint x;"
-    "\n\tint y;"
-    "\n\nint buttons = SDL_GetMouseState(&x, &y);")
+TCOD_DEPRECATED("Use SDL_GetMouseState to check the mouse state.")
 TCODLIB_API TCOD_mouse_t TCOD_mouse_get_status(void);
 
-TCOD_DEPRECATED(
-    "Use SDL_ShowCursor to check the mouse cursor."
-    "\n\tint is_visible = SDL_ShowCursor(SDL_QUERY);")
+TCOD_DEPRECATED("Use SDL_ShowCursor to check the mouse cursor.")
 TCODLIB_API bool TCOD_mouse_is_cursor_visible(void);
 
-TCOD_DEPRECATED(
-    "Use SDL_WarpMouseInWindow to move mouse cursor instead."
-    "\n\tSDL_WarpMouseInWindow(NULL, x, y);")
+TCOD_DEPRECATED("Use SDL_WarpMouseInWindow to move mouse cursor instead.")
 TCODLIB_API void TCOD_mouse_move(int x, int y);
 
 TCOD_DEPRECATED_NOMESSAGE

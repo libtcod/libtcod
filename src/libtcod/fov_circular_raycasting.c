@@ -79,7 +79,7 @@ static void cast_ray(
     map->cells[map_index].fov = true;
   }
 }
-void TCOD_map_compute_fov_circular_raycasting(
+TCOD_Error TCOD_map_compute_fov_circular_raycasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   int x_min = 0;  // Field-of-view bounds.
   int y_min = 0;
@@ -92,7 +92,8 @@ void TCOD_map_compute_fov_circular_raycasting(
     y_max = MIN(y_max, pov_y + max_radius + 1);
   }
   if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    return;  // Invalid POV.
+    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCOD_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = true;  // Mark point-of-view as visible.
 
@@ -113,4 +114,5 @@ void TCOD_map_compute_fov_circular_raycasting(
   if (light_walls) {
     TCOD_map_postprocess(map, pov_x, pov_y, max_radius);
   }
+  return TCOD_E_OK;
 }

@@ -44,6 +44,7 @@
 #include "color.h"
 #include "console_types.h"
 #include "context.h"
+#include "error.h"
 #include "fov.h"
 #include "fov_types.h"
 #include "mersenne_types.h"
@@ -166,17 +167,17 @@ extern TCOD_internal_context_t TCOD_ctx;
 #endif
 
 /* fov internal stuff */
-void TCOD_map_compute_fov_circular_raycasting(
+TCOD_Error TCOD_map_compute_fov_circular_raycasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
-void TCOD_map_compute_fov_diamond_raycasting(
+TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
-void TCOD_map_compute_fov_recursive_shadowcasting(
+TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
-void TCOD_map_compute_fov_permissive2(
+TCOD_Error TCOD_map_compute_fov_permissive2(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, int fovType);
-void TCOD_map_compute_fov_restrictive_shadowcasting(
+TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
-void TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius);
+TCOD_Error TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius);
 /**
     Return true if `x` and `y` are in the boundaries of `map`.
 

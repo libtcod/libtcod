@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- `TCOD_map_compute_fov` and `TCOD_map_copy` now return error codes.
 
 ## [1.16.0-alpha.13] - 2020-10-23
 ### Added

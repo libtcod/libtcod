@@ -46,13 +46,19 @@ struct TCOD_Map* TCOD_map_new(int width, int height) {
   map->cells = calloc(sizeof(*map->cells), map->nbcells);
   return map;
 }
-void TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __restrict dest) {
+TCOD_Error TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __restrict dest) {
   if (!source || !dest) {
-    return;
+    TCOD_set_errorv("source and dest must be non-NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   if (dest->nbcells != source->nbcells) {
+    struct TCOD_MapCell* new_cells = malloc(sizeof(*dest->cells) * dest->nbcells);
+    if (!new_cells) {
+      TCOD_set_errorv("Out of memory while reallocating dest.");
+      return TCOD_E_OUT_OF_MEMORY;
+    }
     free(dest->cells);
-    dest->cells = malloc(sizeof(*dest->cells) * dest->nbcells);
+    dest->cells = new_cells;
   }
   dest->width = source->width;
   dest->height = source->height;
@@ -126,7 +132,7 @@ static void TCOD_map_postprocess_quadrant(TCOD_Map* __restrict map, int x0, int 
 /**
     Spread lighting to walls to avoid lighting artifacts.
  */
-void TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius) {
+TCOD_Error TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius) {
   int x_min = 0;
   int y_min = 0;
   int x_max = map->width;
@@ -141,16 +147,20 @@ void TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int ra
   TCOD_map_postprocess_quadrant(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);
   TCOD_map_postprocess_quadrant(map, x_min, pov_y, pov_x, y_max - 1, -1, 1);
   TCOD_map_postprocess_quadrant(map, pov_x, pov_y, x_max - 1, y_max - 1, 1, 1);
+  return TCOD_E_OK;
 }
 /**
     Reset the map FOV flag to zeros.
  */
 static void TCOD_map_clear_fov(TCOD_Map* __restrict map) {
+  if (!map) {
+    return;
+  }
   for (int i = 0; i < map->nbcells; ++i) {
     map->cells[i].fov = 0;
   }
 }
-void TCOD_map_compute_fov(
+TCOD_Error TCOD_map_compute_fov(
     struct TCOD_Map* __restrict map,
     int pov_x,
     int pov_y,
@@ -158,22 +168,21 @@ void TCOD_map_compute_fov(
     bool light_walls,
     TCOD_fov_algorithm_t algo) {
   if (!map) {
-    return;
+    TCOD_set_errorv("Map must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    return;
+    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCOD_E_INVALID_ARGUMENT;
   }
   TCOD_map_clear_fov(map);
   switch (algo) {
     case FOV_BASIC:
-      TCOD_map_compute_fov_circular_raycasting(map, pov_x, pov_y, max_radius, light_walls);
-      return;
+      return TCOD_map_compute_fov_circular_raycasting(map, pov_x, pov_y, max_radius, light_walls);
     case FOV_DIAMOND:
-      TCOD_map_compute_fov_diamond_raycasting(map, pov_x, pov_y, max_radius, light_walls);
-      return;
+      return TCOD_map_compute_fov_diamond_raycasting(map, pov_x, pov_y, max_radius, light_walls);
     case FOV_SHADOW:
-      TCOD_map_compute_fov_recursive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
-      return;
+      return TCOD_map_compute_fov_recursive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
     case FOV_PERMISSIVE_0:
     case FOV_PERMISSIVE_1:
     case FOV_PERMISSIVE_2:
@@ -183,13 +192,11 @@ void TCOD_map_compute_fov(
     case FOV_PERMISSIVE_6:
     case FOV_PERMISSIVE_7:
     case FOV_PERMISSIVE_8:
-      TCOD_map_compute_fov_permissive2(map, pov_x, pov_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
-      return;
+      return TCOD_map_compute_fov_permissive2(map, pov_x, pov_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
     case FOV_RESTRICTIVE:
-      TCOD_map_compute_fov_restrictive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
-      return;
+      return TCOD_map_compute_fov_restrictive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
     default:
-      return;
+      return TCOD_E_INVALID_ARGUMENT;
   }
 }
 bool TCOD_map_is_in_fov(const struct TCOD_Map* map, int x, int y) {

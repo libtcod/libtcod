@@ -37,6 +37,7 @@
 #include <memory>
 #endif  // __cplusplus
 #include "config.h"
+#include "error.h"
 #include "fov_types.h"
 
 #ifdef __cplusplus
@@ -57,7 +58,7 @@ TCOD_PUBLIC void TCOD_map_clear(TCOD_Map* map, bool transparent, bool walkable);
 
     `dest` will be resized to match `source` if necessary.
  */
-TCOD_PUBLIC void TCOD_map_copy(const TCOD_Map* __restrict source, TCOD_Map* __restrict dest);
+TCOD_PUBLIC TCOD_Error TCOD_map_copy(const TCOD_Map* __restrict source, TCOD_Map* __restrict dest);
 /**
     Change the properties of a single cell.
  */
@@ -82,9 +83,11 @@ TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
 
     After this call you may check if a cell is within the field-of-view by
     calling :any:`TCOD_map_is_in_fov`.
+
+    Returns an error code on failure.  See :any:`TCOD_get_error` for details.
     \endrst
  */
-TCOD_PUBLIC void TCOD_map_compute_fov(
+TCOD_PUBLIC TCOD_Error TCOD_map_compute_fov(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
 /**
     Return true if this cell was touched by the current field-of-view.

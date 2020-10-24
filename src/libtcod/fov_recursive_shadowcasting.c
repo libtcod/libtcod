@@ -108,10 +108,11 @@ static void cast_light(
   }
 }
 
-void TCOD_map_compute_fov_recursive_shadowcasting(
+TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    return;  // Invalid POV.
+    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCOD_E_INVALID_ARGUMENT;
   }
   if (max_radius <= 0) {
     int max_radius_x = MAX(map->width - pov_x, pov_x);
@@ -135,4 +136,5 @@ void TCOD_map_compute_fov_recursive_shadowcasting(
         light_walls);
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
+  return TCOD_E_OK;
 }

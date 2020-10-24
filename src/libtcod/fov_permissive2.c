@@ -244,7 +244,7 @@ static void check_quadrant(
   TCOD_list_delete(active_views);
 }
 
-void TCOD_map_compute_fov_permissive2(
+TCOD_Error TCOD_map_compute_fov_permissive2(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int fovType) {
   int c, min_x, max_x, min_y, max_y;
   if ((unsigned)fovType > 8)
@@ -255,12 +255,19 @@ void TCOD_map_compute_fov_permissive2(
   int limit = 8 + fovType;
 
   if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    return;  // Invalid POV.
+    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCOD_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
   /* preallocate views and bumps */
   view_t* views = malloc(sizeof(*views) * map->width * map->height);
   viewbump_container_t bumps = {0, malloc(sizeof(*bumps.data) * map->width * map->height)};
+  if (!views || !bumps.data) {
+    free(bumps.data);
+    free(views);
+    TCOD_set_errorv("Out of memory.");
+    return TCOD_E_OUT_OF_MEMORY;
+  }
   /* set the fov range */
   if (max_radius > 0) {
     min_x = MIN(pov_x, max_radius);
@@ -280,4 +287,5 @@ void TCOD_map_compute_fov_permissive2(
   check_quadrant(map, pov_x, pov_y, -1, 1, min_x, max_y, light_walls, offset, limit, views, &bumps);
   free(bumps.data);
   free(views);
+  return TCOD_E_OK;
 }

@@ -116,43 +116,43 @@ void TCOD_map_postproc(struct TCOD_Map* __restrict map, int x0, int y0, int x1, 
   }
 }
 void TCOD_map_compute_fov_circular_raycasting(
-    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   int x_min = 0;  // Field-of-view bounds.
   int y_min = 0;
   int x_max = map->width;
   int y_max = map->height;
   if (max_radius > 0) {
-    x_min = MAX(x_min, player_x - max_radius);
-    y_min = MAX(y_min, player_y - max_radius);
-    x_max = MIN(x_max, player_x + max_radius + 1);
-    y_max = MIN(y_max, player_y + max_radius + 1);
+    x_min = MAX(x_min, pov_x - max_radius);
+    y_min = MAX(y_min, pov_y - max_radius);
+    x_max = MIN(x_max, pov_x + max_radius + 1);
+    y_max = MIN(y_max, pov_y + max_radius + 1);
   }
   for (int i = 0; i < map->nbcells; ++i) {
     map->cells[i].fov = 0;
   }
-  if (0 <= player_x && 0 <= player_y && player_x < map->width && player_y < map->height) {
-    map->cells[player_x + player_y * map->width].fov = true;  // Mark point-of-view as visible.
+  if (0 <= pov_x && 0 <= pov_y && pov_x < map->width && pov_y < map->height) {
+    map->cells[pov_x + pov_y * map->width].fov = true;  // Mark point-of-view as visible.
   }
 
   // Cast rays along the perimeter.
   const int radius_squared = max_radius * max_radius;
   for (int x = x_min; x < x_max; ++x) {
-    cast_ray(map, player_x, player_y, x, y_min, radius_squared, light_walls);
+    cast_ray(map, pov_x, pov_y, x, y_min, radius_squared, light_walls);
   }
   for (int y = y_min + 1; y < y_max; ++y) {
-    cast_ray(map, player_x, player_y, x_max - 1, y, radius_squared, light_walls);
+    cast_ray(map, pov_x, pov_y, x_max - 1, y, radius_squared, light_walls);
   }
   for (int x = x_max - 2; x >= x_min; --x) {
-    cast_ray(map, player_x, player_y, x, y_max - 1, radius_squared, light_walls);
+    cast_ray(map, pov_x, pov_y, x, y_max - 1, radius_squared, light_walls);
   }
   for (int y = y_max - 2; y > y_min; --y) {
-    cast_ray(map, player_x, player_y, x_min, y, radius_squared, light_walls);
+    cast_ray(map, pov_x, pov_y, x_min, y, radius_squared, light_walls);
   }
 
   if (light_walls) {
-    TCOD_map_postproc(map, x_min, y_min, player_x, player_y, -1, -1);
-    TCOD_map_postproc(map, player_x, y_min, x_max - 1, player_y, 1, -1);
-    TCOD_map_postproc(map, x_min, player_y, player_x, y_max - 1, -1, 1);
-    TCOD_map_postproc(map, player_x, player_y, x_max - 1, y_max - 1, 1, 1);
+    TCOD_map_postproc(map, x_min, y_min, pov_x, pov_y, -1, -1);
+    TCOD_map_postproc(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);
+    TCOD_map_postproc(map, x_min, pov_y, pov_x, y_max - 1, -1, 1);
+    TCOD_map_postproc(map, pov_x, pov_y, x_max - 1, y_max - 1, 1, 1);
   }
 }

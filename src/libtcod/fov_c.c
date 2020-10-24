@@ -93,26 +93,26 @@ void TCOD_map_delete(struct TCOD_Map* map) {
 }
 void TCOD_map_compute_fov(
     struct TCOD_Map* __restrict map,
-    int player_x,
-    int player_y,
+    int pov_x,
+    int pov_y,
     int max_radius,
     bool light_walls,
     TCOD_fov_algorithm_t algo) {
   if (!map) {
     return;
   }
-  if (!TCOD_map_in_bounds(map, player_x, player_y)) {
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
     return;
   }
   switch (algo) {
     case FOV_BASIC:
-      TCOD_map_compute_fov_circular_raycasting(map, player_x, player_y, max_radius, light_walls);
+      TCOD_map_compute_fov_circular_raycasting(map, pov_x, pov_y, max_radius, light_walls);
       return;
     case FOV_DIAMOND:
-      TCOD_map_compute_fov_diamond_raycasting(map, player_x, player_y, max_radius, light_walls);
+      TCOD_map_compute_fov_diamond_raycasting(map, pov_x, pov_y, max_radius, light_walls);
       return;
     case FOV_SHADOW:
-      TCOD_map_compute_fov_recursive_shadowcasting(map, player_x, player_y, max_radius, light_walls);
+      TCOD_map_compute_fov_recursive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
       return;
     case FOV_PERMISSIVE_0:
     case FOV_PERMISSIVE_1:
@@ -123,10 +123,10 @@ void TCOD_map_compute_fov(
     case FOV_PERMISSIVE_6:
     case FOV_PERMISSIVE_7:
     case FOV_PERMISSIVE_8:
-      TCOD_map_compute_fov_permissive2(map, player_x, player_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
+      TCOD_map_compute_fov_permissive2(map, pov_x, pov_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
       return;
     case FOV_RESTRICTIVE:
-      TCOD_map_compute_fov_restrictive_shadowcasting(map, player_x, player_y, max_radius, light_walls);
+      TCOD_map_compute_fov_restrictive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
       return;
     default:
       return;

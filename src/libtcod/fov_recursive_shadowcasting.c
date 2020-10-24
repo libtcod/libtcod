@@ -109,21 +109,21 @@ static void cast_light(
 }
 
 void TCOD_map_compute_fov_recursive_shadowcasting(
-    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   for (int i = 0; i < map->nbcells; ++i) {
     map->cells[i].fov = false;
   }
   if (max_radius <= 0) {
-    int max_radius_x = MAX(map->width - player_x, player_x);
-    int max_radius_y = MAX(map->height - player_y, player_y);
+    int max_radius_x = MAX(map->width - pov_x, pov_x);
+    int max_radius_y = MAX(map->height - pov_y, pov_y);
     max_radius = (int)(sqrt(max_radius_x * max_radius_x + max_radius_y * max_radius_y)) + 1;
   }
   /* recursive shadow casting */
   for (int octant = 0; octant < 8; ++octant) {
     cast_light(
         map,
-        player_x,
-        player_y,
+        pov_x,
+        pov_y,
         1,
         1.0,
         0.0,
@@ -134,5 +134,5 @@ void TCOD_map_compute_fov_recursive_shadowcasting(
         mult[3][octant],
         light_walls);
   }
-  map->cells[player_x + player_y * map->width].fov = 1;
+  map->cells[pov_x + pov_y * map->width].fov = 1;
 }

@@ -70,7 +70,7 @@ TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
     Calculate the field-of-view.
 
     \rst
-    `player_x` and `player_y` are the used as the field-of-view source.
+    `pov_x` and `pov_y` are the used as the field-of-view source.
     These coordinates must be within the map.
 
     `max_radius` is the maximum distance for the field-of-view algorithm.
@@ -85,7 +85,7 @@ TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
     \endrst
  */
 TCOD_PUBLIC void TCOD_map_compute_fov(
-    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
 /**
     Return true if this cell was touched by the current field-of-view.
  */

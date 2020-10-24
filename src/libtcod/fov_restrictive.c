@@ -40,8 +40,8 @@
 
 static void compute_quadrant(
     TCOD_Map* __restrict map,
-    int player_x,
-    int player_y,
+    int pov_x,
+    int pov_y,
     int max_radius,
     bool light_walls,
     int dx,
@@ -60,7 +60,7 @@ static void compute_quadrant(
 
     /* do while there are unblocked slopes left and the algo is within the map's boundaries
        scan progressive lines/columns from the PC outwards */
-    y = player_y + dy; /* the outer slope's coordinates (first processed line) */
+    y = pov_y + dy; /* the outer slope's coordinates (first processed line) */
     if (y < 0 || y >= map->height) {
       done = true;
     }
@@ -69,10 +69,10 @@ static void compute_quadrant(
       double slopes_per_cell = 1.0 / (double)(iteration);
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
-      int minx = MAX(0, player_x - iteration);
-      int maxx = MIN(map->width - 1, player_x + iteration);
+      int minx = MAX(0, pov_x - iteration);
+      int maxx = MIN(map->width - 1, pov_x + iteration);
       done = true;
-      for (x = player_x + (processed_cell * dx); x >= minx && x <= maxx; x += dx) {
+      for (x = pov_x + (processed_cell * dx); x >= minx && x <= maxx; x += dx) {
         int c = x + (y * map->width);
         /* calculate slopes per cell */
         bool visible = true;
@@ -152,7 +152,7 @@ static void compute_quadrant(
 
     /* do while there are unblocked slopes left and the algo is within the map's boundaries
        scan progressive lines/columns from the PC outwards */
-    x = player_x + dx; /*the outer slope's coordinates (first processed line) */
+    x = pov_x + dx; /*the outer slope's coordinates (first processed line) */
     if (x < 0 || x >= map->width) {
       done = true;
     }
@@ -161,10 +161,10 @@ static void compute_quadrant(
       double slopes_per_cell = 1.0 / (double)(iteration);
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
-      int miny = MAX(0, player_y - iteration);
-      int maxy = MIN(map->height - 1, player_y + iteration);
+      int miny = MAX(0, pov_y - iteration);
+      int maxy = MIN(map->height - 1, pov_y + iteration);
       done = true;
-      for (y = player_y + (processed_cell * dy); y >= miny && y <= maxy; y += dy) {
+      for (y = pov_y + (processed_cell * dy); y >= miny && y <= maxy; y += dy) {
         int c = x + (y * map->width);
         /* calculate slopes per cell */
         bool visible = true;
@@ -235,14 +235,14 @@ static void compute_quadrant(
 }
 
 void TCOD_map_compute_fov_restrictive_shadowcasting(
-    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   /* first, zero the FOV map */
   for (int i = 0, e = map->nbcells; i != e; i++) {
     map->cells[i].fov = false;
   }
 
   /* set PC's position as visible */
-  map->cells[player_x + (player_y * map->width)].fov = true;
+  map->cells[pov_x + (pov_y * map->width)].fov = true;
 
   /* calculate an approximated (excessive, just in case) maximum number of obstacles per octant */
   const int max_obstacles = map->nbcells / 7;
@@ -250,10 +250,10 @@ void TCOD_map_compute_fov_restrictive_shadowcasting(
   double* end_angle = malloc(max_obstacles * sizeof(*end_angle));
 
   /* compute the 4 quadrants of the map */
-  compute_quadrant(map, player_x, player_y, max_radius, light_walls, 1, 1, start_angle, end_angle);
-  compute_quadrant(map, player_x, player_y, max_radius, light_walls, 1, -1, start_angle, end_angle);
-  compute_quadrant(map, player_x, player_y, max_radius, light_walls, -1, 1, start_angle, end_angle);
-  compute_quadrant(map, player_x, player_y, max_radius, light_walls, -1, -1, start_angle, end_angle);
+  compute_quadrant(map, pov_x, pov_y, max_radius, light_walls, 1, 1, start_angle, end_angle);
+  compute_quadrant(map, pov_x, pov_y, max_radius, light_walls, 1, -1, start_angle, end_angle);
+  compute_quadrant(map, pov_x, pov_y, max_radius, light_walls, -1, 1, start_angle, end_angle);
+  compute_quadrant(map, pov_x, pov_y, max_radius, light_walls, -1, -1, start_angle, end_angle);
 
   free(end_angle);
   free(start_angle);

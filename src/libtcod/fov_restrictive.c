@@ -236,11 +236,9 @@ static void compute_quadrant(
 
 void TCOD_map_compute_fov_restrictive_shadowcasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
-  /* first, zero the FOV map */
-  for (int i = 0, e = map->nbcells; i != e; i++) {
-    map->cells[i].fov = false;
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
+    return;  // Invalid POV.
   }
-
   /* set PC's position as visible */
   map->cells[pov_x + (pov_y * map->width)].fov = true;
 

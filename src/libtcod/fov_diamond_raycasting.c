@@ -70,13 +70,12 @@ typedef struct DiamondFov {
     Returns NULL if the tile would be out-of-bounds.
  */
 static RaycastTile* get_ray(DiamondFov* __restrict fov, int relative_x, int relative_y) {
-  const TCOD_Map* map = fov->map;
   const int x = fov->pov_x + relative_x;
   const int y = fov->pov_y + relative_y;
-  if (x < 0 || y < 0 || x >= map->width || y >= map->height) {
+  if (!TCOD_map_in_bounds(fov->map, x, y)) {
     return NULL;
   }
-  RaycastTile* ray = &fov->raymap_grid[x + (y * map->width)];
+  RaycastTile* ray = &fov->raymap_grid[x + (y * fov->map->width)];
   ray->x_relative = relative_x;
   ray->y_relative = relative_y;
   return ray;
@@ -197,10 +196,9 @@ static void expand_perimeter_from(DiamondFov* __restrict fov, const RaycastTile*
 void TCOD_map_compute_fov_diamond_raycasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   const int radius_squared = max_radius * max_radius;
-  const int nbcells = map->nbcells;
 
-  for (int i = 0; i < nbcells; ++i) {
-    map->cells[i].fov = false;
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
+    return;  // Invalid POV.
   }
   map->cells[pov_x + pov_y * map->width].fov = true;
 
@@ -208,7 +206,7 @@ void TCOD_map_compute_fov_diamond_raycasting(
       .map = map,
       .pov_x = pov_x,
       .pov_y = pov_y,
-      .raymap_grid = calloc(sizeof(*fov.raymap_grid), nbcells),
+      .raymap_grid = calloc(sizeof(*fov.raymap_grid), map->nbcells),
   };
 
   // Add the origin ray tile to start the process.
@@ -240,24 +238,8 @@ void TCOD_map_compute_fov_diamond_raycasting(
     const int map_y = pov_y + current_ray->y_relative;
     map->cells[map_x + map_y * map->width].fov = true;
   }
-
-  /* light walls */
-  if (light_walls) {
-    int x_min = 0;
-    int y_min = 0;
-    int x_max = map->width;
-    int y_max = map->height;
-    if (max_radius > 0) {
-      x_min = MAX(x_min, pov_x - max_radius);
-      y_min = MAX(y_min, pov_y - max_radius);
-      x_max = MIN(x_max, pov_x + max_radius + 1);
-      y_max = MIN(y_max, pov_y + max_radius + 1);
-    }
-    TCOD_map_postproc(map, x_min, y_min, pov_x, pov_y, -1, -1);
-    TCOD_map_postproc(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);
-    TCOD_map_postproc(map, x_min, pov_y, pov_x, y_max - 1, -1, 1);
-    TCOD_map_postproc(map, pov_x, pov_y, x_max - 1, y_max - 1, 1, 1);
-  }
-
   free(fov.raymap_grid);
+  if (light_walls) {
+    TCOD_map_postprocess(map, pov_x, pov_y, max_radius);
+  }
 }

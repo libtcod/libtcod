@@ -58,7 +58,7 @@ static void cast_ray(
   int current_y;
   TCOD_line_init_mt(x_origin, y_origin, x_dest, y_dest, &bresenham_data);
   while (!TCOD_line_step_mt(&current_x, &current_y, &bresenham_data)) {
-    if (!(0 <= current_x && 0 <= current_y && current_x < map->width && current_y < map->height)) {
+    if (!TCOD_map_in_bounds(map, current_x, current_y)) {
       return;  // Out of bounds.
     }
     if (radius_squared > 0) {
@@ -79,42 +79,6 @@ static void cast_ray(
     map->cells[map_index].fov = true;
   }
 }
-/**
-    Spread lighting to walls to avoid lighting artifacts.
-
-    `x0`, `y0` are the lower bounds.  `x1`, `y1` are the upper bounds.
-
-    `dx`, `dy` is the cast direction.
- */
-void TCOD_map_postproc(struct TCOD_Map* __restrict map, int x0, int y0, int x1, int y1, int dx, int dy) {
-  for (int cx = x0; cx <= x1; cx++) {
-    for (int cy = y0; cy <= y1; cy++) {
-      const int x2 = cx + dx;
-      const int y2 = cy + dy;
-      const int offset = cx + cy * map->width;
-      if (offset < map->nbcells && map->cells[offset].fov == 1 && map->cells[offset].transparent) {
-        if (x2 >= x0 && x2 <= x1) {
-          const int offset2 = x2 + cy * map->width;
-          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
-            map->cells[offset2].fov = 1;
-          }
-        }
-        if (y2 >= y0 && y2 <= y1) {
-          const int offset2 = cx + y2 * map->width;
-          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
-            map->cells[offset2].fov = 1;
-          }
-        }
-        if (x2 >= x0 && x2 <= x1 && y2 >= y0 && y2 <= y1) {
-          const int offset2 = x2 + y2 * map->width;
-          if (offset2 < map->nbcells && !map->cells[offset2].transparent) {
-            map->cells[offset2].fov = 1;
-          }
-        }
-      }
-    }
-  }
-}
 void TCOD_map_compute_fov_circular_raycasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   int x_min = 0;  // Field-of-view bounds.
@@ -127,12 +91,10 @@ void TCOD_map_compute_fov_circular_raycasting(
     x_max = MIN(x_max, pov_x + max_radius + 1);
     y_max = MIN(y_max, pov_y + max_radius + 1);
   }
-  for (int i = 0; i < map->nbcells; ++i) {
-    map->cells[i].fov = 0;
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
+    return;  // Invalid POV.
   }
-  if (0 <= pov_x && 0 <= pov_y && pov_x < map->width && pov_y < map->height) {
-    map->cells[pov_x + pov_y * map->width].fov = true;  // Mark point-of-view as visible.
-  }
+  map->cells[pov_x + pov_y * map->width].fov = true;  // Mark point-of-view as visible.
 
   // Cast rays along the perimeter.
   const int radius_squared = max_radius * max_radius;
@@ -148,11 +110,7 @@ void TCOD_map_compute_fov_circular_raycasting(
   for (int y = y_max - 2; y > y_min; --y) {
     cast_ray(map, pov_x, pov_y, x_min, y, radius_squared, light_walls);
   }
-
   if (light_walls) {
-    TCOD_map_postproc(map, x_min, y_min, pov_x, pov_y, -1, -1);
-    TCOD_map_postproc(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);
-    TCOD_map_postproc(map, x_min, pov_y, pov_x, y_max - 1, -1, 1);
-    TCOD_map_postproc(map, pov_x, pov_y, x_max - 1, y_max - 1, 1, 1);
+    TCOD_map_postprocess(map, pov_x, pov_y, max_radius);
   }
 }

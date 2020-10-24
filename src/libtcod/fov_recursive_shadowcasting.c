@@ -110,8 +110,8 @@ static void cast_light(
 
 void TCOD_map_compute_fov_recursive_shadowcasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
-  for (int i = 0; i < map->nbcells; ++i) {
-    map->cells[i].fov = false;
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
+    return;  // Invalid POV.
   }
   if (max_radius <= 0) {
     int max_radius_x = MAX(map->width - pov_x, pov_x);

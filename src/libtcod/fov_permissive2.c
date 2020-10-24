@@ -253,9 +253,9 @@ void TCOD_map_compute_fov_permissive2(
   /* Derived values defining the actual part of the square used as a range. */
   int offset = 8 - fovType;
   int limit = 8 + fovType;
-  /* clean the map */
-  for (c = map->nbcells - 1; c >= 0; c--) {
-    map->cells[c].fov = 0;
+
+  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
+    return;  // Invalid POV.
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
   /* preallocate views and bumps */

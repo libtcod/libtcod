@@ -176,7 +176,15 @@ void TCOD_map_compute_fov_permissive2(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, int fovType);
 void TCOD_map_compute_fov_restrictive_shadowcasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
-void TCOD_map_postproc(TCOD_Map* __restrict map, int x0, int y0, int x1, int y1, int dx, int dy);
+void TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius);
+/**
+    Return true if `x` and `y` are in the boundaries of `map`.
+
+    Returns false if `map` is NULL.
+ */
+static inline bool TCOD_map_in_bounds(const struct TCOD_Map* map, int x, int y) {
+  return map && 0 <= x && x < map->width && 0 <= y && y < map->height;
+}
 
 /* fatal errors */
 void TCOD_fatal(const char* fmt, ...);

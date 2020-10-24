@@ -35,192 +35,221 @@
 #include "fov.h"
 #include "libtcod_int.h"
 #include "utility.h"
-
-typedef struct _ray_data_t {
-  int x_loc, y_loc;                    /* position */
-  int xob, yob;                        /* obscurity vector */
-  int x_err, y_err;                    /* bresenham error */
-  struct _ray_data_t *xinput, *yinput; /* offset of input rays */
-  bool added;                          /* already in the fov */
-  bool ignore;                         /* non visible. don't bother processing it */
-} ray_data_t;
-
-static int ray_length_sq(ray_data_t* ray) { return (ray->x_loc * ray->x_loc) + (ray->y_loc * ray->y_loc); }
-
-typedef struct _fov_t {
-  struct TCOD_Map* map;
+/**
+    A diamond raycast tile.
+ */
+typedef struct RayData {
+  int x_relative, y_relative;               // Ray position relative to the POV.
+  int x_obscurity, y_obscurity;             // Obscurity vector.
+  int x_error, y_error;                     // Bresenham error.
+  const struct RayData *x_input, *y_input;  // Offset of input rays.
+  bool added;                               // Already in the fov.
+  bool ignore;                              // Non visible.  Don't bother processing it.
+} RayData;
+/**
+    Return a rays squared distance from the origin POV.
+ */
+static int ray_length_sq(const RayData* ray) {
+  return (ray->x_relative * ray->x_relative) + (ray->y_relative * ray->y_relative);
+}
+/**
+    The diamond raycast state.
+ */
+typedef struct DiamondFov {
+  struct TCOD_Map* __restrict const map;
   TCOD_list_t perimeter;
+  const int pov_x, pov_y;          // Fov origin point, the POV.
+  RayData** const raymap_results;  // Grid of result rays.
+  RayData* const raymap_temp;      // Grid of temporary rays.
+} DiamondFov;
 
-  int origx, origy;    /* fov origin */
-  ray_data_t** raymap; /* result rays */
-  ray_data_t* raymap2; /* temporary rays */
-} fov_t;
-
-static ray_data_t* new_ray(fov_t* fov, int rx, int ry) {
-  struct TCOD_Map* map = fov->map;
-  const int x = fov->origx + rx;
-  const int y = fov->origy + ry;
-
-  if (x < 0 || y < 0) return NULL;
-  if (x >= map->width) return NULL;
-  if (y >= map->height) return NULL;
-
-  ray_data_t* r = &fov->raymap2[x + (y * map->width)];
-  r->x_loc = rx;
-  r->y_loc = ry;
-  return r;
+static RayData* new_ray(DiamondFov* fov, int ray_x, int ray_y) {
+  const struct TCOD_Map* map = fov->map;
+  const int x = fov->pov_x + ray_x;
+  const int y = fov->pov_y + ray_y;
+  if (x < 0 || y < 0 || x >= map->width || y >= map->height) {
+    return NULL;
+  }
+  RayData* ray = &fov->raymap_temp[x + (y * map->width)];
+  ray->x_relative = ray_x;
+  ray->y_relative = ray_y;
+  return ray;
 }
 
-static void processRay(fov_t* fov, ray_data_t* new_ray, ray_data_t* input_ray) {
+static void process_ray(DiamondFov* fov, RayData* new_ray, const RayData* input_ray) {
   if (new_ray) {
-    const int map_x = fov->origx + new_ray->x_loc;
-    const int map_y = fov->origy + new_ray->y_loc;
-    const int newrayidx = map_x + (map_y * fov->map->width);
-    if (new_ray->y_loc == input_ray->y_loc) {
-      new_ray->xinput = input_ray;
+    const int map_x = fov->pov_x + new_ray->x_relative;
+    const int map_y = fov->pov_y + new_ray->y_relative;
+    const int new_ray_index = map_x + (map_y * fov->map->width);
+    if (new_ray->y_relative == input_ray->y_relative) {
+      new_ray->x_input = input_ray;
     } else {
-      new_ray->yinput = input_ray;
+      new_ray->y_input = input_ray;
     }
     if (!new_ray->added) {
       TCOD_list_push(fov->perimeter, new_ray);
       new_ray->added = true;
-      fov->raymap[newrayidx] = new_ray;
+      fov->raymap_results[new_ray_index] = new_ray;
     }
   }
 }
 
-static bool is_obscure(ray_data_t* r) {
-  return (r->x_err > 0 && r->x_err <= r->xob) || (r->y_err > 0 && r->y_err <= r->yob);
+static bool is_obscure(const RayData* ray) {
+  return (ray->x_error > 0 && ray->x_error <= ray->x_obscurity) ||
+         (ray->y_error > 0 && ray->y_error <= ray->y_obscurity);
 }
 
-static void process_x_input(ray_data_t* new_ray, ray_data_t* xinput) {
-  if (xinput->xob == 0 && xinput->yob == 0) return;
-  if (xinput->x_err > 0 && new_ray->xob == 0) {
-    new_ray->x_err = xinput->x_err - xinput->yob;
-    new_ray->y_err = xinput->y_err + xinput->yob;
-    new_ray->xob = xinput->xob;
-    new_ray->yob = xinput->yob;
+static void process_x_input(RayData* new_ray, const RayData* x_input) {
+  if (x_input->x_obscurity == 0 && x_input->y_obscurity == 0) {
+    return;
   }
-  if (xinput->y_err <= 0 && xinput->yob > 0 && xinput->x_err > 0) {
-    new_ray->y_err = xinput->y_err + xinput->yob;
-    new_ray->x_err = xinput->x_err - xinput->yob;
-    new_ray->xob = xinput->xob;
-    new_ray->yob = xinput->yob;
+  if (x_input->x_error > 0 && new_ray->x_obscurity == 0) {
+    new_ray->x_error = x_input->x_error - x_input->y_obscurity;
+    new_ray->y_error = x_input->y_error + x_input->y_obscurity;
+    new_ray->x_obscurity = x_input->x_obscurity;
+    new_ray->y_obscurity = x_input->y_obscurity;
   }
-}
-
-static void process_y_input(ray_data_t* new_ray, ray_data_t* yinput) {
-  if (yinput->xob == 0 && yinput->yob == 0) return;
-  if (yinput->y_err > 0 && new_ray->yob == 0) {
-    new_ray->y_err = yinput->y_err - yinput->xob;
-    new_ray->x_err = yinput->x_err + yinput->xob;
-    new_ray->xob = yinput->xob;
-    new_ray->yob = yinput->yob;
-  }
-  if (yinput->x_err <= 0 && yinput->xob > 0 && yinput->y_err > 0) {
-    new_ray->y_err = yinput->y_err - yinput->xob;
-    new_ray->x_err = yinput->x_err + yinput->xob;
-    new_ray->xob = yinput->xob;
-    new_ray->yob = yinput->yob;
+  if (x_input->y_error <= 0 && x_input->y_obscurity > 0 && x_input->x_error > 0) {
+    new_ray->y_error = x_input->y_error + x_input->y_obscurity;
+    new_ray->x_error = x_input->x_error - x_input->y_obscurity;
+    new_ray->x_obscurity = x_input->x_obscurity;
+    new_ray->y_obscurity = x_input->y_obscurity;
   }
 }
 
-static void merge_input(fov_t* fov, ray_data_t* r) {
-  TCOD_Map* map = fov->map;
-  const int x = r->x_loc + fov->origx;
-  const int y = r->y_loc + fov->origy;
-  const int rayidx = x + y * map->width;
+static void process_y_input(RayData* new_ray, const RayData* y_input) {
+  if (y_input->x_obscurity == 0 && y_input->y_obscurity == 0) {
+    return;
+  }
+  if (y_input->y_error > 0 && new_ray->y_obscurity == 0) {
+    new_ray->y_error = y_input->y_error - y_input->x_obscurity;
+    new_ray->x_error = y_input->x_error + y_input->x_obscurity;
+    new_ray->x_obscurity = y_input->x_obscurity;
+    new_ray->y_obscurity = y_input->y_obscurity;
+  }
+  if (y_input->x_error <= 0 && y_input->x_obscurity > 0 && y_input->y_error > 0) {
+    new_ray->y_error = y_input->y_error - y_input->x_obscurity;
+    new_ray->x_error = y_input->x_error + y_input->x_obscurity;
+    new_ray->x_obscurity = y_input->x_obscurity;
+    new_ray->y_obscurity = y_input->y_obscurity;
+  }
+}
 
-  ray_data_t* xi = r->xinput;
-  ray_data_t* yi = r->yinput;
-  if (xi) process_x_input(r, xi);
-  if (yi) process_y_input(r, yi);
+static void merge_input(const DiamondFov* fov, RayData* ray) {
+  const TCOD_Map* map = fov->map;
+  const int x = ray->x_relative + fov->pov_x;
+  const int y = ray->y_relative + fov->pov_y;
+  const int ray_index = x + y * map->width;
+
+  const RayData* xi = ray->x_input;
+  const RayData* yi = ray->y_input;
+  if (xi) {
+    process_x_input(ray, xi);
+  }
+  if (yi) {
+    process_y_input(ray, yi);
+  }
   if (!xi) {
-    if (is_obscure(yi)) r->ignore = true;
+    if (is_obscure(yi)) {
+      ray->ignore = true;
+    }
   } else if (!yi) {
-    if (is_obscure(xi)) r->ignore = true;
+    if (is_obscure(xi)) {
+      ray->ignore = true;
+    }
   } else if (is_obscure(xi) && is_obscure(yi)) {
-    r->ignore = true;
+    ray->ignore = true;
   }
-  if (!r->ignore && !map->cells[rayidx].transparent) {
-    r->x_err = r->xob = ABS(r->x_loc);
-    r->y_err = r->yob = ABS(r->y_loc);
+  if (!ray->ignore && !map->cells[ray_index].transparent) {
+    ray->x_error = ray->x_obscurity = ABS(ray->x_relative);
+    ray->y_error = ray->y_obscurity = ABS(ray->y_relative);
   }
 }
 
-static void expandPerimeterFrom(fov_t* fov, ray_data_t* r) {
-  const int rx = r->x_loc;
-  const int ry = r->y_loc;
-  if (rx >= 0) {
-    processRay(fov, new_ray(fov, rx + 1, ry), r);
+static void expand_perimeter_from(DiamondFov* fov, const RayData* ray) {
+  if (ray->x_relative >= 0) {
+    process_ray(fov, new_ray(fov, ray->x_relative + 1, ray->y_relative), ray);
   }
-  if (rx <= 0) {
-    processRay(fov, new_ray(fov, rx - 1, ry), r);
+  if (ray->x_relative <= 0) {
+    process_ray(fov, new_ray(fov, ray->x_relative - 1, ray->y_relative), ray);
   }
-  if (ry >= 0) {
-    processRay(fov, new_ray(fov, rx, ry + 1), r);
+  if (ray->y_relative >= 0) {
+    process_ray(fov, new_ray(fov, ray->x_relative, ray->y_relative + 1), ray);
   }
-  if (ry <= 0) {
-    processRay(fov, new_ray(fov, rx, ry - 1), r);
+  if (ray->y_relative <= 0) {
+    process_ray(fov, new_ray(fov, ray->x_relative, ray->y_relative - 1), ray);
   }
 }
 
 void TCOD_map_compute_fov_diamond_raycasting(
-    TCOD_map_t m, int player_x, int player_y, int max_radius, bool light_walls) {
-  const int radius_sq = max_radius * max_radius;
-  const int nbcells = m->nbcells;
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+  const int radius_squared = max_radius * max_radius;
+  const int nbcells = map->nbcells;
 
-  fov_t fov;
-  fov.map = m;
-  fov.perimeter = TCOD_list_allocate(nbcells);
+  DiamondFov fov = {
+      .map = map,
+      .perimeter = TCOD_list_allocate(nbcells),
+      .pov_x = player_x,
+      .pov_y = player_y,
+      .raymap_results = calloc(sizeof(*fov.raymap_results), nbcells),
+      .raymap_temp = calloc(sizeof(*fov.raymap_temp), nbcells),
+  };
 
-  fov.origx = player_x;
-  fov.origy = player_y;
-  fov.raymap = calloc(sizeof(*fov.raymap), nbcells);
-  fov.raymap2 = calloc(sizeof(*fov.raymap2), nbcells);
-
-  expandPerimeterFrom(&fov, new_ray(&fov, 0, 0));
+  expand_perimeter_from(&fov, new_ray(&fov, 0, 0));
 
   for (int perimeter_idx = 0; perimeter_idx < TCOD_list_size(fov.perimeter); perimeter_idx++) {
-    ray_data_t* ray = (ray_data_t*)TCOD_list_get(fov.perimeter, perimeter_idx);
-    if (radius_sq == 0 || ray_length_sq(ray) <= radius_sq) {
+    RayData* ray = (RayData*)TCOD_list_get(fov.perimeter, perimeter_idx);
+    if (radius_squared == 0 || ray_length_sq(ray) <= radius_squared) {
       merge_input(&fov, ray);
-      if (!ray->ignore) expandPerimeterFrom(&fov, ray);
+      if (!ray->ignore) {
+        expand_perimeter_from(&fov, ray);
+      }
     } else {
       ray->ignore = true;
     }
   }
 
   /* set fov data */
-  for (int i = 0; i != nbcells; ++i) {
-    struct TCOD_MapCell* cell = &m->cells[i];
-    ray_data_t* ray = fov.raymap[i];
+  for (int i = 0; i < nbcells; ++i) {
+    struct TCOD_MapCell* cell = &map->cells[i];
+    const RayData* ray = fov.raymap_results[i];
 
     cell->fov = false;
-    if (ray == NULL) continue;
-    if (ray->ignore) continue;
-    if (ray->x_err > 0 && ray->x_err <= ray->xob) continue;
-    if (ray->y_err > 0 && ray->y_err <= ray->yob) continue;
+    if (ray == NULL) {
+      continue;
+    }
+    if (ray->ignore) {
+      continue;
+    }
+    if (ray->x_error > 0 && ray->x_error <= ray->x_obscurity) {
+      continue;
+    }
+    if (ray->y_error > 0 && ray->y_error <= ray->y_obscurity) {
+      continue;
+    }
     cell->fov = true;
   }
-  m->cells[player_x + player_y * m->width].fov = true;
+  map->cells[player_x + player_y * map->width].fov = true;
 
   /* light walls */
   if (light_walls) {
-    int xmin = 0, ymin = 0, xmax = m->width, ymax = m->height;
+    int xmin = 0;
+    int ymin = 0;
+    int xmax = map->width;
+    int ymax = map->height;
     if (max_radius > 0) {
-      xmin = MAX(0, player_x - max_radius);
-      ymin = MAX(0, player_y - max_radius);
-      xmax = MIN(m->width, player_x + max_radius + 1);
-      ymax = MIN(m->height, player_y + max_radius + 1);
+      xmin = MAX(xmin, player_x - max_radius);
+      ymin = MAX(ymin, player_y - max_radius);
+      xmax = MIN(xmax, player_x + max_radius + 1);
+      ymax = MIN(ymax, player_y + max_radius + 1);
     }
-    TCOD_map_postproc(m, xmin, ymin, player_x, player_y, -1, -1);
-    TCOD_map_postproc(m, player_x, ymin, xmax - 1, player_y, 1, -1);
-    TCOD_map_postproc(m, xmin, player_y, player_x, ymax - 1, -1, 1);
-    TCOD_map_postproc(m, player_x, player_y, xmax - 1, ymax - 1, 1, 1);
+    TCOD_map_postproc(map, xmin, ymin, player_x, player_y, -1, -1);
+    TCOD_map_postproc(map, player_x, ymin, xmax - 1, player_y, 1, -1);
+    TCOD_map_postproc(map, xmin, player_y, player_x, ymax - 1, -1, 1);
+    TCOD_map_postproc(map, player_x, player_y, xmax - 1, ymax - 1, 1, 1);
   }
 
-  free(fov.raymap);
-  free(fov.raymap2);
+  free(fov.raymap_results);
+  free(fov.raymap_temp);
   TCOD_list_delete(fov.perimeter);
 }

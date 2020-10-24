@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -36,70 +37,79 @@
 #include "libtcod_int.h"
 #include "utility.h"
 /**
-    A diamond raycast tile.
+    A discrete diamond raycast tile.
  */
-typedef struct RayData {
-  int x_relative, y_relative;               // Ray position relative to the POV.
-  int x_obscurity, y_obscurity;             // Obscurity vector.
-  int x_error, y_error;                     // Bresenham error.
-  const struct RayData *x_input, *y_input;  // Offset of input rays.
-  bool added;                               // Already in the fov.
-  bool ignore;                              // Non visible.  Don't bother processing it.
-} RayData;
+typedef struct RaycastTile {
+  int x_relative, y_relative;                    // Ray position relative to the POV.
+  int x_obscurity, y_obscurity;                  // Obscurity vector.
+  int x_error, y_error;                          // Bresenham error.
+  const struct RaycastTile* __restrict x_input;  // Pointer to the x-adjacent source ray.
+  const struct RaycastTile* __restrict y_input;  // Pointer to the y-adjacent source ray.
+  struct RaycastTile* perimeter_next;            // The next queued raycast of the perimeter.
+  bool touched;                                  // Becomes true once this ray is added to the perimeter.
+  bool ignore;                                   // Marked as non visible.
+} RaycastTile;
 /**
     Return a rays squared distance from the origin POV.
  */
-static int ray_length_sq(const RayData* ray) {
+static int ray_length_sq(const RaycastTile* __restrict ray) {
   return (ray->x_relative * ray->x_relative) + (ray->y_relative * ray->y_relative);
 }
 /**
     The diamond raycast state.
  */
 typedef struct DiamondFov {
-  struct TCOD_Map* __restrict const map;
-  TCOD_list_t perimeter;
-  const int pov_x, pov_y;          // Fov origin point, the POV.
-  RayData** const raymap_results;  // Grid of result rays.
-  RayData* const raymap_temp;      // Grid of temporary rays.
+  TCOD_Map* __restrict const map;
+  const int pov_x, pov_y;                     // Fov origin point, the POV.
+  RaycastTile* __restrict const raymap_grid;  // Grid of temporary rays.
+  RaycastTile* perimeter_last;                // Pointer to the last tile on the perimeter.
 } DiamondFov;
+/**
+    Return a pointer to the tile belonging relative to the POV.
 
-static RayData* new_ray(DiamondFov* fov, int ray_x, int ray_y) {
-  const struct TCOD_Map* map = fov->map;
-  const int x = fov->pov_x + ray_x;
-  const int y = fov->pov_y + ray_y;
+    Returns NULL if the tile would be out-of-bounds.
+ */
+static RaycastTile* get_ray(DiamondFov* __restrict fov, int relative_x, int relative_y) {
+  const TCOD_Map* map = fov->map;
+  const int x = fov->pov_x + relative_x;
+  const int y = fov->pov_y + relative_y;
   if (x < 0 || y < 0 || x >= map->width || y >= map->height) {
     return NULL;
   }
-  RayData* ray = &fov->raymap_temp[x + (y * map->width)];
-  ray->x_relative = ray_x;
-  ray->y_relative = ray_y;
+  RaycastTile* ray = &fov->raymap_grid[x + (y * map->width)];
+  ray->x_relative = relative_x;
+  ray->y_relative = relative_y;
   return ray;
 }
+/**
+    Configure the relationships of `new_ray` and add it to the perimeter.
 
-static void process_ray(DiamondFov* fov, RayData* new_ray, const RayData* input_ray) {
-  if (new_ray) {
-    const int map_x = fov->pov_x + new_ray->x_relative;
-    const int map_y = fov->pov_y + new_ray->y_relative;
-    const int new_ray_index = map_x + (map_y * fov->map->width);
-    if (new_ray->y_relative == input_ray->y_relative) {
-      new_ray->x_input = input_ray;
-    } else {
-      new_ray->y_input = input_ray;
-    }
-    if (!new_ray->added) {
-      TCOD_list_push(fov->perimeter, new_ray);
-      new_ray->added = true;
-      fov->raymap_results[new_ray_index] = new_ray;
-    }
+    `input_ray` is the source tile for `new_ray`.
+ */
+static void process_ray(DiamondFov* fov, RaycastTile* __restrict new_ray, const RaycastTile* __restrict input_ray) {
+  if (!new_ray) {
+    return;
+  }
+  if (new_ray->y_relative == input_ray->y_relative) {
+    new_ray->x_input = input_ray;
+  } else {
+    new_ray->y_input = input_ray;
+  }
+  if (!new_ray->touched) {
+    // Add this new tile to the perimeter.
+    fov->perimeter_last->perimeter_next = new_ray;
+    fov->perimeter_last = new_ray;
+    new_ray->touched = true;
   }
 }
-
-static bool is_obscure(const RayData* ray) {
+/**
+    Return true if this tile is obstructed.
+ */
+static bool is_obscured(const RaycastTile* __restrict ray) {
   return (ray->x_error > 0 && ray->x_error <= ray->x_obscurity) ||
          (ray->y_error > 0 && ray->y_error <= ray->y_obscurity);
 }
-
-static void process_x_input(RayData* new_ray, const RayData* x_input) {
+static void process_x_input(RaycastTile* __restrict new_ray, const RaycastTile* __restrict x_input) {
   if (x_input->x_obscurity == 0 && x_input->y_obscurity == 0) {
     return;
   }
@@ -116,8 +126,7 @@ static void process_x_input(RayData* new_ray, const RayData* x_input) {
     new_ray->y_obscurity = x_input->y_obscurity;
   }
 }
-
-static void process_y_input(RayData* new_ray, const RayData* y_input) {
+static void process_y_input(RaycastTile* __restrict new_ray, const RaycastTile* __restrict y_input) {
   if (y_input->x_obscurity == 0 && y_input->y_obscurity == 0) {
     return;
   }
@@ -134,30 +143,30 @@ static void process_y_input(RayData* new_ray, const RayData* y_input) {
     new_ray->y_obscurity = y_input->y_obscurity;
   }
 }
-
-static void merge_input(const DiamondFov* fov, RayData* ray) {
+/**
+    Combine this rays source tiles to tell how obscured `ray` is.
+ */
+static void merge_input(const DiamondFov* __restrict fov, RaycastTile* __restrict ray) {
   const TCOD_Map* map = fov->map;
   const int x = ray->x_relative + fov->pov_x;
   const int y = ray->y_relative + fov->pov_y;
   const int ray_index = x + y * map->width;
 
-  const RayData* xi = ray->x_input;
-  const RayData* yi = ray->y_input;
-  if (xi) {
-    process_x_input(ray, xi);
+  if (ray->x_input) {
+    process_x_input(ray, ray->x_input);
   }
-  if (yi) {
-    process_y_input(ray, yi);
+  if (ray->y_input) {
+    process_y_input(ray, ray->y_input);
   }
-  if (!xi) {
-    if (is_obscure(yi)) {
+  if (!ray->x_input) {
+    if (is_obscured(ray->y_input)) {
       ray->ignore = true;
     }
-  } else if (!yi) {
-    if (is_obscure(xi)) {
+  } else if (!ray->y_input) {
+    if (is_obscured(ray->x_input)) {
       ray->ignore = true;
     }
-  } else if (is_obscure(xi) && is_obscure(yi)) {
+  } else if (is_obscured(ray->x_input) && is_obscured(ray->y_input)) {
     ray->ignore = true;
   }
   if (!ray->ignore && !map->cells[ray_index].transparent) {
@@ -165,91 +174,90 @@ static void merge_input(const DiamondFov* fov, RayData* ray) {
     ray->y_error = ray->y_obscurity = ABS(ray->y_relative);
   }
 }
-
-static void expand_perimeter_from(DiamondFov* fov, const RayData* ray) {
+/**
+    Expand the perimeter outwards from this tile.
+ */
+static void expand_perimeter_from(DiamondFov* __restrict fov, const RaycastTile* __restrict ray) {
+  if (ray->ignore) {
+    return;  // This tile was excluded from the perimeter.
+  }
   if (ray->x_relative >= 0) {
-    process_ray(fov, new_ray(fov, ray->x_relative + 1, ray->y_relative), ray);
+    process_ray(fov, get_ray(fov, ray->x_relative + 1, ray->y_relative), ray);
   }
   if (ray->x_relative <= 0) {
-    process_ray(fov, new_ray(fov, ray->x_relative - 1, ray->y_relative), ray);
+    process_ray(fov, get_ray(fov, ray->x_relative - 1, ray->y_relative), ray);
   }
   if (ray->y_relative >= 0) {
-    process_ray(fov, new_ray(fov, ray->x_relative, ray->y_relative + 1), ray);
+    process_ray(fov, get_ray(fov, ray->x_relative, ray->y_relative + 1), ray);
   }
   if (ray->y_relative <= 0) {
-    process_ray(fov, new_ray(fov, ray->x_relative, ray->y_relative - 1), ray);
+    process_ray(fov, get_ray(fov, ray->x_relative, ray->y_relative - 1), ray);
   }
 }
-
 void TCOD_map_compute_fov_diamond_raycasting(
-    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   const int radius_squared = max_radius * max_radius;
   const int nbcells = map->nbcells;
 
+  for (int i = 0; i < nbcells; ++i) {
+    map->cells[i].fov = false;
+  }
+  map->cells[pov_x + pov_y * map->width].fov = true;
+
   DiamondFov fov = {
       .map = map,
-      .perimeter = TCOD_list_allocate(nbcells),
-      .pov_x = player_x,
-      .pov_y = player_y,
-      .raymap_results = calloc(sizeof(*fov.raymap_results), nbcells),
-      .raymap_temp = calloc(sizeof(*fov.raymap_temp), nbcells),
+      .pov_x = pov_x,
+      .pov_y = pov_y,
+      .raymap_grid = calloc(sizeof(*fov.raymap_grid), nbcells),
   };
 
-  expand_perimeter_from(&fov, new_ray(&fov, 0, 0));
+  // Add the origin ray tile to start the process.
+  RaycastTile* current_ray = fov.perimeter_last = get_ray(&fov, 0, 0);
+  current_ray->touched = true;
+  expand_perimeter_from(&fov, current_ray);
 
-  for (int perimeter_idx = 0; perimeter_idx < TCOD_list_size(fov.perimeter); perimeter_idx++) {
-    RayData* ray = (RayData*)TCOD_list_get(fov.perimeter, perimeter_idx);
-    if (radius_squared == 0 || ray_length_sq(ray) <= radius_squared) {
-      merge_input(&fov, ray);
-      if (!ray->ignore) {
-        expand_perimeter_from(&fov, ray);
-      }
+  // Iterative over the diamond perimeter.
+  while ((current_ray = current_ray->perimeter_next) != NULL) {
+    if (radius_squared <= 0 || ray_length_sq(current_ray) <= radius_squared) {
+      merge_input(&fov, current_ray);
     } else {
-      ray->ignore = true;
+      current_ray->ignore = true;  // Mark out-of-range tiles as ignored.
     }
-  }
+    expand_perimeter_from(&fov, current_ray);
 
-  /* set fov data */
-  for (int i = 0; i < nbcells; ++i) {
-    struct TCOD_MapCell* cell = &map->cells[i];
-    const RayData* ray = fov.raymap_results[i];
-
-    cell->fov = false;
-    if (ray == NULL) {
+    // Check if this tile is visible.
+    // current_ray->touched is true.
+    if (current_ray->ignore) {
       continue;
     }
-    if (ray->ignore) {
+    if (current_ray->x_error > 0 && current_ray->x_error <= current_ray->x_obscurity) {
       continue;
     }
-    if (ray->x_error > 0 && ray->x_error <= ray->x_obscurity) {
+    if (current_ray->y_error > 0 && current_ray->y_error <= current_ray->y_obscurity) {
       continue;
     }
-    if (ray->y_error > 0 && ray->y_error <= ray->y_obscurity) {
-      continue;
-    }
-    cell->fov = true;
+    const int map_x = pov_x + current_ray->x_relative;
+    const int map_y = pov_y + current_ray->y_relative;
+    map->cells[map_x + map_y * map->width].fov = true;
   }
-  map->cells[player_x + player_y * map->width].fov = true;
 
   /* light walls */
   if (light_walls) {
-    int xmin = 0;
-    int ymin = 0;
-    int xmax = map->width;
-    int ymax = map->height;
+    int x_min = 0;
+    int y_min = 0;
+    int x_max = map->width;
+    int y_max = map->height;
     if (max_radius > 0) {
-      xmin = MAX(xmin, player_x - max_radius);
-      ymin = MAX(ymin, player_y - max_radius);
-      xmax = MIN(xmax, player_x + max_radius + 1);
-      ymax = MIN(ymax, player_y + max_radius + 1);
+      x_min = MAX(x_min, pov_x - max_radius);
+      y_min = MAX(y_min, pov_y - max_radius);
+      x_max = MIN(x_max, pov_x + max_radius + 1);
+      y_max = MIN(y_max, pov_y + max_radius + 1);
     }
-    TCOD_map_postproc(map, xmin, ymin, player_x, player_y, -1, -1);
-    TCOD_map_postproc(map, player_x, ymin, xmax - 1, player_y, 1, -1);
-    TCOD_map_postproc(map, xmin, player_y, player_x, ymax - 1, -1, 1);
-    TCOD_map_postproc(map, player_x, player_y, xmax - 1, ymax - 1, 1, 1);
+    TCOD_map_postproc(map, x_min, y_min, pov_x, pov_y, -1, -1);
+    TCOD_map_postproc(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);
+    TCOD_map_postproc(map, x_min, pov_y, pov_x, y_max - 1, -1, 1);
+    TCOD_map_postproc(map, pov_x, pov_y, x_max - 1, y_max - 1, 1, 1);
   }
 
-  free(fov.raymap_results);
-  free(fov.raymap_temp);
-  TCOD_list_delete(fov.perimeter);
+  free(fov.raymap_grid);
 }

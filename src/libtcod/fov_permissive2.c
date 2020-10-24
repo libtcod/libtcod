@@ -137,7 +137,7 @@ static bool check_view(TCOD_list_t active_views, view_t** it, int offset, int li
 }
 
 static void visit_coords(
-    struct TCOD_Map* m,
+    TCOD_Map* __restrict map,
     int startX,
     int startY,
     int x,
@@ -167,7 +167,7 @@ static void visit_coords(
     /* no more active view */
     return;
   }
-  if (!is_blocked(m, startX, startY, x, y, dx, dy, light_walls)) return;
+  if (!is_blocked(map, startX, startY, x, y, dx, dy, light_walls)) return;
   if (ABOVE(&view->shallow_line, brx, bry) && BELOW(&view->steep_line, tlx, tly)) {
     /* view blocked */
     /* slow ! */
@@ -182,7 +182,7 @@ static void visit_coords(
     check_view(active_views, *current_view, offset, limit);
   } else {
     /* view split */
-    int views_offset = startX + x * dx / STEP_SIZE + (startY + y * dy / STEP_SIZE) * m->width;
+    int views_offset = startX + x * dx / STEP_SIZE + (startY + y * dy / STEP_SIZE) * map->width;
     view_t* shallower_view = &views[views_offset];
     int view_index = (int)(*current_view - (view_t**)TCOD_list_begin(active_views));
     view_t** shallower_view_it;
@@ -201,7 +201,7 @@ static void visit_coords(
 }
 
 static void check_quadrant(
-    struct TCOD_Map* m,
+    TCOD_Map* __restrict map,
     int startX,
     int startY,
     int dx,
@@ -218,7 +218,7 @@ static void check_quadrant(
   line_t shallow_line = {offset, limit, extentX * STEP_SIZE, 0};
   line_t steep_line = {limit, offset, 0, extentY * STEP_SIZE};
   int maxI = extentX + extentY, i = 1;
-  view_t* view = &views[startX + startY * m->width];
+  view_t* view = &views[startX + startY * map->width];
 
   view->shallow_line = shallow_line;
   view->steep_line = steep_line;
@@ -235,7 +235,7 @@ static void check_quadrant(
       int x = (i - j) * STEP_SIZE;
       int y = j * STEP_SIZE;
       visit_coords(
-          m, startX, startY, x, y, dx, dy, active_views, &current_view, light_walls, offset, limit, views, bumps);
+          map, startX, startY, x, y, dx, dy, active_views, &current_view, light_walls, offset, limit, views, bumps);
       j++;
     }
     i++;
@@ -245,9 +245,8 @@ static void check_quadrant(
 }
 
 void TCOD_map_compute_fov_permissive2(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, int fovType) {
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, int fovType) {
   int c, minx, maxx, miny, maxy;
-  struct TCOD_Map* m = (struct TCOD_Map*)map;
   if ((unsigned)fovType > 8)
     TCOD_fatal("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].\n", fovType);
   /* Defines the parameters of the permissiveness */
@@ -255,30 +254,30 @@ void TCOD_map_compute_fov_permissive2(
   int offset = 8 - fovType;
   int limit = 8 + fovType;
   /* clean the map */
-  for (c = m->nbcells - 1; c >= 0; c--) {
-    m->cells[c].fov = 0;
+  for (c = map->nbcells - 1; c >= 0; c--) {
+    map->cells[c].fov = 0;
   }
-  m->cells[player_x + player_y * m->width].fov = 1;
+  map->cells[player_x + player_y * map->width].fov = 1;
   /* preallocate views and bumps */
-  view_t* views = malloc(sizeof(*views) * m->width * m->height);
-  viewbump_container_t bumps = {0, malloc(sizeof(*bumps.data) * m->width * m->height)};
+  view_t* views = malloc(sizeof(*views) * map->width * map->height);
+  viewbump_container_t bumps = {0, malloc(sizeof(*bumps.data) * map->width * map->height)};
   /* set the fov range */
   if (max_radius > 0) {
     minx = MIN(player_x, max_radius);
-    maxx = MIN(m->width - player_x - 1, max_radius);
+    maxx = MIN(map->width - player_x - 1, max_radius);
     miny = MIN(player_y, max_radius);
-    maxy = MIN(m->height - player_y - 1, max_radius);
+    maxy = MIN(map->height - player_y - 1, max_radius);
   } else {
     minx = player_x;
-    maxx = m->width - player_x - 1;
+    maxx = map->width - player_x - 1;
     miny = player_y;
-    maxy = m->height - player_y - 1;
+    maxy = map->height - player_y - 1;
   }
   /* calculate fov. precise permissive field of view */
-  check_quadrant(m, player_x, player_y, 1, 1, maxx, maxy, light_walls, offset, limit, views, &bumps);
-  check_quadrant(m, player_x, player_y, 1, -1, maxx, miny, light_walls, offset, limit, views, &bumps);
-  check_quadrant(m, player_x, player_y, -1, -1, minx, miny, light_walls, offset, limit, views, &bumps);
-  check_quadrant(m, player_x, player_y, -1, 1, minx, maxy, light_walls, offset, limit, views, &bumps);
+  check_quadrant(map, player_x, player_y, 1, 1, maxx, maxy, light_walls, offset, limit, views, &bumps);
+  check_quadrant(map, player_x, player_y, 1, -1, maxx, miny, light_walls, offset, limit, views, &bumps);
+  check_quadrant(map, player_x, player_y, -1, -1, minx, miny, light_walls, offset, limit, views, &bumps);
+  check_quadrant(map, player_x, player_y, -1, 1, minx, maxy, light_walls, offset, limit, views, &bumps);
   free(bumps.data);
   free(views);
 }

@@ -171,9 +171,9 @@ void TCOD_map_compute_fov_circular_raycasting(
 void TCOD_map_compute_fov_diamond_raycasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_recursive_shadowcasting(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls);
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_compute_fov_permissive2(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls, int fovType);
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls, int fovType);
 void TCOD_map_compute_fov_restrictive_shadowcasting(
     TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls);
 void TCOD_map_postproc(TCOD_Map* __restrict map, int x0, int y0, int x1, int y1, int dx, int dy);

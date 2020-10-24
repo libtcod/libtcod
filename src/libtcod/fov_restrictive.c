@@ -39,7 +39,7 @@
 #include "utility.h"
 
 static void compute_quadrant(
-    struct TCOD_Map* m,
+    TCOD_Map* __restrict map,
     int player_x,
     int player_y,
     int max_radius,
@@ -61,7 +61,7 @@ static void compute_quadrant(
     /* do while there are unblocked slopes left and the algo is within the map's boundaries
        scan progressive lines/columns from the PC outwards */
     y = player_y + dy; /* the outer slope's coordinates (first processed line) */
-    if (y < 0 || y >= m->height) {
+    if (y < 0 || y >= map->height) {
       done = true;
     }
     while (!done) {
@@ -70,10 +70,10 @@ static void compute_quadrant(
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
       int minx = MAX(0, player_x - iteration);
-      int maxx = MIN(m->width - 1, player_x + iteration);
+      int maxx = MIN(map->width - 1, player_x + iteration);
       done = true;
       for (x = player_x + (processed_cell * dx); x >= minx && x <= maxx; x += dx) {
-        int c = x + (y * m->width);
+        int c = x + (y * map->width);
         /* calculate slopes per cell */
         bool visible = true;
         bool extended = false;
@@ -81,14 +81,14 @@ static void compute_quadrant(
         double start_slope = centre_slope - half_slopes;
         double end_slope = centre_slope + half_slopes;
         if (obstacles_in_last_line > 0) {
-          if (!(m->cells[c - (m->width * dy)].fov && m->cells[c - (m->width * dy)].transparent) &&
-              !(m->cells[c - (m->width * dy) - dx].fov && m->cells[c - (m->width * dy) - dx].transparent)) {
+          if (!(map->cells[c - (map->width * dy)].fov && map->cells[c - (map->width * dy)].transparent) &&
+              !(map->cells[c - (map->width * dy) - dx].fov && map->cells[c - (map->width * dy) - dx].transparent)) {
             visible = false;
           } else {
             int idx;
             for (idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
               if (start_slope <= end_angle[idx] && end_slope >= start_angle[idx]) {
-                if (m->cells[c].transparent) {
+                if (map->cells[c].transparent) {
                   if (centre_slope > start_angle[idx] && centre_slope < end_angle[idx]) {
                     visible = false;
                   }
@@ -107,9 +107,9 @@ static void compute_quadrant(
         }
         if (visible) {
           done = false;
-          m->cells[c].fov = true;
+          map->cells[c].fov = true;
           /* if the cell is opaque, block the adjacent slopes */
-          if (!m->cells[c].transparent) {
+          if (!map->cells[c].transparent) {
             if (min_angle >= start_slope) {
               min_angle = end_slope;
               /* if min_angle is applied to the last cell in line, nothing more
@@ -122,7 +122,7 @@ static void compute_quadrant(
               end_angle[total_obstacles++] = end_slope;
             }
             if (!light_walls) {
-              m->cells[c].fov = false;
+              map->cells[c].fov = false;
             }
           }
         }
@@ -134,7 +134,7 @@ static void compute_quadrant(
       iteration++;
       obstacles_in_last_line = total_obstacles;
       y += dy;
-      if (y < 0 || y >= m->height) {
+      if (y < 0 || y >= map->height) {
         done = true;
       }
     }
@@ -153,7 +153,7 @@ static void compute_quadrant(
     /* do while there are unblocked slopes left and the algo is within the map's boundaries
        scan progressive lines/columns from the PC outwards */
     x = player_x + dx; /*the outer slope's coordinates (first processed line) */
-    if (x < 0 || x >= m->width) {
+    if (x < 0 || x >= map->width) {
       done = true;
     }
     while (!done) {
@@ -162,10 +162,10 @@ static void compute_quadrant(
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
       int miny = MAX(0, player_y - iteration);
-      int maxy = MIN(m->height - 1, player_y + iteration);
+      int maxy = MIN(map->height - 1, player_y + iteration);
       done = true;
       for (y = player_y + (processed_cell * dy); y >= miny && y <= maxy; y += dy) {
-        int c = x + (y * m->width);
+        int c = x + (y * map->width);
         /* calculate slopes per cell */
         bool visible = true;
         bool extended = false;
@@ -173,14 +173,14 @@ static void compute_quadrant(
         double start_slope = centre_slope - half_slopes;
         double end_slope = centre_slope + half_slopes;
         if (obstacles_in_last_line > 0) {
-          if (!(m->cells[c - dx].fov && m->cells[c - dx].transparent) &&
-              !(m->cells[c - (m->width * dy) - dx].fov && m->cells[c - (m->width * dy) - dx].transparent)) {
+          if (!(map->cells[c - dx].fov && map->cells[c - dx].transparent) &&
+              !(map->cells[c - (map->width * dy) - dx].fov && map->cells[c - (map->width * dy) - dx].transparent)) {
             visible = false;
           } else {
             int idx;
             for (idx = 0; idx < obstacles_in_last_line && visible; ++idx) {
               if (start_slope <= end_angle[idx] && end_slope >= start_angle[idx]) {
-                if (m->cells[c].transparent) {
+                if (map->cells[c].transparent) {
                   if (centre_slope > start_angle[idx] && centre_slope < end_angle[idx]) {
                     visible = false;
                   }
@@ -200,9 +200,9 @@ static void compute_quadrant(
         }
         if (visible) {
           done = false;
-          m->cells[c].fov = true;
+          map->cells[c].fov = true;
           /* if the cell is opaque, block the adjacent slopes */
-          if (!m->cells[c].transparent) {
+          if (!map->cells[c].transparent) {
             if (min_angle >= start_slope) {
               min_angle = end_slope;
               /* if min_angle is applied to the last cell in line, nothing more
@@ -215,7 +215,7 @@ static void compute_quadrant(
               end_angle[total_obstacles++] = end_slope;
             }
             if (!light_walls) {
-              m->cells[c].fov = false;
+              map->cells[c].fov = false;
             }
           }
         }
@@ -227,7 +227,7 @@ static void compute_quadrant(
       iteration++;
       obstacles_in_last_line = total_obstacles;
       x += dx;
-      if (x < 0 || x >= m->width) {
+      if (x < 0 || x >= map->width) {
         done = true;
       }
     }
@@ -235,7 +235,7 @@ static void compute_quadrant(
 }
 
 void TCOD_map_compute_fov_restrictive_shadowcasting(
-    TCOD_map_t map, int player_x, int player_y, int max_radius, bool light_walls) {
+    TCOD_Map* __restrict map, int player_x, int player_y, int max_radius, bool light_walls) {
   /* first, zero the FOV map */
   for (int i = 0, e = map->nbcells; i != e; i++) {
     map->cells[i].fov = false;

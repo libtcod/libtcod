@@ -483,7 +483,7 @@ static void TCOD_sys_convert_event(const SDL_Event* ev, TCOD_key_t* ret) {
   if ((kev->keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) != 0) {
     /* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
     if (kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z) {
-      ret->c = 'a' + (kev->keysym.sym - SDLK_a);
+      ret->c = (char)('a' + (kev->keysym.sym - SDLK_a));
     }
   }
   if (ev->type == SDL_KEYDOWN)

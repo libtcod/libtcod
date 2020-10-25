@@ -113,7 +113,7 @@ int oldFade = -1;
 /* convert SDL vk to a char (depends on the keyboard layout) */
 typedef struct {
   SDL_Keycode sdl_key;
-  int tcod_key;
+  char tcod_key;
 } vk_to_c_entry;
 #define NUM_VK_TO_C_ENTRIES 10
 static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
@@ -476,10 +476,14 @@ static void TCOD_sys_convert_event(const SDL_Event* ev, TCOD_key_t* ret) {
   /* SDL2 does not map keycodes and modifiers to characters, this is on the developer.
           Presumably in order to avoid problems with different keyboard layouts, they
           are expected to write their own key mapping editing code for the user.  */
-  if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK))
+  if (SDLK_SCANCODE_MASK == (kev->keysym.sym & SDLK_SCANCODE_MASK)) {
     ret->c = 0;
-  else
-    ret->c = kev->keysym.sym;
+  } else if (kev->keysym.sym < 0 || kev->keysym.sym >= 256) {
+    TCOD_set_errorvf("Old event API does not support key: %s", SDL_GetKeyName(kev->keysym.sym));
+    ret->c = 0;
+  } else {
+    ret->c = (char)kev->keysym.sym;
+  }
   if ((kev->keysym.mod & (KMOD_LCTRL | KMOD_RCTRL)) != 0) {
     /* when pressing CTRL-A, we don't get unicode for 'a', but unicode for CTRL-A = 1. Fix it */
     if (kev->keysym.sym >= SDLK_a && kev->keysym.sym <= SDLK_z) {

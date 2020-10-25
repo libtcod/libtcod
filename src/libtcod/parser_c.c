@@ -182,9 +182,10 @@ TCOD_value_t TCOD_parse_bool_value(void) {
 
 TCOD_value_t TCOD_parse_char_value(void) {
   TCOD_value_t ret;
-  if (lex->token_type != TCOD_LEX_CHAR && lex->token_type != TCOD_LEX_INTEGER)
+  if (lex->token_type != TCOD_LEX_CHAR && lex->token_type != TCOD_LEX_INTEGER) {
     TCOD_parser_error("parseCharValue : char constant expected instead of '%s'", lex->tok);
-  ret.c = lex->token_int_val;
+  }
+  ret.c = (char)lex->token_int_val;
   return ret;
 }
 

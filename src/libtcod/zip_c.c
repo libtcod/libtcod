@@ -405,7 +405,7 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 
 TCODLIB_API TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip) {
   TCOD_random_t ret;
-  size_t s = TCOD_zip_get_int(zip);
+  int s = TCOD_zip_get_int(zip);
   ret = (TCOD_random_t)malloc(s);
   TCOD_zip_get_data(zip, s, ret);
   return ret;

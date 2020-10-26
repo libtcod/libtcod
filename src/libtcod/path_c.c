@@ -223,12 +223,15 @@ static TCOD_path_data_t* TCOD_path_new_intern(int w, int h) {
   TCOD_path_data_t* path = (TCOD_path_data_t*)calloc(sizeof(TCOD_path_data_t), 1);
   path->w = w;
   path->h = h;
-  path->grid = (float*)calloc(sizeof(float), w * h);
-  path->heuristic = (float*)calloc(sizeof(float), w * h);
-  path->prev = (dir_t*)calloc(sizeof(dir_t), w * h);
+  path->grid = calloc(sizeof(*path->grid), w * h);
+  path->heuristic = calloc(sizeof(*path->heuristic), w * h);
+  path->prev = calloc(sizeof(*path->prev), w * h);
   if (!path->grid || !path->heuristic || !path->prev) {
-    TCOD_fatal("Fatal error : path finding module cannot allocate dijkstra grids (size %dx%d)\n", w, h);
-    exit(1);
+    free(path->grid);
+    free(path->heuristic);
+    free(path->prev);
+    TCOD_set_errorvf("Cannot allocate dijkstra grids of size {%d, %d}", w, h);
+    return NULL;
   }
   path->path = TCOD_list_new();
   path->heap = TCOD_list_new();
@@ -239,6 +242,9 @@ TCOD_path_t TCOD_path_new_using_map(TCOD_map_t map, float diagonalCost) {
   TCOD_path_data_t* path;
   TCOD_IFNOT(map != NULL) return NULL;
   path = TCOD_path_new_intern(TCOD_map_get_width(map), TCOD_map_get_height(map));
+  if (!path) {
+    return NULL;
+  }
   path->map = map;
   path->diagonalCost = diagonalCost;
   return (TCOD_path_t)path;
@@ -249,6 +255,9 @@ TCOD_path_t TCOD_path_new_using_function(
   TCOD_path_data_t* path;
   TCOD_IFNOT(func != NULL && map_width > 0 && map_height > 0) return NULL;
   path = TCOD_path_new_intern(map_width, map_height);
+  if (!path) {
+    return NULL;
+  }
   path->func = func;
   path->user_data = user_data;
   path->diagonalCost = diagonalCost;

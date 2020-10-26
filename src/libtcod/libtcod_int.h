@@ -187,10 +187,6 @@ static inline bool TCOD_map_in_bounds(const struct TCOD_Map* map, int x, int y) 
   return map && 0 <= x && x < map->width && 0 <= y && y < map->height;
 }
 
-/* fatal errors */
-void TCOD_fatal(const char* fmt, ...);
-void TCOD_fatal_nopar(const char* msg);
-
 /* switch fullscreen mode */
 TCOD_key_t TCOD_sys_check_for_keypress(int flags);
 TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);

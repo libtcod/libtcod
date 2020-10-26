@@ -37,7 +37,6 @@
 #include "color.h"
 #include "console.h"
 #include "console_types.h"
-#include "libtcod_int.h" /* Needed only for TCOD_fatal */
 
 /* Convert a little-endian number to native memory order. */
 static uint32_t decode_little_endian(uint32_t data) {
@@ -204,13 +203,13 @@ TCOD_list_t TCOD_console_list_from_xp(const char* filename) {
   TCOD_list_t console_list;
   gzFile gz_file = gzopen(filename, "rb");
   if (!gz_file) {
-    TCOD_fatal("Could not open file: '%s'", filename);
+    TCOD_set_errorvf("Could not open file: '%s'", filename);
     return NULL;
   }
   console_list = load_consoleList(gz_file);
   if (!console_list) {
-    TCOD_fatal("Error parsing '%s'\n%s", filename, gzerror(gz_file, &z_errno));
-    /* Could fall-through here and return NULL. */
+    TCOD_set_errorvf("Error parsing '%s'\n%s", filename, gzerror(gz_file, &z_errno));
+    // Will fall-through here and return NULL.
   }
   gzclose(gz_file);
   return console_list;

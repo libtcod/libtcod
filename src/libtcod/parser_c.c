@@ -863,7 +863,7 @@ static bool default_end_struct(TCOD_parser_struct_t str, const char* name) {
   return true;
 }
 
-static void default_error(const char* msg) { TCOD_fatal_nopar(msg); }
+static void default_error(const char* msg) { TCOD_set_errorvf("Error during parser: %s\n", msg); }
 
 static const TCOD_value_t* TCOD_get_property(TCOD_parser_t parser, TCOD_value_type_t expectedType, const char* name) {
   void** it;

@@ -379,21 +379,6 @@ void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
   if (offset_x) *offset_x = TCOD_ctx.fullscreen_offsetx;
   if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
 }
-/**
- *  Print formatted text as an error and then forcefully terminate the program.
- */
-void TCOD_fatal(const char* fmt, ...) {
-  va_list ap;
-  TCOD_sys_shutdown();
-  fprintf(stderr, "%s FATAL ERROR:\n", TCOD_STRVERSIONNAME);
-  va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  va_end(ap);
-  fprintf(stderr, "\n");
-  exit(EXIT_FAILURE);
-}
-void TCOD_fatal_nopar(const char* msg) { TCOD_fatal("%s", msg); }
-
 /* dynamic library support */
 #ifdef TCOD_WINDOWS
 TCOD_library_t TCOD_load_library(const char* path) { return (TCOD_library_t)LoadLibrary(path); }

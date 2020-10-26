@@ -40,7 +40,7 @@
 /**
     Quadrant matrixes.
  */
-static int mult[4][8] = {
+static const int matrix_table[4][8] = {
     {1, 0, 0, -1, -1, 0, 0, 1},
     {0, 1, -1, 0, 0, -1, 1, 0},
     {0, 1, 1, 0, 0, -1, -1, 0},
@@ -53,52 +53,53 @@ static void cast_light(
     struct TCOD_Map* __restrict map,
     int pov_x,
     int pov_y,
-    int row,
-    float start,
-    float end,
-    int radius,
-    int xx,
-    int xy,
-    int yx,
-    int yy,
+    int distance,      // Polar distance from POV.
+    float slope_high,  // Main slope for this call to check.
+    float slope_low,
+    int max_radius,
+    int octant,
     bool light_walls) {
-  const int radius_squared = radius * radius;
-  float new_start = 0.0f;
-  if (start < end) {
+  const int xx = matrix_table[0][octant];
+  const int xy = matrix_table[1][octant];
+  const int yx = matrix_table[2][octant];
+  const int yy = matrix_table[3][octant];
+  const int radius_squared = max_radius * max_radius;
+  float new_high_slope = 0.0f;
+  if (slope_high < slope_low) {
     return;
   }
-  for (; row < radius + 1; ++row) {
+  for (; distance < max_radius + 1; ++distance) {
     bool blocked = false;
-    const int dy = -row;
-    for (int dx = -row; dx <= 0; ++dx) {
-      const int map_x = pov_x + dx * xx + dy * xy;
-      const int map_y = pov_y + dx * yx + dy * yy;
-      if (0 <= map_x && 0 <= map_y && map_x < map->width && map_y < map->height) {
-        const int offset = map_x + map_y * map->width;
-        const float l_slope = (dx - 0.5f) / (dy + 0.5f);
-        const float r_slope = (dx + 0.5f) / (dy - 0.5f);
-        if (start < r_slope) {
+    for (int angle = distance; angle >= 0; --angle) {  // Polar angle coordinates from top to bottom.
+      const float tile_slope_high = (angle + 0.5f) / (distance - 0.5f);
+      const float tile_slope_low = (angle - 0.5f) / (distance + 0.5f);
+      if (tile_slope_low > slope_high) {
+        continue;
+      } else if (tile_slope_high < slope_low) {
+        break;
+      }
+      const int map_x = pov_x + angle * xx + distance * xy;
+      const int map_y = pov_y + angle * yx + distance * yy;
+      if (!TCOD_map_in_bounds(map, map_x, map_y)) {
+        continue;  // Distance or angle is out-of-bounds.
+      }
+      const int map_index = map_x + map_y * map->width;
+      if (angle * angle + distance * distance <= radius_squared && (light_walls || map->cells[map_index].transparent)) {
+        map->cells[map_index].fov = 1;
+      }
+      if (blocked) {
+        if (!map->cells[map_index].transparent) {
+          new_high_slope = tile_slope_low;
           continue;
-        } else if (end > l_slope) {
-          break;
-        }
-        if (dx * dx + dy * dy <= radius_squared && (light_walls || map->cells[offset].transparent)) {
-          map->cells[offset].fov = 1;
-        }
-        if (blocked) {
-          if (!map->cells[offset].transparent) {
-            new_start = r_slope;
-            continue;
-          } else {
-            blocked = false;
-            start = new_start;
-          }
         } else {
-          if (!map->cells[offset].transparent && row < radius) {
-            blocked = true;
-            cast_light(map, pov_x, pov_y, row + 1, start, l_slope, radius, xx, xy, yx, yy, light_walls);
-            new_start = r_slope;
-          }
+          blocked = false;
+          slope_high = new_high_slope;
+        }
+      } else {
+        if (!map->cells[map_index].transparent && distance < max_radius) {
+          blocked = true;
+          cast_light(map, pov_x, pov_y, distance + 1, slope_high, tile_slope_high, max_radius, octant, light_walls);
+          new_high_slope = tile_slope_low;
         }
       }
     }
@@ -121,19 +122,7 @@ TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
   }
   /* recursive shadow casting */
   for (int octant = 0; octant < 8; ++octant) {
-    cast_light(
-        map,
-        pov_x,
-        pov_y,
-        1,
-        1.0,
-        0.0,
-        max_radius,
-        mult[0][octant],
-        mult[1][octant],
-        mult[2][octant],
-        mult[3][octant],
-        light_walls);
+    cast_light(map, pov_x, pov_y, 1, 1.0, 0.0, max_radius, octant, light_walls);
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
   return TCOD_E_OK;

@@ -38,13 +38,19 @@
 #include "libtcod_int.h"
 #include "utility.h"
 /**
-    Quadrant matrixes.
+    Octant transformation matrixes.
+
+    {xx, xy, yx, yy}
  */
-static const int matrix_table[4][8] = {
-    {1, 0, 0, -1, -1, 0, 0, 1},
-    {0, 1, -1, 0, 0, -1, 1, 0},
-    {0, 1, 1, 0, 0, -1, -1, 0},
-    {1, 0, 0, 1, -1, 0, 0, -1},
+static const int matrix_table[8][4] = {
+    {1, 0, 0, 1},
+    {0, 1, 1, 0},
+    {0, -1, 1, 0},
+    {-1, 0, 0, 1},
+    {-1, 0, 0, -1},
+    {0, -1, -1, 0},
+    {0, 1, -1, 0},
+    {1, 0, 0, -1},
 };
 /**
     Cast visiblity using shadowcasting.
@@ -53,59 +59,58 @@ static void cast_light(
     struct TCOD_Map* __restrict map,
     int pov_x,
     int pov_y,
-    int distance,      // Polar distance from POV.
-    float slope_high,  // Main slope for this call to check.
-    float slope_low,
+    int distance,  // Polar distance from POV.
+    float view_slope_high,
+    float view_slope_low,
     int max_radius,
     int octant,
     bool light_walls) {
-  const int xx = matrix_table[0][octant];
-  const int xy = matrix_table[1][octant];
-  const int yx = matrix_table[2][octant];
-  const int yy = matrix_table[3][octant];
+  const int xx = matrix_table[octant][0];
+  const int xy = matrix_table[octant][1];
+  const int yx = matrix_table[octant][2];
+  const int yy = matrix_table[octant][3];
   const int radius_squared = max_radius * max_radius;
-  float new_high_slope = 0.0f;
-  if (slope_high < slope_low) {
-    return;
+  if (view_slope_high < view_slope_low) {
+    return;  // View is invalid.
   }
-  for (; distance < max_radius + 1; ++distance) {
-    bool blocked = false;
-    for (int angle = distance; angle >= 0; --angle) {  // Polar angle coordinates from top to bottom.
-      const float tile_slope_high = (angle + 0.5f) / (distance - 0.5f);
-      const float tile_slope_low = (angle - 0.5f) / (distance + 0.5f);
-      if (tile_slope_low > slope_high) {
-        continue;
-      } else if (tile_slope_high < slope_low) {
-        break;
-      }
-      const int map_x = pov_x + angle * xx + distance * xy;
-      const int map_y = pov_y + angle * yx + distance * yy;
-      if (!TCOD_map_in_bounds(map, map_x, map_y)) {
-        continue;  // Distance or angle is out-of-bounds.
-      }
-      const int map_index = map_x + map_y * map->width;
-      if (angle * angle + distance * distance <= radius_squared && (light_walls || map->cells[map_index].transparent)) {
-        map->cells[map_index].fov = 1;
-      }
-      if (blocked) {
-        if (!map->cells[map_index].transparent) {
-          new_high_slope = tile_slope_low;
-          continue;
-        } else {
-          blocked = false;
-          slope_high = new_high_slope;
-        }
-      } else {
-        if (!map->cells[map_index].transparent && distance < max_radius) {
-          blocked = true;
-          cast_light(map, pov_x, pov_y, distance + 1, slope_high, tile_slope_high, max_radius, octant, light_walls);
-          new_high_slope = tile_slope_low;
-        }
-      }
+  if (distance > max_radius) {
+    return;  // Distance is out-of-range.
+  }
+  if (!TCOD_map_in_bounds(map, pov_x + distance * xy, pov_y + distance * yy)) {
+    return;  // Distance is out-of-bounds.
+  }
+  bool prev_tile_blocked = false;
+  for (int angle = distance; angle >= 0; --angle) {  // Polar angle coordinates from high to low.
+    const float tile_slope_high = (angle + 0.5f) / (distance - 0.5f);
+    const float tile_slope_low = (angle - 0.5f) / (distance + 0.5f);
+    const float prev_tile_slope_low = (angle + 0.5f) / (distance + 0.5f);
+    if (tile_slope_low > view_slope_high) {
+      continue;  // Tile is not in the view yet.
+    } else if (tile_slope_high < view_slope_low) {
+      break;  // Tiles will no longer be in view.
     }
-    if (blocked) {
-      break;
+    // Current tile is in view.
+    const int map_x = pov_x + angle * xx + distance * xy;
+    const int map_y = pov_y + angle * yx + distance * yy;
+    if (!TCOD_map_in_bounds(map, map_x, map_y)) {
+      continue;  // Angle is out-of-bounds.
     }
+    const int map_index = map_x + map_y * map->width;
+    if (angle * angle + distance * distance <= radius_squared && (light_walls || map->cells[map_index].transparent)) {
+      map->cells[map_index].fov = true;
+    }
+    if (prev_tile_blocked && map->cells[map_index].transparent) {  // Wall -> floor.
+      view_slope_high = prev_tile_slope_low;                       // Reduce the view size.
+    }
+    if (!prev_tile_blocked && !map->cells[map_index].transparent) {  // Floor -> wall.
+      // Get the last sequence of floors as a view and recurse into them.
+      cast_light(map, pov_x, pov_y, distance + 1, view_slope_high, tile_slope_high, max_radius, octant, light_walls);
+    }
+    prev_tile_blocked = !map->cells[map_index].transparent;
+  }
+  if (!prev_tile_blocked) {
+    // Tail-recurse into the current view.
+    cast_light(map, pov_x, pov_y, distance + 1, view_slope_high, view_slope_low, max_radius, octant, light_walls);
   }
 }
 

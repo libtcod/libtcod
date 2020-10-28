@@ -195,6 +195,8 @@ TCOD_Error TCOD_map_compute_fov(
       return TCOD_map_compute_fov_permissive2(map, pov_x, pov_y, max_radius, light_walls, algo - FOV_PERMISSIVE_0);
     case FOV_RESTRICTIVE:
       return TCOD_map_compute_fov_restrictive_shadowcasting(map, pov_x, pov_y, max_radius, light_walls);
+    case FOV_SYMMETRIC_SHADOWCAST:
+      return TCOD_map_compute_fov_symmetric_shadowcast(map, pov_x, pov_y, max_radius, light_walls);
     default:
       return TCOD_E_INVALID_ARGUMENT;
   }

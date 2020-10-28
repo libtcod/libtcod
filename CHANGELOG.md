@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added new algorithm `FOV_SYMMETRIC_SHADOWCAST` based off of the code
+  provided [here](https://www.albertford.com/shadowcasting/).
+
 ### Changed
 - `TCOD_map_compute_fov` and `TCOD_map_copy` now return error codes.
 

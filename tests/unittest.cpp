@@ -542,5 +542,8 @@ TEST_CASE("FOV Benchmarks", "[benchmark]") {
     BENCHMARK(map_name + " FOV_SHADOW") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SHADOW); };
     BENCHMARK(map_name + " FOV_RESTRICTIVE") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_RESTRICTIVE); };
     BENCHMARK(map_name + " FOV_PERMISSIVE_8") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_PERMISSIVE_8); };
+    BENCHMARK(map_name + " FOV_SYMMETRIC_SHADOWCAST") {
+      TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SYMMETRIC_SHADOWCAST);
+    };
   }
 }

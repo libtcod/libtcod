@@ -466,19 +466,21 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static bool light_walls = true;
   static int algonum = 0;
   static const std::vector<std::string> algo_names = {
-      "BASIC      ",
-      "DIAMOND    ",
-      "SHADOW     ",
-      "PERMISSIVE0",
-      "PERMISSIVE1",
-      "PERMISSIVE2",
-      "PERMISSIVE3",
-      "PERMISSIVE4",
-      "PERMISSIVE5",
-      "PERMISSIVE6",
-      "PERMISSIVE7",
-      "PERMISSIVE8",
-      "RESTRICTIVE"};
+      "BASIC               ",
+      "DIAMOND             ",
+      "SHADOW              ",
+      "PERMISSIVE0         ",
+      "PERMISSIVE1         ",
+      "PERMISSIVE2         ",
+      "PERMISSIVE3         ",
+      "PERMISSIVE4         ",
+      "PERMISSIVE5         ",
+      "PERMISSIVE6         ",
+      "PERMISSIVE7         ",
+      "PERMISSIVE8         ",
+      "RESTRICTIVE         ",
+      "SYMMETRIC_SHADOWCAST",
+  };
   static float torch_x = 0.0f;  // torch light position in the perlin noise
   if (!map) {
     // initialize the map for the fov toolkit
@@ -625,7 +627,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     recomputeFov = true;
   } else if (key->c == '+' || key->c == '-') {
     algonum += key->c == '+' ? 1 : -1;
-    algonum = CLAMP(0, NB_FOV_ALGORITHMS - 1, algonum);
+    algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
     sampleConsole.setDefaultForeground(TCODColor::white);
     sampleConsole.printf(
         1,

@@ -177,6 +177,8 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int permissiveness);
 TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
     TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCOD_Error TCOD_map_compute_fov_symmetric_shadowcast(
+    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
 TCOD_Error TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius);
 /**
     Return true if `x` and `y` are in the boundaries of `map`.

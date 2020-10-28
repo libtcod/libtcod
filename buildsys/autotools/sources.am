@@ -142,6 +142,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/fov_permissive2.c \
 	../../src/libtcod/fov_recursive_shadowcasting.c \
 	../../src/libtcod/fov_restrictive.c \
+	../../src/libtcod/fov_symmetric_shadowcast.c \
 	../../src/libtcod/globals.c \
 	../../src/libtcod/heapq.c \
 	../../src/libtcod/heightmap.cpp \

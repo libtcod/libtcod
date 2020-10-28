@@ -59,7 +59,7 @@ typedef enum {
    */
   FOV_BASIC,
   /**
-   *  Diamond: http://www.geocities.com/temerra/los_rays.html
+      Diamond: http://www.oocities.org/temerra/los_rays.html
    */
   FOV_DIAMOND,
   /**
@@ -82,6 +82,13 @@ typedef enum {
    *  Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
    */
   FOV_RESTRICTIVE,
+  /**
+      Symmetric Shadowcast.
+
+      Based on: https://www.albertford.com/shadowcasting/
+
+   */
+  FOV_SYMMETRIC_SHADOWCAST,
   NB_FOV_ALGORITHMS
 } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))

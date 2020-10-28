@@ -46,6 +46,7 @@ target_sources(LIBTCOD PRIVATE
     libtcod/fov_permissive2.c
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
+    libtcod/fov_symmetric_shadowcast.c
     libtcod/fov_types.h
     libtcod/globals.c
     libtcod/globals.h
@@ -369,6 +370,7 @@ source_group(libtcod FILES
     libtcod/fov_permissive2.c
     libtcod/fov_recursive_shadowcasting.c
     libtcod/fov_restrictive.c
+    libtcod/fov_symmetric_shadowcast.c
     libtcod/fov_types.h
     libtcod/globals.c
     libtcod/globals.h

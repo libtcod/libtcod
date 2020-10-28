@@ -469,19 +469,21 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_noise_t noise;
   static int algonum = 0;
   static char* algo_names[] = {
-      "BASIC      ",
-      "DIAMOND    ",
-      "SHADOW     ",
-      "PERMISSIVE0",
-      "PERMISSIVE1",
-      "PERMISSIVE2",
-      "PERMISSIVE3",
-      "PERMISSIVE4",
-      "PERMISSIVE5",
-      "PERMISSIVE6",
-      "PERMISSIVE7",
-      "PERMISSIVE8",
-      "RESTRICTIVE"};
+      "BASIC               ",
+      "DIAMOND             ",
+      "SHADOW              ",
+      "PERMISSIVE0         ",
+      "PERMISSIVE1         ",
+      "PERMISSIVE2         ",
+      "PERMISSIVE3         ",
+      "PERMISSIVE4         ",
+      "PERMISSIVE5         ",
+      "PERMISSIVE6         ",
+      "PERMISSIVE7         ",
+      "PERMISSIVE8         ",
+      "RESTRICTIVE         ",
+      "SYMMETRIC_SHADOWCAST",
+  };
   static float torch_x = 0.0f; /* torch light position in the perlin noise */
   int x, y;
   /* torch position & intensity variation */
@@ -620,7 +622,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       recompute_fov = true;
     } else if (key->text[0] == '+' || key->text[0] == '-') {
       algonum += key->text[0] == '+' ? 1 : -1;
-      algonum = CLAMP(0, NB_FOV_ALGORITHMS - 1, algonum);
+      algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
       TCOD_console_set_default_foreground(sample_console, TCOD_white);
       TCOD_console_printf(
           sample_console,

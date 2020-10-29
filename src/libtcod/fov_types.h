@@ -51,23 +51,33 @@ typedef struct TCOD_Map {
 } TCOD_Map;
 typedef TCOD_Map* TCOD_map_t;
 /**
- *  Field-of-view options.
+    \rst
+    Field-of-view options for :any:`TCOD_map_compute_fov`.
+    \endrst
  */
 typedef enum {
   /**
-   *  Basic: http://roguebasin.roguelikedevelopment.org/index.php?title=Ray_casting
+      Trace multiple Bresenham lines along the perimeter.
+
+      Based on: http://www.roguebasin.com/index.php?title=Ray_casting
    */
   FOV_BASIC,
   /**
-      Diamond: http://www.oocities.org/temerra/los_rays.html
+      Cast Bresenham line shadows on a per-tile basis.
+
+      Based on: http://www.oocities.org/temerra/los_rays.html
    */
   FOV_DIAMOND,
   /**
-   * Shadow casting: http://roguebasin.roguelikedevelopment.org/index.php?title=FOV_using_recursive_shadowcasting
+      Recursive Shadowcast.
+
+      Based on: http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
    */
   FOV_SHADOW,
   /**
-   *  Permissive: http://roguebasin.roguelikedevelopment.org/index.php?title=Precise_Permissive_Field_of_View
+      Precise Permissive Field of View.
+
+      Based on: http://www.roguebasin.com/index.php?title=Precise_Permissive_Field_of_View
    */
   FOV_PERMISSIVE_0,
   FOV_PERMISSIVE_1,
@@ -79,14 +89,18 @@ typedef enum {
   FOV_PERMISSIVE_7,
   FOV_PERMISSIVE_8,
   /**
-   *  Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
+      Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
+
+      Based on: http://www.roguebasin.com/index.php?title=Restrictive_Precise_Angle_Shadowcasting
    */
   FOV_RESTRICTIVE,
   /**
       Symmetric Shadowcast.
 
       Based on: https://www.albertford.com/shadowcasting/
-
+      \rst
+      .. versionadded :: 1.16
+      \endrst
    */
   FOV_SYMMETRIC_SHADOWCAST,
   NB_FOV_ALGORITHMS

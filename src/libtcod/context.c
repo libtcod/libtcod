@@ -58,12 +58,18 @@ TCOD_Error TCOD_context_present(
     TCOD_set_errorv("Console must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  if (!context->present_) {
+    return TCOD_set_errorv("Context is missing a present method.");
+  }
   return context->present_(context, console, viewport);
 }
 TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* context, double* x, double* y) {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!context->pixel_to_tile_) {
+    return TCOD_E_OK;
   }
   context->pixel_to_tile_(context, x, y);
   return TCOD_E_OK;
@@ -85,11 +91,17 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  if (!context->save_screenshot_) {
+    return TCOD_set_errorv("Context does not support screenshots.");
+  }
   return context->save_screenshot_(context, filename);
 }
 TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(struct TCOD_Context* context) {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
+    return NULL;
+  }
+  if (!context->get_sdl_window_) {
     return NULL;
   }
   return context->get_sdl_window_(context);
@@ -99,12 +111,18 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_context_get_sdl_renderer(struct TCOD_Conte
     TCOD_set_errorv("Context must not be NULL.");
     return NULL;
   }
+  if (!context->get_sdl_renderer_) {
+    return NULL;
+  }
   return context->get_sdl_renderer_(context);
 }
 TCOD_Error TCOD_context_change_tileset(struct TCOD_Context* context, TCOD_Tileset* tileset) {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!context->set_tileset) {
+    return TCOD_set_errorv("Context does not support changing tilesets.");
   }
   return context->set_tileset(context, tileset);
 }

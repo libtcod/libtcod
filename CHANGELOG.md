@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Context functions won't crash when methods are missing.
 
 ## [1.16.0-alpha.14] - 2020-10-30
 ### Added

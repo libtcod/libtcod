@@ -39,6 +39,7 @@ struct SDL_Surface;
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
+#ifndef NO_SDL
 /**
     Render a console to a SDL_Surface with a software renderer.
 
@@ -65,6 +66,7 @@ TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
     const TCOD_Console* __restrict console,
     TCOD_Console* __restrict* cache,
     struct SDL_Surface* __restrict* surface_out);
+#endif  // NO_SDL
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "context_init.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -300,3 +300,4 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
       return err;
   }
 }
+#endif  // NO_SDL

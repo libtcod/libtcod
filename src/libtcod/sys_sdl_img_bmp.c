@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef NO_SDL
 #include <SDL.h>
 
 #include "error.h"
@@ -56,3 +57,4 @@ TCOD_Error TCOD_sys_write_bmp(SDL_Surface* surf, const char* filename) {
   }
   return TCOD_E_OK;
 }
+#endif  // NO_SDL

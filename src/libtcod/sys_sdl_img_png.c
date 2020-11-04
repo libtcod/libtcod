@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "sys.h"
-
+#ifndef NO_SDL
 #if !defined(__HAIKU__) && !defined(__ANDROID__)
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,3 +112,4 @@ TCOD_Error TCOD_sys_write_png(SDL_Surface* surf, const char* filename) {
   }
   return TCOD_E_OK;
 }
+#endif  // NO_SDL

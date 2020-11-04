@@ -37,43 +37,6 @@
 #include "mouse_types.h"
 #include "portability.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-TCODLIB_API void TCOD_sys_startup(void);
-TCODLIB_API void TCOD_sys_shutdown(void);
-
-TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
-TCODLIB_API float TCOD_sys_elapsed_seconds(void);
-TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
-TCODLIB_API void TCOD_sys_set_fps(int val);
-TCODLIB_API int TCOD_sys_get_fps(void);
-TCODLIB_API float TCOD_sys_get_last_frame_length(void);
-
-TCODLIB_API void TCOD_sys_save_screenshot(const char* filename);
-TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
-TCODLIB_API TCOD_NODISCARD int TCOD_sys_set_renderer(TCOD_renderer_t renderer);
-TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
-TCODLIB_API void TCOD_sys_get_current_resolution(int* w, int* h);
-TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y);
-TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
-
-/**
- *  Upload a tile to the active tileset.
- *
- *  `asciiCode` is the Unicode codepoint for this tile.
- *
- *  `font_x` and `font_y` are the tile-coordinates on the active tilemap.
- *
- *  `img` is the tile to upload.
- *
- *  `x` and `y` are the upper-left pixel-coordinates of the tile on the `img`.
- */
-TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_image_t img, int x, int y);
-
-TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
-TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
-
 typedef enum {
   TCOD_EVENT_NONE = 0,
   TCOD_EVENT_KEY_PRESS = 1,
@@ -91,8 +54,21 @@ typedef enum {
   /* #endif */
   TCOD_EVENT_ANY = TCOD_EVENT_KEY | TCOD_EVENT_MOUSE | TCOD_EVENT_FINGER,
 } TCOD_event_t;
-TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse, bool flush);
-TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse);
+
+struct SDL_Surface;
+typedef void (*SDL_renderer_t)(struct SDL_Surface* sdl_renderer);
+
+/* thread stuff */
+typedef void* TCOD_thread_t;
+typedef void* TCOD_semaphore_t;
+typedef void* TCOD_mutex_t;
+typedef void* TCOD_cond_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+TCODLIB_API void TCOD_sys_startup(void);
+TCODLIB_API void TCOD_sys_shutdown(void);
 
 /* filesystem stuff */
 TCOD_DEPRECATED_NOMESSAGE
@@ -111,18 +87,6 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_read_file(const char* filename, unsigned char** buf, size_t* size);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_write_file(const char* filename, unsigned char* buf, uint32_t size);
-
-/* clipboard */
-TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
-TCODLIB_API bool TCOD_sys_clipboard_set(const char* value);
-TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
-TCODLIB_API char* TCOD_sys_clipboard_get(void);
-
-/* thread stuff */
-typedef void* TCOD_thread_t;
-typedef void* TCOD_semaphore_t;
-typedef void* TCOD_mutex_t;
-typedef void* TCOD_cond_t;
 /* threads */
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data);
@@ -169,12 +133,53 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void* TCOD_get_function_address(TCOD_library_t library, const char* function_name);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
+
+#ifndef NO_SDL
+TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
+TCODLIB_API float TCOD_sys_elapsed_seconds(void);
+TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
+TCODLIB_API void TCOD_sys_set_fps(int val);
+TCODLIB_API int TCOD_sys_get_fps(void);
+TCODLIB_API float TCOD_sys_get_last_frame_length(void);
+
+TCODLIB_API void TCOD_sys_save_screenshot(const char* filename);
+TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
+TCODLIB_API TCOD_NODISCARD int TCOD_sys_set_renderer(TCOD_renderer_t renderer);
+TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
+TCODLIB_API void TCOD_sys_get_current_resolution(int* w, int* h);
+TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y);
+TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
+
+/**
+ *  Upload a tile to the active tileset.
+ *
+ *  `asciiCode` is the Unicode codepoint for this tile.
+ *
+ *  `font_x` and `font_y` are the tile-coordinates on the active tilemap.
+ *
+ *  `img` is the tile to upload.
+ *
+ *  `x` and `y` are the upper-left pixel-coordinates of the tile on the `img`.
+ */
+TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_image_t img, int x, int y);
+
+TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
+TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
+
+TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse, bool flush);
+TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse);
+
+/* clipboard */
+TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
+TCODLIB_API bool TCOD_sys_clipboard_set(const char* value);
+TCOD_DEPRECATED("Use the SDL2 API to handle the clipboard.")
+TCODLIB_API char* TCOD_sys_clipboard_get(void);
+
 /* SDL renderer callback */
-struct SDL_Surface;
-typedef void (*SDL_renderer_t)(struct SDL_Surface* sdl_renderer);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
+#endif  // NO_SDL
 #ifdef __cplusplus
-}
+}  // extern "C"
 #endif
 #endif

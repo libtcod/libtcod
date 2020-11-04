@@ -45,6 +45,7 @@
 #define GREEN_MASK 0x00FF00
 #define BLUE_MASK 0xFF0000
 
+#ifndef NO_SDL
 TCOD_color_t int_to_color(colornum_t col) {
   TCOD_color_t ret;
   ret.r = col & 0xFF;
@@ -295,3 +296,4 @@ int TCOD_sys_get_current_resolution_y() {
 void TCOD_console_set_key_color_wrapper(TCOD_console_t con, colornum_t c) {
   TCOD_console_set_key_color(con, int_to_color(c));
 }
+#endif  // NO_SDL

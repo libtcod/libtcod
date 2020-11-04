@@ -31,7 +31,6 @@
  */
 #include "console_etc.h"
 
-#include <SDL.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -96,24 +95,6 @@ TCOD_internal_context_t TCOD_ctx = {
     NULL,
     NULL,
 };
-/**
- *  Wait for a key press event, then return it.
- *
- *  \param flush If 1 then the event queue will be cleared before waiting for
- *               the next event.  This should always be 0.
- *  \return A TCOD_key_t struct with the most recent key data.
- *
- *  Do not solve input lag issues by arbitrarily dropping events!
- */
-TCOD_key_t TCOD_console_wait_for_keypress(bool flush) { return TCOD_sys_wait_for_keypress(flush); }
-/**
- *  Return immediately with a recently pressed key.
- *
- *  \param flags A TCOD_event_t bit-field, for example: `TCOD_EVENT_KEY_PRESS`
- *  \return A TCOD_key_t struct with a recently pressed key.
- *          If no event exists then the `vk` attribute will be `TCODK_NONE`
- */
-TCOD_key_t TCOD_console_check_for_keypress(int flags) { return TCOD_sys_check_for_keypress(flags); }
 TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_ViewportOptions* viewport) {
   console = TCOD_console_validate_(console);
   if (!console) {
@@ -146,7 +127,9 @@ TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_ViewportOpti
     err = TCOD_context_present(TCOD_ctx.engine, root_copy, viewport);
     TCOD_console_delete(root_copy);
   }
+#ifndef NO_SDL
   sync_time_();
+#endif  // NO_SDL
   return err;
 }
 TCOD_Error TCOD_console_flush(void) { return TCOD_console_flush_ex(NULL, NULL); }
@@ -280,7 +263,13 @@ void TCOD_console_map_string_to_font_utf(const wchar_t* s, int fontCharX, int fo
     s++;
   }
 }
-bool TCOD_console_is_key_pressed(TCOD_keycode_t key) { return TCOD_sys_is_key_pressed(key); }
+bool TCOD_console_is_key_pressed(TCOD_keycode_t key) {
+#ifndef NO_SDL
+  return TCOD_sys_is_key_pressed(key);
+#else
+  return false;
+#endif  // NO_SDL
+}
 void TCOD_console_set_key_color(TCOD_Console* con, TCOD_color_t col) {
   con = TCOD_console_validate_(con);
   if (!con) {
@@ -289,7 +278,9 @@ void TCOD_console_set_key_color(TCOD_Console* con, TCOD_color_t col) {
   con->has_key_color = 1;
   con->key_color = col;
 }
-
+#ifndef NO_SDL
+TCOD_key_t TCOD_console_wait_for_keypress(bool flush) { return TCOD_sys_wait_for_keypress(flush); }
+TCOD_key_t TCOD_console_check_for_keypress(int flags) { return TCOD_sys_check_for_keypress(flags); }
 void TCOD_console_credits(void) {
   bool end = false;
   int x = TCOD_console_get_width(NULL) / 2 - 6;
@@ -564,12 +555,12 @@ bool TCOD_console_credits_render(int x, int y, bool alpha) {
   init2 = false;
   return true;
 }
-
 void TCOD_console_set_keyboard_repeat(int initial_delay, int interval) {
   (void)initial_delay;
   (void)interval;
 }
 void TCOD_console_disable_keyboard_repeat(void) {}
+#endif  // NO_SDL
 
 static void TCOD_console_read_asc(TCOD_console_t con, FILE* f, int width, int height, float version) {
   con = TCOD_console_validate_(con);

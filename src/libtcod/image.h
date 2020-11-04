@@ -68,13 +68,14 @@ TCODLIB_API TCOD_Image* TCOD_image_from_console(const TCOD_Console* console);
  *  Same as TCOD_image_from_console, but with an existing image.
  */
 TCODLIB_API void TCOD_image_refresh_console(TCOD_Image* image, const TCOD_Console* console);
-TCODLIB_API TCOD_Image* TCOD_image_load(const char* filename);
 TCODLIB_API void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color);
 TCODLIB_API void TCOD_image_invert(TCOD_Image* image);
 TCODLIB_API void TCOD_image_hflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_rotate90(TCOD_Image* image, int numRotations);
 TCODLIB_API void TCOD_image_vflip(TCOD_Image* image);
 TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h);
+#ifndef NO_SDL
+TCODLIB_API TCOD_Image* TCOD_image_load(const char* filename);
 /**
     Save an image to a PNG or BMP file.
 
@@ -85,6 +86,7 @@ TCODLIB_API void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h);
     \endrst
  */
 TCODLIB_API TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename);
+#endif  // NO_SDL
 TCODLIB_API void TCOD_image_get_size(const TCOD_Image* image, int* w, int* h);
 TCODLIB_API TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y);
 TCODLIB_API int TCOD_image_get_alpha(const TCOD_Image* image, int x, int y);

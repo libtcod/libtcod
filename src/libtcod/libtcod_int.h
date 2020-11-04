@@ -514,7 +514,9 @@ extern int oldFade;
 int TCOD_console_stringLength(const unsigned char* s);
 unsigned char* TCOD_console_forward(unsigned char* s, int l);
 // TCODSystem non public methods
+#ifndef NO_SDL
 void sync_time_(void);
+#endif  // NO_SDL
 void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY);
 void TCOD_sys_decode_font_(void);
 TCOD_Error TCOD_sys_save_bitmap(struct SDL_Surface* bitmap, const char* filename);

@@ -29,7 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef NO_SDL
 #include <SDL.h>
+#endif  // NO_SDL
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -150,29 +152,6 @@ TCOD_Image* TCOD_image_new(int width, int height) {
   }
   return ret;
 }
-
-TCOD_Image* TCOD_image_load(const char* filename) {
-  TCOD_Image* image = NULL;
-  SDL_Surface* surface = TCOD_sys_load_image(filename);
-  if (surface) {
-    image = TCOD_image_new(surface->w, surface->h);
-    if (image) {
-      SDL_ConvertPixels(
-          surface->w,
-          surface->h,
-          surface->format->format,
-          surface->pixels,
-          surface->pitch,
-          SDL_PIXELFORMAT_RGB24,
-          image->mipmaps[0].buf,
-          (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
-      TCOD_image_invalidate_mipmaps(image);
-    }
-    SDL_FreeSurface(surface);
-  }
-  return image;
-}
-
 void TCOD_image_get_size(const TCOD_Image* image, int* w, int* h) {
   if (!image) {
     return;
@@ -455,7 +434,28 @@ void TCOD_image_refresh_console(TCOD_Image* __restrict image, const TCOD_Console
     }
   }
 }
-
+#ifndef NO_SDL
+TCOD_Image* TCOD_image_load(const char* filename) {
+  TCOD_Image* image = NULL;
+  SDL_Surface* surface = TCOD_sys_load_image(filename);
+  if (surface) {
+    image = TCOD_image_new(surface->w, surface->h);
+    if (image) {
+      SDL_ConvertPixels(
+          surface->w,
+          surface->h,
+          surface->format->format,
+          surface->pixels,
+          surface->pitch,
+          SDL_PIXELFORMAT_RGB24,
+          image->mipmaps[0].buf,
+          (int)sizeof(image->mipmaps[0].buf[0]) * surface->w);
+      TCOD_image_invalidate_mipmaps(image);
+    }
+    SDL_FreeSurface(surface);
+  }
+  return image;
+}
 TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename) {
   if (!image) {
     TCOD_set_errorv("Image parameter must not be NULL.");
@@ -475,7 +475,7 @@ TCOD_Error TCOD_image_save(const TCOD_Image* image, const char* filename) {
   SDL_FreeSurface(bitmap);
   return err;
 }
-
+#endif  // NO_SDL
 void TCOD_image_set_key_color(TCOD_Image* image, TCOD_color_t key_color) {
   if (!image) {
     return;

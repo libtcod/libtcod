@@ -424,6 +424,7 @@ static void deleteSelection(text_t* data) {
 
 /* copy selected text to clipboard */
 static void copy(text_t* data) {
+#ifndef NO_SDL
   if (data->sel_end - data->sel_start > 0) {
     char* clipbuf = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
     char* ptr = clipbuf;
@@ -434,10 +435,12 @@ static void copy(text_t* data) {
     TCOD_sys_clipboard_set(clipbuf);
     free(clipbuf);
   }
+#endif  // NO_SDL
 }
 
 /* cut selected text to clipboard */
 static void cut(text_t* data) {
+#ifndef NO_SDL
   if (data->sel_end - data->sel_start > 0) {
     char* clipbuf = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
     char* ptr = clipbuf;
@@ -449,10 +452,12 @@ static void cut(text_t* data) {
     free(clipbuf);
     deleteSelection(data);
   }
+#endif  // NO_SDL
 }
 
 /* paste from clipboard */
 static void paste(text_t* data) {
+#ifndef NO_SDL
   char* clipbuf = TCOD_sys_clipboard_get();
   if (clipbuf) {
     if (data->sel_start != MAX_INT) {
@@ -462,6 +467,7 @@ static void paste(text_t* data) {
       insertChar(data, *clipbuf++);
     }
   }
+#endif  // NO_SDL
 }
 
 /* update returns false if enter has been pressed, true otherwise */
@@ -611,14 +617,16 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
 /* renders the textfield */
 void TCOD_text_render(TCOD_text_t txt, TCOD_console_t con) {
   text_t* data = (text_t*)txt;
-  uint32_t time;
-  bool cursor_on;
   char back = 0;
   int curx, cury, cursorx, cursory, curpos;
   char* ptr;
   TCOD_IFNOT(data && data->con) return;
-  time = TCOD_sys_elapsed_milli();
-  cursor_on = (int)(time % data->interval) > data->halfinterval;
+#ifndef NO_SDL
+  uint32_t time = TCOD_sys_elapsed_milli();
+  bool cursor_on = (int)(time % data->interval) > data->halfinterval;
+#else
+  bool cursor_on = 1;
+#endif  // NO_SDL
   TCOD_console_set_default_background(data->con, data->back);
   TCOD_console_set_default_foreground(data->con, data->fore);
   TCOD_console_clear(data->con);

@@ -39,12 +39,13 @@
 #include "parser.h"
 #include "portability.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 /* wrappers to ease other languages integration */
 typedef unsigned int colornum_t;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+#ifndef NO_SDL
 /* color module */
 TCODLIB_API bool TCOD_color_equals_wrapper(colornum_t c1, colornum_t c2);
 TCODLIB_API colornum_t TCOD_color_add_wrapper(colornum_t c1, colornum_t c2);
@@ -122,7 +123,8 @@ TCODLIB_API void TCOD_namegen_get_sets_wrapper(char** sets);
 /* sys module */
 TCODLIB_API int TCOD_sys_get_current_resolution_x(void);
 TCODLIB_API int TCOD_sys_get_current_resolution_y(void);
+#endif  // NO_SDL
 #ifdef __cplusplus
-}
+}  // extern "C"
 #endif
 #endif /* WRAPPERS_H */

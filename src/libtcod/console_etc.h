@@ -81,9 +81,6 @@ TCOD_PUBLIC TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_
  *  Render and present the root console to the active display.
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_flush(void);
-
-TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
-TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
 /**
     Return True if the libtcod keycode is held.
 
@@ -102,6 +99,26 @@ TCODLIB_API bool TCOD_console_load_apf(TCOD_console_t con, const char* filename)
 TCODLIB_API bool TCOD_console_save_asc(TCOD_console_t con, const char* filename);
 TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char* filename);
 
+#ifndef NO_SDL
+/**
+    Return immediately with a recently pressed key.
+
+    \param flags A TCOD_event_t bit-field, for example: `TCOD_EVENT_KEY_PRESS`
+    \return A TCOD_key_t struct with a recently pressed key.
+            If no event exists then the `vk` attribute will be `TCODK_NONE`
+ */
+TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
+/**
+    Wait for a key press event, then return it.
+
+    \param flush If 1 then the event queue will be cleared before waiting for
+                 the next event.  This should always be 0.
+    \return A TCOD_key_t struct with the most recent key data.
+
+    Do not solve input lag issues by arbitrarily dropping events!
+ */
+TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
+
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
@@ -110,7 +127,8 @@ TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay, int interval);
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_disable_keyboard_repeat(void);
+#endif  // NO_SDL
 #ifdef __cplusplus
-}
+}  // extern "C"
 #endif
 #endif  // TCOD_CONSOLE_ETC_H_

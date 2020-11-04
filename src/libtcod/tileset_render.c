@@ -31,7 +31,9 @@
  */
 #include "tileset_render.h"
 
+#ifndef NO_SDL
 #include <SDL.h>
+#endif  // NO_SDL
 /**
     Render a single tile.
  */
@@ -62,6 +64,7 @@ static void render_tile(
     }
   }
 }
+#ifndef NO_SDL
 TCOD_Error TCOD_tileset_render_to_surface(
     const TCOD_Tileset* __restrict tileset,
     const TCOD_Console* __restrict console,
@@ -125,3 +128,4 @@ TCOD_Error TCOD_tileset_render_to_surface(
   }
   return TCOD_E_OK;
 }
+#endif  // NO_SDL

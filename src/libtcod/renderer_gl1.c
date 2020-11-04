@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "renderer_gl1.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 #include <stddef.h>
 
@@ -350,3 +350,4 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
   context->present_ = gl1_present;
   return context;
 }
+#endif  // NO_SDL

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "renderer_sdl2.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 #include <math.h>
 #include <stdbool.h>
@@ -717,3 +717,4 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   }
   return context;
 }
+#endif  // NO_SDL

@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "console_init.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 #include <stdbool.h>
 #include <string.h>
@@ -132,3 +132,4 @@ int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_R
   }
   return -1;
 }
+#endif  // NO_SDL

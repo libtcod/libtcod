@@ -29,7 +29,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef NO_SDL
 #include <SDL.h>
+#endif  // NO_SDL
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -53,6 +55,112 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
+// clang-format off
+/**
+    Converts TCOD_FONT_LAYOUT_TCOD tile position to Extended ASCII code-point.
+ */
+static const int tcod_codec_eascii_[256] = {
+    32,  33,  34,  35,  36,  37,  38,  39,  40,  41,  42,  43,  44,  45,  46,  47,
+    48,  49,  50,  51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,
+    64,  91,  92,  93,  94,  95,  96,  123, 124, 125, 126, 176, 177, 178, 179, 196,
+    197, 180, 193, 195, 194, 192, 218, 191, 217, 226, 227, 228, 229, 230, 231, 232,
+    24,  25,  27,  26,  30,  31,  17,  16,  18,  29,  224, 225, 9,   10,  186, 205,
+    206, 185, 202, 204, 203, 200, 201, 187, 188, 0,   0,   0,   0,   0,   0,   0,
+    65,  66,  67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,
+    81,  82,  83,  84,  85,  86,  87,  88,  89,  90,  0,   0,   0,   0,   0,   0,
+    97,  98,  99,  100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112,
+    113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+};
+// clang-format on
+/**
+    Older startup function, mostly called from TCOD_sys_init.
+ */
+void TCOD_sys_startup(void) {}
+/**
+    All shutdown routines call this function.
+
+    Mostly used internally. TCOD_quit should be called to shutdown the library.
+ */
+void TCOD_sys_shutdown(void) {
+  if (TCOD_ctx.root) {
+    TCOD_console_delete(TCOD_ctx.root);
+  }
+  if (TCOD_ctx.engine) {
+    TCOD_context_delete(TCOD_ctx.engine);
+    TCOD_ctx.engine = NULL;
+    return;
+  }
+}
+/**
+    See TCOD_console_map_ascii_code_to_font
+  */
+void TCOD_sys_map_ascii_to_font(int asciiCode, int fontCharX, int fontCharY) {
+  if (!TCOD_ctx.tileset) {
+    return;
+  }
+  TCOD_tileset_assign_tile(TCOD_ctx.tileset, TCOD_ctx.tileset->virtual_columns * fontCharY + fontCharX, asciiCode);
+}
+/**
+    Set a code-point to point to an already existing code-point.
+ */
+static void TCOD_sys_map_clone_(int new_codepoint, int old_codepoint) {
+  if (!TCOD_ctx.tileset) {
+    return;
+  }
+  if (old_codepoint < 0) {
+    return;
+  }
+  if (old_codepoint >= TCOD_ctx.tileset->character_map_length) {
+    return;
+  }
+  TCOD_sys_map_ascii_to_font(new_codepoint, TCOD_ctx.tileset->character_map[old_codepoint], 0);
+}
+/**
+    Decode the font layout depending on the current flags.
+ */
+void TCOD_sys_decode_font_(void) {
+  if (!TCOD_ctx.tileset) {
+    return;
+  }
+  if (TCOD_ctx.font_flags & TCOD_FONT_LAYOUT_CP437) {
+    for (int i = 0; i < (int)(sizeof(TCOD_CHARMAP_CP437) / sizeof(*TCOD_CHARMAP_CP437)); ++i) {
+      TCOD_sys_map_ascii_to_font(TCOD_CHARMAP_CP437[i], i, 0);
+    }
+  } else if (TCOD_ctx.font_tcod_layout) {
+    for (int i = 0; i < (int)(sizeof(TCOD_CHARMAP_TCOD) / sizeof(*TCOD_CHARMAP_TCOD)); ++i) {
+      TCOD_sys_map_ascii_to_font(TCOD_CHARMAP_TCOD[i], i, 0);
+    }
+    for (int i = 0; i < (int)(sizeof(tcod_codec_eascii_) / sizeof(*tcod_codec_eascii_)); ++i) {
+      TCOD_sys_map_ascii_to_font(tcod_codec_eascii_[i], i, 0);
+    }
+  } else {
+    if (TCOD_ctx.font_in_row) {
+      /* for font in row */
+      for (int i = 0; i < TCOD_ctx.tileset->tiles_count; ++i) {
+        TCOD_sys_map_ascii_to_font(i, i, 0);
+      }
+    } else {
+      /* for font in column */
+      for (int i = 0; i < TCOD_ctx.tileset->tiles_count; ++i) {
+        int fy = i % TCOD_ctx.tileset->virtual_columns;
+        int fx = i / TCOD_ctx.tileset->virtual_columns;
+        TCOD_sys_map_ascii_to_font(i, fx, fy);
+      }
+    }
+    TCOD_sys_map_clone_(0x2500, 0xC4);
+    TCOD_sys_map_clone_(0x2502, 0xB3);
+    TCOD_sys_map_clone_(0x250C, 0xDA);
+    TCOD_sys_map_clone_(0x2510, 0xBF);
+    TCOD_sys_map_clone_(0x2514, 0xC0);
+    TCOD_sys_map_clone_(0x2518, 0xD9);
+  }
+}
 
 bool TCOD_sys_create_directory(const char* path) {
 #ifdef TCOD_WINDOWS
@@ -151,7 +259,13 @@ static DWORD CountSetBits(ULONG_PTR bitMask) {
 }
 #endif
 
-int TCOD_sys_get_num_cores(void) { return SDL_GetCPUCount(); }
+int TCOD_sys_get_num_cores(void) {
+#ifndef NO_SDL
+  return SDL_GetCPUCount();
+#else
+  return 1;
+#endif  // NO_SDL
+}
 
 TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data) {
 #ifdef TCOD_WINDOWS

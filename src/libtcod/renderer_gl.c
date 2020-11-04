@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef NO_SDL
 #include "renderer_gl.h"
 
 #include <SDL.h>
@@ -164,3 +165,4 @@ void TCOD_gl_atlas_delete(struct TCOD_TilesetAtlasOpenGL* atlas) {
   }
   free(atlas);
 }
+#endif  // NO_SDL

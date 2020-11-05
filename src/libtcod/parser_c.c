@@ -171,6 +171,7 @@ TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t def, const char* pro
 
 TCOD_value_t TCOD_parse_bool_value(void) {
   TCOD_value_t ret;
+  ret.b = false;
   if (strcmp(lex->tok, "true") == 0)
     ret.b = true;
   else if (strcmp(lex->tok, "false") == 0)
@@ -240,6 +241,7 @@ TCOD_value_t TCOD_parse_string_value(void) {
 
 TCOD_value_t TCOD_parse_color_value(void) {
   TCOD_value_t ret;
+  ret.col = (TCOD_ColorRGB){0, 0, 0};
   if (lex->token_type == TCOD_LEX_SYMBOL && lex->tok[0] == '#') {
     char tmp[128] = "";
     int tok = TCOD_lex_parse(lex);

@@ -69,9 +69,12 @@ struct TCOD_Context {
   TCOD_Error (*set_tileset)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
   /**
       Output the recommended console size to `columns` and `rows`.
+
+      `magnification` determines the apparent size of tiles,
+      but might be ignored.
   */
   TCOD_Error (*cb_recommended_console_size_)(
-      struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows);
+      struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows);
 };
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
@@ -176,11 +179,18 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
 /**
     Set `columns` and `rows` to the recommended console size for this context.
 
+    `magnification` determines the apparent size of the tiles that will
+    be rendered by a console created with the output values.  A
+    `magnification` larger then 1.0f will output smaller console parameters,
+    which will show as larger tiles when presented.
+    Values of 0.0f or lower will default to 1.0f.
+
     \rst
     .. versionadded:: 1.16
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(struct TCOD_Context* context, int* columns, int* rows);
+TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
+    struct TCOD_Context* context, float magnification, int* __restrict columns, int* __restrict rows);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {

@@ -595,7 +595,7 @@ static TCOD_Error sdl2_set_tileset(struct TCOD_Context* __restrict self, TCOD_Ti
   return TCOD_E_OK;
 }
 static TCOD_Error sdl2_recommended_console_size(
-    struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows) {
+    struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows) {
   struct TCOD_RendererSDL2* context = self->contextdata;
   int w;
   int h;
@@ -604,10 +604,10 @@ static TCOD_Error sdl2_recommended_console_size(
     return TCOD_E_ERROR;
   }
   if (columns) {
-    *columns = w / context->atlas->tileset->tile_width;
+    *columns = (int)(w / (context->atlas->tileset->tile_width * magnification));
   }
   if (rows) {
-    *rows = h / context->atlas->tileset->tile_height;
+    *rows = (int)(h / (context->atlas->tileset->tile_height * magnification));
   }
   return TCOD_E_OK;
 }

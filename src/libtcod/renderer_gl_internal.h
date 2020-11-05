@@ -100,16 +100,16 @@ static TCOD_Error gl_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tile
   return TCOD_E_OK;
 }
 static TCOD_Error gl_recommended_console_size(
-    struct TCOD_Context* __restrict self, int* __restrict columns, int* __restrict rows) {
+    struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows) {
   struct TCOD_RendererGLCommon* context = self->contextdata;
   int w;
   int h;
   SDL_GL_GetDrawableSize(context->window, &w, &h);
   if (columns) {
-    *columns = w / context->atlas->tileset->tile_width;
+    *columns = (int)(w / (context->atlas->tileset->tile_width * magnification));
   }
   if (rows) {
-    *rows = h / context->atlas->tileset->tile_height;
+    *rows = (int)(h / (context->atlas->tileset->tile_height * magnification));
   }
   return TCOD_E_OK;
 }

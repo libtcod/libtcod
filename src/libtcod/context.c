@@ -133,7 +133,8 @@ int TCOD_context_get_renderer_type(struct TCOD_Context* context) {
   }
   return context->type;
 }
-TCOD_Error TCOD_context_recommended_console_size(struct TCOD_Context* context, int* columns, int* rows) {
+TCOD_Error TCOD_context_recommended_console_size(
+    struct TCOD_Context* __restrict context, float magnification, int* __restrict columns, int* __restrict rows) {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -142,5 +143,8 @@ TCOD_Error TCOD_context_recommended_console_size(struct TCOD_Context* context, i
     TCOD_set_errorv("Context is missing configuration..");
     return TCOD_E_ERROR;
   }
-  return context->cb_recommended_console_size_(context, columns, rows);
+  if (magnification <= 0) {
+    magnification = 1.0f;
+  }
+  return context->cb_recommended_console_size_(context, magnification, columns, rows);
 }

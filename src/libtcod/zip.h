@@ -44,6 +44,7 @@ extern "C" {
 struct TCOD_Zip;
 typedef struct TCOD_Zip* TCOD_zip_t;
 
+TCOD_DEPRECATED("This method of serialization is not cross-platform.  It's recommended to find a standard alternative.")
 TCODLIB_API TCOD_zip_t TCOD_zip_new(void);
 TCODLIB_API void TCOD_zip_delete(TCOD_zip_t zip);
 
@@ -54,6 +55,7 @@ TCODLIB_API void TCOD_zip_put_float(TCOD_zip_t zip, float val);
 TCODLIB_API void TCOD_zip_put_string(TCOD_zip_t zip, const char* val);
 TCODLIB_API void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val);
 TCODLIB_API void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val);
+TCOD_DEPRECATED("This function will fail with console characters greater than 255.")
 TCODLIB_API void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val);
 /**
     Write a TCOD_Random* object.

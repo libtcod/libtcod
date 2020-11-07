@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Deprecated
+- Deprecated the zip functions.
+
 ### Fixed
 - Context functions won't crash when methods are missing.
 

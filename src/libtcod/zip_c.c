@@ -171,7 +171,7 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val) {
   TCOD_zip_put_int(zip, h);
   for (y = 0; y < h; y++) {
     for (x = 0; x < w; x++) {
-      TCOD_zip_put_char(zip, TCOD_console_get_char(val, x, y));
+      TCOD_zip_put_char(zip, TCOD_console_get_char(val, x, y) & 0xff);
       TCOD_zip_put_color(zip, TCOD_console_get_char_foreground(val, x, y));
       TCOD_zip_put_color(zip, TCOD_console_get_char_background(val, x, y));
     }
@@ -395,7 +395,7 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
   ret = TCOD_console_new(w, h);
   for (y = 0; y < h; y++) {
     for (x = 0; x < w; x++) {
-      TCOD_console_set_char(ret, x, y, TCOD_zip_get_char(pzip));
+      TCOD_console_set_char(ret, x, y, (unsigned char)TCOD_zip_get_char(pzip));
       TCOD_console_set_char_foreground(ret, x, y, TCOD_zip_get_color(pzip));
       TCOD_console_set_char_background(ret, x, y, TCOD_zip_get_color(pzip), TCOD_BKGND_SET);
     }

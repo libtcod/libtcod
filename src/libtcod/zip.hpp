@@ -49,6 +49,7 @@
 	* put data in the buffer, then save it to a file,
 	* load a file into the buffer, then get data from it.
  */
+TCOD_DEPRECATED("This method of serialization is not cross-platform.  It's recommended to find a standard alternative.")
 class TCODLIB_API TCODZip {
 public :
 
@@ -159,6 +160,7 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	@Param val	A console to store in the buffer
 	*/
+  TCOD_DEPRECATED("This function will fail with console characters greater than 255.")
 	void putConsole(const TCODConsole *val);
 
 	/**

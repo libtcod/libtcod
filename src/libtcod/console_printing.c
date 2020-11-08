@@ -1122,35 +1122,40 @@ static TCOD_Error next_split_(
   *break_width = char_width;
   return TCOD_E_OK;
 }
+/**
+    A parameters struct for internal printing functions.
+ */
+struct PrintParams {
+  TCOD_Console* __restrict console;  // Can not be NULL.
+  int x;                             // Cursor starting position.
+  int y;
+  int width;
+  int height;
+  const TCOD_ColorRGB* __restrict rgb_fg;  // Can be NULL.
+  const TCOD_ColorRGB* __restrict rgb_bg;
+  TCOD_bkgnd_flag_t flag;
+  TCOD_alignment_t alignment;
+  bool can_split;   // In general `can_split = false` is deprecated.
+  bool count_only;  // True if console is read-only.
+};
 TCOD_NODISCARD
-static int print_internal_(
-    TCOD_Console* __restrict con,
-    int x,
-    int y,
-    int width,
-    int height,
-    size_t n,
-    const char* __restrict string,
-    const TCOD_color_t* fg_in,
-    const TCOD_color_t* bg_in,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t align,
-    int can_split,
-    int count_only) {
+static int printn_internal_(const struct PrintParams* __restrict params, size_t n, const char* __restrict string) {
+  if (!params->console) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  int x = params->x;  // Cursor position.
+  int y = params->y;
+  int width = params->width;  // Bounds size, used to calculate the boundary.
+  int height = params->height;
   static const TCOD_ColorRGBA color_default = {255, 255, 255, 0};
   TCOD_ColorRGBA fg = color_default;
   TCOD_ColorRGBA bg = color_default;
-  if (fg_in) {
-    fg.r = fg_in->r;
-    fg.g = fg_in->g;
-    fg.b = fg_in->b;
-    fg.a = 255;
+  if (params->rgb_fg) {
+    fg = (TCOD_ColorRGBA){params->rgb_fg->r, params->rgb_fg->g, params->rgb_fg->b, 255};
   }
-  if (bg_in) {
-    bg.r = bg_in->r;
-    bg.g = bg_in->g;
-    bg.b = bg_in->b;
-    bg.a = 255;
+  if (params->rgb_bg) {
+    bg = (TCOD_ColorRGBA){params->rgb_bg->r, params->rgb_bg->g, params->rgb_bg->b, 255};
   }
   struct FormattedPrinter printer = {
       .string = (const unsigned char*)string,
@@ -1160,18 +1165,18 @@ static int print_internal_(
       .default_fg = fg,
       .default_bg = bg,
   };
-  if (!can_split && align == TCOD_RIGHT) {
-    // In general `can_split = false` is deprecated.
-    x -= con->w - 1;
-    width = con->w;
+  if (!params->can_split) {
+    // Default sizes for `can_split = false`.
+    width = width ? width : params->console->w;
+    height = height ? height : params->console->h;
+  }
+  if (!params->can_split && params->alignment == TCOD_RIGHT) {
+    x -= params->console->w - 1;
+    width = params->console->w;
   }
   // Expand the width/height of 0 to the edge of the console.
-  if (!width) {
-    width = con->w - x;
-  }
-  if (!height) {
-    height = con->h - y;
-  }
+  width = width ? width : params->console->w - x;
+  height = height ? height : params->console->h - y;
   // Print bounding box.
   int left = x;
   int right = x + width;
@@ -1179,10 +1184,10 @@ static int print_internal_(
   int bottom = y + height;
   width = right - left;
   height = bottom - top;
-  if (can_split && (width <= 0 || height <= 0)) {
+  if (params->can_split && (width <= 0 || height <= 0)) {
     return 0;  // The bounding box is invalid.
   }
-  while (printer.string != printer.end && top < bottom && top < con->h) {
+  while (printer.string != printer.end && top < bottom && top < params->console->h) {
     int codepoint;
     TCOD_Error err = fp_peek(&printer, &codepoint);
     if (err < 0) {
@@ -1205,12 +1210,12 @@ static int print_internal_(
     const unsigned char* line_break;
     int line_width;
     bool add_line_break;
-    if ((err = next_split_(&printer, width, can_split, &line_break, &line_width, &add_line_break)) < 0) {
+    if ((err = next_split_(&printer, width, params->can_split, &line_break, &line_width, &add_line_break)) < 0) {
       return err;
     }
     // Set cursor_x from alignment.
     int cursor_x = 0;
-    switch (align) {
+    switch (params->alignment) {
       default:
       case TCOD_LEFT:
         cursor_x = left;
@@ -1219,7 +1224,7 @@ static int print_internal_(
         cursor_x = right - line_width;
         break;
       case TCOD_CENTER:
-        if (can_split) {
+        if (params->can_split) {
           cursor_x = left + (width - line_width) / 2;
         } else {
           cursor_x = left - (line_width / 2);  // Deprecated.
@@ -1229,27 +1234,27 @@ static int print_internal_(
     // True clipping area.  Prevent drawing outside of these bounds.
     int clip_left = left;
     int clip_right = right;
-    if (!can_split) {
+    if (!params->can_split) {
       // Bounds are ignored if splitting is off.
       clip_left = 0;
-      clip_right = con->w;
+      clip_right = params->console->w;
     }
     while (printer.string < line_break) {
       // Iterate over a line of characters.
-      if ((err = fp_next(&printer, &codepoint)) < 0) {
+      if ((err = fp_next(&printer, &codepoint)) < 0) {  // Advances printer.string.
         return err;
       }
-      if (get_character_width(codepoint) == 0) {
-        continue;
+      if (params->count_only) {
+        continue;  // Console is read-only.
       }
-      if (count_only) {
+      if (get_character_width(codepoint) == 0) {
         continue;
       }
       if (clip_left <= cursor_x && cursor_x < clip_right) {
         // Actually render this line of characters.
         TCOD_ColorRGB* fg_rgb = printer.fg.a ? (TCOD_ColorRGB*)&printer.fg : NULL;
         TCOD_ColorRGB* bg_rgb = printer.bg.a ? (TCOD_ColorRGB*)&printer.bg : NULL;
-        TCOD_console_put_rgb(con, cursor_x, top, codepoint, fg_rgb, bg_rgb, flag);
+        TCOD_console_put_rgb(params->console, cursor_x, top, codepoint, fg_rgb, bg_rgb, params->flag);
       }
       cursor_x += get_character_width(codepoint);
     }
@@ -1314,16 +1319,21 @@ TCOD_Error TCOD_console_printn(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
-  con = TCOD_console_validate_(con);
-  if (!con) {
-    TCOD_set_errorv("Console pointer must not be NULL.");
-    return TCOD_E_INVALID_ARGUMENT;
-  }
-  int err = print_internal_(con, x, y, con->w, con->h, n, str, fg, bg, flag, alignment, false, false);
-  if (err < 0) {
-    return (TCOD_Error)err;
-  }
-  return TCOD_E_OK;
+  const struct PrintParams params = {
+      .console = TCOD_console_validate_(con),
+      .x = x,
+      .y = y,
+      .width = 0,
+      .height = 0,
+      .rgb_fg = fg,
+      .rgb_bg = bg,
+      .flag = flag,
+      .alignment = alignment,
+      .can_split = false,
+      .count_only = false,
+  };
+  int err = printn_internal_(&params, n, str);
+  return err < 0 ? (TCOD_Error)err : TCOD_E_OK;
 }
 int TCOD_console_printn_rect(
     TCOD_Console* __restrict con,
@@ -1337,22 +1347,36 @@ int TCOD_console_printn_rect(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
-  con = TCOD_console_validate_(con);
-  if (!con) {
-    TCOD_set_errorv("Console pointer must not be NULL.");
-    return TCOD_E_INVALID_ARGUMENT;
-  }
-  return print_internal_(con, x, y, width, height, n, str, fg, bg, flag, alignment, true, false);
+  const struct PrintParams params = {
+      .console = TCOD_console_validate_(con),
+      .x = x,
+      .y = y,
+      .width = width,
+      .height = height,
+      .rgb_fg = fg,
+      .rgb_bg = bg,
+      .flag = flag,
+      .alignment = alignment,
+      .can_split = true,
+      .count_only = false,
+  };
+  return printn_internal_(&params, n, str);
 }
 
 int TCOD_console_get_height_rect_n(
     TCOD_Console* console, int x, int y, int width, int height, size_t n, const char* str) {
-  console = TCOD_console_validate_(console);
-  if (!console) {
-    TCOD_set_errorv("Console pointer must not be NULL.");
-    return TCOD_E_INVALID_ARGUMENT;
-  }
-  return print_internal_(console, x, y, width, height, n, str, NULL, NULL, TCOD_BKGND_NONE, TCOD_LEFT, true, true);
+  const struct PrintParams params = {
+      .console = TCOD_console_validate_(console),
+      .x = x,
+      .y = y,
+      .width = width,
+      .height = height,
+      .flag = TCOD_BKGND_NONE,
+      .alignment = TCOD_LEFT,
+      .can_split = true,
+      .count_only = true,
+  };
+  return printn_internal_(&params, n, str);
 }
 int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str) {
   TCOD_Console console = {.w = width, .h = INT_MAX};

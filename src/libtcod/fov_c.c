@@ -64,6 +64,7 @@ TCOD_Error TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_M
   dest->height = source->height;
   dest->nbcells = source->nbcells;
   memcpy(dest->cells, source->cells, sizeof(*dest->cells) * source->nbcells);
+  return TCOD_E_OK;
 }
 void TCOD_map_clear(struct TCOD_Map* map, bool transparent, bool walkable) {
   int i;

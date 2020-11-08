@@ -32,6 +32,10 @@
 #ifndef LIBTCOD_CONTEXT_H_
 #define LIBTCOD_CONTEXT_H_
 
+#ifdef __cplusplus
+#include <array>
+#include <memory>
+#endif  // __cplusplus
 #include "config.h"
 #include "console.h"
 #include "context_viewport.h"
@@ -41,42 +45,8 @@
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Rect;
-/**
- *  A rendering context for libtcod.
- *  \rst
- *  .. versionadded:: 1.16
- *  \endrst
- */
-struct TCOD_Context {
-  int type;
-  // All remaining variables are private.
-  void* __restrict contextdata_;
-  void (*c_destructor_)(struct TCOD_Context* __restrict self);
-  TCOD_Error (*c_present_)(
-      struct TCOD_Context* __restrict self,
-      const struct TCOD_Console* __restrict console,
-      const struct TCOD_ViewportOptions* __restrict viewport);
-  void (*c_pixel_to_tile_)(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y);
-  TCOD_Error (*c_save_screenshot_)(struct TCOD_Context* __restrict self, const char* __restrict filename);
-  struct SDL_Window* (*c_get_sdl_window_)(struct TCOD_Context* __restrict self);
-  struct SDL_Renderer* (*c_get_sdl_renderer_)(struct TCOD_Context* __restrict self);
-  TCOD_Error (*c_accumulate_)(
-      struct TCOD_Context* __restrict self,
-      const struct TCOD_Console* __restrict console,
-      const struct TCOD_ViewportOptions* __restrict viewport);
-  /**
-      Change the tileset used by this context.
-  */
-  TCOD_Error (*c_set_tileset_)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
-  /**
-      Output the recommended console size to `columns` and `rows`.
 
-      `magnification` determines the apparent size of tiles,
-      but might be ignored.
-  */
-  TCOD_Error (*c_recommended_console_size_)(
-      struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows);
-};
+struct TCOD_Context;  // Defined in this header later.
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
 extern "C" {
@@ -194,11 +164,147 @@ TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
     struct TCOD_Context* context, float magnification, int* __restrict columns, int* __restrict rows);
 #ifdef __cplusplus
 }  // extern "C"
+#endif  // __cplusplus
+/**
+    A rendering context for libtcod.
+    \rst
+    .. versionadded:: 1.16
+    \endrst
+ */
+struct TCOD_Context {
+#ifdef __cplusplus
+  /**
+      Return the TCOD_renderer_t value of this context which may be diffent
+      than the one requested.
+   */
+  auto get_renderer_type() noexcept -> int { return TCOD_context_get_renderer_type(this); }
+  /**
+      Present a console to the display with the provided viewport options.
+   */
+  void present(const TCOD_Console& console, const TCOD_ViewportOptions& viewport) {
+    tcod::check_throw_error(TCOD_context_present(this, &console, &viewport));
+  }
+  /**
+      Present a console to the display.
+   */
+  void present(const TCOD_Console& console) { tcod::check_throw_error(TCOD_context_present(this, &console, nullptr)); }
+  /**
+      Return a non-owning pointer to the SDL_Window used by this context.
+
+      May return nullptr.
+   */
+  auto get_sdl_window() noexcept -> struct SDL_Window* { return TCOD_context_get_sdl_window(this); }
+  /**
+      Return a non-owning pointer to the SDL_Renderer used by this context.
+
+      May return nullptr.
+   */
+  auto get_sdl_renderer() noexcept -> struct SDL_Renderer* { return TCOD_context_get_sdl_renderer(this); }
+  /**
+      Convert pixel coordinates to this contexts integer tile coordinates.
+   */
+  auto pixel_to_tile_coordinates(const std::array<int, 2>& xy) -> std::array<int, 2> {
+    std::array<int, 2> out{xy[0], xy[1]};
+    tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_i(this, &out[0], &out[1]));
+    return out;
+  }
+  /**
+      Convert pixel coordinates to this contexts sub-tile coordinates.
+   */
+  auto pixel_to_tile_coordinates(const std::array<double, 2>& xy) -> std::array<double, 2> {
+    std::array<double, 2> out{xy[0], xy[1]};
+    tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_d(this, &out[0], &out[1]));
+    return out;
+  }
+  /**
+      Save a screenshot to `filepath`.
+
+      If `filepath` is nullptr then a unique file name will be generated.
+   */
+  void save_screenshot(const char* filepath) { tcod::check_throw_error(TCOD_context_save_screenshot(this, filepath)); }
+  /**
+      Save a screenshot to `filepath`.
+   */
+  void save_screenshot(const std::string& filepath) { return this->save_screenshot(filepath.data()); }
+  /**
+      Return a new console with a size automatically determined by the context.
+   */
+  auto new_console(float magnification = 1.0f) -> tcod::ConsolePtr {
+    int columns;
+    int rows;
+    tcod::check_throw_error(TCOD_context_recommended_console_size(this, magnification, &columns, &rows));
+    return tcod::new_console(columns, rows);
+  }
+#endif  // __cplusplus
+  // All remaining members are private.
+  /**
+      The TCOD_renderer_t value of this context.
+   */
+  int type;
+  /**
+      A pointer to this contexts unique data.
+   */
+  void* __restrict contextdata_;
+  // Context C callback are prefixed with 'c_', always check if see if these are NULL.
+  /**
+      Called when this context is deleted.
+   */
+  void (*c_destructor_)(struct TCOD_Context* __restrict self);
+  /**
+      Called to present a console to a contexts display.
+
+      `console` must not be NULL.
+
+      `viewport` may be NULL.
+   */
+  TCOD_Error (*c_present_)(
+      struct TCOD_Context* __restrict self,
+      const struct TCOD_Console* __restrict console,
+      const struct TCOD_ViewportOptions* __restrict viewport);
+  /**
+      Convert pixel coordinates to the contexts tile coordinates.
+   */
+  void (*c_pixel_to_tile_)(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y);
+  /**
+      Ask this context to save a screenshot.
+   */
+  TCOD_Error (*c_save_screenshot_)(struct TCOD_Context* __restrict self, const char* __restrict filename);
+  /**
+      Return this contexts SDL_Window, if any.
+   */
+  struct SDL_Window* (*c_get_sdl_window_)(struct TCOD_Context* __restrict self);
+  /**
+      Return this contexts SDL_Renderer, if any.
+   */
+  struct SDL_Renderer* (*c_get_sdl_renderer_)(struct TCOD_Context* __restrict self);
+  /**
+      Draw a console without flipping the display.
+      This method of drawing is deprecated.
+   */
+  TCOD_Error (*c_accumulate_)(
+      struct TCOD_Context* __restrict self,
+      const struct TCOD_Console* __restrict console,
+      const struct TCOD_ViewportOptions* __restrict viewport);
+  /**
+      Change the tileset used by this context.
+  */
+  TCOD_Error (*c_set_tileset_)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
+  /**
+      Output the recommended console size to `columns` and `rows`.
+
+      `magnification` determines the apparent size of tiles,
+      but might be ignored.
+  */
+  TCOD_Error (*c_recommended_console_size_)(
+      struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows);
+};
+#ifdef __cplusplus
 namespace tcod {
 struct ContextDeleter {
   void operator()(TCOD_Context* console) const { TCOD_context_delete(console); }
 };
-typedef std::unique_ptr<struct TCOD_Context, ContextDeleter> ContextPtr;
+typedef std::unique_ptr<TCOD_Context, ContextDeleter> ContextPtr;
+typedef std::shared_ptr<TCOD_Context> ContextSharedPtr;
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // LIBTCOD_CONTEXT_H_

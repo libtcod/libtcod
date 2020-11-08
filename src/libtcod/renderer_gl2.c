@@ -344,7 +344,7 @@ static TCOD_Error gl2_accumulate(
     struct TCOD_Context* __restrict context,
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
-  struct TCOD_RendererGL2* renderer = context->contextdata;
+  struct TCOD_RendererGL2* renderer = context->contextdata_;
   TCOD_Error err;
   if ((err = resize_textures(renderer, console)) < 0) {
     return err;
@@ -370,7 +370,7 @@ static TCOD_Error gl2_present(
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
   }
-  struct TCOD_RendererGL2* renderer = context->contextdata;
+  struct TCOD_RendererGL2* renderer = context->contextdata_;
   int window_width;
   int window_height;
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
@@ -386,7 +386,7 @@ static TCOD_Error gl2_present(
   return err;
 }
 void gl2_destructor(struct TCOD_Context* __restrict context) {
-  struct TCOD_RendererGL2* renderer = context->contextdata;
+  struct TCOD_RendererGL2* renderer = context->contextdata_;
   if (!renderer) {
     return;
   }
@@ -415,8 +415,8 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
     TCOD_context_delete(context);
     return NULL;
   }
-  context->destructor_ = gl2_destructor;
-  context->contextdata = renderer;
+  context->c_destructor_ = gl2_destructor;
+  context->contextdata_ = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
       x, y, pixel_width, pixel_height, title, window_flags, vsync, tileset, 2, 0, SDL_GL_CONTEXT_PROFILE_CORE, context);
   if (err < 0) {
@@ -442,8 +442,8 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
   glBufferData(GL_ARRAY_BUFFER, 8, VERTEX_BUFFER_DATA, GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  context->accumulate_ = gl2_accumulate;
-  context->present_ = gl2_present;
+  context->c_accumulate_ = gl2_accumulate;
+  context->c_present_ = gl2_present;
   return context;
 }
 #endif  // NO_SDL

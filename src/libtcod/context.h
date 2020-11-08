@@ -49,31 +49,32 @@ struct SDL_Rect;
  */
 struct TCOD_Context {
   int type;
-  void* __restrict contextdata;
-  void (*destructor_)(struct TCOD_Context* __restrict self);
-  TCOD_Error (*present_)(
+  // All remaining variables are private.
+  void* __restrict contextdata_;
+  void (*c_destructor_)(struct TCOD_Context* __restrict self);
+  TCOD_Error (*c_present_)(
       struct TCOD_Context* __restrict self,
       const struct TCOD_Console* __restrict console,
       const struct TCOD_ViewportOptions* __restrict viewport);
-  void (*pixel_to_tile_)(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y);
-  TCOD_Error (*save_screenshot_)(struct TCOD_Context* __restrict self, const char* __restrict filename);
-  struct SDL_Window* (*get_sdl_window_)(struct TCOD_Context* __restrict self);
-  struct SDL_Renderer* (*get_sdl_renderer_)(struct TCOD_Context* __restrict self);
-  TCOD_Error (*accumulate_)(
+  void (*c_pixel_to_tile_)(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y);
+  TCOD_Error (*c_save_screenshot_)(struct TCOD_Context* __restrict self, const char* __restrict filename);
+  struct SDL_Window* (*c_get_sdl_window_)(struct TCOD_Context* __restrict self);
+  struct SDL_Renderer* (*c_get_sdl_renderer_)(struct TCOD_Context* __restrict self);
+  TCOD_Error (*c_accumulate_)(
       struct TCOD_Context* __restrict self,
       const struct TCOD_Console* __restrict console,
       const struct TCOD_ViewportOptions* __restrict viewport);
   /**
       Change the tileset used by this context.
   */
-  TCOD_Error (*set_tileset)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
+  TCOD_Error (*c_set_tileset_)(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset);
   /**
       Output the recommended console size to `columns` and `rows`.
 
       `magnification` determines the apparent size of tiles,
       but might be ignored.
   */
-  TCOD_Error (*cb_recommended_console_size_)(
+  TCOD_Error (*c_recommended_console_size_)(
       struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows);
 };
 typedef struct TCOD_Context TCOD_Context;

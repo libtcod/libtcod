@@ -285,8 +285,8 @@ void TCOD_sys_save_screenshot(const char* filename) {
       fclose(access_file);
     }
   }
-  if (TCOD_ctx.engine && TCOD_ctx.engine->save_screenshot_) {
-    TCOD_ctx.engine->save_screenshot_(TCOD_ctx.engine, filename);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_save_screenshot_) {
+    TCOD_ctx.engine->c_save_screenshot_(TCOD_ctx.engine, filename);
   }
 }
 
@@ -841,8 +841,8 @@ void TCOD_sys_pixel_to_tile(double* x, double* y) {
   if (!x || !y) {
     return;
   }
-  if (TCOD_ctx.engine && TCOD_ctx.engine->pixel_to_tile_) {
-    TCOD_ctx.engine->pixel_to_tile_(TCOD_ctx.engine, x, y);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_pixel_to_tile_) {
+    TCOD_ctx.engine->c_pixel_to_tile_(TCOD_ctx.engine, x, y);
   } else {
     *x = (*x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
     *y = (*y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
@@ -878,15 +878,15 @@ static void sdl_parse_mouse_(const SDL_Event* ev, TCOD_mouse_t* mouse) {
     default:
       return;
   }
-  if (TCOD_ctx.engine && TCOD_ctx.engine->pixel_to_tile_) {
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_pixel_to_tile_) {
     double x = mouse->x;
     double y = mouse->y;
-    TCOD_ctx.engine->pixel_to_tile_(TCOD_ctx.engine, &x, &y);
+    TCOD_ctx.engine->c_pixel_to_tile_(TCOD_ctx.engine, &x, &y);
     int cell_x = (int)x;
     int cell_y = (int)y;
     x = mouse->x - mouse->dx;
     y = mouse->y - mouse->dy;
-    TCOD_ctx.engine->pixel_to_tile_(TCOD_ctx.engine, &x, &y);
+    TCOD_ctx.engine->c_pixel_to_tile_(TCOD_ctx.engine, &x, &y);
     int prev_cell_x = (int)x;
     int prev_cell_y = (int)y;
     mouse->cx = cell_x;

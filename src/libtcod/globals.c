@@ -46,6 +46,6 @@ TCODLIB_CAPI void TCOD_set_default_tileset(TCOD_Tileset* tileset) {
     ++tileset->ref_count;
   }
   if (tileset && TCOD_ctx.engine) {
-    TCOD_ctx.engine->set_tileset(TCOD_ctx.engine, tileset);
+    TCOD_ctx.engine->c_set_tileset_(TCOD_ctx.engine, tileset);
   }
 }

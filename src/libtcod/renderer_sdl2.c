@@ -408,7 +408,7 @@ static int sdl2_handle_event(void* userdata, SDL_Event* event) {
  *  Deconstruct an SDL2 rendering context.
  */
 static void sdl2_destructor(struct TCOD_Context* __restrict self) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   if (!context) {
     return;
   }
@@ -464,7 +464,7 @@ static TCOD_Error sdl2_accumulate(
     struct TCOD_Context* __restrict self,
     const struct TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   if (!context || !console) {
     return -1;
   }
@@ -513,7 +513,7 @@ static TCOD_Error sdl2_present(
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
   }
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   SDL_SetRenderTarget(context->renderer, NULL);
   SDL_SetRenderDrawColor(
       context->renderer,
@@ -533,7 +533,7 @@ static TCOD_Error sdl2_present(
  *  Convert pixel coordinates to tile coordinates.
  */
 static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   *x = (*x - context->last_offset_x) * context->last_scale_x;
   *y = (*y - context->last_offset_y) * context->last_scale_y;
 }
@@ -541,7 +541,7 @@ static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __r
  *  Save a PNG screen-shot to `file`.
  */
 static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* __restrict self, const char* __restrict filename) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   if (!context->cache_texture) {
     TCOD_set_errorv("Nothing to save before the first frame.");
     lodepng_encode32_file(filename, NULL, 0, 0);
@@ -567,19 +567,19 @@ static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* __restrict self, con
  *  Return a pointer to the SDL2 window.
  */
 static struct SDL_Window* sdl2_get_window(struct TCOD_Context* __restrict self) {
-  return ((struct TCOD_RendererSDL2*)self->contextdata)->window;
+  return ((struct TCOD_RendererSDL2*)self->contextdata_)->window;
 }
 /**
  *  Return a pointer to the SDL2 renderer.
  */
 static struct SDL_Renderer* sdl2_get_renderer(struct TCOD_Context* __restrict self) {
-  return ((struct TCOD_RendererSDL2*)self->contextdata)->renderer;
+  return ((struct TCOD_RendererSDL2*)self->contextdata_)->renderer;
 }
 /**
     Change the atlas to the given tileset.
  */
 static TCOD_Error sdl2_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   struct TCOD_TilesetAtlasSDL2* atlas = TCOD_sdl2_atlas_new(context->renderer, tileset);
   if (!atlas) {
     return TCOD_E_ERROR;
@@ -596,7 +596,7 @@ static TCOD_Error sdl2_set_tileset(struct TCOD_Context* __restrict self, TCOD_Ti
 }
 static TCOD_Error sdl2_recommended_console_size(
     struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows) {
-  struct TCOD_RendererSDL2* context = self->contextdata;
+  struct TCOD_RendererSDL2* context = self->contextdata_;
   int w;
   int h;
   if (SDL_GetRendererOutputSize(context->renderer, &w, &h) < 0) {
@@ -686,16 +686,16 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   if (renderer_flags & SDL_RENDERER_SOFTWARE) {
     context->type = TCOD_RENDERER_SDL;
   }
-  context->contextdata = sdl2_data;
-  context->destructor_ = sdl2_destructor;
-  context->present_ = sdl2_present;
-  context->accumulate_ = sdl2_accumulate;
-  context->get_sdl_window_ = sdl2_get_window;
-  context->get_sdl_renderer_ = sdl2_get_renderer;
-  context->pixel_to_tile_ = sdl2_pixel_to_tile;
-  context->save_screenshot_ = sdl2_save_screenshot;
-  context->set_tileset = sdl2_set_tileset;
-  context->cb_recommended_console_size_ = sdl2_recommended_console_size;
+  context->contextdata_ = sdl2_data;
+  context->c_destructor_ = sdl2_destructor;
+  context->c_present_ = sdl2_present;
+  context->c_accumulate_ = sdl2_accumulate;
+  context->c_get_sdl_window_ = sdl2_get_window;
+  context->c_get_sdl_renderer_ = sdl2_get_renderer;
+  context->c_pixel_to_tile_ = sdl2_pixel_to_tile;
+  context->c_save_screenshot_ = sdl2_save_screenshot;
+  context->c_set_tileset_ = sdl2_set_tileset;
+  context->c_recommended_console_size_ = sdl2_recommended_console_size;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   sdl2_data->window = SDL_CreateWindow(title, x, y, pixel_width, pixel_height, window_flags);
@@ -711,7 +711,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     TCOD_context_delete(context);
     return NULL;
   }
-  if (context->set_tileset(context, tileset) < 0) {
+  if (context->c_set_tileset_(context, tileset) < 0) {
     TCOD_context_delete(context);
     return NULL;
   }

@@ -90,7 +90,7 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
   if (verify_console_size(console)) {
     return TCOD_E_ERROR;
   }
-  struct TCOD_RendererGL1* renderer = context->contextdata;
+  struct TCOD_RendererGL1* renderer = context->contextdata_;
   // Setup background texture.
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, renderer->background_texture);
@@ -178,7 +178,7 @@ static TCOD_Error render_foreground(struct TCOD_Context* __restrict context, con
   if (verify_console_size(console)) {
     return TCOD_E_ERROR;
   }
-  struct TCOD_RendererGL1* renderer = context->contextdata;
+  struct TCOD_RendererGL1* renderer = context->contextdata_;
   // Setup OpenGL.
   glEnable(GL_BLEND);
   glEnable(GL_TEXTURE_2D);
@@ -258,7 +258,7 @@ static TCOD_Error gl1_accumulate(
     struct TCOD_Context* __restrict context,
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
-  struct TCOD_RendererGL1* renderer = context->contextdata;
+  struct TCOD_RendererGL1* renderer = context->contextdata_;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
@@ -293,7 +293,7 @@ static TCOD_Error gl1_present(
   if (!viewport) {
     viewport = &TCOD_VIEWPORT_DEFAULT_;
   }
-  struct TCOD_RendererGL1* renderer = context->contextdata;
+  struct TCOD_RendererGL1* renderer = context->contextdata_;
   int window_width;
   int window_height;
   SDL_GL_GetDrawableSize(renderer->common.window, &window_width, &window_height);
@@ -309,7 +309,7 @@ static TCOD_Error gl1_present(
   return err;
 }
 void gl1_destructor(struct TCOD_Context* __restrict context) {
-  struct TCOD_RendererGL1* renderer = context->contextdata;
+  struct TCOD_RendererGL1* renderer = context->contextdata_;
   if (!renderer) {
     return;
   }
@@ -338,16 +338,16 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(
     TCOD_context_delete(context);
     return NULL;
   }
-  context->destructor_ = gl1_destructor;
-  context->contextdata = renderer;
+  context->c_destructor_ = gl1_destructor;
+  context->contextdata_ = renderer;
   TCOD_Error err = TCOD_renderer_gl_common_init(
       x, y, pixel_width, pixel_height, title, window_flags, vsync, tileset, 1, 1, SDL_GL_CONTEXT_PROFILE_CORE, context);
   if (err < 0) {
     TCOD_context_delete(context);
     return NULL;
   }
-  context->accumulate_ = gl1_accumulate;
-  context->present_ = gl1_present;
+  context->c_accumulate_ = gl1_accumulate;
+  context->c_present_ = gl1_present;
   return context;
 }
 #endif  // NO_SDL

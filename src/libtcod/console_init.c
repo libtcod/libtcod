@@ -109,14 +109,14 @@ bool TCOD_console_is_active(void) {
 }
 bool TCOD_console_is_window_closed(void) { return TCOD_ctx.is_window_closed; }
 struct SDL_Window* TCOD_sys_get_sdl_window(void) {
-  if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_window_) {
-    return TCOD_ctx.engine->get_sdl_window_(TCOD_ctx.engine);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_get_sdl_window_) {
+    return TCOD_ctx.engine->c_get_sdl_window_(TCOD_ctx.engine);
   }
   return NULL;
 }
 struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void) {
-  if (TCOD_ctx.engine && TCOD_ctx.engine->get_sdl_renderer_) {
-    return TCOD_ctx.engine->get_sdl_renderer_(TCOD_ctx.engine);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_get_sdl_renderer_) {
+    return TCOD_ctx.engine->c_get_sdl_renderer_(TCOD_ctx.engine);
   }
   return NULL;
 }
@@ -127,8 +127,8 @@ int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_R
   if (!console) {
     return -1;
   }
-  if (TCOD_ctx.engine && TCOD_ctx.engine->accumulate_) {
-    return TCOD_ctx.engine->accumulate_(TCOD_ctx.engine, console, NULL);
+  if (TCOD_ctx.engine && TCOD_ctx.engine->c_accumulate_) {
+    return TCOD_ctx.engine->c_accumulate_(TCOD_ctx.engine, console, NULL);
   }
   return -1;
 }

@@ -73,14 +73,14 @@ static TCOD_Error gl_screenshot(struct TCOD_Context* __restrict context, const c
  *  Return the SDL2 window.
  */
 static struct SDL_Window* gl_get_sdl_window(struct TCOD_Context* __restrict context) {
-  struct TCOD_RendererGLCommon* renderer = context->contextdata;
+  struct TCOD_RendererGLCommon* renderer = context->contextdata_;
   return renderer->window;
 }
 /**
  *  Convert pixel coordinates to tile coordinates.
  */
 static void gl_pixel_to_tile(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y) {
-  struct TCOD_RendererGLCommon* renderer = self->contextdata;
+  struct TCOD_RendererGLCommon* renderer = self->contextdata_;
   *x = (*x - renderer->last_offset_x) * renderer->last_scale_x;
   *y = (*y - renderer->last_offset_y) * renderer->last_scale_y;
 }
@@ -88,7 +88,7 @@ static void gl_pixel_to_tile(struct TCOD_Context* __restrict self, double* __res
     Change the atlas to the given tileset.
  */
 static TCOD_Error gl_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tileset* __restrict tileset) {
-  struct TCOD_RendererGLCommon* renderer = self->contextdata;
+  struct TCOD_RendererGLCommon* renderer = self->contextdata_;
   struct TCOD_TilesetAtlasOpenGL* atlas = TCOD_gl_atlas_new(tileset);
   if (!atlas) {
     return TCOD_E_ERROR;
@@ -101,7 +101,7 @@ static TCOD_Error gl_set_tileset(struct TCOD_Context* __restrict self, TCOD_Tile
 }
 static TCOD_Error gl_recommended_console_size(
     struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows) {
-  struct TCOD_RendererGLCommon* context = self->contextdata;
+  struct TCOD_RendererGLCommon* context = self->contextdata_;
   int w;
   int h;
   SDL_GL_GetDrawableSize(context->window, &w, &h);
@@ -143,12 +143,12 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     int gl_minor,
     int gl_profile,
     struct TCOD_Context* out) {
-  out->get_sdl_window_ = gl_get_sdl_window;
-  out->pixel_to_tile_ = gl_pixel_to_tile;
-  out->save_screenshot_ = gl_screenshot;
-  out->set_tileset = gl_set_tileset;
-  out->cb_recommended_console_size_ = gl_recommended_console_size;
-  struct TCOD_RendererGLCommon* renderer = out->contextdata;
+  out->c_get_sdl_window_ = gl_get_sdl_window;
+  out->c_pixel_to_tile_ = gl_pixel_to_tile;
+  out->c_save_screenshot_ = gl_screenshot;
+  out->c_set_tileset_ = gl_set_tileset;
+  out->c_recommended_console_size_ = gl_recommended_console_size;
+  struct TCOD_RendererGLCommon* renderer = out->contextdata_;
   if (!tileset) {
     return TCOD_E_ERROR;
   }
@@ -178,7 +178,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     return TCOD_E_ERROR;
   }
   SDL_GL_SetSwapInterval(vsync);
-  if (out->set_tileset(out, tileset) < 0) {
+  if (out->c_set_tileset_(out, tileset) < 0) {
     TCOD_renderer_gl_common_uninit(renderer);
     return TCOD_E_ERROR;
   }

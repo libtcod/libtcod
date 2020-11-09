@@ -1125,7 +1125,7 @@ static TCOD_Error next_split_(
 /**
     A parameters struct for internal printing functions.
  */
-struct PrintParams {
+typedef struct PrintParams {
   TCOD_Console* __restrict console;  // Can not be NULL.
   int x;                             // Cursor starting position.
   int y;
@@ -1137,12 +1137,15 @@ struct PrintParams {
   TCOD_alignment_t alignment;
   bool can_split;   // In general `can_split = false` is deprecated.
   bool count_only;  // True if console is read-only.
-};
+} PrintParams;
 TCOD_NODISCARD
-static int printn_internal_(const struct PrintParams* __restrict params, size_t n, const char* __restrict string) {
+static int printn_internal_(const PrintParams* __restrict params, size_t n, const char* __restrict string) {
   if (!params->console) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (n <= 0) {
+    return TCOD_E_OK;
   }
   int x = params->x;  // Cursor position.
   int y = params->y;
@@ -1278,12 +1281,38 @@ static int printn_internal_(const struct PrintParams* __restrict params, size_t 
   }
   return MIN(top, bottom) - y + 1;
 }
+TCOD_NODISCARD
+static int vprintf_internal_(const PrintParams* __restrict params, const char* __restrict fmt, va_list args) {
+  char stack_buffer[512];              // This buffer attempts to prevent a heap allocation.
+  char* heap_buffer = NULL;            // Heap buffer to hold the result in case of overflow.
+  char* active_buffer = stack_buffer;  // Which buffer will be passed down.
+  va_list args_copy;
+  va_copy(args_copy, args);
+  int str_length = vsnprintf(stack_buffer, sizeof(stack_buffer), fmt, args_copy);
+  va_end(args_copy);
+  if (str_length >= (int)sizeof(stack_buffer)) {
+    active_buffer = heap_buffer = malloc(str_length + 1);
+    if (!heap_buffer) {
+      TCOD_set_errorv("Out of memory.");
+      return TCOD_E_OUT_OF_MEMORY;
+    }
+    str_length = vsnprintf(heap_buffer, str_length + 1, fmt, args);
+  }
+  if (str_length < 0) {
+    TCOD_set_errorvf("vsnprintf error: %i", str_length);
+    free(heap_buffer);
+    return TCOD_E_ERROR;
+  }
+  int err = printn_internal_(params, str_length, active_buffer);
+  free(heap_buffer);
+  return err;
+}
 /**
  *  Normalize rectangle values using old libtcod rules where alignment can move
  *  the rectangle position.
  */
 static void normalize_old_rect_(
-    TCOD_Console* console,
+    TCOD_Console* __restrict console,
     TCOD_alignment_t alignment,
     int* __restrict x,
     int* __restrict y,
@@ -1319,7 +1348,7 @@ TCOD_Error TCOD_console_printn(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
-  const struct PrintParams params = {
+  const PrintParams params = {
       .console = TCOD_console_validate_(con),
       .x = x,
       .y = y,
@@ -1347,7 +1376,7 @@ int TCOD_console_printn_rect(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
-  const struct PrintParams params = {
+  const PrintParams params = {
       .console = TCOD_console_validate_(con),
       .x = x,
       .y = y,
@@ -1362,10 +1391,9 @@ int TCOD_console_printn_rect(
   };
   return printn_internal_(&params, n, str);
 }
-
 int TCOD_console_get_height_rect_n(
     TCOD_Console* console, int x, int y, int width, int height, size_t n, const char* str) {
-  const struct PrintParams params = {
+  const PrintParams params = {
       .console = TCOD_console_validate_(console),
       .x = x,
       .y = y,
@@ -1379,7 +1407,7 @@ int TCOD_console_get_height_rect_n(
   return printn_internal_(&params, n, str);
 }
 int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str) {
-  TCOD_Console console = {.w = width, .h = INT_MAX};
+  TCOD_Console console = {.w = width, .h = INT_MAX};  // get_height functions don't need a fully defined console.
   return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
 TCOD_Error TCOD_console_printn_frame(
@@ -1417,6 +1445,29 @@ TCOD_Error TCOD_console_printn_frame(
   }
   return TCOD_E_OK;
 }
+static TCOD_Error TCOD_console_vprintf_ex(
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    va_list args) {
+  const PrintParams params = {
+      .console = TCOD_console_validate_(console),
+      .x = x,
+      .y = y,
+      .rgb_fg = fg,
+      .rgb_bg = bg,
+      .flag = flag,
+      .alignment = alignment,
+      .can_split = false,
+  };
+  int err = vprintf_internal_(&params, fmt, args);
+  return err < 0 ? (TCOD_Error)err : TCOD_E_OK;
+}
 TCOD_Error TCOD_console_printf_ex(
     TCOD_Console* __restrict con,
     int x,
@@ -1430,17 +1481,10 @@ TCOD_Error TCOD_console_printf_ex(
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  va_list ap;
-  va_start(ap, fmt);
-  char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
-  }
-  TCOD_Error err = TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, flag, alignment);
-  free(str);
+  va_list args;
+  va_start(args, fmt);
+  TCOD_Error err = TCOD_console_vprintf_ex(con, x, y, &con->fore, &con->back, flag, alignment, fmt, args);
+  va_end(args);
   return err;
 }
 TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* fmt, ...) {
@@ -1449,25 +1493,45 @@ TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  va_list ap;
-  va_start(ap, fmt);
-  char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
-  }
-  int err = TCOD_console_printn(con, x, y, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
-  free(str);
-  return (TCOD_Error)err;
+  va_list args;
+  va_start(args, fmt);
+  TCOD_Error err =
+      TCOD_console_vprintf_ex(con, x, y, &con->fore, &con->back, con->bkgnd_flag, con->alignment, fmt, args);
+  va_end(args);
+  return err;
+}
+static int TCOD_console_vprintf_rect(
+    struct TCOD_Console* __restrict con,
+    int x,
+    int y,
+    int width,
+    int height,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    va_list args) {
+  const PrintParams params = {
+      .console = TCOD_console_validate_(con),
+      .x = x,
+      .y = y,
+      .width = width,
+      .height = height,
+      .rgb_fg = fg,
+      .rgb_bg = bg,
+      .flag = flag,
+      .alignment = alignment,
+      .can_split = true,
+  };
+  return vprintf_internal_(&params, fmt, args);
 }
 int TCOD_console_printf_rect_ex(
     struct TCOD_Console* __restrict con,
     int x,
     int y,
-    int w,
-    int h,
+    int width,
+    int height,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
     const char* fmt,
@@ -1477,61 +1541,52 @@ int TCOD_console_printf_rect_ex(
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  normalize_old_rect_(con, alignment, &x, &y, &w, &h);
-  va_list ap;
-  va_start(ap, fmt);
-  char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
-  }
-  int ret = TCOD_console_printn_rect(con, x, y, w, h, len, str, &con->fore, &con->back, flag, alignment);
-  free(str);
-  return ret;
+  normalize_old_rect_(con, alignment, &x, &y, &width, &height);
+  va_list args;
+  va_start(args, fmt);
+  int err = TCOD_console_vprintf_rect(con, x, y, width, height, &con->fore, &con->back, flag, alignment, fmt, args);
+  va_end(args);
+  return err;
 }
-int TCOD_console_printf_rect(struct TCOD_Console* __restrict con, int x, int y, int w, int h, const char* fmt, ...) {
+int TCOD_console_printf_rect(
+    struct TCOD_Console* __restrict con, int x, int y, int width, int height, const char* fmt, ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  normalize_old_rect_(con, con->alignment, &x, &y, &w, &h);
-  va_list ap;
-  va_start(ap, fmt);
-  char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
-  }
-  int ret =
-      TCOD_console_printn_rect(con, x, y, w, h, len, str, &con->fore, &con->back, con->bkgnd_flag, con->alignment);
-  free(str);
-  return ret;
+  normalize_old_rect_(con, con->alignment, &x, &y, &width, &height);
+  va_list args;
+  va_start(args, fmt);
+  int err = TCOD_console_vprintf_rect(
+      con, x, y, width, height, &con->fore, &con->back, con->bkgnd_flag, con->alignment, fmt, args);
+  va_end(args);
+  return err;
 }
 int TCOD_console_get_height_rect_fmt(
-    struct TCOD_Console* __restrict con, int x, int y, int w, int h, const char* fmt, ...) {
+    struct TCOD_Console* __restrict con, int x, int y, int width, int height, const char* fmt, ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  normalize_old_rect_(con, TCOD_LEFT, &x, &y, &w, &h);
-  va_list ap;
-  va_start(ap, fmt);
-  char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
-  }
-  int ret = TCOD_console_get_height_rect_n(con, x, y, w, h, len, str);
-  free(str);
-  return ret;
+  normalize_old_rect_(con, TCOD_LEFT, &x, &y, &width, &height);
+  const PrintParams params = {
+      .console = TCOD_console_validate_(con),
+      .x = x,
+      .y = y,
+      .width = width,
+      .height = height,
+      .flag = TCOD_BKGND_NONE,
+      .alignment = TCOD_LEFT,
+      .can_split = true,
+      .count_only = true,
+  };
+  va_list args;
+  va_start(args, fmt);
+  int result = vprintf_internal_(&params, fmt, args);
+  va_end(args);
+  return result;
 }
 TCOD_Error TCOD_console_printf_frame(
     struct TCOD_Console* __restrict con,
@@ -1557,7 +1612,7 @@ TCOD_Error TCOD_console_printf_frame(
     TCOD_set_errorv("Error while resolving formatting string.");
     return TCOD_E_ERROR;
   }
-  int err = TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
+  TCOD_Error err = TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
   free(str);
-  return (TCOD_Error)err;
+  return err;
 }

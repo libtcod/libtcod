@@ -14,7 +14,7 @@ endif()
 
 add_library(LIBTCOD)
 add_library(LIBTCOD::LIBTCOD ALIAS LIBTCOD)
-target_compile_features(LIBTCOD PUBLIC cxx_std_14)
+target_compile_features(LIBTCOD PUBLIC c_std_99 cxx_std_11)
 
 if(CONAN_FILE)
     message(STATUS "Fetching dependencies from Conan.")

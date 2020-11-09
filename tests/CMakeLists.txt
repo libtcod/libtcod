@@ -19,6 +19,8 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
 add_executable(unittest catch.cpp unittest.cpp)
 target_link_libraries(unittest ${LINK_TARGETS})
+target_compile_features(unittest PUBLIC cxx_std_14)
+target_compile_definitions(unittest PRIVATE _CRT_SECURE_NO_WARNINGS)
 
 # CTest is a testing tool that can be used to test your project.
 # enable_testing()

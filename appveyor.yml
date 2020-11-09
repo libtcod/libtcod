@@ -1,8 +1,10 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 environment:
   SCONSMODE: "MODE=DEBUG"
+  CONAN_PASSWORD:
+    secure: /oF4w+hmQPXWuANB2bQOks3rTLEAimrYPGRt4VBuZQY23Bk1ElBJetGBTuT5Pd2e
   matrix:
     - SCONSOPTS: "ARCH=x86_64 TOOLSET=msvc"
       TEST_PYTHON3: "C:/Python35-x64/python.exe"
@@ -17,15 +19,15 @@ environment:
       MSYSTEM: MINGW32
       TEST_PYTHON3: "C:/Python35/python.exe"
     - CONAN_BUILD: True
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
       CONAN_VISUAL_VERSIONS: 15
       CONAN_ARCHS: x86_64
-      CONAN_PASSWORD:
-        secure: /oF4w+hmQPXWuANB2bQOks3rTLEAimrYPGRt4VBuZQY23Bk1ElBJetGBTuT5Pd2e
     - CONAN_BUILD: True
-      CONAN_VISUAL_VERSIONS: 15
+      CONAN_VISUAL_VERSIONS: 16
+      CONAN_ARCHS: x86_64
+    - CONAN_BUILD: True
+      CONAN_VISUAL_VERSIONS: 16
       CONAN_ARCHS: x86
-      CONAN_PASSWORD:
-        secure: /oF4w+hmQPXWuANB2bQOks3rTLEAimrYPGRt4VBuZQY23Bk1ElBJetGBTuT5Pd2e
 
 matrix:
   allow_failures:

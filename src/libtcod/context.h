@@ -33,8 +33,10 @@
 #define LIBTCOD_CONTEXT_H_
 
 #ifdef __cplusplus
+#include <algorithm>
 #include <array>
 #include <memory>
+#include <stdexcept>
 #endif  // __cplusplus
 #include "config.h"
 #include "console.h"
@@ -150,10 +152,7 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
 /**
     Set `columns` and `rows` to the recommended console size for this context.
 
-    `magnification` determines the apparent size of the tiles that will
-    be rendered by a console created with the output values.  A
-    `magnification` larger then 1.0f will output smaller console parameters,
-    which will show as larger tiles when presented.
+    `magnification` determines the apparent size of the tiles on the output.
     Values of 0.0f or lower will default to 1.0f.
 
     \rst
@@ -228,12 +227,25 @@ struct TCOD_Context {
   void save_screenshot(const std::string& filepath) { return this->save_screenshot(filepath.data()); }
   /**
       Return a new console with a size automatically determined by the context.
+
+      `min_columns` and `min_rows` are the minimum size to use for the new
+      console.
+
+      `magnification` determines the apparent size of the tiles that will
+      be rendered by a console created with the output values.  A
+      `magnification` larger then 1.0f will output smaller console parameters,
+      which will show as larger tiles when presented.
+      Only values larger than zero are allowed.
    */
-  auto new_console(float magnification = 1.0f) -> tcod::ConsolePtr {
+  auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::ConsolePtr {
     int columns;
     int rows;
+    if (magnification <= 0.0f) {
+      throw std::invalid_argument(
+          std::string("Magnification must be greater than zero. Got ") + std::to_string(magnification));
+    }
     tcod::check_throw_error(TCOD_context_recommended_console_size(this, magnification, &columns, &rows));
-    return tcod::new_console(columns, rows);
+    return tcod::new_console(std::max(columns, min_columns), std::max(rows, min_rows));
   }
 #endif  // __cplusplus
   // All remaining members are private.

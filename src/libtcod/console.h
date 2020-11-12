@@ -109,29 +109,29 @@ struct TCOD_Console {
     return tiles + size();
   }
   const struct TCOD_ConsoleTile* end() const noexcept { return tiles + size(); }
-  auto operator[](const std::array<int, 2>& yx) noexcept -> struct TCOD_ConsoleTile& {
-    return tiles[w * yx[0] + yx[1]];
+  auto operator[](const std::array<int, 2>& xy) noexcept -> struct TCOD_ConsoleTile& {
+    return tiles[w * xy[1] + xy[0]];
   }
-  auto operator[](const std::array<int, 2>& yx) const noexcept -> const struct TCOD_ConsoleTile& {
-    return tiles[w * yx[0] + yx[1]];
+  auto operator[](const std::array<int, 2>& xy) const noexcept -> const struct TCOD_ConsoleTile& {
+    return tiles[w * xy[1] + xy[0]];
   }
-  struct TCOD_ConsoleTile& at(int y, int x) {
-    range_check_(y, x);
-    return (*this)[{y, x}];
+  auto at(int x, int y) -> struct TCOD_ConsoleTile& {
+    range_check_(x, y);
+    return (*this)[{x, y}];
   }
-  const struct TCOD_ConsoleTile& at(int y, int x) const {
-    range_check_(y, x);
-    return (*this)[{y, x}];
+  auto at(int x, int y) const -> const struct TCOD_ConsoleTile& {
+    range_check_(x, y);
+    return (*this)[{x, y}];
   }
   int size() const { return elements; }
-  void range_check_(int y, int x) const {
-    if (!in_bounds(y, x)) {
+  void range_check_(int x, int y) const {
+    if (!in_bounds(x, y)) {
       throw std::out_of_range(
           std::string("Out of bounds lookup {x=") + std::to_string(x) + ", y=" + std::to_string(y) +
           "} on console of shape {" + std::to_string(w) + ", " + std::to_string(h) + "}.");
     }
   }
-  bool in_bounds(int y, int x) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
+  bool in_bounds(int x, int y) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
 #endif  // __cplusplus
   /** Console width and height (in characters, not pixels.) */
   int w, h;

@@ -43,7 +43,7 @@ std::string to_string(const TCOD_Console& console) {
       result += '\n';
     }
     for (int x = 0; x < console.w; ++x) {
-      result += static_cast<char>(console.at(y, x).ch);
+      result += static_cast<char>(console.at(x, y).ch);
     }
   }
   return result;
@@ -263,14 +263,14 @@ TEST_CASE("Print color codes.") {
   CHECK(console->at(0, 0).fg.g == 255);
   CHECK(console->at(0, 0).fg.b == 255);
   CHECK(console->at(0, 0).fg.a == 255);
-  CHECK(console->at(0, 1).fg.r == 1);
-  CHECK(console->at(0, 1).fg.g == 2);
-  CHECK(console->at(0, 1).fg.b == 3);
-  CHECK(console->at(0, 1).fg.a == 255);
-  CHECK(console->at(0, 2).fg.r == 255);
-  CHECK(console->at(0, 2).fg.g == 255);
-  CHECK(console->at(0, 2).fg.b == 255);
-  CHECK(console->at(0, 2).fg.a == 255);
+  CHECK(console->at(1, 0).fg.r == 1);
+  CHECK(console->at(1, 0).fg.g == 2);
+  CHECK(console->at(1, 0).fg.b == 3);
+  CHECK(console->at(1, 0).fg.a == 255);
+  CHECK(console->at(2, 0).fg.r == 255);
+  CHECK(console->at(2, 0).fg.g == 255);
+  CHECK(console->at(2, 0).fg.b == 255);
+  CHECK(console->at(2, 0).fg.a == 255);
 }
 TEST_CASE("Color code formatting.") {
   using namespace std::string_literals;

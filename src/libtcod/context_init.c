@@ -168,6 +168,11 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     TCOD_set_errorv("Output must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  // Covert ambiguously undefined window coordinates to SDL_WINDOWPOS_UNDEFINED.
+  const int window_x =
+      (params->window_x || params->window_xy_defined) ? params->window_x : (int)SDL_WINDOWPOS_UNDEFINED;
+  const int window_y =
+      (params->window_y || params->window_xy_defined) ? params->window_y : (int)SDL_WINDOWPOS_UNDEFINED;
   // These values may be modified.
   int pixel_width = params->pixel_width;
   int pixel_height = params->pixel_height;
@@ -254,8 +259,8 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     case TCOD_RENDERER_SDL:
       renderer_flags |= SDL_RENDERER_SOFTWARE;
       *out = TCOD_renderer_init_sdl2(
-          params->x,
-          params->y,
+          window_x,
+          window_y,
           pixel_width,
           pixel_height,
           params->window_title,
@@ -269,7 +274,7 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
       *out = TCOD_renderer_new_gl2(
-          params->x, params->y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
+          window_x, window_y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
       if (*out) {
         return err;
       }
@@ -277,7 +282,7 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
       //@fallthrough@
     case TCOD_RENDERER_OPENGL:
       *out = TCOD_renderer_init_gl1(
-          params->x, params->y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
+          window_x, window_y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
       if (*out) {
         return err;
       }
@@ -286,8 +291,8 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     default:
     case TCOD_RENDERER_SDL2:
       *out = TCOD_renderer_init_sdl2(
-          params->x,
-          params->y,
+          window_x,
+          window_y,
           pixel_width,
           pixel_height,
           params->window_title,

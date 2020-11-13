@@ -59,14 +59,15 @@ TCOD_Error TCOD_console_init_root_(
   TCOD_ctx.fullscreen = fullscreen;
   struct TCOD_ContextParams params = {
       .tcod_version = TCOD_COMPILEDVERSION,
-      .x = SDL_WINDOWPOS_UNDEFINED,
-      .y = SDL_WINDOWPOS_UNDEFINED,
+      .window_x = SDL_WINDOWPOS_UNDEFINED,
+      .window_y = SDL_WINDOWPOS_UNDEFINED,
       .columns = w,
       .rows = h,
       .vsync = vsync,
       .sdl_window_flags = SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0),
       .window_title = title,
       .renderer_type = renderer,
+      .window_xy_defined = true,
   };
   return TCOD_context_new(&params, &TCOD_ctx.engine);
 }

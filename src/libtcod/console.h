@@ -71,59 +71,75 @@ typedef enum {
  */
 typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
 /**
- *  A console tile.
+    A console tile.
  */
-struct TCOD_ConsoleTile {
+typedef struct TCOD_ConsoleTile {
 #ifdef __cplusplus
   bool operator==(const TCOD_ConsoleTile& rhs) const noexcept { return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg; }
   bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
 #endif  // __cplusplus
   /**
-   *  The Unicode codepoint for this tile.
+      The Unicode codepoint for this tile.
    */
   int ch;
   /**
-   *  The tile glyph color, rendered on top of the background.
+      The tile glyph color, rendered on top of the background.
    */
-  struct TCOD_ColorRGBA fg;
+  TCOD_ColorRGBA fg;
   /**
-   *  The tile background color, rendered behind the glyph.
+      The tile background color, rendered behind the glyph.
    */
-  struct TCOD_ColorRGBA bg;
-};
+  TCOD_ColorRGBA bg;
+} TCOD_ConsoleTile;
 /**
- *  The libtcod console struct.
- *
- *  All attributes should be considered private.
- *
- *  All C++ methods should be considered provisional, and are subject to
- *  change.
+    The libtcod console struct.
+
+    All attributes should be considered private.
+
+    All C++ methods should be considered provisional, and are subject to
+    change.
  */
 struct TCOD_Console {
 #ifdef __cplusplus
-  struct TCOD_ConsoleTile* begin() noexcept {
-    return tiles;
-  }
-  const struct TCOD_ConsoleTile* begin() const noexcept { return tiles; }
-  struct TCOD_ConsoleTile* end() noexcept {
-    return tiles + size();
-  }
-  const struct TCOD_ConsoleTile* end() const noexcept { return tiles + size(); }
-  auto operator[](const std::array<int, 2>& xy) noexcept -> struct TCOD_ConsoleTile& {
+  auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
+  auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
+  auto end() noexcept -> TCOD_ConsoleTile* { return tiles + size(); }
+  auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + size(); }
+  /**
+      Return a reference to the tile at `xy`.
+   */
+  auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& { return tiles[w * xy[1] + xy[0]]; }
+  /**
+      Return a constant reference to the tile at `xy`.
+   */
+  auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
     return tiles[w * xy[1] + xy[0]];
   }
-  auto operator[](const std::array<int, 2>& xy) const noexcept -> const struct TCOD_ConsoleTile& {
-    return tiles[w * xy[1] + xy[0]];
-  }
-  auto at(int x, int y) -> struct TCOD_ConsoleTile& {
+  /**
+      Return a reference to the tile at `x`,`y`.
+
+      Throws if the index is out-of-bounds.
+   */
+  auto at(int x, int y) -> TCOD_ConsoleTile& {
     range_check_(x, y);
     return (*this)[{x, y}];
   }
-  auto at(int x, int y) const -> const struct TCOD_ConsoleTile& {
+  /**
+      Return a constant reference to the tile at `x`,`y`.
+
+      Throws if the index is out-of-bounds.
+   */
+  auto at(int x, int y) const -> const TCOD_ConsoleTile& {
     range_check_(x, y);
     return (*this)[{x, y}];
   }
+  /**
+      Return the total number of tiles in this console.
+   */
   int size() const { return elements; }
+  /**
+      Internal function.  Throws `std::out_of_range` if `x` or `y` is out-of-bounds.
+   */
   void range_check_(int x, int y) const {
     if (!in_bounds(x, y)) {
       throw std::out_of_range(
@@ -131,12 +147,15 @@ struct TCOD_Console {
           "} on console of shape {" + std::to_string(w) + ", " + std::to_string(h) + "}.");
     }
   }
+  /**
+      Return true if `x`,`y` are within the bounds of this console.
+   */
   bool in_bounds(int x, int y) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
 #endif  // __cplusplus
   /** Console width and height (in characters, not pixels.) */
   int w, h;
   /** A contiguous array of console tiles. */
-  struct TCOD_ConsoleTile* __restrict tiles;
+  TCOD_ConsoleTile* __restrict tiles;
   /** Default background operator for print & print_rect functions. */
   TCOD_bkgnd_flag_t bkgnd_flag;
   /** Default alignment for print & print_rect functions. */

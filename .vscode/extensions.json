@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools", // C/C++
+        "austin.code-gnu-global", // C++ Intellisense
+        "xaver.clang-format", // Clang-Format
+        "twxs.cmake", // CMake
+        "ms-vscode.cmake-tools", // CMake Tools
+        "streetsidesoftware.code-spell-checker", // Code Spell Checker
+        "cschlosser.doxdocgen", // Doxygen Documentation Generator
+        "editorconfig.editorconfig", // EditorConfig for VS Code
+    ]
+}

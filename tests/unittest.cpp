@@ -8,8 +8,9 @@
 #include <libtcod/utility/matrix.h>
 
 #include <climits>
-#include <codecvt>
+#include <clocale>
 #include <cstddef>
+#include <cuchar>
 #include <iostream>
 #include <libtcod.hpp>
 #include <random>
@@ -17,6 +18,7 @@
 #include <utility>
 
 #include "catch.hpp"
+
 
 namespace std {
 ostream& operator<<(ostream& out, const array<ptrdiff_t, 2>& data) {
@@ -289,11 +291,14 @@ TEST_CASE("Malformed UTF-8.", "[!throws]") {
   REQUIRE_THROWS(tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
 }
 TEST_CASE("Unicode PUA.") {
+  std::setlocale(LC_ALL, "en_US.UTF-8");
   auto console = tcod::new_console(1, 1);
-  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> ucs4_to_utf8;
-  auto check_character = [&](char32_t c) {
-    tcod::print(*console, 0, 0, ucs4_to_utf8.to_bytes(c), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
-    REQUIRE(console->at(0, 0).ch == c);
+  auto check_character = [&](char32_t utf32_ch) {
+    char utf8_ch[MB_LEN_MAX + 1] = "";
+    std::mbstate_t state{};
+    REQUIRE(std::c32rtomb(utf8_ch, utf32_ch, &state) > 0);
+    tcod::print(*console, 0, 0, utf8_ch, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+    REQUIRE(console->at(0, 0).ch == utf32_ch);
   };
   for (char32_t i = 0xE000; i <= 0xF8FF; ++i) check_character(i);
   for (char32_t i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);

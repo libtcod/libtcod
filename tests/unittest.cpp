@@ -10,7 +10,6 @@
 #include <climits>
 #include <clocale>
 #include <cstddef>
-#include <cuchar>
 #include <iostream>
 #include <libtcod.hpp>
 #include <random>
@@ -19,6 +18,34 @@
 
 #include "catch.hpp"
 
+/**
+    Convert a Unicode codepoint to a UTF-8 multi-byte string.
+ */
+std::string ucs4_to_utf8(int ucs4) {
+  char utf8[4];
+  if (ucs4 < 0) {
+    throw std::invalid_argument("Invalid codepoint.");
+  } else if (ucs4 <= 0x7F) {
+    utf8[0] = ucs4;
+    return std::string(utf8, 1);
+  } else if (ucs4 <= 0x07FF) {
+    utf8[0] = 0b11000000 | ((ucs4 & 0b11111'000000) >> 6);
+    utf8[1] = 0b10000000 | ((ucs4 & 0b00000'111111) >> 0);
+    return std::string(utf8, 2);
+  } else if (ucs4 <= 0xFFFF) {
+    utf8[0] = 0b11100000 | ((ucs4 & 0b1111'000000'000000) >> 12);
+    utf8[1] = 0b10000000 | ((ucs4 & 0b0000'111111'000000) >> 6);
+    utf8[2] = 0b10000000 | ((ucs4 & 0b0000'000000'111111) >> 0);
+    return std::string(utf8, 3);
+  } else if (ucs4 <= 0x10FFFF) {
+    utf8[0] = 0b11110000 | ((ucs4 & 0b111'000000'000000'000000) >> 18);
+    utf8[1] = 0b10000000 | ((ucs4 & 0b000'111111'000000'000000) >> 12);
+    utf8[2] = 0b10000000 | ((ucs4 & 0b000'000000'111111'000000) >> 6);
+    utf8[3] = 0b10000000 | ((ucs4 & 0b000'000000'000000'111111) >> 0);
+    return std::string(utf8, 4);
+  }
+  throw std::invalid_argument("Invalid codepoint.");
+}
 
 namespace std {
 ostream& operator<<(ostream& out, const array<ptrdiff_t, 2>& data) {
@@ -291,14 +318,10 @@ TEST_CASE("Malformed UTF-8.", "[!throws]") {
   REQUIRE_THROWS(tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
 }
 TEST_CASE("Unicode PUA.") {
-  std::setlocale(LC_ALL, "en_US.UTF-8");
   auto console = tcod::new_console(1, 1);
-  auto check_character = [&](char32_t utf32_ch) {
-    char utf8_ch[MB_LEN_MAX + 1] = "";
-    std::mbstate_t state{};
-    REQUIRE(std::c32rtomb(utf8_ch, utf32_ch, &state) > 0);
-    tcod::print(*console, 0, 0, utf8_ch, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
-    REQUIRE(console->at(0, 0).ch == utf32_ch);
+  auto check_character = [&](char32_t codepoint) {
+    tcod::print(*console, 0, 0, ucs4_to_utf8(codepoint), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+    REQUIRE(console->at(0, 0).ch == codepoint);
   };
   for (char32_t i = 0xE000; i <= 0xF8FF; ++i) check_character(i);
   for (char32_t i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);

@@ -1020,6 +1020,9 @@ static const bool TCOD_double_width_print_mode = 0;
 TCOD_NODISCARD
 static int get_character_width(int codepoint) {
   const utf8proc_property_t* property = utf8proc_get_property(codepoint);
+  if (property->category == UTF8PROC_CATEGORY_CO) {  // Private Use Area.
+    return 1;                                        // Width would otherwise be zero.
+  }
   switch (property->charwidth) {
     default:
       return (int)property->charwidth;

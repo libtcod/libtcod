@@ -8,6 +8,7 @@
 #include <libtcod/utility/matrix.h>
 
 #include <climits>
+#include <codecvt>
 #include <cstddef>
 #include <iostream>
 #include <libtcod.hpp>
@@ -286,6 +287,17 @@ TEST_CASE("Malformed UTF-8.", "[!throws]") {
   auto console = tcod::new_console(8, 1);
   std::string text = "\x80";
   REQUIRE_THROWS(tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
+}
+TEST_CASE("Unicode PUA.") {
+  auto console = tcod::new_console(1, 1);
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> ucs4_to_utf8;
+  auto check_character = [&](char32_t c) {
+    tcod::print(*console, 0, 0, ucs4_to_utf8.to_bytes(c), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+    REQUIRE(console->at(0, 0).ch == c);
+  };
+  for (char32_t i = 0xE000; i <= 0xF8FF; ++i) check_character(i);
+  for (char32_t i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);
+  for (char32_t i = 0x100000; i <= 0x10FFFD; ++i) check_character(i);
 }
 TEST_CASE("Heap test.") {
   struct TCOD_Heap heap;

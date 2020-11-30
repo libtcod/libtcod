@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Code points from the Private Use Area will now print correctly.
 
 ## [1.16.0-alpha.15] - 2020-11-13
 ### Deprecated

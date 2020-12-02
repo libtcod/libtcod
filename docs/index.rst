@@ -25,3 +25,4 @@ Welcome to the libtcod documentation!
    :caption: How-tos
 
    upgrading
+   guides/getting-started

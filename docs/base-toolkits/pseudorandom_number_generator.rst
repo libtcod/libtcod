@@ -1,3 +1,0 @@
-Psuedorandom Number Generator
-=============================
-

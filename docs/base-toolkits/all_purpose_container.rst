@@ -1,3 +1,0 @@
-All Purpose Container
-=====================
-

@@ -22,14 +22,6 @@ Welcome to the libtcod documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Roguelike toolkits
-   :glob:
-
-   roguelike-toolkits/*
-
-.. toctree::
-   :maxdepth: 1
    :caption: How-tos
-   :glob:
 
-   *
+   upgrading

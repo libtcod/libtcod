@@ -7,8 +7,16 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- `TCOD_sys_get_current_resolution` now returns error codes.
+
+### Deprecated
+- Deprecated `TCOD_sys_get_current_resolution`
+
 ### Fixed
 - Code points from the Private Use Area will now print correctly.
+- Fixed regression in `TCOD_sys_get_current_resolution` behavior.  This
+  function now returns the monitor resolution as was previously expected.
 
 ## [1.16.0-alpha.15] - 2020-11-13
 ### Deprecated

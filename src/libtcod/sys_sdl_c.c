@@ -1242,12 +1242,28 @@ void TCOD_sys_get_char_size(int* w, int* h) {
   }
 }
 
-void TCOD_sys_get_current_resolution(int* w, int* h) {
+TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
-  if (!window) {
-    return;
+  int monitor_index = 0;
+  if (window) {
+    monitor_index = SDL_GetWindowDisplayIndex(window);
+    if (monitor_index < 0) {
+      return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
+    }
   }
-  SDL_GetWindowSize(window, w, h);
+  // Temporarally load the video subsystem if it isn't already active.
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+    return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
+  }
+  SDL_Rect display_rect;
+  if (SDL_GetDisplayBounds(monitor_index, &display_rect) < 0) {
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
+  }
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  if (w) *w = display_rect.w;
+  if (h) *h = display_rect.h;
+  return TCOD_E_OK;
 }
 
 /* image stuff */

@@ -89,7 +89,7 @@ void test_renderer(TCOD_renderer_t renderer) {
   TCOD_console_delete(NULL);
 }
 
-TEST_CASE("SDL2 Renderer") { test_renderer(TCOD_RENDERER_SDL2); }
+TEST_CASE("SDL2 Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_SDL2); }
 TEST_CASE("SDL Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_SDL); }
 TEST_CASE("OPENGL Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_OPENGL); }
 TEST_CASE("GLSL Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_SDL); }

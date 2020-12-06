@@ -5,14 +5,22 @@ on: [push, pull_request]
 jobs:
   build:
 
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-11.0, ubuntu-20.04]
 
     steps:
     - uses: actions/checkout@v2
     - name: Install APT dependencies
+      if: runner.os == 'Linux'
       run: |
         sudo apt-get update
         sudo apt-get install scons libsdl2-dev
+    - name: Install Brew dependencies
+      if: runner.os == 'macOS'
+      run: |
+        brew install scons sdl2
     - name: Build package.
       working-directory: buildsys/scons
       run: |

@@ -100,15 +100,15 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGBA, atlas->texture_size, atlas->texture_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
-    switch (glGetError()) {
+    GLenum gl_error = glGetError();
+    switch (gl_error) {
       case GL_NO_ERROR:
         break;
       case GL_OUT_OF_MEMORY:
-        TCOD_set_errorv("Out of memory while allocating texture.");
+        TCOD_set_errorv("Out of memory while allocating texture atlas.");
         return TCOD_E_OUT_OF_MEMORY;
       default:
-        TCOD_set_errorv("Unkown OpenGL error while allocating texture.");
-        return TCOD_E_ERROR;
+        return TCOD_set_errorvf("OpenGL error while allocating texture atlas: %u", gl_error);
     }
     for (int i = 0; i < atlas->tileset->tiles_count; ++i) {
       if (upload_gl_tile(atlas, i) < 0) {

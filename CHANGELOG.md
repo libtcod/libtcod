@@ -18,6 +18,9 @@ since `1.7.0`.
 - Fixed regression in `TCOD_sys_get_current_resolution` behavior.  This
   function now returns the monitor resolution as was previously expected.
 
+### Removed
+- `TCOD_rng_splitmix64_next` has been marked as provisional.
+
 ## [1.16.0-alpha.15] - 2020-11-13
 ### Deprecated
 - Deprecated the zip functions.

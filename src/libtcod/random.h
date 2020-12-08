@@ -45,9 +45,8 @@ extern "C" {
     There is no initializer function because the first value of `state[1]` is
     itself the seed which can start at any value.
     `state[1]` will be updated by this call.
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+
+    This function is provisional and may change.
  */
 TCOD_PUBLIC inline uint64_t TCOD_rng_splitmix64_next(uint64_t* state) {
   // Based on http://xoshiro.di.unimi.it/splitmix64.c

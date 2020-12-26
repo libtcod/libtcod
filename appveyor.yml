@@ -19,10 +19,6 @@ environment:
       MSYSTEM: MINGW32
       TEST_PYTHON3: "C:/Python35/python.exe"
     - CONAN_BUILD: True
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      CONAN_VISUAL_VERSIONS: 15
-      CONAN_ARCHS: x86_64
-    - CONAN_BUILD: True
       CONAN_VISUAL_VERSIONS: 16
       CONAN_ARCHS: x86_64
     - CONAN_BUILD: True

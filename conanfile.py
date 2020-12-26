@@ -39,12 +39,18 @@ class LibtcodConan(ConanFile):
     def package(self):
         self.copy("*.h", dst="include", src="src", excludes="vendor/*")
         self.copy("*.hpp", dst="include", src="src", excludes="vendor/*")
-        self.copy("*.lib", dst="lib", src="src/lib", keep_path=False)
-        self.copy("*.dll", dst="bin", src="src/bin", keep_path=False)
-        self.copy("*.pdb", dst="bin", src="/srcbin", keep_path=False)
-        self.copy("*.so", dst="lib", src="src/lib", keep_path=False)
-        self.copy("*.dylib", dst="lib", src="src/lib", keep_path=False)
-        self.copy("*.a", dst="lib", src="src/lib", keep_path=False)
+        self.copy("*.lib", dst="lib", src="lib", keep_path=False)
+        self.copy("*.dll", dst="bin", src="bin", keep_path=False)
+        self.copy("*.pdb", dst="bin", src="bin", keep_path=False)
+        self.copy("*.so", dst="lib", src="lib", keep_path=False)
+        self.copy("*.dylib", dst="lib", src="lib", keep_path=False)
+        self.copy("*.a", dst="lib", src="lib", keep_path=False)
+        self.copy("*.lib", dst="lib", src="Release", keep_path=False)
+        self.copy("*.dll", dst="bin", src="Release", keep_path=False)
+        self.copy("*.pdb", dst="bin", src="Release", keep_path=False)
+        self.copy("*.lib", dst="lib", src="Debug", keep_path=False)
+        self.copy("*.dll", dst="bin", src="Debug", keep_path=False)
+        self.copy("*.pdb", dst="bin", src="Debug", keep_path=False)
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":

@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.9)
+cmake_minimum_required (VERSION 3.13)
 
 if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     if(DEFINED ENV{VCPKG_ROOT})
@@ -27,7 +27,10 @@ project(
 set(BUILD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
 set(BUILD_TESTS OFF CACHE BOOL "Build unit tests.")
 
+add_library(LIBTCOD)
+add_library(LIBTCOD::LIBTCOD ALIAS LIBTCOD)
 add_subdirectory(src)
+
 if(BUILD_SAMPLES)
     add_subdirectory(samples)
 endif()

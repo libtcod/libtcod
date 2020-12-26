@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.9)
+cmake_minimum_required (VERSION 3.13)
 
 set(CMAKE_INSTALL_LIBDIR ${CMAKE_CURRENT_BINARY_DIR}/lib CACHE STRING "")
 set(CMAKE_INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/libtcod/cmake CACHE STRING "")
@@ -12,8 +12,6 @@ if(CONAN_FILE)
     conan_basic_setup(TARGETS)
 endif()
 
-add_library(LIBTCOD)
-add_library(LIBTCOD::LIBTCOD ALIAS LIBTCOD)
 target_compile_features(LIBTCOD PUBLIC c_std_99 cxx_std_11)
 
 if(CONAN_FILE)

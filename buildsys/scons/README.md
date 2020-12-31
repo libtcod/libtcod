@@ -49,9 +49,10 @@ support when running MacOS on an arm64 CPU.
 1. Use Homebrew or Macports to install scons - running in rosetta mode
 doesn't seem to be an issue.
 2. from ./buildsys/scons, run `scons build ARCH=arm64`.
-3. The build script will put out a compiled binary in the scons folder
+3. The build script will put out a compiled `libtcod` binary in the scons folder
 with a name that looks like `libtcod-1.16.0-alpha.15-arm64-DEBUG-macos`.
-Make sure that `arm64` is in the filename.
+Make sure that `arm64` is in the filename. It will also output a folder called
+`Frameworks` with a corresponding arm64 framework blob of SDL.
 
 Unfortunately `scons develop_all MODE=RELEASE ARCH=arm64` does not currently
 work due to inline assembly that is being consumed by the sample apps.

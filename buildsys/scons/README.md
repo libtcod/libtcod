@@ -1,6 +1,6 @@
 If you need to, download Scons from http://scons.org/pages/download.html
 
-This builder automatically downloads SDL2 on Windows and Mac as needed.
+This builder automatically downloads SDL2 on Windows and Intel Macs as needed.
 On Linux you must install SDL2 'the Unix way' or by installing the libsdl2-dev
 package before running this script.
 
@@ -42,3 +42,16 @@ A packaged release can be made with the `dist` alias.
 Additional variables can be changed such as the compiler and linker flags.  The
 easiest way to change these options is by editing `config.py`.
 To see an additional list of extra variables you should run `scons -h`.
+
+## ARM64 MacOS Users
+There is experimental support for using scons to build libtcod with arm64
+support when running MacOS on an arm64 CPU.
+1. Use Homebrew or Macports to install scons - running in rosetta mode
+doesn't seem to be an issue.
+2. from ./buildsys/scons, run `scons build ARCH=arm64`.
+3. The build script will put out a compiled binary in the scons folder
+with a name that looks like `libtcod-1.16.0-alpha.15-arm64-DEBUG-macos`.
+Make sure that `arm64` is in the filename.
+
+Unfortunately `scons develop_all MODE=RELEASE ARCH=arm64` does not currently
+work due to inline assembly that is being consumed by the sample apps.

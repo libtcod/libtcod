@@ -54,7 +54,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'libtcod'
-copyright = u'2008-2018, Richard Tew'
+copyright = u'2008-2021, Richard Tew'
 author = u'Richard Tew'
 
 # The version info for the project you're documenting, acts as replacement for

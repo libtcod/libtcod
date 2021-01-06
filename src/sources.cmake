@@ -174,18 +174,6 @@ target_sources(LIBTCOD PRIVATE
     libtcod/gui/vbox.hpp
     libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
-    libtcod/pathfinding/astar.cpp
-    libtcod/pathfinding/astar.h
-    libtcod/pathfinding/breadth-first.cpp
-    libtcod/pathfinding/breadth-first.h
-    libtcod/pathfinding/dijkstra.cpp
-    libtcod/pathfinding/dijkstra.h
-    libtcod/pathfinding/generic.cpp
-    libtcod/pathfinding/generic.h
-    libtcod/pathfinding/graph.cpp
-    libtcod/pathfinding/graph.h
-    libtcod/pathfinding/hill-climb.cpp
-    libtcod/pathfinding/hill-climb.h
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
     libtcod/sdl2/gl2_ext_.h
@@ -299,16 +287,6 @@ install(FILES
     libtcod/gui/vbox.hpp
     libtcod/gui/widget.hpp
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/gui
-    COMPONENT IncludeFiles
-)
-install(FILES
-    libtcod/pathfinding/astar.h
-    libtcod/pathfinding/breadth-first.h
-    libtcod/pathfinding/dijkstra.h
-    libtcod/pathfinding/generic.h
-    libtcod/pathfinding/graph.h
-    libtcod/pathfinding/hill-climb.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/pathfinding
     COMPONENT IncludeFiles
 )
 install(FILES
@@ -500,20 +478,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/vbox.hpp
     libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
-)
-source_group(libtcod\\pathfinding FILES
-    libtcod/pathfinding/astar.cpp
-    libtcod/pathfinding/astar.h
-    libtcod/pathfinding/breadth-first.cpp
-    libtcod/pathfinding/breadth-first.h
-    libtcod/pathfinding/dijkstra.cpp
-    libtcod/pathfinding/dijkstra.h
-    libtcod/pathfinding/generic.cpp
-    libtcod/pathfinding/generic.h
-    libtcod/pathfinding/graph.cpp
-    libtcod/pathfinding/graph.h
-    libtcod/pathfinding/hill-climb.cpp
-    libtcod/pathfinding/hill-climb.h
 )
 source_group(libtcod\\sdl2 FILES
     libtcod/sdl2/event.cpp

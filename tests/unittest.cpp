@@ -1,11 +1,6 @@
 
 #include <libtcod.h>
-#include <libtcod/pathfinding/astar.h>
-#include <libtcod/pathfinding/breadth-first.h>
-#include <libtcod/pathfinding/dijkstra.h>
-#include <libtcod/pathfinding/hill-climb.h>
 #include <libtcod/tileset_fallback.h>
-#include <libtcod/utility/matrix.h>
 
 #include <climits>
 #include <clocale>
@@ -148,99 +143,15 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][!hide]") {
   CHECK(console.getChar(1, 0) == 0x20);
 }
 
-TEST_CASE("New Dijkstra") {
-  using Catch::Matchers::Equals;
-  using index_type = std::array<ptrdiff_t, 2>;
-  auto dist = tcod::Vector2<int>(3, 2, INT_MAX);
-  auto path_map = tcod::Vector2<index_type>(3, 2);
-  tcod::pathfinding::path_clear(path_map);
-  dist.atf(0, 0) = 0;
-  tcod::Vector2<int> cost{
-      {1, 1, 1},
-      {0, 1, 2},
-  };
-  tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
-  const tcod::Vector2<int> EXPECTED_DIST{
-      {0, 2, 4},
-      {INT_MAX, 3, 7},
-  };
-  CHECK(dist == EXPECTED_DIST);
-  const tcod::Vector2<index_type> EXPECTED_PATH_MAP{
-      {{0, 0}, {0, 0}, {0, 1}},
-      {{1, 0}, {0, 0}, {1, 1}},
-  };
-  CHECK(path_map == EXPECTED_PATH_MAP);
-  const std::vector<index_type> EXPECTED_TRAVEL_PATH{{1, 1}, {0, 0}};
-  CHECK_THAT(tcod::pathfinding::get_path(path_map, {1, 2}), Equals(EXPECTED_TRAVEL_PATH));
-}
 TEST_CASE("Pathfinder Benchmarks", "[benchmark]") {
   const int SIZE = 50;
-  tcod::Matrix<uint8_t, 2> plain_cost({SIZE, SIZE}, 1);
-  tcod::pathfinding::SimpleGraph2D<decltype(plain_cost)> plain_graph(plain_cost);
-  BENCHMARK("Old Dijkstra 50x50") {
-    TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
-    TCOD_map_clear(map, 1, 1);
-    TCOD_Dijkstra* dijkstra = TCOD_dijkstra_new(map, 1.5f);
-    TCOD_dijkstra_compute(dijkstra, 0, 0);
-    TCOD_dijkstra_delete(dijkstra);
-    TCOD_map_delete(map);
-  }
-  BENCHMARK("Breadth-first 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    tcod::Matrix<int8_t, 2> cost({SIZE, SIZE}, 1);
-    tcod::pathfinding::breadth_first2d(map, cost, {{0, 0}});
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == SIZE - 1);
-  }
-  BENCHMARK("Breadth-first (graph) 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    tcod::pathfinding::breadth_first(map, plain_graph, {{0, 0}});
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == SIZE - 1);
-    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, {SIZE - 1, SIZE - 1}).size() == SIZE);
-  }
-  BENCHMARK("New Dijkstra 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    tcod::Matrix<int8_t, 2> cost({SIZE, SIZE}, 1);
-    map.at({0, 0}) = 0;
-    tcod::pathfinding::dijkstra2d(map, cost);
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == SIZE - 1);
-  }
-  BENCHMARK("New Dijkstra (graph) 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    map.at({0, 0}) = 0;
-    tcod::pathfinding::dijkstra(map, plain_graph);
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == SIZE - 1);
-    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, {SIZE - 1, SIZE - 1}).size() == SIZE);
-  }
-  BENCHMARK("Advanced Dijkstra 50x50") {
-    using index_type = std::array<ptrdiff_t, 2>;
-    auto dist = tcod::Vector2<int>(SIZE, SIZE, INT_MAX);
-    auto path_map = tcod::Vector2<index_type>(SIZE, SIZE);
-    tcod::pathfinding::path_clear(path_map);
-    dist.at({0, 0}) = 0;
-    auto cost = tcod::Vector2<int>(SIZE, SIZE, 1);
-    tcod::pathfinding::dijkstra_compute(dist, cost, 2, 3, &path_map);
-  }
-  BENCHMARK("Old A* 50x50") {
+  BENCHMARK("Classic libtcod A* 50x50") {
     TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
     TCOD_map_clear(map, 1, 1);
     TCOD_Path* astar = TCOD_path_new_using_map(map, 1.0f);
     TCOD_path_compute(astar, 0, 0, SIZE - 1, SIZE - 1);
     TCOD_path_delete(astar);
     TCOD_map_delete(map);
-  }
-  BENCHMARK("New A* 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    tcod::Matrix<int8_t, 2> cost({SIZE, SIZE}, 1);
-    map.at({0, 0}) = 0;
-    tcod::pathfinding::astar2d(map, cost, {SIZE - 1, SIZE - 1});
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == SIZE - 1);
-  }
-  BENCHMARK("New A* (graph) 50x50") {
-    tcod::Matrix<int, 2> map({SIZE, SIZE}, std::numeric_limits<int>::max());
-    map.at({0, 0}) = 0;
-    tcod::pathfinding::astar(map, plain_graph, {SIZE - 1, SIZE - 1});
-    CHECK(map.at({SIZE - 1, SIZE - 1}) == (SIZE - 1));
-    CHECK(tcod::pathfinding::simple_hillclimb(map, plain_graph, {SIZE - 1, SIZE - 1}).size() == SIZE);
   }
 }
 

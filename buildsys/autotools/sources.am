@@ -97,15 +97,6 @@ libtcod_gui_include_HEADERS = \
 	../../src/libtcod/gui/vbox.hpp \
 	../../src/libtcod/gui/widget.hpp
 
-libtcod_pathfinding_includedir = $(includedir)/libtcod/pathfinding
-libtcod_pathfinding_include_HEADERS = \
-	../../src/libtcod/pathfinding/astar.h \
-	../../src/libtcod/pathfinding/breadth-first.h \
-	../../src/libtcod/pathfinding/dijkstra.h \
-	../../src/libtcod/pathfinding/generic.h \
-	../../src/libtcod/pathfinding/graph.h \
-	../../src/libtcod/pathfinding/hill-climb.h
-
 libtcod_sdl2_includedir = $(includedir)/libtcod/sdl2
 libtcod_sdl2_include_HEADERS = \
 	../../src/libtcod/sdl2/event.h \
@@ -200,12 +191,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/gui/toolbar.cpp \
 	../../src/libtcod/gui/vbox.cpp \
 	../../src/libtcod/gui/widget.cpp \
-	../../src/libtcod/pathfinding/astar.cpp \
-	../../src/libtcod/pathfinding/breadth-first.cpp \
-	../../src/libtcod/pathfinding/dijkstra.cpp \
-	../../src/libtcod/pathfinding/generic.cpp \
-	../../src/libtcod/pathfinding/graph.cpp \
-	../../src/libtcod/pathfinding/hill-climb.cpp \
 	../../src/libtcod/sdl2/event.cpp \
 	../../src/vendor/glad.c \
 	../../src/vendor/lodepng.c \

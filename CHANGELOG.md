@@ -17,6 +17,7 @@ since `1.7.0`.
 - Code points from the Private Use Area will now print correctly.
 - Fixed regression in `TCOD_sys_get_current_resolution` behavior.  This
   function now returns the monitor resolution as was previously expected.
+- The OpenGL 2 renderer was ignoring `SDL_HINT_RENDER_SCALE_QUALITY=nearest`.
 
 ### Removed
 - `TCOD_rng_splitmix64_next` has been marked as provisional.

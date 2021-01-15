@@ -225,7 +225,7 @@ static int gl_filter_from_sdl_hint() {
   if (!value) {
     return GL_LINEAR;  // Default option.
   }
-  if (strcmp(value, "0") == 0 || strcmp(value, "nearest")) {
+  if (strcmp(value, "0") == 0 || strcmp(value, "nearest") == 0) {
     return GL_NEAREST;
   }
   return GL_LINEAR;

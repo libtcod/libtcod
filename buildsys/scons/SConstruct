@@ -188,14 +188,16 @@ vars.Add("CXXFLAGS", "C++ flags", "")
 vars.Add("LINKFLAGS", "Linker flags", "")
 
 ARCH_OPTIONS = ("x86", "x86_64")
+ARCH_DEFAULT = "x86" if platform.architecture()[0] == "32bit" else "x86_64"
 if sys.platform == "darwin":
     ARCH_OPTIONS += ("x86.x86_64", "arm64", "universal2")
+    ARCH_DEFAULT = "universal2"
 
 vars.Add(
     EnumVariable(
         "ARCH",
         "Set target architecture.",
-        "x86" if platform.architecture()[0] == "32bit" else "x86_64",
+        ARCH_DEFAULT,
         allowed_values=ARCH_OPTIONS,
     )
 )

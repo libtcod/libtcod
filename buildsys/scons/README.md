@@ -24,7 +24,9 @@ scons develop_all MODE=RELEASE
 For libtcod devs, if you only need to update the libtcod shared library you can
 use `develop` or `develop_libtcod` instead.
 
-The compiled binaries will default to your installed Python architecture.
+The compiled binaries will default to your installed Python architecture
+(where SCons is run from.)
+The default architecture on MacOS is `ARCH=universal2`.
 You can compile 32-bit or 64-bit binaries with the `ARCH=x86` or `ARCH=x86_64`
 variables respectfully:
 
@@ -32,7 +34,8 @@ variables respectfully:
 scons develop_all MODE=RELEASE ARCH=x86_64
 ```
 
-On MacOS this script can make a universal build with `ARCH=x86.x86_64`.
+On MacOS this script can make a universal build with `ARCH=x86.x86_64` or a
+universal 2 build (x86_64/arm64) with `ARCH=universal2`.
 
 Windows has the option of using the MSVC compiler (default) or MinGW compiler.
 To use MinGW set the `TOOLSET=mingw` variable.

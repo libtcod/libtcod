@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- SCons builder now supports MacOS ARM64 and Universal 2 architectures.
+
 ### Changed
 - `TCOD_sys_get_current_resolution` now returns error codes.
 

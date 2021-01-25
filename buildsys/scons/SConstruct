@@ -543,7 +543,7 @@ package_files = (
 if sys.platform == "win32":
     zip = env.Zip("${DIST_NAME}.zip", package_files)
 else:
-    env.Append(TARFLAGS="-c -z")
+    env.Append(TARFLAGS="-z --format=ustar")
     zip = env.Tar("${DIST_NAME}.tar.gz", package_files)
 
 Alias("dist", zip)

@@ -46,6 +46,9 @@ namespace std {
 ostream& operator<<(ostream& out, const array<ptrdiff_t, 2>& data) {
   return out << '{' << data.at(0) << ',' << ' ' << data.at(1) << '}';
 }
+ostream& operator<<(ostream& out, const TCOD_ColorRGBA& color) {
+  return out << '{' << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << '}';
+}
 }  // namespace std
 
 const int WIDTH = 20;
@@ -497,4 +500,29 @@ TEST_CASE("FOV Benchmarks", "[benchmark]") {
       TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SYMMETRIC_SHADOWCAST);
     };
   }
+}
+TEST_CASE("Color control.") {
+  auto console = tcod::new_console(3, 1);
+  TCODConsole::setColorControl(TCOD_COLCTRL_1, {1, 2, 3}, {4, 5, 6});
+  TCODConsole::setColorControl(TCOD_COLCTRL_2, {7, 8, 9}, {10, 11, 12});
+  TCOD_console_printf(console.get(), 0, 0, "%c1%c2%c3", TCOD_COLCTRL_1, TCOD_COLCTRL_2, TCOD_COLCTRL_STOP);
+  REQUIRE(to_string(*console) == ("123"));
+  // Because console->bkgnd_flag is at its default this will not affect the background colors.
+  CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});
+  CHECK(console->at(0, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});  // Remains unset, since bkgnd_flag was unset.
+  CHECK(console->at(1, 0).fg == TCOD_ColorRGBA{7, 8, 9, 255});
+  CHECK(console->at(1, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
+  CHECK(console->at(2, 0).fg == TCOD_ColorRGBA{255, 255, 255, 255});
+  CHECK(console->at(2, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
+
+  console = tcod::new_console(3, 1);
+  console->bkgnd_flag = TCOD_BKGND_SET;
+  TCOD_console_printf(console.get(), 0, 0, "%c1%c2%c3", TCOD_COLCTRL_1, TCOD_COLCTRL_2, TCOD_COLCTRL_STOP);
+  REQUIRE(to_string(*console) == ("123"));
+  CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});
+  CHECK(console->at(0, 0).bg == TCOD_ColorRGBA{4, 5, 6, 255});
+  CHECK(console->at(1, 0).fg == TCOD_ColorRGBA{7, 8, 9, 255});
+  CHECK(console->at(1, 0).bg == TCOD_ColorRGBA{10, 11, 12, 255});
+  CHECK(console->at(2, 0).fg == TCOD_ColorRGBA{255, 255, 255, 255});
+  CHECK(console->at(2, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }

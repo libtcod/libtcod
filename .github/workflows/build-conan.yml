@@ -1,0 +1,32 @@
+name: Conan package
+
+on: [push, pull_request]
+
+jobs:
+  linux:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        CONAN_ARCHS: [x86_64]
+        CONAN_BUILD_TYPES: [Debug, Release]
+        CONAN_GCC_VERSIONS: [7, 8, 9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install Conan
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install conan_package_tools
+    - name: Build and test Conan package
+      env:
+        CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}
+        CONAN_BUILD_TYPES: ${{matrix.CONAN_BUILD_TYPES}}
+        CONAN_GCC_VERSIONS: ${{matrix.CONAN_GCC_VERSIONS}}
+      run: |
+        export CONAN_DOCKER_IMAGE=conanio/gcc${{matrix.CONAN_GCC_VERSIONS}}
+        .ci/conan_build.py

@@ -511,6 +511,8 @@ docs/doxyxml/
 doc/doxyxml/
 .deps
 .dirstamp
+/build*
+!/buildsys
 buildsys/scons/*/
 buildsys/msvs/*/
 Thumbs.db

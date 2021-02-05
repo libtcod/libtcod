@@ -265,29 +265,37 @@ TEST_CASE("Noise Benchmarks", "[benchmark]") {
   TCOD_Noise* noise3d = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
   TCOD_Noise* noise4d = TCOD_noise_new(4, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
   const float POINT[4] = {0.5f, 0.5f, 0.5f, 0.5f};
-  TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET);  // Pre-generate wavelet data.
-  TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET);
-  TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET);
-  BENCHMARK("Perlin 1D") { TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_PERLIN); }
-  BENCHMARK("Perlin 2D") { TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_PERLIN); }
-  BENCHMARK("Perlin 3D") { TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_PERLIN); }
-  BENCHMARK("Perlin 4D") { TCOD_noise_get_ex(noise4d, POINT, TCOD_NOISE_PERLIN); }
-  BENCHMARK("Simplex 1D") { TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex 2D") { TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex 3D") { TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex 4D") { TCOD_noise_get_ex(noise4d, POINT, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Wavelet 1D") { TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET); }
-  BENCHMARK("Wavelet 2D") { TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET); }
-  BENCHMARK("Wavelet 3D") { TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET); }
+  (void)!TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET);  // Pre-generate wavelet data.
+  (void)!TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET);
+  (void)!TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET);
+  BENCHMARK("Perlin 1D") { (void)!TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_PERLIN); }
+  BENCHMARK("Perlin 2D") { (void)!TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_PERLIN); }
+  BENCHMARK("Perlin 3D") { (void)!TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_PERLIN); }
+  BENCHMARK("Perlin 4D") { (void)!TCOD_noise_get_ex(noise4d, POINT, TCOD_NOISE_PERLIN); }
+  BENCHMARK("Simplex 1D") { (void)!TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex 2D") { (void)!TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex 3D") { (void)!TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex 4D") { (void)!TCOD_noise_get_ex(noise4d, POINT, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Wavelet 1D") { (void)!TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET); }
+  BENCHMARK("Wavelet 2D") { (void)!TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET); }
+  BENCHMARK("Wavelet 3D") { (void)!TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET); }
 
-  BENCHMARK("Simplex fbM 1D octaves=4") { TCOD_noise_get_fbm_ex(noise1d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex fbM 2D octaves=4") { TCOD_noise_get_fbm_ex(noise2d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex fbM 3D octaves=4") { TCOD_noise_get_fbm_ex(noise3d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex fbM 4D octaves=4") { TCOD_noise_get_fbm_ex(noise4d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex turbulence 1D octaves=4") { TCOD_noise_get_turbulence_ex(noise1d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex turbulence 2D octaves=4") { TCOD_noise_get_turbulence_ex(noise2d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex turbulence 3D octaves=4") { TCOD_noise_get_turbulence_ex(noise3d, POINT, 4, TCOD_NOISE_SIMPLEX); }
-  BENCHMARK("Simplex turbulence 4D octaves=4") { TCOD_noise_get_turbulence_ex(noise4d, POINT, 4, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex fbM 1D octaves=4") { (void)!TCOD_noise_get_fbm_ex(noise1d, POINT, 4, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex fbM 2D octaves=4") { (void)!TCOD_noise_get_fbm_ex(noise2d, POINT, 4, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex fbM 3D octaves=4") { (void)!TCOD_noise_get_fbm_ex(noise3d, POINT, 4, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex fbM 4D octaves=4") { (void)!TCOD_noise_get_fbm_ex(noise4d, POINT, 4, TCOD_NOISE_SIMPLEX); }
+  BENCHMARK("Simplex turbulence 1D octaves=4") {
+    (void)!TCOD_noise_get_turbulence_ex(noise1d, POINT, 4, TCOD_NOISE_SIMPLEX);
+  }
+  BENCHMARK("Simplex turbulence 2D octaves=4") {
+    (void)!TCOD_noise_get_turbulence_ex(noise2d, POINT, 4, TCOD_NOISE_SIMPLEX);
+  }
+  BENCHMARK("Simplex turbulence 3D octaves=4") {
+    (void)!TCOD_noise_get_turbulence_ex(noise3d, POINT, 4, TCOD_NOISE_SIMPLEX);
+  }
+  BENCHMARK("Simplex turbulence 4D octaves=4") {
+    (void)!TCOD_noise_get_turbulence_ex(noise4d, POINT, 4, TCOD_NOISE_SIMPLEX);
+  }
 
   TCOD_noise_delete(noise4d);
   TCOD_noise_delete(noise3d);
@@ -304,9 +312,9 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   constexpr int ARRAY_SIZE = 1024;
   {
     const float POINT[4] = {0.5f, 0.5f, 0.5f, 0.5f};
-    TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET);  // Pre-generate wavelet data.
-    TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET);
-    TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET);
+    (void)!TCOD_noise_get_ex(noise1d, POINT, TCOD_NOISE_WAVELET);  // Pre-generate wavelet data.
+    (void)!TCOD_noise_get_ex(noise2d, POINT, TCOD_NOISE_WAVELET);
+    (void)!TCOD_noise_get_ex(noise3d, POINT, TCOD_NOISE_WAVELET);
   }
   float x[ARRAY_SIZE];
   float y[ARRAY_SIZE];
@@ -316,7 +324,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Perlin 2Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[2] = {i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_PERLIN);
+      (void)!TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_PERLIN);
     }
   }
   BENCHMARK("Perlin 2Dx256 vectorized") {
@@ -328,7 +336,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Perlin 3Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[3] = {i * 0.1f, i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_PERLIN);
+      (void)!TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_PERLIN);
     }
   }
   BENCHMARK("Perlin 3Dx256 vectorized") {
@@ -340,7 +348,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Perlin 4Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[4] = {i * 0.1f, i * 0.1f, i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise4d, point, TCOD_NOISE_PERLIN);
+      (void)!TCOD_noise_get_ex(noise4d, point, TCOD_NOISE_PERLIN);
     }
   }
   BENCHMARK("Perlin 4Dx256 vectorized") {
@@ -352,7 +360,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Simplex 2Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[2] = {i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_SIMPLEX);
+      (void)!TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_SIMPLEX);
     }
   }
   BENCHMARK("Simplex 2Dx256 vectorized") {
@@ -364,7 +372,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Simplex 3Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[3] = {i * 0.1f, i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_SIMPLEX);
+      (void)!TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_SIMPLEX);
     }
   }
   BENCHMARK("Simplex 3Dx256 vectorized") {
@@ -376,7 +384,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Simplex 4Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[4] = {i * 0.1f, i * 0.1f, i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise4d, point, TCOD_NOISE_SIMPLEX);
+      (void)!TCOD_noise_get_ex(noise4d, point, TCOD_NOISE_SIMPLEX);
     }
   }
   BENCHMARK("Simplex 4Dx256 vectorized") {
@@ -388,7 +396,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Wavelet 2Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[2] = {i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_WAVELET);
+      (void)!TCOD_noise_get_ex(noise2d, point, TCOD_NOISE_WAVELET);
     }
   }
   BENCHMARK("Wavelet 2Dx256 vectorized") {
@@ -400,7 +408,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Wavelet 3Dx256") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[3] = {i * 0.1f, i * 0.1f, i * 0.1f};
-      TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_WAVELET);
+      (void)!TCOD_noise_get_ex(noise3d, point, TCOD_NOISE_WAVELET);
     }
   }
   BENCHMARK("Wavelet 3Dx256 vectorized") {
@@ -412,7 +420,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Perlin fBm 2Dx256 octaves=4") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[2] = {i * 0.1f, i * 0.1f};
-      TCOD_noise_get_fbm_ex(noise2d, point, 4, TCOD_NOISE_PERLIN);
+      (void)!TCOD_noise_get_fbm_ex(noise2d, point, 4, TCOD_NOISE_PERLIN);
     }
   }
   BENCHMARK("Perlin fBm 2Dx256 octaves=4 vectorized") {
@@ -424,7 +432,7 @@ TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
   BENCHMARK("Perlin turbulence 2Dx256 octaves=4") {
     for (int i = 0; i < ARRAY_SIZE; ++i) {
       const float point[2] = {i * 0.1f, i * 0.1f};
-      TCOD_noise_get_turbulence_ex(noise2d, point, 4, TCOD_NOISE_PERLIN);
+      (void)!TCOD_noise_get_turbulence_ex(noise2d, point, 4, TCOD_NOISE_PERLIN);
     }
   }
   BENCHMARK("Perlin turbulence 2Dx256 octaves=4 vectorized") {
@@ -491,13 +499,17 @@ TEST_CASE("FOV Benchmarks", "[benchmark]") {
     const std::string& map_name = std::get<0>(active_test);
     TCOD_Map* map = std::get<1>(active_test).get();
     const int radius = TCOD_map_get_width(map) / 2;
-    BENCHMARK(map_name + " FOV_BASIC") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_BASIC); };
-    BENCHMARK(map_name + " FOV_DIAMOND") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_DIAMOND); };
-    BENCHMARK(map_name + " FOV_SHADOW") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SHADOW); };
-    BENCHMARK(map_name + " FOV_RESTRICTIVE") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_RESTRICTIVE); };
-    BENCHMARK(map_name + " FOV_PERMISSIVE_8") { TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_PERMISSIVE_8); };
+    BENCHMARK(map_name + " FOV_BASIC") { (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_BASIC); };
+    BENCHMARK(map_name + " FOV_DIAMOND") { (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_DIAMOND); };
+    BENCHMARK(map_name + " FOV_SHADOW") { (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SHADOW); };
+    BENCHMARK(map_name + " FOV_RESTRICTIVE") {
+      (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_RESTRICTIVE);
+    };
+    BENCHMARK(map_name + " FOV_PERMISSIVE_8") {
+      (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_PERMISSIVE_8);
+    };
     BENCHMARK(map_name + " FOV_SYMMETRIC_SHADOWCAST") {
-      TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SYMMETRIC_SHADOWCAST);
+      (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SYMMETRIC_SHADOWCAST);
     };
   }
 }

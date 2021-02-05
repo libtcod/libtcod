@@ -24,6 +24,11 @@ project(
     LANGUAGES C CXX
 )
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL RESULT_VARIABLE CONAN_FILE)
+if(CONAN_FILE)
+    conan_basic_setup(TARGETS)
+endif()
+
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 endif()

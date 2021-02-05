@@ -7,11 +7,6 @@ set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_CURRENT_BINARY_DIR}/include CACHE STRING ""
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake OPTIONAL RESULT_VARIABLE CONAN_FILE)
-if(CONAN_FILE)
-    conan_basic_setup(TARGETS)
-endif()
-
 target_compile_features(LIBTCOD PUBLIC c_std_99 cxx_std_11)
 
 if(CONAN_FILE)

@@ -6,16 +6,20 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04]
         scons-options: ['ARCH=x86_64']
+        experimental: [false]
         include:
           - os: 'macos-11.0'
             scons-options: 'ARCH=universal2'
+            experimental: true
           - os: 'macos-10.15'
             scons-options: 'ARCH=x86_64'
+            experimental: false
 
     steps:
     - uses: actions/checkout@v2

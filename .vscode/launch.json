@@ -13,7 +13,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false
+            "console": "internalConsole"
         },
         {
             "name": "(gdb) Launch CMake target",
@@ -24,7 +24,6 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "gdb",
             "setupCommands": [

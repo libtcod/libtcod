@@ -30,3 +30,34 @@ jobs:
       run: |
         export CONAN_DOCKER_IMAGE=conanio/gcc${{matrix.CONAN_GCC_VERSIONS}}
         .ci/conan_build.py
+  macos:
+    runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        CONAN_ARCHS: [x86_64]
+        CONAN_BUILD_TYPES: [Debug, Release]
+        CONAN_APPLE_CLANG_VERSIONS: ['11.0']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install Conan
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install conan_package_tools
+    - name: Use Clang 11
+      if: ${{matrix.CONAN_APPLE_CLANG_VERSIONS == '11.0'}}
+      run: |
+        echo "CC=$(brew --prefix llvm)/bin/clang" >> $GITHUB_ENV
+        echo "CXX=$(brew --prefix llvm)/bin/clang++" >> $GITHUB_ENV
+    - name: Build and test Conan package
+      env:
+        CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}
+        CONAN_BUILD_TYPES: ${{matrix.CONAN_BUILD_TYPES}}
+        CONAN_APPLE_CLANG_VERSIONS: ${{matrix.CONAN_APPLE_CLANG_VERSIONS}}
+      run: |
+        .ci/conan_build.py

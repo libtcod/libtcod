@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Needed to support tags.
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:
@@ -48,6 +50,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Needed to support tags.
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:

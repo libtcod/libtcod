@@ -26,6 +26,7 @@ jobs:
         python -m pip install conan_package_tools
     - name: Build and test Conan package
       env:
+        CONAN_PASSWORD: ${{secrets.CONAN_PASSWORD}}
         CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}
         CONAN_BUILD_TYPES: ${{matrix.CONAN_BUILD_TYPES}}
         CONAN_GCC_VERSIONS: ${{matrix.CONAN_GCC_VERSIONS}}
@@ -67,6 +68,7 @@ jobs:
         echo "CXX=$(brew --prefix llvm)/bin/clang++" >> $GITHUB_ENV
     - name: Build and test Conan package
       env:
+        CONAN_PASSWORD: ${{secrets.CONAN_PASSWORD}}
         CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}
         CONAN_BUILD_TYPES: ${{matrix.CONAN_BUILD_TYPES}}
         CONAN_APPLE_CLANG_VERSIONS: ${{matrix.CONAN_APPLE_CLANG_VERSIONS}}

@@ -1,0 +1,28 @@
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+name: Create Release
+
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Generate body
+        run: |
+          scripts/get_release_description.py | tee release_body.md
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ''
+          body_path: release_body.md
+          draft: false
+          prerelease: false

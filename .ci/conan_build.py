@@ -18,6 +18,9 @@ except subprocess.CalledProcessError:
 if __name__ == "__main__":
     if 'CI' in os.environ:
         os.environ["CONAN_SYSREQUIRES_MODE"] = "enabled"
+        # Fix GitHub Actions version tag.
+        if os.environ.get("GITHUB_REF", "").startswith("/refs/tags/"):
+            version = os.environ["GITHUB_REF"].replace("/refs/tags/", "")
 
     builder = ConanMultiPackager(
         username="hexdecimal",

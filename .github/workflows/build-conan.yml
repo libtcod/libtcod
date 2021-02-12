@@ -67,6 +67,7 @@ jobs:
         echo "CC=$(brew --prefix llvm)/bin/clang" >> $GITHUB_ENV
         echo "CXX=$(brew --prefix llvm)/bin/clang++" >> $GITHUB_ENV
     - name: Build and test Conan package
+      continue-on-error: ${{ matrix.experimental }}
       env:
         CONAN_PASSWORD: ${{secrets.CONAN_PASSWORD}}
         CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}

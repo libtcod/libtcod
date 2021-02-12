@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.0] - 2021-02-11
 ### Added
 - SCons builder now supports MacOS ARM64 and Universal 2 architectures.
 

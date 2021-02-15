@@ -60,36 +60,34 @@ else()
   target_compile_options(LIBTCOD PRIVATE -Wall -Wextra)
 endif()
 
-if(NOT CONAN_FILE)
-    install(
-        TARGETS LIBTCOD
-        EXPORT libtcodTargets
-        RUNTIME LIBRARY ARCHIVE
-        COMPONENT Library
-    )
-    include(CMakePackageConfigHelpers)
-    get_filename_component(
-        INSTALL_FULL_INCLUDEDIR
-        ${CMAKE_INSTALL_INCLUDEDIR}
-        REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    )
-    install(
-        EXPORT libtcodTargets
-        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-        NAMESPACE LIBTCOD::
-    )
-    configure_package_config_file(LibtcodConfig.cmake.in
+install(
+    TARGETS LIBTCOD
+    EXPORT libtcodTargets
+    RUNTIME LIBRARY ARCHIVE
+    COMPONENT Library
+)
+include(CMakePackageConfigHelpers)
+get_filename_component(
+    INSTALL_FULL_INCLUDEDIR
+    ${CMAKE_INSTALL_INCLUDEDIR}
+    REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
+)
+install(
+    EXPORT libtcodTargets
+    DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+    NAMESPACE LIBTCOD::
+)
+configure_package_config_file(LibtcodConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+    PATH_VARS INSTALL_FULL_INCLUDEDIR)
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion
+)
+install(
+    FILES
         ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
-        INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-        PATH_VARS INSTALL_FULL_INCLUDEDIR)
-    write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
-        COMPATIBILITY SameMajorVersion
-    )
-    install(
-        FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
-        DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-    )
-endif()
+    DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
+)

@@ -3,6 +3,8 @@
 Colors
 ******
 
+.. include:: ../old_docs_notice.inc.rst
+
 libtcod uses 32-bit color, therefore your OS desktop must also use 32-bit color.  A color is defined by its red, green and blue component between 0 and 255.
 
 You can use the following predefined colors (hover over a color to see its full name and R,G,B values):
@@ -106,9 +108,3 @@ Result:
 INSERT TABLE.
 
 .. doxygenfunction:: TCOD_color_gen_map
-
-C++
-^^^
-
-.. doxygenclass:: TCODColor
-    :members:

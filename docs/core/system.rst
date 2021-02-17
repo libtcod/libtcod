@@ -2,6 +2,8 @@
 System layer
 ************
 
+.. include:: ../old_docs_notice.inc.rst
+
 Time functions
 ==============
 
@@ -22,9 +24,3 @@ Miscellaneous utilities
 
 .. doxygenfunction:: TCOD_sys_get_sdl_window
 .. doxygenfunction:: TCOD_sys_get_sdl_renderer
-
-C++
-===
-
-.. doxygenclass:: TCODSystem
-    :members:

@@ -198,7 +198,7 @@ Working with REXPaint ``.xp`` files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 REXPaint gives special treatment to tiles with a magic pink ``{255, 0, 255}``
 background color.  You can processes this effect manually or by setting
-:any:`TCOD_console_set_key_color` to :any:`TCOD_fuchsia`.
+:any:`TCOD_console_set_key_color` to `TCOD_fuchsia`.
 
 .. py:function:: libtcodpy.console_from_xp(filename)
 .. doxygenfunction:: TCOD_console_from_xp

@@ -83,7 +83,10 @@
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureSettings": {
         "BUILD_SAMPLES": "ON",
-        "BUILD_TESTS": "ON"
+        "BUILD_TESTS": "ON",
+        "LIBTCOD_GLAD": "vendored", // find_package | vendored
+        "LIBTCOD_LODEPNG": "vendored",
+        "LIBTCOD_UTF8PROC": "vendored",
     },
     "cmake.debugConfig": {
         // Workaround for launching the debugger from the CMake toolbar.

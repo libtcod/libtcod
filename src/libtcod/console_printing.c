@@ -42,11 +42,13 @@
 #include <wctype.h>
 #endif
 
-#include "../vendor/utf8proc/utf8proc.h"
+#include <utf8proc.h>
+
 #include "console.h"
 #include "console_drawing.h"
 #include "libtcod_int.h"
 #include "utility.h"
+
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER] = {
     {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255}};
 static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER];

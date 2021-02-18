@@ -179,10 +179,7 @@ target_sources(LIBTCOD PRIVATE
     libtcod/sdl2/gl2_ext_.h
     libtcod/utility/matrix.h
     libtcod/utility/vector2.h
-    vendor/glad.c
-    vendor/lodepng.c
     vendor/stb.c
-    vendor/utf8proc/utf8proc.c
 )
 install(FILES
     libtcod.h
@@ -489,8 +486,5 @@ source_group(libtcod\\utility FILES
     libtcod/utility/vector2.h
 )
 source_group(vendor FILES
-    vendor/glad.c
-    vendor/lodepng.c
     vendor/stb.c
-    vendor/utf8proc/utf8proc.c
 )

@@ -3,6 +3,7 @@ ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS} -I m4
 AM_CFLAGS = \
 	-I$(top_srcdir)/../../src \
 	-I$(top_srcdir)/../../src/vendor \
+	-I$(top_srcdir)/../../src/vendor/utf8proc \
 	-fvisibility=hidden \
 	-DLIBTCOD_EXPORTS \
 	-DNDEBUG \

@@ -7,6 +7,11 @@ set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_CURRENT_BINARY_DIR}/include CACHE STRING ""
 include(CheckIPOSupported)
 check_ipo_supported(RESULT IPO_SUPPORTED)
 
+if(IPO_SUPPORTED)
+    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
+endif()
+
 target_compile_features(LIBTCOD PUBLIC c_std_99 cxx_std_11)
 
 if(CONAN_FILE)
@@ -19,6 +24,37 @@ else()
     find_package(ZLIB REQUIRED)
     target_link_libraries(LIBTCOD PUBLIC SDL2::SDL2)
     target_link_libraries(LIBTCOD PRIVATE ZLIB::ZLIB)
+endif()
+
+set(LIBTCOD_GLAD "vendored" CACHE STRING "How this library will be linked.")
+if(LIBTCOD_GLAD STREQUAL "find_package")
+    find_package(glad CONFIG REQUIRED)
+    target_link_libraries(LIBTCOD PRIVATE glad::glad)
+elseif(LIBTCOD_GLAD STREQUAL "vendored")
+    message("Will be vendored: GLAD")
+    target_sources(LIBTCOD PRIVATE "vendor/glad.c")
+else()
+    message(FATAL_ERROR "Unknown option for LIBTCOD_GLAD: '${LIBTCOD_GLAD}'")
+endif()
+
+set(LIBTCOD_LODEPNG "vendored" CACHE STRING "How this library will be linked.")
+if(LIBTCOD_LODEPNG STREQUAL "find_package")
+    find_package(lodepng CONFIG REQUIRED)
+    target_link_libraries(LIBTCOD PRIVATE lodepng)
+elseif(LIBTCOD_LODEPNG STREQUAL "vendored")
+    message("Will be vendored: LodePNG")
+    target_sources(LIBTCOD PRIVATE "vendor/lodepng.c")
+else()
+    message(FATAL_ERROR "Unknown option for LIBTCOD_LODEPNG: '${LIBTCOD_LODEPNG}'")
+endif()
+
+set(LIBTCOD_UTF8PROC "vendored" CACHE STRING "How this library will be linked.")
+if(LIBTCOD_UTF8PROC STREQUAL "vendored")
+    message("Will be vendored: utf8proc")
+    target_include_directories(LIBTCOD PRIVATE "vendor/utf8proc")
+    target_sources(LIBTCOD PRIVATE "vendor/utf8proc/utf8proc.c")
+else()
+    message(FATAL_ERROR "Unknown option for LIBTCOD_UTF8PROC: '${LIBTCOD_UTF8PROC}'")
 endif()
 
 target_include_directories(LIBTCOD INTERFACE
@@ -42,11 +78,6 @@ endif()
 target_compile_definitions(LIBTCOD PRIVATE TCOD_IGNORE_DEPRECATED)
 
 include(sources.cmake)
-
-if(IPO_SUPPORTED)
-    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-    set_property(TARGET LIBTCOD PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
-endif()
 
 if(MSVC)
     set_property(TARGET LIBTCOD PROPERTY OUTPUT_NAME libtcod)

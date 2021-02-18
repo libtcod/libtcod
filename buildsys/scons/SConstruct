@@ -438,7 +438,7 @@ env.VariantDir(
 
 env_libtcod = env.Clone()
 env_libtcod.Append(
-    CPPPATH=["../../src/vendor"],
+    CPPPATH=["../../src/vendor", "../../src/vendor/utf8proc"],
 )
 
 if sys.platform != "darwin":

@@ -71,3 +71,4 @@ jobs:
         file: buildsys/scons/libtcod-*.tar.*
         file_glob: true
         tag: ${{ github.ref }}
+        overwrite: true

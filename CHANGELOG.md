@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.1] - 2021-02-17
 ### Fixed
 - Fixed the case-sensitive file name `LibtcodConfig.cmake.in` which was causing
   CMake to fail.

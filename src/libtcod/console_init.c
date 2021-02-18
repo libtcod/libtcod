@@ -64,7 +64,8 @@ TCOD_Error TCOD_console_init_root_(
       .columns = w,
       .rows = h,
       .vsync = vsync,
-      .sdl_window_flags = SDL_WINDOW_RESIZABLE | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0),
+      .sdl_window_flags =
+          SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | (fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0),
       .window_title = title,
       .renderer_type = renderer,
       .window_xy_defined = true,

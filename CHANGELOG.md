@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- The `SDL_WINDOW_ALLOW_HIGHDPI` flag has been added to SDL windows created
+  with the non-context API.  This fixes issues on some MacOS systems.
+  [#90](https://github.com/libtcod/libtcod/issues/90)
 
 ## [1.16.1] - 2021-02-17
 ### Fixed

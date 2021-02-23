@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.2] - 2021-02-22
 ### Fixed
 - The `SDL_WINDOW_ALLOW_HIGHDPI` flag has been added to SDL windows created
   with the non-context API.  This fixes issues on some MacOS systems.

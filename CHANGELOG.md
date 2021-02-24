@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Libtcod's CMake config file is now aware of its dependencies.
 
 ## [1.16.2] - 2021-02-22
 ### Fixed

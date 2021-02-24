@@ -6,6 +6,8 @@
 Welcome to the libtcod documentation!
 ======================================
 
+.. include:: old_docs_notice.inc.rst
+
 .. toctree::
    :maxdepth: 1
    :caption: Core

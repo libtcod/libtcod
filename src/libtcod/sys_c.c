@@ -494,19 +494,8 @@ void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
   if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
 }
 /* dynamic library support */
-#ifdef TCOD_WINDOWS
-TCOD_library_t TCOD_load_library(const char* path) { return (TCOD_library_t)LoadLibrary(path); }
+TCOD_library_t TCOD_load_library(const char* path) { SDL_LoadObject(path); }
 void* TCOD_get_function_address(TCOD_library_t library, const char* function_name) {
-  return (void*)GetProcAddress((HMODULE)library, function_name);
+  return SDL_LoadFunction(library, function_name);
 }
-void TCOD_close_library(TCOD_library_t library) { FreeLibrary((HMODULE)library); }
-#else
-TCOD_library_t TCOD_load_library(const char* path) {
-  void* l = dlopen(path, RTLD_LAZY);
-  return l;
-}
-void* TCOD_get_function_address(TCOD_library_t library, const char* function_name) {
-  return dlsym(library, function_name);
-}
-void TCOD_close_library(TCOD_library_t library) { dlclose(library); }
-#endif
+void TCOD_close_library(TCOD_library_t library) { SDL_UnloadObject(library); }

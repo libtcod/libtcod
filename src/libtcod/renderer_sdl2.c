@@ -32,13 +32,14 @@
 #include "renderer_sdl2.h"
 #ifndef NO_SDL
 #include <SDL.h>
+#include <lodepng.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../vendor/lodepng.h"
 #include "libtcod_int.h"
+
 
 static inline float minf(float a, float b) { return a < b ? a : b; }
 static inline float maxf(float a, float b) { return a > b ? a : b; }

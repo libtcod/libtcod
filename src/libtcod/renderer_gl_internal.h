@@ -32,14 +32,15 @@
 #ifndef LIBTCOD_RENDERER_GL_INTERNAL_H_
 #define LIBTCOD_RENDERER_GL_INTERNAL_H_
 #include <SDL.h>
+#include <lodepng.h>
 #include <math.h>
 #include <stdbool.h>
 
 #include "../vendor/glad.h"
-#include "../vendor/lodepng.h"
 #include "config.h"
 #include "libtcod_int.h"
 #include "renderer_gl.h"
+
 
 #ifdef __cplusplus
 extern "C" {

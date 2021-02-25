@@ -31,13 +31,12 @@
  */
 #include "tileset.h"
 
+#include <lodepng.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../vendor/lodepng.h"
 #include "color.h"
-
 
 // Starting sizes of arrays:
 #define DEFAULT_TILES_LENGTH 256

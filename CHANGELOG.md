@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.4] - 2021-02-28
 ## Fixed
 - Simplified libtcod's system calls which should fix support for Microsoft's
   UWP.

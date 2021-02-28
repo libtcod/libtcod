@@ -90,10 +90,21 @@ else()
     message(FATAL_ERROR "Unknown option for LIBTCOD_UTF8PROC: '${LIBTCOD_UTF8PROC}'")
 endif()
 
+set(LIBTCOD_STB "vendored" CACHE STRING "How this library will be linked.")
+set_property(CACHE LIBTCOD_STB PROPERTY STRINGS "vendored" "vcpkg")
+if(LIBTCOD_STB STREQUAL "vendored")
+    message("Will be vendored: stb")
+elseif(LIBTCOD_STB STREQUAL "vcpkg")
+    find_path(STB_INCLUDE_DIRS "stb.h")
+    target_include_directories(LIBTCOD PRIVATE ${STB_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Unknown option for LIBTCOD_STB: '${LIBTCOD_STB}'")
+endif()
+
 target_include_directories(LIBTCOD INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-target_include_directories(LIBTCOD PRIVATE ./vendor)
+target_include_directories(LIBTCOD PRIVATE AFTER ./vendor)
 
 find_package(Threads REQUIRED)
 target_link_libraries(LIBTCOD PUBLIC ${CMAKE_THREAD_LIBS_INIT})

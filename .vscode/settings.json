@@ -87,6 +87,7 @@
         "LIBTCOD_GLAD": "find_package", // find_package | vendored
         "LIBTCOD_LODEPNG": "vendored",
         "LIBTCOD_UTF8PROC": "vendored",
+        "LIBTCOD_STB": "vcpkg",
     },
     "cmake.debugConfig": {
         // Workaround for launching the debugger from the CMake toolbar.

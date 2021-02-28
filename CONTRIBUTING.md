@@ -54,7 +54,7 @@ Dependencies are installed using Vcpkg and CMake is invoked by Visual Studio Cod
 * You'll need to have the command line in the vcpkg directory or have that added to PATH for the following:
   * Use Vcpkg to install the `sdl2` and `zlib` packages as needed:
     ```
-    vcpkg install sdl2:x64-windows zlib:x64-windows glad:x64-windows
+    vcpkg install sdl2:x64-windows zlib:x64-windows glad:x64-windows stb:x64-windows
     ```
 * Clone the libtcod repository.
 * In Visual Studio Code choose `File -> Open folder...` then select the libtcod repository.

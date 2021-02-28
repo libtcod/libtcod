@@ -327,5 +327,10 @@
     ],
     "flagWords": [
         "hte"
+    ],
+    "ignorePaths": [
+        ".vscode/**",
+        "vendor/**",
+        "test/catch*"
     ]
 }

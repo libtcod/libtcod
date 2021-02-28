@@ -42,7 +42,7 @@ jobs:
         CONAN_ARCHS: [x86_64]
         CONAN_BUILD_TYPES: [Debug, Release]
         CONAN_APPLE_CLANG_VERSIONS: ['11.0']
-        experimental: [false]
+        experimental: [true]
         include:
           - CONAN_ARCHS: x86_64
             CONAN_BUILD_TYPES: 'Debug,Release'

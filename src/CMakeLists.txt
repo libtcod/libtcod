@@ -137,7 +137,7 @@ endif()
 
 install(
     TARGETS LIBTCOD
-    EXPORT libtcodTargets
+    EXPORT LIBTCODTargets
     RUNTIME LIBRARY ARCHIVE
     COMPONENT Library
 )
@@ -148,21 +148,21 @@ get_filename_component(
     REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
 )
 install(
-    EXPORT libtcodTargets
+    EXPORT LIBTCODTargets
     DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
     NAMESPACE LIBTCOD::
 )
-configure_package_config_file(LibtcodConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
+configure_package_config_file(LIBTCODConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
     PATH_VARS INSTALL_FULL_INCLUDEDIR)
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
 )
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/LibtcodConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
 )

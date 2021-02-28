@@ -8,7 +8,7 @@ find_package(UTF8PROC QUIET)
 
 set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 
-include(${CMAKE_CURRENT_LIST_DIR}/libtcodTargets.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/LIBTCODTargets.cmake)
 
 target_include_directories(LIBTCOD::LIBTCOD INTERFACE "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 

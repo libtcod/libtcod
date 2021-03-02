@@ -7,9 +7,11 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- CMake scripts now support fetching dependences from Vcpkg.
 
 ## [1.16.4] - 2021-02-28
-## Fixed
+### Fixed
 - Simplified libtcod's system calls which should fix support for Microsoft's
   UWP.
 

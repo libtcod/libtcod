@@ -52,9 +52,9 @@ Dependencies are installed using Vcpkg and CMake is invoked by Visual Studio Cod
 * Clone the [Vcpkg repository](https://github.com/microsoft/vcpkg) and run the bootstrap script.
 * Ensure the [VCPKG_ROOT environment variable](https://github.com/microsoft/vcpkg/blob/master/docs/users/config-environment.md#vcpkg_root) is set to the repository folder.
 * You'll need to have the command line in the vcpkg directory or have that added to PATH for the following:
-  * Use Vcpkg to install the `sdl2` and `zlib` packages as needed:
+  * Use Vcpkg to install libtcod's dependencies as needed:
     ```
-    vcpkg install sdl2:x64-windows zlib:x64-windows glad:x64-windows stb:x64-windows
+    vcpkg install sdl2:x64-windows zlib:x64-windows glad:x64-windows stb:x64-windows utf8proc:x64-windows lodepng-c:x64-windows
     ```
 * Clone the libtcod repository.
 * In Visual Studio Code choose `File -> Open folder...` then select the libtcod repository.

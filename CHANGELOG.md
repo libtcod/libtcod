@@ -8,6 +8,10 @@ since `1.7.0`.
 
 ## [Unreleased]
 
+## [1.16.6] - 2021-03-02
+### Fixed
+- Fixed static linking.
+
 ## [1.16.5] - 2021-03-02
 ### Added
 - CMake scripts now support fetching dependencies from Vcpkg.

@@ -7,8 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.5] - 2021-03-02
 ### Added
-- CMake scripts now support fetching dependences from Vcpkg.
+- CMake scripts now support fetching dependencies from Vcpkg.
 
 ## [1.16.4] - 2021-02-28
 ### Fixed

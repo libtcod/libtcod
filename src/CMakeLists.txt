@@ -95,7 +95,7 @@ elseif (LIBTCOD_UTF8PROC STREQUAL "vcpkg")
     find_library(UTF8PROC_LIBRARY_RELEASE NAMES utf8proc utf8proc_static PATHS ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib NO_DEFAULT_PATH Debug)
     select_library_configurations(UTF8PROC)
 
-    if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
+    if(NOT BUILD_SHARED_LIBS)
         target_compile_definitions(LIBTCOD PRIVATE UTF8PROC_STATIC)
     endif()
     target_include_directories(LIBTCOD PRIVATE ${UTF8PROC_INCLUDE_DIRS})

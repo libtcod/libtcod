@@ -4,6 +4,7 @@
         120
     ],
     "files.associations": {
+        "*.cmake.in": "cmake",
         "*.h": "cpp",
         "algorithm": "cpp",
         "array": "cpp",

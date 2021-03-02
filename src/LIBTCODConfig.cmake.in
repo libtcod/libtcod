@@ -1,10 +1,9 @@
 @PACKAGE_INIT@
 
-find_package(SDL2 REQUIRED)
-find_package(ZLIB REQUIRED)
+find_package(SDL2 QUIET)
+find_package(ZLIB QUIET)
 find_package(glad QUIET)
-find_package(lodepng QUIET)
-find_package(UTF8PROC QUIET)
+find_package(lodepng-c QUIET)
 
 set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 

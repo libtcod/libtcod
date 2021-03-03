@@ -19,7 +19,7 @@ string(REGEX MATCH "([0-9]+\.[0-9]+\.[0-9]+)" LIBTCOD_VERSION ${LIBTCOD_VERSION_
 message(STATUS "Libtcod version: ${LIBTCOD_VERSION}")
 
 project(
-    libtcod
+    LIBTCOD
     VERSION ${LIBTCOD_VERSION}
     LANGUAGES C CXX
 )
@@ -42,8 +42,8 @@ endif()
 set(BUILD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
 set(BUILD_TESTS OFF CACHE BOOL "Build unit tests.")
 
-add_library(LIBTCOD)
-add_library(LIBTCOD::LIBTCOD ALIAS LIBTCOD)
+add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_subdirectory(src)
 
 if(BUILD_SAMPLES)

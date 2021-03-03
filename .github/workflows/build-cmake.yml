@@ -1,0 +1,48 @@
+name: CMake
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+
+    env:
+      VCPKG_ROOT: ${{github.workspace}}/vcpkg
+
+    steps:
+    - uses: actions/checkout@v2
+    # Install latest CMake.
+    - uses: lukka/get-cmake@latest
+    - name: Checkout microsoft/vcpkg
+      uses: actions/checkout@v2
+      with:
+        repository: microsoft/vcpkg
+        path: vcpkg
+    - name: Bootstrap Vcpkg
+      working-directory: ${{env.VCPKG_ROOT}}
+      run: |
+        ./bootstrap-vcpkg.sh
+    - name: Vcpkg install dependences
+      run: |
+        $VCPKG_ROOT/vcpkg install sdl2 zlib
+    - name: CMake configure
+      run: |
+        cmake -S . -B build \
+          -DCMAKE_INSTALL_PREFIX=local \
+          -DBUILD_SAMPLES=ON \
+          -DBUILD_TESTS=ON \
+          -Wdev \
+          --warn-uninitialized
+    - name: CMake build
+      run: |
+        cmake --build build
+    - name: CMake install
+      run: |
+        cmake --install build

@@ -121,7 +121,9 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_include_directories(${PROJECT_NAME} PRIVATE AFTER ./vendor)
 
 find_package(Threads REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+if (DEFINED CMAKE_THREAD_LIBS_INIT)
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+endif()
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(${PROJECT_NAME} PRIVATE LIBTCOD_EXPORTS)

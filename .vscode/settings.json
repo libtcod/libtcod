@@ -92,6 +92,11 @@
         "LIBTCOD_UTF8PROC": "vcpkg",
         "LIBTCOD_STB": "vcpkg",
     },
+    "cmake.configureArgs": [
+        "-Wdev",
+        "-Wdeprecated",
+        "--warn-uninitialized",
+    ],
     "cmake.debugConfig": {
         // Workaround for launching the debugger from the CMake toolbar.
         // Running from the CMake tools toolbar without a debugger will still have working directory issues.

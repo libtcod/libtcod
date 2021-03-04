@@ -43,6 +43,9 @@ jobs:
     - name: CMake build
       run: |
         cmake --build build
-    - name: CMake install
+    - name: Run tests
+      run: |
+        build/bin/unittest ~[!nonportable]
+    - name: CMake test install
       run: |
         cmake --install build

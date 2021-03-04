@@ -12,6 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-20.04]
+        config: [Debug, Release]
 
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
@@ -42,10 +43,10 @@ jobs:
           --warn-uninitialized
     - name: CMake build
       run: |
-        cmake --build build
+        cmake --build build --config ${{matrix.config}}
     - name: Run tests
       run: |
         build/bin/unittest ~[!nonportable]
     - name: CMake test install
       run: |
-        cmake --install build
+        cmake --install build --config ${{matrix.config}}

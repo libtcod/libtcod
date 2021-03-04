@@ -13,9 +13,15 @@ jobs:
         CONAN_GCC_VERSIONS: [7, 8, 9]
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Needed to support tags.
+    # actions/checkout breaks `git describe` so a manual clone is needed.
+    # https://github.com/actions/checkout/issues/272
+    - name: Clone libtcod
+      run: |
+        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git checkout ${{github.sha}}
+    - name: git describe
+      run: |
+        git describe
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:
@@ -50,9 +56,10 @@ jobs:
             experimental: true
 
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0  # Needed to support tags.
+    - name: Clone libtcod
+      run: |
+        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git checkout ${{github.sha}}
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:

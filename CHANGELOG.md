@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed PNG loading issues when using Vcpkg.
 
 ## [1.16.6] - 2021-03-02
 ### Fixed

@@ -37,6 +37,7 @@
 #endif
 
 #include <SDL.h>
+#include <assert.h>
 #include <lodepng.h>
 
 #include "error.h"
@@ -48,23 +49,24 @@ bool TCOD_sys_check_png(const char* filename) {
 }
 
 SDL_Surface* TCOD_sys_read_png(const char* filename) {
-  unsigned error;
-  unsigned char* image;
-  unsigned width, height, y, bpp;
-  unsigned char* png;
+  unsigned char* png = NULL;
   size_t pngsize;
+  if (!TCOD_sys_read_file(filename, &png, &pngsize)) {
+    TCOD_set_errorvf("File not found: %s", filename);
+    return NULL;
+  }
   LodePNGState state;
-  SDL_Surface* bitmap;
-  unsigned char* source;
-  unsigned int rowsize;
-
   lodepng_state_init(&state);
-  /*optionally customize the state*/
-  if (!TCOD_sys_read_file(filename, &png, &pngsize)) return NULL;
-
+  unsigned width;
+  unsigned height;
   lodepng_inspect(&width, &height, &state, png, pngsize);
-  bpp = lodepng_get_bpp(&state.info_png.color);
+  if (state.error) {
+    TCOD_set_errorvf("Error decoding PNG: %s", lodepng_error_text(state.error));
+    free(png);
+    return NULL;
+  }
 
+  unsigned bpp = lodepng_get_bpp(&state.info_png.color);
   if (bpp == 24) {
     /* don't convert to 32 bits because libtcod's 24bits renderer is faster */
     state.info_raw.colortype = LCT_RGB;
@@ -74,28 +76,30 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
     state.info_raw.bitdepth = 8;
     bpp = 24;
   }
-  error = lodepng_decode(&image, &width, &height, &state, png, pngsize);
+  unsigned char* image = NULL;
+  unsigned error = lodepng_decode(&image, &width, &height, &state, png, pngsize);
   free(png);
   if (error) {
-    printf("error %u: %s\n", error, lodepng_error_text(error));
+    TCOD_set_errorvf("Error decoding PNG: %s", lodepng_error_text(error));
     lodepng_state_cleanup(&state);
     return NULL;
   }
-
-  /* create the SDL surface */
+  SDL_Surface* bitmap;
   if (bpp == 32) {
     bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, SDL_PIXELFORMAT_RGBA32);
   } else {
     bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 24, SDL_PIXELFORMAT_RGB24);
   }
-  source = image;
-  rowsize = width * bpp / 8;
-  for (y = 0; y < height; y++) {
-    uint8_t* row_pointer = (uint8_t*)bitmap->pixels + y * bitmap->pitch;
-    memcpy(row_pointer, source, rowsize);
-    source += rowsize;
-  }
-
+  assert(bitmap);
+  assert(!SDL_ConvertPixels(
+      width,
+      height,
+      bitmap->format->format,
+      image,
+      width * bpp / 8,
+      bitmap->format->format,
+      bitmap->pixels,
+      bitmap->pitch));
   lodepng_state_cleanup(&state);
   free(image);
   return bitmap;

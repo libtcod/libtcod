@@ -83,8 +83,8 @@
     "editor.defaultFormatter": "xaver.clang-format",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureSettings": {
-        "BUILD_SAMPLES": "ON",
-        "BUILD_TESTS": "ON",
+        "LIBTCOD_SAMPLES": "ON",
+        "LIBTCOD_TESTS": "ON",
         "LIBTCOD_SDL2": "find_package",
         "LIBTCOD_ZLIB": "find_package",
         "LIBTCOD_GLAD": "find_package", // find_package | vendored

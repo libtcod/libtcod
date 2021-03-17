@@ -115,6 +115,7 @@
         "hextoint",
         "HEXVERSION",
         "hflip",
+        "HIGHDPI",
         "hilite",
         "hline",
         "hmtool",

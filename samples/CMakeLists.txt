@@ -9,7 +9,7 @@ if(CONAN_FILE)
     set(SDL2MAIN)
 else()
     find_package(SDL2 CONFIG REQUIRED)
-    set(LINK_TCOD LIBTCOD::LIBTCOD)
+    set(LINK_TCOD libtcod::libtcod)
     set(SDL2MAIN SDL2::SDL2main)
 endif()
 

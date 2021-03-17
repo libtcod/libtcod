@@ -138,7 +138,7 @@ endif()
 
 install(
     TARGETS ${PROJECT_NAME}
-    EXPORT LIBTCODTargets
+    EXPORT ${PROJECT_NAME}Targets
     RUNTIME LIBRARY ARCHIVE
     COMPONENT Library
 )
@@ -149,21 +149,21 @@ get_filename_component(
     REALPATH BASE_DIR ${CMAKE_CURRENT_BINARY_DIR}
 )
 install(
-    EXPORT LIBTCODTargets
+    EXPORT ${PROJECT_NAME}Targets
     DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
-    NAMESPACE LIBTCOD::
+    NAMESPACE ${PROJECT_NAME}::
 )
-configure_package_config_file(LIBTCODConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfig.cmake
+configure_package_config_file(${PROJECT_NAME}Config.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
     PATH_VARS INSTALL_FULL_INCLUDEDIR)
 write_basic_package_version_file(
-    ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfigVersion.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
     COMPATIBILITY SameMajorVersion
 )
 install(
     FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/LIBTCODConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_CONFIGDIR}
 )

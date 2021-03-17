@@ -19,7 +19,7 @@ string(REGEX MATCH "([0-9]+\.[0-9]+\.[0-9]+)" LIBTCOD_VERSION ${LIBTCOD_VERSION_
 message(STATUS "Libtcod version: ${LIBTCOD_VERSION}")
 
 project(
-    LIBTCOD
+    libtcod
     VERSION ${LIBTCOD_VERSION}
     LANGUAGES C CXX
 )

@@ -6,7 +6,7 @@ if(CONAN_FILE)
     conan_basic_setup(KEEP_RPATHS)
     set(LINK_TARGETS ${CONAN_LIBS})
 else()
-    set(LINK_TARGETS LIBTCOD::LIBTCOD)
+    set(LINK_TARGETS libtcod::libtcod)
 endif()
 
 

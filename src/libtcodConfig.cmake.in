@@ -1,0 +1,16 @@
+@PACKAGE_INIT@
+
+find_package(SDL2 QUIET)
+find_package(ZLIB QUIET)
+find_package(glad QUIET)
+find_package(lodepng-c QUIET)
+
+set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
+
+include(${CMAKE_CURRENT_LIST_DIR}/libtcodTargets.cmake)
+
+target_include_directories(libtcod::libtcod INTERFACE "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
+
+set(LIBTCOD_LIBRARY libtcod::libtcod)
+
+check_required_components(libtcod)

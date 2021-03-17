@@ -124,11 +124,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE TCOD_IGNORE_DEPRECATED)
 
 include(sources.cmake)
 
-if(MSVC)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY OUTPUT_NAME libtcod)
-else()
-    set_property(TARGET ${PROJECT_NAME} PROPERTY OUTPUT_NAME tcod)
-endif()
+# Remove the "lib" prefix to prevent a library name like "liblibtcod".
+set_property(TARGET ${PROJECT_NAME} PROPERTY PREFIX "")
 
 if(MSVC)
   target_compile_options(${PROJECT_NAME} PRIVATE /W4)

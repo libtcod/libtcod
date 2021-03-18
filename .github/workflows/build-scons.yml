@@ -71,7 +71,7 @@ jobs:
           buildsys/scons/libtcod-*.tar.*
         retention-days: 3
     - name: Upload release
-      if: runner.os == 'macOS' && github.event_name == 'release'
+      if: runner.os != 'Linux' && github.event_name == 'release'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}

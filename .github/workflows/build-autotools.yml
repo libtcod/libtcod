@@ -1,4 +1,4 @@
-name: Autotools build
+name: Autotools
 
 on: [push, pull_request]
 

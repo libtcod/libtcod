@@ -1,4 +1,4 @@
-name: Conan package
+name: Conan
 
 on: [push, pull_request]
 

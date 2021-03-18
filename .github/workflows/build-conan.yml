@@ -82,3 +82,37 @@ jobs:
         CONAN_APPLE_CLANG_VERSIONS: ${{matrix.CONAN_APPLE_CLANG_VERSIONS}}
       run: |
         .ci/conan_build.py
+
+  windows:
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: true
+      matrix:
+        CONAN_ARCHS: [x86_64]
+        CONAN_BUILD_TYPES: [Debug, Release]
+
+    steps:
+    - name: Clone libtcod
+      shell: cmd
+      run: |
+        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git checkout ${{github.sha}}
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - name: Install Conan
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install conan_package_tools
+    - name: Build and test Conan package
+      env:
+        CONAN_PASSWORD: ${{secrets.CONAN_PASSWORD}}
+        CONAN_ARCHS: ${{matrix.CONAN_ARCHS}}
+        CONAN_BUILD_TYPES: ${{matrix.CONAN_BUILD_TYPES}}
+        CONAN_VISUAL_VERSIONS: 16
+      run: |
+        .ci/conan_build.py

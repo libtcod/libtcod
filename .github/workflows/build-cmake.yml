@@ -13,9 +13,11 @@ jobs:
       matrix:
         os: [ubuntu-20.04]
         config: [Debug, Release]
+        shared: [dynamic, static]
 
     env:
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
+      VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
     - uses: actions/checkout@v2
@@ -37,6 +39,7 @@ jobs:
       run: |
         cmake -S . -B build \
           -DCMAKE_INSTALL_PREFIX=local \
+          -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
           -DLIBTCOD_SAMPLES=ON \
           -DLIBTCOD_TESTS=ON \
           -Wdev \
@@ -44,7 +47,11 @@ jobs:
     - name: CMake build
       run: |
         cmake --build build --config ${{matrix.config}}
+    - name: List build files
+      run: find build/
     - name: Run tests
+      env:
+        LD_LIBRARY_PATH: build/lib
       run: |
         build/bin/unittest ~[!nonportable]
     - name: CMake test install

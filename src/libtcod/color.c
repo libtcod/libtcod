@@ -526,12 +526,13 @@ TCOD_color_t TCOD_color_lerp(TCOD_color_t c1, TCOD_color_t c2, float coef) {
       (uint8_t)(c1.b + (c2.b - c1.b) * coef)};
   return new_color;
 }
-/* Return floor modulo for double values. */
-static double fabsmod(double x, double n) {
-  double m = fmod(x, n);
+/**
+    Return floor modulo for float values.
+ */
+static float fabsmodf(float x, float n) {
+  float m = fmodf(x, n);
   return m < 0 ? m + n : m;
 }
-
 /**
  *  \brief Sets a colors values from HSV values.
  *
@@ -551,7 +552,7 @@ void TCOD_color_set_HSV(TCOD_color_t* color, float hue, float saturation, float 
     return;
   }
 
-  hue = (float)fabsmod(hue, 360.0f);
+  hue = fabsmodf(hue, 360.0f);
   hue /= 60.0f; /* sector 0 to 5 */
   hue_section = (int)floor(hue);
   hue_fraction = hue - hue_section; /* fraction between sections */
@@ -631,7 +632,7 @@ float TCOD_color_get_hue(TCOD_color_t color) {
     hue = 4.0f + (float)(color.r - color.g) / delta;
   }
   hue *= 60.0f;
-  hue = (float)fabsmod(hue, 360.0f);
+  hue = fabsmodf(hue, 360.0f);
   return hue;
 }
 /**

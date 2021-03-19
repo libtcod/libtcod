@@ -65,13 +65,13 @@ def unpack_sdl2_darwin(env):
         return
     download_sdl2_darwin(env)
     print(env.subst("Extracting $SDL2_DMG_PATH to $DEPENDANCY_DIR"))
-    subprocess.check_call(["hdiutil", "mount", env.subst("$SDL2_DMG_PATH")])
+    subprocess.check_call(["hdiutil", "attach", env.subst("$SDL2_DMG_PATH")])
     shutil.copytree(
         "/Volumes/SDL2/SDL2.framework",
         env.subst("$SDL2_PATH"),
         symlinks=True,
     )
-    subprocess.check_call(["hdiutil", "unmount", "/Volumes/SDL2"])
+    subprocess.check_call(["hdiutil", "detach", "/Volumes/SDL2", "-force"])
 
 
 def samples_factory():

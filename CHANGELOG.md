@@ -14,6 +14,8 @@ since `1.7.0`.
 ### Fixed
 - Fixed PNG loading issues when using Vcpkg.
 - Fixed crashes from loading tilesets with non-square tile sizes.
+- Tilesets with a size of 0 should no longer crash when used.
+- Prevent division by zero from recommended-console-size functions.
 
 ## [1.16.6] - 2021-03-02
 ### Fixed

@@ -81,9 +81,12 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas) {
     SDL_QueryTexture(atlas->texture, NULL, NULL, &current_size, NULL);
   }
   int new_size = current_size ? current_size : 256;
-  int columns;
-  int rows;
+  int columns = 1;  // Must be more than zero.
+  int rows = 1;
   while (1) {
+    if (atlas->tileset->tile_width == 0 || atlas->tileset->tile_height == 0) {
+      break;  // Avoid division by zero.
+    }
     columns = new_size / atlas->tileset->tile_width;
     rows = new_size / atlas->tileset->tile_height;
     if (rows * columns >= atlas->tileset->tiles_capacity) {
@@ -603,10 +606,10 @@ static TCOD_Error sdl2_recommended_console_size(
     TCOD_set_errorvf("SDL Error: %s", SDL_GetError());
     return TCOD_E_ERROR;
   }
-  if (columns) {
+  if (columns && context->atlas->tileset->tile_width * magnification != 0) {
     *columns = (int)(w / (context->atlas->tileset->tile_width * magnification));
   }
-  if (rows) {
+  if (rows && context->atlas->tileset->tile_height * magnification != 0) {
     *rows = (int)(h / (context->atlas->tileset->tile_height * magnification));
   }
   return TCOD_E_OK;

@@ -137,6 +137,9 @@ TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int want) {
     TCOD_set_errorv("Tileset argument must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  if (tileset->tile_length == 0) {
+    return TCOD_E_OK;  // Tiles have zero size.
+  }
   if (want < 0) {
     TCOD_set_errorv("Can not take a negative number.");
     return TCOD_E_INVALID_ARGUMENT;

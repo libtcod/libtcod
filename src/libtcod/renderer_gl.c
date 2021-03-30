@@ -76,9 +76,12 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
   int new_size = atlas->texture_size ? atlas->texture_size : 64;
   int max_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
-  int columns;
-  int rows;
+  int columns = 1;  // Must be more than zero.
+  int rows = 1;
   while (1) {
+    if (atlas->tileset->tile_width == 0 || atlas->tileset->tile_height == 0) {
+      break;  // Avoid division by zero.
+    }
     columns = new_size / atlas->tileset->tile_width;
     rows = new_size / atlas->tileset->tile_height;
     if (rows * columns >= atlas->tileset->tiles_capacity) {

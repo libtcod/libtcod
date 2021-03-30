@@ -41,7 +41,6 @@
 #include "libtcod_int.h"
 #include "renderer_gl.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -106,10 +105,10 @@ static TCOD_Error gl_recommended_console_size(
   int w;
   int h;
   SDL_GL_GetDrawableSize(context->window, &w, &h);
-  if (columns) {
+  if (columns && context->atlas->tileset->tile_width * magnification != 0) {
     *columns = (int)(w / (context->atlas->tileset->tile_width * magnification));
   }
-  if (rows) {
+  if (rows && context->atlas->tileset->tile_height * magnification != 0) {
     *rows = (int)(h / (context->atlas->tileset->tile_height * magnification));
   }
   return TCOD_E_OK;

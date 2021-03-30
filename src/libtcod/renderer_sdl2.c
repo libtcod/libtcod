@@ -40,7 +40,6 @@
 
 #include "libtcod_int.h"
 
-
 static inline float minf(float a, float b) { return a < b ? a : b; }
 static inline float maxf(float a, float b) { return a > b ? a : b; }
 static inline float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
@@ -82,11 +81,11 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas) {
     SDL_QueryTexture(atlas->texture, NULL, NULL, &current_size, NULL);
   }
   int new_size = current_size ? current_size : 256;
-  int rows;
   int columns;
+  int rows;
   while (1) {
-    rows = new_size / atlas->tileset->tile_width;
-    columns = new_size / atlas->tileset->tile_height;
+    columns = new_size / atlas->tileset->tile_width;
+    rows = new_size / atlas->tileset->tile_height;
     if (rows * columns >= atlas->tileset->tiles_capacity) {
       break;
     }

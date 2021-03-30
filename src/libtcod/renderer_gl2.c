@@ -191,10 +191,14 @@ static TCOD_Error resize_textures(struct TCOD_RendererGL2* renderer, const TCOD_
           NULL);
     }
     glBindTexture(GL_TEXTURE_2D, 0);
-  }
-  if (glGetError()) {
-    TCOD_set_errorv("Unexpected OpenGL error.");
-    return TCOD_E_ERROR;
+    int gl_error = glGetError();
+    if (gl_error) {
+      return TCOD_set_errorvf(
+          "Unexpected OpenGL error %i while allocating %ix%i textures.",
+          gl_error,
+          renderer->console_width,
+          renderer->console_height);
+    }
   }
   return TCOD_E_OK;
   ;
@@ -331,9 +335,9 @@ static TCOD_Error render(
   glActiveTexture(GL_TEXTURE0 + 0);
   glBindTexture(GL_TEXTURE_2D, 0);
   glUseProgram(0);
-  if (glGetError()) {
-    TCOD_set_errorv("Unexpected OpenGL error.");
-    return TCOD_E_ERROR;
+  int gl_error;
+  if ((gl_error = glGetError()) != 0) {
+    return TCOD_set_errorvf("Unexpected OpenGL error %i.", gl_error);
   }
   return TCOD_E_OK;
 }
@@ -345,6 +349,10 @@ static TCOD_Error gl2_accumulate(
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererGL2* renderer = context->contextdata_;
+  int gl_error = glGetError();
+  if (gl_error) {
+    return TCOD_set_errorvf("Unhandled OpenGL error %i.", gl_error);
+  }
   TCOD_Error err;
   if ((err = resize_textures(renderer, console)) < 0) {
     return err;
@@ -354,9 +362,8 @@ static TCOD_Error gl2_accumulate(
   }
 
   glFlush();
-  if (glGetError()) {
-    TCOD_set_errorv("Unexpected OpenGL error.");
-    return TCOD_E_ERROR;
+  if ((gl_error = glGetError()) != 0) {
+    return TCOD_set_errorvf("Unexpected OpenGL error %i.", gl_error);
   }
   return TCOD_E_OK;
 }

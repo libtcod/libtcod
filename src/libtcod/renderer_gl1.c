@@ -259,6 +259,10 @@ static TCOD_Error gl1_accumulate(
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
   struct TCOD_RendererGL1* renderer = context->contextdata_;
+  int gl_error = glGetError();
+  if (gl_error) {
+    return TCOD_set_errorvf("Unhandled OpenGL error %i.", gl_error);
+  }
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);
@@ -277,9 +281,8 @@ static TCOD_Error gl1_accumulate(
     return err;
   }
   glFlush();
-  if (glGetError()) {
-    TCOD_set_errorv("Unexpected OpenGL error.");
-    return TCOD_E_ERROR;
+  if ((gl_error = glGetError()) != 0) {
+    return TCOD_set_errorvf("Unexpected OpenGL error %i.", gl_error);
   }
   return TCOD_E_OK;
 }

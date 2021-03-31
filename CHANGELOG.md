@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.16.7] - 2021-03-31
 ### Changed
 - CMake files now use lower-case `libtcod` to be consistent with the previous
   usage of this name.

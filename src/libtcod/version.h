@@ -34,9 +34,9 @@
 
 #define TCOD_MAJOR_VERSION  1
 #define TCOD_MINOR_VERSION  16
-#define TCOD_PATCHLEVEL     6
+#define TCOD_PATCHLEVEL     7
 
-#define TCOD_STRVERSION "1.16.6"
+#define TCOD_STRVERSION "1.16.7"
 
 /**
     Converts version numbers into a numeric value.

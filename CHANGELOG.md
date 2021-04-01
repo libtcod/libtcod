@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Changed
+- CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.
 
 ## [1.16.7] - 2021-03-31
 ### Changed

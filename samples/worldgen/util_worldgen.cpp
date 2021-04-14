@@ -706,7 +706,7 @@ void WorldGenerator::generateRivers() {
       }
       if (cx == 0 || cx == HM_WIDTH - 1 || cy == 0 || cy == HM_HEIGHT - 1)
         len = 0;
-      else if (line.step(&cx, &cy))
+      else if (line.step(cx, cy))
         len = 0;
       len--;
     } while (len > 0);

@@ -149,7 +149,7 @@ bool Frost::update(float elapsed) {
     int cury = besty;
     // frosting
     auto line = TCODLine(curx, cury, rx, ry);
-    line.step(&curx, &cury);
+    line.step(curx, cury);
     if ((unsigned)(x - RANGE + curx) < (unsigned)manager->w && (unsigned)(y - RANGE + cury) < (unsigned)manager->h) {
       float f = getValue(curx, cury);
       f += GROW * elapsed;

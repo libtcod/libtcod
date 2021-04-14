@@ -50,7 +50,7 @@ public :
 	@PageDesc This toolkit is a very simple and lightweight implementation of the bresenham line drawing algorithm. It allows you to follow straight paths on your map very easily.
 	@FuncTitle Initializing the line
 	@FuncDesc First, you have to initialize the toolkit with your starting and ending coordinates.
-	@Cpp static void TCODLine::init (int xFrom, int yFrom, int xTo, int yTo)
+	@Cpp TCODLine(int xFrom, int yFrom, int xTo, int yTo)
 	@C void TCOD_line_init (int xFrom, int yFrom, int xTo, int yTo)
 	@Py line_init (xFrom, yFrom, xTo, yTo)
 	@C# static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
@@ -58,13 +58,13 @@ public :
 	@Param xFrom,yFrom Coordinates of the line's starting point.
 	@Param xTo,yTo Coordinates of the line's ending point.
 	*/
-	static void init(int xFrom, int yFrom, int xTo, int yTo);
+	TCODLine(int xFrom, int yFrom, int xTo, int yTo);
 
 	/**
 	@PageName line
 	@FuncTitle Walking the line
 	@FuncDesc You can then step through each cell with this function. It returns true when you reach the line's ending point.
-	@Cpp static bool TCODLine::step (int * xCur, int * yCur)
+	@Cpp bool TCODLine::step (int& xCur, int& yCur)
 	@C bool TCOD_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
 	@C# static bool TCODLine::step(ref int xCur, ref int yCur)
@@ -99,7 +99,7 @@ public :
 			lineEnd,x,y = tcod.line.step(x,y)
 		until lineEnd
 	*/
-	static bool step(int *xCur, int *yCur);
+	bool step(int& xCur, int& yCur);
 
 	/**
 	@PageName line
@@ -141,6 +141,9 @@ TCOD_line_line(5,8,13,4,my_listener);
 libtcod.line_line(5,8,13,4,my_listener)
 	*/
 	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
+
+private:
+	TCOD_bresenham_data_t data_;
 };
 
 #endif

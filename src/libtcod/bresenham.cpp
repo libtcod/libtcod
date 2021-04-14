@@ -32,16 +32,27 @@
 #include "bresenham.hpp"
 
 // ********** bresenham line drawing **********
-void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init(xFrom, yFrom, xTo, yTo); }
+TCODLine::TCODLine(int xFrom, int yFrom, int xTo, int yTo) 
+{
+  TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_);
+}
 
-bool TCODLine::step(int* xCur, int* yCur) { return TCOD_line_step(xCur, yCur) != 0; }
+bool TCODLine::step(int& xCur, int& yCur) 
+{
+  return TCOD_line_step_mt(&xCur, &yCur, &data_);
+}
 
-static TCODLineListener* line_listener = NULL;
+bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener* listener) 
+{
+  auto line = TCODLine(xFrom, yFrom, xTo, yTo);
 
-// C to C++ bridge
-extern "C" bool internalListener(int x, int y) { return line_listener->putPoint(x, y) ? 1 : 0; }
+  do
+  {
+    if(!listener->putPoint(xFrom, yFrom) )
+    {
+      return false;
+    }
+  } while(line.step(xFrom, yFrom));
 
-bool TCODLine::line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener* listener) {
-  line_listener = listener;
-  return TCOD_line(xFrom, yFrom, xTo, yTo, internalListener) != 0;
+  return true;
 }

@@ -32,6 +32,11 @@
 #ifndef _TCOD_BRESENHAM_H
 #define _TCOD_BRESENHAM_H
 
+#ifdef __cplusplus
+#include <functional>
+#include <vector>
+#endif // __cplusplus
+
 #include "portability.h"
 
 #ifdef __cplusplus
@@ -83,9 +88,6 @@ TCODLIB_API bool TCOD_line_mt(
 
 #ifdef __cplusplus
 }
-
-#include <functional>
-#include <vector>
 
 namespace tcod {
 /**

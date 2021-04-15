@@ -10,6 +10,9 @@ since `1.7.0`.
 ### Changed
 - CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.
 
+## Fixed
+- Fixed `TCOD_load_library`.
+
 ## [1.16.7] - 2021-03-31
 ### Changed
 - CMake files now use lower-case `libtcod` to be consistent with the previous

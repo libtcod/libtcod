@@ -494,7 +494,7 @@ void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
   if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
 }
 /* dynamic library support */
-TCOD_library_t TCOD_load_library(const char* path) { SDL_LoadObject(path); }
+TCOD_library_t TCOD_load_library(const char* path) { return SDL_LoadObject(path); }
 void* TCOD_get_function_address(TCOD_library_t library, const char* function_name) {
   return SDL_LoadFunction(library, function_name);
 }

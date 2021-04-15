@@ -43,16 +43,6 @@ public :
 
 class TCODLIB_API TCODLine {
 public :
-	TCODLine(int xFrom, int yFrom, int xTo, int yTo)
-	{
-		TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_);
-	}
-
-	bool step(int& xCur, int& yCur) 
-	{
-	return TCOD_line_step_mt(&xCur, &yCur, &data_);
-	}
-
 	/**
 	@PageName line
 	@PageCategory Base toolkits
@@ -150,23 +140,7 @@ TCOD_line_line(5,8,13,4,my_listener);
     return True
 libtcod.line_line(5,8,13,4,my_listener)
 	*/
-	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener)
-	{
-		auto line = TCODLine(xFrom, yFrom, xTo, yTo);
-
-		do
-		{
-			if(!listener->putPoint(xFrom, yFrom) )
-			{
-			return false;
-			}
-		} while(line.step(xFrom, yFrom));
-
-		return true;
-	}
-
-private:
-	TCOD_bresenham_data_t data_;
+	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
 };
 
 #endif

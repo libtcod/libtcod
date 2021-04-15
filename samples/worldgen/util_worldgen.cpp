@@ -692,7 +692,7 @@ void WorldGenerator::generateRivers() {
         best_y = ty;
       }
     }
-    auto line = TCODLine(best_x, best_y, rx, ry);
+    TCODLine::init(best_x, best_y, rx, ry);
     int len = 3, cx = best_x, cy = best_y;
     map_data_t* md = &mapData[cx + cy * HM_WIDTH];
     if (md->riverId == riverId) md->riverId = 0;
@@ -706,7 +706,7 @@ void WorldGenerator::generateRivers() {
       }
       if (cx == 0 || cx == HM_WIDTH - 1 || cy == 0 || cy == HM_HEIGHT - 1)
         len = 0;
-      else if (line.step(cx, cy))
+      else if (TCODLine::step(&cx, &cy))
         len = 0;
       len--;
     } while (len > 0);

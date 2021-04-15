@@ -80,7 +80,67 @@ TCODLIB_API bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, T
 TCOD_DEPRECATED("Use TCOD_line instead.")
 TCODLIB_API bool TCOD_line_mt(
     int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data);
+
 #ifdef __cplusplus
 }
-#endif
-#endif
+
+#include <functional>
+#include <vector>
+
+namespace tcod {
+/**
+tcod::Line class
+
+Implements a lightweight bresenham line drawing algorithm.
+ */
+class TCODLIB_API Line {
+ public:
+  /**
+    tcod::Line constructor
+
+    Initializes the object to draw a line between [xFrom, yFrom] to [xTo, yTo]
+    \rst
+    .. cpp:function:: tcod::Line(int xFrom, int yFrom, int xTo, int yTo);
+    \endrst
+  */
+  Line(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_); }
+
+  /**
+    TCODLine step method
+
+    Steps through each cell from the start to the end coordinates.
+    The input variables [xCur, yCur] are passed in by reference and updated at each step of the line.
+    \rst
+    .. cpp:function:: bool step(int& xCur, int& yCur);
+    \endrst
+  */
+  inline bool step(int& xCur, int& yCur) { return TCOD_line_step_mt(&xCur, &yCur, &data_); }
+
+  /**
+    tcod::Line callback function
+
+    \rst
+    .. cpp:function:: bool tcod::Line::line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>&
+    callback);
+    \endrst
+  */
+  static bool line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
+    auto line = Line(xFrom, yFrom, xTo, yTo);
+
+    do {
+      if (!callback(xFrom, yFrom)) {
+        return false;
+      }
+    } while (line.step(xFrom, yFrom));
+
+    return true;
+  }
+
+ private:
+  TCOD_bresenham_data_t data_{};
+};
+}  // namespace tcod
+
+#endif  // __cplusplus
+
+#endif  // _TCOD_BRESENHAM_H

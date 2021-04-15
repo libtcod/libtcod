@@ -43,6 +43,16 @@ public :
 
 class TCODLIB_API TCODLine {
 public :
+	TCODLine(int xFrom, int yFrom, int xTo, int yTo)
+	{
+		TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_);
+	}
+
+	bool step(int& xCur, int& yCur) 
+	{
+	return TCOD_line_step_mt(&xCur, &yCur, &data_);
+	}
+
 	/**
 	@PageName line
 	@PageCategory Base toolkits
@@ -50,7 +60,7 @@ public :
 	@PageDesc This toolkit is a very simple and lightweight implementation of the bresenham line drawing algorithm. It allows you to follow straight paths on your map very easily.
 	@FuncTitle Initializing the line
 	@FuncDesc First, you have to initialize the toolkit with your starting and ending coordinates.
-	@Cpp TCODLine(int xFrom, int yFrom, int xTo, int yTo)
+	@Cpp static void TCODLine::init (int xFrom, int yFrom, int xTo, int yTo)
 	@C void TCOD_line_init (int xFrom, int yFrom, int xTo, int yTo)
 	@Py line_init (xFrom, yFrom, xTo, yTo)
 	@C# static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
@@ -58,13 +68,13 @@ public :
 	@Param xFrom,yFrom Coordinates of the line's starting point.
 	@Param xTo,yTo Coordinates of the line's ending point.
 	*/
-	TCODLine(int xFrom, int yFrom, int xTo, int yTo);
+	static void init(int xFrom, int yFrom, int xTo, int yTo);
 
 	/**
 	@PageName line
 	@FuncTitle Walking the line
 	@FuncDesc You can then step through each cell with this function. It returns true when you reach the line's ending point.
-	@Cpp bool TCODLine::step (int& xCur, int& yCur)
+	@Cpp static bool TCODLine::step (int * xCur, int * yCur)
 	@C bool TCOD_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
 	@C# static bool TCODLine::step(ref int xCur, ref int yCur)
@@ -99,7 +109,7 @@ public :
 			lineEnd,x,y = tcod.line.step(x,y)
 		until lineEnd
 	*/
-	bool step(int& xCur, int& yCur);
+	static bool step(int *xCur, int *yCur);
 
 	/**
 	@PageName line
@@ -140,7 +150,20 @@ TCOD_line_line(5,8,13,4,my_listener);
     return True
 libtcod.line_line(5,8,13,4,my_listener)
 	*/
-	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
+	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener)
+	{
+		auto line = TCODLine(xFrom, yFrom, xTo, yTo);
+
+		do
+		{
+			if(!listener->putPoint(xFrom, yFrom) )
+			{
+			return false;
+			}
+		} while(line.step(xFrom, yFrom));
+
+		return true;
+	}
 
 private:
 	TCOD_bresenham_data_t data_;

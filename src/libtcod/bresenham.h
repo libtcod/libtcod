@@ -124,11 +124,11 @@ class TCODLIB_API BresenhamLine {
     tcod::BresenhamLine callback function
 
     \rst
-    .. cpp:function:: bool tcod::line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>&
-    callback);
+    .. cpp:function:: bool tcod::bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int,
+   int)>& callback);
     \endrst
   */
-inline bool line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
+inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
   auto line = BresenhamLine(xFrom, yFrom, xTo, yTo);
 
   do {

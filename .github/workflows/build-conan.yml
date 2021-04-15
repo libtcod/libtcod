@@ -17,7 +17,7 @@ jobs:
     # https://github.com/actions/checkout/issues/272
     - name: Clone libtcod
       run: |
-        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
         git checkout ${{github.sha}}
     - name: git describe
       run: |
@@ -58,7 +58,7 @@ jobs:
     steps:
     - name: Clone libtcod
       run: |
-        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
         git checkout ${{github.sha}}
     - name: Set up Python 3
       uses: actions/setup-python@v2
@@ -98,7 +98,7 @@ jobs:
     - name: Clone libtcod
       shell: cmd
       run: |
-        git clone https://github.com/libtcod/libtcod.git ${{github.workspace}}
+        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
         git checkout ${{github.sha}}
     - name: Set up Python 3
       uses: actions/setup-python@v2

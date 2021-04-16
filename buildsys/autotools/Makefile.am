@@ -39,14 +39,6 @@ samples_cpp_SOURCES = ../../samples/samples_cpp.cpp
 samples_cpp_LDADD = libtcod.la
 endif
 
-check_scripts = unittest.sh
-check_PROGRAMS = unittest
-unittest_SOURCES = ../../tests/catch.cpp ../../tests/unittest.cpp
-unittest_LDADD = libtcod.la
-unittest_CXXFLAGS = $(CXXFLAGS)
-
-TESTS = unittest.sh
-
 dist_noinst_DATA = \
 	../../CHANGELOG.md \
 	../../LIBTCOD-CREDITS.txt \

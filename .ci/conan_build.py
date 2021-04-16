@@ -16,7 +16,7 @@ except subprocess.CalledProcessError:
     version = "0.0"
 
 if __name__ == "__main__":
-    if 'CI' in os.environ:
+    if "CI" in os.environ:
         os.environ["CONAN_SYSREQUIRES_MODE"] = "enabled"
         # Fix GitHub Actions version tag.
         if os.environ.get("GITHUB_REF", "").startswith("refs/tags/"):
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         ],
         cppstds=["14"],
         visual_runtimes=["MD", "MDd"],
-        test_folder="tests/",
+        # test_folder="tests/",
         build_policy="missing",
         upload_dependencies="all",
     )

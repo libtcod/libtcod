@@ -34,7 +34,7 @@ jobs:
         ./bootstrap-vcpkg.sh
     - name: Vcpkg install dependences
       run: |
-        $VCPKG_ROOT/vcpkg install sdl2 zlib
+        $VCPKG_ROOT/vcpkg install sdl2 zlib Catch2
     - name: CMake configure
       run: |
         cmake -S . -B build \

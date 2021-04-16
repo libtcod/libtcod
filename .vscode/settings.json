@@ -106,4 +106,5 @@
     "doxdocgen.c.firstLine": "/**",
     "doxdocgen.c.commentPrefix": "    ",
     "doxdocgen.c.lastLine": " */",
+    "python.formatting.provider": "black",
 }

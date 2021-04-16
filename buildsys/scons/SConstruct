@@ -124,30 +124,6 @@ def samples_factory():
     return samples
 
 
-def get_unittest():
-    """Return the unittest builder."""
-    env_unittest = env.Clone()
-    env_unittest.Append(CPPPATH=["$VARIANT/src"])
-    if not using_msvc and not env["LIBRARY_DEPRECATION"]:
-        env_unittest.Append(CCFLAGS=["-Wno-deprecated-declarations"])
-    if env["TOOLSET"] == "msvc":
-        env_unittest.Append(CXXFLAGS=["/EHsc"])  # Enable exception handler.
-    if sys.platform == "win32":
-        env_unittest.Append(LIBS=["libtcod"])
-    else:
-        env_unittest.Append(LIBS=["tcod"])
-
-    unittest = env_unittest.Program(
-        target=os.path.join("$VARIANT", "unittest"),
-        source=[
-            os.path.join("$VARIANT", "tests/catch.cpp"),
-            os.path.join("$VARIANT", "tests/unittest.cpp"),
-        ],
-    )
-    env.Depends(unittest, [libtcod])
-    return unittest
-
-
 def filtered_glob(env, pattern, omit=[], ondisk=True, source=False, strings=False):
     """Like Glob, but can omit specific files from the results."""
     return [f for f in env.Glob(pattern) if os.path.basename(f.path) not in omit]
@@ -331,8 +307,8 @@ if sys.platform != "darwin":
     env.Replace(LIBPREFIX="", SHLIBPREFIX="")
 
 if env["ARCH"] == "universal2":
-   env["SDL_ARCH"] = ["x64", "arm64"]
-   env["SDL_MINGW_ARCH"] = ["x86_64", "arm64"]
+    env["SDL_ARCH"] = ["x64", "arm64"]
+    env["SDL_MINGW_ARCH"] = ["x86_64", "arm64"]
 if env["ARCH"] == "arm64":
     env["SDL_ARCH"] = "arm64"
     env["SDL_MINGW_ARCH"] = "arm64"
@@ -513,11 +489,6 @@ samples_develop = env.Install("$DEVELOP_DIR", samples_builders)
 Alias("build_samples", samples_builders)
 Alias("develop_samples", lib_develop + samples_develop)
 
-unittest_builder = get_unittest()
-unittest_develop = env.Install("$DEVELOP_DIR", unittest_builder)
-Alias("build_unittest", unittest_builder)
-Alias("develop_unittest", lib_develop + unittest_develop)
-
 package_files = (
     lib_build
     + samples_builders
@@ -554,8 +525,8 @@ Alias("dist", zip)
 Alias("build", ["build_libtcod"])
 Alias("develop", ["develop_libtcod"])
 
-Alias("build_all", ["build_libtcod", "build_samples", "build_unittest"])
-Alias("develop_all", ["develop_libtcod", "develop_samples", "develop_unittest"])
+Alias("build_all", ["build_libtcod", "build_samples"])
+Alias("develop_all", ["develop_libtcod", "develop_samples"])
 
 Default(None)
 Help(vars.GenerateHelpText(env))

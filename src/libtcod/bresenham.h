@@ -112,19 +112,21 @@ class TCODLIB_API BresenhamLine {
   */
   inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
 
-  struct iterator : public std::iterator<std::input_iterator_tag, cell>
-  {
-    iterator(value_type cur, TCOD_bresenham_data_t& data) : cur_(cur), data_(data)  {}
+  struct iterator : public std::iterator<std::input_iterator_tag, cell> {
+    iterator(value_type cur, TCOD_bresenham_data_t& data) : cur_(cur), data_(data) {}
 
     inline reference operator*() { return cur_; }
-    inline iterator& operator++() { TCOD_line_step_mt(&cur_.first, &cur_.second, &data_); return *this; }
+    inline iterator& operator++() {
+      TCOD_line_step_mt(&cur_.first, &cur_.second, &data_);
+      return *this;
+    }
 
     inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
     inline bool operator!=(const iterator& rhs) const { return cur_ != rhs.cur_; }
 
-    private:
-      value_type cur_;
-      TCOD_bresenham_data_t& data_;
+   private:
+    value_type cur_;
+    TCOD_bresenham_data_t& data_;
   };
 
   iterator begin() { return iterator({data_.origx, data_.origy}, data_); }
@@ -139,7 +141,8 @@ class TCODLIB_API BresenhamLine {
 
     This function is provisional.
  */
-inline bool bresenham_line(std::pair<int, int> from, std::pair<int, int> to, const std::function<bool(std::pair<int, int>)>& callback) {
+inline bool bresenham_line(
+    std::pair<int, int> from, std::pair<int, int> to, const std::function<bool(std::pair<int, int>)>& callback) {
   auto line = BresenhamLine(from, to);
   do {
     if (!callback(from)) {
@@ -149,7 +152,8 @@ inline bool bresenham_line(std::pair<int, int> from, std::pair<int, int> to, con
   return true;
 }
 
-inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(std::pair<int, int>)>& callback) {
+inline bool bresenham_line(
+    int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(std::pair<int, int>)>& callback) {
   return bresenham_line({xFrom, yFrom}, {xTo, yTo}, callback);
 }
 

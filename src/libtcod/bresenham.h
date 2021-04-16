@@ -35,7 +35,7 @@
 #ifdef __cplusplus
 #include <functional>
 #include <vector>
-#endif // __cplusplus
+#endif  // __cplusplus
 
 #include "portability.h"
 
@@ -87,63 +87,46 @@ TCODLIB_API bool TCOD_line_mt(
     int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data);
 
 #ifdef __cplusplus
-}
-
+}  // extern "C"
 namespace tcod {
 /**
-tcod::BresenhamLine class
+    Encapsulates a Bresenham line drawing algorithm.
 
-Implements a lightweight bresenham line drawing algorithm.
+    This class is provisional.
  */
 class TCODLIB_API BresenhamLine {
  public:
   /**
-    tcod::BresenhamLine constructor
-
-    Initializes the object to draw a line between [xFrom, yFrom] to [xTo, yTo]
-    \rst
-    .. cpp:function:: tcod::BresenhamLine(int xFrom, int yFrom, int xTo, int yTo);
-    \endrst
+      Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
   */
   BresenhamLine(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_); }
 
   /**
-    tcod::BresenhamLine step method
+      Steps through each cell from the start to the end coordinates.
 
-    Steps through each cell from the start to the end coordinates.
-    The input variables [xCur, yCur] are passed in by reference and updated at each step of the line.
-    \rst
-    .. cpp:function:: bool step(int& xCur, int& yCur);
-    \endrst
+      The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
-  inline bool step(int& xCur, int& yCur) { return TCOD_line_step_mt(&xCur, &yCur, &data_); }
+  inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
 
  private:
   TCOD_bresenham_data_t data_{};
 };
 
 /**
-    tcod::BresenhamLine callback function
+    Draw a Bresenham line, passing the indexes of the line to `callback`.
 
-    \rst
-    .. cpp:function:: bool tcod::bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int,
-   int)>& callback);
-    \endrst
-  */
+    This function is provisional.
+ */
 inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
   auto line = BresenhamLine(xFrom, yFrom, xTo, yTo);
-
   do {
     if (!callback(xFrom, yFrom)) {
       return false;
     }
   } while (!line.step(xFrom, yFrom));
-
   return true;
 }
 
 }  // namespace tcod
-
 #endif  // __cplusplus
-
 #endif  // _TCOD_BRESENHAM_H

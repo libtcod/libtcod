@@ -13,12 +13,9 @@ jobs:
         CONAN_GCC_VERSIONS: [7, 8, 9]
 
     steps:
-    # actions/checkout breaks `git describe` so a manual clone is needed.
+    # actions/checkout@v2 breaks `git describe` so v1 is needed.
     # https://github.com/actions/checkout/issues/272
-    - name: Clone libtcod
-      run: |
-        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
-        git checkout ${{github.sha}}
+    - uses: actions/checkout@v1
     - name: git describe
       run: |
         git describe
@@ -56,10 +53,9 @@ jobs:
             experimental: true
 
     steps:
-    - name: Clone libtcod
-      run: |
-        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
-        git checkout ${{github.sha}}
+    # actions/checkout@v2 breaks `git describe` so v1 is needed.
+    # https://github.com/actions/checkout/issues/272
+    - uses: actions/checkout@v1
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:
@@ -95,11 +91,9 @@ jobs:
         CONAN_BUILD_TYPES: [Debug, Release]
 
     steps:
-    - name: Clone libtcod
-      shell: cmd
-      run: |
-        git clone https://github.com/${{github.repository}}.git ${{github.workspace}}
-        git checkout ${{github.sha}}
+    # actions/checkout@v2 breaks `git describe` so v1 is needed.
+    # https://github.com/actions/checkout/issues/272
+    - uses: actions/checkout@v1
     - name: Set up Python 3
       uses: actions/setup-python@v2
       with:

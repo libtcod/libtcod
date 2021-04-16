@@ -34,6 +34,7 @@
 
 #ifdef __cplusplus
 #include <functional>
+#include <iterator>
 #include <vector>
 #endif  // __cplusplus
 
@@ -95,11 +96,14 @@ namespace tcod {
     This class is provisional.
  */
 class TCODLIB_API BresenhamLine {
+  using cell = std::pair<int, int>;
+
  public:
   /**
       Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
   */
   BresenhamLine(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_); }
+  BresenhamLine(cell from, cell to) { TCOD_line_init_mt(from.first, from.second, to.first, to.second, &data_); }
 
   /**
       Steps through each cell from the start to the end coordinates.
@@ -107,6 +111,24 @@ class TCODLIB_API BresenhamLine {
       The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
   inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
+
+  struct iterator : public std::iterator<std::input_iterator_tag, cell>
+  {
+    iterator(value_type cur, TCOD_bresenham_data_t& data) : cur_(cur), data_(data)  {}
+
+    inline reference operator*() { return cur_; }
+    inline iterator& operator++() { TCOD_line_step_mt(&cur_.first, &cur_.second, &data_); return *this; }
+
+    inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
+    inline bool operator!=(const iterator& rhs) const { return cur_ != rhs.cur_; }
+
+    private:
+      value_type cur_;
+      TCOD_bresenham_data_t& data_;
+  };
+
+  iterator begin() { return iterator({data_.origx, data_.origy}, data_); }
+  iterator end() { return iterator({data_.destx, data_.desty}, data_); }
 
  private:
   TCOD_bresenham_data_t data_{};
@@ -117,14 +139,18 @@ class TCODLIB_API BresenhamLine {
 
     This function is provisional.
  */
-inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
-  auto line = BresenhamLine(xFrom, yFrom, xTo, yTo);
+inline bool bresenham_line(std::pair<int, int> from, std::pair<int, int> to, const std::function<bool(std::pair<int, int>)>& callback) {
+  auto line = BresenhamLine(from, to);
   do {
-    if (!callback(xFrom, yFrom)) {
+    if (!callback(from)) {
       return false;
     }
-  } while (!line.step(xFrom, yFrom));
+  } while (!line.step(from.first, from.second));
   return true;
+}
+
+inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(std::pair<int, int>)>& callback) {
+  return bresenham_line({xFrom, yFrom}, {xTo, yTo}, callback);
 }
 
 }  // namespace tcod

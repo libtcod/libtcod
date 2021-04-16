@@ -32,6 +32,11 @@
 #ifndef _TCOD_BRESENHAM_H
 #define _TCOD_BRESENHAM_H
 
+#ifdef __cplusplus
+#include <functional>
+#include <vector>
+#endif // __cplusplus
+
 #include "portability.h"
 
 #ifdef __cplusplus
@@ -80,7 +85,65 @@ TCODLIB_API bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, T
 TCOD_DEPRECATED("Use TCOD_line instead.")
 TCODLIB_API bool TCOD_line_mt(
     int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data);
+
 #ifdef __cplusplus
 }
-#endif
-#endif
+
+namespace tcod {
+/**
+tcod::BresenhamLine class
+
+Implements a lightweight bresenham line drawing algorithm.
+ */
+class TCODLIB_API BresenhamLine {
+ public:
+  /**
+    tcod::BresenhamLine constructor
+
+    Initializes the object to draw a line between [xFrom, yFrom] to [xTo, yTo]
+    \rst
+    .. cpp:function:: tcod::BresenhamLine(int xFrom, int yFrom, int xTo, int yTo);
+    \endrst
+  */
+  BresenhamLine(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_); }
+
+  /**
+    tcod::BresenhamLine step method
+
+    Steps through each cell from the start to the end coordinates.
+    The input variables [xCur, yCur] are passed in by reference and updated at each step of the line.
+    \rst
+    .. cpp:function:: bool step(int& xCur, int& yCur);
+    \endrst
+  */
+  inline bool step(int& xCur, int& yCur) { return TCOD_line_step_mt(&xCur, &yCur, &data_); }
+
+ private:
+  TCOD_bresenham_data_t data_{};
+};
+
+/**
+    tcod::BresenhamLine callback function
+
+    \rst
+    .. cpp:function:: bool tcod::bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int,
+   int)>& callback);
+    \endrst
+  */
+inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
+  auto line = BresenhamLine(xFrom, yFrom, xTo, yTo);
+
+  do {
+    if (!callback(xFrom, yFrom)) {
+      return false;
+    }
+  } while (!line.step(xFrom, yFrom));
+
+  return true;
+}
+
+}  // namespace tcod
+
+#endif  // __cplusplus
+
+#endif  // _TCOD_BRESENHAM_H

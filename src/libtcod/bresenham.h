@@ -111,6 +111,16 @@ inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data)
   }
 }
 
+inline void bresenham_reverse(TCOD_bresenham_data_t& data) {
+  data.e = -data.e;
+  data.stepx = -data.stepx;
+  data.stepy = -data.stepy;
+  data.deltax = -data.deltax;
+  data.deltay = -data.deltay;
+  std::swap(data.origx, data.destx);
+  std::swap(data.origy, data.desty);
+}
+
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
@@ -147,15 +157,12 @@ class TCODLIB_API BresenhamLine {
   }
 
   struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
-    iterator(value_type orig, value_type dest, value_type cur, const TCOD_bresenham_data_t& data)
-        : orig_(orig), dest_(dest), cur_(cur), data_(data) {}
+    iterator(bool forward, value_type cur, const TCOD_bresenham_data_t& data)
+        : forward_(forward), cur_(cur), data_(data) {}
 
     inline iterator& operator++() {
       if (!forward_) {
-        data_.origx = cur_.at(0);
-        data_.origy = cur_.at(1);
-        data_.destx = dest_.at(0);
-        data_.desty = dest_.at(1);
+        bresenham_reverse(data_);
         forward_ = true;
       }
 
@@ -165,10 +172,7 @@ class TCODLIB_API BresenhamLine {
 
     inline iterator& operator--() {
       if (forward_) {
-        data_.origx = cur_.at(0);
-        data_.origy = cur_.at(1);
-        data_.destx = orig_.at(0);
-        data_.desty = orig_.at(1);
+        bresenham_reverse(data_);
         forward_ = false;
       }
 
@@ -193,18 +197,25 @@ class TCODLIB_API BresenhamLine {
     inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 
    private:
-    bool forward_ = true;
-    const Point2 orig_;
-    const Point2 dest_;
+    bool forward_;
     value_type cur_;
     TCOD_bresenham_data_t data_;
   };
 
-  inline iterator begin() { return iterator(orig_, dest_, orig_, data_); }
+  inline iterator begin() { return iterator(true, orig_, data_); }
   inline iterator end() {
     Point2 cur = dest_;
     bresenham_step(cur, data_);
-    return iterator(orig_, dest_, cur, data_);
+    return iterator(true, cur, data_);
+  }
+
+  inline iterator rbegin() { return iterator(false, dest_, data_); }
+  inline iterator rend() {
+    Point2 cur = orig_;
+    auto data = data_;
+    bresenham_reverse(data);
+    bresenham_step(cur, data);
+    return iterator(false, cur, data);
   }
 
  private:

@@ -91,6 +91,26 @@ TCODLIB_API bool TCOD_line_mt(
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
+inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
+  if (data.stepx * data.deltax > data.stepy * data.deltay) {
+    cur.at(0) += data.stepx;
+    data.e -= data.stepy * data.deltay;
+
+    if (data.e < 0) {
+      cur.at(1) += data.stepy;
+      data.e += data.stepx * data.deltax;
+    }
+  } else {
+    cur.at(1) += data.stepy;
+    data.e -= data.stepx * data.deltax;
+
+    if (data.e < 0) {
+      cur.at(0) += data.stepx;
+      data.e += data.stepy * data.deltay;
+    }
+  }
+}
+
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
@@ -112,7 +132,19 @@ class TCODLIB_API BresenhamLine {
 
       The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
-  inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
+  inline bool step(int& x, int& y) {
+    Point2 cur{x, y};
+
+    bresenham_step(cur, data_);
+
+    if (cur == dest_) {
+      return true;
+    }
+
+    x = cur.at(0);
+    y = cur.at(1);
+    return false;
+  }
 
   struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
     iterator(value_type orig, value_type dest, value_type cur, const TCOD_bresenham_data_t& data)
@@ -127,7 +159,7 @@ class TCODLIB_API BresenhamLine {
         forward_ = true;
       }
 
-      TCOD_line_step_mt(&cur_.at(0), &cur_.at(1), &data_);
+      bresenham_step(cur_, data_);
       return *this;
     }
 
@@ -140,7 +172,7 @@ class TCODLIB_API BresenhamLine {
         forward_ = false;
       }
 
-      TCOD_line_step_mt(&cur_.at(0), &cur_.at(1), &data_);
+      bresenham_step(cur_, data_);
       return *this;
     }
 
@@ -157,7 +189,7 @@ class TCODLIB_API BresenhamLine {
     }
 
     inline reference operator*() { return cur_; }
-    inline bool operator==(const iterator& rhs) const { return (cur_ == rhs.cur_); }
+    inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
     inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 
    private:
@@ -170,28 +202,9 @@ class TCODLIB_API BresenhamLine {
 
   inline iterator begin() { return iterator(orig_, dest_, orig_, data_); }
   inline iterator end() {
-    Point2 cur{data_.origx, data_.origy};
-    char err = data_.e;
-
-    if ((data_.stepx * data_.deltax) > (data_.stepy * data_.deltay)) {
-      cur.at(0) += data_.stepx;
-      err -= data_.stepy * data_.deltay;
-
-      if (err < 0) {
-        cur.at(1) += data_.stepy;
-        err += data_.stepx * data_.deltax;
-      }
-    } else {
-      cur.at(1) += data_.stepy;
-      err -= data_.stepx * data_.deltax;
-
-      if (err < 0) {
-        cur.at(0) += data_.stepx;
-        err += data_.stepy * data_.deltay;
-      }
-    }
-
-    return iterator(orig_, dest_, dest_, data_);
+    Point2 cur = dest_;
+    bresenham_step(cur, data_);
+    return iterator(orig_, dest_, cur, data_);
   }
 
  private:

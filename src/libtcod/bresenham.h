@@ -91,36 +91,6 @@ TCODLIB_API bool TCOD_line_mt(
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
-inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
-  if (data.stepx * data.deltax > data.stepy * data.deltay) {
-    cur.at(0) += data.stepx;
-    data.e -= data.stepy * data.deltay;
-
-    if (data.e < 0) {
-      cur.at(1) += data.stepy;
-      data.e += data.stepx * data.deltax;
-    }
-  } else {
-    cur.at(1) += data.stepy;
-    data.e -= data.stepx * data.deltax;
-
-    if (data.e < 0) {
-      cur.at(0) += data.stepx;
-      data.e += data.stepy * data.deltay;
-    }
-  }
-}
-
-inline void bresenham_reverse(TCOD_bresenham_data_t& data) {
-  data.e = -data.e;
-  data.stepx = -data.stepx;
-  data.stepy = -data.stepy;
-  data.deltax = -data.deltax;
-  data.deltay = -data.deltay;
-  std::swap(data.origx, data.destx);
-  std::swap(data.origy, data.desty);
-}
-
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
@@ -219,6 +189,36 @@ class TCODLIB_API BresenhamLine {
   }
 
  private:
+  static inline void bresenham_reverse(TCOD_bresenham_data_t& data) {
+    data.e = -data.e;
+    data.stepx = -data.stepx;
+    data.stepy = -data.stepy;
+    data.deltax = -data.deltax;
+    data.deltay = -data.deltay;
+    std::swap(data.origx, data.destx);
+    std::swap(data.origy, data.desty);
+  }
+
+  static inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
+    if (data.stepx * data.deltax > data.stepy * data.deltay) {
+      cur.at(0) += data.stepx;
+      data.e -= data.stepy * data.deltay;
+
+      if (data.e < 0) {
+        cur.at(1) += data.stepy;
+        data.e += data.stepx * data.deltax;
+      }
+    } else {
+      cur.at(1) += data.stepy;
+      data.e -= data.stepx * data.deltax;
+
+      if (data.e < 0) {
+        cur.at(0) += data.stepx;
+        data.e += data.stepy * data.deltay;
+      }
+    }
+  }
+
   const Point2 orig_;
   const Point2 dest_;
   TCOD_bresenham_data_t data_{};

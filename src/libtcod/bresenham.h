@@ -103,7 +103,7 @@ class TCODLIB_API BresenhamLine {
   /**
       Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
   */
-  BresenhamLine(Point2 from, Point2 to) : orig_(from), dest_(to) {
+  BresenhamLine(Point2 from, Point2 to) : orig_(from), dest_(to), cur_(from) {
     TCOD_line_init_mt(from.at(0), from.at(1), to.at(0), to.at(1), &data_);
   }
 
@@ -113,16 +113,15 @@ class TCODLIB_API BresenhamLine {
       The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
   inline bool step(int& x, int& y) {
-    Point2 cur{x, y};
-
-    bresenham_step(cur, data_);
-
-    if (cur == dest_) {
+    if (cur_ == dest_) {
       return true;
     }
 
-    x = cur.at(0);
-    y = cur.at(1);
+    bresenham_step(cur_, data_);
+
+    x = cur_.at(0);
+    y = cur_.at(1);
+
     return false;
   }
 
@@ -221,6 +220,7 @@ class TCODLIB_API BresenhamLine {
 
   const Point2 orig_;
   const Point2 dest_;
+  Point2 cur_;
   TCOD_bresenham_data_t data_{};
 };
 

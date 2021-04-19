@@ -103,12 +103,8 @@ class TCODLIB_API BresenhamLine {
   /**
       Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
   */
-  BresenhamLine(Point2 from, Point2 to) {
-    TCOD_bresenham_data_t data;
-    TCOD_line_init_mt(from.at(0), from.at(1), to.at(0), to.at(1), &data);
-    do {
-      data_.push_back(from);
-    } while (!TCOD_line_step_mt(&from.at(0), &from.at(1), &data));
+  BresenhamLine(Point2 from, Point2 to) : orig_(from), dest_(to) {
+    TCOD_line_init_mt(from.at(0), from.at(1), to.at(0), to.at(1), &data_);
   }
 
   /**
@@ -116,45 +112,92 @@ class TCODLIB_API BresenhamLine {
 
       The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
-  inline bool step(int& x, int& y) {
-    auto pos = data_.at(cur_);
-    x = pos.at(0);
-    y = pos.at(1);
-    return (cur_++ < data_.size());
-  }
+  inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
 
   struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
-    iterator(std::size_t cur, std::vector<value_type>& data) : cur_(cur), data_(data) {}
+    iterator(value_type orig, value_type dest, value_type cur, const TCOD_bresenham_data_t& data)
+        : orig_(orig), dest_(dest), cur_(cur), data_(data) {}
+
+    inline iterator& operator++() {
+      if (!forward_) {
+        data_.origx = cur_.at(0);
+        data_.origy = cur_.at(1);
+        data_.destx = dest_.at(0);
+        data_.desty = dest_.at(1);
+        forward_ = true;
+      }
+
+      TCOD_line_step_mt(&cur_.at(0), &cur_.at(1), &data_);
+      return *this;
+    }
+
+    inline iterator& operator--() {
+      if (forward_) {
+        data_.origx = cur_.at(0);
+        data_.origy = cur_.at(1);
+        data_.destx = orig_.at(0);
+        data_.desty = orig_.at(1);
+        forward_ = false;
+      }
+
+      TCOD_line_step_mt(&cur_.at(0), &cur_.at(1), &data_);
+      return *this;
+    }
 
     inline iterator operator++(int) {
       auto tmp = *this;
       ++(*this);
       return tmp;
     }
-    inline iterator& operator++() {
-      ++cur_;
-      return *this;
-    }
-    inline iterator& operator--() {
-      --cur_;
-      return *this;
+
+    inline iterator operator--(int) {
+      auto tmp = *this;
+      --(*this);
+      return tmp;
     }
 
-    inline reference operator*() const { return data_.at(cur_); }
-    inline bool operator==(const iterator& rhs) const { return (data_ == rhs.data_ && cur_ == rhs.cur_); }
+    inline reference operator*() { return cur_; }
+    inline bool operator==(const iterator& rhs) const { return (cur_ == rhs.cur_); }
     inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 
    private:
-    std::size_t cur_;
-    std::vector<value_type>& data_;
+    bool forward_ = true;
+    const Point2 orig_;
+    const Point2 dest_;
+    value_type cur_;
+    TCOD_bresenham_data_t data_;
   };
 
-  iterator begin() { return iterator(0, data_); }
-  iterator end() { return iterator(data_.size(), data_); }
+  inline iterator begin() { return iterator(orig_, dest_, orig_, data_); }
+  inline iterator end() {
+    Point2 cur{data_.origx, data_.origy};
+    char err = data_.e;
+
+    if ((data_.stepx * data_.deltax) > (data_.stepy * data_.deltay)) {
+      cur.at(0) += data_.stepx;
+      err -= data_.stepy * data_.deltay;
+
+      if (err < 0) {
+        cur.at(1) += data_.stepy;
+        err += data_.stepx * data_.deltax;
+      }
+    } else {
+      cur.at(1) += data_.stepy;
+      err -= data_.stepx * data_.deltax;
+
+      if (err < 0) {
+        cur.at(0) += data_.stepx;
+        err += data_.stepy * data_.deltay;
+      }
+    }
+
+    return iterator(orig_, dest_, dest_, data_);
+  }
 
  private:
-  std::size_t cur_ = 0;
-  std::vector<Point2> data_{};
+  const Point2 orig_;
+  const Point2 dest_;
+  TCOD_bresenham_data_t data_{};
 };
 
 /**
@@ -164,17 +207,12 @@ class TCODLIB_API BresenhamLine {
  */
 inline bool bresenham_line(
     std::array<int, 2> from, std::array<int, 2> to, const std::function<bool(std::array<int, 2>)>& callback) {
-  for (auto&& [x, y] : BresenhamLine(from, to)) {
-    if (!callback({x, y})) {
+  for (auto pos : BresenhamLine(from, to)) {
+    if (!callback(pos)) {
       return false;
     }
   }
   return true;
-}
-
-inline bool bresenham_line(
-    int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(std::array<int, 2>)>& callback) {
-  return bresenham_line({xFrom, yFrom}, {xTo, yTo}, callback);
 }
 
 }  // namespace tcod

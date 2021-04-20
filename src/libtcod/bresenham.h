@@ -126,25 +126,9 @@ class TCODLIB_API BresenhamLine {
   }
 
   struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
-    iterator(bool forward, value_type cur, const TCOD_bresenham_data_t& data)
-        : forward_(forward), cur_(cur), data_(data) {}
+    iterator(value_type cur, const TCOD_bresenham_data_t& data) : cur_(cur), data_(data) {}
 
     inline iterator& operator++() {
-      if (!forward_) {
-        bresenham_reverse(data_);
-        forward_ = true;
-      }
-
-      bresenham_step(cur_, data_);
-      return *this;
-    }
-
-    inline iterator& operator--() {
-      if (forward_) {
-        bresenham_reverse(data_);
-        forward_ = false;
-      }
-
       bresenham_step(cur_, data_);
       return *this;
     }
@@ -154,50 +138,23 @@ class TCODLIB_API BresenhamLine {
       ++(*this);
       return tmp;
     }
-
-    inline iterator operator--(int) {
-      auto tmp = *this;
-      --(*this);
-      return tmp;
-    }
-
     inline reference operator*() { return cur_; }
     inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
     inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
 
    private:
-    bool forward_;
     value_type cur_;
     TCOD_bresenham_data_t data_;
   };
 
-  inline iterator begin() { return iterator(true, orig_, data_); }
+  inline iterator begin() { return iterator(orig_, data_); }
   inline iterator end() {
     Point2 cur = dest_;
     bresenham_step(cur, data_);
-    return iterator(true, cur, data_);
-  }
-
-  inline iterator rbegin() { return iterator(false, dest_, data_); }
-  inline iterator rend() {
-    Point2 cur = orig_;
-    auto data = data_;
-    bresenham_reverse(data);
-    bresenham_step(cur, data);
-    return iterator(false, cur, data);
+    return iterator(cur, data_);
   }
 
  private:
-  static inline void bresenham_reverse(TCOD_bresenham_data_t& data) {
-    data.e = -data.e;
-    data.stepx = -data.stepx;
-    data.stepy = -data.stepy;
-    data.deltax = -data.deltax;
-    data.deltay = -data.deltay;
-    std::swap(data.origx, data.destx);
-    std::swap(data.origy, data.desty);
-  }
-
   static inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
     if (data.stepx * data.deltax > data.stepy * data.deltay) {
       cur.at(0) += data.stepx;

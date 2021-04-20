@@ -181,21 +181,6 @@ class TCODLIB_API BresenhamLine {
   TCOD_bresenham_data_t data_{};
 };
 
-/**
-    Draw a Bresenham line, passing the indexes of the line to `callback`.
-
-    This function is provisional.
- */
-inline bool bresenham_line(
-    std::array<int, 2> from, std::array<int, 2> to, const std::function<bool(std::array<int, 2>)>& callback) {
-  for (auto pos : BresenhamLine(from, to)) {
-    if (!callback(pos)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // _TCOD_BRESENHAM_H

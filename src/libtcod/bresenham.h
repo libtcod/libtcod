@@ -125,11 +125,13 @@ class TCODLIB_API BresenhamLine {
     return false;
   }
 
-  struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
-    iterator(value_type cur, const TCOD_bresenham_data_t& data) : cur_(cur), data_(data) {}
+  struct iterator : public std::iterator<std::random_access_iterator_tag, Point2> {
+    constexpr iterator(value_type cur, const TCOD_bresenham_data_t& data, int index)
+        : cur_(cur), data_(data), index_(index) {}
 
     inline iterator& operator++() {
       bresenham_step(cur_, data_);
+      ++index_;
       return *this;
     }
 
@@ -138,23 +140,27 @@ class TCODLIB_API BresenhamLine {
       ++(*this);
       return tmp;
     }
-    inline reference operator*() { return cur_; }
-    inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
-    inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
+    inline constexpr reference operator*() noexcept { return cur_; }
+    inline constexpr bool operator==(const iterator& rhs) const noexcept { return index_ == rhs.index_; }
+    inline constexpr bool operator!=(const iterator& rhs) const noexcept { return !(*this == rhs); }
+    inline constexpr difference_type operator-(const iterator& rhs) const noexcept { return index_ - rhs.index_; }
 
    private:
     value_type cur_;
     TCOD_bresenham_data_t data_;
+    int index_;
   };
 
-  inline iterator begin() { return iterator(orig_, data_); }
-  inline iterator end() {
-    Point2 cur = dest_;
-    bresenham_step(cur, data_);
-    return iterator(cur, data_);
-  }
+  inline constexpr iterator begin() const noexcept { return iterator(orig_, data_, 0); }
+  inline iterator end() const noexcept { return iterator(dest_, data_, length()); }
 
  private:
+  /**
+      The total length of the Bresenham line including both endpoints.
+   */
+  inline int length() const noexcept {
+    return std::max(std::abs(orig_.at(0) - dest_.at(0)), std::abs(orig_.at(1) - dest_.at(1))) + 1;
+  }
   static inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
     if (data.stepx * data.deltax > data.stepy * data.deltay) {
       cur.at(0) += data.stepx;
@@ -175,8 +181,8 @@ class TCODLIB_API BresenhamLine {
     }
   }
 
-  const Point2 orig_;
-  const Point2 dest_;
+  Point2 orig_;
+  Point2 dest_;
   Point2 cur_;
   TCOD_bresenham_data_t data_{};
 };

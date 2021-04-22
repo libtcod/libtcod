@@ -1,6 +1,7 @@
 
 #include <libtcod/bresenham.h>
 
+#include <algorithm>
 #include <array>
 #include <catch2/catch.hpp>
 #include <vector>
@@ -45,4 +46,22 @@ TEST_CASE("bresenham benchmarks", "[benchmark]") {
     return x;
   };
   BENCHMARK("TCOD_line") { return TCOD_line(0, 0, 11, 3, null_bresenham_callback); };
+  BENCHMARK("BresenhamLine (iterate)") {
+    std::array<int, 2> out;
+    for (auto&& xy : tcod::BresenhamLine({0, 0}, {11, 3})) {
+      out = xy;
+    }
+    return out;
+  };
+  BENCHMARK("BresenhamLine (to vector)") {
+    tcod::BresenhamLine it{{0, 0}, {11, 3}};
+    return std::vector<std::array<int, 2>>{it.begin(), it.end()};
+  };
+}
+
+TEST_CASE("BresenhamLine") {
+  const auto EXPECTED = generate_line({0, 0}, {11, 3});
+  const tcod::BresenhamLine bresenham_iterator{{0, 0}, {11, 3}};
+  std::vector<std::array<int, 2>> line{bresenham_iterator.begin(), bresenham_iterator.end()};
+  REQUIRE(line == EXPECTED);
 }

@@ -33,7 +33,9 @@
 #define _TCOD_BRESENHAM_H
 
 #ifdef __cplusplus
+#include <array>
 #include <functional>
+#include <iterator>
 #include <vector>
 #endif  // __cplusplus
 
@@ -95,37 +97,89 @@ namespace tcod {
     This class is provisional.
  */
 class TCODLIB_API BresenhamLine {
+  using Point2 = std::array<int, 2>;
+
  public:
   /**
       Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
   */
-  BresenhamLine(int xFrom, int yFrom, int xTo, int yTo) { TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &data_); }
+  BresenhamLine(Point2 from, Point2 to) : orig_(from), dest_(to), cur_(from) {
+    TCOD_line_init_mt(from.at(0), from.at(1), to.at(0), to.at(1), &data_);
+  }
 
   /**
       Steps through each cell from the start to the end coordinates.
 
       The input variables `x`, `y` are passed in by reference and updated at each step of the line.
   */
-  inline bool step(int& x, int& y) { return TCOD_line_step_mt(&x, &y, &data_); }
+  inline bool step(int& x, int& y) {
+    if (cur_ == dest_) {
+      return true;
+    }
+
+    bresenham_step(cur_, data_);
+
+    x = cur_.at(0);
+    y = cur_.at(1);
+
+    return false;
+  }
+
+  struct iterator : public std::iterator<std::bidirectional_iterator_tag, Point2> {
+    iterator(value_type cur, const TCOD_bresenham_data_t& data) : cur_(cur), data_(data) {}
+
+    inline iterator& operator++() {
+      bresenham_step(cur_, data_);
+      return *this;
+    }
+
+    inline iterator operator++(int) {
+      auto tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+    inline reference operator*() { return cur_; }
+    inline bool operator==(const iterator& rhs) const { return cur_ == rhs.cur_; }
+    inline bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
+
+   private:
+    value_type cur_;
+    TCOD_bresenham_data_t data_;
+  };
+
+  inline iterator begin() { return iterator(orig_, data_); }
+  inline iterator end() {
+    Point2 cur = dest_;
+    bresenham_step(cur, data_);
+    return iterator(cur, data_);
+  }
 
  private:
+  static inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
+    if (data.stepx * data.deltax > data.stepy * data.deltay) {
+      cur.at(0) += data.stepx;
+      data.e -= data.stepy * data.deltay;
+
+      if (data.e < 0) {
+        cur.at(1) += data.stepy;
+        data.e += data.stepx * data.deltax;
+      }
+    } else {
+      cur.at(1) += data.stepy;
+      data.e -= data.stepx * data.deltax;
+
+      if (data.e < 0) {
+        cur.at(0) += data.stepx;
+        data.e += data.stepy * data.deltay;
+      }
+    }
+  }
+
+  const Point2 orig_;
+  const Point2 dest_;
+  Point2 cur_;
   TCOD_bresenham_data_t data_{};
 };
-
-/**
-    Draw a Bresenham line, passing the indexes of the line to `callback`.
-
-    This function is provisional.
- */
-inline bool bresenham_line(int xFrom, int yFrom, int xTo, int yTo, const std::function<bool(int, int)>& callback) {
-  auto line = BresenhamLine(xFrom, yFrom, xTo, yTo);
-  do {
-    if (!callback(xFrom, yFrom)) {
-      return false;
-    }
-  } while (!line.step(xFrom, yFrom));
-  return true;
-}
 
 }  // namespace tcod
 #endif  // __cplusplus

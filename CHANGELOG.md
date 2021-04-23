@@ -8,8 +8,10 @@ since `1.7.0`.
 
 ## [Unreleased]
 ###
-- Added experimental `tcod::BresenhamLine` and `tcod::bresenham_line`.
+- Added experimental `tcod::BresenhamLine`.
   [#91](https://github.com/libtcod/libtcod/pull/91)
+  [#92](https://github.com/libtcod/libtcod/issues/92)
+  [#93](https://github.com/libtcod/libtcod/pull/93)
 
 ### Changed
 - CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.

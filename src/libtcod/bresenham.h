@@ -96,95 +96,173 @@ namespace tcod {
 
     This class is provisional.
  */
-class TCODLIB_API BresenhamLine {
+class BresenhamLine {
+ public:
   using Point2 = std::array<int, 2>;
 
- public:
-  /**
-      Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
-  */
-  BresenhamLine(Point2 from, Point2 to) : orig_(from), dest_(to), cur_(from) {
-    TCOD_line_init_mt(from.at(0), from.at(1), to.at(0), to.at(1), &data_);
-  }
-
-  /**
-      Steps through each cell from the start to the end coordinates.
-
-      The input variables `x`, `y` are passed in by reference and updated at each step of the line.
-  */
-  inline bool step(int& x, int& y) {
-    if (cur_ == dest_) {
-      return true;
-    }
-
-    bresenham_step(cur_, data_);
-
-    x = cur_.at(0);
-    y = cur_.at(1);
-
-    return false;
-  }
-
   struct iterator : public std::iterator<std::random_access_iterator_tag, Point2> {
-    constexpr iterator(value_type cur, const TCOD_bresenham_data_t& data, int index)
-        : cur_(cur), data_(data), index_(index) {}
+    explicit iterator(const Point2& origin, const Point2& dest, int index) noexcept
+        : origin_{origin}, dest_{dest}, state_{init_state(origin, dest)}, index_{index} {}
 
-    inline iterator& operator++() {
-      bresenham_step(cur_, data_);
+    inline iterator& operator++() noexcept {
       ++index_;
       return *this;
     }
-
-    inline iterator operator++(int) {
+    inline iterator operator++(int) noexcept {
       auto tmp = *this;
       ++(*this);
       return tmp;
     }
-    inline constexpr reference operator*() noexcept { return cur_; }
+    inline iterator& operator--() noexcept {
+      --index_;
+      return *this;
+    }
+    inline iterator operator--(int) noexcept {
+      auto tmp = *this;
+      --(*this);
+      return tmp;
+    }
+    inline value_type operator*() noexcept { return get_matrix().transform(state_[index_].cursor_); }
+    inline value_type operator[](int index) noexcept { return get_matrix().transform(state_[index_ + index].cursor_); }
     inline constexpr bool operator==(const iterator& rhs) const noexcept { return index_ == rhs.index_; }
     inline constexpr bool operator!=(const iterator& rhs) const noexcept { return !(*this == rhs); }
     inline constexpr difference_type operator-(const iterator& rhs) const noexcept { return index_ - rhs.index_; }
 
    private:
-    value_type cur_;
-    TCOD_bresenham_data_t data_;
-    int index_;
+    /**
+        Internal state of the Bresenham line algorithm.
+     */
+    struct State {
+      Point2 cursor_;  // Normalized cursor position. First axis acts as the current index.
+      Point2 delta_;   // Normalized delta vector. First axis is always longer. All values are non-negative.
+      int err_;        // Fractional difference between Y indexes.  Is always `delta[0] * -2 < err <= 0`.
+      /**
+          Advance one step using the Bresenham algorithm.
+       */
+      State& operator++() {
+        err_ += delta_.at(1) * 2;
+        if (err_ > 0) {
+          ++cursor_.at(1);
+          err_ -= delta_.at(0) * 2;
+        };
+        ++cursor_.at(0);
+        return *this;
+      }
+      /**
+          Inverse Bresenham algorithm.  Takes one step backwards.
+       */
+      State& operator--() {
+        err_ -= delta_.at(1) * 2;
+        if (err_ <= delta_.at(0) * -2) {
+          --cursor_.at(1);
+          err_ += delta_.at(0) * 2;
+        };
+        --cursor_.at(0);
+        return *this;
+      }
+      /**
+          Seek to the given index.
+       */
+      State& operator[](int index) {
+        while (cursor_.at(0) < index) ++(*this);
+        while (cursor_.at(0) > index) --(*this);
+        return *this;
+      }
+    };
+    /**
+        Transform matrix to convert from normalized state cursor to the real world coordinates.
+     */
+    struct Matrix {
+      /**
+          Convert a state cursor vector to the a world vector.
+       */
+      Point2 transform(const Point2& cursor) const noexcept {
+        return {ax + cursor.at(0) * xx + cursor.at(1) * yx, ay + cursor.at(0) * xy + cursor.at(1) * yy};
+      }
+      int ax;          // Affine transformation on X.
+      int ay;          // Affine transformation on Y.
+      int_fast8_t xx;  // Index to world X.
+      int_fast8_t xy;  // Index to world Y.
+      int_fast8_t yx;  // Cursor Y to world X.
+      int_fast8_t yy;  // Cursor Y to world Y.
+    };
+    /**
+        Normalize the delta vector and return a new State.
+     */
+    static State init_state(const Point2& origin, const Point2& dest) noexcept {
+      int delta_x = std::abs(dest.at(0) - origin.at(0));
+      int delta_y = std::abs(dest.at(1) - origin.at(1));
+      if (delta_y > delta_x) std::swap(delta_x, delta_y);
+      return {{0, 0}, {delta_x, delta_y}, -delta_x};
+    }
+    /**
+        Return a Matrix that converts a normalized cursor to the correct octant.
+     */
+    inline Matrix get_matrix() const noexcept { return get_matrix(origin_, dest_); }
+    static Matrix get_matrix(const Point2& origin, const Point2& dest) noexcept {
+      const int delta_x = dest.at(0) - origin.at(0);
+      const int delta_y = dest.at(1) - origin.at(1);
+      Matrix matrix{
+          origin.at(0),
+          origin.at(1),
+          1,
+          0,
+          0,
+          1,
+      };
+      if (delta_x < 0) matrix.xx = -1;
+      if (delta_y < 0) matrix.yy = -1;
+      if (std::abs(delta_y) > std::abs(delta_x)) {
+        std::swap(matrix.xx, matrix.yx);
+        std::swap(matrix.xy, matrix.yy);
+      }
+      return matrix;
+    }
+    Point2 origin_;  // Starting point.
+    Point2 dest_;    // Ending point.
+    State state_;    // The current Bresenham state and real position.
+    int index_;      // Current index.
   };
+  /**
+      Initializes the object to draw a line from `xFrom`, `yFrom` to `xTo`, `yTo`.
+  */
+  explicit BresenhamLine(Point2 from, Point2 to) noexcept
+      : origin_(from), dest_(to), index_begin_{0}, index_end_{length(from, to)} {}
 
-  inline constexpr iterator begin() const noexcept { return iterator(orig_, data_, 0); }
-  inline iterator end() const noexcept { return iterator(dest_, data_, length()); }
+  /**
+      Return a new version of this BresenhamLine with an adjusted range.
+
+      `shift_begin` and `shift_end` change the beginning and ending of the line
+      when iterators over.
+
+      Example::
+
+        // Remove the endpoints of a bresenham line.
+        auto line = tcod::BresenhamLine(from, to).adjust_range(1, -1);
+   */
+  inline BresenhamLine adjust_range(int shift_begin, int shift_end) const noexcept {
+    BresenhamLine new_data{*this};
+    new_data.index_begin_ += shift_begin;
+    new_data.index_end_ += shift_end;
+    new_data.index_end_ = std::max(new_data.index_begin_, new_data.index_end_);
+    return new_data;
+  }
+
+  inline iterator begin() const noexcept { return iterator(origin_, dest_, index_begin_); }
+  inline iterator end() const noexcept { return iterator(dest_, dest_, index_end_); }
 
  private:
   /**
       The total length of the Bresenham line including both endpoints.
    */
-  inline int length() const noexcept {
-    return std::max(std::abs(orig_.at(0) - dest_.at(0)), std::abs(orig_.at(1) - dest_.at(1))) + 1;
-  }
-  static inline void bresenham_step(std::array<int, 2>& cur, TCOD_bresenham_data_t& data) {
-    if (data.stepx * data.deltax > data.stepy * data.deltay) {
-      cur.at(0) += data.stepx;
-      data.e -= data.stepy * data.deltay;
-
-      if (data.e < 0) {
-        cur.at(1) += data.stepy;
-        data.e += data.stepx * data.deltax;
-      }
-    } else {
-      cur.at(1) += data.stepy;
-      data.e -= data.stepx * data.deltax;
-
-      if (data.e < 0) {
-        cur.at(0) += data.stepx;
-        data.e += data.stepy * data.deltay;
-      }
-    }
+  inline int length(const Point2& origin, const Point2& dest) const noexcept {
+    return std::max(std::abs(origin.at(0) - dest.at(0)), std::abs(origin.at(1) - dest.at(1))) + 1;
   }
 
-  Point2 orig_;
-  Point2 dest_;
-  Point2 cur_;
-  TCOD_bresenham_data_t data_{};
+  Point2 origin_;    // Starting point.
+  Point2 dest_;      // Ending point.
+  int index_begin_;  // The starting index returned by `begin`.
+  int index_end_;    // The past-the-end index returned by `end`.
 };
 
 }  // namespace tcod

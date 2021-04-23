@@ -60,8 +60,20 @@ TEST_CASE("bresenham benchmarks", "[benchmark]") {
 }
 
 TEST_CASE("BresenhamLine") {
-  const auto EXPECTED = generate_line({0, 0}, {11, 3});
-  const tcod::BresenhamLine bresenham_iterator{{0, 0}, {11, 3}};
-  std::vector<std::array<int, 2>> line{bresenham_iterator.begin(), bresenham_iterator.end()};
-  REQUIRE(line == EXPECTED);
+  using Point2_Vector = std::vector<tcod::BresenhamLine::Point2>;
+  const auto dest_x = GENERATE(-11, -3, 0, 3, 11);
+  const auto dest_y = GENERATE(-11, -3, 0, 3, 11);
+  const auto EXPECTED = generate_line({0, 0}, {dest_x, dest_y});
+  SECTION("BresenhamLine compares equal to the original algorithm.") {
+    const tcod::BresenhamLine bresenham_iterator{{0, 0}, {dest_x, dest_y}};
+    const Point2_Vector line{bresenham_iterator.begin(), bresenham_iterator.end()};
+    REQUIRE(line == EXPECTED);
+  }
+  SECTION("BresenhamLine endpoints can be clipped.") {
+    const auto EXPECTED_CLIPPED =
+        Point2_Vector{EXPECTED.begin() + 1, std::max(EXPECTED.begin() + 1, EXPECTED.end() - 1)};
+    const auto bresenham_iterator = tcod::BresenhamLine({0, 0}, {dest_x, dest_y}).adjust_range(1, -1);
+    const Point2_Vector line = {bresenham_iterator.begin(), bresenham_iterator.end()};
+    REQUIRE(line == EXPECTED_CLIPPED);
+  }
 }

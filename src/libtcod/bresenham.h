@@ -135,15 +135,15 @@ class BresenhamLine {
     struct State {
       Point2 cursor_;  // Normalized cursor position. First axis acts as the current index.
       Point2 delta_;   // Normalized delta vector. First axis is always longer. All values are non-negative.
-      int err_;        // Fractional difference between Y indexes.  Is always `delta[0] * -2 < err <= 0`.
+      int err_;        // Fractional difference between Y indexes.  Is always `-delta[0] < err <= 0`.
       /**
           Advance one step using the Bresenham algorithm.
        */
       State& operator++() {
-        err_ += delta_.at(1) * 2;
+        err_ += delta_.at(1);
         if (err_ > 0) {
           ++cursor_.at(1);
-          err_ -= delta_.at(0) * 2;
+          err_ -= delta_.at(0);
         };
         ++cursor_.at(0);
         return *this;
@@ -152,10 +152,10 @@ class BresenhamLine {
           Inverse Bresenham algorithm.  Takes one step backwards.
        */
       State& operator--() {
-        err_ -= delta_.at(1) * 2;
-        if (err_ <= delta_.at(0) * -2) {
+        err_ -= delta_.at(1);
+        if (err_ <= -delta_.at(0)) {
           --cursor_.at(1);
-          err_ += delta_.at(0) * 2;
+          err_ += delta_.at(0);
         };
         --cursor_.at(0);
         return *this;
@@ -193,7 +193,7 @@ class BresenhamLine {
       int delta_x = std::abs(dest.at(0) - origin.at(0));
       int delta_y = std::abs(dest.at(1) - origin.at(1));
       if (delta_y > delta_x) std::swap(delta_x, delta_y);
-      return {{0, 0}, {delta_x, delta_y}, -delta_x};
+      return {{0, 0}, {delta_x, delta_y}, -delta_x / 2};
     }
     /**
         Return a Matrix that converts a normalized cursor to the correct octant.

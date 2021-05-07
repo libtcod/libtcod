@@ -18,12 +18,6 @@ environment:
       MSYS2_ARCH: i686
       MSYSTEM: MINGW32
       TEST_PYTHON3: "C:/Python35/python.exe"
-    - CONAN_BUILD: True
-      CONAN_VISUAL_VERSIONS: 16
-      CONAN_ARCHS: x86_64
-    - CONAN_BUILD: True
-      CONAN_VISUAL_VERSIONS: 16
-      CONAN_ARCHS: x86
 
 matrix:
   allow_failures:

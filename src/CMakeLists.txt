@@ -66,7 +66,7 @@ else()
 endif()
 
 set(LIBTCOD_UTF8PROC "vendored" CACHE STRING "How this library will be linked.")
-set_property(CACHE LIBTCOD_UTF8PROC PROPERTY STRINGS "vendored")
+set_property(CACHE LIBTCOD_UTF8PROC PROPERTY STRINGS "vendored" "vcpkg")
 if(LIBTCOD_UTF8PROC STREQUAL "vendored")
     message("Will be vendored: utf8proc")
     target_include_directories(${PROJECT_NAME} PRIVATE "vendor/utf8proc")

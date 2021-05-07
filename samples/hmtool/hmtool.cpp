@@ -475,7 +475,7 @@ void buildGui() {
 }
 
 int main(int argc, char* argv[]) {
-  TCODConsole::initRoot(HM_WIDTH, HM_HEIGHT, "height map tool", false);
+  TCODConsole::initRoot(HM_WIDTH, HM_HEIGHT, "height map tool", false, TCOD_RENDERER_OPENGL2);
   guicon = new TCODConsole(HM_WIDTH, HM_HEIGHT);
   guicon->setKeyColor(TCODColor(255, 0, 255));
   Widget::setConsole(guicon);

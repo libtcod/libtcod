@@ -7,7 +7,7 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
-###
+### Added
 - Added experimental `tcod::BresenhamLine`.
   [#91](https://github.com/libtcod/libtcod/pull/91)
   [#92](https://github.com/libtcod/libtcod/issues/92)
@@ -18,6 +18,7 @@ since `1.7.0`.
 
 ### Fixed
 - Fixed `TCOD_load_library`.
+- Fixed `TCODList(TCOD_list_t)` constructor.
 
 ## [1.16.7] - 2021-03-31
 ### Changed

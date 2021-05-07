@@ -95,7 +95,7 @@ public :
     array = NULL;
     fillSize = allocSize = 0;
     for (void** it = TCOD_list_begin(l); it != TCOD_list_end(l); ++it) {
-      push(*reinterpret_cast<T*>(it));
+      push(*static_cast<T*>(static_cast<void*>(it)));
     }
   }
 	TCODList(const TCODList<T> &l2) {

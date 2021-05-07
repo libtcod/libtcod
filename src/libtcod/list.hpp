@@ -46,7 +46,8 @@ Note that this module has no Python wrapper. Use Python built-in containers inst
  */
 
 // fast & lightweight list template
-template <class T> class TCODList {
+template <class T>
+class [[deprecated("TCODList is unsuitable as a C++ container.")]] TCODList {
 	T *array;
 	int fillSize;
 	int allocSize;

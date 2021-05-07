@@ -16,6 +16,9 @@ since `1.7.0`.
 ### Changed
 - CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.
 
+### Deprecated
+- Deprecated the `TCOD_List` and `TCODList` classes since they don't work for their intended purpose.
+
 ### Fixed
 - Fixed `TCOD_load_library`.
 - Fixed `TCODList(TCOD_list_t)` constructor.

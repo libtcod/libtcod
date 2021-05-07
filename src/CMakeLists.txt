@@ -8,7 +8,7 @@ if(IPO_SUPPORTED)
     set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
 endif()
 
-target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_11)
+target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_14)
 
 set(LIBTCOD_SDL2 "find_package" CACHE STRING "How this library will be linked.")
 set(LIBTCOD_ZLIB "find_package" CACHE STRING "How this library will be linked.")

@@ -47,7 +47,7 @@ Note that this module has no Python wrapper. Use Python built-in containers inst
 
 // fast & lightweight list template
 template <class T>
-class [[deprecated("TCODList is unsuitable as a C++ container.")]] TCODList {
+class TCODList {
 	T *array;
 	int fillSize;
 	int allocSize;
@@ -68,6 +68,7 @@ public :
 		TCOD_list_t intList = TCOD_list_new();
 		TCOD_list_t floatList = TCOD_list_new();
 	*/
+  [[deprecated("TCODList is unsuitable as a C++ container.")]]
 	TCODList() {
 		array=NULL;
 		fillSize=allocSize=0;
@@ -115,6 +116,7 @@ public :
 	@CppEx TCODList<int> intList(5); // create an empty list, pre-allocate memory for 5 elements
 	@CEx TCOD_list_t intList = TCOD_list_allocate(5);
 	*/
+  [[deprecated("TCODList is unsuitable as a C++ container.")]]
 	TCODList(int nbElements) {
 		fillSize=0;
 		allocSize=nbElements;

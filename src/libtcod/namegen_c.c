@@ -498,7 +498,7 @@ void TCOD_namegen_parse(const char* filename, TCOD_random_t random) {
 }
 
 /* generate a name using a given generation rule */
-char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate) {
+char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allocate) {
   namegen_t* data;
   size_t buflen = 1024;
   char* buf;
@@ -514,7 +514,7 @@ char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate) {
   rule_len = strlen(rule);
   /* let the show begin! */
   do {
-    char* it = rule;
+    const char* it = rule;
     memset(buf, '\0', buflen);
     while (it <= rule + rule_len) {
       /* make sure the buffer is large enough */
@@ -618,7 +618,7 @@ char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate) {
 }
 
 /* generate a name with one of the rules from the file */
-char* TCOD_namegen_generate(char* name, bool allocate) {
+char* TCOD_namegen_generate(const char* name, bool allocate) {
   namegen_t* data;
   int rule_number;
   int chance;

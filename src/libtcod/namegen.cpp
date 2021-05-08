@@ -40,9 +40,21 @@ void TCODNamegen::parse(const char* filename, TCODRandom* random) {
 }
 
 char* TCODNamegen::generate(char* name, bool allocate) { return TCOD_namegen_generate(name, allocate); }
+std::string TCODNamegen::generate(const char* name, bool allocate) {
+  char* tmp = TCOD_namegen_generate(name, allocate);
+  std::string result{tmp ? tmp : ""};
+  free(tmp);
+  return result;
+}
 
 char* TCODNamegen::generateCustom(char* name, char* rule, bool allocate) {
   return TCOD_namegen_generate_custom(name, rule, allocate);
+}
+std::string TCODNamegen::generateCustom(const char* name, const char* rule, bool allocate) {
+  char* tmp = TCOD_namegen_generate_custom(name, rule, allocate);
+  std::string result{tmp ? tmp : ""};
+  free(tmp);
+  return result;
 }
 
 TCOD_list_t TCODNamegen::getSets(void) { return TCOD_namegen_get_sets(); }

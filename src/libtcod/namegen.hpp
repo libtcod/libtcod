@@ -38,6 +38,8 @@
 #ifndef _TCOD_NAMEGEN_HPP
 #define _TCOD_NAMEGEN_HPP
 
+#include <string>
+
 #include "list.hpp"
 #include "mersenne.hpp"
 #include "namegen.h"
@@ -116,7 +118,9 @@ class TCODLIB_API TCODNamegen {
 			libtcod.namegen_parse('data/names.txt')
 			name = libtcod.namegen_generate('Nordic female')
 		*/
+    [[deprecated("This overload is deprecated, be sure to pass in const strings.")]]
 		static char * generate (char * name, bool allocate = false);
+		static std::string generate (const char * name, bool allocate = false);
 
 		/**
 		@PageName namegen_generate
@@ -140,7 +144,9 @@ class TCODLIB_API TCODNamegen {
 			libtcod.namegen_parse('data/names.txt')
 			name = libtcod.namegen_generate_custom('Nordic female','$s$e')
 		*/
+    [[deprecated("This overload is deprecated, be sure to pass in const strings.")]]
 		static char * generateCustom (char * name, char * rule, bool allocate = false);
+		static std::string generateCustom (const char * name, const char * rule, bool allocate = false);
 
 		/**
 		@PageName namegen_generate

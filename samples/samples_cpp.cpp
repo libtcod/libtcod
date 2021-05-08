@@ -1172,60 +1172,48 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * name generator sample
  * ***************************/
 void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static int nbSets = 0;
   static int curSet = 0;
   static float delay = 0.0f;
-  static TCODList<char*> names;
-  static TCODList<char*> sets;
-  int i;
-  if (nbSets == 0) {
-    TCODList<char*> files = TCODSystem::getDirectoryContent("data/namegen", "*.cfg");
+  static std::vector<std::string> names;
+  static std::vector<std::string> sets;
+  if (sets.size() == 0) {
+    TCODList<char*> files{TCODSystem::getDirectoryContent("data/namegen", "*.cfg")};
     // parse all the files
-    for (char** it = files.begin(); it != files.end(); it++) {
-      char tmp[256] = "";
-      std::snprintf(tmp, sizeof(tmp), "data/namegen/%s", *it);
-      TCODNamegen::parse(tmp);
+    for (char* it : files) {
+      TCODNamegen::parse((std::string("data/namegen/") + it).c_str());
     }
     // get the sets list
-    sets = TCODNamegen::getSets();
-    nbSets = sets.size();
+    TCODList<char*> sets_list{TCODNamegen::getSets()};
+    sets = {sets_list.begin(), sets_list.end()};
   }
   while (names.size() >= 15) {
-    // remove the first element.
-#ifndef TCOD_VISUAL_STUDIO
-    char* nameToRemove = *(names.begin());
-#endif
-    names.remove(names.begin());
-    // for some reason, this crashes on MSVC...
-#ifndef TCOD_VISUAL_STUDIO
-    free(nameToRemove);
-#endif
+    names.erase(names.begin());  // remove the first element.
   }
 
   sampleConsole.setDefaultBackground(TCODColor::lightBlue);
   sampleConsole.clear();
   sampleConsole.setDefaultForeground(TCODColor::white);
-  sampleConsole.printf(1, 1, "%s\n\n+ : next generator\n- : prev generator", sets.get(curSet));
-  for (i = 0; i < names.size(); i++) {
-    char* name = names.get(i);
-    if (strlen(name) < SAMPLE_SCREEN_WIDTH)
-      sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name);
+  sampleConsole.printf(1, 1, "%s\n\n+ : next generator\n- : prev generator", sets.at(curSet).c_str());
+  for (int i = 0; i < names.size(); ++i) {
+    const std::string& name = names.at(i);
+    if (name.length() < SAMPLE_SCREEN_WIDTH)
+      sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name.c_str());
   }
 
   delay += TCODSystem::getLastFrameLength();
   if (delay >= 0.5f) {
     delay -= 0.5f;
     // add a new name to the list
-    names.push(TCODNamegen::generate(sets.get(curSet), true));
+    names.emplace_back(TCODNamegen::generate(sets.at(curSet).c_str(), true));
   }
-  if (key->c == '+') {
+  if (key->c == '=') {
     curSet++;
-    if (curSet == nbSets) curSet = 0;
-    names.push(strdup("======"));
+    if (curSet == sets.size()) curSet = 0;
+    names.emplace_back("======");
   } else if (key->c == '-') {
     curSet--;
-    if (curSet < 0) curSet = nbSets - 1;
-    names.push(strdup("======"));
+    if (curSet < 0) curSet = static_cast<int>(sets.size()) - 1;
+    names.emplace_back("======");
   }
 }
 

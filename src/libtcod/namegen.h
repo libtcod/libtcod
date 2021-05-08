@@ -51,9 +51,9 @@ typedef struct TCOD_NameGen* TCOD_namegen_t;
 /* parse a file with syllable sets */
 TCODLIB_API void TCOD_namegen_parse(const char* filename, TCOD_random_t random);
 /* generate a name */
-TCODLIB_API char* TCOD_namegen_generate(char* name, bool allocate);
+TCODLIB_API char* TCOD_namegen_generate(const char* name, bool allocate);
 /* generate a name using a custom generation rule */
-TCODLIB_API char* TCOD_namegen_generate_custom(char* name, char* rule, bool allocate);
+TCODLIB_API char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allocate);
 /* retrieve the list of all available syllable set names */
 TCODLIB_API TCOD_list_t TCOD_namegen_get_sets(void);
 /* delete a generator */

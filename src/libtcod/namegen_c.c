@@ -215,15 +215,15 @@ void namegen_generator_delete(namegen_t* generator) {
  * ------------------------------ */
 
 /* fill the pointed list with syllable data by extracting tokens */
-void namegen_populate_list(char* source, TCOD_list_t list, bool wildcards) {
-  size_t len = strlen(source);
+void namegen_populate_list(const char* source, TCOD_list_t list, bool wildcards) {
+  const size_t source_length = strlen(source);
+  const size_t token_length = source_length + 1;
+  char* token = calloc(token_length, 1);  // tokens will typically be many and very short, but let's be cautious. What
+                                          // if the entire string is a single token?
   size_t i = 0;
-  char* token = malloc(strlen(source) + 1); /* tokens will typically be many and very short, but let's be cautious. What
-                                               if the entire string is a single token?*/
-  memset(token, '\0', strlen(source) + 1);
   do {
     /* do the tokenizing using an iterator imitation :) */
-    char* it = source + i;
+    const char* it = source + i;
     /* append a normal character */
     if ((*it >= 'a' && *it <= 'z') || (*it >= 'A' && *it <= 'Z') || *it == '\'' || *it == '-') strncat(token, it, 1);
     /* special character */
@@ -247,14 +247,14 @@ void namegen_populate_list(char* source, TCOD_list_t list, bool wildcards) {
     /* all other characters are treated as separators and cause adding the current token to the list */
     else if (strlen(token) > 0) {
       TCOD_list_push(list, TCOD_strdup(token));
-      memset(token, '\0', strlen(source) + 1);
+      memset(token, '\0', token_length);
     }
-  } while (++i <= len);
+  } while (++i <= source_length);
   free(token);
 }
 
 /* populate all lists of a namegen_t struct */
-void namegen_populate(namegen_t* dst, namegen_syllables_t* src) {
+void namegen_populate(namegen_t* dst, const namegen_syllables_t* src) {
   if (dst == NULL || src == NULL) {
     fprintf(stderr, "Couldn't populate the name generator with data.\n");
     exit(1);
@@ -388,8 +388,8 @@ void namegen_parser_run(const char* filename) {
  * --------------- */
 
 /* search for occurrences of triple characters (case-insensitive) */
-bool namegen_word_has_triples(char* str) {
-  char* it = str;
+bool namegen_word_has_triples(const char* str) {
+  const char* it = str;
   char c = (char)(tolower(*it));
   int cnt = 1;
   bool has_triples = false;
@@ -408,7 +408,7 @@ bool namegen_word_has_triples(char* str) {
 }
 
 /* search for occurrences of illegal strings */
-bool namegen_word_has_illegal(namegen_t* data, char* str) {
+bool namegen_word_has_illegal(const namegen_t* data, const char* str) {
   /* convert word to lowercase */
   char* haystack = TCOD_strdup(str);
   int i;
@@ -472,7 +472,7 @@ bool namegen_word_prune_syllables(char* str) {
 }
 
 /* everything stacked together */
-bool namegen_word_is_ok(namegen_t* data, char* str) {
+bool namegen_word_is_ok(const namegen_t* data, char* str) {
   namegen_word_prune_spaces(str);
   return (strlen(str) > 0) & (!namegen_word_has_triples(str)) & (!namegen_word_has_illegal(data, str)) &
          (!namegen_word_prune_syllables(str));
@@ -501,8 +501,6 @@ void TCOD_namegen_parse(const char* filename, TCOD_random_t random) {
 char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allocate) {
   namegen_t* data;
   size_t buflen = 1024;
-  char* buf;
-  size_t rule_len;
   if (namegen_generator_check(name))
     data = namegen_generator_get(name);
   else {
@@ -510,8 +508,8 @@ char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allo
     namegen_get_sets_on_error();
     return NULL;
   }
-  buf = malloc(buflen);
-  rule_len = strlen(rule);
+  char* buf = malloc(buflen);
+  const size_t rule_len = strlen(rule);
   /* let the show begin! */
   do {
     const char* it = rule;
@@ -620,12 +618,6 @@ char* TCOD_namegen_generate_custom(const char* name, const char* rule, bool allo
 /* generate a name with one of the rules from the file */
 char* TCOD_namegen_generate(const char* name, bool allocate) {
   namegen_t* data;
-  int rule_number;
-  int chance;
-  char* rule_rolled;
-  int truncation;
-  char* rule_parsed;
-  char* ret;
   if (namegen_generator_check(name))
     data = namegen_generator_get(name);
   else {
@@ -639,8 +631,11 @@ char* TCOD_namegen_generate(const char* name, bool allocate) {
     exit(1);
   }
   /* choose the rule */
+  int chance;
+  const char* rule_rolled;
+  int truncation;
   do {
-    rule_number = TCOD_random_get_int(data->random, 0, TCOD_list_size(data->rules) - 1);
+    int rule_number = TCOD_random_get_int(data->random, 0, TCOD_list_size(data->rules) - 1);
     rule_rolled = (char*)TCOD_list_get(data->rules, rule_number);
     chance = 100;
     truncation = 0;
@@ -655,10 +650,8 @@ char* TCOD_namegen_generate(const char* name, bool allocate) {
     }
   } while (TCOD_random_get_int(data->random, 0, 100) > chance);
   /* OK, we've got ourselves a new rule! */
-  rule_parsed = TCOD_strdup(rule_rolled + truncation);
-  ret = TCOD_namegen_generate_custom(name, rule_parsed, allocate);
-  free(rule_parsed);
-  return ret;
+  const char* rule_parsed = rule_rolled + truncation;
+  return TCOD_namegen_generate_custom(name, rule_parsed, allocate);
 }
 
 /* retrieve the list of all available syllable set names */

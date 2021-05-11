@@ -1608,14 +1608,17 @@ TCOD_Error TCOD_console_printf_frame(
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  va_list ap;
-  va_start(ap, fmt);
   char* str = NULL;
-  int len = vsprint_(&str, fmt, ap);
-  va_end(ap);
-  if (len < 0) {
-    TCOD_set_errorv("Error while resolving formatting string.");
-    return TCOD_E_ERROR;
+  int len = 0;
+  if (fmt) {
+    va_list ap;
+    va_start(ap, fmt);
+    len = vsprint_(&str, fmt, ap);
+    va_end(ap);
+    if (len < 0) {
+      TCOD_set_errorv("Error while resolving formatting string.");
+      return TCOD_E_ERROR;
+    }
   }
   TCOD_Error err = TCOD_console_printn_frame(con, x, y, width, height, len, str, &con->fore, &con->back, flag, empty);
   free(str);

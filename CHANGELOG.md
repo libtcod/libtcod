@@ -22,6 +22,7 @@ since `1.7.0`.
 ### Fixed
 - Fixed `TCOD_load_library`.
 - Fixed `TCODList(TCOD_list_t)` constructor.
+- Fixed a regression in `TCOD_console_printf_frame` where a `fmt` of NULL would prevent the frame from being drawn.
 
 ## [1.16.7] - 2021-03-31
 ### Changed

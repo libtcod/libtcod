@@ -51,7 +51,7 @@ if (CONAN_FILE)
 endif()
 
 add_executable(frost frost/frost.cpp)
-target_link_libraries(frost ${LINK_TCOD})
+target_link_libraries(frost ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
 if (CONAN_FILE)
     add_dependencies(frost copy_font)
 endif()

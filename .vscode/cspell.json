@@ -168,6 +168,7 @@
         "libtcodpy",
         "libtcodxx",
         "libtools",
+        "LMASK",
         "lmeta",
         "lodepng",
         "lread",

@@ -444,6 +444,15 @@ public :
 	*/
 	void blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1) const;
 
+  /**
+      Return the pointer to this objects TCOD_Image data.
+   */
+  TCOD_Image* get_data() noexcept { return data; }
+  /**
+      Return the const pointer to this objects TCOD_Image data.
+   */
+  const TCOD_Image* get_data() const noexcept { return data; }
+
 	TCODImage(TCOD_image_t img) : data(img), deleteData(false) {}
 	virtual ~TCODImage();
 

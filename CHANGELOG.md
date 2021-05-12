@@ -12,6 +12,7 @@ since `1.7.0`.
   [#91](https://github.com/libtcod/libtcod/pull/91)
   [#92](https://github.com/libtcod/libtcod/issues/92)
   [#93](https://github.com/libtcod/libtcod/pull/93)
+- Added `TCODImage::get_data`.
 
 ### Changed
 - CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.

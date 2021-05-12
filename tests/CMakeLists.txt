@@ -17,6 +17,9 @@ target_link_libraries(unittest libtcod::libtcod Catch2::Catch2)
 target_compile_features(unittest PUBLIC cxx_std_14)
 target_compile_definitions(unittest PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_compile_definitions(unittest PRIVATE CATCH_CONFIG_ENABLE_BENCHMARKING)
+if (MSVC)
+    target_compile_options(unittest PRIVATE /utf-8)
+endif()
 
 # CTest is a testing tool that can be used to test your project.
 # enable_testing()

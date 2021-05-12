@@ -34,6 +34,10 @@ add_custom_target(copy_font
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
 )
 
+# Enforce UTF-8 encoding on MSVC.
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+
 add_executable(samples_c samples_c.c)
 target_link_libraries(samples_c ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)

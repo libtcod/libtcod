@@ -189,6 +189,7 @@ public :
 		TCOD_event_t ev = TCOD_sys_wait_for_event(TCOD_EVENT_ANY,&key,&mouse,true);
 		if ( ev == TCOD_EVENT_KEY_PRESS && key.c == 'i' ) { ... open inventory ... }
 	*/
+  [[deprecated("This API is deprecated, use SDL_WaitEvent instead.")]]
 	static TCOD_event_t waitForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse, bool flush);
 
 	/**
@@ -223,6 +224,7 @@ public :
 		TCOD_event_t ev = TCOD_sys_check_for_event(TCOD_EVENT_ANY,&key,&mouse);
 		if ( ev == TCOD_EVENT_KEY_PRESS && key.c == 'i' ) { ... open inventory ... }
 	*/
+  [[deprecated("This API is deprecated, use SDL_PollEvent instead.")]]
 	static TCOD_event_t checkForEvent(int eventMask, TCOD_key_t *key, TCOD_mouse_t *mouse);
 
 	/**

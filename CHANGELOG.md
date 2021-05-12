@@ -18,6 +18,7 @@ since `1.7.0`.
 
 ### Deprecated
 - Deprecated the `TCOD_List` and `TCODList` classes since they don't work for their intended purpose.
+- Deprecated libtcod's event handling API, you should use SDL for events instead of libtcod.
 
 ### Fixed
 - Fixed `TCOD_load_library`.

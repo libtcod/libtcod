@@ -107,6 +107,7 @@ TCODLIB_API bool TCOD_console_save_apf(TCOD_console_t con, const char* filename)
     \return A TCOD_key_t struct with a recently pressed key.
             If no event exists then the `vk` attribute will be `TCODK_NONE`
  */
+TCOD_DEPRECATED("This API is deprecated, use SDL_PollEvent instead.")
 TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 /**
     Wait for a key press event, then return it.
@@ -117,6 +118,7 @@ TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 
     Do not solve input lag issues by arbitrarily dropping events!
  */
+TCOD_DEPRECATED("This API is deprecated, use SDL_WaitEvent instead.")
 TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
 
 TCODLIB_API void TCOD_console_credits(void);

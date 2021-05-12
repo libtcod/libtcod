@@ -170,7 +170,9 @@ TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCO
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
 TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);
 
+TCOD_DEPRECATED("This API is deprecated, use SDL_WaitEvent instead.")
 TCODLIB_API TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse, bool flush);
+TCOD_DEPRECATED("This API is deprecated, use SDL_PollEvent instead.")
 TCODLIB_API TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse);
 
 /* clipboard */

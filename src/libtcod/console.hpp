@@ -1337,8 +1337,10 @@ public :
 	*/
 
 	/* deprecated as of 1.5.1 */
+  [[deprecated("This API is deprecated, use SDL_WaitEvent instead.")]]
 	static TCOD_key_t waitForKeypress(bool flush);
 	/* deprecated as of 1.5.1 */
+  [[deprecated("This API is deprecated, use SDL_PollEvent instead.")]]
 	static TCOD_key_t checkForKeypress(int flags=TCOD_KEY_RELEASED);
 
 	/**

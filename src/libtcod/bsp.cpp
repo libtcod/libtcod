@@ -31,6 +31,8 @@
  */
 #include "bsp.hpp"
 
+#include <vector>
+
 TCODBsp::TCODBsp(TCODBsp* father, bool left) {
   if (father->horizontal) {
     x = father->x;
@@ -70,32 +72,32 @@ bool TCODBsp::traversePostOrder(ITCODBspCallback* listener, void* userData) {
 }
 
 bool TCODBsp::traverseLevelOrder(ITCODBspCallback* listener, void* userData) {
-  TCODList<TCODBsp*> stack;
-  stack.push(this);
-  while (!stack.isEmpty()) {
-    TCODBsp* node = stack.get(0);
-    stack.remove(node);
-    if (node->getLeft()) stack.push(node->getLeft());
-    if (node->getRight()) stack.push(node->getRight());
+  std::vector<TCODBsp*> stack;
+  stack.push_back(this);
+  while (!stack.empty()) {
+    TCODBsp* node = stack.front();
+    stack.erase(stack.begin());
+    if (node->getLeft()) stack.push_back(node->getLeft());
+    if (node->getRight()) stack.push_back(node->getRight());
     if (!listener->visitNode(node, userData)) return false;
   }
   return true;
 }
 
 bool TCODBsp::traverseInvertedLevelOrder(ITCODBspCallback* listener, void* userData) {
-  TCODList<TCODBsp*> stack1;
-  TCODList<TCODBsp*> stack2;
-  stack1.push(this);
-  while (!stack1.isEmpty()) {
-    TCODBsp* node = stack1.get(0);
-    stack2.push(node);
-    stack1.remove(node);
-    if (node->getLeft()) stack1.push(node->getLeft());
-    if (node->getRight()) stack1.push(node->getRight());
+  std::vector<TCODBsp*> stack1;
+  std::vector<TCODBsp*> stack2;
+  stack1.push_back(this);
+  while (!stack1.empty()) {
+    TCODBsp* node = stack1.front();
+    stack1.erase(stack1.begin());
+    stack2.push_back(node);
+    if (node->getLeft()) stack1.push_back(node->getLeft());
+    if (node->getRight()) stack1.push_back(node->getRight());
   }
-  while (!stack2.isEmpty()) {
-    TCODBsp* node = stack2.pop();
-    if (!listener->visitNode(node, userData)) return false;
+  while (!stack2.empty()) {
+    if (!listener->visitNode(stack2.back(), userData)) return false;
+    stack2.pop_back();
   }
   return true;
 }

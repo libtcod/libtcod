@@ -7,12 +7,14 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.17.0] - 2021-05-13
 ### Added
-- Added experimental `tcod::BresenhamLine`.
+- Added `tcod::BresenhamLine`, a C++ Bresenham line iterator.
   [#91](https://github.com/libtcod/libtcod/pull/91)
   [#92](https://github.com/libtcod/libtcod/issues/92)
   [#93](https://github.com/libtcod/libtcod/pull/93)
-- Added `TCODImage::get_data`.
+- Added `TCODImage::get_data` to return its `TCOD_Image*` object.
 
 ### Changed
 - CMake scripts now use `CMAKE_INSTALL_DATAROOTDIR` correctly.

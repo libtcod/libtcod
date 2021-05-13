@@ -446,10 +446,18 @@ public :
 
   /**
       Return the pointer to this objects TCOD_Image data.
+
+      \rst
+      .. versionadded:: 1.17
+      \endrst
    */
   TCOD_Image* get_data() noexcept { return data; }
   /**
       Return the const pointer to this objects TCOD_Image data.
+
+      \rst
+      .. versionadded:: 1.17
+      \endrst
    */
   const TCOD_Image* get_data() const noexcept { return data; }
 

@@ -94,7 +94,9 @@ namespace tcod {
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
-    This class is provisional.
+    \rst
+    .. versionadded:: 1.17
+    \endrst
  */
 class BresenhamLine : public std::iterator<std::random_access_iterator_tag, std::array<int, 2>> {
  public:

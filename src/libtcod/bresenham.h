@@ -176,6 +176,36 @@ class BresenhamLine : public std::iterator<std::random_access_iterator_tag, std:
     return new_data;
   }
   /**
+      Remove the staring endpoint of a line.
+
+      Example::
+
+        for (auto&& [x, y] : tcod::BresenhamLine(from, to).without_start()) {
+          // All positions excluding `from`.
+        }
+   */
+  inline BresenhamLine without_start() const noexcept { return adjust_range(1, 0); }
+  /**
+      Remove the final endpoint of a line.
+
+      Example::
+
+        for (auto&& [x, y] : tcod::BresenhamLine(from, to).without_end()) {
+          // All positions excluding `to`.
+        }
+   */
+  inline BresenhamLine without_end() const noexcept { return adjust_range(0, -1); }
+  /**
+      Remove both endpoints of a line.
+
+      Example::
+
+        for (auto&& [x, y] : tcod::BresenhamLine(from, to).without_endpoints()) {
+          // All positions between and excluding `from` and `to`.
+        }
+   */
+  inline BresenhamLine without_endpoints() const noexcept { return adjust_range(1, -1); }
+  /**
       Return the beginning iterator, which is a copy of the current object.
    */
   inline BresenhamLine begin() const noexcept { return {*this}; }

@@ -31,142 +31,34 @@
  */
 #include "console_rexpaint.h"
 
+#include <SDL_endian.h>
 #include <limits.h>
+#include <stdlib.h>
 #include <zlib.h>
 
 #include "color.h"
 #include "console.h"
 #include "console_types.h"
+#include "libtcod_int.h"
 
-/* Convert a little-endian number to native memory order. */
-static uint32_t decode_little_endian(uint32_t data) {
-  uint32_t result = 0;
-  const uint8_t* p = (uint8_t*)&data;
-  for (int i = 0; i < (int)sizeof(result); ++i) {
-    result += p[i] << (CHAR_BIT * i);
-  }
-  return result;
-}
-/* Byte swaps a number into little-endian order to be saved to disk. */
-static uint32_t encode_little_endian(uint32_t number) {
-  uint32_t result = 0;
-  uint8_t* p = (uint8_t*)&result;
-  for (int i = 0; i < (int)sizeof(result); ++i) {
-    p[i] = number & UCHAR_MAX;
-    number >>= CHAR_BIT;
-  }
-  return result;
-}
-/* RexPaint structs */
-struct RexPaintHeader {
+#pragma pack(push, 1)
+/** REXPaint header struct, always at the beginning of the gzip stream. */
+typedef struct RexPaintHeader {
   int32_t version;
   int32_t layer_count;
-};
-struct RexPaintLayerChunk {
+} RexPaintHeader;
+/** The struct at the start of each REXPaint layer. */
+typedef struct RexPaintLayerChunk {
   int32_t width;
   int32_t height;
-};
-struct RexPaintTile {
+} RexPaintLayerChunk;
+/** The layout of REXPaint's tile data. */
+typedef struct RexPaintTile {
   int32_t ch;
   TCOD_color_t fg;
   TCOD_color_t bg;
-};
-/* Read data from a gz file, returns 0 on success, or -1 on any error. */
-static int load_gz_confirm(gzFile gz_file, void* data, size_t length) {
-  int length_ = (int)length;
-  if (gzread(gz_file, data, length_) != length_) {
-    return -1;
-  }
-  return 0;
-}
-/* Loads a little-endian 32 bit signed int into memory. */
-static int load_int32(gzFile gz_file, int32_t* out) {
-  if (load_gz_confirm(gz_file, out, sizeof(out[0]))) {
-    return -1;
-  }
-  *out = (int32_t)decode_little_endian((uint32_t)out[0]);
-  return 0;
-}
-static int load_header(gzFile gz_file, struct RexPaintHeader* xp_header) {
-  return (load_int32(gz_file, &xp_header->version) || load_int32(gz_file, &xp_header->layer_count));
-}
-static int load_layer(gzFile gz_file, struct RexPaintLayerChunk* xp_layer) {
-  return (load_int32(gz_file, &xp_layer->width) || load_int32(gz_file, &xp_layer->height));
-}
-/* Read a single REXPaint tile, return 0 on success, or -1 on error. */
-static int load_tile(gzFile gz_file, struct RexPaintTile* tile) {
-  return (
-      load_int32(gz_file, &tile->ch) || load_gz_confirm(gz_file, &tile->fg, sizeof(tile->fg)) ||
-      load_gz_confirm(gz_file, &tile->bg, sizeof(tile->bg)));
-}
-/* Read a layer of REXPaint tiles onto a console.
-   If transparent is true, then follow REXPaint's rules for transparency. */
-static int load_tiles(gzFile gz_file, TCOD_Console* console, int transparent) {
-  int x, y;
-  const int width = TCOD_console_get_width(console);
-  const int height = TCOD_console_get_height(console);
-  /* REXPaint tiles are in column-major order. */
-  for (x = 0; x < width; ++x) {
-    for (y = 0; y < height; ++y) {
-      struct RexPaintTile tile;
-      if (load_tile(gz_file, &tile)) {
-        return -1;
-      }
-      /* REXPaint uses a magic pink background to mark transparency. */
-      if (transparent && tile.bg.r == 0xff && tile.bg.g == 0x00 && tile.bg.b == 0xff) {
-        continue;
-      }
-      TCOD_console_set_char(console, x, y, tile.ch);
-      TCOD_console_set_char_foreground(console, x, y, tile.fg);
-      TCOD_console_set_char_background(console, x, y, tile.bg, TCOD_BKGND_SET);
-    }
-  }
-  return 0;
-}
-/* Return the next REXPaint layer as a console.  After reading the header you
-  could just keep calling this function until it returns NULL. */
-static TCOD_console_t load_console(gzFile gz_file) {
-  struct RexPaintLayerChunk xp_layer;
-  TCOD_console_t console;
-  if (load_layer(gz_file, &xp_layer)) {
-    return NULL;
-  }
-  console = TCOD_console_new(xp_layer.width, xp_layer.height);
-  if (!console) {
-    return NULL;
-  }
-  if (load_tiles(gz_file, console, 0)) {
-    TCOD_console_delete(console);
-    return NULL;
-  }
-  return console;
-}
-/* Load all the contents of a REXPaint file into a list of consoles. */
-static TCOD_list_t load_consoleList(gzFile gz_file) {
-  struct RexPaintHeader xp_header;
-  TCOD_list_t console_list;
-  int i;
-  if (load_header(gz_file, &xp_header)) {
-    return NULL;
-  }
-  console_list = TCOD_list_allocate(xp_header.layer_count);
-  if (!console_list) {
-    return NULL;
-  }
-  for (i = 0; i < xp_header.layer_count; ++i) {
-    TCOD_console_t console = load_console(gz_file);
-    if (!console) {
-      /* There was an issue then delete everything so far and return NULL */
-      while (!TCOD_list_is_empty(console_list)) {
-        TCOD_console_delete(TCOD_list_pop(console_list));
-      }
-      TCOD_list_delete(console_list);
-      return NULL;
-    }
-    TCOD_list_push(console_list, console);
-  }
-  return console_list;
-}
+} RexPaintTile;
+#pragma pack(pop)
 /* Convert a list of consoles into a single console, deleting the list.
   Follows REXPaint's rules for transparency. */
 static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
@@ -188,53 +80,165 @@ static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
   TCOD_list_delete(console_list);
   return main_console;
 }
-/**
- *  \brief Return a list of consoles from a REXPaint file.
- *
- *  \param [in] filename A path to the REXPaint file.
- *  \return Returns a TCOD_list_t of TCOD_console_t objects.  Or NULL on an
- *  error.  You will need to delete this list and each console individually.
- *
- *  This function can load a REXPaint file with variable layer shapes,
- *  which would cause issues for a function like TCOD_console_list_from_xp.
- */
-TCOD_list_t TCOD_console_list_from_xp(const char* filename) {
-  int z_errno = Z_ERRNO;
-  TCOD_list_t console_list;
-  gzFile gz_file = gzopen(filename, "rb");
-  if (!gz_file) {
-    TCOD_set_errorvf("Could not open file: '%s'", filename);
-    return NULL;
-  }
-  console_list = load_consoleList(gz_file);
-  if (!console_list) {
-    TCOD_set_errorvf("Error parsing '%s'\n%s", filename, gzerror(gz_file, &z_errno));
-    // Will fall-through here and return NULL.
-  }
-  gzclose(gz_file);
-  return console_list;
+void xp_tile_to_console_tile(int i, const RexPaintTile* xp_tile, TCOD_Console* console) {
+  const int x = i / console->h;
+  const int y = i % console->h;
+  console->tiles[x + y * console->w] = (TCOD_ConsoleTile){
+      SDL_SwapLE32(xp_tile->ch),
+      {xp_tile->fg.r, xp_tile->fg.g, xp_tile->fg.b, 0xff},
+      {xp_tile->bg.r, xp_tile->bg.g, xp_tile->bg.b, 0xff},
+  };
 }
 /**
- *  \brief Return a new console loaded from a REXPaint ``.xp`` file.
- *
- *  \param [in] filename A path to the REXPaint file.
- *  \return A new TCOD_console_t object.  New consoles will need
- *  to be deleted with a call to :any:`TCOD_console_delete`.
- *  Returns NULL on an error.
- *
+    Read a console from a REXPaint gzFile file.
  */
+static int console_from_xp_file(gzFile gz_file, TCOD_Console** out) {
+  RexPaintLayerChunk xp_layer;
+  int z_errno = gzread(gz_file, &xp_layer, sizeof(xp_layer));
+  if (z_errno < 0) {
+    return TCOD_set_errorvf("Error decoding REXPaint file: %s", gzerror(gz_file, &z_errno));
+  }
+  xp_layer.width = SDL_SwapLE32(xp_layer.width);
+  xp_layer.height = SDL_SwapLE32(xp_layer.height);
+  *out = TCOD_console_new(xp_layer.width, xp_layer.height);
+  if (!*out) return -1;
+  const int layer_total = xp_layer.width * xp_layer.height;
+  for (int i = 0; i < layer_total; ++i) {
+    RexPaintTile xp_tile;
+    z_errno = gzread(gz_file, &xp_tile, sizeof(xp_tile));
+    if (z_errno < 0) {
+      return TCOD_set_errorvf("Error decoding REXPaint file: %s", gzerror(gz_file, &z_errno));
+    }
+    xp_tile_to_console_tile(i, &xp_tile, *out);
+  }
+  return TCOD_E_OK;
+}
+
+int TCOD_load_xp(const char* path, int n, TCOD_Console** out) {
+  int z_errno = Z_ERRNO;
+  gzFile gz_file = gzopen(path, "rb");
+  if (!gz_file) {
+    return TCOD_set_errorvf("Could not open file: '%s'", path);
+  }
+  RexPaintHeader xp_header;
+  z_errno = gzread(gz_file, &xp_header, sizeof(xp_header));
+  if (z_errno < 0) {
+    TCOD_set_errorvf("Error parsing '%s'\n%s", path, gzerror(gz_file, &z_errno));
+    gzclose(gz_file);
+    return TCOD_E_ERROR;
+  }
+  xp_header.version = SDL_SwapLE32(xp_header.version);
+  xp_header.layer_count = SDL_SwapLE32(xp_header.layer_count);
+  if (n <= 0 || !out) {
+    gzclose(gz_file);
+    return xp_header.layer_count;
+  }
+  for (int i = 0; i < n; ++i) {
+    if (console_from_xp_file(gz_file, &out[i]) < 0) {
+      for (; i >= 0; --i) {
+        TCOD_console_delete(out[i]);
+        out[i] = NULL;
+      }
+      gzclose(gz_file);
+      return TCOD_E_ERROR;
+    }
+  }
+  gzclose(gz_file);
+  return xp_header.layer_count;
+}
+/**
+    Append a console to a REXPaint gzFile.
+ */
+static TCOD_Error console_to_xp_file(const TCOD_Console* console, gzFile gz_file) {
+  if (console->w < 0 || console->h < 0) {
+    return TCOD_set_errorv("Console data is corrupt.");
+  }
+  RexPaintLayerChunk xp_layer = {.width = SDL_SwapLE32(console->w), .height = SDL_SwapLE32(console->h)};
+  int z_err = gzwrite(gz_file, &xp_layer, sizeof(xp_layer));
+  if (z_err < 0) {
+    return TCOD_set_errorvf("Error encoding file: %s", gzerror(gz_file, &z_err));
+  };
+  for (int x = 0; x < console->w; ++x) {
+    for (int y = 0; y < console->h; ++y) {
+      const TCOD_ConsoleTile tile = console->tiles[x + y * console->w];
+      const RexPaintTile xp_tile = {
+          SDL_SwapLE32(tile.ch),
+          {tile.fg.r, tile.fg.g, tile.fg.b},
+          {tile.bg.r, tile.bg.g, tile.bg.b},
+      };
+      z_err = gzwrite(gz_file, &xp_tile, sizeof(xp_tile));
+      if (z_err < 0) {
+        return TCOD_set_errorvf("Error encoding: %s", gzerror(gz_file, &z_err));
+      };
+    }
+  }
+  return TCOD_E_OK;
+}
+TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* path, int compress_level) {
+  if (n < 0) {
+    TCOD_set_errorv("n parameter can not be negative");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (n >= 0 && !consoles) {
+    TCOD_set_errorv("consoles parameter can not be NULL");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  for (int i = 0; i < n; ++i) {
+    if (consoles[i] == NULL) {
+      TCOD_set_errorvf("consoles[%i] can not be NULL.", i);
+      return TCOD_E_INVALID_ARGUMENT;
+    }
+    if (consoles[i]->w < 0 || consoles[i]->h < 0) {
+      return TCOD_set_errorv("Console data is corrupt.");
+    }
+  }
+  if (!path) {
+    TCOD_set_errorv("path parameter can not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  RexPaintHeader xp_header;
+  gzFile gz_file = gzopen(path, "wb");
+  if (!gz_file) {
+    return TCOD_set_errorvf("Could not open the file for writing: %s", path);
+  }
+  int z_err = gzsetparams(gz_file, compress_level, Z_DEFAULT_STRATEGY);
+  if (z_err < 0) {
+    TCOD_set_errorvf("Error encoding: %s", gzerror(gz_file, &z_err));
+    gzclose(gz_file);
+    return TCOD_E_ERROR;
+  }
+  xp_header.version = SDL_SwapLE32(-1);
+  xp_header.layer_count = SDL_SwapLE32(n);
+  z_err = gzwrite(gz_file, &xp_header, sizeof(xp_header));
+  if (z_err < 0) {
+    TCOD_set_errorvf("Error encoding: %s", gzerror(gz_file, &z_err));
+    gzclose(gz_file);
+    return TCOD_E_ERROR;
+  }
+  for (int i = 0; i < n; ++i) {
+    if (console_to_xp_file(consoles[i], gz_file)) {
+      z_err = gzclose(gz_file);
+      return TCOD_E_ERROR;
+    }
+  }
+  z_err = gzclose(gz_file);
+  return TCOD_E_OK;
+}
+
+TCOD_list_t TCOD_console_list_from_xp(const char* filename) {
+  int layer_count = TCOD_load_xp(filename, 0, NULL);
+  if (layer_count < 0) return NULL;
+  TCOD_list_t console_list = TCOD_list_allocate(layer_count);
+  for (int i = 0; i < layer_count; ++i) TCOD_list_push(console_list, NULL);
+  if (TCOD_load_xp(filename, layer_count, (TCOD_Console**)TCOD_list_begin(console_list)) < 0) {
+    TCOD_list_delete(console_list);
+    console_list = NULL;
+  }
+  return console_list;
+}
 TCOD_console_t TCOD_console_from_xp(const char* filename) {
   return combine_console_list(TCOD_console_list_from_xp(filename));
 }
-/**
- *  \brief Update a console from a REXPaint ``.xp`` file.
- *
- *  \param [out] con A console instance to update from the REXPaint file.
- *  \param [in] filename A path to the REXPaint file.
- *
- *  In C++, you can pass the filepath directly to the :any:`TCODConsole`
- *  constructor to load a REXPaint file.
- */
 bool TCOD_console_load_xp(TCOD_console_t con, const char* filename) {
   TCOD_console_t xp_console = TCOD_console_from_xp(filename);
   if (!xp_console) {
@@ -249,116 +253,137 @@ bool TCOD_console_load_xp(TCOD_console_t con, const char* filename) {
   TCOD_console_delete(xp_console);
   return true;
 }
-/* Saves a 32-bit signed int encoded as little-endian to gz_file. */
-static int write_int32(gzFile gz_file, int32_t number) {
-  uint32_t encoded = encode_little_endian((uint32_t)number);
-  if (!gzwrite(gz_file, &encoded, sizeof(encoded))) {
-    return -1;
+bool TCOD_console_save_xp(const TCOD_Console* con, const char* filename, int compress_level) {
+  con = TCOD_console_validate_(con);
+  return TCOD_save_xp(1, &con, filename, compress_level) == TCOD_E_OK;
+}
+bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level) {
+  return (
+      TCOD_save_xp(
+          TCOD_list_size(console_list), (TCOD_Console**)TCOD_list_begin(console_list), filename, compress_level) ==
+      TCOD_E_OK);
+}
+/**
+    Load a console from a REXPaint chunk from a zlib `stream` to `out`.
+
+    Returns a negative value on error.
+ */
+static int console_from_xp_stream(z_stream* stream, TCOD_Console** out) {
+  RexPaintLayerChunk xp_layer;
+  stream->next_out = (unsigned char*)&xp_layer;
+  stream->avail_out = sizeof(xp_layer);
+  int z_err = inflate(stream, Z_SYNC_FLUSH);
+  if (z_err < 0) {
+    return TCOD_set_errorvf("Decoding error: %s", stream->msg);
   }
-  return 0;
-}
-static int write_header(gzFile gz_file, struct RexPaintHeader* xp_header) {
-  return (write_int32(gz_file, xp_header->version) || write_int32(gz_file, xp_header->layer_count));
-}
-static int write_layer(gzFile gz_file, struct RexPaintLayerChunk* xp_layer) {
-  return (write_int32(gz_file, xp_layer->width) || write_int32(gz_file, xp_layer->height));
-}
-static int write_tile(gzFile gz_file, struct RexPaintTile* tile) {
-  if (write_int32(gz_file, tile->ch) || !gzwrite(gz_file, &tile->fg, sizeof(tile->fg)) ||
-      !gzwrite(gz_file, &tile->bg, sizeof(tile->bg))) {
-    return -1;
+  xp_layer.width = SDL_SwapLE32(xp_layer.width);
+  xp_layer.height = SDL_SwapLE32(xp_layer.height);
+  *out = TCOD_console_new(xp_layer.width, xp_layer.height);
+  if (!*out) return -1;
+  const int layer_total = xp_layer.width * xp_layer.height;
+  for (int i = 0; i < layer_total; ++i) {
+    RexPaintTile xp_tile;
+    stream->next_out = (Bytef*)&xp_tile;
+    stream->avail_out = sizeof(xp_tile);
+    if (inflate(stream, Z_SYNC_FLUSH) < 0) {
+      return TCOD_set_errorvf("Decoding error: %s", stream->msg);
+    }
+    xp_tile_to_console_tile(i, &xp_tile, *out);
   }
-  return 0;
+  return TCOD_E_OK;
 }
-static int write_console(gzFile gz_file, const TCOD_Console* console) {
-  int x, y;
-  struct RexPaintLayerChunk xp_layer;
-  xp_layer.width = TCOD_console_get_width(console);
-  xp_layer.height = TCOD_console_get_height(console);
-  if (write_layer(gz_file, &xp_layer)) {
-    return -1; /* error writing layer */
+
+int TCOD_load_xp_from_memory(int n_data, const unsigned char* data, int n_out, TCOD_Console** out) {
+  z_stream stream = {.next_in = (Bytef*)data, .avail_in = n_data};
+  inflateInit(&stream);
+  RexPaintHeader header;
+  stream.next_out = (Bytef*)&header;
+  stream.avail_out = sizeof(header);
+  if (inflate(&stream, Z_SYNC_FLUSH) < 0) {
+    TCOD_set_errorvf("Decoding error: %s", stream.msg);
+    inflateEnd(&stream);
+    return TCOD_E_ERROR;
   }
-  /* Write console data out in column-major order. */
-  for (x = 0; x < xp_layer.width; ++x) {
-    for (y = 0; y < xp_layer.height; ++y) {
-      struct RexPaintTile tile;
-      tile.ch = TCOD_console_get_char(console, x, y);
-      tile.fg = TCOD_console_get_char_foreground(console, x, y);
-      tile.bg = TCOD_console_get_char_background(console, x, y);
-      if (write_tile(gz_file, &tile)) {
-        return -1; /* error writing tile data */
+  header.version = SDL_SwapLE32(header.version);
+  header.layer_count = SDL_SwapLE32(header.layer_count);
+  if (n_out <= 0 || !out) {
+    inflateEnd(&stream);
+    return header.layer_count;
+  }
+  for (int i = 0; i < n_out && i < header.layer_count; ++i) {
+    if (console_from_xp_stream(&stream, &out[i]) < 0) {
+      inflateEnd(&stream);
+      for (; i >= 0; --i) {
+        TCOD_console_delete(out[i]);
+        out[i] = NULL;
+      }
+      return TCOD_E_ERROR;
+    }
+  }
+  inflateEnd(&stream);
+  return header.layer_count;
+}
+
+static int console_to_xp_stream(const TCOD_Console* console, z_stream* stream) {
+  const RexPaintLayerChunk xp_layer = {.width = SDL_SwapLE32(console->w), .height = SDL_SwapLE32(console->h)};
+  stream->next_in = (Bytef*)&xp_layer;
+  stream->avail_in = sizeof(xp_layer);
+  if (deflate(stream, Z_NO_FLUSH) < 0) {
+    return TCOD_set_errorvf("Error encoding: %s", stream->msg);
+  }
+  for (int x = 0; x < console->w; ++x) {
+    for (int y = 0; y < console->h; ++y) {
+      const TCOD_ConsoleTile in_tile = console->tiles[x + y * console->w];
+      const RexPaintTile out_tile = {
+          SDL_SwapLE32(in_tile.ch),
+          {in_tile.fg.r, in_tile.fg.g, in_tile.fg.b},
+          {in_tile.bg.r, in_tile.bg.g, in_tile.bg.b},
+      };
+      stream->next_in = (Bytef*)&out_tile;
+      stream->avail_in = sizeof(out_tile);
+      if (deflate(stream, Z_NO_FLUSH) < 0) {
+        return TCOD_set_errorvf("Error encoding: %s", stream->msg);
       }
     }
   }
-  return 0;
+  return TCOD_E_OK;
 }
-/**
- *  \brief Save a console as a REXPaint ``.xp`` file.
- *
- *  \param [in] con The console instance to save.
- *  \param [in] filename The filepath to save to.
- *  \param [in] compress_level A zlib compression level, from 0 to 9.
- *  1=fast, 6=balanced, 9=slowest, 0=uncompressed.
- *  \return ``true`` when the file is saved successfully, or ``false`` when an
- *  issue is detected.
- *
- *  The REXPaint format can support a 1:1 copy of a libtcod console.
- */
-bool TCOD_console_save_xp(const TCOD_Console* con, const char* filename, int compress_level) {
-  struct RexPaintHeader xp_header;
-  gzFile gz_file = gzopen(filename, "wb");
-  if (!gz_file) {
-    return false; /* could not open file */
-  }
-  gzsetparams(gz_file, compress_level, Z_DEFAULT_STRATEGY);
-  xp_header.version = -1; /* REXPaint uses this version. */
-  xp_header.layer_count = 1;
-  if (write_header(gz_file, &xp_header) || write_console(gz_file, con)) {
-    gzclose(gz_file);
-    return false; /* error writing data */
-  }
-  if (gzclose(gz_file)) {
-    return false; /* error writing to file */
-  }
-  return true;
-}
-/**
- *  \brief Save a list of consoles to a REXPaint file.
- *
- *  \param [in] console_list A TCOD_list_t of TCOD_console_t objects.
- *  \param [in] filename Path to save to.
- *  \param [in] compress_level zlib compression level.
- *  \return true on success, false on a failure such as not being able to write
- *  to the path provided.
- *
- *  This function can save any number of layers with multiple
- *  different sizes.
- *
- *  The REXPaint tool only supports files with up to 9 layers where
- *  all layers are the same size.
- */
-bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level) {
-  int i;
-  struct RexPaintHeader xp_header;
-  gzFile gz_file = gzopen(filename, "wb");
-  if (!gz_file) {
-    return false; /* could not open file */
-  }
-  gzsetparams(gz_file, compress_level, Z_DEFAULT_STRATEGY);
-  xp_header.version = -1;
-  xp_header.layer_count = TCOD_list_size(console_list);
-  if (write_header(gz_file, &xp_header)) {
-    gzclose(gz_file);
-    return false; /* error writing metadata */
-  }
-  for (i = 0; i < xp_header.layer_count; ++i) {
-    if (write_console(gz_file, TCOD_list_get(console_list, i))) {
-      gzclose(gz_file);
-      return false; /* error writing out console data */
+
+int TCOD_save_xp_to_memory(
+    int n_consoles, const TCOD_Console* const* consoles, int n_out, unsigned char* out, int compression_level) {
+  z_stream stream = {.next_out = out, .avail_out = n_out};
+  deflateInit(&stream, compression_level);
+  size_t total_size = sizeof(RexPaintHeader) + sizeof(RexPaintLayerChunk) * n_consoles;
+  for (int i = 0; i < n_consoles; ++i) {
+    total_size += consoles[i]->w * consoles[i]->h * sizeof(RexPaintTile);
+    if (consoles[i]->w < 0 || consoles[i]->h < 0) {
+      deflateEnd(&stream);
+      return TCOD_set_errorv("Input console is corrupt.");
     }
   }
-  if (gzclose(gz_file)) {
-    return false; /* error writing to file */
+  if (n_out <= 0 || !out) {
+    int upper_size = deflateBound(&stream, (uLong)total_size);
+    deflateEnd(&stream);
+    return upper_size;
   }
-  return true;
+  const RexPaintHeader header = {.version = SDL_SwapLE32(-1), .layer_count = SDL_SwapLE32(n_consoles)};
+  stream.next_in = (Bytef*)&header;
+  stream.avail_in = sizeof(header);
+  if (deflate(&stream, Z_NO_FLUSH)) {
+    TCOD_set_errorvf("Error encoding: %s", stream.msg);
+    deflateEnd(&stream);
+    return TCOD_E_ERROR;
+  }
+  for (int i = 0; i < n_consoles; ++i) {
+    if (console_to_xp_stream(consoles[i], &stream) < 0) {
+      deflateEnd(&stream);
+      return TCOD_E_ERROR;
+    }
+  }
+  if (deflate(&stream, Z_FINISH) == Z_STREAM_END) {
+    deflateEnd(&stream);
+    return stream.total_out;  // Success.
+  }
+  deflateEnd(&stream);
+  return TCOD_set_errorv("Output buffer was too small.");
 }

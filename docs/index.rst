@@ -21,6 +21,7 @@ Welcome to the libtcod documentation!
    :glob:
 
    base-toolkits/*
+   api/*
 
 .. toctree::
    :maxdepth: 1

@@ -73,40 +73,38 @@ TCOD_value_type_t TCODParserStruct::getPropertyType(const char* propname) const 
 }
 
 TCODParserStruct* TCODParser::newStructure(const char* name) {
-  TCODParserStruct* ent = new TCODParserStruct();
-  ent->data = TCOD_parser_new_struct(data, name);
-  defs.push(ent);
-  return ent;
+  defs.push_back(std::make_unique<TCODParserStruct>());
+  defs.back()->data = TCOD_parser_new_struct(data, name);
+  return defs.back().get();
 }
 
 static ITCODParserListener* listener = NULL;
 static TCODParser* parser = NULL;
-extern "C" bool new_struct(TCOD_parser_struct_t def, const char* name) {
-  for (TCODParserStruct** i_def = parser->defs.begin(); i_def != parser->defs.end(); i_def++) {
-    if ((*i_def)->data == def) {
-      return listener->parserNewStruct(parser, *i_def, name) ? 1 : 0;
+bool new_struct(TCOD_parser_struct_t def, const char* name) noexcept {
+  for (auto& i_def : parser->defs) {
+    if (i_def->data == def) {
+      return listener->parserNewStruct(parser, i_def.get(), name) ? 1 : 0;
     }
   }
   // not found. autodeclaring struct
-  TCODParserStruct* i_def = new TCODParserStruct();
-  i_def->data = def;
-  parser->defs.push(i_def);
-  return listener->parserNewStruct(parser, i_def, name) ? 1 : 0;
+  parser->defs.push_back(std::make_unique<TCODParserStruct>());
+  parser->defs.back()->data = def;
+  return listener->parserNewStruct(parser, parser->defs.back().get(), name) ? 1 : 0;
 }
-extern "C" bool new_flag(const char* name) { return listener->parserFlag(parser, name) ? 1 : 0; }
-extern "C" bool new_property(const char* propname, TCOD_value_type_t type, TCOD_value_t value) {
+bool new_flag(const char* name) noexcept { return listener->parserFlag(parser, name) ? 1 : 0; }
+bool new_property(const char* propname, TCOD_value_type_t type, TCOD_value_t value) noexcept {
   return listener->parserProperty(parser, propname, type, value) ? 1 : 0;
 }
-extern "C" bool end_struct(TCOD_parser_struct_t def, const char* name) {
-  for (TCODParserStruct** i_def = parser->defs.begin(); i_def != parser->defs.end(); i_def++) {
-    if ((*i_def)->data == def) {
-      return listener->parserEndStruct(parser, *i_def, name) ? 1 : 0;
+bool end_struct(TCOD_parser_struct_t def, const char* name) noexcept {
+  for (auto& i_def : parser->defs) {
+    if (i_def->data == def) {
+      return listener->parserEndStruct(parser, i_def.get(), name) ? 1 : 0;
     }
   }
   return 0;
 }
 
-extern "C" void error(const char* msg) { listener->error(msg); }
+void error(const char* msg) noexcept { listener->error(msg); }
 
 static TCOD_parser_listener_t c_to_cpp_listener = {new_struct, new_flag, new_property, end_struct, error};
 

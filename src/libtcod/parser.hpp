@@ -33,6 +33,9 @@
 #ifndef _TCOD_PARSER_HPP
 #define _TCOD_PARSER_HPP
 
+#include <vector>
+#include <memory>
+
 #include "color.hpp"
 #include "list.hpp"
 #include "parser.h"
@@ -146,6 +149,12 @@ public :
 	*/
 	TCODParser();
 
+  // Disable copy operators.
+  TCODParser(const TCODParser&) = delete;
+  TCODParser& operator=(const TCODParser&) = delete;
+  TCODParser(TCODParser&&) = default;
+  TCODParser& operator=(TCODParser&&) = default;
+
 	/**
 	@PageName parser_str
 	@FuncTitle Registering a new structure type
@@ -200,15 +209,6 @@ public :
 
 	// error during parsing. can be called by the parser listener
 	void error(const char *msg, ...);
-#ifdef TCOD_VISUAL_STUDIO
-    // silly stuff to avoid VS warning
-	#pragma warning(disable: 4251)
-#endif
-	TCODList<TCODParserStruct *> defs;
-#ifdef TCOD_VISUAL_STUDIO
-	// restore warning again
-	#pragma warning(default: 4251)
-#endif
 
 	bool hasProperty(const char *name) const;
 	bool getBoolProperty(const char *name) const;
@@ -223,6 +223,17 @@ public :
 private :
 	bool parseEntity(TCODParserStruct *def, ITCODParserListener *listener);
 	TCOD_parser_t data;
+#ifdef _MSC_VER
+  // Disable dll-interface warning.  This value should only used internally.
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif // _MSC_VER
+	std::vector<std::unique_ptr<TCODParserStruct>> defs;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif // _MSC_VER
+  friend bool new_struct(TCOD_parser_struct_t def, const char* name) noexcept;
+  friend bool end_struct(TCOD_parser_struct_t def, const char* name) noexcept;
 };
 
 // a parser structure

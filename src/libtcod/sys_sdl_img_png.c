@@ -37,7 +37,6 @@
 #endif
 
 #include <SDL.h>
-#include <assert.h>
 #include <lodepng.h>
 
 #include "error.h"
@@ -79,9 +78,9 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
   unsigned char* image = NULL;
   unsigned error = lodepng_decode(&image, &width, &height, &state, png, pngsize);
   free(png);
+  lodepng_state_cleanup(&state);
   if (error) {
     TCOD_set_errorvf("Error decoding PNG: %s", lodepng_error_text(error));
-    lodepng_state_cleanup(&state);
     return NULL;
   }
   SDL_Surface* bitmap;
@@ -90,17 +89,23 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
   } else {
     bitmap = SDL_CreateRGBSurfaceWithFormat(0, width, height, 24, SDL_PIXELFORMAT_RGB24);
   }
-  assert(bitmap);
-  assert(!SDL_ConvertPixels(
-      width,
-      height,
-      bitmap->format->format,
-      image,
-      width * bpp / 8,
-      bitmap->format->format,
-      bitmap->pixels,
-      bitmap->pitch));
-  lodepng_state_cleanup(&state);
+  if (bitmap) {
+    if (SDL_ConvertPixels(
+            width,
+            height,
+            bitmap->format->format,
+            image,
+            width * bpp / 8,
+            bitmap->format->format,
+            bitmap->pixels,
+            bitmap->pitch) < 0) {
+      SDL_FreeSurface(bitmap);
+      bitmap = NULL;
+      TCOD_set_errorvf("SDL Error: %s", SDL_GetError);
+    }
+  } else {
+    TCOD_set_errorvf("Could not allocate SDLSurface: %s", SDL_GetError);
+  }
   free(image);
   return bitmap;
 }

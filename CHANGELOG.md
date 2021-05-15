@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- Fixed regression with loading PNG images.
 
 ## [1.17.0] - 2021-05-13
 ### Added

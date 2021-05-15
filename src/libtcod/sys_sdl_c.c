@@ -1155,13 +1155,18 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush) {
 void TCOD_sys_sleep_milli(uint32_t milliseconds) { SDL_Delay(milliseconds); }
 
 SDL_Surface* TCOD_sys_load_image(const char* filename) {
+  if (!filename) {
+    TCOD_set_errorv("File name can not be NULL.");
+    return NULL;
+  }
   const image_support_t* img = image_type;
   while (img->extension != NULL && !img->check_type(filename)) {
     img++;
   }
   if (img->extension == NULL || img->read == NULL) {
-    return NULL;
-  } /* unknown format */
+    TCOD_set_errorvf("File is missing or corrupt: %s", filename);
+    return NULL;  // Unknown format.
+  }
   return img->read(filename);
 }
 

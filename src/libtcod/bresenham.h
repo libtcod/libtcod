@@ -98,9 +98,14 @@ namespace tcod {
     .. versionadded:: 1.17
     \endrst
  */
-class BresenhamLine : public std::iterator<std::random_access_iterator_tag, std::array<int, 2>> {
+class BresenhamLine {
  public:
-  using Point2 = value_type;
+  using Point2 = std::array<int, 2>;
+  using iterator_category = std::random_access_iterator_tag;
+  using value_type = Point2;
+  using difference_type = int;
+  using pointer = void;
+  using reference = void;
   /**
       Construct a new Bresenham line from `begin` to `end`.
 

@@ -7,6 +7,11 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.18.0] - 2021-05-15
+### Added
+- Added REXPaint functions which don't use TCOD lists for multiple consoles.
+
 ### Fixed
 - Resolved C++17 deprecation warnings with `tcod::BresenhamLine`.
 

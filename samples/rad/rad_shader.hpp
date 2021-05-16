@@ -43,7 +43,7 @@ class Shader {
     int x, y, radius;
     TCODColor col;
   };
-  TCODList<Light> lights;
+  std::vector<Light> lights;
   TCODColor* lightmap;
   TCODMap* map;
 };
@@ -78,7 +78,7 @@ class PhotonShader : public Shader {
     Coord() {}
     Coord(int x, int y) : x(x), y(y) {}
   };
-  TCODList<Coord> lightsCoord;
+  std::vector<Coord> lightsCoord;
   // color not limited to 0-255 range
   struct FColor {
     float r, g, b;

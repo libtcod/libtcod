@@ -103,7 +103,7 @@ void Weather::update(float elapsed) {
         l.radius = TCODRandom::getInstance()->getInt(LIGHTNING_RADIUS, LIGHTNING_RADIUS * 2);
         l.noisex = TCODRandom::getInstance()->getFloat(0.0f, 1000.0f);
         l.intensity = 0.0f;
-        lightnings.push(l);
+        lightnings.push_back(l);
       }
     }
   }
@@ -130,15 +130,17 @@ void Weather::update(float elapsed) {
     by--;
   }
   // update lightnings
-  for (lightning_t* l = lightnings.begin(); l != lightnings.end(); l++) {
-    l->life -= elapsed;
-    l->noisex += elapsed * LIGHTNING_INTENSITY_SPEED;
-    if (l->life <= 0) {
-      l = lightnings.remove(l);
+  for (int i = static_cast<int>(lightnings.size()) - 1; i >= 0; --i) {
+    lightning_t& l = lightnings.at(i);
+    l.life -= elapsed;
+    l.noisex += elapsed * LIGHTNING_INTENSITY_SPEED;
+    if (l.life <= 0) {
+      lightnings.erase(lightnings.begin() + i);
+      continue;
     } else {
-      l->intensity = 0.5f * noise1d.get(&l->noisex, TCOD_NOISE_SIMPLEX) + 1.0f;
-      l->posx -= bx;
-      l->posy -= by;
+      l.intensity = 0.5f * noise1d.get(&l.noisex, TCOD_NOISE_SIMPLEX) + 1.0f;
+      l.posx -= bx;
+      l.posy -= by;
     }
   }
 
@@ -181,12 +183,12 @@ float Weather::getLightning(int x, int y) {
   cloud -= 0.6f;         // no lightning under 0.6f. cloud is now 0 - 0.4
   if (cloud <= 0.0f) return 0.0f;
   cloud = cloud / 0.4f;  // now back to 0-1 range (but only for really cloudy zones)
-  for (lightning_t* l = lightnings.begin(); l != lightnings.end(); l++) {
-    int dx = l->posx - x;
-    int dy = l->posy - y;
+  for (const lightning_t& l : lightnings) {
+    int dx = l.posx - x;
+    int dy = l.posy - y;
     int dist = dx * dx + dy * dy;
-    if (dist < l->radius) {
-      res += l->intensity * (float)(l->radius - dist) / l->radius;
+    if (dist < l.radius) {
+      res += l.intensity * (float)(l.radius - dist) / l.radius;
     }
   }
   float ret = cloud * res;

@@ -35,22 +35,22 @@ void Shader::init(TCODMap* map) {
 }
 
 int Shader::addLight(int x, int y, int radius, const TCODColor& col) {
-  int id = lights.size();
+  int id = static_cast<int>(lights.size());
   Light l;
   l.x = x;
   l.y = y;
   l.radius = radius;
   l.col = col;
-  lights.push(l);
+  lights.push_back(l);
   return id;
 }
 
 void Shader::updateLight(int id, int x, int y, int radius, const TCODColor& col) {
-  Light* l = lights.begin() + id;
-  l->x = x;
-  l->y = y;
-  l->radius = radius;
-  l->col = col;
+  Light& l = lights.at(id);
+  l.x = x;
+  l.y = y;
+  l.radius = radius;
+  l.col = col;
 }
 
 const TCODColor& Shader::getLightColor(int x, int y) { return lightmap[x + y * map->getWidth()]; }

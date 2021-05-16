@@ -23,6 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <vector>
 
 // size of the heightmap
 #define HM_WIDTH 400
@@ -118,10 +119,10 @@ class WorldGenerator {
   } map_data_t;
   map_data_t* mapData;
   typedef struct {
-    TCODList<int> coords;
-    TCODList<int> strength;
+    std::vector<int> coords;
+    std::vector<int> strength;
   } river_t;
-  TCODList<river_t*> rivers;
+  std::vector<river_t> rivers;
   TCODRandom* wgRng;
 
   void addHill(int nbHill, float baseRadius, float radiusVar, float height);

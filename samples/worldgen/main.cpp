@@ -100,10 +100,10 @@ void render() {
       "Thorn forest"};
   if (worldGen.isOnSea(mx, my)) {
     // some information are irrelevant on sea
-    TCODConsole::root->print(
+    TCODConsole::root->printf(
         5, 47, "Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my));
   } else {
-    TCODConsole::root->print(
+    TCODConsole::root->printf(
         5,
         47,
         "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",

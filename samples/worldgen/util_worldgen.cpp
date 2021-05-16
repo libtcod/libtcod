@@ -27,8 +27,9 @@
 // world generator
 // this was mostly generated with libtcod 1.4.2 heightmap tool !
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
+#include <vector>
 
 #include "main.hpp"
 
@@ -269,13 +270,13 @@ void WorldGenerator::setLandMass(float landMass, float waterLevel) {
 // function building the heightmap
 void WorldGenerator::buildBaseMap() {
   float t0 = TCODSystem::getElapsedSeconds();
-  addHill(600, 16.0 * HM_WIDTH / 200, 0.7, 0.3);
+  addHill(600, 16.0 * HM_WIDTH / 200, 0.7f, 0.3f);
   hm->normalize();
   float t1 = TCODSystem::getElapsedSeconds();
   DBG(("  Hills... %g\n", t1 - t0));
   t0 = t1;
 
-  hm->addFbm(noise, 2.20 * HM_WIDTH / 400, 2.20 * HM_WIDTH / 400, 0, 0, 10.0f, 1.0, 2.05);
+  hm->addFbm(noise, 2.20f * HM_WIDTH / 400, 2.20f * HM_WIDTH / 400, 0, 0, 10.0f, 1.0f, 2.05f);
   hm->normalize();
   hm2->copy(hm);
   t1 = TCODSystem::getElapsedSeconds();
@@ -551,7 +552,7 @@ void WorldGenerator::updateClouds(float elapsedTime) {
     }
     // compute a new column
     float f[2];
-    float cdx = (int)cloudTotalDx;
+    float cdx = std::floor(cloudTotalDx);
     for (int x = HM_WIDTH - colsToTranslate; x < HM_WIDTH; x++) {
       for (int y = 0; y < HM_HEIGHT; y++) {
         f[0] = 6.0f * ((float)(x + cdx) / HM_WIDTH);
@@ -660,9 +661,9 @@ void WorldGenerator::generateRivers() {
     }
     h = hm->getValue(sx, sy);
   }
-  TCODList<int> tree;
-  TCODList<int> randPt;
-  tree.push(sx + sy * HM_WIDTH);
+  std::vector<int> tree;
+  std::vector<int> randPt;
+  tree.push_back(sx + sy * HM_WIDTH);
   riverId++;
   dx = sx;
   dy = sy;
@@ -672,20 +673,20 @@ void WorldGenerator::generateRivers() {
     //	    if ( IN_RECTANGLE(rx,ry,HM_WIDTH,HM_HEIGHT) ) {
     //	        float h=hm->getValue(rx,ry);
     //	        if ( h >= sandHeight ) {
-    randPt.push(rx + ry * HM_WIDTH);
+    randPt.push_back(rx + ry * HM_WIDTH);
     //	        }
     //	    }
   }
   for (int i = 0; i < randPt.size(); i++) {
-    int rx = randPt.get(i) % HM_WIDTH;
-    int ry = randPt.get(i) / HM_WIDTH;
+    int rx = randPt.at(i) % HM_WIDTH;
+    int ry = randPt.at(i) / HM_WIDTH;
 
     float minDist = 1E10;
     int best_x = -1, best_y = -1;
     for (int j = 0; j < tree.size(); j++) {
-      int tx = tree.get(j) % HM_WIDTH;
-      int ty = tree.get(j) / HM_WIDTH;
-      float dist = (tx - rx) * (tx - rx) + (ty - ry) * (ty - ry);
+      int tx = tree.at(j) % HM_WIDTH;
+      int ty = tree.at(j) / HM_WIDTH;
+      float dist = static_cast<float>((tx - rx) * (tx - rx) + (ty - ry) * (ty - ry));
       if (dist < minDist) {
         minDist = dist;
         best_x = tx;
@@ -712,7 +713,7 @@ void WorldGenerator::generateRivers() {
     } while (len > 0);
     int newNode = cx + cy * HM_WIDTH;
     if (newNode != best_x + best_y * HM_WIDTH) {
-      tree.push(newNode);
+      tree.push_back(newNode);
     }
   }
 }
@@ -896,7 +897,7 @@ void WorldGenerator::computePrecipitations() {
   for (int y = HM_HEIGHT / 4; y < 3 * HM_HEIGHT / 4; y++) {
     // latitude (0 : equator, -1/1 : pole)
     float lat = (float)(y - HM_HEIGHT / 4) * 2 / HM_HEIGHT;
-    float coef = sinf(2 * 3.1415926 * lat);
+    float coef = sinf(2 * 3.1415926f * lat);
     for (int x = 0; x < HM_WIDTH; x++) {
       float f[2] = {(float)(x) / HM_WIDTH, (float)(y) / HM_HEIGHT};
       // float x_coef = coef + 0.5f*noise2d.getFbmSimplex(f,3.0f);
@@ -997,7 +998,7 @@ void WorldGenerator::computeTemperaturesAndBiomes() {
   float waterCoef = 1.0f / sandHeight;
   for (int y = 0; y < HM_HEIGHT; y++) {
     float lat = (float)(y - HM_HEIGHT / 2) * 2 / HM_HEIGHT;
-    float latTemp = 0.5f * (1.0f + pow(sin(3.1415926 * (lat + 0.5f)), 5));  // between 0 and 1
+    float latTemp = 0.5f * (1.0f + powf(sinf(3.1415926f * (lat + 0.5f)), 5));  // between 0 and 1
     if (latTemp > 0.0f) latTemp = sqrt(latTemp);
     latTemp = -30 + latTemp * 60;
     for (int x = 0; x < HM_WIDTH; x++) {

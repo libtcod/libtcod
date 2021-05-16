@@ -24,6 +24,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+
 class Weather {
  public:
   void init(int width, int height);
@@ -61,6 +63,6 @@ class Weather {
   float dx, dy;          // sub cell cloud map position
   float changeFactor;
   TCODHeightMap* map;
-  TCODList<lightning_t> lightnings;
+  std::vector<lightning_t> lightnings;
   TCODColor ambientColor;
 };

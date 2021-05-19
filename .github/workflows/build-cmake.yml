@@ -28,16 +28,16 @@ jobs:
       with:
         repository: microsoft/vcpkg
         path: vcpkg
-    - name: Bootstrap Vcpkg
-      working-directory: ${{env.VCPKG_ROOT}}
-      run: |
-        ./bootstrap-vcpkg.sh
-    - name: Vcpkg install dependences
-      run: |
-        $VCPKG_ROOT/vcpkg install sdl2 zlib Catch2
     - name: CMake configure
       run: |
         cmake -S . -B build \
+          -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake \
+          -DLIBTCOD_SDL2=find_package \
+          -DLIBTCOD_ZLIB=find_package \
+          -DLIBTCOD_GLAD=find_package \
+          -DLIBTCOD_LODEPNG=find_package \
+          -DLIBTCOD_UTF8PROC=vcpkg \
+          -DLIBTCOD_STB=vcpkg \
           -DCMAKE_INSTALL_PREFIX=local \
           -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
           -DLIBTCOD_SAMPLES=ON \

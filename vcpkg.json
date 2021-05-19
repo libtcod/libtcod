@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "name": "libtcod",
+  "version-semver": "1.18.0",
+  "maintainers": "Kyle Benesch <4b796c65+github@gmail.com>",
+  "description": "Common algorithms and tools for roguelikes.",
+  "homepage": "https://github.com/libtcod/libtcod",
+  "documentation": "https://libtcod.readthedocs.io/en/latest/",
+  "license": "BSD-3-Clause",
+  "dependencies": [
+    "catch2",
+    "glad",
+    "lodepng-c",
+    "sdl2",
+    "stb",
+    "utf8proc",
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "zlib"
+  ]
+}

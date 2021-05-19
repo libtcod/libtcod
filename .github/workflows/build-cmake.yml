@@ -53,7 +53,7 @@ jobs:
       env:
         LD_LIBRARY_PATH: build/lib
       run: |
-        build/bin/unittest ~[!nonportable]
+        build/bin/unittest ~[!nonportable] ${{ matrix.config == 'Release' && '~[benchmark]' || '' }}
     - name: CMake test install
       run: |
         cmake --install build --config ${{matrix.config}}

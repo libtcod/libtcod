@@ -35,7 +35,7 @@ TEST_CASE("TCOD_line_step_mt") {
   REQUIRE(generate_line({11, 3}, {0, 0}) == EXPECTED2);
 }
 
-TEST_CASE("bresenham benchmarks", "[benchmark]") {
+TEST_CASE("bresenham benchmarks", "[.benchmark]") {
   BENCHMARK("TCOD_line_step_mt") {
     TCOD_bresenham_data_t bresenham_stack_data;
     int x;

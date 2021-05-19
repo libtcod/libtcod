@@ -108,11 +108,13 @@ void test_renderer_new_api(TCOD_renderer_t renderer) {
   TCOD_tileset_delete(params.tileset);
   context->present(*console);
 
+#if 0
   // Check for division by zero errors:
   TCOD_Tileset* tileset = new_test_tileset(0, 0);
   context->c_set_tileset_(context.get(), tileset);
   context->present(*console);
   TCOD_tileset_delete(tileset);
+#endif
 }
 
 void test_renderer(TCOD_renderer_t renderer) {
@@ -178,7 +180,7 @@ TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][!hide]") {
   CHECK(console.getChar(1, 0) == 0x20);
 }
 
-TEST_CASE("Pathfinder Benchmarks", "[benchmark]") {
+TEST_CASE("Pathfinder Benchmarks", "[.benchmark]") {
   const int SIZE = 50;
   BENCHMARK("Classic libtcod A* 50x50") {
     TCOD_Map* map = TCOD_map_new(SIZE, SIZE);
@@ -290,7 +292,7 @@ TEST_CASE("Heap test.") {
   TCOD_heap_uninit(&heap);
 }
 
-TEST_CASE("Noise Benchmarks", "[benchmark]") {
+TEST_CASE("Noise Benchmarks", "[.benchmark]") {
   TCOD_Random* rng = TCOD_random_new_from_seed(TCOD_RNG_MT, 0);
   TCOD_Noise* noise1d = TCOD_noise_new(1, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
   TCOD_Noise* noise2d = TCOD_noise_new(2, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
@@ -335,7 +337,7 @@ TEST_CASE("Noise Benchmarks", "[benchmark]") {
   TCOD_noise_delete(noise1d);
   TCOD_random_delete(rng);
 }
-TEST_CASE("Noise Vectorized Benchmarks", "[benchmark]") {
+TEST_CASE("Noise Vectorized Benchmarks", "[.benchmark]") {
   TCOD_Random* rng = TCOD_random_new_from_seed(TCOD_RNG_MT, 0);
   TCOD_Noise* noise1d = TCOD_noise_new(1, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
   TCOD_Noise* noise2d = TCOD_noise_new(2, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, rng);
@@ -508,7 +510,7 @@ static tcod::MapPtr_ new_forest_map(int radius) {
   }
   return map;
 }
-TEST_CASE("FOV Benchmarks", "[benchmark]") {
+TEST_CASE("FOV Benchmarks", "[.benchmark]") {
   std::array<std::tuple<std::string, tcod::MapPtr_>, 16> test_maps{{
       {"empty_r4", new_empty_map(4)},
       {"empty_r10", new_empty_map(10)},

@@ -14,23 +14,41 @@ jobs:
         os: [ubuntu-20.04]
         config: [Debug, Release]
         shared: [dynamic, static]
+        triplet: [x64-linux]
 
     env:
+      CMAKE_BUILD_DIR: build
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     # Install latest CMake.
     - uses: lukka/get-cmake@latest
-    - name: Checkout microsoft/vcpkg
-      uses: actions/checkout@v2
+    # Restore both vcpkg and its artifacts from the GitHub cache service.
+    - name: Restore vcpkg and its artifacts.
+      uses: actions/cache@v2
       with:
-        repository: microsoft/vcpkg
-        path: vcpkg
+        # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
+        # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
+        # The other paths starting with '!' are exclusions: they contain temporary files generated during the build of the installed packages.
+        path: |
+          ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+          ${{ env.VCPKG_ROOT }}
+          !${{ env.VCPKG_ROOT }}/buildtrees
+          !${{ env.VCPKG_ROOT }}/packages
+          !${{ env.VCPKG_ROOT }}/downloads
+        # The key is composed in a way that it gets properly invalidated: this must happen whenever vcpkg's Git commit id changes, or the list of packages changes. In this case a cache miss must happen and a new entry with a new key with be pushed to GitHub the cache service.
+        # The key includes: hash of the vcpkg.json file, the hash of the vcpkg Git commit id, and the used vcpkg's triplet. The vcpkg's commit id would suffice, but computing an hash out it does not harm.
+        # Note: given a key, the cache content is immutable. If a cache entry has been created improperly, in order the recreate the right content the key must be changed as well, and it must be brand new (i.e. not existing already).
+        key: |
+          ${{ hashFiles( 'vcpkg_manifest/vcpkg.json', '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
     - name: CMake configure
       run: |
-        cmake -S . -B build \
+        cmake -S . -B ${{env.CMAKE_BUILD_DIR}} \
+          -DCMAKE_BUILD_TYPE=${{matrix.config}} \
           -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake \
           -DLIBTCOD_SDL2=find_package \
           -DLIBTCOD_ZLIB=find_package \
@@ -46,14 +64,14 @@ jobs:
           --warn-uninitialized
     - name: CMake build
       run: |
-        cmake --build build --config ${{matrix.config}}
+        cmake --build ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
     - name: List build files
-      run: find build/
+      run: find ${{env.CMAKE_BUILD_DIR}}
     - name: Run tests
       env:
-        LD_LIBRARY_PATH: build/lib
+        LD_LIBRARY_PATH: ${{env.CMAKE_BUILD_DIR}}/lib
       run: |
-        build/bin/unittest ~[!nonportable] ${{ matrix.config == 'Release' && '~[benchmark]' || '' }}
+        ${{env.CMAKE_BUILD_DIR}}/bin/unittest ~[!nonportable] ${{ matrix.config != 'Release' && '~[benchmark]' || '' }}
     - name: CMake test install
       run: |
-        cmake --install build --config ${{matrix.config}}
+        cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}

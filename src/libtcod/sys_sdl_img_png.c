@@ -101,10 +101,10 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
             bitmap->pitch) < 0) {
       SDL_FreeSurface(bitmap);
       bitmap = NULL;
-      TCOD_set_errorvf("SDL Error: %s", SDL_GetError);
+      TCOD_set_errorvf("SDL Error: %s", SDL_GetError());
     }
   } else {
-    TCOD_set_errorvf("Could not allocate SDLSurface: %s", SDL_GetError);
+    TCOD_set_errorvf("Could not allocate SDLSurface: %s", SDL_GetError());
   }
   free(image);
   return bitmap;

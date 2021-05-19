@@ -400,7 +400,7 @@ static int sdl2_handle_event(void* userdata, SDL_Event* event) {
     case SDL_RENDER_TARGETS_RESET:
       if (context->cache_console) {
         for (int i = 0; i < context->cache_console->elements; ++i) {
-          context->cache_console->tiles[i] = (struct TCOD_ConsoleTile){-1, {0, 0, 0}, {0, 0, 0}};
+          context->cache_console->tiles[i] = (struct TCOD_ConsoleTile){-1, {0}, {0}};
         }
       }
       break;

@@ -260,8 +260,10 @@ bool TCOD_console_save_xp(const TCOD_Console* con, const char* filename, int com
 bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level) {
   return (
       TCOD_save_xp(
-          TCOD_list_size(console_list), (TCOD_Console**)TCOD_list_begin(console_list), filename, compress_level) ==
-      TCOD_E_OK);
+          TCOD_list_size(console_list),
+          (const TCOD_Console* const*)TCOD_list_begin(console_list),
+          filename,
+          compress_level) == TCOD_E_OK);
 }
 /**
     Load a console from a REXPaint chunk from a zlib `stream` to `out`.

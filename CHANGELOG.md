@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.18.1] - 2021-05-21
 ### Fixed
 - Fixed potential crash in PNG image loading.
 

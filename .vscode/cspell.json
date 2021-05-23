@@ -86,6 +86,7 @@
         "DVLINE",
         "DWIDTH",
         "eascii",
+        "EMSCRIPTEN",
         "endianness",
         "errorf",
         "errorvf",

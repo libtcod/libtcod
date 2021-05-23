@@ -1,13 +1,5 @@
 cmake_minimum_required (VERSION 3.13)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT IPO_SUPPORTED)
-
-if(IPO_SUPPORTED)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-    set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION_DEBUG FALSE)
-endif()
-
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_14)
 
 set(LIBTCOD_SDL2 "find_package" CACHE STRING "How this library will be linked.")

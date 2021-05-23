@@ -39,7 +39,9 @@
 #include "tileset_truetype.h"
 
 TCOD_Tileset* TCOD_tileset_load_fallback_font_(int tile_width, int tile_height) {
-#if defined(_WIN32)  // Windows.
+#if defined(__EMSCRIPTEN__)
+  return NULL;
+#elif defined(_WIN32)  // Windows.
   const char* sys_root = getenv("SystemRoot");
   const char* filename = "\\Fonts\\LUCON.TTF";
   char path[4096] = "";

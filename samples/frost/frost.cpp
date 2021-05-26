@@ -1,3 +1,6 @@
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif  // __EMSCRIPTEN__
 #include <SDL.h>
 #include <libtcod.h>
 
@@ -5,17 +8,18 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <vector>
 
 std::array<TCODColor, 256> frostCol;
 
-#define GROW 5000.0f
-#define ANGLE_DELAY 0.2f
-#define FROST_LEVEL 0.8f
-#define SMOOTH 0.3f
-#define PIX_PER_FRAME 6
-#define RANGE 10
+static constexpr auto GROW = 5000.0f;
+static constexpr auto ANGLE_DELAY = 0.2f;
+static constexpr auto FROST_LEVEL = 0.8f;
+static constexpr auto SMOOTH = 0.3f;
+static constexpr auto PIX_PER_FRAME = 6;
+static constexpr auto RANGE = 10;
 
 struct Frost;
 
@@ -49,8 +53,8 @@ struct Frost {
   int border;
   FrostManager* manager;
   float timer;
-  float ra;
-  float rr;
+  float random_angle;
+  float random_range;
   Frost(int x, int y, FrostManager* manager);
   inline float getValue(int cx, int cy) { return manager->getValue(x - RANGE + cx, y - RANGE + cy); }
   inline void setValue(int cx, int cy, float v) { manager->setValue(x - RANGE + cx, y - RANGE + cy, v); }
@@ -87,11 +91,11 @@ bool Frost::update(float elapsed) {
     timer -= elapsed;
     if (timer <= 0) {
       // find a new random frost direction
-      ra = TCODRandom::getInstance()->getFloat(0.0f, 2 * 3.1415926f);
-      rr = TCODRandom::getInstance()->getFloat(0, 2 * RANGE);
+      random_angle = TCODRandom::getInstance()->getFloat(0.0f, 2 * 3.1415926f);
+      random_range = TCODRandom::getInstance()->getFloat(0, 2 * RANGE);
       timer = ANGLE_DELAY;
-      rx = (int)(RANGE + rr * cosf(ra));
-      ry = (int)(RANGE + rr * sinf(ra));
+      rx = (int)(RANGE + random_range * cosf(random_angle));
+      ry = (int)(RANGE + random_range * sinf(random_angle));
       int minDist = 100000;
       // find closest frost pixel
       for (int cx = 1; cx < 2 * RANGE; cx++) {
@@ -167,56 +171,86 @@ void Frost::render(TCODImage& img) {
   }
 }
 
+static constexpr int CONSOLE_WIDTH = 80;
+static constexpr int CONSOLE_HEIGHT = 50;
+
+tcod::ContextPtr context;
+
+void main_loop() {
+  static uint32_t last_time_ms = SDL_GetTicks();
+  static FrostManager frostManager(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
+  static tcod::ConsolePtr console = tcod::new_console(CONSOLE_WIDTH, CONSOLE_HEIGHT);
+  frostManager.render(*console);
+  context->present(*console);
+
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+      case SDL_KEYDOWN:
+        if (event.key.keysym.sym == SDLK_BACKSPACE) frostManager.clear();
+        break;
+      case SDL_MOUSEBUTTONDOWN: {
+        auto tile_xy = context->pixel_to_tile_coordinates(std::array<int, 2>{{event.motion.x, event.motion.y}});
+        if (event.button.button == SDL_BUTTON_LEFT) {
+          frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
+        }
+      }
+      case SDL_MOUSEMOTION: {
+        auto tile_xy = context->pixel_to_tile_coordinates(std::array<int, 2>{{event.motion.x, event.motion.y}});
+        if (event.motion.state & SDL_BUTTON_LMASK) {
+          frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
+        }
+      } break;
+      case SDL_QUIT:
+        std::exit(EXIT_SUCCESS);
+        break;
+    }
+  }
+  uint32_t current_time_ms = SDL_GetTicks();
+  int delta_time_ms = std::max<int>(0, current_time_ms - last_time_ms);
+  last_time_ms = current_time_ms;
+  frostManager.update(delta_time_ms / 1000.0f);
+}
+
+void on_quit() {
+  context = nullptr;
+  SDL_Quit();
+}
+
 int main(int argc, char** argv) {
-  tcod::ConsolePtr console = tcod::new_console(80, 50);
+  std::atexit(on_quit);
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+  auto tileset = TCOD_tileset_load("data/fonts/terminal8x8_gs_tc.png", 32, 8, 256, TCOD_CHARMAP_TCOD);
+  if (!tileset) {
+    std::cerr << TCOD_get_error() << "\n";
+    return EXIT_FAILURE;
+  }
   TCOD_ContextParams params = {TCOD_COMPILEDVERSION};
+  params.tileset = tileset;
   params.argc = argc;
   params.argv = argv;
-  params.columns = console->w;
-  params.rows = console->h;
-  params.window_title = "frost test";
+  params.columns = CONSOLE_WIDTH;
+  params.rows = CONSOLE_HEIGHT;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+#ifdef __EMSCRIPTEN__
+  params.renderer_type = TCOD_RENDERER_SDL2;
+#endif
   params.vsync = true;
-  tcod::ContextPtr context = tcod::new_context(params);
+  try {
+    context = tcod::new_context(params);
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << "\n";
+    return EXIT_FAILURE;
+  }
 
   const std::array<int, 4> keys{0, 60, 200, 255};
   const std::array<TCODColor, 4> keyCols{
       TCODColor::black, TCODColor::darkerBlue, TCODColor::lighterBlue, TCODColor::lightestBlue};
   TCODColor::genMap(&frostCol[0], static_cast<int>(keys.size()), keyCols.data(), keys.data());
-
-  uint32_t last_time_ms = SDL_GetTicks();
-  FrostManager frostManager(160, 100);
-  while (true) {
-    frostManager.render(*console);
-    context->present(*console);
-
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_KEYDOWN:
-          if (event.key.keysym.sym == SDLK_BACKSPACE) frostManager.clear();
-          break;
-        case SDL_MOUSEBUTTONDOWN: {
-          auto tile_xy = context->pixel_to_tile_coordinates(std::array<int, 2>{{event.motion.x, event.motion.y}});
-          if (event.button.button == SDL_BUTTON_LEFT) {
-            frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
-          }
-        }
-        case SDL_MOUSEMOTION: {
-          auto tile_xy = context->pixel_to_tile_coordinates(std::array<int, 2>{{event.motion.x, event.motion.y}});
-          if (event.motion.state & SDL_BUTTON_LMASK) {
-            frostManager.addFrost(tile_xy.at(0) * 2, tile_xy.at(1) * 2);
-          }
-        } break;
-        case SDL_QUIT:
-          std::exit(EXIT_SUCCESS);
-          break;
-      }
-    }
-    uint32_t current_time_ms = SDL_GetTicks();
-    int delta_time_ms = std::max<int>(0, current_time_ms - last_time_ms);
-    last_time_ms = current_time_ms;
-    frostManager.update(delta_time_ms / 1000.0f);
-  }
-  return 0;
+#ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop(main_loop, 0, 0);
+#else
+  while (true) main_loop();
+#endif
+  return EXIT_SUCCESS;
 }

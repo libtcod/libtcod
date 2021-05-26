@@ -34,6 +34,10 @@ add_custom_target(copy_font
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
 )
 
+if (EMSCRIPTEN)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file ../data@data/")
+endif()
+
 # Enforce UTF-8 encoding on MSVC.
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")

@@ -42,11 +42,20 @@ endif()
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
+# Enable extra warnings for all samples.
+if(MSVC)
+    add_compile_options("/W4")
+else()
+    add_compile_options("-Wall" "-Wextra")
+endif()
+
 add_executable(samples_c samples_c.c)
 target_link_libraries(samples_c ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(samples_c copy_data_dir)
 endif()
+# Suppress MSVC warnings for POSIX C functions such as strdup.  This is only for the C samples.
+target_compile_definitions(samples_c PRIVATE "$<$<C_COMPILER_ID:MSVC>:_CRT_NONSTDC_NO_DEPRECATE>")
 
 add_executable(samples_cpp samples_cpp.cpp)
 target_link_libraries(samples_cpp ${LINK_TCOD} ${SDL2MAIN})

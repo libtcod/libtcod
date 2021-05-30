@@ -429,7 +429,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static const char* s_map[] = {
+  static const char* SAMPLE_MAP[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -487,9 +487,9 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == ' ')
+        if (SAMPLE_MAP[y][x] == ' ')
           map->setProperties(x, y, true, true);  // ground
-        else if (s_map[y][x] == '=')
+        else if (SAMPLE_MAP[y][x] == '=')
           map->setProperties(x, y, true, false);  // window
       }
     }
@@ -515,7 +515,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     // draw windows
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == '=') {
+        if (SAMPLE_MAP[y][x] == '=') {
           sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -543,7 +543,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
       bool visible = map->isInFov(x, y);
-      bool wall = s_map[y][x] == '#';
+      bool wall = SAMPLE_MAP[y][x] == '#';
       if (!visible) {
         sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
       } else {
@@ -571,7 +571,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if (key->c == 'I' || key->c == 'i') {
     // player move north
-    if (s_map[py - 1][px] == ' ') {
+    if (SAMPLE_MAP[py - 1][px] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       py--;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -579,7 +579,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'K' || key->c == 'k') {
     // player move south
-    if (s_map[py + 1][px] == ' ') {
+    if (SAMPLE_MAP[py + 1][px] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       py++;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -587,7 +587,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'J' || key->c == 'j') {
     // player move west
-    if (s_map[py][px - 1] == ' ') {
+    if (SAMPLE_MAP[py][px - 1] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       px--;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -595,7 +595,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   } else if (key->c == 'L' || key->c == 'l') {
     // player move east
-    if (s_map[py][px + 1] == ' ') {
+    if (SAMPLE_MAP[py][px + 1] == ' ') {
       sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
       px++;
       sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
@@ -740,7 +740,7 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // clang-format off
-  static const char* s_map[] = {
+  static const char* SAMPLE_MAP[] = {
       "##############################################",
       "#######################      #################",
       "#####################    #     ###############",
@@ -784,9 +784,9 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == ' ')
+        if (SAMPLE_MAP[y][x] == ' ')
           map->setProperties(x, y, true, true);  // ground
-        else if (s_map[y][x] == '=')
+        else if (SAMPLE_MAP[y][x] == '=')
           map->setProperties(x, y, true, false);  // window
       }
     }
@@ -807,7 +807,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     // draw windows
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == '=') {
+        if (SAMPLE_MAP[y][x] == '=') {
           sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -837,7 +837,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // draw the dungeon
   for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = s_map[y][x] == '#';
+      bool wall = SAMPLE_MAP[y][x] == '#';
       sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
     }
   }
@@ -851,7 +851,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   } else {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        bool wall = s_map[y][x] == '#';
+        bool wall = SAMPLE_MAP[y][x] == '#';
         if (!wall) {
           float d = dijkstra->getDistance(x, y);
           sampleConsole.setCharBackground(
@@ -890,7 +890,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy--;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'K' || key->c == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
@@ -899,7 +899,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy++;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'J' || key->c == 'j') && dx > 0) {
@@ -908,7 +908,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dx--;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if ((key->c == 'L' || key->c == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
@@ -917,7 +917,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dx++;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   } else if (key->vk == TCODK_TAB) {
@@ -936,7 +936,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     dy = my;
     oldChar = sampleConsole.getChar(dx, dy);
     sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   }

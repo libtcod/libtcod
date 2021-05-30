@@ -11,12 +11,12 @@
 #include <libtcod.h>
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h> /* for NULL */
+#include <stdlib.h>
 #include <string.h>
 
 /* a sample has a name and a rendering function */
 typedef struct {
-  char name[64];
+  const char* name;
   void (*render)(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse);
 } sample_t;
 
@@ -32,7 +32,7 @@ typedef struct {
  * ***************************/
 
 /* the offscreen console in which the samples are rendered */
-TCOD_console_t sample_console;
+static TCOD_console_t sample_console;
 
 /* ***************************
  * true colors sample
@@ -40,17 +40,16 @@ TCOD_console_t sample_console;
 void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
   static TCOD_color_t cols[4] = {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}; /* random corner colors */
-  static int dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
-  int c, x, y;
+  static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
   TCOD_color_t textColor;
   /* ==== slightly modify the corner colors ==== */
   if (first) {
     TCOD_console_clear(sample_console);
   }
   /* ==== slightly modify the corner colors ==== */
-  for (c = 0; c < 4; c++) {
+  for (int c = 0; c < 4; ++c) {
     /* move each corner color */
-    int component = TCOD_random_get_int(NULL, 0, 2);
+    const int component = TCOD_random_get_int(NULL, 0, 2);
     switch (component) {
       case 0:
         cols[c].r += 5 * dir_r[c];
@@ -77,13 +76,13 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
 
   /* ==== scan the whole screen, interpolating corner colors ==== */
-  for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+    const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
     /* get the current column top and bottom colors */
     TCOD_color_t top = TCOD_color_lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
     TCOD_color_t bottom = TCOD_color_lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      const float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
       /* get the current cell color */
       TCOD_color_t curColor = TCOD_color_lerp(top, bottom, y_coef);
       TCOD_console_set_char_background(sample_console, x, y, curColor, TCOD_BKGND_SET);
@@ -99,12 +98,11 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   textColor.b = 255 - textColor.b;
   TCOD_console_set_default_foreground(sample_console, textColor);
   /* put random text (for performance tests) */
-  for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      int c;
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
       TCOD_color_t col = TCOD_console_get_char_background(sample_console, x, y);
       col = TCOD_color_lerp(col, TCOD_black, 0.5f);
-      c = TCOD_random_get_int(NULL, 'a', 'z');
+      const int c = TCOD_random_get_int(NULL, 'a', 'z');
       TCOD_console_set_default_foreground(sample_console, col);
       TCOD_console_put_char(sample_console, x, y, c, TCOD_BKGND_NONE);
     }
@@ -187,7 +185,7 @@ bool line_listener(int x, int y) {
 void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static TCOD_console_t bk; /* colored background */
   static bool init = false;
-  static char* flag_names[] = {
+  static const char* flag_names[] = {
       "TCOD_BKGND_NONE",
       "TCOD_BKGND_SET",
       "TCOD_BKGND_MULTIPLY",
@@ -201,15 +199,12 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "TCOD_BKGND_BURN",
       "TCOD_BKGND_OVERLAY",
       "TCOD_BKGND_ALPHA"};
-  int xo, yo, xd, yd, x, y;          /* segment starting, ending, current position */
-  float alpha;                       /* alpha value when blending mode = TCOD_BKGND_ALPHA */
-  float angle, cos_angle, sin_angle; /* segment angle data */
-  int rect_y;                        /* gradient vertical position */
   if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
     /* switch to the next blending mode */
     bk_flag++;
     if ((bk_flag & 0xff) > TCOD_BKGND_ALPH) bk_flag = TCOD_BKGND_NONE;
   }
+  float alpha; /* alpha value when blending mode = TCOD_BKGND_ALPHA */
   if ((bk_flag & 0xff) == TCOD_BKGND_ALPH) {
     /* for the alpha mode, update alpha every frame */
     alpha = (1.0f + cosf(TCOD_sys_elapsed_seconds() * 2)) / 2.0f;
@@ -222,8 +217,8 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (!init) {
     bk = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     /* initialize the colored background */
-    for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         TCOD_color_t col;
         col.r = (uint8_t)(x * 255 / (SAMPLE_SCREEN_WIDTH - 1));
         col.g = (uint8_t)((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1));
@@ -239,24 +234,25 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   /* blit the background */
   TCOD_console_blit(bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
   /* render the gradient */
-  rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCOD_sys_elapsed_seconds())) / 2.0f));
-  for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    TCOD_color_t col;
-    col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    col.g = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    col.b = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
+  /* gradient vertical position */
+  const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCOD_sys_elapsed_seconds())) / 2.0f));
+  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+    const TCOD_ColorRGB col = {
+        (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
+        (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
+        (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
+    };
     TCOD_console_set_char_background(sample_console, x, rect_y, col, (TCOD_bkgnd_flag_t)bk_flag);
     TCOD_console_set_char_background(sample_console, x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bk_flag);
     TCOD_console_set_char_background(sample_console, x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bk_flag);
   }
   /* calculate the segment ends */
-  angle = TCOD_sys_elapsed_seconds() * 2.0f;
-  cos_angle = cosf(angle);
-  sin_angle = sinf(angle);
-  xo = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 + cos_angle));
-  yo = (int)(SAMPLE_SCREEN_HEIGHT / 2 + sin_angle * SAMPLE_SCREEN_WIDTH / 2);
-  xd = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 - cos_angle));
-  yd = (int)(SAMPLE_SCREEN_HEIGHT / 2 - sin_angle * SAMPLE_SCREEN_WIDTH / 2);
+  const float angle = TCOD_sys_elapsed_seconds() * 2.0f; /* segment angle data */
+  /* segment starting and ending positions */
+  const int xo = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
+  const int yo = (int)(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
+  const int xd = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosf(angle)));
+  const int yd = (int)(SAMPLE_SCREEN_HEIGHT / 2 - sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
   /* render the line */
   TCOD_line(xo, yo, xd, yd, line_listener);
   /* print the current flag */
@@ -278,7 +274,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     FBM_WAVELET,
     TURBULENCE_WAVELET
   }; /* which function we render */
-  static char* funcName[] = {
+  static const char* funcName[] = {
       "1 : perlin noise       ",
       "2 : simplex noise      ",
       "3 : wavelet noise      ",
@@ -296,7 +292,6 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static float lacunarity = TCOD_NOISE_DEFAULT_LACUNARITY;
   static TCOD_image_t img = NULL;
   static float zoom = 3.0f;
-  int x, y, curfunc;
   if (!noise) {
     noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
     img = TCOD_image_new(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
@@ -307,47 +302,45 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   const float dy = dx;
 
   /* render the 2d noise function */
-  for (y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; y++) {
-    for (x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; x++) {
-      float f[2], value;
-      uint8_t c;
-      TCOD_color_t col;
-      f[0] = zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx;
-      f[1] = zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy;
-      value = 0.0f;
+  for (int y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; ++x) {
+      const float sample_xy[2] = {
+          zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx,
+          zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy,
+      };
+      float value = 0.0f;
       switch (func) {
         case PERLIN:
-          value = TCOD_noise_get_ex(noise, f, TCOD_NOISE_PERLIN);
+          value = TCOD_noise_get_ex(noise, sample_xy, TCOD_NOISE_PERLIN);
           break;
         case SIMPLEX:
-          value = TCOD_noise_get_ex(noise, f, TCOD_NOISE_SIMPLEX);
+          value = TCOD_noise_get_ex(noise, sample_xy, TCOD_NOISE_SIMPLEX);
           break;
         case WAVELET:
-          value = TCOD_noise_get_ex(noise, f, TCOD_NOISE_WAVELET);
+          value = TCOD_noise_get_ex(noise, sample_xy, TCOD_NOISE_WAVELET);
           break;
         case FBM_PERLIN:
-          value = TCOD_noise_get_fbm_ex(noise, f, octaves, TCOD_NOISE_PERLIN);
+          value = TCOD_noise_get_fbm_ex(noise, sample_xy, octaves, TCOD_NOISE_PERLIN);
           break;
         case TURBULENCE_PERLIN:
-          value = TCOD_noise_get_turbulence_ex(noise, f, octaves, TCOD_NOISE_PERLIN);
+          value = TCOD_noise_get_turbulence_ex(noise, sample_xy, octaves, TCOD_NOISE_PERLIN);
           break;
         case FBM_SIMPLEX:
-          value = TCOD_noise_get_fbm_ex(noise, f, octaves, TCOD_NOISE_SIMPLEX);
+          value = TCOD_noise_get_fbm_ex(noise, sample_xy, octaves, TCOD_NOISE_SIMPLEX);
           break;
         case TURBULENCE_SIMPLEX:
-          value = TCOD_noise_get_turbulence_ex(noise, f, octaves, TCOD_NOISE_SIMPLEX);
+          value = TCOD_noise_get_turbulence_ex(noise, sample_xy, octaves, TCOD_NOISE_SIMPLEX);
           break;
         case FBM_WAVELET:
-          value = TCOD_noise_get_fbm_ex(noise, f, octaves, TCOD_NOISE_WAVELET);
+          value = TCOD_noise_get_fbm_ex(noise, sample_xy, octaves, TCOD_NOISE_WAVELET);
           break;
         case TURBULENCE_WAVELET:
-          value = TCOD_noise_get_turbulence_ex(noise, f, octaves, TCOD_NOISE_WAVELET);
+          value = TCOD_noise_get_turbulence_ex(noise, sample_xy, octaves, TCOD_NOISE_WAVELET);
           break;
       }
-      c = (uint8_t)((value + 1.0f) / 2.0f * 255);
+      const uint8_t c = (uint8_t)((value + 1.0f) / 2.0f * 255);
       /* use a bluish color */
-      col.r = col.g = c / 2;
-      col.b = c;
+      TCOD_ColorRGB col = {c / 2, c / 2, c};
       TCOD_image_put_pixel(img, x, y, col);
     }
   }
@@ -357,8 +350,8 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   /* draw a transparent rectangle */
   TCOD_console_set_default_background(sample_console, TCOD_grey);
   TCOD_console_rect(sample_console, 2, 2, 23, (func <= WAVELET ? 10 : 13), false, TCOD_BKGND_MULTIPLY);
-  for (y = 2; y < 2 + (func <= WAVELET ? 10 : 13); y++) {
-    for (x = 2; x < 2 + 23; x++) {
+  for (int y = 2; y < 2 + (func <= WAVELET ? 10 : 13); ++y) {
+    for (int x = 2; x < 2 + 23; ++x) {
       TCOD_color_t col = TCOD_console_get_char_foreground(sample_console, x, y);
       col = TCOD_color_multiply(col, TCOD_grey);
       TCOD_console_set_char_foreground(sample_console, x, y, col);
@@ -366,7 +359,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
 
   /* draw the text */
-  for (curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
+  for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; ++curfunc) {
     if (curfunc == func) {
       TCOD_console_set_default_foreground(sample_console, TCOD_white);
       TCOD_console_set_default_background(sample_console, TCOD_light_blue);
@@ -430,45 +423,45 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 /* ***************************
  * fov sample
  * ***************************/
-void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  // clang-format off
-  static char* s_map[] = {
-      "##############################################",
-      "#######################      #################",
-      "#####################    #     ###############",
-      "######################  ###        ###########",
-      "##################      #####             ####",
-      "################       ########    ###### ####",
-      "###############      #################### ####",
-      "################    ######                  ##",
-      "########   #######  ######   #     #     #  ##",
-      "########   ######      ###                  ##",
-      "########                                    ##",
-      "####       ######      ###   #     #     #  ##",
-      "#### ###   ########## ####                  ##",
-      "#### ###   ##########   ###########=##########",
-      "#### ##################   #####          #####",
-      "#### ###             #### #####          #####",
-      "####           #     ####                #####",
-      "########       #     #### #####          #####",
-      "########       #####      ####################",
-      "##############################################",
-  };
-  // clang-format on
+// clang-format off
+static const char* SAMPLE_MAP[] = {
+    "##############################################",
+    "#######################      #################",
+    "#####################    #     ###############",
+    "######################  ###        ###########",
+    "##################      #####             ####",
+    "################       ########    ###### ####",
+    "###############      #################### ####",
+    "################    ######                  ##",
+    "########   #######  ######   #     #     #  ##",
+    "########   ######      ###                  ##",
+    "########                                    ##",
+    "####       ######      ###   #     #     #  ##",
+    "#### ###   ########## ####                  ##",
+    "#### ###   ##########   ###########=##########",
+    "#### ##################   #####          #####",
+    "#### ###             #### #####          #####",
+    "####           #     ####                #####",
+    "########       #     #### #####          #####",
+    "########       #####      ####################",
+    "##############################################",
+};
+// clang-format on
 #define TORCH_RADIUS 10.0f
 #define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
+void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static int px = 20, py = 10; /* player position */
   static bool recompute_fov = true;
   static bool torch = false;
   static bool light_walls = true;
   static TCOD_map_t map = NULL;
-  static TCOD_color_t dark_wall = {0, 0, 100};
-  static TCOD_color_t light_wall = {130, 110, 50};
-  static TCOD_color_t dark_ground = {50, 50, 150};
-  static TCOD_color_t light_ground = {200, 180, 50};
+  static const TCOD_color_t dark_wall = {0, 0, 100};
+  static const TCOD_color_t dark_ground = {50, 50, 150};
+  static const TCOD_color_t light_ground = {200, 180, 50};
+  static const TCOD_color_t light_wall = {130, 110, 50};
   static TCOD_noise_t noise;
   static int algonum = 0;
-  static char* algo_names[] = {
+  static const char* algo_names[] = {
       "BASIC               ",
       "DIAMOND             ",
       "SHADOW              ",
@@ -485,16 +478,15 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "SYMMETRIC_SHADOWCAST",
   };
   static float torch_x = 0.0f; /* torch light position in the perlin noise */
-  int x, y;
   /* torch position & intensity variation */
   float dx = 0.0f, dy = 0.0f, di = 0.0f;
   if (!map) {
     map = TCOD_map_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == ' ')
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        if (SAMPLE_MAP[y][x] == ' ')
           TCOD_map_set_properties(map, x, y, true, true); /* ground */
-        else if (s_map[y][x] == '=')
+        else if (SAMPLE_MAP[y][x] == '=')
           TCOD_map_set_properties(map, x, y, true, false); /* window */
       }
     }
@@ -518,9 +510,9 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_set_default_foreground(sample_console, TCOD_black);
     TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
     /* draw windows */
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == '=') {
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        if (SAMPLE_MAP[y][x] == '=') {
           TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -531,20 +523,19 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_map_compute_fov(map, px, py, torch ? (int)(TORCH_RADIUS) : 0, light_walls, (TCOD_fov_algorithm_t)algonum);
   }
   if (torch) {
-    float tdx;
     /* slightly change the perlin noise parameter */
     torch_x += 0.2f;
     /* randomize the light position between -1.5 and 1.5 */
-    tdx = torch_x + 20.0f;
+    float tdx = torch_x + 20.0f;
     dx = TCOD_noise_get(noise, &tdx) * 1.5f;
     tdx += 30.0f;
     dy = TCOD_noise_get(noise, &tdx) * 1.5f;
     di = 0.2f * TCOD_noise_get(noise, &torch_x);
   }
-  for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool visible = TCOD_map_is_in_fov(map, x, y);
-      bool wall = s_map[y][x] == '#';
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      const bool visible = TCOD_map_is_in_fov(map, x, y);
+      const bool wall = SAMPLE_MAP[y][x] == '#';
       if (!visible) {
         TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
 
@@ -552,14 +543,13 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
         if (!torch) {
           TCOD_console_set_char_background(sample_console, x, y, wall ? light_wall : light_ground, TCOD_BKGND_SET);
         } else {
-          TCOD_color_t base = (wall ? dark_wall : dark_ground);
-          TCOD_color_t light = (wall ? light_wall : light_ground);
-          float r =
-              (x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy); /* cell distance to torch (squared) */
-          if (r < SQUARED_TORCH_RADIUS) {
-            float l = (SQUARED_TORCH_RADIUS - r) / SQUARED_TORCH_RADIUS + di;
-            l = CLAMP(0.0f, 1.0f, l);
-            base = TCOD_color_lerp(base, light, l);
+          TCOD_ColorRGB base = (wall ? dark_wall : dark_ground);
+          const TCOD_ColorRGB light = (wall ? light_wall : light_ground);
+          /* cell distance to torch (squared) */
+          const float radius_squared = (x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy);
+          if (radius_squared < SQUARED_TORCH_RADIUS) {
+            const float l = (SQUARED_TORCH_RADIUS - radius_squared) / SQUARED_TORCH_RADIUS + di;
+            base = TCOD_color_lerp(base, light, CLAMP(0.0f, 1.0f, l));
           }
           TCOD_console_set_char_background(sample_console, x, y, base, TCOD_BKGND_SET);
         }
@@ -568,30 +558,30 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
     if (key->text[0] == 'I' || key->text[0] == 'i') {
-      if (s_map[py - 1][px] == ' ') {
+      if (SAMPLE_MAP[py - 1][px] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        py--;
+        --py;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'K' || key->text[0] == 'k') {
-      if (s_map[py + 1][px] == ' ') {
+      if (SAMPLE_MAP[py + 1][px] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        py++;
+        ++py;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'J' || key->text[0] == 'j') {
-      if (s_map[py][px - 1] == ' ') {
+      if (SAMPLE_MAP[py][px - 1] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        px--;
+        --px;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
     } else if (key->text[0] == 'L' || key->text[0] == 'l') {
-      if (s_map[py][px + 1] == ' ') {
+      if (SAMPLE_MAP[py][px + 1] == ' ') {
         TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        px++;
+        ++px;
         TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
         recompute_fov = true;
       }
@@ -642,11 +632,10 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * image sample
  * ***************************/
 void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static TCOD_image_t img = NULL, circle = NULL;
-  static TCOD_color_t blue = {0, 0, 255};
-  static TCOD_color_t green = {0, 255, 0};
-  float x, y, scale_x, scale_y, angle;
-  long elapsed;
+  static TCOD_image_t img = NULL;
+  static TCOD_image_t circle = NULL;
+  static const TCOD_color_t blue = {0, 0, 255};
+  static const TCOD_color_t green = {0, 255, 0};
   if (img == NULL) {
     img = TCOD_image_load("data/img/skull.png");
     TCOD_image_set_key_color(img, TCOD_black);
@@ -654,13 +643,12 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   TCOD_console_set_default_background(sample_console, TCOD_black);
   TCOD_console_clear(sample_console);
-  x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
-  y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-  scale_x = 0.2f + 1.8f * (1.0f + cosf(TCOD_sys_elapsed_seconds() / 2)) / 2.0f;
-  scale_y = scale_x;
-  angle = TCOD_sys_elapsed_seconds();
-  elapsed = TCOD_sys_elapsed_milli() / 2000;
-  if (elapsed & 1) {
+  const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
+  const float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
+  const float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCOD_sys_elapsed_seconds() / 2)) / 2.0f;
+  const float scale_y = scale_x;
+  const float angle = TCOD_sys_elapsed_seconds();
+  if ((TCOD_sys_elapsed_milli() / 2000) & 1) {
     /* split the color channels of circle.png */
     /* the red channel */
     TCOD_console_set_default_background(sample_console, TCOD_red);
@@ -687,7 +675,9 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * mouse sample
  * ***************************/
 void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static bool left_button = false, right_button = false, middle_button = false;
+  static bool left_button = false;
+  static bool right_button = false;
+  static bool middle_button = false;
 
   if (first) {
     TCOD_console_set_default_background(sample_console, TCOD_grey);
@@ -742,32 +732,6 @@ void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * path sample
  * ***************************/
 void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  // clang-format off
-  static const char* s_map[] = {
-      "##############################################",
-      "#######################      #################",
-      "#####################    #     ###############",
-      "######################  ###        ###########",
-      "##################      #####             ####",
-      "################       ########    ###### ####",
-      "###############      #################### ####",
-      "################    ######                  ##",
-      "########   #######  ######   #     #     #  ##",
-      "########   ######      ###                  ##",
-      "########                                    ##",
-      "####       ######      ###   #     #     #  ##",
-      "#### ###   ########## ####                  ##",
-      "#### ###   ##########   ###########=##########",
-      "#### ##################   #####          #####",
-      "#### ###             #### #####          #####",
-      "####           #     ####                #####",
-      "########       #     #### #####          #####",
-      "########       #####      ####################",
-      "##############################################",
-  };
-  // clang-format on
-#define TORCH_RADIUS 10.0f
-#define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
   static int px = 20, py = 10;  // player position
   static int dx = 24, dy = 1;   // destination
   static TCOD_map_t map = NULL;
@@ -781,15 +745,14 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static bool recalculatePath = false;
   static float busy;
   static int oldChar = ' ';
-  int mx, my, x, y, i;
   if (!map) {
     /* initialize the map */
     map = TCOD_map_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == ' ')
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        if (SAMPLE_MAP[y][x] == ' ')
           TCOD_map_set_properties(map, x, y, true, true); /* ground */
-        else if (s_map[y][x] == '=')
+        else if (SAMPLE_MAP[y][x] == '=')
           TCOD_map_set_properties(map, x, y, true, false); /* window */
       }
     }
@@ -808,9 +771,9 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_printf(sample_console, 1, 1, "IJKL / mouse :\nmove destination\nTAB : A*/dijkstra");
     TCOD_console_printf(sample_console, 1, 4, "Using : A*");
     /* draw windows */
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (s_map[y][x] == '=') {
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        if (SAMPLE_MAP[y][x] == '=') {
           TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
         }
       }
@@ -822,13 +785,12 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     if (usingAstar) {
       TCOD_path_compute(path, px, py, dx, dy);
     } else {
-      int x, y;
       dijkstraDist = 0.0f;
       /* compute the distance grid */
       TCOD_dijkstra_compute(dijkstra, px, py);
       /* get the maximum distance (needed for ground shading only) */
-      for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-        for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
           float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
           if (d > dijkstraDist) dijkstraDist = d;
         }
@@ -840,26 +802,25 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     busy = 0.2f;
   }
   // draw the dungeon
-  for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = s_map[y][x] == '#';
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      const bool wall = SAMPLE_MAP[y][x] == '#';
       TCOD_console_set_char_background(sample_console, x, y, wall ? dark_wall : dark_ground, TCOD_BKGND_SET);
     }
   }
   // draw the path
   if (usingAstar) {
-    for (i = 0; i < TCOD_path_size(path); i++) {
+    for (int i = 0; i < TCOD_path_size(path); ++i) {
       int x, y;
       TCOD_path_get(path, i, &x, &y);
       TCOD_console_set_char_background(sample_console, x, y, light_ground, TCOD_BKGND_SET);
     }
   } else {
-    int x, y, i;
-    for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        bool wall = s_map[y][x] == '#';
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        const bool wall = SAMPLE_MAP[y][x] == '#';
         if (!wall) {
-          float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
+          const float d = TCOD_dijkstra_get_distance(dijkstra, x, y);
           TCOD_console_set_char_background(
               sample_console,
               x,
@@ -869,7 +830,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
         }
       }
     }
-    for (i = 0; i < TCOD_dijkstra_size(dijkstra); i++) {
+    for (int i = 0; i < TCOD_dijkstra_size(dijkstra); ++i) {
       int x, y;
       TCOD_dijkstra_get(dijkstra, i, &x, &y);
       TCOD_console_set_char_background(sample_console, x, y, light_ground, TCOD_BKGND_SET);
@@ -905,50 +866,50 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     if ((key->text[0] == 'I' || key->text[0] == 'i') && dy > 0) {
       // destination move north
       TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      dy--;
+      --dy;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (s_map[dy][dx] == ' ') {
+      if (SAMPLE_MAP[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'K' || key->text[0] == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
       // destination move south
       TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      dy++;
+      ++dy;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (s_map[dy][dx] == ' ') {
+      if (SAMPLE_MAP[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'J' || key->text[0] == 'j') && dx > 0) {
       // destination move west
       TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      dx--;
+      --dx;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (s_map[dy][dx] == ' ') {
+      if (SAMPLE_MAP[dy][dx] == ' ') {
         recalculatePath = true;
       }
     } else if ((key->text[0] == 'L' || key->text[0] == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
       // destination move east
       TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      dx++;
+      ++dx;
       oldChar = TCOD_console_get_char(sample_console, dx, dy);
       TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (s_map[dy][dx] == ' ') {
+      if (SAMPLE_MAP[dy][dx] == ' ') {
         recalculatePath = true;
       }
     }
   }
-  mx = mouse->cx - SAMPLE_SCREEN_X;
-  my = mouse->cy - SAMPLE_SCREEN_Y;
+  const int mx = mouse->cx - SAMPLE_SCREEN_X;
+  const int my = mouse->cy - SAMPLE_SCREEN_Y;
   if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
     TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
     dx = mx;
     dy = my;
     oldChar = TCOD_console_get_char(sample_console, dx, dy);
     TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-    if (s_map[dy][dx] == ' ') {
+    if (SAMPLE_MAP[dy][dx] == ' ') {
       recalculatePath = true;
     }
   }
@@ -966,7 +927,7 @@ typedef char map_t[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
 // draw a vertical line
 void vline(map_t* map, int x, int y1, int y2) {
   int y = y1;
-  int dy = (y1 > y2 ? -1 : 1);
+  const int dy = (y1 > y2 ? -1 : 1);
   (*map)[x][y] = ' ';
   if (y1 == y2) return;
   do {
@@ -979,7 +940,7 @@ void vline(map_t* map, int x, int y1, int y2) {
 void vline_up(map_t* map, int x, int y) {
   while (y >= 0 && (*map)[x][y] != ' ') {
     (*map)[x][y] = ' ';
-    y--;
+    --y;
   }
 }
 
@@ -987,14 +948,14 @@ void vline_up(map_t* map, int x, int y) {
 void vline_down(map_t* map, int x, int y) {
   while (y < SAMPLE_SCREEN_HEIGHT && (*map)[x][y] != ' ') {
     (*map)[x][y] = ' ';
-    y++;
+    ++y;
   }
 }
 
 // draw a horizontal line
 void hline(map_t* map, int x1, int y, int x2) {
   int x = x1;
-  int dx = (x1 > x2 ? -1 : 1);
+  const int dx = (x1 > x2 ? -1 : 1);
   (*map)[x][y] = ' ';
   if (x1 == x2) return;
   do {
@@ -1007,7 +968,7 @@ void hline(map_t* map, int x1, int y, int x2) {
 void hline_left(map_t* map, int x, int y) {
   while (x >= 0 && (*map)[x][y] != ' ') {
     (*map)[x][y] = ' ';
-    x--;
+    --x;
   }
 }
 
@@ -1015,7 +976,7 @@ void hline_left(map_t* map, int x, int y) {
 void hline_right(map_t* map, int x, int y) {
   while (x < SAMPLE_SCREEN_WIDTH && (*map)[x][y] != ' ') {
     (*map)[x][y] = ' ';
-    x++;
+    ++x;
   }
 }
 
@@ -1028,13 +989,12 @@ bool traverse_node(TCOD_bsp_t* node, void* userData) {
     int maxx = node->x + node->w - 1;
     int miny = node->y + 1;
     int maxy = node->y + node->h - 1;
-    int x, y;
     if (!roomWalls) {
-      if (minx > 1) minx--;
-      if (miny > 1) miny--;
+      if (minx > 1) --minx;
+      if (miny > 1) --miny;
     }
-    if (maxx == SAMPLE_SCREEN_WIDTH - 1) maxx--;
-    if (maxy == SAMPLE_SCREEN_HEIGHT - 1) maxy--;
+    if (maxx == SAMPLE_SCREEN_WIDTH - 1) --maxx;
+    if (maxy == SAMPLE_SCREEN_HEIGHT - 1) --maxy;
     if (randomRoom) {
       minx = TCOD_random_get_int(NULL, minx, maxx - minRoomSize + 1);
       miny = TCOD_random_get_int(NULL, miny, maxy - minRoomSize + 1);
@@ -1049,16 +1009,16 @@ bool traverse_node(TCOD_bsp_t* node, void* userData) {
     node->w = maxx - minx + 1;
     node->h = maxy - miny + 1;
     // dig the room
-    for (x = minx; x <= maxx; x++) {
-      for (y = miny; y <= maxy; y++) {
+    for (int x = minx; x <= maxx; ++x) {
+      for (int y = miny; y <= maxy; ++y) {
         (*map)[x][y] = ' ';
       }
     }
   } else {
     //	printf("lvl %d %dx%d %dx%d\n",node->level, node->x,node->y,node->w,node->h);
     // resize the node to fit its sons
-    TCOD_bsp_t* left = TCOD_bsp_left(node);
-    TCOD_bsp_t* right = TCOD_bsp_right(node);
+    const TCOD_bsp_t* left = TCOD_bsp_left(node);
+    const TCOD_bsp_t* right = TCOD_bsp_right(node);
     node->x = MIN(left->x, right->x);
     node->y = MIN(left->y, right->y);
     node->w = MAX(left->x + left->w, right->x + right->w) - node->x;
@@ -1068,17 +1028,17 @@ bool traverse_node(TCOD_bsp_t* node, void* userData) {
       // vertical corridor
       if (left->x + left->w - 1 < right->x || right->x + right->w - 1 < left->x) {
         // no overlapping zone. we need a Z shaped corridor
-        int x1 = TCOD_random_get_int(NULL, left->x, left->x + left->w - 1);
-        int x2 = TCOD_random_get_int(NULL, right->x, right->x + right->w - 1);
-        int y = TCOD_random_get_int(NULL, left->y + left->h, right->y);
+        const int x1 = TCOD_random_get_int(NULL, left->x, left->x + left->w - 1);
+        const int x2 = TCOD_random_get_int(NULL, right->x, right->x + right->w - 1);
+        const int y = TCOD_random_get_int(NULL, left->y + left->h, right->y);
         vline_up(map, x1, y - 1);
         hline(map, x1, y, x2);
         vline_down(map, x2, y + 1);
       } else {
         // straight vertical corridor
-        int minx = MAX(left->x, right->x);
-        int maxx = MIN(left->x + left->w - 1, right->x + right->w - 1);
-        int x = TCOD_random_get_int(NULL, minx, maxx);
+        const int minx = MAX(left->x, right->x);
+        const int maxx = MIN(left->x + left->w - 1, right->x + right->w - 1);
+        const int x = TCOD_random_get_int(NULL, minx, maxx);
         vline_down(map, x, right->y);
         vline_up(map, x, right->y - 1);
       }
@@ -1086,17 +1046,17 @@ bool traverse_node(TCOD_bsp_t* node, void* userData) {
       // horizontal corridor
       if (left->y + left->h - 1 < right->y || right->y + right->h - 1 < left->y) {
         // no overlapping zone. we need a Z shaped corridor
-        int y1 = TCOD_random_get_int(NULL, left->y, left->y + left->h - 1);
-        int y2 = TCOD_random_get_int(NULL, right->y, right->y + right->h - 1);
-        int x = TCOD_random_get_int(NULL, left->x + left->w, right->x);
+        const int y1 = TCOD_random_get_int(NULL, left->y, left->y + left->h - 1);
+        const int y2 = TCOD_random_get_int(NULL, right->y, right->y + right->h - 1);
+        const int x = TCOD_random_get_int(NULL, left->x + left->w, right->x);
         hline_left(map, x - 1, y1);
         vline(map, x, y1, y2);
         hline_right(map, x + 1, y2);
       } else {
         // straight horizontal corridor
-        int miny = MAX(left->y, right->y);
-        int maxy = MIN(left->y + left->h - 1, right->y + right->h - 1);
-        int y = TCOD_random_get_int(NULL, miny, maxy);
+        const int miny = MAX(left->y, right->y);
+        const int maxy = MIN(left->y + left->h - 1, right->y + right->h - 1);
+        const int y = TCOD_random_get_int(NULL, miny, maxy);
         hline_left(map, right->x - 1, y);
         hline_right(map, right->x, y);
       }
@@ -1110,9 +1070,8 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static bool generate = true;
   static bool refresh = false;
   static char map[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
-  static TCOD_color_t darkWall = {0, 0, 100};
-  static TCOD_color_t darkGround = {50, 50, 150};
-  int x, y;
+  static const TCOD_color_t darkWall = {0, 0, 100};
+  static const TCOD_color_t darkGround = {50, 50, 150};
 
   if (generate || refresh) {
     // dungeon generation
@@ -1123,7 +1082,7 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       // restore the nodes size
       TCOD_bsp_resize(bsp, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
     }
-    memset(map, '#', sizeof(char) * SAMPLE_SCREEN_WIDTH * SAMPLE_SCREEN_HEIGHT);
+    memset(map, '#', sizeof(map));
     if (generate) {
       // build a new random bsp tree
       TCOD_bsp_remove_sons(bsp);
@@ -1147,9 +1106,9 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       randomRoom ? "ON" : "OFF");
   if (randomRoom) TCOD_console_printf(sample_console, 1, 6, "2 : room walls %s", roomWalls ? "ON" : "OFF");
   // render the level
-  for (y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = (map[x][y] == '#');
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      const bool wall = (map[x][y] == '#');
       TCOD_console_set_char_background(sample_console, x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
     }
   }
@@ -1159,16 +1118,16 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     if (key->text[0] == ' ') {
       refresh = true;
     } else if (key->text[0] == '+') {
-      bspDepth++;
+      ++bspDepth;
       generate = true;
     } else if (key->text[0] == '-' && bspDepth > 1) {
-      bspDepth--;
+      --bspDepth;
       generate = true;
     } else if (key->text[0] == '*') {
-      minRoomSize++;
+      ++minRoomSize;
       generate = true;
     } else if (key->text[0] == '/' && minRoomSize > 2) {
-      minRoomSize--;
+      --minRoomSize;
       generate = true;
     } else if (key->text[0] == '1' || key->vk == TCODK_1 || key->vk == TCODK_KP1) {
       randomRoom = !randomRoom;
@@ -1190,14 +1149,13 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static float delay = 0.0f;
   static TCOD_list_t sets = NULL;
   static TCOD_list_t names = NULL;
-  int i;
   if (!names) {
     TCOD_list_t files;
-    char** it;
+    const char** it;
     names = TCOD_list_new();
     files = TCOD_sys_get_directory_content("data/namegen", "*.cfg");
     // parse all the files
-    for (it = (char**)TCOD_list_begin(files); it != (char**)TCOD_list_end(files); it++) {
+    for (it = (const char**)TCOD_list_begin(files); it != (const char**)TCOD_list_end(files); it++) {
       char tmp[256] = "";
       snprintf(tmp, sizeof(tmp), "data/namegen/%s", *it);
       TCOD_namegen_parse(tmp, NULL);
@@ -1224,8 +1182,8 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   if (TCOD_list_size(sets) > 0) {
     TCOD_console_printf(
         sample_console, 1, 1, "%s\n\n+ : next generator\n- : prev generator", (char*)TCOD_list_get(sets, curSet));
-    for (i = 0; i < TCOD_list_size(names); i++) {
-      char* name = (char*)TCOD_list_get(names, i);
+    for (int i = 0; i < TCOD_list_size(names); ++i) {
+      const char* name = (const char*)TCOD_list_get(names, i);
       if (strlen(name) < SAMPLE_SCREEN_WIDTH)
         TCOD_console_printf_ex(sample_console, SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name);
     }
@@ -1234,15 +1192,15 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     if (delay >= 0.5f) {
       delay -= 0.5f;
       // add a new name to the list
-      TCOD_list_push(names, TCOD_namegen_generate((char*)TCOD_list_get(sets, curSet), true));
+      TCOD_list_push(names, TCOD_namegen_generate((const char*)TCOD_list_get(sets, curSet), true));
     }
     if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
       if (key->text[0] == '+') {
-        curSet++;
+        ++curSet;
         if (curSet == nbSets) curSet = 0;
         TCOD_list_push(names, strdup("======"));
       } else if (key->text[0] == '-') {
-        curSet--;
+        --curSet;
         if (curSet < 0) curSet = nbSets - 1;
         TCOD_list_push(names, strdup("======"));
       }
@@ -1256,21 +1214,20 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
  * SDL callback sample
  * ***************************/
 #ifndef NO_SDL_SAMPLE
-TCOD_noise_t noise = NULL;
-bool sdl_callback_enabled = false;
-int effectNum = 0;
-float delay = 3.0f;
+static TCOD_noise_t noise = NULL;
+static bool sdl_callback_enabled = false;
+static int effectNum = 0;
+static float delay = 3.0f;
 
 void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-  int r_idx = screen->format->Rshift / 8;
-  int g_idx = screen->format->Gshift / 8;
-  int b_idx = screen->format->Bshift / 8;
-  int x, y;
-  for (x = sample_x; x < sample_x + sample_w; x++) {
+  const int r_idx = screen->format->Rshift / 8;
+  const int g_idx = screen->format->Gshift / 8;
+  const int b_idx = screen->format->Bshift / 8;
+  for (int x = sample_x; x < sample_x + sample_w; ++x) {
     uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
-    for (y = sample_y; y < sample_y + sample_h; y++) {
+    for (int y = sample_y; y < sample_y + sample_h; ++y) {
       int ir = 0, ig = 0, ib = 0;
-      uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
+      const uint8_t* p2 = p + screen->format->BytesPerPixel;  // get pixel at x+1,y
       ir += p2[r_idx];
       ig += p2[g_idx];
       ib += p2[b_idx];
@@ -1286,43 +1243,36 @@ void burn(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
       ir += p2[r_idx];
       ig += p2[g_idx];
       ib += p2[b_idx];
-      ir /= 4;
-      ig /= 4;
-      ib /= 4;
-      p[r_idx] = ir;
-      p[g_idx] = ig;
-      p[b_idx] = ib;
+      p[r_idx] = (uint8_t)(ir / 4);
+      p[g_idx] = (uint8_t)(ig / 4);
+      p[b_idx] = (uint8_t)(ib / 4);
       p += screen->pitch;
     }
   }
 }
 
 void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
-  int r_idx = screen->format->Rshift / 8;
-  int g_idx = screen->format->Gshift / 8;
-  int b_idx = screen->format->Bshift / 8;
-  int dist = (int)(10 * (3.0f - delay));
-  int x, y;
-  for (x = sample_x; x < sample_x + sample_w; x++) {
+  const int r_idx = screen->format->Rshift / 8;
+  const int g_idx = screen->format->Gshift / 8;
+  const int b_idx = screen->format->Bshift / 8;
+  const int dist = (int)(10 * (3.0f - delay));
+  for (int x = sample_x; x < sample_x + sample_w; ++x) {
     uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
-    for (y = sample_y; y < sample_y + sample_h; y++) {
-      int ir = 0, ig = 0, ib = 0, i;
-      for (i = 0; i < 3; i++) {
-        int dx = TCOD_random_get_int(NULL, -dist, dist);
-        int dy = TCOD_random_get_int(NULL, -dist, dist);
-        uint8_t* p2;
+    for (int y = sample_y; y < sample_y + sample_h; ++y) {
+      int ir = 0, ig = 0, ib = 0;
+      for (int i = 0; i < 3; ++i) {
+        const int dx = TCOD_random_get_int(NULL, -dist, dist);
+        const int dy = TCOD_random_get_int(NULL, -dist, dist);
+        const uint8_t* p2;
         p2 = p + dx * screen->format->BytesPerPixel;
         p2 += dy * screen->pitch;
         ir += p2[r_idx];
         ig += p2[g_idx];
         ib += p2[b_idx];
       }
-      ir /= 3;
-      ig /= 3;
-      ib /= 3;
-      p[r_idx] = ir;
-      p[g_idx] = ig;
-      p[b_idx] = ib;
+      p[r_idx] = (uint8_t)(ir / 3);
+      p[g_idx] = (uint8_t)(ig / 3);
+      p[b_idx] = (uint8_t)(ib / 3);
       p += screen->pitch;
     }
   }
@@ -1330,24 +1280,23 @@ void explode(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int 
 
 void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sample_h) {
   // let's blur that sample console
-  float f[3], n = 0.0f;
-  int r_idx = screen->format->Rshift / 8;
-  int g_idx = screen->format->Gshift / 8;
-  int b_idx = screen->format->Bshift / 8;
-  int x, y;
-  f[2] = TCOD_sys_elapsed_seconds();
+  float n = 0.0f;
+  const int r_idx = screen->format->Rshift / 8;
+  const int g_idx = screen->format->Gshift / 8;
+  const int b_idx = screen->format->Bshift / 8;
+  float f[3] = {0, 0, TCOD_sys_elapsed_seconds()};
   if (noise == NULL) noise = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
-  for (x = sample_x; x < sample_x + sample_w; x++) {
+  for (int x = sample_x; x < sample_x + sample_w; ++x) {
     uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
     f[0] = (float)(x) / sample_w;
-    for (y = sample_y; y < sample_y + sample_h; y++) {
-      int ir = 0, ig = 0, ib = 0, dec, count;
+    for (int y = sample_y; y < sample_y + sample_h; ++y) {
+      int ir = 0, ig = 0, ib = 0;
       if ((y - sample_y) % 8 == 0) {
         f[1] = (float)(y) / sample_h;
         n = TCOD_noise_get_fbm(noise, f, 3.0f);
       }
-      dec = (int)(3 * (n + 1.0f));
-      count = 0;
+      const int dec = (int)(3 * (n + 1.0f));
+      int count = 0;
       switch (dec) {
         case 4:
           count += 4;
@@ -1425,12 +1374,9 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ig += p[g_idx];
           ib += p[b_idx];
           p -= screen->pitch;
-          ir /= count;
-          ig /= count;
-          ib /= count;
-          p[r_idx] = ir;
-          p[g_idx] = ig;
-          p[b_idx] = ib;
+          p[r_idx] = (uint8_t)(ir / count);
+          p[g_idx] = (uint8_t)(ig / count);
+          p[b_idx] = (uint8_t)(ib / count);
           break;
         default:
           break;
@@ -1444,11 +1390,11 @@ void SDL_render(void* sdlSurface) {
   SDL_Surface* screen = (SDL_Surface*)sdlSurface;
   // now we have almighty access to the screen's precious pixels !!
   // get the font character size
-  int char_w, char_h, sample_x, sample_y;
+  int char_w, char_h;
   TCOD_sys_get_char_size(&char_w, &char_h);
   // compute the sample console position in pixels
-  sample_x = SAMPLE_SCREEN_X * char_w;
-  sample_y = SAMPLE_SCREEN_Y * char_h;
+  const int sample_x = SAMPLE_SCREEN_X * char_w;
+  const int sample_y = SAMPLE_SCREEN_Y * char_h;
   delay -= TCOD_sys_get_last_frame_length();
   if (delay < 0.0f) {
     delay = 3.0f;
@@ -1499,13 +1445,12 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
   }
 }
-
-#endif
+#endif  // NO_SDL_SAMPLE
 
 /* ***************************
  * the list of samples
  * ***************************/
-sample_t samples[] = {
+static const sample_t samples[] = {
     {"  True colors        ", render_colors},
     {"  Offscreen console  ", render_offscreen},
     {"  Line drawing       ", render_lines},
@@ -1520,21 +1465,18 @@ sample_t samples[] = {
     {"  SDL callback       ", render_sdl},
 #endif
 };
-int nb_samples = sizeof(samples) / sizeof(sample_t); /* total number of samples */
+static const int nb_samples = sizeof(samples) / sizeof(sample_t); /* total number of samples */
 
 /* ***************************
  * the main function
  * ***************************/
 int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
-  int cur_sample = 0; /* index of the current sample */
-  bool first = true;  /* first time we render a sample */
-  int i;
+  bool first = true; /* first time we render a sample */
   TCOD_key_t key = {TCODK_NONE, 0};
   TCOD_mouse_t mouse;
-  char* font = "data/fonts/dejavu10x10_gs_tc.png";
+  const char* font = "data/fonts/dejavu10x10_gs_tc.png";
   int nb_char_horiz = 0, nb_char_vertic = 0;
-  int argn;
   int fullscreen_width = 0;
   int fullscreen_height = 0;
   int font_flags = TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_TCOD;
@@ -1547,24 +1489,24 @@ int main(int argc, char* argv[]) {
       "F1 GLSL   ", "F2 OPENGL ", "F3 SDL    ", "F4 SDL2   ", "F5 OPENGL2"};
 
   /* initialize the root console (open the game window) */
-  for (argn = 1; argn < argc; argn++) {
+  for (int argn = 1; argn < argc; ++argn) {
     if (strcmp(argv[argn], "-font") == 0 && argn + 1 < argc) {
-      argn++;
+      ++argn;
       font = argv[argn];
       font_flags = 0;
     } else if (strcmp(argv[argn], "-font-nb-char") == 0 && argn + 2 < argc) {
-      argn++;
+      ++argn;
       nb_char_horiz = atoi(argv[argn]);
-      argn++;
+      ++argn;
       nb_char_vertic = atoi(argv[argn]);
       font_flags = 0;
     } else if (strcmp(argv[argn], "-fullscreen-resolution") == 0 && argn + 2 < argc) {
-      argn++;
+      ++argn;
       fullscreen_width = atoi(argv[argn]);
-      argn++;
+      ++argn;
       fullscreen_height = atoi(argv[argn]);
     } else if (strcmp(argv[argn], "-renderer") == 0 && argn + 1 < argc) {
-      argn++;
+      ++argn;
       renderer = (TCOD_renderer_t)atoi(argv[argn]);
     } else if (strcmp(argv[argn], "-fullscreen") == 0) {
       fullscreen = true;
@@ -1587,7 +1529,7 @@ int main(int argc, char* argv[]) {
       printf("-fullscreen : start in fullscreen\n");
       printf("-fullscreen-resolution <screen_width> <screen_height> : force fullscreen resolution\n");
       printf("-renderer <num> : set renderer. 0 : GLSL 1 : OPENGL 2 : SDL\n");
-      exit(0);
+      exit(EXIT_SUCCESS);
     } else {
       /* ignore parameter */
     }
@@ -1601,12 +1543,13 @@ int main(int argc, char* argv[]) {
   atexit(TCOD_quit);
   /* initialize the offscreen console for the samples */
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+  int cur_sample = 0; /* index of the current sample */
   do {
     if (!credits_end) {
       credits_end = TCOD_console_credits_render(56, 43, false);
     }
     /* print the list of samples */
-    for (i = 0; i < nb_samples; i++) {
+    for (int i = 0; i < nb_samples; ++i) {
       if (i == cur_sample) {
         /* set colors for currently selected sample */
         TCOD_console_set_default_foreground(NULL, TCOD_white);
@@ -1664,7 +1607,7 @@ int main(int argc, char* argv[]) {
     TCOD_console_set_default_foreground(NULL, TCOD_grey);
     TCOD_console_set_default_background(NULL, TCOD_black);
     TCOD_console_printf_ex(NULL, 42, 46 - (TCOD_NB_RENDERERS + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
-    for (i = 0; i < TCOD_NB_RENDERERS; i++) {
+    for (int i = 0; i < TCOD_NB_RENDERERS; ++i) {
       if (i == cur_renderer) {
         /* set colors for current renderer */
         TCOD_console_set_default_foreground(NULL, TCOD_white);
@@ -1681,15 +1624,14 @@ int main(int argc, char* argv[]) {
     TCOD_console_flush();
 
     /* did the user hit a key ? */
-    TCOD_sys_check_for_event((TCOD_event_t)(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE), &key, &mouse);
+    TCOD_sys_check_for_event(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE, &key, &mouse);
     if (key.vk == TCODK_DOWN) {
       /* down arrow : next sample */
-      cur_sample = (cur_sample + 1) % nb_samples;
+      if (++cur_sample >= nb_samples) cur_sample = 0;
       first = true;
     } else if (key.vk == TCODK_UP) {
       /* up arrow : previous sample */
-      cur_sample--;
-      if (cur_sample < 0) cur_sample = nb_samples - 1;
+      if (--cur_sample < 0) cur_sample = nb_samples - 1;
       first = true;
     } else if (key.vk == TCODK_ENTER && (key.lalt | key.ralt)) {
       /* ALT-ENTER : switch fullscreen */
@@ -1715,5 +1657,5 @@ int main(int argc, char* argv[]) {
       TCOD_sys_set_renderer(TCOD_RENDERER_OPENGL2);
     }
   } while (!TCOD_console_is_window_closed());
-  return 0;
+  return EXIT_SUCCESS;
 }

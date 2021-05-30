@@ -5,6 +5,7 @@
 #include <libtcod.h>
 
 #include <algorithm>
+#include <climits>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -12,164 +13,163 @@
 #include <memory>
 #include <vector>
 
-std::array<TCODColor, 256> frostCol;
+static constexpr auto TAU = 6.28318530718f;  // The number of radians in a turn.  Same as `2 * PI`.
+
+std::array<TCODColor, 256> frost_gradient;  // Frost color gradient.
 
 static constexpr auto GROW = 5000.0f;
 static constexpr auto ANGLE_DELAY = 0.2f;
 static constexpr auto FROST_LEVEL = 0.8f;
 static constexpr auto SMOOTH = 0.3f;
 static constexpr auto PIX_PER_FRAME = 6;
-static constexpr auto RANGE = 10;
+static constexpr auto RANGE = 10;  // Maximum range from a frost origin to calculate and apply frost effects.
 
-struct Frost;
+struct Frost {
+  explicit Frost(int x, int y) : origin_x{x}, origin_y{y}, border{0}, timer{0} {}
+  int origin_x, origin_y;  // The frost origin position.
+  int best_x, best_y;      // A relative position to the frost closest to rx,ry.
+  int rx, ry;              // A random relative direction.
+  int border;              // The total number of frames this effect has touched the border.
+  float timer;             // Seconds remaining until this particle changes direction.
+};
 
 class FrostManager {
  public:
-  FrostManager(int w, int h);
-  void addFrost(int x, int y);
-  void update(float elapsed);
-  void render(TCOD_Console& console);
-  void clear();
-  inline bool in_bounds(int cx, int cy) const noexcept { return 0 <= cx && 0 <= cy && cx < w && cy < h; }
-  inline float getValue(int cx, int cy) {
-    if (!(in_bounds(cx, cy))) return 0.0f;
-    return grid.at(cx + cy * w);
+  explicit FrostManager(int w, int h) : grid(w * h), img{std::make_unique<TCODImage>(w, h)}, width{w}, height{h} {
+    clear();
   }
-  inline void setValue(int cx, int cy, float v) {
-    if (!(in_bounds(cx, cy))) return;
-    grid.at(cx + cy * w) = v;
+  inline void clear() {
+    img->clear(TCODColor::black);
+    for (auto& it : grid) it = 0;
+  }
+  inline void addFrost(int x, int y) {
+    frost_objs.emplace_back(Frost(x, y));
+    setValue(x, y, 1.0f);
+  }
+  inline void update(float delta_time) {
+    auto update_func = [&](auto& it) { return !frost_update(it, delta_time); };
+    frost_objs.erase(std::remove_if(frost_objs.begin(), frost_objs.end(), update_func), frost_objs.end());
+  }
+  inline void render(TCOD_Console& console) {
+    for (auto& it : frost_objs) frost_render(it);
+    TCOD_image_blit_2x(img->get_data(), &console, 0, 0, 0, 0, -1, -1);
   }
 
- protected:
-  friend struct Frost;
-  std::vector<std::unique_ptr<Frost>> list;
-  std::vector<float> grid;
-  std::unique_ptr<TCODImage> img;
-  int w, h;
-};
+  /**
+      Returns true if x,y are within the bounds of this manager.
+   */
+  inline bool in_bounds(int x, int y) const noexcept { return 0 <= x && 0 <= y && x < width && y < height; }
+  inline float getValue(int x, int y) const noexcept {
+    if (!(in_bounds(x, y))) return 0.0f;
+    return grid.at(x + y * width);
+  }
+  inline void setValue(int x, int y, float value) noexcept {
+    if (!(in_bounds(x, y))) return;
+    grid.at(x + y * width) = value;
+  }
 
-struct Frost {
-  int x, y, best_x, best_y, rx, ry;
-  int border;
-  FrostManager* manager;
-  float timer;
-  float random_angle;
-  float random_range;
-  Frost(int x, int y, FrostManager* manager);
-  inline float getValue(int cx, int cy) { return manager->getValue(x - RANGE + cx, y - RANGE + cy); }
-  inline void setValue(int cx, int cy, float v) { manager->setValue(x - RANGE + cx, y - RANGE + cy, v); }
-  bool update(float elapsed);
-  void render(TCODImage& img);
-};
+ private:
+  inline float getValue(const Frost& frost, int x, int y) const noexcept {
+    return getValue(frost.origin_x - RANGE + x, frost.origin_y - RANGE + y);
+  }
+  inline void setValue(const Frost& frost, int x, int y, float value) noexcept {
+    setValue(frost.origin_x - RANGE + x, frost.origin_y - RANGE + y, value);
+  }
 
-FrostManager::FrostManager(int w, int h) : grid(w * h), img{std::make_unique<TCODImage>(w, h)}, w{w}, h{h} { clear(); }
+  /**
+      Updates a frost particle with a given delta time.
 
-void FrostManager::addFrost(int x, int y) {
-  list.emplace_back(std::make_unique<Frost>(x, y, this));
-  setValue(x, y, 1.0f);
-}
-
-void FrostManager::clear() {
-  img->clear(TCODColor::black);
-  for (auto& it : grid) it = 0;
-}
-
-void FrostManager::update(float elapsed) {
-  auto it_end = std::remove_if(list.begin(), list.end(), [&](auto& it) { return !it->update(elapsed); });
-  list.erase(it_end, list.end());
-}
-
-void FrostManager::render(TCOD_Console& console) {
-  for (auto& it : list) it->render(*img);
-  TCOD_image_blit_2x(img->get_data(), &console, 0, 0, 0, 0, -1, -1);
-}
-
-Frost::Frost(int x, int y, FrostManager* manager) : x{x}, y{y}, manager{manager}, border{0}, timer{0} {}
-
-bool Frost::update(float elapsed) {
-  for (int i = PIX_PER_FRAME; i > 0; i--) {
-    timer -= elapsed;
-    if (timer <= 0) {
-      // find a new random frost direction
-      random_angle = TCODRandom::getInstance()->getFloat(0.0f, 2 * 3.1415926f);
-      random_range = TCODRandom::getInstance()->getFloat(0, 2 * RANGE);
-      timer = ANGLE_DELAY;
-      rx = (int)(RANGE + random_range * cosf(random_angle));
-      ry = (int)(RANGE + random_range * sinf(random_angle));
-      int minDist = 100000;
-      // find closest frost pixel
-      for (int cx = 1; cx < 2 * RANGE; cx++) {
-        if ((unsigned)(x - RANGE + cx) < (unsigned)manager->w) {
-          for (int cy = 1; cy < 2 * RANGE; cy++) {
-            if ((unsigned)(y - RANGE + cy) < (unsigned)manager->h) {
-              float f = getValue(cx, cy);
-              if (f > FROST_LEVEL) {
-                int dist = (cx - rx) * (cx - rx) + (cy - ry) * (cy - ry);
+      Returns false if this particle is to be removed.
+   */
+  inline bool frost_update(Frost& frost, float delta_time) {
+    for (int i = PIX_PER_FRAME; i > 0; i--) {
+      frost.timer -= delta_time;
+      if (frost.timer <= 0) {
+        // find a new random frost direction
+        const float random_angle = TCODRandom::getInstance()->getFloat(0.0f, TAU);
+        const float random_range = TCODRandom::getInstance()->getFloat(0, 2 * RANGE);
+        frost.timer = ANGLE_DELAY;
+        frost.rx = static_cast<int>(RANGE + random_range * cosf(random_angle));
+        frost.ry = static_cast<int>(RANGE + random_range * sinf(random_angle));
+        int minDist = std::numeric_limits<int>::max();
+        // find closest frost pixel
+        for (int cy = 1; cy < 2 * RANGE; cy++) {
+          for (int cx = 1; cx < 2 * RANGE; cx++) {
+            if (in_bounds(frost.origin_x - RANGE + cx, frost.origin_y - RANGE + cy)) {
+              if (getValue(frost, cx, cy) > FROST_LEVEL) {
+                const int dist = (cx - frost.rx) * (cx - frost.rx) + (cy - frost.ry) * (cy - frost.ry);
                 if (dist < minDist) {
                   minDist = dist;
-                  best_x = cx;
-                  best_y = cy;
+                  frost.best_x = cx;
+                  frost.best_y = cy;
                 }
               }
             }
           }
         }
       }
-    }
-    // smoothing
-    for (int cx = 0; cx < 2 * RANGE + 1; cx++) {
-      if (x - RANGE + cx < manager->w - 1 && x - RANGE + cx > 0) {
-        for (int cy = 0; cy < 2 * RANGE + 1; cy++) {
-          if (y - RANGE + cy < manager->h - 1 && y - RANGE + cy > 0) {
-            if (getValue(cx, cy) < 1.0f) {
-              float f = getValue(cx, cy);
-              float old_f = f;
-              f = MAX(f, getValue(cx + 1, cy));
-              f = MAX(f, getValue(cx - 1, cy));
-              f = MAX(f, getValue(cx, cy + 1));
-              f = MAX(f, getValue(cx, cy - 1));
-              setValue(cx, cy, old_f + (f - old_f) * SMOOTH * elapsed);
+      // smoothing
+      for (int cy = 0; cy < 2 * RANGE + 1; cy++) {
+        if (frost.origin_y - RANGE + cy < height - 1 && frost.origin_y - RANGE + cy > 0) {
+          for (int cx = 0; cx < 2 * RANGE + 1; cx++) {
+            if (frost.origin_x - RANGE + cx < width - 1 && frost.origin_x - RANGE + cx > 0) {
+              if (getValue(frost, cx, cy) < 1.0f) {
+                float f = getValue(frost, cx, cy);
+                const float old_f = f;
+                f = std::max(f, getValue(frost, cx + 1, cy));
+                f = std::max(f, getValue(frost, cx - 1, cy));
+                f = std::max(f, getValue(frost, cx, cy + 1));
+                f = std::max(f, getValue(frost, cx, cy - 1));
+                setValue(frost, cx, cy, old_f + (f - old_f) * SMOOTH * delta_time);
+              }
             }
           }
         }
       }
-    }
-    int cur_x = best_x;
-    int cur_y = best_y;
-    // frosting
-    TCODLine::init(cur_x, cur_y, rx, ry);
-    TCODLine::step(&cur_x, &cur_y);
-    if ((unsigned)(x - RANGE + cur_x) < (unsigned)manager->w && (unsigned)(y - RANGE + cur_y) < (unsigned)manager->h) {
-      float f = getValue(cur_x, cur_y);
-      f += GROW * elapsed;
-      f = MIN(1.0f, f);
-      setValue(cur_x, cur_y, f);
-      if (f == 1.0f) {
-        best_x = cur_x;
-        best_y = cur_y;
-        if (best_x == rx && best_y == ry) timer = 0.0f;
-        timer = 0.0f;
-        if (cur_x == 0 || cur_x == 2 * RANGE || cur_y == 0 || cur_y == 2 * RANGE) {
-          border++;
-          if (border == 20) return false;
+      int cur_x = frost.best_x;
+      int cur_y = frost.best_y;
+      // frosting
+      TCODLine::init(cur_x, cur_y, frost.rx, frost.ry);
+      TCODLine::step(&cur_x, &cur_y);
+
+      if (in_bounds(frost.origin_x - RANGE + cur_x, frost.origin_y - RANGE + cur_y)) {
+        const float frost_value = std::min(1.0f, getValue(frost, cur_x, cur_y) + GROW * delta_time);
+        setValue(frost, cur_x, cur_y, frost_value);
+        if (frost_value == 1.0f) {
+          frost.best_x = cur_x;
+          frost.best_y = cur_y;
+          if (frost.best_x == frost.rx && frost.best_y == frost.ry) frost.timer = 0.0f;
+          frost.timer = 0.0f;
+          if (cur_x == 0 || cur_x == 2 * RANGE || cur_y == 0 || cur_y == 2 * RANGE) {
+            frost.border++;
+            if (frost.border == 20) {
+              return false;  // Delete this particle.
+            }
+          }
         }
-      }
-    } else
-      timer = 0.0f;
+      } else
+        frost.timer = 0.0f;
+    }
+    return true;
   }
-  return true;
-}
-void Frost::render(TCODImage& img) {
-  int w, h;
-  img.getSize(&w, &h);
-  for (int cy = std::max(y - RANGE, 0); cy < std::min(y + RANGE + 1, h); ++cy) {
-    for (int cx = std::max(x - RANGE, 0); cx < std::min(x + RANGE + 1, w); ++cx) {
-      float f = getValue(cx - (x - RANGE), cy - (y - RANGE));
-      int idx = std::max(0, std::min(static_cast<int>(f * 255), 255));
-      img.putPixel(cx, cy, frostCol.at(idx));
+
+  /**
+      Renders a frost particle.
+   */
+  inline void frost_render(const Frost& frost) {
+    for (int cy = std::max(frost.origin_y - RANGE, 0); cy < std::min(frost.origin_y + RANGE + 1, height); ++cy) {
+      for (int cx = std::max(frost.origin_x - RANGE, 0); cx < std::min(frost.origin_x + RANGE + 1, width); ++cx) {
+        const float f = getValue(frost, cx - (frost.origin_x - RANGE), cy - (frost.origin_y - RANGE));
+        const int idx = std::max(0, std::min(static_cast<int>(f * 255), 255));
+        img->putPixel(cx, cy, frost_gradient.at(idx));
+      }
     }
   }
-}
+  std::vector<Frost> frost_objs;   // A vector of frost effects.
+  std::vector<float> grid;         // A canvas for holding the freeze effect values.
+  std::unique_ptr<TCODImage> img;  // An image for storing the freeze colors.
+  int width, height;               // The size of the managed frost map.
+};
 
 static constexpr int CONSOLE_WIDTH = 80;
 static constexpr int CONSOLE_HEIGHT = 50;
@@ -229,6 +229,7 @@ int main(int argc, char** argv) {
   params.tileset = tileset;
   params.argc = argc;
   params.argv = argv;
+  params.window_title = "frost test";
   params.columns = CONSOLE_WIDTH;
   params.rows = CONSOLE_HEIGHT;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
@@ -243,10 +244,11 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  // Initialize the frost color gradient.
   const std::array<int, 4> keys{0, 60, 200, 255};
   const std::array<TCODColor, 4> keyCols{
       TCODColor::black, TCODColor::darkerBlue, TCODColor::lighterBlue, TCODColor::lightestBlue};
-  TCODColor::genMap(&frostCol[0], static_cast<int>(keys.size()), keyCols.data(), keys.data());
+  TCODColor::genMap(&frost_gradient[0], static_cast<int>(keys.size()), keyCols.data(), keys.data());
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(main_loop, 0, 0);
 #else

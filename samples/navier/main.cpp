@@ -32,37 +32,31 @@
 // based on Jos Stam, "Real-Time Fluid Dynamics for Games". Proceedings of the Game Developer Conference, March 2003.
 // http://www.dgp.toronto.edu/people/stam/reality/Research/pub.html
 
-#define WIDTH 50
-#define HEIGHT 50
+static constexpr auto WIDTH = 50;
+static constexpr auto HEIGHT = 50;
 
-#define WIDTHx2 (WIDTH * 2)
-#define HEIGHTx2 (HEIGHT * 2)
+static constexpr auto WIDTHx2 = WIDTH * 2;
+static constexpr auto HEIGHTx2 = HEIGHT * 2;
 // use square map
-#define N MIN(WIDTHx2, HEIGHTx2)
+static constexpr auto N = std::min(WIDTHx2, HEIGHTx2);
 // store a 2D map in a 1D array
-#define SIZE (N + 2) * (N + 2)
+static constexpr auto SIZE = (N + 2) * (N + 2);
 // convert x,y to array index
-#define IX(i, j) ((i) + (N + 2) * (j))
-#define SWAP(x0, x)  \
-  {                  \
-    float* tmp = x0; \
-    x0 = x;          \
-    x = tmp;         \
-  }
+constexpr int IX(int x, int y) { return x + (N + 2) * y; }
 
 // 2D velocity maps (current and previous)
-float u[SIZE], v[SIZE], u_prev[SIZE], v_prev[SIZE];
+static float u_current[SIZE], v_current[SIZE], u_prev[SIZE], v_prev[SIZE];
 // density maps (current and previous)
-float dens[SIZE], dens_prev[SIZE];
+static float dens[SIZE], dens_prev[SIZE];
 TCODImage img(WIDTHx2, HEIGHTx2);
 
-float visc = 1E-6f;
-float diff = 1E-5f;
-float force = 40.0f;
-float source = 5000.0f;
-float stepDelay = 0.0f;
+static constexpr auto VISCOSITY = 1E-6f;
+static constexpr auto diff = 1E-5f;
+static constexpr auto force = 40.0f;
+static constexpr auto source = 5000.0f;
+static float stepDelay = 0.0f;
 
-int player_x = N / 4, player_y = N / 4;
+static int player_x = N / 4, player_y = N / 4;
 
 // set boundary conditions
 void set_bnd(int b, float* x) {
@@ -86,7 +80,7 @@ void set_bnd(int b, float* x) {
 // x : density map
 // s : density source map
 // dt : elapsed time
-void add_source(float* x, float* s, float dt) {
+void add_source(float* x, const float* s, float dt) {
   for (int i = 0; i < SIZE; i++) {
     x[i] += dt * s[i];
   }
@@ -98,8 +92,8 @@ void add_source(float* x, float* s, float dt) {
 // x0 : previous density map
 // diff : diffusion coef
 // dt : elapsed time
-void diffuse(int b, float* x, float* x0, float diff, float dt) {
-  float a = diff * dt * N * N;
+void diffuse(int b, float* x, const float* x0, float diffusion_coef, float dt) {
+  const float a = diffusion_coef * dt * N * N;
   for (int k = 0; k < 20; k++) {
     for (int i = 1; i <= N; i++) {
       for (int j = 1; j <= N; j++) {
@@ -117,27 +111,24 @@ void diffuse(int b, float* x, float* x0, float diff, float dt) {
 // d0 : previous density map
 // u,v : current velocity map
 // dt : elapsed time
-void advect(int b, float* d, float* d0, float* u, float* v, float dt) {
-  int i0, j0, i1, j1;
-  float x, y, s0, t0, s1, t1, dt0;
-
-  dt0 = dt * N;
+void advect(int b, float* d, const float* d0, const float* u, const float* v, float dt) {
+  const float dt0 = dt * N;
   for (int i = 1; i <= N; i++) {
     for (int j = 1; j <= N; j++) {
-      x = i - dt0 * u[IX(i, j)];
-      y = j - dt0 * v[IX(i, j)];
+      float x = i - dt0 * u[IX(i, j)];
+      float y = j - dt0 * v[IX(i, j)];
       if (x < 0.5) x = 0.5;
       if (x > N + 0.5) x = N + 0.5;
-      i0 = (int)x;
-      i1 = i0 + 1;
+      const int i0 = (int)x;
+      const int i1 = i0 + 1;
       if (y < 0.5) y = 0.5;
       if (y > N + 0.5) y = N + 0.5;
-      j0 = (int)y;
-      j1 = j0 + 1;
-      s1 = x - i0;
-      s0 = 1 - s1;
-      t1 = y - j0;
-      t0 = 1 - t1;
+      const int j0 = (int)y;
+      const int j1 = j0 + 1;
+      const float s1 = x - i0;
+      const float s0 = 1 - s1;
+      const float t1 = y - j0;
+      const float t0 = 1 - t1;
       d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) + s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
     }
   }
@@ -145,7 +136,7 @@ void advect(int b, float* d, float* d0, float* u, float* v, float dt) {
 }
 
 void project(float* u, float* v, float* p, float* div) {
-  float h = 1.0f / N;
+  const float h = 1.0f / N;
   for (int i = 1; i <= N; i++) {
     for (int j = 1; j <= N; j++) {
       div[IX(i, j)] = -0.5f * h * (u[IX(i + 1, j)] - u[IX(i - 1, j)] + v[IX(i, j + 1)] - v[IX(i, j - 1)]);
@@ -175,41 +166,41 @@ void project(float* u, float* v, float* p, float* div) {
 }
 
 // do all three density steps
-void update_density(float* x, float* x0, float* u, float* v, float diff, float dt) {
+void update_density(float* x, float* x0, const float* u, const float* v, float diffusion_coef, float dt) {
   add_source(x, x0, dt);
-  SWAP(x0, x);
-  diffuse(0, x, x0, diff, dt);
-  SWAP(x0, x);
+  std::swap(x0, x);
+  diffuse(0, x, x0, diffusion_coef, dt);
+  std::swap(x0, x);
   advect(0, x, x0, u, v, dt);
 }
 
-void update_velocity(float* u, float* v, float* u0, float* v0, float visc, float dt) {
+void update_velocity(float* u, float* v, float* u0, float* v0, float viscosity, float dt) {
   add_source(u, u0, dt);
   add_source(v, v0, dt);
-  SWAP(u0, u);
-  diffuse(1, u, u0, visc, dt);
-  SWAP(v0, v);
-  diffuse(2, v, v0, visc, dt);
+  std::swap(u0, u);
+  diffuse(1, u, u0, viscosity, dt);
+  std::swap(v0, v);
+  diffuse(2, v, v0, viscosity, dt);
   project(u, v, u0, v0);
-  SWAP(u0, u);
-  SWAP(v0, v);
+  std::swap(u0, u);
+  std::swap(v0, v);
   advect(1, u, u0, u0, v0, dt);
   advect(2, v, v0, u0, v0, dt);
   project(u, v, u0, v0);
 }
 
 void init() {
-  memset(u, 0, sizeof(float) * SIZE);
-  memset(v, 0, sizeof(float) * SIZE);
+  memset(u_current, 0, sizeof(float) * SIZE);
+  memset(v_current, 0, sizeof(float) * SIZE);
   memset(u_prev, 0, sizeof(float) * SIZE);
   memset(v_prev, 0, sizeof(float) * SIZE);
   for (int i = 0; i < SIZE; i++) dens[i] = 0.0f;
   memcpy(dens_prev, dens, sizeof(float) * SIZE);
 }
 
-void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
-  int i, j;
-  float vx = 0.0f, vy = 0.0f;
+void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
+  float vx = 0.0f;
+  float vy = 0.0f;
 
   stepDelay -= elapsed;
   if (stepDelay < 0.0f) {
@@ -235,21 +226,20 @@ void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t k, TCOD
     v[IX(player_x * 2, player_y * 2)] = 5 * vy;
   }
 
-  for (i = 0; i < SIZE; i++) {
+  for (int i = 0; i < SIZE; ++i) {
     u[i] = v[i] = d[i] = 0.0f;
   }
 
   if (!mouse.lbutton && !mouse.rbutton) return;
 
-  i = mouse.cx * 2;
-  j = mouse.cy * 2;
+  int i = mouse.cx * 2;
+  int j = mouse.cy * 2;
   if (i < 1 || i > N || j < 1 || j > N) return;
 
   if (mouse.lbutton) {
-    float dx, dy, l;
-    dx = (float)(mouse.cx - player_x);
-    dy = (float)(mouse.cy - player_y);
-    l = sqrtf(dx * dx + dy * dy);
+    float dx = (float)(mouse.cx - player_x);
+    float dy = (float)(mouse.cy - player_y);
+    float l = sqrtf(dx * dx + dy * dy);
     if (l > 0) {
       l = 1.0f / l;
       dx *= l;
@@ -263,13 +253,13 @@ void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t k, TCOD
 
 void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
   get_from_UI(dens_prev, u_prev, v_prev, elapsed, k, mouse);
-  update_velocity(u, v, u_prev, v_prev, visc, elapsed);
-  update_density(dens, dens_prev, u, v, diff, elapsed);
+  update_velocity(u_current, v_current, u_prev, v_prev, VISCOSITY, elapsed);
+  update_density(dens, dens_prev, u_current, v_current, diff, elapsed);
 }
 
 void render() {
-  static TCODColor deepBlue = TCODColor::darkestFlame;
-  static TCODColor highBlue = TCODColor::lightestYellow;
+  static const TCODColor deepBlue = TCODColor::darkestFlame;
+  static const TCODColor highBlue = TCODColor::lightestYellow;
   for (int x = 0; x <= N; x++) {
     for (int y = 0; y <= N; y++) {
       float coef = (float)(dens[IX(x, y)] / 128.0f);
@@ -278,7 +268,7 @@ void render() {
     }
   }
   img.blit2x(TCODConsole::root, 0, 0);
-  TCODConsole::root->print(2, HEIGHT - 2, "%4d fps", TCODSystem::getFps());
+  TCODConsole::root->printf(2, HEIGHT - 2, "%4d fps", TCODSystem::getFps());
   TCODConsole::root->setDefaultForeground(TCODColor::white);
   TCODConsole::root->putChar(player_x, player_y, '@');
 }
@@ -316,7 +306,7 @@ int main(int argc, char* argv[]) {
 
     // render the game screen
     render();
-    TCODConsole::root->print(5, 49, "Arrows to move, left mouse button to cast");
+    TCODConsole::root->printf(5, 49, "Arrows to move, left mouse button to cast");
     // render libtcod credits
     if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
     // flush updates to screen

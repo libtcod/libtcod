@@ -29,28 +29,28 @@
 #include <libtcod.h>
 
 void Shader::init(TCODMap* map) {
-  this->map = map;
-  int size = map->getWidth() * map->getHeight();
-  lightmap = new TCODColor[size];
+  this->map_ = map;
+  const int size = map->getWidth() * map->getHeight();
+  lightmap_ = new TCODColor[size];
 }
 
 int Shader::addLight(int x, int y, int radius, const TCODColor& col) {
-  int id = static_cast<int>(lights.size());
+  const int id = static_cast<int>(lights_.size());
   Light l;
   l.x = x;
   l.y = y;
   l.radius = radius;
   l.col = col;
-  lights.push_back(l);
+  lights_.push_back(l);
   return id;
 }
 
 void Shader::updateLight(int id, int x, int y, int radius, const TCODColor& col) {
-  Light& l = lights.at(id);
+  Light& l = lights_.at(id);
   l.x = x;
   l.y = y;
   l.radius = radius;
   l.col = col;
 }
 
-const TCODColor& Shader::getLightColor(int x, int y) { return lightmap[x + y * map->getWidth()]; }
+const TCODColor& Shader::getLightColor(int x, int y) { return lightmap_[x + y * map_->getWidth()]; }

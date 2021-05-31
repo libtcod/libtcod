@@ -26,43 +26,44 @@
  */
 
 #include <libtcod.h>
-#include <math.h>
+
+#include <cmath>
 
 #include "bsp_helper.hpp"
 #include "rad_shader.hpp"
 
-#define CON_WIDTH 80
-#define CON_HEIGHT 50
+static constexpr auto CON_WIDTH = 80;
+static constexpr auto CON_HEIGHT = 50;
 
-#define MAP_WIDTH 39
-#define MAP_HEIGHT 50
+static constexpr auto MAP_WIDTH = 39;
+static constexpr auto MAP_HEIGHT = 50;
 
-#define LIGHT_RADIUS 10
-#define CELL_REFLECTIVITY 1.5f
-#define CELL_SELF_ILLUMINATION 0.4f
+static constexpr auto LIGHT_RADIUS = 10;
+static constexpr auto CELL_REFLECTIVITY = 1.5f;
+static constexpr auto CELL_SELF_ILLUMINATION = 0.4f;
 
-TCODMap* map;
-BspHelper bsp;
-int player_x = 0, player_y = 0, playerBack;
-Shader* leftShader = NULL;
-Shader* rightShader = NULL;
-TCODColor darkWall(50, 50, 150);
-TCODColor lightWall(130, 110, 50);
-TCODColor darkGround(0, 0, 100);
-TCODColor lightGround(200, 180, 50);
-int torchIndex;
+static TCODMap* map;
+static BspHelper bsp;
+static int player_x = 0, player_y = 0, playerBack;
+static Shader* leftShader = NULL;
+static Shader* rightShader = NULL;
+static const TCODColor darkWall(50, 50, 150);
+static const TCODColor lightWall(130, 110, 50);
+static const TCODColor darkGround(0, 0, 100);
+static const TCODColor lightGround(200, 180, 50);
+static int torchIndex;
 
-float stdTime = 0.0f;
-float radTime = 0.0f;
-float stdLength = 0.0f;
-float radLength = 0.0f;
-int timeSecond;
-int framesCount = 0;
+static float stdTime = 0.0f;
+static float radTime = 0.0f;
+static float stdLength = 0.0f;
+static float radLength = 0.0f;
+static int timeSecond;
+static int framesCount = 0;
 
 // gamma correction lookup table
-bool enableGammaCorrection = true;
-int gammaLookup[256];
-#define GAMMA (1 / 2.2f)
+static bool enableGammaCorrection = true;
+static int gammaLookup[256];
+static constexpr auto GAMMA = 1.0f / 2.2f;
 
 // find the closest walkable position
 void findPos(int* x, int* y) {
@@ -119,13 +120,13 @@ void init() {
   timeSecond = TCODSystem::getElapsedMilli() / 1000;
 
   if (enableGammaCorrection) {
-    for (int i = 0; i < 256; i++) {
-      float v = i / 255.0f;
-      float correctedV = powf(v, GAMMA);
+    for (int i = 0; i < 256; ++i) {
+      const float v = i / 255.0f;
+      const float correctedV = powf(v, GAMMA);
       gammaLookup[i] = (int)(correctedV * 255);
     }
   } else {
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; ++i) {
       gammaLookup[i] = i;
     }
   }
@@ -134,11 +135,11 @@ void init() {
 void render() {
   // compute lights
   framesCount++;
-  uint32_t start = TCODSystem::getElapsedMilli();
+  const uint32_t start = TCODSystem::getElapsedMilli();
   leftShader->compute();
-  uint32_t leftEnd = TCODSystem::getElapsedMilli();
+  const uint32_t leftEnd = TCODSystem::getElapsedMilli();
   rightShader->compute();
-  uint32_t rightEnd = TCODSystem::getElapsedMilli();
+  const uint32_t rightEnd = TCODSystem::getElapsedMilli();
   stdTime += (leftEnd - start) * 0.001f;
   radTime += (rightEnd - leftEnd) * 0.001f;
   if ((int)(start / 1000) != timeSecond) {
@@ -150,8 +151,8 @@ void render() {
     framesCount = 0;
   }
 
-  for (int x = 0; x < MAP_WIDTH; x++) {
-    for (int y = 0; y < MAP_HEIGHT; y++) {
+  for (int x = 0; x < MAP_WIDTH; ++x) {
+    for (int y = 0; y < MAP_HEIGHT; ++y) {
       TCODColor darkCol, lightCol;
       // get the cell dark and lit colors
       if (map->isWalkable(x, y)) {
@@ -165,18 +166,18 @@ void render() {
       // hack : for a better look, lights are white and we only use them as
       // a lerp coefficient between dark and light colors.
       // a true light model would multiply the light color with the cell color
-      TCODColor leftLight = leftShader->getLightColor(x, y);
-      TCODColor cellLeftCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[leftLight.r] / 255.0f);
+      const TCODColor leftLight = leftShader->getLightColor(x, y);
+      const TCODColor cellLeftCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[leftLight.r] / 255.0f);
       TCODConsole::root->setCharBackground(x, y, cellLeftCol);
 
       // render right map
-      TCODColor rightLight = rightShader->getLightColor(x, y);
-      TCODColor cellRightCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[rightLight.r] / 255.0f);
+      const TCODColor rightLight = rightShader->getLightColor(x, y);
+      const TCODColor cellRightCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[rightLight.r] / 255.0f);
       TCODConsole::root->setCharBackground(x + CON_WIDTH / 2, y, cellRightCol);
     }
   }
-  TCODConsole::root->print(CON_WIDTH / 4, 0, "Standard lighting %1.2fms", stdLength);
-  TCODConsole::root->print(3 * CON_WIDTH / 4, 0, "Photon reactor %1.2fms", radLength);
+  TCODConsole::root->printf(CON_WIDTH / 4, 0, "Standard lighting %1.2fms", stdLength);
+  TCODConsole::root->printf(3 * CON_WIDTH / 4, 0, "Photon reactor %1.2fms", radLength);
 }
 
 void move(int dx, int dy) {
@@ -228,7 +229,7 @@ int main() {
         break;
       case TCODK_CHAR:
         switch (k.c) {
-          // move with vi keys (HJKL) or FPS keys (WSAD or ZQSD)
+          // move with vi keys (HJKL) or FPS keys (WASD/ZQSD)
           case 'q':
           case 'Q':
           case 'a':

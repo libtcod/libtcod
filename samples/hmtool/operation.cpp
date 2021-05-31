@@ -141,7 +141,7 @@ bool Operation::needsNoise = false;
 Operation* Operation::currentOp = NULL;
 
 void Operation::addCode(const char* code) {
-  int len = strlen(code);
+  int len = static_cast<int>(strlen(code));
   if (len + 1 > freeSize) {
     int newSize = bufSize + MAX(4096, len + 1);
     char* newbuf = new char[newSize];
@@ -224,7 +224,7 @@ const char* Operation::buildCode(CodeType type) {
 
 void Operation::run() { runInternal(); }
 
-void historyCbk(Widget* w, void* data) {
+void historyCbk(Widget*, void* data) {
   Operation* op = (Operation*)data;
   op->createParamUi();
   op->button->select();
@@ -237,7 +237,7 @@ void Operation::add() {
   if (addInternal()) {
     list.push(this);
     createParamUi();
-    button = new RadioButton(names[type], tips[type], historyCbk, this);
+    button = new RadioButton(names[operation_type], tips[operation_type], historyCbk, this);
     button->setGroup(0);
     history->addWidget(button);
     button->select();
@@ -311,13 +311,13 @@ void NormalizeOperation::runInternal() { hm->normalize(min, max); }
 
 bool NormalizeOperation::addInternal() {
   Operation* prev = list.peek();
-  if (prev && prev->type == NORM) {
+  if (prev && prev->operation_type == NORM) {
     return false;
   }
   return true;
 }
 
-void normalizeMinValueCbk(Widget* wid, char* val, void* data) {
+void normalizeMinValueCbk(Widget*, char* val, void* data) {
 #ifdef TCOD_VISUAL_STUDIO
   float f = (float)atof(val);
   {
@@ -338,7 +338,7 @@ void normalizeMinValueCbk(Widget* wid, char* val, void* data) {
   }
 }
 
-void normalizeMaxValueCbk(Widget* wid, char* val, void* data) {
+void normalizeMaxValueCbk(Widget*, char* val, void* data) {
 #ifdef TCOD_VISUAL_STUDIO
   float f = (float)atof(val);
   {
@@ -419,7 +419,7 @@ bool AddFbmOperation::addInternal() {
   return true;
 }
 
-void addFbmZoomValueCbk(Widget* wid, float val, void* data) {
+void addFbmZoomValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->zoom = val;
   if (Operation::list.peek() == op) {
@@ -430,7 +430,7 @@ void addFbmZoomValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addFbmXOffsetValueCbk(Widget* wid, float val, void* data) {
+void addFbmXOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offsetx = val;
   if (Operation::list.peek() == op) {
@@ -441,7 +441,7 @@ void addFbmXOffsetValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addFbmYOffsetValueCbk(Widget* wid, float val, void* data) {
+void addFbmYOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offsety = val;
   if (Operation::list.peek() == op) {
@@ -452,7 +452,7 @@ void addFbmYOffsetValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addFbmOctavesValueCbk(Widget* wid, float val, void* data) {
+void addFbmOctavesValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->octaves = val;
   if (Operation::list.peek() == op) {
@@ -463,7 +463,7 @@ void addFbmOctavesValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addFbmOffsetValueCbk(Widget* wid, float val, void* data) {
+void addFbmOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offset = val;
   if (Operation::list.peek() == op) {
@@ -474,7 +474,7 @@ void addFbmOffsetValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addFbmScaleValueCbk(Widget* wid, float val, void* data) {
+void addFbmScaleValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->scale = val;
   if (Operation::list.peek() == op) {
@@ -488,7 +488,7 @@ void addFbmScaleValueCbk(Widget* wid, float val, void* data) {
 void AddFbmOperation::createParamUi() {
   params->clear();
   params->setVisible(true);
-  params->setName(names[ADDFBM]);
+  params->setName(names[ADD_FBM]);
 
   Slider* slider = new Slider(0, 0, 8, 0.1f, 20.0f, "zoom       ", "Noise zoom");
   slider->setCallback(addFbmZoomValueCbk, this);
@@ -641,7 +641,7 @@ bool AddHillOperation::addInternal() {
   return true;
 }
 
-void addHillNbHillValueCbk(Widget* wid, float val, void* data) {
+void addHillNbHillValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->nbHill = (int)val;
   if (Operation::list.peek() == op) {
@@ -652,7 +652,7 @@ void addHillNbHillValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addHillRadiusValueCbk(Widget* wid, float val, void* data) {
+void addHillRadiusValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->radius = val;
   if (Operation::list.peek() == op) {
@@ -663,7 +663,7 @@ void addHillRadiusValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addHillRadiusVarValueCbk(Widget* wid, float val, void* data) {
+void addHillRadiusVarValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->radiusVar = val;
   if (Operation::list.peek() == op) {
@@ -674,7 +674,7 @@ void addHillRadiusVarValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void addHillHeightValueCbk(Widget* wid, float val, void* data) {
+void addHillHeightValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->height = val;
   if (Operation::list.peek() == op) {
@@ -743,7 +743,7 @@ void AddLevelOperation::runInternal() {
 bool AddLevelOperation::addInternal() {
   Operation* prev = list.peek();
   bool ret = true;
-  if (prev && prev->type == ADDLEVEL) {
+  if (prev && prev->operation_type == ADDLEVEL) {
     // cumulated consecutive addLevel operation into a single call
     AddLevelOperation* addOp = (AddLevelOperation*)prev;
     if (addOp->level * level > 0) {
@@ -754,7 +754,7 @@ bool AddLevelOperation::addInternal() {
   return ret;
 }
 
-void raiseLowerValueCbk(Widget* wid, float val, void* data) {
+void raiseLowerValueCbk(Widget*, float val, void* data) {
   AddLevelOperation* op = (AddLevelOperation*)data;
   op->level = val;
   if (op == Operation::list.peek()) {
@@ -861,7 +861,7 @@ bool SmoothOperation::addInternal() {
   return true;
 }
 
-void smoothMinValueCbk(Widget* wid, float val, void* data) {
+void smoothMinValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->minLevel = val;
   if (op == Operation::list.peek()) {
@@ -872,7 +872,7 @@ void smoothMinValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void smoothMaxValueCbk(Widget* wid, float val, void* data) {
+void smoothMaxValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->maxLevel = val;
   if (op == Operation::list.peek()) {
@@ -883,7 +883,7 @@ void smoothMaxValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void smoothRadiusValueCbk(Widget* wid, float val, void* data) {
+void smoothRadiusValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->radius = val;
   if (op == Operation::list.peek()) {
@@ -894,7 +894,7 @@ void smoothRadiusValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void smoothCountValueCbk(Widget* wid, float val, void* data) {
+void smoothCountValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->count = (int)val;
   if (op == Operation::list.peek()) {
@@ -977,7 +977,7 @@ bool RainErosionOperation::addInternal() {
   return true;
 }
 
-void rainErosionNbDropsValueCbk(Widget* wid, float val, void* data) {
+void rainErosionNbDropsValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->nbDrops = (int)val;
   if (op == Operation::list.peek()) {
@@ -988,7 +988,7 @@ void rainErosionNbDropsValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void rainErosionErosionCoefValueCbk(Widget* wid, float val, void* data) {
+void rainErosionErosionCoefValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->erosionCoef = val;
   if (op == Operation::list.peek()) {
@@ -999,7 +999,7 @@ void rainErosionErosionCoefValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void rainErosionSedimentationCoefValueCbk(Widget* wid, float val, void* data) {
+void rainErosionSedimentationCoefValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->sedimentationCoef = val;
   if (op == Operation::list.peek()) {
@@ -1101,7 +1101,7 @@ bool NoiseLerpOperation::addInternal() {
   return true;
 }
 
-void noiseLerpValueCbk(Widget* wid, float val, void* data) {
+void noiseLerpValueCbk(Widget*, float val, void* data) {
   NoiseLerpOperation* op = (NoiseLerpOperation*)data;
   op->coef = val;
   if (Operation::list.peek() == op) {
@@ -1114,7 +1114,7 @@ void noiseLerpValueCbk(Widget* wid, float val, void* data) {
 
 void NoiseLerpOperation::createParamUi() {
   AddFbmOperation::createParamUi();
-  params->setName(names[NOISELERP]);
+  params->setName(names[NOISE_LERP]);
 
   Slider* slider = new Slider(0, 0, 8, -1.0f, 1.0f, "coef       ", "Coefficient of the lerp operation");
   slider->setCallback(noiseLerpValueCbk, this);
@@ -1124,7 +1124,7 @@ void NoiseLerpOperation::createParamUi() {
 
 // Voronoi
 VoronoiOperation::VoronoiOperation(int nbPoints, int nbCoef, float* coef) : nbPoints(nbPoints), nbCoef(nbCoef) {
-  type = VORONOI;
+  operation_type = VORONOI;
   for (int i = 0; i < MIN(MAX_VORONOI_COEF, nbCoef); i++) {
     this->coef[i] = coef[i];
   }
@@ -1137,11 +1137,11 @@ VoronoiOperation::VoronoiOperation(int nbPoints, int nbCoef, float* coef) : nbPo
 }
 
 const char* VoronoiOperation::getCode(CodeType type) {
-  char coefstr[256] = "";
+  char coef_str[256] = "";
   for (int i = 0; i < nbCoef; i++) {
     char tmp2[64];
     sprintf(tmp2, "%g,", coef[i]);
-    strcat(coefstr, tmp2);
+    strcat(coef_str, tmp2);
   }
   switch (type) {
     case C:
@@ -1154,7 +1154,7 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\tTCOD_heightmap_add_hm(hm,tmp,hm);\n"
           "\t\tTCOD_heightmap_delete(tmp);\n"
           "\t}\n",
-          coefstr,
+          coef_str,
           nbPoints,
           nbCoef);
       break;
@@ -1167,7 +1167,7 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\ttmp.normalize();\n"
           "\t\thm->add(hm,&tmp);\n"
           "\t}\n",
-          coefstr,
+          coef_str,
           nbPoints,
           nbCoef);
       break;
@@ -1179,7 +1179,7 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "    libtcod.heightmap_normalize(tmp)\n"
           "    libtcod.heightmap_add_hm(hm,tmp,hm)\n"
           "    libtcod.heightmap_delete(tmp)\n",
-          coefstr,
+          coef_str,
           nbPoints,
           nbCoef);
       break;
@@ -1201,7 +1201,7 @@ bool VoronoiOperation::addInternal() {
   return true;
 }
 
-void voronoiNbPointsValueCbk(Widget* wid, float val, void* data) {
+void voronoiNbPointsValueCbk(Widget*, float val, void* data) {
   VoronoiOperation* op = (VoronoiOperation*)data;
   op->nbPoints = (int)val;
   if (Operation::list.peek() == op) {
@@ -1212,7 +1212,7 @@ void voronoiNbPointsValueCbk(Widget* wid, float val, void* data) {
   }
 }
 
-void voronoiNbCoefValueCbk(Widget* wid, float val, void* data) {
+void voronoiNbCoefValueCbk(Widget*, float val, void* data) {
   VoronoiOperation* op = (VoronoiOperation*)data;
   op->nbCoef = (int)val;
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {
@@ -1233,11 +1233,11 @@ void voronoiNbCoefValueCbk(Widget* wid, float val, void* data) {
 
 void voronoiCoefValueCbk(Widget* wid, float val, void* data) {
   VoronoiOperation* op = (VoronoiOperation*)data;
-  int coefnum;
-  for (coefnum = 0; coefnum < op->nbCoef; coefnum++) {
-    if (op->coefSlider[coefnum] == wid) break;
+  int coef_num;
+  for (coef_num = 0; coef_num < op->nbCoef; coef_num++) {
+    if (op->coefSlider[coef_num] == wid) break;
   }
-  op->coef[coefnum] = val;
+  op->coef[coef_num] = val;
   if (Operation::list.peek() == op) {
     restore();
     op->run();

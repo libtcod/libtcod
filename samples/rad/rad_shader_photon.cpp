@@ -27,26 +27,28 @@
 
 #include <libtcod.h>
 
+#include <algorithm>
+
 #include "rad_shader.hpp"
 
 PhotonShader::PhotonShader(float reflectivity, float selfIllumination, int nbPass)
-    : maxRadius(0), reflectivity(reflectivity), selfIllumination(selfIllumination), nbPass(nbPass) {}
+    : maxRadius_(0), reflectivity_(reflectivity), selfIllumination_(selfIllumination), nbPass_(nbPass) {}
 
 int PhotonShader::addLight(int x, int y, int radius, const TCODColor& col) {
-  if (radius > maxRadius) maxRadius = radius;
+  if (radius > maxRadius_) maxRadius_ = radius;
   return Shader::addLight(x, y, radius, col);
 }
 
 void PhotonShader::init(TCODMap* map) {
   Shader::init(map);
   int size = map->getWidth() * map->getHeight();
-  int maxDiameter = 2 * maxRadius + 1;
+  int maxDiameter = 2 * maxRadius_ + 1;
   // initialize data
-  ff = new float[size * maxDiameter * maxDiameter];
-  ffSum = new float[size];
-  data = new CellData[size];
-  memset(ff, 0, sizeof(float) * size * maxDiameter * maxDiameter);
-  memset(data, 0, sizeof(CellData) * size);
+  ff_ = new float[size * maxDiameter * maxDiameter];
+  ffSum_ = new float[size];
+  data_ = new CellData[size];
+  memset(ff_, 0, sizeof(float) * size * maxDiameter * maxDiameter);
+  memset(data_, 0, sizeof(CellData) * size);
   // compute form factors
   for (int y = 0; y < map->getHeight(); y++) {
     for (int x = 0; x < map->getWidth(); x++) {
@@ -57,26 +59,26 @@ void PhotonShader::init(TCODMap* map) {
 
 // compute form factor of cell x,y relative to all its surrounding cells
 void PhotonShader::computeFormFactor(int x, int y) {
-  int ominx = x - maxRadius;
-  int ominy = y - maxRadius;
-  int omaxx = x + maxRadius;
-  int omaxy = y + maxRadius;
-  int minx = MAX(ominx, 0);
-  int miny = MAX(ominy, 0);
-  int maxx = MIN(omaxx, map->getWidth() - 1);
-  int maxy = MIN(omaxy, map->getHeight() - 1);
-  int maxDiameter = 2 * maxRadius + 1;
-  float* cellFormFactor = ff + (x + y * map->getWidth()) * maxDiameter * maxDiameter;
-  map->computeFov(x, y, maxRadius);
-  int squareRad = (maxRadius * maxRadius);
+  const int o_minx = x - maxRadius_;
+  const int o_miny = y - maxRadius_;
+  const int o_maxx = x + maxRadius_;
+  const int o_maxy = y + maxRadius_;
+  const int minx = std::max(o_minx, 0);
+  const int miny = std::max(o_miny, 0);
+  const int maxx = std::min(o_maxx, map_->getWidth() - 1);
+  const int maxy = std::min(o_maxy, map_->getHeight() - 1);
+  const int maxDiameter = 2 * maxRadius_ + 1;
+  float* cellFormFactor = ff_ + (x + y * map_->getWidth()) * maxDiameter * maxDiameter;
+  map_->computeFov(x, y, maxRadius_);
+  const int squareRad = (maxRadius_ * maxRadius_);
   // float invRad=1.0/squareRad;
   double curFfSum = 0;
-  float offset = 1.0f / (1.0f + (float)(maxRadius * maxRadius) / 20);
-  float factor = 1.0f / (1.0f - offset);
-  for (int cx = minx, cdx = minx - ominx; cx <= maxx; cx++, cdx++) {
-    for (int cy = miny, cdy = miny - ominy; cy <= maxy; cy++, cdy++) {
-      if (map->isInFov(cx, cy)) {
-        int dist = (maxRadius - cdx) * (maxRadius - cdx) + (maxRadius - cdy) * (maxRadius - cdy);
+  const float offset = 1.0f / (1.0f + (float)(maxRadius_ * maxRadius_) / 20);
+  const float factor = 1.0f / (1.0f - offset);
+  for (int cx = minx, cdx = minx - o_minx; cx <= maxx; cx++, cdx++) {
+    for (int cy = miny, cdy = miny - o_miny; cy <= maxy; cy++, cdy++) {
+      if (map_->isInFov(cx, cy)) {
+        const int dist = (maxRadius_ - cdx) * (maxRadius_ - cdx) + (maxRadius_ - cdy) * (maxRadius_ - cdy);
         if (dist <= squareRad) {
           // float value = (1.0f-dist*invRad) ;
           // float value =1.0f/(1.0f+(float)(dist)/20);
@@ -88,99 +90,98 @@ void PhotonShader::computeFormFactor(int x, int y) {
     }
   }
   // scale so that the sum of all form factors for cell x,y is 1.0
-  ffSum[x + y * map->getWidth()] = (float)curFfSum;
+  ffSum_[x + y * map_->getWidth()] = (float)curFfSum;
   if (curFfSum > 1E-8) {
     curFfSum = 1.0 / curFfSum;
-    for (int cx = minx, cdx = minx - ominx; cx <= maxx; cx++, cdx++) {
-      for (int cy = miny, cdy = miny - ominy; cy <= maxy; cy++, cdy++) {
+    for (int cx = minx, cdx = minx - o_minx; cx <= maxx; cx++, cdx++) {
+      for (int cy = miny, cdy = miny - o_miny; cy <= maxy; cy++, cdy++) {
         cellFormFactor[cdx + cdy * maxDiameter] *= (float)curFfSum;
       }
     }
   }
 }
 
-void PhotonShader::computeLightContribution(int lx, int ly, int lradius, const FColor& lcol, float reflectivity) {
-  int ominx = lx - lradius;
-  int ominy = ly - lradius;
-  int omaxx = lx + lradius;
-  int omaxy = ly + lradius;
-  int minx = MAX(ominx, 0);
-  int miny = MAX(ominy, 0);
-  int maxx = MIN(omaxx, map->getWidth() - 1);
-  int maxy = MIN(omaxy, map->getHeight() - 1);
-  int maxDiameter = 2 * maxRadius + 1;
-  float* cellFormFactor = ff + (lx + ly * map->getWidth()) * maxDiameter * maxDiameter;
-// compute the light's contribution
-#define MIN_FACTOR (1.0f / 255.0f)
-  int width = map->getWidth();
-  for (int y = miny, cdy = miny - ominy; y <= maxy; y++, cdy++) {
-    CellData* cellData = &data[minx + y * width];
-    float* cellFormRow = &cellFormFactor[minx - ominx + cdy * maxDiameter];
+void PhotonShader::computeLightContribution(
+    int lx, int ly, int l_radius, const FColor& l_col, float /* reflectivity */) {
+  const int o_minx = lx - l_radius;
+  const int o_miny = ly - l_radius;
+  const int o_maxx = lx + l_radius;
+  const int o_maxy = ly + l_radius;
+  const int minx = std::max(o_minx, 0);
+  const int miny = std::max(o_miny, 0);
+  const int maxx = std::min(o_maxx, map_->getWidth() - 1);
+  const int maxy = std::min(o_maxy, map_->getHeight() - 1);
+  const int maxDiameter = 2 * maxRadius_ + 1;
+  const float* cellFormFactor = ff_ + (lx + ly * map_->getWidth()) * maxDiameter * maxDiameter;
+  // compute the light's contribution
+  static constexpr auto MIN_FACTOR = 1.0f / 255.0f;
+  const int width = map_->getWidth();
+  for (int y = miny, cdy = miny - o_miny; y <= maxy; y++, cdy++) {
+    CellData* cellData = &data_[minx + y * width];
+    const float* cellFormRow = &cellFormFactor[minx - o_minx + cdy * maxDiameter];
     for (int x = minx; x <= maxx; x++, cellData++, cellFormRow++) {
-      float cellff = *cellFormRow;
-      if (cellff > MIN_FACTOR) {
-        cellData->incoming.r += lcol.r * cellff;
-        cellData->incoming.g += lcol.g * cellff;
-        cellData->incoming.b += lcol.b * cellff;
+      const float cell_ff = *cellFormRow;
+      if (cell_ff > MIN_FACTOR) {
+        cellData->incoming.r += l_col.r * cell_ff;
+        cellData->incoming.g += l_col.g * cell_ff;
+        cellData->incoming.b += l_col.b * cell_ff;
       }
     }
   }
 }
 
 void PhotonShader::propagate() {
-  CellData* cellData = data;
+  CellData* cellData = data_;
 
-  int size = map->getWidth() * map->getHeight();
-  lightsCoord.clear();
+  const int size = map_->getWidth() * map_->getHeight();
+  lightsCoord_.clear();
   for (int c = 0; c < size; c++, cellData++) {
-    cellData->emission.r = cellData->incoming.r * reflectivity;
-    cellData->emission.g = cellData->incoming.g * reflectivity;
-    cellData->emission.b = cellData->incoming.b * reflectivity;
-    cellData->outgoing.r += cellData->incoming.r * selfIllumination;
-    cellData->outgoing.g += cellData->incoming.g * selfIllumination;
-    cellData->outgoing.b += cellData->incoming.b * selfIllumination;
+    cellData->emission.r = cellData->incoming.r * reflectivity_;
+    cellData->emission.g = cellData->incoming.g * reflectivity_;
+    cellData->emission.b = cellData->incoming.b * reflectivity_;
+    cellData->outgoing.r += cellData->incoming.r * selfIllumination_;
+    cellData->outgoing.g += cellData->incoming.g * selfIllumination_;
+    cellData->outgoing.b += cellData->incoming.b * selfIllumination_;
     cellData->incoming.r = 0;
     cellData->incoming.g = 0;
     cellData->incoming.b = 0;
     if (cellData->emission.r > 0 || cellData->emission.g > 0 || cellData->emission.b > 0)
-      lightsCoord.emplace_back(c % map->getWidth(), c / map->getWidth());
+      lightsCoord_.emplace_back(c % map_->getWidth(), c / map_->getWidth());
   }
 }
 
 void PhotonShader::compute() {
   // turn off all lights
-  int size = map->getWidth() * map->getHeight();
-  memset(data, 0, sizeof(CellData) * size);
+  const int size = map_->getWidth() * map_->getHeight();
+  memset(data_, 0, sizeof(CellData) * size);
   // first pass. lights only
-  for (const Light& l : lights) {
-    int off = l.x + l.y * map->getWidth();
-    CellData* cellData = &data[off];
-    float sum = ffSum[off];
+  for (const Light& l : lights_) {
+    const int off = l.x + l.y * map_->getWidth();
+    CellData* cellData = &data_[off];
+    const float sum = ffSum_[off];
     cellData->emission.r = l.col.r * sum;
     cellData->emission.g = l.col.r * sum;
     cellData->emission.b = l.col.r * sum;
     computeLightContribution(l.x, l.y, l.radius, cellData->emission, 0.5f);
   }
   // other passes. all lit cells act as lights
-  int pass = 1;
-  while (pass < nbPass) {
+  for (int pass = 1; pass < nbPass_; ++pass) {
     propagate();
-    CellData* cellData = data;
+    const CellData* cellData = data_;
     // for (int y=0; y < map->getHeight(); y++ ) {
     //	for (int x=0; x < map->getWidth(); x++, cellData++ ) {
-    for (const Coord& c : lightsCoord) {
-      cellData = &data[c.x + c.y * map->getWidth()];
-      computeLightContribution(c.x, c.y, maxRadius, cellData->emission, reflectivity);
+    for (const Coord& c : lightsCoord_) {
+      cellData = &data_[c.x + c.y * map_->getWidth()];
+      computeLightContribution(c.x, c.y, maxRadius_, cellData->emission, reflectivity_);
     }
-    pass++;
   }
 
-  CellData* cellData = data;
-  TCODColor* col = lightmap;
+  const CellData* cellData = data_;
+  TCODColor* col = lightmap_;
   propagate();
   for (int c = 0; c < size; c++, cellData++, col++) {
-    col->r = (uint8_t)MIN(255, cellData->outgoing.r);
-    col->g = (uint8_t)MIN(255, cellData->outgoing.g);
-    col->b = (uint8_t)MIN(255, cellData->outgoing.b);
+    col->r = static_cast<uint8_t>(std::min(255.0f, cellData->outgoing.r));
+    col->g = static_cast<uint8_t>(std::min(255.0f, cellData->outgoing.g));
+    col->b = static_cast<uint8_t>(std::min(255.0f, cellData->outgoing.b));
   }
 }

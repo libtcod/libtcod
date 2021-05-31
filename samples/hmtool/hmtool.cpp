@@ -7,7 +7,7 @@
 
 #include "operation.hpp"
 
-TCODHeightMap *hm = NULL, *hmold = NULL;
+TCODHeightMap *hm = NULL, *hm_old = NULL;
 TCODNoise* noise = NULL;
 TCODRandom *rnd = NULL, *backupRnd = NULL;
 TCODConsole* guicon = NULL;
@@ -71,7 +71,7 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(114, 150, 71),   // sand
     TCODColor(80, 120, 10),    // sand-grass transition
     TCODColor(17, 109, 7),     // grass
-    TCODColor(120, 220, 120),  // grass-snow transisiton
+    TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
 static Image* keyImages[MAX_COLOR_KEY];
@@ -157,7 +157,7 @@ void backup() {
   // save the heightmap & RNG states
   for (int x = 0; x < HM_WIDTH; x++) {
     for (int y = 0; y < HM_HEIGHT; y++) {
-      hmold->setValue(x, y, hm->getValue(x, y));
+      hm_old->setValue(x, y, hm->getValue(x, y));
     }
   }
   if (backupRnd) delete backupRnd;
@@ -171,7 +171,7 @@ void restore() {
   // restore the previously saved heightmap & RNG states
   for (int x = 0; x < HM_WIDTH; x++) {
     for (int y = 0; y < HM_HEIGHT; y++) {
-      hm->setValue(x, y, hmold->getValue(x, y));
+      hm->setValue(x, y, hm_old->getValue(x, y));
     }
   }
   rnd->restore(backupRnd);
@@ -202,7 +202,7 @@ void addHill(int nbHill, float baseRadius, float radiusVar, float height) {
   }
 }
 
-void clearCbk(Widget* w, void* data) {
+void clearCbk(Widget*, void*) {
   hm->clear();
   Operation::clear();
   history->clear();
@@ -210,42 +210,42 @@ void clearCbk(Widget* w, void* data) {
   params->setVisible(false);
 }
 
-void reseedCbk(Widget* w, void* data) {
+void reseedCbk(Widget*, void*) {
   seed = rnd->getInt(0x7FFFFFFF, 0xFFFFFFFF);
   Operation::reseed();
   message(3.0f, "Switching to seed %X", seed);
 }
 
-void cancelCbk(Widget* w, void* data) { Operation::cancel(); }
+void cancelCbk(Widget*, void*) { Operation::cancel(); }
 
 // operations buttons callbacks
-void normalizeCbk(Widget* w, void* data) { (new NormalizeOperation(0.0f, 1.0f))->add(); }
+void normalizeCbk(Widget*, void*) { (new NormalizeOperation(0.0f, 1.0f))->add(); }
 
-void addFbmCbk(Widget* w, void* data) { (new AddFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
+void addFbmCbk(Widget*, void*) { (new AddFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
 
-void scaleFbmCbk(Widget* w, void* data) { (new ScaleFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
+void scaleFbmCbk(Widget*, void*) { (new ScaleFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
 
-void addHillCbk(Widget* w, void* data) {
+void addHillCbk(Widget*, void*) {
   (new AddHillOperation(25, 10.0f, 0.5f, (mapmax == mapmin ? 0.5f : (mapmax - mapmin) * 0.1f)))->add();
 }
 
-void rainErosionCbk(Widget* w, void* data) { (new RainErosionOperation(1000, 0.05f, 0.05f))->add(); }
+void rainErosionCbk(Widget*, void*) { (new RainErosionOperation(1000, 0.05f, 0.05f))->add(); }
 
-void smoothCbk(Widget* w, void* data) { (new SmoothOperation(mapmin, mapmax, 2))->add(); }
+void smoothCbk(Widget*, void*) { (new SmoothOperation(mapmin, mapmax, 2))->add(); }
 
-void voronoiCbk(Widget* w, void* data) { (new VoronoiOperation(100, 2, voronoiCoef))->add(); }
+void voronoiCbk(Widget*, void*) { (new VoronoiOperation(100, 2, voronoiCoef))->add(); }
 
-void noiseLerpCbk(Widget* w, void* data) {
+void noiseLerpCbk(Widget*, void*) {
   float v = (mapmax - mapmin) * 0.5f;
   if (v == 0.0f) v = 1.0f;
   (new NoiseLerpOperation(0.0f, 1.0f, addFbmDelta, 0.0f, 6.0f, v, v))->add();
 }
 
-void raiseLowerCbk(Widget* w, void* data) { (new AddLevelOperation(0.0f))->add(); }
+void raiseLowerCbk(Widget*, void*) { (new AddLevelOperation(0.0f))->add(); }
 
 // In/Out buttons callbacks
 
-void exportCCbk(Widget* w, void* data) {
+void exportCCbk(Widget*, void*) {
   const char* code = Operation::buildCode(Operation::C);
   FILE* f = fopen("hm.c", "wt");
   fprintf(f, "%s", code);
@@ -253,7 +253,7 @@ void exportCCbk(Widget* w, void* data) {
   message(3.0f, "The code has been exported to ./hm.c");
 }
 
-void exportPyCbk(Widget* w, void* data) {
+void exportPyCbk(Widget*, void*) {
   const char* code = Operation::buildCode(Operation::PY);
   FILE* f = fopen("hm.py", "wt");
   fprintf(f, "%s", code);
@@ -261,7 +261,7 @@ void exportPyCbk(Widget* w, void* data) {
   message(3.0f, "The code has been exported to ./hm.py");
 }
 
-void exportCppCbk(Widget* w, void* data) {
+void exportCppCbk(Widget*, void*) {
   const char* code = Operation::buildCode(Operation::CPP);
   FILE* f = fopen("hm.cpp", "wt");
   fprintf(f, "%s", code);
@@ -269,7 +269,7 @@ void exportCppCbk(Widget* w, void* data) {
   message(3.0f, "The code has been exported to ./hm.cpp");
 }
 
-void exportBmpCbk(Widget* w, void* data) {
+void exportBmpCbk(Widget*, void*) {
   TCODImage img(HM_WIDTH, HM_HEIGHT);
   for (int x = 0; x < HM_WIDTH; x++) {
     for (int y = 0; y < HM_HEIGHT; y++) {
@@ -305,97 +305,97 @@ void exportBmpCbk(Widget* w, void* data) {
 }
 
 // Display buttons callbacks
-void colorMapCbk(Widget* w, void* data) {
+void colorMapCbk(Widget*, void*) {
   slope = false;
   greyscale = false;
   normal = false;
 }
 
-void greyscaleCbk(Widget* w, void* data) {
+void greyscaleCbk(Widget*, void*) {
   slope = false;
   greyscale = true;
   normal = false;
 }
 
-void slopeCbk(Widget* w, void* data) {
+void slopeCbk(Widget*, void*) {
   slope = true;
   greyscale = false;
   normal = false;
 }
 
-void normalCbk(Widget* w, void* data) {
+void normalCbk(Widget*, void*) {
   slope = false;
   greyscale = false;
   normal = true;
 }
 
-void changeColorMapIdxCbk(Widget* w, float val, void* data) {
-  intptr_t i = ((intptr_t)data);
+void changeColorMapIdxCbk(Widget*, float val, void* data) {
+  auto i = reinterpret_cast<intptr_t>(data);
   keyIndex[i] = (int)(val);
   if (i == 1) sandHeight = (float)(i) / 255.0f;
   initColors();
 }
 
-void changeColorMapRedCbk(Widget* w, float val, void* data) {
-  intptr_t i = ((intptr_t)data);
-  keyColor[i].r = (int)(val);
+void changeColorMapRedCbk(Widget*, float val, void* data) {
+  auto i = reinterpret_cast<intptr_t>(data);
+  keyColor[i].r = static_cast<uint8_t>(val);
   keyImages[i]->setBackgroundColor(keyColor[i]);
   initColors();
 }
 
-void changeColorMapGreenCbk(Widget* w, float val, void* data) {
-  intptr_t i = ((intptr_t)data);
-  keyColor[i].g = (int)(val);
+void changeColorMapGreenCbk(Widget*, float val, void* data) {
+  auto i = reinterpret_cast<intptr_t>(data);
+  keyColor[i].g = static_cast<uint8_t>(val);
   keyImages[i]->setBackgroundColor(keyColor[i]);
   initColors();
 }
 
-void changeColorMapBlueCbk(Widget* w, float val, void* data) {
-  intptr_t i = ((intptr_t)data);
-  keyColor[i].b = (int)(val);
+void changeColorMapBlueCbk(Widget*, float val, void* data) {
+  auto i = reinterpret_cast<intptr_t>(data);
+  keyColor[i].b = static_cast<uint8_t>(val);
   keyImages[i]->setBackgroundColor(keyColor[i]);
   initColors();
 }
 
-void changeColorMapEndCbk(Widget* w, void* data) { colorMapGui->setVisible(false); }
+void changeColorMapEndCbk(Widget*, void*) { colorMapGui->setVisible(false); }
 
-void changeColorMapCbk(Widget* w, void* data) {
+void changeColorMapCbk(Widget* w, void*) {
   colorMapGui->move(w->x + w->w + 2, w->y);
   colorMapGui->clear();
-  for (int i = 0; i < nbColorKeys; i++) {
+  for (intptr_t i = 0; i < nbColorKeys; i++) {
     char tmp[64];
-    sprintf(tmp, "Color %d", i);
+    sprintf(tmp, "Color %d", static_cast<int>(i));
     colorMapGui->addSeparator(tmp);
-    HBox* hbox = new HBox(0, 0, 0);
-    VBox* vbox = new VBox(0, 0, 0);
-    colorMapGui->addWidget(hbox);
+    HBox* h_box = new HBox(0, 0, 0);
+    VBox* v_box = new VBox(0, 0, 0);
+    colorMapGui->addWidget(h_box);
     Slider* idxSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "index", "Index of the key in the color map (0-255)");
     idxSlider->setValue((float)keyIndex[i]);
     idxSlider->setFormat("%.0f");
-    idxSlider->setCallback(changeColorMapIdxCbk, (void*)i);
-    vbox->addWidget(idxSlider);
+    idxSlider->setCallback(changeColorMapIdxCbk, reinterpret_cast<void*>(i));
+    v_box->addWidget(idxSlider);
     keyImages[i] = new Image(0, 0, 0, 2);
     keyImages[i]->setBackgroundColor(keyColor[i]);
-    vbox->addWidget(keyImages[i]);
-    hbox->addWidget(vbox);
+    v_box->addWidget(keyImages[i]);
+    h_box->addWidget(v_box);
 
-    vbox = new VBox(0, 0, 0);
-    hbox->addWidget(vbox);
+    v_box = new VBox(0, 0, 0);
+    h_box->addWidget(v_box);
     Slider* redSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "r", "Red component of the color");
     redSlider->setValue((float)keyColor[i].r);
     redSlider->setFormat("%.0f");
-    redSlider->setCallback(changeColorMapRedCbk, (void*)i);
-    vbox->addWidget(redSlider);
+    redSlider->setCallback(changeColorMapRedCbk, reinterpret_cast<void*>(i));
+    v_box->addWidget(redSlider);
     Slider* greenSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "g", "Green component of the color");
     greenSlider->setValue((float)keyColor[i].g);
     greenSlider->setFormat("%.0f");
-    greenSlider->setCallback(changeColorMapGreenCbk, (void*)i);
-    vbox->addWidget(greenSlider);
+    greenSlider->setCallback(changeColorMapGreenCbk, reinterpret_cast<void*>(i));
+    v_box->addWidget(greenSlider);
     Slider* blueSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "b", "Blue component of the color");
     blueSlider->setValue((float)keyColor[i].b);
     blueSlider->setFormat("%.0f");
-    blueSlider->setCallback(changeColorMapBlueCbk, (void*)i);
-    vbox->addWidget(blueSlider);
+    blueSlider->setCallback(changeColorMapBlueCbk, reinterpret_cast<void*>(i));
+    v_box->addWidget(blueSlider);
   }
   colorMapGui->addWidget(new Button("Ok", NULL, changeColorMapEndCbk, NULL));
   colorMapGui->setVisible(true);
@@ -429,13 +429,13 @@ void buildGui() {
   // operations
   tools->addSeparator("Operations", "Apply a new operation to the map");
   addOperationButton(tools, Operation::NORM, normalizeCbk);
-  addOperationButton(tools, Operation::ADDFBM, addFbmCbk);
-  addOperationButton(tools, Operation::SCALEFBM, scaleFbmCbk);
+  addOperationButton(tools, Operation::ADD_FBM, addFbmCbk);
+  addOperationButton(tools, Operation::SCALE_FBM, scaleFbmCbk);
   addOperationButton(tools, Operation::ADDHILL, addHillCbk);
   addOperationButton(tools, Operation::RAIN, rainErosionCbk);
   addOperationButton(tools, Operation::SMOOTH, smoothCbk);
   addOperationButton(tools, Operation::VORONOI, voronoiCbk);
-  addOperationButton(tools, Operation::NOISELERP, noiseLerpCbk);
+  addOperationButton(tools, Operation::NOISE_LERP, noiseLerpCbk);
   addOperationButton(tools, Operation::ADDLEVEL, raiseLowerCbk);
 
   // display
@@ -483,7 +483,7 @@ int main(int argc, char* argv[]) {
   initColors();
   buildGui();
   hm = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
-  hmold = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
+  hm_old = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
   rnd = new TCODRandom(seed);
   noise = new TCODNoise(2, rnd);
   uint8_t fade = 50;

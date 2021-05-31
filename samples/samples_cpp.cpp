@@ -24,11 +24,11 @@ typedef struct {
 } sample_t;
 
 // sample screen size
-#define SAMPLE_SCREEN_WIDTH 46
-#define SAMPLE_SCREEN_HEIGHT 20
+static constexpr auto SAMPLE_SCREEN_WIDTH = 46;
+static constexpr auto SAMPLE_SCREEN_HEIGHT = 20;
 // sample screen position
-#define SAMPLE_SCREEN_X 20
-#define SAMPLE_SCREEN_Y 10
+static constexpr auto SAMPLE_SCREEN_X = 20;
+static constexpr auto SAMPLE_SCREEN_Y = 10;
 
 // ***************************
 // samples rendering functions
@@ -47,14 +47,14 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       TCODColor(240, 85, 5),
       TCODColor(50, 35, 240),
       TCODColor(10, 200, 130)};  // random corner colors
-  static int dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
+  static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
   if (first) {
     sampleConsole.clear();
   }
   // ==== slightly modify the corner colors ====
   for (int c = 0; c < 4; c++) {
     // move each corner color
-    int component = TCODRandom::getInstance()->getInt(0, 2);
+    const int component = TCODRandom::getInstance()->getInt(0, 2);
     switch (component) {
       case 0:
         cols[c].r += 5 * dir_r[c];
@@ -82,7 +82,7 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 
   // ==== scan the whole screen, interpolating corner colors ====
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+    const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
     // get the current column top and bottom colors
     TCODColor top = TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
     TCODColor bottom = TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
@@ -217,11 +217,11 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   }
   if ((bkFlag & 0xff) == TCOD_BKGND_ALPH) {
     // for the alpha mode, update alpha every frame
-    float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+    const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
     bkFlag = TCOD_BKGND_ALPHA(alpha);
   } else if ((bkFlag & 0xff) == TCOD_BKGND_ADDA) {
     // for the add alpha mode, update alpha every frame
-    float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+    const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
     bkFlag = TCOD_BKGND_ADDALPHA(alpha);
   }
   if (!init) {
@@ -243,7 +243,7 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // blit the background
   TCODConsole::blit(&bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
   // render the gradient
-  int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
+  const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
     TCODColor col;
     col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
@@ -254,13 +254,11 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     sampleConsole.setCharBackground(x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
   }
   // calculate the segment ends
-  float angle = TCODSystem::getElapsedSeconds() * 2.0f;
-  float cosAngle = cosf(angle);
-  float sinAngle = sinf(angle);
-  int xo = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosAngle));
-  int yo = (int)(SAMPLE_SCREEN_HEIGHT / 2 + sinAngle * SAMPLE_SCREEN_WIDTH / 2);
-  int xd = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosAngle));
-  int yd = (int)(SAMPLE_SCREEN_HEIGHT / 2 - sinAngle * SAMPLE_SCREEN_WIDTH / 2);
+  const float angle = TCODSystem::getElapsedSeconds() * 2.0f;
+  const int xo = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
+  const int yo = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
+  const int xd = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosf(angle)));
+  const int yd = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 - sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
 
   // render the line
   LineListener listener;
@@ -313,9 +311,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   // render the 2d noise function
   for (int y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; y++) {
     for (int x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; x++) {
-      float f[2];
-      f[0] = zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx;
-      f[1] = zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy;
+      const float f[2] = {zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx, zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy};
       float value = 0.0f;
       switch (func) {
         case PERLIN:
@@ -1101,8 +1097,8 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
   static bool generate = true;
   static bool refresh = false;
   static map_t map;
-  static TCODColor darkWall(0, 0, 100);
-  static TCODColor darkGround(50, 50, 150);
+  static const TCODColor darkWall(0, 0, 100);
+  static const TCODColor darkGround(50, 50, 150);
   static BspListener listener;
   if (generate || refresh) {
     // dungeon generation
@@ -1287,12 +1283,9 @@ class SampleRenderer : public ITCODSDLRenderer {
         ir += p2[r_idx];
         ig += p2[g_idx];
         ib += p2[b_idx];
-        ir /= 4;
-        ig /= 4;
-        ib /= 4;
-        p[r_idx] = ir;
-        p[g_idx] = ig;
-        p[b_idx] = ib;
+        p[r_idx] = static_cast<uint8_t>(ir / 4);
+        p[g_idx] = static_cast<uint8_t>(ig / 4);
+        p[b_idx] = static_cast<uint8_t>(ib / 4);
         p += screen->pitch;
       }
     }
@@ -1318,12 +1311,9 @@ class SampleRenderer : public ITCODSDLRenderer {
           ig += p2[g_idx];
           ib += p2[b_idx];
         }
-        ir /= 3;
-        ig /= 3;
-        ib /= 3;
-        p[r_idx] = ir;
-        p[g_idx] = ig;
-        p[b_idx] = ib;
+        p[r_idx] = static_cast<uint8_t>(ir / 3);
+        p[g_idx] = static_cast<uint8_t>(ig / 3);
+        p[b_idx] = static_cast<uint8_t>(ib / 3);
         p += screen->pitch;
       }
     }
@@ -1424,12 +1414,9 @@ class SampleRenderer : public ITCODSDLRenderer {
             ig += p[g_idx];
             ib += p[b_idx];
             p -= screen->pitch;
-            ir /= count;
-            ig /= count;
-            ib /= count;
-            p[r_idx] = ir;
-            p[g_idx] = ig;
-            p[b_idx] = ib;
+            p[r_idx] = static_cast<uint8_t>(ir / count);
+            p[g_idx] = static_cast<uint8_t>(ig / count);
+            p[b_idx] = static_cast<uint8_t>(ib / count);
             break;
           default:
             break;

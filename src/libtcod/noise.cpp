@@ -55,25 +55,32 @@ TCODNoise::TCODNoise(int dimensions, float hurst, float lacunarity, TCODRandom* 
 
 void TCODNoise::setType(TCOD_noise_type_t type) { TCOD_noise_set_type(data, type); }
 
-float TCODNoise::get(float* f, TCOD_noise_type_t type) {
+float TCODNoise::get(const float* f, TCOD_noise_type_t type) {
   if (type == TCOD_NOISE_DEFAULT)
     return TCOD_noise_get(data, f);
   else
     return TCOD_noise_get_ex(data, f, type);
 }
+float TCODNoise::get(float* f, TCOD_noise_type_t type) { return get(static_cast<const float*>(f), type); }
 
-float TCODNoise::getFbm(float* f, float octaves, TCOD_noise_type_t type) {
+float TCODNoise::getFbm(const float* f, float octaves, TCOD_noise_type_t type) {
   if (type == TCOD_NOISE_DEFAULT)
     return TCOD_noise_get_fbm(data, f, octaves);
   else
     return TCOD_noise_get_fbm_ex(data, f, octaves, type);
 }
+float TCODNoise::getFbm(float* f, float octaves, TCOD_noise_type_t type) {
+  return getFbm(static_cast<const float*>(f), octaves, type);
+}
 
-float TCODNoise::getTurbulence(float* f, float octaves, TCOD_noise_type_t type) {
+float TCODNoise::getTurbulence(const float* f, float octaves, TCOD_noise_type_t type) {
   if (type == TCOD_NOISE_DEFAULT)
     return TCOD_noise_get_turbulence(data, f, octaves);
   else
     return TCOD_noise_get_turbulence_ex(data, f, octaves, type);
+}
+float TCODNoise::getTurbulence(float* f, float octaves, TCOD_noise_type_t type) {
+  return getTurbulence(static_cast<const float*>(f), octaves, type);
 }
 
 TCODNoise::~TCODNoise() { TCOD_noise_delete(data); }

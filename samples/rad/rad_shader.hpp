@@ -43,9 +43,9 @@ class Shader {
     int x, y, radius;
     TCODColor col;
   };
-  std::vector<Light> lights;
-  TCODColor* lightmap;
-  TCODMap* map;
+  std::vector<Light> lights_;
+  TCODColor* lightmap_;
+  TCODMap* map_;
 };
 
 class StandardShader : public Shader {
@@ -61,27 +61,15 @@ class PhotonShader : public Shader {
   int addLight(int x, int y, int radius, const TCODColor& col);
 
  protected:
-  // maximum radius of a light in the map
-  int maxRadius;
-  float reflectivity;
-  float selfIllumination;
-  int nbPass;
-  // array of MAP_WIDTH*MAP_HEIGHT*maxDiameter*maxDiamter form factor coefficients (0-255)
-  // maxDiameter = 2*maxRadius+1
-  float* ff;
-  // array of MAP_WIDTH*MAP_HEIGHT containing the sum of all affected cells form factors for each cell in the map
-  float* ffSum;
-  // convenient way to store the list of cells with non null incoming light
-  struct Coord {
-    uint16_t x;
-    uint16_t y;
-    Coord() {}
-    Coord(int x, int y) : x(x), y(y) {}
-  };
-  std::vector<Coord> lightsCoord;
   // color not limited to 0-255 range
   struct FColor {
     float r, g, b;
+  };
+  // convenient way to store the list of cells with non null incoming light
+  struct Coord {
+    int x;
+    int y;
+    Coord(int x, int y) : x{x}, y{y} {}
   };
   struct CellData {
     // amount of light emitted by this cell for this pass
@@ -91,10 +79,21 @@ class PhotonShader : public Shader {
     // total amount of light on the cell (used to shade the map)
     FColor outgoing;
   };
-  // array of MAP_WIDTH*MAP_HEIGHT CellData
-  CellData* data;
-
   void propagate();
   void computeFormFactor(int x, int y);
-  void computeLightContribution(int lx, int ly, int lradius, const FColor& lcol, float reflectivity);
+  void computeLightContribution(int lx, int ly, int l_radius, const FColor& l_col, float reflectivity);
+
+  // maximum radius of a light in the map
+  int maxRadius_;
+  float reflectivity_;
+  float selfIllumination_;
+  int nbPass_;
+  // array of MAP_WIDTH*MAP_HEIGHT*maxDiameter*maxDiamter form factor coefficients (0-255)
+  // maxDiameter = 2*maxRadius+1
+  float* ff_;
+  // array of MAP_WIDTH*MAP_HEIGHT containing the sum of all affected cells form factors for each cell in the map
+  float* ffSum_;
+  std::vector<Coord> lightsCoord_;
+  // array of MAP_WIDTH*MAP_HEIGHT CellData
+  CellData* data_;
 };

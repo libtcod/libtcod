@@ -57,7 +57,7 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
 
-void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
+void update(float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
   if (mouse.lbutton) rippleManager->startRipple(mouse.cx * 2, mouse.cy * 2);
   rippleManager->updateRipples(elapsed);
 }
@@ -72,7 +72,7 @@ void render() {
   rippleManager->renderRipples(ground, ground2);
   ground2->blit2x(TCODConsole::root, 0, 0);
   TCODConsole::root->setDefaultForeground(TCODColor::white);
-  TCODConsole::root->print(3, 49, "Click in water to trigger ripples");
+  TCODConsole::root->printf(3, 49, "Click in water to trigger ripples");
 }
 
 int main(int argc, char* argv[]) {

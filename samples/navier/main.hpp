@@ -25,11 +25,12 @@
  */
 #include <libtcod.h>
 
+#include <cstdbool>
+
 #define VERSION "0.1.1"
 
 // console size
-#define CON_W 80
-#define CON_H 50
+static constexpr auto CON_W = 80;
+static constexpr auto CON_H = 50;
 
-#define IN_RECTANGLE(x, y, w, h) ((unsigned)(x) < (unsigned)(w) && (unsigned)(y) < (unsigned)(h))
-#define SQRDIST(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
+constexpr bool IN_RECTANGLE(int x, int y, int w, int h) { return 0 <= x && 0 <= y && x < w && y < h; }

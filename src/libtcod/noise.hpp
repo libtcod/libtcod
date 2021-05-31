@@ -227,6 +227,7 @@ float TCOD_noise_get_ex(TCOD_noise_t noise, float *f, TCOD_noise_type_t type)
 			value = libtcod.noise_get(noise2d,[0.5,0.7], libtcod.NOISE_PERLIN)
    		*/
 		float get(float *f, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		float get(const float *f, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 		/**
 		@PageName noise_get_fbm
 		@PageFather noise
@@ -274,6 +275,7 @@ float TCOD_noise_get_fbm(TCOD_noise_t noise, float *f, float octaves, TCOD_noise
 			value = libtcod.noise_get_fbm(noise2d,[0.5,0.7],32.0, libtcod.NOISE_PERLIN)
 		*/
 		float getFbm(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		float getFbm(const float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 		/**
 		@PageName noise_get_turbulence
 		@PageFather noise
@@ -320,6 +322,7 @@ float TCOD_noise_get_turbulence_ex(TCOD_noise_t noise, float *f, float octaves, 
 			value = libtcod.noise_get_turbulence(noise2d,[0.5,0.7],32.0,libtcod.NOISE_PERLIN)
 		*/
 		float getTurbulence(float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+		float getTurbulence(const float *f, float octaves, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 
 	protected :
 		friend class TCODLIB_API TCODHeightMap;

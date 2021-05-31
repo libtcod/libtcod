@@ -1,6 +1,7 @@
 cmake_minimum_required (VERSION 3.9)
 project(PackageTest CXX)
 
+set(_IMPORT_CHECK_TARGETS "")  # Suppress undefined variable in Catch2Targets.cmake.
 find_package(Catch2 CONFIG REQUIRED)
 
 if (APPLE)

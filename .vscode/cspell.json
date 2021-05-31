@@ -259,6 +259,7 @@
         "restype",
         "rexpaint",
         "RGUI",
+        "RMASK",
         "rmeta",
         "rmtew",
         "roguelike",

@@ -17,7 +17,7 @@
 /* a sample has a name and a rendering function */
 typedef struct {
   const char* name;
-  void (*render)(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse);
+  void (*render)(const SDL_Event* event);
 } sample_t;
 
 /* sample screen size */
@@ -26,6 +26,11 @@ typedef struct {
 /* sample screen position */
 #define SAMPLE_SCREEN_X 20
 #define SAMPLE_SCREEN_Y 10
+
+// A custom SDL event for when a sample is switched to.
+#define ON_ENTER_USEREVENT (SDL_USEREVENT + 0)
+// A custom SDL event to tell a sample to draw.
+#define ON_DRAW_USEREVENT (SDL_USEREVENT + 1)
 
 /* ***************************
  * samples rendering functions
@@ -37,13 +42,12 @@ static TCOD_console_t sample_console;
 /* ***************************
  * true colors sample
  * ***************************/
-void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_colors(const SDL_Event* event) {
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
   static TCOD_color_t cols[4] = {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}; /* random corner colors */
   static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
-  TCOD_color_t textColor;
   /* ==== slightly modify the corner colors ==== */
-  if (first) {
+  if (event->type == ON_ENTER_USEREVENT) {
     TCOD_console_clear(sample_console);
   }
   /* ==== slightly modify the corner colors ==== */
@@ -91,7 +95,7 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 
   /* ==== print the text ==== */
   /* get the background color at the text position */
-  textColor = TCOD_console_get_char_background(sample_console, SAMPLE_SCREEN_WIDTH / 2, 5);
+  TCOD_color_t textColor = TCOD_console_get_char_background(sample_console, SAMPLE_SCREEN_WIDTH / 2, 5);
   /* and invert it */
   textColor.r = 255 - textColor.r;
   textColor.g = 255 - textColor.g;
@@ -123,7 +127,7 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 /* ***************************
  * offscreen console sample
  * ***************************/
-void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_offscreen(const SDL_Event* event) {
   static TCOD_console_t secondary;  /* second screen */
   static TCOD_console_t screenshot; /* second screen */
   static bool init = false;         /* draw the secondary screen only the first time */
@@ -146,7 +150,7 @@ void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
         TCOD_CENTER,
         "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
   }
-  if (first) {
+  if (event->type == ON_ENTER_USEREVENT) {
     counter = SDL_GetTicks();
     /* get a "screenshot" of the current sample screen */
     TCOD_console_blit(sample_console, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, screenshot, 0, 0, 1.0f, 1.0f);
@@ -182,7 +186,7 @@ bool line_listener(int x, int y) {
   return true;
 }
 
-void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_lines(const SDL_Event* event) {
   static TCOD_console_t bk; /* colored background */
   static bool init = false;
   static const char* flag_names[] = {
@@ -199,10 +203,21 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       "TCOD_BKGND_BURN",
       "TCOD_BKGND_OVERLAY",
       "TCOD_BKGND_ALPHA"};
-  if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
-    /* switch to the next blending mode */
-    bk_flag++;
-    if ((bk_flag & 0xff) > TCOD_BKGND_ALPH) bk_flag = TCOD_BKGND_NONE;
+  switch (event->type) {
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_RETURN:
+        case SDL_SCANCODE_RETURN2:
+        case SDL_SCANCODE_KP_ENTER:
+          if (event->key.keysym.mod & KMOD_ALT) break;
+          /* switch to the next blending mode */
+          ++bk_flag;
+          if ((bk_flag & 0xff) > TCOD_BKGND_ALPH) bk_flag = TCOD_BKGND_NONE;
+          break;
+        default:
+          break;
+      }
+      break;
   }
   float alpha; /* alpha value when blending mode = TCOD_BKGND_ALPHA */
   if ((bk_flag & 0xff) == TCOD_BKGND_ALPH) {
@@ -228,7 +243,7 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
     init = true;
   }
-  if (first) {
+  if (event->type == ON_ENTER_USEREVENT) {
     TCOD_console_set_default_foreground(sample_console, TCOD_white);
   }
   /* blit the background */
@@ -262,7 +277,7 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 /* ***************************
  * noise sample
  * ***************************/
-void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_noise(const SDL_Event* event) {
   enum {
     PERLIN,
     SIMPLEX,
@@ -378,45 +393,61 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_console_printf(sample_console, 2, 14, "T/G : octaves (%2.1f)", octaves);
   }
   /* handle keypress */
-  if (key->vk == TCODK_NONE) return;
-
-  if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if (key->text[0] >= '1' && key->text[0] <= '9') {
-      /* change the noise function */
-      func = key->text[0] - '1';
-    } else if (key->text[0] == 'E' || key->text[0] == 'e') {
-      /* increase hurst */
-      hurst += 0.1f;
-      TCOD_noise_delete(noise);
-      noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
-    } else if (key->text[0] == 'D' || key->text[0] == 'd') {
-      /* decrease hurst */
-      hurst -= 0.1f;
-      TCOD_noise_delete(noise);
-      noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
-    } else if (key->text[0] == 'R' || key->text[0] == 'r') {
-      /* increase lacunarity */
-      lacunarity += 0.5f;
-      TCOD_noise_delete(noise);
-      noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
-    } else if (key->text[0] == 'F' || key->text[0] == 'f') {
-      /* decrease lacunarity */
-      lacunarity -= 0.5f;
-      TCOD_noise_delete(noise);
-      noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
-    } else if (key->text[0] == 'T' || key->text[0] == 't') {
-      /* increase octaves */
-      octaves += 0.5f;
-    } else if (key->text[0] == 'G' || key->text[0] == 'g') {
-      /* decrease octaves */
-      octaves -= 0.5f;
-    } else if (key->text[0] == 'Y' || key->text[0] == 'y') {
-      /* increase zoom */
-      zoom += 0.2f;
-    } else if (key->text[0] == 'H' || key->text[0] == 'h') {
-      /* decrease zoom */
-      zoom -= 0.2f;
-    }
+  switch (event->type) {
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_E:
+          /* increase hurst */
+          hurst += 0.1f;
+          TCOD_noise_delete(noise);
+          noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
+          break;
+        case SDL_SCANCODE_D:
+          /* decrease hurst */
+          hurst -= 0.1f;
+          TCOD_noise_delete(noise);
+          noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
+          break;
+        case SDL_SCANCODE_R:
+          /* increase lacunarity */
+          lacunarity += 0.5f;
+          TCOD_noise_delete(noise);
+          noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
+          break;
+        case SDL_SCANCODE_F:
+          /* decrease lacunarity */
+          lacunarity -= 0.5f;
+          TCOD_noise_delete(noise);
+          noise = TCOD_noise_new(2, hurst, lacunarity, NULL);
+          break;
+        case SDL_SCANCODE_T:
+          /* increase octaves */
+          octaves += 0.5f;
+          break;
+        case SDL_SCANCODE_G:
+          /* decrease octaves */
+          octaves -= 0.5f;
+          break;
+        case SDL_SCANCODE_Y:
+          /* increase zoom */
+          zoom += 0.2f;
+          break;
+        case SDL_SCANCODE_H:
+          /* decrease zoom */
+          zoom -= 0.2f;
+          break;
+        default: {
+          /* change the noise function */
+          const int scancode = event->key.keysym.scancode;
+          if (scancode >= SDL_SCANCODE_1 && scancode <= SDL_SCANCODE_9) {
+            func = scancode - SDL_SCANCODE_1;
+          }
+          if (scancode >= SDL_SCANCODE_KP_1 && scancode <= SDL_SCANCODE_KP_9) {
+            func = scancode - SDL_SCANCODE_KP_1;
+          }
+        } break;
+      }
+      break;
   }
 }
 
@@ -449,7 +480,7 @@ static const char* SAMPLE_MAP[] = {
 // clang-format on
 #define TORCH_RADIUS 10.0f
 #define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
-void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_fov(const SDL_Event* event) {
   static int px = 20, py = 10; /* player position */
   static bool recompute_fov = true;
   static bool torch = false;
@@ -492,7 +523,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
     noise = TCOD_noise_new(1, 1.0f, 1.0f, NULL); /* 1d noise for the torch flickering */
   }
-  if (first) {
+  if (event->type == ON_ENTER_USEREVENT) {
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
@@ -556,82 +587,101 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       }
     }
   }
-  if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if (key->text[0] == 'I' || key->text[0] == 'i') {
-      if (SAMPLE_MAP[py - 1][px] == ' ') {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        --py;
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-        recompute_fov = true;
+  switch (event->type) {
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_I:
+          if (SAMPLE_MAP[py - 1][px] == ' ') {
+            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
+            --py;
+            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+            recompute_fov = true;
+          }
+          break;
+        case SDL_SCANCODE_K:
+          if (SAMPLE_MAP[py + 1][px] == ' ') {
+            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
+            ++py;
+            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+            recompute_fov = true;
+          }
+          break;
+        case SDL_SCANCODE_J:
+          if (SAMPLE_MAP[py][px - 1] == ' ') {
+            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
+            --px;
+            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+            recompute_fov = true;
+          }
+          break;
+        case SDL_SCANCODE_L:
+          if (SAMPLE_MAP[py][px + 1] == ' ') {
+            TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
+            ++px;
+            TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
+            recompute_fov = true;
+          }
+          break;
+        case SDL_SCANCODE_T:
+          torch = !torch;
+          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_printf(
+              sample_console,
+              1,
+              0,
+              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+              torch ? "on " : "off",
+              light_walls ? "on " : "off",
+              algo_names[algonum]);
+          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          break;
+        case SDL_SCANCODE_W:
+          light_walls = !light_walls;
+          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_printf(
+              sample_console,
+              1,
+              0,
+              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+              torch ? "on " : "off",
+              light_walls ? "on " : "off",
+              algo_names[algonum]);
+          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          recompute_fov = true;
+          break;
+        case SDL_SCANCODE_EQUALS:
+        case SDL_SCANCODE_KP_PLUS:
+        case SDL_SCANCODE_MINUS:
+        case SDL_SCANCODE_KP_MINUS:
+          if (event->key.keysym.scancode == SDL_SCANCODE_EQUALS || event->key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
+            ++algonum;
+          } else {
+            --algonum;
+          }
+          algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
+          TCOD_console_set_default_foreground(sample_console, TCOD_white);
+          TCOD_console_printf(
+              sample_console,
+              1,
+              0,
+              "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+              torch ? "on " : "off",
+              light_walls ? "on " : "off",
+              algo_names[algonum]);
+          TCOD_console_set_default_foreground(sample_console, TCOD_black);
+          recompute_fov = true;
+          break;
+        default:
+          break;
       }
-    } else if (key->text[0] == 'K' || key->text[0] == 'k') {
-      if (SAMPLE_MAP[py + 1][px] == ' ') {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        ++py;
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-        recompute_fov = true;
-      }
-    } else if (key->text[0] == 'J' || key->text[0] == 'j') {
-      if (SAMPLE_MAP[py][px - 1] == ' ') {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        --px;
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-        recompute_fov = true;
-      }
-    } else if (key->text[0] == 'L' || key->text[0] == 'l') {
-      if (SAMPLE_MAP[py][px + 1] == ' ') {
-        TCOD_console_put_char(sample_console, px, py, ' ', TCOD_BKGND_NONE);
-        ++px;
-        TCOD_console_put_char(sample_console, px, py, '@', TCOD_BKGND_NONE);
-        recompute_fov = true;
-      }
-    } else if (key->text[0] == 'T' || key->text[0] == 't') {
-      torch = !torch;
-      TCOD_console_set_default_foreground(sample_console, TCOD_white);
-      TCOD_console_printf(
-          sample_console,
-          1,
-          0,
-          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off",
-          light_walls ? "on " : "off",
-          algo_names[algonum]);
-      TCOD_console_set_default_foreground(sample_console, TCOD_black);
-    } else if (key->text[0] == 'W' || key->text[0] == 'w') {
-      light_walls = !light_walls;
-      TCOD_console_set_default_foreground(sample_console, TCOD_white);
-      TCOD_console_printf(
-          sample_console,
-          1,
-          0,
-          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off",
-          light_walls ? "on " : "off",
-          algo_names[algonum]);
-      TCOD_console_set_default_foreground(sample_console, TCOD_black);
-      recompute_fov = true;
-    } else if (key->text[0] == '+' || key->text[0] == '-') {
-      algonum += key->text[0] == '+' ? 1 : -1;
-      algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
-      TCOD_console_set_default_foreground(sample_console, TCOD_white);
-      TCOD_console_printf(
-          sample_console,
-          1,
-          0,
-          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-          torch ? "on " : "off",
-          light_walls ? "on " : "off",
-          algo_names[algonum]);
-      TCOD_console_set_default_foreground(sample_console, TCOD_black);
-      recompute_fov = true;
-    }
+      break;
   }
 }
 
 /* ***************************
  * image sample
  * ***************************/
-void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_image(const SDL_Event* event) {
   static TCOD_image_t img = NULL;
   static TCOD_image_t circle = NULL;
   static const TCOD_color_t blue = {0, 0, 255};
@@ -641,6 +691,7 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     TCOD_image_set_key_color(img, TCOD_black);
     circle = TCOD_image_load("data/img/circle.png");
   }
+  if (event->type != ON_DRAW_USEREVENT) return;
   TCOD_console_set_default_background(sample_console, TCOD_black);
   TCOD_console_clear(sample_console);
   const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
@@ -674,64 +725,63 @@ void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 /* ***************************
  * mouse sample
  * ***************************/
-void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static bool left_button = false;
-  static bool right_button = false;
-  static bool middle_button = false;
-
-  if (first) {
-    TCOD_console_set_default_background(sample_console, TCOD_grey);
-    TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
-    SDL_WarpMouseInWindow(NULL, 320, 200);
-    SDL_ShowCursor(1);
+void render_mouse(const SDL_Event* event) {
+  static TCOD_mouse_t mouse = {0};
+  uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
+  TCOD_sys_process_mouse_event(event, &mouse);
+  switch (event->type) {
+    case ON_ENTER_USEREVENT:
+      TCOD_console_set_default_background(sample_console, TCOD_grey);
+      TCOD_console_set_default_foreground(sample_console, TCOD_light_yellow);
+      SDL_WarpMouseInWindow(NULL, 320, 200);
+      SDL_ShowCursor(1);
+      break;
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_1:
+        case SDL_SCANCODE_KP_1:
+          SDL_ShowCursor(0);
+          break;
+        case SDL_SCANCODE_2:
+        case SDL_SCANCODE_KP_2:
+          SDL_ShowCursor(1);
+          break;
+        default:
+          break;
+      }
+      break;
   }
-
   TCOD_console_clear(sample_console);
-  if (mouse->lbutton_pressed) left_button = !left_button;
-  if (mouse->rbutton_pressed) right_button = !right_button;
-  if (mouse->mbutton_pressed) middle_button = !middle_button;
   TCOD_console_printf(
       sample_console,
       1,
       1,
       "%s\n"
-      "Mouse position : %4dx%4d %s\n"
-      "Mouse cell     : %4dx%4d\n"
-      "Mouse movement : %4dx%4d\n"
-      "Left button    : %s (toggle %s)\n"
-      "Right button   : %s (toggle %s)\n"
-      "Middle button  : %s (toggle %s)\n"
-      "Wheel          : %s\n",
+      "Pixel position : %4dx%4d %s\n"
+      "Tile position  : %4dx%4d\n"
+      "Tile movement  : %4dx%4d\n"
+      "Left button    : %s\n"
+      "Right button   : %s\n"
+      "Middle button  : %s\n",
       TCOD_console_is_active() ? "" : "APPLICATION INACTIVE",
-      mouse->x,
-      mouse->y,
+      mouse.x,
+      mouse.y,
       TCOD_console_has_mouse_focus() ? "" : "OUT OF FOCUS",
-      mouse->cx,
-      mouse->cy,
-      mouse->dx,
-      mouse->dy,
-      mouse->lbutton ? " ON" : "OFF",
-      left_button ? " ON" : "OFF",
-      mouse->rbutton ? " ON" : "OFF",
-      right_button ? " ON" : "OFF",
-      mouse->mbutton ? " ON" : "OFF",
-      middle_button ? " ON" : "OFF",
-      mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
+      mouse.cx,
+      mouse.cy,
+      mouse.dcx,
+      mouse.dcy,
+      mouse_state & SDL_BUTTON_LMASK ? " ON" : "OFF",
+      mouse_state & SDL_BUTTON_RMASK ? " ON" : "OFF",
+      mouse_state & SDL_BUTTON_MMASK ? " ON" : "OFF");
 
   TCOD_console_printf(sample_console, 1, 10, "1 : Hide cursor\n2 : Show cursor");
-  if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if (key->text[0] == '1') {
-      SDL_ShowCursor(0);
-    } else if (key->text[0] == '2') {
-      SDL_ShowCursor(1);
-    }
-  }
 }
 
 /* ***************************
  * path sample
  * ***************************/
-void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_path(const SDL_Event* event) {
   static int px = 20, py = 10;  // player position
   static int dx = 24, dy = 1;   // destination
   static TCOD_map_t map = NULL;
@@ -759,7 +809,7 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     path = TCOD_path_new_using_map(map, 1.41f);
     dijkstra = TCOD_dijkstra_new(map, 1.41f);
   }
-  if (first) {
+  if (event->type == ON_ENTER_USEREVENT) {
     /* we draw the foreground only the first time.
        during the player movement, only the @ is redrawn.
        the rest impacts only the background color */
@@ -855,63 +905,78 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       }
     }
   }
-  if (key->vk == TCODK_TAB) {
-    usingAstar = !usingAstar;
-    if (usingAstar)
-      TCOD_console_printf(sample_console, 1, 4, "Using : A*      ");
-    else
-      TCOD_console_printf(sample_console, 1, 4, "Using : Dijkstra");
-    recalculatePath = true;
-  } else if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if ((key->text[0] == 'I' || key->text[0] == 'i') && dy > 0) {
-      // destination move north
-      TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      --dy;
-      oldChar = TCOD_console_get_char(sample_console, dx, dy);
-      TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (SAMPLE_MAP[dy][dx] == ' ') {
-        recalculatePath = true;
+  switch (event->type) {
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_TAB:
+        case SDL_SCANCODE_KP_TAB:
+          usingAstar = !usingAstar;
+          if (usingAstar)
+            TCOD_console_printf(sample_console, 1, 4, "Using : A*      ");
+          else
+            TCOD_console_printf(sample_console, 1, 4, "Using : Dijkstra");
+          recalculatePath = true;
+          break;
+        case SDL_SCANCODE_I:
+          // destination move north
+          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+          dy = MAX(0, dy - 1);
+          oldChar = TCOD_console_get_char(sample_console, dx, dy);
+          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
+          if (SAMPLE_MAP[dy][dx] == ' ') {
+            recalculatePath = true;
+          }
+          break;
+        case SDL_SCANCODE_K:
+          // destination move south
+          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+          dy = MIN(dy + 1, SAMPLE_SCREEN_HEIGHT - 1);
+          oldChar = TCOD_console_get_char(sample_console, dx, dy);
+          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
+          if (SAMPLE_MAP[dy][dx] == ' ') {
+            recalculatePath = true;
+          }
+          break;
+        case SDL_SCANCODE_J:
+          // destination move west
+          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+          dx = MAX(0, dx - 1);
+          oldChar = TCOD_console_get_char(sample_console, dx, dy);
+          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
+          if (SAMPLE_MAP[dy][dx] == ' ') {
+            recalculatePath = true;
+          }
+          break;
+        case SDL_SCANCODE_L:
+          // destination move east
+          TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+          dx = MIN(dx + 1, SAMPLE_SCREEN_WIDTH - 1);
+          oldChar = TCOD_console_get_char(sample_console, dx, dy);
+          TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
+          if (SAMPLE_MAP[dy][dx] == ' ') {
+            recalculatePath = true;
+          }
+          break;
+        default:
+          break;
       }
-    } else if ((key->text[0] == 'K' || key->text[0] == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
-      // destination move south
-      TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      ++dy;
-      oldChar = TCOD_console_get_char(sample_console, dx, dy);
-      TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (SAMPLE_MAP[dy][dx] == ' ') {
-        recalculatePath = true;
+      break;
+    case SDL_MOUSEMOTION: {
+      TCOD_mouse_t mouse = {0};
+      TCOD_sys_process_mouse_event(event, &mouse);
+      const int mx = mouse.cx - SAMPLE_SCREEN_X;
+      const int my = mouse.cy - SAMPLE_SCREEN_Y;
+      if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
+        TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
+        dx = mx;
+        dy = my;
+        oldChar = TCOD_console_get_char(sample_console, dx, dy);
+        TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
+        if (SAMPLE_MAP[dy][dx] == ' ') {
+          recalculatePath = true;
+        }
       }
-    } else if ((key->text[0] == 'J' || key->text[0] == 'j') && dx > 0) {
-      // destination move west
-      TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      --dx;
-      oldChar = TCOD_console_get_char(sample_console, dx, dy);
-      TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (SAMPLE_MAP[dy][dx] == ' ') {
-        recalculatePath = true;
-      }
-    } else if ((key->text[0] == 'L' || key->text[0] == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
-      // destination move east
-      TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-      ++dx;
-      oldChar = TCOD_console_get_char(sample_console, dx, dy);
-      TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-      if (SAMPLE_MAP[dy][dx] == ' ') {
-        recalculatePath = true;
-      }
-    }
-  }
-  const int mx = mouse->cx - SAMPLE_SCREEN_X;
-  const int my = mouse->cy - SAMPLE_SCREEN_Y;
-  if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
-    TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
-    dx = mx;
-    dy = my;
-    oldChar = TCOD_console_get_char(sample_console, dx, dy);
-    TCOD_console_put_char(sample_console, dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
-    }
+    } break;
   }
 }
 
@@ -1065,14 +1130,64 @@ bool traverse_node(TCOD_bsp_t* node, void* userData) {
   return true;
 }
 
-void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_bsp(const SDL_Event* event) {
   static TCOD_bsp_t* bsp = NULL;
   static bool generate = true;
   static bool refresh = false;
   static char map[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
   static const TCOD_color_t darkWall = {0, 0, 100};
   static const TCOD_color_t darkGround = {50, 50, 150};
-
+  switch (event->type) {
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_RETURN:
+        case SDL_SCANCODE_RETURN2:
+        case SDL_SCANCODE_KP_ENTER:
+          if (event->key.keysym.mod & KMOD_ALT) break;
+          generate = true;
+          break;
+        case SDL_SCANCODE_SPACE:
+        case SDL_SCANCODE_KP_SPACE:
+          refresh = true;
+          break;
+        case SDL_SCANCODE_EQUALS:
+        case SDL_SCANCODE_KP_PLUS:
+          ++bspDepth;
+          generate = true;
+          break;
+        case SDL_SCANCODE_MINUS:
+        case SDL_SCANCODE_KP_MINUS:
+          if (bspDepth <= 1) break;
+          --bspDepth;
+          generate = true;
+          break;
+        case SDL_SCANCODE_8:
+        case SDL_SCANCODE_KP_MULTIPLY:
+          ++minRoomSize;
+          generate = true;
+          break;
+        case SDL_SCANCODE_SLASH:
+        case SDL_SCANCODE_KP_DIVIDE:
+          if (minRoomSize <= 2) break;
+          --minRoomSize;
+          generate = true;
+          break;
+        case SDL_SCANCODE_1:
+        case SDL_SCANCODE_KP_1:
+          randomRoom = !randomRoom;
+          if (!randomRoom) roomWalls = true;
+          refresh = true;
+          break;
+        case SDL_SCANCODE_2:
+        case SDL_SCANCODE_KP_2:
+          roomWalls = !roomWalls;
+          refresh = true;
+          break;
+        default:
+          break;
+      }
+      break;
+  }
   if (generate || refresh) {
     // dungeon generation
     if (!bsp) {
@@ -1112,38 +1227,12 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       TCOD_console_set_char_background(sample_console, x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
     }
   }
-  if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
-    generate = true;
-  } else if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-    if (key->text[0] == ' ') {
-      refresh = true;
-    } else if (key->text[0] == '+') {
-      ++bspDepth;
-      generate = true;
-    } else if (key->text[0] == '-' && bspDepth > 1) {
-      --bspDepth;
-      generate = true;
-    } else if (key->text[0] == '*') {
-      ++minRoomSize;
-      generate = true;
-    } else if (key->text[0] == '/' && minRoomSize > 2) {
-      --minRoomSize;
-      generate = true;
-    } else if (key->text[0] == '1' || key->vk == TCODK_1 || key->vk == TCODK_KP1) {
-      randomRoom = !randomRoom;
-      if (!randomRoom) roomWalls = true;
-      refresh = true;
-    } else if (key->text[0] == '2' || key->vk == TCODK_2 || key->vk == TCODK_KP2) {
-      roomWalls = !roomWalls;
-      refresh = true;
-    }
-  }
 }
 
 /* ***************************
  * name generator sample
  * ***************************/
-void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_name(const SDL_Event* event) {
   static int nbSets;
   static int curSet = 0;
   static float delay = 0.0f;
@@ -1194,16 +1283,25 @@ void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
       // add a new name to the list
       TCOD_list_push(names, TCOD_namegen_generate((const char*)TCOD_list_get(sets, curSet), true));
     }
-    if (key->vk == TCODK_TEXT && key->text[0] != '\0') {
-      if (key->text[0] == '+') {
-        ++curSet;
-        if (curSet == nbSets) curSet = 0;
-        TCOD_list_push(names, strdup("======"));
-      } else if (key->text[0] == '-') {
-        --curSet;
-        if (curSet < 0) curSet = nbSets - 1;
-        TCOD_list_push(names, strdup("======"));
-      }
+    switch (event->type) {
+      case SDL_KEYDOWN:
+        switch (event->key.keysym.scancode) {
+          case SDL_SCANCODE_EQUALS:
+          case SDL_SCANCODE_KP_PLUS:
+            ++curSet;
+            if (curSet == nbSets) curSet = 0;
+            TCOD_list_push(names, strdup("======"));
+            break;
+          case SDL_SCANCODE_MINUS:
+          case SDL_SCANCODE_KP_MINUS:
+            --curSet;
+            if (curSet < 0) curSet = nbSets - 1;
+            TCOD_list_push(names, strdup("======"));
+            break;
+          default:
+            break;
+        }
+        break;
     }
   } else {
     TCOD_console_printf(sample_console, 1, 1, "Unable to find name config data files.");
@@ -1317,6 +1415,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ig += p[g_idx];
           ib += p[b_idx];
           p += 2 * screen->pitch;
+          //@fallthrough@
         case 3:
           count += 4;
           // get pixel at x,y
@@ -1336,6 +1435,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ig += p[g_idx];
           ib += p[b_idx];
           p -= 2 * screen->pitch;
+          //@fallthrough@
         case 2:
           count += 4;
           // get pixel at x,y
@@ -1355,6 +1455,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
           ig += p[g_idx];
           ib += p[b_idx];
           p += screen->pitch;
+          //@fallthrough@
         case 1:
           count += 4;
           // get pixel at x,y
@@ -1417,32 +1518,42 @@ void SDL_render(void* sdlSurface) {
   }
 }
 
-void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  if (first) {
-    // use noise sample as background. rendering is done in SampleRenderer
-    TCOD_console_set_default_background(sample_console, TCOD_light_blue);
-    TCOD_console_set_default_foreground(sample_console, TCOD_white);
-    TCOD_console_clear(sample_console);
-    TCOD_console_printf_rect_ex(
-        sample_console,
-        SAMPLE_SCREEN_WIDTH / 2,
-        3,
-        SAMPLE_SCREEN_WIDTH,
-        0,
-        TCOD_BKGND_NONE,
-        TCOD_CENTER,
-        "The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL "
-        "API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the "
-        "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
-        "with SDL renderer.");
-  }
-  if (key->vk == TCODK_TAB) {
-    sdl_callback_enabled = !sdl_callback_enabled;
-    if (sdl_callback_enabled) {
-      TCOD_sys_register_SDL_renderer(SDL_render);
-    } else {
-      TCOD_sys_register_SDL_renderer(NULL);
-    }
+void render_sdl(const SDL_Event* event) {
+  switch (event->type) {
+    case ON_ENTER_USEREVENT:
+      // use noise sample as background. rendering is done in SampleRenderer
+      TCOD_console_set_default_background(sample_console, TCOD_light_blue);
+      TCOD_console_set_default_foreground(sample_console, TCOD_white);
+      TCOD_console_clear(sample_console);
+      TCOD_console_printf_rect_ex(
+          sample_console,
+          SAMPLE_SCREEN_WIDTH / 2,
+          3,
+          SAMPLE_SCREEN_WIDTH,
+          0,
+          TCOD_BKGND_NONE,
+          TCOD_CENTER,
+          "The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using "
+          "SDL "
+          "API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the "
+          "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
+          "with SDL renderer.");
+      break;
+    case SDL_KEYDOWN:
+      switch (event->key.keysym.scancode) {
+        case SDL_SCANCODE_TAB:
+        case SDL_SCANCODE_KP_TAB:
+          sdl_callback_enabled = !sdl_callback_enabled;
+          if (sdl_callback_enabled) {
+            TCOD_sys_register_SDL_renderer(SDL_render);
+          } else {
+            TCOD_sys_register_SDL_renderer(NULL);
+          }
+          break;
+        default:
+          break;
+      }
+      break;
   }
 }
 #endif  // NO_SDL_SAMPLE
@@ -1465,16 +1576,31 @@ static const sample_t samples[] = {
     {"  SDL callback       ", render_sdl},
 #endif
 };
-static const int nb_samples = sizeof(samples) / sizeof(sample_t); /* total number of samples */
+static const int nb_samples = sizeof(samples) / sizeof(*samples); /* total number of samples */
+
+// A renderer selection.
+typedef struct RendererOption {
+  const char* name;
+  TCOD_renderer_t renderer;
+} RendererOption;
+// The available renderers and their labels.
+static const RendererOption RENDERER_OPTIONS[] = {
+    {"GLSL   ", TCOD_RENDERER_GLSL},
+    {"OPENGL ", TCOD_RENDERER_OPENGL},
+    {"SDL    ", TCOD_RENDERER_SDL},
+    {"SDL2   ", TCOD_RENDERER_SDL2},
+    {"OPENGL2", TCOD_RENDERER_OPENGL2},
+};
+// The total number of renderer options.
+static const int RENDERER_OPTIONS_COUNT = sizeof(RENDERER_OPTIONS) / sizeof(*RENDERER_OPTIONS);
 
 /* ***************************
  * the main function
  * ***************************/
 int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
-  bool first = true; /* first time we render a sample */
-  TCOD_key_t key = {TCODK_NONE, 0};
-  TCOD_mouse_t mouse;
+  static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
+  static const SDL_Event on_draw_event = {.type = ON_DRAW_USEREVENT};
   const char* font = "data/fonts/dejavu10x10_gs_tc.png";
   int nb_char_horiz = 0, nb_char_vertic = 0;
   int fullscreen_width = 0;
@@ -1484,9 +1610,6 @@ int main(int argc, char* argv[]) {
   TCOD_renderer_t renderer = TCOD_RENDERER_SDL2;
   bool fullscreen = false;
   bool credits_end = false;
-  int cur_renderer = 0;
-  static const char* renderer_name[TCOD_NB_RENDERERS] = {
-      "F1 GLSL   ", "F2 OPENGL ", "F3 SDL    ", "F4 SDL2   ", "F5 OPENGL2"};
 
   /* initialize the root console (open the game window) */
   for (int argn = 1; argn < argc; ++argn) {
@@ -1544,7 +1667,8 @@ int main(int argc, char* argv[]) {
   /* initialize the offscreen console for the samples */
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
   int cur_sample = 0; /* index of the current sample */
-  do {
+  samples[cur_sample].render(&on_enter_event);
+  while (true) {
     if (!credits_end) {
       credits_end = TCOD_console_credits_render(56, 43, false);
     }
@@ -1585,9 +1709,6 @@ int main(int argc, char* argv[]) {
     TCOD_console_printf(NULL, 2, 47, "%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
     TCOD_console_printf(
         NULL, 2, 48, "ALT-ENTER : switch to %s", TCOD_console_is_fullscreen() ? "windowed mode  " : "fullscreen mode");
-    /* render current sample */
-    samples[cur_sample].render(first, &key, &mouse);
-    first = false;
 
     /* blit the sample console on the root console */
     TCOD_console_blit(
@@ -1603,12 +1724,12 @@ int main(int argc, char* argv[]) {
         1.0f /* alpha coefficients */
     );
     /* display renderer list and current renderer */
-    cur_renderer = TCOD_sys_get_renderer();
+    const TCOD_renderer_t current_renderer = TCOD_sys_get_renderer();
     TCOD_console_set_default_foreground(NULL, TCOD_grey);
     TCOD_console_set_default_background(NULL, TCOD_black);
-    TCOD_console_printf_ex(NULL, 42, 46 - (TCOD_NB_RENDERERS + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
-    for (int i = 0; i < TCOD_NB_RENDERERS; ++i) {
-      if (i == cur_renderer) {
+    TCOD_console_printf_ex(NULL, 42, 46 - (RENDERER_OPTIONS_COUNT + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
+    for (int i = 0; i < RENDERER_OPTIONS_COUNT; ++i) {
+      if (RENDERER_OPTIONS[i].renderer == current_renderer) {
         /* set colors for current renderer */
         TCOD_console_set_default_foreground(NULL, TCOD_white);
         TCOD_console_set_default_background(NULL, TCOD_light_blue);
@@ -1617,45 +1738,60 @@ int main(int argc, char* argv[]) {
         TCOD_console_set_default_foreground(NULL, TCOD_grey);
         TCOD_console_set_default_background(NULL, TCOD_black);
       }
-      TCOD_console_printf_ex(NULL, 42, 46 - (TCOD_NB_RENDERERS - i), TCOD_BKGND_SET, TCOD_LEFT, "%s", renderer_name[i]);
+      TCOD_console_printf_ex(
+          NULL,
+          42,
+          46 - (RENDERER_OPTIONS_COUNT - i),
+          TCOD_BKGND_SET,
+          TCOD_LEFT,
+          "F%d %s",
+          i + 1,
+          RENDERER_OPTIONS[i].name);
     }
+
+    samples[cur_sample].render(&on_draw_event);
 
     /* update the game screen */
     TCOD_console_flush();
 
-    /* did the user hit a key ? */
-    TCOD_sys_check_for_event(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE, &key, &mouse);
-    if (key.vk == TCODK_DOWN) {
-      /* down arrow : next sample */
-      if (++cur_sample >= nb_samples) cur_sample = 0;
-      first = true;
-    } else if (key.vk == TCODK_UP) {
-      /* up arrow : previous sample */
-      if (--cur_sample < 0) cur_sample = nb_samples - 1;
-      first = true;
-    } else if (key.vk == TCODK_ENTER && (key.lalt | key.ralt)) {
-      /* ALT-ENTER : switch fullscreen */
-      TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
-    } else if (key.vk == TCODK_PRINTSCREEN) {
-      if (key.lalt) {
-        /* Alt-PrintScreen : save to samples.asc */
-        TCOD_console_save_asc(NULL, "samples.asc");
-      } else {
-        /* save screenshot */
-        TCOD_sys_save_screenshot(NULL);
+    // Check for events.
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_DOWN:  // Next sample.
+              if (++cur_sample >= nb_samples) cur_sample = 0;
+              samples[cur_sample].render(&on_enter_event);
+              break;
+            case SDL_SCANCODE_UP:  // Previous sample.
+              if (--cur_sample < 0) cur_sample = nb_samples - 1;
+              samples[cur_sample].render(&on_enter_event);
+              break;
+            case SDL_SCANCODE_RETURN:  // Toggle fullscreen with Alt+Enter.
+            case SDL_SCANCODE_RETURN2:
+            case SDL_SCANCODE_KP_ENTER:
+              if (event.key.keysym.mod & KMOD_ALT) {
+                TCOD_console_set_fullscreen(!TCOD_console_is_fullscreen());
+              }
+              break;
+            case SDL_SCANCODE_PRINTSCREEN:  // Save screenshot.
+              TCOD_sys_save_screenshot(NULL);
+              break;
+            default: {
+              // Switch renderers with the function keys.
+              int renderer_pick = event.key.keysym.scancode - SDL_SCANCODE_F1;
+              if (0 <= renderer_pick && renderer_pick < RENDERER_OPTIONS_COUNT) {
+                TCOD_sys_set_renderer(RENDERER_OPTIONS[renderer_pick].renderer);
+              }
+            } break;
+          }
+          break;
+        case SDL_QUIT:
+          return EXIT_SUCCESS;  // Exit program by returning from main.
       }
-    } else if (key.vk == TCODK_F1) {
-      /* switch renderers with F1,F2,F3 */
-      TCOD_sys_set_renderer(TCOD_RENDERER_GLSL);
-    } else if (key.vk == TCODK_F2) {
-      TCOD_sys_set_renderer(TCOD_RENDERER_OPENGL);
-    } else if (key.vk == TCODK_F3) {
-      TCOD_sys_set_renderer(TCOD_RENDERER_SDL);
-    } else if (key.vk == TCODK_F4) {
-      TCOD_sys_set_renderer(TCOD_RENDERER_SDL2);
-    } else if (key.vk == TCODK_F5) {
-      TCOD_sys_set_renderer(TCOD_RENDERER_OPENGL2);
+      /* render current sample */
+      samples[cur_sample].render(&event);
     }
-  } while (!TCOD_console_is_window_closed());
-  return EXIT_SUCCESS;
+  }
 }

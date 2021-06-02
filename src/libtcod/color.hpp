@@ -448,251 +448,249 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	*/
 	static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
 
-	// color array
-	static const TCODColor colors [[deprecated]] [TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
+  // clang-format on
 
-	// grey levels
-	static const TCODColor black [[deprecated]];
-	static const TCODColor darkestGrey [[deprecated]];
-	static const TCODColor darkerGrey [[deprecated]];
-	static const TCODColor darkGrey [[deprecated]];
-	static const TCODColor grey [[deprecated]];
-	static const TCODColor lightGrey [[deprecated]];
-	static const TCODColor lighterGrey [[deprecated]];
-	static const TCODColor lightestGrey [[deprecated]];
-	static const TCODColor white [[deprecated]];
+  // color array
+  static const TCODColor colors [[deprecated]][TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
 
-	//sepia
-	static const TCODColor darkestSepia [[deprecated]];
-	static const TCODColor darkerSepia [[deprecated]];
-	static const TCODColor darkSepia [[deprecated]];
-	static const TCODColor sepia [[deprecated]];
-	static const TCODColor lightSepia [[deprecated]];
-	static const TCODColor lighterSepia [[deprecated]];
-	static const TCODColor lightestSepia [[deprecated]];
+  // grey levels
+  static const TCODColor black [[deprecated("Replace with TCODColor{0, 0, 0}")]];
+  static const TCODColor darkestGrey [[deprecated("Replace with TCODColor{31, 31, 31}")]];
+  static const TCODColor darkerGrey [[deprecated("Replace with TCODColor{63, 63, 63}")]];
+  static const TCODColor darkGrey [[deprecated("Replace with TCODColor{95, 95, 95}")]];
+  static const TCODColor grey [[deprecated("Replace with TCODColor{127, 127, 127}")]];
+  static const TCODColor lightGrey [[deprecated("Replace with TCODColor{159, 159, 159}")]];
+  static const TCODColor lighterGrey [[deprecated("Replace with TCODColor{191, 191, 191}")]];
+  static const TCODColor lightestGrey [[deprecated("Replace with TCODColor{223, 223, 223}")]];
+  static const TCODColor white [[deprecated("Replace with TCODColor{255, 255, 255}")]];
 
-	// standard colors
-	static const TCODColor red [[deprecated]];
-  static const TCODColor flame [[deprecated]];
-  static const TCODColor orange [[deprecated]];
-  static const TCODColor amber [[deprecated]];
-  static const TCODColor yellow [[deprecated]];
-  static const TCODColor lime [[deprecated]];
-  static const TCODColor chartreuse [[deprecated]];
-  static const TCODColor green [[deprecated]];
-  static const TCODColor sea [[deprecated]];
-  static const TCODColor turquoise [[deprecated]];
-  static const TCODColor cyan [[deprecated]];
-  static const TCODColor sky [[deprecated]];
-  static const TCODColor azure [[deprecated]];
-  static const TCODColor blue [[deprecated]];
-  static const TCODColor han [[deprecated]];
-  static const TCODColor violet [[deprecated]];
-  static const TCODColor purple [[deprecated]];
-  static const TCODColor fuchsia [[deprecated]];
-  static const TCODColor magenta [[deprecated]];
-  static const TCODColor pink [[deprecated]];
-  static const TCODColor crimson [[deprecated]];
+  // sepia
+  static const TCODColor darkestSepia [[deprecated("Replace with TCODColor{31, 24, 15}")]];
+  static const TCODColor darkerSepia [[deprecated("Replace with TCODColor{63, 50, 31}")]];
+  static const TCODColor darkSepia [[deprecated("Replace with TCODColor{94, 75, 47}")]];
+  static const TCODColor sepia [[deprecated("Replace with TCODColor{127, 101, 63}")]];
+  static const TCODColor lightSepia [[deprecated("Replace with TCODColor{158, 134, 100}")]];
+  static const TCODColor lighterSepia [[deprecated("Replace with TCODColor{191, 171, 143}")]];
+  static const TCODColor lightestSepia [[deprecated("Replace with TCODColor{222, 211, 195}")]];
 
-	// dark colors
-	static const TCODColor darkRed [[deprecated]];
-  static const TCODColor darkFlame [[deprecated]];
-  static const TCODColor darkOrange [[deprecated]];
-  static const TCODColor darkAmber [[deprecated]];
-  static const TCODColor darkYellow [[deprecated]];
-  static const TCODColor darkLime [[deprecated]];
-  static const TCODColor darkChartreuse [[deprecated]];
-  static const TCODColor darkGreen [[deprecated]];
-  static const TCODColor darkSea [[deprecated]];
-  static const TCODColor darkTurquoise [[deprecated]];
-  static const TCODColor darkCyan [[deprecated]];
-  static const TCODColor darkSky [[deprecated]];
-  static const TCODColor darkAzure [[deprecated]];
-  static const TCODColor darkBlue [[deprecated]];
-  static const TCODColor darkHan [[deprecated]];
-  static const TCODColor darkViolet [[deprecated]];
-  static const TCODColor darkPurple [[deprecated]];
-  static const TCODColor darkFuchsia [[deprecated]];
-  static const TCODColor darkMagenta [[deprecated]];
-  static const TCODColor darkPink [[deprecated]];
-  static const TCODColor darkCrimson [[deprecated]];
+  // standard colors
+  static const TCODColor red [[deprecated("Replace with TCODColor{255, 0, 0}")]];
+  static const TCODColor flame [[deprecated("Replace with TCODColor{255, 63, 0}")]];
+  static const TCODColor orange [[deprecated("Replace with TCODColor{255, 127, 0}")]];
+  static const TCODColor amber [[deprecated("Replace with TCODColor{255, 191, 0}")]];
+  static const TCODColor yellow [[deprecated("Replace with TCODColor{255, 255, 0}")]];
+  static const TCODColor lime [[deprecated("Replace with TCODColor{191, 255, 0}")]];
+  static const TCODColor chartreuse [[deprecated("Replace with TCODColor{127, 255, 0}")]];
+  static const TCODColor green [[deprecated("Replace with TCODColor{0, 255, 0}")]];
+  static const TCODColor sea [[deprecated("Replace with TCODColor{0, 255, 127}")]];
+  static const TCODColor turquoise [[deprecated("Replace with TCODColor{0, 255, 191}")]];
+  static const TCODColor cyan [[deprecated("Replace with TCODColor{0, 255, 255}")]];
+  static const TCODColor sky [[deprecated("Replace with TCODColor{0, 191, 255}")]];
+  static const TCODColor azure [[deprecated("Replace with TCODColor{0, 127, 255}")]];
+  static const TCODColor blue [[deprecated("Replace with TCODColor{0, 0, 255}")]];
+  static const TCODColor han [[deprecated("Replace with TCODColor{63, 0, 255}")]];
+  static const TCODColor violet [[deprecated("Replace with TCODColor{127, 0, 255}")]];
+  static const TCODColor purple [[deprecated("Replace with TCODColor{191, 0, 255}")]];
+  static const TCODColor fuchsia [[deprecated("Replace with TCODColor{255, 0, 255}")]];
+  static const TCODColor magenta [[deprecated("Replace with TCODColor{255, 0, 191}")]];
+  static const TCODColor pink [[deprecated("Replace with TCODColor{255, 0, 127}")]];
+  static const TCODColor crimson [[deprecated("Replace with TCODColor{255, 0, 63}")]];
 
-	// darker colors
-	static const TCODColor darkerRed [[deprecated]];
-  static const TCODColor darkerFlame [[deprecated]];
-  static const TCODColor darkerOrange [[deprecated]];
-  static const TCODColor darkerAmber [[deprecated]];
-  static const TCODColor darkerYellow [[deprecated]];
-  static const TCODColor darkerLime [[deprecated]];
-  static const TCODColor darkerChartreuse [[deprecated]];
-  static const TCODColor darkerGreen [[deprecated]];
-  static const TCODColor darkerSea [[deprecated]];
-  static const TCODColor darkerTurquoise [[deprecated]];
-  static const TCODColor darkerCyan [[deprecated]];
-  static const TCODColor darkerSky [[deprecated]];
-  static const TCODColor darkerAzure [[deprecated]];
-  static const TCODColor darkerBlue [[deprecated]];
-  static const TCODColor darkerHan [[deprecated]];
-  static const TCODColor darkerViolet [[deprecated]];
-  static const TCODColor darkerPurple [[deprecated]];
-  static const TCODColor darkerFuchsia [[deprecated]];
-  static const TCODColor darkerMagenta [[deprecated]];
-  static const TCODColor darkerPink [[deprecated]];
-  static const TCODColor darkerCrimson [[deprecated]];
+  // dark colors
+  static const TCODColor darkRed [[deprecated("Replace with TCODColor{191, 0, 0}")]];
+  static const TCODColor darkFlame [[deprecated("Replace with TCODColor{191, 47, 0}")]];
+  static const TCODColor darkOrange [[deprecated("Replace with TCODColor{191, 95, 0}")]];
+  static const TCODColor darkAmber [[deprecated("Replace with TCODColor{191, 143, 0}")]];
+  static const TCODColor darkYellow [[deprecated("Replace with TCODColor{191, 191, 0}")]];
+  static const TCODColor darkLime [[deprecated("Replace with TCODColor{143, 191, 0}")]];
+  static const TCODColor darkChartreuse [[deprecated("Replace with TCODColor{95, 191, 0}")]];
+  static const TCODColor darkGreen [[deprecated("Replace with TCODColor{0, 191, 0}")]];
+  static const TCODColor darkSea [[deprecated("Replace with TCODColor{0, 191, 95}")]];
+  static const TCODColor darkTurquoise [[deprecated("Replace with TCODColor{0, 191, 143}")]];
+  static const TCODColor darkCyan [[deprecated("Replace with TCODColor{0, 191, 191}")]];
+  static const TCODColor darkSky [[deprecated("Replace with TCODColor{0, 143, 191}")]];
+  static const TCODColor darkAzure [[deprecated("Replace with TCODColor{0, 95, 191}")]];
+  static const TCODColor darkBlue [[deprecated("Replace with TCODColor{0, 0, 191}")]];
+  static const TCODColor darkHan [[deprecated("Replace with TCODColor{47, 0, 191}")]];
+  static const TCODColor darkViolet [[deprecated("Replace with TCODColor{95, 0, 191}")]];
+  static const TCODColor darkPurple [[deprecated("Replace with TCODColor{143, 0, 191}")]];
+  static const TCODColor darkFuchsia [[deprecated("Replace with TCODColor{191, 0, 191}")]];
+  static const TCODColor darkMagenta [[deprecated("Replace with TCODColor{191, 0, 143}")]];
+  static const TCODColor darkPink [[deprecated("Replace with TCODColor{191, 0, 95}")]];
+  static const TCODColor darkCrimson [[deprecated("Replace with TCODColor{191, 0, 47}")]];
+
+  // darker colors
+  static const TCODColor darkerRed [[deprecated("Replace with TCODColor{127, 0, 0}")]];
+  static const TCODColor darkerFlame [[deprecated("Replace with TCODColor{127, 31, 0}")]];
+  static const TCODColor darkerOrange [[deprecated("Replace with TCODColor{127, 63, 0}")]];
+  static const TCODColor darkerAmber [[deprecated("Replace with TCODColor{127, 95, 0}")]];
+  static const TCODColor darkerYellow [[deprecated("Replace with TCODColor{127, 127, 0}")]];
+  static const TCODColor darkerLime [[deprecated("Replace with TCODColor{95, 127, 0}")]];
+  static const TCODColor darkerChartreuse [[deprecated("Replace with TCODColor{63, 127, 0}")]];
+  static const TCODColor darkerGreen [[deprecated("Replace with TCODColor{0, 127, 0}")]];
+  static const TCODColor darkerSea [[deprecated("Replace with TCODColor{0, 127, 63}")]];
+  static const TCODColor darkerTurquoise [[deprecated("Replace with TCODColor{0, 127, 95}")]];
+  static const TCODColor darkerCyan [[deprecated("Replace with TCODColor{0, 127, 127}")]];
+  static const TCODColor darkerSky [[deprecated("Replace with TCODColor{0, 95, 127}")]];
+  static const TCODColor darkerAzure [[deprecated("Replace with TCODColor{0, 63, 127}")]];
+  static const TCODColor darkerBlue [[deprecated("Replace with TCODColor{0, 0, 127}")]];
+  static const TCODColor darkerHan [[deprecated("Replace with TCODColor{31, 0, 127}")]];
+  static const TCODColor darkerViolet [[deprecated("Replace with TCODColor{63, 0, 127}")]];
+  static const TCODColor darkerPurple [[deprecated("Replace with TCODColor{95, 0, 127}")]];
+  static const TCODColor darkerFuchsia [[deprecated("Replace with TCODColor{127, 0, 127}")]];
+  static const TCODColor darkerMagenta [[deprecated("Replace with TCODColor{127, 0, 95}")]];
+  static const TCODColor darkerPink [[deprecated("Replace with TCODColor{127, 0, 63}")]];
+  static const TCODColor darkerCrimson [[deprecated("Replace with TCODColor{127, 0, 31}")]];
 
   // darkest colors
-  static const TCODColor darkestRed [[deprecated]];
-  static const TCODColor darkestFlame [[deprecated]];
-  static const TCODColor darkestOrange [[deprecated]];
-  static const TCODColor darkestAmber [[deprecated]];
-  static const TCODColor darkestYellow [[deprecated]];
-  static const TCODColor darkestLime [[deprecated]];
-  static const TCODColor darkestChartreuse [[deprecated]];
-  static const TCODColor darkestGreen [[deprecated]];
-  static const TCODColor darkestSea [[deprecated]];
-  static const TCODColor darkestTurquoise [[deprecated]];
-  static const TCODColor darkestCyan [[deprecated]];
-  static const TCODColor darkestSky [[deprecated]];
-  static const TCODColor darkestAzure [[deprecated]];
-  static const TCODColor darkestBlue [[deprecated]];
-  static const TCODColor darkestHan [[deprecated]];
-  static const TCODColor darkestViolet [[deprecated]];
-  static const TCODColor darkestPurple [[deprecated]];
-  static const TCODColor darkestFuchsia [[deprecated]];
-  static const TCODColor darkestMagenta [[deprecated]];
-  static const TCODColor darkestPink [[deprecated]];
-  static const TCODColor darkestCrimson [[deprecated]];
+  static const TCODColor darkestRed [[deprecated("Replace with TCODColor{63, 0, 0}")]];
+  static const TCODColor darkestFlame [[deprecated("Replace with TCODColor{63, 15, 0}")]];
+  static const TCODColor darkestOrange [[deprecated("Replace with TCODColor{63, 31, 0}")]];
+  static const TCODColor darkestAmber [[deprecated("Replace with TCODColor{63, 47, 0}")]];
+  static const TCODColor darkestYellow [[deprecated("Replace with TCODColor{63, 63, 0}")]];
+  static const TCODColor darkestLime [[deprecated("Replace with TCODColor{47, 63, 0}")]];
+  static const TCODColor darkestChartreuse [[deprecated("Replace with TCODColor{31, 63, 0}")]];
+  static const TCODColor darkestGreen [[deprecated("Replace with TCODColor{0, 63, 0}")]];
+  static const TCODColor darkestSea [[deprecated("Replace with TCODColor{0, 63, 31}")]];
+  static const TCODColor darkestTurquoise [[deprecated("Replace with TCODColor{0, 63, 47}")]];
+  static const TCODColor darkestCyan [[deprecated("Replace with TCODColor{0, 63, 63}")]];
+  static const TCODColor darkestSky [[deprecated("Replace with TCODColor{0, 47, 63}")]];
+  static const TCODColor darkestAzure [[deprecated("Replace with TCODColor{0, 31, 63}")]];
+  static const TCODColor darkestBlue [[deprecated("Replace with TCODColor{0, 0, 63}")]];
+  static const TCODColor darkestHan [[deprecated("Replace with TCODColor{15, 0, 63}")]];
+  static const TCODColor darkestViolet [[deprecated("Replace with TCODColor{31, 0, 63}")]];
+  static const TCODColor darkestPurple [[deprecated("Replace with TCODColor{47, 0, 63}")]];
+  static const TCODColor darkestFuchsia [[deprecated("Replace with TCODColor{63, 0, 63}")]];
+  static const TCODColor darkestMagenta [[deprecated("Replace with TCODColor{63, 0, 47}")]];
+  static const TCODColor darkestPink [[deprecated("Replace with TCODColor{63, 0, 31}")]];
+  static const TCODColor darkestCrimson [[deprecated("Replace with TCODColor{63, 0, 15}")]];
 
-	// light colors
-	static const TCODColor lightRed [[deprecated]];
-  static const TCODColor lightFlame [[deprecated]];
-  static const TCODColor lightOrange [[deprecated]];
-  static const TCODColor lightAmber [[deprecated]];
-  static const TCODColor lightYellow [[deprecated]];
-  static const TCODColor lightLime [[deprecated]];
-  static const TCODColor lightChartreuse [[deprecated]];
-  static const TCODColor lightGreen [[deprecated]];
-  static const TCODColor lightSea [[deprecated]];
-  static const TCODColor lightTurquoise [[deprecated]];
-  static const TCODColor lightCyan [[deprecated]];
-  static const TCODColor lightSky [[deprecated]];
-  static const TCODColor lightAzure [[deprecated]];
-  static const TCODColor lightBlue [[deprecated]];
-  static const TCODColor lightHan [[deprecated]];
-  static const TCODColor lightViolet [[deprecated]];
-  static const TCODColor lightPurple [[deprecated]];
-  static const TCODColor lightFuchsia [[deprecated]];
-  static const TCODColor lightMagenta [[deprecated]];
-  static const TCODColor lightPink [[deprecated]];
-  static const TCODColor lightCrimson [[deprecated]];
+  // light colors
+  static const TCODColor lightRed [[deprecated("Replace with TCODColor{255, 63, 63}")]];
+  static const TCODColor lightFlame [[deprecated("Replace with TCODColor{255, 111, 63}")]];
+  static const TCODColor lightOrange [[deprecated("Replace with TCODColor{255, 159, 63}")]];
+  static const TCODColor lightAmber [[deprecated("Replace with TCODColor{255, 207, 63}")]];
+  static const TCODColor lightYellow [[deprecated("Replace with TCODColor{255, 255, 63}")]];
+  static const TCODColor lightLime [[deprecated("Replace with TCODColor{207, 255, 63}")]];
+  static const TCODColor lightChartreuse [[deprecated("Replace with TCODColor{159, 255, 63}")]];
+  static const TCODColor lightGreen [[deprecated("Replace with TCODColor{63, 255, 63}")]];
+  static const TCODColor lightSea [[deprecated("Replace with TCODColor{63, 255, 159}")]];
+  static const TCODColor lightTurquoise [[deprecated("Replace with TCODColor{63, 255, 207}")]];
+  static const TCODColor lightCyan [[deprecated("Replace with TCODColor{63, 255, 255}")]];
+  static const TCODColor lightSky [[deprecated("Replace with TCODColor{63, 207, 255}")]];
+  static const TCODColor lightAzure [[deprecated("Replace with TCODColor{63, 159, 255}")]];
+  static const TCODColor lightBlue [[deprecated("Replace with TCODColor{63, 63, 255}")]];
+  static const TCODColor lightHan [[deprecated("Replace with TCODColor{111, 63, 255}")]];
+  static const TCODColor lightViolet [[deprecated("Replace with TCODColor{159, 63, 255}")]];
+  static const TCODColor lightPurple [[deprecated("Replace with TCODColor{207, 63, 255}")]];
+  static const TCODColor lightFuchsia [[deprecated("Replace with TCODColor{255, 63, 255}")]];
+  static const TCODColor lightMagenta [[deprecated("Replace with TCODColor{255, 63, 207}")]];
+  static const TCODColor lightPink [[deprecated("Replace with TCODColor{255, 63, 159}")]];
+  static const TCODColor lightCrimson [[deprecated("Replace with TCODColor{255, 63, 111}")]];
 
-  //lighter colors
-  static const TCODColor lighterRed [[deprecated]];
-  static const TCODColor lighterFlame [[deprecated]];
-  static const TCODColor lighterOrange [[deprecated]];
-  static const TCODColor lighterAmber [[deprecated]];
-  static const TCODColor lighterYellow [[deprecated]];
-  static const TCODColor lighterLime [[deprecated]];
-  static const TCODColor lighterChartreuse [[deprecated]];
-  static const TCODColor lighterGreen [[deprecated]];
-  static const TCODColor lighterSea [[deprecated]];
-  static const TCODColor lighterTurquoise [[deprecated]];
-  static const TCODColor lighterCyan [[deprecated]];
-  static const TCODColor lighterSky [[deprecated]];
-  static const TCODColor lighterAzure [[deprecated]];
-  static const TCODColor lighterBlue [[deprecated]];
-  static const TCODColor lighterHan [[deprecated]];
-  static const TCODColor lighterViolet [[deprecated]];
-  static const TCODColor lighterPurple [[deprecated]];
-  static const TCODColor lighterFuchsia [[deprecated]];
-  static const TCODColor lighterMagenta [[deprecated]];
-  static const TCODColor lighterPink [[deprecated]];
-  static const TCODColor lighterCrimson [[deprecated]];
+  // lighter colors
+  static const TCODColor lighterRed [[deprecated("Replace with TCODColor{255, 127, 127}")]];
+  static const TCODColor lighterFlame [[deprecated("Replace with TCODColor{255, 159, 127}")]];
+  static const TCODColor lighterOrange [[deprecated("Replace with TCODColor{255, 191, 127}")]];
+  static const TCODColor lighterAmber [[deprecated("Replace with TCODColor{255, 223, 127}")]];
+  static const TCODColor lighterYellow [[deprecated("Replace with TCODColor{255, 255, 127}")]];
+  static const TCODColor lighterLime [[deprecated("Replace with TCODColor{223, 255, 127}")]];
+  static const TCODColor lighterChartreuse [[deprecated("Replace with TCODColor{191, 255, 127}")]];
+  static const TCODColor lighterGreen [[deprecated("Replace with TCODColor{127, 255, 127}")]];
+  static const TCODColor lighterSea [[deprecated("Replace with TCODColor{127, 255, 191}")]];
+  static const TCODColor lighterTurquoise [[deprecated("Replace with TCODColor{127, 255, 223}")]];
+  static const TCODColor lighterCyan [[deprecated("Replace with TCODColor{127, 255, 255}")]];
+  static const TCODColor lighterSky [[deprecated("Replace with TCODColor{127, 223, 255}")]];
+  static const TCODColor lighterAzure [[deprecated("Replace with TCODColor{127, 191, 255}")]];
+  static const TCODColor lighterBlue [[deprecated("Replace with TCODColor{127, 127, 255}")]];
+  static const TCODColor lighterHan [[deprecated("Replace with TCODColor{159, 127, 255}")]];
+  static const TCODColor lighterViolet [[deprecated("Replace with TCODColor{191, 127, 255}")]];
+  static const TCODColor lighterPurple [[deprecated("Replace with TCODColor{223, 127, 255}")]];
+  static const TCODColor lighterFuchsia [[deprecated("Replace with TCODColor{255, 127, 255}")]];
+  static const TCODColor lighterMagenta [[deprecated("Replace with TCODColor{255, 127, 223}")]];
+  static const TCODColor lighterPink [[deprecated("Replace with TCODColor{255, 127, 191}")]];
+  static const TCODColor lighterCrimson [[deprecated("Replace with TCODColor{255, 127, 159}")]];
 
   // lightest colors
-  static const TCODColor lightestRed [[deprecated]];
-  static const TCODColor lightestFlame [[deprecated]];
-  static const TCODColor lightestOrange [[deprecated]];
-  static const TCODColor lightestAmber [[deprecated]];
-  static const TCODColor lightestYellow [[deprecated]];
-  static const TCODColor lightestLime [[deprecated]];
-  static const TCODColor lightestChartreuse [[deprecated]];
-  static const TCODColor lightestGreen [[deprecated]];
-  static const TCODColor lightestSea [[deprecated]];
-  static const TCODColor lightestTurquoise [[deprecated]];
-  static const TCODColor lightestCyan [[deprecated]];
-  static const TCODColor lightestSky [[deprecated]];
-  static const TCODColor lightestAzure [[deprecated]];
-  static const TCODColor lightestBlue [[deprecated]];
-  static const TCODColor lightestHan [[deprecated]];
-  static const TCODColor lightestViolet [[deprecated]];
-  static const TCODColor lightestPurple [[deprecated]];
-  static const TCODColor lightestFuchsia [[deprecated]];
-  static const TCODColor lightestMagenta [[deprecated]];
-  static const TCODColor lightestPink [[deprecated]];
-  static const TCODColor lightestCrimson [[deprecated]];
+  static const TCODColor lightestRed [[deprecated("Replace with TCODColor{255, 191, 191}")]];
+  static const TCODColor lightestFlame [[deprecated("Replace with TCODColor{255, 207, 191}")]];
+  static const TCODColor lightestOrange [[deprecated("Replace with TCODColor{255, 223, 191}")]];
+  static const TCODColor lightestAmber [[deprecated("Replace with TCODColor{255, 239, 191}")]];
+  static const TCODColor lightestYellow [[deprecated("Replace with TCODColor{255, 255, 191}")]];
+  static const TCODColor lightestLime [[deprecated("Replace with TCODColor{239, 255, 191}")]];
+  static const TCODColor lightestChartreuse [[deprecated("Replace with TCODColor{223, 255, 191}")]];
+  static const TCODColor lightestGreen [[deprecated("Replace with TCODColor{191, 255, 191}")]];
+  static const TCODColor lightestSea [[deprecated("Replace with TCODColor{191, 255, 223}")]];
+  static const TCODColor lightestTurquoise [[deprecated("Replace with TCODColor{191, 255, 239}")]];
+  static const TCODColor lightestCyan [[deprecated("Replace with TCODColor{191, 255, 255}")]];
+  static const TCODColor lightestSky [[deprecated("Replace with TCODColor{191, 239, 255}")]];
+  static const TCODColor lightestAzure [[deprecated("Replace with TCODColor{191, 223, 255}")]];
+  static const TCODColor lightestBlue [[deprecated("Replace with TCODColor{191, 191, 255}")]];
+  static const TCODColor lightestHan [[deprecated("Replace with TCODColor{207, 191, 255}")]];
+  static const TCODColor lightestViolet [[deprecated("Replace with TCODColor{223, 191, 255}")]];
+  static const TCODColor lightestPurple [[deprecated("Replace with TCODColor{239, 191, 255}")]];
+  static const TCODColor lightestFuchsia [[deprecated("Replace with TCODColor{255, 191, 255}")]];
+  static const TCODColor lightestMagenta [[deprecated("Replace with TCODColor{255, 191, 239}")]];
+  static const TCODColor lightestPink [[deprecated("Replace with TCODColor{255, 191, 223}")]];
+  static const TCODColor lightestCrimson [[deprecated("Replace with TCODColor{255, 191, 207}")]];
 
-	// desaturated colors
-  static const TCODColor desaturatedRed [[deprecated]];
-  static const TCODColor desaturatedFlame [[deprecated]];
-  static const TCODColor desaturatedOrange [[deprecated]];
-  static const TCODColor desaturatedAmber [[deprecated]];
-  static const TCODColor desaturatedYellow [[deprecated]];
-  static const TCODColor desaturatedLime [[deprecated]];
-  static const TCODColor desaturatedChartreuse [[deprecated]];
-  static const TCODColor desaturatedGreen [[deprecated]];
-  static const TCODColor desaturatedSea [[deprecated]];
-  static const TCODColor desaturatedTurquoise [[deprecated]];
-  static const TCODColor desaturatedCyan [[deprecated]];
-  static const TCODColor desaturatedSky [[deprecated]];
-  static const TCODColor desaturatedAzure [[deprecated]];
-  static const TCODColor desaturatedBlue [[deprecated]];
-  static const TCODColor desaturatedHan [[deprecated]];
-  static const TCODColor desaturatedViolet [[deprecated]];
-  static const TCODColor desaturatedPurple [[deprecated]];
-  static const TCODColor desaturatedFuchsia [[deprecated]];
-  static const TCODColor desaturatedMagenta [[deprecated]];
-  static const TCODColor desaturatedPink [[deprecated]];
-  static const TCODColor desaturatedCrimson [[deprecated]];
+  // desaturated colors
+  static const TCODColor desaturatedRed [[deprecated("Replace with TCODColor{127, 63, 63}")]];
+  static const TCODColor desaturatedFlame [[deprecated("Replace with TCODColor{127, 79, 63}")]];
+  static const TCODColor desaturatedOrange [[deprecated("Replace with TCODColor{127, 95, 63}")]];
+  static const TCODColor desaturatedAmber [[deprecated("Replace with TCODColor{127, 111, 63}")]];
+  static const TCODColor desaturatedYellow [[deprecated("Replace with TCODColor{127, 127, 63}")]];
+  static const TCODColor desaturatedLime [[deprecated("Replace with TCODColor{111, 127, 63}")]];
+  static const TCODColor desaturatedChartreuse [[deprecated("Replace with TCODColor{95, 127, 63}")]];
+  static const TCODColor desaturatedGreen [[deprecated("Replace with TCODColor{63, 127, 63}")]];
+  static const TCODColor desaturatedSea [[deprecated("Replace with TCODColor{63, 127, 95}")]];
+  static const TCODColor desaturatedTurquoise [[deprecated("Replace with TCODColor{63, 127, 111}")]];
+  static const TCODColor desaturatedCyan [[deprecated("Replace with TCODColor{63, 127, 127}")]];
+  static const TCODColor desaturatedSky [[deprecated("Replace with TCODColor{63, 111, 127}")]];
+  static const TCODColor desaturatedAzure [[deprecated("Replace with TCODColor{63, 95, 127}")]];
+  static const TCODColor desaturatedBlue [[deprecated("Replace with TCODColor{63, 63, 127}")]];
+  static const TCODColor desaturatedHan [[deprecated("Replace with TCODColor{79, 63, 127}")]];
+  static const TCODColor desaturatedViolet [[deprecated("Replace with TCODColor{95, 63, 127}")]];
+  static const TCODColor desaturatedPurple [[deprecated("Replace with TCODColor{111, 63, 127}")]];
+  static const TCODColor desaturatedFuchsia [[deprecated("Replace with TCODColor{127, 63, 127}")]];
+  static const TCODColor desaturatedMagenta [[deprecated("Replace with TCODColor{127, 63, 111}")]];
+  static const TCODColor desaturatedPink [[deprecated("Replace with TCODColor{127, 63, 95}")]];
+  static const TCODColor desaturatedCrimson [[deprecated("Replace with TCODColor{127, 63, 79}")]];
 
-	// metallic
-	static const TCODColor brass [[deprecated]];
-	static const TCODColor copper [[deprecated]];
-	static const TCODColor gold [[deprecated]];
-	static const TCODColor silver [[deprecated]];
+  // metallic
+  static const TCODColor brass [[deprecated("Replace with TCODColor{191, 151, 96}")]];
+  static const TCODColor copper [[deprecated("Replace with TCODColor{197, 136, 124}")]];
+  static const TCODColor gold [[deprecated("Replace with TCODColor{229, 191, 0}")]];
+  static const TCODColor silver [[deprecated("Replace with TCODColor{203, 203, 203}")]];
 
-	// miscellaneous
-	static const TCODColor celadon [[deprecated]];
-	static const TCODColor peach [[deprecated]];
+  // miscellaneous
+  static const TCODColor celadon [[deprecated("Replace with TCODColor{172, 255, 175}")]];
+  static const TCODColor peach [[deprecated("Replace with TCODColor{255, 159, 127}")]];
+
  private:
   /**
    *  Return a color transformed by a lambda.
    */
   template <typename F>
   TCODColor(const TCODColor& color, const F& lambda)
-  : r{clamp_(lambda(color.r))},
-    g{clamp_(lambda(color.g))},
-    b{clamp_(lambda(color.b))}
-  {}
+      : r{clamp_(lambda(color.r))}, g{clamp_(lambda(color.g))}, b{clamp_(lambda(color.b))} {}
   /**
    *  Return a color from two colors combined using a lambda.
    */
   template <typename F>
   TCODColor(const TCODColor& color1, const TCODColor& color2, const F& lambda)
-  : r{clamp_(lambda(color1.r, color2.r))},
-    g{clamp_(lambda(color1.g, color2.g))},
-    b{clamp_(lambda(color1.b, color2.b))}
-  {}
+      : r{clamp_(lambda(color1.r, color2.r))},
+        g{clamp_(lambda(color1.g, color2.g))},
+        b{clamp_(lambda(color1.b, color2.b))} {}
   /**
    *  Return a color value clamped between 0 to 255.
    */
   template <typename T>
-  static constexpr uint8_t clamp_(const T& value) noexcept
-  {
+  static constexpr uint8_t clamp_(const T& value) noexcept {
     return static_cast<uint8_t>(std::max<T>(0, std::min<T>(value, 255)));
   }
 };
 
-TCODLIB_API TCODColor operator *(float value, const TCODColor &c);
+TCODLIB_API TCODColor operator*(float value, const TCODColor& c);
 
 #endif

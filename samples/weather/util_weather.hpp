@@ -37,32 +37,32 @@ class Weather {
   void move(int dx, int dy);
   // description of current weather
   const char* getWeather();
-  const TCODColor& getAmbientLightColor() { return ambientColor; }
+  const TCODColor& getAmbientLightColor() { return ambientColor_; }
   // timeInSecond : between 0 and 3600*24
   void calculateAmbient(float timeInSeconds);
   // how fast the weather is changing. 0 : never changes, 1 : default > 1 : faster...
-  void setChangeFactor(float f) { changeFactor = f; }
+  void setChangeFactor(float f) { changeFactor_ = f; }
   // 0 : bad weather. 1 : good weather
-  float getIndicator() { return indicator; }
+  float getIndicator() { return indicator_; }
   // to alter the weather
-  float getIndicatorDelta() { return indicatorDelta; }
-  void setIndicatorDelta(float v) { indicatorDelta = CLAMP(-1.0f, 1.0f, v); }
+  float getIndicatorDelta() { return indicatorDelta_; }
+  void setIndicatorDelta(float v) { indicatorDelta_ = CLAMP(-1.0f, 1.0f, v); }
 
  protected:
   typedef struct {
-    int posx, posy;
+    int pos_x, pos_y;
     float intensity;  // 0-1
     float life;       // in seconds
-    int radius;       // squared
-    float noisex;
+    int radius_squared;
+    float noise_x;
   } lightning_t;
 
-  float indicator;  // 0 : bad, 1 : good
-  float indicatorDelta;
-  float noisex, noisey;  // position in the noise space
-  float dx, dy;          // sub cell cloud map position
-  float changeFactor;
-  TCODHeightMap* map;
-  std::vector<lightning_t> lightnings;
-  TCODColor ambientColor;
+  float indicator_;  // 0 : bad, 1 : good
+  float indicatorDelta_;
+  float noise_x_, noise_y_;  // position in the noise space
+  float dx_, dy_;            // sub cell cloud map position
+  float changeFactor_;
+  TCODHeightMap* map_;
+  std::vector<lightning_t> lightnings_;
+  TCODColor ambientColor_;
 };

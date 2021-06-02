@@ -47,7 +47,7 @@ TCODConsole sampleConsole(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
 // ***************************
 // true colors sample
 // ***************************
-void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_colors(bool first, TCOD_key_t*, TCOD_mouse_t*) {
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
   static TCODColor cols[4] = {
       TCODColor(50, 40, 150),
@@ -141,7 +141,7 @@ void render_colors(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 // offscreen console sample
 // ***************************
-void render_offscreen(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_offscreen(bool first, TCOD_key_t*, TCOD_mouse_t*) {
   static TCODConsole secondary(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);  // second screen
   static TCODConsole screenshot(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);         // second screen
   static bool init = false;  // draw the secondary screen only the first time
@@ -200,7 +200,7 @@ class LineListener : public TCODLineListener {
     return true;
   }
 };
-void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
   static TCODConsole bk(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);  // colored background
   static bool init = false;
   static const std::vector<std::string> flagNames = {
@@ -277,7 +277,7 @@ void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 // noise sample
 // ***************************
-void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_noise(bool, TCOD_key_t* key, TCOD_mouse_t*) {
   enum {
     PERLIN,
     SIMPLEX,
@@ -430,7 +430,7 @@ void render_noise(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 // fov sample
 // ***************************
-void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
   // clang-format off
   static const char* SAMPLE_MAP[] = {
       "##############################################",
@@ -647,7 +647,7 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 // ***************************
 // image sample
 // ***************************
-void render_image(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_image(bool, TCOD_key_t*, TCOD_mouse_t*) {
   static TCODImage *img = NULL, *circle = NULL;
   if (img == NULL) {
     img = new TCODImage("data/img/skull.png");
@@ -1097,7 +1097,7 @@ class BspListener : public ITCODBspCallback {
     return true;
   }
 };
-void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_bsp(bool, TCOD_key_t* key, TCOD_mouse_t*) {
   static TCODBsp* bsp = NULL;
   static bool generate = true;
   static bool refresh = false;
@@ -1172,7 +1172,7 @@ void render_bsp(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
 /* ***************************
  * name generator sample
  * ***************************/
-void render_name(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_name(bool, TCOD_key_t* key, TCOD_mouse_t*) {
   static int curSet = 0;
   static float delay = 0.0f;
   static std::vector<std::string> names;
@@ -1432,7 +1432,7 @@ class SampleRenderer : public ITCODSDLRenderer {
   }
 };
 
-void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
+void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
   if (first) {
     // use noise sample as background. rendering is done in SampleRenderer
     sampleConsole.setDefaultBackground(LIGHT_BLUE);

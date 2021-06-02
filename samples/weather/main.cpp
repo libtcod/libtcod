@@ -26,7 +26,8 @@
 
 #include "main.hpp"
 
-#include <stdio.h>
+#include <cstdio>
+#include <string>
 
 TCODNoise noise1d(1);
 TCODNoise noise2d(2);
@@ -35,7 +36,7 @@ float dayTime = 6 * 3600.0f;  // starts at 6.00am
 TCODColor lightningColor(220, 220, 255);
 TCODImage* ground;
 
-void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
+void update(float elapsed, TCOD_key_t k, TCOD_mouse_t) {
   if (k.c == '+') {
     float d = weather.getIndicatorDelta();
     weather.setIndicatorDelta(d + elapsed * 0.1f);
@@ -52,11 +53,11 @@ void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
   weather.calculateAmbient(dayTime);
 }
 
-const char* getDaytime() {
-  static char buf[6];
-  int h = (int)(dayTime / 3600);
-  int m = (int)((dayTime - h * 3600) / 60);
-  sprintf(buf, "%02d:%02d", h, m);
+std::string getDaytime() {
+  char buf[6] = "";
+  int hour = (int)(dayTime / 3600);
+  int minute = (int)((dayTime - hour * 3600) / 60);
+  snprintf(buf, sizeof(buf), "%02d:%02d", hour, minute);
   return buf;
 }
 
@@ -113,7 +114,7 @@ void render() {
     }
   }
   TCODConsole::root->setDefaultForeground({255, 255, 255});
-  TCODConsole::root->print(
+  TCODConsole::root->printf(
       5,
       CON_H - 12,
       "TCOD's weather system :\n"
@@ -125,7 +126,7 @@ void render() {
       "Weather : %s\n\n"
       "Weather evolves automatically\nbut you can alter it by holding + or - : %.1f\n"
       "Accelerate time with ENTER",
-      getDaytime(),
+      getDaytime().c_str(),
       weather.getWeather(),
       weather.getIndicatorDelta());
 }

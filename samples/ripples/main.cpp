@@ -71,7 +71,7 @@ void render() {
   }
   rippleManager->renderRipples(ground, ground2);
   ground2->blit2x(TCODConsole::root, 0, 0);
-  TCODConsole::root->setDefaultForeground(TCODColor::white);
+  TCODConsole::root->setDefaultForeground({255, 255, 255});
   TCODConsole::root->printf(3, 49, "Click in water to trigger ripples");
 }
 

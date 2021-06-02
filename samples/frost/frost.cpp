@@ -39,7 +39,7 @@ class FrostManager {
     clear();
   }
   inline void clear() {
-    img->clear(TCODColor::black);
+    img->clear({0, 0, 0});
     for (auto& it : grid) it = 0;
   }
   inline void addFrost(int x, int y) {
@@ -245,10 +245,9 @@ int main(int argc, char** argv) {
   }
 
   // Initialize the frost color gradient.
-  const std::array<int, 4> keys{0, 60, 200, 255};
-  const std::array<TCODColor, 4> keyCols{
-      TCODColor::black, TCODColor::darkerBlue, TCODColor::lighterBlue, TCODColor::lightestBlue};
-  TCODColor::genMap(&frost_gradient[0], static_cast<int>(keys.size()), keyCols.data(), keys.data());
+  static constexpr std::array<int, 4> key_indexes{0, 60, 200, 255};
+  static constexpr std::array<TCODColor, 4> key_colors{{{0, 0, 0}, {0, 0, 127}, {127, 127, 255}, {191, 191, 255}}};
+  TCODColor::genMap(&frost_gradient[0], static_cast<int>(key_indexes.size()), key_colors.data(), key_indexes.data());
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(main_loop, 0, 0);
 #else

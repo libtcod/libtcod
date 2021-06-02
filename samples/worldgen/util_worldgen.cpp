@@ -33,6 +33,8 @@
 
 #include "main.hpp"
 
+static constexpr auto WHITE = TCODColor{255, 255, 255};
+
 // temperature / precipitation Biome diagram (Whittaker diagram)
 EBiome biomeDiagram[5][5] = {
     // arctic/alpine climate (below -5°C)
@@ -1032,7 +1034,7 @@ TCODColor WorldGenerator::getBiomeColor(EBiome biome, int x, int y) {
       // COLD_DESERT,
       TCODColor(180, 210, 210),
       // GRASSLAND,
-      TCODColor::sea,
+      TCODColor(0, 255, 127),
       // BOREAL_FOREST,
       TCODColor(14, 93, 43),
       // TEMPERATE_FOREST,
@@ -1046,7 +1048,7 @@ TCODColor WorldGenerator::getBiomeColor(EBiome biome, int x, int y) {
       // TROPICAL_DRY_FOREST,
       TCODColor(60, 130, 40),
       // TROPICAL_EVERGREEN_FOREST,
-      TCODColor::green,
+      TCODColor(0, 255, 0),
       // THORN_FOREST,
       TCODColor(192, 192, 112),
   };
@@ -1093,15 +1095,15 @@ void WorldGenerator::computeColors() {
       // snow near poles
       temp += 10 * (clouds[HM_WIDTH - 1 - x][HM_HEIGHT - 1 - y]);  // cheap 2D noise ;)
       if (temp < -10.0f && h < sandHeight)
-        worldmap->putPixel(x, y, TCODColor::lerp(TCODColor::white, c, 0.3f));
+        worldmap->putPixel(x, y, TCODColor::lerp(WHITE, c, 0.3f));
       else if (temp < -8.0f && h < sandHeight)
-        worldmap->putPixel(x, y, TCODColor::lerp(TCODColor::white, c, 0.3f + 0.7f * (10.0f + temp) / 2.0f));
+        worldmap->putPixel(x, y, TCODColor::lerp(WHITE, c, 0.3f + 0.7f * (10.0f + temp) / 2.0f));
       else if (temp < -2.0f && h >= sandHeight)
-        worldmap->putPixel(x, y, TCODColor::white);
+        worldmap->putPixel(x, y, WHITE);
       else if (temp < 2.0f && h >= sandHeight) {
         // TCODColor snow = mapGradient[(int)(snowHeight*255) + (int)((255 - (int)(snowHeight*255)) *
         // (0.6f-temp)/0.4f)];
-        c = TCODColor::lerp(TCODColor::white, c, (temp + 2) / 4.0f);
+        c = TCODColor::lerp(WHITE, c, (temp + 2) / 4.0f);
         worldmap->putPixel(x, y, c);
       } else {
         worldmap->putPixel(x, y, c);
@@ -1128,7 +1130,7 @@ void WorldGenerator::computeColors() {
     for (int x = 0; x < HM_WIDTH; x++) {
       if (md->riverId > 0) {
         TCODColor c = worldmap->getPixel(x, y);
-        c = TCODColor::lerp(c, TCODColor::blue, 0.3f);
+        c = TCODColor::lerp(c, {0, 0, 255}, 0.3f);
         worldmap->putPixel(x, y, c);
       }
       md++;
@@ -1238,12 +1240,12 @@ void WorldGenerator::drawCoasts(TCODImage* img) {
       float h = hm->getValue(x, y);
       float h2 = hm->getValue(x + 1, y);
       if ((h < sandHeight && h2 >= sandHeight) || (h2 < sandHeight && h >= sandHeight))
-        img->putPixel(x, y, TCODColor::black);
+        img->putPixel(x, y, {0, 0, 0});
       else {
         h = hm->getValue(x, y);
         h2 = hm->getValue(x, y + 1);
         if ((h < sandHeight && h2 >= sandHeight) || (h2 < sandHeight && h >= sandHeight))
-          img->putPixel(x, y, TCODColor::black);
+          img->putPixel(x, y, {0, 0, 0});
       }
     }
   }
@@ -1258,7 +1260,7 @@ void WorldGenerator::saveBiomeMap(const char* filename) {
       // COLD_DESERT,
       TCODColor(129, 174, 170),
       // GRASSLAND,
-      TCODColor::sea,
+      TCODColor(0, 255, 127),
       // BOREAL_FOREST,
       TCODColor(14, 93, 43),
       // TEMPERATE_FOREST,
@@ -1268,11 +1270,11 @@ void WorldGenerator::saveBiomeMap(const char* filename) {
       // HOT_DESERT,
       TCODColor(229, 247, 184),
       // SAVANNA,
-      TCODColor::orange,
+      TCODColor(255, 127, 0),
       // TROPICAL_DRY_FOREST,
-      TCODColor::darkYellow,
+      TCODColor(191, 191, 0),
       // TROPICAL_EVERGREEN_FOREST,
-      TCODColor::green,
+      TCODColor(0, 255, 0),
       // THORN_FOREST,
       TCODColor(192, 192, 112),
   };

@@ -258,8 +258,8 @@ void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
 }
 
 void render() {
-  static const TCODColor deepBlue = TCODColor::darkestFlame;
-  static const TCODColor highBlue = TCODColor::lightestYellow;
+  static constexpr TCODColor deepBlue = {63, 15, 0};
+  static constexpr TCODColor highBlue = {255, 255, 191};
   for (int x = 0; x <= N; x++) {
     for (int y = 0; y <= N; y++) {
       float coef = (float)(dens[IX(x, y)] / 128.0f);
@@ -269,7 +269,7 @@ void render() {
   }
   img.blit2x(TCODConsole::root, 0, 0);
   TCODConsole::root->printf(2, HEIGHT - 2, "%4d fps", TCODSystem::getFps());
-  TCODConsole::root->setDefaultForeground(TCODColor::white);
+  TCODConsole::root->setDefaultForeground({0, 0, 0});
   TCODConsole::root->putChar(player_x, player_y, '@');
 }
 

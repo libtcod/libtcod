@@ -42,6 +42,8 @@ static constexpr auto LIGHT_RADIUS = 10;
 static constexpr auto CELL_REFLECTIVITY = 1.5f;
 static constexpr auto CELL_SELF_ILLUMINATION = 0.4f;
 
+static constexpr auto WHITE = TCODColor{255, 255, 255};
+
 static TCODMap* map;
 static BspHelper bsp;
 static int player_x = 0, player_y = 0, playerBack;
@@ -97,8 +99,8 @@ void init() {
     int lx = TCODRandom::getInstance()->getInt(1, MAP_WIDTH - 2);
     int ly = TCODRandom::getInstance()->getInt(1, MAP_HEIGHT - 2);
     findPos(&lx, &ly);
-    leftShader->addLight(lx, ly, LIGHT_RADIUS, TCODColor::white);
-    rightShader->addLight(lx, ly, LIGHT_RADIUS, TCODColor::white);
+    leftShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
+    rightShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
     TCODConsole::root->setChar(lx, ly, '*');
     TCODConsole::root->setChar(lx + CON_WIDTH / 2, ly, '*');
   }
@@ -110,8 +112,8 @@ void init() {
   TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
 
   // add the player's torch
-  torchIndex = leftShader->addLight(player_x, player_y, 10, TCODColor::white);
-  rightShader->addLight(player_x, player_y, LIGHT_RADIUS, TCODColor::white);
+  torchIndex = leftShader->addLight(player_x, player_y, 10, WHITE);
+  rightShader->addLight(player_x, player_y, LIGHT_RADIUS, WHITE);
 
   // init shaders (must be done after adding lights for photon shader)
   leftShader->init(map);
@@ -193,8 +195,8 @@ void move(int dx, int dy) {
     TCODConsole::root->setChar(player_x, player_y, '@');
     TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
     // update the player's torch position
-    leftShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, TCODColor::white);
-    rightShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, TCODColor::white);
+    leftShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);
+    rightShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);
   }
 }
 

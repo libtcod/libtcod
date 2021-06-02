@@ -85,7 +85,7 @@ void render() {
   }
   map.blit2x(TCODConsole::root, 0, 0);
 
-  TCODConsole::root->setDefaultForeground(TCODColor::white);
+  TCODConsole::root->setDefaultForeground({255, 255, 255});
   static const char* biomeNames[] = {
       "Tundra",
       "Cold desert",

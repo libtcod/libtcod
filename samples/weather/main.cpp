@@ -104,7 +104,7 @@ void render() {
       if (weather.hasRainDrop()) {
         float lightning = weather.getLightning(x * 2, y * 2);
         float cloudCoef = weather.getCloud(x * 2, y * 2);
-        TCODColor col = TCODColor::darkBlue * cloudCoef;
+        TCODColor col = TCODColor{0, 0, 191} * cloudCoef;
         col = col * weather.getAmbientLightColor();
         if (lightning > 0.0f) col = col + 2 * lightning * lightningColor;
         TCODConsole::root->setChar(x, y, '/');
@@ -112,7 +112,7 @@ void render() {
       }
     }
   }
-  TCODConsole::root->setDefaultForeground(TCODColor::white);
+  TCODConsole::root->setDefaultForeground({255, 255, 255});
   TCODConsole::root->print(
       5,
       CON_H - 12,

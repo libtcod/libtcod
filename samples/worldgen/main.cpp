@@ -25,6 +25,8 @@
  */
 #include "main.hpp"
 
+#include <algorithm>
+
 #define WIDTH 80
 #define HEIGHT 50
 
@@ -36,7 +38,7 @@ float wx = 0, wy = 0, cur_w_x = 0, cur_w_y = 0;
 // mouse coordinates in world map
 float mx = 0, my = 0;
 
-void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
+void update(float elapsed, const TCOD_key_t&, const TCOD_mouse_t& mouse) {
   // destination wanted
   wx = (worldGen.getWidth() - 2 * WIDTH) * mouse.cx / WIDTH;
   wy = (worldGen.getHeight() - 2 * HEIGHT) * mouse.cy / HEIGHT;
@@ -49,26 +51,23 @@ void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
 
 TCODColor getMapShadedColor(float worldX, float worldY, bool clouds) {
   // sun color
-  static TCODColor sunCol(255, 255, 200);
-  float wx = CLAMP(0.0f, worldGen.getWidth() - 1, worldX);
-  float wy = CLAMP(0.0f, worldGen.getHeight() - 1, worldY);
+  static constexpr TCODColor sunCol(255, 255, 200);
+  const float wx = CLAMP(0.0f, worldGen.getWidth() - 1, worldX);
+  const float wy = CLAMP(0.0f, worldGen.getHeight() - 1, worldY);
   // apply cloud shadow
-  float cloudAmount = clouds ? worldGen.getCloudThickness(wx, wy) : 0.0f;
+  const float cloudAmount = clouds ? worldGen.getCloudThickness(wx, wy) : 0.0f;
   TCODColor col = worldGen.getInterpolatedColor(worldX, worldY);
   // apply sun light
   float intensity = worldGen.getInterpolatedIntensity(wx, wy);
-  intensity = MIN(intensity, 1.5f - cloudAmount);
-  int cr = (int)(intensity * (int)(col.r) * sunCol.r / 255);
-  int cg = (int)(intensity * (int)(col.g) * sunCol.g / 255);
-  int cb = (int)(intensity * (int)(col.b) * sunCol.b / 255);
-  TCODColor col2;
-  col2.r = CLAMP(0, 255, cr);
-  col2.g = CLAMP(0, 255, cg);
-  col2.b = CLAMP(0, 255, cb);
-  col2.r = MAX(col2.r, col.r / 2);
-  col2.g = MAX(col2.g, col.g / 2);
-  col2.b = MAX(col2.b, col.b / 2);
-  return col2;
+  intensity = std::min(intensity, 1.5f - cloudAmount);
+  const int cr = (int)(intensity * (int)(col.r) * sunCol.r / 255);
+  const int cg = (int)(intensity * (int)(col.g) * sunCol.g / 255);
+  const int cb = (int)(intensity * (int)(col.b) * sunCol.b / 255);
+  return {
+      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cr)), col.r / 2),
+      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cg)), col.g / 2),
+      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cb)), col.b / 2),
+  };
 }
 
 void render() {
@@ -78,8 +77,8 @@ void render() {
   for (int px = 0; px < 2 * WIDTH; px++) {
     for (int py = 0; py < 2 * HEIGHT; py++) {
       // world texel coordinate (with fisheye distorsion)
-      float wx = px + cur_w_x;
-      float wy = py + cur_w_y;
+      const float wx = px + cur_w_x;
+      const float wy = py + cur_w_y;
       map.putPixel(px, py, getMapShadedColor(wx, wy, true));
     }
   }
@@ -120,8 +119,8 @@ int main(int argc, char* argv[]) {
   TCODSystem::setFps(25);
   TCODMouse::showCursor(true);
 
-  TCOD_key_t k = {TCODK_NONE, 0};
-  TCOD_mouse_t mouse;
+  TCOD_key_t k = {};
+  TCOD_mouse_t mouse = {};
 
   bool endCredits = false;
   // generate the world with all data (rain, temperature and so on...)

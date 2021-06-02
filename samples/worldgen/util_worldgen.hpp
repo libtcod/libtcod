@@ -26,8 +26,8 @@
 #include <vector>
 
 // size of the heightmap
-#define HM_WIDTH 400
-#define HM_HEIGHT 400
+static constexpr auto HM_WIDTH = 400;
+static constexpr auto HM_HEIGHT = 400;
 
 // biome and climate list. based on Whittaker Biome Diagram
 enum EClimate { ARCTIC_ALPINE, COLD, TEMPERATE, WARM, TROPICAL, NB_CLIMATES };
@@ -82,7 +82,7 @@ class WorldGenerator {
 
   // update
   void updateClouds(float elapsedTime);
-  void computeSunLight(float lightDir[3]);
+  void computeSunLight(const float lightDir[3]);
 
   // data
   float getRealAltitude(float x, float y) const;    // altitude in meters
@@ -132,9 +132,9 @@ class WorldGenerator {
   // compute the ground color from the heightmap
   TCODColor getMapColor(float h);
   // get sun light intensity on a point of the map
-  float getMapIntensity(float worldX, float worldY, float lightDir[3]);
+  float getMapIntensity(float worldX, float worldY, const float lightDir[3]);
   TCODColor getInterpolatedColor(TCODImage* img, float x, float y);
-  float getInterpolatedFloat(float* arr, float x, float y, int width, int height);
+  float getInterpolatedFloat(const float* arr, float x, float y, int width, int height);
   void generateRivers();
   void smoothPrecipitations();
   int getRiverStrength(int riverId);

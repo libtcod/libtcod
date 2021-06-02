@@ -79,18 +79,23 @@
 #ifdef TCOD_IGNORE_DEPRECATED
 #define TCOD_DEPRECATED(msg)
 #define TCOD_DEPRECATED_NOMESSAGE
+#define TCOD_DEPRECATED_ENUM
 #elif defined(__cplusplus) && __cplusplus >= 201402L && !defined(__clang__)
 #define TCOD_DEPRECATED(msg) [[deprecated(msg)]]
 #define TCOD_DEPRECATED_NOMESSAGE [[deprecated]]
+#define TCOD_DEPRECATED_ENUM [[deprecated]]
 #elif defined(_MSC_VER)
 #define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
 #define TCOD_DEPRECATED_NOMESSAGE __declspec(deprecated)
+#define TCOD_DEPRECATED_ENUM
 #elif defined(__GNUC__)
 #define TCOD_DEPRECATED(msg) __attribute__((deprecated(msg)))
 #define TCOD_DEPRECATED_NOMESSAGE __attribute__((deprecated))
+#define TCOD_DEPRECATED_ENUM __attribute__((deprecated))
 #else
 #define TCOD_DEPRECATED(msg)
 #define TCOD_DEPRECATED_NOMESSAGE
+#define TCOD_DEPRECATED_ENUM
 #endif
 
 // Tells GCC the these functions are like printf.

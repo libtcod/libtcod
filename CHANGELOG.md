@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Deprecated
+- Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
 
 ## [1.18.1] - 2021-05-21
 ### Fixed

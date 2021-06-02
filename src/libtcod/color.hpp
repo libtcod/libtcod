@@ -136,7 +136,7 @@ class TCODLIB_API TCODColor {
 public :
 	uint8_t r,g,b;
 
-	TCODColor() : r(0),g(0),b(0) {}
+	constexpr TCODColor() : r{0}, g{0}, b{0} {}
 	/**
 	@PageName color
 	@FuncTitle Create your own colors
@@ -153,13 +153,13 @@ public :
 	     TCODColor myColor = new TCODColor(321.0f,0.7f,1.0f); //HSV
 	@LuaEx myColor = tcod.Color(24,24,255)
 	*/
-	TCODColor(uint8_t r_, uint8_t g_, uint8_t b_)
-  : r(r_), g(g_), b(b_)
+	constexpr TCODColor(uint8_t r_, uint8_t g_, uint8_t b_)
+  : r{r_}, g{g_}, b{b_}
   {}
-	TCODColor(int r_, int g_, int b_)
-  : r((uint8_t)r_), g((uint8_t)g_), b((uint8_t)b_)
+	constexpr TCODColor(int r_, int g_, int b_)
+  : r{static_cast<uint8_t>(r_)}, g{static_cast<uint8_t>(g_)}, b{static_cast<uint8_t>(b_)}
   {}
-	TCODColor(const TCOD_color_t &col): r(col.r), g(col.g), b(col.b) {}
+	constexpr TCODColor(const TCOD_color_t &col): r{col.r}, g{col.g}, b{col.b} {}  // Notice: not explicit!
 	TCODColor(float h, float s, float v);
 
 	/**
@@ -670,18 +670,18 @@ coef should be between 0.0 and 1.0 but you can as well use other values
    */
   template <typename F>
   TCODColor(const TCODColor& color, const F& lambda)
-  : r(clamp_(lambda(color.r))),
-    g(clamp_(lambda(color.g))),
-    b(clamp_(lambda(color.b)))
+  : r{clamp_(lambda(color.r))},
+    g{clamp_(lambda(color.g))},
+    b{clamp_(lambda(color.b))}
   {}
   /**
    *  Return a color from two colors combined using a lambda.
    */
   template <typename F>
   TCODColor(const TCODColor& color1, const TCODColor& color2, const F& lambda)
-  : r(clamp_(lambda(color1.r, color2.r))),
-    g(clamp_(lambda(color1.g, color2.g))),
-    b(clamp_(lambda(color1.b, color2.b)))
+  : r{clamp_(lambda(color1.r, color2.r))},
+    g{clamp_(lambda(color1.g, color2.g))},
+    b{clamp_(lambda(color1.b, color2.b))}
   {}
   /**
    *  Return a color value clamped between 0 to 255.

@@ -14,13 +14,23 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <memory>
 #include <string>
 #include <vector>
 
+// Abstract class for samples.
+class Sample {
+ public:
+  virtual ~Sample() = default;
+  virtual void on_enter() = 0;
+  virtual void on_event(TCOD_key_t* key, TCOD_mouse_t* mouse) = 0;
+  virtual void on_draw(TCOD_Console& console) = 0;
+};
+
 // a sample has a name and a rendering function
-typedef struct {
+typedef struct sample_t {
   std::string name;
-  void (*render)(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse);
+  std::shared_ptr<Sample> sample;
 } sample_t;
 
 // sample screen size
@@ -37,6 +47,31 @@ static constexpr auto GREY = TCODColor{127, 127, 127};
 static constexpr auto LIGHT_BLUE = TCODColor{63, 63, 255};
 static constexpr auto LIGHT_YELLOW = TCODColor{255, 255, 63};
 
+// clang-format off
+static const char* SAMPLE_MAP[] = {
+    "##############################################",
+    "#######################      #################",
+    "#####################    #     ###############",
+    "######################  ###        ###########",
+    "##################      #####             ####",
+    "################       ########    ###### ####",
+    "###############      #################### ####",
+    "################    ######                  ##",
+    "########   #######  ######   #     #     #  ##",
+    "########   ######      ###                  ##",
+    "########                                    ##",
+    "####       ######      ###   #     #     #  ##",
+    "#### ###   ########## ####                  ##",
+    "#### ###   ##########   ###########=##########",
+    "#### ##################   #####          #####",
+    "#### ###             #### #####          #####",
+    "####           #     ####                #####",
+    "########       #     #### #####          #####",
+    "########       #####      ####################",
+    "##############################################",
+};
+// clang-format on
+
 // ***************************
 // samples rendering functions
 // ***************************
@@ -47,145 +82,154 @@ TCODConsole sampleConsole(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
 // ***************************
 // true colors sample
 // ***************************
-void render_colors(bool first, TCOD_key_t*, TCOD_mouse_t*) {
-  enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
-  static TCODColor cols[4] = {
-      TCODColor(50, 40, 150),
-      TCODColor(240, 85, 5),
-      TCODColor(50, 35, 240),
-      TCODColor(10, 200, 130)};  // random corner colors
-  static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
-  if (first) {
-    sampleConsole.clear();
-  }
-  // ==== slightly modify the corner colors ====
-  for (int c = 0; c < 4; c++) {
-    // move each corner color
-    const int component = TCODRandom::getInstance()->getInt(0, 2);
-    switch (component) {
-      case 0:
-        cols[c].r += 5 * dir_r[c];
-        if (cols[c].r == 255)
-          dir_r[c] = -1;
-        else if (cols[c].r == 0)
-          dir_r[c] = 1;
-        break;
-      case 1:
-        cols[c].g += 5 * dir_g[c];
-        if (cols[c].g == 255)
-          dir_g[c] = -1;
-        else if (cols[c].g == 0)
-          dir_g[c] = 1;
-        break;
-      case 2:
-        cols[c].b += 5 * dir_b[c];
-        if (cols[c].b == 255)
-          dir_b[c] = -1;
-        else if (cols[c].b == 0)
-          dir_b[c] = 1;
-        break;
-    }
-  }
-
-  // ==== scan the whole screen, interpolating corner colors ====
-  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
-    // get the current column top and bottom colors
-    TCODColor top = TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
-    TCODColor bottom = TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
-      // get the current cell color
-      TCODColor curColor = TCODColor::lerp(top, bottom, y_coef);
-      sampleConsole.setCharBackground(x, y, curColor, TCOD_BKGND_SET);
-    }
-  }
-
-  // ==== print the text with a random color ====
-  // get the background color at the text position
-  TCODColor textColor = sampleConsole.getCharBackground(SAMPLE_SCREEN_WIDTH / 2, 5);
-  // and invert it
-  textColor.r = 255 - textColor.r;
-  textColor.g = 255 - textColor.g;
-  textColor.b = 255 - textColor.b;
-  // put random text (for performance tests)
-  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      int c;
-      TCODColor col = sampleConsole.getCharBackground(x, y);
-      col = TCODColor::lerp(col, BLACK, 0.5f);
-      // use colored character 255 on first and last lines
-      if (y == 0 || y == SAMPLE_SCREEN_HEIGHT - 1) {
-        c = 255;
-      } else {
-        c = TCODRandom::getInstance()->getInt('a', 'z');
+class TrueColors : public Sample {
+ public:
+  void on_enter() override { sampleConsole.clear(); };
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_draw(TCOD_Console& console) override {
+    enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
+    static TCODColor cols[4] = {
+        TCODColor(50, 40, 150),
+        TCODColor(240, 85, 5),
+        TCODColor(50, 35, 240),
+        TCODColor(10, 200, 130)};  // random corner colors
+    static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
+    // ==== slightly modify the corner colors ====
+    for (int c = 0; c < 4; ++c) {
+      // move each corner color
+      const int component = TCODRandom::getInstance()->getInt(0, 2);
+      switch (component) {
+        case 0:
+          cols[c].r += 5 * dir_r[c];
+          if (cols[c].r == 255)
+            dir_r[c] = -1;
+          else if (cols[c].r == 0)
+            dir_r[c] = 1;
+          break;
+        case 1:
+          cols[c].g += 5 * dir_g[c];
+          if (cols[c].g == 255)
+            dir_g[c] = -1;
+          else if (cols[c].g == 0)
+            dir_g[c] = 1;
+          break;
+        case 2:
+          cols[c].b += 5 * dir_b[c];
+          if (cols[c].b == 255)
+            dir_b[c] = -1;
+          else if (cols[c].b == 0)
+            dir_b[c] = 1;
+          break;
       }
-
-      sampleConsole.setDefaultForeground(col);
-      sampleConsole.putChar(x, y, c, TCOD_BKGND_NONE);
     }
+
+    // ==== scan the whole screen, interpolating corner colors ====
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+      // get the current column top and bottom colors
+      const TCODColor top = TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
+      const TCODColor bottom = TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+        const float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+        // get the current cell color
+        TCODColor curColor = TCODColor::lerp(top, bottom, y_coef);
+        sampleConsole.setCharBackground(x, y, curColor, TCOD_BKGND_SET);
+      }
+    }
+
+    // ==== print the text with a random color ====
+    // get the background color at the text position
+    TCODColor textColor = sampleConsole.getCharBackground(SAMPLE_SCREEN_WIDTH / 2, 5);
+    // and invert it
+    textColor.r = 255 - textColor.r;
+    textColor.g = 255 - textColor.g;
+    textColor.b = 255 - textColor.b;
+    // put random text (for performance tests)
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        int c;
+        TCODColor col = sampleConsole.getCharBackground(x, y);
+        col = TCODColor::lerp(col, BLACK, 0.5f);
+        // use colored character 255 on first and last lines
+        if (y == 0 || y == SAMPLE_SCREEN_HEIGHT - 1) {
+          c = 255;
+        } else {
+          c = TCODRandom::getInstance()->getInt('a', 'z');
+        }
+
+        sampleConsole.setDefaultForeground(col);
+        sampleConsole.putChar(x, y, c, TCOD_BKGND_NONE);
+      }
+    }
+    sampleConsole.setDefaultForeground(textColor);
+    // the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
+    sampleConsole.setDefaultBackground(GREY);
+    sampleConsole.printRectEx(
+        SAMPLE_SCREEN_WIDTH / 2,
+        5,
+        SAMPLE_SCREEN_WIDTH - 2,
+        SAMPLE_SCREEN_HEIGHT - 1,
+        TCOD_BKGND_MULTIPLY,
+        TCOD_CENTER,
+        "The Doryen library uses 24 bits colors, for both background and foreground.");
   }
-  sampleConsole.setDefaultForeground(textColor);
-  // the background behind the text is slightly darkened using the BKGND_MULTIPLY flag
-  sampleConsole.setDefaultBackground(GREY);
-  sampleConsole.printRectEx(
-      SAMPLE_SCREEN_WIDTH / 2,
-      5,
-      SAMPLE_SCREEN_WIDTH - 2,
-      SAMPLE_SCREEN_HEIGHT - 1,
-      TCOD_BKGND_MULTIPLY,
-      TCOD_CENTER,
-      "The Doryen library uses 24 bits colors, for both background and foreground.");
-}
+};
 
 // ***************************
 // offscreen console sample
 // ***************************
-void render_offscreen(bool first, TCOD_key_t*, TCOD_mouse_t*) {
-  static TCODConsole secondary(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);  // second screen
-  static TCODConsole screenshot(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);         // second screen
-  static bool init = false;  // draw the secondary screen only the first time
-  static int counter;
-  static int x = 0, y = 0;          // secondary screen position
-  static int x_dir = 1, y_dir = 1;  // movement direction
-  if (!init) {
-    init = true;
-    secondary.printFrame(
-        0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, false, TCOD_BKGND_SET, "Offscreen console");
-    secondary.printRectEx(
-        SAMPLE_SCREEN_WIDTH / 4,
-        2,
-        SAMPLE_SCREEN_WIDTH / 2 - 2,
-        SAMPLE_SCREEN_HEIGHT / 2,
-        TCOD_BKGND_NONE,
-        TCOD_CENTER,
-        "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
-  }
-  if (first) {
+class OffscreenConsole : public Sample {
+ public:
+  OffscreenConsole() : screenshot(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT) {}
+  void on_enter() override {
     counter = SDL_GetTicks();
     // get a "screenshot" of the current sample screen
     TCODConsole::blit(&sampleConsole, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &screenshot, 0, 0);
   }
-  if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
-    counter = SDL_GetTicks();
-    // move the secondary screen every 2 seconds
-    x += x_dir;
-    y += y_dir;
-    if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
-      x_dir = -1;
-    else if (x == -5)
-      x_dir = 1;
-    if (y == SAMPLE_SCREEN_HEIGHT / 2 + 5)
-      y_dir = -1;
-    else if (y == -5)
-      y_dir = 1;
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_draw(TCOD_Console& console) override {
+    static TCODConsole secondary(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);  // second screen
+    static bool init = false;         // draw the secondary screen only the first time
+    static int x = 0, y = 0;          // secondary screen position
+    static int x_dir = 1, y_dir = 1;  // movement direction
+    if (!init) {
+      init = true;
+      secondary.printFrame(
+          0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, false, TCOD_BKGND_SET, "Offscreen console");
+      secondary.printRectEx(
+          SAMPLE_SCREEN_WIDTH / 4,
+          2,
+          SAMPLE_SCREEN_WIDTH / 2 - 2,
+          SAMPLE_SCREEN_HEIGHT / 2,
+          TCOD_BKGND_NONE,
+          TCOD_CENTER,
+          "You can render to an offscreen console and blit in on another one, simulating alpha transparency.");
+    }
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
+      counter = SDL_GetTicks();
+      // move the secondary screen every 2 seconds
+      x += x_dir;
+      y += y_dir;
+      if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
+        x_dir = -1;
+      else if (x == -5)
+        x_dir = 1;
+      if (y == SAMPLE_SCREEN_HEIGHT / 2 + 5)
+        y_dir = -1;
+      else if (y == -5)
+        y_dir = 1;
+    }
+    // restore the initial screen
+    TCODConsole::blit(&screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
+    // blit the overlapping screen
+    TCODConsole::blit(
+        &secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, &sampleConsole, x, y, 1.0f, 0.75f);
   }
-  // restore the initial screen
-  TCODConsole::blit(&screenshot, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
-  // blit the overlapping screen
-  TCODConsole::blit(
-      &secondary, 0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2, &sampleConsole, x, y, 1.0f, 0.75f);
-}
+
+ private:
+  int counter;
+  TCODConsole screenshot;
+};
 
 // ***************************
 // line drawing sample
@@ -200,84 +244,225 @@ class LineListener : public TCODLineListener {
     return true;
   }
 };
-void render_lines(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
-  static TCODConsole bk(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);  // colored background
-  static bool init = false;
-  static const std::vector<std::string> flagNames = {
-      "TCOD_BKGND_NONE",
-      "TCOD_BKGND_SET",
-      "TCOD_BKGND_MULTIPLY",
-      "TCOD_BKGND_LIGHTEN",
-      "TCOD_BKGND_DARKEN",
-      "TCOD_BKGND_SCREEN",
-      "TCOD_BKGND_COLOR_DODGE",
-      "TCOD_BKGND_COLOR_BURN",
-      "TCOD_BKGND_ADD",
-      "TCOD_BKGND_ADDALPHA",
-      "TCOD_BKGND_BURN",
-      "TCOD_BKGND_OVERLAY",
-      "TCOD_BKGND_ALPHA"};
-  if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
-    // switch to the next blending mode
-    bkFlag++;
-    if ((bkFlag & 0xff) > TCOD_BKGND_ALPH) bkFlag = TCOD_BKGND_NONE;
-  }
-  if ((bkFlag & 0xff) == TCOD_BKGND_ALPH) {
-    // for the alpha mode, update alpha every frame
-    const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
-    bkFlag = TCOD_BKGND_ALPHA(alpha);
-  } else if ((bkFlag & 0xff) == TCOD_BKGND_ADDA) {
-    // for the add alpha mode, update alpha every frame
-    const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
-    bkFlag = TCOD_BKGND_ADDALPHA(alpha);
-  }
-  if (!init) {
-    // initialize the colored background
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-        TCODColor col;
-        col.r = (uint8_t)(x * 255 / (SAMPLE_SCREEN_WIDTH - 1));
-        col.g = (uint8_t)((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1));
-        col.b = (uint8_t)(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1));
-        bk.setCharBackground(x, y, col, TCOD_BKGND_SET);
-      }
+class LineDrawingSample : public Sample {
+ public:
+  void on_enter() override { sampleConsole.setDefaultForeground(WHITE); }
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
+      // switch to the next blending mode
+      ++bkFlag;
+      if ((bkFlag & 0xff) > TCOD_BKGND_ALPH) bkFlag = TCOD_BKGND_NONE;
     }
-    init = true;
   }
-  if (first) {
-    sampleConsole.setDefaultForeground(WHITE);
-  }
-  // blit the background
-  TCODConsole::blit(&bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
-  // render the gradient
-  const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
-  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-    TCODColor col;
-    col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    col.g = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    col.b = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
-    sampleConsole.setCharBackground(x, rect_y, col, (TCOD_bkgnd_flag_t)bkFlag);
-    sampleConsole.setCharBackground(x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bkFlag);
-    sampleConsole.setCharBackground(x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
-  }
-  // calculate the segment ends
-  const float angle = TCODSystem::getElapsedSeconds() * 2.0f;
-  const int xo = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
-  const int yo = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
-  const int xd = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosf(angle)));
-  const int yd = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 - sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
+  void on_draw(TCOD_Console& console) override {
+    static TCODConsole bk(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);  // colored background
+    static bool init = false;
+    static const std::vector<std::string> flagNames = {
+        "TCOD_BKGND_NONE",
+        "TCOD_BKGND_SET",
+        "TCOD_BKGND_MULTIPLY",
+        "TCOD_BKGND_LIGHTEN",
+        "TCOD_BKGND_DARKEN",
+        "TCOD_BKGND_SCREEN",
+        "TCOD_BKGND_COLOR_DODGE",
+        "TCOD_BKGND_COLOR_BURN",
+        "TCOD_BKGND_ADD",
+        "TCOD_BKGND_ADDALPHA",
+        "TCOD_BKGND_BURN",
+        "TCOD_BKGND_OVERLAY",
+        "TCOD_BKGND_ALPHA"};
+    if ((bkFlag & 0xff) == TCOD_BKGND_ALPH) {
+      // for the alpha mode, update alpha every frame
+      const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+      bkFlag = TCOD_BKGND_ALPHA(alpha);
+    } else if ((bkFlag & 0xff) == TCOD_BKGND_ADDA) {
+      // for the add alpha mode, update alpha every frame
+      const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+      bkFlag = TCOD_BKGND_ADDALPHA(alpha);
+    }
+    if (!init) {
+      // initialize the colored background
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+        for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+          TCODColor col;
+          col.r = (uint8_t)(x * 255 / (SAMPLE_SCREEN_WIDTH - 1));
+          col.g = (uint8_t)((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1));
+          col.b = (uint8_t)(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1));
+          bk.setCharBackground(x, y, col, TCOD_BKGND_SET);
+        }
+      }
+      init = true;
+    }
+    // blit the background
+    TCODConsole::blit(&bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
+    // render the gradient
+    const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+      TCODColor col;
+      col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
+      col.g = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
+      col.b = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
+      sampleConsole.setCharBackground(x, rect_y, col, (TCOD_bkgnd_flag_t)bkFlag);
+      sampleConsole.setCharBackground(x, rect_y + 1, col, (TCOD_bkgnd_flag_t)bkFlag);
+      sampleConsole.setCharBackground(x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
+    }
+    // calculate the segment ends
+    const float angle = TCODSystem::getElapsedSeconds() * 2.0f;
+    const int xo = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
+    const int yo = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
+    const int xd = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosf(angle)));
+    const int yd = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 - sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
 
-  // render the line
-  LineListener listener;
-  TCODLine::line(xo, yo, xd, yd, &listener);
-  // print the current flag
-  sampleConsole.print(2, 2, flagNames[bkFlag & 0xff] + " (ENTER to change)");
-}
+    // render the line
+    LineListener listener;
+    TCODLine::line(xo, yo, xd, yd, &listener);
+    // print the current flag
+    sampleConsole.print(2, 2, flagNames[bkFlag & 0xff] + " (ENTER to change)");
+  }
+};
 
 // ***************************
 // noise sample
 // ***************************
-void render_noise(bool, TCOD_key_t* key, TCOD_mouse_t*) {
+class NoiseSample : public Sample {
+ public:
+  void on_enter() override {}
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    // handle keypress
+    if (key->vk == TCODK_NONE) return;
+    if (key->c >= '1' && key->c <= '9') {
+      // change the noise function
+      func = key->c - '1';
+    } else if (key->c == 'E' || key->c == 'e') {
+      // increase hurst
+      hurst += 0.1f;
+      delete noise;
+      noise = new TCODNoise(2, hurst, lacunarity);
+    } else if (key->c == 'D' || key->c == 'd') {
+      // decrease hurst
+      hurst -= 0.1f;
+      delete noise;
+      noise = new TCODNoise(2, hurst, lacunarity);
+    } else if (key->c == 'R' || key->c == 'r') {
+      // increase lacunarity
+      lacunarity += 0.5f;
+      delete noise;
+      noise = new TCODNoise(2, hurst, lacunarity);
+    } else if (key->c == 'F' || key->c == 'f') {
+      // decrease lacunarity
+      lacunarity -= 0.5f;
+      delete noise;
+      noise = new TCODNoise(2, hurst, lacunarity);
+    } else if (key->c == 'T' || key->c == 't') {
+      // increase octaves
+      octaves += 0.5f;
+    } else if (key->c == 'G' || key->c == 'g') {
+      // decrease octaves
+      octaves -= 0.5f;
+    } else if (key->c == 'Y' || key->c == 'y') {
+      // increase zoom
+      zoom += 0.2f;
+    } else if (key->c == 'H' || key->c == 'h') {
+      // decrease zoom
+      zoom -= 0.2f;
+    }
+  }
+  void on_draw(TCOD_Console& console) override {
+    static const std::vector<std::string> funcName = {
+        "1 : perlin noise       ",
+        "2 : simplex noise      ",
+        "3 : wavelet noise      ",
+        "4 : perlin fbm         ",
+        "5 : perlin turbulence  ",
+        "6 : simplex fbm        ",
+        "7 : simplex turbulence ",
+        "8 : wavelet fbm        ",
+        "9 : wavelet turbulence ",
+    };
+    static TCODImage* img = NULL;
+    if (!noise) {
+      noise = new TCODNoise(2, hurst, lacunarity);
+      img = new TCODImage(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
+    }
+
+    // texture animation
+    const float dx = SDL_GetTicks() * 0.0005f;
+    const float dy = dx;
+    // render the 2d noise function
+    for (int y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; y++) {
+      for (int x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; x++) {
+        const float f[2] = {zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx, zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy};
+        float value = 0.0f;
+        switch (func) {
+          case PERLIN:
+            value = noise->get(f, TCOD_NOISE_PERLIN);
+            break;
+          case SIMPLEX:
+            value = noise->get(f, TCOD_NOISE_SIMPLEX);
+            break;
+          case WAVELET:
+            value = noise->get(f, TCOD_NOISE_WAVELET);
+            break;
+          case FBM_PERLIN:
+            value = noise->getFbm(f, octaves, TCOD_NOISE_PERLIN);
+            break;
+          case TURBULENCE_PERLIN:
+            value = noise->getTurbulence(f, octaves, TCOD_NOISE_PERLIN);
+            break;
+          case FBM_SIMPLEX:
+            value = noise->getFbm(f, octaves, TCOD_NOISE_SIMPLEX);
+            break;
+          case TURBULENCE_SIMPLEX:
+            value = noise->getTurbulence(f, octaves, TCOD_NOISE_SIMPLEX);
+            break;
+          case FBM_WAVELET:
+            value = noise->getFbm(f, octaves, TCOD_NOISE_WAVELET);
+            break;
+          case TURBULENCE_WAVELET:
+            value = noise->getTurbulence(f, octaves, TCOD_NOISE_WAVELET);
+            break;
+        }
+        uint8_t c = (uint8_t)((value + 1.0f) / 2.0f * 255);
+        // use a bluish color
+        TCODColor col((uint8_t)(c / 2), (uint8_t)(c / 2), c);
+        img->putPixel(x, y, col);
+      }
+    }
+    // blit the noise image on the console with subcell resolution
+    img->blit2x(&sampleConsole, 0, 0);
+    // draw a transparent rectangle
+    sampleConsole.setDefaultBackground(GREY);
+    sampleConsole.rect(2, 2, 23, (func <= WAVELET ? 10 : 13), false, TCOD_BKGND_MULTIPLY);
+    for (int y = 2; y < 2 + (func <= WAVELET ? 10 : 13); y++) {
+      for (int x = 2; x < 2 + 23; x++) {
+        TCODColor col = sampleConsole.getCharForeground(x, y);
+        col = col * GREY;
+        sampleConsole.setCharForeground(x, y, col);
+      }
+    }
+
+    // draw the text
+    for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
+      if (curfunc == func) {
+        sampleConsole.setDefaultForeground(WHITE);
+        sampleConsole.setDefaultBackground(LIGHT_BLUE);
+        sampleConsole.print(2, 2 + curfunc, funcName[curfunc], TCOD_LEFT, TCOD_BKGND_SET);
+      } else {
+        sampleConsole.setDefaultForeground(GREY);
+        sampleConsole.print(2, 2 + curfunc, funcName[curfunc]);
+      }
+    }
+    // draw parameters
+    sampleConsole.setDefaultForeground(WHITE);
+    sampleConsole.printf(2, 11, "Y/H : zoom (%2.1f)", zoom);
+    if (func > WAVELET) {
+      sampleConsole.printf(2, 12, "E/D : hurst (%2.1f)", hurst);
+      sampleConsole.printf(2, 13, "R/F : lacunarity (%2.1f)", lacunarity);
+      sampleConsole.printf(2, 14, "T/G : octaves (%2.1f)", octaves);
+    }
+  }
+
+ private:
   enum {
     PERLIN,
     SIMPLEX,
@@ -289,217 +474,38 @@ void render_noise(bool, TCOD_key_t* key, TCOD_mouse_t*) {
     FBM_WAVELET,
     TURBULENCE_WAVELET
   };  // which function we render
-  static const std::vector<std::string> funcName = {
-      "1 : perlin noise       ",
-      "2 : simplex noise      ",
-      "3 : wavelet noise      ",
-      "4 : perlin fbm         ",
-      "5 : perlin turbulence  ",
-      "6 : simplex fbm        ",
-      "7 : simplex turbulence ",
-      "8 : wavelet fbm        ",
-      "9 : wavelet turbulence ",
-  };
-  static int func = PERLIN;
-  static TCODNoise* noise = NULL;
-  static float octaves = 4.0f;
-  static float hurst = TCOD_NOISE_DEFAULT_HURST;
-  static float lacunarity = TCOD_NOISE_DEFAULT_LACUNARITY;
-  static TCODImage* img = NULL;
-  static float zoom = 3.0f;
-  if (!noise) {
-    noise = new TCODNoise(2, hurst, lacunarity);
-    img = new TCODImage(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
-  }
-
-  // texture animation
-  const float dx = SDL_GetTicks() * 0.0005f;
-  const float dy = dx;
-  // render the 2d noise function
-  for (int y = 0; y < 2 * SAMPLE_SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < 2 * SAMPLE_SCREEN_WIDTH; x++) {
-      const float f[2] = {zoom * x / (2 * SAMPLE_SCREEN_WIDTH) + dx, zoom * y / (2 * SAMPLE_SCREEN_HEIGHT) + dy};
-      float value = 0.0f;
-      switch (func) {
-        case PERLIN:
-          value = noise->get(f, TCOD_NOISE_PERLIN);
-          break;
-        case SIMPLEX:
-          value = noise->get(f, TCOD_NOISE_SIMPLEX);
-          break;
-        case WAVELET:
-          value = noise->get(f, TCOD_NOISE_WAVELET);
-          break;
-        case FBM_PERLIN:
-          value = noise->getFbm(f, octaves, TCOD_NOISE_PERLIN);
-          break;
-        case TURBULENCE_PERLIN:
-          value = noise->getTurbulence(f, octaves, TCOD_NOISE_PERLIN);
-          break;
-        case FBM_SIMPLEX:
-          value = noise->getFbm(f, octaves, TCOD_NOISE_SIMPLEX);
-          break;
-        case TURBULENCE_SIMPLEX:
-          value = noise->getTurbulence(f, octaves, TCOD_NOISE_SIMPLEX);
-          break;
-        case FBM_WAVELET:
-          value = noise->getFbm(f, octaves, TCOD_NOISE_WAVELET);
-          break;
-        case TURBULENCE_WAVELET:
-          value = noise->getTurbulence(f, octaves, TCOD_NOISE_WAVELET);
-          break;
-      }
-      uint8_t c = (uint8_t)((value + 1.0f) / 2.0f * 255);
-      // use a bluish color
-      TCODColor col((uint8_t)(c / 2), (uint8_t)(c / 2), c);
-      img->putPixel(x, y, col);
-    }
-  }
-  // blit the noise image on the console with subcell resolution
-  img->blit2x(&sampleConsole, 0, 0);
-  // draw a transparent rectangle
-  sampleConsole.setDefaultBackground(GREY);
-  sampleConsole.rect(2, 2, 23, (func <= WAVELET ? 10 : 13), false, TCOD_BKGND_MULTIPLY);
-  for (int y = 2; y < 2 + (func <= WAVELET ? 10 : 13); y++) {
-    for (int x = 2; x < 2 + 23; x++) {
-      TCODColor col = sampleConsole.getCharForeground(x, y);
-      col = col * GREY;
-      sampleConsole.setCharForeground(x, y, col);
-    }
-  }
-
-  // draw the text
-  for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; curfunc++) {
-    if (curfunc == func) {
-      sampleConsole.setDefaultForeground(WHITE);
-      sampleConsole.setDefaultBackground(LIGHT_BLUE);
-      sampleConsole.print(2, 2 + curfunc, funcName[curfunc], TCOD_LEFT, TCOD_BKGND_SET);
-    } else {
-      sampleConsole.setDefaultForeground(GREY);
-      sampleConsole.print(2, 2 + curfunc, funcName[curfunc]);
-    }
-  }
-  // draw parameters
-  sampleConsole.setDefaultForeground(WHITE);
-  sampleConsole.printf(2, 11, "Y/H : zoom (%2.1f)", zoom);
-  if (func > WAVELET) {
-    sampleConsole.printf(2, 12, "E/D : hurst (%2.1f)", hurst);
-    sampleConsole.printf(2, 13, "R/F : lacunarity (%2.1f)", lacunarity);
-    sampleConsole.printf(2, 14, "T/G : octaves (%2.1f)", octaves);
-  }
-  // handle keypress
-  if (key->vk == TCODK_NONE) return;
-  if (key->c >= '1' && key->c <= '9') {
-    // change the noise function
-    func = key->c - '1';
-  } else if (key->c == 'E' || key->c == 'e') {
-    // increase hurst
-    hurst += 0.1f;
-    delete noise;
-    noise = new TCODNoise(2, hurst, lacunarity);
-  } else if (key->c == 'D' || key->c == 'd') {
-    // decrease hurst
-    hurst -= 0.1f;
-    delete noise;
-    noise = new TCODNoise(2, hurst, lacunarity);
-  } else if (key->c == 'R' || key->c == 'r') {
-    // increase lacunarity
-    lacunarity += 0.5f;
-    delete noise;
-    noise = new TCODNoise(2, hurst, lacunarity);
-  } else if (key->c == 'F' || key->c == 'f') {
-    // decrease lacunarity
-    lacunarity -= 0.5f;
-    delete noise;
-    noise = new TCODNoise(2, hurst, lacunarity);
-  } else if (key->c == 'T' || key->c == 't') {
-    // increase octaves
-    octaves += 0.5f;
-  } else if (key->c == 'G' || key->c == 'g') {
-    // decrease octaves
-    octaves -= 0.5f;
-  } else if (key->c == 'Y' || key->c == 'y') {
-    // increase zoom
-    zoom += 0.2f;
-  } else if (key->c == 'H' || key->c == 'h') {
-    // decrease zoom
-    zoom -= 0.2f;
-  }
-}
+  int func = PERLIN;
+  TCODNoise* noise = NULL;
+  float octaves = 4.0f;
+  float hurst = TCOD_NOISE_DEFAULT_HURST;
+  float lacunarity = TCOD_NOISE_DEFAULT_LACUNARITY;
+  float zoom = 3.0f;
+};
 
 // ***************************
 // fov sample
 // ***************************
-void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
-  // clang-format off
-  static const char* SAMPLE_MAP[] = {
-      "##############################################",
-      "#######################      #################",
-      "#####################    #     ###############",
-      "######################  ###        ###########",
-      "##################      #####             ####",
-      "################       ########    ###### ####",
-      "###############      #################### ####",
-      "################    ######                  ##",
-      "########   #######  ######   #     #     #  ##",
-      "########   ######      ###                  ##",
-      "########                                    ##",
-      "####       ######      ###   #     #     #  ##",
-      "#### ###   ########## ####                  ##",
-      "#### ###   ##########   ###########=##########",
-      "#### ##################   #####          #####",
-      "#### ###             #### #####          #####",
-      "####           #     ####                #####",
-      "########       #     #### #####          #####",
-      "########       #####      ####################",
-      "##############################################",
-  };
-  // clang-format on
-#define TORCH_RADIUS 10.0f
-#define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
-  static int px = 20, py = 10;      // player position
-  static bool recomputeFov = true;  // the player moved. must recompute fov
-  static bool torch = false;        // torch fx on ?
-  static TCODMap* map = NULL;
-  static TCODColor darkWall(0, 0, 100);
-  static TCODColor lightWall(130, 110, 50);
-  static TCODColor darkGround(50, 50, 150);
-  static TCODColor lightGround(200, 180, 50);
-  static TCODNoise* noise = NULL;
-  static bool light_walls = true;
-  static int algonum = 0;
-  static const std::vector<std::string> algo_names = {
-      "BASIC               ",
-      "DIAMOND             ",
-      "SHADOW              ",
-      "PERMISSIVE0         ",
-      "PERMISSIVE1         ",
-      "PERMISSIVE2         ",
-      "PERMISSIVE3         ",
-      "PERMISSIVE4         ",
-      "PERMISSIVE5         ",
-      "PERMISSIVE6         ",
-      "PERMISSIVE7         ",
-      "PERMISSIVE8         ",
-      "RESTRICTIVE         ",
-      "SYMMETRIC_SHADOWCAST",
-  };
-  static float torch_x = 0.0f;  // torch light position in the perlin noise
-  if (!map) {
-    // initialize the map for the fov toolkit
-    map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (SAMPLE_MAP[y][x] == ' ')
-          map->setProperties(x, y, true, true);  // ground
-        else if (SAMPLE_MAP[y][x] == '=')
-          map->setProperties(x, y, true, false);  // window
-      }
-    }
-    // 1d noise used for the torch flickering
-    noise = new TCODNoise(1);
-  }
-  if (first) {
+
+static const std::vector<std::string> algo_names{
+    "BASIC               ",
+    "DIAMOND             ",
+    "SHADOW              ",
+    "PERMISSIVE0         ",
+    "PERMISSIVE1         ",
+    "PERMISSIVE2         ",
+    "PERMISSIVE3         ",
+    "PERMISSIVE4         ",
+    "PERMISSIVE5         ",
+    "PERMISSIVE6         ",
+    "PERMISSIVE7         ",
+    "PERMISSIVE8         ",
+    "RESTRICTIVE         ",
+    "SYMMETRIC_SHADOWCAST",
+};
+
+class FOVSample : public Sample {
+ public:
+  void on_enter() override {
     // we draw the foreground only the first time.
     // during the player movement, only the @ is redrawn.
     // the rest impacts only the background color
@@ -524,277 +530,267 @@ void render_fov(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
       }
     }
   }
-  if (recomputeFov) {
-    // calculate the field of view from the player position
-    recomputeFov = false;
-    map->computeFov(px, py, torch ? (int)(TORCH_RADIUS) : 0, light_walls, (TCOD_fov_algorithm_t)algonum);
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    if (key->c == 'I' || key->c == 'i') {
+      // player move north
+      if (SAMPLE_MAP[py - 1][px] == ' ') {
+        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+        py--;
+        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+        recomputeFov = true;
+      }
+    } else if (key->c == 'K' || key->c == 'k') {
+      // player move south
+      if (SAMPLE_MAP[py + 1][px] == ' ') {
+        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+        py++;
+        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+        recomputeFov = true;
+      }
+    } else if (key->c == 'J' || key->c == 'j') {
+      // player move west
+      if (SAMPLE_MAP[py][px - 1] == ' ') {
+        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+        px--;
+        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+        recomputeFov = true;
+      }
+    } else if (key->c == 'L' || key->c == 'l') {
+      // player move east
+      if (SAMPLE_MAP[py][px + 1] == ' ') {
+        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+        px++;
+        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+        recomputeFov = true;
+      }
+    } else if (key->c == 'T' || key->c == 't') {
+      // enable/disable the torch fx
+      torch = !torch;
+      sampleConsole.setDefaultForeground(WHITE);
+      sampleConsole.printf(
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum].c_str());
+      sampleConsole.setDefaultForeground(BLACK);
+    } else if (key->c == 'W' || key->c == 'w') {
+      light_walls = !light_walls;
+      sampleConsole.setDefaultForeground(WHITE);
+      sampleConsole.printf(
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum].c_str());
+      sampleConsole.setDefaultForeground(BLACK);
+      recomputeFov = true;
+    } else if (key->c == '+' || key->c == '-') {
+      algonum += key->c == '+' ? 1 : -1;
+      algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
+      sampleConsole.setDefaultForeground(WHITE);
+      sampleConsole.printf(
+          1,
+          0,
+          "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
+          torch ? "on " : "off",
+          light_walls ? "on " : "off",
+          algo_names[algonum].c_str());
+      sampleConsole.setDefaultForeground(BLACK);
+      recomputeFov = true;
+    }
   }
-  // torch position & intensity variation
-  float dx = 0.0f, dy = 0.0f, di = 0.0f;
-  if (torch) {
-    // slightly change the perlin noise parameter
-    torch_x += 0.2f;
-    // randomize the light position between -1.5 and 1.5
-    float tdx = torch_x + 20.0f;
-    dx = noise->get(&tdx) * 1.5f;
-    tdx += 30.0f;
-    dy = noise->get(&tdx) * 1.5f;
-    // randomize the light intensity between -0.2 and 0.2
-    di = 0.2f * noise->get(&torch_x);
-  }
-  // draw the dungeon
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool visible = map->isInFov(x, y);
-      bool wall = SAMPLE_MAP[y][x] == '#';
-      if (!visible) {
-        sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
-      } else {
-        TCODColor light;
-        if (!torch) {
-          light = wall ? lightWall : lightGround;
-        } else {
-          // torch flickering fx
-          TCODColor base = (wall ? darkWall : darkGround);
-          light = (wall ? lightWall : lightGround);
-          // cell distance to torch (squared)
-          float r = (float)((x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy));
-          if (r < SQUARED_TORCH_RADIUS) {
-            // l = 1.0 at player position, 0.0 at a radius of 10 cells
-            float l = (SQUARED_TORCH_RADIUS - r) / SQUARED_TORCH_RADIUS + di;
-            l = CLAMP(0.0f, 1.0f, l);
-            // interpolate the color
-            base = TCODColor::lerp(base, light, l);
-          }
-          light = base;
+  void on_draw(TCOD_Console& console) override {
+    static constexpr auto TORCH_RADIUS = 10.0f;
+    static constexpr auto SQUARED_TORCH_RADIUS = (TORCH_RADIUS * TORCH_RADIUS);
+    static constexpr TCODColor darkWall(0, 0, 100);
+    static constexpr TCODColor lightWall(130, 110, 50);
+    static constexpr TCODColor darkGround(50, 50, 150);
+    static constexpr TCODColor lightGround(200, 180, 50);
+    if (!map) {
+      // initialize the map for the fov toolkit
+      map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+          if (SAMPLE_MAP[y][x] == ' ')
+            map->setProperties(x, y, true, true);  // ground
+          else if (SAMPLE_MAP[y][x] == '=')
+            map->setProperties(x, y, true, false);  // window
         }
-        sampleConsole.setCharBackground(x, y, light, TCOD_BKGND_SET);
+      }
+      // 1d noise used for the torch flickering
+      noise = new TCODNoise(1);
+    }
+    if (recomputeFov) {
+      // calculate the field of view from the player position
+      recomputeFov = false;
+      map->computeFov(px, py, torch ? (int)(TORCH_RADIUS) : 0, light_walls, (TCOD_fov_algorithm_t)algonum);
+    }
+    // torch position & intensity variation
+    float dx = 0.0f, dy = 0.0f, di = 0.0f;
+    if (torch) {
+      // slightly change the perlin noise parameter
+      torch_x += 0.2f;
+      // randomize the light position between -1.5 and 1.5
+      float tdx = torch_x + 20.0f;
+      dx = noise->get(&tdx) * 1.5f;
+      tdx += 30.0f;
+      dy = noise->get(&tdx) * 1.5f;
+      // randomize the light intensity between -0.2 and 0.2
+      di = 0.2f * noise->get(&torch_x);
+    }
+    // draw the dungeon
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+        bool visible = map->isInFov(x, y);
+        bool wall = SAMPLE_MAP[y][x] == '#';
+        if (!visible) {
+          sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
+        } else {
+          TCODColor light;
+          if (!torch) {
+            light = wall ? lightWall : lightGround;
+          } else {
+            // torch flickering fx
+            TCODColor base = (wall ? darkWall : darkGround);
+            light = (wall ? lightWall : lightGround);
+            // cell distance to torch (squared)
+            float r = (float)((x - px + dx) * (x - px + dx) + (y - py + dy) * (y - py + dy));
+            if (r < SQUARED_TORCH_RADIUS) {
+              // l = 1.0 at player position, 0.0 at a radius of 10 cells
+              float l = (SQUARED_TORCH_RADIUS - r) / SQUARED_TORCH_RADIUS + di;
+              l = CLAMP(0.0f, 1.0f, l);
+              // interpolate the color
+              base = TCODColor::lerp(base, light, l);
+            }
+            light = base;
+          }
+          sampleConsole.setCharBackground(x, y, light, TCOD_BKGND_SET);
+        }
       }
     }
   }
-  if (key->c == 'I' || key->c == 'i') {
-    // player move north
-    if (SAMPLE_MAP[py - 1][px] == ' ') {
-      sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-      py--;
-      sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
-      recomputeFov = true;
-    }
-  } else if (key->c == 'K' || key->c == 'k') {
-    // player move south
-    if (SAMPLE_MAP[py + 1][px] == ' ') {
-      sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-      py++;
-      sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
-      recomputeFov = true;
-    }
-  } else if (key->c == 'J' || key->c == 'j') {
-    // player move west
-    if (SAMPLE_MAP[py][px - 1] == ' ') {
-      sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-      px--;
-      sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
-      recomputeFov = true;
-    }
-  } else if (key->c == 'L' || key->c == 'l') {
-    // player move east
-    if (SAMPLE_MAP[py][px + 1] == ' ') {
-      sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-      px++;
-      sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
-      recomputeFov = true;
-    }
-  } else if (key->c == 'T' || key->c == 't') {
-    // enable/disable the torch fx
-    torch = !torch;
-    sampleConsole.setDefaultForeground(WHITE);
-    sampleConsole.printf(
-        1,
-        0,
-        "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-        torch ? "on " : "off",
-        light_walls ? "on " : "off",
-        algo_names[algonum].c_str());
-    sampleConsole.setDefaultForeground(BLACK);
-  } else if (key->c == 'W' || key->c == 'w') {
-    light_walls = !light_walls;
-    sampleConsole.setDefaultForeground(WHITE);
-    sampleConsole.printf(
-        1,
-        0,
-        "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-        torch ? "on " : "off",
-        light_walls ? "on " : "off",
-        algo_names[algonum].c_str());
-    sampleConsole.setDefaultForeground(BLACK);
-    recomputeFov = true;
-  } else if (key->c == '+' || key->c == '-') {
-    algonum += key->c == '+' ? 1 : -1;
-    algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
-    sampleConsole.setDefaultForeground(WHITE);
-    sampleConsole.printf(
-        1,
-        0,
-        "IJKL : move around\nT : torch fx %s\nW : light walls %s\n+-: algo %s",
-        torch ? "on " : "off",
-        light_walls ? "on " : "off",
-        algo_names[algonum].c_str());
-    sampleConsole.setDefaultForeground(BLACK);
-    recomputeFov = true;
-  }
-}
+
+ private:
+  int px = 20, py = 10;      // player position
+  bool recomputeFov = true;  // the player moved. must recompute fov
+  bool torch = false;        // torch fx on ?
+  TCODMap* map = NULL;
+  TCODNoise* noise = NULL;
+  bool light_walls = true;
+  int algonum = 0;
+  float torch_x = 0.0f;  // torch light position in the perlin noise
+};
 
 // ***************************
 // image sample
 // ***************************
-void render_image(bool, TCOD_key_t*, TCOD_mouse_t*) {
-  static TCODImage *img = NULL, *circle = NULL;
-  if (img == NULL) {
-    img = new TCODImage("data/img/skull.png");
-    img->setKeyColor(BLACK);
-    circle = new TCODImage("data/img/circle.png");
+class ImageSample : public Sample {
+ public:
+  void on_enter() override {}
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) {}
+  void on_draw(TCOD_Console& console) override {
+    static TCODImage *img = NULL, *circle = NULL;
+    if (img == NULL) {
+      img = new TCODImage("data/img/skull.png");
+      img->setKeyColor(BLACK);
+      circle = new TCODImage("data/img/circle.png");
+    }
+    sampleConsole.setDefaultBackground(BLACK);
+    sampleConsole.clear();
+    float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCODSystem::getElapsedSeconds()) * 10.0f;
+    float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
+    float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCODSystem::getElapsedSeconds() / 2)) / 2.0f;
+    float scale_y = scale_x;
+    float angle = TCODSystem::getElapsedSeconds();
+    long elapsed = TCODSystem::getElapsedMilli() / 2000;
+    if (elapsed & 1) {
+      // split the color channels of circle.png
+      // the red channel
+      sampleConsole.setDefaultBackground({255, 0, 0});
+      sampleConsole.rect(0, 3, 15, 15, false, TCOD_BKGND_SET);
+      circle->blitRect(&sampleConsole, 0, 3, -1, -1, TCOD_BKGND_MULTIPLY);
+      // the green channel
+      sampleConsole.setDefaultBackground({0, 255, 0});
+      sampleConsole.rect(15, 3, 15, 15, false, TCOD_BKGND_SET);
+      circle->blitRect(&sampleConsole, 15, 3, -1, -1, TCOD_BKGND_MULTIPLY);
+      // the blue channel
+      sampleConsole.setDefaultBackground({0, 0, 255});
+      sampleConsole.rect(30, 3, 15, 15, false, TCOD_BKGND_SET);
+      circle->blitRect(&sampleConsole, 30, 3, -1, -1, TCOD_BKGND_MULTIPLY);
+    } else {
+      // render circle.png with normal blitting
+      circle->blitRect(&sampleConsole, 0, 3, -1, -1, TCOD_BKGND_SET);
+      circle->blitRect(&sampleConsole, 15, 3, -1, -1, TCOD_BKGND_SET);
+      circle->blitRect(&sampleConsole, 30, 3, -1, -1, TCOD_BKGND_SET);
+    }
+    img->blit(&sampleConsole, x, y, TCOD_BKGND_SET, scale_x, scale_y, angle);
   }
-  sampleConsole.setDefaultBackground(BLACK);
-  sampleConsole.clear();
-  float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCODSystem::getElapsedSeconds()) * 10.0f;
-  float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-  float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCODSystem::getElapsedSeconds() / 2)) / 2.0f;
-  float scale_y = scale_x;
-  float angle = TCODSystem::getElapsedSeconds();
-  long elapsed = TCODSystem::getElapsedMilli() / 2000;
-  if (elapsed & 1) {
-    // split the color channels of circle.png
-    // the red channel
-    sampleConsole.setDefaultBackground({255, 0, 0});
-    sampleConsole.rect(0, 3, 15, 15, false, TCOD_BKGND_SET);
-    circle->blitRect(&sampleConsole, 0, 3, -1, -1, TCOD_BKGND_MULTIPLY);
-    // the green channel
-    sampleConsole.setDefaultBackground({0, 255, 0});
-    sampleConsole.rect(15, 3, 15, 15, false, TCOD_BKGND_SET);
-    circle->blitRect(&sampleConsole, 15, 3, -1, -1, TCOD_BKGND_MULTIPLY);
-    // the blue channel
-    sampleConsole.setDefaultBackground({0, 0, 255});
-    sampleConsole.rect(30, 3, 15, 15, false, TCOD_BKGND_SET);
-    circle->blitRect(&sampleConsole, 30, 3, -1, -1, TCOD_BKGND_MULTIPLY);
-  } else {
-    // render circle.png with normal blitting
-    circle->blitRect(&sampleConsole, 0, 3, -1, -1, TCOD_BKGND_SET);
-    circle->blitRect(&sampleConsole, 15, 3, -1, -1, TCOD_BKGND_SET);
-    circle->blitRect(&sampleConsole, 30, 3, -1, -1, TCOD_BKGND_SET);
-  }
-  img->blit(&sampleConsole, x, y, TCOD_BKGND_SET, scale_x, scale_y, angle);
-}
+};
 
 // ***************************
 // mouse sample
 // ***************************/
-void render_mouse(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  static bool left_button = false, right_button = false, middle_button = false;
-
-  if (first) {
+class MouseSample : public Sample {
+ public:
+  void on_enter() override {
     sampleConsole.setDefaultBackground(GREY);
     sampleConsole.setDefaultForeground(LIGHT_YELLOW);
     SDL_WarpMouseInWindow(NULL, 320, 200);
     SDL_ShowCursor(1);
   }
-
-  sampleConsole.clear();
-  if (mouse->lbutton_pressed) left_button = !left_button;
-  if (mouse->rbutton_pressed) right_button = !right_button;
-  if (mouse->mbutton_pressed) middle_button = !middle_button;
-  sampleConsole.printf(
-      1,
-      1,
-      "%s\n"
-      "Mouse position : %4dx%4d %s\n"
-      "Mouse cell     : %4dx%4d\n"
-      "Mouse movement : %4dx%4d\n"
-      "Left button    : %s (toggle %s)\n"
-      "Right button   : %s (toggle %s)\n"
-      "Middle button  : %s (toggle %s)\n"
-      "Wheel          : %s\n",
-      TCODConsole::isActive() ? "" : "APPLICATION INACTIVE",
-      mouse->x,
-      mouse->y,
-      TCODConsole::hasMouseFocus() ? "" : "OUT OF FOCUS",
-      mouse->cx,
-      mouse->cy,
-      mouse->dx,
-      mouse->dy,
-      mouse->lbutton ? " ON" : "OFF",
-      left_button ? " ON" : "OFF",
-      mouse->rbutton ? " ON" : "OFF",
-      right_button ? " ON" : "OFF",
-      mouse->mbutton ? " ON" : "OFF",
-      middle_button ? " ON" : "OFF",
-      mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
-  sampleConsole.printf(1, 10, "1 : Hide cursor\n2 : Show cursor");
-  if (key->c == '1') {
-    SDL_ShowCursor(0);
-  } else if (key->c == '2') {
-    SDL_ShowCursor(1);
+  void on_event(TCOD_key_t* key, TCOD_mouse_t* mouse) override {
+    sampleConsole.clear();
+    if (mouse->lbutton_pressed) left_button = !left_button;
+    if (mouse->rbutton_pressed) right_button = !right_button;
+    if (mouse->mbutton_pressed) middle_button = !middle_button;
+    sampleConsole.printf(
+        1,
+        1,
+        "%s\n"
+        "Mouse position : %4dx%4d %s\n"
+        "Mouse cell     : %4dx%4d\n"
+        "Mouse movement : %4dx%4d\n"
+        "Left button    : %s (toggle %s)\n"
+        "Right button   : %s (toggle %s)\n"
+        "Middle button  : %s (toggle %s)\n"
+        "Wheel          : %s\n",
+        TCODConsole::isActive() ? "" : "APPLICATION INACTIVE",
+        mouse->x,
+        mouse->y,
+        TCODConsole::hasMouseFocus() ? "" : "OUT OF FOCUS",
+        mouse->cx,
+        mouse->cy,
+        mouse->dx,
+        mouse->dy,
+        mouse->lbutton ? " ON" : "OFF",
+        left_button ? " ON" : "OFF",
+        mouse->rbutton ? " ON" : "OFF",
+        right_button ? " ON" : "OFF",
+        mouse->mbutton ? " ON" : "OFF",
+        middle_button ? " ON" : "OFF",
+        mouse->wheel_up ? "UP" : (mouse->wheel_down ? "DOWN" : ""));
+    sampleConsole.printf(1, 10, "1 : Hide cursor\n2 : Show cursor");
+    if (key->c == '1') {
+      SDL_ShowCursor(0);
+    } else if (key->c == '2') {
+      SDL_ShowCursor(1);
+    }
   }
-}
+  void on_draw(TCOD_Console& console) override {}
+
+ private:
+  bool left_button = false, right_button = false, middle_button = false;
+};
 
 // ***************************
 // path sample
 // ***************************
-void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
-  // clang-format off
-  static const char* SAMPLE_MAP[] = {
-      "##############################################",
-      "#######################      #################",
-      "#####################    #     ###############",
-      "######################  ###        ###########",
-      "##################      #####             ####",
-      "################       ########    ###### ####",
-      "###############      #################### ####",
-      "################    ######                  ##",
-      "########   #######  ######   #     #     #  ##",
-      "########   ######      ###                  ##",
-      "########                                    ##",
-      "####       ######      ###   #     #     #  ##",
-      "#### ###   ########## ####                  ##",
-      "#### ###   ##########   ###########=##########",
-      "#### ##################   #####          #####",
-      "#### ###             #### #####          #####",
-      "####           #     ####                #####",
-      "########       #     #### #####          #####",
-      "########       #####      ####################",
-      "##############################################",
-  };
-  // clang-format on
-#define TORCH_RADIUS 10.0f
-#define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
-  static int px = 20, py = 10;  // player position
-  static int dx = 24, dy = 1;   // destination
-  static TCODMap* map = NULL;
-  static TCODColor darkWall(0, 0, 100);
-  static TCODColor darkGround(50, 50, 150);
-  static TCODColor lightGround(200, 180, 50);
-  static TCODPath* path = NULL;
-  static bool usingAstar = true;
-  static float dijkstraDist = 0;
-  static TCODDijkstra* dijkstra = NULL;
-  static bool recalculatePath = false;
-  static float busy;
-  static int oldChar = ' ';
-  int mx, my;
-  if (!map) {
-    // initialize the map for the fov toolkit
-    map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        if (SAMPLE_MAP[y][x] == ' ')
-          map->setProperties(x, y, true, true);  // ground
-        else if (SAMPLE_MAP[y][x] == '=')
-          map->setProperties(x, y, true, false);  // window
-      }
-    }
-    path = new TCODPath(map);
-    dijkstra = new TCODDijkstra(map);
-  }
-  if (first) {
+class PathfinderSample : public Sample {
+ public:
+  void on_enter() override {
     // we draw the foreground only the first time.
     // during the player movement, only the @ is redrawn.
     // the rest impacts only the background color
@@ -815,133 +811,166 @@ void render_path(bool first, TCOD_key_t* key, TCOD_mouse_t* mouse) {
     }
     recalculatePath = true;
   }
-  if (recalculatePath) {
-    if (usingAstar) {
-      path->compute(px, py, dx, dy);
-    } else {
-      dijkstraDist = 0.0f;
-      // compute the distance grid
-      dijkstra->compute(px, py);
-      // get the maximum distance (needed for ground shading only)
-      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-          float d = dijkstra->getDistance(x, y);
-          if (d > dijkstraDist) dijkstraDist = d;
-        }
+  void on_event(TCOD_key_t* key, TCOD_mouse_t* mouse) override {
+    if ((key->c == 'I' || key->c == 'i') && dy > 0) {
+      // destination move north
+      sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
+      dy--;
+      oldChar = sampleConsole.getChar(dx, dy);
+      sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
+      if (SAMPLE_MAP[dy][dx] == ' ') {
+        recalculatePath = true;
       }
-      // compute the path
-      dijkstra->setPath(dx, dy);
-    }
-    recalculatePath = false;
-    busy = 0.2f;
-  }
-  // draw the dungeon
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = SAMPLE_MAP[y][x] == '#';
-      sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
-    }
-  }
-  // draw the path
-  if (usingAstar) {
-    for (int i = 0; i < path->size(); i++) {
-      int x, y;
-      path->get(i, &x, &y);
-      sampleConsole.setCharBackground(x, y, lightGround, TCOD_BKGND_SET);
-    }
-  } else {
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-        bool wall = SAMPLE_MAP[y][x] == '#';
-        if (!wall) {
-          float d = dijkstra->getDistance(x, y);
-          sampleConsole.setCharBackground(
-              x, y, TCODColor::lerp(lightGround, darkGround, 0.9f * d / dijkstraDist), TCOD_BKGND_SET);
-        }
+    } else if ((key->c == 'K' || key->c == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
+      // destination move south
+      sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
+      dy++;
+      oldChar = sampleConsole.getChar(dx, dy);
+      sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
+      if (SAMPLE_MAP[dy][dx] == ' ') {
+        recalculatePath = true;
       }
-    }
-    for (int i = 0; i < dijkstra->size(); i++) {
-      int x, y;
-      dijkstra->get(i, &x, &y);
-      sampleConsole.setCharBackground(x, y, lightGround, TCOD_BKGND_SET);
-    }
-  }
-  // move the creature
-  busy -= TCODSystem::getLastFrameLength();
-  if (busy <= 0.0f) {
-    busy = 0.2f;
-    if (usingAstar) {
-      if (!path->isEmpty()) {
-        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-        path->walk(&px, &py, true);
-        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+    } else if ((key->c == 'J' || key->c == 'j') && dx > 0) {
+      // destination move west
+      sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
+      dx--;
+      oldChar = sampleConsole.getChar(dx, dy);
+      sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
+      if (SAMPLE_MAP[dy][dx] == ' ') {
+        recalculatePath = true;
       }
-    } else {
-      if (!dijkstra->isEmpty()) {
-        sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
-        dijkstra->walk(&px, &py);
-        sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+    } else if ((key->c == 'L' || key->c == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
+      // destination move east
+      sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
+      dx++;
+      oldChar = sampleConsole.getChar(dx, dy);
+      sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
+      if (SAMPLE_MAP[dy][dx] == ' ') {
+        recalculatePath = true;
+      }
+    } else if (key->vk == TCODK_TAB) {
+      usingAstar = !usingAstar;
+      if (usingAstar)
+        sampleConsole.print(1, 4, std::string("Using : A*      "));
+      else
+        sampleConsole.print(1, 4, std::string("Using : Dijkstra"));
+      recalculatePath = true;
+    }
+    int mx = mouse->cx - SAMPLE_SCREEN_X;
+    int my = mouse->cy - SAMPLE_SCREEN_Y;
+    if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
+      sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
+      dx = mx;
+      dy = my;
+      oldChar = sampleConsole.getChar(dx, dy);
+      sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
+      if (SAMPLE_MAP[dy][dx] == ' ') {
         recalculatePath = true;
       }
     }
   }
-  if ((key->c == 'I' || key->c == 'i') && dy > 0) {
-    // destination move north
-    sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
-    dy--;
-    oldChar = sampleConsole.getChar(dx, dy);
-    sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
+  void on_draw(TCOD_Console& console) override {
+    static constexpr TCODColor darkWall(0, 0, 100);
+    static constexpr TCODColor darkGround(50, 50, 150);
+    static constexpr TCODColor lightGround(200, 180, 50);
+    if (!map) {
+      // initialize the map for the fov toolkit
+      map = new TCODMap(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+          if (SAMPLE_MAP[y][x] == ' ')
+            map->setProperties(x, y, true, true);  // ground
+          else if (SAMPLE_MAP[y][x] == '=')
+            map->setProperties(x, y, true, false);  // window
+        }
+      }
+      path = new TCODPath(map);
+      dijkstra = new TCODDijkstra(map);
     }
-  } else if ((key->c == 'K' || key->c == 'k') && dy < SAMPLE_SCREEN_HEIGHT - 1) {
-    // destination move south
-    sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
-    dy++;
-    oldChar = sampleConsole.getChar(dx, dy);
-    sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
+    if (recalculatePath) {
+      if (usingAstar) {
+        path->compute(px, py, dx, dy);
+      } else {
+        dijkstraDist = 0.0f;
+        // compute the distance grid
+        dijkstra->compute(px, py);
+        // get the maximum distance (needed for ground shading only)
+        for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+          for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+            float d = dijkstra->getDistance(x, y);
+            if (d > dijkstraDist) dijkstraDist = d;
+          }
+        }
+        // compute the path
+        dijkstra->setPath(dx, dy);
+      }
+      recalculatePath = false;
+      busy = 0.2f;
     }
-  } else if ((key->c == 'J' || key->c == 'j') && dx > 0) {
-    // destination move west
-    sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
-    dx--;
-    oldChar = sampleConsole.getChar(dx, dy);
-    sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
+    // draw the dungeon
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+        bool wall = SAMPLE_MAP[y][x] == '#';
+        sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
+      }
     }
-  } else if ((key->c == 'L' || key->c == 'l') && dx < SAMPLE_SCREEN_WIDTH - 1) {
-    // destination move east
-    sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
-    dx++;
-    oldChar = sampleConsole.getChar(dx, dy);
-    sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
+    // draw the path
+    if (usingAstar) {
+      for (int i = 0; i < path->size(); i++) {
+        int x, y;
+        path->get(i, &x, &y);
+        sampleConsole.setCharBackground(x, y, lightGround, TCOD_BKGND_SET);
+      }
+    } else {
+      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+          bool wall = SAMPLE_MAP[y][x] == '#';
+          if (!wall) {
+            float d = dijkstra->getDistance(x, y);
+            sampleConsole.setCharBackground(
+                x, y, TCODColor::lerp(lightGround, darkGround, 0.9f * d / dijkstraDist), TCOD_BKGND_SET);
+          }
+        }
+      }
+      for (int i = 0; i < dijkstra->size(); i++) {
+        int x, y;
+        dijkstra->get(i, &x, &y);
+        sampleConsole.setCharBackground(x, y, lightGround, TCOD_BKGND_SET);
+      }
     }
-  } else if (key->vk == TCODK_TAB) {
-    usingAstar = !usingAstar;
-    if (usingAstar)
-      sampleConsole.print(1, 4, std::string("Using : A*      "));
-    else
-      sampleConsole.print(1, 4, std::string("Using : Dijkstra"));
-    recalculatePath = true;
+    // move the creature
+    busy -= TCODSystem::getLastFrameLength();
+    if (busy <= 0.0f) {
+      busy = 0.2f;
+      if (usingAstar) {
+        if (!path->isEmpty()) {
+          sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+          path->walk(&px, &py, true);
+          sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+        }
+      } else {
+        if (!dijkstra->isEmpty()) {
+          sampleConsole.putChar(px, py, ' ', TCOD_BKGND_NONE);
+          dijkstra->walk(&px, &py);
+          sampleConsole.putChar(px, py, '@', TCOD_BKGND_NONE);
+          recalculatePath = true;
+        }
+      }
+    }
   }
-  mx = mouse->cx - SAMPLE_SCREEN_X;
-  my = mouse->cy - SAMPLE_SCREEN_Y;
-  if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
-    sampleConsole.putChar(dx, dy, oldChar, TCOD_BKGND_NONE);
-    dx = mx;
-    dy = my;
-    oldChar = sampleConsole.getChar(dx, dy);
-    sampleConsole.putChar(dx, dy, '+', TCOD_BKGND_NONE);
-    if (SAMPLE_MAP[dy][dx] == ' ') {
-      recalculatePath = true;
-    }
-  }
-}
+
+ private:
+  int px = 20, py = 10;  // player position
+  int dx = 24, dy = 1;   // destination
+  TCODMap* map = NULL;
+  TCODPath* path = NULL;
+  bool usingAstar = true;
+  float dijkstraDist = 0;
+  TCODDijkstra* dijkstra = NULL;
+  bool recalculatePath = false;
+  float busy;
+  int oldChar = ' ';
+};
 
 // ***************************
 // bsp sample
@@ -1097,87 +1126,94 @@ class BspListener : public ITCODBspCallback {
     return true;
   }
 };
-void render_bsp(bool, TCOD_key_t* key, TCOD_mouse_t*) {
-  static TCODBsp* bsp = NULL;
-  static bool generate = true;
-  static bool refresh = false;
-  static map_t map;
-  static const TCODColor darkWall(0, 0, 100);
-  static const TCODColor darkGround(50, 50, 150);
-  static BspListener listener;
-  if (generate || refresh) {
-    // dungeon generation
-    if (!bsp) {
-      // create the bsp
-      bsp = new TCODBsp(0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    } else {
-      // restore the nodes size
-      bsp->resize(0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
-    }
-    memset(map, '#', sizeof(char) * SAMPLE_SCREEN_WIDTH * SAMPLE_SCREEN_HEIGHT);
-    if (generate) {
-      // build a new random bsp tree
-      bsp->removeSons();
-      bsp->splitRecursive(
-          NULL, bspDepth, minRoomSize + (roomWalls ? 1 : 0), minRoomSize + (roomWalls ? 1 : 0), 1.5f, 1.5f);
-    }
-    // create the dungeon from the bsp
-    bsp->traverseInvertedLevelOrder(&listener, &map);
-    generate = false;
-    refresh = false;
-  }
-  sampleConsole.clear();
-  sampleConsole.setDefaultForeground(WHITE);
-  sampleConsole.printf(
-      1,
-      1,
-      "ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
-      bspDepth,
-      minRoomSize,
-      randomRoom ? "ON" : "OFF");
-  if (randomRoom) sampleConsole.printf(1, 6, "2 : room walls %s", roomWalls ? "ON" : "OFF");
-  // render the level
-  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
-      bool wall = (map[x][y] == '#');
-      sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
+
+class BSPSample : public Sample {
+ public:
+  void on_enter() override {}
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
+      generate = true;
+    } else if (key->c == ' ') {
+      refresh = true;
+    } else if (key->c == '+') {
+      bspDepth++;
+      generate = true;
+    } else if (key->c == '-' && bspDepth > 1) {
+      bspDepth--;
+      generate = true;
+    } else if (key->c == '*') {
+      minRoomSize++;
+      generate = true;
+    } else if (key->c == '/' && minRoomSize > 2) {
+      minRoomSize--;
+      generate = true;
+    } else if (key->c == '1' || key->vk == TCODK_1 || key->vk == TCODK_KP1) {
+      randomRoom = !randomRoom;
+      if (!randomRoom) roomWalls = true;
+      refresh = true;
+    } else if (key->c == '2' || key->vk == TCODK_2 || key->vk == TCODK_KP2) {
+      roomWalls = !roomWalls;
+      refresh = true;
     }
   }
-  if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
-    generate = true;
-  } else if (key->c == ' ') {
-    refresh = true;
-  } else if (key->c == '+') {
-    bspDepth++;
-    generate = true;
-  } else if (key->c == '-' && bspDepth > 1) {
-    bspDepth--;
-    generate = true;
-  } else if (key->c == '*') {
-    minRoomSize++;
-    generate = true;
-  } else if (key->c == '/' && minRoomSize > 2) {
-    minRoomSize--;
-    generate = true;
-  } else if (key->c == '1' || key->vk == TCODK_1 || key->vk == TCODK_KP1) {
-    randomRoom = !randomRoom;
-    if (!randomRoom) roomWalls = true;
-    refresh = true;
-  } else if (key->c == '2' || key->vk == TCODK_2 || key->vk == TCODK_KP2) {
-    roomWalls = !roomWalls;
-    refresh = true;
+  void on_draw(TCOD_Console& console) override {
+    static constexpr TCODColor darkWall(0, 0, 100);
+    static constexpr TCODColor darkGround(50, 50, 150);
+    if (generate || refresh) {
+      // dungeon generation
+      if (!bsp) {
+        // create the bsp
+        bsp = new TCODBsp(0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+      } else {
+        // restore the nodes size
+        bsp->resize(0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+      }
+      memset(map, '#', sizeof(char) * SAMPLE_SCREEN_WIDTH * SAMPLE_SCREEN_HEIGHT);
+      if (generate) {
+        // build a new random bsp tree
+        bsp->removeSons();
+        bsp->splitRecursive(
+            NULL, bspDepth, minRoomSize + (roomWalls ? 1 : 0), minRoomSize + (roomWalls ? 1 : 0), 1.5f, 1.5f);
+      }
+      // create the dungeon from the bsp
+      bsp->traverseInvertedLevelOrder(&listener, &map);
+      generate = false;
+      refresh = false;
+    }
+    sampleConsole.clear();
+    sampleConsole.setDefaultForeground(WHITE);
+    sampleConsole.printf(
+        1,
+        1,
+        "ENTER : rebuild bsp\nSPACE : rebuild dungeon\n+-: bsp depth %d\n*/: room size %d\n1 : random room size %s",
+        bspDepth,
+        minRoomSize,
+        randomRoom ? "ON" : "OFF");
+    if (randomRoom) sampleConsole.printf(1, 6, "2 : room walls %s", roomWalls ? "ON" : "OFF");
+    // render the level
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
+        bool wall = (map[x][y] == '#');
+        sampleConsole.setCharBackground(x, y, wall ? darkWall : darkGround, TCOD_BKGND_SET);
+      }
+    }
   }
-}
+
+ private:
+  TCODBsp* bsp = NULL;
+  bool generate = true;
+  bool refresh = false;
+  map_t map;
+  BspListener listener;
+};
 
 /* ***************************
  * name generator sample
  * ***************************/
-void render_name(bool, TCOD_key_t* key, TCOD_mouse_t*) {
-  static int curSet = 0;
-  static float delay = 0.0f;
-  static std::vector<std::string> names;
-  static std::vector<std::string> sets;
-  if (sets.size() == 0) {
+
+class NameGeneratorSample : public Sample {
+ public:
+  NameGeneratorSample() {
     TCODList<char*> files{TCODSystem::getDirectoryContent("data/namegen", "*.cfg")};
     // parse all the files
     for (char* it : files) {
@@ -1187,36 +1223,47 @@ void render_name(bool, TCOD_key_t* key, TCOD_mouse_t*) {
     TCODList<char*> sets_list{TCODNamegen::getSets()};
     sets = {sets_list.begin(), sets_list.end()};
   }
-  while (names.size() >= 15) {
-    names.erase(names.begin());  // remove the first element.
+  void on_enter() override {}
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    if (key->c == '=') {
+      curSet++;
+      if (curSet == sets.size()) curSet = 0;
+      names.emplace_back("======");
+    } else if (key->c == '-') {
+      curSet--;
+      if (curSet < 0) curSet = static_cast<int>(sets.size()) - 1;
+      names.emplace_back("======");
+    }
+  }
+  void on_draw(TCOD_Console& console) override {
+    while (names.size() >= 15) {
+      names.erase(names.begin());  // remove the first element.
+    }
+
+    sampleConsole.setDefaultBackground(LIGHT_BLUE);
+    sampleConsole.clear();
+    sampleConsole.setDefaultForeground(WHITE);
+    sampleConsole.printf(1, 1, "%s\n\n+ : next generator\n- : prev generator", sets.at(curSet).c_str());
+    for (int i = 0; i < names.size(); ++i) {
+      const std::string& name = names.at(i);
+      if (name.length() < SAMPLE_SCREEN_WIDTH)
+        sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name.c_str());
+    }
+
+    delay += TCODSystem::getLastFrameLength();
+    if (delay >= 0.5f) {
+      delay -= 0.5f;
+      // add a new name to the list
+      names.emplace_back(TCODNamegen::generate(sets.at(curSet).c_str(), true));
+    }
   }
 
-  sampleConsole.setDefaultBackground(LIGHT_BLUE);
-  sampleConsole.clear();
-  sampleConsole.setDefaultForeground(WHITE);
-  sampleConsole.printf(1, 1, "%s\n\n+ : next generator\n- : prev generator", sets.at(curSet).c_str());
-  for (int i = 0; i < names.size(); ++i) {
-    const std::string& name = names.at(i);
-    if (name.length() < SAMPLE_SCREEN_WIDTH)
-      sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name.c_str());
-  }
-
-  delay += TCODSystem::getLastFrameLength();
-  if (delay >= 0.5f) {
-    delay -= 0.5f;
-    // add a new name to the list
-    names.emplace_back(TCODNamegen::generate(sets.at(curSet).c_str(), true));
-  }
-  if (key->c == '=') {
-    curSet++;
-    if (curSet == sets.size()) curSet = 0;
-    names.emplace_back("======");
-  } else if (key->c == '-') {
-    curSet--;
-    if (curSet < 0) curSet = static_cast<int>(sets.size()) - 1;
-    names.emplace_back("======");
-  }
-}
+ private:
+  int curSet = 0;
+  float delay = 0.0f;
+  std::vector<std::string> names;
+  std::vector<std::string> sets;
+};
 
 /* ***************************
  * SDL callback sample
@@ -1432,8 +1479,9 @@ class SampleRenderer : public ITCODSDLRenderer {
   }
 };
 
-void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
-  if (first) {
+class SDLSample : public Sample {
+ public:
+  void on_enter() override {
     // use noise sample as background. rendering is done in SampleRenderer
     sampleConsole.setDefaultBackground(LIGHT_BLUE);
     sampleConsole.setDefaultForeground(WHITE);
@@ -1450,33 +1498,35 @@ void render_sdl(bool first, TCOD_key_t* key, TCOD_mouse_t*) {
         "callback. While enabled, it will be active on other samples too.\n\nNote that the SDL callback only works "
         "with SDL renderer.");
   }
-  if (key->vk == TCODK_TAB) {
-    sdl_callback_enabled = !sdl_callback_enabled;
-    if (sdl_callback_enabled) {
-      TCODSystem::registerSDLRenderer(new SampleRenderer());
-    } else {
-      TCODSystem::registerSDLRenderer(NULL);
+  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
+    if (key->vk == TCODK_TAB) {
+      sdl_callback_enabled = !sdl_callback_enabled;
+      if (sdl_callback_enabled) {
+        TCODSystem::registerSDLRenderer(new SampleRenderer());
+      } else {
+        TCODSystem::registerSDLRenderer(NULL);
+      }
     }
   }
-}
-
+  void on_draw(TCOD_Console& console) override {}
+};
 #endif
 // ***************************
 // the list of samples
 // ***************************
-const std::vector<sample_t> samples = {
-    {"  True colors        ", render_colors},
-    {"  Offscreen console  ", render_offscreen},
-    {"  Line drawing       ", render_lines},
-    {"  Noise              ", render_noise},
-    {"  Field of view      ", render_fov},
-    {"  Path finding       ", render_path},
-    {"  Bsp toolkit        ", render_bsp},
-    {"  Image toolkit      ", render_image},
-    {"  Mouse support      ", render_mouse},
-    {"  Name generator     ", render_name},
+static const std::vector<sample_t> samples = {
+    {"  True colors        ", std::make_unique<TrueColors>()},
+    {"  Offscreen console  ", std::make_unique<OffscreenConsole>()},
+    {"  Line drawing       ", std::make_unique<LineDrawingSample>()},
+    {"  Noise              ", std::make_unique<NoiseSample>()},
+    {"  Field of view      ", std::make_unique<FOVSample>()},
+    {"  Path finding       ", std::make_unique<PathfinderSample>()},
+    {"  Bsp toolkit        ", std::make_unique<BSPSample>()},
+    {"  Image toolkit      ", std::make_unique<ImageSample>()},
+    {"  Mouse support      ", std::make_unique<MouseSample>()},
+    {"  Name generator     ", std::make_unique<NameGeneratorSample>()},
 #ifndef NO_SDL_SAMPLE
-    {"  SDL callback       ", render_sdl},
+    {"  SDL callback       ", std::make_unique<SDLSample>()},
 #endif
 };
 
@@ -1575,7 +1625,7 @@ int main(int argc, char* argv[]) {
       }
       // print the sample name
       TCODConsole::root->print(
-          2, 46 - (static_cast<int>(samples.size()) - i), samples[i].name, TCOD_LEFT, TCOD_BKGND_SET);
+          2, 46 - (static_cast<int>(samples.size()) - i), samples.at(i).name, TCOD_LEFT, TCOD_BKGND_SET);
     }
     // print the help message
     TCODConsole::root->setDefaultForeground(GREY);
@@ -1600,7 +1650,9 @@ int main(int argc, char* argv[]) {
         2, 48, "ALT-ENTER : switch to %s", TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode");
 
     // render current sample
-    samples[curSample].render(first, &key, &mouse);
+    if (first) samples.at(curSample).sample->on_enter();
+    samples.at(curSample).sample->on_event(&key, &mouse);
+    samples.at(curSample).sample->on_draw(*sampleConsole.get_data());
     first = false;
 
     // blit the sample console on the root console

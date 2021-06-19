@@ -45,3 +45,11 @@ indent_size = 4
 
 [*.props]
 insert_final_newline = false
+
+[*.json]
+indent_style = space
+indent_size = 4
+insert_final_newline = false
+
+[vcpkg.json]
+indent_size = 2

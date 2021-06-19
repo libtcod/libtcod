@@ -104,7 +104,6 @@ def update_vcpkg_manifest(args: argparse.Namespace) -> None:
     if not args.dry_run:
         with open("vcpkg.json", "w") as f:
             json.dump(vcpkg_manifest, f, indent=2)
-            f.write("\n")
 
 
 def main() -> None:

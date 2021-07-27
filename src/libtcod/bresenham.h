@@ -105,7 +105,7 @@ class BresenhamLine {
   using value_type = Point2;
   using difference_type = int;
   using pointer = void;
-  using reference = void;
+  using reference = value_type;
   /**
       Construct a new Bresenham line from `begin` to `end`.
 

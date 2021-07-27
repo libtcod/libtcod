@@ -73,7 +73,7 @@ TEST_CASE("BresenhamLine") {
     const auto EXPECTED_CLIPPED =
         Point2_Vector{EXPECTED.begin() + 1, std::max(EXPECTED.begin() + 1, EXPECTED.end() - 1)};
     const auto bresenham_iterator = tcod::BresenhamLine({0, 0}, {dest_x, dest_y}).adjust_range(1, -1);
-    const Point2_Vector line = {bresenham_iterator.begin(), bresenham_iterator.end()};
+    const Point2_Vector line{bresenham_iterator.begin(), bresenham_iterator.end()};
     REQUIRE(line == EXPECTED_CLIPPED);
   }
 }

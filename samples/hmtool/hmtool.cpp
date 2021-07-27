@@ -138,7 +138,7 @@ void render() {
   msgDelay -= TCODSystem::getLastFrameLength();
   if (msg[0] != 0 && msgDelay > 0.0f) {
     int h = TCODConsole::root->printRectEx(
-        HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, msg);
+        HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, "%s", msg);
     TCODConsole::root->setDefaultBackground(TCODColor::lightBlue);
     if (h > 0) TCODConsole::root->rect(HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, h + 2, false, TCOD_BKGND_SET);
     TCODConsole::root->setDefaultBackground(TCODColor::black);

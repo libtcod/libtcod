@@ -49,7 +49,6 @@
 	* put data in the buffer, then save it to a file,
 	* load a file into the buffer, then get data from it.
  */
-TCOD_DEPRECATED("This method of serialization is not cross-platform.  It's recommended to find a standard alternative.")
 class TCODLIB_API TCODZip {
 public :
 
@@ -61,6 +60,7 @@ public :
 	@Cpp TCODZip::TCODZip()
 	@C TCOD_zip_t TCOD_zip_new()
 	*/
+  [[deprecated("This method of serialization is not cross-platform.  An alternative should be used instead.")]]
 	TCODZip();
 
 	/**

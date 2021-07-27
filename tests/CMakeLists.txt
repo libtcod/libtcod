@@ -5,7 +5,7 @@ set(_IMPORT_CHECK_TARGETS "")  # Suppress undefined variable in Catch2Targets.cm
 find_package(Catch2 CONFIG REQUIRED)
 
 if (APPLE)
-    set(CMAKE_INSTALL_RPATH "@executable_path")
+    set(CMAKE_INSTALL_RPATH "@executable_path;@executable_path/../lib")
 else()
     set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()

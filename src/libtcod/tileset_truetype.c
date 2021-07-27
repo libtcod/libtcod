@@ -39,39 +39,10 @@
 #include "error.h"
 #include "globals.h"
 
-
 // You can look here for a reference on glyph metrics:
 // https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
-/**
- *  Return an entire file as a single data buffer.
- *
- *  The returned buffer is allocated and must be freed manually.
- */
-TCOD_NODISCARD
-static unsigned char* alloc_read_whole_file(const char* path, int* size) {
-  if (!path) {
-    TCOD_set_errorv("Given path was NULL.");
-    return NULL;
-  }
-  FILE* file = fopen(path, "rb");
-  if (!file) {
-    TCOD_set_errorvf("Could not open file:\n%s", path);
-    return NULL;
-  }
-  fseek(file, 0, SEEK_END);
-  long int fsize = ftell(file);
-  fseek(file, 0, SEEK_SET);
-  unsigned char* buffer = malloc(fsize);
-  if (!buffer) {
-    TCOD_set_errorvf("Could not allocate %i bytes for file.", (int)fsize);
-  }
-  fread(buffer, 1, fsize, file);
-  fclose(file);
-  if (size) {
-    *size = (int)fsize;
-  }
-  return buffer;
-}
+TCOD_NODISCARD unsigned char* TCOD_load_binary_file_(const char* path, size_t* size);
+
 struct BBox {
   int xMin;
   int yMin;
@@ -198,7 +169,7 @@ static struct TCOD_Tileset* tileset_from_ttf(const stbtt_fontinfo* font_info, in
 }
 
 TCOD_Tileset* TCOD_load_truetype_font_(const char* path, int tile_width, int tile_height) {
-  unsigned char* font_data = alloc_read_whole_file(path, NULL);
+  unsigned char* font_data = TCOD_load_binary_file_(path, NULL);
   if (!font_data) {
     return NULL;
   }

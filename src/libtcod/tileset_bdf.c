@@ -39,39 +39,12 @@
 #include <string.h>
 
 #include "error.h"
-/**
-    Load a file into memory.  Returns NULL on failure.
 
-    The returned buffer must be freed by the caller.
- */
-TCOD_NODISCARD
-static unsigned char* load_binary_file(const char* path, long int* size) {
-  if (!path) {
-    TCOD_set_errorv("Given path was NULL.");
-    return NULL;
-  }
-  FILE* file = fopen(path, "rb");
-  if (!file) {
-    TCOD_set_errorvf("Could not open file:\n%s", path);
-    return NULL;
-  }
-  fseek(file, 0, SEEK_END);
-  long int fsize = ftell(file);
-  fseek(file, 0, SEEK_SET);
-  unsigned char* buffer = malloc(fsize);
-  if (!buffer) {
-    TCOD_set_errorvf("Could not allocate %ld bytes for file.", fsize);
-  }
-  fread(buffer, 1, fsize, file);
-  fclose(file);
-  if (size) {
-    *size = fsize;
-  }
-  return buffer;
-}
+TCOD_NODISCARD unsigned char* TCOD_load_binary_file_(const char* path, size_t* size);
+
 TCOD_Tileset* TCOD_load_bdf(const char* path) {
-  long int fsize;
-  unsigned char* buffer = load_binary_file(path, &fsize);
+  size_t fsize;
+  unsigned char* buffer = TCOD_load_binary_file_(path, &fsize);
   if (!buffer) {
     return NULL;
   }

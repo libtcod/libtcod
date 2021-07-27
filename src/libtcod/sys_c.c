@@ -499,3 +499,37 @@ void* TCOD_get_function_address(TCOD_library_t library, const char* function_nam
   return SDL_LoadFunction(library, function_name);
 }
 void TCOD_close_library(TCOD_library_t library) { SDL_UnloadObject(library); }
+
+/**
+    Load a file into memory.  Returns NULL on failure.
+
+    The returned buffer must be freed by the caller with free()
+ */
+TCOD_NODISCARD unsigned char* TCOD_load_binary_file_(const char* path, size_t* size) {
+  if (!path) {
+    TCOD_set_errorv("Given path was NULL.");
+    return NULL;
+  }
+  FILE* file = fopen(path, "rb");
+  if (!file) {
+    TCOD_set_errorvf("Could not open file:\n%s", path);
+    return NULL;
+  }
+  fseek(file, 0, SEEK_END);
+  size_t fsize = (size_t)ftell(file);
+  fseek(file, 0, SEEK_SET);
+  unsigned char* buffer = malloc(fsize);
+  if (!buffer) {
+    TCOD_set_errorvf("Could not allocate %ld bytes for file.", fsize);
+  } else {
+    if (fread(buffer, 1, fsize, file) != fsize) {
+      // Shouldn't happen, but just in case.
+      TCOD_set_errorv("Could not determine a files size.");
+      free(buffer);
+      buffer = NULL;
+    }
+  }
+  fclose(file);
+  if (size) *size = fsize;
+  return buffer;
+}

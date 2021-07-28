@@ -38,6 +38,7 @@
 #include <memory>
 #include <stdexcept>
 #endif  // __cplusplus
+
 #include "config.h"
 #include "console.h"
 #include "context_viewport.h"
@@ -47,6 +48,7 @@
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Rect;
+union SDL_Event;
 
 struct TCOD_Context;  // Defined in this header later.
 typedef struct TCOD_Context TCOD_Context;
@@ -107,6 +109,14 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* 
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int* x, int* y);
+/**
+    Convert the pixel coordantes of SDL mouse events to the tile coordantes of the current context.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, union SDL_Event* event);
 /**
     Save the last presented console to a PNG file.
 
@@ -214,6 +224,16 @@ struct TCOD_Context {
     std::array<double, 2> out{xy[0], xy[1]};
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_d(this, &out[0], &out[1]));
     return out;
+  }
+  /**
+      Convert the pixel coordantes of SDL mouse events to the tile coordantes of the current context.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  void convert_event_coordinates(SDL_Event& event) {
+    tcod::check_throw_error(TCOD_context_convert_event_coordinates(this, &event));
   }
   /**
       Save a screenshot to `filepath`.

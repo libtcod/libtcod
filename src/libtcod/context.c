@@ -31,6 +31,7 @@
  */
 #include "context.h"
 
+#include <SDL_events.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -85,6 +86,30 @@ TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int
     *y = (int)floor(yd);
   }
   return err;
+}
+TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, union SDL_Event* event) {
+  if (!event) return TCOD_E_OK;
+  switch (event->type) {
+    case SDL_MOUSEMOTION: {
+      int tile_x = event->motion.x;
+      int tile_y = event->motion.y;
+      int previous_tile_x = event->motion.x - event->motion.xrel;
+      int previous_tile_y = event->motion.y - event->motion.yrel;
+      TCOD_Error err = TCOD_context_screen_pixel_to_tile_i(context, &tile_x, &tile_y);
+      if (err < 0) return err;
+      err = TCOD_context_screen_pixel_to_tile_i(context, &previous_tile_x, &previous_tile_y);
+      if (err < 0) return err;
+      event->motion.x = tile_x;
+      event->motion.y = tile_y;
+      event->motion.xrel = tile_x - previous_tile_x;
+      event->motion.yrel = tile_y - previous_tile_y;
+    } break;
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      return TCOD_context_screen_pixel_to_tile_i(context, &event->button.x, &event->button.y);
+      break;
+  }
+  return TCOD_E_OK;
 }
 TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context, const char* filename) {
   if (!context) {

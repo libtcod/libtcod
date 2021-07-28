@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- Added `TCOD_context_convert_event_coordinates` and `TCOD_Context::convert_event_coordinates` as an easier way to
+  convert mouse pixel coordinates to tile coordinates.
+
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
 - Deprecated C++ color constants because of class `static const` initialization issues.

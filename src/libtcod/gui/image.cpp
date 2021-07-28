@@ -31,7 +31,7 @@
  */
 #include "image.hpp"
 
-Image::Image(int x, int y, int w, int h, const char* tip) : Widget(x, y, w, h), back(TCODColor::black) {
+Image::Image(int x, int y, int w, int h, const char* tip) : Widget(x, y, w, h), back{0, 0, 0} {
   if (tip) setTip(tip);
 }
 

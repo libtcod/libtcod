@@ -225,7 +225,8 @@ int main(int argc, char** argv) {
     std::cerr << TCOD_get_error() << "\n";
     return EXIT_FAILURE;
   }
-  TCOD_ContextParams params = {TCOD_COMPILEDVERSION};
+  TCOD_ContextParams params = {0};
+  params.tcod_version = TCOD_COMPILEDVERSION;
   params.tileset = tileset;
   params.argc = argc;
   params.argv = argv;

@@ -478,6 +478,7 @@ static const char* SAMPLE_MAP[] = {
     "##############################################",
 };
 // clang-format on
+static const int CHAR_WINDOW = 0x2550;  // "═" glyph.
 #define TORCH_RADIUS 10.0f
 #define SQUARED_TORCH_RADIUS (TORCH_RADIUS * TORCH_RADIUS)
 void render_fov(const SDL_Event* event) {
@@ -544,7 +545,7 @@ void render_fov(const SDL_Event* event) {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         if (SAMPLE_MAP[y][x] == '=') {
-          TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
+          TCOD_console_put_char(sample_console, x, y, CHAR_WINDOW, TCOD_BKGND_NONE);  // ═
         }
       }
     }
@@ -824,7 +825,7 @@ void render_path(const SDL_Event* event) {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         if (SAMPLE_MAP[y][x] == '=') {
-          TCOD_console_put_char(sample_console, x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
+          TCOD_console_put_char(sample_console, x, y, CHAR_WINDOW, TCOD_BKGND_NONE);  // ═
         }
       }
     }
@@ -1487,8 +1488,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
   }
 }
 
-void SDL_render(void* sdlSurface) {
-  SDL_Surface* screen = (SDL_Surface*)sdlSurface;
+void SDL_render(SDL_Surface* screen) {
   // now we have almighty access to the screen's precious pixels !!
   // get the font character size
   int char_w, char_h;
@@ -1706,7 +1706,7 @@ int main(int argc, char* argv[]) {
         "elapsed : %8dms %4.2fs",
         TCOD_sys_elapsed_milli(),
         TCOD_sys_elapsed_seconds());
-    TCOD_console_printf(NULL, 2, 47, "%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
+    TCOD_console_printf(NULL, 2, 47, "↑↓ : select a sample");
     TCOD_console_printf(
         NULL, 2, 48, "ALT-ENTER : switch to %s", TCOD_console_is_fullscreen() ? "windowed mode  " : "fullscreen mode");
 

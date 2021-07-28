@@ -676,13 +676,13 @@ void WorldGenerator::generateRivers() {
     //	        }
     //	    }
   }
-  for (int i = 0; i < randPt.size(); ++i) {
+  for (size_t i = 0; i < randPt.size(); ++i) {
     const int rx = randPt.at(i) % HM_WIDTH;
     const int ry = randPt.at(i) / HM_WIDTH;
 
     float minDist = 1E10;
     int best_x = -1, best_y = -1;
-    for (int j = 0; j < tree.size(); ++j) {
+    for (size_t j = 0; j < tree.size(); ++j) {
       const int tx = tree.at(j) % HM_WIDTH;
       const int ty = tree.at(j) / HM_WIDTH;
       const float dist = static_cast<float>((tx - rx) * (tx - rx) + (ty - ry) * (ty - ry));

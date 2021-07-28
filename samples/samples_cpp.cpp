@@ -486,6 +486,7 @@ class NoiseSample : public Sample {
 // fov sample
 // ***************************
 
+static const auto CHAR_WINDOW = 0x2550;  // "═" glyph.
 static const std::vector<std::string> algo_names{
     "BASIC               ",
     "DIAMOND             ",
@@ -525,7 +526,7 @@ class FOVSample : public Sample {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
         if (SAMPLE_MAP[y][x] == '=') {
-          sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
+          sampleConsole.putChar(x, y, CHAR_WINDOW, TCOD_BKGND_NONE);
         }
       }
     }
@@ -805,7 +806,7 @@ class PathfinderSample : public Sample {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; y++) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
         if (SAMPLE_MAP[y][x] == '=') {
-          sampleConsole.putChar(x, y, TCOD_CHAR_DHLINE, TCOD_BKGND_NONE);
+          sampleConsole.putChar(x, y, CHAR_WINDOW, TCOD_BKGND_NONE);
         }
       }
     }
@@ -1244,7 +1245,7 @@ class NameGeneratorSample : public Sample {
     sampleConsole.clear();
     sampleConsole.setDefaultForeground(WHITE);
     sampleConsole.printf(1, 1, "%s\n\n+ : next generator\n- : prev generator", sets.at(curSet).c_str());
-    for (int i = 0; i < names.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(names.size()); ++i) {
       const std::string& name = names.at(i);
       if (name.length() < SAMPLE_SCREEN_WIDTH)
         sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name.c_str());
@@ -1537,7 +1538,7 @@ int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   int curSample = 0;  // index of the current sample
   bool first = true;  // first time we render a sample
-  TCOD_key_t key = {TCODK_NONE, 0};
+  TCOD_key_t key;
   TCOD_mouse_t mouse;
   const char* font = "data/fonts/dejavu10x10_gs_tc.png";
   int nbCharHoriz = 0, nbCharVertic = 0;
@@ -1613,7 +1614,7 @@ int main(int argc, char* argv[]) {
     }
 
     // print the list of samples
-    for (int i = 0; i < samples.size(); i++) {
+    for (int i = 0; i < static_cast<int>(samples.size()); ++i) {
       if (i == curSample) {
         // set colors for currently selected sample
         TCODConsole::root->setDefaultForeground(WHITE);
@@ -1645,7 +1646,7 @@ int main(int argc, char* argv[]) {
         "elapsed : %8dms %4.2fs",
         TCODSystem::getElapsedMilli(),
         TCODSystem::getElapsedSeconds());
-    TCODConsole::root->printf(2, 47, "%c%c : select a sample", TCOD_CHAR_ARROW_N, TCOD_CHAR_ARROW_S);
+    TCODConsole::root->printf(2, 47, "↑↓ : select a sample");
     TCODConsole::root->printf(
         2, 48, "ALT-ENTER : switch to %s", TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode");
 

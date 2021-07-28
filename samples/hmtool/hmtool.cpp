@@ -78,13 +78,17 @@ static Image* keyImages[MAX_COLOR_KEY];
 
 static int nbColorKeys = 8;
 
+static auto BLACK = TCODColor{0, 0, 0};
+static auto WHITE = TCODColor{255, 255, 255};
+static auto LIGHT_BLUE = TCODColor{63, 63, 255};
+
 void initColors() { TCODColor::genMap(mapGradient, nbColorKeys, keyColor, keyIndex); }
 
 void render() {
   static TCODHeightMap backup(HM_WIDTH, HM_HEIGHT);
   isNormalized = true;
-  TCODConsole::root->setDefaultBackground(TCODColor::black);
-  TCODConsole::root->setDefaultForeground(TCODColor::white);
+  TCODConsole::root->setDefaultBackground(BLACK);
+  TCODConsole::root->setDefaultForeground(WHITE);
   TCODConsole::root->clear();
   backup.copy(hm);
   mapmin = 1E8f;
@@ -139,9 +143,9 @@ void render() {
   if (msg[0] != 0 && msgDelay > 0.0f) {
     int h = TCODConsole::root->printRectEx(
         HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, "%s", msg);
-    TCODConsole::root->setDefaultBackground(TCODColor::lightBlue);
+    TCODConsole::root->setDefaultBackground(LIGHT_BLUE);
     if (h > 0) TCODConsole::root->rect(HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, h + 2, false, TCOD_BKGND_SET);
-    TCODConsole::root->setDefaultBackground(TCODColor::black);
+    TCODConsole::root->setDefaultBackground(BLACK);
   }
 }
 

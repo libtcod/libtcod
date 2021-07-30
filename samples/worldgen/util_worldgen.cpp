@@ -340,11 +340,11 @@ void WorldGenerator::smoothMap() {
 #endif
 }
 
-static constexpr int dir_x[9] = {0, -1, 0, 1, -1, 1, -1, 0, 1};
-static constexpr int dir_y[9] = {0, -1, -1, -1, 0, 0, 1, 1, 1};
+static constexpr int8_t DIR_X[9] = {0, -1, 0, 1, -1, 1, -1, 0, 1};
+static constexpr int8_t DIR_Y[9] = {0, -1, -1, -1, 0, 0, 1, 1, 1};
 static constexpr float dir_coef[9] = {
     1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f, 1.0f / 1.414f, 1.0f, 1.0f / 1.414f};
-static constexpr int oppdir[9] = {0, 8, 7, 6, 5, 4, 3, 2, 1};
+static constexpr uint8_t opposite_dir[9] = {0, 8, 7, 6, 5, 4, 3, 2, 1};
 
 // erosion parameters
 static constexpr auto EROSION_FACTOR = 0.01f;
@@ -361,10 +361,11 @@ void WorldGenerator::erodeMap() {
       for (int x = 0; x < HM_WIDTH; ++x) {
         const float h = hm->getValue(x, y);
         float h_min = h, h_max = h;
-        int minDir = 0, maxDir = 0;
-        for (int j = 1; j < 9; ++j) {
-          const int ix = x + dir_x[j];
-          const int iy = y + dir_y[j];
+        uint8_t minDir = 0;
+        uint8_t maxDir = 0;
+        for (uint8_t j = 1; j < 9; ++j) {
+          const int ix = x + DIR_X[j];
+          const int iy = y + DIR_Y[j];
           if (IN_RECTANGLE(ix, iy, HM_WIDTH, HM_HEIGHT)) {
             float h2 = hm->getValue(ix, iy);
             if (h2 < h_min) {
@@ -396,7 +397,7 @@ void WorldGenerator::erodeMap() {
         while (!end) {
           float h = hm->getValue(ix, iy);
           if (h < sandHeight - 0.01f) break;
-          if (md2->flowDir == oppdir[oldFlow]) {
+          if (md2->flowDir == opposite_dir[oldFlow]) {
             h += SEDIMENTATION_FACTOR * sediment;
             hm->setValue(ix, iy, h);
             end = true;
@@ -407,8 +408,8 @@ void WorldGenerator::erodeMap() {
             sediment -= md2->slope;
             hm->setValue(ix, iy, h);
             oldFlow = md2->flowDir;
-            ix += dir_x[oldFlow];
-            iy += dir_y[oldFlow];
+            ix += DIR_X[oldFlow];
+            iy += DIR_Y[oldFlow];
             md2 = &mapData[ix + iy * HM_WIDTH];
           }
         }
@@ -429,8 +430,8 @@ void WorldGenerator::erodeMap() {
         float sumDelta1 = 0.0f, sumDelta2 = 0.0f;
         int nb1 = 1, nb2 = 1;
         for (int j = 1; j < 9; j++) {
-          const int ix = x + dir_x[j];
-          const int iy = y + dir_y[j];
+          const int ix = x + DIR_X[j];
+          const int iy = y + DIR_Y[j];
           if (IN_RECTANGLE(ix, iy, HM_WIDTH, HM_HEIGHT)) {
             const float ih = hm->getValue(ix, iy);
             if (ih < h) {
@@ -644,7 +645,7 @@ void WorldGenerator::generateRivers() {
 */
 
 void WorldGenerator::generateRivers() {
-  static int riverId = 0;
+  static uint8_t riverId = 0;
   // the source
   int sx = wgRng->getInt(0, HM_WIDTH - 1);
   int sy = wgRng->getInt(HM_HEIGHT / 5, 4 * HM_HEIGHT / 5);
@@ -701,8 +702,7 @@ void WorldGenerator::generateRivers() {
     do {
       md = &mapData[cx + cy * HM_WIDTH];
       if (md->riverId > 0) return;
-      const float h = hm->getValue(cx, cy);
-      if (h >= sandHeight) {
+      if (hm->getValue(cx, cy) >= sandHeight) {
         md->riverId = riverId;
         precipitation->setValue(cx, cy, 1.0f);
       }

@@ -27,23 +27,23 @@
 
 #include <algorithm>
 
-#define WIDTH 80
-#define HEIGHT 50
+static constexpr auto WIDTH = 80;
+static constexpr auto HEIGHT = 50;
 
 TCODNoise noise1d(1);
 TCODNoise noise2d(2);
 WorldGenerator worldGen;
 // world map panning
-float wx = 0, wy = 0, cur_w_x = 0, cur_w_y = 0;
+float cur_w_x = 0, cur_w_y = 0;
 // mouse coordinates in world map
 float mx = 0, my = 0;
 
 void update(float elapsed, const TCOD_key_t&, const TCOD_mouse_t& mouse) {
   // destination wanted
-  wx = (worldGen.getWidth() - 2 * WIDTH) * mouse.cx / WIDTH;
-  wy = (worldGen.getHeight() - 2 * HEIGHT) * mouse.cy / HEIGHT;
-  cur_w_x += (wx - cur_w_x) * elapsed;
-  cur_w_y += (wy - cur_w_y) * elapsed;
+  float world_x = static_cast<float>(worldGen.getWidth() - 2 * WIDTH) * mouse.cx / WIDTH;
+  float world_y = static_cast<float>(worldGen.getHeight() - 2 * HEIGHT) * mouse.cy / HEIGHT;
+  cur_w_x += (world_x - cur_w_x) * elapsed;
+  cur_w_y += (world_y - cur_w_y) * elapsed;
   mx = cur_w_x + mouse.cx * 2;
   my = cur_w_y + mouse.cy * 2;
   worldGen.updateClouds(elapsed);

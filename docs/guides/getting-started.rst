@@ -15,7 +15,7 @@ deprecated functions.
       tcod::ConsolePtr console = tcod::new_console(80, 25);  // Main console.
 
       // Configure the context.
-      TCOD_ContextParams params = {};
+      TCOD_ContextParams params{};
       params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
       params.columns = console->w;  // Derive the window size from the console size.
       params.rows = console->h;
@@ -24,6 +24,12 @@ deprecated functions.
       params.vsync = true;
       params.argc = argc;  // This allows some user-control of the context.
       params.argv = argv;
+
+      // Tileset example using a Code Page 437 font.
+      // "terminal8x8_gs_ro.png" must be in the working directory.
+      // tcod::TilesetPtr tileset = tcod::load_tilesheet("terminal8x8_gs_ro.png", {16, 16}, tcod::CHARMAP_CP437);
+      // params.tileset = tileset.get();
+
       tcod::ContextPtr context = tcod::new_context(params);
 
       while (1) {  // Game loop.

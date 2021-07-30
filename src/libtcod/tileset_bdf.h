@@ -73,16 +73,25 @@ namespace tcod {
 /**
     Load a Tileset from a BDF font file.
 
-    Will throw on an error.
+    Will throw an excpetion on a missing or corrupt file.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 TCOD_NODISCARD
-inline auto load_bdf(const std::string& path) -> TilesetPtr {
-  TilesetPtr tileset{TCOD_load_bdf(path.c_str())};
-  if (!tileset) {
-    throw std::runtime_error(TCOD_get_error());
-  }
+inline auto load_bdf(const char* path) -> TilesetPtr {
+  TilesetPtr tileset{TCOD_load_bdf(path)};
+  if (!tileset) throw std::runtime_error(TCOD_get_error());
   return tileset;
 }
+/**
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_NODISCARD
+inline auto load_bdf(const std::string& path) -> TilesetPtr { return load_bdf(path.c_str()); }
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // LIBTCOD_TILESET_BDF_H_

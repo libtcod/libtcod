@@ -13,6 +13,8 @@
 #include <string>
 #include <utility>
 
+#include "common.h"
+
 /**
     Convert a Unicode codepoint to a UTF-8 multi-byte string.
  */
@@ -54,15 +56,6 @@ ostream& operator<<(ostream& out, const TCOD_ColorRGBA& color) {
 const int WIDTH = 20;
 const int HEIGHT = 10;
 const char* TITLE = "Unittest";
-
-std::string get_file(const std::string& path) {
-  static const char* DEFAULT_DIR = "data";
-  const char* data_dir = std::getenv("DATA_DIR");
-  if (!data_dir) {
-    data_dir = DEFAULT_DIR;
-  }
-  return std::string(data_dir) + "/" + path;
-}
 
 std::string to_string(const TCOD_Console& console) {
   std::string result;
@@ -230,7 +223,6 @@ TEST_CASE("Rectangle text alignment.") {
   tcod::print_rect(*console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT);
   CHECK(to_string(*console) == "123.123..123");
 }
-TEST_CASE("Load BDF.") { REQUIRE(tcod::load_bdf(get_file("fonts/ucs-fonts/4x6.bdf"))); }
 TEST_CASE("Print color codes.") {
   using namespace std::string_literals;
   auto console = tcod::new_console(8, 1);

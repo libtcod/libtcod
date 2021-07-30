@@ -44,8 +44,6 @@ Callback-based line drawing
 .. doxygenclass:: tcod::BresenhamLine
     :members:
 
-.. doxygenfunction:: tcod::bresenham_line
-
 Deprecated functions
 ^^^^^^^^^^^^^^^^^^^^
 

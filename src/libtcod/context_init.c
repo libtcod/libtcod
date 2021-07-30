@@ -53,7 +53,7 @@ static TCOD_Error ensure_tileset(TCOD_Tileset** tileset) {
     TCOD_console_set_custom_font("terminal.png", TCOD_FONT_LAYOUT_ASCII_INCOL, 0, 0);
   }
   if (!TCOD_ctx.tileset) {
-    TCOD_set_default_tileset(TCOD_tileset_load_fallback_font_(0, 12));
+    TCOD_set_default_tileset(TCOD_tileset_load_fallback_font_(0, TCOD_FALLBACK_FONT_SIZE));
   }
   if (!TCOD_ctx.tileset) {
     TCOD_set_errorv("No font loaded and couldn't load a fallback font!");

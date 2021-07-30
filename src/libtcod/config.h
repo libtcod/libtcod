@@ -115,4 +115,9 @@
 #define TCOD_NODISCARD
 #endif
 
+#ifndef TCOD_FALLBACK_FONT_SIZE
+// The default height of the fallback font size in pixels.
+#define TCOD_FALLBACK_FONT_SIZE 16
+#endif  // TCOD_FALLBACK_FONT_SIZE
+
 #endif  // LIBTCOD_CONFIG_H_

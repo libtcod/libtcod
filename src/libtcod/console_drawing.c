@@ -79,7 +79,7 @@ void TCOD_console_put_rgb(
     TCOD_console_set_char_background(console, x, y, *bg, flag);
   }
 }
-void TCOD_console_draw_rect_rgb(
+TCOD_Error TCOD_console_draw_rect_rgb(
     TCOD_Console* __restrict console,
     int x,
     int y,
@@ -91,7 +91,8 @@ void TCOD_console_draw_rect_rgb(
     TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);
   if (!console) {
-    return;
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
   clamp_rect_(0, 0, console->w, console->h, &x, &y, &width, &height);
   TCOD_ASSERT(x + width <= console->w && y + height <= console->h);
@@ -100,6 +101,7 @@ void TCOD_console_draw_rect_rgb(
       TCOD_console_put_rgb(console, console_x, console_y, ch, fg, bg, flag);
     }
   }
+  return TCOD_E_OK;
 }
 void TCOD_console_rect(TCOD_Console* console, int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
   console = TCOD_console_validate_(console);

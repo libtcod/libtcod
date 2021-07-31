@@ -204,91 +204,225 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) TCOD_Error TCOD_console_printf_frame(
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_get_height_rect_fmt(
     struct TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
+/**
+    @brief Print a string of a specified length to a console.
 
+    @param console A pointer to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param n The length of the string buffer `str[n]` in bytes.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @return TCOD_Error Any problems such as malformed UTF-8 will return a negative error code.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 TCOD_PUBLIC TCOD_Error TCOD_console_printn(
-    TCOD_Console* __restrict con,
+    TCOD_Console* __restrict console,
     int x,
     int y,
     size_t n,
     const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
+/**
+    @brief Print a string of a specified length in a bounding box to a console.
+
+    @param console A pointer to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param n The length of the string buffer `str[n]` in bytes.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @return int The height of the printed text, or a negative error code on failure.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 TCOD_PUBLIC int TCOD_console_printn_rect(
-    TCOD_Console* __restrict con,
+    TCOD_Console* __restrict console,
     int x,
     int y,
     int width,
     int height,
     size_t n,
     const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
+/**
+    @brief Return the height of the word-wrapped text with the given parameters.
+
+    @param console A pointer to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param n The length of the string buffer `str[n]` in bytes.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @return int The height of the word-wrapped text as if it were printed, or a negative error code on failure.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     TCOD_Console* __restrict console, int x, int y, int width, int height, size_t n, const char* __restrict str);
+/**
+    @brief Return the height of the word-wrapped text with the given width.
+
+    @param width The maximum width of the bounding region in tiles.
+    @param n The length of the string buffer `str[n]` in bytes.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @return int The height of the word-wrapped text as if it were printed, or a negative error code on failure.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str);
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
-    struct TCOD_Console* __restrict con,
+    struct TCOD_Console* __restrict console,
     int x,
     int y,
     int width,
     int height,
     size_t n,
     const char* title,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag,
-    bool empty);
+    bool clear);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
+/**
+    @brief Print a string to a console.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.
+    @param alignment The text justification.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 inline void print(
-    TCOD_Console& con,
+    TCOD_Console& console,
     int x,
     int y,
     const std::string& str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment) {
-  check_throw_error(TCOD_console_printn(&con, x, y, str.size(), str.data(), fg, bg, flag, alignment));
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
+    TCOD_alignment_t alignment = TCOD_LEFT) {
+  check_throw_error(TCOD_console_printn(&console, x, y, str.size(), str.data(), fg, bg, flag, alignment));
 }
+/**
+    @brief Print a string to a console contrained to a bounding box.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.
+    @param alignment The text justification.
+    @return int The height of the printed output.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 inline int print_rect(
-    TCOD_Console& con,
+    TCOD_Console& console,
     int x,
     int y,
     int width,
     int height,
     const std::string& str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment) {
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
+    TCOD_alignment_t alignment = TCOD_LEFT) {
   return check_throw_error(
-      TCOD_console_printn_rect(&con, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
+      TCOD_console_printn_rect(&console, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
 }
+/**
+    @brief Return the height of the word-wrapped text with the given parameters.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @return int The height of the text as if it were printed.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 inline int get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str) {
   return check_throw_error(TCOD_console_get_height_rect_n(&console, x, y, width, height, str.size(), str.data()));
 }
+/**
+    @brief Return the height of the word-wrapped text with the given width.
+
+    @param width The maximum width of the bounding region in tiles.
+    @param str The text to print.  This string can contain libtcod color codes.
+    @return int The height of the text as if it were printed.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 inline int get_height_rect(int width, const std::string& str) {
   return check_throw_error(TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
 }
-inline void print_frame(
-    struct TCOD_Console& con,
+[[deprecated("It is recommended that you print your own banners for frames.")]] inline void print_frame(
+    struct TCOD_Console& console,
     int x,
     int y,
     int width,
     int height,
     const std::string& title,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
-    TCOD_bkgnd_flag_t flag,
-    bool empty) {
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
+    bool clear = true) {
   check_throw_error(
-      TCOD_console_printn_frame(&con, x, y, width, height, title.size(), title.data(), fg, bg, flag, empty));
+      TCOD_console_printn_frame(&console, x, y, width, height, title.size(), title.data(), fg, bg, flag, clear));
 }
 }  // namespace tcod
 #endif  // __cplusplus

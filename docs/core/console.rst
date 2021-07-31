@@ -42,11 +42,11 @@ libtcod's Credits
 .. doxygenfunction:: TCOD_console_credits_reset
 .. doxygenfunction:: TCOD_console_credits_render
 
-Drawing on the root console
-===========================
+Drawing on the console
+======================
 
-Basic printing functions
-^^^^^^^^^^^^^^^^^^^^^^^^
+Basic drawing functions
+^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenfunction:: TCOD_console_set_default_foreground
 .. doxygenfunction:: TCOD_console_set_default_background
 .. doxygenfunction:: TCOD_console_set_background_flag
@@ -62,9 +62,19 @@ Basic printing functions
 
 .. doxygenfunction:: TCOD_console_rect
 
+.. doxygenfunction:: TCOD_console_draw_rect_rgb
+.. doxygenfunction:: TCOD_console_draw_frame_rgb
+
 .. doxygenfunction:: TCOD_console_hline
 .. doxygenfunction:: TCOD_console_vline
 .. doxygenfunction:: TCOD_console_print_frame
+
+
+Drawing functions (C++)
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: tcod::draw_rect
+.. doxygenfunction:: tcod::draw_frame
 
 Background effect flags
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -75,35 +85,6 @@ String printing alignment
 .. doxygenenum:: TCOD_alignment_t
 .. doxygenfunction:: TCOD_console_set_alignment
 .. doxygenfunction:: TCOD_console_get_alignment
-
-Printing functions using 8-bit encodings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: TCOD_console_print
-.. doxygenfunction:: TCOD_console_print_ex
-.. doxygenfunction:: TCOD_console_print_rect
-.. doxygenfunction:: TCOD_console_print_rect_ex
-.. doxygenfunction:: TCOD_console_get_height_rect
-
-Printing functions using UTF-8
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. doxygenfunction:: TCOD_console_printf
-.. doxygenfunction:: TCOD_console_printf_ex
-.. doxygenfunction:: TCOD_console_printf_rect
-.. doxygenfunction:: TCOD_console_printf_rect_ex
-.. doxygenfunction:: TCOD_console_get_height_rect_fmt
-.. doxygenfunction:: TCOD_console_printf_frame
-
-Printing functions using wchar_t
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. note::
-    These functions say they are UTF, however they will behave as UCS2 or UCS4
-    depending on the platform.
-
-.. doxygenfunction:: TCOD_console_print_utf
-.. doxygenfunction:: TCOD_console_print_ex_utf
-.. doxygenfunction:: TCOD_console_print_rect_utf
-.. doxygenfunction:: TCOD_console_print_rect_ex_utf
-.. doxygenfunction:: TCOD_console_get_height_rect_utf
 
 Reading the content of the console
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -127,6 +108,54 @@ Screen fading functions
 ASCII constants
 ^^^^^^^^^^^^^^^
 .. doxygenenum:: TCOD_chars_t
+
+Printing to the console
+=======================
+
+Printing functions using UTF-8
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: TCOD_console_printf
+.. doxygenfunction:: TCOD_console_printf_ex
+.. doxygenfunction:: TCOD_console_printf_rect
+.. doxygenfunction:: TCOD_console_printf_rect_ex
+.. doxygenfunction:: TCOD_console_get_height_rect_fmt
+.. doxygenfunction:: TCOD_console_printf_frame
+.. doxygenfunction:: TCOD_console_printn
+.. doxygenfunction:: TCOD_console_printn_rect
+.. doxygenfunction:: TCOD_console_get_height_rect_n
+.. doxygenfunction:: TCOD_console_get_height_rect_wn
+
+Printing functions using UTF-8 (C++)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. doxygenfunction:: tcod::print
+.. doxygenfunction:: tcod::print_rect
+.. doxygenfunction:: tcod::get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str)
+.. doxygenfunction:: tcod::get_height_rect(int width, const std::string& str)
+
+Printing functions using 8-bit encodings
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
+    These functions use EASCII encoded strings which are not compatible with Unicode.
+    They are deprecated for this reason.
+
+.. doxygenfunction:: TCOD_console_print
+.. doxygenfunction:: TCOD_console_print_ex
+.. doxygenfunction:: TCOD_console_print_rect
+.. doxygenfunction:: TCOD_console_print_rect_ex
+.. doxygenfunction:: TCOD_console_get_height_rect
+
+Printing functions using wchar_t
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. note::
+    These functions say they are UTF, however they will behave as UCS2 or UCS4 depending on the platform.
+    They are deprecated for this reason.
+
+.. doxygenfunction:: TCOD_console_print_utf
+.. doxygenfunction:: TCOD_console_print_ex_utf
+.. doxygenfunction:: TCOD_console_print_rect_utf
+.. doxygenfunction:: TCOD_console_print_rect_ex_utf
+.. doxygenfunction:: TCOD_console_get_height_rect_utf
 
 Flushing the root console
 =========================

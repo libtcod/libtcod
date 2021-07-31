@@ -31,6 +31,9 @@
  */
 #ifndef TCOD_CONSOLE_DRAWING_H_
 #define TCOD_CONSOLE_DRAWING_H_
+#ifdef __cplusplus
+#include <array>
+#endif  // __cplusplus
 #include "config.h"
 #include "console_types.h"
 #ifdef __cplusplus
@@ -97,7 +100,7 @@ TCOD_PUBLIC void TCOD_console_put_rgb(
  *
  *  If `fg`,`bg` is NULL then their respective colors will not be updated.
  */
-TCOD_PUBLIC void TCOD_console_draw_rect_rgb(
+TCOD_PUBLIC TCOD_Error TCOD_console_draw_rect_rgb(
     TCOD_Console* __restrict console,
     int x,
     int y,
@@ -108,14 +111,12 @@ TCOD_PUBLIC void TCOD_console_draw_rect_rgb(
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag);
 /**
-    Draw a decorated frame onto `console` with the shape of `x`, `y`, `width`,
-    `height`.
+    Draw a decorated frame onto `console` with the shape of `x`, `y`, `width`, `height`.
 
-    `decoration[9]` is an optional array of Unicode codepoints.  If left as
-    NULL then a single-pipe decoration is used by default.
+    `decoration[9]` is an optional array of Unicode codepoints.
+    If left as NULL then a single-pipe decoration is used by default.
 
-    If `decoration[9]` is given the codepoints are used for the edges, corners,
-    and fill of the frame in this order:
+    If `decoration[9]` is given the codepoints are used for the edges, corners, and fill of the frame in this order:
 
         0 1 2
         3 4 5
@@ -123,8 +124,11 @@ TCOD_PUBLIC void TCOD_console_draw_rect_rgb(
 
     If `fg` or `bg` is NULL then their respective colors will not be updated.
 
-    If `clear` is true then the inner area of the frame is filled with the
-    inner decoraction, which is typically space.
+    If `clear` is true then the inner area of the frame is filled with the inner decoraction, which is typically space.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_console_draw_frame_rgb(
     struct TCOD_Console* __restrict con,
@@ -139,5 +143,75 @@ TCOD_PUBLIC TCOD_Error TCOD_console_draw_frame_rgb(
     bool clear);
 #ifdef __cplusplus
 }  // extern "C"
+namespace tcod {
+/**
+    @brief Fill a region with the given graphic.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param ch The character to draw.  If zero then the characers in the drawing region will not be changed.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.
+ */
+inline void draw_rect(
+    TCOD_Console& console,
+    int x,
+    int y,
+    int width,
+    int height,
+    int ch,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET) {
+  tcod::check_throw_error(TCOD_console_draw_rect_rgb(&console, x, y, width, height, ch, fg, bg, flag));
+}
+/**
+    @brief Draw a decorative frame.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param decoration The codepoints to use for the frame in row-major order.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.
+    @param clear If true then the center area will be cleared with the center decoration.
+
+    `decoration` is given the codepoints to be used for the edges, corners, and fill of the frame in this order:
+
+        0 1 2
+        3 4 5
+        6 7 8
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+inline void draw_frame(
+    TCOD_Console& console,
+    int x,
+    int y,
+    int width,
+    int height,
+    const std::array<int, 9>& decoration,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
+    bool clear = true) {
+  tcod::check_throw_error(
+      TCOD_console_draw_frame_rgb(&console, x, y, width, height, decoration.data(), fg, bg, flag, clear));
+}
+
+}  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_CONSOLE_DRAWING_H_

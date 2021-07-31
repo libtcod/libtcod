@@ -37,7 +37,7 @@
 
 #include "config.h"
 /**
- *  A three channel color struct.
+    A 3-channel RGB color struct.
  */
 struct TCOD_ColorRGB {
 #ifdef __cplusplus
@@ -51,7 +51,7 @@ struct TCOD_ColorRGB {
 typedef struct TCOD_ColorRGB TCOD_color_t;
 typedef struct TCOD_ColorRGB TCOD_ColorRGB;
 /**
- *  A four channel color struct.
+    A 4-channel RGBA color struct.
  */
 struct TCOD_ColorRGBA {
 #ifdef __cplusplus

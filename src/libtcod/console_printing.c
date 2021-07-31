@@ -121,8 +121,7 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
  *  \param fmt A format string as if passed to printf.
  *  \param ... Variadic arguments as if passed to printf.
  *
- *  This function makes assumptions about the fonts character encoding.
- *  It will fail if the font encoding is not `cp437`.
+ *  This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
  */
 void TCOD_console_print_frame(
     TCOD_Console* con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...) {
@@ -1426,13 +1425,13 @@ TCOD_Error TCOD_console_printn_frame(
     const TCOD_color_t* fg,
     const TCOD_color_t* bg,
     TCOD_bkgnd_flag_t flag,
-    bool empty) {
+    bool clear) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  TCOD_console_draw_frame_rgb(con, x, y, width, height, NULL, fg, bg, flag, empty);
+  TCOD_console_draw_frame_rgb(con, x, y, width, height, NULL, fg, bg, flag, clear);
   if (n > 0 && title) {
     char* tmp_string = malloc(n + 2);
     if (!tmp_string) {

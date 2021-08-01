@@ -1,9 +1,10 @@
 #include <libtcod.h>
 
+#include <array>
 #include <libtcod/gui/gui.hpp>
 
-#define HM_WIDTH 100
-#define HM_HEIGHT 80
+static constexpr auto HM_WIDTH = 100;
+static constexpr auto HM_HEIGHT = 80;
 
 // functions used by the operations
 void backup();
@@ -18,10 +19,15 @@ extern ToolBar* history;
 extern bool isNormalized;
 extern float addFbmDelta;
 extern float scaleFbmDelta;
-extern int smoothKernelSize;
-extern int smoothKernelDx[9];
-extern int smoothKernelDy[9];
-extern float smoothKernelWeight[9];
+/* light 3x3 smoothing kernel :
+        1  2 1
+        2 20 2
+        1  2 1
+*/
+static constexpr int smoothKernelSize = 9;
+static constexpr int smoothKernelDx[9] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
+static constexpr int smoothKernelDy[9] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
+static constexpr std::array<float, smoothKernelSize> smoothKernelWeight{1, 2, 1, 2, 20, 2, 1, 2, 1};
 extern TCODRandom* rnd;
 extern uint32_t seed;
 extern float mapmin, mapmax;

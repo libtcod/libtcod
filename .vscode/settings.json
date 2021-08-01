@@ -79,7 +79,12 @@
         "future": "cpp",
         "mutex": "cpp",
         "numeric": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "charconv": "cpp",
+        "bit": "cpp",
+        "format": "cpp",
+        "forward_list": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.default.cppStandard": "c++14",
     "C_Cpp.default.cStandard": "c99",

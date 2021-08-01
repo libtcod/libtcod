@@ -830,9 +830,11 @@ const char* SmoothOperation::getCode(CodeType type) {
 }
 
 void SmoothOperation::runInternal() {
-  smoothKernelWeight[4] = 20 - radius * 19;
-  for (int i = count; i >= 0; i--) {
-    hm->kernelTransform(smoothKernelSize, smoothKernelDx, smoothKernelDy, smoothKernelWeight, minLevel, maxLevel);
+  std::array<float, 9> new_smooth_kernel_weight{smoothKernelWeight};
+  new_smooth_kernel_weight[4] = 20 - radius * 19;
+  for (int i = count; i >= 0; --i) {
+    hm->kernelTransform(
+        smoothKernelSize, smoothKernelDx, smoothKernelDy, new_smooth_kernel_weight.data(), minLevel, maxLevel);
   }
 }
 

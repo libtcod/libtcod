@@ -7,53 +7,45 @@
 
 #include "operation.hpp"
 
-TCODHeightMap *hm = NULL, *hm_old = NULL;
+TCODHeightMap* hm = NULL;
+static TCODHeightMap* hm_old = NULL;
 TCODNoise* noise = NULL;
-TCODRandom *rnd = NULL, *backupRnd = NULL;
-TCODConsole* guicon = NULL;
-bool greyscale = false;
-bool slope = false;
-bool normal = false;
+TCODRandom* rnd = NULL;
+static TCODRandom* backupRnd = NULL;
+static TCODConsole* guicon = NULL;
+static bool greyscale = false;
+static bool slope = false;
+static bool normal = false;
 bool isNormalized = true;
-bool oldNormalized = true;
-char msg[512] = "";
+static bool oldNormalized = true;
+static char msg[512] = "";
 float msgDelay = 0.0f;
-float hillRadius = 0.1f;
-float hillVariation = 0.5f;
+static constexpr float hillRadius = 0.1f;
+static constexpr float hillVariation = 0.5f;
 float addFbmDelta = 0.0f;
 float scaleFbmDelta = 0.0f;
 uint32_t seed = 0xdeadbeef;
 
-float sandHeight = 0.12f;
-float grassHeight = 0.315f;
-float snowHeight = 0.785f;
+static float sandHeight = 0.12f;
+static float grassHeight = 0.315f;
+static float snowHeight = 0.785f;
 
-char landMassTxt[128] = "";
-char minZTxt[128] = "";
-char maxZTxt[128] = "";
-char seedTxt[128] = "";
+static char landMassTxt[128] = "";
+static char minZTxt[128] = "";
+static char maxZTxt[128] = "";
+static char seedTxt[128] = "";
 float mapmin = 0.0f, mapmax = 0.0f;
-float oldmapmin = 0.0f, oldmapmax = 0.0f;
+static float oldmapmin = 0.0f, oldmapmax = 0.0f;
 
 // ui
 ToolBar* params = NULL;
 ToolBar* history = NULL;
 ToolBar* colorMapGui = NULL;
 
-float voronoiCoef[2] = {-1.0f, 1.0f};
+static float voronoiCoef[2] = {-1.0f, 1.0f};
 
-/* light 3x3 smoothing kernel :
-        1  2 1
-        2 20 2
-        1  2 1
-*/
-int smoothKernelSize = 9;
-int smoothKernelDx[9] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-int smoothKernelDy[9] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
-float smoothKernelWeight[9] = {1, 2, 1, 2, 20, 2, 1, 2, 1};
-
-TCODColor mapGradient[256];
-#define MAX_COLOR_KEY 10
+static TCODColor mapGradient[256];
+static constexpr auto MAX_COLOR_KEY = 10;
 
 // TCOD's land color map
 static int keyIndex[MAX_COLOR_KEY] = {
@@ -76,16 +68,16 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(255, 255, 255)};
 static Image* keyImages[MAX_COLOR_KEY];
 
-static int nbColorKeys = 8;
+static constexpr int nbColorKeys = 8;
 
-static auto BLACK = TCODColor{0, 0, 0};
-static auto WHITE = TCODColor{255, 255, 255};
-static auto LIGHT_BLUE = TCODColor{63, 63, 255};
+static constexpr auto BLACK = TCODColor{0, 0, 0};
+static constexpr auto WHITE = TCODColor{255, 255, 255};
+static constexpr auto LIGHT_BLUE = TCODColor{63, 63, 255};
 
 void initColors() { TCODColor::genMap(mapGradient, nbColorKeys, keyColor, keyIndex); }
 
 void render() {
-  static TCODHeightMap backup(HM_WIDTH, HM_HEIGHT);
+  TCODHeightMap backup(HM_WIDTH, HM_HEIGHT);
   isNormalized = true;
   TCODConsole::root->setDefaultBackground(BLACK);
   TCODConsole::root->setDefaultForeground(WHITE);
@@ -131,11 +123,11 @@ void render() {
       }
     }
   }
-  sprintf(minZTxt, "min z    : %.2f", mapmin);
-  sprintf(maxZTxt, "max z    : %.2f", mapmax);
-  sprintf(seedTxt, "seed     : %X", seed);
+  snprintf(minZTxt, sizeof(minZTxt), "min z    : %.2f", mapmin);
+  snprintf(maxZTxt, sizeof(maxZTxt), "max z    : %.2f", mapmax);
+  snprintf(seedTxt, sizeof(seedTxt), "seed     : %X", seed);
   float landProportion = 100.0f - 100.0f * backup.countCells(0.0f, sandHeight) / (hm->w * hm->h);
-  sprintf(landMassTxt, "landMass : %d %%", (int)landProportion);
+  snprintf(landMassTxt, sizeof(landMassTxt), "landMass : %d %%", (int)landProportion);
   if (!isNormalized)
     TCODConsole::root->printf(HM_WIDTH / 2, HM_HEIGHT - 1, TCOD_BKGND_NONE, TCOD_CENTER, "the map is not normalized !");
   // message

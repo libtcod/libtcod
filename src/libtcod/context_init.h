@@ -39,6 +39,10 @@
 #include "tileset.h"
 /**
     A struct of paramers used to create a new context with `TCOD_context_new`.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 typedef struct TCOD_ContextParams {
   /**
@@ -141,11 +145,37 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_Error TCOD_context_new(const TCOD_ContextParams*
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
-TCOD_NODISCARD
-inline auto new_context(const TCOD_ContextParams& params) -> ContextPtr {
+/**
+    @brief Initialize and return a new libtcod context.  Also returns an error code for non-critical issues.
+
+    @param params Options to configure the new context with.
+    @param out_code Will be set to an error code on non-critical issues.
+    @return ContextPtr A pointer to the new context.
+
+    For critical issues an exception is thrown as usual.
+    Non-critical issues are things such as being unable to create a desired renderer and using to a fallback instead.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_NODISCARD inline auto new_context(const TCOD_ContextParams& params, TCOD_Error& out_code) -> ContextPtr {
   struct TCOD_Context* context = nullptr;
-  check_throw_error(TCOD_context_new(&params, &context));
+  out_code = check_throw_error(TCOD_context_new(&params, &context));
   return ContextPtr{context};
+}
+/**
+    @brief Initialize and return a new libtcod context.
+
+    @param params Options to configure the new context with.
+    @return ContextPtr A pointer to the new context.
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_NODISCARD inline auto new_context(const TCOD_ContextParams& params) -> ContextPtr {
+  TCOD_Error discard_output;
+  return new_context(params, discard_output);
 }
 }  // namespace tcod
 #endif  // __cplusplus

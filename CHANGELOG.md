@@ -12,6 +12,7 @@ since `1.7.0`.
   convert mouse pixel coordinates to tile coordinates.
 - Several C++ drawing and print functions have been made public.
 - Several C++ tileset functions have been made public.
+- C++ context functions are now public.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

@@ -276,7 +276,7 @@ public :
 	@PageName path_read
 	@PageTitle Reading path information
 	@PageFather path
-	@PageDescDesc Once the path has been computed, you can get information about it using of one those functions.
+	@PageDesc Once the path has been computed, you can get information about it using of one those functions.
 	@FuncTitle Getting the path origin and destination
 	@FuncDesc
 		You can read the current origin and destination cells with getOrigin/getDestination.

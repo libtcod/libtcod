@@ -110,7 +110,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_d(struct TCOD_Context* 
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int* x, int* y);
 /**
-    Convert the pixel coordantes of SDL mouse events to the tile coordantes of the current context.
+    Convert the pixel coordinates of SDL mouse events to the tile coordinates of the current context.
 
     \rst
     .. versionadded:: 1.19
@@ -226,7 +226,7 @@ struct TCOD_Context {
     return out;
   }
   /**
-      Convert the pixel coordantes of SDL mouse events to the tile coordantes of the current context.
+      Convert the pixel coordinates of SDL mouse events to the tile coordinates of the current context.
 
       \rst
       .. versionadded:: 1.19

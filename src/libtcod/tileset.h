@@ -47,6 +47,13 @@ struct TCOD_TilesetObserver {
   void (*on_observer_delete)(struct TCOD_TilesetObserver* observer);
   int (*on_tile_changed)(struct TCOD_TilesetObserver* observer, int tile_id);
 };
+/**
+    @brief A container for libtcod tileset graphics.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 struct TCOD_Tileset {
   int tile_width;
   int tile_height;
@@ -395,6 +402,13 @@ static constexpr std::array<int, 256> CHARMAP_TCOD = {
 struct TilesetDeleter {
   void operator()(TCOD_Tileset* tileset) const { TCOD_tileset_delete(tileset); }
 };
+/**
+    @brief A unique pointer to a TCOD_Tileset.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
 typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
 /**
     @brief Load a tilesheet from a PNG file.

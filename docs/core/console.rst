@@ -4,6 +4,15 @@ Console
 
 .. include:: ../old_docs_notice.inc.rst
 
+.. doxygenstruct:: TCOD_Console
+    :members:
+    :undoc-members:
+
+.. doxygentypedef:: ConsolePtr
+
+.. doxygenstruct:: TCOD_ConsoleTile
+    :members:
+
 Initializing the console
 ========================
 

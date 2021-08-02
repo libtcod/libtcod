@@ -71,7 +71,11 @@ typedef enum {
  */
 typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
 /**
-    A console tile.
+    @brief The raw data for a single TCOD_Console tile.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 typedef struct TCOD_ConsoleTile {
 #ifdef __cplusplus
@@ -79,66 +83,79 @@ typedef struct TCOD_ConsoleTile {
   bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
 #endif  // __cplusplus
   /**
-      The Unicode codepoint for this tile.
+      @brief The Unicode codepoint for this tile.
    */
   int ch;
   /**
-      The tile glyph color, rendered on top of the background.
+      @brief The tile glyph color, rendered on top of the background.
    */
   TCOD_ColorRGBA fg;
   /**
-      The tile background color, rendered behind the glyph.
+      @brief The tile background color, rendered behind the glyph.
    */
   TCOD_ColorRGBA bg;
 } TCOD_ConsoleTile;
 /**
-    The libtcod console struct.
+    @brief A libtcod console.
 
-    All attributes should be considered private.
-
-    All C++ methods should be considered provisional, and are subject to
-    change.
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 struct TCOD_Console {
 #ifdef __cplusplus
+  /**
+      @brief Return a pointer to the beginning of this consoles tile data.
+   */
   auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
+  /**
+      @brief Return a const pointer to the beginning of this consoles tile data.
+   */
   auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
+  /**
+      @brief Return a pointer to the end of this consoles tile data.
+   */
   auto end() noexcept -> TCOD_ConsoleTile* { return tiles + size(); }
+  /**
+      @brief Return a const pointer to the end of this consoles tile data.
+   */
   auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + size(); }
   /**
-      Return a reference to the tile at `xy`.
+      @brief Return a reference to the tile at `xy`.
    */
   auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& { return tiles[w * xy[1] + xy[0]]; }
   /**
-      Return a constant reference to the tile at `xy`.
+      @brief Return a constant reference to the tile at `xy`.
    */
   auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
     return tiles[w * xy[1] + xy[0]];
   }
   /**
-      Return a reference to the tile at `x`,`y`.
+      @brief Return a reference to the tile at `x`,`y`.
 
-      Throws if the index is out-of-bounds.
+      @throws std::out_of_range if the index is out-of-bounds
    */
   auto at(int x, int y) -> TCOD_ConsoleTile& {
     range_check_(x, y);
     return (*this)[{x, y}];
   }
   /**
-      Return a constant reference to the tile at `x`,`y`.
+      @brief Return a constant reference to the tile at `x`,`y`.
 
-      Throws if the index is out-of-bounds.
+      @throws std::out_of_range if the index is out-of-bounds
    */
   auto at(int x, int y) const -> const TCOD_ConsoleTile& {
     range_check_(x, y);
     return (*this)[{x, y}];
   }
   /**
-      Return the total number of tiles in this console.
+      @brief Return the total number of tiles in this console.
    */
-  int size() const { return elements; }
+  int size() const noexcept { return elements; }
   /**
-      Internal function.  Throws `std::out_of_range` if `x` or `y` is out-of-bounds.
+      Internal function.
+
+      @throws std::out_of_range if the index is out-of-bounds
    */
   void range_check_(int x, int y) const {
     if (!in_bounds(x, y)) {
@@ -148,7 +165,7 @@ struct TCOD_Console {
     }
   }
   /**
-      Return true if `x`,`y` are within the bounds of this console.
+      @brief Return true if `x`,`y` are within the bounds of this console.
    */
   bool in_bounds(int x, int y) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
 #endif  // __cplusplus
@@ -167,7 +184,7 @@ struct TCOD_Console {
   /** The current key color for this console. */
   TCOD_color_t key_color;
   /**
-      The total length of the tiles array.  Same as `w * h`.
+      @brief The total length of the tiles array.  Same as `w * h`.
 
       \rst
       .. versionadded:: 1.16
@@ -175,6 +192,8 @@ struct TCOD_Console {
    */
   int elements;
   /**
+      @brief A userdata attribute which can be repurposed.
+
       \rst
       .. versionadded:: 1.16
       \endrst
@@ -396,6 +415,14 @@ namespace tcod {
 struct ConsoleDeleter {
   void operator()(TCOD_Console* console) const { TCOD_console_delete(console); }
 };
+/**
+    @brief A unique pointer to a TCOD_Console.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+
+ */
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
 TCOD_NODISCARD
 inline auto new_console(int width, int height) -> ConsolePtr {

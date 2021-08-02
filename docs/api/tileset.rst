@@ -1,6 +1,8 @@
 Tilesets
 ========
 
+.. doxygenstruct:: TCOD_Tileset
+.. doxygentypedef:: TilesetPtr
 
 Tilesheets
 ----------

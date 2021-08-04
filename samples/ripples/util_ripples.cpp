@@ -27,119 +27,111 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <algorithm>
+
 // windows specific inclusion of alloca
 // all other platforms have alloca in stdlib.h
 #ifndef alloca
 #include <malloc.h>
 #endif
 
+#include <libtcod.h>
+
 #include "main.hpp"
+#include "util_ripples.hpp"
 
 // dummy height indicating that a cell is not water
-#define NO_WATER -1000.0f
+static constexpr auto NO_WATER = -1000.0f;
 // how much wave energy is lost per second
-#define DAMPING_COEF 1.3f
+static constexpr auto DAMPING_COEF = 1.3f;
 // wave height below which the water is considered still
-#define ACTIVE_THRESHOLD 0.02f
+static constexpr auto ACTIVE_THRESHOLD = 0.02f;
 // height on the triggering ripple
-#define RIPPLE_TRIGGER 3.0f
+static constexpr auto RIPPLE_TRIGGER = 3.0f;
 // how many times ripples are updated per second
-#define RIPPLE_FPS 10
+static constexpr auto RIPPLE_FPS = 10;
 
-RippleManager::RippleManager(TCODMap* waterMap) { init(waterMap); }
-
-void RippleManager::init(TCODMap* waterMap) {
-  this->width = waterMap->getWidth();
-  this->height = waterMap->getHeight();
-  bool* visited = (bool*)alloca(sizeof(bool) * width * height);
-  memset(visited, 0, sizeof(bool) * width * height);
+RippleManager::RippleManager(TCODMap* waterMap) : width{waterMap->getWidth()}, height{waterMap->getHeight()} {
+  std::vector<bool> visited(width * height);
   // first time : compute water zones
   zone.cumulatedElapsed = 0.0f;
   zone.isActive = false;
-  zone.data = new float[width * height];
-  zone.oldData = new float[width * height];
-  for (int dx = 0; dx < width; dx++) {
-    for (int dy = 0; dy < height; dy++) {
-      float value = waterMap->isWalkable(dx, dy) ? 0.0f : NO_WATER;
+  zone.data = std::vector<float>(width * height);
+  for (int dx = 0; dx < width; ++dx) {
+    for (int dy = 0; dy < height; ++dy) {
+      const float value = waterMap->isWalkable(dx, dy) ? 0.0f : NO_WATER;
       // set water height to 0.0, not water cells to -1000
       zone.data[dx + dy * width] = value;
     }
   }
-  memcpy(zone.oldData, zone.data, sizeof(float) * width * height);
+  zone.oldData = zone.data;
 }
 
 void RippleManager::startRipple(int x, int y) {
   // look for the water zone
-  int off = x + y * width;
-  if (zone.data[off] != NO_WATER) {
-    zone.data[off] = -RIPPLE_TRIGGER;
+  const int offset = x + y * width;
+  if (zone.data[offset] != NO_WATER) {
+    zone.data[offset] = -RIPPLE_TRIGGER;
     zone.isActive = true;
   }
 }
 
 bool RippleManager::updateRipples(float elapsed) {
-  bool updated = false;
   zone.cumulatedElapsed += elapsed;
-  if (zone.isActive) {
+  if (zone.isActive && zone.cumulatedElapsed > 1.0f / RIPPLE_FPS) {
+    zone.isActive = false;
     // update the ripples
-    if (zone.cumulatedElapsed > 1.0f / RIPPLE_FPS) {
-      zone.cumulatedElapsed = 0.0f;
-      // swap grids
-      float* tmp = zone.data;
-      zone.data = zone.oldData;
-      zone.oldData = tmp;
-      zone.isActive = false;
-      for (int zx2 = 1; zx2 < width - 1; zx2++) {
-        for (int zy2 = 1; zy2 < height - 1; zy2++) {
-          int off = zx2 + zy2 * width;
-          if (zone.data[off] != NO_WATER) {
-            float sum = 0.0f;
-            int count = 0;
-            // wave smoothing + spreading
-            if (zone.oldData[off - 1] != NO_WATER) {
-              sum += zone.oldData[off - 1];
-              count++;
-            }
-            if (zone.oldData[off + 1] != NO_WATER) {
-              sum += zone.oldData[off + 1];
-              count++;
-            }
-            if (zone.oldData[off - width] != NO_WATER) {
-              sum += zone.oldData[off - width];
-              count++;
-            }
-            if (zone.oldData[off + width] != NO_WATER) {
-              sum += zone.oldData[off + width];
-              count++;
-            }
-            sum = sum * 2 / count;
-            zone.data[off] = sum - zone.data[off];
-            // damping
-            zone.data[off] *= 1.0f - DAMPING_COEF / RIPPLE_FPS;
-            if (ABS(zone.data[off]) > ACTIVE_THRESHOLD) {
-              zone.isActive = true;
-              updated = true;
-            }
+    zone.cumulatedElapsed = 0.0f;
+    // swap grids
+    std::swap(zone.data, zone.oldData);
+    for (int zx2 = 1; zx2 < width - 1; ++zx2) {
+      for (int zy2 = 1; zy2 < height - 1; ++zy2) {
+        const int offset = zx2 + zy2 * width;
+        if (zone.data[offset] != NO_WATER) {
+          float sum = 0.0f;
+          int count = 0;
+          // wave smoothing + spreading
+          if (zone.oldData[offset - 1] != NO_WATER) {
+            sum += zone.oldData[offset - 1];
+            ++count;
+          }
+          if (zone.oldData[offset + 1] != NO_WATER) {
+            sum += zone.oldData[offset + 1];
+            ++count;
+          }
+          if (zone.oldData[offset - width] != NO_WATER) {
+            sum += zone.oldData[offset - width];
+            ++count;
+          }
+          if (zone.oldData[offset + width] != NO_WATER) {
+            sum += zone.oldData[offset + width];
+            ++count;
+          }
+          sum = sum * 2 / count;
+          zone.data[offset] = sum - zone.data[offset];
+          // damping
+          zone.data[offset] *= 1.0f - DAMPING_COEF / RIPPLE_FPS;
+          if (std::abs(zone.data[offset]) > ACTIVE_THRESHOLD) {
+            zone.isActive = true;
           }
         }
       }
     }
   }
-
-  return updated;
+  return zone.isActive;
 }
 
 void RippleManager::renderRipples(const TCODImage* ground, TCODImage* groundWithRipples) {
-  float elCoef = TCODSystem::getElapsedSeconds() * 2.0f;
-  for (int x = 1; x < width - 1; x++) {
-    for (int y = 1; y < height - 1; y++) {
+  const float elCoef = TCODSystem::getElapsedSeconds() * 2.0f;
+  for (int x = 1; x < width - 1; ++x) {
+    for (int y = 1; y < height - 1; ++y) {
       if (getData(x, y) != NO_WATER) {
         float xOffset = (getData(x - 1, y) - getData(x + 1, y));
-        float yOffset = (getData(x, y - 1) - getData(x, y + 1));
-        float f[3] = {float(x), float(y), elCoef};
+        const float yOffset = (getData(x, y - 1) - getData(x, y + 1));
+        const float f[3] = {static_cast<float>(x), static_cast<float>(y), elCoef};
         xOffset += noise3d.get(f, TCOD_NOISE_SIMPLEX) * 0.3f;
-        if (ABS(xOffset) < 250 && ABS(yOffset) < 250) {
-          TCODColor col = ground->getPixel(x + (int)(xOffset), y + (int)(yOffset));
+        if (std::abs(xOffset) < 250 && std::abs(yOffset) < 250) {
+          TCODColor col = ground->getPixel(x + static_cast<int>(xOffset), y + static_cast<int>(yOffset));
           col = col + TCODColor{255, 255, 255} * xOffset * 0.1f;
           groundWithRipples->putPixel(x, y, col);
         }

@@ -25,29 +25,38 @@
  */
 #include "main.hpp"
 
+#include <libtcod.h>
+
+#include <algorithm>
+#include <array>
+#include <memory>
+
+#include "util_ripples.hpp"
+
 TCODNoise noise2d(2);
 TCODNoise noise3d(3);
-RippleManager* rippleManager;
-TCODImage *ground, *ground2;
+std::unique_ptr<RippleManager> rippleManager;
+std::unique_ptr<TCODImage> ground, ground_with_ripples;
 
-TCODColor mapGradient[256];
-#define MAX_COLOR_KEY 8
+std::array<TCODColor, 256> mapGradient;
+static constexpr auto MAX_COLOR_KEY = 8;
 
 // TCOD's land color map
-float sandHeight = 0.3f;
-float grassHeight = 0.5f;
-float snowHeight = 0.9f;
+static constexpr float sandHeight = 0.3f;
+static constexpr float grassHeight = 0.5f;
+static constexpr float snowHeight = 0.9f;
 
-static int keyIndex[MAX_COLOR_KEY] = {
+static constexpr std::array<int, MAX_COLOR_KEY> keyIndex{
     0,
-    (int)(sandHeight * 255),
-    (int)(sandHeight * 255) + 4,
-    (int)(grassHeight * 255),
-    (int)(grassHeight * 255) + 10,
-    (int)(snowHeight * 255),
-    (int)(snowHeight * 255) + 10,
-    255};
-static TCODColor keyColor[MAX_COLOR_KEY] = {
+    static_cast<int>(sandHeight * 255),
+    static_cast<int>(sandHeight * 255) + 4,
+    static_cast<int>(grassHeight * 255),
+    static_cast<int>(grassHeight * 255) + 10,
+    static_cast<int>(snowHeight * 255),
+    static_cast<int>(snowHeight * 255) + 10,
+    255,
+};
+static constexpr std::array<TCODColor, MAX_COLOR_KEY> keyColor{
     TCODColor(10, 10, 90),     // deep water
     TCODColor(30, 30, 170),    // water-sand transition
     TCODColor(114, 150, 71),   // sand
@@ -55,7 +64,8 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(17, 109, 7),     // grass
     TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
-    TCODColor(255, 255, 255)};
+    TCODColor(255, 255, 255),
+};
 
 void update(float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
   if (mouse.lbutton) rippleManager->startRipple(mouse.cx * 2, mouse.cy * 2);
@@ -63,23 +73,22 @@ void update(float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
 }
 
 void render() {
-  // copy ground into ground2. damn libtcod should have that...
-  for (int x = 0; x < CON_W * 2; x++) {
-    for (int y = 0; y < CON_H * 2; y++) {
-      ground2->putPixel(x, y, ground->getPixel(x, y));
+  // copy ground into ground_with_ripples. damn libtcod should have that...
+  for (int x = 0; x < CON_W * 2; ++x) {
+    for (int y = 0; y < CON_H * 2; ++y) {
+      ground_with_ripples->putPixel(x, y, ground->getPixel(x, y));
     }
   }
-  rippleManager->renderRipples(ground, ground2);
-  ground2->blit2x(TCODConsole::root, 0, 0);
+  rippleManager->renderRipples(ground.get(), ground_with_ripples.get());
+  ground_with_ripples->blit2x(TCODConsole::root, 0, 0);
   TCODConsole::root->setDefaultForeground({255, 255, 255});
   TCODConsole::root->printf(3, 49, "Click in water to trigger ripples");
 }
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(CON_W, CON_H, "Water ripples v" VERSION, false, TCOD_RENDERER_OPENGL2);
+  TCODConsole::initRoot(CON_W, CON_H, "Water ripples", false, TCOD_RENDERER_OPENGL2);
   TCODSystem::setFps(25);
-  TCODMouse::showCursor(true);
 
   bool endCredits = false;
 
@@ -88,23 +97,22 @@ int main(int argc, char* argv[]) {
   hm.addFbm(&noise2d, 3.0f, 3.0f, 0, 0, 7.0f, 1.0f, 0.5f);
   hm.normalize();
   // apply a color map to create a ground image
-  TCODColor::genMap(mapGradient, MAX_COLOR_KEY, keyColor, keyIndex);
-  ground = new TCODImage(CON_W * 2, CON_H * 2);
-  ground2 = new TCODImage(CON_W * 2, CON_H * 2);
+  TCODColor::genMap(&mapGradient[0], MAX_COLOR_KEY, keyColor.data(), keyIndex.data());
+  ground = std::make_unique<TCODImage>(CON_W * 2, CON_H * 2);
+  ground_with_ripples = std::make_unique<TCODImage>(CON_W * 2, CON_H * 2);
   // create a TCODMap defining water zones. Walkable = water
   TCODMap waterMap(CON_W * 2, CON_H * 2);
 
-  for (int x = 0; x < CON_W * 2; x++) {
-    for (int y = 0; y < CON_H * 2; y++) {
-      float h = hm.getValue(x, y);
-      bool isWater = h < sandHeight;
+  for (int x = 0; x < CON_W * 2; ++x) {
+    for (int y = 0; y < CON_H * 2; ++y) {
+      const float h = hm.getValue(x, y);
+      const bool isWater = h < sandHeight;
       waterMap.setProperties(x, y, isWater, isWater);
-      int ih = (int)(h * 256);
-      ih = CLAMP(0, 255, ih);
+      const int ih = std::max(0, std::min(static_cast<int>(h * 256), 255));  // Clamp to 0...255.
       ground->putPixel(x, y, mapGradient[ih]);
     }
   }
-  rippleManager = new RippleManager(&waterMap);
+  rippleManager = std::make_unique<RippleManager>(&waterMap);
 
   while (!TCODConsole::isWindowClosed()) {
     TCOD_key_t k;

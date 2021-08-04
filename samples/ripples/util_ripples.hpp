@@ -23,24 +23,24 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <vector>
 
 struct WaterZone {
-  float cumulatedElapsed;  // to control the ripples framerate
-  float* data;             // water height data after update
-  float* oldData;          // water height data before update
-  bool isActive;           // not to use CPU is there are no ripples
+  float cumulatedElapsed;      // to control the ripples framerate
+  std::vector<float> data;     // water height data after update
+  std::vector<float> oldData;  // water height data before update
+  bool isActive;               // not to use CPU is there are no ripples
 };
 
 class RippleManager {
  public:
   RippleManager(TCODMap* waterMap);
-  void startRipple(int dungeonx, int dungeony);
+  void startRipple(int dungeon_x, int dungeon_y);
   bool updateRipples(float elapsed);
   void renderRipples(const TCODImage* ground, TCODImage* groundWithRipples);
 
- protected:
+ private:
   int width, height;
   WaterZone zone;
-  void init(TCODMap* waterMap);
-  float getData(int x, int y) const { return zone.data[x + y * width]; }
+  float& getData(int x, int y) noexcept { return zone.data[x + y * width]; }
 };

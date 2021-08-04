@@ -29,15 +29,4 @@
 static constexpr auto CON_W = 80;
 static constexpr auto CON_H = 50;
 
-// Return true if x and y are in the bounds of width and height.
-static constexpr bool IN_RECTANGLE(int x, int y, int width, int height) {
-  return 0 <= x && x < width && 0 <= y && y < height;
-}
-
-#ifndef NDEBUG
-#define DBG(x) printf x
-#else
-#define DBG(x)
-#endif
-
 extern TCODNoise noise3d;

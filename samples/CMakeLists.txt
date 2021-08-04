@@ -77,7 +77,7 @@ if (CONAN_FILE)
     add_dependencies(hmtool copy_font)
 endif()
 
-add_executable(navier navier/main.cpp navier/main.hpp)
+add_executable(navier navier/main.cpp)
 target_link_libraries(navier ${LINK_TCOD})
 if (CONAN_FILE)
     add_dependencies(navier copy_font)

@@ -133,7 +133,7 @@ void render() {
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(CON_W, CON_H, "Weather system v" VERSION, false, TCOD_RENDERER_OPENGL2);
+  TCODConsole::initRoot(CON_W, CON_H, "Weather system", false, TCOD_RENDERER_OPENGL2);
   TCODMouse::showCursor(true);
   TCODSystem::setFps(25);
 

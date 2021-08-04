@@ -27,19 +27,9 @@
 
 #include "util_weather.hpp"
 
-#define VERSION "0.1.0"
-
 // console size
-#define CON_W 80
-#define CON_H 50
-
-#define IN_RECTANGLE(x, y, w, h) ((unsigned)(x) < (unsigned)(w) && (unsigned)(y) < (unsigned)(h))
-
-#ifndef NDEBUG
-#define DBG(x) printf x
-#else
-#define DBG(x)
-#endif
+static constexpr auto CON_W = 80;
+static constexpr auto CON_H = 50;
 
 extern TCODNoise noise1d;
 extern TCODNoise noise2d;

@@ -23,10 +23,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "main.hpp"
-
+#include <libtcod.h>
 #include <math.h>
 #include <stdio.h>
+
+#include <cstdbool>
 
 // gas simulation
 // based on Jos Stam, "Real-Time Fluid Dynamics for Games". Proceedings of the Game Developer Conference, March 2003.
@@ -275,7 +276,7 @@ void render() {
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(WIDTH, HEIGHT, "pyromancer flame spell v" VERSION, false, TCOD_RENDERER_OPENGL2);
+  TCODConsole::initRoot(WIDTH, HEIGHT, "pyromancer flame spell", false, TCOD_RENDERER_OPENGL2);
   TCODSystem::setFps(25);
   TCODMouse::showCursor(true);
 

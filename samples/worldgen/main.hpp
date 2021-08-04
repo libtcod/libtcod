@@ -27,14 +27,10 @@
 
 #include "util_worldgen.hpp"
 
-#define VERSION "World generator v0.1.0"
-
-// console size
-#define CON_W 80
-#define CON_H 50
-
-#define IN_RECTANGLE(x, y, w, h) ((unsigned)(x) < (unsigned)(w) && (unsigned)(y) < (unsigned)(h))
-#define SQRDIST(x1, y1, x2, y2) (((x1) - (x2)) * ((x1) - (x2)) + ((y1) - (y2)) * ((y1) - (y2)))
+// Return true if x and y are in the bounds of width and height.
+static constexpr bool IN_RECTANGLE(int x, int y, int width, int height) {
+  return 0 <= x && x < width && 0 <= y && y < height;
+}
 
 #ifndef NDEBUG
 #define DBG(x) printf x

@@ -703,24 +703,26 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
   free(newimg);
 }
 
-/* distance between two colors */
-int rgbdist(const TCOD_color_t* c1, const TCOD_color_t* c2) {
-  int dr = (int)c1->r - c2->r;
-  int dg = (int)c1->g - c2->g;
-  int db = (int)c1->b - c2->b;
+// Return the squared distance between two colors.
+static int rgb_squared_distance(const TCOD_ColorRGB* c1, const TCOD_ColorRGB* c2) {
+  const int dr = (int)c1->r - c2->r;
+  const int dg = (int)c1->g - c2->g;
+  const int db = (int)c1->b - c2->b;
   return dr * dr + dg * dg + db * db;
 }
 
-void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2], int* __restrict nbCols, int* __restrict ascii) {
-  /* adapted from Jeff Lait's code posted on r.g.r.d */
-  int flag = 0;
+// Return a new tile graphic from 4 quadrant colors.
+static TCOD_ConsoleTile generate_quadrant_graphic(const TCOD_ColorRGB desired[4]) {
+  // adapted from Jeff Lait's code posted on r.g.r.d
   /*
-    pixels have following flag values :
+    A quadrant bitmask.  A raised bit means the quadrant is part of the foreground.
+    Quadrants are arranged with the following bits:
       X 1
       2 4
-    flag indicates which pixels uses foreground color (palette[1])
-  */
-  static int flagToAscii[8] = {
+   */
+  int quadrant_mask = 0;
+  // Maps a mask of quadrants to a codepoint.  A negative codepoint means to swap the fg/bg values.
+  static int quadrant_to_codepoint[8] = {
       0,
       0x259D,   // Quadrant upper right.
       0x2597,   // Quadrant lower left.
@@ -730,142 +732,147 @@ void getPattern(const TCOD_color_t desired[4], TCOD_color_t palette[2], int* __r
       -0x2580,  // Upper half block.
       -0x2598   // Quadrant upper left.
   };
-  int weight[2] = {0, 0};
-  int i;
-
-  /* First colour trivial. */
-  palette[0] = desired[0];
-
-  /* Ignore all duplicates... */
-  for (i = 1; i < 4; i++) {
-    if (!TCOD_color_equals(desired[i], palette[0])) {
-      break;
+  int quadrant_index;  // The active color quadrant being checked.
+  // Ignore all quadrants matching the first color.
+  for (quadrant_index = 1; quadrant_index < 4; ++quadrant_index) {
+    if (!TCOD_color_equals(desired[quadrant_index], desired[0])) {
+      break;  // Found a second color, will continue to check for colors from this index.
     }
   }
-
-  /* All the same. */
-  if (i == 4) {
-    *nbCols = 1;
-    return;
+  if (quadrant_index == 4) {  // This tile is a solid color.
+    return (TCOD_ConsoleTile){
+        .ch = ' ',
+        .fg = {desired[0].r, desired[0].g, desired[0].b, 255},
+        .bg = {desired[0].r, desired[0].g, desired[0].b, 255},
+    };
   }
-  weight[0] = i;
-
-  /* Found a second colour... */
-  palette[1] = desired[i];
-  weight[1] = 1;
-  flag |= 1 << (i - 1);
-  *nbCols = 2;
+  TCOD_ColorRGB palette[2] = {desired[0], desired[quadrant_index]};  // The current color palette: {bg color, fg color}.
+  int weight[2] = {quadrant_index, 1};  // Number of quadrents that each pallette color is assigned, respectively.
+  quadrant_mask |= 1 << (quadrant_index - 1);
   /* remaining colours */
-  ++i;
-  while (i < 4) {
-    if (TCOD_color_equals(desired[i], palette[0])) {
+  ++quadrant_index;
+  while (quadrant_index < 4) {
+    if (TCOD_color_equals(desired[quadrant_index], palette[0])) {
+      // Assign to the background color.
       ++weight[0];
-    } else if (TCOD_color_equals(desired[i], palette[1])) {
-      flag |= 1 << (i - 1);
+    } else if (TCOD_color_equals(desired[quadrant_index], palette[1])) {
+      // Assign to the foreground color.
+      quadrant_mask |= 1 << (quadrant_index - 1);
       ++weight[1];
     } else {
-      /* Bah, too many colours, */
-      /* merge the two nearest */
-      int dist0i = rgbdist(&desired[i], &palette[0]);
-      int dist1i = rgbdist(&desired[i], &palette[1]);
-      int dist01 = rgbdist(&palette[0], &palette[1]);
-      if (dist0i < dist1i) {
-        if (dist0i <= dist01) {
-          /* merge 0 and i */
-          palette[0] = TCOD_color_lerp(desired[i], palette[0], weight[0] / (1.0f + weight[0]));
+      // No more than two colors can be supported, so merge colors based on the smallest differences.
+      const int dist_0_q = rgb_squared_distance(&desired[quadrant_index], &palette[0]);
+      const int dist_1_q = rgb_squared_distance(&desired[quadrant_index], &palette[1]);
+      const int dist_0_1 = rgb_squared_distance(&palette[0], &palette[1]);
+      if (dist_0_q < dist_1_q) {
+        if (dist_0_q <= dist_0_1) {
+          // Merge 0 and quadrant_index.
+          palette[0] = TCOD_color_lerp(desired[quadrant_index], palette[0], weight[0] / (1.0f + weight[0]));
           ++weight[0];
         } else {
-          /* merge 0 and 1 */
+          // Merge 0 and 1.
           palette[0] = TCOD_color_lerp(palette[0], palette[1], (float)weight[1] / (weight[0] + weight[1]));
           ++weight[0];
-          palette[1] = desired[i];
-          flag = 1 << (i - 1);
+          palette[1] = desired[quadrant_index];
+          quadrant_mask = 1 << (quadrant_index - 1);
         }
       } else {
-        if (dist1i <= dist01) {
-          /* merge 1 and i */
-          palette[1] = TCOD_color_lerp(desired[i], palette[1], weight[1] / (1.0f + weight[1]));
+        if (dist_1_q <= dist_0_1) {
+          // Merge 1 and quadrant_index.
+          palette[1] = TCOD_color_lerp(desired[quadrant_index], palette[1], weight[1] / (1.0f + weight[1]));
           ++weight[1];
-          flag |= 1 << (i - 1);
+          quadrant_mask |= 1 << (quadrant_index - 1);
         } else {
-          /* merge 0 and 1 */
+          // Merge 0 and 1.
           palette[0] = TCOD_color_lerp(palette[0], palette[1], (float)weight[1] / (weight[0] + weight[1]));
           ++weight[0];
-          palette[1] = desired[i];
-          flag = 1 << (i - 1);
+          palette[1] = desired[quadrant_index];
+          quadrant_mask = 1 << (quadrant_index - 1);
         }
       }
     }
-    ++i;
+    ++quadrant_index;
   }
-  *ascii = flagToAscii[flag];
+  if (quadrant_to_codepoint[quadrant_mask] >= 0) {
+    return (TCOD_ConsoleTile){
+        .ch = quadrant_to_codepoint[quadrant_mask],
+        .fg = (TCOD_ColorRGBA){palette[1].r, palette[1].g, palette[1].b, 255},
+        .bg = (TCOD_ColorRGBA){palette[0].r, palette[0].g, palette[0].b, 255},
+    };
+  } else {  // A negative codepoint means we invert the bg/fg colors.
+    return (TCOD_ConsoleTile){
+        .ch = -quadrant_to_codepoint[quadrant_mask],
+        .fg = (TCOD_ColorRGBA){palette[0].r, palette[0].g, palette[0].b, 255},
+        .bg = (TCOD_ColorRGBA){palette[1].r, palette[1].g, palette[1].b, 255},
+    };
+  }
 }
 
 void TCOD_image_blit_2x(
-    const TCOD_Image* __restrict image, TCOD_Console* __restrict con, int dx, int dy, int sx, int sy, int w, int h) {
-  if (!image) {
-    return;
-  }
-  con = TCOD_console_validate_(con);
-  if (!con) {
-    return;
-  }
-  TCOD_color_t grid[4];
-  TCOD_color_t cols[2];
+    const TCOD_Image* __restrict image,
+    TCOD_Console* __restrict console,
+    int dest_x,
+    int dest_y,
+    int src_x,
+    int src_y,
+    int src_width,
+    int src_height) {
+  if (!image) return;
+  console = TCOD_console_validate_(console);
+  if (!console) return;
 
-  int width, height;
-  TCOD_image_get_size(image, &width, &height);
-  if (w == -1) {
-    w = width;
-  }
-  if (h == -1) {
-    h = height;
-  }
+  int img_width, img_height;
+  TCOD_image_get_size(image, &img_width, &img_height);
+  if (src_width == -1) src_width = img_width;
+  if (src_height == -1) src_height = img_height;
 
-  /* check that the sx,sy/w,h rectangle is inside the image */
-  TCOD_ASSERT(sx >= 0 && sy >= 0 && sx + w <= width && sy + h <= height);
-  TCOD_IFNOT(w > 0 && h > 0) { return; }
+  /* check that the src_x,src_y/src_width,src_height rectangle is inside the image */
+  TCOD_ASSERT(src_x >= 0 && src_y >= 0 && src_x + src_width <= img_width && src_y + src_height <= img_height);
+  TCOD_IFNOT(src_width > 0 && src_height > 0) { return; }
 
-  sx = MAX(0, sx);
-  sy = MAX(0, sy);
-  w = MIN(w, width - sx);
-  h = MIN(h, height - sy);
+  src_x = MAX(0, src_x);
+  src_y = MAX(0, src_y);
+  src_width = MIN(src_width, img_width - src_x);
+  src_height = MIN(src_height, img_height - src_y);
 
-  int max_x = dx + w / 2 <= con->w ? w : (con->w - dx) * 2;
-  int max_y = dy + h / 2 <= con->h ? h : (con->h - dy) * 2;
+  int max_x = dest_x + src_width / 2 <= console->w ? src_width : (console->w - dest_x) * 2;
+  int max_y = dest_y + src_height / 2 <= console->h ? src_height : (console->h - dest_y) * 2;
   /* check that the image is not blitted outside the console */
-  TCOD_IFNOT(dx + max_x / 2 >= 0 && dy + max_y / 2 >= 0 && dx < con->w && dy < con->h) { return; }
-  max_x += sx;
-  max_y += sy;
+  TCOD_IFNOT(dest_x + max_x / 2 >= 0 && dest_y + max_y / 2 >= 0 && dest_x < console->w && dest_y < console->h) {
+    return;
+  }
+  max_x += src_x;
+  max_y += src_y;
 
-  for (int cx = sx; cx < max_x; cx += 2) {
-    for (int cy = sy; cy < max_y; cy += 2) {
+  for (int img_x = src_x; img_x < max_x; img_x += 2) {
+    for (int img_y = src_y; img_y < max_y; img_y += 2) {
+      TCOD_ColorRGB grid[4];
       /* get the 2x2 super pixel colors from the image */
-      int con_x = dx + (cx - sx) / 2;
-      int con_y = dy + (cy - sy) / 2;
-      TCOD_color_t consoleBack = TCOD_console_get_char_background(con, con_x, con_y);
-      grid[0] = TCOD_image_get_pixel(image, cx, cy);
+      const int console_x = dest_x + (img_x - src_x) / 2;
+      const int console_y = dest_y + (img_y - src_y) / 2;
+      TCOD_ColorRGB consoleBack = TCOD_console_get_char_background(console, console_x, console_y);
+      grid[0] = TCOD_image_get_pixel(image, img_x, img_y);
       if (image->has_key_color && TCOD_color_equals(grid[0], image->key_color)) {
         grid[0] = consoleBack;
       }
-      if (cx < max_x - 1) {
-        grid[1] = TCOD_image_get_pixel(image, cx + 1, cy);
+      if (img_x < max_x - 1) {
+        grid[1] = TCOD_image_get_pixel(image, img_x + 1, img_y);
         if (image->has_key_color && TCOD_color_equals(grid[1], image->key_color)) {
           grid[1] = consoleBack;
         }
       } else {
         grid[1] = consoleBack;
       }
-      if (cy < max_y - 1) {
-        grid[2] = TCOD_image_get_pixel(image, cx, cy + 1);
+      if (img_y < max_y - 1) {
+        grid[2] = TCOD_image_get_pixel(image, img_x, img_y + 1);
         if (image->has_key_color && TCOD_color_equals(grid[2], image->key_color)) {
           grid[2] = consoleBack;
         }
       } else {
         grid[2] = consoleBack;
       }
-      if (cx < max_x - 1 && cy < max_y - 1) {
-        grid[3] = TCOD_image_get_pixel(image, cx + 1, cy + 1);
+      if (img_x < max_x - 1 && img_y < max_y - 1) {
+        grid[3] = TCOD_image_get_pixel(image, img_x + 1, img_y + 1);
         if (image->has_key_color && TCOD_color_equals(grid[3], image->key_color)) {
           grid[3] = consoleBack;
         }
@@ -873,23 +880,7 @@ void TCOD_image_blit_2x(
         grid[3] = consoleBack;
       }
       /* analyse color, posterize, get pattern */
-      int nbCols;
-      int ascii;
-      getPattern(grid, cols, &nbCols, &ascii);
-      if (nbCols == 1) {
-        /* single color */
-        TCOD_console_set_char_background(con, con_x, con_y, cols[0], TCOD_BKGND_SET);
-        TCOD_console_set_char(con, con_x, con_y, ' ');
-      } else if (ascii >= 0) {
-        TCOD_console_set_char_background(con, con_x, con_y, cols[0], TCOD_BKGND_SET);
-        TCOD_console_set_char_foreground(con, con_x, con_y, cols[1]);
-        TCOD_console_set_char(con, con_x, con_y, ascii);
-      } else {
-        /* negative ascii code means we need to invert back/fore colors */
-        TCOD_console_set_char_background(con, con_x, con_y, cols[1], TCOD_BKGND_SET);
-        TCOD_console_set_char_foreground(con, con_x, con_y, cols[0]);
-        TCOD_console_set_char(con, con_x, con_y, -ascii);
-      }
+      console->tiles[console_y * console->w + console_x] = generate_quadrant_graphic(grid);
     }
   }
 }

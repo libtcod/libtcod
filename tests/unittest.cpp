@@ -57,19 +57,6 @@ const int WIDTH = 20;
 const int HEIGHT = 10;
 const char* TITLE = "Unittest";
 
-std::string to_string(const TCOD_Console& console) {
-  std::string result;
-  for (int y = 0; y < console.h; ++y) {
-    if (y != 0) {
-      result += '\n';
-    }
-    for (int x = 0; x < console.w; ++x) {
-      result += static_cast<char>(console.at(x, y).ch);
-    }
-  }
-  return result;
-}
-
 TCOD_Tileset* new_test_tileset(int width, int height) {
   TCOD_Tileset* tileset = TCOD_tileset_new(width, height);
   std::vector<TCOD_ColorRGBA> buffer{(size_t)(width * height + 1)};

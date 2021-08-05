@@ -113,7 +113,7 @@
         "cwd": "${workspaceFolder}"
     },
     "doxdocgen.c.triggerSequence": "/**",
-    "doxdocgen.c.firstLine": "/**",
+    "doxdocgen.c.firstLine": "/*****************************************************************************",
     "doxdocgen.c.commentPrefix": "    ",
     "doxdocgen.c.lastLine": " */",
     "python.formatting.provider": "black",

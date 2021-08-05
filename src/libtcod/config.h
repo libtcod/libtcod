@@ -98,12 +98,14 @@
 #define TCOD_DEPRECATED_ENUM
 #endif
 
-// Tells GCC the these functions are like printf.
 #ifdef __GNUC__
-#define TCODLIB_FORMAT(str_index, first_arg) __attribute__((format(printf, str_index, first_arg)))
+// Tells GCC the these functions are printf-like.
+#define TCODLIB_PRINTF(str_index, first_arg) __attribute__((format(printf, str_index, first_arg)))
 #else
-#define TCODLIB_FORMAT(str_index, first_arg)
+#define TCODLIB_PRINTF(str_index, first_arg)
 #endif
+
+#define TCODLIB_FORMAT TCODLIB_PRINTF
 
 #if defined(__cplusplus) && __cplusplus >= 201703L && !defined(__clang__)
 #define TCOD_NODISCARD [[nodiscard]]

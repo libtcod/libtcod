@@ -34,9 +34,11 @@
 
 #ifdef __cplusplus
 #include <array>
+#include <cstdarg>
 #include <string>
 #endif
 
+#include <stdarg.h>
 #include <stdbool.h>
 #ifndef NO_UNICODE
 #include <wchar.h>
@@ -299,8 +301,9 @@ TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     \endrst
  */
 TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str);
+// Depreacted function.
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
-    struct TCOD_Console* __restrict console,
+    TCOD_Console* __restrict console,
     int x,
     int y,
     int width,
@@ -311,10 +314,74 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag,
     bool clear);
+/*****************************************************************************
+    @brief Print a formatted string using a va_list.
+
+    @param console A pointer to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @param fmt The format string for a vprintf-life function.
+    @param args The arguments for the formatted string.
+    @return TCOD_Error Any problems such as malformed UTF-8 will return a negative error code.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    va_list args);
+/*****************************************************************************
+    @brief Print a formatted string using a va_list within a bounding box.
+
+    @param console A pointer to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @param fmt The format string for a vprintf-life function.
+    @param args The arguments for the formatted string.
+    @return TCOD_PUBLIC
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_PUBLIC int TCOD_console_vprintf_rect(
+    TCOD_Console* __restrict console,
+    int x,
+    int y,
+    int width,
+    int height,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    va_list args);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
-/**
+/*****************************************************************************
     @brief Print a string to a console.
 
     @param console A reference to a TCOD_Console.
@@ -343,7 +410,42 @@ inline void print(
     TCOD_alignment_t alignment = TCOD_LEFT) {
   check_throw_error(TCOD_console_printn(&console, x, y, str.size(), str.data(), fg, bg, flag, alignment));
 }
-/**
+/*****************************************************************************
+    @brief Print a formatted string to a console.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @param fmt A printf-lie format string.
+    @param ... The additional arguments for the formatted string.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+inline TCODLIB_PRINTF(8, 9) void printf(
+    TCOD_Console& console,
+    int x,
+    int y,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    ...) {
+  std::va_list args;
+  va_start(args, fmt);
+  TCOD_Error err = TCOD_console_vprintf(&console, x, y, fg, bg, flag, alignment, fmt, args);
+  va_end(args);
+  check_throw_error(err);
+}
+/*****************************************************************************
     @brief Print a string to a console contrained to a bounding box.
 
     @param console A reference to a TCOD_Console.
@@ -378,7 +480,43 @@ inline int print_rect(
   return check_throw_error(
       TCOD_console_printn_rect(&console, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
 }
-/**
+/*****************************************************************************
+    @brief Print a formatted string to a console constrained to a bounding box.
+
+    @param console A reference to a TCOD_Console.
+    @param x The starting X position, starting from the left-most tile as zero.
+    @param y The starting Y position, starting from the upper-most tile as zero.
+    @param width The maximum width of the bounding region in tiles.
+    @param height The maximum height of the bounding region in tiles.
+    @param fg The foreground color.  The printed text is set to this color.
+              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+    @param bg The background color.  The background tile under the printed text is set to this color.
+              If NULL then the background will be left unchanged.
+    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
+    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    @param fmt
+    @param ...
+    @return int
+ */
+inline TCODLIB_PRINTF(10, 11) int printf_rect(
+    TCOD_Console& console,
+    int x,
+    int y,
+    int width,
+    int height,
+    const TCOD_ColorRGB* fg,
+    const TCOD_ColorRGB* bg,
+    TCOD_bkgnd_flag_t flag,
+    TCOD_alignment_t alignment,
+    const char* fmt,
+    ...) {
+  std::va_list args;
+  va_start(args, fmt);
+  int result = TCOD_console_vprintf_rect(&console, x, y, width, height, fg, bg, flag, alignment, fmt, args);
+  va_end(args);
+  return check_throw_error(result);
+}
+/*****************************************************************************
     @brief Return the height of the word-wrapped text with the given parameters.
 
     @param console A reference to a TCOD_Console.
@@ -396,7 +534,7 @@ inline int print_rect(
 inline int get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str) {
   return check_throw_error(TCOD_console_get_height_rect_n(&console, x, y, width, height, str.size(), str.data()));
 }
-/**
+/*****************************************************************************
     @brief Return the height of the word-wrapped text with the given width.
 
     @param width The maximum width of the bounding region in tiles.

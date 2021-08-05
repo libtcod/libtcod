@@ -346,6 +346,7 @@
         "vflip",
         "vline",
         "voronoi",
+        "vprintf",
         "vscale",
         "vsprint",
         "vsync",

@@ -1449,7 +1449,7 @@ TCOD_Error TCOD_console_printn_frame(
   }
   return TCOD_E_OK;
 }
-static TCOD_Error TCOD_console_vprintf_ex(
+TCOD_Error TCOD_console_vprintf(
     TCOD_Console* __restrict console,
     int x,
     int y,
@@ -1487,7 +1487,7 @@ TCOD_Error TCOD_console_printf_ex(
   }
   va_list args;
   va_start(args, fmt);
-  TCOD_Error err = TCOD_console_vprintf_ex(con, x, y, &con->fore, &con->back, flag, alignment, fmt, args);
+  TCOD_Error err = TCOD_console_vprintf(con, x, y, &con->fore, &con->back, flag, alignment, fmt, args);
   va_end(args);
   return err;
 }
@@ -1499,12 +1499,11 @@ TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const
   }
   va_list args;
   va_start(args, fmt);
-  TCOD_Error err =
-      TCOD_console_vprintf_ex(con, x, y, &con->fore, &con->back, con->bkgnd_flag, con->alignment, fmt, args);
+  TCOD_Error err = TCOD_console_vprintf(con, x, y, &con->fore, &con->back, con->bkgnd_flag, con->alignment, fmt, args);
   va_end(args);
   return err;
 }
-static int TCOD_console_vprintf_rect(
+int TCOD_console_vprintf_rect(
     struct TCOD_Console* __restrict con,
     int x,
     int y,

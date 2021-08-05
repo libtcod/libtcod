@@ -45,7 +45,7 @@
 #ifdef __cplusplus
 namespace tcod {
 template <typename T, size_t D>
-class MatrixView {
+class [[deprecated]] MatrixView {
  public:
   using value_type = T;
   using size_type = ptrdiff_t;
@@ -142,7 +142,7 @@ class MatrixView {
   strides_type strides_;
 };
 template <typename T, size_t D>
-class Matrix {
+class [[deprecated]] Matrix {
  public:
   using view_type = MatrixView<T, D>;
   using value_type = typename view_type::value_type;

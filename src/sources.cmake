@@ -70,6 +70,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/list.h
     libtcod/list.hpp
     libtcod/list_c.c
+    libtcod/matrix.h
     libtcod/mersenne.cpp
     libtcod/mersenne.h
     libtcod/mersenne.hpp
@@ -223,6 +224,7 @@ install(FILES
     libtcod/libtcod_int.h
     libtcod/list.h
     libtcod/list.hpp
+    libtcod/matrix.h
     libtcod/mersenne.h
     libtcod/mersenne.hpp
     libtcod/mersenne_types.h
@@ -369,6 +371,7 @@ source_group(libtcod FILES
     libtcod/list.h
     libtcod/list.hpp
     libtcod/list_c.c
+    libtcod/matrix.h
     libtcod/mersenne.cpp
     libtcod/mersenne.h
     libtcod/mersenne.hpp

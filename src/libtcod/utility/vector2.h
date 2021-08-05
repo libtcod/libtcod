@@ -48,7 +48,7 @@ template <typename T>
 /**
  *  A 2-dimensional vector array.
  */
-class Vector2 {
+class [[deprecated]] Vector2 {
  public:
   using value_type = T;
   using size_type = ptrdiff_t;

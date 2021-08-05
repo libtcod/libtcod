@@ -37,6 +37,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/libtcod_int.h \
 	../../src/libtcod/list.h \
 	../../src/libtcod/list.hpp \
+	../../src/libtcod/matrix.h \
 	../../src/libtcod/mersenne.h \
 	../../src/libtcod/mersenne.hpp \
 	../../src/libtcod/mersenne_types.h \

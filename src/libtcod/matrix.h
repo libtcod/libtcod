@@ -53,6 +53,8 @@ class Matrix {
   using shape_type = std::array<size_type, Dimensions>;  // The type used to measure the matrixes shape.
   using index_type = std::array<size_type, Dimensions>;  // The type used to index the container.
   using container_type = std::vector<T>;                 // The underlying container type.
+  using reference = typename container_type::reference;
+  using const_reference = typename container_type::const_reference;
   Matrix() = default;
   explicit Matrix(const shape_type& shape) : shape_(shape), data_(get_size_from_shape(shape)) {}
   Matrix(const shape_type& shape, const T& fill_value) : shape_(shape), data_(get_size_from_shape(shape), fill_value) {}
@@ -61,11 +63,11 @@ class Matrix {
   auto end() noexcept { return data_.end(); }
   auto end() const noexcept { return data_.cend(); }
 
-  T& operator[](const index_type& index) noexcept { return data_[get_index(index)]; }
-  const T& operator[](const index_type& index) const noexcept { return data_[get_index(index)]; }
+  reference operator[](const index_type& index) noexcept { return data_[get_index(index)]; }
+  const_reference operator[](const index_type& index) const noexcept { return data_[get_index(index)]; }
 
-  T& at(const index_type& index) { return data_[check_range(index)]; }
-  const T& at(const index_type& index) const { return data_[check_range(index)]; }
+  reference at(const index_type& index) { return data_[check_range(index)]; }
+  const_reference at(const index_type& index) const { return data_[check_range(index)]; }
 
   const shape_type& get_shape() const { return shape_; }
   bool in_bounds(const index_type& index) const noexcept {
@@ -86,7 +88,7 @@ class Matrix {
     for (auto& it : shape) size *= it;
     return size;
   }
-  size_t get_index(const index_type& index) noexcept {
+  size_t get_index(const index_type& index) const noexcept {
     size_t stride = 1;
     size_t data_index = 0;
     for (size_t dimension = 0; dimension < Dimensions; ++dimension) {
@@ -95,7 +97,7 @@ class Matrix {
     }
     return data_index;
   }
-  size_t check_range(const index_type& index) {
+  size_t check_range(const index_type& index) const {
     if (!in_bounds(index)) {
       throw std::out_of_range(
           std::string("Out of bounds lookup ") + array_as_string(index) + " on matrix of shape " +

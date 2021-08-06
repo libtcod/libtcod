@@ -35,11 +35,9 @@ struct Frost {
 
 class FrostManager {
  public:
-  explicit FrostManager(int w, int h) : grid(w * h), img{std::make_unique<TCODImage>(w, h)}, width{w}, height{h} {
-    clear();
-  }
+  explicit FrostManager(int w, int h) : grid({w, h}), img({w, h}), width{w}, height{h} { clear(); }
   inline void clear() {
-    img->clear({0, 0, 0});
+    for (auto& it : img) it = {0, 0, 0};
     for (auto& it : grid) it = 0;
   }
   inline void addFrost(int x, int y) {
@@ -52,7 +50,7 @@ class FrostManager {
   }
   inline void render(TCOD_Console& console) {
     for (auto& it : frost_objs) frost_render(it);
-    TCOD_image_blit_2x(img->get_data(), &console, 0, 0, 0, 0, -1, -1);
+    TCOD_image_blit_2x(TCODImage(img).get_data(), &console, 0, 0, 0, 0, -1, -1);
   }
 
   /**
@@ -61,11 +59,11 @@ class FrostManager {
   inline bool in_bounds(int x, int y) const noexcept { return 0 <= x && 0 <= y && x < width && y < height; }
   inline float getValue(int x, int y) const noexcept {
     if (!(in_bounds(x, y))) return 0.0f;
-    return grid.at(x + y * width);
+    return grid.at({x, y});
   }
   inline void setValue(int x, int y, float value) noexcept {
     if (!(in_bounds(x, y))) return;
-    grid.at(x + y * width) = value;
+    grid.at({x, y}) = value;
   }
 
  private:
@@ -161,14 +159,15 @@ class FrostManager {
       for (int cx = std::max(frost.origin_x - RANGE, 0); cx < std::min(frost.origin_x + RANGE + 1, width); ++cx) {
         const float f = getValue(frost, cx - (frost.origin_x - RANGE), cy - (frost.origin_y - RANGE));
         const int idx = std::max(0, std::min(static_cast<int>(f * 255), 255));
-        img->putPixel(cx, cy, frost_gradient.at(idx));
+        const auto& color = frost_gradient.at(idx);
+        img.at({cx, cy}) = {color.r, color.g, color.b};
       }
     }
   }
-  std::vector<Frost> frost_objs;   // A vector of frost effects.
-  std::vector<float> grid;         // A canvas for holding the freeze effect values.
-  std::unique_ptr<TCODImage> img;  // An image for storing the freeze colors.
-  int width, height;               // The size of the managed frost map.
+  std::vector<Frost> frost_objs;       // A vector of frost effects.
+  tcod::Matrix<float, 2> grid;         // A canvas for holding the freeze effect values.
+  tcod::Matrix<TCOD_ColorRGB, 2> img;  // An image for storing the freeze colors.
+  int width, height;                   // The size of the managed frost map.
 };
 
 static constexpr int CONSOLE_WIDTH = 80;

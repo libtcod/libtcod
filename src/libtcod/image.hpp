@@ -37,6 +37,7 @@
 
 #include "console.hpp"
 #include "image.h"
+#include "matrix.h"
 
 class TCODConsole;
 
@@ -98,6 +99,24 @@ public :
 	@PyEx pix = libtcod.image_from_console(0)
 	*/
 	TCODImage(const TCODConsole *console);
+
+  // clang-format on
+  /***************************************************************************
+      @brief Construct a new TCODImage object from a Matrix of pixels.
+
+      This constructor is provisional.
+
+      @param pixels A 2D matrix of RGB pixels.
+   */
+  explicit TCODImage(const tcod::Matrix<TCOD_ColorRGB, 2>& pixels)
+      : TCODImage(pixels.get_shape().at(0), pixels.get_shape().at(1)) {
+    for (int y = 0; y < pixels.get_shape().at(1); ++y) {
+      for (int x = 0; x < pixels.get_shape().at(0); ++x) {
+        putPixel(x, y, pixels[{x, y}]);
+      }
+    }
+  }
+  // clang-format off
 
 	/**
 	@PageName image_create

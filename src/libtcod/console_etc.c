@@ -308,252 +308,277 @@ void TCOD_console_credits(void) {
   TCOD_sys_restore_fps();
 }
 
-static bool init2 = false;
+static bool credits_initialized = false;
 
-void TCOD_console_credits_reset(void) { init2 = false; }
+void TCOD_console_credits_reset(void) { credits_initialized = false; }
 
-bool TCOD_console_credits_render(int x, int y, bool alpha) {
+/*****************************************************************************
+    @brief Return a bitmask based on which quadrants are in the foreground, or -1 on non-quadrant codepoints.
+
+    The returned bitmask is arranged as the following flag values:
+        1 2
+        4 8
+ */
+static int8_t quadrants_from_codepoint(int codepoint) {
+  switch (codepoint) {
+    case 0x20:  // Space.
+      return 0;
+    case 0x2580:  // Upper half block.
+      return 1 | 2;
+    case 0x2584:  // Lower half block.
+      return 4 | 8;
+    case 0x2588:  // Full block.
+      return 1 | 2 | 4 | 8;
+    case 0x258C:  // Left half block.
+      return 1 | 4;
+    case 0x2590:  // Right half block.
+      return 2 | 8;
+    case 0x2596:  // Lower left quadrant.
+      return 4;
+    case 0x2597:  // Quadrant lower right
+      return 8;
+    case 0x2598:  // Quadrant upper left
+      return 1;
+    case 0x2599:  // ▙
+      return 1 | 4 | 8;
+    case 0x259A:  // ▚
+      return 1 | 8;
+    case 0x259B:  // ▛
+      return 1 | 2 | 4;
+    case 0x259C:  // ▜
+      return 1 | 2 | 8;
+    case 0x259D:  // ▝
+      return 2;
+    case 0x259E:  // ▞
+      return 2 | 4;
+    case 0x259F:  // ▟
+      return 2 | 4 | 8;
+    default:
+      return -1;
+  }
+}
+
+bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool alpha, float delta_time) {
+  console = TCOD_console_validate_(console);
+  if (!console) return false;
   static char powered_by[128];
   static float char_heat[128];
   static int char_x[128];
   static int char_y[128];
-  static bool init1 = false;
-  static int len, len1, cw = -1, ch = -1;
-  static float xstr;
-  static TCOD_color_t colmap[64];
-  static TCOD_color_t colmap_light[64];
-  static TCOD_noise_t noise;
-  static TCOD_color_t colkeys[4] = {
+  static bool static_vars_initialized = false;
+  static int text_length, text_length_upper;
+  static int console_w = -1, console_h = -1;
+  static float text_progress;
+  static TCOD_ColorRGB colormap_heat[64];
+  static TCOD_ColorRGB colormap_light[64];
+  static TCOD_Noise* noise;
+  static const TCOD_ColorRGB color_keys_heat[4] = {
       {255, 255, 204},
       {255, 204, 0},
       {255, 102, 0},
       {102, 153, 255},
   };
-  static TCOD_color_t colkeys_light[4] = {
+  static const TCOD_ColorRGB color_keys_light[4] = {
       {255, 255, 204},
       {128, 128, 77},
       {51, 51, 31},
       {0, 0, 0},
   };
-  static int colpos[4] = {0, 21, 42, 63};
+  static const int color_key_positions[4] = {0, 21, 42, 63};
   static TCOD_image_t img = NULL;
-  int i, xc, yc, xi, yi, j;
   static int left, right, top, bottom;
-  float sparkle_x, sparkle_y, sparkle_rad, sparkle_rad2, noise_x;
   /* mini particle system */
-#define MAX_PARTICULES 50
-  static float p_heat[MAX_PARTICULES];
-  static float px[MAX_PARTICULES], py[MAX_PARTICULES], pvx[MAX_PARTICULES], pvy[MAX_PARTICULES];
-  static int nb_part = 0, first_part = 0;
-  static float partDelay = 0.1f;
-  float elapsed = TCOD_sys_get_last_frame_length();
-  TCOD_color_t fg_backup; /* backup fg color */
+#define MAX_PARTICULES 64
+  static float particle_heat[MAX_PARTICULES];
+  static float particle_x[MAX_PARTICULES], particle_y[MAX_PARTICULES];
+  static float particle_x_velocity[MAX_PARTICULES], particle_y_velocity[MAX_PARTICULES];
+  static int particle_count = 0;       // Current number of active particles.
+  static int first_particle = 0;       // First particle index, particle data wraps around the array.
+  static float particle_delay = 0.1f;  // Seconds until the next particle spawns.
 
-  if (!init1) {
+  if (!static_vars_initialized) {
     /* initialize all static data, colormaps, ... */
-    TCOD_color_t col;
-    TCOD_color_gen_map(colmap, 4, colkeys, colpos);
-    TCOD_color_gen_map(colmap_light, 4, colkeys_light, colpos);
-    sprintf(powered_by, "Powered by\n%s", version_string);
+    TCOD_color_gen_map(colormap_heat, 4, color_keys_heat, color_key_positions);
+    TCOD_color_gen_map(colormap_light, 4, color_keys_light, color_key_positions);
+    text_length = snprintf(powered_by, sizeof(powered_by), "Powered by\n%s", version_string);
     noise = TCOD_noise_new(1, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
-    len = (int)strlen(powered_by);
-    len1 = 11; /* sizeof "Powered by\n" */
+    text_length_upper = (int)strlen("Powered by\n");
     left = MAX(x - 4, 0);
     top = MAX(y - 4, 0);
-    col = TCOD_console_get_default_background(NULL);
-    TCOD_console_set_default_background(NULL, TCOD_black);
-    TCOD_console_set_default_background(NULL, col);
-    init1 = true;
+    const TCOD_ColorRGB color = TCOD_console_get_default_background(console);
+    TCOD_console_set_default_background(console, TCOD_black);
+    TCOD_console_set_default_background(console, color);
+    static_vars_initialized = true;
   }
-  if (!init2) {
+  if (!credits_initialized) {
     /* reset the credits vars ... */
-    int curx, cury;
-    xstr = -4.0f;
-    curx = x;
-    cury = y;
-    for (i = 0; i < len; i++) {
+    text_progress = -4.0f;
+    int cursor_x = x;
+    int cursor_y = y;
+    for (int i = 0; i < text_length; ++i) {
       char_heat[i] = -1;
-      char_x[i] = curx;
-      char_y[i] = cury;
-      curx++;
+      char_x[i] = cursor_x;
+      char_y[i] = cursor_y;
+      ++cursor_x;
       if (powered_by[i] == '\n') {
-        curx = x;
-        cury++;
+        cursor_x = x;
+        ++cursor_y;
       }
     }
-    nb_part = first_part = 0;
-    init2 = true;
+    particle_count = first_particle = 0;
+    credits_initialized = true;
   }
-  if (TCOD_console_get_width(NULL) != cw || TCOD_console_get_height(NULL) != ch) {
+  if (TCOD_console_get_width(console) != console_w || TCOD_console_get_height(console) != console_h) {
     /* console size has changed */
-    int width, height;
-    cw = TCOD_console_get_width(NULL);
-    ch = TCOD_console_get_height(NULL);
-    right = MIN(x + len, cw - 1);
-    bottom = MIN(y + 6, ch - 1);
-    width = right - left + 1;
-    height = bottom - top + 1;
+    console_w = TCOD_console_get_width(console);
+    console_h = TCOD_console_get_height(console);
+    right = MIN(x + text_length, console_w - 1);
+    bottom = MIN(y + 6, console_h - 1);
+    const int width = right - left + 1;
+    const int height = bottom - top + 1;
     if (img) TCOD_image_delete(img);
     img = TCOD_image_new(width * 2, height * 2);
   }
-  fg_backup = TCOD_console_get_default_foreground(NULL);
-  if (xstr < len1) {
-    sparkle_x = x + xstr;
+  const TCOD_ColorRGB fg_backup = TCOD_console_get_default_foreground(console); /* backup fg color */
+  float sparkle_x;
+  float sparkle_y;
+  if (text_progress < text_length_upper) {
+    sparkle_x = x + text_progress;
     sparkle_y = (float)y;
   } else {
-    sparkle_x = x - len1 + xstr;
+    sparkle_x = x - text_length_upper + text_progress;
     sparkle_y = (float)(y + 1);
   }
-  noise_x = xstr * 6;
-  sparkle_rad = 3.0f + 2 * TCOD_noise_get(noise, &noise_x);
-  if (xstr >= len - 1)
-    sparkle_rad -= (xstr - len + 1) * 4.0f;
-  else if (xstr < 0.0f)
-    sparkle_rad += xstr * 4.0f;
-  else if (powered_by[(int)(xstr + 0.5f)] == ' ' || powered_by[(int)(xstr + 0.5f)] == '\n')
-    sparkle_rad /= 2;
-  sparkle_rad2 = sparkle_rad * sparkle_rad * 4;
+  const float noise_x = text_progress * 6;
+  float sparkle_radius = 3.0f + 2 * TCOD_noise_get(noise, &noise_x);
+  if (text_progress >= text_length - 1) {
+    sparkle_radius -= (text_progress - text_length + 1) * 4.0f;
+  } else if (text_progress < 0.0f) {
+    sparkle_radius += text_progress * 4.0f;
+  } else if (powered_by[(int)(text_progress + 0.5f)] == ' ' || powered_by[(int)(text_progress + 0.5f)] == '\n') {
+    sparkle_radius /= 2;
+  }
+  const float sparkle_radius2 = sparkle_radius * sparkle_radius * 4;
 
   /* draw the light */
-  for (xc = left * 2, xi = 0; xc < (right + 1) * 2; xc++, xi++) {
-    for (yc = top * 2, yi = 0; yc < (bottom + 1) * 2; yc++, yi++) {
-      float dist = ((xc - 2 * sparkle_x) * (xc - 2 * sparkle_x) + (yc - 2 * sparkle_y) * (yc - 2 * sparkle_y));
-      TCOD_color_t pixcol;
-      if (sparkle_rad >= 0.0f && dist < sparkle_rad2) {
-        int colidx = 63 - (int)(63 * (sparkle_rad2 - dist) / sparkle_rad2) + TCOD_random_get_int(NULL, -10, 10);
+  for (int xc = left * 2, xi = 0; xc < (right + 1) * 2; ++xc, ++xi) {
+    for (int yc = top * 2, yi = 0; yc < (bottom + 1) * 2; ++yc, ++yi) {
+      const float dist = ((xc - 2 * sparkle_x) * (xc - 2 * sparkle_x) + (yc - 2 * sparkle_y) * (yc - 2 * sparkle_y));
+      TCOD_ColorRGB pixel_color = TCOD_black;
+      if (sparkle_radius >= 0.0f && dist < sparkle_radius2) {
+        int colidx = 63 - (int)(63 * (sparkle_radius2 - dist) / sparkle_radius2) + TCOD_random_get_int(NULL, -10, 10);
         colidx = CLAMP(0, 63, colidx);
-        pixcol = colmap_light[colidx];
-      } else {
-        pixcol = TCOD_black;
+        pixel_color = colormap_light[colidx];
       }
       if (alpha) {
-        /*	console cells have following flag values :
-                        1 2
-                        4 8
-                flag indicates which subcell uses foreground color */
-        static int asciiToFlag[] = {
-            1,  /* TCOD_CHAR_SUBP_NW */
-            2,  /* TCOD_CHAR_SUBP_NE */
-            3,  /* TCOD_CHAR_SUBP_N */
-            8,  /* TCOD_CHAR_SUBP_SE */
-            9,  /* TCOD_CHAR_SUBP_DIAG */
-            10, /* TCOD_CHAR_SUBP_E */
-            4,  /* TCOD_CHAR_SUBP_SW */
-        };
-        int conc = TCOD_console_get_char(NULL, xc / 2, yc / 2);
-        TCOD_color_t bk = TCOD_console_get_char_background(NULL, xc / 2, yc / 2);
-        if (conc >= TCOD_CHAR_SUBP_NW && conc <= TCOD_CHAR_SUBP_SW) {
+        TCOD_ColorRGB bg_color = TCOD_console_get_char_background(console, xc / 2, yc / 2);
+        const int8_t quadrant_mask = quadrants_from_codepoint(TCOD_console_get_char(console, xc / 2, yc / 2));
+        if (quadrant_mask > 0) {
           /* merge two subcell chars...
              get the flag for the existing cell on root console */
-          int bk_flag = asciiToFlag[conc - TCOD_CHAR_SUBP_NW];
-          int x_flag = (xc & 1);
-          int y_flag = (yc & 1);
+          const bool x_flag = (xc & 1);
+          const bool y_flag = (yc & 1);
           /* get the flag for the current subcell */
-          int credflag = (1 + 3 * y_flag) * (x_flag + 1);
-          if ((credflag & bk_flag) != 0) {
-            /* the color for this subcell on root console
-               is foreground, not background */
-            bk = TCOD_console_get_char_foreground(NULL, xc / 2, yc / 2);
+          const int8_t current_quadrant_bit = (1 + 3 * y_flag) * (x_flag + 1);
+          if ((current_quadrant_bit & quadrant_mask) != 0) {
+            /* the color for this subcell on root console is foreground, not background */
+            bg_color = TCOD_console_get_char_foreground(console, xc / 2, yc / 2);
           }
         }
-        pixcol.r = MIN(255, bk.r + pixcol.r);
-        pixcol.g = MIN(255, bk.g + pixcol.g);
-        pixcol.b = MIN(255, bk.b + pixcol.b);
+        pixel_color.r = MIN(255, bg_color.r + pixel_color.r);
+        pixel_color.g = MIN(255, bg_color.g + pixel_color.g);
+        pixel_color.b = MIN(255, bg_color.b + pixel_color.b);
       }
-      TCOD_image_put_pixel(img, xi, yi, pixcol);
+      TCOD_image_put_pixel(img, xi, yi, pixel_color);
     }
   }
 
   /* draw and update the particules */
-  j = nb_part;
-  i = first_part;
-  while (j > 0) {
-    int colidx = (int)(64 * (1.0f - p_heat[i]));
-    TCOD_color_t col;
-    colidx = MIN(63, colidx);
-    col = colmap[colidx];
-    if (py[i] < (bottom - top + 1) * 2) {
-      int ipx = (int)px[i];
-      int ipy = (int)py[i];
-      float fpx = px[i] - ipx;
-      float fpy = py[i] - ipy;
-      TCOD_color_t col2 = TCOD_image_get_pixel(img, ipx, ipy);
-      col2 = TCOD_color_lerp(col, col2, 0.5f * (fpx + fpy));
-      TCOD_image_put_pixel(img, ipx, ipy, col2);
-      col2 = TCOD_image_get_pixel(img, ipx + 1, ipy);
-      col2 = TCOD_color_lerp(col2, col, fpx);
-      TCOD_image_put_pixel(img, ipx + 1, ipy, col2);
-      col2 = TCOD_image_get_pixel(img, ipx, ipy + 1);
-      col2 = TCOD_color_lerp(col2, col, fpy);
-      TCOD_image_put_pixel(img, ipx, ipy + 1, col2);
-    } else
-      pvy[i] = -pvy[i] * 0.5f;
-    pvx[i] *= (1.0f - elapsed);
-    pvy[i] += (1.0f - p_heat[i]) * elapsed * 300.0f;
-    px[i] += pvx[i] * elapsed;
-    py[i] += pvy[i] * elapsed;
-    p_heat[i] -= elapsed * 0.3f;
-    if (p_heat[i] < 0.0f) {
-      first_part = (first_part + 1) % MAX_PARTICULES;
-      nb_part--;
+  int particles_left_to_update = particle_count;
+  int particle_i = first_particle;
+  while (particles_left_to_update > 0) {
+    const int color_index = MIN(63, (int)(64 * (1.0f - particle_heat[particle_i])));
+    const TCOD_ColorRGB particle_color = colormap_heat[color_index];
+    if (particle_y[particle_i] < (bottom - top + 1) * 2) {
+      const int particle_x_int = (int)particle_x[particle_i];
+      const int particle_y_int = (int)particle_y[particle_i];
+      const float particle_x_fractional = particle_x[particle_i] - particle_x_int;
+      const float particle_y_fractional = particle_y[particle_i] - particle_y_int;
+      TCOD_ColorRGB col2 = TCOD_image_get_pixel(img, particle_x_int, particle_y_int);
+      col2 = TCOD_color_lerp(particle_color, col2, 0.5f * (particle_x_fractional + particle_y_fractional));
+      TCOD_image_put_pixel(img, particle_x_int, particle_y_int, col2);
+      col2 = TCOD_image_get_pixel(img, particle_x_int + 1, particle_y_int);
+      col2 = TCOD_color_lerp(col2, particle_color, particle_x_fractional);
+      TCOD_image_put_pixel(img, particle_x_int + 1, particle_y_int, col2);
+      col2 = TCOD_image_get_pixel(img, particle_x_int, particle_y_int + 1);
+      col2 = TCOD_color_lerp(col2, particle_color, particle_y_fractional);
+      TCOD_image_put_pixel(img, particle_x_int, particle_y_int + 1, col2);
+    } else {
+      particle_y_velocity[particle_i] = -particle_y_velocity[particle_i] * 0.5f;  // Particle bounces on floor.
     }
-    i = (i + 1) % MAX_PARTICULES;
-    j--;
-  }
-  partDelay -= elapsed;
-  if (partDelay < 0.0f && nb_part < MAX_PARTICULES && sparkle_rad > 2.0f) {
-    /* fire a new particle */
-    int lastpart = first_part;
-    int nb = nb_part;
-    while (nb > 0) {
-      lastpart = (lastpart + 1) % MAX_PARTICULES;
-      nb--;
+    particle_x_velocity[particle_i] *= (1.0f - delta_time);
+    particle_y_velocity[particle_i] += (1.0f - particle_heat[particle_i]) * delta_time * 300.0f;
+    particle_x[particle_i] += particle_x_velocity[particle_i] * delta_time;
+    particle_y[particle_i] += particle_y_velocity[particle_i] * delta_time;
+    particle_heat[particle_i] -= delta_time * 0.3f;
+    if (particle_heat[particle_i] < 0.0f) {  // Particle has died out.
+      first_particle = (first_particle + 1) % MAX_PARTICULES;
+      --particle_count;
     }
-    nb_part++;
-    px[lastpart] = 2 * (sparkle_x - left);
-    py[lastpart] = 2 * (sparkle_y - top) + 2;
-    pvx[lastpart] = TCOD_random_get_float(NULL, -5.0f, 5.0f);
-    pvy[lastpart] = TCOD_random_get_float(NULL, -0.5f, -15.0f);
-    p_heat[lastpart] = 1.0f;
-    partDelay += 0.1f;
+    particle_i = (particle_i + 1) % MAX_PARTICULES;
+    --particles_left_to_update;
   }
-  TCOD_image_blit_2x(img, NULL, left, top, 0, 0, -1, -1);
+  particle_delay -= delta_time;
+  if (particle_delay < 0.0f && particle_count < MAX_PARTICULES && sparkle_radius > 2.0f) {
+    // Fire a new particle.
+    const int new_particle = (first_particle + particle_count++) % MAX_PARTICULES;
+    particle_x[new_particle] = 2 * (sparkle_x - left);
+    particle_y[new_particle] = 2 * (sparkle_y - top) + 2;
+    particle_x_velocity[new_particle] = TCOD_random_get_float(NULL, -5.0f, 5.0f);
+    particle_y_velocity[new_particle] = TCOD_random_get_float(NULL, -0.5f, -15.0f);
+    particle_heat[new_particle] = 1.0f;
+    particle_delay += 0.1f;
+  }
+  TCOD_image_blit_2x(img, console, left, top, 0, 0, -1, -1);
   /* draw the text */
-  for (i = 0; i < len; i++) {
+  for (int i = 0; i < text_length; ++i) {
     if (char_heat[i] >= 0.0f && powered_by[i] != '\n') {
       int colidx = (int)(64 * char_heat[i]);
       TCOD_color_t col;
       colidx = MIN(63, colidx);
-      col = colmap[colidx];
-      if (xstr >= len) {
-        float coef = (xstr - len) / len;
+      col = colormap_heat[colidx];
+      if (text_progress >= text_length) {
+        float coef = (text_progress - text_length) / text_length;
         if (alpha) {
-          TCOD_color_t fore = TCOD_console_get_char_background(NULL, char_x[i], char_y[i]);
+          TCOD_color_t fore = TCOD_console_get_char_background(console, char_x[i], char_y[i]);
           int r = (int)(coef * fore.r + (1.0f - coef) * col.r);
           int g = (int)(coef * fore.g + (1.0f - coef) * col.g);
           int b = (int)(coef * fore.b + (1.0f - coef) * col.b);
           col.r = (uint8_t)MAX(0, MIN(r, 255));
           col.g = (uint8_t)MAX(0, MIN(g, 255));
           col.b = (uint8_t)MAX(0, MIN(b, 255));
-          TCOD_console_set_char_foreground(NULL, char_x[i], char_y[i], col);
+          TCOD_console_set_char_foreground(console, char_x[i], char_y[i], col);
         } else {
           col = TCOD_color_lerp(col, TCOD_black, coef);
         }
       }
-      TCOD_console_set_char(NULL, char_x[i], char_y[i], powered_by[i]);
-      TCOD_console_set_char_foreground(NULL, char_x[i], char_y[i], col);
+      TCOD_console_set_char(console, char_x[i], char_y[i], powered_by[i]);
+      TCOD_console_set_char_foreground(console, char_x[i], char_y[i], col);
     }
   }
   /* update letters heat */
-  xstr += elapsed * 4;
-  for (i = 0; i < (int)(xstr + 0.5f); ++i) {
-    char_heat[i] = (xstr - i) / (len / 2);
+  text_progress += delta_time * 4;
+  for (int i = 0; i < (int)(text_progress + 0.5f); ++i) {
+    char_heat[i] = (text_progress - i) / (text_length / 2);
   }
   /* restore fg color */
-  TCOD_console_set_default_foreground(NULL, fg_backup);
-  if (xstr <= 2 * len) return false;
-  init2 = false;
+  TCOD_console_set_default_foreground(console, fg_backup);
+  if (text_progress <= 2 * text_length) return false;
+  credits_initialized = false;
   return true;
+}
+bool TCOD_console_credits_render(int x, int y, bool alpha) {
+  return TCOD_console_credits_render_ex(NULL, x, y, alpha, TCOD_sys_get_last_frame_length());
 }
 void TCOD_console_set_keyboard_repeat(int initial_delay, int interval) {
   (void)initial_delay;

@@ -341,7 +341,7 @@ int main(int argc, char* argv[]) {
         *console, 2, HEIGHT - 2, &TEXT_COLOR, nullptr, TCOD_BKGND_SET, TCOD_LEFT, "%4.0f fps", 1.0f / delta_time);
     tcod::print(*console, 5, 49, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
     // render libtcod credits
-    // if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
+    if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     context->present(*console);
   }
 }

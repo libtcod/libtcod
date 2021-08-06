@@ -121,9 +121,26 @@ TCODLIB_API TCOD_key_t TCOD_console_check_for_keypress(int flags);
 TCOD_DEPRECATED("This API is deprecated, use SDL_WaitEvent instead.")
 TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
 
+TCOD_DEPRECATED("This function does not support contexts.  Consider using `TCOD_console_credits_render_ex`.")
 TCODLIB_API void TCOD_console_credits(void);
 TCODLIB_API void TCOD_console_credits_reset(void);
+TCOD_DEPRECATED("This function does not support contexts.  Consider using `TCOD_console_credits_render_ex`.")
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);
+/*****************************************************************************
+    @brief Render a libtcod credit animation to a console.
+
+    @param console The console to render to.
+    @param x
+    @param y
+    @param alpha
+    @param delta_time Delta time in seconds.
+    @return Returns true once the credits animation has ended.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCODLIB_API bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool alpha, float delta_time);
 
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay, int interval);

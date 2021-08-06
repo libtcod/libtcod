@@ -23,6 +23,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#include <SDL.h>
 #include <libtcod.h>
 #include <math.h>
 #include <stdio.h>
@@ -53,8 +54,8 @@ TCODImage img(WIDTHx2, HEIGHTx2);
 
 static constexpr auto VISCOSITY = 1E-6f;
 static constexpr auto diff = 1E-5f;
-static constexpr auto force = 40.0f;
-static constexpr auto source = 5000.0f;
+static constexpr auto force = 12000.0f;
+static constexpr auto source = 1250000.0f;
 static float stepDelay = 0.0f;
 
 static int player_x = N / 4, player_y = N / 4;
@@ -199,25 +200,27 @@ void init() {
   memcpy(dens_prev, dens, sizeof(float) * SIZE);
 }
 
-void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
+void get_from_UI(float* d, float* u, float* v, float delta_time, TCOD_Context& context) {
   float vx = 0.0f;
   float vy = 0.0f;
 
-  stepDelay -= elapsed;
+  const uint8_t* keyboard_state = SDL_GetKeyboardState(nullptr);
+
+  stepDelay -= delta_time;
   if (stepDelay < 0.0f) {
-    if (TCODConsole::isKeyPressed(TCODK_UP) && player_y > 0) {
+    if (keyboard_state[SDL_SCANCODE_UP] && player_y > 0) {
       player_y--;
       vy -= force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_DOWN) && player_y < N / 2 - 1) {
+    if (keyboard_state[SDL_SCANCODE_DOWN] && player_y < N / 2 - 1) {
       player_y++;
       vx += force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_LEFT) && player_x > 0) {
+    if (keyboard_state[SDL_SCANCODE_LEFT] && player_x > 0) {
       player_x--;
       vx -= force;
     }
-    if (TCODConsole::isKeyPressed(TCODK_RIGHT) && player_x < N / 2 - 1) {
+    if (keyboard_state[SDL_SCANCODE_RIGHT] && player_x < N / 2 - 1) {
       player_x++;
       vx += force;
     }
@@ -231,34 +234,39 @@ void get_from_UI(float* d, float* u, float* v, float elapsed, TCOD_key_t, TCOD_m
     u[i] = v[i] = d[i] = 0.0f;
   }
 
-  if (!mouse.lbutton && !mouse.rbutton) return;
+  int mouse_pixel_x;
+  int mouse_pixel_y;
+  uint32_t mouse_buttons = SDL_GetMouseState(&mouse_pixel_x, &mouse_pixel_y);
+  const auto mouse_tile_xy = context.pixel_to_tile_coordinates(std::array<int, 2>{mouse_pixel_x, mouse_pixel_y});
 
-  int i = mouse.cx * 2;
-  int j = mouse.cy * 2;
-  if (i < 1 || i > N || j < 1 || j > N) return;
+  int subtile_x = mouse_tile_xy.at(0) * 2;
+  int subtile_y = mouse_tile_xy.at(1) * 2;
+  if (subtile_x < 1 || subtile_x > N || subtile_y < 1 || subtile_y > N) return;
 
-  if (mouse.lbutton) {
-    float dx = (float)(mouse.cx - player_x);
-    float dy = (float)(mouse.cy - player_y);
+  if (mouse_buttons & SDL_BUTTON_LMASK) {
+    float dx = (float)(mouse_tile_xy.at(0) - player_x);
+    float dy = (float)(mouse_tile_xy.at(1) - player_y);
     float l = sqrtf(dx * dx + dy * dy);
     if (l > 0) {
       l = 1.0f / l;
       dx *= l;
       dy *= l;
-      u[IX(player_x * 2, player_y * 2)] = force * dx;
-      v[IX(player_x * 2, player_y * 2)] = force * dy;
-      d[IX(player_x * 2, player_y * 2)] = source;
+      u[IX(player_x * 2, player_y * 2)] += force * dx * delta_time;
+      v[IX(player_x * 2, player_y * 2)] += force * dy * delta_time;
+      d[IX(player_x * 2, player_y * 2)] += source * delta_time;
     }
   }
 }
 
-void update(float elapsed, TCOD_key_t k, TCOD_mouse_t mouse) {
-  get_from_UI(dens_prev, u_prev, v_prev, elapsed, k, mouse);
+void update(float elapsed, TCOD_Context& context) {
+  get_from_UI(dens_prev, u_prev, v_prev, elapsed, context);
   update_velocity(u_current, v_current, u_prev, v_prev, VISCOSITY, elapsed);
   update_density(dens, dens_prev, u_current, v_current, diff, elapsed);
 }
 
-void render() {
+static constexpr TCOD_ColorRGB TEXT_COLOR{0, 0, 0};
+
+void render(TCOD_Console& console) {
   static constexpr TCODColor deepBlue = {63, 15, 0};
   static constexpr TCODColor highBlue = {255, 255, 191};
   for (int x = 0; x <= N; x++) {
@@ -268,50 +276,72 @@ void render() {
       img.putPixel(x, y, TCODColor::lerp(deepBlue, highBlue, coef));
     }
   }
-  img.blit2x(TCODConsole::root, 0, 0);
-  TCODConsole::root->printf(2, HEIGHT - 2, "%4d fps", TCODSystem::getFps());
-  TCODConsole::root->setDefaultForeground({0, 0, 0});
-  TCODConsole::root->putChar(player_x, player_y, '@');
+  TCOD_image_blit_2x(img.get_data(), &console, 0, 0, 0, 0, -1, -1);
+
+  console.at(player_x, player_y).ch = '@';
+  console.at(player_x, player_y).fg = {0, 0, 0, 255};
 }
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(WIDTH, HEIGHT, "pyromancer flame spell", false, TCOD_RENDERER_OPENGL2);
-  TCODSystem::setFps(25);
-  TCODMouse::showCursor(true);
+  auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+  TCOD_ContextParams params{};
+  params.tcod_version = TCOD_COMPILEDVERSION;
+  params.argc = argc;
+  params.argv = argv;
+  params.columns = WIDTH;
+  params.rows = HEIGHT;
+  params.tileset = tileset.get();
+  params.window_title = "pyromancer flame spell";
+  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  params.vsync = true;
+
+  auto context = tcod::new_context(params);
+  auto console = tcod::new_console(WIDTH, HEIGHT);
 
   bool endCredits = false;
   init();
 
-  while (!TCODConsole::isWindowClosed()) {
-    TCOD_key_t k;
-    TCOD_mouse_t mouse;
+  uint64_t last_time = SDL_GetPerformanceCounter();
 
-    TCODSystem::checkForEvent(TCOD_EVENT_KEY | TCOD_EVENT_MOUSE, &k, &mouse);
-    /*
-                    v_prev[IX(N/2,0)] = 1.0f;
-                    u_prev[IX(N/3,N/3)]=1.0f;
-                    dens_prev[IX(N/2,0)] = 128.0f;
-    */
-    if (k.vk == TCODK_PRINTSCREEN) {
-      // screenshot
-      if (!k.pressed) TCODSystem::saveScreenshot(NULL);
-      k.vk = TCODK_NONE;
-    } else if (k.lalt && (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER)) {
-      // switch fullscreen
-      if (!k.pressed) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-      k.vk = TCODK_NONE;
+  while (true) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_QUIT:
+          return 0;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_RETURN:
+            case SDL_SCANCODE_RETURN2:
+            case SDL_SCANCODE_KP_ENTER:
+              if (event.key.keysym.mod & KMOD_ALT) {
+                auto window = context->get_sdl_window();
+                const uint32_t flags = SDL_GetWindowFlags(window);
+                if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+                  SDL_SetWindowFullscreen(window, 0);
+                } else {
+                  SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                }
+              }
+              break;
+          }
+          break;
+      }
     }
     // update the game
-    update(TCODSystem::getLastFrameLength(), k, mouse);
-
+    const uint64_t current_time = SDL_GetPerformanceCounter();
+    const float delta_time =
+        static_cast<float>(std::max<int64_t>(1, current_time - last_time)) / SDL_GetPerformanceFrequency();
+    last_time = current_time;
+    update(delta_time, *context);
     // render the game screen
-    render();
-    TCODConsole::root->printf(5, 49, "Arrows to move, left mouse button to cast");
+    render(*console);
+    tcod::printf(
+        *console, 2, HEIGHT - 2, &TEXT_COLOR, nullptr, TCOD_BKGND_SET, TCOD_LEFT, "%4.0f fps", 1.0f / delta_time);
+    tcod::print(*console, 5, 49, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
     // render libtcod credits
-    if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
-    // flush updates to screen
-    TCODConsole::root->flush();
+    // if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
+    context->present(*console);
   }
-  return 0;
 }

@@ -78,7 +78,7 @@ if (CONAN_FILE)
 endif()
 
 add_executable(navier navier/main.cpp)
-target_link_libraries(navier ${LINK_TCOD})
+target_link_libraries(navier ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
 if (CONAN_FILE)
     add_dependencies(navier copy_font)
 endif()

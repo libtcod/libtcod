@@ -66,8 +66,8 @@ class Matrix {
   reference operator[](const index_type& index) noexcept { return data_[get_index(index)]; }
   const_reference operator[](const index_type& index) const noexcept { return data_[get_index(index)]; }
 
-  reference at(const index_type& index) { return data_[check_range(index)]; }
-  const_reference at(const index_type& index) const { return data_[check_range(index)]; }
+  reference at(const index_type& index) { return data_.at(check_range(index)); }
+  const_reference at(const index_type& index) const { return data_.at(check_range(index)); }
 
   const shape_type& get_shape() const { return shape_; }
   bool in_bounds(const index_type& index) const noexcept {

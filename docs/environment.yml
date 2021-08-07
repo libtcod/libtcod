@@ -1,0 +1,12 @@
+name: RTD
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - doxygen=1.9.1
+  - pip:
+    - breathe
+    - sphinx<4
+    - sphinx_rtd_theme
+    - recommonmark

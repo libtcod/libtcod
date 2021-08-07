@@ -50,6 +50,7 @@
         "colorwheel",
         "COMPILEDVERSION",
         "conanbuildinfo",
+        "conda",
         "CONFIGDIR",
         "consolas",
         "cottog",

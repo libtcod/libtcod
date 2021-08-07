@@ -144,8 +144,7 @@ Printing functions using UTF-8 (C++)
 .. doxygenfunction:: tcod::get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str)
 .. doxygenfunction:: tcod::get_height_rect(int width, const std::string& str)
 
-.. doxygenfunction:: tcod::printf
-.. doxygenfunction:: tcod::printf_rect
+.. doxygenfunction:: tcod::printf_to_str
 
 Printing functions using 8-bit encodings
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

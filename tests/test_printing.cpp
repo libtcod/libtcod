@@ -6,12 +6,14 @@
 
 TEST_CASE("tcod::print") {
   tcod::ConsolePtr console = tcod::new_console(5, 1);
-  tcod::print(*console, 0, 0, "Test", nullptr, nullptr);
+  static constexpr TCOD_ColorRGB FG{1, 2, 3};
+  static constexpr TCOD_ColorRGB BG{4, 5, 6};
+  tcod::print(*console, 0, 0, "Test", &FG, &BG);
   CHECK(to_string(*console) == "Test ");
+  CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});
+  CHECK(console->at(0, 0).bg == TCOD_ColorRGBA{4, 5, 6, 255});
+  CHECK(console->at(4, 0).fg == TCOD_ColorRGBA{255, 255, 255, 255});
+  CHECK(console->at(4, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }
 
-TEST_CASE("tcod::printf") {
-  tcod::ConsolePtr console = tcod::new_console(5, 1);
-  tcod::printf(*console, 0, 0, nullptr, nullptr, TCOD_BKGND_SET, TCOD_LEFT, "%s", "Test");
-  CHECK(to_string(*console) == "Test ");
-}
+TEST_CASE("String from printf.") { CHECK(tcod::printf_to_str("%s%s%s", "1", "2", "3") == "123"); }

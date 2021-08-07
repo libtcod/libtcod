@@ -33,8 +33,11 @@
 #define TCOD_CONSOLE_PRINTING_H_
 
 #ifdef __cplusplus
+#include <stdio.h>
+
 #include <array>
 #include <cstdarg>
+#include <stdexcept>
 #include <string>
 #endif
 
@@ -411,41 +414,6 @@ inline void print(
   check_throw_error(TCOD_console_printn(&console, x, y, str.size(), str.data(), fg, bg, flag, alignment));
 }
 /*****************************************************************************
-    @brief Print a formatted string to a console.
-
-    @param console A reference to a TCOD_Console.
-    @param x The starting X position, starting from the left-most tile as zero.
-    @param y The starting Y position, starting from the upper-most tile as zero.
-    @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
-    @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
-    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
-    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
-    @param fmt A printf-lie format string.
-    @param ... The additional arguments for the formatted string.
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-inline TCODLIB_PRINTF(8, 9) void printf(
-    TCOD_Console& console,
-    int x,
-    int y,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment,
-    const char* fmt,
-    ...) {
-  std::va_list args;
-  va_start(args, fmt);
-  TCOD_Error err = TCOD_console_vprintf(&console, x, y, fg, bg, flag, alignment, fmt, args);
-  va_end(args);
-  check_throw_error(err);
-}
-/*****************************************************************************
     @brief Print a string to a console contrained to a bounding box.
 
     @param console A reference to a TCOD_Console.
@@ -479,42 +447,6 @@ inline int print_rect(
     TCOD_alignment_t alignment = TCOD_LEFT) {
   return check_throw_error(
       TCOD_console_printn_rect(&console, x, y, width, height, str.size(), str.data(), fg, bg, flag, alignment));
-}
-/*****************************************************************************
-    @brief Print a formatted string to a console constrained to a bounding box.
-
-    @param console A reference to a TCOD_Console.
-    @param x The starting X position, starting from the left-most tile as zero.
-    @param y The starting Y position, starting from the upper-most tile as zero.
-    @param width The maximum width of the bounding region in tiles.
-    @param height The maximum height of the bounding region in tiles.
-    @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
-    @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
-    @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
-    @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
-    @param fmt
-    @param ...
-    @return int
- */
-inline TCODLIB_PRINTF(10, 11) int printf_rect(
-    TCOD_Console& console,
-    int x,
-    int y,
-    int width,
-    int height,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag,
-    TCOD_alignment_t alignment,
-    const char* fmt,
-    ...) {
-  std::va_list args;
-  va_start(args, fmt);
-  int result = TCOD_console_vprintf_rect(&console, x, y, width, height, fg, bg, flag, alignment, fmt, args);
-  va_end(args);
-  return check_throw_error(result);
 }
 /*****************************************************************************
     @brief Return the height of the word-wrapped text with the given parameters.
@@ -561,6 +493,29 @@ inline int get_height_rect(int width, const std::string& str) {
     bool clear = true) {
   check_throw_error(
       TCOD_console_printn_frame(&console, x, y, width, height, title.size(), title.data(), fg, bg, flag, clear));
+}
+/*****************************************************************************
+    @brief Return a formatted string as a std::string object.
+
+    This is a convience function for code using printf-like formatted strings.
+    Newer more modern code might want to use the fmt library instead.
+
+    @tparam T Parameter packed arguments.
+    @param format A printf-like format string.
+    @param args Any printf-like arguments.
+    @return A std::string object with the resulting output.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+template <typename... T>
+inline std::string printf_to_str(const char* format, T... args) {
+  const int str_length = snprintf(nullptr, 0, format, args...);
+  if (str_length < 0) throw std::runtime_error("Failed to format string.");
+  std::string out(str_length, '\0');
+  snprintf(&out[0], str_length + 1, format, args...);
+  return out;
 }
 }  // namespace tcod
 #endif  // __cplusplus

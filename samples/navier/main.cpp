@@ -30,7 +30,77 @@
 
 #include <array>
 #include <cstdbool>
+#include <deque>
+#include <numeric>
 #include <vector>
+
+class Timer {
+ public:
+  static constexpr size_t MAX_SAMPLES = 256;
+  Timer() : last_time_{SDL_GetPerformanceCounter()} {}
+
+  float sync(int fps = 0) {
+    const uint64_t frequency = SDL_GetPerformanceFrequency();
+    uint64_t current_time = SDL_GetPerformanceCounter();                   // Precise current time.
+    int64_t delta_time = std::max<int64_t>(0, current_time - last_time_);  // Precise delta time.
+    if (fps > 0) {
+      const int64_t desired_delta_time = frequency / fps;  // Desired precise delta time.
+      if (delta_time < desired_delta_time) {
+        SDL_Delay(static_cast<uint32_t>((desired_delta_time - delta_time) * 1000 / frequency - 1));
+      }
+      while (delta_time < desired_delta_time) {
+        current_time = SDL_GetPerformanceCounter();
+        delta_time = std::max<int64_t>(0, current_time - last_time_);
+      }
+    }
+    last_time_ = current_time;
+    const float delta_time_s = static_cast<float>(delta_time) / frequency;
+    if (samples_.size() >= MAX_SAMPLES) samples_.pop_front();
+    samples_.push_back(delta_time_s);
+    return delta_time_s;
+  }
+
+  float get_mean_fps() const noexcept {
+    if (samples_.empty()) return 0;
+    double total_time = std::accumulate(samples_.begin(), samples_.end(), 0.0);
+    if (total_time == 0) return 0;
+    return static_cast<float>(1.0 / (total_time / static_cast<double>(samples_.size())));
+  }
+
+  float get_last_fps() const noexcept {
+    if (samples_.empty()) return 0;
+    if (samples_.back() == 0) return 0;
+    return 1.0f / samples_.back();
+  }
+
+  float get_min_fps() const noexcept {
+    if (samples_.empty()) return 0;
+    const float sample = *std::max_element(samples_.begin(), samples_.end());
+    if (sample == 0) return 0;
+    return 1.0f / sample;
+  }
+
+  float get_max_fps() const noexcept {
+    if (samples_.empty()) return 0;
+    const float sample = *std::min_element(samples_.begin(), samples_.end());
+    if (sample == 0) return 0;
+    return 1.0f / sample;
+  }
+
+  float get_median_fps() const noexcept {
+    if (samples_.empty()) return 0;
+    std::vector<float> samples(samples_.begin(), samples_.end());
+    std::sort(samples.begin(), samples.end());
+    float sample = samples[samples.size() / 2];
+    if (samples.size() % 2 == 0) sample = (sample + samples[samples.size() / 2]) / 2.0f;
+    if (sample == 0) return 0;
+    return 1.0f / sample;
+  }
+
+ private:
+  uint64_t last_time_;         // The last precise time sampled.
+  std::deque<float> samples_;  // The most recent delta time samples.
+};
 
 // gas simulation
 // based on Jos Stam, "Real-Time Fluid Dynamics for Games". Proceedings of the Game Developer Conference, March 2003.
@@ -246,19 +316,19 @@ void get_from_UI(
 
   stepDelay -= delta_time;
   if (stepDelay < 0.0f) {
-    if (keyboard_state[SDL_SCANCODE_UP] && player_y > 0) {
+    if ((keyboard_state[SDL_SCANCODE_UP] || keyboard_state[SDL_SCANCODE_W]) && player_y > 0) {
       --player_y;
       vy -= FORCE;
     }
-    if (keyboard_state[SDL_SCANCODE_DOWN] && player_y < N / 2 - 1) {
+    if ((keyboard_state[SDL_SCANCODE_DOWN] || keyboard_state[SDL_SCANCODE_S]) && player_y < N / 2 - 1) {
       ++player_y;
       vx += FORCE;
     }
-    if (keyboard_state[SDL_SCANCODE_LEFT] && player_x > 0) {
+    if ((keyboard_state[SDL_SCANCODE_LEFT] || keyboard_state[SDL_SCANCODE_A]) && player_x > 0) {
       --player_x;
       vx -= FORCE;
     }
-    if (keyboard_state[SDL_SCANCODE_RIGHT] && player_x < N / 2 - 1) {
+    if ((keyboard_state[SDL_SCANCODE_RIGHT] || keyboard_state[SDL_SCANCODE_D]) && player_x < N / 2 - 1) {
       ++player_x;
       vx += FORCE;
     }
@@ -332,7 +402,7 @@ int main(int argc, char* argv[]) {
   params.tileset = tileset.get();
   params.window_title = "pyromancer flame spell";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
-  params.vsync = true;
+  params.vsync = false;
 
   auto context = tcod::new_context(params);
   auto console = tcod::new_console(WIDTH, HEIGHT);
@@ -340,7 +410,8 @@ int main(int argc, char* argv[]) {
   bool endCredits = false;
   init();
 
-  uint64_t last_time = SDL_GetPerformanceCounter();
+  auto timer = Timer();
+  int desired_fps = 30;
 
   while (true) {
     SDL_Event event;
@@ -363,6 +434,15 @@ int main(int argc, char* argv[]) {
                 }
               }
               break;
+            case SDL_SCANCODE_F1:
+              desired_fps = 0;
+              break;
+            case SDL_SCANCODE_F2:
+              desired_fps = 30;
+              break;
+            case SDL_SCANCODE_F3:
+              desired_fps = 60;
+              break;
             default:
               break;
           }
@@ -372,14 +452,24 @@ int main(int argc, char* argv[]) {
       }
     }
     // update the game
-    const uint64_t current_time = SDL_GetPerformanceCounter();
-    const float delta_time =
-        static_cast<float>(std::max<int64_t>(1, current_time - last_time)) / SDL_GetPerformanceFrequency();
-    last_time = current_time;
+    const float delta_time = timer.sync(desired_fps);
     update(delta_time, *context);
     // render the game screen
     render(*console);
-    tcod::print(*console, 2, HEIGHT - 2, tcod::printf_to_str("%4.0f fps", 1.0f / delta_time), &TEXT_COLOR, nullptr);
+    tcod::print(
+        *console,
+        1,
+        HEIGHT - 2 - 6,
+        tcod::printf_to_str(
+            "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1,F2,F3): %2i fps",
+            timer.get_mean_fps(),
+            timer.get_median_fps(),
+            timer.get_last_fps(),
+            timer.get_min_fps(),
+            timer.get_max_fps(),
+            desired_fps),
+        &TEXT_COLOR,
+        nullptr);
     tcod::print(*console, 5, 49, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);

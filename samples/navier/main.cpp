@@ -28,7 +28,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include <array>
 #include <cstdbool>
+#include <vector>
 
 // gas simulation
 // based on Jos Stam, "Real-Time Fluid Dynamics for Games". Proceedings of the Game Developer Conference, March 2003.
@@ -47,22 +49,22 @@ static constexpr auto SIZE = (N + 2) * (N + 2);
 constexpr int IX(int x, int y) { return x + (N + 2) * y; }
 
 // 2D velocity maps (current and previous)
-static float u_current[SIZE], v_current[SIZE], u_prev[SIZE], v_prev[SIZE];
+static std::array<float, SIZE> u_current, v_current, u_prev, v_prev;
 // density maps (current and previous)
-static float dens[SIZE], dens_prev[SIZE];
+static std::array<float, SIZE> dens, dens_prev;
 TCODImage img(WIDTHx2, HEIGHTx2);
 
 static constexpr auto VISCOSITY = 1E-6f;
-static constexpr auto diff = 1E-5f;
-static constexpr auto force = 12000.0f;
-static constexpr auto source = 1250000.0f;
+static constexpr auto DIFF = 1E-5f;
+static constexpr auto FORCE = 12000.0f;
+static constexpr auto SOURCE = 1250000.0f;
 static float stepDelay = 0.0f;
 
 static int player_x = N / 4, player_y = N / 4;
 
 // set boundary conditions
-void set_bnd(int b, float* x) {
-  for (int i = 1; i <= N; i++) {
+void set_bnd(int b, std::array<float, SIZE>& x) {
+  for (int i = 1; i <= N; ++i) {
     // west and east walls
     x[IX(0, i)] = b == 1 ? -x[IX(1, i)] : x[IX(1, i)];
     x[IX(N + 1, i)] = b == 1 ? -x[IX(N, i)] : x[IX(N, i)];
@@ -82,9 +84,9 @@ void set_bnd(int b, float* x) {
 // x : density map
 // s : density source map
 // dt : elapsed time
-void add_source(float* x, const float* s, float dt) {
-  for (int i = 0; i < SIZE; i++) {
-    x[i] += dt * s[i];
+void add_source(std::array<float, SIZE>& density, const std::array<float, SIZE>& source, float delta) {
+  for (size_t i = 0; i < source.size(); ++i) {
+    density[i] += delta * source[i];
   }
 }
 
@@ -94,16 +96,22 @@ void add_source(float* x, const float* s, float dt) {
 // x0 : previous density map
 // diff : diffusion coef
 // dt : elapsed time
-void diffuse(int b, float* x, const float* x0, float diffusion_coef, float dt) {
-  const float a = diffusion_coef * dt * N * N;
-  for (int k = 0; k < 20; k++) {
-    for (int i = 1; i <= N; i++) {
-      for (int j = 1; j <= N; j++) {
-        x[IX(i, j)] =
-            (x0[IX(i, j)] + a * (x[IX(i - 1, j)] + x[IX(i + 1, j)] + x[IX(i, j - 1)] + x[IX(i, j + 1)])) / (1 + 4 * a);
+void diffuse(
+    int b,
+    std::array<float, SIZE>& density,
+    const std::array<float, SIZE>& density_prev,
+    float diffusion_coef,
+    float delta_time) {
+  const float a = diffusion_coef * delta_time * N * N;
+  for (int k = 0; k < 20; ++k) {
+    for (int i = 1; i <= N; ++i) {
+      for (int j = 1; j <= N; ++j) {
+        density[IX(i, j)] = (density_prev[IX(i, j)] + a * (density[IX(i - 1, j)] + density[IX(i + 1, j)] +
+                                                           density[IX(i, j - 1)] + density[IX(i, j + 1)])) /
+                            (1 + 4 * a);
       }
     }
-    set_bnd(b, x);
+    set_bnd(b, density);
   }
 }
 
@@ -113,12 +121,18 @@ void diffuse(int b, float* x, const float* x0, float diffusion_coef, float dt) {
 // d0 : previous density map
 // u,v : current velocity map
 // dt : elapsed time
-void advect(int b, float* d, const float* d0, const float* u, const float* v, float dt) {
-  const float dt0 = dt * N;
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      float x = i - dt0 * u[IX(i, j)];
-      float y = j - dt0 * v[IX(i, j)];
+void advect(
+    int b,
+    std::array<float, SIZE>& density,
+    const std::array<float, SIZE>& density_prev,
+    const std::array<float, SIZE>& velocity_u,
+    const std::array<float, SIZE>& velocity_v,
+    float delta_time) {
+  const float dt0 = delta_time * N;
+  for (int i = 1; i <= N; ++i) {
+    for (int j = 1; j <= N; ++j) {
+      float x = i - dt0 * velocity_u[IX(i, j)];
+      float y = j - dt0 * velocity_v[IX(i, j)];
       if (x < 0.5) x = 0.5;
       if (x > N + 0.5) x = N + 0.5;
       const int i0 = (int)x;
@@ -131,76 +145,100 @@ void advect(int b, float* d, const float* d0, const float* u, const float* v, fl
       const float s0 = 1 - s1;
       const float t1 = y - j0;
       const float t0 = 1 - t1;
-      d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) + s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
+      density[IX(i, j)] = s0 * (t0 * density_prev[IX(i0, j0)] + t1 * density_prev[IX(i0, j1)]) +
+                          s1 * (t0 * density_prev[IX(i1, j0)] + t1 * density_prev[IX(i1, j1)]);
     }
   }
-  set_bnd(b, d);
+  set_bnd(b, density);
 }
 
-void project(float* u, float* v, float* p, float* div) {
+void project(
+    std::array<float, SIZE>& velocity_u,
+    std::array<float, SIZE>& velocity_v,
+    std::array<float, SIZE>& p,
+    std::array<float, SIZE>& div) {
   const float h = 1.0f / N;
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      div[IX(i, j)] = -0.5f * h * (u[IX(i + 1, j)] - u[IX(i - 1, j)] + v[IX(i, j + 1)] - v[IX(i, j - 1)]);
+  for (int i = 1; i <= N; ++i) {
+    for (int j = 1; j <= N; ++j) {
+      div[IX(i, j)] =
+          -0.5f * h *
+          (velocity_u[IX(i + 1, j)] - velocity_u[IX(i - 1, j)] + velocity_v[IX(i, j + 1)] - velocity_v[IX(i, j - 1)]);
       p[IX(i, j)] = 0;
     }
   }
   set_bnd(0, div);
   set_bnd(0, p);
 
-  for (int k = 0; k < 20; k++) {
-    for (int i = 1; i <= N; i++) {
-      for (int j = 1; j <= N; j++) {
+  for (int k = 0; k < 20; ++k) {
+    for (int i = 1; i <= N; ++i) {
+      for (int j = 1; j <= N; ++j) {
         p[IX(i, j)] = (div[IX(i, j)] + p[IX(i - 1, j)] + p[IX(i + 1, j)] + p[IX(i, j - 1)] + p[IX(i, j + 1)]) / 4;
       }
     }
     set_bnd(0, p);
   }
 
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      u[IX(i, j)] -= 0.5f * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h;
-      v[IX(i, j)] -= 0.5f * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h;
+  for (int i = 1; i <= N; ++i) {
+    for (int j = 1; j <= N; ++j) {
+      velocity_u[IX(i, j)] -= 0.5f * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h;
+      velocity_v[IX(i, j)] -= 0.5f * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h;
     }
   }
-  set_bnd(1, u);
-  set_bnd(2, v);
+  set_bnd(1, velocity_u);
+  set_bnd(2, velocity_v);
 }
 
 // do all three density steps
-void update_density(float* x, float* x0, const float* u, const float* v, float diffusion_coef, float dt) {
-  add_source(x, x0, dt);
-  std::swap(x0, x);
-  diffuse(0, x, x0, diffusion_coef, dt);
-  std::swap(x0, x);
-  advect(0, x, x0, u, v, dt);
+void update_density(
+    std::array<float, SIZE>& density,
+    std::array<float, SIZE>& density_prev,
+    const std::array<float, SIZE>& velocity_u,
+    const std::array<float, SIZE>& velocity_v,
+    float diffusion_coef,
+    float delta_time) {
+  add_source(density, density_prev, delta_time);
+  std::swap(density_prev, density);
+  diffuse(0, density, density_prev, diffusion_coef, delta_time);
+  std::swap(density_prev, density);
+  advect(0, density, density_prev, velocity_u, velocity_v, delta_time);
 }
 
-void update_velocity(float* u, float* v, float* u0, float* v0, float viscosity, float dt) {
-  add_source(u, u0, dt);
-  add_source(v, v0, dt);
-  std::swap(u0, u);
-  diffuse(1, u, u0, viscosity, dt);
-  std::swap(v0, v);
-  diffuse(2, v, v0, viscosity, dt);
-  project(u, v, u0, v0);
-  std::swap(u0, u);
-  std::swap(v0, v);
-  advect(1, u, u0, u0, v0, dt);
-  advect(2, v, v0, u0, v0, dt);
-  project(u, v, u0, v0);
+void update_velocity(
+    std::array<float, SIZE>& velocity_u,
+    std::array<float, SIZE>& velocity_v,
+    std::array<float, SIZE>& velocity_u_prev,
+    std::array<float, SIZE>& velocity_v_prev,
+    float viscosity,
+    float delta_time) {
+  add_source(velocity_u, velocity_u_prev, delta_time);
+  add_source(velocity_v, velocity_v_prev, delta_time);
+  std::swap(velocity_u_prev, velocity_u);
+  diffuse(1, velocity_u, velocity_u_prev, viscosity, delta_time);
+  std::swap(velocity_v_prev, velocity_v);
+  diffuse(2, velocity_v, velocity_v_prev, viscosity, delta_time);
+  project(velocity_u, velocity_v, velocity_u_prev, velocity_v_prev);
+  std::swap(velocity_u_prev, velocity_u);
+  std::swap(velocity_v_prev, velocity_v);
+  advect(1, velocity_u, velocity_u_prev, velocity_u_prev, velocity_v_prev, delta_time);
+  advect(2, velocity_v, velocity_v_prev, velocity_u_prev, velocity_v_prev, delta_time);
+  project(velocity_u, velocity_v, velocity_u_prev, velocity_v_prev);
 }
 
 void init() {
-  memset(u_current, 0, sizeof(float) * SIZE);
-  memset(v_current, 0, sizeof(float) * SIZE);
-  memset(u_prev, 0, sizeof(float) * SIZE);
-  memset(v_prev, 0, sizeof(float) * SIZE);
-  for (int i = 0; i < SIZE; i++) dens[i] = 0.0f;
-  memcpy(dens_prev, dens, sizeof(float) * SIZE);
+  for (auto& it : u_current) it = 0;
+  for (auto& it : v_current) it = 0;
+  for (auto& it : u_prev) it = 0;
+  for (auto& it : v_prev) it = 0;
+  for (auto& it : dens) it = 0;
+  for (auto& it : dens_prev) it = 0;
 }
 
-void get_from_UI(float* d, float* u, float* v, float delta_time, TCOD_Context& context) {
+void get_from_UI(
+    std::array<float, SIZE>& density,
+    std::array<float, SIZE>& velocity_u,
+    std::array<float, SIZE>& velocity_v,
+    float delta_time,
+    TCOD_Context& context) {
   float vx = 0.0f;
   float vy = 0.0f;
 
@@ -209,29 +247,29 @@ void get_from_UI(float* d, float* u, float* v, float delta_time, TCOD_Context& c
   stepDelay -= delta_time;
   if (stepDelay < 0.0f) {
     if (keyboard_state[SDL_SCANCODE_UP] && player_y > 0) {
-      player_y--;
-      vy -= force;
+      --player_y;
+      vy -= FORCE;
     }
     if (keyboard_state[SDL_SCANCODE_DOWN] && player_y < N / 2 - 1) {
-      player_y++;
-      vx += force;
+      ++player_y;
+      vx += FORCE;
     }
     if (keyboard_state[SDL_SCANCODE_LEFT] && player_x > 0) {
-      player_x--;
-      vx -= force;
+      --player_x;
+      vx -= FORCE;
     }
     if (keyboard_state[SDL_SCANCODE_RIGHT] && player_x < N / 2 - 1) {
-      player_x++;
-      vx += force;
+      ++player_x;
+      vx += FORCE;
     }
     stepDelay = 0.2f;  // move 5 cells per second
     // try to move smoke when you walk inside it. doesn't seem to work...
-    u[IX(player_x * 2, player_y * 2)] = 5 * vx;
-    v[IX(player_x * 2, player_y * 2)] = 5 * vy;
+    velocity_u[IX(player_x * 2, player_y * 2)] = 5 * vx;
+    velocity_v[IX(player_x * 2, player_y * 2)] = 5 * vy;
   }
 
   for (int i = 0; i < SIZE; ++i) {
-    u[i] = v[i] = d[i] = 0.0f;
+    velocity_u[i] = velocity_v[i] = density[i] = 0.0f;
   }
 
   int mouse_pixel_x;
@@ -251,9 +289,9 @@ void get_from_UI(float* d, float* u, float* v, float delta_time, TCOD_Context& c
       l = 1.0f / l;
       dx *= l;
       dy *= l;
-      u[IX(player_x * 2, player_y * 2)] += force * dx * delta_time;
-      v[IX(player_x * 2, player_y * 2)] += force * dy * delta_time;
-      d[IX(player_x * 2, player_y * 2)] += source * delta_time;
+      velocity_u[IX(player_x * 2, player_y * 2)] += FORCE * dx * delta_time;
+      velocity_v[IX(player_x * 2, player_y * 2)] += FORCE * dy * delta_time;
+      density[IX(player_x * 2, player_y * 2)] += SOURCE * delta_time;
     }
   }
 }
@@ -261,7 +299,7 @@ void get_from_UI(float* d, float* u, float* v, float delta_time, TCOD_Context& c
 void update(float elapsed, TCOD_Context& context) {
   get_from_UI(dens_prev, u_prev, v_prev, elapsed, context);
   update_velocity(u_current, v_current, u_prev, v_prev, VISCOSITY, elapsed);
-  update_density(dens, dens_prev, u_current, v_current, diff, elapsed);
+  update_density(dens, dens_prev, u_current, v_current, DIFF, elapsed);
 }
 
 static constexpr TCOD_ColorRGB TEXT_COLOR{0, 0, 0};
@@ -269,9 +307,9 @@ static constexpr TCOD_ColorRGB TEXT_COLOR{0, 0, 0};
 void render(TCOD_Console& console) {
   static constexpr TCODColor deepBlue = {63, 15, 0};
   static constexpr TCODColor highBlue = {255, 255, 191};
-  for (int x = 0; x <= N; x++) {
-    for (int y = 0; y <= N; y++) {
-      float coef = (float)(dens[IX(x, y)] / 128.0f);
+  for (int x = 0; x <= N; ++x) {
+    for (int y = 0; y <= N; ++y) {
+      float coef = dens[IX(x, y)] / 128.0f;
       coef = CLAMP(0.0f, 1.0f, coef);
       img.putPixel(x, y, TCODColor::lerp(deepBlue, highBlue, coef));
     }
@@ -325,7 +363,11 @@ int main(int argc, char* argv[]) {
                 }
               }
               break;
+            default:
+              break;
           }
+          break;
+        default:
           break;
       }
     }

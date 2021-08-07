@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.13)
+cmake_minimum_required (VERSION 3.13...3.21)
 
 target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_14)
 

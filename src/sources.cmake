@@ -130,6 +130,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
+    libtcod/timer.h
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c
@@ -256,6 +257,7 @@ install(FILES
     libtcod/tileset_fallback.h
     libtcod/tileset_render.h
     libtcod/tileset_truetype.h
+    libtcod/timer.h
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/txtfield.h
@@ -431,6 +433,7 @@ source_group(libtcod FILES
     libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
+    libtcod/timer.h
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c

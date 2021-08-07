@@ -7,12 +7,25 @@ System layer
 Time functions
 ==============
 
+Deprecated C functions
+----------------------
+.. note::
+    These are deprecated because they are not compatible with libtcod contexts or are straight ports of SDL calls.
+    You should use the `SDL timing API <https://wiki.libsdl.org/CategoryTimer>`_ to track time.
+
 .. doxygenfunction:: TCOD_sys_elapsed_milli
 .. doxygenfunction:: TCOD_sys_elapsed_seconds
 .. doxygenfunction:: TCOD_sys_sleep_milli
 .. doxygenfunction:: TCOD_sys_set_fps
 .. doxygenfunction:: TCOD_sys_get_fps
 .. doxygenfunction:: TCOD_sys_get_last_frame_length
+
+Timer class
+-----------
+You must add ``#include <libtcod/timer.h>`` to include the following C++ class.
+
+.. doxygenclass:: tcod::Timer
+    :members:
 
 Easy screenshots
 ================

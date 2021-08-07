@@ -14,10 +14,12 @@ since `1.7.0`.
 - Several C++ tileset functions have been made public.
 - C++ context functions are now public.
 - Added vprintf-like console printing functions.
+- Added Timer class.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
 - Deprecated C++ color constants because of class `static const` initialization issues.
+- Deprecated libtcod's older timing functions.
 
 ## [1.18.1] - 2021-05-21
 ### Fixed

@@ -25,82 +25,13 @@
  */
 #include <SDL.h>
 #include <libtcod.h>
+#include <libtcod/timer.h>
 #include <math.h>
 #include <stdio.h>
 
 #include <array>
 #include <cstdbool>
-#include <deque>
-#include <numeric>
 #include <vector>
-
-class Timer {
- public:
-  static constexpr size_t MAX_SAMPLES = 256;
-  Timer() : last_time_{SDL_GetPerformanceCounter()} {}
-
-  float sync(int fps = 0) {
-    const uint64_t frequency = SDL_GetPerformanceFrequency();
-    uint64_t current_time = SDL_GetPerformanceCounter();                   // Precise current time.
-    int64_t delta_time = std::max<int64_t>(0, current_time - last_time_);  // Precise delta time.
-    if (fps > 0) {
-      const int64_t desired_delta_time = frequency / fps;  // Desired precise delta time.
-      if (delta_time < desired_delta_time) {
-        SDL_Delay(static_cast<uint32_t>((desired_delta_time - delta_time) * 1000 / frequency - 1));
-      }
-      while (delta_time < desired_delta_time) {
-        current_time = SDL_GetPerformanceCounter();
-        delta_time = std::max<int64_t>(0, current_time - last_time_);
-      }
-    }
-    last_time_ = current_time;
-    const float delta_time_s = static_cast<float>(delta_time) / frequency;
-    if (samples_.size() >= MAX_SAMPLES) samples_.pop_front();
-    samples_.push_back(delta_time_s);
-    return delta_time_s;
-  }
-
-  float get_mean_fps() const noexcept {
-    if (samples_.empty()) return 0;
-    double total_time = std::accumulate(samples_.begin(), samples_.end(), 0.0);
-    if (total_time == 0) return 0;
-    return static_cast<float>(1.0 / (total_time / static_cast<double>(samples_.size())));
-  }
-
-  float get_last_fps() const noexcept {
-    if (samples_.empty()) return 0;
-    if (samples_.back() == 0) return 0;
-    return 1.0f / samples_.back();
-  }
-
-  float get_min_fps() const noexcept {
-    if (samples_.empty()) return 0;
-    const float sample = *std::max_element(samples_.begin(), samples_.end());
-    if (sample == 0) return 0;
-    return 1.0f / sample;
-  }
-
-  float get_max_fps() const noexcept {
-    if (samples_.empty()) return 0;
-    const float sample = *std::min_element(samples_.begin(), samples_.end());
-    if (sample == 0) return 0;
-    return 1.0f / sample;
-  }
-
-  float get_median_fps() const noexcept {
-    if (samples_.empty()) return 0;
-    std::vector<float> samples(samples_.begin(), samples_.end());
-    std::sort(samples.begin(), samples.end());
-    float sample = samples[samples.size() / 2];
-    if (samples.size() % 2 == 0) sample = (sample + samples[samples.size() / 2]) / 2.0f;
-    if (sample == 0) return 0;
-    return 1.0f / sample;
-  }
-
- private:
-  uint64_t last_time_;         // The last precise time sampled.
-  std::deque<float> samples_;  // The most recent delta time samples.
-};
 
 // gas simulation
 // based on Jos Stam, "Real-Time Fluid Dynamics for Games". Proceedings of the Game Developer Conference, March 2003.
@@ -410,7 +341,7 @@ int main(int argc, char* argv[]) {
   bool endCredits = false;
   init();
 
-  auto timer = Timer();
+  auto timer = tcod::Timer();
   int desired_fps = 30;
 
   while (true) {
@@ -461,7 +392,7 @@ int main(int argc, char* argv[]) {
         1,
         HEIGHT - 2 - 6,
         tcod::printf_to_str(
-            "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1,F2,F3): %2i fps",
+            "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
             timer.get_mean_fps(),
             timer.get_median_fps(),
             timer.get_last_fps(),

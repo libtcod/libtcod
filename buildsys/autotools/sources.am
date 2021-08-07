@@ -69,6 +69,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/tileset_fallback.h \
 	../../src/libtcod/tileset_render.h \
 	../../src/libtcod/tileset_truetype.h \
+	../../src/libtcod/timer.h \
 	../../src/libtcod/tree.h \
 	../../src/libtcod/tree.hpp \
 	../../src/libtcod/txtfield.h \

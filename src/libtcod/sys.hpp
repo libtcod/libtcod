@@ -70,6 +70,7 @@ public :
 	@Lua tcod.system.setFps(val)
 	@Param val Maximum number of frames per second. 0 means unlimited frame rate.
 	*/
+  [[deprecated("This function is not compatible with contexts.  Use tcod::Timer instead.")]]
 	static void setFps(int val);
 
 	/**
@@ -82,6 +83,7 @@ public :
 	@C# static int TCODSystem::getFps()
 	@Lua tcod.system.getFps()
 	*/
+  [[deprecated("This function is not compatible with contexts.  Use tcod::Timer instead.")]]
 	static int getFps();
 
 	/**
@@ -115,6 +117,7 @@ public :
 		x = x + 5 * tcod.system.getLastFrameLength()
 		libtcod.TCODConsole_root:putChar(x,y,'X')
 	*/
+  [[deprecated("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")]]
 	static float getLastFrameLength();
 
 	/**
@@ -128,6 +131,7 @@ public :
 	@Lua tcod.system.sleepMilli(val)
 	@Param val number of milliseconds before the function returns
 	*/
+  [[deprecated("Use SDL_Delay instead.")]]
 	static void sleepMilli(uint32_t val);
 
 	/**
@@ -140,6 +144,7 @@ public :
 	@C# static uint TCODSystem::getElapsedMilli()
 	@Lua tcod.system.getElapsedMilli()
 	*/
+  [[deprecated("Use SDL_GetTicks instead.")]]
 	static uint32_t getElapsedMilli();
 
 	/**
@@ -152,6 +157,7 @@ public :
 	@C# static float TCODSystem::getElapsedSeconds()
 	@Lua tcod.system.getElapsedSeconds()
 	*/
+  [[deprecated("Use SDL_GetTicks instead.")]]
 	static float getElapsedSeconds();
 
 	/**

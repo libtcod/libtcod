@@ -135,11 +135,17 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 
 #ifndef NO_SDL
+TCOD_DEPRECATED("Use SDL_GetTicks instead.")
 TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
+TCOD_DEPRECATED("Use SDL_GetTicks instead.")
 TCODLIB_API float TCOD_sys_elapsed_seconds(void);
+TCOD_DEPRECATED("Use SDL_Delay instead.")
 TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API void TCOD_sys_set_fps(int val);
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API int TCOD_sys_get_fps(void);
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 
 TCODLIB_API void TCOD_sys_save_screenshot(const char* filename);

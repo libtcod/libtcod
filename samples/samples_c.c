@@ -32,6 +32,11 @@ typedef struct {
 // A custom SDL event to tell a sample to draw.
 #define ON_DRAW_USEREVENT (SDL_USEREVENT + 1)
 
+static float delta_time = 0.0f;  // The time in seconds of the current frame.
+#define DELTA_SAMPLES_LENGTH 64
+static float delta_samples[DELTA_SAMPLES_LENGTH] = {0};
+static int last_delta_sample = 0;
+
 /* ***************************
  * samples rendering functions
  * ***************************/
@@ -220,13 +225,14 @@ void render_lines(const SDL_Event* event) {
       break;
   }
   float alpha; /* alpha value when blending mode = TCOD_BKGND_ALPHA */
+  const float current_time = SDL_GetTicks() / 1000.0f;
   if ((bk_flag & 0xff) == TCOD_BKGND_ALPH) {
     /* for the alpha mode, update alpha every frame */
-    alpha = (1.0f + cosf(TCOD_sys_elapsed_seconds() * 2)) / 2.0f;
+    alpha = (1.0f + cosf(current_time * 2)) / 2.0f;
     bk_flag = TCOD_BKGND_ALPHA(alpha);
   } else if ((bk_flag & 0xff) == TCOD_BKGND_ADDA) {
     /* for the add alpha mode, update alpha every frame */
-    alpha = (1.0f + cosf(TCOD_sys_elapsed_seconds() * 2)) / 2.0f;
+    alpha = (1.0f + cosf(current_time * 2)) / 2.0f;
     bk_flag = TCOD_BKGND_ADDALPHA(alpha);
   }
   if (!init) {
@@ -250,7 +256,7 @@ void render_lines(const SDL_Event* event) {
   TCOD_console_blit(bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, sample_console, 0, 0, 1.0f, 1.0f);
   /* render the gradient */
   /* gradient vertical position */
-  const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCOD_sys_elapsed_seconds())) / 2.0f));
+  const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(current_time)) / 2.0f));
   for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
     const TCOD_ColorRGB col = {
         (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH),
@@ -262,7 +268,7 @@ void render_lines(const SDL_Event* event) {
     TCOD_console_set_char_background(sample_console, x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bk_flag);
   }
   /* calculate the segment ends */
-  const float angle = TCOD_sys_elapsed_seconds() * 2.0f; /* segment angle data */
+  const float angle = current_time * 2.0f; /* segment angle data */
   /* segment starting and ending positions */
   const int xo = (int)(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
   const int yo = (int)(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
@@ -695,12 +701,13 @@ void render_image(const SDL_Event* event) {
   if (event->type != ON_DRAW_USEREVENT) return;
   TCOD_console_set_default_background(sample_console, TCOD_black);
   TCOD_console_clear(sample_console);
-  const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCOD_sys_elapsed_seconds()) * 10.0f;
+  const float current_time = SDL_GetTicks() / 1000.0f;
+  const float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(current_time) * 10.0f;
   const float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-  const float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCOD_sys_elapsed_seconds() / 2)) / 2.0f;
+  const float scale_x = 0.2f + 1.8f * (1.0f + cosf(current_time / 2)) / 2.0f;
   const float scale_y = scale_x;
-  const float angle = TCOD_sys_elapsed_seconds();
-  if ((TCOD_sys_elapsed_milli() / 2000) & 1) {
+  const float angle = current_time;
+  if ((SDL_GetTicks() / 2000) & 1) {
     /* split the color channels of circle.png */
     /* the red channel */
     TCOD_console_set_default_background(sample_console, TCOD_red);
@@ -888,7 +895,7 @@ void render_path(const SDL_Event* event) {
     }
   }
   // move the creature
-  busy -= TCOD_sys_get_last_frame_length();
+  busy -= delta_time;
   if (busy <= 0.0f) {
     busy = 0.2f;
     if (usingAstar) {
@@ -1278,7 +1285,7 @@ void render_name(const SDL_Event* event) {
         TCOD_console_printf_ex(sample_console, SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name);
     }
 
-    delay += TCOD_sys_get_last_frame_length();
+    delay += delta_time;
     if (delay >= 0.5f) {
       delay -= 0.5f;
       // add a new name to the list
@@ -1383,7 +1390,7 @@ void blur(SDL_Surface* screen, int sample_x, int sample_y, int sample_w, int sam
   const int r_idx = screen->format->Rshift / 8;
   const int g_idx = screen->format->Gshift / 8;
   const int b_idx = screen->format->Bshift / 8;
-  float f[3] = {0, 0, TCOD_sys_elapsed_seconds()};
+  float f[3] = {0, 0, SDL_GetTicks() / 1000.0f};
   if (noise == NULL) noise = TCOD_noise_new(3, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
   for (int x = sample_x; x < sample_x + sample_w; ++x) {
     uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
@@ -1496,7 +1503,7 @@ void SDL_render(SDL_Surface* screen) {
   // compute the sample console position in pixels
   const int sample_x = SAMPLE_SCREEN_X * char_w;
   const int sample_y = SAMPLE_SCREEN_Y * char_h;
-  delay -= TCOD_sys_get_last_frame_length();
+  delay -= delta_time;
   if (delay < 0.0f) {
     delay = 3.0f;
     effectNum = (effectNum + 1) % 3;
@@ -1594,6 +1601,14 @@ static const RendererOption RENDERER_OPTIONS[] = {
 // The total number of renderer options.
 static const int RENDERER_OPTIONS_COUNT = sizeof(RENDERER_OPTIONS) / sizeof(*RENDERER_OPTIONS);
 
+// Return the current framerate from the sampled frames.
+static float get_framerate() {
+  double total_time = 0.0;
+  for (int i = 0; i < DELTA_SAMPLES_LENGTH; ++i) total_time += delta_samples[i];
+  if (total_time == 0) return 0.0f;
+  return 1.0f / (float)(total_time / DELTA_SAMPLES_LENGTH);
+}
+
 /* ***************************
  * the main function
  * ***************************/
@@ -1664,11 +1679,22 @@ int main(int argc, char* argv[]) {
   }
   TCOD_console_init_root(80, 50, "libtcod C sample", fullscreen, renderer);
   atexit(TCOD_quit);
+
+  uint32_t last_time = SDL_GetTicks();
+
   /* initialize the offscreen console for the samples */
   sample_console = TCOD_console_new(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
   int cur_sample = 0; /* index of the current sample */
   samples[cur_sample].render(&on_enter_event);
   while (true) {
+    const uint32_t current_time = SDL_GetTicks();
+    const int32_t delta_time_ms = (int32_t)(current_time - last_time);
+    last_time = current_time;
+    delta_time = (float)(delta_time_ms) / 1000.0f;
+
+    delta_samples[last_delta_sample] = delta_time;
+    last_delta_sample = (last_delta_sample + 1) % DELTA_SAMPLES_LENGTH;
+
     if (!credits_end) {
       credits_end = TCOD_console_credits_render(56, 43, false);
     }
@@ -1689,23 +1715,9 @@ int main(int argc, char* argv[]) {
     /* print the help message */
     TCOD_console_set_default_foreground(NULL, TCOD_grey);
     TCOD_console_printf_ex(
-        NULL,
-        79,
-        46,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
-        "last frame : %3d ms (%3d fps)",
-        (int)(TCOD_sys_get_last_frame_length() * 1000),
-        TCOD_sys_get_fps());
+        NULL, 79, 46, TCOD_BKGND_NONE, TCOD_RIGHT, "last frame : %3d ms (%3.0f fps)", delta_time_ms, get_framerate());
     TCOD_console_printf_ex(
-        NULL,
-        79,
-        47,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
-        "elapsed : %8dms %4.2fs",
-        TCOD_sys_elapsed_milli(),
-        TCOD_sys_elapsed_seconds());
+        NULL, 79, 47, TCOD_BKGND_NONE, TCOD_RIGHT, "elapsed : %5dms %5.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f);
     TCOD_console_printf(NULL, 2, 47, "↑↓ : select a sample");
     TCOD_console_printf(
         NULL, 2, 48, "ALT-ENTER : switch to %s", TCOD_console_is_fullscreen() ? "windowed mode  " : "fullscreen mode");

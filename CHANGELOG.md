@@ -14,7 +14,8 @@ since `1.7.0`.
 - Several C++ tileset functions have been made public.
 - C++ context functions are now public.
 - Added vprintf-like console printing functions.
-- Added Timer class.
+- Added the Timer class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
+- Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

@@ -36,3 +36,4 @@ Miscellaneous utilities
 
 .. doxygenfunction:: TCOD_sys_get_sdl_window
 .. doxygenfunction:: TCOD_sys_get_sdl_renderer
+.. doxygenfunction:: TCOD_sys_get_internal_context

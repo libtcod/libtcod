@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include "console_types.h"
+#include "context.h"
 #include "error.h"
 #include "tileset.h"
 
@@ -163,6 +164,17 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  */
 TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
+/***************************************************************************
+    @brief Return the context being used internally by the old API.
+
+    @return A TCOD_Context pointer, or NULL if the global internals were not initialzed.
+
+    This function can be useful to progressively upgrade older code to use the newer API.
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Context* TCOD_sys_get_internal_context(void);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {

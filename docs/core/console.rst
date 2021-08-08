@@ -206,8 +206,8 @@ Mouse event structure
 Events from SDL2
 ^^^^^^^^^^^^^^^^
 .. doxygenfunction:: tcod::sdl2::process_event(const union SDL_Event &in, TCOD_key_t &out) noexcept
-.. doxygenfunction:: TCOD_sys_process_key_event
 .. doxygenfunction:: tcod::sdl2::process_event(const union SDL_Event &in, TCOD_mouse_t &out) noexcept
+.. doxygenfunction:: TCOD_sys_process_key_event
 .. doxygenfunction:: TCOD_sys_process_mouse_event
 
 Using off-screen consoles

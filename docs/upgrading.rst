@@ -1,11 +1,58 @@
 
-.. _SDL2: https://www.libsdl.org/index.php
-
 Upgrading
 =========
 
-1.5.x -> 1.6.x
---------------
+1.6 -> latest 1.x
+-----------------
+
+New project should use the :ref:`getting-started` guide so that they can start using contexts right way.
+Older projects will have to convert to contexts over a series of steps.
+
+Libtcod's systems have been deprecated in favor of using `SDL2`_ directly for events.
+:any:`TCOD_Context::convert_event_coordinates` is the recommended way to convert pixel coordinates to tiles.
+:any:`tcod::sdl2::process_event` might work better for converting old code to use the new system.
+
+.. code-block:: cpp
+
+  // tcod::ContextPtr context = tcod::new_context(...);  // For code using contexts.
+  // TCOD_Context* context = TCOD_sys_get_internal_context();  // For code still using the old API.
+
+  while (true) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      // context->convert_event_coordinates(event);  // Optional, converts ALL pixel coordinates into tile coordinates.
+      switch (event.type) {
+        case SDL_QUIT:
+          std::exit(EXIT_SUCCESS);
+          break;
+        case SDL_KEYDOWN: {
+          TCOD_mouse_t key;
+          tcod::sdl2::process_event(event, key);  // Convert a SDL key to a libtcod key event, to help port older code.
+          switch (event.key.keysym.sym) {
+            case SDLK_EQUALS: // equals/plus key symbol.
+              if (event.key.keysym.mod & KMOD_SHIFT) {
+                // Handle plus key.
+              }
+              break;
+            default:
+              break;
+          }
+        } break;
+        case SDL_MOUSEBUTTONDOWN: {
+          TCOD_mouse_t mouse;
+          tcod::sdl2::process_event(event, mouse);  // Convert SDL into a libtcod mouse event, to help port older code.
+          // The above expects pixel coordinates.  So you can't use convert_event_coordinates before process_event.
+          context->convert_event_coordinates(event);
+        } break;
+        default:
+          break;
+      }
+    }
+  }
+
+
+1.5 -> 1.6
+----------
 
 The largest and most influential change to libtcod, between versions 1.5.2 and 1.6.0, was the move to replace SDL with `SDL2`_.  SDL2 made many extensive changes to concepts used in SDL.  Only one of these changes, the separation of text and key events, required a change in the libtcod API requiring users to update their code in the process of updating the version of libtcod they use.
 
@@ -23,12 +70,6 @@ SDL would when sending key events, provide the unicode character for the key eve
         /* Handle any key that displays a plus. */
     }
 
-.. code-block:: python
-   :caption: Python
-
-   if key.c == "+":
-       pass # Handle any key that displays a plus.
-
 In libtcod 1.6.x
 ^^^^^^^^^^^^^^^^
 
@@ -42,14 +83,10 @@ With SDL2, the raw key-presses still occur, but they are fundamentally linked to
            ; /* Handle any key that displays a plus. */
        }
 
-.. code-block:: python
-   :caption: Python
-
-   if key.vk == libtcod.KEY_TEXT:
-       if key.text == "+":
-           pass # Handle any key that displays a plus.
-
 Still confused?
 ^^^^^^^^^^^^^^^
 
 Run your code from a terminal or DOS window and print out the event attributes/fields and look at what is going on.  Have your code print out the modifiers, the keycode, the character, the text, and then run it and try pressing some keys. It will be much faster than posting "I don't understand" or "Can someone explain" somewhere and waiting for a response.
+
+
+.. _SDL2: https://www.libsdl.org/index.php

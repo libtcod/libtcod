@@ -6,7 +6,7 @@ Getting Started
 Here is a simple example of setting up a libtcod context in C++ without using
 deprecated functions.
 
-.. code-block:: c++
+.. code-block:: cpp
 
     #include <libtcod.h>
     #include <SDL2.h>
@@ -34,14 +34,17 @@ deprecated functions.
 
       while (1) {  // Game loop.
         TCOD_console_clear(console.get());
-        tcod::print(*console, 0, 0, "Hello World", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT);
+        tcod::print(*console, 0, 0, "Hello World", nullptr, nullptr);
         context->present(*console);  // Updates the visible display.
 
         SDL_Event event;
-        SDL_WaitEvent(&event);
-        switch (event.type) {
-          case SDL_QUIT:
-            return 0;  // Exit.
+        SDL_WaitEvent(nullptr);  // Optional, sleep until events are available.
+        while (SDL_PollEvent(&event)){
+          context->convert_event_coordinates(event);  // Optional, converts pixel coordinates into tile coordinates.
+          switch (event.type) {
+            case SDL_QUIT:
+              return 0;  // Exit.
+          }
         }
       }
     }

@@ -227,14 +227,14 @@ TCOD_PUBLIC void TCOD_console_set_key_color(TCOD_Console* con, TCOD_color_t col)
 /**
  *  Blit from one console to another.
  *
- *  \param srcCon Pointer to the source console.
+ *  \param src Pointer to the source console.
  *  \param xSrc The left region of the source console to blit from.
  *  \param ySrc The top region of the source console to blit from.
  *  \param wSrc The width of the region to blit from.
  *              If 0 then it will fill to the maximum width.
  *  \param hSrc The height of the region to blit from.
  *              If 0 then it will fill to the maximum height.
- *  \param dstCon Pointer to the destination console.
+ *  \param dst Pointer to the destination console.
  *  \param xDst The left corner to blit onto the destination console.
  *  \param yDst The top corner to blit onto the destination console.
  *  \param foreground_alpha Foreground blending alpha.
@@ -272,7 +272,7 @@ TCOD_PUBLIC void TCOD_console_blit_key_color(
 /**
  *  Delete a console.
  *
- *  \param con A console pointer.
+ *  \param console A console pointer.
  *
  *  If the console being deleted is the root console, then the display will be
  *  uninitialized.
@@ -392,10 +392,10 @@ TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_char(const TCOD_Console* con, in
  *
  *  \param val Where at 255 colors are normal and at 0 colors are completely
  *             faded.
- *  \param fadecol Color to fade towards.
+ *  \param fade_color Color to fade towards.
  */
 TCOD_PUBLIC
-void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade);
+void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color);
 /**
  *  Return the fade value.
  *

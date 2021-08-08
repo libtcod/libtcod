@@ -1108,7 +1108,6 @@ TCOD_event_t TCOD_sys_wait_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_
  *  \param eventMask A bit-mask of TCOD_event_t flags.
  *  \param key Optional pointer to a TCOD_key_t struct.
  *  \param mouse Optional pointer to a TCOD_mouse_t struct.
- *  \param flush This should always be false.
  *  \return A TCOD_event_t flag showing which event was actually processed.
  */
 TCOD_event_t TCOD_sys_check_for_event(int eventMask, TCOD_key_t* key, TCOD_mouse_t* mouse) {

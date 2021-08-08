@@ -135,16 +135,67 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 
 #ifndef NO_SDL
+/***************************************************************************
+    @brief Alias for SDL_GetTicks.
+
+    \rst
+    .. deprecated:: 1.19
+        You should call SDL_GetTicks directly.
+    \endrst
+ */
 TCOD_DEPRECATED("Use SDL_GetTicks instead.")
 TCODLIB_API uint32_t TCOD_sys_elapsed_milli(void);
+/***************************************************************************
+    @brief Returns the number of seconds since the start of the program.
+
+    \rst
+    .. deprecated:: 1.19
+        Use SDL_GetTicks and convert the result into seconds instead of using this function.
+    \endrst
+ */
 TCOD_DEPRECATED("Use SDL_GetTicks instead.")
 TCODLIB_API float TCOD_sys_elapsed_seconds(void);
+/***************************************************************************
+    @brief Alias for SDL_Delay.
+
+    \rst
+    .. deprecated:: 1.19
+        You should call SDL_Delay directly.
+    \endrst
+ */
 TCOD_DEPRECATED("Use SDL_Delay instead.")
 TCODLIB_API void TCOD_sys_sleep_milli(uint32_t val);
+/***************************************************************************
+    @brief Set the desired framerate.
+
+    \rst
+    .. deprecated:: 1.19
+        This function will not affect libtcod contexts.
+        Set the framerate with :any:`tcod::Timer` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API void TCOD_sys_set_fps(int val);
+/***************************************************************************
+    @brief Get the current framerate.
+
+    \rst
+    .. deprecated:: 1.19
+        This function will not work with libtcod contexts.
+        Use :any:`tcod::Timer` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API int TCOD_sys_get_fps(void);
+/***************************************************************************
+    @brief Get the delta time between the last two frames.
+
+    \rst
+    .. deprecated:: 1.19
+        This function will not work with libtcod contexts.
+        Use :any:`tcod::Timer` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 

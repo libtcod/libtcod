@@ -459,7 +459,7 @@ public :
 	@C# static void TCODSystem::getCurrentResolution(out int w, out int h);
 	@Param width,height contains current resolution when the function returns
 	*/
-	static void getCurrentResolution(int *w, int *h);
+	static void getCurrentResolution(int *width, int *height);
 	/**
 	@PageName system_misc
 	@FuncTitle Get fullscreen offset

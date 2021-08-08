@@ -51,6 +51,8 @@ namespace tcod {
     This class is based on using `SDL_GetPerformanceCounter` to track the time.
     The time taken between calls to sync() is tracked.  This is used to determine the real framerate if requested.
 
+    You must add ``#include <libtcod/timer.h>`` to include ths class.
+
     \rst
     .. versionadded:: 1.19
     \endrst

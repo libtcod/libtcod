@@ -1,0 +1,5 @@
+# For local testing, environment.yml is what's used to install files on RTD.
+breathe
+sphinx<4
+sphinx_rtd_theme
+recommonmark

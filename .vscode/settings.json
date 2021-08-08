@@ -93,6 +93,9 @@
     "C_Cpp.default.cStandard": "c99",
     "C_Cpp.vcpkg.enabled": true,
     "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
     "editor.defaultFormatter": "xaver.clang-format",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureSettings": {

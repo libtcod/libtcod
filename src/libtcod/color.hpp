@@ -693,4 +693,4 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 
 TCODLIB_API TCODColor operator*(float value, const TCODColor& c);
 
-#endif
+#endif  // _TCOD_COLOR_HPP

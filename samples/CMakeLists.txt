@@ -92,7 +92,7 @@ add_executable(rad
     rad/rad_shader_photon.cpp
     rad/rad_shader_standard.cpp
 )
-target_link_libraries(rad ${LINK_TCOD})
+target_link_libraries(rad ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
 if (CONAN_FILE)
     add_dependencies(rad copy_font)
 endif()

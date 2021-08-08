@@ -25,6 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <SDL.h>
 #include <libtcod.h>
 
 #include <cmath>
@@ -81,9 +82,8 @@ void findPos(int* x, int* y) {
   }
 }
 
-void init() {
-  TCODConsole::root->clear();
-
+void init(TCOD_Console& console) {
+  for (auto& tile : console) tile = {' ', {255, 255, 255, 255}, {0, 0, 0, 255}};
   // build the dungeon
   map = new TCODMap(MAP_WIDTH, MAP_HEIGHT);
   bsp.createBspDungeon(map, NULL);
@@ -101,15 +101,16 @@ void init() {
     findPos(&lx, &ly);
     leftShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
     rightShader->addLight(lx, ly, LIGHT_RADIUS, WHITE);
-    TCODConsole::root->setChar(lx, ly, '*');
-    TCODConsole::root->setChar(lx + CON_WIDTH / 2, ly, '*');
+    console.at(lx, ly).ch = '*';
+    console.at(lx + CON_WIDTH / 2, ly).ch = '*';
   }
 
   // find a starting position for the player
   findPos(&player_x, &player_y);
-  playerBack = TCODConsole::root->getChar(player_x, player_y);
-  TCODConsole::root->setChar(player_x, player_y, '@');
-  TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
+  playerBack = console.at(player_x, player_y).ch;
+
+  console.at(player_x, player_y).ch = '@';
+  console.at(player_x + CON_WIDTH / 2, player_y).ch = '@';
 
   // add the player's torch
   torchIndex = leftShader->addLight(player_x, player_y, 10, WHITE);
@@ -119,7 +120,7 @@ void init() {
   leftShader->init(map);
   rightShader->init(map);
 
-  timeSecond = TCODSystem::getElapsedMilli() / 1000;
+  timeSecond = SDL_GetTicks() / 1000;
 
   if (enableGammaCorrection) {
     for (int i = 0; i < 256; ++i) {
@@ -134,14 +135,14 @@ void init() {
   }
 }
 
-void render() {
+void render(TCOD_Console& console) {
   // compute lights
-  framesCount++;
-  const uint32_t start = TCODSystem::getElapsedMilli();
+  ++framesCount;
+  const uint32_t start = SDL_GetTicks();
   leftShader->compute();
-  const uint32_t leftEnd = TCODSystem::getElapsedMilli();
+  const uint32_t leftEnd = SDL_GetTicks();
   rightShader->compute();
-  const uint32_t rightEnd = TCODSystem::getElapsedMilli();
+  const uint32_t rightEnd = SDL_GetTicks();
   stdTime += (leftEnd - start) * 0.001f;
   radTime += (rightEnd - leftEnd) * 0.001f;
   if ((int)(start / 1000) != timeSecond) {
@@ -153,8 +154,8 @@ void render() {
     framesCount = 0;
   }
 
-  for (int x = 0; x < MAP_WIDTH; ++x) {
-    for (int y = 0; y < MAP_HEIGHT; ++y) {
+  for (int y = 0; y < MAP_HEIGHT; ++y) {
+    for (int x = 0; x < MAP_WIDTH; ++x) {
       TCODColor darkCol, lightCol;
       // get the cell dark and lit colors
       if (map->isWalkable(x, y)) {
@@ -171,104 +172,115 @@ void render() {
       const TCODColor leftLight = leftShader->getLightColor(x, y);
       const TCODColor cellLeftCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[leftLight.r] / 255.0f);
       TCODConsole::root->setCharBackground(x, y, cellLeftCol);
+      console.at(x, y).bg = {cellLeftCol.r, cellLeftCol.g, cellLeftCol.b, 255};
 
       // render right map
       const TCODColor rightLight = rightShader->getLightColor(x, y);
       const TCODColor cellRightCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[rightLight.r] / 255.0f);
-      TCODConsole::root->setCharBackground(x + CON_WIDTH / 2, y, cellRightCol);
+      console.at(x + CON_WIDTH / 2, y).bg = {cellRightCol.r, cellRightCol.g, cellRightCol.b, 255};
     }
   }
-  TCODConsole::root->printf(CON_WIDTH / 4, 0, "Standard lighting %1.2fms", stdLength);
-  TCODConsole::root->printf(3 * CON_WIDTH / 4, 0, "Photon reactor %1.2fms", radLength);
+  tcod::print(
+      console,
+      console.w / 4,
+      0,
+      tcod::printf_to_str("Standard lighting %1.2fms", stdLength),
+      nullptr,
+      nullptr,
+      TCOD_BKGND_SET,
+      TCOD_CENTER);
+
+  tcod::print(
+      console,
+      3 * CON_WIDTH / 4,
+      0,
+      tcod::printf_to_str("Photon reactor %1.2fms", radLength),
+      nullptr,
+      nullptr,
+      TCOD_BKGND_SET,
+      TCOD_CENTER);
 }
 
-void move(int dx, int dy) {
+void move(TCOD_Console& console, int dx, int dy) {
   if (map->isWalkable(player_x + dx, player_y + dy)) {
     // restore the previous map char
-    TCODConsole::root->setChar(player_x, player_y, playerBack);
-    TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, playerBack);
+    console.at(player_x, player_y).ch = playerBack;
+    console.at(player_x + CON_WIDTH / 2, player_y).ch = playerBack;
     // move the player
     player_x += dx;
     player_y += dy;
-    playerBack = TCODConsole::root->getChar(player_x, player_y);
+    playerBack = console.at(player_x, player_y).ch;
     // render the player
-    TCODConsole::root->setChar(player_x, player_y, '@');
-    TCODConsole::root->setChar(player_x + CON_WIDTH / 2, player_y, '@');
+    console.at(player_x, player_y).ch = '@';
+    console.at(player_x + CON_WIDTH / 2, player_y).ch = '@';
     // update the player's torch position
     leftShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);
     rightShader->updateLight(torchIndex, player_x, player_y, LIGHT_RADIUS, WHITE);
   }
 }
 
-int main() {
-  TCODConsole::initRoot(80, 50, "Photon reactor - radiosity engine for roguelikes", false, TCOD_RENDERER_OPENGL2);
-  TCODConsole::root->setAlignment(TCOD_CENTER);
-  TCOD_key_t k;
-  TCOD_mouse_t mouse;
+int main(int argc, char* argv[]) {
+  auto console = tcod::new_console(80, 50);
+  auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+  TCOD_ContextParams params{};
+  params.tcod_version = TCOD_COMPILEDVERSION;
+  params.columns = console->w;
+  params.rows = console->h;
+  params.tileset = tileset.get();
+  params.vsync = true;
+  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  params.argc = argc;
+  params.argv = argv;
+  params.window_title = "Photon reactor - radiosity engine for roguelikes";
 
-  init();
-  while (!TCODConsole::isWindowClosed()) {
-    render();
-    TCODConsole::flush();
-    TCODSystem::checkForEvent((TCOD_event_t)TCOD_EVENT_KEY_PRESS, &k, &mouse);
-    switch (k.vk) {
-      // move with arrows or numpad (2468)
-      case TCODK_KP8:
-      case TCODK_UP:
-        move(0, -1);
-        break;
-      case TCODK_KP2:
-      case TCODK_DOWN:
-        move(0, 1);
-        break;
-      case TCODK_KP4:
-      case TCODK_LEFT:
-        move(-1, 0);
-        break;
-      case TCODK_KP6:
-      case TCODK_RIGHT:
-        move(1, 0);
-        break;
-      case TCODK_CHAR:
-        switch (k.c) {
-          // move with vi keys (HJKL) or FPS keys (WASD/ZQSD)
-          case 'q':
-          case 'Q':
-          case 'a':
-          case 'A':
-          case 'h':
-          case 'H':
-            move(-1, 0);
-            break;
-          case 's':
-          case 'S':
-          case 'j':
-          case 'J':
-            move(0, 1);
-            break;
-          case 'z':
-          case 'Z':
-          case 'w':
-          case 'W':
-          case 'k':
-          case 'K':
-            move(0, -1);
-            break;
-          case 'd':
-          case 'D':
-          case 'l':
-          case 'L':
-            move(1, 0);
-            break;
-          default:
-            break;
-        }
-        break;
-      case TCODK_PRINTSCREEN:
-        TCODSystem::saveScreenshot(NULL);
-        break;
-      default:
-        break;
+  auto context = tcod::new_context(params);
+
+  init(*console);
+  while (true) {
+    render(*console);
+    context->present(*console);
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_QUIT:
+          return 0;
+          break;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_UP:
+            case SDL_SCANCODE_KP_8:
+            case SDL_SCANCODE_W:
+            case SDL_SCANCODE_K:
+              move(*console, 0, -1);
+              break;
+            case SDL_SCANCODE_DOWN:
+            case SDL_SCANCODE_KP_2:
+            case SDL_SCANCODE_S:
+            case SDL_SCANCODE_J:
+              move(*console, 0, 1);
+              break;
+            case SDL_SCANCODE_LEFT:
+            case SDL_SCANCODE_KP_4:
+            case SDL_SCANCODE_A:
+            case SDL_SCANCODE_H:
+              move(*console, -1, 0);
+              break;
+            case SDL_SCANCODE_RIGHT:
+            case SDL_SCANCODE_KP_6:
+            case SDL_SCANCODE_D:
+            case SDL_SCANCODE_L:
+              move(*console, 1, 0);
+              break;
+            case SDL_SCANCODE_PRINTSCREEN:
+              context->save_screenshot(nullptr);
+              break;
+            default:
+              break;
+          }
+          break;
+        default:
+          break;
+      }
     }
   }
   return 0;

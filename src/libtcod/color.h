@@ -365,6 +365,6 @@ extern TCODLIB_API const TCOD_color_t TCOD_celadon;  // 172, 255, 175
 extern TCODLIB_API const TCOD_color_t TCOD_peach;    // 255, 159, 127
 
 #ifdef __cplusplus
-}
+}  // extern "C"
 #endif
 #endif

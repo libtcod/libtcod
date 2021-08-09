@@ -16,8 +16,9 @@ since `1.7.0`.
 - Added vprintf-like console printing functions.
 - Added the Timer class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
 - Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
+- Added `TCOD_sys_get_internal_console`.  This returns a pointer to the root console used by the old API.
 
-### Change
+### Changed
 - Initializing libtcod with the old API will now enable VSync by default.
   You can set the environment variable `TCOD_VSYNC=0` to disable this or use the new API where VSync is a setting.
 

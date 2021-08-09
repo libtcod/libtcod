@@ -1836,8 +1836,18 @@ public :
   /***************************************************************************
       @brief Convert this TCODConsole into a TCOD_Console reference.
    */
-  explicit operator TCOD_Console&() noexcept { return *data; };
-  explicit operator const TCOD_Console&() const noexcept { return *data; };
+  explicit operator TCOD_Console&() {
+    TCOD_Console* out = data;
+    if (!out) out = TCOD_sys_get_internal_console();
+    if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
+    return *out;
+  };
+  explicit operator const TCOD_Console&() const {
+    const TCOD_Console* out = data;
+    if (!out) out = TCOD_sys_get_internal_console();
+    if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
+    return *out;
+  };
 
  protected:
   TCODConsole();

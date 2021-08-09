@@ -175,6 +175,18 @@ TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const 
     \endrst
  */
 TCOD_PUBLIC TCOD_Context* TCOD_sys_get_internal_context(void);
+/***************************************************************************
+    @brief Return a pointer to the "root console" used internally by the old API.
+
+    This is useful for functions which take a console parameter but won't accept NULL.
+
+    @return A pointer to TCOD_Console, or NULL if it doesn't exist.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Console* TCOD_sys_get_internal_console(void);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {

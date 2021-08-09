@@ -135,4 +135,5 @@ int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_R
   return -1;
 }
 TCOD_Context* TCOD_sys_get_internal_context(void) { return TCOD_ctx.engine; }
+TCOD_Console* TCOD_sys_get_internal_console(void) { return TCOD_ctx.root; }
 #endif  // NO_SDL

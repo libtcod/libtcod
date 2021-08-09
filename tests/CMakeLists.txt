@@ -15,7 +15,7 @@ file(GLOB SRC_FILES CONFIGURE_DEPENDS test_*.cpp)
 
 add_executable(unittest unittest.cpp ${SRC_FILES})
 target_link_libraries(unittest libtcod::libtcod Catch2::Catch2)
-target_compile_features(unittest PUBLIC cxx_std_14)
+target_compile_features(unittest PUBLIC cxx_std_17)
 target_compile_definitions(unittest PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_compile_definitions(unittest PRIVATE CATCH_CONFIG_ENABLE_BENCHMARKING)
 if (MSVC)

@@ -29,21 +29,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #ifndef _TCOD_CONSOLE_HPP
 #define _TCOD_CONSOLE_HPP
 
+#include <stdexcept>
 #include <string>
+#include <utility>
 
+#include "color.hpp"
 #include "console.h"
+#include "console_drawing.h"
 #include "console_etc.h"
 #include "console_init.h"
-#include "console_drawing.h"
 #include "console_printing.h"
 #include "console_rexpaint.h"
-
 #include "image.hpp"
-#include "color.hpp"
+
+// clang-format off
 
 class TCODImage;
 /**
@@ -1793,35 +1795,52 @@ public :
   static void setKeyboardRepeat(int initialDelay,int interval);
   TCOD_DEPRECATED("This function is a stub and will do nothing.")
   static void disableKeyboardRepeat();
+  // clang-format on
+  // Delete copy constructors.
+  TCODConsole(const TCODConsole&) = delete;
+  TCODConsole& operator=(const TCODConsole&) = delete;
+  // Supports move since version 1.19
+  TCODConsole(TCODConsole&& rhs) : data{rhs.data} { rhs.data = nullptr; }
+  TCODConsole& operator=(TCODConsole&& rhs) {
+    std::swap(data, rhs.data);
+    return *this;
+  }
 
-	virtual ~TCODConsole();
+  virtual ~TCODConsole();
 
   TCOD_DEPRECATED("This function does nothing.")
-	void setDirty(int x, int y, int w, int h);
+  void setDirty(int x, int y, int w, int h);
 
+  // This conversion may be unsafe.
+  TCODConsole(TCOD_Console* console) : data{console} {}
+  /***************************************************************************
+      @brief Construct a new TCODConsole object from a tcod::ConsolePtr.
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  explicit TCODConsole(tcod::ConsolePtr&& console) : data{console.get()} {}
 
-	TCODConsole(TCOD_console_t con) : data(con) {}
-
-    // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
-	static const char *getColorControlString( TCOD_colctrl_t ctrl );
-	// ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
-	static const char *getRGBColorControlString( TCOD_colctrl_t ctrl, const TCODColor & col );
+  // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
+  static const char* getColorControlString(TCOD_colctrl_t ctrl);
+  // ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
+  static const char* getRGBColorControlString(TCOD_colctrl_t ctrl, const TCODColor& col);
   /**
    *  Return a pointer to the underlying TCOD_Console struct.
    *  \rst
    *  .. versionadded:: 1.14
    *  \endrst
    */
-  TCOD_Console* get_data() noexcept
-  {
-    return data;
-  }
-  const TCOD_Console* get_data() const noexcept
-  {
-    return data;
-  }
-protected :
+  TCOD_Console* get_data() noexcept { return data; }
+  const TCOD_Console* get_data() const noexcept { return data; }
+  /***************************************************************************
+      @brief Convert this TCODConsole into a TCOD_Console reference.
+   */
+  explicit operator TCOD_Console&() noexcept { return *data; };
+  explicit operator const TCOD_Console&() const noexcept { return *data; };
+
+ protected:
   TCODConsole();
-  TCOD_Console* data = nullptr;
+  TCOD_Console* data = nullptr;  // This should be a unique_ptr, but fixing it will break the ABI.
 };
 #endif /* _TCOD_CONSOLE_HPP */

@@ -126,7 +126,9 @@ void TCODConsole::setAlignment(TCOD_alignment_t alignment) { TCOD_console_set_al
 
 TCOD_alignment_t TCODConsole::getAlignment() const { return TCOD_console_get_alignment(data); }
 
-TCODConsole::~TCODConsole() { TCOD_console_delete(data); }
+TCODConsole::~TCODConsole() {
+  if (data) TCOD_console_delete(data);
+}
 
 void TCODConsole::blit(
     const TCODConsole* srcCon,

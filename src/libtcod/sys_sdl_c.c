@@ -194,7 +194,7 @@ TCOD_Error TCOD_sys_load_player_config(void) {
     /* custom font */
     if (TCOD_sys_file_exists(font)) {
       int fontNbCharHoriz, fontNbCharVertic;
-      strcpy(TCOD_ctx.font_file, font);
+      strncpy(TCOD_ctx.font_file, font, sizeof(TCOD_ctx.font_file) - 1);
       TCOD_ctx.font_in_row = TCOD_parser_get_bool_property(parser, "libtcod.fontInRow");
       TCOD_ctx.font_greyscale = TCOD_parser_get_bool_property(parser, "libtcod.fontGreyscale");
       TCOD_ctx.font_tcod_layout = TCOD_parser_get_bool_property(parser, "libtcod.fontTcodLayout");
@@ -276,7 +276,7 @@ void TCOD_sys_save_screenshot(const char* filename) {
   while (!filename) {
     /* generate filename */
     FILE* access_file = NULL;
-    sprintf(buf, "./screenshot%03d.png", idx);
+    snprintf(buf, sizeof(buf), "./screenshot%03d.png", idx);
     access_file = fopen(buf, "rb");
     if (!access_file) {
       filename = buf;
@@ -1355,7 +1355,7 @@ bool TCOD_sys_file_exists(const char* filename, ...) {
   char f[1024];
   va_list ap;
   va_start(ap, filename);
-  vsprintf(f, filename, ap);
+  vsnprintf(f, sizeof(f), filename, ap);
   va_end(ap);
   SDL_RWops* rwops;
   rwops = SDL_RWFromFile(f, "rb");

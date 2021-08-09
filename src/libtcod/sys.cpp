@@ -102,10 +102,10 @@ TCOD_list_t TCODSystem::getDirectoryContent(const char* path, const char* patter
 bool TCODSystem::fileExists(const char* filename, ...) {
   FILE* in;
   bool ret = false;
-  char f[1024];
+  char f[1024] = "";
   va_list ap;
   va_start(ap, filename);
-  vsprintf(f, filename, ap);
+  vsnprintf(f, sizeof(f), filename, ap);
   va_end(ap);
   in = fopen(f, "rb");
   if (in != NULL) {

@@ -130,7 +130,7 @@ void TCODParser::error(const char* msg, ...) {
   char buf[2048];
   va_list ap;
   va_start(ap, msg);
-  vsprintf(buf, msg, ap);
+  vsnprintf(buf, sizeof(buf), msg, ap);
   va_end(ap);
   TCOD_parser_error("%s", buf);
 }

@@ -215,7 +215,7 @@ TCOD_list_t TCOD_sys_get_directory_content(const char* path, const char* pattern
   WIN32_FIND_DATA FileData;
   HANDLE hList;
   char dname[512];
-  sprintf(dname, "%s\\*", path);
+  snprintf(dname, sizeof(dname), "%s\\*", path);
   hList = FindFirstFile(dname, &FileData);
   if (hList == INVALID_HANDLE_VALUE) {
     return list;

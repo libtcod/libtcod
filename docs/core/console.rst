@@ -4,6 +4,9 @@ Console
 
 .. include:: ../old_docs_notice.inc.rst
 
+TCOD_Console
+============
+
 .. doxygenstruct:: TCOD_Console
     :members:
     :undoc-members:

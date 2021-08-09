@@ -34,6 +34,7 @@
 
 #include <stdbool.h>
 #ifdef __cplusplus
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <stdexcept>
@@ -70,7 +71,7 @@ typedef enum {
  *  Print justification options.
  */
 typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
-/**
+/***************************************************************************
     @brief The raw data for a single TCOD_Console tile.
 
     \rst
@@ -82,21 +83,33 @@ typedef struct TCOD_ConsoleTile {
   bool operator==(const TCOD_ConsoleTile& rhs) const noexcept { return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg; }
   bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
 #endif  // __cplusplus
-  /**
+  /***************************************************************************
       @brief The Unicode codepoint for this tile.
    */
   int ch;
-  /**
+  /***************************************************************************
       @brief The tile glyph color, rendered on top of the background.
    */
   TCOD_ColorRGBA fg;
-  /**
+  /***************************************************************************
       @brief The tile background color, rendered behind the glyph.
    */
   TCOD_ColorRGBA bg;
 } TCOD_ConsoleTile;
-/**
-    @brief A libtcod console.
+/***************************************************************************
+    @brief A libtcod console containing a grid of tiles with `{ch, fg, bg}` information.
+
+    @details In C++ this struct has several convience methods to make working with consoles easier.
+    Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
+
+    @code{.cpp}
+      tcod::ConsolePtr console = tcod::new_console({80, 50});
+      console->at({1, 1}).ch = '@';  // Bounds-checked references to a tile.
+      (*console)[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking.
+      if (console->in_bounds({100, 100})) {}  // Test if an index is in bounds.
+      for (auto& tile : *console) tile.fg = {255, 255, 0, 255};  // Iterate over all tiles on a console.
+      for (auto& tile : *console) tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}};  // Clear all tiles.
+    @endcode
 
     \rst
     .. versionadded:: 1.19
@@ -104,72 +117,87 @@ typedef struct TCOD_ConsoleTile {
  */
 struct TCOD_Console {
 #ifdef __cplusplus
-  /**
+  /***************************************************************************
       @brief Return a pointer to the beginning of this consoles tile data.
    */
-  auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
-  /**
+  [[nodiscard]] auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
+  /***************************************************************************
       @brief Return a const pointer to the beginning of this consoles tile data.
    */
-  auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
-  /**
+  [[nodiscard]] auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
+  /***************************************************************************
       @brief Return a pointer to the end of this consoles tile data.
    */
-  auto end() noexcept -> TCOD_ConsoleTile* { return tiles + size(); }
-  /**
+  [[nodiscard]] auto end() noexcept -> TCOD_ConsoleTile* { return tiles + elements; }
+  /***************************************************************************
       @brief Return a const pointer to the end of this consoles tile data.
    */
-  auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + size(); }
-  /**
+  [[nodiscard]] auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + elements; }
+  /***************************************************************************
       @brief Return a reference to the tile at `xy`.
    */
-  auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& { return tiles[w * xy[1] + xy[0]]; }
-  /**
+  [[nodiscard]] auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& {
+    return tiles[get_index(xy)];
+  }
+  /***************************************************************************
       @brief Return a constant reference to the tile at `xy`.
    */
-  auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
-    return tiles[w * xy[1] + xy[0]];
+  [[nodiscard]] auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
+    return tiles[get_index(xy)];
   }
-  /**
+  /***************************************************************************
+      @brief Return a reference to the tile at `xy`.
+
+      @throws std::out_of_range if the index is out-of-bounds
+   */
+  [[nodiscard]] auto at(const std::array<int, 2>& xy) -> TCOD_ConsoleTile& { return tiles[bounds_check(xy)]; }
+  /***************************************************************************
+      @brief Return a constant reference to the tile at `xy`.
+
+      @throws std::out_of_range if the index is out-of-bounds
+   */
+  [[nodiscard]] auto at(const std::array<int, 2>& xy) const -> const TCOD_ConsoleTile& {
+    return tiles[bounds_check(xy)];
+  }
+  /***************************************************************************
       @brief Return a reference to the tile at `x`,`y`.
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  auto at(int x, int y) -> TCOD_ConsoleTile& {
-    range_check_(x, y);
-    return (*this)[{x, y}];
-  }
-  /**
+  [[nodiscard]] auto at(int x, int y) -> TCOD_ConsoleTile& { return at({x, y}); }
+  /***************************************************************************
       @brief Return a constant reference to the tile at `x`,`y`.
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  auto at(int x, int y) const -> const TCOD_ConsoleTile& {
-    range_check_(x, y);
-    return (*this)[{x, y}];
-  }
-  /**
-      @brief Return the total number of tiles in this console.
-   */
-  int size() const noexcept { return elements; }
-  /**
-      Internal function.
+  [[nodiscard]] auto at(int x, int y) const -> const TCOD_ConsoleTile& { return at({x, y}); }
+  /***************************************************************************
+      @brief Checks if `xy` is in bounds then return an in-bounds index.
 
-      @throws std::out_of_range if the index is out-of-bounds
+      @throws std::out_of_range if `xy` is out-of-bounds
    */
-  void range_check_(int x, int y) const {
-    if (!in_bounds(x, y)) {
+  int bounds_check(const std::array<int, 2>& xy) const {
+    if (!in_bounds(xy)) {
       throw std::out_of_range(
-          std::string("Out of bounds lookup {x=") + std::to_string(x) + ", y=" + std::to_string(y) +
+          std::string("Out of bounds lookup {") + std::to_string(xy[0]) + ", " + std::to_string(xy[1]) +
           "} on console of shape {" + std::to_string(w) + ", " + std::to_string(h) + "}.");
     }
+    return get_index(xy);
   }
-  /**
-      @brief Return true if `x`,`y` are within the bounds of this console.
+  /***************************************************************************
+      @brief Convert `xy` into a 1-dimensional index.
+
+      @details This index is normally used to index the tiles attribute.
    */
-  bool in_bounds(int x, int y) const noexcept { return 0 <= x && x < w && 0 <= y && y < h; }
+  [[nodiscard]] int get_index(const std::array<int, 2>& xy) const noexcept { return w * xy[1] + xy[0]; }
+  /***************************************************************************
+      @brief Return true if `xy` are within the bounds of this console.
+   */
+  [[nodiscard]] bool in_bounds(const std::array<int, 2>& xy) const noexcept {
+    return 0 <= xy[0] && xy[0] < w && 0 <= xy[1] && xy[1] < h;
+  }
 #endif  // __cplusplus
-  /** Console width and height (in characters, not pixels.) */
+  /** Console width and height in tiles. */
   int w, h;
   /** A contiguous array of console tiles. */
   TCOD_ConsoleTile* __restrict tiles;
@@ -415,22 +443,61 @@ namespace tcod {
 struct ConsoleDeleter {
   void operator()(TCOD_Console* console) const { TCOD_console_delete(console); }
 };
-/**
+/***************************************************************************
     @brief A unique pointer to a TCOD_Console.
 
     \rst
     .. versionadded:: 1.19
     \endrst
-
  */
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
-TCOD_NODISCARD
-inline auto new_console(int width, int height) -> ConsolePtr {
+/***************************************************************************
+    @brief Return a new console with the given size.
+
+    @param width The width of the new console in tiles.
+    @param height The height of the new console in tiles.
+    @return ConsolePtr, a unique_ptr to a TCOD_Console.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+[[nodiscard]] inline auto new_console(int width, int height) -> ConsolePtr {
   ConsolePtr console{TCOD_console_new(width, height)};
   if (!console) {
     throw std::runtime_error(TCOD_get_error());
   }
   return console;
+}
+/***************************************************************************
+    @brief Return a new console with the given size.
+
+    @param size The {width, height} of the new console.
+    @return ConsolePtr, a unique_ptr to a TCOD_Console.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+[[nodiscard]] inline auto new_console(std::array<int, 2> size) -> ConsolePtr {
+  return new_console(size.at(0), size.at(1));
+}
+/***************************************************************************
+    @brief Return a copy of another console.
+
+    Only the tile data is copied, all other data will be the same as if a new console was initialized.
+
+    @param console The console to make a copy from.
+    @return ConsolePtr, a unique_ptr to a TCOD_Console.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+[[nodiscard]] inline auto new_console(const TCOD_Console& console) -> ConsolePtr {
+  auto clone = new_console(console.w, console.h);
+  std::copy(console.begin(), console.end(), clone->begin());
+  return clone;
 }
 }  // namespace tcod
 #endif  // __cplusplus

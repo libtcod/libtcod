@@ -11,7 +11,7 @@ else()
 endif()
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
-file(GLOB SRC_FILES test_*.cpp)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS test_*.cpp)
 
 add_executable(unittest unittest.cpp ${SRC_FILES})
 target_link_libraries(unittest libtcod::libtcod Catch2::Catch2)

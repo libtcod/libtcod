@@ -103,7 +103,7 @@ typedef struct TCOD_ConsoleTile {
     Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
 
     @code{.cpp}
-      tcod::ConsolePtr console = tcod::new_console({80, 50});
+      tcod::ConsolePtr console = tcod::new_console({{80, 50}});
       console->at({1, 1}).ch = '@';  // Bounds-checked references to a tile.
       (*console)[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking.
       if (console->in_bounds({100, 100})) {}  // Test if an index is in bounds.

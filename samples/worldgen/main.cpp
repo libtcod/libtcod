@@ -25,6 +25,8 @@
  */
 #include "main.hpp"
 
+#include <libtcod/timer.h>
+
 #include <algorithm>
 
 static constexpr auto WIDTH = 80;
@@ -115,9 +117,8 @@ void render() {
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(WIDTH, HEIGHT, "World generator", false, TCOD_RENDERER_SDL);
-  TCODSystem::setFps(25);
-  TCODMouse::showCursor(true);
+  TCODConsole::initRoot(WIDTH, HEIGHT, "World generator", false, TCOD_RENDERER_OPENGL2);
+  int desired_fps = 25;
 
   TCOD_key_t k = {};
   TCOD_mouse_t mouse = {};
@@ -128,6 +129,8 @@ int main(int argc, char* argv[]) {
   // compute light intensity on ground (depends on light direction and ground slope)
   static float lightDir[3] = {1.0f, 1.0f, 0.0f};
   worldGen.computeSunLight(lightDir);
+
+  auto timer = tcod::Timer();
 
   while (!TCODConsole::isWindowClosed()) {
     //	read keyboard
@@ -146,7 +149,7 @@ int main(int argc, char* argv[]) {
       k.vk = TCODK_NONE;
     }
     // update the game
-    update(TCODSystem::getLastFrameLength(), k, mouse);
+    update(timer.sync(desired_fps), k, mouse);
 
     // render the game screen
     render();

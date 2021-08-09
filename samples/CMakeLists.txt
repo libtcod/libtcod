@@ -64,7 +64,7 @@ if (CONAN_FILE)
 endif()
 
 add_executable(frost frost/frost.cpp)
-target_link_libraries(frost ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
+target_link_libraries(frost ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(frost copy_font)
 endif()
@@ -72,13 +72,13 @@ endif()
 add_executable(hmtool
     hmtool/hmtool.cpp hmtool/operation.cpp hmtool/operation.hpp
 )
-target_link_libraries(hmtool ${LINK_TCOD})
+target_link_libraries(hmtool ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(hmtool copy_font)
 endif()
 
 add_executable(navier navier/main.cpp)
-target_link_libraries(navier ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
+target_link_libraries(navier ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(navier copy_font)
 endif()
@@ -92,7 +92,7 @@ add_executable(rad
     rad/rad_shader_photon.cpp
     rad/rad_shader_standard.cpp
 )
-target_link_libraries(rad ${LINK_TCOD} SDL2::SDL2main SDL2::SDL2)
+target_link_libraries(rad ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(rad copy_font)
 endif()
@@ -103,7 +103,7 @@ add_executable(ripples
     ripples/util_ripples.cpp
     ripples/util_ripples.hpp
 )
-target_link_libraries(ripples ${LINK_TCOD})
+target_link_libraries(ripples ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(ripples copy_font)
 endif()
@@ -114,7 +114,7 @@ add_executable(weather
     weather/util_weather.cpp
     weather/util_weather.hpp
 )
-target_link_libraries(weather ${LINK_TCOD})
+target_link_libraries(weather ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(weather copy_font)
 endif()
@@ -125,7 +125,7 @@ add_executable(worldgen
     worldgen/util_worldgen.cpp
     worldgen/util_worldgen.hpp
 )
-target_link_libraries(worldgen ${LINK_TCOD})
+target_link_libraries(worldgen ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(worldgen copy_font)
 endif()

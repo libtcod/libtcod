@@ -26,6 +26,8 @@
 
 #include "main.hpp"
 
+#include <SDL.h>
+
 #include <cstdio>
 #include <string>
 

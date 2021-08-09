@@ -1,3 +1,4 @@
+#include <SDL.h>
 #include <libtcod.h>
 #include <math.h>
 #include <stdarg.h>

@@ -25,6 +25,7 @@
  */
 #include "main.hpp"
 
+#include <SDL.h>
 #include <libtcod/timer.h>
 
 #include <algorithm>

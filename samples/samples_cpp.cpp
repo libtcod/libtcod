@@ -9,6 +9,7 @@
 
 #include <SDL.h>
 #include <libtcod.h>
+#include <libtcod/timer.h>
 
 #include <cmath>
 #include <cstdio>
@@ -46,6 +47,8 @@ static constexpr auto BLACK = TCODColor{0, 0, 0};
 static constexpr auto GREY = TCODColor{127, 127, 127};
 static constexpr auto LIGHT_BLUE = TCODColor{63, 63, 255};
 static constexpr auto LIGHT_YELLOW = TCODColor{255, 255, 63};
+
+static float delta_time;  // Global delta time.
 
 // clang-format off
 static const char* SAMPLE_MAP[] = {
@@ -273,11 +276,11 @@ class LineDrawingSample : public Sample {
         "TCOD_BKGND_ALPHA"};
     if ((bkFlag & 0xff) == TCOD_BKGND_ALPH) {
       // for the alpha mode, update alpha every frame
-      const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+      const float alpha = (1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f;
       bkFlag = TCOD_BKGND_ALPHA(alpha);
     } else if ((bkFlag & 0xff) == TCOD_BKGND_ADDA) {
       // for the add alpha mode, update alpha every frame
-      const float alpha = (1.0f + cosf(TCODSystem::getElapsedSeconds() * 2)) / 2.0f;
+      const float alpha = (1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f;
       bkFlag = TCOD_BKGND_ADDALPHA(alpha);
     }
     if (!init) {
@@ -296,7 +299,7 @@ class LineDrawingSample : public Sample {
     // blit the background
     TCODConsole::blit(&bk, 0, 0, SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT, &sampleConsole, 0, 0);
     // render the gradient
-    const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(TCODSystem::getElapsedSeconds())) / 2.0f));
+    const int rect_y = (int)((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(SDL_GetTicks() / 1000.0f)) / 2.0f));
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; x++) {
       TCODColor col;
       col.r = (uint8_t)(x * 255 / SAMPLE_SCREEN_WIDTH);
@@ -307,7 +310,7 @@ class LineDrawingSample : public Sample {
       sampleConsole.setCharBackground(x, rect_y + 2, col, (TCOD_bkgnd_flag_t)bkFlag);
     }
     // calculate the segment ends
-    const float angle = TCODSystem::getElapsedSeconds() * 2.0f;
+    const float angle = SDL_GetTicks() / 1000.0f * 2.0f;
     const int xo = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 + cosf(angle)));
     const int yo = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 + sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
     const int xd = static_cast<int>(SAMPLE_SCREEN_WIDTH / 2 * (1 - cosf(angle)));
@@ -701,12 +704,12 @@ class ImageSample : public Sample {
     }
     sampleConsole.setDefaultBackground(BLACK);
     sampleConsole.clear();
-    float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(TCODSystem::getElapsedSeconds()) * 10.0f;
+    float x = SAMPLE_SCREEN_WIDTH / 2 + cosf(SDL_GetTicks() / 1000.0f) * 10.0f;
     float y = (float)(SAMPLE_SCREEN_HEIGHT / 2);
-    float scale_x = 0.2f + 1.8f * (1.0f + cosf(TCODSystem::getElapsedSeconds() / 2)) / 2.0f;
+    float scale_x = 0.2f + 1.8f * (1.0f + cosf(SDL_GetTicks() / 1000.0f / 2.0f)) / 2.0f;
     float scale_y = scale_x;
-    float angle = TCODSystem::getElapsedSeconds();
-    long elapsed = TCODSystem::getElapsedMilli() / 2000;
+    float angle = SDL_GetTicks() / 1000.0f;
+    long elapsed = SDL_GetTicks() / 2000;
     if (elapsed & 1) {
       // split the color channels of circle.png
       // the red channel
@@ -940,7 +943,7 @@ class PathfinderSample : public Sample {
       }
     }
     // move the creature
-    busy -= TCODSystem::getLastFrameLength();
+    busy -= delta_time;
     if (busy <= 0.0f) {
       busy = 0.2f;
       if (usingAstar) {
@@ -1251,7 +1254,7 @@ class NameGeneratorSample : public Sample {
         sampleConsole.printf(SAMPLE_SCREEN_WIDTH - 2, 2 + i, TCOD_BKGND_NONE, TCOD_RIGHT, "%s", name.c_str());
     }
 
-    delay += TCODSystem::getLastFrameLength();
+    delay += delta_time;
     if (delay >= 0.5f) {
       delay -= 0.5f;
       // add a new name to the list
@@ -1285,7 +1288,7 @@ class SampleRenderer : public ITCODSDLRenderer {
     // compute the sample console position in pixels
     int sample_x = SAMPLE_SCREEN_X * char_w;
     int sample_y = SAMPLE_SCREEN_Y * char_h;
-    delay -= TCODSystem::getLastFrameLength();
+    delay -= delta_time;
     if (delay < 0.0f) {
       delay = 3.0f;
       effectNum = (effectNum + 1) % 3;
@@ -1378,7 +1381,7 @@ class SampleRenderer : public ITCODSDLRenderer {
     int r_idx = screen->format->Rshift / 8;
     int g_idx = screen->format->Gshift / 8;
     int b_idx = screen->format->Bshift / 8;
-    f[2] = TCODSystem::getElapsedSeconds();
+    f[2] = SDL_GetTicks() / 1000.0f;
     for (int x = sample_x; x < sample_x + sample_w; x++) {
       uint8_t* p = (uint8_t*)screen->pixels + x * screen->format->BytesPerPixel + sample_y * screen->pitch;
       f[0] = (float)(x) / sample_w;
@@ -1608,7 +1611,9 @@ int main(int argc, char* argv[]) {
 
   TCODConsole::initRoot(80, 50, "libtcod C++ sample", fullscreen, renderer);
   atexit(TCOD_quit);
+  auto timer = tcod::Timer();
   do {
+    delta_time = timer.sync();
     if (!creditsEnd) {
       creditsEnd = TCODConsole::renderCredits(56, 43, false);
     }
@@ -1635,17 +1640,11 @@ int main(int argc, char* argv[]) {
         46,
         TCOD_BKGND_NONE,
         TCOD_RIGHT,
-        "last frame : %3d ms (%3d fps)",
-        (int)(TCODSystem::getLastFrameLength() * 1000),
-        TCODSystem::getFps());
+        "last frame : %3.0f ms (%3.0f fps)",
+        delta_time * 1000.0f,
+        timer.get_mean_fps());
     TCODConsole::root->printf(
-        79,
-        47,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
-        "elapsed : %8dms %4.2fs",
-        TCODSystem::getElapsedMilli(),
-        TCODSystem::getElapsedSeconds());
+        79, 47, TCOD_BKGND_NONE, TCOD_RIGHT, "elapsed : %8dms %4.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f);
     TCODConsole::root->printf(2, 47, "↑↓ : select a sample");
     TCODConsole::root->printf(
         2, 48, "ALT-ENTER : switch to %s", TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode");

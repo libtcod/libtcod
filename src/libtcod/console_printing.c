@@ -106,22 +106,27 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
   curbuf = (curbuf + 1) % NB_BUFFERS;
   return ret;
 }
-/**
- *  Print a titled, framed region on a console, using default colors and
- *  alignment.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param w The width of the frame.
- *  \param h The height of the frame.
- *  \param empty If true the characters inside of the frame will be cleared
- *               with spaces.
- *  \param flag The blending flag.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- *
- *  This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
+/***************************************************************************
+    Print a titled, framed region on a console, using default colors and
+    alignment.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param w The width of the frame.
+    @param h The height of the frame.
+    @param empty If true the characters inside of the frame will be cleared
+                 with spaces.
+    @param flag The blending flag.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+
+    This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
+
+    \rst
+    .. deprecated:: 1.19
+      This function is not using Unicode frame characters and has been deprecated.
+    \endrst
  */
 void TCOD_console_print_frame(
     TCOD_Console* con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...) {
@@ -129,10 +134,10 @@ void TCOD_console_print_frame(
   if (!con) {
     return;
   }
-  TCOD_console_put_char(con, x, y, TCOD_CHAR_NW, flag);
-  TCOD_console_put_char(con, x + w - 1, y, TCOD_CHAR_NE, flag);
-  TCOD_console_put_char(con, x, y + h - 1, TCOD_CHAR_SW, flag);
-  TCOD_console_put_char(con, x + w - 1, y + h - 1, TCOD_CHAR_SE, flag);
+  TCOD_console_put_char(con, x, y, 0x250C, flag);
+  TCOD_console_put_char(con, x + w - 1, y, 0x2510, flag);
+  TCOD_console_put_char(con, x, y + h - 1, 0x2514, flag);
+  TCOD_console_put_char(con, x + w - 1, y + h - 1, 0x2518, flag);
   TCOD_console_hline(con, x + 1, y, w - 2, flag);
   TCOD_console_hline(con, x + 1, y + h - 1, w - 2, flag);
   if (h > 2) {

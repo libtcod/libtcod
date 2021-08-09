@@ -153,12 +153,42 @@ void TCOD_sys_decode_font_(void) {
         TCOD_sys_map_ascii_to_font(i, fx, fy);
       }
     }
-    TCOD_sys_map_clone_(0x2500, 0xC4);
-    TCOD_sys_map_clone_(0x2502, 0xB3);
-    TCOD_sys_map_clone_(0x250C, 0xDA);
-    TCOD_sys_map_clone_(0x2510, 0xBF);
-    TCOD_sys_map_clone_(0x2514, 0xC0);
-    TCOD_sys_map_clone_(0x2518, 0xD9);
+    // Assume the font is mostly Code Page 437 and try to clone the Unicode codepoints from the EASCII codepoints.
+    for (int i = 1; i <= 0xFE; ++i) {
+      if (TCOD_CHARMAP_CP437[i] <= 0xFF) continue;  // Prefer the EASCII codepoints for backwards compatibility.
+      TCOD_sys_map_clone_(TCOD_CHARMAP_CP437[i], i);
+    }
+    // Manually apply codepoints from TCOD's old default tileset.
+    TCOD_sys_map_clone_(0x2500, 0xC4);  // TCOD_CHAR_HLINE
+    TCOD_sys_map_clone_(0x2502, 0xB3);  // TCOD_CHAR_VLINE
+    TCOD_sys_map_clone_(0x250C, 0xDA);  // TCOD_CHAR_NW
+    TCOD_sys_map_clone_(0x2510, 0xBF);  // TCOD_CHAR_NE
+    TCOD_sys_map_clone_(0x2514, 0xC0);  // TCOD_CHAR_SW
+    TCOD_sys_map_clone_(0x2518, 0xD9);  // TCOD_CHAR_SE
+
+    TCOD_sys_map_clone_(0x2190, 27);  // TCOD_CHAR_ARROW_W
+    TCOD_sys_map_clone_(0x2192, 26);  // TCOD_CHAR_ARROW_E
+
+    TCOD_sys_map_clone_(0x251C, 195);  // TCOD_CHAR_TEEE
+    TCOD_sys_map_clone_(0x2524, 180);  // TCOD_CHAR_TEEW
+
+    TCOD_sys_map_clone_(0x2550, 205);  // TCOD_CHAR_DHLINE
+    TCOD_sys_map_clone_(0x2551, 186);  // TCOD_CHAR_DVLINE
+    TCOD_sys_map_clone_(0x2554, 201);  // TCOD_CHAR_DNW
+    TCOD_sys_map_clone_(0x2557, 187);  // TCOD_CHAR_DNE
+    TCOD_sys_map_clone_(0x255A, 200);  // TCOD_CHAR_DSW
+    TCOD_sys_map_clone_(0x255D, 188);  // TCOD_CHAR_DSE
+
+    TCOD_sys_map_clone_(0x2611, 225);  // TCOD_CHAR_CHECKBOX_SET
+    TCOD_sys_map_clone_(0x2610, 224);  // TCOD_CHAR_CHECKBOX_UNSET;
+
+    TCOD_sys_map_clone_(0x2598, 226);  // TCOD_CHAR_SUBP_NW
+    TCOD_sys_map_clone_(0x259D, 227);  // TCOD_CHAR_SUBP_NE
+    TCOD_sys_map_clone_(0x2580, 228);  // TCOD_CHAR_SUBP_N
+    TCOD_sys_map_clone_(0x2597, 229);  // TCOD_CHAR_SUBP_SE
+    TCOD_sys_map_clone_(0x259E, 230);  // TCOD_CHAR_SUBP_DIAG
+    TCOD_sys_map_clone_(0x2590, 231);  // TCOD_CHAR_SUBP_E
+    TCOD_sys_map_clone_(0x2596, 231);  // TCOD_CHAR_SUBP_SW
   }
 }
 

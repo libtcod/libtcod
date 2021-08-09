@@ -56,10 +56,10 @@ void FlatList::render() {
   w++;
   con->setDefaultBackground((onLeftArrow) ? backFocus : back);
   con->setDefaultForeground((onLeftArrow) ? foreFocus : fore);
-  con->putChar(x + boxx, y, TCOD_CHAR_ARROW_W);
+  con->putChar(x + boxx, y, 0x2190);  // ←
   con->setDefaultBackground((onRightArrow) ? backFocus : back);
   con->setDefaultForeground((onRightArrow) ? foreFocus : fore);
-  con->putChar(x + w - 1, y, TCOD_CHAR_ARROW_E);
+  con->putChar(x + w - 1, y, 0x2192);  // →
 }
 
 void FlatList::update(TCOD_key_t k) {

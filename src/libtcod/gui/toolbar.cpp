@@ -54,8 +54,8 @@ class Separator : public Widget {
     con->setDefaultBackground(back);
     con->setDefaultForeground(fore);
     con->hline(x, y, w, TCOD_BKGND_SET);
-    con->setChar(x - 1, y, TCOD_CHAR_TEEE);
-    con->setChar(x + w, y, TCOD_CHAR_TEEW);
+    con->setChar(x - 1, y, 0x251C);  // ├
+    con->setChar(x + w, y, 0x2524);  // ┤
     con->setDefaultBackground(fore);
     con->setDefaultForeground(back);
     con->printf(x + w / 2, y, TCOD_BKGND_SET, TCOD_CENTER, " %s ", txt);

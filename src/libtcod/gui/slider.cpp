@@ -70,8 +70,8 @@ void Slider::render() {
   con->setDefaultBackground((onArrows || drag) ? backFocus : back);
   con->setDefaultForeground((onArrows || drag) ? foreFocus : fore);
   con->rect(x + w - 2, y, 2, 1, TCOD_BKGND_SET);
-  con->setChar(x + w - 2, y, TCOD_CHAR_ARROW_W);
-  con->setChar(x + w - 1, y, TCOD_CHAR_ARROW_E);
+  con->setChar(x + w - 2, y, 0x2190);  // ←
+  con->setChar(x + w - 1, y, 0x2192);  // →
 }
 
 void Slider::update(TCOD_key_t k) {

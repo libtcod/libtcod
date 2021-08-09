@@ -197,12 +197,12 @@ void TCOD_mouse_get_status_wrapper(TCOD_mouse_t* mouse) { *mouse = TCOD_mouse_ge
 
 void TCOD_console_double_hline(TCOD_console_t con, int x, int y, int l, TCOD_bkgnd_flag_t flag) {
   int i;
-  for (i = x; i < x + l; i++) TCOD_console_put_char(con, i, y, TCOD_CHAR_DHLINE, flag);
+  for (i = x; i < x + l; i++) TCOD_console_put_char(con, i, y, 0x2550, flag);  // ═
 }
 
 void TCOD_console_double_vline(TCOD_console_t con, int x, int y, int l, TCOD_bkgnd_flag_t flag) {
   int i;
-  for (i = y; i < y + l; i++) TCOD_console_put_char(con, x, i, TCOD_CHAR_DVLINE, flag);
+  for (i = y; i < y + l; i++) TCOD_console_put_char(con, x, i, 0x2551, flag);  // ║
 }
 
 void TCOD_console_print_double_frame(
@@ -211,10 +211,10 @@ void TCOD_console_print_double_frame(
   if (!dat) {
     return;
   }
-  TCOD_console_put_char(con, x, y, TCOD_CHAR_DNW, flag);
-  TCOD_console_put_char(con, x + w - 1, y, TCOD_CHAR_DNE, flag);
-  TCOD_console_put_char(con, x, y + h - 1, TCOD_CHAR_DSW, flag);
-  TCOD_console_put_char(con, x + w - 1, y + h - 1, TCOD_CHAR_DSE, flag);
+  TCOD_console_put_char(con, x, y, 0x2554, flag);                  // ╔
+  TCOD_console_put_char(con, x + w - 1, y, 0x2557, flag);          // ╗
+  TCOD_console_put_char(con, x, y + h - 1, 0x255A, flag);          // ╚
+  TCOD_console_put_char(con, x + w - 1, y + h - 1, 0x255D, flag);  // ╝
   TCOD_console_double_hline(con, x + 1, y, w - 2, flag);
   TCOD_console_double_hline(con, x + 1, y + h - 1, w - 2, flag);
   TCOD_console_double_vline(con, x, y + 1, h - 2, flag);

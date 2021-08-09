@@ -17,6 +17,10 @@ since `1.7.0`.
 - Added the Timer class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
 - Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
 
+### Change
+- Initializing libtcod with the old API will now enable VSync by default.
+  You can set the environment variable `TCOD_VSYNC=0` to disable this or use the new API where VSync is a setting.
+
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
 - Deprecated C++ color constants because of class `static const` initialization issues.

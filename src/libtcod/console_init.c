@@ -73,7 +73,8 @@ TCOD_Error TCOD_console_init_root_(
   return TCOD_context_new(&params, &TCOD_ctx.engine);
 }
 TCOD_Error TCOD_console_init_root(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer) {
-  return TCOD_console_init_root_(w, h, title, fullscreen, renderer, true);
+  const bool vsync = renderer != TCOD_RENDERER_SDL;  // Enable VSync for all except the software renderer.
+  return TCOD_console_init_root_(w, h, title, fullscreen, renderer, vsync);
 }
 void TCOD_quit(void) { TCOD_console_delete(NULL); }
 void TCOD_console_set_window_title(const char* title) {

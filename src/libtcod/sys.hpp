@@ -245,6 +245,7 @@ public :
 	@Lua tcod.system.saveScreenshot(filename)
 	@Param filename Name of the file. If NULL, a filename is automatically generated with the form "./screenshotNNN.png", NNN being the first free number (if a file named screenshot000.png already exist, screenshot001.png will be used, and so on...).
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void saveScreenshot(const char *filename);
 
 	/**
@@ -447,6 +448,7 @@ public :
 		tcod.system.forceFullscreenResolution(800,600) -- use 800x600 in fullscreen instead of 640x400
 		tcod.console.initRoot(80,50,"",true) -- 80x50 console with 8x8 char => 640x400 default resolution
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void forceFullscreenResolution(int width, int height);
 
 	/**
@@ -459,6 +461,7 @@ public :
 	@C# static void TCODSystem::getCurrentResolution(out int w, out int h);
 	@Param width,height contains current resolution when the function returns
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void getCurrentResolution(int *width, int *height);
 	/**
 	@PageName system_misc
@@ -469,6 +472,7 @@ public :
 	@C# static void TCODSystem::getFullscreenOffsets(out int offset_x, out int offset_y);
 	@Param offset_x,offset_y contains the position of the console on the screen when using fullscreen mode.
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void getFullscreenOffsets(int *offset_x, int *offset_y);
 
 	/**
@@ -481,6 +485,7 @@ public :
 	@C# static void TCODSystem::getCharSize(out int w, out int h);
 	@Param width,height contains a character size when the function returns
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void getCharSize(int *w, int *h);
 
 	/**
@@ -495,6 +500,7 @@ public :
 	@Param img image containing the new character bitmap
 	@Param x,y position in pixels of the top-left corner of the character in the image
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void updateChar(int asciiCode, int font_x, int font_y,const TCODImage *img,int x,int y);
 
 	/**
@@ -511,6 +517,7 @@ public :
 	@C# static void TCODSystem::setRenderer(TCODRendererType renderer);
 	@Param renderer Either TCOD_RENDERER_GLSL, TCOD_RENDERER_OPENGL or TCOD_RENDERER_SDL
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void setRenderer(TCOD_renderer_t renderer);
 
 	/**
@@ -521,6 +528,7 @@ public :
 	@Py sys_get_renderer()
 	@C# static TCODRendererType TCODSystem::getRenderer();
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static TCOD_renderer_t getRenderer();
 
 	/**

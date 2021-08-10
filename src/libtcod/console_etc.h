@@ -123,6 +123,7 @@ TCODLIB_API TCOD_key_t TCOD_console_wait_for_keypress(bool flush);
 
 TCOD_DEPRECATED("This function does not support contexts.  Consider using `TCOD_console_credits_render_ex`.")
 TCODLIB_API void TCOD_console_credits(void);
+TCOD_DEPRECATED("This function does not support contexts.")
 TCODLIB_API void TCOD_console_credits_reset(void);
 TCOD_DEPRECATED("This function does not support contexts.  Consider using `TCOD_console_credits_render_ex`.")
 TCODLIB_API bool TCOD_console_credits_render(int x, int y, bool alpha);

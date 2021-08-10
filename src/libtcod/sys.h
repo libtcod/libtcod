@@ -199,16 +199,22 @@ TCODLIB_API int TCOD_sys_get_fps(void);
 TCOD_DEPRECATED("This function is not compatible with contexts.  Use tcod::Timer or SDL timing functions instead.")
 TCODLIB_API float TCOD_sys_get_last_frame_length(void);
 
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_sys_save_screenshot(const char* filename);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_sys_force_fullscreen_resolution(int width, int height);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API TCOD_NODISCARD int TCOD_sys_set_renderer(TCOD_renderer_t renderer);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API TCOD_renderer_t TCOD_sys_get_renderer(void);
 /**
     Return the resolution of the current monitor.
  */
 TCOD_DEPRECATED("Use SDL to determine the screen resolution instead.")
 TCODLIB_API TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
 
 /**

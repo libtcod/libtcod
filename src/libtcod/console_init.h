@@ -99,20 +99,24 @@ TCOD_PUBLIC void TCOD_quit(void);
  *
  *  \param title A utf8 string.
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to change the window title.")
 TCOD_PUBLIC void TCOD_console_set_window_title(const char* title);
 /**
  *  Set the display to be full-screen or windowed.
  *
  *  \param fullscreen If true the display will go full-screen.
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to set the fullscreen state.")
 TCOD_PUBLIC void TCOD_console_set_fullscreen(bool fullscreen);
 /**
  *  Return true if the display is full-screen.
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check the fullscreen state.")
 TCOD_PUBLIC bool TCOD_console_is_fullscreen(void);
 /**
  *  Return true if the window has mouse focus.
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check for mouse focus.")
 TCOD_PUBLIC bool TCOD_console_has_mouse_focus(void);
 /**
  *  Return true if the window has keyboard focus.
@@ -123,10 +127,12 @@ TCOD_PUBLIC bool TCOD_console_has_mouse_focus(void);
  *      focus.
  *  \endverbatim
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check for keyboard focus.")
 TCOD_PUBLIC bool TCOD_console_is_active(void);
 /**
  *  Return true if the window is closing.
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL for events and check for SDL_QUIT.")
 TCOD_PUBLIC bool TCOD_console_is_window_closed(void);
 /**
  *  Return an SDL_Window pointer if one is in use, returns NULL otherwise.
@@ -134,6 +140,7 @@ TCOD_PUBLIC bool TCOD_console_is_window_closed(void);
  *  .. versionadded:: 1.11
  *  \endrst
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCOD_PUBLIC struct SDL_Window* TCOD_sys_get_sdl_window(void);
 /**
  *  Return an SDL_Renderer pointer if one is in use, returns NULL otherwise.
@@ -141,6 +148,7 @@ TCOD_PUBLIC struct SDL_Window* TCOD_sys_get_sdl_window(void);
  *  .. versionadded:: 1.11
  *  \endrst
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
 /**
  *  Render a console over the display.
@@ -162,7 +170,9 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  *      :any:`TCOD_sys_get_sdl_window` :any:`TCOD_sys_get_sdl_renderer`
  *  \endrst
  */
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCOD_PUBLIC int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport);
 /***************************************************************************
     @brief Return the context being used internally by the old API.

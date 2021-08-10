@@ -274,6 +274,7 @@ public :
 	@C# static bool TCODConsole::isFullscreen()
 	@Lua tcod.console.isFullscreen()
 	*/
+  [[deprecated("This function is not compatible with contexts. Use SDL to check the fullscreen state.")]]
 	static bool isFullscreen();
 	/**
 	@PageName console_fullscreen
@@ -308,6 +309,7 @@ public :
 			tcod.console.setFullscreen(not tcod.console.isFullscreen())
 		end
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void setFullscreen(bool fullscreen);
 
 	/**
@@ -324,6 +326,7 @@ public :
 	@Lua tcod.console.setWindowTitle(title)
 	@Param title New title of the game window
 	*/
+  [[deprecated("This function is not compatible with contexts. Use SDL to change the window title.")]]
 	static void setWindowTitle(const char *title);
 
 	/**
@@ -336,6 +339,7 @@ public :
 	@C# static bool TCODConsole::isWindowClosed()
 	@Lua tcod.console.isWindowClosed()
 	*/
+  [[deprecated("This function is not compatible with contexts. Use SDL for events and check for SDL_QUIT.")]]
 	static bool isWindowClosed();
 
 	/**
@@ -346,6 +350,7 @@ public :
 	@C bool TCOD_console_has_mouse_focus()
 	@Py console_has_mouse_focus()
 	*/
+  [[deprecated("This function is not compatible with contexts. Use SDL to check for mouse focus.")]]
 	static bool hasMouseFocus();
 
 	/**
@@ -356,6 +361,7 @@ public :
 	@C bool TCOD_console_is_active()
 	@Py console_is_active()
 	*/
+  [[deprecated("This function is not compatible with contexts. Use SDL to check for keyboard focus.")]]
 	static bool isActive();
 
 	/**
@@ -372,6 +378,7 @@ public :
 	@C# static void TCODConsole::credits()
 	@Lua tcod.console.credits()
 	*/
+  [[deprecated("This function is not compatible with contexts. Consider using `TCOD_console_credits_render_ex`.")]]
 	static void credits();
 
 	/**
@@ -423,6 +430,7 @@ public :
 			tcod.console.flush()
 		end
 	*/
+  [[deprecated("This function is not compatible with contexts. Consider using `TCOD_console_credits_render_ex`.")]]
 	static bool renderCredits(int x, int y, bool alpha);
 
 	/**
@@ -435,6 +443,7 @@ public :
 	@C# static void TCODConsole::resetCredits()
 	@Lua tcod.console.resetCredits()
 	*/
+  [[deprecated]]
 	static void resetCredits();
 
 	/**

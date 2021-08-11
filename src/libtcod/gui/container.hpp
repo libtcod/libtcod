@@ -44,6 +44,6 @@ class TCODLIB_GUI_API Container : public Widget {
   void update(const TCOD_key_t k);
 
  protected:
-  TCODList<Widget*> content;
+  TCODList<Widget*> content;  // Can't be fixed without breaking the ABI.
 };
 #endif /* TCOD_GUI_CONTAINER_HPP */

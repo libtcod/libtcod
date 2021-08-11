@@ -2,6 +2,7 @@
 
 #include <array>
 #include <libtcod/gui/gui.hpp>
+#include <string>
 
 static constexpr auto HM_WIDTH = 100;
 static constexpr auto HM_HEIGHT = 80;
@@ -40,13 +41,13 @@ class Operation {
   static const char* names[];
   static const char* tips[];
   OpType operation_type;
-  static TCODList<Operation*> list;  // the list of operation applied since the last clear
-  void run();                        // run this operation
-  void add();                        // run this operation and adds it in the list
+  static std::vector<Operation*> list;  // the list of operation applied since the last clear
+  void run();                           // run this operation
+  void add();                           // run this operation and adds it in the list
   virtual void createParamUi();
-  static const char* buildCode(CodeType type);  // generate the code corresponding to the list of operations
-  static void clear();                          // remove all operation, clear the heightmap
-  static void cancel();                         // cancel the last operation
+  static const std::string& buildCode(CodeType type);  // generate the code corresponding to the list of operations
+  static void clear();                                 // remove all operation, clear the heightmap
+  static void cancel();                                // cancel the last operation
   static void reseed();
   virtual ~Operation() {}
 
@@ -59,17 +60,17 @@ class Operation {
   RadioButton* button;  // button associated with this operation in history
 
   static void addInitCode(
-      CodeType type, const char* code);             // add a global variable or a function to the generated code
-  static const char* format(const char* fmt, ...);  // helper to format strings
+      CodeType type, const std::string& code);  // add a global variable or a function to the generated code
 
   virtual void runInternal() = 0;                  // actually execute this operation
   virtual bool addInternal() = 0;                  // actually add this operation
-  virtual const char* getCode(CodeType type) = 0;  // the code corresponding to this operation
+  virtual std::string getCode(CodeType type) = 0;  // the code corresponding to this operation
  private:
-  static char* codebuf;                            // generated code buffer
-  static int bufSize, freeSize;                    // total size and remaining size of the code buffer
-  static TCODList<const char*> initCode[NB_CODE];  // list of global vars/functions to add to the generated code
-  static void addCode(const char* code);           // add some code to the generated code
+  static std::string codebuf;    // generated code buffer
+  static int bufSize, freeSize;  // total size and remaining size of the code buffer
+  static std::array<std::vector<std::string>, NB_CODE>
+      initCode;                                  // list of global vars/functions to add to the generated code
+  static void addCode(const std::string& code);  // add some code to the generated code
 };
 
 // normalize the heightmap
@@ -81,7 +82,7 @@ class NormalizeOperation : public Operation {
   float min, max;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -98,7 +99,7 @@ class AddFbmOperation : public Operation {
   float zoom, offsetx, offsety, octaves, scale, offset;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -113,7 +114,7 @@ class ScaleFbmOperation : public AddFbmOperation {
   virtual ~ScaleFbmOperation() {}
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -132,7 +133,7 @@ class AddHillOperation : public Operation {
   float radius, radiusVar, height;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -147,7 +148,7 @@ class AddLevelOperation : public Operation {
   float level;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -165,7 +166,7 @@ class SmoothOperation : public Operation {
   int count;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -183,7 +184,7 @@ class RainErosionOperation : public Operation {
   float erosionCoef, sedimentationCoef;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -200,7 +201,7 @@ class NoiseLerpOperation : public AddFbmOperation {
   float coef;
 
  protected:
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };
@@ -221,7 +222,7 @@ class VoronoiOperation : public Operation {
   friend void voronoiCoefValueCbk(Widget* wid, float val, void* data);
 
   Slider* coefSlider[MAX_VORONOI_COEF];
-  const char* getCode(CodeType type);
+  std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();
 };

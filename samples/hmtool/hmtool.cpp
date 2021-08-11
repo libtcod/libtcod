@@ -1,10 +1,12 @@
 #include <SDL.h>
 #include <libtcod.h>
-#include <math.h>
-#include <stdarg.h>
-#include <stdio.h>
 
+#include <cmath>
+#include <cstdarg>
+#include <cstdio>
+#include <fstream>
 #include <libtcod/gui/gui.hpp>
+#include <string>
 
 #include "operation.hpp"
 
@@ -19,7 +21,7 @@ static bool slope = false;
 static bool normal = false;
 bool isNormalized = true;
 static bool oldNormalized = true;
-static char msg[512] = "";
+static std::string msg = "";
 float msgDelay = 0.0f;
 static constexpr float hillRadius = 0.1f;
 static constexpr float hillVariation = 0.5f;
@@ -133,21 +135,19 @@ void render() {
     TCODConsole::root->printf(HM_WIDTH / 2, HM_HEIGHT - 1, TCOD_BKGND_NONE, TCOD_CENTER, "the map is not normalized !");
   // message
   msgDelay -= TCODSystem::getLastFrameLength();
-  if (msg[0] != 0 && msgDelay > 0.0f) {
+  if (msg.size() && msgDelay > 0.0f) {
     int h = TCODConsole::root->printRectEx(
-        HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, "%s", msg);
+        HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, "%s", msg.c_str());
     TCODConsole::root->setDefaultBackground(LIGHT_BLUE);
     if (h > 0) TCODConsole::root->rect(HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, h + 2, false, TCOD_BKGND_SET);
     TCODConsole::root->setDefaultBackground(BLACK);
   }
 }
 
-void message(float delay, const char* fmt, ...) {
-  va_list ap;
+template <typename... T>
+void message(float delay, const char* fmt, T... args) {
   msgDelay = delay;
-  va_start(ap, fmt);
-  vsprintf(msg, fmt, ap);
-  va_end(ap);
+  msg = tcod::stringf(fmt, args...);
 }
 
 void backup() {
@@ -243,26 +243,26 @@ void raiseLowerCbk(Widget*, void*) { (new AddLevelOperation(0.0f))->add(); }
 // In/Out buttons callbacks
 
 void exportCCbk(Widget*, void*) {
-  const char* code = Operation::buildCode(Operation::C);
-  FILE* f = fopen("hm.c", "wt");
-  fprintf(f, "%s", code);
-  fclose(f);
+  const std::string code = Operation::buildCode(Operation::C);
+  auto f = std::ofstream("hm.c", std::ios_base::trunc);
+  f << code;
+  f.close();
   message(3.0f, "The code has been exported to ./hm.c");
 }
 
 void exportPyCbk(Widget*, void*) {
-  const char* code = Operation::buildCode(Operation::PY);
-  FILE* f = fopen("hm.py", "wt");
-  fprintf(f, "%s", code);
-  fclose(f);
+  const std::string code = Operation::buildCode(Operation::PY);
+  auto f = std::ofstream("hm.py", std::ios_base::trunc);
+  f << code;
+  f.close();
   message(3.0f, "The code has been exported to ./hm.py");
 }
 
 void exportCppCbk(Widget*, void*) {
-  const char* code = Operation::buildCode(Operation::CPP);
-  FILE* f = fopen("hm.cpp", "wt");
-  fprintf(f, "%s", code);
-  fclose(f);
+  const std::string code = Operation::buildCode(Operation::CPP);
+  auto f = std::ofstream("hm.cpp", std::ios_base::trunc);
+  f << code;
+  f.close();
   message(3.0f, "The code has been exported to ./hm.cpp");
 }
 
@@ -360,9 +360,7 @@ void changeColorMapCbk(Widget* w, void*) {
   colorMapGui->move(w->x + w->w + 2, w->y);
   colorMapGui->clear();
   for (intptr_t i = 0; i < nbColorKeys; i++) {
-    char tmp[64];
-    sprintf(tmp, "Color %d", static_cast<int>(i));
-    colorMapGui->addSeparator(tmp);
+    colorMapGui->addSeparator(tcod::stringf("Color %d", static_cast<int>(i)).c_str());
     HBox* h_box = new HBox(0, 0, 0);
     VBox* v_box = new VBox(0, 0, 0);
     colorMapGui->addWidget(h_box);

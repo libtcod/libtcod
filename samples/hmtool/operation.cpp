@@ -1,9 +1,9 @@
 #include "operation.hpp"
 
 #include <libtcod.h>
-#include <stdarg.h>
-#include <stdio.h>
 
+#include <cstdarg>
+#include <cstdio>
 #include <libtcod/gui/gui.hpp>
 
 // must match Operation::OpType enum
@@ -132,57 +132,28 @@ static const char* footer2[] = {
     "",
 };
 
-TCODList<Operation*> Operation::list;
-char* Operation::codebuf = NULL;
+std::vector<Operation*> Operation::list;
+std::string Operation::codebuf = "";
 int Operation::bufSize = 0, Operation::freeSize = 0;
-TCODList<const char*> Operation::initCode[Operation::NB_CODE];
+std::array<std::vector<std::string>, Operation::NB_CODE> Operation::initCode;
 bool Operation::needsRandom = false;
 bool Operation::needsNoise = false;
 Operation* Operation::currentOp = NULL;
 
-void Operation::addCode(const char* code) {
-  int len = static_cast<int>(strlen(code));
-  if (len + 1 > freeSize) {
-    int newSize = bufSize + MAX(4096, len + 1);
-    char* newbuf = new char[newSize];
-    newbuf[0] = 0;
-    if (codebuf) {
-      strcpy(newbuf, codebuf);
-      delete[] codebuf;
-    }
-    codebuf = newbuf;
-    freeSize += newSize - bufSize;
-    bufSize = newSize;
-  }
-  strcat(codebuf, code);
-  freeSize -= len;
-}
+void Operation::addCode(const std::string& code) { codebuf += code; }
 
-const char* Operation::format(const char* fmt, ...) {
-  static char tmp[4096];
-  va_list ap;
-  va_start(ap, fmt);
-  vsprintf(tmp, fmt, ap);
-  va_end(ap);
-  return tmp;
-}
-
-const char* Operation::buildCode(CodeType type) {
-  if (codebuf) {
-    codebuf[0] = 0;
-    freeSize = bufSize;
-  }
-  addCode(header1[type]);
+const std::string& Operation::buildCode(CodeType type) {
+  codebuf = header1[type];
   if (needsRandom || needsNoise) {
     switch (type) {
       case (C):
-        addCode(format("TCOD_random_t rnd=NULL;\n", seed));
+        addCode(tcod::stringf("TCOD_random_t rnd=NULL;\n", seed));
         break;
       case (CPP):
-        addCode(format("TCODRandom *rnd=new TCODRandom(%uU);\n", seed));
+        addCode(tcod::stringf("TCODRandom *rnd=new TCODRandom(%uU);\n", seed));
         break;
       case (PY):
-        addCode(format("rnd=libtcod.random_new_from_seed(%u)\n", seed));
+        addCode(tcod::stringf("rnd=libtcod.random_new_from_seed(%u)\n", seed));
         break;
       default:
         break;
@@ -203,17 +174,12 @@ const char* Operation::buildCode(CodeType type) {
         break;
     }
   }
-  for (const char** s = initCode[type].begin(); s != initCode[type].end(); s++) {
-    addCode(*s);
-  }
+  for (const auto& s : initCode[type]) addCode(s);
   addCode(header2[type]);
-  for (Operation** op = list.begin(); op != list.end(); op++) {
-    const char* code = (*op)->getCode(type);
-    addCode(code);
-  }
+  for (auto& op : list) addCode(op->getCode(type));
   addCode(footer1[type]);
   if ((needsRandom || needsNoise) && type == C) {
-    addCode(format("\trnd=TCOD_random_new_from_seed(%uU);\n", seed));
+    addCode(tcod::stringf("\trnd=TCOD_random_new_from_seed(%uU);\n", seed));
     if (needsNoise) {
       addCode("\tnoise=TCOD_noise_new(2,TCOD_NOISE_DEFAULT_HURST,TCOD_NOISE_DEFAULT_LACUNARITY,rnd);\n");
     }
@@ -235,7 +201,7 @@ void Operation::add() {
   backup();
   runInternal();
   if (addInternal()) {
-    list.push(this);
+    list.push_back(this);
     createParamUi();
     button = new RadioButton(names[operation_type], tips[operation_type], historyCbk, this);
     button->setGroup(0);
@@ -246,7 +212,7 @@ void Operation::add() {
     delete this;
 }
 
-void Operation::clear() { list.clearAndDelete(); }
+void Operation::clear() { list.clear(); }
 
 void Operation::createParamUi() {
   params->clear();
@@ -255,12 +221,12 @@ void Operation::createParamUi() {
 
 void Operation::cancel() {
   if (currentOp) {
-    list.remove(currentOp);
     history->removeWidget(currentOp->button);
     currentOp->button->unSelect();
+    list.erase(std::find(list.begin(), list.end(), currentOp));
     delete currentOp;
-    currentOp = list.peek();
-    if (currentOp) {
+    if (!list.empty()) {
+      currentOp = list.back();
       currentOp->button->select();
       currentOp->createParamUi();
     } else {
@@ -271,8 +237,10 @@ void Operation::cancel() {
   }
 }
 
-void Operation::addInitCode(CodeType type, const char* code) {
-  if (!initCode[type].contains(code)) initCode[type].push(code);
+void Operation::addInitCode(CodeType type, const std::string& code) {
+  if (std::find(initCode[type].begin(), initCode[type].end(), code) == initCode[type].end()) {
+    initCode[type].emplace_back(code);
+  }
 }
 
 void Operation::reseed() {
@@ -282,35 +250,33 @@ void Operation::reseed() {
   noise = new TCODNoise(2, rnd);
   addFbmDelta = scaleFbmDelta = 0.0f;
   hm->clear();
-  for (Operation** op = list.begin(); op != list.end(); op++) {
-    (*op)->runInternal();
-  }
+  for (auto& op : list) op->runInternal();
 }
 
 // ********** actual operations below **********
 
 // Normalize
-const char* NormalizeOperation::getCode(CodeType type) {
+std::string NormalizeOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format("\tTCOD_heightmap_normalize(hm,%g,%g);\n", min, max);
+      return tcod::stringf("\tTCOD_heightmap_normalize(hm,%g,%g);\n", min, max);
       break;
     case CPP:
-      return format("\thm->normalize(%g,%g);\n", min, max);
+      return tcod::stringf("\thm->normalize(%g,%g);\n", min, max);
       break;
     case PY:
-      return format("    libtcod.heightmap_normalize(hm,%g,%g)\n", min, max);
+      return tcod::stringf("    libtcod.heightmap_normalize(hm,%g,%g)\n", min, max);
       break;
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void NormalizeOperation::runInternal() { hm->normalize(min, max); }
 
 bool NormalizeOperation::addInternal() {
-  Operation* prev = list.peek();
+  Operation* prev = list.back();
   if (prev && prev->operation_type == NORM) {
     return false;
   }
@@ -329,7 +295,7 @@ void normalizeMinValueCbk(Widget*, char* val, void* data) {
     NormalizeOperation* op = (NormalizeOperation*)data;
     if (f < op->max) {
       op->min = f;
-      if (Operation::list.peek() == op) {
+      if (Operation::list.back() == op) {
         op->run();
       } else {
         Operation::reseed();
@@ -350,7 +316,7 @@ void normalizeMaxValueCbk(Widget*, char* val, void* data) {
     NormalizeOperation* op = (NormalizeOperation*)data;
     if (f > op->min) {
       op->max = f;
-      if (Operation::list.peek() == op) {
+      if (Operation::list.back() == op) {
         op->run();
       } else {
         Operation::reseed();
@@ -363,24 +329,23 @@ void NormalizeOperation::createParamUi() {
   params->clear();
   params->setVisible(true);
   params->setName(names[NORM]);
-  char tmp[64];
-  sprintf(tmp, "%g", min);
 
-  TextBox* tbMin = new TextBox(0, 0, 8, 10, "min", tmp, "Heightmap minimum value after the normalization");
+  TextBox* tbMin = new TextBox(
+      0, 0, 8, 10, "min", tcod::stringf("%g", min).c_str(), "Heightmap minimum value after the normalization");
   tbMin->setCallback(normalizeMinValueCbk, this);
   params->addWidget(tbMin);
 
-  sprintf(tmp, "%g", max);
-  TextBox* tbMax = new TextBox(0, 0, 8, 10, "max", tmp, "Heightmap maximum value after the normalization");
+  TextBox* tbMax = new TextBox(
+      0, 0, 8, 10, "max", tcod::stringf("%g", max).c_str(), "Heightmap maximum value after the normalization");
   tbMax->setCallback(normalizeMaxValueCbk, this);
   params->addWidget(tbMax);
 }
 
 // AddFbm
-const char* AddFbmOperation::getCode(CodeType type) {
+std::string AddFbmOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format(
+      return tcod::stringf(
           "\tTCOD_heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n",
           zoom,
           zoom,
@@ -391,11 +356,11 @@ const char* AddFbmOperation::getCode(CodeType type) {
           scale);
       break;
     case CPP:
-      return format(
+      return tcod::stringf(
           "\thm->addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n", zoom, zoom, offsetx, offsety, octaves, offset, scale);
       break;
     case PY:
-      return format(
+      return tcod::stringf(
           "    libtcod.heightmap_add_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n",
           zoom,
           zoom,
@@ -408,7 +373,7 @@ const char* AddFbmOperation::getCode(CodeType type) {
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void AddFbmOperation::runInternal() { hm->addFbm(noise, zoom, zoom, offsetx, offsety, octaves, offset, scale); }
@@ -422,7 +387,7 @@ bool AddFbmOperation::addInternal() {
 void addFbmZoomValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->zoom = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -433,7 +398,7 @@ void addFbmZoomValueCbk(Widget*, float val, void* data) {
 void addFbmXOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offsetx = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -444,7 +409,7 @@ void addFbmXOffsetValueCbk(Widget*, float val, void* data) {
 void addFbmYOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offsety = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -455,7 +420,7 @@ void addFbmYOffsetValueCbk(Widget*, float val, void* data) {
 void addFbmOctavesValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->octaves = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -466,7 +431,7 @@ void addFbmOctavesValueCbk(Widget*, float val, void* data) {
 void addFbmOffsetValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->offset = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -477,7 +442,7 @@ void addFbmOffsetValueCbk(Widget*, float val, void* data) {
 void addFbmScaleValueCbk(Widget*, float val, void* data) {
   AddFbmOperation* op = (AddFbmOperation*)data;
   op->scale = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -522,10 +487,10 @@ void AddFbmOperation::createParamUi() {
 }
 
 // ScaleFbm
-const char* ScaleFbmOperation::getCode(CodeType type) {
+std::string ScaleFbmOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format(
+      return tcod::stringf(
           "\tTCOD_heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g);\n"
           "\tscaleFbmDelta += HM_WIDTH;\n",
           zoom,
@@ -537,7 +502,7 @@ const char* ScaleFbmOperation::getCode(CodeType type) {
           scale);
       break;
     case CPP:
-      return format(
+      return tcod::stringf(
           "\thm->scaleFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
           "\tscaleFbmDelta += HM_WIDTH;\n",
           zoom,
@@ -549,7 +514,7 @@ const char* ScaleFbmOperation::getCode(CodeType type) {
           scale);
       break;
     case PY:
-      return format(
+      return tcod::stringf(
           "    libtcod.heightmap_scale_fbm(hm,noise,%g,%g,%g,%g,%g,%g,%g)\n"
           "    scaleFbmDelta += HM_WIDTH\n",
           zoom,
@@ -563,7 +528,7 @@ const char* ScaleFbmOperation::getCode(CodeType type) {
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void ScaleFbmOperation::runInternal() { hm->scaleFbm(noise, zoom, zoom, offsetx, offsety, octaves, offset, scale); }
@@ -575,21 +540,21 @@ bool ScaleFbmOperation::addInternal() {
 }
 
 // AddHill
-const char* AddHillOperation::getCode(CodeType type) {
+std::string AddHillOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format("\taddHill(hm,%d,%g,%g,%g);\n", nbHill, radius, radiusVar, height);
+      return tcod::stringf("\taddHill(hm,%d,%g,%g,%g);\n", nbHill, radius, radiusVar, height);
       break;
     case CPP:
-      return format("\taddHill(hm,%d,%g,%g,%g);\n", nbHill, radius, radiusVar, height);
+      return tcod::stringf("\taddHill(hm,%d,%g,%g,%g);\n", nbHill, radius, radiusVar, height);
       break;
     case PY:
-      return format("    addHill(hm,%d,%g,%g,%g)\n", nbHill, radius, radiusVar, height);
+      return tcod::stringf("    addHill(hm,%d,%g,%g,%g)\n", nbHill, radius, radiusVar, height);
       break;
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void AddHillOperation::runInternal() { addHill(nbHill, radius, radiusVar, height); }
@@ -644,7 +609,7 @@ bool AddHillOperation::addInternal() {
 void addHillNbHillValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->nbHill = (int)val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -655,7 +620,7 @@ void addHillNbHillValueCbk(Widget*, float val, void* data) {
 void addHillRadiusValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->radius = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -666,7 +631,7 @@ void addHillRadiusValueCbk(Widget*, float val, void* data) {
 void addHillRadiusVarValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->radiusVar = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -677,7 +642,7 @@ void addHillRadiusVarValueCbk(Widget*, float val, void* data) {
 void addHillHeightValueCbk(Widget*, float val, void* data) {
   AddHillOperation* op = (AddHillOperation*)data;
   op->height = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -716,21 +681,21 @@ void AddHillOperation::createParamUi() {
 }
 
 // AddLevel
-const char* AddLevelOperation::getCode(CodeType type) {
+std::string AddLevelOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format("\tTCOD_heightmap_add(hm,%g);\n\tTCOD_heightmap_clamp(hm,0.0f,1.0f);\n", level);
+      return tcod::stringf("\tTCOD_heightmap_add(hm,%g);\n\tTCOD_heightmap_clamp(hm,0.0f,1.0f);\n", level);
       break;
     case CPP:
-      return format("\thm->add(%g);\n\thm->clamp(0.0f,1.0f);\n", level);
+      return tcod::stringf("\thm->add(%g);\n\thm->clamp(0.0f,1.0f);\n", level);
       break;
     case PY:
-      return format("    libtcod.heightmap_add(hm,%g)\n    libtcod.heightmap_clamp(hm,0.0,1.0)\n", level);
+      return tcod::stringf("    libtcod.heightmap_add(hm,%g)\n    libtcod.heightmap_clamp(hm,0.0,1.0)\n", level);
       break;
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void AddLevelOperation::runInternal() {
@@ -741,7 +706,7 @@ void AddLevelOperation::runInternal() {
 }
 
 bool AddLevelOperation::addInternal() {
-  Operation* prev = list.peek();
+  Operation* prev = list.back();
   bool ret = true;
   if (prev && prev->operation_type == ADDLEVEL) {
     // cumulated consecutive addLevel operation into a single call
@@ -757,7 +722,7 @@ bool AddLevelOperation::addInternal() {
 void raiseLowerValueCbk(Widget*, float val, void* data) {
   AddLevelOperation* op = (AddLevelOperation*)data;
   op->level = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -783,10 +748,10 @@ void AddLevelOperation::createParamUi() {
 }
 
 // Smooth
-const char* SmoothOperation::getCode(CodeType type) {
+std::string SmoothOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format(
+      return tcod::stringf(
           "\tsmoothKernelWeight[4] = %g;\n"
           "\t{\n"
           "\t\tint i;\n"
@@ -801,7 +766,7 @@ const char* SmoothOperation::getCode(CodeType type) {
           maxLevel);
       break;
     case CPP:
-      return format(
+      return tcod::stringf(
           "\tsmoothKernelWeight[4] = %g;\n"
           "\tfor (int i=%d; i>= 0; i--) {\n"
           "\t\thm->kernelTransform(smoothKernelSize,smoothKernelDx,smoothKernelDy,smoothKernelWeight,%g,%g);\n"
@@ -812,7 +777,7 @@ const char* SmoothOperation::getCode(CodeType type) {
           maxLevel);
       break;
     case PY:
-      return format(
+      return tcod::stringf(
           "    smoothKernelWeight[4] = %g\n"
           "    for i in range(%d,-1,-1) :\n"
           "        "
@@ -826,7 +791,7 @@ const char* SmoothOperation::getCode(CodeType type) {
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void SmoothOperation::runInternal() {
@@ -866,7 +831,7 @@ bool SmoothOperation::addInternal() {
 void smoothMinValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->minLevel = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -877,7 +842,7 @@ void smoothMinValueCbk(Widget*, float val, void* data) {
 void smoothMaxValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->maxLevel = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -888,7 +853,7 @@ void smoothMaxValueCbk(Widget*, float val, void* data) {
 void smoothRadiusValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->radius = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -899,7 +864,7 @@ void smoothRadiusValueCbk(Widget*, float val, void* data) {
 void smoothCountValueCbk(Widget*, float val, void* data) {
   SmoothOperation* op = (SmoothOperation*)data;
   op->count = (int)val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -950,21 +915,23 @@ void SmoothOperation::createParamUi() {
 }
 
 // Rain
-const char* RainErosionOperation::getCode(CodeType type) {
+std::string RainErosionOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format("\tTCOD_heightmap_rain_erosion(hm,%d,%g,%g,rnd);\n", nbDrops, erosionCoef, sedimentationCoef);
+      return tcod::stringf(
+          "\tTCOD_heightmap_rain_erosion(hm,%d,%g,%g,rnd);\n", nbDrops, erosionCoef, sedimentationCoef);
       break;
     case CPP:
-      return format("\thm->rainErosion(%d,%g,%g,rnd);\n", nbDrops, erosionCoef, sedimentationCoef);
+      return tcod::stringf("\thm->rainErosion(%d,%g,%g,rnd);\n", nbDrops, erosionCoef, sedimentationCoef);
       break;
     case PY:
-      return format("    libtcod.heightmap_rain_erosion(hm,%d,%g,%g,rnd)\n", nbDrops, erosionCoef, sedimentationCoef);
+      return tcod::stringf(
+          "    libtcod.heightmap_rain_erosion(hm,%d,%g,%g,rnd)\n", nbDrops, erosionCoef, sedimentationCoef);
       break;
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void RainErosionOperation::runInternal() {
@@ -982,7 +949,7 @@ bool RainErosionOperation::addInternal() {
 void rainErosionNbDropsValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->nbDrops = (int)val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -993,7 +960,7 @@ void rainErosionNbDropsValueCbk(Widget*, float val, void* data) {
 void rainErosionErosionCoefValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->erosionCoef = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -1004,7 +971,7 @@ void rainErosionErosionCoefValueCbk(Widget*, float val, void* data) {
 void rainErosionSedimentationCoefValueCbk(Widget*, float val, void* data) {
   RainErosionOperation* op = (RainErosionOperation*)data;
   op->sedimentationCoef = val;
-  if (op == Operation::list.peek()) {
+  if (op == Operation::list.back()) {
     restore();
     op->run();
   } else {
@@ -1035,10 +1002,10 @@ void RainErosionOperation::createParamUi() {
 }
 
 // NoiseLerp
-const char* NoiseLerpOperation::getCode(CodeType type) {
+std::string NoiseLerpOperation::getCode(CodeType type) {
   switch (type) {
     case C:
-      return format(
+      return tcod::stringf(
           "\t{\n"
           "\t\tTCOD_heightmap_t *tmp=TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n"
           "\t\tTCOD_heightmap_add_fbm(tmp,noise,%g,%g,%g,%g,%g,%g,%g);\n"
@@ -1055,7 +1022,7 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
           coef);
       break;
     case CPP:
-      return format(
+      return tcod::stringf(
           "\t{\n"
           "\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
           "\t\ttmp.addFbm(noise,%g,%g,%g,%g,%g,%g,%g);\n"
@@ -1071,7 +1038,7 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
           coef);
       break;
     case PY:
-      return format(
+      return tcod::stringf(
           "    tmp=libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
           "    libtcod.heightmap_add_fbm(tmp,noise,%g,%g,%g,%g,%g,%g,%g)\n"
           "    libtcod.heightmap_lerp(hm,tmp,hm,%g)\n"
@@ -1088,7 +1055,7 @@ const char* NoiseLerpOperation::getCode(CodeType type) {
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void NoiseLerpOperation::runInternal() {
@@ -1106,7 +1073,7 @@ bool NoiseLerpOperation::addInternal() {
 void noiseLerpValueCbk(Widget*, float val, void* data) {
   NoiseLerpOperation* op = (NoiseLerpOperation*)data;
   op->coef = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -1138,16 +1105,14 @@ VoronoiOperation::VoronoiOperation(int nbPoints, int nbCoef, float* coef) : nbPo
   }
 }
 
-const char* VoronoiOperation::getCode(CodeType type) {
-  char coef_str[256] = "";
-  for (int i = 0; i < nbCoef; i++) {
-    char tmp2[64];
-    sprintf(tmp2, "%g,", coef[i]);
-    strcat(coef_str, tmp2);
+std::string VoronoiOperation::getCode(CodeType type) {
+  std::string coef_str = "";
+  for (int i = 0; i < nbCoef; ++i) {
+    coef_str += tcod::stringf("%g,", coef[i]);
   }
   switch (type) {
     case C:
-      return format(
+      return tcod::stringf(
           "\t{\n"
           "\t\tfloat coef[]={%s};\n"
           "\t\tTCOD_heightmap_t *tmp =TCOD_heightmap_new(HM_WIDTH,HM_HEIGHT);\n"
@@ -1156,12 +1121,12 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\tTCOD_heightmap_add_hm(hm,tmp,hm);\n"
           "\t\tTCOD_heightmap_delete(tmp);\n"
           "\t}\n",
-          coef_str,
+          coef_str.c_str(),
           nbPoints,
           nbCoef);
       break;
     case CPP:
-      return format(
+      return tcod::stringf(
           "\t{\n"
           "\t\tfloat coef[]={%s};\n"
           "\t\tTCODHeightMap tmp(HM_WIDTH,HM_HEIGHT);\n"
@@ -1169,26 +1134,26 @@ const char* VoronoiOperation::getCode(CodeType type) {
           "\t\ttmp.normalize();\n"
           "\t\thm->add(hm,&tmp);\n"
           "\t}\n",
-          coef_str,
+          coef_str.c_str(),
           nbPoints,
           nbCoef);
       break;
     case PY:
-      return format(
+      return tcod::stringf(
           "    coef=[%s]\n"
           "    tmp =libtcod.heightmap_new(HM_WIDTH,HM_HEIGHT)\n"
           "    libtcod.heightmap_add_voronoi(tmp,%d,%d,coef,rnd)\n"
           "    libtcod.heightmap_normalize(tmp)\n"
           "    libtcod.heightmap_add_hm(hm,tmp,hm)\n"
           "    libtcod.heightmap_delete(tmp)\n",
-          coef_str,
+          coef_str.c_str(),
           nbPoints,
           nbCoef);
       break;
     default:
       break;
   }
-  return NULL;
+  return "";
 }
 
 void VoronoiOperation::runInternal() {
@@ -1206,7 +1171,7 @@ bool VoronoiOperation::addInternal() {
 void voronoiNbPointsValueCbk(Widget*, float val, void* data) {
   VoronoiOperation* op = (VoronoiOperation*)data;
   op->nbPoints = (int)val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -1225,7 +1190,7 @@ void voronoiNbCoefValueCbk(Widget*, float val, void* data) {
     }
   }
   params->computeSize();
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -1240,7 +1205,7 @@ void voronoiCoefValueCbk(Widget* wid, float val, void* data) {
     if (op->coefSlider[coef_num] == wid) break;
   }
   op->coef[coef_num] = val;
-  if (Operation::list.peek() == op) {
+  if (Operation::list.back() == op) {
     restore();
     op->run();
   } else {
@@ -1268,9 +1233,8 @@ void VoronoiOperation::createParamUi() {
   slider->setValue((float)nbCoef);
 
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {
-    char tmp[64];
-    sprintf(tmp, "coef[%d] ", i);
-    coefSlider[i] = new Slider(0, 0, 8, -5.0f, 5.0f, tmp, "Coefficient of Voronoi points");
+    coefSlider[i] =
+        new Slider(0, 0, 8, -5.0f, 5.0f, tcod::stringf("coef[%d] ", i).c_str(), "Coefficient of Voronoi points");
     coefSlider[i]->setCallback(voronoiCoefValueCbk, this);
     params->addWidget(coefSlider[i]);
     coefSlider[i]->setValue((float)coef[i]);

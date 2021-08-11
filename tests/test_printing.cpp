@@ -16,4 +16,4 @@ TEST_CASE("tcod::print") {
   CHECK(console->at(4, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }
 
-TEST_CASE("String from printf.") { CHECK(tcod::printf_to_str("%s%s%s", "1", "2", "3") == "123"); }
+TEST_CASE("String from printf.") { CHECK(tcod::stringf("%s%s%s", "1", "2", "3") == "123"); }

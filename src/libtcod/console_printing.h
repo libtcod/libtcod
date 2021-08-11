@@ -510,7 +510,7 @@ inline int get_height_rect(int width, const std::string& str) {
     \endrst
  */
 template <typename... T>
-inline std::string printf_to_str(const char* format, T... args) {
+inline std::string stringf(const char* format, T... args) {
   const int str_length = snprintf(nullptr, 0, format, args...);
   if (str_length < 0) throw std::runtime_error("Failed to format string.");
   std::string out(str_length, '\0');

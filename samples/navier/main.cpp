@@ -391,7 +391,7 @@ int main(int argc, char* argv[]) {
         *console,
         1,
         HEIGHT - 2 - 6,
-        tcod::printf_to_str(
+        tcod::stringf(
             "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
             timer.get_mean_fps(),
             timer.get_median_fps(),

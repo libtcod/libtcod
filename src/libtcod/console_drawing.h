@@ -148,37 +148,43 @@ namespace tcod {
     @brief Fill a region with the given graphic.
 
     @param console A reference to a TCOD_Console.
-    @param x The starting X position, starting from the left-most tile as zero.
-    @param y The starting Y position, starting from the upper-most tile as zero.
-    @param width The maximum width of the bounding region in tiles.
-    @param height The maximum height of the bounding region in tiles.
+    @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
     @param ch The character to draw.  If zero then the characers in the drawing region will not be changed.
     @param fg The foreground color.  The printed text is set to this color.
               If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
               If NULL then the background will be left unchanged.
     @param flag The background blending flag.
+
+    @code{.cpp}
+      auto console = tcod::new_console({{80, 50}})
+      static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+      static constexpr TCOD_ColorRGB RED{255, 0, 0};
+      // Draw a red background without replacing any foreground glyphs/colors.
+      tcod::draw_rect(*console, {2, 2, 24, 24}, 0, nullptr, &RED);
+      // Draw a horizontal bar.
+      tcod::draw_rect(*console, {8, 8, 16, 1}, '-', WHITE, nullptr);
+    @endcode
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
  */
 inline void draw_rect(
     TCOD_Console& console,
-    int x,
-    int y,
-    int width,
-    int height,
+    const std::array<int, 4>& rect,
     int ch,
     const TCOD_ColorRGB* fg,
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET) {
-  tcod::check_throw_error(TCOD_console_draw_rect_rgb(&console, x, y, width, height, ch, fg, bg, flag));
+  tcod::check_throw_error(
+      TCOD_console_draw_rect_rgb(&console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), ch, fg, bg, flag));
 }
 /**
     @brief Draw a decorative frame.
 
     @param console A reference to a TCOD_Console.
-    @param x The starting X position, starting from the left-most tile as zero.
-    @param y The starting Y position, starting from the upper-most tile as zero.
-    @param width The maximum width of the bounding region in tiles.
-    @param height The maximum height of the bounding region in tiles.
+    @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
     @param decoration The codepoints to use for the frame in row-major order.
     @param fg The foreground color.  The printed text is set to this color.
               If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
@@ -193,23 +199,28 @@ inline void draw_rect(
         3 4 5
         6 7 8
 
+    @code{.cpp}
+      auto console = tcod::new_console({{80, 50}})
+      static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+      static constexpr TCOD_ColorRGB BLACK{0, 0, 0};
+      static constexpr std::array<int, 9> LEGEND = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
+      tcod::draw_frame(*console, {0, 0, 3, 3}, LEGEND, &WHITE, &BLACK);
+    @endcode
+
     \rst
     .. versionadded:: 1.19
     \endrst
  */
 inline void draw_frame(
     TCOD_Console& console,
-    int x,
-    int y,
-    int width,
-    int height,
+    const std::array<int, 4>& rect,
     const std::array<int, 9>& decoration,
     const TCOD_ColorRGB* fg,
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
     bool clear = true) {
-  tcod::check_throw_error(
-      TCOD_console_draw_frame_rgb(&console, x, y, width, height, decoration.data(), fg, bg, flag, clear));
+  tcod::check_throw_error(TCOD_console_draw_frame_rgb(
+      &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), decoration.data(), fg, bg, flag, clear));
 }
 
 }  // namespace tcod

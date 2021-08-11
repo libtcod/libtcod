@@ -307,6 +307,7 @@
         "stdint",
         "stepx",
         "stepy",
+        "stringf",
         "struct",
         "structs",
         "STRVERSION",

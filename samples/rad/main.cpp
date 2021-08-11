@@ -182,8 +182,7 @@ void render(TCOD_Console& console) {
   }
   tcod::print(
       console,
-      console.w / 4,
-      0,
+      {console.w / 4, 0},
       tcod::stringf("Standard lighting %1.2fms", stdLength),
       nullptr,
       nullptr,
@@ -192,8 +191,7 @@ void render(TCOD_Console& console) {
 
   tcod::print(
       console,
-      3 * CON_WIDTH / 4,
-      0,
+      {3 * CON_WIDTH / 4, 0},
       tcod::stringf("Photon reactor %1.2fms", radLength),
       nullptr,
       nullptr,

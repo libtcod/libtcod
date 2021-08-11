@@ -54,6 +54,8 @@ libtcod's Credits
 .. doxygenfunction:: TCOD_console_credits_reset
 .. doxygenfunction:: TCOD_console_credits_render
 
+.. doxygenfunction:: TCOD_console_credits_render_ex
+
 Drawing on the console
 ======================
 
@@ -144,7 +146,6 @@ Printing functions using UTF-8 (C++)
 
 .. doxygenfunction:: tcod::print
 .. doxygenfunction:: tcod::print_rect
-.. doxygenfunction:: tcod::get_height_rect(TCOD_Console& console, int x, int y, int width, int height, const std::string& str)
 .. doxygenfunction:: tcod::get_height_rect(int width, const std::string& str)
 
 .. doxygenfunction:: tcod::stringf

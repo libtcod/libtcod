@@ -389,8 +389,7 @@ int main(int argc, char* argv[]) {
     render(*console);
     tcod::print(
         *console,
-        1,
-        HEIGHT - 2 - 6,
+        {1, HEIGHT - 2 - 6},
         tcod::stringf(
             "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
             timer.get_mean_fps(),
@@ -401,7 +400,7 @@ int main(int argc, char* argv[]) {
             desired_fps),
         &TEXT_COLOR,
         nullptr);
-    tcod::print(*console, 5, 49, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
+    tcod::print(*console, {5, 49}, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     context->present(*console);

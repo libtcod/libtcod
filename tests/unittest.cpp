@@ -205,16 +205,16 @@ TEST_CASE("Rectangle text alignment.") {
   for (auto& tile : *console) {
     tile.ch = static_cast<int>('.');
   }
-  tcod::print_rect(*console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT);
-  tcod::print_rect(*console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER);
-  tcod::print_rect(*console, 0, 0, 0, 0, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT);
+  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT);
+  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER);
+  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT);
   CHECK(to_string(*console) == "123.123..123");
 }
 TEST_CASE("Print color codes.") {
   using namespace std::string_literals;
   auto console = tcod::new_console(8, 1);
   std::string text = "1\u0006\u0001\u0002\u00032\u00083"s;
-  tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+  tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
   REQUIRE(to_string(*console) == "123     ");
   CHECK(console->at(0, 0).fg.r == 255);
   CHECK(console->at(0, 0).fg.g == 255);
@@ -236,18 +236,18 @@ TEST_CASE("Color code formatting.") {
   for (auto& tile : *console) {
     tile.ch = static_cast<int>('.');
   }
-  tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+  tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
   REQUIRE(to_string(*console) == ("1..\n2 .\n 3."));
 }
 TEST_CASE("Malformed UTF-8.", "[!throws]") {
   auto console = tcod::new_console(8, 1);
   std::string text = "\x80";
-  REQUIRE_THROWS(tcod::print(*console, 0, 0, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
+  REQUIRE_THROWS(tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
 }
 TEST_CASE("Unicode PUA.") {
   auto console = tcod::new_console(1, 1);
   auto check_character = [&](char32_t codepoint) {
-    tcod::print(*console, 0, 0, ucs4_to_utf8(codepoint), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
+    tcod::print(*console, {0, 0}, ucs4_to_utf8(codepoint), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
     REQUIRE(console->at(0, 0).ch == codepoint);
   };
   for (char32_t i = 0xE000; i <= 0xF8FF; ++i) check_character(i);

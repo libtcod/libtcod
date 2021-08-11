@@ -31,6 +31,6 @@ TEST_CASE("Console bounds", "[!throws]") {
 
 TEST_CASE("TCODConsole conversion") {
   auto console = TCODConsole(3, 2);
-  tcod::print(static_cast<TCOD_Console&>(console), 0, 0, "@", nullptr, nullptr);
+  tcod::print(static_cast<TCOD_Console&>(console), {0, 0}, "@", nullptr, nullptr);
   REQUIRE(static_cast<const TCOD_Console&>(console).at(0, 0).ch == '@');
 }

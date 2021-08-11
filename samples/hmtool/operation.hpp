@@ -41,9 +41,9 @@ class Operation {
   static const char* names[];
   static const char* tips[];
   OpType operation_type;
-  static std::vector<Operation*> list;  // the list of operation applied since the last clear
-  void run();                           // run this operation
-  void add();                           // run this operation and adds it in the list
+  static std::vector<std::unique_ptr<Operation>> list;  // the list of operation applied since the last clear
+  void run();                                           // run this operation
+  void add();                                           // run this operation and adds it in the list
   virtual void createParamUi();
   static const std::string& buildCode(CodeType type);  // generate the code corresponding to the list of operations
   static void clear();                                 // remove all operation, clear the heightmap
@@ -66,8 +66,7 @@ class Operation {
   virtual bool addInternal() = 0;                  // actually add this operation
   virtual std::string getCode(CodeType type) = 0;  // the code corresponding to this operation
  private:
-  static std::string codebuf;    // generated code buffer
-  static int bufSize, freeSize;  // total size and remaining size of the code buffer
+  static std::string codebuf;  // generated code buffer
   static std::array<std::vector<std::string>, NB_CODE>
       initCode;                                  // list of global vars/functions to add to the generated code
   static void addCode(const std::string& code);  // add some code to the generated code

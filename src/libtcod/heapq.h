@@ -43,7 +43,7 @@
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4200)  // MSVC complains about standard C99.
-#endif                           // _MSC_VER
+#endif  // _MSC_VER
 
 struct TCOD_HeapNode {
   int priority;

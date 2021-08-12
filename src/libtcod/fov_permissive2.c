@@ -59,7 +59,7 @@ typedef struct {
 } View;
 
 typedef struct {
-  int count;                  // Current number of elements in this container.
+  int count;  // Current number of elements in this container.
   ViewBump* __restrict data;  // This array is preallocated.
 } ViewBumpContainer;
 

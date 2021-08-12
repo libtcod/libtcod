@@ -110,10 +110,10 @@ typedef enum {
 
 /* key data : special code or character or text */
 typedef struct {
-  TCOD_keycode_t vk;             /*  key code */
-  char c;                        /* character if vk == TCODK_CHAR else 0 */
+  TCOD_keycode_t vk; /*  key code */
+  char c; /* character if vk == TCODK_CHAR else 0 */
   char text[TCOD_KEY_TEXT_SIZE]; /* text if vk == TCODK_TEXT else text[0] == '\0' */
-  bool pressed;                  /* does this correspond to a key press or key release event ? */
+  bool pressed; /* does this correspond to a key press or key release event ? */
   bool lalt;
   bool lctrl;
   bool lmeta;

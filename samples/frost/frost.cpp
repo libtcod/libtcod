@@ -27,10 +27,10 @@ static constexpr auto RANGE = 10;  // Maximum range from a frost origin to calcu
 struct Frost {
   explicit Frost(int x, int y) : origin_x{x}, origin_y{y}, border{0}, timer{0} {}
   int origin_x, origin_y;  // The frost origin position.
-  int best_x, best_y;      // A relative position to the frost closest to rx,ry.
-  int rx, ry;              // A random relative direction.
-  int border;              // The total number of frames this effect has touched the border.
-  float timer;             // Seconds remaining until this particle changes direction.
+  int best_x, best_y;  // A relative position to the frost closest to rx,ry.
+  int rx, ry;  // A random relative direction.
+  int border;  // The total number of frames this effect has touched the border.
+  float timer;  // Seconds remaining until this particle changes direction.
 };
 
 class FrostManager {
@@ -164,10 +164,10 @@ class FrostManager {
       }
     }
   }
-  std::vector<Frost> frost_objs;       // A vector of frost effects.
-  tcod::Matrix<float, 2> grid;         // A canvas for holding the freeze effect values.
+  std::vector<Frost> frost_objs;  // A vector of frost effects.
+  tcod::Matrix<float, 2> grid;  // A canvas for holding the freeze effect values.
   tcod::Matrix<TCOD_ColorRGB, 2> img;  // An image for storing the freeze colors.
-  int width, height;                   // The size of the managed frost map.
+  int width, height;  // The size of the managed frost map.
 };
 
 static constexpr int CONSOLE_WIDTH = 80;

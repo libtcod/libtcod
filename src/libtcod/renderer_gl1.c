@@ -43,9 +43,9 @@
  *  Attribute data for the foreground vertices.
  */
 struct ForegroundVertexBuffer {
-  int16_t vertex[2];     // Simple vertex integers.
+  int16_t vertex[2];  // Simple vertex integers.
   TCOD_ColorRGBA color;  // Foreground color.
-  float tex_uv[2];       // Texture coordinates.
+  float tex_uv[2];  // Texture coordinates.
 };
 /**
  *  Get the texture coordinates for a codepoint.

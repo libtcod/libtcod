@@ -41,10 +41,10 @@ extern "C" {
 #endif
 typedef struct {
   TCOD_tree_t tree; /* pseudo oop : bsp inherit tree */
-  int x, y, w, h;   /* node position & size */
-  int position;     /* position of splitting */
-  uint8_t level;    /* level in the tree */
-  bool horizontal;  /* horizontal splitting ? */
+  int x, y, w, h; /* node position & size */
+  int position; /* position of splitting */
+  uint8_t level; /* level in the tree */
+  bool horizontal; /* horizontal splitting ? */
 } TCOD_bsp_t;
 
 typedef bool (*TCOD_bsp_callback_t)(TCOD_bsp_t* node, void* userData);

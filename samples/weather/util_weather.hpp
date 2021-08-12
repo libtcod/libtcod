@@ -30,9 +30,9 @@ class Weather {
  public:
   void init(int width, int height);
   void update(float elapsed);
-  float getCloud(int x, int y);      // 0.0 : dark cloud, 1.0 : no cloud
+  float getCloud(int x, int y);  // 0.0 : dark cloud, 1.0 : no cloud
   float getLightning(int x, int y);  // 0.0 : no lightning. 1.0 : full lightning light
-  bool hasRainDrop();                // call for each cell on the map
+  bool hasRainDrop();  // call for each cell on the map
   // when scrolling the map on the game side
   void move(int dx, int dy);
   // description of current weather
@@ -52,7 +52,7 @@ class Weather {
   typedef struct {
     int pos_x, pos_y;
     float intensity;  // 0-1
-    float life;       // in seconds
+    float life;  // in seconds
     int radius_squared;
     float noise_x;
   } lightning_t;
@@ -60,7 +60,7 @@ class Weather {
   float indicator_;  // 0 : bad, 1 : good
   float indicatorDelta_;
   float noise_x_, noise_y_;  // position in the noise space
-  float dx_, dy_;            // sub cell cloud map position
+  float dx_, dy_;  // sub cell cloud map position
   float changeFactor_;
   TCODHeightMap* map_;
   std::vector<lightning_t> lightnings_;

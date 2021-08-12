@@ -85,9 +85,9 @@ class WorldGenerator {
   void computeSunLight(const float lightDir[3]);
 
   // data
-  float getRealAltitude(float x, float y) const;    // altitude in meters
+  float getRealAltitude(float x, float y) const;  // altitude in meters
   float getPrecipitations(float x, float y) const;  // in centimeter/m²/year
-  float getTemperature(float x, float y) const;     // in °C
+  float getTemperature(float x, float y) const;  // in °C
   EBiome getBiome(float x, float y) const;
 
   // map generators

@@ -61,11 +61,11 @@ static int keyIndex[MAX_COLOR_KEY] = {
     (int)(snowHeight * 255) + 10,
     255};
 static TCODColor keyColor[MAX_COLOR_KEY] = {
-    TCODColor(0, 0, 50),       // deep water
-    TCODColor(30, 30, 170),    // water-sand transition
-    TCODColor(114, 150, 71),   // sand
-    TCODColor(80, 120, 10),    // sand-grass transition
-    TCODColor(17, 109, 7),     // grass
+    TCODColor(0, 0, 50),  // deep water
+    TCODColor(30, 30, 170),  // water-sand transition
+    TCODColor(114, 150, 71),  // sand
+    TCODColor(80, 120, 10),  // sand-grass transition
+    TCODColor(17, 109, 7),  // grass
     TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};

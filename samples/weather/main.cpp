@@ -143,12 +143,12 @@ int main(int argc, char* argv[]) {
   ground = new TCODImage(CON_W * 2, CON_H * 2);
   // generate some good locking ground
   TCODColor colors[] = {
-      TCODColor(40, 117, 0),    // grass
-      TCODColor(69, 125, 0),    // sparse grass
-      TCODColor(110, 125, 0),   // withered grass
+      TCODColor(40, 117, 0),  // grass
+      TCODColor(69, 125, 0),  // sparse grass
+      TCODColor(110, 125, 0),  // withered grass
       TCODColor(150, 143, 92),  // dried grass
       TCODColor(133, 115, 71),  // bare ground
-      TCODColor(111, 100, 73)   // dirt
+      TCODColor(111, 100, 73)  // dirt
   };
   int keys[] = {0, 51, 102, 153, 204, 255};
   TCODColor gradientMap[256];

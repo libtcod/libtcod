@@ -40,10 +40,10 @@
 
 typedef struct TCOD_Zip {
   TCOD_list_t buffer; /* list<int> */
-  uintptr_t ibuffer;  /* byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS) */
-  int isize;          /* number of bytes in ibuffer */
-  int bsize;          /* number of bytes in buffer */
-  int offset;         /* current reading position */
+  uintptr_t ibuffer; /* byte buffer. bytes are send into buffer 4 by 4 (32 bits OS) or 8 by 8(64 bits OS) */
+  int isize; /* number of bytes in ibuffer */
+  int bsize; /* number of bytes in buffer */
+  int offset; /* current reading position */
 } zip_data_t;
 
 TCOD_zip_t TCOD_zip_new(void) {
@@ -337,8 +337,8 @@ const char* TCOD_zip_get_string(TCOD_zip_t pzip) {
   int boffset; /* offset in bytes */
   if (l == -1) return NULL;
   boffset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
-  ret += boffset;                                         /* the string address in buffer */
-  boffset += l + 1;                                       /* new offset */
+  ret += boffset; /* the string address in buffer */
+  boffset += l + 1; /* new offset */
   /* update ibuffer */
   zip->offset = (boffset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
   zip->isize = boffset % sizeof(uintptr_t);
@@ -357,7 +357,7 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
   int boffset; /* offset in bytes */
   if (l == -1) return 0;
   boffset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
-  in += boffset;                                          /* the data address in buffer */
+  in += boffset; /* the data address in buffer */
   /* copy it to data */
   for (i = 0; i < MIN(l, nbBytes); i++) {
     *(out++) = *(in++);

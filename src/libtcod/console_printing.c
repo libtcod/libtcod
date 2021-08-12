@@ -1027,7 +1027,7 @@ TCOD_NODISCARD
 static int get_character_width(int codepoint) {
   const utf8proc_property_t* property = utf8proc_get_property(codepoint);
   if (property->category == UTF8PROC_CATEGORY_CO) {  // Private Use Area.
-    return 1;                                        // Width would otherwise be zero.
+    return 1;  // Width would otherwise be zero.
   }
   switch (property->charwidth) {
     default:
@@ -1136,7 +1136,7 @@ static TCOD_Error next_split_(
  */
 typedef struct PrintParams {
   TCOD_Console* __restrict console;  // Can not be NULL.
-  int x;                             // Cursor starting position.
+  int x;  // Cursor starting position.
   int y;
   int width;
   int height;
@@ -1144,7 +1144,7 @@ typedef struct PrintParams {
   const TCOD_ColorRGB* __restrict rgb_bg;
   TCOD_bkgnd_flag_t flag;
   TCOD_alignment_t alignment;
-  bool can_split;   // In general `can_split = false` is deprecated.
+  bool can_split;  // In general `can_split = false` is deprecated.
   bool count_only;  // True if console is read-only.
 } PrintParams;
 TCOD_NODISCARD
@@ -1292,8 +1292,8 @@ static int printn_internal_(const PrintParams* __restrict params, size_t n, cons
 }
 TCOD_NODISCARD
 static int vprintf_internal_(const PrintParams* __restrict params, const char* __restrict fmt, va_list args) {
-  char stack_buffer[512];              // This buffer attempts to prevent a heap allocation.
-  char* heap_buffer = NULL;            // Heap buffer to hold the result in case of overflow.
+  char stack_buffer[512];  // This buffer attempts to prevent a heap allocation.
+  char* heap_buffer = NULL;  // Heap buffer to hold the result in case of overflow.
   char* active_buffer = stack_buffer;  // Which buffer will be passed down.
   va_list args_copy;
   va_copy(args_copy, args);

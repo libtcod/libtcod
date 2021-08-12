@@ -192,8 +192,8 @@ class OffscreenConsole : public Sample {
   void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
   void on_draw(TCOD_Console& console) override {
     static TCODConsole secondary(SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2);  // second screen
-    static bool init = false;         // draw the secondary screen only the first time
-    static int x = 0, y = 0;          // secondary screen position
+    static bool init = false;  // draw the secondary screen only the first time
+    static int x = 0, y = 0;  // secondary screen position
     static int x_dir = 1, y_dir = 1;  // movement direction
     if (!init) {
       init = true;
@@ -678,9 +678,9 @@ class FOVSample : public Sample {
   }
 
  private:
-  int px = 20, py = 10;      // player position
+  int px = 20, py = 10;  // player position
   bool recomputeFov = true;  // the player moved. must recompute fov
-  bool torch = false;        // torch fx on ?
+  bool torch = false;  // torch fx on ?
   TCODMap* map = NULL;
   TCODNoise* noise = NULL;
   bool light_walls = true;
@@ -965,7 +965,7 @@ class PathfinderSample : public Sample {
 
  private:
   int px = 20, py = 10;  // player position
-  int dx = 24, dy = 1;   // destination
+  int dx = 24, dy = 1;  // destination
   TCODMap* map = NULL;
   TCODPath* path = NULL;
   bool usingAstar = true;
@@ -983,7 +983,7 @@ class PathfinderSample : public Sample {
 static int bspDepth = 8;
 static int minRoomSize = 4;
 static bool randomRoom = false;  // a room fills a random part of the node or the maximum available space ?
-static bool roomWalls = true;    // if true, there is always a wall on north & west side of a room
+static bool roomWalls = true;  // if true, there is always a wall on north & west side of a room
 typedef char map_t[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
 
 // draw a vertical line

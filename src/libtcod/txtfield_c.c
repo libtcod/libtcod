@@ -41,25 +41,25 @@
 #define MAX_INT 0x7FFFFFFF
 
 typedef struct TCOD_Text {
-  int x, y;                           /* coordinates on parent console */
-  int w, h;                           /* textfield display size */
-  int max;                            /* maximum nb of characters */
-  int interval;                       /* cursor blinking interval */
-  int halfinterval;                   /* half of the above */
-  int ascii_cursor;                   /* cursor char. 0 if none */
+  int x, y; /* coordinates on parent console */
+  int w, h; /* textfield display size */
+  int max; /* maximum nb of characters */
+  int interval; /* cursor blinking interval */
+  int halfinterval; /* half of the above */
+  int ascii_cursor; /* cursor char. 0 if none */
   int cursor_pos, sel_start, sel_end; /* cursor position in text, selection range */
-  int tab_size;                       /* tab size, if 0, no tab */
-  char* prompt;                       /* prompt to be displayed before the string */
-  int textx, texty;                   /* coordinate of start of text (after prompt) */
-  TCOD_console_t con;                 /* offscreen console that will contain the textfield */
-  bool input_continue;                /* controls whether ENTER has been pressed */
-  int len;                            /* allocated size of the text */
-  int curlen;                         /* current length of the text */
-  TCOD_color_t back;                  /* background colour */
-  TCOD_color_t fore;                  /* foreground colour */
-  float transparency;                 /* background transparency */
-  bool multiline;                     /* multiline support ? */
-  char* text;                         /* the text itself */
+  int tab_size; /* tab size, if 0, no tab */
+  char* prompt; /* prompt to be displayed before the string */
+  int textx, texty; /* coordinate of start of text (after prompt) */
+  TCOD_console_t con; /* offscreen console that will contain the textfield */
+  bool input_continue; /* controls whether ENTER has been pressed */
+  int len; /* allocated size of the text */
+  int curlen; /* current length of the text */
+  TCOD_color_t back; /* background colour */
+  TCOD_color_t fore; /* foreground colour */
+  float transparency; /* background transparency */
+  bool multiline; /* multiline support ? */
+  char* text; /* the text itself */
 } text_t;
 
 /* ctor */

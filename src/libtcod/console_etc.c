@@ -392,8 +392,8 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
   static float particle_heat[MAX_PARTICULES];
   static float particle_x[MAX_PARTICULES], particle_y[MAX_PARTICULES];
   static float particle_x_velocity[MAX_PARTICULES], particle_y_velocity[MAX_PARTICULES];
-  static int particle_count = 0;       // Current number of active particles.
-  static int first_particle = 0;       // First particle index, particle data wraps around the array.
+  static int particle_count = 0;  // Current number of active particles.
+  static int first_particle = 0;  // First particle index, particle data wraps around the array.
   static float particle_delay = 0.1f;  // Seconds until the next particle spawns.
 
   if (!static_vars_initialized) {
@@ -930,7 +930,7 @@ bool TCOD_console_save_apf(TCOD_console_t con, const char* filename) {
        the first layer is the lowest layer
        Assume imgData filter = uncompressed, and imgData format = CRGB */
     layerImageSize = imgData.width * imgData.height * 7;
-    layerChunkSize = sizeof(uint32_t)  /* version */
+    layerChunkSize = sizeof(uint32_t) /* version */
                      + sizeof(LayerV2) /* header */
                      + layerImageSize; /* data */
 

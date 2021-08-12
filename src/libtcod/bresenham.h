@@ -234,8 +234,8 @@ class BresenhamLine {
     inline Point2 transform(const Point2& cursor) const noexcept {
       return {ax + cursor.at(0) * xx + cursor.at(1) * yx, ay + cursor.at(0) * xy + cursor.at(1) * yy};
     }
-    int ax;          // Affine transformation on X.
-    int ay;          // Affine transformation on Y.
+    int ax;  // Affine transformation on X.
+    int ay;  // Affine transformation on Y.
     int_fast8_t xx;  // Index to world X.
     int_fast8_t xy;  // Index to world Y.
     int_fast8_t yx;  // Cursor Y to world X.
@@ -318,11 +318,11 @@ class BresenhamLine {
     return get_matrix().transform(cursor_);
   }
   Point2 origin_;  // Starting point.
-  Point2 dest_;    // Ending point.
-  int index_;      // The starting index returned by `begin`.
+  Point2 dest_;  // Ending point.
+  int index_;  // The starting index returned by `begin`.
   int index_end_;  // The past-the-end index returned by `end`.
   Point2 cursor_;  // Normalized Bresenham low-slope position.  First axis acts as the current index.
-  int y_error_;    // Fractional difference between Y indexes.  Is always `-delta[0] < err <= 0`.
+  int y_error_;  // Fractional difference between Y indexes.  Is always `-delta[0] < err <= 0`.
 };
 
 }  // namespace tcod

@@ -58,7 +58,7 @@ typedef struct Row {
   const int pov_x;  // The origin point-of-view.
   const int pov_y;
   const int quadrant;  // The quadrant index.
-  int depth;           // The depth of this row.
+  int depth;  // The depth of this row.
   float slope_low;
   const float slope_high;
 } Row;
@@ -113,7 +113,7 @@ static void scan(TCOD_Map* __restrict map, Row* __restrict row) {
     if (is_wall || is_symmetric(row, column)) {
       map_cell->fov = true;
     }
-    if (prev_tile_is_wall && !is_wall) {           // Floor tile to wall tile.
+    if (prev_tile_is_wall && !is_wall) {  // Floor tile to wall tile.
       row->slope_low = slope(row->depth, column);  // Shrink the view.
     }
     if (column != column_min && !prev_tile_is_wall && is_wall) {  // Wall tile to floor tile.

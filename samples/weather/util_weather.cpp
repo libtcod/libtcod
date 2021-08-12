@@ -180,7 +180,7 @@ float Weather::getLightning(int x, int y) {
   float res = 0.0f;
   float cloud = map_->getValue(x, y);
   cloud = 1.0f - cloud;  // inverted cloud. 0 = sky, 1=dark cloud
-  cloud -= 0.6f;         // no lightning under 0.6f. cloud is now 0 - 0.4
+  cloud -= 0.6f;  // no lightning under 0.6f. cloud is now 0 - 0.4
   if (cloud <= 0.0f) return 0.0f;
   cloud = cloud / 0.4f;  // now back to 0-1 range (but only for really cloudy zones)
   for (const lightning_t& l : lightnings_) {

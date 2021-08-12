@@ -58,11 +58,11 @@ static constexpr std::array<int, MAX_COLOR_KEY> keyIndex{
     255,
 };
 static constexpr std::array<TCODColor, MAX_COLOR_KEY> keyColor{
-    TCODColor(10, 10, 90),     // deep water
-    TCODColor(30, 30, 170),    // water-sand transition
-    TCODColor(114, 150, 71),   // sand
-    TCODColor(80, 120, 10),    // sand-grass transition
-    TCODColor(17, 109, 7),     // grass
+    TCODColor(10, 10, 90),  // deep water
+    TCODColor(30, 30, 170),  // water-sand transition
+    TCODColor(114, 150, 71),  // sand
+    TCODColor(80, 120, 10),  // sand-grass transition
+    TCODColor(17, 109, 7),  // grass
     TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255),

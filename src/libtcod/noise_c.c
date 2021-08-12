@@ -134,7 +134,7 @@ TCOD_Noise* TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_Random*
 }
 
 static float TCOD_noise_perlin(TCOD_Noise* __restrict data, const float* __restrict f) {
-  int n[TCOD_NOISE_MAX_DIMENSIONS];   /* Indexes to pass to lattice function */
+  int n[TCOD_NOISE_MAX_DIMENSIONS]; /* Indexes to pass to lattice function */
   float r[TCOD_NOISE_MAX_DIMENSIONS]; /* Remainders to pass to lattice function */
   float w[TCOD_NOISE_MAX_DIMENSIONS]; /* Cubic values to pass to interpolation function */
   float value;

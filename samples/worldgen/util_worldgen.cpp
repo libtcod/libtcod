@@ -105,14 +105,14 @@ static constexpr int keyIndex[MAX_COLOR_KEY] = {
     static_cast<int>(snowHeight * 255) + 10,
     255};
 static constexpr TCODColor keyColor[MAX_COLOR_KEY] = {
-    TCODColor(0, 0, 50),       // deep water
-    TCODColor(20, 20, 200),    // water-sand transition
+    TCODColor(0, 0, 50),  // deep water
+    TCODColor(20, 20, 200),  // water-sand transition
     TCODColor(134, 180, 101),  // sand
-    TCODColor(80, 120, 10),    // sand-grass transition
-    TCODColor(17, 109, 7),     // grass
-    TCODColor(30, 85, 12),     // grass-rock transistion
-    TCODColor(64, 70, 20),     // rock
-    TCODColor(120, 140, 40),   // rock-snow transistion
+    TCODColor(80, 120, 10),  // sand-grass transition
+    TCODColor(17, 109, 7),  // grass
+    TCODColor(30, 85, 12),  // grass-rock transistion
+    TCODColor(64, 70, 20),  // rock
+    TCODColor(120, 140, 40),  // rock-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
 
@@ -124,13 +124,13 @@ static constexpr float altitudes[MAX_ALT_KEY] = {
     -2000, -1000, -100, 0, 500, 1000, 2500, 4000  // in meters
 };
 static constexpr TCODColor altColors[MAX_ALT_KEY] = {
-    TCODColor(24, 165, 255),   // -2000
+    TCODColor(24, 165, 255),  // -2000
     TCODColor(132, 214, 255),  // -1000
     TCODColor(247, 255, 255),  // -100
-    TCODColor(49, 149, 44),    // 0
+    TCODColor(49, 149, 44),  // 0
     TCODColor(249, 209, 151),  // 500
-    TCODColor(165, 148, 24),   // 1000
-    TCODColor(153, 110, 6),    // 2500
+    TCODColor(165, 148, 24),  // 1000
+    TCODColor(153, 110, 6),  // 2500
     TCODColor(172, 141, 138),  // 4000
 };
 
@@ -142,23 +142,23 @@ static constexpr float precipitations[MAX_PREC_KEY] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18, 20, 25, 30, 35, 40  // cm / m² / year
 };
 static constexpr TCODColor precColors[MAX_PREC_KEY] = {
-    TCODColor(128, 0, 0),      // < 4
-    TCODColor(173, 55, 0),     // 4-8
-    TCODColor(227, 102, 0),    // 8-12
-    TCODColor(255, 149, 0),    // 12-16
-    TCODColor(255, 200, 0),    // 16-20
-    TCODColor(255, 251, 0),    // 20-24
-    TCODColor(191, 255, 0),    // 24-28
-    TCODColor(106, 251, 0),    // 28-32
-    TCODColor(25, 255, 48),    // 32-36
-    TCODColor(48, 255, 141),   // 36-40
-    TCODColor(28, 255, 232),   // 40-50
-    TCODColor(54, 181, 255),   // 50-60
-    TCODColor(41, 71, 191),    // 60-70
-    TCODColor(38, 0, 255),     // 70-80
-    TCODColor(140, 0, 255),    // 80-100
-    TCODColor(221, 0, 255),    // 100-120
-    TCODColor(255, 87, 255),   // 120-140
+    TCODColor(128, 0, 0),  // < 4
+    TCODColor(173, 55, 0),  // 4-8
+    TCODColor(227, 102, 0),  // 8-12
+    TCODColor(255, 149, 0),  // 12-16
+    TCODColor(255, 200, 0),  // 16-20
+    TCODColor(255, 251, 0),  // 20-24
+    TCODColor(191, 255, 0),  // 24-28
+    TCODColor(106, 251, 0),  // 28-32
+    TCODColor(25, 255, 48),  // 32-36
+    TCODColor(48, 255, 141),  // 36-40
+    TCODColor(28, 255, 232),  // 40-50
+    TCODColor(54, 181, 255),  // 50-60
+    TCODColor(41, 71, 191),  // 60-70
+    TCODColor(38, 0, 255),  // 70-80
+    TCODColor(140, 0, 255),  // 80-100
+    TCODColor(221, 0, 255),  // 100-120
+    TCODColor(255, 87, 255),  // 120-140
     TCODColor(255, 173, 255),  // 140-160
     TCODColor(255, 206, 255),  // > 160
 };
@@ -168,13 +168,13 @@ static constexpr int MAX_TEMP_KEY = 7;
 static constexpr int tempIndexes[MAX_TEMP_KEY] = {0, 42, 84, 126, 168, 210, 255};
 static constexpr int temperatures[MAX_TEMP_KEY] = {-30, -20, -10, 0, 10, 20, 30};
 static constexpr TCODColor tempKeyColor[MAX_TEMP_KEY] = {
-    TCODColor(180, 8, 130),   // -30 °C
-    TCODColor(32, 1, 139),    // -20 °C
-    TCODColor(0, 65, 252),    // -10 °C
+    TCODColor(180, 8, 130),  // -30 °C
+    TCODColor(32, 1, 139),  // -20 °C
+    TCODColor(0, 65, 252),  // -10 °C
     TCODColor(37, 255, 236),  // 0 °C
-    TCODColor(255, 255, 1),   // 10 °C
-    TCODColor(255, 29, 4),    // 20 °C
-    TCODColor(80, 3, 0),      // 30 °C
+    TCODColor(255, 255, 1),  // 10 °C
+    TCODColor(255, 29, 4),  // 20 °C
+    TCODColor(80, 3, 0),  // 30 °C
 };
 
 int WorldGenerator::getWidth() const { return HM_WIDTH; }

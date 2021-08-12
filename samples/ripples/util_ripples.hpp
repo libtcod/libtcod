@@ -26,10 +26,10 @@
 #include <vector>
 
 struct WaterZone {
-  float cumulatedElapsed;      // to control the ripples framerate
-  std::vector<float> data;     // water height data after update
+  float cumulatedElapsed;  // to control the ripples framerate
+  std::vector<float> data;  // water height data after update
   std::vector<float> oldData;  // water height data before update
-  bool isActive;               // not to use CPU is there are no ripples
+  bool isActive;  // not to use CPU is there are no ripples
 };
 
 class RippleManager {

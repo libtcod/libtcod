@@ -724,13 +724,13 @@ static TCOD_ConsoleTile generate_quadrant_graphic(const TCOD_ColorRGB desired[4]
   // Maps a mask of quadrants to a codepoint.  A negative codepoint means to swap the fg/bg values.
   static int quadrant_to_codepoint[8] = {
       0,
-      0x259D,   // Quadrant upper right.
-      0x2597,   // Quadrant lower left.
+      0x259D,  // Quadrant upper right.
+      0x2597,  // Quadrant lower left.
       -0x259A,  // Quadrant upper left and lower right.
-      0x2596,   // Quadrant lower right.
-      0x2590,   // Right half block.
+      0x2596,  // Quadrant lower right.
+      0x2590,  // Right half block.
       -0x2580,  // Upper half block.
-      -0x2598   // Quadrant upper left.
+      -0x2598  // Quadrant upper left.
   };
   int quadrant_index;  // The active color quadrant being checked.
   // Ignore all quadrants matching the first color.

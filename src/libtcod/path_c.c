@@ -45,13 +45,13 @@ static int dir_y[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
 static int invdir[] = {SOUTH_EAST, SOUTH, SOUTH_WEST, EAST, NONE, WEST, NORTH_EAST, NORTH, NORTH_WEST};
 
 typedef struct TCOD_Path {
-  int ox, oy;       /* coordinates of the creature position */
-  int dx, dy;       /* coordinates of the creature's destination */
+  int ox, oy; /* coordinates of the creature position */
+  int dx, dy; /* coordinates of the creature's destination */
   TCOD_list_t path; /* list of dir_t to follow the path */
-  int w, h;         /* map size */
-  float* grid;      /* wxh dijkstra distance grid (covered distance) */
+  int w, h; /* map size */
+  float* grid; /* wxh dijkstra distance grid (covered distance) */
   float* heuristic; /* wxh A* score grid (covered distance + estimated remaining distance) */
-  dir_t* prev;      /* wxh 'previous' grid : direction to the previous cell */
+  dir_t* prev; /* wxh 'previous' grid : direction to the previous cell */
   float diagonalCost;
   TCOD_list_t heap; /* min_heap used in the algorithm. stores the offset in grid/heuristic (offset=x+y*w) */
   TCOD_map_t map;
@@ -281,7 +281,7 @@ bool TCOD_path_compute(TCOD_path_t p, int ox, int oy, int dx, int dy) {
   memset(path->grid, 0, sizeof(float) * path->w * path->h);
   memset(path->prev, NONE, sizeof(dir_t) * path->w * path->h);
   path->heuristic[ox + oy * path->w] = 1.0f; /* anything != 0 */
-  TCOD_path_push_cell(path, ox, oy);         /* put the origin cell as a bootstrap */
+  TCOD_path_push_cell(path, ox, oy); /* put the origin cell as a bootstrap */
   /* fill the dijkstra grid until we reach dx,dy */
   TCOD_path_set_cells(path);
   if (path->grid[dx + dy * path->w] == 0) return false; /* no path found */
@@ -326,7 +326,7 @@ bool TCOD_path_walk(TCOD_path_t p, int* x, int* y, bool recalculate_when_needed)
     if (!recalculate_when_needed) return false; /* don't walk */
     /* calculate a new path */
     if (!TCOD_path_compute(path, path->ox, path->oy, path->dx, path->dy)) return false; /* cannot find a new path */
-    return TCOD_path_walk(p, x, y, true);                                               /* walk along the new path */
+    return TCOD_path_walk(p, x, y, true); /* walk along the new path */
   }
   if (x) *x = new_x;
   if (y) *y = new_y;
@@ -506,8 +506,8 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
   /* encode the root coords in one integer */
   unsigned int root = (root_y * mx) + root_x;
   /* some stuff to walk through the nodes table */
-  unsigned int index = 0;            /* the index of the first node in queue */
-  unsigned int last_index = 1;       /* total nb of registered queue indices */
+  unsigned int index = 0; /* the index of the first node in queue */
+  unsigned int last_index = 1; /* total nb of registered queue indices */
   unsigned int* nodes = data->nodes; /* table of nodes to which the indices above apply */
   /* ok, here's the order of node processing: W, S, E, N, NW, NE, SE, SW */
   static int dx[8] = {-1, 0, 1, 0, -1, 1, 1, -1};
@@ -579,7 +579,7 @@ void TCOD_dijkstra_compute(TCOD_Dijkstra* data, int root_x, int root_y) {
               nodes[j + 1] = nodes[j];
             j--;
           }
-          last_index++;            /* increase total indices count */
+          last_index++; /* increase total indices count */
           nodes[j + 1] = new_node; /* and finally put the node where it belongs in the queue */
         }
       }

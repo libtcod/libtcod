@@ -141,11 +141,11 @@ void render_colors(const SDL_Event* event) {
  * offscreen console sample
  * ***************************/
 void render_offscreen(const SDL_Event* event) {
-  static TCOD_console_t secondary;  /* second screen */
+  static TCOD_console_t secondary; /* second screen */
   static TCOD_console_t screenshot; /* second screen */
-  static bool init = false;         /* draw the secondary screen only the first time */
+  static bool init = false; /* draw the secondary screen only the first time */
   static int counter;
-  static int x = 0, y = 0;         /* secondary screen position */
+  static int x = 0, y = 0; /* secondary screen position */
   static int x_dir = 1, y_dir = 1; /* movement direction */
   if (!init) {
     init = true;
@@ -799,7 +799,7 @@ void render_mouse(const SDL_Event* event) {
  * ***************************/
 void render_path(const SDL_Event* event) {
   static int px = 20, py = 10;  // player position
-  static int dx = 24, dy = 1;   // destination
+  static int dx = 24, dy = 1;  // destination
   static TCOD_map_t map = NULL;
   static TCOD_color_t dark_wall = {0, 0, 100};
   static TCOD_color_t dark_ground = {50, 50, 150};
@@ -1003,7 +1003,7 @@ void render_path(const SDL_Event* event) {
 static int bspDepth = 8;
 static int minRoomSize = 4;
 static bool randomRoom = false;  // a room fills a random part of the node or the maximum available space ?
-static bool roomWalls = true;    // if true, there is always a wall on north & west side of a room
+static bool roomWalls = true;  // if true, there is always a wall on north & west side of a room
 typedef char map_t[SAMPLE_SCREEN_WIDTH][SAMPLE_SCREEN_HEIGHT];
 // draw a vertical line
 void vline(map_t* map, int x, int y1, int y2) {

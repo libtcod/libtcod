@@ -42,12 +42,12 @@ class Operation {
   static const char* tips[];
   OpType operation_type;
   static std::vector<std::unique_ptr<Operation>> list;  // the list of operation applied since the last clear
-  void run();                                           // run this operation
-  void add();                                           // run this operation and adds it in the list
+  void run();  // run this operation
+  void add();  // run this operation and adds it in the list
   virtual void createParamUi();
   static const std::string& buildCode(CodeType type);  // generate the code corresponding to the list of operations
-  static void clear();                                 // remove all operation, clear the heightmap
-  static void cancel();                                // cancel the last operation
+  static void clear();  // remove all operation, clear the heightmap
+  static void cancel();  // cancel the last operation
   static void reseed();
   virtual ~Operation() {}
 
@@ -55,20 +55,20 @@ class Operation {
   friend void historyCbk(Widget* w, void* data);
 
   static bool needsRandom;  // we need a random number generator
-  static bool needsNoise;   // we need a 2D noise
+  static bool needsNoise;  // we need a 2D noise
   static Operation* currentOp;
   RadioButton* button;  // button associated with this operation in history
 
   static void addInitCode(
       CodeType type, const std::string& code);  // add a global variable or a function to the generated code
 
-  virtual void runInternal() = 0;                  // actually execute this operation
-  virtual bool addInternal() = 0;                  // actually add this operation
+  virtual void runInternal() = 0;  // actually execute this operation
+  virtual bool addInternal() = 0;  // actually add this operation
   virtual std::string getCode(CodeType type) = 0;  // the code corresponding to this operation
  private:
   static std::string codebuf;  // generated code buffer
   static std::array<std::vector<std::string>, NB_CODE>
-      initCode;                                  // list of global vars/functions to add to the generated code
+      initCode;  // list of global vars/functions to add to the generated code
   static void addCode(const std::string& code);  // add some code to the generated code
 };
 

@@ -211,9 +211,9 @@ void TCOD_console_print_double_frame(
   if (!dat) {
     return;
   }
-  TCOD_console_put_char(con, x, y, 0x2554, flag);                  // ╔
-  TCOD_console_put_char(con, x + w - 1, y, 0x2557, flag);          // ╗
-  TCOD_console_put_char(con, x, y + h - 1, 0x255A, flag);          // ╚
+  TCOD_console_put_char(con, x, y, 0x2554, flag);  // ╔
+  TCOD_console_put_char(con, x + w - 1, y, 0x2557, flag);  // ╗
+  TCOD_console_put_char(con, x, y + h - 1, 0x255A, flag);  // ╚
   TCOD_console_put_char(con, x + w - 1, y + h - 1, 0x255D, flag);  // ╝
   TCOD_console_double_hline(con, x + 1, y, w - 2, flag);
   TCOD_console_double_hline(con, x + 1, y + h - 1, w - 2, flag);

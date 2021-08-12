@@ -75,7 +75,7 @@ class [[nodiscard]] Timer {
    */
   float sync(int desired_fps = 0) {
     const uint64_t frequency = SDL_GetPerformanceFrequency();
-    uint64_t current_time = SDL_GetPerformanceCounter();                   // The precise current time.
+    uint64_t current_time = SDL_GetPerformanceCounter();  // The precise current time.
     int64_t delta_time = static_cast<int64_t>(current_time - last_time_);  // The precise delta time.
     if (desired_fps > 0) {
       const int64_t desired_delta_time = frequency / desired_fps;  // Desired precise delta time.
@@ -153,9 +153,9 @@ class [[nodiscard]] Timer {
 
  private:
   static constexpr size_t MAX_SAMPLES_COUNT = 1024;  // Hard limit on the number of samples held.
-  static constexpr double MAX_SAMPLES_TIME = 1.0;    // Hard limit on the total time of samples held.
+  static constexpr double MAX_SAMPLES_TIME = 1.0;  // Hard limit on the total time of samples held.
 
-  uint64_t last_time_;         // The last precise time sampled.
+  uint64_t last_time_;  // The last precise time sampled.
   std::deque<float> samples_;  // The most recent delta time samples in seconds.
 };
 }  // namespace tcod

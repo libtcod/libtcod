@@ -70,7 +70,7 @@ typedef struct TCOD_Dijkstra {
   TCOD_path_func_t func;
   void* user_data;
   unsigned int* distances; /* distances grid */
-  unsigned int* nodes;     /* the processed nodes */
+  unsigned int* nodes; /* the processed nodes */
   TCOD_list_t path;
 } TCOD_Dijkstra;
 typedef struct TCOD_Dijkstra* TCOD_dijkstra_t;

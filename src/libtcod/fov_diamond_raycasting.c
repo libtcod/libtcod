@@ -40,14 +40,14 @@
     A discrete diamond raycast tile.
  */
 typedef struct RaycastTile {
-  int x_relative, y_relative;                    // Ray position relative to the POV.
-  int x_obscurity, y_obscurity;                  // Obscurity vector.
-  int x_error, y_error;                          // Bresenham error.
+  int x_relative, y_relative;  // Ray position relative to the POV.
+  int x_obscurity, y_obscurity;  // Obscurity vector.
+  int x_error, y_error;  // Bresenham error.
   const struct RaycastTile* __restrict x_input;  // Pointer to the x-adjacent source ray.
   const struct RaycastTile* __restrict y_input;  // Pointer to the y-adjacent source ray.
-  struct RaycastTile* perimeter_next;            // The next queued raycast of the perimeter.
-  bool touched;                                  // Becomes true once this ray is added to the perimeter.
-  bool ignore;                                   // Marked as non visible.
+  struct RaycastTile* perimeter_next;  // The next queued raycast of the perimeter.
+  bool touched;  // Becomes true once this ray is added to the perimeter.
+  bool ignore;  // Marked as non visible.
 } RaycastTile;
 /**
     Return a rays squared distance from the origin POV.
@@ -60,9 +60,9 @@ static int ray_length_sq(const RaycastTile* __restrict ray) {
  */
 typedef struct DiamondFov {
   TCOD_Map* __restrict const map;
-  const int pov_x, pov_y;                     // Fov origin point, the POV.
+  const int pov_x, pov_y;  // Fov origin point, the POV.
   RaycastTile* __restrict const raymap_grid;  // Grid of temporary rays.
-  RaycastTile* perimeter_last;                // Pointer to the last tile on the perimeter.
+  RaycastTile* perimeter_last;  // Pointer to the last tile on the perimeter.
 } DiamondFov;
 /**
     Return a pointer to the tile belonging relative to the POV.

@@ -9,3 +9,4 @@ ColumnLimit: 120
 AlignAfterOpenBracket: AlwaysBreak
 BinPackArguments: false
 BinPackParameters: false
+AlignTrailingComments: false

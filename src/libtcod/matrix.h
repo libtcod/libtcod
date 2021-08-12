@@ -49,10 +49,10 @@ namespace tcod {
 template <typename T, size_t Dimensions>
 class Matrix {
  public:
-  using size_type = int;                                 // The int size of indexes.
+  using size_type = int;  // The int size of indexes.
   using shape_type = std::array<size_type, Dimensions>;  // The type used to measure the matrixes shape.
   using index_type = std::array<size_type, Dimensions>;  // The type used to index the container.
-  using container_type = std::vector<T>;                 // The underlying container type.
+  using container_type = std::vector<T>;  // The underlying container type.
   using reference = typename container_type::reference;
   using const_reference = typename container_type::const_reference;
   Matrix() = default;

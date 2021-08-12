@@ -100,7 +100,7 @@ static void cast_light(
       map->cells[map_index].fov = true;
     }
     if (prev_tile_blocked && map->cells[map_index].transparent) {  // Wall -> floor.
-      view_slope_high = prev_tile_slope_low;                       // Reduce the view size.
+      view_slope_high = prev_tile_slope_low;  // Reduce the view size.
     }
     if (!prev_tile_blocked && !map->cells[map_index].transparent) {  // Floor -> wall.
       // Get the last sequence of floors as a view and recurse into them.

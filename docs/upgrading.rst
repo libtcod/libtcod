@@ -2,13 +2,57 @@
 Upgrading
 =========
 
-1.6 -> latest 1.x
+Upgrading to 1.19
 -----------------
 
-New project should use the :ref:`getting-started` guide so that they can start using contexts right way.
+Any new project should use the :ref:`getting-started` guide so that they can start using contexts right way.
 Older projects will have to convert to contexts over a series of steps.
 
-Libtcod's systems have been deprecated in favor of using `SDL2`_ directly for events.
+The old way of initializing a global state with :any:`TCOD_console_init_root` or ``TCODConsole::initRoot`` has been deprecated.
+These have been replaced with a public context object.
+
+New tileset API
+^^^^^^^^^^^^^^^
+
+You can switch away from :any:`TCOD_console_set_custom_font` before using contexts by using the :any:`TCOD_set_default_tileset` function.
+
+.. code-block:: cpp
+
+    // The old way to load tilesets:
+    // TCOD_console_set_custom_font("terminal8x8_gs_tc.png", TCOD_FONT_LAYOUT_TCOD, 32, 8);
+
+    // You can update old code to use this new method of loading tilesets before using contexts properly.
+    tcod::TilesetPtr tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+    TCOD_set_default_tileset(tileset.get());
+
+    // This is deprecated, but will work with the above tileset.
+    TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);
+
+Adapting to contexts and a rootless console
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Before initializing a context properly you can access both the context and the root console.
+This lets you use context methods like :any:`TCOD_Context::present` easily in older code.
+This also lets you use the root console on functions which can't accept `nullptr`.
+
+.. code-block:: cpp
+
+    TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);  // Deprecated.
+
+    // Get a temporary non-owning pointer to the context made by TCOD_console_init_root or TCODConsole::initRoot.
+    TCOD_Context* context = TCOD_sys_get_internal_context();
+
+    // Get a temporary non-owning pointer to the root console made by TCOD_console_init_root or TCODConsole::initRoot.
+    TCOD_Console* root_console = TCOD_sys_get_internal_console();
+    // From now on use root_console instead of NULL, make this global if you have to.
+
+    // Using the root console with the context is the same as calling TCOD_console_flush()
+    context->present(*root_console);  // Or in C: TCOD_context_present(context, root_console, NULL)
+
+Event systems
+^^^^^^^^^^^^^
+
+Libtcod's event systems have been deprecated in favor of using `SDL2`_ directly for events.
 :any:`TCOD_Context::convert_event_coordinates` is the recommended way to convert pixel coordinates to tiles.
 :any:`tcod::sdl2::process_event` might work better for converting old code to use the new system.
 
@@ -50,9 +94,68 @@ Libtcod's systems have been deprecated in favor of using `SDL2`_ directly for ev
     }
   }
 
+Timing
+^^^^^^
 
-1.5 -> 1.6
-----------
+All of the libtcod timing functions have been deprecated.
+Many will stop working once you switch to using contexts.
+Instead you should use :any:`tcod::Timer` and SDL2's timing functions.
+Remember that you have to add ``#include <libtcod/timer.h>`` to access :any:`tcod::Timer`, this also requires the SDL2 headers.
+
+.. code-block:: cpp
+
+  int desired_fps = 30;
+  auto timer = tcod::Timer();
+
+  while (1) {
+    uint32_t current_time_ms = SDL_GetTicks();
+    float current_time = static_cast<float>(current_time_ms) / 1000.f;
+    float delta_time = timer.sync(desired_fps);
+    // ...
+  }
+
+Switching to contexts
+^^^^^^^^^^^^^^^^^^^^^
+
+With all the above done you can now switch away from :any:`TCOD_console_init_root` and start using :any:`TCOD_ContextParams` and :any:`tcod::new_context`.
+
+.. code-block:: cpp
+
+    #include <libtcod.h>
+    #include <SDL2.h>
+
+    int main(int argc, char* argv[]) {
+      tcod::ConsolePtr root_console = tcod::new_console(80, 25);
+      tcod::TilesetPtr tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+
+      TCOD_ContextParams params{};
+      params.tcod_version = TCOD_COMPILEDVERSION;
+      params.columns = root_console->w;
+      params.rows = root_console->h;
+      params.window_title = "Window title";
+      params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+      params.vsync = true;
+      params.argc = argc;
+      params.argv = argv;
+      params.tileset = tileset.get();
+
+      tcod::ContextPtr context = tcod::new_context(params);
+
+      while (1) {
+        context->present(*root_console);
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)){
+          switch (event.type) {
+            case SDL_QUIT:
+              return 0;  // Exit.
+          }
+        }
+      }
+    }
+
+Upgrading to 1.6
+----------------
 
 The largest and most influential change to libtcod, between versions 1.5.2 and 1.6.0, was the move to replace SDL with `SDL2`_.  SDL2 made many extensive changes to concepts used in SDL.  Only one of these changes, the separation of text and key events, required a change in the libtcod API requiring users to update their code in the process of updating the version of libtcod they use.
 

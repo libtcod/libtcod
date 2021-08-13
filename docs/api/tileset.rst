@@ -38,3 +38,6 @@ C API
 .. doxygenfunction:: TCOD_load_bdf_memory
 
 .. doxygenfunction:: TCOD_tileset_render_to_surface
+
+.. doxygenfunction:: TCOD_get_default_tileset
+.. doxygenfunction:: TCOD_set_default_tileset

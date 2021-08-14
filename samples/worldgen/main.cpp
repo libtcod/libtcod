@@ -29,9 +29,12 @@
 #include <libtcod/timer.h>
 
 #include <algorithm>
+#include <array>
 
 static constexpr auto WIDTH = 80;
 static constexpr auto HEIGHT = 50;
+
+static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
 
 TCODNoise noise1d(1);
 TCODNoise noise2d(2);
@@ -40,15 +43,16 @@ WorldGenerator worldGen;
 float cur_w_x = 0, cur_w_y = 0;
 // mouse coordinates in world map
 float mx = 0, my = 0;
+std::array<float, 2> mouse_subtile_xy{};  // Tracked mouse tile position.
 
-void update(float elapsed, const TCOD_key_t&, const TCOD_mouse_t& mouse) {
+void update(float elapsed) {
   // destination wanted
-  float world_x = static_cast<float>(worldGen.getWidth() - 2 * WIDTH) * mouse.cx / WIDTH;
-  float world_y = static_cast<float>(worldGen.getHeight() - 2 * HEIGHT) * mouse.cy / HEIGHT;
+  const float world_x = (worldGen.getWidth() - 2 * WIDTH) * mouse_subtile_xy.at(0) / WIDTH;
+  const float world_y = (worldGen.getHeight() - 2 * HEIGHT) * mouse_subtile_xy.at(1) / HEIGHT;
   cur_w_x += (world_x - cur_w_x) * elapsed;
   cur_w_y += (world_y - cur_w_y) * elapsed;
-  mx = cur_w_x + mouse.cx * 2;
-  my = cur_w_y + mouse.cy * 2;
+  mx = cur_w_x + mouse_subtile_xy.at(0) * 2;
+  my = cur_w_y + mouse_subtile_xy.at(1) * 2;
   worldGen.updateClouds(elapsed);
 }
 
@@ -73,21 +77,20 @@ TCODColor getMapShadedColor(float worldX, float worldY, bool clouds) {
   };
 }
 
-void render() {
+void render(TCOD_Console& console) {
   // subcell resolution image
   static TCODImage map(WIDTH * 2, HEIGHT * 2);
   // compute the map image
-  for (int px = 0; px < 2 * WIDTH; px++) {
-    for (int py = 0; py < 2 * HEIGHT; py++) {
+  for (int py = 0; py < 2 * HEIGHT; ++py) {
+    for (int px = 0; px < 2 * WIDTH; ++px) {
       // world texel coordinate (with fisheye distorsion)
       const float wx = px + cur_w_x;
       const float wy = py + cur_w_y;
       map.putPixel(px, py, getMapShadedColor(wx, wy, true));
     }
   }
-  map.blit2x(TCODConsole::root, 0, 0);
+  TCOD_image_blit_2x(map.get_data(), &console, 0, 0, 0, 0, -1, -1);
 
-  TCODConsole::root->setDefaultForeground({255, 255, 255});
   static const char* biomeNames[] = {
       "Tundra",
       "Cold desert",
@@ -102,62 +105,83 @@ void render() {
       "Thorn forest"};
   if (worldGen.isOnSea(mx, my)) {
     // some information are irrelevant on sea
-    TCODConsole::root->printf(
-        5, 47, "Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my));
+    tcod::print(
+        console,
+        {5, 47},
+        tcod::stringf("Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my)),
+        &WHITE,
+        nullptr);
   } else {
-    TCODConsole::root->printf(
-        5,
-        47,
-        "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
-        (int)worldGen.getRealAltitude(mx, my),
-        (int)worldGen.getPrecipitations(mx, my),
-        (int)worldGen.getTemperature(mx, my),
-        biomeNames[worldGen.getBiome(mx, my)]);
+    tcod::print(
+        console,
+        {5, 47},
+        tcod::stringf(
+            "Alt %5dm  Prec %3dcm/sq. m/y  Temp %d deg C\nBiome : %s\nMove the mouse to scroll the map",
+            (int)worldGen.getRealAltitude(mx, my),
+            (int)worldGen.getPrecipitations(mx, my),
+            (int)worldGen.getTemperature(mx, my),
+            biomeNames[worldGen.getBiome(mx, my)]),
+        &WHITE,
+        nullptr);
   }
 }
 
 int main(int argc, char* argv[]) {
-  // initialize the game window
-  TCODConsole::initRoot(WIDTH, HEIGHT, "World generator", false, TCOD_RENDERER_OPENGL2);
-  int desired_fps = 25;
+  auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
 
-  TCOD_key_t k = {};
-  TCOD_mouse_t mouse = {};
+  // initialize the game window
+  TCOD_ContextParams params{};
+  params.tcod_version = TCOD_COMPILEDVERSION;
+  params.argc = argc;
+  params.argv = argv;
+  params.columns = WIDTH;
+  params.rows = HEIGHT;
+  params.vsync = true;
+  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  params.window_title = "World generator";
+  params.tileset = tileset.get();
+
+  auto context = tcod::new_context(params);
+  auto console = tcod::new_console({{WIDTH, HEIGHT}});
+
+  int desired_fps = 0;
 
   bool endCredits = false;
   // generate the world with all data (rain, temperature and so on...)
   worldGen.generate(NULL);
   // compute light intensity on ground (depends on light direction and ground slope)
-  static float lightDir[3] = {1.0f, 1.0f, 0.0f};
+  static const float lightDir[3] = {1.0f, 1.0f, 0.0f};
   worldGen.computeSunLight(lightDir);
 
   auto timer = tcod::Timer();
 
-  while (!TCODConsole::isWindowClosed()) {
-    //	read keyboard
-    //		TCOD_key_t k=TCODConsole::checkForKeypress(TCOD_KEY_PRESSED|TCOD_KEY_RELEASED);
-    //		TCOD_mouse_t mouse=TCODMouse::getStatus();
-
-    TCODSystem::checkForEvent((TCOD_event_t)(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE), &k, &mouse);
-
-    if (k.vk == TCODK_PRINTSCREEN) {
-      // screenshot
-      if (!k.pressed) TCODSystem::saveScreenshot(NULL);
-      k.vk = TCODK_NONE;
-    } else if (k.lalt && (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER)) {
-      // switch fullscreen
-      if (!k.pressed) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-      k.vk = TCODK_NONE;
+  while (true) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_QUIT:
+          std::exit(EXIT_SUCCESS);
+          break;
+        case SDL_MOUSEMOTION: {
+          const auto mouse_xy_d = context->pixel_to_tile_coordinates(
+              std::array<double, 2>{static_cast<double>(event.motion.x), static_cast<double>(event.motion.y)});
+          mouse_subtile_xy = {static_cast<float>(mouse_xy_d.at(0)), static_cast<float>(mouse_xy_d.at(1))};
+        } break;
+        default:
+          break;
+      }
     }
+
     // update the game
-    update(timer.sync(desired_fps), k, mouse);
+    const float delta_time = timer.sync(desired_fps);
+    update(delta_time);
 
     // render the game screen
-    render();
+    render(*console);
     // render libtcod credits
-    if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
+    if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    TCODConsole::root->flush();
+    context->present(*console);
   }
   return 0;
 }

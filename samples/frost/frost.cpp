@@ -219,14 +219,10 @@ void on_quit() {
 int main(int argc, char** argv) {
   std::atexit(on_quit);
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
-  auto tileset = TCOD_tileset_load("data/fonts/terminal8x8_gs_tc.png", 32, 8, 256, TCOD_CHARMAP_TCOD);
-  if (!tileset) {
-    std::cerr << TCOD_get_error() << "\n";
-    return EXIT_FAILURE;
-  }
+  auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
-  params.tileset = tileset;
+  params.tileset = tileset.get();
   params.argc = argc;
   params.argv = argv;
   params.window_title = "frost test";

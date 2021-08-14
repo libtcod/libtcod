@@ -2,8 +2,8 @@
 Upgrading
 =========
 
-Upgrading to 1.19
------------------
+Porting to 1.19
+---------------
 
 Any new project should use the :ref:`getting-started` guide so that they can start using contexts right way.
 Older projects will have to convert to contexts over a series of steps.
@@ -48,6 +48,24 @@ This also lets you use the root console on functions which can't accept `nullptr
 
     // Using the root console with the context is the same as calling TCOD_console_flush()
     context->present(*root_console);  // Or in C: TCOD_context_present(context, root_console, NULL)
+
+Window manipulation
+^^^^^^^^^^^^^^^^^^^
+
+With the temporary context from the previous step or with :any:`TCOD_sys_get_sdl_window` you can access the ``SDL_Window`` pointer.
+You use this to replace several window-related functions such as :any:`TCOD_console_set_fullscreen`, :any:`TCOD_console_is_active` or :any:`TCOD_console_set_window_title`.
+See the `SDL2 window documentation <https://wiki.libsdl.org/CategoryVideo>`_ for what you can do with the ``SDL_Window`` pointer.
+
+.. code-block:: cpp
+
+    TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);  // Deprecated.
+    TCOD_Context* context = TCOD_sys_get_internal_context();
+    SDL_Window* sdl_window = context->get_sdl_window();
+
+    if (sdl_window) {
+      SDL_SetWindowTitle(sdl_window, "New title");
+      if (SDL_GetWindowFlags(sdl_window) & SDL_WINDOW_INPUT_FOCUS) {}
+    }
 
 Event systems
 ^^^^^^^^^^^^^
@@ -154,8 +172,8 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
       }
     }
 
-Upgrading to 1.6
-----------------
+Porting to 1.6
+--------------
 
 The largest and most influential change to libtcod, between versions 1.5.2 and 1.6.0, was the move to replace SDL with `SDL2`_.  SDL2 made many extensive changes to concepts used in SDL.  Only one of these changes, the separation of text and key events, required a change in the libtcod API requiring users to update their code in the process of updating the version of libtcod they use.
 

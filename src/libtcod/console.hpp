@@ -274,7 +274,7 @@ public :
 	@C# static bool TCODConsole::isFullscreen()
 	@Lua tcod.console.isFullscreen()
 	*/
-  [[deprecated("This function is not compatible with contexts. Use SDL to check the fullscreen state.")]]
+  [[deprecated("This function is not compatible with contexts. Use SDL_GetWindowFlags to check this.")]]
 	static bool isFullscreen();
 	/**
 	@PageName console_fullscreen
@@ -309,7 +309,7 @@ public :
 			tcod.console.setFullscreen(not tcod.console.isFullscreen())
 		end
 	*/
-  [[deprecated("This function is not compatible with contexts.")]]
+  [[deprecated("This function is not compatible with contexts. Use SDL_SetWindowFullscreen to set this state.")]]
 	static void setFullscreen(bool fullscreen);
 
 	/**
@@ -326,7 +326,7 @@ public :
 	@Lua tcod.console.setWindowTitle(title)
 	@Param title New title of the game window
 	*/
-  [[deprecated("This function is not compatible with contexts. Use SDL to change the window title.")]]
+  [[deprecated("This function is not compatible with contexts. Use SDL_SetWindowTitle to change the window title.")]]
 	static void setWindowTitle(const char *title);
 
 	/**
@@ -350,7 +350,7 @@ public :
 	@C bool TCOD_console_has_mouse_focus()
 	@Py console_has_mouse_focus()
 	*/
-  [[deprecated("This function is not compatible with contexts. Use SDL to check for mouse focus.")]]
+  [[deprecated("This function is not compatible with contexts. Use SDL_GetWindowFlags to check this.")]]
 	static bool hasMouseFocus();
 
 	/**
@@ -361,7 +361,7 @@ public :
 	@C bool TCOD_console_is_active()
 	@Py console_is_active()
 	*/
-  [[deprecated("This function is not compatible with contexts. Use SDL to check for keyboard focus.")]]
+  [[deprecated("This function is not compatible with contexts. Use SDL_GetWindowFlags to check this.")]]
 	static bool isActive();
 
 	/**

@@ -99,24 +99,25 @@ TCOD_PUBLIC void TCOD_quit(void);
  *
  *  \param title A utf8 string.
  */
-TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to change the window title.")
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL_SetWindowTitle to change the window title.")
 TCOD_PUBLIC void TCOD_console_set_window_title(const char* title);
 /**
  *  Set the display to be full-screen or windowed.
  *
  *  \param fullscreen If true the display will go full-screen.
  */
-TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to set the fullscreen state.")
+TCOD_DEPRECATED(
+    "This function is not compatible with contexts.  Use SDL_SetWindowFullscreen to set the fullscreen state.")
 TCOD_PUBLIC void TCOD_console_set_fullscreen(bool fullscreen);
 /**
  *  Return true if the display is full-screen.
  */
-TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check the fullscreen state.")
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL_GetWindowFlags to check this.")
 TCOD_PUBLIC bool TCOD_console_is_fullscreen(void);
 /**
  *  Return true if the window has mouse focus.
  */
-TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check for mouse focus.")
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL_GetWindowFlags to check this.")
 TCOD_PUBLIC bool TCOD_console_has_mouse_focus(void);
 /**
  *  Return true if the window has keyboard focus.
@@ -127,7 +128,7 @@ TCOD_PUBLIC bool TCOD_console_has_mouse_focus(void);
  *      focus.
  *  \endverbatim
  */
-TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL to check for keyboard focus.")
+TCOD_DEPRECATED("This function is not compatible with contexts.  Use SDL_GetWindowFlags to check this.")
 TCOD_PUBLIC bool TCOD_console_is_active(void);
 /**
  *  Return true if the window is closing.

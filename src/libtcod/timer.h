@@ -53,6 +53,13 @@ namespace tcod {
 
     You must add ``#include <libtcod/timer.h>`` to include ths class.
 
+    @code{.cpp}
+      int desired_fps = 30;
+      auto timer = tcod::Timer();
+      while (1) {
+        float delta_time = timer.sync(desired_fps);  // desired_fps is optional.
+        // ...
+    @endcode
     \rst
     .. versionadded:: 1.19
     \endrst
@@ -87,11 +94,11 @@ class [[nodiscard]] Timer {
       }
       while (delta_time < desired_delta_time) {  // Spin for the remaining time.
         current_time = SDL_GetPerformanceCounter();
-        delta_time = static_cast<int64_t>(0, current_time - last_time_);
+        delta_time = static_cast<int64_t>(current_time - last_time_);
       }
     }
     last_time_ = current_time;
-    const float delta_time_s = static_cast<float>(delta_time) / frequency;  // Delta time in seconds.
+    const float delta_time_s = std::max(0.0f, static_cast<float>(delta_time) / frequency);  // Delta time in seconds.
     // Drop samples as they hit the total time and count limits.
     double total_time = std::accumulate(samples_.begin(), samples_.end(), 0.0);  // Total time of all samples.
     while (!samples_.empty() && (total_time > MAX_SAMPLES_TIME || samples_.size() >= MAX_SAMPLES_COUNT)) {

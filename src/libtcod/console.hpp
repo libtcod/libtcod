@@ -526,6 +526,7 @@ public :
 	@Param col the background color to use. You can use color constants
 	@Param flag this flag defines how the cell's background color is modified. See <a href="console_bkgnd_flag_t.html">TCOD_bkgnd_flag_t</a>
 	*/
+  [[deprecated]]
 	void setCharBackground(int x, int y, const TCODColor &col, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET);
 	/**
 	@PageName console_draw_basic
@@ -542,6 +543,7 @@ public :
 		0 <= y < console height
 	@Param col the foreground color to use. You can use color constants
 	*/
+  [[deprecated]]
 	void setCharForeground(int x, int y, const TCODColor &col);
 
 	/**
@@ -560,6 +562,7 @@ public :
 		0 <= y < console height
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	*/
+  [[deprecated]]
 	void setChar(int x, int y, int c);
 
 	/**
@@ -585,6 +588,7 @@ public :
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
+  [[deprecated]]
 	void putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
 
 	/**
@@ -606,6 +610,7 @@ public :
 	@Param c the new ASCII code for the cell. You can use ASCII constants
 	@Param fore,back new foreground and background colors for this cell
 	*/
+  [[deprecated]]
 	void putCharEx(int x, int y, int c, const TCODColor &fore, const TCODColor &back);
 
 	/**
@@ -717,6 +722,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print.")]]
   void print(int x, int y, const std::string &str);
   /**
    *  Print a UTF-8 string to the console with specific alignment and blend
@@ -725,6 +731,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print.")]]
   void print(int x, int y, const std::string &str,
              TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag);
   /**
@@ -736,6 +743,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print and tcod::stringf.")]]
   TCODLIB_FORMAT(4, 5)
   void printf(int x, int y, const char *fmt, ...);
   /**
@@ -745,6 +753,7 @@ public :
    *  .. versionadded:: 1.8
    *  \endrst
    */
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print and tcod::stringf.")]]
   TCODLIB_FORMAT(6, 7)
   void printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
               const char *fmt, ...);
@@ -784,6 +793,7 @@ public :
 		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print_rect and tcod::stringf.")]]
   TCODLIB_FORMAT(6, 7)
   int printRect(int x, int y, int w, int h, const char *fmt, ...);
 
@@ -811,6 +821,7 @@ public :
 	@Param alignment defines how the strings are printed on screen.
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print_rect and tcod::stringf.")]]
   TCODLIB_FORMAT(8, 9)
   int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag,
                   TCOD_alignment_t alignment, const char *fmt, ...);
@@ -832,6 +843,7 @@ public :
 		y <= y+h < console height
 	@Param fmt printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string, except in C#.
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::get_height_rect.")]]
   TCODLIB_FORMAT(6, 7)
   int getHeightRect(int x, int y, int w, int h, const char *fmt, ...);
 
@@ -917,25 +929,29 @@ public :
 	@Cpp void TCODConsole::print(int x, int y, const wchar_t *fmt, ...)
 	@C void TCOD_console_print_utf(TCOD_console_t con,int x, int y, const wchar_t *fmt, ...)
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print and tcod::stringf.")]]
 	void print(int x, int y, const wchar_t *fmt, ...);
 	/**
 	@PageName console_print
 	@Cpp void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...)
 	@C void TCOD_console_print_ex_utf(TCOD_console_t con,int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...)
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print and tcod::stringf.")]]
 	void printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
 	/**
 	@PageName console_print
 	@Cpp int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t *fmt, ...)
 	@C int TCOD_console_print_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...)
 	*/
-   	int printRect(int x, int y, int w, int h, const wchar_t *fmt, ...);
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print_rect and tcod::stringf.")]]
+  int printRect(int x, int y, int w, int h, const wchar_t *fmt, ...);
 
 	/**
 	@PageName console_print
 	@Cpp int TCODConsole::printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...)
 	@C int TCOD_console_print_rect_ex_utf(TCOD_console_t con,int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...)
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::print_rect and tcod::stringf.")]]
 	int printRectEx(int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t *fmt, ...);
 
 	/**
@@ -943,6 +959,7 @@ public :
 	@Cpp int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, ...)
 	@C int TCOD_console_get_height_rect_utf(TCOD_console_t con,int x, int y, int w, int h, const wchar_t *fmt, ...)
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::get_height_rect.")]]
 	int getHeightRect(int x, int y, int w, int h, const wchar_t *fmt, ...);
 #endif
 
@@ -974,6 +991,7 @@ public :
 		If false, only the background color is modified
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::draw_rect.")]]
 	void rect(int x, int y, int w, int h, bool clear, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
 
 	/**
@@ -996,6 +1014,7 @@ public :
 	@Param l The length of the line in cells 1 <= l <= console width - x
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::draw_rect.")]]
 	void hline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
 
 	/**
@@ -1018,6 +1037,7 @@ public :
 	@Param l The length of the line in cells 1 <= l <= console height - y
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::draw_rect.")]]
 	void vline(int x,int y, int l, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT);
 
 	/**
@@ -1050,6 +1070,7 @@ public :
 	@Param fmt if NULL, the function only draws a rectangle.
 		Else, printf-like format string, eventually followed by parameters. You can use control codes to change the colors inside the string.
 	*/
+  [[deprecated("TCODConsole methods are deprecated, this call should be replaced with tcod::draw_frame.")]]
 	TCODLIB_FORMAT(8, 9)
 	void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...);
 
@@ -1121,6 +1142,7 @@ public :
 		0 <= x < console width
 		0 <= y < console height
 	*/
+  [[deprecated]]
 	TCODColor getCharBackground(int x, int y) const;
 
 	/**
@@ -1137,6 +1159,7 @@ public :
 		0 <= x < console width
 		0 <= y < console height
 	*/
+  [[deprecated]]
 	TCODColor getCharForeground(int x, int y) const;
 
 	/**
@@ -1153,6 +1176,7 @@ public :
 		0 <= x < console width
 		0 <= y < console height
 	*/
+  [[deprecated]]
 	int getChar(int x, int y) const;
 
 	/**
@@ -1190,6 +1214,7 @@ public :
 			tcod.console.flush()
 		end
 	*/
+  [[deprecated("This function does not support contexts.")]]
 	static void setFade(uint8_t fade, const TCODColor &fadingColor);
 
 	/**
@@ -1228,6 +1253,7 @@ public :
 	@C# static void TCODConsole::flush()
 	@Lua tcod.console.flush()
 	*/
+  [[deprecated("This function does not support contexts.")]]
 	static void flush();
 
 	/**

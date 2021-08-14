@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <libtcod.h>
+#include <libtcod/timer.h>
 
 #include <cmath>
 #include <cstdarg>
@@ -77,18 +78,20 @@ static constexpr auto BLACK = TCODColor{0, 0, 0};
 static constexpr auto WHITE = TCODColor{255, 255, 255};
 static constexpr auto LIGHT_BLUE = TCODColor{63, 63, 255};
 
+static constexpr auto BLACK_ = TCOD_ColorRGB{0, 0, 0};
+static constexpr auto WHITE_ = TCOD_ColorRGB{255, 255, 255};
+static constexpr auto LIGHT_BLUE_ = TCOD_ColorRGB{63, 63, 255};
+
 void initColors() { TCODColor::genMap(mapGradient, nbColorKeys, keyColor, keyIndex); }
 
-void render() {
+void render(TCOD_Console& console, float delta_time) {
   TCODHeightMap backup(HM_WIDTH, HM_HEIGHT);
   isNormalized = true;
-  TCODConsole::root->setDefaultBackground(BLACK);
-  TCODConsole::root->setDefaultForeground(WHITE);
-  TCODConsole::root->clear();
+  for (auto& tile : console) tile = {' ', {255, 255, 255, 255}, {0, 0, 0, 255}};
   backup.copy(hm);
   mapmin = 1E8f;
   mapmax = -1E8f;
-  for (int i = 0; i < HM_WIDTH * HM_HEIGHT; i++) {
+  for (int i = 0; i < HM_WIDTH * HM_HEIGHT; ++i) {
     if (hm->values[i] < 0.0f || hm->values[i] > 1.0f) {
       isNormalized = false;
     }
@@ -97,20 +100,18 @@ void render() {
   }
   if (!isNormalized) backup.normalize();
   // render the TCODHeightMap
-  for (int x = 0; x < HM_WIDTH; x++) {
-    for (int y = 0; y < HM_HEIGHT; y++) {
+  for (int y = 0; y < HM_HEIGHT; ++y) {
+    for (int x = 0; x < HM_WIDTH; ++x) {
       float z = backup.getValue(x, y);
       uint8_t val = (uint8_t)(z * 255);
       if (slope) {
         // render the slope map
         z = CLAMP(0.0f, 1.0f, hm->getSlope(x, y) * 10.0f);
         val = (uint8_t)(z * 255);
-        TCODColor c(val, val, val);
-        TCODConsole::root->setCharBackground(x, y, c);
+        console.at({x, y}).bg = {val, val, val, 255};
       } else if (greyscale) {
         // render the greyscale heightmap
-        TCODColor c(val, val, val);
-        TCODConsole::root->setCharBackground(x, y, c);
+        console.at({x, y}).bg = {val, val, val, 255};
       } else if (normal) {
         // render the normal map
         float n[3];
@@ -118,29 +119,40 @@ void render() {
         uint8_t r = (uint8_t)((n[0] * 0.5f + 0.5f) * 255);
         uint8_t g = (uint8_t)((n[1] * 0.5f + 0.5f) * 255);
         uint8_t b = (uint8_t)((n[2] * 0.5f + 0.5f) * 255);
-        TCODColor c(r, g, b);
-        TCODConsole::root->setCharBackground(x, y, c);
+        console.at({x, y}).bg = {r, g, b, 255};
       } else {
         // render the colored heightmap
-        TCODConsole::root->setCharBackground(x, y, mapGradient[val]);
+        console.at({x, y}).bg = {mapGradient[val].r, mapGradient[val].g, mapGradient[val].b, 255};
       }
     }
   }
   snprintf(minZTxt, sizeof(minZTxt), "min z    : %.2f", mapmin);
   snprintf(maxZTxt, sizeof(maxZTxt), "max z    : %.2f", mapmax);
   snprintf(seedTxt, sizeof(seedTxt), "seed     : %X", seed);
-  float landProportion = 100.0f - 100.0f * backup.countCells(0.0f, sandHeight) / (hm->w * hm->h);
+  const float landProportion = 100.0f - 100.0f * backup.countCells(0.0f, sandHeight) / (hm->w * hm->h);
   snprintf(landMassTxt, sizeof(landMassTxt), "landMass : %d %%", (int)landProportion);
-  if (!isNormalized)
-    TCODConsole::root->printf(HM_WIDTH / 2, HM_HEIGHT - 1, TCOD_BKGND_NONE, TCOD_CENTER, "the map is not normalized !");
+  if (!isNormalized) {
+    tcod::print(
+        console,
+        {HM_WIDTH / 2, HM_HEIGHT - 1},
+        "the map is not normalized !",
+        &WHITE_,
+        nullptr,
+        TCOD_BKGND_SET,
+        TCOD_CENTER);
+  }
   // message
-  msgDelay -= TCODSystem::getLastFrameLength();
+  msgDelay -= delta_time;
   if (msg.size() && msgDelay > 0.0f) {
-    int h = TCODConsole::root->printRectEx(
-        HM_WIDTH / 2, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 2, 0, TCOD_BKGND_NONE, TCOD_CENTER, "%s", msg.c_str());
-    TCODConsole::root->setDefaultBackground(LIGHT_BLUE);
-    if (h > 0) TCODConsole::root->rect(HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, h + 2, false, TCOD_BKGND_SET);
-    TCODConsole::root->setDefaultBackground(BLACK);
+    const int msg_height = tcod::print_rect(
+        console,
+        {HM_WIDTH / 4 + 1, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 1, 0},
+        msg,
+        &WHITE_,
+        nullptr,
+        TCOD_BKGND_SET,
+        TCOD_CENTER);
+    tcod::draw_rect(console, {HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, msg_height + 2}, 0, nullptr, &LIGHT_BLUE_);
   }
 }
 
@@ -152,8 +164,8 @@ void message(float delay, const char* fmt, T... args) {
 
 void backup() {
   // save the heightmap & RNG states
-  for (int x = 0; x < HM_WIDTH; x++) {
-    for (int y = 0; y < HM_HEIGHT; y++) {
+  for (int y = 0; y < HM_HEIGHT; ++y) {
+    for (int x = 0; x < HM_WIDTH; ++x) {
       hm_old->setValue(x, y, hm->getValue(x, y));
     }
   }
@@ -166,8 +178,8 @@ void backup() {
 
 void restore() {
   // restore the previously saved heightmap & RNG states
-  for (int x = 0; x < HM_WIDTH; x++) {
-    for (int y = 0; y < HM_HEIGHT; y++) {
+  for (int y = 0; y < HM_HEIGHT; ++y) {
+    for (int x = 0; x < HM_WIDTH; ++x) {
       hm->setValue(x, y, hm_old->getValue(x, y));
     }
   }
@@ -187,14 +199,14 @@ void load() {
 }
 
 void addHill(int nbHill, float baseRadius, float radiusVar, float height) {
-  for (int i = 0; i < nbHill; i++) {
-    float hillMinRadius = baseRadius * (1.0f - radiusVar);
-    float hillMaxRadius = baseRadius * (1.0f + radiusVar);
-    float radius = rnd->getFloat(hillMinRadius, hillMaxRadius);
-    float theta = rnd->getFloat(0.0f, 6.283185f);  // between 0 and 2Pi
-    float dist = rnd->getFloat(0.0f, (float)MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);
-    int xh = (int)(HM_WIDTH / 2 + cos(theta) * dist);
-    int yh = (int)(HM_HEIGHT / 2 + sin(theta) * dist);
+  for (int i = 0; i < nbHill; ++i) {
+    const float hillMinRadius = baseRadius * (1.0f - radiusVar);
+    const float hillMaxRadius = baseRadius * (1.0f + radiusVar);
+    const float radius = rnd->getFloat(hillMinRadius, hillMaxRadius);
+    const float theta = rnd->getFloat(0.0f, 6.283185f);  // between 0 and 2Pi
+    const float dist = rnd->getFloat(0.0f, (float)MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);
+    const int xh = (int)(HM_WIDTH / 2 + cos(theta) * dist);
+    const int yh = (int)(HM_HEIGHT / 2 + sin(theta) * dist);
     hm->addHill((float)xh, (float)yh, radius, height);
   }
 }
@@ -470,11 +482,21 @@ void buildGui() {
 }
 
 int main(int argc, char* argv[]) {
+  TCOD_ContextParams context_params{};
+  context_params.tcod_version = SDL_COMPILEDVERSION;
+  context_params.columns = HM_WIDTH;
+  context_params.rows = HM_HEIGHT;
+  context_params.argc = argc;
+  context_params.argv = argv;
+  context_params.vsync = true;
+  context_params.window_title = "height map tool";
+  context_params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+
   TCODConsole::initRoot(HM_WIDTH, HM_HEIGHT, "height map tool", false, TCOD_RENDERER_OPENGL2);
   guicon = new TCODConsole(HM_WIDTH, HM_HEIGHT);
   guicon->setKeyColor(TCODColor(255, 0, 255));
   Widget::setConsole(guicon);
-  TCODSystem::setFps(25);
+  int desired_fps = 25;
   initColors();
   buildGui();
   hm = new TCODHeightMap(HM_WIDTH, HM_HEIGHT);
@@ -483,14 +505,18 @@ int main(int argc, char* argv[]) {
   noise = new TCODNoise(2, rnd);
   uint8_t fade = 50;
   bool creditsEnd = false;
+  auto timer = tcod::Timer();
 
-  while (!TCODConsole::isWindowClosed()) {
-    render();
+  while (true) {
+    auto context = TCOD_sys_get_internal_context();
+    auto console = TCOD_sys_get_internal_console();
+    const float delta_time = timer.sync(desired_fps);
+    render(*console, delta_time);
     guicon->setDefaultBackground(TCODColor(255, 0, 255));
     guicon->clear();
     Widget::renderWidgets();
     if (!creditsEnd) {
-      creditsEnd = TCODConsole::renderCredits(HM_WIDTH - 20, HM_HEIGHT - 7, true);
+      creditsEnd = TCOD_console_credits_render_ex(console, HM_WIDTH - 20, HM_HEIGHT - 7, true, delta_time);
     }
     if (Widget::focus) {
       if (fade < 200) fade += 20;
@@ -498,29 +524,38 @@ int main(int argc, char* argv[]) {
       if (fade > 80) fade -= 20;
     }
     TCODConsole::blit(guicon, 0, 0, HM_WIDTH, HM_HEIGHT, TCODConsole::root, 0, 0, fade / 255.0f, fade / 255.0f);
-    TCODConsole::flush();
-    TCOD_key_t key;
-    TCOD_mouse_t mouse;
-    TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE, &key, &mouse);
-    Widget::updateWidgets(key, mouse);
-    switch (key.c) {
-      case '+':
-        (new AddLevelOperation((mapmax - mapmin) / 50))->run();
-        break;
-      case '-':
-        (new AddLevelOperation(-(mapmax - mapmin) / 50))->run();
-        break;
-      default:
-        break;
-    }
-    switch (key.vk) {
-      case TCODK_PRINTSCREEN:
-        TCODSystem::saveScreenshot(NULL);
-        break;
-      default:
-        break;
+    context->present(*console);
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      TCOD_key_t key{};
+      TCOD_mouse_t mouse{};
+      tcod::sdl2::process_event(event, key);
+      tcod::sdl2::process_event(event, mouse);
+      Widget::updateWidgets(key, mouse);
+      switch (event.type) {
+        case SDL_QUIT:
+          std::exit(EXIT_SUCCESS);
+          break;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.sym) {
+            case SDLK_MINUS:
+              (new AddLevelOperation(-(mapmax - mapmin) / 50))->run();
+              break;
+            case SDLK_EQUALS:
+              (new AddLevelOperation((mapmax - mapmin) / 50))->run();
+              break;
+            case SDLK_PRINTSCREEN:
+              context->save_screenshot(nullptr);
+              break;
+            default:
+              break;
+          }
+          break;
+        default:
+          break;
+      }
     }
   }
-
   return 0;
 }

@@ -171,7 +171,6 @@ void render(TCOD_Console& console) {
       // a true light model would multiply the light color with the cell color
       const TCODColor leftLight = leftShader->getLightColor(x, y);
       const TCODColor cellLeftCol = TCODColor::lerp(darkCol, lightCol, gammaLookup[leftLight.r] / 255.0f);
-      TCODConsole::root->setCharBackground(x, y, cellLeftCol);
       console.at(x, y).bg = {cellLeftCol.r, cellLeftCol.g, cellLeftCol.b, 255};
 
       // render right map

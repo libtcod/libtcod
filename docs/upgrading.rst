@@ -28,6 +28,35 @@ You can switch away from :any:`TCOD_console_set_custom_font` before using contex
     // This is deprecated, but will work with the above tileset.
     TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);
 
+Using the new console functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There is less state with the new functions.
+Instead of setting colors before calling the print functions you now pass the colors and flags needed for each print call.
+
+.. code-block:: cpp
+
+  static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+
+  TCODConsole* console = new TCODConsole(80, 25);  // Deprecated.
+
+  tcod::print(
+    static_cast<TCOD_Console&>(*console),  // TCODConsole& can be static cast to TCOD_Console&.
+    {0, 0},  // Coordinates are passed together.
+    tcod::stringf("%s %s", "Hello", "world"),  // Printf-like strings are encapsulated in tcod::stringf.
+    &WHITE,  // Colors are passed by pointer, this is so that you can pass nullptr.
+    nullptr,  // Passing nullptr here leaves the background color unchanged.
+  )
+
+  TCOD_ColorRGB bg = TCOD_console_get_char_background(TCODConsole::root->get_data());
+  tcod::draw_rect(
+    static_cast<TCOD_Console&>(*TCODConsole::root),  // This cast also works with TCODConsole::root.
+    {0, 0, 20, 1},  // {left, top, width, height}
+    0x2500,  // "─" BOX DRAWINGS LIGHT HORIZONTAL.  Unicode is expected for character codes.
+    &WHITE,
+    &bg,
+  )
+
 Adapting to contexts and a rootless console
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

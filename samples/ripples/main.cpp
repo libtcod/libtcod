@@ -27,12 +27,15 @@
 
 #include <SDL.h>
 #include <libtcod.h>
+#include <libtcod/timer.h>
 
 #include <algorithm>
 #include <array>
 #include <memory>
 
 #include "util_ripples.hpp"
+
+static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
 
 TCODNoise noise2d(2);
 TCODNoise noise3d(3);
@@ -68,28 +71,34 @@ static constexpr std::array<TCODColor, MAX_COLOR_KEY> keyColor{
     TCODColor(255, 255, 255),
 };
 
-void update(float elapsed, TCOD_key_t, TCOD_mouse_t mouse) {
-  if (mouse.lbutton) rippleManager->startRipple(mouse.cx * 2, mouse.cy * 2);
-  rippleManager->updateRipples(elapsed);
-}
-
-void render() {
+void render(TCOD_Console& console) {
   // copy ground into ground_with_ripples. damn libtcod should have that...
-  for (int x = 0; x < CON_W * 2; ++x) {
-    for (int y = 0; y < CON_H * 2; ++y) {
+  for (int y = 0; y < CON_H * 2; ++y) {
+    for (int x = 0; x < CON_W * 2; ++x) {
       ground_with_ripples->putPixel(x, y, ground->getPixel(x, y));
     }
   }
   rippleManager->renderRipples(ground.get(), ground_with_ripples.get());
-  ground_with_ripples->blit2x(TCODConsole::root, 0, 0);
-  TCODConsole::root->setDefaultForeground({255, 255, 255});
-  TCODConsole::root->printf(3, 49, "Click in water to trigger ripples");
+  tcod::draw_quartergraphics(console, *ground_with_ripples);
+  tcod::print(console, {3, 49}, "Click in water to trigger ripples", &WHITE, nullptr);
 }
 
 int main(int argc, char* argv[]) {
   // initialize the game window
-  TCODConsole::initRoot(CON_W, CON_H, "Water ripples", false, TCOD_RENDERER_OPENGL2);
-  TCODSystem::setFps(25);
+  TCOD_ContextParams params{};
+  params.tcod_version = SDL_COMPILEDVERSION;
+  params.argc = argc;
+  params.argv = argv;
+  params.columns = CON_W;
+  params.rows = CON_H;
+  params.vsync = true;
+  params.window_title = "Water ripples";
+  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+
+  auto context = tcod::new_context(params);
+  auto console = tcod::new_console({{CON_W, CON_H}});
+
+  int desired_fps = 25;
 
   bool endCredits = false;
 
@@ -104,8 +113,8 @@ int main(int argc, char* argv[]) {
   // create a TCODMap defining water zones. Walkable = water
   TCODMap waterMap(CON_W * 2, CON_H * 2);
 
-  for (int x = 0; x < CON_W * 2; ++x) {
-    for (int y = 0; y < CON_H * 2; ++y) {
+  for (int y = 0; y < CON_H * 2; ++y) {
+    for (int x = 0; x < CON_W * 2; ++x) {
       const float h = hm.getValue(x, y);
       const bool isWater = h < sandHeight;
       waterMap.setProperties(x, y, isWater, isWater);
@@ -115,30 +124,48 @@ int main(int argc, char* argv[]) {
   }
   rippleManager = std::make_unique<RippleManager>(&waterMap);
 
-  while (!TCODConsole::isWindowClosed()) {
-    TCOD_key_t k;
-    TCOD_mouse_t mouse;
+  auto timer = tcod::Timer();
+  while (true) {
+    const float delta_time = timer.sync(desired_fps);
 
-    TCODSystem::checkForEvent(TCOD_EVENT_KEY | TCOD_EVENT_MOUSE, &k, &mouse);
-
-    if (k.vk == TCODK_PRINTSCREEN) {
-      // screenshot
-      if (!k.pressed) TCODSystem::saveScreenshot(NULL);
-      k.vk = TCODK_NONE;
-    } else if (k.lalt && (k.vk == TCODK_ENTER || k.vk == TCODK_KPENTER)) {
-      // switch fullscreen
-      if (!k.pressed) TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-      k.vk = TCODK_NONE;
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      context->convert_event_coordinates(event);
+      switch (event.type) {
+        case SDL_QUIT:
+          std::exit(EXIT_SUCCESS);
+          break;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.sym) {
+            case SDLK_PRINTSCREEN:
+              context->save_screenshot(nullptr);
+              break;
+            default:
+              break;
+          }
+          break;
+        case SDL_MOUSEMOTION:
+          if (event.motion.state & SDL_BUTTON_LMASK) {
+            rippleManager->startRipple(event.motion.x * 2, event.motion.y * 2);
+          }
+          break;
+        case SDL_MOUSEBUTTONDOWN:
+          if (event.button.button == SDL_BUTTON_LEFT) {
+            rippleManager->startRipple(event.button.x * 2, event.button.y * 2);
+          }
+          break;
+        default:
+          break;
+      }
     }
-    // update the game
-    update(TCODSystem::getLastFrameLength(), k, mouse);
+    rippleManager->updateRipples(delta_time);
 
     // render the game screen
-    render();
+    render(*console);
     // render libtcod credits
-    if (!endCredits) endCredits = TCODConsole::renderCredits(4, 4, true);
+    if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    TCODConsole::root->flush();
+    context->present(*console);
   }
   return 0;
 }

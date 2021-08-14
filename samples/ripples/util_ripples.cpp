@@ -24,10 +24,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
+#include <SDL.h>
 
 #include <algorithm>
+#include <cstdlib>
+#include <cstring>
 
 // windows specific inclusion of alloca
 // all other platforms have alloca in stdlib.h
@@ -57,8 +58,8 @@ RippleManager::RippleManager(TCODMap* waterMap) : width{waterMap->getWidth()}, h
   zone.cumulatedElapsed = 0.0f;
   zone.isActive = false;
   zone.data = std::vector<float>(width * height);
-  for (int dx = 0; dx < width; ++dx) {
-    for (int dy = 0; dy < height; ++dy) {
+  for (int dy = 0; dy < height; ++dy) {
+    for (int dx = 0; dx < width; ++dx) {
       const float value = waterMap->isWalkable(dx, dy) ? 0.0f : NO_WATER;
       // set water height to 0.0, not water cells to -1000
       zone.data[dx + dy * width] = value;
@@ -69,6 +70,7 @@ RippleManager::RippleManager(TCODMap* waterMap) : width{waterMap->getWidth()}, h
 
 void RippleManager::startRipple(int x, int y) {
   // look for the water zone
+  if (!(0 <= x && x < width && 0 <= y && y < height)) return;
   const int offset = x + y * width;
   if (zone.data[offset] != NO_WATER) {
     zone.data[offset] = -RIPPLE_TRIGGER;
@@ -84,8 +86,8 @@ bool RippleManager::updateRipples(float elapsed) {
     zone.cumulatedElapsed = 0.0f;
     // swap grids
     std::swap(zone.data, zone.oldData);
-    for (int zx2 = 1; zx2 < width - 1; ++zx2) {
-      for (int zy2 = 1; zy2 < height - 1; ++zy2) {
+    for (int zy2 = 1; zy2 < height - 1; ++zy2) {
+      for (int zx2 = 1; zx2 < width - 1; ++zx2) {
         const int offset = zx2 + zy2 * width;
         if (zone.data[offset] != NO_WATER) {
           float sum = 0.0f;
@@ -122,9 +124,9 @@ bool RippleManager::updateRipples(float elapsed) {
 }
 
 void RippleManager::renderRipples(const TCODImage* ground, TCODImage* groundWithRipples) {
-  const float elCoef = TCODSystem::getElapsedSeconds() * 2.0f;
-  for (int x = 1; x < width - 1; ++x) {
-    for (int y = 1; y < height - 1; ++y) {
+  const float elCoef = SDL_GetTicks() / 1000.0f * 2.0f;
+  for (int y = 1; y < height - 1; ++y) {
+    for (int x = 1; x < width - 1; ++x) {
       if (getData(x, y) != NO_WATER) {
         float xOffset = (getData(x - 1, y) - getData(x + 1, y));
         const float yOffset = (getData(x, y - 1) - getData(x, y + 1));

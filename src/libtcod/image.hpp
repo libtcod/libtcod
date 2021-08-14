@@ -489,4 +489,34 @@ protected :
 	struct TCOD_Image *data;
 	bool deleteData;
 };
+// clang-format on
+namespace tcod {
+/***************************************************************************
+    @brief Render an image to a console using quadrant semigraphics.
+
+    @param dest The destination TCOD_Console reference.
+    @param source The image to be used as a source.
+    @param dest_xy The top-left position of the console to draw at.
+    @param src_rect The region of the source image to render.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+inline void draw_quartergraphics(
+    TCOD_Console& dest,
+    TCODImage& source,
+    const std::array<int, 2>& dest_xy = {0, 0},
+    const std::array<int, 4>& src_rect = {0, 0, -1, -1}) {
+  TCOD_image_blit_2x(
+      source.get_data(),
+      &dest,
+      dest_xy.at(0),
+      dest_xy.at(1),
+      src_rect.at(0),
+      src_rect.at(1),
+      src_rect.at(2),
+      src_rect.at(3));
+}
+}  // namespace tcod
 #endif /* _TCOD_IMAGE_HPP */

@@ -32,6 +32,7 @@
 #include <stdlib.h> /* calloc */
 #include <string.h> /* NULL/memcpy */
 
+#include "error.h"
 #include "list.h"
 #include "utility.h"
 /**
@@ -209,13 +210,13 @@ void TCOD_list_reverse(TCOD_list_t l) {
  *  Remove an item from the list and return a new iterator.
  */
 void** TCOD_list_remove_iterator(TCOD_list_t l, void** elt) {
-  void** curElt;
-  for (curElt = elt; curElt < TCOD_list_end(l) - 1; ++curElt) {
+  for (void** curElt = elt; curElt < TCOD_list_end(l) - 1; ++curElt) {
     *curElt = *(curElt + 1);
   }
   l->fillSize--;
   if (l->fillSize == 0) {
-    return ((void**)NULL) - 1;
+    TCOD_set_errorv("The list is empty.");
+    return NULL;
   } else {
     return elt - 1;
   }
@@ -224,8 +225,7 @@ void** TCOD_list_remove_iterator(TCOD_list_t l, void** elt) {
  *  Remove an item from the list.
  */
 void TCOD_list_remove(TCOD_list_t l, const void* elt) {
-  void** curElt;
-  for (curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
+  for (void** curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
     if (*curElt == elt) {
       TCOD_list_remove_iterator(l, curElt);
       return;
@@ -242,7 +242,8 @@ void** TCOD_list_remove_iterator_fast(TCOD_list_t l, void** elt) {
   *elt = l->array[l->fillSize - 1];
   l->fillSize--;
   if (l->fillSize == 0) {
-    return ((void**)NULL) - 1;
+    TCOD_set_errorv("The list is empty.");
+    return NULL;
   } else {
     return elt - 1;
   }

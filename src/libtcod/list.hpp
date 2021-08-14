@@ -590,14 +590,14 @@ public :
 			*curElt = *(curElt+1);
 		}
 		fillSize--;
-		if ( fillSize == 0 ) return ((T *)NULL)-1;
-		else return elt-1;
+		if (fillSize == 0) return NULL;
+		else return elt - 1;
 	}
 	T *removeFast(T *elt) {
 		*elt = array[fillSize-1];
 		fillSize--;
-		if ( fillSize == 0 ) return ((T *)NULL)-1;
-		else return elt-1;
+		if (fillSize == 0) return NULL;
+		else return elt - 1;
 	}
 
 	TCODList<T> & operator = (TCODList<T> const & l2) {

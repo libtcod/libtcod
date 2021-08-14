@@ -1860,14 +1860,23 @@ public :
   static const char* getColorControlString(TCOD_colctrl_t ctrl);
   // ctrl = TCOD_COLCTRL_FORE_RGB or TCOD_COLCTRL_BACK_RGB
   static const char* getRGBColorControlString(TCOD_colctrl_t ctrl, const TCODColor& col);
-  /**
-   *  Return a pointer to the underlying TCOD_Console struct.
-   *  \rst
-   *  .. versionadded:: 1.14
-   *  \endrst
+  /***************************************************************************
+      Return a pointer to the underlying TCOD_Console struct.
+      \rst
+      .. versionadded:: 1.14
+
+      .. versionchanged:: 1.19
+          This now returns a non-NULL pointer to the root console.
+      \endrst
    */
-  TCOD_Console* get_data() noexcept { return data; }
-  const TCOD_Console* get_data() const noexcept { return data; }
+  TCOD_Console* get_data() noexcept {
+    if (!data) return TCOD_sys_get_internal_console();
+    return data;
+  }
+  const TCOD_Console* get_data() const noexcept {
+    if (!data) return TCOD_sys_get_internal_console();
+    return data;
+  }
   /***************************************************************************
       @brief Convert this TCODConsole into a TCOD_Console reference.
    */

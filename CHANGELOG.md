@@ -21,6 +21,7 @@ since `1.7.0`.
 ### Changed
 - Initializing libtcod with the old API will now enable VSync by default.
   You can set the environment variable `TCOD_VSYNC=0` to disable this or use the new API where VSync is a setting.
+- `TCODConsole::get_data` now returns a non-NULL pointer to the root console.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

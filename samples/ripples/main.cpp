@@ -78,12 +78,13 @@ void render(TCOD_Console& console) {
       ground_with_ripples->putPixel(x, y, ground->getPixel(x, y));
     }
   }
-  rippleManager->renderRipples(ground.get(), ground_with_ripples.get());
+  rippleManager->renderRipples(*ground, *ground_with_ripples);
   tcod::draw_quartergraphics(console, *ground_with_ripples);
   tcod::print(console, {3, 49}, "Click in water to trigger ripples", &WHITE, nullptr);
 }
 
 int main(int argc, char* argv[]) {
+  auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   // initialize the game window
   TCOD_ContextParams params{};
   params.tcod_version = SDL_COMPILEDVERSION;
@@ -94,11 +95,10 @@ int main(int argc, char* argv[]) {
   params.vsync = true;
   params.window_title = "Water ripples";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+  params.tileset = tileset.get();
 
   auto context = tcod::new_context(params);
   auto console = tcod::new_console({{CON_W, CON_H}});
-
-  int desired_fps = 25;
 
   bool endCredits = false;
 
@@ -122,11 +122,11 @@ int main(int argc, char* argv[]) {
       ground->putPixel(x, y, mapGradient[ih]);
     }
   }
-  rippleManager = std::make_unique<RippleManager>(&waterMap);
+  rippleManager = std::make_unique<RippleManager>(waterMap);
 
   auto timer = tcod::Timer();
   while (true) {
-    const float delta_time = timer.sync(desired_fps);
+    const float delta_time = timer.sync();
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {

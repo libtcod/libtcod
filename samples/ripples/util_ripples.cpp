@@ -52,7 +52,7 @@ static constexpr auto RIPPLE_TRIGGER = 3.0f;
 // how many times ripples are updated per second
 static constexpr auto RIPPLE_FPS = 10;
 
-RippleManager::RippleManager(TCODMap* waterMap) : width{waterMap->getWidth()}, height{waterMap->getHeight()} {
+RippleManager::RippleManager(const TCODMap& waterMap) : width{waterMap.getWidth()}, height{waterMap.getHeight()} {
   std::vector<bool> visited(width * height);
   // first time : compute water zones
   zone.cumulatedElapsed = 0.0f;
@@ -60,7 +60,7 @@ RippleManager::RippleManager(TCODMap* waterMap) : width{waterMap->getWidth()}, h
   zone.data = std::vector<float>(width * height);
   for (int dy = 0; dy < height; ++dy) {
     for (int dx = 0; dx < width; ++dx) {
-      const float value = waterMap->isWalkable(dx, dy) ? 0.0f : NO_WATER;
+      const float value = waterMap.isWalkable(dx, dy) ? 0.0f : NO_WATER;
       // set water height to 0.0, not water cells to -1000
       zone.data[dx + dy * width] = value;
     }
@@ -123,7 +123,7 @@ bool RippleManager::updateRipples(float elapsed) {
   return zone.isActive;
 }
 
-void RippleManager::renderRipples(const TCODImage* ground, TCODImage* groundWithRipples) {
+void RippleManager::renderRipples(const TCODImage& ground, TCODImage& groundWithRipples) {
   const float elCoef = SDL_GetTicks() / 1000.0f * 2.0f;
   for (int y = 1; y < height - 1; ++y) {
     for (int x = 1; x < width - 1; ++x) {
@@ -133,9 +133,9 @@ void RippleManager::renderRipples(const TCODImage* ground, TCODImage* groundWith
         const float f[3] = {static_cast<float>(x), static_cast<float>(y), elCoef};
         xOffset += noise3d.get(f, TCOD_NOISE_SIMPLEX) * 0.3f;
         if (std::abs(xOffset) < 250 && std::abs(yOffset) < 250) {
-          TCODColor col = ground->getPixel(x + static_cast<int>(xOffset), y + static_cast<int>(yOffset));
+          TCODColor col = ground.getPixel(x + static_cast<int>(xOffset), y + static_cast<int>(yOffset));
           col = col + TCODColor{255, 255, 255} * xOffset * 0.1f;
-          groundWithRipples->putPixel(x, y, col);
+          groundWithRipples.putPixel(x, y, col);
         }
       }
     }

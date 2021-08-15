@@ -34,10 +34,10 @@ struct WaterZone {
 
 class RippleManager {
  public:
-  RippleManager(TCODMap* waterMap);
+  RippleManager(const TCODMap& waterMap);
   void startRipple(int dungeon_x, int dungeon_y);
   bool updateRipples(float elapsed);
-  void renderRipples(const TCODImage* ground, TCODImage* groundWithRipples);
+  void renderRipples(const TCODImage& ground, TCODImage& groundWithRipples);
 
  private:
   int width, height;

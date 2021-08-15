@@ -111,7 +111,7 @@ Libtcod's event systems have been deprecated in favor of using `SDL2`_ directly 
   while (true) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      // context->convert_event_coordinates(event);  // Optional, converts ALL pixel coordinates into tile coordinates.
+      // context->convert_event_coordinates(event);  // Optional, converts mouse pixel coordinates into tile coordinates.
       switch (event.type) {
         case SDL_QUIT:
           std::exit(EXIT_SUCCESS);

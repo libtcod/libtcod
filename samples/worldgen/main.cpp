@@ -128,21 +128,20 @@ void render(TCOD_Console& console) {
 
 int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+  auto console = tcod::new_console({{WIDTH, HEIGHT}});
 
   // initialize the game window
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
-  params.columns = WIDTH;
-  params.rows = HEIGHT;
+  params.console = console.get();
   params.vsync = true;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
   params.window_title = "World generator";
   params.tileset = tileset.get();
 
   auto context = tcod::new_context(params);
-  auto console = tcod::new_console({{WIDTH, HEIGHT}});
 
   int desired_fps = 0;
 

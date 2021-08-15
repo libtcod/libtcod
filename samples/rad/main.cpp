@@ -221,8 +221,7 @@ int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
-  params.columns = console->w;
-  params.rows = console->h;
+  params.console = console.get();
   params.tileset = tileset.get();
   params.vsync = true;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;

@@ -85,20 +85,19 @@ void render(TCOD_Console& console) {
 
 int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+  auto console = tcod::new_console({{CON_W, CON_H}});
   // initialize the game window
   TCOD_ContextParams params{};
   params.tcod_version = SDL_COMPILEDVERSION;
   params.argc = argc;
   params.argv = argv;
-  params.columns = CON_W;
-  params.rows = CON_H;
+  params.console = console.get();
   params.vsync = true;
   params.window_title = "Water ripples";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
   params.tileset = tileset.get();
 
   auto context = tcod::new_context(params);
-  auto console = tcod::new_console({{CON_W, CON_H}});
 
   bool endCredits = false;
 

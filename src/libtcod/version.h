@@ -76,5 +76,13 @@
     \endrst
  */
 #define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
+/***************************************************************************
+    @brief Returns true if the compiled version of libtcod is at least (major, minor).
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+#define TCOD_VERSION_ATLEAST(major, minor) (TCOD_COMPILEDVERSION >= TCOD_VERSIONNUM(major, minor, 0))
 
 #endif /* LIBTCOD_VERSION_H */

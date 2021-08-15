@@ -1631,8 +1631,7 @@ int main(int argc, char* argv[]) {
   if (!main_console) fatal("Could not allocate console: %s", TCOD_get_error());
   TCOD_ContextParams params = {
       .tcod_version = TCOD_COMPILEDVERSION,
-      .columns = main_console->w,
-      .rows = main_console->h,
+      .console = main_console,
       .window_title = "libtcod C sample",
       .sdl_window_flags = SDL_WINDOW_RESIZABLE,
       .renderer_type = TCOD_RENDERER_SDL2,

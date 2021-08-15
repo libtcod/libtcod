@@ -66,6 +66,8 @@ typedef struct TCOD_ContextParams {
   /**
       `columns` and `rows` are the desired size of the terminal window.
       Usually you'll set either these or the pixel resolution.
+
+      If you are setting these values from a TCOD_Console then you should set the console attribute instead.
    */
   int columns, rows;
   /**
@@ -125,6 +127,15 @@ typedef struct TCOD_ContextParams {
       assumed to be undefined and will be changed to `SDL_WINDOWPOS_UNDEFINED`.
    */
   bool window_xy_defined;
+  /***************************************************************************
+      @brief A console to be used as a reference for the desired window size.
+      This can set as an alternative to the columns and rows attributes.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  TCOD_Console* console;
 } TCOD_ContextParams;
 #ifdef __cplusplus
 extern "C" {

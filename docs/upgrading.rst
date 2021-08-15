@@ -177,8 +177,7 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
 
       TCOD_ContextParams params{};
       params.tcod_version = TCOD_COMPILEDVERSION;
-      params.columns = root_console->w;
-      params.rows = root_console->h;
+      params.console = root_console.get();
       params.window_title = "Window title";
       params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
       params.vsync = true;

@@ -155,12 +155,105 @@ static const char TCOD_help_msg[] =
     Return true if an arg variable is "-name" or "--name".
  */
 #define TCOD_CHECK_ARGUMENT(arg, name) (strcmp((arg), ("-" name)) == 0 || strcmp((arg), ("--" name)) == 0)
+/***************************************************************************
+    @brief Parse context parameters and output to a fully defined struct.
+ */
+static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_ContextParams* out) {
+  *out = (TCOD_ContextParams){
+      .tcod_version = in->tcod_version,
+      .window_x = in->window_x,
+      .window_y = in->window_y,
+      .pixel_width = in->pixel_width,
+      .pixel_height = in->pixel_height,
+      .columns = in->columns,
+      .rows = in->rows,
+      .renderer_type = in->renderer_type,
+      .tileset = in->tileset,
+      .vsync = in->vsync,
+      .sdl_window_flags = in->sdl_window_flags,
+      .window_title = in->window_title,
+      .argc = in->argc,
+      .argv = in->argv,
+      .cli_output = in->cli_output,
+      .cli_userdata = in->cli_userdata,
+      .window_xy_defined = in->window_xy_defined,
+      .console = (in->tcod_version >= TCOD_VERSIONNUM(1, 19, 0) ? in->console : NULL),
+  };
+  if (!out->window_xy_defined) {
+    if (!out->window_x) out->window_x = (int)SDL_WINDOWPOS_UNDEFINED;
+    if (!out->window_y) out->window_y = (int)SDL_WINDOWPOS_UNDEFINED;
+  }
+  get_env_renderer(&out->renderer_type);
+  get_env_vsync(&out->vsync);
+
+  // Parse CLI arguments.
+  for (int i = 0; i < out->argc; ++i) {
+    if (strcmp(out->argv[i], "-?") == 0 || strcmp(out->argv[i], "-h") == 0 ||
+        TCOD_CHECK_ARGUMENT(out->argv[i], "help")) {
+      return send_to_cli_out(out, "%s", TCOD_help_msg);
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "windowed")) {
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+      out->sdl_window_flags |= SDL_WINDOW_RESIZABLE;
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "exclusive-fullscreen")) {
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+      out->sdl_window_flags |= SDL_WINDOW_FULLSCREEN;
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "fullscreen")) {
+      out->sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+      out->sdl_window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "vsync")) {
+      out->vsync = 1;
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "no-vsync")) {
+      out->vsync = 0;
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "width")) {
+      if (++i < out->argc) {
+        out->pixel_width = atoi(out->argv[i]);
+      } else {
+        return send_to_cli_out(out, "Width must be given a number.");
+      }
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "height")) {
+      if (++i < out->argc) {
+        out->pixel_height = atoi(out->argv[i]);
+      } else {
+        TCOD_set_error("Height must be given a number.");
+        return send_to_cli_out(out, "Height must be given a number.");
+      }
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "renderer")) {
+      if (++i < out->argc && get_renderer_from_str(out->argv[i]) >= 0) {
+        out->renderer_type = get_renderer_from_str(out->argv[i]);
+      } else {
+        TCOD_set_error("Renderer should be one of [sdl|sdl2|opengl|opengl2]");
+        return send_to_cli_out(out, "Renderer should be one of [sdl|sdl2|opengl|opengl2]");
+      }
+    } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "resolution")) {
+      if (++i < out->argc && sscanf(out->argv[i], "%dx%d", &out->pixel_width, &out->pixel_height) == 2) {
+      } else {
+        return send_to_cli_out(out, "Resolution argument should be in the format: <width>x<height>");
+      }
+    }
+  }
+  TCOD_Error err = ensure_tileset(&out->tileset);
+  if (err < 0) return err;
+  if (out->pixel_width < 0 || out->pixel_height < 0) {
+    TCOD_set_errorvf("Width and height must be non-negative. Not %i,%i", out->pixel_width, out->pixel_height);
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (out->columns <= 0) out->columns = 80;
+  if (out->rows <= 0) out->rows = 24;
+  if (out->console) {
+    out->columns = out->console->w;
+    out->rows = out->console->h;
+  }
+  if (out->pixel_width <= 0) out->pixel_width = out->columns * out->tileset->tile_width;
+  if (out->pixel_height <= 0) out->pixel_height = out->rows * out->tileset->tile_height;
+  return TCOD_E_OK;
+}
+
 /**
     Create a new context while filling incomplete values as needed and
     unpacking values from the envrionment and the command line.
  */
-TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out) {
-  if (!params) {
+TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** out) {
+  if (!params_in) {
     TCOD_set_errorv("Params must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
@@ -168,105 +261,25 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     TCOD_set_errorv("Output must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  // Covert ambiguously undefined window coordinates to SDL_WINDOWPOS_UNDEFINED.
-  const int window_x =
-      (params->window_x || params->window_xy_defined) ? params->window_x : (int)SDL_WINDOWPOS_UNDEFINED;
-  const int window_y =
-      (params->window_y || params->window_xy_defined) ? params->window_y : (int)SDL_WINDOWPOS_UNDEFINED;
-  // These values may be modified.
-  int pixel_width = params->pixel_width;
-  int pixel_height = params->pixel_height;
-  int columns = params->columns;
-  int rows = params->rows;
-  int renderer_type = params->renderer_type;
-  int vsync = params->vsync;
-  int sdl_window_flags = params->sdl_window_flags;
-  TCOD_Tileset* tileset = params->tileset;
-
-  get_env_renderer(&renderer_type);
-  get_env_vsync(&vsync);
-
-  // Parse CLI arguments.
-  for (int i = 0; i < params->argc; ++i) {
-    if (strcmp(params->argv[i], "-?") == 0 || strcmp(params->argv[i], "-h") == 0 ||
-        TCOD_CHECK_ARGUMENT(params->argv[i], "help")) {
-      return send_to_cli_out(params, "%s", TCOD_help_msg);
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "windowed")) {
-      sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
-      sdl_window_flags |= SDL_WINDOW_RESIZABLE;
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "exclusive-fullscreen")) {
-      sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
-      sdl_window_flags |= SDL_WINDOW_FULLSCREEN;
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "fullscreen")) {
-      sdl_window_flags &= ~(SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
-      sdl_window_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "vsync")) {
-      vsync = 1;
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "no-vsync")) {
-      vsync = 0;
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "width")) {
-      if (++i < params->argc) {
-        pixel_width = atoi(params->argv[i]);
-      } else {
-        return send_to_cli_out(params, "Width must be given a number.");
-      }
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "height")) {
-      if (++i < params->argc) {
-        pixel_height = atoi(params->argv[i]);
-      } else {
-        TCOD_set_error("Height must be given a number.");
-        return send_to_cli_out(params, "Height must be given a number.");
-      }
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "renderer")) {
-      if (++i < params->argc && get_renderer_from_str(params->argv[i]) >= 0) {
-        renderer_type = get_renderer_from_str(params->argv[i]);
-      } else {
-        TCOD_set_error("Renderer should be one of [sdl|sdl2|opengl|opengl2]");
-        return send_to_cli_out(params, "Renderer should be one of [sdl|sdl2|opengl|opengl2]");
-      }
-    } else if (TCOD_CHECK_ARGUMENT(params->argv[i], "resolution")) {
-      if (++i < params->argc && sscanf(params->argv[i], "%dx%d", &pixel_width, &pixel_height) == 2) {
-      } else {
-        return send_to_cli_out(params, "Resolution argument should be in the format: <width>x<height>");
-      }
-    }
-  }
-  TCOD_Error err = ensure_tileset(&tileset);
-  if (err < 0) {
-    return err;
-  }
-  if (pixel_width < 0 || pixel_height < 0) {
-    TCOD_set_errorvf("Width and height must be non-negative. Not %i,%i", pixel_width, pixel_height);
-    return TCOD_E_INVALID_ARGUMENT;
-  }
-  if (columns <= 0) {
-    columns = 80;
-  }
-  if (rows <= 0) {
-    rows = 24;
-  }
-  if (pixel_width <= 0) {
-    pixel_width = columns * tileset->tile_width;
-  }
-  if (pixel_height <= 0) {
-    pixel_height = rows * tileset->tile_height;
-  }
+  TCOD_ContextParams params;
+  TCOD_Error err = parse_context_parameters(params_in, &params);
+  if (err < 0) return err;
 
   // Initialize the renderer.
-  int renderer_flags = SDL_RENDERER_PRESENTVSYNC * vsync;
+  int renderer_flags = SDL_RENDERER_PRESENTVSYNC * params.vsync;
   err = TCOD_E_OK;
-  switch (renderer_type) {
+  switch (params.renderer_type) {
     case TCOD_RENDERER_SDL:
       renderer_flags |= SDL_RENDERER_SOFTWARE;
       *out = TCOD_renderer_init_sdl2(
-          window_x,
-          window_y,
-          pixel_width,
-          pixel_height,
-          params->window_title,
-          sdl_window_flags,
+          params.window_x,
+          params.window_y,
+          params.pixel_width,
+          params.pixel_height,
+          params.window_title,
+          params.sdl_window_flags,
           renderer_flags,
-          tileset);
+          params.tileset);
       if (!*out) {
         return TCOD_E_ERROR;
       }
@@ -274,7 +287,14 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
       *out = TCOD_renderer_new_gl2(
-          window_x, window_y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
+          params.window_x,
+          params.window_y,
+          params.pixel_width,
+          params.pixel_height,
+          params.window_title,
+          params.sdl_window_flags,
+          params.vsync,
+          params.tileset);
       if (*out) {
         return err;
       }
@@ -282,7 +302,14 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
       //@fallthrough@
     case TCOD_RENDERER_OPENGL:
       *out = TCOD_renderer_init_gl1(
-          window_x, window_y, pixel_width, pixel_height, params->window_title, sdl_window_flags, vsync, tileset);
+          params.window_x,
+          params.window_y,
+          params.pixel_width,
+          params.pixel_height,
+          params.window_title,
+          params.sdl_window_flags,
+          params.vsync,
+          params.tileset);
       if (*out) {
         return err;
       }
@@ -291,14 +318,14 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params, TCOD_Context** out
     default:
     case TCOD_RENDERER_SDL2:
       *out = TCOD_renderer_init_sdl2(
-          window_x,
-          window_y,
-          pixel_width,
-          pixel_height,
-          params->window_title,
-          sdl_window_flags,
+          params.window_x,
+          params.window_y,
+          params.pixel_width,
+          params.pixel_height,
+          params.window_title,
+          params.sdl_window_flags,
           renderer_flags,
-          tileset);
+          params.tileset);
       if (!*out) {
         return TCOD_E_ERROR;
       }

@@ -416,12 +416,17 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_char_foreground(const T
  */
 TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
 /**
- *  Fade the color of the display.
- *
- *  \param val Where at 255 colors are normal and at 0 colors are completely
- *             faded.
- *  \param fade_color Color to fade towards.
+    Fade the color of the display.
+
+    \param val Where at 255 colors are normal and at 0 colors are completely
+               faded.
+    \param fade_color Color to fade towards.
+    \rst
+    .. deprecated:: 1.19
+        This function will not work with libtcod contexts.
+    \endrst
  */
+TCOD_DEPRECATED("This function does not support contexts.")
 TCOD_PUBLIC
 void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color);
 /**

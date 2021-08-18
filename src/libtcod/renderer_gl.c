@@ -73,6 +73,8 @@ static int upload_gl_tile(struct TCOD_TilesetAtlasOpenGL* atlas, int tile_id) {
  */
 TCOD_NODISCARD
 static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
+  GLenum gl_error = glGetError();
+  if (gl_error) return TCOD_set_errorvf("Unexpected OpenGL error before texture allocation: %u", gl_error);
   int new_size = atlas->texture_size ? atlas->texture_size : 64;
   int max_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_size);
@@ -103,7 +105,7 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
     glTexImage2D(
         GL_TEXTURE_2D, 0, GL_RGBA, atlas->texture_size, atlas->texture_size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glBindTexture(GL_TEXTURE_2D, 0);
-    GLenum gl_error = glGetError();
+    gl_error = glGetError();
     switch (gl_error) {
       case GL_NO_ERROR:
         break;

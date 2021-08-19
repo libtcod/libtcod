@@ -245,6 +245,7 @@ static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_Co
   }
   if (out->pixel_width <= 0) out->pixel_width = out->columns * out->tileset->tile_width;
   if (out->pixel_height <= 0) out->pixel_height = out->rows * out->tileset->tile_height;
+  if (!out->window_title && out->argv) out->window_title = out->argv[0];  // Default the window title to argv[0].
   return TCOD_E_OK;
 }
 

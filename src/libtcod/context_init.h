@@ -96,6 +96,8 @@ typedef struct TCOD_ContextParams {
   int sdl_window_flags;
   /**
       `window_title` will be the title of the opened window.
+
+      If not set then `argv[0]` will be used if available.
    */
   const char* window_title;
   /**

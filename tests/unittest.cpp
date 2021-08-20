@@ -4,11 +4,11 @@
 #include <libtcod/tileset_fallback.h>
 
 #include <catch2/catch.hpp>
-#include <climits>
 #include <clocale>
 #include <cstddef>
 #include <iostream>
 #include <libtcod.hpp>
+#include <limits>
 #include <random>
 #include <string>
 #include <utility>

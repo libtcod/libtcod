@@ -30,5 +30,3 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "random.h"
-
-extern inline uint64_t TCOD_rng_splitmix64_next(uint64_t* state);

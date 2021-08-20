@@ -48,7 +48,7 @@ extern "C" {
 
     This function is provisional and may change.
  */
-TCOD_PUBLIC inline uint64_t TCOD_rng_splitmix64_next(uint64_t* state) {
+static inline uint64_t TCOD_rng_splitmix64_next(uint64_t* state) {
   // Based on http://xoshiro.di.unimi.it/splitmix64.c
   uint64_t z = (*state += 0x9e3779b97f4a7c15);
   z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9;

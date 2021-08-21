@@ -1,26 +1,35 @@
-# Table of contents #
+# Introduction
 
-   * [Table of contents](#table-of-contents)
-   * [Introduction](#introduction)
-   * [How do I get set up?](#how-do-i-get-set-up)
-      * [Using one of our downloads](#using-one-of-our-downloads)
-      * [Compiling from source](#compiling-from-source)
-   * [Getting Started](#getting-started)
-
-# Introduction #
-
-libtcod is a free, fast, portable and uncomplicated API for roguelike
-developers providing an advanced true color console, input, and lots of other
-utilities frequently used in roguelikes.
+libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing a true color console, pathfinding, field-of-view, and a few other utilities frequently used in roguelikes.
 
 Status:
 [![Build status](https://ci.appveyor.com/api/projects/status/pemepxo2221f8heo/branch/master?svg=true)](https://ci.appveyor.com/project/HexDecimal/libtcod-6e1jk/branch/master)
 [![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 
-# How do I get set up? #
+# How do I get set up?
 
-## Using one of our downloads ##
+## Using Vcpkg
+
+This is the easiest way to get the latest stable version of libtcod for any project.
+
+Libtcod is included as a port in [Vcpkg](https://github.com/microsoft/vcpkg).
+You can install libtcod via Vcpkg and then link the library using a [CMake](https://cmake.org/) script as you normally do for that package manager.
+
+## As a submodule
+
+This is the best option for testing the development versions of libtcod.
+
+You can include libtcod in a project by adding the libtcod repository as a [submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) and then adding that directory to a [CMake](https://cmake.org/) script.
+You will want to fork [this template project](https://github.com/HexDecimal/libtcod-vcpkg-template) if you plan on starting a project with this setup.
+
+It is expected that Vcpkg will be used, but libtcod's CMake script can be configured to compile without using Vcpkg for dependencies.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details on configuring dependencies.
+
+## Using one of our downloads
+
+This is not recommend as these releases are unwieldy, are more difficult to update, and are less cross-platform.
+*Do not upload binary files to your projects source repository.*
 
 If you are programming in C or C++ then
 Windows and MacOS binaries are available from the
@@ -45,27 +54,12 @@ A alternative version of the Python library (libtcodpy) exists in the binary
 downloads, but you should avoid using this version as it is not as well
 maintained.
 
-## Compiling from source ##
+## Compiling from source
 
-You can clone with Git via the
-[GitHub repository](https://github.com/libtcod/libtcod).
-You can then checkout a specific tag or get the in-development version from
-the master branch.
+This is only recommended for libtcod developers.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-All compilation methods, currently including
-SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within
-the `buildsys/` subdirectory.
-
-SCons automatically downloads SDL2 and can be used on all platforms.
-Instructions are
-[provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/scons).
-The current release builds are built using SCons.
-
-Autotools is a common standard on Linux, and can be used for MacOS.
-Instructions are
-[provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
-
-# Getting Started #
+# Getting Started
 
 The latest documentation is [here](https://libtcod.readthedocs.io/en/latest).
 Currently it's very incomplete, so most people will want to read the

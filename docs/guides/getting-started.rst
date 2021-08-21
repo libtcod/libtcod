@@ -3,6 +3,9 @@
 Getting Started
 ===============
 
+This code example does not go into setting up libtcod as a dependency.
+You can setup libtcod by using `this template project <https://github.com/HexDecimal/libtcod-vcpkg-template>`_, or by installing libtcod via `Vcpkg <https://github.com/microsoft/vcpkg>`_.
+
 Here is a simple example of setting up a libtcod context in C++ without using
 deprecated functions.
 

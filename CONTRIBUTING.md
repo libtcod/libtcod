@@ -36,6 +36,15 @@ static functions in sources.
 Code formatting is handled via [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
 and [EditorConfig](https://editorconfig.org/), make sure your IDE supports these tools.
 
+Some compilation methods, including SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within the `buildsys/` subdirectory.
+
+SCons automatically downloads SDL2 and can be used on all platforms.
+Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/scons).
+The current release builds are built using SCons.
+
+Autotools is a common standard on Linux, and can be used for MacOS.
+Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
+
 ## MacOS / Linux
 
 For MacOS and Linux you should be able to compile libtcod easily from the
@@ -67,5 +76,23 @@ The status bar at the bottom of Visual Studio Code can be used to configure CMak
 
 You can now run the samples project from the IDE.  Other launch targets like
 `samples_c` or `unittest` may be useful choices.
-If you set `LIBTCOD` as the build target you could check libtcod for compile
-errors without having to build and run the samples too.
+If you set `libtcod` as the build target you could check libtcod for compile errors without having to build and run the samples too.
+
+## CMake
+
+The libtcod repository includes a CMake script for compiling libtcod and its tests and samples.
+You can include the repository as a submodule allowing another project to build and run any version of libtcod.
+
+By default it is assumed that Vcpkg will be used to get dependencies, but this can be changed by setting the following cache variables.
+`find_package` means CMake's `find_package` command will be used.
+`vendored` means that sources bundled in the repository will be statically compiled, this is generally not recommended.
+`conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
+
+| Cache Variable   | Default      | Options |
+| ---------------- | ------------ | ------- |
+| LIBTCOD_SDL2     | find_package | conan, find_package |
+| LIBTCOD_ZLIB     | find_package | conan, find_package |
+| LIBTCOD_GLAD     | find_package | find_package, vendored |
+| LIBTCOD_LODEPNG  | find_package | find_package, vendored |
+| LIBTCOD_UTF8PROC | vcpkg        | find_package, vcpkg |
+| LIBTCOD_STB      | vcpkg        | vcpkg, vendored |

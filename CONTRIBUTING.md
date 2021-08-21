@@ -14,22 +14,31 @@ The current setup for doc generation is by using
 [Doxygen](https://www.doxygen.nl/index.html)'s documentation style.
 
 The [docs](docs) directory has instructions on how to build the documentation.
-This isn't strictly necessary, but it can help with larger tasks.
+This isn't strictly necessary, but it can help with larger documentation tasks.
 
-Newer C/C++ documentation on functions should try to follow this format:
+Newer C/C++ documentation on functions should generally try to follow this format:
 ```c
-/**
-    [Brief summary]
+/***************************************************************************
+    @brief [Brief summary]
 
-    [Extended description]
+    @details [Extended description]
+
+    @param value Description of parameter.
+    @return Description of the return value if any.
+
+    @code{.cpp}
+      // Code example if necessary.
+    @endcode
     \rst
     [Sphinx directives]
+    .. versionadded:: 0.0
+    .. deprecated:: 0.0
+        Deprecation details.
     \endrst
  */
-void example(void);
+int example(int value);
 ```
-Functions which should always be documented are public functions in headers and
-static functions in sources.
+Functions which are expected to always be documented are the public functions in headers, and the static functions in sources.
 
 # Building libtcod for Development
 

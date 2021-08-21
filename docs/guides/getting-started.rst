@@ -19,6 +19,7 @@ deprecated functions.
       params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
       params.columns = console->w;  // Derive the window size from the console size.
       params.rows = console->h;
+      // params.console = console.get();  // New in version 1.19, this replaces the above two lines.
       params.window_title = "Libtcod Project";
       params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
       params.vsync = true;

@@ -75,8 +75,11 @@ This also lets you use the root console on functions which can't accept `nullptr
     TCOD_Console* root_console = TCOD_sys_get_internal_console();
     // From now on use root_console instead of NULL, make this global if you have to.
 
-    // Using the root console with the context is the same as calling TCOD_console_flush()
+    // Using the root console with the context is similar to calling TCOD_console_flush() with some exceptions.
     context->present(*root_console);  // Or in C: TCOD_context_present(context, root_console, NULL)
+
+Using the context present function like this will break some functions which say they're not compatible with contexts.
+Most importantly any timing-related functions will need to be updated.  See `Timing`_ below.
 
 Window manipulation
 ^^^^^^^^^^^^^^^^^^^

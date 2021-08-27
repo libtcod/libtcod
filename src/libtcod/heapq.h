@@ -37,31 +37,14 @@
 
 #include "config.h"
 
-#define TCOD_HEAP_DEFAULT_CAPACITY 256
-#define TCOD_HEAP_MAX_NODE_SIZE 256
-
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4200)  // MSVC complains about standard C99.
-#endif  // _MSC_VER
-
-struct TCOD_HeapNode {
-  int priority;
-#if !defined(__cplusplus)
-  unsigned char data[];
-#endif  // !defined(__cplusplus)
-};
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif  // _MSC_VER
-
 struct TCOD_Heap {
-  struct TCOD_HeapNode* __restrict heap;
-  int size;
-  int capacity;
-  size_t node_size;
-  size_t data_size;
+  unsigned char* __restrict heap;
+  int size;  // The current number of elements in heap.
+  int capacity;  // The current capacity of heap.
+  size_t node_size;  // The full size of each node in bytes.
+  size_t data_size;  // The size of a nodes user data section in bytes.
+  size_t data_offset;  // The offset of the user data section.
+  int priority_type;  // Should be -4.
 };
 
 #ifdef __cplusplus

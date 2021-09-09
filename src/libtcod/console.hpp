@@ -215,8 +215,14 @@ public :
 		tcod.console.setCustomFont("32bits_8x8_ascii_in_row_font.png",tcod.LayoutAsciiInRow);
 		tcod.console.setCustomFont("greyscale_8x8_tcod_font.png",tcod.LayoutTCOD + tcod.Greyscale);
 	*/
-	static void setCustomFont(const char *fontFile, int flags=TCOD_FONT_LAYOUT_ASCII_INCOL,int nbCharHoriz=0, int nbCharVertic=0);
-
+  // clang-format on
+  [[deprecated(
+      "This function is not compatible with contexts."
+      "  Consider using tcod::load_tilesheet or TCOD_tileset_load instead."
+      "  https://libtcod.readthedocs.io/en/latest/upgrading.html")]] static void
+  setCustomFont(
+      const char* fontFile, int flags = TCOD_FONT_LAYOUT_ASCII_INCOL, int nbCharHoriz = 0, int nbCharVertic = 0);
+  // clang-format off
 	/**
 	@PageName console_map
 	@PageTitle Using custom characters mapping
@@ -233,6 +239,7 @@ public :
 	@Param asciiCode ASCII code to map.
 	@Param fontCharX,fontCharY Coordinate of the character in the bitmap font (in characters, not pixels).
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void mapAsciiCodeToFont(int asciiCode, int fontCharX, int fontCharY);
 
 	/**
@@ -247,6 +254,7 @@ public :
 	@Param nbCodes number of consecutive ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void mapAsciiCodesToFont(int firstAsciiCode, int nbCodes, int fontCharX, int fontCharY);
 
 	/**
@@ -260,6 +268,7 @@ public :
 	@Param s string containing the ASCII codes to map
 	@Param fontCharX,fontCharY coordinate of the character in the bitmap font (in characters, not pixels) corresponding to the first ASCII code in the string
 	*/
+  [[deprecated("This function is not compatible with contexts.")]]
 	static void mapStringToFont(const char *s, int fontCharX, int fontCharY);
 
 	/**

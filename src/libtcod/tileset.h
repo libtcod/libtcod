@@ -268,13 +268,13 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_raw(
     int rows,
     int n,
     const int* __restrict charmap);
+/***************************************************************************
+    @brief Assign a codepoint to an existing tile based on its tile ID.
 
-/**
- *  Assign a codepoint to an existing tile based on its tile ID.
- *
- *  Returns the tile ID on success.
- *
- *  Returns a negative value on error.
+    @param tileset A TCOD_Tileset pointer, must not be NULL.
+    @param tile_id The index of the tile.
+    @param codepoint The Unicode codepoint to associate with tile_id.
+    @return Returns a negative value on error.
  */
 TCOD_NODISCARD
 TCOD_PUBLIC int TCOD_tileset_assign_tile(struct TCOD_Tileset* tileset, int tile_id, int codepoint);

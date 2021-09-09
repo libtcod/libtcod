@@ -53,12 +53,19 @@ extern "C" {
 #define TCOD_BKGND_ALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ALPH | (((uint8_t)(alpha * 255)) << 8)))
 #define TCOD_BKGND_ADDALPHA(alpha) ((TCOD_bkgnd_flag_t)(TCOD_BKGND_ADDA | (((uint8_t)(alpha * 255)) << 8)))
 
+TCOD_DEPRECATED(
+    "This function is not compatible with contexts.  Consider using tcod::load_tilesheet or TCOD_tileset_load instead."
+    "  https://libtcod.readthedocs.io/en/latest/upgrading.html")
 TCODLIB_API TCOD_Error
 TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_console_map_ascii_code_to_font(int asciiCode, int fontCharX, int fontCharY);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_console_map_ascii_codes_to_font(int asciiCode, int nbCodes, int fontCharX, int fontCharY);
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_console_map_string_to_font(const char* s, int fontCharX, int fontCharY);
 #ifndef NO_UNICODE
+TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCODLIB_API void TCOD_console_map_string_to_font_utf(const wchar_t* s, int fontCharX, int fontCharY);
 #endif
 

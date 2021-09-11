@@ -187,26 +187,72 @@ struct TCOD_Context {
       than the one requested.
    */
   auto get_renderer_type() noexcept -> int { return TCOD_context_get_renderer_type(this); }
-  /**
-      Present a console to the display with the provided viewport options.
+  /***************************************************************************
+      @brief Present a console to the display with the provided viewport options.
+
+      @param console The TCOD_Console to render.  This console can be any size.
+      @param viewport The viewport options, which can change the way the console is scaled.
+
+      @code{.cpp}
+        // tcod::ContextPtr context = tcod::new_context(...);
+        while (1) {
+          auto console = context->new_console();  // This can be done as an alternative to clearing the console.
+          tcod::print(*console, {0, 0}, "Hello world", nullptr, nullptr);
+          const auto viewport_options = [](){
+            auto options = TCOD_ViewportOptions{};
+            options.tcod_version = TCOD_COMPILEDVERSION;
+            options.keep_aspect = true;
+            options.integer_scaling = true;
+            options.clear_color = {0, 0, 0, 255};
+            options.align_x = 0.5f;
+            options.align_y = 0.5f;
+            return options;
+          }();
+          context->present(*console, viewport_options);
+          SDL_Event event;
+          while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
+          }
+        }
+      @endcode
    */
   void present(const TCOD_Console& console, const TCOD_ViewportOptions& viewport) {
     tcod::check_throw_error(TCOD_context_present(this, &console, &viewport));
   }
-  /**
-      Present a console to the display.
+  /***************************************************************************
+      @brief Present a console to the display.
+
+      @param console The TCOD_Console to render.  This console can be any size and will be stretched to fit the window.
    */
   void present(const TCOD_Console& console) { tcod::check_throw_error(TCOD_context_present(this, &console, nullptr)); }
-  /**
-      Return a non-owning pointer to the SDL_Window used by this context.
+  /***************************************************************************
+      @brief Return a non-owning pointer to the SDL_Window used by this context.
 
-      May return nullptr.
+      @return A ``struct SDL_Window*`` pointer.  This will be nullptr if this context does not use an SDL window.
+
+      @code{.cpp}
+        // tcod::ContextPtr context = tcod::new_context(...);
+        if (SDL_Window* sdl_window = context->get_sdl_window(); sdl_window) {
+          // Do anything with an SDL window, for example:
+          uint32_t flags = SDL_GetWindowFlags(sdl_window);
+        }
+      @endcode
    */
   auto get_sdl_window() noexcept -> struct SDL_Window* { return TCOD_context_get_sdl_window(this); }
-  /**
-      Return a non-owning pointer to the SDL_Renderer used by this context.
+  /***************************************************************************
+      @brief Return a non-owning pointer to the SDL_Renderer used by this context.
 
-      May return nullptr.
+      @return A ``struct SDL_Renderer*`` pointer.  This will be nullptr if this context does not use SDL's renderer.
+
+      @code{.cpp}
+        // tcod::ContextPtr context = tcod::new_context(...);
+        if (SDL_Renderer* sdl_renderer = context->get_sdl_renderer(); sdl_renderer) {
+          // Do anything with an SDL renderer, for example:
+          SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
+          SDL_RenderClear(sdl_renderer);
+          SDL_RenderPresent(sdl_renderer);
+        }
+      @endcode
    */
   auto get_sdl_renderer() noexcept -> struct SDL_Renderer* { return TCOD_context_get_sdl_renderer(this); }
   /**
@@ -225,9 +271,30 @@ struct TCOD_Context {
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_d(this, &out[0], &out[1]));
     return out;
   }
-  /**
-      Convert the pixel coordinates of SDL mouse events to the tile coordinates of the current context.
+  /***************************************************************************
+      @brief Convert the pixel coordinates of SDL mouse events to the tile coordinates of the current context.
 
+      @param event Any SDL_Event event.
+          If the event type is compatible then its coordinates will be converted into tile coordinates.
+
+      @code{.cpp}
+        // tcod::ContextPtr context = tcod::new_context(...);
+        while (1) {
+          SDL_Event event;
+          while (SDL_PollEvent(&event)) {
+            SDL_Event event_tile = event;  // A copy of `event` using tile coordinates.
+            context->convert_event_coordinates(event_tile);
+            switch (event.type) {
+              case SDL_QUIT:
+                std::exit(EXIT_SUCCESS);
+              case SDL_MOUSEMOTION:
+                event.motion.xrel; // Relative motion in pixels.
+                event_tile.motion.xrel; // Relative motion in tiles.
+                break;
+            }
+          }
+        }
+      @endcode
       \rst
       .. versionadded:: 1.19
       \endrst
@@ -235,27 +302,43 @@ struct TCOD_Context {
   void convert_event_coordinates(SDL_Event& event) {
     tcod::check_throw_error(TCOD_context_convert_event_coordinates(this, &event));
   }
-  /**
-      Save a screenshot to `filepath`.
+  /***************************************************************************
+      @brief Save a screenshot to `filepath`.
 
-      If `filepath` is nullptr then a unique file name will be generated.
+      @param filepath The file path to save the screenshot at.
+          If nullptr then a unique file name will be generated.
    */
   void save_screenshot(const char* filepath) { tcod::check_throw_error(TCOD_context_save_screenshot(this, filepath)); }
-  /**
-      Save a screenshot to `filepath`.
+  /***************************************************************************
+      @brief Save a screenshot to `filepath`.
+
+      @param filepath The file path to save the screenshot at.
    */
   void save_screenshot(const std::string& filepath) { return this->save_screenshot(filepath.data()); }
-  /**
-      Return a new console with a size automatically determined by the context.
+  /***************************************************************************
+      @brief Return a new console with a size automatically determined by the context.
 
-      `min_columns` and `min_rows` are the minimum size to use for the new
-      console.
+      @param min_columns The minimum width to use for the new console, in tiles.
+      @param min_rows The minimum height to use for the new console, in tiles.
+      @param magnification Determines the apparent size of the tiles that will be rendered by a console created with
+        the output values.
+        A `magnification` larger then 1.0f will output smaller console parameters, which will show as larger tiles when
+        presented.
+        Only values larger than zero are allowed.
+      @return Returns a tcod::ConsolePtr of a dynamic size, this will never be nullptr.
 
-      `magnification` determines the apparent size of the tiles that will
-      be rendered by a console created with the output values.  A
-      `magnification` larger then 1.0f will output smaller console parameters,
-      which will show as larger tiles when presented.
-      Only values larger than zero are allowed.
+      @code{.cpp}
+        // tcod::ContextPtr context = tcod::new_context(...);
+        while (1) {
+          tcod::ConsolePtr console = context->new_console();  // This can be an alternative to clearing the console.
+          tcod::print(*console, {0, 0}, "Hello world", nullptr, nullptr);
+          context->present(*console);
+          SDL_Event event;
+          while (SDL_PollEvent(&event)) {  // SDL_PollEvent may resize the window.
+            if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
+          }
+        }
+      @endcode
    */
   auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::ConsolePtr {
     int columns;

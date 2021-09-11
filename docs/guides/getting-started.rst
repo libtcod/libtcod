@@ -18,7 +18,7 @@ deprecated functions.
       tcod::ConsolePtr console = tcod::new_console(80, 25);  // Main console.
 
       // Configure the context.
-      TCOD_ContextParams params{};
+      auto params = TCOD_ContextParams{};
       params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
       params.columns = console->w;  // Derive the window size from the console size.
       params.rows = console->h;
@@ -43,7 +43,7 @@ deprecated functions.
 
         SDL_Event event;
         SDL_WaitEvent(nullptr);  // Optional, sleep until events are available.
-        while (SDL_PollEvent(&event)){
+        while (SDL_PollEvent(&event)) {
           context->convert_event_coordinates(event);  // Optional, converts pixel coordinates into tile coordinates.
           switch (event.type) {
             case SDL_QUIT:

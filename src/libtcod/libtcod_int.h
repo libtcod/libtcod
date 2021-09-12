@@ -63,21 +63,6 @@ struct SDL_Window;
 struct SDL_Renderer;
 union SDL_Event;
 
-/* pseudorandom number generator toolkit */
-typedef struct TCOD_Random {
-  /* algorithm identifier */
-  TCOD_random_algo_t algo;
-  /* distribution */
-  TCOD_distribution_t distribution;
-  /* Mersenne Twister stuff */
-  uint32_t mt[624];
-  int cur_mt;
-  /* Complementary-Multiply-With-Carry stuff */
-  /* shared with Generalised Feedback Shift Register */
-  uint32_t Q[4096], c;
-  int cur;
-} mersenne_data_t;
-
 typedef struct {
   /* number of characters in the bitmap font */
   int fontNbCharHoriz;

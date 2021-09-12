@@ -31,10 +31,7 @@
  */
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
-struct TCOD_Random;
-typedef struct TCOD_Random TCOD_Random;
-typedef struct TCOD_Random* TCOD_random_t;
-
+#include "stdint.h"
 /* dice roll */
 typedef struct {
   int nb_rolls;
@@ -44,7 +41,16 @@ typedef struct {
 } TCOD_dice_t;
 
 /* PRNG algorithms */
-typedef enum { TCOD_RNG_MT, TCOD_RNG_CMWC } TCOD_random_algo_t;
+typedef enum {
+  /***************************************************************************
+      @brief Mersenne Twister implementation.
+   */
+  TCOD_RNG_MT,
+  /***************************************************************************
+      @brief Complementary-Multiply-With-Carry implementation.
+   */
+  TCOD_RNG_CMWC
+} TCOD_random_algo_t;
 
 typedef enum {
   TCOD_DISTRIBUTION_LINEAR,
@@ -53,4 +59,20 @@ typedef enum {
   TCOD_DISTRIBUTION_GAUSSIAN_INVERSE,
   TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE
 } TCOD_distribution_t;
+
+/* Pseudorandom number generator toolkit, all attributes are private. */
+typedef struct TCOD_Random {
+  TCOD_random_algo_t algo;  // algorithm identifier
+  TCOD_distribution_t distribution;  // distribution
+  // Mersenne Twister stuff
+  uint32_t mt[624];
+  int cur_mt;
+  // Complementary-Multiply-With-Carry stuff
+  // shared with Generalised Feedback Shift Register
+  uint32_t Q[4096], c;
+  int cur;
+} TCOD_Random;
+
+typedef struct TCOD_Random* TCOD_random_t;
+
 #endif /* _TCOD_RANDOM_TYPES_H */

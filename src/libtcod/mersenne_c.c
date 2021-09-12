@@ -39,8 +39,6 @@
 #include "utility.h"
 
 static TCOD_Random* instance = NULL;
-static float rand_div = 1.0f / (float)(0xffffffff);
-static double rand_div_double = 1.0 / (double)(0xffffffff);
 
 // A generic macro to swap two variables.
 #define GENERIC_SWAP(x, y, T) \
@@ -98,9 +96,6 @@ static uint32_t mt_rand(uint32_t mt[624], int* cur_mt) {
   return y;
 }
 
-/* get a random float between 0 and 1 */
-static float frandom01(TCOD_Random* r) { return (float)mt_rand(r->mt, &r->cur_mt) * rand_div; }
-
 /* string hashing function */
 /* not used (yet)
 static uint32_t hash(const char *data,int len) {
@@ -135,6 +130,23 @@ TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(TCOD_Random* r) {
   return r->Q[r->cur] = 0xfffffffe - x;
 }
 
+// Return a random uint32_t number.
+static uint32_t get_random_u32(TCOD_Random* rng) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->algo) {
+    case TCOD_RNG_MT:
+      return mt_rand(rng->mt, &rng->cur_mt);
+    case TCOD_RNG_CMWC:
+      return CMWC_GET_NUMBER(rng);
+    default:
+      return 0;
+  }
+}
+// Return a random float between 0.0 and 1.0.
+static float get_random_float(TCOD_Random* rng) { return get_random_u32(rng) * (1.0f / 0xffffffff); }
+// Return a random double between 0.0 and 1.0.
+static double get_random_double(TCOD_Random* rng) { return get_random_u32(rng) * (1.0 / 0xffffffff); }
+
 TCOD_Random* TCOD_random_new(TCOD_random_algo_t algo) { return TCOD_random_new_from_seed(algo, (uint32_t)time(0)); }
 
 TCOD_Random* TCOD_random_get_instance(void) {
@@ -164,29 +176,15 @@ TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
 int TCOD_random_get_i(TCOD_Random* rng, int min, int max) {
   if (max == min) return min;
   SORT_MINMAX(min, max, int);
-  if (!rng) rng = TCOD_random_get_instance();
   const int delta = max - min + 1;
-  /* return a number from the Mersenne Twister */
-  if (rng->algo == TCOD_RNG_MT) {
-    return (mt_rand(rng->mt, &rng->cur_mt) % delta) + min;
-  } else { /* or from the CMWC */
-    return CMWC_GET_NUMBER(rng) % delta + min;
-  }
+  return get_random_u32(rng) % delta + min;
 }
 
 float TCOD_random_get_f(TCOD_Random* rng, float min, float max) {
   if (max == min) return min;
   SORT_MINMAX(min, max, float);
-  if (!rng) rng = TCOD_random_get_instance();
   const float delta = max - min;
-  float f;
-  /* Mersenne Twister */
-  if (rng->algo == TCOD_RNG_MT) {
-    f = delta * frandom01(rng);
-  } else { /* CMWC */
-    f = (float)(CMWC_GET_NUMBER(rng)) * rand_div * delta;
-  }
-  return min + f;
+  return min + get_random_float(rng) * delta;
 }
 
 double TCOD_random_get_d(TCOD_Random* rng, double min, double max) {
@@ -194,14 +192,7 @@ double TCOD_random_get_d(TCOD_Random* rng, double min, double max) {
   SORT_MINMAX(min, max, double);
   if (!rng) rng = TCOD_random_get_instance();
   const double delta = max - min;
-  double f;
-  /* Mersenne Twister */
-  if (rng->algo == TCOD_RNG_MT) {
-    f = delta * (double)frandom01(rng);
-  } else { /* CMWC */
-    f = (double)(CMWC_GET_NUMBER(rng)) * rand_div_double * delta;
-  }
-  return min + f;
+  return min + get_random_double(rng) * delta;
 }
 
 void TCOD_random_delete(TCOD_Random* rng) {
@@ -230,25 +221,14 @@ double TCOD_random_get_gaussian_double(TCOD_Random* rng, double mean, double std
     ret = mean + y2 * std_deviation;
   } else {
     if (!rng) rng = TCOD_random_get_instance();
-    double x1, x2, w, y1;
-    /* MT */
-    if (rng->algo == TCOD_RNG_MT) {
-      do {
-        x1 = (double)frandom01(rng) * 2.0 - 1.0;
-        x2 = (double)frandom01(rng) * 2.0 - 1.0;
-        w = x1 * x1 + x2 * x2;
-      } while (w >= 1.0);
-    }
-    /* CMWC */
-    else {
-      do {
-        x1 = CMWC_GET_NUMBER(rng) * rand_div_double * 2.0 - 1.0;
-        x2 = CMWC_GET_NUMBER(rng) * rand_div_double * 2.0 - 1.0;
-        w = x1 * x1 + x2 * x2;
-      } while (w >= 1.0);
-    }
+    double x1, x2, w;
+    do {
+      x1 = get_random_double(rng) * 2.0 - 1.0;
+      x2 = get_random_double(rng) * 2.0 - 1.0;
+      w = x1 * x1 + x2 * x2;
+    } while (w >= 1.0);
     w = sqrt((-2.0 * log(w)) / w);
-    y1 = x1 * w;
+    const double y1 = x1 * w;
     y2 = x2 * w;
     ret = mean + y1 * std_deviation;
   }

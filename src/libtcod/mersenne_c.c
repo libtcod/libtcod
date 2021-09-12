@@ -111,24 +111,21 @@ static uint32_t hash(const char *data,int len) {
 */
 
 /* get a random number from the CMWC */
-#define CMWC_GET_NUMBER(num)                         \
-  {                                                  \
-    unsigned long long t;                            \
-    uint32_t x;                                      \
-    r->cur = (r->cur + 1) & 4095;                    \
-    t = 18782LL * r->Q[r->cur] + r->c;               \
-    r->c = (t >> 32);                                \
-    x = (uint32_t)(t + r->c);                        \
-    if (x < r->c) {                                  \
-      x++;                                           \
-      r->c++;                                        \
-    }                                                \
-    if ((x + 1) == 0) {                              \
-      r->c++;                                        \
-      x = 0;                                         \
-    }                                                \
-    num = (uint32_t)(r->Q[r->cur] = 0xfffffffe - x); \
+TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(mersenne_data_t* r) {
+  r->cur = (r->cur + 1) & 4095;
+  const uint64_t t = 18782LL * r->Q[r->cur] + r->c;
+  r->c = (t >> 32);
+  uint32_t x = (uint32_t)(t + r->c);
+  if (x < r->c) {
+    ++x;
+    ++r->c;
   }
+  if ((x + 1) == 0) {
+    ++r->c;
+    x = 0;
+  }
+  return r->Q[r->cur] = 0xfffffffe - x;
+}
 
 TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) { return TCOD_random_new_from_seed(algo, (uint32_t)time(0)); }
 
@@ -178,9 +175,7 @@ int TCOD_random_get_i(TCOD_random_t mersenne, int min, int max) {
   if (r->algo == TCOD_RNG_MT) return (mt_rand(r->mt, &r->cur_mt) % delta) + min;
   /* or from the CMWC */
   else {
-    uint32_t number;
-    CMWC_GET_NUMBER(number)
-    return number % delta + min;
+    return CMWC_GET_NUMBER(r) % delta + min;
   }
 }
 
@@ -201,9 +196,7 @@ float TCOD_random_get_f(TCOD_random_t mersenne, float min, float max) {
   if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
   /* CMWC */
   else {
-    uint32_t number;
-    CMWC_GET_NUMBER(number)
-    f = (float)(number)*rand_div * delta;
+    f = (float)(CMWC_GET_NUMBER(r)) * rand_div * delta;
   }
   return min + f;
 }
@@ -225,9 +218,7 @@ double TCOD_random_get_d(TCOD_random_t mersenne, double min, double max) {
   if (r->algo == TCOD_RNG_MT) f = delta * (double)frandom01(r);
   /* CMWC */
   else {
-    uint32_t number;
-    CMWC_GET_NUMBER(number)
-    f = (double)(number)*rand_div_double * delta;
+    f = (double)(CMWC_GET_NUMBER(r)) * rand_div_double * delta;
   }
   return min + f;
 }
@@ -272,12 +263,9 @@ double TCOD_random_get_gaussian_double(TCOD_random_t mersenne, double mean, doub
     }
     /* CMWC */
     else {
-      uint32_t number;
       do {
-        CMWC_GET_NUMBER(number)
-        x1 = number * rand_div_double * 2.0 - 1.0;
-        CMWC_GET_NUMBER(number)
-        x2 = number * rand_div_double * 2.0 - 1.0;
+        x1 = CMWC_GET_NUMBER(r) * rand_div_double * 2.0 - 1.0;
+        x2 = CMWC_GET_NUMBER(r) * rand_div_double * 2.0 - 1.0;
         w = x1 * x1 + x2 * x2;
       } while (w >= 1.0);
     }

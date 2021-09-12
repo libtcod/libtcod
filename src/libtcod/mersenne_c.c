@@ -38,30 +38,38 @@
 #include "mersenne.h"
 #include "utility.h"
 
-static TCOD_random_t instance = NULL;
+static TCOD_Random* instance = NULL;
 static float rand_div = 1.0f / (float)(0xffffffff);
 static double rand_div_double = 1.0 / (double)(0xffffffff);
 
+// A generic macro to swap two variables.
+#define GENERIC_SWAP(x, y, T) \
+  {                           \
+    T __SWAP_VARIABLE_ = (x); \
+    (x) = (y);                \
+    (y) = __SWAP_VARIABLE_;   \
+  }
+
+// A generic macro to swap min and max if they are out-of-order.
+#define SORT_MINMAX(min, max, T) \
+  if ((min) > (max)) GENERIC_SWAP((min), (max), T);
+
 /* initialize the mersenne twister array */
 static void mt_init(uint32_t seed, uint32_t mt[624]) {
-  int i;
   mt[0] = seed;
-  for (i = 1; i < 624; i++) {
+  for (int i = 1; i < 624; ++i) {
     mt[i] = (1812433253 * (mt[i - 1] ^ (mt[i - 1] >> 30)) + i);
   }
 }
 
 /* get the next random value from the mersenne twister array */
 static uint32_t mt_rand(uint32_t mt[624], int* cur_mt) {
-#define MT_HIGH_BIT 0x80000000UL
-#define MT_LOW_BITS 0x7fffffffUL
+  static const uint32_t MT_HIGH_BIT = 0x80000000UL;
+  static const uint32_t MT_LOW_BITS = 0x7fffffffUL;
   uint32_t y;
-
   if (*cur_mt == 624) {
     /* our 624 sequence is finished. generate a new one */
-    int i;
-
-    for (i = 0; i < 623; i++) {
+    for (int i = 0; i < 623; ++i) {
       y = (mt[i] & MT_HIGH_BIT) | (mt[i + 1] & MT_LOW_BITS);
       if (y & 1) {
         /* odd y */
@@ -91,7 +99,7 @@ static uint32_t mt_rand(uint32_t mt[624], int* cur_mt) {
 }
 
 /* get a random float between 0 and 1 */
-static float frandom01(mersenne_data_t* r) { return (float)mt_rand(r->mt, &r->cur_mt) * rand_div; }
+static float frandom01(TCOD_Random* r) { return (float)mt_rand(r->mt, &r->cur_mt) * rand_div; }
 
 /* string hashing function */
 /* not used (yet)
@@ -111,7 +119,7 @@ static uint32_t hash(const char *data,int len) {
 */
 
 /* get a random number from the CMWC */
-TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(mersenne_data_t* r) {
+TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(TCOD_Random* r) {
   r->cur = (r->cur + 1) & 4095;
   const uint64_t t = 18782LL * r->Q[r->cur] + r->c;
   r->c = (t >> 32);
@@ -127,145 +135,115 @@ TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(mersenne_data_t* r) {
   return r->Q[r->cur] = 0xfffffffe - x;
 }
 
-TCOD_random_t TCOD_random_new(TCOD_random_algo_t algo) { return TCOD_random_new_from_seed(algo, (uint32_t)time(0)); }
+TCOD_Random* TCOD_random_new(TCOD_random_algo_t algo) { return TCOD_random_new_from_seed(algo, (uint32_t)time(0)); }
 
-TCOD_random_t TCOD_random_get_instance(void) {
-  if (!instance) {
-    instance = TCOD_random_new(TCOD_RNG_CMWC);
-  }
+TCOD_Random* TCOD_random_get_instance(void) {
+  if (!instance) instance = TCOD_random_new(TCOD_RNG_CMWC);
   return instance;
 }
 
-TCOD_random_t TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
-  mersenne_data_t* r = (mersenne_data_t*)calloc(sizeof(mersenne_data_t), 1);
+TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
+  TCOD_Random* r = calloc(sizeof(*r), 1);
   /* Mersenne Twister */
   if (algo == TCOD_RNG_MT) {
     r->algo = TCOD_RNG_MT;
     r->cur_mt = 624;
     mt_init(seed, r->mt);
-  }
-  /* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
-  else {
-    int i;
+  } else { /* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
     /* fill the Q array with pseudorandom seeds */
     uint32_t s = seed;
-    for (i = 0; i < 4096; i++) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
+    for (int i = 0; i < 4096; ++i) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
     r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
     r->cur = 0;
     r->algo = TCOD_RNG_CMWC;
   }
   r->distribution = TCOD_DISTRIBUTION_LINEAR;
-  return (TCOD_random_t)r;
+  return r;
 }
 
-int TCOD_random_get_i(TCOD_random_t mersenne, int min, int max) {
-  mersenne_data_t* r;
-  int delta;
-  if (max == min)
-    return min;
-  else if (max < min) {
-    int tmp = max;
-    max = min;
-    min = tmp;
-  }
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  r = (mersenne_data_t*)mersenne;
-  delta = max - min + 1;
+int TCOD_random_get_i(TCOD_Random* rng, int min, int max) {
+  if (max == min) return min;
+  SORT_MINMAX(min, max, int);
+  if (!rng) rng = TCOD_random_get_instance();
+  const int delta = max - min + 1;
   /* return a number from the Mersenne Twister */
-  if (r->algo == TCOD_RNG_MT) return (mt_rand(r->mt, &r->cur_mt) % delta) + min;
-  /* or from the CMWC */
-  else {
-    return CMWC_GET_NUMBER(r) % delta + min;
+  if (rng->algo == TCOD_RNG_MT) {
+    return (mt_rand(rng->mt, &rng->cur_mt) % delta) + min;
+  } else { /* or from the CMWC */
+    return CMWC_GET_NUMBER(rng) % delta + min;
   }
 }
 
-float TCOD_random_get_f(TCOD_random_t mersenne, float min, float max) {
-  mersenne_data_t* r;
-  float delta, f;
-  if (max == min)
-    return min;
-  else if (max < min) {
-    float tmp = max;
-    max = min;
-    min = tmp;
-  }
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  r = (mersenne_data_t*)mersenne;
-  delta = max - min;
+float TCOD_random_get_f(TCOD_Random* rng, float min, float max) {
+  if (max == min) return min;
+  SORT_MINMAX(min, max, float);
+  if (!rng) rng = TCOD_random_get_instance();
+  const float delta = max - min;
+  float f;
   /* Mersenne Twister */
-  if (r->algo == TCOD_RNG_MT) f = delta * frandom01(r);
-  /* CMWC */
-  else {
-    f = (float)(CMWC_GET_NUMBER(r)) * rand_div * delta;
+  if (rng->algo == TCOD_RNG_MT) {
+    f = delta * frandom01(rng);
+  } else { /* CMWC */
+    f = (float)(CMWC_GET_NUMBER(rng)) * rand_div * delta;
   }
   return min + f;
 }
 
-double TCOD_random_get_d(TCOD_random_t mersenne, double min, double max) {
-  mersenne_data_t* r;
-  double delta, f;
-  if (max == min)
-    return min;
-  else if (max < min) {
-    double tmp = max;
-    max = min;
-    min = tmp;
-  }
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  r = (mersenne_data_t*)mersenne;
-  delta = max - min;
+double TCOD_random_get_d(TCOD_Random* rng, double min, double max) {
+  if (max == min) return min;
+  SORT_MINMAX(min, max, double);
+  if (!rng) rng = TCOD_random_get_instance();
+  const double delta = max - min;
+  double f;
   /* Mersenne Twister */
-  if (r->algo == TCOD_RNG_MT) f = delta * (double)frandom01(r);
-  /* CMWC */
-  else {
-    f = (double)(CMWC_GET_NUMBER(r)) * rand_div_double * delta;
+  if (rng->algo == TCOD_RNG_MT) {
+    f = delta * (double)frandom01(rng);
+  } else { /* CMWC */
+    f = (double)(CMWC_GET_NUMBER(rng)) * rand_div_double * delta;
   }
   return min + f;
 }
 
-void TCOD_random_delete(TCOD_random_t mersenne) {
-  TCOD_IFNOT(mersenne != NULL) return;
-  if (mersenne == instance) instance = NULL;
-  free(mersenne);
+void TCOD_random_delete(TCOD_Random* rng) {
+  TCOD_IFNOT(rng != NULL) return;
+  if (rng == instance) instance = NULL;
+  free(rng);
 }
-TCOD_random_t TCOD_random_save(TCOD_random_t mersenne) {
-  mersenne_data_t* ret = (mersenne_data_t*)malloc(sizeof(mersenne_data_t));
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  memcpy(ret, mersenne, sizeof(mersenne_data_t));
-  return (TCOD_random_t)ret;
+TCOD_Random* TCOD_random_save(TCOD_Random* rng) {
+  TCOD_Random* backup = malloc(sizeof(*backup));
+  if (!rng) rng = TCOD_random_get_instance();
+  *backup = *rng;
+  return backup;
 }
 
-void TCOD_random_restore(TCOD_random_t mersenne, TCOD_random_t backup) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  memcpy(mersenne, backup, sizeof(mersenne_data_t));
+void TCOD_random_restore(TCOD_Random* rng, TCOD_Random* backup) {
+  if (!rng) rng = TCOD_random_get_instance();
+  *rng = *backup;
 }
 
 /* Box-Muller transform (Gaussian distribution) */
-
-double TCOD_random_get_gaussian_double(TCOD_random_t mersenne, double mean, double std_deviation) {
-  double x1, x2, w, y1;
-  static double y2;
+double TCOD_random_get_gaussian_double(TCOD_Random* rng, double mean, double std_deviation) {
+  static double y2;  // This implementation is not reentrant because of these static variables.
   static bool again = false;
   double ret;
-  if (again)
+  if (again) {
     ret = mean + y2 * std_deviation;
-  else {
-    mersenne_data_t* r = NULL;
-    if (!mersenne) mersenne = TCOD_random_get_instance();
-    r = (mersenne_data_t*)mersenne;
+  } else {
+    if (!rng) rng = TCOD_random_get_instance();
+    double x1, x2, w, y1;
     /* MT */
-    if (r->algo == TCOD_RNG_MT) {
+    if (rng->algo == TCOD_RNG_MT) {
       do {
-        x1 = (double)frandom01(r) * 2.0 - 1.0;
-        x2 = (double)frandom01(r) * 2.0 - 1.0;
+        x1 = (double)frandom01(rng) * 2.0 - 1.0;
+        x2 = (double)frandom01(rng) * 2.0 - 1.0;
         w = x1 * x1 + x2 * x2;
       } while (w >= 1.0);
     }
     /* CMWC */
     else {
       do {
-        x1 = CMWC_GET_NUMBER(r) * rand_div_double * 2.0 - 1.0;
-        x2 = CMWC_GET_NUMBER(r) * rand_div_double * 2.0 - 1.0;
+        x1 = CMWC_GET_NUMBER(rng) * rand_div_double * 2.0 - 1.0;
+        x2 = CMWC_GET_NUMBER(rng) * rand_div_double * 2.0 - 1.0;
         w = x1 * x1 + x2 * x2;
       } while (w >= 1.0);
     }
@@ -278,319 +256,251 @@ double TCOD_random_get_gaussian_double(TCOD_random_t mersenne, double mean, doub
   return ret;
 }
 
-float TCOD_random_get_gaussian_float(TCOD_random_t mersenne, float mean, float std_deviation) {
-  return (float)TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
+float TCOD_random_get_gaussian_float(TCOD_Random* rng, float mean, float std_deviation) {
+  return (float)TCOD_random_get_gaussian_double(rng, (double)mean, (double)std_deviation);
 }
 
-int TCOD_random_get_gaussian_int(TCOD_random_t mersenne, int mean, int std_deviation) {
-  double num = TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
+int TCOD_random_get_gaussian_int(TCOD_Random* rng, int mean, int std_deviation) {
+  const double num = TCOD_random_get_gaussian_double(rng, (double)mean, (double)std_deviation);
   return (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
 }
 
 /* Box-Muller, ranges */
 
-double TCOD_random_get_gaussian_double_range(TCOD_random_t mersenne, double min, double max) {
-  double mean, std_deviation, ret;
-  if (min > max) {
-    double tmp = max;
-    max = min;
-    min = tmp;
-  }
-  mean = (min + max) / 2;
-  std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
-  ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+double TCOD_random_get_gaussian_double_range(TCOD_Random* rng, double min, double max) {
+  SORT_MINMAX(min, max, double);
+  const double mean = (min + max) / 2;
+  const double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
+  const double ret = TCOD_random_get_gaussian_double(rng, mean, std_deviation);
   return CLAMP(min, max, ret);
 }
 
-float TCOD_random_get_gaussian_float_range(TCOD_random_t mersenne, float min, float max) {
-  if (min > max) {
-    float tmp = max;
-    max = min;
-    min = tmp;
-  }
-  return (float)TCOD_random_get_gaussian_double_range(mersenne, (double)min, (double)max);
+float TCOD_random_get_gaussian_float_range(TCOD_Random* rng, float min, float max) {
+  SORT_MINMAX(min, max, float);
+  return (float)TCOD_random_get_gaussian_double_range(rng, (double)min, (double)max);
 }
 
-int TCOD_random_get_gaussian_int_range(TCOD_random_t mersenne, int min, int max) {
-  double num;
-  int ret;
-  if (min > max) {
-    int tmp = max;
-    max = min;
-    min = tmp;
-  }
-  num = TCOD_random_get_gaussian_double_range(mersenne, (double)min, (double)max);
-  ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+int TCOD_random_get_gaussian_int_range(TCOD_Random* rng, int min, int max) {
+  SORT_MINMAX(min, max, int);
+  const double num = TCOD_random_get_gaussian_double_range(rng, (double)min, (double)max);
+  const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
   return CLAMP(min, max, ret);
 }
 
 /* Box-Muller, ranges with a custom mean */
 
-double TCOD_random_get_gaussian_double_range_custom(TCOD_random_t mersenne, double min, double max, double mean) {
-  double d1, d2, std_deviation, ret;
-  if (min > max) {
-    double tmp = max;
-    max = min;
-    min = tmp;
-  }
-  d1 = max - mean;
-  d2 = mean - min;
-  std_deviation = MAX(d1, d2) / 3.0;
-  ret = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+double TCOD_random_get_gaussian_double_range_custom(TCOD_Random* rng, double min, double max, double mean) {
+  SORT_MINMAX(min, max, double);
+  const double d1 = max - mean;
+  const double d2 = mean - min;
+  const double std_deviation = MAX(d1, d2) / 3.0;
+  const double ret = TCOD_random_get_gaussian_double(rng, mean, std_deviation);
   return CLAMP(min, max, ret);
 }
 
-float TCOD_random_get_gaussian_float_range_custom(TCOD_random_t mersenne, float min, float max, float mean) {
-  if (min > max) {
-    float tmp = max;
-    max = min;
-    min = tmp;
-  }
-  return (float)TCOD_random_get_gaussian_double_range_custom(mersenne, (double)min, (double)max, (double)mean);
+float TCOD_random_get_gaussian_float_range_custom(TCOD_Random* rng, float min, float max, float mean) {
+  SORT_MINMAX(min, max, float);
+  return (float)TCOD_random_get_gaussian_double_range_custom(rng, (double)min, (double)max, (double)mean);
 }
 
-int TCOD_random_get_gaussian_int_range_custom(TCOD_random_t mersenne, int min, int max, int mean) {
-  double num;
-  int ret;
-  if (min > max) {
-    int tmp = max;
-    max = min;
-    min = tmp;
-  }
-  num = TCOD_random_get_gaussian_double_range_custom(mersenne, (double)min, (double)max, (double)mean);
-  ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+int TCOD_random_get_gaussian_int_range_custom(TCOD_Random* rng, int min, int max, int mean) {
+  SORT_MINMAX(min, max, int);
+  const double num = TCOD_random_get_gaussian_double_range_custom(rng, (double)min, (double)max, (double)mean);
+  const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
   return CLAMP(min, max, ret);
 }
 
 /* Box-Muller, inverted distribution */
-
-double TCOD_random_get_gaussian_double_inv(TCOD_random_t mersenne, double mean, double std_deviation) {
-  double num = TCOD_random_get_gaussian_double(mersenne, mean, std_deviation);
+double TCOD_random_get_gaussian_double_inv(TCOD_Random* rng, double mean, double std_deviation) {
+  const double num = TCOD_random_get_gaussian_double(rng, mean, std_deviation);
   return (num >= mean ? num - (3 * std_deviation) : num + (3 * std_deviation));
 }
 
-float TCOD_random_get_gaussian_float_inv(TCOD_random_t mersenne, float mean, float std_deviation) {
-  float num = (float)TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
+float TCOD_random_get_gaussian_float_inv(TCOD_Random* rng, float mean, float std_deviation) {
+  const float num = (float)TCOD_random_get_gaussian_double(rng, (double)mean, (double)std_deviation);
   return (num >= mean ? (num - (3 * std_deviation)) : (num + (3 * std_deviation)));
 }
 
-int TCOD_random_get_gaussian_int_inv(TCOD_random_t mersenne, int mean, int std_deviation) {
-  double num = TCOD_random_get_gaussian_double(mersenne, (double)mean, (double)std_deviation);
-  int i_num = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+int TCOD_random_get_gaussian_int_inv(TCOD_Random* rng, int mean, int std_deviation) {
+  const double num = TCOD_random_get_gaussian_double(rng, (double)mean, (double)std_deviation);
+  const int i_num = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
   return (num >= mean ? i_num - (3 * std_deviation) : i_num + (3 * std_deviation));
 }
 
 /* Box-Muller, ranges, inverted distribution */
 
-double TCOD_random_get_gaussian_double_range_inv(TCOD_random_t mersenne, double min, double max) {
-  double mean, std_deviation, ret;
-  if (min > max) {
-    double tmp = max;
-    max = min;
-    min = tmp;
-  }
-  mean = (min + max) / 2.0;
-  std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
-  ret = TCOD_random_get_gaussian_double_inv(mersenne, mean, std_deviation);
+double TCOD_random_get_gaussian_double_range_inv(TCOD_Random* rng, double min, double max) {
+  SORT_MINMAX(min, max, double);
+  const double mean = (min + max) / 2.0;
+  const double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
+  const double ret = TCOD_random_get_gaussian_double_inv(rng, mean, std_deviation);
   return CLAMP(min, max, ret);
 }
 
-float TCOD_random_get_gaussian_float_range_inv(TCOD_random_t mersenne, float min, float max) {
-  float ret = (float)TCOD_random_get_gaussian_double_range_inv(mersenne, (double)min, (double)max);
+float TCOD_random_get_gaussian_float_range_inv(TCOD_Random* rng, float min, float max) {
+  const float ret = (float)TCOD_random_get_gaussian_double_range_inv(rng, (double)min, (double)max);
   return CLAMP(min, max, ret);
 }
 
-int TCOD_random_get_gaussian_int_range_inv(TCOD_random_t mersenne, int min, int max) {
-  double num = TCOD_random_get_gaussian_double_range_inv(mersenne, (double)min, (double)max);
-  int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+int TCOD_random_get_gaussian_int_range_inv(TCOD_Random* rng, int min, int max) {
+  const double num = TCOD_random_get_gaussian_double_range_inv(rng, (double)min, (double)max);
+  const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
   return CLAMP(min, max, ret);
 }
 
 /* Box-Muller, ranges with a custom mean, inverted distribution */
 
-double TCOD_random_get_gaussian_double_range_custom_inv(TCOD_random_t mersenne, double min, double max, double mean) {
-  double d1, d2, std_deviation, ret;
-  if (min > max) {
-    double tmp = max;
-    max = min;
-    min = tmp;
-  }
-  d1 = max - mean;
-  d2 = mean - min;
-  std_deviation = MAX(d1, d2) / 3.0;
-  ret = TCOD_random_get_gaussian_double_inv(mersenne, mean, std_deviation);
+double TCOD_random_get_gaussian_double_range_custom_inv(TCOD_Random* rng, double min, double max, double mean) {
+  SORT_MINMAX(min, max, double);
+  const double d1 = max - mean;
+  const double d2 = mean - min;
+  const double std_deviation = MAX(d1, d2) / 3.0;
+  const double ret = TCOD_random_get_gaussian_double_inv(rng, mean, std_deviation);
   return CLAMP(min, max, ret);
 }
 
-float TCOD_random_get_gaussian_float_range_custom_inv(TCOD_random_t mersenne, float min, float max, float mean) {
-  float ret = (float)TCOD_random_get_gaussian_double_range_custom_inv(mersenne, (double)min, (double)max, (double)mean);
+float TCOD_random_get_gaussian_float_range_custom_inv(TCOD_Random* rng, float min, float max, float mean) {
+  const float ret =
+      (float)TCOD_random_get_gaussian_double_range_custom_inv(rng, (double)min, (double)max, (double)mean);
   return CLAMP(min, max, ret);
 }
 
-int TCOD_random_get_gaussian_int_range_custom_inv(TCOD_random_t mersenne, int min, int max, int mean) {
-  double num = TCOD_random_get_gaussian_double_range_custom_inv(mersenne, (double)min, (double)max, (double)mean);
-  int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
+int TCOD_random_get_gaussian_int_range_custom_inv(TCOD_Random* rng, int min, int max, int mean) {
+  const double num = TCOD_random_get_gaussian_double_range_custom_inv(rng, (double)min, (double)max, (double)mean);
+  const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
   return CLAMP(min, max, ret);
 }
 
-void TCOD_random_set_distribution(TCOD_random_t mersenne, TCOD_distribution_t distribution) {
-  mersenne_data_t* r = NULL;
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  r = (mersenne_data_t*)mersenne;
-  r->distribution = distribution;
+void TCOD_random_set_distribution(TCOD_Random* rng, TCOD_distribution_t distribution) {
+  if (!rng) rng = TCOD_random_get_instance();
+  rng->distribution = distribution;
 }
 
-int TCOD_random_get_int(TCOD_random_t mersenne, int min, int max) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+int TCOD_random_get_int(TCOD_Random* rng, int min, int max) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_LINEAR:
-      return TCOD_random_get_i(mersenne, min, max);
-      break;
+      return TCOD_random_get_i(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
-      return TCOD_random_get_gaussian_int(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_int(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
-      return TCOD_random_get_gaussian_int_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_int_inv(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE:
-      return TCOD_random_get_gaussian_int_range(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_int_range(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_int_range_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_int_range_inv(rng, min, max);
     default:
-      return TCOD_random_get_i(mersenne, min, max);
-      break;
+      return TCOD_random_get_i(rng, min, max);
   }
 }
 
-float TCOD_random_get_float(TCOD_random_t mersenne, float min, float max) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+float TCOD_random_get_float(TCOD_Random* rng, float min, float max) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_LINEAR:
-      return TCOD_random_get_f(mersenne, min, max);
-      break;
+      return TCOD_random_get_f(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
-      return TCOD_random_get_gaussian_float(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_float(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
-      return TCOD_random_get_gaussian_float_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_float_inv(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE:
-      return TCOD_random_get_gaussian_float_range(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_float_range(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_float_range_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_float_range_inv(rng, min, max);
     default:
-      return TCOD_random_get_f(mersenne, min, max);
-      break;
+      return TCOD_random_get_f(rng, min, max);
   }
 }
 
-double TCOD_random_get_double(TCOD_random_t mersenne, double min, double max) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+double TCOD_random_get_double(TCOD_Random* rng, double min, double max) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_LINEAR:
-      return TCOD_random_get_d(mersenne, min, max);
-      break;
+      return TCOD_random_get_d(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
-      return TCOD_random_get_gaussian_double(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_double(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
-      return TCOD_random_get_gaussian_double_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_double_inv(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE:
-      return TCOD_random_get_gaussian_double_range(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_double_range(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_double_range_inv(mersenne, min, max);
-      break;
+      return TCOD_random_get_gaussian_double_range_inv(rng, min, max);
     default:
-      return TCOD_random_get_d(mersenne, min, max);
-      break;
+      return TCOD_random_get_d(rng, min, max);
   }
 }
 
-int TCOD_random_get_int_mean(TCOD_random_t mersenne, int min, int max, int mean) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+int TCOD_random_get_int_mean(TCOD_Random* rng, int min, int max, int mean) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_int_range_custom_inv(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_int_range_custom_inv(rng, min, max, mean);
     default:
-      return TCOD_random_get_gaussian_int_range_custom(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_int_range_custom(rng, min, max, mean);
   }
 }
 
-float TCOD_random_get_float_mean(TCOD_random_t mersenne, float min, float max, float mean) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+float TCOD_random_get_float_mean(TCOD_Random* rng, float min, float max, float mean) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_float_range_custom_inv(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_float_range_custom_inv(rng, min, max, mean);
     default:
-      return TCOD_random_get_gaussian_float_range_custom(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_float_range_custom(rng, min, max, mean);
   }
 }
 
-double TCOD_random_get_double_mean(TCOD_random_t mersenne, double min, double max, double mean) {
-  if (!mersenne) mersenne = TCOD_random_get_instance();
-  switch (((mersenne_data_t*)mersenne)->distribution) {
+double TCOD_random_get_double_mean(TCOD_Random* rng, double min, double max, double mean) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->distribution) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
-      return TCOD_random_get_gaussian_double_range_custom_inv(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_double_range_custom_inv(rng, min, max, mean);
     default:
-      return TCOD_random_get_gaussian_double_range_custom(mersenne, min, max, mean);
-      break;
+      return TCOD_random_get_gaussian_double_range_custom(rng, min, max, mean);
   }
 }
 
-TCOD_dice_t TCOD_random_dice_new(const char* s) {
-  TCOD_dice_t d = {1, 1, 1.0f, 0.0f};
-  char* ptr = (char*)s;
-  char tmp[128];
-  size_t l;
+TCOD_dice_t TCOD_random_dice_new(const char* dice_str) {
+  TCOD_dice_t dice = {1, 1, 1.0f, 0.0f};
+  char tmp[128] = "";
+  size_t length;
   /* get multiplier */
-  if ((l = strcspn(ptr, "*x")) < strlen(ptr)) {
-    strcpy(tmp, ptr);
-    tmp[l] = '\0';
-    d.multiplier = (float)atof(tmp);
-    ptr += l + 1;
+  if ((length = strcspn(dice_str, "*x")) < strlen(dice_str)) {
+    strncpy(tmp, dice_str, sizeof(tmp) - 1);
+    tmp[length] = '\0';
+    dice.multiplier = (float)atof(tmp);
+    dice_str += length + 1;
   }
   /* get rolls */
-  l = strcspn(ptr, "dD");
-  strcpy(tmp, ptr);
-  tmp[l] = '\0';
-  d.nb_rolls = atoi(tmp);
-  ptr += l + 1;
+  length = strcspn(dice_str, "dD");
+  strncpy(tmp, dice_str, sizeof(tmp) - 1);
+  tmp[length] = '\0';
+  dice.nb_rolls = atoi(tmp);
+  dice_str += length + 1;
   /* get faces */
-  l = strcspn(ptr, "-+");
-  strcpy(tmp, ptr);
-  tmp[l] = '\0';
-  d.nb_faces = atoi(tmp);
-  ptr += l;
+  length = strcspn(dice_str, "-+");
+  strncpy(tmp, dice_str, sizeof(tmp) - 1);
+  tmp[length] = '\0';
+  dice.nb_faces = atoi(tmp);
+  dice_str += length;
   /* get addsub */
-  if (strlen(ptr) > 0) {
-    int sign = (*ptr == '+') ? 1 : (-1);
-    ptr++;
-    d.addsub = (float)(atof(ptr) * sign);
+  if (strlen(dice_str) > 0) {
+    const int sign = (*dice_str == '+') ? 1 : (-1);
+    ++dice_str;
+    dice.addsub = (float)(atof(dice_str) * sign);
   }
-  return d;
+  return dice;
 }
 
-int TCOD_random_dice_roll(TCOD_random_t mersenne, TCOD_dice_t dice) {
-  int rolls;
+int TCOD_random_dice_roll(TCOD_Random* rng, TCOD_dice_t dice) {
   int result = 0;
-  for (rolls = 0; rolls < dice.nb_rolls; rolls++) result += TCOD_random_get_i(mersenne, 1, dice.nb_faces);
+  for (int rolls = 0; rolls < dice.nb_rolls; ++rolls) result += TCOD_random_get_i(rng, 1, dice.nb_faces);
   return (int)((result + dice.addsub) * dice.multiplier);
 }
 
-int TCOD_random_dice_roll_s(TCOD_random_t mersenne, const char* s) {
-  return TCOD_random_dice_roll(mersenne, TCOD_random_dice_new(s));
+int TCOD_random_dice_roll_s(TCOD_Random* rng, const char* dice_str) {
+  return TCOD_random_dice_roll(rng, TCOD_random_dice_new(dice_str));
 }

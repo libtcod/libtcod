@@ -83,7 +83,7 @@ TCODLIB_API TCOD_console_t TCOD_zip_get_console(TCOD_zip_t zip);
     .. versionadded:: 1.16
     \endrst
  */
-TCODLIB_API TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip);
+TCODLIB_API TCOD_Random* TCOD_zip_get_random(TCOD_zip_t zip);
 TCODLIB_API int TCOD_zip_get_data(TCOD_zip_t zip, int nbBytes, void* data);
 TCODLIB_API uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t zip);
 TCODLIB_API void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes);

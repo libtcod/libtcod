@@ -338,7 +338,7 @@ bool TCOD_heightmap_has_land_on_border(const TCOD_heightmap_t* hm, float waterLe
   return false;
 }
 
-void TCOD_heightmap_islandify(TCOD_heightmap_t* hm, float seaLevel, TCOD_random_t rnd) {
+void TCOD_heightmap_islandify(TCOD_heightmap_t* hm, float seaLevel, TCOD_Random* rnd) {
   (void)hm;
   (void)seaLevel;
   (void)rnd;  // This function is pending removal.
@@ -433,7 +433,7 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
 }
 
 void TCOD_heightmap_rain_erosion(
-    TCOD_heightmap_t* hm, int nbDrops, float erosionCoef, float aggregationCoef, TCOD_random_t rnd) {
+    TCOD_heightmap_t* hm, int nbDrops, float erosionCoef, float aggregationCoef, TCOD_Random* rnd) {
   if (!hm) {
     return;
   }
@@ -475,10 +475,10 @@ void TCOD_heightmap_rain_erosion(
 }
 
 #if 0
-static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x,int y, float z, float offset);
-static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_random_t rnd,int x, int y, int initsz, int sz,float offset);
+static void setMPDHeight(TCOD_heightmap_t *hm, TCOD_Random* rnd,int x,int y, float z, float offset);
+static void setMDPHeightSquare(TCOD_heightmap_t *hm, TCOD_Random* rnd,int x, int y, int initsz, int sz,float offset);
 
-void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope,float erosionCoef,float aggregationCoef,TCOD_random_t rnd) {
+void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope,float erosionCoef,float aggregationCoef,TCOD_Random* rnd) {
 	if (!hm) { return; }
 	while ( nbPass-- > 0 ) {
 		for (int y=0; y < hm->h; y++) {
@@ -541,7 +541,7 @@ void TCOD_heightmap_kernel_transform(
   }
 }
 
-void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_random_t rnd) {
+void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, const float* coef, TCOD_Random* rnd) {
   if (!hm) {
     return;
   }
@@ -583,10 +583,10 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, 
   free(pt);
 }
 
-static void setMPDHeight(TCOD_heightmap_t* hm, TCOD_random_t rnd, int x, int y, float z, float offset);
-static void setMDPHeightSquare(TCOD_heightmap_t* hm, TCOD_random_t rnd, int x, int y, int initsz, int sz, float offset);
+static void setMPDHeight(TCOD_heightmap_t* hm, TCOD_Random* rnd, int x, int y, float z, float offset);
+static void setMDPHeightSquare(TCOD_heightmap_t* hm, TCOD_Random* rnd, int x, int y, int initsz, int sz, float offset);
 
-void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_random_t rnd, float roughness) {
+void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_Random* rnd, float roughness) {
   if (!hm) {
     return;
   }
@@ -634,13 +634,12 @@ void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_random_t r
 }
 
 /* private stuff */
-static void setMPDHeight(TCOD_heightmap_t* hm, TCOD_random_t rnd, int x, int y, float z, float offset) {
+static void setMPDHeight(TCOD_heightmap_t* hm, TCOD_Random* rnd, int x, int y, float z, float offset) {
   z += TCOD_random_get_float(rnd, -offset, offset);
   GET_VALUE(hm, x, y) = z;
 }
 
-static void setMDPHeightSquare(
-    TCOD_heightmap_t* hm, TCOD_random_t rnd, int x, int y, int initsz, int sz, float offset) {
+static void setMDPHeightSquare(TCOD_heightmap_t* hm, TCOD_Random* rnd, int x, int y, int initsz, int sz, float offset) {
   float z = 0;
   int count = 0;
   if (y >= sz) {

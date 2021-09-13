@@ -403,10 +403,9 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
   return ret;
 }
 
-TCODLIB_API TCOD_random_t TCOD_zip_get_random(TCOD_zip_t zip) {
-  TCOD_random_t ret;
-  int s = TCOD_zip_get_int(zip);
-  ret = (TCOD_random_t)malloc(s);
+TCODLIB_API TCOD_Random* TCOD_zip_get_random(TCOD_zip_t zip) {
+  const int s = TCOD_zip_get_int(zip);
+  TCOD_Random* ret = malloc(s);
   TCOD_zip_get_data(zip, s, ret);
   return ret;
 }

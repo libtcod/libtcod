@@ -64,7 +64,7 @@ extern "C" {
 #endif
 /* create a new noise object */
 TCOD_NODISCARD
-TCOD_PUBLIC TCOD_Noise* TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_random_t random);
+TCOD_PUBLIC TCOD_Noise* TCOD_noise_new(int dimensions, float hurst, float lacunarity, TCOD_Random* random);
 
 /* simplified API */
 TCOD_PUBLIC void TCOD_noise_set_type(TCOD_Noise* __restrict noise, TCOD_noise_type_t type);

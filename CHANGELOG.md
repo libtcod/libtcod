@@ -28,6 +28,7 @@ since `1.7.0`.
 - Deprecated C++ color constants because of class `static const` initialization issues.
 - Deprecated libtcod's older timing functions.
 - Deprecated older font loading functions.
+- Deprecated `TCOD_random_t` type.
 
 ## [1.18.1] - 2021-05-21
 ### Fixed

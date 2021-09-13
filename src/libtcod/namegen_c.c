@@ -64,7 +64,7 @@ typedef struct TCOD_NameGen {
   /* the name that will be called */
   char* name;
   /* needs to use a random number generator */
-  TCOD_random_t random;
+  TCOD_Random* random;
   /* the lists with all the data */
   TCOD_list_t vocals;
   TCOD_list_t consonants;
@@ -92,7 +92,7 @@ TCOD_list_t parsed_files = NULL;
 namegen_syllables_t* parser_data = NULL;
 namegen_t* parser_output = NULL;
 /* this one's needed to correctly update the generators with RNG pointer */
-TCOD_random_t namegen_random;
+TCOD_Random* namegen_random;
 
 /* the string that will be pointed to upon generating a name */
 char* namegen_name = NULL;
@@ -483,7 +483,7 @@ bool namegen_word_is_ok(const namegen_t* data, char* str) {
  * ---------------------------- */
 
 /* parse a new syllable sets file - allocates a new data structure and fills it with necessary content */
-void TCOD_namegen_parse(const char* filename, TCOD_random_t random) {
+void TCOD_namegen_parse(const char* filename, TCOD_Random* random) {
   /* check for file existence */
   FILE* in = fopen(filename, "r");
   if (in == NULL) {

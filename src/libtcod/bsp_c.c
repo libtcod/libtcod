@@ -157,7 +157,7 @@ void TCOD_bsp_split_once(TCOD_bsp_t* node, bool horizontal, int position) {
 }
 
 void TCOD_bsp_split_recursive(
-    TCOD_bsp_t* node, TCOD_random_t randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio) {
+    TCOD_bsp_t* node, TCOD_Random* randomizer, int nb, int minHSize, int minVSize, float maxHRatio, float maxVRatio) {
   bool horiz;
   int position;
   if (nb == 0 || (node->w < 2 * minHSize && node->h < 2 * minVSize)) return;

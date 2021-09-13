@@ -31,7 +31,10 @@
  */
 #ifndef _TCOD_RANDOM_TYPES_H
 #define _TCOD_RANDOM_TYPES_H
-#include "stdint.h"
+#include <stdint.h>
+
+#include "config.h"
+
 /* dice roll */
 typedef struct {
   int nb_rolls;
@@ -73,6 +76,6 @@ typedef struct TCOD_Random {
   int cur;
 } TCOD_Random;
 
-typedef struct TCOD_Random* TCOD_random_t;
+typedef TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.") struct TCOD_Random* TCOD_random_t;
 
 #endif /* _TCOD_RANDOM_TYPES_H */

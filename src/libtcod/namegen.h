@@ -49,7 +49,7 @@ struct TCOD_NameGen;
 typedef struct TCOD_NameGen* TCOD_namegen_t;
 
 /* parse a file with syllable sets */
-TCODLIB_API void TCOD_namegen_parse(const char* filename, TCOD_random_t random);
+TCODLIB_API void TCOD_namegen_parse(const char* filename, TCOD_Random* random);
 /* generate a name */
 TCODLIB_API char* TCOD_namegen_generate(const char* name, bool allocate);
 /* generate a name using a custom generation rule */

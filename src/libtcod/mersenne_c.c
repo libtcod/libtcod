@@ -38,7 +38,7 @@
 #include "mersenne.h"
 #include "utility.h"
 
-static TCOD_Random* instance = NULL;
+static TCOD_Random* global_rng_instance = NULL;
 
 // A generic macro to swap two variables.
 #define GENERIC_SWAP(x, y, T) \
@@ -150,8 +150,8 @@ static double get_random_double(TCOD_Random* rng) { return get_random_u32(rng) *
 TCOD_Random* TCOD_random_new(TCOD_random_algo_t algo) { return TCOD_random_new_from_seed(algo, (uint32_t)time(0)); }
 
 TCOD_Random* TCOD_random_get_instance(void) {
-  if (!instance) instance = TCOD_random_new(TCOD_RNG_CMWC);
-  return instance;
+  if (!global_rng_instance) global_rng_instance = TCOD_random_new(TCOD_RNG_CMWC);
+  return global_rng_instance;
 }
 
 TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
@@ -197,7 +197,7 @@ double TCOD_random_get_d(TCOD_Random* rng, double min, double max) {
 
 void TCOD_random_delete(TCOD_Random* rng) {
   TCOD_IFNOT(rng != NULL) return;
-  if (rng == instance) instance = NULL;
+  if (rng == global_rng_instance) global_rng_instance = NULL;
   free(rng);
 }
 TCOD_Random* TCOD_random_save(TCOD_Random* rng) {

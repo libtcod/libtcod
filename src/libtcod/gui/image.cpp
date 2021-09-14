@@ -38,8 +38,8 @@ Image::Image(int x, int y, int w, int h, const char* tip) : Widget(x, y, w, h), 
 Image::~Image() {}
 
 void Image::render() {
-  con->setDefaultBackground(back);
-  con->rect(x, y, w, h, TCOD_BKGND_SET);
+  const auto bg = TCOD_ColorRGB(back);
+  tcod::draw_rect(static_cast<TCOD_Console&>(*con), {x, y, w, h}, ' ', nullptr, &bg);
 }
 
 void Image::setBackgroundColor(const TCODColor col) { back = col; }

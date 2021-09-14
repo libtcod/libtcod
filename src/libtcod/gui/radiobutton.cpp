@@ -56,7 +56,8 @@ void RadioButton::unSelectGroup(int group) { groupSelect[group] = NULL; }
 void RadioButton::render() {
   Button::render();
   if (groupSelect[group] == this) {
-    con->setChar(x, y, '>');
+    auto& console = static_cast<TCOD_Console&>(*con);
+    if (console.in_bounds({x, y})) console.at({x, y}).ch = '>';
   }
 }
 

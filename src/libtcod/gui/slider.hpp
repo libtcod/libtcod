@@ -54,8 +54,8 @@ class TCODLIB_GUI_API Slider : public TextBox {
   float min, max, value, sensitivity;
   bool onArrows;
   bool drag;
-  int dragx;
-  int dragy;
+  int drag_x;
+  int drag_y;
   float dragValue;
   char* fmt;
   void (*cbk)(Widget* wid, float val, void* data);

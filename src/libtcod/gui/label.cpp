@@ -40,9 +40,8 @@ Label::Label(int x, int y, const char* label, const char* tip) : Widget(x, y, 0,
   }
 }
 void Label::render() {
-  con->setDefaultBackground(back);
-  con->setDefaultForeground(fore);
-  con->printf(x, y, TCOD_BKGND_NONE, TCOD_LEFT, "%s", label);
+  const auto fg = TCOD_ColorRGB(fore);
+  tcod::print(static_cast<TCOD_Console&>(*con), {x, y}, label, &fg, nullptr);
 }
 void Label::computeSize() { w = label ? static_cast<int>(strlen(label)) : 0; }
 void Label::expand(int width, int) { w = std::max(w, width); }

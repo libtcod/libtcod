@@ -67,11 +67,15 @@ void Slider::render() {
   w -= 2;
   TextBox::render();
   w += 2;
-  con->setDefaultBackground((onArrows || drag) ? backFocus : back);
-  con->setDefaultForeground((onArrows || drag) ? foreFocus : fore);
-  con->rect(x + w - 2, y, 2, 1, TCOD_BKGND_SET);
-  con->setChar(x + w - 2, y, 0x2190);  // ←
-  con->setChar(x + w - 1, y, 0x2192);  // →
+  const auto fg = TCOD_ColorRGBA((onArrows || drag) ? foreFocus : fore);
+  const auto bg = TCOD_ColorRGBA((onArrows || drag) ? backFocus : back);
+  auto& console = static_cast<TCOD_Console&>(*con);
+  if (console.in_bounds({x + w - 2, y})) {
+    console.at({x + w - 2, y}) = {0x2190, fg, bg};  // ←
+  }
+  if (console.in_bounds({x + w - 1, y})) {
+    console.at({x + w - 1, y}) = {0x2192, fg, bg};  // →
+  }
 }
 
 void Slider::update(TCOD_key_t k) {
@@ -84,12 +88,12 @@ void Slider::update(TCOD_key_t k) {
     onArrows = false;
   }
   if (drag) {
-    if (dragy == -1) {
-      dragx = mouse.x;
-      dragy = mouse.y;
+    if (drag_y == -1) {
+      drag_x = mouse.x;
+      drag_y = mouse.y;
     } else {
-      float mdx = ((mouse.x - dragx) * sensitivity) / (con->getWidth() * 8);
-      float mdy = ((mouse.y - dragy) * sensitivity) / (con->getHeight() * 8);
+      float mdx = ((mouse.x - drag_x) * sensitivity) / (con->getWidth() * 8);
+      float mdy = ((mouse.y - drag_y) * sensitivity) / (con->getHeight() * 8);
       float old_value2 = value;
       if (fabs(mdy) > fabs(mdx)) {
         mdx = -mdy;
@@ -131,7 +135,7 @@ void Slider::setValue(float value_) {
 void Slider::onButtonPress() {
   if (onArrows) {
     drag = true;
-    dragy = -1;
+    drag_y = -1;
     dragValue = value;
     TCODMouse::showCursor(false);
   }

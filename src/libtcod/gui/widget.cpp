@@ -125,8 +125,8 @@ void Widget::updateWidgetsIntern(const TCOD_key_t k) {
   }
 }
 
-void Widget::updateWidgets(const TCOD_key_t k, const TCOD_mouse_t pmouse) {
-  mouse = pmouse;
+void Widget::updateWidgets(const TCOD_key_t k, const TCOD_mouse_t p_mouse) {
+  mouse = p_mouse;
   updateWidgetsIntern(k);
 }
 

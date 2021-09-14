@@ -32,10 +32,11 @@
 #include "statusbar.hpp"
 
 void StatusBar::render() {
-  con->setDefaultBackground(back);
-  con->rect(x, y, w, h, true, TCOD_BKGND_SET);
+  auto& console = static_cast<TCOD_Console&>(*con);
+  const auto bg = TCOD_ColorRGB(back);
+  tcod::draw_rect(console, {x, y, w, h}, ' ', nullptr, &bg);
   if (focus && focus->tip) {
-    con->setDefaultForeground(fore);
-    con->printRectEx(x + 1, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT, "%s", focus->tip);
+    const auto fg = TCOD_ColorRGB(fore);
+    tcod::print_rect(console, {x + 1, y, w, h}, focus->tip, &fg, nullptr);
   }
 }

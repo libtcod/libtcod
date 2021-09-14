@@ -51,14 +51,17 @@ class Separator : public Widget {
   void computeSize() { w = txt ? static_cast<int>(strlen(txt) + 2) : 0; }
   void expand(int width, int) { w = std::max(w, width); }
   void render() {
-    con->setDefaultBackground(back);
-    con->setDefaultForeground(fore);
-    con->hline(x, y, w, TCOD_BKGND_SET);
-    con->setChar(x - 1, y, 0x251C);  // ├
-    con->setChar(x + w, y, 0x2524);  // ┤
-    con->setDefaultBackground(fore);
-    con->setDefaultForeground(back);
-    con->printf(x + w / 2, y, TCOD_BKGND_SET, TCOD_CENTER, " %s ", txt);
+    auto& console = static_cast<TCOD_Console&>(*con);
+    const auto fg = TCOD_ColorRGB(fore);
+    const auto bg = TCOD_ColorRGB(back);
+    tcod::draw_rect(console, {x, y, w, 1}, 0x2500, &fg, &bg);
+    if (console.in_bounds({x - 1, y})) {
+      console.at({x - 1, y}) = {0x251C, {fg.r, fg.g, fg.b, 255}, {bg.r, bg.g, bg.b, 255}};  // ├
+    }
+    if (console.in_bounds({x + w, y})) {
+      console.at({x + w, y}) = {0x2524, {fg.r, fg.g, fg.b, 255}, {bg.r, bg.g, bg.b, 255}};  // ┤
+    }
+    tcod::print(console, {x + w / 2, y}, tcod::stringf(" %s ", txt), &bg, &fg, TCOD_BKGND_SET, TCOD_CENTER);
   }
   char* txt;
 };

@@ -34,15 +34,13 @@
 #include <string.h>
 
 void ToggleButton::render() {
-  con->setDefaultBackground(mouseIn ? backFocus : back);
-  con->setDefaultForeground(mouseIn ? foreFocus : fore);
-  con->rect(x, y, w, h, true, TCOD_BKGND_SET);
+  auto& console = static_cast<TCOD_Console&>(*con);
+  const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
+  const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
+  tcod::draw_rect(console, {x, y, w, h}, ' ', nullptr, &bg);
   const char* check = pressed ? u8"\u2611" : u8"\u2610";
-  if (label) {
-    con->printf(x, y, TCOD_BKGND_NONE, TCOD_LEFT, "%s %s", check, label);
-  } else {
-    con->printf(x, y, TCOD_BKGND_NONE, TCOD_LEFT, "%s", check);
-  }
+  const auto text = label ? tcod::stringf("%s %s", check, label) : check;
+  tcod::print(console, {x, y}, text, &fg, nullptr);
 }
 
 void ToggleButton::onButtonPress() {}

@@ -50,21 +50,28 @@ FlatList::~FlatList() {}
 
 void FlatList::render() {
   w--;
-  boxx++;
+  box_x++;
   TextBox::render();
-  boxx--;
+  box_x--;
   w++;
-  con->setDefaultBackground((onLeftArrow) ? backFocus : back);
-  con->setDefaultForeground((onLeftArrow) ? foreFocus : fore);
-  con->putChar(x + boxx, y, 0x2190);  // ←
-  con->setDefaultBackground((onRightArrow) ? backFocus : back);
-  con->setDefaultForeground((onRightArrow) ? foreFocus : fore);
-  con->putChar(x + w - 1, y, 0x2192);  // →
+  auto& console = static_cast<TCOD_Console&>(*con);
+  if (console.in_bounds({x + box_x, y})) {
+    console.at({x + box_x, y}) = {
+        0x2190,  // ←
+        TCOD_ColorRGBA(onLeftArrow ? foreFocus : fore),
+        TCOD_ColorRGBA(onLeftArrow ? backFocus : back)};
+  }
+  if (console.in_bounds({x + w - 1, y})) {
+    console.at({x + w - 1, y}) = {
+        0x2192,  // →
+        TCOD_ColorRGBA(onRightArrow ? foreFocus : fore),
+        TCOD_ColorRGBA(onRightArrow ? backFocus : back)};
+  }
 }
 
 void FlatList::update(TCOD_key_t k) {
   onLeftArrow = onRightArrow = false;
-  if (mouse.cx == x + boxx && mouse.cy == y)
+  if (mouse.cx == x + box_x && mouse.cy == y)
     onLeftArrow = true;
   else if (mouse.cx == x + w - 1 && mouse.cy == y)
     onRightArrow = true;

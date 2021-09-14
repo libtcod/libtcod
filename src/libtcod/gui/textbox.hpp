@@ -34,14 +34,14 @@
 #include "widget.hpp"
 class TCODLIB_GUI_API TextBox : public Widget {
  public:
-  TextBox(int x, int y, int w, int maxw, const char* label, const char* value, const char* tip = NULL);
+  TextBox(int x, int y, int w, int max_width, const char* label, const char* value, const char* tip = NULL);
   virtual ~TextBox();
   void render();
   void update(const TCOD_key_t k);
   void setText(const char* txt);
   const char* getValue() { return txt; }
   void setCallback(void (*cbk)(Widget* wid, char* val, void* data), void* data_) {
-    txtcbk = cbk;
+    text_callback = cbk;
     this->data = data_;
   }
   static void setBlinkingDelay(float delay) { blinkingDelay = delay; }
@@ -52,9 +52,9 @@ class TCODLIB_GUI_API TextBox : public Widget {
   char* txt;
   float blink;
   int pos, offset;
-  int boxx, boxw, maxw;
+  int box_x, box_width, max_width;
   bool insert;
-  void (*txtcbk)(Widget* wid, char* val, void* data);
+  void (*text_callback)(Widget* wid, char* val, void* data);
   void* data;
 
   void onButtonClick();

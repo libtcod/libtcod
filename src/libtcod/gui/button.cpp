@@ -76,16 +76,17 @@ void Button::setLabel(const char* newLabel) {
   label = TCOD_strdup(newLabel);
 }
 void Button::render() {
-  con->setDefaultBackground(mouseIn ? backFocus : back);
-  con->setDefaultForeground(mouseIn ? foreFocus : fore);
+  const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
+  const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
+  auto& console = static_cast<TCOD_Console&>(*con);
   if (w > 0 && h > 0) {
-    con->rect(x, y, w, h, true, TCOD_BKGND_SET);
+    tcod::draw_rect(console, {x, y, w, h}, ' ', &fg, &bg);
   }
   if (label) {
     if (pressed && mouseIn) {
-      con->printf(x + w / 2, y, TCOD_BKGND_NONE, TCOD_CENTER, "-%s-", label);
+      tcod::print(console, {x + w / 2, y}, tcod::stringf("-%s-", label), &fg, nullptr, TCOD_BKGND_SET, TCOD_CENTER);
     } else {
-      con->printf(x + w / 2, y, TCOD_BKGND_NONE, TCOD_CENTER, "%s", label);
+      tcod::print(console, {x + w / 2, y}, label, &fg, nullptr, TCOD_BKGND_SET, TCOD_CENTER);
     }
   }
 }

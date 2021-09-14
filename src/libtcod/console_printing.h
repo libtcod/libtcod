@@ -399,8 +399,8 @@ namespace tcod {
 
     @code{.cpp}
       auto console = tcod::new_console({{80, 50}})
-      static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
-      static constexpr TCOD_ColorRGB BLACK{0, 0, 0};
+      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
+      static constexpr auto BLACK = TCOD_ColorRGB{0, 0, 0};
       tcod::print(*console, {0, 0}, "Hello World", &WHITE, &BLACK);
     @endcode
 
@@ -435,7 +435,7 @@ inline void print(
 
     @code{.cpp}
       auto console = tcod::new_console({{80, 50}})
-      static constexpr TCOD_ColorRGB TEAL{0, 255, 255};
+      static constexpr auto TEAL = TCOD_ColorRGB{0, 255, 255};
       // Print "Hello World" centered along the top row, ignoring the background color.
       tcod::print_rect(
           *console, {0, 0, console->w, 1}, "Hello World", &TEAL, nullptr, TCOD_BKGND_SET, TCOD_CENTER);

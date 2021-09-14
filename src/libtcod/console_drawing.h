@@ -158,8 +158,8 @@ namespace tcod {
 
     @code{.cpp}
       auto console = tcod::new_console({{80, 50}})
-      static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
-      static constexpr TCOD_ColorRGB RED{255, 0, 0};
+      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
+      static constexpr auto RED = TCOD_ColorRGB{255, 0, 0};
       // Draw a red background without replacing any foreground glyphs/colors.
       tcod::draw_rect(*console, {2, 2, 24, 24}, 0, nullptr, &RED);
       // Draw a horizontal bar.
@@ -201,8 +201,8 @@ inline void draw_rect(
 
     @code{.cpp}
       auto console = tcod::new_console({{80, 50}})
-      static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
-      static constexpr TCOD_ColorRGB BLACK{0, 0, 0};
+      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
+      static constexpr auto BLACK = TCOD_ColorRGB{0, 0, 0};
       static constexpr std::array<int, 9> LEGEND = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
       tcod::draw_frame(*console, {0, 0, 3, 3}, LEGEND, &WHITE, &BLACK);
     @endcode

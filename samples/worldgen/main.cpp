@@ -34,7 +34,7 @@
 static constexpr auto WIDTH = 80;
 static constexpr auto HEIGHT = 50;
 
-static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
 
 TCODNoise noise1d(1);
 TCODNoise noise2d(2);

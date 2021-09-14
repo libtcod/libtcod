@@ -36,7 +36,7 @@ Instead of setting colors before calling the print functions you now pass the co
 
 .. code-block:: cpp
 
-  static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+  static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
 
   TCODConsole* console = new TCODConsole(80, 25);  // Deprecated.
 

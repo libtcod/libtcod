@@ -6,8 +6,8 @@
 
 TEST_CASE("tcod::print") {
   tcod::ConsolePtr console = tcod::new_console(5, 1);
-  static constexpr TCOD_ColorRGB FG{1, 2, 3};
-  static constexpr TCOD_ColorRGB BG{4, 5, 6};
+  static constexpr auto FG = TCOD_ColorRGB{1, 2, 3};
+  static constexpr auto BG = TCOD_ColorRGB{4, 5, 6};
   tcod::print(*console, {0, 0}, "Test", &FG, &BG);
   CHECK(to_string(*console) == "Test ");
   CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});

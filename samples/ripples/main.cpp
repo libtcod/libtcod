@@ -35,7 +35,7 @@
 
 #include "util_ripples.hpp"
 
-static constexpr TCOD_ColorRGB WHITE{255, 255, 255};
+static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
 
 TCODNoise noise2d(2);
 TCODNoise noise3d(3);

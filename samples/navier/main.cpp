@@ -303,7 +303,7 @@ void update(float elapsed, TCOD_Context& context) {
   update_density(dens, dens_prev, u_current, v_current, DIFF, elapsed);
 }
 
-static constexpr TCOD_ColorRGB TEXT_COLOR{0, 0, 0};
+static constexpr auto TEXT_COLOR = TCOD_ColorRGB{0, 0, 0};
 
 void render(TCOD_Console& console) {
   static constexpr TCODColor deepBlue = {63, 15, 0};

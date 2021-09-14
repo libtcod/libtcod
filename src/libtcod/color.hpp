@@ -450,6 +450,21 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 
   // clang-format on
 
+  /***************************************************************************
+      @brief Allow conversions to TCOD_ColorRGB.
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  explicit operator TCOD_ColorRGB() const noexcept { return {r, g, b}; }
+  /***************************************************************************
+      @brief Allow conversions to TCOD_ColorRGBA.
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  explicit operator TCOD_ColorRGBA() const noexcept { return {r, g, b, 255}; }
+
   // color array
   static const TCODColor colors [[deprecated]][TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
 

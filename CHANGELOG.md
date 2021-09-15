@@ -23,6 +23,7 @@ since `1.7.0`.
 - Initializing libtcod with the old API will now enable VSync by default.
   You can set the environment variable `TCOD_VSYNC=0` to disable this or use the new API where VSync is a setting.
 - `TCODConsole::get_data` now returns a non-NULL pointer to the root console.
+- Fixes to Gaussian number generation will have changed the resulting numbers and any subsequent random numbers.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
@@ -30,6 +31,10 @@ since `1.7.0`.
 - Deprecated libtcod's older timing functions.
 - Deprecated older font loading functions.
 - Deprecated `TCOD_random_t` type.
+
+## Fixed
+- Gaussian number generation no longer affects the results of unrelated RNG's.
+- Gaussian number generation is now reentrant and thread-safe.
 
 ## [1.18.1] - 2021-05-21
 ### Fixed

@@ -214,26 +214,17 @@ void TCOD_random_restore(TCOD_Random* rng, TCOD_Random* backup) {
 
 /* Box-Muller transform (Gaussian distribution) */
 double TCOD_random_get_gaussian_double(TCOD_Random* rng, double mean, double std_deviation) {
-  static double y2;  // This implementation is not reentrant because of these static variables.
-  static bool again = false;
-  double ret;
-  if (again) {
-    ret = mean + y2 * std_deviation;
-  } else {
-    if (!rng) rng = TCOD_random_get_instance();
-    double x1, x2, w;
-    do {
-      x1 = get_random_double(rng) * 2.0 - 1.0;
-      x2 = get_random_double(rng) * 2.0 - 1.0;
-      w = x1 * x1 + x2 * x2;
-    } while (w >= 1.0);
-    w = sqrt((-2.0 * log(w)) / w);
-    const double y1 = x1 * w;
-    y2 = x2 * w;
-    ret = mean + y1 * std_deviation;
-  }
-  again = !again;
-  return ret;
+  if (!rng) rng = TCOD_random_get_instance();
+  double x1, x2, w;
+  do {
+    x1 = get_random_double(rng) * 2.0 - 1.0;
+    x2 = get_random_double(rng) * 2.0 - 1.0;
+    w = x1 * x1 + x2 * x2;
+  } while (w >= 1.0);
+  w = sqrt((-2.0 * log(w)) / w);
+  const double y1 = x1 * w;
+  // const double y2 = x2 * w;  // y2 is discarded.
+  return mean + y1 * std_deviation;
 }
 
 float TCOD_random_get_gaussian_float(TCOD_Random* rng, float mean, float std_deviation) {

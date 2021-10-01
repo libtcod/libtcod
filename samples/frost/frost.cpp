@@ -25,12 +25,12 @@ static constexpr auto PIX_PER_FRAME = 6;
 static constexpr auto RANGE = 10;  // Maximum range from a frost origin to calculate and apply frost effects.
 
 struct Frost {
-  explicit Frost(int x, int y) : origin_x{x}, origin_y{y}, border{0}, timer{0} {}
-  int origin_x, origin_y;  // The frost origin position.
-  int best_x, best_y;  // A relative position to the frost closest to rx,ry.
-  int rx, ry;  // A random relative direction.
-  int border;  // The total number of frames this effect has touched the border.
-  float timer;  // Seconds remaining until this particle changes direction.
+  explicit Frost(int x, int y) : origin_x{x}, origin_y{y} {}
+  int origin_x = 0, origin_y = 0;  // The frost origin position.
+  int best_x = 0, best_y = 0;  // A relative position to the frost closest to rx,ry.
+  int rx = 0, ry = 0;  // A random relative direction.
+  int border = 0;  // The total number of frames this effect has touched the border.
+  float timer = 0;  // Seconds remaining until this particle changes direction.
 };
 
 class FrostManager {

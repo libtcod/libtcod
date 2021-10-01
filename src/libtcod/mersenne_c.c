@@ -43,9 +43,9 @@ static TCOD_Random* global_rng_instance = NULL;
 // A generic macro to swap two variables.
 #define GENERIC_SWAP(x, y, T) \
   {                           \
-    T __SWAP_VARIABLE_ = (x); \
+    T swap_variable__ = (x);  \
     (x) = (y);                \
-    (y) = __SWAP_VARIABLE_;   \
+    (y) = swap_variable__;    \
   }
 
 // A generic macro to swap min and max if they are out-of-order.

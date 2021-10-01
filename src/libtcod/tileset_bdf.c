@@ -164,6 +164,7 @@ static int parse_bitmap(struct BDFLoader* loader, int codepoint, struct BBox* gl
       if (bitmap_x % 8 == 0) {
         bitmask = read_next_bitmap_byte(loader);
         if (bitmask < 0) {
+          free(pixels);
           return -1;
         }
       }

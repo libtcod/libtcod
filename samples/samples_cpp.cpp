@@ -383,10 +383,8 @@ class NoiseSample : public Sample {
         "9 : wavelet turbulence ",
     };
     static TCODImage* img = NULL;
-    if (!noise) {
-      noise = new TCODNoise(2, hurst, lacunarity);
-      img = new TCODImage(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
-    }
+    if (!noise) noise = new TCODNoise(2, hurst, lacunarity);
+    if (!img) img = new TCODImage(SAMPLE_SCREEN_WIDTH * 2, SAMPLE_SCREEN_HEIGHT * 2);
 
     // texture animation
     const float dx = SDL_GetTicks() * 0.0005f;

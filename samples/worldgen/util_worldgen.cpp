@@ -118,12 +118,12 @@ static constexpr TCODColor keyColor[MAX_COLOR_KEY] = {
 
 // altitude color map
 static constexpr int MAX_ALT_KEY = 8;
-static constexpr int altIndexes[MAX_ALT_KEY] = {
+static constexpr std::array<int, MAX_ALT_KEY> altIndexes{
     0, 15, (int)(sandHeight * 255), (int)(sandHeight * 255) + 1, 80, 130, 195, 255};
-static constexpr float altitudes[MAX_ALT_KEY] = {
+static constexpr std::array<float, MAX_ALT_KEY> altitudes{
     -2000, -1000, -100, 0, 500, 1000, 2500, 4000  // in meters
 };
-static constexpr TCODColor altColors[MAX_ALT_KEY] = {
+static constexpr std::array<TCODColor, MAX_ALT_KEY> altColors{
     TCODColor(24, 165, 255),  // -2000
     TCODColor(132, 214, 255),  // -1000
     TCODColor(247, 255, 255),  // -100
@@ -136,12 +136,12 @@ static constexpr TCODColor altColors[MAX_ALT_KEY] = {
 
 // precipitation color map
 static constexpr int MAX_PREC_KEY = 19;
-static constexpr int precIndexes[MAX_PREC_KEY] = {
+static constexpr std::array<int, MAX_PREC_KEY> precIndexes{
     4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 50, 60, 70, 80, 100, 120, 140, 160, 255};
-static constexpr float precipitations[MAX_PREC_KEY] = {
+static constexpr std::array<float, MAX_PREC_KEY> precipitations{
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 15, 18, 20, 25, 30, 35, 40  // cm / m² / year
 };
-static constexpr TCODColor precColors[MAX_PREC_KEY] = {
+static constexpr std::array<TCODColor, MAX_PREC_KEY> precColors{
     TCODColor(128, 0, 0),  // < 4
     TCODColor(173, 55, 0),  // 4-8
     TCODColor(227, 102, 0),  // 8-12
@@ -187,24 +187,22 @@ float WorldGenerator::getRealAltitude(float x, float y) const {
   int ih = (int)(256 * getInterpolatedAltitude(x, y));
   int idx;
   ih = CLAMP(0, 255, ih);
-  for (idx = 0; idx < MAX_ALT_KEY - 1; idx++) {
-    if (altIndexes[idx + 1] > ih) break;
+  for (idx = 0; idx < MAX_ALT_KEY - 1; ++idx) {
+    if (altIndexes.at(idx + 1) > ih) break;
   }
-  --idx;
-  return altitudes[idx] +
-         (altitudes[idx + 1] - altitudes[idx]) * (ih - altIndexes[idx]) / (altIndexes[idx + 1] - altIndexes[idx]);
+  return altitudes.at(idx) + (altitudes.at(idx + 1) - altitudes.at(idx)) * (ih - altIndexes.at(idx)) /
+                                 (altIndexes.at(idx + 1) - altIndexes.at(idx));
 }
 
 float WorldGenerator::getPrecipitations(float x, float y) const {
   int i_prec = (int)(256 * precipitation->getValue((int)x, (int)y));
   int idx;
   i_prec = CLAMP(0, 255, i_prec);
-  for (idx = 0; idx < MAX_PREC_KEY - 1; idx++) {
-    if (precIndexes[idx + 1] > i_prec) break;
+  for (idx = 0; idx < MAX_PREC_KEY - 1; ++idx) {
+    if (precIndexes.at(idx + 1) > i_prec) break;
   }
-  --idx;
-  return precipitations[idx] + (precipitations[idx + 1] - precipitations[idx]) * (i_prec - precIndexes[idx]) /
-                                   (precIndexes[idx + 1] - precIndexes[idx]);
+  return precipitations.at(idx) + (precipitations.at(idx + 1) - precipitations.at(idx)) *
+                                      (i_prec - precIndexes.at(idx)) / (precIndexes.at(idx + 1) - precIndexes.at(idx));
 }
 
 float WorldGenerator::getTemperature(float x, float y) const { return temperature->getValue((int)x, (int)y); }
@@ -1381,9 +1379,9 @@ void WorldGenerator::savePrecipitationMap(const char* filename) {
         const float prec = precipitation->getValue(x, y);
         const int i_prec = (int)(prec * 180);
         int colorIdx = 0;
-        while (colorIdx < MAX_PREC_KEY && i_prec > precIndexes[colorIdx]) ++colorIdx;
+        while (colorIdx < MAX_PREC_KEY && i_prec > precIndexes.at(colorIdx)) ++colorIdx;
         colorIdx = CLAMP(0, MAX_PREC_KEY, colorIdx);
-        img.putPixel(x, y, precColors[colorIdx]);
+        img.putPixel(x, y, precColors.at(colorIdx));
       }
     }
   }
@@ -1400,14 +1398,14 @@ void WorldGenerator::savePrecipitationMap(const char* filename) {
 }
 
 void WorldGenerator::saveAltitudeMap(const char* filename) {
-  static TCODColor altGradient[256];
+  static std::array<TCODColor, 256> altGradient{};
 
   static TCODImage* legend = NULL;
   static int legendHeight, legendWidth;
   if (legend == NULL) {
     legend = new TCODImage("data/img/legend_altitude.png");
     legend->getSize(&legendWidth, &legendHeight);
-    TCODColor::genMap(altGradient, MAX_ALT_KEY, altColors, altIndexes);
+    TCODColor::genMap(&altGradient[0], MAX_ALT_KEY, &altColors[0], &altIndexes[0]);
   }
 
   if (filename == NULL) filename = "world_altitude.png";
@@ -1418,7 +1416,7 @@ void WorldGenerator::saveAltitudeMap(const char* filename) {
       const float h = hm->getValue(x, y);
       int i_alt = (int)(h * 256);
       i_alt = CLAMP(0, 255, i_alt);
-      img.putPixel(x, y, altGradient[i_alt]);
+      img.putPixel(x, y, altGradient.at(i_alt));
     }
   }
 

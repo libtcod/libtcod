@@ -346,7 +346,7 @@ TCOD_Tileset* TCOD_tileset_load_raw(
     return NULL;
   }
   if (TCOD_tileset_reserve(tileset, font_tiles) < 0) {
-    TCOD_tileset_delete(NULL);
+    TCOD_tileset_delete(tileset);
     return NULL;
   }
   tileset->tiles_count = font_tiles;

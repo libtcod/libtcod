@@ -84,10 +84,13 @@ static float lattice(
 
 #define DEFAULT_SEED 0x15687436
 #define DELTA 1e-6f
-#define SWAP(a, b, t) \
-  t = a;              \
-  a = b;              \
-  b = t
+// A generic macro to swap two variables.
+#define GENERIC_SWAP(x, y, T) \
+  {                           \
+    T swap_variable__ = (x);  \
+    (x) = (y);                \
+    (y) = swap_variable__;    \
+  }
 
 #define FLOOR(a) ((a) > 0 ? (int)(a) : ((int)(a)-1))
 #define CUBIC(a) ((a) * (a) * (3 - 2 * (a)))
@@ -116,9 +119,8 @@ TCOD_Noise* TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_Random*
   }
 
   for (int i = 255; i >= 0; --i) {
-    unsigned char tmp;
     int j = TCOD_random_get_int(data->rand, 0, 255);
-    SWAP(data->map[i], data->map[j], tmp);
+    GENERIC_SWAP(data->map[i], data->map[j], unsigned char);
   }
 
   data->H = hurst;
@@ -634,7 +636,7 @@ static float TCOD_noise_simplex(TCOD_Noise* __restrict data, const float* __rest
 
 static float TCOD_noise_fbm_int(
     TCOD_Noise* __restrict noise, const float* __restrict f, float octaves, TCOD_noise_func_t func) {
-  float tf[TCOD_NOISE_MAX_DIMENSIONS];
+  float tf[TCOD_NOISE_MAX_DIMENSIONS] = {0, 0, 0, 0};
   /* Initialize locals */
   for (int i = 0; i < noise->ndim; ++i) {
     tf[i] = f[i];
@@ -668,7 +670,7 @@ static float TCOD_noise_fbm_simplex(TCOD_Noise* __restrict noise, const float* _
 
 static float TCOD_noise_turbulence_int(
     TCOD_Noise* __restrict noise, const float* __restrict f, float octaves, TCOD_noise_func_t func) {
-  float tf[TCOD_NOISE_MAX_DIMENSIONS];
+  float tf[TCOD_NOISE_MAX_DIMENSIONS] = {0, 0, 0, 0};
   /* Initialize locals */
   for (int i = 0; i < noise->ndim; ++i) {
     tf[i] = f[i];
@@ -787,7 +789,7 @@ static float TCOD_noise_wavelet(TCOD_Noise* __restrict data, const float* __rest
   float pf[3];
   int p[3], c[3], mid[3], n = WAVELET_TILE_SIZE;
   float w[3][3], t, result = 0.0f;
-  if (data->ndim < 0 || data->ndim > 3) {
+  if (data->ndim <= 0 || data->ndim > 3) {
     return NAN; /* not supported */
   }
   if (!data->waveletTileData) {

@@ -671,17 +671,19 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   if (!context) {
     return NULL;
   }
+  context->c_destructor_ = sdl2_destructor;
   struct TCOD_RendererSDL2* sdl2_data = calloc(sizeof(*sdl2_data), 1);
+  context->contextdata_ = sdl2_data;
   if (!sdl2_data) {
     TCOD_set_errorv("Out of memory.");
     TCOD_context_delete(context);
     return NULL;
   }
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
-    TCOD_context_delete(context);
     char video_driver_log[512];
     TCOD_sdl2_debug_video_drivers((int)sizeof(video_driver_log), video_driver_log);
     TCOD_set_errorvf("Could not initialize SDL:\n%s\n%s", SDL_GetError(), video_driver_log);
+    TCOD_context_delete(context);
     return NULL;
   }
   sdl2_data->sdl_subsystems = SDL_INIT_VIDEO;
@@ -689,8 +691,6 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   if (renderer_flags & SDL_RENDERER_SOFTWARE) {
     context->type = TCOD_RENDERER_SDL;
   }
-  context->contextdata_ = sdl2_data;
-  context->c_destructor_ = sdl2_destructor;
   context->c_present_ = sdl2_present;
   context->c_accumulate_ = sdl2_accumulate;
   context->c_get_sdl_window_ = sdl2_get_window;

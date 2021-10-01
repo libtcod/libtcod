@@ -230,6 +230,7 @@ static TCOD_path_data_t* TCOD_path_new_intern(int w, int h) {
     free(path->grid);
     free(path->heuristic);
     free(path->prev);
+    free(path);
     TCOD_set_errorvf("Cannot allocate dijkstra grids of size {%d, %d}", w, h);
     return NULL;
   }

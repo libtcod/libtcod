@@ -100,6 +100,8 @@ void TCOD_heightmap_set_value(TCOD_heightmap_t* hm, int x, int y, float value) {
 
 void TCOD_heightmap_get_minmax(const TCOD_heightmap_t* hm, float* min, float* max) {
   if (!in_bounds(hm, 0, 0)) {
+    *min = 0;
+    *max = 0;
     return;
   }
   if (min) {
@@ -123,7 +125,8 @@ void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max) {
   if (!hm) {
     return;
   }
-  float curmin, curmax;
+  float curmin = 0;
+  float curmax = 0;
   TCOD_heightmap_get_minmax(hm, &curmin, &curmax);
 
   if (curmax - curmin < FLT_EPSILON) {

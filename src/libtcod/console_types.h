@@ -216,7 +216,7 @@ typedef enum TCOD_chars_t {
   /* diacritics */
 } TCOD_chars_t TCOD_DEPRECATED_ENUM;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__clang__)
 #pragma deprecated(TCOD_CHAR_HLINE)
 #pragma deprecated(TCOD_CHAR_VLINE)
 #pragma deprecated(TCOD_CHAR_NE)

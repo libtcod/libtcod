@@ -63,7 +63,7 @@ typedef enum {
   TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE
 } TCOD_distribution_t;
 
-/* Pseudorandom number generator toolkit, all attributes are private. */
+// Old RNG, this struct and its attribute are private.
 struct TCOD_Random_MT_CMWC {
   TCOD_random_algo_t algorithm;  // algorithm identifier
   TCOD_distribution_t distribution;  // distribution
@@ -75,7 +75,9 @@ struct TCOD_Random_MT_CMWC {
   uint32_t Q[4096], c;
   int cur;
 };
-
+/***************************************************************************
+    @brief Pseudorandom number generator toolkit, all attributes are private.
+ */
 typedef union TCOD_Random {
   TCOD_random_algo_t algorithm;
   struct TCOD_Random_MT_CMWC mt_cmwc;

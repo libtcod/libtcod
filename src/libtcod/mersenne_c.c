@@ -114,7 +114,7 @@ static uint32_t hash(const char *data,int len) {
 */
 
 /* get a random number from the CMWC */
-TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(TCOD_Random* r) {
+TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(struct TCOD_Random_MT_CMWC* r) {
   r->cur = (r->cur + 1) & 4095;
   const uint64_t t = 18782LL * r->Q[r->cur] + r->c;
   r->c = (t >> 32);
@@ -133,11 +133,11 @@ TCOD_NODISCARD static uint32_t CMWC_GET_NUMBER(TCOD_Random* r) {
 // Return a random uint32_t number.
 static uint32_t get_random_u32(TCOD_Random* rng) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->algo) {
+  switch (rng->algorithm) {
     case TCOD_RNG_MT:
-      return mt_rand(rng->mt, &rng->cur_mt);
+      return mt_rand(rng->mt_cmwc.mt, &rng->mt_cmwc.cur_mt);
     case TCOD_RNG_CMWC:
-      return CMWC_GET_NUMBER(rng);
+      return CMWC_GET_NUMBER(&rng->mt_cmwc);
     default:
       return 0;
   }
@@ -155,10 +155,10 @@ TCOD_Random* TCOD_random_get_instance(void) {
 }
 
 TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
-  TCOD_Random* r = calloc(sizeof(*r), 1);
+  struct TCOD_Random_MT_CMWC* r = calloc(sizeof(*r), 1);
   /* Mersenne Twister */
   if (algo == TCOD_RNG_MT) {
-    r->algo = TCOD_RNG_MT;
+    r->algorithm = TCOD_RNG_MT;
     r->cur_mt = 624;
     mt_init(seed, r->mt);
   } else { /* Complementary-Multiply-With-Carry or Generalised Feedback Shift Register */
@@ -167,10 +167,10 @@ TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
     for (int i = 0; i < 4096; ++i) r->Q[i] = s = (s * 1103515245) + 12345; /* glibc LCG */
     r->c = ((s * 1103515245) + 12345) % 809430660; /* this max value is recommended by George Marsaglia */
     r->cur = 0;
-    r->algo = TCOD_RNG_CMWC;
+    r->algorithm = TCOD_RNG_CMWC;
   }
   r->distribution = TCOD_DISTRIBUTION_LINEAR;
-  return r;
+  return (TCOD_Random*)r;
 }
 
 int TCOD_random_get_i(TCOD_Random* rng, int min, int max) {
@@ -344,12 +344,30 @@ int TCOD_random_get_gaussian_int_range_custom_inv(TCOD_Random* rng, int min, int
 
 void TCOD_random_set_distribution(TCOD_Random* rng, TCOD_distribution_t distribution) {
   if (!rng) rng = TCOD_random_get_instance();
-  rng->distribution = distribution;
+  switch (rng->algorithm) {
+    case TCOD_RNG_MT:
+    case TCOD_RNG_CMWC:
+      rng->mt_cmwc.distribution = distribution;
+      break;
+    default:
+      break;
+  }
+}
+
+static TCOD_distribution_t get_distribution(const TCOD_Random* rng) {
+  if (!rng) rng = TCOD_random_get_instance();
+  switch (rng->algorithm) {
+    case TCOD_RNG_MT:
+    case TCOD_RNG_CMWC:
+      return rng->mt_cmwc.distribution;
+    default:
+      return TCOD_DISTRIBUTION_LINEAR;
+  }
 }
 
 int TCOD_random_get_int(TCOD_Random* rng, int min, int max) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_LINEAR:
       return TCOD_random_get_i(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
@@ -367,7 +385,7 @@ int TCOD_random_get_int(TCOD_Random* rng, int min, int max) {
 
 float TCOD_random_get_float(TCOD_Random* rng, float min, float max) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_LINEAR:
       return TCOD_random_get_f(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
@@ -385,7 +403,7 @@ float TCOD_random_get_float(TCOD_Random* rng, float min, float max) {
 
 double TCOD_random_get_double(TCOD_Random* rng, double min, double max) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_LINEAR:
       return TCOD_random_get_d(rng, min, max);
     case TCOD_DISTRIBUTION_GAUSSIAN:
@@ -403,7 +421,7 @@ double TCOD_random_get_double(TCOD_Random* rng, double min, double max) {
 
 int TCOD_random_get_int_mean(TCOD_Random* rng, int min, int max, int mean) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
       return TCOD_random_get_gaussian_int_range_custom_inv(rng, min, max, mean);
@@ -414,7 +432,7 @@ int TCOD_random_get_int_mean(TCOD_Random* rng, int min, int max, int mean) {
 
 float TCOD_random_get_float_mean(TCOD_Random* rng, float min, float max, float mean) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
       return TCOD_random_get_gaussian_float_range_custom_inv(rng, min, max, mean);
@@ -425,7 +443,7 @@ float TCOD_random_get_float_mean(TCOD_Random* rng, float min, float max, float m
 
 double TCOD_random_get_double_mean(TCOD_Random* rng, double min, double max, double mean) {
   if (!rng) rng = TCOD_random_get_instance();
-  switch (rng->distribution) {
+  switch (get_distribution(rng)) {
     case TCOD_DISTRIBUTION_GAUSSIAN_INVERSE:
     case TCOD_DISTRIBUTION_GAUSSIAN_RANGE_INVERSE:
       return TCOD_random_get_gaussian_double_range_custom_inv(rng, min, max, mean);

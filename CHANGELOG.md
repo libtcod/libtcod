@@ -24,6 +24,7 @@ since `1.7.0`.
   You can set the environment variable `TCOD_VSYNC=0` to disable this or use the new API where VSync is a setting.
 - `TCODConsole::get_data` now returns a non-NULL pointer to the root console.
 - Fixes to Gaussian number generation will have changed the resulting numbers and any subsequent random numbers.
+- `TCOD_Random` now points to a union type.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

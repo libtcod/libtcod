@@ -178,10 +178,22 @@ void TCOD_zip_put_console(TCOD_zip_t zip, const TCOD_Console* val) {
   }
 }
 
-void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* val) {
-  int s = (int)sizeof(*val);
-  TCOD_zip_put_int(zip, s);
-  TCOD_zip_put_data(zip, s, val);
+// Return the size of an RNG to be serialized.
+static int get_rng_bytesize(const TCOD_Random* rng) {
+  if (!rng) return 0;
+  switch (rng->algorithm) {
+    case TCOD_RNG_MT:
+    case TCOD_RNG_CMWC:
+      return (int)sizeof(rng->mt_cmwc);
+    default:
+      return 0;  // Unkown RNG.  This could be a fatal error.
+  }
+}
+
+void TCOD_zip_put_random(TCOD_zip_t zip, const TCOD_Random* rng) {
+  const int size = get_rng_bytesize(rng);
+  TCOD_zip_put_int(zip, size);
+  TCOD_zip_put_data(zip, size, rng);
 }
 
 int TCOD_zip_save_to_file(TCOD_zip_t pzip, const char* filename) {
@@ -405,6 +417,7 @@ TCOD_console_t TCOD_zip_get_console(TCOD_zip_t pzip) {
 
 TCODLIB_API TCOD_Random* TCOD_zip_get_random(TCOD_zip_t zip) {
   const int s = TCOD_zip_get_int(zip);
+  if (s <= 0) return NULL;
   TCOD_Random* ret = malloc(s);
   TCOD_zip_get_data(zip, s, ret);
   return ret;

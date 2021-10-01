@@ -64,8 +64,8 @@ typedef enum {
 } TCOD_distribution_t;
 
 /* Pseudorandom number generator toolkit, all attributes are private. */
-typedef struct TCOD_Random {
-  TCOD_random_algo_t algo;  // algorithm identifier
+struct TCOD_Random_MT_CMWC {
+  TCOD_random_algo_t algorithm;  // algorithm identifier
   TCOD_distribution_t distribution;  // distribution
   // Mersenne Twister stuff
   uint32_t mt[624];
@@ -74,8 +74,13 @@ typedef struct TCOD_Random {
   // shared with Generalised Feedback Shift Register
   uint32_t Q[4096], c;
   int cur;
+};
+
+typedef union TCOD_Random {
+  TCOD_random_algo_t algorithm;
+  struct TCOD_Random_MT_CMWC mt_cmwc;
 } TCOD_Random;
 
-typedef TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.") struct TCOD_Random* TCOD_random_t;
+typedef TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.") union TCOD_Random* TCOD_random_t;
 
 #endif /* _TCOD_RANDOM_TYPES_H */

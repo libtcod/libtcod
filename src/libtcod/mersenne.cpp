@@ -53,7 +53,7 @@ TCODRandom::TCODRandom(uint32_t seed, TCOD_random_algo_t algo) { data = TCOD_ran
 TCODRandom::~TCODRandom() { TCOD_random_delete(data); }
 
 TCODRandom* TCODRandom::save() const {
-  TCODRandom* ret = new TCODRandom(data->algo, false);
+  TCODRandom* ret = new TCODRandom(data->algorithm, false);
   ret->data = TCOD_random_save(data);
   return ret;
 }

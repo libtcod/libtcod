@@ -420,7 +420,7 @@ In these cases, the selected mean will appear with the lowest frequency.
 		friend class TCODLIB_API TCODHeightMap;
 		friend class TCODLIB_API TCODNamegen;
 		friend class TCODNameGenerator;	// Used for SWIG interface, does NOT need TCODLIB_API
-		struct TCOD_Random* data;
+		TCOD_Random* data;
 };
 
 #endif

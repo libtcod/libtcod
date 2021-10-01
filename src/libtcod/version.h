@@ -33,10 +33,10 @@
 #define LIBTCOD_VERSION_H
 
 #define TCOD_MAJOR_VERSION 1
-#define TCOD_MINOR_VERSION 18
-#define TCOD_PATCHLEVEL 1
+#define TCOD_MINOR_VERSION 19
+#define TCOD_PATCHLEVEL 0
 
-#define TCOD_STRVERSION "1.18.1"
+#define TCOD_STRVERSION "1.19.0-alpha"
 
 /**
     Converts version numbers into a numeric value.

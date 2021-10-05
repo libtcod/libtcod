@@ -10,7 +10,7 @@ RE_SECTION = re.compile(r"^### (\w+)$", re.MULTILINE)
 
 def main() -> None:
     # Get the most recent tag.
-    with open("CHANGELOG.md", "r") as f:
+    with open("CHANGELOG.md", "r", encoding="utf-8") as f:
         match = RE_BODY.match(f.read())
     assert match
     body = match.groups()[0].strip()

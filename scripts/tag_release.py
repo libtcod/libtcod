@@ -40,7 +40,7 @@ parser.add_argument(
 
 def parse_changelog(args: argparse.Namespace) -> Tuple[str, str]:
     """Return an updated changelog and and the list of changes."""
-    with open("CHANGELOG.md", "r") as file:
+    with open("CHANGELOG.md", "r", encoding="utf-8") as file:
         match = re.match(
             pattern=r"(.*?## \[Unreleased]\n)(.+?\n)(\n*## \[.*)",
             string=file.read(),
@@ -71,7 +71,7 @@ VERSION_SOURCE = """\
 
 def update_version_header(args: argparse.Namespace) -> None:
     """Update version.h to use the given tag."""
-    with open("src/libtcod/version.h", "r") as f:
+    with open("src/libtcod/version.h", "r", encoding="utf-8") as f:
         match = re.match(
             pattern=r"(?P<head>.*?)\n#define TCOD_MAJOR_VERSION.*?TCOD_STRVERSION[^\n]*\n(?P<tail>.*)",
             string=f.read(),
@@ -91,18 +91,18 @@ def update_version_header(args: argparse.Namespace) -> None:
     source = VERSION_SOURCE.format(**format_args)
 
     if not args.dry_run:
-        with open("src/libtcod/version.h", "w") as f:
+        with open("src/libtcod/version.h", "w", encoding="utf-8") as f:
             f.write(source)
 
 
 def update_vcpkg_manifest(args: argparse.Namespace) -> None:
     """Update the version on the vcpkg.json manifest."""
-    with open("vcpkg.json", "r") as f:
+    with open("vcpkg.json", "r", encoding="utf-8") as f:
         vcpkg_manifest = json.load(f)
     vcpkg_manifest["version-semver"] = args.tag
 
     if not args.dry_run:
-        with open("vcpkg.json", "w") as f:
+        with open("vcpkg.json", "w", encoding="utf-8") as f:
             json.dump(vcpkg_manifest, f, indent=2)
 
 
@@ -121,7 +121,7 @@ def main() -> None:
     update_vcpkg_manifest(args)
 
     if not args.dry_run:
-        with open("CHANGELOG.md", "w") as f:
+        with open("CHANGELOG.md", "w", encoding="utf-8") as f:
             f.write(new_changelog)
         edit = ["-e"] if args.edit else []
         subprocess.check_call(

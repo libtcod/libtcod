@@ -24,7 +24,7 @@ Many thanks to everyone who provided feedback and patches, and especially :
 - Jonathon Duerig for the permissive field of view algorithm
 - dividee for polishing and optimizing the Python wrapper.
 - John Klimek for the early C# port and valuable bug fixes.
-- Kyle 'Hex Decimal' Stewart & Emmanuel 'Altefcat' Dempuré for their contribution
+- Kyle 'HexDecimal' Benesch & Emmanuel 'Altefcat' Dempuré for their contribution
   to the Python port.
 - Antagonist for the awesome SkyFire GLSL roguelike engine, hence libtcod's GLSL
   renderer

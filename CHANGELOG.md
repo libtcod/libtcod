@@ -575,40 +575,40 @@ since `1.7.0`.
 
 ## [1.6.5] - 2018-02-20
 ### Fixed
-- Resolved header issues that were leaving some types and functions undefined. (Kyle Stewart)
+- Resolved header issues that were leaving some types and functions undefined. (Kyle Benesch)
 - key.c is no longer set when key.vk == TCODK_TEXT, this fixes a regression
-  which was causing events to be heard twice in the libtcod/Python tutorial. (Kyle Stewart)
-- OpenGL renderer alpha blending is now consistent with all other render modes. (Kyle Stewart)
+  which was causing events to be heard twice in the libtcod/Python tutorial. (Kyle Benesch)
+- OpenGL renderer alpha blending is now consistent with all other render modes. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/99/opengl-renderer-looks-poorly-compared-to
 
 ## [1.6.4] - 2017-11-27
 ### Added
-- Added support for loading/saving REXPaint files. (Kyle Stewart)
+- Added support for loading/saving REXPaint files. (Kyle Benesch)
 - Added documentation to guide people in upgrading from 1.5.x to 1.6.x (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/88
 
 ### Changed
 - Upgraded to `stdint.h` source code typing via `pstdint.h` (rmtew)
   https://bitbucket.org/libtcod/libtcod/issues/91
-- All libtcod headers are now self-contained. (Kyle Stewart)
+- All libtcod headers are now self-contained. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/93/header-organization
-- bool type is now based off of stdbool.h (Kyle Stewart)
+- bool type is now based off of stdbool.h (Kyle Benesch)
 - SCons builder defaults to debug builds, now builds with OpenGL, and uses link
-  time optimization on release builds. (Kyle Stewart)
+  time optimization on release builds. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
-- SDL is no longer initialized at module load time. (Kyle Stewart)
+- SDL is no longer initialized at module load time. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/107/sdl_init-on-library-load-libtcod
 
 ### Fixed
-- Text input events now include correct modifier key values. (Kyle Stewart)
+- Text input events now include correct modifier key values. (Kyle Benesch)
 - Fixed touch support compilation, although it is still an experimental option that may change (rmtew)
-- Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Stewart)
+- Console objects should be safe to create and use before libtcod is fully initialized. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/17/offline-libtcod
-- Fixed TCOD_list_reverse. (Kyle Stewart)
-- Fixed simplex noise artifacts when using negative coordinates. (Kyle Stewart)
-- Fixed the GLSL and OPENGL renderers on all platforms. (rmtew) (Kyle Stewart)
+- Fixed TCOD_list_reverse. (Kyle Benesch)
+- Fixed simplex noise artifacts when using negative coordinates. (Kyle Benesch)
+- Fixed the GLSL and OPENGL renderers on all platforms. (rmtew) (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/issues/92/tcod_renderer_glsl-not-working
-- TCOD_image_blit_2x no longer alters a consoles default colors. (Kyle Stewart)
+- TCOD_image_blit_2x no longer alters a consoles default colors. (Kyle Benesch)
 - SDL renderer is only created when using SDL rendering (wump@bitbucket)
   https://bitbucket.org/libtcod/libtcod/pull-requests/74/dont-create-sdl-renderer-when-using-opengl
 
@@ -617,8 +617,8 @@ since `1.7.0`.
 - Added SCons build support (HexDecimal@bitbucket).
   https://bitbucket.org/libtcod/libtcod/commits/92c5a1b530049f15d1ed36375b12781554272f17
 - Exposed clipboard API to Python (rmtew@bitbucket).
-- Added TravisCI integration tests (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
-- Added .gitattributes and .gitignore files (Kyle Stewart) https://bitbucket.org/libtcod/libtcod/pull-requests/61
+- Added TravisCI integration tests (Kyle Benesch) https://bitbucket.org/libtcod/libtcod/pull-requests/61
+- Added .gitattributes and .gitignore files (Kyle Benesch) https://bitbucket.org/libtcod/libtcod/pull-requests/61
 
 ### Changed
 - Updated restrictive FOV code to match MRPAS v1.2 (mingos@bitbucket)
@@ -627,7 +627,7 @@ since `1.7.0`.
   The clipboard encoding is now UTF-8 on all platforms.
   https://bitbucket.org/libtcod/libtcod/issues/81/
 - Documented and undeprecated TCOD_mouse_get_status() as the state is awkwardly exposed via check/wait event calls anyway (rmtew@bitbucket).
-- Switched Python tests to use pytest instead of unittest. (Kyle Stewart)
+- Switched Python tests to use pytest instead of unittest. (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/pull-requests/61
 
 ### Fixed
@@ -647,7 +647,7 @@ since `1.7.0`.
   https://bitbucket.org/libtcod/libtcod/commits/a03a79814fd734e05e5d72801376b2af6b315373
 - Fix libtcodpy arguments for TCOD_heightmap_add_fbm and TCOD_heightmap_scale_fbm (HexDecimal@bitbucket)
   https://bitbucket.org/libtcod/libtcod/commits/6f34ffa3d17af39cc274c048ff633be8609998f8
-- Fixed creating a libtcodpy pathfinder with a callback would crash on 64-bit Unix systems (Kyle Stewart)
+- Fixed creating a libtcodpy pathfinder with a callback would crash on 64-bit Unix systems (Kyle Benesch)
   https://bitbucket.org/libtcod/libtcod/pull-requests/61
 
 ## [1.6.2] - 2016-12-28
@@ -656,7 +656,7 @@ since `1.7.0`.
 - Python (PTVS) project for samples_py added to VS2015 solution.
 - Console foreground and background colours are images.
   https://bitbucket.org/libtcod/libtcod/issues/51/console-image-unification
-- Python unit tests added (Kyle Stewart).
+- Python unit tests added (Kyle Benesch).
   https://bitbucket.org/libtcod/libtcod/commits/7a66ad5d66832686c0071e3938b85ebad8e7cebb
 - Added TCOD_console_get_background_color_image and TCOD_console_get_foreground_color_image API for C++/C/Python.
 
@@ -667,7 +667,7 @@ since `1.7.0`.
 - libtcodpy now inlines more ctypes argtypes and restype definitions in order to work better on x64.
 - libtcodpy partially rewritten to support Python 3 as best possible and resolve outstanding 64 bit problems.
 - samples_py partially rewritten to run under both Python 3 and Python 2.
-- Adopted strict prototypes / void in C parameterless functions (Kyle Stewart).
+- Adopted strict prototypes / void in C parameterless functions (Kyle Benesch).
   https://bitbucket.org/libtcod/libtcod/commits/5353098a70254b59b740865a875cccf1d6d84c27
 - SDL2 supported revision updated to release-2.0.5 AKA changeset 007dfe83abf8.
 

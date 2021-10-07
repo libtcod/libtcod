@@ -2,12 +2,15 @@ import subprocess
 
 from conans import ConanFile, CMake, tools
 
+
 class LibtcodConan(ConanFile):
     name = "libtcod"
     license = "BSD 3-Clause License"
-    author = "Kyle Stewart 4b796c65+libtcod@gmail.com"
+    author = "Kyle Benesch 4b796c65+libtcod@gmail.com"
     url = "https://github.com/libtcod/libtcod"
-    description = "A free, fast, portable and uncomplicated API for roguelike developers."
+    description = (
+        "A free, fast, portable and uncomplicated API for roguelike developers."
+    )
     topics = ("roguelikedev",)
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}

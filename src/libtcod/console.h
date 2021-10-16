@@ -105,7 +105,7 @@ typedef struct TCOD_ConsoleTile {
     @code{.cpp}
       tcod::ConsolePtr console = tcod::new_console({{80, 50}});
       console->at({1, 1}).ch = '@';  // Bounds-checked references to a tile.
-      (*console)[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking.
+      (*console)[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking, colors are RGBA.
       if (console->in_bounds({100, 100})) {}  // Test if an index is in bounds.
       for (auto& tile : *console) tile.fg = {255, 255, 0, 255};  // Iterate over all tiles on a console.
       for (auto& tile : *console) tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}};  // Clear all tiles.
@@ -133,6 +133,35 @@ struct TCOD_Console {
       @brief Return a const pointer to the end of this consoles tile data.
    */
   [[nodiscard]] auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + elements; }
+  /***************************************************************************
+      @brief Clear a console by setting all tiles to the provided TCOD_ConsoleTile object.
+
+      @param tile A TCOD_ConsoleTile refernce which will be used to clear the console.
+
+      @code{.cpp}
+        // New consoles start already cleared with the space character, a white foreground, and a black background.
+        auto console = tcod::new_console(80, 50)
+        console->clear()  // Clear with the above mentioned defaults.
+        console->clear({0x20, {255, 255, 255, 255}, {0, 0, 0, 255}});  // Same as the above.
+        console->clear(0x20, {255, 255, 255}, {0, 0, 0})  // Also same as the above.
+      @endcode
+   */
+  void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
+    for (auto& it : *this) it = tile;
+  }
+  /***************************************************************************
+      @brief Clear the console with the given character and RGB colors.
+
+      @param ch A Unicode codepoint, if unsure then use the space codepoint ``int{0x20}``
+      @param fg The foreground color to clear with.
+          While it doesn't seem useful at first to set the foreground color at the same time as clearing with space,
+          this will still determine what the default color will be if a character is set without also overwriting the
+          colors for that tile.
+      @param bg The background color to clear with.
+   */
+  void clear(int ch, const TCOD_ColorRGB& fg, const TCOD_ColorRGB& bg) noexcept {
+    clear({ch, TCOD_ColorRGBA{fg.r, fg.g, fg.b, 255}, TCOD_ColorRGBA{bg.r, bg.g, bg.b, 255}});
+  }
   /***************************************************************************
       @brief Return a reference to the tile at `xy`.
    */

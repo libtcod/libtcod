@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the libtcod documentation!
-======================================
+Welcome to the libtcod C/C++ documentation!
+===========================================
 
 .. include:: old_docs_notice.inc.rst
 

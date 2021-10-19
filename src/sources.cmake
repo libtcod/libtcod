@@ -70,6 +70,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/list.h
     libtcod/list.hpp
     libtcod/list_c.c
+    libtcod/logging.c
+    libtcod/logging.h
     libtcod/matrix.h
     libtcod/mersenne.cpp
     libtcod/mersenne.h
@@ -225,6 +227,7 @@ install(FILES
     libtcod/libtcod_int.h
     libtcod/list.h
     libtcod/list.hpp
+    libtcod/logging.h
     libtcod/matrix.h
     libtcod/mersenne.h
     libtcod/mersenne.hpp
@@ -373,6 +376,8 @@ source_group(libtcod FILES
     libtcod/list.h
     libtcod/list.hpp
     libtcod/list_c.c
+    libtcod/logging.c
+    libtcod/logging.h
     libtcod/matrix.h
     libtcod/mersenne.cpp
     libtcod/mersenne.h

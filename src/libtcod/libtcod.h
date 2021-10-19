@@ -50,6 +50,7 @@
 #include "image.h"
 #include "lex.h"
 #include "list.h"
+#include "logging.h"
 #include "mersenne.h"
 #include "mouse.h"
 #include "namegen.h"

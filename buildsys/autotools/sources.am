@@ -37,6 +37,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/libtcod_int.h \
 	../../src/libtcod/list.h \
 	../../src/libtcod/list.hpp \
+	../../src/libtcod/logging.h \
 	../../src/libtcod/matrix.h \
 	../../src/libtcod/mersenne.h \
 	../../src/libtcod/mersenne.hpp \
@@ -145,6 +146,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/lex.cpp \
 	../../src/libtcod/lex_c.c \
 	../../src/libtcod/list_c.c \
+	../../src/libtcod/logging.c \
 	../../src/libtcod/mersenne.cpp \
 	../../src/libtcod/mersenne_c.c \
 	../../src/libtcod/mouse.cpp \

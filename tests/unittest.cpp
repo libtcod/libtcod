@@ -1,6 +1,7 @@
 #define CATCH_CONFIG_MAIN
 
 #include <libtcod.h>
+#include <libtcod/logging.h>
 #include <libtcod/tileset_fallback.h>
 
 #include <catch2/catch.hpp>
@@ -43,6 +44,20 @@ std::string ucs4_to_utf8(int ucs4) {
   }
   throw std::invalid_argument("Invalid codepoint.");
 }
+
+/// Captures libtcod log output on tests.
+struct HandleLogging : Catch::TestEventListenerBase {
+  using TestEventListenerBase::TestEventListenerBase;  // inherit constructor
+  /// Register logger before each test.
+  void testCaseStarting(Catch::TestCaseInfo const&) override {
+    TCOD_set_log_level(TCOD_LOG_DEBUG);
+    TCOD_set_log_callback(&catch_log, nullptr);
+  }
+  static void catch_log(const TCOD_LogMessage* message, void*) {
+    INFO("libtcod:" << message->source << ":" << message->lineno << ":" << message->level << ":" << message->message);
+  }
+};
+CATCH_REGISTER_LISTENER(HandleLogging)
 
 namespace std {
 ostream& operator<<(ostream& out, const array<ptrdiff_t, 2>& data) {

@@ -43,6 +43,7 @@
 #include "error.h"
 #include "globals.h"
 #include "libtcod_int.h"
+#include "logging.h"
 #include "mouse.h"
 #include "parser.h"
 #include "sys.h"
@@ -220,7 +221,7 @@ TCOD_Error TCOD_sys_load_player_config(void) {
       printf("Warning : font file '%s' does not exist\n", font);
     }
   }
-  printf("Warning: The use of libtcod.cfg is deprecated.\n");
+  TCOD_log_warning("The use of libtcod.cfg is deprecated.");
   TCOD_set_error("The use of libtcod.cfg is deprecated.");
   return TCOD_E_WARN;
 }

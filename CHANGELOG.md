@@ -18,6 +18,7 @@ since `1.7.0`.
 - Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
 - Added `TCOD_sys_get_internal_console`.  This returns a pointer to the root console used by the old API.
 - `TCODColor` can now be converted to `TCOD_ColorRGB` or `TCOD_ColorRGBA`.
+- Added libtcod logging functions, for debugging and internal use.
 
 ### Changed
 - Initializing libtcod with the old API will now enable VSync by default.

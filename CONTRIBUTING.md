@@ -42,41 +42,23 @@ Functions which are expected to always be documented are the public functions in
 
 # Building libtcod for Development
 
+The easiest and recommended build method is to use the Visual Studio Code with the CMake Tools extension.
+This automates a significant portion of the build process.
+
 Code formatting is handled via [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
 and [EditorConfig](https://editorconfig.org/), make sure your IDE supports these tools.
 
-Some compilation methods, including SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within the `buildsys/` subdirectory.
+## Visual Studio Code
 
-SCons automatically downloads SDL2 and can be used on all platforms.
-Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/scons).
-The current release builds are built using SCons.
-
-Autotools is a common standard on Linux, and can be used for MacOS.
-Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
-
-## MacOS / Linux
-
-For MacOS and Linux you should be able to compile libtcod easily from the
-command line.  See the instructions in the relevant [buildsys](buildsys) subfolder.
-
-## Visual Studio Code on Windows
-
-This is a common setup for developing libtcod on Windows.
+This is the common setup for developing libtcod on Windows.  It should also work on all platforms.
 Dependencies are installed using Vcpkg and CMake is invoked by Visual Studio Code.
 
 * Install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)'s desktop C++
 * Install [Visual Studio Code](https://code.visualstudio.com/).
 * Install [LLVM](https://releases.llvm.org/download.html) and make sure it's added to your PATH.
-* Clone the [Vcpkg repository](https://github.com/microsoft/vcpkg) and run the bootstrap script.
-* Ensure the [VCPKG_ROOT environment variable](https://github.com/microsoft/vcpkg/blob/master/docs/users/config-environment.md#vcpkg_root) is set to the repository folder.
-* You'll need to have the command line in the vcpkg directory or have that added to PATH for the following:
-  * Use Vcpkg to install libtcod's dependencies as needed:
-    ```
-    vcpkg install sdl2:x64-windows zlib:x64-windows glad:x64-windows stb:x64-windows utf8proc:x64-windows lodepng-c:x64-windows
-    ```
-* Clone the libtcod repository.
+* Clone the libtcod repository and its submodules.
 * In Visual Studio Code choose `File -> Open folder...` then select the libtcod repository.
-* Install the recommended extensions.
+* Install the extensions recommended for this workspace.
 * CMake Tools will ask permission to configure the project, select yes.
 * When CMake Tools asks for a kit, the recommended option is: `Visual Studio Community 2019 Release - amd64`
 * When CMake Tools asks for a launch target.  Scroll down and pick `samples_cpp`.
@@ -86,6 +68,20 @@ The status bar at the bottom of Visual Studio Code can be used to configure CMak
 You can now run the samples project from the IDE.  Other launch targets like
 `samples_c` or `unittest` may be useful choices.
 If you set `libtcod` as the build target you could check libtcod for compile errors without having to build and run the samples too.
+
+## MacOS / Linux
+
+For MacOS and Linux you should be able to compile libtcod easily from the
+command line.  See the instructions in the relevant [buildsys](buildsys) subfolder.
+
+Some compilation methods, including SCons (Windows, Linux, MacOS) and Autotools (Linux, MacOS), are located within the `buildsys/` subdirectory.
+
+SCons automatically downloads SDL2 and can be used on all platforms.
+Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/scons).
+The current release builds are built using SCons.
+
+Autotools is a common standard on Linux, and can be used for MacOS.
+Instructions are [provided here](https://github.com/libtcod/libtcod/tree/master/buildsys/autotools).
 
 ## CMake
 

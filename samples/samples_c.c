@@ -1605,6 +1605,7 @@ static const RendererOption RENDERER_OPTIONS[] = {
     {"SDL    ", TCOD_RENDERER_SDL},
     {"SDL2   ", TCOD_RENDERER_SDL2},
     {"OPENGL2", TCOD_RENDERER_OPENGL2},
+    {"XTERM  ", TCOD_RENDERER_XTERM},
 };
 // The total number of renderer options.
 static const int RENDERER_OPTIONS_COUNT = sizeof(RENDERER_OPTIONS) / sizeof(*RENDERER_OPTIONS);

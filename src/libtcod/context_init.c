@@ -43,6 +43,7 @@
 #include "renderer_gl1.h"
 #include "renderer_gl2.h"
 #include "renderer_sdl2.h"
+#include "renderer_xterm.h"
 #include "tileset_fallback.h"
 
 static TCOD_Error ensure_tileset(TCOD_Tileset** tileset) {
@@ -330,6 +331,10 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
       if (!*out) {
         return TCOD_E_ERROR;
       }
+      return err;
+    case TCOD_RENDERER_XTERM:
+      *out = TCOD_renderer_init_xterm(params.window_title);
+      if (!*out) return TCOD_E_ERROR;
       return err;
   }
 }

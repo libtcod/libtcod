@@ -1552,7 +1552,13 @@ int main(int argc, char* argv[]) {
   bool creditsEnd = false;
   int cur_renderer = 0;
   static const std::vector<std::string> renderer_name = {
-      "F1 GLSL   ", "F2 OPENGL ", "F3 SDL    ", "F4 SDL2   ", "F5 OPENGL2"};
+      "F1 GLSL   ",
+      "F2 OPENGL ",
+      "F3 SDL    ",
+      "F4 SDL2   ",
+      "F5 OPENGL2",
+      "F6 XTERM  ",
+  };
 
   // initialize the root console (open the game window)
   for (argn = 1; argn < argc; argn++) {
@@ -1724,6 +1730,8 @@ int main(int argc, char* argv[]) {
       TCODSystem::setRenderer(TCOD_RENDERER_SDL2);
     } else if (key.vk == TCODK_F5) {
       TCODSystem::setRenderer(TCOD_RENDERER_OPENGL2);
+    } else if (key.vk == TCODK_F6) {
+      TCODSystem::setRenderer(TCOD_RENDERER_XTERM);
     }
   } while (!TCODConsole::isWindowClosed());
   TCOD_quit();

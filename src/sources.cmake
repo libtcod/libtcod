@@ -115,6 +115,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.c
     libtcod/renderer_sdl2.h
+    libtcod/renderer_xterm.c
+    libtcod/renderer_xterm.h
     libtcod/sys.cpp
     libtcod/sys.h
     libtcod/sys.hpp
@@ -253,6 +255,7 @@ install(FILES
     libtcod/renderer_gl2.h
     libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.h
+    libtcod/renderer_xterm.h
     libtcod/sys.h
     libtcod/sys.hpp
     libtcod/tileset.h
@@ -421,6 +424,8 @@ source_group(libtcod FILES
     libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.c
     libtcod/renderer_sdl2.h
+    libtcod/renderer_xterm.c
+    libtcod/renderer_xterm.h
     libtcod/sys.cpp
     libtcod/sys.h
     libtcod/sys.hpp

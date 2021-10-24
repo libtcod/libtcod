@@ -63,6 +63,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/renderer_gl2.h \
 	../../src/libtcod/renderer_gl_internal.h \
 	../../src/libtcod/renderer_sdl2.h \
+	../../src/libtcod/renderer_xterm.h \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
 	../../src/libtcod/tileset.h \
@@ -165,6 +166,7 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/renderer_gl1.c \
 	../../src/libtcod/renderer_gl2.c \
 	../../src/libtcod/renderer_sdl2.c \
+	../../src/libtcod/renderer_xterm.c \
 	../../src/libtcod/sys.cpp \
 	../../src/libtcod/sys_c.c \
 	../../src/libtcod/sys_sdl_c.c \

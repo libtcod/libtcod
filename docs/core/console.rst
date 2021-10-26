@@ -4,6 +4,13 @@ Console
 
 .. include:: ../old_docs_notice.inc.rst
 
+tcod::Console
+=============
+
+.. doxygenclass:: tcod::Console
+    :members:
+    :undoc-members:
+
 TCOD_Console
 ============
 

@@ -1,5 +1,5 @@
 # For local testing, environment.yml is what's used to install files on RTD.
-breathe
-sphinx<4
+breathe>=4.31.0
+sphinx>=4.2.0
 sphinx_rtd_theme
 recommonmark

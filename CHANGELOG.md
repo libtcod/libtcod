@@ -17,7 +17,8 @@ since `1.7.0`.
 - Added the Timer class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
 - Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
 - Added `TCOD_sys_get_internal_console`.  This returns a pointer to the root console used by the old API.
-- `TCODColor` can now be converted to `TCOD_ColorRGB` or `TCOD_ColorRGBA`.
+- `TCODColor` can now has implicit conversions to `TCOD_ColorRGB` or `TCOD_ColorRGBA`.
+- Added `tcod::ColorRGB` and `tcod::ColorRGBA` to help with color type conversions.
 - Added libtcod logging functions, for debugging and internal use.
 
 ### Changed

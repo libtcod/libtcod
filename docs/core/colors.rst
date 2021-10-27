@@ -31,9 +31,11 @@ You can create your own colours using a set of constructors, both for RGB and HS
     // HSV
     TCODColor myOtherColor(321.0f, 0.7f, 1.0f);
 
-.. code-block:: python
+.. doxygenstruct:: tcod::ColorRGB
+  :members:
 
-    my_color = libtcod.Color(24, 64, 255)
+.. doxygenstruct:: tcod::ColorRGBA
+  :members:
 
 Compare two colors
 ^^^^^^^^^^^^^^^^^^

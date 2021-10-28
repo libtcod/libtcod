@@ -59,14 +59,12 @@ struct HandleLogging : Catch::TestEventListenerBase {
 };
 CATCH_REGISTER_LISTENER(HandleLogging)
 
-namespace std {
-ostream& operator<<(ostream& out, const array<ptrdiff_t, 2>& data) {
+std::ostream& operator<<(std::ostream& out, const std::array<ptrdiff_t, 2>& data) {
   return out << '{' << data.at(0) << ',' << ' ' << data.at(1) << '}';
 }
-ostream& operator<<(ostream& out, const TCOD_ColorRGBA& color) {
+std::ostream& operator<<(std::ostream& out, const TCOD_ColorRGBA& color) {
   return out << '{' << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << '}';
 }
-}  // namespace std
 
 const int WIDTH = 20;
 const int HEIGHT = 10;

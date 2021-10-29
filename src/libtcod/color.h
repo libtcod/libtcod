@@ -34,6 +34,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef __cplusplus
+#include <istream>
+#include <ostream>
+#include <stdexcept>
+#endif  // __cplusplus
 
 #include "config.h"
 /**
@@ -41,8 +46,32 @@
  */
 struct TCOD_ColorRGB {
 #ifdef __cplusplus
-  bool operator==(const TCOD_ColorRGB& rhs) const noexcept { return r == rhs.r && g == rhs.g && b == rhs.b; }
-  bool operator!=(const TCOD_ColorRGB& rhs) const noexcept { return !(*this == rhs); }
+  constexpr bool operator==(const TCOD_ColorRGB& rhs) const noexcept { return r == rhs.r && g == rhs.g && b == rhs.b; }
+  constexpr bool operator!=(const TCOD_ColorRGB& rhs) const noexcept { return !(*this == rhs); }
+  friend std::ostream& operator<<(std::ostream& out, const TCOD_ColorRGB& rgb) {
+    return out << '{' << static_cast<int>(rgb.r) << ", " << static_cast<int>(rgb.g) << ", " << static_cast<int>(rgb.b)
+               << '}';
+  }
+  friend std::istream& operator>>(std::istream& in, TCOD_ColorRGB& rgb) {
+    in >> std::ws;
+    char ch;
+    in >> ch;
+    if (ch != '{') std::runtime_error("Expected missing '{'.");
+    int channel;
+    in >> channel;
+    rgb.r = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    in >> channel;
+    rgb.g = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    in >> channel;
+    rgb.b = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != '}') std::runtime_error("Expected missing '}'.");
+    return in;
+  }
 #endif  // __cplusplus
   uint8_t r;
   uint8_t g;
@@ -55,10 +84,45 @@ typedef struct TCOD_ColorRGB TCOD_ColorRGB;
  */
 struct TCOD_ColorRGBA {
 #ifdef __cplusplus
-  bool operator==(const TCOD_ColorRGBA& rhs) const noexcept {
+  constexpr bool operator==(const TCOD_ColorRGBA& rhs) const noexcept {
     return r == rhs.r && g == rhs.g && b == rhs.b && a == rhs.a;
   }
-  bool operator!=(const TCOD_ColorRGBA& rhs) const noexcept { return !(*this == rhs); }
+  constexpr bool operator!=(const TCOD_ColorRGBA& rhs) const noexcept { return !(*this == rhs); }
+  constexpr TCOD_ColorRGBA& operator=(const TCOD_ColorRGB& rhs) {
+    return (*this) = TCOD_ColorRGBA{rhs.r, rhs.g, rhs.b, 255};
+  }
+  friend std::ostream& operator<<(std::ostream& out, const TCOD_ColorRGBA& rgba) {
+    return out << '{' << static_cast<int>(rgba.r) << ", " << static_cast<int>(rgba.g) << ", "
+               << static_cast<int>(rgba.b) << ", " << static_cast<int>(rgba.a) << '}';
+  }
+  friend std::istream& operator>>(std::istream& in, TCOD_ColorRGBA& rgba) {
+    in >> std::ws;
+    char ch;
+    in >> ch;
+    if (ch != '{') std::runtime_error("Expected missing '{'.");
+    int channel;
+    in >> channel;
+    rgba.r = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    in >> channel;
+    rgba.g = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    in >> channel;
+    rgba.b = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch == '}') {
+      rgba.a = 255;
+      return in;
+    }
+    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    in >> channel;
+    rgba.a = static_cast<uint8_t>(channel);
+    in >> ch;
+    if (ch != '}') std::runtime_error("Expected missing '}'.");
+    return in;
+  }
 #endif  // __cplusplus
   uint8_t r;
   uint8_t g;

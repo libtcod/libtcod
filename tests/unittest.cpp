@@ -62,9 +62,6 @@ CATCH_REGISTER_LISTENER(HandleLogging)
 std::ostream& operator<<(std::ostream& out, const std::array<ptrdiff_t, 2>& data) {
   return out << '{' << data.at(0) << ',' << ' ' << data.at(1) << '}';
 }
-std::ostream& operator<<(std::ostream& out, const TCOD_ColorRGBA& color) {
-  return out << '{' << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << ", " << (int)color.a << '}';
-}
 
 const int WIDTH = 20;
 const int HEIGHT = 10;

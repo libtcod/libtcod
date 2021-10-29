@@ -48,9 +48,9 @@ class FrostManager {
     auto update_func = [&](auto& it) { return !frost_update(it, delta_time); };
     frost_objs.erase(std::remove_if(frost_objs.begin(), frost_objs.end(), update_func), frost_objs.end());
   }
-  inline void render(TCOD_Console& console) {
+  inline void render(tcod::Console& console) {
     for (auto& it : frost_objs) frost_render(it);
-    TCOD_image_blit_2x(TCODImage(img).get_data(), &console, 0, 0, 0, 0, -1, -1);
+    TCOD_image_blit_2x(TCODImage(img).get_data(), console.get(), 0, 0, 0, 0, -1, -1);
   }
 
   /**
@@ -159,8 +159,7 @@ class FrostManager {
       for (int cx = std::max(frost.origin_x - RANGE, 0); cx < std::min(frost.origin_x + RANGE + 1, width); ++cx) {
         const float f = getValue(frost, cx - (frost.origin_x - RANGE), cy - (frost.origin_y - RANGE));
         const int idx = std::max(0, std::min(static_cast<int>(f * 255), 255));
-        const auto& color = frost_gradient.at(idx);
-        img.at({cx, cy}) = {color.r, color.g, color.b};
+        img.at({cx, cy}) = static_cast<TCOD_ColorRGB>(frost_gradient.at(idx));
       }
     }
   }
@@ -177,10 +176,10 @@ tcod::ContextPtr context;
 
 void main_loop() {
   static uint32_t last_time_ms = SDL_GetTicks();
-  static FrostManager frostManager(CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2);
-  static tcod::ConsolePtr console = tcod::new_console(CONSOLE_WIDTH, CONSOLE_HEIGHT);
-  frostManager.render(*console);
-  context->present(*console);
+  static FrostManager frostManager{CONSOLE_WIDTH * 2, CONSOLE_HEIGHT * 2};
+  static auto console = tcod::Console{CONSOLE_WIDTH, CONSOLE_HEIGHT};
+  frostManager.render(console);
+  context->present(console);
 
   SDL_Event event;
   while (SDL_PollEvent(&event)) {

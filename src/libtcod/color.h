@@ -459,15 +459,15 @@ struct ColorRGB : public TCOD_ColorRGB {
   /***************************************************************************
       @brief Allow implicit casts to RGBA colors, where alpha=255 is implied.
    */
-  constexpr operator const TCOD_ColorRGBA() const noexcept { return TCOD_ColorRGBA{r, g, b, 255}; }
+  [[nodiscard]] constexpr operator const TCOD_ColorRGBA() const noexcept { return TCOD_ColorRGBA{r, g, b, 255}; }
   /***************************************************************************
       @brief Allow implicit casts to a TCOD_ColorRGB pointer.  Used for some function parameters.
    */
-  constexpr operator TCOD_ColorRGB*() noexcept { return this; }
+  [[nodiscard]] constexpr operator TCOD_ColorRGB*() noexcept { return this; }
   /***************************************************************************
       @brief Allow implicit casts to a const TCOD_ColorRGB pointer.  Used for some function parameters.
    */
-  constexpr operator const TCOD_ColorRGB*() const noexcept { return this; }
+  [[nodiscard]] constexpr operator const TCOD_ColorRGB*() const noexcept { return this; }
 };
 /***************************************************************************
     @brief A C++ RGBA color, used to handle conversions between color types.
@@ -499,15 +499,15 @@ struct ColorRGBA : public TCOD_ColorRGBA {
   /***************************************************************************
       @brief Allow explicit conversions to a TCOD_ColorRGB struct.
    */
-  constexpr explicit operator TCOD_ColorRGB() const noexcept { return TCOD_ColorRGB{r, g, b}; };
+  [[nodiscard]] constexpr explicit operator TCOD_ColorRGB() const noexcept { return TCOD_ColorRGB{r, g, b}; };
   /***************************************************************************
       @brief Allow implicit conversions to a TCOD_ColorRGBA pointer.  Used for some function parameters.
    */
-  constexpr operator TCOD_ColorRGBA*() noexcept { return this; }
+  [[nodiscard]] constexpr operator TCOD_ColorRGBA*() noexcept { return this; }
   /***************************************************************************
       @brief Allow implicit conversions to a const TCOD_ColorRGBA pointer.  Used for some function parameters.
    */
-  constexpr operator const TCOD_ColorRGBA*() const noexcept { return this; }
+  [[nodiscard]] constexpr operator const TCOD_ColorRGBA*() const noexcept { return this; }
 };
 }  // namespace tcod
 #endif

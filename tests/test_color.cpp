@@ -27,6 +27,11 @@ TEST_CASE("Color conversions") {
     rgba = TCOD_ColorRGB{1, 2, 3};
     CHECK(rgba == tcod::ColorRGBA{1, 2, 3, 255});
   }
+  {
+    auto console = tcod::Console{4, 2};
+    console.clear({0x20, tcod::ColorRGB(1, 2, 3), tcod::ColorRGBA(4, 5, 6, 7)});
+    CHECK(console.at({0, 0}) == TCOD_ConsoleTile{0x20, {1, 2, 3, 255}, {4, 5, 6, 7}});
+  }
 }
 TEST_CASE("Color IO") {
   {

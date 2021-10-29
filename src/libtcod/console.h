@@ -540,12 +540,17 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
     @details Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
 
     @code{.cpp}
-      auto console = tcod::Console{{80, 50}};
+      auto console = tcod::Console{80, 50};
       console.at({1, 1}).ch = '@';  // Bounds-checked references to a tile.
       console[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking, colors are RGBA.
       if (console.in_bounds({100, 100})) {}  // Test if an index is in bounds.
       for (auto& tile : console) tile.fg = {255, 255, 0, 255};  // Iterate over all tiles on a console.
       for (auto& tile : console) tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}};  // Same as clearing all tiles.
+      for (int y = 0; y < console.get_height(); ++y) {
+        for (int x = 0; x < console.get_width(); ++x) {
+          auto& tile = console.at({x, y});  // Iterate over the coordinates of a console.
+        }
+      }
     @endcode
 
     \rst
@@ -557,19 +562,26 @@ class Console {
   /***************************************************************************
       @brief Default initializer.
    */
-  Console() : Console{{0, 0}} {}
+  Console() : Console{0, 0} {}
+  /***************************************************************************
+      @brief Create a new Console with the given size.
+
+      @param width The number of columns in the new console.
+      @param height The number of rows in the new console.
+   */
+  explicit Console(int width, int height) : console_(TCOD_console_new(width, height)) {
+    if (!console_) throw std::runtime_error(TCOD_get_error());
+  }
   /***************************************************************************
       @brief Create a new Console with the given size.
 
       @param size The new console size of `{width, height}`.
    */
-  explicit Console(const std::array<int, 2>& size) : console_(TCOD_console_new(size[0], size[1])) {
-    if (!console_) throw std::runtime_error(TCOD_get_error());
-  }
+  explicit Console(const std::array<int, 2>& size) : Console{size[0], size[1]} {}
   /***************************************************************************
       @brief Clone the shape and tile data of a Console.
    */
-  explicit Console(const Console& other) : Console{{other.console_->w, other.console_->h}} {
+  explicit Console(const Console& other) : Console{other.console_->w, other.console_->h} {
     std::copy(other.console_->begin(), other.console_->end(), console_->begin());
   }
   /***************************************************************************
@@ -614,10 +626,22 @@ class Console {
    */
   ~Console() noexcept = default;
 
-  explicit operator TCOD_Console&() { return *console_; }
-  explicit operator const TCOD_Console&() const { return *console_; }
-  explicit operator TCOD_Console*() noexcept { return console_.get(); }
-  explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
+  /***************************************************************************
+      @brief Allow implicit conversions to a TCOD_Console reference.
+   */
+  [[nodiscard]] operator TCOD_Console&() { return *console_; }
+  /***************************************************************************
+      @brief Allow implicit conversions to a const TCOD_Console reference.
+   */
+  [[nodiscard]] operator const TCOD_Console&() const { return *console_; }
+  /***************************************************************************
+      @brief Allow explicit conversions to a TCOD_Console pointer.
+   */
+  [[nodiscard]] explicit operator TCOD_Console*() noexcept { return console_.get(); }
+  /***************************************************************************
+      @brief Allow explicit conversions to a const TCOD_Console pointer.
+   */
+  [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
   /***************************************************************************
       @brief Return a pointer to the internal TCOD_Console struct.
    */

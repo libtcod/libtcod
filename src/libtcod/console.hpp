@@ -1887,20 +1887,47 @@ public :
     return data;
   }
   /***************************************************************************
-      @brief Convert this TCODConsole into a TCOD_Console reference.
+      @brief Allow implicit conversions into a TCOD_Console reference.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
    */
-  explicit operator TCOD_Console&() {
+  [[nodiscard]] operator TCOD_Console&() {
     TCOD_Console* out = data;
     if (!out) out = TCOD_sys_get_internal_console();
     if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
     return *out;
   };
-  explicit operator const TCOD_Console&() const {
+  /***************************************************************************
+      @brief Allow implicit conversions into a const TCOD_Console reference.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] operator const TCOD_Console&() const {
     const TCOD_Console* out = data;
     if (!out) out = TCOD_sys_get_internal_console();
     if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
     return *out;
   };
+  /***************************************************************************
+      @brief Allow explicit conversions into a TCOD_Console pointer.  Same as calling get_data.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] explicit operator TCOD_Console*() noexcept { return get_data(); };
+  /***************************************************************************
+      @brief Allow explicit conversions into a const TCOD_Console pointer.  Same as calling get_data.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return get_data(); };
 
  protected:
   TCODConsole();

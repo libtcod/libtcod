@@ -1,4 +1,4 @@
-name: CMake
+name: Builds
 
 on:
   push:
@@ -9,8 +9,7 @@ defaults:
     shell: bash
 
 jobs:
-  build:
-
+  CMake:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -107,3 +106,109 @@ jobs:
       - name: CMake test install
         run: |
           cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
+
+  Autotools:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04, macos-10.15]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install APT dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libsdl2-dev
+      - name: Install Brew dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install automake sdl2
+      - name: Configure package
+        working-directory: buildsys/autotools
+        run: |
+          autoreconf --install
+          ./configure --prefix=$HOME/.local
+      - name: Build package
+        working-directory: buildsys/autotools
+        run: |
+          make -j 3 install
+      - name: Run tests
+        working-directory: buildsys/autotools
+        run: |
+          make check
+
+  SCons:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental == true }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-20.04]
+        architecture: [x86_64]
+        include:
+          - os: "macos-11.0"
+            architecture: universal2
+            experimental: true
+          - os: "macos-10.15"
+            architecture: x86_64
+          - os: "windows-2019"
+            architecture: x86
+          - os: "windows-2019"
+            architecture: x86_64
+          - os: "windows-2019"
+            architecture: x86
+            toolset: mingw
+          - os: "windows-2019"
+            architecture: x86_64
+            toolset: mingw
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install SCons
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install scons
+      - name: Install APT dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install libsdl2-dev
+      - name: Install Brew dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install sdl2
+      - name: Set up MinGW
+        if: ${{ matrix.toolset == 'mingw' }}
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: ${{ matrix.architecture == 'x86_64' && 'x64' || 'x86' }}
+      - name: Build package.
+        working-directory: buildsys/scons
+        run: |
+          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE \
+            ARCH=${{ matrix.architecture }} ${{ matrix.toolset == 'mingw' && 'TOOLSET=mingw' || '' }}
+      - name: Archive distribution
+        uses: actions/upload-artifact@v2
+        with:
+          name: scons-dist
+          path: |
+            buildsys/scons/libtcod-*.zip
+            buildsys/scons/libtcod-*.tar.*
+          retention-days: 3
+      - name: Upload release
+        if: runner.os != 'Linux' && startsWith(github.ref, 'refs/tags/')
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: buildsys/scons/libtcod-*.*
+          file_glob: true
+          tag: ${{ github.ref }}
+          overwrite: true

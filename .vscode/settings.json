@@ -123,4 +123,7 @@
     "doxdocgen.c.commentPrefix": "    ",
     "doxdocgen.c.lastLine": " */",
     "python.formatting.provider": "black",
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
 }

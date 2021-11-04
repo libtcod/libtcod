@@ -3,7 +3,6 @@
 https://github.com/conan-io/conan-package-tools
 """
 import os
-
 import subprocess
 
 from cpt.packager import ConanMultiPackager
@@ -32,7 +31,7 @@ if __name__ == "__main__":
             "https://conan.bintray.com",
             "https://api.bintray.com/conan/bincrafters/public-conan",
         ],
-        cppstds=["14"],
+        cppstds=["17"],
         visual_runtimes=["MD", "MDd"],
         # test_folder="tests/",
         build_policy="missing",

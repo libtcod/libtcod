@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.13...3.21)
 
-target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_14)
+target_compile_features(${PROJECT_NAME} PUBLIC c_std_99 cxx_std_17)
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 14)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD_REQUIRED TRUE)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED TRUE)
 

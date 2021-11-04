@@ -27,6 +27,7 @@ since `1.7.0`.
 - `TCODConsole::get_data` now returns a non-NULL pointer to the root console.
 - Fixes to Gaussian number generation will have changed the resulting numbers and any subsequent random numbers.
 - `TCOD_Random` now points to a union type.
+- Libtcod now uses the C++17 standard.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.
@@ -35,9 +36,12 @@ since `1.7.0`.
 - Deprecated older font loading functions.
 - Deprecated `TCOD_random_t` type.
 
-## Fixed
+### Fixed
 - Gaussian number generation no longer affects the results of unrelated RNG's.
 - Gaussian number generation is now reentrant and thread-safe.
+
+### Removed
+- Dropped support for C++14.
 
 ## [1.18.1] - 2021-05-21
 ### Fixed

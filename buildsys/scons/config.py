@@ -26,7 +26,7 @@ DEBUG_GCC = {
     "CXXFLAGS": GCC_CXX_WARNINGS,
 }
 DEBUG_MSVC = {
-    "CCFLAGS": ["/nologo", "/std:c++14", "-W3"],
+    "CCFLAGS": ["/nologo", "/std:c++17", "-W3"],
     "LINKFLAGS": ["/nologo"],
 }
 
@@ -37,7 +37,7 @@ SIZE_GCC = {
     "CPPDEFINES": ["NDEBUG"],
 }
 SIZE_MSVC = {
-    "CCFLAGS": ["/nologo", "/std:c++14", "-W3", "-O1", "-GL", "-GS-"],
+    "CCFLAGS": ["/nologo", "/std:c++17", "-W3", "-O1", "-GL", "-GS-"],
     "LINKFLAGS": ["/nologo", "-LTCG"],
     "CPPDEFINES": ["NDEBUG"],
 }
@@ -49,7 +49,7 @@ PERFORMANCE_GCC = {
     "CPPDEFINES": ["NDEBUG"],
 }
 PERFORMANCE_MSVC = {
-    "CCFLAGS": ["/nologo", "/std:c++14", "-W3", "-O2", "-GL", "-GS-"],
+    "CCFLAGS": ["/nologo", "/std:c++17", "-W3", "-O2", "-GL", "-GS-"],
     "LINKFLAGS": ["/nologo", "-LTCG"],
     "CPPDEFINES": ["NDEBUG"],
 }

@@ -10,7 +10,7 @@
                 "${vcpkgRoot}/x64-windows/include/SDL2"
             ],
             "cStandard": "c99",
-            "cppStandard": "c++14",
+            "cppStandard": "c++17",
             "defines": [
                 "_DEBUG",
                 "UNICODE",

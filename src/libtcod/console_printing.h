@@ -37,8 +37,10 @@
 
 #include <array>
 #include <cstdarg>
+#include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #endif
 
 #include <stdarg.h>
@@ -391,17 +393,15 @@ namespace tcod {
     @param xy The starting `{x, y}` position, starting from the upper-left-most tile as zero.
     @param str The text to print.  This string can contain libtcod color codes.
     @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
-    @param flag The background blending flag.
+              If `{}` then the background will be left unchanged.
     @param alignment The text justification.
+    @param flag The background blending flag.
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}})
-      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
-      static constexpr auto BLACK = TCOD_ColorRGB{0, 0, 0};
-      tcod::print(*console, {0, 0}, "Hello World", &WHITE, &BLACK);
+      auto console = tcod::Console{80, 50};
+      tcod::print(console, {0, 0}, "Hello World", {{255, 255, 255}}, {{0, 0, 0}});
     @endcode
 
     \rst
@@ -411,7 +411,20 @@ namespace tcod {
 inline void print(
     TCOD_Console& console,
     const std::array<int, 2>& xy,
-    const std::string& str,
+    std::string_view str,
+    std::optional<TCOD_ColorRGB> fg,
+    std::optional<TCOD_ColorRGB> bg,
+    TCOD_alignment_t alignment = TCOD_LEFT,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET) {
+  const TCOD_ColorRGB* fg_ptr = fg ? &fg.value() : nullptr;
+  const TCOD_ColorRGB* bg_ptr = bg ? &bg.value() : nullptr;
+  check_throw_error(
+      TCOD_console_printn(&console, xy.at(0), xy.at(1), str.size(), str.data(), fg_ptr, bg_ptr, flag, alignment));
+}
+[[deprecated]] inline void print(
+    TCOD_Console& console,
+    const std::array<int, 2>& xy,
+    std::string_view str,
     const TCOD_ColorRGB* fg,
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
@@ -426,29 +439,49 @@ inline void print(
                 A width or height of zero will leave that axis unconstrained.
     @param str The text to print.  This string can contain libtcod color codes.
     @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
+              If `{}` then the background will be left unchanged.
     @param flag The background blending flag.
     @param alignment The text justification.
     @return int The height of the printed output.
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}})
+      auto console = tcod::Console{80, 50};
       static constexpr auto TEAL = TCOD_ColorRGB{0, 255, 255};
       // Print "Hello World" centered along the top row, ignoring the background color.
-      tcod::print_rect(
-          *console, {0, 0, console->w, 1}, "Hello World", &TEAL, nullptr, TCOD_BKGND_SET, TCOD_CENTER);
+      tcod::print(console, {0, 0, console->w, 1}, "Hello World", TEAL, {}, TCOD_CENTER);
     @endcode
 
     \rst
     .. versionadded:: 1.19
     \endrst
  */
-inline int print_rect(
+inline int print(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
-    const std::string& str,
+    std::string_view str,
+    std::optional<TCOD_ColorRGB> fg,
+    std::optional<TCOD_ColorRGB> bg,
+    TCOD_alignment_t alignment = TCOD_LEFT,
+    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET) {
+  return check_throw_error(TCOD_console_printn_rect(
+      &console,
+      rect.at(0),
+      rect.at(1),
+      rect.at(2),
+      rect.at(3),
+      str.size(),
+      str.data(),
+      fg ? &fg.value() : nullptr,
+      bg ? &bg.value() : nullptr,
+      flag,
+      alignment));
+}
+[[deprecated]] inline int print_rect(
+    TCOD_Console& console,
+    const std::array<int, 4>& rect,
+    std::string_view str,
     const TCOD_ColorRGB* fg,
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
@@ -456,8 +489,7 @@ inline int print_rect(
   return check_throw_error(TCOD_console_printn_rect(
       &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), str.size(), str.data(), fg, bg, flag, alignment));
 }
-[[deprecated]] inline int get_height_rect(
-    TCOD_Console& console, const std::array<int, 4>& rect, const std::string& str) {
+[[deprecated]] inline int get_height_rect(TCOD_Console& console, const std::array<int, 4>& rect, std::string_view str) {
   return check_throw_error(
       TCOD_console_get_height_rect_n(&console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), str.size(), str.data()));
 }
@@ -469,24 +501,24 @@ inline int print_rect(
     @return int The height of the text as if it were printed.
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}})
+      auto console = tcod::Console{80, 50};
       int y = console->h; // Start Y at the bottom of this console.
       const int width = 6;
       y -= tcod::get_height_rect("Long text example", width); // Move y up by the height of this text.
-      tcod::print_rect(*console, {0, y, width, 0}, "Long text example", nullptr, nullptr);
+      tcod::print(console, {0, y, width, 0}, "Long text example", {}, {});
     @endcode
 
     \rst
     .. versionadded:: 1.19
     \endrst
  */
-inline int get_height_rect(int width, const std::string& str) {
+inline int get_height_rect(int width, std::string_view str) {
   return check_throw_error(TCOD_console_get_height_rect_wn(width, str.size(), str.data()));
 }
 [[deprecated("It is recommended that you print your own banners for frames.")]] inline void print_frame(
     struct TCOD_Console& console,
     const std::array<int, 4>& rect,
-    const std::string& title,
+    std::string_view title,
     const TCOD_ColorRGB* fg,
     const TCOD_ColorRGB* bg,
     TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,

@@ -6,9 +6,6 @@
 #include <libtcod/color.hpp>
 #include <sstream>
 
-static bool rgba_equals(const TCOD_ColorRGBA* lhs, const TCOD_ColorRGBA* rhs) { return (*lhs) == (*rhs); }
-static bool rgb_equals(const TCOD_ColorRGB* lhs, const TCOD_ColorRGB* rhs) { return (*lhs) == (*rhs); }
-
 TEST_CASE("Color conversions") {
   {
     const auto tile = TCOD_ConsoleTile{
@@ -19,9 +16,6 @@ TEST_CASE("Color conversions") {
     CHECK(tile.fg == tcod::ColorRGBA{1, 2, 3, 255});
     CHECK(tile.bg == tcod::ColorRGBA{4, 5, 6, 7});
   }
-  // Check implicit casts to pointers.
-  CHECK(rgb_equals(tcod::ColorRGB{1, 2, 3}, tcod::ColorRGB{1, 2, 3}));
-  CHECK(rgba_equals(tcod::ColorRGBA{1, 2, 3}, tcod::ColorRGBA{1, 2, 3}));
   {
     auto rgba = TCOD_ColorRGBA{0, 0, 0, 0};
     rgba = TCOD_ColorRGB{1, 2, 3};

@@ -28,6 +28,7 @@ since `1.7.0`.
 - Fixes to Gaussian number generation will have changed the resulting numbers and any subsequent random numbers.
 - `TCOD_Random` now points to a union type.
 - Libtcod now uses the C++17 standard.
+- The newer C++ printing functions now take `std::string_view` instead of `std::string`.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

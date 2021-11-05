@@ -151,8 +151,8 @@ Printing functions using UTF-8
 Printing functions using UTF-8 (C++)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: tcod::print
-.. doxygenfunction:: tcod::print_rect
+.. doxygenfunction:: tcod::print(TCOD_Console& console, const std::array<int, 2>& xy, std::string_view str, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_alignment_t alignment = TCOD_LEFT, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
+.. doxygenfunction:: tcod::print(TCOD_Console& console, const std::array<int, 4>& rect, std::string_view str, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_alignment_t alignment = TCOD_LEFT, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 .. doxygenfunction:: tcod::get_height_rect(int width, const std::string& str)
 
 .. doxygenfunction:: tcod::stringf

@@ -94,8 +94,8 @@ Basic drawing functions
 Drawing functions (C++)
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: tcod::draw_rect
-.. doxygenfunction:: tcod::draw_frame
+.. doxygenfunction:: tcod::draw_rect(TCOD_Console& console, const std::array<int, 4>& rect, int ch, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
+.. doxygenfunction:: tcod::draw_frame(TCOD_Console& console, const std::array<int, 4>& rect, const std::array<int, 9>& decoration, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET, bool clear = true)
 
 Background effect flags
 ^^^^^^^^^^^^^^^^^^^^^^^

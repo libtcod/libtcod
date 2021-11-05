@@ -36,7 +36,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
-TCOD_PUBLIC TCOD_NODISCARD TCOD_Context* TCOD_renderer_init_xterm(const char* window_title);
+TCOD_PUBLIC TCOD_NODISCARD TCOD_Context* TCOD_renderer_init_xterm(
+  int columns,
+  int rows,
+  const char* window_title);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

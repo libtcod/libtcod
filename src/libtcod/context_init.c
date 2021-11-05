@@ -335,7 +335,10 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
       }
       return err;
     case TCOD_RENDERER_XTERM:
-      *out = TCOD_renderer_init_xterm(params.window_title);
+      *out = TCOD_renderer_init_xterm(
+          params.columns,
+          params.rows,
+          params.window_title);
       if (!*out) return TCOD_E_ERROR;
       return err;
   }

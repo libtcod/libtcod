@@ -159,7 +159,10 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   xterm_cleanup();
 }
 
-TCOD_Context* TCOD_renderer_init_xterm(const char* window_title) {
+TCOD_Context* TCOD_renderer_init_xterm(
+    int columns,
+    int rows,
+    const char* window_title) {
   TCOD_Context* context = TCOD_context_new_();
   if (!context) return NULL;
   struct TCOD_RendererXterm* data = context->contextdata_ = calloc(sizeof(*data), 1);
@@ -187,6 +190,7 @@ TCOD_Context* TCOD_renderer_init_xterm(const char* window_title) {
       "\x1b[2J"  // Clear the screen.
       "\x1b[?25l"  // Hide cursor.
   );
+  if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
   return context;
 }

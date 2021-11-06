@@ -146,6 +146,7 @@ static void xterm_cleanup(void) {
       "\x1b[2J"  // Clear the screen.
       "\x1b[?1049l"  // Disable alternative screen buffer.
       "\x1b[?25h"  // Show cursor.
+      "\x1b" "c"  // Reset to initial state.
   );
 #ifdef _WIN32
   SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_old_mode_stdin);

@@ -22,7 +22,7 @@ You can switch away from :any:`TCOD_console_set_custom_font` before using contex
     // TCOD_console_set_custom_font("terminal8x8_gs_tc.png", TCOD_FONT_LAYOUT_TCOD, 32, 8);
 
     // You can update old code to use this new method of loading tilesets before using contexts properly.
-    tcod::TilesetPtr tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+    auto tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
     TCOD_set_default_tileset(tileset.get());
 
     // This is deprecated, but will work with the above tileset.
@@ -36,25 +36,25 @@ Instead of setting colors before calling the print functions you now pass the co
 
 .. code-block:: cpp
 
-  static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
+  static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
 
   TCODConsole* console = new TCODConsole(80, 25);  // Deprecated.
 
   tcod::print(
-    static_cast<TCOD_Console&>(*console),  // TCODConsole& can be static cast to TCOD_Console&.
+    *console,  // Should be a tcod::Console reference, but a TCODConsole reference can be used for these functions.
     {0, 0},  // Coordinates are passed together.
     tcod::stringf("%s %s", "Hello", "world"),  // Printf-like strings are encapsulated in tcod::stringf.
-    &WHITE,  // Colors are passed by pointer, this is so that you can pass nullptr.
-    nullptr,  // Passing nullptr here leaves the background color unchanged.
+    WHITE,  // Color parameters are std::optional.
+    {},  // Passing {} here leaves the background color unchanged.
   )
 
-  TCOD_ColorRGB bg = TCOD_console_get_char_background(TCODConsole::root->get_data());
+  tcod::ColorRGB bg = TCOD_console_get_char_background(TCODConsole::root->get_data());
   tcod::draw_rect(
-    static_cast<TCOD_Console&>(*TCODConsole::root),  // This cast also works with TCODConsole::root.
+    *TCODConsole::root,  // TCODConsole::root is deprecated, but can still be passed as a parameter.
     {0, 0, 20, 1},  // {left, top, width, height}
     0x2500,  // "─" BOX DRAWINGS LIGHT HORIZONTAL.  Unicode is expected for character codes.
-    &WHITE,
-    &bg,
+    WHITE,
+    bg,
   )
 
 Adapting to contexts and a rootless console
@@ -175,8 +175,8 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
     #include <SDL2.h>
 
     int main(int argc, char* argv[]) {
-      tcod::ConsolePtr root_console = tcod::new_console(80, 25);
-      tcod::TilesetPtr tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
+      auto root_console = tcod::Console{80, 25};
+      auto tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
 
       TCOD_ContextParams params{};
       params.tcod_version = TCOD_COMPILEDVERSION;
@@ -188,10 +188,10 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
       params.argv = argv;
       params.tileset = tileset.get();
 
-      tcod::ContextPtr context = tcod::new_context(params);
+      auto context = tcod::new_context(params);
 
       while (1) {
-        context->present(*root_console);
+        context->present(root_console);
 
         SDL_Event event;
         while (SDL_PollEvent(&event)){

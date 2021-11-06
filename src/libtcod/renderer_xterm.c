@@ -36,9 +36,13 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
 #endif
 
 #include "error.h"
@@ -46,10 +50,13 @@
 #ifdef _WIN32
 static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
+#else
+struct termios g_old_termios;
 #endif
 
 struct TCOD_RendererXterm {
   TCOD_Console* cache;
+  pthread_t input_thread;
 };
 
 static char* ucs4_to_utf8(int ucs4, char out[5]) {
@@ -151,6 +158,8 @@ static void xterm_cleanup(void) {
 #ifdef _WIN32
   SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_old_mode_stdin);
   SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), g_old_mode_stdout);
+#else
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_old_termios);
 #endif
 }
 
@@ -158,6 +167,40 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   struct TCOD_RendererXterm* context = self->contextdata_;
   if (context) free(context);
   xterm_cleanup();
+}
+
+static void *xterm_handle_input(void *arg) {
+  while (true) {
+    int ch = getchar();
+    int sym = ch;
+    int mod = KMOD_NONE;
+    if isupper(ch) {
+      sym = tolower(sym);
+      mod = KMOD_SHIFT;
+    }
+    SDL_Event down_event;
+    down_event.type = SDL_KEYDOWN;
+    down_event.key.timestamp = SDL_GetTicks();
+    down_event.key.windowID = 0;
+    down_event.key.state = SDL_PRESSED;
+    down_event.key.repeat = 0;
+    down_event.key.keysym.sym = sym;
+    down_event.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
+    down_event.key.keysym.mod = mod;
+    SDL_Event text_event;
+    text_event.type = SDL_TEXTINPUT;
+    text_event.text.timestamp = SDL_GetTicks();
+    text_event.text.windowID = 0;
+    text_event.text.text[0] = ch;
+    text_event.text.text[1] = '\0';
+    SDL_Event up_event = down_event;
+    up_event.type = SDL_KEYUP;
+    up_event.key.state = SDL_RELEASED;
+    SDL_PushEvent(&down_event);
+    SDL_PushEvent(&text_event);
+    SDL_PushEvent(&up_event);
+  }
+  return NULL;
 }
 
 TCOD_Context* TCOD_renderer_init_xterm(
@@ -184,6 +227,20 @@ TCOD_Context* TCOD_renderer_init_xterm(
   SetConsoleMode(handle_stdin, ENABLE_VIRTUAL_TERMINAL_INPUT);
   SetConsoleMode(
       handle_stdout, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
+#else
+  tcgetattr(STDIN_FILENO, &g_old_termios);
+  struct termios new_termios = g_old_termios;
+  new_termios.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+  new_termios.c_oflag &= ~(OPOST);
+  new_termios.c_cflag &= ~(CSIZE | PARENB);
+  new_termios.c_cflag |= CS8;
+  new_termios.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+  new_termios.c_cc[VMIN] = 1;
+  new_termios.c_cc[VTIME] = 1;
+  if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &new_termios) < 0) {
+    TCOD_set_errorv("Could not set raw terminal mode.");
+    return NULL;
+  }
 #endif
   fprintf(
       stdout,
@@ -193,5 +250,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   );
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
+  SDL_Init(SDL_INIT_VIDEO); // Need SDL init to get keysyms
+  pthread_create(&data->input_thread, NULL, &xterm_handle_input, NULL);
   return context;
 }

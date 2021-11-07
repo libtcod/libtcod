@@ -497,11 +497,10 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
     .. versionadded:: 1.19
     \endrst
  */
-[[nodiscard]] inline auto new_console(int width, int height) -> ConsolePtr {
+[[nodiscard]] [[deprecated("Switch to using tcod::Console{w, h}")]] inline auto new_console(int width, int height)
+    -> ConsolePtr {
   ConsolePtr console{TCOD_console_new(width, height)};
-  if (!console) {
-    throw std::runtime_error(TCOD_get_error());
-  }
+  if (!console) throw std::runtime_error(TCOD_get_error());
   return console;
 }
 /***************************************************************************
@@ -514,8 +513,11 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
     .. versionadded:: 1.19
     \endrst
  */
-[[nodiscard]] inline auto new_console(std::array<int, 2> size) -> ConsolePtr {
-  return new_console(size.at(0), size.at(1));
+[[nodiscard]] [[deprecated("Switch to using tcod::Console{{w, h}}")]] inline auto new_console(std::array<int, 2> size)
+    -> ConsolePtr {
+  ConsolePtr console{TCOD_console_new(size.at(0), size.at(1))};
+  if (!console) throw std::runtime_error(TCOD_get_error());
+  return console;
 }
 /***************************************************************************
     @brief Return a copy of another console.
@@ -529,9 +531,11 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
     .. versionadded:: 1.19
     \endrst
  */
-[[nodiscard]] inline auto new_console(const TCOD_Console& console) -> ConsolePtr {
-  auto clone = new_console(console.w, console.h);
-  std::copy(console.begin(), console.end(), clone->begin());
+[[nodiscard]] [[deprecated("Switch to using tcod::Console{w, h}")]] inline auto new_console(const TCOD_Console& console)
+    -> ConsolePtr {
+  ConsolePtr clone{TCOD_console_new(console.w, console.h)};
+  if (!clone) throw std::runtime_error(TCOD_get_error());
+  std::copy(console.tiles, console.tiles + console.elements, clone->tiles);
   return clone;
 }
 /***************************************************************************

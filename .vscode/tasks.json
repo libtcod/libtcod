@@ -1,0 +1,38 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "install documentation requirements",
+            "type": "process",
+            "command": "python",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "--requirement",
+                "docs/requirements.txt"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build documentation",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "html"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/docs"
+            },
+            "problemMatcher": [],
+            "dependsOn": [
+                "install documentation requirements"
+            ],
+            "windows": {
+                "command": "./make.bat"
+            }
+        }
+    ]
+}

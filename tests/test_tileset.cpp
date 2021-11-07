@@ -7,9 +7,9 @@
 
 TEST_CASE("Load tilesheet.") {
   auto tileset = tcod::load_tilesheet(get_file("fonts/terminal8x8_gs_ro.png"), {16, 16}, tcod::CHARMAP_CP437);
-  REQUIRE(tileset);
+  REQUIRE(tileset.get());
   tileset = tcod::load_tilesheet(get_file("fonts/dejavu8x8_gs_tc.png"), {32, 8}, tcod::CHARMAP_TCOD);
-  REQUIRE(tileset);
+  REQUIRE(tileset.get());
 }
 
 TEST_CASE("Missing tilesheet.", "[!throws]") {

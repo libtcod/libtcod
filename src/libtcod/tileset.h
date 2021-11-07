@@ -410,6 +410,100 @@ struct TilesetDeleter {
     \endrst
  */
 typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
+/***************************************************************************
+    @brief A C++ Tileset container.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+class Tileset {
+ public:
+  /***************************************************************************
+      @brief Construct a new Tileset object.
+   */
+  Tileset() = default;
+  /***************************************************************************
+      @brief Construct a new Tileset object with tiles of the given size.  The tileset will be empty.
+
+      @param tile_width The width of the tiles of this object in pixels.
+      @param tile_height The width of the tiles of this object in pixels.
+   */
+  explicit Tileset(int tile_width, int tile_height) : tileset_{TCOD_tileset_new(tile_width, tile_height)} {
+    if (!tileset_) throw std::runtime_error(TCOD_get_error());
+  }
+  /***************************************************************************
+      @brief Construct a new Tileset object with tiles of the given size.  The tileset will be empty.
+
+      @param tile_shape The `{width, height}` of the tiles in pixels.
+   */
+  explicit Tileset(const std::array<int, 2>& tile_shape) : Tileset{tile_shape.at(0), tile_shape.at(1)} {}
+  /***************************************************************************
+      @brief Pass ownership of a TilesetPtr to a new Tileset.
+
+      @param ptr A `tcod::TilesetPtr`, must not be nullptr.
+   */
+  explicit Tileset(TilesetPtr ptr) : tileset_{std::move(ptr)} {
+    if (!tileset_) throw std::invalid_argument("Pointer must not be nullptr.");
+  }
+  /***************************************************************************
+      @brief Takes ownership of a raw TCOD_Tileset pointer.
+
+      @param ptr A pointer which will now be managed by this object.
+   */
+  explicit Tileset(TCOD_Tileset* ptr) : tileset_{ptr} {
+    if (!tileset_) throw std::invalid_argument("Pointer must not be nullptr.");
+  }
+  /***************************************************************************
+      @brief Get the width of tiles in this Tileset.
+
+      @return int The total width of tiles in pixels.
+   */
+  [[nodiscard]] auto get_tile_width() noexcept -> int { return tileset_->tile_width; }
+  /***************************************************************************
+      @brief Get the height of tiles in this Tileset.
+
+      @return int The total height of tiles in pixels.
+   */
+  [[nodiscard]] auto get_tile_height() noexcept -> int { return tileset_->tile_height; }
+  /***************************************************************************
+      @brief Get the `{width, height}` shape of tiles in this Tileset.
+
+      @return std::array<int, 2> The `{width, height}` of tiles in this Tileset in pixels.
+   */
+  [[nodiscard]] auto get_tile_shape() noexcept -> std::array<int, 2> {
+    return {tileset_->tile_width, tileset_->tile_height};
+  }
+  /***************************************************************************
+      @brief Return a non-owning pointer to this objects TCOD_Tileset.
+
+      @return TCOD_Tileset
+   */
+  [[nodiscard]] auto get() noexcept -> TCOD_Tileset* { return tileset_.get(); }
+  /***************************************************************************
+      @brief Return a non-owning pointer to this objects TCOD_Tileset.
+
+      @return TCOD_Tileset
+   */
+  [[nodiscard]] auto get() const noexcept -> TCOD_Tileset* { return tileset_.get(); }
+  /***************************************************************************
+      @brief Release ownership of this Tileset's `TCOD_Tileset*` and return the pointer.
+
+      Using this Tileset afterwards is undefined.
+   */
+  auto release() noexcept -> TCOD_Tileset* { return tileset_.release(); }
+  /***************************************************************************
+      @brief Allow implicit conversions to a TCOD_Console reference.
+   */
+  [[nodiscard]] operator TCOD_Tileset&() { return *tileset_; }
+  /***************************************************************************
+      @brief Allow implicit conversions to a const TCOD_Console reference.
+   */
+  [[nodiscard]] operator const TCOD_Tileset&() const { return *tileset_; }
+
+ private:
+  TilesetPtr tileset_ = nullptr;
+};
 /**
     @brief Load a tilesheet from a PNG file.
 
@@ -432,11 +526,11 @@ typedef std::unique_ptr<TCOD_Tileset, TilesetDeleter> TilesetPtr;
  */
 template <typename ArrayType>
 TCOD_NODISCARD inline auto load_tilesheet(
-    const char* path, const std::array<int, 2>& columns_rows, const ArrayType& charmap) -> TilesetPtr {
+    const char* path, const std::array<int, 2>& columns_rows, const ArrayType& charmap) -> Tileset {
   TilesetPtr tileset{TCOD_tileset_load(
       path, columns_rows.at(0), columns_rows.at(1), static_cast<int>(charmap.size()), charmap.data())};
   if (!tileset) throw std::runtime_error(TCOD_get_error());
-  return tileset;
+  return Tileset{std::move(tileset)};
 }
 /**
     \rst
@@ -445,7 +539,7 @@ TCOD_NODISCARD inline auto load_tilesheet(
  */
 template <typename ArrayType>
 TCOD_NODISCARD inline auto load_tilesheet(
-    const std::string& path, const std::array<int, 2>& columns_rows, const ArrayType& charmap) -> TilesetPtr {
+    const std::string& path, const std::array<int, 2>& columns_rows, const ArrayType& charmap) -> Tileset {
   return load_tilesheet(path.c_str(), columns_rows, charmap);
 }
 }  // namespace tcod

@@ -133,26 +133,14 @@ void render(TCOD_Console& console, float delta_time) {
   snprintf(landMassTxt, sizeof(landMassTxt), "landMass : %d %%", (int)landProportion);
   if (!isNormalized) {
     tcod::print(
-        console,
-        {HM_WIDTH / 2, HM_HEIGHT - 1},
-        "the map is not normalized !",
-        &WHITE_,
-        nullptr,
-        TCOD_BKGND_SET,
-        TCOD_CENTER);
+        console, {HM_WIDTH / 2, HM_HEIGHT - 1}, "the map is not normalized !", WHITE_, std::nullopt, TCOD_CENTER);
   }
   // message
   msgDelay -= delta_time;
   if (msg.size() && msgDelay > 0.0f) {
     const int msg_height = tcod::print_rect(
-        console,
-        {HM_WIDTH / 4 + 1, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 1, 0},
-        msg,
-        &WHITE_,
-        nullptr,
-        TCOD_BKGND_SET,
-        TCOD_CENTER);
-    tcod::draw_rect(console, {HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, msg_height + 2}, 0, nullptr, &LIGHT_BLUE_);
+        console, {HM_WIDTH / 4 + 1, HM_HEIGHT / 2 + 1, HM_WIDTH / 2 - 1, 0}, msg, WHITE_, std::nullopt, TCOD_CENTER);
+    tcod::draw_rect(console, {HM_WIDTH / 4, HM_HEIGHT / 2, HM_WIDTH / 2, msg_height + 2}, 0, std::nullopt, LIGHT_BLUE_);
   }
 }
 

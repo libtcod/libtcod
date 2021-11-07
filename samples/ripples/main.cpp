@@ -80,12 +80,12 @@ void render(TCOD_Console& console) {
   }
   rippleManager->renderRipples(*ground, *ground_with_ripples);
   tcod::draw_quartergraphics(console, *ground_with_ripples);
-  tcod::print(console, {3, 49}, "Click in water to trigger ripples", &WHITE, nullptr);
+  tcod::print(console, {3, 49}, "Click in water to trigger ripples", WHITE, std::nullopt);
 }
 
 int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::new_console({{CON_W, CON_H}});
+  auto console = tcod::Console{CON_W, CON_H};
   // initialize the game window
   TCOD_ContextParams params{};
   params.tcod_version = SDL_COMPILEDVERSION;
@@ -160,11 +160,11 @@ int main(int argc, char* argv[]) {
     rippleManager->updateRipples(delta_time);
 
     // render the game screen
-    render(*console);
+    render(console);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    context->present(*console);
+    context->present(console);
   }
   return 0;
 }

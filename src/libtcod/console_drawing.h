@@ -152,17 +152,17 @@ namespace tcod {
     @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
     @param ch The character to draw.  If zero then the characers in the drawing region will not be changed.
     @param fg The foreground color.  The printed text is set to this color.
-              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If `{}` then the background will be left unchanged.
+              If std::nullopt then the background will be left unchanged.
     @param flag The background blending flag.
 
     @code{.cpp}
       auto console = tcod::Console{80, 50};
       // Draw a red background without replacing any foreground glyphs/colors.
-      tcod::draw_rect(console, {2, 2, 24, 24}, 0, {}, tcod::ColorRGB{255, 0, 0});
+      tcod::draw_rect(console, {2, 2, 24, 24}, 0, std::nullopt, tcod::ColorRGB{255, 0, 0});
       // Draw a horizontal bar.
-      tcod::draw_rect(console, {8, 8, 16, 1}, '-', {{255, 255, 255}}, {});
+      tcod::draw_rect(console, {8, 8, 16, 1}, '-', {{255, 255, 255}}, std::nullopt);
     @endcode
     \rst
     .. versionadded:: 1.19
@@ -206,7 +206,7 @@ inline void draw_rect(
     .. versionadded:: 1.19
     \endrst
  */
-[[deprecated]] inline void draw_rect(
+[[deprecated("Color parameters should be references, nullptr colors become `{}`")]] inline void draw_rect(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     int ch,
@@ -223,9 +223,9 @@ inline void draw_rect(
     @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
     @param decoration The codepoints to use for the frame in row-major order.
     @param fg The foreground color.  The printed text is set to this color.
-              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If `{}` then the background will be left unchanged.
+              If std::nullopt then the background will be left unchanged.
     @param flag The background blending flag.
     @param clear If true then the center area will be cleared with the center decoration.
 
@@ -288,7 +288,7 @@ inline void draw_frame(
     .. versionadded:: 1.19
     \endrst
  */
-[[deprecated]] inline void draw_frame(
+[[deprecated("Color parameters should be references, nullptr colors become `std::nullopt`")]] inline void draw_frame(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     const std::array<int, 9>& decoration,

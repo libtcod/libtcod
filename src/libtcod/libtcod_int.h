@@ -180,6 +180,9 @@ TCOD_key_t TCOD_sys_wait_for_keypress(bool flush);
 bool TCOD_sys_is_key_pressed(TCOD_keycode_t key);
 void TCOD_sys_pixel_to_tile(double* x, double* y);
 
+/***************************************************************************
+    @brief Deprecated EASCII internal printing.
+ */
 int TCOD_console_print_internal(
     TCOD_Console* con,
     int x,

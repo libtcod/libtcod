@@ -323,7 +323,7 @@ void render(TCOD_Console& console) {
 int main(int argc, char* argv[]) {
   // initialize the game window
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::new_console(WIDTH, HEIGHT);
+  auto console = tcod::Console{WIDTH, HEIGHT};
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
   params.argc = argc;
@@ -384,9 +384,9 @@ int main(int argc, char* argv[]) {
     const float delta_time = timer.sync(desired_fps);
     update(delta_time, *context);
     // render the game screen
-    render(*console);
+    render(console);
     tcod::print(
-        *console,
+        console,
         {1, HEIGHT - 2 - 6},
         tcod::stringf(
             "FPS:\n%6.2f mean\n%6.2f median\n%6.2f last\n%6.2f min\n%6.2f max\nlimit (F1=0,F2=30,F3=60): %2i fps",
@@ -396,11 +396,11 @@ int main(int argc, char* argv[]) {
             timer.get_min_fps(),
             timer.get_max_fps(),
             desired_fps),
-        &TEXT_COLOR,
-        nullptr);
-    tcod::print(*console, {5, 49}, "Arrows to move, left mouse button to cast", &TEXT_COLOR, nullptr);
+        TEXT_COLOR,
+        {});
+    tcod::print(console, {5, 49}, "Arrows to move, left mouse button to cast", TEXT_COLOR, std::nullopt);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
-    context->present(*console);
+    context->present(console);
   }
 }

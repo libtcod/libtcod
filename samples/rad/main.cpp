@@ -183,18 +183,16 @@ void render(TCOD_Console& console) {
       console,
       {console.w / 4, 0},
       tcod::stringf("Standard lighting %1.2fms", stdLength),
-      nullptr,
-      nullptr,
-      TCOD_BKGND_SET,
+      std::nullopt,
+      std::nullopt,
       TCOD_CENTER);
 
   tcod::print(
       console,
       {3 * CON_WIDTH / 4, 0},
       tcod::stringf("Photon reactor %1.2fms", radLength),
-      nullptr,
-      nullptr,
-      TCOD_BKGND_SET,
+      std::nullopt,
+      std::nullopt,
       TCOD_CENTER);
 }
 
@@ -217,7 +215,7 @@ void move(TCOD_Console& console, int dx, int dy) {
 }
 
 int main(int argc, char* argv[]) {
-  auto console = tcod::new_console(80, 50);
+  auto console = tcod::Console{80, 50};
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
@@ -231,10 +229,10 @@ int main(int argc, char* argv[]) {
 
   auto context = tcod::new_context(params);
 
-  init(*console);
+  init(console);
   while (true) {
-    render(*console);
-    context->present(*console);
+    render(console);
+    context->present(console);
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -247,25 +245,25 @@ int main(int argc, char* argv[]) {
             case SDL_SCANCODE_KP_8:
             case SDL_SCANCODE_W:
             case SDL_SCANCODE_K:
-              move(*console, 0, -1);
+              move(console, 0, -1);
               break;
             case SDL_SCANCODE_DOWN:
             case SDL_SCANCODE_KP_2:
             case SDL_SCANCODE_S:
             case SDL_SCANCODE_J:
-              move(*console, 0, 1);
+              move(console, 0, 1);
               break;
             case SDL_SCANCODE_LEFT:
             case SDL_SCANCODE_KP_4:
             case SDL_SCANCODE_A:
             case SDL_SCANCODE_H:
-              move(*console, -1, 0);
+              move(console, -1, 0);
               break;
             case SDL_SCANCODE_RIGHT:
             case SDL_SCANCODE_KP_6:
             case SDL_SCANCODE_D:
             case SDL_SCANCODE_L:
-              move(*console, 1, 0);
+              move(console, 1, 0);
               break;
             case SDL_SCANCODE_PRINTSCREEN:
               context->save_screenshot(nullptr);

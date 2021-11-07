@@ -641,11 +641,11 @@ class Console {
   /***************************************************************************
       @brief Allow explicit conversions to a TCOD_Console pointer.
    */
-  [[nodiscard]] explicit operator TCOD_Console*() noexcept { return console_.get(); }
+  [[deprecated]] [[nodiscard]] explicit operator TCOD_Console*() noexcept { return console_.get(); }
   /***************************************************************************
       @brief Allow explicit conversions to a const TCOD_Console pointer.
    */
-  [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
+  [[deprecated]] [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
   /***************************************************************************
       @brief Return a pointer to the internal TCOD_Console struct.
    */

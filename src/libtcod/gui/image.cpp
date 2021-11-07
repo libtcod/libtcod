@@ -39,7 +39,7 @@ Image::~Image() {}
 
 void Image::render() {
   const auto bg = TCOD_ColorRGB(back);
-  tcod::draw_rect(static_cast<TCOD_Console&>(*con), {x, y, w, h}, ' ', nullptr, &bg);
+  tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
 }
 
 void Image::setBackgroundColor(const TCODColor col) { back = col; }

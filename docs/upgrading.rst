@@ -45,7 +45,7 @@ Instead of setting colors before calling the print functions you now pass the co
     {0, 0},  // Coordinates are passed together.
     tcod::stringf("%s %s", "Hello", "world"),  // Printf-like strings are encapsulated in tcod::stringf.
     WHITE,  // Color parameters are std::optional.
-    {},  // Passing {} here leaves the background color unchanged.
+    std::nullopt,  // Passing std::nullopt here leaves the background color unchanged.
   )
 
   tcod::ColorRGB bg = TCOD_console_get_char_background(TCODConsole::root->get_data());

@@ -187,7 +187,7 @@ void TCOD_console_print(TCOD_Console* con, int x, int y, const char* fmt, ...) {
   va_end(ap);
 }
 /**
- *  Print a string on a console, using default colors.
+ *  Print an EASCII string on a console, using default colors.
  *
  *  \param con A console pointer.
  *  \param x The starting X coordinate, the left-most position being 0.
@@ -205,8 +205,7 @@ void TCOD_console_print_ex(
   va_end(ap);
 }
 /**
- *  Print a string on a console constrained to a rectangle, using default
- *  colors and alignment.
+ *  Print an EASCII string on a console constrained to a rectangle, using default colors and alignment.
  *
  *  \param con A console pointer.
  *  \param x The starting X coordinate, the left-most position being 0.
@@ -233,8 +232,7 @@ int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const
   return ret;
 }
 /**
- *  Print a string on a console constrained to a rectangle, using default
- *  colors.
+ *  Print an EASCII string on a console constrained to a rectangle, using default colors.
  *
  *  \param con A console pointer.
  *  \param x The starting X coordinate, the left-most position being 0.
@@ -267,7 +265,7 @@ int TCOD_console_print_rect_ex(
   return ret;
 }
 /**
- *  Return the number of lines that would be printed by the
+ *  Return the number of lines that would be printed by an EASCII string.
  *
  *  \param con A console pointer.
  *  \param x The starting X coordinate, the left-most position being 0.

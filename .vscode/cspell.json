@@ -242,6 +242,7 @@
         "noexcept",
         "NOMINMAX",
         "nopar",
+        "nullopt",
         "nullptr",
         "numlock",
         "numpy",

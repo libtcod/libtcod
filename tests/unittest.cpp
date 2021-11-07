@@ -16,35 +16,6 @@
 
 #include "common.h"
 
-/**
-    Convert a Unicode codepoint to a UTF-8 multi-byte string.
- */
-std::string ucs4_to_utf8(int ucs4) {
-  char utf8[4];
-  if (ucs4 < 0) {
-    throw std::invalid_argument("Invalid codepoint.");
-  } else if (ucs4 <= 0x7F) {
-    utf8[0] = ucs4;
-    return std::string(utf8, 1);
-  } else if (ucs4 <= 0x07FF) {
-    utf8[0] = 0b11000000 | ((ucs4 & 0b11111'000000) >> 6);
-    utf8[1] = 0b10000000 | ((ucs4 & 0b00000'111111) >> 0);
-    return std::string(utf8, 2);
-  } else if (ucs4 <= 0xFFFF) {
-    utf8[0] = 0b11100000 | ((ucs4 & 0b1111'000000'000000) >> 12);
-    utf8[1] = 0b10000000 | ((ucs4 & 0b0000'111111'000000) >> 6);
-    utf8[2] = 0b10000000 | ((ucs4 & 0b0000'000000'111111) >> 0);
-    return std::string(utf8, 3);
-  } else if (ucs4 <= 0x10FFFF) {
-    utf8[0] = 0b11110000 | ((ucs4 & 0b111'000000'000000'000000) >> 18);
-    utf8[1] = 0b10000000 | ((ucs4 & 0b000'111111'000000'000000) >> 12);
-    utf8[2] = 0b10000000 | ((ucs4 & 0b000'000000'111111'000000) >> 6);
-    utf8[3] = 0b10000000 | ((ucs4 & 0b000'000000'000000'111111) >> 0);
-    return std::string(utf8, 4);
-  }
-  throw std::invalid_argument("Invalid codepoint.");
-}
-
 /// Captures libtcod log output on tests.
 struct HandleLogging : Catch::TestEventListenerBase {
   using TestEventListenerBase::TestEventListenerBase;  // inherit constructor
@@ -87,16 +58,16 @@ void test_renderer_old_api(TCOD_renderer_t renderer) {
 }
 
 void test_renderer_new_api(TCOD_renderer_t renderer) {
-  tcod::ConsolePtr console = tcod::new_console(16, 12);
-  TCOD_ContextParams params = {TCOD_COMPILEDVERSION};
+  auto console = tcod::Console{16, 12};
+  TCOD_ContextParams params{};
+  params.tcod_version = TCOD_COMPILEDVERSION;
   params.tileset = new_test_tileset(25, 24);
   params.renderer_type = renderer;
-  params.columns = console->w;
-  params.rows = console->h;
+  params.console = console.get();
 
-  tcod::ContextPtr context = tcod::new_context(params);
+  auto context = tcod::new_context(params);
   TCOD_tileset_delete(params.tileset);
-  context->present(*console);
+  context->present(console);
 
 #if 0
   // Check for division by zero errors:
@@ -117,59 +88,6 @@ TEST_CASE("SDL Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_SDL); 
 TEST_CASE("OPENGL Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_OPENGL); }
 TEST_CASE("OPENGL2 Renderer", "[!nonportable]") { test_renderer(TCOD_RENDERER_OPENGL2); }
 
-TEST_CASE("Console ascii") {
-  TCODConsole console = TCODConsole(5, 1);
-  console.print(0, 0, "Test");
-  CHECK(to_string(*console.get_data()) == "Test ");
-}
-
-TEST_CASE("Console print") {
-  TCODConsole console = TCODConsole(5, 1);
-  console.print(0, 0, std::string("plop"));
-  CHECK(to_string(*console.get_data()) == "plop ");
-}
-TEST_CASE("Console print empty") {
-  TCODConsole console = TCODConsole(5, 1);
-  console.print(0, 0, std::string(""));
-}
-
-TEST_CASE("Console eascii") {
-  TCODConsole console = TCODConsole(2, 1);
-  const char test_str[] = {static_cast<char>(0xff), static_cast<char>(0x00)};
-  console.print(0, 0, test_str);
-  CHECK(console.getChar(0, 0) == 0xff);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
-TEST_CASE("Console UTF-8 BMP") {
-  TCODConsole console = TCODConsole(2, 1);
-  console.printf(0, 0, "☃");
-  CHECK(console.getChar(0, 0) == 0x2603);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
-TEST_CASE("Console UTF-8 SMP") {
-  TCODConsole console = TCODConsole(2, 1);
-  console.printf(0, 0, "🌍");
-  CHECK(console.getChar(0, 0) == 0x1F30D);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
-TEST_CASE("Console wchar BMP", "[!nonportable]") {
-  TCODConsole console = TCODConsole(2, 1);
-  console.print(0, 0, L"\u2603");
-  CHECK(console.getChar(0, 0) == 0x2603);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
-/* Fails when sizeof(wchar_t) == 2 */
-TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][!hide]") {
-  TCODConsole console = TCODConsole(2, 1);
-  console.print(0, 0, L"\U0001F30D");
-  CHECK(console.getChar(0, 0) == 0x1F30D);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
 TEST_CASE("Pathfinder Benchmarks", "[.benchmark]") {
   const int SIZE = 50;
   BENCHMARK("Classic libtcod A* 50x50") {
@@ -184,86 +102,6 @@ TEST_CASE("Pathfinder Benchmarks", "[.benchmark]") {
 
 TEST_CASE("Fallback font.", "[!mayfail]") { REQUIRE(tcod::tileset::new_fallback_tileset()); }
 
-void test_alignment(TCOD_alignment_t alignment) {
-  // Compare alignment between the new and old functions.
-  int x = GENERATE(0, 1, 2, 3, 4, 5, 6);
-  int width = GENERATE(11, 12);
-  INFO("x=" << x << ", width=" << width);
-  TCOD_Console* console1 = TCOD_console_new(width, 1);
-  TCOD_Console* console2 = TCOD_console_new(width, 1);
-  SECTION("Print text.") {
-    for (auto& tile : *console1) {
-      tile.ch = static_cast<int>('.');
-    }
-    for (auto& tile : *console2) {
-      tile.ch = static_cast<int>('.');
-    }
-    TCOD_console_print_ex(console1, x, 0, TCOD_BKGND_NONE, alignment, "123");
-    TCOD_console_printf_ex(console2, x, 0, TCOD_BKGND_NONE, alignment, "123");
-    CHECK(to_string(*console1) == to_string(*console2));
-  }
-  SECTION("Print rect.") {}
-  TCOD_console_delete(console1);
-  TCOD_console_delete(console2);
-}
-TEST_CASE("Left alignment regression.") { test_alignment(TCOD_LEFT); }
-TEST_CASE("Center alignment regression.") { test_alignment(TCOD_CENTER); }
-TEST_CASE("Right alignment regression.") { test_alignment(TCOD_RIGHT); }
-TEST_CASE("Rectangle text alignment.") {
-  auto console = tcod::new_console(12, 1);
-  // TCOD_Console* console = TCOD_console_new(12, 1);
-  for (auto& tile : *console) {
-    tile.ch = static_cast<int>('.');
-  }
-  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_LEFT);
-  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_CENTER);
-  tcod::print_rect(*console, {0, 0, 0, 0}, "123", nullptr, nullptr, TCOD_BKGND_NONE, TCOD_RIGHT);
-  CHECK(to_string(*console) == "123.123..123");
-}
-TEST_CASE("Print color codes.") {
-  using namespace std::string_literals;
-  auto console = tcod::new_console(8, 1);
-  std::string text = "1\u0006\u0001\u0002\u00032\u00083"s;
-  tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
-  REQUIRE(to_string(*console) == "123     ");
-  CHECK(console->at(0, 0).fg.r == 255);
-  CHECK(console->at(0, 0).fg.g == 255);
-  CHECK(console->at(0, 0).fg.b == 255);
-  CHECK(console->at(0, 0).fg.a == 255);
-  CHECK(console->at(1, 0).fg.r == 1);
-  CHECK(console->at(1, 0).fg.g == 2);
-  CHECK(console->at(1, 0).fg.b == 3);
-  CHECK(console->at(1, 0).fg.a == 255);
-  CHECK(console->at(2, 0).fg.r == 255);
-  CHECK(console->at(2, 0).fg.g == 255);
-  CHECK(console->at(2, 0).fg.b == 255);
-  CHECK(console->at(2, 0).fg.a == 255);
-}
-TEST_CASE("Color code formatting.") {
-  using namespace std::string_literals;
-  auto console = tcod::new_console(3, 3);
-  std::string text = "1\u0006\u0001\u0002\u0003\n2 \u0008\n 3"s;
-  for (auto& tile : *console) {
-    tile.ch = static_cast<int>('.');
-  }
-  tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
-  REQUIRE(to_string(*console) == ("1..\n2 .\n 3."));
-}
-TEST_CASE("Malformed UTF-8.", "[!throws]") {
-  auto console = tcod::new_console(8, 1);
-  std::string text = "\x80";
-  REQUIRE_THROWS(tcod::print(*console, {0, 0}, text, &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT));
-}
-TEST_CASE("Unicode PUA.") {
-  auto console = tcod::new_console(1, 1);
-  auto check_character = [&](char32_t codepoint) {
-    tcod::print(*console, {0, 0}, ucs4_to_utf8(codepoint), &TCOD_white, &TCOD_black, TCOD_BKGND_SET, TCOD_LEFT);
-    REQUIRE(console->at(0, 0).ch == codepoint);
-  };
-  for (char32_t i = 0xE000; i <= 0xF8FF; ++i) check_character(i);
-  for (char32_t i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);
-  for (char32_t i = 0x100000; i <= 0x10FFFD; ++i) check_character(i);
-}
 TEST_CASE("Heap test.") {
   struct TCOD_Heap heap;
   TCOD_heap_init(&heap, sizeof(int));
@@ -535,29 +373,4 @@ TEST_CASE("FOV Benchmarks", "[.benchmark]") {
       (void)!TCOD_map_compute_fov(map, radius, radius, 0, true, FOV_SYMMETRIC_SHADOWCAST);
     };
   }
-}
-TEST_CASE("Color control.") {
-  auto console = tcod::new_console(3, 1);
-  TCODConsole::setColorControl(TCOD_COLCTRL_1, {1, 2, 3}, {4, 5, 6});
-  TCODConsole::setColorControl(TCOD_COLCTRL_2, {7, 8, 9}, {10, 11, 12});
-  TCOD_console_printf(console.get(), 0, 0, "%c1%c2%c3", TCOD_COLCTRL_1, TCOD_COLCTRL_2, TCOD_COLCTRL_STOP);
-  REQUIRE(to_string(*console) == ("123"));
-  // Because console->bkgnd_flag is at its default this will not affect the background colors.
-  CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});
-  CHECK(console->at(0, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});  // Remains unset, since bkgnd_flag was unset.
-  CHECK(console->at(1, 0).fg == TCOD_ColorRGBA{7, 8, 9, 255});
-  CHECK(console->at(1, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
-  CHECK(console->at(2, 0).fg == TCOD_ColorRGBA{255, 255, 255, 255});
-  CHECK(console->at(2, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
-
-  console = tcod::new_console(3, 1);
-  console->bkgnd_flag = TCOD_BKGND_SET;
-  TCOD_console_printf(console.get(), 0, 0, "%c1%c2%c3", TCOD_COLCTRL_1, TCOD_COLCTRL_2, TCOD_COLCTRL_STOP);
-  REQUIRE(to_string(*console) == ("123"));
-  CHECK(console->at(0, 0).fg == TCOD_ColorRGBA{1, 2, 3, 255});
-  CHECK(console->at(0, 0).bg == TCOD_ColorRGBA{4, 5, 6, 255});
-  CHECK(console->at(1, 0).fg == TCOD_ColorRGBA{7, 8, 9, 255});
-  CHECK(console->at(1, 0).bg == TCOD_ColorRGBA{10, 11, 12, 255});
-  CHECK(console->at(2, 0).fg == TCOD_ColorRGBA{255, 255, 255, 255});
-  CHECK(console->at(2, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }

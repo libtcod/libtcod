@@ -36,7 +36,7 @@ deprecated functions.
 
       while (1) {  // Game loop.
         TCOD_console_clear(console.get());
-        tcod::print(console, {0, 0}, "Hello World", {}, {});
+        tcod::print(console, {0, 0}, "Hello World", std::nullopt, std::nullopt);
         context->present(console);  // Updates the visible display.
 
         SDL_Event event;

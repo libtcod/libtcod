@@ -109,8 +109,8 @@ void render(TCOD_Console& console) {
         console,
         {5, 47},
         tcod::stringf("Alt %5dm\n\nMove the mouse to scroll the map", (int)worldGen.getRealAltitude(mx, my)),
-        &WHITE,
-        nullptr);
+        WHITE,
+        {});
   } else {
     tcod::print(
         console,
@@ -121,14 +121,14 @@ void render(TCOD_Console& console) {
             (int)worldGen.getPrecipitations(mx, my),
             (int)worldGen.getTemperature(mx, my),
             biomeNames[worldGen.getBiome(mx, my)]),
-        &WHITE,
-        nullptr);
+        WHITE,
+        {});
   }
 }
 
 int main(int argc, char* argv[]) {
   auto tileset = tcod::load_tilesheet("data/fonts/terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
-  auto console = tcod::new_console({{WIDTH, HEIGHT}});
+  auto console = tcod::Console{WIDTH, HEIGHT};
 
   // initialize the game window
   TCOD_ContextParams params{};
@@ -176,11 +176,11 @@ int main(int argc, char* argv[]) {
     update(delta_time);
 
     // render the game screen
-    render(*console);
+    render(console);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    context->present(*console);
+    context->present(console);
   }
   return 0;
 }

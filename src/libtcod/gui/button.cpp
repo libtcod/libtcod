@@ -78,15 +78,14 @@ void Button::setLabel(const char* newLabel) {
 void Button::render() {
   const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
   const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
-  auto& console = static_cast<TCOD_Console&>(*con);
   if (w > 0 && h > 0) {
-    tcod::draw_rect(console, {x, y, w, h}, ' ', &fg, &bg);
+    tcod::draw_rect(*con, {x, y, w, h}, ' ', fg, bg);
   }
   if (label) {
     if (pressed && mouseIn) {
-      tcod::print(console, {x + w / 2, y}, tcod::stringf("-%s-", label), &fg, nullptr, TCOD_BKGND_SET, TCOD_CENTER);
+      tcod::print(*con, {x + w / 2, y}, tcod::stringf("-%s-", label), fg, std::nullopt, TCOD_CENTER);
     } else {
-      tcod::print(console, {x + w / 2, y}, label, &fg, nullptr, TCOD_BKGND_SET, TCOD_CENTER);
+      tcod::print(*con, {x + w / 2, y}, label, fg, std::nullopt, TCOD_CENTER);
     }
   }
 }

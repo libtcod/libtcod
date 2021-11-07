@@ -325,14 +325,14 @@ struct TCOD_Context {
         A `magnification` larger then 1.0f will output smaller console parameters, which will show as larger tiles when
         presented.
         Only values larger than zero are allowed.
-      @return Returns a tcod::ConsolePtr of a dynamic size, this will never be nullptr.
+      @return Returns a tcod::Console of a dynamic size.
 
       @code{.cpp}
-        // tcod::ContextPtr context = tcod::new_context(...);
+        // auto context = tcod::new_context(...);
         while (1) {
-          tcod::ConsolePtr console = context->new_console();  // This can be an alternative to clearing the console.
-          tcod::print(*console, {0, 0}, "Hello world", nullptr, nullptr);
-          context->present(*console);
+          auto console = context->new_console();  // This can be an alternative to clearing the console.
+          tcod::print(console, {0, 0}, "Hello world", std::nullopt, std::nullopt);
+          context->present(console);
           SDL_Event event;
           while (SDL_PollEvent(&event)) {  // SDL_PollEvent may resize the window.
             if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
@@ -340,7 +340,7 @@ struct TCOD_Context {
         }
       @endcode
    */
-  auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::ConsolePtr {
+  auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::Console {
     int columns;
     int rows;
     if (magnification <= 0.0f) {
@@ -348,7 +348,7 @@ struct TCOD_Context {
           std::string("Magnification must be greater than zero. Got ") + std::to_string(magnification));
     }
     tcod::check_throw_error(TCOD_context_recommended_console_size(this, magnification, &columns, &rows));
-    return tcod::new_console(std::max(columns, min_columns), std::max(rows, min_rows));
+    return tcod::Console{std::max(columns, min_columns), std::max(rows, min_rows)};
   }
 #endif  // __cplusplus
   // All remaining members are private.

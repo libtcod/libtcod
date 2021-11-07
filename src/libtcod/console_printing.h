@@ -393,9 +393,9 @@ namespace tcod {
     @param xy The starting `{x, y}` position, starting from the upper-left-most tile as zero.
     @param str The text to print.  This string can contain libtcod color codes.
     @param fg The foreground color.  The printed text is set to this color.
-              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If `{}` then the background will be left unchanged.
+              If std::nullopt then the background will be left unchanged.
     @param alignment The text justification.
     @param flag The background blending flag.
 
@@ -421,7 +421,10 @@ inline void print(
   check_throw_error(
       TCOD_console_printn(&console, xy.at(0), xy.at(1), str.size(), str.data(), fg_ptr, bg_ptr, flag, alignment));
 }
-[[deprecated]] inline void print(
+[[deprecated(
+    "Color parameters should be references, nullptr colors become `std::nullopt`, alignment should be put before "
+    "flag")]] inline void
+print(
     TCOD_Console& console,
     const std::array<int, 2>& xy,
     std::string_view str,
@@ -439,9 +442,9 @@ inline void print(
                 A width or height of zero will leave that axis unconstrained.
     @param str The text to print.  This string can contain libtcod color codes.
     @param fg The foreground color.  The printed text is set to this color.
-              If `{}` then the foreground will be left unchanged, inheriting the previous value of the tile.
+              If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
-              If `{}` then the background will be left unchanged.
+              If std::nullopt then the background will be left unchanged.
     @param flag The background blending flag.
     @param alignment The text justification.
     @return int The height of the printed output.
@@ -450,14 +453,14 @@ inline void print(
       auto console = tcod::Console{80, 50};
       static constexpr auto TEAL = TCOD_ColorRGB{0, 255, 255};
       // Print "Hello World" centered along the top row, ignoring the background color.
-      tcod::print(console, {0, 0, console->w, 1}, "Hello World", TEAL, {}, TCOD_CENTER);
+      tcod::print(console, {0, 0, console->w, 1}, "Hello World", TEAL, std::nullopt, TCOD_CENTER);
     @endcode
 
     \rst
     .. versionadded:: 1.19
     \endrst
  */
-inline int print(
+inline int print_rect(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     std::string_view str,
@@ -478,7 +481,10 @@ inline int print(
       flag,
       alignment));
 }
-[[deprecated]] inline int print_rect(
+[[deprecated(
+    "Color parameters should be references, nullptr colors become std::nullopt, alignment should be put before "
+    "flag")]] inline int
+print_rect(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     std::string_view str,
@@ -505,7 +511,7 @@ inline int print(
       int y = console->h; // Start Y at the bottom of this console.
       const int width = 6;
       y -= tcod::get_height_rect("Long text example", width); // Move y up by the height of this text.
-      tcod::print(console, {0, y, width, 0}, "Long text example", {}, {});
+      tcod::print(console, {0, y, width, 0}, "Long text example", std::nullopt, std::nullopt);
     @endcode
 
     \rst
@@ -538,9 +544,9 @@ inline int get_height_rect(int width, std::string_view str) {
     @return A std::string object with the resulting output.
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}});
+      auto console = tcod::Console{80, 50};
       // Use tcod::stringf to encapsulate printf-like parameters.
-      tcod::print(*console, {0, 0}, tcod::stringf("%s %s", "Hello", "World"), nullptr, nullptr);
+      tcod::print(console, {0, 0}, tcod::stringf("%s %s", "Hello", "World"), nullptr, nullptr);
     @endcode
 
     \rst

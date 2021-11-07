@@ -21,6 +21,13 @@ if (MSVC)
     target_compile_options(unittest PRIVATE /utf-8)
 endif()
 
+if(MSVC)
+  target_compile_options(unittest PRIVATE /W4)
+  target_compile_options(unittest PRIVATE /utf-8)
+else()
+  target_compile_options(unittest PRIVATE -Wall -Wextra)
+endif()
+
 # CTest is a testing tool that can be used to test your project.
 # enable_testing()
 # add_test(NAME example

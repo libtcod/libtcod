@@ -54,14 +54,14 @@ class Separator : public Widget {
     auto& console = static_cast<TCOD_Console&>(*con);
     const auto fg = TCOD_ColorRGB(fore);
     const auto bg = TCOD_ColorRGB(back);
-    tcod::draw_rect(console, {x, y, w, 1}, 0x2500, &fg, &bg);
+    tcod::draw_rect(console, {x, y, w, 1}, 0x2500, fg, bg);
     if (console.in_bounds({x - 1, y})) {
       console.at({x - 1, y}) = {0x251C, {fg.r, fg.g, fg.b, 255}, {bg.r, bg.g, bg.b, 255}};  // ├
     }
     if (console.in_bounds({x + w, y})) {
       console.at({x + w, y}) = {0x2524, {fg.r, fg.g, fg.b, 255}, {bg.r, bg.g, bg.b, 255}};  // ┤
     }
-    tcod::print(console, {x + w / 2, y}, tcod::stringf(" %s ", txt), &bg, &fg, TCOD_BKGND_SET, TCOD_CENTER);
+    tcod::print(console, {x + w / 2, y}, tcod::stringf(" %s ", txt), bg, fg, TCOD_CENTER);
   }
   char* txt;
 };

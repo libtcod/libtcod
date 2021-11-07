@@ -72,17 +72,17 @@ TextBox::~TextBox() {
 void TextBox::setText(const char* txt_) { strncpy(this->txt, txt_, max_width); }
 
 void TextBox::render() {
-  auto& console = static_cast<TCOD_Console&>(*con);
+  TCOD_Console& console = *con;
   const auto bg = TCOD_ColorRGB(back);
-  tcod::draw_rect(console, {x, y, w, h}, ' ', nullptr, &bg);
+  tcod::draw_rect(console, {x, y, w, h}, ' ', std::nullopt, bg);
   const auto fg = TCOD_ColorRGB(fore);
-  if (label) tcod::print(console, {x, y}, label, &fg, nullptr);
+  if (label) tcod::print(console, {x, y}, label, fg, std::nullopt);
 
   const auto focus_bg = TCOD_ColorRGB(keyboardFocus == this ? backFocus : back);
-  tcod::draw_rect(console, {x + box_x, y, box_width, h}, 0, nullptr, &focus_bg);
+  tcod::draw_rect(console, {x + box_x, y, box_width, h}, 0, std::nullopt, focus_bg);
   const int len = std::min(static_cast<int>(strlen(txt) - offset), box_width);
   const auto focus_fg = TCOD_ColorRGB(keyboardFocus == this ? foreFocus : fore);
-  if (txt) tcod::print(console, {x + box_x, y}, tcod::stringf("%.*s", len, &txt[offset]), &focus_fg, nullptr);
+  if (txt) tcod::print(console, {x + box_x, y}, tcod::stringf("%.*s", len, &txt[offset]), focus_fg, std::nullopt);
 
   if (keyboardFocus == this && blink > 0.0f && console.in_bounds({x + box_x + pos - offset, y})) {
     auto& tile = console.at(x + box_x + pos - offset, y);

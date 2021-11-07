@@ -29,15 +29,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
 
 #include "console.hpp"
 #include "console_init.h"
 #include "console_printing.h"
 #include "image.hpp"
 #include "libtcod_int.h"
+
+/***************************************************************************
+    @brief Covert variable arguments into a std::string object.
+
+    This function can throw an excaption, so care should be taken handing va_list objects.
+
+    @param fmt A format input string, must not be nullptr.
+    @param varags A va_list to be used with the fmt string.
+    @return std::string The formatted output.
+ */
+static auto vstring(const char* fmt, va_list varags) -> std::string {
+  va_list varags_clone;
+  va_copy(varags_clone, varags);
+  const int str_length = vsnprintf(nullptr, 0, fmt, varags_clone);
+  va_end(varags_clone);
+  if (str_length < 0) throw std::runtime_error("Failed to format string.");
+  std::string out(str_length, '\0');
+  vsnprintf(&out[0], str_length + 1, fmt, varags);
+  return out;
+};
 
 TCODConsole* TCODConsole::root = new TCODConsole();
 
@@ -208,25 +228,60 @@ void TCODConsole::print(int x, int y, const char* fmt, ...) {
   va_end(ap);
 }
 void TCODConsole::print(int x, int y, const std::string& str) {
-  this->print(x, y, str, getAlignment(), getBackgroundFlag());
+  tcod::print(
+      *this,
+      {x, y},
+      str,
+      tcod::ColorRGB{getDefaultForeground()},
+      tcod::ColorRGB{getDefaultBackground()},
+      getAlignment(),
+      getBackgroundFlag());
 }
 void TCODConsole::print(int x, int y, const std::string& str, TCOD_alignment_t alignment, TCOD_bkgnd_flag_t flag) {
-  auto fg_ = getDefaultForeground();
-  auto bg_ = getDefaultBackground();
-  TCOD_ColorRGB fg{fg_.r, fg_.g, fg_.b};
-  TCOD_ColorRGB bg{bg_.r, bg_.g, bg_.b};
-  TCOD_console_printn(data, x, y, str.size(), str.c_str(), &fg, &bg, flag, alignment);
+  tcod::print(
+      *this,
+      {x, y},
+      str,
+      tcod::ColorRGB{getDefaultForeground()},
+      tcod::ColorRGB{getDefaultBackground()},
+      alignment,
+      flag);
 }
 void TCODConsole::printf(int x, int y, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  this->print(x, y, std::string(TCOD_console_vsprint(fmt, ap)));
+  try {
+    tcod::print(
+        *this,
+        {x, y},
+        vstring(fmt, ap),
+        tcod::ColorRGB{getDefaultForeground()},
+        tcod::ColorRGB{getDefaultBackground()},
+        getAlignment(),
+        getBackgroundFlag());
+  } catch (...) {
+    va_end(ap);
+    throw;
+  }
   va_end(ap);
 }
 void TCODConsole::printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  this->print(x, y, std::string(TCOD_console_vsprint(fmt, ap)), alignment, flag);
+  auto str = vstring(fmt, ap);
+  try {
+    tcod::print(
+        *this,
+        {x, y},
+        vstring(fmt, ap),
+        tcod::ColorRGB{getDefaultForeground()},
+        tcod::ColorRGB{getDefaultBackground()},
+        alignment,
+        flag);
+  } catch (...) {
+    va_end(ap);
+    throw;
+  }
   va_end(ap);
 }
 /** Deprecated EASCII function. */

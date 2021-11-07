@@ -32,11 +32,10 @@
 #include "statusbar.hpp"
 
 void StatusBar::render() {
-  auto& console = static_cast<TCOD_Console&>(*con);
   const auto bg = TCOD_ColorRGB(back);
-  tcod::draw_rect(console, {x, y, w, h}, ' ', nullptr, &bg);
+  tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
   if (focus && focus->tip) {
     const auto fg = TCOD_ColorRGB(fore);
-    tcod::print_rect(console, {x + 1, y, w, h}, focus->tip, &fg, nullptr);
+    tcod::print_rect(*con, {x + 1, y, w, h}, focus->tip, fg, std::nullopt);
   }
 }

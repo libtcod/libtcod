@@ -8,18 +8,17 @@
 #include <utility>
 #include <vector>
 
-
 const int COMPRESSION_LEVEL = 0;  // Disable compression.
 
 TEST_CASE("REXPaint in-memory.") {
   const uint8_t WIDTH = 3;
   const uint8_t HEIGHT = 2;
-  tcod::ConsolePtr console1 = tcod::new_console(WIDTH, HEIGHT);
-  tcod::ConsolePtr console2 = tcod::new_console(WIDTH, HEIGHT);
+  auto console1 = tcod::Console{WIDTH, HEIGHT};
+  auto console2 = tcod::Console{WIDTH, HEIGHT};
   for (uint8_t y = 0; y < HEIGHT; ++y) {
     for (uint8_t x = 0; x < WIDTH; ++x) {
-      console1->at(x, y) = {'!', {x, y, 1, 255}, {10, 20, 30, 255}};
-      console2->at(x, y) = {'@', {x, y, 2, 255}, {10, 20, 30, 255}};
+      console1.at(x, y) = {'!', {x, y, 1, 255}, {10, 20, 30, 255}};
+      console2.at(x, y) = {'@', {x, y, 2, 255}, {10, 20, 30, 255}};
     }
   }
   std::array<TCOD_Console*, 2> console_array{console1.get(), console2.get()};
@@ -35,8 +34,8 @@ TEST_CASE("REXPaint in-memory.") {
       TCOD_load_xp_from_memory(buffer_size, buffer.data(), static_cast<int>(console_out.size()), &console_out[0]) ==
       console_out.size());
   for (int i = 0; i < WIDTH * HEIGHT; ++i) {
-    REQUIRE(console1->tiles[i] == console_out.at(0)->tiles[i]);
-    REQUIRE(console2->tiles[i] == console_out.at(1)->tiles[i]);
+    REQUIRE(console1.begin()[i] == console_out.at(0)->tiles[i]);
+    REQUIRE(console2.begin()[i] == console_out.at(1)->tiles[i]);
   }
   for (auto& it : console_out) TCOD_console_delete(it);
 }
@@ -57,20 +56,20 @@ TEST_CASE("REXPaint to file.") {
   std::tmpnam(tmp_file);
   const uint8_t WIDTH = 3;
   const uint8_t HEIGHT = 2;
-  tcod::ConsolePtr console1 = tcod::new_console(WIDTH, HEIGHT);
-  tcod::ConsolePtr console2 = tcod::new_console(WIDTH, HEIGHT);
+  auto console1 = tcod::Console{WIDTH, HEIGHT};
+  auto console2 = tcod::Console{WIDTH, HEIGHT};
   for (uint8_t y = 0; y < HEIGHT; ++y) {
     for (uint8_t x = 0; x < WIDTH; ++x) {
-      console1->at(x, y) = {'!', {x, y, 1, 255}, {10, 20, 30, 255}};
-      console2->at(x, y) = {'@', {x, y, 2, 255}, {10, 20, 30, 255}};
+      console1.at(x, y) = {'!', {x, y, 1, 255}, {10, 20, 30, 255}};
+      console2.at(x, y) = {'@', {x, y, 2, 255}, {10, 20, 30, 255}};
     }
   }
   tcod::save_xp({console1.get(), console2.get()}, tmp_file, 0);
   auto consoles = tcod::load_xp(tmp_file);
   REQUIRE(std::remove(tmp_file) == 0);
   for (int i = 0; i < WIDTH * HEIGHT; ++i) {
-    REQUIRE(console1->tiles[i] == consoles.at(0)->tiles[i]);
-    REQUIRE(console2->tiles[i] == consoles.at(1)->tiles[i]);
+    REQUIRE(console1.begin()[i] == consoles.at(0)->tiles[i]);
+    REQUIRE(console2.begin()[i] == consoles.at(1)->tiles[i]);
   }
 }
 

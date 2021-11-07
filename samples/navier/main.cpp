@@ -30,7 +30,6 @@
 #include <stdio.h>
 
 #include <array>
-#include <cstdbool>
 #include <vector>
 
 // gas simulation

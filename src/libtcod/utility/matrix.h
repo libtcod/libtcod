@@ -34,7 +34,6 @@
 #ifdef __cplusplus
 #include <algorithm>
 #include <array>
-#include <cstdbool>
 #include <cstddef>
 #include <initializer_list>
 #include <iostream>

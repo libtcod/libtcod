@@ -206,7 +206,7 @@ inline void draw_rect(
     .. versionadded:: 1.19
     \endrst
  */
-[[depreacted]] inline void draw_rect(
+[[deprecated]] inline void draw_rect(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     int ch,
@@ -288,7 +288,7 @@ inline void draw_frame(
     .. versionadded:: 1.19
     \endrst
  */
-[[depreacted]] inline void draw_frame(
+[[deprecated]] inline void draw_frame(
     TCOD_Console& console,
     const std::array<int, 4>& rect,
     const std::array<int, 9>& decoration,

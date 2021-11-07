@@ -306,7 +306,7 @@ TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     \endrst
  */
 TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str);
-// Depreacted function.
+// Deprecated function.
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     TCOD_Console* __restrict console,
     int x,

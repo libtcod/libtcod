@@ -139,6 +139,7 @@ public :
 	@PyEx libtcod.console_init_root(80, 50, 'The Chronicles Of Doryen v0.1')
 	@LuaEx tcod.console.initRoot(80,50,"The Chronicles Of Doryen v0.1")
 	*/
+  [[deprecated("This way of initializing libtcod is deprecated.  See the documentation for how to use tcod::new_context.")]]
 	static void initRoot(int w, int h, const char * title, bool fullscreen = false, TCOD_renderer_t renderer=TCOD_RENDERER_SDL);
 
 	/**

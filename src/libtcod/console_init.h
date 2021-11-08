@@ -82,9 +82,12 @@ struct SDL_Renderer;
  *      Added the `TCOD_RENDERER` and `TCOD_VSYNC` overrides.
  *  \endrst
  */
-
+TCOD_DEPRECATED(
+    "This way of initializing libtcod is deprecated.  See the documentation for how to use TCOD_context_new.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error
 TCOD_console_init_root(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer);
+TCOD_DEPRECATED(
+    "This way of initializing libtcod is deprecated.  See the documentation for how to use TCOD_context_new.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error
 TCOD_console_init_root_(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 /**
@@ -202,9 +205,14 @@ TCOD_PUBLIC TCOD_Console* TCOD_sys_get_internal_console(void);
 }  // extern "C"
 namespace tcod {
 namespace console {
-TCOD_PUBLIC void init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer);
-TCOD_PUBLIC void init_root(
-    int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
+[[deprecated(
+    "This way of initializing libtcod is deprecated.  See the documentation for how to use "
+    "tcod::new_context.")]] TCOD_PUBLIC void
+init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer);
+[[deprecated(
+    "This way of initializing libtcod is deprecated.  See the documentation for how to use "
+    "tcod::new_context.")]] TCOD_PUBLIC void
+init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
 }  // namespace console
 }  // namespace tcod
 #endif  // __cplusplus

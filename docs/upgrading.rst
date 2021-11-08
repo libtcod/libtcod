@@ -26,7 +26,23 @@ You can switch away from :any:`TCOD_console_set_custom_font` before using contex
     TCOD_set_default_tileset(tileset.get());
 
     // This is deprecated, but will work with the above tileset.
-    TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);
+    TCOD_console_init_root(80, 25, "Window title", true, TCOD_RENDERER_OPENGL2);
+
+Later when you upgrade to contexts you will replace :any:`TCOD_set_default_tileset` with :any:`TCOD_ContextParams`.
+
+.. code-block:: cpp
+
+    auto params = TCOD_ContextParams{};
+    params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
+    params.columns = 80;
+    params.rows = 25;
+    params.tileset = tileset.get();
+    params.vsync = 1;
+    params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+    params.window_title = "Window title";
+
+    auto context = tcod::new_context(params);
+
 
 Using the new console functions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -50,7 +66,7 @@ Instead of setting colors before calling the print functions you now pass the co
 
   tcod::ColorRGB bg = TCOD_console_get_char_background(TCODConsole::root->get_data());
   tcod::draw_rect(
-    *TCODConsole::root,  // TCODConsole::root is deprecated, but can still be passed as a parameter.
+    *TCODConsole::root,  // TCODConsole::root is deprecated, but can still be passed as a parameter if it's initialized.
     {0, 0, 20, 1},  // {left, top, width, height}
     0x2500,  // "─" BOX DRAWINGS LIGHT HORIZONTAL.  Unicode is expected for character codes.
     WHITE,
@@ -66,7 +82,7 @@ This also lets you use the root console on functions which can't accept `nullptr
 
 .. code-block:: cpp
 
-    TCOD_console_init_root(80, 25, "Window title", false, TCOD_RENDERER_OPENGL2);  // Deprecated.
+    TCOD_console_init_root(80, 25, "Window title", true, TCOD_RENDERER_OPENGL2);  // Deprecated.
 
     // Get a temporary non-owning pointer to the context made by TCOD_console_init_root or TCODConsole::initRoot.
     TCOD_Context* context = TCOD_sys_get_internal_context();
@@ -80,6 +96,23 @@ This also lets you use the root console on functions which can't accept `nullptr
 
 Using the context present function like this will break some functions which say they're not compatible with contexts.
 Most importantly any timing-related functions will need to be updated.  See `Timing`_ below.
+
+The next step is to actually replace :any:`TCOD_console_init_root` with contexts.
+
+.. code-block:: cpp
+
+    auto console = tcod::Console{80, 25};  // This is now a normal console.
+
+    auto params = TCOD_ContextParams{};
+    params.tcod_version = TCOD_COMPILEDVERSION;
+    params.vsync = 1;
+    params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+    params.window_title = "Window title";
+    params.console = console.get();  // Set the window size from the console size.
+
+    auto context = tcod::new_context(params);
+
+    context->present(console);
 
 Window manipulation
 ^^^^^^^^^^^^^^^^^^^

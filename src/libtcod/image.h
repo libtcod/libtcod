@@ -117,6 +117,6 @@ TCODLIB_API bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x,
 
 #ifdef __cplusplus
 }
-#endif
-
+namespace tcod {}  // namespace tcod
+#endif  // __cplusplus
 #endif /* _TCOD_IMAGE_H */

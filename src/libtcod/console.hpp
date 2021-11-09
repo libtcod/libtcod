@@ -480,6 +480,7 @@ public :
 	@PyEx libtcod.console_set_default_background(0, my_color)
 	@Lua libtcod.TCODConsole_root:setBackgroundColor( myColor )
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	void setDefaultBackground(TCODColor back);
 
 	/**
@@ -498,6 +499,7 @@ public :
 	@PyEx libtcod.console_set_default_foreground(0, my_color)
 	@LuaEx libtcod.TCODConsole_root:setForegroundColor( myColor )
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	void setDefaultForeground(TCODColor fore);
 
 	/**
@@ -663,6 +665,7 @@ public :
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param flag this flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	void setBackgroundFlag(TCOD_bkgnd_flag_t flag);
 
 	/**
@@ -677,6 +680,7 @@ public :
 	@Lua Console:getBackgroundFlag()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	TCOD_bkgnd_flag_t getBackgroundFlag() const;
 
 	/**
@@ -694,6 +698,7 @@ public :
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	@Param alignment defines how the strings are printed on screen.
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	void setAlignment(TCOD_alignment_t alignment);
 
 	/**
@@ -710,6 +715,7 @@ public :
 	@Lua Console:getAlignment()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	TCOD_alignment_t getAlignment() const;
   /**
    *  Print an EASCII formatted string to the console.
@@ -719,9 +725,8 @@ public :
    *    UTF-8 overloads.
    *  \endrst
    */
-  TCOD_DEPRECATED(
-    "Use TCODConsole::printf or the std::string overload for this function."
-    "\nNote that you'll need to use UTF-8 encoded strings for those functions.")
+  [[deprecated("Use TCODConsole::printf or the std::string overload for this function."
+               "\nNote that you'll need to use UTF-8 encoded strings for those functions.")]]
   void print(int x, int y, const char *fmt, ...);
   /**
    *  Print an EASCII encoded string to the console.
@@ -775,10 +780,10 @@ public :
    *    These functions have overloads for specifying flag and alignment.
    *  \endrst
    */
-  TCOD_DEPRECATED(
+  [[deprecated(
     "Use TCODConsole::print (std::string overload) or TCODConsole::printf"
     "instead of this function."
-    "\nNote that you'll need to use UTF-8 encoded strings for those functions.")
+    "\nNote that you'll need to use UTF-8 encoded strings for those functions.")]]
   void printEx(int x, int y, TCOD_bkgnd_flag_t flag,
                TCOD_alignment_t alignment, const char *fmt, ...);
 	/**
@@ -1123,6 +1128,7 @@ public :
 	@Lua Console:getBackgroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	TCODColor getDefaultBackground() const;
 
 	/**
@@ -1136,6 +1142,7 @@ public :
 	@Lua Console:getForegroundColor()
 	@Param con in the C and Python versions, the offscreen console handler or NULL for the root console
 	*/
+  [[deprecated("Default console parameters are deprecated.")]]
 	TCODColor getDefaultForeground() const;
 
 	/**
@@ -1795,6 +1802,7 @@ public :
 			tcod.console.flush()
 		end
 	*/
+  [[deprecated("This function has been replaced by tcod::blit.")]]
 	static void blit(const TCODConsole *src,int xSrc, int ySrc, int wSrc, int hSrc, TCODConsole *dst, int xDst, int yDst, float foreground_alpha=1.0f, float background_alpha=1.0f);
 	/**
 	@PageName console_offscreen
@@ -1836,9 +1844,9 @@ public :
 		... use off1
 		off1=nil -- release the reference
 	*/
-  TCOD_DEPRECATED("This function is a stub and will do nothing.")
+  [[deprecated("This function is a stub and will do nothing.")]]
   static void setKeyboardRepeat(int initialDelay,int interval);
-  TCOD_DEPRECATED("This function is a stub and will do nothing.")
+  [[deprecated("This function is a stub and will do nothing.")]]
   static void disableKeyboardRepeat();
   // clang-format on
   // Delete copy constructors.
@@ -1853,8 +1861,7 @@ public :
 
   virtual ~TCODConsole();
 
-  TCOD_DEPRECATED("This function does nothing.")
-  void setDirty(int x, int y, int w, int h);
+  [[deprecated("This function does nothing.")]] void setDirty(int x, int y, int w, int h);
 
   // This conversion may be unsafe.
   TCODConsole(TCOD_Console* console) : data{console} {}
@@ -1879,11 +1886,21 @@ public :
           This now returns a non-NULL pointer to the root console.
       \endrst
    */
-  TCOD_Console* get_data() noexcept {
+  [[nodiscard]] auto get_data() noexcept -> TCOD_Console* { return get(); }
+  [[nodiscard]] auto get_data() const noexcept -> const TCOD_Console* { return get(); }
+  /***************************************************************************
+      @brief Return a pointer to the underlying TCOD_Console struct.
+
+      @return TCOD_Console*
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] auto get() noexcept -> TCOD_Console* {
     if (!data) return TCOD_sys_get_internal_console();
     return data;
   }
-  const TCOD_Console* get_data() const noexcept {
+  [[nodiscard]] auto get() const noexcept -> const TCOD_Console* {
     if (!data) return TCOD_sys_get_internal_console();
     return data;
   }

@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 #endif  // __cplusplus
@@ -337,7 +338,9 @@ TCOD_PUBLIC void TCOD_console_blit_key_color(
  */
 TCOD_PUBLIC void TCOD_console_delete(TCOD_Console* console);
 
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC void TCOD_console_set_default_background(TCOD_Console* con, TCOD_color_t col);
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col);
 /**
  *  Clear a console to its default colors and the space character code.
@@ -399,10 +402,12 @@ TCOD_PUBLIC void TCOD_console_put_char_ex(TCOD_Console* con, int x, int y, int c
  *  \param con A console pointer.
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC void TCOD_console_set_background_flag(TCOD_Console* con, TCOD_bkgnd_flag_t flag);
 /**
  *  Return a consoles default background flag.
  */
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_Console* con);
 /**
  *  Set a consoles default alignment.
@@ -410,13 +415,16 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TC
  *  \param con A console pointer.
  *  \param alignment One of TCOD_alignment_t
  */
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC void TCOD_console_set_alignment(TCOD_Console* con, TCOD_alignment_t alignment);
 /**
  *  Return a consoles default alignment.
  */
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
-
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con);
+TCOD_DEPRECATED("Console defaults have been deprecated.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_foreground(TCOD_Console* con);
 /**
  *  Return the background color of a console at x,y
@@ -792,6 +800,36 @@ class Console {
 
   ConsolePtr console_ = nullptr;  // The owned TCOD_Console pointer.
 };
+/***************************************************************************
+    @brief Blit a region of tiles from one console to another.
+
+    @param dest The destination console.
+    @param source The source console to blit from.
+    @param dest_xy The upper-left position of the destination console to blit to.
+    @param source_rect The source region `{left, top, width, height}` to blit from.
+        A width or height of zero will use the entire console.
+    @param foreground_alpha
+    @param background_alpha
+ */
+inline void blit(
+    TCOD_Console& dest,
+    const TCOD_Console& source,
+    const std::array<int, 2>& dest_xy = {0, 0},
+    std::array<int, 4> source_rect = {0, 0, 0, 0},
+    float foreground_alpha = 1.0f,
+    float background_alpha = 1.0f) {
+  TCOD_console_blit(
+      &source,
+      source_rect.at(0),
+      source_rect.at(1),
+      source_rect.at(2),
+      source_rect.at(3),
+      &dest,
+      dest_xy.at(0),
+      dest_xy.at(1),
+      foreground_alpha,
+      background_alpha);
+}
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_CONSOLE_H_

@@ -386,6 +386,9 @@ public :
 	@Param flag	This flag defines how the cell's background color is modified. See TCOD_bkgnd_flag_t.
 	*/
 	void blitRect(TCODConsole *console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const;
+	void blitRect(TCOD_Console &console, int x, int y, int w=-1, int h=-1, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET ) const {
+    TCOD_image_blit_rect(data, &console, x, y, w, h, bkgnd_flag);
+  }
 
 	/**
 	@PageName image_blit
@@ -409,6 +412,9 @@ public :
 	@Param angle	Rotation angle in radians.
 	*/
 	void blit(TCODConsole *console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scale_x=1.0f, float scale_y=1.0f, float angle=0.0f) const;
+	void blit(TCOD_Console& console, float x, float y, TCOD_bkgnd_flag_t bkgnd_flag = TCOD_BKGND_SET, float scale_x=1.0f, float scale_y=1.0f, float angle=0.0f) const {
+    TCOD_image_blit(data, &console, x, y, bkgnd_flag, scale_x, scale_y, angle);
+  }
 
 	/**
 	@PageName image_blit
@@ -462,6 +468,10 @@ public :
 	@Param sx,sy,w,h	Part of the image to blit. Use -1 in w and h to blit the whole image.
 	*/
 	void blit2x(TCODConsole *dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1) const;
+  [[deprecated("This call is replaced by tcod::draw_quartergraphics.")]]
+	void blit2x(TCOD_Console& dest, int dx, int dy, int sx=0, int sy=0, int w=-1, int h=-1) const {
+    TCOD_image_blit_2x(data, &dest, dx, dy, sx, sy, w, h);
+  }
 
   /**
       Return the pointer to this objects TCOD_Image data.
@@ -482,6 +492,20 @@ public :
 
 	TCODImage(TCOD_image_t img) : data(img), deleteData(false) {}
 	virtual ~TCODImage();
+  /***************************************************************************
+      @brief Allow implicit conversions to TCOD_Image&.
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] operator TCOD_Image&() { return *data; }
+  /***************************************************************************
+      @brief Allow implicit conversions to const TCOD_Image&.
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  [[nodiscard]] operator const TCOD_Image&() const { return *data; }
 
 protected :
 	friend class TCODLIB_API TCODSystem;
@@ -492,31 +516,30 @@ protected :
 // clang-format on
 namespace tcod {
 /***************************************************************************
-    @brief Render an image to a console using quadrant semigraphics.
+    @brief Draw a double resolution image on a console using quadrant character glyphs.
 
-    @param dest The destination TCOD_Console reference.
-    @param source The image to be used as a source.
-    @param dest_xy The top-left position of the console to draw at.
-    @param src_rect The region of the source image to render.
+    @param dest The console to draw to.
+    @param source The source image which will be rendered.
+    @param dest_xy The upper-left position to where the source will be drawn.
+    @param source_rect The `{left, top, width, height}` region of the source image to draw.
+        A width or height of -1 will use the full size of the image.
 
+    @code{.cpp}
+      auto console = tcod::Console{80, 50};
+      TCODImage* image = new TCODImage(console.get_width() * 2, console.get_height() * 2);
+      tcod::draw_quartergraphics(console, image);
+    @endcode
     \rst
     .. versionadded:: 1.19
     \endrst
  */
 inline void draw_quartergraphics(
     TCOD_Console& dest,
-    TCODImage& source,
+    const TCOD_Image& source,
     const std::array<int, 2>& dest_xy = {0, 0},
     const std::array<int, 4>& src_rect = {0, 0, -1, -1}) {
   TCOD_image_blit_2x(
-      source.get_data(),
-      &dest,
-      dest_xy.at(0),
-      dest_xy.at(1),
-      src_rect.at(0),
-      src_rect.at(1),
-      src_rect.at(2),
-      src_rect.at(3));
+      &source, &dest, dest_xy.at(0), dest_xy.at(1), src_rect.at(0), src_rect.at(1), src_rect.at(2), src_rect.at(3));
 }
 }  // namespace tcod
 #endif /* _TCOD_IMAGE_HPP */

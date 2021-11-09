@@ -20,6 +20,8 @@ since `1.7.0`.
 - `TCODColor` can now has implicit conversions to `TCOD_ColorRGB` or `TCOD_ColorRGBA`.
 - Added `tcod::ColorRGB` and `tcod::ColorRGBA` to help with color type conversions.
 - Added libtcod logging functions, for debugging and internal use.
+- Added `tcod::draw_quartergraphics` to replace older C++ blit2x functions.
+- Added `tcod::blit` to replace older C++ blit functions.
 
 ### Changed
 - Initializing libtcod with the old API will now enable VSync by default.
@@ -36,6 +38,7 @@ since `1.7.0`.
 - Deprecated libtcod's older timing functions.
 - Deprecated older font loading functions.
 - Deprecated `TCOD_random_t` type.
+- Console defaults have been deprecated.
 
 ### Fixed
 - Gaussian number generation no longer affects the results of unrelated RNG's.

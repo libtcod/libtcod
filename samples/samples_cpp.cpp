@@ -25,6 +25,7 @@ class Sample {
   virtual ~Sample() = default;
   virtual void on_enter() = 0;
   virtual void on_event(TCOD_key_t* key, TCOD_mouse_t* mouse) = 0;
+  virtual void on_event(SDL_Event& event) = 0;
   virtual void on_draw(TCOD_Console& console) = 0;
 };
 
@@ -51,7 +52,7 @@ static constexpr auto LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 static float delta_time;  // Global delta time.
 
 // clang-format off
-static const char* SAMPLE_MAP[] = {
+static constexpr char* SAMPLE_MAP[] = {
     "##############################################",
     "#######################      #################",
     "#####################    #     ###############",
@@ -89,38 +90,33 @@ class TrueColors : public Sample {
  public:
   void on_enter() override { sampleConsole.clear(); };
   void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_event(SDL_Event&) override {}
   void on_draw(TCOD_Console& console) override {
-    enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
-    static auto cols = std::array<tcod::ColorRGB, 4>{
-        {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}};  // random corner colors
-    static auto dir_r = std::array<int8_t, 4>{1, -1, 1, 1};
-    static auto dir_g = std::array<int8_t, 4>{1, -1, -1, 1};
-    static auto dir_b = std::array<int8_t, 4>{1, 1, 1, -1};
     // ==== slightly modify the corner colors ====
     for (int c = 0; c < 4; ++c) {
       // move each corner color
       const int component = TCODRandom::getInstance()->getInt(0, 2);
       switch (component) {
         case 0:
-          cols[c].r += 5 * dir_r[c];
-          if (cols[c].r == 255)
-            dir_r[c] = -1;
-          else if (cols[c].r == 0)
-            dir_r[c] = 1;
+          colors_[c].r += 5 * dir_r_[c];
+          if (colors_[c].r == 255)
+            dir_r_[c] = -1;
+          else if (colors_[c].r == 0)
+            dir_r_[c] = 1;
           break;
         case 1:
-          cols[c].g += 5 * dir_g[c];
-          if (cols[c].g == 255)
-            dir_g[c] = -1;
-          else if (cols[c].g == 0)
-            dir_g[c] = 1;
+          colors_[c].g += 5 * dir_g_[c];
+          if (colors_[c].g == 255)
+            dir_g_[c] = -1;
+          else if (colors_[c].g == 0)
+            dir_g_[c] = 1;
           break;
         case 2:
-          cols[c].b += 5 * dir_b[c];
-          if (cols[c].b == 255)
-            dir_b[c] = -1;
-          else if (cols[c].b == 0)
-            dir_b[c] = 1;
+          colors_[c].b += 5 * dir_b_[c];
+          if (colors_[c].b == 255)
+            dir_b_[c] = -1;
+          else if (colors_[c].b == 0)
+            dir_b_[c] = 1;
           break;
       }
     }
@@ -129,8 +125,8 @@ class TrueColors : public Sample {
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
       const float x_coef = static_cast<float>(x) / (SAMPLE_SCREEN_WIDTH - 1);
       // get the current column top and bottom colors
-      const auto top = tcod::ColorRGB{TCODColor::lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef)};
-      const auto bottom = tcod::ColorRGB{TCODColor::lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef)};
+      const auto top = tcod::ColorRGB{TCODColor::lerp(colors_[TOPLEFT], colors_[TOPRIGHT], x_coef)};
+      const auto bottom = tcod::ColorRGB{TCODColor::lerp(colors_[BOTTOMLEFT], colors_[BOTTOMRIGHT], x_coef)};
       for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
         const float y_coef = static_cast<float>(y) / (SAMPLE_SCREEN_HEIGHT - 1);
         // get the current cell color
@@ -172,6 +168,14 @@ class TrueColors : public Sample {
         TCOD_CENTER,
         TCOD_BKGND_MULTIPLY);
   }
+
+ private:
+  enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
+  std::array<tcod::ColorRGB, 4> colors_{
+      {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}};  // random corner colors
+  std::array<int8_t, 4> dir_r_{1, -1, 1, 1};
+  std::array<int8_t, 4> dir_g_{1, -1, -1, 1};
+  std::array<int8_t, 4> dir_b_{1, 1, 1, -1};
 };
 
 // ***************************
@@ -179,127 +183,109 @@ class TrueColors : public Sample {
 // ***************************
 class OffscreenConsole : public Sample {
  public:
-  OffscreenConsole() : screenshot(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT) {}
+  static constexpr auto FRAME_DECOR_SINGLE_PIPE =
+      std::array<int, 9>{0x250C, 0x2500, 0x2510, 0x2502, 0x20, 0x2502, 0x2514, 0x2500, 0x2518};
+  OffscreenConsole() {
+    tcod::draw_frame(
+        secondary,
+        {0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2},
+        FRAME_DECOR_SINGLE_PIPE,
+        std::nullopt,
+        std::nullopt);
+    tcod::print_rect(
+        secondary,
+        {1, 2, SAMPLE_SCREEN_WIDTH / 2 - 2, SAMPLE_SCREEN_HEIGHT / 2},
+        "You can render to an offscreen console and blit in on another one, simulating alpha transparency.",
+        std::nullopt,
+        std::nullopt,
+        TCOD_CENTER);
+  }
   void on_enter() override {
     counter = SDL_GetTicks();
-    // get a "screenshot" of the current sample screen
-    screenshot = sampleConsole;
+    screenshot = sampleConsole;  // get a "screenshot" of the current sample screen
   }
   void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_event(SDL_Event&) override {}
   void on_draw(TCOD_Console& console) override {
-    static tcod::Console secondary{SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2};  // second screen
-    static bool init = false;  // draw the secondary screen only the first time
-    static int x = 0;  // secondary screen position
-    static int y = 0;
-    static int x_dir = 1;  // movement direction
-    static int y_dir = 1;
-    if (!init) {
-      init = true;
-      static const auto FRAME_DECOR_SINGLE_PIPE =
-          std::array<int, 9>{0x250C, 0x2500, 0x2510, 0x2502, 0x20, 0x2502, 0x2514, 0x2500, 0x2518};
-      tcod::draw_frame(
-          secondary,
-          {0, 0, SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2},
-          FRAME_DECOR_SINGLE_PIPE,
-          std::nullopt,
-          std::nullopt);
-      tcod::print_rect(
-          secondary,
-          {1, 2, SAMPLE_SCREEN_WIDTH / 2 - 2, SAMPLE_SCREEN_HEIGHT / 2},
-          "You can render to an offscreen console and blit in on another one, simulating alpha transparency.",
-          std::nullopt,
-          std::nullopt,
-          TCOD_CENTER);
-    }
     if (SDL_TICKS_PASSED(SDL_GetTicks(), counter + 1000)) {  // Once every second.
       counter = SDL_GetTicks();
-      // move the secondary screen every 2 seconds
-      x += x_dir;
-      y += y_dir;
-      if (x == SAMPLE_SCREEN_WIDTH / 2 + 5)
-        x_dir = -1;
-      else if (x == -5)
-        x_dir = 1;
-      if (y == SAMPLE_SCREEN_HEIGHT / 2 + 5)
-        y_dir = -1;
-      else if (y == -5)
-        y_dir = 1;
+      x_ += x_dir_;
+      y_ += y_dir_;
+      if (x_ == SAMPLE_SCREEN_WIDTH / 2 + 5) {
+        x_dir_ = -1;
+      } else if (x_ == -5) {
+        x_dir_ = 1;
+      }
+      if (y_ == SAMPLE_SCREEN_HEIGHT / 2 + 5) {
+        y_dir_ = -1;
+      } else if (y_ == -5) {
+        y_dir_ = 1;
+      }
     }
-    // restore the initial screen
-    sampleConsole = screenshot;
-    // blit the overlapping screen
-    tcod::blit(sampleConsole, secondary, {x, y}, {}, 1.0f, 0.75f);
+    sampleConsole = screenshot;  // restore the initial screen
+    tcod::blit(sampleConsole, secondary, {x_, y_}, {}, 1.0f, 0.75f);  // blit the overlapping screen
   }
 
  private:
   int counter;
-  tcod::Console screenshot;
+  tcod::Console screenshot{SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT};
+  tcod::Console secondary{SAMPLE_SCREEN_WIDTH / 2, SAMPLE_SCREEN_HEIGHT / 2};  // second screen
+  int x_ = 0;  // secondary screen position
+  int y_ = 0;
+  int x_dir_ = 1;  // movement direction
+  int y_dir_ = 1;
 };
 
 // ***************************
 // line drawing sample
 // ***************************
-static int bkFlag = TCOD_BKGND_SET;  // current blending mode
-class LineListener : public TCODLineListener {
- public:
-  bool putPoint(int x, int y) {
-    if (x >= 0 && y >= 0 && x < SAMPLE_SCREEN_WIDTH && y < SAMPLE_SCREEN_HEIGHT) {
-      TCOD_console_set_char_background(sampleConsole.get(), x, y, LIGHT_BLUE, static_cast<TCOD_bkgnd_flag_t>(bkFlag));
-    }
-    return true;
-  }
-};
 class LineDrawingSample : public Sample {
  public:
+  LineDrawingSample() : background_{SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT} {
+    // initialize the colored background
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        background_.at({x, y}).bg = tcod::ColorRGB{
+            static_cast<uint8_t>(x * 255 / (SAMPLE_SCREEN_WIDTH - 1)),
+            static_cast<uint8_t>((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1)),
+            static_cast<uint8_t>(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1)),
+        };
+      }
+    }
+  }
   void on_enter() override {}
-  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
-    if (key->vk == TCODK_ENTER || key->vk == TCODK_KPENTER) {
-      // switch to the next blending mode
-      ++bkFlag;
-      if ((bkFlag & 0xff) > TCOD_BKGND_ALPH) bkFlag = TCOD_BKGND_NONE;
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_event(SDL_Event& event) override {
+    switch (event.type) {
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym) {
+          case SDLK_RETURN:
+          case SDLK_RETURN2:
+          case SDLK_KP_ENTER:
+            // switch to the next blending mode
+            ++blend_flag_;
+            if ((blend_flag_ & 0xff) > TCOD_BKGND_ALPH) blend_flag_ = TCOD_BKGND_NONE;
+            break;
+          default:
+            break;
+        }
+        break;
+      default:
+        break;
     }
   }
   void on_draw(TCOD_Console& console) override {
-    static auto bk = tcod::Console{SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT};  // colored background
-    static auto init = false;
-    static const auto flagNames = std::vector<std::string>{
-        "TCOD_BKGND_NONE",
-        "TCOD_BKGND_SET",
-        "TCOD_BKGND_MULTIPLY",
-        "TCOD_BKGND_LIGHTEN",
-        "TCOD_BKGND_DARKEN",
-        "TCOD_BKGND_SCREEN",
-        "TCOD_BKGND_COLOR_DODGE",
-        "TCOD_BKGND_COLOR_BURN",
-        "TCOD_BKGND_ADD",
-        "TCOD_BKGND_ADDALPHA",
-        "TCOD_BKGND_BURN",
-        "TCOD_BKGND_OVERLAY",
-        "TCOD_BKGND_ALPHA"};
-    if ((bkFlag & 0xff) == TCOD_BKGND_ALPH) {
+    if ((blend_flag_ & 0xff) == TCOD_BKGND_ALPH) {
       // for the alpha mode, update alpha every frame
-      const float alpha = (1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f;
-      bkFlag = TCOD_BKGND_ALPHA(alpha);
-    } else if ((bkFlag & 0xff) == TCOD_BKGND_ADDA) {
+      const auto alpha = float{(1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f};
+      blend_flag_ = TCOD_BKGND_ALPHA(alpha);
+    } else if ((blend_flag_ & 0xff) == TCOD_BKGND_ADDA) {
       // for the add alpha mode, update alpha every frame
-      const float alpha = (1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f;
-      bkFlag = TCOD_BKGND_ADDALPHA(alpha);
-    }
-    if (!init) {
-      // initialize the colored background
-      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-        for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-          bk.at({x, y}).bg = tcod::ColorRGB{
-              static_cast<uint8_t>(x * 255 / (SAMPLE_SCREEN_WIDTH - 1)),
-              static_cast<uint8_t>((x + y) * 255 / (SAMPLE_SCREEN_WIDTH - 1 + SAMPLE_SCREEN_HEIGHT - 1)),
-              static_cast<uint8_t>(y * 255 / (SAMPLE_SCREEN_HEIGHT - 1)),
-          };
-        }
-      }
-      init = true;
+      const auto alpha = float{(1.0f + cosf(SDL_GetTicks() / 1000.0f * 2.0f)) / 2.0f};
+      blend_flag_ = TCOD_BKGND_ADDALPHA(alpha);
     }
     // blit the background
-    sampleConsole = bk;
+    sampleConsole = background_;
     // render the gradient
     const auto rect_y = static_cast<int>((SAMPLE_SCREEN_HEIGHT - 2) * ((1.0f + cosf(SDL_GetTicks() / 1000.0f)) / 2.0f));
     for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
@@ -308,7 +294,8 @@ class LineDrawingSample : public Sample {
           static_cast<uint8_t>(x * 255 / SAMPLE_SCREEN_WIDTH),
           static_cast<uint8_t>(x * 255 / SAMPLE_SCREEN_WIDTH),
       };
-      tcod::draw_rect(sampleConsole, {x, rect_y, 1, 3}, 0, std::nullopt, col, static_cast<TCOD_bkgnd_flag_t>(bkFlag));
+      tcod::draw_rect(
+          sampleConsole, {x, rect_y, 1, 3}, 0, std::nullopt, col, static_cast<TCOD_bkgnd_flag_t>(blend_flag_));
     }
     // calculate the segment ends
     const float angle = SDL_GetTicks() / 1000.0f * 2.0f;
@@ -318,11 +305,40 @@ class LineDrawingSample : public Sample {
     const int yd = static_cast<int>(SAMPLE_SCREEN_HEIGHT / 2 - sinf(angle) * SAMPLE_SCREEN_WIDTH / 2);
 
     // render the line
-    LineListener listener;
-    TCODLine::line(xo, yo, xd, yd, &listener);
+    for (const auto xy : tcod::BresenhamLine({xo, yo}, {xd, yd})) {
+      if (sampleConsole.in_bounds(xy)) {
+        TCOD_console_set_char_background(
+            sampleConsole.get(), xy.at(0), xy.at(1), LIGHT_BLUE, static_cast<TCOD_bkgnd_flag_t>(blend_flag_));
+      }
+    }
     // print the current flag
-    tcod::print(sampleConsole, {2, 2}, flagNames.at(bkFlag & 0xff) + " (ENTER to change)", WHITE, std::nullopt);
+    tcod::print(
+        sampleConsole,
+        {2, 2},
+        tcod::stringf("%s (ENTER to change)", flag_names_.at(blend_flag_ & 0xff)),
+        WHITE,
+        std::nullopt);
   }
+
+ private:
+  tcod::Console background_{SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT};  // The background of this sample.
+  int blend_flag_ = TCOD_BKGND_SET;  // current blending mode
+  // Readable names for the blend modes.
+  static constexpr auto flag_names_ = std::array<const char*, 13>{
+      "TCOD_BKGND_NONE",
+      "TCOD_BKGND_SET",
+      "TCOD_BKGND_MULTIPLY",
+      "TCOD_BKGND_LIGHTEN",
+      "TCOD_BKGND_DARKEN",
+      "TCOD_BKGND_SCREEN",
+      "TCOD_BKGND_COLOR_DODGE",
+      "TCOD_BKGND_COLOR_BURN",
+      "TCOD_BKGND_ADD",
+      "TCOD_BKGND_ADDALPHA",
+      "TCOD_BKGND_BURN",
+      "TCOD_BKGND_OVERLAY",
+      "TCOD_BKGND_ALPHA",
+  };
 };
 
 // ***************************
@@ -371,6 +387,7 @@ class NoiseSample : public Sample {
       zoom -= 0.2f;
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {
     static const std::vector<std::string> funcName = {
         "1 : perlin noise       ",
@@ -480,7 +497,7 @@ class NoiseSample : public Sample {
 // ***************************
 
 static constexpr auto CHAR_WINDOW = 0x2550;  // "═" glyph.
-static const std::vector<const char*> algo_names{
+static constexpr std::array<const char*, 14> algo_names{
     "BASIC               ",
     "DIAMOND             ",
     "SHADOW              ",
@@ -527,6 +544,7 @@ class FOVSample : public Sample {
       algonum = (algonum + NB_FOV_ALGORITHMS) % NB_FOV_ALGORITHMS;
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {
     static constexpr auto TORCH_RADIUS = 10.0f;
     static constexpr auto SQUARED_TORCH_RADIUS = (TORCH_RADIUS * TORCH_RADIUS);
@@ -632,7 +650,8 @@ class FOVSample : public Sample {
 class ImageSample : public Sample {
  public:
   void on_enter() override {}
-  void on_event(TCOD_key_t*, TCOD_mouse_t*) {}
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_event(SDL_Event&) override {}
   void on_draw(TCOD_Console& console) override {
     static TCODImage *img = NULL, *circle = NULL;
     if (img == NULL) {
@@ -718,6 +737,7 @@ class MouseSample : public Sample {
       SDL_ShowCursor(1);
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {}
 
  private:
@@ -759,6 +779,7 @@ class PathfinderSample : public Sample {
       dest_y_ = my;
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {
     static constexpr auto darkWall = tcod::ColorRGB{0, 0, 100};
     static constexpr auto darkGround = tcod::ColorRGB{50, 50, 150};
@@ -1051,6 +1072,7 @@ class BSPSample : public Sample {
       refresh = true;
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {
     static constexpr auto darkWall = tcod::ColorRGB{0, 0, 100};
     static constexpr auto darkGround = tcod::ColorRGB{50, 50, 150};
@@ -1139,6 +1161,7 @@ class NameGeneratorSample : public Sample {
       names.emplace_back("======");
     }
   }
+  void on_event(SDL_Event& event) override {}
   void on_draw(TCOD_Console& console) override {
     while (names.size() >= 15) {
       names.erase(names.begin());  // remove the first element.
@@ -1403,19 +1426,45 @@ class SDLSample : public Sample {
         std::nullopt,
         TCOD_CENTER);
   }
-  void on_event(TCOD_key_t* key, TCOD_mouse_t*) override {
-    if (key->vk == TCODK_TAB) {
-      sdl_callback_enabled = !sdl_callback_enabled;
-      if (sdl_callback_enabled) {
-        TCODSystem::registerSDLRenderer(new SampleRenderer());
-      } else {
-        TCODSystem::registerSDLRenderer(NULL);
-      }
+  void on_event(TCOD_key_t*, TCOD_mouse_t*) override {}
+  void on_event(SDL_Event& event) override {
+    switch (event.type) {
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym) {
+          case SDLK_TAB:
+          case SDLK_KP_TAB:
+            sdl_callback_enabled = !sdl_callback_enabled;
+            if (sdl_callback_enabled) {
+              TCODSystem::registerSDLRenderer(new SampleRenderer());
+            } else {
+              TCODSystem::registerSDLRenderer(NULL);
+            }
+            break;
+          default:
+            break;
+        }
+        break;
+      default:
+        break;
     }
   }
   void on_draw(TCOD_Console& console) override {}
 };
 #endif
+
+struct RendererOption {
+  const char* name;
+  TCOD_renderer_t renderer;
+};
+
+static constexpr std::array<RendererOption, 5> RENDERERS{
+    RendererOption{"GLSL   ", TCOD_RENDERER_GLSL},
+    RendererOption{"OPENGL ", TCOD_RENDERER_OPENGL},
+    RendererOption{"SDL    ", TCOD_RENDERER_SDL},
+    RendererOption{"SDL2   ", TCOD_RENDERER_SDL2},
+    RendererOption{"OPENGL2", TCOD_RENDERER_OPENGL2},
+};
+
 // ***************************
 // the list of samples
 // ***************************
@@ -1441,12 +1490,10 @@ static const std::vector<sample_t> samples = {
 int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   int curSample = 0;  // index of the current sample
-  bool first = true;  // first time we render a sample
   TCOD_key_t key;
   TCOD_mouse_t mouse;
   const char* font = "data/fonts/dejavu10x10_gs_tc.png";
   int nbCharHoriz = 0, nbCharVertic = 0;
-  int argn;
   int fullscreenWidth = 0;
   int fullscreenHeight = 0;
   TCOD_renderer_t renderer = TCOD_RENDERER_SDL2;
@@ -1454,11 +1501,9 @@ int main(int argc, char* argv[]) {
   int fontFlags = TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_TCOD, fontNewFlags = 0;
   bool creditsEnd = false;
   int cur_renderer = 0;
-  static const std::vector<std::string> renderer_name = {
-      "F1 GLSL   ", "F2 OPENGL ", "F3 SDL    ", "F4 SDL2   ", "F5 OPENGL2"};
 
   // initialize the root console (open the game window)
-  for (argn = 1; argn < argc; argn++) {
+  for (int argn = 1; argn < argc; ++argn) {
     if (strcmp(argv[argn], "-font") == 0 && argn + 1 < argc) {
       argn++;
       font = argv[argn];
@@ -1511,115 +1556,118 @@ int main(int argc, char* argv[]) {
   }
 
   TCODConsole::initRoot(80, 50, "libtcod C++ sample", fullscreen, renderer);
+  TCOD_Context* context = TCOD_sys_get_internal_context();
+  TCOD_Console& root_console = *TCOD_sys_get_internal_console();
+
   atexit(TCOD_quit);
   auto timer = tcod::Timer();
-  do {
+  while (true) {
     delta_time = timer.sync();
     if (!creditsEnd) {
-      creditsEnd = TCODConsole::renderCredits(56, 43, false);
+      creditsEnd = TCOD_console_credits_render_ex(&root_console, 56, 43, false, delta_time);
     }
 
     // print the list of samples
     for (int i = 0; i < static_cast<int>(samples.size()); ++i) {
-      if (i == curSample) {
-        // set colors for currently selected sample
-        TCODConsole::root->setDefaultForeground(WHITE);
-        TCODConsole::root->setDefaultBackground(LIGHT_BLUE);
-      } else {
-        // set colors for other samples
-        TCODConsole::root->setDefaultForeground(GREY);
-        TCODConsole::root->setDefaultBackground(BLACK);
-      }
+      const auto fg = (i == curSample) ? WHITE : GREY;
+      const auto bg = (i == curSample) ? LIGHT_BLUE : BLACK;
       // print the sample name
-      TCODConsole::root->print(
-          2, 46 - (static_cast<int>(samples.size()) - i), samples.at(i).name, TCOD_LEFT, TCOD_BKGND_SET);
+      tcod::print(root_console, {2, 46 - (static_cast<int>(samples.size()) - i)}, samples.at(i).name, fg, bg);
     }
     // print the help message
-    TCODConsole::root->setDefaultForeground(GREY);
-    TCODConsole::root->printf(
-        79,
-        46,
-        TCOD_BKGND_NONE,
-        TCOD_RIGHT,
-        "last frame : %3.0f ms (%3.0f fps)",
-        delta_time * 1000.0f,
-        timer.get_mean_fps());
-    TCODConsole::root->printf(
-        79, 47, TCOD_BKGND_NONE, TCOD_RIGHT, "elapsed : %8dms %4.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f);
-    TCODConsole::root->printf(2, 47, "↑↓ : select a sample");
-    TCODConsole::root->printf(
-        2, 48, "ALT-ENTER : switch to %s", TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode");
+    tcod::print(
+        root_console,
+        {79, 46},
+        tcod::stringf("last frame : %3.0f ms (%3.0f fps)", delta_time * 1000.0f, timer.get_mean_fps()),
+        GREY,
+        std::nullopt,
+        TCOD_RIGHT);
+    tcod::print(
+        root_console,
+        {79, 47},
+        tcod::stringf("elapsed : %8dms %4.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f),
+        GREY,
+        std::nullopt,
+        TCOD_RIGHT);
+    tcod::print(root_console, {2, 47}, "↑↓ : select a sample", GREY, std::nullopt);
+    tcod::print(
+        root_console,
+        {2, 48},
+        tcod::stringf("ALT-ENTER : switch to %s", TCODConsole::isFullscreen() ? "windowed mode  " : "fullscreen mode"),
+        GREY,
+        std::nullopt);
 
     // render current sample
-    if (first) samples.at(curSample).sample->on_enter();
-    samples.at(curSample).sample->on_event(&key, &mouse);
     samples.at(curSample).sample->on_draw(sampleConsole);
-    first = false;
 
     // blit the sample console on the root console
-    tcod::blit(*TCODConsole::root, sampleConsole, {SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y});
-    // erase the renderer in debug mode (needed because the root console is not cleared each frame)
-    TCODConsole::root->printf(1, 1, "        ");
+    tcod::blit(root_console, sampleConsole, {SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y});
     /* display renderer list and current renderer */
     cur_renderer = TCODSystem::getRenderer();
-    TCODConsole::root->setDefaultForeground(GREY);
-    TCODConsole::root->setDefaultBackground(BLACK);
-    TCODConsole::root->printf(42, 46 - (TCOD_NB_RENDERERS + 1), TCOD_BKGND_SET, TCOD_LEFT, "Renderer :");
-    for (int i = 0; i < TCOD_NB_RENDERERS; i++) {
-      if (i == cur_renderer) {
-        /* set colors for current renderer */
-        TCODConsole::root->setDefaultForeground(WHITE);
-        TCODConsole::root->setDefaultBackground(LIGHT_BLUE);
-      } else {
-        /* set colors for other renderer */
-        TCODConsole::root->setDefaultForeground(GREY);
-        TCODConsole::root->setDefaultBackground(BLACK);
-      }
-      TCODConsole::root->print(42, 46 - (TCOD_NB_RENDERERS - i), renderer_name[i], TCOD_LEFT, TCOD_BKGND_SET);
+    tcod::print(root_console, {42, 46 - (static_cast<int>(RENDERERS.size()) + 1)}, "Renderer :", GREY, BLACK);
+    for (int i = 0; i < static_cast<int>(RENDERERS.size()); ++i) {
+      const auto fg = (i == cur_renderer) ? WHITE : GREY;
+      const auto bg = (i == cur_renderer) ? LIGHT_BLUE : BLACK;
+      tcod::print(
+          root_console,
+          {42, 46 - (static_cast<int>(RENDERERS.size()) - i)},
+          tcod::stringf("F%d %s", i + 1, RENDERERS.at(i).name),
+          fg,
+          bg);
     }
 
     // update the game screen
-    TCODConsole::flush();
+    context->present(root_console);
+    root_console.clear();
 
     // did the user hit a key ?
-    TCODSystem::checkForEvent((TCOD_event_t)(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE), &key, &mouse);
-    if (key.vk == TCODK_DOWN) {
-      // down arrow : next sample
-      curSample = (curSample + 1) % samples.size();
-      first = true;
-    } else if (key.vk == TCODK_UP) {
-      // up arrow : previous sample
-      curSample--;
-      if (curSample < 0) curSample = static_cast<int>(samples.size()) - 1;
-      first = true;
-    } else if (key.vk == TCODK_ENTER && (key.lalt | key.ralt)) {
-      // ALT-ENTER : switch fullscreen
-      TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
-#ifdef TCOD_LINUX
-    } else if (key.c == 'p') {
-#else
-    } else if (key.vk == TCODK_PRINTSCREEN) {
-#endif
-      if (key.lalt) {
-        // ALT-PrintScreen : save to .asc format
-        TCODConsole::root->saveApf("samples.apf");
-      } else {
-        // save screenshot
-        TCODSystem::saveScreenshot(NULL);
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_QUIT:
+          std::exit(EXIT_SUCCESS);
+          break;
+        case SDL_KEYDOWN:
+          switch (event.key.keysym.sym) {
+            case SDLK_DOWN:
+              curSample = (curSample + 1) % static_cast<int>(samples.size());
+              samples.at(curSample).sample->on_enter();
+              break;
+            case SDLK_UP:
+              curSample = (curSample + static_cast<int>(samples.size()) - 1) % static_cast<int>(samples.size());
+              samples.at(curSample).sample->on_enter();
+              break;
+            case SDLK_RETURN:
+            case SDLK_RETURN2:
+            case SDLK_KP_ENTER:
+              if (event.key.keysym.mod & KMOD_ALT) {
+                TCODConsole::setFullscreen(!TCODConsole::isFullscreen());
+              }
+              break;
+            case SDLK_p:
+            case SDLK_PRINTSCREEN:
+              if (event.key.keysym.mod & KMOD_ALT) {
+                TCODConsole::root->saveApf("samples.apf");  // ALT-PrintScreen : save to .asc format
+              } else {
+                TCODSystem::saveScreenshot(NULL);  // save screenshot
+              }
+              break;
+            default:
+              if (SDLK_F1 <= event.key.keysym.sym && event.key.keysym.sym < SDLK_F1 + RENDERERS.size()) {
+                TCODSystem::setRenderer(RENDERERS.at(event.key.keysym.sym - SDLK_F1).renderer);
+              }
+              context = TCOD_sys_get_internal_context();
+              break;
+          }
+          break;
+        default:
+          break;
       }
-    } else if (key.vk == TCODK_F1) {
-      // switch renderers with F1,F2,F3
-      TCODSystem::setRenderer(TCOD_RENDERER_GLSL);
-    } else if (key.vk == TCODK_F2) {
-      TCODSystem::setRenderer(TCOD_RENDERER_OPENGL);
-    } else if (key.vk == TCODK_F3) {
-      TCODSystem::setRenderer(TCOD_RENDERER_SDL);
-    } else if (key.vk == TCODK_F4) {
-      TCODSystem::setRenderer(TCOD_RENDERER_SDL2);
-    } else if (key.vk == TCODK_F5) {
-      TCODSystem::setRenderer(TCOD_RENDERER_OPENGL2);
+      samples.at(curSample).sample->on_event(event);
+      tcod::sdl2::process_event(event, key);
+      tcod::sdl2::process_event(event, mouse);
+      samples.at(curSample).sample->on_event(&key, &mouse);
     }
-  } while (!TCODConsole::isWindowClosed());
-  TCOD_quit();
-  return 0;
+  }
+  return EXIT_SUCCESS;
 }

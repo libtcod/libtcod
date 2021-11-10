@@ -87,12 +87,12 @@ This also lets you use the root console on functions which can't accept `nullptr
     // Get a temporary non-owning pointer to the context made by TCOD_console_init_root or TCODConsole::initRoot.
     TCOD_Context* context = TCOD_sys_get_internal_context();
 
-    // Get a temporary non-owning pointer to the root console made by TCOD_console_init_root or TCODConsole::initRoot.
-    TCOD_Console* root_console = TCOD_sys_get_internal_console();
+    // Get a temporary non-owning reference to the root console made by TCOD_console_init_root or TCODConsole::initRoot.
+    TCOD_Console& root_console = *TCOD_sys_get_internal_console();
     // From now on use root_console instead of NULL, make this global if you have to.
 
     // Using the root console with the context is similar to calling TCOD_console_flush() with some exceptions.
-    context->present(*root_console);  // Or in C: TCOD_context_present(context, root_console, NULL)
+    context->present(root_console);  // Or in C: TCOD_context_present(context, root_console, NULL)
 
 Using the context present function like this will break some functions which say they're not compatible with contexts.
 Most importantly any timing-related functions will need to be updated.  See `Timing`_ below.
@@ -101,18 +101,18 @@ The next step is to actually replace :any:`TCOD_console_init_root` with contexts
 
 .. code-block:: cpp
 
-    auto console = tcod::Console{80, 25};  // This is now a normal console.
+    auto root_console = tcod::Console{80, 25};  // TCOD_Console& can be replaced with tcod::Console.
 
     auto params = TCOD_ContextParams{};
     params.tcod_version = TCOD_COMPILEDVERSION;
     params.vsync = 1;
     params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
     params.window_title = "Window title";
-    params.console = console.get();  // Set the window size from the console size.
+    params.console = root_console.get();  // Set the window size from the console size.
 
     auto context = tcod::new_context(params);
 
-    context->present(console);
+    context->present(root_console);
 
 Window manipulation
 ^^^^^^^^^^^^^^^^^^^

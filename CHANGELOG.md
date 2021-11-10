@@ -39,6 +39,7 @@ since `1.7.0`.
 - Deprecated older font loading functions.
 - Deprecated `TCOD_random_t` type.
 - Console defaults have been deprecated.
+- Root console initiation has been deprecated.
 
 ### Fixed
 - Gaussian number generation no longer affects the results of unrelated RNG's.

@@ -33,6 +33,8 @@
 #ifndef _TCOD_FOV_HPP
 #define _TCOD_FOV_HPP
 
+#include <utility>
+
 #include "fov.h"
 
 class TCODPath;
@@ -59,6 +61,14 @@ class TCODLIB_API TCODMap {
 		@Param width, height	The size of the map (in map cells).
 		*/
 		TCODMap(int width, int height);
+
+    TCODMap(const TCODMap&) = delete;
+    TCODMap& operator=(const TCODMap&) = delete;
+    TCODMap(TCODMap&& rhs) noexcept { std::swap(data, rhs.data); };
+    TCODMap& operator=(TCODMap&& rhs) noexcept {
+      std::swap(data, rhs.data);
+      return *this;
+    };
 
 		/**
 		@PageName fov_init

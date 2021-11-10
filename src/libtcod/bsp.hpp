@@ -33,6 +33,8 @@
 #ifndef _TCOD_BSP_HPP
 #define _TCOD_BSP_HPP
 
+#include <utility>
+
 #include "bsp.h"
 #include "list.hpp"
 #include "mersenne.hpp"
@@ -77,6 +79,16 @@ public :
 	*/
 	TCODBsp() : level(0) {}
 	TCODBsp(int x,int y,int w, int h) : x(x),y(y),w(w),h(h),level(0) {}
+
+  TCODBsp(const TCODBsp&) = delete;
+  TCODBsp& operator=(const TCODBsp&) = delete;
+  TCODBsp(TCODBsp&& rhs) noexcept { (*this) = std::move(rhs); };
+  TCODBsp& operator=(TCODBsp&& rhs) noexcept {
+    std::swap(next, rhs.next);
+    std::swap(father, rhs.father);
+    std::swap(sons, rhs.sons);
+    return *this;
+  };
 
 	/**
 	@PageName bsp_init

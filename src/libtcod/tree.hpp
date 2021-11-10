@@ -37,9 +37,9 @@
 
 class TCODLIB_API TCODTree {
 public :
-	TCODTree *next;
-	TCODTree *father;
-	TCODTree *sons;
+	TCODTree *next = nullptr;
+	TCODTree *father = nullptr;
+	TCODTree *sons = nullptr;
 
 	TCODTree() : next(NULL),father(NULL),sons(NULL){}
 	void addSon(TCODTree *data) {

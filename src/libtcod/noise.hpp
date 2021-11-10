@@ -33,6 +33,8 @@
 #ifndef _TCOD_PERLIN_HPP
 #define _TCOD_PERLIN_HPP
 
+#include <utility>
+
 #include "mersenne.hpp"
 #include "noise.h"
 #include "noise_defaults.h"
@@ -124,6 +126,14 @@ class TCODLIB_API TCODNoise {
 		TCODNoise(int dimensions, TCODRandom *random, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 		TCODNoise(int dimensions, float hurst, float lacunarity, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
 		TCODNoise(int dimensions, float hurst, float lacunarity, TCODRandom *random, TCOD_noise_type_t type = TCOD_NOISE_DEFAULT);
+
+    TCODNoise(const TCODNoise&) = delete;
+    TCODNoise& operator=(const TCODNoise&) = delete;
+    TCODNoise(TCODNoise&& rhs) noexcept { std::swap(data, rhs.data); };
+    TCODNoise& operator=(TCODNoise&& rhs) noexcept {
+      std::swap(data, rhs.data);
+      return *this;
+    };
 
 		/**
 		@PageName noise_init

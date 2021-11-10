@@ -31,6 +31,8 @@ since `1.7.0`.
 - `TCOD_Random` now points to a union type.
 - Libtcod now uses the C++17 standard.
 - The newer C++ printing functions now take `std::string_view` instead of `std::string`.
+- `TCODBsp`, `TCODPath`, `TCODDijkstra`, `TCODNoise`, `TCODImage`, and `TCODMap` can now handle move operations.
+  Their copy operators have been deleted.  This makes them safe to use as a value instead of using `new`/`delete`.
 
 ### Deprecated
 - Deprecate `TCOD_chars_t` enum values because they are non-Unicode.

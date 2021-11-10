@@ -100,6 +100,18 @@ public :
 	*/
 	TCODImage(const TCODConsole *console);
 
+  TCODImage(const TCODImage&) = delete;
+  TCODImage& operator=(const TCODImage&) = delete;
+  TCODImage(TCODImage&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    std::swap(deleteData, rhs.deleteData);
+  };
+  TCODImage& operator=(TCODImage&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    std::swap(deleteData, rhs.deleteData);
+    return *this;
+  };
+
   // clang-format on
   /***************************************************************************
       @brief Construct a new TCODImage object from a Matrix of pixels.

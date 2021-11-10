@@ -33,6 +33,8 @@
 #ifndef _TCOD_PATH_HPP
 #define _TCOD_PATH_HPP
 
+#include <utility>
+
 #include "fov.hpp"
 #include "path.h"
 
@@ -162,6 +164,17 @@ public :
 	*/
 	TCODPath(int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost=1.41f);
 
+  TCODPath(const TCODPath&) = delete;
+  TCODPath& operator=(const TCODPath&) = delete;
+  TCODPath(TCODPath&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    cppData = std::move(rhs.cppData);
+  }
+  TCODPath& operator=(TCODPath&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    cppData = std::move(rhs.cppData);
+    return *this;
+  }
 	/**
 	@PageName path_init
 	@FuncTitle Destroying a path
@@ -483,6 +496,19 @@ class TCODLIB_API TCODDijkstra {
     public:
         TCODDijkstra (TCODMap *map, float diagonalCost=1.41f);
         TCODDijkstra (int width, int height, const ITCODPathCallback *listener, void *userData, float diagonalCost=1.41f);
+
+        TCODDijkstra(const TCODDijkstra&) = delete;
+        TCODDijkstra& operator=(const TCODDijkstra&) = delete;
+        TCODDijkstra(TCODDijkstra&& rhs) noexcept {
+          std::swap(data, rhs.data);
+          cppData = std::move(rhs.cppData);
+        }
+        TCODDijkstra& operator=(TCODDijkstra&& rhs)noexcept {
+          std::swap(data, rhs.data);
+          cppData = std::move(rhs.cppData);
+          return *this;
+        }
+
         ~TCODDijkstra (void);
         /**
         @PageName path_compute

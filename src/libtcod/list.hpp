@@ -29,14 +29,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #ifndef _TCOD_LIST_HPP
 #define _TCOD_LIST_HPP
 
+#include <stdlib.h>  // NULL
+#include <string.h>  // memcpy
+
+#include <utility>
+
 #include "list.h"
 
-#include <string.h> // memcpy
-#include <stdlib.h> // NULL
 /**
  @PageName list
  @PageCategory Base toolkits
@@ -48,100 +50,112 @@ Note that this module has no Python wrapper. Use Python built-in containers inst
 // fast & lightweight list template
 template <class T>
 class TCODList {
-	T *array;
-	int fillSize;
-	int allocSize;
+  T* array = nullptr;
+  int fillSize = 0;
+  int allocSize = 0;
 
-public :
-	/**
-	@PageName list_create
-	@PageFather list
-	@PageTitle Creating a list
-	@FuncTitle Using the default constructor
-	@FuncDesc You can create an empty list with the default constructor. The C version returns a handler on the list.
-	@Cpp template <class T> TCODList::TCODList()
-	@C TCOD_list_t TCOD_list_new()
-	@CppEx
-		TCODList<int> intList;
-		TCODList<float> *floatList = new TCODList<float>();
-	@CEx
-		TCOD_list_t intList = TCOD_list_new();
-		TCOD_list_t floatList = TCOD_list_new();
-	*/
-  [[deprecated("TCODList is unsuitable as a C++ container.")]]
-	TCODList() {
-		array=NULL;
-		fillSize=allocSize=0;
-	}
+ public:
+  /**
+  @PageName list_create
+  @PageFather list
+  @PageTitle Creating a list
+  @FuncTitle Using the default constructor
+  @FuncDesc You can create an empty list with the default constructor. The C version returns a handler on the list.
+  @Cpp template <class T> TCODList::TCODList()
+  @C TCOD_list_t TCOD_list_new()
+  @CppEx
+          TCODList<int> intList;
+          TCODList<float> *floatList = new TCODList<float>();
+  @CEx
+          TCOD_list_t intList = TCOD_list_new();
+          TCOD_list_t floatList = TCOD_list_new();
+  */
+  [[deprecated("TCODList is unsuitable as a C++ container.")]] TCODList() = default;
 
-	/**
-	@PageName list_create
-	@FuncTitle Duplicating an existing list
-	@FuncDesc You can create a list by duplicating an existing list.
-	@Cpp template <class T> TCODList::TCODList(const TCODList &l)
-	@C TCOD_list_t TCOD_list_duplicate(TCOD_list_t l)
-	@Param l	Existing list to duplicate.
-	@CppEx
-		TCODList<int> intList;
-		intList.push(3);
-		intList.push(5);
-		TCODList<int> intList2(intList); // intList2 contains two elements : 3 and 5
-	@CEx
-		TCOD_list_t intList = TCOD_list_new();
-		TCOD_list_push(intList,(const void *)3);
-		TCOD_list_push(intList,(const void *)5);
-		TCOD_list_t intList2 = TCOD_list_duplicate(intList); // intList2 contains two elements : 3 and 5
-	*/
-  TCODList(const TCOD_list_t l)
-  {
-    array = NULL;
-    fillSize = allocSize = 0;
+  /**
+  @PageName list_create
+  @FuncTitle Duplicating an existing list
+  @FuncDesc You can create a list by duplicating an existing list.
+  @Cpp template <class T> TCODList::TCODList(const TCODList &l)
+  @C TCOD_list_t TCOD_list_duplicate(TCOD_list_t l)
+  @Param l	Existing list to duplicate.
+  @CppEx
+          TCODList<int> intList;
+          intList.push(3);
+          intList.push(5);
+          TCODList<int> intList2(intList); // intList2 contains two elements : 3 and 5
+  @CEx
+          TCOD_list_t intList = TCOD_list_new();
+          TCOD_list_push(intList,(const void *)3);
+          TCOD_list_push(intList,(const void *)5);
+          TCOD_list_t intList2 = TCOD_list_duplicate(intList); // intList2 contains two elements : 3 and 5
+  */
+  TCODList(const TCOD_list_t l) {
     for (void** it = TCOD_list_begin(l); it != TCOD_list_end(l); ++it) {
       push(*static_cast<T*>(static_cast<void*>(it)));
     }
   }
-	TCODList(const TCODList<T> &l2) {
-		array=NULL;
-		fillSize=allocSize=0;
-		*this = l2;
-	}
+  TCODList(const TCODList<T>& rhs) { *this = rhs; }
+  TCODList<T>& operator=(const TCODList<T>& rhs) {
+    while (allocSize < rhs.allocSize) allocate();
+    fillSize = rhs.fillSize;
+    int i = 0;
+    for (T* t = rhs.begin(); t != rhs.end(); ++t) {
+      array[++i] = *t;
+    }
+    return *this;
+  }
+  TCODList(TCODList&& rhs) noexcept { swap(*this, rhs); };
+  TCODList& operator=(TCODList&& rhs) noexcept {
+    swap(*this, rhs);
+    return *this;
+  }
 
-	/**
-	@PageName list_create
-	@FuncTitle Preallocating memory
-	@FuncDesc You can also create an empty list and pre-allocate memory for elements. Use this if you know the list size and want the memory to fit it perfectly.
-	@Cpp template <class T> TCODList::TCODList(int nbElements)
-	@C TCOD_list_t TCOD_list_allocate(int nbElements)
-	@Param nbElements	Allocate memory for nbElements.
-	@CppEx TCODList<int> intList(5); // create an empty list, pre-allocate memory for 5 elements
-	@CEx TCOD_list_t intList = TCOD_list_allocate(5);
-	*/
-  [[deprecated("TCODList is unsuitable as a C++ container.")]]
-	TCODList(int nbElements) {
-		fillSize=0;
-		allocSize=nbElements;
-		array=new T[ nbElements ];
-	}
+  /**
+  @PageName list_create
+  @FuncTitle Deleting a list
+  @FuncDesc You can delete a list, freeing any allocated resources. Note that deleting the list does not delete it's
+  elements. You have to use clearAndDelete before deleting the list if you want to destroy the elements too.
+  @Cpp virtual template <class T> TCODList::~TCODList()
+  @C void TCOD_list_delete(TCOD_list_t l)
+  @Param l	In the C version, the list handler, returned by a constructor.
+  @CppEx
+          TCODList<int> *intList = new TCODList<int>(); // allocate a new empty list
+          intList->push(5); // the list contains 1 element at position 0, value = 5
+          delete intList; // destroy the list
+  @CEx
+          TCOD_list_t intList = TCOD_list_new();
+          TCOD_list_push(intList,(const void *)5);
+          TCOD_list_delete(intList);
+  */
+  virtual ~TCODList() {
+    if (array) delete[] array;
+  }
 
-	/**
-	@PageName list_create
-	@FuncTitle Deleting a list
-	@FuncDesc You can delete a list, freeing any allocated resources. Note that deleting the list does not delete it's elements. You have to use clearAndDelete before deleting the list if you want to destroy the elements too.
-	@Cpp virtual template <class T> TCODList::~TCODList()
-	@C void TCOD_list_delete(TCOD_list_t l)
-	@Param l	In the C version, the list handler, returned by a constructor.
-	@CppEx
-		TCODList<int> *intList = new TCODList<int>(); // allocate a new empty list
-		intList->push(5); // the list contains 1 element at position 0, value = 5
-		delete intList; // destroy the list
-	@CEx
-		TCOD_list_t intList = TCOD_list_new();
-		TCOD_list_push(intList,(const void *)5);
-		TCOD_list_delete(intList);
-	*/
-	virtual ~TCODList() {
-		if ( array ) delete [] array;
-	}
+  friend void swap(TCODList& lhs, TCODList& rhs) noexcept {
+    using std::swap;
+    swap(lhs.array, rhs.array);
+    swap(lhs.fillSize, rhs.fillSize);
+    swap(lhs.allocSize, rhs.allocSize);
+  }
+
+  /**
+  @PageName list_create
+  @FuncTitle Preallocating memory
+  @FuncDesc You can also create an empty list and pre-allocate memory for elements. Use this if you know the list size
+  and want the memory to fit it perfectly.
+  @Cpp template <class T> TCODList::TCODList(int nbElements)
+  @C TCOD_list_t TCOD_list_allocate(int nbElements)
+  @Param nbElements	Allocate memory for nbElements.
+  @CppEx TCODList<int> intList(5); // create an empty list, pre-allocate memory for 5 elements
+  @CEx TCOD_list_t intList = TCOD_list_allocate(5);
+  */
+  [[deprecated("TCODList is unsuitable as a C++ container.")]] TCODList(int nbElements) {
+    fillSize = 0;
+    allocSize = nbElements;
+    array = new T[nbElements];
+  }
+  // clang-format off
 
 	/**
 	@PageName list_array
@@ -598,16 +612,6 @@ public :
 		fillSize--;
 		if (fillSize == 0) return NULL;
 		else return elt - 1;
-	}
-
-	TCODList<T> & operator = (TCODList<T> const & l2) {
-		while ( allocSize < l2.allocSize ) allocate();
-		fillSize=l2.fillSize;
-		int i=0;
-		for (T *t=l2.begin(); t != l2.end(); t++) {
-			array[i++]=*t;
-		}
-		return *this;
 	}
 
 protected :

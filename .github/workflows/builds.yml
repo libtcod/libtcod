@@ -161,9 +161,6 @@ jobs:
           - os: "windows-2019"
             architecture: x86_64
           - os: "windows-2019"
-            architecture: x86
-            toolset: mingw
-          - os: "windows-2019"
             architecture: x86_64
             toolset: mingw
     steps:
@@ -185,16 +182,24 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install sdl2
-      - name: Set up MinGW
+      - uses: msys2/setup-msys2@v2
         if: ${{ matrix.toolset == 'mingw' }}
-        uses: egor-tensin/setup-mingw@v2
         with:
-          platform: ${{ matrix.architecture == 'x86_64' && 'x64' || 'x86' }}
+          msystem: MINGW64
+          update: true
+          install: git scons mingw-w64-x86_64-toolchain mingw-w64-x86_64-SDL2
       - name: Build package.
+        if: ${{ matrix.toolset != 'mingw' }}
         working-directory: buildsys/scons
         run: |
-          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE \
-            ARCH=${{ matrix.architecture }} ${{ matrix.toolset == 'mingw' && 'TOOLSET=mingw' || '' }}
+          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }}
+      - name: Build package (MinGW)
+        if: ${{ matrix.toolset == 'mingw' }}
+        working-directory: buildsys/scons
+        shell: msys2 {0}
+        run: |
+          scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} \
+            TOOLSET=mingw
       - name: Archive distribution
         uses: actions/upload-artifact@v2
         with:

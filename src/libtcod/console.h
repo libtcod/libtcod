@@ -104,15 +104,6 @@ typedef struct TCOD_ConsoleTile {
     @details In C++ this struct has several convience methods to make working with consoles easier.
     Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
 
-    @code{.cpp}
-      tcod::ConsolePtr console = tcod::new_console({{80, 50}});
-      console->at({1, 1}).ch = '@';  // Bounds-checked references to a tile.
-      (*console)[{1, 1}].bg = {0, 0, 255, 255};  // Access a tile without bounds checking, colors are RGBA.
-      if (console->in_bounds({100, 100})) {}  // Test if an index is in bounds.
-      for (auto& tile : *console) tile.fg = {255, 255, 0, 255};  // Iterate over all tiles on a console.
-      for (auto& tile : *console) tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}};  // Clear all tiles.
-    @endcode
-
     \rst
     .. versionadded:: 1.19
     \endrst
@@ -139,14 +130,6 @@ struct TCOD_Console {
       @brief Clear a console by setting all tiles to the provided TCOD_ConsoleTile object.
 
       @param tile A TCOD_ConsoleTile refernce which will be used to clear the console.
-
-      @code{.cpp}
-        // New consoles start already cleared with the space character, a white foreground, and a black background.
-        auto console = tcod::new_console(80, 50)
-        console->clear()  // Clear with the above mentioned defaults.
-        console->clear({0x20, {255, 255, 255, 255}, {0, 0, 0, 255}});  // Same as the above.
-        console->clear(0x20, {255, 255, 255}, {0, 0, 0})  // Also same as the above.
-      @endcode
    */
   void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
     for (auto& it : *this) it = tile;

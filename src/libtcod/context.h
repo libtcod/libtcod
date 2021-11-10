@@ -197,18 +197,15 @@ struct TCOD_Context {
         // tcod::ContextPtr context = tcod::new_context(...);
         while (1) {
           auto console = context->new_console();  // This can be done as an alternative to clearing the console.
-          tcod::print(*console, {0, 0}, "Hello world", nullptr, nullptr);
-          const auto viewport_options = [](){
-            auto options = TCOD_ViewportOptions{};
-            options.tcod_version = TCOD_COMPILEDVERSION;
-            options.keep_aspect = true;
-            options.integer_scaling = true;
-            options.clear_color = {0, 0, 0, 255};
-            options.align_x = 0.5f;
-            options.align_y = 0.5f;
-            return options;
-          }();
-          context->present(*console, viewport_options);
+          tcod::print(console, {0, 0}, "Hello world", nullptr, nullptr);
+          auto viewport_options = TCOD_ViewportOptions{}
+          viewport_options.tcod_version = TCOD_COMPILEDVERSION;
+          viewport_options.keep_aspect = true;  // Adds letterboxing to keep aspect.
+          viewport_options.integer_scaling = true;  // Prevent scaling artifacts with pixelated or low-res glyphs.
+          viewport_options.clear_color = {0, 0, 0, 255};
+          viewport_options.align_x = 0.5f;
+          viewport_options.align_y = 0.5f;
+          context->present(console, viewport_options);
           SDL_Event event;
           while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
@@ -330,7 +327,7 @@ struct TCOD_Context {
       @code{.cpp}
         // auto context = tcod::new_context(...);
         while (1) {
-          auto console = context->new_console();  // This can be an alternative to clearing the console.
+          auto console = context->new_console();  // Can be an alternative to clearing the console.
           tcod::print(console, {0, 0}, "Hello world", std::nullopt, std::nullopt);
           context->present(console);
           SDL_Event event;

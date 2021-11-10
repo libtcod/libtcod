@@ -193,13 +193,12 @@ inline void draw_rect(
     @param flag The background blending flag.
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}});
-      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
-      static constexpr auto RED = TCOD_ColorRGB{255, 0, 0};
+      auto console = tcod::Console{80, 50};
+      static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
+      static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
       // Draw a red background without replacing any foreground glyphs/colors.
-      tcod::draw_rect(*console, {2, 2, 24, 24}, 0, nullptr, &RED);
-      // Draw a horizontal bar.
-      tcod::draw_rect(*console, {8, 8, 16, 1}, '-', WHITE, nullptr);
+      tcod::draw_rect(console, {2, 2, 24, 24}, 0, std::Nullopt, RED);
+      tcod::draw_rect(console, {8, 8, 16, 1}, '-', WHITE, std::Nullopt);  // Draw a horizontal bar.
     @endcode
 
     \rst
@@ -277,11 +276,11 @@ inline void draw_frame(
         6 7 8
 
     @code{.cpp}
-      auto console = tcod::new_console({{80, 50}});
-      static constexpr auto WHITE = TCOD_ColorRGB{255, 255, 255};
-      static constexpr auto BLACK = TCOD_ColorRGB{0, 0, 0};
+      auto console = tcod::Console{80, 50};
+      static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
+      static constexpr auto BLACK = tcod::ColorRGB{0, 0, 0};
       static constexpr std::array<int, 9> LEGEND = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
-      tcod::draw_frame(*console, {0, 0, 3, 3}, LEGEND, &WHITE, &BLACK);
+      tcod::draw_frame(console, {0, 0, 3, 3}, LEGEND, WHITE, BLACK);
     @endcode
 
     \rst

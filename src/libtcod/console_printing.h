@@ -445,8 +445,8 @@ print(
               If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.
               If std::nullopt then the background will be left unchanged.
-    @param flag The background blending flag.
     @param alignment The text justification.
+    @param flag The background blending flag.
     @return int The height of the printed output.
 
     @code{.cpp}
@@ -536,12 +536,16 @@ inline int get_height_rect(int width, std::string_view str) {
     @brief Return a formatted string as a std::string object.
 
     This is a convience function for code using printf-like formatted strings.
-    Newer more modern code might want to use the fmt library instead.
+    Newer more modern code might want to use [the fmt library](https://fmt.dev/latest/index.html) instead.
 
     @tparam T Parameter packed arguments.
     @param format A printf-like format string.
     @param args Any printf-like arguments.
     @return A std::string object with the resulting output.
+
+    @details
+    [fmt::sprintf](https://fmt.dev/latest/api.html#_CPPv4I0Dp0EN3fmt7sprintfENSt12basic_stringI4CharEERK1SDpRK1T)
+    is a faster and safer alternative to this function.
 
     @code{.cpp}
       auto console = tcod::Console{80, 50};

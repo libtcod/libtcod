@@ -152,13 +152,13 @@ Printing functions using UTF-8 (C++)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. doxygenfunction:: tcod::print(TCOD_Console& console, const std::array<int, 2>& xy, std::string_view str, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_alignment_t alignment = TCOD_LEFT, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
-.. doxygenfunction:: tcod::print(TCOD_Console& console, const std::array<int, 4>& rect, std::string_view str, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_alignment_t alignment = TCOD_LEFT, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
+.. doxygenfunction:: tcod::print_rect(TCOD_Console& console, const std::array<int, 4>& rect, std::string_view str, std::optional<TCOD_ColorRGB> fg, std::optional<TCOD_ColorRGB> bg, TCOD_alignment_t alignment = TCOD_LEFT, TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET)
 .. doxygenfunction:: tcod::get_height_rect(int width, std::string_view str)
 
 .. doxygenfunction:: tcod::stringf
 
-Printing functions using 8-bit encodings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Printing functions using 8-bit encodings (deprecated)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. note::
     These functions use EASCII encoded strings which are not compatible with Unicode.
     They are deprecated for this reason.
@@ -169,8 +169,8 @@ Printing functions using 8-bit encodings
 .. doxygenfunction:: TCOD_console_print_rect_ex
 .. doxygenfunction:: TCOD_console_get_height_rect
 
-Printing functions using wchar_t
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Printing functions using wchar_t (deprecated)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. note::
     These functions say they are UTF, however they will behave as UCS2 or UCS4 depending on the platform.
     They are deprecated for this reason.

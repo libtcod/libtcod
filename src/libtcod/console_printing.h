@@ -451,7 +451,7 @@ print(
 
     @code{.cpp}
       auto console = tcod::Console{80, 50};
-      static constexpr auto TEAL = TCOD_ColorRGB{0, 255, 255};
+      static constexpr auto TEAL = tcod::ColorRGB{0, 255, 255};
       // Print "Hello World" centered along the top row, ignoring the background color.
       tcod::print(console, {0, 0, console->w, 1}, "Hello World", TEAL, std::nullopt, TCOD_CENTER);
     @endcode

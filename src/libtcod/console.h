@@ -104,6 +104,8 @@ typedef struct TCOD_ConsoleTile {
     @details In C++ this struct has several convience methods to make working with consoles easier.
     Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
 
+    For C++ code examples see `tcod::Console`.
+
     \rst
     .. versionadded:: 1.19
     \endrst
@@ -144,7 +146,7 @@ struct TCOD_Console {
           colors for that tile.
       @param bg The background color to clear with.
    */
-  void clear(int ch, const TCOD_ColorRGB& fg, const TCOD_ColorRGB& bg) noexcept {
+  [[deprecated]] void clear(int ch, const TCOD_ColorRGB& fg, const TCOD_ColorRGB& bg) noexcept {
     clear({ch, TCOD_ColorRGBA{fg.r, fg.g, fg.b, 255}, TCOD_ColorRGBA{bg.r, bg.g, bg.b, 255}});
   }
   /***************************************************************************
@@ -186,6 +188,20 @@ struct TCOD_Console {
    */
   [[nodiscard]] auto at(int x, int y) const -> const TCOD_ConsoleTile& { return at({x, y}); }
   /***************************************************************************
+      @brief Convert `xy` into a 1-dimensional index.  Out-of-bounds indexes are undefined.
+
+      @details This index is normally used to index the tiles attribute.
+   */
+  [[nodiscard]] int get_index(const std::array<int, 2>& xy) const noexcept { return w * xy[1] + xy[0]; }
+  /***************************************************************************
+      @brief Return true if `xy` are within the bounds of this console.
+   */
+  [[nodiscard]] bool in_bounds(const std::array<int, 2>& xy) const noexcept {
+    return 0 <= xy[0] && xy[0] < w && 0 <= xy[1] && xy[1] < h;
+  }
+
+ private:
+  /***************************************************************************
       @brief Checks if `xy` is in bounds then return an in-bounds index.
 
       @throws std::out_of_range if `xy` is out-of-bounds
@@ -198,18 +214,8 @@ struct TCOD_Console {
     }
     return get_index(xy);
   }
-  /***************************************************************************
-      @brief Convert `xy` into a 1-dimensional index.
 
-      @details This index is normally used to index the tiles attribute.
-   */
-  [[nodiscard]] int get_index(const std::array<int, 2>& xy) const noexcept { return w * xy[1] + xy[0]; }
-  /***************************************************************************
-      @brief Return true if `xy` are within the bounds of this console.
-   */
-  [[nodiscard]] bool in_bounds(const std::array<int, 2>& xy) const noexcept {
-    return 0 <= xy[0] && xy[0] < w && 0 <= xy[1] && xy[1] < h;
-  }
+ public:
 #endif  // __cplusplus
   /** Console width and height in tiles. */
   int w, h;
@@ -613,14 +619,20 @@ class Console {
       @brief Standard move assignment.
    */
   Console& operator=(Console&& rhs) noexcept {
-    std::swap(console_, rhs.console_);
+    swap(*this, rhs);
     return *this;
   }
   /***************************************************************************
       @brief Standard destructor.
    */
   ~Console() noexcept = default;
-
+  /***************************************************************************
+      @brief Swap two console objects.
+   */
+  friend void swap(Console& lhs, Console& rhs) noexcept {
+    using std::swap;
+    swap(lhs.console_, rhs.console_);
+  }
   /***************************************************************************
       @brief Allow implicit conversions to a TCOD_Console reference.
    */
@@ -629,13 +641,7 @@ class Console {
       @brief Allow implicit conversions to a const TCOD_Console reference.
    */
   [[nodiscard]] operator const TCOD_Console&() const { return *console_; }
-  /***************************************************************************
-      @brief Allow explicit conversions to a TCOD_Console pointer.
-   */
   [[deprecated]] [[nodiscard]] explicit operator TCOD_Console*() noexcept { return console_.get(); }
-  /***************************************************************************
-      @brief Allow explicit conversions to a const TCOD_Console pointer.
-   */
   [[deprecated]] [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
   /***************************************************************************
       @brief Return a pointer to the internal TCOD_Console struct.
@@ -680,7 +686,7 @@ class Console {
 
       @details
       @code{.cpp}
-        auto console = tcod::Console{{80, 50}};
+        auto console = tcod::Console{80, 50};
         auto same_size = tcod::Console{console.get_shape()}  // New console with the same shape of the previous one.
       @endcode
    */
@@ -693,10 +699,10 @@ class Console {
       @details
       @code{.cpp}
         // New consoles start already cleared with the space character, a white foreground, and a black background.
-        auto console = tcod::Console{{80, 50}};
+        auto console = tcod::Console{80, 50};
         console.clear()  // Clear with the above mentioned defaults.
         console.clear({0x20, {255, 255, 255, 255}, {0, 0, 0, 255}});  // Same as the above.
-        console.clear(0x20, {255, 255, 255}, {0, 0, 0})  // Also same as the above.
+        console.clear({0x20, tcod::ColorRGB{255, 255, 255}, tcod::ColorRGB{0, 0, 0}})  // Also same as the above.
       @endcode
    */
   void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
@@ -712,8 +718,8 @@ class Console {
           colors for that tile.
       @param bg The background color to clear with.
    */
-  void clear(int ch, const TCOD_ColorRGB& fg, const TCOD_ColorRGB& bg) noexcept {
-    clear({ch, TCOD_ColorRGBA{fg.r, fg.g, fg.b, 255}, TCOD_ColorRGBA{bg.r, bg.g, bg.b, 255}});
+  [[deprecated]] void clear(int ch, const tcod::ColorRGB& fg, const tcod::ColorRGB& bg) noexcept {
+    clear({ch, fg, bg});
   }
   /***************************************************************************
       @brief Return a reference to the tile at `xy`.

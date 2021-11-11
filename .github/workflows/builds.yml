@@ -107,6 +107,60 @@ jobs:
         run: |
           cmake --install ${{env.CMAKE_BUILD_DIR}} --config ${{matrix.config}}
 
+  coverage:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            triplet: x64-linux
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install the latest CMake
+        uses: lukka/get-cmake@latest
+      - name: Restore vcpkg and its artifacts.
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+            ${{ env.VCPKG_ROOT }}
+            !${{ env.VCPKG_ROOT }}/buildtrees
+            !${{ env.VCPKG_ROOT }}/packages
+            !${{ env.VCPKG_ROOT }}/downloads
+          key: |
+            ${{ hashFiles( 'vcpkg_manifest/vcpkg.json', '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
+      - name: CMake configure
+        run: |
+          cmake . -GNinja \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="--coverage" \
+            -DCMAKE_C_FLAGS="--coverage" \
+            -DLIBTCOD_SDL2=find_package \
+            -DLIBTCOD_ZLIB=find_package \
+            -DLIBTCOD_GLAD=find_package \
+            -DLIBTCOD_LODEPNG=find_package \
+            -DLIBTCOD_UTF8PROC=vcpkg \
+            -DLIBTCOD_STB=vcpkg \
+            -DLIBTCOD_SAMPLES=OFF \
+            -DLIBTCOD_TESTS=ON \
+            -Wdev
+      - name: CMake build
+        run: |
+          cmake --build .
+      - name: Run tests
+        env:
+          LD_LIBRARY_PATH: lib
+        run: |
+          bin/unittest ~[!nonportable] ~[benchmark]
+      - name: List coverage files
+        run: find . | grep -e ".gc..$"
+      - name: Generate coverage data
+        run: gcov CMakeFiles/libtcod.dir/src/libtcod/*.o CMakeFiles/libtcod.dir/src/libtcod/*/*.o tests/CMakeFiles/unittest.dir/*.o
+      - uses: codecov/codecov-action@v2
+
   Autotools:
     runs-on: ${{ matrix.os }}
     strategy:

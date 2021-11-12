@@ -13,20 +13,19 @@ since `1.7.0`.
 
 ## [1.19.0] - 2021-11-12
 ### Added
-- Added `TCOD_context_convert_event_coordinates` and `TCOD_Context::convert_event_coordinates` as an easier way to
-  convert mouse pixel coordinates to tile coordinates.
-- Several C++ drawing and print functions have been made public.
-- Several C++ tileset functions have been made public.
-- C++ context functions are now public.
-- Added vprintf-like console printing functions.
-- Added the Timer class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
+- Added `TCOD_context_convert_event_coordinates` and `TCOD_Context::convert_event_coordinates` as an easier way to convert mouse pixel coordinates to tile coordinates.
+- Added `tcod::print`, `tcod::print_rect`, and `tcod::get_height_rect` to replace the older C++ functions.
+- Added `tcod::Tileset`, `tcod::load_tilesheet`, and `tcod::load_bdf` for working with tilesets in C++ along with the character maps `tcod::CHARMAP_CP437` and `tcod::CHARMAP_TCOD`.
+- `TCOD_Context`, `TCOD_ContextParams`, `TCOD_ViewportOptions`, and `tcod::new_context` are now public.
+- Added vprintf-like console printing functions: `TCOD_console_vprintf` and `TCOD_console_vprintf_rect`.
+- Added the `tcod::Timer` class.  A way of handing frame limiting and delta time without depending on libtcod's internals.
 - Added `TCOD_sys_get_internal_context`.  An easy way to get a `TCOD_Context` from the old API.
 - Added `TCOD_sys_get_internal_console`.  This returns a pointer to the root console used by the old API.
 - Added `tcod::ColorRGB` and `tcod::ColorRGBA` to help with color type conversions.
 - Added libtcod logging functions, for debugging and internal use.
 - Added `tcod::draw_quartergraphics` to replace older C++ blit2x functions.
 - Added `tcod::blit` to replace older C++ blit functions.
-- Added `tcod::stringf` to encapsulate printf formatted strings so that other functions won't have to deal with them.
+- Added `tcod::stringf` to encapsulate printf formatted strings so that other C++ functions won't have to deal with them.
   A library like [fmt](https://fmt.dev/latest/index.html) is safer and faster if you have access to it.
 
 ### Changed

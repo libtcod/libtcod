@@ -180,41 +180,6 @@ inline void draw_rect(
   tcod::check_throw_error(
       TCOD_console_draw_rect_rgb(&console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), ch, fg_ptr, bg_ptr, flag));
 }
-/**
-    @brief Fill a region with the given graphic.
-
-    @param console A reference to a TCOD_Console.
-    @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
-    @param ch The character to draw.  If zero then the characers in the drawing region will not be changed.
-    @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
-    @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
-    @param flag The background blending flag.
-
-    @code{.cpp}
-      auto console = tcod::Console{80, 50};
-      static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
-      static constexpr auto RED = tcod::ColorRGB{255, 0, 0};
-      // Draw a red background without replacing any foreground glyphs/colors.
-      tcod::draw_rect(console, {2, 2, 24, 24}, 0, std::Nullopt, RED);
-      tcod::draw_rect(console, {8, 8, 16, 1}, '-', WHITE, std::Nullopt);  // Draw a horizontal bar.
-    @endcode
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-[[deprecated("Color parameters should be references, nullptr colors become `{}`")]] inline void draw_rect(
-    TCOD_Console& console,
-    const std::array<int, 4>& rect,
-    int ch,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET) {
-  tcod::check_throw_error(
-      TCOD_console_draw_rect_rgb(&console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), ch, fg, bg, flag));
-}
 /***************************************************************************
     @brief Draw a decorative frame.
 
@@ -256,49 +221,6 @@ inline void draw_frame(
   tcod::check_throw_error(TCOD_console_draw_frame_rgb(
       &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), decoration.data(), fg_ptr, bg_ptr, flag, clear));
 }
-/**
-    @brief Draw a decorative frame.
-
-    @param console A reference to a TCOD_Console.
-    @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
-    @param decoration The codepoints to use for the frame in row-major order.
-    @param fg The foreground color.  The printed text is set to this color.
-              If NULL then the foreground will be left unchanged, inheriting the previous value of the tile.
-    @param bg The background color.  The background tile under the printed text is set to this color.
-              If NULL then the background will be left unchanged.
-    @param flag The background blending flag.
-    @param clear If true then the center area will be cleared with the center decoration.
-
-    `decoration` is given the codepoints to be used for the edges, corners, and fill of the frame in this order:
-
-        0 1 2
-        3 4 5
-        6 7 8
-
-    @code{.cpp}
-      auto console = tcod::Console{80, 50};
-      static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
-      static constexpr auto BLACK = tcod::ColorRGB{0, 0, 0};
-      static constexpr std::array<int, 9> LEGEND = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
-      tcod::draw_frame(console, {0, 0, 3, 3}, LEGEND, WHITE, BLACK);
-    @endcode
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-[[deprecated("Color parameters should be references, nullptr colors become `std::nullopt`")]] inline void draw_frame(
-    TCOD_Console& console,
-    const std::array<int, 4>& rect,
-    const std::array<int, 9>& decoration,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
-    bool clear = true) {
-  tcod::check_throw_error(TCOD_console_draw_frame_rgb(
-      &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), decoration.data(), fg, bg, flag, clear));
-}
-
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_CONSOLE_DRAWING_H_

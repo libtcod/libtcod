@@ -584,7 +584,7 @@ class FOVSample : public Sample {
     static constexpr auto darkGround = tcod::ColorRGB{50, 50, 150};
     static constexpr auto lightGround = tcod::ColorRGB{200, 180, 50};
     // draw the help text & player @
-    console.clear(0x20, BLACK, BLACK);
+    console.clear({0x20, BLACK, BLACK});
     tcod::print(
         console,
         {1, 0},
@@ -745,7 +745,7 @@ class MouseSample : public Sample {
     const auto& mouse_tile = last_tile.motion;
     const auto state = SDL_GetMouseState(nullptr, nullptr);
 
-    console.clear(0x20, LIGHT_YELLOW, GREY);
+    console.clear({0x20, LIGHT_YELLOW, GREY});
     tcod::print(
         console,
         {1, 1},
@@ -1165,7 +1165,7 @@ class BSPSample : public Sample {
       generate_ = false;
       refresh_ = false;
     }
-    console.clear(0x20, WHITE, LIGHT_BLUE);
+    console.clear({0x20, WHITE, LIGHT_BLUE});
     tcod::print(
         console,
         {1, 1},
@@ -1242,7 +1242,7 @@ class NameGeneratorSample : public Sample {
       names.erase(names.begin());  // remove the first element.
     }
 
-    console.clear(0x20, WHITE, LIGHT_BLUE);
+    console.clear({0x20, WHITE, LIGHT_BLUE});
     tcod::print(
         console,
         {1, 1},
@@ -1486,7 +1486,7 @@ class SDLSample : public Sample {
  public:
   void on_enter() override {
     // use noise sample as background. rendering is done in SampleRenderer
-    sampleConsole.clear(0x20, WHITE, LIGHT_BLUE);
+    sampleConsole.clear({0x20, WHITE, LIGHT_BLUE});
     tcod::print_rect(
         sampleConsole,
         {0, 3, SAMPLE_SCREEN_WIDTH, 0},

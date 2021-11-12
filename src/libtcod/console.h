@@ -137,19 +137,6 @@ struct TCOD_Console {
     for (auto& it : *this) it = tile;
   }
   /***************************************************************************
-      @brief Clear the console with the given character and RGB colors.
-
-      @param ch A Unicode codepoint, if unsure then use the space codepoint ``int{0x20}``
-      @param fg The foreground color to clear with.
-          While it doesn't seem useful at first to set the foreground color at the same time as clearing with space,
-          this will still determine what the default color will be if a character is set without also overwriting the
-          colors for that tile.
-      @param bg The background color to clear with.
-   */
-  [[deprecated]] void clear(int ch, const TCOD_ColorRGB& fg, const TCOD_ColorRGB& bg) noexcept {
-    clear({ch, TCOD_ColorRGBA{fg.r, fg.g, fg.b, 255}, TCOD_ColorRGBA{bg.r, bg.g, bg.b, 255}});
-  }
-  /***************************************************************************
       @brief Return a reference to the tile at `xy`.
    */
   [[nodiscard]] auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& {
@@ -484,58 +471,6 @@ struct ConsoleDeleter {
  */
 typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
 /***************************************************************************
-    @brief Return a new console with the given size.
-
-    @param width The width of the new console in tiles.
-    @param height The height of the new console in tiles.
-    @return ConsolePtr, a unique_ptr to a TCOD_Console.
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-[[nodiscard]] [[deprecated("Switch to using tcod::Console{w, h}")]] inline auto new_console(int width, int height)
-    -> ConsolePtr {
-  ConsolePtr console{TCOD_console_new(width, height)};
-  if (!console) throw std::runtime_error(TCOD_get_error());
-  return console;
-}
-/***************************************************************************
-    @brief Return a new console with the given size.
-
-    @param size The {width, height} of the new console.
-    @return ConsolePtr, a unique_ptr to a TCOD_Console.
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-[[nodiscard]] [[deprecated("Switch to using tcod::Console{{w, h}}")]] inline auto new_console(std::array<int, 2> size)
-    -> ConsolePtr {
-  ConsolePtr console{TCOD_console_new(size.at(0), size.at(1))};
-  if (!console) throw std::runtime_error(TCOD_get_error());
-  return console;
-}
-/***************************************************************************
-    @brief Return a copy of another console.
-
-    Only the tile data is copied, all other data will be the same as if a new console was initialized.
-
-    @param console The console to make a copy from.
-    @return ConsolePtr, a unique_ptr to a TCOD_Console.
-
-    \rst
-    .. versionadded:: 1.19
-    \endrst
- */
-[[nodiscard]] [[deprecated("Switch to using tcod::Console{w, h}")]] inline auto new_console(const TCOD_Console& console)
-    -> ConsolePtr {
-  ConsolePtr clone{TCOD_console_new(console.w, console.h)};
-  if (!clone) throw std::runtime_error(TCOD_get_error());
-  std::copy(console.tiles, console.tiles + console.elements, clone->tiles);
-  return clone;
-}
-/***************************************************************************
     @brief A managed libtcod console containing a grid of tiles with `{ch, fg, bg}` information.
 
     @details Note that all tile references are to TCOD_ConsoleTile structs and will include an alpha channel.
@@ -641,8 +576,6 @@ class Console {
       @brief Allow implicit conversions to a const TCOD_Console reference.
    */
   [[nodiscard]] operator const TCOD_Console&() const { return *console_; }
-  [[deprecated]] [[nodiscard]] explicit operator TCOD_Console*() noexcept { return console_.get(); }
-  [[deprecated]] [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return console_.get(); }
   /***************************************************************************
       @brief Return a pointer to the internal TCOD_Console struct.
    */
@@ -707,19 +640,6 @@ class Console {
    */
   void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
     for (auto& it : *this) it = tile;
-  }
-  /***************************************************************************
-      @brief Clear the console with the given character and RGB colors.
-
-      @param ch A Unicode codepoint, if unsure then use the space codepoint ``int{0x20}``
-      @param fg The foreground color to clear with.
-          While it doesn't seem useful at first to set the foreground color at the same time as clearing with space,
-          this will still determine what the default color will be if a character is set without also overwriting the
-          colors for that tile.
-      @param bg The background color to clear with.
-   */
-  [[deprecated]] void clear(int ch, const tcod::ColorRGB& fg, const tcod::ColorRGB& bg) noexcept {
-    clear({ch, fg, bg});
   }
   /***************************************************************************
       @brief Return a reference to the tile at `xy`.

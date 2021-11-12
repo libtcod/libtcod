@@ -421,19 +421,6 @@ inline void print(
   check_throw_error(
       TCOD_console_printn(&console, xy.at(0), xy.at(1), str.size(), str.data(), fg_ptr, bg_ptr, flag, alignment));
 }
-[[deprecated(
-    "Color parameters should be references, nullptr colors become `std::nullopt`, alignment should be put before "
-    "flag")]] inline void
-print(
-    TCOD_Console& console,
-    const std::array<int, 2>& xy,
-    std::string_view str,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
-    TCOD_alignment_t alignment = TCOD_LEFT) {
-  check_throw_error(TCOD_console_printn(&console, xy.at(0), xy.at(1), str.size(), str.data(), fg, bg, flag, alignment));
-}
 /*****************************************************************************
     @brief Print a string to a console contrained to a bounding box.
 
@@ -480,24 +467,6 @@ inline int print_rect(
       bg ? &bg.value() : nullptr,
       flag,
       alignment));
-}
-[[deprecated(
-    "Color parameters should be references, nullptr colors become std::nullopt, alignment should be put before "
-    "flag")]] inline int
-print_rect(
-    TCOD_Console& console,
-    const std::array<int, 4>& rect,
-    std::string_view str,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
-    TCOD_bkgnd_flag_t flag = TCOD_BKGND_SET,
-    TCOD_alignment_t alignment = TCOD_LEFT) {
-  return check_throw_error(TCOD_console_printn_rect(
-      &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), str.size(), str.data(), fg, bg, flag, alignment));
-}
-[[deprecated]] inline int get_height_rect(TCOD_Console& console, const std::array<int, 4>& rect, std::string_view str) {
-  return check_throw_error(
-      TCOD_console_get_height_rect_n(&console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), str.size(), str.data()));
 }
 /*****************************************************************************
     @brief Return the height of the word-wrapped text with the given width.

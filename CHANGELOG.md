@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.19.0] - 2021-11-12
 ### Added
 - Added `TCOD_context_convert_event_coordinates` and `TCOD_Context::convert_event_coordinates` as an easier way to
   convert mouse pixel coordinates to tile coordinates.

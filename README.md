@@ -6,6 +6,7 @@ Status:
 [![Build status](https://ci.appveyor.com/api/projects/status/pemepxo2221f8heo/branch/master?svg=true)](https://ci.appveyor.com/project/HexDecimal/libtcod-6e1jk/branch/master)
 [![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/libtcod/libtcod/branch/develop/graph/badge.svg?token=pmHy3jXemj)](https://codecov.io/gh/libtcod/libtcod)
 
 # How do I get set up?
 

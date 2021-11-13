@@ -44,6 +44,7 @@
 #else
 #include <termios.h>
 #include <unistd.h>
+#include <signal.h>
 #endif
 
 #include "error.h"
@@ -264,6 +265,21 @@ static TCOD_Error xterm_recommended_console_size(
   return TCOD_E_ERROR;
 }
 
+#ifndef _WIN32
+static void xterm_on_window_change_signal(int signum) {
+  int columns, rows;
+  xterm_recommended_console_size(NULL, 1.0, &columns, &rows);
+  SDL_Event resize_event;
+  resize_event.type = SDL_WINDOWEVENT;
+  resize_event.window.event = SDL_WINDOWEVENT_RESIZED;
+  resize_event.window.timestamp = SDL_GetTicks();
+  resize_event.window.windowID = 0;
+  resize_event.window.data1 = columns;
+  resize_event.window.data2 = rows;
+  SDL_PushEvent(&resize_event);
+}
+#endif
+
 TCOD_Context* TCOD_renderer_init_xterm(
     int columns,
     int rows,
@@ -305,6 +321,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
     TCOD_set_errorv("Could not set raw terminal mode.");
     return NULL;
   }
+  signal(SIGWINCH, xterm_on_window_change_signal);
 #endif
   fprintf(
       stdout,

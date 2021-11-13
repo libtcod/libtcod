@@ -280,6 +280,15 @@ static void xterm_on_window_change_signal(int signum) {
 }
 #endif
 
+#ifndef _WIN32
+static void xterm_on_hangup_signal(int signum) {
+  SDL_Event quit_event;
+  quit_event.type = SDL_QUIT;
+  quit_event.quit.timestamp = SDL_GetTicks();
+  SDL_PushEvent(&quit_event);
+}
+#endif
+
 TCOD_Context* TCOD_renderer_init_xterm(
     int columns,
     int rows,
@@ -322,6 +331,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
     return NULL;
   }
   signal(SIGWINCH, xterm_on_window_change_signal);
+  signal(SIGHUP, xterm_on_hangup_signal);
 #endif
   fprintf(
       stdout,

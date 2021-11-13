@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <limits.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -52,6 +53,9 @@ static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
 #else
 struct termios g_old_termios;
+int g_got_rows = 0;
+int g_got_columns = 0;
+Uint32 g_got_size_timestamp = 0;
 #endif
 
 struct TCOD_RendererXterm {
@@ -169,9 +173,46 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   xterm_cleanup();
 }
 
+static void xterm_handle_input_escape() {
+  if (getchar() != '[')
+    return;
+  char rows_buf[16], cols_buf[16];
+  rows_buf[15] = '\0';
+  cols_buf[15] = '\0';
+  for (int i = 0; i < 15; i++) {
+    int ch = getchar();
+    if (ch == ';') {
+      rows_buf[i] = '\0';
+      break;
+    }
+    if (!isdigit(ch)) {
+      return;
+    }
+    rows_buf[i] = ch;
+  }
+  for (int j = 0; j < 15; j++) {
+    int ch = getchar();
+    if (ch == 'R') {
+      cols_buf[j] = '\0';
+      break;
+    }
+    if (!isdigit(ch)) {
+      return;
+    }
+    cols_buf[j] = ch;
+  }
+  g_got_rows = atoi(rows_buf);
+  g_got_columns = atoi(cols_buf);
+  g_got_size_timestamp = SDL_GetTicks();
+}
+
 static void *xterm_handle_input(void *arg) {
   while (true) {
     int ch = getchar();
+    if (ch == '\x1b') {
+      xterm_handle_input_escape();
+      continue;
+    }
     int sym = ch;
     int mod = KMOD_NONE;
     if isupper(ch) {
@@ -203,6 +244,26 @@ static void *xterm_handle_input(void *arg) {
   return NULL;
 }
 
+static TCOD_Error xterm_recommended_console_size(
+    struct TCOD_Context* __restrict self,
+    float magnification,
+    int* __restrict columns,
+    int* __restrict rows) {
+  fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
+  fflush(stdout);
+  Uint32 start_time = SDL_GetTicks();
+  fprintf(stdout, "\x1b[6n");
+  fflush(stdout);
+  while (SDL_GetTicks() < start_time + 100) {
+    if (g_got_size_timestamp >= start_time) {
+      *columns = g_got_columns;
+      *rows = g_got_rows;
+      return TCOD_E_OK;
+    }
+  }
+  return TCOD_E_ERROR;
+}
+
 TCOD_Context* TCOD_renderer_init_xterm(
     int columns,
     int rows,
@@ -217,6 +278,9 @@ TCOD_Context* TCOD_renderer_init_xterm(
   }
   context->c_present_ = &xterm_present;
   context->c_destructor_ = &xterm_destructor;
+#ifndef _WIN32
+  context->c_recommended_console_size_ = xterm_recommended_console_size;
+#endif
   atexit(&xterm_cleanup);
   setlocale(LC_ALL, ".UTF-8");  // Enable UTF-8.
 #ifdef _WIN32

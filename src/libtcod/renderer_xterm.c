@@ -206,7 +206,7 @@ static int xterm_handle_input(void *arg) {
     }
     int sym = ch;
     int mod = KMOD_NONE;
-    if isupper(ch) {
+    if (isupper(ch)) {
       sym = tolower(sym);
       mod = KMOD_SHIFT;
     }

@@ -173,35 +173,27 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   xterm_cleanup();
 }
 
+static int read_terminated_int(char term, int def) {
+  char buf[16] = "";
+  for (size_t i = 0; i < sizeof(buf) - 1; i++) {
+    int ch = getchar();
+    if (ch == term) {
+      buf[i] = '\0';
+      break;
+    }
+    if (!isdigit(ch)) {
+      return def;
+    }
+    buf[i] = ch;
+  }
+	return atoi(buf);
+}
+
 static void xterm_handle_input_escape() {
   if (getchar() != '[')
     return;
-  char rows_buf[16] = "";
-  char cols_buf[16] = "";
-  for (int i = 0; i < 15; i++) {
-    int ch = getchar();
-    if (ch == ';') {
-      rows_buf[i] = '\0';
-      break;
-    }
-    if (!isdigit(ch)) {
-      return;
-    }
-    rows_buf[i] = ch;
-  }
-  for (int j = 0; j < 15; j++) {
-    int ch = getchar();
-    if (ch == 'R') {
-      cols_buf[j] = '\0';
-      break;
-    }
-    if (!isdigit(ch)) {
-      return;
-    }
-    cols_buf[j] = ch;
-  }
-  g_got_rows = atoi(rows_buf);
-  g_got_columns = atoi(cols_buf);
+  g_got_rows = read_terminated_int(';', 0);
+  g_got_columns = read_terminated_int('R', 0);
   g_got_size_timestamp = SDL_GetTicks();
 }
 

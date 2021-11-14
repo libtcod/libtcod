@@ -262,7 +262,7 @@ static TCOD_Error xterm_recommended_console_size(
   Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
-  while (SDL_GetTicks() < start_time + 100) {
+  while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
     if (g_got_size_timestamp >= start_time) {
       *columns = g_got_columns;
       *rows = g_got_rows;

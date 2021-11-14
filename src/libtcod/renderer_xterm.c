@@ -200,10 +200,12 @@ static void xterm_handle_input_escape() {
 static int xterm_handle_input(void *arg) {
   while (true) {
     int ch = getchar();
+#ifndef _WIN32
     if (ch == '\x1b') {
       xterm_handle_input_escape();
       continue;
     }
+#endif
     int sym = ch;
     int mod = KMOD_NONE;
     if (isupper(ch)) {
@@ -243,6 +245,7 @@ static int xterm_handle_input(void *arg) {
   return 0;
 }
 
+#ifndef _WIN32
 static TCOD_Error xterm_recommended_console_size(
     struct TCOD_Context* __restrict self,
     float magnification,
@@ -262,6 +265,7 @@ static TCOD_Error xterm_recommended_console_size(
   }
   return TCOD_E_ERROR;
 }
+#endif
 
 #ifndef _WIN32
 static void xterm_on_window_change_signal(int signum) {

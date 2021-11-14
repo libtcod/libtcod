@@ -176,9 +176,8 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
 static void xterm_handle_input_escape() {
   if (getchar() != '[')
     return;
-  char rows_buf[16], cols_buf[16];
-  rows_buf[15] = '\0';
-  cols_buf[15] = '\0';
+  char rows_buf[16] = "";
+  char cols_buf[16] = "";
   for (int i = 0; i < 15; i++) {
     int ch = getchar();
     if (ch == ';') {

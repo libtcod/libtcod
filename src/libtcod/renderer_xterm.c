@@ -53,10 +53,11 @@ static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
 #else
 static struct termios g_old_termios;
+#endif
+
 static int g_got_rows = 0;
 static int g_got_columns = 0;
 static Uint32 g_got_size_timestamp = 0;
-#endif
 
 struct TCOD_RendererXterm {
   TCOD_Console* cache;
@@ -200,12 +201,10 @@ static void xterm_handle_input_escape() {
 static int xterm_handle_input(void *arg) {
   while (true) {
     int ch = getchar();
-#ifndef _WIN32
     if (ch == '\x1b') {
       xterm_handle_input_escape();
       continue;
     }
-#endif
     int sym = ch;
     int mod = KMOD_NONE;
     if (isupper(ch)) {
@@ -245,7 +244,6 @@ static int xterm_handle_input(void *arg) {
   return 0;
 }
 
-#ifndef _WIN32
 static TCOD_Error xterm_recommended_console_size(
     struct TCOD_Context* __restrict self,
     float magnification,
@@ -265,7 +263,6 @@ static TCOD_Error xterm_recommended_console_size(
   }
   return TCOD_E_ERROR;
 }
-#endif
 
 #ifndef _WIN32
 static void xterm_on_window_change_signal(int signum) {
@@ -311,9 +308,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   }
   context->c_present_ = &xterm_present;
   context->c_destructor_ = &xterm_destructor;
-#ifndef _WIN32
   context->c_recommended_console_size_ = xterm_recommended_console_size;
-#endif
   atexit(&xterm_cleanup);
   setlocale(LC_ALL, ".UTF-8");  // Enable UTF-8.
 #ifdef _WIN32

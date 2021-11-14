@@ -255,7 +255,7 @@ static TCOD_Error xterm_recommended_console_size(
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
-    if (SDL_TICKS_PASSED(g_got_size_timestamp, start_time) {
+    if (SDL_TICKS_PASSED(g_got_size_timestamp, start_time)) {
       *columns = g_got_columns;
       *rows = g_got_rows;
       return TCOD_E_OK;

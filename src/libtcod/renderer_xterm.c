@@ -36,7 +36,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <limits.h>
 
 #ifdef _WIN32
@@ -61,7 +60,7 @@ Uint32 g_got_size_timestamp = 0;
 
 struct TCOD_RendererXterm {
   TCOD_Console* cache;
-  pthread_t input_thread;
+  SDL_Thread *input_thread;
 };
 
 static char* ucs4_to_utf8(int ucs4, char out[5]) {
@@ -207,7 +206,7 @@ static void xterm_handle_input_escape() {
   g_got_size_timestamp = SDL_GetTicks();
 }
 
-static void *xterm_handle_input(void *arg) {
+static int xterm_handle_input(void *arg) {
   while (true) {
     int ch = getchar();
     if (ch == '\x1b') {
@@ -250,7 +249,7 @@ static void *xterm_handle_input(void *arg) {
     SDL_PushEvent(&text_event);
     SDL_PushEvent(&up_event);
   }
-  return NULL;
+  return 0;
 }
 
 static TCOD_Error xterm_recommended_console_size(
@@ -356,6 +355,6 @@ TCOD_Context* TCOD_renderer_init_xterm(
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
   SDL_Init(SDL_INIT_VIDEO); // Need SDL init to get keysyms
-  pthread_create(&data->input_thread, NULL, &xterm_handle_input, NULL);
+  data->input_thread = SDL_CreateThread(&xterm_handle_input, "input thread", NULL);
   return context;
 }

@@ -52,10 +52,10 @@
 static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
 #else
-struct termios g_old_termios;
-int g_got_rows = 0;
-int g_got_columns = 0;
-Uint32 g_got_size_timestamp = 0;
+static struct termios g_old_termios;
+static int g_got_rows = 0;
+static int g_got_columns = 0;
+static Uint32 g_got_size_timestamp = 0;
 #endif
 
 struct TCOD_RendererXterm {

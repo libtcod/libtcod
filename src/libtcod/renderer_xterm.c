@@ -220,21 +220,29 @@ static void *xterm_handle_input(void *arg) {
       sym = tolower(sym);
       mod = KMOD_SHIFT;
     }
-    SDL_Event down_event;
-    down_event.type = SDL_KEYDOWN;
-    down_event.key.timestamp = SDL_GetTicks();
-    down_event.key.windowID = 0;
-    down_event.key.state = SDL_PRESSED;
-    down_event.key.repeat = 0;
-    down_event.key.keysym.sym = sym;
-    down_event.key.keysym.scancode = SDL_GetScancodeFromKey(sym);
-    down_event.key.keysym.mod = mod;
-    SDL_Event text_event;
-    text_event.type = SDL_TEXTINPUT;
-    text_event.text.timestamp = SDL_GetTicks();
-    text_event.text.windowID = 0;
-    text_event.text.text[0] = ch;
-    text_event.text.text[1] = '\0';
+    SDL_Event down_event = {
+      .key = {
+        .type = SDL_KEYDOWN,
+        .timestamp = SDL_GetTicks(),
+        .windowID = 0,
+        .state = SDL_PRESSED,
+        .repeat = 0,
+        .keysym = {
+          .sym = sym,
+          .scancode = SDL_GetScancodeFromKey(sym),
+          .mod = mod
+        }
+      }
+    };
+    SDL_Event text_event = {
+      .text = {
+        .type = SDL_TEXTINPUT,
+        .timestamp = SDL_GetTicks(),
+        .windowID = 0,
+        .text[0] = ch,
+        .text[1] = '\0'
+      }
+    };
     SDL_Event up_event = down_event;
     up_event.type = SDL_KEYUP;
     up_event.key.state = SDL_RELEASED;
@@ -269,22 +277,28 @@ static TCOD_Error xterm_recommended_console_size(
 static void xterm_on_window_change_signal(int signum) {
   int columns, rows;
   xterm_recommended_console_size(NULL, 1.0, &columns, &rows);
-  SDL_Event resize_event;
-  resize_event.type = SDL_WINDOWEVENT;
-  resize_event.window.event = SDL_WINDOWEVENT_RESIZED;
-  resize_event.window.timestamp = SDL_GetTicks();
-  resize_event.window.windowID = 0;
-  resize_event.window.data1 = columns;
-  resize_event.window.data2 = rows;
+  SDL_Event resize_event = {
+    .window = {
+      .type = SDL_WINDOWEVENT,
+      .event = SDL_WINDOWEVENT_RESIZED,
+      .timestamp = SDL_GetTicks(),
+      .windowID = 0,
+      .data1 = columns,
+      .data2 = rows,
+    }
+  };
   SDL_PushEvent(&resize_event);
 }
 #endif
 
 #ifndef _WIN32
 static void xterm_on_hangup_signal(int signum) {
-  SDL_Event quit_event;
-  quit_event.type = SDL_QUIT;
-  quit_event.quit.timestamp = SDL_GetTicks();
+  SDL_Event quit_event = {
+    .quit = {
+      .type = SDL_QUIT,
+      .timestamp = SDL_GetTicks(),
+    }
+  };
   SDL_PushEvent(&quit_event);
 }
 #endif

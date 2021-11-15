@@ -299,7 +299,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
     int rows,
     const char* window_title) {
 #ifdef __MINGW32__
-  TCOD_set_errorv("Render not supported.");
+  TCOD_set_errorv("Renderer not supported.");
   return NULL;
 #endif
   TCOD_Context* context = TCOD_context_new_();

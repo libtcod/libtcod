@@ -187,7 +187,7 @@ static int read_terminated_int(char term, int def) {
     }
     buf[i] = ch;
   }
-	return atoi(buf);
+  return atoi(buf);
 }
 
 static void xterm_handle_input_escape() {

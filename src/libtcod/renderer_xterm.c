@@ -38,9 +38,9 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <windows.h>
-#else
+#elif !defined(__MINGW32__)
 #include <termios.h>
 #include <unistd.h>
 #include <signal.h>
@@ -48,10 +48,10 @@
 
 #include "error.h"
 
-#ifdef _WIN32
+#if defined(_WIN32)
 static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
-#else
+#elif !defined(__MINGW32__)
 static struct termios g_old_termios;
 #endif
 
@@ -160,10 +160,10 @@ static void xterm_cleanup(void) {
       "\x1b[?25h"  // Show cursor.
       "\x1b" "c"  // Reset to initial state.
   );
-#ifdef _WIN32
+#if defined(_WIN32)
   SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_old_mode_stdin);
   SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), g_old_mode_stdout);
-#else
+#elif !defined(__MINGW32__)
   tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_old_termios);
 #endif
 }
@@ -298,6 +298,10 @@ TCOD_Context* TCOD_renderer_init_xterm(
     int columns,
     int rows,
     const char* window_title) {
+#ifdef __MINGW32__
+  TCOD_set_errorv("Render not supported.");
+  return NULL;
+#endif
   TCOD_Context* context = TCOD_context_new_();
   if (!context) return NULL;
   struct TCOD_RendererXterm* data = context->contextdata_ = calloc(sizeof(*data), 1);
@@ -311,7 +315,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   context->c_recommended_console_size_ = xterm_recommended_console_size;
   atexit(&xterm_cleanup);
   setlocale(LC_ALL, ".UTF-8");  // Enable UTF-8.
-#ifdef _WIN32
+#if defined(_WIN32)
   HANDLE handle_stdin = GetStdHandle(STD_INPUT_HANDLE);
   HANDLE handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
   GetConsoleMode(handle_stdin, &g_old_mode_stdin);
@@ -319,7 +323,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   SetConsoleMode(handle_stdin, ENABLE_VIRTUAL_TERMINAL_INPUT);
   SetConsoleMode(
       handle_stdout, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
-#else
+#elif !defined(__MINGW32__)
   tcgetattr(STDIN_FILENO, &g_old_termios);
   struct termios new_termios = g_old_termios;
   new_termios.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);

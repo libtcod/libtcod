@@ -38,21 +38,25 @@
 #include <stdlib.h>
 #include <limits.h>
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#if defined(__MINGW32__) || !defined(_WIN32)
+#define HAS_POSIX_HEADERS
+#endif
+
+#ifdef HAS_POSIX_HEADERS
 #include <termios.h>
 #include <unistd.h>
 #include <signal.h>
+#else
+#include <windows.h>
 #endif
 
 #include "error.h"
 
-#ifdef _WIN32
+#ifdef HAS_POSIX_HEADERS
+static struct termios g_old_termios;
+#else
 static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
-#else
-static struct termios g_old_termios;
 #endif
 
 static int g_got_rows = 0;
@@ -160,11 +164,11 @@ static void xterm_cleanup(void) {
       "\x1b[?25h"  // Show cursor.
       "\x1b" "c"  // Reset to initial state.
   );
-#ifdef _WIN32
+#ifdef HAS_POSIX_HEADERS
+  tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_old_termios);
+#else
   SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), g_old_mode_stdin);
   SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE), g_old_mode_stdout);
-#else
-  tcsetattr(STDIN_FILENO, TCSAFLUSH, &g_old_termios);
 #endif
 }
 
@@ -264,7 +268,7 @@ static TCOD_Error xterm_recommended_console_size(
   return TCOD_E_ERROR;
 }
 
-#ifndef _WIN32
+#ifdef HAS_POSIX_HEADERS
 static void xterm_on_window_change_signal(int signum) {
   int columns, rows;
   xterm_recommended_console_size(NULL, 1.0, &columns, &rows);
@@ -282,7 +286,7 @@ static void xterm_on_window_change_signal(int signum) {
 }
 #endif
 
-#ifndef _WIN32
+#ifdef HAS_POSIX_HEADERS
 static void xterm_on_hangup_signal(int signum) {
   SDL_Event quit_event = {
     .quit = {
@@ -311,15 +315,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   context->c_recommended_console_size_ = xterm_recommended_console_size;
   atexit(&xterm_cleanup);
   setlocale(LC_ALL, ".UTF-8");  // Enable UTF-8.
-#ifdef _WIN32
-  HANDLE handle_stdin = GetStdHandle(STD_INPUT_HANDLE);
-  HANDLE handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
-  GetConsoleMode(handle_stdin, &g_old_mode_stdin);
-  GetConsoleMode(handle_stdout, &g_old_mode_stdout);
-  SetConsoleMode(handle_stdin, ENABLE_VIRTUAL_TERMINAL_INPUT);
-  SetConsoleMode(
-      handle_stdout, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
-#else
+#ifdef HAS_POSIX_HEADERS
   tcgetattr(STDIN_FILENO, &g_old_termios);
   struct termios new_termios = g_old_termios;
   new_termios.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -335,6 +331,14 @@ TCOD_Context* TCOD_renderer_init_xterm(
   }
   signal(SIGWINCH, xterm_on_window_change_signal);
   signal(SIGHUP, xterm_on_hangup_signal);
+#else
+  HANDLE handle_stdin = GetStdHandle(STD_INPUT_HANDLE);
+  HANDLE handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
+  GetConsoleMode(handle_stdin, &g_old_mode_stdin);
+  GetConsoleMode(handle_stdout, &g_old_mode_stdout);
+  SetConsoleMode(handle_stdin, ENABLE_VIRTUAL_TERMINAL_INPUT);
+  SetConsoleMode(
+      handle_stdout, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN);
 #endif
   fprintf(
       stdout,

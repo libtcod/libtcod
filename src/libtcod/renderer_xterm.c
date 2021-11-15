@@ -315,7 +315,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   context->c_recommended_console_size_ = xterm_recommended_console_size;
   atexit(&xterm_cleanup);
   setlocale(LC_ALL, ".UTF-8");  // Enable UTF-8.
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(__MINGW32__)
   HANDLE handle_stdin = GetStdHandle(STD_INPUT_HANDLE);
   HANDLE handle_stdout = GetStdHandle(STD_OUTPUT_HANDLE);
   GetConsoleMode(handle_stdin, &g_old_mode_stdin);

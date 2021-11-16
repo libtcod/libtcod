@@ -41,9 +41,9 @@ struct SDL_Window;
 
 struct TCOD_RendererGL1 {
   struct TCOD_RendererGLCommon common;
-  uint32_t background_texture;
-  int background_width;
-  int background_height;
+  uint32_t background_texture;  // The background color texture.
+  int background_width;  // Pixel width of background_texture.
+  int background_height;  // Pixel height of background_texture.
 };
 
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_init_gl1(

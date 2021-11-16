@@ -41,11 +41,11 @@ struct SDL_Window;
 
 struct TCOD_RendererGL2 {
   struct TCOD_RendererGLCommon common;
-  uint32_t program;
-  uint32_t console_textures[3];  // ch, fg, bg
-  int console_width;
-  int console_height;
-  uint32_t vertex_buffer;
+  uint32_t program;  // Shader program used to render a console.
+  uint32_t console_textures[3];  // Cached ch, fg, and bg textures
+  int console_width;  // Pixel width of all console_textures.
+  int console_height;  // Pixel height of all console_textures.
+  uint32_t vertex_buffer;  // Two-triangles vertex buffer.
 };
 
 TCOD_PUBLIC TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(

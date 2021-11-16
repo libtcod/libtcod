@@ -67,12 +67,12 @@ typedef struct TCOD_TilesetAtlasSDL2 TCOD_TilesetAtlasSDL2;
     Internal use only.
  */
 struct TCOD_RendererSDL2 {
-  struct SDL_Window* window;
-  struct SDL_Renderer* renderer;
+  struct SDL_Window* window;  // Owning power to an SDL2 window.
+  struct SDL_Renderer* renderer;  // Owning pointer to an SDL2 renderer.
   struct TCOD_TilesetAtlasSDL2* __restrict atlas;
-  struct TCOD_Console* __restrict cache_console;
-  struct SDL_Texture* __restrict cache_texture;
-  uint32_t sdl_subsystems;
+  struct TCOD_Console* __restrict cache_console;  // Tracks the data from the last console presented.
+  struct SDL_Texture* __restrict cache_texture;  // Cached console rendering output.
+  uint32_t sdl_subsystems;  // Which subsystems where initialzed by this context.
   // Mouse cursor transform values of the last viewport used.
   double last_offset_x;
   double last_offset_y;

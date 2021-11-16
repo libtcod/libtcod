@@ -37,19 +37,19 @@
 #include "tileset.h"
 
 struct TCOD_TilesetAtlasOpenGL {
-  struct TCOD_Tileset* tileset;
-  struct TCOD_TilesetObserver* observer;
-  uint32_t texture;
-  int texture_size;
-  int texture_columns;
-  int texture_rows;
+  struct TCOD_Tileset* tileset;  // An owning pointer to tileset, tracks a tilesets character map and other info.
+  struct TCOD_TilesetObserver* observer;  // Tracks changes to a tileset.
+  uint32_t texture;  // Texture atlas.
+  int texture_size;  // Texture atlas width and height in pixels.
+  int texture_columns;  // Number of columns in texture atlas.
+  int texture_rows;  // Number of rows in texture atlas.
 };
 
 struct TCOD_RendererGLCommon {
   struct SDL_Window* window;
   void* glcontext;
   struct TCOD_TilesetAtlasOpenGL* atlas;
-  uint32_t sdl_subsystems;
+  uint32_t sdl_subsystems;  // Which subsystems were initialzed by this context.
   // Mouse cursor transform values of the last viewport used.
   double last_offset_x;
   double last_offset_y;

@@ -2,6 +2,10 @@ Tilesets
 ========
 
 .. doxygenstruct:: TCOD_Tileset
+
+.. doxygenclass:: tcod::Tileset
+  :members:
+
 .. doxygentypedef:: TilesetPtr
 
 Tilesheets

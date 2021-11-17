@@ -459,19 +459,19 @@ class Tileset {
 
       @return int The total width of tiles in pixels.
    */
-  [[nodiscard]] auto get_tile_width() noexcept -> int { return tileset_->tile_width; }
+  [[nodiscard]] auto get_tile_width() const noexcept -> int { return tileset_->tile_width; }
   /***************************************************************************
       @brief Get the height of tiles in this Tileset.
 
       @return int The total height of tiles in pixels.
    */
-  [[nodiscard]] auto get_tile_height() noexcept -> int { return tileset_->tile_height; }
+  [[nodiscard]] auto get_tile_height() const noexcept -> int { return tileset_->tile_height; }
   /***************************************************************************
       @brief Get the `{width, height}` shape of tiles in this Tileset.
 
       @return std::array<int, 2> The `{width, height}` of tiles in this Tileset in pixels.
    */
-  [[nodiscard]] auto get_tile_shape() noexcept -> std::array<int, 2> {
+  [[nodiscard]] auto get_tile_shape() const noexcept -> std::array<int, 2> {
     return {tileset_->tile_width, tileset_->tile_height};
   }
   /***************************************************************************

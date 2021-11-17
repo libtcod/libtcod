@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- `const` was missing from `tcod::Tileset`'s `get_X` methods.
+
 ### Removed
 - Removed deprecated overrides that existed to help transition obsolete code.
   This affects `Console::clear` and the C++ printing methods which take pointers to colors such as `tcod::print`.

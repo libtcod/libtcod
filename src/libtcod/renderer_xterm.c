@@ -55,6 +55,7 @@ static DWORD g_old_mode_stdout = 0;
 static struct termios g_old_termios;
 #endif
 
+static bool g_waiting_for_get_size = false;
 static int g_got_rows = 0;
 static int g_got_columns = 0;
 static Uint32 g_got_size_timestamp = 0;
@@ -174,40 +175,12 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   xterm_cleanup();
 }
 
-static int read_terminated_int(char term, int def) {
-  char buf[16] = "";
-  for (size_t i = 0; i < sizeof(buf) - 1; i++) {
-    int ch = getchar();
-    if (ch == term) {
-      buf[i] = '\0';
-      break;
-    }
-    if (!isdigit(ch)) {
-      return def;
-    }
-    buf[i] = ch;
-  }
-  return atoi(buf);
-}
-
-static void xterm_handle_input_escape() {
-  if (getchar() != '[')
-    return;
-  g_got_rows = read_terminated_int(';', 0);
-  g_got_columns = read_terminated_int('R', 0);
-  g_got_size_timestamp = SDL_GetTicks();
-}
-
-static int xterm_handle_input(void *arg) {
-  while (true) {
-    int ch = getchar();
-    if (ch == '\x1b') {
-      xterm_handle_input_escape();
-      continue;
-    }
-    int sym = ch;
-    int mod = KMOD_NONE;
-    if (isupper(ch)) {
+static void send_sdl_key_press(SDL_Keycode ch, bool shift) {
+    bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
+    SDL_Keycode sym = ch;
+    Uint16 mod = KMOD_NONE;
+    isascii(ch);
+    if (shift) {
       sym = tolower(sym);
       mod = KMOD_SHIFT;
     }
@@ -225,21 +198,169 @@ static int xterm_handle_input(void *arg) {
         }
       }
     };
-    SDL_Event text_event = {
-      .text = {
-        .type = SDL_TEXTINPUT,
-        .timestamp = SDL_GetTicks(),
-        .windowID = 0,
-        .text[0] = ch,
-        .text[1] = '\0'
-      }
-    };
+    SDL_PushEvent(&down_event);
+    if (is_ascii && isprint(ch)) {
+      SDL_Event text_event = {
+        .text = {
+          .type = SDL_TEXTINPUT,
+          .timestamp = SDL_GetTicks(),
+          .windowID = 0,
+          .text[0] = ch,
+          .text[1] = '\0'
+        }
+      };
+      SDL_PushEvent(&text_event);
+    }
     SDL_Event up_event = down_event;
     up_event.type = SDL_KEYUP;
     up_event.key.state = SDL_RELEASED;
-    SDL_PushEvent(&down_event);
-    SDL_PushEvent(&text_event);
     SDL_PushEvent(&up_event);
+}
+
+static int read_terminated_int(char *after) {
+  *after = '\0';
+  char buf[16] = "";
+  for (size_t i = 0; i < sizeof(buf) - 1; i++) {
+    int ch = getchar();
+    if (!isdigit(ch)) {
+      *after = ch;
+      buf[i] = '\0';
+      return atoi(buf);
+    }
+    buf[i] = ch;
+  }
+  return atoi(buf);
+}
+
+static bool xterm_handle_input_escape_code(
+    char *start,
+    char *end,
+    int *arg0,
+    int *arg1) {
+  *start = '\0';
+  *arg0 = -1;
+  *arg1 = -1;
+  *start = getchar();
+  if (*start != '[' && *start != 'O')
+    return false;
+  *arg0 = read_terminated_int(end);
+  if (*end == ';')
+    *arg1 = read_terminated_int(end);
+  return true;
+}
+
+static void xterm_handle_input_escape() {
+  char start, end;
+  int arg0, arg1;
+  if (!xterm_handle_input_escape_code(&start, &end, &arg0, &arg1))
+    return;
+  switch (start) {
+    case '[': // CSI
+      switch (end) {
+        case 'A':
+          send_sdl_key_press(SDLK_UP, false);
+          break;
+        case 'B':
+          send_sdl_key_press(SDLK_DOWN, false);
+          break;
+        case 'C':
+          send_sdl_key_press(SDLK_RIGHT, false);
+          break;
+        case 'D':
+          send_sdl_key_press(SDLK_LEFT, false);
+          break;
+        case 'H':
+          send_sdl_key_press(SDLK_HOME, false);
+          break;
+        case 'F':
+          send_sdl_key_press(SDLK_END, false);
+          break;
+        case 'P':
+          send_sdl_key_press(SDLK_F1, false);
+          break;
+        case 'Q':
+          send_sdl_key_press(SDLK_F2, false);
+          break;
+        case 'R':
+          if (g_waiting_for_get_size) {
+            g_got_rows = arg0;
+            g_got_columns = arg1;
+            g_got_size_timestamp = SDL_GetTicks();
+          } else {
+            send_sdl_key_press(SDLK_F3, false);
+          }
+          break;
+        case 'S':
+          send_sdl_key_press(SDLK_F4, false);
+          break;
+        case '~':
+          switch (arg0) {
+            case 11:
+              send_sdl_key_press(SDLK_F1, false);
+              break;
+            case 12:
+              send_sdl_key_press(SDLK_F2, false);
+              break;
+            case 13:
+              send_sdl_key_press(SDLK_F3, false);
+              break;
+            case 14:
+              send_sdl_key_press(SDLK_F4, false);
+              break;
+            case 15:
+              send_sdl_key_press(SDLK_F5, false);
+              break;
+            case 17:
+              send_sdl_key_press(SDLK_F6, false);
+              break;
+            case 18:
+              send_sdl_key_press(SDLK_F7, false);
+              break;
+            case 19:
+              send_sdl_key_press(SDLK_F8, false);
+              break;
+            case 20:
+              send_sdl_key_press(SDLK_F9, false);
+              break;
+            case 21:
+              send_sdl_key_press(SDLK_F10, false);
+              break;
+            case 23:
+              send_sdl_key_press(SDLK_F11, false);
+              break;
+            case 24:
+              send_sdl_key_press(SDLK_F12, false);
+          }
+          break;
+      }
+      break;
+    case 'O': // SS3
+      switch (end) {
+        case 'P':
+          send_sdl_key_press(SDLK_F1, false);
+          break;
+        case 'Q':
+          send_sdl_key_press(SDLK_F2, false);
+          break;
+        case 'R':
+          send_sdl_key_press(SDLK_F3, false);
+          break;
+        case 'S':
+          send_sdl_key_press(SDLK_F4, false);
+          break;
+      }
+      break;
+  }
+}
+
+static int xterm_handle_input(void *arg) {
+  while (true) {
+    int ch = getchar();
+    if (ch == '\x1b') {
+      xterm_handle_input_escape();
+      continue;
+    }
+    send_sdl_key_press(ch, isupper(ch));
   }
   return 0;
 }
@@ -251,6 +372,7 @@ static TCOD_Error xterm_recommended_console_size(
     int* __restrict rows) {
   fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
   fflush(stdout);
+  g_waiting_for_get_size = true;
   Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
@@ -258,9 +380,11 @@ static TCOD_Error xterm_recommended_console_size(
     if (SDL_TICKS_PASSED(g_got_size_timestamp, start_time)) {
       *columns = g_got_columns;
       *rows = g_got_rows;
+      g_waiting_for_get_size = false;
       return TCOD_E_OK;
     }
   }
+  g_waiting_for_get_size = false;
   return TCOD_E_ERROR;
 }
 

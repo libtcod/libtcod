@@ -383,6 +383,7 @@ static TCOD_Error xterm_recommended_console_size(
       g_waiting_for_get_size = false;
       return TCOD_E_OK;
     }
+    SDL_Delay(1);
   }
   g_waiting_for_get_size = false;
   return TCOD_E_ERROR;

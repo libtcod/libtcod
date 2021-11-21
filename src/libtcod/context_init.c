@@ -336,6 +336,10 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
       return err;
     case TCOD_RENDERER_XTERM:
       *out = TCOD_renderer_init_xterm(
+          params.window_xy_defined ? params.window_x : -1,
+          params.window_xy_defined ? params.window_y : -1,
+          params.pixel_width,
+          params.pixel_height,
           params.columns,
           params.rows,
           params.window_title);

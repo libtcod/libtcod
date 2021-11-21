@@ -37,6 +37,10 @@
 extern "C" {
 #endif  // __cplusplus
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Context* TCOD_renderer_init_xterm(
+  int window_x,
+  int window_y,
+  int pixel_width,
+  int pixel_height,
   int columns,
   int rows,
   const char* window_title);

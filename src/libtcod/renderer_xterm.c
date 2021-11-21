@@ -567,6 +567,10 @@ static void xterm_on_hangup_signal(int signum) {
 #endif
 
 TCOD_Context* TCOD_renderer_init_xterm(
+    int window_x,
+    int window_y,
+    int pixel_width,
+    int pixel_height,
     int columns,
     int rows,
     const char* window_title) {
@@ -620,7 +624,9 @@ TCOD_Context* TCOD_renderer_init_xterm(
       "\x1b[?1003h"  // Enable all motion mouse tracking.
       "\x1b[?1004h"  // Send focus in/out events.
   );
+  if (window_x > 0 && window_y > 0) fprintf(stdout, "\x1b[3;%i;%it", window_x, window_y);
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
+  else if (pixel_width > 0 && pixel_height > 0) fprintf(stdout, "\x1b[4;%i;%it", pixel_height, pixel_width);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
   SDL_Init(SDL_INIT_VIDEO); // Need SDL init to get keysyms
   data->input_thread = SDL_CreateThread(&xterm_handle_input, "input thread", NULL);

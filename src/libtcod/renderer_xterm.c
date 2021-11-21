@@ -179,7 +179,6 @@ static void send_sdl_key_press(SDL_Keycode ch, bool shift) {
     const bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
     SDL_Keycode sym = ch;
     Uint16 mod = KMOD_NONE;
-    isascii(ch);
     if (shift) {
       sym = tolower(sym);
       mod = KMOD_SHIFT;

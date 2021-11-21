@@ -48,6 +48,8 @@
 
 #include "error.h"
 
+#define DOUBLE_CLICK_TIME 500
+
 #if defined(_WIN32)
 static DWORD g_old_mode_stdin = 0;
 static DWORD g_old_mode_stdout = 0;
@@ -59,6 +61,11 @@ static bool g_waiting_for_get_size = false;
 static int g_got_rows = 0;
 static int g_got_columns = 0;
 static Uint32 g_got_size_timestamp = 0;
+static int g_current_mouse_button_down = -1;
+static Uint32 g_last_mouse_down_timestamp = 0;
+static Uint8 g_current_num_clicks = 1;
+static int g_last_mouse_motion_x = -1;
+static int g_last_mouse_motion_y = -1;
 
 struct TCOD_RendererXterm {
   TCOD_Console* cache;
@@ -159,6 +166,7 @@ static void xterm_cleanup(void) {
       "\x1b[2J"  // Clear the screen.
       "\x1b[?1049l"  // Disable alternative screen buffer.
       "\x1b[?25h"  // Show cursor.
+      "\x1b[?1003l"  // Disable all motion mouse tracking.
       "\x1b" "c"  // Reset to initial state.
   );
 #if defined(_WIN32)
@@ -231,6 +239,122 @@ static int read_terminated_int(char *after) {
   return atoi(buf);
 }
 
+static void xterm_handle_mouse_click(int cb, int x, int y) {
+  const int cb_button = cb & 3;
+  const Uint32 timestamp = SDL_GetTicks();
+  Uint32 type = SDL_MOUSEBUTTONDOWN;
+  Uint32 state = SDL_PRESSED;
+  Uint8 button = 0;
+  switch (cb_button) {
+    case 0:
+      button = SDL_BUTTON_LEFT;
+      break;
+    case 1:
+      button = SDL_BUTTON_MIDDLE;
+      break;
+    case 2:
+      button = SDL_BUTTON_RIGHT;
+      break;
+    case 3:
+      type = SDL_MOUSEBUTTONUP;
+      state = SDL_RELEASED;
+      button = g_current_mouse_button_down;
+      break;
+  }
+  if (type == SDL_MOUSEBUTTONDOWN) {
+    // We don't get button info on mouse up, so only do one click at once.
+    if (g_current_mouse_button_down >= 0)
+      return;
+    g_current_mouse_button_down = button;
+    if (!SDL_TICKS_PASSED(timestamp, g_last_mouse_down_timestamp + DOUBLE_CLICK_TIME)
+        && g_current_mouse_button_down < 255)
+      g_current_num_clicks += 1;
+    g_last_mouse_down_timestamp = timestamp;
+  } else {
+    if (g_current_mouse_button_down < 0)
+      return;
+    g_current_mouse_button_down = -1;
+  }
+  SDL_Event button_event = {
+    .button = {
+      .type = type,
+      .timestamp = timestamp,
+      .windowID = 0,
+      .which = 0,
+      .button = button,
+      .state = state,
+      .clicks = g_current_num_clicks,
+      .x = x,
+      .y = y,
+    }
+  };
+  SDL_PushEvent(&button_event);
+  if (type != SDL_MOUSEBUTTONDOWN)
+    g_current_num_clicks = 1;
+}
+
+static void xterm_handle_mouse_wheel(int cb) {
+  const int cb_button = cb & 3;
+  Sint32 dy = 0;
+  switch (cb_button) {
+    case 0:
+      dy = 1;
+      break;
+    case 1:
+      dy = -1;
+      break;
+  }
+  SDL_Event wheel_event = {
+    .wheel = {
+      .type = SDL_MOUSEWHEEL,
+      .timestamp = SDL_GetTicks(),
+      .windowID = 0,
+      .which = 0,
+      .x = 0,
+      .y = dy,
+      .direction = SDL_MOUSEWHEEL_NORMAL,
+    }
+  };
+  SDL_PushEvent(&wheel_event);
+}
+
+static void xterm_handle_mouse_motion(int x, int y) {
+  int xrel = 0, yrel = 0;
+  if (g_last_mouse_motion_x >= 0 && g_last_mouse_motion_y >= 0) {
+    xrel = x - g_last_mouse_motion_x;
+    yrel = y - g_last_mouse_motion_y;
+  }
+  g_last_mouse_motion_x = x;
+  g_last_mouse_motion_y = y;
+  SDL_Event motion_event = {
+    .motion = {
+      .type = SDL_MOUSEMOTION,
+      .timestamp = SDL_GetTicks(),
+      .windowID = 0,
+      .which = 0,
+      .x = x,
+      .y = y,
+      .xrel = xrel,
+      .yrel = yrel,
+    }
+  };
+  SDL_PushEvent(&motion_event);
+}
+
+static void xterm_handle_mouse_escape() {
+  const char cb = getchar();
+  const char x = getchar() - 33;
+  const char y = getchar() - 33;
+  if (cb & 32) {
+    if (cb & 64)
+      xterm_handle_mouse_wheel(cb);
+    else
+      xterm_handle_mouse_click(cb, x, y);
+  } else {
+    xterm_handle_mouse_motion(x, y);
+  }
+}
+
 static bool xterm_handle_input_escape_code(
     char *start,
     char *end,
@@ -256,6 +380,9 @@ static void xterm_handle_input_escape() {
   switch (start) {
     case '[': // CSI
       switch (end) {
+        case 'M':
+          xterm_handle_mouse_escape();
+          break;
         case 'A':
           send_sdl_key_press(SDLK_UP, false);
           break;
@@ -469,6 +596,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
       "\x1b[?1049h"  // Enable alternative screen buffer.
       "\x1b[2J"  // Clear the screen.
       "\x1b[?25l"  // Hide cursor.
+      "\x1b[?1003h"  // Enable all motion mouse tracking.
   );
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);

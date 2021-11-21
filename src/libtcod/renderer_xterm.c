@@ -176,7 +176,7 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
 }
 
 static void send_sdl_key_press(SDL_Keycode ch, bool shift) {
-    bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
+    const bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
     SDL_Keycode sym = ch;
     Uint16 mod = KMOD_NONE;
     isascii(ch);
@@ -221,7 +221,7 @@ static int read_terminated_int(char *after) {
   *after = '\0';
   char buf[16] = "";
   for (size_t i = 0; i < sizeof(buf) - 1; i++) {
-    int ch = getchar();
+    const int ch = getchar();
     if (!isdigit(ch)) {
       *after = ch;
       buf[i] = '\0';
@@ -355,7 +355,7 @@ static void xterm_handle_input_escape() {
 
 static int xterm_handle_input(void *arg) {
   while (true) {
-    int ch = getchar();
+    const int ch = getchar();
     if (ch == '\x1b') {
       xterm_handle_input_escape();
       continue;
@@ -373,7 +373,7 @@ static TCOD_Error xterm_recommended_console_size(
   fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
   fflush(stdout);
   g_waiting_for_get_size = true;
-  Uint32 start_time = SDL_GetTicks();
+  const Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {

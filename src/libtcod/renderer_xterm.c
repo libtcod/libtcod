@@ -167,6 +167,7 @@ static void xterm_cleanup(void) {
       "\x1b[?1049l"  // Disable alternative screen buffer.
       "\x1b[?25h"  // Show cursor.
       "\x1b[?1003l"  // Disable all motion mouse tracking.
+      "\x1b[?1004h"  // Don't send focus in/out events.
       "\x1b" "c"  // Reset to initial state.
   );
 #if defined(_WIN32)
@@ -372,6 +373,20 @@ static bool xterm_handle_input_escape_code(
   return true;
 }
 
+static void xterm_handle_focus_change(Uint8 event) {
+  SDL_Event focus_event = {
+    .window = {
+      .type = SDL_WINDOWEVENT,
+      .event = event,
+      .timestamp = SDL_GetTicks(),
+      .windowID = 0,
+      .data1 = 0,
+      .data2 = 0,
+    }
+  };
+  SDL_PushEvent(&focus_event);
+}
+
 static void xterm_handle_input_escape() {
   char start, end;
   int arg0, arg1;
@@ -382,6 +397,12 @@ static void xterm_handle_input_escape() {
       switch (end) {
         case 'M':
           xterm_handle_mouse_escape();
+          break;
+        case 'I':
+          xterm_handle_focus_change(SDL_WINDOWEVENT_FOCUS_GAINED);
+          break;
+        case 'O':
+          xterm_handle_focus_change(SDL_WINDOWEVENT_FOCUS_LOST);
           break;
         case 'A':
           send_sdl_key_press(SDLK_UP, false);
@@ -597,6 +618,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
       "\x1b[2J"  // Clear the screen.
       "\x1b[?25l"  // Hide cursor.
       "\x1b[?1003h"  // Enable all motion mouse tracking.
+      "\x1b[?1004h"  // Send focus in/out events.
   );
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);

@@ -57,15 +57,30 @@ static DWORD g_old_mode_stdout = 0;
 static struct termios g_old_termios;
 #endif
 
-static bool g_waiting_for_get_size = false;
-static int g_got_rows = 0;
-static int g_got_columns = 0;
-static Uint32 g_got_size_timestamp = 0;
-static int g_current_mouse_button_down = -1;
-static Uint32 g_last_mouse_down_timestamp = 0;
-static Uint8 g_current_num_clicks = 1;
-static int g_last_mouse_motion_x = -1;
-static int g_last_mouse_motion_y = -1;
+static struct {
+  bool waiting;
+  int columns;
+  int rows;
+  Uint32 timestamp;
+} g_terminal_size_state = {
+  .waiting = false,
+  .columns = 0,
+  .rows = 0,
+  .timestamp = 0,
+};
+static struct {
+  int button_down;
+  Uint32 last_mouse_down_timestamp;
+  Uint8 num_clicks;
+  int last_mouse_motion_x;
+  int last_mouse_motion_y;
+} g_mouse_state = {
+  .button_down = -1,
+  .last_mouse_down_timestamp = 0,
+  .num_clicks = 1,
+  .last_mouse_motion_x = -1,
+  .last_mouse_motion_y = -1,
+};
 
 struct TCOD_RendererXterm {
   TCOD_Console* cache;
@@ -259,22 +274,22 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
     case 3:
       type = SDL_MOUSEBUTTONUP;
       state = SDL_RELEASED;
-      button = g_current_mouse_button_down;
+      button = g_mouse_state.button_down;
       break;
   }
   if (type == SDL_MOUSEBUTTONDOWN) {
     // We don't get button info on mouse up, so only do one click at once.
-    if (g_current_mouse_button_down >= 0)
+    if (g_mouse_state.button_down >= 0)
       return;
-    g_current_mouse_button_down = button;
-    if (!SDL_TICKS_PASSED(timestamp, g_last_mouse_down_timestamp + DOUBLE_CLICK_TIME)
-        && g_current_mouse_button_down < 255)
-      g_current_num_clicks += 1;
-    g_last_mouse_down_timestamp = timestamp;
+    g_mouse_state.button_down = button;
+    if (!SDL_TICKS_PASSED(timestamp, g_mouse_state.last_mouse_down_timestamp + DOUBLE_CLICK_TIME)
+        && g_mouse_state.button_down < 255)
+      g_mouse_state.num_clicks += 1;
+    g_mouse_state.last_mouse_down_timestamp = timestamp;
   } else {
-    if (g_current_mouse_button_down < 0)
+    if (g_mouse_state.button_down < 0)
       return;
-    g_current_mouse_button_down = -1;
+    g_mouse_state.button_down = -1;
   }
   SDL_Event button_event = {
     .button = {
@@ -284,14 +299,14 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
       .which = 0,
       .button = button,
       .state = state,
-      .clicks = g_current_num_clicks,
+      .clicks = g_mouse_state.num_clicks,
       .x = x,
       .y = y,
     }
   };
   SDL_PushEvent(&button_event);
   if (type != SDL_MOUSEBUTTONDOWN)
-    g_current_num_clicks = 1;
+    g_mouse_state.num_clicks = 1;
 }
 
 static void xterm_handle_mouse_wheel(int cb) {
@@ -321,12 +336,12 @@ static void xterm_handle_mouse_wheel(int cb) {
 
 static void xterm_handle_mouse_motion(int x, int y) {
   int xrel = 0, yrel = 0;
-  if (g_last_mouse_motion_x >= 0 && g_last_mouse_motion_y >= 0) {
-    xrel = x - g_last_mouse_motion_x;
-    yrel = y - g_last_mouse_motion_y;
+  if (g_mouse_state.last_mouse_motion_x >= 0 && g_mouse_state.last_mouse_motion_y >= 0) {
+    xrel = x - g_mouse_state.last_mouse_motion_x;
+    yrel = y - g_mouse_state.last_mouse_motion_y;
   }
-  g_last_mouse_motion_x = x;
-  g_last_mouse_motion_y = y;
+  g_mouse_state.last_mouse_motion_x = x;
+  g_mouse_state.last_mouse_motion_y = y;
   SDL_Event motion_event = {
     .motion = {
       .type = SDL_MOUSEMOTION,
@@ -429,10 +444,10 @@ static void xterm_handle_input_escape() {
           send_sdl_key_press(SDLK_F2, false);
           break;
         case 'R':
-          if (g_waiting_for_get_size) {
-            g_got_rows = arg0;
-            g_got_columns = arg1;
-            g_got_size_timestamp = SDL_GetTicks();
+          if (g_terminal_size_state.waiting) {
+            g_terminal_size_state.rows = arg0;
+            g_terminal_size_state.columns = arg1;
+            g_terminal_size_state.timestamp = SDL_GetTicks();
           } else {
             send_sdl_key_press(SDLK_F3, false);
           }
@@ -519,20 +534,20 @@ static TCOD_Error xterm_recommended_console_size(
     int* __restrict rows) {
   fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
   fflush(stdout);
-  g_waiting_for_get_size = true;
+  g_terminal_size_state.waiting = true;
   const Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
-    if (SDL_TICKS_PASSED(g_got_size_timestamp, start_time)) {
-      *columns = g_got_columns;
-      *rows = g_got_rows;
-      g_waiting_for_get_size = false;
+    if (SDL_TICKS_PASSED(g_terminal_size_state.timestamp, start_time)) {
+      *columns = g_terminal_size_state.columns;
+      *rows = g_terminal_size_state.rows;
+      g_terminal_size_state.waiting = false;
       return TCOD_E_OK;
     }
     SDL_Delay(1);
   }
-  g_waiting_for_get_size = false;
+  g_terminal_size_state.waiting = false;
   return TCOD_E_ERROR;
 }
 

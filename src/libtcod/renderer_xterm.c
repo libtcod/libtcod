@@ -457,6 +457,24 @@ static void xterm_handle_input_escape() {
           break;
         case '~':
           switch (arg0) {
+            case 1:
+              send_sdl_key_press(SDLK_HOME, false);
+              break;
+            case 4:
+              send_sdl_key_press(SDLK_END, false);
+              break;
+            case 2:
+              send_sdl_key_press(SDLK_INSERT, false);
+              break;
+            case 3:
+              send_sdl_key_press(SDLK_DELETE, false);
+              break;
+            case 5:
+              send_sdl_key_press(SDLK_PAGEUP, false);
+              break;
+            case 6:
+              send_sdl_key_press(SDLK_PAGEDOWN, false);
+              break;
             case 11:
               send_sdl_key_press(SDLK_F1, false);
               break;

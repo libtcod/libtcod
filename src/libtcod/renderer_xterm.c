@@ -58,11 +58,13 @@ static struct termios g_old_termios;
 #endif
 
 static struct {
+  SDL_mutex *lock;
   bool waiting;
   int columns;
   int rows;
   Uint32 timestamp;
 } g_terminal_size_state = {
+  .lock = NULL,
   .waiting = false,
   .columns = 0,
   .rows = 0,
@@ -444,6 +446,7 @@ static void xterm_handle_input_escape() {
           send_sdl_key_press(SDLK_F2, false);
           break;
         case 'R':
+          SDL_LockMutex(g_terminal_size_state.lock);
           if (g_terminal_size_state.waiting) {
             g_terminal_size_state.rows = arg0;
             g_terminal_size_state.columns = arg1;
@@ -451,6 +454,7 @@ static void xterm_handle_input_escape() {
           } else {
             send_sdl_key_press(SDLK_F3, false);
           }
+          SDL_UnlockMutex(g_terminal_size_state.lock);
           break;
         case 'S':
           send_sdl_key_press(SDLK_F4, false);
@@ -552,20 +556,27 @@ static TCOD_Error xterm_recommended_console_size(
     int* __restrict rows) {
   fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
   fflush(stdout);
+  SDL_LockMutex(g_terminal_size_state.lock);
   g_terminal_size_state.waiting = true;
+  SDL_UnlockMutex(g_terminal_size_state.lock);
   const Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
+    SDL_LockMutex(g_terminal_size_state.lock);
     if (SDL_TICKS_PASSED(g_terminal_size_state.timestamp, start_time)) {
       *columns = g_terminal_size_state.columns;
       *rows = g_terminal_size_state.rows;
       g_terminal_size_state.waiting = false;
+      SDL_UnlockMutex(g_terminal_size_state.lock);
       return TCOD_E_OK;
     }
+    SDL_UnlockMutex(g_terminal_size_state.lock);
     SDL_Delay(1);
   }
+  SDL_LockMutex(g_terminal_size_state.lock);
   g_terminal_size_state.waiting = false;
+  SDL_UnlockMutex(g_terminal_size_state.lock);
   return TCOD_E_ERROR;
 }
 
@@ -661,6 +672,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   else if (pixel_width > 0 && pixel_height > 0) fprintf(stdout, "\x1b[4;%i;%it", pixel_height, pixel_width);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
+  g_terminal_size_state.lock = SDL_CreateMutex();
   SDL_Init(SDL_INIT_VIDEO); // Need SDL init to get keysyms
   data->input_thread = SDL_CreateThread(&xterm_handle_input, "input thread", NULL);
   return context;

@@ -57,18 +57,18 @@ static DWORD g_old_mode_stdout = 0;
 static struct termios g_old_termios;
 #endif
 
-static struct {
-  SDL_mutex *lock;
-  bool waiting;
+struct TerminalSizeOut {
   int columns;
   int rows;
   Uint32 timestamp;
+};
+
+static struct {
+  SDL_mutex *lock;
+  struct TerminalSizeOut *out;
 } g_terminal_size_state = {
   .lock = NULL,
-  .waiting = false,
-  .columns = 0,
-  .rows = 0,
-  .timestamp = 0,
+  .out = NULL,
 };
 static struct {
   int button_down;
@@ -447,10 +447,10 @@ static void xterm_handle_input_escape() {
           break;
         case 'R':
           SDL_LockMutex(g_terminal_size_state.lock);
-          if (g_terminal_size_state.waiting) {
-            g_terminal_size_state.rows = arg0;
-            g_terminal_size_state.columns = arg1;
-            g_terminal_size_state.timestamp = SDL_GetTicks();
+          if (g_terminal_size_state.out != NULL) {
+            g_terminal_size_state.out->rows = arg0;
+            g_terminal_size_state.out->columns = arg1;
+            g_terminal_size_state.out->timestamp = SDL_GetTicks();
           } else {
             send_sdl_key_press(SDLK_F3, false);
           }
@@ -556,18 +556,19 @@ static TCOD_Error xterm_recommended_console_size(
     int* __restrict rows) {
   fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
   fflush(stdout);
+  struct TerminalSizeOut size_out = {.timestamp = 0};
   SDL_LockMutex(g_terminal_size_state.lock);
-  g_terminal_size_state.waiting = true;
+  g_terminal_size_state.out = &size_out;
   SDL_UnlockMutex(g_terminal_size_state.lock);
   const Uint32 start_time = SDL_GetTicks();
   fprintf(stdout, "\x1b[6n");
   fflush(stdout);
   while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
     SDL_LockMutex(g_terminal_size_state.lock);
-    if (SDL_TICKS_PASSED(g_terminal_size_state.timestamp, start_time)) {
-      *columns = g_terminal_size_state.columns;
-      *rows = g_terminal_size_state.rows;
-      g_terminal_size_state.waiting = false;
+    if (SDL_TICKS_PASSED(size_out.timestamp, start_time)) {
+      *columns = size_out.columns;
+      *rows = size_out.rows;
+      g_terminal_size_state.out = NULL;
       SDL_UnlockMutex(g_terminal_size_state.lock);
       return TCOD_E_OK;
     }
@@ -575,7 +576,7 @@ static TCOD_Error xterm_recommended_console_size(
     SDL_Delay(1);
   }
   SDL_LockMutex(g_terminal_size_state.lock);
-  g_terminal_size_state.waiting = false;
+  g_terminal_size_state.out = NULL;
   SDL_UnlockMutex(g_terminal_size_state.lock);
   return TCOD_E_ERROR;
 }

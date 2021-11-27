@@ -47,6 +47,7 @@
 #endif
 
 #include "error.h"
+#include "logging.h"
 
 #define DOUBLE_CLICK_TIME 500
 
@@ -278,6 +279,8 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
       state = SDL_RELEASED;
       button = g_mouse_state.button_down;
       break;
+    default:
+      TCOD_log_debug_f("unknown mouse button %i\n", cb_button);
   }
   if (type == SDL_MOUSEBUTTONDOWN) {
     // We don't get button info on mouse up, so only do one click at once.
@@ -321,6 +324,8 @@ static void xterm_handle_mouse_wheel(int cb) {
     case 1:
       dy = -1;
       break;
+    default:
+      TCOD_log_debug_f("unknown mouse wheel button %i\n", cb_button);
   }
   SDL_Event wheel_event = {
     .wheel = {
@@ -409,6 +414,7 @@ static void xterm_handle_input_escape() {
   int arg0, arg1;
   if (!xterm_handle_input_escape_code(&start, &end, &arg0, &arg1))
     return;
+  bool unknown = false;
   switch (start) {
     case '[': // CSI
       switch (end) {
@@ -514,8 +520,13 @@ static void xterm_handle_input_escape() {
               break;
             case 24:
               send_sdl_key_press(SDLK_F12, false);
+              break;
+            default:
+              unknown = true;
           }
           break;
+        default:
+          unknown = true;
       }
       break;
     case 'O': // SS3
@@ -532,9 +543,15 @@ static void xterm_handle_input_escape() {
         case 'S':
           send_sdl_key_press(SDLK_F4, false);
           break;
+        default:
+          unknown = true;
       }
       break;
+    default:
+      unknown = true;
   }
+  if (unknown)
+    TCOD_log_debug_f("unknown input escape code '%c' '%c' %i %i\n", start, end, arg0, arg1);
 }
 
 static int xterm_handle_input(void *arg) {

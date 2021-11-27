@@ -696,6 +696,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   if (columns > 0 && rows > 0) fprintf(stdout, "\x1b[8;%i;%it", rows, columns);
   else if (pixel_width > 0 && pixel_height > 0) fprintf(stdout, "\x1b[4;%i;%it", pixel_height, pixel_width);
   if (window_title) fprintf(stdout, "\x1b]0;%s\x07", window_title);
+  fflush(stdout);
   g_terminal_size_state.lock = SDL_CreateMutex();
   SDL_Init(SDL_INIT_VIDEO); // Need SDL init to get keysyms
   data->input_thread = SDL_CreateThread(&xterm_handle_input, "input thread", NULL);

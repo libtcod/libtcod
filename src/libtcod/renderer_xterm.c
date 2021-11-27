@@ -485,6 +485,12 @@ static void xterm_handle_input_escape() {
             case 6:
               send_sdl_key_press(SDLK_PAGEDOWN, false);
               break;
+            case 7: // For urxvt
+              send_sdl_key_press(SDLK_HOME, false);
+              break;
+            case 8: // For urxvt
+              send_sdl_key_press(SDLK_END, false);
+              break;
             case 11:
               send_sdl_key_press(SDLK_F1, false);
               break;

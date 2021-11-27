@@ -577,7 +577,7 @@ static TCOD_Error xterm_recommended_console_size(
     float magnification,
     int* __restrict columns,
     int* __restrict rows) {
-  fprintf(stdout, "\x1b[%i;%iH", INT_MAX, INT_MAX);
+  fprintf(stdout, "\x1b[%i;%iH", SHRT_MAX, SHRT_MAX);
   fflush(stdout);
   struct TerminalSizeOut size_out = {.timestamp = 0};
   SDL_LockMutex(g_terminal_size_state.lock);

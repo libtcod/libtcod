@@ -384,6 +384,10 @@ typedef enum {
       \endrst
    */
   TCOD_RENDERER_OPENGL2,
+  /***************************************************************************
+      @brief An ANSI renderer targeting modern xterm terminals with 24-bit color support.
+   */
+  TCOD_RENDERER_XTERM,
   TCOD_NB_RENDERERS,
 } TCOD_renderer_t;
 #endif /* _TCOD_CONSOLE_TYPES_H */

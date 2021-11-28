@@ -1529,11 +1529,11 @@ struct RendererOption {
 };
 
 static constexpr std::array<RendererOption, 5> RENDERERS{
-    RendererOption{"GLSL   ", TCOD_RENDERER_GLSL},
     RendererOption{"OPENGL ", TCOD_RENDERER_OPENGL},
     RendererOption{"SDL    ", TCOD_RENDERER_SDL},
     RendererOption{"SDL2   ", TCOD_RENDERER_SDL2},
     RendererOption{"OPENGL2", TCOD_RENDERER_OPENGL2},
+    RendererOption{"XTERM  ", TCOD_RENDERER_XTERM},
 };
 
 // ***************************
@@ -1565,7 +1565,6 @@ int main(int argc, char* argv[]) {
   TCOD_mouse_t mouse{};
   static constexpr char* FONT = "data/fonts/dejavu10x10_gs_tc.png";
   bool creditsEnd = false;
-
   auto root_console = tcod::Console{80, 50};  // The main console to be presented.
   auto tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
   g_tile_size = {tileset.get_tile_width(), tileset.get_tile_height()};
@@ -1638,8 +1637,9 @@ int main(int argc, char* argv[]) {
     tcod::print(root_console, {42, 46 - (static_cast<int>(RENDERERS.size()) + 1)}, "Renderer :", GREY, BLACK);
 
     for (int i = 0; i < static_cast<int>(RENDERERS.size()); ++i) {
-      const auto fg = (i == g_context->get_renderer_type()) ? WHITE : GREY;
-      const auto bg = (i == g_context->get_renderer_type()) ? LIGHT_BLUE : BLACK;
+      const bool is_current_renderer = RENDERERS.at(i).renderer == g_context->get_renderer_type();
+      const auto fg = is_current_renderer ? WHITE : GREY;
+      const auto bg = is_current_renderer ? LIGHT_BLUE : BLACK;
       tcod::print(
           root_console,
           {42, 46 - (static_cast<int>(RENDERERS.size()) - i)},

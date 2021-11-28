@@ -79,6 +79,8 @@ static int get_renderer_from_str(const char* string) {
     return TCOD_RENDERER_SDL2;
   } else if (strcmp(string, "opengl2") == 0) {
     return TCOD_RENDERER_OPENGL2;
+  } else if (strcmp(string, "xterm") == 0) {
+    return TCOD_RENDERER_XTERM;
   } else {
     return -1;
   }
@@ -148,7 +150,7 @@ static const char TCOD_help_msg[] =
 -resolution <width>x<height> : Sets the desired pixel resolution.\n\
 -width <pixels> : Set the desired pixel width.\n\
 -height <pixels> : Set the desired pixel height.\n\
--renderer <sdl|sdl2|opengl|opengl2> : Change the active libtcod renderer.\n\
+-renderer <sdl|sdl2|opengl|opengl2|xterm> : Change the active libtcod renderer.\n\
 -vsync : Enable Vsync when possible.\n\
 -no-vsync : Disable Vsync.\n\
 ";
@@ -222,8 +224,8 @@ static TCOD_Error parse_context_parameters(const TCOD_ContextParams* in, TCOD_Co
       if (++i < out->argc && get_renderer_from_str(out->argv[i]) >= 0) {
         out->renderer_type = get_renderer_from_str(out->argv[i]);
       } else {
-        TCOD_set_error("Renderer should be one of [sdl|sdl2|opengl|opengl2]");
-        return send_to_cli_out(out, "Renderer should be one of [sdl|sdl2|opengl|opengl2]");
+        TCOD_set_error("Renderer should be one of [sdl|sdl2|opengl|opengl2|xterm]");
+        return send_to_cli_out(out, "Renderer should be one of [sdl|sdl2|opengl|opengl2|xterm]");
       }
     } else if (TCOD_CHECK_ARGUMENT(out->argv[i], "resolution")) {
       if (++i < out->argc && sscanf(out->argv[i], "%dx%d", &out->pixel_width, &out->pixel_height) == 2) {
@@ -333,7 +335,14 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
       }
       return err;
     case TCOD_RENDERER_XTERM:
-      *out = TCOD_renderer_init_xterm(params.window_title);
+      *out = TCOD_renderer_init_xterm(
+          params.window_xy_defined ? params.window_x : -1,
+          params.window_xy_defined ? params.window_y : -1,
+          params.pixel_width,
+          params.pixel_height,
+          params.columns,
+          params.rows,
+          params.window_title);
       if (!*out) return TCOD_E_ERROR;
       return err;
   }

@@ -53,8 +53,8 @@
 #define DOUBLE_CLICK_TIME 500
 
 #if defined(_WIN32)
-static DWORD g_old_mode_stdin = 0;
-static DWORD g_old_mode_stdout = 0;
+static DWORD g_old_mode_stdin = 0;  // Windows console stdin mode before initialization.
+static DWORD g_old_mode_stdout = 0;  // Windows console stdout mode before initialization.
 #elif !defined(__MINGW32__)
 static struct termios g_old_termios;
 #endif
@@ -178,7 +178,7 @@ static TCOD_Error xterm_present(
   }
   return TCOD_E_OK;
 }
-
+/// Undo the terminal setup performed on initialization.
 static void xterm_cleanup(void) {
   fprintf(
       stdout,
@@ -202,7 +202,7 @@ static void xterm_destructor(struct TCOD_Context* __restrict self) {
   if (context) free(context);
   xterm_cleanup();
 }
-
+/// Send keyboard and text input events to SDL.
 static void send_sdl_key_press(SDL_Keycode ch, bool shift) {
   const bool is_ascii = ch <= (SDL_Keycode)INT_MAX && isascii(ch);
   SDL_Keycode sym = ch;
@@ -245,7 +245,7 @@ static int read_terminated_int(char* after) {
   }
   return atoi(buf);
 }
-
+/// Send mouse inputs to SDL.
 static void xterm_handle_mouse_click(int cb, int x, int y) {
   const int cb_button = cb & 3;
   const Uint32 timestamp = SDL_GetTicks();
@@ -297,7 +297,7 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
   SDL_PushEvent(&button_event);
   if (type != SDL_MOUSEBUTTONDOWN) g_mouse_state.num_clicks = 1;
 }
-
+/// Send mouse wheel events to SDL.
 static void xterm_handle_mouse_wheel(int cb) {
   const int cb_button = cb & 3;
   Sint32 dy = 0;
@@ -323,7 +323,7 @@ static void xterm_handle_mouse_wheel(int cb) {
       }};
   SDL_PushEvent(&wheel_event);
 }
-
+/// Send mouse motion info to SDL.
 static void xterm_handle_mouse_motion(int x, int y) {
   int xrel = 0, yrel = 0;
   if (g_mouse_state.last_mouse_motion_x >= 0 && g_mouse_state.last_mouse_motion_y >= 0) {
@@ -345,7 +345,7 @@ static void xterm_handle_mouse_motion(int x, int y) {
       }};
   SDL_PushEvent(&motion_event);
 }
-
+/// Parse X10 compatibility mode mouse escape sequences.
 static void xterm_handle_mouse_escape() {
   const char cb = getchar();
   const char x = getchar() - 33;
@@ -370,7 +370,7 @@ static bool xterm_handle_input_escape_code(char* start, char* end, int* arg0, in
   if (*end == ';') *arg1 = read_terminated_int(end);
   return true;
 }
-
+/// Send a window event to SDL.
 static void xterm_handle_focus_change(Uint8 event) {
   SDL_Event focus_event = {
       .window = {
@@ -383,7 +383,7 @@ static void xterm_handle_focus_change(Uint8 event) {
       }};
   SDL_PushEvent(&focus_event);
 }
-
+/// Dispatch an ANSI escape sequence, excluding the first escape byte.
 static void xterm_handle_input_escape() {
   char start, end;
   int arg0, arg1;
@@ -532,7 +532,7 @@ static void xterm_handle_input_escape() {
   }
   if (unknown) TCOD_log_debug_f("unknown input escape code '%c' '%c' %i %i\n", start, end, arg0, arg1);
 }
-
+/// ANSI input event loop.
 static int xterm_handle_input(void* arg) {
   while (true) {
     const int ch = getchar();

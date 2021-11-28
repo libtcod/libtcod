@@ -7,6 +7,10 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Added
+- `TCOD_RENDERER_XTERM` was added.
+  [#100](https://github.com/libtcod/libtcod/pull/100)
+
 ### Fixed
 - `const` was missing from `tcod::Tileset`'s `get_X` methods.
 

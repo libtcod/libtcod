@@ -385,7 +385,19 @@ typedef enum {
    */
   TCOD_RENDERER_OPENGL2,
   /***************************************************************************
-      @brief An ANSI renderer targeting modern xterm terminals with 24-bit color support.
+      @brief A renderer targeting modern XTerm terminals with 24-bit color support.
+
+      This is an experimental renderer with partial support for XTerm and SSH.
+      This will work best on those terminals.
+
+      Terminal inputs and events will be passed to SDL's event system.
+
+      There is poor support for ANSI escapes on Windows 10.
+      It is not recommended to use this renderer on Windows.
+
+      \rst
+      .. versionadded:: 1.20
+      \endrst
    */
   TCOD_RENDERER_XTERM,
   TCOD_NB_RENDERERS,

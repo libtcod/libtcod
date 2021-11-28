@@ -1600,7 +1600,6 @@ typedef struct RendererOption {
 } RendererOption;
 // The available renderers and their labels.
 static const RendererOption RENDERER_OPTIONS[] = {
-    {"GLSL   ", TCOD_RENDERER_GLSL},
     {"OPENGL ", TCOD_RENDERER_OPENGL},
     {"SDL    ", TCOD_RENDERER_SDL},
     {"SDL2   ", TCOD_RENDERER_SDL2},

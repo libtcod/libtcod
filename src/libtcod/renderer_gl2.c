@@ -394,12 +394,11 @@ static TCOD_Error gl2_present(
 }
 void gl2_destructor(struct TCOD_Context* __restrict context) {
   struct TCOD_RendererGL2* renderer = context->contextdata_;
-  if (!renderer) {
-    return;
-  }
-  glDeleteBuffers(1, &renderer->vertex_buffer);
-  glDeleteTextures(3, renderer->console_textures);
-  glDeleteProgram(renderer->program);
+  if (!renderer) return;
+  // GL functions may be NULL on initialization failures.
+  if (glDeleteBuffers) glDeleteBuffers(1, &renderer->vertex_buffer);
+  if (glDeleteTextures) glDeleteTextures(3, renderer->console_textures);
+  if (glDeleteProgram) glDeleteProgram(renderer->program);
   TCOD_renderer_gl_common_uninit(&renderer->common);
   free(renderer);
 }

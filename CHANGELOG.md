@@ -13,6 +13,7 @@ since `1.7.0`.
 
 ### Fixed
 - `const` was missing from `tcod::Tileset`'s `get_X` methods.
+- Fixed segfault during cleanup when an OpenGL2 context fails to load.
 
 ### Removed
 - Removed deprecated overrides that existed to help transition obsolete code.

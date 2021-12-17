@@ -110,7 +110,7 @@ setup(
     # disabled at this moment
     # cmdclass=cmdclass,
     # important metadata
-    url="https://bitbucket.org/libtcod/libtcod",
+    url="https://github.com/libtcod/python-tcod",
     maintainer="",
     maintainer_email="",
     # used for test command

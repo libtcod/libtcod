@@ -1,10 +1,7 @@
 #!/usr/bin/env python
+import unittest
 
 import pytest
-
-import shutil
-import tempfile
-import unittest
 
 try:
     import numpy
@@ -13,16 +10,20 @@ except ImportError:
 
 import libtcodpy
 
+
 def test_console_behaviour(console):
     assert not console
 
-@pytest.mark.skip('takes too long')
+
+@pytest.mark.skip("takes too long")
 def test_credits_long(console):
     libtcodpy.console_credits()
+
 
 def test_credits(console):
     libtcodpy.console_credits_render(0, 0, True)
     libtcodpy.console_credits_reset()
+
 
 def assert_char(console, x, y, ch=None, fg=None, bg=None):
     if ch is not None:
@@ -36,119 +37,118 @@ def assert_char(console, x, y, ch=None, fg=None, bg=None):
     if bg is not None:
         assert libtcodpy.console_get_char_background(console, x, y) == bg
 
+
 def test_console_defaults(console, fg, bg):
     libtcodpy.console_set_default_foreground(console, fg)
     libtcodpy.console_set_default_background(console, bg)
     libtcodpy.console_clear(console)
     assert_char(console, 0, 0, None, fg, bg)
 
+
 def test_console_set_char_background(console, bg):
     libtcodpy.console_set_char_background(console, 0, 0, bg, libtcodpy.BKGND_SET)
     assert_char(console, 0, 0, bg=bg)
+
 
 def test_console_set_char_foreground(console, fg):
     libtcodpy.console_set_char_foreground(console, 0, 0, fg)
     assert_char(console, 0, 0, fg=fg)
 
+
 def test_console_set_char(console, ch):
     libtcodpy.console_set_char(console, 0, 0, ch)
     assert_char(console, 0, 0, ch=ch)
+
 
 def test_console_put_char(console, ch):
     libtcodpy.console_put_char(console, 0, 0, ch, libtcodpy.BKGND_SET)
     assert_char(console, 0, 0, ch=ch)
 
+
 def console_put_char_ex(console, ch, fg, bg):
     libtcodpy.console_put_char_ex(console, 0, 0, ch, fg, bg)
     assert_char(console, 0, 0, ch=ch, fg=fg, bg=bg)
 
+
 def test_console_printing(console, fg, bg):
-    libtcodpy.console_set_background_flag(console,
-                                          libtcodpy.BKGND_SET)
-    assert (libtcodpy.console_get_background_flag(console) ==
-                     libtcodpy.BKGND_SET)
+    libtcodpy.console_set_background_flag(console, libtcodpy.BKGND_SET)
+    assert libtcodpy.console_get_background_flag(console) == libtcodpy.BKGND_SET
 
     libtcodpy.console_set_alignment(console, libtcodpy.LEFT)
-    assert (libtcodpy.console_get_alignment(console) ==
-                     libtcodpy.LEFT)
+    assert libtcodpy.console_get_alignment(console) == libtcodpy.LEFT
 
-    libtcodpy.console_print(console, 0, 0, 'print')
-    libtcodpy.console_print_ex(console, 0, 0, libtcodpy.BKGND_SET,
-                               libtcodpy.LEFT, 'print ex')
+    libtcodpy.console_print(console, 0, 0, "print")
+    libtcodpy.console_print_ex(console, 0, 0, libtcodpy.BKGND_SET, libtcodpy.LEFT, "print ex")
 
-    assert (libtcodpy.console_print_rect(
-        console, 0, 0, 8, 8, 'print rect') > 0
-        )
-    assert (libtcodpy.console_print_rect_ex(
-        console, 0, 0, 8, 8, libtcodpy.BKGND_SET, libtcodpy.LEFT,
-        'print rect ex') > 0
-        )
-    assert (libtcodpy.console_get_height_rect(
-        console, 0, 0, 8, 8, 'get height') > 0
-        )
+    assert libtcodpy.console_print_rect(console, 0, 0, 8, 8, "print rect") > 0
+    assert (
+        libtcodpy.console_print_rect_ex(console, 0, 0, 8, 8, libtcodpy.BKGND_SET, libtcodpy.LEFT, "print rect ex") > 0
+    )
+    assert libtcodpy.console_get_height_rect(console, 0, 0, 8, 8, "get height") > 0
 
     libtcodpy.console_set_color_control(libtcodpy.COLCTRL_1, fg, bg)
 
+
 def test_console_printing_advanced(console):
-    libtcodpy.console_rect(console, 0, 0, 4, 4, False,
-                           libtcodpy.BKGND_SET)
+    libtcodpy.console_rect(console, 0, 0, 4, 4, False, libtcodpy.BKGND_SET)
     libtcodpy.console_hline(console, 0, 0, 4)
     libtcodpy.console_vline(console, 0, 0, 4)
     libtcodpy.console_print_frame(console, 0, 0, 11, 11)
+
 
 def test_console_fade(console):
     libtcodpy.console_set_fade(0, libtcodpy.Color(0, 0, 0))
     libtcodpy.console_get_fade()
     libtcodpy.console_get_fading_color()
 
+
 def assertConsolesEqual(a, b):
     for y in range(libtcodpy.console_get_height(a)):
         for x in range(libtcodpy.console_get_width(a)):
-            assert libtcodpy.console_get_char(a, x, y) == \
-                libtcodpy.console_get_char(b, x, y)
-            assert libtcodpy.console_get_char_foreground(a, x, y) == \
-                libtcodpy.console_get_char_foreground(b, x, y)
-            assert libtcodpy.console_get_char_background(a, x, y) == \
-                libtcodpy.console_get_char_background(b, x, y)
+            assert libtcodpy.console_get_char(a, x, y) == libtcodpy.console_get_char(b, x, y)
+            assert libtcodpy.console_get_char_foreground(a, x, y) == libtcodpy.console_get_char_foreground(b, x, y)
+            assert libtcodpy.console_get_char_background(a, x, y) == libtcodpy.console_get_char_background(b, x, y)
+
 
 def test_console_blit(console, offscreen):
-    libtcodpy.console_print(offscreen, 0, 0, 'test')
+    libtcodpy.console_print(offscreen, 0, 0, "test")
     libtcodpy.console_blit(offscreen, 0, 0, 0, 0, console, 0, 0, 1, 1)
     assertConsolesEqual(console, offscreen)
     libtcodpy.console_set_key_color(offscreen, libtcodpy.black)
 
-def test_console_asc_read_write(console, offscreen, tmpdir):
-    libtcodpy.console_print(console, 0, 0, 'test')
 
-    asc_file = tmpdir.join('test.asc').strpath
+def test_console_asc_read_write(console, offscreen, tmpdir):
+    libtcodpy.console_print(console, 0, 0, "test")
+
+    asc_file = tmpdir.join("test.asc").strpath
     assert libtcodpy.console_save_asc(console, asc_file)
     assert libtcodpy.console_load_asc(offscreen, asc_file)
     assertConsolesEqual(console, offscreen)
 
-def test_console_apf_read_write(console, offscreen, tmpdir):
-    libtcodpy.console_print(console, 0, 0, 'test')
 
-    apf_file = tmpdir.join('test.apf').strpath
+def test_console_apf_read_write(console, offscreen, tmpdir):
+    libtcodpy.console_print(console, 0, 0, "test")
+
+    apf_file = tmpdir.join("test.apf").strpath
     assert libtcodpy.console_save_apf(console, apf_file)
     assert libtcodpy.console_load_apf(offscreen, apf_file)
     assertConsolesEqual(console, offscreen)
 
+
 def test_console_rexpaint_load_test_file(console):
-    xp_console = libtcodpy.console_from_xp('../data/rexpaint/test.xp')
+    xp_console = libtcodpy.console_from_xp("../data/rexpaint/test.xp")
     assert xp_console
-    assert libtcodpy.console_get_char(xp_console, 0, 0) == ord('T')
-    assert libtcodpy.console_get_char(xp_console, 1, 0) == ord('e')
-    assert (libtcodpy.console_get_char_background(xp_console, 0, 1) ==
-            libtcodpy.Color(255, 0, 0))
-    assert (libtcodpy.console_get_char_background(xp_console, 1, 1) ==
-            libtcodpy.Color(0, 255, 0))
-    assert (libtcodpy.console_get_char_background(xp_console, 2, 1) ==
-            libtcodpy.Color(0, 0, 255))
+    assert libtcodpy.console_get_char(xp_console, 0, 0) == ord("T")
+    assert libtcodpy.console_get_char(xp_console, 1, 0) == ord("e")
+    assert libtcodpy.console_get_char_background(xp_console, 0, 1) == libtcodpy.Color(255, 0, 0)
+    assert libtcodpy.console_get_char_background(xp_console, 1, 1) == libtcodpy.Color(0, 255, 0)
+    assert libtcodpy.console_get_char_background(xp_console, 2, 1) == libtcodpy.Color(0, 0, 255)
+
 
 def test_console_rexpaint_save_load(console, tmpdir, ch, fg, bg):
-    libtcodpy.console_print(console, 0, 0, 'test')
+    libtcodpy.console_print(console, 0, 0, "test")
     libtcodpy.console_put_char_ex(console, 1, 1, ch, fg, bg)
-    xp_file = tmpdir.join('test.xp').strpath
+    xp_file = tmpdir.join("test.xp").strpath
     assert libtcodpy.console_save_xp(console, xp_file, 1)
     xp_console = libtcodpy.console_from_xp(xp_file)
     assert xp_console
@@ -156,30 +156,35 @@ def test_console_rexpaint_save_load(console, tmpdir, ch, fg, bg):
     assert libtcodpy.console_load_xp(None, xp_file)
     assertConsolesEqual(console, xp_console)
 
+
 def test_console_rexpaint_list_save_load(console, tmpdir):
     con1 = libtcodpy.console_new(8, 2)
     con2 = libtcodpy.console_new(8, 2)
-    libtcodpy.console_print(con1, 0, 0, 'hello')
-    libtcodpy.console_print(con2, 0, 0, 'world')
-    xp_file = tmpdir.join('test.xp').strpath
+    libtcodpy.console_print(con1, 0, 0, "hello")
+    libtcodpy.console_print(con2, 0, 0, "world")
+    xp_file = tmpdir.join("test.xp").strpath
     assert libtcodpy.console_list_save_xp([con1, con2], xp_file, 1)
     for a, b in zip([con1, con2], libtcodpy.console_list_load_xp(xp_file)):
         assertConsolesEqual(a, b)
         libtcodpy.console_delete(a)
         libtcodpy.console_delete(b)
 
+
 def test_console_fullscreen(console):
     libtcodpy.console_set_fullscreen(False)
+
 
 def test_console_key_input(console):
     libtcodpy.console_check_for_keypress()
     libtcodpy.console_is_key_pressed(libtcodpy.KEY_ENTER)
+
 
 def test_console_fill_errors(console):
     with pytest.raises(TypeError):
         libtcodpy.console_fill_background(console, [0], [], [])
     with pytest.raises(TypeError):
         libtcodpy.console_fill_foreground(console, [0], [], [])
+
 
 def test_console_fill(console):
     width = libtcodpy.console_get_width(console)
@@ -200,7 +205,8 @@ def test_console_fill(console):
     assert fill == fg
     assert fill == ch
 
-@unittest.skipUnless(numpy, 'requires numpy module')
+
+@unittest.skipUnless(numpy, "requires numpy module")
 def test_console_fill_numpy(console):
     width = libtcodpy.console_get_width(console)
     height = libtcodpy.console_get_height(console)
@@ -226,26 +232,30 @@ def test_console_fill_numpy(console):
     assert fill == fg.tolist()
     assert fill == ch.tolist()
 
+
 def test_console_buffer(console):
     buffer = libtcodpy.ConsoleBuffer(
         libtcodpy.console_get_width(console),
         libtcodpy.console_get_height(console),
     )
     buffer = buffer.copy()
-    buffer.set_fore(0, 0, 0, 0, 0, '@')
+    buffer.set_fore(0, 0, 0, 0, 0, "@")
     buffer.set_back(0, 0, 0, 0, 0)
-    buffer.set(0, 0, 0, 0, 0, 0, 0, 0, '@')
+    buffer.set(0, 0, 0, 0, 0, 0, 0, 0, "@")
     buffer.blit(console)
+
 
 def test_console_buffer_error(console):
     buffer = libtcodpy.ConsoleBuffer(0, 0)
     with pytest.raises(ValueError):
         buffer.blit(console)
 
+
 def test_console_font_mapping(console):
-    libtcodpy.console_map_ascii_code_to_font('@', 1, 1)
-    libtcodpy.console_map_ascii_codes_to_font('@', 1, 0, 0)
-    libtcodpy.console_map_string_to_font('@', 0, 0)
+    libtcodpy.console_map_ascii_code_to_font("@", 1, 1)
+    libtcodpy.console_map_ascii_codes_to_font("@", 1, 0, 0)
+    libtcodpy.console_map_string_to_font("@", 0, 0)
+
 
 def test_mouse(console):
     libtcodpy.mouse_show_cursor(True)
@@ -253,6 +263,7 @@ def test_mouse(console):
     mouse = libtcodpy.mouse_get_status()
     repr(mouse)
     libtcodpy.mouse_move(0, 0)
+
 
 def test_sys_time(console):
     libtcodpy.sys_set_fps(0)
@@ -262,18 +273,23 @@ def test_sys_time(console):
     libtcodpy.sys_elapsed_milli()
     libtcodpy.sys_elapsed_seconds()
 
-def test_sys_screenshot(console, tmpdir):
-    libtcodpy.sys_save_screenshot(tmpdir.join('test.png').strpath)
 
-@pytest.mark.skip('not portable')
+def test_sys_screenshot(console, tmpdir):
+    libtcodpy.sys_save_screenshot(tmpdir.join("test.png").strpath)
+
+
+@pytest.mark.skip("not portable")
 def test_sys_custom_render(console):
     escape = []
+
     def sdl_callback(sdl_surface):
         escape.append(True)
         libtcodpy.console_set_dirty(0, 0, 0, 0)
+
     libtcodpy.sys_register_SDL_renderer(sdl_callback)
     assert libtcodpy.console_flush() == 0
-    assert escape, 'proof that sdl_callback was called'
+    assert escape, "proof that sdl_callback was called"
+
 
 def test_image(console, tmpdir):
     img = libtcodpy.image_new(16, 16)
@@ -290,23 +306,22 @@ def test_image(console, tmpdir):
     libtcodpy.image_get_pixel(img, 0, 0)
     libtcodpy.image_get_mipmap_pixel(img, 0, 0, 1, 1)
     libtcodpy.image_put_pixel(img, 0, 0, libtcodpy.Color(255, 255, 255))
-    libtcodpy.image_blit(img, console, 0, 0,
-                         libtcodpy.BKGND_SET, 1, 1, 0)
-    libtcodpy.image_blit_rect(img, console, 0, 0, 16, 16,
-                              libtcodpy.BKGND_SET)
+    libtcodpy.image_blit(img, console, 0, 0, libtcodpy.BKGND_SET, 1, 1, 0)
+    libtcodpy.image_blit_rect(img, console, 0, 0, 16, 16, libtcodpy.BKGND_SET)
     libtcodpy.image_blit_2x(img, console, 0, 0)
-    libtcodpy.image_save(img, tmpdir.join('test.png').strpath)
+    libtcodpy.image_save(img, tmpdir.join("test.png").strpath)
     libtcodpy.image_delete(img)
 
     # Not portable.
-    #img = libtcodpy.image_from_console(console)
-    #libtcodpy.image_refresh_console(img, console)
-    #libtcodpy.image_delete(img)
+    # img = libtcodpy.image_from_console(console)
+    # libtcodpy.image_refresh_console(img, console)
+    # libtcodpy.image_delete(img)
 
-    libtcodpy.image_delete(libtcodpy.image_load('../data/img/circle.png'))
+    libtcodpy.image_delete(libtcodpy.image_load("../data/img/circle.png"))
 
-@pytest.mark.skip('not portable')
-@pytest.mark.parametrize('sample', ['@', u'\u2603']) # Unicode snowman
+
+@pytest.mark.skip("not portable")
+@pytest.mark.parametrize("sample", ["@", u"\u2603"])  # Unicode snowman
 def test_clipboard(console, sample):
     saved = libtcodpy.sys_clipboard_get()
     try:
@@ -318,9 +333,9 @@ def test_clipboard(console, sample):
 
 # arguments to test with and the results expected from these arguments
 LINE_ARGS = (-5, 0, 5, 10)
-EXCLUSIVE_RESULTS = [(-4, 1), (-3, 2), (-2, 3), (-1, 4), (0, 5), (1, 6),
-                     (2, 7), (3, 8), (4, 9), (5, 10)]
+EXCLUSIVE_RESULTS = [(-4, 1), (-3, 2), (-2, 3), (-1, 4), (0, 5), (1, 6), (2, 7), (3, 8), (4, 9), (5, 10)]
 INCLUSIVE_RESULTS = [(-5, 0)] + EXCLUSIVE_RESULTS
+
 
 def test_line_step():
     """
@@ -331,25 +346,31 @@ def test_line_step():
         assert libtcodpy.line_step() == expected_xy
     assert libtcodpy.line_step() == (None, None)
 
+
 def test_line():
     """
     tests normal use, lazy evaluation, and error propagation
     """
     # test normal results
     test_result = []
+
     def line_test(*test_xy):
         test_result.append(test_xy)
         return 1
+
     assert libtcodpy.line(*LINE_ARGS, py_callback=line_test) == 1
     assert test_result == INCLUSIVE_RESULTS
 
     # test lazy evaluation
     test_result = []
+
     def return_false(*test_xy):
         test_result.append(test_xy)
         return False
+
     assert libtcodpy.line(*LINE_ARGS, py_callback=return_false) == 0
     assert test_result == INCLUSIVE_RESULTS[:1]
+
 
 def test_line_iter():
     """
@@ -357,12 +378,13 @@ def test_line_iter():
     """
     assert list(libtcodpy.line_iter(*LINE_ARGS)) == INCLUSIVE_RESULTS
 
+
 def test_bsp():
     """
     commented out statements work in libtcod-cffi
     """
     bsp = libtcodpy.bsp_new_with_size(0, 0, 64, 64)
-    repr(bsp) # test __repr__ on leaf
+    repr(bsp)  # test __repr__ on leaf
     libtcodpy.bsp_resize(bsp, 0, 0, 32, 32)
     assert bsp != None
 
@@ -376,28 +398,28 @@ def test_bsp():
     bsp.level = bsp.level
 
     # cover functions on leaf
-    #self.assertFalse(libtcodpy.bsp_left(bsp))
-    #self.assertFalse(libtcodpy.bsp_right(bsp))
-    #self.assertFalse(libtcodpy.bsp_father(bsp))
+    # self.assertFalse(libtcodpy.bsp_left(bsp))
+    # self.assertFalse(libtcodpy.bsp_right(bsp))
+    # self.assertFalse(libtcodpy.bsp_father(bsp))
     assert libtcodpy.bsp_is_leaf(bsp)
 
     assert libtcodpy.bsp_contains(bsp, 1, 1)
-    #self.assertFalse(libtcodpy.bsp_contains(bsp, -1, -1))
-    #self.assertEqual(libtcodpy.bsp_find_node(bsp, 1, 1), bsp)
-    #self.assertFalse(libtcodpy.bsp_find_node(bsp, -1, -1))
+    # self.assertFalse(libtcodpy.bsp_contains(bsp, -1, -1))
+    # self.assertEqual(libtcodpy.bsp_find_node(bsp, 1, 1), bsp)
+    # self.assertFalse(libtcodpy.bsp_find_node(bsp, -1, -1))
 
     libtcodpy.bsp_split_once(bsp, False, 4)
-    repr(bsp) # test __repr__ with parent
+    repr(bsp)  # test __repr__ with parent
     libtcodpy.bsp_split_once(bsp, True, 4)
     repr(bsp)
 
     # cover functions on parent
     assert libtcodpy.bsp_left(bsp)
     assert libtcodpy.bsp_right(bsp)
-    #self.assertFalse(libtcodpy.bsp_father(bsp))
+    # self.assertFalse(libtcodpy.bsp_father(bsp))
     assert not libtcodpy.bsp_is_leaf(bsp)
-    #self.assertEqual(libtcodpy.bsp_father(libtcodpy.bsp_left(bsp)), bsp)
-    #self.assertEqual(libtcodpy.bsp_father(libtcodpy.bsp_right(bsp)), bsp)
+    # self.assertEqual(libtcodpy.bsp_father(libtcodpy.bsp_left(bsp)), bsp)
+    # self.assertEqual(libtcodpy.bsp_father(libtcodpy.bsp_right(bsp)), bsp)
 
     libtcodpy.bsp_split_recursive(bsp, None, 4, 2, 2, 1.0, 1.0)
 
@@ -418,6 +440,7 @@ def test_bsp():
 
     libtcodpy.bsp_delete(bsp)
 
+
 def test_map():
     map = libtcodpy.map_new(16, 16)
     assert libtcodpy.map_get_width(map) == 16
@@ -430,6 +453,7 @@ def test_map():
     libtcodpy.map_is_in_fov(map, 0, 0)
     libtcodpy.map_delete(map)
 
+
 def test_color():
     color_a = libtcodpy.Color(0, 1, 2)
     assert list(color_a) == [0, 1, 2]
@@ -438,7 +462,7 @@ def test_color():
     assert color_a[2] == color_a.b
 
     color_a[1] = 3
-    color_a['b'] = color_a['b']
+    color_a["b"] = color_a["b"]
     assert list(color_a) == [0, 3, 2]
 
     assert color_a == color_a
@@ -451,10 +475,12 @@ def test_color():
     libtcodpy.color_get_hsv(color)
     libtcodpy.color_scale_HSV(color, 0, 0)
 
+
 def test_color_repr():
     Color = libtcodpy.Color
     col = Color(0, 1, 2)
     assert eval(repr(col)) == col
+
 
 def test_color_math():
     color_a = libtcodpy.Color(0, 1, 2)
@@ -465,16 +491,19 @@ def test_color_math():
     assert libtcodpy.Color(255, 255, 255) * color_a == color_a
     assert color_a * 100 == libtcodpy.Color(0, 100, 200)
 
+
 def test_color_gen_map():
     colors = libtcodpy.color_gen_map([(0, 0, 0), (255, 255, 255)], [0, 8])
     assert colors[0] == libtcodpy.Color(0, 0, 0)
     assert colors[-1] == libtcodpy.Color(255, 255, 255)
 
+
 def test_namegen_parse():
-    libtcodpy.namegen_parse('../data/namegen/jice_celtic.cfg')
-    assert libtcodpy.namegen_generate('Celtic female')
+    libtcodpy.namegen_parse("../data/namegen/jice_celtic.cfg")
+    assert libtcodpy.namegen_generate("Celtic female")
     assert libtcodpy.namegen_get_sets()
     libtcodpy.namegen_destroy()
+
 
 def test_noise():
     noise = libtcodpy.noise_new(1)
@@ -483,6 +512,7 @@ def test_noise():
     libtcodpy.noise_get_fbm(noise, [0], 4)
     libtcodpy.noise_get_turbulence(noise, [0], 4)
     libtcodpy.noise_delete(noise)
+
 
 def test_random():
     rand = libtcodpy.random_get_instance()
@@ -502,6 +532,7 @@ def test_random():
 
     libtcodpy.random_delete(rand)
     libtcodpy.random_delete(backup)
+
 
 def test_heightmap():
     hmap = libtcodpy.heightmap_new(16, 16)
@@ -524,13 +555,11 @@ def test_heightmap():
     libtcodpy.heightmap_add_hill(hmap, 0, 0, 4, 1)
     libtcodpy.heightmap_dig_hill(hmap, 0, 0, 4, 1)
     libtcodpy.heightmap_rain_erosion(hmap, 1, 1, 1)
-    libtcodpy.heightmap_kernel_transform(hmap, 3, [-1, 1, 0], [0, 0, 0],
-                                    [.33, .33, .33], 0, 1)
-    libtcodpy.heightmap_add_voronoi(hmap, 10, 3, [1,3,5])
+    libtcodpy.heightmap_kernel_transform(hmap, 3, [-1, 1, 0], [0, 0, 0], [0.33, 0.33, 0.33], 0, 1)
+    libtcodpy.heightmap_add_voronoi(hmap, 10, 3, [1, 3, 5])
     libtcodpy.heightmap_add_fbm(hmap, noise, 1, 1, 1, 1, 4, 1, 1)
     libtcodpy.heightmap_scale_fbm(hmap, noise, 1, 1, 1, 1, 4, 1, 1)
-    libtcodpy.heightmap_dig_bezier(hmap, [0, 16, 16, 0], [0, 0, 16, 16],
-                              1, 1, 1, 1)
+    libtcodpy.heightmap_dig_bezier(hmap, [0, 16, 16, 0], [0, 0, 16, 16], 1, 1, 1, 1)
 
     # read data
     libtcodpy.heightmap_get_value(hmap, 0, 0)
@@ -545,15 +574,16 @@ def test_heightmap():
     libtcodpy.noise_delete(noise)
     libtcodpy.heightmap_delete(hmap)
 
+
 MAP = (
-       '############',
-       '#   ###    #',
-       '#   ###    #',
-       '#   ### ####',
-       '## #### # ##',
-       '##      ####',
-       '############',
-       )
+    "############",
+    "#   ###    #",
+    "#   ###    #",
+    "#   ### ####",
+    "## #### # ##",
+    "##      ####",
+    "############",
+)
 
 MAP_WIDTH = len(MAP[0])
 MAP_HEIGHT = len(MAP)
@@ -562,17 +592,19 @@ POINT_A = (2, 2)
 POINT_B = (9, 2)
 POINT_C = (9, 4)
 
-POINTS_AB = POINT_A + POINT_B # valid path
-POINTS_AC = POINT_A + POINT_C # invalid path
+POINTS_AB = POINT_A + POINT_B  # valid path
+POINTS_AC = POINT_A + POINT_C  # invalid path
+
 
 @pytest.fixture()
 def map_():
     map_ = libtcodpy.map_new(MAP_WIDTH, MAP_HEIGHT)
     for y, line in enumerate(MAP):
         for x, ch in enumerate(line):
-            libtcodpy.map_set_properties(map_, x, y, ch == ' ', ch == ' ')
+            libtcodpy.map_set_properties(map_, x, y, ch == " ", ch == " ")
     yield map_
     libtcodpy.map_delete(map_)
+
 
 @pytest.fixture()
 def path_callback(map_):
@@ -580,19 +612,22 @@ def path_callback(map_):
         if libtcodpy.map_is_walkable(map_, dx, dy):
             return 1
         return 0
+
     return callback
+
 
 def test_map_fov(map_):
     libtcodpy.map_compute_fov(map_, *POINT_A)
 
+
 def test_astar(map_):
     astar = libtcodpy.path_new_using_map(map_)
 
-    assert not  libtcodpy.path_compute(astar, *POINTS_AC)
-    assert  libtcodpy.path_size(astar) == 0
-    assert  libtcodpy.path_compute(astar, *POINTS_AB)
-    assert  libtcodpy.path_get_origin(astar) == POINT_A
-    assert  libtcodpy.path_get_destination(astar) == POINT_B
+    assert not libtcodpy.path_compute(astar, *POINTS_AC)
+    assert libtcodpy.path_size(astar) == 0
+    assert libtcodpy.path_compute(astar, *POINTS_AB)
+    assert libtcodpy.path_get_origin(astar) == POINT_A
+    assert libtcodpy.path_get_destination(astar) == POINT_B
     libtcodpy.path_reverse(astar)
     assert libtcodpy.path_get_origin(astar) == POINT_B
     assert libtcodpy.path_get_destination(astar) == POINT_A
@@ -609,14 +644,16 @@ def test_astar(map_):
 
     libtcodpy.path_delete(astar)
 
+
 def test_astar_callback(map_, path_callback):
     astar = libtcodpy.path_new_using_function(
         libtcodpy.map_get_width(map_),
         libtcodpy.map_get_height(map_),
         path_callback,
-        )
+    )
     libtcodpy.path_compute(astar, *POINTS_AB)
     libtcodpy.path_delete(astar)
+
 
 def test_dijkstra(map_):
     path = libtcodpy.dijkstra_new(map_)
@@ -640,14 +677,16 @@ def test_dijkstra(map_):
 
     libtcodpy.dijkstra_delete(path)
 
+
 def test_dijkstra_callback(map_, path_callback):
     path = libtcodpy.dijkstra_new_using_function(
         libtcodpy.map_get_width(map_),
         libtcodpy.map_get_height(map_),
         path_callback,
-        )
+    )
     libtcodpy.dijkstra_compute(path, *POINT_A)
     libtcodpy.dijkstra_delete(path)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pytest.main()

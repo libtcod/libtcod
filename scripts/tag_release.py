@@ -7,35 +7,11 @@ import subprocess
 import sys
 from typing import Tuple
 
-parser = argparse.ArgumentParser(
-    description="Tags and releases the next version of this project.",
-)
-
-parser.add_argument(
-    "tag",
-    help="Semantic version number to use as the tag.",
-)
-
-parser.add_argument(
-    "-e",
-    "--edit",
-    action="store_true",
-    help="Force edits of git commits.",
-)
-
-parser.add_argument(
-    "-n",
-    "--dry-run",
-    action="store_true",
-    help="Don't modify files.",
-)
-
-parser.add_argument(
-    "-v",
-    "--verbose",
-    action="store_true",
-    help="Print debug information.",
-)
+parser = argparse.ArgumentParser(description="Tags and releases the next version of this project.")
+parser.add_argument("tag", help="Semantic version number to use as the tag.")
+parser.add_argument("-e", "--edit", action="store_true", help="Force edits of git commits.")
+parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
+parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
 
 def parse_changelog(args: argparse.Namespace) -> Tuple[str, str]:
@@ -128,8 +104,7 @@ def main() -> None:
             ["git", "commit", "-avm", "Prepare %s release." % args.tag] + edit,
         )
         subprocess.check_call(
-            ["git", "tag", args.tag, "-a", "-m", "%s\n\n%s" % (args.tag, changes)]
-            + edit,
+            ["git", "tag", args.tag, "-a", "-m", "%s\n\n%s" % (args.tag, changes)] + edit,
         )
 
 

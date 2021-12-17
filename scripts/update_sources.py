@@ -38,11 +38,7 @@ def get_sources(
     for curpath, dirs, files in os.walk(directory):
         # Ignore hidden directories.
         dirs[:] = [dir for dir in dirs if not dir.startswith(".")]
-        files = [
-            os.path.join(curpath, f).replace("\\", "/")
-            for f in files
-            if re_valid.match(f)
-        ]
+        files = [os.path.join(curpath, f).replace("\\", "/") for f in files if re_valid.match(f)]
         group = os.path.relpath(curpath, "src").replace("\\", "/")
         yield group, files
     if sources:
@@ -55,9 +51,7 @@ def all_sources(
     vendor_sources: Tuple[str, ...] = VENDOR_SOURCES,
 ) -> Iterable[str]:
     """Iterate over all sources needed to compile libtcod."""
-    for _, sources_ in get_sources(
-        sources=sources, includes=includes, vendor_sources=vendor_sources
-    ):
+    for _, sources_ in get_sources(sources=sources, includes=includes, vendor_sources=vendor_sources):
         yield from sources_
 
 
@@ -76,9 +70,7 @@ def generate_am() -> str:
         out += "\n"
 
     out += "\nlibtcod_la_SOURCES = \\"
-    out += "\n\t" + " \\\n\t".join(
-        "../../" + f for f in all_sources(vendor_sources=VENDOR_SOURCES_AUTOMAKE)
-    )
+    out += "\n\t" + " \\\n\t".join("../../" + f for f in all_sources(vendor_sources=VENDOR_SOURCES_AUTOMAKE))
     out += "\n"
     return out
 
@@ -87,27 +79,21 @@ def generate_cmake() -> str:
     """Returns a CMake script with libtcod's sources."""
     out = f"{BANNER}"
     out += "\ntarget_sources(${PROJECT_NAME} PRIVATE\n    "
-    out += "\n    ".join(
-        os.path.relpath(f, "src").replace("\\", "/") for f in all_sources(includes=True)
-    )
+    out += "\n    ".join(os.path.relpath(f, "src").replace("\\", "/") for f in all_sources(includes=True))
     out += "\n)"
     for group, files in get_sources(sources=False, includes=True, directory="src/"):
         if group.startswith("vendor"):
             continue
         group = group.replace("\\", "/")
         out += "\ninstall(FILES\n    "
-        out += "\n    ".join(
-            os.path.relpath(f, "src").replace("\\", "/") for f in files
-        )
+        out += "\n    ".join(os.path.relpath(f, "src").replace("\\", "/") for f in files)
         out += "\n    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/%s" % group
         out += "\n    COMPONENT IncludeFiles"
         out += "\n)"
     for group, files in get_sources(sources=True, includes=True):
         group = group.replace("/", r"\\")
         out += f"\nsource_group({group} FILES\n    "
-        out += "\n    ".join(
-            os.path.relpath(f, "src").replace("\\", "/") for f in files
-        )
+        out += "\n    ".join(os.path.relpath(f, "src").replace("\\", "/") for f in files)
         out += "\n)"
     out += "\n"
     return out

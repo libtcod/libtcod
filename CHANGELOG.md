@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+
+## [1.20.0] - 2021-12-24
 ### Added
 - `TCOD_RENDERER_XTERM` was added.
   [#100](https://github.com/libtcod/libtcod/pull/100)

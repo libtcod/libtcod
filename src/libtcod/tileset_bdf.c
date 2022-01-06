@@ -97,22 +97,33 @@ static int check_keyword(struct BDFLoader* loader, const char* keyword) {
   }
   return 0;
 }
+/***************************************************************************
+    Move the cursor pass any newlines it is currently at.  Return the number of newlines passed.
+ */
+static int bdf_handle_newlines(struct BDFLoader* loader) {
+  int newlines_count = 0;
+  while (loader->cursor < loader->end) {
+    if (loader->cursor[0] == '\r') {
+      ++loader->cursor;
+      if (loader->cursor < loader->end && loader->cursor[0] == '\n') {
+        ++loader->cursor;
+      }
+    } else if (loader->cursor[0] == '\n') {
+      ++loader->cursor;
+    } else {
+      break;  // No more newlines at cursor.
+    }
+    ++newlines_count;
+  }
+  loader->line_number += newlines_count;
+  return newlines_count;
+}
 /**
     Advance the cursor to the next line.  Returns -1 on error.
  */
 static int goto_next_line(struct BDFLoader* loader) {
-  bool end_found = false;
   while (loader->cursor < loader->end) {
-    if (loader->cursor[0] == '\r') {
-      ++loader->cursor;
-      end_found = true;
-    }
-    if (loader->cursor[0] == '\n') {
-      ++loader->cursor;
-      end_found = true;
-    }
-    if (end_found) {
-      ++loader->line_number;
+    if (bdf_handle_newlines(loader) > 0) {
       return 0;
     }
     ++loader->cursor;
@@ -214,8 +225,9 @@ static int parse_char(struct BDFLoader* loader) {
       // Ignore.
     } else if (check_keyword(loader, "VVECTOR") == 0) {
       // Ignore.
+    } else if (check_keyword(loader, "") == 0) {  // Ignore empty lines.
     } else {
-      TCOD_set_errorvf("Unknown keyword on line %d", loader->line_number);
+      TCOD_set_errorvf("Unknown keyword on line %d", loader->line_number + 1);
       return -1;
     }
   }
@@ -256,8 +268,9 @@ static int parse_bdf_chars(struct BDFLoader* loader) {
     Begins parsing the BDF data.
  */
 static int parse_bdf(struct BDFLoader* loader) {
+  bdf_handle_newlines(loader);
   if (check_keyword(loader, "STARTFONT") < 0) {
-    TCOD_set_errorv("Could not find STARTFONT keyword in BDF file.");
+    TCOD_set_errorv("BDF files must begin with the STARTFONT keyword.");
     return -1;
   }
   while (goto_next_line(loader) == 0) {

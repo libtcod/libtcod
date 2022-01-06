@@ -19,4 +19,6 @@ TEST_CASE("Missing tilesheet.", "[!throws]") {
 TEST_CASE("Load BDF.") {
   auto tileset = tcod::load_bdf(get_file("fonts/ucs-fonts/4x6.bdf"));
   REQUIRE(tileset);
+  tileset = tcod::load_bdf(get_file("fonts/Tamzen5x9r.bdf"));
+  REQUIRE(tileset);
 }

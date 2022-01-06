@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/)
 since `1.7.0`.
 
 ## [Unreleased]
+### Fixed
+- BDF files with blank lines no longer fail to load with an "Unknown keyword" error.
 
 ## [1.20.0] - 2021-12-24
 ### Added

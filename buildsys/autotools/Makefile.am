@@ -62,7 +62,7 @@ dist_noinst_DATA += \
 	../../data/namegen/jice_fantasy.cfg \
 	../../data/namegen/mingos_standard.cfg \
 	../../data/namegen/jice_mesopotamian.cfg \
-	../../data/fonts/README.txt \
+	../../data/fonts/README.md \
 	../../data/fonts/dejavu10x10_gs_tc.png
 
 pkgconfigdir = $(libdir)/pkgconfig

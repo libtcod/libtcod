@@ -46,6 +46,15 @@ void fatal(const char* format, ...) {
   exit(EXIT_FAILURE);
 }
 
+// Return true if string ends with suffix.
+bool str_ends_with(const char* string, const char* suffix) {
+  if (!string || !suffix) return false;
+  size_t str_len = strlen(string);
+  size_t suffix_len = strlen(suffix);
+  if (suffix_len > str_len) return false;
+  return strcmp(string + str_len - suffix_len, suffix) == 0;
+}
+
 /* ***************************
  * samples rendering functions
  * ***************************/
@@ -1804,6 +1813,22 @@ int main(int argc, char* argv[]) {
             } break;
           }
           break;
+        case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
+          TCOD_Tileset* new_tileset = NULL;
+          if (str_ends_with(event.drop.file, ".bdf")) {
+            new_tileset = TCOD_load_bdf(event.drop.file);
+          } else if (str_ends_with(event.drop.file, "_tc.png")) {
+            new_tileset = TCOD_tileset_load(event.drop.file, 32, 8, 256, TCOD_CHARMAP_TCOD);
+          } else {
+            new_tileset = TCOD_tileset_load(event.drop.file, 16, 16, 256, TCOD_CHARMAP_CP437);
+          }
+          if (new_tileset) {
+            TCOD_tileset_delete(tileset);
+            params.tileset = tileset = new_tileset;
+            TCOD_context_change_tileset(context, tileset);
+          }
+          SDL_free(event.drop.file);
+        } break;
         case SDL_QUIT:
           return EXIT_SUCCESS;  // Exit program by returning from main.
       }

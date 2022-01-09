@@ -20,6 +20,12 @@
 #include <string>
 #include <vector>
 
+// Return true if string ends with suffix.
+bool str_ends_with(std::string_view string, std::string_view suffix) {
+  if (suffix.length() > string.length()) return false;
+  return std::equal(suffix.rbegin(), suffix.rend(), string.rbegin());
+}
+
 static tcod::ContextPtr g_context;  // A global tcod context object.
 static std::array<int, 2> g_tile_size{};  // Saved tile size used by the SDL callback sample.
 
@@ -1704,6 +1710,22 @@ int main(int argc, char* argv[]) {
               break;
           }
           break;
+        case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
+          tcod::Tileset new_tileset;
+          if (str_ends_with(event.drop.file, ".bdf")) {
+            new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.file));
+          } else if (str_ends_with(event.drop.file, "_tc.png")) {
+            new_tileset = tcod::load_tilesheet(event.drop.file, {32, 8}, tcod::CHARMAP_TCOD);
+          } else {
+            new_tileset = tcod::load_tilesheet(event.drop.file, {16, 16}, tcod::CHARMAP_CP437);
+          }
+          if (new_tileset.get()) {
+            tileset = std::move(new_tileset);
+            params.tileset = tileset.get();
+            TCOD_context_change_tileset(g_context.get(), tileset.get());
+          }
+          SDL_free(event.drop.file);
+        } break;
         default:
           break;
       }

@@ -72,6 +72,10 @@ struct TCOD_ColorRGB {
     if (ch != '}') std::runtime_error("Expected missing '}'.");
     return in;
   }
+  template <class Archive>
+  void serialize(Archive& archive) {
+    archive(r, g, b);
+  }
 #endif  // __cplusplus
   uint8_t r;
   uint8_t g;
@@ -122,6 +126,10 @@ struct TCOD_ColorRGBA {
     in >> ch;
     if (ch != '}') std::runtime_error("Expected missing '}'.");
     return in;
+  }
+  template <class Archive>
+  void serialize(Archive& archive) {
+    archive(r, g, b, a);
   }
 #endif  // __cplusplus
   uint8_t r;

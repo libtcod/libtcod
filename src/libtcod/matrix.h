@@ -82,6 +82,11 @@ class Matrix {
   container_type& get_container() noexcept { return data_; }
   const container_type& get_container() const noexcept { return data_; }
 
+  template <class Archive>
+  void serialize(Archive& archive) {
+    archive(shape_, data_);
+  }
+
  private:
   static size_t get_size_from_shape(const shape_type& shape) noexcept {
     size_t size = 1;

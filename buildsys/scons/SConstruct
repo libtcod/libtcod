@@ -1,11 +1,10 @@
-import os
-import sys
-
 import multiprocessing
+import os
 import platform
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import time
 import zipfile
@@ -501,7 +500,6 @@ package_files = (
     + env.Glob("$VARIANT/include/*.h*")
     + env.Glob("$VARIANT/include/libtcod/*.h*")
     + env.Glob("$VARIANT/include/libtcod/*/*.h*")
-    + env.Glob("$VARIANT/lua/*.lua")
     + env.Glob("$VARIANT/python/*.py")
     + env.Glob("$VARIANT/python/**/*.py")
     + env.Glob("$VARIANT/python/**.pyproj")

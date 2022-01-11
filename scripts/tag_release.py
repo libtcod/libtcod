@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import argparse
 import datetime
 import json
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Tuple
 
 parser = argparse.ArgumentParser(description="Tags and releases the next version of this project.")
@@ -13,15 +16,16 @@ parser.add_argument("-e", "--edit", action="store_true", help="Force edits of gi
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
+CHANGELOG_PATH = Path("CHANGELOG.md")
+
 
 def parse_changelog(args: argparse.Namespace) -> Tuple[str, str]:
     """Return an updated changelog and and the list of changes."""
-    with open("CHANGELOG.md", "r", encoding="utf-8") as file:
-        match = re.match(
-            pattern=r"(.*?## \[Unreleased]\n)(.+?\n)(\n*## \[.*)",
-            string=file.read(),
-            flags=re.DOTALL,
-        )
+    match = re.match(
+        pattern=r"(.*?## \[Unreleased]\n)(.+?\n)(\n*## \[.*)",
+        string=CHANGELOG_PATH.read_text(encoding="utf-8"),
+        flags=re.DOTALL,
+    )
     assert match
     header, changes, tail = match.groups()
     tagged = "\n## [%s] - %s\n%s" % (
@@ -47,12 +51,12 @@ VERSION_SOURCE = """\
 
 def update_version_header(args: argparse.Namespace) -> None:
     """Update version.h to use the given tag."""
-    with open("src/libtcod/version.h", "r", encoding="utf-8") as f:
-        match = re.match(
-            pattern=r"(?P<head>.*?)\n#define TCOD_MAJOR_VERSION.*?TCOD_STRVERSION[^\n]*\n(?P<tail>.*)",
-            string=f.read(),
-            flags=re.DOTALL,
-        )
+    VERSION_HEADER = Path("src/libtcod/version.h")
+    match = re.match(
+        pattern=r"(?P<head>.*?)\n#define TCOD_MAJOR_VERSION.*?TCOD_STRVERSION[^\n]*\n(?P<tail>.*)",
+        string=VERSION_HEADER.read_text(encoding="utf-8"),
+        flags=re.DOTALL,
+    )
     assert match
     format_args = {"tag": args.tag}
     format_args.update(match.groupdict())
@@ -67,8 +71,7 @@ def update_version_header(args: argparse.Namespace) -> None:
     source = VERSION_SOURCE.format(**format_args)
 
     if not args.dry_run:
-        with open("src/libtcod/version.h", "w", encoding="utf-8") as f:
-            f.write(source)
+        VERSION_HEADER.write_text(source, encoding="utf-8")
 
 
 def update_vcpkg_manifest(args: argparse.Namespace) -> None:
@@ -97,14 +100,13 @@ def main() -> None:
     update_vcpkg_manifest(args)
 
     if not args.dry_run:
-        with open("CHANGELOG.md", "w", encoding="utf-8") as f:
-            f.write(new_changelog)
+        CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")
         edit = ["-e"] if args.edit else []
         subprocess.check_call(
-            ["git", "commit", "-avm", "Prepare %s release." % args.tag] + edit,
+            ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],
         )
         subprocess.check_call(
-            ["git", "tag", args.tag, "-a", "-m", "%s\n\n%s" % (args.tag, changes)] + edit,
+            ["git", "tag", args.tag, "-a", "-m", f"{args.tag}\n\n{changes}", *edit],
         )
 
 

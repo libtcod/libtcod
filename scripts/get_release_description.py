@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Print the description used for GitHub Releases."""
+from __future__ import annotations
+
 import re
+from pathlib import Path
 
 TAG_BANNER = r"## \[\d+\.\d+\.\d+\S*\] - \d+-\d+-\d+\n"
 
@@ -10,8 +13,7 @@ RE_SECTION = re.compile(r"^### (\w+)$", re.MULTILINE)
 
 def main() -> None:
     # Get the most recent tag.
-    with open("CHANGELOG.md", "r", encoding="utf-8") as f:
-        match = RE_BODY.match(f.read())
+    match = RE_BODY.match(Path("CHANGELOG.md").read_text(encoding="utf-8"))
     assert match
     body = match.groups()[0].strip()
 

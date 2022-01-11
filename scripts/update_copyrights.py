@@ -42,6 +42,7 @@ def update_file(path: Path, copyright: str, args: argparse.Namespace):
     `path` is the file path.
     `copyright` is the up-to-date copyright banner.
     """
+    path = path.resolve()
     source = path.read_text(encoding="utf-8")
     match = re.match(
         pattern=r"(/\*.*?Copyright ©.*?\*/\n?)?\n*(.*)",
@@ -52,12 +53,12 @@ def update_file(path: Path, copyright: str, args: argparse.Namespace):
     old_copyright, source = match.groups()
     if old_copyright == copyright:
         if args.verbose:
-            print(f"Banner is up-to-date {path!r}")
+            print(f"Banner is up-to-date {path}")
         return
     elif old_copyright is None:
-        print(f"Adding missing banner to {path!r}")
+        print(f"Adding missing banner to {path}")
     else:
-        print(f"Updating banner for {path!r}")
+        print(f"Updating banner for {path}")
 
     if not args.dry_run:
         path.write_text(copyright + source, encoding="utf-8")

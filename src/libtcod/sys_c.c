@@ -523,13 +523,14 @@ void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
   if (offset_x) *offset_x = TCOD_ctx.fullscreen_offsetx;
   if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
 }
+#ifndef NO_SDL
 /* dynamic library support */
 TCOD_library_t TCOD_load_library(const char* path) { return SDL_LoadObject(path); }
 void* TCOD_get_function_address(TCOD_library_t library, const char* function_name) {
   return SDL_LoadFunction(library, function_name);
 }
 void TCOD_close_library(TCOD_library_t library) { SDL_UnloadObject(library); }
-
+#endif  // NO_SDL
 /**
     Load a file into memory.  Returns NULL on failure.
 

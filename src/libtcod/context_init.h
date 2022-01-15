@@ -139,6 +139,7 @@ typedef struct TCOD_ContextParams {
    */
   TCOD_Console* console;
 } TCOD_ContextParams;
+#ifndef NO_SDL
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -192,4 +193,5 @@ TCOD_NODISCARD inline auto new_context(const TCOD_ContextParams& params) -> Cont
 }
 }  // namespace tcod
 #endif  // __cplusplus
+#endif  // NO_SDL
 #endif  // LIBTCOD_CONTEXT_INIT_H_

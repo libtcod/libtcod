@@ -31,7 +31,9 @@
  */
 #include "context.h"
 
+#ifndef NO_SDL
 #include <SDL_events.h>
+#endif  // NO_SDL
 #include <math.h>
 #include <stdlib.h>
 
@@ -87,6 +89,7 @@ TCOD_Error TCOD_context_screen_pixel_to_tile_i(struct TCOD_Context* context, int
   }
   return err;
 }
+#ifndef NO_SDL
 TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, union SDL_Event* event) {
   if (!event) return TCOD_E_OK;
   switch (event->type) {
@@ -111,6 +114,7 @@ TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, 
   }
   return TCOD_E_OK;
 }
+#endif  // NO_SDL
 TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context, const char* filename) {
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");

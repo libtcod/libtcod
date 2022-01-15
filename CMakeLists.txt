@@ -53,9 +53,12 @@ add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 add_subdirectory(src)
 
+set(VCPKG_MANIFEST_NO_DEFAULT_FEATURES ON)
+
 if(LIBTCOD_SAMPLES)
     add_subdirectory(samples)
 endif()
 if(LIBTCOD_TESTS)
     add_subdirectory(tests)
+    list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()

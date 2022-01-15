@@ -31,7 +31,6 @@
  */
 #include "console_rexpaint.h"
 
-#include <SDL_endian.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <zlib.h>
@@ -40,6 +39,13 @@
 #include "console.h"
 #include "console_types.h"
 #include "libtcod_int.h"
+
+#ifndef NO_SDL
+#include <SDL_endian.h>
+#else
+// Ignore endianness for now if SDL is missing.
+#define SDL_SwapLE32(x) (x)
+#endif  // NO_SDL
 
 #pragma pack(push, 1)
 /** REXPaint header struct, always at the beginning of the gzip stream. */

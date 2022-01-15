@@ -34,7 +34,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
-
 Slider::Slider(int x, int y, int w, float min, float max, const char* label, const char* tip)
     : TextBox(x, y, w, 10, label, NULL, tip),
       min(min),
@@ -131,7 +130,6 @@ void Slider::setValue(float value_) {
   this->value = CLAMP(min, max, value_);
   valueToText();
 }
-
 void Slider::onButtonPress() {
   if (onArrows) {
     drag = true;

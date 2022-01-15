@@ -89,15 +89,13 @@ void TCODConsole::mapStringToFont(const char* s, int fontCharX, int fontCharY) {
 
 void TCODConsole::setDirty(int, int, int, int) {}
 
+#ifndef NO_SDL
 TCOD_key_t TCODConsole::checkForKeypress(int flags) { return TCOD_sys_check_for_keypress(flags); }
-
 TCOD_key_t TCODConsole::waitForKeypress(bool flush) { return TCOD_sys_wait_for_keypress(flush); }
-
 bool TCODConsole::isWindowClosed() { return TCOD_console_is_window_closed() != 0; }
-
 bool TCODConsole::hasMouseFocus() { return TCOD_console_has_mouse_focus() != 0; }
-
 bool TCODConsole::isActive() { return TCOD_console_is_active() != 0; }
+#endif  // NO_SDL
 
 int TCODConsole::getWidth() const { return TCOD_console_get_width(data); }
 
@@ -126,15 +124,14 @@ void TCODConsole::setDefaultForeground(TCODColor fore) {
   TCOD_console_set_default_foreground(data, b);
 }
 
+#ifndef NO_SDL
 void TCODConsole::setWindowTitle(const char* title) { TCOD_console_set_window_title(title); }
-
 void TCODConsole::initRoot(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer) {
   tcod::check_throw_error(TCOD_console_init_root(w, h, title, fullscreen, renderer));
 }
-
 void TCODConsole::setFullscreen(bool fullscreen) { TCOD_console_set_fullscreen(fullscreen); }
-
 bool TCODConsole::isFullscreen() { return TCOD_console_is_fullscreen() != 0; }
+#endif  // NO_SDL
 
 void TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t bkgnd_flag) {
   TCOD_console_set_background_flag(data, bkgnd_flag);
@@ -346,11 +343,11 @@ void TCODConsole::setKeyColor(const TCODColor& col) {
   TCOD_console_set_key_color(data, c);
 }
 
+#ifndef NO_SDL
 void TCODConsole::credits() { TCOD_console_credits(); }
-
 void TCODConsole::resetCredits() { TCOD_console_credits_reset(); }
-
 bool TCODConsole::renderCredits(int x, int y, bool alpha) { return TCOD_console_credits_render(x, y, alpha) != 0; }
+#endif  // NO_SDL
 
 #ifndef NO_UNICODE
 void TCODConsole::mapStringToFont(const wchar_t* s, int fontCharX, int fontCharY) {

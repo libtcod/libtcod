@@ -2,24 +2,15 @@
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
   "name": "libtcod",
   "version-semver": "1.20.1",
-  "maintainers": "Kyle Benesch <4b796c65+github@gmail.com>",
+  "maintainers": [
+    "Kyle Benesch <4b796c65+github@gmail.com>"
+  ],
   "description": "Common algorithms and tools for roguelikes.",
   "homepage": "https://github.com/libtcod/libtcod",
   "documentation": "https://libtcod.readthedocs.io/en/latest/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "catch2",
-    "glad",
     "lodepng-c",
-    "sdl2",
-    {
-      "name": "sdl2",
-      "default-features": false,
-      "features": [
-        "x11"
-      ],
-      "platform": "linux"
-    },
     "stb",
     "utf8proc",
     {
@@ -27,5 +18,32 @@
       "host": true
     },
     "zlib"
-  ]
+  ],
+  "default-features": [
+    "sdl",
+    "tests"
+  ],
+  "features": {
+    "sdl": {
+      "description": "Support for SDL2 windows and events including OpenGL support.",
+      "dependencies": [
+        "glad",
+        "sdl2",
+        {
+          "name": "sdl2",
+          "default-features": false,
+          "features": [
+            "x11"
+          ],
+          "platform": "linux"
+        }
+      ]
+    },
+    "tests": {
+      "description": "Dependencies needed for testing.",
+      "dependencies": [
+        "catch2"
+      ]
+    }
+  }
 }

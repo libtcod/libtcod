@@ -38,11 +38,11 @@
 #include "error.h"
 #include "libtcod_int.h"
 
+#ifndef NO_SDL
 void TCODSystem::sleepMilli(uint32_t milliseconds) { TCOD_sys_sleep_milli(milliseconds); }
-
 uint32_t TCODSystem::getElapsedMilli() { return TCOD_sys_elapsed_milli(); }
-
 float TCODSystem::getElapsedSeconds() { return TCOD_sys_elapsed_seconds(); }
+float TCODSystem::getLastFrameLength() { return TCOD_sys_get_last_frame_length(); }
 
 void TCODSystem::saveScreenshot(const char* filename) { TCOD_sys_save_screenshot(filename); }
 
@@ -71,8 +71,6 @@ TCOD_renderer_t TCODSystem::getRenderer() { return TCOD_sys_get_renderer(); }
 void TCODSystem::setFps(int val) { TCOD_sys_set_fps(val); }
 
 int TCODSystem::getFps() { return TCOD_sys_get_fps(); }
-
-float TCODSystem::getLastFrameLength() { return TCOD_sys_get_last_frame_length(); }
 
 void TCODSystem::getCurrentResolution(int* w, int* h) { TCOD_sys_get_current_resolution(w, h); }
 
@@ -177,3 +175,9 @@ void TCODSystem::registerSDLRenderer(ITCODSDLRenderer* renderer) {
   ::post_renderer = renderer;
   TCOD_sys_register_SDL_renderer(TCOD_CRenderer);
 }
+#else
+void TCODSystem::sleepMilli(uint32_t) {}
+uint32_t TCODSystem::getElapsedMilli() { return 0; }
+float TCODSystem::getElapsedSeconds() { return 0; }
+float TCODSystem::getLastFrameLength() { return 0; }
+#endif  // NO_SDL

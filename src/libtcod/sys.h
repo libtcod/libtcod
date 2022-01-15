@@ -125,6 +125,7 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_delete(TCOD_cond_t sem);
+#ifndef NO_SDL
 /* dynamic library */
 typedef void* TCOD_library_t;
 TCOD_DEPRECATED_NOMESSAGE
@@ -134,7 +135,6 @@ TCODLIB_API void* TCOD_get_function_address(TCOD_library_t library, const char* 
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_close_library(TCOD_library_t);
 
-#ifndef NO_SDL
 /***************************************************************************
     @brief Alias for SDL_GetTicks.
 

@@ -44,6 +44,7 @@ extern "C" {
 struct SDL_Rect;
 struct SDL_Window;
 struct SDL_Renderer;
+#ifndef NO_SDL
 /**
  *  \brief Initialize the libtcod graphical engine.
  *
@@ -90,13 +91,6 @@ TCOD_DEPRECATED(
     "This way of initializing libtcod is deprecated.  See the documentation for how to use TCOD_context_new.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_Error
 TCOD_console_init_root_(int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync);
-/**
- *  Shutdown libtcod.  This must be called before your program exits.
- *  \rst
- *  .. versionadded:: 1.8
- *  \endrst
- */
-TCOD_PUBLIC void TCOD_quit(void);
 /**
  *  Change the title string of the active window.
  *
@@ -174,6 +168,7 @@ TCOD_PUBLIC struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void);
  *      :any:`TCOD_sys_get_sdl_window` :any:`TCOD_sys_get_sdl_renderer`
  *  \endrst
  */
+#endif  // NO_SDL
 TCOD_DEPRECATED("This function is not compatible with contexts.")
 TCOD_PUBLIC int TCOD_sys_accumulate_console(const TCOD_Console* console);
 TCOD_DEPRECATED("This function is not compatible with contexts.")
@@ -201,6 +196,14 @@ TCOD_PUBLIC TCOD_Context* TCOD_sys_get_internal_context(void);
     \endrst
  */
 TCOD_PUBLIC TCOD_Console* TCOD_sys_get_internal_console(void);
+/***************************************************************************
+    @brief Shutdown libtcod.  This must be called before your program exits.
+
+    \rst
+    .. versionadded:: 1.8
+    \endrst
+ */
+TCOD_PUBLIC void TCOD_quit(void);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {

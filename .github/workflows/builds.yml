@@ -46,6 +46,18 @@ jobs:
             shared: dynamic
             config: Release
 
+          # Test libtcod without SDL.
+          - os: ubuntu-20.04
+            triplet: x64-linux
+            shared: dynamic
+            config: Debug
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DLIBTCOD_SDL2=disable"
+          - os: windows-2019
+            triplet: x64-windows
+            shared: dynamic
+            config: Debug
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DLIBTCOD_SDL2=disable"
+
     env:
       CMAKE_BUILD_DIR: build
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
@@ -92,7 +104,8 @@ jobs:
             -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
             -DLIBTCOD_SAMPLES=ON \
             -DLIBTCOD_TESTS=ON \
-            -Wdev
+            -Wdev \
+            ${{ matrix.cmake_extra_args }}
       - name: CMake build
         run: |
           cmake --build ${{env.CMAKE_BUILD_DIR}}

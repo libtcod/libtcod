@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "event.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 
 #include <cstring>
@@ -58,3 +58,4 @@ TCOD_event_t TCOD_sys_process_mouse_event(const union SDL_Event* in, TCOD_mouse_
   }
   return tcod::sdl2::process_event(*in, *out);
 }
+#endif  // NO_SDL

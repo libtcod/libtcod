@@ -33,7 +33,9 @@
 
 #include <stdexcept>
 
+#ifndef NO_SDL
 TCODImage::TCODImage(const char* filename) : deleteData(true) { data = TCOD_image_load(filename); }
+#endif  // NO_SDL
 
 TCODImage::TCODImage(int width, int height) : deleteData(true) { data = TCOD_image_new(width, height); }
 
@@ -76,11 +78,13 @@ void TCODImage::blitRect(TCODConsole* console, int x, int y, int w, int h, TCOD_
   TCOD_image_blit_rect(data, console->get_data(), x, y, w, h, bkgnd_flag);
 }
 
+#ifndef NO_SDL
 void TCODImage::save(const char* filename) const {
   if (TCOD_image_save(data, filename) < 0) {
     throw std::runtime_error(TCOD_get_error());
   }
 }
+#endif  // NO_SDL
 
 void TCODImage::setKeyColor(const TCODColor keyColor) {
   TCOD_color_t color = {keyColor.r, keyColor.g, keyColor.b};

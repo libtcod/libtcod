@@ -1,3 +1,4 @@
+#ifndef NO_SDL
 #include <SDL.h>
 #include <libtcod/timer.h>
 
@@ -25,3 +26,4 @@ TEST_CASE("tcod::Timer") {
 
   SDL_QuitSubSystem(SDL_INIT_TIMER);
 }
+#endif  // NO_SDL

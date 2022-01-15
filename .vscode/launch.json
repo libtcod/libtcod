@@ -13,7 +13,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "console": "newExternalWindow"
+            "console": "integratedTerminal"
         },
         {
             "name": "(gdb) Launch CMake target",

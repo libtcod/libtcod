@@ -34,11 +34,13 @@
 #include "error.h"
 namespace tcod {
 namespace console {
+#ifndef NO_SDL
 void init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer, bool vsync) {
   check_throw_error(TCOD_console_init_root_(w, h, title.c_str(), fullscreen, renderer, vsync));
 }
 void init_root(int w, int h, const std::string& title, bool fullscreen, TCOD_renderer_t renderer) {
   check_throw_error(TCOD_console_init_root(w, h, title.c_str(), fullscreen, renderer));
 }
+#endif  // NO_SDL
 }  // namespace console
 }  // namespace tcod

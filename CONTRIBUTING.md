@@ -92,10 +92,11 @@ By default it is assumed that Vcpkg will be used to get dependencies, but this c
 `find_package` means CMake's `find_package` command will be used.
 `vendored` means that sources bundled in the repository will be statically compiled, this is generally not recommended.
 `conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
+`disable` can be used to ignore a library, but functions which require that library will no longer function.
 
 | Cache Variable   | Default      | Options |
 | ---------------- | ------------ | ------- |
-| LIBTCOD_SDL2     | find_package | conan, find_package |
+| LIBTCOD_SDL2     | find_package | conan, disable, find_package |
 | LIBTCOD_ZLIB     | find_package | conan, find_package |
 | LIBTCOD_GLAD     | find_package | find_package, vendored |
 | LIBTCOD_LODEPNG  | find_package | find_package, vendored |

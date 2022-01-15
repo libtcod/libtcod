@@ -30,8 +30,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "console_init.h"
+
 #ifndef NO_SDL
 #include <SDL.h>
+#endif  // NO_SDL
 #include <stdbool.h>
 #include <string.h>
 
@@ -40,6 +42,7 @@
 #include "context_init.h"
 #include "libtcod_int.h"
 
+#ifndef NO_SDL
 TCOD_Error TCOD_console_init_root_(
     int w, int h, const char* title, bool fullscreen, TCOD_renderer_t renderer, bool vsync) {
   if (w < 0 || h < 0) {
@@ -76,7 +79,6 @@ TCOD_Error TCOD_console_init_root(int w, int h, const char* title, bool fullscre
   const bool vsync = renderer != TCOD_RENDERER_SDL;  // Enable VSync for all except the software renderer.
   return TCOD_console_init_root_(w, h, title, fullscreen, renderer, vsync);
 }
-void TCOD_quit(void) { TCOD_console_delete(NULL); }
 void TCOD_console_set_window_title(const char* title) {
   struct SDL_Window* window = TCOD_sys_get_sdl_window();
   SDL_SetWindowTitle(window, title);
@@ -123,6 +125,7 @@ struct SDL_Renderer* TCOD_sys_get_sdl_renderer(void) {
   }
   return NULL;
 }
+#endif  // NO_SDL
 int TCOD_sys_accumulate_console(const TCOD_Console* console) { return TCOD_sys_accumulate_console_(console, NULL); }
 int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_Rect* viewport) {
   (void)viewport;  // Ignored parameter.
@@ -137,4 +140,4 @@ int TCOD_sys_accumulate_console_(const TCOD_Console* console, const struct SDL_R
 }
 TCOD_Context* TCOD_sys_get_internal_context(void) { return TCOD_ctx.engine; }
 TCOD_Console* TCOD_sys_get_internal_console(void) { return TCOD_ctx.root; }
-#endif  // NO_SDL
+void TCOD_quit(void) { TCOD_console_delete(NULL); }

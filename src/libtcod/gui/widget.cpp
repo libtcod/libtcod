@@ -78,7 +78,11 @@ void Widget::setForegroundColor(const TCODColor col, const TCODColor colFocus) {
 void Widget::setConsole(TCODConsole* console) { con = console; }
 
 void Widget::update(const TCOD_key_t) {
-  bool curs = TCODMouse::isCursorVisible();
+#ifndef NO_SDL
+  const bool curs = TCODMouse::isCursorVisible();
+#else
+  const bool curs = false;
+#endif  // NO_SDL
   if (curs) {
     if (mouse.cx >= x && mouse.cx < x + w && mouse.cy >= y && mouse.cy < y + h) {
       if (!mouseIn) {

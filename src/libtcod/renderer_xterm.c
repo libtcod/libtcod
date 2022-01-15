@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "renderer_xterm.h"
-
+#ifndef NO_SDL
 #include <SDL.h>
 #include <limits.h>
 #include <locale.h>
@@ -668,3 +668,4 @@ TCOD_Context* TCOD_renderer_init_xterm(
   data->input_thread = SDL_CreateThread(&xterm_handle_input, "input thread", NULL);
   return context;
 }
+#endif  // NO_SDL

@@ -59,5 +59,4 @@ class TCODLIB_API TCODMouse {
       "\n\nint buttons = SDL_GetMouseState(&x, &y);")
   static TCOD_mouse_t getStatus();
 };
-
 #endif /* _TCOD_MOUSE_HPP */

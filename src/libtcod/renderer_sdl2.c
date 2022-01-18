@@ -443,7 +443,12 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
   const int tile_height = atlas->tileset->tile_height;
   int output_w;
   int output_h;
-  SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
+  SDL_Texture* render_target = SDL_GetRenderTarget(atlas->renderer);
+  if (render_target) {
+    SDL_QueryTexture(render_target, NULL, NULL, &output_w, &output_h);
+  } else {
+    SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
+  }
   SDL_Rect out = {0, 0, output_w, output_h};
   float scale_w = (float)output_w / (float)(console->w * tile_width);
   float scale_h = (float)output_h / (float)(console->h * tile_height);
@@ -495,9 +500,10 @@ static TCOD_Error sdl2_accumulate(
     int tex_height;
     SDL_QueryTexture(context->cache_texture, NULL, NULL, &tex_width, &tex_height);
     SDL_Surface* canvas = SDL_CreateRGBSurfaceWithFormat(0, tex_width, tex_height, 32, SDL_PIXELFORMAT_RGBA32);
+    SDL_Texture* old_target = SDL_GetRenderTarget(context->renderer);
     SDL_SetRenderTarget(context->renderer, context->cache_texture);
     SDL_RenderReadPixels(context->renderer, NULL, SDL_PIXELFORMAT_RGBA32, canvas->pixels, tex_width * 4);
-    SDL_SetRenderTarget(context->renderer, NULL);
+    SDL_SetRenderTarget(context->renderer, old_target);
     TCOD_ctx.sdl_cbk(canvas);
     SDL_Texture* canvas_tex = SDL_CreateTextureFromSurface(context->renderer, canvas);
     SDL_RenderCopy(context->renderer, canvas_tex, NULL, &dest);

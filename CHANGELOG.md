@@ -9,6 +9,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ## [Unreleased]
 ### Changed
 - Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag to CMake.
+- SDL-based accumulate functions can now handle a non-window render target.
 
 ## [1.20.1] - 2022-01-07
 ### Fixed

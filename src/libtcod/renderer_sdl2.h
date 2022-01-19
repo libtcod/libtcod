@@ -49,7 +49,7 @@ struct SDL_Texture;
     .. versionadded:: 1.16
     \endrst
  */
-struct TCOD_TilesetAtlasSDL2 {
+typedef struct TCOD_TilesetAtlasSDL2 {
   /** The renderer used to create this atlas. */
   struct SDL_Renderer* renderer;
   /** The atlas texture. */
@@ -60,8 +60,28 @@ struct TCOD_TilesetAtlasSDL2 {
   struct TCOD_TilesetObserver* observer;
   /** Internal use only. */
   int texture_columns;
-};
-typedef struct TCOD_TilesetAtlasSDL2 TCOD_TilesetAtlasSDL2;
+} TCOD_TilesetAtlasSDL2;
+/***************************************************************************
+    @brief Info needed to convert between mouse pixel and tile coordinates.
+    Internal use only.
+
+    @code{.cpp}
+    double pixel_x, pixel_y, tile_x, tile_y;
+    TCOD_RendererSDL2CursorTransform transform;
+    // Convert pixel coordinates to tile coordinates.
+    tile_x = (pixel_x - transform.offset_x) * transform.scale_x;
+    tile_y = (pixel_y - transform.offset_y) * transform.scale_y;
+    // Convert tile coordinates to pixel coordinates.
+    pixel_x = tile_x / transform.scale_x + transform.offset_x;
+    pixel_y = tile_y / transform.scale_y + transform.offset_y;
+    @endcode
+ */
+typedef struct TCOD_RendererSDL2CursorTransform {
+  double offset_x;
+  double offset_y;
+  double scale_x;
+  double scale_y;
+} TCOD_RendererSDL2CursorTransform;
 /**
     The renderer data for an SDL2 rendering context.
     Internal use only.
@@ -74,10 +94,7 @@ struct TCOD_RendererSDL2 {
   struct SDL_Texture* __restrict cache_texture;  // Cached console rendering output.
   uint32_t sdl_subsystems;  // Which subsystems where initialzed by this context.
   // Mouse cursor transform values of the last viewport used.
-  double last_offset_x;
-  double last_offset_y;
-  double last_scale_x;
-  double last_scale_y;
+  TCOD_RendererSDL2CursorTransform cursor_transform;
 };
 #ifdef __cplusplus
 extern "C" {

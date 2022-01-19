@@ -434,13 +434,10 @@ static void sdl2_destructor(struct TCOD_Context* __restrict self) {
 /** Return the destination rectangle for these inputs. */
 TCOD_NODISCARD static SDL_Rect get_destination_rect(
     const struct TCOD_TilesetAtlasSDL2* atlas,
-    const struct TCOD_Console* console,
+    int source_width,
+    int source_height,
     const struct TCOD_ViewportOptions* viewport) {
-  if (!viewport) {
-    viewport = &TCOD_VIEWPORT_DEFAULT_;
-  }
-  const int tile_width = atlas->tileset->tile_width;
-  const int tile_height = atlas->tileset->tile_height;
+  if (!viewport) viewport = &TCOD_VIEWPORT_DEFAULT_;
   int output_w;
   int output_h;
   SDL_Texture* render_target = SDL_GetRenderTarget(atlas->renderer);
@@ -450,8 +447,8 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
     SDL_GetRendererOutputSize(atlas->renderer, &output_w, &output_h);
   }
   SDL_Rect out = {0, 0, output_w, output_h};
-  float scale_w = (float)output_w / (float)(console->w * tile_width);
-  float scale_h = (float)output_h / (float)(console->h * tile_height);
+  float scale_w = (float)output_w / (float)(source_width);
+  float scale_h = (float)output_h / (float)(source_height);
   if (viewport->integer_scaling) {
     scale_w = scale_w <= 1.0f ? scale_w : floorf(scale_w);
     scale_h = scale_h <= 1.0f ? scale_h : floorf(scale_h);
@@ -459,11 +456,37 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect(
   if (viewport->keep_aspect) {
     scale_w = scale_h = minf(scale_w, scale_h);
   }
-  out.w = (int)((float)(console->w * tile_width) * scale_w);
-  out.h = (int)((float)(console->h * tile_height) * scale_h);
+  out.w = (int)((float)(source_width)*scale_w);
+  out.h = (int)((float)(source_height)*scale_h);
   out.x = (int)((float)(output_w - out.w) * clampf(viewport->align_x, 0, 1));
   out.y = (int)((float)(output_h - out.h) * clampf(viewport->align_y, 0, 1));
   return out;
+}
+/***************************************************************************
+    @brief Return the destination rectangle for these inputs
+ */
+TCOD_NODISCARD static SDL_Rect get_destination_rect_for_console(
+    const struct TCOD_TilesetAtlasSDL2* atlas,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport) {
+  const int tile_width = atlas->tileset->tile_width;
+  const int tile_height = atlas->tileset->tile_height;
+  return get_destination_rect(atlas, console->w * tile_width, console->h * tile_height, viewport);
+}
+/***************************************************************************
+    @brief Return info needed to convert the mouse between pixel and console coordinates.
+ */
+TCOD_NODISCARD static TCOD_RendererSDL2CursorTransform sdl2_cursor_transform_for_console_viewport(
+    const struct TCOD_TilesetAtlasSDL2* atlas,
+    const struct TCOD_Console* console,
+    const struct TCOD_ViewportOptions* viewport) {
+  SDL_Rect dest = get_destination_rect_for_console(atlas, console, viewport);
+  return (TCOD_RendererSDL2CursorTransform){
+      dest.x,
+      dest.y,
+      (double)console->w / (double)dest.w,
+      (double)console->h / (double)dest.h,
+  };
 }
 /**
  *  Render to the SDL2 renderer without presenting the screen.
@@ -485,12 +508,9 @@ static TCOD_Error sdl2_accumulate(
   if (err < 0) {
     return err;
   }
-  SDL_Rect dest = get_destination_rect(context->atlas, console, viewport);
+  SDL_Rect dest = get_destination_rect_for_console(context->atlas, console, viewport);
   // Set mouse coordinate scaling.
-  context->last_offset_x = dest.x;
-  context->last_offset_y = dest.y;
-  context->last_scale_x = (double)console->w / (double)dest.w;
-  context->last_scale_y = (double)console->h / (double)dest.h;
+  context->cursor_transform = sdl2_cursor_transform_for_console_viewport(context->atlas, console, viewport);
   if (!TCOD_ctx.sdl_cbk) {
     // Normal rendering.
     SDL_RenderCopy(context->renderer, context->cache_texture, NULL, &dest);
@@ -543,8 +563,8 @@ static TCOD_Error sdl2_present(
  */
 static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __restrict x, double* __restrict y) {
   struct TCOD_RendererSDL2* context = self->contextdata_;
-  *x = (*x - context->last_offset_x) * context->last_scale_x;
-  *y = (*y - context->last_offset_y) * context->last_scale_y;
+  *x = (*x - context->cursor_transform.offset_x) * context->cursor_transform.scale_x;
+  *y = (*y - context->cursor_transform.offset_y) * context->cursor_transform.scale_y;
 }
 /**
  *  Save a PNG screen-shot to `file`.

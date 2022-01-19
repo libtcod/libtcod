@@ -59,6 +59,7 @@ bool str_ends_with(const char* string, const char* suffix) {
  * samples rendering functions
  * ***************************/
 
+TCOD_Context* g_context;
 static TCOD_Console* sample_console;  // the offscreen console in which the samples are rendered.
 
 /* ***************************
@@ -752,8 +753,14 @@ void render_image(const SDL_Event* event) {
  * ***************************/
 void render_mouse(const SDL_Event* event) {
   static TCOD_mouse_t mouse = {0};
-  uint32_t mouse_state = SDL_GetMouseState(NULL, NULL);
-  TCOD_sys_process_mouse_event(event, &mouse);
+  static int tile_motion_x = 0;
+  static int tile_motion_y = 0;
+  int pixel_x;
+  int pixel_y;
+  uint32_t mouse_state = SDL_GetMouseState(&pixel_x, &pixel_y);
+  int tile_x = pixel_x;
+  int tile_y = pixel_y;
+  TCOD_context_screen_pixel_to_tile_i(g_context, &tile_x, &tile_y);
   switch (event->type) {
     case ON_ENTER_USEREVENT:
       TCOD_console_set_default_background(sample_console, TCOD_grey);
@@ -775,27 +782,28 @@ void render_mouse(const SDL_Event* event) {
           break;
       }
       break;
+    case SDL_MOUSEMOTION:
+      tile_motion_x = event->motion.xrel;
+      tile_motion_y = event->motion.yrel;
+      break;
   }
   TCOD_console_clear(sample_console);
   TCOD_console_printf(
       sample_console,
       1,
       1,
-      "%s\n"
-      "Pixel position : %4dx%4d %s\n"
+      "Pixel position : %4dx%4d\n"
       "Tile position  : %4dx%4d\n"
       "Tile movement  : %4dx%4d\n"
       "Left button    : %s\n"
       "Right button   : %s\n"
       "Middle button  : %s\n",
-      TCOD_console_is_active() ? "" : "APPLICATION INACTIVE",
-      mouse.x,
-      mouse.y,
-      TCOD_console_has_mouse_focus() ? "" : "OUT OF FOCUS",
-      mouse.cx,
-      mouse.cy,
-      mouse.dcx,
-      mouse.dcy,
+      pixel_x,
+      pixel_y,
+      tile_x,
+      tile_y,
+      tile_motion_x,
+      tile_motion_y,
       mouse_state & SDL_BUTTON_LMASK ? " ON" : "OFF",
       mouse_state & SDL_BUTTON_RMASK ? " ON" : "OFF",
       mouse_state & SDL_BUTTON_MMASK ? " ON" : "OFF");
@@ -987,10 +995,8 @@ void render_path(const SDL_Event* event) {
       }
       break;
     case SDL_MOUSEMOTION: {
-      TCOD_mouse_t mouse = {0};
-      TCOD_sys_process_mouse_event(event, &mouse);
-      const int mx = mouse.cx - SAMPLE_SCREEN_X;
-      const int my = mouse.cy - SAMPLE_SCREEN_Y;
+      const int mx = event->motion.x - SAMPLE_SCREEN_X;
+      const int my = event->motion.y - SAMPLE_SCREEN_Y;
       if (mx >= 0 && mx < SAMPLE_SCREEN_WIDTH && my >= 0 && my < SAMPLE_SCREEN_HEIGHT && (dx != mx || dy != my)) {
         TCOD_console_put_char(sample_console, dx, dy, oldChar, TCOD_BKGND_NONE);
         dx = mx;
@@ -1650,8 +1656,7 @@ int main(int argc, char* argv[]) {
       .argv = argv,
   };
 
-  TCOD_Context* context;
-  if (TCOD_context_new(&params, &context) < 0) fatal("Could not open context: %s", TCOD_get_error());
+  if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
   atexit(TCOD_quit);
 
   bool credits_end = false;
@@ -1730,7 +1735,7 @@ int main(int argc, char* argv[]) {
         1.0f /* alpha coefficients */
     );
     /* display renderer list and current renderer */
-    const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(context);
+    const TCOD_renderer_t current_renderer = TCOD_context_get_renderer_type(g_context);
     TCOD_console_set_default_foreground(main_console, TCOD_grey);
     TCOD_console_set_default_background(main_console, TCOD_black);
     TCOD_console_printf_ex(
@@ -1759,11 +1764,12 @@ int main(int argc, char* argv[]) {
     samples[cur_sample].render(&on_draw_event);
 
     /* update the game screen */
-    TCOD_context_present(context, main_console, NULL);
+    TCOD_context_present(g_context, main_console, NULL);
 
     // Check for events.
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+      TCOD_context_convert_event_coordinates(g_context, &event);
       switch (event.type) {
         case SDL_KEYDOWN:
           switch (event.key.keysym.scancode) {
@@ -1779,7 +1785,7 @@ int main(int argc, char* argv[]) {
             case SDL_SCANCODE_RETURN2:
             case SDL_SCANCODE_KP_ENTER:
               if (event.key.keysym.mod & KMOD_ALT) {
-                SDL_Window* sdl_window = TCOD_context_get_sdl_window(context);
+                SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
                 if (sdl_window) {
                   static const uint32_t FULLSCREEN_FLAGS = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP;
                   const bool is_fullscreen = (SDL_GetWindowFlags(sdl_window) & FULLSCREEN_FLAGS) != 0;
@@ -1788,14 +1794,14 @@ int main(int argc, char* argv[]) {
               }
               break;
             case SDL_SCANCODE_PRINTSCREEN:  // Save screenshot.
-              TCOD_context_save_screenshot(context, NULL);
+              TCOD_context_save_screenshot(g_context, NULL);
               break;
             default: {
               // Switch renderers with the function keys.
               const int renderer_pick = event.key.keysym.scancode - SDL_SCANCODE_F1;
               if (0 <= renderer_pick && renderer_pick < RENDERER_OPTIONS_COUNT) {
                 // Preserve window flags and position during context switching.
-                SDL_Window* sdl_window = TCOD_context_get_sdl_window(context);
+                SDL_Window* sdl_window = TCOD_context_get_sdl_window(g_context);
                 if (sdl_window) {
                   params.sdl_window_flags = SDL_GetWindowFlags(sdl_window);
                   if ((params.sdl_window_flags &
@@ -1807,8 +1813,8 @@ int main(int argc, char* argv[]) {
                   }
                 }
                 params.renderer_type = RENDERER_OPTIONS[renderer_pick].renderer;
-                TCOD_context_delete(context);
-                if (TCOD_context_new(&params, &context) < 0) fatal("Could not open context: %s", TCOD_get_error());
+                TCOD_context_delete(g_context);
+                if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());
               }
             } break;
           }
@@ -1825,7 +1831,7 @@ int main(int argc, char* argv[]) {
           if (new_tileset) {
             TCOD_tileset_delete(tileset);
             params.tileset = tileset = new_tileset;
-            TCOD_context_change_tileset(context, tileset);
+            TCOD_context_change_tileset(g_context, tileset);
           }
           SDL_free(event.drop.file);
         } break;

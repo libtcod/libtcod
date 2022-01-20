@@ -86,7 +86,13 @@ TCODLIB_API bool TCOD_console_save_xp(const TCOD_Console* con, const char* filen
 
     This function can load a REXPaint file with variable layer shapes,
     which would cause issues for a function like TCOD_console_list_from_xp.
+
+    \rst
+    .. deprecated:: 1.20
+        TCOD_list_t is deprecated, use TCOD_load_xp instead.
+    \endrst
  */
+TCOD_DEPRECATED("TCOD_list_t is deprecated, use TCOD_load_xp instead.")
 TCODLIB_API TCOD_list_t TCOD_console_list_from_xp(const char* filename);
 /**
     \brief Save a list of consoles to a REXPaint file.
@@ -102,7 +108,13 @@ TCODLIB_API TCOD_list_t TCOD_console_list_from_xp(const char* filename);
 
     The REXPaint tool only supports files with up to 9 layers where
     all layers are the same size.
+
+    \rst
+    .. deprecated:: 1.20
+        TCOD_list_t is deprecated, use TCOD_save_xp instead.
+    \endrst
  */
+TCOD_DEPRECATED("TCOD_list_t is deprecated, use TCOD_save_xp instead.")
 TCODLIB_API bool TCOD_console_list_save_xp(TCOD_list_t console_list, const char* filename, int compress_level);
 /**
     @brief Load an array of consoles from a REXPaint file in memory.

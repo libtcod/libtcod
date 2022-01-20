@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <stb_ds.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +38,9 @@
 #include "fov.h"
 #include "libtcod_int.h"
 #include "utility.h"
+
+// Return a pointer to the end of an stb_ds array.
+#define ds_array_end(a) (a + stbds_arrlen(a))
 
 /* The size of each square in units */
 #define STEP_SIZE 16
@@ -122,15 +126,14 @@ static void add_steep_bump(int x, int y, View* view, ViewBumpContainer* bumps) {
   }
 }
 
-static bool check_view(TCOD_list_t active_views, View** it, int offset, int limit) {
+static bool check_view(View*** active_views, View** it, int offset, int limit) {
   const View* view = *it;
   const Line* shallow_line = &view->shallow_line;
   const Line* steep_line = &view->steep_line;
   if (LINE_COLINEAR(shallow_line, steep_line) &&
       (COLINEAR(shallow_line, offset, limit) || COLINEAR(shallow_line, limit, offset))) {
     /*printf ("deleting view %x\n",it); */
-    /* slow ! */
-    TCOD_list_remove_iterator(active_views, (void**)it);
+    stbds_arrdel(*active_views, it - *active_views);  // Slow element removal!
     return false;
   }
   return true;
@@ -144,7 +147,7 @@ static void visit_coords(
     int y,
     int dx,
     int dy,
-    TCOD_list_t active_views,
+    View*** active_views,  // Pointer to stb_ds View* array.
     View*** current_view,
     bool light_walls,
     int offset,
@@ -158,14 +161,14 @@ static void visit_coords(
   const int brx = x + STEP_SIZE;
   const int bry = y;
   View* view = NULL;
-  while (*current_view != (View**)TCOD_list_end(active_views)) {
+  while (*current_view != ds_array_end(*active_views)) {
     view = **current_view;
     if (!BELOW_OR_COLINEAR(&view->steep_line, brx, bry)) {
       break;
     }
     (*current_view)++;
   }
-  if (*current_view == (View**)TCOD_list_end(active_views) || ABOVE_OR_COLINEAR(&view->shallow_line, tlx, tly)) {
+  if (*current_view == ds_array_end(*active_views) || ABOVE_OR_COLINEAR(&view->shallow_line, tlx, tly)) {
     return; /* no more active view */
   }
   if (!is_blocked(map, pov_x, pov_y, x, y, dx, dy, light_walls)) {
@@ -173,8 +176,7 @@ static void visit_coords(
   }
   if (ABOVE(&view->shallow_line, brx, bry) && BELOW(&view->steep_line, tlx, tly)) {
     /* view blocked */
-    /* slow ! */
-    TCOD_list_remove_iterator(active_views, (void**)*current_view);
+    stbds_arrdel(*active_views, *current_view - *active_views);  // Slow element removal!
   } else if (ABOVE(&view->shallow_line, brx, bry)) {
     /* shallow bump */
     add_shallow_bump(tlx, tly, view, bumps);
@@ -187,12 +189,12 @@ static void visit_coords(
     /* view split */
     const int views_offset = pov_x + x * dx / STEP_SIZE + (pov_y + y * dy / STEP_SIZE) * map->width;
     View* shallower_view = &views[views_offset];
-    const int view_index = (int)(*current_view - (View**)TCOD_list_begin(active_views));
+    const ptrdiff_t view_index = *current_view - *active_views;
     View** shallower_view_it;
     View** steeper_view_it;
     *shallower_view = ***current_view;
-    /* slow ! */
-    shallower_view_it = (View**)TCOD_list_insert_before(active_views, shallower_view, view_index);
+    stbds_arrins(*active_views, view_index, shallower_view);  // Slow insertion!
+    shallower_view_it = *active_views + view_index;
     steeper_view_it = shallower_view_it + 1;
     *current_view = shallower_view_it;
     add_steep_bump(brx, bry, shallower_view, bumps);
@@ -201,8 +203,8 @@ static void visit_coords(
     }
     add_shallow_bump(tlx, tly, *steeper_view_it, bumps);
     check_view(active_views, steeper_view_it, offset, limit);
-    if (view_index > TCOD_list_size(active_views)) {
-      *current_view = (View**)TCOD_list_end(active_views);
+    if (view_index > stbds_arrlen(*active_views)) {
+      *current_view = ds_array_end(*active_views);
     }
   }
 }
@@ -221,7 +223,7 @@ static void check_quadrant(
     View* __restrict views,
     ViewBumpContainer* __restrict bumps) {
   bumps->count = 0;
-  TCOD_list_t active_views = TCOD_list_new();
+  View** active_views = NULL;  // stb_ds View* array.
   Line shallow_line = {offset, limit, extent_x * STEP_SIZE, 0};
   Line steep_line = {limit, offset, 0, extent_y * STEP_SIZE};
   View* view = &views[pov_x + pov_y * map->width];
@@ -230,26 +232,26 @@ static void check_quadrant(
   view->steep_line = steep_line;
   view->shallow_bump = NULL;
   view->steep_bump = NULL;
-  TCOD_list_push(active_views, view);
+  stbds_arrput(active_views, view);
   const int max_i = extent_x + extent_y;
   for (int i = 1; i <= max_i; ++i) {
-    if (TCOD_list_is_empty(active_views)) {
+    if (!stbds_arrlen(active_views)) {
       break;
     }
-    View** current_view = (View**)TCOD_list_begin(active_views);
+    View** current_view = active_views;
     const int start_j = MAX(i - extent_x, 0);
     const int max_j = MIN(i, extent_y);
     for (int j = start_j; j <= max_j; ++j) {
-      if (TCOD_list_is_empty(active_views) || current_view == (View**)TCOD_list_end(active_views)) {
+      if (!stbds_arrlen(active_views) || current_view == ds_array_end(active_views)) {
         break;
       }
       const int x = (i - j) * STEP_SIZE;
       const int y = j * STEP_SIZE;
       visit_coords(
-          map, pov_x, pov_y, x, y, dx, dy, active_views, &current_view, light_walls, offset, limit, views, bumps);
+          map, pov_x, pov_y, x, y, dx, dy, &active_views, &current_view, light_walls, offset, limit, views, bumps);
     }
   }
-  TCOD_list_delete(active_views);
+  stbds_arrfree(active_views);
 }
 
 TCOD_Error TCOD_map_compute_fov_permissive2(

@@ -153,13 +153,14 @@ inline int check_throw_error(int error) {
   if (error >= 0) {
     return error;
   }
+  std::string error_msg = TCOD_get_error();
   switch (error) {
     case TCOD_E_ERROR:
     default:
-      throw std::runtime_error(TCOD_get_error());
+      throw std::runtime_error(error_msg);
       break;
     case TCOD_E_INVALID_ARGUMENT:
-      throw std::invalid_argument(TCOD_get_error());
+      throw std::invalid_argument(error_msg);
       break;
   }
 }

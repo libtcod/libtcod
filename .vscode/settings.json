@@ -91,6 +91,7 @@
         "string_view": "cpp",
         "filesystem": "cpp"
     },
+    "files.trimFinalNewlines": true,
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c99",
     "C_Cpp.vcpkg.enabled": true,

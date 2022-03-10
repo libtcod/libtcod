@@ -314,9 +314,9 @@ TCOD_PUBLIC void TCOD_console_blit_key_color(
  */
 TCOD_PUBLIC void TCOD_console_delete(TCOD_Console* console);
 
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Set TCOD_Console.back member directly.")
 TCOD_PUBLIC void TCOD_console_set_default_background(TCOD_Console* con, TCOD_color_t col);
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Set TCOD_Console.fore member directly")
 TCOD_PUBLIC void TCOD_console_set_default_foreground(TCOD_Console* con, TCOD_color_t col);
 /**
  *  Clear a console to its default colors and the space character code.
@@ -378,12 +378,12 @@ TCOD_PUBLIC void TCOD_console_put_char_ex(TCOD_Console* con, int x, int y, int c
  *  \param con A console pointer.
  *  \param flag One of `TCOD_bkgnd_flag_t`.
  */
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Set TCOD_Console.bkgnd_flag member directly.")
 TCOD_PUBLIC void TCOD_console_set_background_flag(TCOD_Console* con, TCOD_bkgnd_flag_t flag);
 /**
  *  Return a consoles default background flag.
  */
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Read TCOD_Console.bkgnd_flag member directly.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TCOD_Console* con);
 /**
  *  Set a consoles default alignment.
@@ -391,16 +391,16 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_bkgnd_flag_t TCOD_console_get_background_flag(TC
  *  \param con A console pointer.
  *  \param alignment One of TCOD_alignment_t
  */
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Set TCOD_Console.alignment member directly.")
 TCOD_PUBLIC void TCOD_console_set_alignment(TCOD_Console* con, TCOD_alignment_t alignment);
 /**
  *  Return a consoles default alignment.
  */
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Read TCOD_Console.alignment member directly.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con);
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Read TCOD_Console.back member directly.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con);
-TCOD_DEPRECATED("Console defaults have been deprecated.")
+TCOD_DEPRECATED("Console defaults have been deprecated. Read TCOD_Console.fore member directly.")
 TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_default_foreground(TCOD_Console* con);
 /**
  *  Return the background color of a console at x,y

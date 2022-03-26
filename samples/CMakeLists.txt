@@ -12,6 +12,9 @@ else()
     set(LINK_TCOD libtcod::libtcod)
     set(SDL2MAIN SDL2::SDL2main)
 endif()
+if(MINGW)
+    set(LINK_TCOD mingw32 "${LINK_TCOD}")
+endif()
 
 # This and KEEP_RPATHS is required to handle RPATH's on MacOS.
 if (APPLE)

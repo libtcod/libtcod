@@ -36,6 +36,11 @@
 #include "config.h"
 #include "tileset.h"
 
+// tile padding
+// define this as a power of two to include padding around atlas texture glyphs
+// TODO: Update the GL1 renderer to support this
+#define TILE_PADDING 2
+
 struct TCOD_TilesetAtlasOpenGL {
   struct TCOD_Tileset* tileset;  // An owning pointer to tileset, tracks a tilesets character map and other info.
   struct TCOD_TilesetObserver* observer;  // Tracks changes to a tileset.

@@ -57,7 +57,7 @@ void main(void)\n\
 ";
 static const char* FRAGMENT_SOURCE =
     "\
-uniform vec2 v_tiles_shape; // Tileset columns/rows.\n\
+uniform vec2 v_tile_size; // Individual tile dimensions.\n\
 uniform vec2 v_tiles_size; // Tileset texture size.\n\
 uniform sampler2D t_tileset;\n\
 \n\
@@ -70,33 +70,31 @@ varying vec2 v_coord; // Console coordinates.\n\
 \n\
 void main(void)\n\
 {\n\
-  vec2 tile_size = v_tiles_size / v_tiles_shape;\n\
   // The sample coordinate for per-tile console variables.\n\
   vec2 console_pos = floor(v_coord);\n\
   console_pos += vec2(0.5, 0.5); // Offset to the center (for sampling.)\n\
   console_pos /= v_console_shape; // Scale to fit in t_console_X textures.\n\
 \n\
   // Coordinates within a tile.\n\
-  vec2 tile_interp = fract(v_coord);\n\
+  vec2 tile_interp = v_tile_size * fract(v_coord);\n\
 \n\
-  vec4 tile_encoded = vec4(texture2D(t_console_tile, console_pos));\n\
-\n\
-  // Unpack tileset index.\n\
-  vec2 tile_address = vec2(\n\
-      tile_encoded.x * float(0xff) + tile_encoded.y * float(0xff00),\n\
-      tile_encoded.z * float(0xff) + tile_encoded.w * float(0xff00)\n\
+  // Get and decode atlas pixel coordinate origin for glyph to be rendered.\n\
+  vec4 tile_encoded = texture2DLod(t_console_tile, console_pos, 0);\n\
+  vec2 tile_origin = vec2(\n\
+    tile_encoded.x * float(0xff) + tile_encoded.y * float(0xff00),\n\
+    tile_encoded.z * float(0xff) + tile_encoded.w * float(0xff00)\n\
   );\n\
 \n\
-  // Clamp the edges of tile_interp to prevent alias bleeding.\n\
-  tile_interp = clamp(tile_interp, 0.5 / tile_size, 1.0 - 0.5 / tile_size);\n\
-\n\
   // Apply tile_interp and scale.\n\
-  tile_address = (tile_address + tile_interp) / v_tiles_shape;\n\
+  // This represents the actual location to sample from the tile atlas, in\n\
+  //  an overall coordinate range of (0.0, 0.0) to (1.0, 1.0)\n\
+  vec2 tile_address = (tile_origin + tile_interp) / v_tiles_size;\n\
 \n\
-  vec4 tile_color = texture2D(t_tileset, tile_address);\n\
+  // Need to use texture2DLod here to avoid artifacts for some reason\n\
+  vec4 tile_color = texture2DLod(t_tileset, tile_address, 0);\n\
 \n\
-  vec4 bg = texture2D(t_console_bg, console_pos);\n\
-  vec4 fg = texture2D(t_console_fg, console_pos);\n\
+  vec4 bg = texture2DLod(t_console_bg, console_pos, 0);\n\
+  vec4 fg = texture2DLod(t_console_fg, console_pos, 0);\n\
   fg.rgb *= tile_color.rgb;\n\
 \n\
   gl_FragColor = mix(bg, fg, tile_color.a);\n\
@@ -204,16 +202,24 @@ static TCOD_Error resize_textures(struct TCOD_RendererGL2* renderer, const TCOD_
   ;
 }
 /**
- *  Get the texture coordinates for a codepoint.
+ *  Get the encoded atlas pixel coordinates for a codepoint.
  */
 static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas, int ch, uint8_t* __restrict out) {
+#ifndef TILE_PADDING
+  const int TILE_PADDING = 0;
+#endif
   const struct TCOD_Tileset* tileset = atlas->tileset;
   int tile_id = 0;
   if (ch < tileset->character_map_length) {
     tile_id = tileset->character_map[ch];
   }
+  // get atlas row and column indexes
   int x = tile_id % atlas->texture_columns;
   int y = tile_id / atlas->texture_columns;
+  // now calculate the corresponding atlas pixel coordinates
+  x = TILE_PADDING + (x * (atlas->tileset->tile_width  + TILE_PADDING));
+  y = TILE_PADDING + (y * (atlas->tileset->tile_height + TILE_PADDING));
+  // split 16-bit x and y values into two of 8-bit low and high byte pairs
   out[0] = x & 0xff;
   out[1] = (x >> 8) & 0xff;
   out[2] = y & 0xff;
@@ -239,6 +245,9 @@ static TCOD_Error render(
     struct TCOD_RendererGL2* __restrict renderer,
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
+// #ifndef TILE_PADDING
+//   const int TILE_PADDING = 0;
+// #endif
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
   TCOD_ColorRGBA* bg_buffer = malloc(sizeof(*bg_buffer) * console->elements);
@@ -269,7 +278,7 @@ static TCOD_Error render(
   int a_vertex = glGetAttribLocation(renderer->program, "a_vertex");
   int v_console_shape = glGetUniformLocation(renderer->program, "v_console_shape");
   int v_console_size = glGetUniformLocation(renderer->program, "v_console_size");
-  int v_tiles_shape = glGetUniformLocation(renderer->program, "v_tiles_shape");
+  int v_tile_size = glGetUniformLocation(renderer->program, "v_tile_size");
   int v_tiles_size = glGetUniformLocation(renderer->program, "v_tiles_size");
   int t_tileset = glGetUniformLocation(renderer->program, "t_tileset");
   int t_console_bg = glGetUniformLocation(renderer->program, "t_console_bg");
@@ -283,14 +292,17 @@ static TCOD_Error render(
   // Upload data of texture shapes.
   const struct TCOD_TilesetAtlasOpenGL* atlas = renderer->common.atlas;
 
-  float tiles_shape[2] = {
-      (float)atlas->texture_size / atlas->tileset->tile_width,
-      (float)atlas->texture_size / atlas->tileset->tile_height,
+  float tile_size[2] = {
+    (float)atlas->tileset->tile_width,
+    (float)atlas->tileset->tile_height,
   };
-  glUniform2fv(v_tiles_shape, 1, tiles_shape);
+  glUniform2fv(v_tile_size, 1, tile_size);
   float tiles_size[2] = {
-      (float)atlas->texture_columns * atlas->tileset->tile_width,
-      (float)atlas->texture_rows * atlas->tileset->tile_height,
+    // pretty sure we just want the actual texture size, which we already have
+    //(float)(TILE_PADDING + atlas->texture_columns * (TILE_PADDING + atlas->tileset->tile_width)),
+    //(float)(TILE_PADDING + atlas->texture_rows    * (TILE_PADDING + atlas->tileset->tile_height))
+    (float)(atlas->texture_size),
+    (float)(atlas->texture_size)
   };
   glUniform2fv(v_tiles_size, 1, tiles_size);
 

@@ -94,6 +94,9 @@ static TCOD_Error render_background(struct TCOD_Context* __restrict context, con
   // Setup background texture.
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, renderer->background_texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   if (renderer->background_width < console->w || renderer->background_height < console->h) {

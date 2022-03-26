@@ -380,6 +380,9 @@ TCODLIB_API TCOD_NODISCARD struct TCOD_Context* TCOD_renderer_new_gl2(
   glGenTextures(3, renderer->console_textures);
   for (int i = 0; i < 3; ++i) {
     glBindTexture(GL_TEXTURE_2D, renderer->console_textures[i]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   }

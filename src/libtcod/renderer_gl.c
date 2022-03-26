@@ -100,6 +100,9 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
     atlas->texture_columns = columns;
     atlas->texture_rows = rows;
     glBindTexture(GL_TEXTURE_2D, atlas->texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_LOD, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LOD, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(

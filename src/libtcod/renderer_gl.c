@@ -38,20 +38,21 @@
 #include "error.h"
 
 /**
- *  Return a rectangle shaped for a tile at column `x` and row `y` of a 2D
- *   tile atlas.
+ *  Return a pixel coordinate and size rectangle shaped for a tile at logical
+ *   column `col` and row `row` of a 2D tile atlas.
  */
-static SDL_Rect get_aligned_tile(const struct TCOD_Tileset* tileset, int x, int y) {
+static SDL_Rect get_aligned_tile(const struct TCOD_Tileset* tileset, int col, int row) {
 #ifndef TILE_PADDING
   const int TILE_PADDING = 0;
 #endif
-  // account for padding by adding initial value, plus per-tile value to upper
-  //  left coordinates
-  // size needs to stay true because it determines how big of a source area is
-  //  copied
+  // account for padding when calculating the destination origin, by assuming
+  //  TILE_PADDING pixels around each tile in the atlas, and also shifting this
+  //  specific tile's destination down and right by TILE_PADDING pixels
+  // size needs to stay true because it determines the source area that gets
+  //  copied from the tileset data into the atlas
   SDL_Rect tile_rect = {
-    TILE_PADDING + x * (tileset->tile_width  + TILE_PADDING),
-    TILE_PADDING + y * (tileset->tile_height + TILE_PADDING),
+    TILE_PADDING + col * (tileset->tile_width  + 2 * TILE_PADDING),
+    TILE_PADDING + row * (tileset->tile_height + 2 * TILE_PADDING),
     tileset->tile_width, tileset->tile_height};
   return tile_rect;
 }
@@ -69,9 +70,11 @@ static SDL_Rect get_gl_atlas_tile(const struct TCOD_TilesetAtlasOpenGL* atlas, i
 }
 #ifdef TILE_PADDING
 /**
- *  Upload padding strips to the atlas texture.
+ *  Copy all four edges+corners of tile pixels into padding space around the
+ *   given tile.
  *
- *  Propagates all four edges of tile into padding space.
+ *  Assumes that each tile is surrounded by its own padding of size
+ *   TILE_PADDING.
  */
 static void upload_gl_tile_padding(struct TCOD_TilesetAtlasOpenGL* atlas, struct TCOD_ColorRGBA* tile_top_left, SDL_Rect* dest)
 {
@@ -85,7 +88,7 @@ static void upload_gl_tile_padding(struct TCOD_TilesetAtlasOpenGL* atlas, struct
   struct TCOD_ColorRGBA* tile_bottom_right =
     tile_top_left + atlas->tileset->tile_length - 1;
 
-  for (int i = 0; i < TILE_PADDING / 2; ++i)
+  for (int i = 0; i < TILE_PADDING; ++i)
   {
     // top:
     //  to  : dest->x, dest->y - 1 - i
@@ -98,12 +101,10 @@ static void upload_gl_tile_padding(struct TCOD_TilesetAtlasOpenGL* atlas, struct
       dest->w, 1,
       GL_RGBA, GL_UNSIGNED_BYTE,
       tile_top_left);
-    // glBindTexture(GL_TEXTURE_2D, 0);
     // bottom:
     //  to  : dest->x, dest->y + dest->h + i
     //  size: dest->w, 1
     //  from: tile_bottom_left
-    // glBindTexture(GL_TEXTURE_2D, atlas->texture);
     glTexSubImage2D(
       GL_TEXTURE_2D, 0,
       dest->x, dest->y + dest->h + i,
@@ -125,15 +126,10 @@ static void upload_gl_tile_padding(struct TCOD_TilesetAtlasOpenGL* atlas, struct
       1, dest->h,
       GL_RGBA, GL_UNSIGNED_BYTE,
       tile_top_left);
-    // glBindTexture(GL_TEXTURE_2D, 0);
     // right:
     //  to  : dest->x + dest->w + i, dest->y
     //  size: 1,                     dest->h
     //  from: tile_top_right
-    // glBindTexture(GL_TEXTURE_2D, atlas->texture);
-    // to copy a vertical strip, OpenGL needs to know tileset bytes per row
-    // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    // glPixelStorei(GL_UNPACK_ROW_LENGTH, atlas->tileset->tile_width);
     glTexSubImage2D(
       GL_TEXTURE_2D, 0,
       dest->x + dest->w + i, dest->y,
@@ -141,65 +137,60 @@ static void upload_gl_tile_padding(struct TCOD_TilesetAtlasOpenGL* atlas, struct
       GL_RGBA, GL_UNSIGNED_BYTE,
       tile_top_right);
     glBindTexture(GL_TEXTURE_2D, 0);
+    // thinks seem to break if this doesn't get reset
     glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   }
 
-  // test: fill in the padding corners by copying in the nearest tile corner
+  // also fill in the padding corners with the nearest tile corner pixel value
   // this seems to help with the noise demo at least
-  for (int py = 0; py < TILE_PADDING / 2; ++py)
+  glBindTexture(GL_TEXTURE_2D, atlas->texture);
+  for (int py = 0; py < TILE_PADDING; ++py)
   {
-    for (int px = 0; px < TILE_PADDING / 2; ++px)
+    for (int px = 0; px < TILE_PADDING; ++px)
     {
       // upper left:
       //  to  : dest->x - 1 - px, dest->y - 1 - py
       //  size: 1,           1
       //  from: tile_top_left
-      glBindTexture(GL_TEXTURE_2D, atlas->texture);
       glTexSubImage2D(
         GL_TEXTURE_2D, 0,
         dest->x - 1 - px, dest->y - 1 - py,
         1, 1,
         GL_RGBA, GL_UNSIGNED_BYTE,
         tile_top_left);
-      // glBindTexture(GL_TEXTURE_2D, 0);
       // upper right:
       //  to  : dest->x + dest->w + px, dest->y - 1 - py
       //  size: 1,                 1
       //  from: tile_top_right
-      // glBindTexture(GL_TEXTURE_2D, atlas->texture);
       glTexSubImage2D(
         GL_TEXTURE_2D, 0,
         dest->x + dest->w + px, dest->y - 1 - py,
         1, 1,
         GL_RGBA, GL_UNSIGNED_BYTE,
         tile_top_right);
-      // glBindTexture(GL_TEXTURE_2D, 0);
       // lower left:
       //  to  : dest->x - 1 - px, dest->y + dest->h + py
       //  size: 1,           1
       //  from: tile_bottom_left
-      // glBindTexture(GL_TEXTURE_2D, atlas->texture);
       glTexSubImage2D(
         GL_TEXTURE_2D, 0,
         dest->x - 1 - px, dest->y + dest->h + py,
         1, 1,
         GL_RGBA, GL_UNSIGNED_BYTE,
         tile_bottom_left);
-      // glBindTexture(GL_TEXTURE_2D, 0);
       // lower right:
       //  to  : dest->x + dest->w + px, dest->y + dest->h + py
       //  size: 1,                 1
       //  from: tile_bottom_right
-      // glBindTexture(GL_TEXTURE_2D, atlas->texture);
       glTexSubImage2D(
         GL_TEXTURE_2D, 0,
         dest->x + dest->w + px, dest->y + dest->h + py,
         1, 1,
         GL_RGBA, GL_UNSIGNED_BYTE,
         tile_bottom_right);
-      glBindTexture(GL_TEXTURE_2D, 0);
     }
   }
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 #endif
 /**
@@ -255,12 +246,10 @@ static int prepare_gl_atlas(struct TCOD_TilesetAtlasOpenGL* atlas) {
     }
     // calculate how many rows and colums of tiles can fit in a square texture
     //  whose dimensions are both new_size
-    // padding around tiles is accounted for by adding to the individual tile
-    //  dimension divisors, while padding around the remaining horizontal and
-    //  vertical edge is accounted for by subtracting from the prospective
-    //  texture size
-    columns = (new_size - TILE_PADDING) / (atlas->tileset->tile_width + TILE_PADDING);
-    rows = (new_size - TILE_PADDING) / (atlas->tileset->tile_height + TILE_PADDING);
+    // padding around tiles is accounted for by assuming TILE_PADDING pixels
+    //  around all sides of each tile (i.e. TILE_PADDING * 2 in each dimension)
+    columns = new_size / (atlas->tileset->tile_width + 2 * TILE_PADDING);
+    rows = new_size / (atlas->tileset->tile_height + 2 * TILE_PADDING);
     if (rows * columns >= atlas->tileset->tiles_capacity) {
       break;
     }

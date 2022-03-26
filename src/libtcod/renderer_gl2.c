@@ -216,9 +216,10 @@ static void get_tex_coord(const struct TCOD_TilesetAtlasOpenGL* __restrict atlas
   // get atlas row and column indexes
   int x = tile_id % atlas->texture_columns;
   int y = tile_id / atlas->texture_columns;
-  // now calculate the corresponding atlas pixel coordinates
-  x = TILE_PADDING + (x * (atlas->tileset->tile_width  + TILE_PADDING));
-  y = TILE_PADDING + (y * (atlas->tileset->tile_height + TILE_PADDING));
+  // now calculate the corresponding glyph origin pixel coordinates in the
+  //  atlas texture
+  x = TILE_PADDING + x * (atlas->tileset->tile_width  + 2 * TILE_PADDING);
+  y = TILE_PADDING + y * (atlas->tileset->tile_height + 2 * TILE_PADDING);
   // split 16-bit x and y values into two of 8-bit low and high byte pairs
   out[0] = x & 0xff;
   out[1] = (x >> 8) & 0xff;
@@ -245,9 +246,6 @@ static TCOD_Error render(
     struct TCOD_RendererGL2* __restrict renderer,
     const TCOD_Console* __restrict console,
     const struct TCOD_ViewportOptions* __restrict viewport) {
-// #ifndef TILE_PADDING
-//   const int TILE_PADDING = 0;
-// #endif
   uint8_t* ch_buffer = malloc(sizeof(*ch_buffer) * console->elements * 4);
   TCOD_ColorRGBA* fg_buffer = malloc(sizeof(*fg_buffer) * console->elements);
   TCOD_ColorRGBA* bg_buffer = malloc(sizeof(*bg_buffer) * console->elements);
@@ -291,16 +289,14 @@ static TCOD_Error render(
 
   // Upload data of texture shapes.
   const struct TCOD_TilesetAtlasOpenGL* atlas = renderer->common.atlas;
-
+  //  individual tile pixel dimensions
   float tile_size[2] = {
     (float)atlas->tileset->tile_width,
     (float)atlas->tileset->tile_height,
   };
   glUniform2fv(v_tile_size, 1, tile_size);
+  //  atlas texture pixel dimensions
   float tiles_size[2] = {
-    // pretty sure we just want the actual texture size, which we already have
-    //(float)(TILE_PADDING + atlas->texture_columns * (TILE_PADDING + atlas->tileset->tile_width)),
-    //(float)(TILE_PADDING + atlas->texture_rows    * (TILE_PADDING + atlas->tileset->tile_height))
     (float)(atlas->texture_size),
     (float)(atlas->texture_size)
   };

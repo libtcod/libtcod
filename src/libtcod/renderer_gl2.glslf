@@ -21,7 +21,7 @@ void main(void) {
   // Coordinates within a tile.
   vec2 tile_interp = fract(v_coord);
 
-  vec4 tile_encoded = vec4(texture2DLod(t_console_tile, console_pos, 0));
+  vec4 tile_encoded = vec4(texture2D(t_console_tile, console_pos, 0));
 
   // Unpack tileset index.
   vec2 tile_address = vec2(

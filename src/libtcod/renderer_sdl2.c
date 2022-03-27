@@ -240,6 +240,15 @@ static TCOD_Error setup_cache_console(
   }
   return TCOD_E_OK;
 }
+TCOD_ConsoleTile normalize_tile_for_drawing(TCOD_ConsoleTile tile, const TCOD_Tileset* __restrict tileset) {
+  if (tile.ch == 0x20) tile.ch = 0;  // Tile is the space character.
+  if (tile.ch < 0 || tile.ch >= tileset->character_map_length) tile.ch = 0;  // Tile is out-of-bounds.
+  if (tile.fg.a == 0) tile.ch = 0;  // No foreground alpha.
+  if (tile.ch == 0) {
+    tile.fg.r = tile.fg.g = tile.fg.b = tile.fg.a = 0;  // Clear foreground color if the foreground glyph is skipped.
+  }
+  return tile;
+}
 /**
     Render a console onto the current render target.
 
@@ -268,26 +277,106 @@ static TCOD_Error TCOD_sdl2_render(
     TCOD_set_errorv("Cache console must match the size of the input console.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+#define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. 65536 / 6 to fit indices in a uint16_t type.
+  uint16_t indices[BUFFER_TILES_MAX * 6];
+  float vertex_xy[BUFFER_TILES_MAX * 4 * 2];
+  SDL_Color vertex_rgba[BUFFER_TILES_MAX * 4];
+  float vertex_uv[BUFFER_TILES_MAX * 4 * 2];
+  int16_t buffer_index = 0;
+  if (console->elements > BUFFER_TILES_MAX) {
+    return TCOD_set_errorv("Console size will cause a buffer overflow.");
+  }
+  for (int y = 0; y < console->h; ++y) {
+    for (int x = 0; x < console->w; ++x) {
+      const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
+      vertex_xy[buffer_index * 4 * 2 + 0] = (float)(x * atlas->tileset->tile_width);
+      vertex_xy[buffer_index * 4 * 2 + 1] = (float)(y * atlas->tileset->tile_height);
+      vertex_xy[buffer_index * 4 * 2 + 2] = (float)(x * atlas->tileset->tile_width);
+      vertex_xy[buffer_index * 4 * 2 + 3] = (float)((y + 1) * atlas->tileset->tile_height);
+      vertex_xy[buffer_index * 4 * 2 + 4] = (float)((x + 1) * atlas->tileset->tile_width);
+      vertex_xy[buffer_index * 4 * 2 + 5] = (float)(y * atlas->tileset->tile_height);
+      vertex_xy[buffer_index * 4 * 2 + 6] = (float)((x + 1) * atlas->tileset->tile_width);
+      vertex_xy[buffer_index * 4 * 2 + 7] = (float)((y + 1) * atlas->tileset->tile_height);
+      vertex_rgba[buffer_index * 4] = (SDL_Color){tile.bg.r, tile.bg.g, tile.bg.b, tile.bg.a};
+      vertex_rgba[buffer_index * 4 + 1] = vertex_rgba[buffer_index * 4 + 2] = vertex_rgba[buffer_index * 4 + 3] =
+          vertex_rgba[buffer_index * 4];
+      indices[buffer_index * 6 + 0] = buffer_index * 4;
+      indices[buffer_index * 6 + 1] = buffer_index * 4 + 1;
+      indices[buffer_index * 6 + 2] = buffer_index * 4 + 2;
+      indices[buffer_index * 6 + 3] = buffer_index * 4 + 2;
+      indices[buffer_index * 6 + 4] = buffer_index * 4 + 1;
+      indices[buffer_index * 6 + 5] = buffer_index * 4 + 3;
+      ++buffer_index;
+    }
+  }
+  SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
+  SDL_RenderGeometryRaw(
+      atlas->renderer,
+      NULL,
+      vertex_xy,
+      sizeof(*vertex_xy) * 2,
+      vertex_rgba,
+      sizeof(*vertex_rgba),
+      NULL,
+      0,
+      buffer_index * 4,
+      indices,
+      buffer_index * 6,
+      2);
+  buffer_index = 0;
+  int tex_width;
+  int tex_height;
+  SDL_QueryTexture(atlas->texture, NULL, NULL, &tex_width, &tex_height);
+  const float tex_x_multiply = 1.0f / (float)(tex_width);  // Transforms texture pixel coordinates to UV coords.
+  const float tex_y_multiply = 1.0f / (float)(tex_height);
+  for (int y = 0; y < console->h; ++y) {
+    for (int x = 0; x < console->w; ++x) {
+      const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
+      vertex_rgba[buffer_index * 4] = (SDL_Color){tile.fg.r, tile.fg.g, tile.fg.b, tile.fg.a};
+      vertex_rgba[buffer_index * 4 + 1] = vertex_rgba[buffer_index * 4 + 2] = vertex_rgba[buffer_index * 4 + 3] =
+          vertex_rgba[buffer_index * 4];
+      const int tile_id = atlas->tileset->character_map[tile.ch];
+      const SDL_Rect src = get_sdl2_atlas_tile(atlas, tile_id);
+      vertex_uv[buffer_index * 4 * 2 + 0] = (float)(src.x) * tex_x_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 1] = (float)(src.y) * tex_y_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 2] = (float)(src.x) * tex_x_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 3] = (float)(src.y + src.h) * tex_y_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 4] = (float)(src.x + src.w) * tex_x_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 5] = (float)(src.y) * tex_y_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 6] = (float)(src.x + src.w) * tex_x_multiply;
+      vertex_uv[buffer_index * 4 * 2 + 7] = (float)(src.y + src.h) * tex_y_multiply;
+      indices[buffer_index * 6 + 0] = buffer_index * 4;
+      indices[buffer_index * 6 + 1] = buffer_index * 4 + 1;
+      indices[buffer_index * 6 + 2] = buffer_index * 4 + 2;
+      indices[buffer_index * 6 + 3] = buffer_index * 4 + 2;
+      indices[buffer_index * 6 + 4] = buffer_index * 4 + 1;
+      indices[buffer_index * 6 + 5] = buffer_index * 4 + 3;
+      ++buffer_index;
+    }
+  }
+  SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
+  SDL_RenderGeometryRaw(
+      atlas->renderer,
+      atlas->texture,
+      vertex_xy,
+      sizeof(*vertex_xy) * 2,
+      vertex_rgba,
+      sizeof(*vertex_rgba),
+      vertex_uv,
+      sizeof(*vertex_uv) * 2,
+      buffer_index * 4,
+      indices,
+      buffer_index * 6,
+      2);
+#else  // SDL VERSION < 2.0.18
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
   SDL_SetTextureAlphaMod(atlas->texture, 0xff);
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const SDL_Rect dest = get_aligned_tile(atlas->tileset, x, y);
-      struct TCOD_ConsoleTile tile = console->tiles[console->w * y + x];
-      if (tile.ch == 0x20) {
-        tile.ch = 0;  // Tile is the space character.
-      }
-      if (tile.ch < 0 || tile.ch >= atlas->tileset->character_map_length) {
-        tile.ch = 0;  // Tile is out-of-bounds.
-      }
-      if (tile.fg.a == 0) {
-        tile.ch = 0;  // No foreground alpha.
-      }
-      if (tile.ch == 0) {
-        // Clear foreground color if the foreground glyph is skipped.
-        tile.fg.r = tile.fg.g = tile.fg.b = tile.fg.a = 0;
-      }
+      const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
       if (cache) {
         const struct TCOD_ConsoleTile cached = cache->tiles[cache->w * y + x];
         if (tile.ch == cached.ch && tile.fg.r == cached.fg.r && tile.fg.g == cached.fg.g && tile.fg.b == cached.fg.b &&
@@ -306,11 +395,12 @@ static TCOD_Error TCOD_sdl2_render(
       // Blend the foreground glyph on top of the background.
       SDL_SetTextureColorMod(atlas->texture, tile.fg.r, tile.fg.g, tile.fg.b);
       SDL_SetTextureAlphaMod(atlas->texture, tile.fg.a);
-      int tile_id = atlas->tileset->character_map[tile.ch];
+      const int tile_id = atlas->tileset->character_map[tile.ch];
       const SDL_Rect src = get_sdl2_atlas_tile(atlas, tile_id);
       SDL_RenderCopy(atlas->renderer, atlas->texture, &src, &dest);
     }
   }
+#endif  // SDL_VERSION_ATLEAST
   return TCOD_E_OK;
 }
 TCOD_Error TCOD_sdl2_render_texture_setup(

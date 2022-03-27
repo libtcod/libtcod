@@ -40,6 +40,28 @@
 
 #include "libtcod_int.h"
 
+#define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. 65536 / 6 to fit indices in a uint16_t type.
+/// Vertex element with position and color data.  Position uses pixel coordinates.
+typedef struct VertexElement {
+  float x;
+  float y;
+  TCOD_ColorRGBA rgba;
+} VertexElement;
+/// Vertex normalize UV coords.
+typedef struct VertexUV {
+  float u;
+  float v;
+} VertexUV;
+/// A fixed-size dynamic buffer for vertex data.
+/// Vertices are ordered: upper-left, lower-left, upper-right, lower-right.
+typedef struct VertexBuffer {
+  uint16_t indices[BUFFER_TILES_MAX * 6];  // Vertex indices.  Vertex quads are assigned as: 0 1 2, 2 1 3.
+  VertexElement vertex[BUFFER_TILES_MAX * 4];
+  VertexUV vertex_uv[BUFFER_TILES_MAX * 4];
+  int16_t index;  // Next tile to assign to.  Groups indicies in sets of 6 and vertices in sets of 4.
+  int16_t indices_initialized;  // Sets of indicies initialized.
+} VertexBuffer;
+
 static inline float minf(float a, float b) { return a < b ? a : b; }
 static inline float maxf(float a, float b) { return a > b ? a : b; }
 static inline float clampf(float v, float low, float high) { return maxf(low, minf(v, high)); }
@@ -48,20 +70,18 @@ static inline float clampf(float v, float low, float high) { return maxf(low, mi
 /**
  *  Return a rectangle shaped for a tile at `x`,`y`.
  */
-static SDL_Rect get_aligned_tile(const struct TCOD_Tileset* tileset, int x, int y) {
+static SDL_Rect get_aligned_tile(const struct TCOD_Tileset* __restrict tileset, int x, int y) {
   SDL_Rect tile_rect = {x * tileset->tile_width, y * tileset->tile_height, tileset->tile_width, tileset->tile_height};
   return tile_rect;
 }
-/**
- *  Return the rectangle for the tile at `tile_id`.
- */
-static SDL_Rect get_sdl2_atlas_tile(const struct TCOD_TilesetAtlasSDL2* atlas, int tile_id) {
+/// Return the rectangle for the tile at `tile_id`.
+static SDL_Rect get_sdl2_atlas_tile(const struct TCOD_TilesetAtlasSDL2* __restrict atlas, int tile_id) {
   return get_aligned_tile(atlas->tileset, tile_id % atlas->texture_columns, tile_id / atlas->texture_columns);
 }
 /**
  *  Upload a single tile to the atlas texture.
  */
-static int update_sdl2_tile(struct TCOD_TilesetAtlasSDL2* atlas, int tile_id) {
+static int update_sdl2_tile(struct TCOD_TilesetAtlasSDL2* __restrict atlas, int tile_id) {
   const SDL_Rect dest = get_sdl2_atlas_tile(atlas, tile_id);
   return SDL_UpdateTexture(
       atlas->texture,
@@ -240,6 +260,7 @@ static TCOD_Error setup_cache_console(
   }
   return TCOD_E_OK;
 }
+/// Normalize a console tile so that it collides with a cached value more easily.
 TCOD_ConsoleTile normalize_tile_for_drawing(TCOD_ConsoleTile tile, const TCOD_Tileset* __restrict tileset) {
   if (tile.ch == 0x20) tile.ch = 0;  // Tile is the space character.
   if (tile.ch < 0 || tile.ch >= tileset->character_map_length) tile.ch = 0;  // Tile is out-of-bounds.
@@ -249,6 +270,112 @@ TCOD_ConsoleTile normalize_tile_for_drawing(TCOD_ConsoleTile tile, const TCOD_Ti
   }
   return tile;
 }
+#if SDL_VERSION_ATLEAST(2, 0, 18)
+/// Initialize indices up to the current buffer index.
+static void vertex_buffer_sync_indices(VertexBuffer* __restrict buffer) {
+  for (; buffer->indices_initialized < buffer->index; ++buffer->indices_initialized) {
+    buffer->indices[buffer->indices_initialized * 6 + 0] = buffer->indices_initialized * 4;
+    buffer->indices[buffer->indices_initialized * 6 + 1] = buffer->indices_initialized * 4 + 1;
+    buffer->indices[buffer->indices_initialized * 6 + 2] = buffer->indices_initialized * 4 + 2;
+    buffer->indices[buffer->indices_initialized * 6 + 3] = buffer->indices_initialized * 4 + 2;
+    buffer->indices[buffer->indices_initialized * 6 + 4] = buffer->indices_initialized * 4 + 1;
+    buffer->indices[buffer->indices_initialized * 6 + 5] = buffer->indices_initialized * 4 + 3;
+  }
+}
+/// Draw all background elements and clear the buffer.
+static void vertex_buffer_flush_bg(VertexBuffer* __restrict buffer, const TCOD_TilesetAtlasSDL2* __restrict atlas) {
+  vertex_buffer_sync_indices(buffer);
+  SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
+  SDL_RenderGeometryRaw(
+      atlas->renderer,
+      NULL,  // No texture, this renders solid colors.
+      &buffer->vertex->x,
+      sizeof(*buffer->vertex),
+      (SDL_Color*)&buffer->vertex->rgba,
+      sizeof(*buffer->vertex),
+      NULL,
+      0,
+      buffer->index * 4,
+      buffer->indices,
+      buffer->index * 6,
+      2);
+  buffer->index = 0;
+}
+/// Draw all foreground elements and clear the buffer.
+static void vertex_buffer_flush_fg(VertexBuffer* __restrict buffer, const TCOD_TilesetAtlasSDL2* __restrict atlas) {
+  vertex_buffer_sync_indices(buffer);
+  SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
+  SDL_RenderGeometryRaw(
+      atlas->renderer,
+      atlas->texture,
+      &buffer->vertex->x,
+      sizeof(*buffer->vertex),
+      (SDL_Color*)&buffer->vertex->rgba,
+      sizeof(*buffer->vertex),
+      (float*)buffer->vertex_uv,
+      sizeof(*buffer->vertex_uv),
+      buffer->index * 4,
+      buffer->indices,
+      buffer->index * 6,
+      2);
+  buffer->index = 0;
+}
+/// Set the vertices of a tile position.
+static void vertex_buffer_set_tile_pos(
+    VertexBuffer* __restrict buffer, int index, int x, int y, const TCOD_Tileset* __restrict tileset) {
+  buffer->vertex[index * 4 + 0].x = (float)(x * tileset->tile_width);
+  buffer->vertex[index * 4 + 0].y = (float)(y * tileset->tile_height);
+  buffer->vertex[index * 4 + 1].x = (float)(x * tileset->tile_width);
+  buffer->vertex[index * 4 + 1].y = (float)((y + 1) * tileset->tile_height);
+  buffer->vertex[index * 4 + 2].x = (float)((x + 1) * tileset->tile_width);
+  buffer->vertex[index * 4 + 2].y = (float)(y * tileset->tile_height);
+  buffer->vertex[index * 4 + 3].x = (float)((x + 1) * tileset->tile_width);
+  buffer->vertex[index * 4 + 3].y = (float)((y + 1) * tileset->tile_height);
+}
+/// Set the colors of a tile.
+static void vertex_buffer_set_color(VertexBuffer* __restrict buffer, int index, TCOD_ColorRGBA rgba) {
+  buffer->vertex[index * 4 + 0].rgba = rgba;
+  buffer->vertex[index * 4 + 1].rgba = rgba;
+  buffer->vertex[index * 4 + 2].rgba = rgba;
+  buffer->vertex[index * 4 + 3].rgba = rgba;
+}
+/// Push a background element onto the buffer, flushing it if needed.
+static void vertex_buffer_push_bg(
+    VertexBuffer* __restrict buffer,
+    int x,
+    int y,
+    TCOD_ConsoleTile tile,
+    const TCOD_TilesetAtlasSDL2* __restrict atlas) {
+  if (buffer->index == BUFFER_TILES_MAX) vertex_buffer_flush_bg(buffer, atlas);
+  vertex_buffer_set_tile_pos(buffer, buffer->index, x, y, atlas->tileset);
+  vertex_buffer_set_color(buffer, buffer->index, tile.bg);
+  ++buffer->index;
+}
+static void vertex_buffer_push_fg(
+    VertexBuffer* __restrict buffer,
+    int x,
+    int y,
+    TCOD_ConsoleTile tile,
+    const TCOD_TilesetAtlasSDL2* __restrict atlas,
+    float u_multiply,
+    float v_multiply) {
+  if (buffer->index == BUFFER_TILES_MAX) vertex_buffer_flush_fg(buffer, atlas);
+  vertex_buffer_set_tile_pos(buffer, buffer->index, x, y, atlas->tileset);
+  vertex_buffer_set_color(buffer, buffer->index, tile.fg);
+  // Used a lazy method of UV assignment.  This could be improved to use fewer math operations.
+  const int tile_id = atlas->tileset->character_map[tile.ch];
+  const SDL_Rect src = get_sdl2_atlas_tile(atlas, tile_id);
+  buffer->vertex_uv[buffer->index * 4 + 0].u = (float)(src.x) * u_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 0].v = (float)(src.y) * v_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 1].u = (float)(src.x) * u_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 1].v = (float)(src.y + src.h) * v_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 2].u = (float)(src.x + src.w) * u_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 2].v = (float)(src.y) * v_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 3].u = (float)(src.x + src.w) * u_multiply;
+  buffer->vertex_uv[buffer->index * 4 + 3].v = (float)(src.y + src.h) * v_multiply;
+  ++buffer->index;
+}
+#endif  // SDL_VERSION_ATLEAST(2, 0, 18)
 /**
     Render a console onto the current render target.
 
@@ -262,9 +389,9 @@ TCOD_ConsoleTile normalize_tile_for_drawing(TCOD_ConsoleTile tile, const TCOD_Ti
     Returns a negative value on an error, check `TCOD_get_error`.
  */
 static TCOD_Error TCOD_sdl2_render(
-    const struct TCOD_TilesetAtlasSDL2* __restrict atlas,
-    const struct TCOD_Console* __restrict console,
-    struct TCOD_Console* __restrict cache) {
+    const TCOD_TilesetAtlasSDL2* __restrict atlas,
+    const TCOD_Console* __restrict console,
+    TCOD_Console* __restrict cache) {
   if (!atlas) {
     TCOD_set_errorv("Atlas must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -279,96 +406,28 @@ static TCOD_Error TCOD_sdl2_render(
   }
 #if SDL_VERSION_ATLEAST(2, 0, 18)
 #define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. 65536 / 6 to fit indices in a uint16_t type.
-  uint16_t indices[BUFFER_TILES_MAX * 6];
-  float vertex_xy[BUFFER_TILES_MAX * 4 * 2];
-  SDL_Color vertex_rgba[BUFFER_TILES_MAX * 4];
-  float vertex_uv[BUFFER_TILES_MAX * 4 * 2];
-  int16_t buffer_index = 0;
-  if (console->elements > BUFFER_TILES_MAX) {
-    return TCOD_set_errorv("Console size will cause a buffer overflow.");
-  }
+  VertexBuffer buffer;
+  buffer.index = 0;
+  buffer.indices_initialized = 0;
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
-      vertex_xy[buffer_index * 4 * 2 + 0] = (float)(x * atlas->tileset->tile_width);
-      vertex_xy[buffer_index * 4 * 2 + 1] = (float)(y * atlas->tileset->tile_height);
-      vertex_xy[buffer_index * 4 * 2 + 2] = (float)(x * atlas->tileset->tile_width);
-      vertex_xy[buffer_index * 4 * 2 + 3] = (float)((y + 1) * atlas->tileset->tile_height);
-      vertex_xy[buffer_index * 4 * 2 + 4] = (float)((x + 1) * atlas->tileset->tile_width);
-      vertex_xy[buffer_index * 4 * 2 + 5] = (float)(y * atlas->tileset->tile_height);
-      vertex_xy[buffer_index * 4 * 2 + 6] = (float)((x + 1) * atlas->tileset->tile_width);
-      vertex_xy[buffer_index * 4 * 2 + 7] = (float)((y + 1) * atlas->tileset->tile_height);
-      vertex_rgba[buffer_index * 4] = (SDL_Color){tile.bg.r, tile.bg.g, tile.bg.b, tile.bg.a};
-      vertex_rgba[buffer_index * 4 + 1] = vertex_rgba[buffer_index * 4 + 2] = vertex_rgba[buffer_index * 4 + 3] =
-          vertex_rgba[buffer_index * 4];
-      indices[buffer_index * 6 + 0] = buffer_index * 4;
-      indices[buffer_index * 6 + 1] = buffer_index * 4 + 1;
-      indices[buffer_index * 6 + 2] = buffer_index * 4 + 2;
-      indices[buffer_index * 6 + 3] = buffer_index * 4 + 2;
-      indices[buffer_index * 6 + 4] = buffer_index * 4 + 1;
-      indices[buffer_index * 6 + 5] = buffer_index * 4 + 3;
-      ++buffer_index;
+      vertex_buffer_push_bg(&buffer, x, y, tile, atlas);
     }
   }
-  SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
-  SDL_RenderGeometryRaw(
-      atlas->renderer,
-      NULL,
-      vertex_xy,
-      sizeof(*vertex_xy) * 2,
-      vertex_rgba,
-      sizeof(*vertex_rgba),
-      NULL,
-      0,
-      buffer_index * 4,
-      indices,
-      buffer_index * 6,
-      2);
-  buffer_index = 0;
+  vertex_buffer_flush_bg(&buffer, atlas);
   int tex_width;
   int tex_height;
   SDL_QueryTexture(atlas->texture, NULL, NULL, &tex_width, &tex_height);
-  const float tex_x_multiply = 1.0f / (float)(tex_width);  // Transforms texture pixel coordinates to UV coords.
-  const float tex_y_multiply = 1.0f / (float)(tex_height);
+  const float u_multiply = 1.0f / (float)(tex_width);  // Transforms texture pixel coordinates to UV coords.
+  const float v_multiply = 1.0f / (float)(tex_height);
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
-      vertex_rgba[buffer_index * 4] = (SDL_Color){tile.fg.r, tile.fg.g, tile.fg.b, tile.fg.a};
-      vertex_rgba[buffer_index * 4 + 1] = vertex_rgba[buffer_index * 4 + 2] = vertex_rgba[buffer_index * 4 + 3] =
-          vertex_rgba[buffer_index * 4];
-      const int tile_id = atlas->tileset->character_map[tile.ch];
-      const SDL_Rect src = get_sdl2_atlas_tile(atlas, tile_id);
-      vertex_uv[buffer_index * 4 * 2 + 0] = (float)(src.x) * tex_x_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 1] = (float)(src.y) * tex_y_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 2] = (float)(src.x) * tex_x_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 3] = (float)(src.y + src.h) * tex_y_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 4] = (float)(src.x + src.w) * tex_x_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 5] = (float)(src.y) * tex_y_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 6] = (float)(src.x + src.w) * tex_x_multiply;
-      vertex_uv[buffer_index * 4 * 2 + 7] = (float)(src.y + src.h) * tex_y_multiply;
-      indices[buffer_index * 6 + 0] = buffer_index * 4;
-      indices[buffer_index * 6 + 1] = buffer_index * 4 + 1;
-      indices[buffer_index * 6 + 2] = buffer_index * 4 + 2;
-      indices[buffer_index * 6 + 3] = buffer_index * 4 + 2;
-      indices[buffer_index * 6 + 4] = buffer_index * 4 + 1;
-      indices[buffer_index * 6 + 5] = buffer_index * 4 + 3;
-      ++buffer_index;
+      vertex_buffer_push_fg(&buffer, x, y, tile, atlas, u_multiply, v_multiply);
     }
   }
-  SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);
-  SDL_RenderGeometryRaw(
-      atlas->renderer,
-      atlas->texture,
-      vertex_xy,
-      sizeof(*vertex_xy) * 2,
-      vertex_rgba,
-      sizeof(*vertex_rgba),
-      vertex_uv,
-      sizeof(*vertex_uv) * 2,
-      buffer_index * 4,
-      indices,
-      buffer_index * 6,
-      2);
+  vertex_buffer_flush_fg(&buffer, atlas);
 #else  // SDL VERSION < 2.0.18
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);

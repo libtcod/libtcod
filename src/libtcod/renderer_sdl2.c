@@ -261,10 +261,19 @@ static TCOD_Error setup_cache_console(
   return TCOD_E_OK;
 }
 /// Normalize a console tile so that it collides with a cached value more easily.
+/// Removes invisible or nonexistant foreground glyphs.
 TCOD_ConsoleTile normalize_tile_for_drawing(TCOD_ConsoleTile tile, const TCOD_Tileset* __restrict tileset) {
   if (tile.ch == 0x20) tile.ch = 0;  // Tile is the space character.
-  if (tile.ch < 0 || tile.ch >= tileset->character_map_length) tile.ch = 0;  // Tile is out-of-bounds.
+  if (tile.ch < 0 || tile.ch >= tileset->character_map_length) {
+    tile.ch = 0;  // Tile character is out-of-bounds.
+  } else if (tileset->character_map[tile.ch] == 0) {
+    tile.ch = 0;  // Ignore characters not defined in the tileset.
+  }
   if (tile.fg.a == 0) tile.ch = 0;  // No foreground alpha.
+  if (tile.bg.r == tile.fg.r && tile.bg.g == tile.fg.g && tile.bg.b == tile.fg.b && tile.bg.a == 255 &&
+      tile.fg.a == 255) {
+    tile.ch = 0;  // Foreground and background color match, so the foreground glyph would be invisible.
+  }
   if (tile.ch == 0) {
     tile.fg.r = tile.fg.g = tile.fg.b = tile.fg.a = 0;  // Clear foreground color if the foreground glyph is skipped.
   }
@@ -351,6 +360,7 @@ static void vertex_buffer_push_bg(
   vertex_buffer_set_color(buffer, buffer->index, tile.bg);
   ++buffer->index;
 }
+/// Push a foreground element onto the buffer, flushing it if needed.
 static void vertex_buffer_push_fg(
     VertexBuffer* __restrict buffer,
     int x,
@@ -405,25 +415,56 @@ static TCOD_Error TCOD_sdl2_render(
     return TCOD_E_INVALID_ARGUMENT;
   }
 #if SDL_VERSION_ATLEAST(2, 0, 18)
-#define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. 65536 / 6 to fit indices in a uint16_t type.
+  // Allocate an undefined buffer on the stack and initialize only a few variables.
+  // Reused for the background and foreground passees.
   VertexBuffer buffer;
   buffer.index = 0;
   buffer.indices_initialized = 0;
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
+      if (cache) {
+        TCOD_ConsoleTile* cached = &cache->tiles[cache->w * y + x];
+        // True if there changes to the BG color.
+        const bool bg_changed = tile.bg.g != cached->bg.g || tile.bg.b != cached->bg.b || tile.bg.a != cached->bg.a;
+        // True if there are changes to the FG glyph.
+        const bool fg_changed =
+            cached->ch && (tile.ch != cached->ch || tile.fg.r != cached->fg.r || tile.fg.g != cached->fg.g ||
+                           tile.fg.b != cached->fg.b || tile.fg.a != cached->fg.a);
+        if (!(bg_changed || fg_changed)) {
+          continue;  // If no changes exist then this tile can be skipped entirely.
+        }
+        // Cache the BG and unset the FG data, this will tell the FG pass if it needs to draw the glyph.
+        *cached = (TCOD_ConsoleTile){0, {0, 0, 0, 0}, tile.bg};
+      }
+      // Data is pushed onto the buffer, this is flushed automatically if it would otherwise overflow.
       vertex_buffer_push_bg(&buffer, x, y, tile, atlas);
     }
   }
+  // Flush any remaining data.  The buffer can now be resused for foreground data.
   vertex_buffer_flush_bg(&buffer, atlas);
+
+  // The foreground rendering pass.  Draw FG glyphs on top of the background tiles.
   int tex_width;
   int tex_height;
   SDL_QueryTexture(atlas->texture, NULL, NULL, &tex_width, &tex_height);
-  const float u_multiply = 1.0f / (float)(tex_width);  // Transforms texture pixel coordinates to UV coords.
+  const float u_multiply = 1.0f / (float)(tex_width);  // Used to transform texture pixel coordinates to UV coords.
   const float v_multiply = 1.0f / (float)(tex_height);
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
+      if (tile.ch == 0) continue;  // No FG glyph to draw.
+      if (cache) {
+        TCOD_ConsoleTile* cached = &cache->tiles[cache->w * y + x];
+        // cached->ch will be set to zero by the background pass on changes to the foreground color or glyph.
+        // Because of this the FG color does not need to be checked here.
+        if (tile.ch == cached->ch) {
+          continue;  // The glyph has not changed since the last render.
+        }
+        // Cache the foreground glyph.
+        cached->ch = tile.ch;
+        cached->fg = tile.fg;
+      }
       vertex_buffer_push_fg(&buffer, x, y, tile, atlas, u_multiply, v_multiply);
     }
   }

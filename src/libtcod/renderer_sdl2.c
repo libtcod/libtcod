@@ -40,7 +40,7 @@
 
 #include "libtcod_int.h"
 
-#define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. 65536 / 6 to fit indices in a uint16_t type.
+#define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. (65536 / 6) to fit indices in a uint16_t type.
 /// Vertex element with position and color data.  Position uses pixel coordinates.
 typedef struct VertexElement {
   float x;
@@ -415,7 +415,7 @@ static TCOD_Error TCOD_sdl2_render(
     return TCOD_E_INVALID_ARGUMENT;
   }
 #if SDL_VERSION_ATLEAST(2, 0, 18)
-  // Allocate an undefined buffer on the stack and initialize only a few variables.
+  // Allocate a buffer on the stack and initialize only a few variables.
   // Reused for the background and foreground passees.
   VertexBuffer buffer;
   buffer.index = 0;

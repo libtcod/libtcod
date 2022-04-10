@@ -130,6 +130,34 @@ static char* ucs4_to_utf8(int ucs4, char out[5]) {
   out[1] = '\0';
   return out;
 }
+/// Poll and return the terminal size.  Returns TCOD_E_ERROR if this times out.
+static TCOD_Error xterm_get_terminal_size(struct TerminalSizeOut* out) {
+  out->timestamp = 0;
+  out->columns = 0;
+  out->rows = 0;
+  fprintf(stdout, "\x1b[%i;%iH", SHRT_MAX, SHRT_MAX);  // Move cursor to lower-right corner.
+  fflush(stdout);
+  SDL_LockMutex(g_terminal_size_state.lock);
+  g_terminal_size_state.out = out;
+  SDL_UnlockMutex(g_terminal_size_state.lock);
+  const Uint32 start_time = SDL_GetTicks();
+  fprintf(stdout, "\x1b[6n");  // Poll the cursor position.
+  fflush(stdout);
+  while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
+    SDL_LockMutex(g_terminal_size_state.lock);
+    if (SDL_TICKS_PASSED(out->timestamp, start_time)) {
+      g_terminal_size_state.out = NULL;
+      SDL_UnlockMutex(g_terminal_size_state.lock);
+      return TCOD_E_OK;
+    }
+    SDL_UnlockMutex(g_terminal_size_state.lock);
+    SDL_Delay(1);
+  }
+  SDL_LockMutex(g_terminal_size_state.lock);
+  g_terminal_size_state.out = NULL;
+  SDL_UnlockMutex(g_terminal_size_state.lock);
+  return TCOD_E_ERROR;
+}
 
 static TCOD_Error xterm_present(
     struct TCOD_Context* __restrict self,
@@ -145,11 +173,14 @@ static TCOD_Error xterm_present(
     context->cache = TCOD_console_new(console->w, console->h);
     for (int i = 0; i < context->cache->elements; ++i) context->cache->tiles[i].ch = -1;
   }
+  struct TerminalSizeOut term_size;
+  xterm_get_terminal_size(&term_size);  // This polls the terminal and might be too slow.
+
   fprintf(stdout, "\x1b[?25l");  // Cursor un-hiding on Windows after window is resized.
-  for (int y = 0; y < console->h; ++y) {
+  for (int y = 0; y < console->h && y < term_size.rows; ++y) {
     fprintf(stdout, "\x1b[%d;0H", y);  // Move cursor to start of next line.
     int skip_tiles = 0;  // Skip unchanged tiles.
-    for (int x = 0; x < console->w; ++x) {
+    for (int x = 0; x < console->w && x < term_size.columns; ++x) {
       TCOD_ConsoleTile* prev_tile = &context->cache->tiles[console->w * y + x];
       const TCOD_ConsoleTile* tile = &console->tiles[console->w * y + x];
       if (tile->ch == prev_tile->ch && tile->fg.r == prev_tile->fg.r && tile->fg.g == prev_tile->fg.g &&
@@ -250,7 +281,7 @@ static void xterm_handle_mouse_click(int cb, int x, int y) {
   const int cb_button = cb & 3;
   const Uint32 timestamp = SDL_GetTicks();
   Uint32 type = SDL_MOUSEBUTTONDOWN;
-  Uint32 state = SDL_PRESSED;
+  Uint8 state = SDL_PRESSED;
   Uint8 button = 0;
   switch (cb_button) {
     case 0:
@@ -347,9 +378,9 @@ static void xterm_handle_mouse_motion(int x, int y) {
 }
 /// Parse X10 compatibility mode mouse escape sequences.
 static void xterm_handle_mouse_escape() {
-  const char cb = getchar();
-  const char x = getchar() - 33;
-  const char y = getchar() - 33;
+  const int cb = getchar();
+  const int x = getchar() - 33;
+  const int y = getchar() - 33;
   if (cb & 32) {
     if (cb & 64)
       xterm_handle_mouse_wheel(cb);
@@ -547,31 +578,14 @@ static int xterm_handle_input(void* arg) {
 
 static TCOD_Error xterm_recommended_console_size(
     struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows) {
-  fprintf(stdout, "\x1b[%i;%iH", SHRT_MAX, SHRT_MAX);
-  fflush(stdout);
-  struct TerminalSizeOut size_out = {.timestamp = 0};
-  SDL_LockMutex(g_terminal_size_state.lock);
-  g_terminal_size_state.out = &size_out;
-  SDL_UnlockMutex(g_terminal_size_state.lock);
-  const Uint32 start_time = SDL_GetTicks();
-  fprintf(stdout, "\x1b[6n");
-  fflush(stdout);
-  while (!SDL_TICKS_PASSED(SDL_GetTicks(), start_time + 100)) {
-    SDL_LockMutex(g_terminal_size_state.lock);
-    if (SDL_TICKS_PASSED(size_out.timestamp, start_time)) {
-      *columns = size_out.columns;
-      *rows = size_out.rows;
-      g_terminal_size_state.out = NULL;
-      SDL_UnlockMutex(g_terminal_size_state.lock);
-      return TCOD_E_OK;
-    }
-    SDL_UnlockMutex(g_terminal_size_state.lock);
-    SDL_Delay(1);
-  }
-  SDL_LockMutex(g_terminal_size_state.lock);
-  g_terminal_size_state.out = NULL;
-  SDL_UnlockMutex(g_terminal_size_state.lock);
-  return TCOD_E_ERROR;
+  (void)self;  // Unused.
+  (void)magnification;
+  struct TerminalSizeOut size_out;
+  TCOD_Error err = xterm_get_terminal_size(&size_out);
+  if (err < 0) return err;
+  *columns = size_out.columns;
+  *rows = size_out.rows;
+  return TCOD_E_OK;
 }
 
 #ifndef _WIN32

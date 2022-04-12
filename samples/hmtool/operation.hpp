@@ -1,6 +1,5 @@
-#include <libtcod.h>
-
 #include <array>
+#include <libtcod.hpp>
 #include <libtcod/gui/gui.hpp>
 #include <string>
 

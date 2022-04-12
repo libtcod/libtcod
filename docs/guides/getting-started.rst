@@ -11,8 +11,8 @@ deprecated functions.
 
 .. code-block:: cpp
 
-    #include <libtcod.h>
     #include <SDL2.h>
+    #include <libtcod.hpp>
 
     int main(int argc, char* argv[]) {
       auto console = tcod::Console{80, 25};  // Main console.

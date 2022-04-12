@@ -183,7 +183,7 @@ Timing
 All of the libtcod timing functions have been deprecated.
 Many will stop working once you switch to using contexts.
 Instead you should use :any:`tcod::Timer` and SDL2's timing functions.
-Remember that you have to add ``#include <libtcod/timer.h>`` to access :any:`tcod::Timer`, this also requires the SDL2 headers.
+Remember that you have to add ``#include <libtcod/timer.hpp>`` to access :any:`tcod::Timer`, this also requires the SDL2 headers.
 
 .. code-block:: cpp
 
@@ -204,7 +204,7 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
 
 .. code-block:: cpp
 
-    #include <libtcod.h>
+    #include <libtcod.hpp>
     #include <SDL2.h>
 
     int main(int argc, char* argv[]) {

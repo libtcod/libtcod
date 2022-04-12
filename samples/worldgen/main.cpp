@@ -26,10 +26,10 @@
 #include "main.hpp"
 
 #include <SDL.h>
-#include <libtcod/timer.h>
 
 #include <algorithm>
 #include <array>
+#include <libtcod/timer.hpp>
 
 static constexpr auto WIDTH = 80;
 static constexpr auto HEIGHT = 50;

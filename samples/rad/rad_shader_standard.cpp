@@ -25,7 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <libtcod.h>
+#include <libtcod.hpp>
 
 #include "rad_shader.hpp"
 

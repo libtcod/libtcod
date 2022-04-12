@@ -8,14 +8,14 @@
 //#define NO_SDL_SAMPLE
 
 #include <SDL.h>
-#include <libtcod.h>
-#include <libtcod/timer.h>
 
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <libtcod.hpp>
+#include <libtcod/timer.hpp>
 #include <memory>
 #include <string>
 #include <vector>

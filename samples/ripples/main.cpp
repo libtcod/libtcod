@@ -26,11 +26,11 @@
 #include "main.hpp"
 
 #include <SDL.h>
-#include <libtcod.h>
-#include <libtcod/timer.h>
 
 #include <algorithm>
 #include <array>
+#include <libtcod.hpp>
+#include <libtcod/timer.hpp>
 #include <memory>
 
 #include "util_ripples.hpp"

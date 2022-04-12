@@ -36,7 +36,7 @@
 #include <malloc.h>
 #endif
 
-#include <libtcod.h>
+#include <libtcod.hpp>
 
 #include "main.hpp"
 #include "util_ripples.hpp"

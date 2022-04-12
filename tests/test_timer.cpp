@@ -1,8 +1,8 @@
 #ifndef NO_SDL
 #include <SDL.h>
-#include <libtcod/timer.h>
 
 #include <catch2/catch.hpp>
+#include <libtcod/timer.hpp>
 
 TEST_CASE("tcod::Timer") {
   REQUIRE(SDL_InitSubSystem(SDL_INIT_TIMER) == 0);

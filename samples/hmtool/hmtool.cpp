@@ -1,12 +1,12 @@
 #include <SDL.h>
-#include <libtcod.h>
-#include <libtcod/timer.h>
 
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <fstream>
+#include <libtcod.hpp>
 #include <libtcod/gui/gui.hpp>
+#include <libtcod/timer.hpp>
 #include <string>
 
 #include "operation.hpp"

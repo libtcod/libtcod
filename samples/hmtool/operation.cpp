@@ -1,9 +1,8 @@
 #include "operation.hpp"
 
-#include <libtcod.h>
-
 #include <cstdarg>
 #include <cstdio>
+#include <libtcod.hpp>
 #include <libtcod/gui/gui.hpp>
 
 // must match Operation::OpType enum
@@ -38,7 +37,7 @@ static const char* header1[] = {
     "#define HM_WIDTH 100\n"
     "#define HM_HEIGHT 80\n",
     // CPP header
-    "#include <libtcod.h>\n"
+    "#include <libtcod.hpp>\n"
     "// size of the heightmap\n"
     "static constexpr auto HM_WIDTH = 100;\n"
     "static constexpr auto HM_HEIGHT = 80;\n",

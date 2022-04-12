@@ -26,9 +26,9 @@
  */
 
 #include <SDL.h>
-#include <libtcod.h>
 
 #include <cmath>
+#include <libtcod.hpp>
 
 #include "bsp_helper.hpp"
 #include "rad_shader.hpp"

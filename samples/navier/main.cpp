@@ -24,12 +24,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <SDL.h>
-#include <libtcod.h>
-#include <libtcod/timer.h>
 #include <math.h>
 #include <stdio.h>
 
 #include <array>
+#include <libtcod.hpp>
+#include <libtcod/timer.hpp>
 #include <vector>
 
 // gas simulation

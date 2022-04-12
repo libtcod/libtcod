@@ -2,13 +2,13 @@
 #include <emscripten.h>
 #endif  // __EMSCRIPTEN__
 #include <SDL.h>
-#include <libtcod.h>
 
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <libtcod.hpp>
 #include <limits>
 #include <memory>
 #include <vector>

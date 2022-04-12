@@ -26,7 +26,7 @@
  */
 #include "rad_shader.hpp"
 
-#include <libtcod.h>
+#include <libtcod.hpp>
 
 void Shader::init(TCODMap* map) {
   this->map_ = map;

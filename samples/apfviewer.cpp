@@ -1,6 +1,7 @@
 #include <SDL.h>
-#include <libtcod.h>
 #include <stdio.h>
+
+#include <libtcod.hpp>
 
 static float version = 1.0f;
 

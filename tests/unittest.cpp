@@ -1,6 +1,5 @@
 #define CATCH_CONFIG_MAIN
 
-#include <libtcod.h>
 #include <libtcod/logging.h>
 #include <libtcod/tileset_fallback.h>
 

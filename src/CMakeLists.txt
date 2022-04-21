@@ -15,7 +15,7 @@ if(CONAN_FILE)
     set(LIBTCOD_ZLIB "conan")
 endif()
 
-set_property(CACHE LIBTCOD_SDL2 PROPERTY STRINGS "find_package" "conan", "disable")
+set_property(CACHE LIBTCOD_SDL2 PROPERTY STRINGS "find_package" "conan" "disable")
 if(LIBTCOD_SDL2 STREQUAL "find_package")
     list(APPEND VCPKG_MANIFEST_FEATURES "sdl")
     find_package(SDL2 CONFIG REQUIRED)

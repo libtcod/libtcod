@@ -425,8 +425,9 @@ static TCOD_Error TCOD_sdl2_render(
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
       if (cache) {
         TCOD_ConsoleTile* cached = &cache->tiles[cache->w * y + x];
-        // True if there changes to the BG color.
-        const bool bg_changed = tile.bg.g != cached->bg.g || tile.bg.b != cached->bg.b || tile.bg.a != cached->bg.a;
+        // True if there are changes to the BG color.
+        const bool bg_changed = tile.bg.r != cached->bg.r || tile.bg.g != cached->bg.g || tile.bg.b != cached->bg.b ||
+                                tile.bg.a != cached->bg.a;
         // True if there are changes to the FG glyph.
         const bool fg_changed =
             cached->ch && (tile.ch != cached->ch || tile.fg.r != cached->fg.r || tile.fg.g != cached->fg.g ||

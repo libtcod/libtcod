@@ -37,6 +37,8 @@
 #include <array>
 #include <memory>
 #include <stdexcept>
+
+#include "error.hpp"
 #endif  // __cplusplus
 
 #include "config.h"

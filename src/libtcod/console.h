@@ -40,6 +40,8 @@
 #include <optional>
 #include <stdexcept>
 #include <utility>
+
+#include "error.hpp"
 #endif  // __cplusplus
 
 #include "color.h"

@@ -2,7 +2,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "common.h"
+#include "common.hpp"
 
 TEST_CASE("tcod::print") {
   auto console = tcod::Console{5, 1};

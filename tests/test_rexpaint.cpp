@@ -1,10 +1,10 @@
 
-#include <libtcod/console.h>
 #include <libtcod/console_rexpaint.h>
 
 #include <array>
 #include <catch2/catch.hpp>
 #include <cstdio>
+#include <libtcod/console.hpp>
 #include <utility>
 #include <vector>
 

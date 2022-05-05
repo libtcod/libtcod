@@ -1,9 +1,9 @@
 
 #include <libtcod/color.h>
-#include <libtcod/console.h>
 
 #include <catch2/catch.hpp>
 #include <libtcod/color.hpp>
+#include <libtcod/console.hpp>
 #include <sstream>
 
 TEST_CASE("Color conversions") {

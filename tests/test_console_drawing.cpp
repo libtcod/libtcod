@@ -3,7 +3,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "common.h"
+#include "common.hpp"
 
 TEST_CASE("Console rect") {
   auto console = tcod::Console{32, 32};

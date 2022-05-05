@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _LIBTCOD_H
-#define _LIBTCOD_H
+#ifndef LIBTCOD_H_
+#define LIBTCOD_H_
 
 #include "bresenham.h"
 #include "bsp.h"
@@ -95,9 +95,12 @@
 #include "parser.hpp"
 #include "path.hpp"
 #include "sys.hpp"
+#include "tileset.hpp"
+#include "tileset_bdf.hpp"
+#include "tileset_fallback.hpp"
 #include "tree.hpp"
 #include "txtfield.hpp"
 #include "zip.hpp"
 #endif  // __cplusplus
 
-#endif
+#endif  // LIBTCOD_H_

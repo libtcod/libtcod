@@ -3,7 +3,7 @@
 #include <libtcod.hpp>
 #include <utility>
 
-#include "common.h"
+#include "common.hpp"
 
 #ifndef NO_SDL
 const int WIDTH = 20;

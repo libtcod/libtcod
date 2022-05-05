@@ -391,7 +391,7 @@ TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int
   unsigned int lodepng_err;
   lodepng_err = lodepng_decode32_file((unsigned char**)&font, &font_width, &font_height, filename);
   if (lodepng_err) {
-    TCOD_set_errorvf("Error loading font image:\n%s", lodepng_error_text(lodepng_err));
+    TCOD_set_errorvf("Error loading font image: %s\n%s", filename ? filename : "", lodepng_error_text(lodepng_err));
     return NULL;  // Error decoding file.
   }
   TCOD_Tileset* tileset = TCOD_tileset_load_raw((int)font_width, (int)font_height, font, columns, rows, n, charmap);

@@ -29,15 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_ENGINE_ERROR_H_
-#define LIBTCOD_ENGINE_ERROR_H_
-
-#ifdef __cplusplus
-#include <exception>
-#include <stdexcept>
-#include <string>
-#endif  // __cplusplus
-
+#ifndef LIBTCOD_ERROR_H_
+#define LIBTCOD_ERROR_H_
 #include "config.h"
 #include "version.h"
 /**
@@ -136,37 +129,5 @@ TCODLIB_API void TCOD_clear_error(void);
   TCOD_set_errorf("%s:%i\n" fmt, TCOD_STRVERSIONNAME " " __FILE__, __LINE__, __VA_ARGS__)
 #ifdef __cplusplus
 }  // extern "C"
-namespace tcod {
-/**
- *  Set an error message and return a relevant error code, usually -1.
- *
- *  Used internally.
- */
-inline TCOD_Error set_error(const std::string& msg) { return TCOD_set_errorv(msg.c_str()); }
-inline TCOD_Error set_error(const std::exception& e) { return TCOD_set_errorv(e.what()); }
-/**
- *  Check and throw error messages.
- *
- *  Used internally.
- */
-inline int check_throw_error(int error) {
-  if (error >= 0) {
-    return error;
-  }
-  std::string error_msg = TCOD_get_error();
-  switch (error) {
-    case TCOD_E_ERROR:
-    default:
-      throw std::runtime_error(error_msg);
-      break;
-    case TCOD_E_INVALID_ARGUMENT:
-      throw std::invalid_argument(error_msg);
-      break;
-  }
-}
-inline TCOD_Error check_throw_error(TCOD_Error error) {
-  return static_cast<TCOD_Error>(check_throw_error(static_cast<int>(error)));
-}
-}  // namespace tcod
 #endif  // __cplusplus
-#endif  // LIBTCOD_ENGINE_ERROR_H_
+#endif  // LIBTCOD_ERROR_H_

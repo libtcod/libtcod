@@ -21,6 +21,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/context_init.h \
 	../../src/libtcod/context_viewport.h \
 	../../src/libtcod/error.h \
+	../../src/libtcod/error.hpp \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
 	../../src/libtcod/fov_types.h \
@@ -67,11 +68,15 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/sys.h \
 	../../src/libtcod/sys.hpp \
 	../../src/libtcod/tileset.h \
+	../../src/libtcod/tileset.hpp \
 	../../src/libtcod/tileset_bdf.h \
+	../../src/libtcod/tileset_bdf.hpp \
 	../../src/libtcod/tileset_fallback.h \
+	../../src/libtcod/tileset_fallback.hpp \
 	../../src/libtcod/tileset_render.h \
 	../../src/libtcod/tileset_truetype.h \
 	../../src/libtcod/timer.h \
+	../../src/libtcod/timer.hpp \
 	../../src/libtcod/tree.h \
 	../../src/libtcod/tree.hpp \
 	../../src/libtcod/txtfield.h \

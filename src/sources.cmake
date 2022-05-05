@@ -37,6 +37,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/context_viewport.h
     libtcod/error.c
     libtcod/error.h
+    libtcod/error.hpp
     libtcod/fov.cpp
     libtcod/fov.h
     libtcod/fov.hpp
@@ -126,15 +127,19 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset.h
+    libtcod/tileset.hpp
     libtcod/tileset_bdf.c
     libtcod/tileset_bdf.h
+    libtcod/tileset_bdf.hpp
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
+    libtcod/tileset_fallback.hpp
     libtcod/tileset_render.c
     libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
     libtcod/timer.h
+    libtcod/timer.hpp
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c
@@ -213,6 +218,7 @@ install(FILES
     libtcod/context_init.h
     libtcod/context_viewport.h
     libtcod/error.h
+    libtcod/error.hpp
     libtcod/fov.h
     libtcod/fov.hpp
     libtcod/fov_types.h
@@ -259,11 +265,15 @@ install(FILES
     libtcod/sys.h
     libtcod/sys.hpp
     libtcod/tileset.h
+    libtcod/tileset.hpp
     libtcod/tileset_bdf.h
+    libtcod/tileset_bdf.hpp
     libtcod/tileset_fallback.h
+    libtcod/tileset_fallback.hpp
     libtcod/tileset_render.h
     libtcod/tileset_truetype.h
     libtcod/timer.h
+    libtcod/timer.hpp
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/txtfield.h
@@ -346,6 +356,7 @@ source_group(libtcod FILES
     libtcod/context_viewport.h
     libtcod/error.c
     libtcod/error.h
+    libtcod/error.hpp
     libtcod/fov.cpp
     libtcod/fov.h
     libtcod/fov.hpp
@@ -435,15 +446,19 @@ source_group(libtcod FILES
     libtcod/sys_sdl_img_png.c
     libtcod/tileset.c
     libtcod/tileset.h
+    libtcod/tileset.hpp
     libtcod/tileset_bdf.c
     libtcod/tileset_bdf.h
+    libtcod/tileset_bdf.hpp
     libtcod/tileset_fallback.c
     libtcod/tileset_fallback.h
+    libtcod/tileset_fallback.hpp
     libtcod/tileset_render.c
     libtcod/tileset_render.h
     libtcod/tileset_truetype.c
     libtcod/tileset_truetype.h
     libtcod/timer.h
+    libtcod/timer.hpp
     libtcod/tree.h
     libtcod/tree.hpp
     libtcod/tree_c.c

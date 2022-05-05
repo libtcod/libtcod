@@ -31,7 +31,7 @@
  */
 #include "console.hpp"
 #include "console_init.h"
-#include "error.h"
+#include "error.hpp"
 namespace tcod {
 namespace console {
 #ifndef NO_SDL

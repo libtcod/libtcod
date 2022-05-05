@@ -29,41 +29,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_TILESET_BDF_H_
-#define LIBTCOD_TILESET_BDF_H_
+#ifndef LIBTCOD_TILESET_FALLBACK_HPP_
+#define LIBTCOD_TILESET_FALLBACK_HPP_
+#include <array>
 
-#include "config.h"
-#include "tileset.h"
+#include "tileset.hpp"
+#include "tileset_fallback.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
-/**
-    Load a BDF font from a file path.
-
-    For the best results, you should use a BDF font with a cell-based
-    monospace alignment.
-
-    May return NULL on failure.  See `TCOD_get_error` for the error message.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
- */
-TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
-/**
-    Load a BDF font from memory.
-
-    `size` is the byte length of `buffer`.  `buffer` is the BDF data to load.
-
-    May return NULL on failure.  See `TCOD_get_error` for the error message.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
- */
-TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
-#endif  // LIBTCOD_TILESET_BDF_H_
+namespace tcod {
+namespace tileset {
+TCOD_NODISCARD
+inline auto new_fallback_tileset(const std::array<int, 2>& tile_size = {0, 12}) -> TilesetPtr {
+  TilesetPtr tileset{TCOD_tileset_load_fallback_font_(tile_size.at(0), tile_size.at(1))};
+  if (!tileset) {
+    throw std::runtime_error(TCOD_get_error());
+  }
+  return tileset;
+}
+}  // namespace tileset
+}  // namespace tcod
+#endif  // LIBTCOD_TILESET_FALLBACK_HPP_

@@ -1,19 +1,19 @@
 #define CATCH_CONFIG_MAIN
 
 #include <libtcod/logging.h>
-#include <libtcod/tileset_fallback.h>
 
 #include <catch2/catch.hpp>
 #include <clocale>
 #include <cstddef>
 #include <iostream>
 #include <libtcod.hpp>
+#include <libtcod/tileset_fallback.hpp>
 #include <limits>
 #include <random>
 #include <string>
 #include <utility>
 
-#include "common.h"
+#include "common.hpp"
 
 /// Captures libtcod log output on tests.
 struct HandleLogging : Catch::TestEventListenerBase {

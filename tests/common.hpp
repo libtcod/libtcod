@@ -1,8 +1,7 @@
 #pragma once
 
-#include <libtcod/console.h>
-
 #include <cstdlib>
+#include <libtcod/console.hpp>
 #include <string>
 
 #ifdef _MSC_VER

@@ -4,7 +4,7 @@
 #include <catch2/catch.hpp>
 #include <libtcod/console.hpp>
 
-#include "common.h"
+#include "common.hpp"
 
 TEST_CASE("Console basics") {
   auto console = tcod::Console{3, 2};

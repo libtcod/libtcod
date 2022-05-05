@@ -35,7 +35,7 @@
 #include <cstdio>
 
 #include "console_init.h"
-#include "error.h"
+#include "error.hpp"
 #include "libtcod_int.h"
 
 #ifndef NO_SDL

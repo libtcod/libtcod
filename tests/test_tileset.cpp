@@ -1,9 +1,8 @@
-#include <libtcod/tileset.h>
-#include <libtcod/tileset_bdf.h>
-
 #include <catch2/catch.hpp>
+#include <libtcod/tileset.hpp>
+#include <libtcod/tileset_bdf.hpp>
 
-#include "common.h"
+#include "common.hpp"
 
 TEST_CASE("Load tilesheet.") {
   auto tileset = tcod::load_tilesheet(get_file("fonts/terminal8x8_gs_ro.png"), {16, 16}, tcod::CHARMAP_CP437);

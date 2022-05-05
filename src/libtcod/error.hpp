@@ -29,41 +29,53 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_TILESET_BDF_H_
-#define LIBTCOD_TILESET_BDF_H_
+#ifndef LIBTCOD_ERROR_HPP_
+#define LIBTCOD_ERROR_HPP_
 
-#include "config.h"
-#include "tileset.h"
+#include <exception>
+#include <filesystem>
+#include <stdexcept>
+#include <string>
 
-#ifdef __cplusplus
-extern "C" {
-#endif  // __cplusplus
+#include "error.h"
+namespace tcod {
 /**
-    Load a BDF font from a file path.
-
-    For the best results, you should use a BDF font with a cell-based
-    monospace alignment.
-
-    May return NULL on failure.  See `TCOD_get_error` for the error message.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+ *  Set an error message and return a relevant error code, usually -1.
+ *
+ *  Used internally.
  */
-TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
+inline TCOD_Error set_error(const std::string& msg) { return TCOD_set_errorv(msg.c_str()); }
+inline TCOD_Error set_error(const std::exception& e) { return TCOD_set_errorv(e.what()); }
 /**
-    Load a BDF font from memory.
-
-    `size` is the byte length of `buffer`.  `buffer` is the BDF data to load.
-
-    May return NULL on failure.  See `TCOD_get_error` for the error message.
-
-    \rst
-    .. versionadded:: 1.16
-    \endrst
+ *  Check and throw error messages.
+ *
+ *  Used internally.
  */
-TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
-#ifdef __cplusplus
-}  // extern "C"
-#endif  // __cplusplus
-#endif  // LIBTCOD_TILESET_BDF_H_
+inline int check_throw_error(int error) {
+  if (error >= 0) {
+    return error;
+  }
+  std::string error_msg = TCOD_get_error();
+  switch (error) {
+    case TCOD_E_ERROR:
+    default:
+      throw std::runtime_error(error_msg);
+      break;
+    case TCOD_E_INVALID_ARGUMENT:
+      throw std::invalid_argument(error_msg);
+      break;
+  }
+}
+inline TCOD_Error check_throw_error(TCOD_Error error) {
+  return static_cast<TCOD_Error>(check_throw_error(static_cast<int>(error)));
+}
+/**
+ * @brief Throw an exception if the given path does not exist.  Used internally.
+ */
+inline void check_path(const std::filesystem::path& path) {
+  if (!std::filesystem::exists(path)) {
+    throw std::runtime_error(std::string("File not found:\n") + std::filesystem::absolute(path).string());
+  }
+}
+}  // namespace tcod
+#endif  // LIBTCOD_ERROR_HPP_

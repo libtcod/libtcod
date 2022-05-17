@@ -128,12 +128,25 @@ endif()
 
 if (EMSCRIPTEN)
     # Attach data to Emscripten builds.
-    foreach(project_it samples_c samples_cpp frost hmtool navier rad weather worldgen)
+    foreach(project_it samples_c samples_cpp)
         target_link_options(
             ${project_it} PRIVATE
-            --preload-file "${CMAKE_CURRENT_SOURCE_DIR}/../data@data/"
+            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/fonts/dejavu10x10_gs_tc.png@/data/fonts/"
+            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/img@/data/img/"
+            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/namegen@/data/namegen/"
         )
     endforeach()
+    target_link_options(
+        frost PRIVATE
+        "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data/fonts/terminal8x8_gs_tc.png@/data/fonts/"
+    )
+    foreach(project_it hmtool navier rad weather worldgen)
+        target_link_options(
+            ${project_it} PRIVATE
+            "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/../data@/data/"
+        )
+    endforeach()
+
     # Set output to html to generate preview pages, otherwise you'll have to make your own html.
     set_target_properties(
         samples_c samples_cpp frost hmtool navier rad weather worldgen

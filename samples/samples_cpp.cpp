@@ -6,7 +6,9 @@
 
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
 //#define NO_SDL_SAMPLE
-
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif  // __EMSCRIPTEN__
 #include <SDL.h>
 
 #include <cmath>
@@ -14,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <iostream>
 #include <libtcod.hpp>
 #include <libtcod/timer.hpp>
 #include <memory>
@@ -25,9 +28,6 @@ bool str_ends_with(std::string_view string, std::string_view suffix) {
   if (suffix.length() > string.length()) return false;
   return std::equal(suffix.rbegin(), suffix.rend(), string.rbegin());
 }
-
-static tcod::ContextPtr g_context;  // A global tcod context object.
-static std::array<int, 2> g_tile_size{};  // Saved tile size used by the SDL callback sample.
 
 // Abstract class for samples.
 class Sample {
@@ -85,12 +85,14 @@ static constexpr char* SAMPLE_MAP[] = {
 };
 // clang-format on
 
-// ***************************
-// samples rendering functions
-// ***************************
-
-// the offscreen console in which the samples are rendered
-tcod::Console sampleConsole(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
+// Global variables.
+static tcod::ContextPtr g_context;  // A global tcod context object.
+static auto g_console = tcod::Console{80, 50};  // The main console to be presented.
+static int g_current_sample = 0;  // index of the current sample
+TCOD_ContextParams g_context_params{};  // The active context parameters.  Saved so that they can be modified.
+static tcod::Tileset g_tileset;  // The currently active tileset.
+// The offscreen console in which the samples are rendered
+static tcod::Console g_sample_console(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT);
 
 // ***************************
 // true colors sample
@@ -210,7 +212,7 @@ class OffscreenConsole : public Sample {
   }
   void on_enter() override {
     counter = SDL_GetTicks();
-    screenshot = sampleConsole;  // get a "screenshot" of the current sample screen
+    screenshot = g_sample_console;  // get a "screenshot" of the current sample screen
   }
   void on_event(SDL_Event&) override {}
   void on_draw(tcod::Console& console) override {
@@ -467,14 +469,15 @@ class NoiseSample : public Sample {
     for (int curfunc = PERLIN; curfunc <= TURBULENCE_WAVELET; ++curfunc) {
       const auto fg = curfunc == func_ ? WHITE : GREY;
       const auto bg = curfunc == func_ ? std::optional{LIGHT_BLUE} : std::nullopt;
-      tcod::print(sampleConsole, {2, 2 + curfunc}, funcName.at(curfunc), fg, bg);
+      tcod::print(g_sample_console, {2, 2 + curfunc}, funcName.at(curfunc), fg, bg);
     }
     // draw parameters
-    tcod::print(sampleConsole, {2, 11}, tcod::stringf("Y/H : zoom (%2.1f)", zoom), WHITE, std::nullopt);
+    tcod::print(g_sample_console, {2, 11}, tcod::stringf("Y/H : zoom (%2.1f)", zoom), WHITE, std::nullopt);
     if (func_ > WAVELET) {
-      tcod::print(sampleConsole, {2, 12}, tcod::stringf("E/D : hurst (%2.1f)", hurst_), WHITE, std::nullopt);
-      tcod::print(sampleConsole, {2, 13}, tcod::stringf("R/F : lacunarity (%2.1f)", lacunarity_), WHITE, std::nullopt);
-      tcod::print(sampleConsole, {2, 14}, tcod::stringf("T/G : octaves (%2.1f)", octaves_), WHITE, std::nullopt);
+      tcod::print(g_sample_console, {2, 12}, tcod::stringf("E/D : hurst (%2.1f)", hurst_), WHITE, std::nullopt);
+      tcod::print(
+          g_sample_console, {2, 13}, tcod::stringf("R/F : lacunarity (%2.1f)", lacunarity_), WHITE, std::nullopt);
+      tcod::print(g_sample_console, {2, 14}, tcod::stringf("T/G : octaves (%2.1f)", octaves_), WHITE, std::nullopt);
     }
   }
 
@@ -890,7 +893,7 @@ class PathfinderSample : public Sample {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         const bool wall = SAMPLE_MAP[y][x] == '#';
-        sampleConsole.at({x, y}).bg = wall ? darkWall : darkGround;
+        g_sample_console.at({x, y}).bg = wall ? darkWall : darkGround;
       }
     }
     // draw the path
@@ -898,7 +901,7 @@ class PathfinderSample : public Sample {
       for (int i = 0; i < path_.size(); ++i) {
         int x, y;
         path_.get(i, &x, &y);
-        sampleConsole.at({x, y}).bg = lightGround;
+        g_sample_console.at({x, y}).bg = lightGround;
       }
     } else {
       for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
@@ -906,7 +909,7 @@ class PathfinderSample : public Sample {
           const bool wall = SAMPLE_MAP[y][x] == '#';
           if (!wall) {
             const float d = dijkstra_.getDistance(x, y);
-            sampleConsole.at({x, y}).bg =
+            g_sample_console.at({x, y}).bg =
                 tcod::ColorRGB{TCODColor::lerp(lightGround, darkGround, 0.9f * d / dijkstra_dist_)};
           }
         }
@@ -914,7 +917,7 @@ class PathfinderSample : public Sample {
       for (int i = 0; i < dijkstra_.size(); ++i) {
         int x, y;
         dijkstra_.get(i, &x, &y);
-        sampleConsole.at({x, y}).bg = lightGround;
+        g_sample_console.at({x, y}).bg = lightGround;
       }
     }
     // move the creature
@@ -1190,7 +1193,7 @@ class BSPSample : public Sample {
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
         const bool wall = (map_[x][y] == '#');
-        sampleConsole.at({x, y}).bg = wall ? darkWall : darkGround;
+        g_sample_console.at({x, y}).bg = wall ? darkWall : darkGround;
       }
     }
   }
@@ -1289,7 +1292,8 @@ class SampleRenderer : public ITCODSDLRenderer {
     SDL_Surface* screen = (SDL_Surface*)sdlSurface;
     // now we have almighty access to the screen's precious pixels !!
     // get the font character size
-    const auto [char_w, char_h] = g_tile_size;
+    const auto char_w = g_tileset.get_tile_width();
+    const auto char_h = g_tileset.get_tile_height();
     // compute the sample console position in pixels
     int sample_x = SAMPLE_SCREEN_X * char_w;
     int sample_y = SAMPLE_SCREEN_Y * char_h;
@@ -1492,9 +1496,9 @@ class SDLSample : public Sample {
  public:
   void on_enter() override {
     // use noise sample as background. rendering is done in SampleRenderer
-    sampleConsole.clear({0x20, WHITE, LIGHT_BLUE});
+    g_sample_console.clear({0x20, WHITE, LIGHT_BLUE});
     tcod::print_rect(
-        sampleConsole,
+        g_sample_console,
         {0, 3, SAMPLE_SCREEN_WIDTH, 0},
         "The SDL callback gives you access to the screen surface so that you can alter the pixels one by one using SDL "
         "API or any API on top of SDL. SDL is used here to blur the sample console.\n\nHit TAB to enable/disable the "
@@ -1545,7 +1549,7 @@ static constexpr std::array<RendererOption, 5> RENDERERS{
 // ***************************
 // the list of samples
 // ***************************
-static const std::vector<sample_t> samples = {
+static const std::vector<sample_t> g_samples = {
     {"  True colors        ", std::make_unique<TrueColors>()},
     {"  Offscreen console  ", std::make_unique<OffscreenConsole>()},
     {"  Line drawing       ", std::make_unique<LineDrawingSample>()},
@@ -1561,176 +1565,181 @@ static const std::vector<sample_t> samples = {
 #endif
 };
 
+void main_loop() {
+  static auto timer = tcod::Timer();
+  static bool creditsEnd = false;
+  delta_time = timer.sync();
+  if (!creditsEnd) {
+    creditsEnd = TCOD_console_credits_render_ex(g_console.get(), 56, 43, false, delta_time);
+  }
+
+  // print the list of samples
+  for (int i = 0; i < static_cast<int>(g_samples.size()); ++i) {
+    const auto fg = (i == g_current_sample) ? WHITE : GREY;
+    const auto bg = (i == g_current_sample) ? LIGHT_BLUE : BLACK;
+    // print the sample name
+    tcod::print(g_console, {2, 46 - (static_cast<int>(g_samples.size()) - i)}, g_samples.at(i).name, fg, bg);
+  }
+  // print the help message
+  tcod::print(
+      g_console,
+      {79, 46},
+      tcod::stringf("last frame : %3.0f ms (%3.0f fps)", delta_time * 1000.0f, timer.get_mean_fps()),
+      GREY,
+      std::nullopt,
+      TCOD_RIGHT);
+  tcod::print(
+      g_console,
+      {79, 47},
+      tcod::stringf("elapsed : %8dms %4.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f),
+      GREY,
+      std::nullopt,
+      TCOD_RIGHT);
+  tcod::print(g_console, {2, 47}, "↑↓ : select a sample", GREY, std::nullopt);
+  {
+    auto sdl_window = g_context->get_sdl_window();
+    if (sdl_window) {
+      const auto is_fullscreen =
+          SDL_GetWindowFlags(sdl_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN);
+      tcod::print(
+          g_console,
+          {2, 48},
+          tcod::stringf("ALT-ENTER : switch to %s", is_fullscreen ? "windowed mode  " : "fullscreen mode"),
+          GREY,
+          std::nullopt);
+    }
+  }
+
+  // render current sample
+  g_samples.at(g_current_sample).sample->on_draw(g_sample_console);
+
+  // blit the sample console on the root console
+  tcod::blit(g_console, g_sample_console, {SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y});
+  /* display renderer list and current renderer */
+  tcod::print(g_console, {42, 46 - (static_cast<int>(RENDERERS.size()) + 1)}, "Renderer :", GREY, BLACK);
+
+  for (int i = 0; i < static_cast<int>(RENDERERS.size()); ++i) {
+    const bool is_current_renderer = RENDERERS.at(i).renderer == g_context->get_renderer_type();
+    const auto fg = is_current_renderer ? WHITE : GREY;
+    const auto bg = is_current_renderer ? LIGHT_BLUE : BLACK;
+    tcod::print(
+        g_console,
+        {42, 46 - (static_cast<int>(RENDERERS.size()) - i)},
+        tcod::stringf("F%d %s", i + 1, RENDERERS.at(i).name),
+        fg,
+        bg);
+  }
+
+  // update the game screen
+  g_context->present(g_console);
+  g_console.clear();
+
+  // did the user hit a key ?
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+      case SDL_QUIT:
+        std::exit(EXIT_SUCCESS);
+        break;
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym) {
+          case SDLK_DOWN:
+            g_current_sample = (g_current_sample + 1) % static_cast<int>(g_samples.size());
+            g_samples.at(g_current_sample).sample->on_enter();
+            break;
+          case SDLK_UP:
+            g_current_sample =
+                (g_current_sample + static_cast<int>(g_samples.size()) - 1) % static_cast<int>(g_samples.size());
+            g_samples.at(g_current_sample).sample->on_enter();
+            break;
+          case SDLK_RETURN:
+          case SDLK_RETURN2:
+          case SDLK_KP_ENTER:
+            if (event.key.keysym.mod & KMOD_ALT) {
+              auto sdl_window = g_context->get_sdl_window();
+              if (sdl_window) {
+                const auto flags = SDL_GetWindowFlags(sdl_window);
+                const auto is_fullscreen = flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+                // Change fullscreen mode.
+                SDL_SetWindowFullscreen(sdl_window, is_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
+              }
+            }
+            break;
+          case SDLK_p:
+          case SDLK_PRINTSCREEN:
+            g_context->save_screenshot(nullptr);  // Save screenshot.
+            break;
+          default:
+            if (SDLK_F1 <= event.key.keysym.sym && event.key.keysym.sym < SDLK_F1 + RENDERERS.size()) {
+              auto sdl_window = g_context->get_sdl_window();
+              if (sdl_window) {
+                // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
+                const auto current_flags = SDL_GetWindowFlags(sdl_window);
+                static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_MAXIMIZED;
+                g_context_params.sdl_window_flags =
+                    (g_context_params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
+              }
+              g_context_params.renderer_type = RENDERERS.at(event.key.keysym.sym - SDLK_F1).renderer;
+              g_context = nullptr;
+              g_context = tcod::new_context(g_context_params);
+            }
+            break;
+        }
+        break;
+      case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
+        tcod::Tileset new_tileset;
+        if (str_ends_with(event.drop.file, ".bdf")) {
+          new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.file));
+        } else if (str_ends_with(event.drop.file, "_tc.png")) {
+          new_tileset = tcod::load_tilesheet(event.drop.file, {32, 8}, tcod::CHARMAP_TCOD);
+        } else {
+          new_tileset = tcod::load_tilesheet(event.drop.file, {16, 16}, tcod::CHARMAP_CP437);
+        }
+        if (new_tileset.get()) {
+          g_tileset = std::move(new_tileset);
+          g_context_params.tileset = g_tileset.get();
+          TCOD_context_change_tileset(g_context.get(), g_tileset.get());
+        }
+        SDL_free(event.drop.file);
+      } break;
+      default:
+        break;
+    }
+    g_samples.at(g_current_sample).sample->on_event(event);
+  }
+}
+
 // ***************************
 // the main function
 // ***************************
 int main(int argc, char* argv[]) {
-  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
-  int current_sample = 0;  // index of the current sample
-  TCOD_key_t key{};
-  TCOD_mouse_t mouse{};
-  static constexpr char* FONT = "data/fonts/dejavu10x10_gs_tc.png";
-  bool creditsEnd = false;
-  auto root_console = tcod::Console{80, 50};  // The main console to be presented.
-  auto tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
-  g_tile_size = {tileset.get_tile_width(), tileset.get_tile_height()};
+  try {
+    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
+    static constexpr char* FONT = "data/fonts/dejavu10x10_gs_tc.png";
+    g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
 
-  // Context parameters, this is reused when the renderer is changed.
-  TCOD_ContextParams params{};
-  params.tcod_version = TCOD_COMPILEDVERSION;
-  params.renderer_type = TCOD_RENDERER_SDL2;
-  params.tileset = tileset.get();
-  params.vsync = 0;
-  params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
-  params.window_title = "libtcod C++ samples";
-  params.argc = argc;
-  params.argv = argv;
-  params.console = root_console.get();
+    // Context parameters, this is reused when the renderer is changed.
+    g_context_params.tcod_version = TCOD_COMPILEDVERSION;
+    g_context_params.renderer_type = TCOD_RENDERER_SDL2;
+    g_context_params.tileset = g_tileset.get();
+    g_context_params.vsync = 0;
+    g_context_params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
+    g_context_params.window_title = "libtcod C++ samples";
+    g_context_params.argc = argc;
+    g_context_params.argv = argv;
+    g_context_params.console = g_console.get();
 
-  g_context = tcod::new_context(params);
+    g_context = tcod::new_context(g_context_params);
 
-  atexit(TCOD_quit);
-  auto timer = tcod::Timer();
-  while (true) {
-    delta_time = timer.sync();
-    if (!creditsEnd) {
-      creditsEnd = TCOD_console_credits_render_ex(root_console.get(), 56, 43, false, delta_time);
-    }
-
-    // print the list of samples
-    for (int i = 0; i < static_cast<int>(samples.size()); ++i) {
-      const auto fg = (i == current_sample) ? WHITE : GREY;
-      const auto bg = (i == current_sample) ? LIGHT_BLUE : BLACK;
-      // print the sample name
-      tcod::print(root_console, {2, 46 - (static_cast<int>(samples.size()) - i)}, samples.at(i).name, fg, bg);
-    }
-    // print the help message
-    tcod::print(
-        root_console,
-        {79, 46},
-        tcod::stringf("last frame : %3.0f ms (%3.0f fps)", delta_time * 1000.0f, timer.get_mean_fps()),
-        GREY,
-        std::nullopt,
-        TCOD_RIGHT);
-    tcod::print(
-        root_console,
-        {79, 47},
-        tcod::stringf("elapsed : %8dms %4.2fs", SDL_GetTicks(), SDL_GetTicks() / 1000.0f),
-        GREY,
-        std::nullopt,
-        TCOD_RIGHT);
-    tcod::print(root_console, {2, 47}, "↑↓ : select a sample", GREY, std::nullopt);
-    {
-      auto sdl_window = g_context->get_sdl_window();
-      if (sdl_window) {
-        const auto is_fullscreen =
-            SDL_GetWindowFlags(sdl_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN);
-        tcod::print(
-            root_console,
-            {2, 48},
-            tcod::stringf("ALT-ENTER : switch to %s", is_fullscreen ? "windowed mode  " : "fullscreen mode"),
-            GREY,
-            std::nullopt);
-      }
-    }
-
-    // render current sample
-    samples.at(current_sample).sample->on_draw(sampleConsole);
-
-    // blit the sample console on the root console
-    tcod::blit(root_console, sampleConsole, {SAMPLE_SCREEN_X, SAMPLE_SCREEN_Y});
-    /* display renderer list and current renderer */
-    tcod::print(root_console, {42, 46 - (static_cast<int>(RENDERERS.size()) + 1)}, "Renderer :", GREY, BLACK);
-
-    for (int i = 0; i < static_cast<int>(RENDERERS.size()); ++i) {
-      const bool is_current_renderer = RENDERERS.at(i).renderer == g_context->get_renderer_type();
-      const auto fg = is_current_renderer ? WHITE : GREY;
-      const auto bg = is_current_renderer ? LIGHT_BLUE : BLACK;
-      tcod::print(
-          root_console,
-          {42, 46 - (static_cast<int>(RENDERERS.size()) - i)},
-          tcod::stringf("F%d %s", i + 1, RENDERERS.at(i).name),
-          fg,
-          bg);
-    }
-
-    // update the game screen
-    g_context->present(root_console);
-    root_console.clear();
-
-    // did the user hit a key ?
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-        case SDL_QUIT:
-          std::exit(EXIT_SUCCESS);
-          break;
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.sym) {
-            case SDLK_DOWN:
-              current_sample = (current_sample + 1) % static_cast<int>(samples.size());
-              samples.at(current_sample).sample->on_enter();
-              break;
-            case SDLK_UP:
-              current_sample =
-                  (current_sample + static_cast<int>(samples.size()) - 1) % static_cast<int>(samples.size());
-              samples.at(current_sample).sample->on_enter();
-              break;
-            case SDLK_RETURN:
-            case SDLK_RETURN2:
-            case SDLK_KP_ENTER:
-              if (event.key.keysym.mod & KMOD_ALT) {
-                auto sdl_window = g_context->get_sdl_window();
-                if (sdl_window) {
-                  const auto flags = SDL_GetWindowFlags(sdl_window);
-                  const auto is_fullscreen = flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
-                  // Change fullscreen mode.
-                  SDL_SetWindowFullscreen(sdl_window, is_fullscreen ? 0 : SDL_WINDOW_FULLSCREEN_DESKTOP);
-                }
-              }
-              break;
-            case SDLK_p:
-            case SDLK_PRINTSCREEN:
-              g_context->save_screenshot(nullptr);  // Save screenshot.
-              break;
-            default:
-              if (SDLK_F1 <= event.key.keysym.sym && event.key.keysym.sym < SDLK_F1 + RENDERERS.size()) {
-                auto sdl_window = g_context->get_sdl_window();
-                if (sdl_window) {
-                  // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
-                  const auto current_flags = SDL_GetWindowFlags(sdl_window);
-                  static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_MAXIMIZED;
-                  params.sdl_window_flags =
-                      (params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
-                }
-                params.renderer_type = RENDERERS.at(event.key.keysym.sym - SDLK_F1).renderer;
-                g_context = nullptr;
-                g_context = tcod::new_context(params);
-              }
-              break;
-          }
-          break;
-        case SDL_DROPFILE: {  // Change to a new tileset when one is dropped on the window.
-          tcod::Tileset new_tileset;
-          if (str_ends_with(event.drop.file, ".bdf")) {
-            new_tileset = tcod::Tileset(tcod::load_bdf(event.drop.file));
-          } else if (str_ends_with(event.drop.file, "_tc.png")) {
-            new_tileset = tcod::load_tilesheet(event.drop.file, {32, 8}, tcod::CHARMAP_TCOD);
-          } else {
-            new_tileset = tcod::load_tilesheet(event.drop.file, {16, 16}, tcod::CHARMAP_CP437);
-          }
-          if (new_tileset.get()) {
-            tileset = std::move(new_tileset);
-            params.tileset = tileset.get();
-            TCOD_context_change_tileset(g_context.get(), tileset.get());
-          }
-          SDL_free(event.drop.file);
-        } break;
-        default:
-          break;
-      }
-      samples.at(current_sample).sample->on_event(event);
-    }
+    atexit(TCOD_quit);
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(main_loop, 0, 0);
+#else
+    while (true) main_loop();
+#endif
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << "\n";
+    return EXIT_FAILURE;
   }
   return EXIT_SUCCESS;
 }

@@ -34,10 +34,6 @@ add_custom_target(copy_font
         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terminal.png
 )
 
-if (EMSCRIPTEN)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --preload-file ../data@data/")
-endif()
-
 # Enforce UTF-8 encoding on MSVC.
 add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
@@ -128,4 +124,20 @@ add_executable(worldgen
 target_link_libraries(worldgen ${LINK_TCOD} ${SDL2MAIN})
 if (CONAN_FILE)
     add_dependencies(worldgen copy_font)
+endif()
+
+if (EMSCRIPTEN)
+    # Attach data to Emscripten builds.
+    foreach(project_it samples_c samples_cpp frost hmtool navier rad weather worldgen)
+        target_link_options(
+            ${project_it} PRIVATE
+            --preload-file "${CMAKE_CURRENT_SOURCE_DIR}/../data@data/"
+        )
+    endforeach()
+    # Set output to html to generate preview pages, otherwise you'll have to make your own html.
+    set_target_properties(
+        samples_c samples_cpp frost hmtool navier rad weather worldgen
+        PROPERTIES
+            SUFFIX ".html"
+    )
 endif()

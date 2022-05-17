@@ -284,3 +284,56 @@ jobs:
           file_glob: true
           tag: ${{ github.ref }}
           overwrite: true
+
+  Emscripten:
+    runs-on: ubuntu-latest
+    env:
+      BUILD_TYPE: Release
+      CMAKE_BUILD_DIR: build
+      EM_VERSION: 3.1.9
+      EM_CACHE_FOLDER: "emsdk-cache"
+      VCPKG_ROOT: ${{github.workspace}}/vcpkg
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Restore vcpkg and its artifacts
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
+            ${{ env.VCPKG_ROOT }}
+            !${{ env.VCPKG_ROOT }}/buildtrees
+            !${{ env.VCPKG_ROOT }}/packages
+            !${{ env.VCPKG_ROOT }}/downloads
+          key: wasm32-emscripten-${{ hashFiles('vcpkg.json', '.git/modules/vcpkg/HEAD') }}
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.EM_CACHE_FOLDER }}
+          key: ${{ env.EM_VERSION }}-${{ runner.os }}
+      - uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: ${{ env.EM_VERSION }}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+      - name: Verify
+        run: emcc -v
+      - uses: lukka/get-cmake@latest
+      - name: Configure
+        run: emcmake cmake -S . -B ${{ env.CMAKE_BUILD_DIR }} -G Ninja
+          -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE="${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+          -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
+          -DVCPKG_TARGET_TRIPLET=wasm32-emscripten
+          -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
+          -DLIBTCOD_SAMPLES=ON
+      - name: Build
+        run: cmake --build ${{ env.CMAKE_BUILD_DIR }}
+      - name: Show contents of the build directory
+        run: find ${{ env.CMAKE_BUILD_DIR }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: emscripten-builds
+          path: ${{ env.CMAKE_BUILD_DIR }}/bin
+          retention-days: 7
+          if-no-files-found: error

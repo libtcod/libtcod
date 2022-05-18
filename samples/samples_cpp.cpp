@@ -61,7 +61,7 @@ static constexpr auto LIGHT_YELLOW = tcod::ColorRGB{255, 255, 63};
 static float delta_time;  // Global delta time.
 
 // clang-format off
-static constexpr char* SAMPLE_MAP[] = {
+static constexpr const char* SAMPLE_MAP[] = {
     "##############################################",
     "#######################      #################",
     "#####################    #     ###############",
@@ -102,45 +102,28 @@ class TrueColors : public Sample {
   void on_enter() override{};
   void on_event(SDL_Event&) override {}
   void on_draw(tcod::Console& console) override {
-    // ==== slightly modify the corner colors ====
-    for (int c = 0; c < 4; ++c) {
-      // move each corner color
-      const int component = TCODRandom::getInstance()->getInt(0, 2);
-      switch (component) {
-        case 0:
-          colors_[c].r += 5 * dir_r_[c];
-          if (colors_[c].r == 255)
-            dir_r_[c] = -1;
-          else if (colors_[c].r == 0)
-            dir_r_[c] = 1;
-          break;
-        case 1:
-          colors_[c].g += 5 * dir_g_[c];
-          if (colors_[c].g == 255)
-            dir_g_[c] = -1;
-          else if (colors_[c].g == 0)
-            dir_g_[c] = 1;
-          break;
-        case 2:
-          colors_[c].b += 5 * dir_b_[c];
-          if (colors_[c].b == 255)
-            dir_b_[c] = -1;
-          else if (colors_[c].b == 0)
-            dir_b_[c] = 1;
-          break;
-      }
-    }
+    const float t = SDL_GetTicks() * 0.001f;
+    // Return noise sample as a 0 to 255 value.
+    auto get_value = [&](std::array<float, 2> xy) {
+      return static_cast<uint8_t>(((noise_.get(xy.data(), TCOD_NOISE_DEFAULT) + 1.0f) * 0.5f) * 255.5f);
+    };
+    // Return an RGB color from an index.
+    auto get_color = [&](float x) -> tcod::ColorRGB {
+      return {get_value({t, x}), get_value({t, x + 1000}), get_value({t, x + 2000})};
+    };
+    // Generate color corners from noise samples.
+    const auto colors = std::array<tcod::ColorRGB, 4>{get_color(0), get_color(1), get_color(2), get_color(3)};
 
     // ==== scan the whole screen, interpolating corner colors ====
-    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-      const float x_coef = static_cast<float>(x) / (SAMPLE_SCREEN_WIDTH - 1);
+    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+      const float y_coef = static_cast<float>(y) / (SAMPLE_SCREEN_HEIGHT - 1);
       // get the current column top and bottom colors
-      const auto top = tcod::ColorRGB{TCODColor::lerp(colors_[TOPLEFT], colors_[TOPRIGHT], x_coef)};
-      const auto bottom = tcod::ColorRGB{TCODColor::lerp(colors_[BOTTOMLEFT], colors_[BOTTOMRIGHT], x_coef)};
-      for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-        const float y_coef = static_cast<float>(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+      const auto left = tcod::ColorRGB{TCODColor::lerp(colors[TOPLEFT], colors[BOTTOMLEFT], y_coef)};
+      const auto right = tcod::ColorRGB{TCODColor::lerp(colors[TOPRIGHT], colors[BOTTOMRIGHT], y_coef)};
+      for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+        const float x_coef = static_cast<float>(x) / (SAMPLE_SCREEN_WIDTH - 1);
         // get the current cell color
-        auto curColor = tcod::ColorRGB{TCODColor::lerp(top, bottom, y_coef)};
+        auto curColor = tcod::ColorRGB{TCODColor::lerp(left, right, x_coef)};
         console.at({x, y}).bg = curColor;
       }
     }
@@ -155,16 +138,9 @@ class TrueColors : public Sample {
     // put random text (for performance tests)
     for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
       for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-        int c;
         auto col = tcod::ColorRGB{console.at({x, y}).bg};
         col = tcod::ColorRGB{TCODColor::lerp(col, BLACK, 0.5f)};
-        // use colored character 255 on first and last lines
-        if (y == 0 || y == SAMPLE_SCREEN_HEIGHT - 1) {
-          c = 255;
-        } else {
-          c = TCODRandom::getInstance()->getInt('a', 'z');
-        }
-        console.at({x, y}).ch = c;
+        console.at({x, y}).ch = TCODRandom::getInstance()->getInt('a', 'z');
         console.at({x, y}).fg = col;
       }
     }
@@ -181,11 +157,7 @@ class TrueColors : public Sample {
 
  private:
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
-  std::array<tcod::ColorRGB, 4> colors_{
-      {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}};  // random corner colors
-  std::array<int8_t, 4> dir_r_{1, -1, 1, 1};
-  std::array<int8_t, 4> dir_g_{1, -1, -1, 1};
-  std::array<int8_t, 4> dir_b_{1, 1, 1, -1};
+  TCODNoise noise_{2, TCOD_NOISE_SIMPLEX};  // Noise for random colors.
 };
 
 // ***************************

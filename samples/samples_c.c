@@ -65,53 +65,46 @@ static TCOD_Console* sample_console;  // the offscreen console in which the samp
 /* ***************************
  * true colors sample
  * ***************************/
+// Return noise sample as a 0 to 255 value.
+static uint8_t noise_sample_u8(TCOD_Noise* noise, const float* f) {
+  return (uint8_t)((TCOD_noise_get(noise, f) + 1.0f) * 0.5f * 255.5f);
+}
 void render_colors(const SDL_Event* event) {
   enum { TOPLEFT, TOPRIGHT, BOTTOMLEFT, BOTTOMRIGHT };
-  static TCOD_color_t cols[4] = {{50, 40, 150}, {240, 85, 5}, {50, 35, 240}, {10, 200, 130}}; /* random corner colors */
-  static int8_t dir_r[4] = {1, -1, 1, 1}, dir_g[4] = {1, -1, -1, 1}, dir_b[4] = {1, 1, 1, -1};
-  /* ==== slightly modify the corner colors ==== */
+  static TCOD_Noise* noise = NULL;  // Noise for random colors.
+  if (!noise) {
+    noise = TCOD_noise_new(2, 0, 0, NULL);
+    TCOD_noise_set_type(noise, TCOD_NOISE_SIMPLEX);
+  }
   if (event->type == ON_ENTER_USEREVENT) {
     TCOD_console_clear(sample_console);
   }
-  /* ==== slightly modify the corner colors ==== */
-  for (int c = 0; c < 4; ++c) {
-    /* move each corner color */
-    const int component = TCOD_random_get_int(NULL, 0, 2);
-    switch (component) {
-      case 0:
-        cols[c].r += 5 * dir_r[c];
-        if (cols[c].r == 255)
-          dir_r[c] = -1;
-        else if (cols[c].r == 0)
-          dir_r[c] = 1;
-        break;
-      case 1:
-        cols[c].g += 5 * dir_g[c];
-        if (cols[c].g == 255)
-          dir_g[c] = -1;
-        else if (cols[c].g == 0)
-          dir_g[c] = 1;
-        break;
-      case 2:
-        cols[c].b += 5 * dir_b[c];
-        if (cols[c].b == 255)
-          dir_b[c] = -1;
-        else if (cols[c].b == 0)
-          dir_b[c] = 1;
-        break;
-    }
-  }
+  const float t = SDL_GetTicks() * 0.001f;
+  // Generate color corners from noise samples.
+  const TCOD_color_t colors[4] = {
+      {noise_sample_u8(noise, (float[]){t, 0}),
+       noise_sample_u8(noise, (float[]){t, 1}),
+       noise_sample_u8(noise, (float[]){t, 2})},
+      {noise_sample_u8(noise, (float[]){t, 10}),
+       noise_sample_u8(noise, (float[]){t, 11}),
+       noise_sample_u8(noise, (float[]){t, 12})},
+      {noise_sample_u8(noise, (float[]){t, 20}),
+       noise_sample_u8(noise, (float[]){t, 21}),
+       noise_sample_u8(noise, (float[]){t, 22})},
+      {noise_sample_u8(noise, (float[]){t, 30}),
+       noise_sample_u8(noise, (float[]){t, 31}),
+       noise_sample_u8(noise, (float[]){t, 32})}};
 
   /* ==== scan the whole screen, interpolating corner colors ==== */
-  for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
-    const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
+  for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
+    const float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
     /* get the current column top and bottom colors */
-    TCOD_color_t top = TCOD_color_lerp(cols[TOPLEFT], cols[TOPRIGHT], x_coef);
-    TCOD_color_t bottom = TCOD_color_lerp(cols[BOTTOMLEFT], cols[BOTTOMRIGHT], x_coef);
-    for (int y = 0; y < SAMPLE_SCREEN_HEIGHT; ++y) {
-      const float y_coef = (float)(y) / (SAMPLE_SCREEN_HEIGHT - 1);
+    TCOD_color_t left = TCOD_color_lerp(colors[TOPLEFT], colors[BOTTOMLEFT], y_coef);
+    TCOD_color_t right = TCOD_color_lerp(colors[TOPRIGHT], colors[BOTTOMRIGHT], y_coef);
+    for (int x = 0; x < SAMPLE_SCREEN_WIDTH; ++x) {
+      const float x_coef = (float)(x) / (SAMPLE_SCREEN_WIDTH - 1);
       /* get the current cell color */
-      TCOD_color_t curColor = TCOD_color_lerp(top, bottom, y_coef);
+      TCOD_color_t curColor = TCOD_color_lerp(left, right, x_coef);
       TCOD_console_set_char_background(sample_console, x, y, curColor, TCOD_BKGND_SET);
     }
   }

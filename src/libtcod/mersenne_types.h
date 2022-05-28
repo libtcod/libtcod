@@ -83,6 +83,7 @@ typedef union TCOD_Random {
   struct TCOD_Random_MT_CMWC mt_cmwc;
 } TCOD_Random;
 
-typedef TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.") union TCOD_Random* TCOD_random_t;
+TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.")
+typedef union TCOD_Random* TCOD_random_t;
 
 #endif /* _TCOD_RANDOM_TYPES_H */

@@ -17,6 +17,10 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Deprecated
 - Older REXPaint functions using `TCOD_list_t` have been deprecated.
 
+### Fixed
+- Fixed poor attribute handing causing compile errors in GCC 12.
+  [#116](https://github.com/libtcod/libtcod/issues/116)
+
 ## [1.20.1] - 2022-01-07
 ### Fixed
 - BDF files with blank lines no longer fail to load with an "Unknown keyword" error.

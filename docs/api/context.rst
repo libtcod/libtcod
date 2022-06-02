@@ -8,21 +8,19 @@ Context parameters
     :members:
     :undoc-members:
 
-
-Context object
---------------
-
-.. doxygenstruct:: TCOD_Context
-    :members:
-
 C++ API
 -------
+
+.. doxygenclass:: tcod::Context
+    :members:
 
 .. doxygenfunction:: new_context(const TCOD_ContextParams& params, TCOD_Error& out_code) -> ContextPtr
 .. doxygenfunction:: new_context(const TCOD_ContextParams& params) -> ContextPtr
 
 C API
 -----
+
+.. doxygenstruct:: TCOD_Context
 
 .. doxygenfunction:: TCOD_context_new
 
@@ -41,4 +39,3 @@ C API
 
 .. doxygenfunction:: TCOD_context_get_sdl_window
 .. doxygenfunction:: TCOD_context_get_sdl_renderer
-

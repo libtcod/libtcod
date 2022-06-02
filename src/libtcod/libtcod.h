@@ -83,6 +83,7 @@
 #include "bsp.hpp"
 #include "color.hpp"
 #include "console.hpp"
+#include "context.hpp"
 #include "fov.hpp"
 #include "heightmap.hpp"
 #include "image.hpp"

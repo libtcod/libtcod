@@ -52,6 +52,109 @@ struct SDL_Renderer;
 struct SDL_Rect;
 union SDL_Event;
 
+/**
+    A struct of parameters used to create a new context with `TCOD_context_new`.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+typedef struct TCOD_ContextParams {
+  /**
+      Must be `TCOD_COMPILEDVERSION`.
+   */
+  int tcod_version;
+  /**
+      `window_x` and `window_y` are the starting position of the window.
+      These are SDL parameters so values like `SDL_WINDOWPOS_UNDEFINED` and
+      `SDL_WINDOWPOS_CENTERED` are acceptable.
+
+      Values of zero will be converted to `SDL_WINDOWPOS_UNDEFINED` unless
+      `window_xy_defined` is true.
+   */
+  int window_x, window_y;
+  /**
+      `pixel_width` and `pixel_height` are the desired size of the window in pixels.
+      If these are zero then they'll be derived from `columns`, `rows`, and the `tileset`.
+   */
+  int pixel_width, pixel_height;
+  /**
+      `columns` and `rows` are the desired size of the terminal window.
+      Usually you'll set either these or the pixel resolution.
+
+      If you are setting these values from a TCOD_Console then you should set the console attribute instead.
+   */
+  int columns, rows;
+  /**
+      `renderer_type` is one of the `TCOD_renderer_t` values.
+   */
+  int renderer_type;
+  /**
+      `tileset` is an optional pointer to a tileset object.
+      If this is NULL then a platform specific fallback tileset will be used.
+      This fallback is known to be unreliable, but it should work well enough
+      for prototyping code.
+   */
+  TCOD_Tileset* tileset;
+  /**
+      If `vsync` is true, then vertical sync will be enabled whenever possible.
+      A value of true is recommended.
+   */
+  int vsync;
+  /**
+      `sdl_window_flags` is a bitfield of SDL_WindowFlags flags.
+      For a window, a value of ``SDL_WINDOW_RESIZABLE`` is recommended.
+      For fullscreen, a value of
+      ``SDL_WINDOW_RESIZABLE | SDL_WINDOW_FULLSCREEN_DESKTOP`` is recommended.
+      You should avoid the ``SDL_WINDOW_FULLSCREEN`` flag whenever possible.
+   */
+  int sdl_window_flags;
+  /**
+      `window_title` will be the title of the opened window.
+
+      If not set then `argv[0]` will be used if available.
+   */
+  const char* window_title;
+  /**
+      The number of items in `argv`.
+   */
+  int argc;
+  /**
+      `argc` and `argv` are optional CLI parameters.
+      You can pass `0` and `NULL` respectfully to ignore them.
+      If unsure then you should pass the `argc` and `argv` arguments from your
+      `main` function.
+   */
+  const char* const* argv;
+  /**
+      If user attention is required for the given CLI parameters then
+      `cli_output` will be called with `cli_userdata` and an error or help
+      message.
+      If `cli_output` is NULL then it will print the message to stdout and
+      terminate the program.  If `cli_output` returns normally then
+      TCOD_E_REQUIRES_ATTENTION will be returned from `TCOD_context_new`.
+   */
+  void (*cli_output)(void* userdata, const char* output);
+  /**
+      This is passed to the `userdata` parameter of `cli_output` if called.
+   */
+  void* cli_userdata;
+  /**
+      If this is false then `window_x`/`window_y` parameters of zero are
+      assumed to be undefined and will be changed to `SDL_WINDOWPOS_UNDEFINED`.
+   */
+  bool window_xy_defined;
+  /***************************************************************************
+      @brief A console to be used as a reference for the desired window size.
+      This can set as an alternative to the columns and rows attributes.
+
+      \rst
+      .. versionadded:: 1.19
+      \endrst
+   */
+  TCOD_Console* console;
+} TCOD_ContextParams;
+
 struct TCOD_Context;  // Defined in this header later.
 typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
@@ -185,87 +288,102 @@ TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
 struct TCOD_Context {
 #ifdef __cplusplus
   /**
-      Return the TCOD_renderer_t value of this context which may be diffent
+      Return the TCOD_renderer_t value of this context which may be different
       than the one requested.
    */
-  auto get_renderer_type() noexcept -> int { return TCOD_context_get_renderer_type(this); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] auto
+  get_renderer_type() noexcept -> int {
+    return TCOD_context_get_renderer_type(this);
+  }
   /***************************************************************************
       @brief Present a console to the display with the provided viewport options.
 
       @param console The TCOD_Console to render.  This console can be any size.
       @param viewport The viewport options, which can change the way the console is scaled.
-
-      @code{.cpp}
-        // tcod::ContextPtr context = tcod::new_context(...);
-        while (1) {
-          auto console = context->new_console();  // This can be done as an alternative to clearing the console.
-          tcod::print(console, {0, 0}, "Hello world", nullptr, nullptr);
-          auto viewport_options = TCOD_ViewportOptions{}
-          viewport_options.tcod_version = TCOD_COMPILEDVERSION;
-          viewport_options.keep_aspect = true;  // Adds letterboxing to keep aspect.
-          viewport_options.integer_scaling = true;  // Prevent scaling artifacts with pixelated or low-res glyphs.
-          viewport_options.clear_color = {0, 0, 0, 255};
-          viewport_options.align_x = 0.5f;
-          viewport_options.align_y = 0.5f;
-          context->present(console, viewport_options);
-          SDL_Event event;
-          while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
-          }
-        }
-      @endcode
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  void present(const TCOD_Console& console, const TCOD_ViewportOptions& viewport) {
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] void
+  present(const TCOD_Console& console, const TCOD_ViewportOptions& viewport) {
     tcod::check_throw_error(TCOD_context_present(this, &console, &viewport));
   }
   /***************************************************************************
       @brief Present a console to the display.
 
       @param console The TCOD_Console to render.  This console can be any size and will be stretched to fit the window.
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  void present(const TCOD_Console& console) { tcod::check_throw_error(TCOD_context_present(this, &console, nullptr)); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] void
+  present(const TCOD_Console& console) {
+    tcod::check_throw_error(TCOD_context_present(this, &console, nullptr));
+  }
   /***************************************************************************
       @brief Return a non-owning pointer to the SDL_Window used by this context.
 
       @return A ``struct SDL_Window*`` pointer.  This will be nullptr if this context does not use an SDL window.
-
-      @code{.cpp}
-        // tcod::ContextPtr context = tcod::new_context(...);
-        if (SDL_Window* sdl_window = context->get_sdl_window(); sdl_window) {
-          // Do anything with an SDL window, for example:
-          uint32_t flags = SDL_GetWindowFlags(sdl_window);
-        }
-      @endcode
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  auto get_sdl_window() noexcept -> struct SDL_Window* { return TCOD_context_get_sdl_window(this); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] auto
+  get_sdl_window() noexcept -> struct SDL_Window* {
+    return TCOD_context_get_sdl_window(this);
+  }
   /***************************************************************************
       @brief Return a non-owning pointer to the SDL_Renderer used by this context.
 
       @return A ``struct SDL_Renderer*`` pointer.  This will be nullptr if this context does not use SDL's renderer.
-
-      @code{.cpp}
-        // tcod::ContextPtr context = tcod::new_context(...);
-        if (SDL_Renderer* sdl_renderer = context->get_sdl_renderer(); sdl_renderer) {
-          // Do anything with an SDL renderer, for example:
-          SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
-          SDL_RenderClear(sdl_renderer);
-          SDL_RenderPresent(sdl_renderer);
-        }
-      @endcode
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  auto get_sdl_renderer() noexcept -> struct SDL_Renderer* { return TCOD_context_get_sdl_renderer(this); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] auto
+  get_sdl_renderer() noexcept -> struct SDL_Renderer* {
+    return TCOD_context_get_sdl_renderer(this);
+  }
   /**
       Convert pixel coordinates to this contexts integer tile coordinates.
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  auto pixel_to_tile_coordinates(const std::array<int, 2>& xy) -> std::array<int, 2> {
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] auto
+  pixel_to_tile_coordinates(const std::array<int, 2>& xy) -> std::array<int, 2> {
     std::array<int, 2> out{xy[0], xy[1]};
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_i(this, &out[0], &out[1]));
     return out;
   }
   /**
       Convert pixel coordinates to this contexts sub-tile coordinates.
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  auto pixel_to_tile_coordinates(const std::array<double, 2>& xy) -> std::array<double, 2> {
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] auto
+  pixel_to_tile_coordinates(const std::array<double, 2>& xy) -> std::array<double, 2> {
     std::array<double, 2> out{xy[0], xy[1]};
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_d(this, &out[0], &out[1]));
     return out;
@@ -276,29 +394,16 @@ struct TCOD_Context {
       @param event Any SDL_Event event.
           If the event type is compatible then its coordinates will be converted into tile coordinates.
 
-      @code{.cpp}
-        // tcod::ContextPtr context = tcod::new_context(...);
-        while (1) {
-          SDL_Event event;
-          while (SDL_PollEvent(&event)) {
-            SDL_Event event_tile = event;  // A copy of `event` using tile coordinates.
-            context->convert_event_coordinates(event_tile);
-            switch (event.type) {
-              case SDL_QUIT:
-                std::exit(EXIT_SUCCESS);
-              case SDL_MOUSEMOTION:
-                event.motion.xrel; // Relative motion in pixels.
-                event_tile.motion.xrel; // Relative motion in tiles.
-                break;
-            }
-          }
-        }
-      @endcode
       \rst
       .. versionadded:: 1.19
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
       \endrst
    */
-  void convert_event_coordinates(SDL_Event& event) {
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] void
+  convert_event_coordinates(SDL_Event& event) {
     tcod::check_throw_error(TCOD_context_convert_event_coordinates(this, &event));
   }
   /***************************************************************************
@@ -306,14 +411,32 @@ struct TCOD_Context {
 
       @param filepath The file path to save the screenshot at.
           If nullptr then a unique file name will be generated.
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  void save_screenshot(const char* filepath) { tcod::check_throw_error(TCOD_context_save_screenshot(this, filepath)); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] void
+  save_screenshot(const char* filepath) {
+    tcod::check_throw_error(TCOD_context_save_screenshot(this, filepath));
+  }
   /***************************************************************************
       @brief Save a screenshot to `filepath`.
 
       @param filepath The file path to save the screenshot at.
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
-  void save_screenshot(const std::string& filepath) { return this->save_screenshot(filepath.data()); }
+  [[deprecated(
+      "TCOD_Context methods have been moved to tcod::Context,"
+      " use `auto context = tcod::Context(params);` to make a tcod context for C++.")]] void
+  save_screenshot(const std::string& filepath) {
+    tcod::check_throw_error(TCOD_context_save_screenshot(this, filepath.c_str()));
+  }
   /***************************************************************************
       @brief Return a new console with a size automatically determined by the context.
 
@@ -325,19 +448,10 @@ struct TCOD_Context {
         presented.
         Only values larger than zero are allowed.
       @return Returns a tcod::Console of a dynamic size.
-
-      @code{.cpp}
-        // auto context = tcod::new_context(...);
-        while (1) {
-          auto console = context->new_console();  // Can be an alternative to clearing the console.
-          tcod::print(console, {0, 0}, "Hello world", std::nullopt, std::nullopt);
-          context->present(console);
-          SDL_Event event;
-          while (SDL_PollEvent(&event)) {  // SDL_PollEvent may resize the window.
-            if (event.type == SDL_QUIT) std::exit(EXIT_SUCCESS);
-          }
-        }
-      @endcode
+      \rst
+      .. deprecated:: 1.21
+          Replace ``tcod::new_console(params)`` with ``tcod::Context(params)`` to get a C++ context.
+      \endrst
    */
   auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::Console {
     int columns;

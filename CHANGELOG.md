@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Added
+- Added the `tcod::Context` class to better handle contexts in C++.
+
 ### Changed
 - Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag to CMake.
 - SDL-based accumulate functions can now handle a non-window render target.
@@ -16,6 +19,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ### Deprecated
 - Older REXPaint functions using `TCOD_list_t` have been deprecated.
+- C++ methods gotten through TCOD_Context have been moved to a specialized class.
+  Replace ``tcod.new_context(params)`` with ``tcod::Console(params)``.
 
 ### Fixed
 - Fixed poor attribute handing causing compile errors in GCC 12.

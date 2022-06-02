@@ -31,6 +31,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/console_types.h
     libtcod/context.c
     libtcod/context.h
+    libtcod/context.hpp
     libtcod/context_init.c
     libtcod/context_init.h
     libtcod/context_viewport.c
@@ -215,6 +216,7 @@ install(FILES
     libtcod/console_rexpaint.h
     libtcod/console_types.h
     libtcod/context.h
+    libtcod/context.hpp
     libtcod/context_init.h
     libtcod/context_viewport.h
     libtcod/error.h
@@ -350,6 +352,7 @@ source_group(libtcod FILES
     libtcod/console_types.h
     libtcod/context.c
     libtcod/context.h
+    libtcod/context.hpp
     libtcod/context_init.c
     libtcod/context_init.h
     libtcod/context_viewport.c

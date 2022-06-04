@@ -227,12 +227,12 @@ int main(int argc, char* argv[]) {
   params.argv = argv;
   params.window_title = "Photon reactor - radiosity engine for roguelikes";
 
-  auto context = tcod::new_context(params);
+  auto context = tcod::Context(params);
 
   init(console);
   while (true) {
     render(console);
-    context->present(console);
+    context.present(console);
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) {
               move(console, 1, 0);
               break;
             case SDL_SCANCODE_PRINTSCREEN:
-              context->save_screenshot(nullptr);
+              context.save_screenshot();
               break;
             default:
               break;

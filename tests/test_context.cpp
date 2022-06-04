@@ -10,11 +10,11 @@ const int WIDTH = 20;
 const int HEIGHT = 10;
 const char* TITLE = "Unittest";
 
-TCOD_Tileset* new_test_tileset(int width, int height) {
-  TCOD_Tileset* tileset = TCOD_tileset_new(width, height);
+auto new_test_tileset(int width, int height) -> tcod::TilesetPtr {
+  auto tileset = tcod::TilesetPtr{TCOD_tileset_new(width, height)};
   std::vector<TCOD_ColorRGBA> buffer{(size_t)(width * height + 1)};
   for (int i = 0; i < 256; ++i) {
-    TCOD_tileset_set_tile_(tileset, i, buffer.data());
+    TCOD_tileset_set_tile_(tileset.get(), i, buffer.data());
   }
   return tileset;
 }
@@ -33,19 +33,19 @@ void test_renderer_new_api(TCOD_renderer_t renderer) {
   auto console = tcod::Console{16, 12};
   TCOD_ContextParams params{};
   params.tcod_version = TCOD_COMPILEDVERSION;
-  params.tileset = new_test_tileset(25, 24);
+  auto tileset = new_test_tileset(25, 24);
+  params.tileset = tileset.get();
   params.renderer_type = renderer;
   params.console = console.get();
 
-  auto context = tcod::new_context(params);
-  TCOD_tileset_delete(params.tileset);
-  context->present(console);
+  auto context = tcod::Context(params);
+  context.present(console);
 
 #if 0
   // Check for division by zero errors:
   TCOD_Tileset* tileset = new_test_tileset(0, 0);
-  context->c_set_tileset_(context.get(), tileset);
-  context->present(*console);
+  context.c_set_tileset_(context.get(), tileset);
+  context.present(*console);
   TCOD_tileset_delete(tileset);
 #endif
 }

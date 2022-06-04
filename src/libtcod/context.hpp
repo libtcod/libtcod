@@ -41,7 +41,7 @@
 #include "context_init.h"
 #include "context_viewport.h"
 #include "error.hpp"
-#include "tileset.h"
+#include "tileset.hpp"
 
 namespace tcod {
 /***************************************************************************
@@ -96,7 +96,7 @@ class Context {
   /***************************************************************************
       @brief Return the TCOD_renderer_t value of this context which may be different than the one requested.
    */
-  auto get_renderer_type() noexcept -> TCOD_renderer_t {
+  [[nodiscard]] auto get_renderer_type() noexcept -> TCOD_renderer_t {
     return static_cast<TCOD_renderer_t>(TCOD_context_get_renderer_type(context_.get()));
   }
   /***************************************************************************
@@ -151,7 +151,9 @@ class Context {
         }
       @endcode
    */
-  auto get_sdl_window() noexcept -> struct SDL_Window* { return TCOD_context_get_sdl_window(context_.get()); }
+  [[nodiscard]] auto get_sdl_window() noexcept -> struct SDL_Window* {
+    return TCOD_context_get_sdl_window(context_.get());
+  }
   /***************************************************************************
       @brief Return a non-owning pointer to the SDL_Renderer used by this context.
 
@@ -168,11 +170,13 @@ class Context {
         }
       @endcode
    */
-  auto get_sdl_renderer() noexcept -> struct SDL_Renderer* { return TCOD_context_get_sdl_renderer(context_.get()); }
+  [[nodiscard]] auto get_sdl_renderer() noexcept -> struct SDL_Renderer* {
+    return TCOD_context_get_sdl_renderer(context_.get());
+  }
   /***************************************************************************
       @brief Convert pixel coordinates to this contexts integer tile coordinates.
    */
-  auto pixel_to_tile_coordinates(const std::array<int, 2>& xy) -> std::array<int, 2> {
+  [[nodiscard]] auto pixel_to_tile_coordinates(const std::array<int, 2>& xy) -> std::array<int, 2> {
     std::array<int, 2> out{xy[0], xy[1]};
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_i(context_.get(), &out[0], &out[1]));
     return out;
@@ -180,7 +184,7 @@ class Context {
   /***************************************************************************
       @brief Convert pixel coordinates to this contexts sub-tile coordinates.
    */
-  auto pixel_to_tile_coordinates(const std::array<double, 2>& xy) -> std::array<double, 2> {
+  [[nodiscard]] auto pixel_to_tile_coordinates(const std::array<double, 2>& xy) -> std::array<double, 2> {
     std::array<double, 2> out{xy[0], xy[1]};
     tcod::check_throw_error(TCOD_context_screen_pixel_to_tile_d(context_.get(), &out[0], &out[1]));
     return out;
@@ -255,7 +259,7 @@ class Context {
         }
       @endcode
    */
-  auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::Console {
+  [[nodiscard]] auto new_console(int min_columns = 1, int min_rows = 1, float magnification = 1.0f) -> tcod::Console {
     int columns;
     int rows;
     if (magnification <= 0.0f) {
@@ -266,13 +270,23 @@ class Context {
     return tcod::Console{std::max(columns, min_columns), std::max(rows, min_rows)};
   }
   /***************************************************************************
+      @brief Replace this contexts tileset with a different one.
+   */
+  auto change_tileset(tcod::Tileset& new_tileset) -> void {
+    check_throw_error(TCOD_context_change_tileset(context_.get(), new_tileset.get()));
+  }
+  /***************************************************************************
       @brief Access the context pointer.  Modifying this pointer may make the class invalid.
    */
-  auto get_ptr() -> ContextPtr& { return context_; }
+  [[nodiscard]] auto get_ptr() noexcept -> ContextPtr& { return context_; }
   /***************************************************************************
       @brief Access the const context pointer.
    */
-  auto get_ptr() const -> const ContextPtr& { return context_; }
+  [[nodiscard]] auto get_ptr() const noexcept -> const ContextPtr& { return context_; }
+  /***************************************************************************
+      @brief Close and delete the objects managed by this context.  This object will no longer be valid unless reset.
+   */
+  auto close() -> void { *this = Context(); }
 
  private:
   ContextPtr context_ = nullptr;

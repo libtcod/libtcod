@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
   params.tileset = tileset.get();
 
-  auto context = tcod::new_context(params);
+  auto context = tcod::Context(params);
 
   bool endCredits = false;
 
@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      context->convert_event_coordinates(event);
+      context.convert_event_coordinates(event);
       switch (event.type) {
         case SDL_QUIT:
           std::exit(EXIT_SUCCESS);
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
         case SDL_KEYDOWN:
           switch (event.key.keysym.sym) {
             case SDLK_PRINTSCREEN:
-              context->save_screenshot(nullptr);
+              context.save_screenshot();
               break;
             default:
               break;
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    context->present(console);
+    context.present(console);
   }
   return 0;
 }

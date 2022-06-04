@@ -83,7 +83,7 @@ void render(TCOD_Console& console) {
   // compute the map image
   for (int py = 0; py < 2 * HEIGHT; ++py) {
     for (int px = 0; px < 2 * WIDTH; ++px) {
-      // world texel coordinate (with fisheye distorsion)
+      // world texel coordinate (with fisheye distortion)
       const float wx = px + cur_w_x;
       const float wy = py + cur_w_y;
       map.putPixel(px, py, getMapShadedColor(wx, wy, true));
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
   params.window_title = "World generator";
   params.tileset = tileset.get();
 
-  auto context = tcod::new_context(params);
+  auto context = tcod::Context(params);
 
   int desired_fps = 0;
 
@@ -162,7 +162,7 @@ int main(int argc, char* argv[]) {
           std::exit(EXIT_SUCCESS);
           break;
         case SDL_MOUSEMOTION: {
-          const auto mouse_xy_d = context->pixel_to_tile_coordinates(
+          const auto mouse_xy_d = context.pixel_to_tile_coordinates(
               std::array<double, 2>{static_cast<double>(event.motion.x), static_cast<double>(event.motion.y)});
           mouse_subtile_xy = {static_cast<float>(mouse_xy_d.at(0)), static_cast<float>(mouse_xy_d.at(1))};
         } break;
@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
     // flush updates to screen
-    context->present(console);
+    context.present(console);
   }
   return 0;
 }

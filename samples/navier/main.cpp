@@ -238,7 +238,7 @@ void get_from_UI(
     std::array<float, SIZE>& velocity_u,
     std::array<float, SIZE>& velocity_v,
     float delta_time,
-    TCOD_Context& context) {
+    tcod::Context& context) {
   float vx = 0.0f;
   float vy = 0.0f;
 
@@ -296,7 +296,7 @@ void get_from_UI(
   }
 }
 
-void update(float elapsed, TCOD_Context& context) {
+void update(float elapsed, tcod::Context& context) {
   get_from_UI(dens_prev, u_prev, v_prev, elapsed, context);
   update_velocity(u_current, v_current, u_prev, v_prev, VISCOSITY, elapsed);
   update_density(dens, dens_prev, u_current, v_current, DIFF, elapsed);
@@ -334,7 +334,7 @@ int main(int argc, char* argv[]) {
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
   params.vsync = false;
 
-  auto context = tcod::new_context(params);
+  auto context = tcod::Context(params);
 
   bool endCredits = false;
   init();
@@ -354,12 +354,13 @@ int main(int argc, char* argv[]) {
             case SDL_SCANCODE_RETURN2:
             case SDL_SCANCODE_KP_ENTER:
               if (event.key.keysym.mod & KMOD_ALT) {
-                auto window = context->get_sdl_window();
-                const uint32_t flags = SDL_GetWindowFlags(window);
-                if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
-                  SDL_SetWindowFullscreen(window, 0);
-                } else {
-                  SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                if (auto window = context.get_sdl_window(); window) {
+                  const uint32_t flags = SDL_GetWindowFlags(window);
+                  if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) {
+                    SDL_SetWindowFullscreen(window, 0);
+                  } else {
+                    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                  }
                 }
               }
               break;
@@ -382,7 +383,7 @@ int main(int argc, char* argv[]) {
     }
     // update the game
     const float delta_time = timer.sync(desired_fps);
-    update(delta_time, *context);
+    update(delta_time, context);
     // render the game screen
     render(console);
     tcod::print(
@@ -401,6 +402,6 @@ int main(int argc, char* argv[]) {
     tcod::print(console, {5, 49}, "Arrows to move, left mouse button to cast", TEXT_COLOR, std::nullopt);
     // render libtcod credits
     if (!endCredits) endCredits = TCOD_console_credits_render_ex(console.get(), 4, 4, true, delta_time);
-    context->present(console);
+    context.present(console);
   }
 }

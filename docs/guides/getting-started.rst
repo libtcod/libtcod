@@ -32,17 +32,17 @@ deprecated functions.
       // auto tileset = tcod::load_tilesheet("terminal8x8_gs_ro.png", {16, 16}, tcod::CHARMAP_CP437);
       // params.tileset = tileset.get();
 
-      auto context = tcod::new_context(params);
+      auto context = tcod::Context(params);
 
       while (1) {  // Game loop.
         TCOD_console_clear(console.get());
         tcod::print(console, {0, 0}, "Hello World", std::nullopt, std::nullopt);
-        context->present(console);  // Updates the visible display.
+        context.present(console);  // Updates the visible display.
 
         SDL_Event event;
         SDL_WaitEvent(nullptr);  // Optional, sleep until events are available.
         while (SDL_PollEvent(&event)) {
-          context->convert_event_coordinates(event);  // Optional, converts pixel coordinates into tile coordinates.
+          context.convert_event_coordinates(event);  // Optional, converts pixel coordinates into tile coordinates.
           switch (event.type) {
             case SDL_QUIT:
               return 0;  // Exit.

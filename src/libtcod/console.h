@@ -133,7 +133,7 @@ struct TCOD_Console {
   /***************************************************************************
       @brief Clear a console by setting all tiles to the provided TCOD_ConsoleTile object.
 
-      @param tile A TCOD_ConsoleTile refernce which will be used to clear the console.
+      @param tile A TCOD_ConsoleTile reference which will be used to clear the console.
    */
   void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
     for (auto& it : *this) it = tile;
@@ -629,7 +629,7 @@ class Console {
   /***************************************************************************
       @brief Clear a console by setting all tiles to the provided TCOD_ConsoleTile object.
 
-      @param tile A TCOD_ConsoleTile refernce which will be used to clear the console.
+      @param tile A TCOD_ConsoleTile reference which will be used to clear the console.
 
       @details
       @code{.cpp}

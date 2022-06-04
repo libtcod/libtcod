@@ -86,7 +86,7 @@ static constexpr const char* SAMPLE_MAP[] = {
 // clang-format on
 
 // Global variables.
-static tcod::ContextPtr g_context;  // A global tcod context object.
+static tcod::Context g_context;  // A global tcod context object.
 static auto g_console = tcod::Console{80, 50};  // The main console to be presented.
 static int g_current_sample = 0;  // index of the current sample
 TCOD_ContextParams g_context_params{};  // The active context parameters.  Saved so that they can be modified.
@@ -718,8 +718,8 @@ class MouseSample : public Sample {
   }
   void on_draw(tcod::Console& console) override {
     auto last_tile = last_motion_;  // SDL event to be converted into tile coordinates.
-    g_context->convert_event_coordinates(last_tile);
-    auto sdl_window = g_context->get_sdl_window();
+    g_context.convert_event_coordinates(last_tile);
+    auto sdl_window = g_context.get_sdl_window();
 
     const auto window_flags = sdl_window ? SDL_GetWindowFlags(sdl_window) : 0;
     const auto& mouse = last_motion_.motion;
@@ -788,7 +788,7 @@ class PathfinderSample : public Sample {
     }
   }
   void on_event(SDL_Event& event) override {
-    g_context->convert_event_coordinates(event);
+    g_context.convert_event_coordinates(event);
     switch (event.type) {
       case SDL_KEYDOWN:
         switch (event.key.keysym.sym) {
@@ -1568,18 +1568,14 @@ void main_loop() {
       std::nullopt,
       TCOD_RIGHT);
   tcod::print(g_console, {2, 47}, "↑↓ : select a sample", GREY, std::nullopt);
-  {
-    auto sdl_window = g_context->get_sdl_window();
-    if (sdl_window) {
-      const auto is_fullscreen =
-          SDL_GetWindowFlags(sdl_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN);
-      tcod::print(
-          g_console,
-          {2, 48},
-          tcod::stringf("ALT-ENTER : switch to %s", is_fullscreen ? "windowed mode  " : "fullscreen mode"),
-          GREY,
-          std::nullopt);
-    }
+  if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
+    const auto is_fullscreen = SDL_GetWindowFlags(sdl_window) & (SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_FULLSCREEN);
+    tcod::print(
+        g_console,
+        {2, 48},
+        tcod::stringf("ALT-ENTER : switch to %s", is_fullscreen ? "windowed mode  " : "fullscreen mode"),
+        GREY,
+        std::nullopt);
   }
 
   // render current sample
@@ -1591,7 +1587,7 @@ void main_loop() {
   tcod::print(g_console, {42, 46 - (static_cast<int>(RENDERERS.size()) + 1)}, "Renderer :", GREY, BLACK);
 
   for (int i = 0; i < static_cast<int>(RENDERERS.size()); ++i) {
-    const bool is_current_renderer = RENDERERS.at(i).renderer == g_context->get_renderer_type();
+    const bool is_current_renderer = RENDERERS.at(i).renderer == g_context.get_renderer_type();
     const auto fg = is_current_renderer ? WHITE : GREY;
     const auto bg = is_current_renderer ? LIGHT_BLUE : BLACK;
     tcod::print(
@@ -1603,7 +1599,7 @@ void main_loop() {
   }
 
   // update the game screen
-  g_context->present(g_console);
+  g_context.present(g_console);
   g_console.clear();
 
   // did the user hit a key ?
@@ -1628,8 +1624,7 @@ void main_loop() {
           case SDLK_RETURN2:
           case SDLK_KP_ENTER:
             if (event.key.keysym.mod & KMOD_ALT) {
-              auto sdl_window = g_context->get_sdl_window();
-              if (sdl_window) {
+              if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
                 const auto flags = SDL_GetWindowFlags(sdl_window);
                 const auto is_fullscreen = flags & (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_FULLSCREEN_DESKTOP);
                 // Change fullscreen mode.
@@ -1639,12 +1634,11 @@ void main_loop() {
             break;
           case SDLK_p:
           case SDLK_PRINTSCREEN:
-            g_context->save_screenshot(nullptr);  // Save screenshot.
+            g_context.save_screenshot();  // Save screenshot.
             break;
           default:
             if (SDLK_F1 <= event.key.keysym.sym && event.key.keysym.sym < SDLK_F1 + RENDERERS.size()) {
-              auto sdl_window = g_context->get_sdl_window();
-              if (sdl_window) {
+              if (auto sdl_window = g_context.get_sdl_window(); sdl_window) {
                 // Save fullscreen and maximized state to params, so that they are kept on the new renderer.
                 const auto current_flags = SDL_GetWindowFlags(sdl_window);
                 static constexpr auto TRACKED_FLAGS = SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_MAXIMIZED;
@@ -1652,8 +1646,8 @@ void main_loop() {
                     (g_context_params.sdl_window_flags & ~TRACKED_FLAGS) | (current_flags & TRACKED_FLAGS);
               }
               g_context_params.renderer_type = RENDERERS.at(event.key.keysym.sym - SDLK_F1).renderer;
-              g_context = nullptr;
-              g_context = tcod::new_context(g_context_params);
+              g_context.close();
+              g_context = tcod::Context(g_context_params);
             }
             break;
         }
@@ -1670,7 +1664,7 @@ void main_loop() {
         if (new_tileset.get()) {
           g_tileset = std::move(new_tileset);
           g_context_params.tileset = g_tileset.get();
-          TCOD_context_change_tileset(g_context.get(), g_tileset.get());
+          g_context.change_tileset(g_tileset);
         }
         SDL_free(event.drop.file);
       } break;
@@ -1701,7 +1695,7 @@ int main(int argc, char* argv[]) {
     g_context_params.argv = argv;
     g_context_params.console = g_console.get();
 
-    g_context = tcod::new_context(g_context_params);
+    g_context = tcod::Context(g_context_params);
 
     atexit(TCOD_quit);
 #ifdef __EMSCRIPTEN__

@@ -82,11 +82,11 @@ void Weather::update(float elapsed) {
   float perlin_x = changeFactor_ * localElapsed / 100.0f;
   indicator_ = (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX)) * 0.5f + indicatorDelta_;
   indicator_ = CLAMP(0.0f, 1.0f, indicator_);
-  float windspeed = 1.0f - indicator_;
+  float wind_speed = 1.0f - indicator_;
   perlin_x *= 2.0f;
   float windDir = (2.0f * 3.1415926f * 0.5f) * (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX));
-  dx_ += MAX_WIND_SPEED * windspeed * cosf(windDir) * elapsed;
-  dy_ += 0.5f * MAX_WIND_SPEED * windspeed * sinf(windDir) * elapsed;
+  dx_ += MAX_WIND_SPEED * wind_speed * cosf(windDir) * elapsed;
+  dy_ += 0.5f * MAX_WIND_SPEED * wind_speed * sinf(windDir) * elapsed;
   if (indicator_ < LIGHTNING_LEVEL) {
     float storm = (LIGHTNING_LEVEL - indicator_) / LIGHTNING_LEVEL;  // storm power 0-1
     float lp =

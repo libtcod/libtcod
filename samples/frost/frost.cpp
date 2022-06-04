@@ -228,9 +228,7 @@ int main(int argc, char** argv) {
   params.columns = CONSOLE_WIDTH;
   params.rows = CONSOLE_HEIGHT;
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
-#ifdef __EMSCRIPTEN__
   params.renderer_type = TCOD_RENDERER_SDL2;
-#endif
   params.vsync = true;
   try {
     context = tcod::new_context(params);

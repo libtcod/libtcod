@@ -47,7 +47,7 @@ TEST_CASE("bresenham benchmarks", "[.benchmark]") {
   };
   BENCHMARK("TCOD_line") { return TCOD_line(0, 0, 11, 3, null_bresenham_callback); };
   BENCHMARK("BresenhamLine (iterate)") {
-    std::array<int, 2> out;
+    std::array<int, 2> out{0, 0};
     for (auto&& xy : tcod::BresenhamLine({0, 0}, {11, 3})) {
       out = xy;
     }

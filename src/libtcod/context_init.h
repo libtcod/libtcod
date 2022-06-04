@@ -85,9 +85,11 @@ new_context(const TCOD_ContextParams& params, TCOD_Error& out_code) -> ContextPt
     .. versionadded:: 1.19
     \endrst
  */
-TCOD_NODISCARD inline auto new_context(const TCOD_ContextParams& params) -> ContextPtr {
-  TCOD_Error discard_output;
-  return new_context(params, discard_output);
+[[deprecated("This function has been replaced by `auto context = tcod::Context(params);`")]] TCOD_NODISCARD inline auto
+new_context(const TCOD_ContextParams& params) -> ContextPtr {
+  struct TCOD_Context* context = nullptr;
+  check_throw_error(TCOD_context_new(&params, &context));
+  return ContextPtr{context};
 }
 }  // namespace tcod
 #endif  // __cplusplus

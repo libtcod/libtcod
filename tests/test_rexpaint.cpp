@@ -2,7 +2,7 @@
 #include <libtcod/console_rexpaint.h>
 
 #include <array>
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <cstdio>
 #include <libtcod/console.hpp>
 #include <utility>

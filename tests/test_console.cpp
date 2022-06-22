@@ -1,7 +1,7 @@
 
 #include <libtcod/console.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <libtcod/console.hpp>
 
 #include "common.hpp"
@@ -107,7 +107,7 @@ TEST_CASE("Console wchar BMP", "[!nonportable]") {
 }
 
 /* Fails when sizeof(wchar_t) == 2 */
-TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][!hide]") {
+TEST_CASE("Console wchar SMP", "[!nonportable][!mayfail][.]") {
   TCODConsole console = TCODConsole(2, 1);
   console.print(0, 0, L"\U0001F30D");
   CHECK(console.getChar(0, 0) == 0x1F30D);

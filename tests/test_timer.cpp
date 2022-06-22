@@ -1,7 +1,7 @@
 #ifndef NO_SDL
 #include <SDL.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <libtcod/timer.hpp>
 
 TEST_CASE("tcod::Timer") {

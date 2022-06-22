@@ -1,6 +1,6 @@
 #include <libtcod/matrix.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 TEST_CASE("Matrix basics") {
   auto matrix = tcod::Matrix<int, 2>({2, 2});

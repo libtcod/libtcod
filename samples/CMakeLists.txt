@@ -153,4 +153,10 @@ if (EMSCRIPTEN)
         PROPERTIES
             SUFFIX ".html"
     )
+
+    # Support threading.
+    foreach(project_it samples_c samples_cpp frost hmtool navier rad weather worldgen)
+        target_link_options(${project_it} PRIVATE "-pthread")
+    endforeach()
+
 endif()

@@ -1,7 +1,7 @@
 
 #include <libtcod/color.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <libtcod/color.hpp>
 #include <libtcod/console.hpp>
 #include <sstream>

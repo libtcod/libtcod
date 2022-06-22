@@ -2,7 +2,7 @@
 
 #include <libtcod/logging.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <clocale>
 #include <cstddef>
 #include <iostream>
@@ -16,8 +16,8 @@
 #include "common.hpp"
 
 /// Captures libtcod log output on tests.
-struct HandleLogging : Catch::TestEventListenerBase {
-  using TestEventListenerBase::TestEventListenerBase;  // inherit constructor
+struct HandleLogging : Catch::EventListenerBase {
+  using EventListenerBase::EventListenerBase;  // inherit constructor
   /// Register logger before each test.
   void testCaseStarting(Catch::TestCaseInfo const&) override {
     TCOD_set_log_level(TCOD_LOG_DEBUG);

@@ -101,4 +101,4 @@ By default it is assumed that Vcpkg will be used to get dependencies, but this c
 | LIBTCOD_GLAD     | find_package | find_package, vendored |
 | LIBTCOD_LODEPNG  | find_package | find_package, vendored |
 | LIBTCOD_UTF8PROC | vcpkg        | find_package, vcpkg |
-| LIBTCOD_STB      | vcpkg        | vcpkg, vendored |
+| LIBTCOD_STB      | find_package | find_package, vendored |

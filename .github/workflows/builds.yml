@@ -8,6 +8,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  VCPKG_FETCH_DEPTH: 1000 # Depth to fetch vcpkg commits, must include the baseline.
+
 jobs:
   CMake:
     runs-on: ${{ matrix.os }}
@@ -67,6 +70,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Fetch Vcpkg commits
+        working-directory: vcpkg
+        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       # Install latest CMake.
       - uses: lukka/get-cmake@latest
       # Restore both vcpkg and its artifacts from the GitHub cache service.
@@ -132,6 +138,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Fetch Vcpkg commits
+        working-directory: vcpkg
+        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Install the latest CMake
         uses: lukka/get-cmake@latest
       - name: Restore vcpkg and its artifacts.
@@ -297,6 +306,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Fetch Vcpkg commits
+        working-directory: vcpkg
+        run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Restore vcpkg and its artifacts
         uses: actions/cache@v2
         with:

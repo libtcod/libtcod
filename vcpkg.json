@@ -42,8 +42,12 @@
     "tests": {
       "description": "Dependencies needed for testing.",
       "dependencies": [
-        "catch2"
+        {
+          "name": "catch2",
+          "version>=": "3.0.1"
+        }
       ]
     }
-  }
+  },
+  "builtin-baseline": "0cf5b4305ba811d069d3ce328261eeb54bf61c3a"
 }

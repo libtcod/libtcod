@@ -557,6 +557,7 @@ public :
   TCOD_DEPRECATED_NOMESSAGE
 	static char *getClipboard();
 
+#ifndef TCOD_NO_THREADS
 	// thread stuff
   TCOD_DEPRECATED_NOMESSAGE
 	static int getNumCores();
@@ -595,6 +596,7 @@ public :
 	static void waitCondition(TCOD_cond_t sem, TCOD_mutex_t mut);
   TCOD_DEPRECATED_NOMESSAGE
 	static void deleteCondition( TCOD_cond_t sem);
+#endif  // TCOD_NO_THREADS
 };
 
 #endif

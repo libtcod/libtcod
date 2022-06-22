@@ -9,6 +9,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ## [Unreleased]
 ### Added
 - Added the `tcod::Context` class to better handle contexts in C++.
+- Added a CMake toggle `LIBTCOD_THREADS` to remove deprecated threading functions.
 
 ### Changed
 - Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag to CMake.

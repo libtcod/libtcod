@@ -327,6 +327,7 @@ jobs:
           -DVCPKG_TARGET_TRIPLET=wasm32-emscripten
           -DCMAKE_BUILD_TYPE="${{ env.BUILD_TYPE }}"
           -DLIBTCOD_SAMPLES=ON
+          -DLIBTCOD_THREADS=OFF
       - name: Build
         run: cmake --build ${{ env.CMAKE_BUILD_DIR }}
       - name: Show contents of the build directory

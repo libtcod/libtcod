@@ -126,6 +126,7 @@ bool TCODSystem::setClipboard(const char* value) { return TCOD_sys_clipboard_set
 
 char* TCODSystem::getClipboard() { return TCOD_sys_clipboard_get(); }
 
+#ifndef TCOD_NO_THREADS
 // thread stuff
 int TCODSystem::getNumCores() { return TCOD_sys_get_num_cores(); }
 
@@ -163,6 +164,7 @@ void TCODSystem::broadcastCondition(TCOD_cond_t cond) { TCOD_condition_broadcast
 void TCODSystem::waitCondition(TCOD_cond_t cond, TCOD_mutex_t mut) { TCOD_condition_wait(cond, mut); }
 
 void TCODSystem::deleteCondition(TCOD_cond_t cond) { TCOD_condition_delete(cond); }
+#endif  // TCOD_NO_THREADS
 
 // custom post-renderer
 static ITCODSDLRenderer* post_renderer = NULL;

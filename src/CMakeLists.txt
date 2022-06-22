@@ -104,9 +104,14 @@ target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-find_package(Threads REQUIRED)
-if (DEFINED CMAKE_THREAD_LIBS_INIT)
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+set(LIBTCOD_THREADS ON CACHE BOOL "If true then older thread functions are enabled by libtcod.")
+if(LIBTCOD_THREADS)
+    find_package(Threads REQUIRED)
+    if (DEFINED CMAKE_THREAD_LIBS_INIT)
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+    endif()
+else()
+    target_compile_definitions(${PROJECT_NAME} PUBLIC TCOD_NO_THREADS)
 endif()
 
 if(BUILD_SHARED_LIBS)

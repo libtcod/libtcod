@@ -87,6 +87,7 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_read_file(const char* filename, unsigned char** buf, size_t* size);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API bool TCOD_sys_write_file(const char* filename, unsigned char* buf, uint32_t size);
+#ifndef TCOD_NO_THREADS
 /* threads */
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data);
@@ -125,6 +126,7 @@ TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_wait(TCOD_cond_t sem, TCOD_mutex_t mut);
 TCOD_DEPRECATED_NOMESSAGE
 TCODLIB_API void TCOD_condition_delete(TCOD_cond_t sem);
+#endif  // TCOD_NO_THREADS
 #ifndef NO_SDL
 /* dynamic library */
 typedef void* TCOD_library_t;

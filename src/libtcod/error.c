@@ -35,14 +35,11 @@
 #include <stdio.h>
 #include <string.h>
 
-// Define __thread for MSVC.
-#if !defined(__thread) && defined(_MSC_VER)
-#define __thread __declspec(thread)
-#endif
-
 // Maximum error length in bytes.
 #define MAX_ERROR_LENGTH 1024
-static __thread char error_msg_[MAX_ERROR_LENGTH] = "";
+// Current error message.
+static char error_msg_[MAX_ERROR_LENGTH] = "";
+
 const char* TCOD_get_error(void) { return error_msg_; }
 int TCOD_set_error(const char* msg) {
   strncpy(error_msg_, msg, sizeof(error_msg_) - 1);

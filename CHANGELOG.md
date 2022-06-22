@@ -16,6 +16,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - The SDL2 renderer has been rewritten to use `SDL_RenderGeometry` when compiled with SDL 2.0.18.
   [#104](https://github.com/libtcod/libtcod/issues/104)
 - C++ inline functions switched to use C++17 filesystem types.
+- Error messages are no longer thread-local.
 
 ### Deprecated
 - Older REXPaint functions using `TCOD_list_t` have been deprecated.

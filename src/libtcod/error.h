@@ -81,22 +81,21 @@ typedef enum TCOD_Error {
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
-/**
- *  Return the last error message.  If there is no error then the string will
- *  have a length of zero.
- *
- *  The error state is thread specific.
- *  \rst
- *  .. versionadded:: 1.12
- *  \endrst
+/***************************************************************************
+    @brief Return the last error message.  If there is no error then the string will have a length of zero.
+
+    \rst
+    .. versionadded:: 1.12
+    \endrst
  */
 TCOD_NODISCARD
 TCODLIB_API const char* TCOD_get_error(void);
-/**
- *  Set an error message and return TCOD_E_ERROR.
- *  \rst
- *  .. versionadded:: 1.12
- *  \endrst
+/***************************************************************************
+    @brief Set an error message and return TCOD_E_ERROR.
+
+    \rst
+    .. versionadded:: 1.12
+    \endrst
  */
 TCODLIB_API TCOD_Error TCOD_set_error(const char* msg);
 /**

@@ -94,11 +94,11 @@ By default it is assumed that Vcpkg will be used to get dependencies, but this c
 `conan` and `vcpkg` means that package manager specific scripts are used to link these dependencies.
 `disable` can be used to ignore a library, but functions which require that library will no longer function.
 
-| Cache Variable   | Default      | Options |
-| ---------------- | ------------ | ------- |
+| Cache Variable   | Default      | Options | Notes |
+| ---------------- | ------------ | ------- | ----- |
 | LIBTCOD_SDL2     | find_package | conan, disable, find_package |
 | LIBTCOD_ZLIB     | find_package | conan, find_package |
-| LIBTCOD_GLAD     | find_package | find_package, vendored |
+| LIBTCOD_GLAD     | find_package | find_package, vendored | Disabled if SDL is disabled.
 | LIBTCOD_LODEPNG  | find_package | find_package, vendored |
 | LIBTCOD_UTF8PROC | vcpkg        | find_package, vcpkg |
 | LIBTCOD_STB      | find_package | find_package, vendored |

@@ -35,6 +35,7 @@
 #include <SDL_events.h>
 #endif  // NO_SDL
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 struct TCOD_Context* TCOD_context_new_(void) {
@@ -122,6 +123,17 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
   }
   if (!context->c_save_screenshot_) {
     return TCOD_set_errorv("Context does not support screenshots.");
+  }
+  char unique_path[128];
+  while (!filename) {
+    static int unique_id = 0;
+    snprintf(unique_path, sizeof(unique_path), "./screenshot%03d.png", unique_id++);
+    FILE* access_file = fopen(unique_path, "rb");
+    if (access_file) {  // File exists, increment and try again.
+      fclose(access_file);
+      continue;
+    }
+    filename = unique_path;
   }
   return context->c_save_screenshot_(context, filename);
 }

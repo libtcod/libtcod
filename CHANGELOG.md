@@ -27,6 +27,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Fixed
 - Fixed poor attribute handing causing compile errors in GCC 12.
   [#116](https://github.com/libtcod/libtcod/issues/116)
+- Context screenshots no longer crash when given NULL which the API implied was possible.
 
 ## [1.20.1] - 2022-01-07
 ### Fixed

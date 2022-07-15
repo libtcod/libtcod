@@ -38,6 +38,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include "console_types.hpp"
 #include "error.hpp"
 #endif  // __cplusplus
 
@@ -51,6 +52,9 @@ struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Rect;
 union SDL_Event;
+
+struct TCOD_Context;  // Defined in this header later.
+typedef struct TCOD_Context TCOD_Context;
 
 /**
     A struct of parameters used to create a new context with `TCOD_context_new`.
@@ -155,8 +159,6 @@ typedef struct TCOD_ContextParams {
   TCOD_Console* console;
 } TCOD_ContextParams;
 
-struct TCOD_Context;  // Defined in this header later.
-typedef struct TCOD_Context TCOD_Context;
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus

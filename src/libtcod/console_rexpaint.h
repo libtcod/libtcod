@@ -183,38 +183,5 @@ TCODLIB_API int TCOD_load_xp(const char* path, int n, TCOD_Console** out);
 TCODLIB_API TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, const char* path, int compress_level);
 #ifdef __cplusplus
 }  // extern "C"
-namespace tcod {
-/**
-    @brief Load an array of consoles from a REXPaint file.
-
-    @param path The path to the REXPaint file to load.
-    @return Returns a vector of consoles.
-
-    \rst
-    .. versionadded:: 1.18
-    \endrst
- */
-inline std::vector<tcod::ConsolePtr> load_xp(const std::string& path) {
-  int layer_count = tcod::check_throw_error(TCOD_load_xp(path.c_str(), 0, nullptr));
-  std::vector<TCOD_Console*> tmp(layer_count, nullptr);
-  tcod::check_throw_error(TCOD_load_xp(path.c_str(), layer_count, &tmp[0]));
-  return std::vector<tcod::ConsolePtr>(tmp.begin(), tmp.end());
-}
-/**
-    @brief Save an array of consoles to a REXPaint file.
-
-    @param consoles A vector of consoles to save.
-    @param path The path to write the REXPaint file to.
-    @param compress_level A compression level for the zlib library.
-
-    \rst
-    .. versionadded:: 1.18
-    \endrst
- */
-inline void save_xp(const std::vector<const TCOD_Console*>& consoles, const std::string& path, int compress_level = 9) {
-  tcod::check_throw_error(
-      TCOD_save_xp(static_cast<int>(consoles.size()), consoles.data(), path.c_str(), compress_level));
-}
-}  // namespace tcod
 #endif  // __cplusplus
-#endif /* TCOD_CONSOLE_REXPAINT_H_ */
+#endif  // TCOD_CONSOLE_REXPAINT_H_

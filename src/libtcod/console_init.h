@@ -33,6 +33,7 @@
 #define LIBTCOD_CONSOLE_INIT_H_
 
 #include "config.h"
+#include "console.h"
 #include "console_types.h"
 #include "context.h"
 #include "error.h"

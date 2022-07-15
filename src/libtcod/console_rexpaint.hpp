@@ -29,81 +29,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef LIBTCOD_H_
-#define LIBTCOD_H_
+#ifndef TCOD_CONSOLE_REXPAINT_HPP_
+#define TCOD_CONSOLE_REXPAINT_HPP_
 
-#include "bresenham.h"
-#include "bsp.h"
-#include "color.h"
-#include "console.h"
-#include "console_drawing.h"
-#include "console_etc.h"
-#include "console_init.h"
-#include "console_printing.h"
+#include <string>
+#include <vector>
+
 #include "console_rexpaint.h"
-#include "context.h"
-#include "context_init.h"
-#include "error.h"
-#include "fov.h"
-#include "globals.h"
-#include "heightmap.h"
-#include "image.h"
-#include "lex.h"
-#include "list.h"
-#include "logging.h"
-#include "mersenne.h"
-#include "mouse.h"
-#include "namegen.h"
-#include "noise.h"
-#include "parser.h"
-#include "path.h"
-#include "pathfinder.h"
-#include "pathfinder_frontier.h"
-#include "portability.h"
-#include "random.h"
-#include "renderer_gl.h"
-#include "renderer_gl1.h"
-#include "renderer_gl2.h"
-#include "renderer_sdl2.h"
-#include "sdl2/event.h"
-#include "sys.h"
-#include "tileset.h"
-#include "tileset_bdf.h"
-#include "tileset_fallback.h"
-#include "tileset_render.h"
-#include "tileset_truetype.h"
-#include "tree.h"
-#include "txtfield.h"
-#include "utility.h"
-#include "version.h"
-#include "zip.h"
-
-#ifdef __cplusplus
-#include "bresenham.hpp"
-#include "bsp.hpp"
-#include "color.hpp"
-#include "console.hpp"
-#include "console_rexpaint.hpp"
 #include "console_types.hpp"
-#include "context.hpp"
-#include "fov.hpp"
-#include "heightmap.hpp"
-#include "image.hpp"
-#include "lex.hpp"
-#include "list.hpp"
-#include "mersenne.hpp"
-#include "mouse.hpp"
-#include "namegen.hpp"
-#include "noise.hpp"
-#include "parser.hpp"
-#include "path.hpp"
-#include "sys.hpp"
-#include "tileset.hpp"
-#include "tileset_bdf.hpp"
-#include "tileset_fallback.hpp"
-#include "tree.hpp"
-#include "txtfield.hpp"
-#include "zip.hpp"
-#endif  // __cplusplus
 
-#endif  // LIBTCOD_H_
+namespace tcod {
+/**
+    @brief Load an array of consoles from a REXPaint file.
+
+    @param path The path to the REXPaint file to load.
+    @return Returns a vector of consoles.
+
+    \rst
+    .. versionadded:: 1.18
+    \endrst
+ */
+inline std::vector<tcod::ConsolePtr> load_xp(const std::string& path) {
+  int layer_count = tcod::check_throw_error(TCOD_load_xp(path.c_str(), 0, nullptr));
+  std::vector<TCOD_Console*> tmp(layer_count, nullptr);
+  tcod::check_throw_error(TCOD_load_xp(path.c_str(), layer_count, &tmp[0]));
+  return std::vector<tcod::ConsolePtr>(tmp.begin(), tmp.end());
+}
+/**
+    @brief Save an array of consoles to a REXPaint file.
+
+    @param consoles A vector of consoles to save.
+    @param path The path to write the REXPaint file to.
+    @param compress_level A compression level for the zlib library.
+
+    \rst
+    .. versionadded:: 1.18
+    \endrst
+ */
+inline void save_xp(const std::vector<const TCOD_Console*>& consoles, const std::string& path, int compress_level = 9) {
+  tcod::check_throw_error(
+      TCOD_save_xp(static_cast<int>(consoles.size()), consoles.data(), path.c_str(), compress_level));
+}
+}  // namespace tcod
+#endif  // TCOD_CONSOLE_REXPAINT_HPP_

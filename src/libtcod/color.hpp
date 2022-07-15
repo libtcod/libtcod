@@ -29,7 +29,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #ifndef _TCOD_COLOR_HPP
 #define _TCOD_COLOR_HPP
 
@@ -37,6 +36,88 @@
 
 #include "color.h"
 #include "utility.h"
+
+namespace tcod {
+/***************************************************************************
+    @brief A C++ RGB color, used to handle conversions between color types.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+struct ColorRGB : public TCOD_ColorRGB {
+ public:
+  /***************************************************************************
+      @brief Default construct a black ColorRGB object.  RGB values are zero.
+   */
+  constexpr ColorRGB() noexcept : ColorRGB{0, 0, 0} {}
+  /***************************************************************************
+      @brief Construct a ColorRGB object with the provided color.
+   */
+  constexpr ColorRGB(uint8_t red, uint8_t green, uint8_t blue) noexcept : TCOD_ColorRGB{red, green, blue} {}
+  /***************************************************************************
+      @brief Construct a ColorRGB object from an TCOD_ColorRGB struct.
+   */
+  explicit constexpr ColorRGB(const TCOD_ColorRGB& rhs) noexcept : TCOD_ColorRGB{rhs} {}
+  /***************************************************************************
+      @brief Construct a ColorRGB object from an RGBA color, truncating the alpha.
+   */
+  explicit constexpr ColorRGB(const TCOD_ColorRGBA& rhs) noexcept : ColorRGB{rhs.r, rhs.g, rhs.b} {}
+  /***************************************************************************
+      @brief Allow implicit casts to RGBA colors, where alpha=255 is implied.
+   */
+  [[nodiscard]] constexpr operator const TCOD_ColorRGBA() const noexcept { return TCOD_ColorRGBA{r, g, b, 255}; }
+  /***************************************************************************
+      @brief Allow explicit casts to a TCOD_ColorRGB pointer.
+   */
+  [[nodiscard]] constexpr explicit operator TCOD_ColorRGB*() noexcept { return this; }
+  /***************************************************************************
+      @brief Allow explicit casts to a const TCOD_ColorRGB pointer.
+   */
+  [[nodiscard]] constexpr explicit operator const TCOD_ColorRGB*() const noexcept { return this; }
+};
+/***************************************************************************
+    @brief A C++ RGBA color, used to handle conversions between color types.
+
+    \rst
+    .. versionadded:: 1.19
+    \endrst
+ */
+struct ColorRGBA : public TCOD_ColorRGBA {
+ public:
+  /***************************************************************************
+      @brief Default construct a black ColorRGBA object.  RGB values are zero, alpha is 255.
+   */
+  constexpr ColorRGBA() noexcept : ColorRGBA{0, 0, 0, 255} {}
+  /***************************************************************************
+      @brief Construct a ColorRGBA object with the provided color and alpha.
+   */
+  constexpr ColorRGBA(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) noexcept
+      : TCOD_ColorRGBA{red, green, blue, alpha} {}
+  /***************************************************************************
+      @brief Construct a ColorRGBA object by adding an alpha channel to an RGB object.
+   */
+  explicit constexpr ColorRGBA(const TCOD_ColorRGB& rhs, uint8_t alpha = 255) noexcept
+      : TCOD_ColorRGBA{rhs.r, rhs.b, rhs.b, alpha} {}
+  /***************************************************************************
+      @brief Construct a ColorRGBA object from an TCOD_ColorRGBA struct.
+   */
+  explicit constexpr ColorRGBA(const TCOD_ColorRGBA& rhs) noexcept : TCOD_ColorRGBA{rhs} {}
+  /***************************************************************************
+      @brief Allow explicit conversions to a TCOD_ColorRGB struct.
+   */
+  [[nodiscard]] constexpr explicit operator TCOD_ColorRGB() const noexcept { return TCOD_ColorRGB{r, g, b}; };
+  /***************************************************************************
+      @brief Allow explicit conversions to a TCOD_ColorRGBA pointer.
+   */
+  [[nodiscard]] constexpr explicit operator TCOD_ColorRGBA*() noexcept { return this; }
+  /***************************************************************************
+      @brief Allow explicit conversions to a const TCOD_ColorRGBA pointer.
+   */
+  [[nodiscard]] constexpr explicit operator const TCOD_ColorRGBA*() const noexcept { return this; }
+};
+}  // namespace tcod
+// clang-format off
 // color constants uses to generate @ColorTable
 /**
 	@ColorCategory STANDARD COLORS
@@ -721,5 +802,4 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 };
 
 TCODLIB_API TCODColor operator*(float value, const TCODColor& c);
-
 #endif  // _TCOD_COLOR_HPP

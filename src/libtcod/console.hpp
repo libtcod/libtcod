@@ -43,8 +43,41 @@
 #include "console_init.h"
 #include "console_printing.h"
 #include "console_rexpaint.h"
+#include "console_types.h"
 #include "image.hpp"
 
+namespace tcod {
+/***************************************************************************
+    @brief Blit a region of tiles from one console to another.
+
+    @param dest The destination console.
+    @param source The source console to blit from.
+    @param dest_xy The upper-left position of the destination console to blit to.
+    @param source_rect The source region `{left, top, width, height}` to blit from.
+        A width or height of zero will use the entire console.
+    @param foreground_alpha
+    @param background_alpha
+ */
+inline void blit(
+    TCOD_Console& dest,
+    const TCOD_Console& source,
+    const std::array<int, 2>& dest_xy = {0, 0},
+    std::array<int, 4> source_rect = {0, 0, 0, 0},
+    float foreground_alpha = 1.0f,
+    float background_alpha = 1.0f) {
+  TCOD_console_blit(
+      &source,
+      source_rect.at(0),
+      source_rect.at(1),
+      source_rect.at(2),
+      source_rect.at(3),
+      &dest,
+      dest_xy.at(0),
+      dest_xy.at(1),
+      foreground_alpha,
+      background_alpha);
+}
+}  // namespace tcod
 // clang-format off
 
 class TCODImage;

@@ -18,6 +18,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
   [#104](https://github.com/libtcod/libtcod/issues/104)
 - C++ inline functions switched to use C++17 filesystem types.
 - Error messages are no longer thread-local.
+- C++ objects have been moved to their `.hpp` headers:
+  `tcod::ColorRGB`, `tcod::ColorRGBA`, `tcod::BresenhamLine`, REXPaint functions.
 
 ### Deprecated
 - Older REXPaint functions using `TCOD_list_t` have been deprecated.

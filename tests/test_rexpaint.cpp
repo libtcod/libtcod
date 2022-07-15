@@ -1,12 +1,12 @@
 
-#include <libtcod/console_rexpaint.h>
-
 #include <array>
 #include <catch2/catch_all.hpp>
 #include <cstdio>
 #include <libtcod/console.hpp>
+#include <libtcod/console_rexpaint.hpp>
 #include <utility>
 #include <vector>
+
 
 const int COMPRESSION_LEVEL = 0;  // Disable compression.
 

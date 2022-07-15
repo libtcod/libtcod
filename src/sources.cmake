@@ -28,7 +28,9 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/console_printing.h
     libtcod/console_rexpaint.c
     libtcod/console_rexpaint.h
+    libtcod/console_rexpaint.hpp
     libtcod/console_types.h
+    libtcod/console_types.hpp
     libtcod/context.c
     libtcod/context.h
     libtcod/context.hpp
@@ -214,7 +216,9 @@ install(FILES
     libtcod/console_init.h
     libtcod/console_printing.h
     libtcod/console_rexpaint.h
+    libtcod/console_rexpaint.hpp
     libtcod/console_types.h
+    libtcod/console_types.hpp
     libtcod/context.h
     libtcod/context.hpp
     libtcod/context_init.h
@@ -349,7 +353,9 @@ source_group(libtcod FILES
     libtcod/console_printing.h
     libtcod/console_rexpaint.c
     libtcod/console_rexpaint.h
+    libtcod/console_rexpaint.hpp
     libtcod/console_types.h
+    libtcod/console_types.hpp
     libtcod/context.c
     libtcod/context.h
     libtcod/context.hpp

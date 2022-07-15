@@ -1,6 +1,4 @@
 
-#include <libtcod/console.h>
-
 #include <catch2/catch_all.hpp>
 #include <libtcod/console.hpp>
 

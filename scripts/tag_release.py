@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import os
 import re
 import subprocess
 import sys
@@ -16,7 +17,8 @@ parser.add_argument("-e", "--edit", action="store_true", help="Force edits of gi
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
-CHANGELOG_PATH = Path("CHANGELOG.md")
+PROJECT_DIR = Path(__file__).parent.parent  # Project directory relative to this script.
+CHANGELOG_PATH = PROJECT_DIR / "CHANGELOG.md"
 
 
 def parse_changelog(args: argparse.Namespace) -> Tuple[str, str]:
@@ -85,6 +87,28 @@ def update_vcpkg_manifest(args: argparse.Namespace) -> None:
             json.dump(vcpkg_manifest, f, indent=2)
 
 
+def replace_unreleased_tags(tag: str, dry_run: bool, path: Path) -> None:
+    """Replace "unreleased" version tags with the provided tag.
+
+    Such as the following example:
+        ".. versionadded:: unreleased" -> ".. versionadded:: <tag>"
+    """
+    match = re.match(r"\d+\.\d+", tag)  # Get "major.minor" version.
+    assert match
+    short_tag = match.group()
+    for directory, _, files in os.walk(path):
+        for filename in files:
+            file = Path(directory, filename)
+            if file.suffix not in {".c", ".cpp", ".h", ".hpp"}:
+                continue
+            text = file.read_text(encoding="utf-8")
+            new_text = re.sub(r":: *unreleased", rf":: {short_tag}", text, flags=re.IGNORECASE)
+            if text != new_text:
+                print(f"Update tags in {file}")
+                if not dry_run:
+                    file.write_text(new_text, encoding="utf-8")
+
+
 def main() -> None:
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
@@ -98,6 +122,8 @@ def main() -> None:
     new_changelog, changes = parse_changelog(args)
 
     update_vcpkg_manifest(args)
+
+    replace_unreleased_tags(args.tag, args.dry_run, PROJECT_DIR / "src")
 
     if not args.dry_run:
         CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")

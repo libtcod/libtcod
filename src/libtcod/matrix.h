@@ -69,7 +69,7 @@ class Matrix {
   reference at(const index_type& index) { return data_.at(check_range(index)); }
   const_reference at(const index_type& index) const { return data_.at(check_range(index)); }
 
-  const shape_type& get_shape() const { return shape_; }
+  const shape_type& get_shape() const noexcept { return shape_; }
   bool in_bounds(const index_type& index) const noexcept {
     for (size_t dimension = 0; dimension < Dimensions; ++dimension) {
       if (!(0 <= index.at(dimension) && index.at(dimension) < shape_.at(dimension))) {

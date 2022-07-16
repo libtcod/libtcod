@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+
+## [1.21.0] - 2022-07-15
 ### Added
 - Added the `tcod::Context` class to better handle contexts in C++.
 - Added a CMake toggle `LIBTCOD_THREADS` to remove deprecated threading functions.

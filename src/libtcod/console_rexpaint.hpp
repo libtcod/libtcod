@@ -32,7 +32,7 @@
 #ifndef TCOD_CONSOLE_REXPAINT_HPP_
 #define TCOD_CONSOLE_REXPAINT_HPP_
 
-#include <string>
+#include <filesystem>
 #include <vector>
 
 #include "console_rexpaint.h"
@@ -49,10 +49,11 @@ namespace tcod {
     .. versionadded:: 1.18
     \endrst
  */
-inline std::vector<tcod::ConsolePtr> load_xp(const std::string& path) {
-  int layer_count = tcod::check_throw_error(TCOD_load_xp(path.c_str(), 0, nullptr));
+inline std::vector<tcod::ConsolePtr> load_xp(const std::filesystem::path& path) {
+  const auto path_str = path.string();
+  int layer_count = tcod::check_throw_error(TCOD_load_xp(path_str.c_str(), 0, nullptr));
   std::vector<TCOD_Console*> tmp(layer_count, nullptr);
-  tcod::check_throw_error(TCOD_load_xp(path.c_str(), layer_count, &tmp[0]));
+  tcod::check_throw_error(TCOD_load_xp(path_str.c_str(), layer_count, &tmp[0]));
   return std::vector<tcod::ConsolePtr>(tmp.begin(), tmp.end());
 }
 /**
@@ -66,9 +67,10 @@ inline std::vector<tcod::ConsolePtr> load_xp(const std::string& path) {
     .. versionadded:: 1.18
     \endrst
  */
-inline void save_xp(const std::vector<const TCOD_Console*>& consoles, const std::string& path, int compress_level = 9) {
+inline void save_xp(
+    const std::vector<const TCOD_Console*>& consoles, const std::filesystem::path& path, int compress_level = 9) {
   tcod::check_throw_error(
-      TCOD_save_xp(static_cast<int>(consoles.size()), consoles.data(), path.c_str(), compress_level));
+      TCOD_save_xp(static_cast<int>(consoles.size()), consoles.data(), path.string().c_str(), compress_level));
 }
 }  // namespace tcod
 #endif  // TCOD_CONSOLE_REXPAINT_HPP_

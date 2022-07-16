@@ -10,9 +10,11 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Added
 - Added the `tcod::Context` class to better handle contexts in C++.
 - Added a CMake toggle `LIBTCOD_THREADS` to remove deprecated threading functions.
+  `CMAKE_DISABLE_FIND_PACKAGE_Threads=1` can also be used.
 
 ### Changed
-- Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag to CMake.
+- Libtcod can now be built without SDL by passing the `-DLIBTCOD_SDL2=disable` flag in CMake or by setting
+  `CMAKE_DISABLE_FIND_PACKAGE_SDL2=1`.
 - SDL-based accumulate functions can now handle a non-window render target.
 - The SDL2 renderer has been rewritten to use `SDL_RenderGeometry` when compiled with SDL 2.0.18.
   [#104](https://github.com/libtcod/libtcod/issues/104)

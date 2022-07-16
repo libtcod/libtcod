@@ -54,12 +54,12 @@ jobs:
             triplet: x64-linux
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1"
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
           - os: windows-2019
             triplet: x64-windows
             shared: dynamic
             config: Debug
-            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1"
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
     env:
       CMAKE_BUILD_DIR: build

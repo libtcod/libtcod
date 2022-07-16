@@ -296,7 +296,7 @@ int TCOD_sys_get_num_cores(void) {
   return 1;
 #endif  // NO_SDL
 }
-
+#ifndef TCOD_NO_THREADS
 TCOD_thread_t TCOD_thread_new(int (*func)(void*), void* data) {
 #ifdef TCOD_WINDOWS
   HANDLE ret = CreateThread(NULL, 0, (DWORD(WINAPI*)(LPVOID))func, data, 0, NULL);
@@ -518,7 +518,7 @@ void TCOD_condition_delete(TCOD_cond_t p_cond) {
   }
 #endif
 }
-
+#endif  // TCOD_NO_THREADS
 void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
   if (offset_x) *offset_x = TCOD_ctx.fullscreen_offsetx;
   if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;

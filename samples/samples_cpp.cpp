@@ -1681,7 +1681,7 @@ void main_loop() {
 int main(int argc, char* argv[]) {
   try {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
-    static constexpr char* FONT = "data/fonts/dejavu10x10_gs_tc.png";
+    static constexpr char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
     g_tileset = tcod::load_tilesheet(FONT, {32, 8}, tcod::CHARMAP_TCOD);
 
     // Context parameters, this is reused when the renderer is changed.

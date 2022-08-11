@@ -1632,7 +1632,7 @@ int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
   static const SDL_Event on_draw_event = {.type = ON_DRAW_USEREVENT};
-  static const char* FONT = "data/fonts/dejavu10x10_gs_tc.png";
+  static const char* FONT = "data/fonts/dejavu12x12_gs_tc.png";
   TCOD_Tileset* tileset = TCOD_tileset_load(FONT, 32, 8, 256, TCOD_CHARMAP_TCOD);
   if (!tileset) fatal("Could not load font %s: %s", FONT, TCOD_get_error());
   TCOD_Console* main_console = TCOD_console_new(80, 50);  // The main console to be presented.

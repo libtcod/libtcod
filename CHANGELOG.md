@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Changed
+- The OpenGL2 renderer now defaults to the nearest filter unless `SDL_HINT_RENDER_SCALE_QUALITY` is set otherwise.
+  This makes that renderer consistent with all other renderers.
 
 ## [1.21.0] - 2022-07-15
 ### Added

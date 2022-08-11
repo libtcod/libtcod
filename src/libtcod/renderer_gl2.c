@@ -170,7 +170,7 @@ TCOD_NODISCARD
 static int gl_filter_from_sdl_hint() {
   const char* value = SDL_GetHint(SDL_HINT_RENDER_SCALE_QUALITY);
   if (!value) {
-    return GL_LINEAR;  // Default option.
+    return GL_NEAREST;  // Default option.
   }
   if (strcmp(value, "0") == 0 || strcmp(value, "nearest") == 0) {
     return GL_NEAREST;

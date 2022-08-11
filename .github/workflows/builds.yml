@@ -350,3 +350,10 @@ jobs:
           path: ${{ env.CMAKE_BUILD_DIR }}/bin
           retention-days: 7
           if-no-files-found: error
+
+  verify-shaders:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Verify shader sources
+        run: ./scripts/update_shader.py --check

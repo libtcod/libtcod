@@ -132,6 +132,8 @@
         "glcontext",
         "GLSDL",
         "GLSL",
+        "glslf",
+        "glslv",
         "GRAYSCALE",
         "grayscales",
         "greyscale",

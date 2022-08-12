@@ -104,17 +104,17 @@
     "cmake.configureSettings": {
         "LIBTCOD_SAMPLES": "ON",
         "LIBTCOD_TESTS": "ON",
+        "LIBTCOD_THREADS": "OFF",
         "LIBTCOD_SDL2": "find_package", // find_package | disable
         "LIBTCOD_ZLIB": "find_package",
         "LIBTCOD_GLAD": "find_package", // find_package | vendored
         "LIBTCOD_LODEPNG": "find_package",
         "LIBTCOD_UTF8PROC": "vcpkg",
-        "LIBTCOD_STB": "vcpkg",
+        "LIBTCOD_STB": "find_package",
     },
     "cmake.configureArgs": [
         "-Wdev",
         "-Wdeprecated",
-        "--warn-uninitialized",
     ],
     "cmake.debugConfig": {
         // Workaround for launching the debugger from the CMake toolbar.

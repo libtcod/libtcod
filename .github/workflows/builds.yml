@@ -31,11 +31,11 @@ jobs:
             shared: dynamic
             config: Release
 
-          - os: macos-10.15
+          - os: macos-11
             triplet: x64-osx
             shared: static
             config: Debug
-          - os: macos-10.15
+          - os: macos-11
             triplet: x64-osx
             shared: dynamic
             config: Release
@@ -188,7 +188,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-20.04, macos-10.15]
+        os: [ubuntu-20.04, macos-11]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3
@@ -227,10 +227,9 @@ jobs:
         os: [ubuntu-20.04]
         architecture: [x86_64]
         include:
-          - os: "macos-11.0"
+          - os: "macos-11"
             architecture: universal2
-            experimental: true
-          - os: "macos-10.15"
+          - os: "macos-11"
             architecture: x86_64
           - os: "windows-2019"
             architecture: x86

@@ -11,6 +11,9 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - The OpenGL2 renderer now defaults to the nearest filter unless `SDL_HINT_RENDER_SCALE_QUALITY` is set otherwise.
   This makes the renderer consistent with the SDL2 renderer.
 
+### Fixed
+- SDL2 console rendering is no longer likely to stack overflow.
+
 ## [1.21.0] - 2022-07-15
 ### Added
 - Added the `tcod::Context` class to better handle contexts in C++.

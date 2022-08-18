@@ -55,11 +55,11 @@ typedef struct VertexUV {
 /// A fixed-size dynamic buffer for vertex data.
 /// Vertices are ordered: upper-left, lower-left, upper-right, lower-right.
 typedef struct VertexBuffer {
+  int16_t index;  // Next tile to assign to.  Groups indicies in sets of 6 and vertices in sets of 4.
+  int16_t indices_initialized;  // Sets of indicies initialized.
   uint16_t indices[BUFFER_TILES_MAX * 6];  // Vertex indices.  Vertex quads are assigned as: 0 1 2, 2 1 3.
   VertexElement vertex[BUFFER_TILES_MAX * 4];
   VertexUV vertex_uv[BUFFER_TILES_MAX * 4];
-  int16_t index;  // Next tile to assign to.  Groups indicies in sets of 6 and vertices in sets of 4.
-  int16_t indices_initialized;  // Sets of indicies initialized.
 } VertexBuffer;
 
 static inline float minf(float a, float b) { return a < b ? a : b; }
@@ -416,10 +416,11 @@ static TCOD_Error TCOD_sdl2_render(
   }
 #if SDL_VERSION_ATLEAST(2, 0, 18)
   // Allocate a buffer on the stack and initialize only a few variables.
-  // Reused for the background and foreground passees.
-  VertexBuffer buffer;
-  buffer.index = 0;
-  buffer.indices_initialized = 0;
+  // Reused for the background and foreground passes.
+  VertexBuffer* buffer = malloc(sizeof(*buffer));
+  if (!buffer) return TCOD_E_OUT_OF_MEMORY;
+  buffer->index = 0;
+  buffer->indices_initialized = 0;
   for (int y = 0; y < console->h; ++y) {
     for (int x = 0; x < console->w; ++x) {
       const TCOD_ConsoleTile tile = normalize_tile_for_drawing(console->tiles[console->w * y + x], atlas->tileset);
@@ -439,11 +440,11 @@ static TCOD_Error TCOD_sdl2_render(
         *cached = (TCOD_ConsoleTile){0, {0, 0, 0, 0}, tile.bg};
       }
       // Data is pushed onto the buffer, this is flushed automatically if it would otherwise overflow.
-      vertex_buffer_push_bg(&buffer, x, y, tile, atlas);
+      vertex_buffer_push_bg(buffer, x, y, tile, atlas);
     }
   }
-  // Flush any remaining data.  The buffer can now be resused for foreground data.
-  vertex_buffer_flush_bg(&buffer, atlas);
+  // Flush any remaining data.  The buffer can now be reused for foreground data.
+  vertex_buffer_flush_bg(buffer, atlas);
 
   // The foreground rendering pass.  Draw FG glyphs on top of the background tiles.
   int tex_width;
@@ -466,10 +467,11 @@ static TCOD_Error TCOD_sdl2_render(
         cached->ch = tile.ch;
         cached->fg = tile.fg;
       }
-      vertex_buffer_push_fg(&buffer, x, y, tile, atlas, u_multiply, v_multiply);
+      vertex_buffer_push_fg(buffer, x, y, tile, atlas, u_multiply, v_multiply);
     }
   }
-  vertex_buffer_flush_fg(&buffer, atlas);
+  vertex_buffer_flush_fg(buffer, atlas);
+  free(buffer);
 #else  // SDL VERSION < 2.0.18
   SDL_SetRenderDrawBlendMode(atlas->renderer, SDL_BLENDMODE_NONE);
   SDL_SetTextureBlendMode(atlas->texture, SDL_BLENDMODE_BLEND);

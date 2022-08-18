@@ -2,4 +2,4 @@
 breathe>=4.31.0
 sphinx>=4.2.0
 sphinx_rtd_theme
-recommonmark
+myst-parser

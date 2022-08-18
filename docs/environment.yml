@@ -9,4 +9,4 @@ dependencies:
       - breathe
       - sphinx
       - sphinx_rtd_theme
-      - recommonmark
+      - myst-parser

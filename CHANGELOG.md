@@ -10,6 +10,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Changed
 - The OpenGL2 renderer now defaults to the nearest filter unless `SDL_HINT_RENDER_SCALE_QUALITY` is set otherwise.
   This makes the renderer consistent with the SDL2 renderer.
+- Parser function parameters are more const correct.
 
 ### Fixed
 - SDL2 console rendering is no longer likely to stack overflow.

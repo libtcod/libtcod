@@ -2,8 +2,10 @@
     "version": "0.2",
     "language": "en",
     "words": [
+        "AABB",
         "ADDA",
         "ADDALPHA",
+        "addsub",
         "algo",
         "ALPH",
         "Altefcat",
@@ -388,6 +390,7 @@
         "upscaling",
         "urllib",
         "urlretrieve",
+        "VALUELIST",
         "Vandevenne",
         "vbitmap",
         "vcoef",

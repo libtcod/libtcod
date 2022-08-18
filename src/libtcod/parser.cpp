@@ -86,7 +86,7 @@ bool new_struct(TCOD_parser_struct_t def, const char* name) noexcept {
       return listener->parserNewStruct(parser, i_def.get(), name) ? 1 : 0;
     }
   }
-  // not found. autodeclaring struct
+  // not found. auto-declaring struct
   parser->defs.push_back(std::make_unique<TCODParserStruct>());
   parser->defs.back()->data = def;
   return listener->parserNewStruct(parser, parser->defs.back().get(), name) ? 1 : 0;

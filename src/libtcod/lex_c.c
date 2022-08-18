@@ -79,8 +79,8 @@ TCOD_lex_t* TCOD_lex_new_intern(void) {
 }
 
 TCOD_lex_t* TCOD_lex_new(
-    const char** symbols_in,
-    const char** keywords_in,
+    const char* const* symbols_in,
+    const char* const* keywords_in,
     const char* simpleComment,
     const char* commentStart,
     const char* commentStop,

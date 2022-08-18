@@ -94,8 +94,8 @@ typedef struct TCOD_lex_t {
 
 TCODLIB_API TCOD_lex_t* TCOD_lex_new_intern(void);
 TCODLIB_API TCOD_lex_t* TCOD_lex_new(
-    const char** symbols,
-    const char** keywords,
+    const char* const* symbols,
+    const char* const* keywords,
     const char* simpleComment,
     const char* commentStart,
     const char* commentStop,

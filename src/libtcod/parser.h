@@ -99,86 +99,87 @@ typedef union {
   void* custom;
 } TCOD_value_t;
 
-/* parser structures */
+// Forward declarations for callback.
+struct TCOD_parser_listener_t;
 struct TCOD_ParserStruct;
-typedef struct TCOD_ParserStruct* TCOD_parser_struct_t;
-TCODLIB_API const char* TCOD_struct_get_name(TCOD_parser_struct_t def);
-TCODLIB_API void TCOD_struct_add_property(
-    TCOD_parser_struct_t def, const char* name, TCOD_value_type_t type, bool mandatory);
-TCODLIB_API void TCOD_struct_add_list_property(
-    TCOD_parser_struct_t def, const char* name, TCOD_value_type_t type, bool mandatory);
-TCODLIB_API void TCOD_struct_add_value_list(
-    TCOD_parser_struct_t def, const char* name, const char** value_list, bool mandatory);
-TCODLIB_API void TCOD_struct_add_value_list_sized(
-    TCOD_parser_struct_t def, const char* name, const char** value_list, int size, bool mandatory);
-TCODLIB_API void TCOD_struct_add_flag(TCOD_parser_struct_t def, const char* propname);
-TCODLIB_API void TCOD_struct_add_structure(TCOD_parser_struct_t def, TCOD_parser_struct_t sub_structure);
-TCODLIB_API bool TCOD_struct_is_mandatory(TCOD_parser_struct_t def, const char* propname);
-TCODLIB_API TCOD_value_type_t TCOD_struct_get_type(TCOD_parser_struct_t def, const char* propname);
-
-/* parser listener */
-typedef struct {
-  bool (*new_struct)(TCOD_parser_struct_t str, const char* name);
-  bool (*new_flag)(const char* name);
-  bool (*new_property)(const char* propname, TCOD_value_type_t type, TCOD_value_t value);
-  bool (*end_struct)(TCOD_parser_struct_t str, const char* name);
-  void (*error)(const char* msg);
-} TCOD_parser_listener_t;
 
 /* a custom type parser */
 typedef TCOD_value_t (*TCOD_parser_custom_t)(
-    TCOD_lex_t* lex, TCOD_parser_listener_t* listener, TCOD_parser_struct_t str, char* propname);
+    TCOD_lex_t* lex, struct TCOD_parser_listener_t* listener, struct TCOD_ParserStruct* str, char* propname);
+
+/***************************************************************************
+    @brief Parser struct, member variables are for internal use.
+ */
+typedef struct TCOD_ParserStruct {
+  char* name;  // Entity type name.
+  TCOD_list_t flags;  // List of flags.
+  TCOD_list_t props;  // List of properties (name, type, mandatory)
+  TCOD_list_t lists;  // List of value lists.
+  TCOD_list_t structs;  // List of sub-structures.
+} TCOD_ParserStruct;
+typedef struct TCOD_ParserStruct TCOD_struct_int_t;  // Deprecated
+typedef struct TCOD_ParserStruct* TCOD_parser_struct_t;  // Deprecated
+
+/***************************************************************************
+    @brief Parser, member variables are for internal use.
+ */
+typedef struct TCOD_Parser {
+  TCOD_list_t structs;  // List of structures.
+  TCOD_parser_custom_t customs[16];  // List of custom type parsers.
+  bool fatal;  // True if a fatal error has occurred.
+  TCOD_list_t props;  // List of properties if default listener is used.
+} TCOD_Parser;
+typedef struct TCOD_Parser TCOD_parser_int_t;  // Deprecated
+
+/* parser structures */
+TCODLIB_API const char* TCOD_struct_get_name(const TCOD_ParserStruct* def);
+TCODLIB_API void TCOD_struct_add_property(
+    TCOD_ParserStruct* def, const char* name, TCOD_value_type_t type, bool mandatory);
+TCODLIB_API void TCOD_struct_add_list_property(
+    TCOD_ParserStruct* def, const char* name, TCOD_value_type_t type, bool mandatory);
+TCODLIB_API void TCOD_struct_add_value_list(
+    TCOD_ParserStruct* def, const char* name, const char* const* value_list, bool mandatory);
+TCODLIB_API void TCOD_struct_add_value_list_sized(
+    TCOD_ParserStruct* def, const char* name, const char* const* value_list, int size, bool mandatory);
+TCODLIB_API void TCOD_struct_add_flag(TCOD_ParserStruct* def, const char* propname);
+TCODLIB_API void TCOD_struct_add_structure(TCOD_ParserStruct* def, const TCOD_ParserStruct* sub_structure);
+TCODLIB_API bool TCOD_struct_is_mandatory(TCOD_ParserStruct* def, const char* propname);
+TCODLIB_API TCOD_value_type_t TCOD_struct_get_type(const TCOD_ParserStruct* def, const char* propname);
+
+/* parser listener */
+typedef struct TCOD_parser_listener_t {
+  bool (*new_struct)(TCOD_ParserStruct* str, const char* name);
+  bool (*new_flag)(const char* name);
+  bool (*new_property)(const char* propname, TCOD_value_type_t type, TCOD_value_t value);
+  bool (*end_struct)(TCOD_ParserStruct* str, const char* name);
+  void (*error)(const char* msg);
+} TCOD_parser_listener_t;
 
 /* the parser */
 struct TCOD_Parser;
 typedef struct TCOD_Parser* TCOD_parser_t;
 
-TCODLIB_API TCOD_parser_t TCOD_parser_new(void);
-TCODLIB_API TCOD_parser_struct_t TCOD_parser_new_struct(TCOD_parser_t parser, const char* name);
-TCODLIB_API TCOD_value_type_t
-TCOD_parser_new_custom_type(TCOD_parser_t parser, TCOD_parser_custom_t custom_type_parser);
-TCODLIB_API void TCOD_parser_run(TCOD_parser_t parser, const char* filename, TCOD_parser_listener_t* listener);
-TCODLIB_API void TCOD_parser_delete(TCOD_parser_t parser);
+TCODLIB_API TCOD_Parser* TCOD_parser_new(void);
+TCODLIB_API TCOD_ParserStruct* TCOD_parser_new_struct(TCOD_Parser* parser, const char* name);
+TCODLIB_API TCOD_value_type_t TCOD_parser_new_custom_type(TCOD_Parser* parser, TCOD_parser_custom_t custom_type_parser);
+TCODLIB_API void TCOD_parser_run(TCOD_Parser* parser, const char* filename, TCOD_parser_listener_t* listener);
+TCODLIB_API void TCOD_parser_delete(TCOD_Parser* parser);
 /* error during parsing. can be called by the parser listener */
 TCODLIB_FORMAT(1, 2)
 TCODLIB_API void TCOD_parser_error(const char* msg, ...);
 /* default parser listener */
-TCODLIB_API bool TCOD_parser_has_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API bool TCOD_parser_get_bool_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API int TCOD_parser_get_char_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API int TCOD_parser_get_int_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API float TCOD_parser_get_float_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API const char* TCOD_parser_get_string_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API TCOD_color_t TCOD_parser_get_color_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API TCOD_dice_t TCOD_parser_get_dice_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API void TCOD_parser_get_dice_property_py(TCOD_parser_t parser, const char* name, TCOD_dice_t* dice);
-TCODLIB_API void* TCOD_parser_get_custom_property(TCOD_parser_t parser, const char* name);
-TCODLIB_API TCOD_list_t TCOD_parser_get_list_property(TCOD_parser_t parser, const char* name, TCOD_value_type_t type);
+TCODLIB_API bool TCOD_parser_has_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API bool TCOD_parser_get_bool_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API int TCOD_parser_get_char_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API int TCOD_parser_get_int_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API float TCOD_parser_get_float_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API const char* TCOD_parser_get_string_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API TCOD_color_t TCOD_parser_get_color_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API TCOD_dice_t TCOD_parser_get_dice_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API void TCOD_parser_get_dice_property_py(TCOD_Parser* parser, const char* name, TCOD_dice_t* dice);
+TCODLIB_API void* TCOD_parser_get_custom_property(TCOD_Parser* parser, const char* name);
+TCODLIB_API TCOD_list_t TCOD_parser_get_list_property(TCOD_Parser* parser, const char* name, TCOD_value_type_t type);
 
-/* parser internals (may be used by custom type parsers) */
-/* parser structures */
-typedef struct TCOD_ParserStruct {
-  char* name; /* entity type name */
-  /* list of flags */
-  TCOD_list_t flags;
-  /* list of properties (name, type, mandatory) */
-  TCOD_list_t props;
-  /* list of value lists */
-  TCOD_list_t lists;
-  /* list of sub-structures */
-  TCOD_list_t structs;
-} TCOD_struct_int_t;
-/* the parser */
-typedef struct TCOD_Parser {
-  /* list of structures */
-  TCOD_list_t structs;
-  /* list of custom type parsers */
-  TCOD_parser_custom_t customs[16];
-  /* fatal error occurred */
-  bool fatal;
-  /* list of properties if default listener is used */
-  TCOD_list_t props;
-} TCOD_parser_int_t;
 TCODLIB_API TCOD_value_t TCOD_parse_bool_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_char_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_integer_value(void);
@@ -186,9 +187,9 @@ TCODLIB_API TCOD_value_t TCOD_parse_float_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_string_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_color_value(void);
 TCODLIB_API TCOD_value_t TCOD_parse_dice_value(void);
-TCODLIB_API TCOD_value_t TCOD_parse_value_list_value(TCOD_struct_int_t* def, int listnum);
+TCODLIB_API TCOD_value_t TCOD_parse_value_list_value(TCOD_ParserStruct* def, int list_num);
 TCODLIB_API TCOD_value_t
-TCOD_parse_property_value(TCOD_parser_int_t* parser, TCOD_parser_struct_t def, char* propname, bool list);
+TCOD_parse_property_value(TCOD_Parser* parser, TCOD_ParserStruct* def, char* propname, bool list);
 #ifdef __cplusplus
 }
 #endif

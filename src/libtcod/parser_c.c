@@ -434,6 +434,8 @@ static bool TCOD_parser_parse_entity(TCOD_Parser* parser, TCOD_ParserStruct* def
   }
   TCOD_lex_parse(lex);
   while (strcmp(lex->tok, "}") != 0) {
+    TCOD_lex_t saved = {0};
+    TCOD_lex_savepoint(lex, &saved);
     bool dynStruct = false;
     TCOD_value_type_t dynType = TCOD_TYPE_NONE;
     if (lex->token_type == TCOD_LEX_KEYWORD) {
@@ -473,10 +475,14 @@ static bool TCOD_parser_parse_entity(TCOD_Parser* parser, TCOD_ParserStruct* def
         dynType |= TCOD_TYPE_LIST;
         TCOD_lex_parse(lex);
       }
+      if (lex->token_type != TCOD_LEX_IDEN) {
+        // If an identifier does not exist here then it was mistaken for the type.
+        TCOD_lex_restore(lex, &saved);
+      }
     }
     /* parse entity type content */
-    if (lex->token_type != TCOD_LEX_IDEN) {
-      TCOD_parser_error("Parser::parseEntity : identifier expected");
+    if (lex->token_type != TCOD_LEX_IDEN && lex->token_type != TCOD_LEX_KEYWORD) {  // Allow keywords as identifiers.
+      TCOD_parser_error("Parser::parseEntity : identifier or type expected");
       return false;
     }
     /* is it a flag ? */
@@ -493,9 +499,8 @@ static bool TCOD_parser_parse_entity(TCOD_Parser* parser, TCOD_ParserStruct* def
     if (!found && !dynStruct) {
       do {
         /* is it a property ? */
-        TCOD_struct_prop_t** i_prop;
-        for (i_prop = (TCOD_struct_prop_t**)TCOD_list_begin(def->props);
-             i_prop != (TCOD_struct_prop_t**)TCOD_list_end(def->props);
+        for (TCOD_struct_prop_t** i_prop = (void*)TCOD_list_begin(def->props);
+             i_prop != (void*)TCOD_list_end(def->props);
              i_prop++) {
           if (strcmp((*i_prop)->name, lex->tok) == 0) {
             char propname[MAX_NAME_LEN];

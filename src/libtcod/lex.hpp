@@ -63,8 +63,8 @@ class TCODLIB_API TCODLex {
   bool expect(int tokenType);
   bool expect(int tokenType, const char* tokenValue);
 
-  void savepoint(TCODLex* savept);
-  void restore(TCODLex* savept);
+  void savepoint(TCODLex* savepoint);
+  void restore(TCODLex* savepoint);
   char* getLastJavadoc();
 
   int getFileLine()

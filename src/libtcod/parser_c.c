@@ -735,7 +735,7 @@ void TCOD_parser_run(TCOD_parser_t parser, const char* filename, TCOD_parser_lis
   lex = TCOD_lex_new(symbols, keywords, "//", "/*", "*/", NULL, "\"", TCOD_LEX_FLAG_NESTING_COMMENT);
   if (!TCOD_lex_set_data_file(lex, (char*)filename)) {
     char buf[1024];
-    sprintf(buf, "Fatal error : %s\n", TCOD_lex_get_last_error());
+    sprintf(buf, "Fatal error : %s\n", TCOD_get_error());
     listener->error(buf);
     return;
   }

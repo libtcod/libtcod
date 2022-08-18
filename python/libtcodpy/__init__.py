@@ -3578,9 +3578,6 @@ _lib.TCOD_lex_get_last_javadoc.argtypes = [c_void_p]
 _lib.TCOD_lex_get_token_name.restype = c_char_p
 _lib.TCOD_lex_get_token_name.argtypes = [c_int]
 
-_lib.TCOD_lex_get_last_error.restype = c_char_p
-_lib.TCOD_lex_get_last_error.argtypes = []
-
 _lib.TCOD_lex_hextoint.restype = c_int
 _lib.TCOD_lex_hextoint.argtypes = [c_char]
 

@@ -402,6 +402,7 @@
         "voronoi",
         "vprintf",
         "vscale",
+        "vsnwprintf",
         "vsprint",
         "vsync",
         "VVECTOR",

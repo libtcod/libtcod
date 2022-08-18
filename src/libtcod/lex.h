@@ -63,8 +63,11 @@ extern "C" {
 #define TCOD_LEX_MAX_KEYWORDS 100
 #define TCOD_LEX_KEYWORD_SIZE 20
 
-typedef struct {
-  int file_line, token_type, token_int_val, token_idx;
+typedef struct TCOD_lex_t {
+  int file_line;  // Current line number.
+  int token_type;  // One of the TCOD_LEX_* values.
+  int token_int_val;
+  int token_idx;
   float token_float_val;
   char* tok;
   int toklen;
@@ -74,14 +77,19 @@ typedef struct {
   char* filename;
   char* last_javadoc_comment;
   /* private stuff */
-  int nb_symbols, nb_keywords, flags;
-  char symbols[TCOD_LEX_MAX_SYMBOLS][TCOD_LEX_SYMBOL_SIZE], keywords[TCOD_LEX_MAX_KEYWORDS][TCOD_LEX_KEYWORD_SIZE];
-  const char* simpleCmt;
-  const char *cmtStart, *cmtStop, *javadocCmtStart;
+  int nb_symbols;  // Current number of symbols in `symbols` array.
+  int nb_keywords;  // Current number of keywords in `keywords` array.
+  int flags;
+  char symbols[TCOD_LEX_MAX_SYMBOLS][TCOD_LEX_SYMBOL_SIZE];
+  char keywords[TCOD_LEX_MAX_KEYWORDS][TCOD_LEX_KEYWORD_SIZE];
+  const char* simple_comment;
+  const char* comment_start;
+  const char* comment_stop;
+  const char* javadoc_comment_start;
   const char* stringDelim;
   bool javadoc_read;
-  bool allocBuf;
-  bool savept; /* is this object a savepoint (no free in destructor) */
+  bool allocBuf;  // True if `buf` is owned by this object.
+  bool is_savepoint;  // is this object a savepoint (no free in destructor)
 } TCOD_lex_t;
 
 TCODLIB_API TCOD_lex_t* TCOD_lex_new_intern(void);
@@ -106,11 +114,10 @@ TCODLIB_API int TCOD_lex_parse_until_token_value(TCOD_lex_t* lex, const char* to
 TCODLIB_API bool TCOD_lex_expect_token_type(TCOD_lex_t* lex, int token_type);
 TCODLIB_API bool TCOD_lex_expect_token_value(TCOD_lex_t* lex, int token_type, const char* token_value);
 
-TCODLIB_API void TCOD_lex_savepoint(TCOD_lex_t* lex, TCOD_lex_t* savept);
-TCODLIB_API void TCOD_lex_restore(TCOD_lex_t* lex, TCOD_lex_t* savept);
+TCODLIB_API void TCOD_lex_savepoint(TCOD_lex_t* lex, TCOD_lex_t* savepoint);
+TCODLIB_API void TCOD_lex_restore(TCOD_lex_t* lex, TCOD_lex_t* savepoint);
 TCODLIB_API char* TCOD_lex_get_last_javadoc(TCOD_lex_t* lex);
 TCODLIB_API const char* TCOD_lex_get_token_name(int token_type);
-TCODLIB_API char* TCOD_lex_get_last_error(void);
 
 TCODLIB_API int TCOD_lex_hextoint(char c);
 #ifdef __cplusplus

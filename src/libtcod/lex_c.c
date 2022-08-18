@@ -34,114 +34,99 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
 #include "lex.h"
 
 #define MAX_JAVADOC_COMMENT_SIZE 16384
 
-/* damn ANSI C does not know strdup, strcasecmp, strncasecmp */
 char* TCOD_strdup(const char* str) {
-  size_t l = strlen(str) + 1;
-  char* duplicate = malloc(l);
-  if (duplicate) {
-    strcpy(duplicate, str);
-  }
+  char* duplicate = malloc(strlen(str) + 1);
+  if (duplicate) strcpy(duplicate, str);
   return duplicate;
 }
 
 int TCOD_strcasecmp(const char* s1, const char* s2) {
-  unsigned char c1, c2;
-  do {
-    c1 = *s1++;
-    c2 = *s2++;
-    c1 = (unsigned char)tolower((unsigned char)c1);
-    c2 = (unsigned char)tolower((unsigned char)c2);
-  } while ((c1 == c2) && (c1 != '\0'));
-  return (int)c1 - c2;
+  while (*s1 != '\0' && tolower(*s1) == tolower(*s2)) {
+    ++s1;
+    ++s2;
+  }
+  return tolower(*s1) - tolower(*s2);
 }
 
 int TCOD_strncasecmp(const char* s1, const char* s2, size_t n) {
-  unsigned char c1, c2;
-  do {
-    c1 = *s1++;
-    c2 = *s2++;
-    c1 = (unsigned char)tolower((unsigned char)c1);
-    c2 = (unsigned char)tolower((unsigned char)c2);
-    n--;
-  } while ((c1 == c2) && (c1 != '\0') && n > 0);
-  return (int)c1 - c2;
+  while (n-- && tolower(*s1) == tolower(*s2)) {
+    ++s1;
+    ++s2;
+  }
+  return tolower(*s1) - tolower(*s2);
 }
 
 static const char* TCOD_LEX_names[] = {
     "unknown token", "symbol", "keyword", "identifier", "string", "integer", "float", "char", "eof"};
-
-static char* TCOD_last_error = NULL;
 
 const char* TCOD_lex_get_token_name(int token_type) { return TCOD_LEX_names[token_type]; }
 
 static void allocate_tok(TCOD_lex_t* lex, int len) {
   if (lex->toklen > len) return;
   while (lex->toklen <= len) lex->toklen *= 2;
-  lex->tok = (char*)realloc(lex->tok, lex->toklen);
+  lex->tok = realloc(lex->tok, lex->toklen);  // This might fail and isn't checked.
 }
 
-char* TCOD_lex_get_last_error(void) { return TCOD_last_error; }
-
-TCOD_lex_t* TCOD_lex_new_intern(void) { return (TCOD_lex_t*)calloc(1, sizeof(TCOD_lex_t)); }
+TCOD_lex_t* TCOD_lex_new_intern(void) {
+  TCOD_lex_t* lex = calloc(1, sizeof(TCOD_lex_t));
+  if (!lex) TCOD_set_errorv("Out of memory allocating TCOD lexer.");
+  return lex;
+}
 
 TCOD_lex_t* TCOD_lex_new(
-    const char** _symbols,
-    const char** _keywords,
+    const char** symbols_in,
+    const char** keywords_in,
     const char* simpleComment,
     const char* commentStart,
     const char* commentStop,
     const char* javadocCommentStart,
-    const char* _stringDelim,
-    int _flags) {
-  TCOD_lex_t* lex = (TCOD_lex_t*)TCOD_lex_new_intern();
-  lex->flags = _flags;
-  lex->last_javadoc_comment = (char*)calloc(sizeof(char), MAX_JAVADOC_COMMENT_SIZE);
-  if (_symbols) {
-    while (_symbols[lex->nb_symbols]) {
-      if (strlen(_symbols[lex->nb_symbols]) >= TCOD_LEX_SYMBOL_SIZE) {
-        static char msg[255];
-        sprintf(msg, "symbol '%s' too long (max size %d)", _symbols[lex->nb_symbols], TCOD_LEX_SYMBOL_SIZE);
-        TCOD_last_error = TCOD_strdup(msg);
-        TCOD_lex_delete(lex);
-        return NULL;
-      }
-      strcpy(lex->symbols[lex->nb_symbols], _symbols[lex->nb_symbols]);
-      lex->nb_symbols++;
+    const char* stringDelim,
+    int flags) {
+  TCOD_lex_t* lex = TCOD_lex_new_intern();
+  if (!lex) return NULL;
+  lex->flags = flags;
+  lex->last_javadoc_comment = calloc(sizeof(*lex->last_javadoc_comment), MAX_JAVADOC_COMMENT_SIZE);
+  while (symbols_in && *symbols_in) {
+    if (strlen(*symbols_in) >= TCOD_LEX_SYMBOL_SIZE) {
+      TCOD_set_errorvf("symbol '%s' too long (max size %d)", *symbols_in, TCOD_LEX_SYMBOL_SIZE);
+      TCOD_lex_delete(lex);
+      return NULL;
     }
+    strcpy(lex->symbols[lex->nb_symbols], *symbols_in);
+    ++lex->nb_symbols;
+    ++symbols_in;
   }
-  if (_keywords) {
-    while (_keywords[lex->nb_keywords]) {
-      if (strlen(_keywords[lex->nb_keywords]) >= TCOD_LEX_KEYWORD_SIZE) {
-        static char msg[255];
-        sprintf(msg, "keyword '%s' too long (max size %d)", _keywords[lex->nb_keywords], TCOD_LEX_KEYWORD_SIZE);
-        TCOD_last_error = TCOD_strdup(msg);
-        TCOD_lex_delete(lex);
-        return NULL;
-      }
-      if (lex->flags & TCOD_LEX_FLAG_NOCASE) {
-        char* ptr = (char*)_keywords[lex->nb_keywords];
-        while (*ptr) {
-          *ptr = (char)toupper(*ptr);
-          ptr++;
-        }
-      }
-      strcpy(lex->keywords[lex->nb_keywords], _keywords[lex->nb_keywords]);
-      lex->nb_keywords++;
+  while (keywords_in && *keywords_in) {
+    if (strlen(*keywords_in) >= TCOD_LEX_KEYWORD_SIZE) {
+      TCOD_set_errorvf("keyword '%s' too long (max size %d)", *keywords_in, TCOD_LEX_KEYWORD_SIZE);
+      TCOD_lex_delete(lex);
+      return NULL;
     }
+    strcpy(lex->keywords[lex->nb_keywords], *keywords_in);
+    if (lex->flags & TCOD_LEX_FLAG_NOCASE) {
+      char* ptr = lex->keywords[lex->nb_keywords];
+      while (*ptr) {
+        *ptr = (char)toupper(*ptr);
+        ++ptr;
+      }
+    }
+    ++lex->nb_keywords;
+    ++keywords_in;
   }
-  lex->simpleCmt = simpleComment;
-  lex->cmtStart = commentStart;
-  lex->cmtStop = commentStop;
-  lex->javadocCmtStart = javadocCommentStart;
-  lex->stringDelim = _stringDelim;
+  lex->simple_comment = simpleComment;
+  lex->comment_start = commentStart;
+  lex->comment_stop = commentStop;
+  lex->javadoc_comment_start = javadocCommentStart;
+  lex->stringDelim = stringDelim;
   lex->lastStringDelim = '\0';
-  lex->tok = (char*)calloc(sizeof(char), 256);
+  lex->tok = calloc(sizeof(*lex->tok), 256);
   lex->toklen = 256;
-  return (TCOD_lex_t*)lex;
+  return lex;
 }
 
 char* TCOD_lex_get_last_javadoc(TCOD_lex_t* lex) {
@@ -155,7 +140,7 @@ char* TCOD_lex_get_last_javadoc(TCOD_lex_t* lex) {
 }
 
 void TCOD_lex_delete(TCOD_lex_t* lex) {
-  if (!lex->savept) {
+  if (!lex->is_savepoint) {
     if (lex->filename) free(lex->filename);
     if (lex->buf && lex->allocBuf) free(lex->buf);
     if (lex->last_javadoc_comment) free(lex->last_javadoc_comment);
@@ -183,38 +168,33 @@ void TCOD_lex_set_data_buffer(TCOD_lex_t* lex, char* dat) {
   TCOD_lex_set_data_buffer_internal(lex);
 }
 
-bool TCOD_lex_set_data_file(TCOD_lex_t* lex, const char* _filename) {
-  FILE* f;
-  char* ptr;
-  long size;
-  if (!_filename) {
-    TCOD_last_error = (char*)"Lex.setDatafile(NULL) called";
+bool TCOD_lex_set_data_file(TCOD_lex_t* lex, const char* path) {
+  if (!path) {
+    TCOD_set_errorv("TCOD_lex_set_data_file(NULL) called");
     return false;
   }
-  f = fopen(_filename, "rb");
+  FILE* f = fopen(path, "rb");
   if (f == NULL) {
-    static char msg[255];
-    sprintf(msg, "Cannot open '%s'", _filename);
-    TCOD_last_error = TCOD_strdup(msg);
+    TCOD_set_errorvf("Cannot open '%s'", path);
     return false;
   }
   fseek(f, 0, SEEK_END);
-  size = ftell(f);
+  const long size = ftell(f);
   fclose(f);
-  f = fopen(_filename, "r");
+  f = fopen(path, "r");
 
-  lex->buf = (char*)calloc(sizeof(char), (size + 1));
-  lex->filename = TCOD_strdup(_filename);
+  lex->buf = calloc(sizeof(*lex->buf), (size + 1));
+  lex->filename = TCOD_strdup(path);
   if (lex->buf == NULL || lex->filename == NULL) {
     fclose(f);
     if (lex->buf) free(lex->buf);
     if (lex->filename) {
       free(lex->filename);
     }
-    TCOD_last_error = (char*)"Out of memory";
+    TCOD_set_errorv("Out of memory");
     return false;
   }
-  ptr = lex->buf;
+  char* ptr = lex->buf;
   /* can't rely on size to read because of MS/DOS dumb CR/LF handling */
   while (fgets(ptr, size, f)) {
     ptr += strlen(ptr);
@@ -232,14 +212,10 @@ void TCOD_lex_get_new_line(TCOD_lex_t* lex) {
   }
 }
 
-#ifdef TCOD_VISUAL_STUDIO
-#pragma warning(disable : 4127) /* conditional expression is constant */
-#endif
-
 int TCOD_lex_get_space(TCOD_lex_t* lex) {
-  char c;
-  char* startPos = NULL;
+  const char* startPos = NULL;
   while (1) {
+    char c;
     while ((c = *lex->pos) <= ' ') {
       if (c == '\n')
         TCOD_lex_get_new_line(lex);
@@ -248,20 +224,22 @@ int TCOD_lex_get_space(TCOD_lex_t* lex) {
       else
         lex->pos++;
     }
-    if (lex->simpleCmt && strncmp(lex->pos, lex->simpleCmt, strlen(lex->simpleCmt)) == 0) {
+    if (lex->simple_comment && strncmp(lex->pos, lex->simple_comment, strlen(lex->simple_comment)) == 0) {
       if (!startPos) startPos = lex->pos;
       while (*lex->pos != '\0' && *lex->pos != '\n') lex->pos++;
       TCOD_lex_get_new_line(lex);
       continue;
     }
-    if (lex->cmtStart && lex->cmtStop && strncmp(lex->pos, lex->cmtStart, strlen(lex->cmtStart)) == 0) {
-      int isJavadoc =
-          (lex->javadocCmtStart && strncmp(lex->pos, lex->javadocCmtStart, strlen(lex->javadocCmtStart)) == 0);
+    if (lex->comment_start && lex->comment_stop &&
+        strncmp(lex->pos, lex->comment_start, strlen(lex->comment_start)) == 0) {
+      const int isJavadoc =
+          (lex->javadoc_comment_start &&
+           strncmp(lex->pos, lex->javadoc_comment_start, strlen(lex->javadoc_comment_start)) == 0);
       int cmtLevel = 1;
-      char* javadocStart = NULL;
+      const char* javadocStart = NULL;
       if (!startPos) startPos = lex->pos;
       if (isJavadoc) {
-        javadocStart = lex->pos + strlen(lex->javadocCmtStart);
+        javadocStart = lex->pos + strlen(lex->javadoc_comment_start);
         while (isspace(*javadocStart)) javadocStart++;
       }
       lex->pos++;
@@ -272,17 +250,16 @@ int TCOD_lex_get_space(TCOD_lex_t* lex) {
           lex->pos++;
         if (*lex->pos == '\0') return TCOD_LEX_EOF;
         if ((lex->flags & TCOD_LEX_FLAG_NESTING_COMMENT) &&
-            strncmp(lex->pos - 1, lex->cmtStart, strlen(lex->cmtStart)) == 0)
+            strncmp(lex->pos - 1, lex->comment_start, strlen(lex->comment_start)) == 0)
           cmtLevel++;
-        if (strncmp(lex->pos - 1, lex->cmtStop, strlen(lex->cmtStop)) == 0) cmtLevel--;
+        if (strncmp(lex->pos - 1, lex->comment_stop, strlen(lex->comment_stop)) == 0) cmtLevel--;
       } while (cmtLevel > 0);
       lex->pos++;
       if (isJavadoc) {
-        char *src, *dst;
-        char* end = lex->pos - strlen(lex->cmtStop);
+        const char* end = lex->pos - strlen(lex->comment_stop);
         while (isspace(*end) && end > javadocStart) end--;
-        src = javadocStart;
-        dst = lex->last_javadoc_comment;
+        const char* src = javadocStart;
+        char* dst = lex->last_javadoc_comment;
         while (src < end) {
           /* skip heading spaces */
           while (src < end && isspace(*src) && *src != '\n') src++;
@@ -300,7 +277,7 @@ int TCOD_lex_get_space(TCOD_lex_t* lex) {
     break;
   }
   if ((lex->flags & TCOD_LEX_FLAG_TOKENIZE_COMMENTS) && startPos && lex->pos > startPos) {
-    int len = (int)(lex->pos - startPos);
+    const int len = (int)(lex->pos - startPos);
     allocate_tok(lex, len + 1);
     strncpy(lex->tok, startPos, len);
     lex->tok[len] = 0;
@@ -312,7 +289,7 @@ int TCOD_lex_get_space(TCOD_lex_t* lex) {
 }
 
 int TCOD_lex_hextoint(char c) {
-  int v = toupper(c);
+  const int v = toupper(c);
   if (v >= '0' && v <= '9') return v - '0';
   return 10 + (v - 'A');
 }
@@ -346,10 +323,10 @@ static bool TCOD_lex_get_special_char(TCOD_lex_t* lex, char* c) {
         *c = *(++(lex->pos));
       }
       if (!hasHex) {
-        TCOD_last_error = (char*)"\\x must be followed by an hexadecimal value";
+        TCOD_set_errorv("\\x must be followed by an hexadecimal value");
         return false;
       }
-      *c = value;
+      *c = (char)value;  // Cast to EASCII.
       lex->pos--;
     } break;
     case '0':
@@ -367,27 +344,26 @@ static bool TCOD_lex_get_special_char(TCOD_lex_t* lex, char* c) {
         value += (*c - '0');
         *c = *(++(lex->pos));
       }
-      *c = value;
+      *c = (char)value;  // Cast to EASCII.
       lex->pos--;
     } break;
     default:
-      TCOD_last_error = (char*)"bad escape sequence inside quote";
+      TCOD_set_errorv("bad escape sequence inside quote");
       return false;
   }
   return true;
 }
 
 int TCOD_lex_get_string(TCOD_lex_t* lex) {
-  char c;
   int len = 0;
   do {
-    c = *(++(lex->pos));
+    char c = *(++(lex->pos));
     if (c == '\0') {
-      TCOD_last_error = (char*)"EOF inside quote";
+      TCOD_set_errorv("EOF inside quote");
       return TCOD_LEX_ERROR;
     }
     if (c == '\n') {
-      TCOD_last_error = (char*)"newline inside quote";
+      TCOD_set_errorv("newline inside quote");
       return TCOD_LEX_ERROR;
     }
     if (c == '\\') {
@@ -405,27 +381,20 @@ int TCOD_lex_get_string(TCOD_lex_t* lex) {
   } while (1);
 }
 
-#ifdef TCOD_VISUAL_STUDIO
-#pragma warning(default : 4127) /* conditional expression is constant */
-#endif
-
 int TCOD_lex_get_number(TCOD_lex_t* lex) {
-  int c;
-  int len;
-  char* ptr;
-  int bhex = 0, bfloat = 0;
-
-  len = 0;
+  int len = 0;
   if (*lex->pos == '-') {
     allocate_tok(lex, len);
     lex->tok[len++] = '-';
     lex->pos++;
   }
 
-  c = toupper(*lex->pos);
+  int c = toupper(*lex->pos);
 
+  bool bhex = false;
+  bool bfloat = false;
   if (c == '0' && (lex->pos[1] == 'x' || lex->pos[1] == 'X')) {
-    bhex = 1;
+    bhex = true;
     allocate_tok(lex, len);
     lex->tok[len++] = '0';
     lex->pos++;
@@ -437,10 +406,10 @@ int TCOD_lex_get_number(TCOD_lex_t* lex) {
     lex->pos++;
     if (c == '.') {
       if (bhex) {
-        TCOD_last_error = (char*)"bad constant format";
+        TCOD_set_errorv("bad constant format");
         return TCOD_LEX_ERROR;
       }
-      bfloat = 1;
+      bfloat = true;
     }
     c = toupper(*lex->pos);
   } while ((c >= '0' && c <= '9') || (bhex && c >= 'A' && c <= 'F') || c == '.');
@@ -448,7 +417,7 @@ int TCOD_lex_get_number(TCOD_lex_t* lex) {
   lex->tok[len] = 0;
 
   if (!bfloat) {
-    lex->token_int_val = strtol(lex->tok, &ptr, 0);
+    lex->token_int_val = strtol(lex->tok, NULL, 0);
     lex->token_float_val = (float)lex->token_int_val;
     lex->token_type = TCOD_LEX_INTEGER;
     lex->token_idx = -1;
@@ -462,15 +431,14 @@ int TCOD_lex_get_number(TCOD_lex_t* lex) {
 }
 
 int TCOD_lex_get_char(TCOD_lex_t* lex) {
-  char c;
-  c = *(++(lex->pos));
+  char c = *(++(lex->pos));
 
   if (c == '\0') {
-    TCOD_last_error = (char*)"EOF inside simple quote";
+    TCOD_set_errorv("EOF inside simple quote");
     return TCOD_LEX_ERROR;
   }
   if (c == '\n') {
-    TCOD_last_error = (char*)"newline inside simple quote";
+    TCOD_set_errorv("newline inside simple quote");
     return TCOD_LEX_ERROR;
   }
   if (c == '\\') {
@@ -480,7 +448,7 @@ int TCOD_lex_get_char(TCOD_lex_t* lex) {
     lex->pos++;
 
   if (*lex->pos != '\'') {
-    TCOD_last_error = (char*)"bad character inside simple quote";
+    TCOD_set_errorv("bad character inside simple quote");
     return TCOD_LEX_ERROR;
   }
   lex->pos++;
@@ -494,8 +462,6 @@ int TCOD_lex_get_char(TCOD_lex_t* lex) {
 
 int TCOD_lex_get_symbol(TCOD_lex_t* lex) {
   int symbol = 0;
-  static char msg[255];
-
   while (symbol < lex->nb_symbols) {
     if (((lex->flags & TCOD_LEX_FLAG_NOCASE) &&
          TCOD_strncasecmp(lex->symbols[symbol], lex->pos, strlen(lex->symbols[symbol])) == 0) ||
@@ -506,19 +472,17 @@ int TCOD_lex_get_symbol(TCOD_lex_t* lex) {
       lex->token_type = TCOD_LEX_SYMBOL;
       return TCOD_LEX_SYMBOL;
     }
-    symbol++;
+    ++symbol;
   }
 
-  lex->pos++;
-  sprintf(msg, "unknown symbol %.10s", lex->pos - 1);
-  TCOD_last_error = TCOD_strdup(msg);
+  ++lex->pos;
+  TCOD_set_errorvf("unknown symbol %.10s", lex->pos - 1);
   return TCOD_LEX_ERROR;
 }
 
 int TCOD_lex_get_iden(TCOD_lex_t* lex) {
   char c = *lex->pos;
-  int len = 0, key = 0;
-
+  int len = 0;
   do {
     allocate_tok(lex, len);
     lex->tok[len++] = c;
@@ -527,6 +491,7 @@ int TCOD_lex_get_iden(TCOD_lex_t* lex) {
   allocate_tok(lex, len);
   lex->tok[len] = 0;
 
+  int key = 0;
   while (key < lex->nb_keywords) {
     if (strcmp(lex->tok, lex->keywords[key]) == 0 ||
         (lex->flags & TCOD_LEX_FLAG_NOCASE && TCOD_strcasecmp(lex->tok, lex->keywords[key]) == 0)) {
@@ -534,21 +499,17 @@ int TCOD_lex_get_iden(TCOD_lex_t* lex) {
       lex->token_idx = key;
       return TCOD_LEX_KEYWORD;
     }
-    key++;
+    ++key;
   }
-
   lex->token_type = TCOD_LEX_IDEN;
   lex->token_idx = -1;
   return TCOD_LEX_IDEN;
 }
 
 int TCOD_lex_parse(TCOD_lex_t* lex) {
-  char* ptr;
-  int token;
-
-  token = TCOD_lex_get_space(lex);
+  const int token = TCOD_lex_get_space(lex);
   if (token == TCOD_LEX_ERROR) return token;
-  ptr = lex->pos;
+  const char* ptr = lex->pos;
   if (token != TCOD_LEX_UNKNOWN) {
     lex->token_type = token;
     return token;
@@ -570,8 +531,7 @@ int TCOD_lex_parse(TCOD_lex_t* lex) {
 }
 
 int TCOD_lex_parse_until_token_type(TCOD_lex_t* lex, int tokenType) {
-  int token;
-  token = TCOD_lex_parse(lex);
+  int token = TCOD_lex_parse(lex);
   if (token == TCOD_LEX_ERROR) {
     return token;
   }
@@ -605,18 +565,16 @@ int TCOD_lex_parse_until_token_value(TCOD_lex_t* lex, const char* tokenValue) {
   return token;
 }
 
-void TCOD_lex_savepoint(TCOD_lex_t* lex, TCOD_lex_t* _savept) {
-  TCOD_lex_t* savept = (TCOD_lex_t*)_savept;
-  *savept = *lex;
-  savept->tok = (char*)calloc(sizeof(char), lex->toklen);
-  strcpy(savept->tok, lex->tok);
-  savept->savept = true;
+void TCOD_lex_savepoint(TCOD_lex_t* lex, TCOD_lex_t* savepoint) {
+  *savepoint = *lex;
+  savepoint->tok = calloc(sizeof(*savepoint->tok), lex->toklen);
+  strcpy(savepoint->tok, lex->tok);
+  savepoint->is_savepoint = true;
 }
 
-void TCOD_lex_restore(TCOD_lex_t* lex, TCOD_lex_t* _savept) {
-  TCOD_lex_t* savept = (TCOD_lex_t*)_savept;
-  *lex = *savept;
-  lex->savept = false;
+void TCOD_lex_restore(TCOD_lex_t* lex, TCOD_lex_t* savepoint) {
+  *lex = *savepoint;
+  lex->is_savepoint = false;
 }
 
 bool TCOD_lex_expect_token_type(TCOD_lex_t* lex, int token_type) { return (TCOD_lex_parse(lex) == token_type); }

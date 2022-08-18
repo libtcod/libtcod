@@ -119,12 +119,17 @@
 /* bool type */
 #include <stdbool.h>
 
-/* ansi C lacks support for those functions */
 /**
     Allocate and return a duplicate of string `s`.  The returned memory must be freed manually.
  */
 TCODLIB_CAPI char* TCOD_strdup(const char* s);
+/***************************************************************************
+    @brief Compare two ASCII strings ignoring case. Returns 0 if the strings are equal.
+ */
 TCODLIB_CAPI int TCOD_strcasecmp(const char* s1, const char* s2);
+/***************************************************************************
+    @brief Compare two ASCII strings ignoring case. Returns 0 if the strings are equal.
+ */
 TCODLIB_CAPI int TCOD_strncasecmp(const char* s1, const char* s2, size_t n);
 
 /* Define vswprintf across platforms. */

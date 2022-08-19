@@ -272,22 +272,6 @@ TCOD_list_t TCOD_sys_get_directory_content(const char* path, const char* pattern
 }
 
 /* thread stuff */
-#ifdef TCOD_WINDOWS
-/* Helper function to count set bits in the processor mask. */
-static DWORD CountSetBits(ULONG_PTR bitMask) {
-  DWORD L_SHIFT = sizeof(ULONG_PTR) * 8 - 1;
-  DWORD bitSetCount = 0;
-  ULONG_PTR bitTest = (ULONG_PTR)1 << L_SHIFT;
-  DWORD i;
-
-  for (i = 0; i <= L_SHIFT; ++i) {
-    bitSetCount += ((bitMask & bitTest) ? 1 : 0);
-    bitTest /= 2;
-  }
-
-  return bitSetCount;
-}
-#endif
 
 int TCOD_sys_get_num_cores(void) {
 #ifndef NO_SDL

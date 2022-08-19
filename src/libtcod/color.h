@@ -56,20 +56,20 @@ struct TCOD_ColorRGB {
     in >> std::ws;
     char ch;
     in >> ch;
-    if (ch != '{') std::runtime_error("Expected missing '{'.");
+    if (ch != '{') throw std::runtime_error("Expected missing '{'.");
     int channel;
     in >> channel;
     rgb.r = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    if (ch != ',') throw std::runtime_error("Expected missing ',' delimiter.");
     in >> channel;
     rgb.g = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    if (ch != ',') throw std::runtime_error("Expected missing ',' delimiter.");
     in >> channel;
     rgb.b = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != '}') std::runtime_error("Expected missing '}'.");
+    if (ch != '}') throw std::runtime_error("Expected missing '}'.");
     return in;
   }
   template <class Archive>
@@ -103,16 +103,16 @@ struct TCOD_ColorRGBA {
     in >> std::ws;
     char ch;
     in >> ch;
-    if (ch != '{') std::runtime_error("Expected missing '{'.");
+    if (ch != '{') throw std::runtime_error("Expected missing '{'.");
     int channel;
     in >> channel;
     rgba.r = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    if (ch != ',') throw std::runtime_error("Expected missing ',' delimiter.");
     in >> channel;
     rgba.g = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    if (ch != ',') throw std::runtime_error("Expected missing ',' delimiter.");
     in >> channel;
     rgba.b = static_cast<uint8_t>(channel);
     in >> ch;
@@ -120,11 +120,11 @@ struct TCOD_ColorRGBA {
       rgba.a = 255;
       return in;
     }
-    if (ch != ',') std::runtime_error("Expected missing ',' delimiter.");
+    if (ch != ',') throw std::runtime_error("Expected missing ',' delimiter.");
     in >> channel;
     rgba.a = static_cast<uint8_t>(channel);
     in >> ch;
-    if (ch != '}') std::runtime_error("Expected missing '}'.");
+    if (ch != '}') throw std::runtime_error("Expected missing '}'.");
     return in;
   }
   template <class Archive>

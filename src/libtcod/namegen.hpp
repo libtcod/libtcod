@@ -262,7 +262,7 @@ The rules are parsed pretty much the same way as all other strings, so all rules
   rules = "%50$s, $s_$m, $s_$50m_$e"
 }</p></div>
 
-The above structure only uses three syllable lists and has three different rules. Let's analyse them one by one.
+The above structure only uses three syllable lists and has three different rules. Let's analyze them one by one.
 
 %50$s - this will simply output a random Start syllable, but this rule is not intended to be picked with the same frequency as the others, so the frequency marker at the beginning ("%50") ensures that 50% of the time this syllable will be rejected and a different one will be picked.
 

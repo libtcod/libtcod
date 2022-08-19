@@ -133,12 +133,12 @@ class [[deprecated]] Vector2 {
   /**
    *  Return true if x and y are in the bounds of this canvas.
    */
-  bool in_boundsf(size_type x, size_type y) const noexcept { return 0 <= x && x < width_ && 0 <= y && y < height_; }
+  bool in_bounds_f(size_type x, size_type y) const noexcept { return 0 <= x && x < width_ && 0 <= y && y < height_; }
   /**
    *  Immediately throws std::out_of_range if `x` or `y` are out of bounds.
    */
   void range_check(size_type x, size_type y) const {
-    if (!in_boundsf(x, y)) {
+    if (!in_bounds_f(x, y)) {
       throw std::out_of_range(
           std::string("Out of bounds lookup {") + std::to_string(x) + ", " + std::to_string(y) +
           "} on Vector2 of size {" + std::to_string(width_) + ", " + std::to_string(height_) + "}.");

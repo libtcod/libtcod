@@ -52,7 +52,7 @@ static bool in_bounds(const TCOD_heightmap_t* hm, int x, int y) {
   return true;
 }
 /**
-    Returns true if these heighmaps have the same shape and are non-NULL.
+    Returns true if these heightmaps have the same shape and are non-NULL.
  */
 static bool is_same_size(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm2) {
   return hm1 && hm2 && hm1->w == hm2->w && hm1->h == hm2->h;
@@ -125,18 +125,18 @@ void TCOD_heightmap_normalize(TCOD_heightmap_t* hm, float min, float max) {
   if (!hm) {
     return;
   }
-  float curmin = 0;
-  float curmax = 0;
-  TCOD_heightmap_get_minmax(hm, &curmin, &curmax);
+  float current_min = 0;
+  float current_max = 0;
+  TCOD_heightmap_get_minmax(hm, &current_min, &current_max);
 
-  if (curmax - curmin < FLT_EPSILON) {
+  if (current_max - current_min < FLT_EPSILON) {
     for (int i = 0; i != hm->w * hm->h; ++i) {
       hm->values[i] = min;
     }
   } else {
-    const float invmax = (max - min) / (curmax - curmin);
+    const float normalize_scale = (max - min) / (current_max - current_min);
     for (int i = 0; i != hm->w * hm->h; ++i) {
-      hm->values[i] = min + (hm->values[i] - curmin) * invmax;
+      hm->values[i] = min + (hm->values[i] - current_min) * normalize_scale;
     }
   }
 }
@@ -516,7 +516,7 @@ void TCOD_heightmap_heat_erosion(TCOD_heightmap_t *hm, int nbPass,float minSlope
 
 void TCOD_heightmap_kernel_transform(
     TCOD_heightmap_t* hm,
-    int kernelsize,
+    int kernel_size,
     const int* dx,
     const int* dy,
     const float* weight,
@@ -530,7 +530,7 @@ void TCOD_heightmap_kernel_transform(
       if (GET_VALUE(hm, x, y) >= minLevel && GET_VALUE(hm, x, y) <= maxLevel) {
         float val = 0.0f;
         float totalWeight = 0.0f;
-        for (int i = 0; i < kernelsize; i++) {
+        for (int i = 0; i < kernel_size; i++) {
           const int nx = x + dx[i];
           const int ny = y + dy[i];
           if (in_bounds(hm, nx, ny)) {

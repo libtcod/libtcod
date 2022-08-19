@@ -347,14 +347,14 @@ const char* TCOD_zip_get_string(TCOD_zip_t pzip) {
   zip_data_t* zip = (zip_data_t*)pzip;
   int l = TCOD_zip_get_int(pzip);
   const char* ret = (const char*)TCOD_list_begin(zip->buffer);
-  int boffset; /* offset in bytes */
+  int b_offset; /* offset in bytes */
   if (l == -1) return NULL;
-  boffset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
-  ret += boffset; /* the string address in buffer */
-  boffset += l + 1; /* new offset */
+  b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
+  ret += b_offset; /* the string address in buffer */
+  b_offset += l + 1; /* new offset */
   /* update ibuffer */
-  zip->offset = (boffset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
-  zip->isize = boffset % sizeof(uintptr_t);
+  zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
+  zip->isize = b_offset % sizeof(uintptr_t);
   if (zip->isize != 0) {
     zip->isize = sizeof(uintptr_t) - zip->isize;
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);
@@ -367,18 +367,18 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
   int l = TCOD_zip_get_int(pzip), i;
   const char* in = (const char*)TCOD_list_begin(zip->buffer);
   char* out = (char*)data;
-  int boffset; /* offset in bytes */
+  int b_offset; /* offset in bytes */
   if (l == -1) return 0;
-  boffset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
-  in += boffset; /* the data address in buffer */
+  b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
+  in += b_offset; /* the data address in buffer */
   /* copy it to data */
   for (i = 0; i < MIN(l, nbBytes); i++) {
     *(out++) = *(in++);
-    boffset++;
+    b_offset++;
   }
   /* update ibuffer */
-  zip->offset = (boffset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
-  zip->isize = boffset % sizeof(uintptr_t);
+  zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
+  zip->isize = b_offset % sizeof(uintptr_t);
   if (zip->isize != 0) {
     zip->isize = sizeof(uintptr_t) - zip->isize;
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);
@@ -438,10 +438,10 @@ uint32_t TCOD_zip_get_remaining_bytes(TCOD_zip_t pzip) {
 
 void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32_t nbBytes) {
   zip_data_t* zip = (zip_data_t*)pzip;
-  uint32_t boffset = zip->offset * sizeof(uintptr_t) - zip->isize + nbBytes; /* new offset */
-  TCOD_IFNOT(boffset <= TCOD_list_size(zip->buffer) * sizeof(uintptr_t)) return;
-  zip->offset = (boffset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
-  zip->isize = boffset % sizeof(uintptr_t);
+  uint32_t b_offset = zip->offset * sizeof(uintptr_t) - zip->isize + nbBytes; /* new offset */
+  TCOD_IFNOT(b_offset <= TCOD_list_size(zip->buffer) * sizeof(uintptr_t)) return;
+  zip->offset = (b_offset + sizeof(uintptr_t) - 1) / sizeof(uintptr_t);
+  zip->isize = b_offset % sizeof(uintptr_t);
   if (zip->isize != 0) {
     zip->isize = sizeof(uintptr_t) - zip->isize;
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);

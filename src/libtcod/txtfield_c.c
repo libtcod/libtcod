@@ -45,7 +45,7 @@ typedef struct TCOD_Text {
   int w, h; /* textfield display size */
   int max; /* maximum nb of characters */
   int interval; /* cursor blinking interval */
-  int halfinterval; /* half of the above */
+  int half_interval; /* half of the above */
   int ascii_cursor; /* cursor char. 0 if none */
   int cursor_pos, sel_start, sel_end; /* cursor position in text, selection range */
   int tab_size; /* tab size, if 0, no tab */
@@ -54,7 +54,7 @@ typedef struct TCOD_Text {
   TCOD_console_t con; /* offscreen console that will contain the textfield */
   bool input_continue; /* controls whether ENTER has been pressed */
   int len; /* allocated size of the text */
-  int curlen; /* current length of the text */
+  int current_len; /* current length of the text */
   TCOD_color_t back; /* background colour */
   TCOD_color_t fore; /* foreground colour */
   float transparency; /* background transparency */
@@ -73,7 +73,7 @@ TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars) {
   data->multiline = (h > 1);
   data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
   data->interval = 800;
-  data->halfinterval = 400;
+  data->half_interval = 400;
   data->ascii_cursor = 0;
   data->prompt = NULL;
   data->textx = data->texty = 0;
@@ -110,7 +110,7 @@ TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
   data->multiline = (h > 1);
   data->max = (max_chars > 0 ? max_chars + 1 : MAX_INT);
   data->interval = 800;
-  data->halfinterval = 400;
+  data->half_interval = 400;
   data->ascii_cursor = 0;
   data->prompt = NULL;
   data->textx = data->texty = 0;
@@ -148,7 +148,7 @@ void TCOD_text_set_properties(TCOD_text_t txt, int cursor_char, int blink_interv
   text_t* data = (text_t*)txt;
   TCOD_IFNOT(data && data->con) return;
   data->interval = blink_interval;
-  data->halfinterval = (blink_interval > 0 ? blink_interval / 2 : 0);
+  data->half_interval = (blink_interval > 0 ? blink_interval / 2 : 0);
   data->ascii_cursor = cursor_char;
   if (data->prompt) free(data->prompt);
   data->prompt = prompt ? TCOD_strdup(prompt) : NULL;
@@ -194,15 +194,15 @@ static void insertChar(text_t* data, char c) {
     *(data->text + data->cursor_pos - 1) = c;
     return;
   }
-  if (data->curlen + 1 == data->len) allocate(data);
+  if (data->current_len + 1 == data->len) allocate(data);
   ptr = data->text + data->cursor_pos;
-  end = data->text + data->curlen;
+  end = data->text + data->current_len;
   do {
     *(end + 1) = *end;
     end--;
   } while (end >= ptr);
   *ptr = c;
-  data->curlen++;
+  data->current_len++;
   data->cursor_pos++;
 }
 
@@ -217,7 +217,7 @@ static void deleteChar(text_t* data) {
   } while (*ptr);
   if (data->cursor_pos > 0) {
     data->cursor_pos--;
-    data->curlen--;
+    data->current_len--;
   }
 }
 
@@ -225,11 +225,11 @@ static void deleteChar(text_t* data) {
 static void get_cursor_coords(text_t* data, int* cx, int* cy) {
   char* ptr;
   if (data->multiline) {
-    int curcount = data->cursor_pos;
+    int current_count = data->cursor_pos;
     ptr = data->text;
     *cx = data->textx;
     *cy = data->texty;
-    while (curcount > 0 && *ptr) {
+    while (current_count > 0 && *ptr) {
       if (*ptr == '\n') {
         *cx = 0;
         (*cy)++;
@@ -241,7 +241,7 @@ static void get_cursor_coords(text_t* data, int* cx, int* cy) {
         }
       }
       ptr++;
-      curcount--;
+      current_count--;
     }
   } else {
     *cx = data->textx + data->cursor_pos;
@@ -280,7 +280,7 @@ static void set_cursor_pos(text_t* data, int cx, int cy, bool clamp) {
   if (data->multiline) {
     int curx = data->textx, cury = data->texty;
     char* ptr = data->text;
-    int newpos = 0;
+    int new_pos = 0;
     if (clamp) {
       cy = MAX(data->texty, cy);
       if (cy == data->texty) cx = MAX(data->textx, cx);
@@ -293,7 +293,7 @@ static void set_cursor_pos(text_t* data, int cx, int cy, bool clamp) {
       } else
         curx++;
       ptr++;
-      newpos++;
+      new_pos++;
     }
     if (cury >= data->h) return;
     if (cury == cy) {
@@ -301,20 +301,20 @@ static void set_cursor_pos(text_t* data, int cx, int cy, bool clamp) {
       while (*ptr && curx < cx && *ptr != '\n') {
         ptr++;
         curx++;
-        newpos++;
+        new_pos++;
       }
     }
-    data->cursor_pos = newpos;
+    data->cursor_pos = new_pos;
   } else {
-    int newpos = cx - data->textx + (cy - data->texty) * data->w;
-    if (clamp) newpos = CLAMP(0, data->curlen, newpos);
-    if (newpos >= 0 && newpos <= data->curlen) data->cursor_pos = newpos;
+    int new_pos = cx - data->textx + (cy - data->texty) * data->w;
+    if (clamp) new_pos = CLAMP(0, data->current_len, new_pos);
+    if (new_pos >= 0 && new_pos <= data->current_len) data->cursor_pos = new_pos;
   }
 }
 
 /* decreases the selection range start */
-static void selectStart(text_t* data, int oldpos, TCOD_key_t key) {
-  if (data->multiline && data->cursor_pos != oldpos) {
+static void selectStart(text_t* data, int old_pos, TCOD_key_t key) {
+  if (data->multiline && data->cursor_pos != old_pos) {
     if (key.shift) {
       if (data->sel_start > data->cursor_pos)
         data->sel_start = data->cursor_pos;
@@ -328,8 +328,8 @@ static void selectStart(text_t* data, int oldpos, TCOD_key_t key) {
 }
 
 /* increases the selection range end */
-static void selectEnd(text_t* data, int oldpos, TCOD_key_t key) {
-  if (data->multiline && data->cursor_pos != oldpos) {
+static void selectEnd(text_t* data, int old_pos, TCOD_key_t key) {
+  if (data->multiline && data->cursor_pos != old_pos) {
     if (key.shift) {
       if (data->sel_end < data->cursor_pos)
         data->sel_end = data->cursor_pos;
@@ -342,7 +342,7 @@ static void selectEnd(text_t* data, int oldpos, TCOD_key_t key) {
   }
 }
 
-enum { TYPE_SYMBOL, TYPE_ALPHANUM, TYPE_SPACE };
+enum { TYPE_SYMBOL, TYPE_ALPHANUMERIC, TYPE_SPACE };
 static const char txt_symbols[] = "&~\"#'{([-|`_\\^@)]=+}*/!:;.,?<>";
 
 /* check whether a character is a space */
@@ -369,24 +369,24 @@ static void typecheck(int* type, int ch) {
   else if (is_space(ch))
     *type = TYPE_SPACE;
   else
-    *type = TYPE_ALPHANUM;
+    *type = TYPE_ALPHANUMERIC;
 }
 
 /* go one word left */
 static void previous_word(text_t* data) {
   /* current character type */
   if (data->cursor_pos > 0) {
-    /* detect current char type (alphanum/space or symbol) */
+    /* detect current char type (alphanumeric/space or symbol) */
     char* ptr = data->text + data->cursor_pos - 1;
-    int curtype, prevtype;
-    typecheck(&curtype, *ptr);
+    int current_type, previous_type;
+    typecheck(&current_type, *ptr);
     /* go back until char type changes from alphanumeric to something else */
     do {
       data->cursor_pos--;
       ptr--;
-      prevtype = curtype;
-      typecheck(&curtype, *ptr);
-    } while (data->cursor_pos > 0 && !(curtype != TYPE_ALPHANUM && prevtype == TYPE_ALPHANUM));
+      previous_type = current_type;
+      typecheck(&current_type, *ptr);
+    } while (data->cursor_pos > 0 && !(current_type != TYPE_ALPHANUMERIC && previous_type == TYPE_ALPHANUMERIC));
   }
 }
 
@@ -394,17 +394,17 @@ static void previous_word(text_t* data) {
 static void next_word(text_t* data) {
   /* current character type */
   if (data->text[data->cursor_pos]) {
-    /* detect current char type (alphanum/space or symbol) */
+    /* detect current char type (alphanumeric/space or symbol) */
     char* ptr = data->text + data->cursor_pos;
-    int curtype, prevtype;
-    typecheck(&curtype, *ptr);
+    int current_type, previous_type;
+    typecheck(&current_type, *ptr);
     /* go forth until char type changes from non alphanumeric to alphanumeric */
     do {
       data->cursor_pos++;
       ptr++;
-      prevtype = curtype;
-      typecheck(&curtype, *ptr);
-    } while (*ptr && !(curtype == TYPE_ALPHANUM && prevtype != TYPE_ALPHANUM));
+      previous_type = current_type;
+      typecheck(&current_type, *ptr);
+    } while (*ptr && !(current_type == TYPE_ALPHANUMERIC && previous_type != TYPE_ALPHANUMERIC));
   }
 }
 
@@ -426,14 +426,14 @@ static void deleteSelection(text_t* data) {
 static void copy(text_t* data) {
 #ifndef NO_SDL
   if (data->sel_end - data->sel_start > 0) {
-    char* clipbuf = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
-    char* ptr = clipbuf;
+    char* clip_buffer = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
+    char* ptr = clip_buffer;
     int i;
     for (i = data->sel_start; i != data->sel_end; i++) {
       *ptr++ = data->text[i];
     }
-    TCOD_sys_clipboard_set(clipbuf);
-    free(clipbuf);
+    TCOD_sys_clipboard_set(clip_buffer);
+    free(clip_buffer);
   }
 #endif  // NO_SDL
 }
@@ -442,14 +442,14 @@ static void copy(text_t* data) {
 static void cut(text_t* data) {
 #ifndef NO_SDL
   if (data->sel_end - data->sel_start > 0) {
-    char* clipbuf = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
-    char* ptr = clipbuf;
+    char* clip_buffer = (char*)calloc(data->sel_end - data->sel_start + 1, 1);
+    char* ptr = clip_buffer;
     int i;
     for (i = data->sel_start; i != data->sel_end; i++) {
       *ptr++ = data->text[i];
     }
-    TCOD_sys_clipboard_set(clipbuf);
-    free(clipbuf);
+    TCOD_sys_clipboard_set(clip_buffer);
+    free(clip_buffer);
     deleteSelection(data);
   }
 #endif  // NO_SDL
@@ -458,13 +458,13 @@ static void cut(text_t* data) {
 /* paste from clipboard */
 static void paste(text_t* data) {
 #ifndef NO_SDL
-  char* clipbuf = TCOD_sys_clipboard_get();
-  if (clipbuf) {
+  char* clip_buffer = TCOD_sys_clipboard_get();
+  if (clip_buffer) {
     if (data->sel_start != MAX_INT) {
       deleteSelection(data);
     }
-    while (*clipbuf) {
-      insertChar(data, *clipbuf++);
+    while (*clip_buffer) {
+      insertChar(data, *clip_buffer++);
     }
   }
 #endif  // NO_SDL
@@ -472,10 +472,10 @@ static void paste(text_t* data) {
 
 /* update returns false if enter has been pressed, true otherwise */
 bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
-  int cx, cy, oldpos;
+  int cx, cy, old_pos;
   text_t* data = (text_t*)txt;
   TCOD_IFNOT(data && data->con) return false;
-  oldpos = data->cursor_pos;
+  old_pos = data->cursor_pos;
   /* for real-time keyboard : only on key release */
   if (key.pressed) {
     /* process keyboard input */
@@ -511,7 +511,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
             previous_word(data);
           } else
             data->cursor_pos--;
-          selectStart(data, oldpos, key);
+          selectStart(data, old_pos, key);
         }
         break;
       case TCODK_RIGHT:
@@ -523,7 +523,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
             next_word(data);
           } else
             data->cursor_pos++;
-          selectEnd(data, oldpos, key);
+          selectEnd(data, old_pos, key);
         }
         break;
       case TCODK_UP:
@@ -532,7 +532,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
           data->sel_end = data->cursor_pos;
         }
         set_cursor_pos(data, cx, cy - 1, false);
-        selectStart(data, oldpos, key);
+        selectStart(data, old_pos, key);
         break;
       case TCODK_DOWN:
         get_cursor_coords(data, &cx, &cy);
@@ -540,7 +540,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
           data->sel_start = data->cursor_pos;
         }
         set_cursor_pos(data, cx, cy + 1, false);
-        selectEnd(data, oldpos, key);
+        selectEnd(data, old_pos, key);
         break;
       case TCODK_HOME:
         get_cursor_coords(data, &cx, &cy);
@@ -552,7 +552,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
         } else {
           set_cursor_pos(data, 0, cy, true);
         }
-        selectStart(data, oldpos, key);
+        selectStart(data, old_pos, key);
         break;
       case TCODK_END:
         get_cursor_coords(data, &cx, &cy);
@@ -564,7 +564,7 @@ bool TCOD_text_update(TCOD_text_t txt, TCOD_key_t key) {
         } else {
           set_cursor_pos(data, data->w - 1, cy, true);
         }
-        selectEnd(data, oldpos, key);
+        selectEnd(data, old_pos, key);
         break;
       case TCODK_ENTER: /* validate input */
       case TCODK_KPENTER:
@@ -623,7 +623,7 @@ void TCOD_text_render(TCOD_text_t txt, TCOD_console_t con) {
   TCOD_IFNOT(data && data->con) return;
 #ifndef NO_SDL
   uint32_t time = TCOD_sys_elapsed_milli();
-  bool cursor_on = (int)(time % data->interval) > data->halfinterval;
+  bool cursor_on = (int)(time % data->interval) > data->half_interval;
 #else
   bool cursor_on = 1;
 #endif  // NO_SDL
@@ -701,7 +701,7 @@ void TCOD_text_reset(TCOD_text_t txt) {
   text_t* data = (text_t*)txt;
   TCOD_IFNOT(data && data->con) return;
   memset(data->text, '\0', data->len);
-  data->curlen = 0;
+  data->current_len = 0;
   data->cursor_pos = 0;
   data->sel_start = MAX_INT;
   data->sel_end = -1;

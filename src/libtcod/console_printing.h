@@ -422,7 +422,7 @@ inline void print(
       TCOD_console_printn(&console, xy.at(0), xy.at(1), str.size(), str.data(), fg_ptr, bg_ptr, flag, alignment));
 }
 /*****************************************************************************
-    @brief Print a string to a console contrained to a bounding box.
+    @brief Print a string to a console constrained to a bounding box.
 
     @param console A reference to a TCOD_Console.
     @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.

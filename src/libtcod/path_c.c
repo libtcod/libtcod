@@ -40,9 +40,9 @@ enum { NORTH_WEST, NORTH, NORTH_EAST, WEST, NONE, EAST, SOUTH_WEST, SOUTH, SOUTH
 typedef unsigned char dir_t;
 
 /* convert dir_t to dx,dy */
-static int dir_x[] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
-static int dir_y[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
-static int invdir[] = {SOUTH_EAST, SOUTH, SOUTH_WEST, EAST, NONE, WEST, NORTH_EAST, NORTH, NORTH_WEST};
+static const int dir_x[] = {-1, 0, 1, -1, 0, 1, -1, 0, 1};
+static const int dir_y[] = {-1, -1, -1, 0, 0, 0, 1, 1, 1};
+static const int invert_dir[] = {SOUTH_EAST, SOUTH, SOUTH_WEST, EAST, NONE, WEST, NORTH_EAST, NORTH, NORTH_WEST};
 
 typedef struct TCOD_Path {
   int ox, oy; /* coordinates of the creature position */
@@ -309,7 +309,7 @@ void TCOD_path_reverse(TCOD_path_t p) {
   path->dy = tmp;
   for (i = 0; i < TCOD_list_size(path->path); i++) {
     int d = (int)(uintptr_t)TCOD_list_get(path->path, i);
-    d = invdir[d];
+    d = invert_dir[d];
     TCOD_list_set(path->path, (void*)(uintptr_t)d, i);
   }
 }
@@ -400,7 +400,7 @@ static void TCOD_path_set_cells(TCOD_path_data_t* path) {
       static int i_dir_x[] = {0, -1, 1, 0, -1, 1, -1, 1};
       static int i_dir_y[] = {-1, 0, 0, 1, -1, -1, 1, 1};
       /* convert i to direction */
-      static dir_t prevdirs[] = {NORTH, WEST, EAST, SOUTH, NORTH_WEST, NORTH_EAST, SOUTH_WEST, SOUTH_EAST};
+      static dir_t previous_dirs[] = {NORTH, WEST, EAST, SOUTH, NORTH_WEST, NORTH_EAST, SOUTH_WEST, SOUTH_EAST};
       /* coordinate of the adjacent cell */
       int cx = x + i_dir_x[i];
       int cy = y + i_dir_y[i];
@@ -417,14 +417,14 @@ static void TCOD_path_set_cells(TCOD_path_data_t* path) {
             float remaining = (float)sqrt((cx - path->dx) * (cx - path->dx) + (cy - path->dy) * (cy - path->dy));
             path->grid[offset] = covered;
             path->heuristic[offset] = covered + remaining;
-            path->prev[offset] = prevdirs[i];
+            path->prev[offset] = previous_dirs[i];
             TCOD_path_push_cell(path, cx, cy);
           } else if (previousCovered > covered) {
             /* we found a better path to a cell already in the heap */
             int offset = cx + cy * path->w;
             path->grid[offset] = covered;
             path->heuristic[offset] -= (previousCovered - covered); /* fix the A* score */
-            path->prev[offset] = prevdirs[i];
+            path->prev[offset] = previous_dirs[i];
             /* reorder the heap */
             heap_reorder(path, offset);
           }

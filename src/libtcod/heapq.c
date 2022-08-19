@@ -123,18 +123,18 @@ static bool TCOD_minheap_compare_(struct TCOD_Heap* minheap, int lhs_index, int 
 /// Sort a heap element downwards, away from the root.
 /// Used internally.
 static void TCOD_TCOD_minheap_heapify_down_(struct TCOD_Heap* minheap, int index) {
-  int canidate = index;
+  int candidate = index;
   const int left = index * 2 + 1;
   const int right = index * 2 + 2;
-  if (left < minheap->size && TCOD_minheap_compare_(minheap, left, canidate)) {
-    canidate = left;
+  if (left < minheap->size && TCOD_minheap_compare_(minheap, left, candidate)) {
+    candidate = left;
   }
-  if (right < minheap->size && TCOD_minheap_compare_(minheap, right, canidate)) {
-    canidate = right;
+  if (right < minheap->size && TCOD_minheap_compare_(minheap, right, candidate)) {
+    candidate = right;
   }
-  if (canidate != index) {
-    TCOD_heap_swap_(minheap, index, canidate);
-    TCOD_TCOD_minheap_heapify_down_(minheap, canidate);
+  if (candidate != index) {
+    TCOD_heap_swap_(minheap, index, candidate);
+    TCOD_TCOD_minheap_heapify_down_(minheap, candidate);
   }
 }
 /// Sort a heap element upwards, towards from the root.

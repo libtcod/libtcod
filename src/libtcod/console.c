@@ -488,9 +488,9 @@ TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con) {
   TCOD_IFNOT(con) { return TCOD_black; }
   return con->back;
 }
-void TCOD_console_set_fade(uint8_t val, TCOD_color_t fadecol) {
+void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color) {
   TCOD_ctx.fade = val;
-  TCOD_ctx.fading_color = fadecol;
+  TCOD_ctx.fading_color = fade_color;
 }
 uint8_t TCOD_console_get_fade(void) { return TCOD_ctx.fade; }
 TCOD_color_t TCOD_console_get_fading_color(void) { return TCOD_ctx.fading_color; }

@@ -91,7 +91,7 @@ class [[deprecated]] MatrixView {
     }
     return reinterpret_cast<T*>(ptr);
   }
-  MatrixView<T, D - 1> get_submatrix(size_type n) {
+  MatrixView<T, D - 1> get_sub_matrix(size_type n) {
     return {data_ + n * strides_.at(0), pop_array(shape_), pop_array(strides_)};
   }
   void range_check(size_type n) const {

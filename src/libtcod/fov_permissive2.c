@@ -98,13 +98,13 @@ static void add_shallow_bump(int x, int y, View* view, ViewBumpContainer* bumps)
   shallow->y = y;
   shallow->parent = view->shallow_bump;
   view->shallow_bump = shallow;
-  const ViewBump* curbump = view->steep_bump;
-  while (curbump) {
-    if (ABOVE(&view->shallow_line, curbump->x, curbump->y)) {
-      view->shallow_line.xi = curbump->x;
-      view->shallow_line.yi = curbump->y;
+  const ViewBump* current_bump = view->steep_bump;
+  while (current_bump) {
+    if (ABOVE(&view->shallow_line, current_bump->x, current_bump->y)) {
+      view->shallow_line.xi = current_bump->x;
+      view->shallow_line.yi = current_bump->y;
     }
-    curbump = curbump->parent;
+    current_bump = current_bump->parent;
   }
 }
 
@@ -116,13 +116,13 @@ static void add_steep_bump(int x, int y, View* view, ViewBumpContainer* bumps) {
   steep->y = y;
   steep->parent = view->steep_bump;
   view->steep_bump = steep;
-  const ViewBump* curbump = view->shallow_bump;
-  while (curbump) {
-    if (BELOW(&view->steep_line, curbump->x, curbump->y)) {
-      view->steep_line.xi = curbump->x;
-      view->steep_line.yi = curbump->y;
+  const ViewBump* current_bump = view->shallow_bump;
+  while (current_bump) {
+    if (BELOW(&view->steep_line, current_bump->x, current_bump->y)) {
+      view->steep_line.xi = current_bump->x;
+      view->steep_line.yi = current_bump->y;
     }
-    curbump = curbump->parent;
+    current_bump = current_bump->parent;
   }
 }
 

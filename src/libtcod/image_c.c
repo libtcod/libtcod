@@ -572,18 +572,18 @@ void TCOD_image_rotate90(TCOD_Image* image, int numRotations) {
     }
   } else if (numRotations == 3) {
     /* rotate 270 degrees */
-    TCOD_Image* newImg = TCOD_image_new(height, width);
+    TCOD_Image* new_image = TCOD_image_new(height, width);
     for (int px = 0; px < width; ++px) {
       for (int py = 0; py < height; ++py) {
         TCOD_color_t col1 = TCOD_image_get_pixel(image, px, py);
-        TCOD_image_put_pixel(newImg, py, width - 1 - px, col1);
+        TCOD_image_put_pixel(new_image, py, width - 1 - px, col1);
       }
     }
     TCOD_image_delete_internal(image);
     /* update image with the new image content */
-    image->mipmaps = newImg->mipmaps;
-    image->nb_mipmaps = newImg->nb_mipmaps;
-    free(newImg);
+    image->mipmaps = new_image->mipmaps;
+    image->nb_mipmaps = new_image->nb_mipmaps;
+    free(new_image);
   }
 }
 
@@ -599,7 +599,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
   if (new_w == 0 || new_h == 0) {
     return;
   }
-  TCOD_Image* newimg = TCOD_image_new(new_w, new_h);
+  TCOD_Image* new_image = TCOD_image_new(new_w, new_h);
 
   if (new_w < width && new_h < height) {
     /* scale down image, using supersampling */
@@ -625,7 +625,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
         float x1weight = (x1 - x1floor);
         int ix1 = (int)x1floor;
 
-        float r = 0, g = 0, b = 0, sumweight = 0.0f;
+        float r = 0, g = 0, b = 0, sum_weight = 0.0f;
         /* left & right fractional edges */
         for (int srcy = (int)y0 + 1; srcy < (int)y1; ++srcy) {
           TCOD_color_t col_left = TCOD_image_get_pixel(image, ix0, srcy);
@@ -633,7 +633,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
           r += col_left.r * x0weight + col_right.r * x1weight;
           g += col_left.g * x0weight + col_right.g * x1weight;
           b += col_left.b * x0weight + col_right.b * x1weight;
-          sumweight += x0weight + x1weight;
+          sum_weight += x0weight + x1weight;
         }
         /* top & bottom fractional edges */
         for (int srcx = (int)x0 + 1; srcx < (int)x1; ++srcx) {
@@ -642,7 +642,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
           r += col_top.r * y0weight + col_bottom.r * y1weight;
           g += col_top.g * y0weight + col_bottom.g * y1weight;
           b += col_top.b * y0weight + col_bottom.b * y1weight;
-          sumweight += y0weight + y1weight;
+          sum_weight += y0weight + y1weight;
         }
         /* center */
         for (int srcy = (int)y0 + 1; srcy < (int)y1; ++srcy) {
@@ -651,7 +651,7 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
             r += sample.r;
             g += sample.g;
             b += sample.b;
-            sumweight += 1.0f;
+            sum_weight += 1.0f;
           }
         }
         /* corners */
@@ -659,30 +659,30 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
         r += col.r * (x0weight * y0weight);
         g += col.g * (x0weight * y0weight);
         b += col.b * (x0weight * y0weight);
-        sumweight += x0weight * y0weight;
+        sum_weight += x0weight * y0weight;
         col = TCOD_image_get_pixel(image, ix0, iy1);
         r += col.r * (x0weight * y1weight);
         g += col.g * (x0weight * y1weight);
         b += col.b * (x0weight * y1weight);
-        sumweight += x0weight * y1weight;
+        sum_weight += x0weight * y1weight;
         col = TCOD_image_get_pixel(image, ix1, iy1);
         r += col.r * (x1weight * y1weight);
         g += col.g * (x1weight * y1weight);
         b += col.b * (x1weight * y1weight);
-        sumweight += x1weight * y1weight;
+        sum_weight += x1weight * y1weight;
         col = TCOD_image_get_pixel(image, ix1, iy0);
         r += col.r * (x1weight * y0weight);
         g += col.g * (x1weight * y0weight);
         b += col.b * (x1weight * y0weight);
-        sumweight += x1weight * y0weight;
-        sumweight = 1.0f / sumweight;
-        r = r * sumweight + 0.5f;
-        g = g * sumweight + 0.5f;
-        b = b * sumweight + 0.5f;
+        sum_weight += x1weight * y0weight;
+        sum_weight = 1.0f / sum_weight;
+        r = r * sum_weight + 0.5f;
+        g = g * sum_weight + 0.5f;
+        b = b * sum_weight + 0.5f;
         col.r = (uint8_t)r;
         col.g = (uint8_t)g;
         col.b = (uint8_t)b;
-        TCOD_image_put_pixel(newimg, px, py, col);
+        TCOD_image_put_pixel(new_image, px, py, col);
       }
     }
   } else {
@@ -691,16 +691,16 @@ void TCOD_image_scale(TCOD_Image* image, int new_w, int new_h) {
       int srcy = py * height / new_h;
       for (int px = 0; px < new_w; ++px) {
         int srcx = px * width / new_w;
-        TCOD_image_put_pixel(newimg, px, py, TCOD_image_get_pixel(image, srcx, srcy));
+        TCOD_image_put_pixel(new_image, px, py, TCOD_image_get_pixel(image, srcx, srcy));
       }
     }
   }
   /* destroy old image */
   TCOD_image_delete_internal(image);
   /* update image with the new image content */
-  image->mipmaps = newimg->mipmaps;
-  image->nb_mipmaps = newimg->nb_mipmaps;
-  free(newimg);
+  image->mipmaps = new_image->mipmaps;
+  image->nb_mipmaps = new_image->nb_mipmaps;
+  free(new_image);
 }
 
 // Return the squared distance between two colors.
@@ -747,7 +747,7 @@ static TCOD_ConsoleTile generate_quadrant_graphic(const TCOD_ColorRGB desired[4]
     };
   }
   TCOD_ColorRGB palette[2] = {desired[0], desired[quadrant_index]};  // The current color palette: {bg color, fg color}.
-  int weight[2] = {quadrant_index, 1};  // Number of quadrents that each pallette color is assigned, respectively.
+  int weight[2] = {quadrant_index, 1};  // Number of quadrants that each pallette color is assigned, respectively.
   quadrant_mask |= 1 << (quadrant_index - 1);
   /* remaining colours */
   ++quadrant_index;
@@ -879,7 +879,7 @@ void TCOD_image_blit_2x(
       } else {
         grid[3] = consoleBack;
       }
-      /* analyse color, posterize, get pattern */
+      /* analyze color, posterize, get pattern */
       console->tiles[console_y * console->w + console_x] = generate_quadrant_graphic(grid);
     }
   }

@@ -56,7 +56,7 @@ static const char* TCOD_log_level_name(int level) {
   return "TRACE";
 }
 /***************************************************************************
-    @brief The default logger used when no other logger is provided, prints the error to sederr.
+    @brief The default logger used when no other logger is provided, prints the error to stderr.
  */
 static void TCOD_logger_default(const TCOD_LogMessage* message, void* userdata) {
   (void)userdata;  // Ignored parameter.

@@ -78,7 +78,7 @@ TCODLIB_API void TCOD_heightmap_rain_erosion(
  * sedimentationCoef,TCOD_Random* rnd); */
 TCODLIB_API void TCOD_heightmap_kernel_transform(
     TCOD_heightmap_t* hm,
-    int kernelsize,
+    int kernel_size,
     const int* dx,
     const int* dy,
     const float* weight,

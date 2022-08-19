@@ -50,24 +50,6 @@
 #include "tileset.h"
 
 #ifndef NO_SDL
-#ifdef __ANDROID__
-#define TCOD_TOUCH_INPUT
-#define MAX_TOUCH_FINGERS 5
-
-typedef struct {
-  int nupdates; /* how many updates have happened since the first finger was pressed. */
-  uint32_t ticks0; /* current number of ticks at start of touch event sequence. */
-  SDL_FingerID finger_id; /* the last finger which was pressed. */
-  int coords[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
-  int coords_delta[MAX_TOUCH_FINGERS][2]; /* absolute position of each finger. */
-  int consolecoords[MAX_TOUCH_FINGERS][2]; /* cell coordinates in the root console for each finger. */
-  int consolecoords_delta[MAX_TOUCH_FINGERS][2]; /* cell coordinates in the root console for each finger. */
-  int nfingers; /* number of unique fingers employed at any time during this. */
-  int nfingerspressed; /* number of those fingers currently still pressed. */
-  SDL_FingerID finger_ids[MAX_TOUCH_FINGERS];
-  char fingerspressed[MAX_TOUCH_FINGERS];
-} TCOD_touch_t;
-#endif  // __ANDROID__
 
 /* to enable bitmap locking. Is there any use ?? makes the OSX port renderer to fail */
 /*#define USE_SDL_LOCKS */
@@ -597,7 +579,7 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
   ret->pressed = 0;
   switch (ev->type) {
     case SDL_KEYUP: {
-      TCOD_key_t tmpkey;
+      TCOD_key_t tmp_key;
       switch (ev->key.keysym.sym) {
         case SDLK_LALT:
           ret->lalt = 0;
@@ -626,16 +608,16 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
         default:
           break;
       }
-      TCOD_sys_convert_event(ev, &tmpkey);
+      TCOD_sys_convert_event(ev, &tmp_key);
       if (flags & TCOD_KEY_RELEASED) {
-        ret->vk = tmpkey.vk;
-        ret->c = tmpkey.c;
+        ret->vk = tmp_key.vk;
+        ret->c = tmp_key.c;
         ret->pressed = 0;
       }
       break;
     }
     case SDL_KEYDOWN: {
-      TCOD_key_t tmpkey;
+      TCOD_key_t tmp_key;
       switch (ev->key.keysym.sym) {
         case SDLK_LALT:
           ret->lalt = 1;
@@ -664,10 +646,10 @@ static TCOD_key_t TCOD_sys_SDLtoTCOD(const SDL_Event* ev, int flags) {
         default:
           break;
       }
-      TCOD_sys_convert_event(ev, &tmpkey);
+      TCOD_sys_convert_event(ev, &tmp_key);
       if (flags & TCOD_KEY_PRESSED) {
-        ret->vk = tmpkey.vk;
-        ret->c = tmpkey.c;
+        ret->vk = tmp_key.vk;
+        ret->c = tmp_key.c;
         ret->pressed = 1;
       }
       break;
@@ -815,8 +797,8 @@ void TCOD_sys_unproject_screen_coords(int sx, int sy, int* ssx, int* ssy) {
         (scale_data.src_y0 +
          ((sy - scale_data.dst_offset_y) * scale_data.src_copy_width) / scale_data.dst_display_width);
   } else {
-    *ssx = sx - TCOD_ctx.fullscreen_offsetx;
-    *ssy = sy - TCOD_ctx.fullscreen_offsety;
+    *ssx = sx - TCOD_ctx.fullscreen_offset_x;
+    *ssy = sy - TCOD_ctx.fullscreen_offset_y;
   }
 }
 
@@ -845,8 +827,8 @@ void TCOD_sys_pixel_to_tile(double* x, double* y) {
   if (TCOD_ctx.engine && TCOD_ctx.engine->c_pixel_to_tile_) {
     TCOD_ctx.engine->c_pixel_to_tile_(TCOD_ctx.engine, x, y);
   } else {
-    *x = (*x - TCOD_ctx.fullscreen_offsetx) / TCOD_ctx.font_width;
-    *y = (*y - TCOD_ctx.fullscreen_offsety) / TCOD_ctx.font_height;
+    *x = (*x - TCOD_ctx.fullscreen_offset_x) / TCOD_ctx.font_width;
+    *y = (*y - TCOD_ctx.fullscreen_offset_y) / TCOD_ctx.font_height;
   }
 }
 /**
@@ -1256,7 +1238,7 @@ TCOD_Error TCOD_sys_get_current_resolution(int* w, int* h) {
       return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
     }
   }
-  // Temporarally load the video subsystem if it isn't already active.
+  // Temporarily load the video subsystem if it isn't already active.
   if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
     return TCOD_set_errorvf("SDL error: %s", SDL_GetError());
   }

@@ -70,7 +70,7 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
   /* several static buffers in case the function is used more than once in a single function call */
   static char* msg[NB_BUFFERS] = {NULL};
   static int buflen[NB_BUFFERS] = {0};
-  static int curbuf = 0;
+  static int current_buf = 0;
   char* ret;
   bool ok = false;
   if (!msg[0]) {
@@ -85,25 +85,25 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
      the expected string length if the buffer is not big enough */
     va_list ap_clone;
     va_copy(ap_clone, ap);
-    int len = vsnprintf(msg[curbuf], buflen[curbuf], fmt, ap_clone);
+    int len = vsnprintf(msg[current_buf], buflen[current_buf], fmt, ap_clone);
     va_end(ap_clone);
     ok = true;
-    if (len < 0 || len >= buflen[curbuf]) {
+    if (len < 0 || len >= buflen[current_buf]) {
       /* buffer too small. */
       if (len > 0) {
-        while (buflen[curbuf] < len + 1) {
-          buflen[curbuf] *= 2;
+        while (buflen[current_buf] < len + 1) {
+          buflen[current_buf] *= 2;
         }
       } else {
-        buflen[curbuf] *= 2;
+        buflen[current_buf] *= 2;
       }
-      free(msg[curbuf]);
-      msg[curbuf] = calloc(sizeof(char), buflen[curbuf]);
+      free(msg[current_buf]);
+      msg[current_buf] = calloc(sizeof(char), buflen[current_buf]);
       ok = false;
     }
   } while (!ok);
-  ret = msg[curbuf];
-  curbuf = (curbuf + 1) % NB_BUFFERS;
+  ret = msg[current_buf];
+  current_buf = (current_buf + 1) % NB_BUFFERS;
   return ret;
 }
 /***************************************************************************
@@ -423,7 +423,7 @@ int TCOD_console_print_internal(
         }
       }
       if (split) {
-        unsigned char* oldsplit = split;
+        unsigned char* old_split = split;
         while (!isspace(*split) && split > c) {
           split--;
         }
@@ -431,7 +431,7 @@ int TCOD_console_print_internal(
           *end = '\n';
         }
         if (!isspace(*split)) {
-          split = oldsplit;
+          split = old_split;
         }
         end = split;
         bak = *split;
@@ -520,7 +520,7 @@ wchar_t* TCOD_console_vsprint_utf(const wchar_t* fmt, va_list ap) {
   /* several static buffers in case the function is used more than once in a single function call */
   static wchar_t* msg[NB_BUFFERS] = {NULL};
   static int buflen[NB_BUFFERS] = {0};
-  static int curbuf = 0;
+  static int current_buf = 0;
   wchar_t* ret;
   bool ok = false;
   if (!msg[0]) {
@@ -533,24 +533,24 @@ wchar_t* TCOD_console_vsprint_utf(const wchar_t* fmt, va_list ap) {
   do {
     /* warning ! depending on the compiler, vsnprintf return -1 or
      the expected string length if the buffer is not big enough */
-    int len = vswprintf(msg[curbuf], buflen[curbuf], fmt, ap);
+    int len = vswprintf(msg[current_buf], buflen[current_buf], fmt, ap);
     ok = true;
-    if (len < 0 || len >= buflen[curbuf]) {
+    if (len < 0 || len >= buflen[current_buf]) {
       /* buffer too small. */
       if (len > 0) {
-        while (buflen[curbuf] < len + 1) {
-          buflen[curbuf] *= 2;
+        while (buflen[current_buf] < len + 1) {
+          buflen[current_buf] *= 2;
         }
       } else {
-        buflen[curbuf] *= 2;
+        buflen[current_buf] *= 2;
       }
-      free(msg[curbuf]);
-      msg[curbuf] = calloc(sizeof(wchar_t), buflen[curbuf]);
+      free(msg[current_buf]);
+      msg[current_buf] = calloc(sizeof(wchar_t), buflen[current_buf]);
       ok = false;
     }
   } while (!ok);
-  ret = msg[curbuf];
-  curbuf = (curbuf + 1) % NB_BUFFERS;
+  ret = msg[current_buf];
+  current_buf = (current_buf + 1) % NB_BUFFERS;
   return ret;
 }
 int TCOD_console_stringLength_utf(const wchar_t* s) {
@@ -678,7 +678,7 @@ int TCOD_console_print_internal_utf(
         }
       }
       if (split) {
-        wchar_t* oldsplit = split;
+        wchar_t* old_split = split;
         while (!iswspace(*split) && split > c) {
           split--;
         }
@@ -686,7 +686,7 @@ int TCOD_console_print_internal_utf(
           *end = '\n';
         }
         if (!iswspace(*split)) {
-          split = oldsplit;
+          split = old_split;
         }
         end = split;
         bak = *split;

@@ -42,7 +42,7 @@ namespace tcod {
 /**
     Load a Tileset from a BDF font file.
 
-    Will throw an excpetion on a missing or corrupt file.
+    Will throw an exception on a missing or corrupt file.
 
     \rst
     .. versionadded:: 1.19

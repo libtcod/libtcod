@@ -288,8 +288,8 @@ public :
 	dx=0,dy=0 for current cell (x,y)
 	The weight array will contain 0.33 for each cell.
 	@Cpp void TCODHeightMap::kernelTransform(int kernelSize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
-	@C void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernelsize, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
-	@Py heightmap_kernel_transform(hm, kernelsize, dx, dy, weight, minLevel,maxLevel)
+	@C void TCOD_heightmap_kernel_transform(TCOD_heightmap_t *hm, int kernel_size, int *dx, int *dy, float *weight, float minLevel,float maxLevel)
+	@Py heightmap_kernel_transform(hm, kernel_size, dx, dy, weight, minLevel,maxLevel)
 	@C# void TCODHeightMap::kernelTransform(int kernelSize, int[] dx, int[] dy, float[] weight, float minLevel, float maxLevel)
 	@Param hm	In the C version, the address of the heightmap struct returned by the creation function.
 		kernelSize	Number of neighbour cells involved.

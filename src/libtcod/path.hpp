@@ -513,7 +513,7 @@ class TCODLIB_API TCODDijkstra {
         /**
         @PageName path_compute
 		@FuncTitle Computing a Dijkstra grid
-		@FuncDesc In case of Dijkstra, this works in a slightly different way. In order to be able to compute a path, Dijkstra must first analyse the distances from the selected root (origin) node to all other nodes:
+		@FuncDesc In case of Dijkstra, this works in a slightly different way. In order to be able to compute a path, Dijkstra must first analyze the distances from the selected root (origin) node to all other nodes:
 		@Cpp void TCODDijkstra::compute(int rootX, int rootY)
 		@C void TCOD_dijkstra_compute(TCOD_dijkstra_t dijkstra, int root_x, int root_y)
 		@Py dijkstra_compute(dijkstra, root_x, root_y)
@@ -527,7 +527,7 @@ class TCODLIB_API TCODDijkstra {
         /**
         @PageName path_compute
 		@FuncTitle Computing a path from a Dijkstra grid
-		@FuncDesc After the map is analysed and all the distances from the root node are known, an unlimited number of paths can be set, all originating at the root node, using:
+		@FuncDesc After the map is analyzed and all the distances from the root node are known, an unlimited number of paths can be set, all originating at the root node, using:
 			The path setting function will return true if there's a path from the root node to the destination node. Otherwise, it will return false.
 		@Cpp bool TCODDijkstra::setPath(int toX, int toY)
 		@C bool TCOD_dijkstra_path_set(TCOD_dijkstra_t dijkstra, int to_x, int to_y)

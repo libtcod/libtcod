@@ -144,7 +144,7 @@ static TCOD_Error send_to_cli_out(const TCOD_ContextParams* params, const char* 
 static const char TCOD_help_msg[] =
     "Command line options:\n\
 -help : Show this help message.\n\
--windowed : Open in a resizeable window.\n\
+-windowed : Open in a resizable window.\n\
 -fullscreen : Open a borderless fullscreen window.\n\
 -exclusive-fullscreen : Open an exclusive fullscreen window.\n\
 -resolution <width>x<height> : Sets the desired pixel resolution.\n\

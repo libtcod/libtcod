@@ -33,9 +33,6 @@
 #define TCODLIB_INT_H_
 #include <assert.h>
 #include <stdarg.h>
-#if defined(__ANDROID__)
-#include <android/log.h>
-#endif
 #ifdef __cplusplus
 #include <stdexcept>
 #include <string>
@@ -63,7 +60,7 @@ struct SDL_Window;
 struct SDL_Renderer;
 union SDL_Event;
 
-typedef struct {
+typedef struct TCOD_internal_context_t {
   /* number of characters in the bitmap font */
   int fontNbCharHoriz;
   int fontNbCharVertic;
@@ -87,8 +84,8 @@ typedef struct {
   int max_font_chars;
   /* fullscreen data */
   bool fullscreen;
-  int fullscreen_offsetx;
-  int fullscreen_offsety;
+  int fullscreen_offset_x;
+  int fullscreen_offset_y;
   /* asked by the user */
   int fullscreen_width;
   int fullscreen_height;

@@ -133,18 +133,18 @@ TEST_CASE("Parse sample2.cfg") {
   gameplay->addProperty("darknessLevel", TCOD_TYPE_INT, true);
   config->addStructure(gameplay);
 
-  TCODParserStruct* aidirector = parser.newStructure("aidirector");
-  aidirector->addProperty("waveLength", TCOD_TYPE_FLOAT, true);
-  aidirector->addProperty("lowLevel", TCOD_TYPE_FLOAT, true);
-  aidirector->addProperty("medLevel", TCOD_TYPE_FLOAT, true);
-  aidirector->addProperty("medRate", TCOD_TYPE_FLOAT, true);
-  aidirector->addProperty("highRate", TCOD_TYPE_FLOAT, true);
-  aidirector->addProperty("maxCreatures", TCOD_TYPE_INT, true);
-  aidirector->addProperty("spawnSourceRange", TCOD_TYPE_INT, true);
-  aidirector->addProperty("hordeDelay", TCOD_TYPE_INT, true);
-  aidirector->addProperty("distReplace", TCOD_TYPE_INT, true);
-  aidirector->addProperty("itemKillCount", TCOD_TYPE_INT, true);
-  config->addStructure(aidirector);
+  TCODParserStruct* ai_director = parser.newStructure("ai_director");
+  ai_director->addProperty("waveLength", TCOD_TYPE_FLOAT, true);
+  ai_director->addProperty("lowLevel", TCOD_TYPE_FLOAT, true);
+  ai_director->addProperty("medLevel", TCOD_TYPE_FLOAT, true);
+  ai_director->addProperty("medRate", TCOD_TYPE_FLOAT, true);
+  ai_director->addProperty("highRate", TCOD_TYPE_FLOAT, true);
+  ai_director->addProperty("maxCreatures", TCOD_TYPE_INT, true);
+  ai_director->addProperty("spawnSourceRange", TCOD_TYPE_INT, true);
+  ai_director->addProperty("hordeDelay", TCOD_TYPE_INT, true);
+  ai_director->addProperty("distReplace", TCOD_TYPE_INT, true);
+  ai_director->addProperty("itemKillCount", TCOD_TYPE_INT, true);
+  config->addStructure(ai_director);
 
   TCODParserStruct* creatures = parser.newStructure("creatures");
   creatures->addProperty("burnDamage", TCOD_TYPE_FLOAT, true);
@@ -175,7 +175,7 @@ TEST_CASE("Parse sample2.cfg") {
   player->addProperty("speed", TCOD_TYPE_FLOAT, true);
   player->addProperty("sprintLength", TCOD_TYPE_FLOAT, true);
   player->addProperty("sprintRecovery", TCOD_TYPE_FLOAT, true);
-  player->addProperty("rangeAccomodation", TCOD_TYPE_FLOAT, true);
+  player->addProperty("rangeAccommodation", TCOD_TYPE_FLOAT, true);
   player->addProperty("maxPathFinding", TCOD_TYPE_INT, true);
   player->addProperty("healRate", TCOD_TYPE_FLOAT, true);
   player->addProperty("healIntensityDelay", TCOD_TYPE_FLOAT, true);

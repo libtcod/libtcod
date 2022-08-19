@@ -49,8 +49,8 @@ bool TCOD_sys_check_png(const char* filename) {
 
 SDL_Surface* TCOD_sys_read_png(const char* filename) {
   unsigned char* png = NULL;
-  size_t pngsize;
-  if (!TCOD_sys_read_file(filename, &png, &pngsize)) {
+  size_t png_size;
+  if (!TCOD_sys_read_file(filename, &png, &png_size)) {
     TCOD_set_errorvf("File not found: %s", filename);
     return NULL;
   }
@@ -58,7 +58,7 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
   lodepng_state_init(&state);
   unsigned width;
   unsigned height;
-  lodepng_inspect(&width, &height, &state, png, pngsize);
+  lodepng_inspect(&width, &height, &state, png, png_size);
   if (state.error) {
     TCOD_set_errorvf("Error decoding PNG: %s", lodepng_error_text(state.error));
     free(png);
@@ -76,7 +76,7 @@ SDL_Surface* TCOD_sys_read_png(const char* filename) {
     bpp = 24;
   }
   unsigned char* image = NULL;
-  unsigned error = lodepng_decode(&image, &width, &height, &state, png, pngsize);
+  unsigned error = lodepng_decode(&image, &width, &height, &state, png, png_size);
   free(png);
   lodepng_state_cleanup(&state);
   if (error) {

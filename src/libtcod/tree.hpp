@@ -44,10 +44,10 @@ public :
 	TCODTree() : next(NULL),father(NULL),sons(NULL){}
 	void addSon(TCODTree *data) {
 		data->father=this;
-		TCODTree *lastson = sons;
-		while ( lastson && lastson->next ) lastson=lastson->next;
-		if ( lastson ) {
-			lastson->next=data;
+		TCODTree *last_son = sons;
+		while ( last_son && last_son->next ) last_son=last_son->next;
+		if ( last_son ) {
+			last_son->next=data;
 		} else {
 			sons=data;
 		}

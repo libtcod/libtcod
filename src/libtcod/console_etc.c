@@ -388,10 +388,10 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
   static TCOD_image_t img = NULL;
   static int left, right, top, bottom;
   /* mini particle system */
-#define MAX_PARTICULES 64
-  static float particle_heat[MAX_PARTICULES];
-  static float particle_x[MAX_PARTICULES], particle_y[MAX_PARTICULES];
-  static float particle_x_velocity[MAX_PARTICULES], particle_y_velocity[MAX_PARTICULES];
+#define MAX_PARTICLES 64
+  static float particle_heat[MAX_PARTICLES];
+  static float particle_x[MAX_PARTICLES], particle_y[MAX_PARTICLES];
+  static float particle_x_velocity[MAX_PARTICLES], particle_y_velocity[MAX_PARTICLES];
   static int particle_count = 0;  // Current number of active particles.
   static int first_particle = 0;  // First particle index, particle data wraps around the array.
   static float particle_delay = 0.1f;  // Seconds until the next particle spawns.
@@ -466,9 +466,10 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
       const float dist = ((xc - 2 * sparkle_x) * (xc - 2 * sparkle_x) + (yc - 2 * sparkle_y) * (yc - 2 * sparkle_y));
       TCOD_ColorRGB pixel_color = TCOD_black;
       if (sparkle_radius >= 0.0f && dist < sparkle_radius2) {
-        int colidx = 63 - (int)(63 * (sparkle_radius2 - dist) / sparkle_radius2) + TCOD_random_get_int(NULL, -10, 10);
-        colidx = CLAMP(0, 63, colidx);
-        pixel_color = colormap_light[colidx];
+        int color_idx =
+            63 - (int)(63 * (sparkle_radius2 - dist) / sparkle_radius2) + TCOD_random_get_int(NULL, -10, 10);
+        color_idx = CLAMP(0, 63, color_idx);
+        pixel_color = colormap_light[color_idx];
       }
       if (alpha) {
         TCOD_ColorRGB bg_color = TCOD_console_get_char_background(console, xc / 2, yc / 2);
@@ -493,7 +494,7 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
     }
   }
 
-  /* draw and update the particules */
+  /* draw and update the particles */
   int particles_left_to_update = particle_count;
   int particle_i = first_particle;
   while (particles_left_to_update > 0) {
@@ -522,16 +523,16 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
     particle_y[particle_i] += particle_y_velocity[particle_i] * delta_time;
     particle_heat[particle_i] -= delta_time * 0.3f;
     if (particle_heat[particle_i] < 0.0f) {  // Particle has died out.
-      first_particle = (first_particle + 1) % MAX_PARTICULES;
+      first_particle = (first_particle + 1) % MAX_PARTICLES;
       --particle_count;
     }
-    particle_i = (particle_i + 1) % MAX_PARTICULES;
+    particle_i = (particle_i + 1) % MAX_PARTICLES;
     --particles_left_to_update;
   }
   particle_delay -= delta_time;
-  if (particle_delay < 0.0f && particle_count < MAX_PARTICULES && sparkle_radius > 2.0f) {
+  if (particle_delay < 0.0f && particle_count < MAX_PARTICLES && sparkle_radius > 2.0f) {
     // Fire a new particle.
-    const int new_particle = (first_particle + particle_count++) % MAX_PARTICULES;
+    const int new_particle = (first_particle + particle_count++) % MAX_PARTICLES;
     particle_x[new_particle] = 2 * (sparkle_x - left);
     particle_y[new_particle] = 2 * (sparkle_y - top) + 2;
     particle_x_velocity[new_particle] = TCOD_random_get_float(NULL, -5.0f, 5.0f);
@@ -543,10 +544,10 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
   /* draw the text */
   for (int i = 0; i < text_length; ++i) {
     if (char_heat[i] >= 0.0f && powered_by[i] != '\n') {
-      int colidx = (int)(64 * char_heat[i]);
+      int color_idx = (int)(64 * char_heat[i]);
       TCOD_color_t col;
-      colidx = MIN(63, colidx);
-      col = colormap_heat[colidx];
+      color_idx = MIN(63, color_idx);
+      col = colormap_heat[color_idx];
       if (text_progress >= text_length) {
         float coef = (text_progress - text_length) / text_length;
         if (alpha) {
@@ -852,13 +853,13 @@ void fixImage(ImageDetailsV1* v) {
   fix32(&v->format);
 }
 
-void fixLayerv1(LayerV1* l) {
+void fixLayer_v1(LayerV1* l) {
   fix32(&l->mode);
   fix32(&l->index);
   fix32(&l->dataSize);
 }
 
-void fixLayerv2(LayerV2* l) {
+void fixLayer_v2(LayerV2* l) {
   fix32(&l->mode);
   fix32(&l->fgalpha);
   fix32(&l->bgalpha);
@@ -982,13 +983,13 @@ bool TCOD_console_save_apf(TCOD_console_t con, const char* filename) {
   return true;
 }
 
-typedef struct {
-  LayerV1 headerv1;
-  LayerV2 headerv2;
+typedef struct LayerData {
+  LayerV1 header_v1;
+  LayerV2 header_v2;
   uint8_t* data; /* dynamically allocated */
 } LayerData;
 
-typedef struct {
+typedef struct Data {
   ImageDetailsV1 details;
   SettingsDataV1 settings;
   LayerData layer;
@@ -1112,19 +1113,19 @@ bool TCOD_console_load_apf(TCOD_Console* con, const char* filename) {
               if (ver > 2) ERR_NEWER("layer spec");
 
               if (ver == 1) {
-                if (!getData(&data.layer.headerv1, sizeof(LayerV1), fp)) ERR("Can't read layer header.");
-                fixLayerv1(&data.layer.headerv1);
+                if (!getData(&data.layer.header_v1, sizeof(LayerV1), fp)) ERR("Can't read layer header.");
+                fixLayer_v1(&data.layer.header_v1);
 
                 /* Read in the data chunk*/
-                data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t) * data.layer.headerv1.dataSize));
-                getData(data.layer.data, data.layer.headerv1.dataSize, fp);
+                data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t) * data.layer.header_v1.dataSize));
+                getData(data.layer.data, data.layer.header_v1.dataSize, fp);
               } else if (ver == 2) {
-                if (!getData(&data.layer.headerv2, sizeof(LayerV2), fp)) ERR("Can't read layer header.");
-                fixLayerv2(&data.layer.headerv2);
+                if (!getData(&data.layer.header_v2, sizeof(LayerV2), fp)) ERR("Can't read layer header.");
+                fixLayer_v2(&data.layer.header_v2);
 
                 /* Read in the data chunk */
-                data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t) * data.layer.headerv2.dataSize));
-                getData(data.layer.data, data.layer.headerv2.dataSize, fp);
+                data.layer.data = (uint8_t*)(malloc(sizeof(uint8_t) * data.layer.header_v2.dataSize));
+                getData(data.layer.data, data.layer.header_v2.dataSize, fp);
               }
             } else {
               /* skip unknown segment */

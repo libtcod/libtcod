@@ -300,7 +300,7 @@ static void upload_tile_by_id_normalized(
     const void* __restrict pixels,
     int stride,
     const struct TCOD_ColorRGBA* __restrict color_key) {
-  // Analyse this tiles traits.
+  // Analyze this tiles traits.
   bool has_color = false;
   bool has_alpha = false;
   for (int y = 0; y < tileset->tile_height; ++y) {

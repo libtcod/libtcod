@@ -275,12 +275,12 @@ TCOD_list_t TCOD_sys_get_directory_content(const char* path, const char* pattern
 #ifdef TCOD_WINDOWS
 /* Helper function to count set bits in the processor mask. */
 static DWORD CountSetBits(ULONG_PTR bitMask) {
-  DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+  DWORD L_SHIFT = sizeof(ULONG_PTR) * 8 - 1;
   DWORD bitSetCount = 0;
-  ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
+  ULONG_PTR bitTest = (ULONG_PTR)1 << L_SHIFT;
   DWORD i;
 
-  for (i = 0; i <= LSHIFT; ++i) {
+  for (i = 0; i <= L_SHIFT; ++i) {
     bitSetCount += ((bitMask & bitTest) ? 1 : 0);
     bitTest /= 2;
   }
@@ -520,8 +520,8 @@ void TCOD_condition_delete(TCOD_cond_t p_cond) {
 }
 #endif  // TCOD_NO_THREADS
 void TCOD_sys_get_fullscreen_offsets(int* offset_x, int* offset_y) {
-  if (offset_x) *offset_x = TCOD_ctx.fullscreen_offsetx;
-  if (offset_y) *offset_y = TCOD_ctx.fullscreen_offsety;
+  if (offset_x) *offset_x = TCOD_ctx.fullscreen_offset_x;
+  if (offset_y) *offset_y = TCOD_ctx.fullscreen_offset_y;
 }
 #ifndef NO_SDL
 /* dynamic library support */

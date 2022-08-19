@@ -94,7 +94,7 @@ TCOD_PUBLIC void TCOD_noise_delete(TCOD_Noise* __restrict noise);
     `type` is which noise generator should be used.
     Can be `TCOD_NOISE_DEFAULT` to use the type set by the TCOD_Noise object.
 
-    `n` is the length of the input and output arrrays.
+    `n` is the length of the input and output arrays.
 
     `x[n]`, `y[n]`, `z[n]`, `w[n]` are the input coordinates for the noise
     generator.  For a 2D generator you'd provide the `x[n]` and `y[n]` arrays

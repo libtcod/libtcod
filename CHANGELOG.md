@@ -725,7 +725,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Added
 - doctcod command added to VS2015 solution.
 - Python (PTVS) project for samples_py added to VS2015 solution.
-- Console foreground and background colours are images.
+- Console foreground and background colors are images.
   https://bitbucket.org/libtcod/libtcod/issues/51/console-image-unification
 - Python unit tests added (Kyle Benesch).
   https://bitbucket.org/libtcod/libtcod/commits/7a66ad5d66832686c0071e3938b85ebad8e7cebb
@@ -848,7 +848,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - Some of the parser-related functions now can be chained.
 - The RNG API now has less functions that choose the distribution based on the set flags.
 - The noise API now has less functions that choose the noise type based on the set flags.
-- Console default and cell foreground and background colour getters and setters renamed to more intuitive names:
+- Console default and cell foreground and background color getters and setters renamed to more intuitive names:
   * `TCOD_console_set_background_color` => `TCOD_console_set_default_background`
   * `TCOD_console_set_foreground_color` => `TCOD_console_set_default_foreground`
   * `TCOD_console_get_background_color` => `TCOD_console_get_default_background`
@@ -893,7 +893,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - More default values for `printFrame`:
   `void printFrame(int x,int y,int w,int h, bool clear=true, TCOD_bkgnd_flag_t flag = TCOD_BKGND_DEFAULT, const char *fmt=NULL, ...)`
 - hardened fov module
-- extended list of colour constants (the old names can produce slightly different colours)
+- extended list of color constants (the old names can produce slightly different colors)
 - `TCODMap` memory consumption divided by 4
 - now mouse wheel events are properly detected
 

@@ -57,7 +57,7 @@ typedef struct TCOD_LogMessage {
   int lineno;  // Source line of the logged message, usually __LINE__.
 } TCOD_LogMessage;
 /***************************************************************************
-    @brief A callback for logger listerners.
+    @brief A callback for logger listeners.
  */
 typedef void (*TCOD_LoggingCallback)(const TCOD_LogMessage* message, void* userdata);
 #ifdef __cplusplus

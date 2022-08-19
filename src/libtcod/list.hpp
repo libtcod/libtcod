@@ -475,7 +475,7 @@ class TCODList {
 
 	/**
 	@PageName list_stack
-	@FuncTitle Poping an element from the stack
+	@FuncTitle Popping an element from the stack
 	@FuncDesc You can pop an element from the stack (remove the last element of the list).
 	@Cpp template <class T> T TCODList::pop()
 	@C void * TCOD_list_pop(TCOD_list_t l)

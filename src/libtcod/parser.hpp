@@ -165,7 +165,7 @@ public :
 	@Param name	The name of the structure type (in the example, this would be "item_type").
 	@CppEx
 		TCODParser parser();
-		TCODParserStruct *itemTypeStruct = parser.newStructrue("item_type");
+		TCODParserStruct *itemTypeStruct = parser.newStructure("item_type");
 	@CEx
 		TCOD_parser_t parser = TCOD_parser_new();
 		TCOD_parser_struct_t item_type_struct = TCOD_parser_new_struct(parser, "item_type");

@@ -36,11 +36,11 @@
 TCOD_tree_t* TCOD_tree_new(void) { return (TCOD_tree_t*)calloc(1, sizeof(TCOD_tree_t)); }
 
 void TCOD_tree_add_son(TCOD_tree_t* node, TCOD_tree_t* son) {
-  TCOD_tree_t* lastson = node->sons;
+  TCOD_tree_t* last_son = node->sons;
   son->father = node;
-  while (lastson && lastson->next) lastson = lastson->next;
-  if (lastson) {
-    lastson->next = son;
+  while (last_son && last_son->next) last_son = last_son->next;
+  if (last_son) {
+    last_son->next = son;
   } else {
     node->sons = son;
   }

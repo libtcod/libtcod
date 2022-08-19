@@ -125,7 +125,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_draw_rect_rgb(
 
     If `fg` or `bg` is NULL then their respective colors will not be updated.
 
-    If `clear` is true then the inner area of the frame is filled with the inner decoraction, which is typically space.
+    If `clear` is true then the inner area of the frame is filled with the inner decoration, which is typically space.
 
     \rst
     .. versionadded:: 1.19
@@ -150,7 +150,7 @@ namespace tcod {
 
     @param console A reference to a TCOD_Console.
     @param rect An `{x, y, width, height}` rectangle, starting from the upper-left-most tile as zero.
-    @param ch The character to draw.  If zero then the characers in the drawing region will not be changed.
+    @param ch The character to draw.  If zero then the characters in the drawing region will not be changed.
     @param fg The foreground color.  The printed text is set to this color.
               If std::nullopt then the foreground will be left unchanged, inheriting the previous value of the tile.
     @param bg The background color.  The background tile under the printed text is set to this color.

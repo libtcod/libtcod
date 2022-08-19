@@ -595,7 +595,7 @@ public :
 	@PageName console_draw_basic
 	@FuncTitle Setting the ASCII code of a cell
 	@FuncDesc This function modifies the ASCII code of a cell, leaving other properties (background and foreground colors) unchanged.
-		Note that since a clear console has both background and foreground colors set to black for every cell, using setchar will produce black characters on black background. Use putchar instead.
+		Note that since a clear console has both background and foreground colors set to black for every cell, using setChar will produce black characters on black background. Use putchar instead.
 	@Cpp void TCODConsole::setChar(int x, int y, int c)
 	@C void TCOD_console_set_char(TCOD_console_t con,int x, int y, int c)
 	@Py console_set_char(con, x,  y, c)
@@ -876,8 +876,8 @@ public :
 
 	/**
 	@PageName console_print
-	@FuncTitle Compute the height of an autowrapped string
-	@FuncDesc This function returns the expected height of an autowrapped string without actually printing the string with printRect or printRectEx
+	@FuncTitle Compute the height of an auto-wrapped string
+	@FuncDesc This function returns the expected height of an auto-wrapped string without actually printing the string with printRect or printRectEx
 	@Cpp int TCODConsole::getHeightRect(int x, int y, int w, int h, const char *fmt, ...)
 
 	@C int TCOD_console_get_height_rect(TCOD_console_t con,int x, int y, int w, int h, const char *fmt, ...)

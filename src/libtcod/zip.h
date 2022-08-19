@@ -31,6 +31,7 @@
  */
 #ifndef _TCOD_ZIP_H
 #define _TCOD_ZIP_H
+#ifndef TCOD_NO_ZLIB
 
 #include "color.h"
 #include "console_types.h"
@@ -90,4 +91,5 @@ TCODLIB_API void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_NO_ZLIB
+#endif  // _TCOD_ZIP_H

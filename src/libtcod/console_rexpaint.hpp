@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_CONSOLE_REXPAINT_HPP_
 #define TCOD_CONSOLE_REXPAINT_HPP_
+#ifndef TCOD_NO_ZLIB
 
 #include <filesystem>
 #include <vector>
@@ -73,4 +74,5 @@ inline void save_xp(
       TCOD_save_xp(static_cast<int>(consoles.size()), consoles.data(), path.string().c_str(), compress_level));
 }
 }  // namespace tcod
+#endif  // TCOD_NO_ZLIB
 #endif  // TCOD_CONSOLE_REXPAINT_HPP_

@@ -1,4 +1,4 @@
-
+#ifndef TCOD_NO_ZLIB
 #include <array>
 #include <catch2/catch_all.hpp>
 #include <cstdio>
@@ -6,7 +6,6 @@
 #include <libtcod/console_rexpaint.hpp>
 #include <utility>
 #include <vector>
-
 
 const int COMPRESSION_LEVEL = 0;  // Disable compression.
 
@@ -85,3 +84,4 @@ TEST_CASE("REXPaint from file.") {
   REQUIRE(console->at(2, 1).bg == TCOD_ColorRGBA{0, 0, 255, 255});
   REQUIRE(console->at(3, 1).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }
+#endif  // TCOD_NO_ZLIB

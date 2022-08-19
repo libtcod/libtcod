@@ -32,6 +32,7 @@
 // clang-format off
 #ifndef _TCOD_ZIP_HPP
 #define _TCOD_ZIP_HPP
+#ifndef TCOD_NO_ZLIB
 
 #include "color.hpp"
 #include "console.hpp"
@@ -359,4 +360,5 @@ protected :
 	TCOD_zip_t data;
 };
 
-#endif
+#endif // TCOD_NO_ZLIB
+#endif // _TCOD_ZIP_HPP

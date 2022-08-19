@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "console_rexpaint.h"
+#ifndef TCOD_NO_ZLIB
 
 #include <limits.h>
 #include <stdlib.h>
@@ -395,3 +396,4 @@ int TCOD_save_xp_to_memory(
   deflateEnd(&stream);
   return TCOD_set_errorv("Output buffer was too small.");
 }
+#endif  // TCOD_NO_ZLIB

@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_CONSOLE_REXPAINT_H_
 #define TCOD_CONSOLE_REXPAINT_H_
+#ifndef TCOD_NO_ZLIB
 
 #ifdef __cplusplus
 #include <string>
@@ -184,4 +185,5 @@ TCODLIB_API TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, 
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+#endif  // TCOD_NO_ZLIB
 #endif  // TCOD_CONSOLE_REXPAINT_H_

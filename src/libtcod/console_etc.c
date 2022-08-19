@@ -625,9 +625,11 @@ TCOD_console_t TCOD_console_from_file(const char* filename) {
   TCOD_console_t con;
   FILE* f;
   TCOD_IFNOT(filename != NULL) { return NULL; }
+#ifndef TCOD_NO_ZLIB
   if (string_ends_with(filename, ".xp")) {
     return TCOD_console_from_xp(filename);
   }
+#endif  // TCOD_NO_ZLIB
   f = fopen(filename, "rb");
   TCOD_IFNOT(f != NULL) { return NULL; }
   if (fscanf(f, "ASCII-Paint v%g", &version) != 1) {

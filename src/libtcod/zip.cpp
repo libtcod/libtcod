@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #include "zip.hpp"
+#ifndef TCOD_NO_ZLIB
 
 TCODZip::TCODZip() { data = TCOD_zip_new(); }
 
@@ -86,3 +87,4 @@ uint32_t TCODZip::getCurrentBytes() const { return TCOD_zip_get_current_bytes(da
 uint32_t TCODZip::getRemainingBytes() const { return TCOD_zip_get_remaining_bytes(data); }
 
 void TCODZip::skipBytes(uint32_t nbBytes) { TCOD_zip_skip_bytes(data, nbBytes); }
+#endif  // TCOD_NO_ZLIB

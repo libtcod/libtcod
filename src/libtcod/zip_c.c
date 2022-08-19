@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "zip.h"
+#ifndef TCOD_NO_ZLIB
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
@@ -36,7 +38,6 @@
 #include "console.h"
 #include "libtcod_int.h"
 #include "utility.h"
-#include "zip.h"
 
 typedef struct TCOD_Zip {
   TCOD_list_t buffer; /* list<int> */
@@ -446,3 +447,4 @@ void TCOD_zip_skip_bytes(TCOD_zip_t pzip, uint32_t nbBytes) {
     zip->ibuffer = (uintptr_t)TCOD_list_get(zip->buffer, zip->offset - 1);
   }
 }
+#endif  // TCOD_NO_ZLIB

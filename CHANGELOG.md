@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Added
+- Libtcod can now be built without zlib by passing the `-DLIBTCOD_ZLIB=disable` flag to CMake or by setting `CMAKE_DISABLE_FIND_PACKAGE_ZLIB=1`.
+
 ### Changed
 - The OpenGL2 renderer now defaults to the nearest filter unless `SDL_HINT_RENDER_SCALE_QUALITY` is set otherwise.
   This makes the renderer consistent with the SDL2 renderer.

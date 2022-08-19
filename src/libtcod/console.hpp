@@ -1737,12 +1737,14 @@ public :
 	*/
 	bool saveApf(const char *filename) const;
 
+#ifndef TCOD_NO_ZLIB
 	bool loadXp(const char *filename) {
 		return TCOD_console_load_xp(data, filename) != 0;
 	}
 	bool saveXp(const char *filename, int compress_level) {
 		return TCOD_console_save_xp(data, filename, compress_level) != 0;
 	}
+#endif // TCOD_NO_ZLIB
 
 	/**
 	@PageName console_offscreen

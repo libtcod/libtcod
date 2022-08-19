@@ -72,14 +72,14 @@ static bool string_copy(char* dest, const char* source, int len) {
 }
 
 void TCOD_parser_error(const char* msg, ...) {
-  char buf[2048] = "";
-  char buf2[2048] = "";
   va_list ap;
   va_start(ap, msg);
-  vsnprintf(buf, sizeof(buf), msg, ap);
+  char error_partial[2048] = "";
+  vsnprintf(error_partial, sizeof(error_partial), msg, ap);
   va_end(ap);
-  snprintf(buf2, sizeof(buf2), "error in %s line %d : %s", lex->filename, lex->file_line, buf);
-  listener->error(buf2);
+  char error_final[4096] = "";
+  snprintf(error_final, sizeof(error_final), "error in %s line %d : %s", lex->filename, lex->file_line, error_partial);
+  listener->error(error_final);
   lex->token_type = TCOD_LEX_ERROR;
 }
 
@@ -204,7 +204,7 @@ TCOD_value_t TCOD_parse_string_value(void) {
     slen += strlen(*s);
   }
   TCOD_value_t ret = {.s = calloc(sizeof(*ret.s), slen + 1)};
-  if (!ret.s) TCOD_parser_error("parseStringValue : out of memory allocating string of length %d.", slen + 1);
+  if (!ret.s) TCOD_parser_error("parseStringValue : out of memory allocating string of length %ld.", slen + 1);
   for (char** s = (void*)TCOD_list_begin(l); s != (void*)TCOD_list_end(l); ++s) {
     if (ret.s) strcat(ret.s, *s);
     free(*s);
@@ -780,7 +780,7 @@ static bool default_new_struct(TCOD_ParserStruct* str, const char* name) {
 }
 
 static bool default_new_flag(const char* name) {
-  char tmp[512] = "";
+  char tmp[1024] = "";
   snprintf(tmp, sizeof(tmp), "%s.%s", cur_prop_name, name);
   prop_t* prop = calloc(sizeof(*prop), 1);
   prop->name = TCOD_strdup(tmp);
@@ -791,7 +791,7 @@ static bool default_new_flag(const char* name) {
 }
 
 static bool default_new_property(const char* propname, TCOD_value_type_t type, TCOD_value_t value) {
-  char tmp[512] = "";
+  char tmp[1024] = "";
   snprintf(tmp, sizeof(tmp), "%s.%s", cur_prop_name, propname);
   prop_t* prop = calloc(sizeof(*prop), 1);
   prop->name = TCOD_strdup(tmp);

@@ -37,7 +37,7 @@
 
 #include "console.hpp"
 #include "image.h"
-#include "matrix.h"
+#include "matrix.hpp"
 
 class TCODConsole;
 

@@ -76,7 +76,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/list_c.c
     libtcod/logging.c
     libtcod/logging.h
-    libtcod/matrix.h
+    libtcod/matrix.hpp
     libtcod/mersenne.cpp
     libtcod/mersenne.h
     libtcod/mersenne.hpp
@@ -191,8 +191,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
     libtcod/sdl2/gl2_ext_.h
-    libtcod/utility/matrix.h
-    libtcod/utility/vector2.h
     vendor/stb.c
 )
 install(FILES
@@ -242,7 +240,7 @@ install(FILES
     libtcod/list.h
     libtcod/list.hpp
     libtcod/logging.h
-    libtcod/matrix.h
+    libtcod/matrix.hpp
     libtcod/mersenne.h
     libtcod/mersenne.hpp
     libtcod/mersenne_types.h
@@ -316,12 +314,6 @@ install(FILES
     libtcod/sdl2/event.h
     libtcod/sdl2/gl2_ext_.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/sdl2
-    COMPONENT IncludeFiles
-)
-install(FILES
-    libtcod/utility/matrix.h
-    libtcod/utility/vector2.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/utility
     COMPONENT IncludeFiles
 )
 source_group(libtcod FILES
@@ -401,7 +393,7 @@ source_group(libtcod FILES
     libtcod/list_c.c
     libtcod/logging.c
     libtcod/logging.h
-    libtcod/matrix.h
+    libtcod/matrix.hpp
     libtcod/mersenne.cpp
     libtcod/mersenne.h
     libtcod/mersenne.hpp
@@ -520,10 +512,6 @@ source_group(libtcod\\sdl2 FILES
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
     libtcod/sdl2/gl2_ext_.h
-)
-source_group(libtcod\\utility FILES
-    libtcod/utility/matrix.h
-    libtcod/utility/vector2.h
 )
 source_group(vendor FILES
     vendor/stb.c

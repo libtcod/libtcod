@@ -42,7 +42,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/list.h \
 	../../src/libtcod/list.hpp \
 	../../src/libtcod/logging.h \
-	../../src/libtcod/matrix.h \
+	../../src/libtcod/matrix.hpp \
 	../../src/libtcod/mersenne.h \
 	../../src/libtcod/mersenne.hpp \
 	../../src/libtcod/mersenne_types.h \
@@ -113,11 +113,6 @@ libtcod_sdl2_includedir = $(includedir)/libtcod/sdl2
 libtcod_sdl2_include_HEADERS = \
 	../../src/libtcod/sdl2/event.h \
 	../../src/libtcod/sdl2/gl2_ext_.h
-
-libtcod_utility_includedir = $(includedir)/libtcod/utility
-libtcod_utility_include_HEADERS = \
-	../../src/libtcod/utility/matrix.h \
-	../../src/libtcod/utility/vector2.h
 
 libtcod_la_SOURCES = \
 	../../src/libtcod/bresenham.cpp \

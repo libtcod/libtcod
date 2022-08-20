@@ -32,7 +32,6 @@
 #include "renderer_sdl2.h"
 #ifndef NO_SDL
 #include <SDL.h>
-#include <lodepng.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -762,28 +761,35 @@ static void sdl2_pixel_to_tile(struct TCOD_Context* __restrict self, double* __r
 /**
  *  Save a PNG screen-shot to `file`.
  */
-static TCOD_Error sdl2_save_screenshot(struct TCOD_Context* __restrict self, const char* __restrict filename) {
+static TCOD_Error sdl2_screen_capture(
+    struct TCOD_Context* __restrict self,
+    TCOD_ColorRGBA* __restrict out_pixels,
+    int* __restrict width,
+    int* __restrict height) {
   struct TCOD_RendererSDL2* context = self->contextdata_;
   if (!context->cache_texture) {
     TCOD_set_errorv("Nothing to save before the first frame.");
-    lodepng_encode32_file(filename, NULL, 0, 0);
+    *width = 0;
+    *height = 0;
     return TCOD_E_WARN;
   }
   SDL_SetRenderTarget(context->renderer, context->cache_texture);
-  int width;
-  int height;
-  SDL_QueryTexture(context->cache_texture, NULL, NULL, &width, &height);
-  void* pixels = malloc(sizeof(uint8_t) * 4 * width * height);
-  if (!pixels) {
-    SDL_SetRenderTarget(context->renderer, NULL);
-    TCOD_set_errorv("Out of memory.");
-    return TCOD_E_OUT_OF_MEMORY;
+  int current_width = 0;
+  int current_height = 0;
+  SDL_QueryTexture(context->cache_texture, NULL, NULL, &current_width, &current_height);
+  TCOD_Error err = TCOD_E_OK;
+  if (!out_pixels) {
+    *width = current_width;
+    *height = current_height;
+  } else if (*width != current_width || *height != current_height) {
+    TCOD_set_errorv("width or height do not match the size of the screen.");
+    err = TCOD_E_INVALID_ARGUMENT;
+  } else {
+    SDL_RenderReadPixels(
+        context->renderer, NULL, SDL_PIXELFORMAT_RGBA32, out_pixels, (int)(sizeof(*out_pixels) * (*width)));
   }
-  SDL_RenderReadPixels(context->renderer, NULL, SDL_PIXELFORMAT_RGBA32, pixels, (int)(sizeof(uint8_t) * 4 * width));
-  lodepng_encode32_file(filename, pixels, (unsigned)width, (unsigned)height);
-  free(pixels);
   SDL_SetRenderTarget(context->renderer, NULL);
-  return TCOD_E_OK;
+  return err;
 }
 /**
  *  Return a pointer to the SDL2 window.
@@ -915,7 +921,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->c_get_sdl_window_ = sdl2_get_window;
   context->c_get_sdl_renderer_ = sdl2_get_renderer;
   context->c_pixel_to_tile_ = sdl2_pixel_to_tile;
-  context->c_save_screenshot_ = sdl2_save_screenshot;
+  context->c_screen_capture_ = sdl2_screen_capture;
   context->c_set_tileset_ = sdl2_set_tileset;
   context->c_recommended_console_size_ = sdl2_recommended_console_size;
 

@@ -32,7 +32,6 @@
 #ifndef LIBTCOD_RENDERER_GL_INTERNAL_H_
 #define LIBTCOD_RENDERER_GL_INTERNAL_H_
 #include <SDL.h>
-#include <lodepng.h>
 #include <math.h>
 #include <stdbool.h>
 
@@ -47,26 +46,31 @@ extern "C" {
 /**
  *  Save a screen capture.
  */
-static TCOD_Error gl_screenshot(struct TCOD_Context* __restrict context, const char* __restrict filename) {
+static TCOD_Error gl_capture(
+    struct TCOD_Context* __restrict context,
+    TCOD_ColorRGBA* __restrict out_pixels,
+    int* __restrict width,
+    int* __restrict height) {
   (void)context;  // Unused parameter.
   int rect[4];
   glGetIntegerv(GL_VIEWPORT, rect);
-  TCOD_ColorRGBA* pixels = malloc(sizeof(*pixels) * rect[2] * rect[3]);
-  if (!pixels) {
-    TCOD_set_errorv("Could not allocate memory for a screenshot.");
-    return TCOD_E_OUT_OF_MEMORY;
+  if (!out_pixels) {
+    *width = rect[2];
+    *height = rect[3];
+    return TCOD_E_OK;
+  } else if (*width != rect[2] || *height != rect[3]) {
+    TCOD_set_errorv("width or height do not match the size of the screen.");
+    return TCOD_E_INVALID_ARGUMENT;
   }
-  glReadPixels(0, 0, rect[2], rect[3], GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  glReadPixels(0, 0, rect[2], rect[3], GL_RGBA, GL_UNSIGNED_BYTE, out_pixels);
   // Flip image on Y axis.
   for (int y = 0; y < rect[3] / 2; ++y) {
     for (int x = 0; x < rect[2]; ++x) {
-      TCOD_ColorRGBA tmp = pixels[y * rect[2] + x];
-      pixels[y * rect[2] + x] = pixels[(rect[3] - 1 - y) * rect[2] + x];
-      pixels[(rect[3] - 1 - y) * rect[2] + x] = tmp;
+      TCOD_ColorRGBA tmp = out_pixels[y * rect[2] + x];
+      out_pixels[y * rect[2] + x] = out_pixels[(rect[3] - 1 - y) * rect[2] + x];
+      out_pixels[(rect[3] - 1 - y) * rect[2] + x] = tmp;
     }
   }
-  lodepng_encode32_file(filename, (const unsigned char*)pixels, (unsigned)rect[2], (unsigned)rect[3]);
-  free(pixels);
   return TCOD_E_OK;
 }
 /**
@@ -145,7 +149,7 @@ static TCOD_Error TCOD_renderer_gl_common_init(
     struct TCOD_Context* out) {
   out->c_get_sdl_window_ = gl_get_sdl_window;
   out->c_pixel_to_tile_ = gl_pixel_to_tile;
-  out->c_save_screenshot_ = gl_screenshot;
+  out->c_screen_capture_ = gl_capture;
   out->c_set_tileset_ = gl_set_tileset;
   out->c_recommended_console_size_ = gl_recommended_console_size;
   struct TCOD_RendererGLCommon* renderer = out->contextdata_;

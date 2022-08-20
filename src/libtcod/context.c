@@ -34,6 +34,7 @@
 #ifndef NO_SDL
 #include <SDL_events.h>
 #endif  // NO_SDL
+#include <lodepng.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,9 +122,6 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
-  if (!context->c_save_screenshot_) {
-    return TCOD_set_errorv("Context does not support screenshots.");
-  }
   char unique_path[128];
   while (!filename) {
     static int unique_id = 0;
@@ -134,6 +132,13 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
       continue;
     }
     filename = unique_path;
+  }
+  if (!context->c_save_screenshot_) {
+    int width = 0;
+    int height = 0;
+    TCOD_ColorRGBA* pixels = TCOD_context_screen_capture_alloc(context, &width, &height);
+    lodepng_encode32_file(filename, (const unsigned char*)pixels, (unsigned)width, (unsigned)height);
+    free(pixels);
   }
   return context->c_save_screenshot_(context, filename);
 }
@@ -188,4 +193,37 @@ TCOD_Error TCOD_context_recommended_console_size(
     magnification = 1.0f;
   }
   return context->c_recommended_console_size_(context, magnification, columns, rows);
+}
+TCOD_Error TCOD_context_screen_capture(
+    struct TCOD_Context* __restrict context,
+    TCOD_ColorRGBA* __restrict out_pixels,
+    int* __restrict width,
+    int* __restrict height) {
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!context->c_screen_capture_) return TCOD_set_errorv("Context does not support screen capture.");
+  if (!width || !height) {
+    TCOD_set_errorv("width and height can not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->c_screen_capture_(context, out_pixels, width, height);
+}
+
+TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
+    struct TCOD_Context* __restrict context, int* __restrict width, int* __restrict height) {
+  while (true) {
+    if (!TCOD_context_screen_capture(context, NULL, width, height)) return NULL;
+    TCOD_ColorRGBA* pixels = malloc((*width) * (*height) * sizeof(*pixels));
+    if (!pixels) {
+      TCOD_set_errorv("Failed to allocate image for screen capture.");
+      return NULL;
+    }
+    const TCOD_Error err = TCOD_context_screen_capture(context, pixels, width, height);
+    if (err >= TCOD_E_OK) return pixels;
+    free(pixels);
+    if (err == TCOD_E_INVALID_ARGUMENT) continue;
+    return NULL;
+  }
 }

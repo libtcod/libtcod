@@ -278,6 +278,40 @@ TCOD_PUBLIC int TCOD_context_get_renderer_type(struct TCOD_Context* context);
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
     struct TCOD_Context* context, float magnification, int* __restrict columns, int* __restrict rows);
+/***************************************************************************
+    @brief Fill `out_pixels` with a screen capture.
+
+    @param context A non-NULL TCOD_Context object.
+    @param out_pixels If NULL then width and height are filled with the output dimensions.
+                      If not NULL then width and height are verified and the capture will be written out.
+    @param width Pointer to fill with the expected image width.
+    @param height Pointer to fill with the expected image height.
+    @return A negative error value is returned on errors, otherwise returns TCOD_E_OK.
+
+    \rst
+    .. versionadded:: unreleased
+    \endrst
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
+    struct TCOD_Context* __restrict context,
+    TCOD_ColorRGBA* __restrict out_pixels,
+    int* __restrict width,
+    int* __restrict height);
+/***************************************************************************
+    @brief Allocate and return a screen capture.  The returned array must be freed with `free()`.
+
+    @param context A non-NULL TCOD_Context object.
+    @param width Pointer to fill with the allocated image width.
+    @param height Pointer to fill with the allocated image height.
+    @return An allocated array of RGBA pixels which must be manually freed.
+
+    \rst
+    .. versionadded:: unreleased
+    \endrst
+ */
+TCOD_NODISCARD
+TCOD_PUBLIC TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
+    struct TCOD_Context* __restrict context, int* __restrict width, int* __restrict height);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
@@ -527,6 +561,19 @@ struct TCOD_Context {
   */
   TCOD_Error (*c_recommended_console_size_)(
       struct TCOD_Context* __restrict self, float magnification, int* __restrict columns, int* __restrict rows);
+  /***************************************************************************
+      Fill `out_pixels` with a screen capture.
+
+      `width` and `height` will not be NULL.
+      `width` and `height` will be filled with the dimensions of the output if `out_pixels` is NULL.
+      If `out_pixels` is not NULL then `width` and `height` are verified before writing to `out_pixels`,
+      if verification fails then TCOD_E_INVALID_ARGUMENT must be returned.
+   */
+  TCOD_Error (*c_screen_capture_)(
+      struct TCOD_Context* __restrict self,
+      TCOD_ColorRGBA* __restrict out_pixels,
+      int* __restrict width,
+      int* __restrict height);
 };
 #ifdef __cplusplus
 namespace tcod {

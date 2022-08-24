@@ -289,7 +289,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_recommended_console_size(
     @return A negative error value is returned on errors, otherwise returns TCOD_E_OK.
 
     \rst
-    .. versionadded:: unreleased
+    .. versionadded:: 1.22
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
@@ -306,7 +306,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
     @return An allocated array of RGBA pixels which must be manually freed.
 
     \rst
-    .. versionadded:: unreleased
+    .. versionadded:: 1.22
     \endrst
  */
 TCOD_NODISCARD

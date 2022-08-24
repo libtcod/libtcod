@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+
+## [1.22.1] - 2022-08-24
 ### Fixed
 - Fix regression in TCODList when items are removed during iteration.
 

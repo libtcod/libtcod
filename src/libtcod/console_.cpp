@@ -35,7 +35,7 @@
 
 #include "console.hpp"
 #include "console_init.h"
-#include "console_printing.h"
+#include "console_printing.hpp"
 #include "error.hpp"
 #include "image.hpp"
 #include "libtcod_int.h"

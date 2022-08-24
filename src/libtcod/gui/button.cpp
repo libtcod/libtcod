@@ -35,6 +35,8 @@
 
 #include <algorithm>
 
+#include "../console_printing.hpp"
+
 Button::Button(const char* label, const char* tip, widget_callback_t cbk, void* userData)
     : pressed(false), label(NULL) {
   if (label) {

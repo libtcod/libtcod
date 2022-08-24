@@ -1,6 +1,7 @@
 
 #include <catch2/catch_all.hpp>
 #include <libtcod/console.hpp>
+#include <libtcod/console_printing.hpp>
 
 #include "common.hpp"
 

@@ -83,6 +83,7 @@
 #include "bsp.hpp"
 #include "color.hpp"
 #include "console.hpp"
+#include "console_printing.hpp"
 #include "console_rexpaint.hpp"
 #include "console_types.hpp"
 #include "context.hpp"

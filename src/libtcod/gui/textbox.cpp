@@ -37,6 +37,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "../console_printing.hpp"
+
 float TextBox::blinkingDelay = 0.5f;
 TextBox::TextBox(int x, int y, int w, int max_width, const char* label, const char* value, const char* tip)
     : Widget(x, y, w, 1),

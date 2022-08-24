@@ -33,6 +33,8 @@
 
 #include <algorithm>
 
+#include "../console_printing.hpp"
+
 Label::Label(int x, int y, const char* label, const char* tip) : Widget(x, y, 0, 1) {
   this->label = label;
   if (tip) {

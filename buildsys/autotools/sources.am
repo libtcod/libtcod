@@ -15,6 +15,7 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/console_etc.h \
 	../../src/libtcod/console_init.h \
 	../../src/libtcod/console_printing.h \
+	../../src/libtcod/console_printing.hpp \
 	../../src/libtcod/console_rexpaint.h \
 	../../src/libtcod/console_rexpaint.hpp \
 	../../src/libtcod/console_types.h \

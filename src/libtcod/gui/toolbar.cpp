@@ -35,6 +35,8 @@
 
 #include <algorithm>
 
+#include "../console_printing.hpp"
+
 class Separator : public Widget {
  public:
   Separator(const char* txt, const char* tip = NULL) : Widget(0, 0, 0, 1), txt(NULL) {

@@ -31,6 +31,8 @@
  */
 #include "statusbar.hpp"
 
+#include "../console_printing.hpp"
+
 void StatusBar::render() {
   const auto bg = TCOD_ColorRGB(back);
   tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);

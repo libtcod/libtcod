@@ -33,6 +33,8 @@
 
 #include <string.h>
 
+#include "../console_printing.hpp"
+
 void ToggleButton::render() {
   const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
   const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);

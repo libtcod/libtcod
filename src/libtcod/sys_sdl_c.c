@@ -58,9 +58,11 @@
 bool TCOD_sys_check_bmp(const char* filename);
 SDL_Surface* TCOD_sys_read_bmp(const char* filename);
 TCOD_Error TCOD_sys_write_bmp(SDL_Surface* surf, const char* filename);
+#ifndef TCOD_NO_PNG
 bool TCOD_sys_check_png(const char* filename);
 SDL_Surface* TCOD_sys_read_png(const char* filename);
 TCOD_Error TCOD_sys_write_png(SDL_Surface* surf, const char* filename);
+#endif  // TCOD_NO_PNG
 
 typedef struct {
   const char* extension;
@@ -71,7 +73,9 @@ typedef struct {
 
 static image_support_t image_type[] = {
     {"BMP", TCOD_sys_check_bmp, TCOD_sys_read_bmp, TCOD_sys_write_bmp},
+#ifndef TCOD_NO_PNG
     {"PNG", TCOD_sys_check_png, TCOD_sys_read_png, TCOD_sys_write_png},
+#endif  // TCOD_NO_PNG
     {NULL, NULL, NULL, NULL},
 };
 

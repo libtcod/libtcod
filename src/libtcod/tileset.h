@@ -214,6 +214,7 @@ TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Error
 TCOD_tileset_set_tile_(TCOD_Tileset* __restrict tileset, int codepoint, const struct TCOD_ColorRGBA* __restrict buffer);
 
+#ifndef TCOD_NO_PNG
 /**
     Load a PNG font as a tilesheet and return a TCOD_Tileset.
 
@@ -248,6 +249,7 @@ TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load(
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_Tileset* TCOD_tileset_load_mem(
     size_t buffer_length, const unsigned char* buffer, int columns, int rows, int n, const int* __restrict charmap);
+#endif  // TCOD_NO_PNG
 
 /**
     Load raw RGBA data and return a TCOD_Tileset.

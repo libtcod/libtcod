@@ -10,7 +10,6 @@
   "documentation": "https://libtcod.readthedocs.io/en/latest/",
   "license": "BSD-3-Clause",
   "dependencies": [
-    "lodepng",
     "stb",
     "utf8proc",
     {
@@ -19,11 +18,18 @@
     }
   ],
   "default-features": [
+    "png",
     "sdl",
     "tests",
     "zlib"
   ],
   "features": {
+    "png": {
+      "description": "Support for reading and writing PNG files.  Required to save screenshots and to load tilesets from files.",
+      "dependencies": [
+        "lodepng"
+      ]
+    },
     "sdl": {
       "description": "Support for SDL2 windows and events including OpenGL support.",
       "dependencies": [

@@ -31,7 +31,9 @@
  */
 #include "tileset.h"
 
+#ifndef TCOD_NO_PNG
 #include <lodepng.h>
+#endif  // TCOD_NO_PNG
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -384,6 +386,7 @@ TCOD_Tileset* TCOD_tileset_load_raw(
   }
   return tileset;
 }
+#ifndef TCOD_NO_PNG
 TCOD_Tileset* TCOD_tileset_load(const char* filename, int columns, int rows, int n, const int* __restrict charmap) {
   struct TCOD_ColorRGBA* font;
   unsigned int font_width;
@@ -412,3 +415,4 @@ TCOD_Tileset* TCOD_tileset_load_mem(
   free(pixels);
   return tileset;
 }
+#endif  // TCOD_NO_PNG

@@ -34,7 +34,9 @@
 #ifndef NO_SDL
 #include <SDL_events.h>
 #endif  // NO_SDL
+#ifndef TCOD_NO_PNG
 #include <lodepng.h>
+#endif  // TCOD_NO_PNG
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -118,6 +120,7 @@ TCOD_Error TCOD_context_convert_event_coordinates(struct TCOD_Context* context, 
 }
 #endif  // NO_SDL
 TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context, const char* filename) {
+#ifndef TCOD_NO_PNG
   if (!context) {
     TCOD_set_errorv("Context must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
@@ -141,6 +144,9 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
     free(pixels);
   }
   return context->c_save_screenshot_(context, filename);
+#else
+  return TCOD_set_errorv("Can not save screenshots without PNG support.");
+#endif  // TCOD_NO_PNG
 }
 TCOD_PUBLIC struct SDL_Window* TCOD_context_get_sdl_window(struct TCOD_Context* context) {
   if (!context) {

@@ -161,6 +161,7 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
  *  \endrst
  */
 int TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic) {
+#ifndef TCOD_NO_PNG
   strncpy(TCOD_ctx.font_file, fontFile, sizeof(TCOD_ctx.font_file) - 1);
   /* if layout not defined, assume ASCII_INCOL */
   if (!(flags & (TCOD_FONT_LAYOUT_ASCII_INCOL | TCOD_FONT_LAYOUT_ASCII_INROW | TCOD_FONT_LAYOUT_TCOD))) {
@@ -193,6 +194,9 @@ int TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_ho
   TCOD_set_default_tileset(tileset);
   TCOD_sys_decode_font_();
   return TCOD_E_OK;
+#else
+  return TCOD_set_errorv("Can not call TCOD_console_set_custom_font without PNG support.");
+#endif  // TCOD_NO_PNG
 }
 /**
  *  \brief Remap a character code to a tile.

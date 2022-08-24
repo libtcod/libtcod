@@ -159,6 +159,7 @@ class Tileset {
  private:
   TilesetPtr tileset_ = nullptr;
 };
+#ifndef TCOD_NO_PNG
 /**
     @brief Load a tilesheet from a PNG file.
 
@@ -188,5 +189,6 @@ TCOD_NODISCARD inline auto load_tilesheet(
   if (!tileset) throw std::runtime_error(TCOD_get_error());
   return Tileset{std::move(tileset)};
 }
+#endif  // TCOD_NO_PNG
 }  // namespace tcod
 #endif  // LIBTCOD_TILESET_HPP_

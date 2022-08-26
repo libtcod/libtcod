@@ -4,6 +4,8 @@ find_package(SDL2 QUIET)
 find_package(ZLIB QUIET)
 find_package(glad QUIET)
 find_package(lodepng-c QUIET)
+find_package(utf8proc QUIET)
+find_package(unofficial-utf8proc QUIET)
 
 set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 

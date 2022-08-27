@@ -45,13 +45,65 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/// @defgroup PrintEASCII
+/// @{
+/***************************************************************************
+    @brief Print a string on a console, using default colors and alignment.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
 TCODLIB_API void TCOD_console_print(TCOD_Console* con, int x, int y, const char* fmt, ...);
+/***************************************************************************
+    @brief Print an EASCII string on a console, using default colors.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param flag The blending flag.
+    @param alignment The font alignment to use.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
 TCODLIB_API void TCOD_console_print_ex(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...);
+/***************************************************************************
+    @brief Print an EASCII string on a console constrained to a rectangle, using default colors and alignment.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param w The width of the region.
+             If 0 then the maximum width will be used.
+    @param h The height of the region.
+             If 0 then the maximum height will be used.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+    @return The number of lines actually printed.
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
+/***************************************************************************
+    @brief Print an EASCII string on a console constrained to a rectangle, using default colors.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param w The width of the region.
+             If 0 then the maximum width will be used.
+    @param h The height of the region.
+             If 0 then the maximum height will be used.
+    @param flag The blending flag.
+    @param alignment The font alignment to use.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+    @return The number of lines actually printed.
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex(
     TCOD_Console* con,
@@ -63,20 +115,81 @@ TCODLIB_API int TCOD_console_print_rect_ex(
     TCOD_alignment_t alignment,
     const char* fmt,
     ...);
+/***************************************************************************
+    @brief Print a titled, framed region on a console, using default colors and alignment.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param w The width of the frame.
+    @param h The height of the frame.
+    @param empty If true the characters inside of the frame will be cleared
+                 with spaces.
+    @param flag The blending flag.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+
+    This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
+
+    \rst
+    .. deprecated:: 1.19
+      This function is not using Unicode frame characters and has been deprecated.
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_frame instead.")
 TCODLIB_API void TCOD_console_print_frame(
     TCOD_console_t con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...);
+/***************************************************************************
+    @brief Return the number of lines that would be printed by an EASCII string.
+
+    @param con A console pointer.
+    @param x The starting X coordinate, the left-most position being 0.
+    @param y The starting Y coordinate, the top-most position being 0.
+    @param w The width of the region.
+             If 0 then the maximum width will be used.
+    @param h The height of the region.
+             If 0 then the maximum height will be used.
+    @param fmt A format string as if passed to printf.
+    @param ... Variadic arguments as if passed to printf.
+    @return The number of lines that would have been printed.
+ */
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
-
+/// @}
 #ifndef NO_UNICODE
+/// @defgroup PrintWide
+/// @{
+/***************************************************************************
+    \rst
+    .. deprecated:: 1.8
+      Use :any:`TCOD_console_printf` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
 TCODLIB_API void TCOD_console_print_utf(TCOD_Console* con, int x, int y, const wchar_t* fmt, ...);
+/***************************************************************************
+    \rst
+    .. deprecated:: 1.8
+      Use :any:`TCOD_console_printf_ex` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
 TCODLIB_API void TCOD_console_print_ex_utf(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t* fmt, ...);
+/***************************************************************************
+    \rst
+    .. deprecated:: 1.8
+      Use :any:`TCOD_console_printf_rect` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
 TCODLIB_API int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int w, int h, const wchar_t* fmt, ...);
+/***************************************************************************
+    \rst
+    .. deprecated:: 1.8
+      Use :any:`TCOD_console_printf_rect_ex` instead.
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")
 TCODLIB_API int TCOD_console_print_rect_ex_utf(
     TCOD_Console* con,
@@ -88,9 +201,15 @@ TCODLIB_API int TCOD_console_print_rect_ex_utf(
     TCOD_alignment_t alignment,
     const wchar_t* fmt,
     ...);
+/***************************************************************************
+    \rst
+    .. deprecated:: 1.8
+    \endrst
+ */
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect_utf(
     TCOD_Console* con, int x, int y, int w, int h, const wchar_t* fmt, ...);
+/// @}
 #endif
 
 typedef enum {

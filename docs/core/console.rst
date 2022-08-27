@@ -88,7 +88,6 @@ Basic drawing functions
 
 .. doxygenfunction:: TCOD_console_hline
 .. doxygenfunction:: TCOD_console_vline
-.. doxygenfunction:: TCOD_console_print_frame
 
 
 Drawing functions (C++)
@@ -163,11 +162,8 @@ Printing functions using 8-bit encodings (deprecated)
     These functions use EASCII encoded strings which are not compatible with Unicode.
     They are deprecated for this reason.
 
-.. doxygenfunction:: TCOD_console_print
-.. doxygenfunction:: TCOD_console_print_ex
-.. doxygenfunction:: TCOD_console_print_rect
-.. doxygenfunction:: TCOD_console_print_rect_ex
-.. doxygenfunction:: TCOD_console_get_height_rect
+.. doxygengroup:: PrintEASCII
+    :content-only:
 
 Printing functions using wchar_t (deprecated)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,11 +171,8 @@ Printing functions using wchar_t (deprecated)
     These functions say they are UTF, however they will behave as UCS2 or UCS4 depending on the platform.
     They are deprecated for this reason.
 
-.. doxygenfunction:: TCOD_console_print_utf
-.. doxygenfunction:: TCOD_console_print_ex_utf
-.. doxygenfunction:: TCOD_console_print_rect_utf
-.. doxygenfunction:: TCOD_console_print_rect_ex_utf
-.. doxygenfunction:: TCOD_console_get_height_rect_utf
+.. doxygengroup:: PrintWide
+    :content-only:
 
 Flushing the root console
 =========================

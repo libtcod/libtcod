@@ -118,6 +118,7 @@
         "doxygenclass",
         "doxygenenum",
         "doxygenfunction",
+        "doxygengroup",
         "doxygenstruct",
         "doxygentypedef",
         "doxygenvariable",

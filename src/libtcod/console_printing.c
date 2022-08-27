@@ -106,28 +106,6 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
   current_buf = (current_buf + 1) % NB_BUFFERS;
   return ret;
 }
-/***************************************************************************
-    Print a titled, framed region on a console, using default colors and
-    alignment.
-
-    @param con A console pointer.
-    @param x The starting X coordinate, the left-most position being 0.
-    @param y The starting Y coordinate, the top-most position being 0.
-    @param w The width of the frame.
-    @param h The height of the frame.
-    @param empty If true the characters inside of the frame will be cleared
-                 with spaces.
-    @param flag The blending flag.
-    @param fmt A format string as if passed to printf.
-    @param ... Variadic arguments as if passed to printf.
-
-    This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
-
-    \rst
-    .. deprecated:: 1.19
-      This function is not using Unicode frame characters and has been deprecated.
-    \endrst
- */
 void TCOD_console_print_frame(
     TCOD_Console* con, int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...) {
   con = TCOD_console_validate_(con);
@@ -166,15 +144,6 @@ void TCOD_console_print_frame(
     con->back = tmp;
   }
 }
-/**
- *  Print a string on a console, using default colors and alignment.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- */
 void TCOD_console_print(TCOD_Console* con, int x, int y, const char* fmt, ...) {
   va_list ap;
   con = TCOD_console_validate_(con);
@@ -186,17 +155,6 @@ void TCOD_console_print(TCOD_Console* con, int x, int y, const char* fmt, ...) {
       con, x, y, 0, 0, con->bkgnd_flag, con->alignment, TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
-/**
- *  Print an EASCII string on a console, using default colors.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param flag The blending flag.
- *  \param alignment The font alignment to use.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- */
 void TCOD_console_print_ex(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...) {
   va_list ap;
@@ -204,20 +162,6 @@ void TCOD_console_print_ex(
   TCOD_console_print_internal(con, x, y, 0, 0, flag, alignment, TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
-/**
- *  Print an EASCII string on a console constrained to a rectangle, using default colors and alignment.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param w The width of the region.
- *           If 0 then the maximum width will be used.
- *  \param h The height of the region.
- *           If 0 then the maximum height will be used.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- *  \return The number of lines actually printed.
- */
 int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...) {
   int ret;
   va_list ap;
@@ -231,22 +175,6 @@ int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, int h, const
   va_end(ap);
   return ret;
 }
-/**
- *  Print an EASCII string on a console constrained to a rectangle, using default colors.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param w The width of the region.
- *           If 0 then the maximum width will be used.
- *  \param h The height of the region.
- *           If 0 then the maximum height will be used.
- *  \param flag The blending flag.
- *  \param alignment The font alignment to use.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- *  \return The number of lines actually printed.
- */
 int TCOD_console_print_rect_ex(
     TCOD_Console* con,
     int x,
@@ -264,20 +192,6 @@ int TCOD_console_print_rect_ex(
   va_end(ap);
   return ret;
 }
-/**
- *  Return the number of lines that would be printed by an EASCII string.
- *
- *  \param con A console pointer.
- *  \param x The starting X coordinate, the left-most position being 0.
- *  \param y The starting Y coordinate, the top-most position being 0.
- *  \param w The width of the region.
- *           If 0 then the maximum width will be used.
- *  \param h The height of the region.
- *           If 0 then the maximum height will be used.
- *  \param fmt A format string as if passed to printf.
- *  \param ... Variadic arguments as if passed to printf.
- *  \return The number of lines that would have been printed.
- */
 int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...) {
   int ret;
   va_list ap;
@@ -758,12 +672,6 @@ int TCOD_console_print_internal_utf(
   } while (c && cy < con->h && (rh == 0 || cy < y + rh));
   return cy - y + 1;
 }
-/**
- *  \rst
- *  .. deprecated:: 1.8
- *    Use :any:`TCOD_console_printf` instead.
- *  \endrst
- */
 void TCOD_console_print_utf(TCOD_Console* con, int x, int y, const wchar_t* fmt, ...) {
   va_list ap;
   con = TCOD_console_validate_(con);
@@ -775,12 +683,6 @@ void TCOD_console_print_utf(TCOD_Console* con, int x, int y, const wchar_t* fmt,
       con, x, y, 0, 0, con->bkgnd_flag, con->alignment, TCOD_console_vsprint_utf(fmt, ap), false, false);
   va_end(ap);
 }
-/**
- *  \rst
- *  .. deprecated:: 1.8
- *    Use :any:`TCOD_console_printf_ex` instead.
- *  \endrst
- */
 void TCOD_console_print_ex_utf(
     TCOD_Console* con, int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t* fmt, ...) {
   va_list ap;
@@ -801,12 +703,6 @@ int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int w, int h, c
   va_end(ap);
   return ret;
 }
-/**
- *  \rst
- *  .. deprecated:: 1.8
- *    Use :any:`TCOD_console_printf_rect_ex` instead.
- *  \endrst
- */
 int TCOD_console_print_rect_ex_utf(
     TCOD_Console* con,
     int x,
@@ -824,11 +720,6 @@ int TCOD_console_print_rect_ex_utf(
   va_end(ap);
   return ret;
 }
-/**
- *  \rst
- *  .. deprecated:: 1.8
- *  \endrst
- */
 int TCOD_console_get_height_rect_utf(TCOD_Console* con, int x, int y, int w, int h, const wchar_t* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);

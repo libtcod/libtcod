@@ -305,6 +305,7 @@ texinfo_documents = [
 # Breathe configuration
 breathe_projects = {"libtcod": "doxyxml/"}
 breathe_default_project = "libtcod"
+breathe_show_include = False
 
 
 def run_doxygen(app: sphinx.application.Sphinx) -> None:

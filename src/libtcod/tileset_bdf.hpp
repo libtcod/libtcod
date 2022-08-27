@@ -39,6 +39,8 @@
 #include "tileset_bdf.h"
 
 namespace tcod {
+/// @addtogroup BDF
+/// @{
 /**
     Load a Tileset from a BDF font file.
 
@@ -55,5 +57,6 @@ inline auto load_bdf(const std::filesystem::path& path) -> TilesetPtr {
   if (!tileset) throw std::runtime_error(TCOD_get_error());
   return tileset;
 }
+/// @}
 }  // namespace tcod
 #endif  // LIBTCOD_TILESET_BDF_HPP_

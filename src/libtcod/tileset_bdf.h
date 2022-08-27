@@ -38,6 +38,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
+/// @addtogroup BDF
+/// @{
 /**
     Load a BDF font from a file path.
 
@@ -63,6 +65,7 @@ TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf(const char* path);
     \endrst
  */
 TCODLIB_API TCOD_NODISCARD TCOD_Tileset* TCOD_load_bdf_memory(int size, const unsigned char* buffer);
+/// @}
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

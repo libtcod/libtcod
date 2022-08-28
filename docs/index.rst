@@ -29,3 +29,9 @@ Welcome to the libtcod C/C++ documentation!
 
    upgrading
    guides/getting-started
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API
+
+   library/library_root

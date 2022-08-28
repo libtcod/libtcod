@@ -7,6 +7,7 @@ dependencies:
   - doxygen=1.9.1
   - pip:
       - breathe
+      - exhale
       - sphinx
       - sphinx_rtd_theme
       - myst-parser

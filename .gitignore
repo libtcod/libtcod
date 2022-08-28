@@ -508,7 +508,7 @@ samples_c*
 
 ## Additional rules
 docs/doxyxml/
-doc/doxyxml/
+docs/library/
 .deps
 .dirstamp
 /build*

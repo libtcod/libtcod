@@ -38,6 +38,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.ifconfig",
     "breathe",
+    "exhale",
     "myst_parser",
 ]
 
@@ -305,8 +306,25 @@ texinfo_documents = [
 # Breathe configuration
 breathe_projects = {"libtcod": "doxyxml/"}
 breathe_default_project = "libtcod"
-breathe_show_include = False
+breathe_show_include = True
 
+# Setup the exhale extension
+exhale_args = {
+    # These arguments are required
+    "containmentFolder":     "./library",
+    "rootFileName":          "library_root.rst",
+    "doxygenStripFromPath":  "../src",
+    # Heavily encouraged optional argument (see docs)
+    "rootFileTitle":         "Library API",
+    # Suggested optional arguments
+    "createTreeView":        True,
+    # TIP: if using the sphinx-bootstrap-theme, you need
+    # "treeViewIsBootstrap": True,
+    "exhaleExecutesDoxygen": True,
+    "exhaleUseDoxyfile": True,
+    # Other arguments
+    "unabridgedOrphanKinds": {"dir", "file", "page", "variable"},
+}
 
 def run_doxygen(app: sphinx.application.Sphinx) -> None:
     """Runs the doxygen command."""
@@ -324,4 +342,4 @@ def run_doxygen(app: sphinx.application.Sphinx) -> None:
 def setup(app: sphinx.application.Sphinx) -> None:
 
     # Add hook for building doxygen xml when needed
-    app.connect("builder-inited", run_doxygen)
+    pass # app.connect("builder-inited", run_doxygen)

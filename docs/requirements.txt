@@ -1,5 +1,6 @@
 # For local testing, environment.yml is what's used to install files on RTD.
 breathe>=4.31.0
+exhale
 sphinx>=4.2.0
 sphinx_rtd_theme
 myst-parser

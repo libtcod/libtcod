@@ -29,12 +29,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-/*
- * This is a libtcod internal module.
- * Use at your own risks...
- */
-#ifndef _TCOD_LEX_H
-#define _TCOD_LEX_H
+/// This is a libtcod internal module.
+/// Use at your own risk.
+/// @cond INTERNAL
+#ifndef TCOD_LEX_H_
+#define TCOD_LEX_H_
 
 #include "portability.h"
 
@@ -123,4 +122,5 @@ TCODLIB_API int TCOD_lex_hextoint(char c);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_LEX_H_
+/// @endcond

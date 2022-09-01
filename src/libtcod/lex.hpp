@@ -30,12 +30,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 // clang-format off
-/*
- * This is a libtcod internal module.
- * Use at your own risks...
- */
-#ifndef _TCOD_LEX_HPP
-#define _TCOD_LEX_HPP
+/// This is a libtcod internal module.
+/// Use at your own risk.
+/// @cond INTERNAL
+#ifndef TCOD_LEX_HPP_
+#define TCOD_LEX_HPP_
 
 #include "lex.h"
 
@@ -116,4 +115,5 @@ class TCODLIB_API TCODLex {
  protected:
   TCOD_lex_t* data;
 };
-#endif // _TCOD_LEX_HPP
+#endif // TCOD_LEX_HPP_
+/// @endcond

@@ -138,6 +138,7 @@
         "emsdk",
         "ENDCHAR",
         "endcode",
+        "endcond",
         "ENDFONT",
         "endianness",
         "ENDPROPERTIES",

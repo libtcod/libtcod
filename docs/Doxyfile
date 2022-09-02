@@ -949,7 +949,8 @@ EXCLUDE_SYMLINKS       = NO
 
 EXCLUDE_PATTERNS       = */libtcod_int.h \
                          *_internal.h \
-                         *_.h
+                         *_.h \
+                         */libtcod/gui/*
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -961,7 +962,8 @@ EXCLUDE_PATTERNS       = */libtcod_int.h \
 # exclude all test directories use the pattern */test/*
 
 EXCLUDE_SYMBOLS        = *_ \
-                         _*
+                         _* \
+                         tcod::internal
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include

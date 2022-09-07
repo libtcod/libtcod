@@ -12,7 +12,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import os
 import re
 import subprocess
 import sys
@@ -311,13 +310,13 @@ breathe_show_include = True
 # Setup the exhale extension
 exhale_args = {
     # These arguments are required
-    "containmentFolder":     "./library",
-    "rootFileName":          "library_root.rst",
-    "doxygenStripFromPath":  "../src",
+    "containmentFolder": "./library",
+    "rootFileName": "library_root.rst",
+    "doxygenStripFromPath": "../src",
     # Heavily encouraged optional argument (see docs)
-    "rootFileTitle":         "Library API",
+    "rootFileTitle": "Library API",
     # Suggested optional arguments
-    "createTreeView":        True,
+    "createTreeView": True,
     # TIP: if using the sphinx-bootstrap-theme, you need
     # "treeViewIsBootstrap": True,
     "exhaleExecutesDoxygen": True,
@@ -325,6 +324,7 @@ exhale_args = {
     # Other arguments
     "unabridgedOrphanKinds": {"dir", "file", "page", "variable"},
 }
+
 
 def run_doxygen(app: sphinx.application.Sphinx) -> None:
     """Runs the doxygen command."""
@@ -342,4 +342,4 @@ def run_doxygen(app: sphinx.application.Sphinx) -> None:
 def setup(app: sphinx.application.Sphinx) -> None:
 
     # Add hook for building doxygen xml when needed
-    pass # app.connect("builder-inited", run_doxygen)
+    pass  # app.connect("builder-inited", run_doxygen)

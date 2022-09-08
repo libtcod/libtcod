@@ -104,7 +104,7 @@ TCOD_Error TCOD_console_flush_ex(TCOD_Console* console, struct TCOD_ViewportOpti
   if (!TCOD_ctx.engine) {
     return TCOD_set_errorv("Rendering context is not yet initialized.");
   }
-  TCOD_Error err = TCOD_context_present(TCOD_ctx.engine, console, viewport);
+  TCOD_Error err = TCOD_E_OK;
   if (TCOD_ctx.fade == 255) {
     err = TCOD_context_present(TCOD_ctx.engine, console, viewport);
   } else {

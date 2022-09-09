@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_FLATLIST_HPP
 #define TCOD_GUI_FLATLIST_HPP
+#ifndef TCOD_NO_UNICODE
 #include "textbox.hpp"
 class TCODLIB_GUI_API FlatList : public TextBox {
  public:
@@ -57,4 +58,5 @@ class TCODLIB_GUI_API FlatList : public TextBox {
   void textToValue();
   void onButtonClick();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_FLATLIST_HPP */

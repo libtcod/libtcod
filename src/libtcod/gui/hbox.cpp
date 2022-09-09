@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "hbox.hpp"
 
 HBox::HBox(int x, int y, int padding) : VBox(x, y, padding) {}
@@ -52,3 +53,4 @@ void HBox::computeSize() {
     }
   }
 }
+#endif  // TCOD_NO_UNICODE

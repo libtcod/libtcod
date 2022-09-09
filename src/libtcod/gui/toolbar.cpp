@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "toolbar.hpp"
 
 #include <string.h>
@@ -129,3 +130,4 @@ void ToolBar::computeSize() {
   }
 }
 void ToolBar::addSeparator(const char* txt, const char* tip_) { addWidget(new Separator(txt, tip_)); }
+#endif  // TCOD_NO_UNICODE

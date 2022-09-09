@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_TOOLBAR_HPP
 #define TCOD_GUI_TOOLBAR_HPP
+#ifndef TCOD_NO_UNICODE
 #include "container.hpp"
 class TCODLIB_GUI_API ToolBar : public Container {
  public:
@@ -46,4 +47,5 @@ class TCODLIB_GUI_API ToolBar : public Container {
   char* name;
   int fixedWidth;
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TOOLBAR_HPP */

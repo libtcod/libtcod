@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_VBOX_HPP
 #define TCOD_GUI_VBOX_HPP
+#ifndef TCOD_NO_UNICODE
 #include "container.hpp"
 class TCODLIB_GUI_API VBox : public Container {
  public:
@@ -40,4 +41,5 @@ class TCODLIB_GUI_API VBox : public Container {
  protected:
   int padding;
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_VBOX_HPP */

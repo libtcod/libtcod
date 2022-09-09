@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "label.hpp"
 
 #include <algorithm>
@@ -47,3 +48,4 @@ void Label::render() {
 }
 void Label::computeSize() { w = label ? static_cast<int>(strlen(label)) : 0; }
 void Label::expand(int width, int) { w = std::max(w, width); }
+#endif  // TCOD_NO_UNICODE

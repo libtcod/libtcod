@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "slider.hpp"
 
 #include <math.h>
@@ -146,3 +147,4 @@ void Slider::onButtonRelease() {
     TCODMouse::showCursor(true);
   }
 }
+#endif  // TCOD_NO_UNICODE

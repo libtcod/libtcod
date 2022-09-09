@@ -1,3 +1,4 @@
+#ifndef TCOD_NO_UNICODE
 #include <catch2/catch_all.hpp>
 #include <libtcod/console_printing.hpp>
 
@@ -91,3 +92,4 @@ TEST_CASE("Unicode PUA.") {
   for (int i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);
   for (int i = 0x100000; i <= 0x10FFFD; ++i) check_character(i);
 }
+#endif  // TCOD_NO_UNICODE

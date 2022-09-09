@@ -730,6 +730,7 @@ int TCOD_console_get_height_rect_utf(TCOD_Console* con, int x, int y, int w, int
 }
 
 #endif /* NO_UNICODE */
+#ifndef TCOD_NO_UNICODE
 // ----------------------------------------------------------------------------
 // New UTF-8 parser.
 /**
@@ -1516,3 +1517,4 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
+#endif  // TCOD_NO_UNICODE

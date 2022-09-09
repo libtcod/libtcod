@@ -225,6 +225,7 @@ void TCODConsole::print(int x, int y, const char* fmt, ...) {
       data, x, y, 0, 0, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
+#ifndef TCOD_NO_UNICODE
 void TCODConsole::print(int x, int y, const std::string& str) {
   tcod::print(
       *this,
@@ -269,6 +270,7 @@ void TCODConsole::printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t 
   }
   va_end(ap);
 }
+#endif  // TCOD_NO_UNICODE
 /** Deprecated EASCII function. */
 void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...) {
   va_list ap;

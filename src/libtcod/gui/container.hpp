@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_CONTAINER_HPP
 #define TCOD_GUI_CONTAINER_HPP
+#ifndef TCOD_NO_UNICODE
 #include "widget.hpp"
 class TCODLIB_GUI_API Container : public Widget {
  public:
@@ -46,4 +47,5 @@ class TCODLIB_GUI_API Container : public Widget {
  protected:
   TCODList<Widget*> content;  // Can't be fixed without breaking the ABI.
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_CONTAINER_HPP */

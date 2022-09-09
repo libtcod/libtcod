@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_BUTTON_HPP
 #define TCOD_GUI_BUTTON_HPP
+#ifndef TCOD_NO_UNICODE
 #include "widget.hpp"
 class TCODLIB_GUI_API Button : public Widget {
  public:
@@ -60,4 +61,5 @@ class TCODLIB_GUI_API Button : public Widget {
   void onButtonClick();
   void expand(int width, int height);
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_BUTTON_HPP */

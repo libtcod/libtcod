@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_LABEL_HPP
 #define TCOD_GUI_LABEL_HPP
+#ifndef TCOD_NO_UNICODE
 #include "widget.hpp"
 class TCODLIB_GUI_API Label : public Widget {
  public:
@@ -44,4 +45,5 @@ class TCODLIB_GUI_API Label : public Widget {
 
   void expand(int width, int height);
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_LABEL_HPP */

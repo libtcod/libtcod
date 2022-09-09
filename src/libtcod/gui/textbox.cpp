@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "textbox.hpp"
 
 #include <stdio.h>
@@ -170,3 +171,4 @@ void TextBox::update(TCOD_key_t k) {
 void TextBox::onButtonClick() {
   if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) keyboardFocus = this;
 }
+#endif  // TCOD_NO_UNICODE

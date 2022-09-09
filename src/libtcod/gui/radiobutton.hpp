@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_RADIOBUTTON_HPP
 #define TCOD_GUI_RADIOBUTTON_HPP
+#ifndef TCOD_NO_UNICODE
 #include "button.hpp"
 class TCODLIB_GUI_API RadioButton : public Button {
  public:
@@ -61,4 +62,5 @@ class TCODLIB_GUI_API RadioButton : public Button {
 
   void onButtonClick();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_RADIOBUTTON_HPP */

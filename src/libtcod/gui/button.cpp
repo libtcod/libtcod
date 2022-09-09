@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "button.hpp"
 
 #include <string.h>
@@ -103,3 +104,4 @@ void Button::onButtonClick() {
     cbk(this, userData);
   }
 }
+#endif  // TCOD_NO_UNICODE

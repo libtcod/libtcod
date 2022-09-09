@@ -27,7 +27,7 @@ TEST_CASE("Console bounds", "[!throws]") {
   auto console = tcod::Console{3, 2};
   REQUIRE_THROWS(console.at({1000, 1000}));
 }
-
+#ifndef TCOD_NO_UNICODE
 TEST_CASE("TCODConsole conversion") {
   auto console = TCODConsole(3, 2);
   tcod::print(console, {0, 0}, "@", std::nullopt, std::nullopt);
@@ -60,12 +60,6 @@ TEST_CASE("Color control.") {
   CHECK(console.at(2, 0).bg == TCOD_ColorRGBA{0, 0, 0, 255});
 }
 
-TEST_CASE("Console ascii") {
-  TCODConsole console = TCODConsole(5, 1);
-  console.print(0, 0, "Test");
-  CHECK(to_string(*console.get_data()) == "Test ");
-}
-
 TEST_CASE("Console print") {
   TCODConsole console = TCODConsole(5, 1);
   console.print(0, 0, std::string("plop"));
@@ -75,26 +69,30 @@ TEST_CASE("Console print empty") {
   TCODConsole console = TCODConsole(5, 1);
   console.print(0, 0, std::string(""));
 }
-
-TEST_CASE("Console eascii") {
-  TCODConsole console = TCODConsole(2, 1);
-  const char test_str[] = {static_cast<char>(0xff), static_cast<char>(0x00)};
-  console.print(0, 0, test_str);
-  CHECK(console.getChar(0, 0) == 0xff);
-  CHECK(console.getChar(1, 0) == 0x20);
-}
-
 TEST_CASE("Console UTF-8 BMP") {
   TCODConsole console = TCODConsole(2, 1);
   console.printf(0, 0, "☃");
   CHECK(console.getChar(0, 0) == 0x2603);
   CHECK(console.getChar(1, 0) == 0x20);
 }
-
 TEST_CASE("Console UTF-8 SMP") {
   TCODConsole console = TCODConsole(2, 1);
   console.printf(0, 0, "🌍");
   CHECK(console.getChar(0, 0) == 0x1F30D);
+  CHECK(console.getChar(1, 0) == 0x20);
+}
+#endif  // TCOD_NO_UNICODE
+TEST_CASE("Console ascii") {
+  TCODConsole console = TCODConsole(5, 1);
+  console.print(0, 0, "Test");
+  CHECK(to_string(*console.get_data()) == "Test ");
+}
+
+TEST_CASE("Console eascii") {
+  TCODConsole console = TCODConsole(2, 1);
+  const char test_str[] = {static_cast<char>(0xff), static_cast<char>(0x00)};
+  console.print(0, 0, test_str);
+  CHECK(console.getChar(0, 0) == 0xff);
   CHECK(console.getChar(1, 0) == 0x20);
 }
 

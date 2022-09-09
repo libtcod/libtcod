@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "statusbar.hpp"
 
 #include "../console_printing.hpp"
@@ -41,3 +42,4 @@ void StatusBar::render() {
     tcod::print_rect(*con, {x + 1, y, w, h}, focus->tip, fg, std::nullopt);
   }
 }
+#endif  // TCOD_NO_UNICODE

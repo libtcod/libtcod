@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "container.hpp"
 
 Container::~Container() { content.clearAndDelete(); }
@@ -56,3 +57,4 @@ void Container::update(const TCOD_key_t k) {
     if ((*wid)->isVisible()) (*wid)->update(k);
   }
 }
+#endif  // TCOD_NO_UNICODE

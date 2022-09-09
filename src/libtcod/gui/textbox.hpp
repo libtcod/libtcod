@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_TEXTBOX_HPP
 #define TCOD_GUI_TEXTBOX_HPP
+#ifndef TCOD_NO_UNICODE
 #include "widget.hpp"
 class TCODLIB_GUI_API TextBox : public Widget {
  public:
@@ -59,4 +60,5 @@ class TCODLIB_GUI_API TextBox : public Widget {
 
   void onButtonClick();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TEXTBOX_HPP */

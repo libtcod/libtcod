@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "radiobutton.hpp"
 
 RadioButton* RadioButton::groupSelect[512];
@@ -65,3 +66,4 @@ void RadioButton::onButtonClick() {
   select();
   Button::onButtonClick();
 }
+#endif  // TCOD_NO_UNICODE

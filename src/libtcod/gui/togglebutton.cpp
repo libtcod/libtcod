@@ -29,6 +29,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef TCOD_NO_UNICODE
 #include "togglebutton.hpp"
 
 #include <string.h>
@@ -52,3 +53,4 @@ void ToggleButton::onButtonClick() {
   pressed = !pressed;
   if (cbk) cbk(this, userData);
 }
+#endif  // TCOD_NO_UNICODE

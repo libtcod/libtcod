@@ -31,10 +31,12 @@
  */
 #ifndef TCOD_GUI_HBOX_HPP
 #define TCOD_GUI_HBOX_HPP
+#ifndef TCOD_NO_UNICODE
 #include "vbox.hpp"
 class TCODLIB_GUI_API HBox : public VBox {
  public:
   HBox(int x, int y, int padding);
   void computeSize();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_HBOX_HPP */

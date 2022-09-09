@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Added
+- Libtcod can now be built without utf8proc by passing the `-LIBTCOD_UTF8PROC=disable` flag to CMake.
+
 ### Fixed
 - Fixed regression which would cause a screen with a global fade to flicker.
 

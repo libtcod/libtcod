@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_TOGGLEBUTTON_HPP
 #define TCOD_GUI_TOGGLEBUTTON_HPP
+#ifndef TCOD_NO_UNICODE
 #include "button.hpp"
 class TCODLIB_GUI_API ToggleButton : public Button {
  public:
@@ -55,4 +56,5 @@ class TCODLIB_GUI_API ToggleButton : public Button {
   void onButtonRelease();
   void onButtonClick();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TOGGLEBUTTON_HPP */

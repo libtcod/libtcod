@@ -227,6 +227,7 @@ typedef enum {
 TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 
 /* UTF-8 functions */
+#ifndef TCOD_NO_UNICODE
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -491,6 +492,7 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
     TCOD_alignment_t alignment,
     const char* fmt,
     va_list args);
+#endif  // TCOD_NO_UNICODE
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

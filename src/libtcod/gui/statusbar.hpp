@@ -31,10 +31,12 @@
  */
 #ifndef TCOD_GUI_STATUSBAR_HPP
 #define TCOD_GUI_STATUSBAR_HPP
+#ifndef TCOD_NO_UNICODE
 #include "widget.hpp"
 class TCODLIB_GUI_API StatusBar : public Widget {
  public:
   StatusBar(int x, int y, int w, int h) : Widget(x, y, w, h) {}
   void render();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_STATUSBAR_HPP */

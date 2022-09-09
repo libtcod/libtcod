@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_SLIDER_HPP
 #define TCOD_GUI_SLIDER_HPP
+#ifndef TCOD_NO_UNICODE
 #include "textbox.hpp"
 class TCODLIB_GUI_API Slider : public TextBox {
  public:
@@ -66,4 +67,5 @@ class TCODLIB_GUI_API Slider : public TextBox {
   void onButtonPress();
   void onButtonRelease();
 };
+#endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_SLIDER_HPP */

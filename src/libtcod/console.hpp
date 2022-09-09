@@ -761,6 +761,7 @@ public :
   [[deprecated("Use TCODConsole::printf or the std::string overload for this function."
                "\nNote that you'll need to use UTF-8 encoded strings for those functions.")]]
   void print(int x, int y, const char *fmt, ...);
+#ifndef TCOD_NO_UNICODE
   /**
    *  Print an EASCII encoded string to the console.
    *
@@ -805,6 +806,7 @@ public :
   TCODLIB_FORMAT(6, 7)
   void printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment,
               const char *fmt, ...);
+#endif // TCOD_NO_UNICODE
   /**
    *  Print an EASCII formatted string to the console.
    *  \rst

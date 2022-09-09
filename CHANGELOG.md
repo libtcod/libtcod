@@ -11,7 +11,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - Libtcod can now be built without utf8proc by passing the `-LIBTCOD_UTF8PROC=disable` flag to CMake.
 
 ### Fixed
-- Fixed regression which would cause a screen with a global fade to flicker.
+- Fixed double present bug in non-context flush functions.
+  This was affecting performance and also caused a screen flicker whenever the global fade color was active.
 
 ## [1.22.2] - 2022-08-26
 ### Fixed

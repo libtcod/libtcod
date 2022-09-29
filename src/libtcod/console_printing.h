@@ -500,10 +500,10 @@ typedef struct TCOD_PrintParams {
     int y; // The starting Y coordinate, the left-most position being 0.
     int width; // Width of the bounding rectangle. Will be ignored if set to 0
     int height; // Width of the bounding rectangle. Will be ignored if set to 0
-    const TCOD_ColorRGB fg; // The foreground color of the string
-    const TCOD_ColorRGB bg; // The background color of the string
-    TCOD_bkgnd_flag_t flag; // The background blending flag. If unsure then use `TCOD_BKGND_SET`.
-    TCOD_alignment_t alignment; // The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+    const TCOD_ColorRGB* __restrict fg; // The foreground color of the string
+    const TCOD_ColorRGB* __restrict bg; // The background color of the string
+    TCOD_bkgnd_flag_t flag;
+    TCOD_alignment_t alignment;
 } TCOD_PrintParams;
 /*****************************************************************************
     @brief Prints a formatted string to the console.
@@ -512,41 +512,23 @@ typedef struct TCOD_PrintParams {
     @param params Information about how the string should be printed
     @param fmt The format string for a vprintf-like function.
     @param args The arguments for the formatted string.
-    @return An error code if less than 0
+    @return TCOD_PUBLIC
  */
 TCOD_PUBLIC int TCOD_printf(
     TCOD_Console* __restrict console,
     TCOD_PrintParams params,
     const char* fmt,
     ...);
-/*****************************************************************************
-    @brief Prints n-bytes of a string string to the console.
-
-    @param console A pointer to a TCOD_Console.
-    @param params Information about how the string should be printed
-    @param str The string to be read from.
-    @param n Length of string in bytes 
-    @return An error code if less than 0
- */
 TCOD_PUBLIC int TCOD_printn(
-    TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
-    char* strsrc,
-    int n);
-/*****************************************************************************
-    @brief Prints a formatted string using va_list
-
-    @param console A pointer to a TCOD_Console.
-    @param params Information about how the string should be printed
-    @param fmt The format string for a vprintf-like function
-    @param args The arguments for the format string
-    @return An error code if less than 0
- */
+  TCOD_Console* console,
+  TCOD_PrintParams params,
+  int n,
+  const char* str);
 TCOD_PUBLIC int TCOD_vprintf(
-    TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
-    const char* fmt,
-    va_list args);
+  TCOD_Console* console,
+  TCOD_PrintParams params,
+  const char* fmt,
+  va_list args);
 #endif  // TCOD_NO_UNICODE
 #ifdef __cplusplus
 }  // extern "C"

@@ -498,10 +498,10 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
 typedef struct TCOD_PrintParams {
     int x; // The starting X coordinate, the left-most position being 0.
     int y; // The starting Y coordinate, the left-most position being 0.
-    int width; // Width of the bounding rectangle. Will be ignored if set to 0
-    int height; // Width of the bounding rectangle. Will be ignored if set to 0
-    const TCOD_ColorRGB* __restrict fg; // The foreground color of the string
-    const TCOD_ColorRGB* __restrict bg; // The background color of the string
+    int width;
+    int height;
+    const TCOD_ColorRGBA fg; // The foreground color of the string
+    const TCOD_ColorRGBA bg; // The background color of the string
     TCOD_bkgnd_flag_t flag;
     TCOD_alignment_t alignment;
 } TCOD_PrintParams;
@@ -515,7 +515,7 @@ typedef struct TCOD_PrintParams {
     @return TCOD_PUBLIC
  */
 TCOD_PUBLIC int TCOD_printf(
-    TCOD_Console* __restrict console,
+    TCOD_Console* console,
     TCOD_PrintParams params,
     const char* fmt,
     ...);

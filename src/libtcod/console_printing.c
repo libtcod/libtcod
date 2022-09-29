@@ -1517,12 +1517,4 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
-TCOD_PUBLIC int TCOD_printf(
-    TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
-    const char* fmt,
-    ...) {
-
-  return 0;
-}
 #endif  // TCOD_NO_UNICODE

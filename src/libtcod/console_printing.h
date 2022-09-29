@@ -440,7 +440,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
               If NULL then the background will be left unchanged.
     @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
     @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
-    @param fmt The format string for a vprintf-like function.
+    @param fmt The format string for a vprintf-life function.
     @param args The arguments for the formatted string.
     @return TCOD_Error Any problems such as malformed UTF-8 will return a negative error code.
 
@@ -472,7 +472,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
               If NULL then the background will be left unchanged.
     @param flag The background blending flag.  If unsure then use `TCOD_BKGND_SET`.
     @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
-    @param fmt The format string for a vprintf-like function.
+    @param fmt The format string for a vprintf-life function.
     @param args The arguments for the formatted string.
     @return TCOD_PUBLIC
 
@@ -492,43 +492,6 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
     TCOD_alignment_t alignment,
     const char* fmt,
     va_list args);
-/*****************************************************************************
-    @brief Information about a string to be printed
- */
-typedef struct TCOD_PrintParams {
-    int x; // The starting X coordinate, the left-most position being 0.
-    int y; // The starting Y coordinate, the left-most position being 0.
-    int width;
-    int height;
-    const TCOD_ColorRGBA fg; // The foreground color of the string
-    const TCOD_ColorRGBA bg; // The background color of the string
-    TCOD_bkgnd_flag_t flag;
-    TCOD_alignment_t alignment;
-} TCOD_PrintParams;
-/*****************************************************************************
-    @brief Prints a formatted string to the console.
-
-    @param console A pointer to a TCOD_Console.
-    @param params Information about how the string should be printed
-    @param fmt The format string for a vprintf-like function.
-    @param args The arguments for the formatted string.
-    @return TCOD_PUBLIC
- */
-TCOD_PUBLIC int TCOD_printf(
-    TCOD_Console* console,
-    TCOD_PrintParams params,
-    const char* fmt,
-    ...);
-TCOD_PUBLIC int TCOD_printn(
-  TCOD_Console* console,
-  TCOD_PrintParams params,
-  int n,
-  const char* str);
-TCOD_PUBLIC int TCOD_vprintf(
-  TCOD_Console* console,
-  TCOD_PrintParams params,
-  const char* fmt,
-  va_list args);
 #endif  // TCOD_NO_UNICODE
 #ifdef __cplusplus
 }  // extern "C"

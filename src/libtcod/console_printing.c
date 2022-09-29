@@ -1517,12 +1517,44 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
-TCOD_PUBLIC int TCOD_printf(
+int TCOD_printf(
     TCOD_Console* __restrict console,
     TCOD_PrintParams params,
     const char* fmt,
     ...) {
-
-  return 0;
+  console = TCOD_console_validate_(console);
+  if (!console) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  va_list args;
+  va_start(args, fmt);
+  int err = TCOD_vprintf(console, params, fmt, args);
+  va_end(args);
+  return err;
+}
+int TCOD_printn(
+    TCOD_Console* __restrict console,
+    TCOD_PrintParams params,
+    char* strsrc,
+    int n) {
+  console = TCOD_console_validate_(console);
+  if (!console) {
+    TCOD_set_errorv("Console pointer must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  char* strbuf = malloc(n);
+  strncpy(strbuf, strsrc, n);
+  int err = TCOD_console_print_internal(console, params.x, params.y, params.width, params.height, params.flag, params.alignment, strbuf, true, false);
+  free(strbuf);
+  return err;
+}
+TCOD_PUBLIC int TCOD_vprintf(
+    TCOD_Console* __restrict console,
+    TCOD_PrintParams params,
+    const char* fmt,
+    va_list args) {
+  int err = TCOD_console_print_internal(console, params.x, params.y, params.width, params.height, params.flag, params.alignment, TCOD_console_vsprint(fmt, args), true, false);
+  return err;
 }
 #endif  // TCOD_NO_UNICODE

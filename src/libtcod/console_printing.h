@@ -514,6 +514,9 @@ typedef struct TCOD_PrintParamsRGB {
     @param fmt The format string for a vprintf-like function.
     @param args The arguments for the formatted string.
     @return An error code if less than 0
+    \rst
+    .. versionadded:: Unreleased
+    \endrst
  */
 TCOD_PUBLIC int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...);
 /*****************************************************************************
@@ -524,6 +527,9 @@ TCOD_PUBLIC int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintPara
     @param str The string to be read from.
     @param n Length of string in bytes
     @return An error code if less than 0
+    \rst
+    .. versionadded:: Unreleased
+    \endrst
  */
 TCOD_PUBLIC int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* str);
 /*****************************************************************************
@@ -534,6 +540,9 @@ TCOD_PUBLIC int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintPara
     @param fmt The format string for a vprintf-like function
     @param args The arguments for the format string
     @return An error code if less than 0
+    \rst
+    .. versionadded:: Unreleased
+    \endrst
  */
 TCOD_PUBLIC int TCOD_vprintf_rgb(
     TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, va_list args);

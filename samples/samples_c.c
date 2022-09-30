@@ -5,7 +5,7 @@
  */
 
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
-//#define NO_SDL_SAMPLE
+// #define NO_SDL_SAMPLE
 
 #include <SDL.h>
 #include <libtcod.h>
@@ -288,7 +288,11 @@ void render_lines(const SDL_Event* event) {
   /* render the line */
   TCOD_line(xo, yo, xd, yd, line_listener);
   /* print the current flag */
-  TCOD_console_printf(sample_console, 2, 2, "%s (ENTER to change)", flag_names[bk_flag & 0xff]);
+  TCOD_printf_rgb(
+      sample_console,
+      (TCOD_PrintParamsRGB){.x = 2, .y = 2, .fg = &(TCOD_ColorRGB){255, 255, 255}},
+      "%s (ENTER to change)",
+      flag_names[bk_flag & 0xff]);
 }
 
 /* ***************************

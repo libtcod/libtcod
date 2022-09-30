@@ -92,4 +92,14 @@ TEST_CASE("Unicode PUA.") {
   for (int i = 0xF0000; i <= 0xFFFFD; ++i) check_character(i);
   for (int i = 0x100000; i <= 0x10FFFD; ++i) check_character(i);
 }
+TEST_CASE("Print params RGB") {
+  auto console = tcod::Console{4, 1};
+  TCOD_PrintParamsRGB params{0};
+  params.x = 1;
+  TCOD_printn_rgb(console.get(), params, 1, "A");
+  REQUIRE(to_string(console) == " A  ");
+  params.x = 2;
+  TCOD_printf_rgb(console.get(), params, "%s", "B");
+  REQUIRE(to_string(console) == " AB ");
+}
 #endif  // TCOD_NO_UNICODE

@@ -1517,4 +1517,44 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
+int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  int err = TCOD_vprintf_rgb(console, params, fmt, args);
+  va_end(args);
+  return err;
+}
+int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* str) {
+  PrintParams internal_params = {
+      .console = TCOD_console_validate_(console),
+      .x = params.x,
+      .y = params.y,
+      .width = params.width,
+      .height = params.height,
+      .rgb_fg = params.fg,
+      .rgb_bg = params.bg,
+      .flag = params.flag,
+      .alignment = params.alignment,
+      true,
+      false};
+  int err = printn_internal_(&internal_params, n, str);
+  return err;
+}
+TCOD_PUBLIC int TCOD_vprintf_rgb(
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, va_list args) {
+  PrintParams internal_params = {
+      .console = TCOD_console_validate_(console),
+      .x = params.x,
+      .y = params.y,
+      .width = params.width,
+      .height = params.height,
+      .rgb_fg = params.fg,
+      .rgb_bg = params.bg,
+      .flag = params.flag,
+      .alignment = params.alignment,
+      true,
+      false};
+  int err = vprintf_internal_(&internal_params, fmt, args);
+  return err;
+}
 #endif  // TCOD_NO_UNICODE

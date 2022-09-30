@@ -30,10 +30,7 @@ Newer C/C++ documentation on functions should generally try to follow this forma
       // Code example if necessary.
     @endcode
     \rst
-    [Sphinx directives]
-    .. versionadded:: 0.0
-    .. deprecated:: 0.0
-        Deprecation details.
+    .. versionadded:: Unreleased
     \endrst
  */
 int example(int value);

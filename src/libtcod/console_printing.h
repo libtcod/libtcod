@@ -497,14 +497,13 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
  */
 typedef struct TCOD_PrintParamsRGB {
   int x;  // The starting X coordinate, the left-most position being 0.
-  int y;  // The starting Y coordinate, the left-most position being 0.
-  int width;  // Width of the bounding rectangle. Will be ignored if set to 0
-  int height;  // Width of the bounding rectangle. Will be ignored if set to 0
-  const TCOD_ColorRGB* __restrict fg;  // The foreground color of the string
-  const TCOD_ColorRGB* __restrict bg;  // The background color of the string
-  TCOD_bkgnd_flag_t flag;  // The background blending flag. If unsure then use `TCOD_BKGND_SET`.
-  TCOD_alignment_t
-      alignment;  // The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
+  int y;  // The starting Y coordinate, the top-most position being 0.
+  int width;  // Width of the bounding rectangle. Will be unbound if set to 0
+  int height;  // Height of the bounding rectangle. Will be unbound if set to 0
+  const TCOD_ColorRGB* __restrict fg;  // An optional foreground color of the string
+  const TCOD_ColorRGB* __restrict bg;  // An optional background color of the string
+  TCOD_bkgnd_flag_t flag;  // The background blending flag. The default of `TCOD_BKGND_NONE` implies `TCOD_BKGND_SET`.
+  TCOD_alignment_t alignment;  // The text justification.  Defaults to `TCOD_LEFT`.
 } TCOD_PrintParamsRGB;
 /*****************************************************************************
     @brief Prints a formatted string to the console.

@@ -1533,7 +1533,7 @@ int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params
       .height = params.height,
       .rgb_fg = params.fg,
       .rgb_bg = params.bg,
-      .flag = params.flag,
+      .flag = params.flag ? params.flag : TCOD_BKGND_SET,
       .alignment = params.alignment,
       true,
       false};
@@ -1550,7 +1550,7 @@ TCOD_PUBLIC int TCOD_vprintf_rgb(
       .height = params.height,
       .rgb_fg = params.fg,
       .rgb_bg = params.bg,
-      .flag = params.flag,
+      .flag = params.flag ? params.flag : TCOD_BKGND_SET,
       .alignment = params.alignment,
       true,
       false};

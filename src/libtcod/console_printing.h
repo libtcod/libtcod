@@ -495,7 +495,7 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
 /*****************************************************************************
     @brief Information about a string to be printed
  */
-typedef struct TCOD_PrintParams_RGB {
+typedef struct TCOD_PrintParamsRGB {
     int x; // The starting X coordinate, the left-most position being 0.
     int y; // The starting Y coordinate, the left-most position being 0.
     int width; // Width of the bounding rectangle. Will be ignored if set to 0
@@ -504,7 +504,7 @@ typedef struct TCOD_PrintParams_RGB {
     const TCOD_ColorRGB bg; // The background color of the string
     TCOD_bkgnd_flag_t flag; // The background blending flag. If unsure then use `TCOD_BKGND_SET`.
     TCOD_alignment_t alignment; // The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
-} TCOD_PrintParams_RGB;
+} TCOD_PrintParamsRGB;
 /*****************************************************************************
     @brief Prints a formatted string to the console.
 
@@ -516,7 +516,7 @@ typedef struct TCOD_PrintParams_RGB {
  */
 TCOD_PUBLIC int TCOD_printf_RGB(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     const char* fmt,
     ...);
 /*****************************************************************************
@@ -530,7 +530,7 @@ TCOD_PUBLIC int TCOD_printf_RGB(
  */
 TCOD_PUBLIC int TCOD_printn_RGB(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     int n,
     const char* str);
 /*****************************************************************************
@@ -544,7 +544,7 @@ TCOD_PUBLIC int TCOD_printn_RGB(
  */
 TCOD_PUBLIC int TCOD_vprintf_RGB(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     const char* fmt,
     va_list args);
 #endif  // TCOD_NO_UNICODE

@@ -1519,7 +1519,7 @@ TCOD_Error TCOD_console_printf_frame(
 }
 int TCOD_printf_rgb(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     const char* fmt,
     ...) {
   console = TCOD_console_validate_(console);
@@ -1529,13 +1529,13 @@ int TCOD_printf_rgb(
   }
   va_list args;
   va_start(args, fmt);
-  int err = TCOD_vprintf_RGB(console, params, fmt, args);
+  int err = TCOD_vprintf_rgb(console, params, fmt, args);
   va_end(args);
   return err;
 }
 int TCOD_printn_rgb(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     int n,
     const char* str) {
   console = TCOD_console_validate_(console);
@@ -1560,7 +1560,7 @@ int TCOD_printn_rgb(
 }
 TCOD_PUBLIC int TCOD_vprintf_rgb(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams_RGB params,
+    TCOD_PrintParamsRGB params,
     const char* fmt,
     va_list args) {
   PrintParams paramsformatted = {

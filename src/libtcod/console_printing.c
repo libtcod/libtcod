@@ -1517,9 +1517,9 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
-int TCOD_printf(
+int TCOD_printf_RGB(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
+    TCOD_PrintParams_RGB params,
     const char* fmt,
     ...) {
   console = TCOD_console_validate_(console);
@@ -1529,20 +1529,40 @@ int TCOD_printf(
   }
   va_list args;
   va_start(args, fmt);
-  int err = TCOD_vprintf(console, params, fmt, args);
+  int err = TCOD_vprintf_RGB(console, params, fmt, args);
   va_end(args);
   return err;
 }
-int TCOD_printn(
+int TCOD_printn_RGB(
     TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
-    char* strsrc,
-    int n) {
+    TCOD_PrintParams_RGB params,
+    int n,
+    char* str) {
   console = TCOD_console_validate_(console);
   if (!console) {
     TCOD_set_errorv("Console pointer must not be NULL.");
     return TCOD_E_INVALID_ARGUMENT;
   }
+  PrintParams paramsformatted = {
+    .console = console,
+    .x = params.x,
+    .y = params.y,
+    .width = params.width,
+    .height = params.height,
+    .rgb_fg = &params.fg,
+    .rgb_bg = &params.bg,
+    .flag = params.flag,
+    .alignment = params.alignment,
+    true, 
+    false};
+  int err = printn_internal_(&paramsformatted, n, str);
+  return err;
+}
+TCOD_PUBLIC int TCOD_vprintf_RGB(
+    TCOD_Console* __restrict console,
+    TCOD_PrintParams_RGB params,
+    const char* fmt,
+    va_list args) {
   PrintParams paramsformatted = {
     .x = params.x,
     .y = params.y,
@@ -1554,15 +1574,7 @@ int TCOD_printn(
     .alignment = params.alignment,
     true, 
     false};
-  int err = printn_internal_(&paramsformatted, n, strsrc);
-  return err;
-}
-TCOD_PUBLIC int TCOD_vprintf(
-    TCOD_Console* __restrict console,
-    TCOD_PrintParams params,
-    const char* fmt,
-    va_list args) {
-  int err = TCOD_console_print_internal(console, params.x, params.y, params.width, params.height, params.flag, params.alignment, TCOD_console_vsprint(fmt, args), true, false);
+  int err =  vprintf_internal_(&paramsformatted, fmt, args);
   return err;
 }
 #endif  // TCOD_NO_UNICODE

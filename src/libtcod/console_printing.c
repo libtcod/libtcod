@@ -1537,7 +1537,7 @@ int TCOD_printn_rgb(
     TCOD_Console* __restrict console,
     TCOD_PrintParams_RGB params,
     int n,
-    char* str) {
+    const char* str) {
   console = TCOD_console_validate_(console);
   if (!console) {
     TCOD_set_errorv("Console pointer must not be NULL.");

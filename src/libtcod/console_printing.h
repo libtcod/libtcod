@@ -532,7 +532,7 @@ TCOD_PUBLIC int TCOD_printn_RGB(
     TCOD_Console* __restrict console,
     TCOD_PrintParams_RGB params,
     int n,
-    char* str);
+    const char* str);
 /*****************************************************************************
     @brief Prints a formatted string using va_list
 

@@ -495,7 +495,7 @@ TCOD_PUBLIC int TCOD_console_vprintf_rect(
 /*****************************************************************************
     @brief Information about a string to be printed
  */
-typedef struct TCOD_PrintParams {
+typedef struct TCOD_PrintParams_RGB {
     int x; // The starting X coordinate, the left-most position being 0.
     int y; // The starting Y coordinate, the left-most position being 0.
     int width; // Width of the bounding rectangle. Will be ignored if set to 0
@@ -514,7 +514,7 @@ typedef struct TCOD_PrintParams {
     @param args The arguments for the formatted string.
     @return An error code if less than 0
  */
-TCOD_PUBLIC int TCOD_printf(
+TCOD_PUBLIC int TCOD_printf_RGB(
     TCOD_Console* __restrict console,
     TCOD_PrintParams params,
     const char* fmt,
@@ -528,7 +528,7 @@ TCOD_PUBLIC int TCOD_printf(
     @param n Length of string in bytes 
     @return An error code if less than 0
  */
-TCOD_PUBLIC int TCOD_printn(
+TCOD_PUBLIC int TCOD_printn_RGB(
     TCOD_Console* __restrict console,
     TCOD_PrintParams params,
     char* strsrc,
@@ -542,7 +542,7 @@ TCOD_PUBLIC int TCOD_printn(
     @param args The arguments for the format string
     @return An error code if less than 0
  */
-TCOD_PUBLIC int TCOD_vprintf(
+TCOD_PUBLIC int TCOD_vprintf_RGB(
     TCOD_Console* __restrict console,
     TCOD_PrintParams params,
     const char* fmt,

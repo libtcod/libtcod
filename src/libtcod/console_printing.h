@@ -500,8 +500,8 @@ typedef struct TCOD_PrintParamsRGB {
   int y;  // The starting Y coordinate, the left-most position being 0.
   int width;  // Width of the bounding rectangle. Will be ignored if set to 0
   int height;  // Width of the bounding rectangle. Will be ignored if set to 0
-  const TCOD_ColorRGB fg;  // The foreground color of the string
-  const TCOD_ColorRGB bg;  // The background color of the string
+  const TCOD_ColorRGB* __restrict fg;  // The foreground color of the string
+  const TCOD_ColorRGB* __restrict bg;  // The background color of the string
   TCOD_bkgnd_flag_t flag;  // The background blending flag. If unsure then use `TCOD_BKGND_SET`.
   TCOD_alignment_t
       alignment;  // The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.

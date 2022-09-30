@@ -52,7 +52,7 @@ void TCODImage::clear(const TCODColor col) {
 void TCODImage::getSize(int* w, int* h) const { TCOD_image_get_size(data, w, h); }
 
 TCODImage::~TCODImage() {
-  if (deleteData) TCOD_image_delete(data);
+  if (deleteData && data) TCOD_image_delete(data);
 }
 
 TCODColor TCODImage::getPixel(int x, int y) const { return TCOD_image_get_pixel(data, x, y); }

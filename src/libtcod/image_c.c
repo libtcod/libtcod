@@ -56,9 +56,7 @@ static void TCOD_image_invalidate_mipmaps(TCOD_Image* image) {
     Return true if `x` and `y` are in the bounds of `image`.
  */
 static bool TCOD_image_in_bounds(const TCOD_Image* image, int x, int y) {
-  if (!image) {
-    return 0;
-  }
+  if (!image) return false;
   return (0 <= x && 0 <= y && x < image->mipmaps[0].width && y < image->mipmaps[0].height);
 }
 
@@ -153,11 +151,11 @@ TCOD_Image* TCOD_image_new(int width, int height) {
   return ret;
 }
 void TCOD_image_get_size(const TCOD_Image* image, int* w, int* h) {
-  if (!image) {
-    return;
-  }
-  *w = image->mipmaps[0].width;
-  *h = image->mipmaps[0].height;
+  if (w) *w = 0;
+  if (h) *h = 0;
+  if (!image) return;
+  if (w) *w = image->mipmaps[0].width;
+  if (h) *h = image->mipmaps[0].height;
 }
 
 TCOD_color_t TCOD_image_get_pixel(const TCOD_Image* image, int x, int y) {

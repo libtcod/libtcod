@@ -50,6 +50,9 @@ public :
 	@PageDesc This toolkit contains some image manipulation utilities.
 	*/
 
+  /// @brief Default constructs an image.  This will be in a partially invalid state until assigned a real image.
+  TCODImage() noexcept = default;
+
 	/**
 	@PageName image_create
 	@PageTitle Creating an image
@@ -522,8 +525,8 @@ public :
 protected :
 	friend class TCODLIB_API TCODSystem;
 	friend class TCODLIB_API TCODZip;
-	struct TCOD_Image *data;
-	bool deleteData;
+	struct TCOD_Image *data{nullptr};
+	bool deleteData{false};
 };
 // clang-format on
 namespace tcod {

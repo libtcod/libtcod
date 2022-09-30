@@ -1525,11 +1525,6 @@ int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params
   return err;
 }
 int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* str) {
-  console = TCOD_console_validate_(console);
-  if (!console) {
-    TCOD_set_errorv("Console pointer must not be NULL.");
-    return TCOD_E_INVALID_ARGUMENT;
-  }
   PrintParams internal_params = {
       .console = TCOD_console_validate_(console),
       .x = params.x,

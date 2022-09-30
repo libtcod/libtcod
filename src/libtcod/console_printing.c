@@ -1517,7 +1517,7 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
-int TCOD_printf_RGB(
+int TCOD_printf_rgb(
     TCOD_Console* __restrict console,
     TCOD_PrintParams_RGB params,
     const char* fmt,
@@ -1533,7 +1533,7 @@ int TCOD_printf_RGB(
   va_end(args);
   return err;
 }
-int TCOD_printn_RGB(
+int TCOD_printn_rgb(
     TCOD_Console* __restrict console,
     TCOD_PrintParams_RGB params,
     int n,
@@ -1558,7 +1558,7 @@ int TCOD_printn_RGB(
   int err = printn_internal_(&paramsformatted, n, str);
   return err;
 }
-TCOD_PUBLIC int TCOD_vprintf_RGB(
+TCOD_PUBLIC int TCOD_vprintf_rgb(
     TCOD_Console* __restrict console,
     TCOD_PrintParams_RGB params,
     const char* fmt,

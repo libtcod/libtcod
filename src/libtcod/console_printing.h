@@ -517,7 +517,8 @@ typedef struct TCOD_PrintParamsRGB {
     .. versionadded:: Unreleased
     \endrst
  */
-TCOD_PUBLIC int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...);
+TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...);
 /*****************************************************************************
     @brief Prints n-bytes of a string string to the console.
 

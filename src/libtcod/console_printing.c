@@ -756,14 +756,14 @@ static int vsprint_(char** out, const char* fmt, va_list ap) {
   vsprintf(*out, fmt, ap);
   return size;
 }
-struct FormattedPrinter {
+typedef struct FormattedPrinter {
   const unsigned char* __restrict string;
   const unsigned char* end;
   struct TCOD_ColorRGBA fg;
   struct TCOD_ColorRGBA bg;
   const struct TCOD_ColorRGBA default_fg;
   const struct TCOD_ColorRGBA default_bg;
-};
+} FormattedPrinter;
 static TCOD_Error utf8_report_error(utf8proc_ssize_t err) {
   switch (err) {
     case UTF8PROC_ERROR_NOMEM:
@@ -786,7 +786,7 @@ static TCOD_Error utf8_report_error(utf8proc_ssize_t err) {
     An error may be returned.  `out` can be NULL.
  */
 TCOD_NODISCARD
-static TCOD_Error fp_next_raw(struct FormattedPrinter* printer, int* out) {
+static TCOD_Error fp_next_raw(FormattedPrinter* __restrict printer, int* __restrict out) {
   int codepoint;
   utf8proc_ssize_t len = utf8proc_iterate(printer->string, printer->end - printer->string, &codepoint);
   if (len < 0) {
@@ -802,7 +802,7 @@ static TCOD_Error fp_next_raw(struct FormattedPrinter* printer, int* out) {
     Output the next 3 codepoints to a TCOD_ColorRGBA struct and advance.
  */
 TCOD_NODISCARD
-static TCOD_Error fp_next_rgba(struct FormattedPrinter* printer, struct TCOD_ColorRGBA* out) {
+static TCOD_Error fp_next_rgba(FormattedPrinter* __restrict printer, struct TCOD_ColorRGBA* __restrict out) {
   int r, g, b;
   TCOD_Error err;
   if ((err = fp_next_raw(printer, &r)) < 0 || (err = fp_next_raw(printer, &g)) < 0 ||
@@ -824,7 +824,7 @@ static TCOD_Error fp_next_rgba(struct FormattedPrinter* printer, struct TCOD_Col
     then `*out` is set to a zero-width space.
  */
 TCOD_NODISCARD
-static TCOD_Error fp_next(struct FormattedPrinter* printer, int* out) {
+static TCOD_Error fp_next(FormattedPrinter* __restrict printer, int* __restrict out) {
   do {
     int codepoint;
     TCOD_Error err = fp_next_raw(printer, &codepoint);
@@ -873,8 +873,8 @@ static TCOD_Error fp_next(struct FormattedPrinter* printer, int* out) {
     Return the next non-special codepoint without advancing the string pointer.
  */
 TCOD_NODISCARD
-static TCOD_Error fp_peek(const struct FormattedPrinter* printer, int* out) {
-  struct FormattedPrinter temp = *printer;
+static TCOD_Error fp_peek(const FormattedPrinter* __restrict printer, int* __restrict out) {
+  FormattedPrinter temp = *printer;
   return fp_next(&temp, out);
 }
 /*
@@ -939,13 +939,13 @@ static int get_character_width(int codepoint) {
  */
 TCOD_NODISCARD
 static TCOD_Error next_split_(
-    const struct FormattedPrinter* printer,
+    const FormattedPrinter* __restrict printer,
     int max_width,
     int can_split,
-    const unsigned char** break_point,
-    int* break_width,
-    bool* add_line_break) {
-  struct FormattedPrinter it = *printer;
+    const unsigned char** __restrict break_point,
+    int* __restrict break_width,
+    bool* __restrict add_line_break) {
+  FormattedPrinter it = *printer;
   // The break point and width of the line.
   *break_point = it.end;
   *break_width = 0;
@@ -1059,7 +1059,7 @@ static int printn_internal_(const PrintParams* __restrict params, size_t n, cons
   if (params->rgb_bg) {
     bg = (TCOD_ColorRGBA){params->rgb_bg->r, params->rgb_bg->g, params->rgb_bg->b, 255};
   }
-  struct FormattedPrinter printer = {
+  FormattedPrinter printer = {
       .string = (const unsigned char*)string,
       .end = (const unsigned char*)string + n,
       .fg = fg,

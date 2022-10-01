@@ -238,7 +238,7 @@ TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(4, 5) TCOD_Error
-    TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* fmt, ...);
+    TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* __restrict fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -254,7 +254,7 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
     int y,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     ...);
 /**
     Format and print a UTF-8 string to a console.
@@ -266,7 +266,7 @@ TCODLIB_API TCODLIB_FORMAT(6, 7) TCOD_Error TCOD_console_printf_ex(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_printf_rect(
-    TCOD_Console* __restrict con, int x, int y, int w, int h, const char* fmt, ...);
+    TCOD_Console* __restrict con, int x, int y, int w, int h, const char* __restrict fmt, ...);
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -284,7 +284,7 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
     int h,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     ...);
 /**
     Print a framed and optionally titled region to a console, using default
@@ -300,14 +300,14 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) int TCOD_console_printf_rect_ex(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(8, 9) TCOD_Error TCOD_console_printf_frame(
-    struct TCOD_Console* __restrict con,
+    TCOD_Console* __restrict con,
     int x,
     int y,
     int w,
     int h,
     int empty,
     TCOD_bkgnd_flag_t flag,
-    const char* fmt,
+    const char* __restrict fmt,
     ...);
 /**
     Return the number of lines that would be printed by this formatted string.
@@ -319,7 +319,7 @@ TCODLIB_API TCODLIB_FORMAT(8, 9) TCOD_Error TCOD_console_printf_frame(
     \endrst
  */
 TCODLIB_API TCODLIB_FORMAT(6, 7) int TCOD_console_get_height_rect_fmt(
-    struct TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
+    TCOD_Console* __restrict con, int x, int y, int w, int h, const char* __restrict fmt, ...);
 /**
     @brief Print a string of a specified length to a console.
 
@@ -345,9 +345,9 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn(
     int x,
     int y,
     size_t n,
-    const char* str,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
+    const char* __restrict str,
+    const TCOD_ColorRGB* __restrict fg,
+    const TCOD_ColorRGB* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
 /**
@@ -379,9 +379,9 @@ TCOD_PUBLIC int TCOD_console_printn_rect(
     int width,
     int height,
     size_t n,
-    const char* str,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
+    const char* __restrict str,
+    const TCOD_ColorRGB* __restrict fg,
+    const TCOD_ColorRGB* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment);
 /**
@@ -414,7 +414,7 @@ TCOD_PUBLIC int TCOD_console_get_height_rect_n(
     .. versionadded:: 1.19
     \endrst
  */
-TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str);
+TCOD_PUBLIC int TCOD_console_get_height_rect_wn(int width, size_t n, const char* __restrict str);
 // Deprecated function.
 TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     TCOD_Console* __restrict console,
@@ -423,9 +423,9 @@ TCOD_PUBLIC TCOD_Error TCOD_console_printn_frame(
     int width,
     int height,
     size_t n,
-    const char* title,
-    const TCOD_ColorRGB* fg,
-    const TCOD_ColorRGB* bg,
+    const char* __restrict title,
+    const TCOD_ColorRGB* __restrict fg,
+    const TCOD_ColorRGB* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     bool clear);
 /*****************************************************************************
@@ -456,7 +456,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
     const TCOD_color_t* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     va_list args);
 /*****************************************************************************
     @brief Print a formatted string using a va_list within a bounding box.
@@ -518,7 +518,7 @@ typedef struct TCOD_PrintParamsRGB {
     \endrst
  */
 TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
-    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...);
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, ...);
 /*****************************************************************************
     @brief Prints n-bytes of a string string to the console.
 
@@ -531,7 +531,8 @@ TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
     .. versionadded:: Unreleased
     \endrst
  */
-TCOD_PUBLIC int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* str);
+TCOD_PUBLIC int TCOD_printn_rgb(
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* __restrict str);
 /*****************************************************************************
     @brief Prints a formatted string using va_list
 
@@ -545,7 +546,7 @@ TCOD_PUBLIC int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintPara
     \endrst
  */
 TCOD_PUBLIC int TCOD_vprintf_rgb(
-    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, va_list args);
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, va_list args);
 #endif  // TCOD_NO_UNICODE
 #ifdef __cplusplus
 }  // extern "C"

@@ -757,7 +757,7 @@ static int vsprint_(char** out, const char* fmt, va_list ap) {
   return size;
 }
 struct FormattedPrinter {
-  const unsigned char* string;
+  const unsigned char* __restrict string;
   const unsigned char* end;
   struct TCOD_ColorRGBA fg;
   struct TCOD_ColorRGBA bg;
@@ -1242,9 +1242,9 @@ TCOD_Error TCOD_console_printn(
     int x,
     int y,
     size_t n,
-    const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const char* __restrict str,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
   const PrintParams params = {
@@ -1270,9 +1270,9 @@ int TCOD_console_printn_rect(
     int width,
     int height,
     size_t n,
-    const char* str,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const char* __restrict str,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment) {
   const PrintParams params = {
@@ -1291,7 +1291,7 @@ int TCOD_console_printn_rect(
   return printn_internal_(&params, n, str);
 }
 int TCOD_console_get_height_rect_n(
-    TCOD_Console* console, int x, int y, int width, int height, size_t n, const char* str) {
+    TCOD_Console* console, int x, int y, int width, int height, size_t n, const char* __restrict str) {
   const PrintParams params = {
       .console = TCOD_console_validate_(console),
       .x = x,
@@ -1305,7 +1305,7 @@ int TCOD_console_get_height_rect_n(
   };
   return printn_internal_(&params, n, str);
 }
-int TCOD_console_get_height_rect_wn(int width, size_t n, const char* str) {
+int TCOD_console_get_height_rect_wn(int width, size_t n, const char* __restrict str) {
   TCOD_Console console = {.w = width, .h = INT_MAX};  // get_height functions don't need a fully defined console.
   return TCOD_console_get_height_rect_n(&console, 0, 0, width, INT_MAX, n, str);
 }
@@ -1316,9 +1316,9 @@ TCOD_Error TCOD_console_printn_frame(
     int width,
     int height,
     size_t n,
-    const char* title,
-    const TCOD_color_t* fg,
-    const TCOD_color_t* bg,
+    const char* __restrict title,
+    const TCOD_color_t* __restrict fg,
+    const TCOD_color_t* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     bool clear) {
   con = TCOD_console_validate_(con);
@@ -1352,7 +1352,7 @@ TCOD_Error TCOD_console_vprintf(
     const TCOD_color_t* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     va_list args) {
   const PrintParams params = {
       .console = TCOD_console_validate_(console),
@@ -1373,7 +1373,7 @@ TCOD_Error TCOD_console_printf_ex(
     int y,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
@@ -1386,7 +1386,7 @@ TCOD_Error TCOD_console_printf_ex(
   va_end(args);
   return err;
 }
-TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* fmt, ...) {
+TCOD_Error TCOD_console_printf(TCOD_Console* __restrict con, int x, int y, const char* __restrict fmt, ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1425,14 +1425,14 @@ int TCOD_console_vprintf_rect(
   return vprintf_internal_(&params, fmt, args);
 }
 int TCOD_console_printf_rect_ex(
-    struct TCOD_Console* __restrict con,
+    TCOD_Console* __restrict con,
     int x,
     int y,
     int width,
     int height,
     TCOD_bkgnd_flag_t flag,
     TCOD_alignment_t alignment,
-    const char* fmt,
+    const char* __restrict fmt,
     ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
@@ -1447,7 +1447,7 @@ int TCOD_console_printf_rect_ex(
   return err;
 }
 int TCOD_console_printf_rect(
-    struct TCOD_Console* __restrict con, int x, int y, int width, int height, const char* fmt, ...) {
+    TCOD_Console* __restrict con, int x, int y, int width, int height, const char* __restrict fmt, ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1462,7 +1462,7 @@ int TCOD_console_printf_rect(
   return err;
 }
 int TCOD_console_get_height_rect_fmt(
-    struct TCOD_Console* __restrict con, int x, int y, int width, int height, const char* fmt, ...) {
+    TCOD_Console* __restrict con, int x, int y, int width, int height, const char* __restrict fmt, ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
     TCOD_set_errorv("Console pointer must not be NULL.");
@@ -1487,14 +1487,14 @@ int TCOD_console_get_height_rect_fmt(
   return result;
 }
 TCOD_Error TCOD_console_printf_frame(
-    struct TCOD_Console* __restrict con,
+    TCOD_Console* __restrict con,
     int x,
     int y,
     int width,
     int height,
     int empty,
     TCOD_bkgnd_flag_t flag,
-    const char* fmt,
+    const char* __restrict fmt,
     ...) {
   con = TCOD_console_validate_(con);
   if (!con) {
@@ -1517,14 +1517,14 @@ TCOD_Error TCOD_console_printf_frame(
   free(str);
   return err;
 }
-int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, ...) {
+int TCOD_printf_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, ...) {
   va_list args;
   va_start(args, fmt);
   int err = TCOD_vprintf_rgb(console, params, fmt, args);
   va_end(args);
   return err;
 }
-int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* str) {
+int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, int n, const char* __restrict str) {
   PrintParams internal_params = {
       .console = TCOD_console_validate_(console),
       .x = params.x,
@@ -1541,7 +1541,7 @@ int TCOD_printn_rgb(TCOD_Console* __restrict console, TCOD_PrintParamsRGB params
   return err;
 }
 TCOD_PUBLIC int TCOD_vprintf_rgb(
-    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* fmt, va_list args) {
+    TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, va_list args) {
   PrintParams internal_params = {
       .console = TCOD_console_validate_(console),
       .x = params.x,

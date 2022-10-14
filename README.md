@@ -80,3 +80,9 @@ Each should be identical for the most part, so if you are using Windows,
 downloading the pre-compiled binaries and running the included `samples.exe`
 which is compiled from the C source code, should be representative of the other
 versions.
+
+# Sponsors
+
+[Sponsors donating $25 or more per month](https://github.com/sponsors/HexDecimal) will have their names or logos listed here.
+
+* [q00u](https://github.com/q00u)

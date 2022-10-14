@@ -9,7 +9,7 @@ defaults:
     shell: bash
 
 env:
-  VCPKG_FETCH_DEPTH: 1000 # Depth to fetch vcpkg commits, must include the baseline.
+  VCPKG_FETCH_DEPTH: 1 # Depth to fetch vcpkg commits, must include the baseline.
 
 jobs:
   CMake:

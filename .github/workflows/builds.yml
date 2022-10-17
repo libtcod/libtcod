@@ -82,6 +82,13 @@ jobs:
             config: Debug
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
+          # Test libtcod without everything.
+          - os: ubuntu-20.04
+            triplet: x64-linux
+            shared: dynamic
+            config: Debug
+            cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
+
     env:
       CMAKE_BUILD_DIR: build
       VCPKG_ROOT: ${{github.workspace}}/vcpkg

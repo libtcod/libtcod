@@ -14,6 +14,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ### Fixed
 - Functions getting the size of an image now handle null pointers consistently.
+- Will no longer try to include ``<utf8proc.h>`` when Unicode support is disabled.
 
 ## [1.22.3] - 2022-09-09
 ### Added

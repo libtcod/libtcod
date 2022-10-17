@@ -42,7 +42,9 @@
 #include <wctype.h>
 #endif
 
+#ifndef TCOD_NO_UNICODE
 #include <utf8proc.h>
+#endif  // TCOD_NO_UNICODE
 
 #include "console.h"
 #include "console_drawing.h"

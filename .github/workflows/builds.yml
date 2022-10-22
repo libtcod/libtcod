@@ -99,7 +99,7 @@ jobs:
       VCPKG_LIBRARY_LINKAGE: ${{matrix.shared}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Fetch Vcpkg commits
@@ -109,7 +109,7 @@ jobs:
       - uses: lukka/get-cmake@latest
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           # The first path is where vcpkg generates artifacts while consuming the vcpkg.json manifest file.
           # The second path is the location of vcpkg (it contains the vcpkg executable and data files).
@@ -167,7 +167,7 @@ jobs:
           - os: ubuntu-20.04
             triplet: x64-linux
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Fetch Vcpkg commits
@@ -176,7 +176,7 @@ jobs:
       - name: Install the latest CMake
         uses: lukka/get-cmake@latest
       - name: Restore vcpkg and its artifacts.
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -222,7 +222,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, macos-11]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3
         uses: actions/setup-python@v2
         with:
@@ -271,7 +271,7 @@ jobs:
             architecture: x86_64
             toolset: mingw
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python 3
         uses: actions/setup-python@v2
         with:
@@ -308,7 +308,7 @@ jobs:
           scons develop_all dist -j 3 -s CPPDEFINES=NDEBUG MODE=DEBUG_RELEASE ARCH=${{ matrix.architecture }} \
             TOOLSET=mingw
       - name: Archive distribution
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: scons-dist
           path: |
@@ -334,14 +334,14 @@ jobs:
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Fetch Vcpkg commits
         working-directory: vcpkg
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Restore vcpkg and its artifacts
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ${{ env.CMAKE_BUILD_DIR }}/vcpkg_installed/
@@ -352,7 +352,7 @@ jobs:
           key: wasm32-emscripten-${{ hashFiles('vcpkg.json', '.git/modules/vcpkg/HEAD') }}
       - name: Setup cache
         id: cache-system-libraries
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.EM_CACHE_FOLDER }}
           key: ${{ env.EM_VERSION }}-${{ runner.os }}
@@ -375,7 +375,7 @@ jobs:
         run: cmake --build ${{ env.CMAKE_BUILD_DIR }}
       - name: Show contents of the build directory
         run: find ${{ env.CMAKE_BUILD_DIR }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: emscripten-builds
           path: ${{ env.CMAKE_BUILD_DIR }}/bin
@@ -385,7 +385,7 @@ jobs:
   verify-shaders:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Verify shader sources
         run: ./scripts/update_shader.py --check
 

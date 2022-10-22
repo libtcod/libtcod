@@ -409,7 +409,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           body_path: release_body.md
-          draft: false
+          draft: true
           prerelease: false
           token: ${{ secrets.RELEASE_TOKEN }}
           files: artifacts/*

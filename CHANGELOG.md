@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+
+## [1.23.0] - 2022-10-22
 ### Added
 - Added new C print functions: ``TCOD_printf_rgb``, ``TCOD_printn_rgb``, and ``TCOD_vprintf_rgb``.
   [#133](https://github.com/libtcod/libtcod/pull/133)

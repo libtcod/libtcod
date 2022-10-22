@@ -514,7 +514,7 @@ typedef struct TCOD_PrintParamsRGB {
     @param args The arguments for the formatted string.
     @return An error code if less than 0
     \rst
-    .. versionadded:: Unreleased
+    .. versionadded:: 1.23
     \endrst
  */
 TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
@@ -528,7 +528,7 @@ TCOD_PUBLIC TCODLIB_FORMAT(3, 4) int TCOD_printf_rgb(
     @param n Length of string in bytes
     @return An error code if less than 0
     \rst
-    .. versionadded:: Unreleased
+    .. versionadded:: 1.23
     \endrst
  */
 TCOD_PUBLIC int TCOD_printn_rgb(
@@ -542,7 +542,7 @@ TCOD_PUBLIC int TCOD_printn_rgb(
     @param args The arguments for the format string
     @return An error code if less than 0
     \rst
-    .. versionadded:: Unreleased
+    .. versionadded:: 1.23
     \endrst
  */
 TCOD_PUBLIC int TCOD_vprintf_rgb(

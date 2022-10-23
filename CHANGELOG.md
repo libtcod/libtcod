@@ -7,6 +7,9 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Changed
+- Code Page 437: Character 0x7F is now assigned to 0x2302 (HOUSE).
+  [#134](https://github.com/libtcod/libtcod/pull/134)
 
 ## [1.23.0] - 2022-10-22
 ### Added

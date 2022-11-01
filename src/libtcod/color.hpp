@@ -560,6 +560,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
    */
   [[nodiscard]] constexpr explicit operator tcod::ColorRGBA() const noexcept { return {r, g, b, 255}; };
 
+  /// @cond INTERNAL
   // color array
   static const TCODColor colors [[deprecated]][TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
 
@@ -776,6 +777,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
   // miscellaneous
   static const TCODColor celadon [[deprecated("Replace with tcod::ColorRGB{172, 255, 175}")]];
   static const TCODColor peach [[deprecated("Replace with tcod::ColorRGB{255, 159, 127}")]];
+  /// @endcond
 
  private:
   /**

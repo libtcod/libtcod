@@ -173,269 +173,363 @@ TCODLIB_API void TCOD_color_scale_HSV(TCOD_color_t* color, float saturation_coef
 /* color map */
 TCODLIB_API void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_color_t* key_color, const int* key_index);
 
-/* color names */
+/// @cond INTERNAL
+/***************************************************************************
+    @brief Color names.
+
+    \rst
+    .. deprecated:: Unreleased
+    \endrst
+ */
 enum {
-  TCOD_COLOR_RED,
-  TCOD_COLOR_FLAME,
-  TCOD_COLOR_ORANGE,
-  TCOD_COLOR_AMBER,
-  TCOD_COLOR_YELLOW,
-  TCOD_COLOR_LIME,
-  TCOD_COLOR_CHARTREUSE,
-  TCOD_COLOR_GREEN,
-  TCOD_COLOR_SEA,
-  TCOD_COLOR_TURQUOISE,
-  TCOD_COLOR_CYAN,
-  TCOD_COLOR_SKY,
-  TCOD_COLOR_AZURE,
-  TCOD_COLOR_BLUE,
-  TCOD_COLOR_HAN,
-  TCOD_COLOR_VIOLET,
-  TCOD_COLOR_PURPLE,
-  TCOD_COLOR_FUCHSIA,
-  TCOD_COLOR_MAGENTA,
-  TCOD_COLOR_PINK,
-  TCOD_COLOR_CRIMSON,
+  TCOD_COLOR_RED TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_FLAME TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_ORANGE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_AMBER TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_YELLOW TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_LIME TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_CHARTREUSE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_GREEN TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_SEA TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_TURQUOISE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_CYAN TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_SKY TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_AZURE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_BLUE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_HAN TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_VIOLET TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_PURPLE TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_FUCHSIA TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_MAGENTA TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_PINK TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_CRIMSON TCOD_DEPRECATED_ENUM,
   TCOD_COLOR_NB
 };
 
-/* color levels */
+#if defined(_MSC_VER) && !defined(__clang__)
+#pragma deprecated(TCOD_COLOR_RED)
+#pragma deprecated(TCOD_COLOR_FLAME)
+#pragma deprecated(TCOD_COLOR_ORANGE)
+#pragma deprecated(TCOD_COLOR_AMBER)
+#pragma deprecated(TCOD_COLOR_YELLOW)
+#pragma deprecated(TCOD_COLOR_LIME)
+#pragma deprecated(TCOD_COLOR_CHARTREUSE)
+#pragma deprecated(TCOD_COLOR_GREEN)
+#pragma deprecated(TCOD_COLOR_SEA)
+#pragma deprecated(TCOD_COLOR_TURQUOISE)
+#pragma deprecated(TCOD_COLOR_CYAN)
+#pragma deprecated(TCOD_COLOR_SKY)
+#pragma deprecated(TCOD_COLOR_AZURE)
+#pragma deprecated(TCOD_COLOR_BLUE)
+#pragma deprecated(TCOD_COLOR_HAN)
+#pragma deprecated(TCOD_COLOR_VIOLET)
+#pragma deprecated(TCOD_COLOR_PURPLE)
+#pragma deprecated(TCOD_COLOR_FUCHSIA)
+#pragma deprecated(TCOD_COLOR_MAGENTA)
+#pragma deprecated(TCOD_COLOR_PINK)
+#pragma deprecated(TCOD_COLOR_CRIMSON)
+#endif  // _MSC_VER
+
+/***************************************************************************
+    @brief Color levels
+
+    \rst
+    .. deprecated:: Unreleased
+    \endrst
+ */
 enum {
-  TCOD_COLOR_DESATURATED,
-  TCOD_COLOR_LIGHTEST,
-  TCOD_COLOR_LIGHTER,
-  TCOD_COLOR_LIGHT,
-  TCOD_COLOR_NORMAL,
-  TCOD_COLOR_DARK,
-  TCOD_COLOR_DARKER,
-  TCOD_COLOR_DARKEST,
+  TCOD_COLOR_DESATURATED TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_LIGHTEST TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_LIGHTER TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_LIGHT TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_NORMAL TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_DARK TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_DARKER TCOD_DEPRECATED_ENUM,
+  TCOD_COLOR_DARKEST TCOD_DEPRECATED_ENUM,
   TCOD_COLOR_LEVELS
 };
+
+#if defined(_MSC_VER) && !defined(__clang__)
+#pragma deprecated(TCOD_COLOR_DESATURATED)
+#pragma deprecated(TCOD_COLOR_LIGHTEST)
+#pragma deprecated(TCOD_COLOR_LIGHTER)
+#pragma deprecated(TCOD_COLOR_LIGHT)
+#pragma deprecated(TCOD_COLOR_NORMAL)
+#pragma deprecated(TCOD_COLOR_DARK)
+#pragma deprecated(TCOD_COLOR_DARKER)
+#pragma deprecated(TCOD_COLOR_DARKEST)
+#endif  // _MSC_VER
 
 /* color array */
 extern TCODLIB_API const TCOD_color_t TCOD_colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS];
 
 /* grey levels */
-extern TCODLIB_API const TCOD_color_t TCOD_black;  // 0, 0, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_grey;  // 31, 31, 31
-extern TCODLIB_API const TCOD_color_t TCOD_darker_grey;  // 63, 63, 63
-extern TCODLIB_API const TCOD_color_t TCOD_dark_grey;  // 95, 95, 95
-extern TCODLIB_API const TCOD_color_t TCOD_grey;  // 127, 127, 127
-extern TCODLIB_API const TCOD_color_t TCOD_light_grey;  // 159, 159, 159
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_grey;  // 191, 191, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_grey;  // 223, 223, 223
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_gray;  // 31, 31, 31
-extern TCODLIB_API const TCOD_color_t TCOD_darker_gray;  // 63, 63, 63
-extern TCODLIB_API const TCOD_color_t TCOD_dark_gray;  // 95, 95, 95
-extern TCODLIB_API const TCOD_color_t TCOD_gray;  // 127, 127, 127
-extern TCODLIB_API const TCOD_color_t TCOD_light_gray;  // 159, 159, 159
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_gray;  // 191, 191, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_gray;  // 223, 223, 223
-extern TCODLIB_API const TCOD_color_t TCOD_white;  // 255, 255, 255
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 0, 0}") extern TCODLIB_API const TCOD_color_t TCOD_black;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 31, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 63, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darker_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 95, 95}") extern TCODLIB_API const TCOD_color_t TCOD_dark_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 127, 127}") extern TCODLIB_API const TCOD_color_t TCOD_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){159, 159, 159}") extern TCODLIB_API const TCOD_color_t TCOD_light_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 191, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 223, 223}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_grey;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 31, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 63, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darker_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 95, 95}") extern TCODLIB_API const TCOD_color_t TCOD_dark_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 127, 127}") extern TCODLIB_API const TCOD_color_t TCOD_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){159, 159, 159}") extern TCODLIB_API const TCOD_color_t TCOD_light_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 191, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 223, 223}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_gray;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 255, 255}") extern TCODLIB_API const TCOD_color_t TCOD_white;
 
 /* sepia */
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_sepia;  // 31, 24, 15
-extern TCODLIB_API const TCOD_color_t TCOD_darker_sepia;  // 63, 50, 31
-extern TCODLIB_API const TCOD_color_t TCOD_dark_sepia;  // 94, 75, 47
-extern TCODLIB_API const TCOD_color_t TCOD_sepia;  // 127, 101, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_sepia;  // 158, 134, 100
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_sepia;  // 191, 171, 143
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_sepia;  // 222, 211, 195
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 24, 15}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 50, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darker_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){94, 75, 47}") extern TCODLIB_API const TCOD_color_t TCOD_dark_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 101, 63}") extern TCODLIB_API const TCOD_color_t TCOD_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){158, 134, 100}") extern TCODLIB_API const TCOD_color_t TCOD_light_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 171, 143}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_sepia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){222, 211, 195}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_sepia;
 
 /* standard colors */
-extern TCODLIB_API const TCOD_color_t TCOD_red;  // 255, 0, 0
-extern TCODLIB_API const TCOD_color_t TCOD_flame;  // 255, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_orange;  // 255, 127, 0
-extern TCODLIB_API const TCOD_color_t TCOD_amber;  // 255, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_yellow;  // 255, 255, 0
-extern TCODLIB_API const TCOD_color_t TCOD_lime;  // 191, 255, 0
-extern TCODLIB_API const TCOD_color_t TCOD_chartreuse;  // 127, 255, 0
-extern TCODLIB_API const TCOD_color_t TCOD_green;  // 0, 255, 0
-extern TCODLIB_API const TCOD_color_t TCOD_sea;  // 0, 255, 127
-extern TCODLIB_API const TCOD_color_t TCOD_turquoise;  // 0, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_cyan;  // 0, 255, 255
-extern TCODLIB_API const TCOD_color_t TCOD_sky;  // 0, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_azure;  // 0, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_blue;  // 0, 0, 255
-extern TCODLIB_API const TCOD_color_t TCOD_han;  // 63, 0, 255
-extern TCODLIB_API const TCOD_color_t TCOD_violet;  // 127, 0, 255
-extern TCODLIB_API const TCOD_color_t TCOD_purple;  // 191, 0, 255
-extern TCODLIB_API const TCOD_color_t TCOD_fuchsia;  // 255, 0, 255
-extern TCODLIB_API const TCOD_color_t TCOD_magenta;  // 255, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_pink;  // 255, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_crimson;  // 255, 0, 63
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 0, 0}") extern TCODLIB_API const TCOD_color_t TCOD_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 0}") extern TCODLIB_API const TCOD_color_t TCOD_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 0}") extern TCODLIB_API const TCOD_color_t TCOD_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 255, 0}") extern TCODLIB_API const TCOD_color_t TCOD_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 0}") extern TCODLIB_API const TCOD_color_t TCOD_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 255, 0}") extern TCODLIB_API const TCOD_color_t TCOD_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 255, 0}") extern TCODLIB_API const TCOD_color_t TCOD_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 255, 127}") extern TCODLIB_API const TCOD_color_t TCOD_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 255, 191}") extern TCODLIB_API const TCOD_color_t TCOD_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 255, 255}") extern TCODLIB_API const TCOD_color_t TCOD_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 191, 255}") extern TCODLIB_API const TCOD_color_t TCOD_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 127, 255}") extern TCODLIB_API const TCOD_color_t TCOD_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 0, 255}") extern TCODLIB_API const TCOD_color_t TCOD_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 255}") extern TCODLIB_API const TCOD_color_t TCOD_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 255}") extern TCODLIB_API const TCOD_color_t TCOD_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 255}") extern TCODLIB_API const TCOD_color_t TCOD_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 0, 255}") extern TCODLIB_API const TCOD_color_t TCOD_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_crimson;
 
 /* dark colors */
-extern TCODLIB_API const TCOD_color_t TCOD_dark_red;  // 191, 0, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_flame;  // 191, 47, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_orange;  // 191, 95, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_amber;  // 191, 143, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_yellow;  // 191, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_lime;  // 143, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_chartreuse;  // 95, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_green;  // 0, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_dark_sea;  // 0, 191, 95
-extern TCODLIB_API const TCOD_color_t TCOD_dark_turquoise;  // 0, 191, 143
-extern TCODLIB_API const TCOD_color_t TCOD_dark_cyan;  // 0, 191, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_sky;  // 0, 143, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_azure;  // 0, 95, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_blue;  // 0, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_han;  // 47, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_violet;  // 95, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_purple;  // 143, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_fuchsia;  // 191, 0, 191
-extern TCODLIB_API const TCOD_color_t TCOD_dark_magenta;  // 191, 0, 143
-extern TCODLIB_API const TCOD_color_t TCOD_dark_pink;  // 191, 0, 95
-extern TCODLIB_API const TCOD_color_t TCOD_dark_crimson;  // 191, 0, 47
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 47, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 95, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 143, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){143, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_dark_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 191, 95}") extern TCODLIB_API const TCOD_color_t TCOD_dark_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 191, 143}") extern TCODLIB_API const TCOD_color_t TCOD_dark_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 191, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 143, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 95, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){47, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){143, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 191}") extern TCODLIB_API const TCOD_color_t TCOD_dark_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 143}") extern TCODLIB_API const TCOD_color_t TCOD_dark_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 95}") extern TCODLIB_API const TCOD_color_t TCOD_dark_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 0, 47}") extern TCODLIB_API const TCOD_color_t TCOD_dark_crimson;
 
 /* darker colors */
-extern TCODLIB_API const TCOD_color_t TCOD_darker_red;  // 127, 0, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_flame;  // 127, 31, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_orange;  // 127, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_amber;  // 127, 95, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_yellow;  // 127, 127, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_lime;  // 95, 127, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_chartreuse;  // 63, 127, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_green;  // 0, 127, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darker_sea;  // 0, 127, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darker_turquoise;  // 0, 127, 95
-extern TCODLIB_API const TCOD_color_t TCOD_darker_cyan;  // 0, 127, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_sky;  // 0, 95, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_azure;  // 0, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_blue;  // 0, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_han;  // 31, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_violet;  // 63, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_purple;  // 95, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_fuchsia;  // 127, 0, 127
-extern TCODLIB_API const TCOD_color_t TCOD_darker_magenta;  // 127, 0, 95
-extern TCODLIB_API const TCOD_color_t TCOD_darker_pink;  // 127, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darker_crimson;  // 127, 0, 31
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 31, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 95, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 127, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 127, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 127, 0}")
+extern TCODLIB_API const TCOD_color_t TCOD_darker_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 127, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darker_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 127, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darker_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 127, 95}") extern TCODLIB_API const TCOD_color_t TCOD_darker_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 127, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 95, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 63, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 127}") extern TCODLIB_API const TCOD_color_t TCOD_darker_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 95}") extern TCODLIB_API const TCOD_color_t TCOD_darker_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darker_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 0, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darker_crimson;
 
 /* darkest colors */
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_red;  // 63, 0, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_flame;  // 63, 15, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_orange;  // 63, 31, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_amber;  // 63, 47, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_yellow;  // 63, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_lime;  // 47, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_chartreuse;  // 31, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_green;  // 0, 63, 0
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_sea;  // 0, 63, 31
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_turquoise;  // 0, 63, 47
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_cyan;  // 0, 63, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_sky;  // 0, 47, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_azure;  // 0, 31, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_blue;  // 0, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_han;  // 15, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_violet;  // 31, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_purple;  // 47, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_fuchsia;  // 63, 0, 63
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_magenta;  // 63, 0, 47
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_pink;  // 63, 0, 31
-extern TCODLIB_API const TCOD_color_t TCOD_darkest_crimson;  // 63, 0, 15
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 15, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 31, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 47, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 63, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){47, 63, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 63, 0}")
+extern TCODLIB_API const TCOD_color_t TCOD_darkest_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 63, 0}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 63, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 63, 47}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 63, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 47, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 31, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){0, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){15, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){31, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){47, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 63}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 47}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 31}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 0, 15}") extern TCODLIB_API const TCOD_color_t TCOD_darkest_crimson;
 
 /* light colors */
-extern TCODLIB_API const TCOD_color_t TCOD_light_red;  // 255, 63, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_flame;  // 255, 111, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_orange;  // 255, 159, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_amber;  // 255, 207, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_yellow;  // 255, 255, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_lime;  // 207, 255, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_chartreuse;  // 159, 255, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_green;  // 63, 255, 63
-extern TCODLIB_API const TCOD_color_t TCOD_light_sea;  // 63, 255, 159
-extern TCODLIB_API const TCOD_color_t TCOD_light_turquoise;  // 63, 255, 207
-extern TCODLIB_API const TCOD_color_t TCOD_light_cyan;  // 63, 255, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_sky;  // 63, 207, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_azure;  // 63, 159, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_blue;  // 63, 63, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_han;  // 111, 63, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_violet;  // 159, 63, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_purple;  // 207, 63, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_fuchsia;  // 255, 63, 255
-extern TCODLIB_API const TCOD_color_t TCOD_light_magenta;  // 255, 63, 207
-extern TCODLIB_API const TCOD_color_t TCOD_light_pink;  // 255, 63, 159
-extern TCODLIB_API const TCOD_color_t TCOD_light_crimson;  // 255, 63, 111
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 111, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 159, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 207, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 255, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){207, 255, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){159, 255, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_light_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 255, 63}") extern TCODLIB_API const TCOD_color_t TCOD_light_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 255, 159}") extern TCODLIB_API const TCOD_color_t TCOD_light_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 255, 207}")
+extern TCODLIB_API const TCOD_color_t TCOD_light_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 255, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 207, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 159, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 63, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){111, 63, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){159, 63, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){207, 63, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 255}") extern TCODLIB_API const TCOD_color_t TCOD_light_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 207}") extern TCODLIB_API const TCOD_color_t TCOD_light_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 159}") extern TCODLIB_API const TCOD_color_t TCOD_light_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 63, 111}") extern TCODLIB_API const TCOD_color_t TCOD_light_crimson;
 
 /* lighter colors */
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_red;  // 255, 127, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_flame;  // 255, 159, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_orange;  // 255, 191, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_amber;  // 255, 223, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_yellow;  // 255, 255, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_lime;  // 223, 255, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_chartreuse;  // 191, 255, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_green;  // 127, 255, 127
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_sea;  // 127, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_turquoise;  // 127, 255, 223
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_cyan;  // 127, 255, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_sky;  // 127, 223, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_azure;  // 127, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_blue;  // 127, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_han;  // 159, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_violet;  // 191, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_purple;  // 223, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_fuchsia;  // 255, 127, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_magenta;  // 255, 127, 223
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_pink;  // 255, 127, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lighter_crimson;  // 255, 127, 159
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 127}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 159, 127}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 223, 127}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 255, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 255, 127}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 255, 127}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 255, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 255, 223}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 255, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 223, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 191, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 127, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){159, 127, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 127, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 127, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 223}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lighter_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 127, 159}")
+extern TCODLIB_API const TCOD_color_t TCOD_lighter_crimson;
 
 /* lightest colors */
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_red;  // 255, 191, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_flame;  // 255, 207, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_orange;  // 255, 223, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_amber;  // 255, 239, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_yellow;  // 255, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_lime;  // 239, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_chartreuse;  // 223, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_green;  // 191, 255, 191
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_sea;  // 191, 255, 223
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_turquoise;  // 191, 255, 239
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_cyan;  // 191, 255, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_sky;  // 191, 239, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_azure;  // 191, 223, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_blue;  // 191, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_han;  // 207, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_violet;  // 223, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_purple;  // 239, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_fuchsia;  // 255, 191, 255
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_magenta;  // 255, 191, 239
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_pink;  // 255, 191, 223
-extern TCODLIB_API const TCOD_color_t TCOD_lightest_crimson;  // 255, 191, 207
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 207, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 223, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 239, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 255, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){239, 255, 191}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 255, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 191}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 223}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 239}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 255, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 239, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 223, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 191, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){207, 191, 255}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){223, 191, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){239, 191, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 255}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 239}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 223}") extern TCODLIB_API const TCOD_color_t TCOD_lightest_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 191, 207}")
+extern TCODLIB_API const TCOD_color_t TCOD_lightest_crimson;
 
 /* desaturated */
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_red;  // 127, 63, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_flame;  // 127, 79, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_orange;  // 127, 95, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_amber;  // 127, 111, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_yellow;  // 127, 127, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_lime;  // 111, 127, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_chartreuse;  // 95, 127, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_green;  // 63, 127, 63
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_sea;  // 63, 127, 95
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_turquoise;  // 63, 127, 111
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_cyan;  // 63, 127, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_sky;  // 63, 111, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_azure;  // 63, 95, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_blue;  // 63, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_han;  // 79, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_violet;  // 95, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_purple;  // 111, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_fuchsia;  // 127, 63, 127
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_magenta;  // 127, 63, 111
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_pink;  // 127, 63, 95
-extern TCODLIB_API const TCOD_color_t TCOD_desaturated_crimson;  // 127, 63, 79
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 63}") extern TCODLIB_API const TCOD_color_t TCOD_desaturated_red;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 79, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_flame;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 95, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_orange;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 111, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_amber;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 127, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_yellow;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){111, 127, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_lime;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 127, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_chartreuse;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 127, 63}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_green;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 127, 95}") extern TCODLIB_API const TCOD_color_t TCOD_desaturated_sea;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 127, 111}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_turquoise;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 127, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_cyan;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 111, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_sky;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 95, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_azure;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){63, 63, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_blue;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){79, 63, 127}") extern TCODLIB_API const TCOD_color_t TCOD_desaturated_han;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){95, 63, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_violet;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){111, 63, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_purple;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 127}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_fuchsia;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 111}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_magenta;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 95}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_pink;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){127, 63, 79}")
+extern TCODLIB_API const TCOD_color_t TCOD_desaturated_crimson;
 
 /* metallic */
-extern TCODLIB_API const TCOD_color_t TCOD_brass;  // 191, 151, 96
-extern TCODLIB_API const TCOD_color_t TCOD_copper;  // 197, 136, 124
-extern TCODLIB_API const TCOD_color_t TCOD_gold;  // 229, 191, 0
-extern TCODLIB_API const TCOD_color_t TCOD_silver;  // 203, 203, 203
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){191, 151, 96}") extern TCODLIB_API const TCOD_color_t TCOD_brass;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){197, 136, 124}") extern TCODLIB_API const TCOD_color_t TCOD_copper;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){229, 191, 0}") extern TCODLIB_API const TCOD_color_t TCOD_gold;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){203, 203, 203}") extern TCODLIB_API const TCOD_color_t TCOD_silver;
 
 /* miscellaneous */
-extern TCODLIB_API const TCOD_color_t TCOD_celadon;  // 172, 255, 175
-extern TCODLIB_API const TCOD_color_t TCOD_peach;  // 255, 159, 127
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){172, 255, 175}") extern TCODLIB_API const TCOD_color_t TCOD_celadon;
+TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 159, 127}") extern TCODLIB_API const TCOD_color_t TCOD_peach;
 
+/// @endcond
 #ifdef __cplusplus
 }  // extern "C"
 #endif

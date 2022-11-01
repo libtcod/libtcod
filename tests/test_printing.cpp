@@ -4,6 +4,9 @@
 
 #include "common.hpp"
 
+static constexpr auto WHITE = tcod::ColorRGB{255, 255, 255};
+static constexpr auto BLACK = tcod::ColorRGB{0, 0, 0};
+
 TEST_CASE("tcod::print") {
   auto console = tcod::Console{5, 1};
   static constexpr auto FG = TCOD_ColorRGB{1, 2, 3};
@@ -52,7 +55,7 @@ TEST_CASE("Print color codes.") {
   using namespace std::string_literals;
   auto console = tcod::Console{8, 1};
   std::string text = "1\u0006\u0001\u0002\u00032\u00083"s;
-  tcod::print(console, {0, 0}, text, TCOD_white, TCOD_black, TCOD_LEFT, TCOD_BKGND_SET);
+  tcod::print(console, {0, 0}, text, WHITE, BLACK, TCOD_LEFT, TCOD_BKGND_SET);
   REQUIRE(to_string(console) == "123     ");
   CHECK(console.at(0, 0).fg.r == 255);
   CHECK(console.at(0, 0).fg.g == 255);
@@ -74,18 +77,18 @@ TEST_CASE("Color code formatting.") {
   for (auto& tile : console) {
     tile.ch = static_cast<int>('.');
   }
-  tcod::print(console, {0, 0}, text, TCOD_white, TCOD_black, TCOD_LEFT);
+  tcod::print(console, {0, 0}, text, WHITE, BLACK, TCOD_LEFT);
   REQUIRE(to_string(console) == ("1..\n2 .\n 3."));
 }
 TEST_CASE("Malformed UTF-8.", "[!throws]") {
   auto console = tcod::Console{8, 1};
   std::string text = "\x80";
-  REQUIRE_THROWS(tcod::print(console, {0, 0}, text, TCOD_white, TCOD_black));
+  REQUIRE_THROWS(tcod::print(console, {0, 0}, text, WHITE, BLACK));
 }
 TEST_CASE("Unicode PUA.") {
   auto console = tcod::Console{1, 1};
   auto check_character = [&](int codepoint) {
-    tcod::print(console, {0, 0}, ucs4_to_utf8(codepoint), TCOD_white, TCOD_black);
+    tcod::print(console, {0, 0}, ucs4_to_utf8(codepoint), WHITE, BLACK);
     REQUIRE(console.at(0, 0).ch == codepoint);
   };
   for (int i = 0xE000; i <= 0xF8FF; ++i) check_character(i);

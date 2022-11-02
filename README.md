@@ -86,3 +86,4 @@ versions.
 [Sponsors donating $25 or more per month](https://github.com/sponsors/HexDecimal) will have their names or logos listed here.
 
 * [q00u](https://github.com/q00u)
+* [amaya30](https://github.com/amaya30)

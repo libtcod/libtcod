@@ -31,9 +31,8 @@
       ]
     },
     "sdl": {
-      "description": "Support for SDL2 windows and events including OpenGL support.",
+      "description": "Support for SDL2 windows and events.",
       "dependencies": [
-        "glad",
         "sdl2",
         {
           "name": "sdl2",

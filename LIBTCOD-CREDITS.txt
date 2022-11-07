@@ -11,8 +11,6 @@ Products :
 - utf8proc
    https://github.com/JuliaStrings/utf8proc
    (modified to be statically linkable, and to compile for C89)
-- glad
-   https://github.com/Dav1dde/glad
 
 Many thanks to everyone who provided feedback and patches, and especially :
 - Dominik 'Mingos' Marczuk for the restrictive shadow casting fov, dijkstra
@@ -47,4 +45,3 @@ The celtic garamond and dundalk fonts are from 1001freefonts.com.
 The caeldera font is from blambot.com.
 Other fonts are included in windows.
 The celtic_garamond, arial, courier, dejavu, consolas, prestige and lucida 10x10/12x12 bitmap fonts were created by Mingos.
-

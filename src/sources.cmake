@@ -111,13 +111,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/portability.h
     libtcod/random.c
     libtcod/random.h
-    libtcod/renderer_gl.c
-    libtcod/renderer_gl.h
-    libtcod/renderer_gl1.c
-    libtcod/renderer_gl1.h
-    libtcod/renderer_gl2.c
-    libtcod/renderer_gl2.h
-    libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.c
     libtcod/renderer_sdl2.h
     libtcod/renderer_xterm.c
@@ -191,7 +184,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/widget.hpp
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
-    libtcod/sdl2/gl2_ext_.h
     vendor/stb.c
 )
 install(FILES
@@ -262,10 +254,6 @@ install(FILES
     libtcod/pathfinder_frontier.h
     libtcod/portability.h
     libtcod/random.h
-    libtcod/renderer_gl.h
-    libtcod/renderer_gl1.h
-    libtcod/renderer_gl2.h
-    libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.h
     libtcod/renderer_xterm.h
     libtcod/sys.h
@@ -314,7 +302,6 @@ install(FILES
 )
 install(FILES
     libtcod/sdl2/event.h
-    libtcod/sdl2/gl2_ext_.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod/sdl2
     COMPONENT IncludeFiles
 )
@@ -430,13 +417,6 @@ source_group(libtcod FILES
     libtcod/portability.h
     libtcod/random.c
     libtcod/random.h
-    libtcod/renderer_gl.c
-    libtcod/renderer_gl.h
-    libtcod/renderer_gl1.c
-    libtcod/renderer_gl1.h
-    libtcod/renderer_gl2.c
-    libtcod/renderer_gl2.h
-    libtcod/renderer_gl_internal.h
     libtcod/renderer_sdl2.c
     libtcod/renderer_sdl2.h
     libtcod/renderer_xterm.c
@@ -514,7 +494,6 @@ source_group(libtcod\\gui FILES
 source_group(libtcod\\sdl2 FILES
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
-    libtcod/sdl2/gl2_ext_.h
 )
 source_group(vendor FILES
     vendor/stb.c

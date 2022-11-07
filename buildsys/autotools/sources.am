@@ -63,10 +63,6 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/pathfinder_frontier.h \
 	../../src/libtcod/portability.h \
 	../../src/libtcod/random.h \
-	../../src/libtcod/renderer_gl.h \
-	../../src/libtcod/renderer_gl1.h \
-	../../src/libtcod/renderer_gl2.h \
-	../../src/libtcod/renderer_gl_internal.h \
 	../../src/libtcod/renderer_sdl2.h \
 	../../src/libtcod/renderer_xterm.h \
 	../../src/libtcod/sys.h \
@@ -112,8 +108,7 @@ libtcod_gui_include_HEADERS = \
 
 libtcod_sdl2_includedir = $(includedir)/libtcod/sdl2
 libtcod_sdl2_include_HEADERS = \
-	../../src/libtcod/sdl2/event.h \
-	../../src/libtcod/sdl2/gl2_ext_.h
+	../../src/libtcod/sdl2/event.h
 
 libtcod_la_SOURCES = \
 	../../src/libtcod/bresenham.cpp \
@@ -166,9 +161,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/pathfinder_frontier.c \
 	../../src/libtcod/path_c.c \
 	../../src/libtcod/random.c \
-	../../src/libtcod/renderer_gl.c \
-	../../src/libtcod/renderer_gl1.c \
-	../../src/libtcod/renderer_gl2.c \
 	../../src/libtcod/renderer_sdl2.c \
 	../../src/libtcod/renderer_xterm.c \
 	../../src/libtcod/sys.cpp \
@@ -202,7 +194,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/gui/vbox.cpp \
 	../../src/libtcod/gui/widget.cpp \
 	../../src/libtcod/sdl2/event.cpp \
-	../../src/vendor/glad.c \
 	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c \
 	../../src/vendor/utf8proc/utf8proc.c

@@ -107,7 +107,6 @@
         "LIBTCOD_THREADS": "OFF",
         "LIBTCOD_SDL2": "find_package", // find_package | disable
         "LIBTCOD_ZLIB": "find_package", // find_package | disable
-        "LIBTCOD_GLAD": "find_package", // find_package | vendored
         "LIBTCOD_LODEPNG": "find_package", // find_package | disable
         "LIBTCOD_UTF8PROC": "vcpkg", // vcpkg | disable
         "LIBTCOD_STB": "find_package",

@@ -40,8 +40,7 @@
 #include "console_etc.h"
 #include "globals.h"
 #include "libtcod_int.h"
-#include "renderer_gl1.h"
-#include "renderer_gl2.h"
+#include "logging.h"
 #include "renderer_sdl2.h"
 #include "renderer_xterm.h"
 #include "tileset_fallback.h"
@@ -274,52 +273,12 @@ TCOD_Error TCOD_context_new(const TCOD_ContextParams* params_in, TCOD_Context** 
   err = TCOD_E_OK;
   switch (params.renderer_type) {
     case TCOD_RENDERER_SDL:
-      renderer_flags |= SDL_RENDERER_SOFTWARE;
-      *out = TCOD_renderer_init_sdl2(
-          params.window_x,
-          params.window_y,
-          params.pixel_width,
-          params.pixel_height,
-          params.window_title,
-          params.sdl_window_flags,
-          renderer_flags,
-          params.tileset);
-      if (!*out) {
-        return TCOD_E_ERROR;
-      }
-      return TCOD_E_OK;
-    case TCOD_RENDERER_GLSL:
     case TCOD_RENDERER_OPENGL2:
-      *out = TCOD_renderer_new_gl2(
-          params.window_x,
-          params.window_y,
-          params.pixel_width,
-          params.pixel_height,
-          params.window_title,
-          params.sdl_window_flags,
-          params.vsync,
-          params.tileset);
-      if (*out) {
-        return err;
-      }
-      err = TCOD_E_WARN;
-      //@fallthrough@
     case TCOD_RENDERER_OPENGL:
-      *out = TCOD_renderer_init_gl1(
-          params.window_x,
-          params.window_y,
-          params.pixel_width,
-          params.pixel_height,
-          params.window_title,
-          params.sdl_window_flags,
-          params.vsync,
-          params.tileset);
-      if (*out) {
-        return err;
-      }
-      err = TCOD_E_WARN;
+      TCOD_log_warning("All libtcod renderers other than TCOD_RENDERER_SDL2 will be ignored.");
       //@fallthrough@
     default:
+    case TCOD_RENDERER_GLSL:  // Enum zero, so assume it means "don't care".
     case TCOD_RENDERER_SDL2:
       *out = TCOD_renderer_init_sdl2(
           params.window_x,

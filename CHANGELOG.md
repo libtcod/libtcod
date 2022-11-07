@@ -10,9 +10,19 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Changed
 - Code Page 437: Character 0x7F is now assigned to 0x2302 (HOUSE).
   [#134](https://github.com/libtcod/libtcod/pull/134)
+- ``TCOD_RENDERER_GLSL``, ``TCOD_RENDERER_OPENGL``, ``TCOD_RENDERER_SDL``, and ``TCOD_RENDERER_OPENGL2`` now alias to the ``TCOD_RENDERER_SDL2`` renderer.
+  [#137](https://github.com/libtcod/libtcod/pull/137)
 
 ### Deprecated
 - All color constants have been deprecated.
+
+### Fixed
+- Forcing all renderers to ``TCOD_RENDERER_SDL2`` to fix rare graphical artifacts with OpenGL.
+  [#112](https://github.com/libtcod/libtcod/issues/112)
+  [#83](https://github.com/libtcod/libtcod/issues/83)
+
+### Removed
+- Removed GLAD dependencies.
 
 ## [1.23.0] - 2022-10-22
 ### Added

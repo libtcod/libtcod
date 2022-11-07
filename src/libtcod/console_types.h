@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _TCOD_CONSOLE_TYPES_H
-#define _TCOD_CONSOLE_TYPES_H
+#ifndef TCOD_CONSOLE_TYPES_H_
+#define TCOD_CONSOLE_TYPES_H_
 
 #include "color.h"
 #include "config.h"
@@ -335,25 +335,37 @@ typedef enum {
    */
   TCOD_FONT_LAYOUT_CP437 = 16,
 } TCOD_font_flags_t;
-/**
- *  The available renderers.
+/***************************************************************************
+    @brief Libtcod rendering modes.
  */
-typedef enum {
-  /** Alias for TCOD_RENDERER_OPENGL2. */
+typedef enum TCOD_renderer_t {
+  /***************************************************************************
+      @brief Alias for TCOD_RENDERER_OPENGL2.
+   */
   TCOD_RENDERER_GLSL,
-  /**
-   *  An OpenGL 1.1 implementation.
-   *
-   *  Performs worse than TCOD_RENDERER_GLSL without many benefits.
+  /***************************************************************************
+      An OpenGL 1.1 implementation.
+
+      Performs worse than TCOD_RENDERER_GLSL without many benefits.
+
+      \rst
+      .. deprecated:: Unreleased
+          This renderer has been removed.
+      \endrst
    */
   TCOD_RENDERER_OPENGL,
-  /**
-   *  A software based renderer.
-   *
-   *  The font file is loaded into RAM instead of VRAM in this implementation.
+  /***************************************************************************
+      A software based renderer.
+
+      The font file is loaded into RAM instead of VRAM in this implementation.
+
+      \rst
+      .. deprecated:: Unreleased
+          This renderer has been removed.
+      \endrst
    */
   TCOD_RENDERER_SDL,
-  /**
+  /***************************************************************************
       A new SDL2 renderer.  Allows the window to be resized.
 
       You may set `SDL_HINT_RENDER_SCALE_QUALITY` to determine the tileset
@@ -365,7 +377,7 @@ typedef enum {
       \endrst
    */
   TCOD_RENDERER_SDL2,
-  /**
+  /***************************************************************************
       A new OpenGL 2.0 core renderer.  Allows the window to be resized.
 
       You may set `SDL_HINT_RENDER_SCALE_QUALITY` to determine the tileset
@@ -381,6 +393,8 @@ typedef enum {
       .. versionchanged:: 1.16
           Now checks the `SDL_HINT_RENDER_SCALE_QUALITY` hint.
 
+      .. deprecated:: Unreleased
+          This renderer has been removed.
       \endrst
    */
   TCOD_RENDERER_OPENGL2,
@@ -402,4 +416,4 @@ typedef enum {
   TCOD_RENDERER_XTERM,
   TCOD_NB_RENDERERS,
 } TCOD_renderer_t;
-#endif /* _TCOD_CONSOLE_TYPES_H */
+#endif  // TCOD_CONSOLE_TYPES_H_

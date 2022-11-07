@@ -135,7 +135,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
             -DLIBTCOD_SDL2=find_package \
             -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_GLAD=find_package \
             -DLIBTCOD_LODEPNG=find_package \
             -DLIBTCOD_UTF8PROC=vcpkg \
             -DLIBTCOD_STB=vcpkg \
@@ -195,7 +194,6 @@ jobs:
             -DCMAKE_C_FLAGS="--coverage" \
             -DLIBTCOD_SDL2=find_package \
             -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_GLAD=find_package \
             -DLIBTCOD_LODEPNG=find_package \
             -DLIBTCOD_UTF8PROC=vcpkg \
             -DLIBTCOD_STB=vcpkg \
@@ -382,13 +380,6 @@ jobs:
           path: ${{ env.CMAKE_BUILD_DIR }}/bin
           retention-days: 7
           if-no-files-found: error
-
-  verify-shaders:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: Verify shader sources
-        run: ./scripts/update_shader.py --check
 
   release:
     needs: [SCons]

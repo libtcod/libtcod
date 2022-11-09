@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+
+## [1.23.1] - 2022-11-09
 ### Changed
 - Code Page 437: Character 0x7F is now assigned to 0x2302 (HOUSE).
   [#134](https://github.com/libtcod/libtcod/pull/134)
@@ -17,7 +19,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - All color constants have been deprecated.
 
 ### Fixed
-- Forcing all renderers to ``TCOD_RENDERER_SDL2`` to fix rare graphical artifacts with OpenGL.
+- Forced all renderers to ``TCOD_RENDERER_SDL2`` to fix rare graphical artifacts with OpenGL.
   [#112](https://github.com/libtcod/libtcod/issues/112)
   [#83](https://github.com/libtcod/libtcod/issues/83)
 

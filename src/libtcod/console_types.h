@@ -349,7 +349,7 @@ typedef enum TCOD_renderer_t {
       Performs worse than TCOD_RENDERER_GLSL without many benefits.
 
       \rst
-      .. deprecated:: Unreleased
+      .. deprecated:: 1.23
           This renderer has been removed.
       \endrst
    */
@@ -360,7 +360,7 @@ typedef enum TCOD_renderer_t {
       The font file is loaded into RAM instead of VRAM in this implementation.
 
       \rst
-      .. deprecated:: Unreleased
+      .. deprecated:: 1.23
           This renderer has been removed.
       \endrst
    */
@@ -393,7 +393,7 @@ typedef enum TCOD_renderer_t {
       .. versionchanged:: 1.16
           Now checks the `SDL_HINT_RENDER_SCALE_QUALITY` hint.
 
-      .. deprecated:: Unreleased
+      .. deprecated:: 1.23
           This renderer has been removed.
       \endrst
    */

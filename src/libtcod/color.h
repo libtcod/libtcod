@@ -178,7 +178,7 @@ TCODLIB_API void TCOD_color_gen_map(TCOD_color_t* map, int nb_key, const TCOD_co
     @brief Color names.
 
     \rst
-    .. deprecated:: Unreleased
+    .. deprecated:: 1.23
     \endrst
  */
 enum {
@@ -234,7 +234,7 @@ enum {
     @brief Color levels
 
     \rst
-    .. deprecated:: Unreleased
+    .. deprecated:: 1.23
     \endrst
  */
 enum {

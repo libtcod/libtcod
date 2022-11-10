@@ -89,7 +89,9 @@
         "cstdbool": "cpp",
         "valarray": "cpp",
         "string_view": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "shared_mutex": "cpp",
+        "codecvt": "cpp"
     },
     "files.trimFinalNewlines": true,
     "C_Cpp.default.cppStandard": "c++17",

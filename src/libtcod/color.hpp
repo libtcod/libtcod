@@ -33,6 +33,8 @@
 #define _TCOD_COLOR_HPP
 
 #include <algorithm>
+#include <array>
+#include <stdexcept>
 
 #include "color.h"
 #include "utility.h"
@@ -285,9 +287,13 @@ public :
 	@C#Ex TCODColor myDarkishRed = TCODColor.darkGrey.Multiply(TCODColor.lightRed);
 	@LuaEx myDarkishRed = tcod.color.darkGrey * tcod.color.lightRed
 	*/
-  TCODColor operator*(const TCODColor& rhs) const
+  constexpr TCODColor operator*(const TCODColor& rhs) const
   {
-    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 * c2 / 255; });
+    return TCODColor{
+        r * rhs.r / 255,
+        g * rhs.g / 255,
+        b * rhs.b / 255,
+    };
   }
 
 	/**
@@ -306,9 +312,13 @@ public :
 	@C#Ex TCODColor myDarkishRed = TCODColor.lightRed.Multiply(0.5f);
 	@LuaEx myDarkishRed = tcod.color.lightRed * 0.5
 	*/
-  TCODColor operator*(float value) const
+  constexpr TCODColor operator*(float value) const
   {
-    return TCODColor(*this, [=](int c){ return static_cast<int>(c * value); });
+    return TCODColor{
+        static_cast<uint8_t>(std::clamp(r * value, 0.0f, 255.0f)),
+        static_cast<uint8_t>(std::clamp(g * value, 0.0f, 255.0f)),
+        static_cast<uint8_t>(std::clamp(b * value, 0.0f, 255.0f)),
+    };
   }
 
 	/**
@@ -325,9 +335,13 @@ public :
 	@C#Ex TCODColor myLightishRed = TCODColor.red.Plus(TCODColor.darkGrey)
 	@LuaEx myLightishRed = tcod.color.red + tcod.color.darkGrey
 	*/
-  TCODColor operator+(const TCODColor & rhs) const
+  constexpr TCODColor operator+(const TCODColor & rhs) const
   {
-    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 + c2; });
+    return TCODColor{
+        std::clamp(r + rhs.r, 0, 255),
+        std::clamp(g + rhs.g, 0, 255),
+        std::clamp(b + rhs.b, 0, 255),
+    };
   }
 
 	/**
@@ -344,9 +358,13 @@ public :
 	@C#Ex TCODColor myRedish = TCODColor.red.Minus(TCODColor.darkGrey)
 	@LuaEx myRedish = tcod.color.red - tcod.color.darkGrey
 	*/
-  TCODColor operator-(const TCODColor& rhs) const
+  constexpr TCODColor operator-(const TCODColor& rhs) const
   {
-    return TCODColor(*this, rhs, [](int c1, int c2){ return c1 - c2; });
+    return TCODColor{
+        std::clamp(r - rhs.r, 0, 255),
+        std::clamp(g - rhs.g, 0, 255),
+        std::clamp(b - rhs.b, 0, 255),
+    };
   }
 
 	/**
@@ -368,9 +386,13 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@C#Ex TCODColor myColor = TCODColor.Interpolate( TCODColor.darkGrey, TCODColor.lightRed, coef );
 	@LuaEx myColor = tcod.color.Interpolate( tcod.color.darkGrey, tcod.color.lightRed, coef )
 	*/
-  static TCODColor lerp(const TCODColor &c1, const TCODColor &c2, float coef)
+  static constexpr TCODColor lerp(const TCODColor &c1, const TCODColor &c2, float coef)
   {
-    return TCODColor(c1, c2, [=](int c, int d){ return c + (d - c) * coef; });
+    return TCODColor{
+        c1.r + static_cast<int>((c2.r - c1.r) * coef),
+        c1.g + static_cast<int>((c2.g - c1.g) * coef),
+        c1.b + static_cast<int>((c2.b - c1.b) * coef),
+    };
   }
 
 	/**
@@ -528,8 +550,56 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		map=libtcod.color_gen_map(col,idx)
 	*/
 	static void genMap(TCODColor *map, int nbKey, TCODColor const *keyColor, int const *keyIndex);
-
   // clang-format on
+
+  /***************************************************************************
+      @brief Generate a gradient of colors.
+
+      @tparam OutSize The size of the output array.
+      @tparam KeyColors A key color container of tcod::ColorRGB-like objects.
+      @tparam KeyIndexes The key index container of integers.
+      @param key_colors An array of which colors belong in sequence.
+      @param key_indexes An ascending array of indexes of the output to map the respective color from `key_colors`.
+          First index must always be ``0``, last index must always be ``KeyColors - 1``.
+      @return std::array<tcod::ColorRGB, OutSize>
+
+      @code{.cpp}
+      // Generate an array of 16 colors, with black=0, red=8, white=15.
+      static constexpr auto gradient = TCODColor::genMap<16>(
+          std::array{tcod::ColorRGB{0, 0, 0}, tcod::ColorRGB{255, 0, 0}, tcod::ColorRGB{255, 255, 255}},
+          std::array{0, 8, 15});
+      @endcode
+
+      @throws std::invalid_argument
+          Issues with the key arrays will throw an error.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  template <int OutSize, typename KeyColors, typename KeyIndexes>
+  [[nodiscard]] static constexpr auto genMap(const KeyColors& key_colors, const KeyIndexes& key_indexes)
+      -> std::array<tcod::ColorRGB, OutSize> {
+    auto out = std::array<tcod::ColorRGB, OutSize>{};
+    if (key_colors.size() != key_indexes.size())
+      throw std::invalid_argument{"Key color and index arrays must be the same size."};
+    for (size_t segment = 1; segment < key_colors.size(); ++segment) {  // Segment between two key colors/indexes.
+      const auto index_start = key_indexes.at(segment - 1);
+      const auto index_end = key_indexes.at(segment);
+      if (segment == 1 && index_start != 0) throw std::invalid_argument{"First key must be 0."};
+      if (segment == key_colors.size() - 1 && index_end != OutSize - 1) {
+        throw std::invalid_argument{"Last key must be at the end of the output size."};
+      }
+      if (!(index_start < index_end)) throw std::invalid_argument{"Key indexes must be in ascending order."};
+      const auto color_start = TCODColor{key_colors.at(segment - 1)};
+      const auto color_end = TCODColor{key_colors.at(segment)};
+      for (auto i = index_start; i <= index_end; ++i) {
+        const float interpolation = static_cast<float>(i - index_start) / (index_end - index_start);
+        out.at(i) = tcod::ColorRGB{TCODColor::lerp(color_start, color_end, interpolation)};
+      }
+    }
+    return out;
+  }
 
   /***************************************************************************
       @brief Allow explicit conversions to TCOD_ColorRGB.
@@ -780,27 +850,6 @@ coef should be between 0.0 and 1.0 but you can as well use other values
   /// @endcond
 
  private:
-  /**
-   *  Return a color transformed by a lambda.
-   */
-  template <typename F>
-  TCODColor(const TCODColor& color, const F& lambda)
-      : r{clamp_(lambda(color.r))}, g{clamp_(lambda(color.g))}, b{clamp_(lambda(color.b))} {}
-  /**
-   *  Return a color from two colors combined using a lambda.
-   */
-  template <typename F>
-  TCODColor(const TCODColor& color1, const TCODColor& color2, const F& lambda)
-      : r{clamp_(lambda(color1.r, color2.r))},
-        g{clamp_(lambda(color1.g, color2.g))},
-        b{clamp_(lambda(color1.b, color2.b))} {}
-  /**
-   *  Return a color value clamped between 0 to 255.
-   */
-  template <typename T>
-  static constexpr uint8_t clamp_(const T& value) noexcept {
-    return static_cast<uint8_t>(std::max<T>(0, std::min<T>(value, 255)));
-  }
 };
 
 TCODLIB_API TCODColor operator*(float value, const TCODColor& c);

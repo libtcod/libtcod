@@ -15,7 +15,12 @@
 
 static constexpr auto TAU = 6.28318530718f;  // The number of radians in a turn.  Same as `2 * PI`.
 
-std::array<TCODColor, 256> frost_gradient;  // Frost color gradient.
+// Initialize the frost color gradient.
+static constexpr std::array<int, 4> key_indexes{0, 60, 200, 255};
+static constexpr std::array<tcod::ColorRGB, 4> key_colors{{{0, 0, 0}, {0, 0, 127}, {127, 127, 255}, {191, 191, 255}}};
+
+static constexpr std::array<tcod::ColorRGB, 256> frost_gradient =
+    TCODColor::genMap<256>(key_colors, key_indexes);  // Frost color gradient.
 
 static constexpr auto GROW = 5000.0f;
 static constexpr auto ANGLE_DELAY = 0.2f;
@@ -159,7 +164,7 @@ class FrostManager {
       for (int cx = std::max(frost.origin_x - RANGE, 0); cx < std::min(frost.origin_x + RANGE + 1, width); ++cx) {
         const float f = getValue(frost, cx - (frost.origin_x - RANGE), cy - (frost.origin_y - RANGE));
         const int idx = std::max(0, std::min(static_cast<int>(f * 255), 255));
-        img.at({cx, cy}) = static_cast<TCOD_ColorRGB>(frost_gradient.at(idx));
+        img.at({cx, cy}) = frost_gradient.at(idx);
       }
     }
   }
@@ -236,11 +241,6 @@ int main(int argc, char** argv) {
     std::cerr << e.what() << "\n";
     return EXIT_FAILURE;
   }
-
-  // Initialize the frost color gradient.
-  static constexpr std::array<int, 4> key_indexes{0, 60, 200, 255};
-  static constexpr std::array<TCODColor, 4> key_colors{{{0, 0, 0}, {0, 0, 127}, {127, 127, 255}, {191, 191, 255}}};
-  TCODColor::genMap(&frost_gradient[0], static_cast<int>(key_indexes.size()), key_colors.data(), key_indexes.data());
 #ifdef __EMSCRIPTEN__
   emscripten_set_main_loop(main_loop, 0, 0);
 #else

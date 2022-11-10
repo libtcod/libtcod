@@ -185,6 +185,18 @@ public :
 	*/
 	void getSize(int *w,int *h) const;
 
+  /***************************************************************************
+      @brief Get the {width, height} of this image.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  [[nodiscard]] auto getSize() const noexcept -> std::array<int, 2> {
+    std::array<int, 2> out{};
+    TCOD_image_get_size(data, &out[0], &out[1]);
+    return out;
+  }
 	/**
 	@PageName image_read
 	@FuncTitle Getting the color of a pixel

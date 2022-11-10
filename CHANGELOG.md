@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+### Added
+- New `TCODImage::getSize()` overload which returns a value instead if taking output references.
 
 ## [1.23.1] - 2022-11-09
 ### Changed

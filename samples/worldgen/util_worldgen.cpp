@@ -519,8 +519,7 @@ TCODColor WorldGenerator::getInterpolatedColor(float worldX, float worldY) {
 }
 
 TCODColor WorldGenerator::getInterpolatedColor(TCODImage* img, float x, float y) {
-  int w, h;
-  img->getSize(&w, &h);
+  const auto [w, h] = img->getSize();
   const float wx = CLAMP(0.0f, w - 1, x);
   const float wy = CLAMP(0.0f, h - 1, y);
   const int iwx = (int)wx;

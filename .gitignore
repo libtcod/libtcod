@@ -508,6 +508,7 @@ samples_c*
 
 ## Additional rules
 docs/doxyxml/
+docs/html/
 docs/library/
 .deps
 .dirstamp

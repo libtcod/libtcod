@@ -152,5 +152,8 @@
             "source.fixAll": "always",
             "source.organizeImports": "never"
         },
-    }
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
 }

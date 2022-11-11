@@ -12,6 +12,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - New `TCODColor::genMap` overload which supports constexpr.
 - `TCODZip` has new `get` and `put` functions with their supported types as overloads.
   This includes some types from the new API and C++ types such as `std::optional<std::string>` as an alternative to getting a char pointer.
+- `TCODZip` can now load and save paths using `<filesystem>` types.
 - Added `tcod::ImagePtr`.
 
 ## Changes

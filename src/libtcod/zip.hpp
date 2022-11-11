@@ -33,6 +33,7 @@
 #define TCOD_ZIP_HPP_
 #ifndef TCOD_NO_ZLIB
 
+#include <filesystem>
 #include <optional>
 #include <string>
 
@@ -227,6 +228,17 @@ public :
 	*/
 	int saveToFile(const char *filename);
 
+  /***************************************************************************
+      @brief Save this objects buffered objects to the file at `path`.
+
+      @param path The file to write.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void saveToFile(const std::filesystem::path& path) { saveToFile(path.string().c_str()); }
+
 	/**
 	@PageName zip_load
 	@PageTitle Using the buffer in input mode
@@ -240,6 +252,23 @@ public :
 	@Param filename	Name of the file
 	*/
 	int loadFromFile(const char *filename);
+
+  /***************************************************************************
+      @brief Load objects from the file at `path`.
+
+      @param path The file to read.  Must exist and be valid.
+
+      @throws std::runtime_error on any failure to load the file.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void loadFromFile(const std::filesystem::path& path) {
+    if (loadFromFile(path.string().c_str()) == 0) {
+      throw std::runtime_error{std::string("Failed to load file: " + path.string())};
+    }
+  }
 
 	/**
 	@PageName zip_load

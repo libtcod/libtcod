@@ -19,11 +19,11 @@ TEST_CASE("TCODZip") {
     zip.put(TCODConsole{3, 2});
     zip.put(tcod::Console{3, 2});
 
-    zip.saveToFile(zip_path.string().c_str());
+    zip.saveToFile(zip_path);
   }
   {
     auto zip = TCODZip{};
-    zip.loadFromFile(zip_path.string().c_str());
+    zip.loadFromFile(zip_path);
     REQUIRE(zip.get<char>() == 'c');
     REQUIRE(zip.get<int>() == 42);
     REQUIRE(zip.get<std::string>() == "Test");

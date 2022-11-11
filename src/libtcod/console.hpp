@@ -125,8 +125,18 @@ Classic real time game loop:
 		}
 */
 
+// clang-format on
 class TCODLIB_API TCODConsole {
-public :
+ public:
+  /***************************************************************************
+      @brief Default constructor.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  TCODConsole();
+  // clang-format off
 	/**
 	@PageName console_init
 	@PageTitle Initializing the console
@@ -1908,7 +1918,7 @@ public :
       .. versionadded:: 1.19
       \endrst
    */
-  explicit TCODConsole(tcod::ConsolePtr&& console) : data{console.get()} {}
+  explicit TCODConsole(tcod::ConsolePtr console) : data{console.release()} {}
 
   // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
   static const char* getColorControlString(TCOD_colctrl_t ctrl);
@@ -1985,7 +1995,6 @@ public :
   [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return get_data(); };
 
  protected:
-  TCODConsole();
   TCOD_Console* data = nullptr;  // This should be a unique_ptr, but fixing it will break the ABI.
 };
 #endif /* _TCOD_CONSOLE_HPP */

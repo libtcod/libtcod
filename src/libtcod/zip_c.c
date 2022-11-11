@@ -152,7 +152,7 @@ void TCOD_zip_put_color(TCOD_zip_t zip, const TCOD_color_t val) {
   TCOD_zip_put_char(zip, val.b);
 }
 
-void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_image_t val) {
+void TCOD_zip_put_image(TCOD_zip_t zip, const TCOD_Image* val) {
   int w, h, x, y;
   TCOD_image_get_size(val, &w, &h);
   TCOD_zip_put_int(zip, w);
@@ -386,8 +386,8 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
   return l;
 }
 
-TCOD_image_t TCOD_zip_get_image(TCOD_zip_t pzip) {
-  TCOD_image_t ret;
+TCOD_Image* TCOD_zip_get_image(TCOD_zip_t pzip) {
+  TCOD_Image* ret;
   int w, h, x, y;
   w = TCOD_zip_get_int(pzip);
   h = TCOD_zip_get_int(pzip);

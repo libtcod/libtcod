@@ -29,16 +29,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
-#ifndef _TCOD_ZIP_HPP
-#define _TCOD_ZIP_HPP
+#ifndef TCOD_ZIP_HPP_
+#define TCOD_ZIP_HPP_
 #ifndef TCOD_NO_ZLIB
 
+#include <optional>
+#include <string>
+
 #include "color.hpp"
+#include "config.h"
 #include "console.hpp"
 #include "image.hpp"
 #include "mersenne.hpp"
 #include "zip.h"
+
+// clang-format off
 /**
  @PageName zip
  @PageCategory Base toolkits
@@ -61,7 +66,7 @@ public :
 	@Cpp TCODZip::TCODZip()
 	@C TCOD_zip_t TCOD_zip_new()
 	*/
-  [[deprecated("This method of serialization is not cross-platform.  An alternative should be used instead.")]]
+  [[deprecated("This method of serialization is not cross-platform.  An alternative such as C++ Cereal should be used instead.")]]
 	TCODZip();
 
 	/**
@@ -161,7 +166,7 @@ public :
 	@Param zip	In the C version, the buffer handler, returned by the constructor.
 	@Param val	A console to store in the buffer
 	*/
-  TCOD_DEPRECATED("This function will fail with console characters greater than 255.")
+  [[deprecated("This function will corrupt console characters greater than 255.")]]
 	void putConsole(const TCODConsole *val);
 
 	/**
@@ -356,9 +361,244 @@ public :
 	@Param nbBytes number of uncompressed bytes to skip
 	*/
 	void skipBytes(uint32_t nbBytes);
-protected :
-	TCOD_zip_t data;
+  // clang-format on
+
+  /***************************************************************************
+      @brief Save a char to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(char value) { TCOD_zip_put_char(data, value); }
+  /***************************************************************************
+      @brief Save an int to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(int value) { TCOD_zip_put_int(data, value); }
+  /***************************************************************************
+      @brief Save a float to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(float value) { TCOD_zip_put_float(data, value); }
+  /***************************************************************************
+      @brief Save a string to this zip.  Can be nullptr.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const char* value) { TCOD_zip_put_string(data, value); }
+  /***************************************************************************
+      @brief Save a string to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const std::string& value) { TCOD_zip_put_string(data, value.c_str()); }
+  /***************************************************************************
+      @brief Save an optional string to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const std::optional<std::string>& value) {
+    if (value) return put(value.value());
+    TCOD_zip_put_string(data, nullptr);
+  }
+  /***************************************************************************
+      @brief Save a color to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const tcod::ColorRGB& value) { TCOD_zip_put_color(data, value); }
+  /***************************************************************************
+      @brief Save a color to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const TCODColor& value) { put(tcod::ColorRGB{value}); }
+  /***************************************************************************
+      @brief Save an image to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const TCODImage& value) { TCOD_zip_put_image(data, value.get_data()); }
+  TCODLIB_BEGIN_IGNORE_DEPRECATIONS
+  /***************************************************************************
+      @brief Save a console to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  [[deprecated("This function will corrupt console characters greater than 255.")]] void put(const TCODConsole& value) {
+    TCOD_zip_put_console(data, value.get_data());
+  }
+  /***************************************************************************
+      @brief Save a console to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  [[deprecated("This function will corrupt console characters greater than 255.")]] void put(
+      const tcod::Console& value) {
+    TCOD_zip_put_console(data, value.get());
+  }
+  TCODLIB_END_IGNORE_DEPRECATIONS
+  /***************************************************************************
+      @brief Save an RNG state to this zip.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void put(const TCODRandom& value) { TCOD_zip_put_random(data, value.get_data()); }
+
+  /***************************************************************************
+      @brief Return a value of T from this zip object.
+
+      @tparam T A type which must match one of the `get(T)` overloads.
+      @return T
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  template <typename T>
+  T get() {
+    T out{};
+    get(out);
+    return out;
+  }
+
+  /***************************************************************************
+      @brief Extract a char to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(char& out) { out = TCOD_zip_get_char(data); }
+  /***************************************************************************
+      @brief Extract an int to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(int& out) { out = TCOD_zip_get_int(data); }
+  /***************************************************************************
+      @brief Extract a float to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(float& out) { out = TCOD_zip_get_float(data); }
+  /***************************************************************************
+      @brief Extract an optional string to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(std::optional<std::string>& out) {
+    out = {};
+    const char* string = TCOD_zip_get_string(data);
+    if (string) out = string;
+  }
+  /***************************************************************************
+      @brief Extract a string to `out`.  Will throw if nullptr was put.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(std::string& out) { out = get<std::optional<std::string>>().value(); }
+  /***************************************************************************
+      @brief Extract a color to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(tcod::ColorRGB& out) { out = tcod::ColorRGB{TCOD_zip_get_color(data)}; }
+  /***************************************************************************
+      @brief Extract a color to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(TCODColor& out) { out = TCODColor{TCOD_zip_get_color(data)}; }
+  /***************************************************************************
+      @brief Extract an image pointer to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(tcod::ImagePtr& out) { out = tcod::ImagePtr{TCOD_zip_get_image(data)}; }
+  /***************************************************************************
+      @brief Extract an image to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(TCODImage& out) { out = TCODImage{get<tcod::ImagePtr>()}; }
+  /***************************************************************************
+      @brief Extract a console pointer to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(tcod::ConsolePtr& out) { out = tcod::ConsolePtr{TCOD_zip_get_console(data)}; }
+  /***************************************************************************
+      @brief Extract a console to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(tcod::Console& out) { out = tcod::Console{get<tcod::ConsolePtr>()}; }
+  /***************************************************************************
+      @brief Extract a console to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(TCODConsole& out) { out = TCODConsole{get<tcod::ConsolePtr>()}; }
+  /***************************************************************************
+      @brief Extract an RNG state to `out`.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  void get(TCODRandom& out) { out = TCODRandom{TCOD_zip_get_random(data)}; }
+
+ protected:
+  TCOD_zip_t data{};
 };
 
-#endif // TCOD_NO_ZLIB
-#endif // _TCOD_ZIP_HPP
+#endif  // TCOD_NO_ZLIB
+#endif  // TCOD_ZIP_HPP_

@@ -126,6 +126,19 @@
 #define TCOD_NODISCARD
 #endif
 
+#ifdef __GNUC__
+/// Used to suppress internal header warnings.
+#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS \
+  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated\"")
+#define TCODLIB_END_IGNORE_DEPRECATIONS _Pragma("GCC diagnostic pop")
+#elif defined(_MSC_VER)
+#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS _Pragma("warning(push)") _Pragma("warning(disable : 4996)")
+#define TCODLIB_END_IGNORE_DEPRECATIONS _Pragma("warning(pop)")
+#else
+#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS
+#define TCODLIB_END_IGNORE_DEPRECATIONS
+#endif
+
 #ifndef TCOD_FALLBACK_FONT_SIZE
 // The default height of the fallback font size in pixels.
 #define TCOD_FALLBACK_FONT_SIZE 16

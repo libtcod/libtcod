@@ -62,7 +62,7 @@ static auto vstring(const char* fmt, va_list varags) -> std::string {
 
 TCODConsole* TCODConsole::root = new TCODConsole();
 
-TCODConsole::TCODConsole() {}
+TCODConsole::TCODConsole() = default;
 TCODConsole::TCODConsole(int w, int h) { data = TCOD_console_new(w, h); }
 
 TCODConsole::TCODConsole(const char* filename) { data = TCOD_console_from_file(filename); }

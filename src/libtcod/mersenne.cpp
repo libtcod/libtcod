@@ -50,7 +50,9 @@ TCODRandom::TCODRandom(TCOD_random_algo_t algo, bool allocate) {
 
 TCODRandom::TCODRandom(uint32_t seed, TCOD_random_algo_t algo) { data = TCOD_random_new_from_seed(algo, seed); }
 
-TCODRandom::~TCODRandom() { TCOD_random_delete(data); }
+TCODRandom::~TCODRandom() {
+  if (data) TCOD_random_delete(data);
+}
 
 TCODRandom* TCODRandom::save() const {
   TCODRandom* ret = new TCODRandom(data->algorithm, false);

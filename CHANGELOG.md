@@ -10,6 +10,17 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 ### Added
 - New `TCODImage::getSize()` overload which returns a value instead of taking output references.
 - New `TCODColor::genMap` overload which supports constexpr.
+- `TCODZip` has new `get` and `put` functions with their supported types as overloads.
+  This includes some types from the new API and C++ types such as `std::optional<std::string>` as an alternative to getting a char pointer.
+- Added `tcod::ImagePtr`.
+
+## Changes
+- `TCODRandom` is now a movable, non-copyable object.
+- `TCODConsole` can now be default constructed.
+
+### Fixed
+- Constructing `TCODConsole` from `tcod::ConsolePtr` no longer causes a bad free.
+- Fixed memory leak when loading images with `TCODZip`.
 
 ## [1.23.1] - 2022-11-09
 ### Changed

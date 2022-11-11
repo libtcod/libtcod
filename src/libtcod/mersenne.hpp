@@ -29,11 +29,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #ifndef _TCOD_RANDOM_HPP
 #define _TCOD_RANDOM_HPP
 
+#include <utility>
+
 #include "mersenne.h"
+
+// clang-format off
 /**
  @PageName random
  @PageCategory Base toolkits
@@ -152,14 +155,24 @@ class TCODLIB_API TCODRandom {
 		*/
 		TCODRandom(uint32_t seed, TCOD_random_algo_t algo = TCOD_RNG_CMWC);
 
-    /**
-        Take ownership of a `TCOD_Random*` pointer.
-        \rst
-        .. versionadded:: 1.16
-        \endrst
-     */
-    explicit TCODRandom(TCOD_Random*&& mersenne) : data(mersenne) {}
+  // clang-format on
+  /**
+      Take ownership of a `TCOD_Random*` pointer.
+      \rst
+      .. versionadded:: 1.16
+      \endrst
+   */
+  explicit TCODRandom(TCOD_Random* mersenne) : data{mersenne} {}
 
+  TCODRandom(const TCODRandom&) = delete;
+  TCODRandom& operator=(const TCODRandom&) = delete;
+  TCODRandom(TCODRandom&& rhs) : data{nullptr} { std::swap(data, rhs.data); }
+  TCODRandom& operator=(TCODRandom&& rhs) noexcept {
+    std::swap(data, rhs.data);
+    return *this;
+  }
+
+  // clang-format off
 		/**
 		@PageName random_init
 		@FuncTitle Destroying a RNG
@@ -420,7 +433,7 @@ In these cases, the selected mean will appear with the lowest frequency.
 		friend class TCODLIB_API TCODHeightMap;
 		friend class TCODLIB_API TCODNamegen;
 		friend class TCODNameGenerator;	// Used for SWIG interface, does NOT need TCODLIB_API
-		TCOD_Random* data;
+		TCOD_Random* data{};
 };
 
 #endif

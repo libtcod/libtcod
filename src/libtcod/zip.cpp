@@ -76,7 +76,7 @@ int TCODZip::getData(int nbBytes, void* pdata) { return TCOD_zip_get_data(data, 
 
 TCODColor TCODZip::getColor() { return TCODColor(TCOD_zip_get_color(data)); }
 
-TCODImage* TCODZip::getImage() { return new TCODImage(TCOD_zip_get_image(data)); }
+TCODImage* TCODZip::getImage() { return new TCODImage{tcod::ImagePtr{TCOD_zip_get_image(data)}}; }
 
 TCODConsole* TCODZip::getConsole() { return new TCODConsole(TCOD_zip_get_console(data)); }
 

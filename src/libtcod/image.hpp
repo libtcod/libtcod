@@ -39,6 +39,19 @@
 #include "image.h"
 #include "matrix.hpp"
 
+namespace tcod {
+struct ImageDeleter {
+  void operator()(TCOD_Image* image) const { TCOD_image_delete(image); }
+};
+/***************************************************************************
+    @brief A unique pointer to a TCOD_Image.
+
+    \rst
+    .. versionadded:: Unreleased
+    \endrst
+ */
+typedef std::unique_ptr<TCOD_Image, ImageDeleter> ImagePtr;
+}  // namespace tcod
 class TCODConsole;
 
 class TCODLIB_API TCODImage {
@@ -102,6 +115,15 @@ public :
 	@PyEx pix = libtcod.image_from_console(0)
 	*/
 	TCODImage(const TCODConsole *console);
+
+  /***************************************************************************
+      @brief Take ownership of an image pointer.
+
+      \rst
+      .. versionadded:: Unreleased
+      \endrst
+   */
+  TCODImage(tcod::ImagePtr image) noexcept: data{image.release()}, deleteData{true} {};
 
   TCODImage(const TCODImage&) = delete;
   TCODImage& operator=(const TCODImage&) = delete;
@@ -517,7 +539,9 @@ public :
    */
   const TCOD_Image* get_data() const noexcept { return data; }
 
-	TCODImage(TCOD_image_t img) : data(img), deleteData(false) {}
+	[[deprecated("This only makes a reference to the image data."
+               "  If you intended to pass ownership then use `TCODImage{tcod::ImagePtr{image_ptr}}`")]]
+  TCODImage(TCOD_image_t img) : data(img), deleteData(false) {}
 	virtual ~TCODImage();
   /***************************************************************************
       @brief Allow implicit conversions to TCOD_Image&.

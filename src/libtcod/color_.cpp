@@ -419,7 +419,7 @@ const TCODColor TCODColor::colors[TCOD_COLOR_NB][TCOD_COLOR_LEVELS] = {
      TCODColor(TCOD_DARKEST_CRIMSON)}};
 #endif
 
-TCODColor::TCODColor(float h, float s, float v) {
+TCODColor::TCODColor(float h, float s, float v) noexcept {
   // setHSV(h,s,v);
   TCOD_color_t c = TCOD_color_HSV(h, s, v);
   r = c.r;
@@ -427,7 +427,7 @@ TCODColor::TCODColor(float h, float s, float v) {
   b = c.b;
 }
 
-void TCODColor::setHSV(float h, float s, float v) {
+void TCODColor::setHSV(float h, float s, float v) noexcept {
   TCOD_color_t c;
   TCOD_color_set_HSV(&c, h, s, v);
   r = c.r;
@@ -435,7 +435,7 @@ void TCODColor::setHSV(float h, float s, float v) {
   b = c.b;
 }
 
-void TCODColor::setHue(float h) {
+void TCODColor::setHue(float h) noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_set_hue(&c, h);
   r = c.r;
@@ -443,7 +443,7 @@ void TCODColor::setHue(float h) {
   b = c.b;
 }
 
-void TCODColor::setSaturation(float s) {
+void TCODColor::setSaturation(float s) noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_set_saturation(&c, s);
   r = c.r;
@@ -451,7 +451,7 @@ void TCODColor::setSaturation(float s) {
   b = c.b;
 }
 
-void TCODColor::setValue(float v) {
+void TCODColor::setValue(float v) noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_set_value(&c, v);
   r = c.r;
@@ -459,27 +459,27 @@ void TCODColor::setValue(float v) {
   b = c.b;
 }
 
-void TCODColor::getHSV(float* h, float* s, float* v) const {
+void TCODColor::getHSV(float* h, float* s, float* v) const noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_get_HSV(c, h, s, v);
 }
 
-float TCODColor::getHue() {
+float TCODColor::getHue() noexcept {
   TCOD_color_t c = {r, g, b};
   return TCOD_color_get_hue(c);
 }
 
-float TCODColor::getSaturation() {
+float TCODColor::getSaturation() noexcept {
   TCOD_color_t c = {r, g, b};
   return TCOD_color_get_saturation(c);
 }
 
-float TCODColor::getValue() {
+float TCODColor::getValue() noexcept {
   TCOD_color_t c = {r, g, b};
   return TCOD_color_get_value(c);
 }
 
-void TCODColor::shiftHue(float h_shift) {
+void TCODColor::shiftHue(float h_shift) noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_shift_hue(&c, h_shift);
   r = c.r;
@@ -487,7 +487,7 @@ void TCODColor::shiftHue(float h_shift) {
   b = c.b;
 }
 
-void TCODColor::scaleHSV(float s_scale, float v_scale) {
+void TCODColor::scaleHSV(float s_scale, float v_scale) noexcept {
   TCOD_color_t c = {r, g, b};
   TCOD_color_scale_HSV(&c, s_scale, v_scale);
   r = c.r;
@@ -496,8 +496,6 @@ void TCODColor::scaleHSV(float s_scale, float v_scale) {
 }
 
 // non member operators
-TCODColor operator*(float value, const TCODColor& c) { return c * value; }
-
 void TCODColor::genMap(TCODColor* map, int nbKey, TCODColor const* keyColor, int const* keyIndex) {
   for (int segment = 0; segment < nbKey - 1; ++segment) {
     int idxStart = keyIndex[segment];

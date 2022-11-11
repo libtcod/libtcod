@@ -92,4 +92,5 @@ TEST_CASE("Color math") {
 
   CHECK(TCODColor{0, 10, 100} * 10.0f == TCODColor{0, 100, 255});
   CHECK(TCODColor{0, 10, 100} * -10.0f == TCODColor{0, 0, 0});
+  CHECK(0.0f * TCODColor{0, 10, 100} == TCODColor{0, 0, 0});
 }

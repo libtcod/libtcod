@@ -57,6 +57,15 @@
 #endif
 #endif  // TCODLIB_API
 
+#ifndef TCODLIB_API_INLINE_EXPORT
+#ifdef LIBTCOD_EXPORTS
+/// Only export, but don't import a symbol.  Used to export functions moved inline.
+#define TCODLIB_API_INLINE_EXPORT TCODLIB_API
+#else
+#define TCODLIB_API_INLINE_EXPORT
+#endif
+#endif  // TCODLIB_API_INLINE_EXPORT
+
 #ifndef TCODLIB_CAPI
 #ifdef __cplusplus
 #define TCODLIB_CAPI extern "C" TCODLIB_API

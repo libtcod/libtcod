@@ -216,10 +216,8 @@ You can use the following predefined colors (hover over a color to see its full 
  */
 
 class TCODLIB_API TCODColor {
-public :
-	uint8_t r,g,b;
-
-	constexpr TCODColor() : r{0}, g{0}, b{0} {}
+public:
+	constexpr TCODColor() noexcept = default;
 	/**
 	@PageName color
 	@FuncTitle Create your own colors
@@ -236,14 +234,14 @@ public :
 	     TCODColor myColor = new TCODColor(321.0f,0.7f,1.0f); //HSV
 	@LuaEx myColor = tcod.Color(24,24,255)
 	*/
-	constexpr TCODColor(uint8_t r_, uint8_t g_, uint8_t b_)
+	constexpr TCODColor(uint8_t r_, uint8_t g_, uint8_t b_) noexcept
   : r{r_}, g{g_}, b{b_}
   {}
-	constexpr TCODColor(int r_, int g_, int b_)
+	constexpr TCODColor(int r_, int g_, int b_) noexcept
   : r{static_cast<uint8_t>(r_)}, g{static_cast<uint8_t>(g_)}, b{static_cast<uint8_t>(b_)}
   {}
-	constexpr TCODColor(const TCOD_color_t &col): r{col.r}, g{col.g}, b{col.b} {}  // Notice: not explicit!
-	TCODColor(float h, float s, float v);
+	constexpr TCODColor(const TCOD_color_t &col) noexcept: r{col.r}, g{col.g}, b{col.b} {}  // Notice: not explicit!
+	TCODColor(float h, float s, float v) noexcept;
 
 	/**
 	@PageName color
@@ -263,11 +261,11 @@ public :
 	@LuaEx
 		if myColor == tcod.color.yellow then ... end
 	*/
-  bool operator == (const TCODColor& c) const
+  [[nodiscard]] constexpr bool operator==(const TCODColor& c) const noexcept
   {
     return (c.r == r && c.g == g && c.b == b);
   }
-  bool operator != (const TCODColor& c) const
+  [[nodiscard]] constexpr bool operator!=(const TCODColor& c) const noexcept
   {
     return !(*this == c);
   }
@@ -287,7 +285,7 @@ public :
 	@C#Ex TCODColor myDarkishRed = TCODColor.darkGrey.Multiply(TCODColor.lightRed);
 	@LuaEx myDarkishRed = tcod.color.darkGrey * tcod.color.lightRed
 	*/
-  constexpr TCODColor operator*(const TCODColor& rhs) const
+  [[nodiscard]] constexpr TCODColor operator*(const TCODColor& rhs) const noexcept
   {
     return TCODColor{
         r * rhs.r / 255,
@@ -312,13 +310,16 @@ public :
 	@C#Ex TCODColor myDarkishRed = TCODColor.lightRed.Multiply(0.5f);
 	@LuaEx myDarkishRed = tcod.color.lightRed * 0.5
 	*/
-  constexpr TCODColor operator*(float value) const
+  [[nodiscard]] constexpr TCODColor operator*(float value) const noexcept
   {
     return TCODColor{
         static_cast<uint8_t>(std::clamp(r * value, 0.0f, 255.0f)),
         static_cast<uint8_t>(std::clamp(g * value, 0.0f, 255.0f)),
         static_cast<uint8_t>(std::clamp(b * value, 0.0f, 255.0f)),
     };
+  }
+  [[nodiscard]] TCODLIB_API_INLINE_EXPORT friend TCODColor operator*(float value, const TCODColor& color) noexcept {
+    return color * value;
   }
 
 	/**
@@ -335,7 +336,7 @@ public :
 	@C#Ex TCODColor myLightishRed = TCODColor.red.Plus(TCODColor.darkGrey)
 	@LuaEx myLightishRed = tcod.color.red + tcod.color.darkGrey
 	*/
-  constexpr TCODColor operator+(const TCODColor & rhs) const
+  [[nodiscard]] constexpr TCODColor operator+(const TCODColor & rhs) const noexcept
   {
     return TCODColor{
         std::clamp(r + rhs.r, 0, 255),
@@ -358,7 +359,7 @@ public :
 	@C#Ex TCODColor myRedish = TCODColor.red.Minus(TCODColor.darkGrey)
 	@LuaEx myRedish = tcod.color.red - tcod.color.darkGrey
 	*/
-  constexpr TCODColor operator-(const TCODColor& rhs) const
+  [[nodiscard]] constexpr TCODColor operator-(const TCODColor& rhs) const noexcept
   {
     return TCODColor{
         std::clamp(r - rhs.r, 0, 255),
@@ -386,7 +387,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@C#Ex TCODColor myColor = TCODColor.Interpolate( TCODColor.darkGrey, TCODColor.lightRed, coef );
 	@LuaEx myColor = tcod.color.Interpolate( tcod.color.darkGrey, tcod.color.lightRed, coef )
 	*/
-  static constexpr TCODColor lerp(const TCODColor &c1, const TCODColor &c2, float coef)
+  [[nodiscard]] static constexpr TCODColor lerp(const TCODColor &c1, const TCODColor &c2, float coef) noexcept
   {
     return TCODColor{
         c1.r + static_cast<int>((c2.r - c1.r) * coef),
@@ -410,7 +411,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		0.0 <= s <= 1.0
 		0.0 <= v <= 1.0
 	*/
-	void setHSV(float h, float s, float v);
+	void setHSV(float h, float s, float v) noexcept;
 
 	/**
 	@PageName color
@@ -431,9 +432,9 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Param h,s,v	Color components in the HSV space
 	@Param c	In the C and Python versions, the color to modify
 	*/
-	void setHue (float h);
-	void setSaturation (float s);
-	void setValue (float v);
+	void setHue(float h) noexcept;
+	void setSaturation(float s) noexcept;
+	void setValue(float v) noexcept;
 
 	/**
 	@PageName color
@@ -449,7 +450,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		0.0 <= s <= 1.0
 		0.0 <= v <= 1.0
 	*/
-	void getHSV(float *h, float *s, float *v) const;
+	void getHSV(float *h, float *s, float *v) const noexcept;
 
 	/**
 	@PageName color
@@ -473,9 +474,9 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 		float TCODColor::getValue()
 	@Param c	the TCOD_color_t from which to read
 	*/
-	float getHue ();
-	float getSaturation ();
-	float getValue ();
+	[[nodiscard]] float getHue() noexcept;
+	[[nodiscard]] float getSaturation() noexcept;
+	[[nodiscard]] float getValue() noexcept;
 
 	/**
 	@PageName color
@@ -489,7 +490,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Param c	The color to modify
 	@Param hshift	The hue shift value
 	*/
-	void shiftHue (float hshift);
+	void shiftHue(float hshift) noexcept;
 
 	/**
 	@PageName color
@@ -503,7 +504,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 	@Param sscale	saturation multiplier (1.0f for no change)
 	@Param vscale	value multiplier (1.0f for no change)
 	*/
-	void scaleHSV (float sscale, float vscale);
+	void scaleHSV(float sscale, float vscale) noexcept;
 
 	/**
 	@PageName color
@@ -849,8 +850,10 @@ coef should be between 0.0 and 1.0 but you can as well use other values
   static const TCODColor peach [[deprecated("Replace with tcod::ColorRGB{255, 159, 127}")]];
   /// @endcond
 
+  uint8_t r{};
+  uint8_t g{};
+  uint8_t b{};
+
  private:
 };
-
-TCODLIB_API TCODColor operator*(float value, const TCODColor& c);
 #endif  // _TCOD_COLOR_HPP

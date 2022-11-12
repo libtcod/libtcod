@@ -142,6 +142,7 @@ TCOD_PUBLIC TCOD_Error TCOD_context_save_screenshot(struct TCOD_Context* context
     TCOD_ColorRGBA* pixels = TCOD_context_screen_capture_alloc(context, &width, &height);
     lodepng_encode32_file(filename, (const unsigned char*)pixels, (unsigned)width, (unsigned)height);
     free(pixels);
+    return TCOD_E_OK;
   }
   return context->c_save_screenshot_(context, filename);
 #else

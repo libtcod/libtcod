@@ -1,4 +1,4 @@
-# Introduction
+# libtcod
 
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing a true color console, pathfinding, field-of-view, and a few other utilities frequently used in roguelikes.
 
@@ -111,7 +111,7 @@ versions.
 For reporting bugs or requesting features you should use the [GitHub Issues page](https://github.com/libtcod/libtcod/issues).
 For smaller questions or help with a tutorial or project you can join ``#libtcod`` on the [Roguelikes Discord](https://discord.gg/jEgZtqB) or on the [Libera.​Chat](https://libera.chat/) IRC.
 
-# Sponsors
+## Sponsors
 
 [Sponsors donating $25 or more per month](https://github.com/sponsors/HexDecimal) will have their names or logos listed here.
 

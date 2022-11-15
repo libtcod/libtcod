@@ -54,13 +54,6 @@
 static TCOD_color_t color_control_fore[TCOD_COLCTRL_NUMBER] = {
     {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255}, {255, 255, 255}};
 static TCOD_color_t color_control_back[TCOD_COLCTRL_NUMBER];
-/**
- *  Assign a foreground and background color to a color control index.
- *
- *  \param con Index to change, e.g. `TCOD_COLCTRL_1`
- *  \param fore Foreground color to assign to this index.
- *  \param back Background color to assign to this index.
- */
 void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back) {
   TCOD_IFNOT(con >= TCOD_COLCTRL_1 && con <= TCOD_COLCTRL_NUMBER) return;
   color_control_fore[con - 1] = fore;

@@ -46,15 +46,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/// @defgroup PrintEASCII
+/// @defgroup PrintEASCII Printing (EASCII)
+/// Deprecated printing functions which only support EASCII strings.
+///
+/// These don't support UTF-8, so they can't be used to print Unicode characters.
+/// @ref PrintUTF8 should be used instead.
 /// @{
 /***************************************************************************
-    @brief Print a string on a console, using default colors and alignment.
+    @brief Print an EASCII string on a console, using default colors and alignment.
 
     @param con A console pointer.
     @param x The starting X coordinate, the left-most position being 0.
     @param y The starting Y coordinate, the top-most position being 0.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
  */
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
@@ -67,7 +71,7 @@ TCODLIB_API void TCOD_console_print(TCOD_Console* con, int x, int y, const char*
     @param y The starting Y coordinate, the top-most position being 0.
     @param flag The blending flag.
     @param alignment The font alignment to use.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
  */
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
@@ -83,7 +87,7 @@ TCODLIB_API void TCOD_console_print_ex(
              If 0 then the maximum width will be used.
     @param h The height of the region.
              If 0 then the maximum height will be used.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
     @return The number of lines actually printed.
  */
@@ -101,7 +105,7 @@ TCODLIB_API int TCOD_console_print_rect(TCOD_Console* con, int x, int y, int w, 
              If 0 then the maximum height will be used.
     @param flag The blending flag.
     @param alignment The font alignment to use.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
     @return The number of lines actually printed.
  */
@@ -117,7 +121,7 @@ TCODLIB_API int TCOD_console_print_rect_ex(
     const char* fmt,
     ...);
 /***************************************************************************
-    @brief Print a titled, framed region on a console, using default colors and alignment.
+    @brief Print an EASCII titled, framed region on a console, using default colors and alignment.
 
     @param con A console pointer.
     @param x The starting X coordinate, the left-most position being 0.
@@ -127,7 +131,7 @@ TCODLIB_API int TCOD_console_print_rect_ex(
     @param empty If true the characters inside of the frame will be cleared
                  with spaces.
     @param flag The blending flag.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
 
     This function makes assumptions about the fonts character encoding and may draw garbage with some tilesets.
@@ -150,7 +154,7 @@ TCODLIB_API void TCOD_console_print_frame(
              If 0 then the maximum width will be used.
     @param h The height of the region.
              If 0 then the maximum height will be used.
-    @param fmt A format string as if passed to printf.
+    @param fmt An EASCII format string as if passed to printf.
     @param ... Variadic arguments as if passed to printf.
     @return The number of lines that would have been printed.
  */
@@ -158,7 +162,12 @@ TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
 /// @}
 #ifndef NO_UNICODE
-/// @defgroup PrintWide
+/// @defgroup PrintWide Printing (UCS wchar_t)
+/// Deprecated printing functions which use UCS-2 or UTF-32 wchar_t characters.
+///
+/// Despite the ``_utf`` postfix these functions do not handle variable length characters as you'd expect from UTF-16.
+/// They only support full Unicode when the platform has a 4 byte wchar_t.
+/// @ref PrintUTF8 should be used instead.
 /// @{
 /***************************************************************************
     \rst
@@ -213,7 +222,7 @@ TCODLIB_API int TCOD_console_get_height_rect_utf(
 /// @}
 #endif
 
-typedef enum {
+typedef enum TCOD_colctrl_t {
   TCOD_COLCTRL_1 = 1,
   TCOD_COLCTRL_2,
   TCOD_COLCTRL_3,
@@ -222,13 +231,22 @@ typedef enum {
   TCOD_COLCTRL_NUMBER = 5,
   TCOD_COLCTRL_FORE_RGB,
   TCOD_COLCTRL_BACK_RGB,
-  TCOD_COLCTRL_STOP
+  TCOD_COLCTRL_STOP,
 } TCOD_colctrl_t;
 
+/***************************************************************************
+    @brief Assign a foreground and background color to a color control index.
+
+    @param con Index to change, e.g. `TCOD_COLCTRL_1`
+    @param fore Foreground color to assign to this index.
+    @param back Background color to assign to this index.
+ */
 TCODLIB_API void TCOD_console_set_color_control(TCOD_colctrl_t con, TCOD_color_t fore, TCOD_color_t back);
 
-/* UTF-8 functions */
 #ifndef TCOD_NO_UNICODE
+/// @defgroup PrintUTF8 Printing (Unicode)
+/// Printing functions supporting UTF-8 strings.
+/// @{
 /**
     Format and print a UTF-8 string to a console.
     \rst
@@ -481,7 +499,7 @@ TCOD_PUBLIC TCOD_Error TCOD_console_vprintf(
     @param alignment The text justification.  This is one of `TCOD_alignment_t` and is normally `TCOD_LEFT`.
     @param fmt The format string for a vprintf-like function.
     @param args The arguments for the formatted string.
-    @return TCOD_PUBLIC
+    @return int The height of the printed text, or a negative error code on failures.
 
     \rst
     .. versionadded:: 1.19
@@ -555,6 +573,7 @@ TCOD_PUBLIC int TCOD_printn_rgb(
  */
 TCOD_PUBLIC int TCOD_vprintf_rgb(
     TCOD_Console* __restrict console, TCOD_PrintParamsRGB params, const char* __restrict fmt, va_list args);
+/// @}
 #endif  // TCOD_NO_UNICODE
 #ifdef __cplusplus
 }  // extern "C"

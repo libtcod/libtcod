@@ -46,6 +46,8 @@
 
 namespace tcod {
 #ifndef TCOD_NO_UNICODE
+/// @addtogroup PrintUTF8
+/// @{
 /*****************************************************************************
     @brief Print a string to a console.
 
@@ -163,6 +165,7 @@ TCODLIB_BEGIN_IGNORE_DEPRECATIONS
       &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), title.size(), title.data(), fg, bg, flag, clear));
 }
 TCODLIB_END_IGNORE_DEPRECATIONS
+/// @}
 #endif  // TCOD_NO_UNICODE
 /*****************************************************************************
     @brief Return a formatted string as a std::string object.

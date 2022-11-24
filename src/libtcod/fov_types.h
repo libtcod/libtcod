@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file fov_types.h
+/// Field-of-view types.
 #pragma once
 #ifndef TCOD_FOV_TYPES_H_
 #define TCOD_FOV_TYPES_H_
@@ -53,7 +55,7 @@ typedef struct TCOD_Map {
 typedef TCOD_Map* TCOD_map_t;
 /**
     \rst
-    Field-of-view options for :any:`TCOD_map_compute_fov`.
+    Field-of-view options for TCOD_map_compute_fov.
     \endrst
  */
 typedef enum {

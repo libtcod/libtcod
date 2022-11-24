@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file tileset_fallback.hpp
+/// Last resort local font module.
 #pragma once
 #ifndef LIBTCOD_TILESET_FALLBACK_HPP_
 #define LIBTCOD_TILESET_FALLBACK_HPP_

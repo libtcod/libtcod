@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file console_rexpaint.h
+/// REXPaint support.
 #pragma once
 #ifndef TCOD_CONSOLE_REXPAINT_H_
 #define TCOD_CONSOLE_REXPAINT_H_
@@ -51,7 +53,7 @@ extern "C" {
 
     \param [in] filename A path to the REXPaint file.
     \return A new TCOD_console_t object.  New consoles will need
-    to be deleted with a call to :any:`TCOD_console_delete`.
+    to be deleted with a call to TCOD_console_delete.
     Returns NULL on an error.
 
  */
@@ -62,7 +64,7 @@ TCODLIB_API TCOD_console_t TCOD_console_from_xp(const char* filename);
     \param [out] con A console instance to update from the REXPaint file.
     \param [in] filename A path to the REXPaint file.
 
-    In C++, you can pass the filepath directly to the :any:`TCODConsole`
+    In C++, you can pass the filepath directly to the TCODConsole
     constructor to load a REXPaint file.
  */
 TCODLIB_API bool TCOD_console_load_xp(TCOD_Console* con, const char* filename);

@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file mouse.hpp
+/// Deprecated mouse functions.
 #pragma once
 #ifndef TCOD_MOUSE_HPP_
 #define TCOD_MOUSE_HPP_

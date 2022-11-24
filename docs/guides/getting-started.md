@@ -1,5 +1,3 @@
-(getting-started)=
-
 # Getting Started
 
 ***This guide sets up a portable project which will work for all platforms (Windows/Mac/Linux) as long as these instructions are followed closely.***

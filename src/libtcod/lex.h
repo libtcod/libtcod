@@ -29,7 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-/// This is a libtcod internal module.
+/// @file lex.h
+/// Internal tokenizer module.
 /// Use at your own risk.
 /// @cond INTERNAL
 #pragma once

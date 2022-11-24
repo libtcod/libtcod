@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file tileset_bdf.hpp
+/// Load BDF fonts as tilesets.
 #pragma once
 #ifndef LIBTCOD_TILESET_BDF_HPP_
 #define LIBTCOD_TILESET_BDF_HPP_

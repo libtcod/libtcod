@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file console_types.hpp
+/// C++ types for console functions.
 #pragma once
 #ifndef TCOD_CONSOLE_TYPES_HPP_
 #define TCOD_CONSOLE_TYPES_HPP_

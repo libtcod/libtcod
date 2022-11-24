@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file wrappers.h
+/// Deprecated language binding wrapper functions.
 #pragma once
 #ifndef WRAPPERS_H
 #define WRAPPERS_H

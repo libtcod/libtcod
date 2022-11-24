@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file bsp.hpp
+/// Binary space partitioning module.
 // clang-format off
 #pragma once
 #ifndef TCOD_BSP_HPP_

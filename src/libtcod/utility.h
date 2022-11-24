@@ -29,12 +29,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file utility.h
+/// Common C macro definitions.
 #pragma once
 #ifndef LIBTCOD_UTILITY_H
 #define LIBTCOD_UTILITY_H
-/******************************************
- utility macros
- ******************************************/
+
 #define TCOD_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define TCOD_MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define TCOD_ABS(a) ((a) < 0 ? -(a) : (a))

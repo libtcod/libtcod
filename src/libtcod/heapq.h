@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file heapq.h
+/// Internal heap queue module.
 #pragma once
 #ifndef TCOD_HEAPQ_H
 #define TCOD_HEAPQ_H

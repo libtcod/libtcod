@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file console_printing.h
+/// Console string printing module.
 #pragma once
 #ifndef TCOD_CONSOLE_PRINTING_H_
 #define TCOD_CONSOLE_PRINTING_H_
@@ -172,7 +174,7 @@ TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, in
 /***************************************************************************
     \rst
     .. deprecated:: 1.8
-      Use :any:`TCOD_console_printf` instead.
+      Use TCOD_console_printf instead.
     \endrst
  */
 TCOD_DEPRECATED("Use TCOD_console_printf instead.")
@@ -180,7 +182,7 @@ TCODLIB_API void TCOD_console_print_utf(TCOD_Console* con, int x, int y, const w
 /***************************************************************************
     \rst
     .. deprecated:: 1.8
-      Use :any:`TCOD_console_printf_ex` instead.
+      Use TCOD_console_printf_ex instead.
     \endrst
  */
 TCOD_DEPRECATED("Use TCOD_console_printf_ex instead.")
@@ -189,7 +191,7 @@ TCODLIB_API void TCOD_console_print_ex_utf(
 /***************************************************************************
     \rst
     .. deprecated:: 1.8
-      Use :any:`TCOD_console_printf_rect` instead.
+      Use TCOD_console_printf_rect instead.
     \endrst
  */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect instead.")
@@ -197,7 +199,7 @@ TCODLIB_API int TCOD_console_print_rect_utf(TCOD_Console* con, int x, int y, int
 /***************************************************************************
     \rst
     .. deprecated:: 1.8
-      Use :any:`TCOD_console_printf_rect_ex` instead.
+      Use TCOD_console_printf_rect_ex instead.
     \endrst
  */
 TCOD_DEPRECATED("Use TCOD_console_printf_rect_ex instead.")

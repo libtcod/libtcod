@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file context.hpp
+/// Libtcod display management context.
 #pragma once
 #ifndef LIBTCOD_CONTEXT_HPP_
 #define LIBTCOD_CONTEXT_HPP_

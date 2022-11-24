@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file mersenne.h
+/// Random number generator functions.
 #pragma once
 #ifndef TCOD_RANDOM_H_
 #define TCOD_RANDOM_H_

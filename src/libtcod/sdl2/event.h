@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file sdl2/event.h
+/// SDL2/libtcod event compatibility tools.
 #pragma once
 #ifndef LIBTCOD_SDL2_EVENT_H_
 #define LIBTCOD_SDL2_EVENT_H_

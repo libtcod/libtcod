@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file version.h
+/// Libtcod version informaiton.
 #pragma once
 #ifndef LIBTCOD_VERSION_H
 #define LIBTCOD_VERSION_H

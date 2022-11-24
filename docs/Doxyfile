@@ -888,8 +888,7 @@ WARN_LOGFILE           =
 
 INPUT                  = ../src \
                          ../README.md \
-                         guides/getting-started.md \
-                         upgrading.md
+                         guides
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -919,7 +918,8 @@ INPUT_ENCODING         = UTF-8
 # *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.h \
-                         *.hpp
+                         *.hpp \
+                         *.md
 
 # The RECURSIVE tag can be used to specify whether or not subdirectories should
 # be searched for input files as well.
@@ -954,7 +954,8 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */libtcod_int.h \
                          *_internal.h \
                          *_.h \
-                         */libtcod/gui/*
+                         */libtcod/gui/* \
+                         */src/*.md
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the

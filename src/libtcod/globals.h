@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file globals.h
+/// Manage deprecated global variables.
 #pragma once
 #ifndef LIBTCOD_GLOBALS_H_
 #define LIBTCOD_GLOBALS_H_

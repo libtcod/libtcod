@@ -33,6 +33,8 @@
  * Mingos' NameGen
  * This file was written by Dominik "Mingos" Marczuk.
  */
+/// @file namegen.h
+/// Name generator module.
 #pragma once
 #ifndef TCOD_NAMEGEN_H_
 #define TCOD_NAMEGEN_H_

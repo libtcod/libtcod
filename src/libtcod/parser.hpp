@@ -29,17 +29,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
+/// @file parser.hpp
+/// Libtcod config parser.
 #pragma once
 #ifndef TCOD_PARSER_HPP_
 #define TCOD_PARSER_HPP_
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 #include "color.hpp"
 #include "list.hpp"
 #include "parser.h"
+// clang-format off
 /**
 @PageName parser
 @PageTitle File parser

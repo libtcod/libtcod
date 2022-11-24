@@ -31,3 +31,5 @@
  */
 #pragma once
 #include "libtcod.h"
+/// The libtcod namespace.
+namespace tcod {}

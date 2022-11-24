@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file fov.h
+/// Field-of-view module.
 #pragma once
 #ifndef TCOD_FOV_H_
 #define TCOD_FOV_H_
@@ -80,12 +82,12 @@ TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
     If `light_walls` is false then only transparent cells will be touched by
     the field-of-view.
 
-    `algo` is one of the :any:`TCOD_fov_algorithm_t` algorithms.
+    `algo` is one of the TCOD_fov_algorithm_t algorithms.
 
     After this call you may check if a cell is within the field-of-view by
-    calling :any:`TCOD_map_is_in_fov`.
+    calling TCOD_map_is_in_fov.
 
-    Returns an error code on failure.  See :any:`TCOD_get_error` for details.
+    Returns an error code on failure.  See TCOD_get_error for details.
     \endrst
  */
 TCOD_PUBLIC TCOD_Error TCOD_map_compute_fov(

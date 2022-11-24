@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file config.h
+/// Libtcod config header.
 #pragma once
 #ifndef LIBTCOD_CONFIG_H_
 #define LIBTCOD_CONFIG_H_

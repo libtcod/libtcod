@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file zip.hpp
+/// Deprecated serialization and compression module.
 #pragma once
 #ifndef TCOD_ZIP_HPP_
 #define TCOD_ZIP_HPP_

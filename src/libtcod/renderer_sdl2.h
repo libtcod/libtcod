@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file renderer_sdl2.h
+/// Low level SDL2 tileset rendering.
 #pragma once
 #ifndef LIBTCOD_RENDERER_SDL2_H_
 #define LIBTCOD_RENDERER_SDL2_H_

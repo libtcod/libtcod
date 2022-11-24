@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file mersenne_types.h
+/// Random number generator types.
 #pragma once
 #ifndef TCOD_RANDOM_TYPES_H_
 #define TCOD_RANDOM_TYPES_H_

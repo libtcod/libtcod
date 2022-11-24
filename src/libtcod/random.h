@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file random.h
+/// Experimental random number generators.
 #pragma once
 #ifndef LIBTCOD_RANDOM_H_
 #define LIBTCOD_RANDOM_H_

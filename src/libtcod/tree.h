@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file tree.h
+/// Internal tree container.
 #pragma once
 #ifndef TCOD_TREE_H_
 #define TCOD_TREE_H_

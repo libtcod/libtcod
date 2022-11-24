@@ -124,7 +124,7 @@ bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCOD_bresenha
  *  \verbatim embed:rst:leading-asterisk
  *  .. deprecated:: 1.6.6
  *    The `data` parameter for this call is redundant, you should call
- *    :any:`TCOD_line` instead.
+ *    TCOD_line instead.
  *  \endverbatim
  */
 bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data) {
@@ -147,7 +147,7 @@ bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener,
  *    This function is not reentrant and will fail if a new line is started
  *    before the last is finished processing.
  *
- *    Use :any:`TCOD_line_init_mt` instead.
+ *    Use TCOD_line_init_mt instead.
  *  \endverbatim
  */
 void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
@@ -168,7 +168,7 @@ void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
  *    This function is not reentrant and will fail if a new line is started
  *    before the last is finished processing.
  *
- *    Use :any:`TCOD_line_step_mt` instead.
+ *    Use TCOD_line_step_mt instead.
  *  \endverbatim
  */
 bool TCOD_line_step(int* __restrict xCur, int* __restrict yCur) {

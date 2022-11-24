@@ -30,7 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 // clang-format off
-/// This is a libtcod internal module.
+/// @file lex.hpp
+/// Internal tokenizer module.
 /// Use at your own risk.
 /// @cond INTERNAL
 #pragma once

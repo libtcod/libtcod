@@ -29,7 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
+/// @file noise.hpp
+/// Texture noise generator module.
 #pragma once
 #ifndef TCOD_PERLIN_HPP_
 #define TCOD_PERLIN_HPP_
@@ -39,6 +40,7 @@
 #include "mersenne.hpp"
 #include "noise.h"
 #include "noise_defaults.h"
+// clang-format off
 /**
  @PageName noise
  @PageCategory Base toolkits

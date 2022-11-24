@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file tileset_render.h
+/// Tileset software renderer.
 #pragma once
 #ifndef LIBTCOD_TILESET_RENDER_H_
 #define LIBTCOD_TILESET_RENDER_H_

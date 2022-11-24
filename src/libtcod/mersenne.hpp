@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file mersenne.hpp
+/// Random number generator C++ module.
 #ifndef TCOD_RANDOM_HPP_
 #define TCOD_RANDOM_HPP_
 

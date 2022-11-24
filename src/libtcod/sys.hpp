@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file sys.hpp
+/// Deprecated low-level functions.
 // clang-format off
 #pragma once
 #ifndef TCOD_SYS_HPP_

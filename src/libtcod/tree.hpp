@@ -29,6 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+/// @file tree.hpp
+/// Internal tree container.
 #pragma once
 #ifndef TCOD_TREE_HPP_
 #define TCOD_TREE_HPP_
@@ -37,6 +39,7 @@
 
 #include "tree.h"
 
+// clang-format off
 class TCODLIB_API TCODTree {
  public:
   TCODTree* next{};

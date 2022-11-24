@@ -9,29 +9,3 @@ Welcome to the libtcod C/C++ documentation!
 .. include:: old_docs_notice.inc.rst
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Core
-   :glob:
-
-   core/*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Base toolkits
-   :glob:
-
-   base-toolkits/*
-   api/*
-
-.. toctree::
-   :maxdepth: 1
-   :caption: How-tos
-
-   upgrading
-   guides/getting-started
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API
-
-   library/library_root

@@ -35,26 +35,12 @@
 #include "list.h"
 #include "utility.h"
 /**
- *  A lightweight and generic container that provides array, list, and stack
- *  paradigms.
- */
-struct TCOD_List {
-  /**
-   *  A pointer to an array of void pointers.
-   */
-  void** array;
-  /** The current count of items in the array. */
-  int fillSize;
-  /** The maximum number of items that `array` can currently hold. */
-  int allocSize;
-};
-/**
  *  Initialize or expand the array of a TCOD_list_t struct.
  *
  *  If `l->allocSize` is zero then a new array is allocated, and allocSize is
  *  set.  If `l->allocSize` is not zero then the allocated size is doubled.
  */
-static void TCOD_list_allocate_int(TCOD_list_t l) {
+static void TCOD_list_allocate_int(TCOD_List* l) {
   void** newArray;
   int newSize = l->allocSize * 2;
   if (newSize == 0) {
@@ -75,16 +61,16 @@ static void TCOD_list_allocate_int(TCOD_list_t l) {
  *
  *  The new size will be no more than `l->allocSize`.
  */
-void TCOD_list_set_size(TCOD_list_t l, int size) { l->fillSize = TCOD_MIN(size, l->allocSize); }
+void TCOD_list_set_size(TCOD_List* l, int size) { l->fillSize = TCOD_MIN(size, l->allocSize); }
 /**
  *  Return a new list.
  */
-TCOD_list_t TCOD_list_new(void) { return (TCOD_list_t)calloc(1, sizeof(struct TCOD_List)); }
+TCOD_List* TCOD_list_new(void) { return (TCOD_List*)calloc(1, sizeof(struct TCOD_List)); }
 /**
  *  Return a new list which can hold up to `nb_elements` items.
  */
-TCOD_list_t TCOD_list_allocate(int nb_elements) {
-  TCOD_list_t l = TCOD_list_new();
+TCOD_List* TCOD_list_allocate(int nb_elements) {
+  TCOD_List* l = TCOD_list_new();
   l->array = (void**)calloc(nb_elements, sizeof(void*));
   l->allocSize = nb_elements;
   return l;
@@ -92,10 +78,10 @@ TCOD_list_t TCOD_list_allocate(int nb_elements) {
 /**
  *  Return a new copy of `l`.
  */
-TCOD_list_t TCOD_list_duplicate(TCOD_list_t l) {
+TCOD_List* TCOD_list_duplicate(TCOD_List* l) {
   int i = 0;
   void** t;
-  TCOD_list_t ret = TCOD_list_allocate(l->allocSize);
+  TCOD_List* ret = TCOD_list_allocate(l->allocSize);
   ret->fillSize = l->fillSize;
   for (t = TCOD_list_begin(l); t != TCOD_list_end(l); ++t) {
     ret->array[i++] = *t;
@@ -108,7 +94,7 @@ TCOD_list_t TCOD_list_duplicate(TCOD_list_t l) {
  *  This only frees the list itself, if the list contains any pointers then
  *  those will need to be freed separately.
  */
-void TCOD_list_delete(TCOD_list_t l) {
+void TCOD_list_delete(TCOD_List* l) {
   if (l) {
     free(l->array);
   }
@@ -117,7 +103,7 @@ void TCOD_list_delete(TCOD_list_t l) {
 /**
  *  Add `elt` to the end of a list.
  */
-void TCOD_list_push(TCOD_list_t l, const void* elt) {
+void TCOD_list_push(TCOD_List* l, const void* elt) {
   if (l->fillSize + 1 >= l->allocSize) {
     TCOD_list_allocate_int(l);
   }
@@ -128,7 +114,7 @@ void TCOD_list_push(TCOD_list_t l, const void* elt) {
  *
  *  If the list is empty this will return NULL.
  */
-void* TCOD_list_pop(TCOD_list_t l) {
+void* TCOD_list_pop(TCOD_List* l) {
   if (l->fillSize == 0) {
     return NULL;
   }
@@ -139,7 +125,7 @@ void* TCOD_list_pop(TCOD_list_t l) {
  *
  *  If the list is empty this will return NULL.
  */
-void* TCOD_list_peek(TCOD_list_t l) {
+void* TCOD_list_peek(TCOD_List* l) {
   if (l->fillSize == 0) {
     return NULL;
   }
@@ -148,7 +134,7 @@ void* TCOD_list_peek(TCOD_list_t l) {
 /**
  *  Add all items from `l2` to the end of `l`.
  */
-void TCOD_list_add_all(TCOD_list_t l, TCOD_list_t l2) {
+void TCOD_list_add_all(TCOD_List* l, TCOD_List* l2) {
   void** curElt;
   for (curElt = TCOD_list_begin(l2); curElt != TCOD_list_end(l2); ++curElt) {
     TCOD_list_push(l, *curElt);
@@ -157,13 +143,13 @@ void TCOD_list_add_all(TCOD_list_t l, TCOD_list_t l2) {
 /**
  *  Return the item at index `idx`.
  */
-void* TCOD_list_get(TCOD_list_t l, int idx) { return l->array[idx]; }
+void* TCOD_list_get(TCOD_List* l, int idx) { return l->array[idx]; }
 /**
  *  Set the item at `idx` to `elt`.
  *
  *  The list will automatically resize to fit and item at `idx`.
  */
-void TCOD_list_set(TCOD_list_t l, const void* elt, int idx) {
+void TCOD_list_set(TCOD_List* l, const void* elt, int idx) {
   if (idx < 0) {
     return;
   }
@@ -176,7 +162,7 @@ void TCOD_list_set(TCOD_list_t l, const void* elt, int idx) {
 /**
  *  Return a pointer to the beginning of the list.
  */
-void** TCOD_list_begin(TCOD_list_t l) {
+void** TCOD_list_begin(TCOD_List* l) {
   if (l->fillSize == 0) {
     return (void**)NULL;
   }
@@ -185,7 +171,7 @@ void** TCOD_list_begin(TCOD_list_t l) {
 /**
  *  Return a pointer to the end of the list.
  */
-void** TCOD_list_end(TCOD_list_t l) {
+void** TCOD_list_end(TCOD_List* l) {
   if (l->fillSize == 0) {
     return (void**)NULL;
   }
@@ -194,7 +180,7 @@ void** TCOD_list_end(TCOD_list_t l) {
 /**
  *  Reverse the order of the list.
  */
-void TCOD_list_reverse(TCOD_list_t l) {
+void TCOD_list_reverse(TCOD_List* l) {
   void** head = TCOD_list_begin(l);
   void** tail = TCOD_list_end(l) - 1;
   while (head < tail) {
@@ -208,7 +194,7 @@ void TCOD_list_reverse(TCOD_list_t l) {
 /**
  *  Remove an item from the list and return a new iterator.
  */
-void** TCOD_list_remove_iterator(TCOD_list_t l, void** elt) {
+void** TCOD_list_remove_iterator(TCOD_List* l, void** elt) {
   void** curElt;
   for (curElt = elt; curElt < TCOD_list_end(l) - 1; ++curElt) {
     *curElt = *(curElt + 1);
@@ -223,7 +209,7 @@ void** TCOD_list_remove_iterator(TCOD_list_t l, void** elt) {
 /**
  *  Remove an item from the list.
  */
-void TCOD_list_remove(TCOD_list_t l, const void* elt) {
+void TCOD_list_remove(TCOD_List* l, const void* elt) {
   void** curElt;
   for (curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
     if (*curElt == elt) {
@@ -238,7 +224,7 @@ void TCOD_list_remove(TCOD_list_t l, const void* elt) {
  *  This fast version replaces the removed item with the item at the end of the
  *  list.  This is faster but does not preserve the list order.
  */
-void** TCOD_list_remove_iterator_fast(TCOD_list_t l, void** elt) {
+void** TCOD_list_remove_iterator_fast(TCOD_List* l, void** elt) {
   *elt = l->array[l->fillSize - 1];
   l->fillSize--;
   if (l->fillSize == 0) {
@@ -253,7 +239,7 @@ void** TCOD_list_remove_iterator_fast(TCOD_list_t l, void** elt) {
  *  The removed item is replaced with the item from the end of the list.
  *  This is faster but does not preserve the list order.
  */
-void TCOD_list_remove_fast(TCOD_list_t l, const void* elt) {
+void TCOD_list_remove_fast(TCOD_List* l, const void* elt) {
   void** curElt;
   for (curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
     if (*curElt == elt) {
@@ -265,7 +251,7 @@ void TCOD_list_remove_fast(TCOD_list_t l, const void* elt) {
 /**
  *  Return true if `elt` is in the list.
  */
-bool TCOD_list_contains(TCOD_list_t l, const void* elt) {
+bool TCOD_list_contains(TCOD_List* l, const void* elt) {
   void** curElt;
   for (curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
     if (*curElt == elt) {
@@ -277,11 +263,11 @@ bool TCOD_list_contains(TCOD_list_t l, const void* elt) {
 /**
  *  Remove ALL items from a list.
  */
-void TCOD_list_clear(TCOD_list_t l) { l->fillSize = 0; }
+void TCOD_list_clear(TCOD_List* l) { l->fillSize = 0; }
 /**
  *  Call free() on all items on the list, then remove them.
  */
-void TCOD_list_clear_and_delete(TCOD_list_t l) {
+void TCOD_list_clear_and_delete(TCOD_List* l) {
   void** curElt;
   for (curElt = TCOD_list_begin(l); curElt != TCOD_list_end(l); ++curElt) {
     free(*curElt);
@@ -291,11 +277,11 @@ void TCOD_list_clear_and_delete(TCOD_list_t l) {
 /**
  *  Return the current count of items in a list.
  */
-int TCOD_list_size(TCOD_list_t l) { return l->fillSize; }
+int TCOD_list_size(TCOD_List* l) { return l->fillSize; }
 /**
  *  Insert `elt` on the index before `before`.
  */
-void** TCOD_list_insert_before(TCOD_list_t l, const void* elt, int before) {
+void** TCOD_list_insert_before(TCOD_List* l, const void* elt, int before) {
   int idx;
   if (l->fillSize + 1 >= l->allocSize) {
     TCOD_list_allocate_int(l);
@@ -310,4 +296,4 @@ void** TCOD_list_insert_before(TCOD_list_t l, const void* elt, int before) {
 /**
  *  Return true if this list is empty.
  */
-bool TCOD_list_is_empty(TCOD_list_t l) { return (l->fillSize == 0); }
+bool TCOD_list_is_empty(TCOD_List* l) { return (l->fillSize == 0); }

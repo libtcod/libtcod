@@ -38,37 +38,59 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/***************************************************************************
+    @brief Libtcod's generic container, deprecated in favor of more standard tools.
 
-struct TCOD_List;
+    @deprecated
+      This object is deprecated in favor of more standard tools.
+      In C a library such as ``stb_ds.h`` should be used where a lower level interface isn't possible.
+ */
+typedef struct TCOD_List {
+  /// A pointer to an array of void pointers.  Internal.
+  void** array;
+  /// The current count of items in the array.  Internal.
+  int fillSize;
+  /// The maximum number of items that `array` can currently hold.  Internal.
+  int allocSize;
+} TCOD_List;
 
-typedef struct TCOD_List* TCOD_list_t;
+typedef TCOD_List* TCOD_list_t;
 
-TCODLIB_API
-TCOD_DEPRECATED("TCOD_List is not a suitable container.  Use a custom array or a C++ container instead.")
-TCOD_list_t TCOD_list_new(void);
+/***************************************************************************
+    @brief Return a new list.
 
-TCODLIB_API TCOD_list_t TCOD_list_allocate(int nb_elements);
-TCODLIB_API TCOD_list_t TCOD_list_duplicate(TCOD_list_t l);
-TCODLIB_API void TCOD_list_delete(TCOD_list_t l);
-TCODLIB_API void TCOD_list_push(TCOD_list_t l, const void* elt);
-TCODLIB_API void* TCOD_list_pop(TCOD_list_t l);
-TCODLIB_API void* TCOD_list_peek(TCOD_list_t l);
-TCODLIB_API void TCOD_list_add_all(TCOD_list_t l, TCOD_list_t l2);
-TCODLIB_API void* TCOD_list_get(TCOD_list_t l, int idx);
-TCODLIB_API void TCOD_list_set(TCOD_list_t l, const void* elt, int idx);
-TCODLIB_API void** TCOD_list_begin(TCOD_list_t l);
-TCODLIB_API void** TCOD_list_end(TCOD_list_t l);
-TCODLIB_API void TCOD_list_reverse(TCOD_list_t l);
-TCODLIB_API void** TCOD_list_remove_iterator(TCOD_list_t l, void** elt);
-TCODLIB_API void TCOD_list_remove(TCOD_list_t l, const void* elt);
-TCODLIB_API void** TCOD_list_remove_iterator_fast(TCOD_list_t l, void** elt);
-TCODLIB_API void TCOD_list_remove_fast(TCOD_list_t l, const void* elt);
-TCODLIB_API bool TCOD_list_contains(TCOD_list_t l, const void* elt);
-TCODLIB_API void TCOD_list_clear(TCOD_list_t l);
-TCODLIB_API void TCOD_list_clear_and_delete(TCOD_list_t l);
-TCODLIB_API int TCOD_list_size(TCOD_list_t l);
-TCODLIB_API void** TCOD_list_insert_before(TCOD_list_t l, const void* elt, int before);
-TCODLIB_API bool TCOD_list_is_empty(TCOD_list_t l);
+    @return TCOD_List*
+
+    @code{.c}
+    TCOD_List* intList = TCOD_list_new();
+    TCOD_List* floatList = TCOD_list_new();
+    @endcode
+ */
+TCODLIB_API TCOD_DEPRECATED("TCOD_List is not a suitable container.  Use a custom array or a C++ container instead.")
+    TCOD_List* TCOD_list_new(void);
+
+TCODLIB_API TCOD_List* TCOD_list_allocate(int nb_elements);
+TCODLIB_API TCOD_List* TCOD_list_duplicate(TCOD_List* l);
+TCODLIB_API void TCOD_list_delete(TCOD_List* l);
+TCODLIB_API void TCOD_list_push(TCOD_List* l, const void* elt);
+TCODLIB_API void* TCOD_list_pop(TCOD_List* l);
+TCODLIB_API void* TCOD_list_peek(TCOD_List* l);
+TCODLIB_API void TCOD_list_add_all(TCOD_List* l, TCOD_List* l2);
+TCODLIB_API void* TCOD_list_get(TCOD_List* l, int idx);
+TCODLIB_API void TCOD_list_set(TCOD_List* l, const void* elt, int idx);
+TCODLIB_API void** TCOD_list_begin(TCOD_List* l);
+TCODLIB_API void** TCOD_list_end(TCOD_List* l);
+TCODLIB_API void TCOD_list_reverse(TCOD_List* l);
+TCODLIB_API void** TCOD_list_remove_iterator(TCOD_List* l, void** elt);
+TCODLIB_API void TCOD_list_remove(TCOD_List* l, const void* elt);
+TCODLIB_API void** TCOD_list_remove_iterator_fast(TCOD_List* l, void** elt);
+TCODLIB_API void TCOD_list_remove_fast(TCOD_List* l, const void* elt);
+TCODLIB_API bool TCOD_list_contains(TCOD_List* l, const void* elt);
+TCODLIB_API void TCOD_list_clear(TCOD_List* l);
+TCODLIB_API void TCOD_list_clear_and_delete(TCOD_List* l);
+TCODLIB_API int TCOD_list_size(TCOD_List* l);
+TCODLIB_API void** TCOD_list_insert_before(TCOD_List* l, const void* elt, int before);
+TCODLIB_API bool TCOD_list_is_empty(TCOD_List* l);
 #ifdef __cplusplus
 }
 #endif

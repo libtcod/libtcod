@@ -19,6 +19,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ### Fixed
 - Mouse coordinate to tile conversions now support SDL renderer logical size and scaling.
+- Fixed out-of-bounds memory access in `TCODList::reverse` and `TCODList` copy methods.
 
 ## [2.2.1] - 2025-09-05
 ### Fixed

@@ -49,11 +49,20 @@ Note that this module has no Python wrapper. Use Python built-in containers inst
  */
 
 // fast & lightweight list template
+
+/***************************************************************************
+    @brief
+
+    @tparam T
+
+    @deprecated
+        All instances of TCODList should be replaced with std::vector where possible.
+ */
 template <class T>
 class TCODList {
-  T* array = nullptr;
-  int fillSize = 0;
-  int allocSize = 0;
+  T* array{};
+  int fillSize{};
+  int allocSize{};
 
  public:
   /**
@@ -102,7 +111,7 @@ class TCODList {
     fillSize = rhs.fillSize;
     int i = 0;
     for (T* t = rhs.begin(); t != rhs.end(); ++t) {
-      array[++i] = *t;
+      array[i++] = *t;
     }
     return *this;
   }
@@ -440,13 +449,11 @@ class TCODList {
 	*/
 	void reverse() {
 		T* head = begin();
-		T* tail = end();
-		while ( head < tail ) {
-			T tmp = *head;
-			*head=*tail;
-			*tail=tmp;
-			head++;
-			tail--;
+		T* tail = end() - 1;
+		while (head < tail) {
+      std::swap(*head, *tail);
+			++head;
+			--tail;
 		}
 	}
 

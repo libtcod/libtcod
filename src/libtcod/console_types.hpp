@@ -79,6 +79,7 @@ typedef std::unique_ptr<struct TCOD_Console, ConsoleDeleter> ConsolePtr;
  */
 class Console {
  public:
+  TCODLIB_BEGIN_IGNORE_DEPRECATIONS // Remove this after references to TCOD_Console methods are removed.
   /***************************************************************************
       @brief Default initializer.
    */
@@ -267,6 +268,7 @@ class Console {
       @brief Return true if `xy` are within the bounds of this console.
    */
   [[nodiscard]] bool in_bounds(const std::array<int, 2>& xy) const noexcept { return console_->in_bounds(xy); }
+  TCODLIB_END_IGNORE_DEPRECATIONS
 
  private:
   /***************************************************************************

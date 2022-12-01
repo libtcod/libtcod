@@ -68,7 +68,7 @@ typedef struct RexPaintTile {
 #pragma pack(pop)
 /* Convert a list of consoles into a single console, deleting the list.
   Follows REXPaint's rules for transparency. */
-static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
+static TCOD_Console* combine_console_list(TCOD_list_t console_list) {
   TCOD_Console* main_console;
   if (!console_list) {
     return NULL;
@@ -77,7 +77,7 @@ static TCOD_console_t combine_console_list(TCOD_list_t console_list) {
   TCOD_list_reverse(console_list);
   main_console = TCOD_list_pop(console_list);
   while (!TCOD_list_is_empty(console_list)) {
-    TCOD_console_t console = TCOD_list_pop(console_list);
+    TCOD_Console* console = TCOD_list_pop(console_list);
     /* Set key color to {255, 0, 255} before blit. */
     TCOD_console_set_key_color(console, TCOD_fuchsia);
     /* This blit may fail if the consoles do not match shapes. */
@@ -243,11 +243,11 @@ TCOD_list_t TCOD_console_list_from_xp(const char* filename) {
   }
   return console_list;
 }
-TCOD_console_t TCOD_console_from_xp(const char* filename) {
+TCOD_Console* TCOD_console_from_xp(const char* filename) {
   return combine_console_list(TCOD_console_list_from_xp(filename));
 }
-bool TCOD_console_load_xp(TCOD_console_t con, const char* filename) {
-  TCOD_console_t xp_console = TCOD_console_from_xp(filename);
+bool TCOD_console_load_xp(TCOD_Console* con, const char* filename) {
+  TCOD_Console* xp_console = TCOD_console_from_xp(filename);
   if (!xp_console) {
     return false;
   }

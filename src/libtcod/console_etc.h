@@ -160,6 +160,32 @@ TCODLIB_API void TCOD_console_set_keyboard_repeat(int initial_delay, int interva
 TCOD_DEPRECATED("This function is a stub and will do nothing.")
 TCODLIB_API void TCOD_console_disable_keyboard_repeat(void);
 #endif  // NO_SDL
+/**
+    Fade the color of the display.
+
+    \param val Where at 255 colors are normal and at 0 colors are completely
+               faded.
+    \param fade_color Color to fade towards.
+    \rst
+    .. deprecated:: 1.19
+        This function will not work with libtcod contexts.
+    \endrst
+ */
+TCOD_DEPRECATED("This function does not support contexts.")
+TCOD_PUBLIC
+void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color);
+/**
+ *  Return the fade value.
+ *
+ *  \return At 255 colors are normal and at 0 colors are completely faded.
+ */
+TCOD_PUBLIC TCOD_NODISCARD uint8_t TCOD_console_get_fade(void);
+/**
+ *  Return the fade color.
+ *
+ *  \return The current fading color.
+ */
+TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_fading_color(void);
 #ifdef __cplusplus
 }  // extern "C"
 #endif

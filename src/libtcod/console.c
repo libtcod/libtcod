@@ -145,7 +145,7 @@ void TCOD_console_set_alignment(TCOD_Console* con, TCOD_alignment_t alignment) {
     con->alignment = alignment;
   }
 }
-TCOD_alignment_t TCOD_console_get_alignment(TCOD_console_t con) {
+TCOD_alignment_t TCOD_console_get_alignment(TCOD_Console* con) {
   con = TCOD_console_validate_(con);
   return (con ? con->alignment : TCOD_LEFT);
 }
@@ -294,7 +294,7 @@ void TCOD_console_put_char(TCOD_Console* con, int x, int y, int c, TCOD_bkgnd_fl
   TCOD_console_set_char_foreground(con, x, y, con->fore);
   TCOD_console_set_char_background(con, x, y, con->back, flag);
 }
-void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
+void TCOD_console_put_char_ex(TCOD_Console* con, int x, int y, int c, TCOD_color_t fore, TCOD_color_t back) {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) {
     return;
@@ -303,7 +303,7 @@ void TCOD_console_put_char_ex(TCOD_console_t con, int x, int y, int c, TCOD_colo
   TCOD_console_set_char_foreground(con, x, y, fore);
   TCOD_console_set_char_background(con, x, y, back, TCOD_BKGND_SET);
 }
-void TCOD_console_clear(TCOD_console_t con) {
+void TCOD_console_clear(TCOD_Console* con) {
   con = TCOD_console_validate_(con);
   if (!con) {
     return;
@@ -461,7 +461,7 @@ void TCOD_console_set_char_background(TCOD_Console* con, int x, int y, TCOD_colo
       break;
   }
 }
-void TCOD_console_set_char(TCOD_console_t con, int x, int y, int c) {
+void TCOD_console_set_char(TCOD_Console* con, int x, int y, int c) {
   con = TCOD_console_validate_(con);
   if (!TCOD_console_is_index_valid_(con, x, y)) {
     return;
@@ -488,9 +488,3 @@ TCOD_color_t TCOD_console_get_default_background(TCOD_Console* con) {
   TCOD_IFNOT(con) { return TCOD_black; }
   return con->back;
 }
-void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color) {
-  TCOD_ctx.fade = val;
-  TCOD_ctx.fading_color = fade_color;
-}
-uint8_t TCOD_console_get_fade(void) { return TCOD_ctx.fade; }
-TCOD_color_t TCOD_console_get_fading_color(void) { return TCOD_ctx.fading_color; }

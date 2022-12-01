@@ -40,6 +40,8 @@
 #endif  // __cplusplus
 #include "config.h"
 #include "console_types.h"
+/// @addtogroup Console
+/// @{
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -148,9 +150,12 @@ TCOD_PUBLIC TCOD_Error TCOD_console_draw_frame_rgb(
     const TCOD_ColorRGB* __restrict bg,
     TCOD_bkgnd_flag_t flag,
     bool clear);
+/// @}
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
+/// @addtogroup Console_CPP
+/// @{
 /***************************************************************************
     @brief Fill a region with the given graphic.
 
@@ -227,6 +232,7 @@ inline void draw_frame(
   tcod::check_throw_error(TCOD_console_draw_frame_rgb(
       &console, rect.at(0), rect.at(1), rect.at(2), rect.at(3), decoration.data(), fg_ptr, bg_ptr, flag, clear));
 }
+/// @}
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_CONSOLE_DRAWING_H_

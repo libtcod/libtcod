@@ -50,12 +50,14 @@
 #include "config.h"
 #include "error.h"
 #include "tileset.h"
+/// @defgroup Console Consoles (C)
+/// @{
 /**
  *  \enum TCOD_bkgnd_flag_t
  *
  *  Background color blend modes.
  */
-typedef enum {
+typedef enum TCOD_bkgnd_flag_t {
   TCOD_BKGND_NONE,
   TCOD_BKGND_SET,
   TCOD_BKGND_MULTIPLY,
@@ -76,7 +78,7 @@ typedef enum {
  *
  *  Print justification options.
  */
-typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
+typedef enum TCOD_alignment_t { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
 /***************************************************************************
     @brief The raw data for a single TCOD_Console tile.
 
@@ -86,8 +88,14 @@ typedef enum { TCOD_LEFT, TCOD_RIGHT, TCOD_CENTER } TCOD_alignment_t;
  */
 typedef struct TCOD_ConsoleTile {
 #ifdef __cplusplus
-  bool operator==(const TCOD_ConsoleTile& rhs) const noexcept { return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg; }
-  bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
+  /// @cond INTERNAL
+  TCODLIB_BEGIN_IGNORE_DEPRECATIONS
+  [[deprecated]] bool operator==(const TCOD_ConsoleTile& rhs) const noexcept {
+    return ch == rhs.ch && fg == rhs.fg && bg == rhs.bg;
+  }
+  [[deprecated]] bool operator!=(const TCOD_ConsoleTile& rhs) const noexcept { return !(*this == rhs); }
+  TCODLIB_END_IGNORE_DEPRECATIONS
+  /// @endcond
 #endif  // __cplusplus
   /***************************************************************************
       @brief The Unicode codepoint for this tile.
@@ -116,40 +124,42 @@ typedef struct TCOD_ConsoleTile {
  */
 struct TCOD_Console {
 #ifdef __cplusplus
+  /// @cond INTERNAL
+  TCODLIB_BEGIN_IGNORE_DEPRECATIONS
   /***************************************************************************
       @brief Return a pointer to the beginning of this consoles tile data.
    */
-  [[nodiscard]] auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
+  [[nodiscard]] [[deprecated]] auto begin() noexcept -> TCOD_ConsoleTile* { return tiles; }
   /***************************************************************************
       @brief Return a const pointer to the beginning of this consoles tile data.
    */
-  [[nodiscard]] auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
+  [[nodiscard]] [[deprecated]] auto begin() const noexcept -> const TCOD_ConsoleTile* { return tiles; }
   /***************************************************************************
       @brief Return a pointer to the end of this consoles tile data.
    */
-  [[nodiscard]] auto end() noexcept -> TCOD_ConsoleTile* { return tiles + elements; }
+  [[nodiscard]] [[deprecated]] auto end() noexcept -> TCOD_ConsoleTile* { return tiles + elements; }
   /***************************************************************************
       @brief Return a const pointer to the end of this consoles tile data.
    */
-  [[nodiscard]] auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + elements; }
+  [[nodiscard]] [[deprecated]] auto end() const noexcept -> const TCOD_ConsoleTile* { return tiles + elements; }
   /***************************************************************************
       @brief Clear a console by setting all tiles to the provided TCOD_ConsoleTile object.
 
       @param tile A TCOD_ConsoleTile reference which will be used to clear the console.
    */
-  void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
+  [[deprecated]] void clear(const TCOD_ConsoleTile& tile = {0x20, {255, 255, 255, 255}, {0, 0, 0, 255}}) noexcept {
     for (auto& it : *this) it = tile;
   }
   /***************************************************************************
       @brief Return a reference to the tile at `xy`.
    */
-  [[nodiscard]] auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& {
+  [[nodiscard]] [[deprecated]] auto operator[](const std::array<int, 2>& xy) noexcept -> TCOD_ConsoleTile& {
     return tiles[get_index(xy)];
   }
   /***************************************************************************
       @brief Return a constant reference to the tile at `xy`.
    */
-  [[nodiscard]] auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
+  [[nodiscard]] [[deprecated]] auto operator[](const std::array<int, 2>& xy) const noexcept -> const TCOD_ConsoleTile& {
     return tiles[get_index(xy)];
   }
   /***************************************************************************
@@ -157,13 +167,15 @@ struct TCOD_Console {
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  [[nodiscard]] auto at(const std::array<int, 2>& xy) -> TCOD_ConsoleTile& { return tiles[bounds_check(xy)]; }
+  [[nodiscard]] [[deprecated]] auto at(const std::array<int, 2>& xy) -> TCOD_ConsoleTile& {
+    return tiles[bounds_check(xy)];
+  }
   /***************************************************************************
       @brief Return a constant reference to the tile at `xy`.
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  [[nodiscard]] auto at(const std::array<int, 2>& xy) const -> const TCOD_ConsoleTile& {
+  [[nodiscard]] [[deprecated]] auto at(const std::array<int, 2>& xy) const -> const TCOD_ConsoleTile& {
     return tiles[bounds_check(xy)];
   }
   /***************************************************************************
@@ -171,25 +183,26 @@ struct TCOD_Console {
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  [[nodiscard]] auto at(int x, int y) -> TCOD_ConsoleTile& { return at({x, y}); }
+  [[nodiscard]] [[deprecated]] auto at(int x, int y) -> TCOD_ConsoleTile& { return at({x, y}); }
   /***************************************************************************
       @brief Return a constant reference to the tile at `x`,`y`.
 
       @throws std::out_of_range if the index is out-of-bounds
    */
-  [[nodiscard]] auto at(int x, int y) const -> const TCOD_ConsoleTile& { return at({x, y}); }
+  [[nodiscard]] [[deprecated]] auto at(int x, int y) const -> const TCOD_ConsoleTile& { return at({x, y}); }
   /***************************************************************************
       @brief Convert `xy` into a 1-dimensional index.  Out-of-bounds indexes are undefined.
 
       @details This index is normally used to index the tiles attribute.
    */
-  [[nodiscard]] int get_index(const std::array<int, 2>& xy) const noexcept { return w * xy[1] + xy[0]; }
+  [[nodiscard]] [[deprecated]] int get_index(const std::array<int, 2>& xy) const noexcept { return w * xy[1] + xy[0]; }
   /***************************************************************************
       @brief Return true if `xy` are within the bounds of this console.
    */
-  [[nodiscard]] bool in_bounds(const std::array<int, 2>& xy) const noexcept {
+  [[nodiscard]] [[deprecated]] bool in_bounds(const std::array<int, 2>& xy) const noexcept {
     return 0 <= xy[0] && xy[0] < w && 0 <= xy[1] && xy[1] < h;
   }
+  /// @endcond
 
  private:
   /***************************************************************************
@@ -205,6 +218,7 @@ struct TCOD_Console {
     }
     return get_index(xy);
   }
+  TCODLIB_END_IGNORE_DEPRECATIONS
 
  public:
 #endif  // __cplusplus
@@ -438,33 +452,8 @@ TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_char_foreground(const T
  *  \return The character code.
  */
 TCOD_PUBLIC TCOD_NODISCARD int TCOD_console_get_char(const TCOD_Console* con, int x, int y);
-/**
-    Fade the color of the display.
-
-    \param val Where at 255 colors are normal and at 0 colors are completely
-               faded.
-    \param fade_color Color to fade towards.
-    \rst
-    .. deprecated:: 1.19
-        This function will not work with libtcod contexts.
-    \endrst
- */
-TCOD_DEPRECATED("This function does not support contexts.")
-TCOD_PUBLIC
-void TCOD_console_set_fade(uint8_t val, TCOD_color_t fade_color);
-/**
- *  Return the fade value.
- *
- *  \return At 255 colors are normal and at 0 colors are completely faded.
- */
-TCOD_PUBLIC TCOD_NODISCARD uint8_t TCOD_console_get_fade(void);
-/**
- *  Return the fade color.
- *
- *  \return The current fading color.
- */
-TCOD_PUBLIC TCOD_NODISCARD TCOD_color_t TCOD_console_get_fading_color(void);
 void TCOD_console_resize_(TCOD_Console* console, int width, int height);
+/// @}
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

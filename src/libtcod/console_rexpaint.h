@@ -44,7 +44,8 @@
 #include "config.h"
 #include "console_types.h"
 #include "list.h"
-
+/// @addtogroup Console
+/// @{
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -52,12 +53,12 @@ extern "C" {
     \brief Return a new console loaded from a REXPaint ``.xp`` file.
 
     \param [in] filename A path to the REXPaint file.
-    \return A new TCOD_console_t object.  New consoles will need
+    \return A new TCOD_Console* object.  New consoles will need
     to be deleted with a call to TCOD_console_delete.
     Returns NULL on an error.
 
  */
-TCODLIB_API TCOD_console_t TCOD_console_from_xp(const char* filename);
+TCODLIB_API TCOD_Console* TCOD_console_from_xp(const char* filename);
 /**
     \brief Update a console from a REXPaint ``.xp`` file.
 
@@ -85,7 +86,7 @@ TCODLIB_API bool TCOD_console_save_xp(const TCOD_Console* con, const char* filen
     \brief Return a list of consoles from a REXPaint file.
 
     \param [in] filename A path to the REXPaint file.
-    \return Returns a TCOD_list_t of TCOD_console_t objects.  Or NULL on an
+    \return Returns a TCOD_list_t of TCOD_Console* objects.  Or NULL on an
     error.  You will need to delete this list and each console individually.
 
     This function can load a REXPaint file with variable layer shapes,
@@ -101,7 +102,7 @@ TCODLIB_API TCOD_list_t TCOD_console_list_from_xp(const char* filename);
 /**
     \brief Save a list of consoles to a REXPaint file.
 
-    \param [in] console_list A TCOD_list_t of TCOD_console_t objects.
+    \param [in] console_list A TCOD_list_t of TCOD_Console* objects.
     \param [in] filename Path to save to.
     \param [in] compress_level zlib compression level.
     \return true on success, false on a failure such as not being able to write
@@ -188,5 +189,6 @@ TCODLIB_API TCOD_Error TCOD_save_xp(int n, const TCOD_Console* const* consoles, 
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+/// @}
 #endif  // TCOD_NO_ZLIB
 #endif  // TCOD_CONSOLE_REXPAINT_H_

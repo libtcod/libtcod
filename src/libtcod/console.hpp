@@ -48,8 +48,9 @@
 #include "console_rexpaint.h"
 #include "console_types.h"
 #include "image.hpp"
-
 namespace tcod {
+/// @defgroup Console_CPP Consoles (C++)
+/// @{
 /***************************************************************************
     @brief Blit a region of tiles from one console to another.
 
@@ -80,7 +81,11 @@ inline void blit(
       foreground_alpha,
       background_alpha);
 }
+/// @}
 }  // namespace tcod
+
+/// @addtogroup Console_CPP
+/// @{
 // clang-format off
 
 class TCODImage;
@@ -1828,4 +1833,5 @@ class TCODLIB_API TCODConsole {
  private:
   tcod::ConsolePtr data{};
 };
+/// @}
 #endif  // TCOD_CONSOLE_HPP_

@@ -34,6 +34,7 @@
 #include <cstring>
 
 #include "console.hpp"
+#include "console_etc.h"
 #include "console_init.h"
 #include "console_printing.hpp"
 #include "error.hpp"

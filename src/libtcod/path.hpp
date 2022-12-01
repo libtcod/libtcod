@@ -31,7 +31,6 @@
  */
 /// @file path.hpp
 /// Libtcod A* and Dijkstra pathfinders.
-// clang-format off
 #pragma once
 #ifndef TCOD_PATH_HPP_
 #define TCOD_PATH_HPP_
@@ -41,12 +40,19 @@
 #include "fov.hpp"
 #include "path.h"
 
+/// @defgroup Pathfinding_CPP Pathfinding (C++)
+/// @{
+
+/***************************************************************************
+    @brief Callback class for defining pathfinding graph edges.
+ */
 class TCODLIB_API ITCODPathCallback {
-public :
-	virtual ~ITCODPathCallback() {}
-	virtual float getWalkCost( int xFrom, int yFrom, int xTo, int yTo, void *userData ) const = 0;
+ public:
+  virtual ~ITCODPathCallback() = default;
+  virtual float getWalkCost(int xFrom, int yFrom, int xTo, int yTo, void* userData) const = 0;
 };
 
+// clang-format off
 /**
  @PageName path
  @PageTitle Path finding
@@ -584,5 +590,5 @@ class TCODLIB_API TCODDijkstra {
             const ITCODPathCallback *listener{};
         } cppData;
 };
-
-#endif // TCOD_PATH_HPP_
+/// @}
+#endif  // TCOD_PATH_HPP_

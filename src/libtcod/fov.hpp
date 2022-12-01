@@ -41,6 +41,10 @@
 #include "fov.h"
 
 class TCODPath;
+
+/// @defgroup FOV_CPP Field-of-view (C++)
+/// Field-of-view functions for C++.
+/// @{
 /**
  @PageName fov
  @PageCategory Roguelike toolkits
@@ -269,5 +273,12 @@ class TCODLIB_API TCODMap {
 //	protected :
 		TCOD_map_t data{};
 };
-
-#endif // TCOD_FOV_HPP_
+/// @}
+// clang-format on
+namespace tcod {
+struct MapDeleter_ {
+  void operator()(TCOD_Map* map) const { TCOD_map_delete(map); }
+};
+typedef std::unique_ptr<struct TCOD_Map, MapDeleter_> MapPtr_;
+}  // namespace tcod
+#endif  // TCOD_FOV_HPP_

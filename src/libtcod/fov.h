@@ -46,6 +46,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/// @defgroup FOV Field-of-view (C)
+/// Field-of-view functions for C.
+/// @{
 /**
     Return a new TCOD_Map with `width` and `height`.
  */
@@ -120,13 +123,8 @@ TCOD_PUBLIC int TCOD_map_get_height(const TCOD_Map* map);
     Return the total number of cells in `map`.
  */
 TCOD_PUBLIC int TCOD_map_get_nb_cells(const TCOD_Map* map);
+/// @}
 #ifdef __cplusplus
 }  // extern "C"
-namespace tcod {
-struct MapDeleter_ {
-  void operator()(TCOD_Map* map) const { TCOD_map_delete(map); }
-};
-typedef std::unique_ptr<struct TCOD_Map, MapDeleter_> MapPtr_;
-}  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_FOV_H_

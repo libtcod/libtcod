@@ -35,6 +35,8 @@
 #ifndef TCOD_FOV_TYPES_H_
 #define TCOD_FOV_TYPES_H_
 #include "portability.h"
+/// @addtogroup FOV
+/// @{
 /**
  *  Private map cell struct.
  */
@@ -109,4 +111,5 @@ typedef enum {
   NB_FOV_ALGORITHMS
 } TCOD_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
+/// @}
 #endif /* TCOD_FOV_TYPES_H_ */

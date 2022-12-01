@@ -42,13 +42,15 @@
 
 #include "bresenham.h"
 
-// clang-format off
-class TCODLIB_API TCODLineListener {
-public :
-	virtual bool putPoint(int x,int y) = 0;
-	virtual ~TCODLineListener() {}
-};
+/// @addtogroup Bresenham
+/// @{
 
+class TCODLIB_API TCODLineListener {
+ public:
+  virtual bool putPoint(int x, int y) = 0;
+  virtual ~TCODLineListener() {}
+};
+// clang-format off
 class TCODLIB_API TCODLine {
 public :
 	/**
@@ -151,7 +153,10 @@ libtcod.line_line(5,8,13,4,my_listener)
 	static bool line(int xFrom, int yFrom, int xTo, int yTo, TCODLineListener *listener);
 };
 // clang-format on
+/// @}
 namespace tcod {
+/// @addtogroup Bresenham
+/// @{
 /**
     Encapsulates a Bresenham line drawing algorithm.
 
@@ -385,5 +390,6 @@ class BresenhamLine {
   Point2 cursor_;  // Normalized Bresenham low-slope position.  First axis acts as the current index.
   int y_error_;  // Fractional difference between Y indexes.  Is always `-delta[0] < err <= 0`.
 };
+/// @}
 }  // namespace tcod
 #endif  // TCOD_BRESENHAM_HPP_

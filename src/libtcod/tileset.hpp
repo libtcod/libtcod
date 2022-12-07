@@ -42,6 +42,9 @@
 #include "tileset.h"
 
 namespace tcod {
+/// @defgroup Tileset_CPP Tilesets (C++)
+/// Tileset loading and handling functions.
+/// @{
 /**
     A character mapping of a Code Page 437 tileset to Unicode.
     \rst
@@ -193,5 +196,6 @@ TCOD_NODISCARD inline auto load_tilesheet(
   return Tileset{std::move(tileset)};
 }
 #endif  // TCOD_NO_PNG
+/// @}
 }  // namespace tcod
 #endif  // LIBTCOD_TILESET_HPP_

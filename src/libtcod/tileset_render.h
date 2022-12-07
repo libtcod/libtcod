@@ -39,6 +39,9 @@
 #include "tileset.h"
 
 struct SDL_Surface;
+
+/// @addtogroup Tileset
+/// @{
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -73,4 +76,5 @@ TCOD_PUBLIC TCOD_Error TCOD_tileset_render_to_surface(
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+/// @}
 #endif  // LIBTCOD_TILESET_RENDER_H_

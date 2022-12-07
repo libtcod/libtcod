@@ -40,6 +40,10 @@
 #include "config.h"
 #include "error.h"
 
+/// @defgroup Tileset Tilesets (C)
+/// TCOD_Tileset loading and handling functions.
+/// @{
+
 struct TCOD_Tileset;
 struct TCOD_TilesetObserver {
   struct TCOD_Tileset* tileset;
@@ -323,4 +327,5 @@ TCOD_Error TCOD_tileset_reserve(TCOD_Tileset* tileset, int desired);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
+/// @}
 #endif  // LIBTCOD_TILESET_H_

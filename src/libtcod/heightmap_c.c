@@ -147,8 +147,8 @@ void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   }
   const float h_radius2 = h_radius * h_radius;
   const float coef = h_height / h_radius2;
-  const int minx = (int)MAX(floorf(hx - h_radius + 1), 0);
-  const int miny = (int)MAX(floorf(hy - h_radius + 1), 0);
+  const int minx = MAX((int)(hx - h_radius + 1), 0);
+  const int miny = MAX((int)(hy - h_radius + 1), 0);
   const int maxx = (int)MIN(ceilf(hx + h_radius), hm->w);
   const int maxy = (int)MIN(ceilf(hy + h_radius), hm->h);
   for (int y = miny; y < maxy; y++) {

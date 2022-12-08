@@ -41,7 +41,8 @@
 #include <utility>
 
 #include "list.h"
-
+/// @addtogroup List
+/// @{
 /**
  @PageName list
  @PageCategory Base toolkits
@@ -637,5 +638,5 @@ protected :
 		allocSize=newSize;
 	}
 };
-
+/// @}
 #endif // TCOD_LIST_HPP_

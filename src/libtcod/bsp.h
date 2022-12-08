@@ -39,6 +39,8 @@
 #include "portability.h"
 #include "tree.h"
 
+/// @defgroup BSP Binary space partitioning
+/// @{
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -76,4 +78,5 @@ TCODLIB_API void TCOD_bsp_remove_sons(TCOD_bsp_t* node);
 #ifdef __cplusplus
 }
 #endif
+/// @}
 #endif  // TCOD_BSP_H_

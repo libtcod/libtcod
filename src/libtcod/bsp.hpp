@@ -43,6 +43,9 @@
 #include "mersenne.hpp"
 #include "tree.hpp"
 
+/// @addtogroup BSP
+/// @{
+
 class TCODBsp;
 
 class TCODLIB_API ITCODBspCallback {
@@ -529,5 +532,5 @@ You can use it if you changed the nodes size and position while using the BSP tr
     }
   };
 };
-
+/// @}
 #endif  // TCOD_BSP_HPP_

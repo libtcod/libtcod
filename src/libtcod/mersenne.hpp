@@ -38,6 +38,8 @@
 
 #include "mersenne.h"
 
+/// @addtogroup Random
+/// @{
 // clang-format off
 /**
  @PageName random
@@ -437,5 +439,5 @@ In these cases, the selected mean will appear with the lowest frequency.
 		friend class TCODNameGenerator;	// Used for SWIG interface, does NOT need TCODLIB_API
 		TCOD_Random* data{};
 };
-
+/// @}
 #endif // TCOD_RANDOM_HPP_

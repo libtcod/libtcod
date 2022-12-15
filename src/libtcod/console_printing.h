@@ -48,11 +48,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/// @defgroup PrintEASCII Printing (EASCII)
-/// Deprecated printing functions which only support EASCII strings.
+/// @defgroup PrintOld Printing (Deprecated)
+/// Deprecated printing functions without full support for UTF-8 or Unicode.
 ///
-/// These don't support UTF-8, so they can't be used to print Unicode characters.
+/// None of these functions support the full range of Unicode characters.
 /// @ref PrintUTF8 should be used instead.
+///
+/// Functions taking basic char strings only support EASCII codepoints.
+/// Providing UTF-8 strings to these functions will result in garbage.
+///
+/// Despite the ``_utf`` postfix the wchar_t functions do not handle variable length characters as you'd expect from
+/// UTF-16. They only support full Unicode when the platform has a 4 byte wchar_t.  A 2 byte wchar_t acts like UCS-2.
 /// @{
 /***************************************************************************
     @brief Print an EASCII string on a console, using default colors and alignment.
@@ -162,15 +168,7 @@ TCODLIB_API void TCOD_console_print_frame(
  */
 TCOD_DEPRECATED("Use TCOD_console_get_height_rect_fmt instead.")
 TCODLIB_API int TCOD_console_get_height_rect(TCOD_Console* con, int x, int y, int w, int h, const char* fmt, ...);
-/// @}
 #ifndef NO_UNICODE
-/// @defgroup PrintWide Printing (UCS wchar_t)
-/// Deprecated printing functions which use UCS-2 or UTF-32 wchar_t characters.
-///
-/// Despite the ``_utf`` postfix these functions do not handle variable length characters as you'd expect from UTF-16.
-/// They only support full Unicode when the platform has a 4 byte wchar_t.
-/// @ref PrintUTF8 should be used instead.
-/// @{
 /***************************************************************************
     \rst
     .. deprecated:: 1.8

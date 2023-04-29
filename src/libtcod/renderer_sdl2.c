@@ -614,6 +614,9 @@ static void sdl2_destructor(struct TCOD_Context* __restrict self) {
   if (context->cache_texture) {
     SDL_DestroyTexture(context->cache_texture);
   }
+  if (context->atlas) {
+    TCOD_sdl2_atlas_delete(context->atlas);
+  }
   if (context->renderer) {
     SDL_DestroyRenderer(context->renderer);
   }

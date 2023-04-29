@@ -50,7 +50,7 @@ struct SDL_Texture;
     \endrst
  */
 typedef struct TCOD_TilesetAtlasSDL2 {
-  /** The renderer used to create this atlas. */
+  /** The renderer used to create this atlas. Non-owning. */
   struct SDL_Renderer* renderer;
   /** The atlas texture. */
   struct SDL_Texture* texture;
@@ -89,7 +89,7 @@ typedef struct TCOD_RendererSDL2CursorTransform {
 struct TCOD_RendererSDL2 {
   struct SDL_Window* window;  // Owning power to an SDL2 window.
   struct SDL_Renderer* renderer;  // Owning pointer to an SDL2 renderer.
-  struct TCOD_TilesetAtlasSDL2* __restrict atlas;
+  struct TCOD_TilesetAtlasSDL2* __restrict atlas;  // Owning atlas pointer.
   struct TCOD_Console* __restrict cache_console;  // Tracks the data from the last console presented.
   struct SDL_Texture* __restrict cache_texture;  // Cached console rendering output.
   uint32_t sdl_subsystems;  // Which subsystems where initialzed by this context.

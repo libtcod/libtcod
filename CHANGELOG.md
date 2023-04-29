@@ -21,7 +21,8 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ### Fixed
 - Constructing `TCODConsole` from `tcod::ConsolePtr` no longer causes a bad free.
-- Fixed memory leak when loading images with `TCODZip`.
+- Memory leak when loading images with `TCODZip`.
+- Memory leak with tileset atlases belonging to contexts.
 
 ## [1.23.1] - 2022-11-09
 ### Changed

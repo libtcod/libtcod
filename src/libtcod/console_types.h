@@ -441,7 +441,10 @@ typedef enum TCOD_chars_t {
 #pragma deprecated(TCOD_CHAR_POW2)
 #pragma deprecated(TCOD_CHAR_BULLET_SQUARE)
 #endif  // _MSC_VER
-
+/***************************************************************************
+    @brief Bitwise flags used for functions such as TCOD_console_check_for_keypress()
+    This was replaced by the equivalent values of TCOD_event_t.
+ */
 typedef enum {
   TCOD_KEY_PRESSED = 1,
   TCOD_KEY_RELEASED = 2,

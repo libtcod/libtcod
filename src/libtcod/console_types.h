@@ -36,7 +36,91 @@
 #include "config.h"
 #include "console.h"
 
-typedef enum {
+/***************************************************************************
+    @brief Libtcod specific codes representing keys on the keyboard.
+
+    @details
+    When no key was pressed (see checkForEvent) : TCOD_NONE (NoKey)
+
+    Special keys:
+    - TCODK_ESCAPE (Escape)
+    - TCODK_BACKSPACE (Backspace)
+    - TCODK_TAB (Tab)
+    - TCODK_ENTER (Enter)
+    - TCODK_SHIFT (Shift)
+    - TCODK_CONTROL (Control)
+    - TCODK_ALT (Alt)
+    - TCODK_PAUSE (Pause)
+    - TCODK_CAPSLOCK (CapsLock)
+    - TCODK_PAGEUP (PageUp)
+    - TCODK_PAGEDOWN (PageDown)
+    - TCODK_END (End)
+    - TCODK_HOME (Home)
+    - TCODK_UP (Up)
+    - TCODK_LEFT (Left)
+    - TCODK_RIGHT (Right)
+    - TCODK_DOWN (Down)
+    - TCODK_PRINTSCREEN (Printscreen)
+    - TCODK_INSERT (Insert)
+    - TCODK_DELETE (Delete)
+    - TCODK_LWIN (Lwin)
+    - TCODK_RWIN (Rwin)
+    - TCODK_APPS (Apps)
+    - TCODK_KPADD (KeypadAdd)
+    - TCODK_KPSUB (KeypadSubtract)
+    - TCODK_KPDIV (KeypadDivide)
+    - TCODK_KPMUL (KeypadMultiply)
+    - TCODK_KPDEC (KeypadDecimal)
+    - TCODK_KPENTER (KeypadEnter)
+    - TCODK_F1 (F1)
+    - TCODK_F2 (F2)
+    - TCODK_F3 (F3)
+    - TCODK_F4 (F4)
+    - TCODK_F5 (F5)
+    - TCODK_F6 (F6)
+    - TCODK_F7 (F7)
+    - TCODK_F8 (F8)
+    - TCODK_F9 (F9)
+    - TCODK_F10 (F10)
+    - TCODK_F11 (F11)
+    - TCODK_F12 (F12)
+    - TCODK_NUMLOCK (Numlock)
+    - TCODK_SCROLLLOCK (Scrolllock)
+    - TCODK_SPACE (Space)
+
+    Numeric keys:
+    - TCODK_0 (Zero)
+    - TCODK_1 (One)
+    - TCODK_2 (Two)
+    - TCODK_3 (Three)
+    - TCODK_4 (Four)
+    - TCODK_5 (Five)
+    - TCODK_6 (Six)
+    - TCODK_7 (Seven)
+    - TCODK_8 (Eight)
+    - TCODK_9 (Nine)
+    - TCODK_KP0 (KeypadZero)
+    - TCODK_KP1 (KeypadOne)
+    - TCODK_KP2 (KeypadTwo)
+    - TCODK_KP3 (KeypadThree)
+    - TCODK_KP4 (KeypadFour)
+    - TCODK_KP5 (KeypadFive)
+    - TCODK_KP6 (KeypadSix)
+    - TCODK_KP7 (KeypadSeven)
+    - TCODK_KP8 (KeypadEight)
+    - TCODK_KP9 (KeypadNine)
+
+    Any other (printable) key:
+    - TCODK_CHAR (Char)
+    - TCODK_TEXT (SDL_TEXTINPUT)
+
+    Codes starting with TCODK_KP represents keys on the numeric keypad (if available).
+
+    @deprecated
+    Using libtcod for events means only a limited set of keys are available.
+    Use SDL for events to access a complete range of keys.
+ */
+typedef enum TCOD_keycode_t {
   TCODK_NONE,
   TCODK_ESCAPE,
   TCODK_BACKSPACE,
@@ -108,21 +192,80 @@ typedef enum {
 
 #define TCOD_KEY_TEXT_SIZE 32
 
-/* key data : special code or character or text */
-typedef struct {
-  TCOD_keycode_t vk; /*  key code */
-  char c; /* character if vk == TCODK_CHAR else 0 */
-  char text[TCOD_KEY_TEXT_SIZE]; /* text if vk == TCODK_TEXT else text[0] == '\0' */
-  bool pressed; /* does this correspond to a key press or key release event ? */
+/***************************************************************************
+    @brief Libtcod key event data, as a keycode or text character.
+
+    @deprecated
+    The libtcod keyboard state has several known issues such as missing or broken functionality.
+    In its current state it exists only for backwards compatibility.
+    These issues should be resolved by using SDL directly for keyboard events.
+ */
+typedef struct TCOD_key_t {
+  /***************************************************************************
+      @brief The TCOD_keycode_t enum of the current key.
+   */
+  TCOD_keycode_t vk;
+  /***************************************************************************
+      @brief The printable character of a keycode if `vk == TCODK_CHAR`, else `0`.
+
+      @details
+      Libtcod 1.6 switched form SDL1 to SDL2 which changed the values returned by this attribute.
+
+      Before 1.6 this value could be affected by modifiers such as the shift key.
+
+      After 1.6 the SDL key symbol is always returned, which will be the same no matter which modifiers are held.
+
+      @deprecated
+      The nature of this attribute makes it unsuitable for both printable keys and standard key inputs.
+      Use SDL events instead to differentiate between keycodes, symbols, printable characters.
+   */
+  char c;
+  /***************************************************************************
+      @brief The UTF-8 text of a key when `vk == TCODK_TEXT`.  Otherwise this will always be `'\0'`.
+
+      @details TCODK_TEXT is always derived from an SDL_TEXTINPUT event.
+   */
+  char text[TCOD_KEY_TEXT_SIZE];
+  /***************************************************************************
+      @brief True if is this key was pressed. False if it was released.
+   */
+  bool pressed;
+  /***************************************************************************
+      @brief True if left alt was held during this event.
+   */
   bool lalt;
+  /***************************************************************************
+      @brief True if left control was held during this event.
+   */
   bool lctrl;
+  /***************************************************************************
+      @brief True if the left meta key was held during this event.
+   */
   bool lmeta;
+  /***************************************************************************
+      @brief True if right alt was held during this event.
+   */
   bool ralt;
+  /***************************************************************************
+      @brief True if right control was held during this event.
+   */
   bool rctrl;
+  /***************************************************************************
+      @brief True if the right meta key was held during this event.
+   */
   bool rmeta;
+  /***************************************************************************
+      @brief True if shift was held during this event.
+   */
   bool shift;
 } TCOD_key_t;
 
+/***************************************************************************
+    @brief Non-standard special character codes.
+
+    @deprecated
+    Modern libtcod programs should always uses the Unicode codepoint of special characters and never this enum.
+ */
 typedef enum TCOD_chars_t {
   /* single walls */
   TCOD_CHAR_HLINE TCOD_DEPRECATED_ENUM = 196,

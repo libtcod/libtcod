@@ -29,23 +29,70 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _TCOD_MOUSE_TYPES_H
-#define _TCOD_MOUSE_TYPES_H
-
+#ifndef TCOD_MOUSE_TYPES_H_
+#define TCOD_MOUSE_TYPES_H_
+/***************************************************************************
+    @file mouse_types.h
+    @brief Mouse state provided by the libtcod event system.
+ */
 #include "portability.h"
-/* mouse data */
-typedef struct {
-  int x, y; /* absolute position */
-  int dx, dy; /* movement since last update in pixels */
-  int cx, cy; /* cell coordinates in the root console */
-  int dcx, dcy; /* movement since last update in console cells */
-  bool lbutton; /* left button status */
-  bool rbutton; /* right button status */
-  bool mbutton; /* middle button status */
-  bool lbutton_pressed; /* left button pressed event */
-  bool rbutton_pressed; /* right button pressed event */
-  bool mbutton_pressed; /* middle button pressed event */
-  bool wheel_up; /* wheel up event */
-  bool wheel_down; /* wheel down event */
+/***************************************************************************
+    @brief Mouse state provided by the libtcod event system.
+    This may be a moved, pressed, or released event.
+
+    @deprecated
+    The libtcod mouse state has several known issues such as missing or broken functionality.
+    In its current state it exists only for backwards compatibility.
+    These issues should be resolved by using SDL directly for mouse and keyboard events.
+ */
+typedef struct TCOD_mouse_t {
+  /***************************************************************************
+      @brief The mouse absolute pixel position, according to SDL.
+   */
+  int x, y;
+  /***************************************************************************
+      @brief The mouse relative pixel motion, according to SDL.
+   */
+  int dx, dy;
+  /***************************************************************************
+      @brief The mouse cell coordinates for the root console or the last presented console.
+   */
+  int cx, cy;
+  /***************************************************************************
+      @brief The mouse cell movement for the root console or the last presented console.
+   */
+  int dcx, dcy;
+  /***************************************************************************
+      @brief True when the Left mouse button is held.
+   */
+  bool lbutton;
+  /***************************************************************************
+      @brief True when the right mouse button is held.
+   */
+  bool rbutton;
+  /***************************************************************************
+      @brief True when the middle mouse button is held.
+   */
+  bool mbutton;
+  /***************************************************************************
+      @brief True when the left mouse button has just been released.
+   */
+  bool lbutton_pressed;
+  /***************************************************************************
+      @brief True when the right mouse button has just been released.
+   */
+  bool rbutton_pressed;
+  /***************************************************************************
+      @brief True when the middle mouse button has just been released.
+   */
+  bool mbutton_pressed;
+  /***************************************************************************
+      @brief True when the mouse wheel was rolled up. Multiple scroll events per frame are lost.
+   */
+  bool wheel_up;
+  /***************************************************************************
+      @brief True when the mouse wheel was rolled down. Multiple scroll events per frame are lost.
+   */
+  bool wheel_down;
 } TCOD_mouse_t;
-#endif /* _TCOD_MOUSE_TYPES_H */
+#endif  // TCOD_MOUSE_TYPES_H_

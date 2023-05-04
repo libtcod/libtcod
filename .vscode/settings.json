@@ -91,7 +91,12 @@
         "string_view": "cpp",
         "filesystem": "cpp",
         "shared_mutex": "cpp",
-        "codecvt": "cpp"
+        "codecvt": "cpp",
+        "cassert": "cpp",
+        "cerrno": "cpp",
+        "cfloat": "cpp",
+        "ciso646": "cpp",
+        "climits": "cpp"
     },
     "files.trimFinalNewlines": true,
     "C_Cpp.default.cppStandard": "c++17",

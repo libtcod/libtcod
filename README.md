@@ -4,7 +4,6 @@ libtcod is a free, fast, portable and uncomplicated API for roguelike developers
 
 Status:
 [![Build status](https://ci.appveyor.com/api/projects/status/pemepxo2221f8heo/branch/master?svg=true)](https://ci.appveyor.com/project/HexDecimal/libtcod-6e1jk/branch/master)
-[![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/libtcod/libtcod/branch/main/graph/badge.svg?token=pmHy3jXemj)](https://codecov.io/gh/libtcod/libtcod)
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/libtcod/libtcod/latest)](https://github.com/libtcod/libtcod/blob/main/CHANGELOG.md)

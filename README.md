@@ -7,6 +7,7 @@ Status:
 [![Build Status](https://travis-ci.org/libtcod/libtcod.svg?branch=master)](https://travis-ci.org/libtcod/libtcod)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/libtcod/libtcod/branch/main/graph/badge.svg?token=pmHy3jXemj)](https://codecov.io/gh/libtcod/libtcod)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/libtcod/libtcod/latest)](https://github.com/libtcod/libtcod/blob/main/CHANGELOG.md)
 
 # How do I get set up?
 

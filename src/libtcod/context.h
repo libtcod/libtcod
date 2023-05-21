@@ -46,6 +46,7 @@
 #include "console.h"
 #include "context_viewport.h"
 #include "error.h"
+#include "mouse_types.h"
 #include "tileset.h"
 
 struct SDL_Window;
@@ -312,6 +313,17 @@ TCOD_PUBLIC TCOD_Error TCOD_context_screen_capture(
 TCOD_NODISCARD
 TCOD_PUBLIC TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
     struct TCOD_Context* __restrict context, int* __restrict width, int* __restrict height);
+/***************************************************************************
+    @brief Manually set the pixel-to-tile mouse position transformation.
+
+    @param context A non-NULL TCOD_Context object.
+    @param transform The transform to assign to the context.
+    @return A negative error value is returned on errors, otherwise returns TCOD_E_OK.
+
+    @versionadded Unreleased
+ */
+TCOD_PUBLIC TCOD_Error TCOD_context_set_mouse_transform(
+    struct TCOD_Context* __restrict context, const TCOD_MouseTransform* __restrict transform);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
@@ -574,6 +586,14 @@ struct TCOD_Context {
       TCOD_ColorRGBA* __restrict out_pixels,
       int* __restrict width,
       int* __restrict height);
+  /***************************************************************************
+      @brief Manually set the pixel-to-tile mouse position transformation.
+
+      @param self A pointer to the current context.
+      @param transform The transform to assign to the context.
+   */
+  TCOD_Error (*c_set_mouse_transform_)(
+      struct TCOD_Context* __restrict self, const TCOD_MouseTransform* __restrict transform);
 };
 #ifdef __cplusplus
 namespace tcod {

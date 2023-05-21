@@ -38,6 +38,7 @@
 #include "console.h"
 #include "context.h"
 #include "error.h"
+#include "mouse.h"
 #include "tileset.h"
 
 struct SDL_Window;
@@ -61,27 +62,6 @@ typedef struct TCOD_TilesetAtlasSDL2 {
   /** Internal use only. */
   int texture_columns;
 } TCOD_TilesetAtlasSDL2;
-/***************************************************************************
-    @brief Info needed to convert between mouse pixel and tile coordinates.
-    Internal use only.
-
-    @code{.cpp}
-    double pixel_x, pixel_y, tile_x, tile_y;
-    TCOD_RendererSDL2CursorTransform transform;
-    // Convert pixel coordinates to tile coordinates.
-    tile_x = (pixel_x - transform.offset_x) * transform.scale_x;
-    tile_y = (pixel_y - transform.offset_y) * transform.scale_y;
-    // Convert tile coordinates to pixel coordinates.
-    pixel_x = tile_x / transform.scale_x + transform.offset_x;
-    pixel_y = tile_y / transform.scale_y + transform.offset_y;
-    @endcode
- */
-typedef struct TCOD_RendererSDL2CursorTransform {
-  double offset_x;
-  double offset_y;
-  double scale_x;
-  double scale_y;
-} TCOD_RendererSDL2CursorTransform;
 /**
     The renderer data for an SDL2 rendering context.
     Internal use only.
@@ -94,7 +74,7 @@ struct TCOD_RendererSDL2 {
   struct SDL_Texture* __restrict cache_texture;  // Cached console rendering output.
   uint32_t sdl_subsystems;  // Which subsystems where initialzed by this context.
   // Mouse cursor transform values of the last viewport used.
-  TCOD_RendererSDL2CursorTransform cursor_transform;
+  TCOD_MouseTransform cursor_transform;
 };
 #ifdef __cplusplus
 extern "C" {

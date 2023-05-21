@@ -671,17 +671,25 @@ TCOD_NODISCARD static SDL_Rect get_destination_rect_for_console(
 /***************************************************************************
     @brief Return info needed to convert the mouse between pixel and console coordinates.
  */
-TCOD_NODISCARD static TCOD_RendererSDL2CursorTransform sdl2_cursor_transform_for_console_viewport(
+TCOD_NODISCARD static TCOD_MouseTransform sdl2_cursor_transform_for_console_viewport(
     const struct TCOD_TilesetAtlasSDL2* atlas,
     const struct TCOD_Console* console,
     const struct TCOD_ViewportOptions* viewport) {
   SDL_Rect dest = get_destination_rect_for_console(atlas, console, viewport);
-  return (TCOD_RendererSDL2CursorTransform){
+  return (TCOD_MouseTransform){
       dest.x,
       dest.y,
       (double)console->w / (double)dest.w,
       (double)console->h / (double)dest.h,
   };
+} /***************************************************************************
+     @brief Manually set the mouse transform.
+  */
+TCOD_NODISCARD static TCOD_Error sdl2_cursor_set_transform(
+    struct TCOD_Context* __restrict self, const TCOD_MouseTransform* __restrict transform) {
+  struct TCOD_RendererSDL2* context = self->contextdata_;
+  context->cursor_transform = *transform;
+  return TCOD_E_OK;
 }
 /**
  *  Render to the SDL2 renderer without presenting the screen.
@@ -927,6 +935,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
   context->c_screen_capture_ = sdl2_screen_capture;
   context->c_set_tileset_ = sdl2_set_tileset;
   context->c_recommended_console_size_ = sdl2_recommended_console_size;
+  context->c_set_mouse_transform_ = sdl2_cursor_set_transform;
 
   SDL_AddEventWatch(sdl2_handle_event, sdl2_data);
   sdl2_data->window = SDL_CreateWindow(title, x, y, pixel_width, pixel_height, window_flags);

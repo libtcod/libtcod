@@ -37,10 +37,12 @@
 
 #include "config.h"
 #include "console.h"
+#include "console_types.h"
 #include "context.h"
 #include "context_init.h"
 #include "context_viewport.h"
 #include "error.hpp"
+#include "mouse_types.h"
 #include "tileset.hpp"
 
 namespace tcod {
@@ -275,6 +277,17 @@ class Context {
   auto change_tileset(tcod::Tileset& new_tileset) -> void {
     check_throw_error(TCOD_context_change_tileset(context_.get(), new_tileset.get()));
   }
+  /***************************************************************************
+      @brief Manually set the pixel-to-tile mouse position transformation.
+
+      @param transform The transform to assign to the context.
+
+      @versionadded{Unreleased}
+   */
+  auto set_mouse_transform(const TCOD_MouseTransform& transform) -> void {
+    check_throw_error(TCOD_context_set_mouse_transform(context_.get(), &transform));
+  }
+
   /***************************************************************************
       @brief Access the context pointer.  Modifying this pointer may make the class invalid.
    */

@@ -95,4 +95,27 @@ typedef struct TCOD_mouse_t {
    */
   bool wheel_down;
 } TCOD_mouse_t;
+/***************************************************************************
+    @brief Info needed to convert between mouse pixel and tile coordinates.
+    Internal use only.
+
+    @code{.cpp}
+    double pixel_x, pixel_y, tile_x, tile_y;
+    TCOD_MouseTransform transform;
+    // Convert pixel coordinates to tile coordinates.
+    tile_x = (pixel_x - transform.offset_x) * transform.scale_x;
+    tile_y = (pixel_y - transform.offset_y) * transform.scale_y;
+    // Convert tile coordinates to pixel coordinates.
+    pixel_x = tile_x / transform.scale_x + transform.offset_x;
+    pixel_y = tile_y / transform.scale_y + transform.offset_y;
+    @endcode
+
+    @versionadded{Unreleased}
+ */
+typedef struct TCOD_MouseTransform {
+  double offset_x;
+  double offset_y;
+  double scale_x;
+  double scale_y;
+} TCOD_MouseTransform;
 #endif  // TCOD_MOUSE_TYPES_H_

@@ -234,3 +234,19 @@ TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
     return NULL;
   }
 }
+TCOD_Error TCOD_context_set_mouse_transform(
+    struct TCOD_Context* __restrict context, const TCOD_MouseTransform* __restrict transform) {
+  if (!context) {
+    TCOD_set_errorv("Context must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  if (!context->c_set_mouse_transform_) {
+    TCOD_set_errorv("Context is missing configuration..");
+    return TCOD_E_ERROR;
+  }
+  if (!context) {
+    TCOD_set_errorv("transform must not be NULL.");
+    return TCOD_E_INVALID_ARGUMENT;
+  }
+  return context->c_set_mouse_transform_(context, transform);
+}

@@ -41,6 +41,7 @@ void test_renderer_new_api(TCOD_renderer_t renderer) {
   auto context = tcod::Context(params);
   context.present(console);
 
+  context.set_mouse_transform(TCOD_MouseTransform{0, 0, 1, 1});
 #if 0
   // Check for division by zero errors:
   TCOD_Tileset* tileset = new_test_tileset(0, 0);

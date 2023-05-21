@@ -55,41 +55,75 @@ public :
  @PageDesc This toolkit allows one to create and manipulate 2D Binary Space Partition trees. They can be used to split a rectangular region into non overlapping sub-regions.
  */
 
+// clang-format on
 class TCODLIB_API TCODBsp : public TCODTree {
-public :
-	int x,y,w,h; //
-	int position; // position of splitting
-	bool horizontal; // horizontal splitting ?
-	uint8_t level; // level in the tree
+ public:
+  int x{}, y{}, w{}, h{};  //
+  int position{};  // position of splitting
+  bool horizontal{};  // horizontal splitting ?
+  uint8_t level{};  // level in the tree
 
-	/**
-	@PageName bsp_init
-	@PageFather bsp
-	@PageTitle Creating a BSP tree
-	@FuncTitle Creating the root node
-	@FuncDesc First, you have to create the root node of the tree. This node encompasses the whole rectangular region.
-	@Cpp TCODBsp::TCODBsp(int x,int y,int w, int h)
-	@C TCOD_bsp_t *TCOD_bsp_new_with_size(int x,int y,int w, int h)
-	@Py bsp_new_with_size(x,y,w, h)
-	@C# TCODBsp::TCODBsp(int x, int y, int w, int h)
-	@Param x,y,w,h	Top left corner position and size of the rectangular region covered by the BSP tree.
-	@CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
-	@CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-	@PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-	*/
-	TCODBsp() : level(0) {}
-	TCODBsp(int x,int y,int w, int h) : x(x),y(y),w(w),h(h),level(0) {}
+  /**
+  @PageName bsp_init
+  @PageFather bsp
+  @PageTitle Creating a BSP tree
+  @FuncTitle Creating the root node
+  @FuncDesc First, you have to create the root node of the tree. This node encompasses the whole rectangular region.
+  @Cpp TCODBsp::TCODBsp(int x,int y,int w, int h)
+  @C TCOD_bsp_t *TCOD_bsp_new_with_size(int x,int y,int w, int h)
+  @Py bsp_new_with_size(x,y,w, h)
+  @C# TCODBsp::TCODBsp(int x, int y, int w, int h)
+  @Param x,y,w,h	Top left corner position and size of the rectangular region covered by the BSP tree.
+  @CppEx TCODBsp *myBSP = new TCODBsp(0,0,50,50);
+  @CEx TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+  @PyEx my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
+  */
+  TCODBsp() : level{0} {}
+  TCODBsp(int x, int y, int w, int h) : x{x}, y{y}, w{w}, h{h}, level{0} {}
 
   TCODBsp(const TCODBsp&) = delete;
   TCODBsp& operator=(const TCODBsp&) = delete;
   TCODBsp(TCODBsp&& rhs) noexcept { (*this) = std::move(rhs); };
   TCODBsp& operator=(TCODBsp&& rhs) noexcept {
-    std::swap(next, rhs.next);
-    std::swap(father, rhs.father);
-    std::swap(sons, rhs.sons);
+    swap(*this, rhs);
     return *this;
   };
 
+  friend void swap(TCODBsp& lhs, TCODBsp& rhs) noexcept {
+    std::swap(lhs.x, rhs.x);
+    std::swap(lhs.y, rhs.y);
+    std::swap(lhs.w, rhs.w);
+    std::swap(lhs.h, rhs.h);
+    std::swap(lhs.position, rhs.position);
+    std::swap(lhs.horizontal, rhs.horizontal);
+    std::swap(lhs.level, rhs.level);
+    std::swap(lhs.next, rhs.next);
+    std::swap(lhs.father, rhs.father);
+    std::swap(lhs.sons, rhs.sons);
+  };
+
+  /***************************************************************************
+      @brief Delete a node and all of its children.
+
+      @details
+      @code{.cpp}
+        TCODBsp *myBSP = new TCODBsp(0,0,50,50);
+        // create a tree
+        myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f);
+        // use the tree ...
+        // delete the tree
+        delete myBSP;
+      @endcode
+      @code{.c}
+        TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
+        TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
+        // use the tree ...
+        TCOD_bsp_delete(my_bsp);
+      @endcode
+  */
+  virtual ~TCODBsp();
+
+  // clang-format off
 	/**
 	@PageName bsp_init
 	@FuncTitle Deleting a part of the tree
@@ -119,35 +153,6 @@ public :
 		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
 	*/
 	void removeSons();
-
-	/**
-	@PageName bsp_init
-	@FuncTitle deleting the tree
-	@FuncDesc You can also completely delete the tree, including the root node to release every resource used :
-	@Cpp void TCODBsp::~TCODBsp()
-	@C void TCOD_bsp_delete(TCOD_bsp_t *node)
-	@Py bsp_delete(node)
-	@C# void TCODBsp::Dispose()
-	@Param node	In the C version, the node reference.
-	@CppEx
-		TCODBsp *myBSP = new TCODBsp(0,0,50,50);
-		// create a tree
-		myBSP->splitRecursive(NULL,4,5,5,1.5f,1.5f);
-		// use the tree ...
-		// delete the tree
-		delete myBSP;
-	@CEx
-		TCOD_bsp_t *my_bsp=TCOD_bsp_new_with_size(0,0,50,50);
-		TCOD_bsp_split_recursive(my_bsp,NULL,4,5,5,1.5f,1.5f);
-		// use the tree ...
-		TCOD_bsp_delete(my_bsp);
-	@PyEx
-		my_bsp=libtcod.bsp_new_with_size(0,0,50,50)
-		libtcod.bsp_split_recursive(my_bsp,0,4,5,5,1.5,1.5)
-		# use the tree ...
-		libtcod.bsp_delete(my_bsp)
-	*/
-	virtual ~TCODBsp();
 
 	/**
 	@PageName bsp_split
@@ -415,14 +420,111 @@ You can use it if you changed the nodes size and position while using the BSP tr
 			return True
 		libtcod.bsp_traverse_post_order(my_bsp,my_callback)
 	*/
-	bool traversePreOrder(ITCODBspCallback *listener, void *userData);
-	bool traverseInOrder(ITCODBspCallback *listener, void *userData);
-	bool traversePostOrder(ITCODBspCallback *listener, void *userData);
-	bool traverseLevelOrder(ITCODBspCallback *listener, void *userData);
-	bool traverseInvertedLevelOrder(ITCODBspCallback *listener, void *userData);
-protected :
-	TCODBsp(TCODBsp *father, bool left);
+  bool traversePreOrder(ITCODBspCallback* listener, void* userData);
+  bool traverseInOrder(ITCODBspCallback* listener, void* userData);
+  bool traversePostOrder(ITCODBspCallback* listener, void* userData);
+  bool traverseLevelOrder(ITCODBspCallback* listener, void* userData);
+  bool traverseInvertedLevelOrder(ITCODBspCallback* listener, void* userData);
+  // clang-format on
+  /***************************************************************************
+      @brief Visit nodes using a function callback in pre-order.
 
+      @tparam VisitorFunc A function type of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void`.
+      @param visitor Will be called with each visited node.
+          Can optionally return bool and will terminate traversal early if false is returned.
+      @return bool Returns false if the traversal was terminated early.
+
+      @versionadded{Unreleased}
+   */
+  template <typename VisitorFunc>
+  bool traversePreOrder(VisitorFunc&& visitor) {
+    auto visitor_instance = LambdaVisitor<VisitorFunc>{};
+    return traversePreOrder(&visitor_instance, static_cast<void*>(&visitor));
+  }
+  /***************************************************************************
+      @brief Visit nodes using a function callback in-order.
+
+      @tparam VisitorFunc A function type of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void`.
+      @param visitor Will be called with each visited node.
+          Can optionally return bool and will terminate traversal early if false is returned.
+      @return bool Returns false if the traversal was terminated early.
+
+      @versionadded{Unreleased}
+   */
+  template <typename VisitorFunc>
+  bool traverseInOrder(VisitorFunc&& visitor) {
+    auto visitor_instance = LambdaVisitor<VisitorFunc>{};
+    return traverseInOrder(&visitor_instance, static_cast<void*>(&visitor));
+  }
+  /***************************************************************************
+      @brief Visit nodes using a function callback post-order.
+
+      @tparam VisitorFunc A function type of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void`.
+      @param visitor Will be called with each visited node.
+          Can optionally return bool and will terminate traversal early if false is returned.
+      @return bool Returns false if the traversal was terminated early.
+
+      @versionadded{Unreleased}
+   */
+  template <typename VisitorFunc>
+  bool traversePostOrder(VisitorFunc&& visitor) {
+    auto visitor_instance = LambdaVisitor<VisitorFunc>{};
+    return traversePostOrder(&visitor_instance, static_cast<void*>(&visitor));
+  }
+  /***************************************************************************
+      @brief Visit nodes using a function callback in level-order.
+
+      @tparam VisitorFunc A function type of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void`.
+      @param visitor Will be called with each visited node.
+          Can optionally return bool and will terminate traversal early if false is returned.
+      @return bool Returns false if the traversal was terminated early.
+
+      @versionadded{Unreleased}
+   */
+  template <typename VisitorFunc>
+  bool traverseLevelOrder(VisitorFunc&& visitor) {
+    auto visitor_instance = LambdaVisitor<VisitorFunc>{};
+    return traverseLevelOrder(&visitor_instance, static_cast<void*>(&visitor));
+  }
+  /***************************************************************************
+      @brief Visit nodes using a function callback in reverse-level-order.
+
+      @tparam VisitorFunc A function type of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void`.
+      @param visitor Will be called with each visited node.
+          Can optionally return bool and will terminate traversal early if false is returned.
+      @return bool Returns false if the traversal was terminated early.
+
+      @versionadded{Unreleased}
+   */
+  template <typename VisitorFunc>
+  bool traverseInvertedLevelOrder(VisitorFunc&& visitor) {
+    auto visitor_instance = LambdaVisitor<VisitorFunc>{};
+    return traverseInvertedLevelOrder(&visitor_instance, static_cast<void*>(&visitor));
+  }
+
+ protected:
+  TCODBsp(TCODBsp* father, bool left);
+
+ private:
+  /***************************************************************************
+      @brief Generic lambda visitor.
+
+      @tparam VisitorFunc A lambda of `(TCODBsp&) -> bool` or `(TCODBsp&) -> void` type.
+   */
+  template <typename VisitorFunc>
+  class LambdaVisitor final : public ITCODBspCallback {
+    /***************************************************************************
+        @brief Invoke the callback, replace a void return with true.
+     */
+    bool visitNode(TCODBsp* node, void* callback) override {
+      if constexpr (std::is_same_v<typename std::invoke_result<VisitorFunc, TCODBsp&>::type, void>) {
+        (*static_cast<VisitorFunc*>(callback))(*node);
+        return true;
+      } else {
+        return ((*static_cast<VisitorFunc*>(callback))(*node));
+      }
+    }
+  };
 };
 
 #endif

@@ -29,30 +29,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// clang-format off
 #ifndef _TCOD_TREE_HPP
 #define _TCOD_TREE_HPP
 
 #include "tree.h"
 
 class TCODLIB_API TCODTree {
-public :
-	TCODTree *next = nullptr;
-	TCODTree *father = nullptr;
-	TCODTree *sons = nullptr;
+ public:
+  TCODTree* next{};
+  TCODTree* father{};
+  TCODTree* sons{};
 
-	TCODTree() : next(NULL),father(NULL),sons(NULL){}
-	void addSon(TCODTree *data) {
-		data->father=this;
-		TCODTree *last_son = sons;
-		while ( last_son && last_son->next ) last_son=last_son->next;
-		if ( last_son ) {
-			last_son->next=data;
-		} else {
-			sons=data;
-		}
-	}
+  TCODTree() = default;
+  TCODTree(const TCODTree&) = delete;
+  TCODTree& operator=(const TCODTree&) = delete;
+  TCODTree(TCODTree&& rhs) noexcept { (*this) = std::move(rhs); };
+  TCODTree& operator=(TCODTree&& rhs) noexcept {
+    swap(*this, rhs);
+    return *this;
+  };
 
+  void addSon(TCODTree* data) {
+    data->father = this;
+    TCODTree* last_son = sons;
+    while (last_son && last_son->next) last_son = last_son->next;
+    if (last_son) {
+      last_son->next = data;
+    } else {
+      sons = data;
+    }
+  }
+
+  friend void swap(TCODTree& lhs, TCODTree& rhs) noexcept {
+    std::swap(lhs.next, rhs.next);
+    std::swap(lhs.father, rhs.father);
+    std::swap(lhs.sons, rhs.sons);
+  };
 };
 
 #endif

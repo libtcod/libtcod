@@ -15,6 +15,7 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 - `TCODZip` can now load and save paths using `<filesystem>` types.
 - Added `tcod::ImagePtr`.
 - Added functions to manually set context pixel-to-tile conversions in cases where it can't be set automatically.
+- New overloads to `TCODBsp` which can take function callbacks directly.
 
 ## Changes
 - `TCODRandom` is now a movable, non-copyable object.

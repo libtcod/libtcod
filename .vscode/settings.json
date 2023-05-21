@@ -96,7 +96,8 @@
         "cerrno": "cpp",
         "cfloat": "cpp",
         "ciso646": "cpp",
-        "climits": "cpp"
+        "climits": "cpp",
+        "coroutine": "cpp"
     },
     "files.trimFinalNewlines": true,
     "C_Cpp.default.cppStandard": "c++17",

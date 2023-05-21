@@ -90,8 +90,9 @@ def update_vcpkg_manifest(args: argparse.Namespace) -> None:
 def replace_unreleased_tags(tag: str, dry_run: bool, path: Path) -> None:
     """Replace "unreleased" version tags with the provided tag.
 
-    Such as the following example:
+    Such as the following examples:
         ".. versionadded:: unreleased" -> ".. versionadded:: <tag>"
+        "@versionadded{Unreleased}" -> "@versionadded{<tag>}"
     """
     match = re.match(r"\d+\.\d+", tag)  # Get "major.minor" version.
     assert match
@@ -102,7 +103,18 @@ def replace_unreleased_tags(tag: str, dry_run: bool, path: Path) -> None:
             if file.suffix not in {".c", ".cpp", ".h", ".hpp"}:
                 continue
             text = file.read_text(encoding="utf-8")
-            new_text = re.sub(r":: *unreleased", rf":: {short_tag}", text, flags=re.IGNORECASE)
+            new_text = re.sub(
+                r":: *unreleased",
+                rf":: {short_tag}",
+                text,
+                flags=re.IGNORECASE,
+            )
+            new_text = re.sub(
+                r"@versionadded{ *unreleased *}",
+                rf"@versionadded{{{short_tag}}}",
+                new_text,
+                flags=re.IGNORECASE,
+            )
             if text != new_text:
                 print(f"Update tags in {file}")
                 if not dry_run:

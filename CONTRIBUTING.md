@@ -29,9 +29,7 @@ Newer C/C++ documentation on functions should generally try to follow this forma
     @code{.cpp}
       // Code example if necessary.
     @endcode
-    \rst
-    .. versionadded:: Unreleased
-    \endrst
+    @versionadded{Unreleased}
  */
 int example(int value);
 ```

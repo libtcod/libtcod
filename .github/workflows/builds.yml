@@ -212,7 +212,7 @@ jobs:
         run: find . | grep -e ".gc..$"
       - name: Generate coverage data
         run: gcov CMakeFiles/libtcod.dir/src/libtcod/*.o CMakeFiles/libtcod.dir/src/libtcod/*/*.o tests/CMakeFiles/unittest.dir/*.o
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
 
   Autotools:
     runs-on: ${{ matrix.os }}
@@ -223,7 +223,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
       - name: Install APT dependencies
@@ -272,7 +272,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
       - name: Install SCons
@@ -346,7 +346,7 @@ jobs:
         with:
           path: ${{ env.EM_CACHE_FOLDER }}
           key: ${{ env.EM_VERSION }}-${{ runner.os }}
-      - uses: mymindstorm/setup-emsdk@v11
+      - uses: mymindstorm/setup-emsdk@v12
         with:
           version: ${{ env.EM_VERSION }}
           actions-cache-folder: ${{env.EM_CACHE_FOLDER}}

@@ -434,7 +434,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
           Can optionally return bool and will terminate traversal early if false is returned.
       @return bool Returns false if the traversal was terminated early.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   template <typename VisitorFunc>
   bool traversePreOrder(VisitorFunc&& visitor) {
@@ -449,7 +449,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
           Can optionally return bool and will terminate traversal early if false is returned.
       @return bool Returns false if the traversal was terminated early.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   template <typename VisitorFunc>
   bool traverseInOrder(VisitorFunc&& visitor) {
@@ -464,7 +464,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
           Can optionally return bool and will terminate traversal early if false is returned.
       @return bool Returns false if the traversal was terminated early.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   template <typename VisitorFunc>
   bool traversePostOrder(VisitorFunc&& visitor) {
@@ -479,7 +479,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
           Can optionally return bool and will terminate traversal early if false is returned.
       @return bool Returns false if the traversal was terminated early.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   template <typename VisitorFunc>
   bool traverseLevelOrder(VisitorFunc&& visitor) {
@@ -494,7 +494,7 @@ You can use it if you changed the nodes size and position while using the BSP tr
           Can optionally return bool and will terminate traversal early if false is returned.
       @return bool Returns false if the traversal was terminated early.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   template <typename VisitorFunc>
   bool traverseInvertedLevelOrder(VisitorFunc&& visitor) {

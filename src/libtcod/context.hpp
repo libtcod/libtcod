@@ -282,7 +282,7 @@ class Context {
 
       @param transform The transform to assign to the context.
 
-      @versionadded{Unreleased}
+      @versionadded{1.24}
    */
   auto set_mouse_transform(const TCOD_MouseTransform& transform) -> void {
     check_throw_error(TCOD_context_set_mouse_transform(context_.get(), &transform));

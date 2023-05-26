@@ -47,7 +47,7 @@ struct ImageDeleter {
     @brief A unique pointer to a TCOD_Image.
 
     \rst
-    .. versionadded:: Unreleased
+    .. versionadded:: 1.24
     \endrst
  */
 typedef std::unique_ptr<TCOD_Image, ImageDeleter> ImagePtr;
@@ -120,7 +120,7 @@ public :
       @brief Take ownership of an image pointer.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   TCODImage(tcod::ImagePtr image) noexcept: data{image.release()}, deleteData{true} {};
@@ -211,7 +211,7 @@ public :
       @brief Get the {width, height} of this image.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   [[nodiscard]] auto getSize() const noexcept -> std::array<int, 2> {

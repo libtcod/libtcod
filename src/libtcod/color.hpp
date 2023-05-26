@@ -575,7 +575,7 @@ coef should be between 0.0 and 1.0 but you can as well use other values
           Issues with the key arrays will throw an error.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   template <int OutSize, typename KeyColors, typename KeyIndexes>

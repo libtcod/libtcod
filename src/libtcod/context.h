@@ -320,7 +320,7 @@ TCOD_PUBLIC TCOD_ColorRGBA* TCOD_context_screen_capture_alloc(
     @param transform The transform to assign to the context.
     @return A negative error value is returned on errors, otherwise returns TCOD_E_OK.
 
-    @versionadded{Unreleased}
+    @versionadded{1.24}
  */
 TCOD_PUBLIC TCOD_Error TCOD_context_set_mouse_transform(
     struct TCOD_Context* __restrict context, const TCOD_MouseTransform* __restrict transform);

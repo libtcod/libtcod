@@ -7,6 +7,8 @@ This project attempts to adhere to [Semantic Versioning](http://semver.org/) sin
 Versions since `1.7.0` only track ABI breaks and not API breaks.
 
 ## [Unreleased]
+
+## [1.24.0] - 2023-05-26
 ### Added
 - New `TCODImage::getSize()` overload which returns a value instead of taking output references.
 - New `TCODColor::genMap` overload which supports constexpr.

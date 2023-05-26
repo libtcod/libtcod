@@ -132,7 +132,7 @@ class TCODLIB_API TCODConsole {
       @brief Default constructor.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   TCODConsole();

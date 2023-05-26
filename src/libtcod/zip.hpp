@@ -234,7 +234,7 @@ public :
       @param path The file to write.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void saveToFile(const std::filesystem::path& path) { saveToFile(path.string().c_str()); }
@@ -261,7 +261,7 @@ public :
       @throws std::runtime_error on any failure to load the file.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void loadFromFile(const std::filesystem::path& path) {
@@ -396,7 +396,7 @@ public :
       @brief Save a char to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(char value) { TCOD_zip_put_char(data, value); }
@@ -404,7 +404,7 @@ public :
       @brief Save an int to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(int value) { TCOD_zip_put_int(data, value); }
@@ -412,7 +412,7 @@ public :
       @brief Save a float to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(float value) { TCOD_zip_put_float(data, value); }
@@ -420,7 +420,7 @@ public :
       @brief Save a string to this zip.  Can be nullptr.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const char* value) { TCOD_zip_put_string(data, value); }
@@ -428,7 +428,7 @@ public :
       @brief Save a string to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const std::string& value) { TCOD_zip_put_string(data, value.c_str()); }
@@ -436,7 +436,7 @@ public :
       @brief Save an optional string to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const std::optional<std::string>& value) {
@@ -447,7 +447,7 @@ public :
       @brief Save a color to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const tcod::ColorRGB& value) { TCOD_zip_put_color(data, value); }
@@ -455,7 +455,7 @@ public :
       @brief Save a color to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const TCODColor& value) { put(tcod::ColorRGB{value}); }
@@ -463,7 +463,7 @@ public :
       @brief Save an image to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const TCODImage& value) { TCOD_zip_put_image(data, value.get_data()); }
@@ -472,7 +472,7 @@ public :
       @brief Save a console to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   [[deprecated("This function will corrupt console characters greater than 255.")]] void put(const TCODConsole& value) {
@@ -482,7 +482,7 @@ public :
       @brief Save a console to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   [[deprecated("This function will corrupt console characters greater than 255.")]] void put(
@@ -494,7 +494,7 @@ public :
       @brief Save an RNG state to this zip.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void put(const TCODRandom& value) { TCOD_zip_put_random(data, value.get_data()); }
@@ -506,7 +506,7 @@ public :
       @return T
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   template <typename T>
@@ -520,7 +520,7 @@ public :
       @brief Extract a char to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(char& out) { out = TCOD_zip_get_char(data); }
@@ -528,7 +528,7 @@ public :
       @brief Extract an int to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(int& out) { out = TCOD_zip_get_int(data); }
@@ -536,7 +536,7 @@ public :
       @brief Extract a float to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(float& out) { out = TCOD_zip_get_float(data); }
@@ -544,7 +544,7 @@ public :
       @brief Extract an optional string to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(std::optional<std::string>& out) {
@@ -556,7 +556,7 @@ public :
       @brief Extract a string to `out`.  Will throw if nullptr was put.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(std::string& out) { out = get<std::optional<std::string>>().value(); }
@@ -564,7 +564,7 @@ public :
       @brief Extract a color to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(tcod::ColorRGB& out) { out = tcod::ColorRGB{TCOD_zip_get_color(data)}; }
@@ -572,7 +572,7 @@ public :
       @brief Extract a color to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(TCODColor& out) { out = TCODColor{TCOD_zip_get_color(data)}; }
@@ -580,7 +580,7 @@ public :
       @brief Extract an image pointer to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(tcod::ImagePtr& out) { out = tcod::ImagePtr{TCOD_zip_get_image(data)}; }
@@ -588,7 +588,7 @@ public :
       @brief Extract an image to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(TCODImage& out) { out = TCODImage{get<tcod::ImagePtr>()}; }
@@ -596,7 +596,7 @@ public :
       @brief Extract a console pointer to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(tcod::ConsolePtr& out) { out = tcod::ConsolePtr{TCOD_zip_get_console(data)}; }
@@ -604,7 +604,7 @@ public :
       @brief Extract a console to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(tcod::Console& out) { out = tcod::Console{get<tcod::ConsolePtr>()}; }
@@ -612,7 +612,7 @@ public :
       @brief Extract a console to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(TCODConsole& out) { out = TCODConsole{get<tcod::ConsolePtr>()}; }
@@ -620,7 +620,7 @@ public :
       @brief Extract an RNG state to `out`.
 
       \rst
-      .. versionadded:: Unreleased
+      .. versionadded:: 1.24
       \endrst
    */
   void get(TCODRandom& out) { out = TCODRandom{TCOD_zip_get_random(data)}; }

@@ -110,7 +110,7 @@ typedef struct TCOD_mouse_t {
     pixel_y = tile_y / transform.scale_y + transform.offset_y;
     @endcode
 
-    @versionadded{Unreleased}
+    @versionadded{1.24}
  */
 typedef struct TCOD_MouseTransform {
   double offset_x;

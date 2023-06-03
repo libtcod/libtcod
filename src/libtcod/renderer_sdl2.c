@@ -38,6 +38,7 @@
 #include <stdlib.h>
 
 #include "libtcod_int.h"
+#include "logging.h"
 
 #define BUFFER_TILES_MAX 10922  // Max number of tiles to buffer. (65536 / 6) to fit indices in a uint16_t type.
 /// Vertex element with position and color data.  Position uses pixel coordinates.
@@ -117,6 +118,7 @@ static int prepare_sdl2_atlas(struct TCOD_TilesetAtlasSDL2* atlas) {
     if (atlas->texture) {
       SDL_DestroyTexture(atlas->texture);
     }
+    TCOD_log_debug_f("Creating tileset atlas of pixel size %dx%d.", new_size, new_size);
     atlas->texture =
         SDL_CreateTexture(atlas->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, new_size, new_size);
     if (!atlas->texture) {
@@ -536,6 +538,7 @@ TCOD_Error TCOD_sdl2_render_texture_setup(
     SDL_QueryTexture(*target, NULL, NULL, &tex_width, &tex_height);
     if (tex_width != atlas->tileset->tile_width * console->w ||
         tex_height != atlas->tileset->tile_height * console->h) {
+      TCOD_log_debug("The console renderer buffer is the wrong size and will be replaced.");
       SDL_DestroyTexture(*target);
       *target = NULL;
       if (cache && *cache) {
@@ -546,6 +549,10 @@ TCOD_Error TCOD_sdl2_render_texture_setup(
   }
   if (!*target) {
     // If *target is missing or deleted then create a new texture.
+    TCOD_log_debug_f(
+        "Creating console renderer buffer of pixel size %dx%d.",
+        atlas->tileset->tile_width * console->w,
+        atlas->tileset->tile_height * console->h);
     *target = SDL_CreateTexture(
         atlas->renderer,
         SDL_PIXELFORMAT_RGBA32,
@@ -590,6 +597,7 @@ static int sdl2_handle_event(void* userdata, SDL_Event* event) {
   struct TCOD_RendererSDL2* context = userdata;
   switch (event->type) {
     case SDL_RENDER_TARGETS_RESET:
+      TCOD_log_debug("SDL2 renderer targets have been reset.");
       if (context->cache_console) {
         for (int i = 0; i < context->cache_console->elements; ++i) {
           context->cache_console->tiles[i] = (struct TCOD_ConsoleTile){-1, {0}, {0}};
@@ -899,6 +907,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     int window_flags,
     int renderer_flags,
     struct TCOD_Tileset* tileset) {
+  TCOD_log_debug("Initializing an SDL2 renderer.");
   if (!tileset) {
     TCOD_set_errorv("Tileset must not be NULL.");
     return NULL;

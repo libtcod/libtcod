@@ -1629,11 +1629,19 @@ static float get_framerate() {
   return 1.0f / (float)(total_time / DELTA_SAMPLES_LENGTH);
 }
 
+// Print libtcod log messages.
+void print_log(const TCOD_LogMessage* message, void* userdata) {
+  (void)userdata;  // Unused
+  printf("%s:%d:%d:%s\n", message->source, message->lineno, message->level, message->message);
+}
+
 /* ***************************
  * the main function
  * ***************************/
 int main(int argc, char* argv[]) {
-  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
+  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+  TCOD_set_log_callback(print_log, NULL);
+  TCOD_set_log_level(TCOD_LOG_DEBUG);
   static const SDL_Event on_enter_event = {.type = ON_ENTER_USEREVENT};
   static const SDL_Event on_draw_event = {.type = ON_DRAW_USEREVENT};
   static const char* FONT = "data/fonts/dejavu12x12_gs_tc.png";

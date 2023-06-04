@@ -2,11 +2,13 @@
 
 libtcod is a free, fast, portable and uncomplicated API for roguelike developers providing a true color console, pathfinding, field-of-view, and a few other utilities frequently used in roguelikes.
 
-Status:
+## Status
+
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/libtcod/libtcod/builds.yml)](https://github.com/libtcod/libtcod/actions)
 [![Documentation Status](https://readthedocs.org/projects/libtcod/badge/?version=latest)](https://libtcod.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/libtcod/libtcod/branch/main/graph/badge.svg?token=pmHy3jXemj)](https://codecov.io/gh/libtcod/libtcod)
 [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/libtcod/libtcod/latest)](https://github.com/libtcod/libtcod/blob/main/CHANGELOG.md)
+[![Packaging status](https://repology.org/badge/tiny-repos/libtcod.svg)](https://repology.org/project/libtcod/versions)
 
 # How do I get set up?
 

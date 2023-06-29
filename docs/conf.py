@@ -340,6 +340,5 @@ def run_doxygen(app: sphinx.application.Sphinx) -> None:
 
 
 def setup(app: sphinx.application.Sphinx) -> None:
-
     # Add hook for building doxygen xml when needed
     pass  # app.connect("builder-inited", run_doxygen)

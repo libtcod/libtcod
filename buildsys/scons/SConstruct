@@ -82,6 +82,7 @@ def samples_factory():
     env_samples.Append(
         CPPPATH=["$VARIANT/src"],
     )
+    env_samples.Append(RPATH=["."])
     if sys.platform != "darwin":
         env_samples.Append(
             LIBS=["SDL2", "SDL2main"],

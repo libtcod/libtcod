@@ -94,6 +94,6 @@ By default it is assumed that Vcpkg will be used to get dependencies, but this c
 | LIBTCOD_SDL2     | find_package | conan, disable, find_package | Support for libtcod contexts.
 | LIBTCOD_ZLIB     | find_package | conan, disable, find_package | Support for REXPaint and TCODZip.
 | LIBTCOD_LODEPNG  | find_package | disable, find_package, vendored |
-| LIBTCOD_UTF8PROC | vcpkg        | disable, find_package, vcpkg | Support for console printing functions.
+| LIBTCOD_UTF8PROC | vcpkg        | disable, find_package, vcpkg, vendored | Support for console printing functions.
 | LIBTCOD_STB      | find_package | find_package, vendored |
 | LIBTCOD_THREADS  | false        | bool | Support for deprecated functions, leave this off.

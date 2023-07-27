@@ -31,36 +31,100 @@
  */
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#include <string>
+#include <vector>
+
 #include "../color.hpp"
 #include "../console.hpp"
 #include "../list.hpp"
 #include "../mouse.hpp"
+#include "../sys.hpp"
 #include "gui_portability.hpp"
-class TCODLIB_GUI_API Widget {
- public:
-  int x, y, w, h;
-  void* userData;
-  static Widget* focus;
-  static Widget* keyboardFocus;
 
-  Widget();
-  Widget(int x, int y);
-  Widget(int x, int y, int w, int h);
-  virtual ~Widget();
+class Widget {
+ public:
+  Widget() : Widget{0, 0, 0, 0} {}
+  Widget(int x, int y) : Widget{x, y, 0, 0} {}
+  Widget(int x, int y, int w, int h) : x{x}, y{y}, w{w}, h{h} { widgets_.push_back(this); }
+  virtual ~Widget() {
+    if (focus == this) focus = NULL;
+    auto found = std::find(widgets_.begin(), widgets_.end(), this);
+    if (found != widgets_.end()) widgets_.erase(found);
+  }
+
   virtual void render() {}
-  virtual void update(const TCOD_key_t k);
-  void move(int x, int y);
-  void setTip(const char* tip);
+  virtual void update(const TCOD_key_t) {
+    const bool curs = TCODMouse::isCursorVisible();
+    if (curs) {
+      if (mouse.cx >= x && mouse.cx < x + w && mouse.cy >= y && mouse.cy < y + h) {
+        if (!mouseIn) {
+          mouseIn = true;
+          onMouseIn();
+        }
+        focus = this;
+      } else {
+        if (mouseIn) {
+          mouseIn = false;
+          onMouseOut();
+        }
+        mouseL = false;
+        if (this == focus) {
+          focus = NULL;
+        }
+      }
+    }
+    if (mouseIn || (!curs && this == focus)) {
+      if (mouse.lbutton && !mouseL) {
+        mouseL = true;
+        onButtonPress();
+      } else if (!mouse.lbutton && mouseL) {
+        onButtonRelease();
+        keyboardFocus = NULL;
+        if (mouseL) {
+          onButtonClick();
+        }
+        mouseL = false;
+      } else if (mouse.lbutton_pressed) {
+        keyboardFocus = NULL;
+        onButtonClick();
+      }
+    }
+  }
+  void move(int x_, int y_) {
+    this->x = x_;
+    this->y = y_;
+  }
+  void setTip(const char* tip) { this->tip_ = (tip ? tip : ""); }
   virtual void setVisible(bool val) { visible = val; }
   bool isVisible() { return visible; }
   virtual void computeSize() {}
-  static void setBackgroundColor(const TCODColor col, const TCODColor colFocus);
-  static void setForegroundColor(const TCODColor col, const TCODColor colFocus);
-  static void setConsole(TCODConsole* con);
-  static void updateWidgets(const TCOD_key_t k, const TCOD_mouse_t mouse);
-  static void renderWidgets();
-  static TCOD_mouse_t mouse;
-  static TCODColor fore;
+  static void setBackgroundColor(const TCODColor col, const TCODColor colFocus) {
+    back = col;
+    backFocus = colFocus;
+  }
+
+  static void setForegroundColor(const TCODColor col, const TCODColor colFocus) {
+    fore = col;
+    foreFocus = colFocus;
+  }
+  static void setConsole(TCODConsole* console) { con = console; }
+  static void updateWidgets(const TCOD_key_t k, const TCOD_mouse_t p_mouse) {
+    mouse = p_mouse;
+    updateWidgetsIntern(k);
+  }
+  static void renderWidgets() {
+    if (!con) con = TCODConsole::root;
+    for (Widget* w : widgets_) {
+      if (w->isVisible()) w->render();
+    }
+  }
+
+  int x{}, y{}, w{}, h{};
+  void* userData{};
+  static inline Widget* focus{};
+  static inline Widget* keyboardFocus{};
+  static inline TCOD_mouse_t mouse{};
+  static inline TCODColor fore{220, 220, 180};
   virtual void expand(int, int) {}  // parameters: width, height
  protected:
   friend class StatusBar;
@@ -74,18 +138,26 @@ class TCODLIB_GUI_API Widget {
   virtual void onButtonRelease() {}
   virtual void onButtonClick() {}
 
-  static void updateWidgetsIntern(const TCOD_key_t k);
+  static void updateWidgetsIntern(const TCOD_key_t k) {
+    elapsed = TCODSystem::getLastFrameLength();
+    for (Widget* w : widgets_) {
+      if (w->isVisible()) {
+        w->computeSize();
+        w->update(k);
+      }
+    }
+  }
 
-  static float elapsed;
-  static TCODColor back;
-  static TCODColor backFocus;
-  static TCODColor foreFocus;
-  static TCODConsole* con;
-  static TCODList<Widget*> widgets;
-  char* tip;
-  bool mouseIn : 1;
-  bool mouseL : 1;
-  bool visible : 1;
+  static inline float elapsed{};
+  static inline TCODColor back{40, 40, 120};
+  static inline TCODColor backFocus{70, 70, 130};
+  static inline TCODColor foreFocus{255, 255, 255};
+  static inline TCODConsole* con{};
+  static inline std::vector<Widget*> widgets_{};
+  std::string tip_{};
+  bool mouseIn{false};
+  bool mouseL{false};
+  bool visible{true};
 };
 typedef void (*widget_callback_t)(Widget* w, void* userData);
 #endif /* TCOD_GUI_WIDGET_HPP */

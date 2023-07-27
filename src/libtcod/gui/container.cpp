@@ -32,29 +32,32 @@
 #ifndef TCOD_NO_UNICODE
 #include "container.hpp"
 
-Container::~Container() { content.clearAndDelete(); }
+Container::~Container() { clear(); }
 
 void Container::addWidget(Widget* wid) {
-  content.push(wid);
-  widgets.remove(wid);
+  content_.push_back(wid);
+  widgets_.erase(std::find(widgets_.begin(), widgets_.end(), wid));
 }
 
-void Container::removeWidget(Widget* wid) { content.remove(wid); }
+void Container::removeWidget(Widget* wid) { content_.erase(std::find(content_.begin(), content_.end(), wid)); }
 
 void Container::setVisible(bool val) { Widget::setVisible(val); }
 
-void Container::clear() { content.clearAndDelete(); }
+void Container::clear() {
+  for (Widget* wid : content_) delete wid;
+  content_.clear();
+}
 
 void Container::render() {
-  for (Widget** wid = content.begin(); wid != content.end(); wid++) {
-    if ((*wid)->isVisible()) (*wid)->render();
+  for (Widget* wid : content_) {
+    if (wid->isVisible()) wid->render();
   }
 }
 
 void Container::update(const TCOD_key_t k) {
   Widget::update(k);
-  for (Widget** wid = content.begin(); wid != content.end(); wid++) {
-    if ((*wid)->isVisible()) (*wid)->update(k);
+  for (Widget* wid : content_) {
+    if (wid->isVisible()) wid->update(k);
   }
 }
 #endif  // TCOD_NO_UNICODE

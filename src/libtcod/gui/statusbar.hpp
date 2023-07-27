@@ -32,11 +32,20 @@
 #ifndef TCOD_GUI_STATUSBAR_HPP
 #define TCOD_GUI_STATUSBAR_HPP
 #ifndef TCOD_NO_UNICODE
+#include "../console_printing.hpp"
 #include "widget.hpp"
-class TCODLIB_GUI_API StatusBar : public Widget {
+
+class StatusBar : public Widget {
  public:
   StatusBar(int x, int y, int w, int h) : Widget(x, y, w, h) {}
-  void render();
+  void render() {
+    const auto bg = TCOD_ColorRGB(back);
+    tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
+    if (focus && focus->tip_.size()) {
+      const auto fg = TCOD_ColorRGB(fore);
+      tcod::print_rect(*con, {x + 1, y, w, h}, focus->tip_, fg, std::nullopt);
+    }
+  }
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_STATUSBAR_HPP */

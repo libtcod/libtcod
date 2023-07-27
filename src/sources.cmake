@@ -170,7 +170,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/radiobutton.hpp
     libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
-    libtcod/gui/statusbar.cpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.cpp
     libtcod/gui/textbox.hpp
@@ -180,7 +179,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/toolbar.hpp
     libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
-    libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
@@ -478,7 +476,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/radiobutton.hpp
     libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
-    libtcod/gui/statusbar.cpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.cpp
     libtcod/gui/textbox.hpp
@@ -488,7 +485,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/toolbar.hpp
     libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
-    libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
 )
 source_group(libtcod\\sdl2 FILES

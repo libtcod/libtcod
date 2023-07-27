@@ -45,7 +45,7 @@ class TCODLIB_GUI_API Container : public Widget {
   void update(const TCOD_key_t k);
 
  protected:
-  TCODList<Widget*> content;  // Can't be fixed without breaking the ABI.
+  std::vector<Widget*> content_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_CONTAINER_HPP */

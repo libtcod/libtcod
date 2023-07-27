@@ -187,12 +187,10 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/gui/label.cpp \
 	../../src/libtcod/gui/radiobutton.cpp \
 	../../src/libtcod/gui/slider.cpp \
-	../../src/libtcod/gui/statusbar.cpp \
 	../../src/libtcod/gui/textbox.cpp \
 	../../src/libtcod/gui/togglebutton.cpp \
 	../../src/libtcod/gui/toolbar.cpp \
 	../../src/libtcod/gui/vbox.cpp \
-	../../src/libtcod/gui/widget.cpp \
 	../../src/libtcod/sdl2/event.cpp \
 	../../src/vendor/lodepng.c \
 	../../src/vendor/stb.c \

@@ -112,20 +112,20 @@ void ToolBar::render() {
 void ToolBar::computeSize() {
   int cury = y + 1;
   w = name ? static_cast<int>(strlen(name) + 4) : 2;
-  for (Widget** wid = content.begin(); wid != content.end(); wid++) {
-    if ((*wid)->isVisible()) {
-      (*wid)->x = x + 1;
-      (*wid)->y = cury;
-      (*wid)->computeSize();
-      if ((*wid)->w + 2 > w) w = (*wid)->w + 2;
-      cury += (*wid)->h;
+  for (Widget* wid : content_) {
+    if (wid->isVisible()) {
+      wid->x = x + 1;
+      wid->y = cury;
+      wid->computeSize();
+      if (wid->w + 2 > w) w = wid->w + 2;
+      cury += wid->h;
     }
   }
   if (w < fixedWidth) w = fixedWidth;
   h = cury - y + 1;
-  for (Widget** wid = content.begin(); wid != content.end(); wid++) {
-    if ((*wid)->isVisible()) {
-      (*wid)->expand(w - 2, (*wid)->h);
+  for (Widget* wid : content_) {
+    if (wid->isVisible()) {
+      wid->expand(w - 2, wid->h);
     }
   }
 }

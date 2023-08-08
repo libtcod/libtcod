@@ -35,7 +35,7 @@
 void VBox::computeSize() {
   int cury = y;
   w = 0;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->x = x;
       wid->y = cury;
@@ -45,7 +45,7 @@ void VBox::computeSize() {
     }
   }
   h = cury - y;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->expand(w, wid->h);
     }

@@ -31,6 +31,7 @@
  */
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -96,7 +97,7 @@ class Widget {
   }
   void setTip(const char* tip) { this->tip_ = (tip ? tip : ""); }
   virtual void setVisible(bool val) { visible = val; }
-  bool isVisible() { return visible; }
+  bool isVisible() const noexcept { return visible; }
   virtual void computeSize() {}
   static void setBackgroundColor(const TCODColor col, const TCODColor colFocus) {
     back = col;
@@ -114,7 +115,7 @@ class Widget {
   }
   static void renderWidgets() {
     if (!con) con = TCODConsole::root;
-    for (Widget* w : widgets_) {
+    for (auto& w : widgets_) {
       if (w->isVisible()) w->render();
     }
   }
@@ -140,7 +141,7 @@ class Widget {
 
   static void updateWidgetsIntern(const TCOD_key_t k) {
     elapsed = TCODSystem::getLastFrameLength();
-    for (Widget* w : widgets_) {
+    for (auto& w : widgets_) {
       if (w->isVisible()) {
         w->computeSize();
         w->update(k);

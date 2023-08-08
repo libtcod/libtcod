@@ -42,9 +42,9 @@ float mapmin = 0.0f, mapmax = 0.0f;
 static float oldmapmin = 0.0f, oldmapmax = 0.0f;
 
 // ui
-ToolBar* params = NULL;
-ToolBar* history = NULL;
-ToolBar* colorMapGui = NULL;
+std::shared_ptr<ToolBar> params = nullptr;
+std::shared_ptr<ToolBar> history = nullptr;
+std::shared_ptr<ToolBar> colorMapGui = nullptr;
 
 static float voronoiCoef[2] = {-1.0f, 1.0f};
 
@@ -70,7 +70,7 @@ static TCODColor keyColor[MAX_COLOR_KEY] = {
     TCODColor(120, 220, 120),  // grass-snow transistion
     TCODColor(208, 208, 239),  // snow
     TCODColor(255, 255, 255)};
-static Image* keyImages[MAX_COLOR_KEY];
+static std::shared_ptr<Image> keyImages[MAX_COLOR_KEY];
 
 static constexpr int nbColorKeys = 8;
 
@@ -361,111 +361,118 @@ void changeColorMapCbk(Widget* w, void*) {
   colorMapGui->clear();
   for (intptr_t i = 0; i < nbColorKeys; i++) {
     colorMapGui->addSeparator(tcod::stringf("Color %d", static_cast<int>(i)).c_str());
-    HBox* h_box = new HBox(0, 0, 0);
-    VBox* v_box = new VBox(0, 0, 0);
+    auto h_box = std::make_shared<HBox>(0, 0, 0);
+    auto v_box = std::make_shared<VBox>(0, 0, 0);
     colorMapGui->addWidget(h_box);
-    Slider* idxSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "index", "Index of the key in the color map (0-255)");
+    auto idxSlider =
+        std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "index", "Index of the key in the color map (0-255)");
     idxSlider->setValue((float)keyIndex[i]);
     idxSlider->setFormat("%.0f");
     idxSlider->setCallback(changeColorMapIdxCbk, reinterpret_cast<void*>(i));
     v_box->addWidget(idxSlider);
-    keyImages[i] = new Image(0, 0, 0, 2);
+    keyImages[i] = std::make_shared<Image>(0, 0, 0, 2);
     keyImages[i]->setBackgroundColor(keyColor[i]);
     v_box->addWidget(keyImages[i]);
     h_box->addWidget(v_box);
 
-    v_box = new VBox(0, 0, 0);
+    v_box = std::make_shared<VBox>(0, 0, 0);
     h_box->addWidget(v_box);
-    Slider* redSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "r", "Red component of the color");
+    auto redSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "r", "Red component of the color");
     redSlider->setValue((float)keyColor[i].r);
     redSlider->setFormat("%.0f");
     redSlider->setCallback(changeColorMapRedCbk, reinterpret_cast<void*>(i));
     v_box->addWidget(redSlider);
-    Slider* greenSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "g", "Green component of the color");
+    auto greenSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "g", "Green component of the color");
     greenSlider->setValue((float)keyColor[i].g);
     greenSlider->setFormat("%.0f");
     greenSlider->setCallback(changeColorMapGreenCbk, reinterpret_cast<void*>(i));
     v_box->addWidget(greenSlider);
-    Slider* blueSlider = new Slider(0, 0, 3, 0.0f, 255.0f, "b", "Blue component of the color");
+    auto blueSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "b", "Blue component of the color");
     blueSlider->setValue((float)keyColor[i].b);
     blueSlider->setFormat("%.0f");
     blueSlider->setCallback(changeColorMapBlueCbk, reinterpret_cast<void*>(i));
     v_box->addWidget(blueSlider);
   }
-  colorMapGui->addWidget(new Button("Ok", NULL, changeColorMapEndCbk, NULL));
+  colorMapGui->addWidget(std::make_shared<Button>("Ok", nullptr, changeColorMapEndCbk, nullptr));
   colorMapGui->setVisible(true);
 }
 
 // build gui
 
-void addOperationButton(ToolBar* tools, Operation::OpType type, void (*cbk)(Widget* w, void* data)) {
-  tools->addWidget(new Button(Operation::names[type], Operation::tips[type], cbk, NULL));
+void addOperationButton(ToolBar& tools, Operation::OpType type, void (*cbk)(Widget* w, void* data)) {
+  tools.addWidget(std::make_shared<Button>(Operation::names[type], Operation::tips[type], cbk, nullptr));
 }
 
 void buildGui() {
   // status bar
-  new StatusBar(0, 0, HM_WIDTH, 1);
+  static auto status_bar = std::make_unique<StatusBar>(0, 0, HM_WIDTH, 1);
 
-  VBox* vbox = new VBox(0, 2, 1);
+  static auto vbox = std::make_unique<VBox>(0, 2, 1);
   // stats
-  ToolBar* stats = new ToolBar(0, 0, 21, "Stats", "Statistics about the current map");
-  stats->addWidget(new Label(0, 0, landMassTxt, "Ratio of land surface / total surface"));
-  stats->addWidget(new Label(0, 0, minZTxt, "Minimum z value in the map"));
-  stats->addWidget(new Label(0, 0, maxZTxt, "Maximum z value in the map"));
-  stats->addWidget(new Label(0, 0, seedTxt, "Current random seed used to build the map"));
+  auto stats = std::make_shared<ToolBar>(0, 0, 21, "Stats", "Statistics about the current map");
+  stats->addWidget(std::make_shared<Label>(0, 0, landMassTxt, "Ratio of land surface / total surface"));
+  stats->addWidget(std::make_shared<Label>(0, 0, minZTxt, "Minimum z value in the map"));
+  stats->addWidget(std::make_shared<Label>(0, 0, maxZTxt, "Maximum z value in the map"));
+  stats->addWidget(std::make_shared<Label>(0, 0, seedTxt, "Current random seed used to build the map"));
   vbox->addWidget(stats);
 
   // tools
-  ToolBar* tools = new ToolBar(0, 0, 15, "Tools", "Tools to modify the heightmap");
-  tools->addWidget(new Button("cancel", "Delete the selected operation", cancelCbk, NULL));
-  tools->addWidget(new Button("clear", "Remove all operations and reset all heightmap values to 0.0", clearCbk, NULL));
-  tools->addWidget(new Button("reseed", "Replay all operations with a new random seed", reseedCbk, NULL));
+  auto tools = std::make_shared<ToolBar>(0, 0, 15, "Tools", "Tools to modify the heightmap");
+  tools->addWidget(std::make_shared<Button>("cancel", "Delete the selected operation", cancelCbk, nullptr));
+  tools->addWidget(std::make_shared<Button>(
+      "clear", "Remove all operations and reset all heightmap values to 0.0", clearCbk, nullptr));
+  tools->addWidget(
+      std::make_shared<Button>("reseed", "Replay all operations with a new random seed", reseedCbk, nullptr));
 
   // operations
   tools->addSeparator("Operations", "Apply a new operation to the map");
-  addOperationButton(tools, Operation::NORM, normalizeCbk);
-  addOperationButton(tools, Operation::ADD_FBM, addFbmCbk);
-  addOperationButton(tools, Operation::SCALE_FBM, scaleFbmCbk);
-  addOperationButton(tools, Operation::ADDHILL, addHillCbk);
-  addOperationButton(tools, Operation::RAIN, rainErosionCbk);
-  addOperationButton(tools, Operation::SMOOTH, smoothCbk);
-  addOperationButton(tools, Operation::VORONOI, voronoiCbk);
-  addOperationButton(tools, Operation::NOISE_LERP, noiseLerpCbk);
-  addOperationButton(tools, Operation::ADDLEVEL, raiseLowerCbk);
+  addOperationButton(*tools, Operation::NORM, normalizeCbk);
+  addOperationButton(*tools, Operation::ADD_FBM, addFbmCbk);
+  addOperationButton(*tools, Operation::SCALE_FBM, scaleFbmCbk);
+  addOperationButton(*tools, Operation::ADDHILL, addHillCbk);
+  addOperationButton(*tools, Operation::RAIN, rainErosionCbk);
+  addOperationButton(*tools, Operation::SMOOTH, smoothCbk);
+  addOperationButton(*tools, Operation::VORONOI, voronoiCbk);
+  addOperationButton(*tools, Operation::NOISE_LERP, noiseLerpCbk);
+  addOperationButton(*tools, Operation::ADDLEVEL, raiseLowerCbk);
 
   // display
   tools->addSeparator("Display", "Change the type of display");
   RadioButton::setDefaultGroup(1);
-  RadioButton* colormap = new RadioButton("colormap", "Enable colormap mode", colorMapCbk, NULL);
+  auto colormap = std::make_shared<RadioButton>("colormap", "Enable colormap mode", colorMapCbk, nullptr);
   tools->addWidget(colormap);
   colormap->select();
-  tools->addWidget(new RadioButton("slope", "Enable slope mode", slopeCbk, NULL));
-  tools->addWidget(new RadioButton("greyscale", "Enable greyscale mode", greyscaleCbk, NULL));
-  tools->addWidget(new RadioButton("normal", "Enable normal map mode", normalCbk, NULL));
-  tools->addWidget(new Button("change colormap", "Modify the colormap used by hmtool", changeColorMapCbk, NULL));
+  tools->addWidget(std::make_shared<RadioButton>("slope", "Enable slope mode", slopeCbk, nullptr));
+  tools->addWidget(std::make_shared<RadioButton>("greyscale", "Enable greyscale mode", greyscaleCbk, nullptr));
+  tools->addWidget(std::make_shared<RadioButton>("normal", "Enable normal map mode", normalCbk, nullptr));
+  tools->addWidget(
+      std::make_shared<Button>("change colormap", "Modify the colormap used by hmtool", changeColorMapCbk, nullptr));
 
   // change colormap gui
-  colorMapGui = new ToolBar(0, 0, "Colormap", "Select the color and position of the keys in the color map");
+  colorMapGui =
+      std::make_shared<ToolBar>(0, 0, "Colormap", "Select the color and position of the keys in the color map");
   colorMapGui->setVisible(false);
 
   // in/out
   tools->addSeparator("In/Out", "Import/Export stuff");
-  tools->addWidget(new Button("export C", "Generate the C code for this heightmap in ./hm.c", exportCCbk, NULL));
   tools->addWidget(
-      new Button("export CPP", "Generate the CPP code for this heightmap in ./hm.cpp", exportCppCbk, NULL));
+      std::make_shared<Button>("export C", "Generate the C code for this heightmap in ./hm.c", exportCCbk, nullptr));
+  tools->addWidget(std::make_shared<Button>(
+      "export CPP", "Generate the CPP code for this heightmap in ./hm.cpp", exportCppCbk, nullptr));
+  tools->addWidget(std::make_shared<Button>(
+      "export PY", "Generate the Python code for this heightmap in ./hm.py", exportPyCbk, nullptr));
   tools->addWidget(
-      new Button("export PY", "Generate the Python code for this heightmap in ./hm.py", exportPyCbk, NULL));
-  tools->addWidget(new Button("export bmp", "Save this heightmap as a bitmap in ./hm.bmp", exportBmpCbk, NULL));
+      std::make_shared<Button>("export bmp", "Save this heightmap as a bitmap in ./hm.bmp", exportBmpCbk, nullptr));
 
   vbox->addWidget(tools);
 
   // params box
-  params = new ToolBar(0, 0, "Params", "Parameters of the current tool");
+  params = std::make_shared<ToolBar>(0, 0, "Params", "Parameters of the current tool");
   vbox->addWidget(params);
   params->setVisible(false);
 
   // history
-  history = new ToolBar(0, tools->y + 1 + tools->h, 15, "History", "History of operations");
+  history = std::make_shared<ToolBar>(0, tools->y + 1 + tools->h, 15, "History", "History of operations");
   vbox->addWidget(history);
 }
 

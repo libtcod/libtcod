@@ -180,7 +180,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/zip.cpp \
 	../../src/libtcod/zip_c.c \
 	../../src/libtcod/gui/button.cpp \
-	../../src/libtcod/gui/container.cpp \
 	../../src/libtcod/gui/flatlist.cpp \
 	../../src/libtcod/gui/hbox.cpp \
 	../../src/libtcod/gui/image.cpp \

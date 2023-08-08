@@ -32,20 +32,42 @@
 #ifndef TCOD_GUI_CONTAINER_HPP
 #define TCOD_GUI_CONTAINER_HPP
 #ifndef TCOD_NO_UNICODE
+#include <memory>
+
 #include "widget.hpp"
-class TCODLIB_GUI_API Container : public Widget {
+
+class Container : public Widget {
  public:
   Container(int x, int y, int w, int h) : Widget(x, y, w, h) {}
-  virtual ~Container();
-  void addWidget(Widget* wid);
-  void removeWidget(Widget* wid);
-  void setVisible(bool val);
-  void render();
-  void clear();
-  void update(const TCOD_key_t k);
+  void addWidget(std::shared_ptr<Widget> wid) {
+    content_.emplace_back(wid);
+    widgets_.erase(std::find(widgets_.begin(), widgets_.end(), wid.get()));
+  }
+  [[deprecated("This function should be passed a std::shared_ptr instead.")]] void addWidget(Widget* wid) {
+    addWidget(std::shared_ptr<Widget>{wid});
+  }
+  void removeWidget(const std::shared_ptr<Widget>& wid) {
+    content_.erase(std::find(content_.begin(), content_.end(), wid));
+  }
+  void removeWidget(Widget* wid) {
+    content_.erase(std::find_if(content_.begin(), content_.end(), [&](auto& it) { return it.get() == wid; }));
+  }
+  void setVisible(bool val) { Widget::setVisible(val); }
+  void render() {
+    for (auto wid : content_) {
+      if (wid->isVisible()) wid->render();
+    }
+  }
+  void clear() { content_.clear(); }
+  void update(const TCOD_key_t k) {
+    Widget::update(k);
+    for (auto wid : content_) {
+      if (wid->isVisible()) wid->update(k);
+    }
+  }
 
  protected:
-  std::vector<Widget*> content_{};
+  std::vector<std::shared_ptr<Widget>> content_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_CONTAINER_HPP */

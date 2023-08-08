@@ -37,7 +37,7 @@ HBox::HBox(int x, int y, int padding) : VBox(x, y, padding) {}
 void HBox::computeSize() {
   int curx = x;
   h = 0;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->y = y;
       wid->x = curx;
@@ -47,7 +47,7 @@ void HBox::computeSize() {
     }
   }
   w = curx - x;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->expand(wid->w, h);
     }

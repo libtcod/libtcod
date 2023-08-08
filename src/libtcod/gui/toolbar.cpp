@@ -112,7 +112,7 @@ void ToolBar::render() {
 void ToolBar::computeSize() {
   int cury = y + 1;
   w = name ? static_cast<int>(strlen(name) + 4) : 2;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->x = x + 1;
       wid->y = cury;
@@ -123,11 +123,11 @@ void ToolBar::computeSize() {
   }
   if (w < fixedWidth) w = fixedWidth;
   h = cury - y + 1;
-  for (Widget* wid : content_) {
+  for (auto& wid : content_) {
     if (wid->isVisible()) {
       wid->expand(w - 2, wid->h);
     }
   }
 }
-void ToolBar::addSeparator(const char* txt, const char* tip_) { addWidget(new Separator(txt, tip_)); }
+void ToolBar::addSeparator(const char* txt, const char* tip_) { addWidget(std::make_unique<Separator>(txt, tip_)); }
 #endif  // TCOD_NO_UNICODE

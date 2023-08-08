@@ -200,7 +200,7 @@ void Operation::add() {
   if (addInternal()) {
     list.emplace_back(this);
     createParamUi();
-    button = new RadioButton(names[operation_type], tips[operation_type], historyCbk, this);
+    button = std::make_shared<RadioButton>(names[operation_type], tips[operation_type], historyCbk, this);
     button->setGroup(0);
     history->addWidget(button);
     button->select();
@@ -329,12 +329,12 @@ void NormalizeOperation::createParamUi() {
   params->setVisible(true);
   params->setName(names[NORM]);
 
-  TextBox* tbMin = new TextBox(
+  auto tbMin = std::make_shared<TextBox>(
       0, 0, 8, 10, "min", tcod::stringf("%g", min).c_str(), "Heightmap minimum value after the normalization");
   tbMin->setCallback(normalizeMinValueCbk, this);
   params->addWidget(tbMin);
 
-  TextBox* tbMax = new TextBox(
+  auto tbMax = std::make_shared<TextBox>(
       0, 0, 8, 10, "max", tcod::stringf("%g", max).c_str(), "Heightmap maximum value after the normalization");
   tbMax->setCallback(normalizeMaxValueCbk, this);
   params->addWidget(tbMax);
@@ -454,32 +454,33 @@ void AddFbmOperation::createParamUi() {
   params->setVisible(true);
   params->setName(names[ADD_FBM]);
 
-  Slider* slider = new Slider(0, 0, 8, 0.1f, 20.0f, "zoom       ", "Noise zoom");
+  auto slider = std::make_shared<Slider>(0, 0, 8, 0.1f, 20.0f, "zoom       ", "Noise zoom");
   slider->setCallback(addFbmZoomValueCbk, this);
   params->addWidget(slider);
   slider->setValue(zoom);
 
-  slider = new Slider(0, 0, 8, -100.0f, 100.0f, "xOffset    ", "Horizontal offset in the noise plan");
+  slider = std::make_shared<Slider>(0, 0, 8, -100.0f, 100.0f, "xOffset    ", "Horizontal offset in the noise plan");
   slider->setCallback(addFbmXOffsetValueCbk, this);
   params->addWidget(slider);
   slider->setValue(offsetx);
 
-  slider = new Slider(0, 0, 8, -100.0f, 100.0f, "yOffset    ", "Vertical offset in the noise plan");
+  slider = std::make_shared<Slider>(0, 0, 8, -100.0f, 100.0f, "yOffset    ", "Vertical offset in the noise plan");
   slider->setCallback(addFbmYOffsetValueCbk, this);
   params->addWidget(slider);
   slider->setValue(offsety);
 
-  slider = new Slider(0, 0, 8, 1.0f, 10.0f, "octaves    ", "Number of octaves for the fractal sum");
+  slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 10.0f, "octaves    ", "Number of octaves for the fractal sum");
   slider->setCallback(addFbmOctavesValueCbk, this);
   params->addWidget(slider);
   slider->setValue(octaves);
 
-  slider = new Slider(0, 0, 8, -1.0f, 1.0f, "noiseOffset", "Offset added to the noise value");
+  slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "noiseOffset", "Offset added to the noise value");
   slider->setCallback(addFbmOffsetValueCbk, this);
   params->addWidget(slider);
   slider->setValue(offset);
 
-  slider = new Slider(0, 0, 8, 0.01f, 10.0f, "scale      ", "The noise value is multiplied by this value");
+  slider =
+      std::make_shared<Slider>(0, 0, 8, 0.01f, 10.0f, "scale      ", "The noise value is multiplied by this value");
   slider->setCallback(addFbmScaleValueCbk, this);
   params->addWidget(slider);
   slider->setValue(scale);
@@ -653,25 +654,25 @@ void AddHillOperation::createParamUi() {
   params->setVisible(true);
   params->setName(names[ADDHILL]);
 
-  Slider* slider = new Slider(0, 0, 8, 1.0f, 50.0f, "nbHill   ", "Number of hills");
+  auto slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 50.0f, "nbHill   ", "Number of hills");
   slider->setCallback(addHillNbHillValueCbk, this);
   slider->setFormat("%.0f");
   slider->setSensitivity(2.0f);
   params->addWidget(slider);
   slider->setValue((float)nbHill);
 
-  slider = new Slider(0, 0, 8, 1.0f, 30.0f, "radius   ", "Average radius of the hills");
+  slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 30.0f, "radius   ", "Average radius of the hills");
   slider->setCallback(addHillRadiusValueCbk, this);
   slider->setFormat("%.1f");
   params->addWidget(slider);
   slider->setValue(radius);
 
-  slider = new Slider(0, 0, 8, 0.0f, 1.0f, "radiusVar", "Variation of the radius of the hills");
+  slider = std::make_shared<Slider>(0, 0, 8, 0.0f, 1.0f, "radiusVar", "Variation of the radius of the hills");
   slider->setCallback(addHillRadiusVarValueCbk, this);
   params->addWidget(slider);
   slider->setValue(radiusVar);
 
-  slider = new Slider(
+  slider = std::make_shared<Slider>(
       0, 0, 8, 0.0f, (mapmax == mapmin ? 1.0f : (mapmax - mapmin) * 0.5f), "height   ", "Height of the hills");
   slider->setCallback(addHillHeightValueCbk, this);
   params->addWidget(slider);
@@ -734,7 +735,7 @@ void AddLevelOperation::createParamUi() {
   params->setName(names[ADDLEVEL]);
   params->setVisible(true);
 
-  Slider* slider = new Slider(0, 0, 8, -1.0f, 1.0f, "zOffset", "z value to add to the whole map");
+  auto slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "zOffset", "z value to add to the whole map");
   slider->setCallback(raiseLowerValueCbk, this);
   params->addWidget(slider);
   float minLevel, maxLevel;
@@ -875,7 +876,7 @@ void SmoothOperation::createParamUi() {
   params->setName(names[SMOOTH]);
   params->setVisible(true);
 
-  Slider* slider = new Slider(
+  auto slider = std::make_shared<Slider>(
       0,
       0,
       8,
@@ -887,7 +888,7 @@ void SmoothOperation::createParamUi() {
   params->addWidget(slider);
   slider->setValue(minLevel);
 
-  slider = new Slider(
+  slider = std::make_shared<Slider>(
       0,
       0,
       8,
@@ -899,14 +900,15 @@ void SmoothOperation::createParamUi() {
   params->addWidget(slider);
   slider->setValue(maxLevel);
 
-  slider = new Slider(0, 0, 8, 1.0f, 20.0f, "amount", "Number of times the smoothing operation is applied");
+  slider =
+      std::make_shared<Slider>(0, 0, 8, 1.0f, 20.0f, "amount", "Number of times the smoothing operation is applied");
   slider->setCallback(smoothCountValueCbk, this);
   slider->setFormat("%.0f");
   slider->setSensitivity(4.0f);
   params->addWidget(slider);
   slider->setValue((float)count);
 
-  slider = new Slider(0, 0, 8, 0.0f, 1.0f, "sharpness", "Radius of the blurring effect");
+  slider = std::make_shared<Slider>(0, 0, 8, 0.0f, 1.0f, "sharpness", "Radius of the blurring effect");
   slider->setCallback(smoothRadiusValueCbk, this);
   params->addWidget(slider);
   slider->setValue(0.0f);
@@ -982,18 +984,18 @@ void RainErosionOperation::createParamUi() {
   params->setName(names[RAIN]);
   params->setVisible(true);
 
-  Slider* slider = new Slider(0, 0, 8, 1000.0f, 20000.0f, "nbDrops      ", "Number of rain drops simulated");
+  auto slider = std::make_shared<Slider>(0, 0, 8, 1000.0f, 20000.0f, "nbDrops      ", "Number of rain drops simulated");
   slider->setCallback(rainErosionNbDropsValueCbk, this);
   params->addWidget(slider);
   slider->setFormat("%.0f");
   slider->setValue((float)nbDrops);
 
-  slider = new Slider(0, 0, 8, 0.01f, 1.0f, "erosion      ", "Erosion effect amount");
+  slider = std::make_shared<Slider>(0, 0, 8, 0.01f, 1.0f, "erosion      ", "Erosion effect amount");
   slider->setCallback(rainErosionErosionCoefValueCbk, this);
   params->addWidget(slider);
   slider->setValue(erosionCoef);
 
-  slider = new Slider(0, 0, 8, 0.01f, 1.0f, "sedimentation", "Sedimentation effect amount");
+  slider = std::make_shared<Slider>(0, 0, 8, 0.01f, 1.0f, "sedimentation", "Sedimentation effect amount");
   slider->setCallback(rainErosionSedimentationCoefValueCbk, this);
   params->addWidget(slider);
   slider->setValue(sedimentationCoef);
@@ -1082,7 +1084,7 @@ void NoiseLerpOperation::createParamUi() {
   AddFbmOperation::createParamUi();
   params->setName(names[NOISE_LERP]);
 
-  Slider* slider = new Slider(0, 0, 8, -1.0f, 1.0f, "coef       ", "Coefficient of the lerp operation");
+  auto slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "coef       ", "Coefficient of the lerp operation");
   slider->setCallback(noiseLerpValueCbk, this);
   params->addWidget(slider);
   slider->setValue(coef);
@@ -1198,7 +1200,7 @@ void voronoiCoefValueCbk(Widget* wid, float val, void* data) {
   VoronoiOperation* op = (VoronoiOperation*)data;
   int coef_num;
   for (coef_num = 0; coef_num < op->nbCoef; coef_num++) {
-    if (op->coefSlider[coef_num] == wid) break;
+    if (op->coefSlider[coef_num].get() == wid) break;
   }
   op->coef[coef_num] = val;
   if (Operation::list.back().get() == op) {
@@ -1214,14 +1216,15 @@ void VoronoiOperation::createParamUi() {
   params->setName(names[VORONOI]);
   params->setVisible(true);
 
-  Slider* slider = new Slider(0, 0, 8, 1.0f, 50.0f, "nbPoints", "Number of Voronoi points");
+  auto slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 50.0f, "nbPoints", "Number of Voronoi points");
   slider->setCallback(voronoiNbPointsValueCbk, this);
   params->addWidget(slider);
   slider->setFormat("%.0f");
   slider->setSensitivity(2.0f);
   slider->setValue((float)nbPoints);
 
-  slider = new Slider(0, 0, 8, 1.0f, (float)(MAX_VORONOI_COEF - 1), "nbCoef  ", "Number of Voronoi coefficients");
+  slider = std::make_shared<Slider>(
+      0, 0, 8, 1.0f, (float)(MAX_VORONOI_COEF - 1), "nbCoef  ", "Number of Voronoi coefficients");
   slider->setCallback(voronoiNbCoefValueCbk, this);
   params->addWidget(slider);
   slider->setSensitivity(4.0f);
@@ -1229,8 +1232,8 @@ void VoronoiOperation::createParamUi() {
   slider->setValue((float)nbCoef);
 
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {
-    coefSlider[i] =
-        new Slider(0, 0, 8, -5.0f, 5.0f, tcod::stringf("coef[%d] ", i).c_str(), "Coefficient of Voronoi points");
+    coefSlider[i] = std::make_shared<Slider>(
+        0, 0, 8, -5.0f, 5.0f, tcod::stringf("coef[%d] ", i).c_str(), "Coefficient of Voronoi points");
     coefSlider[i]->setCallback(voronoiCoefValueCbk, this);
     params->addWidget(coefSlider[i]);
     coefSlider[i]->setValue((float)coef[i]);

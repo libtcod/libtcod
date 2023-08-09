@@ -161,7 +161,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
     libtcod/gui/radiobutton.hpp
-    libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.cpp
@@ -459,7 +458,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
     libtcod/gui/radiobutton.hpp
-    libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.cpp

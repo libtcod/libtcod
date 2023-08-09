@@ -32,13 +32,68 @@
 #ifndef TCOD_GUI_SLIDER_HPP
 #define TCOD_GUI_SLIDER_HPP
 #ifndef TCOD_NO_UNICODE
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
 #include "textbox.hpp"
-class TCODLIB_GUI_API Slider : public TextBox {
+
+class Slider : public TextBox {
  public:
-  Slider(int x, int y, int w, float min, float max, const char* label, const char* tip = NULL);
-  virtual ~Slider();
-  void render();
-  void update(const TCOD_key_t k);
+  Slider(int x, int y, int w, float min, float max, const char* label, const char* tip = nullptr)
+      : TextBox(x, y, w, 10, label, nullptr, tip), min{min}, max{max}, value{(min + max) * 0.5f} {
+    valueToText();
+    this->w += 2;
+  }
+  virtual ~Slider() override {
+    if (fmt) free(fmt);
+  }
+  void render() override {
+    w -= 2;
+    TextBox::render();
+    w += 2;
+    const auto fg = TCOD_ColorRGBA((onArrows || drag) ? foreFocus : fore);
+    const auto bg = TCOD_ColorRGBA((onArrows || drag) ? backFocus : back);
+    auto& console = static_cast<TCOD_Console&>(*con);
+    if (console.in_bounds({x + w - 2, y})) {
+      console.at({x + w - 2, y}) = {0x2190, fg, bg};  // ←
+    }
+    if (console.in_bounds({x + w - 1, y})) {
+      console.at({x + w - 1, y}) = {0x2192, fg, bg};  // →
+    }
+  }
+  void update(const TCOD_key_t k) override {
+    float old_value = value;
+    TextBox::update(k);
+    textToValue();
+    if (mouse.cx >= x + w - 2 && mouse.cx < x + w && mouse.cy == y) {
+      onArrows = true;
+    } else {
+      onArrows = false;
+    }
+    if (drag) {
+      if (drag_y == -1) {
+        drag_x = mouse.x;
+        drag_y = mouse.y;
+      } else {
+        float mdx = ((mouse.x - drag_x) * sensitivity) / (con->getWidth() * 8);
+        float mdy = ((mouse.y - drag_y) * sensitivity) / (con->getHeight() * 8);
+        float old_value2 = value;
+        if (fabs(mdy) > fabs(mdx)) {
+          mdx = -mdy;
+        }
+        value = dragValue + (max - min) * mdx;
+        value = std::max(min, std::min(value, max));
+        if (value != old_value2) {
+          valueToText();
+          textToValue();
+        }
+      }
+    }
+    if (value != old_value && cbk) {
+      cbk(this, value, data);
+    }
+  }
   void setMinMax(float min_, float max_) {
     this->min = min_;
     this->max = max_;
@@ -47,25 +102,61 @@ class TCODLIB_GUI_API Slider : public TextBox {
     this->cbk = cbk_;
     this->data = data_;
   }
-  void setFormat(const char* fmt);
-  void setValue(float value);
+  void setFormat(const char* fmt_) {
+    if (this->fmt) free(this->fmt);
+    if (fmt_)
+      this->fmt = TCOD_strdup(fmt_);
+    else
+      this->fmt = nullptr;
+    valueToText();
+  }
+  void setValue(float value_) {
+    this->value = CLAMP(min, max, value_);
+    valueToText();
+  }
   void setSensitivity(float sensitivity_) { this->sensitivity = sensitivity_; }
 
  protected:
-  float min, max, value, sensitivity;
-  bool onArrows;
-  bool drag;
-  int drag_x;
-  int drag_y;
-  float dragValue;
-  char* fmt;
-  void (*cbk)(Widget* wid, float val, void* data);
-  void* data;
+  void valueToText() {
+    char tmp[128];
+    sprintf(tmp, fmt ? fmt : "%.2f", static_cast<double>(value));
+    setText(tmp);
+  }
 
-  void valueToText();
-  void textToValue();
-  void onButtonPress();
-  void onButtonRelease();
+  void textToValue() {
+#ifdef TCOD_VISUAL_STUDIO
+    value = (float)atof(txt);
+#else
+    char* endptr;
+    float f = strtof(txt, &endptr);
+    if (f != 0.0f || endptr != txt) value = f;
+#endif
+  }
+  void onButtonPress() override {
+    if (onArrows) {
+      drag = true;
+      drag_y = -1;
+      dragValue = value;
+      TCODMouse::showCursor(false);
+    }
+  }
+  void onButtonRelease() override {
+    if (drag) {
+      drag = false;
+      TCODMouse::move((x + w - 2) * 8, y * 8);
+      TCODMouse::showCursor(true);
+    }
+  }
+
+  float min{}, max{}, value{}, sensitivity{1.0f};
+  bool onArrows{false};
+  bool drag{false};
+  int drag_x{};
+  int drag_y{};
+  float dragValue{};
+  char* fmt{};
+  void (*cbk)(Widget* wid, float val, void* data){};
+  void* data{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_SLIDER_HPP */

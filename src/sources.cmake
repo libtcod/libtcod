@@ -159,7 +159,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
     libtcod/gui/gui_portability.hpp
-    libtcod/gui/hbox.cpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.cpp
     libtcod/gui/image.hpp
@@ -176,7 +175,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/togglebutton.hpp
     libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp
-    libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
     libtcod/gui/widget.hpp
     libtcod/sdl2/event.cpp
@@ -464,7 +462,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
     libtcod/gui/gui_portability.hpp
-    libtcod/gui/hbox.cpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.cpp
     libtcod/gui/image.hpp
@@ -481,7 +478,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/togglebutton.hpp
     libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp
-    libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
     libtcod/gui/widget.hpp
 )

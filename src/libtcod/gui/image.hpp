@@ -32,16 +32,23 @@
 #ifndef TCOD_GUI_IMAGE_HPP
 #define TCOD_GUI_IMAGE_HPP
 #include "widget.hpp"
-class TCODLIB_GUI_API Image : public Widget {
+class Image : public Widget {
  public:
-  Image(int x, int y, int w, int h, const char* tip = NULL);
-  virtual ~Image();
-  void setBackgroundColor(const TCODColor col);
-  void render();
+  Image(int x, int y, int w, int h, const char* tip = NULL) : Widget{x, y, w, h} {
+    if (tip) setTip(tip);
+  }
+  void setBackgroundColor(const TCODColor col) { back = col; }
+  void render() override {
+    const auto bg = TCOD_ColorRGB(back);
+    tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
+  }
 
  protected:
-  void expand(int width, int height);
+  void expand(int width, int height) override {
+    if (width > w) w = width;
+    if (height > h) h = height;
+  }
 
-  TCODColor back;
+  TCODColor back{0, 0, 0};
 };
 #endif /* TCOD_GUI_IMAGE_HPP */

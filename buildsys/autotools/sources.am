@@ -181,7 +181,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/zip_c.c \
 	../../src/libtcod/gui/button.cpp \
 	../../src/libtcod/gui/flatlist.cpp \
-	../../src/libtcod/gui/image.cpp \
 	../../src/libtcod/gui/label.cpp \
 	../../src/libtcod/gui/radiobutton.cpp \
 	../../src/libtcod/gui/slider.cpp \

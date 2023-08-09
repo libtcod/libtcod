@@ -160,7 +160,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
-    libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp
     libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
@@ -459,7 +458,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
-    libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp
     libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp

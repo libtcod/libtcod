@@ -160,7 +160,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
-    libtcod/gui/label.cpp
     libtcod/gui/label.hpp
     libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp
@@ -461,7 +460,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
-    libtcod/gui/label.cpp
     libtcod/gui/label.hpp
     libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp

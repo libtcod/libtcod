@@ -32,9 +32,8 @@
 #ifndef TCOD_GUI_SLIDER_HPP
 #define TCOD_GUI_SLIDER_HPP
 #ifndef TCOD_NO_UNICODE
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <string>
 
 #include "textbox.hpp"
 
@@ -119,7 +118,7 @@ class Slider : public TextBox {
  protected:
   void valueToText() {
     char tmp[128];
-    sprintf(tmp, fmt ? fmt : "%.2f", static_cast<double>(value));
+    std::snprintf(tmp, sizeof(tmp), fmt ? fmt : "%.2f", static_cast<double>(value));
     setText(tmp);
   }
 

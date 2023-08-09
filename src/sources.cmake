@@ -152,7 +152,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/zip.h
     libtcod/zip.hpp
     libtcod/zip_c.c
-    libtcod/gui/button.cpp
     libtcod/gui/button.hpp
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.cpp
@@ -454,7 +453,6 @@ source_group(libtcod FILES
     libtcod/zip_c.c
 )
 source_group(libtcod\\gui FILES
-    libtcod/gui/button.cpp
     libtcod/gui/button.hpp
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.cpp

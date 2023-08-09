@@ -32,10 +32,25 @@
 #ifndef TCOD_GUI_BUTTON_HPP
 #define TCOD_GUI_BUTTON_HPP
 #ifndef TCOD_NO_UNICODE
+#include <string.h>
+
+#include <algorithm>
+
+#include "../console_printing.hpp"
 #include "widget.hpp"
-class TCODLIB_GUI_API Button : public Widget {
+
+class Button : public Widget {
  public:
-  Button(const char* label, const char* tip, widget_callback_t cbk, void* userData = NULL);
+  Button(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr) {
+    if (label) {
+      setLabel(label);
+    }
+    if (tip) {
+      setTip(tip);
+    }
+    this->userData = userData;
+    this->cbk = cbk;
+  }
   Button(
       int x,
       int y,
@@ -44,22 +59,64 @@ class TCODLIB_GUI_API Button : public Widget {
       const char* label,
       const char* tip,
       widget_callback_t cbk,
-      void* userData = NULL);
-  virtual ~Button();
-  void render();
-  void setLabel(const char* newLabel);
-  void computeSize();
+      void* userData = nullptr) {
+    if (label) {
+      setLabel(label);
+    }
+    if (tip) {
+      setTip(tip);
+    }
+    w = width;
+    h = height;
+    this->x = x;
+    this->y = y;
+    this->userData = userData;
+    this->cbk = cbk;
+  }
+  virtual ~Button() override {
+    if (label) {
+      free(label);
+    }
+  }
+  void render() override {
+    const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
+    const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
+    if (w > 0 && h > 0) {
+      tcod::draw_rect(*con, {x, y, w, h}, ' ', fg, bg);
+    }
+    if (label) {
+      if (pressed && mouseIn) {
+        tcod::print(*con, {x + w / 2, y}, tcod::stringf("-%s-", label), fg, std::nullopt, TCOD_CENTER);
+      } else {
+        tcod::print(*con, {x + w / 2, y}, label, fg, std::nullopt, TCOD_CENTER);
+      }
+    }
+  }
+  void setLabel(const char* newLabel) {
+    if (label) {
+      free(label);
+    }
+    label = TCOD_strdup(newLabel);
+  }
+  void computeSize() override {
+    w = label ? static_cast<int>(strlen(label) + 2) : 4;
+    h = 1;
+  }
   inline bool isPressed() { return pressed; }
 
  protected:
-  bool pressed;
-  char* label;
-  widget_callback_t cbk;
+  void onButtonPress() override { pressed = true; }
+  void onButtonRelease() override { pressed = false; }
+  void onButtonClick() override {
+    if (cbk) {
+      cbk(this, userData);
+    }
+  }
+  void expand(int width, int height) override { w = std::max(w, width); }
 
-  void onButtonPress();
-  void onButtonRelease();
-  void onButtonClick();
-  void expand(int width, int height);
+  bool pressed{};
+  char* label{};
+  widget_callback_t cbk{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_BUTTON_HPP */

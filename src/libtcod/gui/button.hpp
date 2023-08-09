@@ -41,10 +41,8 @@
 
 class Button : public Widget {
  public:
-  Button(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr) {
-    if (label) {
-      setLabel(label);
-    }
+  Button(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr)
+      : label_{label ? label : ""} {
     if (tip) {
       setTip(tip);
     }
@@ -59,10 +57,8 @@ class Button : public Widget {
       const char* label,
       const char* tip,
       widget_callback_t cbk,
-      void* userData = nullptr) {
-    if (label) {
-      setLabel(label);
-    }
+      void* userData = nullptr)
+      : label_{label ? label : ""} {
     if (tip) {
       setTip(tip);
     }
@@ -73,33 +69,23 @@ class Button : public Widget {
     this->userData = userData;
     this->cbk = cbk;
   }
-  virtual ~Button() override {
-    if (label) {
-      free(label);
-    }
-  }
   void render() override {
     const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
     const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
     if (w > 0 && h > 0) {
       tcod::draw_rect(*con, {x, y, w, h}, ' ', fg, bg);
     }
-    if (label) {
+    if (label_.size()) {
       if (pressed && mouseIn) {
-        tcod::print(*con, {x + w / 2, y}, tcod::stringf("-%s-", label), fg, std::nullopt, TCOD_CENTER);
+        tcod::print(*con, {x + w / 2, y}, tcod::stringf("-%s-", label_.c_str()), fg, std::nullopt, TCOD_CENTER);
       } else {
-        tcod::print(*con, {x + w / 2, y}, label, fg, std::nullopt, TCOD_CENTER);
+        tcod::print(*con, {x + w / 2, y}, label_, fg, std::nullopt, TCOD_CENTER);
       }
     }
   }
-  void setLabel(const char* newLabel) {
-    if (label) {
-      free(label);
-    }
-    label = TCOD_strdup(newLabel);
-  }
+  void setLabel(const char* newLabel) { label_ = newLabel ? newLabel : ""; }
   void computeSize() override {
-    w = label ? static_cast<int>(strlen(label) + 2) : 4;
+    w = label_.size() ? static_cast<int>(label_.size() + 2) : 4;
     h = 1;
   }
   inline bool isPressed() { return pressed; }
@@ -115,7 +101,7 @@ class Button : public Widget {
   void expand(int width, int height) override { w = std::max(w, width); }
 
   bool pressed{};
-  char* label{};
+  std::string label_{};
   widget_callback_t cbk{};
 };
 #endif  // TCOD_NO_UNICODE

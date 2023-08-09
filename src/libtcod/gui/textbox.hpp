@@ -44,7 +44,7 @@
 class TextBox : public Widget {
  public:
   TextBox(int x, int y, int w, int max_width, const char* label, const char* value, const char* tip = nullptr)
-      : Widget{x, y, w, 1}, max_width{max_width} {
+      : Widget{x, y, w, 1}, label_{label ? label : ""}, max_width{max_width} {
     if (max_width > 0) {
       txt = new char[max_width + 1]{};
       if (value) {
@@ -52,23 +52,21 @@ class TextBox : public Widget {
       }
     }
     if (tip) setTip(tip);
-    if (label) this->label = TCOD_strdup(label);
     box_width = w;
-    if (label) {
-      box_x = static_cast<int>(strlen(label) + 1);
+    if (label_.size()) {
+      box_x = static_cast<int>(label_.size() + 1);
       this->w += box_x;
     }
   }
   virtual ~TextBox() override {
     if (txt) delete[] txt;
-    if (label) free(label);
   }
   void render() override {
     TCOD_Console& console = *con;
     const auto bg = TCOD_ColorRGB(back);
     tcod::draw_rect(console, {x, y, w, h}, ' ', std::nullopt, bg);
     const auto fg = TCOD_ColorRGB(fore);
-    if (label) tcod::print(console, {x, y}, label, fg, std::nullopt);
+    tcod::print(console, {x, y}, label_, fg, std::nullopt);
 
     const auto focus_bg = TCOD_ColorRGB(keyboardFocus == this ? backFocus : back);
     tcod::draw_rect(console, {x + box_x, y, box_width, h}, 0, std::nullopt, focus_bg);
@@ -166,7 +164,7 @@ class TextBox : public Widget {
 
  protected:
   static inline float blinkingDelay{0.5f};
-  char* label{};
+  std::string label_{};
   char* txt{};
   float blink{};
   int pos{}, offset{};

@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <string>
 
 #include "../console_printing.hpp"
 #include "container.hpp"
@@ -76,7 +77,7 @@ class ToolBar : public Container {
     }
   }
 
-  void addSeparator(const char* txt, const char* tip_ = nullptr) { addWidget(std::make_unique<Separator>(txt, tip_)); }
+  void addSeparator(const char* txt, const char* tip = nullptr) { addWidget(std::make_unique<Separator>(txt, tip)); }
   void computeSize() {
     int cury = y + 1;
     w = name ? static_cast<int>(strlen(name) + 4) : 2;

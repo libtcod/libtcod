@@ -56,7 +56,7 @@ class ToggleButton : public Button {
     const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
     tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
     const char* check = pressed ? u8"\u2611" : u8"\u2610";
-    const auto text = label ? tcod::stringf("%s %s", check, label) : check;
+    const auto text = label_.size() ? tcod::stringf("%s %s", check, label_.c_str()) : check;
     tcod::print(*con, {x, y}, text, fg, std::nullopt);
   }
 

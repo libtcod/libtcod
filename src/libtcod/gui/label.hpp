@@ -33,29 +33,29 @@
 #define TCOD_GUI_LABEL_HPP
 #ifndef TCOD_NO_UNICODE
 #include <algorithm>
+#include <string>
 
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
 class Label : public Widget {
  public:
-  Label(int x, int y, const char* label, const char* tip = NULL) : Widget{x, y, 0, 1} {
-    this->label = label;
+  Label(int x, int y, const char* label, const char* tip = NULL) : Widget{x, y, 0, 1}, label_{label ? label : ""} {
     if (tip) {
       setTip(tip);
     }
   }
   void render() override {
     const auto fg = TCOD_ColorRGB(fore);
-    tcod::print(*con, {x, y}, label, fg, std::nullopt);
+    tcod::print(*con, {x, y}, label_, fg, std::nullopt);
   }
-  void computeSize() override { w = label ? static_cast<int>(strlen(label)) : 0; }
-  void setValue(const char* label_) { this->label = label_; }
+  void computeSize() override { w = static_cast<int>(label_.size()); }
+  void setValue(const char* label) { label_ = label; }
 
  protected:
   void expand(int width, int height) override { w = std::max(w, width); }
 
-  const char* label{};
+  std::string label_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_LABEL_HPP */

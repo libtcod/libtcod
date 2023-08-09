@@ -123,15 +123,7 @@ class Slider : public TextBox {
     setText(tmp);
   }
 
-  void textToValue() {
-#ifdef TCOD_VISUAL_STUDIO
-    value = (float)atof(txt);
-#else
-    char* endptr;
-    float f = strtof(txt, &endptr);
-    if (f != 0.0f || endptr != txt) value = f;
-#endif
-  }
+  void textToValue() { value = std::stof(text_); }
   void onButtonPress() override {
     if (onArrows) {
       drag = true;

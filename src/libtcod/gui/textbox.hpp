@@ -36,6 +36,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <functional>
 #include <utility>
 
 #include "../console_printing.hpp"
@@ -45,21 +46,13 @@ class TextBox : public Widget {
  public:
   TextBox(int x, int y, int w, int max_width, const char* label, const char* value, const char* tip = nullptr)
       : Widget{x, y, w, 1}, label_{label ? label : ""}, max_width{max_width} {
-    if (max_width > 0) {
-      txt = new char[max_width + 1]{};
-      if (value) {
-        strncpy(txt, value, max_width);
-      }
-    }
+    setText(value);
     if (tip) setTip(tip);
     box_width = w;
     if (label_.size()) {
       box_x = static_cast<int>(label_.size() + 1);
       this->w += box_x;
     }
-  }
-  virtual ~TextBox() override {
-    if (txt) delete[] txt;
   }
   void render() override {
     TCOD_Console& console = *con;
@@ -70,9 +63,10 @@ class TextBox : public Widget {
 
     const auto focus_bg = TCOD_ColorRGB(keyboardFocus == this ? backFocus : back);
     tcod::draw_rect(console, {x + box_x, y, box_width, h}, 0, std::nullopt, focus_bg);
-    const int len = std::min(static_cast<int>(strlen(txt) - offset), box_width);
+    const int len = std::min(static_cast<int>(text_.size() - offset), box_width);
     const auto focus_fg = TCOD_ColorRGB(keyboardFocus == this ? foreFocus : fore);
-    if (txt) tcod::print(console, {x + box_x, y}, tcod::stringf("%.*s", len, &txt[offset]), focus_fg, std::nullopt);
+    if (text_.size())
+      tcod::print(console, {x + box_x, y}, tcod::stringf("%.*s", len, &text_[offset]), focus_fg, std::nullopt);
 
     if (keyboardFocus == this && blink > 0.0f && console.in_bounds({x + box_x + pos - offset, y})) {
       auto& tile = console.at(x + box_x + pos - offset, y);
@@ -86,16 +80,11 @@ class TextBox : public Widget {
       blink -= elapsed;
       if (blink < -blinkingDelay) blink += 2 * blinkingDelay;
       if (k.vk == TCODK_CHAR || (k.vk >= TCODK_0 && k.vk <= TCODK_9) || (k.vk >= TCODK_KP0 && k.vk <= TCODK_KP9)) {
-        if (!insert || static_cast<int>(strlen(txt)) < max_width) {
-          if (insert && pos < static_cast<int>(strlen(txt))) {
-            for (int i = static_cast<int>(strlen(txt)); i >= pos; --i) {
-              txt[i + 1] = txt[i];
-            }
-          }
-          txt[pos] = k.c;
-          if (pos < max_width) pos++;
+        if (!insert || static_cast<int>(text_.size()) < max_width) {
+          text_.insert(pos, 1, k.c);
+          if (pos < max_width) ++pos;
           if (pos >= w) offset = pos - w + 1;
-          if (text_callback) text_callback(this, txt, data);
+          if (text_callback_) text_callback_(text_);
         }
         blink = blinkingDelay;
       }
@@ -106,7 +95,7 @@ class TextBox : public Widget {
           blink = blinkingDelay;
           break;
         case TCODK_RIGHT:
-          if (pos < static_cast<int>(strlen(txt))) {
+          if (pos < static_cast<int>(text_.size())) {
             pos++;
           }
           if (pos >= w) offset = pos - w + 1;
@@ -119,20 +108,16 @@ class TextBox : public Widget {
         case TCODK_BACKSPACE:
           if (pos > 0) {
             pos--;
-            for (uint32_t i = pos; i <= strlen(txt); i++) {
-              txt[i] = txt[i + 1];
-            }
-            if (text_callback) text_callback(this, txt, data);
+            text_.erase(text_.begin() + pos);
+            if (text_callback_) text_callback_(text_);
             if (pos < offset) offset = pos;
           }
           blink = blinkingDelay;
           break;
         case TCODK_DELETE:
-          if (pos < static_cast<int>(strlen(txt))) {
-            for (uint32_t i = pos; i <= strlen(txt); i++) {
-              txt[i] = txt[i + 1];
-            }
-            if (text_callback) text_callback(this, txt, data);
+          if (pos < static_cast<int>(text_.size())) {
+            text_.erase(text_.begin() + pos);
+            if (text_callback_) text_callback_(text_);
           }
           blink = blinkingDelay;
           break;
@@ -143,7 +128,7 @@ class TextBox : public Widget {
           break;
           */
         case TCODK_END:
-          pos = static_cast<int>(strlen(txt));
+          pos = static_cast<int>(text_.size());
           if (pos >= w) offset = pos - w + 1;
           blink = blinkingDelay;
           break;
@@ -154,24 +139,30 @@ class TextBox : public Widget {
     Widget::update(k);
   }
 
-  void setText(const char* txt_) { strncpy(this->txt, txt_, max_width); }
-  const char* getValue() { return txt; }
-  void setCallback(void (*cbk)(Widget* wid, char* val, void* data), void* data_) {
-    text_callback = cbk;
-    this->data = data_;
+  void setText(const char* txt) {
+    text_ = txt ? txt : "";
+    if (max_width && text_.size() > max_width) text_.resize(max_width);
   }
+  const char* getValue() { return text_.c_str(); }
+  [[deprecated]] void setCallback(void (*callback)(Widget* wid, char* val, void* data), void* data) {
+    text_callback_ = [&, callback, data](const std::string& text) {
+      callback(this, const_cast<char*>(text.c_str()), data);
+    };
+  }
+  void setCallback(std::function<void(const std::string&)> callback) { text_callback_ = callback; }
+
   static void setBlinkingDelay(float delay) { blinkingDelay = delay; }
 
  protected:
   static inline float blinkingDelay{0.5f};
   std::string label_{};
-  char* txt{};
+  std::string text_{};
   float blink{};
   int pos{}, offset{};
   int box_x{}, box_width{}, max_width{};
   bool insert{true};
-  void (*text_callback)(Widget* wid, char* val, void* data){};
-  void* data{};
+  // void (*text_callback_)(Widget* wid, const char* val, void* data){};
+  std::function<void(const std::string&)> text_callback_{};
 
   void onButtonClick() {
     if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) keyboardFocus = this;

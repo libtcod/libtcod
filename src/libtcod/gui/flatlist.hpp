@@ -97,7 +97,7 @@ class FlatList : public TextBox {
   void textToValue() {
     const char** ptr = list;
     while (*ptr) {
-      if (strcmp(txt, *ptr) == 0) {
+      if (strcmp(text_.c_str(), *ptr) == 0) {
         value = ptr;
         break;
       }

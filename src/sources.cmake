@@ -164,7 +164,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/slider.hpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.hpp
-    libtcod/gui/togglebutton.cpp
     libtcod/gui/togglebutton.hpp
     libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp
@@ -460,7 +459,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/slider.hpp
     libtcod/gui/statusbar.hpp
     libtcod/gui/textbox.hpp
-    libtcod/gui/togglebutton.cpp
     libtcod/gui/togglebutton.hpp
     libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp

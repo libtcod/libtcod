@@ -32,11 +32,15 @@
 #ifndef TCOD_GUI_TOGGLEBUTTON_HPP
 #define TCOD_GUI_TOGGLEBUTTON_HPP
 #ifndef TCOD_NO_UNICODE
+#include <string.h>
+
+#include "../console_printing.hpp"
 #include "button.hpp"
-class TCODLIB_GUI_API ToggleButton : public Button {
+
+class ToggleButton : public Button {
  public:
-  ToggleButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = NULL)
-      : Button(label, tip, cbk, userData) {}
+  ToggleButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr)
+      : Button{label, tip, cbk, userData} {}
   ToggleButton(
       int x,
       int y,
@@ -45,16 +49,27 @@ class TCODLIB_GUI_API ToggleButton : public Button {
       const char* label,
       const char* tip,
       widget_callback_t cbk,
-      void* userData = NULL)
-      : Button(x, y, width, height, label, tip, cbk, userData) {}
-  void render();
+      void* userData = nullptr)
+      : Button{x, y, width, height, label, tip, cbk, userData} {}
+  void render() override {
+    const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
+    const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
+    tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
+    const char* check = pressed ? u8"\u2611" : u8"\u2610";
+    const auto text = label ? tcod::stringf("%s %s", check, label) : check;
+    tcod::print(*con, {x, y}, text, fg, std::nullopt);
+  }
+
   bool isPressed() { return pressed; }
   void setPressed(bool val) { pressed = val; }
 
  protected:
-  void onButtonPress();
-  void onButtonRelease();
-  void onButtonClick();
+  void onButtonPress() override {}
+  void onButtonRelease() override {}
+  void onButtonClick() override {
+    pressed = !pressed;
+    if (cbk) cbk(this, userData);
+  }
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TOGGLEBUTTON_HPP */

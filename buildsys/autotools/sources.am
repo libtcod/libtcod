@@ -179,7 +179,6 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/wrappers.c \
 	../../src/libtcod/zip.cpp \
 	../../src/libtcod/zip_c.c \
-	../../src/libtcod/gui/togglebutton.cpp \
 	../../src/libtcod/gui/toolbar.cpp \
 	../../src/libtcod/sdl2/event.cpp \
 	../../src/vendor/lodepng.c \

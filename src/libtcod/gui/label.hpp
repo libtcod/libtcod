@@ -53,7 +53,7 @@ class Label : public Widget {
   void setValue(const char* label) { label_ = label; }
 
  protected:
-  void expand(int width, int height) override { w = std::max(w, width); }
+  void expand(int width, int) override { w = std::max(w, width); }
 
   std::string label_{};
 };

@@ -98,7 +98,7 @@ class Button : public Widget {
       cbk(this, userData);
     }
   }
-  void expand(int width, int height) override { w = std::max(w, width); }
+  void expand(int width, int) override { w = std::max(w, width); }
 
   bool pressed{};
   std::string label_{};

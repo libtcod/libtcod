@@ -44,9 +44,6 @@ class Slider : public TextBox {
     valueToText();
     this->w += 2;
   }
-  virtual ~Slider() override {
-    if (fmt) free(fmt);
-  }
   void render() override {
     w -= 2;
     TextBox::render();
@@ -102,11 +99,7 @@ class Slider : public TextBox {
     this->data = data_;
   }
   void setFormat(const char* fmt_) {
-    if (this->fmt) free(this->fmt);
-    if (fmt_)
-      this->fmt = TCOD_strdup(fmt_);
-    else
-      this->fmt = nullptr;
+    format_str_ = fmt_ ? fmt_ : DEFAULT_FORMAT;
     valueToText();
   }
   void setValue(float value_) {
@@ -118,7 +111,7 @@ class Slider : public TextBox {
  protected:
   void valueToText() {
     char tmp[128];
-    std::snprintf(tmp, sizeof(tmp), fmt ? fmt : "%.2f", static_cast<double>(value));
+    std::snprintf(tmp, sizeof(tmp), format_str_.c_str(), static_cast<double>(value));
     setText(tmp);
   }
 
@@ -145,9 +138,12 @@ class Slider : public TextBox {
   int drag_x{};
   int drag_y{};
   float dragValue{};
-  char* fmt{};
   void (*cbk)(Widget* wid, float val, void* data){};
   void* data{};
+
+ private:
+  static constexpr auto DEFAULT_FORMAT{"%.2f"};
+  std::string format_str_{DEFAULT_FORMAT};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_SLIDER_HPP */

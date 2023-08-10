@@ -164,7 +164,7 @@ class TextBox : public Widget {
   // void (*text_callback_)(Widget* wid, const char* val, void* data){};
   std::function<void(const std::string&)> text_callback_{};
 
-  void onButtonClick() {
+  void onButtonClick() override {
     if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) keyboardFocus = this;
   }
 };

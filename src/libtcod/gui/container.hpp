@@ -38,7 +38,7 @@
 
 class Container : public Widget {
  public:
-  Container(int x, int y, int w, int h) : Widget(x, y, w, h) {}
+  Container(int x, int y, int w, int h) : Widget{x, y, w, h} {}
   void addWidget(std::shared_ptr<Widget> wid) {
     content_.emplace_back(wid);
     widgets_.erase(std::find(widgets_.begin(), widgets_.end(), wid.get()));
@@ -59,7 +59,7 @@ class Container : public Widget {
     }
   }
   void clear() { content_.clear(); }
-  void update(const TCOD_key_t k) {
+  void update(const TCOD_key_t k) override {
     Widget::update(k);
     for (auto wid : content_) {
       if (wid->isVisible()) wid->update(k);

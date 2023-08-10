@@ -42,21 +42,21 @@
 
 class ToolBar : public Container {
  public:
-  ToolBar(int x, int y, const char* name, const char* tip = nullptr) : Container(x, y, 0, 2) {
+  ToolBar(int x, int y, const char* name, const char* tip = nullptr) : Container{x, y, 0, 2} {
     if (name) {
       this->name = TCOD_strdup(name);
       w = static_cast<int>(strlen(name) + 4);
     }
     if (tip) setTip(tip);
   }
-  ToolBar(int x, int y, int w, const char* name, const char* tip = nullptr) : Container(x, y, w, 2), fixedWidth(w) {
+  ToolBar(int x, int y, int w, const char* name, const char* tip = nullptr) : Container{x, y, w, 2}, fixedWidth{w} {
     if (name) {
       this->name = TCOD_strdup(name);
       fixedWidth = w = std::max<int>(static_cast<int>(strlen(name) + 4), w);
     }
     if (tip) setTip(tip);
   }
-  ~ToolBar() {
+  ~ToolBar() override {
     if (name) free(name);
   }
   void render() {
@@ -78,7 +78,7 @@ class ToolBar : public Container {
   }
 
   void addSeparator(const char* txt, const char* tip = nullptr) { addWidget(std::make_unique<Separator>(txt, tip)); }
-  void computeSize() {
+  void computeSize() override {
     int cury = y + 1;
     w = name ? static_cast<int>(strlen(name) + 4) : 2;
     for (auto& wid : content_) {
@@ -105,20 +105,20 @@ class ToolBar : public Container {
 
  private:
   struct Separator : public Widget {
-    Separator(const char* txt, const char* tip = nullptr) : Widget(0, 0, 0, 1) {
+    Separator(const char* txt, const char* tip = nullptr) : Widget{0, 0, 0, 1} {
       if (txt) {
         this->txt = TCOD_strdup(txt);
       }
       if (tip) setTip(tip);
     }
-    virtual ~Separator() {
+    virtual ~Separator() override {
       if (txt) {
         free(txt);
       }
     }
-    void computeSize() { w = txt ? static_cast<int>(strlen(txt) + 2) : 0; }
-    void expand(int width, int) { w = std::max(w, width); }
-    void render() {
+    void computeSize() override { w = txt ? static_cast<int>(strlen(txt) + 2) : 0; }
+    void expand(int width, int) override { w = std::max(w, width); }
+    void render() override {
       auto& console = static_cast<TCOD_Console&>(*con);
       const auto fg = TCOD_ColorRGB(fore);
       const auto bg = TCOD_ColorRGB(back);

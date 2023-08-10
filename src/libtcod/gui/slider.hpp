@@ -40,7 +40,7 @@
 class Slider : public TextBox {
  public:
   Slider(int x, int y, int w, float min, float max, const char* label, const char* tip = nullptr)
-      : TextBox(x, y, w, 10, label, nullptr, tip), min{min}, max{max}, value{(min + max) * 0.5f} {
+      : TextBox{x, y, w, 10, label, nullptr, tip}, min{min}, max{max}, value{(min + max) * 0.5f} {
     valueToText();
     this->w += 2;
   }

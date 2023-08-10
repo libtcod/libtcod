@@ -37,8 +37,8 @@
 
 class StatusBar : public Widget {
  public:
-  StatusBar(int x, int y, int w, int h) : Widget(x, y, w, h) {}
-  void render() {
+  StatusBar(int x, int y, int w, int h) : Widget{x, y, w, h} {}
+  void render() override {
     const auto bg = TCOD_ColorRGB(back);
     tcod::draw_rect(*con, {x, y, w, h}, ' ', std::nullopt, bg);
     if (focus && focus->tip_.size()) {

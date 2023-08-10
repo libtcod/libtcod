@@ -144,10 +144,10 @@ class TextBox : public Widget {
     if (max_width && text_.size() > max_width) text_.resize(max_width);
   }
   const char* getValue() { return text_.c_str(); }
-  [[deprecated]] void setCallback(void (*callback)(Widget* wid, char* val, void* data), void* data) {
-    text_callback_ = [&, callback, data](const std::string& text) {
-      callback(this, const_cast<char*>(text.c_str()), data);
-    };
+  [[deprecated("Use std::function overload instead")]] void setCallback(
+      void (*callback)(Widget* wid, char* val, void* data), void* data) {
+    setCallback(
+        [&, callback, data](const std::string& text) { callback(this, const_cast<char*>(text.c_str()), data); });
   }
   void setCallback(std::function<void(const std::string&)> callback) { text_callback_ = callback; }
 
@@ -161,12 +161,13 @@ class TextBox : public Widget {
   int pos{}, offset{};
   int box_x{}, box_width{}, max_width{};
   bool insert{true};
-  // void (*text_callback_)(Widget* wid, const char* val, void* data){};
-  std::function<void(const std::string&)> text_callback_{};
 
   void onButtonClick() override {
     if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) keyboardFocus = this;
   }
+
+ private:
+  std::function<void(const std::string&)> text_callback_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TEXTBOX_HPP */

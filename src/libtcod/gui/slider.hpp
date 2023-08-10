@@ -33,6 +33,7 @@
 #define TCOD_GUI_SLIDER_HPP
 #ifndef TCOD_NO_UNICODE
 #include <cstdio>
+#include <functional>
 #include <string>
 
 #include "textbox.hpp"
@@ -86,18 +87,19 @@ class Slider : public TextBox {
         }
       }
     }
-    if (value != old_value && cbk) {
-      cbk(this, value, data);
+    if (value != old_value && callback_) {
+      callback_(value);
     }
   }
   void setMinMax(float min_, float max_) {
     this->min = min_;
     this->max = max_;
   }
-  void setCallback(void (*cbk_)(Widget* wid, float val, void* data), void* data_) {
-    this->cbk = cbk_;
-    this->data = data_;
+  [[deprecated("Use std::function overload instead")]] void setCallback(
+      void (*callback)(Widget* wid, float val, void* data), void* data) {
+    setCallback([&, callback, data](float value) { callback(this, value, data); });
   }
+  void setCallback(std::function<void(float)> callback) { callback_ = callback; }
   void setFormat(const char* fmt_) {
     format_str_ = fmt_ ? fmt_ : DEFAULT_FORMAT;
     valueToText();
@@ -138,12 +140,11 @@ class Slider : public TextBox {
   int drag_x{};
   int drag_y{};
   float dragValue{};
-  void (*cbk)(Widget* wid, float val, void* data){};
-  void* data{};
 
  private:
   static constexpr auto DEFAULT_FORMAT{"%.2f"};
   std::string format_str_{DEFAULT_FORMAT};
+  std::function<void(float)> callback_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_SLIDER_HPP */

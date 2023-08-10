@@ -39,18 +39,22 @@
 
 class ToggleButton : public Button {
  public:
-  ToggleButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr)
-      : Button{label, tip, cbk, userData} {}
-  ToggleButton(
+  ToggleButton(std::string label, std::string tip, std::function<void()> callback) : Button{label, tip, callback} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] ToggleButton(
+      const char* label, const char* tip, widget_callback_t callback, void* userData = nullptr)
+      : Button{label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
+  ToggleButton(int x, int y, int width, int height, std::string label, std::string tip, std::function<void()> callback)
+      : Button{x, y, width, height, label, tip, callback} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] ToggleButton(
       int x,
       int y,
       int width,
       int height,
       const char* label,
       const char* tip,
-      widget_callback_t cbk,
+      widget_callback_t callback,
       void* userData = nullptr)
-      : Button{x, y, width, height, label, tip, cbk, userData} {}
+      : Button{x, y, width, height, label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
   void render() override {
     const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
     const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
@@ -68,7 +72,7 @@ class ToggleButton : public Button {
   void onButtonRelease() override {}
   void onButtonClick() override {
     pressed = !pressed;
-    if (cbk) cbk(this, userData);
+    if (callback_) callback_();
   }
 };
 #endif  // TCOD_NO_UNICODE

@@ -35,18 +35,23 @@
 #include "button.hpp"
 class RadioButton : public Button {
  public:
-  RadioButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr)
-      : Button{label, tip, cbk, userData}, group{defaultGroup} {}
-  RadioButton(
+  RadioButton(std::string label, std::string tip, std::function<void()> callback)
+      : Button{label, tip, callback}, group{defaultGroup} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] RadioButton(
+      const char* label, const char* tip, widget_callback_t callback, void* userData = nullptr)
+      : RadioButton{label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
+  RadioButton(int x, int y, int width, int height, std::string label, std::string tip, std::function<void()> callback)
+      : Button{x, y, width, height, label, tip, callback}, group{defaultGroup} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] RadioButton(
       int x,
       int y,
       int width,
       int height,
       const char* label,
       const char* tip,
-      widget_callback_t cbk,
+      widget_callback_t callback,
       void* userData = nullptr)
-      : Button{x, y, width, height, label, tip, cbk, userData}, group{defaultGroup} {}
+      : RadioButton{x, y, width, height, label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
 
   void setGroup(int group_) { this->group = group_; }
   void render() override {

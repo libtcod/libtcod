@@ -42,6 +42,7 @@
 #include "../sys.hpp"
 #include "gui_portability.hpp"
 
+typedef void (*widget_callback_t)(class Widget* w, void* userData);
 class Widget {
  public:
   Widget() : Widget{0, 0, 0, 0} {}
@@ -121,7 +122,6 @@ class Widget {
   }
 
   int x{}, y{}, w{}, h{};
-  void* userData{};
   static inline Widget* focus{};
   static inline Widget* keyboardFocus{};
   static inline TCOD_mouse_t mouse{};
@@ -149,6 +149,13 @@ class Widget {
     }
   }
 
+  /***************************************************************************
+      @brief Used for backwards compatibility, do not call this function directly.
+   */
+  std::function<void()> makeCallback_(widget_callback_t callback, void* userData) {
+    return [&, callback, userData]() { callback(this, userData); };
+  }
+
   static inline float elapsed{};
   static inline TCODColor back{40, 40, 120};
   static inline TCODColor backFocus{70, 70, 130};
@@ -160,5 +167,4 @@ class Widget {
   bool mouseL{false};
   bool visible{true};
 };
-typedef void (*widget_callback_t)(Widget* w, void* userData);
 #endif /* TCOD_GUI_WIDGET_HPP */

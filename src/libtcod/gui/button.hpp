@@ -35,40 +35,34 @@
 #include <string.h>
 
 #include <algorithm>
+#include <functional>
 
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
 class Button : public Widget {
  public:
-  Button(const char* label, const char* tip, widget_callback_t cbk, void* userData = nullptr)
-      : label_{label ? label : ""} {
-    if (tip) {
-      setTip(tip);
-    }
-    this->userData = userData;
-    this->cbk = cbk;
+  Button(std::string label, std::string tip, std::function<void()> callback) : label_{label}, callback_{callback} {
+    tip_ = tip;
   }
-  Button(
+  [[deprecated("Switch to a non-deprecated constructor")]] Button(
+      const char* label, const char* tip, widget_callback_t callback, void* userData = nullptr)
+      : Button{label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
+  Button(int x, int y, int width, int height, std::string label, std::string tip, std::function<void()> callback)
+      : Widget{x, y, width, height}, label_{label}, callback_{callback} {
+    tip_ = tip;
+  }
+  [[deprecated("Switch to a non-deprecated constructor")]] Button(
       int x,
       int y,
       int width,
       int height,
       const char* label,
       const char* tip,
-      widget_callback_t cbk,
+      widget_callback_t callback,
       void* userData = nullptr)
-      : label_{label ? label : ""} {
-    if (tip) {
-      setTip(tip);
-    }
-    w = width;
-    h = height;
-    this->x = x;
-    this->y = y;
-    this->userData = userData;
-    this->cbk = cbk;
-  }
+      : Button{x, y, width, height, label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
+
   void render() override {
     const auto fg = TCOD_ColorRGB(mouseIn ? foreFocus : fore);
     const auto bg = TCOD_ColorRGB(mouseIn ? backFocus : back);
@@ -94,15 +88,13 @@ class Button : public Widget {
   void onButtonPress() override { pressed = true; }
   void onButtonRelease() override { pressed = false; }
   void onButtonClick() override {
-    if (cbk) {
-      cbk(this, userData);
-    }
+    if (callback_) callback_();
   }
   void expand(int width, int) override { w = std::max(w, width); }
 
   bool pressed{};
   std::string label_{};
-  widget_callback_t cbk{};
+  std::function<void()> callback_{};
 };
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_BUTTON_HPP */

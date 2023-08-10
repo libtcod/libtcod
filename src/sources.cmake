@@ -156,7 +156,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
@@ -271,7 +270,6 @@ install(FILES
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
@@ -450,7 +448,6 @@ source_group(libtcod\\gui FILES
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp

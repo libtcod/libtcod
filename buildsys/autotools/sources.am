@@ -93,7 +93,6 @@ libtcod_gui_include_HEADERS = \
 	../../src/libtcod/gui/container.hpp \
 	../../src/libtcod/gui/flatlist.hpp \
 	../../src/libtcod/gui/gui.hpp \
-	../../src/libtcod/gui/gui_portability.hpp \
 	../../src/libtcod/gui/hbox.hpp \
 	../../src/libtcod/gui/image.hpp \
 	../../src/libtcod/gui/label.hpp \

@@ -31,16 +31,16 @@
  */
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "../color.hpp"
 #include "../console.hpp"
-#include "../list.hpp"
 #include "../mouse.hpp"
+#include "../portability.h"
 #include "../sys.hpp"
-#include "gui_portability.hpp"
 
 typedef void (*widget_callback_t)(class Widget* w, void* userData);
 class Widget {

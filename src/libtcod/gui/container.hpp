@@ -52,8 +52,8 @@ class Container : public Widget {
   void removeWidget(Widget* wid) {
     content_.erase(std::find_if(content_.begin(), content_.end(), [&](auto& it) { return it.get() == wid; }));
   }
-  void setVisible(bool val) { Widget::setVisible(val); }
-  void render() {
+  void setVisible(bool val) override { Widget::setVisible(val); }
+  void render() override {
     for (auto wid : content_) {
       if (wid->isVisible()) wid->render();
     }

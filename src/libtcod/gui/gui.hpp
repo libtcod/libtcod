@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _GUI_HPP
-#define _GUI_HPP
+#ifndef TCOD_GUI_HPP
+#define TCOD_GUI_HPP
 
 #include "../libtcod.hpp"
 #include "button.hpp"
@@ -48,4 +48,4 @@
 #include "vbox.hpp"
 #include "widget.hpp"
 
-#endif
+#endif  // TCOD_GUI_HPP

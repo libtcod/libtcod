@@ -187,8 +187,7 @@ const std::string& Operation::buildCode(CodeType type) {
 
 void Operation::run() { runInternal(); }
 
-void historyCbk(Widget*, void* data) {
-  Operation* op = (Operation*)data;
+void historyCbk(Operation* op) {
   op->createParamUi();
   op->button->select();
   Operation::currentOp = op;
@@ -200,7 +199,7 @@ void Operation::add() {
   if (addInternal()) {
     list.emplace_back(this);
     createParamUi();
-    button = std::make_shared<RadioButton>(names[operation_type], tips[operation_type], historyCbk, this);
+    button = std::make_shared<RadioButton>(names[operation_type], tips[operation_type], [&]() { historyCbk(this); });
     button->setGroup(0);
     history->addWidget(button);
     button->select();
@@ -282,44 +281,26 @@ bool NormalizeOperation::addInternal() {
   return true;
 }
 
-void normalizeMinValueCbk(Widget*, char* val, void* data) {
-#ifdef TCOD_VISUAL_STUDIO
-  float f = (float)atof(val);
-  {
-#else
-  char* endptr;
-  float f = strtof(val, &endptr);
-  if (f != 0.0f || endptr != val) {
-#endif
-    NormalizeOperation* op = (NormalizeOperation*)data;
-    if (f < op->max) {
-      op->min = f;
-      if (Operation::list.back().get() == op) {
-        op->run();
-      } else {
-        Operation::reseed();
-      }
+void normalizeMinValueCbk(float f, NormalizeOperation* data) {
+  NormalizeOperation* op = (NormalizeOperation*)data;
+  if (f < op->max) {
+    op->min = f;
+    if (Operation::list.back().get() == op) {
+      op->run();
+    } else {
+      Operation::reseed();
     }
   }
 }
 
-void normalizeMaxValueCbk(Widget*, char* val, void* data) {
-#ifdef TCOD_VISUAL_STUDIO
-  float f = (float)atof(val);
-  {
-#else
-  char* endptr;
-  float f = strtof(val, &endptr);
-  if (f != 0.0f || endptr != val) {
-#endif
-    NormalizeOperation* op = (NormalizeOperation*)data;
-    if (f > op->min) {
-      op->max = f;
-      if (Operation::list.back().get() == op) {
-        op->run();
-      } else {
-        Operation::reseed();
-      }
+void normalizeMaxValueCbk(float f, NormalizeOperation* data) {
+  NormalizeOperation* op = (NormalizeOperation*)data;
+  if (f > op->min) {
+    op->max = f;
+    if (Operation::list.back().get() == op) {
+      op->run();
+    } else {
+      Operation::reseed();
     }
   }
 }
@@ -331,12 +312,12 @@ void NormalizeOperation::createParamUi() {
 
   auto tbMin = std::make_shared<TextBox>(
       0, 0, 8, 10, "min", tcod::stringf("%g", min).c_str(), "Heightmap minimum value after the normalization");
-  tbMin->setCallback(normalizeMinValueCbk, this);
+  tbMin->setCallback([&](const std::string& v) { normalizeMinValueCbk(std::stof(v), this); });
   params->addWidget(tbMin);
 
   auto tbMax = std::make_shared<TextBox>(
       0, 0, 8, 10, "max", tcod::stringf("%g", max).c_str(), "Heightmap maximum value after the normalization");
-  tbMax->setCallback(normalizeMaxValueCbk, this);
+  tbMax->setCallback([&](const std::string& v) { normalizeMaxValueCbk(std::stof(v), this); });
   params->addWidget(tbMax);
 }
 
@@ -383,8 +364,7 @@ bool AddFbmOperation::addInternal() {
   return true;
 }
 
-void addFbmZoomValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmZoomValueCbk(float val, AddFbmOperation* op) {
   op->zoom = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -394,8 +374,7 @@ void addFbmZoomValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addFbmXOffsetValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmXOffsetValueCbk(float val, AddFbmOperation* op) {
   op->offsetx = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -405,8 +384,7 @@ void addFbmXOffsetValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addFbmYOffsetValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmYOffsetValueCbk(float val, AddFbmOperation* op) {
   op->offsety = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -416,8 +394,7 @@ void addFbmYOffsetValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addFbmOctavesValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmOctavesValueCbk(float val, AddFbmOperation* op) {
   op->octaves = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -427,8 +404,7 @@ void addFbmOctavesValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addFbmOffsetValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmOffsetValueCbk(float val, AddFbmOperation* op) {
   op->offset = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -438,8 +414,7 @@ void addFbmOffsetValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addFbmScaleValueCbk(Widget*, float val, void* data) {
-  AddFbmOperation* op = (AddFbmOperation*)data;
+void addFbmScaleValueCbk(float val, AddFbmOperation* op) {
   op->scale = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -455,33 +430,33 @@ void AddFbmOperation::createParamUi() {
   params->setName(names[ADD_FBM]);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, 0.1f, 20.0f, "zoom       ", "Noise zoom");
-  slider->setCallback(addFbmZoomValueCbk, this);
+  slider->setCallback([&](float v) { addFbmZoomValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(zoom);
 
   slider = std::make_shared<Slider>(0, 0, 8, -100.0f, 100.0f, "xOffset    ", "Horizontal offset in the noise plan");
-  slider->setCallback(addFbmXOffsetValueCbk, this);
+  slider->setCallback([&](float v) { addFbmXOffsetValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(offsetx);
 
   slider = std::make_shared<Slider>(0, 0, 8, -100.0f, 100.0f, "yOffset    ", "Vertical offset in the noise plan");
-  slider->setCallback(addFbmYOffsetValueCbk, this);
+  slider->setCallback([&](float v) { addFbmYOffsetValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(offsety);
 
   slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 10.0f, "octaves    ", "Number of octaves for the fractal sum");
-  slider->setCallback(addFbmOctavesValueCbk, this);
+  slider->setCallback([&](float v) { addFbmOctavesValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(octaves);
 
   slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "noiseOffset", "Offset added to the noise value");
-  slider->setCallback(addFbmOffsetValueCbk, this);
+  slider->setCallback([&](float v) { addFbmOffsetValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(offset);
 
   slider =
       std::make_shared<Slider>(0, 0, 8, 0.01f, 10.0f, "scale      ", "The noise value is multiplied by this value");
-  slider->setCallback(addFbmScaleValueCbk, this);
+  slider->setCallback([&](float v) { addFbmScaleValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(scale);
 }
@@ -605,8 +580,7 @@ bool AddHillOperation::addInternal() {
   return true;
 }
 
-void addHillNbHillValueCbk(Widget*, float val, void* data) {
-  AddHillOperation* op = (AddHillOperation*)data;
+void addHillNbHillValueCbk(float val, AddHillOperation* op) {
   op->nbHill = (int)val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -616,8 +590,7 @@ void addHillNbHillValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addHillRadiusValueCbk(Widget*, float val, void* data) {
-  AddHillOperation* op = (AddHillOperation*)data;
+void addHillRadiusValueCbk(float val, AddHillOperation* op) {
   op->radius = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -627,8 +600,7 @@ void addHillRadiusValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addHillRadiusVarValueCbk(Widget*, float val, void* data) {
-  AddHillOperation* op = (AddHillOperation*)data;
+void addHillRadiusVarValueCbk(float val, AddHillOperation* op) {
   op->radiusVar = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -638,8 +610,7 @@ void addHillRadiusVarValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void addHillHeightValueCbk(Widget*, float val, void* data) {
-  AddHillOperation* op = (AddHillOperation*)data;
+void addHillHeightValueCbk(float val, AddHillOperation* op) {
   op->height = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -655,26 +626,26 @@ void AddHillOperation::createParamUi() {
   params->setName(names[ADDHILL]);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 50.0f, "nbHill   ", "Number of hills");
-  slider->setCallback(addHillNbHillValueCbk, this);
+  slider->setCallback([&](float v) { addHillNbHillValueCbk(v, this); });
   slider->setFormat("%.0f");
   slider->setSensitivity(2.0f);
   params->addWidget(slider);
   slider->setValue((float)nbHill);
 
   slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 30.0f, "radius   ", "Average radius of the hills");
-  slider->setCallback(addHillRadiusValueCbk, this);
+  slider->setCallback([&](float v) { addHillRadiusValueCbk(v, this); });
   slider->setFormat("%.1f");
   params->addWidget(slider);
   slider->setValue(radius);
 
   slider = std::make_shared<Slider>(0, 0, 8, 0.0f, 1.0f, "radiusVar", "Variation of the radius of the hills");
-  slider->setCallback(addHillRadiusVarValueCbk, this);
+  slider->setCallback([&](float v) { addHillRadiusVarValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(radiusVar);
 
   slider = std::make_shared<Slider>(
       0, 0, 8, 0.0f, (mapmax == mapmin ? 1.0f : (mapmax - mapmin) * 0.5f), "height   ", "Height of the hills");
-  slider->setCallback(addHillHeightValueCbk, this);
+  slider->setCallback([&](float v) { addHillHeightValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(height);
 }
@@ -719,8 +690,7 @@ bool AddLevelOperation::addInternal() {
   return ret;
 }
 
-void raiseLowerValueCbk(Widget*, float val, void* data) {
-  AddLevelOperation* op = (AddLevelOperation*)data;
+void raiseLowerValueCbk(float val, AddLevelOperation* op) {
   op->level = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -736,7 +706,7 @@ void AddLevelOperation::createParamUi() {
   params->setVisible(true);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "zOffset", "z value to add to the whole map");
-  slider->setCallback(raiseLowerValueCbk, this);
+  slider->setCallback([&](float v) { raiseLowerValueCbk(v, this); });
   params->addWidget(slider);
   float minLevel, maxLevel;
   hm->getMinMax(&minLevel, &maxLevel);
@@ -827,8 +797,7 @@ bool SmoothOperation::addInternal() {
   return true;
 }
 
-void smoothMinValueCbk(Widget*, float val, void* data) {
-  SmoothOperation* op = (SmoothOperation*)data;
+void smoothMinValueCbk(float val, SmoothOperation* op) {
   op->minLevel = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -838,8 +807,7 @@ void smoothMinValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void smoothMaxValueCbk(Widget*, float val, void* data) {
-  SmoothOperation* op = (SmoothOperation*)data;
+void smoothMaxValueCbk(float val, SmoothOperation* op) {
   op->maxLevel = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -849,8 +817,7 @@ void smoothMaxValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void smoothRadiusValueCbk(Widget*, float val, void* data) {
-  SmoothOperation* op = (SmoothOperation*)data;
+void smoothRadiusValueCbk(float val, SmoothOperation* op) {
   op->radius = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -860,8 +827,7 @@ void smoothRadiusValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void smoothCountValueCbk(Widget*, float val, void* data) {
-  SmoothOperation* op = (SmoothOperation*)data;
+void smoothCountValueCbk(float val, SmoothOperation* op) {
   op->count = (int)val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -884,7 +850,7 @@ void SmoothOperation::createParamUi() {
       MAX(1.0f, maxLevel),
       "minLevel",
       "Land level above which the smooth operation is applied");
-  slider->setCallback(smoothMinValueCbk, this);
+  slider->setCallback([&](float v) { smoothMinValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(minLevel);
 
@@ -896,20 +862,20 @@ void SmoothOperation::createParamUi() {
       MAX(1.0f, maxLevel),
       "maxLevel",
       "Land level below which the smooth operation is applied");
-  slider->setCallback(smoothMaxValueCbk, this);
+  slider->setCallback([&](float v) { smoothMaxValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(maxLevel);
 
   slider =
       std::make_shared<Slider>(0, 0, 8, 1.0f, 20.0f, "amount", "Number of times the smoothing operation is applied");
-  slider->setCallback(smoothCountValueCbk, this);
+  slider->setCallback([&](float v) { smoothCountValueCbk(v, this); });
   slider->setFormat("%.0f");
   slider->setSensitivity(4.0f);
   params->addWidget(slider);
   slider->setValue((float)count);
 
   slider = std::make_shared<Slider>(0, 0, 8, 0.0f, 1.0f, "sharpness", "Radius of the blurring effect");
-  slider->setCallback(smoothRadiusValueCbk, this);
+  slider->setCallback([&](float v) { smoothRadiusValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(0.0f);
 }
@@ -946,8 +912,7 @@ bool RainErosionOperation::addInternal() {
   return true;
 }
 
-void rainErosionNbDropsValueCbk(Widget*, float val, void* data) {
-  RainErosionOperation* op = (RainErosionOperation*)data;
+void rainErosionNbDropsValueCbk(float val, RainErosionOperation* op) {
   op->nbDrops = (int)val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -957,8 +922,7 @@ void rainErosionNbDropsValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void rainErosionErosionCoefValueCbk(Widget*, float val, void* data) {
-  RainErosionOperation* op = (RainErosionOperation*)data;
+void rainErosionErosionCoefValueCbk(float val, RainErosionOperation* op) {
   op->erosionCoef = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -968,8 +932,7 @@ void rainErosionErosionCoefValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void rainErosionSedimentationCoefValueCbk(Widget*, float val, void* data) {
-  RainErosionOperation* op = (RainErosionOperation*)data;
+void rainErosionSedimentationCoefValueCbk(float val, RainErosionOperation* op) {
   op->sedimentationCoef = val;
   if (op == Operation::list.back().get()) {
     restore();
@@ -985,18 +948,18 @@ void RainErosionOperation::createParamUi() {
   params->setVisible(true);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, 1000.0f, 20000.0f, "nbDrops      ", "Number of rain drops simulated");
-  slider->setCallback(rainErosionNbDropsValueCbk, this);
+  slider->setCallback([&](float v) { rainErosionNbDropsValueCbk(v, this); });
   params->addWidget(slider);
   slider->setFormat("%.0f");
   slider->setValue((float)nbDrops);
 
   slider = std::make_shared<Slider>(0, 0, 8, 0.01f, 1.0f, "erosion      ", "Erosion effect amount");
-  slider->setCallback(rainErosionErosionCoefValueCbk, this);
+  slider->setCallback([&](float v) { rainErosionErosionCoefValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(erosionCoef);
 
   slider = std::make_shared<Slider>(0, 0, 8, 0.01f, 1.0f, "sedimentation", "Sedimentation effect amount");
-  slider->setCallback(rainErosionSedimentationCoefValueCbk, this);
+  slider->setCallback([&](float v) { rainErosionSedimentationCoefValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(sedimentationCoef);
 }
@@ -1069,8 +1032,7 @@ bool NoiseLerpOperation::addInternal() {
   return true;
 }
 
-void noiseLerpValueCbk(Widget*, float val, void* data) {
-  NoiseLerpOperation* op = (NoiseLerpOperation*)data;
+void noiseLerpValueCbk(float val, NoiseLerpOperation* op) {
   op->coef = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -1085,7 +1047,7 @@ void NoiseLerpOperation::createParamUi() {
   params->setName(names[NOISE_LERP]);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, -1.0f, 1.0f, "coef       ", "Coefficient of the lerp operation");
-  slider->setCallback(noiseLerpValueCbk, this);
+  slider->setCallback([&](float v) { noiseLerpValueCbk(v, this); });
   params->addWidget(slider);
   slider->setValue(coef);
 }
@@ -1166,8 +1128,7 @@ bool VoronoiOperation::addInternal() {
   return true;
 }
 
-void voronoiNbPointsValueCbk(Widget*, float val, void* data) {
-  VoronoiOperation* op = (VoronoiOperation*)data;
+void voronoiNbPointsValueCbk(float val, VoronoiOperation* op) {
   op->nbPoints = (int)val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -1177,8 +1138,7 @@ void voronoiNbPointsValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void voronoiNbCoefValueCbk(Widget*, float val, void* data) {
-  VoronoiOperation* op = (VoronoiOperation*)data;
+void voronoiNbCoefValueCbk(float val, VoronoiOperation* op) {
   op->nbCoef = (int)val;
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {
     if (i < op->nbCoef) {
@@ -1196,12 +1156,7 @@ void voronoiNbCoefValueCbk(Widget*, float val, void* data) {
   }
 }
 
-void voronoiCoefValueCbk(Widget* wid, float val, void* data) {
-  VoronoiOperation* op = (VoronoiOperation*)data;
-  int coef_num;
-  for (coef_num = 0; coef_num < op->nbCoef; coef_num++) {
-    if (op->coefSlider[coef_num].get() == wid) break;
-  }
+void voronoiCoefValueCbk(int coef_num, float val, VoronoiOperation* op) {
   op->coef[coef_num] = val;
   if (Operation::list.back().get() == op) {
     restore();
@@ -1217,7 +1172,7 @@ void VoronoiOperation::createParamUi() {
   params->setVisible(true);
 
   auto slider = std::make_shared<Slider>(0, 0, 8, 1.0f, 50.0f, "nbPoints", "Number of Voronoi points");
-  slider->setCallback(voronoiNbPointsValueCbk, this);
+  slider->setCallback([&](float v) { voronoiNbPointsValueCbk(v, this); });
   params->addWidget(slider);
   slider->setFormat("%.0f");
   slider->setSensitivity(2.0f);
@@ -1225,7 +1180,7 @@ void VoronoiOperation::createParamUi() {
 
   slider = std::make_shared<Slider>(
       0, 0, 8, 1.0f, (float)(MAX_VORONOI_COEF - 1), "nbCoef  ", "Number of Voronoi coefficients");
-  slider->setCallback(voronoiNbCoefValueCbk, this);
+  slider->setCallback([&](float v) { voronoiNbCoefValueCbk(v, this); });
   params->addWidget(slider);
   slider->setSensitivity(4.0f);
   slider->setFormat("%.0f");
@@ -1234,7 +1189,7 @@ void VoronoiOperation::createParamUi() {
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {
     coefSlider[i] = std::make_shared<Slider>(
         0, 0, 8, -5.0f, 5.0f, tcod::stringf("coef[%d] ", i).c_str(), "Coefficient of Voronoi points");
-    coefSlider[i]->setCallback(voronoiCoefValueCbk, this);
+    coefSlider[i]->setCallback([&, i = i](float v) { voronoiCoefValueCbk(i, v, this); });
     params->addWidget(coefSlider[i]);
     coefSlider[i]->setValue((float)coef[i]);
     if (i >= nbCoef) coefSlider[i]->setVisible(false);

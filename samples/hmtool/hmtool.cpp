@@ -45,6 +45,7 @@ static float oldmapmin = 0.0f, oldmapmax = 0.0f;
 std::shared_ptr<ToolBar> params = nullptr;
 std::shared_ptr<ToolBar> history = nullptr;
 std::shared_ptr<ToolBar> colorMapGui = nullptr;
+std::shared_ptr<Button> change_color_map_button = nullptr;
 
 static float voronoiCoef[2] = {-1.0f, 1.0f};
 
@@ -199,7 +200,7 @@ void addHill(int nbHill, float baseRadius, float radiusVar, float height) {
   }
 }
 
-void clearCbk(Widget*, void*) {
+void clearCbk() {
   hm->clear();
   Operation::clear();
   history->clear();
@@ -207,42 +208,42 @@ void clearCbk(Widget*, void*) {
   params->setVisible(false);
 }
 
-void reseedCbk(Widget*, void*) {
+void reseedCbk() {
   seed = rnd->getInt(0x7FFFFFFF, 0xFFFFFFFF);
   Operation::reseed();
   message(3.0f, "Switching to seed %X", seed);
 }
 
-void cancelCbk(Widget*, void*) { Operation::cancel(); }
+void cancelCbk() { Operation::cancel(); }
 
 // operations buttons callbacks
-void normalizeCbk(Widget*, void*) { (new NormalizeOperation(0.0f, 1.0f))->add(); }
+void normalizeCbk() { (new NormalizeOperation(0.0f, 1.0f))->add(); }
 
-void addFbmCbk(Widget*, void*) { (new AddFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
+void addFbmCbk() { (new AddFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
 
-void scaleFbmCbk(Widget*, void*) { (new ScaleFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
+void scaleFbmCbk() { (new ScaleFbmOperation(1.0f, addFbmDelta, 0.0f, 6.0f, 1.0f, 0.5f))->add(); }
 
-void addHillCbk(Widget*, void*) {
+void addHillCbk() {
   (new AddHillOperation(25, 10.0f, 0.5f, (mapmax == mapmin ? 0.5f : (mapmax - mapmin) * 0.1f)))->add();
 }
 
-void rainErosionCbk(Widget*, void*) { (new RainErosionOperation(1000, 0.05f, 0.05f))->add(); }
+void rainErosionCbk() { (new RainErosionOperation(1000, 0.05f, 0.05f))->add(); }
 
-void smoothCbk(Widget*, void*) { (new SmoothOperation(mapmin, mapmax, 2))->add(); }
+void smoothCbk() { (new SmoothOperation(mapmin, mapmax, 2))->add(); }
 
-void voronoiCbk(Widget*, void*) { (new VoronoiOperation(100, 2, voronoiCoef))->add(); }
+void voronoiCbk() { (new VoronoiOperation(100, 2, voronoiCoef))->add(); }
 
-void noiseLerpCbk(Widget*, void*) {
+void noiseLerpCbk() {
   float v = (mapmax - mapmin) * 0.5f;
   if (v == 0.0f) v = 1.0f;
   (new NoiseLerpOperation(0.0f, 1.0f, addFbmDelta, 0.0f, 6.0f, v, v))->add();
 }
 
-void raiseLowerCbk(Widget*, void*) { (new AddLevelOperation(0.0f))->add(); }
+void raiseLowerCbk() { (new AddLevelOperation(0.0f))->add(); }
 
 // In/Out buttons callbacks
 
-void exportCCbk(Widget*, void*) {
+void exportCCbk() {
   const std::string code = Operation::buildCode(Operation::C);
   auto f = std::ofstream("hm.c", std::ios_base::trunc);
   f << code;
@@ -250,7 +251,7 @@ void exportCCbk(Widget*, void*) {
   message(3.0f, "The code has been exported to ./hm.c");
 }
 
-void exportPyCbk(Widget*, void*) {
+void exportPyCbk() {
   const std::string code = Operation::buildCode(Operation::PY);
   auto f = std::ofstream("hm.py", std::ios_base::trunc);
   f << code;
@@ -258,7 +259,7 @@ void exportPyCbk(Widget*, void*) {
   message(3.0f, "The code has been exported to ./hm.py");
 }
 
-void exportCppCbk(Widget*, void*) {
+void exportCppCbk() {
   const std::string code = Operation::buildCode(Operation::CPP);
   auto f = std::ofstream("hm.cpp", std::ios_base::trunc);
   f << code;
@@ -266,7 +267,7 @@ void exportCppCbk(Widget*, void*) {
   message(3.0f, "The code has been exported to ./hm.cpp");
 }
 
-void exportBmpCbk(Widget*, void*) {
+void exportBmpCbk() {
   TCODImage img(HM_WIDTH, HM_HEIGHT);
   for (int x = 0; x < HM_WIDTH; x++) {
     for (int y = 0; y < HM_HEIGHT; y++) {
@@ -302,74 +303,50 @@ void exportBmpCbk(Widget*, void*) {
 }
 
 // Display buttons callbacks
-void colorMapCbk(Widget*, void*) {
+void colorMapCbk() {
   slope = false;
   greyscale = false;
   normal = false;
 }
 
-void greyscaleCbk(Widget*, void*) {
+void greyscaleCbk() {
   slope = false;
   greyscale = true;
   normal = false;
 }
 
-void slopeCbk(Widget*, void*) {
+void slopeCbk() {
   slope = true;
   greyscale = false;
   normal = false;
 }
 
-void normalCbk(Widget*, void*) {
+void normalCbk() {
   slope = false;
   greyscale = false;
   normal = true;
 }
 
-void changeColorMapIdxCbk(Widget*, float val, void* data) {
-  auto i = reinterpret_cast<intptr_t>(data);
-  keyIndex[i] = (int)(val);
-  if (i == 1) sandHeight = (float)(i) / 255.0f;
-  initColors();
-}
+void changeColorMapEndCbk() { colorMapGui->setVisible(false); }
 
-void changeColorMapRedCbk(Widget*, float val, void* data) {
-  auto i = reinterpret_cast<intptr_t>(data);
-  keyColor[i].r = static_cast<uint8_t>(val);
-  keyImages[i]->setBackgroundColor(keyColor[i]);
-  initColors();
-}
-
-void changeColorMapGreenCbk(Widget*, float val, void* data) {
-  auto i = reinterpret_cast<intptr_t>(data);
-  keyColor[i].g = static_cast<uint8_t>(val);
-  keyImages[i]->setBackgroundColor(keyColor[i]);
-  initColors();
-}
-
-void changeColorMapBlueCbk(Widget*, float val, void* data) {
-  auto i = reinterpret_cast<intptr_t>(data);
-  keyColor[i].b = static_cast<uint8_t>(val);
-  keyImages[i]->setBackgroundColor(keyColor[i]);
-  initColors();
-}
-
-void changeColorMapEndCbk(Widget*, void*) { colorMapGui->setVisible(false); }
-
-void changeColorMapCbk(Widget* w, void*) {
-  colorMapGui->move(w->x + w->w + 2, w->y);
+void changeColorMapCbk() {
+  colorMapGui->move(change_color_map_button->x + change_color_map_button->w + 2, change_color_map_button->y);
   colorMapGui->clear();
   for (intptr_t i = 0; i < nbColorKeys; i++) {
     colorMapGui->addSeparator(tcod::stringf("Color %d", static_cast<int>(i)).c_str());
     auto h_box = std::make_shared<HBox>(0, 0, 0);
     auto v_box = std::make_shared<VBox>(0, 0, 0);
     colorMapGui->addWidget(h_box);
-    auto idxSlider =
+    auto index_slider =
         std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "index", "Index of the key in the color map (0-255)");
-    idxSlider->setValue((float)keyIndex[i]);
-    idxSlider->setFormat("%.0f");
-    idxSlider->setCallback(changeColorMapIdxCbk, reinterpret_cast<void*>(i));
-    v_box->addWidget(idxSlider);
+    index_slider->setValue((float)keyIndex[i]);
+    index_slider->setFormat("%.0f");
+    index_slider->setCallback([i = i](float val) {
+      keyIndex[i] = (int)(val);
+      if (i == 1) sandHeight = (float)(i) / 255.0f;
+      initColors();
+    });
+    v_box->addWidget(index_slider);
     keyImages[i] = std::make_shared<Image>(0, 0, 0, 2);
     keyImages[i]->setBackgroundColor(keyColor[i]);
     v_box->addWidget(keyImages[i]);
@@ -380,27 +357,39 @@ void changeColorMapCbk(Widget* w, void*) {
     auto redSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "r", "Red component of the color");
     redSlider->setValue((float)keyColor[i].r);
     redSlider->setFormat("%.0f");
-    redSlider->setCallback(changeColorMapRedCbk, reinterpret_cast<void*>(i));
+    redSlider->setCallback([i = i](float val) {
+      keyColor[i].r = static_cast<uint8_t>(val);
+      keyImages[i]->setBackgroundColor(keyColor[i]);
+      initColors();
+    });
     v_box->addWidget(redSlider);
     auto greenSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "g", "Green component of the color");
     greenSlider->setValue((float)keyColor[i].g);
     greenSlider->setFormat("%.0f");
-    greenSlider->setCallback(changeColorMapGreenCbk, reinterpret_cast<void*>(i));
+    greenSlider->setCallback([i = i](float val) {
+      keyColor[i].g = static_cast<uint8_t>(val);
+      keyImages[i]->setBackgroundColor(keyColor[i]);
+      initColors();
+    });
     v_box->addWidget(greenSlider);
     auto blueSlider = std::make_shared<Slider>(0, 0, 3, 0.0f, 255.0f, "b", "Blue component of the color");
     blueSlider->setValue((float)keyColor[i].b);
     blueSlider->setFormat("%.0f");
-    blueSlider->setCallback(changeColorMapBlueCbk, reinterpret_cast<void*>(i));
+    blueSlider->setCallback([i = i](float val) {
+      keyColor[i].b = static_cast<uint8_t>(val);
+      keyImages[i]->setBackgroundColor(keyColor[i]);
+      initColors();
+    });
     v_box->addWidget(blueSlider);
   }
-  colorMapGui->addWidget(std::make_shared<Button>("Ok", nullptr, changeColorMapEndCbk, nullptr));
+  colorMapGui->addWidget(std::make_shared<Button>("Ok", "", changeColorMapEndCbk));
   colorMapGui->setVisible(true);
 }
 
 // build gui
 
-void addOperationButton(ToolBar& tools, Operation::OpType type, void (*cbk)(Widget* w, void* data)) {
-  tools.addWidget(std::make_shared<Button>(Operation::names[type], Operation::tips[type], cbk, nullptr));
+void addOperationButton(ToolBar& tools, Operation::OpType type, void (*cbk)()) {
+  tools.addWidget(std::make_shared<Button>(Operation::names[type], Operation::tips[type], cbk));
 }
 
 void buildGui() {
@@ -418,11 +407,10 @@ void buildGui() {
 
   // tools
   auto tools = std::make_shared<ToolBar>(0, 0, 15, "Tools", "Tools to modify the heightmap");
-  tools->addWidget(std::make_shared<Button>("cancel", "Delete the selected operation", cancelCbk, nullptr));
-  tools->addWidget(std::make_shared<Button>(
-      "clear", "Remove all operations and reset all heightmap values to 0.0", clearCbk, nullptr));
+  tools->addWidget(std::make_shared<Button>("cancel", "Delete the selected operation", cancelCbk));
   tools->addWidget(
-      std::make_shared<Button>("reseed", "Replay all operations with a new random seed", reseedCbk, nullptr));
+      std::make_shared<Button>("clear", "Remove all operations and reset all heightmap values to 0.0", clearCbk));
+  tools->addWidget(std::make_shared<Button>("reseed", "Replay all operations with a new random seed", reseedCbk));
 
   // operations
   tools->addSeparator("Operations", "Apply a new operation to the map");
@@ -439,14 +427,15 @@ void buildGui() {
   // display
   tools->addSeparator("Display", "Change the type of display");
   RadioButton::setDefaultGroup(1);
-  auto colormap = std::make_shared<RadioButton>("colormap", "Enable colormap mode", colorMapCbk, nullptr);
+  auto colormap = std::make_shared<RadioButton>("colormap", "Enable colormap mode", colorMapCbk);
   tools->addWidget(colormap);
   colormap->select();
-  tools->addWidget(std::make_shared<RadioButton>("slope", "Enable slope mode", slopeCbk, nullptr));
-  tools->addWidget(std::make_shared<RadioButton>("greyscale", "Enable greyscale mode", greyscaleCbk, nullptr));
-  tools->addWidget(std::make_shared<RadioButton>("normal", "Enable normal map mode", normalCbk, nullptr));
-  tools->addWidget(
-      std::make_shared<Button>("change colormap", "Modify the colormap used by hmtool", changeColorMapCbk, nullptr));
+  tools->addWidget(std::make_shared<RadioButton>("slope", "Enable slope mode", slopeCbk));
+  tools->addWidget(std::make_shared<RadioButton>("greyscale", "Enable greyscale mode", greyscaleCbk));
+  tools->addWidget(std::make_shared<RadioButton>("normal", "Enable normal map mode", normalCbk));
+  change_color_map_button =
+      std::make_shared<Button>("change colormap", "Modify the colormap used by hmtool", changeColorMapCbk);
+  tools->addWidget(change_color_map_button);
 
   // change colormap gui
   colorMapGui =
@@ -456,13 +445,12 @@ void buildGui() {
   // in/out
   tools->addSeparator("In/Out", "Import/Export stuff");
   tools->addWidget(
-      std::make_shared<Button>("export C", "Generate the C code for this heightmap in ./hm.c", exportCCbk, nullptr));
-  tools->addWidget(std::make_shared<Button>(
-      "export CPP", "Generate the CPP code for this heightmap in ./hm.cpp", exportCppCbk, nullptr));
-  tools->addWidget(std::make_shared<Button>(
-      "export PY", "Generate the Python code for this heightmap in ./hm.py", exportPyCbk, nullptr));
+      std::make_shared<Button>("export C", "Generate the C code for this heightmap in ./hm.c", exportCCbk));
   tools->addWidget(
-      std::make_shared<Button>("export bmp", "Save this heightmap as a bitmap in ./hm.bmp", exportBmpCbk, nullptr));
+      std::make_shared<Button>("export CPP", "Generate the CPP code for this heightmap in ./hm.cpp", exportCppCbk));
+  tools->addWidget(
+      std::make_shared<Button>("export PY", "Generate the Python code for this heightmap in ./hm.py", exportPyCbk));
+  tools->addWidget(std::make_shared<Button>("export bmp", "Save this heightmap as a bitmap in ./hm.bmp", exportBmpCbk));
 
   vbox->addWidget(tools);
 

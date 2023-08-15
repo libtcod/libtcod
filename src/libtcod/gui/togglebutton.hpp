@@ -37,6 +37,7 @@
 #include "../console_printing.hpp"
 #include "button.hpp"
 
+namespace tcod::gui {
 class ToggleButton : public Button {
  public:
   ToggleButton(std::string label, std::string tip, std::function<void()> callback) : Button{label, tip, callback} {}
@@ -75,5 +76,6 @@ class ToggleButton : public Button {
     if (callback_) callback_();
   }
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TOGGLEBUTTON_HPP */

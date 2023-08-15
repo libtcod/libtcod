@@ -42,6 +42,7 @@
 #include "../portability.h"
 #include "../sys.hpp"
 
+namespace tcod::gui {
 typedef void (*widget_callback_t)(class Widget* w, void* userData);
 class Widget {
  public:
@@ -167,4 +168,5 @@ class Widget {
   bool mouseL{false};
   bool visible{true};
 };
+}  // namespace tcod::gui
 #endif /* TCOD_GUI_WIDGET_HPP */

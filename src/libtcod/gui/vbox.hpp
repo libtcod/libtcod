@@ -33,6 +33,8 @@
 #define TCOD_GUI_VBOX_HPP
 #ifndef TCOD_NO_UNICODE
 #include "container.hpp"
+
+namespace tcod::gui {
 class VBox : public Container {
  public:
   VBox(int x, int y, int padding) : Container{x, y, 0, 0}, padding{padding} {}
@@ -59,5 +61,6 @@ class VBox : public Container {
  protected:
   int padding{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_VBOX_HPP */

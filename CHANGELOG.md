@@ -8,8 +8,9 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
-## Changes
+### Changed
 - Several functions have been moved inline, this will break the ABI.
+- Provisional gui tools moved into the `tcod::gui` namespace.
 
 ## [1.24.0] - 2023-05-26
 ### Added
@@ -22,7 +23,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Added functions to manually set context pixel-to-tile conversions in cases where it can't be set automatically.
 - New overloads to `TCODBsp` which can take function callbacks directly.
 
-## Changes
+### Changed
 - `TCODRandom` is now a movable, non-copyable object.
 - `TCODConsole` can now be default constructed.
 

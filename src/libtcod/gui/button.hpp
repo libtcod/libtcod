@@ -40,6 +40,7 @@
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
+namespace tcod::gui {
 class Button : public Widget {
  public:
   Button(std::string label, std::string tip, std::function<void()> callback) : label_{label}, callback_{callback} {
@@ -96,5 +97,6 @@ class Button : public Widget {
   std::string label_{};
   std::function<void()> callback_{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_BUTTON_HPP */

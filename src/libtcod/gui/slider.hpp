@@ -38,6 +38,7 @@
 
 #include "textbox.hpp"
 
+namespace tcod::gui {
 class Slider : public TextBox {
  public:
   Slider(int x, int y, int w, float min, float max, const char* label, const char* tip = nullptr)
@@ -146,5 +147,6 @@ class Slider : public TextBox {
   std::string format_str_{DEFAULT_FORMAT};
   std::function<void(float)> callback_{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_SLIDER_HPP */

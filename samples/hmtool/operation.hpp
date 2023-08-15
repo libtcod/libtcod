@@ -3,6 +3,8 @@
 #include <libtcod/gui/gui.hpp>
 #include <string>
 
+using namespace tcod::gui;
+
 static constexpr auto HM_WIDTH = 100;
 static constexpr auto HM_HEIGHT = 80;
 

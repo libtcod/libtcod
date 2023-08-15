@@ -32,6 +32,8 @@
 #ifndef TCOD_GUI_IMAGE_HPP
 #define TCOD_GUI_IMAGE_HPP
 #include "widget.hpp"
+
+namespace tcod::gui {
 class Image : public Widget {
  public:
   Image(int x, int y, int w, int h, const char* tip = NULL) : Widget{x, y, w, h} {
@@ -51,4 +53,5 @@ class Image : public Widget {
 
   TCODColor back{0, 0, 0};
 };
+}  // namespace tcod::gui
 #endif /* TCOD_GUI_IMAGE_HPP */

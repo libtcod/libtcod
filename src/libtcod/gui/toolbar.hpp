@@ -40,6 +40,7 @@
 #include "../console_printing.hpp"
 #include "container.hpp"
 
+namespace tcod::gui {
 class ToolBar : public Container {
  public:
   ToolBar(int x, int y, const char* name, const char* tip = nullptr) : Container{x, y, 0, 2} {
@@ -134,5 +135,6 @@ class ToolBar : public Container {
     char* txt{};
   };
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TOOLBAR_HPP */

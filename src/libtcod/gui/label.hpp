@@ -38,6 +38,7 @@
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
+namespace tcod::gui {
 class Label : public Widget {
  public:
   Label(int x, int y, const char* label, const char* tip = NULL) : Widget{x, y, 0, 1}, label_{label ? label : ""} {
@@ -57,5 +58,6 @@ class Label : public Widget {
 
   std::string label_{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_LABEL_HPP */

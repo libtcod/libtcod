@@ -35,6 +35,7 @@
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
+namespace tcod::gui {
 class StatusBar : public Widget {
  public:
   StatusBar(int x, int y, int w, int h) : Widget{x, y, w, h} {}
@@ -47,5 +48,6 @@ class StatusBar : public Widget {
     }
   }
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_STATUSBAR_HPP */

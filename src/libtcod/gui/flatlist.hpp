@@ -37,6 +37,7 @@
 
 #include "textbox.hpp"
 
+namespace tcod::gui {
 class FlatList : public TextBox {
  public:
   FlatList(int x, int y, int w, const char** list, const char* label, const char* tip = nullptr)
@@ -130,5 +131,6 @@ class FlatList : public TextBox {
   void (*cbk)(Widget* wid, const char* val, void* data){};
   void* data{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_FLATLIST_HPP */

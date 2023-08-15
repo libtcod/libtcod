@@ -36,6 +36,7 @@
 
 #include "widget.hpp"
 
+namespace tcod::gui {
 class Container : public Widget {
  public:
   Container(int x, int y, int w, int h) : Widget{x, y, w, h} {}
@@ -69,5 +70,6 @@ class Container : public Widget {
  protected:
   std::vector<std::shared_ptr<Widget>> content_{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_CONTAINER_HPP */

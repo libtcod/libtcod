@@ -42,6 +42,7 @@
 #include "../console_printing.hpp"
 #include "widget.hpp"
 
+namespace tcod::gui {
 class TextBox : public Widget {
  public:
   TextBox(int x, int y, int w, int max_width, const char* label, const char* value, const char* tip = nullptr)
@@ -169,5 +170,6 @@ class TextBox : public Widget {
  private:
   std::function<void(const std::string&)> text_callback_{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_TEXTBOX_HPP */

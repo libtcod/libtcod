@@ -33,6 +33,8 @@
 #define TCOD_GUI_RADIOBUTTON_HPP
 #ifndef TCOD_NO_UNICODE
 #include "button.hpp"
+
+namespace tcod::gui {
 class RadioButton : public Button {
  public:
   RadioButton(std::string label, std::string tip, std::function<void()> callback)
@@ -76,5 +78,6 @@ class RadioButton : public Button {
   static inline RadioButton* groupSelect[512]{};
   int group{defaultGroup};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_RADIOBUTTON_HPP */

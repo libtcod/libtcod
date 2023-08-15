@@ -33,6 +33,7 @@
 #define TCOD_GUI_SLIDER_HPP
 #ifndef TCOD_NO_UNICODE
 #include <cstdio>
+#include <cstdlib>
 #include <functional>
 #include <string>
 
@@ -61,26 +62,20 @@ class Slider : public TextBox {
     }
   }
   void update(const TCOD_key_t k) override {
-    float old_value = value;
+    const float old_value = value;
     TextBox::update(k);
     textToValue();
-    if (mouse.cx >= x + w - 2 && mouse.cx < x + w && mouse.cy == y) {
-      onArrows = true;
-    } else {
-      onArrows = false;
-    }
+    onArrows = mouse.cx >= x + w - 2 && mouse.cx < x + w && mouse.cy == y;
     if (drag) {
       if (drag_y == -1) {
         drag_x = mouse.x;
         drag_y = mouse.y;
       } else {
         float mdx = ((mouse.x - drag_x) * sensitivity) / (con->getWidth() * 8);
-        float mdy = ((mouse.y - drag_y) * sensitivity) / (con->getHeight() * 8);
-        float old_value2 = value;
-        if (fabs(mdy) > fabs(mdx)) {
-          mdx = -mdy;
-        }
-        value = dragValue + (max - min) * mdx;
+        const float mdy = ((mouse.y - drag_y) * sensitivity) / (con->getHeight() * 8);
+        const float old_value2 = value;
+        if (std::abs(mdy) > std::abs(mdx)) mdx = -mdy;
+        dragValue += (max - min) * mdx;
         value = std::max(min, std::min(value, max));
         if (value != old_value2) {
           valueToText();
@@ -88,9 +83,37 @@ class Slider : public TextBox {
         }
       }
     }
-    if (value != old_value && callback_) {
-      callback_(value);
+    if (value != old_value && callback_) callback_(value);
+  }
+  void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
+    const float old_value = value;
+    TextBox::update(ev_tile, ev_pixel);
+    textToValue();
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        onArrows = ev_tile.motion.x >= x + w - 2 && ev_tile.motion.x < x + w && ev_tile.motion.y == y;
+        break;
+      default:
+        break;
     }
+    switch (ev_pixel.type) {
+      case SDL_MOUSEMOTION:
+        if (drag) {
+          const float old_value2 = value;
+          float motion_dx = ((ev_pixel.motion.xrel) * sensitivity) / (64 * 8);
+          const float motion_dy = ((ev_pixel.motion.yrel) * sensitivity) / (64 * 8);
+          if (std::abs(motion_dy) > std::abs(motion_dx)) motion_dx = -motion_dy;
+          dragValue += (max - min) * motion_dx;
+          value = std::max(min, std::min(dragValue, max));
+          if (value != old_value2) {
+            valueToText();
+          }
+        }
+        break;
+      default:
+        break;
+    }
+    if (value != old_value && callback_) callback_(value);
   }
   void setMinMax(float min_, float max_) {
     this->min = min_;
@@ -118,20 +141,27 @@ class Slider : public TextBox {
     setText(tmp);
   }
 
-  void textToValue() { value = std::stof(text_); }
+  void textToValue() {
+    try {
+      value = std::stof(text_);
+    } catch (std::invalid_argument const&) {
+    } catch (std::out_of_range const&) {
+    }
+    valueToText();
+  }
   void onButtonPress() override {
     if (onArrows) {
       drag = true;
       drag_y = -1;
       dragValue = value;
-      TCODMouse::showCursor(false);
+      SDL_SetRelativeMouseMode(SDL_TRUE);
     }
   }
   void onButtonRelease() override {
     if (drag) {
       drag = false;
-      TCODMouse::move((x + w - 2) * 8, y * 8);
-      TCODMouse::showCursor(true);
+      SDL_WarpMouseInWindow(nullptr, (x + w - 2) * 8, y * 8);
+      SDL_SetRelativeMouseMode(SDL_FALSE);
     }
   }
 

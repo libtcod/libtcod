@@ -66,6 +66,12 @@ class Container : public Widget {
       if (wid->isVisible()) wid->update(k);
     }
   }
+  void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
+    Widget::update(ev_tile, ev_pixel);
+    for (auto wid : content_) {
+      if (wid->isVisible()) wid->update(ev_tile, ev_pixel);
+    }
+  }
 
  protected:
   std::vector<std::shared_ptr<Widget>> content_{};

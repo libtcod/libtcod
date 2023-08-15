@@ -73,6 +73,18 @@ class FlatList : public TextBox {
       onRightArrow = true;
     Widget::update(k);
   }
+  void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
+    onLeftArrow = onRightArrow = false;
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        onLeftArrow = ev_tile.motion.x == x + box_x && ev_tile.motion.y == y;
+        onRightArrow = ev_tile.motion.x == x + w - 1 && ev_tile.motion.y == y;
+        break;
+      default:
+        break;
+    }
+    Widget::update(ev_tile, ev_pixel);
+  }
   void setCallback(void (*cbk_)(Widget* wid, const char* val, void* data), void* data_) {
     this->cbk = cbk_;
     this->data = data_;

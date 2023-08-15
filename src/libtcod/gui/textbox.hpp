@@ -32,10 +32,12 @@
 #ifndef TCOD_GUI_TEXTBOX_HPP
 #define TCOD_GUI_TEXTBOX_HPP
 #ifndef TCOD_NO_UNICODE
+#include <SDL_timer.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <algorithm>
+#include <cctype>
 #include <functional>
 #include <utility>
 
@@ -69,7 +71,9 @@ class TextBox : public Widget {
     if (text_.size())
       tcod::print(console, {x + box_x, y}, tcod::stringf("%.*s", len, &text_[offset]), focus_fg, std::nullopt);
 
-    if (keyboardFocus == this && blink > 0.0f && console.in_bounds({x + box_x + pos - offset, y})) {
+    const int blink_ms = static_cast<int>(blinkingDelay * 1000);
+    const bool is_blinking = (SDL_GetTicks() - blink_start_ms_) % (blink_ms * 2) < blink_ms;
+    if (keyboardFocus == this && is_blinking && console.in_bounds({x + box_x + pos - offset, y})) {
       auto& tile = console.at(x + box_x + pos - offset, y);
       tile.fg = TCOD_ColorRGBA(fore);
       tile.bg = TCOD_ColorRGBA(back);
@@ -78,8 +82,6 @@ class TextBox : public Widget {
   }
   void update(const TCOD_key_t k) override {
     if (keyboardFocus == this && k.pressed) {
-      blink -= elapsed;
-      if (blink < -blinkingDelay) blink += 2 * blinkingDelay;
       if (k.vk == TCODK_CHAR || (k.vk >= TCODK_0 && k.vk <= TCODK_9) || (k.vk >= TCODK_KP0 && k.vk <= TCODK_KP9)) {
         if (!insert || static_cast<int>(text_.size()) < max_width) {
           text_.insert(pos, 1, k.c);
@@ -87,24 +89,24 @@ class TextBox : public Widget {
           if (pos >= w) offset = pos - w + 1;
           if (text_callback_) text_callback_(text_);
         }
-        blink = blinkingDelay;
+        blink_start_ms_ = SDL_GetTicks();
       }
       switch (k.vk) {
         case TCODK_LEFT:
           if (pos > 0) pos--;
           if (pos < offset) offset = pos;
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
         case TCODK_RIGHT:
           if (pos < static_cast<int>(text_.size())) {
             pos++;
           }
           if (pos >= w) offset = pos - w + 1;
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
         case TCODK_HOME:
           pos = offset = 0;
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
         case TCODK_BACKSPACE:
           if (pos > 0) {
@@ -113,31 +115,82 @@ class TextBox : public Widget {
             if (text_callback_) text_callback_(text_);
             if (pos < offset) offset = pos;
           }
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
         case TCODK_DELETE:
           if (pos < static_cast<int>(text_.size())) {
             text_.erase(text_.begin() + pos);
             if (text_callback_) text_callback_(text_);
           }
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
-          /*
-        case TCODK_INSERT :
-          insert=!insert;
-          blink=blinkingDelay;
-          break;
-          */
         case TCODK_END:
           pos = static_cast<int>(text_.size());
           if (pos >= w) offset = pos - w + 1;
-          blink = blinkingDelay;
+          blink_start_ms_ = SDL_GetTicks();
           break;
         default:
           break;
       }
     }
     Widget::update(k);
+  }
+
+  void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
+    pos = std::clamp(pos, 0, static_cast<int>(text_.size()));
+    switch (ev_tile.type) {
+      case SDL_KEYDOWN:
+        if (keyboardFocus == this) {
+          blink_start_ms_ = SDL_GetTicks();
+          switch (ev_tile.key.keysym.sym) {
+            case SDLK_LEFT:
+              if (pos > 0) pos--;
+              if (pos < offset) offset = pos;
+              break;
+            case SDLK_RIGHT:
+              if (pos < static_cast<int>(text_.size())) pos++;
+              break;
+            case SDLK_HOME:
+              pos = offset = 0;
+              break;
+            case SDLK_END:
+              pos = static_cast<int>(text_.size());
+              if (pos >= w) offset = pos - w + 1;
+              break;
+            case SDLK_BACKSPACE:
+              if (pos > 0) {
+                pos--;
+                text_.erase(text_.begin() + pos);
+                if (text_callback_) text_callback_(text_);
+                if (pos < offset) offset = pos;
+              }
+              break;
+            case SDLK_DELETE:
+              if (pos < static_cast<int>(text_.size())) {
+                text_.erase(text_.begin() + pos);
+                if (text_callback_) text_callback_(text_);
+              }
+              break;
+            default:
+              const unsigned char ch = static_cast<unsigned char>(ev_tile.key.keysym.sym);
+              if (ev_tile.key.keysym.sym <= 0xFF && std::isprint(ch)) {
+                if (!insert || static_cast<int>(text_.size()) < max_width) {
+                  text_.insert(pos, 1, ch);
+                  if (pos < max_width) ++pos;
+                  if (pos >= w) offset = pos - w + 1;
+                  if (text_callback_) text_callback_(text_);
+                }
+              }
+              break;
+          }
+        }
+        break;
+
+      default:
+        break;
+    }
+    pos = std::clamp(pos, 0, static_cast<int>(text_.size()));
+    Widget::update(ev_tile, ev_pixel);
   }
 
   void setText(const char* txt) {
@@ -158,17 +211,20 @@ class TextBox : public Widget {
   static inline float blinkingDelay{0.5f};
   std::string label_{};
   std::string text_{};
-  float blink{};
   int pos{}, offset{};
   int box_x{}, box_width{}, max_width{};
   bool insert{true};
 
   void onButtonClick() override {
-    if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) keyboardFocus = this;
+    if (mouse.cx >= x + box_x && mouse.cx < x + box_x + box_width) {
+      keyboardFocus = this;
+      blink_start_ms_ = SDL_GetTicks();
+    }
   }
 
  private:
   std::function<void(const std::string&)> text_callback_{};
+  uint32_t blink_start_ms_{};
 };
 }  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE

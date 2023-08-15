@@ -511,11 +511,9 @@ int main(int argc, char* argv[]) {
 
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-      TCOD_key_t key{};
-      TCOD_mouse_t mouse{};
-      tcod::sdl2::process_event(event, key);
-      tcod::sdl2::process_event(event, mouse);
-      Widget::updateWidgets(key, mouse);
+      SDL_Event tile_event = event;
+      context->convert_event_coordinates(tile_event);
+      Widget::updateWidgets(tile_event, event);
       switch (event.type) {
         case SDL_QUIT:
           std::exit(EXIT_SUCCESS);

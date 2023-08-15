@@ -31,6 +31,8 @@
  */
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#include <SDL_events.h>
+
 #include <functional>
 #include <memory>
 #include <string>
@@ -50,15 +52,15 @@ class Widget {
   Widget(int x, int y) : Widget{x, y, 0, 0} {}
   Widget(int x, int y, int w, int h) : x{x}, y{y}, w{w}, h{h} { widgets_.push_back(this); }
   virtual ~Widget() {
-    if (focus == this) focus = NULL;
+    if (focus == this) focus = nullptr;
     auto found = std::find(widgets_.begin(), widgets_.end(), this);
     if (found != widgets_.end()) widgets_.erase(found);
   }
 
   virtual void render() {}
   virtual void update(const TCOD_key_t) {
-    const bool curs = TCODMouse::isCursorVisible();
-    if (curs) {
+    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    if (cursor_visible) {
       if (mouse.cx >= x && mouse.cx < x + w && mouse.cy >= y && mouse.cy < y + h) {
         if (!mouseIn) {
           mouseIn = true;
@@ -71,26 +73,64 @@ class Widget {
           onMouseOut();
         }
         mouseL = false;
-        if (this == focus) {
-          focus = NULL;
-        }
+        if (this == focus) focus = nullptr;
       }
     }
-    if (mouseIn || (!curs && this == focus)) {
+    if (mouseIn || (!cursor_visible && this == focus)) {
       if (mouse.lbutton && !mouseL) {
         mouseL = true;
         onButtonPress();
       } else if (!mouse.lbutton && mouseL) {
         onButtonRelease();
-        keyboardFocus = NULL;
+        keyboardFocus = nullptr;
         if (mouseL) {
           onButtonClick();
         }
         mouseL = false;
       } else if (mouse.lbutton_pressed) {
-        keyboardFocus = NULL;
+        keyboardFocus = nullptr;
         onButtonClick();
       }
+    }
+  }
+  virtual void update(const SDL_Event& ev_tile, [[maybe_unused]] const SDL_Event& ev_pixel) {
+    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    const bool cursor_over = mouseIn || (!cursor_visible && this == focus);
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        if (cursor_visible) {
+          if (ev_tile.motion.x >= x && ev_tile.motion.x < x + w && ev_tile.motion.y >= y && ev_tile.motion.y < y + h) {
+            if (!mouseIn) {
+              mouseIn = true;
+              onMouseIn();
+            }
+            focus = this;
+          } else {
+            if (mouseIn) {
+              mouseIn = false;
+              onMouseOut();
+            }
+            if (this == focus) focus = nullptr;
+          }
+        }
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        if (cursor_over && ev_tile.button.button == SDL_BUTTON_LEFT) {
+          mouseL = true;
+          onButtonPress();
+        }
+        break;
+      case SDL_MOUSEBUTTONUP:
+        if (ev_tile.button.button == SDL_BUTTON_LEFT && mouseL) {
+          onButtonRelease();
+          keyboardFocus = nullptr;
+          if (cursor_over) onButtonClick();
+          mouseL = false;
+        }
+        break;
+
+      default:
+        break;
     }
   }
   void move(int x_, int y_) {
@@ -111,12 +151,43 @@ class Widget {
     foreFocus = colFocus;
   }
   static void setConsole(TCODConsole* console) { con = console; }
+
   static void updateWidgets(const TCOD_key_t k, const TCOD_mouse_t p_mouse) {
     mouse = p_mouse;
     updateWidgetsIntern(k);
   }
+  static void updateWidgets() {
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->computeSize();
+    }
+  }
+  static void updateWidgets(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) {
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        mouse.cx = ev_tile.motion.x;
+        mouse.cy = ev_tile.motion.y;
+        mouse.dcx = ev_tile.motion.xrel;
+        mouse.dcy = ev_tile.motion.yrel;
+        break;
+      default:
+        break;
+    }
+    switch (ev_pixel.type) {
+      case SDL_MOUSEMOTION:
+        mouse.dx = ev_pixel.motion.xrel;
+        mouse.dy = ev_pixel.motion.yrel;
+        break;
+      default:
+        break;
+    }
+    updateWidgets();
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->update(ev_tile, ev_pixel);
+    }
+  }
   static void renderWidgets() {
     if (!con) con = TCODConsole::root;
+    updateWidgets();
     for (auto& w : widgets_) {
       if (w->isVisible()) w->render();
     }
@@ -140,13 +211,15 @@ class Widget {
   virtual void onButtonRelease() {}
   virtual void onButtonClick() {}
 
-  static void updateWidgetsIntern(const TCOD_key_t k) {
-    elapsed = TCODSystem::getLastFrameLength();
+  static void updateWidgetsIntern() {
     for (auto& w : widgets_) {
-      if (w->isVisible()) {
-        w->computeSize();
-        w->update(k);
-      }
+      if (w->isVisible()) w->computeSize();
+    }
+  }
+  static void updateWidgetsIntern(const TCOD_key_t k) {
+    updateWidgetsIntern();
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->update(k);
     }
   }
 
@@ -157,7 +230,6 @@ class Widget {
     return [&, callback, userData]() { callback(this, userData); };
   }
 
-  static inline float elapsed{};
   static inline TCODColor back{40, 40, 120};
   static inline TCODColor backFocus{70, 70, 130};
   static inline TCODColor foreFocus{255, 255, 255};

@@ -32,31 +32,117 @@
 #ifndef TCOD_GUI_FLATLIST_HPP
 #define TCOD_GUI_FLATLIST_HPP
 #ifndef TCOD_NO_UNICODE
+#include <math.h>
+#include <stdio.h>
+
 #include "textbox.hpp"
-class TCODLIB_GUI_API FlatList : public TextBox {
+
+namespace tcod::gui {
+class FlatList : public TextBox {
  public:
-  FlatList(int x, int y, int w, const char** list, const char* label, const char* tip = NULL);
-  virtual ~FlatList();
-  void render();
-  void update(const TCOD_key_t k);
+  FlatList(int x, int y, int w, const char** list, const char* label, const char* tip = nullptr)
+      : TextBox(x, y, w, 10, label, nullptr, tip), value{list}, list{list} {
+    valueToText();
+    this->w += 2;
+  }
+  void render() override {
+    w--;
+    box_x++;
+    TextBox::render();
+    box_x--;
+    w++;
+    auto& console = static_cast<TCOD_Console&>(*con);
+    if (console.in_bounds({x + box_x, y})) {
+      console.at({x + box_x, y}) = {
+          0x2190,  // ←
+          TCOD_ColorRGBA(onLeftArrow ? foreFocus : fore),
+          TCOD_ColorRGBA(onLeftArrow ? backFocus : back)};
+    }
+    if (console.in_bounds({x + w - 1, y})) {
+      console.at({x + w - 1, y}) = {
+          0x2192,  // →
+          TCOD_ColorRGBA(onRightArrow ? foreFocus : fore),
+          TCOD_ColorRGBA(onRightArrow ? backFocus : back)};
+    }
+  }
+  void update(const TCOD_key_t k) override {
+    onLeftArrow = onRightArrow = false;
+    if (mouse.cx == x + box_x && mouse.cy == y)
+      onLeftArrow = true;
+    else if (mouse.cx == x + w - 1 && mouse.cy == y)
+      onRightArrow = true;
+    Widget::update(k);
+  }
+  void update(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) override {
+    onLeftArrow = onRightArrow = false;
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        onLeftArrow = ev_tile.motion.x == x + box_x && ev_tile.motion.y == y;
+        onRightArrow = ev_tile.motion.x == x + w - 1 && ev_tile.motion.y == y;
+        break;
+      default:
+        break;
+    }
+    Widget::update(ev_tile, ev_pixel);
+  }
   void setCallback(void (*cbk_)(Widget* wid, const char* val, void* data), void* data_) {
     this->cbk = cbk_;
     this->data = data_;
   }
-  void setValue(const char* value);
-  void setList(const char** list);
+  void setValue(const char* v) {
+    const char** ptr = list;
+    while (*ptr) {
+      if (strcmp(v, *ptr) == 0) {
+        value = ptr;
+        valueToText();
+        break;
+      }
+      ptr++;
+    }
+  }
+  void setList(const char** l) {
+    value = list = l;
+    valueToText();
+  }
 
  protected:
-  const char** value;
-  const char** list;
-  bool onLeftArrow;
-  bool onRightArrow;
-  void (*cbk)(Widget* wid, const char* val, void* data);
-  void* data;
+  void valueToText() { setText(*value); }
+  void textToValue() {
+    const char** ptr = list;
+    while (*ptr) {
+      if (strcmp(text_.c_str(), *ptr) == 0) {
+        value = ptr;
+        break;
+      }
+      ptr++;
+    }
+  }
+  void onButtonClick() override {
+    const char** oldValue = value;
+    if (onLeftArrow) {
+      if (value == list) {
+        while (*value) {
+          value++;
+        }
+      }
+      value--;
+    } else if (onRightArrow) {
+      value++;
+      if (*value == nullptr) value = list;
+    }
+    if (value != oldValue && cbk) {
+      valueToText();
+      cbk(this, *value, data);
+    }
+  }
 
-  void valueToText();
-  void textToValue();
-  void onButtonClick();
+  const char** value{};
+  const char** list{};
+  bool onLeftArrow{false};
+  bool onRightArrow{false};
+  void (*cbk)(Widget* wid, const char* val, void* data){};
+  void* data{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_FLATLIST_HPP */

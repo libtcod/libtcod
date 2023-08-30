@@ -31,36 +31,173 @@
  */
 #ifndef TCOD_GUI_WIDGET_HPP
 #define TCOD_GUI_WIDGET_HPP
+#include <SDL_events.h>
+
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "../color.hpp"
 #include "../console.hpp"
-#include "../list.hpp"
 #include "../mouse.hpp"
-#include "gui_portability.hpp"
-class TCODLIB_GUI_API Widget {
- public:
-  int x, y, w, h;
-  void* userData;
-  static Widget* focus;
-  static Widget* keyboardFocus;
+#include "../portability.h"
+#include "../sys.hpp"
 
-  Widget();
-  Widget(int x, int y);
-  Widget(int x, int y, int w, int h);
-  virtual ~Widget();
+namespace tcod::gui {
+typedef void (*widget_callback_t)(class Widget* w, void* userData);
+class Widget {
+ public:
+  Widget() : Widget{0, 0, 0, 0} {}
+  Widget(int x, int y) : Widget{x, y, 0, 0} {}
+  Widget(int x, int y, int w, int h) : x{x}, y{y}, w{w}, h{h} { widgets_.push_back(this); }
+  virtual ~Widget() {
+    if (focus == this) focus = nullptr;
+    auto found = std::find(widgets_.begin(), widgets_.end(), this);
+    if (found != widgets_.end()) widgets_.erase(found);
+  }
+
   virtual void render() {}
-  virtual void update(const TCOD_key_t k);
-  void move(int x, int y);
-  void setTip(const char* tip);
+  virtual void update(const TCOD_key_t) {
+    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    if (cursor_visible) {
+      if (mouse.cx >= x && mouse.cx < x + w && mouse.cy >= y && mouse.cy < y + h) {
+        if (!mouseIn) {
+          mouseIn = true;
+          onMouseIn();
+        }
+        focus = this;
+      } else {
+        if (mouseIn) {
+          mouseIn = false;
+          onMouseOut();
+        }
+        mouseL = false;
+        if (this == focus) focus = nullptr;
+      }
+    }
+    if (mouseIn || (!cursor_visible && this == focus)) {
+      if (mouse.lbutton && !mouseL) {
+        mouseL = true;
+        onButtonPress();
+      } else if (!mouse.lbutton && mouseL) {
+        onButtonRelease();
+        keyboardFocus = nullptr;
+        if (mouseL) {
+          onButtonClick();
+        }
+        mouseL = false;
+      } else if (mouse.lbutton_pressed) {
+        keyboardFocus = nullptr;
+        onButtonClick();
+      }
+    }
+  }
+  virtual void update(const SDL_Event& ev_tile, [[maybe_unused]] const SDL_Event& ev_pixel) {
+    const int cursor_visible = SDL_ShowCursor(SDL_QUERY);
+    const bool cursor_over = mouseIn || (!cursor_visible && this == focus);
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        if (cursor_visible) {
+          if (ev_tile.motion.x >= x && ev_tile.motion.x < x + w && ev_tile.motion.y >= y && ev_tile.motion.y < y + h) {
+            if (!mouseIn) {
+              mouseIn = true;
+              onMouseIn();
+            }
+            focus = this;
+          } else {
+            if (mouseIn) {
+              mouseIn = false;
+              onMouseOut();
+            }
+            if (this == focus) focus = nullptr;
+          }
+        }
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        if (cursor_over && ev_tile.button.button == SDL_BUTTON_LEFT) {
+          mouseL = true;
+          onButtonPress();
+        }
+        break;
+      case SDL_MOUSEBUTTONUP:
+        if (ev_tile.button.button == SDL_BUTTON_LEFT && mouseL) {
+          onButtonRelease();
+          keyboardFocus = nullptr;
+          if (cursor_over) onButtonClick();
+          mouseL = false;
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+  void move(int x_, int y_) {
+    this->x = x_;
+    this->y = y_;
+  }
+  void setTip(const char* tip) { this->tip_ = (tip ? tip : ""); }
   virtual void setVisible(bool val) { visible = val; }
-  bool isVisible() { return visible; }
+  bool isVisible() const noexcept { return visible; }
   virtual void computeSize() {}
-  static void setBackgroundColor(const TCODColor col, const TCODColor colFocus);
-  static void setForegroundColor(const TCODColor col, const TCODColor colFocus);
-  static void setConsole(TCODConsole* con);
-  static void updateWidgets(const TCOD_key_t k, const TCOD_mouse_t mouse);
-  static void renderWidgets();
-  static TCOD_mouse_t mouse;
-  static TCODColor fore;
+  static void setBackgroundColor(const TCODColor col, const TCODColor colFocus) {
+    back = col;
+    backFocus = colFocus;
+  }
+
+  static void setForegroundColor(const TCODColor col, const TCODColor colFocus) {
+    fore = col;
+    foreFocus = colFocus;
+  }
+  static void setConsole(TCODConsole* console) { con = console; }
+
+  static void updateWidgets(const TCOD_key_t k, const TCOD_mouse_t p_mouse) {
+    mouse = p_mouse;
+    updateWidgetsIntern(k);
+  }
+  static void updateWidgets() {
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->computeSize();
+    }
+  }
+  static void updateWidgets(const SDL_Event& ev_tile, const SDL_Event& ev_pixel) {
+    switch (ev_tile.type) {
+      case SDL_MOUSEMOTION:
+        mouse.cx = ev_tile.motion.x;
+        mouse.cy = ev_tile.motion.y;
+        mouse.dcx = ev_tile.motion.xrel;
+        mouse.dcy = ev_tile.motion.yrel;
+        break;
+      default:
+        break;
+    }
+    switch (ev_pixel.type) {
+      case SDL_MOUSEMOTION:
+        mouse.dx = ev_pixel.motion.xrel;
+        mouse.dy = ev_pixel.motion.yrel;
+        break;
+      default:
+        break;
+    }
+    updateWidgets();
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->update(ev_tile, ev_pixel);
+    }
+  }
+  static void renderWidgets() {
+    if (!con) con = TCODConsole::root;
+    updateWidgets();
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->render();
+    }
+  }
+
+  int x{}, y{}, w{}, h{};
+  static inline Widget* focus{};
+  static inline Widget* keyboardFocus{};
+  static inline TCOD_mouse_t mouse{};
+  static inline TCODColor fore{220, 220, 180};
   virtual void expand(int, int) {}  // parameters: width, height
  protected:
   friend class StatusBar;
@@ -74,18 +211,34 @@ class TCODLIB_GUI_API Widget {
   virtual void onButtonRelease() {}
   virtual void onButtonClick() {}
 
-  static void updateWidgetsIntern(const TCOD_key_t k);
+  static void updateWidgetsIntern() {
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->computeSize();
+    }
+  }
+  static void updateWidgetsIntern(const TCOD_key_t k) {
+    updateWidgetsIntern();
+    for (auto& w : widgets_) {
+      if (w->isVisible()) w->update(k);
+    }
+  }
 
-  static float elapsed;
-  static TCODColor back;
-  static TCODColor backFocus;
-  static TCODColor foreFocus;
-  static TCODConsole* con;
-  static TCODList<Widget*> widgets;
-  char* tip;
-  bool mouseIn : 1;
-  bool mouseL : 1;
-  bool visible : 1;
+  /***************************************************************************
+      @brief Used for backwards compatibility, do not call this function directly.
+   */
+  std::function<void()> makeCallback_(widget_callback_t callback, void* userData) {
+    return [&, callback, userData]() { callback(this, userData); };
+  }
+
+  static inline TCODColor back{40, 40, 120};
+  static inline TCODColor backFocus{70, 70, 130};
+  static inline TCODColor foreFocus{255, 255, 255};
+  static inline TCODConsole* con{};
+  static inline std::vector<Widget*> widgets_{};
+  std::string tip_{};
+  bool mouseIn{false};
+  bool mouseL{false};
+  bool visible{true};
 };
-typedef void (*widget_callback_t)(Widget* w, void* userData);
+}  // namespace tcod::gui
 #endif /* TCOD_GUI_WIDGET_HPP */

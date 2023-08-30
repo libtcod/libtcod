@@ -152,35 +152,20 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/zip.h
     libtcod/zip.hpp
     libtcod/zip_c.c
-    libtcod/gui/button.cpp
     libtcod/gui/button.hpp
-    libtcod/gui/container.cpp
     libtcod/gui/container.hpp
-    libtcod/gui/flatlist.cpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
-    libtcod/gui/hbox.cpp
     libtcod/gui/hbox.hpp
-    libtcod/gui/image.cpp
     libtcod/gui/image.hpp
-    libtcod/gui/label.cpp
     libtcod/gui/label.hpp
-    libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp
-    libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
-    libtcod/gui/statusbar.cpp
     libtcod/gui/statusbar.hpp
-    libtcod/gui/textbox.cpp
     libtcod/gui/textbox.hpp
-    libtcod/gui/togglebutton.cpp
     libtcod/gui/togglebutton.hpp
-    libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp
-    libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
-    libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
     libtcod/sdl2/event.cpp
     libtcod/sdl2/event.h
@@ -285,7 +270,6 @@ install(FILES
     libtcod/gui/container.hpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
     libtcod/gui/hbox.hpp
     libtcod/gui/image.hpp
     libtcod/gui/label.hpp
@@ -460,35 +444,20 @@ source_group(libtcod FILES
     libtcod/zip_c.c
 )
 source_group(libtcod\\gui FILES
-    libtcod/gui/button.cpp
     libtcod/gui/button.hpp
-    libtcod/gui/container.cpp
     libtcod/gui/container.hpp
-    libtcod/gui/flatlist.cpp
     libtcod/gui/flatlist.hpp
     libtcod/gui/gui.hpp
-    libtcod/gui/gui_portability.hpp
-    libtcod/gui/hbox.cpp
     libtcod/gui/hbox.hpp
-    libtcod/gui/image.cpp
     libtcod/gui/image.hpp
-    libtcod/gui/label.cpp
     libtcod/gui/label.hpp
-    libtcod/gui/radiobutton.cpp
     libtcod/gui/radiobutton.hpp
-    libtcod/gui/slider.cpp
     libtcod/gui/slider.hpp
-    libtcod/gui/statusbar.cpp
     libtcod/gui/statusbar.hpp
-    libtcod/gui/textbox.cpp
     libtcod/gui/textbox.hpp
-    libtcod/gui/togglebutton.cpp
     libtcod/gui/togglebutton.hpp
-    libtcod/gui/toolbar.cpp
     libtcod/gui/toolbar.hpp
-    libtcod/gui/vbox.cpp
     libtcod/gui/vbox.hpp
-    libtcod/gui/widget.cpp
     libtcod/gui/widget.hpp
 )
 source_group(libtcod\\sdl2 FILES

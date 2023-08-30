@@ -3,6 +3,8 @@
 #include <libtcod/gui/gui.hpp>
 #include <string>
 
+using namespace tcod::gui;
+
 static constexpr auto HM_WIDTH = 100;
 static constexpr auto HM_HEIGHT = 80;
 
@@ -14,8 +16,8 @@ void addHill(int nbHill, float baseRadius, float radiusVar, float height);
 // data used by the operations
 extern TCODHeightMap* hm;
 extern TCODNoise* noise;
-extern ToolBar* params;
-extern ToolBar* history;
+extern std::shared_ptr<ToolBar> params;
+extern std::shared_ptr<ToolBar> history;
 extern bool isNormalized;
 extern float addFbmDelta;
 extern float scaleFbmDelta;
@@ -51,12 +53,12 @@ class Operation {
   virtual ~Operation() {}
 
  protected:
-  friend void historyCbk(Widget* w, void* data);
+  friend void historyCbk(Operation* op);
 
   static bool needsRandom;  // we need a random number generator
   static bool needsNoise;  // we need a 2D noise
   static Operation* currentOp;
-  RadioButton* button;  // button associated with this operation in history
+  std::shared_ptr<RadioButton> button;  // button associated with this operation in history
 
   static void addInitCode(
       CodeType type, const std::string& code);  // add a global variable or a function to the generated code
@@ -216,10 +218,10 @@ class VoronoiOperation : public Operation {
   float coef[MAX_VORONOI_COEF];
 
  protected:
-  friend void voronoiNbCoefValueCbk(Widget* wid, float val, void* data);
-  friend void voronoiCoefValueCbk(Widget* wid, float val, void* data);
+  friend void voronoiNbCoefValueCbk(float val, VoronoiOperation* op);
+  friend void voronoiCoefValueCbk(int coef_num, float val, VoronoiOperation* op);
 
-  Slider* coefSlider[MAX_VORONOI_COEF];
+  std::shared_ptr<Slider> coefSlider[MAX_VORONOI_COEF];
   std::string getCode(CodeType type);
   void runInternal();
   bool addInternal();

@@ -33,10 +33,31 @@
 #define TCOD_GUI_HBOX_HPP
 #ifndef TCOD_NO_UNICODE
 #include "vbox.hpp"
-class TCODLIB_GUI_API HBox : public VBox {
+
+namespace tcod::gui {
+class HBox : public VBox {
  public:
-  HBox(int x, int y, int padding);
-  void computeSize();
+  HBox(int x, int y, int padding) : VBox{x, y, padding} {};
+  void computeSize() override {
+    int cursor_x = x;
+    h = 0;
+    for (auto& wid : content_) {
+      if (wid->isVisible()) {
+        wid->y = y;
+        wid->x = cursor_x;
+        wid->computeSize();
+        if (wid->h > h) h = wid->h;
+        cursor_x += wid->w + padding;
+      }
+    }
+    w = cursor_x - x;
+    for (auto& wid : content_) {
+      if (wid->isVisible()) {
+        wid->expand(wid->w, h);
+      }
+    }
+  }
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_HBOX_HPP */

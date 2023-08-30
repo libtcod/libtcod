@@ -33,34 +33,51 @@
 #define TCOD_GUI_RADIOBUTTON_HPP
 #ifndef TCOD_NO_UNICODE
 #include "button.hpp"
-class TCODLIB_GUI_API RadioButton : public Button {
+
+namespace tcod::gui {
+class RadioButton : public Button {
  public:
-  RadioButton(const char* label, const char* tip, widget_callback_t cbk, void* userData = NULL)
-      : Button(label, tip, cbk, userData), group(defaultGroup) {}
-  RadioButton(
+  RadioButton(std::string label, std::string tip, std::function<void()> callback)
+      : Button{label, tip, callback}, group{defaultGroup} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] RadioButton(
+      const char* label, const char* tip, widget_callback_t callback, void* userData = nullptr)
+      : RadioButton{label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
+  RadioButton(int x, int y, int width, int height, std::string label, std::string tip, std::function<void()> callback)
+      : Button{x, y, width, height, label, tip, callback}, group{defaultGroup} {}
+  [[deprecated("Switch to a non-deprecated constructor")]] RadioButton(
       int x,
       int y,
       int width,
       int height,
       const char* label,
       const char* tip,
-      widget_callback_t cbk,
-      void* userData = NULL)
-      : Button(x, y, width, height, label, tip, cbk, userData), group(defaultGroup) {}
+      widget_callback_t callback,
+      void* userData = nullptr)
+      : RadioButton{x, y, width, height, label ? label : "", tip ? tip : "", makeCallback_(callback, userData)} {}
 
   void setGroup(int group_) { this->group = group_; }
-  void render();
-  void select();
-  void unSelect();
-  static void unSelectGroup(int group);
+  void render() override {
+    Button::render();
+    if (groupSelect[group] == this) {
+      auto& console = static_cast<TCOD_Console&>(*con);
+      if (console.in_bounds({x, y})) console.at({x, y}).ch = '>';
+    }
+  }
+  void select() { groupSelect[group] = this; }
+  void unSelect() { groupSelect[group] = nullptr; }
+  static void unSelectGroup(int group) { groupSelect[group] = nullptr; }
   static void setDefaultGroup(int group) { defaultGroup = group; }
 
  protected:
-  static int defaultGroup;
-  int group;
-  static RadioButton* groupSelect[512];
+  void onButtonClick() override {
+    select();
+    Button::onButtonClick();
+  }
 
-  void onButtonClick();
+  static inline int defaultGroup{0};
+  static inline RadioButton* groupSelect[512]{};
+  int group{defaultGroup};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_RADIOBUTTON_HPP */

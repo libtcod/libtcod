@@ -33,13 +33,34 @@
 #define TCOD_GUI_VBOX_HPP
 #ifndef TCOD_NO_UNICODE
 #include "container.hpp"
-class TCODLIB_GUI_API VBox : public Container {
+
+namespace tcod::gui {
+class VBox : public Container {
  public:
-  VBox(int x, int y, int padding) : Container(x, y, 0, 0), padding(padding) {}
-  void computeSize();
+  VBox(int x, int y, int padding) : Container{x, y, 0, 0}, padding{padding} {}
+  void computeSize() override {
+    int cursor_y = y;
+    w = 0;
+    for (auto& wid : content_) {
+      if (wid->isVisible()) {
+        wid->x = x;
+        wid->y = cursor_y;
+        wid->computeSize();
+        if (wid->w > w) w = wid->w;
+        cursor_y += wid->h + padding;
+      }
+    }
+    h = cursor_y - y;
+    for (auto& wid : content_) {
+      if (wid->isVisible()) {
+        wid->expand(w, wid->h);
+      }
+    }
+  }
 
  protected:
-  int padding;
+  int padding{};
 };
+}  // namespace tcod::gui
 #endif  // TCOD_NO_UNICODE
 #endif /* TCOD_GUI_VBOX_HPP */

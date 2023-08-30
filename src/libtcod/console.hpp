@@ -135,7 +135,7 @@ class TCODLIB_API TCODConsole {
       .. versionadded:: 1.24
       \endrst
    */
-  TCODConsole();
+  TCODConsole() = default;
   // clang-format off
 	/**
 	@PageName console_init
@@ -1590,10 +1590,10 @@ class TCODLIB_API TCODConsole {
 
 #ifndef TCOD_NO_ZLIB
 	bool loadXp(const char *filename) {
-		return TCOD_console_load_xp(data, filename) != 0;
+		return TCOD_console_load_xp(data.get(), filename) != 0;
 	}
 	bool saveXp(const char *filename, int compress_level) {
-		return TCOD_console_save_xp(data, filename, compress_level) != 0;
+		return TCOD_console_save_xp(data.get(), filename, compress_level) != 0;
 	}
 #endif // TCOD_NO_ZLIB
 
@@ -1735,17 +1735,6 @@ class TCODLIB_API TCODConsole {
   [[deprecated("This function is a stub and will do nothing.")]]
   static void disableKeyboardRepeat();
   // clang-format on
-  // Delete copy constructors.
-  TCODConsole(const TCODConsole&) = delete;
-  TCODConsole& operator=(const TCODConsole&) = delete;
-  // Supports move since version 1.19
-  TCODConsole(TCODConsole&& rhs) : data{rhs.data} { rhs.data = nullptr; }
-  TCODConsole& operator=(TCODConsole&& rhs) {
-    std::swap(data, rhs.data);
-    return *this;
-  }
-
-  virtual ~TCODConsole();
 
   [[deprecated("This function does nothing.")]] void setDirty(int x, int y, int w, int h);
 
@@ -1757,7 +1746,7 @@ class TCODLIB_API TCODConsole {
       .. versionadded:: 1.19
       \endrst
    */
-  explicit TCODConsole(tcod::ConsolePtr console) : data{console.release()} {}
+  explicit TCODConsole(tcod::ConsolePtr console) : data{std::move(console)} {}
 
   // ctrl = TCOD_COLCTRL_1...TCOD_COLCTRL_5 or TCOD_COLCTRL_STOP
   static const char* getColorControlString(TCOD_colctrl_t ctrl);
@@ -1784,11 +1773,11 @@ class TCODLIB_API TCODConsole {
    */
   [[nodiscard]] auto get() noexcept -> TCOD_Console* {
     if (!data) return TCOD_sys_get_internal_console();
-    return data;
+    return data.get();
   }
   [[nodiscard]] auto get() const noexcept -> const TCOD_Console* {
     if (!data) return TCOD_sys_get_internal_console();
-    return data;
+    return data.get();
   }
   /***************************************************************************
       @brief Allow implicit conversions into a TCOD_Console reference.
@@ -1798,7 +1787,7 @@ class TCODLIB_API TCODConsole {
       \endrst
    */
   [[nodiscard]] operator TCOD_Console&() {
-    TCOD_Console* out = data;
+    TCOD_Console* out = data.get();
     if (!out) out = TCOD_sys_get_internal_console();
     if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
     return *out;
@@ -1811,7 +1800,7 @@ class TCODLIB_API TCODConsole {
       \endrst
    */
   [[nodiscard]] operator const TCOD_Console&() const {
-    const TCOD_Console* out = data;
+    const TCOD_Console* out = data.get();
     if (!out) out = TCOD_sys_get_internal_console();
     if (!out) throw std::logic_error("Tried to get a reference to nullptr.");
     return *out;
@@ -1833,7 +1822,7 @@ class TCODLIB_API TCODConsole {
    */
   [[nodiscard]] explicit operator const TCOD_Console*() const noexcept { return get_data(); };
 
- protected:
-  TCOD_Console* data = nullptr;  // This should be a unique_ptr, but fixing it will break the ABI.
+ private:
+  tcod::ConsolePtr data{};
 };
 #endif /* _TCOD_CONSOLE_HPP */

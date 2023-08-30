@@ -62,15 +62,14 @@ static auto vstring(const char* fmt, va_list varags) -> std::string {
 
 TCODConsole* TCODConsole::root = new TCODConsole();
 
-TCODConsole::TCODConsole() = default;
-TCODConsole::TCODConsole(int w, int h) { data = TCOD_console_new(w, h); }
+TCODConsole::TCODConsole(int w, int h) : TCODConsole{TCOD_console_new(w, h)} {}
 
-TCODConsole::TCODConsole(const char* filename) { data = TCOD_console_from_file(filename); }
+TCODConsole::TCODConsole(const char* filename) : TCODConsole{TCOD_console_from_file(filename)} {}
 
-bool TCODConsole::loadAsc(const char* filename) { return TCOD_console_load_asc(data, filename) != 0; }
-bool TCODConsole::saveAsc(const char* filename) const { return TCOD_console_save_asc(data, filename) != 0; }
-bool TCODConsole::saveApf(const char* filename) const { return TCOD_console_save_apf(data, filename) != 0; }
-bool TCODConsole::loadApf(const char* filename) { return TCOD_console_load_apf(data, filename) != 0; }
+bool TCODConsole::loadAsc(const char* filename) { return TCOD_console_load_asc(data.get(), filename) != 0; }
+bool TCODConsole::saveAsc(const char* filename) const { return TCOD_console_save_asc(data.get(), filename) != 0; }
+bool TCODConsole::saveApf(const char* filename) const { return TCOD_console_save_apf(data.get(), filename) != 0; }
+bool TCODConsole::loadApf(const char* filename) { return TCOD_console_load_apf(data.get(), filename) != 0; }
 
 void TCODConsole::setCustomFont(const char* fontFile, int flags, int nbCharHoriz, int nbCharVertic) {
   TCOD_console_set_custom_font(fontFile, flags, nbCharHoriz, nbCharVertic);
@@ -98,9 +97,9 @@ bool TCODConsole::hasMouseFocus() { return TCOD_console_has_mouse_focus() != 0; 
 bool TCODConsole::isActive() { return TCOD_console_is_active() != 0; }
 #endif  // NO_SDL
 
-int TCODConsole::getWidth() const { return TCOD_console_get_width(data); }
+int TCODConsole::getWidth() const { return TCOD_console_get_width(data.get()); }
 
-int TCODConsole::getHeight() const { return TCOD_console_get_height(data); }
+int TCODConsole::getHeight() const { return TCOD_console_get_height(data.get()); }
 
 void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor& fore, const TCODColor& back) {
   TCOD_color_t b = {back.r, back.g, back.b}, f = {fore.r, fore.g, fore.b};
@@ -108,21 +107,21 @@ void TCODConsole::setColorControl(TCOD_colctrl_t con, const TCODColor& fore, con
 }
 
 TCODColor TCODConsole::getDefaultBackground() const {
-  TCOD_color_t c = TCOD_console_get_default_background(data);
+  TCOD_color_t c = TCOD_console_get_default_background(data.get());
   TCODColor ret;
   ret.r = c.r;
   ret.g = c.g;
   ret.b = c.b;
   return ret;
 }
-TCODColor TCODConsole::getDefaultForeground() const { return TCOD_console_get_default_foreground(data); }
+TCODColor TCODConsole::getDefaultForeground() const { return TCOD_console_get_default_foreground(data.get()); }
 void TCODConsole::setDefaultBackground(TCODColor back) {
   TCOD_color_t b = {back.r, back.g, back.b};
-  TCOD_console_set_default_background(data, b);
+  TCOD_console_set_default_background(data.get(), b);
 }
 void TCODConsole::setDefaultForeground(TCODColor fore) {
   TCOD_color_t b = {fore.r, fore.g, fore.b};
-  TCOD_console_set_default_foreground(data, b);
+  TCOD_console_set_default_foreground(data.get(), b);
 }
 
 #ifndef NO_SDL
@@ -135,18 +134,14 @@ bool TCODConsole::isFullscreen() { return TCOD_console_is_fullscreen() != 0; }
 #endif  // NO_SDL
 
 void TCODConsole::setBackgroundFlag(TCOD_bkgnd_flag_t bkgnd_flag) {
-  TCOD_console_set_background_flag(data, bkgnd_flag);
+  TCOD_console_set_background_flag(data.get(), bkgnd_flag);
 }
 
-TCOD_bkgnd_flag_t TCODConsole::getBackgroundFlag() const { return TCOD_console_get_background_flag(data); }
+TCOD_bkgnd_flag_t TCODConsole::getBackgroundFlag() const { return TCOD_console_get_background_flag(data.get()); }
 
-void TCODConsole::setAlignment(TCOD_alignment_t alignment) { TCOD_console_set_alignment(data, alignment); }
+void TCODConsole::setAlignment(TCOD_alignment_t alignment) { TCOD_console_set_alignment(data.get(), alignment); }
 
-TCOD_alignment_t TCODConsole::getAlignment() const { return TCOD_console_get_alignment(data); }
-
-TCODConsole::~TCODConsole() {
-  if (data) TCOD_console_delete(data);
-}
+TCOD_alignment_t TCODConsole::getAlignment() const { return TCOD_console_get_alignment(data.get()); }
 
 void TCODConsole::blit(
     const TCODConsole* srcCon,
@@ -159,7 +154,8 @@ void TCODConsole::blit(
     int yDst,
     float foreground_alpha,
     float background_alpha) {
-  TCOD_console_blit(srcCon->data, xSrc, ySrc, wSrc, hSrc, dstCon->data, xDst, yDst, foreground_alpha, background_alpha);
+  TCOD_console_blit(
+      srcCon->get(), xSrc, ySrc, wSrc, hSrc, dstCon->get(), xDst, yDst, foreground_alpha, background_alpha);
 }
 
 void TCODConsole::flush() { tcod::check_throw_error(TCOD_console_flush()); }
@@ -173,48 +169,54 @@ uint8_t TCODConsole::getFade() { return TCOD_console_get_fade(); }
 
 TCODColor TCODConsole::getFadingColor() { return TCOD_console_get_fading_color(); }
 
-void TCODConsole::putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag) { TCOD_console_put_char(data, x, y, c, flag); }
+void TCODConsole::putChar(int x, int y, int c, TCOD_bkgnd_flag_t flag) {
+  TCOD_console_put_char(data.get(), x, y, c, flag);
+}
 
 void TCODConsole::putCharEx(int x, int y, int c, const TCODColor& fore, const TCODColor& back) {
   TCOD_color_t f = {fore.r, fore.g, fore.b};
   TCOD_color_t b = {back.r, back.g, back.b};
-  TCOD_console_put_char_ex(data, x, y, c, f, b);
+  TCOD_console_put_char_ex(data.get(), x, y, c, f, b);
 }
 
-void TCODConsole::clear() { TCOD_console_clear(data); }
+void TCODConsole::clear() { TCOD_console_clear(data.get()); }
 
-TCODColor TCODConsole::getCharBackground(int x, int y) const { return TCOD_console_get_char_background(data, x, y); }
+TCODColor TCODConsole::getCharBackground(int x, int y) const {
+  return TCOD_console_get_char_background(data.get(), x, y);
+}
 void TCODConsole::setCharForeground(int x, int y, const TCODColor& col) {
   TCOD_color_t c = {col.r, col.g, col.b};
-  TCOD_console_set_char_foreground(data, x, y, c);
+  TCOD_console_set_char_foreground(data.get(), x, y, c);
 }
-TCODColor TCODConsole::getCharForeground(int x, int y) const { return TCOD_console_get_char_foreground(data, x, y); }
+TCODColor TCODConsole::getCharForeground(int x, int y) const {
+  return TCOD_console_get_char_foreground(data.get(), x, y);
+}
 
-int TCODConsole::getChar(int x, int y) const { return TCOD_console_get_char(data, x, y); }
+int TCODConsole::getChar(int x, int y) const { return TCOD_console_get_char(data.get(), x, y); }
 
 void TCODConsole::setCharBackground(int x, int y, const TCODColor& col, TCOD_bkgnd_flag_t flag) {
   TCOD_color_t c = {col.r, col.g, col.b};
-  TCOD_console_set_char_background(data, x, y, c, flag);
+  TCOD_console_set_char_background(data.get(), x, y, c, flag);
 }
 
-void TCODConsole::setChar(int x, int y, int c) { TCOD_console_set_char(data, x, y, c); }
+void TCODConsole::setChar(int x, int y, int c) { TCOD_console_set_char(data.get(), x, y, c); }
 
 void TCODConsole::rect(int x, int y, int rw, int rh, bool clear, TCOD_bkgnd_flag_t flag) {
-  TCOD_console_rect(data, x, y, rw, rh, clear, flag);
+  TCOD_console_rect(data.get(), x, y, rw, rh, clear, flag);
 }
 
-void TCODConsole::hline(int x, int y, int l, TCOD_bkgnd_flag_t flag) { TCOD_console_hline(data, x, y, l, flag); }
+void TCODConsole::hline(int x, int y, int l, TCOD_bkgnd_flag_t flag) { TCOD_console_hline(data.get(), x, y, l, flag); }
 
-void TCODConsole::vline(int x, int y, int l, TCOD_bkgnd_flag_t flag) { TCOD_console_vline(data, x, y, l, flag); }
+void TCODConsole::vline(int x, int y, int l, TCOD_bkgnd_flag_t flag) { TCOD_console_vline(data.get(), x, y, l, flag); }
 
 void TCODConsole::printFrame(int x, int y, int w, int h, bool empty, TCOD_bkgnd_flag_t flag, const char* fmt, ...) {
   if (fmt) {
     va_list ap;
     va_start(ap, fmt);
-    TCOD_console_print_frame(data, x, y, w, h, empty, flag, TCOD_console_vsprint(fmt, ap));
+    TCOD_console_print_frame(data.get(), x, y, w, h, empty, flag, TCOD_console_vsprint(fmt, ap));
     va_end(ap);
   } else {
-    TCOD_console_print_frame(data, x, y, w, h, empty, flag, NULL);
+    TCOD_console_print_frame(data.get(), x, y, w, h, empty, flag, NULL);
   }
 }
 /** Deprecated EASCII function. */
@@ -222,7 +224,7 @@ void TCODConsole::print(int x, int y, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   TCOD_console_print_internal(
-      data, x, y, 0, 0, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint(fmt, ap), false, false);
+      data.get(), x, y, 0, 0, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
 #ifndef TCOD_NO_UNICODE
@@ -275,36 +277,15 @@ void TCODConsole::printf(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t 
 void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  TCOD_console_print_internal(data, x, y, 0, 0, flag, alignment, TCOD_console_vsprint(fmt, ap), false, false);
+  TCOD_console_print_internal(data.get(), x, y, 0, 0, flag, alignment, TCOD_console_vsprint(fmt, ap), false, false);
   va_end(ap);
 }
-
-/*
-void TCODConsole::printLine(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_print_location_t location, const char *fmt, ...)
-{ va_list ap; va_start(ap,fmt); switch(location)
-        {
-                case TCOD_PRINT_LEFT:
-                        TCOD_console_print(data,x,y,getWidth()-x,getHeight()-y,flag,LEFT,TCOD_console_vsprint(fmt,ap),false,false);
-                        break;
-                case TCOD_PRINT_RIGHT:
-                        TCOD_console_print(data,x,y,x+1,getHeight()-y,flag,RIGHT,TCOD_console_vsprint(fmt,ap),false,false);
-                        break;
-                case TCOD_PRINT_CENTER:
-                        TCOD_console_print(data,x,y,getWidth(),getHeight()-y,flag,CENTER,TCOD_console_vsprint(fmt,ap),false,false);
-                        break;
-                default:
-                        TCOD_ASSERT(0);
-                        break;
-        }
-        va_end(ap);
-}
-*/
 
 int TCODConsole::printRect(int x, int y, int w, int h, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   int ret = TCOD_console_print_internal(
-      data, x, y, w, h, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint(fmt, ap), true, false);
+      data.get(), x, y, w, h, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;
 }
@@ -313,7 +294,8 @@ int TCODConsole::printRectEx(
     int x, int y, int w, int h, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  int ret = TCOD_console_print_internal(data, x, y, w, h, flag, alignment, TCOD_console_vsprint(fmt, ap), true, false);
+  int ret =
+      TCOD_console_print_internal(data.get(), x, y, w, h, flag, alignment, TCOD_console_vsprint(fmt, ap), true, false);
   va_end(ap);
   return ret;
 }
@@ -322,7 +304,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const char* fmt, ...)
   va_list ap;
   va_start(ap, fmt);
   int ret = TCOD_console_print_internal(
-      data, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT, TCOD_console_vsprint(fmt, ap), true, true);
+      data.get(), x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT, TCOD_console_vsprint(fmt, ap), true, true);
   va_end(ap);
   return ret;
 }
@@ -330,7 +312,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const char* fmt, ...)
 bool TCODConsole::isKeyPressed(TCOD_keycode_t key) { return TCOD_console_is_key_pressed(key) != 0; }
 void TCODConsole::setKeyColor(const TCODColor& col) {
   TCOD_color_t c = {col.r, col.g, col.b};
-  TCOD_console_set_key_color(data, c);
+  TCOD_console_set_key_color(data.get(), c);
 }
 
 #ifndef NO_SDL
@@ -348,14 +330,15 @@ void TCODConsole::print(int x, int y, const wchar_t* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   TCOD_console_print_internal_utf(
-      data, x, y, 0, 0, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint_utf(fmt, ap), false, false);
+      data.get(), x, y, 0, 0, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint_utf(fmt, ap), false, false);
   va_end(ap);
 }
 
 void TCODConsole::printEx(int x, int y, TCOD_bkgnd_flag_t flag, TCOD_alignment_t alignment, const wchar_t* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  TCOD_console_print_internal_utf(data, x, y, 0, 0, flag, alignment, TCOD_console_vsprint_utf(fmt, ap), false, false);
+  TCOD_console_print_internal_utf(
+      data.get(), x, y, 0, 0, flag, alignment, TCOD_console_vsprint_utf(fmt, ap), false, false);
   va_end(ap);
 }
 
@@ -363,7 +346,7 @@ int TCODConsole::printRect(int x, int y, int w, int h, const wchar_t* fmt, ...) 
   va_list ap;
   va_start(ap, fmt);
   int ret = TCOD_console_print_internal_utf(
-      data, x, y, w, h, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint_utf(fmt, ap), true, false);
+      data.get(), x, y, w, h, get()->bkgnd_flag, get()->alignment, TCOD_console_vsprint_utf(fmt, ap), true, false);
   va_end(ap);
   return ret;
 }
@@ -373,7 +356,7 @@ int TCODConsole::printRectEx(
   va_list ap;
   va_start(ap, fmt);
   int ret = TCOD_console_print_internal_utf(
-      data, x, y, w, h, flag, alignment, TCOD_console_vsprint_utf(fmt, ap), true, false);
+      data.get(), x, y, w, h, flag, alignment, TCOD_console_vsprint_utf(fmt, ap), true, false);
   va_end(ap);
   return ret;
 }
@@ -382,7 +365,7 @@ int TCODConsole::getHeightRect(int x, int y, int w, int h, const wchar_t* fmt, .
   va_list ap;
   va_start(ap, fmt);
   int ret = TCOD_console_print_internal_utf(
-      data, x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT, TCOD_console_vsprint_utf(fmt, ap), true, true);
+      data.get(), x, y, w, h, TCOD_BKGND_NONE, TCOD_LEFT, TCOD_console_vsprint_utf(fmt, ap), true, true);
   va_end(ap);
   return ret;
 }

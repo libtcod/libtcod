@@ -11,6 +11,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 ### Changed
 - Several functions have been moved inline, this will break the ABI.
 - Provisional gui tools moved into the `tcod::gui` namespace.
+- `TCODConsole::data` changed from protected to private.
 
 ## [1.24.0] - 2023-05-26
 ### Added

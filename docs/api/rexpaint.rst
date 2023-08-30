@@ -25,5 +25,3 @@ C API
 .. doxygenfunction:: TCOD_load_xp_from_memory
 
 .. doxygenfunction:: TCOD_save_xp_to_memory
-
-

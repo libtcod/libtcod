@@ -14383,4 +14383,3 @@ static const utf8proc_uint16_t utf8proc_combinations[] = {
 72, 75,
   1, 53694, 1, 53696,
 };
-

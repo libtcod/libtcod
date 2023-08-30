@@ -157,4 +157,3 @@ CheckOptions:
   - key:             bugprone-not-null-terminated-result.WantToUseSafeFunctions
     value:           'true'
 ...
-

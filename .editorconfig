@@ -43,13 +43,9 @@ indent_style = tab
 indent_style = space
 indent_size = 4
 
-[*.props]
-insert_final_newline = false
-
 [*.json]
 indent_style = space
 indent_size = 4
-insert_final_newline = false
 
 [cspell.json]
 insert_final_newline = true

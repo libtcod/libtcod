@@ -11,7 +11,7 @@ dnl AM_PATH_SDL2([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
 dnl
 AC_DEFUN([AM_PATH_SDL2],
-[dnl 
+[dnl
 dnl Get the cflags and libraries from the sdl2-config script
 dnl
 AC_ARG_WITH(sdl-prefix,[  --with-sdl-prefix=PFX   Prefix where SDL is installed (optional)],
@@ -90,7 +90,7 @@ char*
 my_strdup (char *str)
 {
   char *new_str;
-  
+
   if (str)
     {
       new_str = (char *)malloc ((strlen (str) + 1) * sizeof(char));
@@ -98,7 +98,7 @@ my_strdup (char *str)
     }
   else
     new_str = NULL;
-  
+
   return new_str;
 }
 

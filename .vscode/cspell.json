@@ -26,6 +26,7 @@
         "automake",
         "autoreconf",
         "Autotools",
+        "autoupdate",
         "autowrap",
         "autowrapping",
         "backported",

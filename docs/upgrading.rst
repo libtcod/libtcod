@@ -205,7 +205,7 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
 .. code-block:: cpp
 
     #include <libtcod.hpp>
-    #include <SDL2.h>
+    #include <SDL.h>
 
     int main(int argc, char* argv[]) {
       auto root_console = tcod::Console{80, 25};

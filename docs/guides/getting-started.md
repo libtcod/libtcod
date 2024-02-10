@@ -13,7 +13,7 @@ For Windows [Visual Studio Community](https://visualstudio.microsoft.com/vs/comm
 Here is a simple example of setting up a libtcod context in C++ without using deprecated functions.
 Put this code at `./src/main.cpp`:
 ```cpp
-#include <SDL2.h>
+#include <SDL.h>
 #include <libtcod.hpp>
 
 int main(int argc, char* argv[]) {

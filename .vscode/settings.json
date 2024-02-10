@@ -105,7 +105,7 @@
     "C_Cpp.vcpkg.enabled": true,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "always"
     },
     "editor.defaultFormatter": "xaver.clang-format",
     "cmake.sourceDirectory": "${workspaceFolder}",

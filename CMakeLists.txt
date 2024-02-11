@@ -48,6 +48,7 @@ endif()
 
 set(LIBTCOD_SAMPLES OFF CACHE BOOL "Build sources from the samples directory.")
 set(LIBTCOD_TESTS OFF CACHE BOOL "Build unit tests.")
+set(LIBTCOD_INSTALL ON CACHE BOOL "Enable install targets.")
 
 add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})

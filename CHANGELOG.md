@@ -8,6 +8,10 @@ Versions since `1.7.0` only track ABI breaks and not API breaks.
 Versions since `2.0.0` only track API breaks and no longer guarantee ABI compatibility.
 
 ## [Unreleased]
+### Added
+- Cmake scripts now have the `LIBTCOD_INSTALL` option to disable installation.
+  [#153](https://github.com/libtcod/libtcod/issues/153)
+
 ### Changed
 - Several functions have been moved inline, this will break the ABI.
 - Provisional gui tools moved into the `tcod::gui` namespace.

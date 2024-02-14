@@ -109,7 +109,7 @@ typedef struct {
 static vk_to_c_entry vk_to_c[NUM_VK_TO_C_ENTRIES];
 void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer) { TCOD_ctx.sdl_cbk = renderer; }
 
-void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_Image* img, int x, int y) {
+void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, const TCOD_Image* img, int x, int y) {
   static const TCOD_color_t pink = {255, 0, 255};
   int img_width;
   int img_height;

@@ -559,8 +559,6 @@ public :
   [[nodiscard]] operator const TCOD_Image&() const { return *data; }
 
 protected :
-	friend class TCODLIB_API TCODSystem;
-	friend class TCODLIB_API TCODZip;
 	struct TCOD_Image *data{nullptr};
 	bool deleteData{false};
 };

@@ -17,6 +17,9 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Provisional gui tools moved into the `tcod::gui` namespace.
 - `TCODConsole::data` changed from protected to private.
 
+### Fixed
+- `const` was missing from `TCOD_sys_update_char` image parameter.
+
 ## [1.24.0] - 2023-05-26
 ### Added
 - New `TCODImage::getSize()` overload which returns a value instead of taking output references.

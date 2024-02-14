@@ -230,7 +230,7 @@ TCODLIB_API void TCOD_sys_get_char_size(int* w, int* h);
  *
  *  `x` and `y` are the upper-left pixel-coordinates of the tile on the `img`.
  */
-TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, TCOD_image_t img, int x, int y);
+TCODLIB_API void TCOD_sys_update_char(int asciiCode, int font_x, int font_y, const TCOD_Image* img, int x, int y);
 
 TCODLIB_API struct SDL_Window* TCOD_sys_get_SDL_window(void);
 TCODLIB_API struct SDL_Renderer* TCOD_sys_get_SDL_renderer(void);

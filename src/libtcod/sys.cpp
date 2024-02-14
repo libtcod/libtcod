@@ -79,7 +79,7 @@ void TCODSystem::getFullscreenOffsets(int* offset_x, int* offset_y) {
 }
 
 void TCODSystem::updateChar(int asciiCode, int font_x, int font_y, const TCODImage* img, int x, int y) {
-  TCOD_sys_update_char(asciiCode, font_x, font_y, img->data, x, y);
+  TCOD_sys_update_char(asciiCode, font_x, font_y, img->get_data(), x, y);
 }
 
 void TCODSystem::getCharSize(int* w, int* h) { TCOD_sys_get_char_size(w, h); }

@@ -108,15 +108,15 @@ TCODLIB_API void TCOD_log_verbose_fmt_(int level, const char* source, int line, 
 
 // All of these are for internal use.
 #define TCOD_log_debug_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_DEBUG, __FILE__, __LINE__, (fmt), __VA_ARGS__)
-#define TCOD_log_info_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_DEBUG, __FILE__, __LINE__, (fmt), __VA_ARGS__)
-#define TCOD_log_warning_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_DEBUG, __FILE__, __LINE__, (fmt), __VA_ARGS__)
-#define TCOD_log_error_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_DEBUG, __FILE__, __LINE__, (fmt), __VA_ARGS__)
-#define TCOD_log_critical_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_DEBUG, __FILE__, __LINE__, (fmt), __VA_ARGS__)
+#define TCOD_log_info_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_INFO, __FILE__, __LINE__, (fmt), __VA_ARGS__)
+#define TCOD_log_warning_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_WARNING, __FILE__, __LINE__, (fmt), __VA_ARGS__)
+#define TCOD_log_error_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_ERROR, __FILE__, __LINE__, (fmt), __VA_ARGS__)
+#define TCOD_log_critical_f(fmt, ...) TCOD_log_verbose_fmt_(TCOD_LOG_CRITICAL, __FILE__, __LINE__, (fmt), __VA_ARGS__)
 #define TCOD_log_debug(msg) TCOD_log_verbose_((msg), TCOD_LOG_DEBUG, __FILE__, __LINE__)
-#define TCOD_log_info(msg) TCOD_log_verbose_((msg), TCOD_LOG_DEBUG, __FILE__, __LINE__)
-#define TCOD_log_warning(msg) TCOD_log_verbose_((msg), TCOD_LOG_DEBUG, __FILE__, __LINE__)
-#define TCOD_log_error(msg) TCOD_log_verbose_((msg), TCOD_LOG_DEBUG, __FILE__, __LINE__)
-#define TCOD_log_critical(msg) TCOD_log_verbose_((msg), TCOD_LOG_DEBUG, __FILE__, __LINE__)
+#define TCOD_log_info(msg) TCOD_log_verbose_((msg), TCOD_LOG_INFO, __FILE__, __LINE__)
+#define TCOD_log_warning(msg) TCOD_log_verbose_((msg), TCOD_LOG_WARNING, __FILE__, __LINE__)
+#define TCOD_log_error(msg) TCOD_log_verbose_((msg), TCOD_LOG_ERROR, __FILE__, __LINE__)
+#define TCOD_log_critical(msg) TCOD_log_verbose_((msg), TCOD_LOG_CRITICAL, __FILE__, __LINE__)
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus

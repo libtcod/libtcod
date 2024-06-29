@@ -48,7 +48,7 @@ typedef struct TCOD_Zip {
 } zip_data_t;
 
 TCOD_zip_t TCOD_zip_new(void) {
-  zip_data_t* ret = (zip_data_t*)calloc(sizeof(zip_data_t), 1);
+  zip_data_t* ret = (zip_data_t*)calloc(1, sizeof(zip_data_t));
   return (TCOD_zip_t)ret;
 }
 

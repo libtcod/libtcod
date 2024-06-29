@@ -117,12 +117,12 @@ void TCOD_image_clear(TCOD_Image* image, TCOD_color_t color) {
 }
 
 TCOD_Image* TCOD_image_new(int width, int height) {
-  TCOD_Image* ret = calloc(sizeof(*ret), 1);
+  TCOD_Image* ret = calloc(1, sizeof(*ret));
   if (!ret) {
     return NULL;
   }
   ret->nb_mipmaps = TCOD_image_get_mipmap_levels(width, height);
-  ret->mipmaps = calloc(sizeof(*ret->mipmaps), ret->nb_mipmaps);
+  ret->mipmaps = calloc(ret->nb_mipmaps, sizeof(*ret->mipmaps));
   if (!ret->mipmaps) {
     TCOD_image_delete(ret);
     return NULL;

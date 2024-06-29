@@ -148,7 +148,7 @@ struct TCOD_TilesetAtlasSDL2* TCOD_sdl2_atlas_new(struct SDL_Renderer* renderer,
   if (!renderer || !tileset) {
     return NULL;
   }
-  struct TCOD_TilesetAtlasSDL2* atlas = calloc(sizeof(*atlas), 1);
+  struct TCOD_TilesetAtlasSDL2* atlas = calloc(1, sizeof(*atlas));
   if (!atlas) {
     return NULL;
   }
@@ -917,7 +917,7 @@ struct TCOD_Context* TCOD_renderer_init_sdl2(
     return NULL;
   }
   context->c_destructor_ = sdl2_destructor;
-  struct TCOD_RendererSDL2* sdl2_data = calloc(sizeof(*sdl2_data), 1);
+  struct TCOD_RendererSDL2* sdl2_data = calloc(1, sizeof(*sdl2_data));
   context->contextdata_ = sdl2_data;
   if (!sdl2_data) {
     TCOD_set_errorv("Out of memory.");

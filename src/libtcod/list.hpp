@@ -404,7 +404,7 @@ class TCODList {
 		intList.clearAndDelete(); // the list is empty. delete cl has been called. The address cl is no longer valid.
 	@C
 		TCOD_list_t intList = TCOD_list_new();
-		void *data=calloc(10,1); // some memory allocation here
+		void *data=calloc(1,10); // some memory allocation here
 		TCOD_list_set(intList,0,(const void *)data);
 		TCOD_list_clear(intList); // the list is empty, but data is always valid
 		TCOD_list_set(intList,0,(const void *)data);

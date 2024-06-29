@@ -207,7 +207,7 @@ TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
       .map = map,
       .pov_x = pov_x,
       .pov_y = pov_y,
-      .raymap_grid = calloc(sizeof(*fov.raymap_grid), map->nbcells),
+      .raymap_grid = calloc(map->nbcells, sizeof(*fov.raymap_grid)),
   };
 
   if (!fov.raymap_grid) {

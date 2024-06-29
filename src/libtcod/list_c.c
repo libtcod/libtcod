@@ -60,7 +60,7 @@ static void TCOD_list_allocate_int(TCOD_list_t l) {
   if (newSize == 0) {
     newSize = 16;
   }
-  newArray = (void**)calloc(sizeof(void*), newSize);
+  newArray = (void**)calloc(newSize, sizeof(void*));
   if (l->array) {
     if (l->fillSize > 0) {
       memcpy(newArray, l->array, sizeof(void*) * l->fillSize);
@@ -85,7 +85,7 @@ TCOD_list_t TCOD_list_new(void) { return (TCOD_list_t)calloc(1, sizeof(struct TC
  */
 TCOD_list_t TCOD_list_allocate(int nb_elements) {
   TCOD_list_t l = TCOD_list_new();
-  l->array = (void**)calloc(sizeof(void*), nb_elements);
+  l->array = (void**)calloc(nb_elements, sizeof(void*));
   l->allocSize = nb_elements;
   return l;
 }

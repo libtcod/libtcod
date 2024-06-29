@@ -314,12 +314,12 @@ void TCOD_thread_wait(TCOD_thread_t th) {
 
 TCOD_mutex_t TCOD_mutex_new() {
 #ifdef TCOD_WINDOWS
-  CRITICAL_SECTION* cs = calloc(sizeof(CRITICAL_SECTION), 1);
+  CRITICAL_SECTION* cs = calloc(1, sizeof(CRITICAL_SECTION));
   InitializeCriticalSection(cs);
   return cs;
 #else
   static pthread_mutex_t tmp = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_t* mut = calloc(sizeof(pthread_mutex_t), 1);
+  pthread_mutex_t* mut = calloc(1, sizeof(pthread_mutex_t));
   *mut = tmp;
   return (TCOD_mutex_t)mut;
 #endif
@@ -356,7 +356,7 @@ TCOD_semaphore_t TCOD_semaphore_new(int initVal) {
   HANDLE ret = CreateSemaphore(NULL, initVal, 255, NULL);
   return ret;
 #else
-  sem_t* ret = calloc(sizeof(sem_t), 1);
+  sem_t* ret = calloc(1, sizeof(sem_t));
   if (ret) sem_init(ret, 0, initVal);
   return (TCOD_semaphore_t)ret;
 #endif
@@ -402,13 +402,13 @@ typedef struct {
 
 TCOD_cond_t TCOD_condition_new(void) {
 #ifdef TCOD_WINDOWS
-  cond_t* ret = calloc(sizeof(cond_t), 1);
+  cond_t* ret = calloc(1, sizeof(cond_t));
   ret->mutex = TCOD_mutex_new();
   ret->waiting = TCOD_semaphore_new(0);
   ret->waitDone = TCOD_semaphore_new(0);
   return ret;
 #else
-  pthread_cond_t* ret = calloc(sizeof(pthread_cond_t), 1);
+  pthread_cond_t* ret = calloc(1, sizeof(pthread_cond_t));
   if (ret) pthread_cond_init(ret, NULL);
   return (TCOD_cond_t)ret;
 #endif

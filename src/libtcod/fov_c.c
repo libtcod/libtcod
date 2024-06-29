@@ -39,11 +39,11 @@ struct TCOD_Map* TCOD_map_new(int width, int height) {
   if (width <= 0 || height <= 0) {
     return NULL;
   }
-  struct TCOD_Map* map = calloc(sizeof(*map), 1);
+  struct TCOD_Map* map = calloc(1, sizeof(*map));
   map->width = width;
   map->height = height;
   map->nbcells = width * height;
-  map->cells = calloc(sizeof(*map->cells), map->nbcells);
+  map->cells = calloc(map->nbcells, sizeof(*map->cells));
   return map;
 }
 TCOD_Error TCOD_map_copy(const struct TCOD_Map* __restrict source, struct TCOD_Map* __restrict dest) {

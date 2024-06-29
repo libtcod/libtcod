@@ -38,7 +38,7 @@ struct TCOD_Frontier* TCOD_frontier_new(int ndim) {
     TCOD_set_errorvf("Can not make a pathfinder with %i dimensions.", ndim);
     return NULL;
   }
-  struct TCOD_Frontier* frontier = calloc(sizeof(*frontier), 1);
+  struct TCOD_Frontier* frontier = calloc(1, sizeof(*frontier));
   if (!frontier) {
     TCOD_set_errorv("Out of memory allocating pathfinder.");
     return NULL;

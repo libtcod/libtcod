@@ -105,7 +105,7 @@ size_t namegen_name_size;
 
 /* initialise a syllable set */
 namegen_syllables_t* namegen_syllables_new(void) {
-  namegen_syllables_t* data = calloc(sizeof(namegen_syllables_t), 1);
+  namegen_syllables_t* data = calloc(1, sizeof(namegen_syllables_t));
   return data;
 }
 
@@ -218,7 +218,7 @@ void namegen_generator_delete(namegen_t* generator) {
 void namegen_populate_list(const char* source, TCOD_list_t list, bool wildcards) {
   const size_t source_length = strlen(source);
   const size_t token_length = source_length + 1;
-  char* token = calloc(token_length, 1);  // tokens will typically be many and very short, but let's be cautious. What
+  char* token = calloc(1, token_length);  // tokens will typically be many and very short, but let's be cautious. What
                                           // if the entire string is a single token?
   size_t i = 0;
   do {

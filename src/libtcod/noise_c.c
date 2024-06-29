@@ -108,7 +108,7 @@ static void normalize(const TCOD_Noise* __restrict data, float* __restrict f) {
 }
 
 TCOD_Noise* TCOD_noise_new(int ndim, float hurst, float lacunarity, TCOD_Random* random) {
-  TCOD_Noise* data = calloc(sizeof(*data), 1);
+  TCOD_Noise* data = calloc(1, sizeof(*data));
   if (!data) {
     TCOD_set_errorv("Out of memory.");
     return NULL;

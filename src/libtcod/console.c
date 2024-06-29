@@ -43,7 +43,7 @@ static TCOD_Error TCOD_console_data_alloc(struct TCOD_Console* console) {
   if (console->tiles) {
     return TCOD_E_ERROR;
   }
-  console->tiles = calloc(sizeof(*console->tiles), console->elements);
+  console->tiles = calloc(console->elements, sizeof(*console->tiles));
   return TCOD_E_OK;
 }
 static void TCOD_console_data_free(struct TCOD_Console* con) {
@@ -75,7 +75,7 @@ TCOD_Console* TCOD_console_new(int w, int h) {
     TCOD_set_errorvf("Width and height can not be negative: got %i,%i", w, h);
     return NULL;
   }
-  struct TCOD_Console* con = calloc(sizeof(*con), 1);
+  struct TCOD_Console* con = calloc(1, sizeof(*con));
   if (!con) {
     TCOD_set_errorv("Could not allocate memory for a console.");
     return NULL;

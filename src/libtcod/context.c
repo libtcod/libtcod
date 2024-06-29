@@ -42,7 +42,7 @@
 #include <stdlib.h>
 
 struct TCOD_Context* TCOD_context_new_(void) {
-  struct TCOD_Context* renderer = calloc(sizeof(*renderer), 1);
+  struct TCOD_Context* renderer = calloc(1, sizeof(*renderer));
   return renderer;
 }
 

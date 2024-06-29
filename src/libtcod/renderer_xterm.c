@@ -625,7 +625,7 @@ TCOD_Context* TCOD_renderer_init_xterm(
   TCOD_Context* context = TCOD_context_new_();
   if (!context) return NULL;
   context->type = TCOD_RENDERER_XTERM;
-  struct TCOD_RendererXterm* data = context->contextdata_ = calloc(sizeof(*data), 1);
+  struct TCOD_RendererXterm* data = context->contextdata_ = calloc(1, sizeof(*data));
   if (!data) {
     TCOD_context_delete(context);
     TCOD_set_errorv("Could not allocate memory.");

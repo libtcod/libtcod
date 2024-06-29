@@ -90,7 +90,7 @@ TCOD_lex_t* TCOD_lex_new(
   TCOD_lex_t* lex = TCOD_lex_new_intern();
   if (!lex) return NULL;
   lex->flags = flags;
-  lex->last_javadoc_comment = calloc(sizeof(*lex->last_javadoc_comment), MAX_JAVADOC_COMMENT_SIZE);
+  lex->last_javadoc_comment = calloc(MAX_JAVADOC_COMMENT_SIZE, sizeof(*lex->last_javadoc_comment));
   while (symbols_in && *symbols_in) {
     if (strlen(*symbols_in) >= TCOD_LEX_SYMBOL_SIZE) {
       TCOD_set_errorvf("symbol '%s' too long (max size %d)", *symbols_in, TCOD_LEX_SYMBOL_SIZE);
@@ -124,7 +124,7 @@ TCOD_lex_t* TCOD_lex_new(
   lex->javadoc_comment_start = javadocCommentStart;
   lex->stringDelim = stringDelim;
   lex->lastStringDelim = '\0';
-  lex->tok = calloc(sizeof(*lex->tok), 256);
+  lex->tok = calloc(256, sizeof(*lex->tok));
   lex->toklen = 256;
   return lex;
 }
@@ -183,7 +183,7 @@ bool TCOD_lex_set_data_file(TCOD_lex_t* lex, const char* path) {
   fclose(f);
   f = fopen(path, "r");
 
-  lex->buf = calloc(sizeof(*lex->buf), (size + 1));
+  lex->buf = calloc(size + 1, sizeof(*lex->buf));
   lex->filename = TCOD_strdup(path);
   if (lex->buf == NULL || lex->filename == NULL) {
     fclose(f);
@@ -567,7 +567,7 @@ int TCOD_lex_parse_until_token_value(TCOD_lex_t* lex, const char* tokenValue) {
 
 void TCOD_lex_savepoint(TCOD_lex_t* lex, TCOD_lex_t* savepoint) {
   *savepoint = *lex;
-  savepoint->tok = calloc(sizeof(*savepoint->tok), lex->toklen);
+  savepoint->tok = calloc(lex->toklen, sizeof(*savepoint->tok));
   strcpy(savepoint->tok, lex->tok);
   savepoint->is_savepoint = true;
 }

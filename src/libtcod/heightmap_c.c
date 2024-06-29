@@ -60,7 +60,7 @@ static bool is_same_size(const TCOD_heightmap_t* hm1, const TCOD_heightmap_t* hm
 
 TCOD_heightmap_t* TCOD_heightmap_new(int w, int h) {
   TCOD_heightmap_t* hm = malloc(sizeof(*hm));
-  hm->values = calloc(sizeof(*hm->values), w * h);
+  hm->values = calloc(w * h, sizeof(*hm->values));
   if (!hm->values) {
     free(hm);
     return NULL;

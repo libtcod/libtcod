@@ -155,7 +155,7 @@ TCOD_Random* TCOD_random_get_instance(void) {
 }
 
 TCOD_Random* TCOD_random_new_from_seed(TCOD_random_algo_t algo, uint32_t seed) {
-  struct TCOD_Random_MT_CMWC* r = calloc(sizeof(*r), 1);
+  struct TCOD_Random_MT_CMWC* r = calloc(1, sizeof(*r));
   /* Mersenne Twister */
   if (algo == TCOD_RNG_MT) {
     r->algorithm = TCOD_RNG_MT;

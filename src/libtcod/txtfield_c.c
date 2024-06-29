@@ -64,7 +64,7 @@ typedef struct TCOD_Text {
 
 /* ctor */
 TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars) {
-  text_t* data = (text_t*)calloc(sizeof(text_t), 1);
+  text_t* data = (text_t*)calloc(1, sizeof(text_t));
   TCOD_IFNOT(w > 0 && h > 0) return data;
   data->x = x;
   data->y = y;
@@ -101,7 +101,7 @@ TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars) {
 }
 
 TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
-  text_t* data = (text_t*)calloc(sizeof(text_t), 1);
+  text_t* data = (text_t*)calloc(1, sizeof(text_t));
   TCOD_IFNOT(w > 0 && h > 0) return data;
   data->x = 0;
   data->y = 0;

@@ -220,12 +220,12 @@ static void TCOD_path_set_cells(TCOD_path_data_t* path);
 static float TCOD_path_walk_cost(TCOD_path_data_t* path, int xFrom, int yFrom, int xTo, int yTo);
 
 static TCOD_path_data_t* TCOD_path_new_intern(int w, int h) {
-  TCOD_path_data_t* path = (TCOD_path_data_t*)calloc(sizeof(TCOD_path_data_t), 1);
+  TCOD_path_data_t* path = (TCOD_path_data_t*)calloc(1, sizeof(TCOD_path_data_t));
   path->w = w;
   path->h = h;
-  path->grid = calloc(sizeof(*path->grid), w * h);
-  path->heuristic = calloc(sizeof(*path->heuristic), w * h);
-  path->prev = calloc(sizeof(*path->prev), w * h);
+  path->grid = calloc(w * h, sizeof(*path->grid));
+  path->heuristic = calloc(w * h, sizeof(*path->heuristic));
+  path->prev = calloc(w * h, sizeof(*path->prev));
   if (!path->grid || !path->heuristic || !path->prev) {
     free(path->grid);
     free(path->heuristic);

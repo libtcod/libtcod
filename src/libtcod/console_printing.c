@@ -79,7 +79,7 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
     int i;
     for (i = 0; i < NB_BUFFERS; i++) {
       buflen[i] = INITIAL_SIZE;
-      msg[i] = calloc(sizeof(char), INITIAL_SIZE);
+      msg[i] = calloc(INITIAL_SIZE, sizeof(char));
     }
   }
   do {
@@ -100,7 +100,7 @@ char* TCOD_console_vsprint(const char* fmt, va_list ap) {
         buflen[current_buf] *= 2;
       }
       free(msg[current_buf]);
-      msg[current_buf] = calloc(sizeof(char), buflen[current_buf]);
+      msg[current_buf] = calloc(buflen[current_buf], sizeof(char));
       ok = false;
     }
   } while (!ok);
@@ -443,7 +443,7 @@ wchar_t* TCOD_console_vsprint_utf(const wchar_t* fmt, va_list ap) {
     int i;
     for (i = 0; i < NB_BUFFERS; i++) {
       buflen[i] = INITIAL_SIZE;
-      msg[i] = calloc(sizeof(wchar_t), INITIAL_SIZE);
+      msg[i] = calloc(INITIAL_SIZE, sizeof(wchar_t));
     }
   }
   do {
@@ -461,7 +461,7 @@ wchar_t* TCOD_console_vsprint_utf(const wchar_t* fmt, va_list ap) {
         buflen[current_buf] *= 2;
       }
       free(msg[current_buf]);
-      msg[current_buf] = calloc(sizeof(wchar_t), buflen[current_buf]);
+      msg[current_buf] = calloc(buflen[current_buf], sizeof(wchar_t));
       ok = false;
     }
   } while (!ok);

@@ -266,7 +266,7 @@ public :
    */
   void loadFromFile(const std::filesystem::path& path) {
     if (loadFromFile(path.string().c_str()) == 0) {
-      throw std::runtime_error{std::string("Failed to load file: " + path.string())};
+      throw std::runtime_error{"Failed to load file: " + path.string()};
     }
   }
 

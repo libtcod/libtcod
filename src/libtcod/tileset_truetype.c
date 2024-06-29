@@ -183,7 +183,7 @@ TCOD_Tileset* TCOD_load_truetype_font_(const char* path, int tile_width, int til
   free(font_data);
   return tileset;
 }
-int TCOD_tileset_load_truetype_(const char* path, int tile_width, int tile_height) {
+TCOD_Error TCOD_tileset_load_truetype_(const char* path, int tile_width, int tile_height) {
   TCOD_Tileset* tileset = TCOD_load_truetype_font_(path, tile_width, tile_height);
   if (!tileset) {
     return TCOD_E_ERROR;

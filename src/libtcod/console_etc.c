@@ -160,7 +160,7 @@ void TCOD_console_set_dirty(int dx, int dy, int dw, int dh) {
  *      Now returns -1 on error instead of crashing.
  *  \endrst
  */
-int TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic) {
+TCOD_Error TCOD_console_set_custom_font(const char* fontFile, int flags, int nb_char_horiz, int nb_char_vertic) {
 #ifndef TCOD_NO_PNG
   strncpy(TCOD_ctx.font_file, fontFile, sizeof(TCOD_ctx.font_file) - 1);
   /* if layout not defined, assume ASCII_INCOL */

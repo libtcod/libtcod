@@ -43,17 +43,17 @@
 static char error_msg_[MAX_ERROR_LENGTH] = "";
 
 const char* TCOD_get_error(void) { return error_msg_; }
-int TCOD_set_error(const char* msg) {
+TCOD_Error TCOD_set_error(const char* msg) {
   strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
   TCOD_log_error(msg);
-  return -1;
+  return TCOD_E_ERROR;
 }
-int TCOD_set_errorf(const char* fmt, ...) {
+TCOD_Error TCOD_set_errorf(const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   vsnprintf(error_msg_, sizeof(error_msg_), fmt, ap);
   va_end(ap);
   TCOD_log_error(error_msg_);
-  return -1;
+  return TCOD_E_ERROR;
 }
 void TCOD_clear_error(void) { error_msg_[0] = '\0'; }

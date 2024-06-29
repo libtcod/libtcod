@@ -1658,7 +1658,7 @@ int main(int argc, char* argv[]) {
       .tileset = tileset,
       .vsync = false,
       .argc = argc,
-      .argv = argv,
+      .argv = (const char* const*)argv,
   };
 
   if (TCOD_context_new(&params, &g_context) < 0) fatal("Could not open context: %s", TCOD_get_error());

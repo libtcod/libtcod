@@ -132,11 +132,21 @@
     "doxdocgen.c.firstLine": "/***************************************************************************",
     "doxdocgen.c.commentPrefix": "    ",
     "doxdocgen.c.lastLine": " */",
-    "python.formatting.provider": "black",
     "[yaml]": {
         "editor.defaultFormatter": "redhat.vscode-yaml"
     },
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features"
     },
+    "[toml]": {
+        "editor.defaultFormatter": "tamasfe.even-better-toml"
+    },
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "always",
+            "source.organizeImports": "never"
+        },
+    }
 }

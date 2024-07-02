@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Print the description used for GitHub Releases."""
+
 from __future__ import annotations
 
 import re
@@ -12,6 +13,7 @@ RE_SECTION = re.compile(r"^### (\w+)$", re.MULTILINE)
 
 
 def main() -> None:
+    """Main script."""
     # Get the most recent tag.
     match = RE_BODY.match(Path("CHANGELOG.md").read_text(encoding="utf-8"))
     assert match

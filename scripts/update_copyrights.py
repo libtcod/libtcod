@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-"""
-This script will automatically update the copyright banner on all of libtcod's
-source files using LICENSE.txt as a reference.
-"""
+"""Automatically update the copyright banner on all of libtcod's source files using LICENSE.txt as a reference."""
+
 from __future__ import annotations
 
 import argparse
@@ -11,7 +9,9 @@ import os
 import re
 from pathlib import Path
 
-parser = argparse.ArgumentParser(description="Updates the copyright banners in this project.")
+# ruff: noqa: A001
+
+parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("-n", "--dry-run", action="store_true", help="Don't modify files.")
 parser.add_argument("-v", "--verbose", action="store_true", help="Print debug information.")
 
@@ -25,7 +25,7 @@ def get_copyright(args: argparse.Namespace) -> str:
     copyright = LICENSE_FILE.read_text(encoding="utf-8")
     copyright = re.sub(
         pattern=r"(?<=Copyright © \d\d\d\d-)\d+",
-        repl=str(datetime.date.today().year),
+        repl=str(datetime.date.today().year),  # noqa: DTZ011
         string=copyright,
     )
     if not args.dry_run:
@@ -36,7 +36,7 @@ def get_copyright(args: argparse.Namespace) -> str:
     return "/* " + banner + "\n */\n"
 
 
-def update_file(path: Path, copyright: str, args: argparse.Namespace):
+def update_file(path: Path, copyright: str, args: argparse.Namespace) -> None:  # noqa: A002
     """Adds or replaces the copyright banner for a source file.
 
     `path` is the file path.
@@ -55,7 +55,7 @@ def update_file(path: Path, copyright: str, args: argparse.Namespace):
         if args.verbose:
             print(f"Banner is up-to-date {path}")
         return
-    elif old_copyright is None:
+    if old_copyright is None:
         print(f"Adding missing banner to {path}")
     else:
         print(f"Updating banner for {path}")
@@ -65,6 +65,7 @@ def update_file(path: Path, copyright: str, args: argparse.Namespace):
 
 
 def main() -> None:
+    """Main script."""
     args = parser.parse_args()
 
     copyright = get_copyright(args)

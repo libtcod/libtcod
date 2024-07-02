@@ -1,7 +1,16 @@
-[tool.black]
+[tool.ruff] # https://docs.astral.sh/ruff/rules/
 line-length = 120
-target-version = ['py38', 'py39', 'py310']
+target-version = "py312"
 
-[tool.isort]
-profile = "black"
-line_length = 120
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "E501",   # line-too-long
+    "S101",   # assert
+    "ANN101", # missing-type-self
+    "ANN102", # missing-type-cls
+    "T20",    # flake8-print
+]
+
+[tool.ruff.lint.pydocstyle] # https://docs.astral.sh/ruff/settings/#lintpydocstyle
+convention = "google"

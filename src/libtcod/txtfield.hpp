@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_TEXT_HPP_
-#define _TCOD_TEXT_HPP_
+#ifndef TCOD_TEXT_HPP_
+#define TCOD_TEXT_HPP_
 
 #include "color.hpp"
 #include "console.hpp"
@@ -54,4 +54,4 @@ protected :
 	TCOD_text_t data;
 };
 
-#endif
+#endif // TCOD_TEXT_HPP_

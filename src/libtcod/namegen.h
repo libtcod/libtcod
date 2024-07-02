@@ -34,8 +34,8 @@
  * This file was written by Dominik "Mingos" Marczuk.
  */
 #pragma once
-#ifndef _TCOD_NAMEGEN_H
-#define _TCOD_NAMEGEN_H
+#ifndef TCOD_NAMEGEN_H_
+#define TCOD_NAMEGEN_H_
 
 #include "list.h"
 #include "mersenne.h"
@@ -61,4 +61,4 @@ TCODLIB_API void TCOD_namegen_destroy(void);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_NAMEGEN_H_

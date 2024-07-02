@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_PARSER_H
-#define _TCOD_PARSER_H
+#ifndef TCOD_PARSER_H_
+#define TCOD_PARSER_H_
 
 #include "color.h"
 #include "lex.h"
@@ -194,4 +194,4 @@ TCOD_parse_property_value(TCOD_Parser* parser, TCOD_ParserStruct* def, char* pro
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_PARSER_H_

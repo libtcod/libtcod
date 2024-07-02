@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_LIST_H
-#define _TCOD_LIST_H
+#ifndef TCOD_LIST_H_
+#define TCOD_LIST_H_
 
 #include "portability.h"
 
@@ -72,4 +72,4 @@ TCODLIB_API bool TCOD_list_is_empty(TCOD_list_t l);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_LIST_H_

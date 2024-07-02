@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_COLOR_H
-#define _TCOD_COLOR_H
+#ifndef TCOD_COLOR_H_
+#define TCOD_COLOR_H_
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -534,4 +534,4 @@ TCOD_DEPRECATED("Replace with (TCOD_ColorRGB){255, 159, 127}") extern TCODLIB_AP
 #ifdef __cplusplus
 }  // extern "C"
 #endif
-#endif
+#endif  // TCOD_COLOR_H_

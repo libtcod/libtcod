@@ -35,8 +35,8 @@
 * This file was written by Dominik "Mingos" Marczuk.
 */
 #pragma once
-#ifndef _TCOD_NAMEGEN_HPP
-#define _TCOD_NAMEGEN_HPP
+#ifndef TCOD_NAMEGEN_HPP_
+#define TCOD_NAMEGEN_HPP_
 
 #include <string>
 
@@ -302,4 +302,4 @@ Augustus Probus
 		*/
 };
 
-#endif
+#endif // TCOD_NAMEGEN_HPP_

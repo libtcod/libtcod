@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_LIST_HPP
-#define _TCOD_LIST_HPP
+#ifndef TCOD_LIST_HPP_
+#define TCOD_LIST_HPP_
 
 #include <stdlib.h>  // NULL
 #include <string.h>  // memcpy
@@ -629,4 +629,4 @@ protected :
 	}
 };
 
-#endif
+#endif // TCOD_LIST_HPP_

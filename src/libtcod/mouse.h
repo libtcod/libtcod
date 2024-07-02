@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_MOUSE_H
-#define _TCOD_MOUSE_H
+#ifndef TCOD_MOUSE_H_
+#define TCOD_MOUSE_H_
 
 #include "mouse_types.h"
 #include "portability.h"
@@ -56,4 +56,4 @@ TCODLIB_API void TCOD_mouse_includes_touch(bool enable);
 #ifdef __cplusplus
 }
 #endif
-#endif /* _TCOD_MOUSE_H */
+#endif  // TCOD_MOUSE_H_

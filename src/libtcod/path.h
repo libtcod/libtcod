@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_PATH_H
-#define _TCOD_PATH_H
+#ifndef TCOD_PATH_H_
+#define TCOD_PATH_H_
 
 #include "fov_types.h"
 #include "list.h"
@@ -91,4 +91,4 @@ TCODLIB_API void TCOD_dijkstra_delete(TCOD_dijkstra_t dijkstra);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_PATH_H_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_MOUSE_HPP
-#define _TCOD_MOUSE_HPP
+#ifndef TCOD_MOUSE_HPP_
+#define TCOD_MOUSE_HPP_
 
 #include "mouse.h"
 #include "mouse_types.h"
@@ -60,4 +60,4 @@ class TCODLIB_API TCODMouse {
       "\n\nint buttons = SDL_GetMouseState(&x, &y);")
   static TCOD_mouse_t getStatus();
 };
-#endif /* _TCOD_MOUSE_HPP */
+#endif  // TCOD_MOUSE_HPP_

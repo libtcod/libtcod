@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_TEXT_H_
-#define _TCOD_TEXT_H_
+#ifndef TCOD_TEXT_H_
+#define TCOD_TEXT_H_
 
 #include "color.h"
 #include "console_types.h"
@@ -58,4 +58,4 @@ TCODLIB_API void TCOD_text_delete(TCOD_text_t txt);
 }
 #endif
 
-#endif /* _TCOD_TEXT_H_ */
+#endif  // TCOD_TEXT_H_

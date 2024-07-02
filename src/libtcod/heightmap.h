@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_HEIGHTMAP_H
-#define _TCOD_HEIGHTMAP_H
+#ifndef TCOD_HEIGHTMAP_H_
+#define TCOD_HEIGHTMAP_H_
 
 #include "mersenne_types.h"
 #include "noise.h"
@@ -113,4 +113,4 @@ TCODLIB_API void TCOD_heightmap_islandify(TCOD_heightmap_t* hm, float seaLevel, 
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_HEIGHTMAP_H_

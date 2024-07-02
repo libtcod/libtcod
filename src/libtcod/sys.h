@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_SYS_H
-#define _TCOD_SYS_H
+#ifndef TCOD_SYS_H_
+#define TCOD_SYS_H_
 
 #include "image.h"
 #include "list.h"
@@ -254,4 +254,4 @@ TCODLIB_API void TCOD_sys_register_SDL_renderer(SDL_renderer_t renderer);
 #ifdef __cplusplus
 }  // extern "C"
 #endif
-#endif
+#endif  // TCOD_SYS_H_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_RANDOM_H
-#define _TCOD_RANDOM_H
+#ifndef TCOD_RANDOM_H_
+#define TCOD_RANDOM_H_
 
 #include "mersenne_types.h"
 #include "portability.h"
@@ -62,4 +62,4 @@ TCODLIB_API int TCOD_random_dice_roll_s(TCOD_Random* mersenne, const char* s);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_RANDOM_H_

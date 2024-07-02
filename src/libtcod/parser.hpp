@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_PARSER_HPP
-#define _TCOD_PARSER_HPP
+#ifndef TCOD_PARSER_HPP_
+#define TCOD_PARSER_HPP_
 
 #include <vector>
 #include <memory>
@@ -690,4 +690,4 @@ To define a list type, use the appropriate function (TCODParserStruct::addListPr
  */
 
 
-#endif
+#endif // TCOD_PARSER_HPP_

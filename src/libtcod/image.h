@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_IMAGE_H
-#define _TCOD_IMAGE_H
+#ifndef TCOD_IMAGE_H_
+#define TCOD_IMAGE_H_
 
 #include "color.h"
 #include "console_types.h"
@@ -120,4 +120,4 @@ TCODLIB_API bool TCOD_image_is_pixel_transparent(const TCOD_Image* image, int x,
 }
 namespace tcod {}  // namespace tcod
 #endif  // __cplusplus
-#endif /* _TCOD_IMAGE_H */
+#endif  // TCOD_IMAGE_H_

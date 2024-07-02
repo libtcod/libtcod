@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_BRESENHAM_H
-#define _TCOD_BRESENHAM_H
+#ifndef TCOD_BRESENHAM_H_
+#define TCOD_BRESENHAM_H_
 
 #include "portability.h"
 
@@ -85,4 +85,4 @@ TCODLIB_API bool TCOD_line_mt(
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-#endif  // _TCOD_BRESENHAM_H
+#endif  // TCOD_BRESENHAM_H_

@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_SYS_HPP
-#define _TCOD_SYS_HPP
+#ifndef TCOD_SYS_HPP_
+#define TCOD_SYS_HPP_
 
 #include "image.hpp"
 #include "mouse.hpp"
@@ -600,4 +600,4 @@ public :
 #endif  // TCOD_NO_THREADS
 };
 
-#endif
+#endif // TCOD_SYS_HPP_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_BRESENHAM_HPP
-#define _TCOD_BRESENHAM_HPP
+#ifndef TCOD_BRESENHAM_HPP_
+#define TCOD_BRESENHAM_HPP_
 
 #include <array>
 #include <functional>
@@ -384,4 +384,4 @@ class BresenhamLine {
   int y_error_;  // Fractional difference between Y indexes.  Is always `-delta[0] < err <= 0`.
 };
 }  // namespace tcod
-#endif
+#endif  // TCOD_BRESENHAM_HPP_

@@ -29,8 +29,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef _TCOD_RANDOM_HPP
-#define _TCOD_RANDOM_HPP
+#ifndef TCOD_RANDOM_HPP_
+#define TCOD_RANDOM_HPP_
 
 #include <utility>
 
@@ -436,4 +436,4 @@ In these cases, the selected mean will appear with the lowest frequency.
 		TCOD_Random* data{};
 };
 
-#endif
+#endif // TCOD_RANDOM_HPP_

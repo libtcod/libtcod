@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_RANDOM_TYPES_H
-#define _TCOD_RANDOM_TYPES_H
+#ifndef TCOD_RANDOM_TYPES_H_
+#define TCOD_RANDOM_TYPES_H_
 #include <stdint.h>
 
 #include "config.h"
@@ -87,4 +87,4 @@ typedef union TCOD_Random {
 TCOD_DEPRECATED("This type hides indirection.  Use TCOD_Random* instead.")
 typedef union TCOD_Random* TCOD_random_t;
 
-#endif /* _TCOD_RANDOM_TYPES_H */
+#endif  // TCOD_RANDOM_TYPES_H_

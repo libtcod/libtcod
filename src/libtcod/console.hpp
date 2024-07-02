@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_CONSOLE_HPP
-#define _TCOD_CONSOLE_HPP
+#ifndef TCOD_CONSOLE_HPP_
+#define TCOD_CONSOLE_HPP_
 
 #include <stdexcept>
 #include <string>
@@ -1826,4 +1826,4 @@ class TCODLIB_API TCODConsole {
  private:
   tcod::ConsolePtr data{};
 };
-#endif /* _TCOD_CONSOLE_HPP */
+#endif  // TCOD_CONSOLE_HPP_

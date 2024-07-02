@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_COLOR_HPP
-#define _TCOD_COLOR_HPP
+#ifndef TCOD_COLOR_HPP_
+#define TCOD_COLOR_HPP_
 
 #include <algorithm>
 #include <array>
@@ -857,4 +857,4 @@ coef should be between 0.0 and 1.0 but you can as well use other values
 
  private:
 };
-#endif  // _TCOD_COLOR_HPP
+#endif  // TCOD_COLOR_HPP_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_TREE_HPP
-#define _TCOD_TREE_HPP
+#ifndef TCOD_TREE_HPP_
+#define TCOD_TREE_HPP_
 
 #include "tree.h"
 
@@ -68,4 +68,4 @@ class TCODLIB_API TCODTree {
   };
 };
 
-#endif
+#endif  // TCOD_TREE_HPP_

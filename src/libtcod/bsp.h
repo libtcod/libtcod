@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_BSP_H
-#define _TCOD_BSP_H
+#ifndef TCOD_BSP_H_
+#define TCOD_BSP_H_
 
 #include "mersenne_types.h"
 #include "portability.h"
@@ -74,4 +74,4 @@ TCODLIB_API void TCOD_bsp_remove_sons(TCOD_bsp_t* node);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_BSP_H_

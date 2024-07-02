@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_FOV_HPP
-#define _TCOD_FOV_HPP
+#ifndef TCOD_FOV_HPP_
+#define TCOD_FOV_HPP_
 
 #include <utility>
 
@@ -269,4 +269,4 @@ class TCODLIB_API TCODMap {
 		TCOD_map_t data;
 };
 
-#endif
+#endif // TCOD_FOV_HPP_

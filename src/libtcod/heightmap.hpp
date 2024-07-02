@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_HEIGHTMAP_HPP
-#define _TCOD_HEIGHTMAP_HPP
+#ifndef TCOD_HEIGHTMAP_HPP_
+#define TCOD_HEIGHTMAP_HPP_
 
 #include "heightmap.h"
 #include "noise.hpp"
@@ -506,4 +506,4 @@ private :
 //	void setMDPHeightSquare(TCODRandom *rnd,int x, int y, int initsz, int sz,float offset);
 };
 
-#endif
+#endif // TCOD_HEIGHTMAP_HPP_

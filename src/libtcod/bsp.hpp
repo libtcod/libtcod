@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_BSP_HPP
-#define _TCOD_BSP_HPP
+#ifndef TCOD_BSP_HPP_
+#define TCOD_BSP_HPP_
 
 #include <utility>
 
@@ -528,4 +528,4 @@ You can use it if you changed the nodes size and position while using the BSP tr
   };
 };
 
-#endif
+#endif  // TCOD_BSP_HPP_

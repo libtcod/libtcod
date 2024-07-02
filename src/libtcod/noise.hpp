@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_PERLIN_HPP
-#define _TCOD_PERLIN_HPP
+#ifndef TCOD_PERLIN_HPP_
+#define TCOD_PERLIN_HPP_
 
 #include <utility>
 
@@ -340,4 +340,4 @@ float TCOD_noise_get_turbulence_ex(TCOD_noise_t noise, float *f, float octaves, 
 		TCOD_noise_t data;
 };
 
-#endif
+#endif // TCOD_PERLIN_HPP_

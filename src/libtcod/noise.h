@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_PERLIN_H
-#define _TCOD_PERLIN_H
+#ifndef TCOD_PERLIN_H_
+#define TCOD_PERLIN_H_
 
 #include "config.h"
 #include "mersenne_types.h"
@@ -160,4 +160,4 @@ TCOD_PUBLIC void TCOD_noise_get_turbulence_vectorized(
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_PERLIN_H_

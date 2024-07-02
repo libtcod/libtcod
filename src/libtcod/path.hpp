@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_PATH_HPP
-#define _TCOD_PATH_HPP
+#ifndef TCOD_PATH_HPP_
+#define TCOD_PATH_HPP_
 
 #include <utility>
 
@@ -583,4 +583,4 @@ class TCODLIB_API TCODDijkstra {
         } cppData;
 };
 
-#endif
+#endif // TCOD_PATH_HPP_

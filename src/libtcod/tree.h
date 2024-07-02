@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_TREE_H
-#define _TCOD_TREE_H
+#ifndef TCOD_TREE_H_
+#define TCOD_TREE_H_
 
 #include "portability.h"
 
@@ -49,4 +49,4 @@ TCODLIB_API void TCOD_tree_add_son(TCOD_tree_t* node, TCOD_tree_t* son);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif  // TCOD_TREE_H_

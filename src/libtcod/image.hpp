@@ -31,8 +31,8 @@
  */
 // clang-format off
 #pragma once
-#ifndef _TCOD_IMAGE_HPP
-#define _TCOD_IMAGE_HPP
+#ifndef TCOD_IMAGE_HPP_
+#define TCOD_IMAGE_HPP_
 
 #include "color.hpp"
 
@@ -592,4 +592,4 @@ inline void draw_quartergraphics(
       &source, &dest, dest_xy.at(0), dest_xy.at(1), src_rect.at(0), src_rect.at(1), src_rect.at(2), src_rect.at(3));
 }
 }  // namespace tcod
-#endif /* _TCOD_IMAGE_HPP */
+#endif  // TCOD_IMAGE_HPP_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef _TCOD_ZIP_H
-#define _TCOD_ZIP_H
+#ifndef TCOD_ZIP_H_
+#define TCOD_ZIP_H_
 #ifndef TCOD_NO_ZLIB
 
 #include "color.h"
@@ -93,4 +93,4 @@ TCODLIB_API void TCOD_zip_skip_bytes(TCOD_zip_t zip, uint32_t nbBytes);
 }
 #endif
 #endif  // TCOD_NO_ZLIB
-#endif  // _TCOD_ZIP_H
+#endif  // TCOD_ZIP_H_

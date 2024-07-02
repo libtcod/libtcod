@@ -33,9 +33,9 @@
 #ifndef LIBTCOD_VERSION_H
 #define LIBTCOD_VERSION_H
 
-#define TCOD_MAJOR_VERSION  1
-#define TCOD_MINOR_VERSION  24
-#define TCOD_PATCHLEVEL     0
+#define TCOD_MAJOR_VERSION 1
+#define TCOD_MINOR_VERSION 24
+#define TCOD_PATCHLEVEL 0
 
 #define TCOD_STRVERSION "1.24.0"
 
@@ -47,7 +47,7 @@
     .. versionadded:: 1.16
     \endrst
  */
-#define TCOD_VERSIONNUM(major, minor, patch) ((major)*0x010000 + (minor)*0x0100 + (patch))
+#define TCOD_VERSIONNUM(major, minor, patch) ((major) * 0x010000 + (minor) * 0x0100 + (patch))
 
 /**
     The version of libtcod currently being compiled.

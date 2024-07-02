@@ -93,7 +93,7 @@ static const float DELTA = 1e-6f;
     (y) = swap_variable__;    \
   }
 
-#define FLOOR(a) ((a) > 0 ? (int)(a) : ((int)(a)-1))
+#define FLOOR(a) ((a) > 0 ? (int)(a) : ((int)(a) - 1))
 #define CUBIC(a) ((a) * (a) * (3 - 2 * (a)))
 
 static void normalize(const TCOD_Noise* __restrict data, float* __restrict f) {

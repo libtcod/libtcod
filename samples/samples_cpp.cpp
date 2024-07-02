@@ -5,7 +5,7 @@
  */
 
 // uncomment this to disable SDL sample (might cause compilation issues on some systems)
-//#define NO_SDL_SAMPLE
+// #define NO_SDL_SAMPLE
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif  // __EMSCRIPTEN__
@@ -99,7 +99,7 @@ static tcod::Console g_sample_console(SAMPLE_SCREEN_WIDTH, SAMPLE_SCREEN_HEIGHT)
 // ***************************
 class TrueColors : public Sample {
  public:
-  void on_enter() override{};
+  void on_enter() override {};
   void on_event(SDL_Event&) override {}
   void on_draw(tcod::Console& console) override {
     const float t = SDL_GetTicks() * 0.001f;
@@ -986,7 +986,6 @@ void hline_right(map_t* map, int x, int y) {
 }
 
 // the class building the dungeon from the bsp nodes
-//#include <stdio.h>
 class BspListener : public ITCODBspCallback {
  public:
   bool visitNode(TCODBsp* node, void* userData) {

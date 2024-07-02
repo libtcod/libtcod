@@ -118,11 +118,13 @@ TCOD_Error TCOD_tileset_render_to_surface(
           continue;
         }
       }
+      // clang-format off
       TCOD_ColorRGBA* out = (TCOD_ColorRGBA*)(
           (char*)(*surface_out)->pixels
           + console_y * tileset->tile_height * (*surface_out)->pitch
           + console_x * tileset->tile_width * sizeof(*out)
       );
+      // clang-format on
       render_tile(tileset, tile, out, (*surface_out)->pitch);
     }
   }

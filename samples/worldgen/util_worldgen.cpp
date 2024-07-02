@@ -832,7 +832,7 @@ void WorldGenerator::computePrecipitations() {
   // north/south winds
   for (int dir_y = -1; dir_y <= 1; dir_y += 2) {
     for (int x = 0; x < HM_WIDTH; ++x) {
-      const float noise_x = (float)(x)*5 / HM_WIDTH;
+      const float noise_x = (float)(x) * 5 / HM_WIDTH;
       // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noise_x,3.0f));
       float waterAmount = (1.0f + noise1d.getFbm(&noise_x, 3.0f, TCOD_NOISE_SIMPLEX));
       const int start_y = (dir_y == -1 ? HM_HEIGHT - 1 : 0);
@@ -864,7 +864,7 @@ void WorldGenerator::computePrecipitations() {
   // east/west winds
   for (int dir_x = -1; dir_x <= 1; dir_x += 2) {
     for (int y = 0; y < HM_HEIGHT; ++y) {
-      const float noise_y = (float)(y)*5 / HM_HEIGHT;
+      const float noise_y = (float)(y) * 5 / HM_HEIGHT;
       // float waterAmount=(1.0f+noise1d.getFbmSimplex(&noise_y,3.0f));
       float waterAmount = (1.0f + noise1d.getFbm(&noise_y, 3.0f, TCOD_NOISE_SIMPLEX));
       const int start_x = (dir_x == -1 ? HM_WIDTH - 1 : 0);

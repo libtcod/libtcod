@@ -595,8 +595,8 @@ void TCOD_console_disable_keyboard_repeat(void) {}
 static void TCOD_console_read_asc(TCOD_console_t con, FILE* f, int width, int height, float version) {
   con = TCOD_console_validate_(con);
   TCOD_IFNOT(con) { return; }
-  while (fgetc(f) != '#')
-    ;
+  while (fgetc(f) != '#') {
+  }
   for (int x = 0; x < width; ++x) {
     for (int y = 0; y < height; ++y) {
       TCOD_color_t fore, back;

@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 // clang-format off
+#pragma once
 #ifndef _TCOD_PERLIN_HPP
 #define _TCOD_PERLIN_HPP
 

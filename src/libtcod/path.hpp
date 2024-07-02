@@ -30,6 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 // clang-format off
+#pragma once
 #ifndef _TCOD_PATH_HPP
 #define _TCOD_PATH_HPP
 

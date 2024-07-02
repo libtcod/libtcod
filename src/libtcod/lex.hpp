@@ -33,6 +33,7 @@
 /// This is a libtcod internal module.
 /// Use at your own risk.
 /// @cond INTERNAL
+#pragma once
 #ifndef TCOD_LEX_HPP_
 #define TCOD_LEX_HPP_
 

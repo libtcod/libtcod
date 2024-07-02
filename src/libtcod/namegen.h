@@ -33,7 +33,7 @@
  * Mingos' NameGen
  * This file was written by Dominik "Mingos" Marczuk.
  */
-
+#pragma once
 #ifndef _TCOD_NAMEGEN_H
 #define _TCOD_NAMEGEN_H
 

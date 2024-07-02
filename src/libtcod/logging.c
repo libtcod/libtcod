@@ -31,9 +31,11 @@
  */
 #include "logging.h"
 
-#include "stdarg.h"
-#include "stdio.h"
+#include <stdarg.h>
+#include <stdio.h>
+
 #include "version.h"
+
 /***************************************************************************
     @brief The current log level.  Messages below this level are not processed.
  */

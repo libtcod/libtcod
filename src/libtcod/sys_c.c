@@ -88,6 +88,10 @@ void TCOD_sys_startup(void) {}
     Mostly used internally. TCOD_quit should be called to shutdown the library.
  */
 void TCOD_sys_shutdown(void) {
+  // Quitting or restarting can drop SDL's queue of events.
+  // key_state needs to be cleared to prevent key modifiers from getting stuck when the library internals reset.
+  TCOD_ctx.key_state = (TCOD_key_t){0};
+
   if (TCOD_ctx.root) {
     TCOD_console_delete(TCOD_ctx.root);
   }

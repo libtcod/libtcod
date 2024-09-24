@@ -19,6 +19,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 
 ### Fixed
 - `const` was missing from `TCOD_sys_update_char` image parameter.
+- Prevent key modifiers from getting stuck when the root console is reinitialized.
 
 ## [1.24.0] - 2023-05-26
 ### Added

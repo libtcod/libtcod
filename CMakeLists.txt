@@ -64,9 +64,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 set(VCPKG_MANIFEST_NO_DEFAULT_FEATURES ON)
 
-if(LIBTCOD_SAMPLES)
-    add_subdirectory(samples)
-endif()
 if(LIBTCOD_TESTS)
     add_subdirectory(tests)
     list(APPEND VCPKG_MANIFEST_FEATURES "tests")

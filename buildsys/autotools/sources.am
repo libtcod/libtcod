@@ -4,129 +4,22 @@ libtcod_includedir = $(includedir)/libtcod
 libtcod_include_HEADERS = \
 	../../src/libtcod/bresenham.h \
 	../../src/libtcod/bresenham.hpp \
-	../../src/libtcod/bsp.h \
-	../../src/libtcod/bsp.hpp \
-	../../src/libtcod/color.h \
-	../../src/libtcod/color.hpp \
 	../../src/libtcod/config.h \
-	../../src/libtcod/console.h \
-	../../src/libtcod/console.hpp \
-	../../src/libtcod/console_drawing.h \
-	../../src/libtcod/console_etc.h \
-	../../src/libtcod/console_init.h \
-	../../src/libtcod/console_printing.h \
-	../../src/libtcod/console_printing.hpp \
-	../../src/libtcod/console_rexpaint.h \
-	../../src/libtcod/console_rexpaint.hpp \
-	../../src/libtcod/console_types.h \
-	../../src/libtcod/console_types.hpp \
-	../../src/libtcod/context.h \
-	../../src/libtcod/context.hpp \
-	../../src/libtcod/context_init.h \
-	../../src/libtcod/context_viewport.h \
 	../../src/libtcod/error.h \
 	../../src/libtcod/error.hpp \
 	../../src/libtcod/fov.h \
 	../../src/libtcod/fov.hpp \
 	../../src/libtcod/fov_types.h \
-	../../src/libtcod/globals.h \
-	../../src/libtcod/heapq.h \
-	../../src/libtcod/heightmap.h \
-	../../src/libtcod/heightmap.hpp \
-	../../src/libtcod/image.h \
-	../../src/libtcod/image.hpp \
-	../../src/libtcod/lex.h \
-	../../src/libtcod/lex.hpp \
 	../../src/libtcod/libtcod.h \
 	../../src/libtcod/libtcod.hpp \
 	../../src/libtcod/libtcod_int.h \
-	../../src/libtcod/list.h \
-	../../src/libtcod/list.hpp \
 	../../src/libtcod/logging.h \
-	../../src/libtcod/matrix.hpp \
-	../../src/libtcod/mersenne.h \
-	../../src/libtcod/mersenne.hpp \
-	../../src/libtcod/mersenne_types.h \
-	../../src/libtcod/mouse.h \
-	../../src/libtcod/mouse.hpp \
-	../../src/libtcod/mouse_types.h \
-	../../src/libtcod/namegen.h \
-	../../src/libtcod/namegen.hpp \
-	../../src/libtcod/noise.h \
-	../../src/libtcod/noise.hpp \
-	../../src/libtcod/noise_defaults.h \
-	../../src/libtcod/parser.h \
-	../../src/libtcod/parser.hpp \
-	../../src/libtcod/path.h \
-	../../src/libtcod/path.hpp \
-	../../src/libtcod/pathfinder.h \
-	../../src/libtcod/pathfinder_frontier.h \
 	../../src/libtcod/portability.h \
-	../../src/libtcod/random.h \
-	../../src/libtcod/renderer_sdl2.h \
-	../../src/libtcod/renderer_xterm.h \
-	../../src/libtcod/sys.h \
-	../../src/libtcod/sys.hpp \
-	../../src/libtcod/tileset.h \
-	../../src/libtcod/tileset.hpp \
-	../../src/libtcod/tileset_bdf.h \
-	../../src/libtcod/tileset_bdf.hpp \
-	../../src/libtcod/tileset_fallback.h \
-	../../src/libtcod/tileset_fallback.hpp \
-	../../src/libtcod/tileset_render.h \
-	../../src/libtcod/tileset_truetype.h \
-	../../src/libtcod/timer.h \
-	../../src/libtcod/timer.hpp \
-	../../src/libtcod/tree.h \
-	../../src/libtcod/tree.hpp \
-	../../src/libtcod/txtfield.h \
-	../../src/libtcod/txtfield.hpp \
 	../../src/libtcod/utility.h \
-	../../src/libtcod/version.h \
-	../../src/libtcod/wrappers.h \
-	../../src/libtcod/zip.h \
-	../../src/libtcod/zip.hpp
-
-libtcod_gui_includedir = $(includedir)/libtcod/gui
-libtcod_gui_include_HEADERS = \
-	../../src/libtcod/gui/button.hpp \
-	../../src/libtcod/gui/container.hpp \
-	../../src/libtcod/gui/flatlist.hpp \
-	../../src/libtcod/gui/gui.hpp \
-	../../src/libtcod/gui/hbox.hpp \
-	../../src/libtcod/gui/image.hpp \
-	../../src/libtcod/gui/label.hpp \
-	../../src/libtcod/gui/radiobutton.hpp \
-	../../src/libtcod/gui/slider.hpp \
-	../../src/libtcod/gui/statusbar.hpp \
-	../../src/libtcod/gui/textbox.hpp \
-	../../src/libtcod/gui/togglebutton.hpp \
-	../../src/libtcod/gui/toolbar.hpp \
-	../../src/libtcod/gui/vbox.hpp \
-	../../src/libtcod/gui/widget.hpp
-
-libtcod_sdl2_includedir = $(includedir)/libtcod/sdl2
-libtcod_sdl2_include_HEADERS = \
-	../../src/libtcod/sdl2/event.h
+	../../src/libtcod/version.h
 
 libtcod_la_SOURCES = \
-	../../src/libtcod/bresenham.cpp \
 	../../src/libtcod/bresenham_c.c \
-	../../src/libtcod/bsp.cpp \
-	../../src/libtcod/bsp_c.c \
-	../../src/libtcod/color.c \
-	../../src/libtcod/color_.cpp \
-	../../src/libtcod/console.c \
-	../../src/libtcod/console_.cpp \
-	../../src/libtcod/console_drawing.c \
-	../../src/libtcod/console_etc.c \
-	../../src/libtcod/console_init.c \
-	../../src/libtcod/console_init_.cpp \
-	../../src/libtcod/console_printing.c \
-	../../src/libtcod/console_rexpaint.c \
-	../../src/libtcod/context.c \
-	../../src/libtcod/context_init.c \
-	../../src/libtcod/context_viewport.c \
 	../../src/libtcod/error.c \
 	../../src/libtcod/fov.cpp \
 	../../src/libtcod/fov_c.c \
@@ -136,49 +29,4 @@ libtcod_la_SOURCES = \
 	../../src/libtcod/fov_recursive_shadowcasting.c \
 	../../src/libtcod/fov_restrictive.c \
 	../../src/libtcod/fov_symmetric_shadowcast.c \
-	../../src/libtcod/globals.c \
-	../../src/libtcod/heapq.c \
-	../../src/libtcod/heightmap.cpp \
-	../../src/libtcod/heightmap_c.c \
-	../../src/libtcod/image.cpp \
-	../../src/libtcod/image_c.c \
-	../../src/libtcod/lex.cpp \
-	../../src/libtcod/lex_c.c \
-	../../src/libtcod/list_c.c \
-	../../src/libtcod/logging.c \
-	../../src/libtcod/mersenne.cpp \
-	../../src/libtcod/mersenne_c.c \
-	../../src/libtcod/mouse.cpp \
-	../../src/libtcod/namegen.cpp \
-	../../src/libtcod/namegen_c.c \
-	../../src/libtcod/noise.cpp \
-	../../src/libtcod/noise_c.c \
-	../../src/libtcod/parser.cpp \
-	../../src/libtcod/parser_c.c \
-	../../src/libtcod/path.cpp \
-	../../src/libtcod/pathfinder.c \
-	../../src/libtcod/pathfinder_frontier.c \
-	../../src/libtcod/path_c.c \
-	../../src/libtcod/random.c \
-	../../src/libtcod/renderer_sdl2.c \
-	../../src/libtcod/renderer_xterm.c \
-	../../src/libtcod/sys.cpp \
-	../../src/libtcod/sys_c.c \
-	../../src/libtcod/sys_sdl_c.c \
-	../../src/libtcod/sys_sdl_img_bmp.c \
-	../../src/libtcod/sys_sdl_img_png.c \
-	../../src/libtcod/tileset.c \
-	../../src/libtcod/tileset_bdf.c \
-	../../src/libtcod/tileset_fallback.c \
-	../../src/libtcod/tileset_render.c \
-	../../src/libtcod/tileset_truetype.c \
-	../../src/libtcod/tree_c.c \
-	../../src/libtcod/txtfield.cpp \
-	../../src/libtcod/txtfield_c.c \
-	../../src/libtcod/wrappers.c \
-	../../src/libtcod/zip.cpp \
-	../../src/libtcod/zip_c.c \
-	../../src/libtcod/sdl2/event.cpp \
-	../../src/vendor/lodepng.c \
-	../../src/vendor/stb.c \
-	../../src/vendor/utf8proc/utf8proc.c
+	../../src/libtcod/logging.c

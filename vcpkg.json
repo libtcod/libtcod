@@ -1,7 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "name": "libtcod",
-  "version-semver": "1.24.0",
   "maintainers": [
     "Kyle Benesch <4b796c65+github@gmail.com>"
   ],
@@ -9,41 +8,11 @@
   "homepage": "https://github.com/libtcod/libtcod",
   "documentation": "https://libtcod.readthedocs.io/en/latest/",
   "license": "BSD-3-Clause",
-  "dependencies": [
-    "stb",
-    {
-      "name": "vcpkg-cmake",
-      "host": true
-    }
-  ],
+  "dependencies": [],
   "default-features": [
-    "png",
-    "sdl",
-    "tests",
-    "unicode",
-    "zlib"
+    "tests"
   ],
   "features": {
-    "png": {
-      "description": "Support for reading and writing PNG files.  Required to save screenshots and to load tilesets from files.",
-      "dependencies": [
-        "lodepng"
-      ]
-    },
-    "sdl": {
-      "description": "Support for SDL2 windows and events.",
-      "dependencies": [
-        "sdl2",
-        {
-          "name": "sdl2",
-          "default-features": false,
-          "features": [
-            "x11"
-          ],
-          "platform": "linux"
-        }
-      ]
-    },
     "tests": {
       "description": "Dependencies needed for testing.",
       "dependencies": [
@@ -51,18 +20,6 @@
           "name": "catch2",
           "version>=": "3.0.1"
         }
-      ]
-    },
-    "unicode": {
-      "description": "Support for interpreting non-ASCII characters.  Required for text printing functions",
-      "dependencies": [
-        "utf8proc"
-      ]
-    },
-    "zlib": {
-      "description": "Support for REXPaint files and outdated TCODZip archives.",
-      "dependencies": [
-        "zlib"
       ]
     }
   }

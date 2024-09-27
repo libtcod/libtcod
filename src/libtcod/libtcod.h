@@ -38,7 +38,6 @@
 #include "fov.h"
 #include "logging.h"
 #include "parser.h"
-#include "portability.h"
 #include "utility.h"
 #include "version.h"
 

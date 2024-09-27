@@ -23,7 +23,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod/libtcod_int.h
     libtcod/logging.c
     libtcod/logging.h
-    libtcod/portability.h
     libtcod/utility.h
     libtcod/version.h
 )
@@ -46,7 +45,6 @@ install(FILES
     libtcod/libtcod.hpp
     libtcod/libtcod_int.h
     libtcod/logging.h
-    libtcod/portability.h
     libtcod/utility.h
     libtcod/version.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libtcod
@@ -76,7 +74,6 @@ source_group(libtcod FILES
     libtcod/libtcod_int.h
     libtcod/logging.c
     libtcod/logging.h
-    libtcod/portability.h
     libtcod/utility.h
     libtcod/version.h
 )

@@ -33,7 +33,9 @@
 #ifndef TCOD_BRESENHAM_H_
 #define TCOD_BRESENHAM_H_
 
-#include "portability.h"
+#include <stdbool.h>
+
+#include "config.h"
 
 #ifdef __cplusplus
 extern "C" {

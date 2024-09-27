@@ -32,17 +32,12 @@
 #pragma once
 #ifndef TCODLIB_INT_H_
 #define TCODLIB_INT_H_
-#include <assert.h>
-#include <stdarg.h>
-#ifdef __cplusplus
-#include <stdexcept>
-#include <string>
-#endif  // __cplusplus
+#include <stdbool.h>
 
+#include "config.h"
 #include "error.h"
 #include "fov.h"
 #include "fov_types.h"
-#include "portability.h"
 
 /* tcodlib internal stuff */
 #ifdef __cplusplus

@@ -14,7 +14,6 @@ libtcod_include_HEADERS = \
 	../../src/libtcod/libtcod.hpp \
 	../../src/libtcod/libtcod_int.h \
 	../../src/libtcod/logging.h \
-	../../src/libtcod/portability.h \
 	../../src/libtcod/utility.h \
 	../../src/libtcod/version.h
 

@@ -32,7 +32,10 @@
 #pragma once
 #ifndef TCOD_FOV_TYPES_H_
 #define TCOD_FOV_TYPES_H_
-#include "portability.h"
+#include <stdbool.h>
+
+#include "config.h"
+
 /**
  *  Private map cell struct.
  */

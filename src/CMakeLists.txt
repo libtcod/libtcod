@@ -11,16 +11,16 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE LIBTCOD_EXPORTS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE TCODFOV_EXPORTS)
 else()
-    target_compile_definitions(${PROJECT_NAME} PUBLIC LIBTCOD_STATIC)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC TCODFOV_STATIC)
 endif()
 
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE TCOD_IGNORE_DEPRECATED)
+target_compile_definitions(${PROJECT_NAME} PRIVATE TCODFOV_IGNORE_DEPRECATED)
 
 include(sources.cmake)
 
@@ -34,7 +34,7 @@ else()
   target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 endif()
 
-if(LIBTCOD_INSTALL)
+if(LIBTCODFOV_INSTALL)
     install(
         TARGETS ${PROJECT_NAME}
         EXPORT ${PROJECT_NAME}Targets

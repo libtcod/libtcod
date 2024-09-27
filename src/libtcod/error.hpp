@@ -30,23 +30,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCOD_ERROR_HPP_
-#define LIBTCOD_ERROR_HPP_
+#ifndef LIBTCODFOV_ERROR_HPP_
+#define LIBTCODFOV_ERROR_HPP_
 
 #include <exception>
-#include <filesystem>
 #include <stdexcept>
 #include <string>
 
 #include "error.h"
-namespace tcod {
+namespace tcod::fov {
 /**
  *  Set an error message and return a relevant error code, usually -1.
  *
  *  Used internally.
  */
-inline TCOD_Error set_error(const std::string& msg) { return TCOD_set_errorv(msg.c_str()); }
-inline TCOD_Error set_error(const std::exception& e) { return TCOD_set_errorv(e.what()); }
+inline TCODFOV_Error set_error(const std::string& msg) { return TCODFOV_set_errorv(msg.c_str()); }
+inline TCODFOV_Error set_error(const std::exception& e) { return TCODFOV_set_errorv(e.what()); }
 /**
  *  Check and throw error messages.
  *
@@ -56,27 +55,19 @@ inline int check_throw_error(int error) {
   if (error >= 0) {
     return error;
   }
-  std::string error_msg = TCOD_get_error();
+  std::string error_msg = TCODFOV_get_error();
   switch (error) {
-    case TCOD_E_ERROR:
+    case TCODFOV_E_ERROR:
     default:
       throw std::runtime_error(error_msg);
       break;
-    case TCOD_E_INVALID_ARGUMENT:
+    case TCODFOV_E_INVALID_ARGUMENT:
       throw std::invalid_argument(error_msg);
       break;
   }
 }
-inline TCOD_Error check_throw_error(TCOD_Error error) {
-  return static_cast<TCOD_Error>(check_throw_error(static_cast<int>(error)));
+inline TCODFOV_Error check_throw_error(TCODFOV_Error error) {
+  return static_cast<TCODFOV_Error>(check_throw_error(static_cast<int>(error)));
 }
-/**
- * @brief Throw an exception if the given path does not exist.  Used internally.
- */
-inline void check_path(const std::filesystem::path& path) {
-  if (!std::filesystem::exists(path)) {
-    throw std::runtime_error(std::string("File not found:\n") + std::filesystem::absolute(path).string());
-  }
-}
-}  // namespace tcod
-#endif  // LIBTCOD_ERROR_HPP_
+}  // namespace tcod::fov
+#endif  // LIBTCODFOV_ERROR_HPP_

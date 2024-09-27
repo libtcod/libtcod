@@ -46,19 +46,19 @@
     If `light_walls` is true then blocking walls are marked as visible.
  */
 static void cast_ray(
-    struct TCOD_Map* __restrict map,
+    struct TCODFOV_Map* __restrict map,
     int x_origin,
     int y_origin,
     int x_dest,
     int y_dest,
     int radius_squared,
     bool light_walls) {
-  TCOD_bresenham_data_t bresenham_data;
+  TCODFOV_bresenham_data_t bresenham_data;
   int current_x;
   int current_y;
-  TCOD_line_init_mt(x_origin, y_origin, x_dest, y_dest, &bresenham_data);
-  while (!TCOD_line_step_mt(&current_x, &current_y, &bresenham_data)) {
-    if (!TCOD_map_in_bounds(map, current_x, current_y)) {
+  TCODFOV_line_init_mt(x_origin, y_origin, x_dest, y_dest, &bresenham_data);
+  while (!TCODFOV_line_step_mt(&current_x, &current_y, &bresenham_data)) {
+    if (!TCODFOV_map_in_bounds(map, current_x, current_y)) {
       return;  // Out of bounds.
     }
     if (radius_squared > 0) {
@@ -79,8 +79,8 @@ static void cast_ray(
     map->cells[map_index].fov = true;
   }
 }
-TCOD_Error TCOD_map_compute_fov_circular_raycasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
+TCODFOV_Error TCODFOV_map_compute_fov_circular_raycasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   int x_min = 0;  // Field-of-view bounds.
   int y_min = 0;
   int x_max = map->width;
@@ -91,9 +91,9 @@ TCOD_Error TCOD_map_compute_fov_circular_raycasting(
     x_max = MIN(x_max, pov_x + max_radius + 1);
     y_max = MIN(y_max, pov_y + max_radius + 1);
   }
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = true;  // Mark point-of-view as visible.
 
@@ -112,7 +112,7 @@ TCOD_Error TCOD_map_compute_fov_circular_raycasting(
     cast_ray(map, pov_x, pov_y, x_min, y, radius_squared, light_walls);
   }
   if (light_walls) {
-    TCOD_map_postprocess(map, pov_x, pov_y, max_radius);
+    TCODFOV_map_postprocess(map, pov_x, pov_y, max_radius);
   }
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

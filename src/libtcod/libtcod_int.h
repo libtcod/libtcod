@@ -45,25 +45,25 @@ extern "C" {
 #endif
 
 /* fov internal stuff */
-TCOD_Error TCOD_map_compute_fov_circular_raycasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
-TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
-TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
-TCOD_Error TCOD_map_compute_fov_permissive2(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int permissiveness);
-TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
-TCOD_Error TCOD_map_compute_fov_symmetric_shadowcast(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
-TCOD_Error TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, int radius);
+TCODFOV_Error TCODFOV_map_compute_fov_circular_raycasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCODFOV_Error TCODFOV_map_compute_fov_diamond_raycasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCODFOV_Error TCODFOV_map_compute_fov_recursive_shadowcasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCODFOV_Error TCODFOV_map_compute_fov_permissive2(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int permissiveness);
+TCODFOV_Error TCODFOV_map_compute_fov_restrictive_shadowcasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCODFOV_Error TCODFOV_map_compute_fov_symmetric_shadowcast(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls);
+TCODFOV_Error TCODFOV_map_postprocess(TCODFOV_Map* __restrict map, int pov_x, int pov_y, int radius);
 /**
     Return true if `x` and `y` are in the boundaries of `map`.
 
     Returns false if `map` is NULL.
  */
-static inline bool TCOD_map_in_bounds(const struct TCOD_Map* map, int x, int y) {
+static inline bool TCODFOV_map_in_bounds(const struct TCODFOV_Map* map, int x, int y) {
   return map && 0 <= x && x < map->width && 0 <= y && y < map->height;
 }
 

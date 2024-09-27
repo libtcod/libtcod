@@ -30,119 +30,89 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCOD_CONFIG_H_
-#define LIBTCOD_CONFIG_H_
+#ifndef LIBTCODFOV_CONFIG_H_
+#define LIBTCODFOV_CONFIG_H_
 
 /* DLL export */
-#ifndef TCODLIB_API
-#ifdef LIBTCOD_STATIC
-#define TCODLIB_API
+#ifndef TCODFOV_PUBLIC
+#ifdef TCODFOV_STATIC
+/// Publicly visible symbols and functions.
+#define TCODFOV_PUBLIC
 #elif defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
-#ifdef LIBTCOD_EXPORTS
+#ifdef TCODFOV_EXPORTS
 #ifdef __GNUC__
-#define TCODLIB_API __attribute__((dllexport))
+#define TCODFOV_PUBLIC __attribute__((dllexport))
 #else
-#define TCODLIB_API __declspec(dllexport)
+#define TCODFOV_PUBLIC __declspec(dllexport)
 #endif  // __GNUC__
 #else
 #ifdef __GNUC__
-#define TCODLIB_API __attribute__((dllimport))
+#define TCODFOV_PUBLIC __attribute__((dllimport))
 #else
-#define TCODLIB_API __declspec(dllimport)
+#define TCODFOV_PUBLIC __declspec(dllimport)
 #endif  // __GNUC__
-#endif  // LIBTCOD_EXPORTS
+#endif  // TCODFOV_EXPORTS
 #elif __GNUC__ >= 4
-#define TCODLIB_API __attribute__((visibility("default")))
+#define TCODFOV_PUBLIC __attribute__((visibility("default")))
 #else
-#define TCODLIB_API
+#define TCODFOV_PUBLIC
 #endif
-#endif  // TCODLIB_API
+#endif  // TCODFOV_PUBLIC
 
-#ifndef TCODLIB_API_INLINE_EXPORT
-#ifdef LIBTCOD_EXPORTS
+#ifndef TCODFOV_PUBLIC_INLINE_EXPORT
+#ifdef TCODFOV_EXPORTS
 /// Only export, but don't import a symbol.  Used to export functions moved inline.
-#define TCODLIB_API_INLINE_EXPORT TCODLIB_API
+#define TCODFOV_PUBLIC_INLINE_EXPORT TCODFOV_PUBLIC
 #else
-#define TCODLIB_API_INLINE_EXPORT
+#define TCODFOV_PUBLIC_INLINE_EXPORT
 #endif
-#endif  // TCODLIB_API_INLINE_EXPORT
-
-#ifndef TCODLIB_CAPI
-#ifdef __cplusplus
-#define TCODLIB_CAPI extern "C" TCODLIB_API
-#else
-#define TCODLIB_CAPI TCODLIB_API
-#endif  // __cplusplus
-#endif  // TCODLIB_CAPI
-
-// Publicly visible symbols and functions.
-#define TCOD_PUBLIC TCODLIB_API
+#endif  // TCODFOV_PUBLIC_INLINE_EXPORT
 
 // Private hidden symbols.
 #if __GNUC__ >= 4
-#define TCOD_PRIVATE __attribute__((visibility("hidden")))
+#define TCODFOV_PRIVATE __attribute__((visibility("hidden")))
 #else
-#define TCOD_PRIVATE
+#define TCODFOV_PRIVATE
 #endif  // __GNUC__ >= 4
 
 // Cross platform deprecation.
-#ifdef TCOD_IGNORE_DEPRECATED
-#define TCOD_DEPRECATED(msg)
-#define TCOD_DEPRECATED_NOMESSAGE
-#define TCOD_DEPRECATED_ENUM
+#ifdef TCODFOV_IGNORE_DEPRECATED
+#define TCODFOV_DEPRECATED(msg)
+#define TCODFOV_DEPRECATED_NOMESSAGE
+#define TCODFOV_DEPRECATED_ENUM
 #elif defined(__cplusplus) && __cplusplus >= 201402L && !defined(__clang__)
-#define TCOD_DEPRECATED(msg) [[deprecated(msg)]]
-#define TCOD_DEPRECATED_NOMESSAGE [[deprecated]]
-#define TCOD_DEPRECATED_ENUM [[deprecated]]
+#define TCODFOV_DEPRECATED(msg) [[deprecated(msg)]]
+#define TCODFOV_DEPRECATED_NOMESSAGE [[deprecated]]
+#define TCODFOV_DEPRECATED_ENUM [[deprecated]]
 #elif defined(_MSC_VER)
-#define TCOD_DEPRECATED(msg) __declspec(deprecated(msg))
-#define TCOD_DEPRECATED_NOMESSAGE __declspec(deprecated)
-#define TCOD_DEPRECATED_ENUM
+#define TCODFOV_DEPRECATED(msg) __declspec(deprecated(msg))
+#define TCODFOV_DEPRECATED_NOMESSAGE __declspec(deprecated)
+#define TCODFOV_DEPRECATED_ENUM
 #elif defined(__GNUC__)
-#define TCOD_DEPRECATED(msg) __attribute__((deprecated(msg)))
-#define TCOD_DEPRECATED_NOMESSAGE __attribute__((deprecated))
-#define TCOD_DEPRECATED_ENUM __attribute__((deprecated))
+#define TCODFOV_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#define TCODFOV_DEPRECATED_NOMESSAGE __attribute__((deprecated))
+#define TCODFOV_DEPRECATED_ENUM __attribute__((deprecated))
 #else
-#define TCOD_DEPRECATED(msg)
-#define TCOD_DEPRECATED_NOMESSAGE
-#define TCOD_DEPRECATED_ENUM
+#define TCODFOV_DEPRECATED(msg)
+#define TCODFOV_DEPRECATED_NOMESSAGE
+#define TCODFOV_DEPRECATED_ENUM
 #endif
 
 #ifdef __GNUC__
 // Tells GCC the these functions are printf-like.
-#define TCODLIB_PRINTF(str_index, first_arg) __attribute__((format(printf, str_index, first_arg)))
+#define TCODFOV_FORMAT(str_index, first_arg) __attribute__((format(printf, str_index, first_arg)))
 #else
-#define TCODLIB_PRINTF(str_index, first_arg)
+#define TCODFOV_FORMAT(str_index, first_arg)
 #endif
-
-#define TCODLIB_FORMAT TCODLIB_PRINTF
 
 #if defined(__cplusplus) && __cplusplus >= 201703L && !defined(__clang__)
-#define TCOD_NODISCARD [[nodiscard]]
+#define TCODFOV_NODISCARD [[nodiscard]]
 #elif defined(_MSC_VER)
-#define TCOD_NODISCARD
+#define TCODFOV_NODISCARD
 #elif defined(__GNUC__)
-#define TCOD_NODISCARD __attribute__((warn_unused_result))
+#define TCODFOV_NODISCARD __attribute__((warn_unused_result))
 #else
-#define TCOD_NODISCARD
+#define TCODFOV_NODISCARD
 #endif
 
-#ifdef __GNUC__
-/// Used to suppress internal header warnings.
-#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS \
-  _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wdeprecated\"")
-#define TCODLIB_END_IGNORE_DEPRECATIONS _Pragma("GCC diagnostic pop")
-#elif defined(_MSC_VER)
-#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS _Pragma("warning(push)") _Pragma("warning(disable : 4996)")
-#define TCODLIB_END_IGNORE_DEPRECATIONS _Pragma("warning(pop)")
-#else
-#define TCODLIB_BEGIN_IGNORE_DEPRECATIONS
-#define TCODLIB_END_IGNORE_DEPRECATIONS
-#endif
-
-#ifndef TCOD_FALLBACK_FONT_SIZE
-// The default height of the fallback font size in pixels.
-#define TCOD_FALLBACK_FONT_SIZE 16
-#endif  // TCOD_FALLBACK_FONT_SIZE
-
-#endif  // LIBTCOD_CONFIG_H_
+#endif  // LIBTCODFOV_CONFIG_H_

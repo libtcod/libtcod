@@ -39,7 +39,7 @@
 /**
  *  Private map cell struct.
  */
-struct TCOD_MapCell {
+struct TCODFOV_MapCell {
   bool transparent;
   bool walkable;
   bool fov;
@@ -47,57 +47,56 @@ struct TCOD_MapCell {
 /**
  *  Private map struct.
  */
-typedef struct TCOD_Map {
+typedef struct TCODFOV_Map {
   int width;
   int height;
   int nbcells;
-  struct TCOD_MapCell* __restrict cells;
-} TCOD_Map;
-typedef TCOD_Map* TCOD_map_t;
+  struct TCODFOV_MapCell* __restrict cells;
+} TCODFOV_Map;
 /**
     \rst
-    Field-of-view options for :any:`TCOD_map_compute_fov`.
+    Field-of-view options for :any:`TCODFOV_map_compute_fov`.
     \endrst
  */
-typedef enum {
+typedef enum TCODFOV_fov_algorithm_t {
   /**
       Trace multiple Bresenham lines along the perimeter.
 
       Based on: http://www.roguebasin.com/index.php?title=Ray_casting
    */
-  FOV_BASIC,
+  TCODFOV_BASIC,
   /**
       Cast Bresenham line shadows on a per-tile basis.
 
       Based on: http://www.oocities.org/temerra/los_rays.html
    */
-  FOV_DIAMOND,
+  TCODFOV_DIAMOND,
   /**
       Recursive Shadowcast.
 
       Based on: http://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
    */
-  FOV_SHADOW,
+  TCODFOV_SHADOW,
   /**
       Precise Permissive Field of View.
 
       Based on: http://www.roguebasin.com/index.php?title=Precise_Permissive_Field_of_View
    */
-  FOV_PERMISSIVE_0,
-  FOV_PERMISSIVE_1,
-  FOV_PERMISSIVE_2,
-  FOV_PERMISSIVE_3,
-  FOV_PERMISSIVE_4,
-  FOV_PERMISSIVE_5,
-  FOV_PERMISSIVE_6,
-  FOV_PERMISSIVE_7,
-  FOV_PERMISSIVE_8,
+  TCODFOV_PERMISSIVE_0,
+  TCODFOV_PERMISSIVE_1,
+  TCODFOV_PERMISSIVE_2,
+  TCODFOV_PERMISSIVE_3,
+  TCODFOV_PERMISSIVE_4,
+  TCODFOV_PERMISSIVE_5,
+  TCODFOV_PERMISSIVE_6,
+  TCODFOV_PERMISSIVE_7,
+  TCODFOV_PERMISSIVE_8,
   /**
       Mingos' Restrictive Precise Angle Shadowcasting (contribution by Mingos)
 
       Based on: http://www.roguebasin.com/index.php?title=Restrictive_Precise_Angle_Shadowcasting
    */
-  FOV_RESTRICTIVE,
+  TCODFOV_RESTRICTIVE,
   /**
       Symmetric Shadowcast.
 
@@ -108,6 +107,6 @@ typedef enum {
    */
   FOV_SYMMETRIC_SHADOWCAST,
   NB_FOV_ALGORITHMS
-} TCOD_fov_algorithm_t;
-#define FOV_PERMISSIVE(x) ((TCOD_fov_algorithm_t)(FOV_PERMISSIVE_0 + (x)))
+} TCODFOV_fov_algorithm_t;
+#define FOV_PERMISSIVE(x) ((TCODFOV_fov_algorithm_t)(TCODFOV_PERMISSIVE_0 + (x)))
 #endif /* TCOD_FOV_TYPES_H_ */

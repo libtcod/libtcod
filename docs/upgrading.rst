@@ -33,7 +33,7 @@ Later when you upgrade to contexts you will replace :any:`TCOD_set_default_tiles
 .. code-block:: cpp
 
     auto params = TCOD_ContextParams{};
-    params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
+    params.tcod_version = TCODFOV_COMPILEDVERSION;  // This is required.
     params.columns = 80;
     params.rows = 25;
     params.tileset = tileset.get();
@@ -104,7 +104,7 @@ The next step is to actually replace :any:`TCOD_console_init_root` with contexts
     auto root_console = tcod::Console{80, 25};  // TCOD_Console& can be replaced with tcod::Console.
 
     auto params = TCOD_ContextParams{};
-    params.tcod_version = TCOD_COMPILEDVERSION;
+    params.tcod_version = TCODFOV_COMPILEDVERSION;
     params.vsync = 1;
     params.sdl_window_flags = SDL_WINDOW_RESIZABLE;
     params.window_title = "Window title";
@@ -212,7 +212,7 @@ With all the above done you can now switch away from :any:`TCOD_console_init_roo
       auto tileset = tcod::load_tilesheet("terminal8x8_gs_tc.png", {32, 8}, tcod::CHARMAP_TCOD);
 
       TCOD_ContextParams params{};
-      params.tcod_version = TCOD_COMPILEDVERSION;
+      params.tcod_version = TCODFOV_COMPILEDVERSION;
       params.console = root_console.get();
       params.window_title = "Window title";
       params.sdl_window_flags = SDL_WINDOW_RESIZABLE;

@@ -2239,14 +2239,13 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             = TCODLIB_API= \
-                         TCODLIB_CAPI= \
-                         "TCODLIB_FORMAT(int,int)=" \
-                         "TCOD_DEPRECATED(msg)=" \
-                         TCOD_DEPRECATED_NOMESSAGE= \
-                         TCOD_NODISCARD= \
-                         TCOD_PUBLIC= \
-                         TCOD_PRIVATE= \
+PREDEFINED             = TCODFOV_PUBLIC= \
+                         "TCODFOV_FORMAT(int,int)=" \
+                         "TCODFOV_DEPRECATED(msg)=" \
+                         TCODFOV_DEPRECATED_NOMESSAGE= \
+                         TCODFOV_NODISCARD= \
+                         TCODFOV_PUBLIC= \
+                         TCODFOV_PRIVATE= \
                          __restrict= \
                          __cplusplus
 

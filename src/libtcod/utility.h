@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCOD_UTILITY_H
-#define LIBTCOD_UTILITY_H
+#ifndef LIBTCODFOV_UTILITY_H
+#define LIBTCODFOV_UTILITY_H
 /******************************************
  utility macros
  ******************************************/

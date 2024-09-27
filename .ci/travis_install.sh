@@ -9,7 +9,7 @@ if [[ "$BUILD_TOOL" == "scons" ]]; then
 elif [[ "$BUILD_TOOL" == "autotools" ]]; then
     cd buildsys/autotools && autoreconf --install && ./configure --prefix=$HOME/.local && make -j 3 install || exit 1
     cd ../..
-    export LIBTCOD_DLL_PATH=~/.local/lib
+    export LIBTCODFOV_DLL_PATH=~/.local/lib
 elif [[ "$BUILD_TOOL" == "conan" ]]; then
     :
 else

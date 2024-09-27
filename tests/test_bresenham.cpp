@@ -9,13 +9,13 @@
     Return a vector of bresenham coordinates, including both endpoints.
  */
 std::vector<std::array<int, 2>> generate_line(const std::array<int, 2>& begin, const std::array<int, 2>& end) {
-  TCOD_bresenham_data_t bresenham_stack_data;
+  TCODFOV_bresenham_data_t bresenham_stack_data;
   std::vector<std::array<int, 2>> line;
   int x = begin.at(0);
   int y = begin.at(1);
-  TCOD_line_init_mt(begin.at(0), begin.at(1), end.at(0), end.at(1), &bresenham_stack_data);
+  TCODFOV_line_init_mt(begin.at(0), begin.at(1), end.at(0), end.at(1), &bresenham_stack_data);
   line.push_back(begin);
-  while (!TCOD_line_step_mt(&x, &y, &bresenham_stack_data)) {
+  while (!TCODFOV_line_step_mt(&x, &y, &bresenham_stack_data)) {
     line.push_back({x, y});
   }
   return line;
@@ -24,7 +24,7 @@ std::vector<std::array<int, 2>> generate_line(const std::array<int, 2>& begin, c
 /** Dummy callback for older bresenham functions. */
 bool null_bresenham_callback(int x, int y) { return true; }
 
-TEST_CASE("TCOD_line_step_mt") {
+TEST_CASE("TCODFOV_line_step_mt") {
   const std::vector<std::array<int, 2>> EXPECTED = {
       {0, 0}, {1, 0}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 2}, {7, 2}, {8, 2}, {9, 2}, {10, 3}, {11, 3}};
   REQUIRE(generate_line({0, 0}, {11, 3}) == EXPECTED);
@@ -35,16 +35,16 @@ TEST_CASE("TCOD_line_step_mt") {
 }
 
 TEST_CASE("bresenham benchmarks", "[.benchmark]") {
-  BENCHMARK("TCOD_line_step_mt") {
-    TCOD_bresenham_data_t bresenham_stack_data;
+  BENCHMARK("TCODFOV_line_step_mt") {
+    TCODFOV_bresenham_data_t bresenham_stack_data;
     int x;
     int y;
-    TCOD_line_init_mt(0, 0, 11, 3, &bresenham_stack_data);
-    while (!TCOD_line_step_mt(&x, &y, &bresenham_stack_data)) {
+    TCODFOV_line_init_mt(0, 0, 11, 3, &bresenham_stack_data);
+    while (!TCODFOV_line_step_mt(&x, &y, &bresenham_stack_data)) {
     };
     return x;
   };
-  BENCHMARK("TCOD_line") { return TCOD_line(0, 0, 11, 3, null_bresenham_callback); };
+  BENCHMARK("TCODFOV_line") { return TCODFOV_line(0, 0, 11, 3, null_bresenham_callback); };
   BENCHMARK("BresenhamLine (iterate)") {
     std::array<int, 2> out{0, 0};
     for (auto&& xy : tcod::BresenhamLine({0, 0}, {11, 3})) {

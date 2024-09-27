@@ -91,12 +91,12 @@ static int round_half_down(float n) { return (int)roundf(n * (1 - FLT_EPSILON));
 
     If you think of each quadrant as a tree of rows, this essentially is a depth-first tree traversal.
  */
-static void scan(TCOD_Map* __restrict map, Row* __restrict row) {
+static void scan(TCODFOV_Map* __restrict map, Row* __restrict row) {
   const int xx = quadrant_table[row->quadrant][0];
   const int xy = quadrant_table[row->quadrant][1];
   const int yx = quadrant_table[row->quadrant][2];
   const int yy = quadrant_table[row->quadrant][3];
-  if (!TCOD_map_in_bounds(map, row->pov_x + row->depth * xx, row->pov_y + row->depth * yx)) {
+  if (!TCODFOV_map_in_bounds(map, row->pov_x + row->depth * xx, row->pov_y + row->depth * yx)) {
     return;  // Row->depth is out-of-bounds.
   }
   const int column_min = round_half_up(row->depth * row->slope_low);
@@ -105,10 +105,10 @@ static void scan(TCOD_Map* __restrict map, Row* __restrict row) {
   for (int column = column_min; column <= column_max; ++column) {
     const int map_x = row->pov_x + row->depth * xx + column * xy;
     const int map_y = row->pov_y + row->depth * yx + column * yy;
-    if (!TCOD_map_in_bounds(map, map_x, map_y)) {
+    if (!TCODFOV_map_in_bounds(map, map_x, map_y)) {
       continue;  // Tile is out-of-bounds.
     }
-    struct TCOD_MapCell* map_cell = &map->cells[map_x + map_y * map->width];
+    struct TCODFOV_MapCell* map_cell = &map->cells[map_x + map_y * map->width];
     const bool is_wall = !map_cell->transparent;
     if (is_wall || is_symmetric(row, column)) {
       map_cell->fov = true;
@@ -137,15 +137,15 @@ static void scan(TCOD_Map* __restrict map, Row* __restrict row) {
   }
 }
 
-TCOD_Error TCOD_map_compute_fov_symmetric_shadowcast(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
+TCODFOV_Error TCODFOV_map_compute_fov_symmetric_shadowcast(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   if (!map) {
-    TCOD_set_errorv("Map must not be NULL.");
-    return TCOD_E_INVALID_ARGUMENT;
+    TCODFOV_set_errorv("Map must not be NULL.");
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = true;
   for (int quadrant = 0; quadrant < 4; ++quadrant) {
@@ -175,5 +175,5 @@ TCOD_Error TCOD_map_compute_fov_symmetric_shadowcast(
       }
     }
   }
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

@@ -45,29 +45,29 @@
 extern "C" {
 #endif
 /**
-    Return a new TCOD_Map with `width` and `height`.
+    Return a new TCODFOV_Map with `width` and `height`.
  */
-TCOD_PUBLIC TCOD_Map* TCOD_map_new(int width, int height);
+TCODFOV_PUBLIC TCODFOV_Map* TCODFOV_map_new(int width, int height);
 /**
     Set all cell values on `map` to the given parameters.
 
     This call also zeroes out the field-of-view attribute.
  */
-TCOD_PUBLIC void TCOD_map_clear(TCOD_Map* map, bool transparent, bool walkable);
+TCODFOV_PUBLIC void TCODFOV_map_clear(TCODFOV_Map* map, bool transparent, bool walkable);
 /**
     Clone map data from `source` to `dest`.
 
     `dest` will be resized to match `source` if necessary.
  */
-TCOD_PUBLIC TCOD_Error TCOD_map_copy(const TCOD_Map* __restrict source, TCOD_Map* __restrict dest);
+TCODFOV_PUBLIC TCODFOV_Error TCODFOV_map_copy(const TCODFOV_Map* __restrict source, TCODFOV_Map* __restrict dest);
 /**
     Change the properties of a single cell.
  */
-TCOD_PUBLIC void TCOD_map_set_properties(TCOD_Map* map, int x, int y, bool is_transparent, bool is_walkable);
+TCODFOV_PUBLIC void TCODFOV_map_set_properties(TCODFOV_Map* map, int x, int y, bool is_transparent, bool is_walkable);
 /**
-    Free a TCOD_Map object.
+    Free a TCODFOV_Map object.
  */
-TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
+TCODFOV_PUBLIC void TCODFOV_map_delete(TCODFOV_Map* map);
 /**
     Calculate the field-of-view.
 
@@ -80,51 +80,51 @@ TCOD_PUBLIC void TCOD_map_delete(TCOD_Map* map);
     If `light_walls` is false then only transparent cells will be touched by
     the field-of-view.
 
-    `algo` is one of the :any:`TCOD_fov_algorithm_t` algorithms.
+    `algo` is one of the :any:`TCODFOV_fov_algorithm_t` algorithms.
 
     After this call you may check if a cell is within the field-of-view by
-    calling :any:`TCOD_map_is_in_fov`.
+    calling :any:`TCODFOV_map_is_in_fov`.
 
-    Returns an error code on failure.  See :any:`TCOD_get_error` for details.
+    Returns an error code on failure.  See :any:`TCODFOV_get_error` for details.
     \endrst
  */
-TCOD_PUBLIC TCOD_Error TCOD_map_compute_fov(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, TCOD_fov_algorithm_t algo);
+TCODFOV_PUBLIC TCODFOV_Error TCODFOV_map_compute_fov(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, TCODFOV_fov_algorithm_t algo);
 /**
     Return true if this cell was touched by the current field-of-view.
  */
-TCOD_PUBLIC bool TCOD_map_is_in_fov(const TCOD_Map* map, int x, int y);
+TCODFOV_PUBLIC bool TCODFOV_map_is_in_fov(const TCODFOV_Map* map, int x, int y);
 /**
     Set the fov flag on a specific cell.
  */
-TCOD_PUBLIC void TCOD_map_set_in_fov(TCOD_Map* map, int x, int y, bool fov);
+TCODFOV_PUBLIC void TCODFOV_map_set_in_fov(TCODFOV_Map* map, int x, int y, bool fov);
 /**
     Return true if this cell is transparent.
  */
-TCOD_PUBLIC bool TCOD_map_is_transparent(const TCOD_Map* map, int x, int y);
+TCODFOV_PUBLIC bool TCODFOV_map_is_transparent(const TCODFOV_Map* map, int x, int y);
 /**
     Return true if this cell is walkable.
  */
-TCOD_PUBLIC bool TCOD_map_is_walkable(TCOD_Map* map, int x, int y);
+TCODFOV_PUBLIC bool TCODFOV_map_is_walkable(TCODFOV_Map* map, int x, int y);
 /**
     Return the width of `map`.
  */
-TCOD_PUBLIC int TCOD_map_get_width(const TCOD_Map* map);
+TCODFOV_PUBLIC int TCODFOV_map_get_width(const TCODFOV_Map* map);
 /**
     Return the height of `map`.
  */
-TCOD_PUBLIC int TCOD_map_get_height(const TCOD_Map* map);
+TCODFOV_PUBLIC int TCODFOV_map_get_height(const TCODFOV_Map* map);
 /**
     Return the total number of cells in `map`.
  */
-TCOD_PUBLIC int TCOD_map_get_nb_cells(const TCOD_Map* map);
+TCODFOV_PUBLIC int TCODFOV_map_get_nb_cells(const TCODFOV_Map* map);
 #ifdef __cplusplus
 }  // extern "C"
 namespace tcod {
 struct MapDeleter_ {
-  void operator()(TCOD_Map* map) const { TCOD_map_delete(map); }
+  void operator()(TCODFOV_Map* map) const { TCODFOV_map_delete(map); }
 };
-typedef std::unique_ptr<struct TCOD_Map, MapDeleter_> MapPtr_;
+typedef std::unique_ptr<struct TCODFOV_Map, MapDeleter_> MapPtr_;
 }  // namespace tcod
 #endif  // __cplusplus
 #endif  // TCOD_FOV_H_

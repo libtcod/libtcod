@@ -1,11 +1,11 @@
 @PACKAGE_INIT@
 
-set_and_check(LIBTCOD_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
+set_and_check(LIBTCODFOV_INCLUDE_DIR "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 
 include(${CMAKE_CURRENT_LIST_DIR}/libtcodTargets.cmake)
 
 target_include_directories(libtcod::libtcod INTERFACE "@PACKAGE_INSTALL_FULL_INCLUDEDIR@")
 
-set(LIBTCOD_LIBRARY libtcod::libtcod)
+set(LIBTCODFOV_LIBRARY libtcod::libtcod)
 
 check_required_components(libtcod)

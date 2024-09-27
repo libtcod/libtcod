@@ -9,18 +9,18 @@ Iterator-based line drawing
     #include <libtcod.h>
 
     void main() {
-      TCOD_bresenham_data_t bresenham_data;
+      TCODFOV_bresenham_data_t bresenham_data;
       int x=5, y=8;
-      TCOD_line_init_mt(x, y, 13, 14, &bresenham_data);
+      TCODFOV_line_init_mt(x, y, 13, 14, &bresenham_data);
       do {
         printf("%d %d\n", x, y);
-      } while (!TCOD_line_step_mt(&x, &y, &bresenham_data));
+      } while (!TCODFOV_line_step_mt(&x, &y, &bresenham_data));
     }
 
-.. doxygenstruct:: TCOD_bresenham_data_t
+.. doxygenstruct:: TCODFOV_bresenham_data_t
 
-.. doxygenfunction:: TCOD_line_init_mt
-.. doxygenfunction:: TCOD_line_step_mt
+.. doxygenfunction:: TCODFOV_line_init_mt
+.. doxygenfunction:: TCODFOV_line_step_mt
 
 Callback-based line drawing
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -34,12 +34,12 @@ Callback-based line drawing
         printf("%d %d\n", x, y);
         return true;
       }
-      TCOD_line(5, 8, 13, 4, my_listener);
+      TCODFOV_line(5, 8, 13, 4, my_listener);
     }
 
-.. doxygentypedef:: TCOD_line_listener_t
+.. doxygentypedef:: TCODFOV_line_listener_t
 
-.. doxygenfunction:: TCOD_line
+.. doxygenfunction:: TCODFOV_line
 
 .. doxygenclass:: tcod::BresenhamLine
     :members:
@@ -47,6 +47,6 @@ Callback-based line drawing
 Deprecated functions
 ^^^^^^^^^^^^^^^^^^^^
 
-.. doxygenfunction:: TCOD_line_mt
-.. doxygenfunction:: TCOD_line_init
-.. doxygenfunction:: TCOD_line_step
+.. doxygenfunction:: TCODFOV_line_mt
+.. doxygenfunction:: TCODFOV_line_init
+.. doxygenfunction:: TCODFOV_line_step

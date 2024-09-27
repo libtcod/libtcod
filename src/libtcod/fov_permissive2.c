@@ -103,7 +103,7 @@ static void view_array_insert(ActiveViewArray* view_array, ptrdiff_t index, View
 static View** view_array_end(const ActiveViewArray* view_array) { return view_array->view_ptrs + view_array->count; }
 
 /// @brief Set a maps FOV-bit and return true if the tile is blocked.
-static bool is_blocked(TCOD_Map* map, int pov_x, int pov_y, int x, int y, int dx, int dy, bool light_walls) {
+static bool is_blocked(TCODFOV_Map* map, int pov_x, int pov_y, int x, int y, int dx, int dy, bool light_walls) {
   const int pos_x = x * dx / STEP_SIZE + pov_x;
   const int pos_y = y * dy / STEP_SIZE + pov_y;
   const int cells_offset = pos_x + pos_y * map->width;
@@ -164,7 +164,7 @@ static bool check_view(ActiveViewArray* active_views, View** it, int offset, int
 }
 
 static void visit_coords(
-    TCOD_Map* __restrict map,
+    TCODFOV_Map* __restrict map,
     int pov_x,
     int pov_y,
     int x,
@@ -234,7 +234,7 @@ static void visit_coords(
 }
 
 static void check_quadrant(
-    TCOD_Map* __restrict map,
+    TCODFOV_Map* __restrict map,
     int pov_x,
     int pov_y,
     int dx,
@@ -280,20 +280,20 @@ static void check_quadrant(
   }
 }
 
-TCOD_Error TCOD_map_compute_fov_permissive2(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int permissiveness) {
+TCODFOV_Error TCODFOV_map_compute_fov_permissive2(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls, int permissiveness) {
   if (!(0 <= permissiveness && permissiveness <= 8)) {
-    TCOD_set_errorvf("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].", permissiveness);
-    return TCOD_E_INVALID_ARGUMENT;
+    TCODFOV_set_errorvf("Bad permissiveness %d for FOV_PERMISSIVE. Accepted range is [0,8].", permissiveness);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   /* Defines the parameters of the permissiveness */
   /* Derived values defining the actual part of the square used as a range. */
   const int offset = 8 - permissiveness;
   const int limit = 8 + permissiveness;
 
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
 
@@ -305,8 +305,8 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
     free(bumps.data);
     free(views);
     free(active_views.view_ptrs);
-    TCOD_set_errorv("Out of memory.");
-    return TCOD_E_OUT_OF_MEMORY;
+    TCODFOV_set_errorv("Out of memory.");
+    return TCODFOV_E_OUT_OF_MEMORY;
   }
   /* set the fov range */
   int min_x = pov_x;
@@ -327,5 +327,5 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
   free(bumps.data);
   free(views);
   free(active_views.view_ptrs);
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

@@ -30,42 +30,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCOD_ERROR_H_
-#define LIBTCOD_ERROR_H_
+#ifndef LIBTCODFOV_ERROR_H_
+#define LIBTCODFOV_ERROR_H_
 #include "config.h"
 #include "version.h"
 /**
  *  An enum of libtcod error codes.
  *
- *  On values other than `TCOD_E_OK` you can use `TCOD_get_error()` to learn
+ *  On values other than `TCODFOV_E_OK` you can use `TCODFOV_get_error()` to learn
  *  more information.
  *  \rst
  *  .. versionadded:: 1.16
  *  \endrst
  */
-typedef enum TCOD_Error {
+typedef enum TCODFOV_Error {
   /**
    *  The function completed successfully without issues.
    *
    *  A function is successful when `(err >= 0)`.  Positive values may be used
    *  for warnings, or for other outputs.
    */
-  TCOD_E_OK = 0,
+  TCODFOV_E_OK = 0,
   /**
    *  The error code for generic runtime errors.
    *
    *  The returned code my be changed in the future to something more specific.
    *  Use `(err < 0)` to check if the value is an error.
    */
-  TCOD_E_ERROR = -1,
+  TCODFOV_E_ERROR = -1,
   /**
    *  The function failed because a given input argument was invalid.
    */
-  TCOD_E_INVALID_ARGUMENT = -2,
+  TCODFOV_E_INVALID_ARGUMENT = -2,
   /**
    *  The function failed because it was unable to allocate enough memory.
    */
-  TCOD_E_OUT_OF_MEMORY = -3,
+  TCODFOV_E_OUT_OF_MEMORY = -3,
   /**
       This function needs additional attention, but is otherwise functioning
       correctly.  See its documentation.
@@ -73,12 +73,12 @@ typedef enum TCOD_Error {
       .. versionadded:: 1.16
       \endrst
    */
-  TCOD_E_REQUIRES_ATTENTION = -4,
+  TCODFOV_E_REQUIRES_ATTENTION = -4,
   /**
    *  The function completed, but a minor issue was detected.
    */
-  TCOD_E_WARN = 1,
-} TCOD_Error;
+  TCODFOV_E_WARN = 1,
+} TCODFOV_Error;
 #ifdef __cplusplus
 extern "C" {
 #endif  // __cplusplus
@@ -89,45 +89,45 @@ extern "C" {
     .. versionadded:: 1.12
     \endrst
  */
-TCOD_NODISCARD
-TCODLIB_API const char* TCOD_get_error(void);
+TCODFOV_NODISCARD
+TCODFOV_PUBLIC const char* TCODFOV_get_error(void);
 /***************************************************************************
-    @brief Set an error message and return TCOD_E_ERROR.
+    @brief Set an error message and return TCODFOV_E_ERROR.
 
     \rst
     .. versionadded:: 1.12
     \endrst
  */
-TCODLIB_API TCOD_Error TCOD_set_error(const char* msg);
+TCODFOV_PUBLIC TCODFOV_Error TCODFOV_set_error(const char* msg);
 /**
- *  Set an error message and return TCOD_E_ERROR.
+ *  Set an error message and return TCODFOV_E_ERROR.
  *  \rst
  *  .. versionadded:: 1.16
  *  \endrst
  */
-TCODLIB_FORMAT(1, 2)
-TCODLIB_API TCOD_Error TCOD_set_errorf(const char* fmt, ...);
+TCODFOV_FORMAT(1, 2)
+TCODFOV_PUBLIC TCODFOV_Error TCODFOV_set_errorf(const char* fmt, ...);
 /**
  *  Clear a current existing error message.
  *  \rst
  *  .. versionadded:: 1.16
  *  \endrst
  */
-TCODLIB_API void TCOD_clear_error(void);
+TCODFOV_PUBLIC void TCODFOV_clear_error(void);
 /**
  *  Set an error with version, file, and line info added to the output.
  *
  *  Used internally.
  */
-#define TCOD_set_errorv(msg) TCOD_set_errorf("%s:%i\n%s", TCOD_STRVERSIONNAME " " __FILE__, __LINE__, (msg))
+#define TCODFOV_set_errorv(msg) TCODFOV_set_errorf("%s:%i\n%s", TCODFOV_STRVERSIONNAME " " __FILE__, __LINE__, (msg))
 /**
  *  Format an error with version, file, and line info added to the output.
  *
  *  Used internally.
  */
-#define TCOD_set_errorvf(fmt, ...) \
-  TCOD_set_errorf("%s:%i\n" fmt, TCOD_STRVERSIONNAME " " __FILE__, __LINE__, __VA_ARGS__)
+#define TCODFOV_set_errorvf(fmt, ...) \
+  TCODFOV_set_errorf("%s:%i\n" fmt, TCODFOV_STRVERSIONNAME " " __FILE__, __LINE__, __VA_ARGS__)
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-#endif  // LIBTCOD_ERROR_H_
+#endif  // LIBTCODFOV_ERROR_H_

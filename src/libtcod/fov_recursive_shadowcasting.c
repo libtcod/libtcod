@@ -56,7 +56,7 @@ static const int matrix_table[8][4] = {
     Cast visiblity using shadowcasting.
  */
 static void cast_light(
-    struct TCOD_Map* __restrict map,
+    struct TCODFOV_Map* __restrict map,
     int pov_x,
     int pov_y,
     int distance,  // Polar distance from POV.
@@ -76,7 +76,7 @@ static void cast_light(
   if (distance > max_radius) {
     return;  // Distance is out-of-range.
   }
-  if (!TCOD_map_in_bounds(map, pov_x + distance * xy, pov_y + distance * yy)) {
+  if (!TCODFOV_map_in_bounds(map, pov_x + distance * xy, pov_y + distance * yy)) {
     return;  // Distance is out-of-bounds.
   }
   bool prev_tile_blocked = false;
@@ -92,7 +92,7 @@ static void cast_light(
     // Current tile is in view.
     const int map_x = pov_x + angle * xx + distance * xy;
     const int map_y = pov_y + angle * yx + distance * yy;
-    if (!TCOD_map_in_bounds(map, map_x, map_y)) {
+    if (!TCODFOV_map_in_bounds(map, map_x, map_y)) {
       continue;  // Angle is out-of-bounds.
     }
     const int map_index = map_x + map_y * map->width;
@@ -114,11 +114,11 @@ static void cast_light(
   }
 }
 
-TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+TCODFOV_Error TCODFOV_map_compute_fov_recursive_shadowcasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   if (max_radius <= 0) {
     int max_radius_x = MAX(map->width - pov_x, pov_x);
@@ -130,5 +130,5 @@ TCOD_Error TCOD_map_compute_fov_recursive_shadowcasting(
     cast_light(map, pov_x, pov_y, 1, 1.0, 0.0, max_radius, octant, light_walls);
   }
   map->cells[pov_x + pov_y * map->width].fov = 1;
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

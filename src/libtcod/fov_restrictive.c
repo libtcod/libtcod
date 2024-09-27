@@ -39,7 +39,7 @@
 #include "utility.h"
 
 static void compute_quadrant(
-    TCOD_Map* __restrict map,
+    TCODFOV_Map* __restrict map,
     int pov_x,
     int pov_y,
     int max_radius,
@@ -234,11 +234,11 @@ static void compute_quadrant(
   }
 }
 
-TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+TCODFOV_Error TCODFOV_map_compute_fov_restrictive_shadowcasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   /* set PC's position as visible */
   map->cells[pov_x + (pov_y * map->width)].fov = true;
@@ -250,8 +250,8 @@ TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
   if (!start_angle || !end_angle) {
     free(end_angle);
     free(start_angle);
-    TCOD_set_errorv("Out of memory.");
-    return TCOD_E_OUT_OF_MEMORY;
+    TCODFOV_set_errorv("Out of memory.");
+    return TCODFOV_E_OUT_OF_MEMORY;
   }
   /* compute the 4 quadrants of the map */
   compute_quadrant(map, pov_x, pov_y, max_radius, light_walls, 1, 1, start_angle, end_angle);
@@ -261,5 +261,5 @@ TCOD_Error TCOD_map_compute_fov_restrictive_shadowcasting(
 
   free(end_angle);
   free(start_angle);
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

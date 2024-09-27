@@ -35,20 +35,20 @@
  *  \brief bresenham line drawing
  */
 /* This static variable is deprecated since 1.6 */
-static TCOD_bresenham_data_t bresenham_data;
+static TCODFOV_bresenham_data_t bresenham_data;
 /**
- *  \brief Initialize a TCOD_bresenham_data_t struct.
+ *  \brief Initialize a TCODFOV_bresenham_data_t struct.
  *
  *  \param xFrom The starting x position.
  *  \param yFrom The starting y position.
  *  \param xTo The ending x position.
  *  \param yTo The ending y position.
- *  \param data Pointer to a TCOD_bresenham_data_t struct.
+ *  \param data Pointer to a TCODFOV_bresenham_data_t struct.
  *
- *  After calling this function you use TCOD_line_step_mt to iterate
+ *  After calling this function you use TCODFOV_line_step_mt to iterate
  *  over the individual points on the line.
  */
-void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t* data) {
+void TCODFOV_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCODFOV_bresenham_data_t* data) {
   data->origx = xFrom;
   data->origy = yFrom;
   data->destx = xTo;
@@ -82,13 +82,13 @@ void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_da
  *
  *  \param xCur An int pointer to fill with the next x position.
  *  \param yCur An int pointer to fill with the next y position.
- *  \param data Pointer to a initialized TCOD_bresenham_data_t struct.
+ *  \param data Pointer to a initialized TCODFOV_bresenham_data_t struct.
  *  \return true after the ending point has been reached.
  *
  *  The starting point is excluded by this function.
  *  After the ending point is reached, the next call will return true.
  */
-bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCOD_bresenham_data_t* __restrict data) {
+bool TCODFOV_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCODFOV_bresenham_data_t* __restrict data) {
   if (data->stepx * data->deltax > data->stepy * data->deltay) {
     if (data->origx == data->destx) return true;
     data->origx += data->stepx;
@@ -117,21 +117,21 @@ bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCOD_bresenha
  *  \param yo The origin y position.
  *  \param xd The destination x position.
  *  \param yd The destination y position.
- *  \param listener A TCOD_line_listener_t callback.
- *  \param data Pointer to a TCOD_bresenham_data_t struct.
+ *  \param listener A TCODFOV_line_listener_t callback.
+ *  \param data Pointer to a TCODFOV_bresenham_data_t struct.
  *  \return true if the line was completely exhausted by the callback.
  *
  *  \verbatim embed:rst:leading-asterisk
  *  .. deprecated:: 1.6.6
  *    The `data` parameter for this call is redundant, you should call
- *    :any:`TCOD_line` instead.
+ *    :any:`TCODFOV_line` instead.
  *  \endverbatim
  */
-bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data) {
-  TCOD_line_init_mt(xo, yo, xd, yd, data);
+bool TCODFOV_line_mt(int xo, int yo, int xd, int yd, TCODFOV_line_listener_t listener, TCODFOV_bresenham_data_t* data) {
+  TCODFOV_line_init_mt(xo, yo, xd, yd, data);
   do {
     if (!listener(xo, yo)) return false;
-  } while (!TCOD_line_step_mt(&xo, &yo, data));
+  } while (!TCODFOV_line_step_mt(&xo, &yo, data));
   return true;
 }
 /**
@@ -147,11 +147,11 @@ bool TCOD_line_mt(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener,
  *    This function is not reentrant and will fail if a new line is started
  *    before the last is finished processing.
  *
- *    Use :any:`TCOD_line_init_mt` instead.
+ *    Use :any:`TCODFOV_line_init_mt` instead.
  *  \endverbatim
  */
-void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
-  TCOD_line_init_mt(xFrom, yFrom, xTo, yTo, &bresenham_data);
+void TCODFOV_line_init(int xFrom, int yFrom, int xTo, int yTo) {
+  TCODFOV_line_init_mt(xFrom, yFrom, xTo, yTo, &bresenham_data);
 }
 /**
  *  \brief Get the next point in a line, returns true once the line has ended.
@@ -168,11 +168,11 @@ void TCOD_line_init(int xFrom, int yFrom, int xTo, int yTo) {
  *    This function is not reentrant and will fail if a new line is started
  *    before the last is finished processing.
  *
- *    Use :any:`TCOD_line_step_mt` instead.
+ *    Use :any:`TCODFOV_line_step_mt` instead.
  *  \endverbatim
  */
-bool TCOD_line_step(int* __restrict xCur, int* __restrict yCur) {
-  return TCOD_line_step_mt(xCur, yCur, &bresenham_data);
+bool TCODFOV_line_step(int* __restrict xCur, int* __restrict yCur) {
+  return TCODFOV_line_step_mt(xCur, yCur, &bresenham_data);
 }
 /**
  *  \brief Iterate over a line using a callback.
@@ -181,7 +181,7 @@ bool TCOD_line_step(int* __restrict xCur, int* __restrict yCur) {
  *  \param yo The origin y position.
  *  \param xd The destination x position.
  *  \param yd The destination y position.
- *  \param listener A TCOD_line_listener_t callback.
+ *  \param listener A TCODFOV_line_listener_t callback.
  *  \return true if the line was completely exhausted by the callback.
  *
  *  \verbatim embed:rst:leading-asterisk
@@ -189,7 +189,7 @@ bool TCOD_line_step(int* __restrict xCur, int* __restrict yCur) {
  *    This function is now reentrant.
  *  \endverbatim
  */
-bool TCOD_line(int xo, int yo, int xd, int yd, TCOD_line_listener_t listener) {
-  TCOD_bresenham_data_t data;
-  return TCOD_line_mt(xo, yo, xd, yd, listener, &data);
+bool TCODFOV_line(int xo, int yo, int xd, int yd, TCODFOV_line_listener_t listener) {
+  TCODFOV_bresenham_data_t data;
+  return TCODFOV_line_mt(xo, yo, xd, yd, listener, &data);
 }

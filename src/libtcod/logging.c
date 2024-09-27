@@ -39,20 +39,20 @@
 /***************************************************************************
     @brief The current log level.  Messages below this level are not processed.
  */
-static int TCOD_log_level = TCOD_LOG_WARNING;
+static int log_level = TCODFOV_log_WARNING;
 /***************************************************************************
     @brief Return a readable name for the given log level.
  */
-static const char* TCOD_log_level_name(int level) {
-  if (level >= TCOD_LOG_CRITICAL) {
+static const char* log_level_name(int level) {
+  if (level >= TCODFOV_log_CRITICAL) {
     return "CRITICAL";
-  } else if (level >= TCOD_LOG_ERROR) {
+  } else if (level >= TCODFOV_log_ERROR) {
     return "ERROR";
-  } else if (level >= TCOD_LOG_WARNING) {
+  } else if (level >= TCODFOV_log_WARNING) {
     return "WARNING";
-  } else if (level >= TCOD_LOG_INFO) {
+  } else if (level >= TCODFOV_log_INFO) {
     return "INFO";
-  } else if (level >= TCOD_LOG_DEBUG) {
+  } else if (level >= TCODFOV_log_DEBUG) {
     return "DEBUG";
   }
   return "TRACE";
@@ -60,74 +60,74 @@ static const char* TCOD_log_level_name(int level) {
 /***************************************************************************
     @brief The default logger used when no other logger is provided, prints the error to stderr.
  */
-static void TCOD_logger_default(const TCOD_LogMessage* message, void* userdata) {
+static void logger_default(const TCODFOV_LogMessage* message, void* userdata) {
   (void)userdata;  // Ignored parameter.
   if (!message) {
-    const TCOD_LogMessage bad_log = {
+    const TCODFOV_LogMessage bad_log = {
         .message = "Logger has been invoked with a NULL message!",
-        .level = TCOD_LOG_ERROR,
+        .level = TCODFOV_log_ERROR,
         .source = __FILE__,
         .lineno = __LINE__,
     };
-    TCOD_logger_default(&bad_log, NULL);
+    logger_default(&bad_log, NULL);
     return;
   }
   if (!message->source) {
-    const TCOD_LogMessage no_source = {
+    const TCODFOV_LogMessage no_source = {
         .message = "Message source attribute was NULL!",
-        .level = TCOD_LOG_ERROR,
+        .level = TCODFOV_log_ERROR,
         .source = "",
         .lineno = message->lineno,
     };
-    TCOD_logger_default(&no_source, NULL);
+    logger_default(&no_source, NULL);
     return;
   }
   fprintf(
       stderr,
-      "libtcod v" TCOD_STRVERSION ":%s:%d:%s:%s",
+      "libtcod v" TCODFOV_STRVERSION ":%s:%d:%s:%s",
       message->source,
       message->lineno,
-      TCOD_log_level_name(message->level),
+      log_level_name(message->level),
       message->message);
 }
 /***************************************************************************
     @brief The active logger callback.
  */
-static TCOD_LoggingCallback TCOD_logger_current = &TCOD_logger_default;
+static TCODFOV_LoggingCallback logger_current = &logger_default;
 /***************************************************************************
     @brief User data for the active logger callback.
  */
-static void* TCOD_logger_current_userdata = NULL;
+static void* logger_current_userdata = NULL;
 /***************************************************************************
     @brief Log a message if it passes the log level.
  */
-static void TCOD_log_internal(const TCOD_LogMessage* message) {
+static void log_internal(const TCODFOV_LogMessage* message) {
   if (!message) return;
-  if (message->level < TCOD_log_level) return;
-  if (TCOD_logger_current) TCOD_logger_current(message, TCOD_logger_current_userdata);
+  if (message->level < log_level) return;
+  if (logger_current) logger_current(message, logger_current_userdata);
 }
-void TCOD_set_log_level(int level) { TCOD_log_level = level; }
-void TCOD_set_log_callback(TCOD_LoggingCallback callback, void* userdata) {
-  TCOD_logger_current = callback;
-  TCOD_logger_current_userdata = userdata;
+void TCODFOV_set_log_level(int level) { log_level = level; }
+void TCODFOV_set_log_callback(TCODFOV_LoggingCallback callback, void* userdata) {
+  logger_current = callback;
+  logger_current_userdata = userdata;
 }
-void TCOD_log_verbose_(const char* msg, int level, const char* source, int line) {
+void TCODFOV_log_verbose_(const char* msg, int level, const char* source, int line) {
   if (!msg) return;
-  const TCOD_LogMessage message = {
+  const TCODFOV_LogMessage message = {
       .message = msg,
       .level = level,
       .source = source ? source : "",
       .lineno = line,
   };
-  TCOD_log_internal(&message);
+  log_internal(&message);
 }
-void TCOD_log_verbose_fmt_(int level, const char* source, int line, const char* fmt, ...) {
+void TCODFOV_log_verbose_fmt_(int level, const char* source, int line, const char* fmt, ...) {
   if (!fmt) return;
-  if (level < TCOD_log_level) return;
+  if (level < log_level) return;
   char buffer[4096];
   va_list args;
   va_start(args, fmt);
   vsnprintf(buffer, sizeof(buffer), fmt, args);
   va_end(args);
-  TCOD_log_verbose_(buffer, level, source, line);
+  TCODFOV_log_verbose_(buffer, level, source, line);
 }

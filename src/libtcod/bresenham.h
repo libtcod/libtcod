@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 /**
- *  \brief A callback to be passed to TCOD_line
+ *  \brief A callback to be passed to TCODFOV_line
  *
  *  The points given to the callback include both the starting and ending
  *  positions.
@@ -51,21 +51,22 @@ extern "C" {
  *  \return As long as this callback returns true it will be called with the
  *          next x,y point on the line.
  */
-typedef bool (*TCOD_line_listener_t)(int x, int y);
+typedef bool (*TCODFOV_line_listener_t)(int x, int y);
 
-TCODLIB_API TCOD_DEPRECATED("This function is not reentrant. Use TCOD_line_init_mt instead.") void TCOD_line_init(
-    int xFrom, int yFrom, int xTo, int yTo);
+TCODFOV_PUBLIC
+TCODFOV_DEPRECATED("This function is not reentrant. Use TCODFOV_line_init_mt instead.")
+void TCODFOV_line_init(int xFrom, int yFrom, int xTo, int yTo);
 
 /** advance one step. returns true if we reach destination */
-TCODLIB_API TCOD_DEPRECATED("This function is not reentrant.") bool TCOD_line_step(
+TCODFOV_PUBLIC TCODFOV_DEPRECATED("This function is not reentrant.") bool TCODFOV_line_step(
     int* __restrict xCur, int* __restrict yCur);
 
 /* atomic callback function. Stops when the callback returns false */
-TCODLIB_API bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener);
+TCODFOV_PUBLIC bool TCODFOV_line(int xFrom, int yFrom, int xTo, int yTo, TCODFOV_line_listener_t listener);
 /**
  *  \brief A struct used for computing a bresenham line.
  */
-typedef struct {
+typedef struct TCODFOV_bresenham_data_t {
   int stepx;
   int stepy;
   int e;
@@ -75,14 +76,15 @@ typedef struct {
   int origy;
   int destx;
   int desty;
-} TCOD_bresenham_data_t;
+} TCODFOV_bresenham_data_t;
 
-TCODLIB_API void TCOD_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCOD_bresenham_data_t* data);
-TCODLIB_API bool TCOD_line_step_mt(int* __restrict xCur, int* __restrict yCur, TCOD_bresenham_data_t* __restrict data);
+TCODFOV_PUBLIC void TCODFOV_line_init_mt(int xFrom, int yFrom, int xTo, int yTo, TCODFOV_bresenham_data_t* data);
+TCODFOV_PUBLIC bool TCODFOV_line_step_mt(
+    int* __restrict xCur, int* __restrict yCur, TCODFOV_bresenham_data_t* __restrict data);
 
-TCOD_DEPRECATED("Use TCOD_line instead.")
-TCODLIB_API bool TCOD_line_mt(
-    int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener, TCOD_bresenham_data_t* data);
+TCODFOV_DEPRECATED("Use TCODFOV_line instead.")
+TCODFOV_PUBLIC bool TCODFOV_line_mt(
+    int xFrom, int yFrom, int xTo, int yTo, TCODFOV_line_listener_t listener, TCODFOV_bresenham_data_t* data);
 
 #ifdef __cplusplus
 }  // extern "C"

@@ -110,14 +110,7 @@
     "editor.defaultFormatter": "xaver.clang-format",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "cmake.configureSettings": {
-        "LIBTCOD_SAMPLES": "ON",
-        "LIBTCOD_TESTS": "ON",
-        "LIBTCOD_THREADS": "OFF",
-        "LIBTCOD_SDL2": "find_package", // find_package | disable
-        "LIBTCOD_ZLIB": "find_package", // find_package | disable
-        "LIBTCOD_LODEPNG": "find_package", // find_package | disable
-        "LIBTCOD_UTF8PROC": "vcpkg", // vcpkg | disable
-        "LIBTCOD_STB": "find_package",
+        "LIBTCODFOV_TESTS": "ON",
     },
     "cmake.configureArgs": [
         "-Wdev",

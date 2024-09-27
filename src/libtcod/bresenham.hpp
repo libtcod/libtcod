@@ -41,13 +41,13 @@
 #include "bresenham.h"
 
 // clang-format off
-class TCODLIB_API TCODLineListener {
+class TCODFOV_PUBLIC TCODLineListener {
 public :
 	virtual bool putPoint(int x,int y) = 0;
 	virtual ~TCODLineListener() {}
 };
 
-class TCODLIB_API TCODLine {
+class TCODFOV_PUBLIC TCODLine {
 public :
 	/**
 	@PageName line
@@ -57,7 +57,7 @@ public :
 	@FuncTitle Initializing the line
 	@FuncDesc First, you have to initialize the toolkit with your starting and ending coordinates.
 	@Cpp static void TCODLine::init (int xFrom, int yFrom, int xTo, int yTo)
-	@C void TCOD_line_init (int xFrom, int yFrom, int xTo, int yTo)
+	@C void TCODFOV_line_init (int xFrom, int yFrom, int xTo, int yTo)
 	@Py line_init (xFrom, yFrom, xTo, yTo)
 	@C# static void TCODLine::init(int xFrom, int yFrom, int xTo, int yTo)
 	@Lua tcod.line.init(xFrom,yFrom, xTo,yTo)
@@ -71,7 +71,7 @@ public :
 	@FuncTitle Walking the line
 	@FuncDesc You can then step through each cell with this function. It returns true when you reach the line's ending point.
 	@Cpp static bool TCODLine::step (int * xCur, int * yCur)
-	@C bool TCOD_line_step (int * xCur, int * yCur)
+	@C bool TCODFOV_line_step (int * xCur, int * yCur)
 	@Py line_step () # returns x,y or None,None if finished
 	@C# static bool TCODLine::step(ref int xCur, ref int yCur)
 	@Lua tcod.line.step(x,y) -- returns lineEnd,x,y
@@ -85,10 +85,10 @@ public :
 		} while (!TCODLine::step(&x,&y));
 	@CEx
 		int x = 5, y = 8;
-		TCOD_line_init(x,y,13,4);
+		TCODFOV_line_init(x,y,13,4);
 		do {
 		    // update cell x,y
-		} while (!TCOD_line_step(&x,&y));
+		} while (!TCODFOV_line_step(&x,&y));
 	@PyEx
 		libtcod.line_init(5,8,13,4)
 		# update cell 5,8
@@ -112,13 +112,13 @@ public :
 	@FuncTitle Callback-based function
 	@FuncDesc The function returns false if the line has been interrupted by the callback (it returned false before the last point).
 	@Cpp
-		class TCODLIB_API TCODLineListener {
+		class TCODFOV_PUBLIC TCODLineListener {
 			virtual bool putPoint (int x, int y) = 0;
 		};
 		static bool TCODLine::line (int xFrom, int yFrom, int xTo, int yTo, TCODLineListener * listener)
 	@C
-		typedef bool (*TCOD_line_listener_t) (int x, int y);
-		bool TCOD_line(int xFrom, int yFrom, int xTo, int yTo, TCOD_line_listener_t listener)
+		typedef bool (*TCODFOV_line_listener_t) (int x, int y);
+		bool TCODFOV_line(int xFrom, int yFrom, int xTo, int yTo, TCODFOV_line_listener_t listener)
 	@Py
 		def line_listener(x,y) : # ...
 		line(xFrom, yFrom, xTo, yTo, listener)
@@ -140,7 +140,7 @@ TCODLine::line(5,8,13,4,&myListener);
     printf ("%d %d\n",x,y);
     return true;
 }
-TCOD_line_line(5,8,13,4,my_listener);
+TCODFOV_line_line(5,8,13,4,my_listener);
 	@PyEx def my_listener(x,y):
     print x,y
     return True

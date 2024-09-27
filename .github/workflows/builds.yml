@@ -93,15 +93,9 @@ jobs:
           cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -GNinja \
             -DVCPKG_TARGET_TRIPLET="${{ matrix.triplet }}" \
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
-            -DLIBTCOD_SDL2=find_package \
-            -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=vcpkg \
-            -DLIBTCOD_STB=vcpkg \
             -DCMAKE_INSTALL_PREFIX=local \
             -DBUILD_SHARED_LIBS=${{ matrix.shared == 'dynamic' && 'TRUE' || 'FALSE' }} \
-            -DLIBTCOD_SAMPLES=ON \
-            -DLIBTCOD_TESTS=ON \
+            -DLIBTCODFOV_TESTS=ON \
             -Wdev \
             ${{ matrix.cmake_extra_args }}
       - name: CMake build
@@ -152,13 +146,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage" \
             -DCMAKE_C_FLAGS="--coverage" \
-            -DLIBTCOD_SDL2=find_package \
-            -DLIBTCOD_ZLIB=find_package \
-            -DLIBTCOD_LODEPNG=find_package \
-            -DLIBTCOD_UTF8PROC=vcpkg \
-            -DLIBTCOD_STB=vcpkg \
-            -DLIBTCOD_SAMPLES=OFF \
-            -DLIBTCOD_TESTS=ON \
+            -DLIBTCODFOV_TESTS=ON \
             -Wdev
       - name: CMake build
         run: |

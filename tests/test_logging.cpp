@@ -15,7 +15,7 @@ struct CapturedLog {
 
 using LogStorage = std::vector<CapturedLog>;
 
-static void logger_callback(const TCOD_LogMessage* message, void* userdata) {
+static void logger_callback(const TCODFOV_LogMessage* message, void* userdata) {
   static_cast<LogStorage*>(userdata)->push_back(CapturedLog{
       message->message,
       message->level,
@@ -26,16 +26,16 @@ static void logger_callback(const TCOD_LogMessage* message, void* userdata) {
 
 TEST_CASE("Logging tests") {
   auto log = LogStorage{};
-  TCOD_set_log_callback(&logger_callback, static_cast<void*>(&log));
-  TCOD_set_log_level(TCOD_LOG_INFO);
-  TCOD_log_verbose_("DEBUG", TCOD_LOG_DEBUG, "source", 0);
-  TCOD_log_verbose_fmt_(TCOD_LOG_INFO, "source", 1, "%s", "INFO");
-  TCOD_log_verbose_fmt_(TCOD_LOG_WARNING, "source", 2, "%s", "WARNING");
-  TCOD_log_verbose_("ERROR", TCOD_LOG_ERROR, "source", 3);
+  TCODFOV_set_log_callback(&logger_callback, static_cast<void*>(&log));
+  TCODFOV_set_log_level(TCODFOV_log_INFO);
+  TCODFOV_log_verbose_("DEBUG", TCODFOV_log_DEBUG, "source", 0);
+  TCODFOV_log_verbose_fmt_(TCODFOV_log_INFO, "source", 1, "%s", "INFO");
+  TCODFOV_log_verbose_fmt_(TCODFOV_log_WARNING, "source", 2, "%s", "WARNING");
+  TCODFOV_log_verbose_("ERROR", TCODFOV_log_ERROR, "source", 3);
   REQUIRE(
       log == LogStorage{
-                 CapturedLog{"INFO", TCOD_LOG_INFO, "source", 1},
-                 CapturedLog{"WARNING", TCOD_LOG_WARNING, "source", 2},
-                 CapturedLog{"ERROR", TCOD_LOG_ERROR, "source", 3},
+                 CapturedLog{"INFO", TCODFOV_log_INFO, "source", 1},
+                 CapturedLog{"WARNING", TCODFOV_log_WARNING, "source", 2},
+                 CapturedLog{"ERROR", TCODFOV_log_ERROR, "source", 3},
              });
 }

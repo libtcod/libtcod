@@ -59,7 +59,7 @@ static int ray_length_sq(const RaycastTile* __restrict ray) {
     The diamond raycast state.
  */
 typedef struct DiamondFov {
-  TCOD_Map* __restrict const map;
+  TCODFOV_Map* __restrict const map;
   const int pov_x, pov_y;  // Fov origin point, the POV.
   RaycastTile* __restrict const raymap_grid;  // Grid of temporary rays.
   RaycastTile* perimeter_last;  // Pointer to the last tile on the perimeter.
@@ -72,7 +72,7 @@ typedef struct DiamondFov {
 static RaycastTile* get_ray(DiamondFov* __restrict fov, int relative_x, int relative_y) {
   const int x = fov->pov_x + relative_x;
   const int y = fov->pov_y + relative_y;
-  if (!TCOD_map_in_bounds(fov->map, x, y)) {
+  if (!TCODFOV_map_in_bounds(fov->map, x, y)) {
     return NULL;
   }
   RaycastTile* ray = &fov->raymap_grid[x + (y * fov->map->width)];
@@ -146,7 +146,7 @@ static void process_y_input(RaycastTile* __restrict new_ray, const RaycastTile* 
     Combine this rays source tiles to tell how obscured `ray` is.
  */
 static void merge_input(const DiamondFov* __restrict fov, RaycastTile* __restrict ray) {
-  const TCOD_Map* map = fov->map;
+  const TCODFOV_Map* map = fov->map;
   const int x = ray->x_relative + fov->pov_x;
   const int y = ray->y_relative + fov->pov_y;
   const int ray_index = x + y * map->width;
@@ -193,13 +193,13 @@ static void expand_perimeter_from(DiamondFov* __restrict fov, const RaycastTile*
     process_ray(fov, get_ray(fov, ray->x_relative, ray->y_relative - 1), ray);
   }
 }
-TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
-    TCOD_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
+TCODFOV_Error TCODFOV_map_compute_fov_diamond_raycasting(
+    TCODFOV_Map* __restrict map, int pov_x, int pov_y, int max_radius, bool light_walls) {
   const int radius_squared = max_radius * max_radius;
 
-  if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
-    TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
-    return TCOD_E_INVALID_ARGUMENT;
+  if (!TCODFOV_map_in_bounds(map, pov_x, pov_y)) {
+    TCODFOV_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);
+    return TCODFOV_E_INVALID_ARGUMENT;
   }
   map->cells[pov_x + pov_y * map->width].fov = true;
 
@@ -211,8 +211,8 @@ TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
   };
 
   if (!fov.raymap_grid) {
-    TCOD_set_errorv("Out of memory.");
-    return TCOD_E_OUT_OF_MEMORY;
+    TCODFOV_set_errorv("Out of memory.");
+    return TCODFOV_E_OUT_OF_MEMORY;
   }
 
   // Add the origin ray tile to start the process.
@@ -246,7 +246,7 @@ TCOD_Error TCOD_map_compute_fov_diamond_raycasting(
   }
   free(fov.raymap_grid);
   if (light_walls) {
-    TCOD_map_postprocess(map, pov_x, pov_y, max_radius);
+    TCODFOV_map_postprocess(map, pov_x, pov_y, max_radius);
   }
-  return TCOD_E_OK;
+  return TCODFOV_E_OK;
 }

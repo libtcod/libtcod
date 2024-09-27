@@ -54,4 +54,4 @@ class LibtcodConan(ConanFile):
         else:
             self.cpp_info.libs = ["tcod"]
         if not self.options.shared:
-            self.cpp_info.defines = ["LIBTCOD_STATIC"]
+            self.cpp_info.defines = ["TCODFOV_STATIC"]

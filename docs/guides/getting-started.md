@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 
   // Configure the context.
   auto params = TCOD_ContextParams{};
-  params.tcod_version = TCOD_COMPILEDVERSION;  // This is required.
+  params.tcod_version = TCODFOV_COMPILEDVERSION;  // This is required.
   params.console = console.get();  // Derive the window size from the console size.
   params.window_title = "Libtcod Project";
   params.sdl_window_flags = SDL_WINDOW_RESIZABLE;

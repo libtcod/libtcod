@@ -41,11 +41,11 @@ def parse_changelog(args: argparse.Namespace) -> tuple[str, str]:
 
 VERSION_SOURCE = """\
 {head}
-#define TCOD_MAJOR_VERSION {major}
-#define TCOD_MINOR_VERSION {minor}
-#define TCOD_PATCHLEVEL {patch}
+#define TCODFOV_MAJOR_VERSION {major}
+#define TCODFOV_MINOR_VERSION {minor}
+#define TCODFOV_PATCHLEVEL {patch}
 
-#define TCOD_STRVERSION "{tag}"
+#define TCODFOV_STRVERSION "{tag}"
 {tail}"""
 
 
@@ -53,7 +53,7 @@ def update_version_header(args: argparse.Namespace) -> None:
     """Update version.h to use the given tag."""
     version_header_path: Final = Path("src/libtcod/version.h")
     match = re.match(
-        pattern=r"(?P<head>.*?)\n#define TCOD_MAJOR_VERSION.*?TCOD_STRVERSION[^\n]*\n(?P<tail>.*)",
+        pattern=r"(?P<head>.*?)\n#define TCODFOV_MAJOR_VERSION.*?TCODFOV_STRVERSION[^\n]*\n(?P<tail>.*)",
         string=version_header_path.read_text(encoding="utf-8"),
         flags=re.DOTALL,
     )
@@ -141,10 +141,10 @@ def main() -> None:
         CHANGELOG_PATH.write_text(new_changelog, encoding="utf-8")
         edit = ["-e"] if args.edit else []
         subprocess.check_call(
-            ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S603, S607
+            ["git", "commit", "-avm", f"Prepare {args.tag} release.", *edit],  # noqa: S607
         )
         subprocess.check_call(
-            ["git", "tag", args.tag, "-a", "-m", f"{args.tag}\n\n{changes}", *edit],  # noqa: S603, S607
+            ["git", "tag", args.tag, "-a", "-m", f"{args.tag}\n\n{changes}", *edit],  # noqa: S607
         )
 
 

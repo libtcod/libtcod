@@ -42,18 +42,18 @@
 // Current error message.
 static char error_msg_[MAX_ERROR_LENGTH] = "";
 
-const char* TCOD_get_error(void) { return error_msg_; }
-TCOD_Error TCOD_set_error(const char* msg) {
+const char* TCODFOV_get_error(void) { return error_msg_; }
+TCODFOV_Error TCODFOV_set_error(const char* msg) {
   strncpy(error_msg_, msg, sizeof(error_msg_) - 1);
-  TCOD_log_error(msg);
-  return TCOD_E_ERROR;
+  TCODFOV_log_error(msg);
+  return TCODFOV_E_ERROR;
 }
-TCOD_Error TCOD_set_errorf(const char* fmt, ...) {
+TCODFOV_Error TCODFOV_set_errorf(const char* fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   vsnprintf(error_msg_, sizeof(error_msg_), fmt, ap);
   va_end(ap);
-  TCOD_log_error(error_msg_);
-  return TCOD_E_ERROR;
+  TCODFOV_log_error(error_msg_);
+  return TCODFOV_E_ERROR;
 }
-void TCOD_clear_error(void) { error_msg_[0] = '\0'; }
+void TCODFOV_clear_error(void) { error_msg_[0] = '\0'; }

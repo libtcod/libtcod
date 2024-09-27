@@ -30,14 +30,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCOD_VERSION_H
-#define LIBTCOD_VERSION_H
+#ifndef LIBTCODFOV_VERSION_H
+#define LIBTCODFOV_VERSION_H
 
-#define TCOD_MAJOR_VERSION 1
-#define TCOD_MINOR_VERSION 24
-#define TCOD_PATCHLEVEL 0
+#define TCODFOV_MAJOR_VERSION 1
+#define TCODFOV_MINOR_VERSION 24
+#define TCODFOV_PATCHLEVEL 0
 
-#define TCOD_STRVERSION "1.24.0"
+#define TCODFOV_STRVERSION "1.24.0"
 
 /**
     Converts version numbers into a numeric value.
@@ -47,7 +47,7 @@
     .. versionadded:: 1.16
     \endrst
  */
-#define TCOD_VERSIONNUM(major, minor, patch) ((major) * 0x010000 + (minor) * 0x0100 + (patch))
+#define TCODFOV_VERSIONNUM(major, minor, patch) ((major) * 0x010000 + (minor) * 0x0100 + (patch))
 
 /**
     The version of libtcod currently being compiled.
@@ -55,28 +55,14 @@
     .. versionadded:: 1.16
     \endrst
  */
-#define TCOD_COMPILEDVERSION TCOD_VERSIONNUM(TCOD_MAJOR_VERSION, TCOD_MINOR_VERSION, TCOD_PATCHLEVEL)
+#define TCODFOV_COMPILEDVERSION TCODFOV_VERSIONNUM(TCODFOV_MAJOR_VERSION, TCODFOV_MINOR_VERSION, TCODFOV_PATCHLEVEL)
 
 /**
     \rst
     .. deprecated:: 1.16
     \endrst
  */
-#define TCOD_HEXVERSION TCOD_COMPILEDVERSION
-
-/**
-    \rst
-    .. deprecated:: 1.16
-    \endrst
- */
-#define TCOD_TECHVERSION (TCOD_HEXVERSION * 0x100)
-
-/**
-    \rst
-    .. deprecated:: 1.16
-    \endrst
- */
-#define TCOD_STRVERSIONNAME "libtcod " TCOD_STRVERSION
+#define TCODFOV_STRVERSIONNAME "libtcod " TCODFOV_STRVERSION
 /***************************************************************************
     @brief Returns true if the compiled version of libtcod is at least (major, minor).
 
@@ -84,6 +70,6 @@
     .. versionadded:: 1.19
     \endrst
  */
-#define TCOD_VERSION_ATLEAST(major, minor) (TCOD_COMPILEDVERSION >= TCOD_VERSIONNUM(major, minor, 0))
+#define TCODFOV_VERSION_ATLEAST(major, minor) (TCODFOV_COMPILEDVERSION >= TCODFOV_VERSIONNUM(major, minor, 0))
 
-#endif /* LIBTCOD_VERSION_H */
+#endif /* LIBTCODFOV_VERSION_H */

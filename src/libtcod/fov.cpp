@@ -31,32 +31,32 @@
  */
 #include "fov.hpp"
 
-TCODMap::TCODMap(int width, int height) { data = TCOD_map_new(width, height); }
+TCODMap::TCODMap(int width, int height) { data = TCODFOV_map_new(width, height); }
 
-void TCODMap::clear(bool transparent, bool walkable) { TCOD_map_clear(data, transparent, walkable); }
+void TCODMap::clear(bool transparent, bool walkable) { TCODFOV_map_clear(data, transparent, walkable); }
 
 void TCODMap::setProperties(int x, int y, bool isTransparent, bool isWalkable) {
-  TCOD_map_set_properties(data, x, y, isTransparent, isWalkable);
+  TCODFOV_map_set_properties(data, x, y, isTransparent, isWalkable);
 }
 
-void TCODMap::copy(const TCODMap* source) { TCOD_map_copy(source->data, data); }
+void TCODMap::copy(const TCODMap* source) { TCODFOV_map_copy(source->data, data); }
 
-void TCODMap::computeFov(int x, int y, int maxRadius, bool light_walls, TCOD_fov_algorithm_t algo) {
-  TCOD_map_compute_fov(data, x, y, maxRadius, light_walls, algo);
+void TCODMap::computeFov(int x, int y, int maxRadius, bool light_walls, TCODFOV_fov_algorithm_t algo) {
+  TCODFOV_map_compute_fov(data, x, y, maxRadius, light_walls, algo);
 }
 
-bool TCODMap::isInFov(int x, int y) const { return TCOD_map_is_in_fov(data, x, y) != 0; }
+bool TCODMap::isInFov(int x, int y) const { return TCODFOV_map_is_in_fov(data, x, y) != 0; }
 
-void TCODMap::setInFov(int x, int y, bool fov) { TCOD_map_set_in_fov(data, x, y, fov); }
+void TCODMap::setInFov(int x, int y, bool fov) { TCODFOV_map_set_in_fov(data, x, y, fov); }
 
-bool TCODMap::isTransparent(int x, int y) const { return TCOD_map_is_transparent(data, x, y) != 0; }
+bool TCODMap::isTransparent(int x, int y) const { return TCODFOV_map_is_transparent(data, x, y) != 0; }
 
-bool TCODMap::isWalkable(int x, int y) const { return TCOD_map_is_walkable(data, x, y) != 0; }
+bool TCODMap::isWalkable(int x, int y) const { return TCODFOV_map_is_walkable(data, x, y) != 0; }
 
-int TCODMap::getWidth() const { return TCOD_map_get_width(data); }
+int TCODMap::getWidth() const { return TCODFOV_map_get_width(data); }
 
-int TCODMap::getHeight() const { return TCOD_map_get_height(data); }
+int TCODMap::getHeight() const { return TCODFOV_map_get_height(data); }
 
-int TCODMap::getNbCells() const { return TCOD_map_get_nb_cells(data); }
+int TCODMap::getNbCells() const { return TCODFOV_map_get_nb_cells(data); }
 
-TCODMap::~TCODMap() { TCOD_map_delete(data); }
+TCODMap::~TCODMap() { TCODFOV_map_delete(data); }

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCODFOV_ERROR_H_
-#define LIBTCODFOV_ERROR_H_
+#ifndef TCODFOV_ERROR_H_
+#define TCODFOV_ERROR_H_
 #include "config.h"
 #include "version.h"
 /**
@@ -130,4 +130,4 @@ TCODFOV_PUBLIC void TCODFOV_clear_error(void);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-#endif  // LIBTCODFOV_ERROR_H_
+#endif  // TCODFOV_ERROR_H_

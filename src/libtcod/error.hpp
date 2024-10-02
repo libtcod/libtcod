@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCODFOV_ERROR_HPP_
-#define LIBTCODFOV_ERROR_HPP_
+#ifndef TCODFOV_ERROR_HPP_
+#define TCODFOV_ERROR_HPP_
 
 #include <exception>
 #include <stdexcept>
@@ -70,4 +70,4 @@ inline TCODFOV_Error check_throw_error(TCODFOV_Error error) {
   return static_cast<TCODFOV_Error>(check_throw_error(static_cast<int>(error)));
 }
 }  // namespace tcod::fov
-#endif  // LIBTCODFOV_ERROR_HPP_
+#endif  // TCODFOV_ERROR_HPP_

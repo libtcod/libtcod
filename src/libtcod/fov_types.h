@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef TCOD_FOV_TYPES_H_
-#define TCOD_FOV_TYPES_H_
+#ifndef TCODFOV_FOV_TYPES_H_
+#define TCODFOV_FOV_TYPES_H_
 #include <stdbool.h>
 
 #include "config.h"
@@ -109,4 +109,4 @@ typedef enum TCODFOV_fov_algorithm_t {
   NB_FOV_ALGORITHMS
 } TCODFOV_fov_algorithm_t;
 #define FOV_PERMISSIVE(x) ((TCODFOV_fov_algorithm_t)(TCODFOV_PERMISSIVE_0 + (x)))
-#endif /* TCOD_FOV_TYPES_H_ */
+#endif  // TCODFOV_FOV_TYPES_H_

@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCODFOV_H_
-#define LIBTCODFOV_H_
+#ifndef TCODFOV_H_
+#define TCODFOV_H_
 
 #include "bresenham.h"
 #include "error.h"
@@ -46,4 +46,4 @@
 #include "fov.hpp"
 #endif  // __cplusplus
 
-#endif  // LIBTCODFOV_H_
+#endif  // TCODFOV_H_

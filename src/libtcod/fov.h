@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef TCOD_FOV_H_
-#define TCOD_FOV_H_
+#ifndef TCODFOV_FOV_H_
+#define TCODFOV_FOV_H_
 
 #include <stdbool.h>
 #ifdef __cplusplus
@@ -127,4 +127,4 @@ struct MapDeleter_ {
 typedef std::unique_ptr<struct TCODFOV_Map, MapDeleter_> MapPtr_;
 }  // namespace tcod
 #endif  // __cplusplus
-#endif  // TCOD_FOV_H_
+#endif  // TCODFOV_FOV_H_

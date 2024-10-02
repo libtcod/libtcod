@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef LIBTCODFOV_LOGGING_H_
-#define LIBTCODFOV_LOGGING_H_
+#ifndef TCODFOV_LOGGING_H_
+#define TCODFOV_LOGGING_H_
 
 #include "config.h"
 #include "error.h"
@@ -125,4 +125,4 @@ TCODFOV_PUBLIC void TCODFOV_log_verbose_fmt_(int level, const char* source, int 
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-#endif  // LIBTCODFOV_LOGGING_H_
+#endif  // TCODFOV_LOGGING_H_

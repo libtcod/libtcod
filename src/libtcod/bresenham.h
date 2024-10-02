@@ -30,8 +30,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 #pragma once
-#ifndef TCOD_BRESENHAM_H_
-#define TCOD_BRESENHAM_H_
+#ifndef TCODFOV_BRESENHAM_H_
+#define TCODFOV_BRESENHAM_H_
 
 #include <stdbool.h>
 
@@ -89,4 +89,4 @@ TCODFOV_PUBLIC bool TCODFOV_line_mt(
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
-#endif  // TCOD_BRESENHAM_H_
+#endif  // TCODFOV_BRESENHAM_H_

@@ -16,7 +16,7 @@ RE_VERSION = RE_MAJOR + RE_MINOR + RE_PATCH
 
 
 def main():
-    with io.open("../../src/libtcod/version.h", encoding="utf-8") as f:
+    with io.open("../../src/libtcod-fov/version.h", encoding="utf-8") as f:
         header = f.read()
     major, minor, patch = re.match(RE_VERSION, header, re.DOTALL).groups()
     if "--so" in sys.argv:

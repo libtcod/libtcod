@@ -1,4 +1,4 @@
-#include <libtcod/logging.h>
+#include <libtcod-fov/logging.h>
 
 #include <catch2/catch_all.hpp>
 #include <string>

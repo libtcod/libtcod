@@ -3,9 +3,8 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libtcod
-Description: A roguelike development library.
+Name: libtcod-fov
+Description: A collection of tile-based field-of-view algorithms.
 Version: @PACKAGE_VERSION@
-Requires.private: sdl2 >= 2.0.5, zlib
 Cflags: -I${includedir}
-Libs: -L${libdir} -ltcod
+Libs: -L${libdir} -ltcod-fov

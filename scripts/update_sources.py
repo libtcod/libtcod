@@ -27,7 +27,7 @@ def get_sources(
     *,
     sources: bool = False,
     includes: bool = False,
-    directory: str | PathLike[str] = "src/libtcod",
+    directory: str | PathLike[str] = "src/libtcod-fov",
     vendor_sources: tuple[Path, ...] = VENDOR_SOURCES,
 ) -> Iterable[tuple[Path, Sequence[Path]]]:
     """Iterate over sources and headers with sub-folders grouped together."""
@@ -68,14 +68,14 @@ def generate_am() -> str:
     out = f"{BANNER}\n"
     for group_path, files_str in get_sources(sources=False, includes=True):
         group_posix = PurePosixPath(group_path)
-        include_name = str(group_posix).replace("/", "_")
+        include_name = str(group_posix).replace("/", "_").replace("-", "_")
         files = [str(PurePosixPath("../..", f)) for f in files_str]
         out += f"\n{include_name}_includedir = $(includedir)/{group_posix}"
         out += f"\n{include_name}_include_HEADERS = \\"
         out += "\n\t" + " \\\n\t".join(files)
         out += "\n"
 
-    out += "\nlibtcod_la_SOURCES = \\"
+    out += "\nlibtcod_fov_la_SOURCES = \\"
     out += "\n\t" + " \\\n\t".join(
         str(PurePosixPath("../..", f)) for f in all_sources(vendor_sources=VENDOR_SOURCES_AUTOMAKE)
     )
@@ -95,7 +95,7 @@ def generate_cmake() -> str:
             continue
         out += "\ninstall(FILES\n    "
         out += "\n    ".join(str(PurePosixPath(f.relative_to("src"))) for f in files)
-        out += "\n    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/%s" % group_posix
+        out += f"\n    DESTINATION ${{CMAKE_INSTALL_INCLUDEDIR}}/{group_posix}"
         out += "\n    COMPONENT IncludeFiles"
         out += "\n)"
     for group_path, files in get_sources(sources=True, includes=True):

@@ -16,16 +16,16 @@ AM_CPPFLAGS = $(AM_CFLAGS)
 AM_LDFLAGS = $(SDL_LIBS) $(X11_LIBS) $(ZLIB_LIBS) $(SYSLIBS)
 
 
-lib_LTLIBRARIES = libtcod.la
+lib_LTLIBRARIES = libtcod-fov.la
 
-libtcod_root_includedir = $(includedir)
-libtcod_root_include_HEADERS = ../../src/libtcod.h ../../src/libtcod.hpp
+libtcod_fov_root_includedir = $(includedir)
+libtcod_fov_root_include_HEADERS = ../../src/libtcod-fov.h
 
 include $(srcdir)/sources.am
 
-libtcod_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
-libtcod_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION) -lpthread
-libtcod_la_LIBADD = $(PTHREAD_LIBS) -lpthread
+libtcod_fov_la_CFLAGS = $(AM_CFLAGS) $(PTHREAD_CFLAGS)
+libtcod_fov_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(SOVERSION) -lpthread
+libtcod_fov_la_LIBADD = $(PTHREAD_LIBS) -lpthread
 
 dist_noinst_DATA = \
 	../../CHANGELOG.md \
@@ -34,4 +34,4 @@ dist_noinst_DATA = \
 	../../README.md
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libtcod.pc
+pkgconfig_DATA = libtcod-fov.pc

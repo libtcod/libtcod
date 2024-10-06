@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <catch2/catch_all.hpp>
-#include <libtcod/bresenham.hpp>
+#include <libtcod-fov/bresenham.hpp>
 #include <vector>
 
 /**

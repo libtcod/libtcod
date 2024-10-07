@@ -135,7 +135,7 @@ void TCOD_console_print_frame(
     title = TCOD_console_vsprint(fmt, ap);
     va_end(ap);
     title[w - 3] = 0; /* truncate if needed */
-    xs = x + (w - (int)(strlen(title)) - 2) / 2;
+    xs = x + (w - (int)(strlen(title))-2) / 2;
     TCOD_color_t tmp;
     tmp = con->fore;
     con->fore = con->back;

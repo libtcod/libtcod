@@ -18,7 +18,6 @@ libtcod_fov_include_HEADERS = \
 libtcod_fov_la_SOURCES = \
 	../../src/libtcod-fov/bresenham_c.c \
 	../../src/libtcod-fov/error.c \
-	../../src/libtcod-fov/fov.cpp \
 	../../src/libtcod-fov/fov_c.c \
 	../../src/libtcod-fov/fov_circular_raycasting.c \
 	../../src/libtcod-fov/fov_diamond_raycasting.c \

@@ -61,7 +61,7 @@ class TCODFOV_PUBLIC TCODMap {
 		@C# TCODMap::TCODMap(int width, int height)
 		@Param width, height	The size of the map (in map cells).
 		*/
-		TCODMap(int width, int height);
+		TCODMap(int width, int height): data{TCODFOV_map_new(width, height)} {}
 
     TCODMap(const TCODMap&) = delete;
     TCODMap& operator=(const TCODMap&) = delete;
@@ -71,6 +71,7 @@ class TCODFOV_PUBLIC TCODMap {
       return *this;
     };
 
+		virtual ~TCODMap() { TCODFOV_map_delete(data); }
 		/**
 		@PageName fov_init
 		@PageFather fov
@@ -85,7 +86,9 @@ class TCODFOV_PUBLIC TCODMap {
 		@Param isTransparent	If true, this cell will let the light pass else it will block the light.
 		@Param isWalkable	If true, creatures can walk true this cell (it is not a wall).
 		*/
-		void setProperties(int x,int y, bool isTransparent, bool isWalkable);
+		void setProperties(int x,int y, bool isTransparent, bool isWalkable) {
+      TCODFOV_map_set_properties(data, x, y, isTransparent, isWalkable);
+    }
 
 		/**
 		@PageName fov_init
@@ -103,7 +106,9 @@ class TCODFOV_PUBLIC TCODMap {
 		@Param walkable	Whether the cells should be walkable.
 		@Param transparent	Whether the cells should be transparent.
 		*/
-		void clear(bool transparent=false, bool walkable=false);
+		void clear(bool transparent=false, bool walkable=false) {
+      TCODFOV_map_clear(data, transparent, walkable);
+    }
 
 		/**
 		@PageName fov_init
@@ -132,7 +137,9 @@ class TCODFOV_PUBLIC TCODMap {
 			libtcod.map_set_properties(map,10,10,True,True)
 			libtcod.map_copy(map,map2)
 		*/
-		void copy (const TCODMap *source);
+		void copy (const TCODMap *source)  {
+      TCODFOV_map_copy(source->data, data);
+    }
 
 		/**
 		@PageName fov_compute
@@ -182,7 +189,9 @@ class TCODFOV_PUBLIC TCODMap {
 			libtcod.map_set_properties(map,10,10,True,True)
 			libtcod.map_compute_fov(map,10,10,0,True,libtcod.FOV_PERMISSIVE(2))
 		*/
-		void computeFov(int playerX,int playerY, int maxRadius = 0,bool light_walls = true, TCODFOV_fov_algorithm_t algo = TCODFOV_BASIC);
+		void computeFov(int playerX, int playerY, int maxRadius = 0, bool light_walls = true, TCODFOV_fov_algorithm_t algo = TCODFOV_BASIC) {
+      TCODFOV_map_compute_fov(data, playerX, playerY, maxRadius, light_walls, algo);
+    }
 
 		/**
 		@PageName fov_get
@@ -214,7 +223,9 @@ class TCODFOV_PUBLIC TCODMap {
 			libtcod.map_compute_fov(map,10,10)
 			visible = libtcod.map_is_in_fov(map,10,10)
 		*/
-   		bool isInFov(int x,int y) const;
+    bool isInFov(int x,int y) const {
+      return TCODFOV_map_is_in_fov(data, x, y) != 0;
+    }
    		/**
    		@PageName fov_get
    		@FuncTitle Checking a cell transparency/walkability
@@ -236,8 +247,8 @@ class TCODFOV_PUBLIC TCODMap {
 			0 <= x < map width.
 			0 <= y < map height.
 		*/
-		bool isTransparent(int x, int y) const;
-		bool isWalkable(int x, int y) const;
+		bool isTransparent(int x, int y) const { return TCODFOV_map_is_transparent(data, x, y) != 0; }
+		bool isWalkable(int x, int y) const  { return TCODFOV_map_is_walkable(data, x, y) != 0; }
 
    		/**
    		@PageName fov_get
@@ -257,14 +268,13 @@ class TCODFOV_PUBLIC TCODMap {
 			int TCODMap::getHeight()
 		@Param map	In the C version, the map handler returned by the TCODFOV_map_new function.
 		*/
-   		int getWidth() const;
-		int getHeight() const;
+    int getWidth() const { return TCODFOV_map_get_width(data); }
+		int getHeight() const { return TCODFOV_map_get_height(data); }
 
-		virtual ~TCODMap();
-		void setInFov(int x,int y, bool fov);
-		int getNbCells() const;
+		void setInFov(int x,int y, bool fov)  { TCODFOV_map_set_in_fov(data, x, y, fov); }
+		int getNbCells() const { return TCODFOV_map_get_nb_cells(data); }
 //	protected :
-		TCODFOV_Map* data;
+		TCODFOV_Map* data{};
 };
 
 #endif // TCODFOV_FOV_HPP_

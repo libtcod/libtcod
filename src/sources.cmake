@@ -7,7 +7,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     libtcod-fov/error.c
     libtcod-fov/error.h
     libtcod-fov/error.hpp
-    libtcod-fov/fov.cpp
     libtcod-fov/fov.h
     libtcod-fov/fov.hpp
     libtcod-fov/fov_c.c
@@ -53,7 +52,6 @@ source_group(libtcod-fov FILES
     libtcod-fov/error.c
     libtcod-fov/error.h
     libtcod-fov/error.hpp
-    libtcod-fov/fov.cpp
     libtcod-fov/fov.h
     libtcod-fov/fov.hpp
     libtcod-fov/fov_c.c

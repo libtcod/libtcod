@@ -100,6 +100,8 @@
         "coroutine": "cpp"
     },
     "files.trimFinalNewlines": true,
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
     "C_Cpp.default.cppStandard": "c++17",
     "C_Cpp.default.cStandard": "c99",
     "C_Cpp.vcpkg.enabled": true,

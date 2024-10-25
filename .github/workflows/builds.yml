@@ -23,15 +23,15 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: static
             config: Debug
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Release
@@ -55,7 +55,7 @@ jobs:
             config: Release
 
           # Test libtcod without SDL.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
@@ -67,28 +67,28 @@ jobs:
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
           # Test libtcod without zlib.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_ZLIB=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
           # Test libtcod without PNG.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_lodepng-c=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
           # Test libtcod without utf8proc.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
             cmake_extra_args: "-DLIBTCOD_SAMPLES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_utf8proc=1 -DCMAKE_DISABLE_FIND_PACKAGE_Threads=1"
 
           # Test libtcod without everything.
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
             shared: dynamic
             config: Debug
@@ -164,7 +164,7 @@ jobs:
       fail-fast: true
       matrix:
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             triplet: x64-linux
     steps:
       - uses: actions/checkout@v4
@@ -221,7 +221,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-22.04, macos-13]
+        os: [ubuntu-24.04, macos-14]
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3
@@ -236,7 +236,10 @@ jobs:
       - name: Install Brew dependencies
         if: runner.os == 'macOS'
         run: |
-          brew install automake sdl2
+          brew install automake sdl2 libtool
+      - name: libtoolize
+        run: ${{ runner.os == 'macOS' && 'glibtoolize' || 'libtoolize' }} --install
+        working-directory: buildsys/autotools
       - name: Configure package
         working-directory: buildsys/autotools
         run: |

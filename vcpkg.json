@@ -33,15 +33,7 @@
     "sdl": {
       "description": "Support for SDL2 windows and events.",
       "dependencies": [
-        "sdl2",
-        {
-          "name": "sdl2",
-          "default-features": false,
-          "features": [
-            "x11"
-          ],
-          "platform": "linux"
-        }
+        "sdl2"
       ]
     },
     "tests": {

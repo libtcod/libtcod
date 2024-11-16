@@ -243,7 +243,7 @@ double TCOD_random_get_gaussian_double_range(TCOD_Random* rng, double min, doubl
   const double mean = (min + max) / 2;
   const double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
   const double ret = TCOD_random_get_gaussian_double(rng, mean, std_deviation);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 float TCOD_random_get_gaussian_float_range(TCOD_Random* rng, float min, float max) {
@@ -255,7 +255,7 @@ int TCOD_random_get_gaussian_int_range(TCOD_Random* rng, int min, int max) {
   SORT_MINMAX(min, max, int);
   const double num = TCOD_random_get_gaussian_double_range(rng, (double)min, (double)max);
   const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 /* Box-Muller, ranges with a custom mean */
@@ -264,9 +264,9 @@ double TCOD_random_get_gaussian_double_range_custom(TCOD_Random* rng, double min
   SORT_MINMAX(min, max, double);
   const double d1 = max - mean;
   const double d2 = mean - min;
-  const double std_deviation = MAX(d1, d2) / 3.0;
+  const double std_deviation = TCOD_MAX(d1, d2) / 3.0;
   const double ret = TCOD_random_get_gaussian_double(rng, mean, std_deviation);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 float TCOD_random_get_gaussian_float_range_custom(TCOD_Random* rng, float min, float max, float mean) {
@@ -278,7 +278,7 @@ int TCOD_random_get_gaussian_int_range_custom(TCOD_Random* rng, int min, int max
   SORT_MINMAX(min, max, int);
   const double num = TCOD_random_get_gaussian_double_range_custom(rng, (double)min, (double)max, (double)mean);
   const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 /* Box-Muller, inverted distribution */
@@ -305,18 +305,18 @@ double TCOD_random_get_gaussian_double_range_inv(TCOD_Random* rng, double min, d
   const double mean = (min + max) / 2.0;
   const double std_deviation = (max - min) / 6.0; /* 6.0 is used because of the three-sigma rule */
   const double ret = TCOD_random_get_gaussian_double_inv(rng, mean, std_deviation);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 float TCOD_random_get_gaussian_float_range_inv(TCOD_Random* rng, float min, float max) {
   const float ret = (float)TCOD_random_get_gaussian_double_range_inv(rng, (double)min, (double)max);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 int TCOD_random_get_gaussian_int_range_inv(TCOD_Random* rng, int min, int max) {
   const double num = TCOD_random_get_gaussian_double_range_inv(rng, (double)min, (double)max);
   const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 /* Box-Muller, ranges with a custom mean, inverted distribution */
@@ -325,21 +325,21 @@ double TCOD_random_get_gaussian_double_range_custom_inv(TCOD_Random* rng, double
   SORT_MINMAX(min, max, double);
   const double d1 = max - mean;
   const double d2 = mean - min;
-  const double std_deviation = MAX(d1, d2) / 3.0;
+  const double std_deviation = TCOD_MAX(d1, d2) / 3.0;
   const double ret = TCOD_random_get_gaussian_double_inv(rng, mean, std_deviation);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 float TCOD_random_get_gaussian_float_range_custom_inv(TCOD_Random* rng, float min, float max, float mean) {
   const float ret =
       (float)TCOD_random_get_gaussian_double_range_custom_inv(rng, (double)min, (double)max, (double)mean);
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 int TCOD_random_get_gaussian_int_range_custom_inv(TCOD_Random* rng, int min, int max, int mean) {
   const double num = TCOD_random_get_gaussian_double_range_custom_inv(rng, (double)min, (double)max, (double)mean);
   const int ret = (num >= 0.0 ? (int)(num + 0.5) : (int)(num - 0.5));
-  return CLAMP(min, max, ret);
+  return TCOD_CLAMP(min, max, ret);
 }
 
 void TCOD_random_set_distribution(TCOD_Random* rng, TCOD_distribution_t distribution) {

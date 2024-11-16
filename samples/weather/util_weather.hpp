@@ -46,7 +46,7 @@ class Weather {
   float getIndicator() { return indicator_; }
   // to alter the weather
   float getIndicatorDelta() { return indicatorDelta_; }
-  void setIndicatorDelta(float v) { indicatorDelta_ = CLAMP(-1.0f, 1.0f, v); }
+  void setIndicatorDelta(float v) { indicatorDelta_ = TCOD_CLAMP(-1.0f, 1.0f, v); }
 
  protected:
   typedef struct {

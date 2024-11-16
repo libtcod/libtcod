@@ -35,10 +35,10 @@
 /******************************************
  utility macros
  ******************************************/
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define ABS(a) ((a) < 0 ? -(a) : (a))
-#define CLAMP(a, b, x) ((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
-#define LERP(a, b, x) ((a) + (x) * ((b) - (a)))
+#define TCOD_MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define TCOD_MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define TCOD_ABS(a) ((a) < 0 ? -(a) : (a))
+#define TCOD_CLAMP(a, b, x) ((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
+#define TCOD_LERP(a, b, x) ((a) + (x) * ((b) - (a)))
 
 #endif

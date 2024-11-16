@@ -310,7 +310,7 @@ void render(TCOD_Console& console) {
   for (int x = 0; x <= N; ++x) {
     for (int y = 0; y <= N; ++y) {
       float coef = dens[IX(x, y)] / 128.0f;
-      coef = CLAMP(0.0f, 1.0f, coef);
+      coef = TCOD_CLAMP(0.0f, 1.0f, coef);
       img.putPixel(x, y, TCODColor::lerp(deepBlue, highBlue, coef));
     }
   }

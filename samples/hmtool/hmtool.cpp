@@ -107,7 +107,7 @@ void render(TCOD_Console& console, float delta_time) {
       uint8_t val = (uint8_t)(z * 255);
       if (slope) {
         // render the slope map
-        z = CLAMP(0.0f, 1.0f, hm->getSlope(x, y) * 10.0f);
+        z = TCOD_CLAMP(0.0f, 1.0f, hm->getSlope(x, y) * 10.0f);
         val = (uint8_t)(z * 255);
         console.at({x, y}).bg = {val, val, val, 255};
       } else if (greyscale) {
@@ -193,7 +193,7 @@ void addHill(int nbHill, float baseRadius, float radiusVar, float height) {
     const float hillMaxRadius = baseRadius * (1.0f + radiusVar);
     const float radius = rnd->getFloat(hillMinRadius, hillMaxRadius);
     const float theta = rnd->getFloat(0.0f, 6.283185f);  // between 0 and 2Pi
-    const float dist = rnd->getFloat(0.0f, (float)MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);
+    const float dist = rnd->getFloat(0.0f, (float)TCOD_MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);
     const int xh = (int)(HM_WIDTH / 2 + cos(theta) * dist);
     const int yh = (int)(HM_HEIGHT / 2 + sin(theta) * dist);
     hm->addHill((float)xh, (float)yh, radius, height);
@@ -275,7 +275,7 @@ void exportBmpCbk() {
       uint8_t val = (uint8_t)(z * 255);
       if (slope) {
         // render the slope map
-        z = CLAMP(0.0f, 1.0f, hm->getSlope(x, y) * 10.0f);
+        z = TCOD_CLAMP(0.0f, 1.0f, hm->getSlope(x, y) * 10.0f);
         val = (uint8_t)(z * 255);
         TCODColor c(val, val, val);
         img.putPixel(x, y, c);

@@ -81,7 +81,7 @@ void Weather::update(float elapsed) {
   localElapsed += elapsed;
   float perlin_x = changeFactor_ * localElapsed / 100.0f;
   indicator_ = (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX)) * 0.5f + indicatorDelta_;
-  indicator_ = CLAMP(0.0f, 1.0f, indicator_);
+  indicator_ = TCOD_CLAMP(0.0f, 1.0f, indicator_);
   float wind_speed = 1.0f - indicator_;
   perlin_x *= 2.0f;
   float windDir = (2.0f * 3.1415926f * 0.5f) * (1.0f + noise1d.get(&perlin_x, TCOD_NOISE_SIMPLEX));
@@ -169,7 +169,7 @@ float Weather::getCloud(int x, int y) {
     cdy = dy_ + 1.0f;
   float val = map_->getInterpolatedValue(x + cdx, y + cdy);  // between 0 and 1
   val += 2 * indicator_ - 0.5f;
-  val = CLAMP(0.2f, 1.0f, val);
+  val = TCOD_CLAMP(0.2f, 1.0f, val);
   return val;
 }
 
@@ -192,7 +192,7 @@ float Weather::getLightning(int x, int y) {
     }
   }
   float ret = cloud * res;
-  return CLAMP(0.0f, 1.0f, ret);
+  return TCOD_CLAMP(0.0f, 1.0f, ret);
 }
 
 bool Weather::hasRainDrop() {

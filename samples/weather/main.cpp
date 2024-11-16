@@ -91,9 +91,9 @@ void render() {
         g += lg;
         b += lb;
       }
-      r = MIN(255, r);
-      g = MIN(255, g);
-      b = MIN(255, b);
+      r = TCOD_MIN(255, r);
+      g = TCOD_MIN(255, g);
+      b = TCOD_MIN(255, b);
       r = groundCol.r * r / 200;
       g = groundCol.g * g / 200;
       b = groundCol.b * b / 200;
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
       float f[2] = {x * 3.0f / CON_W, y * 3.0f / CON_H};
       float h = noise2d.getFbm(f, 6.0f, TCOD_NOISE_SIMPLEX);
       int ih = (int)(h * 256);
-      ih = CLAMP(0, 255, ih);
+      ih = TCOD_CLAMP(0, 255, ih);
       float coef = 1.0f;
       // darken the lower part (text background)
       if (y > CON_H * 2 - 27) coef = 0.5f;

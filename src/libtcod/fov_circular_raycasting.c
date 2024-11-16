@@ -86,10 +86,10 @@ TCOD_Error TCOD_map_compute_fov_circular_raycasting(
   int x_max = map->width;
   int y_max = map->height;
   if (max_radius > 0) {
-    x_min = MAX(x_min, pov_x - max_radius);
-    y_min = MAX(y_min, pov_y - max_radius);
-    x_max = MIN(x_max, pov_x + max_radius + 1);
-    y_max = MIN(y_max, pov_y + max_radius + 1);
+    x_min = TCOD_MAX(x_min, pov_x - max_radius);
+    y_min = TCOD_MAX(y_min, pov_y - max_radius);
+    x_max = TCOD_MIN(x_max, pov_x + max_radius + 1);
+    y_max = TCOD_MIN(y_max, pov_y + max_radius + 1);
   }
   if (!TCOD_map_in_bounds(map, pov_x, pov_y)) {
     TCOD_set_errorvf("Point of view {%i, %i} is out of bounds.", pov_x, pov_y);

@@ -544,7 +544,7 @@ bool AddHillOperation::addInternal() {
       "\t\tconst float hillMaxRadius = baseRadius * (1.0f + radiusVar);\n"
       "\t\tconst float radius = TCOD_random_get_float(rnd, hillMinRadius, hillMaxRadius);\n"
       "\t\tconst float theta = TCOD_random_get_float(rnd, 0.0f, 6.283185f); // between 0 and 2Pi\n"
-      "\t\tconst float dist = TCOD_random_get_float(rnd, 0.0f, (float)MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);\n"
+      "\t\tconst float dist = TCOD_random_get_float(rnd, 0.0f, (float)TCOD_MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);\n"
       "\t\tconst int xh = (int) (HM_WIDTH/2 + cos(theta) * dist);\n"
       "\t\tconst int yh = (int) (HM_HEIGHT/2 + sin(theta) * dist);\n"
       "\t\tTCOD_heightmap_add_hill(hm, (float)xh, (float)yh, radius, height);\n"
@@ -559,7 +559,7 @@ bool AddHillOperation::addInternal() {
       "\t\tconst float hillMaxRadius = baseRadius * (1.0f + radiusVar);\n"
       "\t\tconst float radius = rnd->getFloat(hillMinRadius, hillMaxRadius);\n"
       "\t\tconst float theta = rnd->getFloat(0.0f, 6.283185f);  // between 0 and 2Pi\n"
-      "\t\tconst float dist = rnd->getFloat(0.0f, (float)MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);\n"
+      "\t\tconst float dist = rnd->getFloat(0.0f, (float)TCOD_MIN(HM_WIDTH, HM_HEIGHT) / 2 - radius);\n"
       "\t\tconst int xh = (int)(HM_WIDTH / 2 + cos(theta) * dist);\n"
       "\t\tconst int yh = (int)(HM_HEIGHT / 2 + sin(theta) * dist);\n"
       "\t\thm->addHill((float)xh, (float)yh, radius, height);\n"
@@ -846,8 +846,8 @@ void SmoothOperation::createParamUi() {
       0,
       0,
       8,
-      MIN(0.0f, minLevel),
-      MAX(1.0f, maxLevel),
+      TCOD_MIN(0.0f, minLevel),
+      TCOD_MAX(1.0f, maxLevel),
       "minLevel",
       "Land level above which the smooth operation is applied");
   slider->setCallback([&](float v) { smoothMinValueCbk(v, this); });
@@ -858,8 +858,8 @@ void SmoothOperation::createParamUi() {
       0,
       0,
       8,
-      MIN(0.0f, minLevel),
-      MAX(1.0f, maxLevel),
+      TCOD_MIN(0.0f, minLevel),
+      TCOD_MAX(1.0f, maxLevel),
       "maxLevel",
       "Land level below which the smooth operation is applied");
   slider->setCallback([&](float v) { smoothMaxValueCbk(v, this); });
@@ -1055,10 +1055,10 @@ void NoiseLerpOperation::createParamUi() {
 // Voronoi
 VoronoiOperation::VoronoiOperation(int nbPoints, int nbCoef, float* coef) : nbPoints(nbPoints), nbCoef(nbCoef) {
   operation_type = VORONOI;
-  for (int i = 0; i < MIN(MAX_VORONOI_COEF, nbCoef); i++) {
+  for (int i = 0; i < TCOD_MIN(MAX_VORONOI_COEF, nbCoef); i++) {
     this->coef[i] = coef[i];
   }
-  for (int i = MIN(MAX_VORONOI_COEF, nbCoef); i < MAX_VORONOI_COEF; i++) {
+  for (int i = TCOD_MIN(MAX_VORONOI_COEF, nbCoef); i < MAX_VORONOI_COEF; i++) {
     this->coef[i] = 0.0f;
   }
   for (int i = 0; i < MAX_VORONOI_COEF; i++) {

@@ -59,8 +59,8 @@ void update(float elapsed) {
 TCODColor getMapShadedColor(float worldX, float worldY, bool clouds) {
   // sun color
   static constexpr TCODColor sunCol(255, 255, 200);
-  const float wx = CLAMP(0.0f, worldGen.getWidth() - 1, worldX);
-  const float wy = CLAMP(0.0f, worldGen.getHeight() - 1, worldY);
+  const float wx = TCOD_CLAMP(0.0f, worldGen.getWidth() - 1, worldX);
+  const float wy = TCOD_CLAMP(0.0f, worldGen.getHeight() - 1, worldY);
   // apply cloud shadow
   const float cloudAmount = clouds ? worldGen.getCloudThickness(wx, wy) : 0.0f;
   TCODColor col = worldGen.getInterpolatedColor(worldX, worldY);
@@ -71,9 +71,9 @@ TCODColor getMapShadedColor(float worldX, float worldY, bool clouds) {
   const int cg = (int)(intensity * (int)(col.g) * sunCol.g / 255);
   const int cb = (int)(intensity * (int)(col.b) * sunCol.b / 255);
   return {
-      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cr)), col.r / 2),
-      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cg)), col.g / 2),
-      std::max<uint8_t>(static_cast<uint8_t>(CLAMP(0, 255, cb)), col.b / 2),
+      std::max<uint8_t>(static_cast<uint8_t>(TCOD_CLAMP(0, 255, cr)), col.r / 2),
+      std::max<uint8_t>(static_cast<uint8_t>(TCOD_CLAMP(0, 255, cg)), col.g / 2),
+      std::max<uint8_t>(static_cast<uint8_t>(TCOD_CLAMP(0, 255, cb)), col.b / 2),
   };
 }
 

@@ -677,8 +677,8 @@ class TCODLIB_API TCODConsole {
 		TCOD_BKGND_NONE : the cell's background color is not modified.
 		TCOD_BKGND_SET : the cell's background color is replaced by the console's default background color : newbk = curbk.
 		TCOD_BKGND_MULTIPLY : the cell's background color is multiplied by the console's default background color : newbk = oldbk * curbk
-		TCOD_BKGND_LIGHTEN : newbk = MAX(oldbk,curbk)
-		TCOD_BKGND_DARKEN : newbk = MIN(oldbk,curbk)
+		TCOD_BKGND_LIGHTEN : newbk = TCOD_MAX(oldbk,curbk)
+		TCOD_BKGND_DARKEN : newbk = TCOD_MIN(oldbk,curbk)
 		TCOD_BKGND_SCREEN : newbk = white - (white - oldbk) * (white - curbk) // inverse of multiply : (1-newbk) = (1-oldbk)*(1-curbk)
 		TCOD_BKGND_COLOR_DODGE : newbk = curbk / (white - oldbk)
 		TCOD_BKGND_COLOR_BURN : newbk = white - (white - oldbk) / curbk

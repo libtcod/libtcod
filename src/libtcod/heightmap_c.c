@@ -113,10 +113,10 @@ void TCOD_heightmap_get_minmax(const TCOD_heightmap_t* hm, float* min, float* ma
   for (int i = 0; i != hm->h * hm->w; i++) {
     const float value = hm->values[i];
     if (min) {
-      *min = MIN(*min, value);
+      *min = TCOD_MIN(*min, value);
     }
     if (max) {
-      *max = MAX(*max, value);
+      *max = TCOD_MAX(*max, value);
     }
   }
 }
@@ -147,10 +147,10 @@ void TCOD_heightmap_add_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   }
   const float h_radius2 = h_radius * h_radius;
   const float coef = h_height / h_radius2;
-  const int minx = MAX((int)(hx - h_radius), 0);
-  const int miny = MAX((int)(hy - h_radius), 0);
-  const int maxx = (int)MIN(ceilf(hx + h_radius), hm->w);
-  const int maxy = (int)MIN(ceilf(hy + h_radius), hm->h);
+  const int minx = TCOD_MAX((int)(hx - h_radius), 0);
+  const int miny = TCOD_MAX((int)(hy - h_radius), 0);
+  const int maxx = (int)TCOD_MIN(ceilf(hx + h_radius), hm->w);
+  const int maxy = (int)TCOD_MIN(ceilf(hy + h_radius), hm->h);
   for (int y = miny; y < maxy; y++) {
     const float y_dist = (y - hy) * (y - hy);
     for (int x = minx; x < maxx; x++) {
@@ -169,10 +169,10 @@ void TCOD_heightmap_dig_hill(TCOD_heightmap_t* hm, float hx, float hy, float h_r
   }
   const float h_radius2 = h_radius * h_radius;
   const float coef = h_height / h_radius2;
-  const int minx = MAX((int)(hx - h_radius), 0);
-  const int miny = MAX((int)(hy - h_radius), 0);
-  const int maxx = (int)MIN(ceilf(hx + h_radius), hm->w);
-  const int maxy = (int)MIN(ceilf(hy + h_radius), hm->h);
+  const int minx = TCOD_MAX((int)(hx - h_radius), 0);
+  const int miny = TCOD_MAX((int)(hy - h_radius), 0);
+  const int maxx = (int)TCOD_MIN(ceilf(hx + h_radius), hm->w);
+  const int maxy = (int)TCOD_MIN(ceilf(hy + h_radius), hm->h);
   for (int y = miny; y < maxy; y++) {
     for (int x = minx; x < maxx; x++) {
       const float x_dist = (x - hx) * (x - hx);
@@ -247,8 +247,8 @@ float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x,
   if (!hm) {
     return 0.0f;
   }
-  x = CLAMP(0.0f, hm->w - 1, x);
-  y = CLAMP(0.0f, hm->h - 1, y);
+  x = TCOD_CLAMP(0.0f, hm->w - 1, x);
+  y = TCOD_CLAMP(0.0f, hm->h - 1, y);
   float fix;
   float fiy;
   float fx = modff(x, &fix);
@@ -268,9 +268,9 @@ float TCOD_heightmap_get_interpolated_value(const TCOD_heightmap_t* hm, float x,
   const float c2 = GET_VALUE(hm, ix + 1, iy);
   const float c3 = GET_VALUE(hm, ix, iy + 1);
   const float c4 = GET_VALUE(hm, ix + 1, iy + 1);
-  const float top = LERP(c1, c2, fx);
-  const float bottom = LERP(c3, c4, fx);
-  return LERP(top, bottom, fy);
+  const float top = TCOD_LERP(c1, c2, fx);
+  const float bottom = TCOD_LERP(c3, c4, fx);
+  return TCOD_LERP(top, bottom, fy);
 }
 
 void TCOD_heightmap_get_normal(const TCOD_heightmap_t* hm, float x, float y, float n[3], float waterLevel) {
@@ -383,7 +383,7 @@ void TCOD_heightmap_clamp(TCOD_heightmap_t* hm, float min, float max) {
     return;
   }
   for (int i = 0; i < hm->w * hm->h; ++i) {
-    hm->values[i] = CLAMP(min, max, hm->values[i]);
+    hm->values[i] = TCOD_CLAMP(min, max, hm->values[i]);
   }
 }
 
@@ -393,7 +393,7 @@ void TCOD_heightmap_lerp_hm(
     return;
   }
   for (int i = 0; i < hm1->w * hm1->h; i++) {
-    hm_out->values[i] = LERP(hm1->values[i], hm2->values[i], coef);
+    hm_out->values[i] = TCOD_LERP(hm1->values[i], hm2->values[i], coef);
   }
 }
 
@@ -428,8 +428,8 @@ float TCOD_heightmap_get_slope(const TCOD_heightmap_t* hm, int x, int y) {
     const int ny = y + diy[i];
     if (in_bounds(hm, nx, ny)) {
       const float n_slope = GET_VALUE(hm, nx, ny) - v;
-      min_dy = MIN(min_dy, n_slope);
-      max_dy = MAX(max_dy, n_slope);
+      min_dy = TCOD_MIN(min_dy, n_slope);
+      max_dy = TCOD_MAX(max_dy, n_slope);
     }
   }
   return (float)atan2(max_dy + min_dy, 1.0f);
@@ -554,7 +554,7 @@ void TCOD_heightmap_add_voronoi(TCOD_heightmap_t* hm, int nbPoints, int nbCoef, 
   } point_t;
   if (nbPoints <= 0) return;
   point_t* pt = malloc(sizeof(point_t) * nbPoints);
-  nbCoef = MIN(nbCoef, nbPoints);
+  nbCoef = TCOD_MIN(nbCoef, nbPoints);
   for (int i = 0; i < nbPoints; i++) {
     pt[i].x = TCOD_random_get_int(rnd, 0, hm->w - 1);
     pt[i].y = TCOD_random_get_int(rnd, 0, hm->h - 1);
@@ -595,7 +595,7 @@ void TCOD_heightmap_mid_point_displacement(TCOD_heightmap_t* hm, TCOD_Random* rn
   }
   int step = 1;
   float offset = 1.0f;
-  int initsz = MIN(hm->w, hm->h) - 1;
+  int initsz = TCOD_MIN(hm->w, hm->h) - 1;
   int sz = initsz;
   hm->values[0] = TCOD_random_get_float(rnd, 0.0f, 1.0f);
   hm->values[sz - 1] = TCOD_random_get_float(rnd, 0.0f, 1.0f);

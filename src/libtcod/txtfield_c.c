@@ -82,9 +82,9 @@ TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars) {
   data->sel_end = -1;
   /*
   if (! data->multiline ) {
-          data->max = MIN(w - data->textx,data->max);
+          data->max = TCOD_MIN(w - data->textx,data->max);
   } else {
-          data->max = MIN(w*(h-data->texty) - data->textx,data->max);
+          data->max = TCOD_MIN(w*(h-data->texty) - data->textx,data->max);
   }
   */
   if (max_chars && max_chars > 0)
@@ -92,7 +92,7 @@ TCOD_text_t TCOD_text_init(int x, int y, int w, int h, int max_chars) {
   else
     data->max = data->w * data->h;
   data->input_continue = true;
-  data->len = MIN(64, data->max);
+  data->len = TCOD_MIN(64, data->max);
   data->text = (char*)calloc(data->len, sizeof(char));
   data->back.r = data->back.g = data->back.b = 0;
   data->fore.r = data->fore.g = data->fore.b = 255;
@@ -119,9 +119,9 @@ TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
   data->sel_end = -1;
   /*
   if (! data->multiline ) {
-          data->max = MIN(w - data->textx,data->max);
+          data->max = TCOD_MIN(w - data->textx,data->max);
   } else {
-          data->max = MIN(w*(h-data->texty) - data->textx,data->max);
+          data->max = TCOD_MIN(w*(h-data->texty) - data->textx,data->max);
   }
   */
   if (max_chars && max_chars > 0)
@@ -129,7 +129,7 @@ TCOD_text_t TCOD_text_init2(int w, int h, int max_chars) {
   else
     data->max = data->w * data->h;
   data->input_continue = true;
-  data->len = MIN(64, data->max);
+  data->len = TCOD_MIN(64, data->max);
   data->text = (char*)calloc(data->len, sizeof(char));
   data->back.r = data->back.g = data->back.b = 0;
   data->fore.r = data->fore.g = data->fore.b = 255;
@@ -282,8 +282,8 @@ static void set_cursor_pos(text_t* data, int cx, int cy, bool clamp) {
     char* ptr = data->text;
     int new_pos = 0;
     if (clamp) {
-      cy = MAX(data->texty, cy);
-      if (cy == data->texty) cx = MAX(data->textx, cx);
+      cy = TCOD_MAX(data->texty, cy);
+      if (cy == data->texty) cx = TCOD_MAX(data->textx, cx);
     }
     /* find the right line */
     while (*ptr && cury < cy && cury < data->h) {
@@ -307,7 +307,7 @@ static void set_cursor_pos(text_t* data, int cx, int cy, bool clamp) {
     data->cursor_pos = new_pos;
   } else {
     int new_pos = cx - data->textx + (cy - data->texty) * data->w;
-    if (clamp) new_pos = CLAMP(0, data->current_len, new_pos);
+    if (clamp) new_pos = TCOD_CLAMP(0, data->current_len, new_pos);
     if (new_pos >= 0 && new_pos <= data->current_len) data->cursor_pos = new_pos;
   }
 }

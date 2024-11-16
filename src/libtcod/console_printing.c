@@ -282,21 +282,21 @@ int TCOD_console_print_internal(
   miny = y;
   maxy = con->h - 1;
   if (rh > 0) {
-    maxy = MIN(maxy, y + rh - 1);
+    maxy = TCOD_MIN(maxy, y + rh - 1);
   }
   switch (align) {
     case TCOD_LEFT:
-      minx = MAX(0, x);
-      maxx = MIN(con->w - 1, x + rw - 1);
+      minx = TCOD_MAX(0, x);
+      maxx = TCOD_MIN(con->w - 1, x + rw - 1);
       break;
     case TCOD_RIGHT:
-      minx = MAX(0, x - rw + 1);
-      maxx = MIN(con->w - 1, x);
+      minx = TCOD_MAX(0, x - rw + 1);
+      maxx = TCOD_MIN(con->w - 1, x);
       break;
     case TCOD_CENTER:
     default:
-      minx = MAX(0, x - rw / 2);
-      maxx = MIN(con->w - 1, x + rw / 2);
+      minx = TCOD_MAX(0, x - rw / 2);
+      maxx = TCOD_MIN(con->w - 1, x + rw / 2);
       break;
   }
 
@@ -538,20 +538,20 @@ int TCOD_console_print_internal_utf(
   oldBack = con->back;
   miny = y;
   maxy = con->h - 1;
-  if (rh > 0) maxy = MIN(maxy, y + rh - 1);
+  if (rh > 0) maxy = TCOD_MIN(maxy, y + rh - 1);
   switch (align) {
     case TCOD_LEFT:
-      minx = MAX(0, x);
-      maxx = MIN(con->w - 1, x + rw - 1);
+      minx = TCOD_MAX(0, x);
+      maxx = TCOD_MIN(con->w - 1, x + rw - 1);
       break;
     case TCOD_RIGHT:
-      minx = MAX(0, x - rw + 1);
-      maxx = MIN(con->w - 1, x);
+      minx = TCOD_MAX(0, x - rw + 1);
+      maxx = TCOD_MIN(con->w - 1, x);
       break;
     case TCOD_CENTER:
     default:
-      minx = MAX(0, x - rw / 2);
-      maxx = MIN(con->w - 1, x + rw / 2);
+      minx = TCOD_MAX(0, x - rw / 2);
+      maxx = TCOD_MIN(con->w - 1, x + rw / 2);
       break;
   }
 
@@ -1180,7 +1180,7 @@ static int printn_internal_(const PrintParams* __restrict params, size_t n, cons
       top += 1;
     }
   }
-  return MIN(top, bottom) - y + 1;
+  return TCOD_MIN(top, bottom) - y + 1;
 }
 TCOD_NODISCARD
 static int vprintf_internal_(const PrintParams* __restrict params, const char* __restrict fmt, va_list args) {

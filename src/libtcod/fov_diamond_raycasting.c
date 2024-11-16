@@ -169,8 +169,8 @@ static void merge_input(const DiamondFov* __restrict fov, RaycastTile* __restric
     ray->ignore = true;
   }
   if (!ray->ignore && !map->cells[ray_index].transparent) {
-    ray->x_error = ray->x_obscurity = ABS(ray->x_relative);
-    ray->y_error = ray->y_obscurity = ABS(ray->y_relative);
+    ray->x_error = ray->x_obscurity = TCOD_ABS(ray->x_relative);
+    ray->y_error = ray->y_obscurity = TCOD_ABS(ray->y_relative);
   }
 }
 /**

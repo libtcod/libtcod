@@ -299,9 +299,9 @@ public:
 	@PageName color
 	@FuncTitle Multiply a color by a float
 	@FuncDesc c1 = c2 * v =>
-    c1.r = CLAMP(0, 255, c2.r * v)
-    c1.g = CLAMP(0, 255, c2.g * v)
-    c1.b = CLAMP(0, 255, c2.b * v)
+    c1.r = TCOD_CLAMP(0, 255, c2.r * v)
+    c1.g = TCOD_CLAMP(0, 255, c2.g * v)
+    c1.b = TCOD_CLAMP(0, 255, c2.b * v)
 	darkishRed = red * 0.5
 <table><tr><td style="background-color: rgb(128, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="width: 60px;"></td></tr></table>
 </tbody>
@@ -326,9 +326,9 @@ public:
 	/**
 	@PageName color
 	@FuncTitle Adding two colors
-	@FuncDesc c1 = c1 + c2 => c1.r = MIN(255, c1.r + c2.r)
-                  c1.g = MIN(255, c1.g + c2.g)
-                  c1.b = MIN(255, c1.b + c2.b)
+	@FuncDesc c1 = c1 + c2 => c1.r = TCOD_MIN(255, c1.r + c2.r)
+                  c1.g = TCOD_MIN(255, c1.g + c2.g)
+                  c1.b = TCOD_MIN(255, c1.b + c2.b)
 	lightishRed = red + darkGrey
 <table><tr><td style="background-color: rgb(255, 128, 128); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="background-color: rgb(128, 128, 128); width: 60px;"></td></tr></table>
 	@CppEx TCODColor myLightishRed = TCODColor::red + TCODColor::darkGrey
@@ -349,9 +349,9 @@ public:
 	/**
 	@PageName color
 	@FuncTitle Subtract two colors
-	@FuncDesc  c1 = c1 - c2 => c1.r = MAX(0, c1.r - c2.r)
-                  c1.g = MAX(0, c1.g - c2.g)
-                  c1.b = MAX(0, c1.b - c2.b)
+	@FuncDesc  c1 = c1 - c2 => c1.r = TCOD_MAX(0, c1.r - c2.r)
+                  c1.g = TCOD_MAX(0, c1.g - c2.g)
+                  c1.b = TCOD_MAX(0, c1.b - c2.b)
 	redish = red - darkGrey
 <table><tr><td style="background-color: rgb(127, 0, 0); width: 60px; height: 30px;"></td><td style="background-color: rgb(255, 0, 0); width: 60px;"></td><td style="background-color: rgb(128, 128, 128); width: 60px;"></td></tr></table>
 	@CppEx TCODColor myRedish = TCODColor::red - TCODColor::darkGrey

@@ -130,7 +130,7 @@ class Slider : public TextBox {
     valueToText();
   }
   void setValue(float value_) {
-    this->value = CLAMP(min, max, value_);
+    this->value = TCOD_CLAMP(min, max, value_);
     valueToText();
   }
   void setSensitivity(float sensitivity_) { this->sensitivity = sensitivity_; }

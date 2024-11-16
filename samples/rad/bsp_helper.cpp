@@ -112,10 +112,10 @@ bool BspHelper::visitNode(TCODBsp* node, void* userData) {
       maxy = TCODRandom::getInstance()->getInt(miny + minRoomSize - 1, maxy);
     }
     // keep walls on the map borders
-    minx = MAX(1, minx);
-    miny = MAX(1, miny);
-    maxx = MIN(map->getWidth() - 2, maxx);
-    maxy = MIN(map->getHeight() - 2, maxy);
+    minx = TCOD_MAX(1, minx);
+    miny = TCOD_MAX(1, miny);
+    maxx = TCOD_MIN(map->getWidth() - 2, maxx);
+    maxy = TCOD_MIN(map->getHeight() - 2, maxy);
     // resize the node to fit the room
     // printf("node %dx%d %dx%d => room %dx%d
     // %dx%d\n",node->x,node->y,node->w,node->h,minx,miny,maxx-minx+1,maxy-miny+1);
@@ -134,10 +134,10 @@ bool BspHelper::visitNode(TCODBsp* node, void* userData) {
     // resize the node to fit its sons
     TCODBsp* left = node->getLeft();
     TCODBsp* right = node->getRight();
-    node->x = MIN(left->x, right->x);
-    node->y = MIN(left->y, right->y);
-    node->w = MAX(left->x + left->w, right->x + right->w) - node->x;
-    node->h = MAX(left->y + left->h, right->y + right->h) - node->y;
+    node->x = TCOD_MIN(left->x, right->x);
+    node->y = TCOD_MIN(left->y, right->y);
+    node->w = TCOD_MAX(left->x + left->w, right->x + right->w) - node->x;
+    node->h = TCOD_MAX(left->y + left->h, right->y + right->h) - node->y;
     // create a corridor between the two lower nodes
     if (node->horizontal) {
       // vertical corridor
@@ -151,8 +151,8 @@ bool BspHelper::visitNode(TCODBsp* node, void* userData) {
         vline_down(map, x2, y + 1);
       } else {
         // straight vertical corridor
-        int minx = MAX(left->x, right->x);
-        int maxx = MIN(left->x + left->w - 1, right->x + right->w - 1);
+        int minx = TCOD_MAX(left->x, right->x);
+        int maxx = TCOD_MIN(left->x + left->w - 1, right->x + right->w - 1);
         int x = TCODRandom::getInstance()->getInt(minx, maxx);
         vline_down(map, x, right->y);
         vline_up(map, x, right->y - 1);
@@ -169,8 +169,8 @@ bool BspHelper::visitNode(TCODBsp* node, void* userData) {
         hline_right(map, x + 1, y2);
       } else {
         // straight horizontal corridor
-        int miny = MAX(left->y, right->y);
-        int maxy = MIN(left->y + left->h - 1, right->y + right->h - 1);
+        int miny = TCOD_MAX(left->y, right->y);
+        int maxy = TCOD_MIN(left->y + left->h - 1, right->y + right->h - 1);
         int y = TCODRandom::getInstance()->getInt(miny, maxy);
         hline_left(map, right->x - 1, y);
         hline_right(map, right->x, y);

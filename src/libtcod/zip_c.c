@@ -372,7 +372,7 @@ int TCOD_zip_get_data(TCOD_zip_t pzip, int nbBytes, void* data) {
   b_offset = zip->offset * sizeof(uintptr_t) - zip->isize; /* current offset */
   in += b_offset; /* the data address in buffer */
   /* copy it to data */
-  for (i = 0; i < MIN(l, nbBytes); i++) {
+  for (i = 0; i < TCOD_MIN(l, nbBytes); i++) {
     *(out++) = *(in++);
     b_offset++;
   }

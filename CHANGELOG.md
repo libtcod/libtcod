@@ -16,6 +16,7 @@ Versions since `2.0.0` only track API breaks and no longer guarantee ABI compati
 - Several functions have been moved inline, this will break the ABI.
 - Provisional gui tools moved into the `tcod::gui` namespace.
 - `TCODConsole::data` changed from protected to private.
+- Renamed utility macros such as `MAX`, `MIN`, `ABS`, `CLAMP` and `LERP` to use `TCOD_` prefix.
 
 ### Fixed
 - `const` was missing from `TCOD_sys_update_char` image parameter.

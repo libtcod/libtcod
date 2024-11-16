@@ -265,8 +265,8 @@ static void check_quadrant(
       break;
     }
     View** current_view = active_views->view_ptrs;
-    const int start_j = MAX(i - extent_x, 0);
-    const int max_j = MIN(i, extent_y);
+    const int start_j = TCOD_MAX(i - extent_x, 0);
+    const int max_j = TCOD_MIN(i, extent_y);
     for (int j = start_j; j <= max_j; ++j) {
       if (!active_views->count || current_view == view_array_end(active_views)) {
         break;
@@ -313,10 +313,10 @@ TCOD_Error TCOD_map_compute_fov_permissive2(
   int min_y = pov_y;
   int max_y = map->height - pov_y - 1;
   if (max_radius > 0) {
-    min_x = MIN(min_x, max_radius);
-    max_x = MIN(max_x, max_radius);
-    min_y = MIN(min_y, max_radius);
-    max_y = MIN(max_y, max_radius);
+    min_x = TCOD_MIN(min_x, max_radius);
+    max_x = TCOD_MIN(max_x, max_radius);
+    min_y = TCOD_MIN(min_y, max_radius);
+    max_y = TCOD_MIN(max_y, max_radius);
   }
   /* calculate fov. precise permissive field of view */
   check_quadrant(map, pov_x, pov_y, 1, 1, max_x, max_y, light_walls, offset, limit, views, &bumps, &active_views);

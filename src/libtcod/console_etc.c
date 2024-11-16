@@ -407,8 +407,8 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
     text_length = snprintf(powered_by, sizeof(powered_by), "Powered by\n%s", version_string);
     noise = TCOD_noise_new(1, TCOD_NOISE_DEFAULT_HURST, TCOD_NOISE_DEFAULT_LACUNARITY, NULL);
     text_length_upper = (int)strlen("Powered by\n");
-    left = MAX(x - 4, 0);
-    top = MAX(y - 4, 0);
+    left = TCOD_MAX(x - 4, 0);
+    top = TCOD_MAX(y - 4, 0);
     const TCOD_ColorRGB color = TCOD_console_get_default_background(console);
     TCOD_console_set_default_background(console, TCOD_black);
     TCOD_console_set_default_background(console, color);
@@ -436,8 +436,8 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
     /* console size has changed */
     console_w = TCOD_console_get_width(console);
     console_h = TCOD_console_get_height(console);
-    right = MIN(x + text_length, console_w - 1);
-    bottom = MIN(y + 6, console_h - 1);
+    right = TCOD_MIN(x + text_length, console_w - 1);
+    bottom = TCOD_MIN(y + 6, console_h - 1);
     const int width = right - left + 1;
     const int height = bottom - top + 1;
     if (img) TCOD_image_delete(img);
@@ -472,7 +472,7 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
       if (sparkle_radius >= 0.0f && dist < sparkle_radius2) {
         int color_idx =
             63 - (int)(63 * (sparkle_radius2 - dist) / sparkle_radius2) + TCOD_random_get_int(NULL, -10, 10);
-        color_idx = CLAMP(0, 63, color_idx);
+        color_idx = TCOD_CLAMP(0, 63, color_idx);
         pixel_color = colormap_light[color_idx];
       }
       if (alpha) {
@@ -490,9 +490,9 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
             bg_color = TCOD_console_get_char_foreground(console, xc / 2, yc / 2);
           }
         }
-        pixel_color.r = MIN(255, bg_color.r + pixel_color.r);
-        pixel_color.g = MIN(255, bg_color.g + pixel_color.g);
-        pixel_color.b = MIN(255, bg_color.b + pixel_color.b);
+        pixel_color.r = TCOD_MIN(255, bg_color.r + pixel_color.r);
+        pixel_color.g = TCOD_MIN(255, bg_color.g + pixel_color.g);
+        pixel_color.b = TCOD_MIN(255, bg_color.b + pixel_color.b);
       }
       TCOD_image_put_pixel(img, xi, yi, pixel_color);
     }
@@ -502,7 +502,7 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
   int particles_left_to_update = particle_count;
   int particle_i = first_particle;
   while (particles_left_to_update > 0) {
-    const int color_index = MIN(63, (int)(64 * (1.0f - particle_heat[particle_i])));
+    const int color_index = TCOD_MIN(63, (int)(64 * (1.0f - particle_heat[particle_i])));
     const TCOD_ColorRGB particle_color = colormap_heat[color_index];
     if (particle_y[particle_i] < (bottom - top + 1) * 2) {
       const int particle_x_int = (int)particle_x[particle_i];
@@ -550,7 +550,7 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
     if (char_heat[i] >= 0.0f && powered_by[i] != '\n') {
       int color_idx = (int)(64 * char_heat[i]);
       TCOD_color_t col;
-      color_idx = MIN(63, color_idx);
+      color_idx = TCOD_MIN(63, color_idx);
       col = colormap_heat[color_idx];
       if (text_progress >= text_length) {
         float coef = (text_progress - text_length) / text_length;
@@ -559,9 +559,9 @@ bool TCOD_console_credits_render_ex(TCOD_Console* console, int x, int y, bool al
           int r = (int)(coef * fore.r + (1.0f - coef) * col.r);
           int g = (int)(coef * fore.g + (1.0f - coef) * col.g);
           int b = (int)(coef * fore.b + (1.0f - coef) * col.b);
-          col.r = (uint8_t)MAX(0, MIN(r, 255));
-          col.g = (uint8_t)MAX(0, MIN(g, 255));
-          col.b = (uint8_t)MAX(0, MIN(b, 255));
+          col.r = (uint8_t)TCOD_MAX(0, TCOD_MIN(r, 255));
+          col.g = (uint8_t)TCOD_MAX(0, TCOD_MIN(g, 255));
+          col.b = (uint8_t)TCOD_MAX(0, TCOD_MIN(b, 255));
           TCOD_console_set_char_foreground(console, char_x[i], char_y[i], col);
         } else {
           col = TCOD_color_lerp(col, TCOD_black, coef);

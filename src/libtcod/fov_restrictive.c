@@ -69,8 +69,8 @@ static void compute_quadrant(
       double slopes_per_cell = 1.0 / (double)(iteration);
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
-      int minx = MAX(0, pov_x - iteration);
-      int maxx = MIN(map->width - 1, pov_x + iteration);
+      int minx = TCOD_MAX(0, pov_x - iteration);
+      int maxx = TCOD_MIN(map->width - 1, pov_x + iteration);
       done = true;
       for (x = pov_x + (processed_cell * dx); x >= minx && x <= maxx; x += dx) {
         int c = x + (y * map->width);
@@ -96,8 +96,8 @@ static void compute_quadrant(
                   if (start_slope >= start_angle[idx] && end_slope <= end_angle[idx]) {
                     visible = false;
                   } else {
-                    start_angle[idx] = MIN(start_angle[idx], start_slope);
-                    end_angle[idx] = MAX(end_angle[idx], end_slope);
+                    start_angle[idx] = TCOD_MIN(start_angle[idx], start_slope);
+                    end_angle[idx] = TCOD_MAX(end_angle[idx], end_slope);
                     extended = true;
                   }
                 }
@@ -161,8 +161,8 @@ static void compute_quadrant(
       double slopes_per_cell = 1.0 / (double)(iteration);
       double half_slopes = slopes_per_cell * 0.5;
       int processed_cell = (int)((min_angle + half_slopes) / slopes_per_cell);
-      int miny = MAX(0, pov_y - iteration);
-      int maxy = MIN(map->height - 1, pov_y + iteration);
+      int miny = TCOD_MAX(0, pov_y - iteration);
+      int maxy = TCOD_MIN(map->height - 1, pov_y + iteration);
       done = true;
       for (y = pov_y + (processed_cell * dy); y >= miny && y <= maxy; y += dy) {
         int c = x + (y * map->width);
@@ -188,8 +188,8 @@ static void compute_quadrant(
                   if (start_slope >= start_angle[idx] && end_slope <= end_angle[idx]) {
                     visible = false;
                   } else {
-                    start_angle[idx] = MIN(start_angle[idx], start_slope);
-                    end_angle[idx] = MAX(end_angle[idx], end_slope);
+                    start_angle[idx] = TCOD_MIN(start_angle[idx], start_slope);
+                    end_angle[idx] = TCOD_MAX(end_angle[idx], end_slope);
                     extended = true;
                   }
                 }

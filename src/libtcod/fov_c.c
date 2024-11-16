@@ -139,10 +139,10 @@ TCOD_Error TCOD_map_postprocess(TCOD_Map* __restrict map, int pov_x, int pov_y, 
   int x_max = map->width;
   int y_max = map->height;
   if (radius > 0) {
-    x_min = MAX(x_min, pov_x - radius);
-    y_min = MAX(y_min, pov_y - radius);
-    x_max = MIN(x_max, pov_x + radius + 1);
-    y_max = MIN(y_max, pov_y + radius + 1);
+    x_min = TCOD_MAX(x_min, pov_x - radius);
+    y_min = TCOD_MAX(y_min, pov_y - radius);
+    x_max = TCOD_MIN(x_max, pov_x + radius + 1);
+    y_max = TCOD_MIN(y_max, pov_y + radius + 1);
   }
   TCOD_map_postprocess_quadrant(map, x_min, y_min, pov_x, pov_y, -1, -1);
   TCOD_map_postprocess_quadrant(map, pov_x, y_min, x_max - 1, pov_y, 1, -1);

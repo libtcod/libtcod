@@ -1623,7 +1623,7 @@ local void fill_window(s)
 #define MAX_STORED 65535
 
 /* Minimum of a and b. */
-#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define TCOD_MIN(a, b) ((a) > (b) ? (b) : (a))
 
 /* ===========================================================================
  * Copy without compression as much as possible from the input stream, return
@@ -1648,7 +1648,7 @@ local block_state deflate_stored(s, flush)
      * this is 32K. This can be as small as 507 bytes for memLevel == 1. For
      * large input and output buffers, the stored block size will be larger.
      */
-    unsigned min_block = MIN(s->pending_buf_size - 5, s->w_size);
+    unsigned min_block = TCOD_MIN(s->pending_buf_size - 5, s->w_size);
 
     /* Copy as many min_block or larger stored blocks directly to next_out as
      * possible. If flushing, copy the remaining available input to next_out as
@@ -1755,7 +1755,7 @@ local block_state deflate_stored(s, flush)
             s->strstart += used;
         }
         s->block_start = s->strstart;
-        s->insert += MIN(used, s->w_size - s->insert);
+        s->insert += TCOD_MIN(used, s->w_size - s->insert);
     }
     if (s->high_water < s->strstart)
         s->high_water = s->strstart;
@@ -1796,13 +1796,13 @@ local block_state deflate_stored(s, flush)
      */
     have = (s->bi_valid + 42) >> 3;         /* number of header bytes */
         /* maximum stored block length that will fit in pending: */
-    have = MIN(s->pending_buf_size - have, MAX_STORED);
-    min_block = MIN(have, s->w_size);
+    have = TCOD_MIN(s->pending_buf_size - have, MAX_STORED);
+    min_block = TCOD_MIN(have, s->w_size);
     left = s->strstart - s->block_start;
     if (left >= min_block ||
         ((left || flush == Z_FINISH) && flush != Z_NO_FLUSH &&
          s->strm->avail_in == 0 && left <= have)) {
-        len = MIN(left, have);
+        len = TCOD_MIN(left, have);
         last = flush == Z_FINISH && s->strm->avail_in == 0 &&
                len == left ? 1 : 0;
         _tr_stored_block(s, (charf *)s->window + s->block_start, len, last);

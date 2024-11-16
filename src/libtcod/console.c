@@ -356,7 +356,7 @@ int TCOD_console_get_char(const TCOD_Console* con, int x, int y) {
 /**
  *  Clamp colors channels that are outside of uint8_t's range.
  */
-static uint8_t clamp_color_(int c) { return (uint8_t)(MAX(0, MIN(c, 255))); }
+static uint8_t clamp_color_(int c) { return (uint8_t)(TCOD_MAX(0, TCOD_MIN(c, 255))); }
 /**
  *  Mix two colors using a lambda.
  */
@@ -371,8 +371,8 @@ static struct TCOD_ColorRGBA blend_color_(
   return out;
 }
 static int channel_multiply(uint8_t dst, uint8_t src) { return (int)dst * (int)src / 255; }
-static int channel_lighten(uint8_t dst, uint8_t src) { return MAX(dst, src); }
-static int channel_darken(uint8_t dst, uint8_t src) { return MIN(dst, src); }
+static int channel_lighten(uint8_t dst, uint8_t src) { return TCOD_MAX(dst, src); }
+static int channel_darken(uint8_t dst, uint8_t src) { return TCOD_MIN(dst, src); }
 static int channel_screen(uint8_t dst, uint8_t src) {
   // newbk = white - (white - oldbk) * (white - curbk)
   return 255 - (255 - (int)dst) * (255 - (int)src) / 255;

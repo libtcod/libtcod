@@ -470,7 +470,9 @@ bool TCOD_color_equals(TCOD_color_t c1, TCOD_color_t c2) { return (c1.r == c2.r 
  */
 TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
-      (uint8_t)MIN(255, (int)c1.r + c2.r), (uint8_t)MIN(255, (int)c1.g + c2.g), (uint8_t)MIN(255, (int)c1.b + c2.b)};
+      (uint8_t)TCOD_MIN(255, (int)c1.r + c2.r),
+      (uint8_t)TCOD_MIN(255, (int)c1.g + c2.g),
+      (uint8_t)TCOD_MIN(255, (int)c1.b + c2.b)};
   return new_color;
 }
 /**
@@ -482,7 +484,9 @@ TCOD_color_t TCOD_color_add(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_subtract(TCOD_color_t c1, TCOD_color_t c2) {
   TCOD_color_t new_color = {
-      (uint8_t)MAX(0, (int)c1.r - c2.r), (uint8_t)MAX(0, (int)c1.g - c2.g), (uint8_t)MAX(0, (int)c1.b - c2.b)};
+      (uint8_t)TCOD_MAX(0, (int)c1.r - c2.r),
+      (uint8_t)TCOD_MAX(0, (int)c1.g - c2.g),
+      (uint8_t)TCOD_MAX(0, (int)c1.b - c2.b)};
   return new_color;
 }
 /**
@@ -506,9 +510,9 @@ TCOD_color_t TCOD_color_multiply(TCOD_color_t c1, TCOD_color_t c2) {
  */
 TCOD_color_t TCOD_color_multiply_scalar(TCOD_color_t c1, float value) {
   TCOD_color_t new_color = {
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.r * value),
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.g * value),
-      (uint8_t)CLAMP(0.0f, 255.0f, (float)c1.b * value)};
+      (uint8_t)TCOD_CLAMP(0.0f, 255.0f, (float)c1.r * value),
+      (uint8_t)TCOD_CLAMP(0.0f, 255.0f, (float)c1.g * value),
+      (uint8_t)TCOD_CLAMP(0.0f, 255.0f, (float)c1.b * value)};
   return new_color;
 }
 /**
@@ -545,8 +549,8 @@ void TCOD_color_set_HSV(TCOD_color_t* color, float hue, float saturation, float 
   int hue_section;
   float hue_fraction, p, q, t;
 
-  saturation = CLAMP(0.0f, 1.0f, saturation);
-  value = CLAMP(0.0f, 1.0f, value);
+  saturation = TCOD_CLAMP(0.0f, 1.0f, saturation);
+  value = TCOD_CLAMP(0.0f, 1.0f, value);
   if (saturation == 0.0f) { /* achromatic (grey) */
     color->r = color->g = color->b = (uint8_t)(value * 255.0f + 0.5f);
     return;
@@ -617,8 +621,8 @@ void TCOD_color_get_HSV(TCOD_color_t color, float* hue, float* saturation, float
  *  \return The colors hue. (degrees)
  */
 float TCOD_color_get_hue(TCOD_color_t color) {
-  uint8_t max = MAX(color.r, MAX(color.g, color.b));
-  uint8_t min = MIN(color.r, MIN(color.g, color.b));
+  uint8_t max = TCOD_MAX(color.r, TCOD_MAX(color.g, color.b));
+  uint8_t min = TCOD_MIN(color.r, TCOD_MIN(color.g, color.b));
   float delta = (float)max - (float)min;
   float hue; /* degrees */
   if (delta == 0.0f) {
@@ -651,8 +655,8 @@ void TCOD_color_set_hue(TCOD_color_t* color, float hue) {
  *  \return The colors saturation. (0 to 1)
  */
 float TCOD_color_get_saturation(TCOD_color_t color) {
-  float max = (float)(MAX(color.r, MAX(color.g, color.b))) / 255.0f;
-  float min = (float)(MIN(color.r, MIN(color.g, color.b))) / 255.0f;
+  float max = (float)(TCOD_MAX(color.r, TCOD_MAX(color.g, color.b))) / 255.0f;
+  float min = (float)(TCOD_MIN(color.r, TCOD_MIN(color.g, color.b))) / 255.0f;
   float delta = max - min;
   if (max == 0.0f) {
     return 0.0f;
@@ -674,7 +678,9 @@ void TCOD_color_set_saturation(TCOD_color_t* color, float saturation) {
  *  \param color A color struct.
  *  \return The colors value. (0 to 1)
  */
-float TCOD_color_get_value(TCOD_color_t color) { return (float)(MAX(color.r, MAX(color.g, color.b))) / 255.0f; }
+float TCOD_color_get_value(TCOD_color_t color) {
+  return (float)(TCOD_MAX(color.r, TCOD_MAX(color.g, color.b))) / 255.0f;
+}
 /**
  *  \brief Change a colors value.
  *

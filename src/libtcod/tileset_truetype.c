@@ -134,7 +134,7 @@ static struct TCOD_Tileset* tileset_from_ttf(const stbtt_fontinfo* font_info, in
       font_info, &loader.font_bbox.xMin, &loader.font_bbox.yMin, &loader.font_bbox.xMax, &loader.font_bbox.yMax);
   stbtt_GetFontVMetrics(font_info, &loader.ascent, &loader.descent, &loader.line_gap);
   if (tile_width <= 0) {
-    tile_width = (int)((float)(bbox_width(&loader.font_bbox)) * loader.scale);
+    tile_width = (int)((float)(bbox_width(&loader.font_bbox))*loader.scale);
   }
   float font_width = bbox_width(&loader.font_bbox) * loader.scale;
   if (font_width > tile_width) {

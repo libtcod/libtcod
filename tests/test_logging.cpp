@@ -16,12 +16,13 @@ struct CapturedLog {
 using LogStorage = std::vector<CapturedLog>;
 
 static void logger_callback(const TCOD_LogMessage* message, void* userdata) {
-  static_cast<LogStorage*>(userdata)->push_back(CapturedLog{
-      message->message,
-      message->level,
-      message->source,
-      message->lineno,
-  });
+  static_cast<LogStorage*>(userdata)->push_back(
+      CapturedLog{
+          message->message,
+          message->level,
+          message->source,
+          message->lineno,
+      });
 }
 
 TEST_CASE("Logging tests") {

@@ -106,8 +106,11 @@ jobs:
       - name: Fetch Vcpkg commits
         working-directory: vcpkg
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
-      # Install latest CMake.
-      - uses: lukka/get-cmake@latest
+      - name: Install latest CMake
+        uses: lukka/get-cmake@latest
+      - name: Install APT dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libltdl-dev
       # Restore both vcpkg and its artifacts from the GitHub cache service.
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v4
@@ -130,7 +133,7 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
       - name: CMake configure
         run: |
-          cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -GNinja \
+          cmake -S . -B ${{env.CMAKE_BUILD_DIR}} -G Ninja \
             -DVCPKG_TARGET_TRIPLET="${{ matrix.triplet }}" \
             -DCMAKE_BUILD_TYPE=${{matrix.config}} \
             -DLIBTCOD_SDL2=find_package \
@@ -175,6 +178,9 @@ jobs:
         run: git fetch --depth=${{env.VCPKG_FETCH_DEPTH}}
       - name: Install the latest CMake
         uses: lukka/get-cmake@latest
+      - name: Install APT dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get install libltdl-dev
       - name: Restore vcpkg and its artifacts.
         uses: actions/cache@v4
         with:
@@ -188,7 +194,7 @@ jobs:
             ${{ hashFiles( 'vcpkg_manifest/vcpkg.json', '.git/modules/vcpkg/HEAD' )}}-${{ matrix.triplet }}-invalidate
       - name: CMake configure
         run: |
-          cmake . -GNinja \
+          cmake . -G Ninja \
             -DCMAKE_BUILD_TYPE=Debug \
             -DCMAKE_CXX_FLAGS="--coverage" \
             -DCMAKE_C_FLAGS="--coverage" \
@@ -263,9 +269,9 @@ jobs:
         os: [ubuntu-24.04]
         architecture: [x86_64]
         include:
-          - os: "macos-12"
+          - os: "macos-13"
             architecture: universal2
-          - os: "macos-12"
+          - os: "macos-13"
             architecture: x86_64
           - os: "windows-2022"
             architecture: x86
@@ -326,7 +332,7 @@ jobs:
     env:
       BUILD_TYPE: Release
       CMAKE_BUILD_DIR: build
-      EM_VERSION: 3.1.9
+      EM_VERSION: 4.0.5
       EM_CACHE_FOLDER: "emsdk-cache"
       VCPKG_ROOT: ${{github.workspace}}/vcpkg
     steps:
@@ -358,7 +364,6 @@ jobs:
           actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
       - name: Verify
         run: emcc -v
-      - uses: lukka/get-cmake@latest
       - name: Configure
         run: emcmake cmake -S . -B ${{ env.CMAKE_BUILD_DIR }} -G Ninja
           -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE="${EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"

@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 import platform
 import re
@@ -455,6 +454,10 @@ env_vendored.Append(
     CCFLAGS=["-w"],  # Hide all warnings for vendored sources.
     PDB=["$VARIANT/libtcod.pdb"],
 )
+if not using_msvc:
+    env_vendored.Append(  # Suppress clang errors
+        CCFLAGS=["-Wno-implicit-function-declaration"],
+    )
 
 vendors = env_vendored.SharedObject(
     source=libtcod_sources[env["SOURCE_FILES"]]["vendor"],

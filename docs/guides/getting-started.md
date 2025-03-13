@@ -120,20 +120,10 @@ In Manifest Mode CMake will invoke Vcpkg which will automatically download and c
 Create a `./vcpkg.json` manifest:
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-  "name": "getting-started",
-  "version-semver": "0.0.0",
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
     "libtcod",
-    "sdl2",
-    {
-      "name": "sdl2",
-      "default-features": false,
-      "features": [
-        "x11"
-      ],
-      "platform": "linux"
-    }
+    "sdl2"
   ]
 }
 ```
